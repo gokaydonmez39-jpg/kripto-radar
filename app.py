@@ -8,7 +8,7 @@ st.set_page_config(page_title="10/10 Kripto Radar", layout="wide", initial_sideb
 # 2. VERİ ÇEKME VE SİNYAL MOTORU
 @st.cache_data(ttl=30) 
 def fetch_top_300_coins():
-    url = "https://api.binance.com/api/v3/ticker/24hr"
+ url = "https://data-api.binance.vision/api/v3/ticker/24hr"
     try:
         response = requests.get(url, timeout=10)
         response.raise_for_status()
@@ -89,4 +89,5 @@ if not df_coins.empty:
         height=700
     )
 else:
+
     st.warning("Veri bağlantısı bekleniyor. Lütfen sayfayı yenileyin.")
