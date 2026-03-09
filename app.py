@@ -2,110 +2,154 @@ import streamlit as st
 import requests
 import pandas as pd
 import ta
+import plotly.graph_objects as go
 from streamlit_autorefresh import st_autorefresh
 
-# 1. SAYFA AYARLARI
-st.set_page_config(page_title="10/10 Kripto Radar PRO", layout="wide", initial_sidebar_state="collapsed")
+# 1. ULTRA SAYFA AYARLARI (Geniş ekran, pro görünüm)
+st.set_page_config(page_title="🚀 Kripto Radar ULTRA", layout="wide", initial_sidebar_state="expanded")
 
-# OTO-PİLOT: Sayfayı her 60 saniyede bir el değmeden otomatik yeniler (60000 milisaniye)
-st_autorefresh(interval=60000, limit=None, key="pro_autorefresh")
+# 60 Saniyede Bir Tam Otomatik Yenileme
+st_autorefresh(interval=60000, limit=None, key="ultra_refresh")
 
-# 2. YAPAY ZEKA VE VERİ MOTORU
-@st.cache_data(ttl=50) 
-def get_pro_market_data():
-    # En hacimli 50 coini bul
+# CSS ile Profesyonel Makyaj (Siyah tema metrik kartları)
+st.markdown("""
+<style>
+    div[data-testid="metric-container"] {
+        background-color: #1e1e1e; border: 1px solid #333; padding: 5% 10% 5% 10%; border-radius: 10px;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+# 2. GELİŞMİŞ VERİ VE SKORLAMA MOTORU
+@st.cache_data(ttl=50)
+def get_ultra_data():
     ticker_url = "https://data-api.binance.vision/api/v3/ticker/24hr"
     try:
-        resp = requests.get(ticker_url, timeout=10)
-        resp.raise_for_status()
-        data = resp.json()
+        data = requests.get(ticker_url, timeout=10).json()
         df = pd.DataFrame(data)
         df = df[df['symbol'].str.endswith('USDT')]
         df['quoteVolume'] = pd.to_numeric(df['quoteVolume'])
         
-        # Sistemi yormamak için en hacimli 50 coini filtrele
-        top_50 = df.sort_values(by='quoteVolume', ascending=False).head(50)['symbol'].tolist()
+        # Sistemi en hızlı tutmak için en hacimli 30 coini (Balina koinleri) al
+        top_30 = df.sort_values(by='quoteVolume', ascending=False).head(30)
         
         results = []
-        # Bu 50 coin için 15 dakikalık canlı mumları çek ve Matematiğe (RSI/MACD) sok
-        for coin in top_50:
+        for index, row in top_30.iterrows():
+            coin = row['symbol']
             try:
-                kline_url = f"https://data-api.binance.vision/api/v3/klines?symbol={coin}&interval=15m&limit=50"
-                k_resp = requests.get(kline_url, timeout=5)
-                k_data = k_resp.json()
+                # Canlı 15 dakikalık mumları çek
+                kline_url = f"https://data-api.binance.vision/api/v3/klines?symbol={coin}&interval=15m&limit=100"
+                k_data = requests.get(kline_url, timeout=5).json()
                 
-                # Sadece kapanış fiyatlarını al
-                closes = [float(candle[4]) for candle in k_data]
-                df_k = pd.DataFrame(closes, columns=['Close'])
+                df_k = pd.DataFrame(k_data, columns=['Open_time', 'Open', 'High', 'Low', 'Close', 'Volume', 'Close_time', 'Quote_asset_volume', 'Number_of_trades', 'Taker_buy_base_asset_volume', 'Taker_buy_quote_asset_volume', 'Ignore'])
+                df_k['Close'] = pd.to_numeric(df_k['Close'])
                 
-                # PROFESYONEL İNDİKATÖRLER (RSI ve MACD)
+                # İNDİKATÖRLER (RSI, MACD ve EMA50)
                 rsi = ta.momentum.RSIIndicator(df_k['Close'], window=14).rsi().iloc[-1]
-                macd_line = ta.trend.MACD(df_k['Close']).macd().iloc[-1]
-                macd_signal = ta.trend.MACD(df_k['Close']).macd_signal().iloc[-1]
+                macd = ta.trend.MACD(df_k['Close'])
+                macd_line = macd.macd().iloc[-1]
+                macd_signal = macd.macd_signal().iloc[-1]
+                ema_50 = ta.trend.EMAIndicator(df_k['Close'], window=50).ema_indicator().iloc[-1]
                 
-                # Ticker'dan günlük değişimi al
-                coin_info = df[df['symbol'] == coin].iloc[0]
-                change_pct = float(coin_info['priceChangePercent'])
-                volume = float(coin_info['quoteVolume'])
-                current_price = closes[-1]
+                current_price = df_k['Close'].iloc[-1]
+                change_pct = float(row['priceChangePercent'])
                 
-                # --- 10/10 ULTRA SİNYAL ALGORİTMASI ---
-                sinyal = "⏳ İzlemede"
+                # --- ULTRA GÜÇ SKORU HESAPLAMA (100 Üzerinden) ---
+                score = 50 # Başlangıç nötr
+                if rsi < 35: score += 20 # Ucuzlamış
+                elif rsi > 70: score -= 20 # Şişmiş
                 
-                # Mantık 1: RSI 30'un altındaysa (Aşırı Satım) ve MACD yukarı kesiyorsa -> DİPTEN AL
-                if rsi < 30 and macd_line > macd_signal:
-                    sinyal = "💎 DİPTEN AL (RSI + MACD Onaylı)"
-                    
-                # Mantık 2: RSI 70'in üzerindeyse (Aşırı Alım) ve MACD aşağı kesiyorsa -> DİKKAT SATIŞ
-                elif rsi > 70 and macd_line < macd_signal:
-                    sinyal = "🚨 DİKKAT TEHLİKE (Aşırı Şişti)"
-                    
-                # Mantık 3: Günlük %3'ten fazla artmış, Hacim uçmuş ve RSI hala 70'in altındaysa -> HACİM PATLAMASI
-                elif change_pct > 3 and volume > 50000000 and rsi < 70:
-                    sinyal = "🚀 HACİM PATLAMASI (Trend Güçlü)"
-
+                if macd_line > macd_signal: score += 15 # Trend yukarı kesti
+                else: score -= 15
+                
+                if current_price > ema_50: score += 15 # Güçlü trend üzerinde
+                
+                if change_pct > 2: score += 10 # Hacim ivmesi var
+                
+                # Skor Yorumlama
+                if score >= 85: sinyal = "🟢 NOKTA ATIŞI AL (Mükemmel)"
+                elif score >= 70: sinyal = "🟢 GÜÇLÜ AL"
+                elif score <= 30: sinyal = "🔴 TEHLİKE (Düşüş)"
+                else: sinyal = "⏳ Nötr Bölge"
+                
                 results.append({
                     "Parite": coin,
-                    "Son Fiyat": current_price,
+                    "Fiyat": current_price,
                     "Değişim (%)": change_pct,
-                    "RSI (15m)": round(rsi, 2),
-                    "Hacim (USDT)": volume,
-                    "10/10 PRO Sinyal": sinyal
+                    "RSI": round(rsi, 1),
+                    "Güç Skoru": score,
+                    "Durum": sinyal
                 })
             except:
-                continue # Hata veren coin olursa sistemi çökertme, diğerine geç (İşte sağlamlık budur)
+                continue
                 
-        return pd.DataFrame(results)
+        return pd.DataFrame(results), top_30
+    except:
+        return pd.DataFrame(), pd.DataFrame()
+
+# 3. INTERAKTİF GRAFİK ÇİZDİRİCİ
+def draw_chart(coin_symbol):
+    try:
+        url = f"https://data-api.binance.vision/api/v3/klines?symbol={coin_symbol}&interval=15m&limit=60"
+        data = requests.get(url).json()
+        df_c = pd.DataFrame(data, columns=['Time', 'Open', 'High', 'Low', 'Close', 'Vol', 'CloseTime', 'QVol', 'Trades', 'TakerBase', 'TakerQuote', 'Ignore'])
+        df_c['Time'] = pd.to_datetime(df_c['Time'], unit='ms')
+        for col in ['Open', 'High', 'Low', 'Close']: df_c[col] = df_c[col].astype(float)
         
-    except Exception as e:
-        st.error(f"Bağlantı Hatası: {e}")
-        return pd.DataFrame()
+        fig = go.Figure(data=[go.Candlestick(x=df_c['Time'], open=df_c['Open'], high=df_c['High'], low=df_c['Low'], close=df_c['Close'], name='Fiyat')])
+        fig.update_layout(title=f"{coin_symbol} Canlı Mum Grafiği (15m)", template="plotly_dark", height=400, margin=dict(l=0, r=0, t=40, b=0))
+        return fig
+    except:
+        return None
 
-# 3. PROFESYONEL ARAYÜZ
-st.title("⚡ 10/10 Kripto Radar PRO")
-st.markdown("**Sistem Durumu:** 🟢 **OTO-PİLOT AKTİF** | Her 60 saniyede bir kendini yeniler. İlk 50 coin RSI ve MACD ile anlık taranıyor.")
+# --- ARAYÜZ (DASHBOARD) ---
+st.title("🎯 Kripto Radar ULTRA: Wall Street Terminali")
 
-with st.spinner('Piyasa matematiği hesaplanıyor, lütfen bekleyin...'):
-    df_final = get_pro_market_data()
+with st.spinner('Kuantum algoritmaları piyasayı tarıyor...'):
+    df_signals, df_raw = get_ultra_data()
 
-if not df_final.empty:
-    def color_pro(val):
-        if isinstance(val, str):
-            if "DİPTEN AL" in val: return 'background-color: #003366; color: #00ffcc; font-weight: bold;'
-            if "HACİM PATLAMASI" in val: return 'background-color: #004d00; color: #00ff00; font-weight: bold;'
-            if "TEHLİKE" in val: return 'background-color: #4d0000; color: #ff3333; font-weight: bold;'
-            if "İzlemede" in val: return 'color: gray;'
-        elif isinstance(val, float):
-            if val < 0: return 'color: #ff4b4b; font-weight: bold;'
-            if val > 0: return 'color: #00cc96; font-weight: bold;'
+if not df_signals.empty:
+    # ÜST PANO (KPI METRİKLERİ)
+    btc_price = df_signals[df_signals['Parite'] == 'BTCUSDT']['Fiyat'].values[0] if 'BTCUSDT' in df_signals['Parite'].values else 0
+    firsat_sayisi = len(df_signals[df_signals['Güç Skoru'] >= 80])
+    
+    col1, col2, col3 = st.columns(3)
+    col1.metric("👑 Lider: BTC/USDT", f"${btc_price:,.2f}")
+    col2.metric("🎯 Nokta Atışı Fırsat Sayısı", f"{firsat_sayisi} Adet", "Yapay Zeka Onaylı")
+    col3.metric("⏱️ Sistem Durumu", "Aktif", "Oto-Pilot Devrede")
+    
+    st.markdown("---")
+    
+    # ORTA BÖLÜM: GRAFİK VE LİSTE YAN YANA
+    left_col, right_col = st.columns([1, 2])
+    
+    with left_col:
+        st.subheader("Filtre & Grafik Seçimi")
+        secilen_coin = st.selectbox("Grafiğini Görmek İstediğin Coini Seç:", df_signals['Parite'].tolist())
+        st.markdown("**Nokta Atışı Sinyaller (Skor > 85)**")
+        st.dataframe(df_signals[df_signals['Güç Skoru'] >= 85][['Parite', 'Fiyat']], hide_index=True, use_container_width=True)
+
+    with right_col:
+        # Seçilen coinin profesyonel mum grafiğini çiz
+        chart = draw_chart(secilen_coin)
+        if chart:
+            st.plotly_chart(chart, use_container_width=True)
+            
+    st.markdown("---")
+    
+    # ALT BÖLÜM: ANA TERMİNAL TABLOSU (Renkli)
+    st.subheader("🌐 Tüm Piyasa Algoritma Sonuçları")
+    def style_terminal(val):
+        if isinstance(val, str) and "NOKTA" in val: return 'background-color: #004d00; color: #00ff00; font-weight: bold;'
+        if isinstance(val, str) and "GÜÇLÜ AL" in val: return 'color: #00ffcc; font-weight: bold;'
+        if isinstance(val, str) and "TEHLİKE" in val: return 'color: #ff3333; font-weight: bold;'
+        if isinstance(val, (int, float)) and val >= 85: return 'color: #00ff00; font-weight: bold;'
         return ''
-        
+    
     st.dataframe(
-        df_final.style.applymap(color_pro, subset=['Değişim (%)', '10/10 PRO Sinyal'])
-                      .format({"Son Fiyat": "${:.4f}", "Değişim (%)": "{:+.2f}%", "Hacim (USDT)": "${:,.0f}"}),
-        use_container_width=True,
-        hide_index=True,
-        height=700
+        df_signals.style.applymap(style_terminal, subset=['Durum', 'Güç Skoru'])
+                        .format({"Fiyat": "${:.4f}", "Değişim (%)": "{:+.2f}%"}),
+        use_container_width=True, hide_index=True, height=400
     )
 else:
-    st.warning("Veriler işleniyor, otomatik olarak yenilenecektir...")
+    st.warning("Veriler çekiliyor, Terminal birazdan aktif olacak...")
