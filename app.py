@@ -1,14 +1,15 @@
-﻿import streamlit as st
+import streamlit as st
 import requests
 import pandas as pd
 
 # 1. SAYFA AYARLARI
 st.set_page_config(page_title="10/10 Kripto Radar", layout="wide", initial_sidebar_state="collapsed")
 
-# 2. VERİ ÇEKME VE SİNYAL MOTORU
+# 2. VERİ ÇEKME VE SİNYAL MOTORU (Global Link Güncellendi)
 @st.cache_data(ttl=30) 
 def fetch_top_300_coins():
- url = "https://data-api.binance.vision/api/v3/ticker/24hr"
+    # Coğrafi engeli aşan yeni Binance Global adresi:
+    url = "https://data-api.binance.vision/api/v3/ticker/24hr"
     try:
         response = requests.get(url, timeout=10)
         response.raise_for_status()
@@ -34,11 +35,11 @@ def fetch_top_300_coins():
             dip = row['lowPrice']
             degisim = row['priceChangePercent']
             
-            # Kırılım Stratejisi: Fiyat zirveye %1'den daha yakınsa ve artış trendindeyse
+            # Kırılım Stratejisi
             if tepe > 0 and (tepe - fiyat) / tepe < 0.01 and degisim > 2:
                 return "🚀 Güçlü Al (Kırılım)"
             
-            # Dipten Dönüş Stratejisi: Fiyat dibe %1'den daha yakınsa ve düşüş durmuşsa
+            # Dipten Dönüş Stratejisi
             elif dip > 0 and (fiyat - dip) / dip < 0.01 and degisim < -2:
                 return "💎 Dipten Topla"
             
@@ -89,5 +90,4 @@ if not df_coins.empty:
         height=700
     )
 else:
-
     st.warning("Veri bağlantısı bekleniyor. Lütfen sayfayı yenileyin.")
