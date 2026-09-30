@@ -1,10 +1,10 @@
-name: NASDAQ SWING XRAY Resumable OHLCV
+name: NASDAQ SWING XRAY Hard Gates
 
 on:
   push:
     branches: [main]
     paths:
-      - "nasdaq-xray/yahoo_stage.py"
+      - "nasdaq-xray/eastmoney_stage.py"
       - ".github/workflows/nasdaq-xray-daily.yml"
   schedule:
     - cron: "45 * * * 1-5"
@@ -14,16 +14,16 @@ permissions:
   contents: write
 
 concurrency:
-  group: nasdaq-xray-yahoo-stage
+  group: nasdaq-xray-hard-gates
   cancel-in-progress: false
 
 jobs:
-  yahoo-stage:
+  hard-gates:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 30
     env:
-      XRAY_YAHOO_BATCH: "500"
-      XRAY_YAHOO_WORKERS: "12"
+      XRAY_EM_HISTORY_BATCH: "120"
+      XRAY_EM_HISTORY_WORKERS: "8"
     steps:
       - uses: actions/checkout@v4
         with:
@@ -36,27 +36,29 @@ jobs:
       - name: Install exchange calendar
         run: python -m pip install --disable-pip-version-check pandas_market_calendars
 
-      - name: Resume PRICE DV20 HISTORY stage
-        run: python nasdaq-xray/yahoo_stage.py
+      - name: Resume official-universe PRICE DV20 HISTORY hard gates
+        run: python nasdaq-xray/eastmoney_stage.py
 
-      - name: Commit durable OHLCV cursor
+      - name: Commit durable hard-gate cursor
         shell: bash
         run: |
           set -e
           git config user.name "xray-dataplane-bot"
           git config user.email "xray-dataplane-bot@users.noreply.github.com"
-          git add nasdaq-xray/yahoo_state.json
+          git add nasdaq-xray/eastmoney_state.json nasdaq-xray/market_candidates.json
           if git diff --cached --quiet; then
-            echo "No cursor change."
+            echo "No hard-gate state change."
           else
-            git commit -m "chore(xray): OHLCV cursor checkpoint [skip ci]"
+            git commit -m "chore(xray): hard-gate cursor checkpoint [skip ci]"
             git pull --rebase origin main
             git push
           fi
 
-      - name: Upload OHLCV state
+      - name: Upload hard-gate state
         uses: actions/upload-artifact@v4
         with:
-          name: nasdaq-xray-yahoo-state
-          path: nasdaq-xray/yahoo_state.json
+          name: nasdaq-xray-hard-gate-state
+          path: |
+            nasdaq-xray/eastmoney_state.json
+            nasdaq-xray/market_candidates.json
           retention-days: 30
