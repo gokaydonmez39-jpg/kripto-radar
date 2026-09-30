@@ -1,10 +1,83 @@
 {
-  "asof_et": "2026-09-30",
-  "candidate_count": 0,
-  "candidates": {},
+  "asof_et": "2026-09-29",
+  "candidate_count": 10,
+  "candidates": {
+    "AAL": {
+      "bars": 3086,
+      "dv20": 863413821.4200001,
+      "price": 13.61,
+      "provider": "SINA",
+      "security_name": "American Airlines Group, Inc. - Common Stock"
+    },
+    "AAOI": {
+      "bars": 3269,
+      "dv20": 676986612.65,
+      "price": 100.67,
+      "provider": "SINA",
+      "security_name": "Applied Optoelectronics, Inc. - Common Stock"
+    },
+    "AAON": {
+      "bars": 5283,
+      "dv20": 87849492.78999999,
+      "price": 85.105,
+      "provider": "SINA",
+      "security_name": "AAON, Inc. - Common Stock"
+    },
+    "AAPL": {
+      "bars": 10042,
+      "dv20": 12292927125.525,
+      "price": 329.4,
+      "provider": "SINA",
+      "security_name": "Apple Inc. - Common Stock"
+    },
+    "ABNB": {
+      "bars": 1456,
+      "dv20": 676552523.355,
+      "price": 156.96,
+      "provider": "SINA",
+      "security_name": "Airbnb, Inc. - Class A Common Stock"
+    },
+    "ABVX": {
+      "bars": 737,
+      "dv20": 133293277.45,
+      "price": 98.5,
+      "provider": "SINA",
+      "security_name": "Abivax SA - American Depositary Shares"
+    },
+    "ACGL": {
+      "bars": 5276,
+      "dv20": 392037595.45000005,
+      "price": 95.12,
+      "provider": "SINA",
+      "security_name": "Arch Capital Group Ltd. - Common Stock"
+    },
+    "ACMR": {
+      "bars": 2236,
+      "dv20": 61187939.58,
+      "price": 75.61,
+      "provider": "SINA",
+      "security_name": "ACM Research, Inc. - Class A Common Stock"
+    },
+    "ADBE": {
+      "bars": 9547,
+      "dv20": 1267867794.72,
+      "price": 233.17,
+      "provider": "SINA",
+      "security_name": "Adobe Inc. - Common Stock"
+    },
+    "ADI": {
+      "bars": 3564,
+      "dv20": 1151659839.1100001,
+      "price": 398.22,
+      "provider": "SINA",
+      "security_name": "Analog Devices, Inc. - Common Stock"
+    }
+  },
+  "canonical_commit_pending": true,
   "execution": "NONE",
   "real_money": "NO-GO",
-  "schema": "XRAY_MARKET_CANDIDATES_V4",
-  "source": "NASDAQTRADER_EXPLICIT_TYPE_FILTER_PLUS_EASTMONEY_PRICE_DV20_HISTORY",
+  "recovery_witness_hash": "f4d083c6aff10a000b5e815fa205d3f87b54de396a3d62f4505eac99807e7f2d",
+  "schema": "XRAY_MARKET_CANDIDATES_SHADOW_V5",
+  "source": "NASDAQTRADER_PLUS_SINA_EASTMONEY_SHADOW",
   "task_id": "6a825366222081918997094d76e6ae46"
 }

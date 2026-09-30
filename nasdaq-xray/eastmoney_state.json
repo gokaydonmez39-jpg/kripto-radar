@@ -1,14 +1,19 @@
 {
-  "asof_et": "2026-09-30",
-  "build": "2026-10-01.6",
+  "asof_et": "2026-09-29",
+  "build": "2026-10-01.7",
+  "canonical_commit_pending": true,
+  "canonical_state_source_hash": "709b877e39059b515c5467a6d0ef1a9b8a4fd3a05f86192f1e85539c9e64ce23",
+  "canonical_state_source_revision": 20,
   "counts": {
-    "FAIL_DV20": 1,
-    "FAIL_PRICE": 1,
-    "UNKNOWN_RETRY": 148
+    "FAIL_DV20": 12,
+    "FAIL_PRICE": 30,
+    "PASS": 10,
+    "UNKNOWN_RETRY": 8
   },
-  "cursor": 150,
+  "cursor": 60,
   "execution": "NONE",
   "expected20": [
+    "2026-09-01",
     "2026-09-02",
     "2026-09-03",
     "2026-09-04",
@@ -27,8 +32,7 @@
     "2026-09-24",
     "2026-09-25",
     "2026-09-28",
-    "2026-09-29",
-    "2026-09-30"
+    "2026-09-29"
   ],
   "explicit_excluded_count": 2233,
   "explicit_excluded_hash": "e41d5b17752a0daf1880b703de20324b735ee0dd7c620f50fc02f29c21307d02",
@@ -42,11 +46,12 @@
     "UNIT": 261,
     "WARRANT": 376
   },
-  "identity_authority": "NASDAQTRADER_EXPLICIT_TYPE_FILTER_V1",
+  "identity_authority": "NASDAQTRADER_EXPLICIT_TYPE_FILTER_SHADOW",
+  "master_raw": 5638,
   "official_footer": "File Creation Time: 0930202618:01|||||||",
-  "pending_retry": 148,
-  "processed_new_this_run": 30,
-  "processed_retry_this_run": 10,
+  "pending_retry": 8,
+  "processed_new_this_run": 60,
+  "processed_retry_this_run": 0,
   "queue": [
     "AACG",
     "AACI",
@@ -3457,919 +3462,776 @@
   "queue_hash": "4f7fa2426906e0be6f1cfdf15658aada4d8e91f3898c4e3383cc2198e82db362",
   "queue_total": 3405,
   "real_money": "NO-GO",
+  "recovery_witness_hash": "f4d083c6aff10a000b5e815fa205d3f87b54de396a3d62f4505eac99807e7f2d",
   "results": {
     "AACG": {
-      "attempts": 2,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:13:22.321833+00:00"
+      "attempts": 1,
+      "info": {
+        "bars": 4216,
+        "dv20": 4318.492450000001,
+        "price": 0.8198,
+        "provider": "SINA"
+      },
+      "status": "FAIL_PRICE",
+      "updated_at_utc": "2026-09-30T23:33:07.370468+00:00"
     },
     "AACI": {
-      "attempts": 2,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
+      "attempts": 1,
+      "info": [
+        {
+          "info": {
+            "dates": [
+              "2026-09-02",
+              "2026-09-04",
+              "2026-09-08",
+              "2026-09-09",
+              "2026-09-16",
+              "2026-09-22",
+              "2026-09-23"
+            ],
+            "provider": "SINA",
+            "reason": "EXACT20_MISSING"
+          },
+          "provider": "SINA"
+        },
+        {
+          "error": "RemoteDisconnected:Remote end closed connection without response",
+          "provider": "EASTMONEY"
+        }
+      ],
       "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:13:22.321808+00:00"
+      "updated_at_utc": "2026-09-30T23:33:09.809176+00:00"
     },
     "AACO": {
-      "attempts": 2,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
+      "attempts": 1,
+      "info": [
+        {
+          "info": {
+            "dates": [
+              "2026-09-01",
+              "2026-09-02",
+              "2026-09-03",
+              "2026-09-04",
+              "2026-09-09",
+              "2026-09-10",
+              "2026-09-11",
+              "2026-09-14",
+              "2026-09-15",
+              "2026-09-17",
+              "2026-09-18",
+              "2026-09-21",
+              "2026-09-22",
+              "2026-09-24",
+              "2026-09-25",
+              "2026-09-28"
+            ],
+            "provider": "SINA",
+            "reason": "EXACT20_MISSING"
+          },
+          "provider": "SINA"
+        },
+        {
+          "error": "RemoteDisconnected:Remote end closed connection without response",
+          "provider": "EASTMONEY"
+        }
+      ],
       "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:13:22.321839+00:00"
+      "updated_at_utc": "2026-09-30T23:33:11.961505+00:00"
     },
     "AACP": {
-      "attempts": 2,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
+      "attempts": 1,
+      "info": [
+        {
+          "info": {
+            "dates": [
+              "2026-09-01",
+              "2026-09-03",
+              "2026-09-04",
+              "2026-09-08",
+              "2026-09-10",
+              "2026-09-18",
+              "2026-09-24",
+              "2026-09-25"
+            ],
+            "provider": "SINA",
+            "reason": "EXACT20_MISSING"
+          },
+          "provider": "SINA"
+        },
+        {
+          "error": "RemoteDisconnected:Remote end closed connection without response",
+          "provider": "EASTMONEY"
+        }
+      ],
       "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:13:22.321843+00:00"
+      "updated_at_utc": "2026-09-30T23:33:13.944993+00:00"
     },
     "AAL": {
-      "attempts": 2,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:13:22.321848+00:00"
+      "attempts": 1,
+      "info": {
+        "bars": 3086,
+        "dv20": 863413821.4200001,
+        "price": 13.61,
+        "provider": "SINA"
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:33:14.919036+00:00"
     },
     "AAME": {
-      "attempts": 2,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:13:22.321852+00:00"
+      "attempts": 1,
+      "info": {
+        "bars": 10772,
+        "dv20": 25043.25,
+        "price": 1.3,
+        "provider": "SINA"
+      },
+      "status": "FAIL_PRICE",
+      "updated_at_utc": "2026-09-30T23:33:23.401747+00:00"
     },
     "AAOI": {
-      "attempts": 2,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:13:22.321855+00:00"
+      "attempts": 1,
+      "info": {
+        "bars": 3269,
+        "dv20": 676986612.65,
+        "price": 100.67,
+        "provider": "SINA"
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:33:24.489693+00:00"
     },
     "AAON": {
-      "attempts": 2,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:13:22.321859+00:00"
+      "attempts": 1,
+      "info": {
+        "bars": 5283,
+        "dv20": 87849492.78999999,
+        "price": 85.105,
+        "provider": "SINA"
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:33:25.417455+00:00"
     },
     "AAPG": {
-      "attempts": 2,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:13:22.321863+00:00"
+      "attempts": 1,
+      "info": {
+        "bars": 413,
+        "dv20": 61412.104999999996,
+        "price": 15.35,
+        "provider": "SINA"
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:33:26.049453+00:00"
     },
     "AAPL": {
-      "attempts": 2,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:13:22.321867+00:00"
+      "attempts": 1,
+      "info": {
+        "bars": 10042,
+        "dv20": 12292927125.525,
+        "price": 329.4,
+        "provider": "SINA"
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:33:26.540769+00:00"
     },
     "AARD": {
       "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749139+00:00"
+      "info": {
+        "bars": 408,
+        "dv20": 537116.9099999999,
+        "price": 5.35,
+        "provider": "SINA"
+      },
+      "status": "FAIL_PRICE",
+      "updated_at_utc": "2026-09-30T23:33:27.135736+00:00"
     },
     "ABAT": {
       "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749129+00:00"
+      "info": {
+        "bars": 758,
+        "dv20": 7282506.005000001,
+        "price": 2.19,
+        "provider": "SINA"
+      },
+      "status": "FAIL_PRICE",
+      "updated_at_utc": "2026-09-30T23:33:27.887175+00:00"
     },
     "ABCL": {
       "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749126+00:00"
+      "info": {
+        "bars": 1455,
+        "dv20": 48818255.17,
+        "price": 14.82,
+        "provider": "SINA"
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:33:28.606163+00:00"
     },
     "ABEO": {
       "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749131+00:00"
+      "info": {
+        "bars": 2833,
+        "dv20": 6473224.620000001,
+        "price": 5.16,
+        "provider": "SINA"
+      },
+      "status": "FAIL_PRICE",
+      "updated_at_utc": "2026-09-30T23:33:29.687327+00:00"
     },
     "ABLV": {
       "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
+      "info": [
+        {
+          "info": {
+            "dates": [
+              "2026-09-10"
+            ],
+            "provider": "SINA",
+            "reason": "EXACT20_MISSING"
+          },
+          "provider": "SINA"
+        },
+        {
+          "error": "RemoteDisconnected:Remote end closed connection without response",
+          "provider": "EASTMONEY"
+        }
+      ],
       "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749142+00:00"
+      "updated_at_utc": "2026-09-30T23:33:31.639222+00:00"
     },
     "ABNB": {
       "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749145+00:00"
+      "info": {
+        "bars": 1456,
+        "dv20": 676552523.355,
+        "price": 156.96,
+        "provider": "SINA"
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:33:32.937367+00:00"
     },
     "ABOS": {
       "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749163+00:00"
+      "info": {
+        "bars": 1317,
+        "dv20": 1071272.665,
+        "price": 2.245,
+        "provider": "SINA"
+      },
+      "status": "FAIL_PRICE",
+      "updated_at_utc": "2026-09-30T23:33:33.696910+00:00"
     },
     "ABSI": {
       "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749147+00:00"
+      "info": {
+        "bars": 1303,
+        "dv20": 27315991.560000002,
+        "price": 10.14,
+        "provider": "SINA"
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:33:34.438543+00:00"
     },
     "ABTC": {
       "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749152+00:00"
+      "info": {
+        "bars": 270,
+        "dv20": 11508852.84,
+        "price": 8.72,
+        "provider": "SINA"
+      },
+      "status": "FAIL_PRICE",
+      "updated_at_utc": "2026-09-30T23:33:34.994484+00:00"
     },
     "ABTS": {
       "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749154+00:00"
+      "info": {
+        "bars": 717,
+        "dv20": 24380.175000000003,
+        "price": 1.26,
+        "provider": "SINA"
+      },
+      "status": "FAIL_PRICE",
+      "updated_at_utc": "2026-09-30T23:33:35.761929+00:00"
     },
     "ABUS": {
       "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749150+00:00"
+      "info": {
+        "bars": 4065,
+        "dv20": 24791869.575000003,
+        "price": 4.69,
+        "provider": "SINA"
+      },
+      "status": "FAIL_PRICE",
+      "updated_at_utc": "2026-09-30T23:33:36.631345+00:00"
     },
     "ABVC": {
       "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749157+00:00"
+      "info": {
+        "bars": 1295,
+        "dv20": 116886.40525000001,
+        "price": 1.04,
+        "provider": "SINA"
+      },
+      "status": "FAIL_PRICE",
+      "updated_at_utc": "2026-09-30T23:33:37.284660+00:00"
     },
     "ABVX": {
       "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749160+00:00"
+      "info": {
+        "bars": 737,
+        "dv20": 133293277.45,
+        "price": 98.5,
+        "provider": "SINA"
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:33:37.897819+00:00"
     },
     "ACAA": {
       "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
+      "info": [
+        {
+          "info": {
+            "provider": "SINA",
+            "reason": "ASOF_MISSING"
+          },
+          "provider": "SINA"
+        },
+        {
+          "error": "RemoteDisconnected:Remote end closed connection without response",
+          "provider": "EASTMONEY"
+        }
+      ],
       "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749165+00:00"
+      "updated_at_utc": "2026-09-30T23:33:39.776322+00:00"
     },
     "ACAD": {
       "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749168+00:00"
+      "info": {
+        "bars": 4427,
+        "dv20": 39526877.98,
+        "price": 20.22,
+        "provider": "SINA"
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:33:41.297832+00:00"
     },
     "ACB": {
       "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749170+00:00"
+      "info": {
+        "bars": 1343,
+        "dv20": 2837961.2199999997,
+        "price": 4.03,
+        "provider": "SINA"
+      },
+      "status": "FAIL_PRICE",
+      "updated_at_utc": "2026-09-30T23:33:42.018916+00:00"
     },
     "ACCL": {
       "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749178+00:00"
+      "info": {
+        "bars": 238,
+        "dv20": 74435.65,
+        "price": 2.74,
+        "provider": "SINA"
+      },
+      "status": "FAIL_PRICE",
+      "updated_at_utc": "2026-09-30T23:33:42.583823+00:00"
     },
     "ACCV": {
       "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
+      "info": [
+        {
+          "info": {
+            "provider": "SINA",
+            "reason": "ASOF_MISSING"
+          },
+          "provider": "SINA"
+        },
+        {
+          "error": "RemoteDisconnected:Remote end closed connection without response",
+          "provider": "EASTMONEY"
+        }
+      ],
       "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749173+00:00"
+      "updated_at_utc": "2026-09-30T23:33:44.663606+00:00"
     },
     "ACDC": {
       "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749176+00:00"
+      "info": {
+        "bars": 979,
+        "dv20": 5716979.26,
+        "price": 4.22,
+        "provider": "SINA"
+      },
+      "status": "FAIL_PRICE",
+      "updated_at_utc": "2026-09-30T23:33:45.458549+00:00"
     },
     "ACET": {
       "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749181+00:00"
+      "info": {
+        "bars": 1813,
+        "dv20": 1157407.77,
+        "price": 6.83,
+        "provider": "SINA"
+      },
+      "status": "FAIL_PRICE",
+      "updated_at_utc": "2026-09-30T23:33:46.109737+00:00"
     },
     "ACFN": {
       "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749183+00:00"
+      "info": {
+        "bars": 3929,
+        "dv20": 1404327.7800000003,
+        "price": 19.94,
+        "provider": "SINA"
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:33:47.173849+00:00"
     },
     "ACGC": {
       "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
+      "info": [
+        {
+          "info": {
+            "dates": [
+              "2026-09-01",
+              "2026-09-02",
+              "2026-09-04",
+              "2026-09-08",
+              "2026-09-09",
+              "2026-09-10",
+              "2026-09-11",
+              "2026-09-15"
+            ],
+            "provider": "SINA",
+            "reason": "EXACT20_MISSING"
+          },
+          "provider": "SINA"
+        },
+        {
+          "error": "RemoteDisconnected:Remote end closed connection without response",
+          "provider": "EASTMONEY"
+        }
+      ],
       "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749185+00:00"
+      "updated_at_utc": "2026-09-30T23:33:49.254861+00:00"
     },
     "ACGL": {
       "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749188+00:00"
+      "info": {
+        "bars": 5276,
+        "dv20": 392037595.45000005,
+        "price": 95.12,
+        "provider": "SINA"
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:33:50.863019+00:00"
     },
     "ACHC": {
       "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749196+00:00"
+      "info": {
+        "bars": 3564,
+        "dv20": 33670623.91,
+        "price": 28.04,
+        "provider": "SINA"
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:33:51.889059+00:00"
     },
     "ACHV": {
       "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749204+00:00"
+      "info": {
+        "bars": 2301,
+        "dv20": 10563488.815000001,
+        "price": 7.69,
+        "provider": "SINA"
+      },
+      "status": "FAIL_PRICE",
+      "updated_at_utc": "2026-09-30T23:33:52.688761+00:00"
     },
     "ACIC": {
       "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749190+00:00"
+      "info": {
+        "bars": 971,
+        "dv20": 2050540.9899999998,
+        "price": 9.24,
+        "provider": "SINA"
+      },
+      "status": "FAIL_PRICE",
+      "updated_at_utc": "2026-09-30T23:33:53.480242+00:00"
     },
     "ACIU": {
       "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749198+00:00"
+      "info": {
+        "bars": 2517,
+        "dv20": 345811.9,
+        "price": 2.6,
+        "provider": "SINA"
+      },
+      "status": "FAIL_PRICE",
+      "updated_at_utc": "2026-09-30T23:33:54.234563+00:00"
     },
     "ACIW": {
       "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749201+00:00"
+      "info": {
+        "bars": 5283,
+        "dv20": 32976660.15,
+        "price": 48.59,
+        "provider": "SINA"
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:33:55.823109+00:00"
     },
     "ACLS": {
       "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749206+00:00"
+      "info": {
+        "bars": 5283,
+        "dv20": 40634362.315,
+        "price": 128.69,
+        "provider": "SINA"
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:33:57.061595+00:00"
     },
     "ACMR": {
       "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749193+00:00"
+      "info": {
+        "bars": 2236,
+        "dv20": 61187939.58,
+        "price": 75.61,
+        "provider": "SINA"
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:33:57.892300+00:00"
     },
     "ACNB": {
       "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749208+00:00"
+      "info": {
+        "bars": 3969,
+        "dv20": 3709973.8,
+        "price": 62.81,
+        "provider": "SINA"
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:33:59.297599+00:00"
     },
     "ACNT": {
       "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749214+00:00"
+      "info": {
+        "bars": 1036,
+        "dv20": 371660.35,
+        "price": 14.35,
+        "provider": "SINA"
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:34:00.388422+00:00"
     },
     "ACOG": {
       "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749211+00:00"
+      "info": {
+        "bars": 470,
+        "dv20": 820254.855,
+        "price": 8.71,
+        "provider": "SINA"
+      },
+      "status": "FAIL_PRICE",
+      "updated_at_utc": "2026-09-30T23:34:00.958993+00:00"
     },
     "ACON": {
       "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749219+00:00"
+      "info": {
+        "bars": 1113,
+        "dv20": 93368.52,
+        "price": 2.38,
+        "provider": "SINA"
+      },
+      "status": "FAIL_PRICE",
+      "updated_at_utc": "2026-09-30T23:34:01.749068+00:00"
     },
     "ACRS": {
       "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749222+00:00"
+      "info": {
+        "bars": 2760,
+        "dv20": 12679504.59,
+        "price": 5.28,
+        "provider": "SINA"
+      },
+      "status": "FAIL_PRICE",
+      "updated_at_utc": "2026-09-30T23:34:02.611371+00:00"
     },
     "ACRV": {
       "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749224+00:00"
+      "info": {
+        "bars": 970,
+        "dv20": 609421.425,
+        "price": 2.08,
+        "provider": "SINA"
+      },
+      "status": "FAIL_PRICE",
+      "updated_at_utc": "2026-09-30T23:34:03.326812+00:00"
     },
     "ACT": {
       "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749226+00:00"
+      "info": {
+        "bars": 1264,
+        "dv20": 15800910.74,
+        "price": 46.44,
+        "provider": "SINA"
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:34:03.964293+00:00"
     },
     "ACTG": {
       "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749229+00:00"
+      "info": {
+        "bars": 4791,
+        "dv20": 755468.9,
+        "price": 4.33,
+        "provider": "SINA"
+      },
+      "status": "FAIL_PRICE",
+      "updated_at_utc": "2026-09-30T23:34:04.844239+00:00"
     },
     "ACTU": {
       "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749231+00:00"
+      "info": {
+        "bars": 534,
+        "dv20": 206078.35489999998,
+        "price": 0.686,
+        "provider": "SINA"
+      },
+      "status": "FAIL_PRICE",
+      "updated_at_utc": "2026-09-30T23:34:05.543323+00:00"
     },
     "ACXP": {
       "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749236+00:00"
+      "info": {
+        "bars": 1321,
+        "dv20": 94176.325,
+        "price": 1.305,
+        "provider": "SINA"
+      },
+      "status": "FAIL_PRICE",
+      "updated_at_utc": "2026-09-30T23:34:06.251205+00:00"
     },
     "ADAC": {
       "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
+      "info": [
+        {
+          "info": {
+            "provider": "SINA",
+            "reason": "ASOF_MISSING"
+          },
+          "provider": "SINA"
+        },
+        {
+          "error": "RemoteDisconnected:Remote end closed connection without response",
+          "provider": "EASTMONEY"
+        }
+      ],
       "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749234+00:00"
+      "updated_at_utc": "2026-09-30T23:34:08.854565+00:00"
     },
     "ADAG": {
       "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749243+00:00"
+      "info": {
+        "bars": 1416,
+        "dv20": 736494.775,
+        "price": 3.21,
+        "provider": "SINA"
+      },
+      "status": "FAIL_PRICE",
+      "updated_at_utc": "2026-09-30T23:34:09.533572+00:00"
     },
     "ADAM": {
       "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749245+00:00"
+      "info": {
+        "bars": 270,
+        "dv20": 9151334.942499999,
+        "price": 7.93,
+        "provider": "SINA"
+      },
+      "status": "FAIL_PRICE",
+      "updated_at_utc": "2026-09-30T23:34:10.103839+00:00"
     },
     "ADBE": {
       "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749241+00:00"
+      "info": {
+        "bars": 9547,
+        "dv20": 1267867794.72,
+        "price": 233.17,
+        "provider": "SINA"
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:34:11.885868+00:00"
     },
     "ADBT": {
       "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749238+00:00"
+      "info": {
+        "bars": 25,
+        "dv20": 3696908.4674500003,
+        "price": 0.1058,
+        "provider": "SINA"
+      },
+      "status": "FAIL_PRICE",
+      "updated_at_utc": "2026-09-30T23:34:12.550806+00:00"
     },
     "ADEA": {
       "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749248+00:00"
+      "info": {
+        "bars": 1001,
+        "dv20": 19005221.68,
+        "price": 24.72,
+        "provider": "SINA"
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:34:13.160163+00:00"
     },
     "ADGM": {
       "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749250+00:00"
+      "info": {
+        "bars": 542,
+        "dv20": 101144.2405,
+        "price": 0.144,
+        "provider": "SINA"
+      },
+      "status": "FAIL_PRICE",
+      "updated_at_utc": "2026-09-30T23:34:13.775131+00:00"
     },
     "ADI": {
       "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749252+00:00"
+      "info": {
+        "bars": 3564,
+        "dv20": 1151659839.1100001,
+        "price": 398.22,
+        "provider": "SINA"
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:34:14.872772+00:00"
     },
     "ADIL": {
       "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749254+00:00"
+      "info": {
+        "bars": 2054,
+        "dv20": 221332.64,
+        "price": 4.15,
+        "provider": "SINA"
+      },
+      "status": "FAIL_PRICE",
+      "updated_at_utc": "2026-09-30T23:34:15.843483+00:00"
     },
     "ADMA": {
       "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749257+00:00"
-    },
-    "ADP": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749293+00:00"
-    },
-    "ADPT": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749298+00:00"
-    },
-    "ADRX": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749300+00:00"
-    },
-    "ADSE": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749303+00:00"
-    },
-    "ADSK": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749305+00:00"
-    },
-    "ADTN": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749312+00:00"
-    },
-    "ADUR": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749307+00:00"
-    },
-    "ADUS": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749310+00:00"
-    },
-    "ADV": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749317+00:00"
-    },
-    "ADVB": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749314+00:00"
-    },
-    "ADXN": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749319+00:00"
-    },
-    "AEAQ": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749321+00:00"
-    },
-    "AEBI": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749324+00:00"
-    },
-    "AEC": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749326+00:00"
-    },
-    "AEHL": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749329+00:00"
-    },
-    "AEHR": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749331+00:00"
-    },
-    "AEI": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749333+00:00"
-    },
-    "AEIS": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749338+00:00"
-    },
-    "AEMD": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749335+00:00"
-    },
-    "AENT": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749340+00:00"
-    },
-    "AEP": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749343+00:00"
-    },
-    "AERT": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749348+00:00"
-    },
-    "AESP": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749355+00:00"
-    },
-    "AEVA": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749350+00:00"
-    },
-    "AEYE": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749345+00:00"
-    },
-    "AFCG": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749359+00:00"
-    },
-    "AFJK": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749362+00:00"
-    },
-    "AFRI": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749353+00:00"
-    },
-    "AFRM": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749364+00:00"
-    },
-    "AFYA": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749370+00:00"
-    },
-    "AGCC": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749375+00:00"
-    },
-    "AGEN": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749367+00:00"
-    },
-    "AGIO": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749383+00:00"
-    },
-    "AGMB": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749372+00:00"
-    },
-    "AGMH": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749378+00:00"
-    },
-    "AGNC": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749380+00:00"
-    },
-    "AGNT": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749385+00:00"
-    },
-    "AGPU": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749396+00:00"
-    },
-    "AGRZ": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749401+00:00"
-    },
-    "AGYS": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749393+00:00"
-    },
-    "AHCO": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749390+00:00"
-    },
-    "AHG": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749388+00:00"
-    },
-    "AHMA": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749398+00:00"
-    },
-    "AIAI": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749403+00:00"
-    },
-    "AIBZ": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749405+00:00"
-    },
-    "AIDX": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749411+00:00"
-    },
-    "AIFA": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749408+00:00"
-    },
-    "AIFC": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749413+00:00"
-    },
-    "AIFF": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749416+00:00"
-    },
-    "AIFU": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749421+00:00"
-    },
-    "AIIO": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749418+00:00"
-    },
-    "AIIR": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749423+00:00"
-    },
-    "AIMD": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749426+00:00"
-    },
-    "AIOS": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749436+00:00"
-    },
-    "AIOT": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749441+00:00"
-    },
-    "AIP": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749433+00:00"
-    },
-    "AIRE": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749431+00:00"
-    },
-    "AIRG": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749438+00:00"
-    },
-    "AIRJ": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749428+00:00"
-    },
-    "AIRO": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:04:17.749443+00:00"
-    },
-    "AIRS": {
-      "attempts": 1,
       "info": {
-        "bars": 1234,
-        "dv20": 1879355.39,
-        "price": 1.76,
-        "secid": "105.AIRS"
+        "bars": 2985,
+        "dv20": 24900007.95,
+        "price": 9.96,
+        "provider": "SINA"
       },
       "status": "FAIL_PRICE",
-      "updated_at_utc": "2026-09-30T23:13:22.321871+00:00"
-    },
-    "AIRT": {
-      "attempts": 1,
-      "info": {
-        "bars": 1694,
-        "dv20": 1569700.1800000002,
-        "price": 28.38,
-        "secid": "105.AIRT"
-      },
-      "status": "FAIL_DV20",
-      "updated_at_utc": "2026-09-30T23:13:22.321875+00:00"
-    },
-    "AISP": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:13:22.321879+00:00"
-    },
-    "AIXI": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:13:22.321883+00:00"
-    },
-    "AKAM": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:13:22.321887+00:00"
-    },
-    "AKAN": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:13:22.321890+00:00"
-    },
-    "AKBA": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:13:22.321893+00:00"
-    },
-    "AKTS": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:13:22.321897+00:00"
-    },
-    "AKTX": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:13:22.321902+00:00"
-    },
-    "ALAB": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:13:22.321908+00:00"
-    },
-    "ALAR": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:13:22.321913+00:00"
-    },
-    "ALCO": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:13:22.321916+00:00"
-    },
-    "ALDF": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:13:22.321920+00:00"
-    },
-    "ALDX": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:13:22.321923+00:00"
-    },
-    "ALEC": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:13:22.321926+00:00"
-    },
-    "ALF": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:13:22.321930+00:00"
-    },
-    "ALGM": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:13:22.321934+00:00"
-    },
-    "ALGN": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:13:22.321937+00:00"
-    },
-    "ALGS": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:13:22.321940+00:00"
-    },
-    "ALGT": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:13:22.321943+00:00"
-    },
-    "ALHC": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:13:22.321947+00:00"
-    },
-    "ALIS": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:13:22.321950+00:00"
-    },
-    "ALKS": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:13:22.321954+00:00"
-    },
-    "ALKT": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:13:22.321957+00:00"
-    },
-    "ALLO": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:13:22.321964+00:00"
-    },
-    "ALLR": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:13:22.321960+00:00"
-    },
-    "ALLT": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:13:22.321967+00:00"
-    },
-    "ALM": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:13:22.321970+00:00"
-    },
-    "ALMR": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:13:22.321973+00:00"
-    },
-    "ALMS": {
-      "attempts": 1,
-      "info": "RemoteDisconnected:Remote end closed connection without response",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-09-30T23:13:22.321976+00:00"
+      "updated_at_utc": "2026-09-30T23:34:16.625561+00:00"
     }
   },
-  "schema": "XRAY_EASTMONEY_RESUMABLE_V4",
+  "schema": "XRAY_EXTERNAL_RECOVERY_SHADOW_V5",
   "security_names": {
     "AACG": "ATA Creativity Global - American Depositary Shares, each representing two common shares",
     "AACI": "Armada Acquisition Corp. III - Class A Ordinary Share",
@@ -7777,10 +7639,10 @@
     "ZYBT": "Zhengye Biotechnology Holding Limited - Class A Ordinary Shares",
     "ZYME": "Zymeworks Inc. - Common Stock"
   },
-  "source": "EASTMONEY_HISTORY_ACCELERATOR_NOT_G9",
-  "state_hash": "b855bf63a83d74ccc8d18035cc39c45a2a21b544b3f602fd4a82eec73f04a684",
-  "status": "HISTORY_PARTIAL",
+  "source": "SINA_PRIMARY_EASTMONEY_FALLBACK_SHADOW_NOT_G9",
+  "state_hash": "9ae5b572a42802577c70e7201b0567b5826f6abeec8d735ff0615c58085af1dd",
+  "status": "RECOVERY_SHADOW_PARTIAL",
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_never_pass": true,
-  "updated_at_utc": "2026-09-30T23:13:22.322078+00:00"
+  "updated_at_utc": "2026-09-30T23:34:16.625605+00:00"
 }
