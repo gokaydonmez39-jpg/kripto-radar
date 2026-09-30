@@ -24,16 +24,16 @@ from pathlib import Path
 import pandas_market_calendars as mcal
 
 TASK_ID = "6a825366222081918997094d76e6ae46"
-BUILD = "2026-10-01.5"
+BUILD = "2026-10-01.6"
 NASDAQ_URL = "https://www.nasdaqtrader.com/dynamic/SymDir/nasdaqlisted.txt"
 HIST_URL = "https://63.push2his.eastmoney.com/api/qt/stock/kline/get"
 ROOT = Path(__file__).resolve().parent
 STATE = ROOT / "eastmoney_state.json"
 CAND = ROOT / "market_candidates.json"
 
-NEW_PER_RUN = int(os.getenv("XRAY_EM_HISTORY_BATCH", "120"))
-RETRY_PER_RUN = int(os.getenv("XRAY_EM_RETRY_BATCH", "30"))
-WORKERS = int(os.getenv("XRAY_EM_HISTORY_WORKERS", "3"))
+NEW_PER_RUN = int(os.getenv("XRAY_EM_HISTORY_BATCH", "30"))
+RETRY_PER_RUN = int(os.getenv("XRAY_EM_RETRY_BATCH", "10"))
+WORKERS = int(os.getenv("XRAY_EM_HISTORY_WORKERS", "2"))
 MAX_ATTEMPTS = int(os.getenv("XRAY_EM_MAX_ATTEMPTS", "4"))
 UA = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/126 Safari/537.36"
 
@@ -142,8 +142,8 @@ def parse_hist(symbol, asof, expected20):
             HIST_URL,
             params=params,
             headers={"Referer": "https://quote.eastmoney.com/"},
-            timeout=45,
-            retries=3,
+            timeout=12,
+            retries=2,
         )
         klines = ((payload.get("data") or {}).get("klines") or [])
         by_date = {}
