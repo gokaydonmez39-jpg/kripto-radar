@@ -3,42 +3,51 @@
   "real_money": "NO-GO",
   "results": {
     "AAPL": {
+      "history_status": "PASS",
+      "http_bytes_sample": 4096,
+      "http_prefix": "var KLC_K2_AAPL=\"K2/fQ/6///7B9GFufapoEZAA8oLIAwgfMfMnLDLBAZAQeAQDWStRXOFxAAAAwnh",
+      "http_status": "PASS",
       "last": {
-        "close": 333.02,
+        "close": "333.02",
         "date": "2026-09-30 00:00:00",
-        "high": 339.5,
-        "low": 330.1401,
-        "open": 330.8,
-        "volume": 49962614.0
+        "high": "339.5",
+        "low": "330.1401",
+        "open": "330.8",
+        "volume": "49962614.0"
       },
-      "rows": 10043,
-      "status": "PASS"
+      "rows": 10043
     },
     "MSFT": {
+      "history_status": "PASS",
+      "http_bytes_sample": 4096,
+      "http_prefix": "var KLC_K2_MSFT=\"K2/fo6X///fn41bkJ/5fsEAZACuOtdRAPAKQVG5GPAKAZqUBVMkCsV8YD+eeAUx",
+      "http_status": "PASS",
       "last": {
-        "close": 508.96,
+        "close": "508.96",
         "date": "2026-09-29 00:00:00",
-        "high": 513.64,
-        "low": 502.4,
-        "open": 508.31,
-        "volume": 21341769.0
+        "high": "513.64",
+        "low": "502.4",
+        "open": "508.31",
+        "volume": "21341769.0"
       },
-      "rows": 9660,
-      "status": "PASS"
+      "rows": 9660
     },
     "NVDA": {
+      "history_status": "PASS",
+      "http_bytes_sample": 4096,
+      "http_prefix": "var KLC_K2_NVDA=\"K2/fQ/6///7hr3w4CgGE0zd9FxWKBxplwJZo7y7EZgNc+UKX/NZAZ4QfffCAMTQ",
+      "http_status": "PASS",
       "last": {
-        "close": 227.21,
+        "close": "227.21",
         "date": "2026-09-29 00:00:00",
-        "high": 232.82,
-        "low": 227.025,
-        "open": 230.97,
-        "volume": 101494928.0
+        "high": "232.82",
+        "low": "227.025",
+        "open": "230.97",
+        "volume": "101494928.0"
       },
-      "rows": 5774,
-      "status": "PASS"
+      "rows": 5774
     }
   },
   "status": "PASS",
-  "updated_at_utc": "2026-09-30T23:23:10.002758+00:00"
+  "updated_at_utc": "2026-09-30T23:23:55.979161+00:00"
 }
