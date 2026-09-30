@@ -5,7 +5,7 @@ from pathlib import Path
 
 OUT=Path(__file__).resolve().parent/"eastmoney_probe.json"
 UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/126 Safari/537.36"
-BUILD="2026-10-01.5"
+BUILD="2026-10-01.6"
 
 def get_json(url,params=None,headers=None,timeout=35):
     if params:
