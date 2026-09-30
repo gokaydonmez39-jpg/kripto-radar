@@ -5,6 +5,7 @@ from pathlib import Path
 import akshare as ak
 
 OUT=Path(__file__).resolve().parent/"alt_history_probe.json"
+BUILD="2026-10-01.1"
 symbols=["AAPL","MSFT","NVDA"]
 results={}
 
