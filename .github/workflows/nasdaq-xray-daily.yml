@@ -22,9 +22,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
-      XRAY_SINA_HISTORY_BATCH: "500"
+      XRAY_SINA_HISTORY_BATCH: "100"
       XRAY_SINA_HISTORY_WORKERS: "8"
-      XRAY_SINA_RETRY_BATCH: "50"
+      XRAY_SINA_RETRY_BATCH: "20"
     steps:
       - uses: actions/checkout@v4
         with:
