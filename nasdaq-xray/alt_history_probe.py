@@ -5,9 +5,10 @@ from pathlib import Path
 import akshare as ak
 
 OUT=Path(__file__).resolve().parent/"alt_history_probe.json"
-BUILD="2026-10-01.2"
+BUILD="2026-10-01.3"
 symbols=["AAPL","MSFT","NVDA"]
-results={}\nspot_probe={}
+results={}
+spot_probe={}
 
 for sym in symbols:
     rec={}
