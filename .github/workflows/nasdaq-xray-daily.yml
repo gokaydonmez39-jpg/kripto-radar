@@ -16,7 +16,7 @@ permissions:
 
 concurrency:
   group: nasdaq-xray-repo-writer
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   hard-gates:
