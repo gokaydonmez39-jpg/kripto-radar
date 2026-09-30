@@ -10,7 +10,7 @@
   "source_primary_summary_hash": "d9473aa103dad1964aba08c98764fc7be8f78093f8344d9722678631318d5d43",
   "source_missing_group_hash": "d55174eb1df105baf2b43a208d8871f88f263afeee8ff55aad507c75d9263273",
   "total_missing": 356,
-  "cursor": 104,
+  "cursor": 120,
   "results": {
     "AACI": {
       "status": "FAIL_DV20",
@@ -621,7 +621,103 @@
       "status": "FAIL_DV20",
       "price": 10.721,
       "dv20": 20212.56
+    },
+    "FDMM": {
+      "status": "FAIL_PRICE",
+      "price": 9.82,
+      "dv20": 1387.1999999999998
+    },
+    "FEBO": {
+      "status": "FAIL_PRICE",
+      "price": 0.6682,
+      "dv20": 4061.4759000000004
+    },
+    "FERA": {
+      "status": "FAIL_DV20",
+      "price": 10.54,
+      "dv20": 6402.67
+    },
+    "FFR": {
+      "status": "FAIL_PRICE",
+      "price": 1.01,
+      "dv20": 452331.3753
+    },
+    "FGC": {
+      "status": "FAIL_PRICE",
+      "price": 6.24,
+      "dv20": 573329.7000000001
+    },
+    "FGII": {
+      "status": "FAIL_DV20",
+      "price": 10.02,
+      "dv20": 9789.65
+    },
+    "FIGX": {
+      "status": "FAIL_DV20",
+      "price": 10.33,
+      "dv20": 7200.01
+    },
+    "FJDI": {
+      "status": "UNKNOWN_EXACT20_MISSING",
+      "missing": [
+        "2026-09-01",
+        "2026-09-02",
+        "2026-09-03",
+        "2026-09-04",
+        "2026-09-08",
+        "2026-09-09",
+        "2026-09-10",
+        "2026-09-11",
+        "2026-09-14",
+        "2026-09-15",
+        "2026-09-16",
+        "2026-09-17",
+        "2026-09-18",
+        "2026-09-21",
+        "2026-09-22",
+        "2026-09-23"
+      ]
+    },
+    "FKWL": {
+      "status": "FAIL_PRICE",
+      "price": 2.395,
+      "dv20": 17149.46
+    },
+    "FMAC": {
+      "status": "FAIL_DV20",
+      "price": 10.06,
+      "dv20": 493.69
+    },
+    "FORTY": {
+      "status": "FAIL_DV20",
+      "price": 114.99,
+      "dv20": 33636
+    },
+    "FOXX": {
+      "status": "FAIL_PRICE",
+      "price": 2.543,
+      "dv20": 13159.630000000001
+    },
+    "FSEA": {
+      "status": "FAIL_DV20",
+      "price": 17.25,
+      "dv20": 28540.184999999998
+    },
+    "FSHP": {
+      "status": "FAIL_DV20",
+      "price": 11.29,
+      "dv20": 3693.0525
+    },
+    "FTHA": {
+      "status": "FAIL_PRICE",
+      "price": 9.98,
+      "dv20": 3592.44
+    },
+    "FVAV": {
+      "status": "FAIL_DV20",
+      "price": 10.25,
+      "dv20": 765.125
     }
   },
-  "updated_at_utc": "2026-09-30T23:57:50Z"
+  "updated_at_utc": "2026-09-30T23:58:20Z"
 }
