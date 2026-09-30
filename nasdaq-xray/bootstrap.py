@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from urllib.request import Request, urlopen
 
-TASK_ID = "6a825366222081918997094d76e6ae46"
+TASK_ID = "6a825366222081918997094d76e6ae46"\nBRIDGE_BUILD = "2026-10-01.1"
 URL = "https://www.nasdaqtrader.com/dynamic/SymDir/nasdaqlisted.txt"
 OUT = Path(__file__).resolve().parent / "state.json"
 
