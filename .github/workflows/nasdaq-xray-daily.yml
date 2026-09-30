@@ -23,9 +23,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
-      XRAY_EM_HISTORY_BATCH: "30"
-      XRAY_EM_HISTORY_WORKERS: "2"
-      XRAY_EM_RETRY_BATCH: "10"
+      XRAY_HISTORY_BATCH: "60"
+      XRAY_MAX_ATTEMPTS: "4"
     steps:
       - uses: actions/checkout@v4
         with:
@@ -35,8 +34,8 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install exchange calendar
-        run: python -m pip install --disable-pip-version-check pandas_market_calendars
+      - name: Install zero-key history adapters
+        run: python -m pip install --disable-pip-version-check pandas_market_calendars akshare==1.18.95
 
       - name: Resume official-universe PRICE DV20 HISTORY hard gates
         run: python nasdaq-xray/eastmoney_stage.py
