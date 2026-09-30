@@ -4,6 +4,7 @@ from pathlib import Path
 from datetime import datetime, timezone
 
 OUT=Path(__file__).resolve().parent/"sina_spot_fast_probe.json"
+BUILD="2026-10-01.1"
 UA="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/126 Safari/537.36"
 
 def urshift(x,n):
