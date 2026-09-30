@@ -10,7 +10,7 @@
   "source_primary_summary_hash": "d9473aa103dad1964aba08c98764fc7be8f78093f8344d9722678631318d5d43",
   "source_missing_group_hash": "d55174eb1df105baf2b43a208d8871f88f263afeee8ff55aad507c75d9263273",
   "total_missing": 356,
-  "cursor": 12,
+  "cursor": 24,
   "results": {
     "AACI": {
       "status": "FAIL_DV20",
@@ -108,6 +108,71 @@
       "status": "FAIL_PRICE",
       "price": 7.75,
       "dv20": 31835.52
+    },
+    "ALDF": {
+      "status": "FAIL_DV20",
+      "price": 10.82,
+      "dv20": 1461.345
+    },
+    "ALF": {
+      "status": "FAIL_DV20",
+      "price": 10.82,
+      "dv20": 316.08000000000004
+    },
+    "ALIS": {
+      "status": "FAIL_DV20",
+      "price": 10.32,
+      "dv20": 38271.77250000001
+    },
+    "ALOV": {
+      "status": "FAIL_PRICE",
+      "price": 9.99,
+      "dv20": 11380.085
+    },
+    "ALPX": {
+      "status": "FAIL_PRICE",
+      "price": 9.95,
+      "dv20": 16924.949999999997
+    },
+    "AMAC": {
+      "status": "UNKNOWN_EXACT20_MISSING",
+      "missing": [
+        "2026-09-01",
+        "2026-09-02",
+        "2026-09-03",
+        "2026-09-04"
+      ]
+    },
+    "AMAN": {
+      "status": "FAIL_DV20",
+      "price": 10.61,
+      "dv20": 29900.6
+    },
+    "ANTA": {
+      "status": "FAIL_PRICE",
+      "price": 2.29,
+      "dv20": 12546.5475
+    },
+    "APAC": {
+      "status": "FAIL_DV20",
+      "price": 10.26,
+      "dv20": 1055.75
+    },
+    "APMC": {
+      "status": "FAIL_PRICE",
+      "price": 9.96,
+      "dv20": 697.9000000000001
+    },
+    "APUR": {
+      "status": "FAIL_DV20",
+      "price": 10.03,
+      "dv20": 10277.185
+    },
+    "APXT": {
+      "status": "FAIL_DV20",
+      "price": 10.14,
+      "dv20": 1338190.7925
     }
-  }
+  },
+  "updated_at_utc": "2026-09-30T23:52:45Z"
 }
