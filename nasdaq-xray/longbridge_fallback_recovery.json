@@ -10,7 +10,7 @@
   "source_primary_summary_hash": "d9473aa103dad1964aba08c98764fc7be8f78093f8344d9722678631318d5d43",
   "source_missing_group_hash": "d55174eb1df105baf2b43a208d8871f88f263afeee8ff55aad507c75d9263273",
   "total_missing": 356,
-  "cursor": 168,
+  "cursor": 184,
   "results": {
     "AACI": {
       "status": "FAIL_DV20",
@@ -979,7 +979,89 @@
       "status": "FAIL_PRICE",
       "price": 9.86,
       "dv20": 1121.97
+    },
+    "IRHO": {
+      "status": "FAIL_DV20",
+      "price": 10.07,
+      "dv20": 32433.440000000002
+    },
+    "ISNR": {
+      "status": "FAIL_PRICE",
+      "price": 9.83,
+      "dv20": 1346.6350000000002
+    },
+    "ITHA": {
+      "status": "FAIL_DV20",
+      "price": 10.06,
+      "dv20": 2142.51
+    },
+    "JFU": {
+      "status": "FAIL_PRICE",
+      "price": 2.82,
+      "dv20": 6487.455
+    },
+    "JONE": {
+      "status": "UNKNOWN_EXACT20_MISSING",
+      "missing": [
+        "2026-09-01",
+        "2026-09-02"
+      ]
+    },
+    "KBON": {
+      "status": "FAIL_DV20",
+      "price": 10.07,
+      "dv20": 103256.6
+    },
+    "KCHV": {
+      "status": "FAIL_DV20",
+      "price": 10.46,
+      "dv20": 2057.99
+    },
+    "KELYB": {
+      "status": "FAIL_DV20",
+      "price": 22.4,
+      "dv20": 53459.024999999994
+    },
+    "KEYY": {
+      "status": "FAIL_PRICE",
+      "price": 9.915,
+      "dv20": 27519.8425
+    },
+    "KFFB": {
+      "status": "FAIL_PRICE",
+      "price": 5.86,
+      "dv20": 26256.055
+    },
+    "KFII": {
+      "status": "FAIL_DV20",
+      "price": 10.67,
+      "dv20": 1652.71
+    },
+    "KOYN": {
+      "status": "FAIL_DV20",
+      "price": 10.25,
+      "dv20": 136948.51499999998
+    },
+    "KRAQ": {
+      "status": "FAIL_DV20",
+      "price": 10.02,
+      "dv20": 24789.48
+    },
+    "KRKR": {
+      "status": "FAIL_PRICE",
+      "price": 3,
+      "dv20": 4642.28
+    },
+    "KRSA": {
+      "status": "FAIL_DV20",
+      "price": 34,
+      "dv20": 1074131.76
+    },
+    "KTWO": {
+      "status": "FAIL_DV20",
+      "price": 10.08,
+      "dv20": 1771.83
     }
   },
-  "updated_at_utc": "2026-09-30T23:58:10Z"
+  "updated_at_utc": "2026-09-30T23:58:40Z"
 }
