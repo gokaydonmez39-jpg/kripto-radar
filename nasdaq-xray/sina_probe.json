@@ -1,0 +1,44 @@
+{
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "results": {
+    "AAPL": {
+      "last": {
+        "close": 333.02,
+        "date": "2026-09-30 00:00:00",
+        "high": 339.5,
+        "low": 330.1401,
+        "open": 330.8,
+        "volume": 49962614.0
+      },
+      "rows": 10043,
+      "status": "PASS"
+    },
+    "MSFT": {
+      "last": {
+        "close": 508.96,
+        "date": "2026-09-29 00:00:00",
+        "high": 513.64,
+        "low": 502.4,
+        "open": 508.31,
+        "volume": 21341769.0
+      },
+      "rows": 9660,
+      "status": "PASS"
+    },
+    "NVDA": {
+      "last": {
+        "close": 227.21,
+        "date": "2026-09-29 00:00:00",
+        "high": 232.82,
+        "low": 227.025,
+        "open": 230.97,
+        "volume": 101494928.0
+      },
+      "rows": 5774,
+      "status": "PASS"
+    }
+  },
+  "status": "PASS",
+  "updated_at_utc": "2026-09-30T23:23:10.002758+00:00"
+}
