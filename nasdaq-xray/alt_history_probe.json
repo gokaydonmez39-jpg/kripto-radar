@@ -1,0 +1,32 @@
+{
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "results": {
+    "AAPL": {
+      "eastmoney_count": 689,
+      "eastmoney_pass": true,
+      "sina_count": 10043,
+      "sina_first": "{'date': Timestamp('1984-09-07 00:00:00'), 'open': 26.5, 'high': 26.87, 'low': 26.25, 'close': 26.5, 'volume': 2981600.0}",
+      "sina_last": "{'date': Timestamp('2026-09-30 00:00:00'), 'open': 330.8, 'high': 339.5, 'low': 330.1401, 'close': 333.02, 'volume': 49962614.0}",
+      "sina_pass": true
+    },
+    "MSFT": {
+      "eastmoney_count": 689,
+      "eastmoney_pass": true,
+      "sina_count": 9660,
+      "sina_first": "{'date': Timestamp('1986-03-13 00:00:00'), 'open': 25.5, 'high': 29.25, 'low': 25.5, 'close': 28.0, 'volume': 1031788800.0}",
+      "sina_last": "{'date': Timestamp('2026-09-29 00:00:00'), 'open': 508.31, 'high': 513.64, 'low': 502.4, 'close': 508.96, 'volume': 21341769.0}",
+      "sina_pass": true
+    },
+    "NVDA": {
+      "eastmoney_error": "ConnectionError:('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))",
+      "eastmoney_pass": false,
+      "sina_count": 5774,
+      "sina_first": "{'date': Timestamp('1999-01-22 00:00:00'), 'open': 21.0, 'high': 23.44, 'low': 18.62, 'close': 19.69, 'volume': 67867200.0}",
+      "sina_last": "{'date': Timestamp('2026-09-29 00:00:00'), 'open': 230.97, 'high': 232.82, 'low': 227.025, 'close': 227.21, 'volume': 101494928.0}",
+      "sina_pass": true
+    }
+  },
+  "status": "PASS",
+  "updated_at_utc": "2026-09-30T23:35:25.688702+00:00"
+}
