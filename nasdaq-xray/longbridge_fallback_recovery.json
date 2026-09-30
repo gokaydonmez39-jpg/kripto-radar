@@ -10,7 +10,7 @@
   "source_primary_summary_hash": "d9473aa103dad1964aba08c98764fc7be8f78093f8344d9722678631318d5d43",
   "source_missing_group_hash": "d55174eb1df105baf2b43a208d8871f88f263afeee8ff55aad507c75d9263273",
   "total_missing": 356,
-  "cursor": 88,
+  "cursor": 104,
   "results": {
     "AACI": {
       "status": "FAIL_DV20",
@@ -509,7 +509,119 @@
       "status": "FAIL_DV20",
       "price": 10.7,
       "dv20": 3290.04
+    },
+    "DRK": {
+      "status": "FAIL_PRICE",
+      "price": 2.89,
+      "dv20": 892617.1699999999
+    },
+    "DSAC": {
+      "status": "FAIL_DV20",
+      "price": 10.14,
+      "dv20": 180079.3675
+    },
+    "DTSQ": {
+      "status": "FAIL_DV20",
+      "price": 11.52,
+      "dv20": 1891
+    },
+    "DYOR": {
+      "status": "FAIL_DV20",
+      "price": 10.14,
+      "dv20": 4704.02
+    },
+    "EFTY": {
+      "status": "UNKNOWN_EXACT20_MISSING",
+      "missing": [
+        "2026-09-01",
+        "2026-09-02",
+        "2026-09-03",
+        "2026-09-04",
+        "2026-09-08",
+        "2026-09-09",
+        "2026-09-10",
+        "2026-09-11",
+        "2026-09-14",
+        "2026-09-15",
+        "2026-09-16",
+        "2026-09-17",
+        "2026-09-18",
+        "2026-09-21",
+        "2026-09-22",
+        "2026-09-23",
+        "2026-09-24",
+        "2026-09-25",
+        "2026-09-28",
+        "2026-09-29"
+      ]
+    },
+    "EGHA": {
+      "status": "FAIL_DV20",
+      "price": 10.42,
+      "dv20": 317.076
+    },
+    "ELTK": {
+      "status": "FAIL_PRICE",
+      "price": 8.15,
+      "dv20": 21029.58
+    },
+    "ELWT": {
+      "status": "FAIL_PRICE",
+      "price": 6.91,
+      "dv20": 63693.39
+    },
+    "EMIS": {
+      "status": "FAIL_DV20",
+      "price": 10.27,
+      "dv20": 820.585
+    },
+    "EOCN": {
+      "status": "FAIL_PRICE",
+      "price": 3.55,
+      "dv20": 44040.05
+    },
+    "ESYN": {
+      "status": "FAIL_PRICE",
+      "price": 2.315,
+      "dv20": 44287.350000000006
+    },
+    "ETRA": {
+      "status": "UNKNOWN_EXACT20_MISSING",
+      "missing": [
+        "2026-09-01",
+        "2026-09-02",
+        "2026-09-03",
+        "2026-09-04",
+        "2026-09-08",
+        "2026-09-09",
+        "2026-09-10",
+        "2026-09-11",
+        "2026-09-14",
+        "2026-09-15",
+        "2026-09-16",
+        "2026-09-17"
+      ]
+    },
+    "EURK": {
+      "status": "FAIL_DV20",
+      "price": 11.543,
+      "dv20": 11910.880000000001
+    },
+    "EVOX": {
+      "status": "FAIL_DV20",
+      "price": 10.11,
+      "dv20": 5026.885
+    },
+    "EWAV": {
+      "status": "FAIL_PRICE",
+      "price": 9.91,
+      "dv20": 92987.11
+    },
+    "FACT": {
+      "status": "FAIL_DV20",
+      "price": 10.721,
+      "dv20": 20212.56
     }
   },
-  "updated_at_utc": "2026-09-30T23:57:20Z"
+  "updated_at_utc": "2026-09-30T23:57:50Z"
 }
