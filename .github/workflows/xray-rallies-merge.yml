@@ -34,7 +34,7 @@ jobs:
           set -e
           git config user.name "xray-dataplane-bot"
           git config user.email "xray-dataplane-bot@users.noreply.github.com"
-          git add nasdaq-xray/rallies_recovery_summary.json
+          git add nasdaq-xray/rallies_recovery_summary.json nasdaq-xray/rallies_group_*.txt
           git commit -m "chore(xray): compact Rallies recovery summary [skip ci]" || exit 0
           git pull --rebase origin main
           git push
