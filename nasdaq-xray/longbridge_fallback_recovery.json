@@ -10,7 +10,7 @@
   "source_primary_summary_hash": "d9473aa103dad1964aba08c98764fc7be8f78093f8344d9722678631318d5d43",
   "source_missing_group_hash": "d55174eb1df105baf2b43a208d8871f88f263afeee8ff55aad507c75d9263273",
   "total_missing": 356,
-  "cursor": 216,
+  "cursor": 232,
   "results": {
     "AACI": {
       "status": "FAIL_DV20",
@@ -1302,7 +1302,99 @@
       "status": "FAIL_PRICE",
       "price": 9.82,
       "dv20": 123715.465
+    },
+    "MKDW": {
+      "status": "FAIL_PRICE",
+      "price": 1.54,
+      "dv20": 275259.405
+    },
+    "MKLY": {
+      "status": "FAIL_DV20",
+      "price": 10.26,
+      "dv20": 104591.5375
+    },
+    "MLAA": {
+      "status": "FAIL_DV20",
+      "price": 10.01,
+      "dv20": 7442.82
+    },
+    "MMTX": {
+      "status": "FAIL_DV20",
+      "price": 10.2,
+      "dv20": 5338.33
+    },
+    "MNSBP": {
+      "status": "FAIL_DV20",
+      "price": 24.5,
+      "dv20": 14611.460000000001
+    },
+    "MOLN": {
+      "status": "FAIL_PRICE",
+      "price": 3.9,
+      "dv20": 3378.49
+    },
+    "MRCO": {
+      "status": "FAIL_PRICE",
+      "price": 9.87,
+      "dv20": 7027.245000000001
+    },
+    "MTAK": {
+      "status": "UNKNOWN_EXACT20_MISSING",
+      "missing": [
+        "2026-09-01",
+        "2026-09-02",
+        "2026-09-03",
+        "2026-09-04",
+        "2026-09-08",
+        "2026-09-09",
+        "2026-09-10",
+        "2026-09-11",
+        "2026-09-14",
+        "2026-09-15",
+        "2026-09-16"
+      ]
+    },
+    "MUZE": {
+      "status": "FAIL_PRICE",
+      "price": 10,
+      "dv20": 37047.009999999995
+    },
+    "MYX": {
+      "status": "FAIL_DV20",
+      "price": 10.04,
+      "dv20": 169.43
+    },
+    "NBRG": {
+      "status": "FAIL_DV20",
+      "price": 10.055,
+      "dv20": 993.865
+    },
+    "NCEW": {
+      "status": "FAIL_DV20",
+      "price": 17.62,
+      "dv20": 3710.7749999999996
+    },
+    "NCO": {
+      "status": "FAIL_PRICE",
+      "price": 9.92,
+      "dv20": 23979.86
+    },
+    "NFE": {
+      "status": "UNKNOWN_EXACT20_MISSING",
+      "missing": [
+        "2026-09-11"
+      ]
+    },
+    "NHIV": {
+      "status": "FAIL_DV20",
+      "price": 10.05,
+      "dv20": 695.7950000000001
+    },
+    "NICM": {
+      "status": "FAIL_PRICE",
+      "price": 5.56,
+      "dv20": 8614.9725
     }
   },
-  "updated_at_utc": "2026-09-30T23:59:20Z"
+  "updated_at_utc": "2026-09-30T23:59:40Z"
 }
