@@ -1,26 +1,29 @@
-name: NASDAQ SWING XRAY Daily Bulk
+name: NASDAQ SWING XRAY Resumable OHLCV
 
 on:
   push:
     branches: [main]
     paths:
-      - "nasdaq-xray/daily_bulk.py"
+      - "nasdaq-xray/yahoo_stage.py"
       - ".github/workflows/nasdaq-xray-daily.yml"
   schedule:
-    - cron: "25 22 * * 1-5"
+    - cron: "45 * * * 1-5"
   workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
-  group: nasdaq-xray-daily-bulk
+  group: nasdaq-xray-yahoo-stage
   cancel-in-progress: false
 
 jobs:
-  daily:
+  yahoo-stage:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 25
+    env:
+      XRAY_YAHOO_BATCH: "500"
+      XRAY_YAHOO_WORKERS: "12"
     steps:
       - uses: actions/checkout@v4
         with:
@@ -30,26 +33,30 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Run zero-key daily hard-gate engine
-        run: python nasdaq-xray/daily_bulk.py
+      - name: Install exchange calendar
+        run: python -m pip install --disable-pip-version-check pandas_market_calendars
 
-      - name: Commit durable daily state
+      - name: Resume PRICE DV20 HISTORY stage
+        run: python nasdaq-xray/yahoo_stage.py
+
+      - name: Commit durable OHLCV cursor
         shell: bash
         run: |
           set -e
           git config user.name "xray-dataplane-bot"
           git config user.email "xray-dataplane-bot@users.noreply.github.com"
-          git add nasdaq-xray/daily_state.json
+          git add nasdaq-xray/yahoo_state.json
           if git diff --cached --quiet; then
-            echo "No daily state change."
+            echo "No cursor change."
           else
-            git commit -m "chore(xray): daily hard-gate checkpoint [skip ci]"
+            git commit -m "chore(xray): OHLCV cursor checkpoint [skip ci]"
+            git pull --rebase origin main
             git push
           fi
 
-      - name: Upload daily state artifact
+      - name: Upload OHLCV state
         uses: actions/upload-artifact@v4
         with:
-          name: nasdaq-xray-daily-state
-          path: nasdaq-xray/daily_state.json
+          name: nasdaq-xray-yahoo-state
+          path: nasdaq-xray/yahoo_state.json
           retention-days: 30
