@@ -14,7 +14,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: nasdaq-xray-dataplane
+  group: nasdaq-xray-repo-writer
   cancel-in-progress: false
 
 jobs:
@@ -44,7 +44,18 @@ jobs:
             echo "No state change."
           else
             git commit -m "chore(xray): durable universe checkpoint [skip ci]"
-            git push
+            pushed=0
+            for attempt in 1 2 3 4 5; do
+              if git pull --rebase origin main && git push; then
+                pushed=1
+                break
+              fi
+              sleep $((attempt * 2))
+            done
+            if [ "$pushed" -ne 1 ]; then
+              echo "XRAY_STATE_PUSH_FAILED" >&2
+              exit 1
+            fi
           fi
 
       - name: Upload state artifact
