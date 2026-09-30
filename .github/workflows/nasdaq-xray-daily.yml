@@ -23,8 +23,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
-      XRAY_EM_HISTORY_BATCH: "120"
-      XRAY_EM_HISTORY_WORKERS: "3"
+      XRAY_EM_HISTORY_BATCH: "30"
+      XRAY_EM_HISTORY_WORKERS: "2"
+      XRAY_EM_RETRY_BATCH: "10"
     steps:
       - uses: actions/checkout@v4
         with:
