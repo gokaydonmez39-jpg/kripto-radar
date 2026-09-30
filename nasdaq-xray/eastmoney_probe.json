@@ -1,20 +1,192 @@
 {
-  "aapl_history_count": 689,
-  "aapl_history_first": [
-    "2024-01-02,187.150,185.640,188.440,183.885,82488674,15330141952.000,2.37,-3.58,-6.890,0.53",
-    "2024-01-03,184.220,184.250,185.880,183.430,58414460,10766937600.000,1.32,-0.75,-1.390,0.38"
-  ],
-  "aapl_history_last": [
-    "2026-09-29,336.965,329.400,337.085,328.700,38478037,12737870080.000,2.48,-2.66,-9.000,0.26",
-    "2026-09-30,330.800,333.020,339.500,330.140,49953117,16730703104.000,2.84,1.10,3.620,0.34"
-  ],
-  "aapl_quote": {
-    "f124": 0.0
-  },
-  "aapl_secid": "105.AAPL",
-  "build": "2026-10-01.3",
+  "build": "2026-10-01.4",
   "execution": "NONE",
   "real_money": "NO-GO",
-  "status": "FAIL",
-  "updated_at_utc": "2026-09-30T22:47:47.942112+00:00"
+  "symbols": {
+    "AAPL": {
+      "eastmoney_data": {
+        "f116": 4860153823600.0,
+        "f117": 4860153823600.0,
+        "f127": "\u4fe1\u606f\u6280\u672f",
+        "f189": 19801212,
+        "f43": 333.02,
+        "f57": "AAPL",
+        "f58": "\u82f9\u679c",
+        "f84": 14594180000.0,
+        "f85": 14594180000.0
+      },
+      "eastmoney_rc": 0,
+      "nasdaq_data": {
+        "additionalData": null,
+        "assetClass": "STOCKS",
+        "bidAsk": {
+          "Ask * Size": {
+            "label": "Ask * Size",
+            "value": "$333.70 * 3"
+          },
+          "Bid * Size": {
+            "label": "Bid * Size",
+            "value": "$333.64 * 8"
+          }
+        },
+        "summaryData": {
+          "AnnualizedDividend": {
+            "label": "Annualized Dividend",
+            "value": "$1.08"
+          },
+          "AverageVolume": {
+            "label": "Average Volume",
+            "value": "45,179,852"
+          },
+          "DividendPaymentDate": {
+            "label": "Dividend Pay Date",
+            "value": "Aug 13, 2026"
+          },
+          "ExDividendDate": {
+            "label": "Ex Dividend Date",
+            "value": "Aug 10, 2026"
+          },
+          "Exchange": {
+            "label": "Exchange",
+            "value": "NASDAQ-GS"
+          },
+          "FiftTwoWeekHighLow": {
+            "label": "52 Week High/Low",
+            "value": "$345.34/$243.42"
+          },
+          "Industry": {
+            "label": "Industry",
+            "value": "Computer Manufacturing"
+          },
+          "MarketCap": {
+            "label": "Market Cap",
+            "value": "4,860,153,823,600"
+          },
+          "OneYrTarget": {
+            "label": "1 Year Target",
+            "value": "$335.00"
+          },
+          "PreviousClose": {
+            "label": "Previous Close",
+            "value": "$329.40"
+          },
+          "Sector": {
+            "label": "Sector",
+            "value": "Technology"
+          },
+          "ShareVolume": {
+            "label": "Share Volume",
+            "value": "49,965,060.185525"
+          },
+          "TodayHighLow": {
+            "label": "Today's High/Low",
+            "value": "$339.5/$330.1401"
+          },
+          "Yield": {
+            "label": "Current Yield",
+            "value": "0.33%"
+          }
+        },
+        "symbol": "AAPL"
+      },
+      "nasdaq_status": {
+        "bCodeMessage": null,
+        "developerMessage": null,
+        "rCode": 200
+      }
+    },
+    "NVDA": {
+      "eastmoney_data": {
+        "f116": 5503958000000.0,
+        "f117": 5503958000000.0,
+        "f127": "\u4fe1\u606f\u6280\u672f",
+        "f189": 19990122,
+        "f43": 228.38,
+        "f57": "NVDA",
+        "f58": "\u82f1\u4f1f\u8fbe",
+        "f84": 24100000000.0,
+        "f85": 24100000000.0
+      },
+      "eastmoney_rc": 0,
+      "nasdaq_data": {
+        "additionalData": null,
+        "assetClass": "STOCKS",
+        "bidAsk": {
+          "Ask * Size": {
+            "label": "Ask * Size",
+            "value": "$229.57 * 350"
+          },
+          "Bid * Size": {
+            "label": "Bid * Size",
+            "value": "$229.55 * 95"
+          }
+        },
+        "summaryData": {
+          "AnnualizedDividend": {
+            "label": "Annualized Dividend",
+            "value": "$1.00"
+          },
+          "AverageVolume": {
+            "label": "Average Volume",
+            "value": "121,640,245"
+          },
+          "DividendPaymentDate": {
+            "label": "Dividend Pay Date",
+            "value": "Oct 1, 2026"
+          },
+          "ExDividendDate": {
+            "label": "Ex Dividend Date",
+            "value": "Sep 10, 2026"
+          },
+          "Exchange": {
+            "label": "Exchange",
+            "value": "NASDAQ-GS"
+          },
+          "FiftTwoWeekHighLow": {
+            "label": "52 Week High/Low",
+            "value": "$236.54/$164.27"
+          },
+          "Industry": {
+            "label": "Industry",
+            "value": "Semiconductors"
+          },
+          "MarketCap": {
+            "label": "Market Cap",
+            "value": "5,503,958,000,000"
+          },
+          "OneYrTarget": {
+            "label": "1 Year Target",
+            "value": "$315.00"
+          },
+          "PreviousClose": {
+            "label": "Previous Close",
+            "value": "$227.21"
+          },
+          "Sector": {
+            "label": "Sector",
+            "value": "Technology"
+          },
+          "ShareVolume": {
+            "label": "Share Volume",
+            "value": "121,557,719.570966"
+          },
+          "TodayHighLow": {
+            "label": "Today's High/Low",
+            "value": "$232.37/$228.17"
+          },
+          "Yield": {
+            "label": "Current Yield",
+            "value": "0.44%"
+          }
+        },
+        "symbol": "NVDA"
+      },
+      "nasdaq_status": {
+        "bCodeMessage": null,
+        "developerMessage": null,
+        "rCode": 200
+      }
+    }
+  },
+  "updated_at_utc": "2026-09-30T23:02:51.579313+00:00"
 }
