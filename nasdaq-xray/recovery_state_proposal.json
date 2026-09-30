@@ -1,0 +1,16 @@
+{
+  "schema": "XRAY_RECOVERY_STATE_PROPOSAL_V1",
+  "canonical_task_id": "6a825366222081918997094d76e6ae46",
+  "source_revision": 20,
+  "source_state_hash": "709b877e39059b515c5467a6d0ef1a9b8a4fd3a05f86192f1e85539c9e64ce23",
+  "recovery_witness_hash": "f4d083c6aff10a000b5e815fa205d3f87b54de396a3d62f4505eac99807e7f2d",
+  "target_revision": 21,
+  "target_updated_at_utc": "2026-09-30T23:44:00Z",
+  "target_state_json": "{\"active_signals\":[],\"asof_et\":\"2026-09-29\",\"daily_keys\":[],\"master_hash\":null,\"provider_faults\":[\"PROVIDER|ALPACA_CLOCK|INTERNAL_ERROR|1\",\"PROVIDER|SESSION_SETTLEMENT|VOLUME_MISMATCH_GT_0.10PCT|1\",\"PROVIDER|ALPACA_CLOCK|RECOVERED|2\",\"PROVIDER|ALPACA_MASTER|DENOMINATOR_CHANGED|1\",\"PROVIDER|ALPACA_MASTER|DENOMINATOR_CHANGED|2\",\"PROVIDER|ALPACA_MASTER|RECONCILED|3\",\"PROVIDER|ALPACA_MASTER|DENOMINATOR_CHANGED|4\",\"PROVIDER|ALPACA_MASTER|RECONCILED|5\",\"PROVIDER|DV20_CROSSCHECK_NVDA|VOLUME_MISMATCH_GT_0.10PCT|1\"],\"r92\":[],\"r93\":[],\"recovery_rebase\":{\"from_revision\":20,\"from_state_hash\":\"709b877e39059b515c5467a6d0ef1a9b8a4fd3a05f86192f1e85539c9e64ce23\",\"retired_asof_et\":\"2026-09-28\",\"retired_reason\":\"NONRESUMABLE_LOST_SYMBOL_IDENTITY\",\"settlement_witness_hash\":\"f4d083c6aff10a000b5e815fa205d3f87b54de396a3d62f4505eac99807e7f2d\",\"settlement_date_et\":\"2026-09-29\",\"incomplete_results_carried_forward\":false},\"revision\":21,\"schema\":\"XRAY_STATE_REGISTER_V1\",\"state_epoch\":\"2026-09-30T23:44:00Z\",\"status\":\"RECOVERY_REBASED_MASTER_PENDING\",\"task_id\":\"6a825366222081918997094d76e6ae46\",\"transition_keys\":[\"SYSTEM|CLOCK_ORDER_REPAIR|REV4\",\"SYSTEM|ASOF_SEED|2026-09-28|CROSS_SOURCE_SETTLED\",\"SYSTEM|C4_2_BODY_PERSISTENCE_PROVEN|20260929T2040Z\",\"SYSTEM|STATE_REGISTER|REACCEPTED|REV7\",\"SYSTEM|C4_2_RUNTIME_ACCEPTANCE|EMIT_ATTEMPTED\",\"SYSTEM|MASTER_CHANGED|8f8a2e9df366|REV11\",\"SYSTEM|MASTER_CHANGED|97200e130696|REV16\",\"SYSTEM|MASTER_CHANGED|RAW5629|REV17\",\"SYSTEM|STATE_HASH_REPAIR|REV18\",\"SYSTEM|MASTER_CHANGED|ff9919caa597|REV19\",\"SYSTEM|RECOVERY_REBASE|2026-09-29|REV21\"],\"updated_at_utc\":\"2026-09-30T23:44:00Z\",\"work_cursor\":{\"ASOF_ET\":\"2026-09-29\",\"MASTER_HASH\":null,\"PHASE\":\"MASTER_IDENTITY\",\"CHUNK_INDEX\":0,\"CHUNK_TOTAL\":0,\"COMPLETED_HASH\":null,\"COUNTS\":{}}}",
+  "target_state_hash": "b272b2b3e8dba584c72a16b16d3e6b499ba076608ef7e1fbd4abf1387ba91cb4",
+  "hash_rule": "SHA256_UTF8(\"XRAY_STATE_REGISTER_V1\\n\"+REVISION+\"\\n\"+STATE_JSON)",
+  "role": "ZERO_ALPHA_RECOVERY_TRANSITION_PROPOSAL_ONLY",
+  "direct_write_authority": false,
+  "execution": "NONE",
+  "real_money": "NO-GO"
+}
