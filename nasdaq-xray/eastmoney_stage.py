@@ -136,7 +136,7 @@ def main():
     uh=h(official)
     s=load()
 
-    # Rebuild spot discovery once per official-universe/asof epoch.
+    # Rebuild exact deterministic queue once per official-universe/asof epoch.
     if s.get("universe_hash")!=uh or s.get("asof_et")!=asof:
         queue=direct_queue(official)
         s={
@@ -163,7 +163,8 @@ def main():
 
     for sym,status,info in results:
         if status=="PASS":
-            rec=dict(info)\n            rec["secid"]=f"105.{sym}"
+            rec=dict(info)
+            rec["secid"]=f"105.{sym}"
             s["pass"][sym]=rec
             s["unknown"].pop(sym,None)
         elif status=="UNKNOWN":s["unknown"][sym]=info
