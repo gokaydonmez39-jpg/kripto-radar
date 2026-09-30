@@ -1,0 +1,25 @@
+{
+  "checks": {
+    "asof_match": true,
+    "cursor_zero": true,
+    "hash_match": true,
+    "no_active_signals": true,
+    "no_carryforward": true,
+    "no_r92": true,
+    "no_r93": true,
+    "phase_match": true,
+    "source_hash_bound": true,
+    "status_match": true,
+    "target_revision_match": true,
+    "task_id_match": true,
+    "witness_hash_bound": true
+  },
+  "computed_state_hash": "b272b2b3e8dba584c72a16b16d3e6b499ba076608ef7e1fbd4abf1387ba91cb4",
+  "execution": "NONE",
+  "expected_state_hash": "b272b2b3e8dba584c72a16b16d3e6b499ba076608ef7e1fbd4abf1387ba91cb4",
+  "github_sha": "6ec519f8cf9c576492654fe620a79d37d82fe4d9",
+  "real_money": "NO-GO",
+  "result": "PASS",
+  "schema": "XRAY_RECOVERY_STATE_PROPOSAL_VERIFY_V1",
+  "source_proposal": "recovery_state_proposal.json"
+}
