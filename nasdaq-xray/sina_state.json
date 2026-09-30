@@ -2,13 +2,13 @@
   "asof_et": "2026-09-30",
   "build": "2026-10-01.2",
   "counts": {
-    "FAIL_DV20": 202,
-    "FAIL_HISTORY": 11,
-    "FAIL_PRICE": 6,
-    "PASS": 291,
-    "UNKNOWN_STATIC": 90
+    "FAIL_DV20": 257,
+    "FAIL_HISTORY": 17,
+    "FAIL_PRICE": 8,
+    "PASS": 414,
+    "UNKNOWN_STATIC": 103
   },
-  "cursor": 600,
+  "cursor": 799,
   "discovery": {
     "AAL": {
       "country": "United States",
@@ -6455,7 +6455,7 @@
   "identity_authority": "NASDAQTRADER_EXPLICIT_TYPE_FILTER_V1",
   "official_footer": "File Creation Time: 0930202618:01|||||||",
   "pending_retry": 0,
-  "processed_new_this_run": 250,
+  "processed_new_this_run": 199,
   "processed_retry_this_run": 0,
   "queue": [
     "AAL",
@@ -12942,6 +12942,1944 @@
       "info": "ASOF_MISSING",
       "status": "UNKNOWN_STATIC",
       "updated_at_utc": "2026-09-30T23:57:00.759635+00:00"
+    },
+    "RGTI": {
+      "attempts": 1,
+      "info": {
+        "bars": 1150,
+        "dv20": 221858275.15,
+        "price": 15.74
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381510+00:00"
+    },
+    "RIOT": {
+      "attempts": 1,
+      "info": {
+        "bars": 2248,
+        "dv20": 329729471.0,
+        "price": 20.15
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381502+00:00"
+    },
+    "RIVN": {
+      "attempts": 1,
+      "info": {
+        "bars": 1226,
+        "dv20": 301882895.55,
+        "price": 14.94
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381507+00:00"
+    },
+    "RKLB": {
+      "attempts": 1,
+      "info": {
+        "bars": 1280,
+        "dv20": 1363049764.475,
+        "price": 69.68
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381491+00:00"
+    },
+    "RLAY": {
+      "attempts": 1,
+      "info": {
+        "bars": 1560,
+        "dv20": 55876823.61,
+        "price": 18.05
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381474+00:00"
+    },
+    "RMBS": {
+      "attempts": 1,
+      "info": {
+        "bars": 5284,
+        "dv20": 185073755.52,
+        "price": 106.76
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381504+00:00"
+    },
+    "ROAD": {
+      "attempts": 1,
+      "info": {
+        "bars": 2112,
+        "dv20": 52501792.730000004,
+        "price": 90.03
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381512+00:00"
+    },
+    "ROIV": {
+      "attempts": 1,
+      "info": {
+        "bars": 1254,
+        "dv20": 251205357.385,
+        "price": 36.57
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381498+00:00"
+    },
+    "ROKU": {
+      "attempts": 1,
+      "info": {
+        "bars": 2263,
+        "dv20": 293619451.49,
+        "price": 152.28
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381519+00:00"
+    },
+    "ROP": {
+      "attempts": 1,
+      "info": {
+        "bars": 813,
+        "dv20": 268187507.90000004,
+        "price": 349.41
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381522+00:00"
+    },
+    "ROST": {
+      "attempts": 1,
+      "info": {
+        "bars": 8940,
+        "dv20": 406020721.48,
+        "price": 233.4
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381517+00:00"
+    },
+    "RPRX": {
+      "attempts": 1,
+      "info": {
+        "bars": 1581,
+        "dv20": 171596252.855,
+        "price": 58.36
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381515+00:00"
+    },
+    "RRR": {
+      "attempts": 1,
+      "info": "ASOF_MISSING",
+      "status": "UNKNOWN_STATIC",
+      "updated_at_utc": "2026-09-30T23:58:06.381527+00:00"
+    },
+    "RUSHA": {
+      "attempts": 1,
+      "info": {
+        "bars": 4516,
+        "dv20": 27015849.82,
+        "price": 45.81
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.381524+00:00"
+    },
+    "RUSHB": {
+      "attempts": 1,
+      "info": {
+        "bars": 4820,
+        "dv20": 5607779.9399999995,
+        "price": 53.91
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.381529+00:00"
+    },
+    "RVMD": {
+      "attempts": 1,
+      "info": {
+        "bars": 1666,
+        "dv20": 360826889.6,
+        "price": 205.26
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381532+00:00"
+    },
+    "RYAAY": {
+      "attempts": 1,
+      "info": {
+        "bars": 4945,
+        "dv20": 78894195.53999999,
+        "price": 55.01
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381539+00:00"
+    },
+    "RYTM": {
+      "attempts": 1,
+      "info": {
+        "bars": 2258,
+        "dv20": 64791324.13999999,
+        "price": 95.215
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381544+00:00"
+    },
+    "SAIA": {
+      "attempts": 1,
+      "info": {
+        "bars": 4848,
+        "dv20": 123375277.825,
+        "price": 333.74
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381565+00:00"
+    },
+    "SAIC": {
+      "attempts": 1,
+      "info": {
+        "bars": 3257,
+        "dv20": 49736942.75,
+        "price": 127.56
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.381534+00:00"
+    },
+    "SAIL": {
+      "attempts": 1,
+      "info": {
+        "bars": 409,
+        "dv20": 97280017.35,
+        "price": 20.36
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381542+00:00"
+    },
+    "SANM": {
+      "attempts": 1,
+      "info": {
+        "bars": 4945,
+        "dv20": 118729796.14500001,
+        "price": 214.91
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381537+00:00"
+    },
+    "SBAC": {
+      "attempts": 1,
+      "info": {
+        "bars": 5164,
+        "dv20": 157149536.635,
+        "price": 160.12
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381552+00:00"
+    },
+    "SBCF": {
+      "attempts": 1,
+      "info": {
+        "bars": 5280,
+        "dv20": 25452684.75,
+        "price": 31.83
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.381557+00:00"
+    },
+    "SBET": {
+      "attempts": 1,
+      "info": "ASOF_MISSING",
+      "status": "UNKNOWN_STATIC",
+      "updated_at_utc": "2026-09-30T23:58:06.381554+00:00"
+    },
+    "SBLK": {
+      "attempts": 1,
+      "info": {
+        "bars": 4280,
+        "dv20": 62326970.495,
+        "price": 29.36
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381550+00:00"
+    },
+    "SBRA": {
+      "attempts": 1,
+      "info": {
+        "bars": 4076,
+        "dv20": 45433967.29000001,
+        "price": 19.72
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.381569+00:00"
+    },
+    "SBUX": {
+      "attempts": 1,
+      "info": {
+        "bars": 8070,
+        "dv20": 659120261.435,
+        "price": 93.96
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381559+00:00"
+    },
+    "SDGR": {
+      "attempts": 1,
+      "info": {
+        "bars": 1671,
+        "dv20": 58143024.769999996,
+        "price": 31.05
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381562+00:00"
+    },
+    "SEDG": {
+      "attempts": 1,
+      "info": {
+        "bars": 2894,
+        "dv20": 89217107.85,
+        "price": 31.87
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381572+00:00"
+    },
+    "SEIC": {
+      "attempts": 1,
+      "info": {
+        "bars": 5283,
+        "dv20": 72818969.355,
+        "price": 102.66
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381578+00:00"
+    },
+    "SEPN": {
+      "attempts": 1,
+      "info": {
+        "bars": 483,
+        "dv20": 12253380.455,
+        "price": 39.13
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.381587+00:00"
+    },
+    "SEZL": {
+      "attempts": 1,
+      "info": "ASOF_MISSING",
+      "status": "UNKNOWN_STATIC",
+      "updated_at_utc": "2026-09-30T23:58:06.381575+00:00"
+    },
+    "SFD": {
+      "attempts": 1,
+      "info": {
+        "bars": 421,
+        "dv20": 38751392.95,
+        "price": 18.72
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.381580+00:00"
+    },
+    "SFM": {
+      "attempts": 1,
+      "info": {
+        "bars": 3257,
+        "dv20": 144435192.29,
+        "price": 66.35
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381582+00:00"
+    },
+    "SFNC": {
+      "attempts": 1,
+      "info": {
+        "bars": 5268,
+        "dv20": 28973893.83,
+        "price": 22.58
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.381585+00:00"
+    },
+    "SGRY": {
+      "attempts": 1,
+      "info": {
+        "bars": 2765,
+        "dv20": 27321434.455000002,
+        "price": 13.87
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.381610+00:00"
+    },
+    "SHAZ": {
+      "attempts": 1,
+      "info": {
+        "bars": 156,
+        "dv20": 75084083.64,
+        "price": 54.6
+      },
+      "status": "FAIL_HISTORY",
+      "updated_at_utc": "2026-09-30T23:58:06.381594+00:00"
+    },
+    "SHC": {
+      "attempts": 1,
+      "info": {
+        "bars": 1470,
+        "dv20": 32414111.69,
+        "price": 18.49
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.381591+00:00"
+    },
+    "SHOO": {
+      "attempts": 1,
+      "info": {
+        "bars": 5284,
+        "dv20": 49932967.120000005,
+        "price": 44.77
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.381599+00:00"
+    },
+    "SHOP": {
+      "attempts": 1,
+      "info": {
+        "bars": 2856,
+        "dv20": 1233314303.455,
+        "price": 148.3
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381597+00:00"
+    },
+    "SIGI": {
+      "attempts": 1,
+      "info": {
+        "bars": 5284,
+        "dv20": 39886918.85,
+        "price": 83.6
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.381616+00:00"
+    },
+    "SIMO": {
+      "attempts": 1,
+      "info": {
+        "bars": 4914,
+        "dv20": 184079074.445,
+        "price": 280.0
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381601+00:00"
+    },
+    "SIRI": {
+      "attempts": 1,
+      "info": {
+        "bars": 5146,
+        "dv20": 115337178.15,
+        "price": 25.88
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381608+00:00"
+    },
+    "SITM": {
+      "attempts": 1,
+      "info": {
+        "bars": 1722,
+        "dv20": 259340118.97,
+        "price": 652.03
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381604+00:00"
+    },
+    "SKHY": {
+      "attempts": 1,
+      "info": {
+        "bars": 57,
+        "dv20": 2905741694.1549997,
+        "price": 184.15
+      },
+      "status": "FAIL_HISTORY",
+      "updated_at_utc": "2026-09-30T23:58:06.381606+00:00"
+    },
+    "SKWD": {
+      "attempts": 1,
+      "info": {
+        "bars": 931,
+        "dv20": 18786683.025,
+        "price": 52.8
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.381620+00:00"
+    },
+    "SKYW": {
+      "attempts": 1,
+      "info": {
+        "bars": 5283,
+        "dv20": 31033242.490000002,
+        "price": 96.92
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.381618+00:00"
+    },
+    "SLAB": {
+      "attempts": 1,
+      "info": {
+        "bars": 5284,
+        "dv20": 56522064.910000004,
+        "price": 221.58
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381626+00:00"
+    },
+    "SLDE": {
+      "attempts": 1,
+      "info": {
+        "bars": 323,
+        "dv20": 31055715.310000002,
+        "price": 22.31
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.381613+00:00"
+    },
+    "SLM": {
+      "attempts": 1,
+      "info": {
+        "bars": 3721,
+        "dv20": 46968323.155,
+        "price": 22.63
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.381623+00:00"
+    },
+    "SLS": {
+      "attempts": 1,
+      "info": {
+        "bars": 2198,
+        "dv20": 64648664.474999994,
+        "price": 12.31
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381638+00:00"
+    },
+    "SMCI": {
+      "attempts": 1,
+      "info": {
+        "bars": 3931,
+        "dv20": 1377834522.975,
+        "price": 41.07
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381631+00:00"
+    },
+    "SMMT": {
+      "attempts": 1,
+      "info": {
+        "bars": 2881,
+        "dv20": 99278747.19999999,
+        "price": 16.91
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381636+00:00"
+    },
+    "SMTC": {
+      "attempts": 1,
+      "info": {
+        "bars": 5284,
+        "dv20": 483560494.28999996,
+        "price": 178.35
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381634+00:00"
+    },
+    "SNDK": {
+      "attempts": 1,
+      "info": {
+        "bars": 403,
+        "dv20": 14240287317.24075,
+        "price": 1739.89
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381629+00:00"
+    },
+    "SNEX": {
+      "attempts": 1,
+      "info": {
+        "bars": 1568,
+        "dv20": 56448181.010000005,
+        "price": 64.64
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381641+00:00"
+    },
+    "SNPS": {
+      "attempts": 1,
+      "info": {
+        "bars": 5284,
+        "dv20": 670581721.435,
+        "price": 434.94
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381651+00:00"
+    },
+    "SNY": {
+      "attempts": 1,
+      "info": {
+        "bars": 1947,
+        "dv20": 104469353.73,
+        "price": 41.23
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381648+00:00"
+    },
+    "SOFI": {
+      "attempts": 1,
+      "info": {
+        "bars": 1340,
+        "dv20": 723650694.405,
+        "price": 15.72
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381646+00:00"
+    },
+    "SOLS": {
+      "attempts": 1,
+      "info": {
+        "bars": 230,
+        "dv20": 120331592.97999999,
+        "price": 56.32
+      },
+      "status": "FAIL_HISTORY",
+      "updated_at_utc": "2026-09-30T23:58:06.381661+00:00"
+    },
+    "SONO": {
+      "attempts": 1,
+      "info": {
+        "bars": 2051,
+        "dv20": 28844822.509999998,
+        "price": 17.89
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.381654+00:00"
+    },
+    "SPCX": {
+      "attempts": 1,
+      "info": {
+        "bars": 76,
+        "dv20": 11991128200.140001,
+        "price": 150.86
+      },
+      "status": "FAIL_HISTORY",
+      "updated_at_utc": "2026-09-30T23:58:06.381643+00:00"
+    },
+    "SPSC": {
+      "attempts": 1,
+      "info": {
+        "bars": 3914,
+        "dv20": 34132770.555,
+        "price": 82.44
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.381665+00:00"
+    },
+    "SRAD": {
+      "attempts": 1,
+      "info": {
+        "bars": 1267,
+        "dv20": 27295897.51,
+        "price": 11.56
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.381656+00:00"
+    },
+    "SRCE": {
+      "attempts": 1,
+      "info": {
+        "bars": 5284,
+        "dv20": 7768105.890000001,
+        "price": 84.5
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.381663+00:00"
+    },
+    "SRPT": {
+      "attempts": 1,
+      "info": {
+        "bars": 3564,
+        "dv20": 48352642.265,
+        "price": 18.22
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.381680+00:00"
+    },
+    "SRRK": {
+      "attempts": 1,
+      "info": {
+        "bars": 2099,
+        "dv20": 94904238.35499999,
+        "price": 48.32
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381658+00:00"
+    },
+    "SSNC": {
+      "attempts": 1,
+      "info": {
+        "bars": 4139,
+        "dv20": 116500953.305,
+        "price": 77.07
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381667+00:00"
+    },
+    "SSRM": {
+      "attempts": 1,
+      "info": {
+        "bars": 2302,
+        "dv20": 72624447.30000001,
+        "price": 33.32
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381672+00:00"
+    },
+    "STEP": {
+      "attempts": 1,
+      "info": {
+        "bars": 1517,
+        "dv20": 47121566.39,
+        "price": 43.4
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.381670+00:00"
+    },
+    "STLD": {
+      "attempts": 1,
+      "info": {
+        "bars": 5284,
+        "dv20": 218131643.02499998,
+        "price": 221.61
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381675+00:00"
+    },
+    "STNE": {
+      "attempts": 1,
+      "info": {
+        "bars": 1992,
+        "dv20": 41771794.905,
+        "price": 9.34
+      },
+      "status": "FAIL_PRICE",
+      "updated_at_utc": "2026-09-30T23:58:06.381678+00:00"
+    },
+    "STRL": {
+      "attempts": 1,
+      "info": {
+        "bars": 4280,
+        "dv20": 235308032.325,
+        "price": 491.78
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381687+00:00"
+    },
+    "STX": {
+      "attempts": 1,
+      "info": {
+        "bars": 4432,
+        "dv20": 3059680565.83,
+        "price": 922.34
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381682+00:00"
+    },
+    "SUPN": {
+      "attempts": 1,
+      "info": {
+        "bars": 3565,
+        "dv20": 26557454.85,
+        "price": 43.04
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.381695+00:00"
+    },
+    "SWKS": {
+      "attempts": 1,
+      "info": {
+        "bars": 5284,
+        "dv20": 487779114.32,
+        "price": 85.48
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381693+00:00"
+    },
+    "SYBT": {
+      "attempts": 1,
+      "info": {
+        "bars": 4280,
+        "dv20": 11675819.765,
+        "price": 77.09
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.381697+00:00"
+    },
+    "SYM": {
+      "attempts": 1,
+      "info": "ASOF_MISSING",
+      "status": "UNKNOWN_STATIC",
+      "updated_at_utc": "2026-09-30T23:58:06.381685+00:00"
+    },
+    "SYNA": {
+      "attempts": 1,
+      "info": {
+        "bars": 5018,
+        "dv20": 52772172.9775,
+        "price": 101.395
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381700+00:00"
+    },
+    "SYRE": {
+      "attempts": 1,
+      "info": "ASOF_MISSING",
+      "status": "UNKNOWN_STATIC",
+      "updated_at_utc": "2026-09-30T23:58:06.381690+00:00"
+    },
+    "TARS": {
+      "attempts": 1,
+      "info": {
+        "bars": 1495,
+        "dv20": 50621445.655,
+        "price": 78.61
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381703+00:00"
+    },
+    "TBBK": {
+      "attempts": 1,
+      "info": {
+        "bars": 4286,
+        "dv20": 27305116.290000003,
+        "price": 48.16
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.381717+00:00"
+    },
+    "TCBI": {
+      "attempts": 1,
+      "info": {
+        "bars": 4630,
+        "dv20": 50751282.36,
+        "price": 93.02
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381734+00:00"
+    },
+    "TCOM": {
+      "attempts": 1,
+      "info": "ASOF_MISSING",
+      "status": "UNKNOWN_STATIC",
+      "updated_at_utc": "2026-09-30T23:58:06.381720+00:00"
+    },
+    "TEAM": {
+      "attempts": 1,
+      "info": {
+        "bars": 2716,
+        "dv20": 555500476.2049999,
+        "price": 179.29
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381705+00:00"
+    },
+    "TECH": {
+      "attempts": 1,
+      "info": {
+        "bars": 5284,
+        "dv20": 222081255.575,
+        "price": 72.47
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381727+00:00"
+    },
+    "TEM": {
+      "attempts": 1,
+      "info": {
+        "bars": 575,
+        "dv20": 425963692.44000006,
+        "price": 81.9
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381736+00:00"
+    },
+    "TENB": {
+      "attempts": 1,
+      "info": {
+        "bars": 2056,
+        "dv20": 129814483.695,
+        "price": 36.39
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381722+00:00"
+    },
+    "TER": {
+      "attempts": 1,
+      "info": {
+        "bars": 1970,
+        "dv20": 873526293.42,
+        "price": 400.91
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381725+00:00"
+    },
+    "TFSL": {
+      "attempts": 1,
+      "info": {
+        "bars": 4280,
+        "dv20": 11115921.45,
+        "price": 16.2
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.381745+00:00"
+    },
+    "TGTX": {
+      "attempts": 1,
+      "info": {
+        "bars": 3315,
+        "dv20": 85994504.995,
+        "price": 55.78
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381729+00:00"
+    },
+    "TH": {
+      "attempts": 1,
+      "info": {
+        "bars": 1896,
+        "dv20": 34830341.235,
+        "price": 19.72
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.381738+00:00"
+    },
+    "TIGO": {
+      "attempts": 1,
+      "info": {
+        "bars": 1942,
+        "dv20": 75057434.725,
+        "price": 87.14
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381731+00:00"
+    },
+    "TILE": {
+      "attempts": 1,
+      "info": {
+        "bars": 3315,
+        "dv20": 14668029.325,
+        "price": 34.4
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.381740+00:00"
+    },
+    "TLN": {
+      "attempts": 1,
+      "info": {
+        "bars": 952,
+        "dv20": 226195612.21500003,
+        "price": 312.69
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381743+00:00"
+    },
+    "TLX": {
+      "attempts": 1,
+      "info": {
+        "bars": 469,
+        "dv20": 5009873.2375,
+        "price": 10.97
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.381771+00:00"
+    },
+    "TMDX": {
+      "attempts": 1,
+      "info": {
+        "bars": 1863,
+        "dv20": 52374100.260000005,
+        "price": 83.45
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381750+00:00"
+    },
+    "TMUS": {
+      "attempts": 1,
+      "info": {
+        "bars": 2747,
+        "dv20": 802015528.035,
+        "price": 163.08
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381752+00:00"
+    },
+    "TNGX": {
+      "attempts": 1,
+      "info": {
+        "bars": 1290,
+        "dv20": 57856204.83,
+        "price": 24.95
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381754+00:00"
+    },
+    "TOP": {
+      "attempts": 1,
+      "info": {
+        "bars": 1077,
+        "dv20": 1313054.755,
+        "price": 14.99
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.381747+00:00"
+    },
+    "TOWN": {
+      "attempts": 1,
+      "info": {
+        "bars": 4280,
+        "dv20": 17347573.455,
+        "price": 35.65
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.381757+00:00"
+    },
+    "TPG": {
+      "attempts": 1,
+      "info": {
+        "bars": 1182,
+        "dv20": 115773686.08500001,
+        "price": 44.13
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381759+00:00"
+    },
+    "TRI": {
+      "attempts": 1,
+      "info": {
+        "bars": 4784,
+        "dv20": 132660218.07000001,
+        "price": 97.33
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381761+00:00"
+    },
+    "TRMB": {
+      "attempts": 1,
+      "info": {
+        "bars": 5284,
+        "dv20": 126712611.9,
+        "price": 57.11
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381764+00:00"
+    },
+    "TRMD": {
+      "attempts": 1,
+      "info": {
+        "bars": 1990,
+        "dv20": 62582658.019999996,
+        "price": 38.05
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381769+00:00"
+    },
+    "TRMK": {
+      "attempts": 1,
+      "info": {
+        "bars": 5284,
+        "dv20": 18127699.155,
+        "price": 44.83
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.381774+00:00"
+    },
+    "TROW": {
+      "attempts": 1,
+      "info": {
+        "bars": 8128,
+        "dv20": 146917737.925,
+        "price": 104.05
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381776+00:00"
+    },
+    "TRVI": {
+      "attempts": 1,
+      "info": {
+        "bars": 1861,
+        "dv20": 23799992.67,
+        "price": 14.32
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.381766+00:00"
+    },
+    "TSCO": {
+      "attempts": 1,
+      "info": {
+        "bars": 5284,
+        "dv20": 280897537.375,
+        "price": 31.29
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381783+00:00"
+    },
+    "TSEM": {
+      "attempts": 1,
+      "info": "ASOF_MISSING",
+      "status": "UNKNOWN_STATIC",
+      "updated_at_utc": "2026-09-30T23:58:06.381778+00:00"
+    },
+    "TSLA": {
+      "attempts": 1,
+      "info": {
+        "bars": 3914,
+        "dv20": 12431870345.565,
+        "price": 354.81
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381781+00:00"
+    },
+    "TTAN": {
+      "attempts": 1,
+      "info": {
+        "bars": 450,
+        "dv20": 228307373.5,
+        "price": 65.79
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381788+00:00"
+    },
+    "TTD": {
+      "attempts": 1,
+      "info": {
+        "bars": 2520,
+        "dv20": 281151663.33,
+        "price": 12.17
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381793+00:00"
+    },
+    "TTEK": {
+      "attempts": 1,
+      "info": {
+        "bars": 5284,
+        "dv20": 68650596.67,
+        "price": 32.95
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381790+00:00"
+    },
+    "TTMI": {
+      "attempts": 1,
+      "info": {
+        "bars": 5284,
+        "dv20": 219608846.34999996,
+        "price": 122.84
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381797+00:00"
+    },
+    "TTWO": {
+      "attempts": 1,
+      "info": {
+        "bars": 5267,
+        "dv20": 504031765.88,
+        "price": 207.5
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381795+00:00"
+    },
+    "TVTX": {
+      "attempts": 1,
+      "info": {
+        "bars": 1471,
+        "dv20": 90869445.895,
+        "price": 58.88
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381785+00:00"
+    },
+    "TW": {
+      "attempts": 1,
+      "info": {
+        "bars": 1883,
+        "dv20": 129990872.85,
+        "price": 100.84
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381800+00:00"
+    },
+    "TWST": {
+      "attempts": 1,
+      "info": {
+        "bars": 1988,
+        "dv20": 341450311.62,
+        "price": 193.24
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381832+00:00"
+    },
+    "TXG": {
+      "attempts": 1,
+      "info": {
+        "bars": 1772,
+        "dv20": 228855735.2,
+        "price": 90.36
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381826+00:00"
+    },
+    "TXN": {
+      "attempts": 1,
+      "info": {
+        "bars": 3565,
+        "dv20": 1390391809.0300002,
+        "price": 280.09
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381841+00:00"
+    },
+    "TXRH": {
+      "attempts": 1,
+      "info": {
+        "bars": 4342,
+        "dv20": 194536844.61,
+        "price": 156.34
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381837+00:00"
+    },
+    "UAL": {
+      "attempts": 1,
+      "info": {
+        "bars": 2026,
+        "dv20": 421785692.82,
+        "price": 110.95
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381844+00:00"
+    },
+    "UBSI": {
+      "attempts": 1,
+      "info": {
+        "bars": 5284,
+        "dv20": 48251042.599999994,
+        "price": 45.94
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.381849+00:00"
+    },
+    "UCTT": {
+      "attempts": 1,
+      "info": {
+        "bars": 4475,
+        "dv20": 54245453.665,
+        "price": 81.06
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381858+00:00"
+    },
+    "UFPI": {
+      "attempts": 1,
+      "info": {
+        "bars": 5284,
+        "dv20": 33014574.18,
+        "price": 77.22
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.381846+00:00"
+    },
+    "UFPT": {
+      "attempts": 1,
+      "info": {
+        "bars": 4936,
+        "dv20": 30460699.180000003,
+        "price": 296.82
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.381854+00:00"
+    },
+    "ULTA": {
+      "attempts": 1,
+      "info": {
+        "bars": 4280,
+        "dv20": 271515306.36,
+        "price": 546.17
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381851+00:00"
+    },
+    "UMBF": {
+      "attempts": 1,
+      "info": {
+        "bars": 5284,
+        "dv20": 90186110.47999999,
+        "price": 130.01
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381877+00:00"
+    },
+    "UPST": {
+      "attempts": 1,
+      "info": {
+        "bars": 1453,
+        "dv20": 104813521.12,
+        "price": 22.99
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381861+00:00"
+    },
+    "URBN": {
+      "attempts": 1,
+      "info": {
+        "bars": 7073,
+        "dv20": 71378698.72,
+        "price": 76.38
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381868+00:00"
+    },
+    "URGN": {
+      "attempts": 1,
+      "info": {
+        "bars": 2365,
+        "dv20": 29747147.36,
+        "price": 40.63
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.381863+00:00"
+    },
+    "USAR": {
+      "attempts": 1,
+      "info": {
+        "bars": 389,
+        "dv20": 203654992.14,
+        "price": 14.08
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381856+00:00"
+    },
+    "USLM": {
+      "attempts": 1,
+      "info": {
+        "bars": 4934,
+        "dv20": 14164726.815,
+        "price": 113.11
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.381865+00:00"
+    },
+    "UTHR": {
+      "attempts": 1,
+      "info": {
+        "bars": 5283,
+        "dv20": 298142125.62,
+        "price": 541.89
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381884+00:00"
+    },
+    "VC": {
+      "attempts": 1,
+      "info": {
+        "bars": 2201,
+        "dv20": 42569725.86,
+        "price": 86.68
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.381873+00:00"
+    },
+    "VCEL": {
+      "attempts": 1,
+      "info": {
+        "bars": 2977,
+        "dv20": 18068841.225,
+        "price": 40.14
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.381870+00:00"
+    },
+    "VCRE": {
+      "attempts": 1,
+      "info": {
+        "bars": 57,
+        "dv20": 205028.775,
+        "price": 9.51
+      },
+      "status": "FAIL_PRICE",
+      "updated_at_utc": "2026-09-30T23:58:06.381875+00:00"
+    },
+    "VCTR": {
+      "attempts": 1,
+      "info": {
+        "bars": 2172,
+        "dv20": 68610329.75,
+        "price": 110.6
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381879+00:00"
+    },
+    "VCYT": {
+      "attempts": 1,
+      "info": {
+        "bars": 3246,
+        "dv20": 62007939.620000005,
+        "price": 46.04
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381882+00:00"
+    },
+    "VECO": {
+      "attempts": 1,
+      "info": {
+        "bars": 5284,
+        "dv20": 25999848.299999997,
+        "price": 51.9
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.381889+00:00"
+    },
+    "VEON": {
+      "attempts": 1,
+      "info": {
+        "bars": 2388,
+        "dv20": 13743726.36,
+        "price": 73.93
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.381898+00:00"
+    },
+    "VERA": {
+      "attempts": 1,
+      "info": {
+        "bars": 1351,
+        "dv20": 58145068.8,
+        "price": 32.29
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381891+00:00"
+    },
+    "VERX": {
+      "attempts": 1,
+      "info": {
+        "bars": 1551,
+        "dv20": 16762472.79,
+        "price": 11.78
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.381893+00:00"
+    },
+    "VIAV": {
+      "attempts": 1,
+      "info": {
+        "bars": 2806,
+        "dv20": 188233910.08,
+        "price": 41.92
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381895+00:00"
+    },
+    "VICR": {
+      "attempts": 1,
+      "info": {
+        "bars": 5284,
+        "dv20": 169738107.375,
+        "price": 288.94
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381886+00:00"
+    },
+    "VIR": {
+      "attempts": 1,
+      "info": {
+        "bars": 1751,
+        "dv20": 19726038.692500003,
+        "price": 11.18
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.381900+00:00"
+    },
+    "VKTX": {
+      "attempts": 1,
+      "info": {
+        "bars": 2873,
+        "dv20": 80771432.845,
+        "price": 32.6
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381902+00:00"
+    },
+    "VLY": {
+      "attempts": 1,
+      "info": {
+        "bars": 2003,
+        "dv20": 93115289.64,
+        "price": 12.62
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381905+00:00"
+    },
+    "VNOM": {
+      "attempts": 1,
+      "info": {
+        "bars": 3089,
+        "dv20": 67761562.61,
+        "price": 39.89
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381907+00:00"
+    },
+    "VOD": {
+      "attempts": 1,
+      "info": {
+        "bars": 7954,
+        "dv20": 52819557.685,
+        "price": 16.15
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381923+00:00"
+    },
+    "VRDN": {
+      "attempts": 1,
+      "info": {
+        "bars": 1431,
+        "dv20": 30701186.975,
+        "price": 20.59
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.381909+00:00"
+    },
+    "VRNS": {
+      "attempts": 1,
+      "info": {
+        "bars": 3165,
+        "dv20": 87090944.9925,
+        "price": 47.45
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381918+00:00"
+    },
+    "VRSK": {
+      "attempts": 1,
+      "info": "ASOF_MISSING",
+      "status": "UNKNOWN_STATIC",
+      "updated_at_utc": "2026-09-30T23:58:06.381912+00:00"
+    },
+    "VRSN": {
+      "attempts": 1,
+      "info": {
+        "bars": 6013,
+        "dv20": 192370109.27999997,
+        "price": 282.01
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381914+00:00"
+    },
+    "VRTX": {
+      "attempts": 1,
+      "info": {
+        "bars": 7660,
+        "dv20": 457179248.36,
+        "price": 522.81
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381916+00:00"
+    },
+    "VSAT": {
+      "attempts": 1,
+      "info": {
+        "bars": 5284,
+        "dv20": 116378424.55,
+        "price": 70.38
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381934+00:00"
+    },
+    "VSEC": {
+      "attempts": 1,
+      "info": {
+        "bars": 5019,
+        "dv20": 66503970.33,
+        "price": 164.7
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381925+00:00"
+    },
+    "VSNT": {
+      "attempts": 1,
+      "info": {
+        "bars": 186,
+        "dv20": 53612951.4,
+        "price": 31.7
+      },
+      "status": "FAIL_HISTORY",
+      "updated_at_utc": "2026-09-30T23:58:06.381928+00:00"
+    },
+    "VTRS": {
+      "attempts": 1,
+      "info": {
+        "bars": 1473,
+        "dv20": 134976218.49,
+        "price": 17.72
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381921+00:00"
+    },
+    "WAFD": {
+      "attempts": 1,
+      "info": "ASOF_MISSING",
+      "status": "UNKNOWN_STATIC",
+      "updated_at_utc": "2026-09-30T23:58:06.381930+00:00"
+    },
+    "WAY": {
+      "attempts": 1,
+      "info": "ASOF_MISSING",
+      "status": "UNKNOWN_STATIC",
+      "updated_at_utc": "2026-09-30T23:58:06.381932+00:00"
+    },
+    "WBD": {
+      "attempts": 1,
+      "info": {
+        "bars": 1122,
+        "dv20": 715490382.26,
+        "price": 30.95
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381936+00:00"
+    },
+    "WDAY": {
+      "attempts": 1,
+      "info": {
+        "bars": 2269,
+        "dv20": 402038034.06,
+        "price": 190.46
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381939+00:00"
+    },
+    "WDC": {
+      "attempts": 1,
+      "info": {
+        "bars": 3565,
+        "dv20": 3044380683.945,
+        "price": 454.46
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381941+00:00"
+    },
+    "WDFC": {
+      "attempts": 1,
+      "info": {
+        "bars": 5284,
+        "dv20": 23243844.53,
+        "price": 201.97
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.381946+00:00"
+    },
+    "WERN": {
+      "attempts": 1,
+      "info": {
+        "bars": 10114,
+        "dv20": 29852233.064999998,
+        "price": 33.98
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.381965+00:00"
+    },
+    "WFRD": {
+      "attempts": 1,
+      "info": {
+        "bars": 1339,
+        "dv20": 74656382.03999999,
+        "price": 78.68
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381943+00:00"
+    },
+    "WGS": {
+      "attempts": 1,
+      "info": {
+        "bars": 934,
+        "dv20": 62573242.33,
+        "price": 72.3
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381954+00:00"
+    },
+    "WING": {
+      "attempts": 1,
+      "info": {
+        "bars": 2841,
+        "dv20": 159920868.845,
+        "price": 105.37
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381950+00:00"
+    },
+    "WIX": {
+      "attempts": 1,
+      "info": {
+        "bars": 3237,
+        "dv20": 85435159.93,
+        "price": 72.13
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381948+00:00"
+    },
+    "WMG": {
+      "attempts": 1,
+      "info": {
+        "bars": 1590,
+        "dv20": 54449348.2825,
+        "price": 27.61
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381952+00:00"
+    },
+    "WMT": {
+      "attempts": 1,
+      "info": {
+        "bars": 13028,
+        "dv20": 2302147721.49,
+        "price": 103.92
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381957+00:00"
+    },
+    "WSBC": {
+      "attempts": 1,
+      "info": {
+        "bars": 5284,
+        "dv20": 36639981.785,
+        "price": 37.42
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.381968+00:00"
+    },
+    "WSC": {
+      "attempts": 1,
+      "info": {
+        "bars": 2219,
+        "dv20": 54633063.08,
+        "price": 17.18
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381961+00:00"
+    },
+    "WSE": {
+      "attempts": 1,
+      "info": {
+        "bars": 99,
+        "dv20": 20535948.87,
+        "price": 11.39
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.381963+00:00"
+    },
+    "WSFS": {
+      "attempts": 1,
+      "info": {
+        "bars": 5284,
+        "dv20": 26630169.195,
+        "price": 75.57
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.381959+00:00"
+    },
+    "WTFC": {
+      "attempts": 1,
+      "info": {
+        "bars": 5283,
+        "dv20": 60662155.85,
+        "price": 141.82
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381972+00:00"
+    },
+    "WTW": {
+      "attempts": 1,
+      "info": "ASOF_MISSING",
+      "status": "UNKNOWN_STATIC",
+      "updated_at_utc": "2026-09-30T23:58:06.381970+00:00"
+    },
+    "WULF": {
+      "attempts": 1,
+      "info": {
+        "bars": 1203,
+        "dv20": 428620682.075,
+        "price": 14.8
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381984+00:00"
+    },
+    "WWD": {
+      "attempts": 1,
+      "info": {
+        "bars": 3911,
+        "dv20": 192773010.44,
+        "price": 328.59
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381981+00:00"
+    },
+    "WYNN": {
+      "attempts": 1,
+      "info": {
+        "bars": 4830,
+        "dv20": 176522220.19,
+        "price": 79.43
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381986+00:00"
+    },
+    "XE": {
+      "attempts": 1,
+      "info": {
+        "bars": 200,
+        "dv20": 99379136.285,
+        "price": 14.18
+      },
+      "status": "FAIL_HISTORY",
+      "updated_at_utc": "2026-09-30T23:58:06.381979+00:00"
+    },
+    "XEL": {
+      "attempts": 1,
+      "info": {
+        "bars": 2198,
+        "dv20": 426287091.555,
+        "price": 70.48
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381977+00:00"
+    },
+    "XENE": {
+      "attempts": 1,
+      "info": {
+        "bars": 2992,
+        "dv20": 68435439.09,
+        "price": 37.19
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381988+00:00"
+    },
+    "XERS": {
+      "attempts": 1,
+      "info": "ASOF_MISSING",
+      "status": "UNKNOWN_STATIC",
+      "updated_at_utc": "2026-09-30T23:58:06.381974+00:00"
+    },
+    "XMTR": {
+      "attempts": 1,
+      "info": {
+        "bars": 1319,
+        "dv20": 72566974.975,
+        "price": 102.85
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381992+00:00"
+    },
+    "XNCR": {
+      "attempts": 1,
+      "info": {
+        "bars": 3224,
+        "dv20": 30084692.950000003,
+        "price": 24.95
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.381990+00:00"
+    },
+    "XP": {
+      "attempts": 1,
+      "info": {
+        "bars": 1709,
+        "dv20": 149136973.95,
+        "price": 20.995
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.382001+00:00"
+    },
+    "Z": {
+      "attempts": 1,
+      "info": {
+        "bars": 2797,
+        "dv20": 122497243.31,
+        "price": 27.13
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.381997+00:00"
+    },
+    "ZBRA": {
+      "attempts": 1,
+      "info": "ASOF_MISSING",
+      "status": "UNKNOWN_STATIC",
+      "updated_at_utc": "2026-09-30T23:58:06.381999+00:00"
+    },
+    "ZD": {
+      "attempts": 1,
+      "info": {
+        "bars": 1249,
+        "dv20": 31426404.045,
+        "price": 56.69
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.381994+00:00"
+    },
+    "ZG": {
+      "attempts": 1,
+      "info": {
+        "bars": 2797,
+        "dv20": 31219666.49,
+        "price": 27.7
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.382003+00:00"
+    },
+    "ZION": {
+      "attempts": 1,
+      "info": {
+        "bars": 7967,
+        "dv20": 86065441.895,
+        "price": 62.65
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.382008+00:00"
+    },
+    "ZLAB": {
+      "attempts": 1,
+      "info": {
+        "bars": 2269,
+        "dv20": 21601286.42,
+        "price": 26.34
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.382006+00:00"
+    },
+    "ZM": {
+      "attempts": 1,
+      "info": {
+        "bars": 1873,
+        "dv20": 238803838.98,
+        "price": 90.77
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.382014+00:00"
+    },
+    "ZS": {
+      "attempts": 1,
+      "info": {
+        "bars": 2147,
+        "dv20": 603295049.065,
+        "price": 199.42
+      },
+      "status": "PASS",
+      "updated_at_utc": "2026-09-30T23:58:06.382012+00:00"
+    },
+    "ZYME": {
+      "attempts": 1,
+      "info": {
+        "bars": 949,
+        "dv20": 19638564.085,
+        "price": 26.49
+      },
+      "status": "FAIL_DV20",
+      "updated_at_utc": "2026-09-30T23:58:06.382010+00:00"
     }
   },
   "schema": "XRAY_NASDAQ_SCREENER_SINA_V2",
@@ -13746,9 +15684,9 @@
     "ZS": "Zscaler, Inc. - Common Stock",
     "ZYME": "Zymeworks Inc. - Common Stock"
   },
-  "state_hash": "a544e7602c95db1fea3865497607447c55ac301fac9700027a48e755dce5a4f1",
-  "status": "HISTORY_PARTIAL",
+  "state_hash": "080927a393310aa7222d735050936b74fa46b91146d805f57a8f7451a18c5f81",
+  "status": "HISTORY_COMPLETE",
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_never_pass": true,
-  "updated_at_utc": "2026-09-30T23:57:00.759731+00:00"
+  "updated_at_utc": "2026-09-30T23:58:06.382180+00:00"
 }
