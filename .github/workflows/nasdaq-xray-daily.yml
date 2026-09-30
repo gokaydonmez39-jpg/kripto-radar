@@ -4,8 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - "nasdaq-xray/eastmoney_stage.py"
-      - "nasdaq-xray/trigger.txt"
+      - "nasdaq-xray/sina_stage.py"
       - ".github/workflows/nasdaq-xray-daily.yml"
   schedule:
     - cron: "45 * * * 1-5"
@@ -23,8 +22,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
-      XRAY_HISTORY_BATCH: "60"
-      XRAY_MAX_ATTEMPTS: "4"
+      XRAY_SINA_HISTORY_BATCH: "500"
+      XRAY_SINA_HISTORY_WORKERS: "8"
+      XRAY_SINA_RETRY_BATCH: "50"
     steps:
       - uses: actions/checkout@v4
         with:
@@ -34,11 +34,11 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install zero-key history adapters
-        run: python -m pip install --disable-pip-version-check pandas_market_calendars akshare==1.18.95
+      - name: Install zero-key market-data runtime
+        run: python -m pip install --disable-pip-version-check akshare==1.18.95 pandas_market_calendars
 
-      - name: Resume official-universe PRICE DV20 HISTORY hard gates
-        run: python nasdaq-xray/eastmoney_stage.py
+      - name: Resume Nasdaq PRICE DV20 HISTORY hard gates
+        run: python nasdaq-xray/sina_stage.py
 
       - name: Commit durable hard-gate cursor
         shell: bash
@@ -46,11 +46,11 @@ jobs:
           set -e
           git config user.name "xray-dataplane-bot"
           git config user.email "xray-dataplane-bot@users.noreply.github.com"
-          git add nasdaq-xray/eastmoney_state.json nasdaq-xray/market_candidates.json
+          git add nasdaq-xray/sina_state.json nasdaq-xray/sina_candidates.json
           if git diff --cached --quiet; then
             echo "No hard-gate state change."
           else
-            git commit -m "chore(xray): hard-gate cursor checkpoint [skip ci]"
+            git commit -m "chore(xray): Sina hard-gate checkpoint [skip ci]"
             pushed=0
             for attempt in 1 2 3 4 5; do
               if git pull --rebase origin main && git push; then
@@ -68,8 +68,8 @@ jobs:
       - name: Upload hard-gate state
         uses: actions/upload-artifact@v4
         with:
-          name: nasdaq-xray-hard-gate-state
+          name: nasdaq-xray-sina-hard-gate-state
           path: |
-            nasdaq-xray/eastmoney_state.json
-            nasdaq-xray/market_candidates.json
+            nasdaq-xray/sina_state.json
+            nasdaq-xray/sina_candidates.json
           retention-days: 30
