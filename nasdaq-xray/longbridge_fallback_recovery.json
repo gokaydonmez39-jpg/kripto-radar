@@ -10,7 +10,7 @@
   "source_primary_summary_hash": "d9473aa103dad1964aba08c98764fc7be8f78093f8344d9722678631318d5d43",
   "source_missing_group_hash": "d55174eb1df105baf2b43a208d8871f88f263afeee8ff55aad507c75d9263273",
   "total_missing": 356,
-  "cursor": 120,
+  "cursor": 136,
   "results": {
     "AACI": {
       "status": "FAIL_DV20",
@@ -717,7 +717,89 @@
       "status": "FAIL_DV20",
       "price": 10.25,
       "dv20": 765.125
+    },
+    "FWAC": {
+      "status": "FAIL_PRICE",
+      "price": 9.95,
+      "dv20": 32279.66
+    },
+    "FXAC": {
+      "status": "FAIL_DV20",
+      "price": 10.08,
+      "dv20": 6364.79
+    },
+    "GCGR": {
+      "status": "FAIL_DV20",
+      "price": 10.12,
+      "dv20": 962.825
+    },
+    "GDEV": {
+      "status": "FAIL_DV20",
+      "price": 10.86,
+      "dv20": 15311.5
+    },
+    "GDTC": {
+      "status": "FAIL_PRICE",
+      "price": 0.889,
+      "dv20": 9712.4745
+    },
+    "GHXI": {
+      "status": "FAIL_PRICE",
+      "price": 9.99,
+      "dv20": 10733.5
+    },
+    "GIBO": {
+      "status": "FAIL_DV20",
+      "price": 31.34,
+      "dv20": 936903.7250000001
+    },
+    "GIGM": {
+      "status": "FAIL_PRICE",
+      "price": 1.377,
+      "dv20": 1943.633
+    },
+    "GIW": {
+      "status": "FAIL_DV20",
+      "price": 10.17,
+      "dv20": 133029.485
+    },
+    "GIX": {
+      "status": "FAIL_DV20",
+      "price": 10.005,
+      "dv20": 1862.415
+    },
+    "GIXI": {
+      "status": "UNKNOWN_EXACT20_MISSING",
+      "missing": [
+        "2026-09-01"
+      ]
+    },
+    "GOW": {
+      "status": "FAIL_PRICE",
+      "price": 1.81,
+      "dv20": 386234.115
+    },
+    "GPAC": {
+      "status": "FAIL_DV20",
+      "price": 10.08,
+      "dv20": 8189.005
+    },
+    "GPAT": {
+      "status": "FAIL_DV20",
+      "price": 11.01,
+      "dv20": 1251.1200000000001
+    },
+    "GRAL": {
+      "status": "UNKNOWN_EXACT20_MISSING",
+      "missing": [
+        "2026-09-23"
+      ]
+    },
+    "GRAN": {
+      "status": "FAIL_PRICE",
+      "price": 0.8387,
+      "dv20": 11503.494999999999
     }
   },
-  "updated_at_utc": "2026-09-30T23:58:20Z"
+  "updated_at_utc": "2026-09-30T23:58:50Z"
 }
