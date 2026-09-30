@@ -11,6 +11,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: nasdaq-xray-repo-writer
+  cancel-in-progress: false
+
 jobs:
   probe:
     runs-on: ubuntu-latest
@@ -30,6 +34,20 @@ jobs:
           git config user.name "xray-dataplane-bot"
           git config user.email "xray-dataplane-bot@users.noreply.github.com"
           git add nasdaq-xray/eastmoney_probe.json
-          git commit -m "chore(xray): Eastmoney probe evidence [skip ci]" || exit 0
-          git pull --rebase origin main
-          git push
+          if git diff --cached --quiet; then
+            echo "No probe evidence change."
+          else
+            git commit -m "chore(xray): Eastmoney probe evidence [skip ci]"
+            pushed=0
+            for attempt in 1 2 3 4 5; do
+              if git pull --rebase origin main && git push; then
+                pushed=1
+                break
+              fi
+              sleep $((attempt * 2))
+            done
+            if [ "$pushed" -ne 1 ]; then
+              echo "XRAY_STATE_PUSH_FAILED" >&2
+              exit 1
+            fi
+          fi
