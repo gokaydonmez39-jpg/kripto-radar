@@ -1,0 +1,77 @@
+{
+  "schema": "XRAY_RECOVERY_WITNESS_V1",
+  "canonical_task_id": "6a825366222081918997094d76e6ae46",
+  "source_state_revision": 20,
+  "source_state_hash": "709b877e39059b515c5467a6d0ef1a9b8a4fd3a05f86192f1e85539c9e64ce23",
+  "observed_at_utc": "2026-09-30T23:27:00Z",
+  "candidate_settlement_date_et": "2026-09-29",
+  "gate": {
+    "volume_relative_diff_max_pct": 0.1,
+    "prices_must_match": true,
+    "unknown_never_pass": true
+  },
+  "probes": {
+    "AAPL": {
+      "rallies": {
+        "open": 336.965,
+        "high": 337.085,
+        "low": 328.7,
+        "close": 329.4,
+        "volume": 38478037.237258
+      },
+      "longbridge": {
+        "open": 336.965,
+        "high": 337.085,
+        "low": 328.7,
+        "close": 329.4,
+        "volume": 38478037
+      },
+      "volume_relative_diff_pct": 6.166063030463477e-7,
+      "price_match": true,
+      "pass": true
+    },
+    "NVDA": {
+      "rallies": {
+        "open": 230.97,
+        "high": 232.82,
+        "low": 227.025,
+        "close": 227.21,
+        "volume": 101494933.448493
+      },
+      "longbridge": {
+        "open": 230.97,
+        "high": 232.82,
+        "low": 227.025,
+        "close": 227.21,
+        "volume": 101494933
+      },
+      "volume_relative_diff_pct": 4.4188708696846816e-7,
+      "price_match": true,
+      "pass": true
+    },
+    "MSFT": {
+      "rallies": {
+        "open": 508.31,
+        "high": 513.64,
+        "low": 502.4,
+        "close": 508.96,
+        "volume": 21341832.293104
+      },
+      "longbridge": {
+        "open": 508.31,
+        "high": 513.64,
+        "low": 502.4,
+        "close": 508.96,
+        "volume": 21341832
+      },
+      "volume_relative_diff_pct": 0.0000013733778729813972,
+      "price_match": true,
+      "pass": true
+    }
+  },
+  "settlement_result": "PASS",
+  "role": "ZERO_ALPHA_RECOVERY_EVIDENCE_ONLY",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "witness_hash": "f4d083c6aff10a000b5e815fa205d3f87b54de396a3d62f4505eac99807e7f2d"
+}
