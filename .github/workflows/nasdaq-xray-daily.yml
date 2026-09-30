@@ -24,7 +24,7 @@ jobs:
     timeout-minutes: 30
     env:
       XRAY_EM_HISTORY_BATCH: "120"
-      XRAY_EM_HISTORY_WORKERS: "8"
+      XRAY_EM_HISTORY_WORKERS: "3"
     steps:
       - uses: actions/checkout@v4
         with:
