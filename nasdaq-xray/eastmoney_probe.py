@@ -5,7 +5,7 @@ from pathlib import Path
 
 OUT=Path(__file__).resolve().parent/"eastmoney_probe.json"
 UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/126 Safari/537.36"
-BUILD="2026-10-01.6"
+BUILD="2026-10-01.7"
 
 def get_json(url,params=None,headers=None,timeout=35):
     if params:
@@ -43,8 +43,8 @@ def nasdaq_summary(symbol):
 def nasdaq_hist(symbol):
     return get_json("https://api.nasdaq.com/api/quote/"+symbol+"/historical",{
         "assetclass":"stocks",
-        "fromdate":"09/01/2026",
-        "todate":"09/30/2026",
+        "fromdate":"2026-09-01",
+        "todate":"2026-09-30",
         "limit":"100"
     },NASDAQ_HEADERS)
 
