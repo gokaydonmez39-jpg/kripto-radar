@@ -10,7 +10,7 @@
   "source_primary_summary_hash": "d9473aa103dad1964aba08c98764fc7be8f78093f8344d9722678631318d5d43",
   "source_missing_group_hash": "d55174eb1df105baf2b43a208d8871f88f263afeee8ff55aad507c75d9263273",
   "total_missing": 356,
-  "cursor": 40,
+  "cursor": 56,
   "results": {
     "AACI": {
       "status": "FAIL_DV20",
@@ -252,7 +252,93 @@
       "status": "FAIL_PRICE",
       "price": 9.91,
       "dv20": 810.8750000000001
+    },
+    "BIXI": {
+      "status": "FAIL_DV20",
+      "price": 10.15,
+      "dv20": 1366.8125
+    },
+    "BKHA": {
+      "status": "FAIL_DV20",
+      "price": 12.36,
+      "dv20": 855.69
+    },
+    "BLIV": {
+      "status": "FAIL_PRICE",
+      "price": 2.5,
+      "dv20": 724.535
+    },
+    "BLUW": {
+      "status": "FAIL_DV20",
+      "price": 10.372,
+      "dv20": 2793.3675000000003
+    },
+    "BLZR": {
+      "status": "FAIL_DV20",
+      "price": 10.245,
+      "dv20": 103238.375
+    },
+    "BMGL": {
+      "status": "FAIL_PRICE",
+      "price": 3.1,
+      "dv20": 74644.61499999999
+    },
+    "BMHL": {
+      "status": "FAIL_PRICE",
+      "price": 4.64,
+      "dv20": 4031.3750000000005
+    },
+    "BPAC": {
+      "status": "FAIL_DV20",
+      "price": 10.19,
+      "dv20": 285.32
+    },
+    "BRAG": {
+      "status": "FAIL_PRICE",
+      "price": 1.26,
+      "dv20": 18547.245000000003
+    },
+    "BRBI": {
+      "status": "FAIL_DV20",
+      "price": 11.24,
+      "dv20": 2068.615
+    },
+    "BREZ": {
+      "status": "FAIL_DV20",
+      "price": 10.02,
+      "dv20": 961.5649999999999
+    },
+    "BRID": {
+      "status": "FAIL_PRICE",
+      "price": 5.684,
+      "dv20": 15441.89
+    },
+    "BRKH": {
+      "status": "FAIL_DV20",
+      "price": 10.03,
+      "dv20": 8354.545
+    },
+    "BRTM": {
+      "status": "UNKNOWN_EXACT20_MISSING",
+      "missing": [
+        "2026-09-01",
+        "2026-09-02",
+        "2026-09-03",
+        "2026-09-04",
+        "2026-09-08",
+        "2026-09-09"
+      ]
+    },
+    "BSAA": {
+      "status": "FAIL_DV20",
+      "price": 11.3,
+      "dv20": 16919.45
+    },
+    "BYFC": {
+      "status": "FAIL_DV20",
+      "price": 11.985,
+      "dv20": 18852.7525
     }
   },
-  "updated_at_utc": "2026-09-30T23:53:30Z"
+  "updated_at_utc": "2026-09-30T23:56:00Z"
 }
