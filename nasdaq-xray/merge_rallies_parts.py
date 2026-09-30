@@ -89,6 +89,8 @@ out={
   "unknown_never_pass":True
 }
 OUT.write_text(json.dumps(out,indent=2,sort_keys=True)+"\n",encoding="utf-8")
+for status,symbols in groups.items():
+    (ROOT/f"rallies_group_{status.lower()}.txt").write_text(",".join(symbols)+"\n",encoding="utf-8")
 print(json.dumps({
  "queue_total":len(queue),
  "counts":out["counts"],
