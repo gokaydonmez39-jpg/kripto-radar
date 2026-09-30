@@ -4,7 +4,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 UA="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/126 Safari/537.36"
-OUT=Path(__file__).resolve().parent/"eastmoney_probe.json"\nBUILD="2026-10-01.1"
+OUT=Path(__file__).resolve().parent/"eastmoney_probe.json"
+BUILD="2026-10-01.2"
 
 def get(url,params):
     q=urllib.parse.urlencode(params)
