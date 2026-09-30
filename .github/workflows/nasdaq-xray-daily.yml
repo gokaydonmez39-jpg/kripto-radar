@@ -34,7 +34,7 @@ jobs:
           python-version: "3.12"
 
       - name: Install exchange calendar
-        run: python -m pip install --disable-pip-version-check pandas_market_calendars
+        run: python -m pip install --disable-pip-version-check pandas_market_calendars akshare==1.18.95
 
       - name: Resume official-universe PRICE DV20 HISTORY hard gates
         run: python nasdaq-xray/eastmoney_stage.py
