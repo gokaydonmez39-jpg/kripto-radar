@@ -10,7 +10,7 @@
   "source_primary_summary_hash": "d9473aa103dad1964aba08c98764fc7be8f78093f8344d9722678631318d5d43",
   "source_missing_group_hash": "d55174eb1df105baf2b43a208d8871f88f263afeee8ff55aad507c75d9263273",
   "total_missing": 356,
-  "cursor": 56,
+  "cursor": 72,
   "results": {
     "AACI": {
       "status": "FAIL_DV20",
@@ -338,7 +338,98 @@
       "status": "FAIL_DV20",
       "price": 11.985,
       "dv20": 18852.7525
+    },
+    "CAES": {
+      "status": "FAIL_DV20",
+      "price": 10.06,
+      "dv20": 88812.72750000001
+    },
+    "CAII": {
+      "status": "FAIL_PRICE",
+      "price": 10,
+      "dv20": 24168.875
+    },
+    "CAPN": {
+      "status": "FAIL_DV20",
+      "price": 11.25,
+      "dv20": 1003.075
+    },
+    "CAQ": {
+      "status": "FAIL_DV20",
+      "price": 10.01,
+      "dv20": 1557.7935
+    },
+    "CATL": {
+      "status": "UNKNOWN_EXACT20_MISSING",
+      "missing": [
+        "2026-09-01",
+        "2026-09-02",
+        "2026-09-03",
+        "2026-09-04",
+        "2026-09-08",
+        "2026-09-09",
+        "2026-09-10",
+        "2026-09-11",
+        "2026-09-14",
+        "2026-09-15",
+        "2026-09-16"
+      ]
+    },
+    "CCAQ": {
+      "status": "FAIL_DV20",
+      "price": 10.69,
+      "dv20": 603.9849999999999
+    },
+    "CCCT": {
+      "status": "FAIL_PRICE",
+      "price": 9.84,
+      "dv20": 12747.72
+    },
+    "CCEC": {
+      "status": "FAIL_DV20",
+      "price": 21.29,
+      "dv20": 90428.9
+    },
+    "CCII": {
+      "status": "FAIL_DV20",
+      "price": 10.31,
+      "dv20": 229227.63
+    },
+    "CDZIP": {
+      "status": "FAIL_DV20",
+      "price": 22.001,
+      "dv20": 101898.73999999999
+    },
+    "CEPS": {
+      "status": "FAIL_DV20",
+      "price": 10.3,
+      "dv20": 82.84
+    },
+    "CEPV": {
+      "status": "FAIL_DV20",
+      "price": 10.36,
+      "dv20": 679.51
+    },
+    "CGCF": {
+      "status": "FAIL_PRICE",
+      "price": 9.8,
+      "dv20": 13352.1
+    },
+    "CHAR": {
+      "status": "FAIL_DV20",
+      "price": 10.97,
+      "dv20": 12637.919999999998
+    },
+    "CHEC": {
+      "status": "FAIL_DV20",
+      "price": 10.3,
+      "dv20": 745.97
+    },
+    "CHPG": {
+      "status": "FAIL_DV20",
+      "price": 10.45,
+      "dv20": 3161.2799999999997
     }
   },
-  "updated_at_utc": "2026-09-30T23:56:00Z"
+  "updated_at_utc": "2026-09-30T23:56:50Z"
 }
