@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/eastmoney_stage.py"
+      - "nasdaq-xray/trigger.txt"
       - ".github/workflows/nasdaq-xray-daily.yml"
   schedule:
     - cron: "45 * * * 1-5"
