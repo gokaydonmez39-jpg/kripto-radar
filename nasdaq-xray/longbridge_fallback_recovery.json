@@ -10,7 +10,7 @@
   "source_primary_summary_hash": "d9473aa103dad1964aba08c98764fc7be8f78093f8344d9722678631318d5d43",
   "source_missing_group_hash": "d55174eb1df105baf2b43a208d8871f88f263afeee8ff55aad507c75d9263273",
   "total_missing": 356,
-  "cursor": 248,
+  "cursor": 264,
   "results": {
     "AACI": {
       "status": "FAIL_DV20",
@@ -1514,7 +1514,107 @@
         "2026-09-28",
         "2026-09-29"
       ]
+    },
+    "OTGA": {
+      "status": "FAIL_DV20",
+      "price": 10.26,
+      "dv20": 8763.130000000001
+    },
+    "OYSE": {
+      "status": "FAIL_DV20",
+      "price": 10.405,
+      "dv20": 3067.2900000000004
+    },
+    "PAAC": {
+      "status": "FAIL_DV20",
+      "price": 10.06,
+      "dv20": 26382.275
+    },
+    "PACH": {
+      "status": "FAIL_DV20",
+      "price": 10.36,
+      "dv20": 35178.86
+    },
+    "PALO": {
+      "status": "FAIL_PRICE",
+      "price": 9.97,
+      "dv20": 1716.0169999999998
+    },
+    "PBHC": {
+      "status": "FAIL_DV20",
+      "price": 17.203,
+      "dv20": 29552.010000000002
+    },
+    "PC": {
+      "status": "UNKNOWN_EXACT20_MISSING",
+      "missing": [
+        "2026-09-01",
+        "2026-09-02",
+        "2026-09-03",
+        "2026-09-04",
+        "2026-09-08",
+        "2026-09-09",
+        "2026-09-10",
+        "2026-09-11",
+        "2026-09-14",
+        "2026-09-15",
+        "2026-09-16",
+        "2026-09-17",
+        "2026-09-18",
+        "2026-09-21",
+        "2026-09-22",
+        "2026-09-23",
+        "2026-09-24",
+        "2026-09-25",
+        "2026-09-28",
+        "2026-09-29"
+      ]
+    },
+    "PCAP": {
+      "status": "FAIL_DV20",
+      "price": 10.38,
+      "dv20": 103661.45499999999
+    },
+    "PECE": {
+      "status": "FAIL_DV20",
+      "price": 10.01,
+      "dv20": 82176.0675
+    },
+    "PFAI": {
+      "status": "FAIL_PRICE",
+      "price": 2.77,
+      "dv20": 1004.9
+    },
+    "PFX": {
+      "status": "FAIL_DV20",
+      "price": 46.09,
+      "dv20": 143922.60499999998
+    },
+    "PGAC": {
+      "status": "FAIL_DV20",
+      "price": 10.78,
+      "dv20": 220.185
+    },
+    "PLCI": {
+      "status": "FAIL_PRICE",
+      "price": 9.89,
+      "dv20": 6308.93
+    },
+    "PLMK": {
+      "status": "FAIL_DV20",
+      "price": 10.72,
+      "dv20": 2147.3550000000005
+    },
+    "PLUT": {
+      "status": "FAIL_PRICE",
+      "price": 2.5,
+      "dv20": 365.76
+    },
+    "POLE": {
+      "status": "FAIL_DV20",
+      "price": 10.74,
+      "dv20": 13559.515000000001
     }
   },
-  "updated_at_utc": "2026-09-30T23:59:55Z"
+  "updated_at_utc": "2026-10-01T00:00:05Z"
 }
