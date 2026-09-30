@@ -10,7 +10,7 @@
   "source_primary_summary_hash": "d9473aa103dad1964aba08c98764fc7be8f78093f8344d9722678631318d5d43",
   "source_missing_group_hash": "d55174eb1df105baf2b43a208d8871f88f263afeee8ff55aad507c75d9263273",
   "total_missing": 356,
-  "cursor": 184,
+  "cursor": 200,
   "results": {
     "AACI": {
       "status": "FAIL_DV20",
@@ -1061,7 +1061,107 @@
       "status": "FAIL_DV20",
       "price": 10.08,
       "dv20": 1771.83
+    },
+    "LAFA": {
+      "status": "FAIL_DV20",
+      "price": 10.2,
+      "dv20": 538.2249999999999
+    },
+    "LATA": {
+      "status": "FAIL_DV20",
+      "price": 10.2,
+      "dv20": 17189.59
+    },
+    "LAWR": {
+      "status": "UNKNOWN_EXACT20_MISSING",
+      "missing": [
+        "2026-09-01",
+        "2026-09-02",
+        "2026-09-03",
+        "2026-09-04",
+        "2026-09-08",
+        "2026-09-09",
+        "2026-09-10",
+        "2026-09-11",
+        "2026-09-14",
+        "2026-09-15",
+        "2026-09-16",
+        "2026-09-17",
+        "2026-09-18",
+        "2026-09-21",
+        "2026-09-22",
+        "2026-09-23",
+        "2026-09-24",
+        "2026-09-25",
+        "2026-09-28",
+        "2026-09-29"
+      ]
+    },
+    "LBTYB": {
+      "status": "FAIL_DV20",
+      "price": 12.54,
+      "dv20": 6443.715
+    },
+    "LCCC": {
+      "status": "FAIL_DV20",
+      "price": 10.52,
+      "dv20": 89.46
+    },
+    "LCFY": {
+      "status": "FAIL_PRICE",
+      "price": 2.445,
+      "dv20": 9959.715
+    },
+    "LFAC": {
+      "status": "FAIL_DV20",
+      "price": 10.07,
+      "dv20": 2467.15
+    },
+    "LFWD": {
+      "status": "FAIL_PRICE",
+      "price": 6.91,
+      "dv20": 33323.445
+    },
+    "LKSP": {
+      "status": "FAIL_DV20",
+      "price": 10.24,
+      "dv20": 4735.6175
+    },
+    "LPAA": {
+      "status": "FAIL_DV20",
+      "price": 10.76,
+      "dv20": 274.125
+    },
+    "LPBB": {
+      "status": "FAIL_DV20",
+      "price": 10.83,
+      "dv20": 470240.55500000005
+    },
+    "LPCV": {
+      "status": "FAIL_DV20",
+      "price": 10.07,
+      "dv20": 1843.64
+    },
+    "LRE": {
+      "status": "FAIL_PRICE",
+      "price": 1.14,
+      "dv20": 9536.630000000001
+    },
+    "LSE": {
+      "status": "FAIL_PRICE",
+      "price": 5.07,
+      "dv20": 18440.835
+    },
+    "LTGR": {
+      "status": "FAIL_PRICE",
+      "price": 9.99,
+      "dv20": 969.15
+    },
+    "LWAC": {
+      "status": "FAIL_DV20",
+      "price": 10.382,
+      "dv20": 1079.18
     }
   },
-  "updated_at_utc": "2026-09-30T23:58:40Z"
+  "updated_at_utc": "2026-09-30T23:59:00Z"
 }
