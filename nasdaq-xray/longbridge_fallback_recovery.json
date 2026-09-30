@@ -1,0 +1,113 @@
+{
+  "schema": "XRAY_LONGBRIDGE_DV20_FALLBACK_RECOVERY_V1",
+  "task_id": "6a825366222081918997094d76e6ae46",
+  "asof_et": "2026-09-29",
+  "source": "LONGBRIDGE_CANDLESTICKS_DAY_INTRADAY_UNADJUSTED",
+  "role": "CORE_AUTHORIZED_DV20_FALLBACK_AUDIT_NOT_DIRECT_STATE_WRITE",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "source_primary_summary_hash": "d9473aa103dad1964aba08c98764fc7be8f78093f8344d9722678631318d5d43",
+  "source_missing_group_hash": "d55174eb1df105baf2b43a208d8871f88f263afeee8ff55aad507c75d9263273",
+  "total_missing": 356,
+  "cursor": 12,
+  "results": {
+    "AACI": {
+      "status": "FAIL_DV20",
+      "price": 10.06,
+      "dv20": 8547.525000000001
+    },
+    "AACO": {
+      "status": "FAIL_PRICE",
+      "price": 10,
+      "dv20": 144.925
+    },
+    "AACP": {
+      "status": "FAIL_DV20",
+      "price": 10.07,
+      "dv20": 2824.92
+    },
+    "ABLV": {
+      "status": "FAIL_PRICE",
+      "price": 1.78,
+      "dv20": 10187.868450000002
+    },
+    "ACAA": {
+      "status": "FAIL_PRICE",
+      "price": 10,
+      "dv20": 941.6925
+    },
+    "ACCV": {
+      "status": "UNKNOWN_EXACT20_MISSING",
+      "missing": [
+        "2026-09-01",
+        "2026-09-02",
+        "2026-09-03",
+        "2026-09-04",
+        "2026-09-08",
+        "2026-09-09",
+        "2026-09-10",
+        "2026-09-11",
+        "2026-09-14",
+        "2026-09-15",
+        "2026-09-16",
+        "2026-09-17",
+        "2026-09-18",
+        "2026-09-21",
+        "2026-09-22",
+        "2026-09-23",
+        "2026-09-24",
+        "2026-09-25",
+        "2026-09-28",
+        "2026-09-29"
+      ]
+    },
+    "ACGC": {
+      "status": "FAIL_DV20",
+      "price": 10.06,
+      "dv20": 1793.2714999999998
+    },
+    "ADAC": {
+      "status": "FAIL_DV20",
+      "price": 10.12,
+      "dv20": 1548.815
+    },
+    "ADRX": {
+      "status": "UNKNOWN_EXACT20_MISSING",
+      "missing": [
+        "2026-09-01",
+        "2026-09-02",
+        "2026-09-03",
+        "2026-09-04",
+        "2026-09-08",
+        "2026-09-09",
+        "2026-09-10",
+        "2026-09-11",
+        "2026-09-14",
+        "2026-09-15",
+        "2026-09-16",
+        "2026-09-17",
+        "2026-09-18",
+        "2026-09-21",
+        "2026-09-22",
+        "2026-09-23",
+        "2026-09-24"
+      ]
+    },
+    "AEAQ": {
+      "status": "FAIL_DV20",
+      "price": 10.08,
+      "dv20": 656.0799999999999
+    },
+    "AESP": {
+      "status": "FAIL_PRICE",
+      "price": 9.97,
+      "dv20": 2554.88
+    },
+    "AIIR": {
+      "status": "FAIL_PRICE",
+      "price": 7.75,
+      "dv20": 31835.52
+    }
+  }
+}
