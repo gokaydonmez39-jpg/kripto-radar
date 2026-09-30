@@ -4,7 +4,7 @@ from pathlib import Path
 from datetime import datetime, timezone
 
 OUT=Path(__file__).resolve().parent/"sina_spot_fast_probe.json"
-BUILD="2026-10-01.1"
+BUILD="2026-10-01.2"
 UA="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/126 Safari/537.36"
 
 def urshift(x,n):
@@ -38,11 +38,11 @@ def sina_hash(s):
         a[i%16]^=(a[i]+(i>>4))&63
     return ''.join(alphabet[a[i]] for i in range(16))
 
-page=1; num=1000
-decoded=f"US_CategoryService.getList?page={page}&num={num}&sort=&asc=0&market=&id="
+page=1; num=20
+decoded=f"US_CategoryService.getList?page={page}&num={num}&sort=mktcap&asc=0&market=NASDAQ&id="
 token=sina_hash(decoded)
 base=f"http://stock.finance.sina.com.cn/usstock/api/jsonp.php/IO.XSRV2.CallbackList[{token}]/US_CategoryService.getList"
-params={"page":str(page),"num":str(num),"sort":"","asc":"0","market":"","id":""}
+params={"page":str(page),"num":str(num),"sort":"mktcap","asc":"0","market":"NASDAQ","id":""}
 url=base+"?"+urllib.parse.urlencode(params)
 req=urllib.request.Request(url,headers={"User-Agent":UA,"Referer":"https://finance.sina.com.cn/stock/usstock/sector.shtml"})
 with urllib.request.urlopen(req,timeout=35) as r:
