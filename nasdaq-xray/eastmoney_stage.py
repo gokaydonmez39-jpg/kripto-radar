@@ -11,6 +11,7 @@ from pathlib import Path
 from statistics import median
 from zoneinfo import ZoneInfo
 import pandas_market_calendars as mcal
+import akshare as ak
 
 TASK_ID="6a825366222081918997094d76e6ae46"
 NASDAQ_URL="https://www.nasdaqtrader.com/dynamic/SymDir/nasdaqlisted.txt"
@@ -84,27 +85,24 @@ def fnum(x):
     except:return None
 
 def spot_all():
-    base={
-      "pz":"100","po":"1","np":"1","ut":UT,"fltt":"2","invt":"2","fid":"f12",
-      "fs":"m:105,m:106,m:107",
-      "fields":"f2,f5,f12,f13,f14,f20,f21"
-    }
-    first=get_json(SPOT_URL,{**base,"pn":"1"})
-    data=first.get("data") or {}
-    diff=data.get("diff") or []
-    if isinstance(diff,dict): diff=list(diff.values())
-    if not diff: raise RuntimeError("EASTMONEY_SPOT_EMPTY")
-    total=int(data.get("total") or len(diff))
-    per=len(diff)
-    pages=max(1,math.ceil(total/per))
-    rows=list(diff)
-    for p in range(2,pages+1):
-        d=get_json(SPOT_URL,{**base,"pn":str(p)})
-        x=(d.get("data") or {}).get("diff") or []
-        if isinstance(x,dict): x=list(x.values())
-        rows.extend(x)
-        time.sleep(random.uniform(0.12,0.30))
-    return rows,total,pages
+    # Use AKShare's maintained Eastmoney pagination/retry implementation.
+    df=ak.stock_us_spot_em()
+    if df is None or df.empty:
+        raise RuntimeError("EASTMONEY_SPOT_EMPTY")
+    rows=[]
+    for rec in df.to_dict(orient="records"):
+        code=str(rec.get("代码") or "").strip().upper()
+        if "." not in code:
+            continue
+        market,sym=code.split(".",1)
+        rows.append({
+          "f12":sym,"f13":market,"f14":rec.get("名称"),
+          "f2":rec.get("最新价"),"f5":rec.get("成交量"),
+          "f20":rec.get("总市值")
+        })
+    if not rows:
+        raise RuntimeError("EASTMONEY_SPOT_PARSE_EMPTY")
+    return rows,len(rows),None
 
 def parse_hist(secid,asof,expected20):
     params={
