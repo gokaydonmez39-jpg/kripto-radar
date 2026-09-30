@@ -14,6 +14,7 @@ import pandas_market_calendars as mcal
 import akshare as ak
 
 TASK_ID="6a825366222081918997094d76e6ae46"
+BUILD="2026-10-01.1"
 NASDAQ_URL="https://www.nasdaqtrader.com/dynamic/SymDir/nasdaqlisted.txt"
 SPOT_URL="https://72.push2.eastmoney.com/api/qt/clist/get"
 HIST_URL="https://63.push2his.eastmoney.com/api/qt/stock/kline/get"
