@@ -24,7 +24,7 @@ from pathlib import Path
 import pandas_market_calendars as mcal
 
 TASK_ID = "6a825366222081918997094d76e6ae46"
-BUILD = "2026-10-01.4"
+BUILD = "2026-10-01.5"
 NASDAQ_URL = "https://www.nasdaqtrader.com/dynamic/SymDir/nasdaqlisted.txt"
 HIST_URL = "https://63.push2his.eastmoney.com/api/qt/stock/kline/get"
 ROOT = Path(__file__).resolve().parent
@@ -132,9 +132,9 @@ def parse_hist(symbol, asof, expected20):
         "fields2": "f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61",
         "klt": "101",
         "fqt": "0",
-        "beg": "20180101",
+        "beg": "20200101",
         "end": "20500000",
-        "lmt": "3000",
+        "lmt": "2000",
     }
     try:
         time.sleep(random.uniform(0.06, 0.20))
