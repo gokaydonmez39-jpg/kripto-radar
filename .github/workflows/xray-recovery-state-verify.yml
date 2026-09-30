@@ -1,0 +1,40 @@
+name: XRAY Verify Recovery State Proposal
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/recovery_state_proposal.json"
+      - "nasdaq-xray/verify_recovery_state_proposal.py"
+      - ".github/workflows/xray-recovery-state-verify.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: xray-recovery-state-verify
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify target state hash and recovery invariants
+        run: python nasdaq-xray/verify_recovery_state_proposal.py
+      - name: Commit verification evidence
+        run: |
+          set -e
+          git config user.name "xray-dataplane-bot"
+          git config user.email "xray-dataplane-bot@users.noreply.github.com"
+          git add nasdaq-xray/recovery_state_proposal_verified.json
+          git commit -m "chore(xray): verified REV21 recovery proposal [skip ci]" || exit 0
+          git pull --rebase origin main
+          git push
