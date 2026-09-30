@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 OUT=Path(__file__).resolve().parent/"nasdaq_screener_probe.json"
+BUILD="2026-10-01.1"
 URL="https://api.nasdaq.com/api/screener/stocks"
 params={
   "tableonly":"true",
