@@ -5,7 +5,7 @@ History: Sina raw daily accelerator (shadow only, never G9/canonical fill author
 EXECUTION=NONE. REAL_MONEY=NO-GO. UNKNOWN!=PASS.
 """
 from __future__ import annotations
-import json, math, os, time
+import json, math, os, time, hashlib
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
@@ -19,6 +19,14 @@ MC=Path(os.getenv("XRAY_MC_STATE", str(ROOT/"mc_final_state.json")))
 OUT=Path(os.getenv("XRAY_STAGE1_OUT", str(ROOT/"stage1_shadow.json")))
 TASK_ID="6a825366222081918997094d76e6ae46"
 WORKERS=int(os.getenv("XRAY_STAGE1_WORKERS","8"))
+
+def blob_sha(p:Path):
+    b=p.read_bytes()
+    return hashlib.sha1(f"blob {len(b)}\0".encode()+b).hexdigest()
+
+def relpath(p:Path):
+    try:return str(p.relative_to(ROOT.parent)).replace("\\","/")
+    except Exception:return str(p)
 
 def wilder_atr(df, n=14):
     h=df["high"].astype(float); l=df["low"].astype(float); c=df["close"].astype(float)
@@ -168,6 +176,10 @@ def main():
       "unknown_count":len(unknown),"unknown":sorted(unknown),
       "state_caps":state_caps,
       "r92_ineligible":sorted(r92_ineligible & set(syms)),
+      "source_input_path":relpath(MC),"source_input_blob_sha":blob_sha(MC),
+      "source_legal_pass_hash":mc.get("source_legal_pass_hash"),
+      "source_mc_policy_hash":mc.get("source_mc_policy_hash"),
+      "source_mc_policy_version":mc.get("source_mc_policy_version"),
       "results":results,
       "source_authority":"SHADOW_TECHNICAL_ACCELERATOR_ONLY",
       "notes":["C post-earnings family is evaluated later from official earnings/event evidence.","No setup signal or R92 registration is created here."]
