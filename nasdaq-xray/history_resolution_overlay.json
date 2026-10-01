@@ -5,7 +5,7 @@
   "real_money": "NO-GO",
   "unknown_never_pass": true,
   "base_asof_et": "2026-09-30",
-  "generated_at_utc": "2026-10-01T12:50:01.882447+00:00",
+  "generated_at_utc": "2026-10-01T14:38:30Z",
   "max_age_hours": 24,
   "notes": [
     "Terminal classifications only; no synthetic bars.",
@@ -140,6 +140,13 @@
       "trade_status": "Halted",
       "last_bar": "2025-10-01",
       "source": "LONGBRIDGE_QUOTE_DAILY"
+    },
+    "CHWM": {
+      "decision": "FAIL_HISTORY",
+      "bars": 0,
+      "source": "SEC_8A_PLUS_ISSUER_NASDAQ_LISTING_2026-10-01_PLUS_LONGBRIDGE_DAILY",
+      "reason": "NASDAQ_TRADING_BEGINS_AFTER_FROZEN_ASOF_2026-09-30",
+      "proof": "ADS_REGISTERED_ON_NASDAQ;ISSUER_ANNOUNCED_EXPECTED_FIRST_TRADE_2026-10-01;LONGBRIDGE_DAILY_COUNT_0"
     }
   }
 }
