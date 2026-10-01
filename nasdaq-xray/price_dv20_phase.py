@@ -67,9 +67,7 @@ def classify(by,asof,exp20,source):
           "no_synthetic_bar":True}
     if upper<HARD_DV20:
         info["proof"]="DV20_UPPER_BOUND_LT_GATE";return "FAIL_DV20",info
-    if lower>=HARD_DV20:
-        info["proof"]="DV20_LOWER_BOUND_GE_GATE";return "PASS_PRICE_DV20",info
-    info["reason"]="EXACT20_AMBIGUOUS";return "UNKNOWN",info
+    info["reason"]="EXACT20_INCOMPLETE_NEVER_PASS";return "UNKNOWN",info
 
 def sina(sym,asof):
     try:
