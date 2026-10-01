@@ -1,8 +1,23 @@
 {
+  "a_geometry": [],
+  "a_geometry_count": 0,
   "a_geometry_rs_event_pass": [],
   "a_geometry_rs_event_pass_count": 0,
   "asof_et": "2026-09-30",
   "authority": "SHADOW_DEEP_PREFILTER_ONLY_NO_SIGNAL",
+  "b_armed": [
+    "ASST",
+    "BWIN",
+    "COIN",
+    "FTNT",
+    "GH",
+    "MSTR",
+    "NVDA",
+    "PI",
+    "QRVO",
+    "SWKS"
+  ],
+  "b_armed_count": 10,
   "b_armed_rs_event_pass": [
     "ASST",
     "BWIN",
@@ -16,21 +31,29 @@
     "SWKS"
   ],
   "b_armed_rs_event_pass_count": 10,
+  "b_breakout": [
+    "WBD"
+  ],
+  "b_breakout_count": 1,
   "b_breakout_rs_event_pass": [
     "WBD"
   ],
   "b_breakout_rs_event_pass_count": 1,
   "d_dk3_pre_r1": [],
   "d_dk3_pre_r1_count": 0,
+  "d_geometry_rs": [],
+  "d_geometry_rs_count": 0,
   "event_state_fresh": true,
   "execution": "NONE",
   "input_weekly_pass_count": 107,
+  "mode": "FULL_SHADOW",
   "r92_ineligible": [
     "WGS"
   ],
   "real_money": "NO-GO",
   "regime": "MIXED",
   "remaining_gates": [
+    "REGIME_BREADTH",
     "R1_NEAREST_RESISTANCE",
     "BASIC_SEVERE_RR",
     "EXTENSION_CHASE",
