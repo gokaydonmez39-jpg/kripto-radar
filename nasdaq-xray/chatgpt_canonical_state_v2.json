@@ -3,14 +3,15 @@
   "authority": "GITHUB_CURRENT_POINTER",
   "execution": "NONE",
   "real_money": "NO-GO",
-  "revision": 36,
+  "revision": 37,
   "state_hash": "b272b2b3e8dba584c72a16b16d3e6b499ba076608ef7e1fbd4abf1387ba91cb4",
   "prev_state_hash": "709b877e39059b515c5467a6d0ef1a9b8a4fd3a05f86192f1e85539c9e64ce23",
   "state_json": {
     "active_signals": [],
     "asof_et": "2026-09-30",
     "daily_keys": [
-      "DAILY|2026-09-29|FULL_E2E_NO_CONFIRMED_SETUP"
+      "DAILY|2026-09-29|FULL_E2E_NO_CONFIRMED_SETUP",
+      "DAILY|2026-09-30|FULL_E2E_NO_CONFIRMED_SETUP"
     ],
     "master_hash": "7efd407c4b74dbdf7b52e0d8b9671ef8a032e2a7497ec481e2b27de41d3211e1",
     "provider_faults": [
@@ -35,10 +36,10 @@
       "settlement_date_et": "2026-09-29",
       "incomplete_results_carried_forward": false
     },
-    "revision": 36,
+    "revision": 37,
     "schema": "XRAY_STATE_REGISTER_V1",
     "state_epoch": "2026-10-01T15:39:33.190Z",
-    "status": "MC_BOUND_HISTORY_PENDING",
+    "status": "TERMINAL_FULL_E2E_NO_CONFIRMED_SETUP",
     "task_id": "6a825366222081918997094d76e6ae46",
     "transition_keys": [
       "SYSTEM|CLOCK_ORDER_REPAIR|REV4",
@@ -67,16 +68,25 @@
       "SYSTEM|MASTER_IDENTITY_BOUND|2026-09-30|7efd407c4b74",
       "SYSTEM|COMPILED_POLICY_BOUND|C4.10|8fa4d40d4093",
       "SYSTEM|PRICE_DV20_BOUND|2026-09-30|4615337ebfc1",
-      "SYSTEM|MC_BOUND|2026-09-30|PRIMARY456|WATCH35|FAIL13"
+      "SYSTEM|MC_BOUND|2026-09-30|PRIMARY456|WATCH35|FAIL13",
+      "SYSTEM|HISTORY_BOUND|2026-09-30|PRIMARY456|PASS442|FAIL14",
+      "SYSTEM|LEGAL_BOUND|2026-09-30|PASS442|UNKNOWN0",
+      "SYSTEM|STAGE1_BOUND|2026-09-30|INPUT442|WEEKLY99|UNKNOWN0",
+      "SYSTEM|REGIME_BREADTH_BOUND|2026-09-30|MIXED|MISS0",
+      "SYSTEM|EVENTS_BOUND|2026-09-30|MU_BLOCK|AEHR_UNRESOLVED|AFFECTED_UNKNOWN0",
+      "SYSTEM|DEEP_FINAL_BOUND|2026-09-30|A0|B1|BARMED10|D0|PREG9_0",
+      "SYSTEM|R92_R93|2026-09-30|R92_0|R93_0|NOT_APPLICABLE",
+      "SYSTEM|TERMINAL|2026-09-30|FULL_E2E|NO_CONFIRMED_SETUP",
+      "SYSTEM|C4_14_TERMINAL_RECONCILE|2026-09-30|REV37"
     ],
-    "updated_at_utc": "2026-10-01T18:28:14.705Z",
+    "updated_at_utc": "2026-10-01T19:14:40.105Z",
     "work_cursor": {
       "ASOF_ET": "2026-09-30",
       "MASTER_HASH": "7efd407c4b74dbdf7b52e0d8b9671ef8a032e2a7497ec481e2b27de41d3211e1",
-      "PHASE": "HISTORY",
+      "PHASE": "TERMINAL",
       "CHUNK_INDEX": 0,
       "CHUNK_TOTAL": 0,
-      "COMPLETED_HASH": null,
+      "COMPLETED_HASH": "848a24086dc9001a2a23ac4fb7c95e9a9388c6fc",
       "COUNTS": {
         "MASTER_TOTAL": 3398,
         "MASTER_UNIQUE": 3398,
@@ -93,11 +103,33 @@
         "MC_UNKNOWN": 0,
         "TOTAL": 504,
         "CURRENT_CORE_MC": 491,
-        "FALLBACK_WATCH": 35
+        "FALLBACK_WATCH": 35,
+        "HISTORY_PRIMARY_INPUT": 456,
+        "HISTORY_PASS": 442,
+        "HISTORY_FAIL": 14,
+        "HISTORY_UNKNOWN": 0,
+        "LEGAL_PASS": 442,
+        "LEGAL_BLOCKED": 0,
+        "LEGAL_UNKNOWN": 0,
+        "STAGE1_INPUT": 442,
+        "WEEKLY_PASS": 99,
+        "BREADTH_MISSING": 0,
+        "EVENT_CONFIRMED_BLOCKS": 1,
+        "EVENT_UNRESOLVED": 1,
+        "AFFECTED_EVENT_UNKNOWN": 0,
+        "DEEP_A_CONFIRMED": 0,
+        "DEEP_B_BREAKOUT_CONFIRMED": 1,
+        "DEEP_B_ARMED_NON_R92": 10,
+        "DEEP_D_CONFIRMED": 0,
+        "FINAL_CONFIRMED_CANDIDATES": 1,
+        "PRE_G9_TECH_PASS": 0,
+        "R92_REGISTERED": 0,
+        "R93_REGISTERED": 0
       }
     },
     "delivery_keys": [
-      "CONTROL|ENGINE_START|C4_13|RESEARCH_FORWARD_TEST_WATCH_ONLY"
+      "CONTROL|ENGINE_START|C4_13|RESEARCH_FORWARD_TEST_WATCH_ONLY",
+      "DELIVERY|DAILY_2026-09-30|TERMINAL_NO_CONFIRMED_SETUP|37|FULL_E2E_RESEARCH_PASS"
     ],
     "completed_epochs": [
       {
@@ -111,6 +143,20 @@
         "final_blob_sha": "ff49dc469fd4a1f0260420212f75e6e776290acf",
         "final_confirmed_candidates": 0,
         "b_armed_non_r92": 8
+      },
+      {
+        "asof_et": "2026-09-30",
+        "status": "TERMINAL_FULL_E2E_NO_CONFIRMED_SETUP",
+        "full_end_to_end_pass": true,
+        "full_end_to_end_research_pass": true,
+        "terminal_result": "NO_CONFIRMED_SETUP",
+        "terminal_path": "nasdaq-xray/canonical_terminal_20260930.json",
+        "terminal_blob_sha": "848a24086dc9001a2a23ac4fb7c95e9a9388c6fc",
+        "deep_blob_sha": "a82222af02f898f2fab372c968aad2e7dc4a499d",
+        "final_blob_sha": "34ba06ab0bccb1d89d59a776bae57216b2cadf51",
+        "final_confirmed_candidates": 1,
+        "pre_g9_tech_pass": 0,
+        "b_armed_non_r92": 10
       }
     ],
     "engine_mode": "RESEARCH_FORWARD_TEST_WATCH_ONLY",
@@ -158,7 +204,7 @@
       }
     },
     "price_dv20_evidence": {
-      "path": "nasdaq-xray/canonical_price_dv20_20260930_final.json",
+      "path": "nasdaq-xray/canonical_price_dv20_20260930.json",
       "blob_sha": "2feb02f791852138ca7d2cefb2487793ba854e14",
       "pass_count": 504,
       "pass_hash": "4615337ebfc1c5821e13f8f01312b10a2497252746ba528876a068db0e2250db",
@@ -265,6 +311,81 @@
         "VOD",
         "WGS"
       ]
+    },
+    "runtime_kernel": "C4.14_POLICY_ORDERED_START",
+    "mc_fallback_venue_evidence": {
+      "path": "nasdaq-xray/canonical_mc_fallback_venue_proof_20260930.json",
+      "blob_sha": "0c1c13a7c1100c6c6ad71138fc5645b92b72ca7d",
+      "fallback_watch_count": 35,
+      "longbridge_exchange": "NASD",
+      "exact_coverage": true
+    },
+    "history_evidence": {
+      "path": "nasdaq-xray/canonical_history_20260930.json",
+      "blob_sha": "f0cd6b21afca01bcc0d2e8a7b52747693c8c4d47",
+      "schema": "XRAY_CANONICAL_HISTORY_V2",
+      "primary_input_count": 456,
+      "pass_count": 442,
+      "fail_count": 14,
+      "unknown_count": 0,
+      "fallback_watch_excluded_count": 35
+    },
+    "legal_evidence": {
+      "path": "nasdaq-xray/canonical_legal_20260930.json",
+      "blob_sha": "911b4d40ab9fdf4e2919b89652169331df85fffe",
+      "input_count": 442,
+      "pass_count": 442,
+      "blocked_count": 0,
+      "unknown_count": 0
+    },
+    "stage1_evidence": {
+      "path": "nasdaq-xray/canonical_stage1_20260930.json",
+      "blob_sha": "d94f0a2f450e0152514cb02ee03d974ca98b4c7e",
+      "input_count": 442,
+      "weekly_pass_count": 99,
+      "unknown_count": 0,
+      "r92_ineligible_count": 0
+    },
+    "regime_breadth_evidence": {
+      "path": "nasdaq-xray/canonical_regime_20260930.json",
+      "blob_sha": "71f5c1328d8a575a458fe0501c99ce0f23348b01",
+      "regime": "MIXED",
+      "current_core_count": 442,
+      "history_ok_count": 442,
+      "breadth_missing_count": 0,
+      "breadth_above_sma50_pct": 0.34615384615384615,
+      "nh20": 30,
+      "nl20": 89
+    },
+    "event_evidence": {
+      "path": "nasdaq-xray/canonical_event_state_20260930.json",
+      "blob_sha": "61efc16f770c4b9afcf5104d77001c618635fa65",
+      "weekly_scope_count": 99,
+      "confirmed_block_count": 1,
+      "confirmed_blocks": [
+        "MU"
+      ],
+      "unresolved_count": 1,
+      "unresolved_symbols": [
+        "AEHR"
+      ],
+      "affected_event_unknown_count": 0
+    },
+    "deep_final_evidence": {
+      "deep_path": "nasdaq-xray/canonical_deep_full_20260930.json",
+      "deep_blob_sha": "a82222af02f898f2fab372c968aad2e7dc4a499d",
+      "final_path": "nasdaq-xray/canonical_final_tech_20260930.json",
+      "final_blob_sha": "34ba06ab0bccb1d89d59a776bae57216b2cadf51",
+      "terminal_path": "nasdaq-xray/canonical_terminal_20260930.json",
+      "terminal_blob_sha": "848a24086dc9001a2a23ac4fb7c95e9a9388c6fc",
+      "full_end_to_end_research_pass": true,
+      "terminal_result": "NO_CONFIRMED_SETUP",
+      "A_confirmed": 0,
+      "B_breakout_confirmed": 1,
+      "B_armed_non_r92": 10,
+      "D_confirmed": 0,
+      "final_confirmed_candidates": 1,
+      "pre_g9_tech_pass": 0
     }
   },
   "source_proof": {
@@ -276,6 +397,6 @@
   "transition_rule": "NEXT_REVISION_MUST_BE_EXACT_PLUS_ONE_AND_PREV_STATE_HASH_MUST_EQUAL_THIS_STATE_HASH",
   "immutable_snapshot_path": "nasdaq-xray/state/REV21_b272b2b3e8dba584c72a16b16d3e6b499ba076608ef7e1fbd4abf1387ba91cb4.json",
   "storage_protocol": "GITHUB_CONTENTS_CAS_V1",
-  "prev_pointer_blob_sha": "8f9c56c791fa9e785bd4829702f4751148a8caf7",
+  "prev_pointer_blob_sha": "9ac01a07c623b6dec8ea686b5c5127fea40fc1f5",
   "writer_task_id": "6a825366222081918997094d76e6ae46"
 }
