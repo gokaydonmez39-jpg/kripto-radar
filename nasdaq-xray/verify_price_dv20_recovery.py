@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parent
+BUILD="2026-10-01.1"
 S=ROOT/"rallies_recovery_summary.json"
 F=ROOT/"longbridge_fallback_recovery.json"
 O=ROOT/"price_dv20_recovery_verified.json"
