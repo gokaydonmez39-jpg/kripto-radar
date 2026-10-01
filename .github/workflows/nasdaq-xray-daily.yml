@@ -25,7 +25,7 @@ permissions:
 
 concurrency:
   group: nasdaq-xray-autonomous-dataplane
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   dataplane:
@@ -60,23 +60,59 @@ jobs:
       - name: Commit durable XRAY checkpoints
         shell: bash
         run: |
-          set -e
+          set -euo pipefail
           git config user.name "xray-dataplane-bot"
           git config user.email "xray-dataplane-bot@users.noreply.github.com"
-          git add             nasdaq-xray/sina_state.json             nasdaq-xray/sina_candidates.json             nasdaq-xray/mc_zero_key_state.json             nasdaq-xray/production_core_state.json             nasdaq-xray/stage1_shadow.json             nasdaq-xray/regime_breadth_shadow.json             nasdaq-xray/deep_pre_r1_shadow.json             nasdaq-xray/final_tech_shadow.json             nasdaq-xray/orchestrator_state.json 2>/dev/null || true
-          if git diff --cached --quiet; then
-            echo "XRAY_DURABLE_COMMIT=NO_CHANGE"
-            exit 0
-          fi
-          git commit -m "chore(xray): autonomous data-plane checkpoint [skip ci]"
+
+          files=(
+            nasdaq-xray/sina_state.json
+            nasdaq-xray/sina_candidates.json
+            nasdaq-xray/mc_zero_key_state.json
+            nasdaq-xray/production_core_state.json
+            nasdaq-xray/stage1_shadow.json
+            nasdaq-xray/regime_breadth_shadow.json
+            nasdaq-xray/deep_pre_r1_shadow.json
+            nasdaq-xray/final_tech_shadow.json
+            nasdaq-xray/orchestrator_state.json
+          )
+
+          tmpdir="$(mktemp -d)"
+          trap 'rm -rf "$tmpdir"' EXIT
+          for p in "${files[@]}"; do
+            if [ -f "$p" ]; then
+              mkdir -p "$tmpdir/$(dirname "$p")"
+              cp "$p" "$tmpdir/$p"
+            fi
+          done
+
           pushed=0
           for attempt in 1 2 3 4 5; do
-            if git pull --rebase origin main && git push; then
+            git rebase --abort >/dev/null 2>&1 || true
+            git fetch origin main
+            git reset --hard origin/main
+
+            for p in "${files[@]}"; do
+              if [ -f "$tmpdir/$p" ]; then
+                mkdir -p "$(dirname "$p")"
+                cp "$tmpdir/$p" "$p"
+              fi
+            done
+
+            git add "${files[@]}" 2>/dev/null || true
+            if git diff --cached --quiet; then
+              echo "XRAY_DURABLE_COMMIT=NO_CHANGE"
+              exit 0
+            fi
+
+            git commit -m "chore(xray): autonomous data-plane checkpoint [skip ci]"
+            if git push origin HEAD:main; then
               pushed=1
               break
             fi
+            echo "XRAY_DURABLE_PUSH_RACE attempt=$attempt"
             sleep $((attempt * 2))
           done
+
           if [ "$pushed" -ne 1 ]; then
             echo "XRAY_DURABLE_COMMIT=FAIL" >&2
             exit 1
