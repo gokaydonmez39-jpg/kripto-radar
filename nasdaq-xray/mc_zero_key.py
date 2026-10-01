@@ -79,60 +79,44 @@ def main():
     asof=cc["asof_et"]
     cands=cc.get("candidates") or {}
     disc=ss.get("discovery") or {}
-    mp=sec_map()
 
-    direct_pass={}; borderline={}; unresolved={}; sec_fail={}
-    # Conservative direct pass: official Nasdaq MC >= 2.6B.
+    direct_pass={}; unresolved={}; definitive_fail={}
     for sym,info in sorted(cands.items()):
         nmc=finite((disc.get(sym) or {}).get("screener_market_cap"))
         if nmc is None:
-            unresolved[sym]={"reason":"NASDAQ_MC_MISSING"}; continue
+            unresolved[sym]={"reason":"NASDAQ_MC_MISSING"}
+            continue
         if nmc>=2_600_000_000:
-            direct_pass[sym]={"nasdaq_market_cap":nmc,"mode":"NASDAQ_CONSERVATIVE_GE_2_6B"}
+            direct_pass[sym]={
+              "nasdaq_market_cap":nmc,
+              "mode":"NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B"
+            }
+        elif nmc<2_000_000_000:
+            definitive_fail[sym]={
+              "nasdaq_market_cap":nmc,
+              "mode":"NASDAQ_OFFICIAL_LT_2B"
+            }
         else:
-            borderline[sym]={"nasdaq_market_cap":nmc,"price":finite(info.get("price"))}
-
-    sec_pass={}
-    for sym,rec in sorted(borderline.items()):
-        cik=mp.get(sym)
-        if cik is None:
-            unresolved[sym]={"reason":"SEC_CIK_MISSING","nasdaq_market_cap":rec["nasdaq_market_cap"]};continue
-        if rec["price"] is None:
-            unresolved[sym]={"reason":"PRICE_MISSING"};continue
-        try:
-            sh=latest_shares(cik,asof)
-            if sh is None:
-                unresolved[sym]={"reason":"SEC_SHARES_FACT_MISSING","cik":cik,"nasdaq_market_cap":rec["nasdaq_market_cap"]};continue
-            sec_mc=rec["price"]*sh["shares"]
-            nmc=rec["nasdaq_market_cap"]
-            rel=abs(sec_mc-nmc)/max(sec_mc,nmc)
-            evidence={"cik":cik,"price":rec["price"],"shares":sh["shares"],"shares_end":sh["end"],"shares_filed":sh["filed"],"shares_form":sh["form"],"sec_market_cap":sec_mc,"nasdaq_market_cap":nmc,"relative_diff":rel}
-            if sec_mc>=2_100_000_000 and nmc>=2_100_000_000 and rel<=0.10:
-                sec_pass[sym]=evidence
-            elif sec_mc<2_000_000_000 and nmc<2_000_000_000:
-                sec_fail[sym]=evidence
-            else:
-                unresolved[sym]={"reason":"SEC_NASDAQ_MC_NOT_CONCORDANT","evidence":evidence}
-        except Exception as e:
-            unresolved[sym]={"reason":f"SEC_ERROR:{type(e).__name__}:{str(e)[:140]}"}
-        time.sleep(0.25)
+            unresolved[sym]={
+              "reason":"NASDAQ_MC_BORDERLINE_2_0_TO_2_6B",
+              "nasdaq_market_cap":nmc,
+              "required_resolution":"CANONICAL_BIGDATA_OR_CONSERVATIVE_RALLIES_LONGBRIDGE"
+            }
 
     out={
-      "schema":"XRAY_MC_ZERO_KEY_V1","task_id":TASK_ID,"asof_et":asof,
+      "schema":"XRAY_MC_ZERO_KEY_V2","task_id":TASK_ID,"asof_et":asof,
       "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
       "direct_nasdaq_conservative_pass_count":len(direct_pass),
-      "sec_crosscheck_pass_count":len(sec_pass),
-      "sec_definitive_fail_count":len(sec_fail),
+      "definitive_fail_count":len(definitive_fail),
       "unresolved_count":len(unresolved),
       "direct_nasdaq_conservative_pass":direct_pass,
-      "sec_crosscheck_pass":sec_pass,
-      "sec_definitive_fail":sec_fail,
+      "definitive_fail":definitive_fail,
       "unresolved":unresolved,
-      "current_core_zero_key":sorted(set(direct_pass)|set(sec_pass)),
-      "policy_note":"This zero-key path is deliberately stricter than the canonical $2B threshold. Borderline disagreements stay UNKNOWN."
+      "current_core_zero_key":sorted(direct_pass),
+      "policy_note":"GitHub shared runner receives SEC HTTP 403. No bypass/retry storm. Nasdaq official screener >=2.6B is conservative PASS; 2.0-2.6B remains UNKNOWN until canonical resolver."
     }
     OUT.write_text(json.dumps(out,ensure_ascii=False,sort_keys=True,indent=2)+"\n",encoding="utf-8")
-    print(json.dumps({k:out[k] for k in ["direct_nasdaq_conservative_pass_count","sec_crosscheck_pass_count","sec_definitive_fail_count","unresolved_count"]},sort_keys=True))
+    print(json.dumps({k:out[k] for k in ["direct_nasdaq_conservative_pass_count","definitive_fail_count","unresolved_count"]},sort_keys=True))
 
 if __name__=="__main__":
     main()
