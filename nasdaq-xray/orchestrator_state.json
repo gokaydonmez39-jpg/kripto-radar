@@ -24,7 +24,7 @@
     "d_pass": [],
     "event_state_fresh": true
   },
-  "engine_hash": "c459146eb0dd2f6b0bd938f4c08857e4d8b44514f6e91c32798dd97c144ff173",
+  "engine_hash": "c29ea624a0857fec7112f70da53522e21a9923964e264a95931783ada9b67cc6",
   "event_hash": "a9f78de8591cc52da292345c42dcb0e3719203917a1d577a6112b45d8bf8d40a",
   "execution": "NONE",
   "final_tech": {
@@ -35,7 +35,7 @@
     "unknown": [],
     "watch": []
   },
-  "fingerprint": "34356fb9733f8aec20195b5198ff8d3230d90a181d334f070e7735abd2d1cd53",
+  "fingerprint": "2979f21744eb9c83e24155a24f007855748ff57eb77e143af71d91d5328e526e",
   "full_go_blockers": [
     "G9_BLOCKED_NO_AUTHORIZED_ZERO_DOLLAR_RUNTIME_SOURCE",
     "ACCOUNT_GATE_UNKNOWN",
@@ -45,9 +45,10 @@
   "history": {
     "counts": {
       "BLOCK_CURRENT_RUN": 4,
+      "BLOCK_LEGAL_SHELL": 1,
       "FAIL_DV20": 286,
       "FAIL_HISTORY": 27,
-      "FAIL_IDENTITY_TYPE": 4,
+      "FAIL_IDENTITY_TYPE": 3,
       "FAIL_PRICE": 11,
       "PASS": 483
     },
@@ -75,5 +76,5 @@
   "status": "ENGINE_PASS_NO_CONFIRMED_SETUP",
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_never_pass": true,
-  "updated_at_utc": "2026-10-01T15:33:25.468459+00:00"
+  "updated_at_utc": "2026-10-01T15:47:47.598985+00:00"
 }

@@ -3,9 +3,10 @@
   "build": "2026-10-01.3",
   "counts": {
     "BLOCK_CURRENT_RUN": 4,
+    "BLOCK_LEGAL_SHELL": 1,
     "FAIL_DV20": 286,
     "FAIL_HISTORY": 27,
-    "FAIL_IDENTITY_TYPE": 4,
+    "FAIL_IDENTITY_TYPE": 3,
     "FAIL_PRICE": 11,
     "PASS": 483
   },
@@ -6600,7 +6601,7 @@
   "identity_authority": "NASDAQTRADER_EXPLICIT_TYPE_FILTER_V1",
   "official_footer": "File Creation Time: 1001202611:01|||||||",
   "pending_retry": 0,
-  "processed_new_this_run": 65,
+  "processed_new_this_run": 0,
   "processed_retry_this_run": 0,
   "queue": [
     "AAL",
@@ -7423,7 +7424,7 @@
   "queue_total": 815,
   "real_money": "NO-GO",
   "resolution_overlay_meta": {
-    "age_hours": 0.8511517480555555,
+    "age_hours": 1.0919201027777778,
     "generated_at_utc": "2026-10-01T14:38:30Z",
     "status": "PASS"
   },
@@ -7527,7 +7528,7 @@
       },
       "resolution_overlay": true,
       "status": "FAIL_HISTORY",
-      "updated_at_utc": "2026-10-01T15:29:34.146313+00:00"
+      "updated_at_utc": "2026-10-01T15:44:00.912387+00:00"
     },
     "ACGL": {
       "attempts": 1,
@@ -7658,7 +7659,7 @@
       },
       "resolution_overlay": true,
       "status": "FAIL_HISTORY",
-      "updated_at_utc": "2026-10-01T15:29:34.146325+00:00"
+      "updated_at_utc": "2026-10-01T15:44:00.912401+00:00"
     },
     "ADSK": {
       "attempts": 1,
@@ -8543,13 +8544,12 @@
     "BSAA": {
       "attempts": 1,
       "info": {
-        "proof": "OFFICIAL_NAME_CONTAINS_SPAC;BIGDATA_DESCRIBES_BLANK_CHECK",
-        "reason": "SPAC_BLANK_CHECK",
-        "resolution_source": "NASDAQTRADER_PLUS_BIGDATA"
+        "reason": "NASDAQ_SCREENER_INDUSTRY_BLANK_CHECKS",
+        "security_name": "BEST SPAC I Acquisition Corp. - Class A Ordinary Shares",
+        "source": "NASDAQ_SAME_RUN_SCREENER_METADATA"
       },
-      "resolution_overlay": true,
-      "status": "FAIL_IDENTITY_TYPE",
-      "updated_at_utc": "2026-10-01T15:29:34.146334+00:00"
+      "status": "BLOCK_LEGAL_SHELL",
+      "updated_at_utc": "2026-10-01T15:44:00.912635+00:00"
     },
     "BSP": {
       "attempts": 1,
@@ -8820,7 +8820,7 @@
       },
       "resolution_overlay": true,
       "status": "FAIL_IDENTITY_TYPE",
-      "updated_at_utc": "2026-10-01T15:29:34.146342+00:00"
+      "updated_at_utc": "2026-10-01T15:44:00.912416+00:00"
     },
     "CECO": {
       "attempts": 1,
@@ -9021,7 +9021,7 @@
       },
       "resolution_overlay": true,
       "status": "FAIL_HISTORY",
-      "updated_at_utc": "2026-10-01T15:29:34.146348+00:00"
+      "updated_at_utc": "2026-10-01T15:44:00.912422+00:00"
     },
     "CHYM": {
       "attempts": 1,
@@ -9782,7 +9782,7 @@
       },
       "resolution_overlay": true,
       "status": "FAIL_HISTORY",
-      "updated_at_utc": "2026-10-01T15:29:34.146355+00:00"
+      "updated_at_utc": "2026-10-01T15:44:00.912428+00:00"
     },
     "ELVN": {
       "attempts": 1,
@@ -10652,7 +10652,7 @@
       },
       "resolution_overlay": true,
       "status": "PASS",
-      "updated_at_utc": "2026-10-01T15:29:34.146384+00:00"
+      "updated_at_utc": "2026-10-01T15:44:00.912454+00:00"
     },
     "GSAT": {
       "attempts": 1,
@@ -10723,7 +10723,7 @@
       },
       "resolution_overlay": true,
       "status": "FAIL_HISTORY",
-      "updated_at_utc": "2026-10-01T15:29:34.146395+00:00"
+      "updated_at_utc": "2026-10-01T15:44:00.912463+00:00"
     },
     "HCM": {
       "attempts": 1,
@@ -11504,7 +11504,7 @@
       },
       "resolution_overlay": true,
       "status": "FAIL_HISTORY",
-      "updated_at_utc": "2026-10-01T15:29:34.146403+00:00"
+      "updated_at_utc": "2026-10-01T15:44:00.912472+00:00"
     },
     "LBTYA": {
       "attempts": 1,
@@ -11527,7 +11527,7 @@
       },
       "resolution_overlay": true,
       "status": "FAIL_DV20",
-      "updated_at_utc": "2026-10-01T15:29:34.146416+00:00"
+      "updated_at_utc": "2026-10-01T15:44:00.912483+00:00"
     },
     "LECO": {
       "attempts": 1,
@@ -11878,7 +11878,7 @@
       },
       "resolution_overlay": true,
       "status": "FAIL_HISTORY",
-      "updated_at_utc": "2026-10-01T15:29:34.146425+00:00"
+      "updated_at_utc": "2026-10-01T15:44:00.912492+00:00"
     },
     "MAMK": {
       "attempts": 1,
@@ -11889,7 +11889,7 @@
       },
       "resolution_overlay": true,
       "status": "FAIL_HISTORY",
-      "updated_at_utc": "2026-10-01T15:29:34.146435+00:00"
+      "updated_at_utc": "2026-10-01T15:44:00.912501+00:00"
     },
     "MANH": {
       "attempts": 1,
@@ -11990,7 +11990,7 @@
       },
       "resolution_overlay": true,
       "status": "FAIL_HISTORY",
-      "updated_at_utc": "2026-10-01T15:29:34.146444+00:00"
+      "updated_at_utc": "2026-10-01T15:44:00.912510+00:00"
     },
     "MDB": {
       "attempts": 1,
@@ -12191,7 +12191,7 @@
       },
       "resolution_overlay": true,
       "status": "FAIL_IDENTITY_TYPE",
-      "updated_at_utc": "2026-10-01T15:29:34.146453+00:00"
+      "updated_at_utc": "2026-10-01T15:44:00.912518+00:00"
     },
     "MMSI": {
       "attempts": 1,
@@ -12872,7 +12872,7 @@
       },
       "resolution_overlay": true,
       "status": "FAIL_PRICE",
-      "updated_at_utc": "2026-10-01T15:29:34.146465+00:00"
+      "updated_at_utc": "2026-10-01T15:44:00.912529+00:00"
     },
     "ORKA": {
       "attempts": 1,
@@ -12914,7 +12914,7 @@
       },
       "resolution_overlay": true,
       "status": "BLOCK_CURRENT_RUN",
-      "updated_at_utc": "2026-10-01T15:29:34.146476+00:00"
+      "updated_at_utc": "2026-10-01T15:44:00.912540+00:00"
     },
     "OSW": {
       "attempts": 1,
@@ -13046,7 +13046,7 @@
       },
       "resolution_overlay": true,
       "status": "BLOCK_CURRENT_RUN",
-      "updated_at_utc": "2026-10-01T15:29:34.146486+00:00"
+      "updated_at_utc": "2026-10-01T15:44:00.912549+00:00"
     },
     "PCAR": {
       "attempts": 1,
@@ -14368,7 +14368,7 @@
       },
       "resolution_overlay": true,
       "status": "BLOCK_CURRENT_RUN",
-      "updated_at_utc": "2026-10-01T15:29:34.146498+00:00"
+      "updated_at_utc": "2026-10-01T15:44:00.912559+00:00"
     },
     "SWKS": {
       "attempts": 1,
@@ -14549,7 +14549,7 @@
       },
       "resolution_overlay": true,
       "status": "FAIL_IDENTITY_TYPE",
-      "updated_at_utc": "2026-10-01T15:29:34.146510+00:00"
+      "updated_at_utc": "2026-10-01T15:44:00.912570+00:00"
     },
     "TIGO": {
       "attempts": 1,
@@ -14881,7 +14881,7 @@
       },
       "resolution_overlay": true,
       "status": "BLOCK_CURRENT_RUN",
-      "updated_at_utc": "2026-10-01T15:29:34.146524+00:00"
+      "updated_at_utc": "2026-10-01T15:44:00.912583+00:00"
     },
     "UCTT": {
       "attempts": 1,
@@ -16432,10 +16432,10 @@
     "ZS": "Zscaler, Inc. - Common Stock",
     "ZYME": "Zymeworks Inc. - Common Stock"
   },
-  "state_hash": "514353f4b4f96b36d1b220adbb6e68c784823c2f4c75c551365a22762eb18053",
+  "state_hash": "e98d01937e7b4a0f24e73011b35c0c4f63eca8fa11774e36efa69aaef5f4e62a",
   "status": "HISTORY_COMPLETE",
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_count": 0,
   "unknown_never_pass": true,
-  "updated_at_utc": "2026-10-01T15:29:34.146701+00:00"
+  "updated_at_utc": "2026-10-01T15:44:00.912921+00:00"
 }
