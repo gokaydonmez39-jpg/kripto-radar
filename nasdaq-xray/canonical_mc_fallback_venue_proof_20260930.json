@@ -1,0 +1,298 @@
+{
+  "schema": "XRAY_MC_FALLBACK_VENUE_PROOF_V1",
+  "task_id": "6a825366222081918997094d76e6ae46",
+  "asof_et": "2026-09-30",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "source_mc_path": "nasdaq-xray/canonical_mc_20260930_v2.json",
+  "source_mc_blob_sha": "2af253f476bed14117b0ac4d015d17cc4cbea330",
+  "fallback_watch_count": 35,
+  "fallback_watch_symbols": [
+    "AKAM",
+    "BIDU",
+    "BRZE",
+    "CCEP",
+    "COCO",
+    "CORZ",
+    "DAVE",
+    "ERAS",
+    "FER",
+    "FISV",
+    "FROG",
+    "FRSH",
+    "GTLB",
+    "HBAN",
+    "HTHT",
+    "INDV",
+    "IREN",
+    "JD",
+    "KMB",
+    "KYMR",
+    "LFST",
+    "MRX",
+    "MXL",
+    "NTES",
+    "NXST",
+    "ONC",
+    "RGTI",
+    "RYAAY",
+    "SHOP",
+    "SOFI",
+    "TEM",
+    "TER",
+    "TRI",
+    "VOD",
+    "WGS"
+  ],
+  "required_longbridge_exchange": "NASD",
+  "required_currency": "USD",
+  "exact_coverage": true,
+  "proof_by_symbol": {
+    "AKAM": {
+      "symbol": "AKAM.US",
+      "exchange": "NASD",
+      "currency": "USD",
+      "board": "USMain",
+      "name_en": "Akamai Tech"
+    },
+    "BIDU": {
+      "symbol": "BIDU.US",
+      "exchange": "NASD",
+      "currency": "USD",
+      "board": "USMain",
+      "name_en": "Baidu"
+    },
+    "BRZE": {
+      "symbol": "BRZE.US",
+      "exchange": "NASD",
+      "currency": "USD",
+      "board": "USMain",
+      "name_en": "Braze"
+    },
+    "CCEP": {
+      "symbol": "CCEP.US",
+      "exchange": "NASD",
+      "currency": "USD",
+      "board": "USMain",
+      "name_en": "Coca-Cola Europacific Partners"
+    },
+    "COCO": {
+      "symbol": "COCO.US",
+      "exchange": "NASD",
+      "currency": "USD",
+      "board": "USMain",
+      "name_en": "Vita Coco"
+    },
+    "CORZ": {
+      "symbol": "CORZ.US",
+      "exchange": "NASD",
+      "currency": "USD",
+      "board": "USMain",
+      "name_en": "Core Scientific, Inc."
+    },
+    "DAVE": {
+      "symbol": "DAVE.US",
+      "exchange": "NASD",
+      "currency": "USD",
+      "board": "USMain",
+      "name_en": "Dave"
+    },
+    "ERAS": {
+      "symbol": "ERAS.US",
+      "exchange": "NASD",
+      "currency": "USD",
+      "board": "USMain",
+      "name_en": "Erasca"
+    },
+    "FER": {
+      "symbol": "FER.US",
+      "exchange": "NASD",
+      "currency": "USD",
+      "board": "USMain",
+      "name_en": "Ferrovial SE"
+    },
+    "FISV": {
+      "symbol": "FISV.US",
+      "exchange": "NASD",
+      "currency": "USD",
+      "board": "USMain",
+      "name_en": "Fiserv, Inc."
+    },
+    "FROG": {
+      "symbol": "FROG.US",
+      "exchange": "NASD",
+      "currency": "USD",
+      "board": "USMain",
+      "name_en": "JFrog"
+    },
+    "FRSH": {
+      "symbol": "FRSH.US",
+      "exchange": "NASD",
+      "currency": "USD",
+      "board": "USMain",
+      "name_en": "Freshworks"
+    },
+    "GTLB": {
+      "symbol": "GTLB.US",
+      "exchange": "NASD",
+      "currency": "USD",
+      "board": "USMain",
+      "name_en": "GitLab"
+    },
+    "HBAN": {
+      "symbol": "HBAN.US",
+      "exchange": "NASD",
+      "currency": "USD",
+      "board": "USMain",
+      "name_en": "Huntington Bancshares"
+    },
+    "HTHT": {
+      "symbol": "HTHT.US",
+      "exchange": "NASD",
+      "currency": "USD",
+      "board": "USMain",
+      "name_en": "H World"
+    },
+    "INDV": {
+      "symbol": "INDV.US",
+      "exchange": "NASD",
+      "currency": "USD",
+      "board": "USMain",
+      "name_en": "Indivior Pharmaceuticals"
+    },
+    "IREN": {
+      "symbol": "IREN.US",
+      "exchange": "NASD",
+      "currency": "USD",
+      "board": "USMain",
+      "name_en": "IREN"
+    },
+    "JD": {
+      "symbol": "JD.US",
+      "exchange": "NASD",
+      "currency": "USD",
+      "board": "USMain",
+      "name_en": "JD.com"
+    },
+    "KMB": {
+      "symbol": "KMB.US",
+      "exchange": "NASD",
+      "currency": "USD",
+      "board": "USMain",
+      "name_en": "Kimberly Clark"
+    },
+    "KYMR": {
+      "symbol": "KYMR.US",
+      "exchange": "NASD",
+      "currency": "USD",
+      "board": "USMain",
+      "name_en": "Kymera Therapeutics"
+    },
+    "LFST": {
+      "symbol": "LFST.US",
+      "exchange": "NASD",
+      "currency": "USD",
+      "board": "USMain",
+      "name_en": "LifeStance Health"
+    },
+    "MRX": {
+      "symbol": "MRX.US",
+      "exchange": "NASD",
+      "currency": "USD",
+      "board": "USMain",
+      "name_en": "Marex"
+    },
+    "MXL": {
+      "symbol": "MXL.US",
+      "exchange": "NASD",
+      "currency": "USD",
+      "board": "USMain",
+      "name_en": "Maxlinear"
+    },
+    "NTES": {
+      "symbol": "NTES.US",
+      "exchange": "NASD",
+      "currency": "USD",
+      "board": "USMain",
+      "name_en": "NetEase"
+    },
+    "NXST": {
+      "symbol": "NXST.US",
+      "exchange": "NASD",
+      "currency": "USD",
+      "board": "USMain",
+      "name_en": "Nexstar Media"
+    },
+    "ONC": {
+      "symbol": "ONC.US",
+      "exchange": "NASD",
+      "currency": "USD",
+      "board": "USMain",
+      "name_en": "Beigene"
+    },
+    "RGTI": {
+      "symbol": "RGTI.US",
+      "exchange": "NASD",
+      "currency": "USD",
+      "board": "USMain",
+      "name_en": "Rigetti Computing"
+    },
+    "RYAAY": {
+      "symbol": "RYAAY.US",
+      "exchange": "NASD",
+      "currency": "USD",
+      "board": "USMain",
+      "name_en": "Ryanair"
+    },
+    "SHOP": {
+      "symbol": "SHOP.US",
+      "exchange": "NASD",
+      "currency": "USD",
+      "board": "USMain",
+      "name_en": "Shopify "
+    },
+    "SOFI": {
+      "symbol": "SOFI.US",
+      "exchange": "NASD",
+      "currency": "USD",
+      "board": "USMain",
+      "name_en": "SoFi Tech"
+    },
+    "TEM": {
+      "symbol": "TEM.US",
+      "exchange": "NASD",
+      "currency": "USD",
+      "board": "USMain",
+      "name_en": "Tempus AI"
+    },
+    "TER": {
+      "symbol": "TER.US",
+      "exchange": "NASD",
+      "currency": "USD",
+      "board": "USMain",
+      "name_en": "Teradyne"
+    },
+    "TRI": {
+      "symbol": "TRI.US",
+      "exchange": "NASD",
+      "currency": "USD",
+      "board": "USMain",
+      "name_en": "Thomson Reuters"
+    },
+    "VOD": {
+      "symbol": "VOD.US",
+      "exchange": "NASD",
+      "currency": "USD",
+      "board": "USMain",
+      "name_en": "Vodafone "
+    },
+    "WGS": {
+      "symbol": "WGS.US",
+      "exchange": "NASD",
+      "currency": "USD",
+      "board": "USMain",
+      "name_en": "GeneDx"
+    }
+  }
+}
