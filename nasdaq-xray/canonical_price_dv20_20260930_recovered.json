@@ -542,7 +542,7 @@
     "ZS"
   ],
   "real_money": "NO-GO",
-  "reevaluated_count": 324,
+  "reevaluated_count": 326,
   "results": {
     "AACG": {
       "info": {
@@ -23741,9 +23741,9 @@
     },
     "OPNW": {
       "info": {
-        "bars": 686,
-        "price": 8.979999542236328,
-        "resolution_source": "YAHOO_CHART_FREE_FALLBACK"
+        "bars": 300,
+        "price": 8.98,
+        "resolution_source": "LONGBRIDGE_DAILY"
       },
       "provenance": "FULLSTATE_TERMINAL_FAIL",
       "status": "FAIL_PRICE"
@@ -23958,11 +23958,24 @@
     },
     "OST": {
       "info": {
-        "bars": 686,
         "price": 1.6950000524520874,
-        "resolution_source": "YAHOO_CHART_FREE_FALLBACK"
+        "proof": "ASOF_CLOSE_LE_10",
+        "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "FULLSTATE_TERMINAL_FAIL",
+      "provenance": "POLICY_ORDER_REEVALUATION",
+      "provider_meta": {
+        "nasdaq": {
+          "rows": 0,
+          "usable": 0
+        },
+        "sina": {
+          "usable": 847
+        },
+        "yahoo": {
+          "exchangeName": "NCM",
+          "usable": 62
+        }
+      },
       "status": "FAIL_PRICE"
     },
     "OSUR": {
@@ -24483,11 +24496,24 @@
     },
     "PC": {
       "info": {
-        "bars": 505,
         "price": 9.399999618530273,
-        "resolution_source": "YAHOO_CHART_FREE_FALLBACK"
+        "proof": "ASOF_CLOSE_LE_10",
+        "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "FULLSTATE_TERMINAL_FAIL",
+      "provenance": "POLICY_ORDER_REEVALUATION",
+      "provider_meta": {
+        "nasdaq": {
+          "rows": 0,
+          "usable": 0
+        },
+        "sina": {
+          "usable": 1808
+        },
+        "yahoo": {
+          "exchangeName": "NCM",
+          "usable": 62
+        }
+      },
       "status": "FAIL_PRICE"
     },
     "PCAP": {
@@ -30394,7 +30420,8 @@
           "error": "SyntaxError:invalid syntax (<string>, line 1)"
         },
         "yahoo": {
-          "error": "HTTPError:HTTP Error 404: Not Found"
+          "exchangeName": "NMS",
+          "usable": 0
         }
       },
       "status": "UNKNOWN"
@@ -35325,7 +35352,7 @@
       "status": "FAIL_DV20"
     }
   },
-  "reused_terminal_count": 3074,
+  "reused_terminal_count": 3072,
   "schema": "XRAY_CANONICAL_PRICE_DV20_V1",
   "source_master_count": 3398,
   "source_master_queue_hash": "7efd407c4b74dbdf7b52e0d8b9671ef8a032e2a7497ec481e2b27de41d3211e1",
