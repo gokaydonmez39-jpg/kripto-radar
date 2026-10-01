@@ -1,0 +1,61 @@
+{
+  "schema": "XRAY_FAMILY_C_EVENT_DISCOVERY_V1",
+  "task_id": "6a825366222081918997094d76e6ae46",
+  "asof_et": "2026-09-30",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "discovery_window": [
+    "2026-09-17",
+    "2026-09-30"
+  ],
+  "current_core_count": 383,
+  "hits_count": 5,
+  "hits": [
+    {
+      "ticker": "PAYX",
+      "company_name": "Paychex Inc.",
+      "event_datetime": "2026-09-23T13:30:00Z",
+      "fiscal_year": 2027,
+      "fiscal_period": "Q1",
+      "source_url": "https://quartr.com/companies/paychex-inc_3883?utm_source=api&utm_medium=25",
+      "rp_entity_id": "6F6559"
+    },
+    {
+      "ticker": "CTAS",
+      "company_name": "Cintas Corp.",
+      "event_datetime": "2026-09-23T14:00:00Z",
+      "fiscal_year": 2027,
+      "fiscal_period": "Q1",
+      "source_url": "https://quartr.com/companies/cintas-corporation_5383?utm_source=api&utm_medium=25",
+      "rp_entity_id": "BFAEB4"
+    },
+    {
+      "ticker": "COST",
+      "company_name": "Costco Wholesale Corp.",
+      "event_datetime": "2026-09-24T21:00:00Z",
+      "fiscal_year": 2026,
+      "fiscal_period": "Q4",
+      "source_url": "https://quartr.com/companies/costco-wholesale-corporation_4772?utm_source=api&utm_medium=25",
+      "rp_entity_id": "B8EF97"
+    },
+    {
+      "ticker": "MU",
+      "company_name": "Micron Technology Inc.",
+      "event_datetime": "2026-09-30T20:30:00Z",
+      "fiscal_year": 2026,
+      "fiscal_period": "Q4",
+      "source_url": "https://quartr.com/companies/micron-technology-inc_5199?utm_source=api&utm_medium=25",
+      "rp_entity_id": "49BBBC"
+    },
+    {
+      "ticker": "MU",
+      "company_name": "Micron Technology Inc.",
+      "event_datetime": "2026-09-30T22:00:00Z",
+      "fiscal_year": 2026,
+      "fiscal_period": "Q4",
+      "source_url": "https://quartr.com/companies/micron-technology-inc_5199?utm_source=api&utm_medium=25",
+      "rp_entity_id": "49BBBC"
+    }
+  ],
+  "authority": "DISCOVERY_ONLY_OFFICIAL_IR_SEC_REQUIRED_FOR_FAMILY_C"
+}
