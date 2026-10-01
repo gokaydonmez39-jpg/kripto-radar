@@ -45,9 +45,18 @@ jobs:
           assert j["task_id"]=="6a825366222081918997094d76e6ae46"
           assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
           assert j["base_asof_et"]=="2026-09-30"
-          assert j["resolution_count"]+j["unresolved_count"]==60
-          assert all(v["decision"] in {"FAIL_PRICE","FAIL_DV20","FAIL_HISTORY","PASS_HARD_GATES"} for v in j["resolutions"].values())
-          print({"resolution_count":j["resolution_count"],"unresolved_count":j["unresolved_count"]})
+          m=json.load(open("nasdaq-xray/canonical_full_hard_gate_20260930_unknowns.json"))
+          assert j["manifest_unknown_count"]==m["unknown_count"]
+          assert j["current_resolution_count"]+j["current_unresolved_count"]==m["unknown_count"]
+          assert j["unresolved_count"]==j["current_unresolved_count"]
+          assert j["resolution_count"]==len(j["resolutions"])
+          assert all(v["decision"] in {"FAIL_PRICE","FAIL_DV20","FAIL_HISTORY","PASS_HARD_GATES","EXCLUDE","BLOCK_CURRENT_RUN"} for v in j["resolutions"].values())
+          print({
+            "manifest_unknown_count":j["manifest_unknown_count"],
+            "current_resolution_count":j["current_resolution_count"],
+            "resolution_count":j["resolution_count"],
+            "unresolved_count":j["unresolved_count"]
+          })
           PY
       - name: Commit overlay
         shell: bash
