@@ -1,0 +1,65 @@
+name: XRAY Canonical Regime 20260929
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/xray-canonical-regime-20260929.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: xray-canonical-regime-20260929
+  cancel-in-progress: false
+
+jobs:
+  regime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      XRAY_MC_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_mc_input_20260929.json
+      XRAY_REGIME_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_regime_20260929.json
+      XRAY_BREADTH_WORKERS: "8"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile
+        run: python -m py_compile nasdaq-xray/regime_breadth_shadow.py
+      - name: Install zero-dollar runtime
+        run: python -m pip install --disable-pip-version-check akshare==1.18.95 pandas
+      - name: Run frozen regime
+        run: python nasdaq-xray/regime_breadth_shadow.py
+      - name: Validate
+        run: |
+          python - <<'PY'
+          import json
+          p="nasdaq-xray/canonical_regime_20260929.json"
+          j=json.load(open(p))
+          assert j["schema"]=="XRAY_REGIME_BREADTH_SHADOW_V1"
+          assert j["task_id"]=="6a825366222081918997094d76e6ae46"
+          assert j["asof_et"]=="2026-09-29"
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          assert j["current_core_count"]==449
+          assert j["breadth_missing_count"]==0, j["breadth_missing"]
+          assert j["regime"] in ("WEAK","MIXED","STRONG")
+          print({k:j[k] for k in ["current_core_count","breadth_missing_count","breadth_above_sma50_pct","nh20","nl20","regime"]})
+          PY
+      - name: Commit frozen regime
+        shell: bash
+        run: |
+          set -e
+          git config user.name "xray-dataplane-bot"
+          git config user.email "xray-dataplane-bot@users.noreply.github.com"
+          git add nasdaq-xray/canonical_regime_20260929.json
+          git commit -m "chore(xray): canonical regime 2026-09-29 [skip ci]" || exit 0
+          for attempt in 1 2 3 4 5; do
+            if git pull --rebase origin main && git push; then exit 0; fi
+            sleep $((attempt*2))
+          done
+          exit 1
