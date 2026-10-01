@@ -33,7 +33,7 @@ def wilder_atr(df, n=14):
         series.append(atr)
     return pd.Series(series,index=df.index,dtype="float64")
 
-def weekly_gate(df, asof):
+def build_week_last(asof):
     cal=mcal.get_calendar("NASDAQ")
     a=datetime.fromisoformat(asof).date()
     sched=cal.schedule(start_date=(a-timedelta(days=900)).isoformat(),end_date=(a+timedelta(days=10)).isoformat())
@@ -42,6 +42,9 @@ def weekly_gate(df, asof):
         d=idx.date()
         k=pd.Timestamp(d).to_period("W-FRI").start_time.date().isoformat()
         week_last[k]=d.isoformat()
+    return week_last
+
+def weekly_gate(df, asof, week_last):
     x=df.copy()
     x["week_key"]=x["date"].dt.to_period("W-FRI").apply(lambda p:p.start_time.date().isoformat())
     groups=[]
@@ -94,7 +97,7 @@ def base_pool(df):
             out.append({"window":n,"base_high":bh,"base_low":bl,"width_atr":width,"atr14_frozen":A})
     return out
 
-def process(sym,asof):
+def process(sym,asof,week_last):
     try:
         df=ak.stock_us_daily(symbol=sym,adjust="")
         if df is None or df.empty:return sym,{"status":"UNKNOWN","reason":"SINA_EMPTY"}
@@ -108,7 +111,7 @@ def process(sym,asof):
         x=x.dropna().sort_values("date")
         x=x[x["date"]<=pd.Timestamp(asof)]
         if len(x)<260:return sym,{"status":"UNKNOWN","reason":"DAILY_LT260","bars":len(x)}
-        wg=weekly_gate(x,asof)
+        wg=weekly_gate(x,asof,week_last)
         if not wg.get("pass"):
             return sym,{"status":"WEEKLY_FAIL","weekly":wg}
         close=x["close"].astype(float)
@@ -138,9 +141,10 @@ def main():
     mc=json.loads(MC.read_text())
     syms=list(mc.get("current_core_mc_pass") or [])
     asof=mc["asof_et"]
+    week_last=build_week_last(asof)
     results={}
     with ThreadPoolExecutor(max_workers=WORKERS) as ex:
-        futs={ex.submit(process,s,asof):s for s in syms}
+        futs={ex.submit(process,s,asof,week_last):s for s in syms}
         for fut in as_completed(futs):
             sym,res=fut.result();results[sym]=res
     weekly=[s for s,r in results.items() if r.get("status")=="WEEKLY_PASS"]
