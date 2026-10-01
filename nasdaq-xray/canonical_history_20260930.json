@@ -1,13 +1,59 @@
 {
   "asof_et": "2026-09-30",
+  "c4_14_scope": {
+    "fallback_watch_excluded_count": 35,
+    "fallback_watch_r92_eligible": false,
+    "fallback_watch_remains_watch_only": true,
+    "fallback_watch_symbols": [
+      "AKAM",
+      "BIDU",
+      "BRZE",
+      "CCEP",
+      "COCO",
+      "CORZ",
+      "DAVE",
+      "ERAS",
+      "FER",
+      "FISV",
+      "FROG",
+      "FRSH",
+      "GTLB",
+      "HBAN",
+      "HTHT",
+      "INDV",
+      "IREN",
+      "JD",
+      "KMB",
+      "KYMR",
+      "LFST",
+      "MRX",
+      "MXL",
+      "NTES",
+      "NXST",
+      "ONC",
+      "RGTI",
+      "RYAAY",
+      "SHOP",
+      "SOFI",
+      "TEM",
+      "TER",
+      "TRI",
+      "VOD",
+      "WGS"
+    ],
+    "mode": "MC_PRIMARY_PASS_ONLY",
+    "primary_history_fail_count": 14,
+    "primary_history_pass_count": 442,
+    "primary_input_count": 456
+  },
   "counts": {
     "FAIL_HISTORY": 14,
-    "PASS_HISTORY": 477
+    "PASS_HISTORY": 442
   },
   "execution": "NONE",
-  "input_count": 491,
-  "pass_count": 477,
-  "pass_hash": "330566ca32b3785f38db5915c5f7405b86786894f135378a45681bc61a726244",
+  "input_count": 456,
+  "pass_count": 442,
+  "pass_hash": "1044436ab9ce6dcc92cdca73091321886776cf63d36c0d10fa0dc0a0c4ac21fa",
   "pass_symbols": [
     "AAL",
     "AAOI",
@@ -26,7 +72,6 @@
     "AEIS",
     "AEP",
     "AFRM",
-    "AKAM",
     "ALAB",
     "ALGM",
     "ALGN",
@@ -62,7 +107,6 @@
     "AXSM",
     "AXTI",
     "BBIO",
-    "BIDU",
     "BIIB",
     "BKNG",
     "BKR",
@@ -70,7 +114,6 @@
     "BNTX",
     "BPOP",
     "BRKR",
-    "BRZE",
     "BSP",
     "BSY",
     "BTDR",
@@ -84,7 +127,6 @@
     "CART",
     "CASY",
     "CBSH",
-    "CCEP",
     "CDNA",
     "CDNS",
     "CDW",
@@ -107,7 +149,6 @@
     "CLSK",
     "CMCSA",
     "CME",
-    "COCO",
     "COGT",
     "COHU",
     "COIN",
@@ -115,7 +156,6 @@
     "COLB",
     "COO",
     "CORT",
-    "CORZ",
     "COST",
     "CPB",
     "CPRT",
@@ -135,7 +175,6 @@
     "CYTK",
     "CZR",
     "DASH",
-    "DAVE",
     "DBX",
     "DDOG",
     "DFTX",
@@ -155,7 +194,6 @@
     "ENSG",
     "ENTG",
     "EQIX",
-    "ERAS",
     "ESLT",
     "EVRG",
     "EWBC",
@@ -169,10 +207,8 @@
     "FAST",
     "FCFS",
     "FCNCA",
-    "FER",
     "FFIV",
     "FIGR",
-    "FISV",
     "FIVE",
     "FIVN",
     "FLEX",
@@ -180,9 +216,7 @@
     "FORM",
     "FOX",
     "FOXA",
-    "FROG",
     "FRPT",
-    "FRSH",
     "FSLR",
     "FSLY",
     "FTAI",
@@ -202,11 +236,9 @@
     "GOOG",
     "GOOGL",
     "GRAL",
-    "GTLB",
     "GTX",
     "HALO",
     "HAS",
-    "HBAN",
     "HLNE",
     "HON",
     "HOOD",
@@ -214,7 +246,6 @@
     "HSIC",
     "HST",
     "HTFL",
-    "HTHT",
     "HUT",
     "HWC",
     "IBKR",
@@ -224,30 +255,24 @@
     "IESC",
     "ILMN",
     "INCY",
-    "INDV",
     "INOD",
     "INSM",
     "INTC",
     "INTU",
     "IONS",
     "IOVA",
-    "IREN",
     "IRTC",
     "ISRG",
     "JAZZ",
     "JBHT",
-    "JD",
     "JKHY",
     "KDP",
     "KLAC",
     "KLIC",
-    "KMB",
     "KRYS",
     "KTOS",
-    "KYMR",
     "LAMR",
     "LECO",
-    "LFST",
     "LFUS",
     "LGND",
     "LIN",
@@ -287,13 +312,11 @@
     "MRCY",
     "MRNA",
     "MRVL",
-    "MRX",
     "MSFT",
     "MSTR",
     "MTCH",
     "MTSI",
     "MU",
-    "MXL",
     "MYRG",
     "NBIS",
     "NBIX",
@@ -303,7 +326,6 @@
     "NFLX",
     "NICE",
     "NTAP",
-    "NTES",
     "NTNX",
     "NTRA",
     "NTRS",
@@ -313,7 +335,6 @@
     "NVTS",
     "NWSA",
     "NXPI",
-    "NXST",
     "NXT",
     "ODFL",
     "OKTA",
@@ -321,7 +342,6 @@
     "OLLI",
     "ON",
     "ONB",
-    "ONC",
     "ORKA",
     "ORLY",
     "OUST",
@@ -358,7 +378,6 @@
     "RELY",
     "RGEN",
     "RGLD",
-    "RGTI",
     "RIOT",
     "RIVN",
     "RKLB",
@@ -372,7 +391,6 @@
     "RPRX",
     "RRR",
     "RVMD",
-    "RYAAY",
     "RYTM",
     "SAIA",
     "SAIL",
@@ -383,7 +401,6 @@
     "SDGR",
     "SEIC",
     "SFM",
-    "SHOP",
     "SIMO",
     "SIRI",
     "SITM",
@@ -395,7 +412,6 @@
     "SNEX",
     "SNPS",
     "SNY",
-    "SOFI",
     "SRRK",
     "SSNC",
     "SSRM",
@@ -411,9 +427,7 @@
     "TCOM",
     "TEAM",
     "TECH",
-    "TEM",
     "TENB",
-    "TER",
     "TGTX",
     "TIGO",
     "TLN",
@@ -421,7 +435,6 @@
     "TMUS",
     "TNGX",
     "TPG",
-    "TRI",
     "TRMB",
     "TRMD",
     "TROW",
@@ -454,7 +467,6 @@
     "VKTX",
     "VLY",
     "VNOM",
-    "VOD",
     "VRNS",
     "VRSK",
     "VRSN",
@@ -466,7 +478,6 @@
     "WDAY",
     "WDC",
     "WFRD",
-    "WGS",
     "WING",
     "WIX",
     "WMG",
@@ -487,43 +498,7 @@
     "ZM",
     "ZS"
   ],
-  "r92_ineligible": [
-    "AKAM",
-    "BIDU",
-    "BRZE",
-    "CCEP",
-    "COCO",
-    "CORZ",
-    "DAVE",
-    "ERAS",
-    "FER",
-    "FISV",
-    "FROG",
-    "FRSH",
-    "GTLB",
-    "HBAN",
-    "HTHT",
-    "INDV",
-    "IREN",
-    "JD",
-    "KMB",
-    "KYMR",
-    "LFST",
-    "MRX",
-    "MXL",
-    "NTES",
-    "NXST",
-    "ONC",
-    "RGTI",
-    "RYAAY",
-    "SHOP",
-    "SOFI",
-    "TEM",
-    "TER",
-    "TRI",
-    "VOD",
-    "WGS"
-  ],
+  "r92_ineligible": [],
   "real_money": "NO-GO",
   "results": {
     "AAL": {
@@ -743,19 +718,6 @@
       "provider_meta": {
         "sina": {
           "usable": 1435
-        }
-      },
-      "status": "PASS_HISTORY"
-    },
-    "AKAM": {
-      "info": {
-        "completed_week_count": 1160,
-        "daily_bars": 5580,
-        "source": "SINA_US_DAILY"
-      },
-      "provider_meta": {
-        "sina": {
-          "usable": 5580
         }
       },
       "status": "PASS_HISTORY"
@@ -1215,19 +1177,6 @@
       },
       "status": "PASS_HISTORY"
     },
-    "BIDU": {
-      "info": {
-        "completed_week_count": 1019,
-        "daily_bars": 4915,
-        "source": "SINA_US_DAILY"
-      },
-      "provider_meta": {
-        "sina": {
-          "usable": 4915
-        }
-      },
-      "status": "PASS_HISTORY"
-    },
     "BIIB": {
       "info": {
         "completed_week_count": 1583,
@@ -1348,19 +1297,6 @@
       "provider_meta": {
         "sina": {
           "usable": 5284
-        }
-      },
-      "status": "PASS_HISTORY"
-    },
-    "BRZE": {
-      "info": {
-        "completed_week_count": 254,
-        "daily_bars": 1221,
-        "source": "SINA_US_DAILY"
-      },
-      "provider_meta": {
-        "sina": {
-          "usable": 1221
         }
       },
       "status": "PASS_HISTORY"
@@ -1563,19 +1499,6 @@
       "provider_meta": {
         "sina": {
           "usable": 5284
-        }
-      },
-      "status": "PASS_HISTORY"
-    },
-    "CCEP": {
-      "info": {
-        "completed_week_count": 263,
-        "daily_bars": 1268,
-        "source": "SINA_US_DAILY"
-      },
-      "provider_meta": {
-        "sina": {
-          "usable": 1268
         }
       },
       "status": "PASS_HISTORY"
@@ -1866,19 +1789,6 @@
       },
       "status": "PASS_HISTORY"
     },
-    "COCO": {
-      "info": {
-        "completed_week_count": 258,
-        "daily_bars": 1240,
-        "source": "SINA_US_DAILY"
-      },
-      "provider_meta": {
-        "sina": {
-          "usable": 1240
-        }
-      },
-      "status": "PASS_HISTORY"
-    },
     "COGT": {
       "info": {
         "completed_week_count": 315,
@@ -1966,19 +1876,6 @@
       "provider_meta": {
         "sina": {
           "usable": 4462
-        }
-      },
-      "status": "PASS_HISTORY"
-    },
-    "CORZ": {
-      "info": {
-        "completed_week_count": 190,
-        "daily_bars": 913,
-        "source": "SINA_US_DAILY"
-      },
-      "provider_meta": {
-        "sina": {
-          "usable": 913
         }
       },
       "status": "PASS_HISTORY"
@@ -2226,19 +2123,6 @@
       "provider_meta": {
         "sina": {
           "usable": 755
-        }
-      },
-      "status": "PASS_HISTORY"
-    },
-    "DAVE": {
-      "info": {
-        "completed_week_count": 247,
-        "daily_bars": 1187,
-        "source": "SINA_US_DAILY"
-      },
-      "provider_meta": {
-        "sina": {
-          "usable": 1187
         }
       },
       "status": "PASS_HISTORY"
@@ -2531,19 +2415,6 @@
       },
       "status": "FAIL_HISTORY"
     },
-    "ERAS": {
-      "info": {
-        "completed_week_count": 272,
-        "daily_bars": 1308,
-        "source": "SINA_US_DAILY"
-      },
-      "provider_meta": {
-        "sina": {
-          "usable": 1308
-        }
-      },
-      "status": "PASS_HISTORY"
-    },
     "ESLT": {
       "info": {
         "completed_week_count": 1098,
@@ -2713,19 +2584,6 @@
       },
       "status": "PASS_HISTORY"
     },
-    "FER": {
-      "info": {
-        "completed_week_count": 125,
-        "daily_bars": 600,
-        "source": "SINA_US_DAILY"
-      },
-      "provider_meta": {
-        "sina": {
-          "usable": 600
-        }
-      },
-      "status": "PASS_HISTORY"
-    },
     "FFIV": {
       "info": {
         "completed_week_count": 1181,
@@ -2748,19 +2606,6 @@
       "provider_meta": {
         "sina": {
           "usable": 265
-        }
-      },
-      "status": "PASS_HISTORY"
-    },
-    "FISV": {
-      "info": {
-        "completed_week_count": 1962,
-        "daily_bars": 9454,
-        "source": "SINA_US_DAILY"
-      },
-      "provider_meta": {
-        "sina": {
-          "usable": 9454
         }
       },
       "status": "PASS_HISTORY"
@@ -2856,19 +2701,6 @@
       },
       "status": "PASS_HISTORY"
     },
-    "FROG": {
-      "info": {
-        "completed_week_count": 315,
-        "daily_bars": 1517,
-        "source": "SINA_US_DAILY"
-      },
-      "provider_meta": {
-        "sina": {
-          "usable": 1517
-        }
-      },
-      "status": "PASS_HISTORY"
-    },
     "FRPT": {
       "info": {
         "completed_week_count": 621,
@@ -2878,19 +2710,6 @@
       "provider_meta": {
         "sina": {
           "usable": 2990
-        }
-      },
-      "status": "PASS_HISTORY"
-    },
-    "FRSH": {
-      "info": {
-        "completed_week_count": 527,
-        "daily_bars": 2534,
-        "source": "SINA_US_DAILY"
-      },
-      "provider_meta": {
-        "sina": {
-          "usable": 2534
         }
       },
       "status": "PASS_HISTORY"
@@ -3175,19 +2994,6 @@
       },
       "status": "PASS_HISTORY"
     },
-    "GTLB": {
-      "info": {
-        "completed_week_count": 259,
-        "daily_bars": 1245,
-        "source": "SINA_US_DAILY"
-      },
-      "provider_meta": {
-        "sina": {
-          "usable": 1245
-        }
-      },
-      "status": "PASS_HISTORY"
-    },
     "GTX": {
       "info": {
         "completed_week_count": 282,
@@ -3223,19 +3029,6 @@
       "provider_meta": {
         "sina": {
           "usable": 8965
-        }
-      },
-      "status": "PASS_HISTORY"
-    },
-    "HBAN": {
-      "info": {
-        "completed_week_count": 1660,
-        "daily_bars": 8001,
-        "source": "SINA_US_DAILY"
-      },
-      "provider_meta": {
-        "sina": {
-          "usable": 8001
         }
       },
       "status": "PASS_HISTORY"
@@ -3364,19 +3157,6 @@
       },
       "status": "PASS_HISTORY"
     },
-    "HTHT": {
-      "info": {
-        "completed_week_count": 860,
-        "daily_bars": 4146,
-        "source": "SINA_US_DAILY"
-      },
-      "provider_meta": {
-        "sina": {
-          "usable": 4146
-        }
-      },
-      "status": "PASS_HISTORY"
-    },
     "HUT": {
       "info": {
         "completed_week_count": 276,
@@ -3494,19 +3274,6 @@
       },
       "status": "PASS_HISTORY"
     },
-    "INDV": {
-      "info": {
-        "completed_week_count": 172,
-        "daily_bars": 829,
-        "source": "SINA_US_DAILY"
-      },
-      "provider_meta": {
-        "sina": {
-          "usable": 829
-        }
-      },
-      "status": "PASS_HISTORY"
-    },
     "INIO": {
       "info": {
         "daily_max": 82,
@@ -3618,19 +3385,6 @@
       },
       "status": "PASS_HISTORY"
     },
-    "IREN": {
-      "info": {
-        "completed_week_count": 254,
-        "daily_bars": 1221,
-        "source": "SINA_US_DAILY"
-      },
-      "provider_meta": {
-        "sina": {
-          "usable": 1221
-        }
-      },
-      "status": "PASS_HISTORY"
-    },
     "IRTC": {
       "info": {
         "completed_week_count": 519,
@@ -3679,19 +3433,6 @@
       "provider_meta": {
         "sina": {
           "usable": 10776
-        }
-      },
-      "status": "PASS_HISTORY"
-    },
-    "JD": {
-      "info": {
-        "completed_week_count": 645,
-        "daily_bars": 3107,
-        "source": "SINA_US_DAILY"
-      },
-      "provider_meta": {
-        "sina": {
-          "usable": 3107
         }
       },
       "status": "PASS_HISTORY"
@@ -3748,19 +3489,6 @@
       },
       "status": "PASS_HISTORY"
     },
-    "KMB": {
-      "info": {
-        "completed_week_count": 2039,
-        "daily_bars": 9834,
-        "source": "SINA_US_DAILY"
-      },
-      "provider_meta": {
-        "sina": {
-          "usable": 9834
-        }
-      },
-      "status": "PASS_HISTORY"
-    },
     "KRYS": {
       "info": {
         "completed_week_count": 471,
@@ -3787,19 +3515,6 @@
       },
       "status": "PASS_HISTORY"
     },
-    "KYMR": {
-      "info": {
-        "completed_week_count": 319,
-        "daily_bars": 1534,
-        "source": "SINA_US_DAILY"
-      },
-      "provider_meta": {
-        "sina": {
-          "usable": 1534
-        }
-      },
-      "status": "PASS_HISTORY"
-    },
     "LAMR": {
       "info": {
         "completed_week_count": 1098,
@@ -3822,19 +3537,6 @@
       "provider_meta": {
         "sina": {
           "usable": 5284
-        }
-      },
-      "status": "PASS_HISTORY"
-    },
-    "LFST": {
-      "info": {
-        "completed_week_count": 277,
-        "daily_bars": 1333,
-        "source": "SINA_US_DAILY"
-      },
-      "provider_meta": {
-        "sina": {
-          "usable": 1333
         }
       },
       "status": "PASS_HISTORY"
@@ -4412,19 +4114,6 @@
       },
       "status": "PASS_HISTORY"
     },
-    "MRX": {
-      "info": {
-        "completed_week_count": 253,
-        "daily_bars": 1215,
-        "source": "SINA_US_DAILY"
-      },
-      "provider_meta": {
-        "sina": {
-          "usable": 1215
-        }
-      },
-      "status": "PASS_HISTORY"
-    },
     "MSFT": {
       "info": {
         "completed_week_count": 2001,
@@ -4486,19 +4175,6 @@
       "provider_meta": {
         "sina": {
           "usable": 3914
-        }
-      },
-      "status": "PASS_HISTORY"
-    },
-    "MXL": {
-      "info": {
-        "completed_week_count": 250,
-        "daily_bars": 1204,
-        "source": "SINA_US_DAILY"
-      },
-      "provider_meta": {
-        "sina": {
-          "usable": 1204
         }
       },
       "status": "PASS_HISTORY"
@@ -4653,19 +4329,6 @@
       },
       "status": "PASS_HISTORY"
     },
-    "NTES": {
-      "info": {
-        "completed_week_count": 1370,
-        "daily_bars": 6589,
-        "source": "SINA_US_DAILY"
-      },
-      "provider_meta": {
-        "sina": {
-          "usable": 6589
-        }
-      },
-      "status": "PASS_HISTORY"
-    },
     "NTNX": {
       "info": {
         "completed_week_count": 522,
@@ -4783,19 +4446,6 @@
       },
       "status": "PASS_HISTORY"
     },
-    "NXST": {
-      "info": {
-        "completed_week_count": 947,
-        "daily_bars": 4557,
-        "source": "SINA_US_DAILY"
-      },
-      "provider_meta": {
-        "sina": {
-          "usable": 4557
-        }
-      },
-      "status": "PASS_HISTORY"
-    },
     "NXT": {
       "info": {
         "completed_week_count": 190,
@@ -4883,19 +4533,6 @@
       "provider_meta": {
         "sina": {
           "usable": 3256
-        }
-      },
-      "status": "PASS_HISTORY"
-    },
-    "ONC": {
-      "info": {
-        "completed_week_count": 556,
-        "daily_bars": 2680,
-        "source": "SINA_US_DAILY"
-      },
-      "provider_meta": {
-        "sina": {
-          "usable": 2680
         }
       },
       "status": "PASS_HISTORY"
@@ -5401,19 +5038,6 @@
       },
       "status": "PASS_HISTORY"
     },
-    "RGTI": {
-      "info": {
-        "completed_week_count": 239,
-        "daily_bars": 1150,
-        "source": "SINA_US_DAILY"
-      },
-      "provider_meta": {
-        "sina": {
-          "usable": 1150
-        }
-      },
-      "status": "PASS_HISTORY"
-    },
     "RIOT": {
       "info": {
         "completed_week_count": 467,
@@ -5583,19 +5207,6 @@
       },
       "status": "PASS_HISTORY"
     },
-    "RYAAY": {
-      "info": {
-        "completed_week_count": 1027,
-        "daily_bars": 4945,
-        "source": "SINA_US_DAILY"
-      },
-      "provider_meta": {
-        "sina": {
-          "usable": 4945
-        }
-      },
-      "status": "PASS_HISTORY"
-    },
     "RYTM": {
       "info": {
         "completed_week_count": 469,
@@ -5722,19 +5333,6 @@
       "provider_meta": {
         "sina": {
           "usable": 3257
-        }
-      },
-      "status": "PASS_HISTORY"
-    },
-    "SHOP": {
-      "info": {
-        "completed_week_count": 593,
-        "daily_bars": 2856,
-        "source": "SINA_US_DAILY"
-      },
-      "provider_meta": {
-        "sina": {
-          "usable": 2856
         }
       },
       "status": "PASS_HISTORY"
@@ -5911,19 +5509,6 @@
       "provider_meta": {
         "sina": {
           "usable": 1947
-        }
-      },
-      "status": "PASS_HISTORY"
-    },
-    "SOFI": {
-      "info": {
-        "completed_week_count": 278,
-        "daily_bars": 1340,
-        "source": "SINA_US_DAILY"
-      },
-      "provider_meta": {
-        "sina": {
-          "usable": 1340
         }
       },
       "status": "PASS_HISTORY"
@@ -6189,19 +5774,6 @@
       },
       "status": "PASS_HISTORY"
     },
-    "TEM": {
-      "info": {
-        "completed_week_count": 120,
-        "daily_bars": 575,
-        "source": "SINA_US_DAILY"
-      },
-      "provider_meta": {
-        "sina": {
-          "usable": 575
-        }
-      },
-      "status": "PASS_HISTORY"
-    },
     "TENB": {
       "info": {
         "completed_week_count": 427,
@@ -6211,19 +5783,6 @@
       "provider_meta": {
         "sina": {
           "usable": 2056
-        }
-      },
-      "status": "PASS_HISTORY"
-    },
-    "TER": {
-      "info": {
-        "completed_week_count": 409,
-        "daily_bars": 1970,
-        "source": "SINA_US_DAILY"
-      },
-      "provider_meta": {
-        "sina": {
-          "usable": 1970
         }
       },
       "status": "PASS_HISTORY"
@@ -6315,19 +5874,6 @@
       "provider_meta": {
         "sina": {
           "usable": 1182
-        }
-      },
-      "status": "PASS_HISTORY"
-    },
-    "TRI": {
-      "info": {
-        "completed_week_count": 993,
-        "daily_bars": 4784,
-        "source": "SINA_US_DAILY"
-      },
-      "provider_meta": {
-        "sina": {
-          "usable": 4784
         }
       },
       "status": "PASS_HISTORY"
@@ -6748,19 +6294,6 @@
       },
       "status": "PASS_HISTORY"
     },
-    "VOD": {
-      "info": {
-        "completed_week_count": 1652,
-        "daily_bars": 7954,
-        "source": "SINA_US_DAILY"
-      },
-      "provider_meta": {
-        "sina": {
-          "usable": 7954
-        }
-      },
-      "status": "PASS_HISTORY"
-    },
     "VRNS": {
       "info": {
         "completed_week_count": 657,
@@ -6933,19 +6466,6 @@
       "provider_meta": {
         "sina": {
           "usable": 1339
-        }
-      },
-      "status": "PASS_HISTORY"
-    },
-    "WGS": {
-      "info": {
-        "completed_week_count": 194,
-        "daily_bars": 934,
-        "source": "SINA_US_DAILY"
-      },
-      "provider_meta": {
-        "sina": {
-          "usable": 934
         }
       },
       "status": "PASS_HISTORY"
@@ -7198,7 +6718,7 @@
       "status": "PASS_HISTORY"
     }
   },
-  "schema": "XRAY_CANONICAL_HISTORY_V1",
+  "schema": "XRAY_CANONICAL_HISTORY_V2",
   "source_mc_artifact": "nasdaq-xray/canonical_mc_20260930_v2.json",
   "source_mc_blob_sha": "2af253f476bed14117b0ac4d015d17cc4cbea330",
   "state_caps": {
@@ -7219,7 +6739,6 @@
     "AEIS": "NORMAL",
     "AEP": "NORMAL",
     "AFRM": "NORMAL",
-    "AKAM": "WATCH",
     "ALAB": "NORMAL",
     "ALGM": "NORMAL",
     "ALGN": "NORMAL",
@@ -7255,7 +6774,6 @@
     "AXSM": "NORMAL",
     "AXTI": "NORMAL",
     "BBIO": "NORMAL",
-    "BIDU": "WATCH",
     "BIIB": "NORMAL",
     "BKNG": "NORMAL",
     "BKR": "NORMAL",
@@ -7264,7 +6782,6 @@
     "BNTX": "NORMAL",
     "BPOP": "NORMAL",
     "BRKR": "NORMAL",
-    "BRZE": "WATCH",
     "BSP": "NORMAL",
     "BSY": "NORMAL",
     "BTDR": "NORMAL",
@@ -7279,7 +6796,6 @@
     "CASY": "NORMAL",
     "CBRS": "NORMAL",
     "CBSH": "NORMAL",
-    "CCEP": "WATCH",
     "CDNA": "NORMAL",
     "CDNS": "NORMAL",
     "CDW": "NORMAL",
@@ -7302,7 +6818,6 @@
     "CLSK": "NORMAL",
     "CMCSA": "NORMAL",
     "CME": "NORMAL",
-    "COCO": "WATCH",
     "COGT": "NORMAL",
     "COHU": "NORMAL",
     "COIN": "NORMAL",
@@ -7310,7 +6825,6 @@
     "COLB": "NORMAL",
     "COO": "NORMAL",
     "CORT": "NORMAL",
-    "CORZ": "WATCH",
     "COST": "NORMAL",
     "CPB": "NORMAL",
     "CPRT": "NORMAL",
@@ -7330,7 +6844,6 @@
     "CYTK": "NORMAL",
     "CZR": "NORMAL",
     "DASH": "NORMAL",
-    "DAVE": "WATCH",
     "DBX": "NORMAL",
     "DDOG": "NORMAL",
     "DFTX": "NORMAL",
@@ -7351,7 +6864,6 @@
     "ENTG": "NORMAL",
     "EQIX": "NORMAL",
     "EQPT": "NORMAL",
-    "ERAS": "WATCH",
     "ESLT": "NORMAL",
     "EVRG": "NORMAL",
     "EWBC": "NORMAL",
@@ -7365,10 +6877,8 @@
     "FAST": "NORMAL",
     "FCFS": "NORMAL",
     "FCNCA": "NORMAL",
-    "FER": "WATCH",
     "FFIV": "NORMAL",
     "FIGR": "NORMAL",
-    "FISV": "WATCH",
     "FIVE": "NORMAL",
     "FIVN": "NORMAL",
     "FLEX": "NORMAL",
@@ -7376,9 +6886,7 @@
     "FORM": "NORMAL",
     "FOX": "NORMAL",
     "FOXA": "NORMAL",
-    "FROG": "WATCH",
     "FRPT": "NORMAL",
-    "FRSH": "WATCH",
     "FRVO": "NORMAL",
     "FSLR": "NORMAL",
     "FSLY": "NORMAL",
@@ -7399,11 +6907,9 @@
     "GOOG": "NORMAL",
     "GOOGL": "NORMAL",
     "GRAL": "NORMAL",
-    "GTLB": "WATCH",
     "GTX": "NORMAL",
     "HALO": "NORMAL",
     "HAS": "NORMAL",
-    "HBAN": "WATCH",
     "HLNE": "NORMAL",
     "HON": "NORMAL",
     "HONA": "NORMAL",
@@ -7412,7 +6918,6 @@
     "HSIC": "NORMAL",
     "HST": "NORMAL",
     "HTFL": "NORMAL",
-    "HTHT": "WATCH",
     "HUT": "NORMAL",
     "HWC": "NORMAL",
     "IBKR": "NORMAL",
@@ -7422,7 +6927,6 @@
     "IESC": "NORMAL",
     "ILMN": "NORMAL",
     "INCY": "NORMAL",
-    "INDV": "WATCH",
     "INIO": "NORMAL",
     "INOD": "NORMAL",
     "INSM": "NORMAL",
@@ -7430,23 +6934,18 @@
     "INTU": "NORMAL",
     "IONS": "NORMAL",
     "IOVA": "NORMAL",
-    "IREN": "WATCH",
     "IRTC": "NORMAL",
     "ISRG": "NORMAL",
     "JAZZ": "NORMAL",
     "JBHT": "NORMAL",
-    "JD": "WATCH",
     "JKHY": "NORMAL",
     "KDP": "NORMAL",
     "KLAC": "NORMAL",
     "KLIC": "NORMAL",
-    "KMB": "WATCH",
     "KRYS": "NORMAL",
     "KTOS": "NORMAL",
-    "KYMR": "WATCH",
     "LAMR": "NORMAL",
     "LECO": "NORMAL",
-    "LFST": "WATCH",
     "LFUS": "NORMAL",
     "LGND": "NORMAL",
     "LIN": "NORMAL",
@@ -7488,13 +6987,11 @@
     "MRCY": "NORMAL",
     "MRNA": "NORMAL",
     "MRVL": "NORMAL",
-    "MRX": "WATCH",
     "MSFT": "NORMAL",
     "MSTR": "NORMAL",
     "MTCH": "NORMAL",
     "MTSI": "NORMAL",
     "MU": "NORMAL",
-    "MXL": "WATCH",
     "MYRG": "NORMAL",
     "NAVN": "NORMAL",
     "NBIS": "NORMAL",
@@ -7505,7 +7002,6 @@
     "NFLX": "NORMAL",
     "NICE": "NORMAL",
     "NTAP": "NORMAL",
-    "NTES": "WATCH",
     "NTNX": "NORMAL",
     "NTRA": "NORMAL",
     "NTRS": "NORMAL",
@@ -7515,7 +7011,6 @@
     "NVTS": "NORMAL",
     "NWSA": "NORMAL",
     "NXPI": "NORMAL",
-    "NXST": "WATCH",
     "NXT": "NORMAL",
     "ODFL": "NORMAL",
     "OKTA": "NORMAL",
@@ -7523,7 +7018,6 @@
     "OLLI": "NORMAL",
     "ON": "NORMAL",
     "ONB": "NORMAL",
-    "ONC": "WATCH",
     "ORKA": "NORMAL",
     "ORLY": "NORMAL",
     "OUST": "NORMAL",
@@ -7561,7 +7055,6 @@
     "RELY": "NORMAL",
     "RGEN": "NORMAL",
     "RGLD": "NORMAL",
-    "RGTI": "WATCH",
     "RIOT": "NORMAL",
     "RIVN": "NORMAL",
     "RKLB": "NORMAL",
@@ -7575,7 +7068,6 @@
     "RPRX": "NORMAL",
     "RRR": "NORMAL",
     "RVMD": "NORMAL",
-    "RYAAY": "WATCH",
     "RYTM": "NORMAL",
     "SAIA": "NORMAL",
     "SAIL": "NORMAL",
@@ -7586,7 +7078,6 @@
     "SDGR": "NORMAL",
     "SEIC": "NORMAL",
     "SFM": "NORMAL",
-    "SHOP": "WATCH",
     "SIMO": "NORMAL",
     "SIRI": "NORMAL",
     "SITM": "NORMAL",
@@ -7599,7 +7090,6 @@
     "SNEX": "NORMAL",
     "SNPS": "NORMAL",
     "SNY": "NORMAL",
-    "SOFI": "WATCH",
     "SOLS": "NORMAL",
     "SPCX": "NORMAL",
     "SRRK": "NORMAL",
@@ -7617,9 +7107,7 @@
     "TCOM": "NORMAL",
     "TEAM": "NORMAL",
     "TECH": "NORMAL",
-    "TEM": "WATCH",
     "TENB": "NORMAL",
-    "TER": "WATCH",
     "TGTX": "NORMAL",
     "TIGO": "NORMAL",
     "TLN": "NORMAL",
@@ -7627,7 +7115,6 @@
     "TMUS": "NORMAL",
     "TNGX": "NORMAL",
     "TPG": "NORMAL",
-    "TRI": "WATCH",
     "TRMB": "NORMAL",
     "TRMD": "NORMAL",
     "TROW": "NORMAL",
@@ -7660,7 +7147,6 @@
     "VKTX": "NORMAL",
     "VLY": "NORMAL",
     "VNOM": "NORMAL",
-    "VOD": "WATCH",
     "VRNS": "NORMAL",
     "VRSK": "NORMAL",
     "VRSN": "NORMAL",
@@ -7673,7 +7159,6 @@
     "WDAY": "NORMAL",
     "WDC": "NORMAL",
     "WFRD": "NORMAL",
-    "WGS": "WATCH",
     "WING": "NORMAL",
     "WIX": "NORMAL",
     "WMG": "NORMAL",
