@@ -1,0 +1,149 @@
+name: XRAY Canonical Current Post-MC Factory
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/canonical_mc_bridge_*.json"
+      - "nasdaq-xray/history_phase.py"
+      - "nasdaq-xray/legal_phase.py"
+      - "nasdaq-xray/build_stage1_input.py"
+      - "nasdaq-xray/stage1_shadow.py"
+      - "nasdaq-xray/regime_breadth_shadow.py"
+      - "nasdaq-xray/deep_pre_r1_shadow.py"
+      - ".github/workflows/xray-canonical-current-post-mc.yml"
+  schedule:
+    - cron: "55 * * * 1-5"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: xray-canonical-current-post-mc
+  cancel-in-progress: false
+
+jobs:
+  post-mc:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 1}
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - name: Find latest committed MC bridge
+        id: mc
+        shell: bash
+        run: |
+          set -e
+          python - <<'PY' > /tmp/mc_env
+          import glob,json,os
+          files=sorted(glob.glob("nasdaq-xray/canonical_mc_bridge_*.json"))
+          valid=[]
+          for p in files:
+            try:
+              j=json.load(open(p))
+              if j.get("schema")=="XRAY_MC_EPOCH_RESULT_V1" and j.get("status")=="COMMITTED" and j.get("execution")=="NONE" and j.get("real_money")=="NO-GO":
+                valid.append((j["asof_et"],p))
+            except Exception: pass
+          if not valid: raise SystemExit("NO_COMMITTED_MC_BRIDGE")
+          asof,p=max(valid)
+          print("MC_PATH="+p)
+          print("ASOF="+asof)
+          PY
+          cat /tmp/mc_env >> "$GITHUB_ENV"
+          cat /tmp/mc_env
+      - name: Compile
+        run: |
+          python -m py_compile \
+            nasdaq-xray/history_phase.py \
+            nasdaq-xray/legal_phase.py \
+            nasdaq-xray/build_stage1_input.py \
+            nasdaq-xray/stage1_shadow.py \
+            nasdaq-xray/regime_breadth_shadow.py \
+            nasdaq-xray/deep_pre_r1_shadow.py
+      - name: Install zero-dollar runtime
+        run: python -m pip install --disable-pip-version-check akshare==1.18.95 pandas pandas_market_calendars
+      - name: Run HISTORY
+        env:
+          XRAY_HISTORY_INPUT: ${{ github.workspace }}/${{ env.MC_PATH }}
+          XRAY_HISTORY_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_current_history.json
+          XRAY_ASOF: ${{ env.ASOF }}
+          XRAY_HISTORY_WORKERS: "10"
+        run: python nasdaq-xray/history_phase.py
+      - name: Run LEGAL
+        env:
+          XRAY_LEGAL_HISTORY: ${{ github.workspace }}/nasdaq-xray/canonical_current_history.json
+          XRAY_LEGAL_MASTER: ${{ github.workspace }}/nasdaq-xray/canonical_current_full_state.json
+          XRAY_LEGAL_PROOF: ${{ github.workspace }}/nasdaq-xray/canonical_current_legal_proof.json
+          XRAY_LEGAL_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_current_legal.json
+          XRAY_ASOF: ${{ env.ASOF }}
+        run: python nasdaq-xray/legal_phase.py
+      - name: Build exact Stage1 input
+        env:
+          XRAY_POST_MC: ${{ github.workspace }}/${{ env.MC_PATH }}
+          XRAY_POST_HISTORY: ${{ github.workspace }}/nasdaq-xray/canonical_current_history.json
+          XRAY_POST_LEGAL: ${{ github.workspace }}/nasdaq-xray/canonical_current_legal.json
+          XRAY_STAGE1_INPUT_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_current_stage1_input.json
+        run: python nasdaq-xray/build_stage1_input.py
+      - name: Run Stage1
+        env:
+          XRAY_MC_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_current_stage1_input.json
+          XRAY_STAGE1_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_current_stage1.json
+          XRAY_STAGE1_WORKERS: "8"
+        run: python nasdaq-xray/stage1_shadow.py
+      - name: Run regime breadth
+        env:
+          XRAY_MC_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_current_stage1_input.json
+          XRAY_REGIME_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_current_regime.json
+          XRAY_BREADTH_WORKERS: "8"
+        run: python nasdaq-xray/regime_breadth_shadow.py
+      - name: Run deep geometry only
+        env:
+          XRAY_STAGE1_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_current_stage1.json
+          XRAY_DEEP_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_current_deep_geometry.json
+          XRAY_DEEP_GEOMETRY_ONLY: "1"
+          XRAY_DEEP_WORKERS: "8"
+        run: python nasdaq-xray/deep_pre_r1_shadow.py
+      - name: Structural post-MC gate
+        run: |
+          python - <<'PY'
+          import json,os
+          h=json.load(open("nasdaq-xray/canonical_current_history.json"))
+          l=json.load(open("nasdaq-xray/canonical_current_legal.json"))
+          s=json.load(open("nasdaq-xray/canonical_current_stage1.json"))
+          r=json.load(open("nasdaq-xray/canonical_current_regime.json"))
+          d=json.load(open("nasdaq-xray/canonical_current_deep_geometry.json"))
+          asof=os.environ["ASOF"]
+          assert h["asof_et"]==l["asof_et"]==s["asof_et"]==r["asof_et"]==d["asof_et"]==asof
+          assert h["unknown_count"]==0,h["unknown_symbols"]
+          assert l["counts"]["UNKNOWN_LEGAL"]==0,l["unknown_symbols"]
+          assert s["unknown_count"]==0,s["unknown"]
+          assert r["breadth_missing_count"]==0,r["breadth_missing"]
+          assert d["unknown_history_count"]==0,d["unknown_history"]
+          assert s["input_current_core_count"]==l["counts"]["PASS_LEGAL"]
+          assert r["current_core_count"]==l["counts"]["PASS_LEGAL"]
+          assert d["input_weekly_pass_count"]==s["weekly_pass_count"]
+          print({"asof":asof,"history_pass":h["pass_count"],"legal_pass":l["counts"]["PASS_LEGAL"],"weekly_pass":s["weekly_pass_count"],"regime":r["regime"],"A":d["a_geometry_count"],"B_breakout":d["b_breakout_count"],"B_armed":d["b_armed_count"],"D":d["d_geometry_rs_count"]})
+          PY
+      - name: Commit current post-MC artifacts
+        shell: bash
+        run: |
+          set -e
+          git config user.name "xray-dataplane-bot"
+          git config user.email "xray-dataplane-bot@users.noreply.github.com"
+          git add \
+            nasdaq-xray/canonical_current_history.json \
+            nasdaq-xray/canonical_current_legal.json \
+            nasdaq-xray/canonical_current_stage1_input.json \
+            nasdaq-xray/canonical_current_stage1.json \
+            nasdaq-xray/canonical_current_regime.json \
+            nasdaq-xray/canonical_current_deep_geometry.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "chore(xray): current epoch post-MC factory [skip ci]"
+          for attempt in 1 2 3 4 5; do
+            if git pull --rebase origin main && git push; then exit 0; fi
+            sleep $((attempt*2))
+          done
+          exit 1
