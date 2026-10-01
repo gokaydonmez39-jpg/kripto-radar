@@ -1,0 +1,48 @@
+{
+  "schema": "XRAY_G9_FREE_PATH_AUDIT_V1",
+  "task_id": "6a825366222081918997094d76e6ae46",
+  "generated_on": "2026-10-02",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "policy_version": "C4.11",
+  "policy_hash": "987982f0d17fc0f01a28fe22540fc3e09d4e2f28e3aa1b40c0113e3112b44c16",
+  "g9_required": {
+    "A": "real-time consolidated Tape-C UQDF+UTDF/National NBBO lineage or documented equivalent redistributor",
+    "B": "machine bid+ask+last with independently usable quote/trade timestamps and same-run RTH freshness",
+    "C": "lawful intended automated/non-display permanent-$0 entitlement with no hidden exchange/vendor/per-query fee",
+    "D": "callable from actual canonical scheduler"
+  },
+  "official_findings": [
+    {
+      "id": "UTP_TAPE_C_LINEAGE",
+      "status": "PROVEN",
+      "finding": "UTP Plan is the consolidated Tape-C source for Nasdaq-listed securities; UQDF carries consolidated/National BBO and UTDF carries consolidated trades.",
+      "source": "https://utpplan.com/"
+    },
+    {
+      "id": "UTP_NONDISPLAY_PERMANENT_ZERO",
+      "status": "BLOCKED_BY_PUBLISHED_FEE_SCHEDULE_FOR_DIRECT_VENDOR_NONDISPLAY",
+      "finding": "Published UTP fee schedule lists real-time non-display own-behalf use at $3,500/month per firm and separate real-time access fees. Therefore a direct UTP automated/non-display permanent-$0 entitlement is not proven and cannot be assumed.",
+      "source": "https://www.utpplan.com/DOC/datapolicies.pdf"
+    },
+    {
+      "id": "TRADESTATION_API_CAPABILITY",
+      "status": "TECHNICAL_CANDIDATE_NOT_ENTITLEMENT_PASS",
+      "finding": "TradeStation API documents default MarketData and ReadAccount scopes and streaming market-data capability; qualified non-professional customers may receive basic NASDAQ Level 1 data without a separate market-data charge. No reviewed official text proves that this retail entitlement grants permanent-$0 automated/non-display UTP usage satisfying G9-C.",
+      "sources": [
+        "https://api.tradestation.com/docs/fundamentals/authentication/scopes/",
+        "https://api.tradestation.com/docs/fundamentals/http-streaming/",
+        "https://www.tradestation.com/stocks-etfs-pricing-disclosures/"
+      ]
+    },
+    {
+      "id": "ALPACA_REALTIME_SIP",
+      "status": "NONQUALIFYING_FREE_PATH",
+      "finding": "Connected Alpaca tooling documents SIP as premium and delayed_sip as 15-minute delayed. Historical SIP remains settlement-only and explicitly NON-G9."
+    }
+  ],
+  "current_conclusion": "G9_BLOCKED_FREE_AUTOMATION_PATH",
+  "falsification_condition": "Reopen only on explicit primary-source proof from a callable provider/broker that the exact API market-data entitlement supplies consolidated Tape-C/NBBO+last-sale with independent quote/trade timestamps and permits this automated/non-display use at permanent $0, followed by same-run scheduler freshness proof.",
+  "account_gate": "UNKNOWN_SEPARATE_BLOCKER",
+  "no_policy_weakening": true
+}
