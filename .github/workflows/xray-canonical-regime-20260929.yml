@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 35
     env:
-      XRAY_MC_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_mc_input_20260929.json
+      XRAY_MC_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_current_core_20260929.json
       XRAY_REGIME_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_regime_20260929.json
       XRAY_BREADTH_WORKERS: "8"
     steps:
@@ -45,11 +45,11 @@ jobs:
           assert j["task_id"]=="6a825366222081918997094d76e6ae46"
           assert j["asof_et"]=="2026-09-29"
           assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
-          assert j["current_core_count"]==449
-          assert isinstance(j["breadth_missing_count"], int)
-          assert isinstance(j["breadth_missing"], list)
-          assert j["regime"] in ("WEAK","MIXED","STRONG","UNKNOWN")
-          print({k:j[k] for k in ["current_core_count","history_ok_count","breadth_missing_count","breadth_missing","breadth_above_sma50_pct","nh20","nl20","regime"]})
+          assert j["current_core_count"]==435
+          assert j["breadth_missing_count"]==0, j["breadth_missing"]
+          assert j["history_ok_count"]==435
+          assert j["regime"] in ("WEAK","MIXED","STRONG")
+          print({k:j[k] for k in ["current_core_count","history_ok_count","breadth_missing_count","breadth_above_sma50_pct","nh20","nl20","regime"]})
           PY
       - name: Commit frozen regime
         shell: bash
