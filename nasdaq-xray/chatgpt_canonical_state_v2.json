@@ -3,7 +3,7 @@
   "authority": "GITHUB_CURRENT_POINTER",
   "execution": "NONE",
   "real_money": "NO-GO",
-  "revision": 29,
+  "revision": 30,
   "state_hash": "b272b2b3e8dba584c72a16b16d3e6b499ba076608ef7e1fbd4abf1387ba91cb4",
   "prev_state_hash": "709b877e39059b515c5467a6d0ef1a9b8a4fd3a05f86192f1e85539c9e64ce23",
   "state_json": {
@@ -33,7 +33,7 @@
       "settlement_date_et": "2026-09-29",
       "incomplete_results_carried_forward": false
     },
-    "revision": 29,
+    "revision": 30,
     "schema": "XRAY_STATE_REGISTER_V1",
     "state_epoch": "2026-09-30T23:44:00Z",
     "status": "RECOVERY_REBASED_MASTER_PENDING",
@@ -57,13 +57,14 @@
       "SYSTEM|HISTORY_STAGE1_LEGAL_BOUND|2026-09-29|WEEKLY96|LEGAL96",
       "SYSTEM|DEEP_GEOMETRY_BOUND|2026-09-29|A0|B0|BARMED15|D0",
       "SYSTEM|LEGAL_SCOPE_REPAIR|2026-09-29|CORE435|PASS435",
-      "SYSTEM|REGIME_BREADTH_BOUND|2026-09-29|MIXED|MISS0"
+      "SYSTEM|REGIME_BREADTH_BOUND|2026-09-29|MIXED|MISS0",
+      "SYSTEM|EVENTS_BOUND|2026-09-29|C0|AFFECTED_UNKNOWN0"
     ],
-    "updated_at_utc": "2026-10-01T15:28:04.440Z",
+    "updated_at_utc": "2026-10-01T15:28:25.923Z",
     "work_cursor": {
       "ASOF_ET": "2026-09-29",
       "MASTER_HASH": "4f7fa2426906e0be6f1cfdf15658aada4d8e91f3898c4e3383cc2198e82db362",
-      "PHASE": "EVENTS",
+      "PHASE": "R92_R93",
       "CHUNK_INDEX": 0,
       "CHUNK_TOTAL": 0,
       "COMPLETED_HASH": null,
@@ -85,7 +86,11 @@
         "BREADTH_ABOVE_SMA50": 155,
         "BREADTH_MISSING": 0,
         "NH20": 29,
-        "NL20": 100
+        "NL20": 100,
+        "FAMILY_C": 0,
+        "EVENT_CONFIRMED_BLOCKS": 1,
+        "EVENT_UNRESOLVED": 1,
+        "AFFECTED_SETUP_EVENT_UNKNOWN": 0
       }
     },
     "delivery_keys": [],
@@ -254,6 +259,31 @@
         "sma50": 714.315,
         "sma50_slope20": 2.728200000000129
       }
+    },
+    "event_evidence": {
+      "path": "nasdaq-xray/canonical_events_family_c_20260929.json",
+      "blob_sha": "ee3a43e65ed64e7d0bbf33832403328c9c7fd510",
+      "weekly_scope": 96,
+      "family_c_candidate_count": 0,
+      "confirmed_block_count": 1,
+      "confirmed_blocks": [
+        "MU"
+      ],
+      "unresolved_count": 1,
+      "unresolved_symbols": [
+        "AEHR"
+      ],
+      "affected_setup_event_unknown_count": 0,
+      "checks": {
+        "exact_weekly_pass_scope_96": true,
+        "no_reaction_earnings_in_window": true,
+        "family_c_zero": true,
+        "future_horizon_8_sessions": true,
+        "mu_official_ir_confirmed": true,
+        "aehr_fail_closed_unknown": true,
+        "aehr_not_in_triggered_or_armed_geometry": true,
+        "no_affected_setup_event_unknown": true
+      }
     }
   },
   "source_proof": {
@@ -265,6 +295,6 @@
   "transition_rule": "NEXT_REVISION_MUST_BE_EXACT_PLUS_ONE_AND_PREV_STATE_HASH_MUST_EQUAL_THIS_STATE_HASH",
   "immutable_snapshot_path": "nasdaq-xray/state/REV21_b272b2b3e8dba584c72a16b16d3e6b499ba076608ef7e1fbd4abf1387ba91cb4.json",
   "storage_protocol": "GITHUB_CONTENTS_CAS_V1",
-  "prev_pointer_blob_sha": "78493b8fff4b1b65b93d9d3947b0edc00da31e62",
+  "prev_pointer_blob_sha": "dec0539b80a9f3aea5fd50ab5cb1b16b79625dd8",
   "writer_task_id": "6a825366222081918997094d76e6ae46"
 }
