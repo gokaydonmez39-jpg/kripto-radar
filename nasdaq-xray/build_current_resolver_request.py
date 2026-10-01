@@ -107,7 +107,7 @@ def main():
       "settlement_required":settlement_required,
       "settlement_already_proven":settlement_already_proven,
       "settlement_bridge_blob_sha":settlement_bridge_blob_sha,
-      "settlement_policy":"RALLIES_VS_LONGBRIDGE_AAPL_NVDA_PLUS_ONE_PRIOR_CURRENT_CORE__PRINTED_TICK_OHLC__VOLUME_REL_DIFF_LE_0_001__FAIL_CLOSED",
+      "settlement_policy":"ALPACA_HISTORICAL_SIP_DAILY_AFTER_15M__AAPL_NVDA_PLUS_ONE_PRIOR_CURRENT_CORE__RALLIES_LONGBRIDGE_OHLC_0_01_CROSSCHECK__SIP_VOLUME_AUTHORITY__FAIL_CLOSED__DELAYED_SIP_NEVER_G9",
       "settlement_symbols":["AAPL","NVDA",settlement_core_symbol] if settlement_required else [],
       "settlement_core_symbol":settlement_core_symbol,
       "settlement_core_source_path":settlement_core_source_path,
