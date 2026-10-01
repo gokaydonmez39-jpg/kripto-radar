@@ -3,7 +3,7 @@
   "authority": "GITHUB_CURRENT_POINTER",
   "execution": "NONE",
   "real_money": "NO-GO",
-  "revision": 26,
+  "revision": 27,
   "state_hash": "b272b2b3e8dba584c72a16b16d3e6b499ba076608ef7e1fbd4abf1387ba91cb4",
   "prev_state_hash": "709b877e39059b515c5467a6d0ef1a9b8a4fd3a05f86192f1e85539c9e64ce23",
   "state_json": {
@@ -33,7 +33,7 @@
       "settlement_date_et": "2026-09-29",
       "incomplete_results_carried_forward": false
     },
-    "revision": 26,
+    "revision": 27,
     "schema": "XRAY_STATE_REGISTER_V1",
     "state_epoch": "2026-09-30T23:44:00Z",
     "status": "RECOVERY_REBASED_MASTER_PENDING",
@@ -54,24 +54,24 @@
       "SYSTEM|MASTER_IDENTITY_BOUND|2026-09-29|4f7fa2426906",
       "SYSTEM|PRICE_DV20_BOUND|2026-09-29|13b2f3b90e4d",
       "SYSTEM|MC_BOUND|2026-09-29|PRIMARY449|WATCH36|FAIL13",
-      "SYSTEM|HISTORY_STAGE1_LEGAL_BOUND|2026-09-29|WEEKLY96|LEGAL96"
+      "SYSTEM|HISTORY_STAGE1_LEGAL_BOUND|2026-09-29|WEEKLY96|LEGAL96",
+      "SYSTEM|DEEP_GEOMETRY_BOUND|2026-09-29|A0|B0|BARMED15|D0"
     ],
-    "updated_at_utc": "2026-10-01T14:53:07.641Z",
+    "updated_at_utc": "2026-10-01T14:56:38.904Z",
     "work_cursor": {
       "ASOF_ET": "2026-09-29",
       "MASTER_HASH": "4f7fa2426906e0be6f1cfdf15658aada4d8e91f3898c4e3383cc2198e82db362",
-      "PHASE": "DEEP_FINALISTS",
+      "PHASE": "REGIME_BREADTH",
       "CHUNK_INDEX": 0,
       "CHUNK_TOTAL": 0,
       "COMPLETED_HASH": null,
       "COUNTS": {
-        "HISTORY_STAGE1_INPUT": 449,
-        "WEEKLY_PASS": 96,
-        "WEEKLY_NONPASS": 353,
-        "STAGE1_UNKNOWN": 0,
-        "LEGAL_PASS": 96,
-        "LEGAL_FAIL": 0,
-        "LEGAL_UNKNOWN": 0
+        "DEEP_INPUT": 96,
+        "A_GEOMETRY": 0,
+        "B_BREAKOUT": 0,
+        "B_ARMED": 15,
+        "D_GEOMETRY_RS": 0,
+        "DEEP_UNKNOWN": 0
       }
     },
     "delivery_keys": [],
@@ -185,6 +185,33 @@
       "official_review_pass": [
         "NESR"
       ]
+    },
+    "deep_geometry_evidence": {
+      "path": "nasdaq-xray/canonical_deep_geometry_20260929.json",
+      "blob_sha": "c3d2401581f391bbe8410b05f236551ff2fbc4a1",
+      "input_count": 96,
+      "a_geometry_count": 0,
+      "b_breakout_count": 0,
+      "b_armed_count": 15,
+      "d_geometry_rs_count": 0,
+      "unknown_count": 0,
+      "b_armed": [
+        "ASST",
+        "BWIN",
+        "COIN",
+        "FTNT",
+        "GH",
+        "HOOD",
+        "MMSI",
+        "MRVL",
+        "MSTR",
+        "NVDA",
+        "PI",
+        "QRVO",
+        "ROKU",
+        "SWKS",
+        "WBD"
+      ]
     }
   },
   "source_proof": {
@@ -196,6 +223,6 @@
   "transition_rule": "NEXT_REVISION_MUST_BE_EXACT_PLUS_ONE_AND_PREV_STATE_HASH_MUST_EQUAL_THIS_STATE_HASH",
   "immutable_snapshot_path": "nasdaq-xray/state/REV21_b272b2b3e8dba584c72a16b16d3e6b499ba076608ef7e1fbd4abf1387ba91cb4.json",
   "storage_protocol": "GITHUB_CONTENTS_CAS_V1",
-  "prev_pointer_blob_sha": "5bd9ad71f502d1ce5f9c718ad6bb4a93b742e7e4",
+  "prev_pointer_blob_sha": "784c1530d84eaea2aa20ffef2f69ada5b2c98048",
   "writer_task_id": "6a825366222081918997094d76e6ae46"
 }
