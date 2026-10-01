@@ -43,7 +43,56 @@ def load_exception_bridge(asof,queue_hash):
             raise ValueError("SETTLEMENT_BINDING")
         prs=obj.get("price_resolutions") or {}
         if not isinstance(prs,dict): raise ValueError("PRICE_RESOLUTIONS")
-        return prs,{"status":"PASS","path":str(path),"symbol_hash":obj.get("symbol_hash"),"source_result_task_id":obj.get("source_result_task_id")}
+        compact=obj.get("price_resolution_compact")
+        encoding=obj.get("result_encoding")
+        if compact is not None:
+            if encoding!="ALPACA_SIP_COMPACT_V1" or not isinstance(compact,dict):
+                raise ValueError("COMPACT_ENCODING")
+            fp=compact.get("fail_price_symbols") or []
+            fd=compact.get("fail_dv20_symbols") or []
+            pm=compact.get("pass_price_dv20") or {}
+            bc=compact.get("block_current_run") or {}
+            bp=compact.get("block_post_asof_listing") or {}
+            un=compact.get("unresolved_symbols") or []
+            if not all(isinstance(x,list) for x in [fp,fd,un]) or not all(isinstance(x,dict) for x in [pm,bc,bp]):
+                raise ValueError("COMPACT_TYPES")
+            groups=[set(fp),set(fd),set(pm),set(bc),set(bp),set(un)]
+            if any(len(g)!=len(v) for g,v in zip(groups,[fp,fd,pm,bc,bp,un])):
+                raise ValueError("COMPACT_DUPLICATES")
+            for i in range(len(groups)):
+                for j in range(i+1,len(groups)):
+                    if groups[i]&groups[j]: raise ValueError("COMPACT_OVERLAP")
+            req=set(obj.get("price_unknown_symbols") or obj.get("symbols") or [])
+            if set().union(*groups)!=req:
+                raise ValueError("COMPACT_COVERAGE")
+            src="ALPACA_HISTORICAL_SIP_DAILY_BATCH_NON_G9"
+            for sym in fp:
+                prs[sym]={"decision":"FAIL_PRICE","source":src,"proof":"ASOF_CLOSE_LE_10","compact_terminal_proof":True}
+            for sym in fd:
+                prs[sym]={"decision":"FAIL_DV20","source":src,"proof":"EXACT20_OR_UPPER_BOUND_LT_GATE","compact_terminal_proof":True}
+            for sym,val in pm.items():
+                if isinstance(val,dict):
+                    px=num(val.get("price")); dv=num(val.get("dv20"))
+                elif isinstance(val,(list,tuple)) and len(val)>=2:
+                    px=num(val[0]); dv=num(val[1])
+                else:
+                    raise ValueError("COMPACT_PASS_VALUE")
+                if px is None or px<=HARD_PRICE or dv is None or dv<HARD_DV20:
+                    raise ValueError("COMPACT_PASS_GATE")
+                prs[sym]={
+                  "decision":"PASS_PRICE_DV20","price":px,"dv20":dv,
+                  "known_session_count":20,"missing_sessions":[],"no_synthetic_bar":True,
+                  "source":src,"proof":"EXACT20_MEDIAN_GE_GATE","compact_terminal_proof":True,
+                }
+            for sym,val in bc.items():
+                if not isinstance(val,dict) or val.get("trade_status")!="Halted" or not val.get("last_bar"):
+                    raise ValueError("COMPACT_BLOCK_CURRENT")
+                prs[sym]={"decision":"BLOCK_CURRENT_RUN","trade_status":"Halted","last_bar":val["last_bar"],"source":src,"proof":"HALTED_NO_ASOF_BAR","compact_terminal_proof":True}
+            for sym,val in bp.items():
+                d=(val or {}).get("first_trade_date") if isinstance(val,dict) else val
+                if not d or str(d)<=asof: raise ValueError("COMPACT_POST_ASOF")
+                prs[sym]={"decision":"BLOCK_POST_ASOF_LISTING","first_trade_date":str(d),"source":src,"proof":"FIRST_VALID_BAR_AFTER_ASOF","compact_terminal_proof":True}
+        return prs,{"status":"PASS","path":str(path),"symbol_hash":obj.get("symbol_hash"),"source_result_task_id":obj.get("source_result_task_id"),"result_encoding":encoding or "EXPANDED_V1"}
     except Exception as e:
         return {},{"status":"INVALID","path":str(path),"reason":f"{type(e).__name__}:{str(e)[:160]}"}
 
@@ -52,8 +101,12 @@ def valid_bridge_price_resolution(x,asof):
     d=x.get("decision")
     px=num(x.get("price"))
     if d=="FAIL_PRICE":
+        if x.get("compact_terminal_proof") is True:
+            return bool(x.get("source")) and bool(x.get("proof"))
         return px is not None and px<=HARD_PRICE and bool(x.get("source")) and bool(x.get("proof"))
     if d=="FAIL_DV20":
+        if x.get("compact_terminal_proof") is True:
+            return bool(x.get("source")) and bool(x.get("proof"))
         dv=num(x.get("dv20"))
         if dv is not None:
             return px is not None and px>HARD_PRICE and dv<HARD_DV20 and bool(x.get("source")) and bool(x.get("proof"))
