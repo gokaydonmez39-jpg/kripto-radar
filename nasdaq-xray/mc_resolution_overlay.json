@@ -5,7 +5,7 @@
   "real_money": "NO-GO",
   "unknown_never_pass": true,
   "base_asof_et": "2026-09-30",
-  "generated_at_utc": "2026-10-01T12:43:00.487027+00:00",
+  "generated_at_utc": "2026-10-01T12:45:08.005840+00:00",
   "max_age_hours": 24,
   "policy": "PRIMARY_BIGDATA_EXACT_XNAS_COMPANY_PUBLIC_FINITE_USD_MARKET_CAP;FALLBACK_ONLY_IF_RALLIES_XNAS_AND_LONGBRIDGE_NASD_BOTH_GE_2_1B_REL_DIFF_LE_10PCT;FALLBACK_MAX_WATCH_AND_R92_FALSE",
   "resolutions": {
@@ -89,6 +89,14 @@
       "longbridge_exchange": "NASD",
       "longbridge_market_cap_usd": 2156169714.3,
       "relative_diff": 0.04604829116670837
+    },
+    "NESR": {
+      "decision": "PASS",
+      "mode": "BIGDATA_PRIMARY",
+      "market_cap_usd": 2568579585,
+      "bigdata_entity_id": "270823",
+      "listing": "XNAS:NESR",
+      "identity_note": "MC_ONLY; OPERATING_COMPANY/SPAC_HISTORY_GATE_REQUIRES_SEPARATE_PROOF"
     }
   }
 }
