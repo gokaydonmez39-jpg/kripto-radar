@@ -66,27 +66,28 @@ jobs:
       - name: Install zero-dollar runtime
         run: python -m pip install --disable-pip-version-check akshare==1.18.95 pandas pandas_market_calendars
       - name: Run HISTORY
-        env:
-          XRAY_HISTORY_INPUT: ${{ github.workspace }}/${{ env.MC_PATH }}
-          XRAY_HISTORY_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_current_history.json
-          XRAY_ASOF: ${{ env.ASOF }}
-          XRAY_HISTORY_WORKERS: "10"
-        run: python nasdaq-xray/history_phase.py
+        shell: bash
+        run: |
+          XRAY_HISTORY_INPUT="$GITHUB_WORKSPACE/$MC_PATH" \
+          XRAY_HISTORY_OUT="$GITHUB_WORKSPACE/nasdaq-xray/canonical_current_history.json" \
+          XRAY_ASOF="$ASOF" XRAY_HISTORY_WORKERS="10" \
+          python nasdaq-xray/history_phase.py
       - name: Run LEGAL
-        env:
-          XRAY_LEGAL_HISTORY: ${{ github.workspace }}/nasdaq-xray/canonical_current_history.json
-          XRAY_LEGAL_MASTER: ${{ github.workspace }}/nasdaq-xray/canonical_current_full_state.json
-          XRAY_LEGAL_PROOF: ${{ github.workspace }}/nasdaq-xray/canonical_current_legal_proof.json
-          XRAY_LEGAL_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_current_legal.json
-          XRAY_ASOF: ${{ env.ASOF }}
-        run: python nasdaq-xray/legal_phase.py
+        shell: bash
+        run: |
+          XRAY_LEGAL_HISTORY="$GITHUB_WORKSPACE/nasdaq-xray/canonical_current_history.json" \
+          XRAY_LEGAL_MASTER="$GITHUB_WORKSPACE/nasdaq-xray/canonical_current_full_state.json" \
+          XRAY_LEGAL_PROOF="$GITHUB_WORKSPACE/nasdaq-xray/canonical_current_legal_proof.json" \
+          XRAY_LEGAL_OUT="$GITHUB_WORKSPACE/nasdaq-xray/canonical_current_legal.json" \
+          XRAY_ASOF="$ASOF" python nasdaq-xray/legal_phase.py
       - name: Build exact Stage1 input
-        env:
-          XRAY_POST_MC: ${{ github.workspace }}/${{ env.MC_PATH }}
-          XRAY_POST_HISTORY: ${{ github.workspace }}/nasdaq-xray/canonical_current_history.json
-          XRAY_POST_LEGAL: ${{ github.workspace }}/nasdaq-xray/canonical_current_legal.json
-          XRAY_STAGE1_INPUT_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_current_stage1_input.json
-        run: python nasdaq-xray/build_stage1_input.py
+        shell: bash
+        run: |
+          XRAY_POST_MC="$GITHUB_WORKSPACE/$MC_PATH" \
+          XRAY_POST_HISTORY="$GITHUB_WORKSPACE/nasdaq-xray/canonical_current_history.json" \
+          XRAY_POST_LEGAL="$GITHUB_WORKSPACE/nasdaq-xray/canonical_current_legal.json" \
+          XRAY_STAGE1_INPUT_OUT="$GITHUB_WORKSPACE/nasdaq-xray/canonical_current_stage1_input.json" \
+          python nasdaq-xray/build_stage1_input.py
       - name: Run Stage1
         env:
           XRAY_MC_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_current_stage1_input.json
