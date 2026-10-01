@@ -1,9 +1,9 @@
 {
-  "schema": "XRAY_GITHUB_DURABLE_STATE_V2",
+  "schema": "XRAY_GITHUB_DURABLE_STATE_V3",
   "authority": "GITHUB_CURRENT_POINTER",
   "execution": "NONE",
   "real_money": "NO-GO",
-  "revision": 21,
+  "revision": 22,
   "state_hash": "b272b2b3e8dba584c72a16b16d3e6b499ba076608ef7e1fbd4abf1387ba91cb4",
   "prev_state_hash": "709b877e39059b515c5467a6d0ef1a9b8a4fd3a05f86192f1e85539c9e64ce23",
   "state_json": {
@@ -33,7 +33,7 @@
       "settlement_date_et": "2026-09-29",
       "incomplete_results_carried_forward": false
     },
-    "revision": 21,
+    "revision": 22,
     "schema": "XRAY_STATE_REGISTER_V1",
     "state_epoch": "2026-09-30T23:44:00Z",
     "status": "RECOVERY_REBASED_MASTER_PENDING",
@@ -49,9 +49,10 @@
       "SYSTEM|MASTER_CHANGED|RAW5629|REV17",
       "SYSTEM|STATE_HASH_REPAIR|REV18",
       "SYSTEM|MASTER_CHANGED|ff9919caa597|REV19",
-      "SYSTEM|RECOVERY_REBASE|2026-09-29|REV21"
+      "SYSTEM|RECOVERY_REBASE|2026-09-29|REV21",
+      "SYSTEM|C4_12_RUNTIME_ACCEPTED|GITHUB_CAS_V1"
     ],
-    "updated_at_utc": "2026-09-30T23:44:00Z",
+    "updated_at_utc": "2026-10-01T14:38:41.405Z",
     "work_cursor": {
       "ASOF_ET": "2026-09-29",
       "MASTER_HASH": null,
@@ -60,7 +61,8 @@
       "CHUNK_TOTAL": 0,
       "COMPLETED_HASH": null,
       "COUNTS": {}
-    }
+    },
+    "delivery_keys": []
   },
   "source_proof": {
     "airtable_candidate_record": "reckSQDIFFPPOdTOp",
@@ -69,5 +71,8 @@
     "github_recovery_verify_sha": "6ec519f8cf9c576492654fe620a79d37d82fe4d9"
   },
   "transition_rule": "NEXT_REVISION_MUST_BE_EXACT_PLUS_ONE_AND_PREV_STATE_HASH_MUST_EQUAL_THIS_STATE_HASH",
-  "immutable_snapshot_path": "nasdaq-xray/state/REV21_b272b2b3e8dba584c72a16b16d3e6b499ba076608ef7e1fbd4abf1387ba91cb4.json"
+  "immutable_snapshot_path": "nasdaq-xray/state/REV21_b272b2b3e8dba584c72a16b16d3e6b499ba076608ef7e1fbd4abf1387ba91cb4.json",
+  "storage_protocol": "GITHUB_CONTENTS_CAS_V1",
+  "prev_pointer_blob_sha": "907708665a450813dffc07d646a413941ad91134",
+  "writer_task_id": "6a825366222081918997094d76e6ae46"
 }
