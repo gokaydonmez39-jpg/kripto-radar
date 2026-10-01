@@ -86,6 +86,7 @@ jobs:
             echo "Resolver bounded fallback activated rc=$rc; preserving UNKNOWN and continuing to task-state resolver."
             python - <<'PY'
           import json, pathlib
+          from datetime import datetime, timezone
           root=pathlib.Path("nasdaq-xray")
           m=json.load(open(root/"canonical_current_unknowns.json"))
           u=m.get("unknowns") or {}
@@ -95,6 +96,8 @@ jobs:
             "execution":"NONE","real_money":"NO-GO",
             "base_asof_et":m["asof_et"],
             "resolver":"BOUNDED_LOCAL_RESOLVER_TIMEOUT_FAIL_CLOSED",
+            "generated_at_utc":datetime.now(timezone.utc).isoformat(),
+            "max_age_hours":24,
             "manifest_unknown_count":len(u),
             "current_resolution_count":0,
             "current_unresolved_count":len(u),
