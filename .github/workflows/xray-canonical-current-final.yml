@@ -158,19 +158,46 @@ jobs:
         if: steps.event.outputs.ready == 'true'
         shell: bash
         run: |
-          set -e
+          set -euo pipefail
           git config user.name "xray-dataplane-bot"
           git config user.email "xray-dataplane-bot@users.noreply.github.com"
-          git add \
-            nasdaq-xray/canonical_current_event_state.json \
-            nasdaq-xray/canonical_current_family_c.json \
-            nasdaq-xray/canonical_current_deep_full.json \
-            nasdaq-xray/canonical_current_final_tech.json \
+          files=(
+            nasdaq-xray/canonical_current_event_state.json
+            nasdaq-xray/canonical_current_family_c.json
+            nasdaq-xray/canonical_current_deep_full.json
+            nasdaq-xray/canonical_current_final_tech.json
             nasdaq-xray/canonical_current_terminal.json
-          if git diff --cached --quiet; then exit 0; fi
-          git commit -m "chore(xray): current epoch final factory [skip ci]"
+          )
+          tmpdir="$(mktemp -d)"
+          trap 'rm -rf "$tmpdir"' EXIT
+          for p in "${files[@]}"; do
+            if [ -f "$p" ]; then
+              mkdir -p "$tmpdir/$(dirname "$p")"
+              cp "$p" "$tmpdir/$p"
+            fi
+          done
           for attempt in 1 2 3 4 5; do
-            if git pull --rebase origin main && git push; then exit 0; fi
+            git rebase --abort >/dev/null 2>&1 || true
+            git fetch origin main
+            git reset --hard origin/main
+            for p in "${files[@]}"; do
+              if [ -f "$tmpdir/$p" ]; then
+                mkdir -p "$(dirname "$p")"
+                cp "$tmpdir/$p" "$p"
+              fi
+            done
+            git add "${files[@]}" 2>/dev/null || true
+            if git diff --cached --quiet; then
+              echo "XRAY_FACTORY_COMMIT=NO_CHANGE"
+              exit 0
+            fi
+            git commit -m "chore(xray): current epoch final factory [skip ci]"
+            if git push origin HEAD:main; then
+              echo "XRAY_FACTORY_COMMIT=PASS"
+              exit 0
+            fi
+            echo "XRAY_FACTORY_PUSH_RACE attempt=$attempt"
             sleep $((attempt*2))
           done
+          echo "XRAY_FACTORY_COMMIT=FAIL" >&2
           exit 1
