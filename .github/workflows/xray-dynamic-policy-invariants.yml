@@ -1,0 +1,49 @@
+name: XRAY Dynamic Policy Invariants
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/test_dynamic_policy_invariants.py"
+      - "nasdaq-xray/sina_stage.py"
+      - "nasdaq-xray/resolve_unknowns_fallback.py"
+      - "nasdaq-xray/price_dv20_phase.py"
+      - "nasdaq-xray/price_dv20_recover_from_fullstate.py"
+      - "nasdaq-xray/chatgpt_compiled_policy_v3.json"
+      - ".github/workflows/xray-dynamic-policy-invariants.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  invariants:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - name: Install runtime
+        run: python -m pip install --disable-pip-version-check akshare==1.18.95 pandas_market_calendars
+      - name: Compile policy-critical code
+        run: |
+          python -m py_compile \
+            nasdaq-xray/sina_stage.py \
+            nasdaq-xray/resolve_unknowns_fallback.py \
+            nasdaq-xray/price_dv20_phase.py \
+            nasdaq-xray/price_dv20_recover_from_fullstate.py \
+            nasdaq-xray/test_dynamic_policy_invariants.py
+      - name: Run deterministic invariants
+        run: python nasdaq-xray/test_dynamic_policy_invariants.py
+      - name: Verify compiled policy hard gate
+        run: |
+          python - <<'PY'
+          import json
+          t=json.load(open("nasdaq-xray/chatgpt_compiled_policy_v3.json"))
+          p=json.loads(t["payload_json"])
+          assert p["version"]=="C4.11"
+          assert p["hard_gates"]["dv20"]=="median exactly20 completed official-RTH Close*regular-session Volume >=50000000"
+          assert p["unknown_never_pass"] is True
+          print({"status":"PASS","policy_hash":t["policy_hash"]})
+          PY
