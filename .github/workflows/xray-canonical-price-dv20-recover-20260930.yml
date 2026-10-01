@@ -1,12 +1,8 @@
 name: XRAY Canonical PRICE DV20 Recovery 20260930
 # trigger-1
 on:
-  push:
-    branches: [main]
-    paths:
-      - ".github/workflows/xray-canonical-price-dv20-recover-20260930.yml"
-      - "nasdaq-xray/price_dv20_recover_from_fullstate.py"
   workflow_dispatch:
+
 permissions:
   contents: write
 concurrency:
