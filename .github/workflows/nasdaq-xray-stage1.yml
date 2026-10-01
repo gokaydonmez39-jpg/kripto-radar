@@ -1,0 +1,47 @@
+name: NASDAQ SWING XRAY Stage1 Shadow
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/stage1_shadow.py"
+      - ".github/workflows/nasdaq-xray-stage1.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: nasdaq-xray-stage1
+  cancel-in-progress: true
+
+jobs:
+  stage1:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      XRAY_STAGE1_WORKERS: "8"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install technical runtime
+        run: python -m pip install --disable-pip-version-check akshare==1.18.95 pandas_market_calendars
+      - name: Run Stage1 shadow
+        run: python nasdaq-xray/stage1_shadow.py
+      - name: Commit Stage1 state
+        shell: bash
+        run: |
+          set -e
+          git config user.name "xray-dataplane-bot"
+          git config user.email "xray-dataplane-bot@users.noreply.github.com"
+          git add nasdaq-xray/stage1_shadow.json
+          git commit -m "chore(xray): Stage1 shadow checkpoint [skip ci]" || exit 0
+          for attempt in 1 2 3 4 5; do
+            if git pull --rebase origin main && git push; then exit 0; fi
+            sleep $((attempt*2))
+          done
+          exit 1
