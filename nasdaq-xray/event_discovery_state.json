@@ -1,0 +1,54 @@
+{
+  "schema": "XRAY_EVENT_DISCOVERY_V1",
+  "task_id": "6a825366222081918997094d76e6ae46",
+  "asof_et": "2026-09-30",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "horizon_sessions": [
+    "2026-10-01",
+    "2026-10-02",
+    "2026-10-05",
+    "2026-10-06",
+    "2026-10-07",
+    "2026-10-08",
+    "2026-10-09",
+    "2026-10-12"
+  ],
+  "discovery_source": "BIGDATA_CORPORATE_CALENDAR",
+  "current_core_count": 383,
+  "discovered_event_hits_count": 3,
+  "discovered_event_hits": [
+    {
+      "ticker": "AEHR",
+      "company_name": "Aehr Test Systems Inc.",
+      "event_datetime": "2026-10-05T21:00:00Z",
+      "fiscal_year": 2027,
+      "fiscal_period": "Q1",
+      "category": "earnings-call",
+      "source_url": "https://quartr.com/companies/aehr-test-systems_10088?utm_source=api&utm_medium=25",
+      "rp_entity_id": "3209B9"
+    },
+    {
+      "ticker": "PENG",
+      "company_name": "Penguin Solutions Inc.",
+      "event_datetime": "2026-10-06T20:30:00Z",
+      "fiscal_year": 2026,
+      "fiscal_period": "Q4",
+      "category": "earnings-call",
+      "source_url": "https://quartr.com/companies/penguin-solutions-inc_10181?utm_source=api&utm_medium=25",
+      "rp_entity_id": "722756"
+    },
+    {
+      "ticker": "APLD",
+      "company_name": "Applied Digital Corp.",
+      "event_datetime": "2026-10-07T21:00:00Z",
+      "fiscal_year": 2027,
+      "fiscal_period": "Q1",
+      "category": "earnings-call",
+      "source_url": "https://quartr.com/companies/applied-digital-corp_14768?utm_source=api&utm_medium=25",
+      "rp_entity_id": "F09A2E"
+    }
+  ],
+  "authority": "DISCOVERY_ONLY_OFFICIAL_IR_SEC_CONFIRMATION_REQUIRED_BEFORE_EVENT_BLOCK",
+  "unknown_never_pass": true
+}
