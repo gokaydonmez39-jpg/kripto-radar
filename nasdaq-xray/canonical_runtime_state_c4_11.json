@@ -1,0 +1,88 @@
+{
+  "schema": "XRAY_GITHUB_CAS_STATE_V1",
+  "authority": "GITHUB_SINGLE_POINTER_CAS",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "task_id": "6a825366222081918997094d76e6ae46",
+  "revision": 21,
+  "state_integrity_mode": "LEGACY_SHA256_AT_REV21_THEN_GITHUB_BLOB_CAS_CHAIN",
+  "legacy_state_hash": "b272b2b3e8dba584c72a16b16d3e6b499ba076608ef7e1fbd4abf1387ba91cb4",
+  "legacy_prev_state_hash": "709b877e39059b515c5467a6d0ef1a9b8a4fd3a05f86192f1e85539c9e64ce23",
+  "prev_pointer_blob_sha": null,
+  "state_json": {
+    "active_signals": [],
+    "asof_et": "2026-09-29",
+    "daily_keys": [],
+    "master_hash": null,
+    "provider_faults": [
+      "PROVIDER|ALPACA_CLOCK|INTERNAL_ERROR|1",
+      "PROVIDER|SESSION_SETTLEMENT|VOLUME_MISMATCH_GT_0.10PCT|1",
+      "PROVIDER|ALPACA_CLOCK|RECOVERED|2",
+      "PROVIDER|ALPACA_MASTER|DENOMINATOR_CHANGED|1",
+      "PROVIDER|ALPACA_MASTER|DENOMINATOR_CHANGED|2",
+      "PROVIDER|ALPACA_MASTER|RECONCILED|3",
+      "PROVIDER|ALPACA_MASTER|DENOMINATOR_CHANGED|4",
+      "PROVIDER|ALPACA_MASTER|RECONCILED|5",
+      "PROVIDER|DV20_CROSSCHECK_NVDA|VOLUME_MISMATCH_GT_0.10PCT|1"
+    ],
+    "r92": [],
+    "r93": [],
+    "recovery_rebase": {
+      "from_revision": 20,
+      "from_state_hash": "709b877e39059b515c5467a6d0ef1a9b8a4fd3a05f86192f1e85539c9e64ce23",
+      "retired_asof_et": "2026-09-28",
+      "retired_reason": "NONRESUMABLE_LOST_SYMBOL_IDENTITY",
+      "settlement_witness_hash": "f4d083c6aff10a000b5e815fa205d3f87b54de396a3d62f4505eac99807e7f2d",
+      "settlement_date_et": "2026-09-29",
+      "incomplete_results_carried_forward": false
+    },
+    "revision": 21,
+    "schema": "XRAY_STATE_REGISTER_V1",
+    "state_epoch": "2026-09-30T23:44:00Z",
+    "status": "RECOVERY_REBASED_MASTER_PENDING",
+    "task_id": "6a825366222081918997094d76e6ae46",
+    "transition_keys": [
+      "SYSTEM|CLOCK_ORDER_REPAIR|REV4",
+      "SYSTEM|ASOF_SEED|2026-09-28|CROSS_SOURCE_SETTLED",
+      "SYSTEM|C4_2_BODY_PERSISTENCE_PROVEN|20260929T2040Z",
+      "SYSTEM|STATE_REGISTER|REACCEPTED|REV7",
+      "SYSTEM|C4_2_RUNTIME_ACCEPTANCE|EMIT_ATTEMPTED",
+      "SYSTEM|MASTER_CHANGED|8f8a2e9df366|REV11",
+      "SYSTEM|MASTER_CHANGED|97200e130696|REV16",
+      "SYSTEM|MASTER_CHANGED|RAW5629|REV17",
+      "SYSTEM|STATE_HASH_REPAIR|REV18",
+      "SYSTEM|MASTER_CHANGED|ff9919caa597|REV19",
+      "SYSTEM|RECOVERY_REBASE|2026-09-29|REV21"
+    ],
+    "updated_at_utc": "2026-09-30T23:44:00Z",
+    "work_cursor": {
+      "ASOF_ET": "2026-09-29",
+      "MASTER_HASH": null,
+      "PHASE": "MASTER_IDENTITY",
+      "CHUNK_INDEX": 0,
+      "CHUNK_TOTAL": 0,
+      "COMPLETED_HASH": null,
+      "COUNTS": {}
+    }
+  },
+  "baseline_proof": {
+    "airtable_candidate_record": "reckSQDIFFPPOdTOp",
+    "airtable_commit_record": "rectRkpIypcYQbBbN",
+    "airtable_commit_readback": "PASS",
+    "legacy_pointer_path": "nasdaq-xray/chatgpt_canonical_state_v2.json",
+    "legacy_pointer_blob_sha": "907708665a450813dffc07d646a413941ad91134",
+    "immutable_snapshot_path": "nasdaq-xray/state/REV21_b272b2b3e8dba584c72a16b16d3e6b499ba076608ef7e1fbd4abf1387ba91cb4.json",
+    "immutable_snapshot_state_hash": "b272b2b3e8dba584c72a16b16d3e6b499ba076608ef7e1fbd4abf1387ba91cb4"
+  },
+  "storage_fault_context": {
+    "scheduled_airtable_read": "PASS",
+    "scheduled_airtable_write": "FAIL",
+    "foreground_airtable_create_update_readback": "PASS",
+    "scheduled_github_create_readback": "PASS",
+    "scheduled_github_cas_update_readback": "PASS"
+  },
+  "cas_rule": "FETCH_EXACT_POINTER_AND_BLOB_SHA;REQUIRE_SCHEMA_TASK_REVISION_STATE_JSON_CONSISTENCY;BUILD_REVISION_EXACT_PLUS_ONE;SET_PREV_POINTER_BLOB_SHA_TO_FETCHED_PREIMAGE_SHA;UPDATE_THIS_SAME_FILE_USING_EXACT_PREIMAGE_SHA;FETCH_EXACT_READBACK;REQUIRE_EXACT_CONTENT_AND_NEW_BLOB_SHA;ANY_DRIFT_CONFLICT_OR_READBACK_FAILURE=>STOP_NO_STATEFUL_OUTPUT",
+  "delivery_rule": "MATERIAL_OUTPUT_REQUIRES_STATE_TRANSITION_DEDUP_KEY_DURABLY_PRESENT_IN_THIS_POINTER_AFTER_SUCCESSFUL_CAS_READBACK;NO_DUPLICATE_KEY",
+  "notes": "Storage-only failover seed. Alpha, universe, risk, event, G9, R92/R93, lifecycle, notification and execution rules are unchanged."
+}
