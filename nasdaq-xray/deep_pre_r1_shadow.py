@@ -171,6 +171,8 @@ def main():
         raise RuntimeError("ASOF_MISMATCH_STAGE1_REGIME")
     event_state_fresh=(ev.get("asof_et")==asof)
     syms=sorted(set(st["weekly_pass"]))
+    state_caps={s:(st.get("state_caps") or {}).get(s,"NORMAL") for s in syms}
+    r92_ineligible=set(st.get("r92_ineligible") or [])
     data={};unknown={}
     with ThreadPoolExecutor(max_workers=WORKERS) as ex:
         futs={ex.submit(get_hist,s,asof):s for s in syms+["QQQ"]}
@@ -185,7 +187,7 @@ def main():
     for s in syms:
         x=data.get(s)
         if x is None:
-            outres[s]={"status":"UNKNOWN","reason":unknown.get(s)};continue
+            outres[s]={"status":"UNKNOWN","reason":unknown.get(s),"state_cap":state_caps.get(s,"NORMAL"),"r92_eligible":s not in r92_ineligible};continue
         rs20=common_rs(x,qqq,20);rs60=common_rs(x,qqq,60)
         mix_pass=bool(rs20 is not None and rs60 is not None and rs20>0 and rs60>0) if rg.get("regime")=="MIXED" else True
         A=family_a(x) if s in st["a_trend_pool"] else {"pool":False,"reason":"NOT_A_STAGE1"}
@@ -196,7 +198,7 @@ def main():
             event="CLEAN_DISCOVERY"
             if s in (ev.get("confirmed_blocks") or {}): event="BLOCK_CONFIRMED_8SESSION"
             elif s in (ev.get("unresolved") or {}): event="UNKNOWN"
-        outres[s]={"status":"EVALUATED","rs20":rs20,"rs60":rs60,"mixed_rs_pass":mix_pass,"A":A,"B":B,"D":D,"event_status":event}
+        outres[s]={"status":"EVALUATED","rs20":rs20,"rs60":rs60,"mixed_rs_pass":mix_pass,"A":A,"B":B,"D":D,"event_status":event,"state_cap":state_caps.get(s,"NORMAL"),"r92_eligible":s not in r92_ineligible}
     a=[s for s,r in outres.items() if r.get("mixed_rs_pass") and r.get("A",{}).get("pool") and r.get("event_status")=="CLEAN_DISCOVERY"]
     b=[s for s,r in outres.items() if r.get("mixed_rs_pass") and r.get("B",{}).get("breakout_confirmed") and r.get("event_status")=="CLEAN_DISCOVERY"]
     b_armed=[s for s,r in outres.items() if r.get("mixed_rs_pass") and r.get("B",{}).get("pool") and not r.get("B",{}).get("breakout_confirmed") and r.get("event_status")=="CLEAN_DISCOVERY"]
@@ -210,6 +212,8 @@ def main():
       "b_armed_rs_event_pass_count":len(b_armed),"b_armed_rs_event_pass":b_armed,
       "d_dk3_pre_r1_count":len(d),"d_dk3_pre_r1":d,
       "unknown_history_count":len(unknown),"unknown_history":unknown,
+      "state_caps":state_caps,
+      "r92_ineligible":sorted(r92_ineligible & set(syms)),
       "results":outres,
       "remaining_gates":["R1_NEAREST_RESISTANCE","BASIC_SEVERE_RR","EXTENSION_CHASE","OFFICIAL_EVENT_FINALIST_REVIEW","ACCOUNT_GATE","G9","ALIGNED_60M","NON_SYNTHETIC_TARGET"],
       "event_state_fresh":event_state_fresh,

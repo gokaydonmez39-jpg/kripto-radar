@@ -20,6 +20,9 @@ core=sorted(set(mc.get("current_core_zero_key") or []))
 cand=set((sc.get("candidates") or {}).keys())
 if any(s not in cand for s in core):
     raise RuntimeError("CORE_NOT_SUBSET_HARDGATE_CANDIDATES")
+fallback_watch=sorted(set(mc.get("fallback_watch_symbols") or []) & set(core))
+state_caps={s:("WATCH" if s in fallback_watch else "NORMAL") for s in core}
+r92_ineligible=list(fallback_watch)
 serial="\n".join(core)
 out={
   "schema":"XRAY_EXTERNAL_ZERO_KEY_CORE_V1",
@@ -30,10 +33,13 @@ out={
   "current_core_mc_pass":core,
   "current_core_count":len(core),
   "current_core_hash":hashlib.sha256(serial.encode()).hexdigest(),
+  "state_caps":state_caps,
+  "fallback_watch_symbols":fallback_watch,
+  "r92_ineligible":r92_ineligible,
   "mc_unresolved":mc.get("unresolved") or {},
   "mc_unresolved_count":mc.get("unresolved_count",0),
   "mc_definitive_fail":mc.get("definitive_fail") or {},
-  "mc_policy":"NASDAQ_OFFICIAL_MC_GE_2_6B_CONSERVATIVE_PASS;2_0_TO_2_6B_UNKNOWN",
+  "mc_policy":"BIGDATA_EXACT_XNAS_PRIMARY;RALLIES_XNAS_PLUS_LONGBRIDGE_NASD_FALLBACK_REQUIRES_BOTH_GE_2_1B_REL_DIFF_LE_10PCT_AND_CAPS_WATCH_R92_FALSE",
   "updated_at_utc":datetime.now(timezone.utc).isoformat()
 }
 OUT.write_text(json.dumps(out,indent=2,sort_keys=True)+"\n")

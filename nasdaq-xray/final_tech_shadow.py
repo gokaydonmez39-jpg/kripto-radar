@@ -41,7 +41,7 @@ def hist(sym,asof):
         return sym,x,None
     except Exception as e:return sym,None,f"{type(e).__name__}:{str(e)[:160]}"
 
-def eval_one(sym,fam,g,df,event_status):
+def eval_one(sym,fam,g,df,event_status,state_cap="NORMAL",r92_eligible=True):
     A=float(g["A"]);P=float(g["P"]);anchor=float(g["anchor"])
     close=float(df.close.iloc[-1])
     if not all(math.isfinite(v) for v in [A,P,anchor,close]) or A<=0:
@@ -105,7 +105,10 @@ def eval_one(sym,fam,g,df,event_status):
       risk_pass and rr_pass and not target_overlap and not extension_veto
       and lifecycle=="ENTRY_BAND" and event_pass
     )
-    if hard_pass:
+    mc_cap_blocks=bool(state_cap=="WATCH" or not r92_eligible)
+    if hard_pass and mc_cap_blocks:
+        result="WATCH_MC_FALLBACK_CAP"
+    elif hard_pass:
         result="PRE_G9_TECH_PASS"
     elif lifecycle=="RETEST_REQUIRED":
         result="WATCH_RETEST_REQUIRED"
@@ -139,7 +142,9 @@ def eval_one(sym,fam,g,df,event_status):
       "rr":{"basic":basic,"basic_threshold":th["basic"],"basic_pass":basic>=th["basic"],
             "severe":severe,"severe_threshold":th["severe"],"severe_pass":severe>=th["severe"]},
       "risk_pass":risk_pass,"extension_veto":extension_veto,"target_overlap":target_overlap,
-      "pre_g9_tech_pass":hard_pass,
+      "technical_hard_pass":hard_pass,
+      "state_cap":state_cap,"r92_eligible":bool(r92_eligible),
+      "pre_g9_tech_pass":bool(hard_pass and not mc_cap_blocks),
       "authority":"SHADOW_ONLY"
     }
 
@@ -147,6 +152,8 @@ def main():
     d=json.loads(DEEP.read_text())
     asof=d["asof_et"]
     candidates=[]
+    state_caps=d.get("state_caps") or {}
+    r92_ineligible=set(d.get("r92_ineligible") or [])
     for sym,r in (d.get("results") or {}).items():
         if r.get("A",{}).get("pool"): candidates.append((sym,"A",r["A"],r.get("event_status")))
         if r.get("B",{}).get("breakout_confirmed"): candidates.append((sym,"B",r["B"],r.get("event_status")))
@@ -164,9 +171,9 @@ def main():
     for sym,fam,g,event in candidates:
         key=f"{sym}|{fam}"
         if sym not in data:
-            results[key]={"result":"UNKNOWN","reason":"HISTORY:"+errors.get(sym,"MISSING")}
+            results[key]={"result":"UNKNOWN","reason":"HISTORY:"+errors.get(sym,"MISSING"),"state_cap":state_caps.get(sym,"NORMAL"),"r92_eligible":sym not in r92_ineligible}
         else:
-            results[key]=eval_one(sym,fam,g,data[sym],event)
+            results[key]=eval_one(sym,fam,g,data[sym],event,state_caps.get(sym,"NORMAL"),sym not in r92_ineligible)
 
     passes=[k for k,v in results.items() if v.get("pre_g9_tech_pass")]
     watches=[k for k,v in results.items() if str(v.get("result","")).startswith("WATCH_")]
@@ -178,6 +185,8 @@ def main():
       "pre_g9_tech_pass_count":len(passes),"pre_g9_tech_pass":passes,
       "watch_count":len(watches),"watch":watches,
       "fail_count":len(fails),"fail":fails,
+      "state_caps":{s:state_caps.get(s,"NORMAL") for s in syms},
+      "r92_ineligible":sorted(r92_ineligible & set(syms)),
       "results":results,
       "remaining_nontech_gates":["OFFICIAL_EVENT_FINAL_REVIEW","ACCOUNT_GATE","G9","ALIGNED_60M","DELIVERY_PROOF"],
       "authority":"EXTERNAL_SHADOW_NO_SIGNAL"

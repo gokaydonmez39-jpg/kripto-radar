@@ -141,12 +141,17 @@ def main():
     mc=json.loads(MC.read_text())
     syms=list(mc.get("current_core_mc_pass") or [])
     asof=mc["asof_et"]
+    state_caps={s:(mc.get("state_caps") or {}).get(s,"NORMAL") for s in syms}
+    r92_ineligible=set(mc.get("r92_ineligible") or [])
     week_last=build_week_last(asof)
     results={}
     with ThreadPoolExecutor(max_workers=WORKERS) as ex:
         futs={ex.submit(process,s,asof,week_last):s for s in syms}
         for fut in as_completed(futs):
             sym,res=fut.result();results[sym]=res
+    for s,r in results.items():
+        r["state_cap"]=state_caps.get(s,"NORMAL")
+        r["r92_eligible"]=s not in r92_ineligible
     weekly=[s for s,r in results.items() if r.get("status")=="WEEKLY_PASS"]
     a=[s for s in weekly if results[s].get("a_trend_pool")]
     b=[s for s in weekly if results[s].get("b_tight_base_pool")]
@@ -161,6 +166,8 @@ def main():
       "b_tight_base_pool_count":len(b),"b_tight_base_pool":sorted(b),
       "d_drawdown_pool_count":len(d),"d_drawdown_pool":sorted(d),
       "unknown_count":len(unknown),"unknown":sorted(unknown),
+      "state_caps":state_caps,
+      "r92_ineligible":sorted(r92_ineligible & set(syms)),
       "results":results,
       "source_authority":"SHADOW_TECHNICAL_ACCELERATOR_ONLY",
       "notes":["C post-earnings family is evaluated later from official earnings/event evidence.","No setup signal or R92 registration is created here."]

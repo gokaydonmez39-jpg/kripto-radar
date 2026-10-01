@@ -7,6 +7,8 @@ on:
       - "nasdaq-xray/orchestrator_run.py"
       - "nasdaq-xray/sina_stage.py"
       - "nasdaq-xray/mc_zero_key.py"
+      - "nasdaq-xray/mc_resolution_overlay.json"
+      - "nasdaq-xray/history_resolution_overlay.json"
       - "nasdaq-xray/production_core_build.py"
       - "nasdaq-xray/stage1_shadow.py"
       - "nasdaq-xray/regime_breadth_shadow.py"
@@ -14,7 +16,7 @@ on:
       - "nasdaq-xray/final_tech_shadow.py"
       - ".github/workflows/nasdaq-xray-daily.yml"
   schedule:
-    - cron: "40 * * * *"
+    - cron: "30 * * * *"
   workflow_dispatch:
 
 permissions:

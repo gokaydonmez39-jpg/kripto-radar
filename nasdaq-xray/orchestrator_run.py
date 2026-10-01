@@ -109,13 +109,25 @@ def main():
 
     pre_g9=final.get("pre_g9_tech_pass") or []
     event_fresh=bool(deep.get("event_state_fresh"))
-    blockers=[]
-    if not event_fresh: blockers.append("OFFICIAL_EVENT_STATE_STALE_OR_MISSING")
+    final_unknown=[k for k,v in (final.get("results") or {}).items() if str(v.get("result",""))=="UNKNOWN"]
+    coverage_faults=[]
+    if int(ss.get("unknown_count",0) or 0)>0: coverage_faults.append("HARD_GATE_UNKNOWN_REMAINS")
+    if int(mc.get("unresolved_count",0) or 0)>0: coverage_faults.append("MC_UNRESOLVED_REMAINS")
+    if int(st1.get("unknown_count",0) or 0)>0: coverage_faults.append("STAGE1_UNKNOWN_REMAINS")
+    if int(rg.get("breadth_missing_count",0) or 0)>0: coverage_faults.append("BREADTH_MISSING_REMAINS")
+    if int(deep.get("unknown_history_count",0) or 0)>0: coverage_faults.append("DEEP_HISTORY_UNKNOWN_REMAINS")
+    if final_unknown: coverage_faults.append("FINAL_TECH_UNKNOWN_REMAINS")
+    if not event_fresh: coverage_faults.append("OFFICIAL_EVENT_STATE_STALE_OR_MISSING")
+
+    blockers=list(coverage_faults)
     blockers.append("G9_BLOCKED_NO_AUTHORIZED_ZERO_DOLLAR_RUNTIME_SOURCE")
     blockers.append("ACCOUNT_GATE_UNKNOWN")
     blockers.append("OBSERVED_IPHONE_SIGNAL_DELIVERY_UNPROVEN")
 
-    status="ENGINE_PASS_FULL_GO_BLOCKED" if pre_g9 else "ENGINE_PASS_NO_CONFIRMED_SETUP"
+    if coverage_faults:
+        status="ENGINE_PARTIAL_UNKNOWN"
+    else:
+        status="ENGINE_PASS_FULL_GO_BLOCKED" if pre_g9 else "ENGINE_PASS_NO_CONFIRMED_SETUP"
     out={
       "schema":"XRAY_ORCHESTRATOR_V1","task_id":TASK_ID,
       "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
@@ -128,7 +140,8 @@ def main():
       "stage1":{"weekly_pass_count":st1.get("weekly_pass_count"),"unknown_count":st1.get("unknown_count")},
       "regime":{"regime":rg.get("regime"),"breadth_missing_count":rg.get("breadth_missing_count"),"breadth_above_sma50_pct":rg.get("breadth_above_sma50_pct"),"nh20":rg.get("nh20"),"nl20":rg.get("nl20")},
       "deep":{"a_pass":deep.get("a_geometry_rs_event_pass") or [],"b_breakout_pass":deep.get("b_breakout_rs_event_pass") or [],"b_armed":deep.get("b_armed_rs_event_pass") or [],"d_pass":deep.get("d_dk3_pre_r1") or [],"event_state_fresh":event_fresh},
-      "final_tech":{"pre_g9_tech_pass":pre_g9,"watch":final.get("watch") or [],"fail":final.get("fail") or []},
+      "final_tech":{"pre_g9_tech_pass":pre_g9,"watch":final.get("watch") or [],"fail":final.get("fail") or [],"unknown":final_unknown},
+      "coverage_faults":coverage_faults,
       "g9_status":"BLOCKED",
       "account_gate":"UNKNOWN_NOT_CONFIGURED",
       "full_go_blockers":blockers,
