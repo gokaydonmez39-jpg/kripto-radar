@@ -11,6 +11,7 @@ POLICY_HASH="8fa4d40d4093cc94fb9a6c6669c5f38d4684bfa8ca3fbe25696387cd46b163cf"
 FILES={
  "pointer":ROOT/"chatgpt_canonical_state_v2.json",
  "policy":ROOT/"chatgpt_compiled_policy_v2.json",
+ "price_dv20":ROOT/"canonical_price_dv20_20260930.json",
  "mc":ROOT/"canonical_mc_20260930_v2.json",
  "history":ROOT/"canonical_history_20260930.json",
  "legal":ROOT/"canonical_legal_20260930.json",
@@ -37,7 +38,7 @@ def disjoint(*sets):
 def main():
     data={};shas={}
     for k in FILES:data[k],shas[k]=load(k)
-    ptr=data["pointer"];pol=data["policy"];mc=data["mc"];h=data["history"];lg=data["legal"]
+    ptr=data["pointer"];pol=data["policy"];pdv=data["price_dv20"];mc=data["mc"];h=data["history"];lg=data["legal"]
     st=data["stage1"];rg=data["regime"];ev=data["events"];dp=data["deep"];ft=data["final"]
 
     assert pol["schema"]=="XRAY_GITHUB_COMPILED_POLICY_V2"
@@ -54,10 +55,22 @@ def main():
     assert "SYSTEM|COMPILED_POLICY_BOUND|C4.10|8fa4d40d4093" in ps["transition_keys"]
     assert any(x.startswith("SYSTEM|MC_BOUND|2026-09-30|") for x in ps["transition_keys"])
 
+    assert pdv["schema"]=="XRAY_CANONICAL_PRICE_DV20_V1"
+    assert pdv["task_id"]==TASK and pdv["asof_et"]==ASOF
+    assert pdv["execution"]=="NONE" and pdv["real_money"]=="NO-GO"
+    assert pdv["unknown_count"]==0 and pdv["pass_count"]==504
+    assert pdv["pass_hash"]=="4615337ebfc1c5821e13f8f01312b10a2497252746ba528876a068db0e2250db"
+    assert len(pdv["results"])==3398
+    pdvpass=set(pdv["pass_symbols"])
+
     assert mc["schema"]=="XRAY_CANONICAL_MC_20260930_V2"
     assert mc["task_id"]==TASK and mc["asof_et"]==ASOF
     assert mc["execution"]=="NONE" and mc["real_money"]=="NO-GO"
     assert mc["counts"]=={"MC_PASS_PRIMARY":456,"MC_FAIL_PRIMARY":13,"MC_PASS_FALLBACK_WATCH":35,"MC_UNKNOWN":0,"TOTAL":504}
+    assert mc["input_price_dv20_blob_sha"]==shas["price_dv20"]
+    assert mc["input_price_dv20_pass_count"]==504
+    assert mc["input_price_dv20_pass_hash"]==pdv["pass_hash"]
+    assert set(mc["results"])==pdvpass
     primary=set(mc["primary_pass_symbols"]);mcfail=set(mc["primary_fail_symbols"]);watch=set(mc["fallback_watch_symbols"])
     assert len(primary)==456 and len(mcfail)==13 and len(watch)==35
     disjoint(primary,mcfail,watch)
@@ -168,7 +181,7 @@ def main():
       },
       "evidence":{k:{"path":str(FILES[k].relative_to(ROOT.parent)).replace("\\","/"),"blob_sha":shas[k]} for k in FILES},
       "checks":{
-        "policy_v2_exact":True,"mc_complete_no_unknown":True,
+        "policy_v2_exact":True,"price_dv20_authority_complete":True,"mc_exact_price_dv20_pass_set":True,"mc_complete_no_unknown":True,
         "history_exact_primary_only":True,"fallback_watch_excluded_after_mc":True,
         "legal_exact_history_pass":True,"stage1_exact_legal_pass":True,
         "weekly_exact_event_scope":True,"regime_full_primary_survivor_core_no_missing":True,
