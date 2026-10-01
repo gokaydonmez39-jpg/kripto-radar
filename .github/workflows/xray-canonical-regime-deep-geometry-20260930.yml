@@ -1,0 +1,112 @@
+name: XRAY Canonical Regime Deep Geometry 20260930
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/xray-canonical-regime-deep-geometry-20260930.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: xray-canonical-regime-deep-geometry-20260930
+  cancel-in-progress: false
+
+jobs:
+  regime-deep:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      XRAY_MC_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_mc_input_20260930.json
+      XRAY_REGIME_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_regime_20260930.json
+      XRAY_BREADTH_WORKERS: "10"
+      XRAY_STAGE1_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_stage1_20260930.json
+      XRAY_DEEP_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_deep_geometry_20260930.json
+      XRAY_DEEP_GEOMETRY_ONLY: "1"
+      XRAY_DEEP_WORKERS: "10"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Verify pinned canonical inputs
+        run: |
+          python - <<'PY'
+          import hashlib, pathlib, json
+          pins={
+            "nasdaq-xray/canonical_mc_input_20260930.json":"8f85665989a58a965bd104e7645dab4541a18ab0",
+            "nasdaq-xray/canonical_stage1_20260930.json":"92968175766378af7cef33f534fac21d4949fbc1",
+          }
+          for p,e in pins.items():
+              b=pathlib.Path(p).read_bytes()
+              h=hashlib.sha1(f"blob {len(b)}\0".encode()+b).hexdigest()
+              assert h==e,(p,h,e)
+          mc=json.load(open("nasdaq-xray/canonical_mc_input_20260930.json"))
+          st=json.load(open("nasdaq-xray/canonical_stage1_20260930.json"))
+          assert mc["current_core_count"]==460
+          assert st["input_current_core_count"]==460 and st["unknown_count"]==0
+          assert st["weekly_pass_count"]==104
+          print("PINNED_INPUTS_PASS")
+          PY
+
+      - name: Compile
+        run: python -m py_compile nasdaq-xray/regime_breadth_shadow.py nasdaq-xray/deep_pre_r1_shadow.py
+
+      - name: Install zero-dollar runtime
+        run: python -m pip install --disable-pip-version-check akshare==1.18.95 pandas_market_calendars
+
+      - name: Run canonical regime breadth
+        run: python nasdaq-xray/regime_breadth_shadow.py
+
+      - name: Validate regime breadth
+        run: |
+          python - <<'PY'
+          import json
+          j=json.load(open("nasdaq-xray/canonical_regime_20260930.json"))
+          assert j["schema"]=="XRAY_REGIME_BREADTH_SHADOW_V1"
+          assert j["task_id"]=="6a825366222081918997094d76e6ae46"
+          assert j["asof_et"]=="2026-09-30"
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          assert j["current_core_count"]==460
+          assert j["history_ok_count"]==460
+          assert j["breadth_missing_count"]==0
+          assert j["regime"] in {"STRONG","MIXED","WEAK"}
+          print({k:j[k] for k in ["current_core_count","history_ok_count","breadth_missing_count","breadth_above_sma50_pct","nh20","nl20","regime"]})
+          PY
+
+      - name: Run canonical deep geometry only
+        run: python nasdaq-xray/deep_pre_r1_shadow.py
+
+      - name: Validate deep geometry
+        run: |
+          python - <<'PY'
+          import json
+          j=json.load(open("nasdaq-xray/canonical_deep_geometry_20260930.json"))
+          assert j["schema"]=="XRAY_DEEP_GEOMETRY_V1"
+          assert j["task_id"]=="6a825366222081918997094d76e6ae46"
+          assert j["asof_et"]=="2026-09-30"
+          assert j["mode"]=="GEOMETRY_ONLY_REGIME_EVENT_DEFERRED"
+          assert j["input_weekly_pass_count"]==104
+          assert j["unknown_history_count"]==0, j["unknown_history"]
+          print({k:j[k] for k in ["input_weekly_pass_count","a_geometry_count","b_breakout_count","b_armed_count","d_geometry_rs_count","unknown_history_count"]})
+          PY
+
+      - name: Commit canonical regime and geometry
+        shell: bash
+        run: |
+          set -e
+          git config user.name "xray-dataplane-bot"
+          git config user.email "xray-dataplane-bot@users.noreply.github.com"
+          git add nasdaq-xray/canonical_regime_20260930.json nasdaq-xray/canonical_deep_geometry_20260930.json
+          git commit -m "chore(xray): canonical regime and deep geometry 2026-09-30 [skip ci]" || exit 0
+          for attempt in 1 2 3 4 5; do
+            if git pull --rebase origin main && git push; then exit 0; fi
+            sleep $((attempt*2))
+          done
+          exit 1
