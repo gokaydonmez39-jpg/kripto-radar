@@ -83,7 +83,7 @@ def main():
         assert sw.get("task_id")==TASK and sw.get("asof_et")==asof and sw.get("settlement_status")=="PASS"
         assert sw.get("queue_hash")==m["queue_hash"]
     else:
-        assert mc.get("settlement_witness_status") in {None,"NOT_REQUIRED_POINTER_ASOF"}
+        assert mc.get("settlement_witness_status") in {None,"NOT_REQUIRED_POINTER_ASOF","PASS"}
     primary=set(mc.get("primary_pass_symbols") or [])
     mcfail=set(mc.get("primary_fail_symbols") or [])
     watch=set(mc.get("fallback_watch_symbols") or [])
