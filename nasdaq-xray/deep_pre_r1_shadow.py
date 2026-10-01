@@ -166,6 +166,7 @@ def family_a(df):
 def main():
     st=json.loads(STAGE1.read_text()); rg=json.loads(REGIME.read_text())
     ev=json.loads(EVENTS.read_text()) if EVENTS.exists() else {"confirmed_blocks":{},"unresolved":{}}
+    event_state_fresh=(ev.get("asof_et")==asof)
     asof=st["asof_et"]
     syms=sorted(set(st["weekly_pass"]))
     data={};unknown={}
@@ -188,9 +189,11 @@ def main():
         A=family_a(x) if s in st["a_trend_pool"] else {"pool":False,"reason":"NOT_A_STAGE1"}
         B=family_b(x) if s in st["b_tight_base_pool"] else {"pool":False,"reason":"NOT_B_STAGE1"}
         D=family_d(x,rs20,rs60) if s in st["d_drawdown_pool"] else {"pool":False,"reason":"NOT_D_STAGE1"}
-        event="CLEAN_DISCOVERY"
-        if s in (ev.get("confirmed_blocks") or {}):event="BLOCK_CONFIRMED_8SESSION"
-        elif s in (ev.get("unresolved") or {}):event="UNKNOWN"
+        event="UNKNOWN_STALE_EVENT_STATE"
+        if event_state_fresh:
+            event="CLEAN_DISCOVERY"
+            if s in (ev.get("confirmed_blocks") or {}): event="BLOCK_CONFIRMED_8SESSION"
+            elif s in (ev.get("unresolved") or {}): event="UNKNOWN"
         outres[s]={"status":"EVALUATED","rs20":rs20,"rs60":rs60,"mixed_rs_pass":mix_pass,"A":A,"B":B,"D":D,"event_status":event}
     a=[s for s,r in outres.items() if r.get("mixed_rs_pass") and r.get("A",{}).get("pool") and r.get("event_status")=="CLEAN_DISCOVERY"]
     b=[s for s,r in outres.items() if r.get("mixed_rs_pass") and r.get("B",{}).get("breakout_confirmed") and r.get("event_status")=="CLEAN_DISCOVERY"]
@@ -207,6 +210,7 @@ def main():
       "unknown_history_count":len(unknown),"unknown_history":unknown,
       "results":outres,
       "remaining_gates":["R1_NEAREST_RESISTANCE","BASIC_SEVERE_RR","EXTENSION_CHASE","OFFICIAL_EVENT_FINALIST_REVIEW","ACCOUNT_GATE","G9","ALIGNED_60M","NON_SYNTHETIC_TARGET"],
+      "event_state_fresh":event_state_fresh,
       "authority":"SHADOW_DEEP_PREFILTER_ONLY_NO_SIGNAL"
     }
     OUT.write_text(json.dumps(out,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
