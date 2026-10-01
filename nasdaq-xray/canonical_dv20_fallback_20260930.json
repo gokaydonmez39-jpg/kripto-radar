@@ -51,7 +51,7 @@
     "SENEB"
   ],
   "queue_total": 20,
-  "cursor": 8,
+  "cursor": 16,
   "checkpoint_every": 8,
   "max_per_run": 32,
   "results": {
@@ -94,6 +94,46 @@
       "dv20": 33636,
       "max_dv": 1581457.47,
       "decision": "FAIL_DV20"
+    },
+    "GPAT": {
+      "dv20": 1405.25,
+      "max_dv": 1100053.26,
+      "decision": "FAIL_DV20"
+    },
+    "GTEN": {
+      "dv20": 1368.495,
+      "max_dv": 74341.79999999999,
+      "decision": "FAIL_DV20"
+    },
+    "KELYB": {
+      "dv20": 53459.024999999994,
+      "max_dv": 2051953.68,
+      "decision": "FAIL_DV20"
+    },
+    "LPAA": {
+      "dv20": 317.275,
+      "max_dv": 44045.61,
+      "decision": "FAIL_DV20"
+    },
+    "MACI": {
+      "dv20": 6391.35,
+      "max_dv": 126917.34,
+      "decision": "FAIL_DV20"
+    },
+    "MAYS": {
+      "dv20": 11957.294999999998,
+      "max_dv": 191954.15,
+      "decision": "FAIL_DV20"
+    },
+    "NCEW": {
+      "dv20": 3574.7949999999996,
+      "max_dv": 69700,
+      "decision": "FAIL_DV20"
+    },
+    "NOEM": {
+      "dv20": 244.33,
+      "max_dv": 2740.22,
+      "decision": "FAIL_DV20"
     }
   },
   "checkpoints": [
@@ -108,6 +148,20 @@
         "EURK",
         "FACT",
         "FORTY"
+      ],
+      "verified": true
+    },
+    {
+      "cursor": 16,
+      "symbols": [
+        "GPAT",
+        "GTEN",
+        "KELYB",
+        "LPAA",
+        "MACI",
+        "MAYS",
+        "NCEW",
+        "NOEM"
       ],
       "verified": true
     }
