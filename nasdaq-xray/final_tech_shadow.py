@@ -7,7 +7,7 @@ Synthetic P+3A is permitted only when trigger close is above every prior recorde
 No signal, no G9 authority, no R92 registration.
 """
 from __future__ import annotations
-import json, math, os
+import json, math, os, hashlib
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 import akshare as ak
@@ -20,6 +20,14 @@ FAMILY_C_ENV=os.getenv("XRAY_FINAL_FAMILY_C_STATE")
 FAMILY_C=Path(FAMILY_C_ENV) if FAMILY_C_ENV else None
 TASK_ID="6a825366222081918997094d76e6ae46"
 WORKERS=int(os.getenv("XRAY_FINAL_WORKERS","6"))
+
+def blob_sha(p:Path):
+    b=p.read_bytes()
+    return hashlib.sha1(f"blob {len(b)}\0".encode()+b).hexdigest()
+
+def relpath(p:Path):
+    try:return str(p.relative_to(ROOT.parent)).replace("\\","/")
+    except Exception:return str(p)
 
 THRESH={
  "A":{"basic":1.5,"severe":1.1},
@@ -154,6 +162,8 @@ def eval_one(sym,fam,g,df,event_status,state_cap="NORMAL",r92_eligible=True):
 def main():
     d=json.loads(DEEP.read_text())
     asof=d["asof_et"]
+    if d.get("task_id")!=TASK_ID or d.get("execution")!="NONE" or d.get("real_money")!="NO-GO":
+        raise RuntimeError("DEEP_SAFETY_OR_TASK_MISMATCH")
     candidates=[]
     state_caps=d.get("state_caps") or {}
     r92_ineligible=set(d.get("r92_ineligible") or [])
@@ -203,6 +213,11 @@ def main():
       "fail_count":len(fails),"fail":fails,
       "state_caps":{s:state_caps.get(s,"NORMAL") for s in syms},
       "r92_ineligible":sorted(r92_ineligible & set(syms)),
+      "source_deep_path":relpath(DEEP),"source_deep_blob_sha":blob_sha(DEEP),
+      "source_family_c_path":relpath(FAMILY_C) if FAMILY_C is not None and FAMILY_C.exists() else None,
+      "source_family_c_blob_sha":blob_sha(FAMILY_C) if FAMILY_C is not None and FAMILY_C.exists() else None,
+      "source_compiled_policy_hash":d.get("source_mc_policy_hash"),
+      "source_compiled_policy_version":d.get("source_mc_policy_version"),
       "results":results,
       "remaining_nontech_gates":["OFFICIAL_EVENT_FINAL_REVIEW","ACCOUNT_GATE","G9","ALIGNED_60M","DELIVERY_PROOF"],
       "authority":"EXTERNAL_SHADOW_NO_SIGNAL"
