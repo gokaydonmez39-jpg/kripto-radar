@@ -1,0 +1,40 @@
+{
+  "schema": "XRAY_FAMILY_C_COST_V1",
+  "task_id": "6a825366222081918997094d76e6ae46",
+  "asof_et": "2026-09-30",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "ticker": "COST",
+  "official_event_date_et": "2026-09-24",
+  "event_timing": "AMC",
+  "pre_event_close": 896.48,
+  "atr_pre": 13.72496788856556,
+  "reaction0": {
+    "date": "2026-09-25",
+    "open": 887,
+    "high": 925.14,
+    "low": 883.1,
+    "close": 922.765,
+    "rvol20": 2.1392922552930904,
+    "gap_atr": -0.6907119985248142
+  },
+  "reaction1": {
+    "date": "2026-09-28",
+    "low": 913,
+    "close": 922.92
+  },
+  "reaction2": {
+    "date": "2026-09-29",
+    "low": 912.66,
+    "close": 924.59
+  },
+  "gap_requirement_min_atr": 0.5,
+  "gap_pass": false,
+  "reaction_lows_above_pre_event_close": false,
+  "result": "FAMILY_C_FAIL",
+  "reasons": [
+    "GAP_ATR_LT_0_50",
+    "REACTION_LOW_UNDER_PRE_EVENT_CLOSE"
+  ],
+  "unknown_never_pass": true
+}
