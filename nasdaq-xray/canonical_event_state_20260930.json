@@ -5,7 +5,7 @@
   "execution": "NONE",
   "real_money": "NO-GO",
   "unknown_never_pass": true,
-  "weekly_scope_count": 106,
+  "weekly_scope_count": 99,
   "weekly_scope": [
     "AAPL",
     "ABCL",
@@ -42,7 +42,6 @@
     "GILD",
     "GMAB",
     "GRAL",
-    "GTLB",
     "HALO",
     "HOOD",
     "HTFL",
@@ -60,12 +59,10 @@
     "MMSI",
     "MRNA",
     "MRVL",
-    "MRX",
     "MSFT",
     "MSTR",
     "MTCH",
     "MU",
-    "MXL",
     "NBIS",
     "NDSN",
     "NESR",
@@ -75,7 +72,6 @@
     "NTSK",
     "NVDA",
     "OKTA",
-    "ONC",
     "PCTY",
     "PFG",
     "PI",
@@ -99,17 +95,14 @@
     "TARS",
     "TEAM",
     "TECH",
-    "TEM",
     "TGTX",
     "TRMD",
     "TWST",
     "TXG",
     "ULTA",
-    "VOD",
     "VRNS",
     "WBD",
     "WDAY",
-    "WGS",
     "WIX",
     "XP",
     "ZBRA"
@@ -137,13 +130,15 @@
       "2026-10-01",
       "2026-10-12"
     ],
+    "future_total_market_hits": 68,
+    "future_weekly_scope_hits": [
+      "AEHR"
+    ],
     "past_family_c_window": [
       "2026-09-17",
       "2026-09-30"
     ],
-    "future_weekly_scope_hits": [
-      "AEHR"
-    ],
+    "past_total_market_hits": 48,
     "past_weekly_scope_hits": [
       "MU"
     ],
@@ -183,7 +178,7 @@
       "source_proof_blob_sha": "be6ab188fd8e5ff53f2ce9ec979cdf3642008e3e"
     }
   },
-  "clean_discovery_count": 104,
+  "clean_discovery_count": 97,
   "event_status_by_symbol": {
     "AAPL": {
       "event_status": "CLEAN_DISCOVERY"
@@ -296,9 +291,6 @@
     "GRAL": {
       "event_status": "CLEAN_DISCOVERY"
     },
-    "GTLB": {
-      "event_status": "CLEAN_DISCOVERY"
-    },
     "HALO": {
       "event_status": "CLEAN_DISCOVERY"
     },
@@ -350,9 +342,6 @@
     "MRVL": {
       "event_status": "CLEAN_DISCOVERY"
     },
-    "MRX": {
-      "event_status": "CLEAN_DISCOVERY"
-    },
     "MSFT": {
       "event_status": "CLEAN_DISCOVERY"
     },
@@ -372,9 +361,6 @@
       "asof_semantics": "EVENT_AFTER_2026-09-30_RTH_CLOSE_BEFORE_NEXT_RTH_ENTRY_WINDOW",
       "source_proof_path": "nasdaq-xray/canonical_events_family_c_20260929.json",
       "source_proof_blob_sha": "ee3a43e65ed64e7d0bbf33832403328c9c7fd510"
-    },
-    "MXL": {
-      "event_status": "CLEAN_DISCOVERY"
     },
     "NBIS": {
       "event_status": "CLEAN_DISCOVERY"
@@ -401,9 +387,6 @@
       "event_status": "CLEAN_DISCOVERY"
     },
     "OKTA": {
-      "event_status": "CLEAN_DISCOVERY"
-    },
-    "ONC": {
       "event_status": "CLEAN_DISCOVERY"
     },
     "PCTY": {
@@ -475,9 +458,6 @@
     "TECH": {
       "event_status": "CLEAN_DISCOVERY"
     },
-    "TEM": {
-      "event_status": "CLEAN_DISCOVERY"
-    },
     "TGTX": {
       "event_status": "CLEAN_DISCOVERY"
     },
@@ -493,9 +473,6 @@
     "ULTA": {
       "event_status": "CLEAN_DISCOVERY"
     },
-    "VOD": {
-      "event_status": "CLEAN_DISCOVERY"
-    },
     "VRNS": {
       "event_status": "CLEAN_DISCOVERY"
     },
@@ -503,9 +480,6 @@
       "event_status": "CLEAN_DISCOVERY"
     },
     "WDAY": {
-      "event_status": "CLEAN_DISCOVERY"
-    },
-    "WGS": {
       "event_status": "CLEAN_DISCOVERY"
     },
     "WIX": {
@@ -529,7 +503,7 @@
   "source_proof": {
     "stage1": {
       "path": "nasdaq-xray/canonical_stage1_20260930.json",
-      "blob_sha": "f69d1e97477963343168e51932b50773795d206f"
+      "blob_sha": "d94f0a2f450e0152514cb02ee03d974ca98b4c7e"
     },
     "event_official": {
       "path": "nasdaq-xray/event_official_state.json",
@@ -541,9 +515,8 @@
     }
   },
   "scope_binding": {
-    "stage1_path": "nasdaq-xray/canonical_stage1_20260930.json",
-    "stage1_blob_sha": "f69d1e97477963343168e51932b50773795d206f",
-    "weekly_scope_count": 106,
+    "stage1_blob_sha": "d94f0a2f450e0152514cb02ee03d974ca98b4c7e",
+    "weekly_scope_count": 99,
     "exact_set_match": true,
     "market_wide_discovery_complete": true
   }
