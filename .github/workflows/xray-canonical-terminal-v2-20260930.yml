@@ -3,11 +3,7 @@ name: XRAY Canonical Terminal V2 20260930
 # trigger C4.14 final terminal audit
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - "nasdaq-xray/canonical_final_tech_20260930.json"
-      - "nasdaq-xray/canonical_deep_full_20260930.json"
+  workflow_dispatch:
 
 permissions:
   contents: write
