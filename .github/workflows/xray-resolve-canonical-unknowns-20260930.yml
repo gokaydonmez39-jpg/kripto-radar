@@ -1,0 +1,64 @@
+name: XRAY Resolve Canonical Unknowns 20260930
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/xray-resolve-canonical-unknowns-20260930.yml"
+      - "nasdaq-xray/resolve_unknowns_fallback.py"
+      - "nasdaq-xray/canonical_full_hard_gate_20260930_unknowns.json"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: xray-resolve-canonical-unknowns-20260930
+  cancel-in-progress: false
+
+jobs:
+  resolve:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      XRAY_UNKNOWN_MANIFEST: ${{ github.workspace }}/nasdaq-xray/canonical_full_hard_gate_20260930_unknowns.json
+      XRAY_RESOLUTION_OUT: ${{ github.workspace }}/nasdaq-xray/history_resolution_overlay.json
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile
+        run: python -m py_compile nasdaq-xray/resolve_unknowns_fallback.py
+      - name: Install calendar
+        run: python -m pip install --disable-pip-version-check pandas_market_calendars
+      - name: Resolve unknowns
+        run: python nasdaq-xray/resolve_unknowns_fallback.py
+      - name: Validate overlay
+        run: |
+          python - <<'PY'
+          import json
+          j=json.load(open("nasdaq-xray/history_resolution_overlay.json"))
+          assert j["schema"]=="XRAY_HISTORY_IDENTITY_RESOLUTION_OVERLAY_V1"
+          assert j["task_id"]=="6a825366222081918997094d76e6ae46"
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          assert j["base_asof_et"]=="2026-09-30"
+          assert j["resolution_count"]+j["unresolved_count"]==60
+          assert all(v["decision"] in {"FAIL_PRICE","FAIL_DV20","FAIL_HISTORY","PASS_HARD_GATES"} for v in j["resolutions"].values())
+          print({"resolution_count":j["resolution_count"],"unresolved_count":j["unresolved_count"]})
+          PY
+      - name: Commit overlay
+        shell: bash
+        run: |
+          set -e
+          git config user.name "xray-dataplane-bot"
+          git config user.email "xray-dataplane-bot@users.noreply.github.com"
+          git add nasdaq-xray/history_resolution_overlay.json
+          git commit -m "chore(xray): resolve canonical hard-gate unknowns 2026-09-30 [skip ci]" || exit 0
+          for attempt in 1 2 3 4 5; do
+            if git pull --rebase origin main && git push; then exit 0; fi
+            sleep $((attempt*2))
+          done
+          exit 1
