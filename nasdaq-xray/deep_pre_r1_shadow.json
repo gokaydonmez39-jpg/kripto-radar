@@ -4,16 +4,18 @@
   "asof_et": "2026-09-30",
   "authority": "SHADOW_DEEP_PREFILTER_ONLY_NO_SIGNAL",
   "b_armed_rs_event_pass": [
+    "ASST",
     "BWIN",
     "COIN",
     "FTNT",
     "GH",
     "MSTR",
+    "NVDA",
     "PI",
     "QRVO",
     "SWKS"
   ],
-  "b_armed_rs_event_pass_count": 8,
+  "b_armed_rs_event_pass_count": 10,
   "b_breakout_rs_event_pass": [
     "WBD"
   ],
@@ -22,7 +24,7 @@
   "d_dk3_pre_r1_count": 0,
   "event_state_fresh": true,
   "execution": "NONE",
-  "input_weekly_pass_count": 87,
+  "input_weekly_pass_count": 103,
   "real_money": "NO-GO",
   "regime": "MIXED",
   "remaining_gates": [
@@ -134,6 +136,25 @@
       "rs60": 0.1367151222990044,
       "status": "EVALUATED"
     },
+    "APA": {
+      "A": {
+        "pool": false,
+        "reason": "NOT_A_STAGE1"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "CLEAN_DISCOVERY",
+      "mixed_rs_pass": false,
+      "rs20": -0.10302895375540877,
+      "rs60": 0.17165677885574904,
+      "status": "EVALUATED"
+    },
     "APPF": {
       "A": {
         "pool": false,
@@ -183,6 +204,32 @@
       "mixed_rs_pass": false,
       "rs20": -0.10816402380224632,
       "rs60": -0.000388648632030697,
+      "status": "EVALUATED"
+    },
+    "ASST": {
+      "A": {
+        "pool": false,
+        "reason": "NO_REVERSAL"
+      },
+      "B": {
+        "A": 1.837673723495628,
+        "P": 30.59,
+        "anchor": 28.31,
+        "b": 1.2406990266275228,
+        "breakout_confirmed": false,
+        "close": 29.41,
+        "pool": true,
+        "rvol20": 0.5053019763083082,
+        "window": 5
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "CLEAN_DISCOVERY",
+      "mixed_rs_pass": true,
+      "rs20": 0.17219385755031968,
+      "rs60": 1.2207728428893465,
       "status": "EVALUATED"
     },
     "ATRC": {
@@ -758,6 +805,52 @@
       "rs60": 0.04823298642610063,
       "status": "EVALUATED"
     },
+    "GMAB": {
+      "A": {
+        "A": 0.8052782158206595,
+        "P": 35.64,
+        "anchor": 34.36,
+        "d": 1.5895127607488455,
+        "depth": 1.6143488976355413,
+        "hl_date": "2026-09-24",
+        "pool": false,
+        "prelow_near_hl": true,
+        "sh_date": "2026-09-23",
+        "trigger_date": "2026-09-30"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "CLEAN_DISCOVERY",
+      "mixed_rs_pass": true,
+      "rs20": 0.025099083246762577,
+      "rs60": 0.17244243466257858,
+      "status": "EVALUATED"
+    },
+    "GTLB": {
+      "A": {
+        "pool": false,
+        "reason": "NOT_A_STAGE1"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "CLEAN_DISCOVERY",
+      "mixed_rs_pass": true,
+      "rs20": 0.002391178549669082,
+      "rs60": 0.39036967457973937,
+      "status": "EVALUATED"
+    },
     "HALO": {
       "A": {
         "pool": false,
@@ -911,6 +1004,25 @@
       "mixed_rs_pass": false,
       "rs20": -0.07143847649493695,
       "rs60": -0.014204971396463706,
+      "status": "EVALUATED"
+    },
+    "INTC": {
+      "A": {
+        "pool": false,
+        "reason": "NOT_A_STAGE1"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "CLEAN_DISCOVERY",
+      "mixed_rs_pass": true,
+      "rs20": 0.29266180017684706,
+      "rs60": 0.04446994658499226,
       "status": "EVALUATED"
     },
     "IOVA": {
@@ -1125,6 +1237,56 @@
       "rs60": 1.3150579825835806,
       "status": "EVALUATED"
     },
+    "MRVL": {
+      "A": {
+        "pool": false,
+        "reason": "NOT_A_STAGE1"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "A": 13.453794404055952,
+        "P": 267.4799,
+        "anchor": 248.1415,
+        "close": 264.21,
+        "d": 1.4373937507302756,
+        "dd120": -0.16502860032234623,
+        "dd252": -0.16502860032234623,
+        "dk3_pre_r1": false,
+        "ema50": 233.27882520672648,
+        "hl_date": "2026-09-28",
+        "pool": true,
+        "rs20": 0.20126774462473218,
+        "rs60": 0.09828358067148146,
+        "rvol20": 0.6640321308525233
+      },
+      "event_status": "CLEAN_DISCOVERY",
+      "mixed_rs_pass": true,
+      "rs20": 0.20126774462473218,
+      "rs60": 0.09828358067148146,
+      "status": "EVALUATED"
+    },
+    "MRX": {
+      "A": {
+        "pool": false,
+        "reason": "NOT_A_STAGE1"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "CLEAN_DISCOVERY",
+      "mixed_rs_pass": false,
+      "rs20": -0.08110500540509413,
+      "rs60": -0.004628020310007752,
+      "status": "EVALUATED"
+    },
     "MSFT": {
       "A": {
         "pool": false,
@@ -1184,6 +1346,25 @@
       "rs60": 0.5079227457924613,
       "status": "EVALUATED"
     },
+    "MTCH": {
+      "A": {
+        "pool": false,
+        "reason": "NOT_A_STAGE1"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "CLEAN_DISCOVERY",
+      "mixed_rs_pass": false,
+      "rs20": -0.08360323526816527,
+      "rs60": -0.017270592146229835,
+      "status": "EVALUATED"
+    },
     "MU": {
       "A": {
         "pool": false,
@@ -1202,6 +1383,68 @@
       "mixed_rs_pass": true,
       "rs20": 0.09149993258057032,
       "rs60": 0.08850030139629572,
+      "status": "EVALUATED"
+    },
+    "MXL": {
+      "A": {
+        "pool": false,
+        "reason": "NOT_A_STAGE1"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "A": 6.508028199942737,
+        "P": 88.98,
+        "anchor": 79.69,
+        "close": 90.31,
+        "d": 1.4274676929153052,
+        "dd120": -0.29461844880106225,
+        "dd252": -0.29461844880106225,
+        "dk3_pre_r1": false,
+        "ema50": 76.10016157370531,
+        "hl_date": "2026-09-24",
+        "pool": true,
+        "rs20": 0.5000454647299921,
+        "rs60": 0.009160321602158739,
+        "rvol20": 0.7158014765770736
+      },
+      "event_status": "CLEAN_DISCOVERY",
+      "mixed_rs_pass": true,
+      "rs20": 0.5000454647299921,
+      "rs60": 0.009160321602158739,
+      "status": "EVALUATED"
+    },
+    "NBIS": {
+      "A": {
+        "pool": false,
+        "reason": "NO_REVERSAL"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "A": 16.53178755788812,
+        "P": 249.19,
+        "anchor": 228.38,
+        "close": 235.88,
+        "d": 1.2587870444821039,
+        "dd120": -0.17722976036834215,
+        "dd252": -0.17722976036834215,
+        "dk3_pre_r1": false,
+        "ema50": 221.66228857872056,
+        "hl_date": "2026-09-28",
+        "pool": true,
+        "rs20": 0.13077659215571313,
+        "rs60": 0.15890113832283648,
+        "rvol20": 1.1251649404807593
+      },
+      "event_status": "CLEAN_DISCOVERY",
+      "mixed_rs_pass": true,
+      "rs20": 0.13077659215571313,
+      "rs60": 0.15890113832283648,
       "status": "EVALUATED"
     },
     "NDSN": {
@@ -1353,6 +1596,32 @@
       "rs60": 0.3879450364100492,
       "status": "EVALUATED"
     },
+    "NVDA": {
+      "A": {
+        "pool": false,
+        "reason": "NO_REVERSAL"
+      },
+      "B": {
+        "A": 6.016206749977466,
+        "P": 233.21,
+        "anchor": 221.09,
+        "b": 2.014558425879463,
+        "breakout_confirmed": false,
+        "close": 228.38,
+        "pool": true,
+        "rvol20": 1.1746651768671352,
+        "window": 5
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "CLEAN_DISCOVERY",
+      "mixed_rs_pass": true,
+      "rs20": 0.004695108237358303,
+      "rs60": 0.11213887570849312,
+      "status": "EVALUATED"
+    },
     "OKTA": {
       "A": {
         "pool": false,
@@ -1370,6 +1639,25 @@
       "mixed_rs_pass": true,
       "rs20": 0.20187374291616567,
       "rs60": 0.3506689865421837,
+      "status": "EVALUATED"
+    },
+    "ONC": {
+      "A": {
+        "pool": false,
+        "reason": "NO_REVERSAL"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "CLEAN_DISCOVERY",
+      "mixed_rs_pass": false,
+      "rs20": -0.02400261842233886,
+      "rs60": 0.13584863829532812,
       "status": "EVALUATED"
     },
     "PCTY": {
@@ -1545,6 +1833,25 @@
       "rs60": 0.28961424527131796,
       "status": "EVALUATED"
     },
+    "REGN": {
+      "A": {
+        "pool": false,
+        "reason": "NOT_A_STAGE1"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "CLEAN_DISCOVERY",
+      "mixed_rs_pass": false,
+      "rs20": -0.11954492454225996,
+      "rs60": 0.07533126920826261,
+      "status": "EVALUATED"
+    },
     "RGEN": {
       "A": {
         "pool": false,
@@ -1563,6 +1870,37 @@
       "mixed_rs_pass": true,
       "rs20": 0.08152562200025804,
       "rs60": 0.3183588615085602,
+      "status": "EVALUATED"
+    },
+    "RGLD": {
+      "A": {
+        "pool": false,
+        "reason": "NOT_A_STAGE1"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "A": 7.405712552411528,
+        "P": 238.235,
+        "anchor": 225.28,
+        "close": 236.0,
+        "d": 1.7493252551074865,
+        "dd120": -0.13081909251620505,
+        "dd252": -0.22442406914456614,
+        "dk3_pre_r1": false,
+        "ema50": 241.3287719348412,
+        "hl_date": "2026-08-13",
+        "pool": true,
+        "rs20": -0.1115354822756941,
+        "rs60": 0.15111638095503688,
+        "rvol20": 1.2518855551186614
+      },
+      "event_status": "CLEAN_DISCOVERY",
+      "mixed_rs_pass": false,
+      "rs20": -0.1115354822756941,
+      "rs60": 0.15111638095503688,
       "status": "EVALUATED"
     },
     "RIOT": {
@@ -1620,33 +1958,6 @@
       "mixed_rs_pass": false,
       "rs20": -0.06342113187850651,
       "rs60": 0.03416598580546859,
-      "status": "EVALUATED"
-    },
-    "SDGR": {
-      "A": {
-        "A": 1.7570695231886932,
-        "P": 30.6,
-        "anchor": 27.69,
-        "d": 1.656166680712208,
-        "depth": 2.2223366511494937,
-        "hl_date": "2026-09-25",
-        "pool": false,
-        "prelow_near_hl": true,
-        "sh_date": "2026-09-22",
-        "trigger_date": "2026-09-30"
-      },
-      "B": {
-        "pool": false,
-        "reason": "NOT_B_STAGE1"
-      },
-      "D": {
-        "pool": false,
-        "reason": "NOT_D_STAGE1"
-      },
-      "event_status": "CLEAN_DISCOVERY",
-      "mixed_rs_pass": true,
-      "rs20": 0.4252122560165963,
-      "rs60": 0.8057340327033446,
       "status": "EVALUATED"
     },
     "SEIC": {
@@ -1938,6 +2249,37 @@
       "rs60": -0.01575122206432167,
       "status": "EVALUATED"
     },
+    "TEM": {
+      "A": {
+        "pool": false,
+        "reason": "NO_REVERSAL"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "A": 4.926174241322978,
+        "P": 81.83,
+        "anchor": 74.81,
+        "close": 81.9,
+        "d": 1.425040945793809,
+        "dd120": -0.03737658674188993,
+        "dd252": -0.2067796610169491,
+        "dk3_pre_r1": false,
+        "ema50": 65.87947601226524,
+        "hl_date": "2026-09-24",
+        "pool": true,
+        "rs20": 0.2581160261880189,
+        "rs60": 0.30705701454307044,
+        "rvol20": 0.7478345102404526
+      },
+      "event_status": "CLEAN_DISCOVERY",
+      "mixed_rs_pass": true,
+      "rs20": 0.2581160261880189,
+      "rs60": 0.30705701454307044,
+      "status": "EVALUATED"
+    },
     "TGTX": {
       "A": {
         "pool": false,
@@ -2046,6 +2388,25 @@
       "mixed_rs_pass": false,
       "rs20": -0.042538364255345296,
       "rs60": 0.15423788588948173,
+      "status": "EVALUATED"
+    },
+    "VOD": {
+      "A": {
+        "pool": false,
+        "reason": "NOT_A_STAGE1"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "CLEAN_DISCOVERY",
+      "mixed_rs_pass": false,
+      "rs20": -0.03747249555589338,
+      "rs60": 0.18679265384182497,
       "status": "EVALUATED"
     },
     "VRNS": {
@@ -2194,6 +2555,26 @@
       "mixed_rs_pass": true,
       "rs20": 0.07281711432832738,
       "rs60": 0.26073496383384853,
+      "status": "EVALUATED"
+    },
+    "ZBRA": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 11
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "CLEAN_DISCOVERY",
+      "mixed_rs_pass": true,
+      "rs20": 0.03897656086040091,
+      "rs60": 0.3527282499180886,
       "status": "EVALUATED"
     }
   },

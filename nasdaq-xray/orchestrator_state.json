@@ -1,0 +1,77 @@
+{
+  "account_gate": "UNKNOWN_NOT_CONFIGURED",
+  "asof_et": "2026-09-30",
+  "authority": "EXTERNAL_AUTONOMOUS_SHADOW_DATA_PLANE; CHATGPT_CANONICAL_STATE_UNCHANGED",
+  "candidate_hash": "cd4a276b44de4c50d0510a4ea3c112f24bb565870f0ff3d69f5049bec4c2c14a",
+  "deep": {
+    "a_pass": [],
+    "b_armed": [
+      "ASST",
+      "BWIN",
+      "COIN",
+      "FTNT",
+      "GH",
+      "MSTR",
+      "NVDA",
+      "PI",
+      "QRVO",
+      "SWKS"
+    ],
+    "b_breakout_pass": [
+      "WBD"
+    ],
+    "d_pass": [],
+    "event_state_fresh": true
+  },
+  "engine_hash": "791b2cf788cefd76f2d2e98fe5aecb902769456cfa860752e722ae561e0f8351",
+  "event_hash": "a9f78de8591cc52da292345c42dcb0e3719203917a1d577a6112b45d8bf8d40a",
+  "execution": "NONE",
+  "final_tech": {
+    "fail": [
+      "WBD|B"
+    ],
+    "pre_g9_tech_pass": [],
+    "watch": []
+  },
+  "fingerprint": "41da0481f9f1a118a19df46e9d4a27854aa2231f1c24d2dc59e5a3310a86a688",
+  "full_go_blockers": [
+    "G9_BLOCKED_NO_AUTHORIZED_ZERO_DOLLAR_RUNTIME_SOURCE",
+    "ACCOUNT_GATE_UNKNOWN",
+    "OBSERVED_IPHONE_SIGNAL_DELIVERY_UNPROVEN",
+    "CANONICAL_CHATGPT_DURABLE_STATE_NOT_MIGRATED"
+  ],
+  "g9_status": "BLOCKED",
+  "history": {
+    "counts": {
+      "FAIL_DV20": 285,
+      "FAIL_HISTORY": 18,
+      "FAIL_PRICE": 10,
+      "PASS": 482,
+      "UNKNOWN_STATIC": 4
+    },
+    "queue_total": 799,
+    "status": "HISTORY_COMPLETE"
+  },
+  "mc": {
+    "current_core_count": 470,
+    "definitive_fail_count": 1,
+    "unresolved_count": 11
+  },
+  "real_money": "NO-GO",
+  "regime": {
+    "breadth_above_sma50_pct": 0.3382978723404255,
+    "breadth_missing_count": 0,
+    "nh20": 30,
+    "nl20": 94,
+    "regime": "MIXED"
+  },
+  "schema": "XRAY_ORCHESTRATOR_V1",
+  "stage1": {
+    "unknown_count": 0,
+    "weekly_pass_count": 103
+  },
+  "status": "ENGINE_PASS_NO_CONFIRMED_SETUP",
+  "task_id": "6a825366222081918997094d76e6ae46",
+  "unknown_never_pass": true,
+  "updated_at_utc": "2026-10-01T09:40:48.227497+00:00"
+}
