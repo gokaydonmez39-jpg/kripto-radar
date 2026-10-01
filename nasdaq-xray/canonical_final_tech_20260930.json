@@ -51,7 +51,7 @@
       "rr": {
         "basic": 2.118532121789022,
         "basic_pass": true,
-        "basic_threshold": 2.0,
+        "basic_threshold": 2,
         "severe": 1.49634532637651,
         "severe_pass": false,
         "severe_threshold": 1.5
@@ -74,5 +74,13 @@
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_never_pass": true,
   "watch": [],
-  "watch_count": 0
+  "watch_count": 0,
+  "c4_14_terminal_binding": {
+    "stage1_blob_sha": "d94f0a2f450e0152514cb02ee03d974ca98b4c7e",
+    "regime_blob_sha": "71f5c1328d8a575a458fe0501c99ce0f23348b01",
+    "event_blob_sha": "61efc16f770c4b9afcf5104d77001c618635fa65",
+    "deep_blob_sha": "a82222af02f898f2fab372c968aad2e7dc4a499d",
+    "policy_hash": "8fa4d40d4093cc94fb9a6c6669c5f38d4684bfa8ca3fbe25696387cd46b163cf",
+    "exact_chain_ready": true
+  }
 }
