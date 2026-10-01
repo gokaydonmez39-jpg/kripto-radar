@@ -30,9 +30,10 @@ BUILD="2026-10-01.3"
 NASDAQ_DIR="https://www.nasdaqtrader.com/dynamic/SymDir/nasdaqlisted.txt"
 NASDAQ_SCREENER="https://api.nasdaq.com/api/screener/stocks"
 ROOT=Path(__file__).resolve().parent
-STATE=ROOT/"sina_state.json"
-CAND=ROOT/"sina_candidates.json"
-RESOLUTION_OVERLAY=ROOT/"history_resolution_overlay.json"
+STATE=Path(os.getenv("XRAY_SINA_STATE", str(ROOT/"sina_state.json")))
+CAND=Path(os.getenv("XRAY_SINA_CAND", str(ROOT/"sina_candidates.json")))
+RESOLUTION_OVERLAY=Path(os.getenv("XRAY_HISTORY_RESOLUTION_OVERLAY", str(ROOT/"history_resolution_overlay.json")))
+FULL_IDENTITY=os.getenv("XRAY_FULL_IDENTITY","0")=="1"
 
 BATCH=int(os.getenv("XRAY_SINA_HISTORY_BATCH","100"))
 RETRY_BATCH=int(os.getenv("XRAY_SINA_RETRY_BATCH","20"))
@@ -136,7 +137,7 @@ def num(x):
     except Exception:
         return None
 
-def build_discovery(official):
+def build_discovery(official,force_all=False):
     rows=screener_rows()
     off=set(official)
     prefilter={}
@@ -151,6 +152,17 @@ def build_discovery(official):
         vol=num(r.get("volume"))
         if px is not None and mc is not None and px>HARD_PRICE and mc>=2_000_000_000:
             exact_hard_mc_price_count+=1
+        if force_all:
+            prefilter[sym]={
+              "screener_price":px,
+              "screener_market_cap":mc,
+              "screener_volume":vol,
+              "sector":r.get("sector"),
+              "industry":r.get("industry"),
+              "country":r.get("country"),
+              "discovery_reason":"FULL_IDENTITY_NO_PREFILTER",
+            }
+            continue
         if px is None or mc is None:
             # Fail-closed discovery: an official Nasdaq-listed symbol must never
             # disappear merely because the screener omitted a gating field.
@@ -196,7 +208,8 @@ def build_discovery(official):
       "hard_price_mc_snapshot_count":exact_hard_mc_price_count,
       "discovery_price_floor":DISCOVERY_PRICE_FLOOR,
       "discovery_mc_floor":DISCOVERY_MC_FLOOR,
-      "authority":"DISCOVERY_PREFILTER_ONLY_NOT_CANONICAL_MC",
+      "authority":"FULL_IDENTITY_NO_PREFILTER" if force_all else "DISCOVERY_PREFILTER_ONLY_NOT_CANONICAL_MC",
+      "full_identity":bool(force_all),
     }
 
 def completed_sessions():
@@ -355,7 +368,7 @@ def main():
     epoch_key=footer+"|"+asof
 
     if state.get("schema")!="XRAY_NASDAQ_SCREENER_SINA_V2" or state.get("epoch_key")!=epoch_key:
-        queue,discovery,meta=build_discovery(names)
+        queue,discovery,meta=build_discovery(names,FULL_IDENTITY)
         ex_serial=[s+"|"+excluded[s]["reason"] for s in sorted(excluded)]
         state={
           "schema":"XRAY_NASDAQ_SCREENER_SINA_V2",
@@ -369,7 +382,7 @@ def main():
           "expected20":expected20,
           "official_footer":footer,
           "identity_authority":"NASDAQTRADER_EXPLICIT_TYPE_FILTER_V1",
-          "discovery_source":"NASDAQ_OFFICIAL_WEB_SCREENER_PREFILTER_ONLY",
+          "discovery_source":"NASDAQTRADER_FULL_IDENTITY_PLUS_NASDAQ_SCREENER_METADATA_ONLY" if FULL_IDENTITY else "NASDAQ_OFFICIAL_WEB_SCREENER_PREFILTER_ONLY",
           "history_source":"SINA_US_DAILY_ACCELERATOR_NOT_G9",
           "queue":queue,
           "queue_hash":sha_lines(queue),
@@ -469,7 +482,7 @@ def main():
       "execution":"NONE",
       "real_money":"NO-GO",
       "candidate_count":len(candidates),
-      "source":"NASDAQTRADER_IDENTITY_PLUS_NASDAQ_SCREENER_DISCOVERY_PLUS_SINA_WITH_TTL_FAIL_CLOSED_RESOLUTION_OVERLAY",
+      "source":"NASDAQTRADER_FULL_IDENTITY_PLUS_SINA_WITH_TTL_FAIL_CLOSED_RESOLUTION_OVERLAY" if FULL_IDENTITY else "NASDAQTRADER_IDENTITY_PLUS_NASDAQ_SCREENER_DISCOVERY_PLUS_SINA_WITH_TTL_FAIL_CLOSED_RESOLUTION_OVERLAY",
       "market_cap_authority":"UNRESOLVED_UNTIL_CANONICAL_MC_POLICY",
       "candidates":candidates,
     }
