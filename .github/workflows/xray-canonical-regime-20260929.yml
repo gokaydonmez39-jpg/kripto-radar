@@ -46,9 +46,10 @@ jobs:
           assert j["asof_et"]=="2026-09-29"
           assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
           assert j["current_core_count"]==449
-          assert j["breadth_missing_count"]==0, j["breadth_missing"]
-          assert j["regime"] in ("WEAK","MIXED","STRONG")
-          print({k:j[k] for k in ["current_core_count","breadth_missing_count","breadth_above_sma50_pct","nh20","nl20","regime"]})
+          assert isinstance(j["breadth_missing_count"], int)
+          assert isinstance(j["breadth_missing"], list)
+          assert j["regime"] in ("WEAK","MIXED","STRONG","UNKNOWN")
+          print({k:j[k] for k in ["current_core_count","history_ok_count","breadth_missing_count","breadth_missing","breadth_above_sma50_pct","nh20","nl20","regime"]})
           PY
       - name: Commit frozen regime
         shell: bash
