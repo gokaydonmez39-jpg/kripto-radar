@@ -73,7 +73,7 @@ jobs:
                     and (j.get("counts") or {}).get("TOTAL")==expected_count
                     and set((j.get("results") or {}).keys())==set(p.get("pass_symbols") or [])
                     and (
-                      (not settlement_required and j.get("settlement_witness_status") in (None,"NOT_REQUIRED_POINTER_ASOF"))
+                      (not settlement_required and j.get("settlement_witness_status") in (None,"NOT_REQUIRED_POINTER_ASOF","PASS"))
                       or (
                         settlement_required
                         and j.get("settlement_witness_status")=="PASS"
