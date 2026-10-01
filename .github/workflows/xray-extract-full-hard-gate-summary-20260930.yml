@@ -1,10 +1,6 @@
 name: XRAY Extract Full Hard Gate Summary 20260930
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - ".github/workflows/xray-extract-full-hard-gate-summary-20260930.yml"
   workflow_dispatch:
 
 permissions:
