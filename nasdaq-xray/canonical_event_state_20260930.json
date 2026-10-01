@@ -1,0 +1,510 @@
+{
+  "schema": "XRAY_CANONICAL_EVENT_STATE_V1",
+  "task_id": "6a825366222081918997094d76e6ae46",
+  "asof_et": "2026-09-30",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "weekly_scope_count": 104,
+  "weekly_scope": [
+    "AAPL",
+    "ABCL",
+    "AEHR",
+    "AMD",
+    "APA",
+    "APPF",
+    "ARGX",
+    "ASST",
+    "ATRC",
+    "AUGO",
+    "AVT",
+    "BIIB",
+    "BWIN",
+    "CAI",
+    "CDNA",
+    "CHEF",
+    "CLMT",
+    "CLSK",
+    "COHU",
+    "COIN",
+    "COKE",
+    "CORT",
+    "DOCU",
+    "DUOL",
+    "EXEL",
+    "EXLS",
+    "FFIV",
+    "FIVN",
+    "FORM",
+    "FSLY",
+    "FTNT",
+    "GH",
+    "GILD",
+    "GMAB",
+    "GRAL",
+    "GTLB",
+    "HALO",
+    "HOOD",
+    "HTFL",
+    "HUT",
+    "ILMN",
+    "INCY",
+    "INTC",
+    "IOVA",
+    "LITE",
+    "MANH",
+    "MARA",
+    "MEDP",
+    "META",
+    "MKTX",
+    "MMSI",
+    "MRNA",
+    "MRVL",
+    "MRX",
+    "MSFT",
+    "MSTR",
+    "MTCH",
+    "MU",
+    "NBIS",
+    "NDSN",
+    "NESR",
+    "NTAP",
+    "NTNX",
+    "NTRA",
+    "NTSK",
+    "NVDA",
+    "OKTA",
+    "PCTY",
+    "PFG",
+    "PI",
+    "PLTR",
+    "PTGX",
+    "QCOM",
+    "QRVO",
+    "REGN",
+    "RGEN",
+    "RGLD",
+    "RIOT",
+    "ROKU",
+    "SDGR",
+    "SEIC",
+    "SIMO",
+    "SLAB",
+    "SMCI",
+    "SMTC",
+    "SNDK",
+    "SSRM",
+    "SWKS",
+    "TARS",
+    "TEAM",
+    "TECH",
+    "TEM",
+    "TGTX",
+    "TRMD",
+    "TWST",
+    "TXG",
+    "ULTA",
+    "VRNS",
+    "WBD",
+    "WDAY",
+    "WGS",
+    "WIX",
+    "XP",
+    "ZBRA"
+  ],
+  "horizon_sessions": [
+    "2026-10-01",
+    "2026-10-02",
+    "2026-10-05",
+    "2026-10-06",
+    "2026-10-07",
+    "2026-10-08",
+    "2026-10-09",
+    "2026-10-12"
+  ],
+  "same_day_after_close_window": {
+    "market_close_et": "2026-09-30T16:00:00-04:00",
+    "next_rth_open_et": "2026-10-01T09:30:00-04:00",
+    "included": true,
+    "confirmed_events": [
+      "MU"
+    ]
+  },
+  "confirmed_block_count": 1,
+  "confirmed_blocks": {
+    "MU": {
+      "event_status": "BLOCK_CONFIRMED_8SESSION",
+      "event_datetime_et": "2026-09-30T16:30:00-04:00",
+      "reason": "Q4_FY2026_EARNINGS_CALL",
+      "discovery_source": "BIGDATA_CORPORATE_CALENDAR",
+      "official_source": "MICRON_INVESTOR_RELATIONS",
+      "official_url": "https://investors.micron.com/news/press-release/2026/Micron-Technology-to-Report-Fiscal-Fourth-Quarter-Results-on-September-30-2026/default.aspx",
+      "asof_semantics": "EVENT_AFTER_2026-09-30_RTH_CLOSE_BEFORE_NEXT_RTH_ENTRY_WINDOW",
+      "source_proof_path": "nasdaq-xray/canonical_events_family_c_20260929.json",
+      "source_proof_blob_sha": "ee3a43e65ed64e7d0bbf33832403328c9c7fd510"
+    }
+  },
+  "unresolved_count": 1,
+  "unresolved": {
+    "AEHR": {
+      "event_status": "UNKNOWN",
+      "event_datetime_et": "2026-10-05T17:00:00-04:00",
+      "reason": "DISCOVERY_HIT_BUT_OFFICIAL_IR_CONFIRMATION_NOT_FOUND",
+      "discovery_source": "BIGDATA_CORPORATE_CALENDAR",
+      "official_review_source": "AEHR_INVESTOR_RELATIONS",
+      "source_proof_path": "nasdaq-xray/event_official_state.json",
+      "source_proof_blob_sha": "be6ab188fd8e5ff53f2ce9ec979cdf3642008e3e"
+    }
+  },
+  "clean_discovery_count": 102,
+  "event_status_by_symbol": {
+    "AAPL": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "ABCL": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "AEHR": {
+      "event_status": "UNKNOWN",
+      "event_datetime_et": "2026-10-05T17:00:00-04:00",
+      "reason": "DISCOVERY_HIT_BUT_OFFICIAL_IR_CONFIRMATION_NOT_FOUND",
+      "discovery_source": "BIGDATA_CORPORATE_CALENDAR",
+      "official_review_source": "AEHR_INVESTOR_RELATIONS",
+      "source_proof_path": "nasdaq-xray/event_official_state.json",
+      "source_proof_blob_sha": "be6ab188fd8e5ff53f2ce9ec979cdf3642008e3e"
+    },
+    "AMD": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "APA": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "APPF": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "ARGX": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "ASST": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "ATRC": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "AUGO": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "AVT": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "BIIB": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "BWIN": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "CAI": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "CDNA": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "CHEF": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "CLMT": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "CLSK": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "COHU": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "COIN": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "COKE": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "CORT": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "DOCU": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "DUOL": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "EXEL": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "EXLS": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "FFIV": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "FIVN": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "FORM": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "FSLY": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "FTNT": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "GH": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "GILD": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "GMAB": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "GRAL": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "GTLB": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "HALO": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "HOOD": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "HTFL": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "HUT": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "ILMN": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "INCY": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "INTC": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "IOVA": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "LITE": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "MANH": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "MARA": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "MEDP": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "META": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "MKTX": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "MMSI": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "MRNA": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "MRVL": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "MRX": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "MSFT": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "MSTR": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "MTCH": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "MU": {
+      "event_status": "BLOCK_CONFIRMED_8SESSION",
+      "event_datetime_et": "2026-09-30T16:30:00-04:00",
+      "reason": "Q4_FY2026_EARNINGS_CALL",
+      "discovery_source": "BIGDATA_CORPORATE_CALENDAR",
+      "official_source": "MICRON_INVESTOR_RELATIONS",
+      "official_url": "https://investors.micron.com/news/press-release/2026/Micron-Technology-to-Report-Fiscal-Fourth-Quarter-Results-on-September-30-2026/default.aspx",
+      "asof_semantics": "EVENT_AFTER_2026-09-30_RTH_CLOSE_BEFORE_NEXT_RTH_ENTRY_WINDOW",
+      "source_proof_path": "nasdaq-xray/canonical_events_family_c_20260929.json",
+      "source_proof_blob_sha": "ee3a43e65ed64e7d0bbf33832403328c9c7fd510"
+    },
+    "NBIS": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "NDSN": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "NESR": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "NTAP": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "NTNX": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "NTRA": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "NTSK": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "NVDA": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "OKTA": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "PCTY": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "PFG": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "PI": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "PLTR": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "PTGX": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "QCOM": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "QRVO": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "REGN": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "RGEN": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "RGLD": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "RIOT": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "ROKU": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "SDGR": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "SEIC": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "SIMO": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "SLAB": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "SMCI": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "SMTC": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "SNDK": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "SSRM": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "SWKS": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "TARS": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "TEAM": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "TECH": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "TEM": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "TGTX": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "TRMD": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "TWST": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "TXG": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "ULTA": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "VRNS": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "WBD": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "WDAY": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "WGS": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "WIX": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "XP": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "ZBRA": {
+      "event_status": "CLEAN_DISCOVERY"
+    }
+  },
+  "family_c": {
+    "candidate_count": 0,
+    "candidates": [],
+    "reaction_event_hits_in_weekly": [
+      "MU"
+    ],
+    "MU_reason": "Q4_FY2026 event occurs after 2026-09-30 completed RTH; reaction0+1+2 cannot be complete at this frozen as-of and therefore Family C is not eligible."
+  },
+  "source_proof": {
+    "stage1": {
+      "path": "nasdaq-xray/canonical_stage1_20260930.json",
+      "blob_sha": "92968175766378af7cef33f534fac21d4949fbc1"
+    },
+    "event_official": {
+      "path": "nasdaq-xray/event_official_state.json",
+      "blob_sha": "be6ab188fd8e5ff53f2ce9ec979cdf3642008e3e"
+    },
+    "prior_mu_official": {
+      "path": "nasdaq-xray/canonical_events_family_c_20260929.json",
+      "blob_sha": "ee3a43e65ed64e7d0bbf33832403328c9c7fd510"
+    }
+  }
+}
