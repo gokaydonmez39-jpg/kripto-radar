@@ -148,6 +148,38 @@ def classify(by,asof,exp20,source):
         "dv20_lower_bound":lower,"dv20_upper_bound":None if math.isinf(upper) else upper,
     }
 
+
+def load_exception_bridge(asof,queue_hash):
+    path=ROOT/f"canonical_resolver_bridge_{asof.replace('-','')}.json"
+    if not path.exists():
+        return {},{"status":"ABSENT","path":str(path)}
+    try:
+        obj=json.loads(path.read_text())
+        if obj.get("schema")!="XRAY_RESOLVER_EPOCH_RESULT_V1" or obj.get("status")!="COMMITTED":
+            raise ValueError("SCHEMA_OR_STATUS")
+        if obj.get("task_id")!=TASK_ID or obj.get("execution")!="NONE" or obj.get("real_money")!="NO-GO":
+            raise ValueError("SAFETY_OR_TASK")
+        if obj.get("asof_et")!=asof or obj.get("queue_hash")!=queue_hash:
+            raise ValueError("BINDING")
+        hrs=obj.get("history_resolutions") or {}
+        if not isinstance(hrs,dict): raise ValueError("HISTORY_RESOLUTIONS")
+        return hrs,{"status":"PASS","path":str(path),"symbol_hash":obj.get("symbol_hash"),"source_result_task_id":obj.get("source_result_task_id")}
+    except Exception as e:
+        return {},{"status":"INVALID","path":str(path),"reason":f"{type(e).__name__}:{str(e)[:160]}"}
+
+def valid_bridge_history_resolution(x):
+    if not isinstance(x,dict): return False
+    d=x.get("decision")
+    if d=="FAIL_HISTORY":
+        b=x.get("bars")
+        return isinstance(b,int) and 0<=b<HARD_HISTORY and bool(x.get("source")) and bool(x.get("proof"))
+    if d=="FAIL_PRICE":
+        p=num(x.get("price"))
+        return p is not None and p<=HARD_PRICE and bool(x.get("source")) and bool(x.get("proof"))
+    if d=="BLOCK_CURRENT_RUN":
+        return x.get("trade_status")=="Halted" and bool(x.get("last_bar")) and bool(x.get("source"))
+    return False
+
 def main():
     m=json.loads(MANIFEST.read_text())
     asof=m["asof_et"]; exp20=expected20(asof)
@@ -213,6 +245,15 @@ def main():
                 "nasdaq_meta":nmeta,"nasdaq_class":ndc,"nasdaq_info":ndi,
                 "yahoo_meta":ymeta,"yahoo_class":ydc,"yahoo_info":ydi,
             }
+    bridge_history,exception_bridge_meta=load_exception_bridge(asof,m.get("source_queue_hash"))
+    for sym,br in sorted(bridge_history.items()):
+        if sym not in unresolved:
+            continue
+        if not valid_bridge_history_resolution(br):
+            continue
+        resolutions[sym]=dict(br)
+        unresolved.pop(sym,None)
+
     # Preserve prior same-epoch proven resolutions, but never retain a prior
     # resolution for a symbol that is currently UNKNOWN unless this run re-proves it.
     merged=dict(existing_resolutions)
@@ -227,6 +268,7 @@ def main():
         "generated_at_utc":datetime.now(timezone.utc).isoformat(),
         "max_age_hours":24,
         "resolver":"NASDAQ_OFFICIAL_HISTORICAL_PRIMARY_YAHOO_FAIL_ONLY_FALLBACK_MERGE_V2",
+        "exception_bridge_meta":exception_bridge_meta,
         "expected20":exp20,
         "manifest_unknown_count":len(m.get("unknowns",{})),
         "current_resolution_count":len(resolutions),
