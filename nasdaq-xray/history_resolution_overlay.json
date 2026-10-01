@@ -25,11 +25,11 @@
     "2026-09-29",
     "2026-09-30"
   ],
-  "generated_at_utc": "2026-10-01T17:54:05.492Z",
+  "generated_at_utc": "2026-10-01T19:08:44.629Z",
   "manifest_unknown_count": 1,
   "max_age_hours": 24,
   "real_money": "NO-GO",
-  "resolution_count": 65,
+  "resolution_count": 67,
   "resolutions": {
     "ACFN": {
       "bars": 686,
@@ -357,18 +357,18 @@
       "source": "YAHOO_CHART_FREE_FALLBACK"
     },
     "OPNW": {
-      "bars": 686,
       "decision": "FAIL_PRICE",
-      "price": 8.979999542236328,
-      "proof": "EXACT_ASOF_DAILY_CLOSE",
-      "source": "YAHOO_CHART_FREE_FALLBACK"
+      "price": 8.98,
+      "bars": 300,
+      "source": "LONGBRIDGE_DAILY",
+      "proof": "ASOF_2026-09-30_CLOSE_LE_10"
     },
     "OST": {
-      "bars": 686,
-      "decision": "FAIL_PRICE",
-      "price": 1.6950000524520874,
-      "proof": "EXACT_ASOF_DAILY_CLOSE",
-      "source": "YAHOO_CHART_FREE_FALLBACK"
+      "decision": "BLOCK_CURRENT_RUN",
+      "reason": "HALTED_NO_ASOF",
+      "trade_status": "Halted",
+      "last_bar": "2025-09-12",
+      "source": "LONGBRIDGE_QUOTE_DAILY"
     },
     "PAMT": {
       "bars": 686,
@@ -386,11 +386,11 @@
       "source": "YAHOO_CHART_FREE_FALLBACK"
     },
     "PC": {
-      "bars": 505,
-      "decision": "FAIL_PRICE",
-      "price": 9.399999618530273,
-      "proof": "EXACT_ASOF_DAILY_CLOSE",
-      "source": "YAHOO_CHART_FREE_FALLBACK"
+      "decision": "BLOCK_CURRENT_RUN",
+      "reason": "HALTED_NO_ASOF",
+      "trade_status": "Halted",
+      "last_bar": "2025-10-16",
+      "source": "LONGBRIDGE_QUOTE_DAILY"
     },
     "PFAI": {
       "bars": 364,
@@ -478,19 +478,10 @@
     },
     "SVA": {
       "decision": "BLOCK_CURRENT_RUN",
-      "last_bar": "2024-09-04",
-      "proof": {
-        "longbridge_exchange": "NASD",
-        "longbridge_last_done": 6.47,
-        "longbridge_quote_timestamp": "2024-09-04T20:00:00Z",
-        "longbridge_volume": 0,
-        "rallies_current_price": null,
-        "rallies_exchange": "XNAS",
-        "rallies_volume": null
-      },
-      "reason": "CURRENT_TRADE_STATUS_HALTED",
-      "source": "LONGBRIDGE_NASD_QUOTE_PLUS_RALLIES_XNAS_NO_CURRENT_MARKET_DATA",
-      "trade_status": "Halted"
+      "reason": "HALTED_NO_ASOF",
+      "trade_status": "Halted",
+      "last_bar": "2019-02-22",
+      "source": "LONGBRIDGE_QUOTE_DAILY"
     },
     "SVIA": {
       "bars": 330,
@@ -541,8 +532,20 @@
     "CHWM": {
       "decision": "FAIL_HISTORY",
       "bars": 0,
-      "source": "CHILWA_2026-10-01_NASDAQ_LISTING_NOTICE_PLUS_LONGBRIDGE_FIRST_DAILY_BAR_2026-10-01",
-      "proof": "FROZEN_ASOF_2026-09-30_PRECEDES_NASDAQ_TRADING_START_2026-10-01;NO_COMPLETED_NASDAQ_DAILY_BAR_AT_ASOF"
+      "source": "SEC_8A_PLUS_ISSUER_NASDAQ_LISTING_2026-10-01_PLUS_LONGBRIDGE_DAILY",
+      "proof": "NASDAQ_TRADING_BEGINS_AFTER_FROZEN_ASOF_2026-09-30"
+    },
+    "MMEDV": {
+      "decision": "EXCLUDE",
+      "reason": "WHEN_ISSUED",
+      "source": "NASDAQTRADER_SECURITY_NAME",
+      "proof": "OFFICIAL_SECURITY_NAME_COMMON_STOCK_WHEN_ISSUED"
+    },
+    "THRMV": {
+      "decision": "EXCLUDE",
+      "reason": "WHEN_ISSUED",
+      "source": "NASDAQTRADER_SECURITY_NAME",
+      "proof": "OFFICIAL_SECURITY_NAME_COMMON_STOCK_WHEN_ISSUED"
     }
   },
   "resolver": "NASDAQ_OFFICIAL_HISTORICAL_PRIMARY_YAHOO_FAIL_ONLY_FALLBACK_MERGE_V2",
