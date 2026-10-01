@@ -1,12 +1,6 @@
 name: XRAY Canonical PRICE DV20 20260930
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - ".github/workflows/xray-canonical-price-dv20-20260930.yml"
-      - "nasdaq-xray/price_dv20_phase.py"
-      - "nasdaq-xray/canonical_full_hard_gate_20260930_state.json"
   workflow_dispatch:
 
 permissions:
