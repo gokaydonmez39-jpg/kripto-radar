@@ -1,0 +1,58 @@
+name: XRAY Material Signal Delivery
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/material_alert.json"
+      - "nasdaq-xray/delivery_prepare.py"
+      - ".github/workflows/nasdaq-xray-delivery.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: nasdaq-xray-delivery
+  cancel-in-progress: false
+
+jobs:
+  deliver:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Prepare fail-closed alert
+        id: prep
+        shell: bash
+        run: |
+          set -e
+          out=$(python nasdaq-xray/delivery_prepare.py)
+          echo "$out"
+          if echo "$out" | grep -q "XRAY_DELIVERY_READY=PASS"; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create material signal issue
+        if: steps.prep.outputs.ready == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -e
+          signal_id=$(python -c 'import json; print(json.load(open("nasdaq-xray/material_alert.json"))["signal_id"])')
+          ticker=$(python -c 'import json; print(json.load(open("nasdaq-xray/material_alert.json"))["ticker"])')
+          title="[XRAY SIGNAL] $ticker — $signal_id"
+          existing=$(gh issue list --state all --search "$signal_id in:title" --json number --jq '.[0].number // empty')
+          if [ -n "$existing" ]; then
+            echo "Signal issue already exists: #$existing"
+          else
+            gh issue create --title "$title" --body-file nasdaq-xray/material_alert_issue.md --label "xray-signal" ||             gh issue create --title "$title" --body-file nasdaq-xray/material_alert_issue.md
+          fi
