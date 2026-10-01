@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import json, math, os, urllib.parse, urllib.request
+import json, math, os, urllib.parse, urllib.request, hashlib
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -17,6 +17,14 @@ HARD_WEEKLY=52
 WORKERS=int(os.getenv("XRAY_HISTORY_WORKERS","10"))
 UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/126 Safari/537.36"
 NY=ZoneInfo("America/New_York")
+
+def blob_sha(p:Path):
+    b=p.read_bytes()
+    return hashlib.sha1(f"blob {len(b)}\0".encode()+b).hexdigest()
+
+def relpath(p:Path):
+    try:return str(p.relative_to(ROOT.parent)).replace("\\","/")
+    except Exception:return str(p)
 
 def num(x):
     try:
@@ -138,8 +146,10 @@ def main():
     obj={
       "schema":"XRAY_CANONICAL_HISTORY_V1","task_id":TASK_ID,"asof_et":asof,
       "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
-      "source_mc_artifact":src.get("artifact_path") or src.get("source_mc_artifact") or "TASKSTATE_BRIDGE",
-      "source_mc_blob_sha":src.get("artifact_blob_sha") or src.get("source_mc_blob_sha"),
+      "source_mc_artifact":relpath(INPUT),
+      "source_mc_blob_sha":blob_sha(INPUT),
+      "source_mc_policy_hash":src.get("policy_hash"),
+      "source_mc_policy_version":src.get("policy_version"),
       "input_count":len(syms),"thresholds":{"daily":HARD_DAILY,"weekly_completed":HARD_WEEKLY},
       "counts":dict(sorted(counts.items())),"unknown_count":len(unknown),"unknown_symbols":sorted(unknown),
       "pass_count":len(passes),"pass_symbols":passes,
