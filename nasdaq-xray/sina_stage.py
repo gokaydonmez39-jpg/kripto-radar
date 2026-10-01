@@ -26,8 +26,8 @@ import akshare as ak
 import pandas_market_calendars as mcal
 
 TASK_ID="6a825366222081918997094d76e6ae46"
-BUILD="2026-10-01.5"
-IDENTITY_RULESET="V2_WHEN_ISSUED"
+BUILD="2026-10-02.1"
+IDENTITY_RULESET="V3_SPAC_DEFERRED_TO_LEGAL"
 NASDAQ_DIR="https://www.nasdaqtrader.com/dynamic/SymDir/nasdaqlisted.txt"
 NASDAQ_SCREENER="https://api.nasdaq.com/api/screener/stocks"
 ROOT=Path(__file__).resolve().parent
@@ -59,7 +59,6 @@ TYPE_PATTERNS=[
  ("ETN",re.compile(r"\betn\b|exchange[- ]traded notes?",re.I)),
  ("FUND",re.compile(r"\bfund\b",re.I)),
  ("WHEN_ISSUED",re.compile(r"\bwhen[- ]issued\b",re.I)),
- ("SPAC",re.compile(r"\bspac\b|\bblank check\b",re.I)),
 ]
 
 def sha_lines(items):
@@ -422,7 +421,7 @@ def main():
           "asof_et":asof,
           "expected20":expected20,
           "official_footer":footer,
-          "identity_authority":"NASDAQTRADER_EXPLICIT_TYPE_FILTER_V2_WHEN_ISSUED",
+          "identity_authority":"NASDAQTRADER_EXPLICIT_TYPE_FILTER_V3_SPAC_DEFERRED_TO_LEGAL",
           "identity_ruleset":IDENTITY_RULESET,
           "discovery_source":"NASDAQTRADER_FULL_IDENTITY_PLUS_NASDAQ_SCREENER_METADATA_ONLY" if FULL_IDENTITY else "NASDAQ_OFFICIAL_WEB_SCREENER_PREFILTER_ONLY",
           "history_source":"SINA_US_DAILY_ACCELERATOR_NOT_G9",
