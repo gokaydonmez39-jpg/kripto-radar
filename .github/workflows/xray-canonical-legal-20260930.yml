@@ -1,14 +1,8 @@
 name: XRAY Canonical LEGAL 20260930
 # force latest-main legal rerun
 on:
-  push:
-    branches: [main]
-    paths:
-      - "nasdaq-xray/canonical_history_20260930.json"
-      - "nasdaq-xray/legal_phase.py"
-      - "nasdaq-xray/canonical_legal_proof_20260930.json"
-      - ".github/workflows/xray-canonical-legal-20260930.yml"
   workflow_dispatch:
+
 permissions:
   contents: write
 concurrency:
