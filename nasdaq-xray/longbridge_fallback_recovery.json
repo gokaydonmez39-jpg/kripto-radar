@@ -10,7 +10,7 @@
   "source_primary_summary_hash": "d9473aa103dad1964aba08c98764fc7be8f78093f8344d9722678631318d5d43",
   "source_missing_group_hash": "d55174eb1df105baf2b43a208d8871f88f263afeee8ff55aad507c75d9263273",
   "total_missing": 356,
-  "cursor": 264,
+  "cursor": 280,
   "results": {
     "AACI": {
       "status": "FAIL_DV20",
@@ -1614,7 +1614,101 @@
       "status": "FAIL_DV20",
       "price": 10.74,
       "dv20": 13559.515000000001
+    },
+    "PONO": {
+      "status": "FAIL_DV20",
+      "price": 10.02,
+      "dv20": 470.93999999999994
+    },
+    "PTAC": {
+      "status": "FAIL_PRICE",
+      "price": 9.96,
+      "dv20": 129.78
+    },
+    "PTOR": {
+      "status": "FAIL_PRICE",
+      "price": 9.96,
+      "dv20": 149732.37550000002
+    },
+    "QADR": {
+      "status": "FAIL_PRICE",
+      "price": 10,
+      "dv20": 913.705
+    },
+    "QETA": {
+      "status": "FAIL_DV20",
+      "price": 11.81,
+      "dv20": 300.855
+    },
+    "QH": {
+      "status": "FAIL_PRICE",
+      "price": 3.7,
+      "dv20": 11485.37
+    },
+    "QSEA": {
+      "status": "FAIL_DV20",
+      "price": 10.69,
+      "dv20": 11385.195
+    },
+    "QUMS": {
+      "status": "FAIL_DV20",
+      "price": 10.34,
+      "dv20": 4585.79
+    },
+    "RACC": {
+      "status": "FAIL_DV20",
+      "price": 10.88,
+      "dv20": 312668.02
+    },
+    "RACD": {
+      "status": "FAIL_DV20",
+      "price": 12,
+      "dv20": 26650.86
+    },
+    "RANG": {
+      "status": "FAIL_DV20",
+      "price": 10.86,
+      "dv20": 779.76
+    },
+    "RDAG": {
+      "status": "FAIL_DV20",
+      "price": 10.44,
+      "dv20": 44158.869999999995
+    },
+    "RFAM": {
+      "status": "FAIL_PRICE",
+      "price": 9.99,
+      "dv20": 12977.32
+    },
+    "RIBB": {
+      "status": "FAIL_PRICE",
+      "price": 8.38,
+      "dv20": 172200.125
+    },
+    "RML": {
+      "status": "UNKNOWN_EXACT20_MISSING",
+      "missing": [
+        "2026-09-01",
+        "2026-09-02",
+        "2026-09-03",
+        "2026-09-04",
+        "2026-09-08"
+      ]
+    },
+    "RNAQ": {
+      "status": "UNKNOWN_EXACT20_MISSING",
+      "missing": [
+        "2026-09-01",
+        "2026-09-02",
+        "2026-09-03",
+        "2026-09-04",
+        "2026-09-08",
+        "2026-09-09",
+        "2026-09-10",
+        "2026-09-11",
+        "2026-09-14"
+      ]
     }
   },
-  "updated_at_utc": "2026-10-01T00:00:05Z"
+  "updated_at_utc": "2026-10-01T00:00:20Z"
 }
