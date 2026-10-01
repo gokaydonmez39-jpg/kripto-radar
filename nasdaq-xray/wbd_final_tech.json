@@ -1,0 +1,40 @@
+{
+  "schema": "XRAY_WBD_FINAL_TECH_V1",
+  "task_id": "6a825366222081918997094d76e6ae46",
+  "asof_et": "2026-09-30",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "ticker": "WBD",
+  "setup": "B_TIGHT_BASE",
+  "regime": "MIXED",
+  "price_discovery_verified": true,
+  "historical_resistance_above_trigger_close_found": false,
+  "synthetic_target_used": true,
+  "synthetic_target_policy_ceiling": "MAX_ORANGE_NEVER_GREEN",
+  "levels": {
+    "A": 0.39735319439514216,
+    "P": 30.9,
+    "anchor": 30.68,
+    "trigger_close": 30.95,
+    "entry_model": 30.999338298598783,
+    "entry_high": 30.999338298598783,
+    "chase_limit": 31.09867659719757,
+    "S0": 30.600529361120973,
+    "T1": 32.092059583185424
+  },
+  "risk": {
+    "risk_atr": 1.0036635997978667,
+    "risk_percent": 0.012865079042536745,
+    "extension_percent": 0.0016181229773462036
+  },
+  "rr": {
+    "basic": 2.118532121789022,
+    "basic_threshold": 2,
+    "basic_pass": true,
+    "severe": 1.49634532637651,
+    "severe_threshold": 1.5,
+    "severe_pass": false
+  },
+  "result": "FAIL_SEVERE_RR",
+  "note": "Threshold not rounded or relaxed. Observed spread can only make RR more conservative."
+}
