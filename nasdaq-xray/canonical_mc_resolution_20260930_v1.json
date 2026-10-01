@@ -4172,5 +4172,8 @@
     "conservative_min_market_cap_usd": 2629479485,
     "state_cap": "WATCH",
     "r92_eligible": false
-  }
+  },
+  "canonical_role": "PREORDER_NONAUTHORITATIVE",
+  "superseded_reason": "INPUT_WAS_COMBINED_PRICE_DV20_HISTORY_LEGAL_PASS_SET;CANONICAL_POLICY_REQUIRES_MC_BEFORE_HISTORY_AND_LEGAL",
+  "superseded_by_pending": "nasdaq-xray/canonical_price_dv20_20260930.json -> canonical MC recomputation"
 }
