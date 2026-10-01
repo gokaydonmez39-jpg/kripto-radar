@@ -1,0 +1,159 @@
+name: XRAY Canonical Deep Final V2 20260930
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/canonical_regime_20260930.json"
+      - "nasdaq-xray/canonical_stage1_20260930.json"
+      - "nasdaq-xray/canonical_event_state_20260930.json"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: xray-canonical-deep-final-v2-20260930
+  cancel-in-progress: false
+
+jobs:
+  deep-final:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      XRAY_STAGE1_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_stage1_20260930.json
+      XRAY_REGIME_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_regime_20260930.json
+      XRAY_EVENT_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_event_state_20260930.json
+      XRAY_DEEP_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_deep_full_20260930.json
+      XRAY_DEEP_WORKERS: "10"
+      XRAY_FINAL_DEEP_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_deep_full_20260930.json
+      XRAY_FINAL_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_final_tech_20260930.json
+      XRAY_FINAL_WORKERS: "8"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Verify corrected canonical inputs
+        run: |
+          python - <<'PY'
+          import json
+          st=json.load(open("nasdaq-xray/canonical_stage1_20260930.json"))
+          rg=json.load(open("nasdaq-xray/canonical_regime_20260930.json"))
+          ev=json.load(open("nasdaq-xray/canonical_event_state_20260930.json"))
+          assert st["schema"]=="XRAY_STAGE1_SHADOW_V1"
+          assert st["task_id"]=="6a825366222081918997094d76e6ae46"
+          assert st["asof_et"]=="2026-09-30" and st["unknown_count"]==0
+          assert st["input_current_core_count"]==477
+          assert len(st["state_caps"])==477
+          assert len(st["r92_ineligible"])==35
+          assert sum(1 for v in st["state_caps"].values() if v=="WATCH")==35
+          assert rg["schema"]=="XRAY_REGIME_BREADTH_SHADOW_V1"
+          assert rg["task_id"]==st["task_id"] and rg["asof_et"]==st["asof_et"]
+          assert rg["current_core_count"]==477 and rg["history_ok_count"]==477
+          assert rg["breadth_missing_count"]==0
+          assert rg["regime"] in {"STRONG","MIXED","WEAK"}
+          assert ev["schema"]=="XRAY_CANONICAL_EVENT_STATE_V1"
+          assert ev["task_id"]==st["task_id"] and ev["asof_et"]==st["asof_et"]
+          assert set(ev["weekly_scope"])==set(st["weekly_pass"])
+          assert ev["weekly_scope_count"]==st["weekly_pass_count"]
+          assert set(ev["event_status_by_symbol"])==set(st["weekly_pass"])
+          assert ev["clean_discovery_count"]+ev["confirmed_block_count"]+ev["unresolved_count"]==st["weekly_pass_count"]
+          print({
+            "stage1_input":st["input_current_core_count"],
+            "weekly_scope":st["weekly_pass_count"],
+            "regime":rg["regime"],
+            "event_confirmed":ev["confirmed_block_count"],
+            "event_unresolved":ev["unresolved_count"]
+          })
+          PY
+
+      - name: Compile
+        run: python -m py_compile nasdaq-xray/deep_pre_r1_shadow.py nasdaq-xray/final_tech_shadow.py
+
+      - name: Install zero-dollar runtime
+        run: python -m pip install --disable-pip-version-check akshare==1.18.95 pandas_market_calendars
+
+      - name: Run corrected full deep
+        run: python nasdaq-xray/deep_pre_r1_shadow.py
+
+      - name: Validate corrected deep
+        run: |
+          python - <<'PY'
+          import json
+          st=json.load(open("nasdaq-xray/canonical_stage1_20260930.json"))
+          ev=json.load(open("nasdaq-xray/canonical_event_state_20260930.json"))
+          j=json.load(open("nasdaq-xray/canonical_deep_full_20260930.json"))
+          assert j["schema"]=="XRAY_DEEP_PRE_R1_SHADOW_V1"
+          assert j["task_id"]==st["task_id"] and j["asof_et"]==st["asof_et"]
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          assert j["event_state_fresh"] is True
+          assert j["input_weekly_pass_count"]==st["weekly_pass_count"]
+          assert set(j["results"])==set(st["weekly_pass"])
+          assert j["unknown_history_count"]==0,j["unknown_history"]
+          assert set(j["r92_ineligible"])==set(st["r92_ineligible"]) & set(st["weekly_pass"])
+          assert {s for s,v in j["state_caps"].items() if v=="WATCH"}==({s for s,v in st["state_caps"].items() if v=="WATCH"} & set(st["weekly_pass"]))
+          affected=[
+            s for s,r in j["results"].items()
+            if r.get("event_status")=="UNKNOWN"
+            and r.get("mixed_rs_pass")
+            and (r.get("A",{}).get("pool") or r.get("B",{}).get("breakout_confirmed") or r.get("D",{}).get("dk3_pre_r1"))
+          ]
+          assert not affected,affected
+          print({
+            "A":j["a_geometry_rs_event_pass_count"],
+            "B_breakout":j["b_breakout_rs_event_pass_count"],
+            "B_armed":j["b_armed_rs_event_pass_count"],
+            "D":j["d_dk3_pre_r1_count"],
+            "affected_event_unknown":affected
+          })
+          PY
+
+      - name: Run corrected final tech
+        run: python nasdaq-xray/final_tech_shadow.py
+
+      - name: Validate corrected final
+        run: |
+          python - <<'PY'
+          import json
+          d=json.load(open("nasdaq-xray/canonical_deep_full_20260930.json"))
+          j=json.load(open("nasdaq-xray/canonical_final_tech_20260930.json"))
+          confirmed=set()
+          confirmed|={f"{s}|A" for s in d.get("a_geometry_rs_event_pass",[])}
+          confirmed|={f"{s}|B" for s in d.get("b_breakout_rs_event_pass",[])}
+          confirmed|={f"{s}|D" for s in d.get("d_dk3_pre_r1",[])}
+          assert j["schema"]=="XRAY_FINAL_TECH_SHADOW_V1"
+          assert j["task_id"]==d["task_id"] and j["asof_et"]==d["asof_et"]
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          assert set(j["results"])==confirmed
+          assert j["input_confirmed_family_candidates"]==len(confirmed)
+          assert not {k:v for k,v in j["results"].items() if v.get("result")=="UNKNOWN"}
+          assert j["pre_g9_tech_pass_count"]==len(j["pre_g9_tech_pass"])
+          for k in j["pre_g9_tech_pass"]:
+              assert j["results"][k]["state_cap"]!="WATCH"
+              assert j["results"][k]["r92_eligible"] is True
+          print({
+            "confirmed":sorted(confirmed),
+            "pre_g9":j["pre_g9_tech_pass"],
+            "watch":j["watch"],
+            "fail":j["fail"]
+          })
+          PY
+
+      - name: Commit corrected canonical deep/final
+        shell: bash
+        run: |
+          set -e
+          git config user.name "xray-dataplane-bot"
+          git config user.email "xray-dataplane-bot@users.noreply.github.com"
+          git add nasdaq-xray/canonical_deep_full_20260930.json nasdaq-xray/canonical_final_tech_20260930.json
+          git commit -m "chore(xray): corrected canonical deep final 2026-09-30 [skip ci]" || exit 0
+          for attempt in 1 2 3 4 5; do
+            if git pull --rebase origin main && git push; then exit 0; fi
+            sleep $((attempt*2))
+          done
+          exit 1
