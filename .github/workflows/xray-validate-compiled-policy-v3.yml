@@ -1,0 +1,49 @@
+name: XRAY Validate Compiled Policy V3
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/xray-validate-compiled-policy-v3.yml"
+      - "nasdaq-xray/chatgpt_compiled_policy_v3.json"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate C4.11 settlement-only repair
+        run: |
+          python - <<'PY'
+          import json,hashlib
+          old=json.load(open("nasdaq-xray/chatgpt_compiled_policy_v2.json"))
+          top=json.load(open("nasdaq-xray/chatgpt_compiled_policy_v3.json"))
+          assert top["schema"]=="XRAY_GITHUB_COMPILED_POLICY_V3"
+          assert top["execution"]=="NONE" and top["real_money"]=="NO-GO"
+          payload=top["payload_json"]
+          h=hashlib.sha256(payload.encode()).hexdigest()
+          assert h==top["policy_hash"],(h,top["policy_hash"])
+          x=json.loads(payload); y=json.loads(old["payload_json"])
+          assert x["version"]=="C4.11"
+          assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
+          assert x["unknown_never_pass"] is True and x["zero_dollar_hard_cap"] is True
+          for k in ["universe","hard_gates","mc","dv20","technical","geometry","setups","r1_rr","regime","events_account","lifecycle","g9","r92_r93","coverage","delivery"]:
+              assert x[k]==y[k],k
+          assert x["policy_change"]["base_policy_hash"]==old["policy_hash"]
+          assert x["policy_change"]["no_alpha_threshold_change"] is True
+          assert x["policy_change"]["no_g9_change"] is True
+          assert x["policy_change"]["no_account_change"] is True
+          assert x["policy_change"]["no_execution_change"] is True
+          assert x["policy_change"]["settlement_method_change_only"] is True
+          s=x["settlement"]
+          assert "ALPACA_HISTORICAL_SIP_DAILY_AFTER_15M"==s["primary"]
+          assert "NON-G9" in s["g9_separation"]
+          assert "volume authority" in s["sequential"]
+          assert "OHLC" in s["crosscheck"]
+          print({"policy_hash":h,"version":x["version"],"status":"PASS"})
+          PY
