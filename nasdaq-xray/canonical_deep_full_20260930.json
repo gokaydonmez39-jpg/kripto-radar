@@ -45,9 +45,17 @@
   "d_geometry_rs_count": 0,
   "event_state_fresh": true,
   "execution": "NONE",
-  "input_weekly_pass_count": 104,
+  "input_weekly_pass_count": 106,
   "mode": "FULL_SHADOW",
-  "r92_ineligible": [],
+  "r92_ineligible": [
+    "GTLB",
+    "MRX",
+    "MXL",
+    "ONC",
+    "TEM",
+    "VOD",
+    "WGS"
+  ],
   "real_money": "NO-GO",
   "regime": "MIXED",
   "remaining_gates": [
@@ -980,10 +988,10 @@
       },
       "event_status": "CLEAN_DISCOVERY",
       "mixed_rs_pass": true,
-      "r92_eligible": true,
+      "r92_eligible": false,
       "rs20": 0.002391178549669082,
       "rs60": 0.39036967457973937,
-      "state_cap": "NORMAL",
+      "state_cap": "WATCH",
       "status": "EVALUATED"
     },
     "HALO": {
@@ -1452,10 +1460,10 @@
       },
       "event_status": "CLEAN_DISCOVERY",
       "mixed_rs_pass": false,
-      "r92_eligible": true,
+      "r92_eligible": false,
       "rs20": -0.08110500540509413,
       "rs60": -0.004628020310007752,
-      "state_cap": "NORMAL",
+      "state_cap": "WATCH",
       "status": "EVALUATED"
     },
     "MSFT": {
@@ -1562,6 +1570,39 @@
       "rs20": 0.09149993258057032,
       "rs60": 0.08850030139629572,
       "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "MXL": {
+      "A": {
+        "pool": false,
+        "reason": "NOT_A_STAGE1"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "A": 6.508028199942737,
+        "P": 88.98,
+        "anchor": 79.69,
+        "close": 90.31,
+        "d": 1.4274676929153052,
+        "dd120": -0.29461844880106225,
+        "dd252": -0.29461844880106225,
+        "dk3_pre_r1": false,
+        "ema50": 76.10016157370531,
+        "hl_date": "2026-09-24",
+        "pool": true,
+        "rs20": 0.5000454647299921,
+        "rs60": 0.009160321602158739,
+        "rvol20": 0.7158014765770736
+      },
+      "event_status": "CLEAN_DISCOVERY",
+      "mixed_rs_pass": true,
+      "r92_eligible": false,
+      "rs20": 0.5000454647299921,
+      "rs60": 0.009160321602158739,
+      "state_cap": "WATCH",
       "status": "EVALUATED"
     },
     "NBIS": {
@@ -1805,6 +1846,27 @@
       "rs20": 0.20187374291616567,
       "rs60": 0.3506689865421837,
       "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "ONC": {
+      "A": {
+        "pool": false,
+        "reason": "NO_REVERSAL"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "CLEAN_DISCOVERY",
+      "mixed_rs_pass": false,
+      "r92_eligible": false,
+      "rs20": -0.02400261842233886,
+      "rs60": 0.13584863829532812,
+      "state_cap": "WATCH",
       "status": "EVALUATED"
     },
     "PCTY": {
@@ -2304,39 +2366,6 @@
       "state_cap": "NORMAL",
       "status": "EVALUATED"
     },
-    "SNDK": {
-      "A": {
-        "pool": false,
-        "reason": "NOT_A_STAGE1"
-      },
-      "B": {
-        "pool": false,
-        "reason": "NOT_B_STAGE1"
-      },
-      "D": {
-        "A": 108.16675875618307,
-        "P": 1909.48,
-        "anchor": 1659.02,
-        "close": 1739.89,
-        "d": 2.315498799077061,
-        "dd120": -0.25486509635974297,
-        "dd252": -0.25486509635974297,
-        "dk3_pre_r1": false,
-        "ema50": 1617.5619888822102,
-        "hl_date": "2026-09-28",
-        "pool": true,
-        "rs20": 0.08292983136230658,
-        "rs60": 0.031422594588071284,
-        "rvol20": 0.6847849508809011
-      },
-      "event_status": "CLEAN_DISCOVERY",
-      "mixed_rs_pass": true,
-      "r92_eligible": true,
-      "rs20": 0.08292983136230658,
-      "rs60": 0.031422594588071284,
-      "state_cap": "NORMAL",
-      "status": "EVALUATED"
-    },
     "SSRM": {
       "A": {
         "pool": false,
@@ -2498,10 +2527,10 @@
       },
       "event_status": "CLEAN_DISCOVERY",
       "mixed_rs_pass": true,
-      "r92_eligible": true,
+      "r92_eligible": false,
       "rs20": 0.2581160261880189,
       "rs60": 0.30705701454307044,
-      "state_cap": "NORMAL",
+      "state_cap": "WATCH",
       "status": "EVALUATED"
     },
     "TGTX": {
@@ -2622,6 +2651,27 @@
       "rs20": -0.042538364255345296,
       "rs60": 0.15423788588948173,
       "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "VOD": {
+      "A": {
+        "pool": false,
+        "reason": "NOT_A_STAGE1"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "CLEAN_DISCOVERY",
+      "mixed_rs_pass": false,
+      "r92_eligible": false,
+      "rs20": -0.03747249555589338,
+      "rs60": 0.18679265384182497,
+      "state_cap": "WATCH",
       "status": "EVALUATED"
     },
     "VRNS": {
@@ -2755,10 +2805,10 @@
       },
       "event_status": "CLEAN_DISCOVERY",
       "mixed_rs_pass": false,
-      "r92_eligible": true,
+      "r92_eligible": false,
       "rs20": -0.1845320579495977,
       "rs60": 0.059840696683936656,
-      "state_cap": "NORMAL",
+      "state_cap": "WATCH",
       "status": "EVALUATED"
     },
     "WIX": {
@@ -2875,7 +2925,7 @@
     "GILD": "NORMAL",
     "GMAB": "NORMAL",
     "GRAL": "NORMAL",
-    "GTLB": "NORMAL",
+    "GTLB": "WATCH",
     "HALO": "NORMAL",
     "HOOD": "NORMAL",
     "HTFL": "NORMAL",
@@ -2893,11 +2943,12 @@
     "MMSI": "NORMAL",
     "MRNA": "NORMAL",
     "MRVL": "NORMAL",
-    "MRX": "NORMAL",
+    "MRX": "WATCH",
     "MSFT": "NORMAL",
     "MSTR": "NORMAL",
     "MTCH": "NORMAL",
     "MU": "NORMAL",
+    "MXL": "WATCH",
     "NBIS": "NORMAL",
     "NDSN": "NORMAL",
     "NESR": "NORMAL",
@@ -2907,6 +2958,7 @@
     "NTSK": "NORMAL",
     "NVDA": "NORMAL",
     "OKTA": "NORMAL",
+    "ONC": "WATCH",
     "PCTY": "NORMAL",
     "PFG": "NORMAL",
     "PI": "NORMAL",
@@ -2925,22 +2977,22 @@
     "SLAB": "NORMAL",
     "SMCI": "NORMAL",
     "SMTC": "NORMAL",
-    "SNDK": "NORMAL",
     "SSRM": "NORMAL",
     "SWKS": "NORMAL",
     "TARS": "NORMAL",
     "TEAM": "NORMAL",
     "TECH": "NORMAL",
-    "TEM": "NORMAL",
+    "TEM": "WATCH",
     "TGTX": "NORMAL",
     "TRMD": "NORMAL",
     "TWST": "NORMAL",
     "TXG": "NORMAL",
     "ULTA": "NORMAL",
+    "VOD": "WATCH",
     "VRNS": "NORMAL",
     "WBD": "NORMAL",
     "WDAY": "NORMAL",
-    "WGS": "NORMAL",
+    "WGS": "WATCH",
     "WIX": "NORMAL",
     "XP": "NORMAL",
     "ZBRA": "NORMAL"
