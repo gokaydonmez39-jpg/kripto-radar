@@ -1,6 +1,6 @@
 {
   "asof_et": "2026-09-30",
-  "candidate_count": 482,
+  "candidate_count": 483,
   "candidates": {
     "AAL": {
       "bars": 3087,
@@ -1553,6 +1553,23 @@
       "screener_market_cap_shadow": 2229859228.0,
       "screener_price_shadow": 31.27,
       "security_name": "Structure Therapeutics Inc. - American Depositary Shares"
+    },
+    "GRAL": {
+      "bars": 300,
+      "dv20_gate_pass_by_bound": true,
+      "dv20_lower_bound": 118132920.67,
+      "dv20_upper_bound": 121792809.38,
+      "known_session_count": 19,
+      "missing_sessions": [
+        "2026-09-23"
+      ],
+      "no_synthetic_bar": true,
+      "price": 140.12,
+      "proof": "EXACT20_MEDIAN_INTERVAL_WITH_ONE_UNKNOWN_NONNEGATIVE_DOLLAR_VOLUME",
+      "resolution_source": "LONGBRIDGE_DAILY_BOUND_PROOF",
+      "screener_market_cap_shadow": 6258632708.0,
+      "screener_price_shadow": 140.12,
+      "security_name": "GRAIL, Inc. - Common Stock"
     },
     "GTLB": {
       "bars": 1245,
@@ -3863,6 +3880,6 @@
   "market_cap_authority": "UNRESOLVED_UNTIL_CANONICAL_MC_POLICY",
   "real_money": "NO-GO",
   "schema": "XRAY_SINA_CANDIDATES_V2",
-  "source": "NASDAQTRADER_IDENTITY_PLUS_NASDAQ_SCREENER_DISCOVERY_PLUS_SINA_PRICE_DV20_HISTORY",
+  "source": "NASDAQTRADER_IDENTITY_PLUS_NASDAQ_SCREENER_DISCOVERY_PLUS_SINA_WITH_TTL_FAIL_CLOSED_RESOLUTION_OVERLAY",
   "task_id": "6a825366222081918997094d76e6ae46"
 }
