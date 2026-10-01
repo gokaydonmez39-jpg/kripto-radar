@@ -23,10 +23,10 @@
     "5a8ccd53-0366-4cca-a78b-c5d7cd0f01c9"
   ],
   "counts": {
-    "MC_PASS_PRIMARY": 439,
+    "MC_PASS_PRIMARY": 441,
     "MC_FAIL_PRIMARY": 10,
-    "MC_PASS_FALLBACK_WATCH": 34,
-    "MC_UNKNOWN": 3,
+    "MC_PASS_FALLBACK_WATCH": 35,
+    "MC_UNKNOWN": 0,
     "TOTAL": 486
   },
   "primary_pass_symbols": [
@@ -152,6 +152,7 @@
     "DASH",
     "DBX",
     "DDOG",
+    "DKNG",
     "DLTR",
     "DNTH",
     "DOCU",
@@ -407,6 +408,7 @@
     "TMDX",
     "TMUS",
     "TNGX",
+    "TPG",
     "TRMB",
     "TRMD",
     "TROW",
@@ -485,6 +487,7 @@
   "fallback_watch_symbols": [
     "AKAM",
     "BIDU",
+    "BRZE",
     "CCEP",
     "COCO",
     "CORZ",
@@ -518,11 +521,7 @@
     "VOD",
     "WGS"
   ],
-  "unknown_symbols": [
-    "BRZE",
-    "DKNG",
-    "TPG"
-  ],
+  "unknown_symbols": [],
   "results": {
     "AAL": {
       "status": "MC_PASS_PRIMARY",
@@ -971,15 +970,22 @@
       "listing": "XNAS:BRKR"
     },
     "BRZE": {
-      "status": "MC_UNKNOWN",
-      "primary_reason": "PRIMARY_IDENTITY_UNRESOLVED",
-      "bigdata_entity_id": null,
-      "mode": "FAIL_CLOSED",
+      "status": "MC_PASS_FALLBACK_WATCH",
+      "mode": "THREE_SOURCE_UNANIMOUS_BUFFERED_FALLBACK",
+      "bigdata_entity_id": "A6CD8C",
+      "provider_listing": "XNGS:BRZE",
+      "canonical_exchange_family": "NASDAQ",
+      "bigdata_market_cap_usd": null,
       "rallies_exchange": "XNAS",
-      "longbridge_exchange": "NASD",
       "rallies_market_cap_usd": 2629479485,
+      "longbridge_exchange": "NASD",
       "longbridge_market_cap_usd": 2942404581.44,
-      "relative_diff": 0.1063501254769172
+      "alphastocks_exchange": "NASDAQ NMS - GLOBAL MARKET",
+      "alphastocks_market_cap_usd": 2852105002.2860556,
+      "conservative_min_market_cap_usd": 2629479485,
+      "each_source_minimum_required_usd": 2100000000,
+      "state_cap": "WATCH",
+      "r92_eligible": false
     },
     "BSP": {
       "status": "MC_PASS_PRIMARY",
@@ -1482,15 +1488,13 @@
       "listing": "XNAS:DDOG"
     },
     "DKNG": {
-      "status": "MC_UNKNOWN",
-      "primary_reason": "PRIMARY_IDENTITY_UNRESOLVED",
-      "bigdata_entity_id": null,
-      "mode": "FAIL_CLOSED",
-      "rallies_exchange": "XNAS",
-      "longbridge_exchange": "NASD",
-      "rallies_market_cap_usd": 9725534800,
-      "longbridge_market_cap_usd": 17118701108.75,
-      "relative_diff": 0.4318765928433133
+      "status": "MC_PASS_PRIMARY",
+      "mode": "BIGDATA_EXACT_NASDAQ_SEGMENT_MIC_COMPANY_PUBLIC_USD",
+      "market_cap_usd": 11794636070,
+      "bigdata_entity_id": "HGGE2U",
+      "provider_listing": "XNGS:DKNG",
+      "canonical_exchange_family": "NASDAQ",
+      "mic_normalization": "XNGS_TO_NASDAQ_FAMILY_IDENTITY_ONLY"
     },
     "DLTR": {
       "status": "MC_PASS_PRIMARY",
@@ -3652,15 +3656,13 @@
       "listing": "XNAS:TNGX"
     },
     "TPG": {
-      "status": "MC_UNKNOWN",
-      "primary_reason": "PRIMARY_IDENTITY_UNRESOLVED",
-      "bigdata_entity_id": null,
-      "mode": "FAIL_CLOSED",
-      "rallies_exchange": "XNAS",
-      "longbridge_exchange": "NASD",
-      "rallies_market_cap_usd": 7252103414,
-      "longbridge_market_cap_usd": 17322382799.37,
-      "relative_diff": 0.5813449282356378
+      "status": "MC_PASS_PRIMARY",
+      "mode": "BIGDATA_EXACT_NASDAQ_SEGMENT_MIC_COMPANY_PUBLIC_USD",
+      "market_cap_usd": 16916584009,
+      "bigdata_entity_id": "FOUOG7",
+      "provider_listing": "XNGS:TPG",
+      "canonical_exchange_family": "NASDAQ",
+      "mic_normalization": "XNGS_TO_NASDAQ_FAMILY_IDENTITY_ONLY"
     },
     "TRI": {
       "status": "MC_PASS_FALLBACK_WATCH",
@@ -4142,5 +4144,33 @@
       "bigdata_entity_id": "D44D33",
       "listing": "XNAS:ZS"
     }
+  },
+  "policy_ref": {
+    "path": "nasdaq-xray/chatgpt_compiled_policy_v2.json",
+    "blob_sha": "f94664d8b241913a49a8a90a982bad33442f01c3",
+    "policy_hash": "8fa4d40d4093cc94fb9a6c6669c5f38d4684bfa8ca3fbe25696387cd46b163cf",
+    "version": "C4.10"
+  },
+  "provider_identity_normalization": {
+    "accepted_provider_mics": [
+      "XNAS",
+      "XNGS",
+      "XNMS",
+      "XNCM"
+    ],
+    "scope": "NASDAQ_FAMILY_IDENTITY_ONLY",
+    "no_threshold_change": true
+  },
+  "three_source_fallback_proof": {
+    "symbol": "BRZE",
+    "bigdata_exact_identity": "XNGS:BRZE",
+    "bigdata_market_cap": null,
+    "rallies_xnas_market_cap_usd": 2629479485,
+    "longbridge_nasd_market_cap_usd": 2942404581.44,
+    "alphastocks_nasdaq_market_cap_usd": 2852105002.2860556,
+    "unanimous_ge_2100000000": true,
+    "conservative_min_market_cap_usd": 2629479485,
+    "state_cap": "WATCH",
+    "r92_eligible": false
   }
 }
