@@ -1,0 +1,47 @@
+name: XRAY Validate Compiled Policy V2
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/xray-validate-compiled-policy-v2.yml"
+      - "nasdaq-xray/chatgpt_compiled_policy_v2.json"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate C4.10 compiled policy
+        run: |
+          python - <<'PY'
+          import json,hashlib
+          p="nasdaq-xray/chatgpt_compiled_policy_v2.json"
+          top=json.load(open(p))
+          assert top["schema"]=="XRAY_GITHUB_COMPILED_POLICY_V2"
+          assert top["execution"]=="NONE" and top["real_money"]=="NO-GO"
+          payload=top["payload_json"]
+          h=hashlib.sha256(payload.encode()).hexdigest()
+          assert h==top["policy_hash"],(h,top["policy_hash"])
+          x=json.loads(payload)
+          assert x["version"]=="C4.10"
+          assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
+          assert x["unknown_never_pass"] is True
+          assert x["zero_dollar_hard_cap"] is True
+          assert x["hard_gates"]["price"]==">10"
+          assert x["hard_gates"]["market_cap"]==">=2000000000 USD"
+          assert x["hard_gates"]["dv20"]=="median exactly20 completed official-RTH Close*regular-session Volume >=50000000"
+          assert x["hard_gates"]["daily_history"]==">=260 completed"
+          assert x["hard_gates"]["weekly_history"]==">=52 completed"
+          assert x["policy_change"]["no_alpha_threshold_change"] is True
+          assert x["policy_change"]["no_g9_change"] is True
+          assert "XNGS" in x["mc"]["primary"] and "XNMS" in x["mc"]["primary"] and "XNCM" in x["mc"]["primary"]
+          assert "AlphaStocks" in x["mc"]["fallback"]
+          assert "WATCH" in x["mc"]["fallback"] and "R92=false" in x["mc"]["fallback"]
+          print({"policy_hash":h,"version":x["version"],"status":"PASS"})
+          PY
