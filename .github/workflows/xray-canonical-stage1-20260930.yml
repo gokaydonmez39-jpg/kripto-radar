@@ -2,13 +2,8 @@ name: XRAY Canonical Stage1 20260930
 # force latest-main stage1 rerun
 # C4.14 primary-only stage1 rerun
 on:
-  push:
-    branches: [main]
-    paths:
-      - "nasdaq-xray/canonical_legal_20260930.json"
-      - "nasdaq-xray/stage1_shadow.py"
-      - ".github/workflows/xray-canonical-stage1-20260930.yml"
   workflow_dispatch:
+
 permissions:
   contents: write
 concurrency:
