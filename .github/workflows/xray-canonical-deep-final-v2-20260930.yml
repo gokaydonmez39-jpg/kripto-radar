@@ -2,12 +2,7 @@ name: XRAY Canonical Deep Final V2 20260930
 # C4.14 primary-only downstream
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - "nasdaq-xray/canonical_regime_20260930.json"
-      - "nasdaq-xray/canonical_stage1_20260930.json"
-      - "nasdaq-xray/canonical_event_state_20260930.json"
+  workflow_dispatch:
 
 permissions:
   contents: write
