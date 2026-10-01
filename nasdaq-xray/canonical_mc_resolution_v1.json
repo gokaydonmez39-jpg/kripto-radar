@@ -29,10 +29,10 @@
     ]
   },
   "counts": {
-    "MC_PASS_PRIMARY": 446,
+    "MC_PASS_PRIMARY": 449,
     "MC_FAIL_PRIMARY": 13,
     "MC_PASS_FALLBACK_WATCH": 36,
-    "MC_UNKNOWN": 3,
+    "MC_UNKNOWN": 0,
     "TOTAL": 498
   },
   "primary_pass_symbols": [
@@ -161,6 +161,7 @@
     "DBX",
     "DDOG",
     "DFTX",
+    "DKNG",
     "DLTR",
     "DNTH",
     "DOCU",
@@ -278,6 +279,7 @@
     "MCHP",
     "MDB",
     "MDGL",
+    "MDLN",
     "MDLZ",
     "MEDP",
     "MELI",
@@ -421,6 +423,7 @@
     "TMDX",
     "TMUS",
     "TNGX",
+    "TPG",
     "TRMB",
     "TRMD",
     "TROW",
@@ -536,11 +539,7 @@
     "VOD",
     "WGS"
   ],
-  "unknown_symbols": [
-    "DKNG",
-    "MDLN",
-    "TPG"
-  ],
+  "unknown_symbols": [],
   "results": {
     "AAL": {
       "status": "MC_PASS_PRIMARY",
@@ -1502,11 +1501,13 @@
       "listing": "XNAS:DFTX"
     },
     "DKNG": {
-      "status": "MC_UNKNOWN",
-      "mode": "FAIL_CLOSED",
-      "reason": "PRIMARY_IDENTITY_UNRESOLVED_AND_FALLBACK_NOT_PASS",
-      "fallback_status": "MC_UNKNOWN",
-      "fallback_reason": "MC_REL_DIFF_GT_10PCT"
+      "status": "MC_PASS_PRIMARY",
+      "mode": "BIGDATA_EXACT_NASDAQ_SEGMENT_MIC_COMPANY_PUBLIC_USD",
+      "market_cap_usd": 11794636070,
+      "bigdata_entity_id": "HGGE2U",
+      "provider_listing": "XNGS:DKNG",
+      "canonical_exchange_family": "NASDAQ",
+      "mic_normalization": "XNGS_IS_NASDAQ_GLOBAL_SELECT_TIER;IDENTITY_NORMALIZATION_ONLY"
     },
     "DLTR": {
       "status": "MC_PASS_PRIMARY",
@@ -2507,11 +2508,13 @@
       "listing": "XNAS:MDGL"
     },
     "MDLN": {
-      "status": "MC_UNKNOWN",
-      "mode": "FAIL_CLOSED",
-      "reason": "PRIMARY_IDENTITY_UNRESOLVED_AND_FALLBACK_NOT_PASS",
-      "fallback_status": "MC_UNKNOWN",
-      "fallback_reason": "MC_REL_DIFF_GT_10PCT"
+      "status": "MC_PASS_PRIMARY",
+      "mode": "BIGDATA_EXACT_NASDAQ_SEGMENT_MIC_COMPANY_PUBLIC_USD",
+      "market_cap_usd": 29342534689,
+      "bigdata_entity_id": "2A288A",
+      "provider_listing": "XNGS:MDLN",
+      "canonical_exchange_family": "NASDAQ",
+      "mic_normalization": "XNGS_IS_NASDAQ_GLOBAL_SELECT_TIER;IDENTITY_NORMALIZATION_ONLY"
     },
     "MDLZ": {
       "status": "MC_PASS_PRIMARY",
@@ -3692,11 +3695,13 @@
       "listing": "XNAS:TNGX"
     },
     "TPG": {
-      "status": "MC_UNKNOWN",
-      "mode": "FAIL_CLOSED",
-      "reason": "PRIMARY_IDENTITY_UNRESOLVED_AND_FALLBACK_NOT_PASS",
-      "fallback_status": "MC_UNKNOWN",
-      "fallback_reason": "MC_REL_DIFF_GT_10PCT"
+      "status": "MC_PASS_PRIMARY",
+      "mode": "BIGDATA_EXACT_NASDAQ_SEGMENT_MIC_COMPANY_PUBLIC_USD",
+      "market_cap_usd": 16916584009,
+      "bigdata_entity_id": "FOUOG7",
+      "provider_listing": "XNGS:TPG",
+      "canonical_exchange_family": "NASDAQ",
+      "mic_normalization": "XNGS_IS_NASDAQ_GLOBAL_SELECT_TIER;IDENTITY_NORMALIZATION_ONLY"
     },
     "TRI": {
       "status": "MC_PASS_FALLBACK_WATCH",
@@ -4172,5 +4177,19 @@
       "bigdata_entity_id": "D44D33",
       "listing": "XNAS:ZS"
     }
+  },
+  "provider_identity_normalization": {
+    "schema": "XRAY_NASDAQ_MIC_NORMALIZATION_V1",
+    "canonical_exchange_family": "NASDAQ",
+    "accepted_provider_mics": [
+      "XNAS",
+      "XNGS",
+      "XNMS",
+      "XNCM"
+    ],
+    "scope": "IDENTITY_ONLY_FOR_BIGDATA_EXACT_LISTING_RESOLUTION",
+    "no_threshold_change": true,
+    "no_exchange_broadening_beyond_nasdaq_tiers": true,
+    "evidence": "Nasdaq methodology identifies XNAS=The NASDAQ Stock Market, XNGS=NASDAQ Global Select, XNMS=NASDAQ Global Market, XNCM=NASDAQ Capital Market."
   }
 }
