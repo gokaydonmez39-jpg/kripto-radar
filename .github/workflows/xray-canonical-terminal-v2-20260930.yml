@@ -1,0 +1,62 @@
+name: XRAY Canonical Terminal V2 20260930
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/canonical_final_tech_20260930.json"
+      - "nasdaq-xray/canonical_deep_full_20260930.json"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: xray-canonical-terminal-v2-20260930
+  cancel-in-progress: false
+
+jobs:
+  terminal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile terminal validator
+        run: python -m py_compile nasdaq-xray/build_terminal_bundle_20260930_v2.py
+      - name: Build exact terminal bundle
+        run: python nasdaq-xray/build_terminal_bundle_20260930_v2.py
+      - name: Validate terminal bundle
+        run: |
+          python - <<'PY'
+          import json
+          j=json.load(open("nasdaq-xray/canonical_terminal_20260930.json"))
+          assert j["schema"]=="XRAY_CANONICAL_TERMINAL_V2"
+          assert j["task_id"]=="6a825366222081918997094d76e6ae46"
+          assert j["asof_et"]=="2026-09-30"
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          assert j["full_end_to_end_research_pass"] is True
+          assert j["counts"]["history_unknown"]==0
+          assert j["counts"]["legal_unknown"]==0
+          assert j["counts"]["breadth_missing"]==0
+          assert j["counts"]["affected_event_unknown"]==0
+          assert all(j["checks"].values())
+          print({"terminal_result":j["terminal_result"],"counts":j["counts"]})
+          PY
+      - name: Commit terminal artifact
+        shell: bash
+        run: |
+          set -e
+          git config user.name "xray-dataplane-bot"
+          git config user.email "xray-dataplane-bot@users.noreply.github.com"
+          git add nasdaq-xray/canonical_terminal_20260930.json
+          git commit -m "chore(xray): canonical terminal v2 2026-09-30 [skip ci]" || exit 0
+          for attempt in 1 2 3 4 5; do
+            if git pull --rebase origin main && git push; then exit 0; fi
+            sleep $((attempt*2))
+          done
+          exit 1
