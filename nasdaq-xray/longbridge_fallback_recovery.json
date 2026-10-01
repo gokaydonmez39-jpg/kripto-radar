@@ -10,7 +10,7 @@
   "source_primary_summary_hash": "d9473aa103dad1964aba08c98764fc7be8f78093f8344d9722678631318d5d43",
   "source_missing_group_hash": "d55174eb1df105baf2b43a208d8871f88f263afeee8ff55aad507c75d9263273",
   "total_missing": 356,
-  "cursor": 280,
+  "cursor": 296,
   "results": {
     "AACI": {
       "status": "FAIL_DV20",
@@ -1708,7 +1708,107 @@
         "2026-09-11",
         "2026-09-14"
       ]
+    },
+    "RNGT": {
+      "status": "FAIL_DV20",
+      "price": 10.18,
+      "dv20": 488.16
+    },
+    "ROMA": {
+      "status": "FAIL_PRICE",
+      "price": 9.03,
+      "dv20": 17324.925
+    },
+    "RREV": {
+      "status": "FAIL_PRICE",
+      "price": 9.92,
+      "dv20": 297.3
+    },
+    "RZAI": {
+      "status": "UNKNOWN_EXACT20_MISSING",
+      "missing": [
+        "2026-09-01",
+        "2026-09-02",
+        "2026-09-03",
+        "2026-09-04",
+        "2026-09-08",
+        "2026-09-09",
+        "2026-09-10",
+        "2026-09-11",
+        "2026-09-14",
+        "2026-09-15",
+        "2026-09-16",
+        "2026-09-17",
+        "2026-09-18",
+        "2026-09-21",
+        "2026-09-22",
+        "2026-09-23",
+        "2026-09-24",
+        "2026-09-25",
+        "2026-09-28",
+        "2026-09-29"
+      ]
+    },
+    "SAAQ": {
+      "status": "FAIL_DV20",
+      "price": 10.04,
+      "dv20": 615595
+    },
+    "SANG": {
+      "status": "FAIL_PRICE",
+      "price": 4.93,
+      "dv20": 17289.047
+    },
+    "SCII": {
+      "status": "FAIL_DV20",
+      "price": 10.17,
+      "dv20": 1958.42
+    },
+    "SCPQ": {
+      "status": "FAIL_DV20",
+      "price": 10.05,
+      "dv20": 120.35999999999999
+    },
+    "SDHI": {
+      "status": "FAIL_DV20",
+      "price": 10.55,
+      "dv20": 11046.009999999998
+    },
+    "SENEB": {
+      "status": "FAIL_DV20",
+      "price": 179.84,
+      "dv20": 18780.8
+    },
+    "SFWL": {
+      "status": "FAIL_PRICE",
+      "price": 8.9,
+      "dv20": 28697.699999999997
+    },
+    "SGRX": {
+      "status": "FAIL_PRICE",
+      "price": 1.51,
+      "dv20": 245512.3495
+    },
+    "SHOT": {
+      "status": "FAIL_PRICE",
+      "price": 9.855,
+      "dv20": 6522.355
+    },
+    "SIMA": {
+      "status": "FAIL_DV20",
+      "price": 10.93,
+      "dv20": 10730.96
+    },
+    "SOCA": {
+      "status": "FAIL_DV20",
+      "price": 10.34,
+      "dv20": 496.63750000000005
+    },
+    "SORN": {
+      "status": "FAIL_DV20",
+      "price": 10.02,
+      "dv20": 583.83
     }
   },
-  "updated_at_utc": "2026-10-01T00:00:20Z"
+  "updated_at_utc": "2026-10-01T00:00:35Z"
 }
