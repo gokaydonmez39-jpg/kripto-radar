@@ -1,0 +1,78 @@
+{
+  "asof_et": "2026-09-30",
+  "authority": "EXTERNAL_SHADOW_NO_SIGNAL",
+  "execution": "NONE",
+  "fail": [
+    "WBD|B"
+  ],
+  "fail_count": 1,
+  "input_confirmed_family_candidates": 1,
+  "pre_g9_tech_pass": [],
+  "pre_g9_tech_pass_count": 0,
+  "r92_ineligible": [],
+  "real_money": "NO-GO",
+  "remaining_nontech_gates": [
+    "OFFICIAL_EVENT_FINAL_REVIEW",
+    "ACCOUNT_GATE",
+    "G9",
+    "ALIGNED_60M",
+    "DELIVERY_PROOF"
+  ],
+  "results": {
+    "WBD|B": {
+      "authority": "SHADOW_ONLY",
+      "event_status": "CLEAN_DISCOVERY",
+      "extension_veto": false,
+      "family": "B",
+      "geometry": {
+        "move3_atr": 0.40266443621663817,
+        "pivot_extension": 0.0016181229773462036,
+        "risk_atr": 1.0036635997978667,
+        "risk_percent": 0.012865079042536745,
+        "x": 0.5536635997978742
+      },
+      "levels": {
+        "A": 0.39735319439514216,
+        "P": 30.9,
+        "S0": 30.600529361120973,
+        "T1": 32.092059583185424,
+        "anchor": 30.68,
+        "chase_limit": 31.09867659719757,
+        "close": 30.95,
+        "entry_high": 30.999338298598783,
+        "entry_low": 30.9,
+        "entry_model": 30.999338298598783
+      },
+      "lifecycle": "ENTRY_BAND",
+      "pre_g9_tech_pass": false,
+      "r92_eligible": true,
+      "result": "FAIL_RR",
+      "risk_pass": true,
+      "rr": {
+        "basic": 2.118532121789022,
+        "basic_pass": true,
+        "basic_threshold": 2.0,
+        "severe": 1.49634532637651,
+        "severe_pass": false,
+        "severe_threshold": 1.5
+      },
+      "state_cap": "NORMAL",
+      "target": {
+        "price_discovery": true,
+        "prior_max_high": 30.92,
+        "source": "SYNTHETIC_P_PLUS_3A_PRICE_DISCOVERY",
+        "synthetic": true
+      },
+      "target_overlap": false,
+      "technical_hard_pass": false
+    }
+  },
+  "schema": "XRAY_FINAL_TECH_SHADOW_V1",
+  "state_caps": {
+    "WBD": "NORMAL"
+  },
+  "task_id": "6a825366222081918997094d76e6ae46",
+  "unknown_never_pass": true,
+  "watch": [],
+  "watch_count": 0
+}
