@@ -96,7 +96,8 @@ jobs:
             nasdaq-xray/build_stage1_input.py \
             nasdaq-xray/stage1_shadow.py \
             nasdaq-xray/regime_breadth_shadow.py \
-            nasdaq-xray/deep_pre_r1_shadow.py
+            nasdaq-xray/deep_pre_r1_shadow.py \
+            nasdaq-xray/build_current_event_request.py
       - name: Install zero-dollar runtime
         if: steps.mc.outputs.ready == 'true'
         run: python -m pip install --disable-pip-version-check akshare==1.18.95 pandas pandas_market_calendars
@@ -148,6 +149,14 @@ jobs:
           XRAY_DEEP_GEOMETRY_ONLY: "1"
           XRAY_DEEP_WORKERS: "8"
         run: python nasdaq-xray/deep_pre_r1_shadow.py
+      - name: Build dynamic event request
+        if: steps.mc.outputs.ready == 'true'
+        env:
+          XRAY_EVENT_STAGE1: ${{ github.workspace }}/nasdaq-xray/canonical_current_stage1.json
+          XRAY_EVENT_REGIME: ${{ github.workspace }}/nasdaq-xray/canonical_current_regime.json
+          XRAY_EVENT_DEEP: ${{ github.workspace }}/nasdaq-xray/canonical_current_deep_geometry.json
+          XRAY_EVENT_REQUEST_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_current_event_request.json
+        run: python nasdaq-xray/build_current_event_request.py
       - name: Structural post-MC gate
         if: steps.mc.outputs.ready == 'true'
         run: |
@@ -158,8 +167,9 @@ jobs:
           s=json.load(open("nasdaq-xray/canonical_current_stage1.json"))
           r=json.load(open("nasdaq-xray/canonical_current_regime.json"))
           d=json.load(open("nasdaq-xray/canonical_current_deep_geometry.json"))
+          e=json.load(open("nasdaq-xray/canonical_current_event_request.json"))
           asof="${{ steps.mc.outputs.asof }}"
-          assert h["asof_et"]==l["asof_et"]==s["asof_et"]==r["asof_et"]==d["asof_et"]==asof
+          assert h["asof_et"]==l["asof_et"]==s["asof_et"]==r["asof_et"]==d["asof_et"]==e["asof_et"]==asof
           assert h["unknown_count"]==0,h["unknown_symbols"]
           assert l["counts"]["UNKNOWN_LEGAL"]==0,l["unknown_symbols"]
           assert s["unknown_count"]==0,s["unknown"]
@@ -168,7 +178,11 @@ jobs:
           assert s["input_current_core_count"]==l["counts"]["PASS_LEGAL"]
           assert r["current_core_count"]==l["counts"]["PASS_LEGAL"]
           assert d["input_weekly_pass_count"]==s["weekly_pass_count"]
-          print({"asof":asof,"history_pass":h["pass_count"],"legal_pass":l["counts"]["PASS_LEGAL"],"weekly_pass":s["weekly_pass_count"],"regime":r["regime"],"A":d["a_geometry_count"],"B_breakout":d["b_breakout_count"],"B_armed":d["b_armed_count"],"D":d["d_geometry_rs_count"]})
+          assert e["weekly_scope_count"]==s["weekly_pass_count"]
+          assert set(e["weekly_scope"])==set(s["weekly_pass"])
+          assert e["geometry_scope_count"]==len(set(e["geometry_scope"]))
+          assert set(e["geometry_scope"])<=set(e["weekly_scope"])
+          print({"asof":asof,"history_pass":h["pass_count"],"legal_pass":l["counts"]["PASS_LEGAL"],"weekly_pass":s["weekly_pass_count"],"regime":r["regime"],"A":d["a_geometry_count"],"B_breakout":d["b_breakout_count"],"B_armed":d["b_armed_count"],"D":d["d_geometry_rs_count"],"event_request_geometry":e["geometry_scope_count"]})
           PY
       - name: Commit current post-MC artifacts
         if: steps.mc.outputs.ready == 'true'
@@ -183,7 +197,8 @@ jobs:
             nasdaq-xray/canonical_current_stage1_input.json \
             nasdaq-xray/canonical_current_stage1.json \
             nasdaq-xray/canonical_current_regime.json \
-            nasdaq-xray/canonical_current_deep_geometry.json
+            nasdaq-xray/canonical_current_deep_geometry.json \
+            nasdaq-xray/canonical_current_event_request.json
           if git diff --cached --quiet; then exit 0; fi
           git commit -m "chore(xray): current epoch post-MC factory [skip ci]"
           for attempt in 1 2 3 4 5; do
