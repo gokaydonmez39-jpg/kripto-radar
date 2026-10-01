@@ -1,0 +1,2366 @@
+{
+  "schema": "XRAY_BIGDATA_MC_STATE_V1",
+  "task_id": "6a825366222081918997094d76e6ae46",
+  "asof_et": "2026-09-30",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "threshold_usd": 2000000000,
+  "pass_count": 383,
+  "fail_count": 4,
+  "unknown_count": 27,
+  "pass": {
+    "AAL": {
+      "rp_entity_id": "13C3E0",
+      "name": "American Airlines Group Inc.",
+      "market_cap": 9009411033,
+      "currency": "USD"
+    },
+    "AAOI": {
+      "rp_entity_id": "48F795",
+      "name": "Applied Optoelectronics Inc.",
+      "market_cap": 8078039354,
+      "currency": "USD"
+    },
+    "AAON": {
+      "rp_entity_id": "A94637",
+      "name": "AAON Inc.",
+      "market_cap": 6971095229,
+      "currency": "USD"
+    },
+    "AAPL": {
+      "rp_entity_id": "D8442A",
+      "name": "Apple Inc.",
+      "market_cap": 4838015066400,
+      "currency": "USD"
+    },
+    "ABCL": {
+      "rp_entity_id": "239140",
+      "name": "AbCellera Biologics Inc.",
+      "market_cap": 4525657500,
+      "currency": "USD"
+    },
+    "ABNB": {
+      "rp_entity_id": "09E31A",
+      "name": "Airbnb Inc.",
+      "market_cap": 93157899208,
+      "currency": "USD"
+    },
+    "ACGL": {
+      "rp_entity_id": "61BCA7",
+      "name": "Arch Capital Group Ltd.",
+      "market_cap": 33233976800,
+      "currency": "USD"
+    },
+    "ACMR": {
+      "rp_entity_id": "3215CF",
+      "name": "ACM Research Inc.",
+      "market_cap": 4847937709,
+      "currency": "USD"
+    },
+    "ADSK": {
+      "rp_entity_id": "64E346",
+      "name": "Autodesk Inc.",
+      "market_cap": 42900492098,
+      "currency": "USD"
+    },
+    "AEHR": {
+      "rp_entity_id": "3209B9",
+      "name": "Aehr Test Systems Inc.",
+      "market_cap": 3287488951,
+      "currency": "USD"
+    },
+    "AEIS": {
+      "rp_entity_id": "1D943E",
+      "name": "Advanced Energy Industries Inc.",
+      "market_cap": 11346278320,
+      "currency": "USD"
+    },
+    "AEP": {
+      "rp_entity_id": "D9B1C9",
+      "name": "American Electric Power Co. Inc.",
+      "market_cap": 64946562100,
+      "currency": "USD"
+    },
+    "AFRM": {
+      "rp_entity_id": "4B65EE",
+      "name": "Affirm Holdings Inc.",
+      "market_cap": 23208469931,
+      "currency": "USD"
+    },
+    "ALGM": {
+      "rp_entity_id": "AED763",
+      "name": "Allegro MicroSystems Inc.",
+      "market_cap": 6818909400,
+      "currency": "USD"
+    },
+    "ALGN": {
+      "rp_entity_id": "221AD7",
+      "name": "Align Technology Inc.",
+      "market_cap": 10313726469,
+      "currency": "USD"
+    },
+    "AMBA": {
+      "rp_entity_id": "E0C874",
+      "name": "Ambarella Inc.",
+      "market_cap": 3015060355,
+      "currency": "USD"
+    },
+    "AMD": {
+      "rp_entity_id": "69345C",
+      "name": "Advanced Micro Devices Inc.",
+      "market_cap": 990703642000,
+      "currency": "USD"
+    },
+    "AMKR": {
+      "rp_entity_id": "5C8D61",
+      "name": "Amkor Technology Inc.",
+      "market_cap": 13451191280,
+      "currency": "USD"
+    },
+    "AMZN": {
+      "rp_entity_id": "0157B1",
+      "name": "Amazon.com Inc.",
+      "market_cap": 2653453857000,
+      "currency": "USD"
+    },
+    "APLD": {
+      "rp_entity_id": "F09A2E",
+      "name": "Applied Digital Corp.",
+      "market_cap": 7315122352,
+      "currency": "USD"
+    },
+    "APP": {
+      "rp_entity_id": "9A4ECA",
+      "name": "AppLovin Corp.",
+      "market_cap": 102683270321,
+      "currency": "USD"
+    },
+    "APPF": {
+      "rp_entity_id": "D06996",
+      "name": "AppFolio Inc.",
+      "market_cap": 6996625885,
+      "currency": "USD"
+    },
+    "ARGX": {
+      "rp_entity_id": "B73B08",
+      "name": "argenx SE",
+      "market_cap": 60363181799,
+      "currency": "USD"
+    },
+    "ARM": {
+      "rp_entity_id": "PPCM8I",
+      "name": "ARM Holdings PLC",
+      "market_cap": 313639139758,
+      "currency": "USD"
+    },
+    "ARQT": {
+      "rp_entity_id": "99B61C",
+      "name": "Arcutis Biotherapeutics Inc.",
+      "market_cap": 3345970250,
+      "currency": "USD"
+    },
+    "ARWR": {
+      "rp_entity_id": "AEFC90",
+      "name": "Arrowhead Pharmaceuticals Inc.",
+      "market_cap": 9331776250,
+      "currency": "USD"
+    },
+    "ASML": {
+      "rp_entity_id": "AFCFF2",
+      "name": "ASML Holding N.V.",
+      "market_cap": 707006908510,
+      "currency": "USD"
+    },
+    "ASND": {
+      "rp_entity_id": "A6BE37",
+      "name": "Ascendis Pharma A/S",
+      "market_cap": 14165791472,
+      "currency": "USD"
+    },
+    "ASO": {
+      "rp_entity_id": "70B3D6",
+      "name": "Academy Sports & Outdoors Inc.",
+      "market_cap": 2970059787,
+      "currency": "USD"
+    },
+    "ASTS": {
+      "rp_entity_id": "D82E83",
+      "name": "AST SpaceMobile Inc.",
+      "market_cap": 24169387889,
+      "currency": "USD"
+    },
+    "ATRC": {
+      "rp_entity_id": "5A423F",
+      "name": "AtriCure Inc.",
+      "market_cap": 2952788367,
+      "currency": "USD"
+    },
+    "AUGO": {
+      "rp_entity_id": "3AB306",
+      "name": "Aura Minerals Inc.",
+      "market_cap": 6649512499,
+      "currency": "USD"
+    },
+    "AVAV": {
+      "rp_entity_id": "F1EB39",
+      "name": "AeroVironment Inc.",
+      "market_cap": 7249089920,
+      "currency": "USD"
+    },
+    "AVT": {
+      "rp_entity_id": "DF6FDD",
+      "name": "Avnet Inc.",
+      "market_cap": 8407468303,
+      "currency": "USD"
+    },
+    "AXGN": {
+      "rp_entity_id": "514067",
+      "name": "AxoGen Inc.",
+      "market_cap": 2281638060,
+      "currency": "USD"
+    },
+    "AXON": {
+      "rp_entity_id": "D2AC74",
+      "name": "Axon Enterprise Inc.",
+      "market_cap": 33819019468,
+      "currency": "USD"
+    },
+    "AXSM": {
+      "rp_entity_id": "69C99E",
+      "name": "Axsome Therapeutics Inc.",
+      "market_cap": 9578720843,
+      "currency": "USD"
+    },
+    "AXTI": {
+      "rp_entity_id": "CB88B3",
+      "name": "AXT Inc.",
+      "market_cap": 3967769313,
+      "currency": "USD"
+    },
+    "BAND": {
+      "rp_entity_id": "3798B9",
+      "name": "Bandwidth.com Inc.",
+      "market_cap": 2004219414,
+      "currency": "USD"
+    },
+    "BBIO": {
+      "rp_entity_id": "6D9ECA",
+      "name": "BridgeBio Pharma Inc.",
+      "market_cap": 12920966135,
+      "currency": "USD"
+    },
+    "BIIB": {
+      "rp_entity_id": "CEDFD5",
+      "name": "Biogen Inc.",
+      "market_cap": 33550500326,
+      "currency": "USD"
+    },
+    "BKNG": {
+      "rp_entity_id": "034B61",
+      "name": "Booking Holdings Inc.",
+      "market_cap": 125793694520,
+      "currency": "USD"
+    },
+    "BMRN": {
+      "rp_entity_id": "830BDB",
+      "name": "BioMarin Pharmaceutical Inc.",
+      "market_cap": 11571913080,
+      "currency": "USD"
+    },
+    "BNTX": {
+      "rp_entity_id": "7C1C76",
+      "name": "BioNTech SE",
+      "market_cap": 24761214357,
+      "currency": "USD"
+    },
+    "BPOP": {
+      "rp_entity_id": "FC4550",
+      "name": "Banco Popular",
+      "market_cap": 9982365210,
+      "currency": "USD"
+    },
+    "BRKR": {
+      "rp_entity_id": "94983E",
+      "name": "Bruker Corp.",
+      "market_cap": 9820075004,
+      "currency": "USD"
+    },
+    "BSP": {
+      "rp_entity_id": "UR0FF0",
+      "name": "Bending Spoons SpA",
+      "market_cap": 21932851506,
+      "currency": "USD"
+    },
+    "BSY": {
+      "rp_entity_id": "85E0A1",
+      "name": "Bentley Systems Inc.",
+      "market_cap": 9095801743,
+      "currency": "USD"
+    },
+    "BTDR": {
+      "rp_entity_id": "T9ZBSW",
+      "name": "Bitdeer Technologies Holding Co.",
+      "market_cap": 2544819338,
+      "currency": "USD"
+    },
+    "BTSG": {
+      "rp_entity_id": "D1YS0G",
+      "name": "BrightSpring Health Services Inc.",
+      "market_cap": 10929630296,
+      "currency": "USD"
+    },
+    "BWIN": {
+      "rp_entity_id": "F2BC3D",
+      "name": "The Baldwin Insurance Group Inc.",
+      "market_cap": 2575961746,
+      "currency": "USD"
+    },
+    "BZ": {
+      "rp_entity_id": "433C03",
+      "name": "Kanzhun Ltd.",
+      "market_cap": 6484235899,
+      "currency": "USD"
+    },
+    "CACC": {
+      "rp_entity_id": "57634F",
+      "name": "Credit Acceptance Corp.",
+      "market_cap": 5618119710,
+      "currency": "USD"
+    },
+    "CAI": {
+      "rp_entity_id": "6D8B16",
+      "name": "Caris Life Sciences Inc.",
+      "market_cap": 8918575927,
+      "currency": "USD"
+    },
+    "CAKE": {
+      "rp_entity_id": "018C11",
+      "name": "Cheesecake Factory Inc.",
+      "market_cap": 5333727690,
+      "currency": "USD"
+    },
+    "CALM": {
+      "rp_entity_id": "42DC93",
+      "name": "Cal-Maine Foods Inc.",
+      "market_cap": 3216167205,
+      "currency": "USD"
+    },
+    "CART": {
+      "rp_entity_id": "4CF10A",
+      "name": "Instacart (Maplebear Inc.)",
+      "market_cap": 10221446611,
+      "currency": "USD"
+    },
+    "CASY": {
+      "rp_entity_id": "12F98C",
+      "name": "Casey's General Stores Inc.",
+      "market_cap": 22199239510,
+      "currency": "USD"
+    },
+    "CBSH": {
+      "rp_entity_id": "423279",
+      "name": "Commerce Bancshares Inc.",
+      "market_cap": 8065841410,
+      "currency": "USD"
+    },
+    "CDNA": {
+      "rp_entity_id": "FDF799",
+      "name": "Caredx Inc.",
+      "market_cap": 3312023484,
+      "currency": "USD"
+    },
+    "CDW": {
+      "rp_entity_id": "87B81A",
+      "name": "CDW Corp.",
+      "market_cap": 16570841630,
+      "currency": "USD"
+    },
+    "CEG": {
+      "rp_entity_id": "HTA3J9",
+      "name": "Constellation Energy Corp.",
+      "market_cap": 95011212452,
+      "currency": "USD"
+    },
+    "CELC": {
+      "rp_entity_id": "DA3AA1",
+      "name": "Celcuity Inc.",
+      "market_cap": 3773535365,
+      "currency": "USD"
+    },
+    "CELH": {
+      "rp_entity_id": "1F9258",
+      "name": "Celsius Holdings Inc.",
+      "market_cap": 7083794376,
+      "currency": "USD"
+    },
+    "CENX": {
+      "rp_entity_id": "E74FED",
+      "name": "Century Aluminum Co.",
+      "market_cap": 3582858800,
+      "currency": "USD"
+    },
+    "CGNX": {
+      "rp_entity_id": "709AED",
+      "name": "Cognex Corp.",
+      "market_cap": 9930248641,
+      "currency": "USD"
+    },
+    "CGON": {
+      "rp_entity_id": "0643BD",
+      "name": "CG Oncology Inc.",
+      "market_cap": 6220038396,
+      "currency": "USD"
+    },
+    "CHDN": {
+      "rp_entity_id": "896771",
+      "name": "Churchill Downs Inc.",
+      "market_cap": 5308367232,
+      "currency": "USD"
+    },
+    "CHEF": {
+      "rp_entity_id": "AD3008",
+      "name": "The Chefs' Warehouse Inc.",
+      "market_cap": 4548763255,
+      "currency": "USD"
+    },
+    "CHKP": {
+      "rp_entity_id": "531EF1",
+      "name": "Check Point Software Technologies Ltd.",
+      "market_cap": 12959679930,
+      "currency": "USD"
+    },
+    "CHRD": {
+      "rp_entity_id": "160825",
+      "name": "Chord Energy Corp.",
+      "market_cap": 7567175472,
+      "currency": "USD"
+    },
+    "CHRW": {
+      "rp_entity_id": "C659EB",
+      "name": "C.H. Robinson Worldwide Inc.",
+      "market_cap": 17646773118,
+      "currency": "USD"
+    },
+    "CHTR": {
+      "rp_entity_id": "D88EF3",
+      "name": "Charter Communications Inc.",
+      "market_cap": 14915824154,
+      "currency": "USD"
+    },
+    "CIFR": {
+      "rp_entity_id": "3FB24E",
+      "name": "Cipher Digital Inc.",
+      "market_cap": 6753398990,
+      "currency": "USD"
+    },
+    "CLMT": {
+      "rp_entity_id": "18DDE9",
+      "name": "Calumet Inc.",
+      "market_cap": 4638842635,
+      "currency": "USD"
+    },
+    "CLSK": {
+      "rp_entity_id": "7DFE86",
+      "name": "Cleanspark Inc.",
+      "market_cap": 3415460546,
+      "currency": "USD"
+    },
+    "CMCSA": {
+      "rp_entity_id": "C83B88",
+      "name": "Comcast Corp.",
+      "market_cap": 76650550841,
+      "currency": "USD"
+    },
+    "COGT": {
+      "rp_entity_id": "9465C9",
+      "name": "Cogent Biosciences Inc.",
+      "market_cap": 5409680880,
+      "currency": "USD"
+    },
+    "COHU": {
+      "rp_entity_id": "717DB4",
+      "name": "Cohu Inc.",
+      "market_cap": 3112154541,
+      "currency": "USD"
+    },
+    "COIN": {
+      "rp_entity_id": "D69946",
+      "name": "Coinbase Global Inc.",
+      "market_cap": 50133761003,
+      "currency": "USD"
+    },
+    "COKE": {
+      "rp_entity_id": "97AF94",
+      "name": "Coca-Cola Consolidated Inc.",
+      "market_cap": 14991534499,
+      "currency": "USD"
+    },
+    "COLB": {
+      "rp_entity_id": "822E25",
+      "name": "Columbia Banking System Inc.",
+      "market_cap": 8114019730,
+      "currency": "USD"
+    },
+    "COO": {
+      "rp_entity_id": "CD2DA4",
+      "name": "The Cooper Companies Inc.",
+      "market_cap": 11044605530,
+      "currency": "USD"
+    },
+    "CORT": {
+      "rp_entity_id": "B381D8",
+      "name": "Corcept Therapeutics Inc.",
+      "market_cap": 12403164520,
+      "currency": "USD"
+    },
+    "COST": {
+      "rp_entity_id": "B8EF97",
+      "name": "Costco Wholesale Corp.",
+      "market_cap": 410036248610,
+      "currency": "USD"
+    },
+    "CPB": {
+      "rp_entity_id": "543900",
+      "name": "The Campbell's Co.",
+      "market_cap": 6032707380,
+      "currency": "USD"
+    },
+    "CRDO": {
+      "rp_entity_id": "8VCHP2",
+      "name": "Credo Technology Group Holding Ltd.",
+      "market_cap": 35869023680,
+      "currency": "USD"
+    },
+    "CROX": {
+      "rp_entity_id": "0C355F",
+      "name": "Crocs Inc.",
+      "market_cap": 5879507613,
+      "currency": "USD"
+    },
+    "CRUS": {
+      "rp_entity_id": "F8B149",
+      "name": "Cirrus Logic Inc.",
+      "market_cap": 6094688334,
+      "currency": "USD"
+    },
+    "CRWV": {
+      "rp_entity_id": "DI7L1U",
+      "name": "CoreWeave Inc.",
+      "market_cap": 46880863441,
+      "currency": "USD"
+    },
+    "CSGP": {
+      "rp_entity_id": "ED0402",
+      "name": "CoStar Group Inc.",
+      "market_cap": 10920086100,
+      "currency": "USD"
+    },
+    "CSX": {
+      "rp_entity_id": "E26FC3",
+      "name": "CSX Corp.",
+      "market_cap": 86936886400,
+      "currency": "USD"
+    },
+    "CTAS": {
+      "rp_entity_id": "BFAEB4",
+      "name": "Cintas Corp.",
+      "market_cap": 79129528992,
+      "currency": "USD"
+    },
+    "CTSH": {
+      "rp_entity_id": "07EC43",
+      "name": "Cognizant Technology Solutions Corp.",
+      "market_cap": 25603248840,
+      "currency": "USD"
+    },
+    "CVCO": {
+      "rp_entity_id": "1DDEDA",
+      "name": "Cavco Industries Inc.",
+      "market_cap": 4286311584,
+      "currency": "USD"
+    },
+    "CVLT": {
+      "rp_entity_id": "E8A49A",
+      "name": "CommVault Systems Inc.",
+      "market_cap": 6065411941,
+      "currency": "USD"
+    },
+    "CYTK": {
+      "rp_entity_id": "184866",
+      "name": "Cytokinetics Inc.",
+      "market_cap": 8167782120,
+      "currency": "USD"
+    },
+    "CZR": {
+      "rp_entity_id": "34A959",
+      "name": "Caesars Entertainment Inc.",
+      "market_cap": 6034197152,
+      "currency": "USD"
+    },
+    "DASH": {
+      "rp_entity_id": "CF4517",
+      "name": "DoorDash Inc.",
+      "market_cap": 81522971015,
+      "currency": "USD"
+    },
+    "DBX": {
+      "rp_entity_id": "0A32EA",
+      "name": "Dropbox Inc.",
+      "market_cap": 8322617675,
+      "currency": "USD"
+    },
+    "DDOG": {
+      "rp_entity_id": "D6C356",
+      "name": "Datadog Inc.",
+      "market_cap": 95596664329,
+      "currency": "USD"
+    },
+    "DLTR": {
+      "rp_entity_id": "143C52",
+      "name": "Dollar Tree Inc.",
+      "market_cap": 21773427500,
+      "currency": "USD"
+    },
+    "DNTH": {
+      "rp_entity_id": "620381",
+      "name": "Dianthus Therapeutics Inc.",
+      "market_cap": 4875239951,
+      "currency": "USD"
+    },
+    "DOCU": {
+      "rp_entity_id": "7A0EC4",
+      "name": "DocuSign Inc.",
+      "market_cap": 12789496100,
+      "currency": "USD"
+    },
+    "DOX": {
+      "rp_entity_id": "45D153",
+      "name": "Amdocs Ltd.",
+      "market_cap": 6195013890,
+      "currency": "USD"
+    },
+    "DPZ": {
+      "rp_entity_id": "24D81E",
+      "name": "Domino's Pizza Inc.",
+      "market_cap": 9984398440,
+      "currency": "USD"
+    },
+    "DUOL": {
+      "rp_entity_id": "493F45",
+      "name": "Duolingo Inc.",
+      "market_cap": 6645110061,
+      "currency": "USD"
+    },
+    "DYN": {
+      "rp_entity_id": "23699B",
+      "name": "Dyne Therapeutics Inc.",
+      "market_cap": 3027152660,
+      "currency": "USD"
+    },
+    "ECHO": {
+      "rp_entity_id": "9652E4",
+      "name": "EchoStar Corp.",
+      "market_cap": 14244418850,
+      "currency": "USD"
+    },
+    "ELVN": {
+      "rp_entity_id": "918D6D",
+      "name": "Enliven Therapeutics Inc.",
+      "market_cap": 3322594403,
+      "currency": "USD"
+    },
+    "ENPH": {
+      "rp_entity_id": "C44D01",
+      "name": "Enphase Energy Inc.",
+      "market_cap": 4206164146,
+      "currency": "USD"
+    },
+    "ENSG": {
+      "rp_entity_id": "F4CDA3",
+      "name": "Ensign Group Inc.",
+      "market_cap": 10230315640,
+      "currency": "USD"
+    },
+    "ENTG": {
+      "rp_entity_id": "6A091A",
+      "name": "Entegris Inc.",
+      "market_cap": 23602425000,
+      "currency": "USD"
+    },
+    "EQIX": {
+      "rp_entity_id": "315EB0",
+      "name": "Equinix Inc.",
+      "market_cap": 100178402645,
+      "currency": "USD"
+    },
+    "ESLT": {
+      "rp_entity_id": "0401A0",
+      "name": "Elbit Systems Ltd.",
+      "market_cap": 32953712366,
+      "currency": "USD"
+    },
+    "EVRG": {
+      "rp_entity_id": "AFD7DD",
+      "name": "Evergy Inc.",
+      "market_cap": 18148288490,
+      "currency": "USD"
+    },
+    "EWBC": {
+      "rp_entity_id": "6474BA",
+      "name": "East West Bancorp Inc.",
+      "market_cap": 17195770806,
+      "currency": "USD"
+    },
+    "EXE": {
+      "rp_entity_id": "66CB62",
+      "name": "Expand Energy Corp.",
+      "market_cap": 19488006720,
+      "currency": "USD"
+    },
+    "EXEL": {
+      "rp_entity_id": "85CDC9",
+      "name": "Exelixis Inc.",
+      "market_cap": 14741975618,
+      "currency": "USD"
+    },
+    "EXLS": {
+      "rp_entity_id": "7D97DE",
+      "name": "ExlService Holdings Inc.",
+      "market_cap": 5242777540,
+      "currency": "USD"
+    },
+    "EXPE": {
+      "rp_entity_id": "39692D",
+      "name": "Expedia Group Inc.",
+      "market_cap": 30494418796,
+      "currency": "USD"
+    },
+    "FANG": {
+      "rp_entity_id": "E15736",
+      "name": "Diamondback Energy Inc.",
+      "market_cap": 51747526350,
+      "currency": "USD"
+    },
+    "FAST": {
+      "rp_entity_id": "92D3A0",
+      "name": "Fastenal Co.",
+      "market_cap": 57329100000,
+      "currency": "USD"
+    },
+    "FCFS": {
+      "rp_entity_id": "WGWQ0W",
+      "name": "FirstCash Holdings Inc.",
+      "market_cap": 9230386476,
+      "currency": "USD"
+    },
+    "FCNCA": {
+      "rp_entity_id": "270305",
+      "name": "First Citizens Bancshares Inc.",
+      "market_cap": 23617551225,
+      "currency": "USD"
+    },
+    "FFIV": {
+      "rp_entity_id": "41B0E2",
+      "name": "F5 Inc.",
+      "market_cap": 24715558944,
+      "currency": "USD"
+    },
+    "FIGR": {
+      "rp_entity_id": "JD77OW",
+      "name": "Figure Technology Solutions Inc.",
+      "market_cap": 5350846282,
+      "currency": "USD"
+    },
+    "FIVE": {
+      "rp_entity_id": "C5D687",
+      "name": "Five Below Inc.",
+      "market_cap": 12277226783,
+      "currency": "USD"
+    },
+    "FLEX": {
+      "rp_entity_id": "B4E00D",
+      "name": "Flex Ltd.",
+      "market_cap": 42049140986,
+      "currency": "USD"
+    },
+    "FORM": {
+      "rp_entity_id": "FA35C6",
+      "name": "FormFactor Inc.",
+      "market_cap": 10621337685,
+      "currency": "USD"
+    },
+    "FOXA": {
+      "rp_entity_id": "7BFF81",
+      "name": "Fox Corp.",
+      "market_cap": 27397782591,
+      "currency": "USD"
+    },
+    "FRPT": {
+      "rp_entity_id": "61A586",
+      "name": "Freshpet Inc.",
+      "market_cap": 2808510506,
+      "currency": "USD"
+    },
+    "FSLR": {
+      "rp_entity_id": "061366",
+      "name": "First Solar Inc.",
+      "market_cap": 19014629414,
+      "currency": "USD"
+    },
+    "FSLY": {
+      "rp_entity_id": "3EE191",
+      "name": "Fastly Inc.",
+      "market_cap": 3987620000,
+      "currency": "USD"
+    },
+    "FTNT": {
+      "rp_entity_id": "63F892",
+      "name": "Fortinet Inc.",
+      "market_cap": 129104254382,
+      "currency": "USD"
+    },
+    "FUTU": {
+      "rp_entity_id": "D88862",
+      "name": "Futu Holdings Ltd.",
+      "market_cap": 15767296395,
+      "currency": "USD"
+    },
+    "FWONK": {
+      "rp_entity_id": "B803B1",
+      "name": "Liberty Media Corp.",
+      "market_cap": 23326380511,
+      "currency": "USD"
+    },
+    "GEHC": {
+      "rp_entity_id": "LJPA1L",
+      "name": "GE HealthCare",
+      "market_cap": 30019068308,
+      "currency": "USD"
+    },
+    "GFS": {
+      "rp_entity_id": "SUZM4J",
+      "name": "GlobalFoundries Inc.",
+      "market_cap": 26260821867,
+      "currency": "USD"
+    },
+    "GH": {
+      "rp_entity_id": "27DC40",
+      "name": "Guardant Health Inc.",
+      "market_cap": 23850685294,
+      "currency": "USD"
+    },
+    "GILD": {
+      "rp_entity_id": "F6E248",
+      "name": "Gilead Sciences Inc.",
+      "market_cap": 187580415848,
+      "currency": "USD"
+    },
+    "GLBE": {
+      "rp_entity_id": "F39ECB",
+      "name": "Global-E Online Ltd.",
+      "market_cap": 6728773683,
+      "currency": "USD"
+    },
+    "GLNG": {
+      "rp_entity_id": "AEBAC3",
+      "name": "Golar LNG Ltd.",
+      "market_cap": 4908838066,
+      "currency": "USD"
+    },
+    "GLPI": {
+      "rp_entity_id": "6F0A63",
+      "name": "Gaming and Leisure Properties Inc.",
+      "market_cap": 10838899855,
+      "currency": "USD"
+    },
+    "GLXY": {
+      "rp_entity_id": "5C98AM",
+      "name": "Galaxy Digital Inc.",
+      "market_cap": 7652020220,
+      "currency": "USD"
+    },
+    "GOOGL": {
+      "rp_entity_id": "4A6F00",
+      "name": "Alphabet Inc.",
+      "market_cap": 4125851779623,
+      "currency": "USD"
+    },
+    "HALO": {
+      "rp_entity_id": "8DCF18",
+      "name": "Halozyme Therapeutics Inc.",
+      "market_cap": 13232466280,
+      "currency": "USD"
+    },
+    "HAS": {
+      "rp_entity_id": "AA98ED",
+      "name": "Hasbro Inc.",
+      "market_cap": 12448584657,
+      "currency": "USD"
+    },
+    "HON": {
+      "rp_entity_id": "FF6644",
+      "name": "Honeywell International Inc.",
+      "market_cap": 66598602200,
+      "currency": "USD"
+    },
+    "HOOD": {
+      "rp_entity_id": "BB036E",
+      "name": "Robinhood Markets Inc.",
+      "market_cap": 104491346649,
+      "currency": "USD"
+    },
+    "HQY": {
+      "rp_entity_id": "AED61E",
+      "name": "HealthEquity Inc.",
+      "market_cap": 7294288198,
+      "currency": "USD"
+    },
+    "HSIC": {
+      "rp_entity_id": "A7102F",
+      "name": "Henry Schein Inc.",
+      "market_cap": 9679527490,
+      "currency": "USD"
+    },
+    "HST": {
+      "rp_entity_id": "6BF593",
+      "name": "Host Hotels & Resorts Inc.",
+      "market_cap": 15368684760,
+      "currency": "USD"
+    },
+    "HTFL": {
+      "rp_entity_id": "06D0CB",
+      "name": "HeartFlow Inc.",
+      "market_cap": 4297380459,
+      "currency": "USD"
+    },
+    "HUT": {
+      "rp_entity_id": "8FMM4U",
+      "name": "Hut 8 Corp.",
+      "market_cap": 10455488962,
+      "currency": "USD"
+    },
+    "HWC": {
+      "rp_entity_id": "850779",
+      "name": "Hancock Whitney Corp.",
+      "market_cap": 5859607600,
+      "currency": "USD"
+    },
+    "IBKR": {
+      "rp_entity_id": "DF532D",
+      "name": "Interactive Brokers Group Inc.",
+      "market_cap": 148921835334,
+      "currency": "USD"
+    },
+    "ICLR": {
+      "rp_entity_id": "CB3F2F",
+      "name": "Icon PLC",
+      "market_cap": 13043239555,
+      "currency": "USD"
+    },
+    "IDCC": {
+      "rp_entity_id": "8BAA15",
+      "name": "InterDigital Wireless Inc.",
+      "market_cap": 8368888719,
+      "currency": "USD"
+    },
+    "IDXX": {
+      "rp_entity_id": "B7EB38",
+      "name": "IDEXX Laboratories Inc.",
+      "market_cap": 42079347520,
+      "currency": "USD"
+    },
+    "IESC": {
+      "rp_entity_id": "C9C62A",
+      "name": "IES Holdings Inc.",
+      "market_cap": 12928220232,
+      "currency": "USD"
+    },
+    "ILMN": {
+      "rp_entity_id": "E6D89E",
+      "name": "Illumina Inc.",
+      "market_cap": 41153600000,
+      "currency": "USD"
+    },
+    "INCY": {
+      "rp_entity_id": "6CC55E",
+      "name": "Incyte Corp.",
+      "market_cap": 24972362307,
+      "currency": "USD"
+    },
+    "INOD": {
+      "rp_entity_id": "CAC258",
+      "name": "Innodata Inc.",
+      "market_cap": 2185949665,
+      "currency": "USD"
+    },
+    "INSM": {
+      "rp_entity_id": "0BF198",
+      "name": "Insmed Inc.",
+      "market_cap": 25063033760,
+      "currency": "USD"
+    },
+    "INTU": {
+      "rp_entity_id": "F11638",
+      "name": "Intuit Inc.",
+      "market_cap": 73316122110,
+      "currency": "USD"
+    },
+    "IONS": {
+      "rp_entity_id": "925759",
+      "name": "Ionis Pharmaceuticals Inc.",
+      "market_cap": 7626183760,
+      "currency": "USD"
+    },
+    "IOVA": {
+      "rp_entity_id": "458F49",
+      "name": "Iovance Biotherapeutics Inc.",
+      "market_cap": 6451953900,
+      "currency": "USD"
+    },
+    "ISRG": {
+      "rp_entity_id": "18EC17",
+      "name": "Intuitive Surgical Inc.",
+      "market_cap": 145614126040,
+      "currency": "USD"
+    },
+    "JAZZ": {
+      "rp_entity_id": "AEA57C",
+      "name": "Jazz Pharmaceuticals PLC",
+      "market_cap": 14595669360,
+      "currency": "USD"
+    },
+    "JBHT": {
+      "rp_entity_id": "72DF04",
+      "name": "J.B. Hunt Transport Services Inc.",
+      "market_cap": 21532808272,
+      "currency": "USD"
+    },
+    "JKHY": {
+      "rp_entity_id": "D60BB2",
+      "name": "Jack Henry & Associates Inc.",
+      "market_cap": 10389047976,
+      "currency": "USD"
+    },
+    "KDP": {
+      "rp_entity_id": "14C7B2",
+      "name": "Keurig Dr. Pepper Inc.",
+      "market_cap": 42218160385,
+      "currency": "USD"
+    },
+    "KLAC": {
+      "rp_entity_id": "507AE7",
+      "name": "KLA Corp.",
+      "market_cap": 256723208400,
+      "currency": "USD"
+    },
+    "KLIC": {
+      "rp_entity_id": "E2D429",
+      "name": "Kulicke & Soffa Industries Inc.",
+      "market_cap": 4904637232,
+      "currency": "USD"
+    },
+    "KRYS": {
+      "rp_entity_id": "36529A",
+      "name": "Krystal Biotech Inc.",
+      "market_cap": 9877501788,
+      "currency": "USD"
+    },
+    "KTOS": {
+      "rp_entity_id": "4A2457",
+      "name": "Kratos Defense & Security Solutions Inc.",
+      "market_cap": 8072736000,
+      "currency": "USD"
+    },
+    "LAMR": {
+      "rp_entity_id": "55CD6F",
+      "name": "Lamar Advertising Co.",
+      "market_cap": 14811306180,
+      "currency": "USD"
+    },
+    "LECO": {
+      "rp_entity_id": "EB61C4",
+      "name": "Lincoln Electric Holdings Inc.",
+      "market_cap": 14760715698,
+      "currency": "USD"
+    },
+    "LFUS": {
+      "rp_entity_id": "D06755",
+      "name": "Littelfuse Inc.",
+      "market_cap": 10889946612,
+      "currency": "USD"
+    },
+    "LIN": {
+      "rp_entity_id": "278DC5",
+      "name": "Linde PLC",
+      "market_cap": 218980962000,
+      "currency": "USD"
+    },
+    "LITE": {
+      "rp_entity_id": "092C47",
+      "name": "Lumentum Holdings Inc.",
+      "market_cap": 75737522000,
+      "currency": "USD"
+    },
+    "LKQ": {
+      "rp_entity_id": "A5151E",
+      "name": "LKQ Corp.",
+      "market_cap": 5846878462,
+      "currency": "USD"
+    },
+    "LNT": {
+      "rp_entity_id": "F93C8A",
+      "name": "Alliant Energy Corp.",
+      "market_cap": 16617542180,
+      "currency": "USD"
+    },
+    "LNTH": {
+      "rp_entity_id": "43E8F5",
+      "name": "Lantheus Holdings Inc.",
+      "market_cap": 6478706220,
+      "currency": "USD"
+    },
+    "LOGI": {
+      "rp_entity_id": "33649B",
+      "name": "Logitech International S.A.",
+      "market_cap": 14452768180,
+      "currency": "USD"
+    },
+    "LPLA": {
+      "rp_entity_id": "009397",
+      "name": "LPL Financial Holdings Inc.",
+      "market_cap": 24638720331,
+      "currency": "USD"
+    },
+    "LQDA": {
+      "rp_entity_id": "AE79CD",
+      "name": "Liquidia Corp.",
+      "market_cap": 6286327318,
+      "currency": "USD"
+    },
+    "LRCX": {
+      "rp_entity_id": "0B57D7",
+      "name": "Lam Research Corp.",
+      "market_cap": 405009600200,
+      "currency": "USD"
+    },
+    "LSCC": {
+      "rp_entity_id": "8303CD",
+      "name": "Lattice Semiconductor Corp.",
+      "market_cap": 17187653600,
+      "currency": "USD"
+    },
+    "LSTR": {
+      "rp_entity_id": "FD4E8D",
+      "name": "Landstar System Inc.",
+      "market_cap": 5715652698,
+      "currency": "USD"
+    },
+    "LULU": {
+      "rp_entity_id": "97693A",
+      "name": "Lululemon Athletica Inc.",
+      "market_cap": 10999967843,
+      "currency": "USD"
+    },
+    "LUNR": {
+      "rp_entity_id": "C0C0D6",
+      "name": "Intuitive Machines Inc.",
+      "market_cap": 2318870850,
+      "currency": "USD"
+    },
+    "LYFT": {
+      "rp_entity_id": "2EB04E",
+      "name": "Lyft Inc.",
+      "market_cap": 5721822810,
+      "currency": "USD"
+    },
+    "MANH": {
+      "rp_entity_id": "031025",
+      "name": "Manhattan Associates Inc.",
+      "market_cap": 11667413550,
+      "currency": "USD"
+    },
+    "MAR": {
+      "rp_entity_id": "385DD4",
+      "name": "Marriott International Inc.",
+      "market_cap": 94298305067,
+      "currency": "USD"
+    },
+    "MARA": {
+      "rp_entity_id": "E743AE",
+      "name": "MARA Holdings Inc.",
+      "market_cap": 4571433331,
+      "currency": "USD"
+    },
+    "MAT": {
+      "rp_entity_id": "F4E882",
+      "name": "Mattel Inc.",
+      "market_cap": 3841732000,
+      "currency": "USD"
+    },
+    "MCHP": {
+      "rp_entity_id": "CDFCC9",
+      "name": "Microchip Technology Inc.",
+      "market_cap": 42778170240,
+      "currency": "USD"
+    },
+    "MDB": {
+      "rp_entity_id": "3A0C6D",
+      "name": "MongoDB Inc.",
+      "market_cap": 27120841465,
+      "currency": "USD"
+    },
+    "MDGL": {
+      "rp_entity_id": "41C36B",
+      "name": "Madrigal Pharmaceuticals Inc.",
+      "market_cap": 11770152704,
+      "currency": "USD"
+    },
+    "MDLZ": {
+      "rp_entity_id": "7A10FF",
+      "name": "Mondelez International Inc.",
+      "market_cap": 75710709200,
+      "currency": "USD"
+    },
+    "MEDP": {
+      "rp_entity_id": "A47F2E",
+      "name": "Medpace Holdings Inc.",
+      "market_cap": 17364147687,
+      "currency": "USD"
+    },
+    "MELI": {
+      "rp_entity_id": "C9C2B1",
+      "name": "MercadoLibre Inc.",
+      "market_cap": 87447569232,
+      "currency": "USD"
+    },
+    "META": {
+      "rp_entity_id": "12E454",
+      "name": "Meta Platforms Inc.",
+      "market_cap": 1882057603050,
+      "currency": "USD"
+    },
+    "MIDD": {
+      "rp_entity_id": "ACF0B4",
+      "name": "Middleby Corp.",
+      "market_cap": 4772842620,
+      "currency": "USD"
+    },
+    "MIRM": {
+      "rp_entity_id": "ABB493",
+      "name": "Mirum Pharmaceuticals Inc.",
+      "market_cap": 5338294248,
+      "currency": "USD"
+    },
+    "MKSI": {
+      "rp_entity_id": "1BDB2A",
+      "name": "MKS Inc.",
+      "market_cap": 17968081482,
+      "currency": "USD"
+    },
+    "MKTX": {
+      "rp_entity_id": "60DD84",
+      "name": "MarketAxess Holdings Inc.",
+      "market_cap": 5770227884,
+      "currency": "USD"
+    },
+    "MMSI": {
+      "rp_entity_id": "25A6CC",
+      "name": "Merit Medical Systems Inc.",
+      "market_cap": 5246752848,
+      "currency": "USD"
+    },
+    "MNDY": {
+      "rp_entity_id": "85150E",
+      "name": "Monday.com Ltd.",
+      "market_cap": 3214946750,
+      "currency": "USD"
+    },
+    "MNST": {
+      "rp_entity_id": "D09938",
+      "name": "Monster Beverage Corp.",
+      "market_cap": 81644117023,
+      "currency": "USD"
+    },
+    "MORN": {
+      "rp_entity_id": "0C136E",
+      "name": "Morningstar Inc.",
+      "market_cap": 6990653956,
+      "currency": "USD"
+    },
+    "MPWR": {
+      "rp_entity_id": "6ABCB8",
+      "name": "Monolithic Power Systems Inc.",
+      "market_cap": 66619788700,
+      "currency": "USD"
+    },
+    "MRNA": {
+      "rp_entity_id": "8EA478",
+      "name": "Moderna Inc.",
+      "market_cap": 80730079560,
+      "currency": "USD"
+    },
+    "MSFT": {
+      "rp_entity_id": "228D42",
+      "name": "Microsoft Corp.",
+      "market_cap": 3779307928000,
+      "currency": "USD"
+    },
+    "MSTR": {
+      "rp_entity_id": "C72B8F",
+      "name": "Strategy Inc.",
+      "market_cap": 51166073360,
+      "currency": "USD"
+    },
+    "MTSI": {
+      "rp_entity_id": "5F1B7B",
+      "name": "M/ACom Technology Solutions Holdings Inc.",
+      "market_cap": 21688599675,
+      "currency": "USD"
+    },
+    "MU": {
+      "rp_entity_id": "49BBBC",
+      "name": "Micron Technology Inc.",
+      "market_cap": 1202890701200,
+      "currency": "USD"
+    },
+    "MYRG": {
+      "rp_entity_id": "5AAE17",
+      "name": "MYR Group Inc.",
+      "market_cap": 4488784883,
+      "currency": "USD"
+    },
+    "NBIX": {
+      "rp_entity_id": "367E1C",
+      "name": "Neurocrine Biosciences Inc.",
+      "market_cap": 13911090148,
+      "currency": "USD"
+    },
+    "NDAQ": {
+      "rp_entity_id": "25102A",
+      "name": "Nasdaq Inc.",
+      "market_cap": 51342071618,
+      "currency": "USD"
+    },
+    "NDSN": {
+      "rp_entity_id": "D56D6D",
+      "name": "Nordson Corp.",
+      "market_cap": 18360752540,
+      "currency": "USD"
+    },
+    "NESR": {
+      "rp_entity_id": "270823",
+      "name": "National Energy Services Reunited Corp.",
+      "market_cap": 2671443785,
+      "currency": "USD"
+    },
+    "NFLX": {
+      "rp_entity_id": "ECD263",
+      "name": "Netflix Inc.",
+      "market_cap": 292724981930,
+      "currency": "USD"
+    },
+    "NICE": {
+      "rp_entity_id": "E13BAF",
+      "name": "NICE Ltd.",
+      "market_cap": 6258765650,
+      "currency": "USD"
+    },
+    "NTAP": {
+      "rp_entity_id": "934CC3",
+      "name": "NetApp Inc.",
+      "market_cap": 41048228120,
+      "currency": "USD"
+    },
+    "NTNX": {
+      "rp_entity_id": "59872F",
+      "name": "Nutanix Inc.",
+      "market_cap": 18946728800,
+      "currency": "USD"
+    },
+    "NTRA": {
+      "rp_entity_id": "CBDB4D",
+      "name": "Natera Inc.",
+      "market_cap": 59365481800,
+      "currency": "USD"
+    },
+    "NTRS": {
+      "rp_entity_id": "3CCC90",
+      "name": "Northern Trust Corp.",
+      "market_cap": 31640410640,
+      "currency": "USD"
+    },
+    "NTSK": {
+      "rp_entity_id": "ED521A",
+      "name": "Netskope Inc.",
+      "market_cap": 6975761815,
+      "currency": "USD"
+    },
+    "NVMI": {
+      "rp_entity_id": "2E4F55",
+      "name": "Nova Ltd.",
+      "market_cap": 12240268960,
+      "currency": "USD"
+    },
+    "NVTS": {
+      "rp_entity_id": "D9A1FA",
+      "name": "Navitas Semiconductor Corp.",
+      "market_cap": 3062620890,
+      "currency": "USD"
+    },
+    "NWSA": {
+      "rp_entity_id": "DD1BA1",
+      "name": "News Corp.",
+      "market_cap": 16009185417,
+      "currency": "USD"
+    },
+    "NXPI": {
+      "rp_entity_id": "351EC3",
+      "name": "NXP Semiconductors N.V.",
+      "market_cap": 59629262226,
+      "currency": "USD"
+    },
+    "NXT": {
+      "rp_entity_id": "WKJH2W",
+      "name": "Nextpower Inc.",
+      "market_cap": 12027620051,
+      "currency": "USD"
+    },
+    "ODFL": {
+      "rp_entity_id": "119CB6",
+      "name": "Old Dominion Freight Line Inc.",
+      "market_cap": 36906051501,
+      "currency": "USD"
+    },
+    "OKTA": {
+      "rp_entity_id": "0BF528",
+      "name": "Okta Inc.",
+      "market_cap": 34034665600,
+      "currency": "USD"
+    },
+    "OLED": {
+      "rp_entity_id": "415188",
+      "name": "Universal Display Corp.",
+      "market_cap": 3500834306,
+      "currency": "USD"
+    },
+    "OLLI": {
+      "rp_entity_id": "99FC27",
+      "name": "Ollie's Bargain Outlet Holdings Inc.",
+      "market_cap": 5246136680,
+      "currency": "USD"
+    },
+    "ON": {
+      "rp_entity_id": "790C34",
+      "name": "ON Semiconductor Corp.",
+      "market_cap": 29568246400,
+      "currency": "USD"
+    },
+    "ONB": {
+      "rp_entity_id": "D8760C",
+      "name": "Old National Bancorp",
+      "market_cap": 9503038800,
+      "currency": "USD"
+    },
+    "ORKA": {
+      "rp_entity_id": "D16D10",
+      "name": "Oruka Therapeutics Inc.",
+      "market_cap": 4954639097,
+      "currency": "USD"
+    },
+    "ORLY": {
+      "rp_entity_id": "6E1E61",
+      "name": "O'Reilly Automotive Inc.",
+      "market_cap": 71327500050,
+      "currency": "USD"
+    },
+    "OUST": {
+      "rp_entity_id": "29CF1B",
+      "name": "Ouster Inc.",
+      "market_cap": 2884493320,
+      "currency": "USD"
+    },
+    "OZK": {
+      "rp_entity_id": "10C19B",
+      "name": "Bank OZK",
+      "market_cap": 5043463425,
+      "currency": "USD"
+    },
+    "PANW": {
+      "rp_entity_id": "A52B6B",
+      "name": "Palo Alto Networks Inc.",
+      "market_cap": 316554150000,
+      "currency": "USD"
+    },
+    "PAYX": {
+      "rp_entity_id": "6F6559",
+      "name": "Paychex Inc.",
+      "market_cap": 35322864827,
+      "currency": "USD"
+    },
+    "PCAR": {
+      "rp_entity_id": "ACF77B",
+      "name": "Paccar Inc.",
+      "market_cap": 58847601745,
+      "currency": "USD"
+    },
+    "PCTY": {
+      "rp_entity_id": "6ADA0F",
+      "name": "Paylocity Holding Corp.",
+      "market_cap": 7613435579,
+      "currency": "USD"
+    },
+    "PCVX": {
+      "rp_entity_id": "D36686",
+      "name": "Vaxcyte Inc.",
+      "market_cap": 8185904593,
+      "currency": "USD"
+    },
+    "PDD": {
+      "rp_entity_id": "80D76F",
+      "name": "PDD Holdings Inc.",
+      "market_cap": 110313224798,
+      "currency": "USD"
+    },
+    "PEGA": {
+      "rp_entity_id": "31AA84",
+      "name": "Pegasystems Inc.",
+      "market_cap": 5420432850,
+      "currency": "USD"
+    },
+    "PENG": {
+      "rp_entity_id": "722756",
+      "name": "Penguin Solutions Inc.",
+      "market_cap": 2858830233,
+      "currency": "USD"
+    },
+    "PFG": {
+      "rp_entity_id": "59B229",
+      "name": "Principal Financial Group Inc.",
+      "market_cap": 24401546850,
+      "currency": "USD"
+    },
+    "PI": {
+      "rp_entity_id": "9D65C1",
+      "name": "Impinj Inc.",
+      "market_cap": 5387046264,
+      "currency": "USD"
+    },
+    "PLTR": {
+      "rp_entity_id": "F1C69A",
+      "name": "Palantir Technologies Inc.",
+      "market_cap": 429296207900,
+      "currency": "USD"
+    },
+    "PLXS": {
+      "rp_entity_id": "A2CAF7",
+      "name": "Plexus Corp.",
+      "market_cap": 7120686321,
+      "currency": "USD"
+    },
+    "PODD": {
+      "rp_entity_id": "9C5174",
+      "name": "Insulet Corp.",
+      "market_cap": 9201119294,
+      "currency": "USD"
+    },
+    "POOL": {
+      "rp_entity_id": "5DE5A5",
+      "name": "Pool Corp.",
+      "market_cap": 5922716360,
+      "currency": "USD"
+    },
+    "POWL": {
+      "rp_entity_id": "99DC8D",
+      "name": "Powell Industries Inc.",
+      "market_cap": 6865899336,
+      "currency": "USD"
+    },
+    "PRAX": {
+      "rp_entity_id": "7732C2",
+      "name": "Praxis Precision Medicines Inc.",
+      "market_cap": 7833942800,
+      "currency": "USD"
+    },
+    "PTCT": {
+      "rp_entity_id": "CAB222",
+      "name": "PTC Therapeutics Inc.",
+      "market_cap": 5421613568,
+      "currency": "USD"
+    },
+    "PTEN": {
+      "rp_entity_id": "57356F",
+      "name": "Patterson-UTI Energy Inc.",
+      "market_cap": 4004966239,
+      "currency": "USD"
+    },
+    "PTGX": {
+      "rp_entity_id": "2B8179",
+      "name": "Protagonist Therapeutics Inc.",
+      "market_cap": 9065974252,
+      "currency": "USD"
+    },
+    "PYPL": {
+      "rp_entity_id": "03CF95",
+      "name": "PayPal Holdings Inc.",
+      "market_cap": 46100793290,
+      "currency": "USD"
+    },
+    "QBTS": {
+      "rp_entity_id": "3I24EZ",
+      "name": "D-Wave Quantum Inc.",
+      "market_cap": 6034230886,
+      "currency": "USD"
+    },
+    "QCOM": {
+      "rp_entity_id": "CFF15D",
+      "name": "Qualcomm Inc.",
+      "market_cap": 193305000000,
+      "currency": "USD"
+    },
+    "QRVO": {
+      "rp_entity_id": "7C62A3",
+      "name": "Qorvo Inc.",
+      "market_cap": 10299871800,
+      "currency": "USD"
+    },
+    "REG": {
+      "rp_entity_id": "B5DE80",
+      "name": "Regency Centers Corp.",
+      "market_cap": 13268771096,
+      "currency": "USD"
+    },
+    "RELY": {
+      "rp_entity_id": "7L7LHX",
+      "name": "Remitly Global Inc.",
+      "market_cap": 4520746388,
+      "currency": "USD"
+    },
+    "RGEN": {
+      "rp_entity_id": "A7F7C1",
+      "name": "Repligen Corp.",
+      "market_cap": 10980674692,
+      "currency": "USD"
+    },
+    "RIOT": {
+      "rp_entity_id": "56AAC4",
+      "name": "Riot Platforms Inc.",
+      "market_cap": 8088654810,
+      "currency": "USD"
+    },
+    "RIVN": {
+      "rp_entity_id": "AE8A7E",
+      "name": "Rivian Automotive Inc.",
+      "market_cap": 18171752298,
+      "currency": "USD"
+    },
+    "RKLB": {
+      "rp_entity_id": "8BBCDA",
+      "name": "Rocket Lab Corp.",
+      "market_cap": 40347063008,
+      "currency": "USD"
+    },
+    "RLAY": {
+      "rp_entity_id": "6BBD2D",
+      "name": "Relay Therapeutics Inc.",
+      "market_cap": 4023440345,
+      "currency": "USD"
+    },
+    "RMBS": {
+      "rp_entity_id": "7F3669",
+      "name": "Rambus Inc.",
+      "market_cap": 11184560192,
+      "currency": "USD"
+    },
+    "ROAD": {
+      "rp_entity_id": "E3656D",
+      "name": "Construction Partners Inc.",
+      "market_cap": 5193701390,
+      "currency": "USD"
+    },
+    "ROIV": {
+      "rp_entity_id": "08B4B5",
+      "name": "Roivant Sciences Ltd.",
+      "market_cap": 26367819000,
+      "currency": "USD"
+    },
+    "ROKU": {
+      "rp_entity_id": "9F47E2",
+      "name": "Roku Inc.",
+      "market_cap": 22568776375,
+      "currency": "USD"
+    },
+    "ROP": {
+      "rp_entity_id": "5E6959",
+      "name": "Roper Technologies Inc.",
+      "market_cap": 35265445650,
+      "currency": "USD"
+    },
+    "ROST": {
+      "rp_entity_id": "8C6C1B",
+      "name": "Ross Stores Inc.",
+      "market_cap": 75191084214,
+      "currency": "USD"
+    },
+    "RPRX": {
+      "rp_entity_id": "58A62D",
+      "name": "Royalty Pharma PLC",
+      "market_cap": 25807412280,
+      "currency": "USD"
+    },
+    "RVMD": {
+      "rp_entity_id": "4BAF2E",
+      "name": "Revolution Medicines Inc.",
+      "market_cap": 43471630080,
+      "currency": "USD"
+    },
+    "RYTM": {
+      "rp_entity_id": "0DBB81",
+      "name": "Rhythm Pharmaceuticals Inc.",
+      "market_cap": 6565093456,
+      "currency": "USD"
+    },
+    "SAIA": {
+      "rp_entity_id": "C230FE",
+      "name": "Saia Inc.",
+      "market_cap": 8971201472,
+      "currency": "USD"
+    },
+    "SAIL": {
+      "rp_entity_id": "J1WQ91",
+      "name": "SailPoint Inc.",
+      "market_cap": 11723672548,
+      "currency": "USD"
+    },
+    "SANM": {
+      "rp_entity_id": "6D4636",
+      "name": "Sanmina Corp.",
+      "market_cap": 11937748902,
+      "currency": "USD"
+    },
+    "SBAC": {
+      "rp_entity_id": "1E169E",
+      "name": "SBA Communications Corp.",
+      "market_cap": 17268117030,
+      "currency": "USD"
+    },
+    "SBLK": {
+      "rp_entity_id": "1D43B2",
+      "name": "Star Bulk Carriers Corp.",
+      "market_cap": 3256703039,
+      "currency": "USD"
+    },
+    "SBUX": {
+      "rp_entity_id": "3CBA2A",
+      "name": "Starbucks Corp.",
+      "market_cap": 108790200000,
+      "currency": "USD"
+    },
+    "SDGR": {
+      "rp_entity_id": "6BBCBA",
+      "name": "Schrödinger Inc.",
+      "market_cap": 2266279559,
+      "currency": "USD"
+    },
+    "SEIC": {
+      "rp_entity_id": "992E92",
+      "name": "SEI Investments Co.",
+      "market_cap": 12403963650,
+      "currency": "USD"
+    },
+    "SFM": {
+      "rp_entity_id": "1B9535",
+      "name": "Sprouts Farmers Market Inc.",
+      "market_cap": 6028458956,
+      "currency": "USD"
+    },
+    "SIMO": {
+      "rp_entity_id": "43DDE1",
+      "name": "Silicon Motion Technology Corp.",
+      "market_cap": 9266638000,
+      "currency": "USD"
+    },
+    "SIRI": {
+      "rp_entity_id": "4C6C63",
+      "name": "SiriusXM Holdings Inc.",
+      "market_cap": 8682842958,
+      "currency": "USD"
+    },
+    "SITM": {
+      "rp_entity_id": "96A2D3",
+      "name": "SiTime Corp.",
+      "market_cap": 17195667424,
+      "currency": "USD"
+    },
+    "SLAB": {
+      "rp_entity_id": "F7902B",
+      "name": "Silicon Labs",
+      "market_cap": 7294589793,
+      "currency": "USD"
+    },
+    "SLS": {
+      "rp_entity_id": "9FBBDC",
+      "name": "SELLAS Life Sciences Group Inc.",
+      "market_cap": 2141239830,
+      "currency": "USD"
+    },
+    "SMCI": {
+      "rp_entity_id": "30A565",
+      "name": "Super Micro Computer Inc.",
+      "market_cap": 26534730460,
+      "currency": "USD"
+    },
+    "SMMT": {
+      "rp_entity_id": "C42521",
+      "name": "Summit Therapeutics Inc.",
+      "market_cap": 13075115977,
+      "currency": "USD"
+    },
+    "SMTC": {
+      "rp_entity_id": "589846",
+      "name": "Semtech Corp.",
+      "market_cap": 16776525357,
+      "currency": "USD"
+    },
+    "SNDK": {
+      "rp_entity_id": "E5AAB0",
+      "name": "SanDisk Corp.",
+      "market_cap": 256159725960,
+      "currency": "USD"
+    },
+    "SNEX": {
+      "rp_entity_id": "C50B26",
+      "name": "StoneX Group Inc.",
+      "market_cap": 7756724250,
+      "currency": "USD"
+    },
+    "SNPS": {
+      "rp_entity_id": "7E1D5D",
+      "name": "Synopsys Inc.",
+      "market_cap": 79481153014,
+      "currency": "USD"
+    },
+    "SNY": {
+      "rp_entity_id": "F4194B",
+      "name": "Sanofi S.A.",
+      "market_cap": 97824888000,
+      "currency": "USD"
+    },
+    "SRRK": {
+      "rp_entity_id": "1CD4B5",
+      "name": "Scholar Rock Holding Corp.",
+      "market_cap": 5721787000,
+      "currency": "USD"
+    },
+    "SSNC": {
+      "rp_entity_id": "E0207A",
+      "name": "SS&C Technologies Holdings Inc.",
+      "market_cap": 18206881605,
+      "currency": "USD"
+    },
+    "SSRM": {
+      "rp_entity_id": "CD9D08",
+      "name": "SSR Mining Inc.",
+      "market_cap": 7042244540,
+      "currency": "USD"
+    },
+    "STLD": {
+      "rp_entity_id": "20BEEA",
+      "name": "Steel Dynamics Inc.",
+      "market_cap": 31804504724,
+      "currency": "USD"
+    },
+    "STRL": {
+      "rp_entity_id": "7F9E16",
+      "name": "Sterling Infrastructure Inc.",
+      "market_cap": 15494588840,
+      "currency": "USD"
+    },
+    "STX": {
+      "rp_entity_id": "808319",
+      "name": "Seagate Technology Holdings PLC",
+      "market_cap": 204821980050,
+      "currency": "USD"
+    },
+    "SWKS": {
+      "rp_entity_id": "EB5E78",
+      "name": "Skyworks Solutions Inc.",
+      "market_cap": 13247623727,
+      "currency": "USD"
+    },
+    "SYNA": {
+      "rp_entity_id": "BBF349",
+      "name": "Synaptics Inc.",
+      "market_cap": 3937127114,
+      "currency": "USD"
+    },
+    "TARS": {
+      "rp_entity_id": "75D689",
+      "name": "Tarsus Pharmaceuticals Inc.",
+      "market_cap": 3299510560,
+      "currency": "USD"
+    },
+    "TCBI": {
+      "rp_entity_id": "56AFF4",
+      "name": "Texas Capital Bancshares Inc.",
+      "market_cap": 4056593371,
+      "currency": "USD"
+    },
+    "TEAM": {
+      "rp_entity_id": "RDU3ZQ",
+      "name": "Atlassian Corp.",
+      "market_cap": 46220172467,
+      "currency": "USD"
+    },
+    "TECH": {
+      "rp_entity_id": "85DE00",
+      "name": "Bio-Techne Corp.",
+      "market_cap": 11332464220,
+      "currency": "USD"
+    },
+    "TENB": {
+      "rp_entity_id": "8AC65D",
+      "name": "Tenable Holdings Inc.",
+      "market_cap": 3858417280,
+      "currency": "USD"
+    },
+    "TGTX": {
+      "rp_entity_id": "36C09B",
+      "name": "TG Therapeutics Inc.",
+      "market_cap": 8601766360,
+      "currency": "USD"
+    },
+    "TIGO": {
+      "rp_entity_id": "55EDAF",
+      "name": "Millicom International Cellular S.A.",
+      "market_cap": 15370252073,
+      "currency": "USD"
+    },
+    "TLN": {
+      "rp_entity_id": "47B609",
+      "name": "Talen Energy Corp.",
+      "market_cap": 14292164319,
+      "currency": "USD"
+    },
+    "TMDX": {
+      "rp_entity_id": "01B8D6",
+      "name": "TransMedics Group Inc.",
+      "market_cap": 2905534863,
+      "currency": "USD"
+    },
+    "TMUS": {
+      "rp_entity_id": "57DDB9",
+      "name": "T-Mobile US Inc.",
+      "market_cap": 174824019487,
+      "currency": "USD"
+    },
+    "TNGX": {
+      "rp_entity_id": "F4B8B5",
+      "name": "Tango Therapeutics Inc.",
+      "market_cap": 3975933729,
+      "currency": "USD"
+    },
+    "TRMB": {
+      "rp_entity_id": "D4AC65",
+      "name": "Trimble Inc.",
+      "market_cap": 13366614499,
+      "currency": "USD"
+    },
+    "TRMD": {
+      "rp_entity_id": "7697D2",
+      "name": "Torm PLC",
+      "market_cap": 3700567050,
+      "currency": "USD"
+    },
+    "TROW": {
+      "rp_entity_id": "2F94A5",
+      "name": "T. Rowe Price Group Inc.",
+      "market_cap": 22393044170,
+      "currency": "USD"
+    },
+    "TSCO": {
+      "rp_entity_id": "FC1F9D",
+      "name": "Tractor Supply Co.",
+      "market_cap": 16525419500,
+      "currency": "USD"
+    },
+    "TSLA": {
+      "rp_entity_id": "DD3BB1",
+      "name": "Tesla Inc.",
+      "market_cap": 1393558302499,
+      "currency": "USD"
+    },
+    "TTAN": {
+      "rp_entity_id": "AA4984",
+      "name": "ServiceTitan Inc.",
+      "market_cap": 6059210086,
+      "currency": "USD"
+    },
+    "TTD": {
+      "rp_entity_id": "0E698B",
+      "name": "The Trade Desk Inc.",
+      "market_cap": 5664805449,
+      "currency": "USD"
+    },
+    "TTEK": {
+      "rp_entity_id": "722DE3",
+      "name": "Tetra Tech Inc.",
+      "market_cap": 8745992466,
+      "currency": "USD"
+    },
+    "TTMI": {
+      "rp_entity_id": "605F40",
+      "name": "TTM Technologies Inc.",
+      "market_cap": 12752780000,
+      "currency": "USD"
+    },
+    "TTWO": {
+      "rp_entity_id": "A01664",
+      "name": "Take-Two Interactive Software Inc.",
+      "market_cap": 37915804400,
+      "currency": "USD"
+    },
+    "TVTX": {
+      "rp_entity_id": "701531",
+      "name": "Travere Therapeutics Inc.",
+      "market_cap": 5578644071,
+      "currency": "USD"
+    },
+    "TW": {
+      "rp_entity_id": "EC7AE2",
+      "name": "TradeWeb Markets Inc.",
+      "market_cap": 21418484305,
+      "currency": "USD"
+    },
+    "TWST": {
+      "rp_entity_id": "59DB8C",
+      "name": "Twist Bioscience Corp.",
+      "market_cap": 11590557069,
+      "currency": "USD"
+    },
+    "TXG": {
+      "rp_entity_id": "A0B7C8",
+      "name": "10X Genomics Inc.",
+      "market_cap": 11431135618,
+      "currency": "USD"
+    },
+    "TXN": {
+      "rp_entity_id": "39BFF6",
+      "name": "Texas Instruments Inc.",
+      "market_cap": 257252740669,
+      "currency": "USD"
+    },
+    "TXRH": {
+      "rp_entity_id": "5088A5",
+      "name": "Texas Roadhouse Inc.",
+      "market_cap": 10333352774,
+      "currency": "USD"
+    },
+    "UAL": {
+      "rp_entity_id": "6E705B",
+      "name": "United Airlines Holdings Inc.",
+      "market_cap": 36562779859,
+      "currency": "USD"
+    },
+    "UCTT": {
+      "rp_entity_id": "729368",
+      "name": "Ultra Clean Holdings Inc.",
+      "market_cap": 3606893064,
+      "currency": "USD"
+    },
+    "ULTA": {
+      "rp_entity_id": "CF7292",
+      "name": "Ulta Beauty Inc.",
+      "market_cap": 23553413604,
+      "currency": "USD"
+    },
+    "UMBF": {
+      "rp_entity_id": "DB7FA7",
+      "name": "UMB Financial Corp.",
+      "market_cap": 10013252746,
+      "currency": "USD"
+    },
+    "UPST": {
+      "rp_entity_id": "FD2466",
+      "name": "Upstart Holdings Inc.",
+      "market_cap": 2214766424,
+      "currency": "USD"
+    },
+    "URBN": {
+      "rp_entity_id": "E20BFE",
+      "name": "Urban Outfitters Inc.",
+      "market_cap": 6477438964,
+      "currency": "USD"
+    },
+    "UTHR": {
+      "rp_entity_id": "594402",
+      "name": "United Therapeutics Corp.",
+      "market_cap": 20436812649,
+      "currency": "USD"
+    },
+    "VCTR": {
+      "rp_entity_id": "B60064",
+      "name": "Victory Capital Holdings Inc.",
+      "market_cap": 6903434102,
+      "currency": "USD"
+    },
+    "VCYT": {
+      "rp_entity_id": "C941DC",
+      "name": "Veracyte Inc.",
+      "market_cap": 3676843008,
+      "currency": "USD"
+    },
+    "VERA": {
+      "rp_entity_id": "9XF5GZ",
+      "name": "Vera Therapeutics Inc.",
+      "market_cap": 2323971388,
+      "currency": "USD"
+    },
+    "VIAV": {
+      "rp_entity_id": "E592F0",
+      "name": "Viavi Solutions Inc.",
+      "market_cap": 10316393758,
+      "currency": "USD"
+    },
+    "VICR": {
+      "rp_entity_id": "3A3948",
+      "name": "Vicor Corp.",
+      "market_cap": 13177567360,
+      "currency": "USD"
+    },
+    "VKTX": {
+      "rp_entity_id": "24FA23",
+      "name": "Viking Therapeutics Inc.",
+      "market_cap": 3710729799,
+      "currency": "USD"
+    },
+    "VLY": {
+      "rp_entity_id": "DD0099",
+      "name": "Valley National Bancorp.",
+      "market_cap": 7048546320,
+      "currency": "USD"
+    },
+    "VNOM": {
+      "rp_entity_id": "69CDDC",
+      "name": "Viper Energy Inc.",
+      "market_cap": 14429837431,
+      "currency": "USD"
+    },
+    "VRNS": {
+      "rp_entity_id": "C0F70B",
+      "name": "Varonis Systems Inc.",
+      "market_cap": 5411077448,
+      "currency": "USD"
+    },
+    "VRSN": {
+      "rp_entity_id": "A5B913",
+      "name": "VeriSign Inc.",
+      "market_cap": 25297536000,
+      "currency": "USD"
+    },
+    "VRTX": {
+      "rp_entity_id": "57CAAB",
+      "name": "Vertex Pharmaceuticals Inc.",
+      "market_cap": 133686707650,
+      "currency": "USD"
+    },
+    "VSAT": {
+      "rp_entity_id": "316BDF",
+      "name": "ViaSat Inc.",
+      "market_cap": 9517526804,
+      "currency": "USD"
+    },
+    "VSEC": {
+      "rp_entity_id": "180DA0",
+      "name": "VSE Corp.",
+      "market_cap": 4814334948,
+      "currency": "USD"
+    },
+    "VTRS": {
+      "rp_entity_id": "508CFD",
+      "name": "Viatris Inc.",
+      "market_cap": 21101694090,
+      "currency": "USD"
+    },
+    "WBD": {
+      "rp_entity_id": "ADF092",
+      "name": "Warner Bros Discovery Inc.",
+      "market_cap": 77345167257,
+      "currency": "USD"
+    },
+    "WDAY": {
+      "rp_entity_id": "4B7006",
+      "name": "Workday Inc.",
+      "market_cap": 49551588381,
+      "currency": "USD"
+    },
+    "WDC": {
+      "rp_entity_id": "CE96E7",
+      "name": "Western Digital Corp.",
+      "market_cap": 156306393360,
+      "currency": "USD"
+    },
+    "WFRD": {
+      "rp_entity_id": "AE7EC7",
+      "name": "Weatherford International PLC",
+      "market_cap": 5764226472,
+      "currency": "USD"
+    },
+    "WING": {
+      "rp_entity_id": "21022F",
+      "name": "Wingstop Inc.",
+      "market_cap": 2959080350,
+      "currency": "USD"
+    },
+    "WIX": {
+      "rp_entity_id": "3C0936",
+      "name": "Wix.com Ltd.",
+      "market_cap": 3719390319,
+      "currency": "USD"
+    },
+    "WMG": {
+      "rp_entity_id": "F90151",
+      "name": "Warner Music Group Corp.",
+      "market_cap": 14413511307,
+      "currency": "USD"
+    },
+    "WMT": {
+      "rp_entity_id": "713810",
+      "name": "Walmart Inc.",
+      "market_cap": 849922944000,
+      "currency": "USD"
+    },
+    "WSC": {
+      "rp_entity_id": "AC642C",
+      "name": "WillScot Holdings Corp.",
+      "market_cap": 3158357149,
+      "currency": "USD"
+    },
+    "WTFC": {
+      "rp_entity_id": "272704",
+      "name": "Wintrust Financial Corp.",
+      "market_cap": 9678084822,
+      "currency": "USD"
+    },
+    "WULF": {
+      "rp_entity_id": "61BC66",
+      "name": "TeraWulf Inc.",
+      "market_cap": 7477587613,
+      "currency": "USD"
+    },
+    "WWD": {
+      "rp_entity_id": "E7A2A5",
+      "name": "Woodward Inc.",
+      "market_cap": 19649248762,
+      "currency": "USD"
+    },
+    "WYNN": {
+      "rp_entity_id": "9E91C6",
+      "name": "Wynn Resorts Ltd.",
+      "market_cap": 8119257010,
+      "currency": "USD"
+    },
+    "XEL": {
+      "rp_entity_id": "1151F4",
+      "name": "Xcel Energy Inc.",
+      "market_cap": 44155377460,
+      "currency": "USD"
+    },
+    "XENE": {
+      "rp_entity_id": "2C9575",
+      "name": "Xenon Pharmaceuticals Inc.",
+      "market_cap": 3600793600,
+      "currency": "USD"
+    },
+    "XMTR": {
+      "rp_entity_id": "D0311C",
+      "name": "Xometry Inc.",
+      "market_cap": 5604499215,
+      "currency": "USD"
+    },
+    "XP": {
+      "rp_entity_id": "421A1A",
+      "name": "XP Inc.",
+      "market_cap": 10603904815,
+      "currency": "USD"
+    },
+    "Z": {
+      "rp_entity_id": "6BC6F9",
+      "name": "Zillow Group Inc.",
+      "market_cap": 6569699120,
+      "currency": "USD"
+    },
+    "ZION": {
+      "rp_entity_id": "4D371E",
+      "name": "Zions Bancorporation N.A.",
+      "market_cap": 9137240790,
+      "currency": "USD"
+    },
+    "ZM": {
+      "rp_entity_id": "362955",
+      "name": "Zoom Communications Inc.",
+      "market_cap": 25908533063,
+      "currency": "USD"
+    },
+    "ZS": {
+      "rp_entity_id": "D44D33",
+      "name": "Zscaler Inc.",
+      "market_cap": 32075892831,
+      "currency": "USD"
+    }
+  },
+  "fail": {
+    "GPCR": {
+      "rp_entity_id": "0H4S2P",
+      "name": "Structure Therapeutics Inc.",
+      "market_cap": 1881854312,
+      "currency": "USD"
+    },
+    "NKTR": {
+      "rp_entity_id": "649CBD",
+      "name": "Nektar Therapeutics Co.",
+      "market_cap": 1699474928,
+      "currency": "USD"
+    },
+    "SEDG": {
+      "rp_entity_id": "73F28D",
+      "name": "SolarEdge Technologies Inc.",
+      "market_cap": 1916989727,
+      "currency": "USD"
+    },
+    "USAR": {
+      "rp_entity_id": "304NX5",
+      "name": "USA Rare Earth Inc.",
+      "market_cap": 1866887746,
+      "currency": "USD"
+    }
+  },
+  "unknown": {
+    "AKAM": "NO_EXACT_KG_MATCH",
+    "BRZE": "NO_EXACT_KG_MATCH",
+    "COCO": "NO_EXACT_KG_MATCH",
+    "CORZ": "NO_EXACT_KG_MATCH",
+    "DAVE": "NO_EXACT_KG_MATCH",
+    "DKNG": "NO_EXACT_KG_MATCH",
+    "GTLB": "NO_EXACT_KG_MATCH",
+    "HBAN": "NO_EXACT_KG_MATCH",
+    "INDV": "NO_EXACT_KG_MATCH",
+    "IREN": "NO_EXACT_KG_MATCH",
+    "KMB": "NO_EXACT_KG_MATCH",
+    "NXST": "NO_EXACT_KG_MATCH",
+    "RGTI": "NO_EXACT_KG_MATCH",
+    "SHOP": "NO_EXACT_KG_MATCH",
+    "SOFI": "NO_EXACT_KG_MATCH",
+    "TEM": "NO_EXACT_KG_MATCH",
+    "TER": "NO_EXACT_KG_MATCH",
+    "TPG": "NO_EXACT_KG_MATCH",
+    "TRI": "NO_EXACT_KG_MATCH",
+    "WGS": "NO_EXACT_KG_MATCH",
+    "BIDU": "GRID_TICKER_MISMATCH:9888.HK",
+    "FOX": "GRID_TICKER_MISMATCH:FOXA",
+    "HTHT": "GRID_TICKER_MISMATCH:1179.HK",
+    "JD": "GRID_TICKER_MISMATCH:9618.HK",
+    "NTES": "GRID_TICKER_MISMATCH:9999.HK",
+    "RYAAY": "GRID_TICKER_MISMATCH:RYA.IR",
+    "VOD": "GRID_TICKER_MISMATCH:VOD.L"
+  }
+}
