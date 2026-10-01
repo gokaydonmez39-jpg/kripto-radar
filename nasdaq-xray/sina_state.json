@@ -2,13 +2,13 @@
   "asof_et": "2026-09-30",
   "build": "2026-10-01.4",
   "counts": {
+    "BLOCK_CURRENT_RUN": 1,
     "BLOCK_LEGAL_SHELL": 1,
     "FAIL_DV20": 268,
     "FAIL_HISTORY": 46,
-    "FAIL_PRICE": 10,
+    "FAIL_PRICE": 13,
     "PASS": 483,
-    "UNKNOWN_RETRY_EXHAUSTED": 5,
-    "UNKNOWN_STATIC": 2
+    "UNKNOWN_RETRY_EXHAUSTED": 3
   },
   "cursor": 815,
   "discovery": {
@@ -7425,8 +7425,8 @@
   "queue_total": 815,
   "real_money": "NO-GO",
   "resolution_overlay_meta": {
-    "age_hours": 0.1800100391666667,
-    "generated_at_utc": "2026-10-01T17:02:19.611Z",
+    "age_hours": 0.008806293611111111,
+    "generated_at_utc": "2026-10-01T17:14:06.910Z",
     "status": "PASS"
   },
   "results": {
@@ -8554,7 +8554,7 @@
         "source": "NASDAQ_SAME_RUN_SCREENER_METADATA"
       },
       "status": "BLOCK_LEGAL_SHELL",
-      "updated_at_utc": "2026-10-01T17:13:07.647892+00:00"
+      "updated_at_utc": "2026-10-01T17:14:38.613390+00:00"
     },
     "BSP": {
       "attempts": 1,
@@ -12890,9 +12890,14 @@
     },
     "OPNW": {
       "attempts": 4,
-      "info": "IndexError:list index out of range",
-      "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "updated_at_utc": "2026-10-01T17:12:59.901877+00:00"
+      "info": {
+        "bars": 686,
+        "price": 8.979999542236328,
+        "resolution_source": "YAHOO_CHART_FREE_FALLBACK"
+      },
+      "resolution_overlay": true,
+      "status": "FAIL_PRICE",
+      "updated_at_utc": "2026-10-01T17:14:38.613108+00:00"
     },
     "ORKA": {
       "attempts": 1,
@@ -12927,11 +12932,13 @@
     "OST": {
       "attempts": 1,
       "info": {
-        "bars": 847,
-        "reason": "ASOF_MISSING"
+        "bars": 686,
+        "price": 1.6950000524520874,
+        "resolution_source": "YAHOO_CHART_FREE_FALLBACK"
       },
-      "status": "UNKNOWN_STATIC",
-      "updated_at_utc": "2026-10-01T17:04:28.530183+00:00"
+      "resolution_overlay": true,
+      "status": "FAIL_PRICE",
+      "updated_at_utc": "2026-10-01T17:14:38.613131+00:00"
     },
     "OSW": {
       "attempts": 1,
@@ -13058,11 +13065,13 @@
     "PC": {
       "attempts": 1,
       "info": {
-        "bars": 1808,
-        "reason": "ASOF_MISSING"
+        "bars": 505,
+        "price": 9.399999618530273,
+        "resolution_source": "YAHOO_CHART_FREE_FALLBACK"
       },
-      "status": "UNKNOWN_STATIC",
-      "updated_at_utc": "2026-10-01T17:04:28.530217+00:00"
+      "resolution_overlay": true,
+      "status": "FAIL_PRICE",
+      "updated_at_utc": "2026-10-01T17:14:38.613164+00:00"
     },
     "PCAR": {
       "attempts": 1,
@@ -14384,9 +14393,15 @@
     },
     "SVA": {
       "attempts": 4,
-      "info": "SyntaxError:invalid syntax (<string>, line 1)",
-      "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "updated_at_utc": "2026-10-01T17:12:59.901901+00:00"
+      "info": {
+        "last_bar": "2024-09-04",
+        "reason": "CURRENT_TRADE_STATUS_HALTED",
+        "resolution_source": "LONGBRIDGE_NASD_QUOTE_PLUS_RALLIES_XNAS_NO_CURRENT_MARKET_DATA",
+        "trade_status": "Halted"
+      },
+      "resolution_overlay": true,
+      "status": "BLOCK_CURRENT_RUN",
+      "updated_at_utc": "2026-10-01T17:14:38.613285+00:00"
     },
     "SWKS": {
       "attempts": 1,
@@ -16446,10 +16461,10 @@
     "ZS": "Zscaler, Inc. - Common Stock",
     "ZYME": "Zymeworks Inc. - Common Stock"
   },
-  "state_hash": "45896b998f940da6f1d27424774bb8887f469b9da954e193f8ba3b7662c4de68",
+  "state_hash": "6079ae60da9b377cc4492b4fa533bccfacaa5f94bf3a42919474ceed07416f5c",
   "status": "HISTORY_PARTIAL",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 7,
+  "unknown_count": 3,
   "unknown_never_pass": true,
-  "updated_at_utc": "2026-10-01T17:13:07.648205+00:00"
+  "updated_at_utc": "2026-10-01T17:14:38.613683+00:00"
 }
