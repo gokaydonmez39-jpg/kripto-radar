@@ -1,10 +1,13 @@
 name: XRAY Canonical Regime Deep Geometry 20260930
+# dynamic Stage1-bound regime/deep
 
 on:
   push:
     branches: [main]
     paths:
       - ".github/workflows/xray-canonical-regime-deep-geometry-20260930.yml"
+      - "nasdaq-xray/canonical_stage1_input_20260930.json"
+      - "nasdaq-xray/canonical_stage1_20260930.json"
   workflow_dispatch:
 
 permissions:
@@ -19,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
-      XRAY_MC_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_mc_input_20260930.json
+      XRAY_MC_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_stage1_input_20260930.json
       XRAY_REGIME_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_regime_20260930.json
       XRAY_BREADTH_WORKERS: "10"
       XRAY_STAGE1_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_stage1_20260930.json
@@ -29,30 +32,28 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: main
           fetch-depth: 1
 
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
-      - name: Verify pinned canonical inputs
+      - name: Verify canonical Stage1 inputs
         run: |
           python - <<'PY'
-          import hashlib, pathlib, json
-          pins={
-            "nasdaq-xray/canonical_mc_input_20260930.json":"8f85665989a58a965bd104e7645dab4541a18ab0",
-            "nasdaq-xray/canonical_stage1_20260930.json":"92968175766378af7cef33f534fac21d4949fbc1",
-          }
-          for p,e in pins.items():
-              b=pathlib.Path(p).read_bytes()
-              h=hashlib.sha1(f"blob {len(b)}\0".encode()+b).hexdigest()
-              assert h==e,(p,h,e)
-          mc=json.load(open("nasdaq-xray/canonical_mc_input_20260930.json"))
+          import json
+          inp=json.load(open("nasdaq-xray/canonical_stage1_input_20260930.json"))
           st=json.load(open("nasdaq-xray/canonical_stage1_20260930.json"))
-          assert mc["current_core_count"]==460
-          assert st["input_current_core_count"]==460 and st["unknown_count"]==0
-          assert st["weekly_pass_count"]==104
-          print("PINNED_INPUTS_PASS")
+          assert inp["task_id"]=="6a825366222081918997094d76e6ae46"
+          assert inp["asof_et"]=="2026-09-30"
+          assert inp["execution"]=="NONE" and inp["real_money"]=="NO-GO"
+          syms=inp["current_core_mc_pass"]
+          assert len(syms)==len(set(syms))==st["input_current_core_count"]
+          assert set(st["state_caps"])==set(syms)
+          assert set(st["r92_ineligible"])==set(inp["r92_ineligible"])
+          assert st["unknown_count"]==0
+          print({"input_count":len(syms),"weekly_pass_count":st["weekly_pass_count"],"r92_ineligible":len(st["r92_ineligible"])})
           PY
 
       - name: Compile
@@ -73,8 +74,9 @@ jobs:
           assert j["task_id"]=="6a825366222081918997094d76e6ae46"
           assert j["asof_et"]=="2026-09-30"
           assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
-          assert j["current_core_count"]==460
-          assert j["history_ok_count"]==460
+          st=json.load(open("nasdaq-xray/canonical_stage1_20260930.json"))
+          assert j["current_core_count"]==st["input_current_core_count"]
+          assert j["history_ok_count"]==st["input_current_core_count"]
           assert j["breadth_missing_count"]==0
           assert j["regime"] in {"STRONG","MIXED","WEAK"}
           print({k:j[k] for k in ["current_core_count","history_ok_count","breadth_missing_count","breadth_above_sma50_pct","nh20","nl20","regime"]})
@@ -92,7 +94,8 @@ jobs:
           assert j["task_id"]=="6a825366222081918997094d76e6ae46"
           assert j["asof_et"]=="2026-09-30"
           assert j["mode"]=="GEOMETRY_ONLY_REGIME_EVENT_DEFERRED"
-          assert j["input_weekly_pass_count"]==104
+          st=json.load(open("nasdaq-xray/canonical_stage1_20260930.json"))
+          assert j["input_weekly_pass_count"]==st["weekly_pass_count"]
           assert j["unknown_history_count"]==0, j["unknown_history"]
           print({k:j[k] for k in ["input_weekly_pass_count","a_geometry_count","b_breakout_count","b_armed_count","d_geometry_rs_count","unknown_history_count"]})
           PY
