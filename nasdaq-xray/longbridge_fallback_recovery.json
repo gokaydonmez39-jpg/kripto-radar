@@ -10,7 +10,7 @@
   "source_primary_summary_hash": "d9473aa103dad1964aba08c98764fc7be8f78093f8344d9722678631318d5d43",
   "source_missing_group_hash": "d55174eb1df105baf2b43a208d8871f88f263afeee8ff55aad507c75d9263273",
   "total_missing": 356,
-  "cursor": 328,
+  "cursor": 344,
   "results": {
     "AACI": {
       "status": "FAIL_DV20",
@@ -2047,7 +2047,97 @@
         "2026-09-28",
         "2026-09-29"
       ]
+    },
+    "UONEK": {
+      "status": "FAIL_PRICE",
+      "price": 3.59,
+      "dv20": 20706.04
+    },
+    "UTSI": {
+      "status": "FAIL_PRICE",
+      "price": 2.35,
+      "dv20": 6839.675
+    },
+    "UYSC": {
+      "status": "FAIL_DV20",
+      "price": 11,
+      "dv20": 137.04500000000002
+    },
+    "VHCP": {
+      "status": "FAIL_DV20",
+      "price": 10.06,
+      "dv20": 892.05
+    },
+    "VLOS": {
+      "status": "FAIL_DV20",
+      "price": 10.68,
+      "dv20": 4452.22
+    },
+    "VNME": {
+      "status": "FAIL_DV20",
+      "price": 10.3,
+      "dv20": 1111.6000000000001
+    },
+    "WCCB": {
+      "status": "UNKNOWN_EXACT20_MISSING",
+      "missing": [
+        "2026-09-01",
+        "2026-09-02",
+        "2026-09-03",
+        "2026-09-04",
+        "2026-09-08",
+        "2026-09-09",
+        "2026-09-10",
+        "2026-09-11",
+        "2026-09-14",
+        "2026-09-15"
+      ]
+    },
+    "WENN": {
+      "status": "FAIL_DV20",
+      "price": 10.41,
+      "dv20": 36682.136
+    },
+    "WFCF": {
+      "status": "FAIL_DV20",
+      "price": 10.9,
+      "dv20": 28873.344999999998
+    },
+    "WLCO": {
+      "status": "FAIL_PRICE",
+      "price": 9.83,
+      "dv20": 3890.0600000000004
+    },
+    "WLII": {
+      "status": "FAIL_DV20",
+      "price": 10.25,
+      "dv20": 405.27
+    },
+    "WSTN": {
+      "status": "FAIL_DV20",
+      "price": 10.15,
+      "dv20": 111.85999999999999
+    },
+    "WTF": {
+      "status": "FAIL_PRICE",
+      "price": 2.59,
+      "dv20": 4216.4
+    },
+    "WTG": {
+      "status": "FAIL_DV20",
+      "price": 10.63,
+      "dv20": 32165.989999999998
+    },
+    "XCBE": {
+      "status": "FAIL_DV20",
+      "price": 10.025,
+      "dv20": 6465.094999999999
+    },
+    "XCH": {
+      "status": "FAIL_PRICE",
+      "price": 3.31,
+      "dv20": 10794.07
     }
   },
-  "updated_at_utc": "2026-10-01T00:01:05Z"
+  "updated_at_utc": "2026-10-01T00:01:20Z"
 }
