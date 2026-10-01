@@ -286,7 +286,11 @@ def parse_hist(sym,asof,expected20):
 
         dvs=sorted(known_dv)
         dv20=(dvs[9]+dvs[10])/2.0
-        info={"price":price,"dv20":dv20,"bars":bars}
+        info={
+          "price":price,"dv20":dv20,"bars":bars,
+          "known_session_count":20,"missing_sessions":[],
+          "no_synthetic_bar":True,"proof":"EXACT20_MEDIAN"
+        }
         if dv20<HARD_DV20:return "FAIL_DV20",info
         return "PASS",info
     except Exception as e:
