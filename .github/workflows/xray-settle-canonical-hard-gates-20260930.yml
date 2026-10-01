@@ -1,0 +1,176 @@
+name: XRAY Settle Canonical Hard Gates 20260930
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/xray-settle-canonical-hard-gates-20260930.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: xray-settle-canonical-hard-gates-20260930
+  cancel-in-progress: false
+
+jobs:
+  settle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Settle hard-gate state from evidence overlay
+        run: |
+          python - <<'PY'
+          import json, hashlib, pathlib
+          state_p=pathlib.Path("nasdaq-xray/canonical_full_hard_gate_20260930_state.json")
+          ov_p=pathlib.Path("nasdaq-xray/history_resolution_overlay.json")
+          out_p=pathlib.Path("nasdaq-xray/canonical_hard_gate_settled_20260930.json")
+          cand_p=pathlib.Path("nasdaq-xray/canonical_hard_gate_candidates_settled_20260930.json")
+          s=json.load(open(state_p))
+          ov=json.load(open(ov_p))
+          assert s["schema"]=="XRAY_NASDAQ_SCREENER_SINA_V2"
+          assert s["task_id"]=="6a825366222081918997094d76e6ae46"
+          assert s["asof_et"]=="2026-09-30"
+          assert s["execution"]=="NONE" and s["real_money"]=="NO-GO"
+          assert s["discovery_meta"]["full_identity"] is True
+          assert s["discovery_meta"]["authority"]=="FULL_IDENTITY_NO_PREFILTER"
+          assert s["queue_total"]>3000
+          assert s["queue_total"]==len(s["queue"])==len(s["security_names"])==len(s["results"])
+          assert len(set(s["queue"]))==s["queue_total"]
+          assert ov["schema"]=="XRAY_HISTORY_IDENTITY_RESOLUTION_OVERLAY_V1"
+          assert ov["task_id"]==s["task_id"] and ov["base_asof_et"]=="2026-09-30"
+          assert ov["execution"]=="NONE" and ov["real_money"]=="NO-GO"
+
+          results=json.loads(json.dumps(s["results"]))
+          unknown=[sym for sym,r in results.items() if str(r.get("status","")).startswith("UNKNOWN")]
+          allowed_ex={"SPAC_BLANK_CHECK","PREFERRED","WHEN_ISSUED"}
+          applied=[]
+          for sym in unknown:
+              x=(ov.get("resolutions") or {}).get(sym)
+              assert isinstance(x,dict), ("MISSING_OVERLAY",sym)
+              d=x.get("decision")
+              info={"resolution_source":x.get("source"),"proof":x.get("proof")}
+              if d=="FAIL_HISTORY":
+                  bars=x.get("bars"); assert isinstance(bars,int) and bars<260
+                  status="FAIL_HISTORY"; info.update({"bars":bars,"reason":"DAILY_LT260"})
+              elif d=="FAIL_PRICE":
+                  px=float(x.get("price")); assert px<=10
+                  status="FAIL_PRICE"; info.update({"price":px,"bars":x.get("bars")})
+              elif d=="FAIL_DV20":
+                  dv=float(x.get("dv20")); assert dv<50_000_000
+                  status="FAIL_DV20"; info.update({"price":x.get("price"),"dv20":dv,"bars":x.get("bars")})
+              elif d=="EXCLUDE":
+                  assert x.get("reason") in allowed_ex
+                  status="FAIL_IDENTITY_TYPE"; info.update({"reason":x.get("reason")})
+              elif d=="BLOCK_CURRENT_RUN":
+                  assert x.get("trade_status")=="Halted" and x.get("last_bar")
+                  status="BLOCK_CURRENT_RUN"; info.update({"reason":x.get("reason"),"trade_status":"Halted","last_bar":x.get("last_bar")})
+              elif d=="PASS_HARD_GATES":
+                  px=float(x.get("price")); bars=int(x.get("bars"))
+                  lo=float(x.get("dv20_lower_bound")); hi=float(x.get("dv20_upper_bound"))
+                  miss=x.get("missing_sessions") or []; known=int(x.get("known_session_count"))
+                  assert px>10 and bars>=260 and lo>=50_000_000 and hi>=lo
+                  assert x.get("no_synthetic_bar") is True and known+len(miss)==20
+                  status="PASS"; info.update({
+                      "price":px,"bars":bars,"dv20_gate_pass_by_bound":True,
+                      "dv20_lower_bound":lo,"dv20_upper_bound":hi,
+                      "known_session_count":known,"missing_sessions":miss,"no_synthetic_bar":True
+                  })
+              else:
+                  raise AssertionError(("BAD_DECISION",sym,d))
+              results[sym]={
+                  "status":status,"info":info,
+                  "attempts":results[sym].get("attempts",0),
+                  "resolution_overlay":True
+              }
+              applied.append(sym)
+
+          remaining=[sym for sym,r in results.items() if str(r.get("status","")).startswith("UNKNOWN")]
+          assert not remaining, remaining
+          counts={}
+          for r in results.values():
+              st=r.get("status"); counts[st]=counts.get(st,0)+1
+          candidates={}
+          for sym,r in results.items():
+              if r.get("status")!="PASS": continue
+              info=dict(r.get("info") or {})
+              info["security_name"]=s["security_names"].get(sym)
+              candidates[sym]=info
+
+          def blob_sha(p):
+              b=p.read_bytes()
+              return hashlib.sha1(f"blob {len(b)}\0".encode()+b).hexdigest()
+
+          settled={
+              "schema":"XRAY_CANONICAL_HARD_GATE_SETTLED_V1",
+              "task_id":s["task_id"],
+              "asof_et":"2026-09-30",
+              "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
+              "identity_authority":s["identity_authority"],
+              "official_footer":s["official_footer"],
+              "full_identity":True,
+              "queue_total":s["queue_total"],
+              "queue_hash":s["queue_hash"],
+              "queue_unique":len(set(s["queue"])),
+              "source_state_hash":s.get("state_hash"),
+              "source_state_blob_sha":blob_sha(state_p),
+              "overlay_blob_sha":blob_sha(ov_p),
+              "overlay_applied_to_unknown_symbols":sorted(applied),
+              "overlay_applied_count":len(applied),
+              "counts":dict(sorted(counts.items())),
+              "unknown_count":0,
+              "candidate_count":len(candidates),
+              "candidate_symbols":sorted(candidates),
+              "results":results,
+              "status":"HISTORY_COMPLETE"
+          }
+          out_p.write_text(json.dumps(settled,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
+          cand={
+              "schema":"XRAY_CANONICAL_HARD_GATE_CANDIDATES_SETTLED_V1",
+              "task_id":s["task_id"],"asof_et":"2026-09-30",
+              "execution":"NONE","real_money":"NO-GO",
+              "source_settled_path":str(out_p),
+              "queue_hash":s["queue_hash"],
+              "candidate_count":len(candidates),
+              "candidates":candidates
+          }
+          cand_p.write_text(json.dumps(cand,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
+          print(json.dumps({
+              "queue_total":s["queue_total"],
+              "source_unknown_count":len(unknown),
+              "overlay_applied_count":len(applied),
+              "final_unknown_count":0,
+              "candidate_count":len(candidates),
+              "counts":counts
+          },sort_keys=True))
+          PY
+      - name: Validate settled artifacts
+        run: |
+          python - <<'PY'
+          import json
+          s=json.load(open("nasdaq-xray/canonical_hard_gate_settled_20260930.json"))
+          c=json.load(open("nasdaq-xray/canonical_hard_gate_candidates_settled_20260930.json"))
+          assert s["status"]=="HISTORY_COMPLETE"
+          assert s["unknown_count"]==0
+          assert s["queue_total"]>3000 and s["queue_total"]==s["queue_unique"]
+          assert c["candidate_count"]==s["candidate_count"]==len(c["candidates"])
+          assert set(c["candidates"])==set(s["candidate_symbols"])
+          print({"candidate_count":c["candidate_count"],"unknown_count":s["unknown_count"]})
+          PY
+      - name: Commit settled artifacts
+        shell: bash
+        run: |
+          set -e
+          git config user.name "xray-dataplane-bot"
+          git config user.email "xray-dataplane-bot@users.noreply.github.com"
+          git add nasdaq-xray/canonical_hard_gate_settled_20260930.json nasdaq-xray/canonical_hard_gate_candidates_settled_20260930.json
+          git commit -m "chore(xray): settle canonical hard gates 2026-09-30 [skip ci]" || exit 0
+          for attempt in 1 2 3 4 5; do
+            if git pull --rebase origin main && git push; then exit 0; fi
+            sleep $((attempt*2))
+          done
+          exit 1
