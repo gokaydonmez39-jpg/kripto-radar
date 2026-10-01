@@ -161,6 +161,8 @@ def load_exception_bridge(asof,queue_hash):
             raise ValueError("SAFETY_OR_TASK")
         if obj.get("asof_et")!=asof or obj.get("queue_hash")!=queue_hash:
             raise ValueError("BINDING")
+        if obj.get("settlement_required") is True and obj.get("settlement_status")!="PASS":
+            raise ValueError("SETTLEMENT_BINDING")
         hrs=obj.get("history_resolutions") or {}
         if not isinstance(hrs,dict): raise ValueError("HISTORY_RESOLUTIONS")
         return hrs,{"status":"PASS","path":str(path),"symbol_hash":obj.get("symbol_hash"),"source_result_task_id":obj.get("source_result_task_id")}
