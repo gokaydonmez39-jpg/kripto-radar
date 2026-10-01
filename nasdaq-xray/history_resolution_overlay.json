@@ -1,7 +1,7 @@
 {
   "base_asof_et": "2026-09-30",
-  "current_resolution_count": 3,
-  "current_unresolved_count": 3,
+  "current_resolution_count": 0,
+  "current_unresolved_count": 1,
   "execution": "NONE",
   "expected20": [
     "2026-09-02",
@@ -25,8 +25,8 @@
     "2026-09-29",
     "2026-09-30"
   ],
-  "generated_at_utc": "2026-10-01T17:14:06.910Z",
-  "manifest_unknown_count": 7,
+  "generated_at_utc": "2026-10-01T17:49:59.374511+00:00",
+  "manifest_unknown_count": 1,
   "max_age_hours": 24,
   "real_money": "NO-GO",
   "resolution_count": 64,
@@ -476,6 +476,22 @@
       "proof": "EXACT_ASOF_DAILY_CLOSE",
       "source": "YAHOO_CHART_FREE_FALLBACK"
     },
+    "SVA": {
+      "decision": "BLOCK_CURRENT_RUN",
+      "last_bar": "2024-09-04",
+      "proof": {
+        "longbridge_exchange": "NASD",
+        "longbridge_last_done": 6.47,
+        "longbridge_quote_timestamp": "2024-09-04T20:00:00Z",
+        "longbridge_volume": 0,
+        "rallies_current_price": null,
+        "rallies_exchange": "XNAS",
+        "rallies_volume": null
+      },
+      "reason": "CURRENT_TRADE_STATUS_HALTED",
+      "source": "LONGBRIDGE_NASD_QUOTE_PLUS_RALLIES_XNAS_NO_CURRENT_MARKET_DATA",
+      "trade_status": "Halted"
+    },
     "SVIA": {
       "bars": 330,
       "decision": "FAIL_PRICE",
@@ -521,25 +537,9 @@
       "price": 8.039999961853027,
       "proof": "EXACT_ASOF_DAILY_CLOSE",
       "source": "YAHOO_CHART_FREE_FALLBACK"
-    },
-    "SVA": {
-      "decision": "BLOCK_CURRENT_RUN",
-      "reason": "CURRENT_TRADE_STATUS_HALTED",
-      "trade_status": "Halted",
-      "last_bar": "2024-09-04",
-      "source": "LONGBRIDGE_NASD_QUOTE_PLUS_RALLIES_XNAS_NO_CURRENT_MARKET_DATA",
-      "proof": {
-        "longbridge_exchange": "NASD",
-        "longbridge_last_done": 6.47,
-        "longbridge_quote_timestamp": "2024-09-04T20:00:00Z",
-        "longbridge_volume": 0,
-        "rallies_exchange": "XNAS",
-        "rallies_current_price": null,
-        "rallies_volume": null
-      }
     }
   },
-  "resolver": "NASDAQ_OFFICIAL_YAHOO_MERGE_PLUS_CURRENT_HALT_AND_IDENTITY_FILTER_V3",
+  "resolver": "NASDAQ_OFFICIAL_HISTORICAL_PRIMARY_YAHOO_FAIL_ONLY_FALLBACK_MERGE_V2",
   "schema": "XRAY_HISTORY_IDENTITY_RESOLUTION_OVERLAY_V1",
   "task_id": "6a825366222081918997094d76e6ae46",
   "unresolved": {
@@ -563,66 +563,7 @@
         "firstTradeDate": null,
         "usable": 0
       }
-    },
-    "MMEDV": {
-      "nasdaq_class": null,
-      "nasdaq_info": {
-        "reason": "NO_NASDAQ_DATA"
-      },
-      "nasdaq_meta": {
-        "rows": 0,
-        "usable": 0
-      },
-      "prior_info": "KeyError:'date'",
-      "prior_status": "UNKNOWN_RETRY_EXHAUSTED",
-      "yahoo_class": null,
-      "yahoo_info": {
-        "reason": "NO_YAHOO_DATA"
-      },
-      "yahoo_meta": {
-        "exchangeName": "NAS",
-        "firstTradeDate": null,
-        "usable": 0
-      }
-    },
-    "THRMV": {
-      "nasdaq_class": null,
-      "nasdaq_info": {
-        "reason": "NO_NASDAQ_DATA"
-      },
-      "nasdaq_meta": {
-        "rows": 0,
-        "usable": 0
-      },
-      "prior_info": "KeyError:'date'",
-      "prior_status": "UNKNOWN_RETRY_EXHAUSTED",
-      "yahoo_class": null,
-      "yahoo_info": {
-        "reason": "NO_YAHOO_DATA"
-      },
-      "yahoo_meta": {
-        "exchangeName": "NAS",
-        "firstTradeDate": null,
-        "usable": 0
-      }
     }
   },
-  "unresolved_count": 3,
-  "identity_filter_exclusions": {
-    "CHWM": {
-      "reason": "ADR_ADS",
-      "security_name": "Chilwa Minerals Limited - American Depository Shares",
-      "source": "NASDAQTRADER_SECURITY_NAME"
-    },
-    "MMEDV": {
-      "reason": "WHEN_ISSUED",
-      "security_name": "MiniMed Group, Inc. - Common Stock When Issued",
-      "source": "NASDAQTRADER_SECURITY_NAME"
-    },
-    "THRMV": {
-      "reason": "WHEN_ISSUED",
-      "security_name": "Gentherm Inc - Gentherm Inc Common Stock When-Issued",
-      "source": "NASDAQTRADER_SECURITY_NAME"
-    }
-  }
+  "unresolved_count": 1
 }
