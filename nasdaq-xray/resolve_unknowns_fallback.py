@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 import json, math, os, urllib.parse, urllib.request
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -15,6 +16,7 @@ HARD_DV20=50_000_000.0
 HARD_HISTORY=260
 UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/126 Safari/537.36"
 NY=ZoneInfo("America/New_York")
+RESOLVE_WORKERS=max(1,int(os.getenv("XRAY_RESOLVER_WORKERS","8")))
 
 def req_json(url, params=None, timeout=30):
     if params:
@@ -149,6 +151,49 @@ def classify(by,asof,exp20,source):
     }
 
 
+def resolve_symbol(sym,old,asof,exp20):
+    nd={}; yd={}
+    nmeta={}; ymeta={}
+    try: nd,nmeta=nasdaq_hist(sym,asof)
+    except Exception as e: nmeta={"error":f"{type(e).__name__}:{str(e)[:160]}"}
+    try: yd,ymeta=yahoo_hist(sym,asof)
+    except Exception as e: ymeta={"error":f"{type(e).__name__}:{str(e)[:160]}"}
+    ndc,ndi=classify(nd,asof,exp20,"NASDAQ_OFFICIAL_HISTORICAL_API") if nd else (None,{"reason":"NO_NASDAQ_DATA"})
+    ydc,ydi=classify(yd,asof,exp20,"YAHOO_CHART_FREE_FALLBACK") if yd else (None,{"reason":"NO_YAHOO_DATA"})
+    decision=None; info=None
+    if ndc in {"FAIL_PRICE","FAIL_DV20","PASS_HARD_GATES"}:
+        decision,info=ndc,ndi
+    elif ydc in {"FAIL_PRICE","FAIL_DV20"}:
+        decision,info=ydc,ydi
+    elif ndc=="POTENTIAL_FAIL_HISTORY" and ydc=="POTENTIAL_FAIL_HISTORY":
+        if abs(int(ndi["bars"])-int(ydi["bars"]))<=5:
+            decision="FAIL_HISTORY"
+            info={"bars":min(int(ndi["bars"]),int(ydi["bars"])),
+                  "source":"NASDAQ_OFFICIAL_HISTORICAL_API+YAHOO_CHART_FREE_FALLBACK",
+                  "proof":"TWO_PROVIDER_LT260_AGREEMENT"}
+    if decision:
+        out={"decision":decision}
+        if decision=="FAIL_HISTORY":
+            out.update({"bars":info["bars"],"source":info["source"],"proof":info["proof"]})
+        elif decision=="FAIL_PRICE":
+            out.update({"price":info["price"],"bars":info["bars"],"source":info["source"],"proof":info["proof"]})
+        elif decision=="FAIL_DV20":
+            out.update({"price":info["price"],"dv20":info["dv20"],"bars":info["bars"],"source":info["source"],"proof":info["proof"]})
+        elif decision=="PASS_HARD_GATES":
+            out.update({
+                "price":info["price"],"bars":info["bars"],
+                "dv20_lower_bound":info["dv20_lower_bound"],"dv20_upper_bound":info["dv20_upper_bound"],
+                "known_session_count":info["known_session_count"],"missing_sessions":info["missing_sessions"],
+                "no_synthetic_bar":True,"source":info["source"],"proof":info["proof"],
+            })
+        return sym,out,None
+    unresolved={
+        "prior_status":old.get("status"),"prior_info":old.get("info"),
+        "nasdaq_meta":nmeta,"nasdaq_class":ndc,"nasdaq_info":ndi,
+        "yahoo_meta":ymeta,"yahoo_class":ydc,"yahoo_info":ydi,
+    }
+    return sym,None,unresolved
+
 def load_exception_bridge(asof,queue_hash):
     path=ROOT/f"canonical_resolver_bridge_{asof.replace('-','')}.json"
     if not path.exists():
@@ -201,52 +246,14 @@ def main():
         except Exception:
             existing_resolutions={}
     resolutions={}; unresolved={}
-    for sym,old in sorted(m["unknowns"].items()):
-        nd={}; yd={}
-        nmeta={}; ymeta={}
-        try: nd,nmeta=nasdaq_hist(sym,asof)
-        except Exception as e: nmeta={"error":f"{type(e).__name__}:{str(e)[:160]}"}
-        try: yd,ymeta=yahoo_hist(sym,asof)
-        except Exception as e: ymeta={"error":f"{type(e).__name__}:{str(e)[:160]}"}
-        ndc,ndi=classify(nd,asof,exp20,"NASDAQ_OFFICIAL_HISTORICAL_API") if nd else (None,{"reason":"NO_NASDAQ_DATA"})
-        ydc,ydi=classify(yd,asof,exp20,"YAHOO_CHART_FREE_FALLBACK") if yd else (None,{"reason":"NO_YAHOO_DATA"})
-
-        decision=None; info=None
-        # Nasdaq official is primary. Its exact terminal/pass classification may resolve directly.
-        if ndc in {"FAIL_PRICE","FAIL_DV20","PASS_HARD_GATES"}:
-            decision,info=ndc,ndi
-        # Yahoo fallback may prove only terminal PRICE/DV20 failures; never create PASS alone.
-        elif ydc in {"FAIL_PRICE","FAIL_DV20"}:
-            decision,info=ydc,ydi
-        # FAIL_HISTORY requires two-provider agreement on exact as-of bar presence and <260 usable bars.
-        elif ndc=="POTENTIAL_FAIL_HISTORY" and ydc=="POTENTIAL_FAIL_HISTORY":
-            if abs(int(ndi["bars"])-int(ydi["bars"]))<=5:
-                decision="FAIL_HISTORY"
-                info={"bars":min(int(ndi["bars"]),int(ydi["bars"])),
-                      "source":"NASDAQ_OFFICIAL_HISTORICAL_API+YAHOO_CHART_FREE_FALLBACK",
-                      "proof":"TWO_PROVIDER_LT260_AGREEMENT"}
-        if decision:
-            out={"decision":decision}
-            if decision=="FAIL_HISTORY":
-                out.update({"bars":info["bars"],"source":info["source"],"proof":info["proof"]})
-            elif decision=="FAIL_PRICE":
-                out.update({"price":info["price"],"bars":info["bars"],"source":info["source"],"proof":info["proof"]})
-            elif decision=="FAIL_DV20":
-                out.update({"price":info["price"],"dv20":info["dv20"],"bars":info["bars"],"source":info["source"],"proof":info["proof"]})
-            elif decision=="PASS_HARD_GATES":
-                out.update({
-                    "price":info["price"],"bars":info["bars"],
-                    "dv20_lower_bound":info["dv20_lower_bound"],"dv20_upper_bound":info["dv20_upper_bound"],
-                    "known_session_count":info["known_session_count"],"missing_sessions":info["missing_sessions"],
-                    "no_synthetic_bar":True,"source":info["source"],"proof":info["proof"],
-                })
-            resolutions[sym]=out
-        else:
-            unresolved[sym]={
-                "prior_status":old.get("status"),"prior_info":old.get("info"),
-                "nasdaq_meta":nmeta,"nasdaq_class":ndc,"nasdaq_info":ndi,
-                "yahoo_meta":ymeta,"yahoo_class":ydc,"yahoo_info":ydi,
-            }
+    items=sorted(m["unknowns"].items())
+    if items:
+        with ThreadPoolExecutor(max_workers=min(RESOLVE_WORKERS,len(items))) as ex:
+            futs={ex.submit(resolve_symbol,sym,old,asof,exp20):sym for sym,old in items}
+            for fut in as_completed(futs):
+                sym,out,unres=fut.result()
+                if out is not None: resolutions[sym]=out
+                else: unresolved[sym]=unres
     bridge_history,exception_bridge_meta=load_exception_bridge(asof,m.get("source_queue_hash"))
     for sym,br in sorted(bridge_history.items()):
         if sym not in unresolved:
