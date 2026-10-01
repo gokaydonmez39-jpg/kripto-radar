@@ -26,7 +26,7 @@ import akshare as ak
 import pandas_market_calendars as mcal
 
 TASK_ID="6a825366222081918997094d76e6ae46"
-BUILD="2026-10-01.3"
+BUILD="2026-10-01.4"
 NASDAQ_DIR="https://www.nasdaqtrader.com/dynamic/SymDir/nasdaqlisted.txt"
 NASDAQ_SCREENER="https://api.nasdaq.com/api/screener/stocks"
 ROOT=Path(__file__).resolve().parent
@@ -243,19 +243,50 @@ def parse_hist(sym,asof,expected20):
                 continue
             if day<=asof and close>0 and volume>0 and math.isfinite(close) and math.isfinite(volume):
                 by[day]=(close,volume)
-        if asof not in by:
-            return "UNKNOWN_STATIC","ASOF_MISSING"
-        missing=[d for d in expected20 if d not in by]
-        if missing:
-            return "UNKNOWN_STATIC",{"reason":"EXACT20_MISSING","dates":missing}
-        price=by[asof][0]
-        dvs=sorted(by[d][0]*by[d][1] for d in expected20)
-        dv20=(dvs[9]+dvs[10])/2.0
         bars=len(by)
+        # Hard-gate short circuits are safe: a proven failure at any mandatory
+        # gate is terminal non-PASS even when a later/earlier provider field is missing.
+        if asof in by:
+            price=by[asof][0]
+            if price<=HARD_PRICE:
+                return "FAIL_PRICE",{"price":price,"bars":bars,"proof":"ASOF_CLOSE"}
+        else:
+            if bars<HARD_HISTORY:
+                return "FAIL_HISTORY",{"bars":bars,"reason":"DAILY_LT260","proof":"KNOWN_HISTORY_COUNT"}
+            return "UNKNOWN_STATIC",{"reason":"ASOF_MISSING","bars":bars}
+
+        if bars<HARD_HISTORY:
+            return "FAIL_HISTORY",{"price":price,"bars":bars,"reason":"DAILY_LT260","proof":"KNOWN_HISTORY_COUNT"}
+
+        missing=[d for d in expected20 if d not in by]
+        known_dv=[by[d][0]*by[d][1] for d in expected20 if d in by]
+        if missing:
+            # Median interval proof with unknown session dollar-volume constrained
+            # only to nonnegative values. No synthetic bar is inserted.
+            m=len(missing)
+            low=sorted(known_dv+[0.0]*m)
+            lower=(low[9]+low[10])/2.0
+            high=sorted(known_dv+[float("inf")]*m)
+            upper=(high[9]+high[10])/2.0
+            info={
+              "price":price,"bars":bars,"reason":"EXACT20_MISSING",
+              "dates":missing,"known_session_count":len(known_dv),
+              "dv20_lower_bound":lower,
+              "dv20_upper_bound":None if math.isinf(upper) else upper,
+              "no_synthetic_bar":True,
+            }
+            if upper < HARD_DV20:
+                info["proof"]="DV20_UPPER_BOUND_LT_GATE"
+                return "FAIL_DV20",info
+            if lower >= HARD_DV20:
+                info["proof"]="DV20_LOWER_BOUND_GE_GATE"
+                return "PASS",info
+            return "UNKNOWN_STATIC",info
+
+        dvs=sorted(known_dv)
+        dv20=(dvs[9]+dvs[10])/2.0
         info={"price":price,"dv20":dv20,"bars":bars}
-        if price<=HARD_PRICE:return "FAIL_PRICE",info
         if dv20<HARD_DV20:return "FAIL_DV20",info
-        if bars<HARD_HISTORY:return "FAIL_HISTORY",info
         return "PASS",info
     except Exception as e:
         return "UNKNOWN_RETRY",f"{type(e).__name__}:{str(e)[:200]}"
@@ -448,6 +479,25 @@ def main():
           "resolution_overlay":True,
         }
     state["resolution_overlay_meta"]=resolution_overlay_meta
+
+    # Explicit Nasdaq screener industry classification as Blank Checks is a
+    # legal/shell blocker, not a history-provider UNKNOWN. This does not
+    # declare an operating de-SPAC a shell; it only blocks symbols that the
+    # same-run Nasdaq metadata explicitly classifies as Blank Checks.
+    for sym in queue:
+        disc=(state.get("discovery") or {}).get(sym) or {}
+        if str(disc.get("industry") or "").strip().lower()=="blank checks":
+            prev=results.get(sym) or {}
+            results[sym]={
+              "status":"BLOCK_LEGAL_SHELL",
+              "info":{
+                "reason":"NASDAQ_SCREENER_INDUSTRY_BLANK_CHECKS",
+                "source":"NASDAQ_SAME_RUN_SCREENER_METADATA",
+                "security_name":(state.get("security_names") or {}).get(sym),
+              },
+              "attempts":int(prev.get("attempts",0)),
+              "updated_at_utc":datetime.now(timezone.utc).isoformat(),
+            }
 
     state["cursor"]=end
     state["processed_new_this_run"]=len(new)
