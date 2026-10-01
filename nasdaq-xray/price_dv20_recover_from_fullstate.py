@@ -86,7 +86,17 @@ def main():
     for sym in queue:
         r=old[sym];st=r.get("status");info=r.get("info")
         if st=="PASS":
-            results[sym]={"status":"PASS_PRICE_DV20","info":info,"provenance":"FULLSTATE_TERMINAL_PASS"}
+            if not (
+              isinstance(info,dict)
+              and info.get("known_session_count")==20
+              and (info.get("missing_sessions") or [])==[]
+              and info.get("no_synthetic_bar") is True
+              and num(info.get("dv20")) is not None
+              and num(info.get("dv20"))>=HARD_DV20
+            ):
+                redo.append(sym)
+                continue
+            results[sym]={"status":"PASS_PRICE_DV20","info":info,"provenance":"FULLSTATE_EXACT20_PASS"}
         elif st=="FAIL_PRICE":
             results[sym]={"status":"FAIL_PRICE","info":info,"provenance":"FULLSTATE_TERMINAL_FAIL"}
         elif st=="FAIL_DV20":
