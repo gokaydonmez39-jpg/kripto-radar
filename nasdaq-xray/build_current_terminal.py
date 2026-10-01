@@ -6,11 +6,11 @@ from pathlib import Path
 
 ROOT=Path(__file__).resolve().parent
 TASK="6a825366222081918997094d76e6ae46"
-POLICY_HASH="8fa4d40d4093cc94fb9a6c6669c5f38d4684bfa8ca3fbe25696387cd46b163cf"
+POLICY_HASH="987982f0d17fc0f01a28fe22540fc3e09d4e2f28e3aa1b40c0113e3112b44c16"
 OUT=Path(os.getenv("XRAY_TERMINAL_OUT",str(ROOT/"canonical_current_terminal.json")))
 FILES={
  "pointer":ROOT/"chatgpt_canonical_state_v2.json",
- "policy":ROOT/"chatgpt_compiled_policy_v2.json",
+ "policy":ROOT/"chatgpt_compiled_policy_v3.json",
  "master":ROOT/"canonical_current_master_manifest.json",
  "price":ROOT/"canonical_current_price_dv20.json",
  "history":ROOT/"canonical_current_history.json",
@@ -56,16 +56,21 @@ def main():
     d={k:load(p) for k,p in FILES.items()}
     sh={k:blob_sha(p) for k,p in FILES.items()}
     pol=d["policy"]; ptr=d["pointer"]; m=d["master"]; p=d["price"]
-    assert pol["schema"]=="XRAY_GITHUB_COMPILED_POLICY_V2" and pol["policy_hash"]==POLICY_HASH
+    assert pol["schema"]=="XRAY_GITHUB_COMPILED_POLICY_V3" and pol["policy_hash"]==POLICY_HASH
     pp=json.loads(pol["payload_json"])
-    assert pp["version"]=="C4.10" and pp["hard_gates"]["order"]==["identity/type","PRICE","DV20","MC","HISTORY","LEGAL/SHELL","Stage1","deep/events"]
+    assert pp["version"]=="C4.11" and pp["hard_gates"]["order"]==["identity/type","PRICE","DV20","MC","HISTORY","LEGAL/SHELL","Stage1","deep/events"]
+    assert pp["settlement"]["primary"]=="ALPACA_HISTORICAL_SIP_DAILY_AFTER_15M"
+    assert "NON-G9" in pp["settlement"]["g9_separation"]
     assert p["task_id"]==m["task_id"]==TASK
     asof=p["asof_et"]
     assert m["asof_et"]==asof and m["status"]=="HISTORY_COMPLETE"
     assert m["unknown_count"]==0 and m["pending_retry"]==0
     assert p["execution"]=="NONE" and p["real_money"]=="NO-GO" and p["unknown_count"]==0
     assert p["source_master_queue_hash"]==m["queue_hash"] and int(p["source_master_count"])==int(m["queue_total"])
-    pointer_asof=str((ptr.get("state_json") or {}).get("asof_et") or "")
+    ps=ptr.get("state_json") or {}
+    if isinstance(ps,str): ps=json.loads(ps)
+    assert isinstance(ps,dict)
+    pointer_asof=str(ps.get("asof_et") or "")
     settlement_witness_required=bool(pointer_asof and asof>pointer_asof)
     assert len(p["results"])==int(m["queue_total"])
     price_pass=set(p["pass_symbols"])
@@ -154,7 +159,6 @@ def main():
     }
     full=all(v==0 for v in blockers.values())
     terminal_result=("NO_CONFIRMED_SETUP" if not pre else "PRE_G9_SETUP_EXISTS") if full else "PARTIAL_UNKNOWN"
-    ps=ptr.get("state_json") or {}
     out={
       "schema":"XRAY_CANONICAL_CURRENT_TERMINAL_V1","status":"FULL_E2E_RESEARCH_PASS" if full else "PARTIAL",
       "task_id":TASK,"asof_et":asof,"execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
