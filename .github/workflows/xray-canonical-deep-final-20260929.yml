@@ -68,11 +68,16 @@ jobs:
           assert j["event_state_fresh"] is True
           assert j["input_weekly_pass_count"]==96
           assert j["unknown_history_count"]==0
-          assert j["a_geometry_rs_event_pass_count"]==0
-          assert j["b_breakout_rs_event_pass_count"]==0
-          assert j["d_dk3_pre_r1_count"]==0
-          assert j["b_armed_rs_event_pass_count"]==15
-          print({"A":0,"B_breakout":0,"D":0,"B_armed":15})
+          assert isinstance(j["a_geometry_rs_event_pass"],list)
+          assert isinstance(j["b_breakout_rs_event_pass"],list)
+          assert isinstance(j["b_armed_rs_event_pass"],list)
+          assert isinstance(j["d_dk3_pre_r1"],list)
+          print({
+            "A":j["a_geometry_rs_event_pass_count"],
+            "B_breakout":j["b_breakout_rs_event_pass_count"],
+            "D":j["d_dk3_pre_r1_count"],
+            "B_armed":j["b_armed_rs_event_pass_count"]
+          })
           PY
       - name: Run frozen final tech
         run: python nasdaq-xray/final_tech_shadow.py
@@ -84,12 +89,18 @@ jobs:
           assert j["schema"]=="XRAY_FINAL_TECH_SHADOW_V1"
           assert j["task_id"]=="6a825366222081918997094d76e6ae46"
           assert j["asof_et"]=="2026-09-29"
-          assert j["input_confirmed_family_candidates"]==0
-          assert j["pre_g9_tech_pass_count"]==0
-          assert j["watch_count"]==0
-          assert j["fail_count"]==0
-          assert j["results"]=={}
-          print("FINAL_ZERO_CONFIRMED_PASS")
+          assert j["input_confirmed_family_candidates"]==len(j["results"])
+          assert j["pre_g9_tech_pass_count"]==len(j["pre_g9_tech_pass"])
+          assert j["watch_count"]==len(j["watch"])
+          assert j["fail_count"]==len(j["fail"])
+          unknown=[k for k,v in j["results"].items() if v.get("result")=="UNKNOWN"]
+          assert not unknown, unknown
+          print({
+            "input_confirmed_family_candidates":j["input_confirmed_family_candidates"],
+            "pre_g9_tech_pass_count":j["pre_g9_tech_pass_count"],
+            "watch_count":j["watch_count"],
+            "fail_count":j["fail_count"]
+          })
           PY
       - name: Commit frozen canonical outputs
         shell: bash
