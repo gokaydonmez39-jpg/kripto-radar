@@ -5,14 +5,6 @@ name: XRAY Canonical Regime Deep Geometry 20260930
 # C4.14 primary-442 regime rerun
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - ".github/workflows/xray-canonical-regime-deep-geometry-20260930.yml"
-      - "nasdaq-xray/canonical_stage1_input_20260930.json"
-      - "nasdaq-xray/canonical_stage1_20260930.json"
-      - "nasdaq-xray/regime_breadth_shadow.py"
-      - "nasdaq-xray/deep_pre_r1_shadow.py"
   workflow_dispatch:
 
 permissions:
