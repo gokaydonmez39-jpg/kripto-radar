@@ -57,6 +57,9 @@ TYPE_PATTERNS=[
  ("DEBT",re.compile(r"\bsenior notes?\b|\bsubordinated notes?\b|\bnotes? due\b|\bdebentures?\b|\bbonds?\b",re.I)),
  ("ETN",re.compile(r"\betn\b|exchange[- ]traded notes?",re.I)),
  ("FUND",re.compile(r"\bfund\b",re.I)),
+ ("WHEN_ISSUED",re.compile(r"\bwhen[- ]issued\b",re.I)),
+ ("ADR_ADS",re.compile(r"\bamerican deposit(?:ary|ory) shares?\b|\bamerican deposit(?:ary|ory) receipts?\b",re.I)),
+ ("SPAC",re.compile(r"\bspac\b|\bblank check\b",re.I)),
 ]
 
 def sha_lines(items):
