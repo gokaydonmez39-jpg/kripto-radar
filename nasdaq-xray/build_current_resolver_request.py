@@ -8,6 +8,7 @@ STATE=Path(os.getenv("XRAY_RESOLVER_STATE",str(ROOT/"canonical_current_full_stat
 UNKNOWNS=Path(os.getenv("XRAY_RESOLVER_UNKNOWNS",str(ROOT/"canonical_current_unknowns.json")))
 OVERLAY=Path(os.getenv("XRAY_RESOLVER_OVERLAY",str(ROOT/"canonical_current_resolution_overlay.json")))
 PRICE=Path(os.getenv("XRAY_RESOLVER_PRICE",str(ROOT/"canonical_current_price_dv20.json")))
+POINTER=Path(os.getenv("XRAY_RESOLVER_POINTER",str(ROOT/"chatgpt_canonical_state_v2.json")))
 OUT=Path(os.getenv("XRAY_RESOLVER_REQUEST_OUT",str(ROOT/"canonical_current_resolver_request.json")))
 TASK="6a825366222081918997094d76e6ae46"
 
@@ -23,6 +24,8 @@ def main():
     u=json.loads(UNKNOWNS.read_text())
     o=json.loads(OVERLAY.read_text())
     p=json.loads(PRICE.read_text())
+    ptr=json.loads(POINTER.read_text())
+    ps=ptr.get("state_json") or {}
     asof=s["asof_et"]
     assert s["task_id"]==u["task_id"]==o["task_id"]==p["task_id"]==TASK
     assert u["asof_et"]==p["asof_et"]==asof and o["base_asof_et"]==asof
@@ -50,12 +53,39 @@ def main():
           "price_result":(p.get("results") or {}).get(sym),
         }
     union=sorted(set(master_symbols)|set(price_symbols))
+    pointer_asof=str(ps.get("asof_et") or "")
+    settlement_required=bool(pointer_asof and asof>pointer_asof)
+    bridge=ROOT/f"canonical_resolver_bridge_{asof.replace('-','')}.json"
+    settlement_already_proven=False
+    settlement_bridge_blob_sha=None
+    if bridge.exists():
+        try:
+            br=json.loads(bridge.read_text())
+            if (
+              br.get("schema")=="XRAY_RESOLVER_EPOCH_RESULT_V1"
+              and br.get("status")=="COMMITTED"
+              and br.get("task_id")==TASK
+              and br.get("execution")=="NONE" and br.get("real_money")=="NO-GO"
+              and br.get("asof_et")==asof
+              and br.get("queue_hash")==s["queue_hash"]
+              and br.get("settlement_status")=="PASS"
+            ):
+                settlement_already_proven=True
+                settlement_bridge_blob_sha=blob_sha(bridge)
+        except Exception:
+            pass
+    ready=bool(union) or bool(settlement_required and not settlement_already_proven)
     obj={
       "schema":"XRAY_RESOLVER_EPOCH_REQUEST_V1",
-      "status":"READY" if union else "IDLE",
+      "status":"READY" if ready else "IDLE",
       "task_id":TASK,"asof_et":asof,
       "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
       "queue_hash":s["queue_hash"],"queue_total":len(s["queue"]),
+      "pointer_asof_et":pointer_asof,
+      "settlement_required":settlement_required,
+      "settlement_already_proven":settlement_already_proven,
+      "settlement_bridge_blob_sha":settlement_bridge_blob_sha,
+      "settlement_policy":"RALLIES_VS_LONGBRIDGE_CORE_OHLC_PLUS_VOLUME_REL_DIFF_LE_0_001__FAIL_CLOSED",
       "official_footer":s.get("official_footer"),
       "expected20":p.get("expected20") or s.get("expected20") or [],
       "master_unknown_count":len(master_symbols),"master_unknown_symbols":master_symbols,
@@ -71,10 +101,12 @@ def main():
       "source_overlay_blob_sha":blob_sha(OVERLAY),
       "source_price_path":"nasdaq-xray/canonical_current_price_dv20.json",
       "source_price_blob_sha":blob_sha(PRICE),
+      "source_pointer_path":"nasdaq-xray/chatgpt_canonical_state_v2.json",
+      "source_pointer_blob_sha":blob_sha(POINTER),
       "resolver_policy":"LONG_BRIDGE_DAILY_ONLY__NEVER_G9__FAIL_CLOSED__SAME_ASOF_QUEUE_BINDING",
     }
     OUT.write_text(json.dumps(obj,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
-    print(json.dumps({"asof":asof,"status":obj["status"],"master_unknown":len(master_symbols),"price_unknown":len(price_symbols),"union":len(union),"symbol_hash":obj["symbol_hash"]},sort_keys=True))
+    print(json.dumps({"asof":asof,"pointer_asof":pointer_asof,"status":obj["status"],"settlement_required":settlement_required,"settlement_already_proven":settlement_already_proven,"master_unknown":len(master_symbols),"price_unknown":len(price_symbols),"union":len(union),"symbol_hash":obj["symbol_hash"]},sort_keys=True))
 
 if __name__=="__main__":
     main()
