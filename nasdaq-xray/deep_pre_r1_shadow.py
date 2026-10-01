@@ -166,8 +166,10 @@ def family_a(df):
 def main():
     st=json.loads(STAGE1.read_text()); rg=json.loads(REGIME.read_text())
     ev=json.loads(EVENTS.read_text()) if EVENTS.exists() else {"confirmed_blocks":{},"unresolved":{}}
-    event_state_fresh=(ev.get("asof_et")==asof)
     asof=st["asof_et"]
+    if rg.get("asof_et")!=asof:
+        raise RuntimeError("ASOF_MISMATCH_STAGE1_REGIME")
+    event_state_fresh=(ev.get("asof_et")==asof)
     syms=sorted(set(st["weekly_pass"]))
     data={};unknown={}
     with ThreadPoolExecutor(max_workers=WORKERS) as ex:

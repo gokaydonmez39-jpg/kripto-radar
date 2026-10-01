@@ -1,13 +1,6 @@
 name: XRAY Official MC Audit
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - "nasdaq-xray/mc_official_recovery.py"
-      - ".github/workflows/xray-official-mc.yml"
-  schedule:
-    - cron: "15 * * * 1-5"
   workflow_dispatch:
 
 permissions:

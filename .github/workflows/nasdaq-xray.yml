@@ -1,13 +1,6 @@
 name: NASDAQ SWING XRAY Data Plane
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - "nasdaq-xray/bootstrap.py"
-      - ".github/workflows/nasdaq-xray.yml"
-  schedule:
-    - cron: "40 * * * 1-5"
   workflow_dispatch:
 
 permissions:

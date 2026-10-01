@@ -1,14 +1,6 @@
 name: NASDAQ SWING XRAY Dual Market Cap
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - "nasdaq-xray/dual_mc.py"
-      - "nasdaq-xray/mc-trigger.txt"
-      - ".github/workflows/nasdaq-xray-sec-mc.yml"
-  schedule:
-    - cron: "50 * * * 1-5"
   workflow_dispatch:
 
 permissions:

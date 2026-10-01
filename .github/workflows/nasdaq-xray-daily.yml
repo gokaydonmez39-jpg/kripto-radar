@@ -45,6 +45,9 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Static compile gate
+        run: python -m py_compile nasdaq-xray/orchestrator_run.py nasdaq-xray/sina_stage.py nasdaq-xray/mc_zero_key.py nasdaq-xray/production_core_build.py nasdaq-xray/stage1_shadow.py nasdaq-xray/regime_breadth_shadow.py nasdaq-xray/deep_pre_r1_shadow.py nasdaq-xray/final_tech_shadow.py
+
       - name: Install zero-dollar research runtime
         run: python -m pip install --disable-pip-version-check akshare==1.18.95 pandas_market_calendars
 
