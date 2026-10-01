@@ -13,6 +13,7 @@ FILES={
  "policy":ROOT/"chatgpt_compiled_policy_v2.json",
  "price_dv20":ROOT/"canonical_price_dv20_20260930.json",
  "mc":ROOT/"canonical_mc_20260930_v2.json",
+ "mc_fallback_venue":ROOT/"canonical_mc_fallback_venue_proof_20260930.json",
  "history":ROOT/"canonical_history_20260930.json",
  "legal":ROOT/"canonical_legal_20260930.json",
  "stage1":ROOT/"canonical_stage1_20260930.json",
@@ -38,7 +39,7 @@ def disjoint(*sets):
 def main():
     data={};shas={}
     for k in FILES:data[k],shas[k]=load(k)
-    ptr=data["pointer"];pol=data["policy"];pdv=data["price_dv20"];mc=data["mc"];h=data["history"];lg=data["legal"]
+    ptr=data["pointer"];pol=data["policy"];pdv=data["price_dv20"];mc=data["mc"];mcv=data["mc_fallback_venue"];h=data["history"];lg=data["legal"]
     st=data["stage1"];rg=data["regime"];ev=data["events"];dp=data["deep"];ft=data["final"]
 
     assert pol["schema"]=="XRAY_GITHUB_COMPILED_POLICY_V2"
@@ -76,6 +77,13 @@ def main():
     disjoint(primary,mcfail,watch)
     assert set(mc["r92_ineligible"])==watch
     assert {s for s,v in mc["state_caps"].items() if v=="WATCH"}==watch
+    assert mcv["schema"]=="XRAY_MC_FALLBACK_VENUE_PROOF_V1"
+    assert mcv["task_id"]==TASK and mcv["asof_et"]==ASOF
+    assert mcv["execution"]=="NONE" and mcv["real_money"]=="NO-GO"
+    assert mcv["source_mc_blob_sha"]==shas["mc"]
+    assert mcv["fallback_watch_count"]==35 and set(mcv["fallback_watch_symbols"])==watch
+    assert set(mcv["proof_by_symbol"])==watch
+    assert all(v.get("exchange")=="NASD" and v.get("currency")=="USD" for v in mcv["proof_by_symbol"].values())
 
     assert h["schema"]=="XRAY_CANONICAL_HISTORY_V2"
     assert h["task_id"]==TASK and h["asof_et"]==ASOF
@@ -181,7 +189,7 @@ def main():
       },
       "evidence":{k:{"path":str(FILES[k].relative_to(ROOT.parent)).replace("\\","/"),"blob_sha":shas[k]} for k in FILES},
       "checks":{
-        "policy_v2_exact":True,"price_dv20_authority_complete":True,"mc_exact_price_dv20_pass_set":True,"mc_complete_no_unknown":True,
+        "policy_v2_exact":True,"price_dv20_authority_complete":True,"mc_exact_price_dv20_pass_set":True,"mc_complete_no_unknown":True,"mc_fallback_longbridge_nasd_proven":True,
         "history_exact_primary_only":True,"fallback_watch_excluded_after_mc":True,
         "legal_exact_history_pass":True,"stage1_exact_legal_pass":True,
         "weekly_exact_event_scope":True,"regime_full_primary_survivor_core_no_missing":True,
