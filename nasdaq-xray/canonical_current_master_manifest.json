@@ -1,5 +1,5 @@
 {
-  "asof_et": "2026-09-30",
+  "asof_et": "2026-10-01",
   "completion_proof": {
     "authority_full_identity": true,
     "cursor_complete": true,
@@ -11,29 +11,28 @@
   },
   "counts": {
     "BLOCK_LEGAL_SHELL": 148,
-    "FAIL_DV20": 893,
-    "FAIL_HISTORY": 168,
-    "FAIL_PRICE": 1695,
-    "PASS": 486,
-    "UNKNOWN_RETRY_EXHAUSTED": 3,
-    "UNKNOWN_STATIC": 5
+    "FAIL_DV20": 399,
+    "FAIL_PRICE": 752,
+    "PASS": 234,
+    "UNKNOWN_RETRY_EXHAUSTED": 30,
+    "UNKNOWN_STATIC": 1835
   },
   "execution": "NONE",
   "identity_authority": "NASDAQTRADER_EXPLICIT_TYPE_FILTER_V2_WHEN_ISSUED",
-  "official_footer": "File Creation Time: 1001202614:01|||||||",
-  "pass_count": 486,
-  "pass_hash": "b6cddb7bcbd96886667690f00dc1ebcb5b9893c4cb31b967072be69cd83350dc",
+  "official_footer": "File Creation Time: 1001202618:01|||||||",
+  "pass_count": 234,
+  "pass_hash": "a405a36337264046610f0fcc2eb418801f46d7b4bfbfdbb064eff1ccbe8f341c",
   "pending_retry": 0,
   "queue_hash": "7efd407c4b74dbdf7b52e0d8b9671ef8a032e2a7497ec481e2b27de41d3211e1",
   "queue_total": 3398,
   "queue_unique": 3398,
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1",
-  "source_state_blob_sha": "b5fb6ac7df79a5b36ce3fc2adb0ef0d9e8ea9ae2",
-  "source_state_hash": "b97681fcdd0a4eb29ca30af44f6b749ade68ae37efc71bb01181575983a9722a",
+  "source_state_blob_sha": "fbd9842fe547da5cf160f5ce6cc183351842371e",
+  "source_state_hash": "e37d37486025c5dc337a0435e0b553ef6eb48552b43ee3bc75c495d16c453aa5",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
   "status": "PARTIAL",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 8,
+  "unknown_count": 1865,
   "unknown_never_pass": true
 }
