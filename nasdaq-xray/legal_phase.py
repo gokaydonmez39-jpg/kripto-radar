@@ -10,7 +10,15 @@ PROOF=Path(os.getenv("XRAY_LEGAL_PROOF", str(ROOT/"canonical_legal_proof_2026093
 OUT=Path(os.getenv("XRAY_LEGAL_OUT", str(ROOT/"canonical_legal_20260930.json")))
 TASK_ID="6a825366222081918997094d76e6ae46"
 ASOF_ENV=os.getenv("XRAY_ASOF")
-SUSPECT=re.compile(r"\bacquisition\b|\bspac\b|\bblank check\b",re.I)
+SUSPECT=re.compile(r"\\bacquisition\\b|\\bspac\\b|\\bblank check\\b",re.I)
+
+def blob_sha(p:Path):
+    b=p.read_bytes()
+    return hashlib.sha1(f"blob {len(b)}\0".encode()+b).hexdigest()
+
+def relpath(p:Path):
+    try:return str(p.relative_to(ROOT.parent)).replace("\\","/")
+    except Exception:return str(p)
 
 def main():
     h=json.loads(HISTORY.read_text());m=json.loads(MASTER.read_text())
@@ -51,7 +59,13 @@ def main():
     obj={
       "schema":"XRAY_CANONICAL_LEGAL_V1","task_id":TASK_ID,"asof_et":asof,
       "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
-      "source_history_schema":h.get("schema"),"source_history_pass_hash":h.get("pass_hash"),"input_count":len(h["pass_symbols"]),
+      "source_history_schema":h.get("schema"),
+      "source_history_path":relpath(HISTORY),"source_history_blob_sha":blob_sha(HISTORY),
+      "source_history_pass_hash":h.get("pass_hash"),
+      "source_master_path":relpath(MASTER),"source_master_blob_sha":blob_sha(MASTER),
+      "source_proof_path":relpath(PROOF) if PROOF.exists() else None,
+      "source_proof_blob_sha":blob_sha(PROOF) if PROOF.exists() else None,
+      "input_count":len(h["pass_symbols"]),
       "counts":{"PASS_LEGAL":len(passed),"BLOCK_LEGAL_SHELL":len(blocked),"UNKNOWN_LEGAL":len(unknown)},
       "pass_symbols":sorted(passed),"blocked_symbols":sorted(blocked),"unknown_symbols":sorted(unknown),
       "pass_hash":hashlib.sha256("\n".join(sorted(passed)).encode()).hexdigest(),
