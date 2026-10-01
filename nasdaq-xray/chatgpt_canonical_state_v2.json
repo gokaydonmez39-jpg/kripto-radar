@@ -3,7 +3,7 @@
   "authority": "GITHUB_CURRENT_POINTER",
   "execution": "NONE",
   "real_money": "NO-GO",
-  "revision": 32,
+  "revision": 33,
   "state_hash": "b272b2b3e8dba584c72a16b16d3e6b499ba076608ef7e1fbd4abf1387ba91cb4",
   "prev_state_hash": "709b877e39059b515c5467a6d0ef1a9b8a4fd3a05f86192f1e85539c9e64ce23",
   "state_json": {
@@ -35,10 +35,10 @@
       "settlement_date_et": "2026-09-29",
       "incomplete_results_carried_forward": false
     },
-    "revision": 32,
+    "revision": 33,
     "schema": "XRAY_STATE_REGISTER_V1",
     "state_epoch": "2026-10-01T15:39:33.190Z",
-    "status": "EPOCH_ROLLED_MASTER_PENDING",
+    "status": "ENGINE_STARTED_MASTER_IDENTITY_PENDING",
     "task_id": "6a825366222081918997094d76e6ae46",
     "transition_keys": [
       "SYSTEM|CLOCK_ORDER_REPAIR|REV4",
@@ -62,9 +62,10 @@
       "SYSTEM|REGIME_BREADTH_BOUND|2026-09-29|MIXED|MISS0",
       "SYSTEM|EVENTS_BOUND|2026-09-29|C0|AFFECTED_UNKNOWN0",
       "SYSTEM|TERMINAL|2026-09-29|FULL_E2E|NO_CONFIRMED_SETUP",
-      "SYSTEM|EPOCH_ROLLOVER|2026-09-29|2026-09-30"
+      "SYSTEM|EPOCH_ROLLOVER|2026-09-29|2026-09-30",
+      "SYSTEM|ENGINE_START|C4_13|RESEARCH_FORWARD_TEST_WATCH_ONLY"
     ],
-    "updated_at_utc": "2026-10-01T15:39:33.190Z",
+    "updated_at_utc": "2026-10-01T15:39:56.638Z",
     "work_cursor": {
       "ASOF_ET": "2026-09-30",
       "MASTER_HASH": null,
@@ -74,7 +75,9 @@
       "COMPLETED_HASH": null,
       "COUNTS": {}
     },
-    "delivery_keys": [],
+    "delivery_keys": [
+      "CONTROL|ENGINE_START|C4_13|RESEARCH_FORWARD_TEST_WATCH_ONLY"
+    ],
     "completed_epochs": [
       {
         "asof_et": "2026-09-29",
@@ -95,10 +98,13 @@
     "start_control": {
       "kernel": "C4.13",
       "mode": "RESEARCH_FORWARD_TEST_WATCH_ONLY",
-      "status": "PENDING_EXACT_ONCE_EMIT",
-      "emit_pending": true,
+      "status": "DURABLE_START_COMMITTED",
+      "emit_pending": false,
+      "delivery_key": "CONTROL|ENGINE_START|C4_13|RESEARCH_FORWARD_TEST_WATCH_ONLY",
       "execution": "NONE",
-      "real_money": "NO-GO"
+      "real_money": "NO-GO",
+      "g9": "BLOCKED",
+      "account": "UNKNOWN"
     }
   },
   "source_proof": {
@@ -110,6 +116,6 @@
   "transition_rule": "NEXT_REVISION_MUST_BE_EXACT_PLUS_ONE_AND_PREV_STATE_HASH_MUST_EQUAL_THIS_STATE_HASH",
   "immutable_snapshot_path": "nasdaq-xray/state/REV21_b272b2b3e8dba584c72a16b16d3e6b499ba076608ef7e1fbd4abf1387ba91cb4.json",
   "storage_protocol": "GITHUB_CONTENTS_CAS_V1",
-  "prev_pointer_blob_sha": "3f1bbde0007a97ad9eaef252897f2a2052569395",
+  "prev_pointer_blob_sha": "2a44b42b787cb6cfd96bf3a12c947ebf3ee7dc13",
   "writer_task_id": "6a825366222081918997094d76e6ae46"
 }
