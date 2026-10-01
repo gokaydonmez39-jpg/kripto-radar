@@ -1,10 +1,6 @@
 name: XRAY Extract Canonical Unknowns 20260930
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - ".github/workflows/xray-extract-canonical-unknowns-20260930.yml"
   workflow_dispatch:
 
 permissions:
