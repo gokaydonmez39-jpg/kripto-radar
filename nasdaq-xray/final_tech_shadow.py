@@ -1,0 +1,189 @@
+#!/usr/bin/env python3
+"""XRAY fail-closed final technical shadow engine.
+Consumes deep_pre_r1_shadow.json and applies common geometry/R1/RR/chase/extension.
+Historical resistance is deliberately conservative: nearest ANY prior daily high above
+trigger close, which can only reduce target space versus a looser R1 interpretation.
+Synthetic P+3A is permitted only when trigger close is above every prior recorded high.
+No signal, no G9 authority, no R92 registration.
+"""
+from __future__ import annotations
+import json, math, os
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from pathlib import Path
+import akshare as ak
+import pandas as pd
+
+ROOT=Path(__file__).resolve().parent
+DEEP=ROOT/"deep_pre_r1_shadow.json"
+OUT=ROOT/"final_tech_shadow.json"
+TASK_ID="6a825366222081918997094d76e6ae46"
+WORKERS=int(os.getenv("XRAY_FINAL_WORKERS","6"))
+
+THRESH={
+ "A":{"basic":1.5,"severe":1.1},
+ "B":{"basic":2.0,"severe":1.5},
+ "D":{"basic":2.0,"severe":1.5},
+}
+
+def hist(sym,asof):
+    try:
+        df=ak.stock_us_daily(symbol=sym,adjust="")
+        if df is None or df.empty:return sym,None,"EMPTY"
+        cols={c.lower():c for c in df.columns}
+        need=["date","high","low","close"]
+        if any(x not in cols for x in need):return sym,None,"COLS"
+        x=df[[cols[k] for k in need]].copy();x.columns=need
+        x["date"]=pd.to_datetime(x["date"],errors="coerce")
+        for k in need[1:]:x[k]=pd.to_numeric(x[k],errors="coerce")
+        x=x.dropna().sort_values("date")
+        x=x[x["date"]<=pd.Timestamp(asof)].reset_index(drop=True)
+        if len(x)<260:return sym,None,"LT260"
+        return sym,x,None
+    except Exception as e:return sym,None,f"{type(e).__name__}:{str(e)[:160]}"
+
+def eval_one(sym,fam,g,df,event_status):
+    A=float(g["A"]);P=float(g["P"]);anchor=float(g["anchor"])
+    close=float(df.close.iloc[-1])
+    if not all(math.isfinite(v) for v in [A,P,anchor,close]) or A<=0:
+        return {"result":"UNKNOWN","reason":"NONFINITE_GEOMETRY"}
+
+    entry_low=P
+    entry_high=P+0.25*A
+    entry_model=entry_high
+    chase=P+0.50*A
+    S0=anchor-0.20*A
+    x=(P-anchor)/A
+    risk_atr=(entry_model-S0)/A
+    risk_pct=(entry_model-S0)/entry_model if entry_model>0 else float("inf")
+
+    if close<P: lifecycle="RECONFIRMATION_REQUIRED"
+    elif close<=entry_high: lifecycle="ENTRY_BAND"
+    elif close<chase: lifecycle="RETEST_REQUIRED"
+    else: lifecycle="CHASE_NO_VALID_FILL"
+
+    pivot_extension=(close/P)-1 if P>0 else float("inf")
+    recent3=df.iloc[-3:]
+    move3=(close-float(recent3.low.min()))/A if len(recent3)==3 else 0
+    extension_veto=bool(pivot_extension>=0.08 or move3>2.0)
+
+    prior=df.iloc[:-1]
+    highs=[float(v) for v in prior.high if math.isfinite(float(v)) and float(v)>close]
+    nearest=min(highs) if highs else None
+    prior_max=float(prior.high.max()) if len(prior) else float("nan")
+    price_discovery=bool(math.isfinite(prior_max) and close>prior_max)
+
+    synthetic=False
+    if nearest is not None:
+        T1=nearest
+        target_source="CONSERVATIVE_NEAREST_PRIOR_DAILY_HIGH"
+    elif price_discovery:
+        T1=P+3*A
+        synthetic=True
+        target_source="SYNTHETIC_P_PLUS_3A_PRICE_DISCOVERY"
+    else:
+        return {
+          "result":"UNKNOWN","reason":"R1_UNRESOLVED",
+          "levels":{"A":A,"P":P,"anchor":anchor,"close":close}
+        }
+
+    def rr(cost_mult):
+        cost=cost_mult*A
+        E=entry_model+cost
+        S=S0-cost
+        T=T1-cost
+        den=E-S
+        return (T-E)/den if den>0 else float("-inf")
+
+    basic=rr(0.10); severe=rr(0.25)
+    th=THRESH[fam]
+    risk_pass=bool(0.30<=x<=2.05 and 0.75<=risk_atr<=2.50 and risk_pct<=0.08)
+    rr_pass=bool(basic>=th["basic"] and severe>=th["severe"])
+    target_overlap=bool(T1<=entry_high)
+    event_pass=(event_status=="CLEAN_DISCOVERY")
+
+    hard_pass=bool(
+      risk_pass and rr_pass and not target_overlap and not extension_veto
+      and lifecycle=="ENTRY_BAND" and event_pass
+    )
+    if hard_pass:
+        result="PRE_G9_TECH_PASS"
+    elif lifecycle=="RETEST_REQUIRED":
+        result="WATCH_RETEST_REQUIRED"
+    elif lifecycle=="RECONFIRMATION_REQUIRED":
+        result="WATCH_RECONFIRMATION_REQUIRED"
+    elif lifecycle=="CHASE_NO_VALID_FILL":
+        result="FAIL_CHASE"
+    elif not event_pass:
+        result="WATCH_EVENT_UNKNOWN_OR_BLOCKED"
+    elif extension_veto:
+        result="FAIL_EXTENSION"
+    elif not risk_pass:
+        result="FAIL_RISK_GEOMETRY"
+    elif target_overlap:
+        result="FAIL_R1_ENTRY_OVERLAP"
+    elif not rr_pass:
+        result="FAIL_RR"
+    else:
+        result="FAIL_OTHER"
+
+    return {
+      "result":result,"family":fam,"event_status":event_status,
+      "levels":{"A":A,"P":P,"anchor":anchor,"close":close,
+                "entry_low":entry_low,"entry_high":entry_high,
+                "entry_model":entry_model,"chase_limit":chase,"S0":S0,"T1":T1},
+      "geometry":{"x":x,"risk_atr":risk_atr,"risk_percent":risk_pct,
+                  "pivot_extension":pivot_extension,"move3_atr":move3},
+      "lifecycle":lifecycle,
+      "target":{"source":target_source,"synthetic":synthetic,"price_discovery":price_discovery,
+                "prior_max_high":prior_max},
+      "rr":{"basic":basic,"basic_threshold":th["basic"],"basic_pass":basic>=th["basic"],
+            "severe":severe,"severe_threshold":th["severe"],"severe_pass":severe>=th["severe"]},
+      "risk_pass":risk_pass,"extension_veto":extension_veto,"target_overlap":target_overlap,
+      "pre_g9_tech_pass":hard_pass,
+      "authority":"SHADOW_ONLY"
+    }
+
+def main():
+    d=json.loads(DEEP.read_text())
+    asof=d["asof_et"]
+    candidates=[]
+    for sym,r in (d.get("results") or {}).items():
+        if r.get("A",{}).get("pool"): candidates.append((sym,"A",r["A"],r.get("event_status")))
+        if r.get("B",{}).get("breakout_confirmed"): candidates.append((sym,"B",r["B"],r.get("event_status")))
+        if r.get("D",{}).get("dk3_pre_r1"): candidates.append((sym,"D",r["D"],r.get("event_status")))
+    syms=sorted(set(x[0] for x in candidates))
+    data={};errors={}
+    with ThreadPoolExecutor(max_workers=WORKERS) as ex:
+        futs={ex.submit(hist,s,asof):s for s in syms}
+        for fut in as_completed(futs):
+            s,x,e=fut.result()
+            if x is None:errors[s]=e
+            else:data[s]=x
+
+    results={}
+    for sym,fam,g,event in candidates:
+        key=f"{sym}|{fam}"
+        if sym not in data:
+            results[key]={"result":"UNKNOWN","reason":"HISTORY:"+errors.get(sym,"MISSING")}
+        else:
+            results[key]=eval_one(sym,fam,g,data[sym],event)
+
+    passes=[k for k,v in results.items() if v.get("pre_g9_tech_pass")]
+    watches=[k for k,v in results.items() if str(v.get("result","")).startswith("WATCH_")]
+    fails=[k for k,v in results.items() if str(v.get("result","")).startswith("FAIL_")]
+    out={
+      "schema":"XRAY_FINAL_TECH_SHADOW_V1","task_id":TASK_ID,"asof_et":asof,
+      "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
+      "input_confirmed_family_candidates":len(candidates),
+      "pre_g9_tech_pass_count":len(passes),"pre_g9_tech_pass":passes,
+      "watch_count":len(watches),"watch":watches,
+      "fail_count":len(fails),"fail":fails,
+      "results":results,
+      "remaining_nontech_gates":["OFFICIAL_EVENT_FINAL_REVIEW","ACCOUNT_GATE","G9","ALIGNED_60M","DELIVERY_PROOF"],
+      "authority":"EXTERNAL_SHADOW_NO_SIGNAL"
+    }
+    OUT.write_text(json.dumps(out,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
+    print(json.dumps({k:out[k] for k in ["input_confirmed_family_candidates","pre_g9_tech_pass_count","watch_count","fail_count"]},sort_keys=True))
+
+if __name__=="__main__":
+    main()
