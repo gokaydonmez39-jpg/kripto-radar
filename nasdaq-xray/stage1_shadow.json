@@ -5,7 +5,6 @@
     "AEHR",
     "AMD",
     "ARGX",
-    "ASST",
     "ATRC",
     "AVT",
     "BIIB",
@@ -21,7 +20,6 @@
     "FTNT",
     "GH",
     "GILD",
-    "GMAB",
     "HALO",
     "HOOD",
     "HTFL",
@@ -35,26 +33,23 @@
     "MSFT",
     "MSTR",
     "MU",
-    "NBIS",
     "NDSN",
     "NTAP",
     "NTNX",
     "NTRA",
     "NTSK",
-    "NVDA",
     "OKTA",
-    "ONC",
     "PI",
     "PLTR",
     "QRVO",
     "RGEN",
+    "SDGR",
     "SLAB",
     "SMCI",
     "SMTC",
     "SWKS",
     "TEAM",
     "TECH",
-    "TEM",
     "TGTX",
     "TRMD",
     "TWST",
@@ -63,13 +58,11 @@
     "VRNS",
     "WBD",
     "WDAY",
-    "XP",
-    "ZBRA"
+    "XP"
   ],
-  "a_trend_pool_count": 65,
+  "a_trend_pool_count": 59,
   "asof_et": "2026-09-30",
   "b_tight_base_pool": [
-    "ASST",
     "BWIN",
     "CHEF",
     "COIN",
@@ -80,7 +73,6 @@
     "MARA",
     "MMSI",
     "MSTR",
-    "NVDA",
     "PI",
     "QRVO",
     "ROKU",
@@ -91,7 +83,7 @@
     "WBD",
     "WDAY"
   ],
-  "b_tight_base_pool_count": 21,
+  "b_tight_base_pool_count": 19,
   "d_drawdown_pool": [
     "AEHR",
     "APPF",
@@ -105,36 +97,34 @@
     "HUT",
     "MARA",
     "MKTX",
-    "MRVL",
     "MSTR",
-    "MXL",
-    "NBIS",
     "NESR",
     "NTSK",
     "PI",
     "QCOM",
-    "RGLD",
     "RIOT",
     "SIMO",
     "SMCI",
     "SNDK",
     "SSRM",
-    "TEM",
     "ULTA",
     "VRNS",
     "WDAY",
     "WIX"
   ],
-  "d_drawdown_pool_count": 31,
+  "d_drawdown_pool_count": 26,
   "execution": "NONE",
-  "input_current_core_count": 470,
+  "input_current_core_count": 383,
   "notes": [
     "C post-earnings family is evaluated later from official earnings/event evidence.",
     "No setup signal or R92 registration is created here."
   ],
+  "r92_ineligible": [],
   "real_money": "NO-GO",
   "results": {
     "AAL": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 13.87,
@@ -148,6 +138,8 @@
       }
     },
     "AAOI": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 101.4,
@@ -161,6 +153,8 @@
       }
     },
     "AAON": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 89.1,
@@ -180,6 +174,8 @@
       "dd120": -0.023602193098191004,
       "dd252": -0.023602193098191004,
       "last_close": 333.02,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 341.07,
@@ -199,6 +195,8 @@
       "dd120": -0.015519568151147078,
       "dd252": -0.015519568151147078,
       "last_close": 14.59,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 12.7,
@@ -212,6 +210,8 @@
       }
     },
     "ABNB": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 157.47,
@@ -224,20 +224,9 @@
         "weeks": 128
       }
     },
-    "ABVX": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 91.06,
-        "ema10": 112.10205077982826,
-        "ema10_m1": 116.77806206423455,
-        "ema10_m2": 119.38652030073112,
-        "ema10_m3": 119.5524137008936,
-        "pass": false,
-        "sma30": 117.02133333333333,
-        "weeks": 128
-      }
-    },
     "ACGL": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 94.66,
@@ -251,6 +240,8 @@
       }
     },
     "ACMR": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 77.3,
@@ -263,46 +254,9 @@
         "weeks": 128
       }
     },
-    "ADBE": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 235.47,
-        "ema10": 251.99121485519834,
-        "ema10_m1": 255.66259593413133,
-        "ema10_m2": 257.16095058616054,
-        "ema10_m3": 258.2567173830851,
-        "pass": false,
-        "sma30": 244.60233333333335,
-        "weeks": 128
-      }
-    },
-    "ADI": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 393.6,
-        "ema10": 379.7187667232094,
-        "ema10_m1": 376.63404821725595,
-        "ema10_m2": 376.8371700433128,
-        "ema10_m3": 376.4054300529379,
-        "pass": false,
-        "sma30": 375.78,
-        "weeks": 128
-      }
-    },
-    "ADP": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 263.67,
-        "ema10": 266.16603992211503,
-        "ema10_m1": 266.72071546036284,
-        "ema10_m2": 265.7208744515546,
-        "ema10_m3": 265.15662432967787,
-        "pass": false,
-        "sma30": 235.75999999999996,
-        "weeks": 128
-      }
-    },
     "ADSK": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 209.4,
@@ -322,6 +276,8 @@
       "dd120": -0.3158436920541172,
       "dd252": -0.3158436920541172,
       "last_close": 99.62,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 104.39,
@@ -335,6 +291,8 @@
       }
     },
     "AEIS": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 279.68,
@@ -348,6 +306,8 @@
       }
     },
     "AEP": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 118.35,
@@ -361,6 +321,8 @@
       }
     },
     "AFRM": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 71.52,
@@ -373,33 +335,9 @@
         "weeks": 128
       }
     },
-    "AKAM": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 113.94,
-        "ema10": 111.95656242035935,
-        "ema10_m1": 111.51579851377254,
-        "ema10_m2": 113.070420405722,
-        "ema10_m3": 114.46606938477134,
-        "pass": false,
-        "sma30": 117.57566666666666,
-        "weeks": 128
-      }
-    },
-    "ALAB": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 364.62,
-        "ema10": 318.1771403811742,
-        "ema10_m1": 307.856504910324,
-        "ema10_m2": 308.8801726681738,
-        "ema10_m3": 312.8046554833236,
-        "pass": false,
-        "sma30": 270.8176666666667,
-        "weeks": 128
-      }
-    },
     "ALGM": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 36.76,
@@ -413,6 +351,8 @@
       }
     },
     "ALGN": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 146.78,
@@ -425,59 +365,9 @@
         "weeks": 128
       }
     },
-    "ALKS": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 40.85,
-        "ema10": 45.73019767088887,
-        "ema10_m1": 46.81468604219751,
-        "ema10_m2": 47.57572738490807,
-        "ema10_m3": 47.93255569266542,
-        "pass": false,
-        "sma30": 41.778666666666666,
-        "weeks": 128
-      }
-    },
-    "ALM": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 13.72,
-        "ema10": 15.394644797077191,
-        "ema10_m1": 15.76678808531657,
-        "ema10_m2": 16.19496321538692,
-        "ema10_m3": 16.351621707695124,
-        "pass": false,
-        "sma30": 17.004833333333334,
-        "weeks": 63
-      }
-    },
-    "ALNY": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 255.96,
-        "ema10": 251.30152177921605,
-        "ema10_m1": 250.26630439681963,
-        "ema10_m2": 252.64548315166846,
-        "ema10_m3": 253.526701629817,
-        "pass": false,
-        "sma30": 281.349,
-        "weeks": 128
-      }
-    },
-    "AMAT": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 485.0,
-        "ema10": 483.79754239223615,
-        "ema10_m1": 483.5303295905109,
-        "ema10_m2": 492.1881806106245,
-        "ema10_m3": 500.12110963520774,
-        "pass": false,
-        "sma30": 465.00699999999995,
-        "weeks": 128
-      }
-    },
     "AMBA": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 72.68,
@@ -497,6 +387,8 @@
       "dd120": -0.029922458493887083,
       "dd252": -0.029922458493887083,
       "last_close": 611.76,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 630.63,
@@ -509,20 +401,9 @@
         "weeks": 128
       }
     },
-    "AMGN": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 414.61,
-        "ema10": 400.84764363444435,
-        "ema10_m1": 397.78934221987646,
-        "ema10_m2": 400.48697382429344,
-        "ema10_m3": 405.62852356302534,
-        "pass": false,
-        "sma30": 369.11750000000006,
-        "weeks": 128
-      }
-    },
     "AMKR": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 53.61,
@@ -536,6 +417,8 @@
       }
     },
     "AMZN": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 249.67,
@@ -548,26 +431,9 @@
         "weeks": 128
       }
     },
-    "APA": {
-      "a_trend_pool": false,
-      "b_tight_base_pool": [],
-      "d_drawdown_pool": false,
-      "dd120": -0.12381354144695211,
-      "dd252": -0.12381354144695211,
-      "last_close": 41.54,
-      "status": "WEEKLY_PASS",
-      "weekly": {
-        "close": 42.74,
-        "ema10": 41.52669271108741,
-        "ema10_m1": 41.25706886910683,
-        "ema10_m2": 40.45419528446391,
-        "ema10_m3": 39.50401645878922,
-        "pass": true,
-        "sma30": 38.265,
-        "weeks": 128
-      }
-    },
     "APLD": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 26.25,
@@ -581,6 +447,8 @@
       }
     },
     "APP": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 310.75,
@@ -600,6 +468,8 @@
       "dd120": -0.14486758497164054,
       "dd252": -0.272582166436915,
       "last_close": 200.52,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 204.22,
@@ -619,6 +489,8 @@
       "dd120": -0.09442818018698662,
       "dd252": -0.09442818018698662,
       "last_close": 958.91,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 959.49,
@@ -632,6 +504,8 @@
       }
     },
     "ARM": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 310.32,
@@ -645,6 +519,8 @@
       }
     },
     "ARQT": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 26.92,
@@ -658,6 +534,8 @@
       }
     },
     "ARWR": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 65.92,
@@ -671,6 +549,8 @@
       }
     },
     "ASML": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 1743.9399,
@@ -684,6 +564,8 @@
       }
     },
     "ASND": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 225.6,
@@ -697,6 +579,8 @@
       }
     },
     "ASO": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 49.14,
@@ -709,34 +593,9 @@
         "weeks": 128
       }
     },
-    "ASST": {
-      "a_trend_pool": true,
-      "b_tight_base_pool": [
-        {
-          "atr14_frozen": 1.837673723495628,
-          "base_high": 30.59,
-          "base_low": 28.31,
-          "width_atr": 1.2406990266275228,
-          "window": 5
-        }
-      ],
-      "d_drawdown_pool": false,
-      "dd120": -0.03033300362677216,
-      "dd252": -0.03033300362677216,
-      "last_close": 29.41,
-      "status": "WEEKLY_PASS",
-      "weekly": {
-        "close": 29.44,
-        "ema10": 22.65153194828963,
-        "ema10_m1": 21.14298349235399,
-        "ema10_m2": 19.15475760176599,
-        "ema10_m3": 17.273592624380655,
-        "pass": true,
-        "sma30": 15.634333333333332,
-        "weeks": 128
-      }
-    },
     "ASTS": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 61.81,
@@ -756,6 +615,8 @@
       "dd120": -0.07520157972683894,
       "dd252": -0.07520157972683894,
       "last_close": 56.2,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 58.38,
@@ -775,6 +636,8 @@
       "dd120": -0.2790910756826094,
       "dd252": -0.2790910756826094,
       "last_close": 78.68,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 83.57,
@@ -788,6 +651,8 @@
       }
     },
     "AVAV": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 152.05,
@@ -800,19 +665,6 @@
         "weeks": 128
       }
     },
-    "AVGO": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 352.81,
-        "ema10": 369.7087595391073,
-        "ema10_m1": 373.4640394366867,
-        "ema10_m2": 376.987159311506,
-        "ema10_m3": 380.31986138072955,
-        "pass": false,
-        "sma30": 378.384,
-        "weeks": 128
-      }
-    },
     "AVT": {
       "a_trend_pool": true,
       "b_tight_base_pool": [],
@@ -820,6 +672,8 @@
       "dd120": -0.03031772980839198,
       "dd252": -0.03031772980839198,
       "last_close": 99.95,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 103.075,
@@ -832,7 +686,24 @@
         "weeks": 128
       }
     },
+    "AXGN": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
+      "status": "WEEKLY_FAIL",
+      "weekly": {
+        "close": 43.39,
+        "ema10": 45.012552369622384,
+        "ema10_m1": 45.37311956287181,
+        "ema10_m2": 45.627146132398885,
+        "ema10_m3": 46.397623050709754,
+        "pass": false,
+        "sma30": 41.083,
+        "weeks": 128
+      }
+    },
     "AXON": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 430.11,
@@ -846,6 +717,8 @@
       }
     },
     "AXSM": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 195.09,
@@ -859,6 +732,8 @@
       }
     },
     "AXTI": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 78.94,
@@ -871,7 +746,24 @@
         "weeks": 128
       }
     },
+    "BAND": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
+      "status": "WEEKLY_FAIL",
+      "weekly": {
+        "close": 61.81,
+        "ema10": 53.66711328078675,
+        "ema10_m1": 51.857582898739366,
+        "ema10_m2": 52.21926798734812,
+        "ema10_m3": 51.18577198453659,
+        "pass": false,
+        "sma30": 46.243,
+        "weeks": 128
+      }
+    },
     "BBIO": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 65.57,
@@ -884,19 +776,6 @@
         "weeks": 128
       }
     },
-    "BIDU": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 87.33,
-        "ema10": 97.80736470640147,
-        "ema10_m1": 100.1356679744907,
-        "ema10_m2": 102.4035941910442,
-        "ema10_m3": 104.84883734460959,
-        "pass": false,
-        "sma30": 112.828,
-        "weeks": 128
-      }
-    },
     "BIIB": {
       "a_trend_pool": true,
       "b_tight_base_pool": [],
@@ -904,6 +783,8 @@
       "dd120": -0.012287375923739519,
       "dd252": -0.012287375923739519,
       "last_close": 225.88,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 227.6,
@@ -917,6 +798,8 @@
       }
     },
     "BKNG": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 163.95,
@@ -929,20 +812,9 @@
         "weeks": 128
       }
     },
-    "BKR": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 57.83,
-        "ema10": 59.89164231069288,
-        "ema10_m1": 60.34978504640242,
-        "ema10_m2": 61.03862616782517,
-        "ema10_m3": 61.47832087178633,
-        "pass": false,
-        "sma30": 61.004333333333335,
-        "weeks": 128
-      }
-    },
     "BMRN": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 60.26,
@@ -956,6 +828,8 @@
       }
     },
     "BNTX": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 98.52,
@@ -969,6 +843,8 @@
       }
     },
     "BPOP": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 160.48,
@@ -982,6 +858,8 @@
       }
     },
     "BRKR": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 64.18,
@@ -994,20 +872,9 @@
         "weeks": 128
       }
     },
-    "BRZE": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 24.37,
-        "ema10": 26.52580233286271,
-        "ema10_m1": 27.004869517943312,
-        "ema10_m2": 27.57706274415294,
-        "ema10_m3": 28.385298909520262,
-        "pass": false,
-        "sma30": 23.949333333333335,
-        "weeks": 128
-      }
-    },
     "BSP": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "pass": false,
@@ -1016,6 +883,8 @@
       }
     },
     "BSY": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 31.44,
@@ -1029,6 +898,8 @@
       }
     },
     "BTDR": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 11.51,
@@ -1042,6 +913,8 @@
       }
     },
     "BTSG": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 56.59,
@@ -1076,6 +949,8 @@
       "dd120": -0.021545090797168487,
       "dd252": -0.021545090797168487,
       "last_close": 31.79,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 31.85,
@@ -1089,6 +964,8 @@
       }
     },
     "BZ": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 14.11,
@@ -1102,6 +979,8 @@
       }
     },
     "CACC": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 555.68,
@@ -1121,6 +1000,8 @@
       "dd120": -0.050821196157421866,
       "dd252": -0.07040971168437038,
       "last_close": 30.63,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 31.98,
@@ -1134,6 +1015,8 @@
       }
     },
     "CAKE": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 104.49,
@@ -1147,6 +1030,8 @@
       }
     },
     "CALM": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 67.43,
@@ -1160,6 +1045,8 @@
       }
     },
     "CART": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 43.19,
@@ -1173,6 +1060,8 @@
       }
     },
     "CASY": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 598.46,
@@ -1186,6 +1075,8 @@
       }
     },
     "CBSH": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 56.44,
@@ -1198,19 +1089,6 @@
         "weeks": 128
       }
     },
-    "CCEP": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 101.73,
-        "ema10": 103.84588391105372,
-        "ema10_m1": 104.31608033573232,
-        "ema10_m2": 105.32632041033952,
-        "ema10_m3": 105.8943916126372,
-        "pass": false,
-        "sma30": 100.04966666666668,
-        "weeks": 128
-      }
-    },
     "CDNA": {
       "a_trend_pool": true,
       "b_tight_base_pool": [],
@@ -1218,6 +1096,8 @@
       "dd120": 0.0,
       "dd252": 0.0,
       "last_close": 65.0,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 63.68,
@@ -1230,20 +1110,9 @@
         "weeks": 128
       }
     },
-    "CDNS": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 326.13,
-        "ema10": 318.3169590132179,
-        "ema10_m1": 316.58072768282193,
-        "ema10_m2": 324.06533383456014,
-        "ema10_m3": 331.77540802001795,
-        "pass": false,
-        "sma30": 330.7133333333333,
-        "weeks": 128
-      }
-    },
     "CDW": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 135.43,
@@ -1257,6 +1126,8 @@
       }
     },
     "CEG": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 263.27,
@@ -1270,6 +1141,8 @@
       }
     },
     "CELC": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 79.52,
@@ -1283,6 +1156,8 @@
       }
     },
     "CELH": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 27.99,
@@ -1296,6 +1171,8 @@
       }
     },
     "CENX": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 38.39,
@@ -1308,20 +1185,9 @@
         "weeks": 128
       }
     },
-    "CG": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 40.03,
-        "ema10": 44.30912751838006,
-        "ema10_m1": 45.26004474468674,
-        "ema10_m2": 46.40672135461713,
-        "ema10_m3": 47.31043721119872,
-        "pass": false,
-        "sma30": 46.218666666666664,
-        "weeks": 128
-      }
-    },
     "CGNX": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 58.66,
@@ -1335,6 +1201,8 @@
       }
     },
     "CGON": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 67.15,
@@ -1348,6 +1216,8 @@
       }
     },
     "CHDN": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 79.77,
@@ -1382,6 +1252,8 @@
       "dd120": -0.0289993074792243,
       "dd252": -0.0289993074792243,
       "last_close": 112.17,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 110.27,
@@ -1395,6 +1267,8 @@
       }
     },
     "CHKP": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 131.24,
@@ -1408,6 +1282,8 @@
       }
     },
     "CHRD": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 136.27,
@@ -1421,6 +1297,8 @@
       }
     },
     "CHRW": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 147.1,
@@ -1434,6 +1312,8 @@
       }
     },
     "CHTR": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 112.91,
@@ -1446,20 +1326,9 @@
         "weeks": 128
       }
     },
-    "CHYM": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 26.78,
-        "ema10": 28.84956027956777,
-        "ema10_m1": 29.30946256391616,
-        "ema10_m2": 29.08267646700864,
-        "ema10_m3": 28.212160126343896,
-        "pass": false,
-        "sma30": 23.003833333333333,
-        "weeks": 68
-      }
-    },
     "CIFR": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 17.73,
@@ -1472,19 +1341,6 @@
         "weeks": 128
       }
     },
-    "CINF": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 162.54,
-        "ema10": 170.4846601643745,
-        "ema10_m1": 172.25014020090217,
-        "ema10_m2": 172.97239357888046,
-        "ema10_m3": 173.67736992974278,
-        "pass": false,
-        "sma30": 169.052,
-        "weeks": 128
-      }
-    },
     "CLMT": {
       "a_trend_pool": false,
       "b_tight_base_pool": [],
@@ -1492,6 +1348,8 @@
       "dd120": -0.11295512277730724,
       "dd252": -0.11295512277730724,
       "last_close": 52.38,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 53.65,
@@ -1511,6 +1369,8 @@
       "dd120": -0.315257841573631,
       "dd252": -0.44482758620689655,
       "last_close": 12.88,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 13.95,
@@ -1524,6 +1384,8 @@
       }
     },
     "CMCSA": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 21.91,
@@ -1536,33 +1398,9 @@
         "weeks": 128
       }
     },
-    "CME": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 264.48,
-        "ema10": 270.3752308773775,
-        "ema10_m1": 271.68528218346137,
-        "ema10_m2": 270.7242337797862,
-        "ema10_m3": 269.65406350862753,
-        "pass": false,
-        "sma30": 275.601,
-        "weeks": 128
-      }
-    },
-    "COCO": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 58.59,
-        "ema10": 60.38805114357973,
-        "ema10_m1": 60.78761806437522,
-        "ema10_m2": 61.89153318979194,
-        "ema10_m3": 64.08742945419016,
-        "pass": false,
-        "sma30": 63.509,
-        "weeks": 128
-      }
-    },
     "COGT": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 32.31,
@@ -1582,6 +1420,8 @@
       "dd120": -0.07806792044378297,
       "dd252": -0.07806792044378297,
       "last_close": 68.14,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 67.0,
@@ -1609,6 +1449,8 @@
       "dd120": -0.1393813481071099,
       "dd252": -0.5186562346683192,
       "last_close": 186.41,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 195.11,
@@ -1628,6 +1470,8 @@
       "dd120": -0.12130919220055703,
       "dd252": -0.12742612143285226,
       "last_close": 189.27,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 190.29,
@@ -1641,6 +1485,8 @@
       }
     },
     "COLB": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 29.64,
@@ -1654,6 +1500,8 @@
       }
     },
     "COO": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 55.38,
@@ -1673,6 +1521,8 @@
       "dd120": -0.06749210973537256,
       "dd252": -0.06749210973537256,
       "last_close": 115.23,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 116.1,
@@ -1685,20 +1535,9 @@
         "weeks": 128
       }
     },
-    "CORZ": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 17.34,
-        "ema10": 18.982509695386597,
-        "ema10_m1": 19.347511849916952,
-        "ema10_m2": 19.6491811498985,
-        "ema10_m3": 20.02899918320928,
-        "pass": false,
-        "sma30": 20.763666666666666,
-        "weeks": 128
-      }
-    },
     "COST": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 922.765,
@@ -1712,6 +1551,8 @@
       }
     },
     "CPB": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 19.37,
@@ -1724,20 +1565,9 @@
         "weeks": 128
       }
     },
-    "CPRT": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 27.59,
-        "ema10": 30.331578005216283,
-        "ema10_m1": 30.940817561931016,
-        "ema10_m2": 31.30988813124902,
-        "ema10_m3": 31.612085493748808,
-        "pass": false,
-        "sma30": 31.638500000000004,
-        "weeks": 128
-      }
-    },
     "CRDO": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 210.97,
@@ -1751,6 +1581,8 @@
       }
     },
     "CROX": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 126.14,
@@ -1763,20 +1595,9 @@
         "weeks": 128
       }
     },
-    "CRSP": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 54.23,
-        "ema10": 54.33938093860657,
-        "ema10_m1": 54.36368781385248,
-        "ema10_m2": 53.87561843915304,
-        "ema10_m3": 54.354644758964824,
-        "pass": false,
-        "sma30": 52.5045,
-        "weeks": 128
-      }
-    },
     "CRUS": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 119.92,
@@ -1789,20 +1610,9 @@
         "weeks": 128
       }
     },
-    "CRWD": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 252.13,
-        "ema10": 249.85138225482643,
-        "ema10_m1": 249.34502275589898,
-        "ema10_m2": 251.94391670165433,
-        "ema10_m3": 261.9892315242442,
-        "pass": false,
-        "sma30": 390.70033333333333,
-        "weeks": 128
-      }
-    },
     "CRWV": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 87.59,
@@ -1815,20 +1625,9 @@
         "weeks": 79
       }
     },
-    "CSCO": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 106.7,
-        "ema10": 110.88793578352539,
-        "ema10_m1": 111.81858817986438,
-        "ema10_m2": 112.3316077753898,
-        "ema10_m3": 112.3764095032542,
-        "pass": false,
-        "sma30": 104.74233333333333,
-        "weeks": 128
-      }
-    },
     "CSGP": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 28.09,
@@ -1842,6 +1641,8 @@
       }
     },
     "CSX": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 46.78,
@@ -1855,6 +1656,8 @@
       }
     },
     "CTAS": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 199.91,
@@ -1868,6 +1671,8 @@
       }
     },
     "CTSH": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 57.33,
@@ -1881,6 +1686,8 @@
       }
     },
     "CVCO": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 557.28,
@@ -1894,6 +1701,8 @@
       }
     },
     "CVLT": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 145.54,
@@ -1907,6 +1716,8 @@
       }
     },
     "CYTK": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 64.66,
@@ -1920,6 +1731,8 @@
       }
     },
     "CZR": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 29.59,
@@ -1933,6 +1746,8 @@
       }
     },
     "DASH": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 193.36,
@@ -1945,20 +1760,9 @@
         "weeks": 128
       }
     },
-    "DAVE": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 324.88,
-        "ema10": 348.11800118380796,
-        "ema10_m1": 353.28200144687645,
-        "ema10_m2": 356.7180017684046,
-        "ema10_m3": 358.05311327249456,
-        "pass": false,
-        "sma30": 298.8456666666667,
-        "weeks": 128
-      }
-    },
     "DBX": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 32.32,
@@ -1972,6 +1776,8 @@
       }
     },
     "DDOG": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 268.13,
@@ -1984,20 +1790,9 @@
         "weeks": 128
       }
     },
-    "DKNG": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 22.02,
-        "ema10": 23.931113609501097,
-        "ema10_m1": 24.355805522723564,
-        "ema10_m2": 24.934873416662136,
-        "ema10_m3": 24.978178620364833,
-        "pass": false,
-        "sma30": 24.46216666666667,
-        "weeks": 128
-      }
-    },
     "DLTR": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 114.07,
@@ -2011,6 +1806,8 @@
       }
     },
     "DNTH": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 88.55,
@@ -2030,6 +1827,8 @@
       "dd120": -0.06541405706332626,
       "dd252": -0.08189773038009285,
       "last_close": 67.15,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 67.5,
@@ -2043,6 +1842,8 @@
       }
     },
     "DOX": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 57.71,
@@ -2056,6 +1857,8 @@
       }
     },
     "DPZ": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 292.14,
@@ -2075,6 +1878,8 @@
       "dd120": -0.10338748268480036,
       "dd252": -0.5899444236473061,
       "last_close": 142.4,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 143.51,
@@ -2087,20 +1892,9 @@
         "weeks": 128
       }
     },
-    "DXCM": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 86.62,
-        "ema10": 84.99091048902172,
-        "ema10_m1": 84.62889059769321,
-        "ema10_m2": 83.57975517495838,
-        "ema10_m3": 83.7019229916158,
-        "pass": false,
-        "sma30": 73.867,
-        "weeks": 128
-      }
-    },
     "DYN": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 16.03,
@@ -2113,20 +1907,9 @@
         "weeks": 128
       }
     },
-    "EBAY": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 107.9,
-        "ema10": 108.09951528927233,
-        "ema10_m1": 108.14385202022174,
-        "ema10_m2": 107.32248580249326,
-        "ema10_m3": 107.22748264749177,
-        "pass": false,
-        "sma30": 105.44633333333333,
-        "weeks": 128
-      }
-    },
     "ECHO": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "pass": false,
@@ -2135,6 +1918,8 @@
       }
     },
     "ELVN": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 44.75,
@@ -2148,6 +1933,8 @@
       }
     },
     "ENPH": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 32.4,
@@ -2161,6 +1948,8 @@
       }
     },
     "ENSG": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 175.18,
@@ -2174,6 +1963,8 @@
       }
     },
     "ENTG": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 151.89,
@@ -2187,6 +1978,8 @@
       }
     },
     "EQIX": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 1008.08,
@@ -2199,20 +1992,9 @@
         "weeks": 128
       }
     },
-    "ERAS": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 14.25,
-        "ema10": 16.183809565363678,
-        "ema10_m1": 16.613545024333384,
-        "ema10_m2": 17.023221696407468,
-        "ema10_m3": 17.277270962275797,
-        "pass": false,
-        "sma30": 15.703666666666667,
-        "weeks": 128
-      }
-    },
     "ESLT": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 735.0,
@@ -2226,6 +2008,8 @@
       }
     },
     "EVRG": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 78.04,
@@ -2239,6 +2023,8 @@
       }
     },
     "EWBC": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 127.23,
@@ -2251,33 +2037,9 @@
         "weeks": 128
       }
     },
-    "EWTX": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 39.34,
-        "ema10": 42.122299192102695,
-        "ema10_m1": 42.740587901458845,
-        "ema10_m2": 42.167385212894146,
-        "ema10_m3": 41.67124859353729,
-        "pass": false,
-        "sma30": 37.16,
-        "weeks": 128
-      }
-    },
-    "EXC": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 40.34,
-        "ema10": 43.575226345712586,
-        "ema10_m1": 44.294165533648716,
-        "ema10_m2": 44.78842454112621,
-        "ema10_m3": 45.15029666137649,
-        "pass": false,
-        "sma30": 45.976333333333336,
-        "weeks": 128
-      }
-    },
     "EXE": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 86.84,
@@ -2297,6 +2059,8 @@
       "dd120": -0.012176560121765712,
       "dd252": -0.012176560121765712,
       "last_close": 58.41,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 58.16,
@@ -2316,6 +2080,8 @@
       "dd120": -0.10468749999999993,
       "dd252": -0.21916874858051327,
       "last_close": 34.38,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 34.75,
@@ -2329,6 +2095,8 @@
       }
     },
     "EXPE": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 264.17,
@@ -2342,6 +2110,8 @@
       }
     },
     "FANG": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 186.67,
@@ -2355,6 +2125,8 @@
       }
     },
     "FAST": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 50.43,
@@ -2368,6 +2140,8 @@
       }
     },
     "FCFS": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 217.45,
@@ -2381,6 +2155,8 @@
       }
     },
     "FCNCA": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 2090.3601,
@@ -2393,19 +2169,6 @@
         "weeks": 128
       }
     },
-    "FER": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 55.83,
-        "ema10": 59.62977972077816,
-        "ema10_m1": 60.47417521428442,
-        "ema10_m2": 61.68176970634763,
-        "ema10_m3": 62.91105186331377,
-        "pass": false,
-        "sma30": 64.92983333333333,
-        "weeks": 125
-      }
-    },
     "FFIV": {
       "a_trend_pool": true,
       "b_tight_base_pool": [],
@@ -2413,6 +2176,8 @@
       "dd120": -0.0237066602337771,
       "dd252": -0.0237066602337771,
       "last_close": 445.18,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 443.06,
@@ -2426,6 +2191,8 @@
       }
     },
     "FIGR": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 31.9,
@@ -2438,15 +2205,9 @@
         "weeks": 55
       }
     },
-    "FISV": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "pass": false,
-        "reason": "WEEKLY_HISTORY_LT52",
-        "weeks": 46
-      }
-    },
     "FIVE": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 222.6,
@@ -2460,6 +2221,8 @@
       }
     },
     "FLEX": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 114.68,
@@ -2472,19 +2235,6 @@
         "weeks": 128
       }
     },
-    "FLY": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 24.36,
-        "ema10": 23.55524883101525,
-        "ema10_m1": 23.376415237907526,
-        "ema10_m2": 23.911174179664755,
-        "ema10_m3": 24.52921288625692,
-        "pass": false,
-        "sma30": 29.110166666666665,
-        "weeks": 60
-      }
-    },
     "FORM": {
       "a_trend_pool": false,
       "b_tight_base_pool": [],
@@ -2492,6 +2242,8 @@
       "dd120": -0.06640405177265052,
       "dd252": -0.06640405177265052,
       "last_close": 149.31,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 129.69,
@@ -2504,20 +2256,9 @@
         "weeks": 128
       }
     },
-    "FOX": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 56.54,
-        "ema10": 57.16315989437519,
-        "ema10_m1": 57.30163987090301,
-        "ema10_m2": 57.20422650888146,
-        "ema10_m3": 56.927387955299565,
-        "pass": false,
-        "sma30": 55.21116666666667,
-        "weeks": 128
-      }
-    },
     "FOXA": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 63.07,
@@ -2530,20 +2271,9 @@
         "weeks": 128
       }
     },
-    "FROG": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 89.18,
-        "ema10": 89.03470200456786,
-        "ema10_m1": 89.0024135611385,
-        "ema10_m2": 88.1562832413915,
-        "ema10_m3": 88.37323507281184,
-        "pass": false,
-        "sma30": 72.99816666666666,
-        "weeks": 128
-      }
-    },
     "FRPT": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 57.91,
@@ -2556,20 +2286,9 @@
         "weeks": 128
       }
     },
-    "FRSH": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 12.54,
-        "ema10": 12.071343530133383,
-        "ema10_m1": 11.967197647940804,
-        "ema10_m2": 11.904352680816537,
-        "ema10_m3": 11.907542165442434,
-        "pass": false,
-        "sma30": 10.081,
-        "weeks": 128
-      }
-    },
     "FSLR": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 177.71,
@@ -2589,6 +2308,8 @@
       "dd120": -0.20673671199011123,
       "dd252": -0.23373134328358203,
       "last_close": 25.67,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 24.96,
@@ -2598,19 +2319,6 @@
         "ema10_m3": 22.41086228882398,
         "pass": true,
         "sma30": 22.277499999999996,
-        "weeks": 128
-      }
-    },
-    "FTAI": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 175.06,
-        "ema10": 200.07072701567037,
-        "ema10_m1": 205.628666352486,
-        "ema10_m2": 208.93725887526068,
-        "ema10_m3": 214.02109418087417,
-        "pass": false,
-        "sma30": 230.05633333333333,
         "weeks": 128
       }
     },
@@ -2629,6 +2337,8 @@
       "dd120": 0.0,
       "dd252": 0.0,
       "last_close": 178.76,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 173.46,
@@ -2642,6 +2352,8 @@
       }
     },
     "FUTU": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 111.87,
@@ -2655,6 +2367,8 @@
       }
     },
     "FWONK": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 94.61,
@@ -2668,6 +2382,8 @@
       }
     },
     "GEHC": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 66.63,
@@ -2680,20 +2396,9 @@
         "weeks": 128
       }
     },
-    "GEN": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 21.62,
-        "ema10": 27.42261965050573,
-        "ema10_m1": 28.712090683951452,
-        "ema10_m2": 28.64588861371844,
-        "ema10_m3": 28.287197194544767,
-        "pass": false,
-        "sma30": 24.521,
-        "weeks": 128
-      }
-    },
     "GFS": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 49.0,
@@ -2728,6 +2433,8 @@
       "dd120": -0.025887493173129328,
       "dd252": -0.025887493173129328,
       "last_close": 178.36,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 177.25,
@@ -2747,6 +2454,8 @@
       "dd120": -0.023711272679635687,
       "dd252": -0.04332477535301671,
       "last_close": 149.05,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 150.93,
@@ -2760,6 +2469,8 @@
       }
     },
     "GLBE": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 40.17,
@@ -2773,6 +2484,8 @@
       }
     },
     "GLNG": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 49.61,
@@ -2786,6 +2499,8 @@
       }
     },
     "GLPI": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 38.79,
@@ -2799,6 +2514,8 @@
       }
     },
     "GLXY": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 24.24,
@@ -2811,39 +2528,9 @@
         "weeks": 72
       }
     },
-    "GMAB": {
-      "a_trend_pool": true,
-      "b_tight_base_pool": [],
-      "d_drawdown_pool": false,
-      "dd120": 0.0,
-      "dd252": 0.0,
-      "last_close": 35.675,
-      "status": "WEEKLY_PASS",
-      "weekly": {
-        "close": 35.32,
-        "ema10": 32.55475837382254,
-        "ema10_m1": 31.94026023467199,
-        "ema10_m2": 31.318095842376877,
-        "ema10_m3": 31.062117140682854,
-        "pass": true,
-        "sma30": 28.650166666666667,
-        "weeks": 128
-      }
-    },
-    "GOOG": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 341.08,
-        "ema10": 342.89295922345855,
-        "ema10_m1": 343.2958390508938,
-        "ema10_m2": 343.0482477288702,
-        "ema10_m3": 344.7367472241747,
-        "pass": false,
-        "sma30": 343.0213333333333,
-        "weeks": 128
-      }
-    },
     "GOOGL": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 343.92,
@@ -2856,38 +2543,6 @@
         "weeks": 128
       }
     },
-    "GTLB": {
-      "a_trend_pool": false,
-      "b_tight_base_pool": [],
-      "d_drawdown_pool": false,
-      "dd120": -0.060075591804257034,
-      "dd252": -0.0742554858934169,
-      "last_close": 47.25,
-      "status": "WEEKLY_PASS",
-      "weekly": {
-        "close": 46.845,
-        "ema10": 43.19328357675883,
-        "ema10_m1": 42.38179103826079,
-        "ema10_m2": 40.85996682454097,
-        "ema10_m3": 39.49773722999452,
-        "pass": true,
-        "sma30": 31.50516666666667,
-        "weeks": 128
-      }
-    },
-    "GTX": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 25.72,
-        "ema10": 27.874137777078797,
-        "ema10_m1": 28.35283506087409,
-        "ema10_m2": 28.81568729662389,
-        "ema10_m3": 29.08139558476253,
-        "pass": false,
-        "sma30": 27.154,
-        "weeks": 128
-      }
-    },
     "HALO": {
       "a_trend_pool": true,
       "b_tight_base_pool": [],
@@ -2895,6 +2550,8 @@
       "dd120": -0.0418330151015448,
       "dd252": -0.0418330151015448,
       "last_close": 110.4,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 113.9,
@@ -2908,6 +2565,8 @@
       }
     },
     "HAS": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 88.09,
@@ -2920,33 +2579,9 @@
         "weeks": 128
       }
     },
-    "HBAN": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 15.64,
-        "ema10": 16.699126582719934,
-        "ema10_m1": 16.93448804554659,
-        "ema10_m2": 17.168818722334724,
-        "ema10_m3": 17.237445105075775,
-        "pass": false,
-        "sma30": 16.648,
-        "weeks": 128
-      }
-    },
-    "HLNE": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 86.21,
-        "ema10": 93.63430691913157,
-        "ema10_m1": 95.28415290116082,
-        "ema10_m2": 96.96063132364101,
-        "ema10_m3": 97.17854939556125,
-        "pass": false,
-        "sma30": 91.967,
-        "weeks": 128
-      }
-    },
     "HON": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 212.55,
@@ -2974,6 +2609,8 @@
       "dd120": -0.09797947402180884,
       "dd252": -0.2621015348288076,
       "last_close": 112.5,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 119.4,
@@ -2987,6 +2624,8 @@
       }
     },
     "HQY": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 88.25,
@@ -3000,6 +2639,8 @@
       }
     },
     "HSIC": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 86.37,
@@ -3013,6 +2654,8 @@
       }
     },
     "HST": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 22.42,
@@ -3032,6 +2675,8 @@
       "dd120": -0.019704433497536922,
       "dd252": -0.019704433497536922,
       "last_close": 49.75,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 49.17,
@@ -3042,19 +2687,6 @@
         "pass": true,
         "sma30": 32.713,
         "weeks": 60
-      }
-    },
-    "HTHT": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 42.0,
-        "ema10": 43.85228033324246,
-        "ema10_m1": 44.263898185074126,
-        "ema10_m2": 44.446986670646154,
-        "ema10_m3": 44.84409481967864,
-        "pass": false,
-        "sma30": 46.129999999999995,
-        "weeks": 128
       }
     },
     "HUT": {
@@ -3072,6 +2704,8 @@
       "dd120": -0.35272891294542186,
       "dd252": -0.35272891294542186,
       "last_close": 86.1,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 96.82,
@@ -3085,6 +2719,8 @@
       }
     },
     "HWC": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 73.85,
@@ -3098,6 +2734,8 @@
       }
     },
     "IBKR": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 89.24,
@@ -3111,6 +2749,8 @@
       }
     },
     "ICLR": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 172.33,
@@ -3124,6 +2764,8 @@
       }
     },
     "IDCC": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 334.21,
@@ -3137,6 +2779,8 @@
       }
     },
     "IDXX": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 519.26,
@@ -3150,6 +2794,8 @@
       }
     },
     "IESC": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 324.13,
@@ -3169,6 +2815,8 @@
       "dd120": -0.0008032128514054993,
       "dd252": -0.0008032128514054993,
       "last_close": 273.68,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 270.0,
@@ -3188,6 +2836,8 @@
       "dd120": -0.06603555760794289,
       "dd252": -0.06603555760794289,
       "last_close": 121.35,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 123.89,
@@ -3200,20 +2850,24 @@
         "weeks": 128
       }
     },
-    "INDV": {
+    "INOD": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
-        "close": 35.82,
-        "ema10": 36.426058426365294,
-        "ema10_m1": 36.56073807666869,
-        "ema10_m2": 36.93423542703951,
-        "ema10_m3": 37.477398855270515,
+        "close": 69.21,
+        "ema10": 62.28440705658373,
+        "ema10_m1": 60.745386402491235,
+        "ema10_m2": 61.546583380822625,
+        "ema10_m3": 63.399157465449875,
         "pass": false,
-        "sma30": 36.111999999999995,
+        "sma30": 64.26333333333334,
         "weeks": 128
       }
     },
     "INSM": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 117.83,
@@ -3226,26 +2880,9 @@
         "weeks": 128
       }
     },
-    "INTC": {
-      "a_trend_pool": false,
-      "b_tight_base_pool": [],
-      "d_drawdown_pool": false,
-      "dd120": -0.14694196111820623,
-      "dd252": -0.14694196111820623,
-      "last_close": 120.23,
-      "status": "WEEKLY_PASS",
-      "weekly": {
-        "close": 123.0,
-        "ema10": 104.66627432543295,
-        "ema10_m1": 100.59211306441806,
-        "ema10_m2": 98.81258263428874,
-        "ema10_m3": 97.89537877524181,
-        "pass": true,
-        "sma30": 93.85499999999999,
-        "weeks": 128
-      }
-    },
     "INTU": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 275.79,
@@ -3259,6 +2896,8 @@
       }
     },
     "IONS": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 44.5,
@@ -3278,6 +2917,8 @@
       "dd120": 0.0,
       "dd252": 0.0,
       "last_close": 14.82,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 11.0,
@@ -3290,33 +2931,9 @@
         "weeks": 128
       }
     },
-    "IREN": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 44.125,
-        "ema10": 43.34633612717962,
-        "ema10_m1": 43.17329971099731,
-        "ema10_m2": 42.39403298010782,
-        "ema10_m3": 42.07492919790957,
-        "pass": false,
-        "sma30": 45.2785,
-        "weeks": 128
-      }
-    },
-    "IRTC": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 110.38,
-        "ema10": 116.27556900412233,
-        "ema10_m1": 117.58569544948286,
-        "ema10_m2": 119.42029443825683,
-        "ema10_m3": 121.19591542453614,
-        "pass": false,
-        "sma30": 117.30050000000001,
-        "weeks": 128
-      }
-    },
     "ISRG": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 405.18,
@@ -3330,6 +2947,8 @@
       }
     },
     "JAZZ": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 237.95,
@@ -3343,6 +2962,8 @@
       }
     },
     "JBHT": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 225.46,
@@ -3355,20 +2976,9 @@
         "weeks": 128
       }
     },
-    "JD": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 26.51,
-        "ema10": 28.211821897425352,
-        "ema10_m1": 28.590004541297656,
-        "ema10_m2": 28.961116661586026,
-        "ema10_m3": 29.383587030827364,
-        "pass": false,
-        "sma30": 28.965333333333334,
-        "weeks": 128
-      }
-    },
     "JKHY": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 147.79,
@@ -3382,6 +2992,8 @@
       }
     },
     "KDP": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 31.95,
@@ -3395,6 +3007,8 @@
       }
     },
     "KLAC": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 187.92,
@@ -3408,6 +3022,8 @@
       }
     },
     "KLIC": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 91.18,
@@ -3420,20 +3036,9 @@
         "weeks": 128
       }
     },
-    "KMB": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 98.43,
-        "ema10": 103.50388292006559,
-        "ema10_m1": 104.63141245785795,
-        "ema10_m2": 106.13617078182638,
-        "ema10_m3": 107.91087540001003,
-        "pass": false,
-        "sma30": 102.83633333333334,
-        "weeks": 128
-      }
-    },
     "KRYS": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 345.82,
@@ -3447,6 +3052,8 @@
       }
     },
     "KTOS": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 45.62,
@@ -3459,20 +3066,9 @@
         "weeks": 128
       }
     },
-    "KYMR": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 111.95,
-        "ema10": 112.98224217911638,
-        "ema10_m1": 113.21162933003113,
-        "ema10_m2": 112.2031025144825,
-        "ema10_m3": 111.59045862881194,
-        "pass": false,
-        "sma30": 97.24549999999999,
-        "weeks": 128
-      }
-    },
     "LAMR": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 143.98,
@@ -3486,6 +3082,8 @@
       }
     },
     "LECO": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 271.7,
@@ -3498,20 +3096,9 @@
         "weeks": 128
       }
     },
-    "LFST": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 11.84,
-        "ema10": 11.860749357075505,
-        "ema10_m1": 11.865360325314507,
-        "ema10_m2": 11.708773730939953,
-        "ema10_m3": 11.428501226704388,
-        "pass": false,
-        "sma30": 9.2955,
-        "weeks": 128
-      }
-    },
     "LFUS": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 429.22,
@@ -3524,20 +3111,9 @@
         "weeks": 128
       }
     },
-    "LGND": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 301.52,
-        "ema10": 287.94214117533653,
-        "ema10_m1": 284.9248392143002,
-        "ema10_m2": 285.24369237303364,
-        "ema10_m3": 285.4156240114856,
-        "pass": false,
-        "sma30": 256.79716666666667,
-        "weeks": 128
-      }
-    },
     "LIN": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 469.89,
@@ -3557,6 +3133,8 @@
       "dd120": -0.07770465962073514,
       "dd252": -0.07770465962073514,
       "last_close": 971.26,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 941.65,
@@ -3570,6 +3148,8 @@
       }
     },
     "LKQ": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 23.29,
@@ -3583,6 +3163,8 @@
       }
     },
     "LNT": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 63.6,
@@ -3596,6 +3178,8 @@
       }
     },
     "LNTH": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 99.74,
@@ -3609,6 +3193,8 @@
       }
     },
     "LOGI": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 101.09,
@@ -3622,6 +3208,8 @@
       }
     },
     "LPLA": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 314.36,
@@ -3635,6 +3223,8 @@
       }
     },
     "LQDA": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 68.43,
@@ -3648,6 +3238,8 @@
       }
     },
     "LRCX": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 315.21,
@@ -3661,6 +3253,8 @@
       }
     },
     "LSCC": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 128.05,
@@ -3674,6 +3268,8 @@
       }
     },
     "LSTR": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 163.77,
@@ -3687,6 +3283,8 @@
       }
     },
     "LULU": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 101.3,
@@ -3700,6 +3298,8 @@
       }
     },
     "LUNR": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 15.61,
@@ -3713,6 +3313,8 @@
       }
     },
     "LYFT": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 14.865,
@@ -3732,6 +3334,8 @@
       "dd120": -0.11199499463711116,
       "dd252": -0.11199499463711116,
       "last_close": 198.7,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 206.03,
@@ -3745,6 +3349,8 @@
       }
     },
     "MAR": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 352.03,
@@ -3772,6 +3378,8 @@
       "dd120": -0.23703703703703705,
       "dd252": -0.5039404553415061,
       "last_close": 11.33,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 12.55,
@@ -3785,6 +3393,8 @@
       }
     },
     "MAT": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 13.29,
@@ -3798,6 +3408,8 @@
       }
     },
     "MCHP": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 78.69,
@@ -3811,6 +3423,8 @@
       }
     },
     "MDB": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 410.44,
@@ -3824,6 +3438,8 @@
       }
     },
     "MDGL": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 516.56,
@@ -3837,6 +3453,8 @@
       }
     },
     "MDLZ": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 60.25,
@@ -3856,6 +3474,8 @@
       "dd120": -0.009536806359986882,
       "dd252": -0.009536806359986882,
       "last_close": 624.18,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 618.88,
@@ -3869,6 +3489,8 @@
       }
     },
     "MELI": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 1752.61,
@@ -3888,6 +3510,8 @@
       "dd120": -0.06740055813474977,
       "dd252": -0.06740055813474977,
       "last_close": 725.18,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 751.66,
@@ -3901,6 +3525,8 @@
       }
     },
     "MIDD": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 107.66,
@@ -3914,6 +3540,8 @@
       }
     },
     "MIRM": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 89.7,
@@ -3927,6 +3555,8 @@
       }
     },
     "MKSI": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 260.82,
@@ -3946,6 +3576,8 @@
       "dd120": -0.06095325389550876,
       "dd252": -0.15334951707039934,
       "last_close": 163.92,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 164.19,
@@ -3973,6 +3605,8 @@
       "dd120": -0.06251358991085021,
       "dd252": -0.07458682120626747,
       "last_close": 86.23,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 87.5,
@@ -3986,6 +3620,8 @@
       }
     },
     "MNDY": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 83.66,
@@ -3999,6 +3635,8 @@
       }
     },
     "MNST": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 43.11,
@@ -4012,6 +3650,8 @@
       }
     },
     "MORN": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 195.98,
@@ -4025,6 +3665,8 @@
       }
     },
     "MPWR": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 1367.4301,
@@ -4037,19 +3679,6 @@
         "weeks": 128
       }
     },
-    "MRCY": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 82.18,
-        "ema10": 90.67023962442511,
-        "ema10_m1": 92.55695954096403,
-        "ema10_m2": 94.17406166117827,
-        "ema10_m3": 97.18829758588457,
-        "pass": false,
-        "sma30": 93.864,
-        "weeks": 128
-      }
-    },
     "MRNA": {
       "a_trend_pool": true,
       "b_tight_base_pool": [],
@@ -4057,6 +3686,8 @@
       "dd120": -0.05352403420819829,
       "dd252": -0.05352403420819829,
       "last_close": 192.57,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 198.88,
@@ -4069,44 +3700,6 @@
         "weeks": 128
       }
     },
-    "MRVL": {
-      "a_trend_pool": false,
-      "b_tight_base_pool": [],
-      "d_drawdown_pool": true,
-      "dd120": -0.16502860032234623,
-      "dd252": -0.16502860032234623,
-      "last_close": 264.21,
-      "status": "WEEKLY_PASS",
-      "weekly": {
-        "close": 261.935,
-        "ema10": 232.9880607358087,
-        "ema10_m1": 226.55540756598842,
-        "ema10_m2": 222.62327591398585,
-        "ema10_m3": 219.62844833931604,
-        "pass": true,
-        "sma30": 194.84816666666666,
-        "weeks": 128
-      }
-    },
-    "MRX": {
-      "a_trend_pool": false,
-      "b_tight_base_pool": [],
-      "d_drawdown_pool": false,
-      "dd120": -0.1087262041650695,
-      "dd252": -0.1087262041650695,
-      "last_close": 69.76,
-      "status": "WEEKLY_PASS",
-      "weekly": {
-        "close": 71.31,
-        "ema10": 70.4460468754796,
-        "ema10_m1": 70.25405729225284,
-        "ema10_m2": 69.33495891275348,
-        "ema10_m3": 68.52050533780982,
-        "pass": true,
-        "sma30": 58.608333333333334,
-        "weeks": 127
-      }
-    },
     "MSFT": {
       "a_trend_pool": true,
       "b_tight_base_pool": [],
@@ -4114,6 +3707,8 @@
       "dd120": -0.006335122149679351,
       "dd252": -0.05381223827181003,
       "last_close": 512.9,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 516.17,
@@ -4141,6 +3736,8 @@
       "dd120": -0.21868939471266713,
       "dd252": -0.5743834969001085,
       "last_close": 153.09,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 158.61,
@@ -4153,26 +3750,9 @@
         "weeks": 128
       }
     },
-    "MTCH": {
-      "a_trend_pool": false,
-      "b_tight_base_pool": [],
-      "d_drawdown_pool": false,
-      "dd120": -0.09572072072072069,
-      "dd252": -0.09572072072072069,
-      "last_close": 40.15,
-      "status": "WEEKLY_PASS",
-      "weekly": {
-        "close": 40.55,
-        "ema10": 40.50595553123128,
-        "ema10_m1": 40.496167871504895,
-        "ema10_m2": 39.89531628739487,
-        "ema10_m3": 39.340942129038176,
-        "pass": true,
-        "sma30": 36.70766666666667,
-        "weeks": 128
-      }
-    },
     "MTSI": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 285.57,
@@ -4192,6 +3772,8 @@
       "dd120": -0.1223261213021094,
       "dd252": -0.1223261213021094,
       "last_close": 1065.11,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 1082.28,
@@ -4204,26 +3786,9 @@
         "weeks": 128
       }
     },
-    "MXL": {
-      "a_trend_pool": false,
-      "b_tight_base_pool": [],
-      "d_drawdown_pool": true,
-      "dd120": -0.29461844880106225,
-      "dd252": -0.29461844880106225,
-      "last_close": 90.31,
-      "status": "WEEKLY_PASS",
-      "weekly": {
-        "close": 93.84,
-        "ema10": 77.4723706554747,
-        "ema10_m1": 73.83511969002464,
-        "ema10_m2": 72.21625739891901,
-        "ema10_m3": 71.69320348756769,
-        "pass": true,
-        "sma30": 66.62366666666667,
-        "weeks": 128
-      }
-    },
     "MYRG": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 292.58,
@@ -4236,26 +3801,9 @@
         "weeks": 128
       }
     },
-    "NBIS": {
-      "a_trend_pool": true,
-      "b_tight_base_pool": [],
-      "d_drawdown_pool": true,
-      "dd120": -0.17722976036834215,
-      "dd252": -0.17722976036834215,
-      "last_close": 235.88,
-      "status": "WEEKLY_PASS",
-      "weekly": {
-        "close": 237.33,
-        "ema10": 222.21755550462808,
-        "ema10_m1": 218.85923450565656,
-        "ema10_m2": 217.8190643958025,
-        "ema10_m3": 216.3233009282031,
-        "pass": true,
-        "sma30": 192.00799999999998,
-        "weeks": 101
-      }
-    },
     "NBIX": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 138.4,
@@ -4269,6 +3817,8 @@
       }
     },
     "NDAQ": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 93.55,
@@ -4288,6 +3838,8 @@
       "dd120": -0.020466089034956614,
       "dd252": -0.020466089034956614,
       "last_close": 327.85,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 325.77,
@@ -4307,6 +3859,8 @@
       "dd120": -0.2985403470118425,
       "dd252": -0.2985403470118425,
       "last_close": 25.47,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 32.13,
@@ -4320,6 +3874,8 @@
       }
     },
     "NFLX": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 71.145,
@@ -4333,6 +3889,8 @@
       }
     },
     "NICE": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 112.81,
@@ -4352,6 +3910,8 @@
       "dd120": 0.0,
       "dd252": 0.0,
       "last_close": 210.08,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 201.145,
@@ -4364,19 +3924,6 @@
         "weeks": 128
       }
     },
-    "NTES": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 115.41,
-        "ema10": 120.63556794472547,
-        "ema10_m1": 121.79680526577557,
-        "ema10_m2": 123.04276199150348,
-        "ema10_m3": 124.69448687850426,
-        "pass": false,
-        "sma30": 120.127,
-        "weeks": 128
-      }
-    },
     "NTNX": {
       "a_trend_pool": true,
       "b_tight_base_pool": [],
@@ -4384,6 +3931,8 @@
       "dd120": 0.0,
       "dd252": -0.08463338533541354,
       "last_close": 70.41,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 68.03,
@@ -4403,6 +3952,8 @@
       "dd120": -0.002919038888352765,
       "dd252": -0.002919038888352765,
       "last_close": 413.31,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 412.56,
@@ -4416,6 +3967,8 @@
       }
     },
     "NTRS": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 175.73,
@@ -4435,6 +3988,8 @@
       "dd120": -0.06085083467959074,
       "dd252": -0.281121187139324,
       "last_close": 17.44,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 17.67,
@@ -4447,34 +4002,9 @@
         "weeks": 54
       }
     },
-    "NVDA": {
-      "a_trend_pool": true,
-      "b_tight_base_pool": [
-        {
-          "atr14_frozen": 6.016206749977466,
-          "base_high": 233.21,
-          "base_low": 221.09,
-          "width_atr": 2.014558425879463,
-          "window": 5
-        }
-      ],
-      "d_drawdown_pool": false,
-      "dd120": -0.03122083651480445,
-      "dd252": -0.03122083651480445,
-      "last_close": 228.38,
-      "status": "WEEKLY_PASS",
-      "weekly": {
-        "close": 225.07,
-        "ema10": 218.6596548942088,
-        "ema10_m1": 217.23513375958856,
-        "ema10_m2": 216.11627459505272,
-        "ema10_m3": 215.63322450506445,
-        "pass": true,
-        "sma30": 204.89266666666666,
-        "weeks": 128
-      }
-    },
     "NVMI": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 368.23,
@@ -4488,6 +4018,8 @@
       }
     },
     "NVTS": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 12.2,
@@ -4501,6 +4033,8 @@
       }
     },
     "NWSA": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 28.49,
@@ -4514,6 +4048,8 @@
       }
     },
     "NXPI": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 238.08,
@@ -4526,20 +4062,9 @@
         "weeks": 128
       }
     },
-    "NXST": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 162.1,
-        "ema10": 174.04960326736088,
-        "ema10_m1": 176.70507066010776,
-        "ema10_m2": 181.1884196956873,
-        "ema10_m3": 183.87806851695115,
-        "pass": false,
-        "sma30": 189.0845,
-        "weeks": 128
-      }
-    },
     "NXT": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 80.85,
@@ -4553,6 +4078,8 @@
       }
     },
     "ODFL": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 173.3,
@@ -4572,6 +4099,8 @@
       "dd120": 0.0,
       "dd252": 0.0,
       "last_close": 209.11,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 195.19,
@@ -4585,6 +4114,8 @@
       }
     },
     "OLED": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 77.39,
@@ -4598,6 +4129,8 @@
       }
     },
     "OLLI": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 84.25,
@@ -4611,6 +4144,8 @@
       }
     },
     "ON": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 77.2,
@@ -4624,6 +4159,8 @@
       }
     },
     "ONB": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 25.49,
@@ -4636,26 +4173,9 @@
         "weeks": 128
       }
     },
-    "ONC": {
-      "a_trend_pool": true,
-      "b_tight_base_pool": [],
-      "d_drawdown_pool": false,
-      "dd120": -0.028976277662792538,
-      "dd252": -0.03054547381248851,
-      "last_close": 365.94,
-      "status": "WEEKLY_PASS",
-      "weekly": {
-        "close": 360.85,
-        "ema10": 345.77824387889314,
-        "ema10_m1": 342.4289647408694,
-        "ema10_m2": 340.5598457943959,
-        "ema10_m3": 339.2375893042617,
-        "pass": true,
-        "sma30": 312.47766666666666,
-        "weeks": 128
-      }
-    },
     "ORKA": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 84.46,
@@ -4669,6 +4189,8 @@
       }
     },
     "ORLY": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 86.115,
@@ -4682,6 +4204,8 @@
       }
     },
     "OUST": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 43.72,
@@ -4695,6 +4219,8 @@
       }
     },
     "OZK": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 46.89,
@@ -4708,6 +4234,8 @@
       }
     },
     "PANW": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 374.74,
@@ -4721,6 +4249,8 @@
       }
     },
     "PAYX": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 101.37,
@@ -4734,6 +4264,8 @@
       }
     },
     "PCAR": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 111.31,
@@ -4753,6 +4285,8 @@
       "dd120": -0.11016102858569465,
       "dd252": -0.11016102858569465,
       "last_close": 142.57,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 143.35,
@@ -4766,6 +4300,8 @@
       }
     },
     "PCVX": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 56.21,
@@ -4779,6 +4315,8 @@
       }
     },
     "PDD": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 77.57,
@@ -4792,6 +4330,8 @@
       }
     },
     "PEGA": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 33.745,
@@ -4805,6 +4345,8 @@
       }
     },
     "PENG": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 56.22,
@@ -4817,19 +4359,6 @@
         "weeks": 102
       }
     },
-    "PEP": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 128.63,
-        "ema10": 136.3741633279559,
-        "ema10_m1": 138.0950885119461,
-        "ema10_m2": 139.9495526257119,
-        "ema10_m3": 140.75611987587013,
-        "pass": false,
-        "sma30": 145.55633333333333,
-        "weeks": 128
-      }
-    },
     "PFG": {
       "a_trend_pool": false,
       "b_tight_base_pool": [],
@@ -4837,6 +4366,8 @@
       "dd120": -0.05526959750232052,
       "dd252": -0.05526959750232052,
       "last_close": 111.96,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 114.77,
@@ -4871,6 +4402,8 @@
       "dd120": -0.025836072699611523,
       "dd252": -0.2588565995618205,
       "last_close": 179.29,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 178.28,
@@ -4890,6 +4423,8 @@
       "dd120": -0.028765771846928634,
       "dd252": -0.09716188821314797,
       "last_close": 187.05,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 189.67,
@@ -4903,6 +4438,8 @@
       }
     },
     "PLXS": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 263.09,
@@ -4916,6 +4453,8 @@
       }
     },
     "PODD": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 136.13,
@@ -4929,6 +4468,8 @@
       }
     },
     "POOL": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 164.91,
@@ -4942,6 +4483,8 @@
       }
     },
     "POWL": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 189.53,
@@ -4955,6 +4498,8 @@
       }
     },
     "PRAX": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 280.78,
@@ -4967,33 +4512,9 @@
         "weeks": 128
       }
     },
-    "PSKY": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 9.96,
-        "ema10": 10.107301601837179,
-        "ema10_m1": 10.14003529113433,
-        "ema10_m2": 10.12448757805307,
-        "ema10_m3": 10.018818150953754,
-        "pass": false,
-        "sma30": 10.094,
-        "weeks": 60
-      }
-    },
-    "PTC": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 138.12,
-        "ema10": 138.85717409290683,
-        "ema10_m1": 139.02099055799724,
-        "ema10_m2": 139.71676623755218,
-        "ema10_m3": 141.70271429034156,
-        "pass": false,
-        "sma30": 137.89,
-        "weeks": 128
-      }
-    },
     "PTCT": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 62.67,
@@ -5007,6 +4528,8 @@
       }
     },
     "PTEN": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 10.91,
@@ -5026,6 +4549,8 @@
       "dd120": -0.11177657294162158,
       "dd252": -0.11177657294162158,
       "last_close": 140.89,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 141.86,
@@ -5039,6 +4564,8 @@
       }
     },
     "PYPL": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 55.04,
@@ -5052,6 +4579,8 @@
       }
     },
     "QBTS": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 17.41,
@@ -5071,6 +4600,8 @@
       "dd120": -0.2668313281810215,
       "dd252": -0.2668313281810215,
       "last_close": 184.04,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 201.97,
@@ -5080,19 +4611,6 @@
         "ema10_m3": 170.74410408944226,
         "pass": true,
         "sma30": 174.43733333333333,
-        "weeks": 128
-      }
-    },
-    "QLYS": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 172.43,
-        "ema10": 165.08953669652266,
-        "ema10_m1": 163.45832262908326,
-        "ema10_m2": 160.9023943244351,
-        "ema10_m3": 163.2629263965318,
-        "pass": false,
-        "sma30": 126.76866666666668,
         "weeks": 128
       }
     },
@@ -5118,6 +4636,8 @@
       "dd120": -0.04272932519441419,
       "dd252": -0.04272932519441419,
       "last_close": 114.48,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 117.97,
@@ -5131,6 +4651,8 @@
       }
     },
     "REG": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 73.23,
@@ -5143,26 +4665,9 @@
         "weeks": 128
       }
     },
-    "REGN": {
-      "a_trend_pool": false,
-      "b_tight_base_pool": [],
-      "d_drawdown_pool": false,
-      "dd120": -0.11004307360069476,
-      "dd252": -0.11004307360069476,
-      "last_close": 758.27,
-      "status": "WEEKLY_PASS",
-      "weekly": {
-        "close": 788.04,
-        "ema10": 772.9584756330248,
-        "ema10_m1": 769.6070257736972,
-        "ema10_m2": 766.2196981678521,
-        "ema10_m3": 762.8262977607081,
-        "pass": true,
-        "sma30": 722.0003333333333,
-        "weeks": 128
-      }
-    },
     "RELY": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 21.36,
@@ -5182,6 +4687,8 @@
       "dd120": -0.012026520018502351,
       "dd252": -0.012026520018502351,
       "last_close": 192.23,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 189.68,
@@ -5194,38 +4701,6 @@
         "weeks": 128
       }
     },
-    "RGLD": {
-      "a_trend_pool": false,
-      "b_tight_base_pool": [],
-      "d_drawdown_pool": true,
-      "dd120": -0.13081909251620505,
-      "dd252": -0.22442406914456614,
-      "last_close": 236.0,
-      "status": "WEEKLY_PASS",
-      "weekly": {
-        "close": 252.49,
-        "ema10": 242.905503218641,
-        "ema10_m1": 240.77561504500568,
-        "ema10_m2": 238.80352949945137,
-        "ema10_m3": 235.80875827710724,
-        "pass": true,
-        "sma30": 233.63533333333334,
-        "weeks": 128
-      }
-    },
-    "RGTI": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 16.66,
-        "ema10": 16.4627340841691,
-        "ema10_m1": 16.418897213984454,
-        "ema10_m2": 16.565318817092113,
-        "ema10_m3": 16.853167443112582,
-        "pass": false,
-        "sma30": 17.504666666666665,
-        "weeks": 128
-      }
-    },
     "RIOT": {
       "a_trend_pool": false,
       "b_tight_base_pool": [],
@@ -5233,6 +4708,8 @@
       "dd120": -0.29766469153014996,
       "dd252": -0.29766469153014996,
       "last_close": 20.15,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 23.0,
@@ -5246,6 +4723,8 @@
       }
     },
     "RIVN": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 15.47,
@@ -5259,6 +4738,8 @@
       }
     },
     "RKLB": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 73.95,
@@ -5272,6 +4753,8 @@
       }
     },
     "RLAY": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 17.47,
@@ -5285,6 +4768,8 @@
       }
     },
     "RMBS": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 105.16,
@@ -5298,6 +4783,8 @@
       }
     },
     "ROAD": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 93.71,
@@ -5311,6 +4798,8 @@
       }
     },
     "ROIV": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 35.8,
@@ -5338,6 +4827,8 @@
       "dd120": -0.04682023034551819,
       "dd252": -0.04682023034551819,
       "last_close": 152.28,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 152.68,
@@ -5351,6 +4842,8 @@
       }
     },
     "ROP": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 358.56,
@@ -5364,6 +4857,8 @@
       }
     },
     "ROST": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 236.12,
@@ -5377,6 +4872,8 @@
       }
     },
     "RPRX": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 58.21,
@@ -5389,20 +4886,9 @@
         "weeks": 128
       }
     },
-    "RRR": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 50.76,
-        "ema10": 56.845832560851306,
-        "ema10_m1": 58.19823979659605,
-        "ema10_m2": 59.81784864028406,
-        "ema10_m3": 60.6884816714583,
-        "pass": false,
-        "sma30": 58.399,
-        "weeks": 128
-      }
-    },
     "RVMD": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 204.97,
@@ -5415,20 +4901,9 @@
         "weeks": 128
       }
     },
-    "RYAAY": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 55.3,
-        "ema10": 56.43422912446274,
-        "ema10_m1": 56.68628004101002,
-        "ema10_m2": 57.39212005012337,
-        "ema10_m3": 58.190368950150784,
-        "pass": false,
-        "sma30": 58.90233333333333,
-        "weeks": 128
-      }
-    },
     "RYTM": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 98.66,
@@ -5442,6 +4917,8 @@
       }
     },
     "SAIA": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 324.22,
@@ -5455,6 +4932,8 @@
       }
     },
     "SAIL": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 20.64,
@@ -5468,6 +4947,8 @@
       }
     },
     "SANM": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 224.77,
@@ -5481,6 +4962,8 @@
       }
     },
     "SBAC": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 166.15,
@@ -5494,6 +4977,8 @@
       }
     },
     "SBLK": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 29.54,
@@ -5507,6 +4992,8 @@
       }
     },
     "SBUX": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 94.86,
@@ -5519,6 +5006,27 @@
         "weeks": 128
       }
     },
+    "SDGR": {
+      "a_trend_pool": true,
+      "b_tight_base_pool": [],
+      "d_drawdown_pool": false,
+      "dd120": 0.0,
+      "dd252": 0.0,
+      "last_close": 31.05,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
+      "status": "WEEKLY_PASS",
+      "weekly": {
+        "close": 28.85,
+        "ema10": 21.610745551224635,
+        "ema10_m1": 20.002022340385665,
+        "ema10_m2": 17.998027304915812,
+        "ema10_m3": 17.770922261563772,
+        "pass": true,
+        "sma30": 15.793,
+        "weeks": 128
+      }
+    },
     "SEIC": {
       "a_trend_pool": false,
       "b_tight_base_pool": [],
@@ -5526,6 +5034,8 @@
       "dd120": -0.08035474334856219,
       "dd252": -0.08035474334856219,
       "last_close": 102.66,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 105.65,
@@ -5539,6 +5049,8 @@
       }
     },
     "SFM": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 62.49,
@@ -5548,19 +5060,6 @@
         "ema10_m3": 81.93878629290444,
         "pass": false,
         "sma30": 80.03299999999999,
-        "weeks": 128
-      }
-    },
-    "SHOP": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 142.25,
-        "ema10": 136.14718331129978,
-        "ema10_m1": 134.79100182492198,
-        "ema10_m2": 136.1890022304602,
-        "ema10_m3": 137.83322494834024,
-        "pass": false,
-        "sma30": 124.01666666666667,
         "weeks": 128
       }
     },
@@ -5579,6 +5078,8 @@
       "dd120": -0.16889284654200054,
       "dd252": -0.16889284654200054,
       "last_close": 280.0,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 276.23,
@@ -5592,6 +5093,8 @@
       }
     },
     "SIRI": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 25.855,
@@ -5605,6 +5108,8 @@
       }
     },
     "SITM": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 662.27,
@@ -5632,6 +5137,8 @@
       "dd120": -0.0017569941884038043,
       "dd252": -0.0017569941884038043,
       "last_close": 221.58,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 221.24,
@@ -5644,6 +5151,21 @@
         "weeks": 128
       }
     },
+    "SLS": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
+      "status": "WEEKLY_FAIL",
+      "weekly": {
+        "close": 11.61,
+        "ema10": 12.063604880624604,
+        "ema10_m1": 12.16440596520785,
+        "ema10_m2": 12.314273957476262,
+        "ema10_m3": 12.485223725804321,
+        "pass": false,
+        "sma30": 9.114333333333333,
+        "weeks": 128
+      }
+    },
     "SMCI": {
       "a_trend_pool": true,
       "b_tight_base_pool": [],
@@ -5651,6 +5173,8 @@
       "dd120": -0.18138329679091092,
       "dd252": -0.3001022494887525,
       "last_close": 41.07,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 43.26,
@@ -5664,6 +5188,8 @@
       }
     },
     "SMMT": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 15.61,
@@ -5683,6 +5209,8 @@
       "dd120": -0.03594594594594602,
       "dd252": -0.03594594594594602,
       "last_close": 178.35,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 182.3,
@@ -5702,6 +5230,8 @@
       "dd120": -0.25486509635974297,
       "dd252": -0.25486509635974297,
       "last_close": 1739.89,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 1777.8,
@@ -5715,6 +5245,8 @@
       }
     },
     "SNEX": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 66.81,
@@ -5728,6 +5260,8 @@
       }
     },
     "SNPS": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 425.76,
@@ -5741,6 +5275,8 @@
       }
     },
     "SNY": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 41.11,
@@ -5753,20 +5289,9 @@
         "weeks": 128
       }
     },
-    "SOFI": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 16.58,
-        "ema10": 17.46280709431582,
-        "ema10_m1": 17.658986448608225,
-        "ema10_m2": 17.814316770521167,
-        "ema10_m3": 17.924164941748096,
-        "pass": false,
-        "sma30": 17.285,
-        "weeks": 128
-      }
-    },
     "SRRK": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 48.63,
@@ -5780,6 +5305,8 @@
       }
     },
     "SSNC": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 78.61,
@@ -5799,6 +5326,8 @@
       "dd120": -0.15021678143330786,
       "dd252": -0.15021678143330786,
       "last_close": 33.32,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 35.68,
@@ -5812,6 +5341,8 @@
       }
     },
     "STLD": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 233.66,
@@ -5825,6 +5356,8 @@
       }
     },
     "STRL": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 512.29,
@@ -5838,6 +5371,8 @@
       }
     },
     "STX": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 916.83,
@@ -5872,6 +5407,8 @@
       "dd120": -0.06528157463094586,
       "dd252": -0.06528157463094586,
       "last_close": 85.48,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 89.34,
@@ -5884,20 +5421,9 @@
         "weeks": 128
       }
     },
-    "SYM": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 43.47,
-        "ema10": 42.497464768903924,
-        "ema10_m1": 42.281345828660356,
-        "ema10_m2": 42.368311568362664,
-        "ema10_m3": 42.421269694665476,
-        "pass": false,
-        "sma30": 46.72366666666667,
-        "weeks": 128
-      }
-    },
     "SYNA": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 102.72,
@@ -5910,19 +5436,6 @@
         "weeks": 128
       }
     },
-    "SYRE": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 85.69,
-        "ema10": 91.73139752019608,
-        "ema10_m1": 93.07393030246189,
-        "ema10_m2": 93.70147036967565,
-        "ema10_m3": 94.39068600738136,
-        "pass": false,
-        "sma30": 78.4575,
-        "weeks": 128
-      }
-    },
     "TARS": {
       "a_trend_pool": false,
       "b_tight_base_pool": [],
@@ -5930,6 +5443,8 @@
       "dd120": -0.13406036571932145,
       "dd252": -0.13406036571932145,
       "last_close": 78.61,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 75.69,
@@ -5943,6 +5458,8 @@
       }
     },
     "TCBI": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 95.82,
@@ -5955,19 +5472,6 @@
         "weeks": 128
       }
     },
-    "TCOM": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 39.43,
-        "ema10": 42.41115212440155,
-        "ema10_m1": 43.07363037426857,
-        "ema10_m2": 43.605548235217135,
-        "ema10_m3": 44.62455895415428,
-        "pass": false,
-        "sma30": 46.849000000000004,
-        "weeks": 128
-      }
-    },
     "TEAM": {
       "a_trend_pool": true,
       "b_tight_base_pool": [],
@@ -5975,6 +5479,8 @@
       "dd120": -0.08371237287269384,
       "dd252": -0.08371237287269384,
       "last_close": 179.29,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 187.74,
@@ -6002,6 +5508,8 @@
       "dd120": -0.0019281090758849206,
       "dd252": -0.0019281090758849206,
       "last_close": 72.47,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 72.61,
@@ -6014,26 +5522,9 @@
         "weeks": 128
       }
     },
-    "TEM": {
-      "a_trend_pool": true,
-      "b_tight_base_pool": [],
-      "d_drawdown_pool": true,
-      "dd120": -0.03737658674188993,
-      "dd252": -0.2067796610169491,
-      "last_close": 81.9,
-      "status": "WEEKLY_PASS",
-      "weekly": {
-        "close": 85.01,
-        "ema10": 65.90947483644841,
-        "ema10_m1": 61.66491368899251,
-        "ema10_m2": 58.070450064324184,
-        "ema10_m3": 57.86166118972957,
-        "pass": true,
-        "sma30": 54.056666666666665,
-        "weeks": 120
-      }
-    },
     "TENB": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 33.49,
@@ -6046,19 +5537,6 @@
         "weeks": 128
       }
     },
-    "TER": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 398.38,
-        "ema10": 376.57981576302063,
-        "ema10_m1": 371.73533037702526,
-        "ema10_m2": 371.7942926830309,
-        "ema10_m3": 370.0330243903711,
-        "pass": false,
-        "sma30": 361.2588333333333,
-        "weeks": 128
-      }
-    },
     "TGTX": {
       "a_trend_pool": true,
       "b_tight_base_pool": [],
@@ -6066,6 +5544,8 @@
       "dd120": -0.055536742295970165,
       "dd252": -0.055536742295970165,
       "last_close": 55.78,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 57.43,
@@ -6079,6 +5559,8 @@
       }
     },
     "TIGO": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 92.63,
@@ -6092,6 +5574,8 @@
       }
     },
     "TLN": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 304.42,
@@ -6105,6 +5589,8 @@
       }
     },
     "TMDX": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 85.29,
@@ -6118,6 +5604,8 @@
       }
     },
     "TMUS": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 165.43,
@@ -6131,6 +5619,8 @@
       }
     },
     "TNGX": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 24.92,
@@ -6143,33 +5633,9 @@
         "weeks": 128
       }
     },
-    "TPG": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 44.39,
-        "ema10": 47.57860770473484,
-        "ema10_m1": 48.28718719467592,
-        "ema10_m2": 48.69100657127057,
-        "ema10_m3": 48.91345247599737,
-        "pass": false,
-        "sma30": 44.093333333333334,
-        "weeks": 128
-      }
-    },
-    "TRI": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 98.99,
-        "ema10": 98.49542613433172,
-        "ema10_m1": 98.38552083084988,
-        "ema10_m2": 99.27341434881653,
-        "ema10_m3": 99.70083975966466,
-        "pass": false,
-        "sma30": 93.20616666666666,
-        "weeks": 128
-      }
-    },
     "TRMB": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 57.85,
@@ -6189,6 +5655,8 @@
       "dd120": -0.004708344232278283,
       "dd252": -0.004708344232278283,
       "last_close": 38.05,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 34.32,
@@ -6202,6 +5670,8 @@
       }
     },
     "TROW": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 105.51,
@@ -6215,6 +5685,8 @@
       }
     },
     "TSCO": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 32.27,
@@ -6227,20 +5699,9 @@
         "weeks": 128
       }
     },
-    "TSEM": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 230.47,
-        "ema10": 227.34336013367275,
-        "ema10_m1": 226.6485512744889,
-        "ema10_m2": 227.32600711326424,
-        "ema10_m3": 230.83845313843406,
-        "pass": false,
-        "sma30": 221.3795,
-        "weeks": 128
-      }
-    },
     "TSLA": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 372.11,
@@ -6254,6 +5715,8 @@
       }
     },
     "TTAN": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 58.05,
@@ -6267,6 +5730,8 @@
       }
     },
     "TTD": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 12.6,
@@ -6280,6 +5745,8 @@
       }
     },
     "TTEK": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 33.91,
@@ -6293,6 +5760,8 @@
       }
     },
     "TTMI": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 129.17,
@@ -6306,6 +5775,8 @@
       }
     },
     "TTWO": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 201.44,
@@ -6319,6 +5790,8 @@
       }
     },
     "TVTX": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 59.44,
@@ -6332,6 +5805,8 @@
       }
     },
     "TW": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 101.19,
@@ -6351,6 +5826,8 @@
       "dd120": 0.0,
       "dd252": 0.0,
       "last_close": 193.24,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 182.83,
@@ -6370,6 +5847,8 @@
       "dd120": 0.0,
       "dd252": 0.0,
       "last_close": 90.36,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 85.71,
@@ -6383,6 +5862,8 @@
       }
     },
     "TXN": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 278.07,
@@ -6396,6 +5877,8 @@
       }
     },
     "TXRH": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 159.75,
@@ -6409,6 +5892,8 @@
       }
     },
     "UAL": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 113.99,
@@ -6422,6 +5907,8 @@
       }
     },
     "UCTT": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 77.69,
@@ -6441,6 +5928,8 @@
       "dd120": -0.04555780791276398,
       "dd252": -0.22728558897597706,
       "last_close": 546.17,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 545.2,
@@ -6454,6 +5943,8 @@
       }
     },
     "UMBF": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 135.82,
@@ -6466,7 +5957,24 @@
         "weeks": 128
       }
     },
+    "UPST": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
+      "status": "WEEKLY_FAIL",
+      "weekly": {
+        "close": 23.81,
+        "ema10": 27.461035509215918,
+        "ema10_m1": 28.272376733486126,
+        "ema10_m2": 28.99957156314971,
+        "ema10_m3": 29.757254132738538,
+        "pass": false,
+        "sma30": 29.34766666666667,
+        "weeks": 128
+      }
+    },
     "URBN": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 75.35,
@@ -6479,20 +5987,9 @@
         "weeks": 128
       }
     },
-    "USAR": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 15.18,
-        "ema10": 17.10980945161334,
-        "ema10_m1": 17.538655996416306,
-        "ema10_m2": 18.020579551175487,
-        "ema10_m3": 18.567375006992265,
-        "pass": false,
-        "sma30": 19.523,
-        "weeks": 81
-      }
-    },
     "UTHR": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 475.45,
@@ -6506,6 +6003,8 @@
       }
     },
     "VCTR": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 108.75,
@@ -6519,6 +6018,8 @@
       }
     },
     "VCYT": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 45.43,
@@ -6531,7 +6032,24 @@
         "weeks": 128
       }
     },
+    "VERA": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
+      "status": "WEEKLY_FAIL",
+      "weekly": {
+        "close": 32.54,
+        "ema10": 34.36809575549086,
+        "ema10_m1": 34.77433925671106,
+        "ema10_m2": 34.946414647091295,
+        "ema10_m3": 34.92339567977825,
+        "pass": false,
+        "sma30": 36.81316666666667,
+        "weeks": 128
+      }
+    },
     "VIAV": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 40.68,
@@ -6545,6 +6063,8 @@
       }
     },
     "VICR": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 281.96,
@@ -6558,6 +6078,8 @@
       }
     },
     "VKTX": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 35.56,
@@ -6571,6 +6093,8 @@
       }
     },
     "VLY": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 13.08,
@@ -6584,6 +6108,8 @@
       }
     },
     "VNOM": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 40.93,
@@ -6596,25 +6122,6 @@
         "weeks": 128
       }
     },
-    "VOD": {
-      "a_trend_pool": false,
-      "b_tight_base_pool": [],
-      "d_drawdown_pool": false,
-      "dd120": -0.08653846153846156,
-      "dd252": -0.08653846153846156,
-      "last_close": 16.15,
-      "status": "WEEKLY_PASS",
-      "weekly": {
-        "close": 16.62,
-        "ema10": 16.346313933241788,
-        "ema10_m1": 16.28549480729552,
-        "ema10_m2": 16.137826986694527,
-        "ema10_m3": 15.857344094848868,
-        "pass": true,
-        "sma30": 15.404,
-        "weeks": 128
-      }
-    },
     "VRNS": {
       "a_trend_pool": true,
       "b_tight_base_pool": [],
@@ -6622,6 +6129,8 @@
       "dd120": -0.020740893612630207,
       "dd252": -0.2505133470225872,
       "last_close": 47.45,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 46.25,
@@ -6634,20 +6143,9 @@
         "weeks": 128
       }
     },
-    "VRSK": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 169.21,
-        "ema10": 181.40283758964858,
-        "ema10_m1": 184.11235705401492,
-        "ema10_m2": 186.04621417712934,
-        "ema10_m3": 188.23426177204698,
-        "pass": false,
-        "sma30": 183.95666666666665,
-        "weeks": 128
-      }
-    },
     "VRSN": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 287.25,
@@ -6661,6 +6159,8 @@
       }
     },
     "VRTX": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 526.19,
@@ -6674,6 +6174,8 @@
       }
     },
     "VSAT": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 73.02,
@@ -6687,6 +6189,8 @@
       }
     },
     "VSEC": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 180.77,
@@ -6700,6 +6204,8 @@
       }
     },
     "VTRS": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 17.83,
@@ -6727,6 +6233,8 @@
       "dd120": 0.0,
       "dd252": 0.0,
       "last_close": 30.95,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 30.86,
@@ -6754,6 +6262,8 @@
       "dd120": -0.07954765126618979,
       "dd252": -0.22473236455407652,
       "last_close": 190.46,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 189.45,
@@ -6767,6 +6277,8 @@
       }
     },
     "WDC": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 456.81,
@@ -6780,6 +6292,8 @@
       }
     },
     "WFRD": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 85.08,
@@ -6793,6 +6307,8 @@
       }
     },
     "WING": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 99.07,
@@ -6812,6 +6328,8 @@
       "dd120": -0.18381895332390386,
       "dd252": -0.5939312053144177,
       "last_close": 72.13,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 73.79,
@@ -6825,6 +6343,8 @@
       }
     },
     "WMG": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 27.14,
@@ -6838,6 +6358,8 @@
       }
     },
     "WMT": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 107.98,
@@ -6851,6 +6373,8 @@
       }
     },
     "WSC": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 18.17,
@@ -6864,6 +6388,8 @@
       }
     },
     "WTFC": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 146.11,
@@ -6876,20 +6402,9 @@
         "weeks": 128
       }
     },
-    "WTW": {
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 293.99,
-        "ema10": 313.8059783625519,
-        "ema10_m1": 318.2095291097857,
-        "ema10_m2": 320.0383133564048,
-        "ema10_m3": 321.0223829911614,
-        "pass": false,
-        "sma30": 291.727,
-        "weeks": 128
-      }
-    },
     "WULF": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 15.74,
@@ -6903,6 +6418,8 @@
       }
     },
     "WWD": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 330.31,
@@ -6916,6 +6433,8 @@
       }
     },
     "WYNN": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 81.12,
@@ -6929,6 +6448,8 @@
       }
     },
     "XEL": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 69.8,
@@ -6942,6 +6463,8 @@
       }
     },
     "XENE": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 36.94,
@@ -6955,6 +6478,8 @@
       }
     },
     "XMTR": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 100.57,
@@ -6974,6 +6499,8 @@
       "dd120": -0.011534839924670304,
       "dd252": -0.08518518518518514,
       "last_close": 20.995,
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 20.51,
@@ -6987,6 +6514,8 @@
       }
     },
     "Z": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 28.43,
@@ -6999,26 +6528,9 @@
         "weeks": 128
       }
     },
-    "ZBRA": {
-      "a_trend_pool": true,
-      "b_tight_base_pool": [],
-      "d_drawdown_pool": false,
-      "dd120": -0.025452931655615352,
-      "dd252": -0.025452931655615352,
-      "last_close": 373.31,
-      "status": "WEEKLY_PASS",
-      "weekly": {
-        "close": 370.04,
-        "ema10": 340.9074098856214,
-        "ema10_m1": 334.43350097131514,
-        "ema10_m2": 331.72316785382964,
-        "ema10_m3": 327.5794273769029,
-        "pass": true,
-        "sma30": 271.45050000000003,
-        "weeks": 128
-      }
-    },
     "ZION": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 63.83,
@@ -7032,6 +6544,8 @@
       }
     },
     "ZM": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 89.71,
@@ -7045,6 +6559,8 @@
       }
     },
     "ZS": {
+      "r92_eligible": true,
+      "state_cap": "NORMAL",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 193.05,
@@ -7060,6 +6576,391 @@
   },
   "schema": "XRAY_STAGE1_SHADOW_V1",
   "source_authority": "SHADOW_TECHNICAL_ACCELERATOR_ONLY",
+  "state_caps": {
+    "AAL": "NORMAL",
+    "AAOI": "NORMAL",
+    "AAON": "NORMAL",
+    "AAPL": "NORMAL",
+    "ABCL": "NORMAL",
+    "ABNB": "NORMAL",
+    "ACGL": "NORMAL",
+    "ACMR": "NORMAL",
+    "ADSK": "NORMAL",
+    "AEHR": "NORMAL",
+    "AEIS": "NORMAL",
+    "AEP": "NORMAL",
+    "AFRM": "NORMAL",
+    "ALGM": "NORMAL",
+    "ALGN": "NORMAL",
+    "AMBA": "NORMAL",
+    "AMD": "NORMAL",
+    "AMKR": "NORMAL",
+    "AMZN": "NORMAL",
+    "APLD": "NORMAL",
+    "APP": "NORMAL",
+    "APPF": "NORMAL",
+    "ARGX": "NORMAL",
+    "ARM": "NORMAL",
+    "ARQT": "NORMAL",
+    "ARWR": "NORMAL",
+    "ASML": "NORMAL",
+    "ASND": "NORMAL",
+    "ASO": "NORMAL",
+    "ASTS": "NORMAL",
+    "ATRC": "NORMAL",
+    "AUGO": "NORMAL",
+    "AVAV": "NORMAL",
+    "AVT": "NORMAL",
+    "AXGN": "NORMAL",
+    "AXON": "NORMAL",
+    "AXSM": "NORMAL",
+    "AXTI": "NORMAL",
+    "BAND": "NORMAL",
+    "BBIO": "NORMAL",
+    "BIIB": "NORMAL",
+    "BKNG": "NORMAL",
+    "BMRN": "NORMAL",
+    "BNTX": "NORMAL",
+    "BPOP": "NORMAL",
+    "BRKR": "NORMAL",
+    "BSP": "NORMAL",
+    "BSY": "NORMAL",
+    "BTDR": "NORMAL",
+    "BTSG": "NORMAL",
+    "BWIN": "NORMAL",
+    "BZ": "NORMAL",
+    "CACC": "NORMAL",
+    "CAI": "NORMAL",
+    "CAKE": "NORMAL",
+    "CALM": "NORMAL",
+    "CART": "NORMAL",
+    "CASY": "NORMAL",
+    "CBSH": "NORMAL",
+    "CDNA": "NORMAL",
+    "CDW": "NORMAL",
+    "CEG": "NORMAL",
+    "CELC": "NORMAL",
+    "CELH": "NORMAL",
+    "CENX": "NORMAL",
+    "CGNX": "NORMAL",
+    "CGON": "NORMAL",
+    "CHDN": "NORMAL",
+    "CHEF": "NORMAL",
+    "CHKP": "NORMAL",
+    "CHRD": "NORMAL",
+    "CHRW": "NORMAL",
+    "CHTR": "NORMAL",
+    "CIFR": "NORMAL",
+    "CLMT": "NORMAL",
+    "CLSK": "NORMAL",
+    "CMCSA": "NORMAL",
+    "COGT": "NORMAL",
+    "COHU": "NORMAL",
+    "COIN": "NORMAL",
+    "COKE": "NORMAL",
+    "COLB": "NORMAL",
+    "COO": "NORMAL",
+    "CORT": "NORMAL",
+    "COST": "NORMAL",
+    "CPB": "NORMAL",
+    "CRDO": "NORMAL",
+    "CROX": "NORMAL",
+    "CRUS": "NORMAL",
+    "CRWV": "NORMAL",
+    "CSGP": "NORMAL",
+    "CSX": "NORMAL",
+    "CTAS": "NORMAL",
+    "CTSH": "NORMAL",
+    "CVCO": "NORMAL",
+    "CVLT": "NORMAL",
+    "CYTK": "NORMAL",
+    "CZR": "NORMAL",
+    "DASH": "NORMAL",
+    "DBX": "NORMAL",
+    "DDOG": "NORMAL",
+    "DLTR": "NORMAL",
+    "DNTH": "NORMAL",
+    "DOCU": "NORMAL",
+    "DOX": "NORMAL",
+    "DPZ": "NORMAL",
+    "DUOL": "NORMAL",
+    "DYN": "NORMAL",
+    "ECHO": "NORMAL",
+    "ELVN": "NORMAL",
+    "ENPH": "NORMAL",
+    "ENSG": "NORMAL",
+    "ENTG": "NORMAL",
+    "EQIX": "NORMAL",
+    "ESLT": "NORMAL",
+    "EVRG": "NORMAL",
+    "EWBC": "NORMAL",
+    "EXE": "NORMAL",
+    "EXEL": "NORMAL",
+    "EXLS": "NORMAL",
+    "EXPE": "NORMAL",
+    "FANG": "NORMAL",
+    "FAST": "NORMAL",
+    "FCFS": "NORMAL",
+    "FCNCA": "NORMAL",
+    "FFIV": "NORMAL",
+    "FIGR": "NORMAL",
+    "FIVE": "NORMAL",
+    "FLEX": "NORMAL",
+    "FORM": "NORMAL",
+    "FOXA": "NORMAL",
+    "FRPT": "NORMAL",
+    "FSLR": "NORMAL",
+    "FSLY": "NORMAL",
+    "FTNT": "NORMAL",
+    "FUTU": "NORMAL",
+    "FWONK": "NORMAL",
+    "GEHC": "NORMAL",
+    "GFS": "NORMAL",
+    "GH": "NORMAL",
+    "GILD": "NORMAL",
+    "GLBE": "NORMAL",
+    "GLNG": "NORMAL",
+    "GLPI": "NORMAL",
+    "GLXY": "NORMAL",
+    "GOOGL": "NORMAL",
+    "HALO": "NORMAL",
+    "HAS": "NORMAL",
+    "HON": "NORMAL",
+    "HOOD": "NORMAL",
+    "HQY": "NORMAL",
+    "HSIC": "NORMAL",
+    "HST": "NORMAL",
+    "HTFL": "NORMAL",
+    "HUT": "NORMAL",
+    "HWC": "NORMAL",
+    "IBKR": "NORMAL",
+    "ICLR": "NORMAL",
+    "IDCC": "NORMAL",
+    "IDXX": "NORMAL",
+    "IESC": "NORMAL",
+    "ILMN": "NORMAL",
+    "INCY": "NORMAL",
+    "INOD": "NORMAL",
+    "INSM": "NORMAL",
+    "INTU": "NORMAL",
+    "IONS": "NORMAL",
+    "IOVA": "NORMAL",
+    "ISRG": "NORMAL",
+    "JAZZ": "NORMAL",
+    "JBHT": "NORMAL",
+    "JKHY": "NORMAL",
+    "KDP": "NORMAL",
+    "KLAC": "NORMAL",
+    "KLIC": "NORMAL",
+    "KRYS": "NORMAL",
+    "KTOS": "NORMAL",
+    "LAMR": "NORMAL",
+    "LECO": "NORMAL",
+    "LFUS": "NORMAL",
+    "LIN": "NORMAL",
+    "LITE": "NORMAL",
+    "LKQ": "NORMAL",
+    "LNT": "NORMAL",
+    "LNTH": "NORMAL",
+    "LOGI": "NORMAL",
+    "LPLA": "NORMAL",
+    "LQDA": "NORMAL",
+    "LRCX": "NORMAL",
+    "LSCC": "NORMAL",
+    "LSTR": "NORMAL",
+    "LULU": "NORMAL",
+    "LUNR": "NORMAL",
+    "LYFT": "NORMAL",
+    "MANH": "NORMAL",
+    "MAR": "NORMAL",
+    "MARA": "NORMAL",
+    "MAT": "NORMAL",
+    "MCHP": "NORMAL",
+    "MDB": "NORMAL",
+    "MDGL": "NORMAL",
+    "MDLZ": "NORMAL",
+    "MEDP": "NORMAL",
+    "MELI": "NORMAL",
+    "META": "NORMAL",
+    "MIDD": "NORMAL",
+    "MIRM": "NORMAL",
+    "MKSI": "NORMAL",
+    "MKTX": "NORMAL",
+    "MMSI": "NORMAL",
+    "MNDY": "NORMAL",
+    "MNST": "NORMAL",
+    "MORN": "NORMAL",
+    "MPWR": "NORMAL",
+    "MRNA": "NORMAL",
+    "MSFT": "NORMAL",
+    "MSTR": "NORMAL",
+    "MTSI": "NORMAL",
+    "MU": "NORMAL",
+    "MYRG": "NORMAL",
+    "NBIX": "NORMAL",
+    "NDAQ": "NORMAL",
+    "NDSN": "NORMAL",
+    "NESR": "NORMAL",
+    "NFLX": "NORMAL",
+    "NICE": "NORMAL",
+    "NTAP": "NORMAL",
+    "NTNX": "NORMAL",
+    "NTRA": "NORMAL",
+    "NTRS": "NORMAL",
+    "NTSK": "NORMAL",
+    "NVMI": "NORMAL",
+    "NVTS": "NORMAL",
+    "NWSA": "NORMAL",
+    "NXPI": "NORMAL",
+    "NXT": "NORMAL",
+    "ODFL": "NORMAL",
+    "OKTA": "NORMAL",
+    "OLED": "NORMAL",
+    "OLLI": "NORMAL",
+    "ON": "NORMAL",
+    "ONB": "NORMAL",
+    "ORKA": "NORMAL",
+    "ORLY": "NORMAL",
+    "OUST": "NORMAL",
+    "OZK": "NORMAL",
+    "PANW": "NORMAL",
+    "PAYX": "NORMAL",
+    "PCAR": "NORMAL",
+    "PCTY": "NORMAL",
+    "PCVX": "NORMAL",
+    "PDD": "NORMAL",
+    "PEGA": "NORMAL",
+    "PENG": "NORMAL",
+    "PFG": "NORMAL",
+    "PI": "NORMAL",
+    "PLTR": "NORMAL",
+    "PLXS": "NORMAL",
+    "PODD": "NORMAL",
+    "POOL": "NORMAL",
+    "POWL": "NORMAL",
+    "PRAX": "NORMAL",
+    "PTCT": "NORMAL",
+    "PTEN": "NORMAL",
+    "PTGX": "NORMAL",
+    "PYPL": "NORMAL",
+    "QBTS": "NORMAL",
+    "QCOM": "NORMAL",
+    "QRVO": "NORMAL",
+    "REG": "NORMAL",
+    "RELY": "NORMAL",
+    "RGEN": "NORMAL",
+    "RIOT": "NORMAL",
+    "RIVN": "NORMAL",
+    "RKLB": "NORMAL",
+    "RLAY": "NORMAL",
+    "RMBS": "NORMAL",
+    "ROAD": "NORMAL",
+    "ROIV": "NORMAL",
+    "ROKU": "NORMAL",
+    "ROP": "NORMAL",
+    "ROST": "NORMAL",
+    "RPRX": "NORMAL",
+    "RVMD": "NORMAL",
+    "RYTM": "NORMAL",
+    "SAIA": "NORMAL",
+    "SAIL": "NORMAL",
+    "SANM": "NORMAL",
+    "SBAC": "NORMAL",
+    "SBLK": "NORMAL",
+    "SBUX": "NORMAL",
+    "SDGR": "NORMAL",
+    "SEIC": "NORMAL",
+    "SFM": "NORMAL",
+    "SIMO": "NORMAL",
+    "SIRI": "NORMAL",
+    "SITM": "NORMAL",
+    "SLAB": "NORMAL",
+    "SLS": "NORMAL",
+    "SMCI": "NORMAL",
+    "SMMT": "NORMAL",
+    "SMTC": "NORMAL",
+    "SNDK": "NORMAL",
+    "SNEX": "NORMAL",
+    "SNPS": "NORMAL",
+    "SNY": "NORMAL",
+    "SRRK": "NORMAL",
+    "SSNC": "NORMAL",
+    "SSRM": "NORMAL",
+    "STLD": "NORMAL",
+    "STRL": "NORMAL",
+    "STX": "NORMAL",
+    "SWKS": "NORMAL",
+    "SYNA": "NORMAL",
+    "TARS": "NORMAL",
+    "TCBI": "NORMAL",
+    "TEAM": "NORMAL",
+    "TECH": "NORMAL",
+    "TENB": "NORMAL",
+    "TGTX": "NORMAL",
+    "TIGO": "NORMAL",
+    "TLN": "NORMAL",
+    "TMDX": "NORMAL",
+    "TMUS": "NORMAL",
+    "TNGX": "NORMAL",
+    "TRMB": "NORMAL",
+    "TRMD": "NORMAL",
+    "TROW": "NORMAL",
+    "TSCO": "NORMAL",
+    "TSLA": "NORMAL",
+    "TTAN": "NORMAL",
+    "TTD": "NORMAL",
+    "TTEK": "NORMAL",
+    "TTMI": "NORMAL",
+    "TTWO": "NORMAL",
+    "TVTX": "NORMAL",
+    "TW": "NORMAL",
+    "TWST": "NORMAL",
+    "TXG": "NORMAL",
+    "TXN": "NORMAL",
+    "TXRH": "NORMAL",
+    "UAL": "NORMAL",
+    "UCTT": "NORMAL",
+    "ULTA": "NORMAL",
+    "UMBF": "NORMAL",
+    "UPST": "NORMAL",
+    "URBN": "NORMAL",
+    "UTHR": "NORMAL",
+    "VCTR": "NORMAL",
+    "VCYT": "NORMAL",
+    "VERA": "NORMAL",
+    "VIAV": "NORMAL",
+    "VICR": "NORMAL",
+    "VKTX": "NORMAL",
+    "VLY": "NORMAL",
+    "VNOM": "NORMAL",
+    "VRNS": "NORMAL",
+    "VRSN": "NORMAL",
+    "VRTX": "NORMAL",
+    "VSAT": "NORMAL",
+    "VSEC": "NORMAL",
+    "VTRS": "NORMAL",
+    "WBD": "NORMAL",
+    "WDAY": "NORMAL",
+    "WDC": "NORMAL",
+    "WFRD": "NORMAL",
+    "WING": "NORMAL",
+    "WIX": "NORMAL",
+    "WMG": "NORMAL",
+    "WMT": "NORMAL",
+    "WSC": "NORMAL",
+    "WTFC": "NORMAL",
+    "WULF": "NORMAL",
+    "WWD": "NORMAL",
+    "WYNN": "NORMAL",
+    "XEL": "NORMAL",
+    "XENE": "NORMAL",
+    "XMTR": "NORMAL",
+    "XP": "NORMAL",
+    "Z": "NORMAL",
+    "ZION": "NORMAL",
+    "ZM": "NORMAL",
+    "ZS": "NORMAL"
+  },
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown": [],
   "unknown_count": 0,
@@ -7069,10 +6970,8 @@
     "ABCL",
     "AEHR",
     "AMD",
-    "APA",
     "APPF",
     "ARGX",
-    "ASST",
     "ATRC",
     "AUGO",
     "AVT",
@@ -7097,15 +6996,12 @@
     "FTNT",
     "GH",
     "GILD",
-    "GMAB",
-    "GTLB",
     "HALO",
     "HOOD",
     "HTFL",
     "HUT",
     "ILMN",
     "INCY",
-    "INTC",
     "IOVA",
     "LITE",
     "MANH",
@@ -7115,23 +7011,16 @@
     "MKTX",
     "MMSI",
     "MRNA",
-    "MRVL",
-    "MRX",
     "MSFT",
     "MSTR",
-    "MTCH",
     "MU",
-    "MXL",
-    "NBIS",
     "NDSN",
     "NESR",
     "NTAP",
     "NTNX",
     "NTRA",
     "NTSK",
-    "NVDA",
     "OKTA",
-    "ONC",
     "PCTY",
     "PFG",
     "PI",
@@ -7139,11 +7028,10 @@
     "PTGX",
     "QCOM",
     "QRVO",
-    "REGN",
     "RGEN",
-    "RGLD",
     "RIOT",
     "ROKU",
+    "SDGR",
     "SEIC",
     "SIMO",
     "SLAB",
@@ -7155,19 +7043,16 @@
     "TARS",
     "TEAM",
     "TECH",
-    "TEM",
     "TGTX",
     "TRMD",
     "TWST",
     "TXG",
     "ULTA",
-    "VOD",
     "VRNS",
     "WBD",
     "WDAY",
     "WIX",
-    "XP",
-    "ZBRA"
+    "XP"
   ],
-  "weekly_pass_count": 103
+  "weekly_pass_count": 87
 }
