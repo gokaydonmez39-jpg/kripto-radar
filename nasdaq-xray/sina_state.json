@@ -7,8 +7,7 @@
     "FAIL_HISTORY": 46,
     "FAIL_PRICE": 10,
     "PASS": 483,
-    "UNKNOWN_RETRY": 3,
-    "UNKNOWN_RETRY_EXHAUSTED": 2,
+    "UNKNOWN_RETRY_EXHAUSTED": 5,
     "UNKNOWN_STATIC": 2
   },
   "cursor": 815,
@@ -6602,9 +6601,9 @@
   "history_source": "SINA_US_DAILY_ACCELERATOR_NOT_G9",
   "identity_authority": "NASDAQTRADER_EXPLICIT_TYPE_FILTER_V1",
   "official_footer": "File Creation Time: 1001202612:11|||||||",
-  "pending_retry": 3,
+  "pending_retry": 0,
   "processed_new_this_run": 0,
-  "processed_retry_this_run": 4,
+  "processed_retry_this_run": 0,
   "queue": [
     "AAL",
     "AAOI",
@@ -7426,7 +7425,7 @@
   "queue_total": 815,
   "real_money": "NO-GO",
   "resolution_overlay_meta": {
-    "age_hours": 0.03901663555555556,
+    "age_hours": 0.1800100391666667,
     "generated_at_utc": "2026-10-01T17:02:19.611Z",
     "status": "PASS"
   },
@@ -8555,7 +8554,7 @@
         "source": "NASDAQ_SAME_RUN_SCREENER_METADATA"
       },
       "status": "BLOCK_LEGAL_SHELL",
-      "updated_at_utc": "2026-10-01T17:04:40.071609+00:00"
+      "updated_at_utc": "2026-10-01T17:13:07.647892+00:00"
     },
     "BSP": {
       "attempts": 1,
@@ -12890,10 +12889,10 @@
       "updated_at_utc": "2026-10-01T17:04:28.530180+00:00"
     },
     "OPNW": {
-      "attempts": 3,
+      "attempts": 4,
       "info": "IndexError:list index out of range",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-10-01T17:04:40.070553+00:00"
+      "status": "UNKNOWN_RETRY_EXHAUSTED",
+      "updated_at_utc": "2026-10-01T17:12:59.901877+00:00"
     },
     "ORKA": {
       "attempts": 1,
@@ -14384,10 +14383,10 @@
       "updated_at_utc": "2026-10-01T17:04:28.530565+00:00"
     },
     "SVA": {
-      "attempts": 3,
+      "attempts": 4,
       "info": "SyntaxError:invalid syntax (<string>, line 1)",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-10-01T17:04:40.070590+00:00"
+      "status": "UNKNOWN_RETRY_EXHAUSTED",
+      "updated_at_utc": "2026-10-01T17:12:59.901901+00:00"
     },
     "SWKS": {
       "attempts": 1,
@@ -14560,10 +14559,10 @@
       "updated_at_utc": "2026-10-01T17:04:28.530611+00:00"
     },
     "THRMV": {
-      "attempts": 3,
+      "attempts": 4,
       "info": "KeyError:'date'",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-10-01T17:04:40.070576+00:00"
+      "status": "UNKNOWN_RETRY_EXHAUSTED",
+      "updated_at_utc": "2026-10-01T17:12:59.901896+00:00"
     },
     "TIGO": {
       "attempts": 1,
@@ -16447,10 +16446,10 @@
     "ZS": "Zscaler, Inc. - Common Stock",
     "ZYME": "Zymeworks Inc. - Common Stock"
   },
-  "state_hash": "158427ecf01e9c6a2534fc256a3010f0f562dcf4a95b3e59e385eb19593891da",
+  "state_hash": "45896b998f940da6f1d27424774bb8887f469b9da954e193f8ba3b7662c4de68",
   "status": "HISTORY_PARTIAL",
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_count": 7,
   "unknown_never_pass": true,
-  "updated_at_utc": "2026-10-01T17:04:40.072030+00:00"
+  "updated_at_utc": "2026-10-01T17:13:07.648205+00:00"
 }
