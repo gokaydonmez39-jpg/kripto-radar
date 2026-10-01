@@ -9,6 +9,7 @@
   "input_confirmed_family_candidates": 1,
   "pre_g9_tech_pass": [],
   "pre_g9_tech_pass_count": 0,
+  "r92_ineligible": [],
   "real_money": "NO-GO",
   "remaining_nontech_gates": [
     "OFFICIAL_EVENT_FINAL_REVIEW",
@@ -44,6 +45,7 @@
       },
       "lifecycle": "ENTRY_BAND",
       "pre_g9_tech_pass": false,
+      "r92_eligible": true,
       "result": "FAIL_RR",
       "risk_pass": true,
       "rr": {
@@ -54,16 +56,21 @@
         "severe_pass": false,
         "severe_threshold": 1.5
       },
+      "state_cap": "NORMAL",
       "target": {
         "price_discovery": true,
         "prior_max_high": 30.92,
         "source": "SYNTHETIC_P_PLUS_3A_PRICE_DISCOVERY",
         "synthetic": true
       },
-      "target_overlap": false
+      "target_overlap": false,
+      "technical_hard_pass": false
     }
   },
   "schema": "XRAY_FINAL_TECH_SHADOW_V1",
+  "state_caps": {
+    "WBD": "NORMAL"
+  },
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_never_pass": true,
   "watch": [],

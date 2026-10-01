@@ -24,8 +24,10 @@
   "d_dk3_pre_r1_count": 0,
   "event_state_fresh": true,
   "execution": "NONE",
-  "input_weekly_pass_count": 103,
-  "r92_ineligible": [],
+  "input_weekly_pass_count": 107,
+  "r92_ineligible": [
+    "WGS"
+  ],
   "real_money": "NO-GO",
   "regime": "MIXED",
   "remaining_gates": [
@@ -739,6 +741,27 @@
       "state_cap": "NORMAL",
       "status": "EVALUATED"
     },
+    "FIVN": {
+      "A": {
+        "pool": false,
+        "reason": "NOT_A_STAGE1"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "CLEAN_DISCOVERY",
+      "mixed_rs_pass": false,
+      "r92_eligible": true,
+      "rs20": -0.04399460894619067,
+      "rs60": 0.30538949239746715,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
     "FORM": {
       "A": {
         "pool": false,
@@ -896,6 +919,28 @@
       "r92_eligible": true,
       "rs20": 0.025099083246762577,
       "rs60": 0.17244243466257858,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "GRAL": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 32
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "CLEAN_DISCOVERY",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.7104910015064849,
+      "rs60": 0.9856344704201865,
       "state_cap": "NORMAL",
       "status": "EVALUATED"
     },
@@ -2119,6 +2164,35 @@
       "state_cap": "NORMAL",
       "status": "EVALUATED"
     },
+    "SDGR": {
+      "A": {
+        "A": 1.7570695231886932,
+        "P": 30.6,
+        "anchor": 27.69,
+        "d": 1.656166680712208,
+        "depth": 2.2223366511494937,
+        "hl_date": "2026-09-25",
+        "pool": false,
+        "prelow_near_hl": true,
+        "sh_date": "2026-09-22",
+        "trigger_date": "2026-09-30"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "CLEAN_DISCOVERY",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.4252122560165963,
+      "rs60": 0.8057340327033446,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
     "SEIC": {
       "A": {
         "pool": false,
@@ -2708,6 +2782,39 @@
       "state_cap": "NORMAL",
       "status": "EVALUATED"
     },
+    "WGS": {
+      "A": {
+        "pool": false,
+        "reason": "NOT_A_STAGE1"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "A": 6.435872369416384,
+        "P": 67.44,
+        "anchor": 62.605,
+        "close": 72.3,
+        "d": 0.7512579060728711,
+        "dd120": -0.31110052405907584,
+        "dd252": -0.5683968599826881,
+        "dk3_pre_r1": false,
+        "ema50": 81.6697543373844,
+        "hl_date": "2026-08-03",
+        "pool": true,
+        "rs20": -0.1845320579495977,
+        "rs60": 0.059840696683936656,
+        "rvol20": 1.472009984549658
+      },
+      "event_status": "CLEAN_DISCOVERY",
+      "mixed_rs_pass": false,
+      "r92_eligible": false,
+      "rs20": -0.1845320579495977,
+      "rs60": 0.059840696683936656,
+      "state_cap": "WATCH",
+      "status": "EVALUATED"
+    },
     "WIX": {
       "A": {
         "pool": false,
@@ -2814,12 +2921,14 @@
     "EXEL": "NORMAL",
     "EXLS": "NORMAL",
     "FFIV": "NORMAL",
+    "FIVN": "NORMAL",
     "FORM": "NORMAL",
     "FSLY": "NORMAL",
     "FTNT": "NORMAL",
     "GH": "NORMAL",
     "GILD": "NORMAL",
     "GMAB": "NORMAL",
+    "GRAL": "NORMAL",
     "GTLB": "NORMAL",
     "HALO": "NORMAL",
     "HOOD": "NORMAL",
@@ -2866,6 +2975,7 @@
     "RGLD": "NORMAL",
     "RIOT": "NORMAL",
     "ROKU": "NORMAL",
+    "SDGR": "NORMAL",
     "SEIC": "NORMAL",
     "SIMO": "NORMAL",
     "SLAB": "NORMAL",
@@ -2887,6 +2997,7 @@
     "VRNS": "NORMAL",
     "WBD": "NORMAL",
     "WDAY": "NORMAL",
+    "WGS": "WATCH",
     "WIX": "NORMAL",
     "XP": "NORMAL",
     "ZBRA": "NORMAL"

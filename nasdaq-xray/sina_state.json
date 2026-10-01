@@ -4,11 +4,10 @@
   "counts": {
     "BLOCK_CURRENT_RUN": 4,
     "FAIL_DV20": 286,
-    "FAIL_HISTORY": 26,
+    "FAIL_HISTORY": 27,
     "FAIL_IDENTITY_TYPE": 4,
     "FAIL_PRICE": 11,
-    "PASS": 483,
-    "UNKNOWN_RETRY_EXHAUSTED": 1
+    "PASS": 483
   },
   "cursor": 815,
   "discovery": {
@@ -7424,8 +7423,8 @@
   "queue_total": 815,
   "real_money": "NO-GO",
   "resolution_overlay_meta": {
-    "age_hours": 1.7712603666666669,
-    "generated_at_utc": "2026-10-01T12:50:01.882447+00:00",
+    "age_hours": 0.003692146666666667,
+    "generated_at_utc": "2026-10-01T14:38:30Z",
     "status": "PASS"
   },
   "results": {
@@ -7528,7 +7527,7 @@
       },
       "resolution_overlay": true,
       "status": "FAIL_HISTORY",
-      "updated_at_utc": "2026-10-01T14:36:18.419787+00:00"
+      "updated_at_utc": "2026-10-01T14:38:43.291747+00:00"
     },
     "ACGL": {
       "attempts": 1,
@@ -7659,7 +7658,7 @@
       },
       "resolution_overlay": true,
       "status": "FAIL_HISTORY",
-      "updated_at_utc": "2026-10-01T14:36:18.419801+00:00"
+      "updated_at_utc": "2026-10-01T14:38:43.291761+00:00"
     },
     "ADSK": {
       "attempts": 1,
@@ -8550,7 +8549,7 @@
       },
       "resolution_overlay": true,
       "status": "FAIL_IDENTITY_TYPE",
-      "updated_at_utc": "2026-10-01T14:36:18.419810+00:00"
+      "updated_at_utc": "2026-10-01T14:38:43.291769+00:00"
     },
     "BSP": {
       "attempts": 1,
@@ -8821,7 +8820,7 @@
       },
       "resolution_overlay": true,
       "status": "FAIL_IDENTITY_TYPE",
-      "updated_at_utc": "2026-10-01T14:36:18.419816+00:00"
+      "updated_at_utc": "2026-10-01T14:38:43.291775+00:00"
     },
     "CECO": {
       "attempts": 1,
@@ -9015,9 +9014,14 @@
     },
     "CHWM": {
       "attempts": 4,
-      "info": "IndexError:list index out of range",
-      "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "updated_at_utc": "2026-10-01T14:36:17.002558+00:00"
+      "info": {
+        "bars": 0,
+        "reason": "DAILY_LT260",
+        "resolution_source": "SEC_8A_PLUS_ISSUER_NASDAQ_LISTING_2026-10-01_PLUS_LONGBRIDGE_DAILY"
+      },
+      "resolution_overlay": true,
+      "status": "FAIL_HISTORY",
+      "updated_at_utc": "2026-10-01T14:38:43.291781+00:00"
     },
     "CHYM": {
       "attempts": 1,
@@ -9778,7 +9782,7 @@
       },
       "resolution_overlay": true,
       "status": "FAIL_HISTORY",
-      "updated_at_utc": "2026-10-01T14:36:18.419823+00:00"
+      "updated_at_utc": "2026-10-01T14:38:43.291787+00:00"
     },
     "ELVN": {
       "attempts": 1,
@@ -10648,7 +10652,7 @@
       },
       "resolution_overlay": true,
       "status": "PASS",
-      "updated_at_utc": "2026-10-01T14:36:18.419852+00:00"
+      "updated_at_utc": "2026-10-01T14:38:43.291814+00:00"
     },
     "GSAT": {
       "attempts": 1,
@@ -10719,7 +10723,7 @@
       },
       "resolution_overlay": true,
       "status": "FAIL_HISTORY",
-      "updated_at_utc": "2026-10-01T14:36:18.419861+00:00"
+      "updated_at_utc": "2026-10-01T14:38:43.291823+00:00"
     },
     "HCM": {
       "attempts": 1,
@@ -11500,7 +11504,7 @@
       },
       "resolution_overlay": true,
       "status": "FAIL_HISTORY",
-      "updated_at_utc": "2026-10-01T14:36:18.419870+00:00"
+      "updated_at_utc": "2026-10-01T14:38:43.291831+00:00"
     },
     "LBTYA": {
       "attempts": 1,
@@ -11523,7 +11527,7 @@
       },
       "resolution_overlay": true,
       "status": "FAIL_DV20",
-      "updated_at_utc": "2026-10-01T14:36:18.419881+00:00"
+      "updated_at_utc": "2026-10-01T14:38:43.291843+00:00"
     },
     "LECO": {
       "attempts": 1,
@@ -11874,7 +11878,7 @@
       },
       "resolution_overlay": true,
       "status": "FAIL_HISTORY",
-      "updated_at_utc": "2026-10-01T14:36:18.419891+00:00"
+      "updated_at_utc": "2026-10-01T14:38:43.291851+00:00"
     },
     "MAMK": {
       "attempts": 1,
@@ -11885,7 +11889,7 @@
       },
       "resolution_overlay": true,
       "status": "FAIL_HISTORY",
-      "updated_at_utc": "2026-10-01T14:36:18.419901+00:00"
+      "updated_at_utc": "2026-10-01T14:38:43.291860+00:00"
     },
     "MANH": {
       "attempts": 1,
@@ -11986,7 +11990,7 @@
       },
       "resolution_overlay": true,
       "status": "FAIL_HISTORY",
-      "updated_at_utc": "2026-10-01T14:36:18.419911+00:00"
+      "updated_at_utc": "2026-10-01T14:38:43.291868+00:00"
     },
     "MDB": {
       "attempts": 1,
@@ -12187,7 +12191,7 @@
       },
       "resolution_overlay": true,
       "status": "FAIL_IDENTITY_TYPE",
-      "updated_at_utc": "2026-10-01T14:36:18.419919+00:00"
+      "updated_at_utc": "2026-10-01T14:38:43.291877+00:00"
     },
     "MMSI": {
       "attempts": 1,
@@ -12868,7 +12872,7 @@
       },
       "resolution_overlay": true,
       "status": "FAIL_PRICE",
-      "updated_at_utc": "2026-10-01T14:36:18.419932+00:00"
+      "updated_at_utc": "2026-10-01T14:38:43.291888+00:00"
     },
     "ORKA": {
       "attempts": 1,
@@ -12910,7 +12914,7 @@
       },
       "resolution_overlay": true,
       "status": "BLOCK_CURRENT_RUN",
-      "updated_at_utc": "2026-10-01T14:36:18.419943+00:00"
+      "updated_at_utc": "2026-10-01T14:38:43.291898+00:00"
     },
     "OSW": {
       "attempts": 1,
@@ -13042,7 +13046,7 @@
       },
       "resolution_overlay": true,
       "status": "BLOCK_CURRENT_RUN",
-      "updated_at_utc": "2026-10-01T14:36:18.419952+00:00"
+      "updated_at_utc": "2026-10-01T14:38:43.291907+00:00"
     },
     "PCAR": {
       "attempts": 1,
@@ -14364,7 +14368,7 @@
       },
       "resolution_overlay": true,
       "status": "BLOCK_CURRENT_RUN",
-      "updated_at_utc": "2026-10-01T14:36:18.419964+00:00"
+      "updated_at_utc": "2026-10-01T14:38:43.291918+00:00"
     },
     "SWKS": {
       "attempts": 1,
@@ -14545,7 +14549,7 @@
       },
       "resolution_overlay": true,
       "status": "FAIL_IDENTITY_TYPE",
-      "updated_at_utc": "2026-10-01T14:36:18.419974+00:00"
+      "updated_at_utc": "2026-10-01T14:38:43.291928+00:00"
     },
     "TIGO": {
       "attempts": 1,
@@ -14877,7 +14881,7 @@
       },
       "resolution_overlay": true,
       "status": "BLOCK_CURRENT_RUN",
-      "updated_at_utc": "2026-10-01T14:36:18.420003+00:00"
+      "updated_at_utc": "2026-10-01T14:38:43.291941+00:00"
     },
     "UCTT": {
       "attempts": 1,
@@ -16428,10 +16432,10 @@
     "ZS": "Zscaler, Inc. - Common Stock",
     "ZYME": "Zymeworks Inc. - Common Stock"
   },
-  "state_hash": "3156b23a0c82156e6670010e8131a23c10b2266d07cec21e1d3cc72c14ffd80d",
-  "status": "HISTORY_PARTIAL",
+  "state_hash": "5da09e3fb77f9d61da3e3007bf38c14941d22bbcde97d425ef600ecf83947dd6",
+  "status": "HISTORY_COMPLETE",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 1,
+  "unknown_count": 0,
   "unknown_never_pass": true,
-  "updated_at_utc": "2026-10-01T14:36:18.420152+00:00"
+  "updated_at_utc": "2026-10-01T14:38:43.292079+00:00"
 }

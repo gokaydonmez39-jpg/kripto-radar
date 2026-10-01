@@ -193,6 +193,7 @@
     "GMAB",
     "GOOG",
     "GOOGL",
+    "GRAL",
     "GTLB",
     "GTX",
     "HALO",
@@ -290,6 +291,7 @@
     "NBIX",
     "NDAQ",
     "NDSN",
+    "NESR",
     "NFLX",
     "NICE",
     "NTAP",
@@ -1272,6 +1274,10 @@
       "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
       "nasdaq_market_cap": 4208098400000.0
     },
+    "GRAL": {
+      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
+      "nasdaq_market_cap": 6258632708.0
+    },
     "GTLB": {
       "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
       "nasdaq_market_cap": 7871850000.0
@@ -1660,6 +1666,11 @@
     "NDSN": {
       "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
       "nasdaq_market_cap": 18261037143.0
+    },
+    "NESR": {
+      "bigdata_entity_id": "270823",
+      "market_cap": 2568579585.0,
+      "mode": "BIGDATA_PRIMARY_EXACT_XNAS"
     },
     "NFLX": {
       "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
@@ -2423,14 +2434,14 @@
       "nasdaq_market_cap": 32516367875.0
     }
   },
-  "direct_nasdaq_conservative_pass_count": 477,
+  "direct_nasdaq_conservative_pass_count": 479,
   "execution": "NONE",
   "fallback_watch_symbols": [
     "WGS"
   ],
   "overlay_meta": {
-    "age_hours": 0.02230445611111111,
-    "generated_at_utc": "2026-10-01T12:43:00.487027+00:00",
+    "age_hours": 1.8931914541666666,
+    "generated_at_utc": "2026-10-01T12:45:08.005840+00:00",
     "status": "PASS"
   },
   "policy_note": "Primary Bigdata exact XNAS COMPANY/PUBLIC finite USD market cap overrides discovery MC. Rallies XNAS + Longbridge NASD fallback requires both >=2.10B and <=10% relative difference and is capped WATCH/R92-ineligible. Freshness failure is fail-closed. Nasdaq official screener >=2.6B remains conservative PASS when no fresh overlay resolution exists; 2.0-2.6B remains UNKNOWN.",
@@ -2438,12 +2449,6 @@
   "schema": "XRAY_MC_ZERO_KEY_V2",
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_never_pass": true,
-  "unresolved": {
-    "NESR": {
-      "nasdaq_market_cap": 2568694174.0,
-      "reason": "NASDAQ_MC_BORDERLINE_2_0_TO_2_6B",
-      "required_resolution": "CANONICAL_BIGDATA_OR_CONSERVATIVE_RALLIES_LONGBRIDGE"
-    }
-  },
-  "unresolved_count": 1
+  "unresolved": {},
+  "unresolved_count": 0
 }
