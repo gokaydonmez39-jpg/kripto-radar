@@ -1,10 +1,6 @@
 name: XRAY Settle Canonical Hard Gates 20260930
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - ".github/workflows/xray-settle-canonical-hard-gates-20260930.yml"
   workflow_dispatch:
 
 permissions:
