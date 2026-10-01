@@ -1,12 +1,6 @@
 name: XRAY Resolve Canonical Unknowns 20260930
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - ".github/workflows/xray-resolve-canonical-unknowns-20260930.yml"
-      - "nasdaq-xray/resolve_unknowns_fallback.py"
-      - "nasdaq-xray/canonical_full_hard_gate_20260930_unknowns.json"
   workflow_dispatch:
 
 permissions:
