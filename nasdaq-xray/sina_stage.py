@@ -281,9 +281,7 @@ def parse_hist(sym,asof,expected20):
             if upper < HARD_DV20:
                 info["proof"]="DV20_UPPER_BOUND_LT_GATE"
                 return "FAIL_DV20",info
-            if lower >= HARD_DV20:
-                info["proof"]="DV20_LOWER_BOUND_GE_GATE"
-                return "PASS",info
+            info["reason"]="EXACT20_INCOMPLETE_NEVER_PASS"
             return "UNKNOWN_STATIC",info
 
         dvs=sorted(known_dv)
@@ -356,9 +354,8 @@ def resolution_result(sym,ov,expected20):
           px is None or px<=HARD_PRICE or not isinstance(bars,int) or bars<HARD_HISTORY
           or lo is None or hi is None or lo<HARD_DV20 or hi<lo
           or ov.get("no_synthetic_bar") is not True
-          or not isinstance(known,int) or known+len(missing)!=20
-          or sorted(missing)!=sorted(set(missing))
-          or any(x not in expected20 for x in missing)
+          or not isinstance(known,int) or known!=20 or missing!=[]
+          or lo!=hi
         ):
             return "UNKNOWN_STATIC",{"reason":"RESOLUTION_PASS_BOUND_INVALID","symbol":sym}
         return "PASS",{
