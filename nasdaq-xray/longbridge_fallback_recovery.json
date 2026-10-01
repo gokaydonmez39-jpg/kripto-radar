@@ -10,7 +10,7 @@
   "source_primary_summary_hash": "d9473aa103dad1964aba08c98764fc7be8f78093f8344d9722678631318d5d43",
   "source_missing_group_hash": "d55174eb1df105baf2b43a208d8871f88f263afeee8ff55aad507c75d9263273",
   "total_missing": 356,
-  "cursor": 344,
+  "cursor": 356,
   "results": {
     "AACI": {
       "status": "FAIL_DV20",
@@ -2137,7 +2137,85 @@
       "status": "FAIL_PRICE",
       "price": 3.31,
       "dv20": 10794.07
+    },
+    "XIII": {
+      "status": "UNKNOWN_EXACT20_MISSING",
+      "missing": [
+        "2026-09-01",
+        "2026-09-02",
+        "2026-09-03",
+        "2026-09-04",
+        "2026-09-08",
+        "2026-09-09",
+        "2026-09-10",
+        "2026-09-11",
+        "2026-09-14",
+        "2026-09-15",
+        "2026-09-16",
+        "2026-09-17"
+      ]
+    },
+    "XSLL": {
+      "status": "FAIL_PRICE",
+      "price": 9.98,
+      "dv20": 6840.945
+    },
+    "XTER": {
+      "status": "FAIL_PRICE",
+      "price": 9.79,
+      "dv20": 48091.65
+    },
+    "XTLB": {
+      "status": "FAIL_PRICE",
+      "price": 2.21,
+      "dv20": 5487.540000000001
+    },
+    "YFOR": {
+      "status": "FAIL_PRICE",
+      "price": 1.44,
+      "dv20": 515804.995
+    },
+    "YHGJ": {
+      "status": "FAIL_PRICE",
+      "price": 2.63,
+      "dv20": 3537.2074999999995
+    },
+    "YHNA": {
+      "status": "FAIL_DV20",
+      "price": 11.21,
+      "dv20": 16017.46
+    },
+    "YIBO": {
+      "status": "FAIL_PRICE",
+      "price": 1.12,
+      "dv20": 1286.8999999999999
+    },
+    "YICC": {
+      "status": "FAIL_PRICE",
+      "price": 9.925,
+      "dv20": 114151.495
+    },
+    "YSXT": {
+      "status": "FAIL_PRICE",
+      "price": 1.283,
+      "dv20": 6172.615
+    },
+    "ZKIN": {
+      "status": "FAIL_PRICE",
+      "price": 1.9,
+      "dv20": 13484.800000000001
+    },
+    "ZKP": {
+      "status": "FAIL_DV20",
+      "price": 10.03,
+      "dv20": 16289.7
     }
   },
-  "updated_at_utc": "2026-10-01T00:01:20Z"
+  "updated_at_utc": "2026-10-01T00:01:35Z",
+  "final_distribution": {
+    "FAIL_DV20": 194,
+    "FAIL_PRICE": 127,
+    "UNKNOWN_EXACT20_MISSING": 35
+  },
+  "status": "COMPLETE"
 }
