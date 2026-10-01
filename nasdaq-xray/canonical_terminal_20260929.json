@@ -1,0 +1,37 @@
+{
+  "schema": "XRAY_CANONICAL_TERMINAL_V1",
+  "task_id": "6a825366222081918997094d76e6ae46",
+  "asof_et": "2026-09-29",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "full_end_to_end_pass": true,
+  "terminal_result": "NO_CONFIRMED_SETUP",
+  "evidence": {
+    "deep_path": "nasdaq-xray/canonical_deep_full_20260929.json",
+    "deep_blob_sha": "dd215e19bcad53d95bf0cf6109c54adb245351b6",
+    "final_path": "nasdaq-xray/canonical_final_tech_20260929.json",
+    "final_blob_sha": "ff49dc469fd4a1f0260420212f75e6e776290acf"
+  },
+  "counts": {
+    "current_core_history_pass": 435,
+    "weekly_pass": 96,
+    "legal_pass": 435,
+    "regime_breadth_missing": 0,
+    "deep_unknown_history": 0,
+    "A_confirmed": 0,
+    "B_breakout_confirmed": 0,
+    "C_confirmed": 0,
+    "D_confirmed": 0,
+    "B_armed_non_r92": 8,
+    "final_confirmed_candidates": 0,
+    "r92_registered": 0,
+    "r93_registered": 0
+  },
+  "applicability": {
+    "r1_rr": "NOT_APPLICABLE_NO_CONFIRMED_FAMILY_CANDIDATE",
+    "account_gate": "NOT_EVALUATED_NO_CONFIRMED_FAMILY_CANDIDATE",
+    "g9": "GLOBAL_BLOCK_REMAINS_BUT_NOT_REQUIRED_TO_CLASSIFY_ZERO_CONFIRMED_SETUP_FOR_FROZEN_EPOCH",
+    "delivery": "NO_SWING_ALERT_AUTHORIZED"
+  }
+}
