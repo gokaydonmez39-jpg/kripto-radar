@@ -65,10 +65,25 @@ def main():
     assert m["unknown_count"]==0 and m["pending_retry"]==0
     assert p["execution"]=="NONE" and p["real_money"]=="NO-GO" and p["unknown_count"]==0
     assert p["source_master_queue_hash"]==m["queue_hash"] and int(p["source_master_count"])==int(m["queue_total"])
+    pointer_asof=str((ptr.get("state_json") or {}).get("asof_et") or "")
+    settlement_witness_required=bool(pointer_asof and asof>pointer_asof)
     assert len(p["results"])==int(m["queue_total"])
     price_pass=set(p["pass_symbols"])
     assert len(price_pass)==p["pass_count"]
     mc_path,mc=find_mc(p,sh["price"])
+    if settlement_witness_required:
+        assert mc.get("settlement_witness_status")=="PASS","SETTLEMENT_WITNESS_REQUIRED"
+        swp=mc.get("settlement_witness_path")
+        swsha=mc.get("settlement_witness_blob_sha")
+        assert swp and swsha,"SETTLEMENT_WITNESS_IDENTITY_MISSING"
+        sw_path=ROOT.parent/swp
+        assert sw_path.exists() and blob_sha(sw_path)==swsha,"SETTLEMENT_WITNESS_BLOB_MISMATCH"
+        sw=json.loads(sw_path.read_text())
+        assert sw.get("schema")=="XRAY_RESOLVER_EPOCH_RESULT_V1" and sw.get("status")=="COMMITTED"
+        assert sw.get("task_id")==TASK and sw.get("asof_et")==asof and sw.get("settlement_status")=="PASS"
+        assert sw.get("queue_hash")==m["queue_hash"]
+    else:
+        assert mc.get("settlement_witness_status") in {None,"NOT_REQUIRED_POINTER_ASOF"}
     primary=set(mc.get("primary_pass_symbols") or [])
     mcfail=set(mc.get("primary_fail_symbols") or [])
     watch=set(mc.get("fallback_watch_symbols") or [])
@@ -144,6 +159,11 @@ def main():
       "schema":"XRAY_CANONICAL_CURRENT_TERMINAL_V1","status":"FULL_E2E_RESEARCH_PASS" if full else "PARTIAL",
       "task_id":TASK,"asof_et":asof,"execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
       "compiled_policy_hash":POLICY_HASH,"full_end_to_end_research_pass":full,"terminal_result":terminal_result,
+      "pointer_asof_before_candidate":pointer_asof,
+      "settlement_witness_required":settlement_witness_required,
+      "settlement_witness_status":mc.get("settlement_witness_status"),
+      "settlement_witness_path":mc.get("settlement_witness_path"),
+      "settlement_witness_blob_sha":mc.get("settlement_witness_blob_sha"),
       "r92_account_g9_applicable":bool(full and pre),"r92_candidates":sorted(pre) if full else [],
       "g9_global_status":ps.get("g9_status","G9_BLOCKED_FREE_AUTOMATION_PATH"),
       "account_status":ps.get("account_status","UNKNOWN"),
@@ -173,6 +193,7 @@ def main():
       },
       "checks":{
         "policy_order_exact":True,"master_complete":True,"price_exact_master":True,"mc_exact_price_pass_set":True,
+        "sequential_settlement_bound":(not settlement_witness_required) or mc.get("settlement_witness_status")=="PASS",
         "history_exact_mc_primary":True,"fallback_watch_excluded_after_mc":True,"legal_exact_history_pass":True,
         "stage1_exact_legal_pass":True,"weekly_exact_event_scope":True,"regime_no_missing":True,
         "deep_exact_weekly_scope":True,"final_exact_confirmed_family_set":True,
