@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - ".github/workflows/xray-canonical-full-hard-gates-20260930.yml"
+      - "nasdaq-xray/sina_stage.py"
+      - "nasdaq-xray/history_resolution_overlay.json"
   workflow_dispatch:
 
 permissions:
@@ -38,6 +40,11 @@ jobs:
         run: python -m py_compile nasdaq-xray/sina_stage.py
       - name: Install zero-dollar runtime
         run: python -m pip install --disable-pip-version-check akshare==1.18.95 pandas_market_calendars
+      - name: Reset isolated frozen artifacts
+        shell: bash
+        run: |
+          rm -f nasdaq-xray/canonical_full_hard_gate_20260930_state.json
+          rm -f nasdaq-xray/canonical_full_hard_gate_20260930_candidates.json
       - name: Run full identity hard gates with bounded retries
         shell: bash
         run: |
