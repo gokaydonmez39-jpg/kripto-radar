@@ -1,4 +1,5 @@
 name: XRAY Canonical Deep Final V2 20260930
+# C4.14 primary-only downstream
 
 on:
   push:
@@ -48,13 +49,14 @@ jobs:
           assert st["schema"]=="XRAY_STAGE1_SHADOW_V1"
           assert st["task_id"]=="6a825366222081918997094d76e6ae46"
           assert st["asof_et"]=="2026-09-30" and st["unknown_count"]==0
-          assert st["input_current_core_count"]==477
-          assert len(st["state_caps"])==477
-          assert len(st["r92_ineligible"])==35
-          assert sum(1 for v in st["state_caps"].values() if v=="WATCH")==35
+          assert st["input_current_core_count"]==len(st["results"]) and st["input_current_core_count"]>0
+          assert len(st["state_caps"])==st["input_current_core_count"]
+          assert st["r92_ineligible"]==[]
+          assert set(st["state_caps"].values())=={"NORMAL"}
           assert rg["schema"]=="XRAY_REGIME_BREADTH_SHADOW_V1"
           assert rg["task_id"]==st["task_id"] and rg["asof_et"]==st["asof_et"]
-          assert rg["current_core_count"]==477 and rg["history_ok_count"]==477
+          assert rg["current_core_count"]==st["input_current_core_count"]
+          assert rg["history_ok_count"]==st["input_current_core_count"]
           assert rg["breadth_missing_count"]==0
           assert rg["regime"] in {"STRONG","MIXED","WEAK"}
           assert ev["schema"]=="XRAY_CANONICAL_EVENT_STATE_V1"
@@ -64,7 +66,7 @@ jobs:
           assert set(ev["event_status_by_symbol"])==set(st["weekly_pass"])
           assert ev["clean_discovery_count"]+ev["confirmed_block_count"]+ev["unresolved_count"]==st["weekly_pass_count"]
           print({
-            "stage1_input":st["input_current_core_count"],
+            "stage1_primary_input":st["input_current_core_count"],
             "weekly_scope":st["weekly_pass_count"],
             "regime":rg["regime"],
             "event_confirmed":ev["confirmed_block_count"],
@@ -95,8 +97,8 @@ jobs:
           assert j["input_weekly_pass_count"]==st["weekly_pass_count"]
           assert set(j["results"])==set(st["weekly_pass"])
           assert j["unknown_history_count"]==0,j["unknown_history"]
-          assert set(j["r92_ineligible"])==set(st["r92_ineligible"]) & set(st["weekly_pass"])
-          assert {s for s,v in j["state_caps"].items() if v=="WATCH"}==({s for s,v in st["state_caps"].items() if v=="WATCH"} & set(st["weekly_pass"]))
+          assert j["r92_ineligible"]==[]
+          assert not {s for s,v in j["state_caps"].items() if v=="WATCH"}
           affected=[
             s for s,r in j["results"].items()
             if r.get("event_status")=="UNKNOWN"
