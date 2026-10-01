@@ -75,8 +75,38 @@ jobs:
       - name: Extract unresolved set
         run: python nasdaq-xray/extract_unknown_manifest.py
       - name: Resolve zero-dollar unknowns
-        timeout-minutes: 12
-        run: python nasdaq-xray/resolve_unknowns_fallback.py
+        timeout-minutes: 4
+        shell: bash
+        run: |
+          set +e
+          timeout --signal=TERM --kill-after=10s 150s python nasdaq-xray/resolve_unknowns_fallback.py
+          rc=$?
+          set -e
+          if [ "$rc" -ne 0 ]; then
+            echo "Resolver bounded fallback activated rc=$rc; preserving UNKNOWN and continuing to task-state resolver."
+            python - <<'PY'
+          import json, pathlib
+          root=pathlib.Path("nasdaq-xray")
+          m=json.load(open(root/"canonical_current_unknowns.json"))
+          u=m.get("unknowns") or {}
+          obj={
+            "schema":"XRAY_HISTORY_IDENTITY_RESOLUTION_OVERLAY_V1",
+            "task_id":"6a825366222081918997094d76e6ae46",
+            "execution":"NONE","real_money":"NO-GO",
+            "base_asof_et":m["asof_et"],
+            "resolver":"BOUNDED_LOCAL_RESOLVER_TIMEOUT_FAIL_CLOSED",
+            "manifest_unknown_count":len(u),
+            "current_resolution_count":0,
+            "current_unresolved_count":len(u),
+            "resolution_count":0,
+            "unresolved_count":len(u),
+            "resolutions":{},
+            "unresolved":u,
+          }
+          (root/"canonical_current_resolution_overlay.json").write_text(json.dumps(obj,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
+          print({"fallback_overlay_unknown":len(u),"asof":m["asof_et"]})
+          PY
+          fi
       - name: Apply resolver overlay
         shell: bash
         run: |
