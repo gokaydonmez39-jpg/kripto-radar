@@ -16,7 +16,7 @@ import pandas_market_calendars as mcal
 
 ROOT=Path(__file__).resolve().parent
 MC=Path(os.getenv("XRAY_MC_STATE", str(ROOT/"mc_final_state.json")))
-OUT=ROOT/"stage1_shadow.json"
+OUT=Path(os.getenv("XRAY_STAGE1_OUT", str(ROOT/"stage1_shadow.json")))
 TASK_ID="6a825366222081918997094d76e6ae46"
 WORKERS=int(os.getenv("XRAY_STAGE1_WORKERS","8"))
 
@@ -110,7 +110,7 @@ def process(sym,asof,week_last):
         for k in ["open","high","low","close","volume"]:x[k]=pd.to_numeric(x[k],errors="coerce")
         x=x.dropna().sort_values("date")
         x=x[x["date"]<=pd.Timestamp(asof)]
-        if len(x)<260:return sym,{"status":"UNKNOWN","reason":"DAILY_LT260","bars":len(x)}
+        if len(x)<260:return sym,{"status":"HISTORY_FAIL","reason":"DAILY_LT260","bars":len(x)}
         wg=weekly_gate(x,asof,week_last)
         if not wg.get("pass"):
             return sym,{"status":"WEEKLY_FAIL","weekly":wg}
