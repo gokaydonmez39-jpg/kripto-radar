@@ -1,0 +1,70 @@
+name: XRAY Canonical PRICE DV20 20260930
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/xray-canonical-price-dv20-20260930.yml"
+      - "nasdaq-xray/price_dv20_phase.py"
+      - "nasdaq-xray/canonical_full_hard_gate_20260930_state.json"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: xray-canonical-price-dv20-20260930
+  cancel-in-progress: false
+
+jobs:
+  price-dv20:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      XRAY_PHASE_INPUT: ${{ github.workspace }}/nasdaq-xray/canonical_full_hard_gate_20260930_state.json
+      XRAY_PRICE_DV20_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_price_dv20_20260930.json
+      XRAY_PHASE_WORKERS: "12"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile
+        run: python -m py_compile nasdaq-xray/price_dv20_phase.py
+      - name: Install zero-dollar runtime
+        run: python -m pip install --disable-pip-version-check akshare==1.18.95 pandas_market_calendars
+      - name: Run policy-ordered PRICE DV20
+        run: python nasdaq-xray/price_dv20_phase.py
+      - name: Validate
+        run: |
+          python - <<'PY'
+          import json,hashlib
+          p="nasdaq-xray/canonical_price_dv20_20260930.json"
+          j=json.load(open(p))
+          assert j["schema"]=="XRAY_CANONICAL_PRICE_DV20_V1"
+          assert j["task_id"]=="6a825366222081918997094d76e6ae46"
+          assert j["asof_et"]=="2026-09-30"
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          assert j["source_master_count"]==3398
+          assert sum(j["counts"].values())==3398
+          assert len(j["pass_symbols"])==j["pass_count"]
+          assert len(set(j["pass_symbols"]))==j["pass_count"]
+          assert hashlib.sha256("\n".join(j["pass_symbols"]).encode()).hexdigest()==j["pass_hash"]
+          assert j["unknown_count"]==len(j["unknown_symbols"])
+          print({"counts":j["counts"],"unknown_count":j["unknown_count"],"pass_count":j["pass_count"],"pass_hash":j["pass_hash"]})
+          PY
+      - name: Commit phase artifact
+        shell: bash
+        run: |
+          set -e
+          git config user.name "xray-dataplane-bot"
+          git config user.email "xray-dataplane-bot@users.noreply.github.com"
+          git add nasdaq-xray/canonical_price_dv20_20260930.json
+          git commit -m "chore(xray): canonical PRICE DV20 2026-09-30 [skip ci]" || exit 0
+          for attempt in 1 2 3 4 5; do
+            if git pull --rebase origin main && git push; then exit 0; fi
+            sleep $((attempt*2))
+          done
+          exit 1
