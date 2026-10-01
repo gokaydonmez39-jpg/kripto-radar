@@ -150,7 +150,19 @@ def build_discovery(official):
         vol=num(r.get("volume"))
         if px is not None and mc is not None and px>HARD_PRICE and mc>=2_000_000_000:
             exact_hard_mc_price_count+=1
-        if px is None or mc is None:continue
+        if px is None or mc is None:
+            # Fail-closed discovery: an official Nasdaq-listed symbol must never
+            # disappear merely because the screener omitted a gating field.
+            prefilter[sym]={
+              "screener_price":px,
+              "screener_market_cap":mc,
+              "screener_volume":vol,
+              "sector":r.get("sector"),
+              "industry":r.get("industry"),
+              "country":r.get("country"),
+              "discovery_reason":"SCREENER_FIELD_MISSING_FORCE_QUEUE",
+            }
+            continue
         if px>=DISCOVERY_PRICE_FLOOR and mc>=DISCOVERY_MC_FLOOR:
             prefilter[sym]={
               "screener_price":px,
@@ -160,6 +172,19 @@ def build_discovery(official):
               "industry":r.get("industry"),
               "country":r.get("country"),
             }
+    for sym in sorted(missing):
+        # Official-directory identity exists but the web screener omitted it.
+        # Force it into downstream PRICE/DV20/HISTORY; MC remains UNKNOWN
+        # unless a later authoritative resolver proves it.
+        prefilter[sym]={
+          "screener_price":None,
+          "screener_market_cap":None,
+          "screener_volume":None,
+          "sector":None,
+          "industry":None,
+          "country":None,
+          "discovery_reason":"OFFICIAL_SCREENER_MISSING_FORCE_QUEUE",
+        }
     queue=sorted(prefilter)
     return queue,prefilter,{
       "rows_returned":len(rows),
