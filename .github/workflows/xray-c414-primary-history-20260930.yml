@@ -1,0 +1,54 @@
+name: XRAY C4.14 Primary History Scope 20260930
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/xray-c414-primary-history-20260930.yml"
+permissions:
+  contents: write
+concurrency:
+  group: xray-c414-primary-history-20260930
+  cancel-in-progress: false
+jobs:
+  scope:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m py_compile nasdaq-xray/c414_primary_history.py
+      - name: Apply C4.14 primary-only history scope
+        run: python nasdaq-xray/c414_primary_history.py
+      - name: Validate
+        run: |
+          python - <<'PY'
+          import json
+          j=json.load(open("nasdaq-xray/canonical_history_20260930.json"))
+          assert j["schema"]=="XRAY_CANONICAL_HISTORY_V2"
+          assert j["input_count"]==456
+          assert j["counts"]=={"FAIL_HISTORY":14,"PASS_HISTORY":442}
+          assert j["pass_count"]==442 and j["unknown_count"]==0
+          assert len(j["results"])==456 and len(j["pass_symbols"])==442
+          assert j["r92_ineligible"]==[]
+          assert set(j["state_caps"].values())=={"NORMAL"}
+          assert j["c4_14_scope"]["fallback_watch_excluded_count"]==35
+          print("C4_14_PRIMARY_HISTORY_PASS")
+          PY
+      - name: Commit authoritative history
+        shell: bash
+        run: |
+          set -e
+          git config user.name "xray-dataplane-bot"
+          git config user.email "xray-dataplane-bot@users.noreply.github.com"
+          git add nasdaq-xray/canonical_history_20260930.json
+          git commit -m "fix(xray): C4.14 primary-only history 2026-09-30 [skip ci]" || exit 0
+          for attempt in 1 2 3 4 5; do
+            if git pull --rebase origin main && git push; then exit 0; fi
+            sleep $((attempt*2))
+          done
+          exit 1
