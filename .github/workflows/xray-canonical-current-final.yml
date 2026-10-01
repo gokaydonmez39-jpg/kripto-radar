@@ -76,7 +76,6 @@ jobs:
           cat /tmp/event_out
 
       - name: Compile
-        if: steps.event.outputs.ready == 'true'
         run: |
           python -m py_compile \
             nasdaq-xray/build_current_event_state.py \
