@@ -140,7 +140,7 @@ jobs:
       - name: Structural validation
         run: |
           python - <<'PY'
-          import json
+          import json,re
           s=json.load(open("nasdaq-xray/canonical_full_hard_gate_20260930_state.json"))
           c=json.load(open("nasdaq-xray/canonical_full_hard_gate_20260930_candidates.json"))
           assert s["schema"]=="XRAY_NASDAQ_SCREENER_SINA_V2"
@@ -152,17 +152,83 @@ jobs:
           assert s["queue_total"]>3000
           assert s["queue_total"]==len(s["queue"])==len(s["security_names"])==len(s["results"])
           assert len(set(s["queue"]))==s["queue_total"]
+          assert "ADR_ADS" not in (s.get("explicit_excluded_reason_counts") or {}), s.get("explicit_excluded_reason_counts")
+          adr_pat=re.compile(r"\\bamerican deposit(?:ary|ory) shares?\\b|\\bamerican deposit(?:ary|ory) receipts?\\b",re.I)
+          eligible_adr_ads=[sym for sym,name in (s.get("security_names") or {}).items() if adr_pat.search(str(name or ""))]
+          assert len(eligible_adr_ads)>0
           assert c["asof_et"]=="2026-09-30"
           assert c["candidate_count"]==len(c["candidates"])
           print({
             "footer":s["official_footer"],
             "queue_total":s["queue_total"],
+            "eligible_adr_ads_count":len(eligible_adr_ads),
             "explicit_excluded_reason_counts":s.get("explicit_excluded_reason_counts"),
             "unknown_count":s["unknown_count"],
             "status":s["status"],
             "counts":s["counts"],
             "candidate_count":c["candidate_count"]
           })
+          PY
+
+      - name: Build compact canonical manifest
+        run: |
+          python - <<'PY'
+          import json,hashlib,re
+          sp="nasdaq-xray/canonical_full_hard_gate_20260930_state.json"
+          cp="nasdaq-xray/canonical_full_hard_gate_20260930_candidates.json"
+          mp="nasdaq-xray/canonical_full_hard_gate_20260930_manifest.json"
+          s=json.load(open(sp)); c=json.load(open(cp))
+          adr_pat=re.compile(r"\\bamerican deposit(?:ary|ory) shares?\\b|\\bamerican deposit(?:ary|ory) receipts?\\b",re.I)
+          eligible_adr_ads=sorted(sym for sym,name in (s.get("security_names") or {}).items() if adr_pat.search(str(name or "")))
+          pass_symbols=sorted(c["candidates"])
+          def sha_file(p):
+              h=hashlib.sha256()
+              with open(p,"rb") as fh:
+                  for b in iter(lambda:fh.read(1024*1024),b""): h.update(b)
+              return h.hexdigest()
+          def sha_lines(xs):
+              return hashlib.sha256("\n".join(xs).encode()).hexdigest()
+          m={
+            "schema":"XRAY_CANONICAL_HARD_GATE_MANIFEST_V1",
+            "task_id":s["task_id"],
+            "asof_et":s["asof_et"],
+            "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
+            "official_footer":s["official_footer"],
+            "identity_authority":s["identity_authority"],
+            "discovery_authority":s["discovery_meta"]["authority"],
+            "full_identity":s["discovery_meta"]["full_identity"],
+            "queue_total":s["queue_total"],
+            "queue_hash":s["queue_hash"],
+            "queue":s["queue"],
+            "eligible_adr_ads_count":len(eligible_adr_ads),
+            "eligible_adr_ads":eligible_adr_ads,
+            "explicit_excluded_count":s.get("explicit_excluded_count"),
+            "explicit_excluded_hash":s.get("explicit_excluded_hash"),
+            "explicit_excluded_reason_counts":s.get("explicit_excluded_reason_counts"),
+            "cursor":s["cursor"],
+            "pending_retry":s["pending_retry"],
+            "unknown_count":s["unknown_count"],
+            "status":s["status"],
+            "counts":s["counts"],
+            "pass_count":len(pass_symbols),
+            "pass_symbols_hash":sha_lines(pass_symbols),
+            "pass_symbols":pass_symbols,
+            "state_hash":s.get("state_hash"),
+            "state_file_sha256":sha_file(sp),
+            "candidate_file_sha256":sha_file(cp),
+            "completion_proof":{
+              "queue_result_cardinality_exact":s["queue_total"]==len(s["queue"])==len(s["security_names"])==len(s["results"]),
+              "queue_unique":len(set(s["queue"]))==s["queue_total"],
+              "cursor_complete":s["cursor"]==s["queue_total"],
+              "pending_retry_zero":s["pending_retry"]==0,
+              "unknown_zero":s["unknown_count"]==0,
+              "history_complete":s["status"]=="HISTORY_COMPLETE",
+              "eligible_adr_ads_not_excluded":"ADR_ADS" not in (s.get("explicit_excluded_reason_counts") or {}),
+            }
+          }
+          assert all(m["completion_proof"].values())
+          open(mp,"w").write(json.dumps(m,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
+          print({"queue_total":m["queue_total"],"pass_count":m["pass_count"],"eligible_adr_ads_count":m["eligible_adr_ads_count"],"queue_hash":m["queue_hash"],"pass_symbols_hash":m["pass_symbols_hash"]})
           PY
 
       - name: Commit canonical artifact and merged resolver evidence
@@ -176,6 +242,7 @@ jobs:
           cp nasdaq-xray/canonical_full_hard_gate_20260930_state.json "$tmpdir/state.json"
           cp nasdaq-xray/canonical_full_hard_gate_20260930_candidates.json "$tmpdir/candidates.json"
           cp nasdaq-xray/history_resolution_overlay.json "$tmpdir/overlay.json"
+          cp nasdaq-xray/canonical_full_hard_gate_20260930_manifest.json "$tmpdir/manifest.json"
 
           # Rebase-safe single-writer commit: discard stale checkout only after
           # preserving generated outputs, then apply outputs onto latest main.
@@ -184,9 +251,11 @@ jobs:
           cp "$tmpdir/state.json" nasdaq-xray/canonical_full_hard_gate_20260930_state.json
           cp "$tmpdir/candidates.json" nasdaq-xray/canonical_full_hard_gate_20260930_candidates.json
           cp "$tmpdir/overlay.json" nasdaq-xray/history_resolution_overlay.json
+          cp "$tmpdir/manifest.json" nasdaq-xray/canonical_full_hard_gate_20260930_manifest.json
 
           git add nasdaq-xray/canonical_full_hard_gate_20260930_state.json \
                   nasdaq-xray/canonical_full_hard_gate_20260930_candidates.json \
+                  nasdaq-xray/canonical_full_hard_gate_20260930_manifest.json \
                   nasdaq-xray/history_resolution_overlay.json
           if git diff --cached --quiet; then
             echo "NOOP_UNCHANGED"
@@ -205,5 +274,13 @@ jobs:
           assert s["pending_retry"]==0
           assert s["cursor"]==s["queue_total"]
           assert not any(str(v.get("status","")).startswith("UNKNOWN") for v in s["results"].values())
+          m=json.load(open("nasdaq-xray/canonical_full_hard_gate_20260930_manifest.json"))
+          assert m["schema"]=="XRAY_CANONICAL_HARD_GATE_MANIFEST_V1"
+          assert m["queue_total"]==s["queue_total"]
+          assert m["queue_hash"]==s["queue_hash"]
+          assert m["pass_count"]==s["counts"].get("PASS",0)
+          assert m["eligible_adr_ads_count"]>0
+          assert "ADR_ADS" not in (m.get("explicit_excluded_reason_counts") or {})
+          assert all(m["completion_proof"].values())
           print("FULL_IDENTITY_HARD_GATES_PASS")
           PY
