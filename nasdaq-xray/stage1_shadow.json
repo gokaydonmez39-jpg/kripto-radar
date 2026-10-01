@@ -119,7 +119,6 @@
     "RIOT",
     "SIMO",
     "SMCI",
-    "SNDK",
     "SSRM",
     "TEM",
     "ULTA",
@@ -128,9 +127,9 @@
     "WGS",
     "WIX"
   ],
-  "d_drawdown_pool_count": 32,
+  "d_drawdown_pool_count": 31,
   "execution": "NONE",
-  "input_current_core_count": 479,
+  "input_current_core_count": 477,
   "notes": [
     "C post-earnings family is evaluated later from official earnings/event evidence.",
     "No setup signal or R92 registration is created here."
@@ -1430,21 +1429,6 @@
         "ema10_m3": 140.6884601683552,
         "pass": false,
         "sma30": 131.38299999999998,
-        "weeks": 128
-      }
-    },
-    "CEG": {
-      "r92_eligible": true,
-      "state_cap": "NORMAL",
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 263.27,
-        "ema10": 271.65061477587625,
-        "ema10_m1": 273.5129736149599,
-        "ema10_m2": 277.6914121960621,
-        "ema10_m3": 276.12283712852036,
-        "pass": false,
-        "sma30": 278.811,
         "weeks": 128
       }
     },
@@ -6563,27 +6547,6 @@
         "weeks": 128
       }
     },
-    "SNDK": {
-      "a_trend_pool": false,
-      "b_tight_base_pool": [],
-      "d_drawdown_pool": true,
-      "dd120": -0.25486509635974297,
-      "dd252": -0.25486509635974297,
-      "last_close": 1739.89,
-      "r92_eligible": true,
-      "state_cap": "NORMAL",
-      "status": "WEEKLY_PASS",
-      "weekly": {
-        "close": 1777.8,
-        "ema10": 1641.6878421063504,
-        "ema10_m1": 1611.440695907762,
-        "ema10_m2": 1571.3564283317091,
-        "ema10_m3": 1557.5800790720891,
-        "pass": true,
-        "sma30": 1388.9573233333333,
-        "weeks": 83
-      }
-    },
     "SNEX": {
       "r92_eligible": true,
       "state_cap": "NORMAL",
@@ -8245,7 +8208,6 @@
     "CDNA": "NORMAL",
     "CDNS": "NORMAL",
     "CDW": "NORMAL",
-    "CEG": "NORMAL",
     "CELC": "NORMAL",
     "CELH": "NORMAL",
     "CENX": "NORMAL",
@@ -8549,7 +8511,6 @@
     "SMCI": "NORMAL",
     "SMMT": "NORMAL",
     "SMTC": "NORMAL",
-    "SNDK": "NORMAL",
     "SNEX": "NORMAL",
     "SNPS": "NORMAL",
     "SNY": "NORMAL",
@@ -8738,7 +8699,6 @@
     "SLAB",
     "SMCI",
     "SMTC",
-    "SNDK",
     "SSRM",
     "SWKS",
     "TARS",
@@ -8759,5 +8719,5 @@
     "XP",
     "ZBRA"
   ],
-  "weekly_pass_count": 107
+  "weekly_pass_count": 106
 }

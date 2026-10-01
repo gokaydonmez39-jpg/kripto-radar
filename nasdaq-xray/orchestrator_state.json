@@ -1,13 +1,78 @@
 {
   "account_gate": "UNKNOWN_NOT_CONFIGURED",
   "asof_et": "2026-09-30",
-  "cursor": 815,
+  "authority": "EXTERNAL_AUTONOMOUS_SHADOW_DATA_PLANE; CHATGPT_CANONICAL_STATE_UNCHANGED",
+  "candidate_hash": "60a25993c595fe8c1a9a2bdb121d7566dab6f70be6443fb4332251224b419b14",
+  "coverage_faults": [],
+  "deep": {
+    "a_pass": [],
+    "b_armed": [
+      "ASST",
+      "BWIN",
+      "COIN",
+      "FTNT",
+      "GH",
+      "MSTR",
+      "NVDA",
+      "PI",
+      "QRVO",
+      "SWKS"
+    ],
+    "b_breakout_pass": [
+      "WBD"
+    ],
+    "d_pass": [],
+    "event_state_fresh": true
+  },
+  "engine_hash": "5137830ea0031121e6a7163d9fbb1bd227d862200d21ec985693b50cc3bb4882",
+  "event_hash": "a9f78de8591cc52da292345c42dcb0e3719203917a1d577a6112b45d8bf8d40a",
   "execution": "NONE",
+  "final_tech": {
+    "fail": [
+      "WBD|B"
+    ],
+    "pre_g9_tech_pass": [],
+    "unknown": [],
+    "watch": []
+  },
+  "fingerprint": "0cab2dd792b125d50aeaa5c775ca2ace2a8caaf5795af92219a1113ace1745bb",
+  "full_go_blockers": [
+    "G9_BLOCKED_NO_AUTHORIZED_ZERO_DOLLAR_RUNTIME_SOURCE",
+    "ACCOUNT_GATE_UNKNOWN",
+    "OBSERVED_IPHONE_SIGNAL_DELIVERY_UNPROVEN"
+  ],
   "g9_status": "BLOCKED",
-  "queue_total": 815,
+  "history": {
+    "counts": {
+      "BLOCK_CURRENT_RUN": 1,
+      "FAIL_DV20": 268,
+      "FAIL_HISTORY": 47,
+      "FAIL_PRICE": 13,
+      "PASS": 481
+    },
+    "queue_total": 810,
+    "status": "HISTORY_COMPLETE"
+  },
+  "mc": {
+    "current_core_count": 477,
+    "definitive_fail_count": 4,
+    "unresolved_count": 0
+  },
   "real_money": "NO-GO",
+  "regime": {
+    "breadth_above_sma50_pct": 0.33962264150943394,
+    "breadth_missing_count": 0,
+    "nh20": 32,
+    "nl20": 95,
+    "regime": "MIXED"
+  },
   "schema": "XRAY_ORCHESTRATOR_V1",
-  "status": "PARTIAL_HISTORY",
+  "stage1": {
+    "unknown_count": 0,
+    "weekly_pass_count": 106
+  },
+  "status": "ENGINE_PASS_NO_CONFIRMED_SETUP",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "updated_at_utc": "2026-10-01T17:54:36.749617+00:00"
+  "unknown_never_pass": true,
+  "updated_at_utc": "2026-10-01T18:06:48.820912+00:00"
 }

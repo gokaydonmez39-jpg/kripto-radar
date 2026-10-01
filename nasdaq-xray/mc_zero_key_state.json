@@ -80,7 +80,6 @@
     "CDNA",
     "CDNS",
     "CDW",
-    "CEG",
     "CELC",
     "CELH",
     "CENX",
@@ -384,7 +383,6 @@
     "SMCI",
     "SMMT",
     "SMTC",
-    "SNDK",
     "SNEX",
     "SNPS",
     "SNY",
@@ -820,10 +818,6 @@
     "CDW": {
       "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
       "nasdaq_market_cap": 16022233316.0
-    },
-    "CEG": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 90001160414.0
     },
     "CELC": {
       "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
@@ -2042,10 +2036,6 @@
       "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
       "nasdaq_market_cap": 16644625397.0
     },
-    "SNDK": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 254752955650.0
-    },
     "SNEX": {
       "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
       "nasdaq_market_cap": 7796665750.0
@@ -2434,13 +2424,13 @@
       "nasdaq_market_cap": 32516367875.0
     }
   },
-  "direct_nasdaq_conservative_pass_count": 479,
+  "direct_nasdaq_conservative_pass_count": 477,
   "execution": "NONE",
   "fallback_watch_symbols": [
     "WGS"
   ],
   "overlay_meta": {
-    "age_hours": 2.981416023611111,
+    "age_hours": 5.296026285277778,
     "generated_at_utc": "2026-10-01T12:45:08.005840+00:00",
     "status": "PASS"
   },

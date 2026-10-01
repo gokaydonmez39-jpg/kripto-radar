@@ -45,7 +45,7 @@
   "d_geometry_rs_count": 0,
   "event_state_fresh": true,
   "execution": "NONE",
-  "input_weekly_pass_count": 107,
+  "input_weekly_pass_count": 106,
   "mode": "FULL_SHADOW",
   "r92_ineligible": [
     "WGS"
@@ -2360,39 +2360,6 @@
       "state_cap": "NORMAL",
       "status": "EVALUATED"
     },
-    "SNDK": {
-      "A": {
-        "pool": false,
-        "reason": "NOT_A_STAGE1"
-      },
-      "B": {
-        "pool": false,
-        "reason": "NOT_B_STAGE1"
-      },
-      "D": {
-        "A": 108.16675875618307,
-        "P": 1909.48,
-        "anchor": 1659.02,
-        "close": 1739.89,
-        "d": 2.315498799077061,
-        "dd120": -0.25486509635974297,
-        "dd252": -0.25486509635974297,
-        "dk3_pre_r1": false,
-        "ema50": 1617.5619888822102,
-        "hl_date": "2026-09-28",
-        "pool": true,
-        "rs20": 0.08292983136230658,
-        "rs60": 0.031422594588071284,
-        "rvol20": 0.6847849508809011
-      },
-      "event_status": "CLEAN_DISCOVERY",
-      "mixed_rs_pass": true,
-      "r92_eligible": true,
-      "rs20": 0.08292983136230658,
-      "rs60": 0.031422594588071284,
-      "state_cap": "NORMAL",
-      "status": "EVALUATED"
-    },
     "SSRM": {
       "A": {
         "pool": false,
@@ -3004,7 +2971,6 @@
     "SLAB": "NORMAL",
     "SMCI": "NORMAL",
     "SMTC": "NORMAL",
-    "SNDK": "NORMAL",
     "SSRM": "NORMAL",
     "SWKS": "NORMAL",
     "TARS": "NORMAL",
