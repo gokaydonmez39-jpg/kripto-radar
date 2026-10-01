@@ -14,6 +14,7 @@ on:
       - "nasdaq-xray/price_dv20_recover_from_fullstate.py"
       - "nasdaq-xray/build_current_resolver_request.py"
       - "nasdaq-xray/canonical_resolver_bridge_*.json"
+      - "nasdaq-xray/chatgpt_compiled_policy_v3.json"
       - ".github/workflows/xray-canonical-current-pre-mc.yml"
   workflow_dispatch:
 
@@ -129,14 +130,30 @@ jobs:
           import json
           m=json.load(open("nasdaq-xray/canonical_current_master_manifest.json"))
           p=json.load(open("nasdaq-xray/canonical_current_price_dv20.json"))
-          assert m["task_id"]==p["task_id"]=="6a825366222081918997094d76e6ae46"
-          assert m["asof_et"]==p["asof_et"]
+          q=json.load(open("nasdaq-xray/canonical_current_resolver_request.json"))
+          assert m["task_id"]==p["task_id"]==q["task_id"]=="6a825366222081918997094d76e6ae46"
+          assert m["asof_et"]==p["asof_et"]==q["asof_et"]
+          assert q["compiled_policy_path"]=="nasdaq-xray/chatgpt_compiled_policy_v3.json"
+          assert q["compiled_policy_blob_sha"]=="738402b627abaca89a5b9fdfea51ff6c468d752b"
+          assert q["compiled_policy_hash"]=="987982f0d17fc0f01a28fe22540fc3e09d4e2f28e3aa1b40c0113e3112b44c16"
+          assert q["compiled_policy_version"]=="C4.11"
+          assert q["queue_hash"]==m["queue_hash"] and q["queue_total"]==m["queue_total"]
+          assert q["symbol_count"]==len(q["symbols"])==len(set(q["symbols"]))
+          assert q["master_unknown_count"]==len(q["master_unknown_symbols"])
+          assert q["price_unknown_count"]==len(q["price_unknown_symbols"])
+          assert set(q["symbols"])==set(q["master_unknown_symbols"])|set(q["price_unknown_symbols"])
+          if q["settlement_required"]:
+              assert q["pointer_asof_et"] < q["asof_et"]
+              assert len(q["settlement_symbols"])==3 and len(set(q["settlement_symbols"]))==3
+              assert {"AAPL","NVDA"}<=set(q["settlement_symbols"])
+              assert q["settlement_core_symbol"] not in {"AAPL","NVDA"}
+              assert q["settlement_core_source_path"] and q["settlement_core_source_blob_sha"]
           assert p["source_master_queue_hash"]==m["queue_hash"]
           assert p["source_master_count"]==m["queue_total"]
           assert len(p["results"])==m["queue_total"]
           assert sum(p["counts"].values())==m["queue_total"]
           assert p["pass_count"]==len(p["pass_symbols"])==len(set(p["pass_symbols"]))
-          print({"asof":m["asof_et"],"master_status":m["status"],"master_unknown":m["unknown_count"],"price_dv20_unknown":p["unknown_count"],"price_dv20_pass":p["pass_count"]})
+          print({"asof":m["asof_et"],"master_status":m["status"],"master_unknown":m["unknown_count"],"price_dv20_unknown":p["unknown_count"],"price_dv20_pass":p["pass_count"],"resolver_request_status":q["status"],"settlement_required":q["settlement_required"]})
           PY
       - name: Commit current pre-MC artifacts
         shell: bash
