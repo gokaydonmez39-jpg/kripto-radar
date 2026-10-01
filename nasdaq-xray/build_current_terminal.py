@@ -43,6 +43,8 @@ def find_mc(price,price_blob):
               and j.get("input_path")=="nasdaq-xray/canonical_current_price_dv20.json"
               and j.get("input_blob_sha")==price_blob
               and j.get("input_pass_hash")==price["pass_hash"]
+              and j.get("policy_hash")==POLICY_HASH
+              and j.get("policy_version")=="C4.11"
               and int(j.get("input_count",-1))==int(price["pass_count"])
               and set((j.get("results") or {}).keys())==set(price["pass_symbols"])
             ):
@@ -87,6 +89,7 @@ def main():
         assert sw.get("schema")=="XRAY_RESOLVER_EPOCH_RESULT_V1" and sw.get("status")=="COMMITTED"
         assert sw.get("task_id")==TASK and sw.get("asof_et")==asof and sw.get("settlement_status")=="PASS"
         assert sw.get("queue_hash")==m["queue_hash"]
+        assert sw.get("compiled_policy_hash")==POLICY_HASH and sw.get("compiled_policy_version")=="C4.11"
     else:
         assert mc.get("settlement_witness_status") in {None,"NOT_REQUIRED_POINTER_ASOF","PASS"}
     primary=set(mc.get("primary_pass_symbols") or [])
