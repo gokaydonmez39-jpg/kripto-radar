@@ -5,7 +5,7 @@
   "execution": "NONE",
   "real_money": "NO-GO",
   "unknown_never_pass": true,
-  "weekly_scope_count": 104,
+  "weekly_scope_count": 106,
   "weekly_scope": [
     "AAPL",
     "ABCL",
@@ -65,6 +65,7 @@
     "MSTR",
     "MTCH",
     "MU",
+    "MXL",
     "NBIS",
     "NDSN",
     "NESR",
@@ -74,6 +75,7 @@
     "NTSK",
     "NVDA",
     "OKTA",
+    "ONC",
     "PCTY",
     "PFG",
     "PI",
@@ -92,7 +94,6 @@
     "SLAB",
     "SMCI",
     "SMTC",
-    "SNDK",
     "SSRM",
     "SWKS",
     "TARS",
@@ -104,6 +105,7 @@
     "TWST",
     "TXG",
     "ULTA",
+    "VOD",
     "VRNS",
     "WBD",
     "WDAY",
@@ -122,6 +124,31 @@
     "2026-10-09",
     "2026-10-12"
   ],
+  "market_wide_discovery": {
+    "provider": "BIGDATA_CORPORATE_CALENDAR",
+    "exchange_mics": [
+      "XNAS",
+      "XNGS",
+      "XNMS",
+      "XNCM",
+      "XNGM"
+    ],
+    "future_window": [
+      "2026-10-01",
+      "2026-10-12"
+    ],
+    "past_family_c_window": [
+      "2026-09-17",
+      "2026-09-30"
+    ],
+    "future_weekly_scope_hits": [
+      "AEHR"
+    ],
+    "past_weekly_scope_hits": [
+      "MU"
+    ],
+    "pagination_complete": true
+  },
   "same_day_after_close_window": {
     "market_close_et": "2026-09-30T16:00:00-04:00",
     "next_rth_open_et": "2026-10-01T09:30:00-04:00",
@@ -156,7 +183,7 @@
       "source_proof_blob_sha": "be6ab188fd8e5ff53f2ce9ec979cdf3642008e3e"
     }
   },
-  "clean_discovery_count": 102,
+  "clean_discovery_count": 104,
   "event_status_by_symbol": {
     "AAPL": {
       "event_status": "CLEAN_DISCOVERY"
@@ -346,6 +373,9 @@
       "source_proof_path": "nasdaq-xray/canonical_events_family_c_20260929.json",
       "source_proof_blob_sha": "ee3a43e65ed64e7d0bbf33832403328c9c7fd510"
     },
+    "MXL": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
     "NBIS": {
       "event_status": "CLEAN_DISCOVERY"
     },
@@ -371,6 +401,9 @@
       "event_status": "CLEAN_DISCOVERY"
     },
     "OKTA": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "ONC": {
       "event_status": "CLEAN_DISCOVERY"
     },
     "PCTY": {
@@ -427,9 +460,6 @@
     "SMTC": {
       "event_status": "CLEAN_DISCOVERY"
     },
-    "SNDK": {
-      "event_status": "CLEAN_DISCOVERY"
-    },
     "SSRM": {
       "event_status": "CLEAN_DISCOVERY"
     },
@@ -461,6 +491,9 @@
       "event_status": "CLEAN_DISCOVERY"
     },
     "ULTA": {
+      "event_status": "CLEAN_DISCOVERY"
+    },
+    "VOD": {
       "event_status": "CLEAN_DISCOVERY"
     },
     "VRNS": {
@@ -496,7 +529,7 @@
   "source_proof": {
     "stage1": {
       "path": "nasdaq-xray/canonical_stage1_20260930.json",
-      "blob_sha": "92968175766378af7cef33f534fac21d4949fbc1"
+      "blob_sha": "f69d1e97477963343168e51932b50773795d206f"
     },
     "event_official": {
       "path": "nasdaq-xray/event_official_state.json",
