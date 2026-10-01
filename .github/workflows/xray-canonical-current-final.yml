@@ -1,0 +1,170 @@
+name: XRAY Canonical Current Final Factory
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/canonical_event_bridge_*.json"
+      - "nasdaq-xray/build_current_event_state.py"
+      - "nasdaq-xray/family_c_engine.py"
+      - "nasdaq-xray/deep_pre_r1_shadow.py"
+      - "nasdaq-xray/final_tech_shadow.py"
+      - "nasdaq-xray/build_current_terminal.py"
+      - ".github/workflows/xray-canonical-current-final.yml"
+  schedule:
+    - cron: "58 * * * 1-5"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: xray-canonical-current-final
+  cancel-in-progress: false
+
+jobs:
+  final:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 1}
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+
+      - name: Find exact-bound committed event bridge
+        id: event
+        shell: bash
+        run: |
+          python - <<'PY' > /tmp/event_out
+          import glob,json,pathlib
+          reqp=pathlib.Path("nasdaq-xray/canonical_current_event_request.json")
+          if not reqp.exists():
+              print("ready=false"); raise SystemExit
+          r=json.load(open(reqp))
+          if r.get("schema")!="XRAY_EVENT_EPOCH_REQUEST_V1" or r.get("status")!="READY":
+              print("ready=false"); raise SystemExit
+          valid=[]
+          for fp in glob.glob("nasdaq-xray/canonical_event_bridge_*.json"):
+              try:
+                  e=json.load(open(fp))
+                  ok=(
+                    e.get("schema")=="XRAY_EVENT_EPOCH_RESULT_V1"
+                    and e.get("status")=="COMMITTED"
+                    and e.get("task_id")=="6a825366222081918997094d76e6ae46"
+                    and e.get("execution")=="NONE" and e.get("real_money")=="NO-GO"
+                    and e.get("asof_et")==r.get("asof_et")
+                    and e.get("weekly_scope_hash")==r.get("weekly_scope_hash")
+                    and e.get("geometry_scope_hash")==r.get("geometry_scope_hash")
+                    and e.get("source_stage1_blob_sha")==r.get("source_stage1_blob_sha")
+                    and e.get("source_regime_blob_sha")==r.get("source_regime_blob_sha")
+                    and e.get("source_deep_geometry_blob_sha")==r.get("source_deep_geometry_blob_sha")
+                  )
+                  if ok: valid.append(fp)
+              except Exception:
+                  pass
+          if len(valid)!=1:
+              print("ready=false"); print("binding_matches="+str(len(valid)))
+          else:
+              print("ready=true"); print("path="+valid[0]); print("asof="+r["asof_et"])
+          PY
+          cat /tmp/event_out >> "$GITHUB_OUTPUT"
+          cat /tmp/event_out
+
+      - name: Compile
+        if: steps.event.outputs.ready == 'true'
+        run: |
+          python -m py_compile \
+            nasdaq-xray/build_current_event_state.py \
+            nasdaq-xray/family_c_engine.py \
+            nasdaq-xray/deep_pre_r1_shadow.py \
+            nasdaq-xray/final_tech_shadow.py \
+            nasdaq-xray/build_current_terminal.py
+
+      - name: Install zero-dollar runtime
+        if: steps.event.outputs.ready == 'true'
+        run: python -m pip install --disable-pip-version-check akshare==1.18.95 pandas pandas_market_calendars
+
+      - name: Normalize event bridge
+        if: steps.event.outputs.ready == 'true'
+        run: python nasdaq-xray/build_current_event_state.py
+
+      - name: Run Family C
+        if: steps.event.outputs.ready == 'true'
+        env:
+          XRAY_FAMILY_C_STAGE1: ${{ github.workspace }}/nasdaq-xray/canonical_current_stage1.json
+          XRAY_FAMILY_C_EVENTS: ${{ github.workspace }}/nasdaq-xray/canonical_current_event_state.json
+          XRAY_FAMILY_C_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_current_family_c.json
+          XRAY_FAMILY_C_WORKERS: "8"
+        run: python nasdaq-xray/family_c_engine.py
+
+      - name: Run deep full
+        if: steps.event.outputs.ready == 'true'
+        env:
+          XRAY_STAGE1_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_current_stage1.json
+          XRAY_REGIME_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_current_regime.json
+          XRAY_EVENT_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_current_event_state.json
+          XRAY_DEEP_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_current_deep_full.json
+          XRAY_DEEP_WORKERS: "8"
+        run: python nasdaq-xray/deep_pre_r1_shadow.py
+
+      - name: Run final tech
+        if: steps.event.outputs.ready == 'true'
+        env:
+          XRAY_FINAL_DEEP_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_current_deep_full.json
+          XRAY_FINAL_FAMILY_C_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_current_family_c.json
+          XRAY_FINAL_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_current_final_tech.json
+          XRAY_FINAL_WORKERS: "6"
+        run: python nasdaq-xray/final_tech_shadow.py
+
+      - name: Build dynamic terminal
+        if: steps.event.outputs.ready == 'true'
+        env:
+          XRAY_TERMINAL_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_current_terminal.json
+        run: python nasdaq-xray/build_current_terminal.py
+
+      - name: Structural terminal gate
+        if: steps.event.outputs.ready == 'true'
+        run: |
+          python - <<'PY'
+          import json
+          e=json.load(open("nasdaq-xray/canonical_current_event_state.json"))
+          c=json.load(open("nasdaq-xray/canonical_current_family_c.json"))
+          d=json.load(open("nasdaq-xray/canonical_current_deep_full.json"))
+          f=json.load(open("nasdaq-xray/canonical_current_final_tech.json"))
+          t=json.load(open("nasdaq-xray/canonical_current_terminal.json"))
+          a=t["asof_et"]
+          assert e["asof_et"]==c["asof_et"]==d["asof_et"]==f["asof_et"]==a
+          assert d["event_state_fresh"] is True
+          assert d["unknown_history_count"]==0,d["unknown_history"]
+          assert set(e["event_status_by_symbol"])==set(d["results"])
+          assert t["execution"]=="NONE" and t["real_money"]=="NO-GO"
+          assert t["terminal_result"] in {"NO_CONFIRMED_SETUP","PRE_G9_SETUP_EXISTS","PARTIAL_UNKNOWN"}
+          if t["full_end_to_end_research_pass"]:
+              assert all(v==0 for v in t["blockers"].values()),t["blockers"]
+              assert t["status"]=="FULL_E2E_RESEARCH_PASS"
+          else:
+              assert t["status"]=="PARTIAL"
+          print({"asof":a,"terminal_status":t["status"],"terminal_result":t["terminal_result"],"pre_g9":t["counts"]["pre_g9_tech_pass"],"blockers":t["blockers"]})
+          PY
+
+      - name: Commit current final artifacts
+        if: steps.event.outputs.ready == 'true'
+        shell: bash
+        run: |
+          set -e
+          git config user.name "xray-dataplane-bot"
+          git config user.email "xray-dataplane-bot@users.noreply.github.com"
+          git add \
+            nasdaq-xray/canonical_current_event_state.json \
+            nasdaq-xray/canonical_current_family_c.json \
+            nasdaq-xray/canonical_current_deep_full.json \
+            nasdaq-xray/canonical_current_final_tech.json \
+            nasdaq-xray/canonical_current_terminal.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "chore(xray): current epoch final factory [skip ci]"
+          for attempt in 1 2 3 4 5; do
+            if git pull --rebase origin main && git push; then exit 0; fi
+            sleep $((attempt*2))
+          done
+          exit 1
