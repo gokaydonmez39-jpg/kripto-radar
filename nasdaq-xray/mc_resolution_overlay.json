@@ -1,0 +1,94 @@
+{
+  "schema": "XRAY_MC_RESOLUTION_OVERLAY_V1",
+  "task_id": "6a825366222081918997094d76e6ae46",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "base_asof_et": "2026-09-30",
+  "generated_at_utc": "2026-10-01T12:43:00.487027+00:00",
+  "max_age_hours": 24,
+  "policy": "PRIMARY_BIGDATA_EXACT_XNAS_COMPANY_PUBLIC_FINITE_USD_MARKET_CAP;FALLBACK_ONLY_IF_RALLIES_XNAS_AND_LONGBRIDGE_NASD_BOTH_GE_2_1B_REL_DIFF_LE_10PCT;FALLBACK_MAX_WATCH_AND_R92_FALSE",
+  "resolutions": {
+    "AXGN": {
+      "decision": "PASS",
+      "mode": "BIGDATA_PRIMARY",
+      "market_cap_usd": 2253682080,
+      "bigdata_entity_id": "514067",
+      "listing": "XNAS:AXGN"
+    },
+    "FIVN": {
+      "decision": "PASS",
+      "mode": "BIGDATA_PRIMARY",
+      "market_cap_usd": 2603941232,
+      "bigdata_entity_id": "192727",
+      "listing": "XNAS:FIVN"
+    },
+    "GPCR": {
+      "decision": "FAIL",
+      "mode": "BIGDATA_PRIMARY",
+      "market_cap_usd": 1800109646,
+      "bigdata_entity_id": "0H4S2P",
+      "listing": "XNAS:GPCR"
+    },
+    "INOD": {
+      "decision": "PASS",
+      "mode": "BIGDATA_PRIMARY",
+      "market_cap_usd": 2147416342,
+      "bigdata_entity_id": "CAC258",
+      "listing": "XNAS:INOD"
+    },
+    "SDGR": {
+      "decision": "PASS",
+      "mode": "BIGDATA_PRIMARY",
+      "market_cap_usd": 2320078480,
+      "bigdata_entity_id": "6BBCBA",
+      "listing": "XNAS:SDGR"
+    },
+    "SLS": {
+      "decision": "PASS",
+      "mode": "BIGDATA_PRIMARY",
+      "market_cap_usd": 2290066230,
+      "bigdata_entity_id": "9FBBDC",
+      "listing": "XNAS:SLS"
+    },
+    "UPST": {
+      "decision": "PASS",
+      "mode": "BIGDATA_PRIMARY",
+      "market_cap_usd": 2200409684,
+      "bigdata_entity_id": "FD2466",
+      "listing": "XNAS:UPST"
+    },
+    "VERA": {
+      "decision": "PASS",
+      "mode": "BIGDATA_PRIMARY",
+      "market_cap_usd": 2317869841,
+      "bigdata_entity_id": "9XF5GZ",
+      "listing": "XNAS:VERA"
+    },
+    "BAND": {
+      "decision": "FAIL",
+      "mode": "BIGDATA_PRIMARY",
+      "market_cap_usd": 1953695579,
+      "bigdata_entity_id": "3798B9",
+      "listing": "XNAS:BAND"
+    },
+    "NKTR": {
+      "decision": "FAIL",
+      "mode": "BIGDATA_PRIMARY",
+      "market_cap_usd": 1736912720,
+      "bigdata_entity_id": "649CBD",
+      "listing": "XNAS:NKTR"
+    },
+    "WGS": {
+      "decision": "PASS",
+      "mode": "RALLIES_LONGBRIDGE_FALLBACK",
+      "state_cap": "WATCH",
+      "r92_eligible": false,
+      "rallies_exchange": "XNAS",
+      "rallies_market_cap_usd": 2260250382,
+      "longbridge_exchange": "NASD",
+      "longbridge_market_cap_usd": 2156169714.3,
+      "relative_diff": 0.04604829116670837
+    }
+  }
+}
