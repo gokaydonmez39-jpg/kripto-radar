@@ -14,8 +14,8 @@ import akshare as ak
 import pandas as pd
 
 ROOT=Path(__file__).resolve().parent
-DEEP=ROOT/"deep_pre_r1_shadow.json"
-OUT=ROOT/"final_tech_shadow.json"
+DEEP=Path(os.getenv("XRAY_FINAL_DEEP_STATE", str(ROOT/"deep_pre_r1_shadow.json")))
+OUT=Path(os.getenv("XRAY_FINAL_OUT", str(ROOT/"final_tech_shadow.json")))
 TASK_ID="6a825366222081918997094d76e6ae46"
 WORKERS=int(os.getenv("XRAY_FINAL_WORKERS","6"))
 
