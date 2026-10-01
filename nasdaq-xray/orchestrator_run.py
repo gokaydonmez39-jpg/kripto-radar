@@ -7,6 +7,7 @@ Does not mutate ChatGPT canonical Durable State and never places orders.
 from __future__ import annotations
 import hashlib, json, os, subprocess, sys
 from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parent
@@ -48,6 +49,12 @@ def run(script, extra_env=None):
         raise RuntimeError(f"{script}:EXIT_{cp.returncode}")
 
 def main():
+    now_et=datetime.now(timezone.utc).astimezone(ZoneInfo("America/New_York"))
+    # Keep an all-UTC schedule without accidentally treating UTC Saturday as ET Friday loss.
+    if now_et.weekday()>=5:
+        print("XRAY_ORCHESTRATOR=NOOP_ET_WEEKEND")
+        return
+
     # 1) Progress/refresh official universe + PRICE/DV20/HISTORY.
     # Repeated local invocations are resumable and bounded; same epoch does zero new work once complete.
     max_loops=5
@@ -79,8 +86,6 @@ def main():
 
     # Same completed epoch + same official-event evidence + same engine code => zero-data-plane no-op.
     if old.get("fingerprint")==fingerprint and old.get("status") in {"ENGINE_PASS_FULL_GO_BLOCKED","ENGINE_PASS_NO_CONFIRMED_SETUP"}:
-        old["last_noop_check_utc"]=datetime.now(timezone.utc).isoformat()
-        STATE.write_text(json.dumps(old,indent=2,sort_keys=True)+"\n")
         print("XRAY_ORCHESTRATOR=NOOP_UNCHANGED_EPOCH")
         return
 
