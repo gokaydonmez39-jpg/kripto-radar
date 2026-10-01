@@ -1,0 +1,40 @@
+#!/usr/bin/env python3
+"""Build fail-closed zero-key XRAY shadow CURRENT_CORE for autonomous GitHub data plane.
+This is not the ChatGPT canonical Durable State authority.
+"""
+import json, hashlib
+from pathlib import Path
+from datetime import datetime, timezone
+
+ROOT=Path(__file__).resolve().parent
+MC=ROOT/"mc_zero_key_state.json"
+SINA=ROOT/"sina_candidates.json"
+OUT=ROOT/"production_core_state.json"
+TASK_ID="6a825366222081918997094d76e6ae46"
+
+mc=json.loads(MC.read_text())
+sc=json.loads(SINA.read_text())
+if mc.get("asof_et")!=sc.get("asof_et"):
+    raise RuntimeError("ASOF_MISMATCH_MC_SINA")
+core=sorted(set(mc.get("current_core_zero_key") or []))
+cand=set((sc.get("candidates") or {}).keys())
+if any(s not in cand for s in core):
+    raise RuntimeError("CORE_NOT_SUBSET_HARDGATE_CANDIDATES")
+serial="\n".join(core)
+out={
+  "schema":"XRAY_EXTERNAL_ZERO_KEY_CORE_V1",
+  "task_id":TASK_ID,
+  "asof_et":mc["asof_et"],
+  "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
+  "authority":"EXTERNAL_SHADOW_DATA_PLANE_NOT_CANONICAL_DURABLE_STATE",
+  "current_core_mc_pass":core,
+  "current_core_count":len(core),
+  "current_core_hash":hashlib.sha256(serial.encode()).hexdigest(),
+  "mc_unresolved":mc.get("unresolved") or {},
+  "mc_unresolved_count":mc.get("unresolved_count",0),
+  "mc_definitive_fail":mc.get("definitive_fail") or {},
+  "mc_policy":"NASDAQ_OFFICIAL_MC_GE_2_6B_CONSERVATIVE_PASS;2_0_TO_2_6B_UNKNOWN",
+  "updated_at_utc":datetime.now(timezone.utc).isoformat()
+}
+OUT.write_text(json.dumps(out,indent=2,sort_keys=True)+"\n")
+print(json.dumps({"asof":out["asof_et"],"current_core_count":len(core),"mc_unresolved_count":out["mc_unresolved_count"]},sort_keys=True))
