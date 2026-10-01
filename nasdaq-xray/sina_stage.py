@@ -247,19 +247,25 @@ def parse_hist(sym,asof,expected20):
             if day<=asof and close>0 and volume>0 and math.isfinite(close) and math.isfinite(volume):
                 by[day]=(close,volume)
         bars=len(by)
-        # Hard-gate short circuits are safe: a proven failure at any mandatory
-        # gate is terminal non-PASS even when a later/earlier provider field is missing.
+        # PRICE may short-circuit from an exact same-ASOF close. A short Sina
+        # history alone is not enough to terminally FAIL HISTORY because provider
+        # incompleteness can mimic a young listing. Route it to the independent resolver.
         if asof in by:
             price=by[asof][0]
             if price<=HARD_PRICE:
                 return "FAIL_PRICE",{"price":price,"bars":bars,"proof":"ASOF_CLOSE"}
         else:
-            if bars<HARD_HISTORY:
-                return "FAIL_HISTORY",{"bars":bars,"reason":"DAILY_LT260","proof":"KNOWN_HISTORY_COUNT"}
-            return "UNKNOWN_STATIC",{"reason":"ASOF_MISSING","bars":bars}
+            return "UNKNOWN_STATIC",{
+              "reason":"ASOF_MISSING_REQUIRES_RESOLUTION",
+              "bars":bars,
+              "history_short":bars<HARD_HISTORY,
+            }
 
         if bars<HARD_HISTORY:
-            return "FAIL_HISTORY",{"price":price,"bars":bars,"reason":"DAILY_LT260","proof":"KNOWN_HISTORY_COUNT"}
+            return "UNKNOWN_STATIC",{
+              "price":price,"bars":bars,
+              "reason":"SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+            }
 
         missing=[d for d in expected20 if d not in by]
         known_dv=[by[d][0]*by[d][1] for d in expected20 if d in by]
