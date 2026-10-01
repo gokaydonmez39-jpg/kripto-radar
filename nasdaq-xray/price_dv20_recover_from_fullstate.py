@@ -10,6 +10,7 @@ INPUT=Path(os.getenv("XRAY_FULLSTATE_INPUT",str(ROOT/"canonical_full_hard_gate_2
 OUT=Path(os.getenv("XRAY_PRICE_DV20_RECOVER_OUT",str(ROOT/"canonical_price_dv20_20260930.json")))
 TASK_ID="6a825366222081918997094d76e6ae46"
 WORKERS=int(os.getenv("XRAY_PHASE_WORKERS","12"))
+DEFER_TO_BRIDGE=os.getenv("XRAY_DYNAMIC_AUTHENTICATED_PRICE_BRIDGE","0")=="1"
 HARD_PRICE=10.0
 HARD_DV20=50_000_000.0
 
@@ -46,52 +47,92 @@ def load_exception_bridge(asof,queue_hash):
         compact=obj.get("price_resolution_compact")
         encoding=obj.get("result_encoding")
         if compact is not None:
-            if encoding!="ALPACA_SIP_COMPACT_V1" or not isinstance(compact,dict):
+            if encoding not in {"ALPACA_SIP_COMPACT_V1","ALPACA_SIP_COMPACT_V2"} or not isinstance(compact,dict):
                 raise ValueError("COMPACT_ENCODING")
-            fp=compact.get("fail_price_symbols") or []
-            fd=compact.get("fail_dv20_symbols") or []
-            pm=compact.get("pass_price_dv20") or {}
-            bc=compact.get("block_current_run") or {}
-            bp=compact.get("block_post_asof_listing") or {}
-            un=compact.get("unresolved_symbols") or []
-            if not all(isinstance(x,list) for x in [fp,fd,un]) or not all(isinstance(x,dict) for x in [pm,bc,bp]):
-                raise ValueError("COMPACT_TYPES")
-            groups=[set(fp),set(fd),set(pm),set(bc),set(bp),set(un)]
-            if any(len(g)!=len(v) for g,v in zip(groups,[fp,fd,pm,bc,bp,un])):
-                raise ValueError("COMPACT_DUPLICATES")
-            for i in range(len(groups)):
-                for j in range(i+1,len(groups)):
-                    if groups[i]&groups[j]: raise ValueError("COMPACT_OVERLAP")
-            req=set(obj.get("price_unknown_symbols") or obj.get("symbols") or [])
-            if set().union(*groups)!=req:
-                raise ValueError("COMPACT_COVERAGE")
             src="ALPACA_HISTORICAL_SIP_DAILY_BATCH_NON_G9"
-            for sym in fp:
-                prs[sym]={"decision":"FAIL_PRICE","source":src,"proof":"ASOF_CLOSE_LE_10","compact_terminal_proof":True}
-            for sym in fd:
-                prs[sym]={"decision":"FAIL_DV20","source":src,"proof":"EXACT20_OR_UPPER_BOUND_LT_GATE","compact_terminal_proof":True}
-            for sym,val in pm.items():
-                if isinstance(val,dict):
-                    px=num(val.get("price")); dv=num(val.get("dv20"))
-                elif isinstance(val,(list,tuple)) and len(val)>=2:
+            if encoding=="ALPACA_SIP_COMPACT_V2":
+                fp=compact.get("fail_price") or {}
+                fd=compact.get("fail_dv20") or {}
+                pm=compact.get("pass_price_dv20") or {}
+                bc=compact.get("block_current_run") or {}
+                bp=compact.get("block_post_asof_listing") or {}
+                un=compact.get("unresolved_symbols") or []
+                if not all(isinstance(x,dict) for x in [fp,fd,pm,bc,bp]) or not isinstance(un,list):
+                    raise ValueError("COMPACT_V2_TYPES")
+                groups=[set(fp),set(fd),set(pm),set(bc),set(bp),set(un)]
+                vals=[fp,fd,pm,bc,bp,un]
+                if any(len(g)!=len(v) for g,v in zip(groups,vals)):
+                    raise ValueError("COMPACT_DUPLICATES")
+                for i in range(len(groups)):
+                    for j in range(i+1,len(groups)):
+                        if groups[i]&groups[j]: raise ValueError("COMPACT_OVERLAP")
+                req=set(obj.get("price_unknown_symbols") or obj.get("symbols") or [])
+                if set().union(*groups)!=req: raise ValueError("COMPACT_COVERAGE")
+                for sym,val in fp.items():
+                    px=num(val)
+                    if px is None or px>HARD_PRICE: raise ValueError("COMPACT_FAIL_PRICE_GATE")
+                    prs[sym]={"decision":"FAIL_PRICE","price":px,"source":src,"proof":"ASOF_CLOSE_LE_10"}
+                for sym,val in fd.items():
+                    if not isinstance(val,(list,tuple)) or len(val)<3: raise ValueError("COMPACT_FAIL_DV20_VALUE")
+                    px=num(val[0]); metric=num(val[1]); proof=str(val[2])
+                    if px is None or px<=HARD_PRICE or metric is None or metric>=HARD_DV20:
+                        raise ValueError("COMPACT_FAIL_DV20_GATE")
+                    if proof not in {"EXACT20_MEDIAN_LT_GATE","DV20_UPPER_BOUND_LT_GATE"}:
+                        raise ValueError("COMPACT_FAIL_DV20_PROOF")
+                    rec={"decision":"FAIL_DV20","price":px,"source":src,"proof":proof}
+                    if proof=="EXACT20_MEDIAN_LT_GATE": rec["dv20"]=metric
+                    else: rec["dv20_upper_bound"]=metric
+                    prs[sym]=rec
+                for sym,val in pm.items():
+                    if not isinstance(val,(list,tuple)) or len(val)<2: raise ValueError("COMPACT_PASS_VALUE")
                     px=num(val[0]); dv=num(val[1])
-                else:
-                    raise ValueError("COMPACT_PASS_VALUE")
-                if px is None or px<=HARD_PRICE or dv is None or dv<HARD_DV20:
-                    raise ValueError("COMPACT_PASS_GATE")
-                prs[sym]={
-                  "decision":"PASS_PRICE_DV20","price":px,"dv20":dv,
-                  "known_session_count":20,"missing_sessions":[],"no_synthetic_bar":True,
-                  "source":src,"proof":"EXACT20_MEDIAN_GE_GATE","compact_terminal_proof":True,
-                }
-            for sym,val in bc.items():
-                if not isinstance(val,dict) or val.get("trade_status")!="Halted" or not val.get("last_bar"):
-                    raise ValueError("COMPACT_BLOCK_CURRENT")
-                prs[sym]={"decision":"BLOCK_CURRENT_RUN","trade_status":"Halted","last_bar":val["last_bar"],"source":src,"proof":"HALTED_NO_ASOF_BAR","compact_terminal_proof":True}
-            for sym,val in bp.items():
-                d=(val or {}).get("first_trade_date") if isinstance(val,dict) else val
-                if not d or str(d)<=asof: raise ValueError("COMPACT_POST_ASOF")
-                prs[sym]={"decision":"BLOCK_POST_ASOF_LISTING","first_trade_date":str(d),"source":src,"proof":"FIRST_VALID_BAR_AFTER_ASOF","compact_terminal_proof":True}
+                    if px is None or px<=HARD_PRICE or dv is None or dv<HARD_DV20:
+                        raise ValueError("COMPACT_PASS_GATE")
+                    prs[sym]={
+                      "decision":"PASS_PRICE_DV20","price":px,"dv20":dv,
+                      "known_session_count":20,"missing_sessions":[],"no_synthetic_bar":True,
+                      "source":src,"proof":"EXACT20_MEDIAN_GE_GATE",
+                    }
+                for sym,val in bc.items():
+                    if not isinstance(val,dict) or val.get("trade_status")!="Halted" or not val.get("last_bar"):
+                        raise ValueError("COMPACT_BLOCK_CURRENT")
+                    prs[sym]={"decision":"BLOCK_CURRENT_RUN","trade_status":"Halted","last_bar":val["last_bar"],"source":src,"proof":"HALTED_NO_ASOF_BAR"}
+                for sym,val in bp.items():
+                    d=(val or {}).get("first_trade_date") if isinstance(val,dict) else val
+                    if not d or str(d)<=asof: raise ValueError("COMPACT_POST_ASOF")
+                    prs[sym]={"decision":"BLOCK_POST_ASOF_LISTING","first_trade_date":str(d),"source":src,"proof":"FIRST_VALID_BAR_AFTER_ASOF"}
+            else:
+                fp=compact.get("fail_price_symbols") or []
+                fd=compact.get("fail_dv20_symbols") or []
+                pm=compact.get("pass_price_dv20") or {}
+                bc=compact.get("block_current_run") or {}
+                bp=compact.get("block_post_asof_listing") or {}
+                un=compact.get("unresolved_symbols") or []
+                if not all(isinstance(x,list) for x in [fp,fd,un]) or not all(isinstance(x,dict) for x in [pm,bc,bp]):
+                    raise ValueError("COMPACT_TYPES")
+                groups=[set(fp),set(fd),set(pm),set(bc),set(bp),set(un)]
+                if any(len(g)!=len(v) for g,v in zip(groups,[fp,fd,pm,bc,bp,un])):
+                    raise ValueError("COMPACT_DUPLICATES")
+                for i in range(len(groups)):
+                    for j in range(i+1,len(groups)):
+                        if groups[i]&groups[j]: raise ValueError("COMPACT_OVERLAP")
+                req=set(obj.get("price_unknown_symbols") or obj.get("symbols") or [])
+                if set().union(*groups)!=req: raise ValueError("COMPACT_COVERAGE")
+                # V1 is accepted for historical backward compatibility only.
+                for sym in fp: prs[sym]={"decision":"FAIL_PRICE","source":src,"proof":"ASOF_CLOSE_LE_10","compact_terminal_proof":True}
+                for sym in fd: prs[sym]={"decision":"FAIL_DV20","source":src,"proof":"EXACT20_OR_UPPER_BOUND_LT_GATE","compact_terminal_proof":True}
+                for sym,val in pm.items():
+                    px=num(val[0] if isinstance(val,(list,tuple)) else val.get("price"))
+                    dv=num(val[1] if isinstance(val,(list,tuple)) else val.get("dv20"))
+                    if px is None or px<=HARD_PRICE or dv is None or dv<HARD_DV20: raise ValueError("COMPACT_PASS_GATE")
+                    prs[sym]={"decision":"PASS_PRICE_DV20","price":px,"dv20":dv,"known_session_count":20,"missing_sessions":[],"no_synthetic_bar":True,"source":src,"proof":"EXACT20_MEDIAN_GE_GATE"}
+                for sym,val in bc.items():
+                    if not isinstance(val,dict) or val.get("trade_status")!="Halted" or not val.get("last_bar"): raise ValueError("COMPACT_BLOCK_CURRENT")
+                    prs[sym]={"decision":"BLOCK_CURRENT_RUN","trade_status":"Halted","last_bar":val["last_bar"],"source":src,"proof":"HALTED_NO_ASOF_BAR"}
+                for sym,val in bp.items():
+                    d=(val or {}).get("first_trade_date") if isinstance(val,dict) else val
+                    if not d or str(d)<=asof: raise ValueError("COMPACT_POST_ASOF")
+                    prs[sym]={"decision":"BLOCK_POST_ASOF_LISTING","first_trade_date":str(d),"source":src,"proof":"FIRST_VALID_BAR_AFTER_ASOF"}
         return prs,{"status":"PASS","path":str(path),"symbol_hash":obj.get("symbol_hash"),"source_result_task_id":obj.get("source_result_task_id"),"result_encoding":encoding or "EXPANDED_V1"}
     except Exception as e:
         return {},{"status":"INVALID","path":str(path),"reason":f"{type(e).__name__}:{str(e)[:160]}"}
@@ -157,11 +198,19 @@ def main():
         else:
             redo.append(sym)
     exp20=expected20(asof)
-    with ThreadPoolExecutor(max_workers=WORKERS) as ex:
-        futs={ex.submit(eval_one,sym,exp20,asof):sym for sym in redo}
-        for fut in as_completed(futs):
-            sym,st,info,meta=fut.result()
-            results[sym]={"status":st,"info":info,"provider_meta":meta,"provenance":"POLICY_ORDER_REEVALUATION"}
+    if DEFER_TO_BRIDGE:
+        for sym in redo:
+            results[sym]={
+              "status":"UNKNOWN",
+              "info":{"reason":"AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"},
+              "provenance":"DYNAMIC_BRIDGE_DEFERRED",
+            }
+    else:
+        with ThreadPoolExecutor(max_workers=WORKERS) as ex:
+            futs={ex.submit(eval_one,sym,exp20,asof):sym for sym in redo}
+            for fut in as_completed(futs):
+                sym,st,info,meta=fut.result()
+                results[sym]={"status":st,"info":info,"provider_meta":meta,"provenance":"POLICY_ORDER_REEVALUATION"}
     bridge_price,exception_bridge_meta=load_exception_bridge(asof,s["queue_hash"])
     for sym,br in sorted(bridge_price.items()):
         if sym not in results or results[sym].get("status")!="UNKNOWN":

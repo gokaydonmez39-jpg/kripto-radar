@@ -31,6 +31,8 @@ jobs:
     timeout-minutes: 58
     env:
       XRAY_FULL_IDENTITY: "1"
+      XRAY_IDENTITY_ONLY: "1"
+      XRAY_DYNAMIC_AUTHENTICATED_PRICE_BRIDGE: "1"
       XRAY_SINA_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_current_full_state.json
       XRAY_SINA_CAND: ${{ github.workspace }}/nasdaq-xray/canonical_current_full_candidates.json
       XRAY_HISTORY_RESOLUTION_OVERLAY: ${{ github.workspace }}/nasdaq-xray/canonical_current_resolution_overlay.json
@@ -64,124 +66,39 @@ jobs:
             nasdaq-xray/build_current_resolver_request.py
       - name: Install zero-dollar runtime
         run: python -m pip install --disable-pip-version-check akshare==1.18.95 pandas_market_calendars
-      - name: Full identity initial/retry passes
-        timeout-minutes: 32
-        shell: bash
-        run: |
-          set -e
-          for i in 1 2 3 4 5; do
-            echo "FULL_IDENTITY_PASS=$i"
-            python nasdaq-xray/sina_stage.py
-          done
+      - name: Build identity-only full universe
+        timeout-minutes: 8
+        run: python nasdaq-xray/sina_stage.py
       - name: Extract unresolved set
         run: python nasdaq-xray/extract_unknown_manifest.py
-      - name: Resolve zero-dollar unknowns
-        timeout-minutes: 4
-        shell: bash
+      - name: Prepare identity-only no-op overlay
         run: |
-          set +e
-          timeout --signal=TERM --kill-after=10s 150s python nasdaq-xray/resolve_unknowns_fallback.py
-          rc=$?
-          set -e
-          if [ "$rc" -ne 0 ]; then
-            echo "Resolver bounded fallback activated rc=$rc; preserving UNKNOWN and continuing to task-state resolver."
-            python - <<'PY'
-          import json, pathlib
-          from datetime import datetime, timezone
+          python - <<'PY'
+          import json,pathlib
+          from datetime import datetime,timezone
           root=pathlib.Path("nasdaq-xray")
-          m=json.load(open(root/"canonical_current_unknowns.json"))
-          u=m.get("unknowns") or {}
+          s=json.load(open(root/"canonical_current_full_state.json"))
           obj={
             "schema":"XRAY_HISTORY_IDENTITY_RESOLUTION_OVERLAY_V1",
             "task_id":"6a825366222081918997094d76e6ae46",
             "execution":"NONE","real_money":"NO-GO",
-            "base_asof_et":m["asof_et"],
-            "resolver":"BOUNDED_LOCAL_RESOLVER_TIMEOUT_FAIL_CLOSED",
+            "base_asof_et":s["asof_et"],
+            "resolver":"IDENTITY_ONLY_NOOP_MARKET_GATES_DEFERRED",
             "generated_at_utc":datetime.now(timezone.utc).isoformat(),
             "max_age_hours":24,
-            "manifest_unknown_count":len(u),
+            "manifest_unknown_count":0,
             "current_resolution_count":0,
-            "current_unresolved_count":len(u),
+            "current_unresolved_count":0,
             "resolution_count":0,
-            "unresolved_count":len(u),
-            "resolutions":{},
-            "unresolved":u,
+            "unresolved_count":0,
+            "resolutions":{},"unresolved":{},
           }
-          (root/"canonical_current_resolution_overlay.json").write_text(json.dumps(obj,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
-          print({"fallback_overlay_unknown":len(u),"asof":m["asof_et"]})
+          (root/"canonical_current_resolution_overlay.json").write_text(json.dumps(obj,sort_keys=True,indent=2)+"\n")
           PY
-          fi
-      - name: Apply resolver overlay
-        shell: bash
-        run: |
-          set -e
-          python nasdaq-xray/sina_stage.py
-          python nasdaq-xray/sina_stage.py
-          python nasdaq-xray/extract_unknown_manifest.py
       - name: Build current master manifest
         run: python nasdaq-xray/build_current_master_manifest.py
       - name: Build policy-ordered PRICE-DV20
-        timeout-minutes: 4
-        shell: bash
-        run: |
-          set +e
-          timeout --signal=TERM --kill-after=10s 150s python nasdaq-xray/price_dv20_recover_from_fullstate.py
-          rc=$?
-          set -e
-          if [ "$rc" -ne 0 ]; then
-            echo "PRICE_DV20 bounded fallback activated rc=$rc; preserving terminal proof and UNKNOWN for all unresolved."
-            python - <<'PY'
-          import json,hashlib,math,pathlib
-          import pandas_market_calendars as mcal
-          root=pathlib.Path("nasdaq-xray")
-          s=json.load(open(root/"canonical_current_full_state.json"))
-          task="6a825366222081918997094d76e6ae46"
-          assert s["task_id"]==task and s["execution"]=="NONE" and s["real_money"]=="NO-GO"
-          asof=s["asof_et"]; queue=s["queue"]; old=s["results"]
-          cal=mcal.get_calendar("NASDAQ")
-          sched=cal.schedule(start_date="2025-01-01",end_date=asof)
-          exp=[x.date().isoformat() for x in sched.index if x.date().isoformat()<=asof][-20:]
-          assert len(exp)==20
-          def num(x):
-              try:
-                  v=float(x); return v if math.isfinite(v) else None
-              except: return None
-          results={}
-          for sym in queue:
-              r=old[sym]; st=r.get("status"); info=r.get("info") or {}
-              if st=="FAIL_PRICE":
-                  results[sym]={"status":"FAIL_PRICE","info":info,"provenance":"FULLSTATE_TERMINAL_FAIL"}
-              elif st=="FAIL_DV20":
-                  results[sym]={"status":"FAIL_DV20","info":info,"provenance":"FULLSTATE_TERMINAL_FAIL"}
-              elif st=="PASS":
-                  px=num(info.get("price")); dv=num(info.get("dv20"))
-                  exact=(info.get("known_session_count")==20 and (info.get("missing_sessions") or [])==[] and info.get("no_synthetic_bar") is True)
-                  if exact and px is not None and px>10 and dv is not None and dv>=50_000_000:
-                      results[sym]={"status":"PASS_PRICE_DV20","info":info,"provenance":"FULLSTATE_EXACT20_PASS"}
-                  else:
-                      results[sym]={"status":"UNKNOWN","info":{"reason":"LOCAL_PRICE_DV20_BUDGET_EXHAUSTED_FAIL_CLOSED","prior_status":st,"prior_info":info},"provenance":"BOUNDED_FALLBACK"}
-              else:
-                  results[sym]={"status":"UNKNOWN","info":{"reason":"LOCAL_PRICE_DV20_BUDGET_EXHAUSTED_FAIL_CLOSED","prior_status":st,"prior_info":info},"provenance":"BOUNDED_FALLBACK"}
-          counts={}
-          for r in results.values(): counts[r["status"]]=counts.get(r["status"],0)+1
-          unk=sorted(k for k,v in results.items() if v["status"]=="UNKNOWN")
-          pas=sorted(k for k,v in results.items() if v["status"]=="PASS_PRICE_DV20")
-          obj={
-            "schema":"XRAY_CANONICAL_PRICE_DV20_V1","task_id":task,"asof_et":asof,
-            "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
-            "source_master_queue_hash":s["queue_hash"],"source_master_count":len(queue),
-            "expected20":exp,"gate_order":["PRICE","DV20"],
-            "thresholds":{"price":">10","dv20":">=50000000 exact20 median"},
-            "bounded_fallback":True,"fallback_reason":"LOCAL_PRICE_DV20_BUDGET_EXHAUSTED_FAIL_CLOSED",
-            "counts":dict(sorted(counts.items())),"unknown_count":len(unk),"unknown_symbols":unk,
-            "pass_count":len(pas),"pass_symbols":pas,
-            "pass_hash":hashlib.sha256("\n".join(pas).encode()).hexdigest(),
-            "results":dict(sorted(results.items()))
-          }
-          (root/"canonical_current_price_dv20.json").write_text(json.dumps(obj,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
-          print({"price_fallback_unknown":len(unk),"pass_count":len(pas),"asof":asof})
-          PY
-          fi
+        run: python nasdaq-xray/price_dv20_recover_from_fullstate.py
       - name: Build resolver bridge request
         run: python nasdaq-xray/build_current_resolver_request.py
       - name: Structural gate

@@ -35,6 +35,7 @@ STATE=Path(os.getenv("XRAY_SINA_STATE", str(ROOT/"sina_state.json")))
 CAND=Path(os.getenv("XRAY_SINA_CAND", str(ROOT/"sina_candidates.json")))
 RESOLUTION_OVERLAY=Path(os.getenv("XRAY_HISTORY_RESOLUTION_OVERLAY", str(ROOT/"history_resolution_overlay.json")))
 FULL_IDENTITY=os.getenv("XRAY_FULL_IDENTITY","0")=="1"
+IDENTITY_ONLY=os.getenv("XRAY_IDENTITY_ONLY","0")=="1"
 
 BATCH=int(os.getenv("XRAY_SINA_HISTORY_BATCH","100"))
 RETRY_BATCH=int(os.getenv("XRAY_SINA_RETRY_BATCH","20"))
@@ -440,6 +441,51 @@ def main():
         }
 
     queue=state["queue"]
+    if IDENTITY_ONLY:
+        now=datetime.now(timezone.utc).isoformat()
+        results={
+          sym:{
+            "status":"UNKNOWN_STATIC",
+            "info":{
+              "reason":"MARKET_GATES_DEFERRED_TO_PRICE_DV20_HISTORY",
+              "source":"MASTER_IDENTITY_ONLY_MODE",
+            },
+            "attempts":0,
+            "updated_at_utc":now,
+          }
+          for sym in queue
+        }
+        state["results"]=results
+        state["cursor"]=len(queue)
+        state["processed_new_this_run"]=0
+        state["processed_retry_this_run"]=0
+        state["counts"]=result_counts(results)
+        state["pending_retry"]=0
+        state["unknown_count"]=len(queue)
+        state["status"]="IDENTITY_READY_MARKET_GATES_DEFERRED"
+        state["history_source"]="DEFERRED_TO_PRICE_DV20_HISTORY_PHASE"
+        state["updated_at_utc"]=now
+        state["state_hash"]=hashlib.sha256(
+          json.dumps(state,sort_keys=True,separators=(",",":")).encode("utf-8")
+        ).hexdigest()
+        write(STATE,state)
+        cand={
+          "schema":"XRAY_SINA_CANDIDATES_V2",
+          "task_id":TASK_ID,"asof_et":asof,
+          "execution":"NONE","real_money":"NO-GO",
+          "candidate_count":0,
+          "source":"MASTER_IDENTITY_ONLY_MARKET_GATES_DEFERRED",
+          "market_cap_authority":"UNRESOLVED_UNTIL_CANONICAL_MC_POLICY",
+          "candidates":{},
+        }
+        write(CAND,cand)
+        print(json.dumps({
+          "status":state["status"],"asof":asof,"queue_total":len(queue),
+          "identity_only":True,"market_gate_unknown":len(queue),
+          "discovery_meta":state["discovery_meta"],
+        },sort_keys=True))
+        return
+
     results=state.setdefault("results",{})
     retry=[
       s for s in sorted(results)
