@@ -1,0 +1,2718 @@
+{
+  "a_geometry": [],
+  "a_geometry_count": 0,
+  "a_geometry_rs_event_pass": [],
+  "a_geometry_rs_event_pass_count": 0,
+  "asof_et": "2026-09-29",
+  "authority": "SHADOW_DEEP_PREFILTER_ONLY_NO_SIGNAL",
+  "b_armed": [
+    "ASST",
+    "BWIN",
+    "COIN",
+    "FTNT",
+    "GH",
+    "HOOD",
+    "MMSI",
+    "MRVL",
+    "MSTR",
+    "NVDA",
+    "PI",
+    "QRVO",
+    "ROKU",
+    "SWKS",
+    "WBD"
+  ],
+  "b_armed_count": 15,
+  "b_armed_rs_event_pass": [
+    "ASST",
+    "BWIN",
+    "COIN",
+    "FTNT",
+    "GH",
+    "HOOD",
+    "MMSI",
+    "MRVL",
+    "MSTR",
+    "NVDA",
+    "PI",
+    "QRVO",
+    "ROKU",
+    "SWKS",
+    "WBD"
+  ],
+  "b_armed_rs_event_pass_count": 15,
+  "b_breakout": [],
+  "b_breakout_count": 0,
+  "b_breakout_rs_event_pass": [],
+  "b_breakout_rs_event_pass_count": 0,
+  "d_dk3_pre_r1": [],
+  "d_dk3_pre_r1_count": 0,
+  "d_geometry_rs": [],
+  "d_geometry_rs_count": 0,
+  "event_state_fresh": false,
+  "execution": "NONE",
+  "input_weekly_pass_count": 96,
+  "mode": "GEOMETRY_ONLY_REGIME_EVENT_DEFERRED",
+  "r92_ineligible": [],
+  "real_money": "NO-GO",
+  "regime": "DEFERRED",
+  "remaining_gates": [
+    "REGIME_BREADTH",
+    "R1_NEAREST_RESISTANCE",
+    "BASIC_SEVERE_RR",
+    "EXTENSION_CHASE",
+    "OFFICIAL_EVENT_FINALIST_REVIEW",
+    "ACCOUNT_GATE",
+    "G9",
+    "ALIGNED_60M",
+    "NON_SYNTHETIC_TARGET"
+  ],
+  "results": {
+    "AAPL": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 15
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.00978398258877844,
+      "rs60": 0.03196808268248463,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "AEHR": {
+      "A": {
+        "pool": false,
+        "reason": "NO_REVERSAL"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "A": 8.897229442090453,
+        "P": 100.9449,
+        "anchor": 92.38,
+        "close": 100.78,
+        "d": 0.9626479856169292,
+        "dd120": -0.3078772062358355,
+        "dd252": -0.3078772062358355,
+        "dk3_pre_r1": false,
+        "ema50": 94.00444717499025,
+        "hl_date": "2026-09-23",
+        "pool": true,
+        "rs20": 0.23487810373844664,
+        "rs60": 0.36490022638742325,
+        "rvol20": 0.9674949963746424
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.23487810373844664,
+      "rs60": 0.36490022638742325,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "AMD": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 12
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.2536960705844964,
+      "rs60": 0.078035100138931,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "APA": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 25
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": -0.050298072373977654,
+      "rs60": 0.27313953331962515,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "APPF": {
+      "A": {
+        "pool": false,
+        "reason": "NOT_A_STAGE1"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "A": 8.007217997194221,
+        "P": 190.24,
+        "anchor": 173.435,
+        "close": 195.82,
+        "d": 2.098731420312096,
+        "dd120": -0.16491108362829976,
+        "dd252": -0.3070280982376672,
+        "dk3_pre_r1": false,
+        "ema50": 203.4143559457032,
+        "hl_date": "2026-07-30",
+        "pool": true,
+        "rs20": -0.18789869885373822,
+        "rs60": 0.08946013357556892,
+        "rvol20": 1.1598929786554215
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": -0.18789869885373822,
+      "rs60": 0.08946013357556892,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "ARGX": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 83
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": -0.08612007982413461,
+      "rs60": 0.037068689669127686,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "ASST": {
+      "A": {
+        "pool": false,
+        "reason": "NO_REVERSAL"
+      },
+      "B": {
+        "A": 1.8690332406875994,
+        "P": 31.02,
+        "anchor": 28.31,
+        "b": 1.4499474600050548,
+        "breakout_confirmed": false,
+        "close": 29.31,
+        "pool": true,
+        "rvol20": 0.4607475602184487,
+        "window": 5
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.17543948091545336,
+      "rs60": 1.18991934919937,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "ATRC": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 41
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.166176645699895,
+      "rs60": 0.7555219749384736,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "AUGO": {
+      "A": {
+        "pool": false,
+        "reason": "NOT_A_STAGE1"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "A": 4.756898791494477,
+        "P": 78.94,
+        "anchor": 74.09,
+        "close": 79.36,
+        "d": 1.0195718287452291,
+        "dd120": -0.2728605460875939,
+        "dd252": -0.2728605460875939,
+        "dk3_pre_r1": false,
+        "ema50": 79.39218889596683,
+        "hl_date": "2026-08-18",
+        "pool": true,
+        "rs20": -0.07773041503760603,
+        "rs60": 0.14771901685656097,
+        "rvol20": 0.41783736351454304
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": -0.07773041503760603,
+      "rs60": 0.14771901685656097,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "AVT": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 10
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.11165077386814204,
+      "rs60": 0.2175744580978911,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "BIIB": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 9
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.01802785393384765,
+      "rs60": 0.06696953834440977,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "BWIN": {
+      "A": {
+        "pool": false,
+        "reason": "NO_REVERSAL"
+      },
+      "B": {
+        "A": 0.7544566009016206,
+        "P": 32.705,
+        "anchor": 31.7,
+        "b": 1.3320845742471656,
+        "breakout_confirmed": false,
+        "close": 31.78,
+        "pool": true,
+        "rvol20": 1.5091951411149447,
+        "window": 10
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.0005926736977528435,
+      "rs60": 0.14910544339566267,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "CAI": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 32
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.20223155378225877,
+      "rs60": 0.7352035927502658,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "CDNA": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 16
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.2409373642483168,
+      "rs60": 1.1579185778592413,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "CHEF": {
+      "A": {
+        "pool": false,
+        "reason": "NO_REVERSAL"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": -0.037065456691901755,
+      "rs60": 0.149772650198851,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "CLMT": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 72
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.039672606173863256,
+      "rs60": 0.41415926328874786,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "CLSK": {
+      "A": {
+        "pool": false,
+        "reason": "NOT_A_STAGE1"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "A": 0.9218220154188728,
+        "P": 14.03,
+        "anchor": 12.36,
+        "close": 13.31,
+        "d": 1.8116295467744472,
+        "dd120": -0.2923976608187133,
+        "dd252": -0.42629310344827587,
+        "dk3_pre_r1": false,
+        "ema50": 13.32760187791692,
+        "hl_date": "2026-09-15",
+        "pool": true,
+        "rs20": 0.11257813729445965,
+        "rs60": -0.03497691940253811,
+        "rvol20": 0.7331681524689864
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.11257813729445965,
+      "rs60": -0.03497691940253811,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "COHU": {
+      "A": {
+        "pool": false,
+        "reason": "NOT_A_STAGE1"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.38996592243889805,
+      "rs60": 0.10083790951580074,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "COIN": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 30
+      },
+      "B": {
+        "A": 11.15393194638504,
+        "P": 204.5,
+        "anchor": 191.1,
+        "b": 1.2013700697127627,
+        "breakout_confirmed": false,
+        "close": 190.02,
+        "pool": true,
+        "rvol20": 0.7309828051615205,
+        "window": 5
+      },
+      "D": {
+        "A": 11.15393194638504,
+        "P": 154.42,
+        "anchor": 146.02,
+        "close": 190.02,
+        "d": 0.753097655640834,
+        "dd120": -0.12271468144044317,
+        "dd252": -0.5093345727786815,
+        "dk3_pre_r1": false,
+        "ema50": 177.53745620532413,
+        "hl_date": "2026-08-18",
+        "pool": true,
+        "rs20": -0.018878172348941402,
+        "rs60": 0.10220354745960991,
+        "rvol20": 0.7309828051615205
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": -0.018878172348941402,
+      "rs60": 0.10220354745960991,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "COKE": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 35
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": -0.052130557444401315,
+      "rs60": -0.004991921353773576,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "CORT": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 10
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": -0.016777257997133144,
+      "rs60": 0.22683725755199302,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "DOCU": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 14
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "A": 2.817626439332834,
+        "P": 70.4,
+        "anchor": 63.633,
+        "close": 66.98,
+        "d": 2.401666844666007,
+        "dd120": -0.0677800974251912,
+        "dd252": -0.18456294131969808,
+        "dk3_pre_r1": false,
+        "ema50": 62.516843965380296,
+        "hl_date": "2026-09-09",
+        "pool": true,
+        "rs20": -0.018281970984168616,
+        "rs60": 0.3989020112937949,
+        "rvol20": 0.572272293338647
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": -0.018281970984168616,
+      "rs60": 0.3989020112937949,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "DUOL": {
+      "A": {
+        "pool": false,
+        "reason": "NOT_A_STAGE1"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "A": 7.675985707054045,
+        "P": 146.85,
+        "anchor": 128.465,
+        "close": 142.62,
+        "d": 2.3951321304708295,
+        "dd120": -0.10200226671703805,
+        "dd252": -0.5893109108186714,
+        "dk3_pre_r1": false,
+        "ema50": 140.89914050437088,
+        "hl_date": "2026-08-17",
+        "pool": true,
+        "rs20": -0.06626808852992361,
+        "rs60": 0.07693250689138664,
+        "rvol20": 0.8588667296569683
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": -0.06626808852992361,
+      "rs60": 0.07693250689138664,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "EXEL": {
+      "A": {
+        "pool": false,
+        "reason": "NO_REVERSAL"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.042595677247535546,
+      "rs60": 0.034559176122809454,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "EXLS": {
+      "A": {
+        "pool": false,
+        "reason": "NOT_A_STAGE1"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "A": 0.9398894128626557,
+        "P": 36.2,
+        "anchor": 34.05,
+        "close": 34.58,
+        "d": 2.2875031578998977,
+        "dd120": -0.09947916666666667,
+        "dd252": -0.21462639109697934,
+        "dk3_pre_r1": false,
+        "ema50": 34.42229092538518,
+        "hl_date": "2026-08-12",
+        "pool": true,
+        "rs20": -0.11796332507228091,
+        "rs60": 0.2485047220857577,
+        "rvol20": 1.082365242142854
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": -0.11796332507228091,
+      "rs60": 0.2485047220857577,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "FFIV": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 20
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.04512684160387015,
+      "rs60": 0.024031674131218095,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "FIVN": {
+      "A": {
+        "pool": false,
+        "reason": "NOT_A_STAGE1"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": -0.04414615320333015,
+      "rs60": 0.3823072424247418,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "FORM": {
+      "A": {
+        "pool": false,
+        "reason": "NOT_A_STAGE1"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.3153882439717428,
+      "rs60": 0.1246323263536695,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "FSLY": {
+      "A": {
+        "pool": false,
+        "reason": "NOT_A_STAGE1"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "A": 2.6134005919997443,
+        "P": 24.59,
+        "anchor": 22.9,
+        "close": 25.48,
+        "d": 0.6466670303716555,
+        "dd120": -0.21260815822002466,
+        "dd252": -0.23940298507462687,
+        "dk3_pre_r1": false,
+        "ema50": 23.710142320410363,
+        "hl_date": "2026-09-17",
+        "pool": true,
+        "rs20": 0.0859596594477392,
+        "rs60": 0.36757624669823374,
+        "rvol20": 0.6416643261848615
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.0859596594477392,
+      "rs60": 0.36757624669823374,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "FTNT": {
+      "A": {
+        "A": 6.816660901345209,
+        "P": 176.085,
+        "anchor": 166.09,
+        "d": 1.4662604088209197,
+        "depth": 1.4684608996795783,
+        "hl_date": "2026-09-18",
+        "pool": false,
+        "prelow_near_hl": true,
+        "sh_date": "2026-09-17",
+        "trigger_date": "2026-09-23"
+      },
+      "B": {
+        "A": 6.816660901345209,
+        "P": 181.37,
+        "anchor": 169.56,
+        "b": 1.732519802718865,
+        "breakout_confirmed": false,
+        "close": 175.96,
+        "pool": true,
+        "rvol20": 0.6785890700168176,
+        "window": 5
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": -0.00010532656153838804,
+      "rs60": 0.06163848714708675,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "GH": {
+      "A": {
+        "pool": false,
+        "reason": "NO_REVERSAL"
+      },
+      "B": {
+        "A": 7.713088674341956,
+        "P": 181.79,
+        "anchor": 170.5,
+        "b": 1.4637456506310944,
+        "breakout_confirmed": false,
+        "close": 177.73,
+        "pool": true,
+        "rvol20": 0.917759671857715,
+        "window": 5
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.08559437892857291,
+      "rs60": 0.03122121502052355,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "GILD": {
+      "A": {
+        "pool": false,
+        "reason": "NO_REVERSAL"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.0041002132406915415,
+      "rs60": 0.1432941974272306,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "GMAB": {
+      "A": {
+        "pool": false,
+        "reason": "NO_REVERSAL"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.04190455690147643,
+      "rs60": 0.2439008095404016,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "HALO": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 21
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.01755589054731299,
+      "rs60": 0.3527565668553243,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "HOOD": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 13
+      },
+      "B": {
+        "A": 6.066635784462546,
+        "P": 126.74,
+        "anchor": 116.06,
+        "b": 1.7604485219555919,
+        "breakout_confirmed": false,
+        "close": 116.22,
+        "pool": true,
+        "rvol20": 0.7830001102784686,
+        "window": 5
+      },
+      "D": {
+        "A": 6.066635784462546,
+        "P": 125.25,
+        "anchor": 101.7045,
+        "close": 116.22,
+        "d": 3.881146130496763,
+        "dd120": -0.06815266196279668,
+        "dd252": -0.23770169224714688,
+        "dk3_pre_r1": false,
+        "ema50": 108.34023991349726,
+        "hl_date": "2026-09-16",
+        "pool": true,
+        "rs20": 0.07705218048108908,
+        "rs60": -0.031558856717287864,
+        "rvol20": 0.7830001102784686
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.07705218048108908,
+      "rs60": -0.031558856717287864,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "HTFL": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 127
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": -0.03948285131694873,
+      "rs60": 0.8004305092960375,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "HUT": {
+      "A": {
+        "pool": false,
+        "reason": "NOT_A_STAGE1"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "A": 7.734668183228957,
+        "P": 101.83,
+        "anchor": 85.71,
+        "close": 92.86,
+        "d": 2.084123018354287,
+        "dd120": -0.30190948729514366,
+        "dd252": -0.30190948729514366,
+        "dk3_pre_r1": false,
+        "ema50": 94.33561386204528,
+        "hl_date": "2026-09-15",
+        "pool": true,
+        "rs20": 0.14694810628819144,
+        "rs60": -0.1235442247721138,
+        "rvol20": 0.6067549386832659
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.14694810628819144,
+      "rs60": -0.1235442247721138,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "ILMN": {
+      "A": {
+        "pool": false,
+        "reason": "NO_REVERSAL"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.23670255409343843,
+      "rs60": 0.37102081220215366,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "INCY": {
+      "A": {
+        "pool": false,
+        "reason": "NOT_A_STAGE1"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": -0.028846012842378643,
+      "rs60": 0.04374098372527824,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "INTC": {
+      "A": {
+        "pool": false,
+        "reason": "NOT_A_STAGE1"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "A": 6.408543173819111,
+        "P": 106.69,
+        "anchor": 94.5233,
+        "close": 115.93,
+        "d": 1.8985126057517627,
+        "dd120": -0.17745139775791108,
+        "dd252": -0.17745139775791108,
+        "dk3_pre_r1": false,
+        "ema50": 104.63798585063557,
+        "hl_date": "2026-09-14",
+        "pool": true,
+        "rs20": 0.2580064647529383,
+        "rs60": -0.07073490597387644,
+        "rvol20": 0.9123249625279286
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.2580064647529383,
+      "rs60": -0.07073490597387644,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "IOVA": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 13
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.7179257316121026,
+      "rs60": 2.3780713494922114,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "LITE": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 12
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.0336724063093774,
+      "rs60": 0.3040090626343199,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "MANH": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 29
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": -0.1291313558593301,
+      "rs60": 0.2743807829951772,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "MARA": {
+      "A": {
+        "pool": false,
+        "reason": "NOT_A_STAGE1"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "A": 0.8693692138221198,
+        "P": 12.385,
+        "anchor": 10.77,
+        "close": 11.99,
+        "d": 1.8576687261557925,
+        "dd120": -0.19259259259259254,
+        "dd252": -0.4750437828371278,
+        "dk3_pre_r1": false,
+        "ema50": 11.770392962597644,
+        "hl_date": "2026-09-16",
+        "pool": true,
+        "rs20": 0.08133951605271506,
+        "rs60": -0.09308954449279394,
+        "rvol20": 0.6233803831590904
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.08133951605271506,
+      "rs60": -0.09308954449279394,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "MEDP": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 32
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.017294374687431224,
+      "rs60": 0.0783619478814801,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "META": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 21
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.2537920257401929,
+      "rs60": 0.20552131548191865,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "MKTX": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 14
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "A": 0.6670974139056376,
+        "P": 163.6,
+        "anchor": 162.965,
+        "close": 163.96,
+        "d": 0.9518849672677836,
+        "dd120": -0.06072410632447289,
+        "dd252": -0.1531429161716854,
+        "dk3_pre_r1": false,
+        "ema50": 156.09705120811455,
+        "hl_date": "2026-09-11",
+        "pool": true,
+        "rs20": -0.02074490053170841,
+        "rs60": 0.37927449975507144,
+        "rvol20": 0.7007622087225409
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": -0.02074490053170841,
+      "rs60": 0.37927449975507144,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "MMSI": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 39
+      },
+      "B": {
+        "A": 1.8766895331950462,
+        "P": 88.14,
+        "anchor": 85.47,
+        "b": 1.422718011036355,
+        "breakout_confirmed": false,
+        "close": 87.87,
+        "pool": true,
+        "rvol20": 1.3276410927576063,
+        "window": 5
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": -0.05857981485996788,
+      "rs60": 0.20462920330058765,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "MRNA": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 36
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.4081734835865902,
+      "rs60": 1.4363559043126557,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "MRVL": {
+      "A": {
+        "pool": false,
+        "reason": "NOT_A_STAGE1"
+      },
+      "B": {
+        "A": 13.527547819752565,
+        "P": 267.4799,
+        "anchor": 248.1415,
+        "b": 1.429556949838504,
+        "breakout_confirmed": false,
+        "close": 263.27,
+        "pool": true,
+        "rvol20": 0.8837669293933454,
+        "window": 5
+      },
+      "D": {
+        "A": 13.527547819752565,
+        "P": 241.88,
+        "anchor": 213.6264,
+        "close": 263.27,
+        "d": 2.088597310943884,
+        "dd120": -0.16799924153841295,
+        "dd252": -0.16799924153841295,
+        "dk3_pre_r1": false,
+        "ema50": 232.01632827638878,
+        "hl_date": "2026-09-14",
+        "pool": true,
+        "rs20": 0.20815088347395427,
+        "rs60": 0.034537776846138346,
+        "rvol20": 0.8837669293933454
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.20815088347395427,
+      "rs60": 0.034537776846138346,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "MSFT": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 9
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": -0.025490797521372288,
+      "rs60": 0.28907905779306486,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "MSTR": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 20
+      },
+      "B": {
+        "A": 8.712635929278786,
+        "P": 171.19,
+        "anchor": 155.06,
+        "b": 1.8513341003719874,
+        "breakout_confirmed": false,
+        "close": 154.67,
+        "pool": true,
+        "rvol20": 0.796098780176685,
+        "window": 5
+      },
+      "D": {
+        "A": 8.712635929278786,
+        "P": 139.78,
+        "anchor": 121.38,
+        "close": 154.67,
+        "d": 2.111875229190613,
+        "dd120": -0.21062570174543238,
+        "dd252": -0.5699908254330117,
+        "dk3_pre_r1": false,
+        "ema50": 130.40065566436985,
+        "hl_date": "2026-09-02",
+        "pool": true,
+        "rs20": 0.13007952213111018,
+        "rs60": 0.5034528790409172,
+        "rvol20": 0.796098780176685
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.13007952213111018,
+      "rs60": 0.5034528790409172,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "MTCH": {
+      "A": {
+        "pool": false,
+        "reason": "NOT_A_STAGE1"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": -0.041113500750553644,
+      "rs60": 0.04349058182185517,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "MU": {
+      "A": {
+        "pool": false,
+        "reason": "NOT_A_STAGE1"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.07905729839339193,
+      "rs60": 0.05942748126387043,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "NBIS": {
+      "A": {
+        "pool": false,
+        "reason": "NOT_A_STAGE1"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "A": 16.642309677725667,
+        "P": 254.74,
+        "anchor": 203.87,
+        "close": 237.355,
+        "d": 3.0566670723646747,
+        "dd120": -0.17208483030451016,
+        "dd252": -0.17208483030451016,
+        "dk3_pre_r1": false,
+        "ema50": 221.08197382683161,
+        "hl_date": "2026-09-14",
+        "pool": true,
+        "rs20": 0.11741796623207668,
+        "rs60": 0.09142274095323599,
+        "rvol20": 1.014786264847958
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.11741796623207668,
+      "rs60": 0.09142274095323599,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "NDSN": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 42
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": -0.005109022141247643,
+      "rs60": 0.09917073767590034,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "NESR": {
+      "A": {
+        "pool": false,
+        "reason": "NOT_A_STAGE1"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "A": 1.4491919084281937,
+        "P": 27.69,
+        "anchor": 23.56,
+        "close": 26.49,
+        "d": 2.8498641042506487,
+        "dd120": -0.27044891214541456,
+        "dd252": -0.27044891214541456,
+        "dk3_pre_r1": false,
+        "ema50": 31.55988167515846,
+        "hl_date": "2026-06-18",
+        "pool": true,
+        "rs20": -0.2671590601748818,
+        "rs60": -0.06089085981381748,
+        "rvol20": 3.4170804617427932
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": -0.2671590601748818,
+      "rs60": -0.06089085981381748,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "NTAP": {
+      "A": {
+        "A": 7.694266389859705,
+        "P": 204.84,
+        "anchor": 190.89,
+        "d": 1.8130383448102032,
+        "depth": 1.2931707190581743,
+        "hl_date": "2026-09-22",
+        "pool": false,
+        "prelow_near_hl": false,
+        "sh_date": "2026-09-21",
+        "trigger_date": "2026-09-29"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.09654578918953471,
+      "rs60": 0.25280824901461285,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "NTNX": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 23
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": -0.007157168009640391,
+      "rs60": 0.3097066645789588,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "NTRA": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 12
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.25055318006112337,
+      "rs60": 0.43069840327303766,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "NVDA": {
+      "A": {
+        "pool": false,
+        "reason": "NO_REVERSAL"
+      },
+      "B": {
+        "A": 6.033222653821888,
+        "P": 233.21,
+        "anchor": 221.09,
+        "b": 2.0088766311852098,
+        "breakout_confirmed": false,
+        "close": 227.21,
+        "pool": true,
+        "rvol20": 0.941843299490764,
+        "window": 5
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": -0.00039986328176611075,
+      "rs60": 0.13811098591513993,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "OKTA": {
+      "A": {
+        "A": 10.130810862064639,
+        "P": 203.44,
+        "anchor": 180.55,
+        "d": 2.259444018021579,
+        "depth": 1.1884537342498827,
+        "hl_date": "2026-09-21",
+        "pool": false,
+        "prelow_near_hl": false,
+        "sh_date": "2026-09-17",
+        "trigger_date": "2026-09-29"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.15003657661938585,
+      "rs60": 0.3505036122014513,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "PCTY": {
+      "A": {
+        "pool": false,
+        "reason": "NOT_A_STAGE1"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": -0.13799274510279924,
+      "rs60": 0.22421103593768343,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "PFG": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 66
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.004905481496597641,
+      "rs60": -0.008117922381398301,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "PI": {
+      "A": {
+        "pool": false,
+        "reason": "NO_REVERSAL"
+      },
+      "B": {
+        "A": 7.546373749532705,
+        "P": 186.66,
+        "anchor": 172.4,
+        "b": 1.8896493167838413,
+        "breakout_confirmed": false,
+        "close": 176.45,
+        "pool": true,
+        "rvol20": 0.5860870705481248,
+        "window": 5
+      },
+      "D": {
+        "A": 7.546373749532705,
+        "P": 186.66,
+        "anchor": 172.4,
+        "close": 176.45,
+        "d": 1.8896493167838413,
+        "dd120": -0.041267081420304774,
+        "dd252": -0.2705965028316316,
+        "dk3_pre_r1": false,
+        "ema50": 166.76938547950968,
+        "hl_date": "2026-09-24",
+        "pool": true,
+        "rs20": -0.01681999061823758,
+        "rs60": 0.16781739899887982,
+        "rvol20": 0.5860870705481248
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": -0.01681999061823758,
+      "rs60": 0.16781739899887982,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "PLTR": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 43
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": -0.025613597437821434,
+      "rs60": 0.38178335189481305,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "PTGX": {
+      "A": {
+        "pool": false,
+        "reason": "NOT_A_STAGE1"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": -0.0732602221566282,
+      "rs60": 0.05006441459227329,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "QCOM": {
+      "A": {
+        "pool": false,
+        "reason": "NOT_A_STAGE1"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "A": 9.129787296347319,
+        "P": 183.49,
+        "anchor": 175.97,
+        "close": 184.1,
+        "d": 0.8236774588394454,
+        "dd120": -0.26659230340211937,
+        "dd252": -0.26659230340211937,
+        "dk3_pre_r1": false,
+        "ema50": 178.7123677986495,
+        "hl_date": "2026-09-18",
+        "pool": true,
+        "rs20": 0.0489117391889089,
+        "rs60": -0.032977626848319064,
+        "rvol20": 0.8000085208155425
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.0489117391889089,
+      "rs60": -0.032977626848319064,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "QRVO": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 29
+      },
+      "B": {
+        "A": 4.255700730884283,
+        "P": 121.09,
+        "anchor": 114.44,
+        "b": 1.562609878025473,
+        "breakout_confirmed": false,
+        "close": 116.75,
+        "pool": true,
+        "rvol20": 0.5315440144637827,
+        "window": 5
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.18027304544646694,
+      "rs60": 0.3125146793126399,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "REGN": {
+      "A": {
+        "pool": false,
+        "reason": "NOT_A_STAGE1"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": -0.08772701049121134,
+      "rs60": 0.13131901547010694,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "RGEN": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 42
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.04424856994659043,
+      "rs60": 0.34727800341775916,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "RGLD": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 31
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "A": 7.720767364135492,
+        "P": 238.235,
+        "anchor": 225.28,
+        "close": 238.93,
+        "d": 1.6779420216931515,
+        "dd120": -0.12002799057159685,
+        "dd252": -0.2147950967826745,
+        "dk3_pre_r1": false,
+        "ema50": 241.54627283014085,
+        "hl_date": "2026-08-13",
+        "pool": true,
+        "rs20": -0.1124201987639406,
+        "rs60": 0.15911852938286764,
+        "rvol20": 0.9299934517309728
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": -0.1124201987639406,
+      "rs60": 0.15911852938286764,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "RIOT": {
+      "A": {
+        "pool": false,
+        "reason": "NOT_A_STAGE1"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "A": 1.5249585532364054,
+        "P": 22.87,
+        "anchor": 19.515,
+        "close": 21.39,
+        "d": 2.2000597936774837,
+        "dd120": -0.2544440571627745,
+        "dd252": -0.2544440571627745,
+        "dk3_pre_r1": false,
+        "ema50": 21.637331332611893,
+        "hl_date": "2026-09-15",
+        "pool": true,
+        "rs20": 0.09378025916972899,
+        "rs60": -0.08386470714108496,
+        "rvol20": 0.7816360755091517
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.09378025916972899,
+      "rs60": -0.08386470714108496,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "ROKU": {
+      "A": {
+        "pool": false,
+        "reason": "NOT_A_STAGE1"
+      },
+      "B": {
+        "A": 1.8990983124565146,
+        "P": 155.27,
+        "anchor": 151.6536,
+        "b": 1.9042721360339299,
+        "breakout_confirmed": false,
+        "close": 152.14,
+        "pool": true,
+        "rvol20": 0.5661806778744377,
+        "window": 5
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": -0.05833586173590222,
+      "rs60": 0.04755202726827079,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "SAIC": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 33
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": -0.02876411149500313,
+      "rs60": 0.09489753087795227,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "SEIC": {
+      "A": {
+        "pool": false,
+        "reason": "NOT_A_STAGE1"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": -0.09546712738013508,
+      "rs60": 0.06573097217983181,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "SIMO": {
+      "A": {
+        "pool": false,
+        "reason": "NOT_A_STAGE1"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "A": 17.50960490466367,
+        "P": 287.365,
+        "anchor": 265.0,
+        "close": 276.16,
+        "d": 1.2772989523049207,
+        "dd120": -0.18029088750371014,
+        "dd252": -0.18029088750371014,
+        "dk3_pre_r1": false,
+        "ema50": 261.91555111839915,
+        "hl_date": "2026-09-24",
+        "pool": true,
+        "rs20": 0.08668539564822564,
+        "rs60": -0.15164870646672868,
+        "rvol20": 0.6235219696646623
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.08668539564822564,
+      "rs60": -0.15164870646672868,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "SLAB": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 52
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": -0.019287852696568852,
+      "rs60": -0.0042686053906411114,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "SMCI": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 10
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "A": 2.3300841895871534,
+        "P": 40.45,
+        "anchor": 39.85,
+        "close": 41.02,
+        "d": 0.2575014253482017,
+        "dd120": -0.18237990831174,
+        "dd252": -0.30095432856169047,
+        "dk3_pre_r1": false,
+        "ema50": 36.848368371896306,
+        "hl_date": "2026-09-24",
+        "pool": true,
+        "rs20": 0.06875546019025847,
+        "rs60": 0.4777516146363461,
+        "rvol20": 0.7291461558027975
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.06875546019025847,
+      "rs60": 0.4777516146363461,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "SMTC": {
+      "A": {
+        "pool": false,
+        "reason": "NO_REVERSAL"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.3156831131830813,
+      "rs60": 0.2701579446543485,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "SNDK": {
+      "A": {
+        "pool": false,
+        "reason": "NOT_A_STAGE1"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "A": 112.11958635281253,
+        "P": 1807.38,
+        "anchor": 1504.2,
+        "close": 1729.76,
+        "d": 2.704077047216066,
+        "dd120": -0.259203426124197,
+        "dd252": -0.259203426124197,
+        "dk3_pre_r1": false,
+        "ema50": 1612.5690088365861,
+        "hl_date": "2026-09-16",
+        "pool": true,
+        "rs20": 0.07240443346544745,
+        "rs60": -0.028713679270001125,
+        "rvol20": 0.6513083678922635
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.07240443346544745,
+      "rs60": -0.028713679270001125,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "SSRM": {
+      "A": {
+        "pool": false,
+        "reason": "NOT_A_STAGE1"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": -0.12346936638258132,
+      "rs60": 0.08502081841453402,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "SWKS": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 20
+      },
+      "B": {
+        "A": 4.524161058245068,
+        "P": 92.7999,
+        "anchor": 85.69,
+        "b": 1.5715399846436815,
+        "breakout_confirmed": false,
+        "close": 88.04,
+        "pool": true,
+        "rvol20": 0.5446214415211678,
+        "window": 5
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.2761420230404368,
+      "rs60": 0.39294581848407395,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "TEAM": {
+      "A": {
+        "pool": false,
+        "reason": "NOT_A_STAGE1"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": -0.11978165251667983,
+      "rs60": 1.0158714431383573,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "TECH": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 41
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": -0.02774807564904258,
+      "rs60": -0.0003111552980679111,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "TGTX": {
+      "A": {
+        "pool": false,
+        "reason": "NO_REVERSAL"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.005119726803355373,
+      "rs60": -0.007761988560563093,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "TRMD": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 24
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.07018945014409739,
+      "rs60": 0.2650870125404676,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "TWST": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 16
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.30064917935422497,
+      "rs60": 0.8244647800015918,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "TXG": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 22
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.40043074856670957,
+      "rs60": 1.2049080807122632,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "ULTA": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 21
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "A": 16.41098115868761,
+        "P": 546.51,
+        "anchor": 503.0501,
+        "close": 547.89,
+        "d": 2.648220699284229,
+        "dd120": -0.04255207605200617,
+        "dd252": -0.2248521547211455,
+        "dk3_pre_r1": false,
+        "ema50": 531.5667418525733,
+        "hl_date": "2026-08-28",
+        "pool": true,
+        "rs20": -0.009175320146262655,
+        "rs60": 0.18604012567003547,
+        "rvol20": 0.845730547331811
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": -0.009175320146262655,
+      "rs60": 0.18604012567003547,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "VRNS": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 20
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "A": 1.9935532453918345,
+        "P": 45.07,
+        "anchor": 40.89,
+        "close": 47.11,
+        "d": 2.096758644225937,
+        "dd120": -0.02775771334227628,
+        "dd252": -0.2558837466435002,
+        "dk3_pre_r1": false,
+        "ema50": 44.404695051259004,
+        "hl_date": "2026-09-02",
+        "pool": true,
+        "rs20": 0.04543046506349424,
+        "rs60": 0.010408722633306944,
+        "rvol20": 0.662815689522714
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.04543046506349424,
+      "rs60": 0.010408722633306944,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "WBD": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 38
+      },
+      "B": {
+        "A": 0.42253420934861463,
+        "P": 30.9,
+        "anchor": 30.68,
+        "b": 0.520667901278702,
+        "breakout_confirmed": false,
+        "close": 30.85,
+        "pool": true,
+        "rvol20": 2.0605763398454475,
+        "window": 5
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.05029667565691587,
+      "rs60": 0.15690311350431485,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "WDAY": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 33
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "A": 8.092675177728765,
+        "P": 185.82,
+        "anchor": 173.165,
+        "close": 189.17,
+        "d": 1.563759785494278,
+        "dd120": -0.08578194471293255,
+        "dd252": -0.23626307077395137,
+        "dk3_pre_r1": false,
+        "ema50": 181.10541210655873,
+        "hl_date": "2026-08-12",
+        "pool": true,
+        "rs20": -0.06941998824008455,
+        "rs60": 0.3428256962598315,
+        "rvol20": 0.7627175141350279
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": -0.06941998824008455,
+      "rs60": 0.3428256962598315,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "WIX": {
+      "A": {
+        "pool": false,
+        "reason": "NOT_A_STAGE1"
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "A": 5.297515165141637,
+        "P": 68.32,
+        "anchor": 59.195,
+        "close": 70.9,
+        "d": 1.7225056872028837,
+        "dd120": -0.19773691654879766,
+        "dd252": -0.607593535532433,
+        "dk3_pre_r1": false,
+        "ema50": 73.05034863881245,
+        "hl_date": "2026-08-07",
+        "pool": true,
+        "rs20": -0.21964877711479036,
+        "rs60": 0.3831554996557722,
+        "rvol20": 0.7141769530367061
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": -0.21964877711479036,
+      "rs60": 0.3831554996557722,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "XP": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 15
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.08000477146792417,
+      "rs60": 0.21066752977098457,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "ZBRA": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 10
+      },
+      "B": {
+        "pool": false,
+        "reason": "NOT_B_STAGE1"
+      },
+      "D": {
+        "pool": false,
+        "reason": "NOT_D_STAGE1"
+      },
+      "event_status": "DEFERRED",
+      "mixed_rs_pass": true,
+      "r92_eligible": true,
+      "rs20": 0.03290634437106421,
+      "rs60": 0.3625053248011789,
+      "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    }
+  },
+  "schema": "XRAY_DEEP_GEOMETRY_V1",
+  "state_caps": {
+    "AAPL": "NORMAL",
+    "AEHR": "NORMAL",
+    "AMD": "NORMAL",
+    "APA": "NORMAL",
+    "APPF": "NORMAL",
+    "ARGX": "NORMAL",
+    "ASST": "NORMAL",
+    "ATRC": "NORMAL",
+    "AUGO": "NORMAL",
+    "AVT": "NORMAL",
+    "BIIB": "NORMAL",
+    "BWIN": "NORMAL",
+    "CAI": "NORMAL",
+    "CDNA": "NORMAL",
+    "CHEF": "NORMAL",
+    "CLMT": "NORMAL",
+    "CLSK": "NORMAL",
+    "COHU": "NORMAL",
+    "COIN": "NORMAL",
+    "COKE": "NORMAL",
+    "CORT": "NORMAL",
+    "DOCU": "NORMAL",
+    "DUOL": "NORMAL",
+    "EXEL": "NORMAL",
+    "EXLS": "NORMAL",
+    "FFIV": "NORMAL",
+    "FIVN": "NORMAL",
+    "FORM": "NORMAL",
+    "FSLY": "NORMAL",
+    "FTNT": "NORMAL",
+    "GH": "NORMAL",
+    "GILD": "NORMAL",
+    "GMAB": "NORMAL",
+    "HALO": "NORMAL",
+    "HOOD": "NORMAL",
+    "HTFL": "NORMAL",
+    "HUT": "NORMAL",
+    "ILMN": "NORMAL",
+    "INCY": "NORMAL",
+    "INTC": "NORMAL",
+    "IOVA": "NORMAL",
+    "LITE": "NORMAL",
+    "MANH": "NORMAL",
+    "MARA": "NORMAL",
+    "MEDP": "NORMAL",
+    "META": "NORMAL",
+    "MKTX": "NORMAL",
+    "MMSI": "NORMAL",
+    "MRNA": "NORMAL",
+    "MRVL": "NORMAL",
+    "MSFT": "NORMAL",
+    "MSTR": "NORMAL",
+    "MTCH": "NORMAL",
+    "MU": "NORMAL",
+    "NBIS": "NORMAL",
+    "NDSN": "NORMAL",
+    "NESR": "NORMAL",
+    "NTAP": "NORMAL",
+    "NTNX": "NORMAL",
+    "NTRA": "NORMAL",
+    "NVDA": "NORMAL",
+    "OKTA": "NORMAL",
+    "PCTY": "NORMAL",
+    "PFG": "NORMAL",
+    "PI": "NORMAL",
+    "PLTR": "NORMAL",
+    "PTGX": "NORMAL",
+    "QCOM": "NORMAL",
+    "QRVO": "NORMAL",
+    "REGN": "NORMAL",
+    "RGEN": "NORMAL",
+    "RGLD": "NORMAL",
+    "RIOT": "NORMAL",
+    "ROKU": "NORMAL",
+    "SAIC": "NORMAL",
+    "SEIC": "NORMAL",
+    "SIMO": "NORMAL",
+    "SLAB": "NORMAL",
+    "SMCI": "NORMAL",
+    "SMTC": "NORMAL",
+    "SNDK": "NORMAL",
+    "SSRM": "NORMAL",
+    "SWKS": "NORMAL",
+    "TEAM": "NORMAL",
+    "TECH": "NORMAL",
+    "TGTX": "NORMAL",
+    "TRMD": "NORMAL",
+    "TWST": "NORMAL",
+    "TXG": "NORMAL",
+    "ULTA": "NORMAL",
+    "VRNS": "NORMAL",
+    "WBD": "NORMAL",
+    "WDAY": "NORMAL",
+    "WIX": "NORMAL",
+    "XP": "NORMAL",
+    "ZBRA": "NORMAL"
+  },
+  "task_id": "6a825366222081918997094d76e6ae46",
+  "unknown_history": {},
+  "unknown_history_count": 0,
+  "unknown_never_pass": true
+}
