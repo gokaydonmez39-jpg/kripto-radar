@@ -1,0 +1,50 @@
+name: XRAY Canonical LEGAL 20260930
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/canonical_history_20260930.json"
+      - "nasdaq-xray/legal_phase.py"
+      - "nasdaq-xray/canonical_legal_proof_20260930.json"
+      - ".github/workflows/xray-canonical-legal-20260930.yml"
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: xray-canonical-legal-20260930
+  cancel-in-progress: false
+jobs:
+  legal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 1}
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - run: python -m py_compile nasdaq-xray/legal_phase.py
+      - name: Run LEGAL
+        run: python nasdaq-xray/legal_phase.py
+      - name: Validate zero unknown
+        run: |
+          python - <<'PY'
+          import json
+          j=json.load(open("nasdaq-xray/canonical_legal_20260930.json"))
+          assert j["schema"]=="XRAY_CANONICAL_LEGAL_V1"
+          assert sum(j["counts"].values())==j["input_count"]
+          assert j["counts"]["UNKNOWN_LEGAL"]==0,j["unknown_symbols"]
+          print({"counts":j["counts"],"pass_hash":j["pass_hash"]})
+          PY
+      - name: Commit LEGAL
+        shell: bash
+        run: |
+          set -e
+          git config user.name "xray-dataplane-bot"
+          git config user.email "xray-dataplane-bot@users.noreply.github.com"
+          git add nasdaq-xray/canonical_legal_20260930.json
+          git commit -m "chore(xray): canonical LEGAL 2026-09-30" || exit 0
+          for attempt in 1 2 3 4 5; do
+            if git pull --rebase origin main && git push; then exit 0; fi
+            sleep $((attempt*2))
+          done
+          exit 1
