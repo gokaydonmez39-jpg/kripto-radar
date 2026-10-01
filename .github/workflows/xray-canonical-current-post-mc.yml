@@ -46,6 +46,9 @@ jobs:
               print("ready=false")
               raise SystemExit
           p=json.load(open(price_path)); m=json.load(open(master_path)); ptr=json.load(open(pointer_path))
+          ps=ptr.get("state_json") or {}
+          if isinstance(ps,str): ps=json.loads(ps)
+          if not isinstance(ps,dict): print("ready=false"); raise SystemExit
           if p.get("schema")!="XRAY_CANONICAL_PRICE_DV20_V1" or m.get("schema")!="XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1":
               print("ready=false"); raise SystemExit
           if p.get("asof_et")!=m.get("asof_et") or p.get("source_master_queue_hash")!=m.get("queue_hash") or p.get("source_master_count")!=m.get("queue_total"):
@@ -53,7 +56,7 @@ jobs:
           b=price_path.read_bytes()
           price_blob=hashlib.sha1(f"blob {len(b)}\0".encode()+b).hexdigest()
           expected_asof=p["asof_et"]; expected_hash=p["pass_hash"]; expected_count=p["pass_count"]
-          pointer_asof=str((ptr.get("state_json") or {}).get("asof_et") or "")
+          pointer_asof=str(ps.get("asof_et") or "")
           settlement_required=bool(pointer_asof and expected_asof>pointer_asof)
           expected_path="nasdaq-xray/canonical_current_price_dv20.json"
           valid=[]
