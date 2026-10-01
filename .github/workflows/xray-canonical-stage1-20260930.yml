@@ -1,5 +1,6 @@
 name: XRAY Canonical Stage1 20260930
 # force latest-main stage1 rerun
+# C4.14 primary-only stage1 rerun
 on:
   push:
     branches: [main]
