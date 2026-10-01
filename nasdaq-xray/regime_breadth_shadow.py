@@ -14,7 +14,7 @@ import pandas_market_calendars as mcal
 
 ROOT=Path(__file__).resolve().parent
 MC=Path(os.getenv("XRAY_MC_STATE", str(ROOT/"mc_final_state.json")))
-OUT=ROOT/"regime_breadth_shadow.json"
+OUT=Path(os.getenv("XRAY_REGIME_OUT", str(ROOT/"regime_breadth_shadow.json")))
 TASK_ID="6a825366222081918997094d76e6ae46"
 WORKERS=int(os.getenv("XRAY_BREADTH_WORKERS","8"))
 
