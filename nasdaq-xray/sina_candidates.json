@@ -1555,18 +1555,17 @@
       "security_name": "Structure Therapeutics Inc. - American Depositary Shares"
     },
     "GRAL": {
-      "bars": 300,
-      "dv20_gate_pass_by_bound": true,
-      "dv20_lower_bound": 118132920.67,
-      "dv20_upper_bound": 121792809.38,
-      "known_session_count": 19,
-      "missing_sessions": [
+      "bars": 568,
+      "dates": [
         "2026-09-23"
       ],
+      "dv20_lower_bound": 118128234.6,
+      "dv20_upper_bound": 121790969.185,
+      "known_session_count": 19,
       "no_synthetic_bar": true,
       "price": 140.12,
-      "proof": "EXACT20_MEDIAN_INTERVAL_WITH_ONE_UNKNOWN_NONNEGATIVE_DOLLAR_VOLUME",
-      "resolution_source": "LONGBRIDGE_DAILY_BOUND_PROOF",
+      "proof": "DV20_LOWER_BOUND_GE_GATE",
+      "reason": "EXACT20_MISSING",
       "screener_market_cap_shadow": 6258632708.0,
       "screener_price_shadow": 140.12,
       "security_name": "GRAIL, Inc. - Common Stock"

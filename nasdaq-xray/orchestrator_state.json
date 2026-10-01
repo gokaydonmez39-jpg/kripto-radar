@@ -1,80 +1,13 @@
 {
   "account_gate": "UNKNOWN_NOT_CONFIGURED",
   "asof_et": "2026-09-30",
-  "authority": "EXTERNAL_AUTONOMOUS_SHADOW_DATA_PLANE; CHATGPT_CANONICAL_STATE_UNCHANGED",
-  "candidate_hash": "f727dee55cf1058d7cd3fcf1f2ac77a63f9d9e131a0d255f3117ad9f8ca9c08e",
-  "coverage_faults": [],
-  "deep": {
-    "a_pass": [],
-    "b_armed": [
-      "ASST",
-      "BWIN",
-      "COIN",
-      "FTNT",
-      "GH",
-      "MSTR",
-      "NVDA",
-      "PI",
-      "QRVO",
-      "SWKS"
-    ],
-    "b_breakout_pass": [
-      "WBD"
-    ],
-    "d_pass": [],
-    "event_state_fresh": true
-  },
-  "engine_hash": "c29ea624a0857fec7112f70da53522e21a9923964e264a95931783ada9b67cc6",
-  "event_hash": "a9f78de8591cc52da292345c42dcb0e3719203917a1d577a6112b45d8bf8d40a",
+  "cursor": 815,
   "execution": "NONE",
-  "final_tech": {
-    "fail": [
-      "WBD|B"
-    ],
-    "pre_g9_tech_pass": [],
-    "unknown": [],
-    "watch": []
-  },
-  "fingerprint": "2979f21744eb9c83e24155a24f007855748ff57eb77e143af71d91d5328e526e",
-  "full_go_blockers": [
-    "G9_BLOCKED_NO_AUTHORIZED_ZERO_DOLLAR_RUNTIME_SOURCE",
-    "ACCOUNT_GATE_UNKNOWN",
-    "OBSERVED_IPHONE_SIGNAL_DELIVERY_UNPROVEN"
-  ],
   "g9_status": "BLOCKED",
-  "history": {
-    "counts": {
-      "BLOCK_CURRENT_RUN": 4,
-      "BLOCK_LEGAL_SHELL": 1,
-      "FAIL_DV20": 286,
-      "FAIL_HISTORY": 27,
-      "FAIL_IDENTITY_TYPE": 3,
-      "FAIL_PRICE": 11,
-      "PASS": 483
-    },
-    "queue_total": 815,
-    "status": "HISTORY_COMPLETE"
-  },
-  "mc": {
-    "current_core_count": 479,
-    "definitive_fail_count": 4,
-    "unresolved_count": 0
-  },
+  "queue_total": 815,
   "real_money": "NO-GO",
-  "regime": {
-    "breadth_above_sma50_pct": 0.34029227557411273,
-    "breadth_missing_count": 0,
-    "nh20": 32,
-    "nl20": 96,
-    "regime": "MIXED"
-  },
   "schema": "XRAY_ORCHESTRATOR_V1",
-  "stage1": {
-    "unknown_count": 0,
-    "weekly_pass_count": 107
-  },
-  "status": "ENGINE_PASS_NO_CONFIRMED_SETUP",
+  "status": "PARTIAL_HISTORY",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_never_pass": true,
-  "updated_at_utc": "2026-10-01T15:47:47.598985+00:00"
+  "updated_at_utc": "2026-10-01T17:04:40.214823+00:00"
 }
