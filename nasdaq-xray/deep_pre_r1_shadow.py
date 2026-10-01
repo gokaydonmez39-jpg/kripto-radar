@@ -5,7 +5,7 @@ No signal, no R92 registration, no G9 authority.
 EXECUTION=NONE. REAL_MONEY=NO-GO. UNKNOWN!=PASS.
 """
 from __future__ import annotations
-import json, math, os
+import json, math, os, hashlib
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from statistics import median
@@ -20,6 +20,14 @@ OUT=Path(os.getenv("XRAY_DEEP_OUT", str(ROOT/"deep_pre_r1_shadow.json")))
 GEOMETRY_ONLY=os.getenv("XRAY_DEEP_GEOMETRY_ONLY","0")=="1"
 TASK_ID="6a825366222081918997094d76e6ae46"
 WORKERS=int(os.getenv("XRAY_DEEP_WORKERS","8"))
+
+def blob_sha(p:Path):
+    b=p.read_bytes()
+    return hashlib.sha1(f"blob {len(b)}\0".encode()+b).hexdigest()
+
+def relpath(p:Path):
+    try:return str(p.relative_to(ROOT.parent)).replace("\\","/")
+    except Exception:return str(p)
 
 def get_hist(sym,asof):
     try:
@@ -170,10 +178,15 @@ def main():
     syms=sorted(set(st["weekly_pass"]))
     state_caps={s:(st.get("state_caps") or {}).get(s,"NORMAL") for s in syms}
     r92_ineligible=set(st.get("r92_ineligible") or [])
+    assert st.get("task_id")==TASK_ID and st.get("execution")=="NONE" and st.get("real_money")=="NO-GO"
     rg={"regime":"DEFERRED","asof_et":asof} if GEOMETRY_ONLY else json.loads(REGIME.read_text())
     ev={"confirmed_blocks":{},"unresolved":{},"asof_et":None} if GEOMETRY_ONLY else (json.loads(EVENTS.read_text()) if EVENTS.exists() else {"confirmed_blocks":{},"unresolved":{}})
-    if not GEOMETRY_ONLY and rg.get("asof_et")!=asof:
-        raise RuntimeError("ASOF_MISMATCH_STAGE1_REGIME")
+    if not GEOMETRY_ONLY:
+        if rg.get("asof_et")!=asof: raise RuntimeError("ASOF_MISMATCH_STAGE1_REGIME")
+        if rg.get("task_id")!=TASK_ID or rg.get("execution")!="NONE" or rg.get("real_money")!="NO-GO":
+            raise RuntimeError("REGIME_SAFETY_OR_TASK")
+        if ev.get("asof_et")!=asof or ev.get("task_id")!=TASK_ID or ev.get("execution")!="NONE" or ev.get("real_money")!="NO-GO":
+            raise RuntimeError("EVENT_SAFETY_TASK_OR_ASOF")
     event_state_fresh=(not GEOMETRY_ONLY and ev.get("asof_et")==asof)
     data={};unknown={}
     with ThreadPoolExecutor(max_workers=WORKERS) as ex:
@@ -227,6 +240,13 @@ def main():
       "d_dk3_pre_r1_count":len(d),"d_dk3_pre_r1":sorted(d),
       "unknown_history_count":len(unknown),"unknown_history":unknown,
       "state_caps":state_caps,"r92_ineligible":sorted(r92_ineligible & set(syms)),
+      "source_stage1_path":relpath(STAGE1),"source_stage1_blob_sha":blob_sha(STAGE1),
+      "source_regime_path":None if GEOMETRY_ONLY else relpath(REGIME),
+      "source_regime_blob_sha":None if GEOMETRY_ONLY else blob_sha(REGIME),
+      "source_event_path":None if GEOMETRY_ONLY else relpath(EVENTS),
+      "source_event_blob_sha":None if GEOMETRY_ONLY else blob_sha(EVENTS),
+      "source_mc_policy_hash":st.get("source_mc_policy_hash"),
+      "source_mc_policy_version":st.get("source_mc_policy_version"),
       "results":outres,
       "remaining_gates":["REGIME_BREADTH","R1_NEAREST_RESISTANCE","BASIC_SEVERE_RR","EXTENSION_CHASE","OFFICIAL_EVENT_FINALIST_REVIEW","ACCOUNT_GATE","G9","ALIGNED_60M","NON_SYNTHETIC_TARGET"],
       "event_state_fresh":event_state_fresh,
