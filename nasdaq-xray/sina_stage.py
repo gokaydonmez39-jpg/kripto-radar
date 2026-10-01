@@ -26,12 +26,13 @@ import akshare as ak
 import pandas_market_calendars as mcal
 
 TASK_ID="6a825366222081918997094d76e6ae46"
-BUILD="2026-10-01.2"
+BUILD="2026-10-01.3"
 NASDAQ_DIR="https://www.nasdaqtrader.com/dynamic/SymDir/nasdaqlisted.txt"
 NASDAQ_SCREENER="https://api.nasdaq.com/api/screener/stocks"
 ROOT=Path(__file__).resolve().parent
 STATE=ROOT/"sina_state.json"
 CAND=ROOT/"sina_candidates.json"
+RESOLUTION_OVERLAY=ROOT/"history_resolution_overlay.json"
 
 BATCH=int(os.getenv("XRAY_SINA_HISTORY_BATCH","100"))
 RETRY_BATCH=int(os.getenv("XRAY_SINA_RETRY_BATCH","20"))
@@ -246,6 +247,84 @@ def parse_hist(sym,asof,expected20):
     except Exception as e:
         return "UNKNOWN_RETRY",f"{type(e).__name__}:{str(e)[:200]}"
 
+def load_resolution_overlay(asof):
+    meta={"status":"ABSENT"}
+    if not RESOLUTION_OVERLAY.exists():
+        return {},meta
+    try:
+        obj=json.loads(RESOLUTION_OVERLAY.read_text(encoding="utf-8"))
+        if obj.get("schema")!="XRAY_HISTORY_IDENTITY_RESOLUTION_OVERLAY_V1":
+            raise ValueError("SCHEMA")
+        if obj.get("task_id")!=TASK_ID or obj.get("execution")!="NONE" or obj.get("real_money")!="NO-GO":
+            raise ValueError("SAFETY_OR_TASK")
+        if obj.get("base_asof_et")!=asof:
+            raise ValueError("ASOF_MISMATCH")
+        ts=datetime.fromisoformat(str(obj.get("generated_at_utc")).replace("Z","+00:00"))
+        if ts.tzinfo is None:
+            raise ValueError("TIMESTAMP_TZ")
+        age_h=(datetime.now(timezone.utc)-ts.astimezone(timezone.utc)).total_seconds()/3600.0
+        max_age=float(obj.get("max_age_hours",24))
+        if age_h < -0.25 or age_h > max_age:
+            return {},{"status":"STALE","age_hours":age_h,"max_age_hours":max_age}
+        res=obj.get("resolutions") or {}
+        if not isinstance(res,dict):
+            raise ValueError("RESOLUTIONS")
+        return res,{"status":"PASS","age_hours":age_h,"generated_at_utc":obj.get("generated_at_utc")}
+    except Exception as e:
+        return {},{"status":"INVALID","reason":f"{type(e).__name__}:{str(e)[:160]}"}
+
+def resolution_result(sym,ov,expected20):
+    if not isinstance(ov,dict):
+        return "UNKNOWN_STATIC",{"reason":"RESOLUTION_OVERLAY_INVALID","symbol":sym}
+    d=ov.get("decision")
+    if d=="FAIL_HISTORY":
+        bars=ov.get("bars")
+        if not isinstance(bars,int) or bars>=HARD_HISTORY:
+            return "UNKNOWN_STATIC",{"reason":"RESOLUTION_FAIL_HISTORY_INVALID","symbol":sym}
+        return "FAIL_HISTORY",{"bars":bars,"resolution_source":ov.get("source"),"reason":"DAILY_LT260"}
+    if d=="FAIL_DV20":
+        px=num(ov.get("price")); dv=num(ov.get("dv20")); bars=ov.get("bars")
+        if px is None or dv is None or not isinstance(bars,int) or dv>=HARD_DV20:
+            return "UNKNOWN_STATIC",{"reason":"RESOLUTION_FAIL_DV20_INVALID","symbol":sym}
+        return "FAIL_DV20",{"price":px,"dv20":dv,"bars":bars,"resolution_source":ov.get("source"),"proof":ov.get("proof")}
+    if d=="FAIL_PRICE":
+        px=num(ov.get("price")); bars=ov.get("bars")
+        if px is None or px>HARD_PRICE:
+            return "UNKNOWN_STATIC",{"reason":"RESOLUTION_FAIL_PRICE_INVALID","symbol":sym}
+        return "FAIL_PRICE",{"price":px,"bars":bars,"resolution_source":ov.get("source")}
+    if d=="EXCLUDE":
+        reason=str(ov.get("reason") or "")
+        if reason not in {"SPAC_BLANK_CHECK","PREFERRED","WHEN_ISSUED"}:
+            return "UNKNOWN_STATIC",{"reason":"RESOLUTION_EXCLUDE_INVALID","symbol":sym}
+        return "FAIL_IDENTITY_TYPE",{"reason":reason,"proof":ov.get("proof"),"resolution_source":ov.get("source")}
+    if d=="BLOCK_CURRENT_RUN":
+        if ov.get("trade_status")!="Halted" or not ov.get("last_bar"):
+            return "UNKNOWN_STATIC",{"reason":"RESOLUTION_BLOCK_INVALID","symbol":sym}
+        return "BLOCK_CURRENT_RUN",{"reason":ov.get("reason"),"trade_status":"Halted","last_bar":ov.get("last_bar"),"resolution_source":ov.get("source")}
+    if d=="PASS_HARD_GATES":
+        px=num(ov.get("price")); bars=ov.get("bars")
+        lo=num(ov.get("dv20_lower_bound")); hi=num(ov.get("dv20_upper_bound"))
+        missing=ov.get("missing_sessions") or []; known=ov.get("known_session_count")
+        if (
+          px is None or px<=HARD_PRICE or not isinstance(bars,int) or bars<HARD_HISTORY
+          or lo is None or hi is None or lo<HARD_DV20 or hi<lo
+          or ov.get("no_synthetic_bar") is not True
+          or not isinstance(known,int) or known+len(missing)!=20
+          or sorted(missing)!=sorted(set(missing))
+          or any(x not in expected20 for x in missing)
+        ):
+            return "UNKNOWN_STATIC",{"reason":"RESOLUTION_PASS_BOUND_INVALID","symbol":sym}
+        return "PASS",{
+          "price":px,"bars":bars,
+          "dv20_gate_pass_by_bound":True,
+          "dv20_lower_bound":lo,"dv20_upper_bound":hi,
+          "known_session_count":known,"missing_sessions":missing,
+          "no_synthetic_bar":True,
+          "resolution_source":ov.get("source"),
+          "proof":ov.get("proof"),
+        }
+    return "UNKNOWN_STATIC",{"reason":"RESOLUTION_DECISION_UNKNOWN","symbol":sym,"decision":d}
+
 def load(path):
     if path.exists():
         try:return json.loads(path.read_text(encoding="utf-8"))
@@ -342,6 +421,21 @@ def main():
           "updated_at_utc":datetime.now(timezone.utc).isoformat(),
         }
 
+    resolution_overlay,resolution_overlay_meta=load_resolution_overlay(asof)
+    for sym,ov in sorted(resolution_overlay.items()):
+        if sym not in queue:
+            continue
+        status,info=resolution_result(sym,ov,expected20)
+        prev=results.get(sym) or {}
+        results[sym]={
+          "status":status,
+          "info":info,
+          "attempts":int(prev.get("attempts",0)),
+          "updated_at_utc":datetime.now(timezone.utc).isoformat(),
+          "resolution_overlay":True,
+        }
+    state["resolution_overlay_meta"]=resolution_overlay_meta
+
     state["cursor"]=end
     state["processed_new_this_run"]=len(new)
     state["processed_retry_this_run"]=len(retry)
@@ -351,7 +445,9 @@ def main():
       if x.get("status")=="UNKNOWN_RETRY" and int(x.get("attempts",0))<MAX_ATTEMPTS
     )
     state["updated_at_utc"]=datetime.now(timezone.utc).isoformat()
-    state["status"]="HISTORY_COMPLETE" if end>=len(queue) and state["pending_retry"]==0 else "HISTORY_PARTIAL"
+    unknown_count=sum(1 for x in results.values() if str(x.get("status","")).startswith("UNKNOWN"))
+    state["unknown_count"]=unknown_count
+    state["status"]="HISTORY_COMPLETE" if end>=len(queue) and state["pending_retry"]==0 and unknown_count==0 else "HISTORY_PARTIAL"
     state["state_hash"]=hashlib.sha256(
       json.dumps(state,sort_keys=True,separators=(",",":")).encode("utf-8")
     ).hexdigest()
@@ -373,7 +469,7 @@ def main():
       "execution":"NONE",
       "real_money":"NO-GO",
       "candidate_count":len(candidates),
-      "source":"NASDAQTRADER_IDENTITY_PLUS_NASDAQ_SCREENER_DISCOVERY_PLUS_SINA_PRICE_DV20_HISTORY",
+      "source":"NASDAQTRADER_IDENTITY_PLUS_NASDAQ_SCREENER_DISCOVERY_PLUS_SINA_WITH_TTL_FAIL_CLOSED_RESOLUTION_OVERLAY",
       "market_cap_authority":"UNRESOLVED_UNTIL_CANONICAL_MC_POLICY",
       "candidates":candidates,
     }

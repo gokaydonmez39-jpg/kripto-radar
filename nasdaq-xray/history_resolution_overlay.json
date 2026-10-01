@@ -1,0 +1,145 @@
+{
+  "schema": "XRAY_HISTORY_IDENTITY_RESOLUTION_OVERLAY_V1",
+  "task_id": "6a825366222081918997094d76e6ae46",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "base_asof_et": "2026-09-30",
+  "generated_at_utc": "2026-10-01T12:50:01.882447+00:00",
+  "max_age_hours": 24,
+  "notes": [
+    "Terminal classifications only; no synthetic bars.",
+    "GRAL uses a nonnegative-missing-session median bound proof: even the minimum possible exact20 median exceeds $50M.",
+    "Current-run halted names are terminal non-PASS, not fabricated price/history failures."
+  ],
+  "resolutions": {
+    "ACCV": {
+      "decision": "FAIL_HISTORY",
+      "bars": 1,
+      "source": "LONGBRIDGE_DAILY",
+      "reason": "DAILY_LT260"
+    },
+    "ADRX": {
+      "decision": "FAIL_HISTORY",
+      "bars": 4,
+      "source": "LONGBRIDGE_DAILY",
+      "reason": "DAILY_LT260"
+    },
+    "BSAA": {
+      "decision": "EXCLUDE",
+      "reason": "SPAC_BLANK_CHECK",
+      "source": "NASDAQTRADER_PLUS_BIGDATA",
+      "proof": "OFFICIAL_NAME_CONTAINS_SPAC;BIGDATA_DESCRIBES_BLANK_CHECK"
+    },
+    "CDZIP": {
+      "decision": "EXCLUDE",
+      "reason": "PREFERRED",
+      "source": "NASDAQTRADER_PLUS_SEC_PLUS_LONGBRIDGE",
+      "proof": "DEPOSITARY_SHARES_REPRESENT_SERIES_A_CUMULATIVE_PERPETUAL_PREFERRED"
+    },
+    "EFTY": {
+      "decision": "FAIL_HISTORY",
+      "bars": 40,
+      "source": "LONGBRIDGE_DAILY",
+      "reason": "DAILY_LT260"
+    },
+    "GRAL": {
+      "decision": "PASS_HARD_GATES",
+      "price": 140.12,
+      "bars": 300,
+      "dv20_lower_bound": 118132920.67,
+      "dv20_upper_bound": 121792809.38,
+      "known_session_count": 19,
+      "missing_sessions": [
+        "2026-09-23"
+      ],
+      "no_synthetic_bar": true,
+      "source": "LONGBRIDGE_DAILY_BOUND_PROOF",
+      "proof": "EXACT20_MEDIAN_INTERVAL_WITH_ONE_UNKNOWN_NONNEGATIVE_DOLLAR_VOLUME"
+    },
+    "HCHL": {
+      "decision": "FAIL_HISTORY",
+      "bars": 244,
+      "source": "LONGBRIDGE_DAILY",
+      "reason": "DAILY_LT260"
+    },
+    "LAWR": {
+      "decision": "FAIL_HISTORY",
+      "bars": 69,
+      "source": "LONGBRIDGE_DAILY",
+      "reason": "DAILY_LT260"
+    },
+    "LBTYB": {
+      "decision": "FAIL_DV20",
+      "price": 12.21,
+      "bars": 300,
+      "dv20": 14134.6025,
+      "source": "LONGBRIDGE_EXACT20",
+      "proof": "20_OFFICIAL_SESSIONS_EXACT"
+    },
+    "MAGH": {
+      "decision": "FAIL_HISTORY",
+      "bars": 81,
+      "source": "LONGBRIDGE_DAILY",
+      "reason": "DAILY_LT260"
+    },
+    "MAMK": {
+      "decision": "FAIL_HISTORY",
+      "bars": 94,
+      "source": "LONGBRIDGE_DAILY",
+      "reason": "DAILY_LT260"
+    },
+    "MCTA": {
+      "decision": "FAIL_HISTORY",
+      "bars": 16,
+      "source": "LONGBRIDGE_DAILY",
+      "reason": "DAILY_LT260"
+    },
+    "MMEDV": {
+      "decision": "EXCLUDE",
+      "reason": "WHEN_ISSUED",
+      "source": "NASDAQTRADER_PLUS_LONGBRIDGE",
+      "proof": "OFFICIAL_NAME_COMMON_STOCK_WHEN_ISSUED"
+    },
+    "OPNW": {
+      "decision": "FAIL_PRICE",
+      "price": 8.98,
+      "bars": 300,
+      "source": "LONGBRIDGE_DAILY"
+    },
+    "OST": {
+      "decision": "BLOCK_CURRENT_RUN",
+      "reason": "HALTED_NO_ASOF",
+      "trade_status": "Halted",
+      "last_bar": "2025-09-12",
+      "source": "LONGBRIDGE_QUOTE_DAILY"
+    },
+    "PC": {
+      "decision": "BLOCK_CURRENT_RUN",
+      "reason": "HALTED_NO_ASOF",
+      "trade_status": "Halted",
+      "last_bar": "2025-10-16",
+      "source": "LONGBRIDGE_QUOTE_DAILY"
+    },
+    "SVA": {
+      "decision": "BLOCK_CURRENT_RUN",
+      "reason": "HALTED_NO_ASOF",
+      "trade_status": "Halted",
+      "last_bar": "2019-02-22",
+      "source": "LONGBRIDGE_QUOTE_DAILY"
+    },
+    "THRMV": {
+      "decision": "EXCLUDE",
+      "reason": "WHEN_ISSUED",
+      "source": "NASDAQTRADER_PLUS_LONGBRIDGE",
+      "proof": "OFFICIAL_NAME_COMMON_STOCK_WHEN_ISSUED"
+    },
+    "UCFI": {
+      "decision": "BLOCK_CURRENT_RUN",
+      "reason": "HALTED_NO_ASOF",
+      "trade_status": "Halted",
+      "last_bar": "2025-10-01",
+      "source": "LONGBRIDGE_QUOTE_DAILY"
+    }
+  }
+}
