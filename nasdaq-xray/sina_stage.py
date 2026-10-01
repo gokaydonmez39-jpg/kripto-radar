@@ -26,7 +26,8 @@ import akshare as ak
 import pandas_market_calendars as mcal
 
 TASK_ID="6a825366222081918997094d76e6ae46"
-BUILD="2026-10-01.4"
+BUILD="2026-10-01.5"
+IDENTITY_RULESET="V2_WHEN_ISSUED"
 NASDAQ_DIR="https://www.nasdaqtrader.com/dynamic/SymDir/nasdaqlisted.txt"
 NASDAQ_SCREENER="https://api.nasdaq.com/api/screener/stocks"
 ROOT=Path(__file__).resolve().parent
@@ -398,7 +399,7 @@ def main():
     names,excluded,footer=official_nasdaq()
     asof,expected20=completed_sessions()
     state=load(STATE)
-    epoch_key=footer+"|"+asof
+    epoch_key=IDENTITY_RULESET+"|"+footer+"|"+asof
 
     if state.get("schema")!="XRAY_NASDAQ_SCREENER_SINA_V2" or state.get("epoch_key")!=epoch_key:
         queue,discovery,meta=build_discovery(names,FULL_IDENTITY)
@@ -414,7 +415,8 @@ def main():
           "asof_et":asof,
           "expected20":expected20,
           "official_footer":footer,
-          "identity_authority":"NASDAQTRADER_EXPLICIT_TYPE_FILTER_V1",
+          "identity_authority":"NASDAQTRADER_EXPLICIT_TYPE_FILTER_V2_WHEN_ISSUED",
+          "identity_ruleset":IDENTITY_RULESET,
           "discovery_source":"NASDAQTRADER_FULL_IDENTITY_PLUS_NASDAQ_SCREENER_METADATA_ONLY" if FULL_IDENTITY else "NASDAQ_OFFICIAL_WEB_SCREENER_PREFILTER_ONLY",
           "history_source":"SINA_US_DAILY_ACCELERATOR_NOT_G9",
           "queue":queue,
