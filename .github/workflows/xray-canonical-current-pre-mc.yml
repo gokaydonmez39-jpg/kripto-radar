@@ -1,0 +1,120 @@
+name: XRAY Canonical Current Pre-MC Factory
+
+on:
+  schedule:
+    - cron: "10 * * * 1-5"
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/sina_stage.py"
+      - "nasdaq-xray/resolve_unknowns_fallback.py"
+      - "nasdaq-xray/extract_unknown_manifest.py"
+      - "nasdaq-xray/build_current_master_manifest.py"
+      - "nasdaq-xray/price_dv20_phase.py"
+      - "nasdaq-xray/price_dv20_recover_from_fullstate.py"
+      - ".github/workflows/xray-canonical-current-pre-mc.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: xray-canonical-current-pre-mc
+  cancel-in-progress: false
+
+jobs:
+  pre-mc:
+    runs-on: ubuntu-latest
+    timeout-minutes: 58
+    env:
+      XRAY_FULL_IDENTITY: "1"
+      XRAY_SINA_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_current_full_state.json
+      XRAY_SINA_CAND: ${{ github.workspace }}/nasdaq-xray/canonical_current_full_candidates.json
+      XRAY_HISTORY_RESOLUTION_OVERLAY: ${{ github.workspace }}/nasdaq-xray/canonical_current_resolution_overlay.json
+      XRAY_SINA_HISTORY_BATCH: "5000"
+      XRAY_SINA_RETRY_BATCH: "5000"
+      XRAY_SINA_HISTORY_WORKERS: "12"
+      XRAY_SINA_MAX_ATTEMPTS: "4"
+      XRAY_UNKNOWN_SOURCE: ${{ github.workspace }}/nasdaq-xray/canonical_current_full_state.json
+      XRAY_UNKNOWN_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_current_unknowns.json
+      XRAY_UNKNOWN_MANIFEST: ${{ github.workspace }}/nasdaq-xray/canonical_current_unknowns.json
+      XRAY_RESOLUTION_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_current_resolution_overlay.json
+      XRAY_MASTER_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_current_full_state.json
+      XRAY_MASTER_MANIFEST: ${{ github.workspace }}/nasdaq-xray/canonical_current_master_manifest.json
+      XRAY_FULLSTATE_INPUT: ${{ github.workspace }}/nasdaq-xray/canonical_current_full_state.json
+      XRAY_PRICE_DV20_RECOVER_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_current_price_dv20.json
+      XRAY_PHASE_WORKERS: "12"
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 1}
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - name: Compile factory
+        run: |
+          python -m py_compile \
+            nasdaq-xray/sina_stage.py \
+            nasdaq-xray/resolve_unknowns_fallback.py \
+            nasdaq-xray/extract_unknown_manifest.py \
+            nasdaq-xray/build_current_master_manifest.py \
+            nasdaq-xray/price_dv20_phase.py \
+            nasdaq-xray/price_dv20_recover_from_fullstate.py
+      - name: Install zero-dollar runtime
+        run: python -m pip install --disable-pip-version-check akshare==1.18.95 pandas_market_calendars
+      - name: Full identity initial/retry passes
+        shell: bash
+        run: |
+          set -e
+          for i in 1 2 3 4 5; do
+            echo "FULL_IDENTITY_PASS=$i"
+            python nasdaq-xray/sina_stage.py
+          done
+      - name: Extract unresolved set
+        run: python nasdaq-xray/extract_unknown_manifest.py
+      - name: Resolve zero-dollar unknowns
+        run: python nasdaq-xray/resolve_unknowns_fallback.py
+      - name: Apply resolver overlay
+        shell: bash
+        run: |
+          set -e
+          python nasdaq-xray/sina_stage.py
+          python nasdaq-xray/sina_stage.py
+          python nasdaq-xray/extract_unknown_manifest.py
+      - name: Build current master manifest
+        run: python nasdaq-xray/build_current_master_manifest.py
+      - name: Build policy-ordered PRICE-DV20
+        run: python nasdaq-xray/price_dv20_recover_from_fullstate.py
+      - name: Structural gate
+        run: |
+          python - <<'PY'
+          import json
+          m=json.load(open("nasdaq-xray/canonical_current_master_manifest.json"))
+          p=json.load(open("nasdaq-xray/canonical_current_price_dv20.json"))
+          assert m["task_id"]==p["task_id"]=="6a825366222081918997094d76e6ae46"
+          assert m["asof_et"]==p["asof_et"]
+          assert p["source_master_queue_hash"]==m["queue_hash"]
+          assert p["source_master_count"]==m["queue_total"]
+          assert len(p["results"])==m["queue_total"]
+          assert sum(p["counts"].values())==m["queue_total"]
+          assert p["pass_count"]==len(p["pass_symbols"])==len(set(p["pass_symbols"]))
+          print({"asof":m["asof_et"],"master_status":m["status"],"master_unknown":m["unknown_count"],"price_dv20_unknown":p["unknown_count"],"price_dv20_pass":p["pass_count"]})
+          PY
+      - name: Commit current pre-MC artifacts
+        shell: bash
+        run: |
+          set -e
+          git config user.name "xray-dataplane-bot"
+          git config user.email "xray-dataplane-bot@users.noreply.github.com"
+          git add \
+            nasdaq-xray/canonical_current_full_state.json \
+            nasdaq-xray/canonical_current_full_candidates.json \
+            nasdaq-xray/canonical_current_unknowns.json \
+            nasdaq-xray/canonical_current_resolution_overlay.json \
+            nasdaq-xray/canonical_current_master_manifest.json \
+            nasdaq-xray/canonical_current_price_dv20.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "chore(xray): current epoch pre-MC factory [skip ci]"
+          for attempt in 1 2 3 4 5; do
+            if git pull --rebase origin main && git push; then exit 0; fi
+            sleep $((attempt*2))
+          done
+          exit 1
