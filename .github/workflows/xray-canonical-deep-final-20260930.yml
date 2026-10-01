@@ -1,10 +1,6 @@
 name: XRAY Canonical Deep Final 20260930
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - ".github/workflows/xray-canonical-deep-final-20260930.yml"
   workflow_dispatch:
 
 permissions:
