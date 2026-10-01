@@ -138,14 +138,8 @@ def classify(by,asof,exp20,source):
             "proof":"DV20_UPPER_BOUND_LT_GATE","missing_sessions":miss,
             "known_session_count":len(vals),"no_synthetic_bar":True,
         }
-    if lower>=HARD_DV20 and not math.isinf(upper):
-        return "PASS_HARD_GATES",{
-            "price":price,"bars":bars,"dv20_lower_bound":lower,"dv20_upper_bound":upper,
-            "known_session_count":len(vals),"missing_sessions":miss,"no_synthetic_bar":True,
-            "source":source,"proof":"DV20_LOWER_BOUND_GE_GATE",
-        }
     return None,{
-        "price":price,"bars":bars,"source":source,"reason":"EXACT20_STILL_AMBIGUOUS",
+        "price":price,"bars":bars,"source":source,"reason":"EXACT20_INCOMPLETE_NEVER_PASS",
         "missing_sessions":miss,"known_session_count":len(vals),
         "dv20_lower_bound":lower,"dv20_upper_bound":None if math.isinf(upper) else upper,
     }
