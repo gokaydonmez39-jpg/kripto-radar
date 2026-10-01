@@ -3,7 +3,7 @@
   "authority": "GITHUB_CURRENT_POINTER",
   "execution": "NONE",
   "real_money": "NO-GO",
-  "revision": 24,
+  "revision": 25,
   "state_hash": "b272b2b3e8dba584c72a16b16d3e6b499ba076608ef7e1fbd4abf1387ba91cb4",
   "prev_state_hash": "709b877e39059b515c5467a6d0ef1a9b8a4fd3a05f86192f1e85539c9e64ce23",
   "state_json": {
@@ -33,7 +33,7 @@
       "settlement_date_et": "2026-09-29",
       "incomplete_results_carried_forward": false
     },
-    "revision": 24,
+    "revision": 25,
     "schema": "XRAY_STATE_REGISTER_V1",
     "state_epoch": "2026-09-30T23:44:00Z",
     "status": "RECOVERY_REBASED_MASTER_PENDING",
@@ -52,21 +52,23 @@
       "SYSTEM|RECOVERY_REBASE|2026-09-29|REV21",
       "SYSTEM|C4_12_RUNTIME_ACCEPTED|GITHUB_CAS_V1",
       "SYSTEM|MASTER_IDENTITY_BOUND|2026-09-29|4f7fa2426906",
-      "SYSTEM|PRICE_DV20_BOUND|2026-09-29|13b2f3b90e4d"
+      "SYSTEM|PRICE_DV20_BOUND|2026-09-29|13b2f3b90e4d",
+      "SYSTEM|MC_BOUND|2026-09-29|PRIMARY449|WATCH36|FAIL13"
     ],
-    "updated_at_utc": "2026-10-01T14:40:39.133Z",
+    "updated_at_utc": "2026-10-01T14:45:53.943Z",
     "work_cursor": {
       "ASOF_ET": "2026-09-29",
       "MASTER_HASH": "4f7fa2426906e0be6f1cfdf15658aada4d8e91f3898c4e3383cc2198e82db362",
-      "PHASE": "MC",
+      "PHASE": "HISTORY_STAGE1",
       "CHUNK_INDEX": 0,
       "CHUNK_TOTAL": 0,
       "COMPLETED_HASH": null,
       "COUNTS": {
-        "PASS_PRICE_DV20": 498,
-        "FAIL_PRICE": 1731,
-        "FAIL_DV20": 1141,
-        "UNKNOWN_EXACT20": 35
+        "MC_PASS_PRIMARY": 449,
+        "MC_PASS_FALLBACK_WATCH": 36,
+        "MC_FAIL_PRIMARY": 13,
+        "MC_UNKNOWN": 0,
+        "CURRENT_CORE_PRIMARY": 449
       }
     },
     "delivery_keys": [],
@@ -121,6 +123,45 @@
       "source_blob_sha": "adb23a4970e5b3e681a96c8b71f697a80912316c",
       "symbol_count": 498,
       "symbol_hash": "13b2f3b90e4d7c9c35d52ee638e6e0eec3e980abf694a496088a958876a6c17d"
+    },
+    "mc_evidence": {
+      "path": "nasdaq-xray/canonical_mc_resolution_v1.json",
+      "blob_sha": "41d6f5b8226643e3f31897fe2d7e00b0911357fe",
+      "input_count": 498,
+      "primary_pass_count": 449,
+      "fallback_watch_count": 36,
+      "primary_fail_count": 13,
+      "unknown_count": 0,
+      "current_core_primary_count": 449,
+      "fallback_watch_excluded_from_current_core": true,
+      "fallback_watch_r92_eligible": false,
+      "provider_identity_normalization": {
+        "schema": "XRAY_NASDAQ_MIC_NORMALIZATION_V1",
+        "canonical_exchange_family": "NASDAQ",
+        "accepted_provider_mics": [
+          "XNAS",
+          "XNGS",
+          "XNMS",
+          "XNCM"
+        ],
+        "scope": "IDENTITY_ONLY_FOR_BIGDATA_EXACT_LISTING_RESOLUTION",
+        "no_threshold_change": true,
+        "no_exchange_broadening_beyond_nasdaq_tiers": true,
+        "evidence": "Nasdaq methodology identifies XNAS=The NASDAQ Stock Market, XNGS=NASDAQ Global Select, XNMS=NASDAQ Global Market, XNCM=NASDAQ Capital Market."
+      }
+    },
+    "current_core_reference": {
+      "source": "MC_PRIMARY_PASS_ONLY",
+      "source_artifact": "nasdaq-xray/canonical_mc_resolution_v1.json",
+      "source_blob_sha": "41d6f5b8226643e3f31897fe2d7e00b0911357fe",
+      "symbol_count": 449
+    },
+    "watch_only_mc_fallback_reference": {
+      "source_artifact": "nasdaq-xray/canonical_mc_resolution_v1.json",
+      "source_blob_sha": "41d6f5b8226643e3f31897fe2d7e00b0911357fe",
+      "symbol_count": 36,
+      "state_cap": "WATCH",
+      "r92_eligible": false
     }
   },
   "source_proof": {
@@ -132,6 +173,6 @@
   "transition_rule": "NEXT_REVISION_MUST_BE_EXACT_PLUS_ONE_AND_PREV_STATE_HASH_MUST_EQUAL_THIS_STATE_HASH",
   "immutable_snapshot_path": "nasdaq-xray/state/REV21_b272b2b3e8dba584c72a16b16d3e6b499ba076608ef7e1fbd4abf1387ba91cb4.json",
   "storage_protocol": "GITHUB_CONTENTS_CAS_V1",
-  "prev_pointer_blob_sha": "538c58ab01f2531b1cb405307f354e87facc8020",
+  "prev_pointer_blob_sha": "eb5c2442a31dce48a725d66ce5042c6bae15543f",
   "writer_task_id": "6a825366222081918997094d76e6ae46"
 }
