@@ -1,9 +1,7 @@
 name: XRAY C4.14 Primary History Scope 20260930
 on:
-  push:
-    branches: [main]
-    paths:
-      - ".github/workflows/xray-c414-primary-history-20260930.yml"
+  workflow_dispatch:
+
 permissions:
   contents: write
 concurrency:
