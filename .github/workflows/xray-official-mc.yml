@@ -1,0 +1,61 @@
+name: XRAY Official MC Audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/mc_official_recovery.py"
+      - ".github/workflows/xray-official-mc.yml"
+  schedule:
+    - cron: "15 * * * 1-5"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: xray-official-mc-audit
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      XRAY_OFFICIAL_MC_BATCH: "35"
+      XRAY_OFFICIAL_MC_MAX_ATTEMPTS: "3"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run zero-dollar official MC audit
+        run: python nasdaq-xray/mc_official_recovery.py
+      - name: Commit durable MC audit cursor
+        shell: bash
+        run: |
+          set -e
+          git config user.name "xray-dataplane-bot"
+          git config user.email "xray-dataplane-bot@users.noreply.github.com"
+          git add nasdaq-xray/mc_official_recovery_state.json
+          if git diff --cached --quiet; then
+            echo "No MC audit state change."
+          else
+            git commit -m "chore(xray): official MC audit checkpoint [skip ci]"
+            for attempt in 1 2 3 4 5; do
+              if git pull --rebase origin main && git push; then
+                exit 0
+              fi
+              sleep $((attempt * 2))
+            done
+            exit 1
+          fi
+      - name: Upload MC audit state
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-official-mc-audit
+          path: nasdaq-xray/mc_official_recovery_state.json
+          retention-days: 30
