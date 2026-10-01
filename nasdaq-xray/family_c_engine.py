@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import json,math,os
+import json,math,os,hashlib
 from concurrent.futures import ThreadPoolExecutor,as_completed
 from datetime import datetime,timezone
 from pathlib import Path
@@ -17,6 +17,14 @@ OUT=Path(os.getenv("XRAY_FAMILY_C_OUT",str(ROOT/"canonical_current_family_c.json
 TASK="6a825366222081918997094d76e6ae46"
 WORKERS=int(os.getenv("XRAY_FAMILY_C_WORKERS","8"))
 NY=ZoneInfo("America/New_York")
+
+def blob_sha(p:Path):
+    b=p.read_bytes()
+    return hashlib.sha1(f"blob {len(b)}\0".encode()+b).hexdigest()
+
+def relpath(p:Path):
+    try:return str(p.relative_to(ROOT.parent)).replace("\\","/")
+    except Exception:return str(p)
 
 def hist(sym,asof):
     try:
@@ -170,6 +178,10 @@ def main():
       "confirmed_count":len(confirmed),"confirmed":dict(sorted(confirmed.items())),
       "unknown_count":len(unknown),"unknown":dict(sorted(unknown.items())),
       "details":dict(sorted(details.items())),
+      "source_stage1_path":relpath(STAGE1),"source_stage1_blob_sha":blob_sha(STAGE1),
+      "source_event_path":relpath(EVENTS),"source_event_blob_sha":blob_sha(EVENTS),
+      "source_compiled_policy_hash":ev.get("compiled_policy_hash"),
+      "source_compiled_policy_version":ev.get("compiled_policy_version"),
       "policy":{
         "reaction":"BMO same RTH; AMC next RTH",
         "gap_atr_min":0.50,"reaction_rvol20_min":1.5,
@@ -177,7 +189,7 @@ def main():
         "min_consolidation_bars":3,"base_atr":[0.30,2.05],
         "breakout_rvol20_min":1.5,"breakout_within_sessions":10
       },
-      "authority":"C4_10_POST_EARNINGS_FAIL_CLOSED"
+      "authority":"C4_11_POST_EARNINGS_FAIL_CLOSED_POLICY_INHERITED"
     }
     OUT.write_text(json.dumps(out,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
     print(json.dumps({"asof":asof,"weekly_scope":len(weekly),"event_symbols":len(target),"confirmed":len(confirmed),"unknown":len(unknown)},sort_keys=True))
