@@ -14,7 +14,11 @@ SUSPECT=re.compile(r"\bacquisition\b|\bspac\b|\bblank check\b",re.I)
 
 def main():
     h=json.loads(HISTORY.read_text());m=json.loads(MASTER.read_text())
-    assert h["schema"]=="XRAY_CANONICAL_HISTORY_V1" and h["task_id"]==TASK_ID and h["asof_et"]==ASOF
+    assert h["schema"] in {"XRAY_CANONICAL_HISTORY_V1","XRAY_CANONICAL_HISTORY_V2"} and h["task_id"]==TASK_ID and h["asof_et"]==ASOF
+    if h["schema"]=="XRAY_CANONICAL_HISTORY_V2":
+        assert h["input_count"]==456 and h["pass_count"]==442 and h["unknown_count"]==0
+        assert h["c4_14_scope"]["mode"]=="MC_PRIMARY_PASS_ONLY"
+        assert h["r92_ineligible"]==[] and set(h["state_caps"].values())=={"NORMAL"}
     assert m["task_id"]==TASK_ID and m["asof_et"]==ASOF
     proof={}
     if PROOF.exists():
@@ -46,7 +50,7 @@ def main():
     obj={
       "schema":"XRAY_CANONICAL_LEGAL_V1","task_id":TASK_ID,"asof_et":ASOF,
       "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
-      "source_history_blob_sha":h.get("_blob_sha"),"input_count":len(h["pass_symbols"]),
+      "source_history_schema":h.get("schema"),"source_history_pass_hash":h.get("pass_hash"),"input_count":len(h["pass_symbols"]),
       "counts":{"PASS_LEGAL":len(passed),"BLOCK_LEGAL_SHELL":len(blocked),"UNKNOWN_LEGAL":len(unknown)},
       "pass_symbols":sorted(passed),"blocked_symbols":sorted(blocked),"unknown_symbols":sorted(unknown),
       "pass_hash":hashlib.sha256("\n".join(sorted(passed)).encode()).hexdigest(),
