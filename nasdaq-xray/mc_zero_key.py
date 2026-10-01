@@ -15,6 +15,7 @@ ROOT=Path(__file__).resolve().parent
 SINA_STATE=ROOT/"sina_state.json"
 CAND=ROOT/"sina_candidates.json"
 OUT=ROOT/"mc_zero_key_state.json"
+OVERLAY=ROOT/"mc_resolution_overlay.json"
 TASK_ID="6a825366222081918997094d76e6ae46"
 SEC_TICKERS="https://www.sec.gov/files/company_tickers_exchange.json"
 SEC_UA="NASDAQ-SWING-XRAY research bot (contact: https://github.com/gokaydonmez39-jpg/kripto-radar)"
@@ -73,15 +74,98 @@ def latest_shares(cik,asof):
     end,filed,val,form=eligible[-1]
     return {"shares":val,"end":end,"filed":filed,"form":form}
 
+def load_overlay(asof):
+    meta={"status":"ABSENT"}
+    if not OVERLAY.exists():
+        return {},meta
+    try:
+        obj=json.loads(OVERLAY.read_text(encoding="utf-8"))
+        if obj.get("schema")!="XRAY_MC_RESOLUTION_OVERLAY_V1":
+            raise ValueError("SCHEMA")
+        if obj.get("execution")!="NONE" or obj.get("real_money")!="NO-GO":
+            raise ValueError("SAFETY")
+        if obj.get("base_asof_et")!=asof:
+            raise ValueError("ASOF_MISMATCH")
+        ts=datetime.fromisoformat(str(obj.get("generated_at_utc")).replace("Z","+00:00"))
+        if ts.tzinfo is None:
+            raise ValueError("TIMESTAMP_TZ")
+        age_h=(datetime.now(timezone.utc)-ts.astimezone(timezone.utc)).total_seconds()/3600.0
+        max_age=float(obj.get("max_age_hours",24))
+        if age_h < -0.25 or age_h > max_age:
+            return {},{"status":"STALE","age_hours":age_h,"max_age_hours":max_age}
+        res=obj.get("resolutions") or {}
+        if not isinstance(res,dict):
+            raise ValueError("RESOLUTIONS")
+        return res,{"status":"PASS","age_hours":age_h,"generated_at_utc":obj.get("generated_at_utc")}
+    except Exception as e:
+        return {},{"status":"INVALID","reason":f"{type(e).__name__}:{str(e)[:120]}"}
+
 def main():
     ss=json.loads(SINA_STATE.read_text())
     cc=json.loads(CAND.read_text())
     asof=cc["asof_et"]
     cands=cc.get("candidates") or {}
     disc=ss.get("discovery") or {}
+    overlay,overlay_meta=load_overlay(asof)
 
     direct_pass={}; unresolved={}; definitive_fail={}
+    fallback_watch_symbols=[]
     for sym,info in sorted(cands.items()):
+        ov=overlay.get(sym)
+        if ov:
+            mode=ov.get("mode")
+            decision=ov.get("decision")
+            if mode=="BIGDATA_PRIMARY":
+                mc=finite(ov.get("market_cap_usd"))
+                listing=ov.get("listing")
+                expected="PASS" if mc is not None and mc>=2_000_000_000 else "FAIL"
+                if mc is None or listing!=f"XNAS:{sym}" or decision!=expected:
+                    unresolved[sym]={"reason":"MC_OVERLAY_PRIMARY_INVALID"}
+                    continue
+                if decision=="PASS":
+                    direct_pass[sym]={
+                      "market_cap":mc,
+                      "mode":"BIGDATA_PRIMARY_EXACT_XNAS",
+                      "bigdata_entity_id":ov.get("bigdata_entity_id"),
+                    }
+                else:
+                    definitive_fail[sym]={
+                      "market_cap":mc,
+                      "mode":"BIGDATA_PRIMARY_EXACT_XNAS_LT_2B",
+                      "bigdata_entity_id":ov.get("bigdata_entity_id"),
+                    }
+                continue
+            if mode=="RALLIES_LONGBRIDGE_FALLBACK":
+                rmc=finite(ov.get("rallies_market_cap_usd"))
+                lmc=finite(ov.get("longbridge_market_cap_usd"))
+                rel=finite(ov.get("relative_diff"))
+                ok=(
+                  decision=="PASS"
+                  and ov.get("rallies_exchange")=="XNAS"
+                  and ov.get("longbridge_exchange")=="NASD"
+                  and rmc is not None and lmc is not None
+                  and rmc>=2_100_000_000 and lmc>=2_100_000_000
+                  and rel is not None and rel<=0.10
+                  and ov.get("state_cap")=="WATCH"
+                  and ov.get("r92_eligible") is False
+                )
+                if not ok:
+                    unresolved[sym]={"reason":"MC_OVERLAY_FALLBACK_INVALID"}
+                    continue
+                direct_pass[sym]={
+                  "market_cap_conservative_max":max(rmc,lmc),
+                  "rallies_market_cap":rmc,
+                  "longbridge_market_cap":lmc,
+                  "relative_diff":rel,
+                  "mode":"RALLIES_XNAS_LONGBRIDGE_NASD_FALLBACK",
+                  "state_cap":"WATCH",
+                  "r92_eligible":False,
+                }
+                fallback_watch_symbols.append(sym)
+                continue
+            unresolved[sym]={"reason":"MC_OVERLAY_MODE_UNKNOWN"}
+            continue
+
         nmc=finite((disc.get(sym) or {}).get("screener_market_cap"))
         if nmc is None:
             unresolved[sym]={"reason":"NASDAQ_MC_MISSING"}
@@ -113,7 +197,9 @@ def main():
       "definitive_fail":definitive_fail,
       "unresolved":unresolved,
       "current_core_zero_key":sorted(direct_pass),
-      "policy_note":"GitHub shared runner receives SEC HTTP 403. No bypass/retry storm. Nasdaq official screener >=2.6B is conservative PASS; 2.0-2.6B remains UNKNOWN until canonical resolver."
+      "fallback_watch_symbols":sorted(fallback_watch_symbols),
+      "overlay_meta":overlay_meta,
+      "policy_note":"Primary Bigdata exact XNAS COMPANY/PUBLIC finite USD market cap overrides discovery MC. Rallies XNAS + Longbridge NASD fallback requires both >=2.10B and <=10% relative difference and is capped WATCH/R92-ineligible. Freshness failure is fail-closed. Nasdaq official screener >=2.6B remains conservative PASS when no fresh overlay resolution exists; 2.0-2.6B remains UNKNOWN."
     }
     OUT.write_text(json.dumps(out,ensure_ascii=False,sort_keys=True,indent=2)+"\n",encoding="utf-8")
     print(json.dumps({k:out[k] for k in ["direct_nasdaq_conservative_pass_count","definitive_fail_count","unresolved_count"]},sort_keys=True))
