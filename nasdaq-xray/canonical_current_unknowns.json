@@ -1,0 +1,186 @@
+{
+  "asof_et": "2026-09-30",
+  "by_reason": {
+    "ASOF_MISSING": 4,
+    "EXACT20_MISSING": 1,
+    "IndexError:list index out of range": 2,
+    "SyntaxError:invalid syntax (<string>, line 1)": 1
+  },
+  "by_status": {
+    "UNKNOWN_RETRY_EXHAUSTED": 3,
+    "UNKNOWN_STATIC": 5
+  },
+  "execution": "NONE",
+  "official_footer": "File Creation Time: 1001202614:01|||||||",
+  "real_money": "NO-GO",
+  "schema": "XRAY_CANONICAL_UNKNOWN_MANIFEST_V2",
+  "source_counts": {
+    "BLOCK_LEGAL_SHELL": 148,
+    "FAIL_DV20": 893,
+    "FAIL_HISTORY": 168,
+    "FAIL_PRICE": 1695,
+    "PASS": 486,
+    "UNKNOWN_RETRY_EXHAUSTED": 3,
+    "UNKNOWN_STATIC": 5
+  },
+  "source_queue_hash": "7efd407c4b74dbdf7b52e0d8b9671ef8a032e2a7497ec481e2b27de41d3211e1",
+  "source_state_hash": "b97681fcdd0a4eb29ca30af44f6b749ade68ae37efc71bb01181575983a9722a",
+  "source_unknown_count": 8,
+  "task_id": "6a825366222081918997094d76e6ae46",
+  "unknown_count": 8,
+  "unknowns": {
+    "BPAC": {
+      "attempts": 1,
+      "discovery": {
+        "country": "United States",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "",
+        "screener_market_cap": 0.0,
+        "screener_price": 10.19,
+        "screener_volume": 6.0,
+        "sector": ""
+      },
+      "info": {
+        "bars": 327,
+        "reason": "ASOF_MISSING"
+      },
+      "security_name": "Blueport Acquisition Ltd - Class A Ordinary Shares",
+      "status": "UNKNOWN_STATIC"
+    },
+    "CHWM": {
+      "attempts": 4,
+      "discovery": {
+        "country": null,
+        "discovery_reason": "OFFICIAL_SCREENER_MISSING_FORCE_QUEUE",
+        "industry": null,
+        "screener_market_cap": null,
+        "screener_price": null,
+        "screener_volume": null,
+        "sector": null
+      },
+      "info": "IndexError:list index out of range",
+      "security_name": "Chilwa Minerals Limited - American Depository Shares",
+      "status": "UNKNOWN_RETRY_EXHAUSTED"
+    },
+    "GPAC": {
+      "attempts": 1,
+      "discovery": {
+        "country": "United States",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "",
+        "screener_market_cap": 0.0,
+        "screener_price": 10.08,
+        "screener_volume": 8.0,
+        "sector": ""
+      },
+      "info": {
+        "bars": 842,
+        "reason": "ASOF_MISSING"
+      },
+      "security_name": "General Purpose Acquisition Corp. - Class A Ordinary Shares",
+      "status": "UNKNOWN_STATIC"
+    },
+    "HCMA": {
+      "attempts": 1,
+      "discovery": {
+        "country": "United States",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "Hotels/Resorts",
+        "screener_market_cap": 399380625.0,
+        "screener_price": 10.29,
+        "screener_volume": 14.0,
+        "sector": "Consumer Discretionary"
+      },
+      "info": {
+        "bars": 570,
+        "reason": "ASOF_MISSING"
+      },
+      "security_name": "HCM III Acquisition Corp. - Class A Ordinary Share",
+      "status": "UNKNOWN_STATIC"
+    },
+    "KTWO": {
+      "attempts": 1,
+      "discovery": {
+        "country": "Cayman Islands",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "Medical/Dental Instruments",
+        "screener_market_cap": 201914687.0,
+        "screener_price": 10.075,
+        "screener_volume": 217.0,
+        "sector": "Health Care"
+      },
+      "info": {
+        "bars": 1239,
+        "dates": [
+          "2026-09-09",
+          "2026-09-10",
+          "2026-09-14",
+          "2026-09-16",
+          "2026-09-17",
+          "2026-09-18",
+          "2026-09-21",
+          "2026-09-22",
+          "2026-09-23",
+          "2026-09-28",
+          "2026-09-29"
+        ],
+        "dv20_lower_bound": 0.0,
+        "dv20_upper_bound": null,
+        "known_session_count": 9,
+        "no_synthetic_bar": true,
+        "price": 10.075,
+        "reason": "EXACT20_MISSING"
+      },
+      "security_name": "K2 Capital Acquisition Corporation - Class A Ordinary Share",
+      "status": "UNKNOWN_STATIC"
+    },
+    "RZAI": {
+      "attempts": 4,
+      "discovery": {
+        "country": "South Korea",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "EDP Services",
+        "screener_market_cap": 1217477351.0,
+        "screener_price": 21.88,
+        "screener_volume": 297374.0,
+        "sector": "Technology"
+      },
+      "info": "IndexError:list index out of range",
+      "security_name": "Roze AI Inc. - Common Shares",
+      "status": "UNKNOWN_RETRY_EXHAUSTED"
+    },
+    "SVA": {
+      "attempts": 4,
+      "discovery": {
+        "country": null,
+        "discovery_reason": "OFFICIAL_SCREENER_MISSING_FORCE_QUEUE",
+        "industry": null,
+        "screener_market_cap": null,
+        "screener_price": null,
+        "screener_volume": null,
+        "sector": null
+      },
+      "info": "SyntaxError:invalid syntax (<string>, line 1)",
+      "security_name": "Sinovac Biotech, Ltd. - Ordinary Shares (Antigua/Barbudo)",
+      "status": "UNKNOWN_RETRY_EXHAUSTED"
+    },
+    "TMTS": {
+      "attempts": 1,
+      "discovery": {
+        "country": "United States",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "",
+        "screener_market_cap": 0.0,
+        "screener_price": 10.025,
+        "screener_volume": 31.0,
+        "sector": ""
+      },
+      "info": {
+        "bars": 313,
+        "reason": "ASOF_MISSING"
+      },
+      "security_name": "Spartacus Acquisition Corp. II - Class A Ordinary Shares",
+      "status": "UNKNOWN_STATIC"
+    }
+  }
+}

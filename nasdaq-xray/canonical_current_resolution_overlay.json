@@ -1,0 +1,661 @@
+{
+  "base_asof_et": "2026-09-30",
+  "current_resolution_count": 55,
+  "current_unresolved_count": 8,
+  "execution": "NONE",
+  "expected20": [
+    "2026-09-02",
+    "2026-09-03",
+    "2026-09-04",
+    "2026-09-08",
+    "2026-09-09",
+    "2026-09-10",
+    "2026-09-11",
+    "2026-09-14",
+    "2026-09-15",
+    "2026-09-16",
+    "2026-09-17",
+    "2026-09-18",
+    "2026-09-21",
+    "2026-09-22",
+    "2026-09-23",
+    "2026-09-24",
+    "2026-09-25",
+    "2026-09-28",
+    "2026-09-29",
+    "2026-09-30"
+  ],
+  "generated_at_utc": "2026-10-01T19:34:02.135755+00:00",
+  "manifest_unknown_count": 63,
+  "max_age_hours": 24,
+  "real_money": "NO-GO",
+  "resolution_count": 55,
+  "resolutions": {
+    "ACFN": {
+      "bars": 686,
+      "decision": "FAIL_DV20",
+      "dv20": 1403887.0427131653,
+      "price": 20.0,
+      "proof": "EXACT20_MEDIAN",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "ADAM": {
+      "bars": 686,
+      "decision": "FAIL_PRICE",
+      "price": 7.78000020980835,
+      "proof": "EXACT_ASOF_DAILY_CLOSE",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "AEC": {
+      "bars": 686,
+      "decision": "FAIL_PRICE",
+      "price": 3.2699999809265137,
+      "proof": "EXACT_ASOF_DAILY_CLOSE",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "ALDF": {
+      "bars": 449,
+      "decision": "FAIL_DV20",
+      "dv20": 0.0,
+      "price": 10.819999694824219,
+      "proof": "EXACT20_MEDIAN",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "ALF": {
+      "bars": 543,
+      "decision": "FAIL_DV20",
+      "dv20": 0.0,
+      "price": 10.819999694824219,
+      "proof": "EXACT20_MEDIAN",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "ALTI": {
+      "bars": 686,
+      "decision": "FAIL_PRICE",
+      "price": 2.990000009536743,
+      "proof": "EXACT_ASOF_DAILY_CLOSE",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "ASTI": {
+      "bars": 686,
+      "decision": "FAIL_PRICE",
+      "price": 2.5199999809265137,
+      "proof": "EXACT_ASOF_DAILY_CLOSE",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "CAPN": {
+      "bars": 484,
+      "decision": "FAIL_DV20",
+      "dv20": 0.0,
+      "price": 11.25,
+      "proof": "EXACT20_MEDIAN",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "CHNR": {
+      "bars": 686,
+      "decision": "FAIL_PRICE",
+      "price": 3.990000009536743,
+      "proof": "EXACT_ASOF_DAILY_CLOSE",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "CNL": {
+      "bars": 686,
+      "decision": "FAIL_DV20",
+      "dv20": 2527028.021812439,
+      "price": 12.260000228881836,
+      "proof": "EXACT20_MEDIAN",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "DMAA": {
+      "bars": 402,
+      "decision": "FAIL_DV20",
+      "dv20": 13008.000183105469,
+      "price": 10.880000114440918,
+      "proof": "EXACT20_MEDIAN",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "DPU": {
+      "bars": 686,
+      "decision": "FAIL_PRICE",
+      "price": 1.5199999809265137,
+      "proof": "EXACT_ASOF_DAILY_CLOSE",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "DRK": {
+      "bars": 686,
+      "decision": "FAIL_PRICE",
+      "price": 2.799999952316284,
+      "proof": "EXACT_ASOF_DAILY_CLOSE",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "DTSQ": {
+      "bars": 512,
+      "decision": "FAIL_DV20",
+      "dv20": 0.0,
+      "price": 11.579999923706055,
+      "proof": "EXACT20_MEDIAN",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "ENGN": {
+      "bars": 686,
+      "decision": "FAIL_PRICE",
+      "price": 2.0,
+      "proof": "EXACT_ASOF_DAILY_CLOSE",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "ESYN": {
+      "bars": 686,
+      "decision": "FAIL_PRICE",
+      "price": 2.2799999713897705,
+      "proof": "EXACT_ASOF_DAILY_CLOSE",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "EURK": {
+      "bars": 514,
+      "decision": "FAIL_DV20",
+      "dv20": 12085.499906539917,
+      "price": 11.543000221252441,
+      "proof": "EXACT20_MEDIAN",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "FACT": {
+      "bars": 444,
+      "decision": "FAIL_DV20",
+      "dv20": 6968.7501430511475,
+      "price": 10.720999717712402,
+      "proof": "EXACT20_MEDIAN",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "FGC": {
+      "bars": 686,
+      "decision": "FAIL_PRICE",
+      "price": 6.590000152587891,
+      "proof": "EXACT_ASOF_DAILY_CLOSE",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "FORTY": {
+      "bars": 686,
+      "decision": "FAIL_DV20",
+      "dv20": 0.0,
+      "price": 114.98999786376953,
+      "proof": "EXACT20_MEDIAN",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "GPAT": {
+      "bars": 564,
+      "decision": "FAIL_DV20",
+      "dv20": 548.5000133514404,
+      "price": 11.010000228881836,
+      "proof": "EXACT20_MEDIAN",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "GTEN": {
+      "bars": 321,
+      "decision": "FAIL_DV20",
+      "dv20": 0.0,
+      "price": 10.489999771118164,
+      "proof": "EXACT20_MEDIAN",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "HCIC": {
+      "bars": 128,
+      "decision": "FAIL_PRICE",
+      "price": 9.979999542236328,
+      "proof": "EXACT_ASOF_DAILY_CLOSE",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "HTCO": {
+      "bars": 686,
+      "decision": "FAIL_PRICE",
+      "price": 2.069999933242798,
+      "proof": "EXACT_ASOF_DAILY_CLOSE",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "HUCK": {
+      "bars": 686,
+      "decision": "FAIL_PRICE",
+      "price": 3.3299999237060547,
+      "proof": "EXACT_ASOF_DAILY_CLOSE",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "JL": {
+      "bars": 674,
+      "decision": "FAIL_PRICE",
+      "price": 4.556000232696533,
+      "proof": "EXACT_ASOF_DAILY_CLOSE",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "KELYB": {
+      "bars": 686,
+      "decision": "FAIL_DV20",
+      "dv20": 53592.50011444092,
+      "price": 22.399999618530273,
+      "proof": "EXACT20_MEDIAN",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "LPAA": {
+      "bars": 521,
+      "decision": "FAIL_DV20",
+      "dv20": 0.0,
+      "price": 10.829999923706055,
+      "proof": "EXACT20_MEDIAN",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "MACI": {
+      "bars": 554,
+      "decision": "FAIL_DV20",
+      "dv20": 6074.000072479248,
+      "price": 11.09000015258789,
+      "proof": "EXACT20_MEDIAN",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "MAKO": {
+      "bars": 686,
+      "decision": "FAIL_PRICE",
+      "price": 9.390000343322754,
+      "proof": "EXACT_ASOF_DAILY_CLOSE",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "MAYS": {
+      "bars": 686,
+      "decision": "FAIL_DV20",
+      "dv20": 0.0,
+      "price": 40.099998474121094,
+      "proof": "EXACT20_MEDIAN",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "NCEW": {
+      "bars": 446,
+      "decision": "FAIL_DV20",
+      "dv20": 0.0,
+      "price": 17.6200008392334,
+      "proof": "EXACT20_MEDIAN",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "NCO": {
+      "bars": 43,
+      "decision": "FAIL_PRICE",
+      "price": 9.920000076293945,
+      "proof": "EXACT_ASOF_DAILY_CLOSE",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "NOEM": {
+      "bars": 428,
+      "decision": "FAIL_DV20",
+      "dv20": 0.0,
+      "price": 10.579999923706055,
+      "proof": "EXACT20_MEDIAN",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "NUCL": {
+      "bars": 151,
+      "decision": "FAIL_PRICE",
+      "price": 6.360000133514404,
+      "proof": "EXACT_ASOF_DAILY_CLOSE",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "OPNW": {
+      "bars": 686,
+      "decision": "FAIL_PRICE",
+      "price": 8.979999542236328,
+      "proof": "EXACT_ASOF_DAILY_CLOSE",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "OST": {
+      "bars": 686,
+      "decision": "FAIL_PRICE",
+      "price": 1.6950000524520874,
+      "proof": "EXACT_ASOF_DAILY_CLOSE",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "PAMT": {
+      "bars": 686,
+      "decision": "FAIL_DV20",
+      "dv20": 209743.99585723877,
+      "price": 11.40999984741211,
+      "proof": "EXACT20_MEDIAN",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "PBM": {
+      "bars": 686,
+      "decision": "FAIL_PRICE",
+      "price": 5.460000038146973,
+      "proof": "EXACT_ASOF_DAILY_CLOSE",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "PC": {
+      "bars": 505,
+      "decision": "FAIL_PRICE",
+      "price": 9.399999618530273,
+      "proof": "EXACT_ASOF_DAILY_CLOSE",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "PFAI": {
+      "bars": 364,
+      "decision": "FAIL_PRICE",
+      "price": 2.7699999809265137,
+      "proof": "EXACT_ASOF_DAILY_CLOSE",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "PHOE": {
+      "bars": 360,
+      "decision": "FAIL_DV20",
+      "dv20": 73097.99766540527,
+      "price": 18.34000015258789,
+      "proof": "EXACT20_MEDIAN",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "RJET": {
+      "bars": 686,
+      "decision": "FAIL_DV20",
+      "dv20": 1235933.9764595032,
+      "price": 18.059999465942383,
+      "proof": "EXACT20_MEDIAN",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "SDA": {
+      "bars": 686,
+      "decision": "FAIL_PRICE",
+      "price": 0.4449999928474426,
+      "proof": "EXACT_ASOF_DAILY_CLOSE",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "SENEB": {
+      "bars": 686,
+      "decision": "FAIL_DV20",
+      "dv20": 0.0,
+      "price": 179.83999633789062,
+      "proof": "EXACT20_MEDIAN",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "SFWL": {
+      "bars": 685,
+      "decision": "FAIL_PRICE",
+      "price": 8.899999618530273,
+      "proof": "EXACT_ASOF_DAILY_CLOSE",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "SLBT": {
+      "bars": 415,
+      "decision": "FAIL_PRICE",
+      "price": 1.7000000476837158,
+      "proof": "EXACT_ASOF_DAILY_CLOSE",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "SLE": {
+      "bars": 686,
+      "decision": "FAIL_PRICE",
+      "price": 5.525000095367432,
+      "proof": "EXACT_ASOF_DAILY_CLOSE",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "STRR": {
+      "bars": 686,
+      "decision": "FAIL_PRICE",
+      "price": 9.75,
+      "proof": "EXACT_ASOF_DAILY_CLOSE",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "SUNE": {
+      "bars": 686,
+      "decision": "FAIL_PRICE",
+      "price": 2.369999885559082,
+      "proof": "EXACT_ASOF_DAILY_CLOSE",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "SVIA": {
+      "bars": 330,
+      "decision": "FAIL_PRICE",
+      "price": 3.875,
+      "proof": "EXACT_ASOF_DAILY_CLOSE",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "TLIH": {
+      "bars": 311,
+      "decision": "FAIL_PRICE",
+      "price": 5.699999809265137,
+      "proof": "EXACT_ASOF_DAILY_CLOSE",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "TMS": {
+      "bars": 364,
+      "decision": "FAIL_PRICE",
+      "price": 7.264999866485596,
+      "proof": "EXACT_ASOF_DAILY_CLOSE",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "VMET": {
+      "bars": 148,
+      "decision": "FAIL_PRICE",
+      "price": 8.800000190734863,
+      "proof": "EXACT_ASOF_DAILY_CLOSE",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "WEST": {
+      "bars": 686,
+      "decision": "FAIL_PRICE",
+      "price": 8.039999961853027,
+      "proof": "EXACT_ASOF_DAILY_CLOSE",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    }
+  },
+  "resolver": "NASDAQ_OFFICIAL_HISTORICAL_PRIMARY_YAHOO_FAIL_ONLY_FALLBACK_MERGE_V2",
+  "schema": "XRAY_HISTORY_IDENTITY_RESOLUTION_OVERLAY_V1",
+  "task_id": "6a825366222081918997094d76e6ae46",
+  "unresolved": {
+    "BPAC": {
+      "nasdaq_class": null,
+      "nasdaq_info": {
+        "reason": "NO_NASDAQ_DATA"
+      },
+      "nasdaq_meta": {
+        "rows": 0,
+        "usable": 0
+      },
+      "prior_info": {
+        "bars": 327,
+        "reason": "ASOF_MISSING"
+      },
+      "prior_status": "UNKNOWN_STATIC",
+      "yahoo_class": "POTENTIAL_FAIL_HISTORY",
+      "yahoo_info": {
+        "bars": 185,
+        "price": 10.1899995803833,
+        "source": "YAHOO_CHART_FREE_FALLBACK"
+      },
+      "yahoo_meta": {
+        "exchangeName": "NCM",
+        "firstTradeDate": 1767709800,
+        "usable": 185
+      }
+    },
+    "CHWM": {
+      "nasdaq_class": null,
+      "nasdaq_info": {
+        "reason": "NO_NASDAQ_DATA"
+      },
+      "nasdaq_meta": {
+        "rows": 0,
+        "usable": 0
+      },
+      "prior_info": "IndexError:list index out of range",
+      "prior_status": "UNKNOWN_RETRY_EXHAUSTED",
+      "yahoo_class": null,
+      "yahoo_info": {
+        "reason": "NO_YAHOO_DATA"
+      },
+      "yahoo_meta": {
+        "exchangeName": "NGM",
+        "firstTradeDate": null,
+        "usable": 0
+      }
+    },
+    "GPAC": {
+      "nasdaq_class": null,
+      "nasdaq_info": {
+        "reason": "NO_NASDAQ_DATA"
+      },
+      "nasdaq_meta": {
+        "rows": 0,
+        "usable": 0
+      },
+      "prior_info": {
+        "bars": 842,
+        "reason": "ASOF_MISSING"
+      },
+      "prior_status": "UNKNOWN_STATIC",
+      "yahoo_class": "POTENTIAL_FAIL_HISTORY",
+      "yahoo_info": {
+        "bars": 173,
+        "price": 10.079999923706055,
+        "source": "YAHOO_CHART_FREE_FALLBACK"
+      },
+      "yahoo_meta": {
+        "exchangeName": "NGM",
+        "firstTradeDate": 1769178600,
+        "usable": 173
+      }
+    },
+    "HCMA": {
+      "nasdaq_class": null,
+      "nasdaq_info": {
+        "reason": "NO_NASDAQ_DATA"
+      },
+      "nasdaq_meta": {
+        "rows": 0,
+        "usable": 0
+      },
+      "prior_info": {
+        "bars": 570,
+        "reason": "ASOF_MISSING"
+      },
+      "prior_status": "UNKNOWN_STATIC",
+      "yahoo_class": "POTENTIAL_FAIL_HISTORY",
+      "yahoo_info": {
+        "bars": 258,
+        "price": 10.289999961853027,
+        "source": "YAHOO_CHART_FREE_FALLBACK"
+      },
+      "yahoo_meta": {
+        "exchangeName": "NGM",
+        "firstTradeDate": 1758547800,
+        "usable": 258
+      }
+    },
+    "KTWO": {
+      "nasdaq_class": null,
+      "nasdaq_info": {
+        "reason": "NO_NASDAQ_DATA"
+      },
+      "nasdaq_meta": {
+        "rows": 0,
+        "usable": 0
+      },
+      "prior_info": {
+        "bars": 1239,
+        "dates": [
+          "2026-09-09",
+          "2026-09-10",
+          "2026-09-14",
+          "2026-09-16",
+          "2026-09-17",
+          "2026-09-18",
+          "2026-09-21",
+          "2026-09-22",
+          "2026-09-23",
+          "2026-09-28",
+          "2026-09-29"
+        ],
+        "dv20_lower_bound": 0.0,
+        "dv20_upper_bound": null,
+        "known_session_count": 9,
+        "no_synthetic_bar": true,
+        "price": 10.075,
+        "reason": "EXACT20_MISSING"
+      },
+      "prior_status": "UNKNOWN_STATIC",
+      "yahoo_class": "POTENTIAL_FAIL_HISTORY",
+      "yahoo_info": {
+        "bars": 150,
+        "price": 10.079999923706055,
+        "source": "YAHOO_CHART_FREE_FALLBACK"
+      },
+      "yahoo_meta": {
+        "exchangeName": "NGM",
+        "firstTradeDate": 1772116200,
+        "usable": 150
+      }
+    },
+    "RZAI": {
+      "nasdaq_class": null,
+      "nasdaq_info": {
+        "reason": "NO_NASDAQ_DATA"
+      },
+      "nasdaq_meta": {
+        "rows": 0,
+        "usable": 0
+      },
+      "prior_info": "IndexError:list index out of range",
+      "prior_status": "UNKNOWN_RETRY_EXHAUSTED",
+      "yahoo_class": "POTENTIAL_FAIL_HISTORY",
+      "yahoo_info": {
+        "bars": 1,
+        "price": 21.8799991607666,
+        "source": "YAHOO_CHART_FREE_FALLBACK"
+      },
+      "yahoo_meta": {
+        "exchangeName": "NGM",
+        "firstTradeDate": null,
+        "usable": 1
+      }
+    },
+    "SVA": {
+      "nasdaq_class": null,
+      "nasdaq_info": {
+        "reason": "NO_NASDAQ_DATA"
+      },
+      "nasdaq_meta": {
+        "rows": 0,
+        "usable": 0
+      },
+      "prior_info": "SyntaxError:invalid syntax (<string>, line 1)",
+      "prior_status": "UNKNOWN_RETRY_EXHAUSTED",
+      "yahoo_class": null,
+      "yahoo_info": {
+        "reason": "NO_YAHOO_DATA"
+      },
+      "yahoo_meta": {
+        "exchangeName": "NMS",
+        "firstTradeDate": 1784295000,
+        "usable": 0
+      }
+    },
+    "TMTS": {
+      "nasdaq_class": null,
+      "nasdaq_info": {
+        "reason": "NO_NASDAQ_DATA"
+      },
+      "nasdaq_meta": {
+        "rows": 0,
+        "usable": 0
+      },
+      "prior_info": {
+        "bars": 313,
+        "reason": "ASOF_MISSING"
+      },
+      "prior_status": "UNKNOWN_STATIC",
+      "yahoo_class": "POTENTIAL_FAIL_HISTORY",
+      "yahoo_info": {
+        "bars": 125,
+        "price": 10.029999732971191,
+        "source": "YAHOO_CHART_FREE_FALLBACK"
+      },
+      "yahoo_meta": {
+        "exchangeName": "NGM",
+        "firstTradeDate": 1775136600,
+        "usable": 125
+      }
+    }
+  },
+  "unresolved_count": 8
+}
