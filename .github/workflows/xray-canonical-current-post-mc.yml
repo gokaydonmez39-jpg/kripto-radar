@@ -126,7 +126,6 @@ jobs:
           cat /tmp/mc_out >> "$GITHUB_OUTPUT"
           cat /tmp/mc_out
       - name: Compile
-        if: steps.mc.outputs.ready == 'true'
         run: |
           python -m py_compile \
             nasdaq-xray/history_phase.py \
