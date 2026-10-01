@@ -1,5 +1,7 @@
 {
   "base_asof_et": "2026-09-30",
+  "current_resolution_count": 3,
+  "current_unresolved_count": 4,
   "execution": "NONE",
   "expected20": [
     "2026-09-02",
@@ -23,10 +25,11 @@
     "2026-09-29",
     "2026-09-30"
   ],
-  "generated_at_utc": "2026-10-01T17:02:19.611Z",
+  "generated_at_utc": "2026-10-01T17:13:17.254506+00:00",
+  "manifest_unknown_count": 7,
   "max_age_hours": 24,
   "real_money": "NO-GO",
-  "resolution_count": 60,
+  "resolution_count": 63,
   "resolutions": {
     "ACFN": {
       "bars": 686,
@@ -73,12 +76,34 @@
       "proof": "EXACT_ASOF_DAILY_CLOSE",
       "source": "YAHOO_CHART_FREE_FALLBACK"
     },
+    "ARCI": {
+      "bars": 138,
+      "decision": "FAIL_HISTORY",
+      "no_paid_fallback": true,
+      "proof": "TWO_INDEPENDENT_SOURCES_LT260",
+      "provider_bar_counts": {
+        "rallies": 96,
+        "yahoo": 138
+      },
+      "source": "RALLIES_DAILY+YAHOO_CHART_FREE_FALLBACK"
+    },
     "ASTI": {
       "bars": 686,
       "decision": "FAIL_PRICE",
       "price": 2.5199999809265137,
       "proof": "EXACT_ASOF_DAILY_CLOSE",
       "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "BPAC": {
+      "bars": 185,
+      "decision": "FAIL_HISTORY",
+      "no_paid_fallback": true,
+      "proof": "TWO_INDEPENDENT_SOURCES_LT260",
+      "provider_bar_counts": {
+        "rallies": 97,
+        "yahoo": 185
+      },
+      "source": "RALLIES_DAILY+YAHOO_CHART_FREE_FALLBACK"
     },
     "CAPN": {
       "bars": 484,
@@ -178,6 +203,17 @@
       "proof": "EXACT20_MEDIAN",
       "source": "YAHOO_CHART_FREE_FALLBACK"
     },
+    "GPAC": {
+      "bars": 173,
+      "decision": "FAIL_HISTORY",
+      "no_paid_fallback": true,
+      "proof": "TWO_INDEPENDENT_SOURCES_LT260",
+      "provider_bar_counts": {
+        "rallies": 102,
+        "yahoo": 173
+      },
+      "source": "RALLIES_DAILY+YAHOO_CHART_FREE_FALLBACK"
+    },
     "GPAT": {
       "bars": 564,
       "decision": "FAIL_DV20",
@@ -200,6 +236,17 @@
       "price": 9.979999542236328,
       "proof": "EXACT_ASOF_DAILY_CLOSE",
       "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "HCMA": {
+      "bars": 258,
+      "decision": "FAIL_HISTORY",
+      "no_paid_fallback": true,
+      "proof": "TWO_INDEPENDENT_SOURCES_LT260",
+      "provider_bar_counts": {
+        "rallies": 216,
+        "yahoo": 258
+      },
+      "source": "RALLIES_DAILY+YAHOO_CHART_FREE_FALLBACK"
     },
     "HTCO": {
       "bars": 686,
@@ -229,6 +276,17 @@
       "price": 22.399999618530273,
       "proof": "EXACT20_MEDIAN",
       "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "KTWO": {
+      "bars": 150,
+      "decision": "FAIL_HISTORY",
+      "no_paid_fallback": true,
+      "proof": "TWO_INDEPENDENT_SOURCES_LT260",
+      "provider_bar_counts": {
+        "rallies": 103,
+        "yahoo": 150
+      },
+      "source": "RALLIES_DAILY+YAHOO_CHART_FREE_FALLBACK"
     },
     "LPAA": {
       "bars": 521,
@@ -298,6 +356,20 @@
       "proof": "EXACT_ASOF_DAILY_CLOSE",
       "source": "YAHOO_CHART_FREE_FALLBACK"
     },
+    "OPNW": {
+      "bars": 686,
+      "decision": "FAIL_PRICE",
+      "price": 8.979999542236328,
+      "proof": "EXACT_ASOF_DAILY_CLOSE",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "OST": {
+      "bars": 686,
+      "decision": "FAIL_PRICE",
+      "price": 1.6950000524520874,
+      "proof": "EXACT_ASOF_DAILY_CLOSE",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
     "PAMT": {
       "bars": 686,
       "decision": "FAIL_DV20",
@@ -310,6 +382,13 @@
       "bars": 686,
       "decision": "FAIL_PRICE",
       "price": 5.460000038146973,
+      "proof": "EXACT_ASOF_DAILY_CLOSE",
+      "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "PC": {
+      "bars": 505,
+      "decision": "FAIL_PRICE",
+      "price": 9.399999618530273,
       "proof": "EXACT_ASOF_DAILY_CLOSE",
       "source": "YAHOO_CHART_FREE_FALLBACK"
     },
@@ -335,6 +414,17 @@
       "price": 18.059999465942383,
       "proof": "EXACT20_MEDIAN",
       "source": "YAHOO_CHART_FREE_FALLBACK"
+    },
+    "RZAI": {
+      "bars": 1,
+      "decision": "FAIL_HISTORY",
+      "no_paid_fallback": true,
+      "proof": "TWO_INDEPENDENT_SOURCES_LT260",
+      "provider_bar_counts": {
+        "rallies": 1,
+        "yahoo": 1
+      },
+      "source": "RALLIES_DAILY+YAHOO_CHART_FREE_FALLBACK"
     },
     "SDA": {
       "bars": 686,
@@ -407,6 +497,17 @@
       "proof": "EXACT_ASOF_DAILY_CLOSE",
       "source": "YAHOO_CHART_FREE_FALLBACK"
     },
+    "TMTS": {
+      "bars": 125,
+      "decision": "FAIL_HISTORY",
+      "no_paid_fallback": true,
+      "proof": "TWO_INDEPENDENT_SOURCES_LT260",
+      "provider_bar_counts": {
+        "rallies": 64,
+        "yahoo": 125
+      },
+      "source": "RALLIES_DAILY+YAHOO_CHART_FREE_FALLBACK"
+    },
     "VMET": {
       "bars": 148,
       "decision": "FAIL_PRICE",
@@ -420,91 +521,96 @@
       "price": 8.039999961853027,
       "proof": "EXACT_ASOF_DAILY_CLOSE",
       "source": "YAHOO_CHART_FREE_FALLBACK"
-    },
-    "ARCI": {
-      "decision": "FAIL_HISTORY",
-      "bars": 138,
-      "source": "RALLIES_DAILY+YAHOO_CHART_FREE_FALLBACK",
-      "proof": "TWO_INDEPENDENT_SOURCES_LT260",
-      "provider_bar_counts": {
-        "rallies": 96,
-        "yahoo": 138
-      },
-      "no_paid_fallback": true
-    },
-    "BPAC": {
-      "decision": "FAIL_HISTORY",
-      "bars": 185,
-      "source": "RALLIES_DAILY+YAHOO_CHART_FREE_FALLBACK",
-      "proof": "TWO_INDEPENDENT_SOURCES_LT260",
-      "provider_bar_counts": {
-        "rallies": 97,
-        "yahoo": 185
-      },
-      "no_paid_fallback": true
-    },
-    "GPAC": {
-      "decision": "FAIL_HISTORY",
-      "bars": 173,
-      "source": "RALLIES_DAILY+YAHOO_CHART_FREE_FALLBACK",
-      "proof": "TWO_INDEPENDENT_SOURCES_LT260",
-      "provider_bar_counts": {
-        "rallies": 102,
-        "yahoo": 173
-      },
-      "no_paid_fallback": true
-    },
-    "HCMA": {
-      "decision": "FAIL_HISTORY",
-      "bars": 258,
-      "source": "RALLIES_DAILY+YAHOO_CHART_FREE_FALLBACK",
-      "proof": "TWO_INDEPENDENT_SOURCES_LT260",
-      "provider_bar_counts": {
-        "rallies": 216,
-        "yahoo": 258
-      },
-      "no_paid_fallback": true
-    },
-    "KTWO": {
-      "decision": "FAIL_HISTORY",
-      "bars": 150,
-      "source": "RALLIES_DAILY+YAHOO_CHART_FREE_FALLBACK",
-      "proof": "TWO_INDEPENDENT_SOURCES_LT260",
-      "provider_bar_counts": {
-        "rallies": 103,
-        "yahoo": 150
-      },
-      "no_paid_fallback": true
-    },
-    "RZAI": {
-      "decision": "FAIL_HISTORY",
-      "bars": 1,
-      "source": "RALLIES_DAILY+YAHOO_CHART_FREE_FALLBACK",
-      "proof": "TWO_INDEPENDENT_SOURCES_LT260",
-      "provider_bar_counts": {
-        "rallies": 1,
-        "yahoo": 1
-      },
-      "no_paid_fallback": true
-    },
-    "TMTS": {
-      "decision": "FAIL_HISTORY",
-      "bars": 125,
-      "source": "RALLIES_DAILY+YAHOO_CHART_FREE_FALLBACK",
-      "proof": "TWO_INDEPENDENT_SOURCES_LT260",
-      "provider_bar_counts": {
-        "rallies": 64,
-        "yahoo": 125
-      },
-      "no_paid_fallback": true
     }
   },
-  "resolver": "NASDAQ_OFFICIAL_HISTORICAL_PRIMARY_YAHOO_FAIL_ONLY_FALLBACK_PLUS_RALLIES_LT260_CROSSCHECK_V2",
+  "resolver": "NASDAQ_OFFICIAL_HISTORICAL_PRIMARY_YAHOO_FAIL_ONLY_FALLBACK_MERGE_V2",
   "schema": "XRAY_HISTORY_IDENTITY_RESOLUTION_OVERLAY_V1",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unresolved": {},
-  "unresolved_count": 0,
-  "notes": {
-    "history_fail_crosscheck": "FAIL_HISTORY only where both Yahoo and Rallies independently report <260 usable daily bars; stored bars=max(provider counts), still <260."
-  }
+  "unresolved": {
+    "CHWM": {
+      "nasdaq_class": null,
+      "nasdaq_info": {
+        "reason": "NO_NASDAQ_DATA"
+      },
+      "nasdaq_meta": {
+        "rows": 0,
+        "usable": 0
+      },
+      "prior_info": "IndexError:list index out of range",
+      "prior_status": "UNKNOWN_RETRY_EXHAUSTED",
+      "yahoo_class": null,
+      "yahoo_info": {
+        "reason": "NO_YAHOO_DATA"
+      },
+      "yahoo_meta": {
+        "exchangeName": "NGM",
+        "firstTradeDate": null,
+        "usable": 0
+      }
+    },
+    "MMEDV": {
+      "nasdaq_class": null,
+      "nasdaq_info": {
+        "reason": "NO_NASDAQ_DATA"
+      },
+      "nasdaq_meta": {
+        "rows": 0,
+        "usable": 0
+      },
+      "prior_info": "KeyError:'date'",
+      "prior_status": "UNKNOWN_RETRY_EXHAUSTED",
+      "yahoo_class": null,
+      "yahoo_info": {
+        "reason": "NO_YAHOO_DATA"
+      },
+      "yahoo_meta": {
+        "exchangeName": "NAS",
+        "firstTradeDate": null,
+        "usable": 0
+      }
+    },
+    "SVA": {
+      "nasdaq_class": null,
+      "nasdaq_info": {
+        "reason": "NO_NASDAQ_DATA"
+      },
+      "nasdaq_meta": {
+        "rows": 0,
+        "usable": 0
+      },
+      "prior_info": "SyntaxError:invalid syntax (<string>, line 1)",
+      "prior_status": "UNKNOWN_RETRY_EXHAUSTED",
+      "yahoo_class": null,
+      "yahoo_info": {
+        "reason": "NO_YAHOO_DATA"
+      },
+      "yahoo_meta": {
+        "exchangeName": "NMS",
+        "firstTradeDate": 1784295000,
+        "usable": 0
+      }
+    },
+    "THRMV": {
+      "nasdaq_class": null,
+      "nasdaq_info": {
+        "reason": "NO_NASDAQ_DATA"
+      },
+      "nasdaq_meta": {
+        "rows": 0,
+        "usable": 0
+      },
+      "prior_info": "KeyError:'date'",
+      "prior_status": "UNKNOWN_RETRY_EXHAUSTED",
+      "yahoo_class": null,
+      "yahoo_info": {
+        "reason": "NO_YAHOO_DATA"
+      },
+      "yahoo_meta": {
+        "exchangeName": "NAS",
+        "firstTradeDate": null,
+        "usable": 0
+      }
+    }
+  },
+  "unresolved_count": 4
 }
