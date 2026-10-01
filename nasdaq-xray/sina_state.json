@@ -6,8 +6,7 @@
     "FAIL_DV20": 213,
     "FAIL_PRICE": 10,
     "PASS": 346,
-    "UNKNOWN_RETRY": 2,
-    "UNKNOWN_RETRY_EXHAUSTED": 1,
+    "UNKNOWN_RETRY_EXHAUSTED": 3,
     "UNKNOWN_STATIC": 238
   },
   "cursor": 811,
@@ -6569,9 +6568,9 @@
   "identity_authority": "NASDAQTRADER_EXPLICIT_TYPE_FILTER_V3_SPAC_DEFERRED_TO_LEGAL",
   "identity_ruleset": "V3_SPAC_DEFERRED_TO_LEGAL",
   "official_footer": "File Creation Time: 1001202618:01|||||||",
-  "pending_retry": 2,
+  "pending_retry": 0,
   "processed_new_this_run": 0,
-  "processed_retry_this_run": 2,
+  "processed_retry_this_run": 0,
   "queue": [
     "AAL",
     "AAOI",
@@ -8807,7 +8806,7 @@
         "source": "NASDAQ_SAME_RUN_SCREENER_METADATA"
       },
       "status": "BLOCK_LEGAL_SHELL",
-      "updated_at_utc": "2026-10-01T23:42:40.336160+00:00"
+      "updated_at_utc": "2026-10-01T23:51:46.958170+00:00"
     },
     "BSP": {
       "attempts": 1,
@@ -14279,10 +14278,10 @@
       "updated_at_utc": "2026-10-01T23:42:31.191342+00:00"
     },
     "OPNW": {
-      "attempts": 3,
+      "attempts": 4,
       "info": "IndexError:list index out of range",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-10-01T23:42:40.335727+00:00"
+      "status": "UNKNOWN_RETRY_EXHAUSTED",
+      "updated_at_utc": "2026-10-01T23:51:41.208265+00:00"
     },
     "ORKA": {
       "attempts": 1,
@@ -16131,10 +16130,10 @@
       "updated_at_utc": "2026-10-01T23:42:31.191742+00:00"
     },
     "SVA": {
-      "attempts": 3,
+      "attempts": 4,
       "info": "SyntaxError:invalid syntax (<string>, line 1)",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-10-01T23:42:40.335752+00:00"
+      "status": "UNKNOWN_RETRY_EXHAUSTED",
+      "updated_at_utc": "2026-10-01T23:51:41.208285+00:00"
     },
     "SWKS": {
       "attempts": 1,
@@ -18553,10 +18552,10 @@
     "ZS": "Zscaler, Inc. - Common Stock",
     "ZYME": "Zymeworks Inc. - Common Stock"
   },
-  "state_hash": "21e396a4a8551c4df714773861cdd3bf7b4f63794fa08616d92a56b14d7586de",
+  "state_hash": "4647709618e1ab3ff4ddd959a66481088a7caab5164d11c76dc18fbb84f45b26",
   "status": "HISTORY_PARTIAL",
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_count": 241,
   "unknown_never_pass": true,
-  "updated_at_utc": "2026-10-01T23:42:40.336633+00:00"
+  "updated_at_utc": "2026-10-01T23:51:46.958459+00:00"
 }
