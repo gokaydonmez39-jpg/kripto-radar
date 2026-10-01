@@ -114,7 +114,6 @@ def main():
     blockers.append("G9_BLOCKED_NO_AUTHORIZED_ZERO_DOLLAR_RUNTIME_SOURCE")
     blockers.append("ACCOUNT_GATE_UNKNOWN")
     blockers.append("OBSERVED_IPHONE_SIGNAL_DELIVERY_UNPROVEN")
-    blockers.append("CANONICAL_CHATGPT_DURABLE_STATE_NOT_MIGRATED")
 
     status="ENGINE_PASS_FULL_GO_BLOCKED" if pre_g9 else "ENGINE_PASS_NO_CONFIRMED_SETUP"
     out={
