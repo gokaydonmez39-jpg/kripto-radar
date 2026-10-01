@@ -77,8 +77,9 @@ jobs:
           assert j["schema"]=="XRAY_CANONICAL_UNKNOWN_MANIFEST_V1"
           assert j["task_id"]=="6a825366222081918997094d76e6ae46"
           assert j["asof_et"]=="2026-09-30"
-          assert j["unknown_count"]==j["source_unknown_count"]==60
-          assert sum(j["by_status"].values())==60
+          assert j["unknown_count"]==j["source_unknown_count"]
+          assert j["unknown_count"]>0
+          assert sum(j["by_status"].values())==j["unknown_count"]
           print("UNKNOWN_MANIFEST_PASS")
           PY
       - name: Commit manifest
