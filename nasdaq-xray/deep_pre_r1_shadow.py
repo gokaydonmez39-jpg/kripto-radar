@@ -13,10 +13,11 @@ import akshare as ak
 import pandas as pd
 
 ROOT=Path(__file__).resolve().parent
-STAGE1=ROOT/"stage1_shadow.json"
-REGIME=ROOT/"regime_breadth_shadow.json"
-EVENTS=ROOT/"event_official_state.json"
-OUT=ROOT/"deep_pre_r1_shadow.json"
+STAGE1=Path(os.getenv("XRAY_STAGE1_STATE", str(ROOT/"stage1_shadow.json")))
+REGIME=Path(os.getenv("XRAY_REGIME_STATE", str(ROOT/"regime_breadth_shadow.json")))
+EVENTS=Path(os.getenv("XRAY_EVENT_STATE", str(ROOT/"event_official_state.json")))
+OUT=Path(os.getenv("XRAY_DEEP_OUT", str(ROOT/"deep_pre_r1_shadow.json")))
+GEOMETRY_ONLY=os.getenv("XRAY_DEEP_GEOMETRY_ONLY","0")=="1"
 TASK_ID="6a825366222081918997094d76e6ae46"
 WORKERS=int(os.getenv("XRAY_DEEP_WORKERS","8"))
 
@@ -164,15 +165,16 @@ def family_a(df):
     return {"pool":geom,"sh_date":df.date.iloc[sh].strftime("%Y-%m-%d"),"hl_date":df.date.iloc[hl].strftime("%Y-%m-%d"),"trigger_date":df.date.iloc[trigger].strftime("%Y-%m-%d"),"P":P,"anchor":anchor,"A":A,"d":d,"depth":depth,"prelow_near_hl":near_hl}
 
 def main():
-    st=json.loads(STAGE1.read_text()); rg=json.loads(REGIME.read_text())
-    ev=json.loads(EVENTS.read_text()) if EVENTS.exists() else {"confirmed_blocks":{},"unresolved":{}}
+    st=json.loads(STAGE1.read_text())
     asof=st["asof_et"]
-    if rg.get("asof_et")!=asof:
-        raise RuntimeError("ASOF_MISMATCH_STAGE1_REGIME")
-    event_state_fresh=(ev.get("asof_et")==asof)
     syms=sorted(set(st["weekly_pass"]))
     state_caps={s:(st.get("state_caps") or {}).get(s,"NORMAL") for s in syms}
     r92_ineligible=set(st.get("r92_ineligible") or [])
+    rg={"regime":"DEFERRED","asof_et":asof} if GEOMETRY_ONLY else json.loads(REGIME.read_text())
+    ev={"confirmed_blocks":{},"unresolved":{},"asof_et":None} if GEOMETRY_ONLY else (json.loads(EVENTS.read_text()) if EVENTS.exists() else {"confirmed_blocks":{},"unresolved":{}})
+    if not GEOMETRY_ONLY and rg.get("asof_et")!=asof:
+        raise RuntimeError("ASOF_MISMATCH_STAGE1_REGIME")
+    event_state_fresh=(not GEOMETRY_ONLY and ev.get("asof_et")==asof)
     data={};unknown={}
     with ThreadPoolExecutor(max_workers=WORKERS) as ex:
         futs={ex.submit(get_hist,s,asof):s for s in syms+["QQQ"]}
@@ -189,38 +191,49 @@ def main():
         if x is None:
             outres[s]={"status":"UNKNOWN","reason":unknown.get(s),"state_cap":state_caps.get(s,"NORMAL"),"r92_eligible":s not in r92_ineligible};continue
         rs20=common_rs(x,qqq,20);rs60=common_rs(x,qqq,60)
-        mix_pass=bool(rs20 is not None and rs60 is not None and rs20>0 and rs60>0) if rg.get("regime")=="MIXED" else True
+        mix_pass=True if GEOMETRY_ONLY else (bool(rs20 is not None and rs60 is not None and rs20>0 and rs60>0) if rg.get("regime")=="MIXED" else True)
         A=family_a(x) if s in st["a_trend_pool"] else {"pool":False,"reason":"NOT_A_STAGE1"}
         B=family_b(x) if s in st["b_tight_base_pool"] else {"pool":False,"reason":"NOT_B_STAGE1"}
         D=family_d(x,rs20,rs60) if s in st["d_drawdown_pool"] else {"pool":False,"reason":"NOT_D_STAGE1"}
-        event="UNKNOWN_STALE_EVENT_STATE"
+        event="DEFERRED" if GEOMETRY_ONLY else "UNKNOWN_STALE_EVENT_STATE"
         if event_state_fresh:
             event="CLEAN_DISCOVERY"
             if s in (ev.get("confirmed_blocks") or {}): event="BLOCK_CONFIRMED_8SESSION"
             elif s in (ev.get("unresolved") or {}): event="UNKNOWN"
         outres[s]={"status":"EVALUATED","rs20":rs20,"rs60":rs60,"mixed_rs_pass":mix_pass,"A":A,"B":B,"D":D,"event_status":event,"state_cap":state_caps.get(s,"NORMAL"),"r92_eligible":s not in r92_ineligible}
-    a=[s for s,r in outres.items() if r.get("mixed_rs_pass") and r.get("A",{}).get("pool") and r.get("event_status")=="CLEAN_DISCOVERY"]
-    b=[s for s,r in outres.items() if r.get("mixed_rs_pass") and r.get("B",{}).get("breakout_confirmed") and r.get("event_status")=="CLEAN_DISCOVERY"]
-    b_armed=[s for s,r in outres.items() if r.get("mixed_rs_pass") and r.get("B",{}).get("pool") and not r.get("B",{}).get("breakout_confirmed") and r.get("event_status")=="CLEAN_DISCOVERY"]
-    d=[s for s,r in outres.items() if r.get("D",{}).get("dk3_pre_r1") and r.get("event_status")=="CLEAN_DISCOVERY"]
+    a_geom=[s for s,r in outres.items() if r.get("A",{}).get("pool")]
+    b_break=[s for s,r in outres.items() if r.get("B",{}).get("breakout_confirmed")]
+    b_armed=[s for s,r in outres.items() if r.get("B",{}).get("pool") and not r.get("B",{}).get("breakout_confirmed")]
+    d_geom=[s for s,r in outres.items() if r.get("D",{}).get("dk3_pre_r1")]
+    if GEOMETRY_ONLY:
+        a=a_geom;b=b_break;d=d_geom
+    else:
+        a=[s for s in a_geom if outres[s].get("mixed_rs_pass") and outres[s].get("event_status")=="CLEAN_DISCOVERY"]
+        b=[s for s in b_break if outres[s].get("mixed_rs_pass") and outres[s].get("event_status")=="CLEAN_DISCOVERY"]
+        b_armed=[s for s in b_armed if outres[s].get("mixed_rs_pass") and outres[s].get("event_status")=="CLEAN_DISCOVERY"]
+        d=[s for s in d_geom if outres[s].get("event_status")=="CLEAN_DISCOVERY"]
     out={
-      "schema":"XRAY_DEEP_PRE_R1_SHADOW_V1","task_id":TASK_ID,"asof_et":asof,
-      "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
+      "schema":"XRAY_DEEP_GEOMETRY_V1" if GEOMETRY_ONLY else "XRAY_DEEP_PRE_R1_SHADOW_V1",
+      "task_id":TASK_ID,"asof_et":asof,"execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
+      "mode":"GEOMETRY_ONLY_REGIME_EVENT_DEFERRED" if GEOMETRY_ONLY else "FULL_SHADOW",
       "regime":rg.get("regime"),"input_weekly_pass_count":len(syms),
-      "a_geometry_rs_event_pass_count":len(a),"a_geometry_rs_event_pass":a,
-      "b_breakout_rs_event_pass_count":len(b),"b_breakout_rs_event_pass":b,
-      "b_armed_rs_event_pass_count":len(b_armed),"b_armed_rs_event_pass":b_armed,
-      "d_dk3_pre_r1_count":len(d),"d_dk3_pre_r1":d,
+      "a_geometry_count":len(a_geom),"a_geometry":sorted(a_geom),
+      "b_breakout_count":len(b_break),"b_breakout":sorted(b_break),
+      "b_armed_count":len(b_armed),"b_armed":sorted(b_armed),
+      "d_geometry_rs_count":len(d_geom),"d_geometry_rs":sorted(d_geom),
+      "a_geometry_rs_event_pass_count":len(a),"a_geometry_rs_event_pass":sorted(a),
+      "b_breakout_rs_event_pass_count":len(b),"b_breakout_rs_event_pass":sorted(b),
+      "b_armed_rs_event_pass_count":len(b_armed),"b_armed_rs_event_pass":sorted(b_armed),
+      "d_dk3_pre_r1_count":len(d),"d_dk3_pre_r1":sorted(d),
       "unknown_history_count":len(unknown),"unknown_history":unknown,
-      "state_caps":state_caps,
-      "r92_ineligible":sorted(r92_ineligible & set(syms)),
+      "state_caps":state_caps,"r92_ineligible":sorted(r92_ineligible & set(syms)),
       "results":outres,
-      "remaining_gates":["R1_NEAREST_RESISTANCE","BASIC_SEVERE_RR","EXTENSION_CHASE","OFFICIAL_EVENT_FINALIST_REVIEW","ACCOUNT_GATE","G9","ALIGNED_60M","NON_SYNTHETIC_TARGET"],
+      "remaining_gates":["REGIME_BREADTH","R1_NEAREST_RESISTANCE","BASIC_SEVERE_RR","EXTENSION_CHASE","OFFICIAL_EVENT_FINALIST_REVIEW","ACCOUNT_GATE","G9","ALIGNED_60M","NON_SYNTHETIC_TARGET"],
       "event_state_fresh":event_state_fresh,
       "authority":"SHADOW_DEEP_PREFILTER_ONLY_NO_SIGNAL"
     }
     OUT.write_text(json.dumps(out,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
-    print(json.dumps({k:out[k] for k in ["regime","input_weekly_pass_count","a_geometry_rs_event_pass_count","b_breakout_rs_event_pass_count","b_armed_rs_event_pass_count","d_dk3_pre_r1_count","unknown_history_count"]},sort_keys=True))
+    print(json.dumps({"mode":out["mode"],"input_weekly_pass_count":len(syms),"a_geometry_count":len(a_geom),"b_breakout_count":len(b_break),"b_armed_count":len(b_armed),"d_geometry_rs_count":len(d_geom),"unknown_history_count":len(unknown)},sort_keys=True))
 
 if __name__=="__main__":
     main()
