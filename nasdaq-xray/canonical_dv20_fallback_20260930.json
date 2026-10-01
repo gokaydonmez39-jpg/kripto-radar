@@ -51,10 +51,66 @@
     "SENEB"
   ],
   "queue_total": 20,
-  "cursor": 0,
+  "cursor": 8,
   "checkpoint_every": 8,
   "max_per_run": 32,
-  "results": {},
-  "checkpoints": [],
+  "results": {
+    "ACFN": {
+      "dv20": 1404327.7800000005,
+      "max_dv": 3290144,
+      "decision": "FAIL_DV20"
+    },
+    "ALDF": {
+      "dv20": 1461.345,
+      "max_dv": 4063457.96,
+      "decision": "FAIL_DV20"
+    },
+    "ALF": {
+      "dv20": 190.845,
+      "max_dv": 28717.2,
+      "decision": "FAIL_DV20"
+    },
+    "CNL": {
+      "dv20": 2527002.65,
+      "max_dv": 3915975,
+      "decision": "FAIL_DV20"
+    },
+    "DTSQ": {
+      "dv20": 1891,
+      "max_dv": 20151.45,
+      "decision": "FAIL_DV20"
+    },
+    "EURK": {
+      "dv20": 11894.955,
+      "max_dv": 1399229.22,
+      "decision": "FAIL_DV20"
+    },
+    "FACT": {
+      "dv20": 8777.57,
+      "max_dv": 282561.93000000005,
+      "decision": "FAIL_DV20"
+    },
+    "FORTY": {
+      "dv20": 33636,
+      "max_dv": 1581457.47,
+      "decision": "FAIL_DV20"
+    }
+  },
+  "checkpoints": [
+    {
+      "cursor": 8,
+      "symbols": [
+        "ACFN",
+        "ALDF",
+        "ALF",
+        "CNL",
+        "DTSQ",
+        "EURK",
+        "FACT",
+        "FORTY"
+      ],
+      "verified": true
+    }
+  ],
   "status": "IN_PROGRESS"
 }
