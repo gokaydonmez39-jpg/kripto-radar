@@ -1,0 +1,1141 @@
+{
+  "asof_et": "2026-09-30",
+  "by_reason": {
+    "ASOF_MISSING": 25,
+    "EXACT20_MISSING": 6,
+    "IndexError:list index out of range": 7,
+    "SyntaxError:invalid syntax (<string>, line 1)": 22
+  },
+  "by_status": {
+    "UNKNOWN_RETRY_EXHAUSTED": 29,
+    "UNKNOWN_STATIC": 31
+  },
+  "execution": "NONE",
+  "official_footer": "File Creation Time: 1001202611:01|||||||",
+  "real_money": "NO-GO",
+  "schema": "XRAY_CANONICAL_UNKNOWN_MANIFEST_V1",
+  "source_counts": {
+    "BLOCK_CURRENT_RUN": 4,
+    "BLOCK_LEGAL_SHELL": 151,
+    "FAIL_DV20": 871,
+    "FAIL_HISTORY": 168,
+    "FAIL_IDENTITY_TYPE": 3,
+    "FAIL_PRICE": 1662,
+    "PASS": 488,
+    "UNKNOWN_RETRY_EXHAUSTED": 29,
+    "UNKNOWN_STATIC": 31
+  },
+  "source_queue_hash": "9572dabc2fa9112f94e9ac2bc6cc8ae8075fa5a1b86f87e79fed42bb69761f5d",
+  "source_state_hash": "bf0fa792850fecc295ebebb2723d2325993fd7ffc1de8913363452b4b1bedf9b",
+  "source_unknown_count": 60,
+  "task_id": "6a825366222081918997094d76e6ae46",
+  "unknown_count": 60,
+  "unknowns": {
+    "ACFN": {
+      "attempts": 4,
+      "discovery": {
+        "country": "United States",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "Military/Government/Technical",
+        "screener_market_cap": 50192360.0,
+        "screener_price": 20.0,
+        "screener_volume": 102894.0,
+        "sector": "Consumer Discretionary"
+      },
+      "info": "SyntaxError:invalid syntax (<string>, line 1)",
+      "security_name": "Acorn Energy, Inc. - Common Stock",
+      "status": "UNKNOWN_RETRY_EXHAUSTED"
+    },
+    "ADAM": {
+      "attempts": 4,
+      "discovery": {
+        "country": "United States",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "Real Estate Investment Trusts",
+        "screener_market_cap": 702570924.0,
+        "screener_price": 7.78,
+        "screener_volume": 1053291.0,
+        "sector": "Real Estate"
+      },
+      "info": "SyntaxError:invalid syntax (<string>, line 1)",
+      "security_name": "Adamas Trust, Inc. - Common Stock",
+      "status": "UNKNOWN_RETRY_EXHAUSTED"
+    },
+    "AEC": {
+      "attempts": 4,
+      "discovery": {
+        "country": "Canada",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "Metal Mining",
+        "screener_market_cap": 65236422.0,
+        "screener_price": 3.27,
+        "screener_volume": 65226.0,
+        "sector": "Basic Materials"
+      },
+      "info": "SyntaxError:invalid syntax (<string>, line 1)",
+      "security_name": "Anfield Energy Inc. - Common Shares",
+      "status": "UNKNOWN_RETRY_EXHAUSTED"
+    },
+    "ALDF": {
+      "attempts": 1,
+      "discovery": {
+        "country": "United States",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "",
+        "screener_market_cap": 0.0,
+        "screener_price": 10.82,
+        "screener_volume": 25153.0,
+        "sector": ""
+      },
+      "info": {
+        "bars": 322,
+        "dates": [
+          "2026-09-03",
+          "2026-09-04",
+          "2026-09-08",
+          "2026-09-09",
+          "2026-09-10",
+          "2026-09-14",
+          "2026-09-15",
+          "2026-09-16",
+          "2026-09-18",
+          "2026-09-25",
+          "2026-09-28"
+        ],
+        "dv20_lower_bound": 0.0,
+        "dv20_upper_bound": null,
+        "known_session_count": 9,
+        "no_synthetic_bar": true,
+        "price": 10.82,
+        "reason": "EXACT20_MISSING"
+      },
+      "security_name": "Aldel Financial II Inc. - Class A Ordinary Shares",
+      "status": "UNKNOWN_STATIC"
+    },
+    "ALF": {
+      "attempts": 1,
+      "discovery": {
+        "country": "United States",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "",
+        "screener_market_cap": 0.0,
+        "screener_price": 10.82,
+        "screener_volume": 18.0,
+        "sector": ""
+      },
+      "info": {
+        "bars": 820,
+        "reason": "ASOF_MISSING"
+      },
+      "security_name": "Centurion Acquisition Corp. - Class A Ordinary Shares",
+      "status": "UNKNOWN_STATIC"
+    },
+    "ALTI": {
+      "attempts": 4,
+      "discovery": {
+        "country": "United States",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "Investment Managers",
+        "screener_market_cap": 466270862.0,
+        "screener_price": 2.99,
+        "screener_volume": 89627.0,
+        "sector": "Finance"
+      },
+      "info": "SyntaxError:invalid syntax (<string>, line 1)",
+      "security_name": "AlTi Global, Inc. - Class A Common Stock",
+      "status": "UNKNOWN_RETRY_EXHAUSTED"
+    },
+    "ARCI": {
+      "attempts": 1,
+      "discovery": {
+        "country": "United States",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "",
+        "screener_market_cap": 0.0,
+        "screener_price": 10.1,
+        "screener_volume": 14.0,
+        "sector": ""
+      },
+      "info": {
+        "bars": 6128,
+        "reason": "ASOF_MISSING"
+      },
+      "security_name": "Archimedes Tech SPAC Partners III Co. - Ordinary Share",
+      "status": "UNKNOWN_STATIC"
+    },
+    "ASTI": {
+      "attempts": 4,
+      "discovery": {
+        "country": "United States",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "Semiconductors",
+        "screener_market_cap": 24737406.0,
+        "screener_price": 2.52,
+        "screener_volume": 302426.0,
+        "sector": "Technology"
+      },
+      "info": "SyntaxError:invalid syntax (<string>, line 1)",
+      "security_name": "Ascent Solar Technologies, Inc - Common Stock",
+      "status": "UNKNOWN_RETRY_EXHAUSTED"
+    },
+    "BPAC": {
+      "attempts": 1,
+      "discovery": {
+        "country": "United States",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "",
+        "screener_market_cap": 0.0,
+        "screener_price": 10.19,
+        "screener_volume": 6.0,
+        "sector": ""
+      },
+      "info": {
+        "bars": 327,
+        "reason": "ASOF_MISSING"
+      },
+      "security_name": "Blueport Acquisition Ltd - Class A Ordinary Shares",
+      "status": "UNKNOWN_STATIC"
+    },
+    "CAPN": {
+      "attempts": 1,
+      "discovery": {
+        "country": "United States",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "",
+        "screener_market_cap": 0.0,
+        "screener_price": 11.25,
+        "screener_volume": 6.0,
+        "sector": ""
+      },
+      "info": {
+        "bars": 913,
+        "reason": "ASOF_MISSING"
+      },
+      "security_name": "Cayson Acquisition Corp - Ordinary Shares",
+      "status": "UNKNOWN_STATIC"
+    },
+    "CHNR": {
+      "attempts": 1,
+      "discovery": {
+        "country": "Hong Kong",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "Precious Metals",
+        "screener_market_cap": 4920552.0,
+        "screener_price": 3.99,
+        "screener_volume": 617.0,
+        "sector": "Basic Materials"
+      },
+      "info": {
+        "bars": 6846,
+        "reason": "ASOF_MISSING"
+      },
+      "security_name": "China Natural Resources, Inc. - Common Shares",
+      "status": "UNKNOWN_STATIC"
+    },
+    "CNL": {
+      "attempts": 4,
+      "discovery": {
+        "country": "United States",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "",
+        "screener_market_cap": 1137025588.0,
+        "screener_price": 12.26,
+        "screener_volume": 190880.0,
+        "sector": ""
+      },
+      "info": "SyntaxError:invalid syntax (<string>, line 1)",
+      "security_name": "Collective Mining Ltd. - Common Stock",
+      "status": "UNKNOWN_RETRY_EXHAUSTED"
+    },
+    "DMAA": {
+      "attempts": 1,
+      "discovery": {
+        "country": "United States",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "",
+        "screener_market_cap": 0.0,
+        "screener_price": 10.88,
+        "screener_volume": 197.0,
+        "sector": ""
+      },
+      "info": {
+        "bars": 361,
+        "reason": "ASOF_MISSING"
+      },
+      "security_name": "Drugs Made In America Acquisition Corp. - Ordinary Shares",
+      "status": "UNKNOWN_STATIC"
+    },
+    "DPU": {
+      "attempts": 4,
+      "discovery": {
+        "country": "China",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "Business Services",
+        "screener_market_cap": 5254274.0,
+        "screener_price": 1.52,
+        "screener_volume": 5770.0,
+        "sector": "Consumer Discretionary"
+      },
+      "info": "SyntaxError:invalid syntax (<string>, line 1)",
+      "security_name": "Top KingWin Ltd - Class A Ordinary Shares",
+      "status": "UNKNOWN_RETRY_EXHAUSTED"
+    },
+    "DRK": {
+      "attempts": 4,
+      "discovery": {
+        "country": "Canada",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "Finance: Consumer Services",
+        "screener_market_cap": 29040136.0,
+        "screener_price": 2.8,
+        "screener_volume": 214685.0,
+        "sector": "Finance"
+      },
+      "info": "IndexError:list index out of range",
+      "security_name": "DarkHorse Technologies Inc. - Common Shares",
+      "status": "UNKNOWN_RETRY_EXHAUSTED"
+    },
+    "DTSQ": {
+      "attempts": 1,
+      "discovery": {
+        "country": "United States",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "",
+        "screener_market_cap": 0.0,
+        "screener_price": 11.58,
+        "screener_volume": 516.0,
+        "sector": ""
+      },
+      "info": {
+        "bars": 293,
+        "dates": [
+          "2026-09-02",
+          "2026-09-08",
+          "2026-09-09",
+          "2026-09-16",
+          "2026-09-17",
+          "2026-09-18",
+          "2026-09-21",
+          "2026-09-22",
+          "2026-09-23",
+          "2026-09-24",
+          "2026-09-25",
+          "2026-09-28"
+        ],
+        "dv20_lower_bound": 0.0,
+        "dv20_upper_bound": null,
+        "known_session_count": 8,
+        "no_synthetic_bar": true,
+        "price": 11.58,
+        "reason": "EXACT20_MISSING"
+      },
+      "security_name": "DT Cloud Star Acquisition Corporation - Ordinary Shares",
+      "status": "UNKNOWN_STATIC"
+    },
+    "ENGN": {
+      "attempts": 4,
+      "discovery": {
+        "country": "Canada",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "Biotechnology: Biological Products (No Diagnostic Substances)",
+        "screener_market_cap": 134032632.0,
+        "screener_price": 2.0,
+        "screener_volume": 1283141.0,
+        "sector": "Health Care"
+      },
+      "info": "SyntaxError:invalid syntax (<string>, line 1)",
+      "security_name": "enGene Therapeutics Inc. - Common Stock",
+      "status": "UNKNOWN_RETRY_EXHAUSTED"
+    },
+    "ESYN": {
+      "attempts": 4,
+      "discovery": {
+        "country": "United States",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "Other Pharmaceuticals",
+        "screener_market_cap": 67776192.0,
+        "screener_price": 2.28,
+        "screener_volume": 18750.0,
+        "sector": "Health Care"
+      },
+      "info": "IndexError:list index out of range",
+      "security_name": "EnerSyn Global Inc. - Common Stock",
+      "status": "UNKNOWN_RETRY_EXHAUSTED"
+    },
+    "EURK": {
+      "attempts": 1,
+      "discovery": {
+        "country": "United States",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "",
+        "screener_market_cap": 0.0,
+        "screener_price": 11.5432,
+        "screener_volume": 55.0,
+        "sector": ""
+      },
+      "info": {
+        "bars": 283,
+        "reason": "ASOF_MISSING"
+      },
+      "security_name": "Eureka Acquisition Corp - Class A Ordinary Share",
+      "status": "UNKNOWN_STATIC"
+    },
+    "FACT": {
+      "attempts": 1,
+      "discovery": {
+        "country": "United States",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "",
+        "screener_market_cap": 0.0,
+        "screener_price": 10.7211,
+        "screener_volume": 22.0,
+        "sector": ""
+      },
+      "info": {
+        "bars": 847,
+        "reason": "ASOF_MISSING"
+      },
+      "security_name": "FACT II Acquisition Corp. - Class A Ordinary Shares",
+      "status": "UNKNOWN_STATIC"
+    },
+    "FGC": {
+      "attempts": 4,
+      "discovery": {
+        "country": "United States",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "Property-Casualty Insurers",
+        "screener_market_cap": 31023183.0,
+        "screener_price": 6.59,
+        "screener_volume": 19787.0,
+        "sector": "Finance"
+      },
+      "info": "IndexError:list index out of range",
+      "security_name": "FG Communities Holdings Inc. - Common Stock",
+      "status": "UNKNOWN_RETRY_EXHAUSTED"
+    },
+    "FORTY": {
+      "attempts": 1,
+      "discovery": {
+        "country": "Israel",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "EDP Services",
+        "screener_market_cap": 1761378528.0,
+        "screener_price": 114.99,
+        "screener_volume": 203.0,
+        "sector": "Technology"
+      },
+      "info": {
+        "bars": 4360,
+        "reason": "ASOF_MISSING"
+      },
+      "security_name": "Formula Systems (1985) Ltd. - American Depositary Shares",
+      "status": "UNKNOWN_STATIC"
+    },
+    "GPAC": {
+      "attempts": 1,
+      "discovery": {
+        "country": "United States",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "",
+        "screener_market_cap": 0.0,
+        "screener_price": 10.08,
+        "screener_volume": 8.0,
+        "sector": ""
+      },
+      "info": {
+        "bars": 842,
+        "reason": "ASOF_MISSING"
+      },
+      "security_name": "General Purpose Acquisition Corp. - Class A Ordinary Shares",
+      "status": "UNKNOWN_STATIC"
+    },
+    "GPAT": {
+      "attempts": 1,
+      "discovery": {
+        "country": "United States",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "",
+        "screener_market_cap": 0.0,
+        "screener_price": 11.01,
+        "screener_volume": 4208.0,
+        "sector": ""
+      },
+      "info": {
+        "bars": 410,
+        "dates": [
+          "2026-09-02",
+          "2026-09-04",
+          "2026-09-08",
+          "2026-09-09",
+          "2026-09-10",
+          "2026-09-11",
+          "2026-09-15",
+          "2026-09-17",
+          "2026-09-18",
+          "2026-09-25"
+        ],
+        "dv20_lower_bound": 658.2,
+        "dv20_upper_bound": null,
+        "known_session_count": 10,
+        "no_synthetic_bar": true,
+        "price": 11.01,
+        "reason": "EXACT20_MISSING"
+      },
+      "security_name": "GP-Act III Acquisition Corp. - Class A Ordinary Share",
+      "status": "UNKNOWN_STATIC"
+    },
+    "GTEN": {
+      "attempts": 1,
+      "discovery": {
+        "country": "United States",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "",
+        "screener_market_cap": 0.0,
+        "screener_price": 10.49,
+        "screener_volume": 17.0,
+        "sector": ""
+      },
+      "info": {
+        "bars": 271,
+        "reason": "ASOF_MISSING"
+      },
+      "security_name": "Gores Holdings X, Inc. - Class A ordinary shares",
+      "status": "UNKNOWN_STATIC"
+    },
+    "HCIC": {
+      "attempts": 1,
+      "discovery": {
+        "country": "United States",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "",
+        "screener_market_cap": 0.0,
+        "screener_price": 9.98,
+        "screener_volume": 13.0,
+        "sector": ""
+      },
+      "info": {
+        "bars": 535,
+        "reason": "ASOF_MISSING"
+      },
+      "security_name": "Hennessy Capital Investment Corp. VIII - Class A Ordinary Shares",
+      "status": "UNKNOWN_STATIC"
+    },
+    "HCMA": {
+      "attempts": 1,
+      "discovery": {
+        "country": "United States",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "Hotels/Resorts",
+        "screener_market_cap": 399380625.0,
+        "screener_price": 10.29,
+        "screener_volume": 14.0,
+        "sector": "Consumer Discretionary"
+      },
+      "info": {
+        "bars": 570,
+        "reason": "ASOF_MISSING"
+      },
+      "security_name": "HCM III Acquisition Corp. - Class A Ordinary Share",
+      "status": "UNKNOWN_STATIC"
+    },
+    "HTCO": {
+      "attempts": 4,
+      "discovery": {
+        "country": "Singapore",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "Marine Transportation",
+        "screener_market_cap": 13983521.0,
+        "screener_price": 2.07,
+        "screener_volume": 23275.0,
+        "sector": "Consumer Discretionary"
+      },
+      "info": "SyntaxError:invalid syntax (<string>, line 1)",
+      "security_name": "High-Trend International Group - Class A Ordinary Shares",
+      "status": "UNKNOWN_RETRY_EXHAUSTED"
+    },
+    "HUCK": {
+      "attempts": 4,
+      "discovery": {
+        "country": "United States",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "Computer Software: Prepackaged Software",
+        "screener_market_cap": 156630416.0,
+        "screener_price": 3.33,
+        "screener_volume": 562119.0,
+        "sector": "Technology"
+      },
+      "info": "IndexError:list index out of range",
+      "security_name": "Huckleberry.ai, Inc. - Class B Common Stock",
+      "status": "UNKNOWN_RETRY_EXHAUSTED"
+    },
+    "JL": {
+      "attempts": 1,
+      "discovery": {
+        "country": "Hong Kong",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "Clothing/Shoe/Accessory Stores",
+        "screener_market_cap": 16241986.0,
+        "screener_price": 4.5557,
+        "screener_volume": 201.0,
+        "sector": "Consumer Discretionary"
+      },
+      "info": {
+        "bars": 673,
+        "reason": "ASOF_MISSING"
+      },
+      "security_name": "J-Long Group Limited - Class A Ordinary Shares",
+      "status": "UNKNOWN_STATIC"
+    },
+    "KELYB": {
+      "attempts": 1,
+      "discovery": {
+        "country": "United States",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "Professional Services",
+        "screener_market_cap": 777995523.0,
+        "screener_price": 22.4,
+        "screener_volume": 150.0,
+        "sector": "Consumer Discretionary"
+      },
+      "info": {
+        "bars": 1734,
+        "reason": "ASOF_MISSING"
+      },
+      "security_name": "Kelly Services, Inc. - Class B Common Stock",
+      "status": "UNKNOWN_STATIC"
+    },
+    "KTWO": {
+      "attempts": 1,
+      "discovery": {
+        "country": "Cayman Islands",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "Medical/Dental Instruments",
+        "screener_market_cap": 201914687.0,
+        "screener_price": 10.075,
+        "screener_volume": 217.0,
+        "sector": "Health Care"
+      },
+      "info": {
+        "bars": 1239,
+        "dates": [
+          "2026-09-09",
+          "2026-09-10",
+          "2026-09-14",
+          "2026-09-16",
+          "2026-09-17",
+          "2026-09-18",
+          "2026-09-21",
+          "2026-09-22",
+          "2026-09-23",
+          "2026-09-28",
+          "2026-09-29"
+        ],
+        "dv20_lower_bound": 0.0,
+        "dv20_upper_bound": null,
+        "known_session_count": 9,
+        "no_synthetic_bar": true,
+        "price": 10.075,
+        "reason": "EXACT20_MISSING"
+      },
+      "security_name": "K2 Capital Acquisition Corporation - Class A Ordinary Share",
+      "status": "UNKNOWN_STATIC"
+    },
+    "LPAA": {
+      "attempts": 1,
+      "discovery": {
+        "country": "United States",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "",
+        "screener_market_cap": 0.0,
+        "screener_price": 10.83,
+        "screener_volume": 4067.0,
+        "sector": ""
+      },
+      "info": {
+        "bars": 403,
+        "dates": [
+          "2026-09-02",
+          "2026-09-04",
+          "2026-09-09",
+          "2026-09-11",
+          "2026-09-14",
+          "2026-09-15",
+          "2026-09-16",
+          "2026-09-17",
+          "2026-09-18",
+          "2026-09-21",
+          "2026-09-22",
+          "2026-09-23",
+          "2026-09-24",
+          "2026-09-25",
+          "2026-09-28",
+          "2026-09-29"
+        ],
+        "dv20_lower_bound": 0.0,
+        "dv20_upper_bound": null,
+        "known_session_count": 4,
+        "no_synthetic_bar": true,
+        "price": 10.83,
+        "reason": "EXACT20_MISSING"
+      },
+      "security_name": "Launch One Acquisition Corp. - Class A Ordinary Shares",
+      "status": "UNKNOWN_STATIC"
+    },
+    "MACI": {
+      "attempts": 1,
+      "discovery": {
+        "country": "United States",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "",
+        "screener_market_cap": 0.0,
+        "screener_price": 11.0899,
+        "screener_volume": 18.0,
+        "sector": ""
+      },
+      "info": {
+        "bars": 385,
+        "reason": "ASOF_MISSING"
+      },
+      "security_name": "Melar Acquisition Corp. I - Class A Ordinary Shares",
+      "status": "UNKNOWN_STATIC"
+    },
+    "MAKO": {
+      "attempts": 4,
+      "discovery": {
+        "country": "Canada",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "Precious Metals",
+        "screener_market_cap": 822619486.0,
+        "screener_price": 9.39,
+        "screener_volume": 95732.0,
+        "sector": "Basic Materials"
+      },
+      "info": "SyntaxError:invalid syntax (<string>, line 1)",
+      "security_name": "Mako Mining Corp - Common Stock",
+      "status": "UNKNOWN_RETRY_EXHAUSTED"
+    },
+    "MAYS": {
+      "attempts": 1,
+      "discovery": {
+        "country": "United States",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "Building operators",
+        "screener_market_cap": 80832778.0,
+        "screener_price": 40.1,
+        "screener_volume": 226.0,
+        "sector": "Real Estate"
+      },
+      "info": {
+        "bars": 2272,
+        "dates": [
+          "2026-09-02",
+          "2026-09-03",
+          "2026-09-11",
+          "2026-09-14",
+          "2026-09-15",
+          "2026-09-16",
+          "2026-09-17",
+          "2026-09-22",
+          "2026-09-24",
+          "2026-09-28",
+          "2026-09-29"
+        ],
+        "dv20_lower_bound": 0.0,
+        "dv20_upper_bound": null,
+        "known_session_count": 9,
+        "no_synthetic_bar": true,
+        "price": 40.1,
+        "reason": "EXACT20_MISSING"
+      },
+      "security_name": "J. W. Mays, Inc. - Common Stock",
+      "status": "UNKNOWN_STATIC"
+    },
+    "NCEW": {
+      "attempts": 1,
+      "discovery": {
+        "country": "Hong Kong",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "Integrated Freight & Logistics",
+        "screener_market_cap": 56384000.0,
+        "screener_price": 17.62,
+        "screener_volume": 41.0,
+        "sector": "Industrials"
+      },
+      "info": {
+        "bars": 408,
+        "reason": "ASOF_MISSING"
+      },
+      "security_name": "New Century Logistics (BVI) Limited - Ordinary Shares",
+      "status": "UNKNOWN_STATIC"
+    },
+    "NCO": {
+      "attempts": 4,
+      "discovery": {
+        "country": "United States",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "",
+        "screener_market_cap": 0.0,
+        "screener_price": 9.92,
+        "screener_volume": 260859.0,
+        "sector": ""
+      },
+      "info": "SyntaxError:invalid syntax (<string>, line 1)",
+      "security_name": "Southern Cross Acquisition I Corp. - Ordinary Shares",
+      "status": "UNKNOWN_RETRY_EXHAUSTED"
+    },
+    "NOEM": {
+      "attempts": 1,
+      "discovery": {
+        "country": "United States",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "",
+        "screener_market_cap": 0.0,
+        "screener_price": 10.58,
+        "screener_volume": 26.0,
+        "sector": ""
+      },
+      "info": {
+        "bars": 285,
+        "reason": "ASOF_MISSING"
+      },
+      "security_name": "CO2 Energy Transition Corp. - Common Stock",
+      "status": "UNKNOWN_STATIC"
+    },
+    "NUCL": {
+      "attempts": 4,
+      "discovery": {
+        "country": "United States",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "Other Metals and Minerals",
+        "screener_market_cap": 188127515.0,
+        "screener_price": 6.36,
+        "screener_volume": 399444.0,
+        "sector": "Basic Materials"
+      },
+      "info": "SyntaxError:invalid syntax (<string>, line 1)",
+      "security_name": "Eagle Nuclear Energy Corp. - Common stock",
+      "status": "UNKNOWN_RETRY_EXHAUSTED"
+    },
+    "ONEN": {
+      "attempts": 4,
+      "discovery": {
+        "country": "United States",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "Electric Utilities: Central",
+        "screener_market_cap": 55950166.0,
+        "screener_price": 2.15,
+        "screener_volume": 370599.0,
+        "sector": "Utilities"
+      },
+      "info": "IndexError:list index out of range",
+      "security_name": "ONE Nuclear Energy Inc. - Common Stock",
+      "status": "UNKNOWN_RETRY_EXHAUSTED"
+    },
+    "PAMT": {
+      "attempts": 4,
+      "discovery": {
+        "country": "United States",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "Trucking Freight/Courier Services",
+        "screener_market_cap": 238951152.0,
+        "screener_price": 11.41,
+        "screener_volume": 11487.0,
+        "sector": "Industrials"
+      },
+      "info": "SyntaxError:invalid syntax (<string>, line 1)",
+      "security_name": "PAMT CORP - Common Stock",
+      "status": "UNKNOWN_RETRY_EXHAUSTED"
+    },
+    "PBM": {
+      "attempts": 4,
+      "discovery": {
+        "country": "Canada",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "Biotechnology: Pharmaceutical Preparations",
+        "screener_market_cap": 20826231.0,
+        "screener_price": 5.46,
+        "screener_volume": 17949.0,
+        "sector": "Health Care"
+      },
+      "info": "SyntaxError:invalid syntax (<string>, line 1)",
+      "security_name": "Psyence Biomedical Ltd. - Common Shares",
+      "status": "UNKNOWN_RETRY_EXHAUSTED"
+    },
+    "PFAI": {
+      "attempts": 1,
+      "discovery": {
+        "country": "Canada",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "Farming/Seeds/Milling",
+        "screener_market_cap": 32510327.0,
+        "screener_price": 2.77,
+        "screener_volume": 229.0,
+        "sector": "Consumer Staples"
+      },
+      "info": {
+        "bars": 340,
+        "reason": "ASOF_MISSING"
+      },
+      "security_name": "Pinnacle Food Group Limited - Class A Common Shares",
+      "status": "UNKNOWN_STATIC"
+    },
+    "PHOE": {
+      "attempts": 1,
+      "discovery": {
+        "country": "Hong Kong",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "Engineering & Construction",
+        "screener_market_cap": 396144000.0,
+        "screener_price": 18.34,
+        "screener_volume": 1451.0,
+        "sector": "Consumer Discretionary"
+      },
+      "info": {
+        "bars": 335,
+        "reason": "ASOF_MISSING"
+      },
+      "security_name": "Phoenix Asia Holdings Limited - Ordinary Shares",
+      "status": "UNKNOWN_STATIC"
+    },
+    "RJET": {
+      "attempts": 4,
+      "discovery": {
+        "country": "United States",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "Air Freight/Delivery Services",
+        "screener_market_cap": 845560170.0,
+        "screener_price": 18.06,
+        "screener_volume": 53008.0,
+        "sector": "Consumer Discretionary"
+      },
+      "info": "SyntaxError:invalid syntax (<string>, line 1)",
+      "security_name": "Republic Airways Holdings Inc. - Common Stock",
+      "status": "UNKNOWN_RETRY_EXHAUSTED"
+    },
+    "RZAI": {
+      "attempts": 4,
+      "discovery": {
+        "country": "South Korea",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "EDP Services",
+        "screener_market_cap": 1217477351.0,
+        "screener_price": 21.88,
+        "screener_volume": 297374.0,
+        "sector": "Technology"
+      },
+      "info": "IndexError:list index out of range",
+      "security_name": "Roze AI Inc. - Common Shares",
+      "status": "UNKNOWN_RETRY_EXHAUSTED"
+    },
+    "SDA": {
+      "attempts": 4,
+      "discovery": {
+        "country": "Hong Kong",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "Automotive Aftermarket",
+        "screener_market_cap": 47013323.0,
+        "screener_price": 0.445,
+        "screener_volume": 121414.0,
+        "sector": "Consumer Discretionary"
+      },
+      "info": "SyntaxError:invalid syntax (<string>, line 1)",
+      "security_name": "SunCar Technology Group Inc. - Ordinary Shares",
+      "status": "UNKNOWN_RETRY_EXHAUSTED"
+    },
+    "SENEB": {
+      "attempts": 1,
+      "discovery": {
+        "country": "United States",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "Packaged Foods",
+        "screener_market_cap": 1217465905.0,
+        "screener_price": 179.84,
+        "screener_volume": 35.0,
+        "sector": "Consumer Staples"
+      },
+      "info": {
+        "bars": 2973,
+        "reason": "ASOF_MISSING"
+      },
+      "security_name": "Seneca Foods Corp. - Class B Common Stock",
+      "status": "UNKNOWN_STATIC"
+    },
+    "SFWL": {
+      "attempts": 1,
+      "discovery": {
+        "country": "China",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "Trucking Freight/Courier Services",
+        "screener_market_cap": 48948523.0,
+        "screener_price": 8.9,
+        "screener_volume": 475.0,
+        "sector": "Industrials"
+      },
+      "info": {
+        "bars": 863,
+        "reason": "ASOF_MISSING"
+      },
+      "security_name": "Shengfeng Development Limited - Class A Ordinary Shares",
+      "status": "UNKNOWN_STATIC"
+    },
+    "SLBT": {
+      "attempts": 4,
+      "discovery": {
+        "country": "Taiwan",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "Biotechnology: Biological Products (No Diagnostic Substances)",
+        "screener_market_cap": 953291587.0,
+        "screener_price": 1.7,
+        "screener_volume": 27365.0,
+        "sector": "Health Care"
+      },
+      "info": "SyntaxError:invalid syntax (<string>, line 1)",
+      "security_name": "SL Science Holding Limited - Ordinary Shares",
+      "status": "UNKNOWN_RETRY_EXHAUSTED"
+    },
+    "SLE": {
+      "attempts": 4,
+      "discovery": {
+        "country": "United States",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "EDP Services",
+        "screener_market_cap": 16621951.0,
+        "screener_price": 5.525,
+        "screener_volume": 140482.0,
+        "sector": "Technology"
+      },
+      "info": "SyntaxError:invalid syntax (<string>, line 1)",
+      "security_name": "Super League Enterprise, Inc. - Common Stock",
+      "status": "UNKNOWN_RETRY_EXHAUSTED"
+    },
+    "STRR": {
+      "attempts": 1,
+      "discovery": {
+        "country": "United States",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "Professional Services",
+        "screener_market_cap": 35971679.0,
+        "screener_price": 9.75,
+        "screener_volume": 256.0,
+        "sector": "Consumer Discretionary"
+      },
+      "info": {
+        "bars": 1423,
+        "reason": "ASOF_MISSING"
+      },
+      "security_name": "Star Equity Holdings, Inc. - Common Stock",
+      "status": "UNKNOWN_STATIC"
+    },
+    "SUNE": {
+      "attempts": 4,
+      "discovery": {
+        "country": "United States",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "Engineering & Construction",
+        "screener_market_cap": 15403500.0,
+        "screener_price": 2.365,
+        "screener_volume": 141655.0,
+        "sector": "Consumer Discretionary"
+      },
+      "info": "SyntaxError:invalid syntax (<string>, line 1)",
+      "security_name": "SUNation Energy, Inc. - Common Stock",
+      "status": "UNKNOWN_RETRY_EXHAUSTED"
+    },
+    "SVIA": {
+      "attempts": 4,
+      "discovery": {
+        "country": "United States",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "Finance: Consumer Services",
+        "screener_market_cap": 326702955.0,
+        "screener_price": 3.875,
+        "screener_volume": 1436257.0,
+        "sector": "Finance"
+      },
+      "info": "IndexError:list index out of range",
+      "security_name": "Silvia, Inc. - Common Stock",
+      "status": "UNKNOWN_RETRY_EXHAUSTED"
+    },
+    "TLIH": {
+      "attempts": 1,
+      "discovery": {
+        "country": "Singapore",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "Industrial Specialties",
+        "screener_market_cap": 16760480.0,
+        "screener_price": 5.7,
+        "screener_volume": 2882.0,
+        "sector": "Consumer Discretionary"
+      },
+      "info": {
+        "bars": 308,
+        "reason": "ASOF_MISSING"
+      },
+      "security_name": "Ten-League International Holdings Limited - Ordinary Shares",
+      "status": "UNKNOWN_STATIC"
+    },
+    "TMS": {
+      "attempts": 4,
+      "discovery": {
+        "country": "United States",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "",
+        "screener_market_cap": 535143649.0,
+        "screener_price": 7.265,
+        "screener_volume": 180119.0,
+        "sector": ""
+      },
+      "info": "SyntaxError:invalid syntax (<string>, line 1)",
+      "security_name": "Teamshares Inc. - Common Stock",
+      "status": "UNKNOWN_RETRY_EXHAUSTED"
+    },
+    "TMTS": {
+      "attempts": 1,
+      "discovery": {
+        "country": "United States",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "",
+        "screener_market_cap": 0.0,
+        "screener_price": 10.025,
+        "screener_volume": 31.0,
+        "sector": ""
+      },
+      "info": {
+        "bars": 313,
+        "reason": "ASOF_MISSING"
+      },
+      "security_name": "Spartacus Acquisition Corp. II - Class A Ordinary Shares",
+      "status": "UNKNOWN_STATIC"
+    },
+    "VMET": {
+      "attempts": 4,
+      "discovery": {
+        "country": "Canada",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "Precious Metals",
+        "screener_market_cap": 957699662.0,
+        "screener_price": 8.8,
+        "screener_volume": 224634.0,
+        "sector": "Industrials"
+      },
+      "info": "SyntaxError:invalid syntax (<string>, line 1)",
+      "security_name": "Versamet Royalties Corporation - Common Stock",
+      "status": "UNKNOWN_RETRY_EXHAUSTED"
+    },
+    "WEST": {
+      "attempts": 4,
+      "discovery": {
+        "country": "United States",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "Beverages (Production/Distribution)",
+        "screener_market_cap": 784924191.0,
+        "screener_price": 8.04,
+        "screener_volume": 439843.0,
+        "sector": "Consumer Staples"
+      },
+      "info": "SyntaxError:invalid syntax (<string>, line 1)",
+      "security_name": "Westrock Coffee Company - Common Stock",
+      "status": "UNKNOWN_RETRY_EXHAUSTED"
+    }
+  }
+}
