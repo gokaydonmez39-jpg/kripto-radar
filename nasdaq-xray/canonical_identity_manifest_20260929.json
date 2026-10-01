@@ -1,0 +1,66 @@
+{
+  "schema": "XRAY_CANONICAL_IDENTITY_MANIFEST_V1",
+  "task_id": "6a825366222081918997094d76e6ae46",
+  "asof_et": "2026-09-29",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "role": "EXACT_CANONICAL_IDENTITY_BIND_EVIDENCE_FOR_REV21_ASOF_20260929_ONLY",
+  "queue_total": 3405,
+  "queue_hash": "4f7fa2426906e0be6f1cfdf15658aada4d8e91f3898c4e3383cc2198e82db362",
+  "queue_serialization": "SORT_ASCII_TICKER_ASC_JOIN_LF_NO_TRAILING_NEWLINE",
+  "classification_hash": "d9473aa103dad1964aba08c98764fc7be8f78093f8344d9722678631318d5d43",
+  "groups": [
+    {
+      "name": "PASS_PRICE_DV20",
+      "path": "nasdaq-xray/rallies_group_pass_price_dv20.txt",
+      "blob_sha": "c8b576ebc522fd343688e06255849f8504d63fd3",
+      "count": 498,
+      "semantic_hash": "13b2f3b90e4d7c9c35d52ee638e6e0eec3e980abf694a496088a958876a6c17d"
+    },
+    {
+      "name": "FAIL_PRICE",
+      "path": "nasdaq-xray/rallies_group_fail_price.txt",
+      "blob_sha": "af027b269d68fdeb809823e7af5d8f2089335d84",
+      "count": 1604,
+      "semantic_hash": "316cf3beeb21c554085c032d83f29e10e3754ec91ae6c10b6c09ae359a116e41"
+    },
+    {
+      "name": "FAIL_DV20",
+      "path": "nasdaq-xray/rallies_group_fail_dv20.txt",
+      "blob_sha": "b8149d22358be9d11b8194b0407539287b7f385a",
+      "count": 947,
+      "semantic_hash": "cbb819b0b3286c77c0515239628f20a14b8427edc48ff456d13bcbd4e8e36e55"
+    },
+    {
+      "name": "MISSING_EXACT20",
+      "path": "nasdaq-xray/rallies_group_missing_exact20.txt",
+      "blob_sha": "c371b6f7cb891854f3b07ae3be6a92818a806307",
+      "count": 356,
+      "semantic_hash": "d55174eb1df105baf2b43a208d8871f88f263afeee8ff55aad507c75d9263273"
+    }
+  ],
+  "source_summary": {
+    "path": "nasdaq-xray/rallies_recovery_summary.json",
+    "blob_sha": "ff3725be5fa079cbf861da8f53a1c1274974a920"
+  },
+  "verified_price_dv20": {
+    "path": "nasdaq-xray/price_dv20_recovery_verified.json",
+    "blob_sha": "adb23a4970e5b3e681a96c8b71f697a80912316c",
+    "status": "PASS",
+    "final_pass_count": 498,
+    "final_pass_hash": "13b2f3b90e4d7c9c35d52ee638e6e0eec3e980abf694a496088a958876a6c17d",
+    "fallback_complete": true
+  },
+  "checks": {
+    "exact_group_counts": true,
+    "each_group_unique": true,
+    "groups_pairwise_disjoint": true,
+    "union_unique_total_3405": true,
+    "queue_hash_recomputed_exact": true,
+    "verified_artifact_identity_total": true,
+    "verified_artifact_primary_counts": true,
+    "verified_artifact_fallback_complete": true
+  },
+  "usage_boundary": "ZERO_ALPHA_IDENTITY_AND_PRICE_DV20_BIND_EVIDENCE_ONLY;NOT_G9;NOT_SIGNAL;NOT_ORDER;CONSUME_ONLY_WHEN_DURABLE_ASOF_ET_IS_2026-09-29_AND_POINTER_CHAIN_VALID"
+}
