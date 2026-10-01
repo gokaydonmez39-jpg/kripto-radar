@@ -32,28 +32,58 @@ jobs:
         with: {fetch-depth: 1}
       - uses: actions/setup-python@v5
         with: {python-version: "3.12"}
-      - name: Find latest committed MC bridge
+      - name: Find exact-bound committed MC bridge
         id: mc
         shell: bash
         run: |
           set -e
           python - <<'PY' > /tmp/mc_out
-          import glob,json
-          files=sorted(glob.glob("nasdaq-xray/canonical_mc_bridge_*.json"))
+          import glob,hashlib,json,pathlib
+          price_path=pathlib.Path("nasdaq-xray/canonical_current_price_dv20.json")
+          master_path=pathlib.Path("nasdaq-xray/canonical_current_master_manifest.json")
+          if not price_path.exists() or not master_path.exists():
+              print("ready=false")
+              raise SystemExit
+          p=json.load(open(price_path)); m=json.load(open(master_path))
+          if p.get("schema")!="XRAY_CANONICAL_PRICE_DV20_V1" or m.get("schema")!="XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1":
+              print("ready=false"); raise SystemExit
+          if p.get("asof_et")!=m.get("asof_et") or p.get("source_master_queue_hash")!=m.get("queue_hash") or p.get("source_master_count")!=m.get("queue_total"):
+              print("ready=false"); raise SystemExit
+          b=price_path.read_bytes()
+          price_blob=hashlib.sha1(f"blob {len(b)}\0".encode()+b).hexdigest()
+          expected_asof=p["asof_et"]; expected_hash=p["pass_hash"]; expected_count=p["pass_count"]
+          expected_path="nasdaq-xray/canonical_current_price_dv20.json"
           valid=[]
-          for p in files:
-            try:
-              j=json.load(open(p))
-              if j.get("schema")=="XRAY_MC_EPOCH_RESULT_V1" and j.get("status")=="COMMITTED" and j.get("execution")=="NONE" and j.get("real_money")=="NO-GO":
-                valid.append((j["asof_et"],p))
-            except Exception: pass
-          if not valid:
-            print("ready=false")
+          for fp in glob.glob("nasdaq-xray/canonical_mc_bridge_*.json"):
+              try:
+                  j=json.load(open(fp))
+                  ok=(
+                    j.get("schema")=="XRAY_MC_EPOCH_RESULT_V1"
+                    and j.get("status")=="COMMITTED"
+                    and j.get("task_id")=="6a825366222081918997094d76e6ae46"
+                    and j.get("execution")=="NONE" and j.get("real_money")=="NO-GO"
+                    and j.get("asof_et")==expected_asof
+                    and j.get("input_path")==expected_path
+                    and j.get("input_blob_sha")==price_blob
+                    and j.get("input_pass_hash")==expected_hash
+                    and int(j.get("input_count",-1))==int(expected_count)
+                    and (j.get("counts") or {}).get("TOTAL")==expected_count
+                    and set((j.get("results") or {}).keys())==set(p.get("pass_symbols") or [])
+                  )
+                  if ok: valid.append(fp)
+              except Exception:
+                  pass
+          if len(valid)!=1:
+              print("ready=false")
+              print("expected_asof="+str(expected_asof))
+              print("binding_matches="+str(len(valid)))
           else:
-            asof,p=max(valid)
-            print("ready=true")
-            print("path="+p)
-            print("asof="+asof)
+              fp=valid[0]
+              print("ready=true")
+              print("path="+fp)
+              print("asof="+expected_asof)
+              print("price_blob_sha="+price_blob)
+              print("input_pass_hash="+expected_hash)
           PY
           cat /tmp/mc_out >> "$GITHUB_OUTPUT"
           cat /tmp/mc_out
