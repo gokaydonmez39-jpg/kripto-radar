@@ -2,10 +2,10 @@
   "asof_et": "2026-09-30",
   "build": "2026-10-01.5",
   "counts": {
-    "BLOCK_CURRENT_RUN": 1,
+    "BLOCK_CURRENT_RUN": 3,
     "FAIL_DV20": 268,
     "FAIL_HISTORY": 47,
-    "FAIL_PRICE": 13,
+    "FAIL_PRICE": 11,
     "PASS": 481
   },
   "cursor": 810,
@@ -6560,7 +6560,7 @@
   "identity_ruleset": "V2_WHEN_ISSUED",
   "official_footer": "File Creation Time: 1001202614:01|||||||",
   "pending_retry": 0,
-  "processed_new_this_run": 60,
+  "processed_new_this_run": 0,
   "processed_retry_this_run": 0,
   "queue": [
     "AAL",
@@ -7378,8 +7378,8 @@
   "queue_total": 810,
   "real_money": "NO-GO",
   "resolution_overlay_meta": {
-    "age_hours": 1.0810121727777777,
-    "generated_at_utc": "2026-10-01T17:54:05.492Z",
+    "age_hours": 0.015254585,
+    "generated_at_utc": "2026-10-01T19:08:44.629Z",
     "status": "PASS"
   },
   "results": {
@@ -8966,11 +8966,11 @@
       "info": {
         "bars": 0,
         "reason": "DAILY_LT260",
-        "resolution_source": "CHILWA_2026-10-01_NASDAQ_LISTING_NOTICE_PLUS_LONGBRIDGE_FIRST_DAILY_BAR_2026-10-01"
+        "resolution_source": "SEC_8A_PLUS_ISSUER_NASDAQ_LISTING_2026-10-01_PLUS_LONGBRIDGE_DAILY"
       },
       "resolution_overlay": true,
       "status": "FAIL_HISTORY",
-      "updated_at_utc": "2026-10-01T18:58:57.135989+00:00"
+      "updated_at_utc": "2026-10-01T19:09:39.545607+00:00"
     },
     "CHYM": {
       "attempts": 1,
@@ -12823,13 +12823,13 @@
     "OPNW": {
       "attempts": 1,
       "info": {
-        "bars": 686,
-        "price": 8.979999542236328,
-        "resolution_source": "YAHOO_CHART_FREE_FALLBACK"
+        "bars": 300,
+        "price": 8.98,
+        "resolution_source": "LONGBRIDGE_DAILY"
       },
       "resolution_overlay": true,
       "status": "FAIL_PRICE",
-      "updated_at_utc": "2026-10-01T18:58:57.136298+00:00"
+      "updated_at_utc": "2026-10-01T19:09:39.545826+00:00"
     },
     "ORKA": {
       "attempts": 1,
@@ -12864,13 +12864,14 @@
     "OST": {
       "attempts": 1,
       "info": {
-        "bars": 686,
-        "price": 1.6950000524520874,
-        "resolution_source": "YAHOO_CHART_FREE_FALLBACK"
+        "last_bar": "2025-09-12",
+        "reason": "HALTED_NO_ASOF",
+        "resolution_source": "LONGBRIDGE_QUOTE_DAILY",
+        "trade_status": "Halted"
       },
       "resolution_overlay": true,
-      "status": "FAIL_PRICE",
-      "updated_at_utc": "2026-10-01T18:58:57.136314+00:00"
+      "status": "BLOCK_CURRENT_RUN",
+      "updated_at_utc": "2026-10-01T19:09:39.545834+00:00"
     },
     "OSW": {
       "attempts": 1,
@@ -12997,13 +12998,14 @@
     "PC": {
       "attempts": 1,
       "info": {
-        "bars": 505,
-        "price": 9.399999618530273,
-        "resolution_source": "YAHOO_CHART_FREE_FALLBACK"
+        "last_bar": "2025-10-16",
+        "reason": "HALTED_NO_ASOF",
+        "resolution_source": "LONGBRIDGE_QUOTE_DAILY",
+        "trade_status": "Halted"
       },
       "resolution_overlay": true,
-      "status": "FAIL_PRICE",
-      "updated_at_utc": "2026-10-01T18:58:57.136344+00:00"
+      "status": "BLOCK_CURRENT_RUN",
+      "updated_at_utc": "2026-10-01T19:09:39.545852+00:00"
     },
     "PCAR": {
       "attempts": 1,
@@ -14316,14 +14318,14 @@
     "SVA": {
       "attempts": 1,
       "info": {
-        "last_bar": "2024-09-04",
-        "reason": "CURRENT_TRADE_STATUS_HALTED",
-        "resolution_source": "LONGBRIDGE_NASD_QUOTE_PLUS_RALLIES_XNAS_NO_CURRENT_MARKET_DATA",
+        "last_bar": "2019-02-22",
+        "reason": "HALTED_NO_ASOF",
+        "resolution_source": "LONGBRIDGE_QUOTE_DAILY",
         "trade_status": "Halted"
       },
       "resolution_overlay": true,
       "status": "BLOCK_CURRENT_RUN",
-      "updated_at_utc": "2026-10-01T18:58:57.136462+00:00"
+      "updated_at_utc": "2026-10-01T19:09:39.545930+00:00"
     },
     "SWKS": {
       "attempts": 1,
@@ -16372,10 +16374,10 @@
     "ZS": "Zscaler, Inc. - Common Stock",
     "ZYME": "Zymeworks Inc. - Common Stock"
   },
-  "state_hash": "6c315135cf0e07e07a7134e35997c7936312fe542e1c7ffbe3ed19e123aa3e0b",
+  "state_hash": "249d3eb3485dd0f403a6bad36e94f8f29d58ee3de001f4dbdaca1a43bba25888",
   "status": "HISTORY_COMPLETE",
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_count": 0,
   "unknown_never_pass": true,
-  "updated_at_utc": "2026-10-01T18:58:57.136949+00:00"
+  "updated_at_utc": "2026-10-01T19:09:39.546168+00:00"
 }
