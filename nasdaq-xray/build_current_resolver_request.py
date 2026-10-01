@@ -30,7 +30,8 @@ def prior_core_symbol(pointer_asof):
             if x.get("task_id")!=TASK or x.get("asof_et")!=pointer_asof: continue
             lp=sorted(((x.get("sets") or {}).get("legal_pass") or []))
             if "MSFT" in lp: return "MSFT",str(q.relative_to(ROOT.parent)).replace("\\","/"),blob_sha(q)
-            if lp: return lp[0],str(q.relative_to(ROOT.parent)).replace("\\","/"),blob_sha(q)
+            eligible=[s for s in lp if s not in {"AAPL","NVDA"}]
+            if eligible: return eligible[0],str(q.relative_to(ROOT.parent)).replace("\\","/"),blob_sha(q)
         except Exception:
             pass
     return None,None,None
@@ -90,6 +91,9 @@ def main():
               and br.get("execution")=="NONE" and br.get("real_money")=="NO-GO"
               and br.get("asof_et")==asof
               and br.get("queue_hash")==s["queue_hash"]
+              and br.get("compiled_policy_hash")=="987982f0d17fc0f01a28fe22540fc3e09d4e2f28e3aa1b40c0113e3112b44c16"
+              and br.get("compiled_policy_version")=="C4.11"
+              and br.get("compiled_policy_blob_sha")=="738402b627abaca89a5b9fdfea51ff6c468d752b"
               and br.get("settlement_status")=="PASS"
             ):
                 settlement_already_proven=True
