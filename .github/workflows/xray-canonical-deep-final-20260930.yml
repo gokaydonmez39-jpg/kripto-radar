@@ -1,0 +1,139 @@
+name: XRAY Canonical Deep Final 20260930
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/xray-canonical-deep-final-20260930.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: xray-canonical-deep-final-20260930
+  cancel-in-progress: false
+
+jobs:
+  deep-final:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      XRAY_STAGE1_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_stage1_20260930.json
+      XRAY_REGIME_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_regime_20260930.json
+      XRAY_EVENT_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_event_state_20260930.json
+      XRAY_DEEP_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_deep_full_20260930.json
+      XRAY_DEEP_WORKERS: "10"
+      XRAY_FINAL_DEEP_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_deep_full_20260930.json
+      XRAY_FINAL_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_final_tech_20260930.json
+      XRAY_FINAL_WORKERS: "8"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Verify pinned canonical inputs
+        run: |
+          python - <<'PY'
+          import hashlib, pathlib, json
+          pins={
+            "nasdaq-xray/canonical_stage1_20260930.json":"92968175766378af7cef33f534fac21d4949fbc1",
+            "nasdaq-xray/canonical_regime_20260930.json":"2a5effa8031694b580d86fbb11ed81faba6d89fa",
+            "nasdaq-xray/canonical_event_state_20260930.json":"610b751cf7a788adf3d29780dfe1fb52aa1e2905",
+          }
+          for p,e in pins.items():
+              b=pathlib.Path(p).read_bytes()
+              h=hashlib.sha1(f"blob {len(b)}\0".encode()+b).hexdigest()
+              assert h==e,(p,h,e)
+          st=json.load(open("nasdaq-xray/canonical_stage1_20260930.json"))
+          rg=json.load(open("nasdaq-xray/canonical_regime_20260930.json"))
+          ev=json.load(open("nasdaq-xray/canonical_event_state_20260930.json"))
+          assert st["unknown_count"]==0 and st["weekly_pass_count"]==104
+          assert rg["regime"]=="MIXED" and rg["breadth_missing_count"]==0
+          assert ev["weekly_scope_count"]==104
+          assert set(ev["confirmed_blocks"])=={"MU"}
+          assert set(ev["unresolved"])=={"AEHR"}
+          print("PINNED_INPUTS_PASS")
+          PY
+
+      - name: Compile
+        run: python -m py_compile nasdaq-xray/deep_pre_r1_shadow.py nasdaq-xray/final_tech_shadow.py
+
+      - name: Install zero-dollar runtime
+        run: python -m pip install --disable-pip-version-check akshare==1.18.95 pandas_market_calendars
+
+      - name: Run full deep finalist evaluation
+        run: python nasdaq-xray/deep_pre_r1_shadow.py
+
+      - name: Validate full deep
+        run: |
+          python - <<'PY'
+          import json
+          j=json.load(open("nasdaq-xray/canonical_deep_full_20260930.json"))
+          assert j["schema"]=="XRAY_DEEP_PRE_R1_SHADOW_V1"
+          assert j["task_id"]=="6a825366222081918997094d76e6ae46"
+          assert j["asof_et"]=="2026-09-30"
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          assert j["regime"]=="MIXED"
+          assert j["event_state_fresh"] is True
+          assert j["input_weekly_pass_count"]==104
+          assert j["unknown_history_count"]==0, j["unknown_history"]
+          assert j["a_geometry_rs_event_pass_count"]==len(j["a_geometry_rs_event_pass"])
+          assert j["b_breakout_rs_event_pass_count"]==len(j["b_breakout_rs_event_pass"])
+          assert j["b_armed_rs_event_pass_count"]==len(j["b_armed_rs_event_pass"])
+          assert j["d_dk3_pre_r1_count"]==len(j["d_dk3_pre_r1"])
+          print({
+            "A":j["a_geometry_rs_event_pass_count"],
+            "B_breakout":j["b_breakout_rs_event_pass_count"],
+            "B_armed":j["b_armed_rs_event_pass_count"],
+            "D":j["d_dk3_pre_r1_count"],
+            "unknown_history":j["unknown_history_count"]
+          })
+          PY
+
+      - name: Run R1 RR chase extension final tech
+        run: python nasdaq-xray/final_tech_shadow.py
+
+      - name: Validate final tech
+        run: |
+          python - <<'PY'
+          import json
+          j=json.load(open("nasdaq-xray/canonical_final_tech_20260930.json"))
+          assert j["schema"]=="XRAY_FINAL_TECH_SHADOW_V1"
+          assert j["task_id"]=="6a825366222081918997094d76e6ae46"
+          assert j["asof_et"]=="2026-09-30"
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          assert j["input_confirmed_family_candidates"]==len(j["results"])
+          assert j["pre_g9_tech_pass_count"]==len(j["pre_g9_tech_pass"])
+          assert j["watch_count"]==len(j["watch"])
+          assert j["fail_count"]==len(j["fail"])
+          unknown={k:v for k,v in j["results"].items() if v.get("result")=="UNKNOWN"}
+          assert not unknown, unknown
+          print({
+            "input_confirmed_family_candidates":j["input_confirmed_family_candidates"],
+            "pre_g9_tech_pass_count":j["pre_g9_tech_pass_count"],
+            "watch_count":j["watch_count"],
+            "fail_count":j["fail_count"],
+            "pre_g9_tech_pass":j["pre_g9_tech_pass"],
+            "watch":j["watch"],
+            "fail":j["fail"]
+          })
+          PY
+
+      - name: Commit canonical deep and final
+        shell: bash
+        run: |
+          set -e
+          git config user.name "xray-dataplane-bot"
+          git config user.email "xray-dataplane-bot@users.noreply.github.com"
+          git add nasdaq-xray/canonical_deep_full_20260930.json nasdaq-xray/canonical_final_tech_20260930.json
+          git commit -m "chore(xray): canonical deep final 2026-09-30 [skip ci]" || exit 0
+          for attempt in 1 2 3 4 5; do
+            if git pull --rebase origin main && git push; then exit 0; fi
+            sleep $((attempt*2))
+          done
+          exit 1
