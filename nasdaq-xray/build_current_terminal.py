@@ -11,12 +11,15 @@ OUT=Path(os.getenv("XRAY_TERMINAL_OUT",str(ROOT/"canonical_current_terminal.json
 FILES={
  "pointer":ROOT/"chatgpt_canonical_state_v2.json",
  "policy":ROOT/"chatgpt_compiled_policy_v3.json",
+ "full_state":ROOT/"canonical_current_full_state.json",
  "master":ROOT/"canonical_current_master_manifest.json",
  "price":ROOT/"canonical_current_price_dv20.json",
  "history":ROOT/"canonical_current_history.json",
  "legal":ROOT/"canonical_current_legal.json",
+ "stage1_input":ROOT/"canonical_current_stage1_input.json",
  "stage1":ROOT/"canonical_current_stage1.json",
  "regime":ROOT/"canonical_current_regime.json",
+ "deep_geometry":ROOT/"canonical_current_deep_geometry.json",
  "event_request":ROOT/"canonical_current_event_request.json",
  "events":ROOT/"canonical_current_event_state.json",
  "family_c":ROOT/"canonical_current_family_c.json",
@@ -100,33 +103,64 @@ def main():
     assert primary|mcfail|watch|mcunk==price_pass
     assert len(mcunk)==0 and (mc.get("counts") or {}).get("MC_UNKNOWN",0)==0
 
-    h=d["history"]; lg=d["legal"]; st=d["stage1"]; rg=d["regime"]
+    h=d["history"]; lg=d["legal"]; si=d["stage1_input"]; st=d["stage1"]; rg=d["regime"]; dg=d["deep_geometry"]
     er=d["event_request"]; ev=d["events"]; fc=d["family_c"]; dp=d["deep"]; ft=d["final"]
     for x in [h,lg,st,rg,er,ev,fc,dp,ft]:
         assert x["task_id"]==TASK and x["asof_et"]==asof and x["execution"]=="NONE" and x["real_money"]=="NO-GO"
     assert h["unknown_count"]==0 and h["input_count"]==len(primary) and set(h["results"])==primary
+    assert h.get("source_mc_blob_sha")==blob_sha(mc_path)
+    assert h.get("source_mc_policy_hash")==POLICY_HASH and h.get("source_mc_policy_version")=="C4.11"
     hpass=set(h["pass_symbols"]); hfail=set(h["results"])-hpass
     assert hpass|hfail==primary and not (hpass&hfail)
     assert all((h["results"][s].get("status")=="FAIL_HISTORY") for s in hfail)
 
     assert lg["input_count"]==len(hpass) and set(lg["results"])==hpass
+    assert lg.get("source_history_blob_sha")==sh["history"] and lg.get("source_history_pass_hash")==h.get("pass_hash")
+    assert lg.get("source_master_blob_sha")==sh["full_state"]
     assert (lg["counts"] or {}).get("UNKNOWN_LEGAL",0)==0 and not lg["unknown_symbols"]
     lpass=set(lg["pass_symbols"]); lblock=set(lg["blocked_symbols"])
     assert lpass|lblock==hpass and not (lpass&lblock)
 
+    assert si["task_id"]==TASK and si["asof_et"]==asof and si["execution"]=="NONE" and si["real_money"]=="NO-GO"
+    assert si.get("source_mc_blob_sha")==blob_sha(mc_path)
+    assert si.get("source_history_blob_sha")==sh["history"] and si.get("source_legal_blob_sha")==sh["legal"]
+    assert si.get("source_mc_policy_hash")==POLICY_HASH and si.get("source_mc_policy_version")=="C4.11"
+    assert si.get("source_history_pass_hash")==h.get("pass_hash") and si.get("source_legal_pass_hash")==lg.get("pass_hash")
     assert st["input_current_core_count"]==len(lpass) and set(st["results"])==lpass
+    assert st.get("source_input_blob_sha")==sh["stage1_input"]
+    assert st.get("source_legal_pass_hash")==lg.get("pass_hash")
+    assert st.get("source_mc_policy_hash")==POLICY_HASH and st.get("source_mc_policy_version")=="C4.11"
     assert st["unknown_count"]==0
     weekly=set(st["weekly_pass"]); assert len(weekly)==st["weekly_pass_count"]
     assert rg["current_core_count"]==len(lpass) and rg["breadth_missing_count"]==0
+    assert rg.get("source_input_blob_sha")==sh["stage1_input"]
+    assert rg.get("source_legal_pass_hash")==lg.get("pass_hash")
+    assert rg.get("source_mc_policy_hash")==POLICY_HASH and rg.get("source_mc_policy_version")=="C4.11"
+
+    assert dg["task_id"]==TASK and dg["asof_et"]==asof and dg["execution"]=="NONE" and dg["real_money"]=="NO-GO"
+    assert dg.get("source_stage1_blob_sha")==sh["stage1"]
+    assert dg.get("source_mc_policy_hash")==POLICY_HASH and dg.get("source_mc_policy_version")=="C4.11"
 
     assert er["weekly_scope_count"]==len(weekly) and set(er["weekly_scope"])==weekly
+    assert er.get("compiled_policy_hash")==POLICY_HASH and er.get("compiled_policy_version")=="C4.11"
+    assert er.get("compiled_policy_blob_sha")==sh["policy"]
+    assert er.get("source_stage1_blob_sha")==sh["stage1"]
+    assert er.get("source_regime_blob_sha")==sh["regime"]
+    assert er.get("source_deep_geometry_blob_sha")==sh["deep_geometry"]
     assert ev["weekly_scope_count"]==len(weekly) and set(ev["weekly_scope"])==weekly
     assert ev["source_request_blob_sha"]==sh["event_request"]
+    assert ev.get("compiled_policy_hash")==POLICY_HASH and ev.get("compiled_policy_version")=="C4.11"
+    assert ev.get("compiled_policy_blob_sha")==sh["policy"]
     assert set(ev["event_status_by_symbol"])==weekly
     assert ev["clean_discovery_count"]+ev["confirmed_block_count"]+ev["unresolved_count"]==len(weekly)
 
     assert fc["weekly_scope_count"]==len(weekly)
+    assert fc.get("source_stage1_blob_sha")==sh["stage1"] and fc.get("source_event_blob_sha")==sh["events"]
+    assert fc.get("source_compiled_policy_hash")==POLICY_HASH and fc.get("source_compiled_policy_version")=="C4.11"
     assert dp["input_weekly_pass_count"]==len(weekly) and set(dp["results"])==weekly
+    assert dp.get("source_stage1_blob_sha")==sh["stage1"]
+    assert dp.get("source_regime_blob_sha")==sh["regime"] and dp.get("source_event_blob_sha")==sh["events"]
+    assert dp.get("source_mc_policy_hash")==POLICY_HASH and dp.get("source_mc_policy_version")=="C4.11"
     assert dp["event_state_fresh"] is True and dp["unknown_history_count"]==0
     assert dp["regime"]==rg["regime"]
 
@@ -136,6 +170,8 @@ def main():
     confirmed|={f"{s}|D" for s in dp.get("d_dk3_pre_r1",[])}
     confirmed|={f"{s}|C" for s in (fc.get("confirmed") or {})}
     assert ft["input_confirmed_family_candidates"]==len(confirmed)
+    assert ft.get("source_deep_blob_sha")==sh["deep"] and ft.get("source_family_c_blob_sha")==sh["family_c"]
+    assert ft.get("source_compiled_policy_hash")==POLICY_HASH and ft.get("source_compiled_policy_version")=="C4.11"
     assert set(ft["results"])==confirmed
     final_unknown=sorted(k for k,v in ft["results"].items() if v.get("result")=="UNKNOWN")
     affected_event_unknown=sorted(ev.get("affected_geometry_event_unknown") or [])
@@ -165,7 +201,8 @@ def main():
     out={
       "schema":"XRAY_CANONICAL_CURRENT_TERMINAL_V1","status":"FULL_E2E_RESEARCH_PASS" if full else "PARTIAL",
       "task_id":TASK,"asof_et":asof,"execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
-      "compiled_policy_hash":POLICY_HASH,"full_end_to_end_research_pass":full,"terminal_result":terminal_result,
+      "compiled_policy_hash":POLICY_HASH,"compiled_policy_version":"C4.11",
+      "full_end_to_end_research_pass":full,"terminal_result":terminal_result,
       "pointer_asof_before_candidate":pointer_asof,
       "settlement_witness_required":settlement_witness_required,
       "settlement_witness_status":mc.get("settlement_witness_status"),
@@ -204,6 +241,7 @@ def main():
         "history_exact_mc_primary":True,"fallback_watch_excluded_after_mc":True,"legal_exact_history_pass":True,
         "stage1_exact_legal_pass":True,"weekly_exact_event_scope":True,"regime_no_missing":True,
         "deep_exact_weekly_scope":True,"final_exact_confirmed_family_set":True,
+        "exact_blob_provenance_chain":True,
         "count_equality_never_substituted_for_set_equality":True,
       },
       "generated_at_utc":datetime.now(timezone.utc).isoformat()
