@@ -3,7 +3,7 @@
   "authority": "GITHUB_CURRENT_POINTER",
   "execution": "NONE",
   "real_money": "NO-GO",
-  "revision": 28,
+  "revision": 29,
   "state_hash": "b272b2b3e8dba584c72a16b16d3e6b499ba076608ef7e1fbd4abf1387ba91cb4",
   "prev_state_hash": "709b877e39059b515c5467a6d0ef1a9b8a4fd3a05f86192f1e85539c9e64ce23",
   "state_json": {
@@ -33,7 +33,7 @@
       "settlement_date_et": "2026-09-29",
       "incomplete_results_carried_forward": false
     },
-    "revision": 28,
+    "revision": 29,
     "schema": "XRAY_STATE_REGISTER_V1",
     "state_epoch": "2026-09-30T23:44:00Z",
     "status": "RECOVERY_REBASED_MASTER_PENDING",
@@ -56,13 +56,14 @@
       "SYSTEM|MC_BOUND|2026-09-29|PRIMARY449|WATCH36|FAIL13",
       "SYSTEM|HISTORY_STAGE1_LEGAL_BOUND|2026-09-29|WEEKLY96|LEGAL96",
       "SYSTEM|DEEP_GEOMETRY_BOUND|2026-09-29|A0|B0|BARMED15|D0",
-      "SYSTEM|LEGAL_SCOPE_REPAIR|2026-09-29|CORE435|PASS435"
+      "SYSTEM|LEGAL_SCOPE_REPAIR|2026-09-29|CORE435|PASS435",
+      "SYSTEM|REGIME_BREADTH_BOUND|2026-09-29|MIXED|MISS0"
     ],
-    "updated_at_utc": "2026-10-01T15:08:20.606Z",
+    "updated_at_utc": "2026-10-01T15:28:04.440Z",
     "work_cursor": {
       "ASOF_ET": "2026-09-29",
       "MASTER_HASH": "4f7fa2426906e0be6f1cfdf15658aada4d8e91f3898c4e3383cc2198e82db362",
-      "PHASE": "REGIME_BREADTH",
+      "PHASE": "EVENTS",
       "CHUNK_INDEX": 0,
       "CHUNK_TOTAL": 0,
       "COMPLETED_HASH": null,
@@ -78,7 +79,13 @@
         "WEEKLY_PASS": 96,
         "WEEKLY_FAIL": 339,
         "LEGAL_PASS": 435,
-        "LEGAL_UNKNOWN": 0
+        "LEGAL_UNKNOWN": 0,
+        "REGIME": "MIXED",
+        "BREADTH_CORE": 435,
+        "BREADTH_ABOVE_SMA50": 155,
+        "BREADTH_MISSING": 0,
+        "NH20": 29,
+        "NL20": 100
       }
     },
     "delivery_keys": [],
@@ -231,6 +238,22 @@
         "SWKS",
         "WBD"
       ]
+    },
+    "regime_breadth_evidence": {
+      "path": "nasdaq-xray/canonical_regime_20260929.json",
+      "blob_sha": "38fffd7025f846907ebd10b9ff1cd1c145fff086",
+      "regime": "MIXED",
+      "current_core_count": 435,
+      "breadth_missing_count": 0,
+      "breadth_above_sma50_pct": 0.3563218390804598,
+      "nh20": 29,
+      "nl20": 100,
+      "qqq": {
+        "close": 737.93,
+        "sma200": 666.69585,
+        "sma50": 714.315,
+        "sma50_slope20": 2.728200000000129
+      }
     }
   },
   "source_proof": {
@@ -242,6 +265,6 @@
   "transition_rule": "NEXT_REVISION_MUST_BE_EXACT_PLUS_ONE_AND_PREV_STATE_HASH_MUST_EQUAL_THIS_STATE_HASH",
   "immutable_snapshot_path": "nasdaq-xray/state/REV21_b272b2b3e8dba584c72a16b16d3e6b499ba076608ef7e1fbd4abf1387ba91cb4.json",
   "storage_protocol": "GITHUB_CONTENTS_CAS_V1",
-  "prev_pointer_blob_sha": "c4adb98c43f24f082aff7063d7b4e5aed751881b",
+  "prev_pointer_blob_sha": "78493b8fff4b1b65b93d9d3947b0edc00da31e62",
   "writer_task_id": "6a825366222081918997094d76e6ae46"
 }
