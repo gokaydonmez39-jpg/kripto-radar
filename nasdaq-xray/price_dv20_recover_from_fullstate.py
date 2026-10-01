@@ -67,7 +67,8 @@ def valid_bridge_price_resolution(x,asof):
         dv=num(x.get("dv20")); known=x.get("known_session_count")
         return (
           px is not None and px>HARD_PRICE and dv is not None and dv>=HARD_DV20
-          and known==20 and x.get("no_synthetic_bar") is True
+          and known==20 and (x.get("missing_sessions") or [])==[]
+          and x.get("no_synthetic_bar") is True
           and bool(x.get("source")) and bool(x.get("proof"))
         )
     if d=="BLOCK_CURRENT_RUN":
