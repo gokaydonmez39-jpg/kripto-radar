@@ -151,6 +151,21 @@ def classify(by,asof,exp20,source):
 def main():
     m=json.loads(MANIFEST.read_text())
     asof=m["asof_et"]; exp20=expected20(asof)
+    existing_resolutions={}
+    if OUT.exists():
+        try:
+            old=json.loads(OUT.read_text())
+            if (
+                old.get("schema")=="XRAY_HISTORY_IDENTITY_RESOLUTION_OVERLAY_V1"
+                and old.get("task_id")==TASK_ID
+                and old.get("execution")=="NONE"
+                and old.get("real_money")=="NO-GO"
+                and old.get("base_asof_et")==asof
+                and isinstance(old.get("resolutions"),dict)
+            ):
+                existing_resolutions=dict(old["resolutions"])
+        except Exception:
+            existing_resolutions={}
     resolutions={}; unresolved={}
     for sym,old in sorted(m["unknowns"].items()):
         nd={}; yd={}
@@ -198,6 +213,12 @@ def main():
                 "nasdaq_meta":nmeta,"nasdaq_class":ndc,"nasdaq_info":ndi,
                 "yahoo_meta":ymeta,"yahoo_class":ydc,"yahoo_info":ydi,
             }
+    # Preserve prior same-epoch proven resolutions, but never retain a prior
+    # resolution for a symbol that is currently UNKNOWN unless this run re-proves it.
+    merged=dict(existing_resolutions)
+    for sym in m.get("unknowns",{}):
+        merged.pop(sym,None)
+    merged.update(resolutions)
     obj={
         "schema":"XRAY_HISTORY_IDENTITY_RESOLUTION_OVERLAY_V1",
         "task_id":TASK_ID,
@@ -205,16 +226,21 @@ def main():
         "base_asof_et":asof,
         "generated_at_utc":datetime.now(timezone.utc).isoformat(),
         "max_age_hours":24,
-        "resolver":"NASDAQ_OFFICIAL_HISTORICAL_PRIMARY_YAHOO_FAIL_ONLY_FALLBACK_V1",
+        "resolver":"NASDAQ_OFFICIAL_HISTORICAL_PRIMARY_YAHOO_FAIL_ONLY_FALLBACK_MERGE_V2",
         "expected20":exp20,
-        "resolution_count":len(resolutions),
+        "manifest_unknown_count":len(m.get("unknowns",{})),
+        "current_resolution_count":len(resolutions),
+        "current_unresolved_count":len(unresolved),
+        "resolution_count":len(merged),
         "unresolved_count":len(unresolved),
-        "resolutions":resolutions,
+        "resolutions":merged,
         "unresolved":unresolved,
     }
     OUT.write_text(json.dumps(obj,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
     print(json.dumps({
-        "resolution_count":len(resolutions),"unresolved_count":len(unresolved),
+        "manifest_unknown_count":len(m.get("unknowns",{})),
+        "current_resolution_count":len(resolutions),
+        "resolution_count":len(merged),"unresolved_count":len(unresolved),
         "decisions":{d:sum(1 for v in resolutions.values() if v["decision"]==d) for d in sorted(set(v["decision"] for v in resolutions.values()))}
     },sort_keys=True))
 
