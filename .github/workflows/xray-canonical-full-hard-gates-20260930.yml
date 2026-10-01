@@ -153,7 +153,7 @@ jobs:
           assert s["queue_total"]==len(s["queue"])==len(s["security_names"])==len(s["results"])
           assert len(set(s["queue"]))==s["queue_total"]
           assert "ADR_ADS" not in (s.get("explicit_excluded_reason_counts") or {}), s.get("explicit_excluded_reason_counts")
-          adr_pat=re.compile(r"\\bamerican deposit(?:ary|ory) shares?\\b|\\bamerican deposit(?:ary|ory) receipts?\\b",re.I)
+          adr_pat=re.compile(r"\bamerican deposit(?:ary|ory) shares?\b|\bamerican deposit(?:ary|ory) receipts?\b",re.I)
           eligible_adr_ads=[sym for sym,name in (s.get("security_names") or {}).items() if adr_pat.search(str(name or ""))]
           assert len(eligible_adr_ads)>0
           assert c["asof_et"]=="2026-09-30"
@@ -178,7 +178,7 @@ jobs:
           cp="nasdaq-xray/canonical_full_hard_gate_20260930_candidates.json"
           mp="nasdaq-xray/canonical_full_hard_gate_20260930_manifest.json"
           s=json.load(open(sp)); c=json.load(open(cp))
-          adr_pat=re.compile(r"\\bamerican deposit(?:ary|ory) shares?\\b|\\bamerican deposit(?:ary|ory) receipts?\\b",re.I)
+          adr_pat=re.compile(r"\bamerican deposit(?:ary|ory) shares?\b|\bamerican deposit(?:ary|ory) receipts?\b",re.I)
           eligible_adr_ads=sorted(sym for sym,name in (s.get("security_names") or {}).items() if adr_pat.search(str(name or "")))
           pass_symbols=sorted(c["candidates"])
           def sha_file(p):
