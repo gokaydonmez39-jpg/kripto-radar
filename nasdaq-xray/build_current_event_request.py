@@ -11,6 +11,10 @@ DEEP=Path(os.getenv("XRAY_EVENT_DEEP",str(ROOT/"canonical_current_deep_geometry.
 REGIME=Path(os.getenv("XRAY_EVENT_REGIME",str(ROOT/"canonical_current_regime.json")))
 OUT=Path(os.getenv("XRAY_EVENT_REQUEST_OUT",str(ROOT/"canonical_current_event_request.json")))
 TASK="6a825366222081918997094d76e6ae46"
+POLICY=ROOT/"chatgpt_compiled_policy_v3.json"
+POLICY_BLOB="738402b627abaca89a5b9fdfea51ff6c468d752b"
+POLICY_HASH="987982f0d17fc0f01a28fe22540fc3e09d4e2f28e3aa1b40c0113e3112b44c16"
+POLICY_VERSION="C4.11"
 
 def blob_sha(p:Path)->str:
     b=p.read_bytes()
@@ -33,6 +37,11 @@ def sessions(asof):
 
 def main():
     s=json.loads(STAGE1.read_text()); d=json.loads(DEEP.read_text()); r=json.loads(REGIME.read_text())
+    pol=json.loads(POLICY.read_text())
+    assert blob_sha(POLICY)==POLICY_BLOB
+    assert pol.get("schema")=="XRAY_GITHUB_COMPILED_POLICY_V3" and pol.get("policy_hash")==POLICY_HASH
+    pp=json.loads(pol["payload_json"])
+    assert pp.get("version")==POLICY_VERSION and pp.get("execution")=="NONE" and pp.get("real_money")=="NO-GO"
     asof=s["asof_et"]
     assert s["task_id"]==d["task_id"]==r["task_id"]==TASK
     assert d["asof_et"]==r["asof_et"]==asof
@@ -55,6 +64,10 @@ def main():
     obj={
       "schema":"XRAY_EVENT_EPOCH_REQUEST_V1","status":"READY","task_id":TASK,"asof_et":asof,
       "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
+      "compiled_policy_path":"nasdaq-xray/chatgpt_compiled_policy_v3.json",
+      "compiled_policy_blob_sha":POLICY_BLOB,
+      "compiled_policy_hash":POLICY_HASH,
+      "compiled_policy_version":POLICY_VERSION,
       "weekly_scope":weekly,"weekly_scope_count":len(weekly),"weekly_scope_hash":hash_lines(weekly),
       "geometry_scope":finalists,"geometry_scope_count":len(finalists),"geometry_scope_hash":hash_lines(finalists),
       "past_family_c_sessions":past,"future_horizon_sessions":future,
