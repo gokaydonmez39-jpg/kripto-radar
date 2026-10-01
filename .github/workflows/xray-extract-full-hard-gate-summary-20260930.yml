@@ -1,0 +1,73 @@
+name: XRAY Extract Full Hard Gate Summary 20260930
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/xray-extract-full-hard-gate-summary-20260930.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Extract exact summary
+        run: |
+          python - <<'PY'
+          import json, hashlib
+          src="nasdaq-xray/canonical_full_hard_gate_20260930_state.json"
+          j=json.load(open(src))
+          unknown={}
+          for s,v in sorted((j.get("results") or {}).items()):
+              st=str(v.get("status",""))
+              if st.startswith("UNKNOWN"):
+                  unknown[s]={
+                    "status":st,
+                    "attempts":v.get("attempts"),
+                    "info":v.get("info"),
+                    "security_name":(j.get("security_names") or {}).get(s),
+                    "discovery":(j.get("discovery") or {}).get(s),
+                  }
+          queue=j.get("queue") or []
+          qh=hashlib.sha256("\n".join(sorted(queue)).encode()).hexdigest()
+          out={
+            "schema":"XRAY_FULL_HARD_GATE_SUMMARY_V1",
+            "task_id":j.get("task_id"),
+            "asof_et":j.get("asof_et"),
+            "execution":j.get("execution"),
+            "real_money":j.get("real_money"),
+            "source_state_blob_expected":"1eaed2f3267acc5d526fc19cac7e79030dc3045a",
+            "official_footer":j.get("official_footer"),
+            "queue_total":j.get("queue_total"),
+            "queue_unique":len(set(queue)),
+            "queue_hash_sha256_lf_no_trailing":qh,
+            "cursor":j.get("cursor"),
+            "pending_retry":j.get("pending_retry"),
+            "status":j.get("status"),
+            "counts":j.get("counts"),
+            "unknown_count":len(unknown),
+            "unknown":unknown,
+            "discovery_meta":j.get("discovery_meta"),
+            "resolution_overlay_meta":j.get("resolution_overlay_meta"),
+          }
+          json.dump(out,open("nasdaq-xray/canonical_full_hard_gate_20260930_summary.json","w"),indent=2,sort_keys=True)
+          open("nasdaq-xray/canonical_full_hard_gate_20260930_summary.json","a").write("\n")
+          print(json.dumps({"queue_total":out["queue_total"],"unknown_count":out["unknown_count"],"unknown_symbols":list(unknown)},sort_keys=True))
+          PY
+      - name: Commit summary
+        shell: bash
+        run: |
+          set -e
+          git config user.name "xray-dataplane-bot"
+          git config user.email "xray-dataplane-bot@users.noreply.github.com"
+          git add nasdaq-xray/canonical_full_hard_gate_20260930_summary.json
+          git commit -m "chore(xray): extract canonical full hard-gate summary 2026-09-30 [skip ci]" || exit 0
+          for attempt in 1 2 3 4 5; do
+            if git pull --rebase origin main && git push; then exit 0; fi
+            sleep $((attempt*2))
+          done
+          exit 1
