@@ -6,6 +6,7 @@ on:
     paths:
       - ".github/workflows/xray-canonical-full-hard-gates-20260930.yml"
       - "nasdaq-xray/sina_stage.py"
+      - "nasdaq-xray/resolve_unknowns_fallback.py"
       - "nasdaq-xray/history_resolution_overlay.json"
   workflow_dispatch:
 
@@ -19,7 +20,7 @@ concurrency:
 jobs:
   hard-gates:
     runs-on: ubuntu-latest
-    timeout-minutes: 55
+    timeout-minutes: 60
     env:
       XRAY_FULL_IDENTITY: "1"
       XRAY_SINA_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_full_hard_gate_20260930_state.json
@@ -33,26 +34,109 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 1
+
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+
       - name: Compile
-        run: python -m py_compile nasdaq-xray/sina_stage.py
+        run: python -m py_compile nasdaq-xray/sina_stage.py nasdaq-xray/resolve_unknowns_fallback.py
+
       - name: Install zero-dollar runtime
         run: python -m pip install --disable-pip-version-check akshare==1.18.95 pandas_market_calendars
+
       - name: Reset isolated frozen artifacts
         shell: bash
         run: |
           rm -f nasdaq-xray/canonical_full_hard_gate_20260930_state.json
           rm -f nasdaq-xray/canonical_full_hard_gate_20260930_candidates.json
-      - name: Run full identity hard gates with bounded retries
+          rm -f nasdaq-xray/.current_unknown_manifest_20260930.json
+
+      - name: Run full identity hard gates with bounded Sina retries
         shell: bash
         run: |
           set -e
           for i in 1 2 3 4 5; do
-            echo "PASS=$i"
+            echo "SINA_PASS=$i"
             python nasdaq-xray/sina_stage.py
           done
+
+      - name: Extract current unresolved set
+        id: unknowns
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, os
+          s=json.load(open("nasdaq-xray/canonical_full_hard_gate_20260930_state.json"))
+          unknowns={}
+          for sym,r in sorted((s.get("results") or {}).items()):
+              st=str(r.get("status") or "")
+              if st.startswith("UNKNOWN"):
+                  unknowns[sym]={
+                      "status":st,
+                      "attempts":r.get("attempts"),
+                      "info":r.get("info"),
+                      "security_name":(s.get("security_names") or {}).get(sym),
+                      "discovery":(s.get("discovery") or {}).get(sym),
+                  }
+          obj={
+              "schema":"XRAY_CANONICAL_UNKNOWN_MANIFEST_V1",
+              "task_id":s.get("task_id"),
+              "asof_et":s.get("asof_et"),
+              "execution":"NONE",
+              "real_money":"NO-GO",
+              "source_state_hash":s.get("state_hash"),
+              "source_queue_hash":s.get("queue_hash"),
+              "source_unknown_count":s.get("unknown_count"),
+              "source_counts":s.get("counts"),
+              "official_footer":s.get("official_footer"),
+              "unknown_count":len(unknowns),
+              "unknowns":unknowns,
+          }
+          open("nasdaq-xray/.current_unknown_manifest_20260930.json","w").write(
+              json.dumps(obj,ensure_ascii=False,sort_keys=True,indent=2)+"\n"
+          )
+          with open(os.environ["GITHUB_OUTPUT"],"a") as fh:
+              fh.write(f"count={len(unknowns)}\n")
+          print({"unknown_count":len(unknowns),"symbols":sorted(unknowns)})
+          PY
+
+      - name: Resolve current provider/parser unknowns fail-closed
+        if: steps.unknowns.outputs.count != '0'
+        env:
+          XRAY_UNKNOWN_MANIFEST: ${{ github.workspace }}/nasdaq-xray/.current_unknown_manifest_20260930.json
+          XRAY_RESOLUTION_OUT: ${{ github.workspace }}/nasdaq-xray/history_resolution_overlay.json
+        run: python nasdaq-xray/resolve_unknowns_fallback.py
+
+      - name: Validate dynamic resolver result
+        if: steps.unknowns.outputs.count != '0'
+        run: |
+          python - <<'PY'
+          import json
+          m=json.load(open("nasdaq-xray/.current_unknown_manifest_20260930.json"))
+          o=json.load(open("nasdaq-xray/history_resolution_overlay.json"))
+          assert o["schema"]=="XRAY_HISTORY_IDENTITY_RESOLUTION_OVERLAY_V1"
+          assert o["task_id"]=="6a825366222081918997094d76e6ae46"
+          assert o["execution"]=="NONE" and o["real_money"]=="NO-GO"
+          assert o["base_asof_et"]=="2026-09-30"
+          assert o["manifest_unknown_count"]==m["unknown_count"]
+          assert o["current_resolution_count"]+o["current_unresolved_count"]==m["unknown_count"]
+          assert o["resolution_count"]==len(o["resolutions"])
+          print({
+            "manifest_unknown_count":o["manifest_unknown_count"],
+            "current_resolution_count":o["current_resolution_count"],
+            "current_unresolved_count":o["current_unresolved_count"],
+            "merged_resolution_count":o["resolution_count"],
+          })
+          PY
+
+      - name: Recompute state from merged overlay without a new universe sweep
+        if: steps.unknowns.outputs.count != '0'
+        shell: bash
+        run: |
+          set -e
+          python nasdaq-xray/sina_stage.py
+
       - name: Structural validation
         run: |
           python - <<'PY'
@@ -69,28 +153,34 @@ jobs:
           assert s["queue_total"]==len(s["queue"])==len(s["security_names"])==len(s["results"])
           assert len(set(s["queue"]))==s["queue_total"]
           assert c["asof_et"]=="2026-09-30"
+          assert c["candidate_count"]==len(c["candidates"])
           print({
             "footer":s["official_footer"],
             "queue_total":s["queue_total"],
+            "explicit_excluded_reason_counts":s.get("explicit_excluded_reason_counts"),
             "unknown_count":s["unknown_count"],
             "status":s["status"],
             "counts":s["counts"],
             "candidate_count":c["candidate_count"]
           })
           PY
-      - name: Commit bounded artifact
+
+      - name: Commit canonical artifact and merged resolver evidence
         shell: bash
         run: |
           set -e
           git config user.name "xray-dataplane-bot"
           git config user.email "xray-dataplane-bot@users.noreply.github.com"
-          git add nasdaq-xray/canonical_full_hard_gate_20260930_state.json nasdaq-xray/canonical_full_hard_gate_20260930_candidates.json
+          git add nasdaq-xray/canonical_full_hard_gate_20260930_state.json \
+                  nasdaq-xray/canonical_full_hard_gate_20260930_candidates.json \
+                  nasdaq-xray/history_resolution_overlay.json
           git commit -m "chore(xray): canonical full hard gates 2026-09-30 [skip ci]" || exit 0
           for attempt in 1 2 3 4 5; do
             if git pull --rebase origin main && git push; then exit 0; fi
             sleep $((attempt*2))
           done
           exit 1
+
       - name: Strict completion validation
         run: |
           python - <<'PY'
@@ -100,5 +190,6 @@ jobs:
           assert s["unknown_count"]==0, s["unknown_count"]
           assert s["pending_retry"]==0
           assert s["cursor"]==s["queue_total"]
+          assert not any(str(v.get("status","")).startswith("UNKNOWN") for v in s["results"].values())
           print("FULL_IDENTITY_HARD_GATES_PASS")
           PY
