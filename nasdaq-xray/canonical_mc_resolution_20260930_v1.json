@@ -25,8 +25,8 @@
   "counts": {
     "MC_PASS_PRIMARY": 439,
     "MC_FAIL_PRIMARY": 10,
-    "MC_PASS_FALLBACK_WATCH": 0,
-    "MC_UNKNOWN": 37,
+    "MC_PASS_FALLBACK_WATCH": 34,
+    "MC_UNKNOWN": 3,
     "TOTAL": 486
   },
   "primary_pass_symbols": [
@@ -482,16 +482,13 @@
     "SEDG",
     "USAR"
   ],
-  "fallback_watch_symbols": [],
-  "unknown_symbols": [
+  "fallback_watch_symbols": [
     "AKAM",
     "BIDU",
-    "BRZE",
     "CCEP",
     "COCO",
     "CORZ",
     "DAVE",
-    "DKNG",
     "ERAS",
     "FER",
     "FISV",
@@ -517,10 +514,14 @@
     "SOFI",
     "TEM",
     "TER",
-    "TPG",
     "TRI",
     "VOD",
     "WGS"
+  ],
+  "unknown_symbols": [
+    "BRZE",
+    "DKNG",
+    "TPG"
   ],
   "results": {
     "AAL": {
@@ -643,15 +644,17 @@
       "listing": "XNAS:AFRM"
     },
     "AKAM": {
-      "status": "MC_UNKNOWN",
+      "status": "MC_PASS_FALLBACK_WATCH",
       "primary_reason": "PRIMARY_IDENTITY_UNRESOLVED",
       "bigdata_entity_id": null,
-      "mode": "FAIL_CLOSED",
+      "mode": "RALLIES_XNAS_LONGBRIDGE_NASD",
       "rallies_exchange": "XNAS",
       "longbridge_exchange": null,
       "rallies_market_cap_usd": 15586066246,
-      "longbridge_market_cap_usd": null,
-      "relative_diff": null
+      "longbridge_market_cap_usd": 15268452540.16,
+      "relative_diff": 0.020378054399808058,
+      "state_cap": "WATCH",
+      "r92_eligible": false
     },
     "ALAB": {
       "status": "MC_PASS_PRIMARY",
@@ -906,15 +909,17 @@
       "listing": "XNAS:BBIO"
     },
     "BIDU": {
-      "status": "MC_UNKNOWN",
+      "status": "MC_PASS_FALLBACK_WATCH",
       "primary_reason": "PRIMARY_MC_HKD",
       "bigdata_entity_id": "94D329",
-      "mode": "FAIL_CLOSED",
+      "mode": "RALLIES_XNAS_LONGBRIDGE_NASD",
       "rallies_exchange": "XNAS",
       "longbridge_exchange": null,
       "rallies_market_cap_usd": 29530881061,
-      "longbridge_market_cap_usd": null,
-      "relative_diff": null
+      "longbridge_market_cap_usd": 29288402953.71,
+      "relative_diff": 0.008211001452653235,
+      "state_cap": "WATCH",
+      "r92_eligible": false
     },
     "BIIB": {
       "status": "MC_PASS_PRIMARY",
@@ -971,10 +976,10 @@
       "bigdata_entity_id": null,
       "mode": "FAIL_CLOSED",
       "rallies_exchange": "XNAS",
-      "longbridge_exchange": null,
+      "longbridge_exchange": "NASD",
       "rallies_market_cap_usd": 2629479485,
-      "longbridge_market_cap_usd": null,
-      "relative_diff": null
+      "longbridge_market_cap_usd": 2942404581.44,
+      "relative_diff": 0.1063501254769172
     },
     "BSP": {
       "status": "MC_PASS_PRIMARY",
@@ -1075,15 +1080,17 @@
       "listing": "XNAS:CBSH"
     },
     "CCEP": {
-      "status": "MC_UNKNOWN",
+      "status": "MC_PASS_FALLBACK_WATCH",
       "primary_reason": "PRIMARY_IDENTITY_UNRESOLVED",
       "bigdata_entity_id": null,
-      "mode": "FAIL_CLOSED",
+      "mode": "RALLIES_XNAS_LONGBRIDGE_NASD",
       "rallies_exchange": "XNAS",
       "longbridge_exchange": null,
       "rallies_market_cap_usd": 44990339892,
-      "longbridge_market_cap_usd": null,
-      "relative_diff": null
+      "longbridge_market_cap_usd": 45091096122.05,
+      "relative_diff": 0.002234503898004206,
+      "state_cap": "WATCH",
+      "r92_eligible": false
     },
     "CDNA": {
       "status": "MC_PASS_PRIMARY",
@@ -1240,15 +1247,17 @@
       "listing": "XNAS:CME"
     },
     "COCO": {
-      "status": "MC_UNKNOWN",
+      "status": "MC_PASS_FALLBACK_WATCH",
       "primary_reason": "PRIMARY_IDENTITY_UNRESOLVED",
       "bigdata_entity_id": null,
-      "mode": "FAIL_CLOSED",
+      "mode": "RALLIES_XNAS_LONGBRIDGE_NASD",
       "rallies_exchange": "XNAS",
       "longbridge_exchange": null,
       "rallies_market_cap_usd": 3272217852,
-      "longbridge_market_cap_usd": null,
-      "relative_diff": null
+      "longbridge_market_cap_usd": 3372192333,
+      "relative_diff": 0.02964673159999145,
+      "state_cap": "WATCH",
+      "r92_eligible": false
     },
     "COGT": {
       "status": "MC_PASS_PRIMARY",
@@ -1300,15 +1309,17 @@
       "listing": "XNAS:CORT"
     },
     "CORZ": {
-      "status": "MC_UNKNOWN",
+      "status": "MC_PASS_FALLBACK_WATCH",
       "primary_reason": "PRIMARY_IDENTITY_UNRESOLVED",
       "bigdata_entity_id": null,
-      "mode": "FAIL_CLOSED",
+      "mode": "RALLIES_XNAS_LONGBRIDGE_NASD",
       "rallies_exchange": "XNAS",
       "longbridge_exchange": null,
       "rallies_market_cap_usd": 5241062593,
-      "longbridge_market_cap_usd": null,
-      "relative_diff": null
+      "longbridge_market_cap_usd": 5221782166.25,
+      "relative_diff": 0.003678724763896366,
+      "state_cap": "WATCH",
+      "r92_eligible": false
     },
     "COST": {
       "status": "MC_PASS_PRIMARY",
@@ -1444,15 +1455,17 @@
       "listing": "XNAS:DASH"
     },
     "DAVE": {
-      "status": "MC_UNKNOWN",
+      "status": "MC_PASS_FALLBACK_WATCH",
       "primary_reason": "PRIMARY_IDENTITY_UNRESOLVED",
       "bigdata_entity_id": null,
-      "mode": "FAIL_CLOSED",
+      "mode": "RALLIES_XNAS_LONGBRIDGE_NASD",
       "rallies_exchange": "XNAS",
       "longbridge_exchange": null,
       "rallies_market_cap_usd": 4163907705,
-      "longbridge_market_cap_usd": null,
-      "relative_diff": null
+      "longbridge_market_cap_usd": 4233170108.09,
+      "relative_diff": 0.016361828445692027,
+      "state_cap": "WATCH",
+      "r92_eligible": false
     },
     "DBX": {
       "status": "MC_PASS_PRIMARY",
@@ -1474,10 +1487,10 @@
       "bigdata_entity_id": null,
       "mode": "FAIL_CLOSED",
       "rallies_exchange": "XNAS",
-      "longbridge_exchange": null,
+      "longbridge_exchange": "NASD",
       "rallies_market_cap_usd": 9725534800,
-      "longbridge_market_cap_usd": null,
-      "relative_diff": null
+      "longbridge_market_cap_usd": 17118701108.75,
+      "relative_diff": 0.4318765928433133
     },
     "DLTR": {
       "status": "MC_PASS_PRIMARY",
@@ -1585,15 +1598,17 @@
       "listing": "XNAS:EQIX"
     },
     "ERAS": {
-      "status": "MC_UNKNOWN",
+      "status": "MC_PASS_FALLBACK_WATCH",
       "primary_reason": "PRIMARY_IDENTITY_UNRESOLVED",
       "bigdata_entity_id": null,
-      "mode": "FAIL_CLOSED",
+      "mode": "RALLIES_XNAS_LONGBRIDGE_NASD",
       "rallies_exchange": "XNAS",
       "longbridge_exchange": null,
       "rallies_market_cap_usd": 4970118517,
-      "longbridge_market_cap_usd": null,
-      "relative_diff": null
+      "longbridge_market_cap_usd": 5106525711,
+      "relative_diff": 0.02671232883566304,
+      "state_cap": "WATCH",
+      "r92_eligible": false
     },
     "ESLT": {
       "status": "MC_PASS_PRIMARY",
@@ -1694,15 +1709,17 @@
       "listing": "XNAS:FCNCA"
     },
     "FER": {
-      "status": "MC_UNKNOWN",
+      "status": "MC_PASS_FALLBACK_WATCH",
       "primary_reason": "PRIMARY_IDENTITY_UNRESOLVED",
       "bigdata_entity_id": null,
-      "mode": "FAIL_CLOSED",
+      "mode": "RALLIES_XNAS_LONGBRIDGE_NASD",
       "rallies_exchange": "XNAS",
       "longbridge_exchange": null,
       "rallies_market_cap_usd": 39309889948,
-      "longbridge_market_cap_usd": null,
-      "relative_diff": null
+      "longbridge_market_cap_usd": 37960018831.53,
+      "relative_diff": 0.0343392240033142,
+      "state_cap": "WATCH",
+      "r92_eligible": false
     },
     "FFIV": {
       "status": "MC_PASS_PRIMARY",
@@ -1719,15 +1736,17 @@
       "listing": "XNAS:FIGR"
     },
     "FISV": {
-      "status": "MC_UNKNOWN",
+      "status": "MC_PASS_FALLBACK_WATCH",
       "primary_reason": "PRIMARY_IDENTITY_UNRESOLVED",
       "bigdata_entity_id": null,
-      "mode": "FAIL_CLOSED",
+      "mode": "RALLIES_XNAS_LONGBRIDGE_NASD",
       "rallies_exchange": "XNAS",
       "longbridge_exchange": null,
       "rallies_market_cap_usd": 24120938465,
-      "longbridge_market_cap_usd": null,
-      "relative_diff": null
+      "longbridge_market_cap_usd": 24144867967.01,
+      "relative_diff": 0.0009910802594859521,
+      "state_cap": "WATCH",
+      "r92_eligible": false
     },
     "FIVE": {
       "status": "MC_PASS_PRIMARY",
@@ -1779,15 +1798,17 @@
       "listing": "XNAS:FOXA"
     },
     "FROG": {
-      "status": "MC_UNKNOWN",
+      "status": "MC_PASS_FALLBACK_WATCH",
       "primary_reason": "PRIMARY_IDENTITY_UNRESOLVED",
       "bigdata_entity_id": null,
-      "mode": "FAIL_CLOSED",
+      "mode": "RALLIES_XNAS_LONGBRIDGE_NASD",
       "rallies_exchange": "XNAS",
       "longbridge_exchange": null,
       "rallies_market_cap_usd": 11142739475,
-      "longbridge_market_cap_usd": null,
-      "relative_diff": null
+      "longbridge_market_cap_usd": 11961460180.11,
+      "relative_diff": 0.06844655190771796,
+      "state_cap": "WATCH",
+      "r92_eligible": false
     },
     "FRPT": {
       "status": "MC_PASS_PRIMARY",
@@ -1797,15 +1818,17 @@
       "listing": "XNAS:FRPT"
     },
     "FRSH": {
-      "status": "MC_UNKNOWN",
+      "status": "MC_PASS_FALLBACK_WATCH",
       "primary_reason": "PRIMARY_IDENTITY_UNRESOLVED",
       "bigdata_entity_id": null,
-      "mode": "FAIL_CLOSED",
+      "mode": "RALLIES_XNAS_LONGBRIDGE_NASD",
       "rallies_exchange": "XNAS",
       "longbridge_exchange": null,
       "rallies_market_cap_usd": 3282383312,
-      "longbridge_market_cap_usd": null,
-      "relative_diff": null
+      "longbridge_market_cap_usd": 3454591021.28,
+      "relative_diff": 0.0498489425287146,
+      "state_cap": "WATCH",
+      "r92_eligible": false
     },
     "FSLR": {
       "status": "MC_PASS_PRIMARY",
@@ -1948,15 +1971,17 @@
       "listing": "XNAS:GRAL"
     },
     "GTLB": {
-      "status": "MC_UNKNOWN",
+      "status": "MC_PASS_FALLBACK_WATCH",
       "primary_reason": "PRIMARY_IDENTITY_UNRESOLVED",
       "bigdata_entity_id": null,
-      "mode": "FAIL_CLOSED",
+      "mode": "RALLIES_XNAS_LONGBRIDGE_NASD",
       "rallies_exchange": "XNAS",
       "longbridge_exchange": null,
       "rallies_market_cap_usd": 7782586650,
-      "longbridge_market_cap_usd": null,
-      "relative_diff": null
+      "longbridge_market_cap_usd": 8265026000,
+      "relative_diff": 0.05837118358732326,
+      "state_cap": "WATCH",
+      "r92_eligible": false
     },
     "GTX": {
       "status": "MC_PASS_PRIMARY",
@@ -1980,15 +2005,17 @@
       "listing": "XNAS:HAS"
     },
     "HBAN": {
-      "status": "MC_UNKNOWN",
+      "status": "MC_PASS_FALLBACK_WATCH",
       "primary_reason": "PRIMARY_IDENTITY_UNRESOLVED",
       "bigdata_entity_id": null,
-      "mode": "FAIL_CLOSED",
+      "mode": "RALLIES_XNAS_LONGBRIDGE_NASD",
       "rallies_exchange": "XNAS",
       "longbridge_exchange": null,
       "rallies_market_cap_usd": 30851734393,
-      "longbridge_market_cap_usd": null,
-      "relative_diff": null
+      "longbridge_market_cap_usd": 30437549353.69,
+      "relative_diff": 0.013425016371331672,
+      "state_cap": "WATCH",
+      "r92_eligible": false
     },
     "HLNE": {
       "status": "MC_PASS_PRIMARY",
@@ -2040,15 +2067,17 @@
       "listing": "XNAS:HTFL"
     },
     "HTHT": {
-      "status": "MC_UNKNOWN",
+      "status": "MC_PASS_FALLBACK_WATCH",
       "primary_reason": "PRIMARY_MC_HKD",
       "bigdata_entity_id": "AEE1AC",
-      "mode": "FAIL_CLOSED",
+      "mode": "RALLIES_XNAS_LONGBRIDGE_NASD",
       "rallies_exchange": "XNAS",
       "longbridge_exchange": null,
       "rallies_market_cap_usd": 13606614279,
-      "longbridge_market_cap_usd": null,
-      "relative_diff": null
+      "longbridge_market_cap_usd": 12929587392.06,
+      "relative_diff": 0.04975718963275835,
+      "state_cap": "WATCH",
+      "r92_eligible": false
     },
     "HUT": {
       "status": "MC_PASS_PRIMARY",
@@ -2114,15 +2143,17 @@
       "listing": "XNAS:INCY"
     },
     "INDV": {
-      "status": "MC_UNKNOWN",
+      "status": "MC_PASS_FALLBACK_WATCH",
       "primary_reason": "PRIMARY_IDENTITY_UNRESOLVED",
       "bigdata_entity_id": null,
-      "mode": "FAIL_CLOSED",
+      "mode": "RALLIES_XNAS_LONGBRIDGE_NASD",
       "rallies_exchange": "XNAS",
       "longbridge_exchange": null,
       "rallies_market_cap_usd": 4318788465,
-      "longbridge_market_cap_usd": null,
-      "relative_diff": null
+      "longbridge_market_cap_usd": 4193024948.97,
+      "relative_diff": 0.029120091675988165,
+      "state_cap": "WATCH",
+      "r92_eligible": false
     },
     "INOD": {
       "status": "MC_PASS_PRIMARY",
@@ -2167,15 +2198,17 @@
       "listing": "XNAS:IOVA"
     },
     "IREN": {
-      "status": "MC_UNKNOWN",
+      "status": "MC_PASS_FALLBACK_WATCH",
       "primary_reason": "PRIMARY_IDENTITY_UNRESOLVED",
       "bigdata_entity_id": null,
-      "mode": "FAIL_CLOSED",
+      "mode": "RALLIES_XNAS_LONGBRIDGE_NASD",
       "rallies_exchange": "XNAS",
       "longbridge_exchange": null,
       "rallies_market_cap_usd": 16306146854,
-      "longbridge_market_cap_usd": null,
-      "relative_diff": null
+      "longbridge_market_cap_usd": 15886710909.94,
+      "relative_diff": 0.025722566331304025,
+      "state_cap": "WATCH",
+      "r92_eligible": false
     },
     "IRTC": {
       "status": "MC_PASS_PRIMARY",
@@ -2206,15 +2239,17 @@
       "listing": "XNAS:JBHT"
     },
     "JD": {
-      "status": "MC_UNKNOWN",
+      "status": "MC_PASS_FALLBACK_WATCH",
       "primary_reason": "PRIMARY_MC_HKD",
       "bigdata_entity_id": "3188EC",
-      "mode": "FAIL_CLOSED",
+      "mode": "RALLIES_XNAS_LONGBRIDGE_NASD",
       "rallies_exchange": "XNAS",
       "longbridge_exchange": null,
       "rallies_market_cap_usd": 35518150000,
-      "longbridge_market_cap_usd": null,
-      "relative_diff": null
+      "longbridge_market_cap_usd": 35468160000,
+      "relative_diff": 0.0014074494307839795,
+      "state_cap": "WATCH",
+      "r92_eligible": false
     },
     "JKHY": {
       "status": "MC_PASS_PRIMARY",
@@ -2245,15 +2280,17 @@
       "listing": "XNAS:KLIC"
     },
     "KMB": {
-      "status": "MC_UNKNOWN",
+      "status": "MC_PASS_FALLBACK_WATCH",
       "primary_reason": "PRIMARY_IDENTITY_UNRESOLVED",
       "bigdata_entity_id": null,
-      "mode": "FAIL_CLOSED",
+      "mode": "RALLIES_XNAS_LONGBRIDGE_NASD",
       "rallies_exchange": "XNAS",
       "longbridge_exchange": null,
       "rallies_market_cap_usd": 32921998972,
-      "longbridge_market_cap_usd": null,
-      "relative_diff": null
+      "longbridge_market_cap_usd": 31728006967.3,
+      "relative_diff": 0.03626729973825359,
+      "state_cap": "WATCH",
+      "r92_eligible": false
     },
     "KRYS": {
       "status": "MC_PASS_PRIMARY",
@@ -2270,15 +2307,17 @@
       "listing": "XNAS:KTOS"
     },
     "KYMR": {
-      "status": "MC_UNKNOWN",
+      "status": "MC_PASS_FALLBACK_WATCH",
       "primary_reason": "PRIMARY_IDENTITY_UNRESOLVED",
       "bigdata_entity_id": null,
-      "mode": "FAIL_CLOSED",
+      "mode": "RALLIES_XNAS_LONGBRIDGE_NASD",
       "rallies_exchange": "XNAS",
       "longbridge_exchange": null,
       "rallies_market_cap_usd": 9188974795,
-      "longbridge_market_cap_usd": null,
-      "relative_diff": null
+      "longbridge_market_cap_usd": 9541533415.5,
+      "relative_diff": 0.036949891086403015,
+      "state_cap": "WATCH",
+      "r92_eligible": false
     },
     "LAMR": {
       "status": "MC_PASS_PRIMARY",
@@ -2295,15 +2334,17 @@
       "listing": "XNAS:LECO"
     },
     "LFST": {
-      "status": "MC_UNKNOWN",
+      "status": "MC_PASS_FALLBACK_WATCH",
       "primary_reason": "PRIMARY_IDENTITY_UNRESOLVED",
       "bigdata_entity_id": null,
-      "mode": "FAIL_CLOSED",
+      "mode": "RALLIES_XNAS_LONGBRIDGE_NASD",
       "rallies_exchange": "XNAS",
       "longbridge_exchange": null,
       "rallies_market_cap_usd": 4520032808,
-      "longbridge_market_cap_usd": null,
-      "relative_diff": null
+      "longbridge_market_cap_usd": 4547634349.3,
+      "relative_diff": 0.00606942845003552,
+      "state_cap": "WATCH",
+      "r92_eligible": false
     },
     "LFUS": {
       "status": "MC_PASS_PRIMARY",
@@ -2579,15 +2620,17 @@
       "listing": "XNAS:MRVL"
     },
     "MRX": {
-      "status": "MC_UNKNOWN",
+      "status": "MC_PASS_FALLBACK_WATCH",
       "primary_reason": "PRIMARY_IDENTITY_UNRESOLVED",
       "bigdata_entity_id": null,
-      "mode": "FAIL_CLOSED",
+      "mode": "RALLIES_XNAS_LONGBRIDGE_NASD",
       "rallies_exchange": "XNAS",
       "longbridge_exchange": null,
       "rallies_market_cap_usd": 5188373653,
-      "longbridge_market_cap_usd": null,
-      "relative_diff": null
+      "longbridge_market_cap_usd": 5170002611.76,
+      "relative_diff": 0.00354080921472904,
+      "state_cap": "WATCH",
+      "r92_eligible": false
     },
     "MSFT": {
       "status": "MC_PASS_PRIMARY",
@@ -2625,15 +2668,17 @@
       "listing": "XNAS:MU"
     },
     "MXL": {
-      "status": "MC_UNKNOWN",
+      "status": "MC_PASS_FALLBACK_WATCH",
       "primary_reason": "PRIMARY_IDENTITY_UNRESOLVED",
       "bigdata_entity_id": null,
-      "mode": "FAIL_CLOSED",
+      "mode": "RALLIES_XNAS_LONGBRIDGE_NASD",
       "rallies_exchange": "XNAS",
       "longbridge_exchange": null,
       "rallies_market_cap_usd": 8409072670,
-      "longbridge_market_cap_usd": null,
-      "relative_diff": null
+      "longbridge_market_cap_usd": 8316565614.7,
+      "relative_diff": 0.011000862869222914,
+      "state_cap": "WATCH",
+      "r92_eligible": false
     },
     "MYRG": {
       "status": "MC_PASS_PRIMARY",
@@ -2706,15 +2751,17 @@
       "listing": "XNAS:NTAP"
     },
     "NTES": {
-      "status": "MC_UNKNOWN",
+      "status": "MC_PASS_FALLBACK_WATCH",
       "primary_reason": "PRIMARY_MC_HKD",
       "bigdata_entity_id": "800F03",
-      "mode": "FAIL_CLOSED",
+      "mode": "RALLIES_XNAS_LONGBRIDGE_NASD",
       "rallies_exchange": "XNAS",
       "longbridge_exchange": null,
       "rallies_market_cap_usd": 78005052983,
-      "longbridge_market_cap_usd": null,
-      "relative_diff": null
+      "longbridge_market_cap_usd": 76597996415.48,
+      "relative_diff": 0.01803801822718652,
+      "state_cap": "WATCH",
+      "r92_eligible": false
     },
     "NTNX": {
       "status": "MC_PASS_PRIMARY",
@@ -2787,15 +2834,17 @@
       "listing": "XNAS:NXPI"
     },
     "NXST": {
-      "status": "MC_UNKNOWN",
+      "status": "MC_PASS_FALLBACK_WATCH",
       "primary_reason": "PRIMARY_IDENTITY_UNRESOLVED",
       "bigdata_entity_id": null,
-      "mode": "FAIL_CLOSED",
+      "mode": "RALLIES_XNAS_LONGBRIDGE_NASD",
       "rallies_exchange": "XNAS",
       "longbridge_exchange": null,
       "rallies_market_cap_usd": 4974924445,
-      "longbridge_market_cap_usd": null,
-      "relative_diff": null
+      "longbridge_market_cap_usd": 4864476686.4,
+      "relative_diff": 0.022200891655953656,
+      "state_cap": "WATCH",
+      "r92_eligible": false
     },
     "NXT": {
       "status": "MC_PASS_PRIMARY",
@@ -2847,15 +2896,17 @@
       "listing": "XNAS:ONB"
     },
     "ONC": {
-      "status": "MC_UNKNOWN",
+      "status": "MC_PASS_FALLBACK_WATCH",
       "primary_reason": "PRIMARY_MC_CNY",
       "bigdata_entity_id": "DEAFC5",
-      "mode": "FAIL_CLOSED",
+      "mode": "RALLIES_XNAS_LONGBRIDGE_NASD",
       "rallies_exchange": "XNAS",
       "longbridge_exchange": null,
       "rallies_market_cap_usd": 41320131748,
-      "longbridge_market_cap_usd": null,
-      "relative_diff": null
+      "longbridge_market_cap_usd": 40913575694.04,
+      "relative_diff": 0.00983917612943423,
+      "state_cap": "WATCH",
+      "r92_eligible": false
     },
     "ORKA": {
       "status": "MC_PASS_PRIMARY",
@@ -3124,15 +3175,17 @@
       "listing": "XNAS:RGLD"
     },
     "RGTI": {
-      "status": "MC_UNKNOWN",
+      "status": "MC_PASS_FALLBACK_WATCH",
       "primary_reason": "PRIMARY_IDENTITY_UNRESOLVED",
       "bigdata_entity_id": null,
-      "mode": "FAIL_CLOSED",
+      "mode": "RALLIES_XNAS_LONGBRIDGE_NASD",
       "rallies_exchange": "XNAS",
       "longbridge_exchange": null,
       "rallies_market_cap_usd": 5253520078,
-      "longbridge_market_cap_usd": null,
-      "relative_diff": null
+      "longbridge_market_cap_usd": 5248513546.58,
+      "relative_diff": 0.0009529860637567123,
+      "state_cap": "WATCH",
+      "r92_eligible": false
     },
     "RIOT": {
       "status": "MC_PASS_PRIMARY",
@@ -3226,15 +3279,17 @@
       "listing": "XNAS:RVMD"
     },
     "RYAAY": {
-      "status": "MC_UNKNOWN",
+      "status": "MC_PASS_FALLBACK_WATCH",
       "primary_reason": "PRIMARY_MC_EUR",
       "bigdata_entity_id": "EB5D45",
-      "mode": "FAIL_CLOSED",
+      "mode": "RALLIES_XNAS_LONGBRIDGE_NASD",
       "rallies_exchange": "XNAS",
       "longbridge_exchange": null,
       "rallies_market_cap_usd": 28750182761,
-      "longbridge_market_cap_usd": null,
-      "relative_diff": null
+      "longbridge_market_cap_usd": 28113925047.7,
+      "relative_diff": 0.02213056238943605,
+      "state_cap": "WATCH",
+      "r92_eligible": false
     },
     "RYTM": {
       "status": "MC_PASS_PRIMARY",
@@ -3314,15 +3369,17 @@
       "listing": "XNAS:SFM"
     },
     "SHOP": {
-      "status": "MC_UNKNOWN",
+      "status": "MC_PASS_FALLBACK_WATCH",
       "primary_reason": "PRIMARY_IDENTITY_UNRESOLVED",
       "bigdata_entity_id": null,
-      "mode": "FAIL_CLOSED",
+      "mode": "RALLIES_XNAS_LONGBRIDGE_NASD",
       "rallies_exchange": "XNAS",
       "longbridge_exchange": null,
       "rallies_market_cap_usd": 190757829210,
-      "longbridge_market_cap_usd": null,
-      "relative_diff": null
+      "longbridge_market_cap_usd": 192288935637.4,
+      "relative_diff": 0.007962530045343886,
+      "state_cap": "WATCH",
+      "r92_eligible": false
     },
     "SIMO": {
       "status": "MC_PASS_PRIMARY",
@@ -3402,15 +3459,17 @@
       "listing": "XNAS:SNY"
     },
     "SOFI": {
-      "status": "MC_UNKNOWN",
+      "status": "MC_PASS_FALLBACK_WATCH",
       "primary_reason": "PRIMARY_IDENTITY_UNRESOLVED",
       "bigdata_entity_id": null,
-      "mode": "FAIL_CLOSED",
+      "mode": "RALLIES_XNAS_LONGBRIDGE_NASD",
       "rallies_exchange": "XNAS",
       "longbridge_exchange": null,
       "rallies_market_cap_usd": 20548883855,
-      "longbridge_market_cap_usd": null,
-      "relative_diff": null
+      "longbridge_market_cap_usd": 20361606157.86,
+      "relative_diff": 0.009113764935433736,
+      "state_cap": "WATCH",
+      "r92_eligible": false
     },
     "SRRK": {
       "status": "MC_PASS_PRIMARY",
@@ -3518,15 +3577,17 @@
       "listing": "XNAS:TECH"
     },
     "TEM": {
-      "status": "MC_UNKNOWN",
+      "status": "MC_PASS_FALLBACK_WATCH",
       "primary_reason": "PRIMARY_IDENTITY_UNRESOLVED",
       "bigdata_entity_id": null,
-      "mode": "FAIL_CLOSED",
+      "mode": "RALLIES_XNAS_LONGBRIDGE_NASD",
       "rallies_exchange": "XNAS",
       "longbridge_exchange": null,
       "rallies_market_cap_usd": 14992907280,
-      "longbridge_market_cap_usd": null,
-      "relative_diff": null
+      "longbridge_market_cap_usd": 13699821175.67,
+      "relative_diff": 0.08624652178399918,
+      "state_cap": "WATCH",
+      "r92_eligible": false
     },
     "TENB": {
       "status": "MC_PASS_PRIMARY",
@@ -3536,15 +3597,17 @@
       "listing": "XNAS:TENB"
     },
     "TER": {
-      "status": "MC_UNKNOWN",
+      "status": "MC_PASS_FALLBACK_WATCH",
       "primary_reason": "PRIMARY_IDENTITY_UNRESOLVED",
       "bigdata_entity_id": null,
-      "mode": "FAIL_CLOSED",
+      "mode": "RALLIES_XNAS_LONGBRIDGE_NASD",
       "rallies_exchange": "XNAS",
       "longbridge_exchange": null,
       "rallies_market_cap_usd": 63008449065,
-      "longbridge_market_cap_usd": null,
-      "relative_diff": null
+      "longbridge_market_cap_usd": 64693802350,
+      "relative_diff": 0.026051232479458675,
+      "state_cap": "WATCH",
+      "r92_eligible": false
     },
     "TGTX": {
       "status": "MC_PASS_PRIMARY",
@@ -3594,21 +3657,23 @@
       "bigdata_entity_id": null,
       "mode": "FAIL_CLOSED",
       "rallies_exchange": "XNAS",
-      "longbridge_exchange": null,
+      "longbridge_exchange": "NASD",
       "rallies_market_cap_usd": 7252103414,
-      "longbridge_market_cap_usd": null,
-      "relative_diff": null
+      "longbridge_market_cap_usd": 17322382799.37,
+      "relative_diff": 0.5813449282356378
     },
     "TRI": {
-      "status": "MC_UNKNOWN",
+      "status": "MC_PASS_FALLBACK_WATCH",
       "primary_reason": "PRIMARY_IDENTITY_UNRESOLVED",
       "bigdata_entity_id": null,
-      "mode": "FAIL_CLOSED",
+      "mode": "RALLIES_XNAS_LONGBRIDGE_NASD",
       "rallies_exchange": "XNAS",
       "longbridge_exchange": null,
       "rallies_market_cap_usd": 41696113004,
-      "longbridge_market_cap_usd": null,
-      "relative_diff": null
+      "longbridge_market_cap_usd": 43383109240.92,
+      "relative_diff": 0.03888601500532338,
+      "state_cap": "WATCH",
+      "r92_eligible": false
     },
     "TRMB": {
       "status": "MC_PASS_PRIMARY",
@@ -3842,15 +3907,17 @@
       "listing": "XNAS:VNOM"
     },
     "VOD": {
-      "status": "MC_UNKNOWN",
+      "status": "MC_PASS_FALLBACK_WATCH",
       "primary_reason": "PRIMARY_MC_GBp",
       "bigdata_entity_id": "394E6A",
-      "mode": "FAIL_CLOSED",
+      "mode": "RALLIES_XNAS_LONGBRIDGE_NASD",
       "rallies_exchange": "XNAS",
       "longbridge_exchange": null,
       "rallies_market_cap_usd": 37792455558,
-      "longbridge_market_cap_usd": null,
-      "relative_diff": null
+      "longbridge_market_cap_usd": 37541424781.71,
+      "relative_diff": 0.0066423515641830825,
+      "state_cap": "WATCH",
+      "r92_eligible": false
     },
     "VRNS": {
       "status": "MC_PASS_PRIMARY",
@@ -3930,15 +3997,17 @@
       "listing": "XNAS:WFRD"
     },
     "WGS": {
-      "status": "MC_UNKNOWN",
+      "status": "MC_PASS_FALLBACK_WATCH",
       "primary_reason": "PRIMARY_IDENTITY_UNRESOLVED",
       "bigdata_entity_id": null,
-      "mode": "FAIL_CLOSED",
+      "mode": "RALLIES_XNAS_LONGBRIDGE_NASD",
       "rallies_exchange": "XNAS",
       "longbridge_exchange": null,
       "rallies_market_cap_usd": 2260250382,
-      "longbridge_market_cap_usd": null,
-      "relative_diff": null
+      "longbridge_market_cap_usd": 2163923574.96,
+      "relative_diff": 0.04261775943369798,
+      "state_cap": "WATCH",
+      "r92_eligible": false
     },
     "WING": {
       "status": "MC_PASS_PRIMARY",
