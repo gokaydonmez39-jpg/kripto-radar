@@ -16,12 +16,15 @@ import pandas as pd
 ROOT=Path(__file__).resolve().parent
 DEEP=Path(os.getenv("XRAY_FINAL_DEEP_STATE", str(ROOT/"deep_pre_r1_shadow.json")))
 OUT=Path(os.getenv("XRAY_FINAL_OUT", str(ROOT/"final_tech_shadow.json")))
+FAMILY_C_ENV=os.getenv("XRAY_FINAL_FAMILY_C_STATE")
+FAMILY_C=Path(FAMILY_C_ENV) if FAMILY_C_ENV else None
 TASK_ID="6a825366222081918997094d76e6ae46"
 WORKERS=int(os.getenv("XRAY_FINAL_WORKERS","6"))
 
 THRESH={
  "A":{"basic":1.5,"severe":1.1},
  "B":{"basic":2.0,"severe":1.5},
+ "C":{"basic":2.0,"severe":1.5},
  "D":{"basic":2.0,"severe":1.5},
 }
 
@@ -158,6 +161,18 @@ def main():
         if r.get("A",{}).get("pool"): candidates.append((sym,"A",r["A"],r.get("event_status")))
         if r.get("B",{}).get("breakout_confirmed"): candidates.append((sym,"B",r["B"],r.get("event_status")))
         if r.get("D",{}).get("dk3_pre_r1"): candidates.append((sym,"D",r["D"],r.get("event_status")))
+    family_c_count=0
+    if FAMILY_C is not None and FAMILY_C.exists():
+        fc=json.loads(FAMILY_C.read_text())
+        if fc.get("task_id")!=TASK_ID or fc.get("asof_et")!=asof:
+            raise RuntimeError("FAMILY_C_ASOF_OR_TASK_MISMATCH")
+        if fc.get("execution")!="NONE" or fc.get("real_money")!="NO-GO":
+            raise RuntimeError("FAMILY_C_SAFETY_MISMATCH")
+        for sym,g in sorted((fc.get("confirmed") or {}).items()):
+            if not g.get("confirmed"):
+                continue
+            candidates.append((sym,"C",g,g.get("event_status","CLEAN_DISCOVERY")))
+            family_c_count+=1
     syms=sorted(set(x[0] for x in candidates))
     data={};errors={}
     with ThreadPoolExecutor(max_workers=WORKERS) as ex:
@@ -182,6 +197,7 @@ def main():
       "schema":"XRAY_FINAL_TECH_SHADOW_V1","task_id":TASK_ID,"asof_et":asof,
       "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
       "input_confirmed_family_candidates":len(candidates),
+      "family_c_confirmed_input_count":family_c_count,
       "pre_g9_tech_pass_count":len(passes),"pre_g9_tech_pass":passes,
       "watch_count":len(watches),"watch":watches,
       "fail_count":len(fails),"fail":fails,
