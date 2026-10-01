@@ -122,8 +122,9 @@ def main():
     src=json.loads(INPUT.read_text())
     asof=ASOF_ENV or src.get("asof_et")
     assert src["task_id"]==TASK_ID and src["asof_et"]==asof
-    assert src.get("schema") in {"XRAY_CANONICAL_MC_INPUT_20260930_V1","XRAY_CANONICAL_MC_INPUT_V2"}
-    syms=src["current_core_symbols"];assert len(syms)==len(set(syms))
+    assert src.get("schema") in {"XRAY_CANONICAL_MC_INPUT_20260930_V1","XRAY_CANONICAL_MC_INPUT_V2","XRAY_MC_EPOCH_RESULT_V1"}
+    syms=src.get("current_core_symbols") or src.get("primary_pass_symbols") or []
+    assert len(syms)==len(set(syms)) and len(syms)>0
     results={};unknown=[]
     with ThreadPoolExecutor(max_workers=WORKERS) as ex:
         futs={ex.submit(eval_one,s,asof):s for s in syms}
@@ -137,12 +138,14 @@ def main():
     obj={
       "schema":"XRAY_CANONICAL_HISTORY_V1","task_id":TASK_ID,"asof_et":asof,
       "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
-      "source_mc_artifact":src["source_mc_artifact"],"source_mc_blob_sha":src["source_mc_blob_sha"],
+      "source_mc_artifact":src.get("artifact_path") or src.get("source_mc_artifact") or "TASKSTATE_BRIDGE",
+      "source_mc_blob_sha":src.get("artifact_blob_sha") or src.get("source_mc_blob_sha"),
       "input_count":len(syms),"thresholds":{"daily":HARD_DAILY,"weekly_completed":HARD_WEEKLY},
       "counts":dict(sorted(counts.items())),"unknown_count":len(unknown),"unknown_symbols":sorted(unknown),
       "pass_count":len(passes),"pass_symbols":passes,
       "pass_hash":hashlib.sha256("\n".join(passes).encode()).hexdigest(),
-      "state_caps":src.get("state_caps") or {},"r92_ineligible":src.get("r92_ineligible") or [],
+      "state_caps":src.get("state_caps") or {s:"NORMAL" for s in syms},
+      "r92_ineligible":src.get("r92_ineligible") or src.get("fallback_watch_symbols") or [],
       "results":dict(sorted(results.items()))
     }
     OUT.write_text(json.dumps(obj,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
