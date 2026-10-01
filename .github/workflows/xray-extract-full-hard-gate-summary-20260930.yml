@@ -40,7 +40,7 @@ jobs:
             "asof_et":j.get("asof_et"),
             "execution":j.get("execution"),
             "real_money":j.get("real_money"),
-            "source_state_blob_expected":"1eaed2f3267acc5d526fc19cac7e79030dc3045a",
+            "source_state_blob_expected":"3a087c1efbf20c0ed53d650e857a8a83ea232664",
             "official_footer":j.get("official_footer"),
             "queue_total":j.get("queue_total"),
             "queue_unique":len(set(queue)),
