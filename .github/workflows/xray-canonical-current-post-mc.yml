@@ -41,10 +41,11 @@ jobs:
           import glob,hashlib,json,pathlib
           price_path=pathlib.Path("nasdaq-xray/canonical_current_price_dv20.json")
           master_path=pathlib.Path("nasdaq-xray/canonical_current_master_manifest.json")
-          if not price_path.exists() or not master_path.exists():
+          pointer_path=pathlib.Path("nasdaq-xray/chatgpt_canonical_state_v2.json")
+          if not price_path.exists() or not master_path.exists() or not pointer_path.exists():
               print("ready=false")
               raise SystemExit
-          p=json.load(open(price_path)); m=json.load(open(master_path))
+          p=json.load(open(price_path)); m=json.load(open(master_path)); ptr=json.load(open(pointer_path))
           if p.get("schema")!="XRAY_CANONICAL_PRICE_DV20_V1" or m.get("schema")!="XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1":
               print("ready=false"); raise SystemExit
           if p.get("asof_et")!=m.get("asof_et") or p.get("source_master_queue_hash")!=m.get("queue_hash") or p.get("source_master_count")!=m.get("queue_total"):
@@ -52,6 +53,8 @@ jobs:
           b=price_path.read_bytes()
           price_blob=hashlib.sha1(f"blob {len(b)}\0".encode()+b).hexdigest()
           expected_asof=p["asof_et"]; expected_hash=p["pass_hash"]; expected_count=p["pass_count"]
+          pointer_asof=str((ptr.get("state_json") or {}).get("asof_et") or "")
+          settlement_required=bool(pointer_asof and expected_asof>pointer_asof)
           expected_path="nasdaq-xray/canonical_current_price_dv20.json"
           valid=[]
           for fp in glob.glob("nasdaq-xray/canonical_mc_bridge_*.json"):
@@ -69,7 +72,33 @@ jobs:
                     and int(j.get("input_count",-1))==int(expected_count)
                     and (j.get("counts") or {}).get("TOTAL")==expected_count
                     and set((j.get("results") or {}).keys())==set(p.get("pass_symbols") or [])
+                    and (
+                      (not settlement_required and j.get("settlement_witness_status") in (None,"NOT_REQUIRED_POINTER_ASOF"))
+                      or (
+                        settlement_required
+                        and j.get("settlement_witness_status")=="PASS"
+                        and bool(j.get("settlement_witness_path"))
+                        and bool(j.get("settlement_witness_blob_sha"))
+                      )
+                    )
                   )
+                  if ok and settlement_required:
+                      sw=pathlib.Path(j["settlement_witness_path"])
+                      if not sw.exists():
+                          ok=False
+                      else:
+                          sb=sw.read_bytes()
+                          ssha=hashlib.sha1(f"blob {len(sb)}\0".encode()+sb).hexdigest()
+                          try: sj=json.loads(sb)
+                          except Exception: sj={}
+                          ok=(
+                            ssha==j["settlement_witness_blob_sha"]
+                            and sj.get("schema")=="XRAY_RESOLVER_EPOCH_RESULT_V1"
+                            and sj.get("status")=="COMMITTED"
+                            and sj.get("asof_et")==expected_asof
+                            and sj.get("queue_hash")==m.get("queue_hash")
+                            and sj.get("settlement_status")=="PASS"
+                          )
                   if ok: valid.append(fp)
               except Exception:
                   pass
