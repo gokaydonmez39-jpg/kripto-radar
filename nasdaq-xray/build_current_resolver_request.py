@@ -19,6 +19,22 @@ def blob_sha(p:Path)->str:
 def hash_lines(xs):
     return hashlib.sha256("\n".join(xs).encode()).hexdigest()
 
+def prior_core_symbol(pointer_asof):
+    candidates=[]
+    cur=ROOT/"canonical_current_terminal.json"
+    static=ROOT/f"canonical_terminal_{str(pointer_asof).replace('-','')}.json"
+    for q in [cur,static]:
+        if not q.exists(): continue
+        try:
+            x=json.loads(q.read_text())
+            if x.get("task_id")!=TASK or x.get("asof_et")!=pointer_asof: continue
+            lp=sorted(((x.get("sets") or {}).get("legal_pass") or []))
+            if "MSFT" in lp: return "MSFT",str(q.relative_to(ROOT.parent)).replace("\\","/"),blob_sha(q)
+            if lp: return lp[0],str(q.relative_to(ROOT.parent)).replace("\\","/"),blob_sha(q)
+        except Exception:
+            pass
+    return None,None,None
+
 def main():
     s=json.loads(STATE.read_text())
     u=json.loads(UNKNOWNS.read_text())
@@ -55,6 +71,9 @@ def main():
     union=sorted(set(master_symbols)|set(price_symbols))
     pointer_asof=str(ps.get("asof_et") or "")
     settlement_required=bool(pointer_asof and asof>pointer_asof)
+    settlement_core_symbol,settlement_core_source_path,settlement_core_source_blob_sha=prior_core_symbol(pointer_asof)
+    if settlement_required:
+        assert settlement_core_symbol, "SETTLEMENT_PRIOR_CURRENT_CORE_UNAVAILABLE"
     bridge=ROOT/f"canonical_resolver_bridge_{asof.replace('-','')}.json"
     settlement_already_proven=False
     settlement_bridge_blob_sha=None
@@ -85,7 +104,11 @@ def main():
       "settlement_required":settlement_required,
       "settlement_already_proven":settlement_already_proven,
       "settlement_bridge_blob_sha":settlement_bridge_blob_sha,
-      "settlement_policy":"RALLIES_VS_LONGBRIDGE_CORE_OHLC_PLUS_VOLUME_REL_DIFF_LE_0_001__FAIL_CLOSED",
+      "settlement_policy":"RALLIES_VS_LONGBRIDGE_AAPL_NVDA_PLUS_ONE_PRIOR_CURRENT_CORE__PRINTED_TICK_OHLC__VOLUME_REL_DIFF_LE_0_001__FAIL_CLOSED",
+      "settlement_symbols":["AAPL","NVDA",settlement_core_symbol] if settlement_required else [],
+      "settlement_core_symbol":settlement_core_symbol,
+      "settlement_core_source_path":settlement_core_source_path,
+      "settlement_core_source_blob_sha":settlement_core_source_blob_sha,
       "official_footer":s.get("official_footer"),
       "expected20":p.get("expected20") or s.get("expected20") or [],
       "master_unknown_count":len(master_symbols),"master_unknown_symbols":master_symbols,
