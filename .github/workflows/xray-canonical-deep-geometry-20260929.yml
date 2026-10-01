@@ -1,0 +1,66 @@
+name: XRAY Canonical Deep Geometry 20260929
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/xray-canonical-deep-geometry-20260929.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: xray-canonical-deep-geometry-20260929
+  cancel-in-progress: false
+
+jobs:
+  deep:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      XRAY_STAGE1_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_stage1_20260929.json
+      XRAY_DEEP_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_deep_geometry_20260929.json
+      XRAY_DEEP_GEOMETRY_ONLY: "1"
+      XRAY_DEEP_WORKERS: "8"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile
+        run: python -m py_compile nasdaq-xray/deep_pre_r1_shadow.py
+      - name: Install zero-dollar runtime
+        run: python -m pip install --disable-pip-version-check akshare==1.18.95 pandas
+      - name: Run frozen deep geometry
+        run: python nasdaq-xray/deep_pre_r1_shadow.py
+      - name: Validate
+        run: |
+          python - <<'PY'
+          import json
+          p="nasdaq-xray/canonical_deep_geometry_20260929.json"
+          j=json.load(open(p))
+          assert j["schema"]=="XRAY_DEEP_GEOMETRY_V1"
+          assert j["task_id"]=="6a825366222081918997094d76e6ae46"
+          assert j["asof_et"]=="2026-09-29"
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          assert j["input_weekly_pass_count"]==96
+          assert len(j["results"])==96
+          assert j["unknown_history_count"]==0, j["unknown_history"]
+          print({k:j[k] for k in ["a_geometry_count","b_breakout_count","b_armed_count","d_geometry_rs_count","unknown_history_count"]})
+          PY
+      - name: Commit frozen deep geometry
+        shell: bash
+        run: |
+          set -e
+          git config user.name "xray-dataplane-bot"
+          git config user.email "xray-dataplane-bot@users.noreply.github.com"
+          git add nasdaq-xray/canonical_deep_geometry_20260929.json
+          git commit -m "chore(xray): canonical deep geometry 2026-09-29 [skip ci]" || exit 0
+          for attempt in 1 2 3 4 5; do
+            if git pull --rebase origin main && git push; then exit 0; fi
+            sleep $((attempt*2))
+          done
+          exit 1
