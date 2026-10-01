@@ -9,22 +9,23 @@ MASTER=Path(os.getenv("XRAY_LEGAL_MASTER", str(ROOT/"canonical_full_hard_gate_20
 PROOF=Path(os.getenv("XRAY_LEGAL_PROOF", str(ROOT/"canonical_legal_proof_20260930.json")))
 OUT=Path(os.getenv("XRAY_LEGAL_OUT", str(ROOT/"canonical_legal_20260930.json")))
 TASK_ID="6a825366222081918997094d76e6ae46"
-ASOF="2026-09-30"
+ASOF_ENV=os.getenv("XRAY_ASOF")
 SUSPECT=re.compile(r"\bacquisition\b|\bspac\b|\bblank check\b",re.I)
 
 def main():
     h=json.loads(HISTORY.read_text());m=json.loads(MASTER.read_text())
-    assert h["schema"] in {"XRAY_CANONICAL_HISTORY_V1","XRAY_CANONICAL_HISTORY_V2"} and h["task_id"]==TASK_ID and h["asof_et"]==ASOF
+    asof=ASOF_ENV or h.get("asof_et")
+    assert h["schema"] in {"XRAY_CANONICAL_HISTORY_V1","XRAY_CANONICAL_HISTORY_V2"} and h["task_id"]==TASK_ID and h["asof_et"]==asof
     if h["schema"]=="XRAY_CANONICAL_HISTORY_V2":
         assert h["input_count"]==456 and h["pass_count"]==442 and h["unknown_count"]==0
         assert h["c4_14_scope"]["mode"]=="MC_PRIMARY_PASS_ONLY"
         assert h["r92_ineligible"]==[] and set(h["state_caps"].values())=={"NORMAL"}
-    assert m["task_id"]==TASK_ID and m["asof_et"]==ASOF
+    assert m["task_id"]==TASK_ID and m["asof_et"]==asof
     proof={}
     if PROOF.exists():
         try:
             x=json.loads(PROOF.read_text())
-            if x.get("schema")=="XRAY_CANONICAL_LEGAL_PROOF_V1" and x.get("task_id")==TASK_ID and x.get("asof_et")==ASOF:
+            if x.get("schema")=="XRAY_CANONICAL_LEGAL_PROOF_V1" and x.get("task_id")==TASK_ID and x.get("asof_et")==asof:
                 proof=x.get("proofs") or {}
         except Exception:pass
     results={};unknown=[];blocked=[];passed=[]
@@ -48,7 +49,7 @@ def main():
         results[s]={"status":"PASS_LEGAL","reason":"NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER","security_name":name}
         passed.append(s)
     obj={
-      "schema":"XRAY_CANONICAL_LEGAL_V1","task_id":TASK_ID,"asof_et":ASOF,
+      "schema":"XRAY_CANONICAL_LEGAL_V1","task_id":TASK_ID,"asof_et":asof,
       "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
       "source_history_schema":h.get("schema"),"source_history_pass_hash":h.get("pass_hash"),"input_count":len(h["pass_symbols"]),
       "counts":{"PASS_LEGAL":len(passed),"BLOCK_LEGAL_SHELL":len(blocked),"UNKNOWN_LEGAL":len(unknown)},

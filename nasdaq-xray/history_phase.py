@@ -11,7 +11,7 @@ ROOT=Path(__file__).resolve().parent
 INPUT=Path(os.getenv("XRAY_HISTORY_INPUT", str(ROOT/"canonical_mc_input_20260930.json")))
 OUT=Path(os.getenv("XRAY_HISTORY_OUT", str(ROOT/"canonical_history_20260930.json")))
 TASK_ID="6a825366222081918997094d76e6ae46"
-ASOF="2026-09-30"
+ASOF_ENV=os.getenv("XRAY_ASOF")
 HARD_DAILY=260
 HARD_WEEKLY=52
 WORKERS=int(os.getenv("XRAY_HISTORY_WORKERS","10"))
@@ -49,7 +49,7 @@ def classify(by,asof,source):
     if daily>=HARD_DAILY and weekly>=HARD_WEEKLY:return "PASS_HISTORY",info
     return "POTENTIAL_FAIL_HISTORY",info
 
-def sina(sym):
+def sina(sym,asof):
     try:
         df=ak.stock_us_daily(symbol=sym,adjust="")
         by={}
@@ -59,13 +59,13 @@ def sina(sym):
                     d=r.get("date");day=d.date().isoformat() if hasattr(d,"date") else str(d)[:10]
                     c=float(r.get("close"));v=float(r.get("volume"))
                 except Exception:continue
-                if day<=ASOF and c>0 and v>=0 and math.isfinite(c) and math.isfinite(v):by[day]=(c,v)
+                if day<=asof and c>0 and v>=0 and math.isfinite(c) and math.isfinite(v):by[day]=(c,v)
         return by,{"usable":len(by)}
     except Exception as e:return {},{"error":f"{type(e).__name__}:{str(e)[:160]}"}
 
-def nasdaq(sym):
+def nasdaq(sym,asof):
     try:
-        end=datetime.fromisoformat(ASOF).date();start=end-timedelta(days=1100)
+        end=datetime.fromisoformat(asof).date();start=end-timedelta(days=1100)
         o=req_json(f"https://api.nasdaq.com/api/quote/{urllib.parse.quote(sym)}/historical",
           {"assetclass":"stocks","fromdate":start.strftime("%m/%d/%Y"),"todate":end.strftime("%m/%d/%Y"),"limit":"5000"},40)
         rows=(((o.get("data") or {}).get("tradesTable") or {}).get("rows") or []);by={}
@@ -80,9 +80,9 @@ def nasdaq(sym):
         return by,{"rows":len(rows),"usable":len(by)}
     except Exception as e:return {},{"error":f"{type(e).__name__}:{str(e)[:160]}"}
 
-def yahoo(sym):
+def yahoo(sym,asof):
     try:
-        end=datetime.fromisoformat(ASOF).replace(tzinfo=NY)+timedelta(days=1);start=end-timedelta(days=1100)
+        end=datetime.fromisoformat(asof).replace(tzinfo=NY)+timedelta(days=1);start=end-timedelta(days=1100)
         ticker=sym.replace(".","-")
         o=req_json(f"https://query1.finance.yahoo.com/v8/finance/chart/{urllib.parse.quote(ticker)}",
           {"period1":int(start.timestamp()),"period2":int(end.timestamp()),"interval":"1d","events":"history","includeAdjustedClose":"false"},25)
@@ -93,16 +93,16 @@ def yahoo(sym):
             c=num(c);v=num(v)
             if c is None or c<=0 or v is None or v<0:continue
             day=datetime.fromtimestamp(int(t),timezone.utc).astimezone(NY).date().isoformat()
-            if day<=ASOF:by[day]=(c,v)
+            if day<=asof:by[day]=(c,v)
         return by,{"usable":len(by),"exchangeName":(r.get("meta") or {}).get("exchangeName")}
     except Exception as e:return {},{"error":f"{type(e).__name__}:{str(e)[:160]}"}
 
-def eval_one(sym):
-    sb,sm=sina(sym);ss,si=classify(sb,ASOF,"SINA_US_DAILY")
+def eval_one(sym,asof):
+    sb,sm=sina(sym,asof);ss,si=classify(sb,asof,"SINA_US_DAILY")
     if ss=="PASS_HISTORY":return sym,ss,si,{"sina":sm}
-    nb,nm=nasdaq(sym);ns,ni=classify(nb,ASOF,"NASDAQ_OFFICIAL_HISTORICAL_API")
+    nb,nm=nasdaq(sym,asof);ns,ni=classify(nb,asof,"NASDAQ_OFFICIAL_HISTORICAL_API")
     if ns=="PASS_HISTORY":return sym,ns,ni,{"sina":sm,"nasdaq":nm}
-    yb,ym=yahoo(sym);ys,yi=classify(yb,ASOF,"YAHOO_CHART_FREE")
+    yb,ym=yahoo(sym,asof);ys,yi=classify(yb,asof,"YAHOO_CHART_FREE")
     if ys=="PASS_HISTORY":return sym,ys,yi,{"sina":sm,"nasdaq":nm,"yahoo":ym}
     # Terminal FAIL requires at least two independent providers to agree below either threshold.
     fails=[x for x in [si if ss=="POTENTIAL_FAIL_HISTORY" else None,ni if ns=="POTENTIAL_FAIL_HISTORY" else None,yi if ys=="POTENTIAL_FAIL_HISTORY" else None] if x]
@@ -120,12 +120,13 @@ def eval_one(sym):
 
 def main():
     src=json.loads(INPUT.read_text())
-    assert src["schema"]=="XRAY_CANONICAL_MC_INPUT_20260930_V1"
-    assert src["task_id"]==TASK_ID and src["asof_et"]==ASOF
+    asof=ASOF_ENV or src.get("asof_et")
+    assert src["task_id"]==TASK_ID and src["asof_et"]==asof
+    assert src.get("schema") in {"XRAY_CANONICAL_MC_INPUT_20260930_V1","XRAY_CANONICAL_MC_INPUT_V2"}
     syms=src["current_core_symbols"];assert len(syms)==len(set(syms))
     results={};unknown=[]
     with ThreadPoolExecutor(max_workers=WORKERS) as ex:
-        futs={ex.submit(eval_one,s):s for s in syms}
+        futs={ex.submit(eval_one,s,asof):s for s in syms}
         for fut in as_completed(futs):
             s,st,info,meta=fut.result();results[s]={"status":st,"info":info,"provider_meta":meta}
             if st=="UNKNOWN_HISTORY":unknown.append(s)
@@ -134,7 +135,7 @@ def main():
     passes=sorted(s for s,r in results.items() if r["status"]=="PASS_HISTORY")
     import hashlib
     obj={
-      "schema":"XRAY_CANONICAL_HISTORY_V1","task_id":TASK_ID,"asof_et":ASOF,
+      "schema":"XRAY_CANONICAL_HISTORY_V1","task_id":TASK_ID,"asof_et":asof,
       "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
       "source_mc_artifact":src["source_mc_artifact"],"source_mc_blob_sha":src["source_mc_blob_sha"],
       "input_count":len(syms),"thresholds":{"daily":HARD_DAILY,"weekly_completed":HARD_WEEKLY},

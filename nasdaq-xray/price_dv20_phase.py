@@ -13,7 +13,7 @@ ROOT=Path(__file__).resolve().parent
 INPUT=Path(os.getenv("XRAY_PHASE_INPUT", str(ROOT/"canonical_full_hard_gate_20260930_state.json")))
 OUT=Path(os.getenv("XRAY_PRICE_DV20_OUT", str(ROOT/"canonical_price_dv20_20260930.json")))
 TASK_ID="6a825366222081918997094d76e6ae46"
-ASOF="2026-09-30"
+ASOF_ENV=os.getenv("XRAY_ASOF")
 HARD_PRICE=10.0
 HARD_DV20=50_000_000.0
 WORKERS=int(os.getenv("XRAY_PHASE_WORKERS","12"))
@@ -122,12 +122,12 @@ def yahoo(sym,asof):
         return by,{"usable":len(by),"exchangeName":(r.get("meta") or {}).get("exchangeName")}
     except Exception as e:return {},{"error":f"{type(e).__name__}:{str(e)[:160]}"}
 
-def eval_one(sym,exp20):
-    by,meta=sina(sym,ASOF);st,info=classify(by,ASOF,exp20,"SINA_US_DAILY") if by else ("UNKNOWN",{"reason":"SINA_UNAVAILABLE"})
+def eval_one(sym,exp20,asof):
+    by,meta=sina(sym,asof);st,info=classify(by,asof,exp20,"SINA_US_DAILY") if by else ("UNKNOWN",{"reason":"SINA_UNAVAILABLE"})
     if st!="UNKNOWN":return sym,st,info,{"sina":meta}
-    nby,nm=nasdaq(sym,ASOF);nst,ninfo=classify(nby,ASOF,exp20,"NASDAQ_OFFICIAL_HISTORICAL_API") if nby else ("UNKNOWN",{"reason":"NASDAQ_UNAVAILABLE"})
+    nby,nm=nasdaq(sym,asof);nst,ninfo=classify(nby,asof,exp20,"NASDAQ_OFFICIAL_HISTORICAL_API") if nby else ("UNKNOWN",{"reason":"NASDAQ_UNAVAILABLE"})
     if nst!="UNKNOWN":return sym,nst,ninfo,{"sina":meta,"nasdaq":nm}
-    yby,ym=yahoo(sym,ASOF);yst,yinfo=classify(yby,ASOF,exp20,"YAHOO_CHART_FREE_FAIL_ONLY") if yby else ("UNKNOWN",{"reason":"YAHOO_UNAVAILABLE"})
+    yby,ym=yahoo(sym,asof);yst,yinfo=classify(yby,asof,exp20,"YAHOO_CHART_FREE_FAIL_ONLY") if yby else ("UNKNOWN",{"reason":"YAHOO_UNAVAILABLE"})
     if yst in {"FAIL_PRICE","FAIL_DV20"}:
         return sym,yst,yinfo,{"sina":meta,"nasdaq":nm,"yahoo":ym}
     return sym,"UNKNOWN",{
@@ -137,12 +137,13 @@ def eval_one(sym,exp20):
 
 def main():
     src=json.loads(INPUT.read_text())
-    assert src["task_id"]==TASK_ID and src["asof_et"]==ASOF
+    asof=ASOF_ENV or src.get("asof_et")
+    assert src["task_id"]==TASK_ID and src["asof_et"]==asof
     queue=src["queue"];assert len(queue)==len(set(queue)) and len(queue)>3000
-    exp20=expected20(ASOF)
+    exp20=expected20(asof)
     results={};unknowns=[]
     with ThreadPoolExecutor(max_workers=WORKERS) as ex:
-        futs={ex.submit(eval_one,s,exp20):s for s in queue}
+        futs={ex.submit(eval_one,s,exp20,asof):s for s in queue}
         for fut in as_completed(futs):
             sym,st,info,prov=fut.result()
             results[sym]={"status":st,"info":info,"provider_meta":prov}
@@ -152,7 +153,7 @@ def main():
     pass_syms=sorted(s for s,r in results.items() if r["status"]=="PASS_PRICE_DV20")
     import hashlib
     obj={
-        "schema":"XRAY_CANONICAL_PRICE_DV20_V1","task_id":TASK_ID,"asof_et":ASOF,
+        "schema":"XRAY_CANONICAL_PRICE_DV20_V1","task_id":TASK_ID,"asof_et":asof,
         "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
         "source_master_queue_hash":src["queue_hash"],"source_master_count":len(queue),
         "expected20":exp20,"gate_order":["PRICE","DV20"],"thresholds":{"price":">10","dv20":">=50000000 exact20 median"},
