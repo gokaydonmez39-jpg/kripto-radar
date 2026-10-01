@@ -33,6 +33,12 @@ def load_exception_bridge(asof,queue_hash):
             raise ValueError("SAFETY_OR_TASK")
         if obj.get("asof_et")!=asof or obj.get("queue_hash")!=queue_hash:
             raise ValueError("BINDING")
+        if (
+          obj.get("compiled_policy_hash")!="987982f0d17fc0f01a28fe22540fc3e09d4e2f28e3aa1b40c0113e3112b44c16"
+          or obj.get("compiled_policy_version")!="C4.11"
+          or obj.get("compiled_policy_blob_sha")!="738402b627abaca89a5b9fdfea51ff6c468d752b"
+        ):
+            raise ValueError("POLICY_BINDING")
         if obj.get("settlement_required") is True and obj.get("settlement_status")!="PASS":
             raise ValueError("SETTLEMENT_BINDING")
         prs=obj.get("price_resolutions") or {}
