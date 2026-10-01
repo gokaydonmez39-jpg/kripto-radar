@@ -1,0 +1,106 @@
+name: XRAY Canonical Deep Final 20260929
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/xray-canonical-deep-final-20260929.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: xray-canonical-deep-final-20260929
+  cancel-in-progress: false
+
+jobs:
+  deep-final:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      XRAY_STAGE1_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_stage1_20260929.json
+      XRAY_REGIME_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_regime_20260929.json
+      XRAY_EVENT_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_event_state_20260929.json
+      XRAY_DEEP_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_deep_full_20260929.json
+      XRAY_FINAL_DEEP_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_deep_full_20260929.json
+      XRAY_FINAL_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_final_tech_20260929.json
+      XRAY_DEEP_WORKERS: "8"
+      XRAY_FINAL_WORKERS: "8"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile
+        run: python -m py_compile nasdaq-xray/deep_pre_r1_shadow.py nasdaq-xray/final_tech_shadow.py
+      - name: Verify pinned inputs
+        run: |
+          python - <<'PY'
+          import hashlib, pathlib
+          expected={
+            "nasdaq-xray/canonical_stage1_20260929.json":"fcd12c535d301b6fa2714833c40e3f4b8bcfa640",
+            "nasdaq-xray/canonical_regime_20260929.json":"38fffd7025f846907ebd10b9ff1cd1c145fff086",
+            "nasdaq-xray/canonical_event_state_20260929.json":"af6f44aaeffae49516d7aec8acbdca37c291a780",
+          }
+          # Git blob SHA = sha1("blob <len>\0"+content)
+          for p,e in expected.items():
+            b=pathlib.Path(p).read_bytes()
+            h=hashlib.sha1(f"blob {len(b)}\0".encode()+b).hexdigest()
+            assert h==e,(p,h,e)
+          print("PINNED_INPUTS_PASS")
+          PY
+      - name: Install zero-dollar runtime
+        run: python -m pip install --disable-pip-version-check akshare==1.18.95 pandas_market_calendars
+      - name: Run frozen deep
+        run: python nasdaq-xray/deep_pre_r1_shadow.py
+      - name: Validate deep
+        run: |
+          python - <<'PY'
+          import json
+          j=json.load(open("nasdaq-xray/canonical_deep_full_20260929.json"))
+          assert j["schema"]=="XRAY_DEEP_PRE_R1_SHADOW_V1"
+          assert j["task_id"]=="6a825366222081918997094d76e6ae46"
+          assert j["asof_et"]=="2026-09-29"
+          assert j["regime"]=="MIXED"
+          assert j["event_state_fresh"] is True
+          assert j["input_weekly_pass_count"]==96
+          assert j["unknown_history_count"]==0
+          assert j["a_geometry_rs_event_pass_count"]==0
+          assert j["b_breakout_rs_event_pass_count"]==0
+          assert j["d_dk3_pre_r1_count"]==0
+          assert j["b_armed_rs_event_pass_count"]==15
+          print({"A":0,"B_breakout":0,"D":0,"B_armed":15})
+          PY
+      - name: Run frozen final tech
+        run: python nasdaq-xray/final_tech_shadow.py
+      - name: Validate final
+        run: |
+          python - <<'PY'
+          import json
+          j=json.load(open("nasdaq-xray/canonical_final_tech_20260929.json"))
+          assert j["schema"]=="XRAY_FINAL_TECH_SHADOW_V1"
+          assert j["task_id"]=="6a825366222081918997094d76e6ae46"
+          assert j["asof_et"]=="2026-09-29"
+          assert j["input_confirmed_family_candidates"]==0
+          assert j["pre_g9_tech_pass_count"]==0
+          assert j["watch_count"]==0
+          assert j["fail_count"]==0
+          assert j["results"]=={}
+          print("FINAL_ZERO_CONFIRMED_PASS")
+          PY
+      - name: Commit frozen canonical outputs
+        shell: bash
+        run: |
+          set -e
+          git config user.name "xray-dataplane-bot"
+          git config user.email "xray-dataplane-bot@users.noreply.github.com"
+          git add nasdaq-xray/canonical_deep_full_20260929.json nasdaq-xray/canonical_final_tech_20260929.json
+          git commit -m "chore(xray): canonical deep final 2026-09-29 [skip ci]" || exit 0
+          for attempt in 1 2 3 4 5; do
+            if git pull --rebase origin main && git push; then exit 0; fi
+            sleep $((attempt*2))
+          done
+          exit 1
