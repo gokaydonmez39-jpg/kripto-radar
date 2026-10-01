@@ -1,31 +1,41 @@
-name: NASDAQ SWING XRAY Hard Gates
+name: NASDAQ SWING XRAY Autonomous Data Plane
 
 on:
   push:
     branches: [main]
     paths:
+      - "nasdaq-xray/orchestrator_run.py"
       - "nasdaq-xray/sina_stage.py"
-      - "nasdaq-xray/trigger.txt"
+      - "nasdaq-xray/mc_zero_key.py"
+      - "nasdaq-xray/production_core_build.py"
+      - "nasdaq-xray/stage1_shadow.py"
+      - "nasdaq-xray/regime_breadth_shadow.py"
+      - "nasdaq-xray/deep_pre_r1_shadow.py"
+      - "nasdaq-xray/final_tech_shadow.py"
       - ".github/workflows/nasdaq-xray-daily.yml"
   schedule:
-    - cron: "45 * * * 1-5"
+    - cron: "40 * * * *"
   workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
-  group: nasdaq-xray-repo-writer
-  cancel-in-progress: true
+  group: nasdaq-xray-autonomous-dataplane
+  cancel-in-progress: false
 
 jobs:
-  hard-gates:
+  dataplane:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     env:
       XRAY_SINA_HISTORY_BATCH: "250"
       XRAY_SINA_HISTORY_WORKERS: "8"
       XRAY_SINA_RETRY_BATCH: "20"
+      XRAY_STAGE1_WORKERS: "8"
+      XRAY_BREADTH_WORKERS: "8"
+      XRAY_DEEP_WORKERS: "8"
+      XRAY_FINAL_WORKERS: "6"
     steps:
       - uses: actions/checkout@v4
         with:
@@ -35,42 +45,51 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install zero-key market-data runtime
+      - name: Install zero-dollar research runtime
         run: python -m pip install --disable-pip-version-check akshare==1.18.95 pandas_market_calendars
 
-      - name: Resume Nasdaq PRICE DV20 HISTORY hard gates
-        run: python nasdaq-xray/sina_stage.py
+      - name: Run autonomous XRAY data plane
+        run: python nasdaq-xray/orchestrator_run.py
 
-      - name: Commit durable hard-gate cursor
+      - name: Commit durable XRAY checkpoints
         shell: bash
         run: |
           set -e
           git config user.name "xray-dataplane-bot"
           git config user.email "xray-dataplane-bot@users.noreply.github.com"
-          git add nasdaq-xray/sina_state.json nasdaq-xray/sina_candidates.json
+          git add             nasdaq-xray/sina_state.json             nasdaq-xray/sina_candidates.json             nasdaq-xray/mc_zero_key_state.json             nasdaq-xray/production_core_state.json             nasdaq-xray/stage1_shadow.json             nasdaq-xray/regime_breadth_shadow.json             nasdaq-xray/deep_pre_r1_shadow.json             nasdaq-xray/final_tech_shadow.json             nasdaq-xray/orchestrator_state.json 2>/dev/null || true
           if git diff --cached --quiet; then
-            echo "No hard-gate state change."
-          else
-            git commit -m "chore(xray): Sina hard-gate checkpoint [skip ci]"
-            pushed=0
-            for attempt in 1 2 3 4 5; do
-              if git pull --rebase origin main && git push; then
-                pushed=1
-                break
-              fi
-              sleep $((attempt * 2))
-            done
-            if [ "$pushed" -ne 1 ]; then
-              echo "XRAY_STATE_PUSH_FAILED" >&2
-              exit 1
-            fi
+            echo "XRAY_DURABLE_COMMIT=NO_CHANGE"
+            exit 0
           fi
+          git commit -m "chore(xray): autonomous data-plane checkpoint [skip ci]"
+          pushed=0
+          for attempt in 1 2 3 4 5; do
+            if git pull --rebase origin main && git push; then
+              pushed=1
+              break
+            fi
+            sleep $((attempt * 2))
+          done
+          if [ "$pushed" -ne 1 ]; then
+            echo "XRAY_DURABLE_COMMIT=FAIL" >&2
+            exit 1
+          fi
+          echo "XRAY_DURABLE_COMMIT=PASS"
 
-      - name: Upload hard-gate state
+      - name: Upload audit state
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: nasdaq-xray-sina-hard-gate-state
+          name: nasdaq-xray-autonomous-state
           path: |
             nasdaq-xray/sina_state.json
-            nasdaq-xray/sina_candidates.json
+            nasdaq-xray/mc_zero_key_state.json
+            nasdaq-xray/production_core_state.json
+            nasdaq-xray/stage1_shadow.json
+            nasdaq-xray/regime_breadth_shadow.json
+            nasdaq-xray/deep_pre_r1_shadow.json
+            nasdaq-xray/final_tech_shadow.json
+            nasdaq-xray/orchestrator_state.json
           retention-days: 30
+          if-no-files-found: ignore
