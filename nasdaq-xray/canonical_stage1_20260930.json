@@ -44,6 +44,7 @@
     "NTSK",
     "NVDA",
     "OKTA",
+    "ONC",
     "PI",
     "PLTR",
     "QRVO",
@@ -67,7 +68,7 @@
     "XP",
     "ZBRA"
   ],
-  "a_trend_pool_count": 66,
+  "a_trend_pool_count": 67,
   "asof_et": "2026-09-30",
   "b_tight_base_pool": [
     "ASST",
@@ -108,6 +109,7 @@
     "MKTX",
     "MRVL",
     "MSTR",
+    "MXL",
     "NBIS",
     "NESR",
     "NTSK",
@@ -117,7 +119,6 @@
     "RIOT",
     "SIMO",
     "SMCI",
-    "SNDK",
     "SSRM",
     "TEM",
     "ULTA",
@@ -128,12 +129,48 @@
   ],
   "d_drawdown_pool_count": 31,
   "execution": "NONE",
-  "input_current_core_count": 460,
+  "input_current_core_count": 477,
   "notes": [
     "C post-earnings family is evaluated later from official earnings/event evidence.",
     "No setup signal or R92 registration is created here."
   ],
-  "r92_ineligible": [],
+  "r92_ineligible": [
+    "AKAM",
+    "BIDU",
+    "BRZE",
+    "CCEP",
+    "COCO",
+    "CORZ",
+    "DAVE",
+    "ERAS",
+    "FER",
+    "FISV",
+    "FROG",
+    "FRSH",
+    "GTLB",
+    "HBAN",
+    "HTHT",
+    "INDV",
+    "IREN",
+    "JD",
+    "KMB",
+    "KYMR",
+    "LFST",
+    "MRX",
+    "MXL",
+    "NTES",
+    "NXST",
+    "ONC",
+    "RGTI",
+    "RYAAY",
+    "SHOP",
+    "SOFI",
+    "TEM",
+    "TER",
+    "TRI",
+    "VOD",
+    "WGS"
+  ],
   "real_money": "NO-GO",
   "results": {
     "AAL": {
@@ -410,8 +447,8 @@
       }
     },
     "AKAM": {
-      "r92_eligible": true,
-      "state_cap": "NORMAL",
+      "r92_eligible": false,
+      "state_cap": "WATCH",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 113.94,
@@ -1005,6 +1042,21 @@
         "weeks": 128
       }
     },
+    "BIDU": {
+      "r92_eligible": false,
+      "state_cap": "WATCH",
+      "status": "WEEKLY_FAIL",
+      "weekly": {
+        "close": 87.33,
+        "ema10": 97.80736470640147,
+        "ema10_m1": 100.1356679744907,
+        "ema10_m2": 102.4035941910442,
+        "ema10_m3": 104.84883734460959,
+        "pass": false,
+        "sma30": 112.828,
+        "weeks": 128
+      }
+    },
     "BIIB": {
       "a_trend_pool": true,
       "b_tight_base_pool": [],
@@ -1113,6 +1165,21 @@
         "ema10_m3": 57.52179124819496,
         "pass": false,
         "sma30": 50.49133333333334,
+        "weeks": 128
+      }
+    },
+    "BRZE": {
+      "r92_eligible": false,
+      "state_cap": "WATCH",
+      "status": "WEEKLY_FAIL",
+      "weekly": {
+        "close": 24.37,
+        "ema10": 26.52580233286271,
+        "ema10_m1": 27.004869517943312,
+        "ema10_m2": 27.57706274415294,
+        "ema10_m3": 28.385298909520262,
+        "pass": false,
+        "sma30": 23.949333333333335,
         "weeks": 128
       }
     },
@@ -1333,6 +1400,21 @@
         "weeks": 128
       }
     },
+    "CCEP": {
+      "r92_eligible": false,
+      "state_cap": "WATCH",
+      "status": "WEEKLY_FAIL",
+      "weekly": {
+        "close": 101.73,
+        "ema10": 103.84588391105372,
+        "ema10_m1": 104.31608033573232,
+        "ema10_m2": 105.32632041033952,
+        "ema10_m3": 105.8943916126372,
+        "pass": false,
+        "sma30": 100.04966666666668,
+        "weeks": 128
+      }
+    },
     "CDNA": {
       "a_trend_pool": true,
       "b_tight_base_pool": [],
@@ -1381,21 +1463,6 @@
         "ema10_m3": 140.6884601683552,
         "pass": false,
         "sma30": 131.38299999999998,
-        "weeks": 128
-      }
-    },
-    "CEG": {
-      "r92_eligible": true,
-      "state_cap": "NORMAL",
-      "status": "WEEKLY_FAIL",
-      "weekly": {
-        "close": 263.27,
-        "ema10": 271.65061477587625,
-        "ema10_m1": 273.5129736149599,
-        "ema10_m2": 277.6914121960621,
-        "ema10_m3": 276.12283712852036,
-        "pass": false,
-        "sma30": 278.811,
         "weeks": 128
       }
     },
@@ -1717,6 +1784,21 @@
         "weeks": 128
       }
     },
+    "COCO": {
+      "r92_eligible": false,
+      "state_cap": "WATCH",
+      "status": "WEEKLY_FAIL",
+      "weekly": {
+        "close": 58.59,
+        "ema10": 60.38805114357973,
+        "ema10_m1": 60.78761806437522,
+        "ema10_m2": 61.89153318979194,
+        "ema10_m3": 64.08742945419016,
+        "pass": false,
+        "sma30": 63.509,
+        "weeks": 128
+      }
+    },
     "COGT": {
       "r92_eligible": true,
       "state_cap": "NORMAL",
@@ -1851,6 +1933,21 @@
         "ema10_m3": 104.73649300058887,
         "pass": true,
         "sma30": 77.40166666666667,
+        "weeks": 128
+      }
+    },
+    "CORZ": {
+      "r92_eligible": false,
+      "state_cap": "WATCH",
+      "status": "WEEKLY_FAIL",
+      "weekly": {
+        "close": 17.34,
+        "ema10": 18.982509695386597,
+        "ema10_m1": 19.347511849916952,
+        "ema10_m2": 19.6491811498985,
+        "ema10_m3": 20.02899918320928,
+        "pass": false,
+        "sma30": 20.763666666666666,
         "weeks": 128
       }
     },
@@ -2140,8 +2237,8 @@
       }
     },
     "DAVE": {
-      "r92_eligible": true,
-      "state_cap": "NORMAL",
+      "r92_eligible": false,
+      "state_cap": "WATCH",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 324.88,
@@ -2183,6 +2280,13 @@
         "sma30": 203.41233333333332,
         "weeks": 128
       }
+    },
+    "DFTX": {
+      "bars": 178,
+      "r92_eligible": true,
+      "reason": "DAILY_LT260",
+      "state_cap": "NORMAL",
+      "status": "HISTORY_FAIL"
     },
     "DKNG": {
       "r92_eligible": true,
@@ -2432,8 +2536,8 @@
       }
     },
     "ERAS": {
-      "r92_eligible": true,
-      "state_cap": "NORMAL",
+      "r92_eligible": false,
+      "state_cap": "WATCH",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 14.25,
@@ -2653,6 +2757,21 @@
         "weeks": 128
       }
     },
+    "FER": {
+      "r92_eligible": false,
+      "state_cap": "WATCH",
+      "status": "WEEKLY_FAIL",
+      "weekly": {
+        "close": 55.83,
+        "ema10": 59.62977972077816,
+        "ema10_m1": 60.47417521428442,
+        "ema10_m2": 61.68176970634763,
+        "ema10_m3": 62.91105186331377,
+        "pass": false,
+        "sma30": 64.92983333333333,
+        "weeks": 125
+      }
+    },
     "FFIV": {
       "a_trend_pool": true,
       "b_tight_base_pool": [],
@@ -2687,6 +2806,16 @@
         "pass": false,
         "sma30": 32.91133333333333,
         "weeks": 55
+      }
+    },
+    "FISV": {
+      "r92_eligible": false,
+      "state_cap": "WATCH",
+      "status": "WEEKLY_FAIL",
+      "weekly": {
+        "pass": false,
+        "reason": "WEEKLY_HISTORY_LT52",
+        "weeks": 46
       }
     },
     "FIVE": {
@@ -2807,8 +2936,8 @@
       }
     },
     "FROG": {
-      "r92_eligible": true,
-      "state_cap": "NORMAL",
+      "r92_eligible": false,
+      "state_cap": "WATCH",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 89.18,
@@ -2833,6 +2962,21 @@
         "ema10_m3": 65.82239238534996,
         "pass": false,
         "sma30": 61.5555,
+        "weeks": 128
+      }
+    },
+    "FRSH": {
+      "r92_eligible": false,
+      "state_cap": "WATCH",
+      "status": "WEEKLY_FAIL",
+      "weekly": {
+        "close": 12.54,
+        "ema10": 12.071343530133383,
+        "ema10_m1": 11.967197647940804,
+        "ema10_m2": 11.904352680816537,
+        "ema10_m3": 11.907542165442434,
+        "pass": false,
+        "sma30": 10.081,
         "weeks": 128
       }
     },
@@ -3187,8 +3331,8 @@
       "dd120": -0.060075591804257034,
       "dd252": -0.0742554858934169,
       "last_close": 47.25,
-      "r92_eligible": true,
-      "state_cap": "NORMAL",
+      "r92_eligible": false,
+      "state_cap": "WATCH",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 46.845,
@@ -3253,8 +3397,8 @@
       }
     },
     "HBAN": {
-      "r92_eligible": true,
-      "state_cap": "NORMAL",
+      "r92_eligible": false,
+      "state_cap": "WATCH",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 15.64,
@@ -3390,6 +3534,21 @@
         "pass": true,
         "sma30": 32.713,
         "weeks": 60
+      }
+    },
+    "HTHT": {
+      "r92_eligible": false,
+      "state_cap": "WATCH",
+      "status": "WEEKLY_FAIL",
+      "weekly": {
+        "close": 42.0,
+        "ema10": 43.85228033324246,
+        "ema10_m1": 44.263898185074126,
+        "ema10_m2": 44.446986670646154,
+        "ema10_m3": 44.84409481967864,
+        "pass": false,
+        "sma30": 46.129999999999995,
+        "weeks": 128
       }
     },
     "HUT": {
@@ -3554,8 +3713,8 @@
       }
     },
     "INDV": {
-      "r92_eligible": true,
-      "state_cap": "NORMAL",
+      "r92_eligible": false,
+      "state_cap": "WATCH",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 35.82,
@@ -3671,8 +3830,8 @@
       }
     },
     "IREN": {
-      "r92_eligible": true,
-      "state_cap": "NORMAL",
+      "r92_eligible": false,
+      "state_cap": "WATCH",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 44.125,
@@ -3745,6 +3904,21 @@
         "weeks": 128
       }
     },
+    "JD": {
+      "r92_eligible": false,
+      "state_cap": "WATCH",
+      "status": "WEEKLY_FAIL",
+      "weekly": {
+        "close": 26.51,
+        "ema10": 28.211821897425352,
+        "ema10_m1": 28.590004541297656,
+        "ema10_m2": 28.961116661586026,
+        "ema10_m3": 29.383587030827364,
+        "pass": false,
+        "sma30": 28.965333333333334,
+        "weeks": 128
+      }
+    },
     "JKHY": {
       "r92_eligible": true,
       "state_cap": "NORMAL",
@@ -3805,6 +3979,21 @@
         "weeks": 128
       }
     },
+    "KMB": {
+      "r92_eligible": false,
+      "state_cap": "WATCH",
+      "status": "WEEKLY_FAIL",
+      "weekly": {
+        "close": 98.43,
+        "ema10": 103.50388292006559,
+        "ema10_m1": 104.63141245785795,
+        "ema10_m2": 106.13617078182638,
+        "ema10_m3": 107.91087540001003,
+        "pass": false,
+        "sma30": 102.83633333333334,
+        "weeks": 128
+      }
+    },
     "KRYS": {
       "r92_eligible": true,
       "state_cap": "NORMAL",
@@ -3836,8 +4025,8 @@
       }
     },
     "KYMR": {
-      "r92_eligible": true,
-      "state_cap": "NORMAL",
+      "r92_eligible": false,
+      "state_cap": "WATCH",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 111.95,
@@ -3881,8 +4070,8 @@
       }
     },
     "LFST": {
-      "r92_eligible": true,
-      "state_cap": "NORMAL",
+      "r92_eligible": false,
+      "state_cap": "WATCH",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 11.84,
@@ -4557,8 +4746,8 @@
       "dd120": -0.1087262041650695,
       "dd252": -0.1087262041650695,
       "last_close": 69.76,
-      "r92_eligible": true,
-      "state_cap": "NORMAL",
+      "r92_eligible": false,
+      "state_cap": "WATCH",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 71.31,
@@ -4675,6 +4864,27 @@
         "ema10_m3": 934.4538911478946,
         "pass": true,
         "sma30": 784.9793333333333,
+        "weeks": 128
+      }
+    },
+    "MXL": {
+      "a_trend_pool": false,
+      "b_tight_base_pool": [],
+      "d_drawdown_pool": true,
+      "dd120": -0.29461844880106225,
+      "dd252": -0.29461844880106225,
+      "last_close": 90.31,
+      "r92_eligible": false,
+      "state_cap": "WATCH",
+      "status": "WEEKLY_PASS",
+      "weekly": {
+        "close": 93.84,
+        "ema10": 77.4723706554747,
+        "ema10_m1": 73.83511969002464,
+        "ema10_m2": 72.21625739891901,
+        "ema10_m3": 71.69320348756769,
+        "pass": true,
+        "sma30": 66.62366666666667,
         "weeks": 128
       }
     },
@@ -4834,6 +5044,21 @@
         "ema10_m3": 179.53311280123054,
         "pass": true,
         "sma30": 150.43383333333333,
+        "weeks": 128
+      }
+    },
+    "NTES": {
+      "r92_eligible": false,
+      "state_cap": "WATCH",
+      "status": "WEEKLY_FAIL",
+      "weekly": {
+        "close": 115.41,
+        "ema10": 120.63556794472547,
+        "ema10_m1": 121.79680526577557,
+        "ema10_m2": 123.04276199150348,
+        "ema10_m3": 124.69448687850426,
+        "pass": false,
+        "sma30": 120.127,
         "weeks": 128
       }
     },
@@ -5005,8 +5230,8 @@
       }
     },
     "NXST": {
-      "r92_eligible": true,
-      "state_cap": "NORMAL",
+      "r92_eligible": false,
+      "state_cap": "WATCH",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 162.1,
@@ -5127,6 +5352,27 @@
         "ema10_m3": 26.01982686357474,
         "pass": false,
         "sma30": 24.627333333333336,
+        "weeks": 128
+      }
+    },
+    "ONC": {
+      "a_trend_pool": true,
+      "b_tight_base_pool": [],
+      "d_drawdown_pool": false,
+      "dd120": -0.028976277662792538,
+      "dd252": -0.03054547381248851,
+      "last_close": 365.94,
+      "r92_eligible": false,
+      "state_cap": "WATCH",
+      "status": "WEEKLY_PASS",
+      "weekly": {
+        "close": 360.85,
+        "ema10": 345.77824387889314,
+        "ema10_m1": 342.4289647408694,
+        "ema10_m2": 340.5598457943959,
+        "ema10_m3": 339.2375893042617,
+        "pass": true,
+        "sma30": 312.47766666666666,
         "weeks": 128
       }
     },
@@ -5761,8 +6007,8 @@
       }
     },
     "RGTI": {
-      "r92_eligible": true,
-      "state_cap": "NORMAL",
+      "r92_eligible": false,
+      "state_cap": "WATCH",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 16.66,
@@ -5990,6 +6236,21 @@
         "weeks": 128
       }
     },
+    "RYAAY": {
+      "r92_eligible": false,
+      "state_cap": "WATCH",
+      "status": "WEEKLY_FAIL",
+      "weekly": {
+        "close": 55.3,
+        "ema10": 56.43422912446274,
+        "ema10_m1": 56.68628004101002,
+        "ema10_m2": 57.39212005012337,
+        "ema10_m3": 58.190368950150784,
+        "pass": false,
+        "sma30": 58.90233333333333,
+        "weeks": 128
+      }
+    },
     "RYTM": {
       "r92_eligible": true,
       "state_cap": "NORMAL",
@@ -6149,6 +6410,21 @@
         "ema10_m3": 81.93878629290444,
         "pass": false,
         "sma30": 80.03299999999999,
+        "weeks": 128
+      }
+    },
+    "SHOP": {
+      "r92_eligible": false,
+      "state_cap": "WATCH",
+      "status": "WEEKLY_FAIL",
+      "weekly": {
+        "close": 142.25,
+        "ema10": 136.14718331129978,
+        "ema10_m1": 134.79100182492198,
+        "ema10_m2": 136.1890022304602,
+        "ema10_m3": 137.83322494834024,
+        "pass": false,
+        "sma30": 124.01666666666667,
         "weeks": 128
       }
     },
@@ -6312,27 +6588,6 @@
         "weeks": 128
       }
     },
-    "SNDK": {
-      "a_trend_pool": false,
-      "b_tight_base_pool": [],
-      "d_drawdown_pool": true,
-      "dd120": -0.25486509635974297,
-      "dd252": -0.25486509635974297,
-      "last_close": 1739.89,
-      "r92_eligible": true,
-      "state_cap": "NORMAL",
-      "status": "WEEKLY_PASS",
-      "weekly": {
-        "close": 1777.8,
-        "ema10": 1641.6878421063504,
-        "ema10_m1": 1611.440695907762,
-        "ema10_m2": 1571.3564283317091,
-        "ema10_m3": 1557.5800790720891,
-        "pass": true,
-        "sma30": 1388.9573233333333,
-        "weeks": 83
-      }
-    },
     "SNEX": {
       "r92_eligible": true,
       "state_cap": "NORMAL",
@@ -6379,8 +6634,8 @@
       }
     },
     "SOFI": {
-      "r92_eligible": true,
-      "state_cap": "NORMAL",
+      "r92_eligible": false,
+      "state_cap": "WATCH",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 16.58,
@@ -6678,8 +6933,8 @@
       "dd120": -0.03737658674188993,
       "dd252": -0.2067796610169491,
       "last_close": 81.9,
-      "r92_eligible": true,
-      "state_cap": "NORMAL",
+      "r92_eligible": false,
+      "state_cap": "WATCH",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 85.01,
@@ -6708,8 +6963,8 @@
       }
     },
     "TER": {
-      "r92_eligible": true,
-      "state_cap": "NORMAL",
+      "r92_eligible": false,
+      "state_cap": "WATCH",
       "status": "WEEKLY_FAIL",
       "weekly": {
         "close": 398.38,
@@ -6830,6 +7085,21 @@
         "ema10_m3": 48.91345247599737,
         "pass": false,
         "sma30": 44.093333333333334,
+        "weeks": 128
+      }
+    },
+    "TRI": {
+      "r92_eligible": false,
+      "state_cap": "WATCH",
+      "status": "WEEKLY_FAIL",
+      "weekly": {
+        "close": 98.99,
+        "ema10": 98.49542613433172,
+        "ema10_m1": 98.38552083084988,
+        "ema10_m2": 99.27341434881653,
+        "ema10_m3": 99.70083975966466,
+        "pass": false,
+        "sma30": 93.20616666666666,
         "weeks": 128
       }
     },
@@ -7337,6 +7607,27 @@
         "weeks": 128
       }
     },
+    "VOD": {
+      "a_trend_pool": false,
+      "b_tight_base_pool": [],
+      "d_drawdown_pool": false,
+      "dd120": -0.08653846153846156,
+      "dd252": -0.08653846153846156,
+      "last_close": 16.15,
+      "r92_eligible": false,
+      "state_cap": "WATCH",
+      "status": "WEEKLY_PASS",
+      "weekly": {
+        "close": 16.62,
+        "ema10": 16.346313933241788,
+        "ema10_m1": 16.28549480729552,
+        "ema10_m2": 16.137826986694527,
+        "ema10_m3": 15.857344094848868,
+        "pass": true,
+        "sma30": 15.404,
+        "weeks": 128
+      }
+    },
     "VRNS": {
       "a_trend_pool": true,
       "b_tight_base_pool": [],
@@ -7543,8 +7834,8 @@
       "dd120": -0.31110052405907584,
       "dd252": -0.5683968599826881,
       "last_close": 72.3,
-      "r92_eligible": true,
-      "state_cap": "NORMAL",
+      "r92_eligible": false,
+      "state_cap": "WATCH",
       "status": "WEEKLY_PASS",
       "weekly": {
         "close": 88.4,
@@ -7881,7 +8172,7 @@
     "AEIS": "NORMAL",
     "AEP": "NORMAL",
     "AFRM": "NORMAL",
-    "AKAM": "NORMAL",
+    "AKAM": "WATCH",
     "ALAB": "NORMAL",
     "ALGM": "NORMAL",
     "ALGN": "NORMAL",
@@ -7917,6 +8208,7 @@
     "AXSM": "NORMAL",
     "AXTI": "NORMAL",
     "BBIO": "NORMAL",
+    "BIDU": "WATCH",
     "BIIB": "NORMAL",
     "BKNG": "NORMAL",
     "BKR": "NORMAL",
@@ -7924,6 +8216,7 @@
     "BNTX": "NORMAL",
     "BPOP": "NORMAL",
     "BRKR": "NORMAL",
+    "BRZE": "WATCH",
     "BSP": "NORMAL",
     "BSY": "NORMAL",
     "BTDR": "NORMAL",
@@ -7937,10 +8230,10 @@
     "CART": "NORMAL",
     "CASY": "NORMAL",
     "CBSH": "NORMAL",
+    "CCEP": "WATCH",
     "CDNA": "NORMAL",
     "CDNS": "NORMAL",
     "CDW": "NORMAL",
-    "CEG": "NORMAL",
     "CELC": "NORMAL",
     "CELH": "NORMAL",
     "CENX": "NORMAL",
@@ -7960,6 +8253,7 @@
     "CLSK": "NORMAL",
     "CMCSA": "NORMAL",
     "CME": "NORMAL",
+    "COCO": "WATCH",
     "COGT": "NORMAL",
     "COHU": "NORMAL",
     "COIN": "NORMAL",
@@ -7967,6 +8261,7 @@
     "COLB": "NORMAL",
     "COO": "NORMAL",
     "CORT": "NORMAL",
+    "CORZ": "WATCH",
     "COST": "NORMAL",
     "CPB": "NORMAL",
     "CPRT": "NORMAL",
@@ -7986,9 +8281,10 @@
     "CYTK": "NORMAL",
     "CZR": "NORMAL",
     "DASH": "NORMAL",
-    "DAVE": "NORMAL",
+    "DAVE": "WATCH",
     "DBX": "NORMAL",
     "DDOG": "NORMAL",
+    "DFTX": "NORMAL",
     "DKNG": "NORMAL",
     "DLTR": "NORMAL",
     "DNTH": "NORMAL",
@@ -8005,7 +8301,7 @@
     "ENSG": "NORMAL",
     "ENTG": "NORMAL",
     "EQIX": "NORMAL",
-    "ERAS": "NORMAL",
+    "ERAS": "WATCH",
     "ESLT": "NORMAL",
     "EVRG": "NORMAL",
     "EWBC": "NORMAL",
@@ -8019,8 +8315,10 @@
     "FAST": "NORMAL",
     "FCFS": "NORMAL",
     "FCNCA": "NORMAL",
+    "FER": "WATCH",
     "FFIV": "NORMAL",
     "FIGR": "NORMAL",
+    "FISV": "WATCH",
     "FIVE": "NORMAL",
     "FIVN": "NORMAL",
     "FLEX": "NORMAL",
@@ -8028,8 +8326,9 @@
     "FORM": "NORMAL",
     "FOX": "NORMAL",
     "FOXA": "NORMAL",
-    "FROG": "NORMAL",
+    "FROG": "WATCH",
     "FRPT": "NORMAL",
+    "FRSH": "WATCH",
     "FSLR": "NORMAL",
     "FSLY": "NORMAL",
     "FTAI": "NORMAL",
@@ -8049,11 +8348,11 @@
     "GOOG": "NORMAL",
     "GOOGL": "NORMAL",
     "GRAL": "NORMAL",
-    "GTLB": "NORMAL",
+    "GTLB": "WATCH",
     "GTX": "NORMAL",
     "HALO": "NORMAL",
     "HAS": "NORMAL",
-    "HBAN": "NORMAL",
+    "HBAN": "WATCH",
     "HLNE": "NORMAL",
     "HON": "NORMAL",
     "HOOD": "NORMAL",
@@ -8061,6 +8360,7 @@
     "HSIC": "NORMAL",
     "HST": "NORMAL",
     "HTFL": "NORMAL",
+    "HTHT": "WATCH",
     "HUT": "NORMAL",
     "HWC": "NORMAL",
     "IBKR": "NORMAL",
@@ -8070,28 +8370,30 @@
     "IESC": "NORMAL",
     "ILMN": "NORMAL",
     "INCY": "NORMAL",
-    "INDV": "NORMAL",
+    "INDV": "WATCH",
     "INOD": "NORMAL",
     "INSM": "NORMAL",
     "INTC": "NORMAL",
     "INTU": "NORMAL",
     "IONS": "NORMAL",
     "IOVA": "NORMAL",
-    "IREN": "NORMAL",
+    "IREN": "WATCH",
     "IRTC": "NORMAL",
     "ISRG": "NORMAL",
     "JAZZ": "NORMAL",
     "JBHT": "NORMAL",
+    "JD": "WATCH",
     "JKHY": "NORMAL",
     "KDP": "NORMAL",
     "KLAC": "NORMAL",
     "KLIC": "NORMAL",
+    "KMB": "WATCH",
     "KRYS": "NORMAL",
     "KTOS": "NORMAL",
-    "KYMR": "NORMAL",
+    "KYMR": "WATCH",
     "LAMR": "NORMAL",
     "LECO": "NORMAL",
-    "LFST": "NORMAL",
+    "LFST": "WATCH",
     "LFUS": "NORMAL",
     "LGND": "NORMAL",
     "LIN": "NORMAL",
@@ -8131,12 +8433,13 @@
     "MRCY": "NORMAL",
     "MRNA": "NORMAL",
     "MRVL": "NORMAL",
-    "MRX": "NORMAL",
+    "MRX": "WATCH",
     "MSFT": "NORMAL",
     "MSTR": "NORMAL",
     "MTCH": "NORMAL",
     "MTSI": "NORMAL",
     "MU": "NORMAL",
+    "MXL": "WATCH",
     "MYRG": "NORMAL",
     "NBIS": "NORMAL",
     "NBIX": "NORMAL",
@@ -8146,6 +8449,7 @@
     "NFLX": "NORMAL",
     "NICE": "NORMAL",
     "NTAP": "NORMAL",
+    "NTES": "WATCH",
     "NTNX": "NORMAL",
     "NTRA": "NORMAL",
     "NTRS": "NORMAL",
@@ -8155,7 +8459,7 @@
     "NVTS": "NORMAL",
     "NWSA": "NORMAL",
     "NXPI": "NORMAL",
-    "NXST": "NORMAL",
+    "NXST": "WATCH",
     "NXT": "NORMAL",
     "ODFL": "NORMAL",
     "OKTA": "NORMAL",
@@ -8163,6 +8467,7 @@
     "OLLI": "NORMAL",
     "ON": "NORMAL",
     "ONB": "NORMAL",
+    "ONC": "WATCH",
     "ORKA": "NORMAL",
     "ORLY": "NORMAL",
     "OUST": "NORMAL",
@@ -8199,7 +8504,7 @@
     "RELY": "NORMAL",
     "RGEN": "NORMAL",
     "RGLD": "NORMAL",
-    "RGTI": "NORMAL",
+    "RGTI": "WATCH",
     "RIOT": "NORMAL",
     "RIVN": "NORMAL",
     "RKLB": "NORMAL",
@@ -8213,6 +8518,7 @@
     "RPRX": "NORMAL",
     "RRR": "NORMAL",
     "RVMD": "NORMAL",
+    "RYAAY": "WATCH",
     "RYTM": "NORMAL",
     "SAIA": "NORMAL",
     "SAIL": "NORMAL",
@@ -8223,6 +8529,7 @@
     "SDGR": "NORMAL",
     "SEIC": "NORMAL",
     "SFM": "NORMAL",
+    "SHOP": "WATCH",
     "SIMO": "NORMAL",
     "SIRI": "NORMAL",
     "SITM": "NORMAL",
@@ -8231,11 +8538,10 @@
     "SMCI": "NORMAL",
     "SMMT": "NORMAL",
     "SMTC": "NORMAL",
-    "SNDK": "NORMAL",
     "SNEX": "NORMAL",
     "SNPS": "NORMAL",
     "SNY": "NORMAL",
-    "SOFI": "NORMAL",
+    "SOFI": "WATCH",
     "SRRK": "NORMAL",
     "SSNC": "NORMAL",
     "SSRM": "NORMAL",
@@ -8251,9 +8557,9 @@
     "TCOM": "NORMAL",
     "TEAM": "NORMAL",
     "TECH": "NORMAL",
-    "TEM": "NORMAL",
+    "TEM": "WATCH",
     "TENB": "NORMAL",
-    "TER": "NORMAL",
+    "TER": "WATCH",
     "TGTX": "NORMAL",
     "TIGO": "NORMAL",
     "TLN": "NORMAL",
@@ -8261,6 +8567,7 @@
     "TMUS": "NORMAL",
     "TNGX": "NORMAL",
     "TPG": "NORMAL",
+    "TRI": "WATCH",
     "TRMB": "NORMAL",
     "TRMD": "NORMAL",
     "TROW": "NORMAL",
@@ -8293,6 +8600,7 @@
     "VKTX": "NORMAL",
     "VLY": "NORMAL",
     "VNOM": "NORMAL",
+    "VOD": "WATCH",
     "VRNS": "NORMAL",
     "VRSK": "NORMAL",
     "VRSN": "NORMAL",
@@ -8304,7 +8612,7 @@
     "WDAY": "NORMAL",
     "WDC": "NORMAL",
     "WFRD": "NORMAL",
-    "WGS": "NORMAL",
+    "WGS": "WATCH",
     "WING": "NORMAL",
     "WIX": "NORMAL",
     "WMG": "NORMAL",
@@ -8388,6 +8696,7 @@
     "MSTR",
     "MTCH",
     "MU",
+    "MXL",
     "NBIS",
     "NDSN",
     "NESR",
@@ -8397,6 +8706,7 @@
     "NTSK",
     "NVDA",
     "OKTA",
+    "ONC",
     "PCTY",
     "PFG",
     "PI",
@@ -8415,7 +8725,6 @@
     "SLAB",
     "SMCI",
     "SMTC",
-    "SNDK",
     "SSRM",
     "SWKS",
     "TARS",
@@ -8427,6 +8736,7 @@
     "TWST",
     "TXG",
     "ULTA",
+    "VOD",
     "VRNS",
     "WBD",
     "WDAY",
@@ -8435,5 +8745,5 @@
     "XP",
     "ZBRA"
   ],
-  "weekly_pass_count": 104
+  "weekly_pass_count": 106
 }
