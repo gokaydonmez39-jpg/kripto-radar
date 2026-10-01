@@ -4,7 +4,7 @@ Universe = canonical Bigdata-MC CURRENT_CORE names only.
 History accelerator = Sina. UNKNOWN!=PASS. Never G9.
 """
 from __future__ import annotations
-import json, math, os, urllib.parse, urllib.request
+import json, math, os, urllib.parse, urllib.request, hashlib
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
@@ -18,6 +18,14 @@ MC=Path(os.getenv("XRAY_MC_STATE", str(ROOT/"mc_final_state.json")))
 OUT=Path(os.getenv("XRAY_REGIME_OUT", str(ROOT/"regime_breadth_shadow.json")))
 TASK_ID="6a825366222081918997094d76e6ae46"
 WORKERS=int(os.getenv("XRAY_BREADTH_WORKERS","8"))
+
+def blob_sha(p:Path):
+    b=p.read_bytes()
+    return hashlib.sha1(f"blob {len(b)}\0".encode()+b).hexdigest()
+
+def relpath(p:Path):
+    try:return str(p.relative_to(ROOT.parent)).replace("\\","/")
+    except Exception:return str(p)
 
 UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/126 Safari/537.36"
 NY=ZoneInfo("America/New_York")
@@ -145,6 +153,10 @@ def main():
         "SINA_US_DAILY":sum(1 for v in history_source.values() if v=="SINA_US_DAILY"),
         "YAHOO_CHART_FREE_FALLBACK":sum(1 for v in history_source.values() if v=="YAHOO_CHART_FREE_FALLBACK")
       },
+      "source_input_path":relpath(MC),"source_input_blob_sha":blob_sha(MC),
+      "source_legal_pass_hash":mc.get("source_legal_pass_hash"),
+      "source_mc_policy_hash":mc.get("source_mc_policy_hash"),
+      "source_mc_policy_version":mc.get("source_mc_policy_version"),
       "source_authority":"SHADOW_REGIME_ACCELERATOR_ONLY_SINA_PRIMARY_YAHOO_FALLBACK"
     }
     OUT.write_text(json.dumps(out,indent=2,sort_keys=True)+"\n")
