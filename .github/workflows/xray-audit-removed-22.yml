@@ -1,0 +1,55 @@
+name: XRAY Audit Removed 22
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/xray-audit-removed-22.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Extract exact statuses
+        run: |
+          python - <<'PY'
+          import json
+          syms="ABVX ARGX ARM BIDU BNTX BZ CEG FUTU GMAB GPCR HTHT JD NICE NTES ONC PDD RYAAY SIMO SNDK SNY TCOM VOD".split()
+          s=json.load(open("nasdaq-xray/canonical_full_hard_gate_20260930_state.json"))
+          out={
+            "schema":"XRAY_REMOVED_22_AUDIT_V1",
+            "asof_et":s.get("asof_et"),
+            "state_status":s.get("status"),
+            "state_unknown_count":s.get("unknown_count"),
+            "queue_total":s.get("queue_total"),
+            "official_footer":s.get("official_footer"),
+            "symbols":{}
+          }
+          q=set(s.get("queue") or [])
+          for sym in syms:
+              out["symbols"][sym]={
+                  "in_queue":sym in q,
+                  "security_name":(s.get("security_names") or {}).get(sym),
+                  "discovery":(s.get("discovery") or {}).get(sym),
+                  "result":(s.get("results") or {}).get(sym),
+              }
+          open("nasdaq-xray/audit_removed_22_20260930.json","w").write(json.dumps(out,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
+          print(json.dumps(out,sort_keys=True))
+          PY
+      - name: Commit
+        run: |
+          set -euo pipefail
+          git config user.name "xray-dataplane-bot"
+          git config user.email "xray-dataplane-bot@users.noreply.github.com"
+          cp nasdaq-xray/audit_removed_22_20260930.json /tmp/audit.json
+          git fetch origin main
+          git reset --hard origin/main
+          cp /tmp/audit.json nasdaq-xray/audit_removed_22_20260930.json
+          git add nasdaq-xray/audit_removed_22_20260930.json
+          git commit -m "chore(xray): audit removed 22 [skip ci]" || exit 0
+          git push origin HEAD:main
