@@ -42,6 +42,9 @@ def main():
     p=json.loads(PRICE.read_text())
     ptr=json.loads(POINTER.read_text())
     ps=ptr.get("state_json") or {}
+    if isinstance(ps,str):
+        ps=json.loads(ps)
+    assert isinstance(ps,dict)
     asof=s["asof_et"]
     assert s["task_id"]==u["task_id"]==o["task_id"]==p["task_id"]==TASK
     assert u["asof_et"]==p["asof_et"]==asof and o["base_asof_et"]==asof
