@@ -41,11 +41,14 @@ def main():
     st,info=price_classify(low,exp[-1],exp,"TEST")
     assert st=="FAIL_DV20",(st,info)
 
-    st,info=resolver_classify(exact,exp[-1],exp,"TEST")
+    history_prefix={f"H{i:03d}":(100.0,1_000_000.0) for i in range(260)}
+    rich_exact={**history_prefix,**exact}
+    rich_mid={**history_prefix,**mid}
+    st,info=resolver_classify(rich_exact,exp[-1],exp,"TEST")
     assert st=="PASS_HARD_GATES",(st,info)
     assert info["known_session_count"]==20 and info["missing_sessions"]==[]
 
-    st,info=resolver_classify(mid,exp[-1],exp,"TEST")
+    st,info=resolver_classify(rich_mid,exp[-1],exp,"TEST")
     assert st!="PASS_HARD_GATES",(st,info)
 
     sina=load_sina()
