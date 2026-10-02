@@ -1,0 +1,103 @@
+name: XRAY Strict G9 Gate
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/strict_g9_probe.py"
+      - "nasdaq-xray/g9_entitlement_authority.json"
+      - ".github/workflows/xray-strict-g9-gate.yml"
+  schedule:
+    - cron: "32 * * * 1-5"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: xray-strict-g9-gate
+  cancel-in-progress: true
+
+jobs:
+  strict-g9:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      TRADESTATION_CLIENT_ID: ${{ secrets.TRADESTATION_CLIENT_ID }}
+      TRADESTATION_CLIENT_SECRET: ${{ secrets.TRADESTATION_CLIENT_SECRET }}
+      TRADESTATION_REFRESH_TOKEN: ${{ secrets.TRADESTATION_REFRESH_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 1}
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+
+      - name: Compile strict G9 probe
+        run: python -m py_compile nasdaq-xray/strict_g9_probe.py
+
+      - name: Run strict fail-closed G9 probe
+        run: python nasdaq-xray/strict_g9_probe.py
+
+      - name: Structural audit
+        run: |
+          python - <<'PY'
+          import json
+          p="nasdaq-xray/strict_g9_runtime_state.json"
+          j=json.load(open(p))
+          assert j["schema"]=="XRAY_STRICT_G9_RUNTIME_V1"
+          assert j["execution"]=="NONE"
+          assert j["real_money"]=="NO-GO"
+          assert j["alpha_authority"] is False
+          assert isinstance(j["g9_pass"],bool)
+          if j["g9_pass"]:
+              assert j["status"]=="G9_PASS"
+              assert j["authority_status"]=="PROVEN"
+              assert j["technical_status"]=="PASS_AWAITING_ENTITLEMENT_AUTHORITY"
+              assert set(j.get("technical_evidence",{}))=={"AAPL","NVDA"}
+              for sym,v in j["technical_evidence"].items():
+                  assert v["is_delayed"] is False
+                  assert v["quote_age_seconds"] <= 60
+                  assert v["trade_age_seconds"] <= 60
+                  assert v["max_quote_trade_skew_seconds"] <= 15
+          print("XRAY_STRICT_G9_STRUCTURAL=PASS")
+          PY
+
+      - name: Commit only meaningful gate changes or fresh PASS
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp nasdaq-xray/strict_g9_runtime_state.json /tmp/new_g9.json
+          git fetch origin main
+          git reset --hard origin/main
+          old="nasdaq-xray/strict_g9_runtime_state.json"
+          should_commit="$(python - <<'PY'
+          import json, pathlib
+          new=json.load(open("/tmp/new_g9.json"))
+          try: old=json.load(open("nasdaq-xray/strict_g9_runtime_state.json"))
+          except Exception: old={}
+          keys=("status","reason","g9_pass","authority_status","technical_status","provider")
+          changed=any(old.get(k)!=new.get(k) for k in keys)
+          # A real PASS is freshness-sensitive, so persist each successful RTH proof.
+          print("yes" if changed or new.get("g9_pass") is True else "no")
+          PY
+          )"
+          if [ "$should_commit" != "yes" ]; then
+            echo "XRAY_STRICT_G9_COMMIT=NO_SEMANTIC_CHANGE"
+            exit 0
+          fi
+          cp /tmp/new_g9.json "$old"
+          git config user.name "xray-g9-bot"
+          git config user.email "xray-g9-bot@users.noreply.github.com"
+          git add "$old"
+          git commit -m "chore(xray): refresh strict G9 gate [skip ci]"
+          for attempt in 1 2 3 4 5; do
+            if git push origin HEAD:main; then
+              echo "XRAY_STRICT_G9_COMMIT=PASS"
+              exit 0
+            fi
+            git fetch origin main
+            git rebase origin/main || { git rebase --abort || true; git reset --hard origin/main; cp /tmp/new_g9.json "$old"; git add "$old"; git commit -m "chore(xray): refresh strict G9 gate [skip ci]"; }
+            sleep $((attempt*2))
+          done
+          echo "XRAY_STRICT_G9_COMMIT=FAIL" >&2
+          exit 1
