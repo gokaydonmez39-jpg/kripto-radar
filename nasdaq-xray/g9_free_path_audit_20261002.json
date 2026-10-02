@@ -16,18 +16,19 @@
   "provider_findings": [
     {
       "provider": "Longbridge OpenAPI",
-      "status": "NONQUALIFYING_STRICT_G9",
+      "status": "STRONGEST_ZERO_DOLLAR_TECHNICAL_CANDIDATE_BUT_LINEAGE_UNPROVEN",
       "proven": [
         "US LV1 OpenAPI included free",
         "real-time one-level bid/ask",
-        "real-time trades with timestamps",
+        "real-time trades with trade timestamps",
+        "official Longbridge SDK example converts PushDepth Sequence into event time via time.UnixMicro(sequence/1000)",
         "live API callable"
       ],
       "blocker": [
-        "Official OpenAPI docs do not identify free US LV1 as consolidated UTP Tape-C/National NBBO",
-        "depth payload exposed through current connector lacks independent quote timestamp"
+        "Official reviewed Longbridge material does not explicitly identify free US LV1 OpenAPI feed as consolidated UTP Tape-C UQDF+UTDF / National NBBO",
+        "current connected ChatGPT Longbridge depth tool surface returns asks/bids but does not expose raw PushDepth Sequence, so the canonical scheduler cannot yet prove independent quote-event time through this connector"
       ],
-      "conclusion": "Useful real-time auxiliary feed; never G9 PASS under strict A+B"
+      "conclusion": "Strongest permanent-$0 technical candidate. G9-A remains UNKNOWN and current scheduler surface does not expose the raw sequence needed for exact G9-B proof. Never G9 PASS until both are proven."
     },
     {
       "provider": "TradeStation API",
@@ -110,5 +111,7 @@
     "evidence": "Both account_balance and stock_positions return 403308 Target API is not in authorized scope",
     "repair": "User must reconnect/re-authorize Longbridge OAuth; plain token refresh does not change scopes. After reauth, Health automatically probes only account_balance + stock_positions read-only."
   },
-  "no_policy_weakening": true
+  "no_policy_weakening": true,
+  "updated_at_utc": "2026-10-02T18:00:50.344Z",
+  "longbridge_reopen_condition": "Primary-source statement that free US LV1 OpenAPI is consolidated UTP Tape-C/National NBBO or documented equivalent, plus scheduler-callable raw PushDepth Sequence/timestamp evidence under the user's lawful entitlement."
 }
