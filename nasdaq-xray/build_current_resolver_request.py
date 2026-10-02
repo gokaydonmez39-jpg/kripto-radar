@@ -87,9 +87,9 @@ def main():
               and br.get("execution")=="NONE" and br.get("real_money")=="NO-GO"
               and br.get("asof_et")==asof
               and br.get("queue_hash")==s["queue_hash"]
-              and br.get("compiled_policy_hash")=="ba5134d39009fca2801d482302150732ba47c5a3f0c474e8764bf412cad49b1a"
-              and br.get("compiled_policy_version")=="C4.13"
-              and br.get("compiled_policy_blob_sha")=="edda430faf4057c214fee483e0f7c503c2418462"
+              and br.get("compiled_policy_hash")=="bc4ad11c4029bf5feb5399ae3aa7af9c9c8dd7ad6c44119bac4e5734287b931e"
+              and br.get("compiled_policy_version")=="C4.14"
+              and br.get("compiled_policy_blob_sha")=="b41a40403c03e8884ee90d5cce2e0844d2bea0cd"
               and br.get("settlement_status")=="PASS"
             ):
                 current_policy_bridges.append((bridge,br))
@@ -112,9 +112,9 @@ def main():
       "settlement_bridge_blob_sha":settlement_bridge_blob_sha,
       "settlement_bridge_path":settlement_bridge_path,
       "compiled_policy_path":"nasdaq-xray/chatgpt_compiled_policy_v3.json",
-      "compiled_policy_blob_sha":"edda430faf4057c214fee483e0f7c503c2418462",
-      "compiled_policy_hash":"ba5134d39009fca2801d482302150732ba47c5a3f0c474e8764bf412cad49b1a",
-      "compiled_policy_version":"C4.13",
+      "compiled_policy_blob_sha":"b41a40403c03e8884ee90d5cce2e0844d2bea0cd",
+      "compiled_policy_hash":"bc4ad11c4029bf5feb5399ae3aa7af9c9c8dd7ad6c44119bac4e5734287b931e",
+      "compiled_policy_version":"C4.14",
       "settlement_policy":"ALPACA_HISTORICAL_SIP_DAILY_AFTER_15M__AAPL_NVDA_PLUS_ONE_PRIOR_CURRENT_CORE__RALLIES_MASSIVE_OHLC_0_01_CROSSCHECK__SIP_VOLUME_AUTHORITY__FAIL_CLOSED__DELAYED_SIP_NEVER_G9",
       "settlement_symbols":["AAPL","NVDA",settlement_core_symbol] if settlement_required else [],
       "settlement_core_symbol":settlement_core_symbol,
