@@ -1,7 +1,7 @@
 {
   "alpha_authority": false,
   "execution": "NONE",
-  "generated_at_utc": "2026-10-02T11:39:34.596179+00:00",
+  "generated_at_utc": "2026-10-02T11:40:03.246384+00:00",
   "real_money": "NO-GO",
   "schema": "XRAY_EXTERNAL_HEALTH_V1",
   "sources": {
@@ -9,11 +9,16 @@
       "reason": "CLOUDFLARE_RADAR_TOKEN_MISSING",
       "status": "NOT_CONFIGURED_OPTIONAL"
     },
+    "cloudflare_status": {
+      "description": "Minor Service Outage",
+      "indicator": "minor",
+      "status": "DEGRADED"
+    },
     "github_status": {
       "description": "All Systems Operational",
       "indicator": "none",
       "status": "PASS"
     }
   },
-  "status": "PASS"
+  "status": "DEGRADED"
 }
