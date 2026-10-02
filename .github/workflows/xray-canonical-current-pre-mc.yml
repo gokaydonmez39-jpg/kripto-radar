@@ -66,12 +66,73 @@ jobs:
             nasdaq-xray/build_current_resolver_request.py
       - name: Install zero-dollar runtime
         run: python -m pip install --disable-pip-version-check akshare==1.18.95 pandas_market_calendars
+      - name: Completed-session epoch rollover guard
+        id: rollover
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, os
+          from datetime import datetime, timezone, timedelta
+          import pandas_market_calendars as mcal
+
+          ptr=json.load(open("nasdaq-xray/chatgpt_canonical_state_v2.json"))
+          ps=ptr.get("state_json") or {}
+          if isinstance(ps,str): ps=json.loads(ps)
+          term=json.load(open("nasdaq-xray/canonical_current_terminal.json"))
+          pointer_asof=str(ps.get("asof_et") or "")
+          terminal_asof=str(term.get("asof_et") or "")
+          phase=((ps.get("work_cursor") or {}).get("PHASE") or "")
+          now=datetime.now(timezone.utc)
+          cal=mcal.get_calendar("NASDAQ")
+          sched=cal.schedule(
+              start_date=(now.date()-timedelta(days=15)).isoformat(),
+              end_date=(now.date()+timedelta(days=1)).isoformat(),
+          )
+          completed=[]
+          for idx,row in sched.iterrows():
+              if row["market_close"].to_pydatetime()<=now:
+                  completed.append(idx.date().isoformat())
+          if not completed:
+              raise RuntimeError("NO_COMPLETED_NASDAQ_SESSION")
+          latest_completed=completed[-1]
+          if pointer_asof and pointer_asof>latest_completed:
+              raise RuntimeError(f"POINTER_ASOF_FUTURE:{pointer_asof}>{latest_completed}")
+
+          frozen=(
+              phase=="TERMINAL"
+              and pointer_asof
+              and terminal_asof==pointer_asof
+              and term.get("full_end_to_end_research_pass") is True
+              and term.get("status")=="FULL_E2E_RESEARCH_PASS"
+              and latest_completed==pointer_asof
+          )
+          build=not frozen
+          with open(os.environ["GITHUB_OUTPUT"],"a") as out:
+              out.write(f"build={'true' if build else 'false'}\n")
+              out.write(f"latest_completed={latest_completed}\n")
+              out.write(f"pointer_asof={pointer_asof}\n")
+          print({
+              "build":build,
+              "latest_completed":latest_completed,
+              "pointer_asof":pointer_asof,
+              "terminal_asof":terminal_asof,
+              "phase":phase,
+              "reason":"FREEZE_COMPLETED_TERMINAL_EPOCH_UNTIL_NEXT_RTH_CLOSE" if frozen else "NEW_OR_INCOMPLETE_EPOCH",
+          })
+          PY
+      - name: Frozen completed epoch healthy no-op
+        if: steps.rollover.outputs.build != 'true'
+        run: echo "XRAY_PRE_MC=HEALTHY_NOOP_COMPLETED_EPOCH pointer_asof=${{ steps.rollover.outputs.pointer_asof }} latest_completed=${{ steps.rollover.outputs.latest_completed }}"
       - name: Build identity-only full universe
+        if: steps.rollover.outputs.build == 'true'
         timeout-minutes: 8
         run: python nasdaq-xray/sina_stage.py
       - name: Extract unresolved set
+        if: steps.rollover.outputs.build == 'true'
         run: python nasdaq-xray/extract_unknown_manifest.py
       - name: Prepare identity-only no-op overlay
+        if: steps.rollover.outputs.build == 'true'
         run: |
           python - <<'PY'
           import json,pathlib
@@ -96,12 +157,16 @@ jobs:
           (root/"canonical_current_resolution_overlay.json").write_text(json.dumps(obj,sort_keys=True,indent=2)+"\n")
           PY
       - name: Build current master manifest
+        if: steps.rollover.outputs.build == 'true'
         run: python nasdaq-xray/build_current_master_manifest.py
       - name: Build policy-ordered PRICE-DV20
+        if: steps.rollover.outputs.build == 'true'
         run: python nasdaq-xray/price_dv20_recover_from_fullstate.py
       - name: Build resolver bridge request
+        if: steps.rollover.outputs.build == 'true'
         run: python nasdaq-xray/build_current_resolver_request.py
       - name: Structural gate
+        if: steps.rollover.outputs.build == 'true'
         run: |
           python - <<'PY'
           import json
@@ -135,6 +200,7 @@ jobs:
           print({"asof":m["asof_et"],"master_status":m["status"],"master_unknown":m["unknown_count"],"price_dv20_unknown":p["unknown_count"],"price_dv20_pass":p["pass_count"],"resolver_request_status":q["status"],"settlement_required":q["settlement_required"]})
           PY
       - name: Commit current pre-MC artifacts
+        if: steps.rollover.outputs.build == 'true'
         shell: bash
         run: |
           set -euo pipefail
