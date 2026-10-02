@@ -74,8 +74,8 @@ jobs:
                     and j.get("input_path")==expected_path
                     and j.get("input_blob_sha")==price_blob
                     and j.get("input_pass_hash")==expected_hash
-                    and j.get("policy_hash")=="987982f0d17fc0f01a28fe22540fc3e09d4e2f28e3aa1b40c0113e3112b44c16"
-                    and j.get("policy_version")=="C4.11"
+                    and j.get("policy_hash")=="9a7fdf46c2bda80343c4ecf0aca5eeb853faee435f758139e3f3f2582050e5c6"
+                    and j.get("policy_version")=="C4.12"
                     and int(j.get("input_count",-1))==int(expected_count)
                     and (j.get("counts") or {}).get("TOTAL")==expected_count
                     and set((j.get("results") or {}).keys())==set(p.get("pass_symbols") or [])
@@ -104,8 +104,8 @@ jobs:
                             and sj.get("status")=="COMMITTED"
                             and sj.get("asof_et")==expected_asof
                             and sj.get("queue_hash")==m.get("queue_hash")
-                            and sj.get("compiled_policy_hash")=="987982f0d17fc0f01a28fe22540fc3e09d4e2f28e3aa1b40c0113e3112b44c16"
-                            and sj.get("compiled_policy_version")=="C4.11"
+                            and sj.get("compiled_policy_hash")=="9a7fdf46c2bda80343c4ecf0aca5eeb853faee435f758139e3f3f2582050e5c6"
+                            and sj.get("compiled_policy_version")=="C4.12"
                             and sj.get("settlement_status")=="PASS"
                           )
                   if ok: valid.append(fp)
