@@ -1,0 +1,4432 @@
+{
+  "asof_et": "2026-10-01",
+  "counts": {
+    "FAIL_HISTORY": 12,
+    "PASS_HISTORY": 259
+  },
+  "execution": "NONE",
+  "input_count": 271,
+  "pass_count": 259,
+  "pass_hash": "d8f16f24108a6b408d342fee5a381717586576104fbbfdeda177157fe50d56cf",
+  "pass_symbols": [
+    "AAL",
+    "AAPL",
+    "ABNB",
+    "ACGL",
+    "ADBE",
+    "ADI",
+    "ADP",
+    "ADSK",
+    "AEP",
+    "AFRM",
+    "AGNC",
+    "ALAB",
+    "ALGN",
+    "ALNY",
+    "AMAT",
+    "AMD",
+    "AMGN",
+    "AMZN",
+    "APA",
+    "APP",
+    "APPN",
+    "ARM",
+    "ASML",
+    "ASO",
+    "AVGO",
+    "BEAM",
+    "BIIB",
+    "BKNG",
+    "BKR",
+    "BMRN",
+    "BNTX",
+    "BSP",
+    "BULL",
+    "BZ",
+    "CAR",
+    "CART",
+    "CDNS",
+    "CDW",
+    "CHA",
+    "CHDN",
+    "CHKP",
+    "CHRD",
+    "CHRW",
+    "CHTR",
+    "CHYM",
+    "CINF",
+    "CMCSA",
+    "CME",
+    "COIN",
+    "COLM",
+    "COO",
+    "COST",
+    "CPB",
+    "CPRT",
+    "CROX",
+    "CRSP",
+    "CRWD",
+    "CRWV",
+    "CSCO",
+    "CSGP",
+    "CSX",
+    "CTAS",
+    "CTSH",
+    "CZR",
+    "DASH",
+    "DBX",
+    "DDOG",
+    "DJT",
+    "DKNG",
+    "DLTR",
+    "DOCU",
+    "DOX",
+    "DPZ",
+    "DXCM",
+    "EBAY",
+    "EEFT",
+    "ENPH",
+    "ENTG",
+    "EQIX",
+    "ERIC",
+    "ETOR",
+    "EVRG",
+    "EXC",
+    "EXE",
+    "EXPE",
+    "FANG",
+    "FAST",
+    "FFIV",
+    "FIGR",
+    "FIVE",
+    "FIVN",
+    "FLEX",
+    "FOXA",
+    "FSLR",
+    "FSLY",
+    "FTNT",
+    "FUTU",
+    "GEHC",
+    "GEN",
+    "GFS",
+    "GH",
+    "GILD",
+    "GLXY",
+    "GOOG",
+    "GOOGL",
+    "HAS",
+    "HON",
+    "HOOD",
+    "HSIC",
+    "HST",
+    "IBKR",
+    "ICLR",
+    "IDXX",
+    "ILMN",
+    "INCY",
+    "INTC",
+    "INTU",
+    "IONS",
+    "IOVA",
+    "IPGP",
+    "IRTC",
+    "ISRG",
+    "JAZZ",
+    "JBHT",
+    "JKHY",
+    "KDP",
+    "KLAC",
+    "LBTYK",
+    "LIN",
+    "LITE",
+    "LKQ",
+    "LNT",
+    "LOGI",
+    "LPLA",
+    "LRCX",
+    "LSCC",
+    "LULU",
+    "LYFT",
+    "MAR",
+    "MARA",
+    "MAT",
+    "MBLY",
+    "MCHP",
+    "MDB",
+    "MDLZ",
+    "MELI",
+    "MGNI",
+    "MIDD",
+    "MKSI",
+    "MKTX",
+    "MNST",
+    "MPWR",
+    "MRNA",
+    "MRVL",
+    "MSFT",
+    "MSTR",
+    "MTCH",
+    "MU",
+    "NBIS",
+    "NBIX",
+    "NDAQ",
+    "NFLX",
+    "NICE",
+    "NTAP",
+    "NTRA",
+    "NTRS",
+    "NTSK",
+    "NVDA",
+    "NWL",
+    "NWSA",
+    "NXPI",
+    "ODFL",
+    "OKTA",
+    "OLED",
+    "OLLI",
+    "ON",
+    "OPEN",
+    "ORLY",
+    "PANW",
+    "PAYX",
+    "PCAR",
+    "PDD",
+    "PEP",
+    "PFG",
+    "PLTR",
+    "PLUG",
+    "PODD",
+    "POOL",
+    "PSKY",
+    "PTC",
+    "PTON",
+    "PYPL",
+    "QCOM",
+    "QRVO",
+    "QS",
+    "REG",
+    "REGN",
+    "RGEN",
+    "RIOT",
+    "RIVN",
+    "RKLB",
+    "ROKU",
+    "ROP",
+    "ROST",
+    "SAIL",
+    "SBAC",
+    "SBUX",
+    "SIRI",
+    "SLM",
+    "SNPS",
+    "SNY",
+    "SONO",
+    "SSNC",
+    "STLD",
+    "STNE",
+    "STX",
+    "SWKS",
+    "TCBI",
+    "TCOM",
+    "TEAM",
+    "TECH",
+    "TGTX",
+    "TLN",
+    "TMUS",
+    "TRMB",
+    "TROW",
+    "TSCO",
+    "TSLA",
+    "TTD",
+    "TTWO",
+    "TWST",
+    "TXG",
+    "TXN",
+    "TXRH",
+    "UAL",
+    "ULTA",
+    "UPST",
+    "URBN",
+    "UTHR",
+    "VFS",
+    "VRSK",
+    "VRSN",
+    "VRTX",
+    "VTRS",
+    "WBD",
+    "WDAY",
+    "WDC",
+    "WING",
+    "WIX",
+    "WMT",
+    "WTW",
+    "WYNN",
+    "XEL",
+    "Z",
+    "ZBRA",
+    "ZG",
+    "ZION",
+    "ZM",
+    "ZS"
+  ],
+  "r92_ineligible": [
+    "ACB",
+    "AIRO",
+    "AKAM",
+    "APPS",
+    "ARRY",
+    "AZTA",
+    "BIDU",
+    "BILI",
+    "BIRD",
+    "BL",
+    "BLDP",
+    "BLNK",
+    "BMBL",
+    "BNGO",
+    "BRUN",
+    "BYND",
+    "CAN",
+    "CGC",
+    "CSIQ",
+    "EH",
+    "FATE",
+    "FCEL",
+    "FISV",
+    "FLGT",
+    "FTRE",
+    "GDS",
+    "GEMI",
+    "GRWG",
+    "GT",
+    "GTLB",
+    "HBAN",
+    "HELE",
+    "HTHT",
+    "HTZ",
+    "INMD",
+    "INO",
+    "IQ",
+    "JBLU",
+    "JD",
+    "KMB",
+    "LCID",
+    "LI",
+    "LINE",
+    "MEGL",
+    "MNDR",
+    "MVIS",
+    "NTES",
+    "NTLA",
+    "NVAX",
+    "NVCR",
+    "NXST",
+    "ONC",
+    "OTLY",
+    "PACB",
+    "PARA",
+    "PENN",
+    "PLBY",
+    "PTLO",
+    "QDEL",
+    "RPD",
+    "RUN",
+    "SABR",
+    "SEDG",
+    "SFIX",
+    "SHOP",
+    "SHPH",
+    "SOFI",
+    "SPWR",
+    "SRPT",
+    "STAA",
+    "SWMR",
+    "TER",
+    "TIGR",
+    "TLRY",
+    "TNDM",
+    "TREE",
+    "TRIP",
+    "UPWK",
+    "VISN",
+    "VRM",
+    "VUZI",
+    "WB",
+    "WKHS",
+    "XE",
+    "XRAY",
+    "XRX",
+    "ZLAB"
+  ],
+  "real_money": "NO-GO",
+  "results": {
+    "AAL": {
+      "info": {
+        "completed_week_count": 641,
+        "daily_bars": 3088,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 3088
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "AAPL": {
+      "info": {
+        "completed_week_count": 2080,
+        "daily_bars": 10044,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 10044
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "ABNB": {
+      "info": {
+        "completed_week_count": 303,
+        "daily_bars": 1458,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 1458
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "ACGL": {
+      "info": {
+        "completed_week_count": 1098,
+        "daily_bars": 5278,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 5278
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "ADBE": {
+      "info": {
+        "completed_week_count": 1979,
+        "daily_bars": 9549,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 9549
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "ADI": {
+      "info": {
+        "completed_week_count": 740,
+        "daily_bars": 3566,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 3566
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "ADP": {
+      "info": {
+        "completed_week_count": 814,
+        "daily_bars": 3915,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 3915
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "ADSK": {
+      "info": {
+        "completed_week_count": 1907,
+        "daily_bars": 9199,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 9199
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "AEP": {
+      "info": {
+        "completed_week_count": 313,
+        "daily_bars": 1506,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 1506
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "AFRM": {
+      "info": {
+        "completed_week_count": 298,
+        "daily_bars": 1436,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 1436
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "AGNC": {
+      "info": {
+        "completed_week_count": 859,
+        "daily_bars": 4140,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 4140
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "ALAB": {
+      "info": {
+        "completed_week_count": 132,
+        "daily_bars": 636,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 636
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "ALGN": {
+      "info": {
+        "completed_week_count": 1095,
+        "daily_bars": 5268,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 5268
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "ALNY": {
+      "info": {
+        "completed_week_count": 921,
+        "daily_bars": 4431,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 4431
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "AMAT": {
+      "info": {
+        "completed_week_count": 1950,
+        "daily_bars": 9409,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 9409
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "AMD": {
+      "info": {
+        "completed_week_count": 612,
+        "daily_bars": 2952,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 2952
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "AMGN": {
+      "info": {
+        "completed_week_count": 2080,
+        "daily_bars": 10044,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 10044
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "AMZN": {
+      "info": {
+        "completed_week_count": 1418,
+        "daily_bars": 6828,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 6828
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "APA": {
+      "info": {
+        "completed_week_count": 329,
+        "daily_bars": 1587,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 1587
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "APP": {
+      "info": {
+        "completed_week_count": 285,
+        "daily_bars": 1373,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 1373
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "APPN": {
+      "info": {
+        "completed_week_count": 488,
+        "daily_bars": 2351,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 2351
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "ARM": {
+      "info": {
+        "completed_week_count": 159,
+        "daily_bars": 765,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 765
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "ASML": {
+      "info": {
+        "completed_week_count": 1098,
+        "daily_bars": 5285,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 5285
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "ASO": {
+      "info": {
+        "completed_week_count": 313,
+        "daily_bars": 1506,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 1506
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "AVGO": {
+      "info": {
+        "completed_week_count": 556,
+        "daily_bars": 2683,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 2683
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "BEAM": {
+      "info": {
+        "completed_week_count": 347,
+        "daily_bars": 1672,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 1672
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "BIIB": {
+      "info": {
+        "completed_week_count": 1583,
+        "daily_bars": 7626,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 7626
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "BKNG": {
+      "info": {
+        "completed_week_count": 448,
+        "daily_bars": 2161,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 2161
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "BKR": {
+      "info": {
+        "completed_week_count": 251,
+        "daily_bars": 1209,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 1209
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "BMRN": {
+      "info": {
+        "completed_week_count": 1098,
+        "daily_bars": 5283,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 5283
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "BNTX": {
+      "info": {
+        "completed_week_count": 364,
+        "daily_bars": 1753,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 1753
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "BSP": {
+      "info": {
+        "completed_week_count": 810,
+        "daily_bars": 3884,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 3884
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "BULL": {
+      "info": {
+        "completed_week_count": 77,
+        "daily_bars": 370,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 370
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "BZ": {
+      "info": {
+        "completed_week_count": 277,
+        "daily_bars": 1333,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 1333
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "CAR": {
+      "info": {
+        "completed_week_count": 814,
+        "daily_bars": 3915,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 3915
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "CART": {
+      "info": {
+        "completed_week_count": 158,
+        "daily_bars": 762,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 762
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "CBRS": {
+      "info": {
+        "daily_max": 97,
+        "proof": "TWO_PROVIDER_BELOW_HISTORY_GATE",
+        "provider_results": [
+          {
+            "completed_week_count": 20,
+            "daily_bars": 97,
+            "source": "SINA_US_DAILY"
+          },
+          {
+            "completed_week_count": 20,
+            "daily_bars": 97,
+            "source": "YAHOO_CHART_FREE"
+          }
+        ],
+        "weekly_max": 20
+      },
+      "provider_meta": {
+        "nasdaq": {
+          "rows": 0,
+          "usable": 0
+        },
+        "sina": {
+          "usable": 97
+        },
+        "yahoo": {
+          "exchangeName": "NMS",
+          "usable": 97
+        }
+      },
+      "status": "FAIL_HISTORY"
+    },
+    "CDNS": {
+      "info": {
+        "completed_week_count": 2051,
+        "daily_bars": 9899,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 9899
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "CDW": {
+      "info": {
+        "completed_week_count": 688,
+        "daily_bars": 3316,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 3316
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "CHA": {
+      "info": {
+        "completed_week_count": 76,
+        "daily_bars": 366,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 366
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "CHDN": {
+      "info": {
+        "completed_week_count": 1098,
+        "daily_bars": 5285,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 5285
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "CHKP": {
+      "info": {
+        "completed_week_count": 1334,
+        "daily_bars": 6423,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 6423
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "CHRD": {
+      "info": {
+        "completed_week_count": 221,
+        "daily_bars": 1066,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 1066
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "CHRW": {
+      "info": {
+        "completed_week_count": 1266,
+        "daily_bars": 6092,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 6092
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "CHTR": {
+      "info": {
+        "completed_week_count": 818,
+        "daily_bars": 3942,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 3942
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "CHYM": {
+      "info": {
+        "completed_week_count": 68,
+        "daily_bars": 328,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 328
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "CINF": {
+      "info": {
+        "completed_week_count": 1660,
+        "daily_bars": 8002,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 8002
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "CMCSA": {
+      "info": {
+        "completed_week_count": 1880,
+        "daily_bars": 9071,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 9071
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "CME": {
+      "info": {
+        "completed_week_count": 814,
+        "daily_bars": 3915,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 3915
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "COIN": {
+      "info": {
+        "completed_week_count": 285,
+        "daily_bars": 1374,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 1374
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "COLM": {
+      "info": {
+        "completed_week_count": 1098,
+        "daily_bars": 5285,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 5285
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "COO": {
+      "info": {
+        "completed_week_count": 157,
+        "daily_bars": 757,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 757
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "COST": {
+      "info": {
+        "completed_week_count": 1854,
+        "daily_bars": 8946,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 8946
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "CPB": {
+      "info": {
+        "completed_week_count": 2037,
+        "daily_bars": 9833,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 9833
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "CPRT": {
+      "info": {
+        "completed_week_count": 1098,
+        "daily_bars": 5285,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 5285
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "CROX": {
+      "info": {
+        "completed_week_count": 1077,
+        "daily_bars": 5194,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 5194
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "CRSP": {
+      "info": {
+        "completed_week_count": 519,
+        "daily_bars": 2500,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 2500
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "CRWD": {
+      "info": {
+        "completed_week_count": 381,
+        "daily_bars": 1837,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 1837
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "CRWV": {
+      "info": {
+        "completed_week_count": 79,
+        "daily_bars": 380,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 380
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "CSCO": {
+      "info": {
+        "completed_week_count": 1911,
+        "daily_bars": 9220,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 9220
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "CSGP": {
+      "info": {
+        "completed_week_count": 1098,
+        "daily_bars": 5285,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 5285
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "CSX": {
+      "info": {
+        "completed_week_count": 562,
+        "daily_bars": 2709,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 2709
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "CTAS": {
+      "info": {
+        "completed_week_count": 1660,
+        "daily_bars": 8002,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 8002
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "CTSH": {
+      "info": {
+        "completed_week_count": 1361,
+        "daily_bars": 6553,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 6553
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "CZR": {
+      "info": {
+        "completed_week_count": 628,
+        "daily_bars": 3026,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 3026
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "DASH": {
+      "info": {
+        "completed_week_count": 157,
+        "daily_bars": 756,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 756
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "DBX": {
+      "info": {
+        "completed_week_count": 445,
+        "daily_bars": 2143,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 2143
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "DDOG": {
+      "info": {
+        "completed_week_count": 367,
+        "daily_bars": 1768,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 1768
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "DJT": {
+      "info": {
+        "completed_week_count": 131,
+        "daily_bars": 632,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 632
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "DKNG": {
+      "info": {
+        "completed_week_count": 336,
+        "daily_bars": 1618,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 1618
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "DLTR": {
+      "info": {
+        "completed_week_count": 1402,
+        "daily_bars": 6749,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 6749
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "DOCU": {
+      "info": {
+        "completed_week_count": 440,
+        "daily_bars": 2119,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 2119
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "DOX": {
+      "info": {
+        "completed_week_count": 614,
+        "daily_bars": 2955,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 2955
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "DPZ": {
+      "info": {
+        "completed_week_count": 914,
+        "daily_bars": 4402,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 4402
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "DXCM": {
+      "info": {
+        "completed_week_count": 889,
+        "daily_bars": 4280,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 4280
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "EBAY": {
+      "info": {
+        "completed_week_count": 1347,
+        "daily_bars": 6492,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 6492
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "EEFT": {
+      "info": {
+        "completed_week_count": 1098,
+        "daily_bars": 5285,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 5285
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "ENPH": {
+      "info": {
+        "completed_week_count": 740,
+        "daily_bars": 3566,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 3566
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "ENTG": {
+      "info": {
+        "completed_week_count": 1203,
+        "daily_bars": 5787,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 5787
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "EQIX": {
+      "info": {
+        "completed_week_count": 1098,
+        "daily_bars": 5284,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 5284
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "ERIC": {
+      "info": {
+        "completed_week_count": 1228,
+        "daily_bars": 5920,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 5920
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "ETOR": {
+      "info": {
+        "completed_week_count": 72,
+        "daily_bars": 348,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 348
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "EVRG": {
+      "info": {
+        "completed_week_count": 196,
+        "daily_bars": 943,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 943
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "EXC": {
+      "info": {
+        "completed_week_count": 366,
+        "daily_bars": 1764,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 1764
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "EXE": {
+      "info": {
+        "completed_week_count": 104,
+        "daily_bars": 501,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 501
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "EXPE": {
+      "info": {
+        "completed_week_count": 889,
+        "daily_bars": 4281,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 4281
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "FANG": {
+      "info": {
+        "completed_week_count": 688,
+        "daily_bars": 3316,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 3316
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "FAST": {
+      "info": {
+        "completed_week_count": 1660,
+        "daily_bars": 8007,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 8007
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "FFIV": {
+      "info": {
+        "completed_week_count": 1181,
+        "daily_bars": 5677,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 5677
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "FIGR": {
+      "info": {
+        "completed_week_count": 55,
+        "daily_bars": 266,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 266
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "FIVE": {
+      "info": {
+        "completed_week_count": 741,
+        "daily_bars": 3570,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 3570
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "FIVN": {
+      "info": {
+        "completed_week_count": 652,
+        "daily_bars": 3141,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 3141
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "FLEX": {
+      "info": {
+        "completed_week_count": 1453,
+        "daily_bars": 6992,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 6992
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "FOXA": {
+      "info": {
+        "completed_week_count": 393,
+        "daily_bars": 1896,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 1896
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "FRMI": {
+      "info": {
+        "daily_max": 252,
+        "proof": "TWO_PROVIDER_BELOW_HISTORY_GATE",
+        "provider_results": [
+          {
+            "completed_week_count": 52,
+            "daily_bars": 252,
+            "source": "SINA_US_DAILY"
+          },
+          {
+            "completed_week_count": 52,
+            "daily_bars": 252,
+            "source": "YAHOO_CHART_FREE"
+          }
+        ],
+        "weekly_max": 52
+      },
+      "provider_meta": {
+        "nasdaq": {
+          "rows": 0,
+          "usable": 0
+        },
+        "sina": {
+          "usable": 252
+        },
+        "yahoo": {
+          "exchangeName": "NMS",
+          "usable": 252
+        }
+      },
+      "status": "FAIL_HISTORY"
+    },
+    "FRVO": {
+      "info": {
+        "daily_max": 98,
+        "proof": "TWO_PROVIDER_BELOW_HISTORY_GATE",
+        "provider_results": [
+          {
+            "completed_week_count": 20,
+            "daily_bars": 98,
+            "source": "SINA_US_DAILY"
+          },
+          {
+            "completed_week_count": 20,
+            "daily_bars": 98,
+            "source": "YAHOO_CHART_FREE"
+          }
+        ],
+        "weekly_max": 20
+      },
+      "provider_meta": {
+        "nasdaq": {
+          "rows": 0,
+          "usable": 0
+        },
+        "sina": {
+          "usable": 98
+        },
+        "yahoo": {
+          "exchangeName": "NMS",
+          "usable": 98
+        }
+      },
+      "status": "FAIL_HISTORY"
+    },
+    "FSLR": {
+      "info": {
+        "completed_week_count": 889,
+        "daily_bars": 4281,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 4281
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "FSLY": {
+      "info": {
+        "completed_week_count": 385,
+        "daily_bars": 1854,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 1854
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "FTNT": {
+      "info": {
+        "completed_week_count": 880,
+        "daily_bars": 4242,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 4242
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "FUTU": {
+      "info": {
+        "completed_week_count": 395,
+        "daily_bars": 1903,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 1903
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "GEHC": {
+      "info": {
+        "completed_week_count": 195,
+        "daily_bars": 939,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 939
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "GEN": {
+      "info": {
+        "completed_week_count": 761,
+        "daily_bars": 3668,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 3668
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "GFS": {
+      "info": {
+        "completed_week_count": 257,
+        "daily_bars": 1236,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 1236
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "GH": {
+      "info": {
+        "completed_week_count": 417,
+        "daily_bars": 2007,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 2007
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "GILD": {
+      "info": {
+        "completed_week_count": 1565,
+        "daily_bars": 7539,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 7539
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "GLXY": {
+      "info": {
+        "completed_week_count": 72,
+        "daily_bars": 346,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 346
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "GOOG": {
+      "info": {
+        "completed_week_count": 652,
+        "daily_bars": 3142,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 3142
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "GOOGL": {
+      "info": {
+        "completed_week_count": 1019,
+        "daily_bars": 4916,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 4916
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "HAS": {
+      "info": {
+        "completed_week_count": 1860,
+        "daily_bars": 8966,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 8966
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "HON": {
+      "info": {
+        "completed_week_count": 281,
+        "daily_bars": 1355,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 1355
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "HONA": {
+      "info": {
+        "daily_max": 76,
+        "proof": "TWO_PROVIDER_BELOW_HISTORY_GATE",
+        "provider_results": [
+          {
+            "completed_week_count": 13,
+            "daily_bars": 67,
+            "source": "SINA_US_DAILY"
+          },
+          {
+            "completed_week_count": 15,
+            "daily_bars": 76,
+            "source": "YAHOO_CHART_FREE"
+          }
+        ],
+        "weekly_max": 15
+      },
+      "provider_meta": {
+        "nasdaq": {
+          "rows": 0,
+          "usable": 0
+        },
+        "sina": {
+          "usable": 67
+        },
+        "yahoo": {
+          "exchangeName": "NMS",
+          "usable": 76
+        }
+      },
+      "status": "FAIL_HISTORY"
+    },
+    "HOOD": {
+      "info": {
+        "completed_week_count": 270,
+        "daily_bars": 1300,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 1300
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "HSIC": {
+      "info": {
+        "completed_week_count": 1368,
+        "daily_bars": 6581,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 6581
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "HST": {
+      "info": {
+        "completed_week_count": 308,
+        "daily_bars": 1485,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 1485
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "IBKR": {
+      "info": {
+        "completed_week_count": 1013,
+        "daily_bars": 4884,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 4884
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "ICLR": {
+      "info": {
+        "completed_week_count": 712,
+        "daily_bars": 3435,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 3435
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "IDXX": {
+      "info": {
+        "completed_week_count": 1098,
+        "daily_bars": 5285,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 5285
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "ILMN": {
+      "info": {
+        "completed_week_count": 1121,
+        "daily_bars": 5391,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 5391
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "INCY": {
+      "info": {
+        "completed_week_count": 1098,
+        "daily_bars": 5285,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 5285
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "INIO": {
+      "info": {
+        "daily_max": 83,
+        "proof": "TWO_PROVIDER_BELOW_HISTORY_GATE",
+        "provider_results": [
+          {
+            "completed_week_count": 17,
+            "daily_bars": 83,
+            "source": "SINA_US_DAILY"
+          },
+          {
+            "completed_week_count": 16,
+            "daily_bars": 81,
+            "source": "YAHOO_CHART_FREE"
+          }
+        ],
+        "weekly_max": 17
+      },
+      "provider_meta": {
+        "nasdaq": {
+          "rows": 0,
+          "usable": 0
+        },
+        "sina": {
+          "usable": 83
+        },
+        "yahoo": {
+          "exchangeName": "NMS",
+          "usable": 81
+        }
+      },
+      "status": "FAIL_HISTORY"
+    },
+    "INTC": {
+      "info": {
+        "completed_week_count": 1984,
+        "daily_bars": 9580,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 9580
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "INTU": {
+      "info": {
+        "completed_week_count": 1504,
+        "daily_bars": 7246,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 7246
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "IOND": {
+      "info": {
+        "daily_max": 47,
+        "proof": "TWO_PROVIDER_BELOW_HISTORY_GATE",
+        "provider_results": [
+          {
+            "completed_week_count": 9,
+            "daily_bars": 47,
+            "source": "SINA_US_DAILY"
+          },
+          {
+            "completed_week_count": 9,
+            "daily_bars": 47,
+            "source": "YAHOO_CHART_FREE"
+          }
+        ],
+        "weekly_max": 9
+      },
+      "provider_meta": {
+        "nasdaq": {
+          "rows": 0,
+          "usable": 0
+        },
+        "sina": {
+          "usable": 47
+        },
+        "yahoo": {
+          "exchangeName": "NMS",
+          "usable": 47
+        }
+      },
+      "status": "FAIL_HISTORY"
+    },
+    "IONS": {
+      "info": {
+        "completed_week_count": 845,
+        "daily_bars": 4077,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 4077
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "IOVA": {
+      "info": {
+        "completed_week_count": 483,
+        "daily_bars": 2328,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 2328
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "IPGP": {
+      "info": {
+        "completed_week_count": 889,
+        "daily_bars": 4281,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 4281
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "IRTC": {
+      "info": {
+        "completed_week_count": 519,
+        "daily_bars": 2500,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 2500
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "ISRG": {
+      "info": {
+        "completed_week_count": 1126,
+        "daily_bars": 5414,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 5414
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "JAZZ": {
+      "info": {
+        "completed_week_count": 889,
+        "daily_bars": 4281,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 4281
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "JBHT": {
+      "info": {
+        "completed_week_count": 2236,
+        "daily_bars": 10777,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 10777
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "JKHY": {
+      "info": {
+        "completed_week_count": 1203,
+        "daily_bars": 5787,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 5787
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "KDP": {
+      "info": {
+        "completed_week_count": 314,
+        "daily_bars": 1515,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 1515
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "KLAC": {
+      "info": {
+        "completed_week_count": 1660,
+        "daily_bars": 8002,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 8002
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "LBTYK": {
+      "info": {
+        "completed_week_count": 694,
+        "daily_bars": 3348,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 3348
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "LIN": {
+      "info": {
+        "completed_week_count": 413,
+        "daily_bars": 1989,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 1989
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "LITE": {
+      "info": {
+        "completed_week_count": 582,
+        "daily_bars": 2807,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 2807
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "LKQ": {
+      "info": {
+        "completed_week_count": 740,
+        "daily_bars": 3566,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 3566
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "LNT": {
+      "info": {
+        "completed_week_count": 404,
+        "daily_bars": 1948,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 1948
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "LOGI": {
+      "info": {
+        "completed_week_count": 1098,
+        "daily_bars": 5285,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 5285
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "LPLA": {
+      "info": {
+        "completed_week_count": 814,
+        "daily_bars": 3915,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 3915
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "LRCX": {
+      "info": {
+        "completed_week_count": 1660,
+        "daily_bars": 8001,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 8001
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "LSCC": {
+      "info": {
+        "completed_week_count": 1098,
+        "daily_bars": 5285,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 5285
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "LULU": {
+      "info": {
+        "completed_week_count": 889,
+        "daily_bars": 4281,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 4281
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "LYFT": {
+      "info": {
+        "completed_week_count": 392,
+        "daily_bars": 1888,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 1888
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "MAR": {
+      "info": {
+        "completed_week_count": 672,
+        "daily_bars": 3238,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 3238
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "MARA": {
+      "info": {
+        "completed_week_count": 635,
+        "daily_bars": 3062,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 3062
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "MAT": {
+      "info": {
+        "completed_week_count": 814,
+        "daily_bars": 3915,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 3915
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "MBLY": {
+      "info": {
+        "completed_week_count": 205,
+        "daily_bars": 986,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 986
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "MCHP": {
+      "info": {
+        "completed_week_count": 1750,
+        "daily_bars": 8439,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 8439
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "MDB": {
+      "info": {
+        "completed_week_count": 467,
+        "daily_bars": 2249,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 2249
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "MDLN": {
+      "info": {
+        "daily_max": 198,
+        "proof": "TWO_PROVIDER_BELOW_HISTORY_GATE",
+        "provider_results": [
+          {
+            "completed_week_count": 41,
+            "daily_bars": 198,
+            "source": "SINA_US_DAILY"
+          },
+          {
+            "completed_week_count": 41,
+            "daily_bars": 198,
+            "source": "YAHOO_CHART_FREE"
+          }
+        ],
+        "weekly_max": 41
+      },
+      "provider_meta": {
+        "nasdaq": {
+          "rows": 0,
+          "usable": 0
+        },
+        "sina": {
+          "usable": 198
+        },
+        "yahoo": {
+          "exchangeName": "NMS",
+          "usable": 198
+        }
+      },
+      "status": "FAIL_HISTORY"
+    },
+    "MDLZ": {
+      "info": {
+        "completed_week_count": 688,
+        "daily_bars": 3316,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 3316
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "MELI": {
+      "info": {
+        "completed_week_count": 889,
+        "daily_bars": 4281,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 4281
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "MGNI": {
+      "info": {
+        "completed_week_count": 326,
+        "daily_bars": 1571,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 1571
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "MIDD": {
+      "info": {
+        "completed_week_count": 1098,
+        "daily_bars": 5218,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 5218
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "MKSI": {
+      "info": {
+        "completed_week_count": 1098,
+        "daily_bars": 5285,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 5285
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "MKTX": {
+      "info": {
+        "completed_week_count": 898,
+        "daily_bars": 4320,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 4320
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "MNST": {
+      "info": {
+        "completed_week_count": 768,
+        "daily_bars": 3702,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 3702
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "MPWR": {
+      "info": {
+        "completed_week_count": 896,
+        "daily_bars": 4310,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 4310
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "MRNA": {
+      "info": {
+        "completed_week_count": 408,
+        "daily_bars": 1964,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 1964
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "MRVL": {
+      "info": {
+        "completed_week_count": 1125,
+        "daily_bars": 5408,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 5408
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "MSFT": {
+      "info": {
+        "completed_week_count": 2001,
+        "daily_bars": 9662,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 9662
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "MSTR": {
+      "info": {
+        "completed_week_count": 1098,
+        "daily_bars": 5285,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 5285
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "MTCH": {
+      "info": {
+        "completed_week_count": 567,
+        "daily_bars": 2731,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 2731
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "MU": {
+      "info": {
+        "completed_week_count": 814,
+        "daily_bars": 3915,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 3915
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "NBIS": {
+      "info": {
+        "completed_week_count": 101,
+        "daily_bars": 488,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 488
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "NBIX": {
+      "info": {
+        "completed_week_count": 1098,
+        "daily_bars": 5285,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 5285
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "NDAQ": {
+      "info": {
+        "completed_week_count": 889,
+        "daily_bars": 4281,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 4281
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "NFLX": {
+      "info": {
+        "completed_week_count": 1026,
+        "daily_bars": 4939,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 4939
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "NICE": {
+      "info": {
+        "completed_week_count": 1098,
+        "daily_bars": 5284,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 5284
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "NTAP": {
+      "info": {
+        "completed_week_count": 1365,
+        "daily_bars": 6575,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 6575
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "NTRA": {
+      "info": {
+        "completed_week_count": 587,
+        "daily_bars": 2829,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 2829
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "NTRS": {
+      "info": {
+        "completed_week_count": 743,
+        "daily_bars": 3579,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 3579
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "NTSK": {
+      "info": {
+        "completed_week_count": 54,
+        "daily_bars": 261,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 261
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "NVDA": {
+      "info": {
+        "completed_week_count": 1200,
+        "daily_bars": 5776,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 5776
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "NWL": {
+      "info": {
+        "completed_week_count": 407,
+        "daily_bars": 1962,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 1962
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "NWSA": {
+      "info": {
+        "completed_week_count": 691,
+        "daily_bars": 3333,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 3333
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "NXPI": {
+      "info": {
+        "completed_week_count": 834,
+        "daily_bars": 4017,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 4017
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "ODFL": {
+      "info": {
+        "completed_week_count": 1203,
+        "daily_bars": 5748,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 5748
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "OKTA": {
+      "info": {
+        "completed_week_count": 495,
+        "daily_bars": 2384,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 2384
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "OLED": {
+      "info": {
+        "completed_week_count": 688,
+        "daily_bars": 3316,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 3316
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "OLLI": {
+      "info": {
+        "completed_week_count": 585,
+        "daily_bars": 2820,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 2820
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "ON": {
+      "info": {
+        "completed_week_count": 599,
+        "daily_bars": 2888,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 2888
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "OPEN": {
+      "info": {
+        "completed_week_count": 301,
+        "daily_bars": 1451,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 1451
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "ORLY": {
+      "info": {
+        "completed_week_count": 1500,
+        "daily_bars": 7221,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 7221
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "PANW": {
+      "info": {
+        "completed_week_count": 257,
+        "daily_bars": 1239,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 1239
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "PAYP": {
+      "info": {
+        "daily_max": 141,
+        "proof": "TWO_PROVIDER_BELOW_HISTORY_GATE",
+        "provider_results": [
+          {
+            "completed_week_count": 29,
+            "daily_bars": 141,
+            "source": "SINA_US_DAILY"
+          },
+          {
+            "completed_week_count": 29,
+            "daily_bars": 141,
+            "source": "YAHOO_CHART_FREE"
+          }
+        ],
+        "weekly_max": 29
+      },
+      "provider_meta": {
+        "nasdaq": {
+          "rows": 0,
+          "usable": 0
+        },
+        "sina": {
+          "usable": 141
+        },
+        "yahoo": {
+          "exchangeName": "NMS",
+          "usable": 141
+        }
+      },
+      "status": "FAIL_HISTORY"
+    },
+    "PAYX": {
+      "info": {
+        "completed_week_count": 1660,
+        "daily_bars": 8007,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 8007
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "PCAR": {
+      "info": {
+        "completed_week_count": 1854,
+        "daily_bars": 8946,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 8946
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "PDD": {
+      "info": {
+        "completed_week_count": 427,
+        "daily_bars": 2057,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 2057
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "PEP": {
+      "info": {
+        "completed_week_count": 2480,
+        "daily_bars": 11984,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 11984
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "PFG": {
+      "info": {
+        "completed_week_count": 458,
+        "daily_bars": 2208,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 2208
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "PLTR": {
+      "info": {
+        "completed_week_count": 313,
+        "daily_bars": 1508,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 1508
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "PLUG": {
+      "info": {
+        "completed_week_count": 1094,
+        "daily_bars": 5265,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 5265
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "PODD": {
+      "info": {
+        "completed_week_count": 889,
+        "daily_bars": 4281,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 4281
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "POOL": {
+      "info": {
+        "completed_week_count": 1098,
+        "daily_bars": 5285,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 5285
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "PSKY": {
+      "info": {
+        "completed_week_count": 60,
+        "daily_bars": 290,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 290
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "PTC": {
+      "info": {
+        "completed_week_count": 614,
+        "daily_bars": 2956,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 2956
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "PTON": {
+      "info": {
+        "completed_week_count": 366,
+        "daily_bars": 1763,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 1763
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "PYPL": {
+      "info": {
+        "completed_week_count": 584,
+        "daily_bars": 2818,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 2818
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "QCOM": {
+      "info": {
+        "completed_week_count": 1700,
+        "daily_bars": 8200,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 8200
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "QNT": {
+      "info": {
+        "daily_max": 83,
+        "proof": "TWO_PROVIDER_BELOW_HISTORY_GATE",
+        "provider_results": [
+          {
+            "completed_week_count": 17,
+            "daily_bars": 83,
+            "source": "SINA_US_DAILY"
+          },
+          {
+            "completed_week_count": 17,
+            "daily_bars": 83,
+            "source": "YAHOO_CHART_FREE"
+          }
+        ],
+        "weekly_max": 17
+      },
+      "provider_meta": {
+        "nasdaq": {
+          "rows": 0,
+          "usable": 0
+        },
+        "sina": {
+          "usable": 83
+        },
+        "yahoo": {
+          "exchangeName": "NGM",
+          "usable": 83
+        }
+      },
+      "status": "FAIL_HISTORY"
+    },
+    "QRVO": {
+      "info": {
+        "completed_week_count": 612,
+        "daily_bars": 2953,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 2953
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "QS": {
+      "info": {
+        "completed_week_count": 305,
+        "daily_bars": 1467,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 1467
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "REG": {
+      "info": {
+        "completed_week_count": 411,
+        "daily_bars": 1980,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 1980
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "REGN": {
+      "info": {
+        "completed_week_count": 1098,
+        "daily_bars": 5284,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 5284
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "RGEN": {
+      "info": {
+        "completed_week_count": 1027,
+        "daily_bars": 4946,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 4946
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "RIOT": {
+      "info": {
+        "completed_week_count": 467,
+        "daily_bars": 2249,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 2249
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "RIVN": {
+      "info": {
+        "completed_week_count": 255,
+        "daily_bars": 1227,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 1227
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "RKLB": {
+      "info": {
+        "completed_week_count": 266,
+        "daily_bars": 1281,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 1281
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "ROKU": {
+      "info": {
+        "completed_week_count": 470,
+        "daily_bars": 2264,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 2264
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "ROP": {
+      "info": {
+        "completed_week_count": 169,
+        "daily_bars": 814,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 814
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "ROST": {
+      "info": {
+        "completed_week_count": 1854,
+        "daily_bars": 8941,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 8941
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "SAIL": {
+      "info": {
+        "completed_week_count": 85,
+        "daily_bars": 410,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 410
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "SBAC": {
+      "info": {
+        "completed_week_count": 1075,
+        "daily_bars": 5165,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 5165
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "SBUX": {
+      "info": {
+        "completed_week_count": 1673,
+        "daily_bars": 8071,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 8071
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "SIRI": {
+      "info": {
+        "completed_week_count": 1073,
+        "daily_bars": 5147,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 5147
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "SKHY": {
+      "info": {
+        "daily_max": 59,
+        "proof": "TWO_PROVIDER_BELOW_HISTORY_GATE",
+        "provider_results": [
+          {
+            "completed_week_count": 11,
+            "daily_bars": 58,
+            "source": "SINA_US_DAILY"
+          },
+          {
+            "completed_week_count": 12,
+            "daily_bars": 59,
+            "source": "YAHOO_CHART_FREE"
+          }
+        ],
+        "weekly_max": 12
+      },
+      "provider_meta": {
+        "nasdaq": {
+          "rows": 0,
+          "usable": 0
+        },
+        "sina": {
+          "usable": 58
+        },
+        "yahoo": {
+          "exchangeName": "NMS",
+          "usable": 59
+        }
+      },
+      "status": "FAIL_HISTORY"
+    },
+    "SLM": {
+      "info": {
+        "completed_week_count": 772,
+        "daily_bars": 3722,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 3722
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "SNPS": {
+      "info": {
+        "completed_week_count": 1098,
+        "daily_bars": 5285,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 5285
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "SNY": {
+      "info": {
+        "completed_week_count": 404,
+        "daily_bars": 1948,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 1948
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "SONO": {
+      "info": {
+        "completed_week_count": 426,
+        "daily_bars": 2052,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 2052
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "SPCX": {
+      "info": {
+        "daily_max": 77,
+        "proof": "TWO_PROVIDER_BELOW_HISTORY_GATE",
+        "provider_results": [
+          {
+            "completed_week_count": 16,
+            "daily_bars": 77,
+            "source": "SINA_US_DAILY"
+          },
+          {
+            "completed_week_count": 16,
+            "daily_bars": 77,
+            "source": "YAHOO_CHART_FREE"
+          }
+        ],
+        "weekly_max": 16
+      },
+      "provider_meta": {
+        "nasdaq": {
+          "rows": 0,
+          "usable": 0
+        },
+        "sina": {
+          "usable": 77
+        },
+        "yahoo": {
+          "exchangeName": "NMS",
+          "usable": 77
+        }
+      },
+      "status": "FAIL_HISTORY"
+    },
+    "SSNC": {
+      "info": {
+        "completed_week_count": 859,
+        "daily_bars": 4140,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 4140
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "STLD": {
+      "info": {
+        "completed_week_count": 1098,
+        "daily_bars": 5285,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 5285
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "STNE": {
+      "info": {
+        "completed_week_count": 414,
+        "daily_bars": 1993,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 1993
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "STX": {
+      "info": {
+        "completed_week_count": 922,
+        "daily_bars": 4433,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 4433
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "SWKS": {
+      "info": {
+        "completed_week_count": 1098,
+        "daily_bars": 5285,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 5285
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "TCBI": {
+      "info": {
+        "completed_week_count": 962,
+        "daily_bars": 4631,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 4631
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "TCOM": {
+      "info": {
+        "completed_week_count": 1075,
+        "daily_bars": 5183,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 5183
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "TEAM": {
+      "info": {
+        "completed_week_count": 564,
+        "daily_bars": 2718,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 2718
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "TECH": {
+      "info": {
+        "completed_week_count": 1098,
+        "daily_bars": 5285,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 5285
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "TGTX": {
+      "info": {
+        "completed_week_count": 688,
+        "daily_bars": 3316,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 3316
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "TLN": {
+      "info": {
+        "completed_week_count": 198,
+        "daily_bars": 954,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 954
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "TMUS": {
+      "info": {
+        "completed_week_count": 570,
+        "daily_bars": 2748,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 2748
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "TRMB": {
+      "info": {
+        "completed_week_count": 1098,
+        "daily_bars": 5285,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 5285
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "TROW": {
+      "info": {
+        "completed_week_count": 1688,
+        "daily_bars": 8129,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 8129
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "TSCO": {
+      "info": {
+        "completed_week_count": 1098,
+        "daily_bars": 5285,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 5285
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "TSLA": {
+      "info": {
+        "completed_week_count": 814,
+        "daily_bars": 3915,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 3915
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "TTD": {
+      "info": {
+        "completed_week_count": 523,
+        "daily_bars": 2521,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 2521
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "TTWO": {
+      "info": {
+        "completed_week_count": 1096,
+        "daily_bars": 5268,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 5268
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "TWST": {
+      "info": {
+        "completed_week_count": 413,
+        "daily_bars": 1989,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 1989
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "TXG": {
+      "info": {
+        "completed_week_count": 368,
+        "daily_bars": 1773,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 1773
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "TXN": {
+      "info": {
+        "completed_week_count": 740,
+        "daily_bars": 3566,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 3566
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "TXRH": {
+      "info": {
+        "completed_week_count": 902,
+        "daily_bars": 4343,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 4343
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "UAL": {
+      "info": {
+        "completed_week_count": 421,
+        "daily_bars": 2027,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 2027
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "ULTA": {
+      "info": {
+        "completed_week_count": 889,
+        "daily_bars": 4281,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 4281
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "UPST": {
+      "info": {
+        "completed_week_count": 302,
+        "daily_bars": 1454,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 1454
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "URBN": {
+      "info": {
+        "completed_week_count": 1471,
+        "daily_bars": 7074,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 7074
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "UTHR": {
+      "info": {
+        "completed_week_count": 1098,
+        "daily_bars": 5284,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 5284
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "VFS": {
+      "info": {
+        "completed_week_count": 163,
+        "daily_bars": 786,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 786
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "VRSK": {
+      "info": {
+        "completed_week_count": 814,
+        "daily_bars": 3915,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 3915
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "VRSN": {
+      "info": {
+        "completed_week_count": 1251,
+        "daily_bars": 6014,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 6014
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "VRTX": {
+      "info": {
+        "completed_week_count": 1591,
+        "daily_bars": 7661,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 7661
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "VSNT": {
+      "info": {
+        "daily_max": 200,
+        "proof": "TWO_PROVIDER_BELOW_HISTORY_GATE",
+        "provider_results": [
+          {
+            "completed_week_count": 38,
+            "daily_bars": 187,
+            "source": "SINA_US_DAILY"
+          },
+          {
+            "completed_week_count": 41,
+            "daily_bars": 200,
+            "source": "YAHOO_CHART_FREE"
+          }
+        ],
+        "weekly_max": 41
+      },
+      "provider_meta": {
+        "nasdaq": {
+          "rows": 0,
+          "usable": 0
+        },
+        "sina": {
+          "usable": 187
+        },
+        "yahoo": {
+          "exchangeName": "NMS",
+          "usable": 200
+        }
+      },
+      "status": "FAIL_HISTORY"
+    },
+    "VTRS": {
+      "info": {
+        "completed_week_count": 306,
+        "daily_bars": 1474,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 1474
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "WBD": {
+      "info": {
+        "completed_week_count": 233,
+        "daily_bars": 1123,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 1123
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "WDAY": {
+      "info": {
+        "completed_week_count": 471,
+        "daily_bars": 2270,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 2270
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "WDC": {
+      "info": {
+        "completed_week_count": 740,
+        "daily_bars": 3566,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 3566
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "WING": {
+      "info": {
+        "completed_week_count": 589,
+        "daily_bars": 2842,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 2842
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "WIX": {
+      "info": {
+        "completed_week_count": 672,
+        "daily_bars": 3238,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 3238
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "WMT": {
+      "info": {
+        "completed_week_count": 2708,
+        "daily_bars": 13082,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 13082
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "WTW": {
+      "info": {
+        "completed_week_count": 273,
+        "daily_bars": 1314,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 1314
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "WYNN": {
+      "info": {
+        "completed_week_count": 1004,
+        "daily_bars": 4831,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 4831
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "XEL": {
+      "info": {
+        "completed_week_count": 456,
+        "daily_bars": 2199,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 2199
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "Z": {
+      "info": {
+        "completed_week_count": 580,
+        "daily_bars": 2798,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 2798
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "ZBRA": {
+      "info": {
+        "completed_week_count": 1098,
+        "daily_bars": 5285,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 5285
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "ZG": {
+      "info": {
+        "completed_week_count": 580,
+        "daily_bars": 2798,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 2798
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "ZION": {
+      "info": {
+        "completed_week_count": 1660,
+        "daily_bars": 7968,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 7968
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "ZM": {
+      "info": {
+        "completed_week_count": 389,
+        "daily_bars": 1874,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 1874
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "ZS": {
+      "info": {
+        "completed_week_count": 446,
+        "daily_bars": 2148,
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "usable": 2148
+        }
+      },
+      "status": "PASS_HISTORY"
+    }
+  },
+  "schema": "XRAY_CANONICAL_HISTORY_V1",
+  "source_mc_artifact": "nasdaq-xray/canonical_mc_bridge_20261001_c414r2.json",
+  "source_mc_blob_sha": "1827eed834eca6321bdaed2cbf38f9919f2b1776",
+  "source_mc_policy_hash": "bc4ad11c4029bf5feb5399ae3aa7af9c9c8dd7ad6c44119bac4e5734287b931e",
+  "source_mc_policy_version": "C4.14",
+  "state_caps": {
+    "AAL": "NORMAL",
+    "AAPL": "NORMAL",
+    "ABNB": "NORMAL",
+    "ACGL": "NORMAL",
+    "ADBE": "NORMAL",
+    "ADI": "NORMAL",
+    "ADP": "NORMAL",
+    "ADSK": "NORMAL",
+    "AEP": "NORMAL",
+    "AFRM": "NORMAL",
+    "AGNC": "NORMAL",
+    "AKAM": "WATCH",
+    "ALAB": "NORMAL",
+    "ALGN": "NORMAL",
+    "ALNY": "NORMAL",
+    "AMAT": "NORMAL",
+    "AMD": "NORMAL",
+    "AMGN": "NORMAL",
+    "AMZN": "NORMAL",
+    "APA": "NORMAL",
+    "APP": "NORMAL",
+    "APPN": "NORMAL",
+    "ARM": "NORMAL",
+    "ASML": "NORMAL",
+    "ASO": "NORMAL",
+    "AVGO": "NORMAL",
+    "BEAM": "NORMAL",
+    "BIDU": "WATCH",
+    "BIIB": "NORMAL",
+    "BILI": "WATCH",
+    "BKNG": "NORMAL",
+    "BKR": "NORMAL",
+    "BMRN": "NORMAL",
+    "BNTX": "NORMAL",
+    "BSP": "NORMAL",
+    "BULL": "NORMAL",
+    "BZ": "NORMAL",
+    "CAR": "NORMAL",
+    "CART": "NORMAL",
+    "CBRS": "NORMAL",
+    "CDNS": "NORMAL",
+    "CDW": "NORMAL",
+    "CHA": "NORMAL",
+    "CHDN": "NORMAL",
+    "CHKP": "NORMAL",
+    "CHRD": "NORMAL",
+    "CHRW": "NORMAL",
+    "CHTR": "NORMAL",
+    "CHYM": "NORMAL",
+    "CINF": "NORMAL",
+    "CMCSA": "NORMAL",
+    "CME": "NORMAL",
+    "COIN": "NORMAL",
+    "COLM": "NORMAL",
+    "COO": "NORMAL",
+    "COST": "NORMAL",
+    "CPB": "NORMAL",
+    "CPRT": "NORMAL",
+    "CROX": "NORMAL",
+    "CRSP": "NORMAL",
+    "CRWD": "NORMAL",
+    "CRWV": "NORMAL",
+    "CSCO": "NORMAL",
+    "CSGP": "NORMAL",
+    "CSX": "NORMAL",
+    "CTAS": "NORMAL",
+    "CTSH": "NORMAL",
+    "CZR": "NORMAL",
+    "DASH": "NORMAL",
+    "DBX": "NORMAL",
+    "DDOG": "NORMAL",
+    "DJT": "NORMAL",
+    "DKNG": "NORMAL",
+    "DLTR": "NORMAL",
+    "DOCU": "NORMAL",
+    "DOX": "NORMAL",
+    "DPZ": "NORMAL",
+    "DXCM": "NORMAL",
+    "EBAY": "NORMAL",
+    "EEFT": "NORMAL",
+    "ENPH": "NORMAL",
+    "ENTG": "NORMAL",
+    "EQIX": "NORMAL",
+    "ERIC": "NORMAL",
+    "ETOR": "NORMAL",
+    "EVRG": "NORMAL",
+    "EXC": "NORMAL",
+    "EXE": "NORMAL",
+    "EXPE": "NORMAL",
+    "FANG": "NORMAL",
+    "FAST": "NORMAL",
+    "FFIV": "NORMAL",
+    "FIGR": "NORMAL",
+    "FISV": "WATCH",
+    "FIVE": "NORMAL",
+    "FIVN": "NORMAL",
+    "FLEX": "NORMAL",
+    "FOXA": "NORMAL",
+    "FRMI": "NORMAL",
+    "FRVO": "NORMAL",
+    "FSLR": "NORMAL",
+    "FSLY": "NORMAL",
+    "FTNT": "NORMAL",
+    "FUTU": "NORMAL",
+    "GDS": "WATCH",
+    "GEHC": "NORMAL",
+    "GEN": "NORMAL",
+    "GFS": "NORMAL",
+    "GH": "NORMAL",
+    "GILD": "NORMAL",
+    "GLXY": "NORMAL",
+    "GOOG": "NORMAL",
+    "GOOGL": "NORMAL",
+    "GTLB": "WATCH",
+    "HAS": "NORMAL",
+    "HBAN": "WATCH",
+    "HON": "NORMAL",
+    "HONA": "NORMAL",
+    "HOOD": "NORMAL",
+    "HSIC": "NORMAL",
+    "HST": "NORMAL",
+    "HTHT": "WATCH",
+    "IBKR": "NORMAL",
+    "ICLR": "NORMAL",
+    "IDXX": "NORMAL",
+    "ILMN": "NORMAL",
+    "INCY": "NORMAL",
+    "INIO": "NORMAL",
+    "INTC": "NORMAL",
+    "INTU": "NORMAL",
+    "IOND": "NORMAL",
+    "IONS": "NORMAL",
+    "IOVA": "NORMAL",
+    "IPGP": "NORMAL",
+    "IRTC": "NORMAL",
+    "ISRG": "NORMAL",
+    "JAZZ": "NORMAL",
+    "JBHT": "NORMAL",
+    "JD": "WATCH",
+    "JKHY": "NORMAL",
+    "KDP": "NORMAL",
+    "KLAC": "NORMAL",
+    "KMB": "WATCH",
+    "LBTYK": "NORMAL",
+    "LI": "WATCH",
+    "LIN": "NORMAL",
+    "LINE": "WATCH",
+    "LITE": "NORMAL",
+    "LKQ": "NORMAL",
+    "LNT": "NORMAL",
+    "LOGI": "NORMAL",
+    "LPLA": "NORMAL",
+    "LRCX": "NORMAL",
+    "LSCC": "NORMAL",
+    "LULU": "NORMAL",
+    "LYFT": "NORMAL",
+    "MAR": "NORMAL",
+    "MARA": "NORMAL",
+    "MAT": "NORMAL",
+    "MBLY": "NORMAL",
+    "MCHP": "NORMAL",
+    "MDB": "NORMAL",
+    "MDLN": "NORMAL",
+    "MDLZ": "NORMAL",
+    "MELI": "NORMAL",
+    "MGNI": "NORMAL",
+    "MIDD": "NORMAL",
+    "MKSI": "NORMAL",
+    "MKTX": "NORMAL",
+    "MNST": "NORMAL",
+    "MPWR": "NORMAL",
+    "MRNA": "NORMAL",
+    "MRVL": "NORMAL",
+    "MSFT": "NORMAL",
+    "MSTR": "NORMAL",
+    "MTCH": "NORMAL",
+    "MU": "NORMAL",
+    "NBIS": "NORMAL",
+    "NBIX": "NORMAL",
+    "NDAQ": "NORMAL",
+    "NFLX": "NORMAL",
+    "NICE": "NORMAL",
+    "NTAP": "NORMAL",
+    "NTES": "WATCH",
+    "NTRA": "NORMAL",
+    "NTRS": "NORMAL",
+    "NTSK": "NORMAL",
+    "NVDA": "NORMAL",
+    "NWL": "NORMAL",
+    "NWSA": "NORMAL",
+    "NXPI": "NORMAL",
+    "NXST": "WATCH",
+    "ODFL": "NORMAL",
+    "OKTA": "NORMAL",
+    "OLED": "NORMAL",
+    "OLLI": "NORMAL",
+    "ON": "NORMAL",
+    "ONC": "WATCH",
+    "OPEN": "NORMAL",
+    "ORLY": "NORMAL",
+    "PANW": "NORMAL",
+    "PAYP": "NORMAL",
+    "PAYX": "NORMAL",
+    "PCAR": "NORMAL",
+    "PDD": "NORMAL",
+    "PEP": "NORMAL",
+    "PFG": "NORMAL",
+    "PLTR": "NORMAL",
+    "PLUG": "NORMAL",
+    "PODD": "NORMAL",
+    "POOL": "NORMAL",
+    "PSKY": "NORMAL",
+    "PTC": "NORMAL",
+    "PTON": "NORMAL",
+    "PYPL": "NORMAL",
+    "QCOM": "NORMAL",
+    "QNT": "NORMAL",
+    "QRVO": "NORMAL",
+    "QS": "NORMAL",
+    "REG": "NORMAL",
+    "REGN": "NORMAL",
+    "RGEN": "NORMAL",
+    "RIOT": "NORMAL",
+    "RIVN": "NORMAL",
+    "RKLB": "NORMAL",
+    "ROKU": "NORMAL",
+    "ROP": "NORMAL",
+    "ROST": "NORMAL",
+    "SAIL": "NORMAL",
+    "SBAC": "NORMAL",
+    "SBUX": "NORMAL",
+    "SHOP": "WATCH",
+    "SIRI": "NORMAL",
+    "SKHY": "NORMAL",
+    "SLM": "NORMAL",
+    "SNPS": "NORMAL",
+    "SNY": "NORMAL",
+    "SOFI": "WATCH",
+    "SONO": "NORMAL",
+    "SPCX": "NORMAL",
+    "SSNC": "NORMAL",
+    "STLD": "NORMAL",
+    "STNE": "NORMAL",
+    "STX": "NORMAL",
+    "SWKS": "NORMAL",
+    "TCBI": "NORMAL",
+    "TCOM": "NORMAL",
+    "TEAM": "NORMAL",
+    "TECH": "NORMAL",
+    "TER": "WATCH",
+    "TGTX": "NORMAL",
+    "TLN": "NORMAL",
+    "TMUS": "NORMAL",
+    "TRMB": "NORMAL",
+    "TROW": "NORMAL",
+    "TSCO": "NORMAL",
+    "TSLA": "NORMAL",
+    "TTD": "NORMAL",
+    "TTWO": "NORMAL",
+    "TWST": "NORMAL",
+    "TXG": "NORMAL",
+    "TXN": "NORMAL",
+    "TXRH": "NORMAL",
+    "UAL": "NORMAL",
+    "ULTA": "NORMAL",
+    "UPST": "NORMAL",
+    "URBN": "NORMAL",
+    "UTHR": "NORMAL",
+    "VFS": "NORMAL",
+    "VRSK": "NORMAL",
+    "VRSN": "NORMAL",
+    "VRTX": "NORMAL",
+    "VSNT": "NORMAL",
+    "VTRS": "NORMAL",
+    "WBD": "NORMAL",
+    "WDAY": "NORMAL",
+    "WDC": "NORMAL",
+    "WING": "NORMAL",
+    "WIX": "NORMAL",
+    "WMT": "NORMAL",
+    "WTW": "NORMAL",
+    "WYNN": "NORMAL",
+    "XEL": "NORMAL",
+    "Z": "NORMAL",
+    "ZBRA": "NORMAL",
+    "ZG": "NORMAL",
+    "ZION": "NORMAL",
+    "ZLAB": "WATCH",
+    "ZM": "NORMAL",
+    "ZS": "NORMAL"
+  },
+  "task_id": "6a825366222081918997094d76e6ae46",
+  "thresholds": {
+    "daily": 260,
+    "weekly_completed": 52
+  },
+  "unknown_count": 0,
+  "unknown_never_pass": true,
+  "unknown_symbols": []
+}
