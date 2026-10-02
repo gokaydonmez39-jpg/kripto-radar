@@ -18,7 +18,9 @@ def main():
         OUT.write_text(json.dumps({"schema":"XRAY_SEC_OFFICIAL_WITNESS_V1","status":"NO_EVENT_REQUEST","execution":"NONE","real_money":"NO-GO","generated_at_utc":now()},sort_keys=True,indent=2)+"\n"); return
     r=json.loads(REQ.read_text())
     if r.get("schema")!="XRAY_EVENT_EPOCH_REQUEST_V1" or r.get("status")!="READY":
-        raise RuntimeError("SEC_WITNESS_EVENT_REQUEST_NOT_READY")
+        OUT.write_text(json.dumps({"schema":"XRAY_SEC_OFFICIAL_WITNESS_V1","status":"NOT_READY","execution":"NONE","real_money":"NO-GO","alpha_authority":False,"generated_at_utc":now()},sort_keys=True,indent=2)+"\\n")
+        print(json.dumps({"status":"NOT_READY"},sort_keys=True))
+        return
     scope=sorted(set(r.get("weekly_scope") or []))
     ticker_map=fetch_json("SEC","https://www.sec.gov/files/company_tickers_exchange.json",{"User-Agent":UA,"Accept":"application/json"},cache_ttl=3600)
     fields=ticker_map.get("fields") or []
