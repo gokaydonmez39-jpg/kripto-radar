@@ -98,9 +98,13 @@ def main():
     primary=set(mc.get("primary_pass_symbols") or [])
     mcfail=set(mc.get("primary_fail_symbols") or [])
     watch=set(mc.get("fallback_watch_symbols") or [])
+    fallback_fail=set(mc.get("fallback_fail_symbols") or mc.get("fallback_two_source_fail_symbols") or [])
     mcunk=set(mc.get("unknown_symbols") or [])
-    assert not (primary&mcfail or primary&watch or primary&mcunk or mcfail&watch or mcfail&mcunk or watch&mcunk)
-    assert primary|mcfail|watch|mcunk==price_pass
+    groups=[primary,mcfail,watch,fallback_fail,mcunk]
+    for i in range(len(groups)):
+        for j in range(i+1,len(groups)):
+            assert not (groups[i]&groups[j])
+    assert primary|mcfail|watch|fallback_fail|mcunk==price_pass
     assert len(mcunk)==0 and (mc.get("counts") or {}).get("MC_UNKNOWN",0)==0
 
     h=d["history"]; lg=d["legal"]; si=d["stage1_input"]; st=d["stage1"]; rg=d["regime"]; dg=d["deep_geometry"]
@@ -214,7 +218,7 @@ def main():
       "blockers":blockers,
       "counts":{
         "master_total":m["queue_total"],"price_dv20_pass":p["pass_count"],
-        "mc_primary_pass":len(primary),"mc_primary_fail":len(mcfail),"mc_fallback_watch":len(watch),"mc_unknown":len(mcunk),
+        "mc_primary_pass":len(primary),"mc_primary_fail":len(mcfail),"mc_fallback_watch":len(watch),"mc_fallback_fail":len(fallback_fail),"mc_unknown":len(mcunk),
         "history_input":h["input_count"],"history_pass":len(hpass),"history_fail":len(hfail),
         "legal_pass":len(lpass),"legal_blocked":len(lblock),
         "weekly_pass":len(weekly),"event_confirmed_blocks":ev["confirmed_block_count"],"event_unresolved":ev["unresolved_count"],
@@ -226,7 +230,7 @@ def main():
         "final_confirmed_candidates":len(confirmed),"pre_g9_tech_pass":len(pre),
       },
       "sets":{
-        "mc_fallback_watch":sorted(watch),"history_pass":sorted(hpass),"history_fail":sorted(hfail),
+        "mc_fallback_watch":sorted(watch),"mc_fallback_fail":sorted(fallback_fail),"history_pass":sorted(hpass),"history_fail":sorted(hfail),
         "legal_pass":sorted(lpass),"weekly_pass":sorted(weekly),"confirmed_family_candidates":sorted(confirmed),
         "pre_g9_tech_pass":sorted(pre),"affected_event_unknown":affected_event_unknown,
         "family_c_unknown":family_c_unknown,"final_unknown":final_unknown,
