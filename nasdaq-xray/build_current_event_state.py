@@ -22,8 +22,8 @@ def main():
     assert ev["schema"]=="XRAY_EVENT_EPOCH_RESULT_V1" and ev["status"]=="COMMITTED"
     assert req["task_id"]==ev["task_id"]==TASK and ev["asof_et"]==asof
     assert req["execution"]==ev["execution"]=="NONE" and req["real_money"]==ev["real_money"]=="NO-GO"
-    assert req.get("compiled_policy_hash")=="a2bb9e857759e2b1c312fe1ec78ffefb4ac3e81c5c2012c921d245da0bc6a094"
-    assert req.get("compiled_policy_version")=="C4.16"
+    assert req.get("compiled_policy_hash")=="26a95745a50b65e85f6ece24b6501af0994764a84ddd886edb70d1fcd770849c"
+    assert req.get("compiled_policy_version")=="C4.17"
     assert ev.get("compiled_policy_hash")==req.get("compiled_policy_hash")
     assert ev.get("compiled_policy_version")==req.get("compiled_policy_version")
     assert ev.get("compiled_policy_blob_sha")==req.get("compiled_policy_blob_sha")
