@@ -14,6 +14,27 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
+      - uses: actions/checkout@v4
+      - name: Inventory active C4.14 pins
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          needles=[
+            "C4.14",
+            "bc4ad11c4029bf5feb5399ae3aa7af9c9c8dd7ad6c44119bac4e5734287b931e",
+            "b41a40403c03e8884ee90d5cce2e0844d2bea0cd",
+          ]
+          for root in [Path("nasdaq-xray"),Path(".github/workflows")]:
+              for p in sorted(root.rglob("*")):
+                  if not p.is_file() or p.suffix not in {".py",".yml",".yaml",".json"}:
+                      continue
+                  try: s=p.read_text(errors="ignore")
+                  except Exception: continue
+                  counts=[s.count(n) for n in needles]
+                  if any(counts):
+                      print("PIN",str(p),counts)
+          PY
       - name: Probe Nasdaq official historical
         shell: bash
         run: |
@@ -21,16 +42,11 @@ jobs:
           import json, urllib.request, urllib.parse
           UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/126 Safari/537.36"
           for sym in ["AAPL","NVDA","MSFT"]:
-              params=urllib.parse.urlencode({"assetclass":"stocks","fromdate":"10/02/2026","todate":"10/02/2026","limit":"50"})
+              params=urllib.parse.urlencode({"assetclass":"stocks","fromdate":"10/01/2026","todate":"10/02/2026","limit":"50"})
               url=f"https://api.nasdaq.com/api/quote/{sym}/historical?{params}"
-              req=urllib.request.Request(url,headers={
-                  "User-Agent":UA,
-                  "Accept":"application/json,text/plain,*/*",
-                  "Accept-Language":"en-US,en;q=0.9",
-                  "Referer":"https://www.nasdaq.com/",
-              })
-              with urllib.request.urlopen(req,timeout=30) as r:
-                  obj=json.loads(r.read().decode("utf-8"))
+              req=urllib.request.Request(url,headers={"User-Agent":UA,"Accept":"application/json,text/plain,*/*","Accept-Language":"en-US,en;q=0.9","Referer":"https://www.nasdaq.com/"})
+              with urllib.request.urlopen(req,timeout=30) as resp:
+                  obj=json.loads(resp.read().decode("utf-8"))
               rows=(((obj.get("data") or {}).get("tradesTable") or {}).get("rows") or [])
-              print("NASDAQ_OFFICIAL",sym,json.dumps(rows[:3],sort_keys=True))
+              print("NASDAQ_OFFICIAL",sym,json.dumps(rows[:5],sort_keys=True))
           PY
