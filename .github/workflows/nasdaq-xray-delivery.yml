@@ -30,6 +30,9 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Synthetic registered-R92 delivery self-test
+        run: python nasdaq-xray/delivery_prepare_selftest.py
+
       - name: Prepare fail-closed registered research alerts
         id: prep
         shell: bash
