@@ -4,92 +4,111 @@
   "generated_on": "2026-10-02",
   "execution": "NONE",
   "real_money": "NO-GO",
-  "compiled_policy_version": "C4.14",
-  "operations_version": "C4.22",
+  "policy_version": "C4.14",
+  "policy_blob": "b41a40403c03e8884ee90d5cce2e0844d2bea0cd",
+  "policy_hash": "bc4ad11c4029bf5feb5399ae3aa7af9c9c8dd7ad6c44119bac4e5734287b931e",
   "g9_required": {
-    "A": "Explicit real-time consolidated UTP Tape-C UQDF+UTDF / National NBBO lineage or documented equivalent redistributor",
-    "B": "Machine bid+ask+last with independent quote-event and trade-event timestamps; RTH quote<=60s, trade<=60s, max quote/trade skew<=15s",
-    "C": "Lawful intended automated/non-display permanent-$0 entitlement with no market-data/vendor/exchange/per-query/account-maintenance fee or activity/balance condition required to retain it",
-    "D": "Callable from actual canonical scheduler with secrets protected"
+    "A": "Explicit real-time consolidated UTP Tape-C UQDF+UTDF/National NBBO lineage or documented equivalent redistributor",
+    "B": "Machine bid+ask+last with independent quote-event and trade timestamps; same-run RTH quote<=60s trade<=60s max quote/trade skew<=15s",
+    "C": "Lawful intended automated/non-display permanent-$0 entitlement with no hidden vendor/exchange/per-query/account-maintenance/activity/balance condition",
+    "D": "Callable from actual canonical scheduler without exposed secrets"
   },
-  "findings": [
+  "provider_findings": [
     {
-      "provider": "DIRECT_UTP",
-      "verdict": "FAIL_C",
-      "evidence": "UTP is the authoritative Tape-C consolidated source, but published direct non-display/access fees are not permanent $0.",
-      "sources": [
-        "https://utpplan.com/",
-        "https://www.utpplan.com/DOC/datapolicies.pdf"
-      ]
-    },
-    {
-      "provider": "LONGBRIDGE_US_LV1_FREE",
-      "verdict": "FAIL_A_B",
-      "evidence": "US LV1 is free and callable by REST/WebSocket; connected runtime proves live bid/ask and trade ticks. Longbridge separately describes Consolidated U.S. Market Data including NBBO as a distinct subscription/promotion, so free US LV1 cannot be assumed consolidated NBBO. Current ChatGPT depth connector also does not expose an independent quote-event timestamp.",
-      "sources": [
-        "https://open.longbridge.com/pricing",
-        "https://open.longbridge.com/docs/quote/overview",
-        "https://longbridgeus.zendesk.com/hc/en-us/articles/17099376146447-Market-Data-Promotion"
-      ]
-    },
-    {
-      "provider": "TRADESTATION",
-      "verdict": "TECHNICALLY_STRONG_BUT_FAIL_C_AND_ENTITLEMENT_AUTHORITY_UNPROVEN",
-      "evidence": "Turkey appears in the TradeStation application country list; current API provides MarketData, ReadAccount and Matrix scopes; current client model for v3 participant-level market-depth quotes exposes RFC3339 TimeStamp while quote snapshots expose Bid/Ask/Last/TradeTime/MarketFlags.IsDelayed. Qualified non-professional Nasdaq Level I is included without a separate data charge. However the reviewed primary sources do not prove the exact retail API entitlement is consolidated UTP/NBBO for automated/non-display use at permanent $0, and TradeStation currently publishes a $10 monthly inactivity fee unless balance/trading conditions are met.",
-      "sources": [
-        "https://api.tradestation.com/docs/fundamentals/authentication/scopes/",
-        "https://api.tradestation.com/docs/fundamentals/authentication/refresh-tokens/",
-        "https://www.tradestation.com/nasdaq/",
-        "https://www.tradestation.com/stocks-etfs-pricing-disclosures/",
-        "https://www.tradestation.com/faqs/",
-        "https://github.com/antonio-hickey/tradestation-rs"
+      "provider": "Longbridge OpenAPI",
+      "status": "NONQUALIFYING_STRICT_G9",
+      "proven": [
+        "US LV1 OpenAPI included free",
+        "real-time one-level bid/ask",
+        "real-time trades with timestamps",
+        "live API callable"
       ],
-      "runtime_probe": "nasdaq-xray/strict_g9_probe.py",
-      "authority_contract": "nasdaq-xray/g9_entitlement_authority.json"
+      "blocker": [
+        "Official OpenAPI docs do not identify free US LV1 as consolidated UTP Tape-C/National NBBO",
+        "depth payload exposed through current connector lacks independent quote timestamp"
+      ],
+      "conclusion": "Useful real-time auxiliary feed; never G9 PASS under strict A+B"
     },
     {
-      "provider": "DXFEED_DIRECT",
-      "verdict": "FAIL_C",
-      "evidence": "dxFeed can technically provide true UTP Tape-C/NBBO plus independent quote/trade event timestamps, but current commercial access is paid and therefore not permanent $0.",
-      "sources": [
-        "https://dxfeed.com/coverage/united-states/",
-        "https://choose.dxfeed.com/"
-      ]
+      "provider": "TradeStation API",
+      "status": "TECHNICALLY_STRONG_BUT_FAILS_PERMANENT_ZERO",
+      "proven": [
+        "Turkey appears in official application country list",
+        "MarketData/ReadAccount/Matrix/offline_access API scopes documented",
+        "real-time equity data included for qualified non-professional accounts",
+        "quote snapshot/stream exposes bid ask last TradeTime",
+        "market-depth quote stream is technically timestamped",
+        "scheduler-callable API"
+      ],
+      "blocker": [
+        "Monthly $10 inactivity fee unless activity/balance waiver conditions are met",
+        "published sources reviewed do not prove exact retail API entitlement is permanent-$0 automated/non-display UTP right"
+      ],
+      "conclusion": "Technical G9 candidate but cannot satisfy strict C permanent-zero definition as presently evidenced"
     },
     {
-      "provider": "TRADIER",
-      "verdict": "FAIL_USER_ELIGIBILITY",
-      "evidence": "Technically promising consolidated all-exchanges feed, but current official international-account eligibility excludes Turkey.",
-      "sources": [
-        "https://docs.tradier.com/docs/market-data",
-        "https://support.tradier.com/kb/guide/en/permitted-and-blocked-countries-CLzSa0D1rf/Steps/4997916"
-      ]
+      "provider": "tastytrade/dxFeed",
+      "status": "TECHNICALLY_STRONG_BUT_TURKEY_ACCESS_UNPROVEN",
+      "proven": [
+        "Funded customers get real-time REST quotes",
+        "DXLink real-time Quote+Trade streams via dxFeed",
+        "API quote token supported",
+        "no platform inactivity/account maintenance fee documented"
+      ],
+      "blocker": [
+        "Current official onboarding eligibility for Turkey not verified",
+        "exact consolidated UTP/NBBO entitlement/automated-use wording not proven in reviewed current primary sources"
+      ],
+      "conclusion": "Reopen immediately if Turkey eligibility and exact entitlement lineage become primary-source proven"
     },
     {
-      "provider": "ALPACA_BASIC",
-      "verdict": "FAIL_A",
-      "evidence": "Free real-time equities are IEX; SIP is not a permanent-$0 real-time entitlement. Historical/delayed SIP remains NON-G9.",
-      "sources": [
-        "https://docs.alpaca.markets/docs/about-market-data-api"
-      ]
+      "provider": "Schwab",
+      "status": "NONQUALIFYING_FREE_PATH",
+      "proven": [
+        "Free indicative CBOE/NASDAQ proprietary quote feed exists"
+      ],
+      "blocker": [
+        "Free feed explicitly excludes several venues and is not streaming NBBO; real-time NBBO subscription is fee-based"
+      ],
+      "conclusion": "Never strict permanent-$0 G9"
     },
     {
-      "provider": "IBKR_FREE",
-      "verdict": "FAIL_A_C",
-      "evidence": "Free US equity data is non-consolidated Cboe One/IEX; consolidated Network C/UTP data is paid.",
-      "sources": [
-        "https://www.interactivebrokers.com/en/pricing/research-news-marketdata.php"
-      ]
+      "provider": "Alpaca",
+      "status": "NONQUALIFYING_FREE_PATH",
+      "proven": [
+        "Free real-time IEX path",
+        "SIP available in paid/full-market tier or delayed on free"
+      ],
+      "blocker": [
+        "IEX is venue-limited; delayed SIP is NON-G9"
+      ],
+      "conclusion": "Never strict permanent-$0 G9"
+    },
+    {
+      "provider": "Interactive Brokers",
+      "status": "NONQUALIFYING_FREE_PATH",
+      "proven": [
+        "Free US real-time alternatives include venue-limited feeds such as Cboe One/IEX"
+      ],
+      "blocker": [
+        "Consolidated US Network C/UTP data and regulatory snapshots have paid components"
+      ],
+      "conclusion": "Never strict permanent-$0 G9 based on current evidence"
     }
   ],
+  "runtime_probe": {
+    "path": "nasdaq-xray/strict_g9_probe.py",
+    "workflow": ".github/workflows/xray-external-gates.yml",
+    "state_path": "nasdaq-xray/strict_g9_runtime_state.json",
+    "pass_rule": "Authority status must be PROVEN and live technical A+B+C+D probe must pass. Missing credentials or unproven entitlement is never PASS."
+  },
   "current_conclusion": "G9_BLOCKED_FREE_AUTOMATION_PATH",
-  "strongest_candidate": "TRADESTATION_TECHNICAL_PATH_BUT_NOT_STRICT_C",
-  "falsification_condition": "Promote to G9 PASS only after primary-source proof for the exact callable entitlement establishes A and C, AND live scheduled RTH probe proves B and D for AAPL+NVDA within freshness/skew limits.",
+  "falsification_condition": "Reopen only on primary-source proof of exact automated permanent-$0 consolidated Tape-C/NBBO entitlement from a scheduler-callable provider, then pass the strict live RTH probe.",
   "account_gate": {
-    "provider": "LONGBRIDGE",
-    "current_status": "ACCOUNT_BLOCKED_REAUTH_REQUIRED",
-    "error_code": 403308,
-    "fix": "Reconnect/re-authorize Longbridge OAuth. Then require successful read-only account_balance + stock_positions in the same run. Never store account values in repository and never call order endpoints."
+    "provider": "Longbridge",
+    "status": "ACCOUNT_BLOCKED_REAUTH_REQUIRED",
+    "evidence": "Both account_balance and stock_positions return 403308 Target API is not in authorized scope",
+    "repair": "User must reconnect/re-authorize Longbridge OAuth; plain token refresh does not change scopes. After reauth, Health automatically probes only account_balance + stock_positions read-only."
   },
   "no_policy_weakening": true
 }
