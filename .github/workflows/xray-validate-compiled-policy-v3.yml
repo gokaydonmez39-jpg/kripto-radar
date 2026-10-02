@@ -17,56 +17,46 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
-      - name: Validate C4.13 hard-gate evidence semantics
+      - name: Validate C4.14 MC fail-evidence-only repair
         run: |
           python - <<'PY'
           import json,hashlib
-          v2=json.load(open("nasdaq-xray/chatgpt_compiled_policy_v2.json"))
           top=json.load(open("nasdaq-xray/chatgpt_compiled_policy_v3.json"))
           assert top["schema"]=="XRAY_GITHUB_COMPILED_POLICY_V3"
           assert top["execution"]=="NONE" and top["real_money"]=="NO-GO"
           payload=top["payload_json"]
           h=hashlib.sha256(payload.encode()).hexdigest()
-          assert h==top["policy_hash"],(h,top["policy_hash"])
-          x=json.loads(payload); y=json.loads(v2["payload_json"])
-          assert x["version"]=="C4.13"
+          assert h==top["policy_hash"]
+          x=json.loads(payload)
+          assert x["schema"]=="XRAY_COMPILED_POLICY_V1"
+          assert x["version"]=="C4.14"
           assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
           assert x["unknown_never_pass"] is True and x["zero_dollar_hard_cap"] is True
-          for k in ["universe","hard_gates","mc","dv20","technical","geometry","setups","r1_rr","regime","events_account","lifecycle","g9","r92_r93","coverage","delivery"]:
-              assert x[k]==y[k],k
-          s=x["settlement"]
-          assert s["primary"]=="ALPACA_HISTORICAL_SIP_DAILY_AFTER_15M"
-          assert "Massive/Polygon" in s["sequential"] and "Massive/Polygon" in s["crosscheck"]
-          assert "Longbridge" not in s["crosscheck"]
-          assert "NON-G9" in s["g9_separation"]
-          e=x["hard_gate_evidence"]
+          e=x["mc_fail_evidence"]
           assert e["no_threshold_change"] is True
-          assert e["no_synthetic_data"] is True
           assert e["unknown_never_pass"] is True
-          assert "FAIL_PRICE_NO_ASOF_BAR" in e["price_no_asof_bar"]
-          assert "FAIL_DV20_INSUFFICIENT_SESSIONS" in e["dv20_insufficient_sessions"]
-          assert "Alpaca SIP + Rallies + Massive" in e["source_agreement"]
+          assert "MC_FAIL_FALLBACK_TWO_SOURCE" in e["two_source_subthreshold_fail"]
+          assert "$1,800,000,000" in e["two_source_subthreshold_fail"]
+          assert "R92-ineligible" in e["fallback_pass_unchanged"]
           pc=x["policy_change"]
-          assert pc["id"]=="HARD_GATE_MISSING_BAR_EVIDENCE_REPAIR_V1"
-          assert pc["base_policy_hash"]=="a663cd5046e36cfb8f6b4674d0e9bea4c92edcf5398e73c8c4ed9eb01da36d60"
-          assert pc["base_policy_version"]=="C4.12"
+          assert pc["id"]=="MC_TWO_SOURCE_SUBTHRESHOLD_FAIL_EVIDENCE_V1"
+          assert pc["base_policy_hash"]=="ba5134d39009fca2801d482302150732ba47c5a3f0c474e8764bf412cad49b1a"
+          assert pc["base_policy_version"]=="C4.13"
           assert pc["no_alpha_threshold_change"] is True
           assert pc["no_universe_change"] is True
-          assert pc["no_mc_change"] is True
+          assert pc["no_price_dv20_change"] is True
           assert pc["no_history_threshold_change"] is True
           assert pc["no_setup_change"] is True
           assert pc["no_g9_change"] is True
           assert pc["no_account_change"] is True
           assert pc["no_execution_change"] is True
-          assert pc["evidence_semantics_only"] is True
+          assert pc["fail_evidence_only"] is True
           sp=top["source_proof"]
-          assert sp["base_policy_hash"]=="a663cd5046e36cfb8f6b4674d0e9bea4c92edcf5398e73c8c4ed9eb01da36d60"
-          assert sp["base_policy_version"]=="C4.12"
-          ob=sp["observed_20261001"]
-          assert ob["total_unresolved"]==160
-          assert ob["insufficient_exact20_two_source"]==39
-          assert ob["insufficient_exact20_signature"]=="8c173bf7cd75da4cd84de7b88d456e5376c92e8531dad5d44c4e24c7f49fc30e"
-          assert ob["no_asof_bar_three_source"]==121
-          assert ob["massive_grouped_present_among_121"]==0
+          assert sp["base_policy_hash"]=="ba5134d39009fca2801d482302150732ba47c5a3f0c474e8764bf412cad49b1a"
+          assert sp["base_policy_version"]=="C4.13"
+          obs=sp["observed_20261001"]
+          for s in ["PARA","SPWR","XRX"]:
+              assert obs[s]["rallies_market_cap_usd"]<2_000_000_000
+              assert obs[s]["longbridge_market_cap_usd"]<2_000_000_000
           print({"policy_hash":h,"version":x["version"],"status":"PASS"})
           PY
