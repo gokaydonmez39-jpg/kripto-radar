@@ -4,7 +4,7 @@
   "asof_et": "2026-10-01",
   "authority": "SEC_PRIMARY_WITNESS_OPTIONAL",
   "execution": "NONE",
-  "generated_at_utc": "2026-10-02T11:36:06.185634+00:00",
+  "generated_at_utc": "2026-10-02T11:36:20.069377+00:00",
   "geometry_scope": [
     "CHA",
     "COIN",
@@ -27,67 +27,67 @@
     "CHA": {
       "filings": [],
       "identity_status": "UNKNOWN",
-      "reason": "HTTPError:HTTP Error 403: Forbidden"
+      "reason": "RuntimeError:CIRCUIT_OPEN:SEC_EFTS:106s"
     },
     "COIN": {
       "filings": [],
       "identity_status": "UNKNOWN",
-      "reason": "HTTPError:HTTP Error 403: Forbidden"
+      "reason": "RuntimeError:CIRCUIT_OPEN:SEC_EFTS:106s"
     },
     "FTNT": {
       "filings": [],
       "identity_status": "UNKNOWN",
-      "reason": "HTTPError:HTTP Error 403: Forbidden"
+      "reason": "RuntimeError:CIRCUIT_OPEN:SEC_EFTS:106s"
     },
     "GH": {
       "filings": [],
       "identity_status": "UNKNOWN",
-      "reason": "RuntimeError:CIRCUIT_OPEN:SEC_EFTS:119s"
+      "reason": "RuntimeError:CIRCUIT_OPEN:SEC_EFTS:106s"
     },
     "MTCH": {
       "filings": [],
       "identity_status": "UNKNOWN",
-      "reason": "RuntimeError:CIRCUIT_OPEN:SEC_EFTS:119s"
+      "reason": "RuntimeError:CIRCUIT_OPEN:SEC_EFTS:106s"
     },
     "MU": {
       "filings": [],
       "identity_status": "UNKNOWN",
-      "reason": "RuntimeError:CIRCUIT_OPEN:SEC_EFTS:119s"
+      "reason": "RuntimeError:CIRCUIT_OPEN:SEC_EFTS:106s"
     },
     "NTSK": {
       "filings": [],
       "identity_status": "UNKNOWN",
-      "reason": "RuntimeError:CIRCUIT_OPEN:SEC_EFTS:119s"
+      "reason": "RuntimeError:CIRCUIT_OPEN:SEC_EFTS:106s"
     },
     "PFG": {
       "filings": [],
       "identity_status": "UNKNOWN",
-      "reason": "RuntimeError:CIRCUIT_OPEN:SEC_EFTS:119s"
+      "reason": "RuntimeError:CIRCUIT_OPEN:SEC_EFTS:106s"
     },
     "PLTR": {
       "filings": [],
       "identity_status": "UNKNOWN",
-      "reason": "RuntimeError:CIRCUIT_OPEN:SEC_EFTS:119s"
+      "reason": "RuntimeError:CIRCUIT_OPEN:SEC_EFTS:106s"
     },
     "ROKU": {
       "filings": [],
       "identity_status": "UNKNOWN",
-      "reason": "RuntimeError:CIRCUIT_OPEN:SEC_EFTS:119s"
+      "reason": "RuntimeError:CIRCUIT_OPEN:SEC_EFTS:106s"
     },
     "ULTA": {
       "filings": [],
       "identity_status": "UNKNOWN",
-      "reason": "RuntimeError:CIRCUIT_OPEN:SEC_EFTS:119s"
+      "reason": "RuntimeError:CIRCUIT_OPEN:SEC_EFTS:106s"
     },
     "WBD": {
       "filings": [],
       "identity_status": "UNKNOWN",
-      "reason": "RuntimeError:CIRCUIT_OPEN:SEC_EFTS:119s"
+      "reason": "RuntimeError:CIRCUIT_OPEN:SEC_EFTS:106s"
     },
     "WDAY": {
       "filings": [],
       "identity_status": "UNKNOWN",
-      "reason": "RuntimeError:CIRCUIT_OPEN:SEC_EFTS:119s"
+      "reason": "RuntimeError:CIRCUIT_OPEN:SEC_EFTS:106s"
     }
   },
   "schema": "XRAY_SEC_OFFICIAL_WITNESS_V1",

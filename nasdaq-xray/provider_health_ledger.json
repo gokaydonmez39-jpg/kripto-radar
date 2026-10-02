@@ -3,14 +3,14 @@
     "GITHUB_REPO_VERIFY": {
       "consecutive_failures": 0,
       "last_error": null,
-      "last_success_at_utc": "2026-10-02T11:36:06.923952+00:00",
+      "last_success_at_utc": "2026-10-02T11:36:20.724426+00:00",
       "open_until_epoch": 0,
       "status": "HEALTHY"
     },
     "GITHUB_STATUS": {
       "consecutive_failures": 0,
       "last_error": null,
-      "last_success_at_utc": "2026-10-02T11:36:06.349757+00:00",
+      "last_success_at_utc": "2026-10-02T11:36:20.199903+00:00",
       "open_until_epoch": 0,
       "status": "HEALTHY"
     },
@@ -22,12 +22,12 @@
       "status": "CIRCUIT_OPEN"
     },
     "SEC_TICKER_MAP": {
-      "consecutive_failures": 1,
+      "consecutive_failures": 2,
       "last_error": "HTTPError:HTTP Error 403: Forbidden",
-      "last_failure_at_utc": "2026-10-02T11:36:05.984013+00:00",
+      "last_failure_at_utc": "2026-10-02T11:36:20.068283+00:00",
       "status": "DEGRADED"
     }
   },
   "schema": "XRAY_PROVIDER_HEALTH_LEDGER_V1",
-  "updated_at_utc": "2026-10-02T11:36:06.923973+00:00"
+  "updated_at_utc": "2026-10-02T11:36:20.724442+00:00"
 }
