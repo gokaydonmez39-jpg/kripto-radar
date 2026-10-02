@@ -2,6 +2,10 @@ name: XRAY Canonical Current Pre-MC Factory
 # XRAY_SCHEDULE_REGISTRATION_REFRESH=20261002
 
 on:
+  workflow_run:
+    workflows: ["NASDAQ SWING XRAY Autonomous Data Plane"]
+    types: [completed]
+    branches: [main]
   schedule:
     - cron: "35 * * * 1-5"
   push:
@@ -28,6 +32,7 @@ concurrency:
 
 jobs:
   pre-mc:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 58
     env:
