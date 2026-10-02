@@ -1,10 +1,10 @@
-name: XRAY Material Signal Delivery
+name: XRAY Research Candidate Delivery
 
 on:
   push:
     branches: [main]
     paths:
-      - "nasdaq-xray/material_alert.json"
+      - "nasdaq-xray/chatgpt_canonical_state_v2.json"
       - "nasdaq-xray/delivery_prepare.py"
       - ".github/workflows/nasdaq-xray-delivery.yml"
   workflow_dispatch:
@@ -27,11 +27,11 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Prepare fail-closed alert
+      - name: Prepare fail-closed registered research alert
         id: prep
         shell: bash
         run: |
-          set -e
+          set -euo pipefail
           out=$(python nasdaq-xray/delivery_prepare.py)
           echo "$out"
           if echo "$out" | grep -q "XRAY_DELIVERY_READY=PASS"; then
@@ -40,19 +40,23 @@ jobs:
             echo "ready=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Create material signal issue
+      - name: Create deduplicated research candidate issue
         if: steps.prep.outputs.ready == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
-          set -e
-          signal_id=$(python -c 'import json; print(json.load(open("nasdaq-xray/material_alert.json"))["signal_id"])')
-          ticker=$(python -c 'import json; print(json.load(open("nasdaq-xray/material_alert.json"))["ticker"])')
-          title="[XRAY SIGNAL] $ticker — $signal_id"
-          existing=$(gh issue list --state all --search "$signal_id in:title" --json number --jq '.[0].number // empty')
+          set -euo pipefail
+          delivery_key=$(python -c 'import json; print(json.load(open("nasdaq-xray/material_alert_meta.json"))["delivery_key"])')
+          ticker=$(python -c 'import json; print(json.load(open("nasdaq-xray/material_alert_meta.json"))["symbol"])')
+          title="[XRAY RESEARCH AL ADAYI] $ticker — $delivery_key"
+          existing=$(gh issue list --state all --search "$delivery_key in:title" --json number --jq '.[0].number // empty')
           if [ -n "$existing" ]; then
-            echo "Signal issue already exists: #$existing"
+            echo "Research candidate issue already exists: #$existing"
           else
             gh issue create --title "$title" --body-file nasdaq-xray/material_alert_issue.md --label "xray-signal" ||             gh issue create --title "$title" --body-file nasdaq-xray/material_alert_issue.md
           fi
+
+      - name: Delivery noop is healthy
+        if: steps.prep.outputs.ready != 'true'
+        run: echo "XRAY_DELIVERY_HEALTH=PASS_NO_REGISTERED_CANDIDATE"
