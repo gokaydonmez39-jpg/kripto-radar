@@ -7,10 +7,12 @@ on:
       - "nasdaq-xray/chatgpt_canonical_state_v2.json"
       - "nasdaq-xray/delivery_prepare.py"
       - ".github/workflows/nasdaq-xray-delivery.yml"
+  schedule:
+    - cron: "*/15 * * * 1-5"
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   issues: write
 
 concurrency:
@@ -20,9 +22,10 @@ concurrency:
 jobs:
   deliver:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 8
     steps:
       - uses: actions/checkout@v4
+        with: {fetch-depth: 1}
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -40,7 +43,8 @@ jobs:
             echo "ready=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Create deduplicated research candidate issues
+      - name: Create or recover deduplicated research candidate issues
+        id: issues
         if: steps.prep.outputs.ready == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
@@ -56,17 +60,76 @@ jobs:
                   raise SystemExit("unsafe delivery metadata")
               print("\t".join(vals))
           PY
+          : > /tmp/xray_delivery_result.tsv
           while IFS=$'\t' read -r delivery_key ticker body_file; do
             [ -n "$delivery_key" ] || continue
             title="[XRAY RESEARCH AL ADAYI] $ticker — $delivery_key"
             existing=$(gh issue list --state all --search "$delivery_key in:title" --json number --jq '.[0].number // empty')
+            if [ -z "$existing" ]; then
+              gh issue create --title "$title" --body-file "$body_file" --label "xray-signal" >/tmp/issue_url 2>/tmp/issue_err ||               gh issue create --title "$title" --body-file "$body_file" >/tmp/issue_url
+              existing=$(gh issue list --state all --search "$delivery_key in:title" --json number --jq '.[0].number // empty')
+            fi
             if [ -n "$existing" ]; then
-              echo "Research candidate issue already exists: #$existing ($delivery_key)"
+              printf '%s\t%s\t%s\tDELIVERED\n' "$delivery_key" "$ticker" "$existing" >> /tmp/xray_delivery_result.tsv
+              echo "XRAY_BACKUP_DELIVERY=PASS key=$delivery_key issue=$existing"
             else
-              gh issue create --title "$title" --body-file "$body_file" --label "xray-signal" || \
-              gh issue create --title "$title" --body-file "$body_file"
+              printf '%s\t%s\t\tMISSING_RETRY_REQUIRED\n' "$delivery_key" "$ticker" >> /tmp/xray_delivery_result.tsv
+              echo "XRAY_BACKUP_DELIVERY=MISSING key=$delivery_key" >&2
             fi
           done < /tmp/xray_delivery.tsv
+
+      - name: Reconcile durable delivery ledger
+        if: always() && steps.prep.outputs.ready == 'true'
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, pathlib
+          from datetime import datetime, timezone
+          p=pathlib.Path("nasdaq-xray/delivery_ledger.json")
+          try: d=json.load(open(p))
+          except Exception: d={"schema":"XRAY_DELIVERY_LEDGER_V1","deliveries":{},"execution":"NONE","real_money":"NO-GO"}
+          d.setdefault("deliveries",{})
+          result=pathlib.Path("/tmp/xray_delivery_result.tsv")
+          seen=set()
+          if result.exists():
+              for line in result.read_text().splitlines():
+                  key,symbol,issue,status=(line.split("\t")+["","","",""])[:4]
+                  if not key: continue
+                  seen.add(key)
+                  rec=d["deliveries"].setdefault(key,{})
+                  rec.update({"symbol":symbol,"backup_issue_status":status,"backup_issue_number":int(issue) if issue else None,"last_checked_at_utc":datetime.now(timezone.utc).isoformat(),"chatgpt_notification":"ENABLED_PLATFORM_NOT_OBSERVABLE","email_notification":"ENABLED_PLATFORM_NOT_OBSERVABLE"})
+          batch=pathlib.Path("nasdaq-xray/.delivery_work/batch.json")
+          if batch.exists():
+              for x in json.load(open(batch)).get("candidates",[]):
+                  key=x["delivery_key"]
+                  if key not in seen:
+                      rec=d["deliveries"].setdefault(key,{})
+                      rec.update({"symbol":x["symbol"],"backup_issue_status":"MISSING_RETRY_REQUIRED","backup_issue_number":None,"last_checked_at_utc":datetime.now(timezone.utc).isoformat(),"chatgpt_notification":"ENABLED_PLATFORM_NOT_OBSERVABLE","email_notification":"ENABLED_PLATFORM_NOT_OBSERVABLE"})
+          d["updated_at_utc"]=datetime.now(timezone.utc).isoformat()
+          p.write_text(json.dumps(d,sort_keys=True,indent=2)+"\n")
+          missing=[k for k,v in d["deliveries"].items() if v.get("backup_issue_status")!="DELIVERED"]
+          print("XRAY_DELIVERY_LEDGER_MISSING="+str(len(missing)))
+          PY
+
+      - name: Commit delivery ledger
+        if: always() && steps.prep.outputs.ready == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "xray-delivery-bot"
+          git config user.email "xray-delivery-bot@users.noreply.github.com"
+          cp nasdaq-xray/delivery_ledger.json /tmp/delivery_ledger.json
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp /tmp/delivery_ledger.json nasdaq-xray/delivery_ledger.json
+            git add nasdaq-xray/delivery_ledger.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m "chore(xray): reconcile delivery ledger [skip ci]"
+            if git push origin HEAD:main; then exit 0; fi
+            sleep $((attempt*2))
+          done
+          exit 1
 
       - name: Delivery noop is healthy
         if: steps.prep.outputs.ready != 'true'
