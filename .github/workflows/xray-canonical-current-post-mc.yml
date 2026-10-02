@@ -78,6 +78,7 @@ jobs:
                     and j.get("policy_version")=="C4.14"
                     and int(j.get("input_count",-1))==int(expected_count)
                     and (j.get("counts") or {}).get("TOTAL")==expected_count
+                    and int((j.get("counts") or {}).get("MC_UNKNOWN",-1))==0
                     and set((j.get("results") or {}).keys())==set(p.get("pass_symbols") or [])
                     and (
                       (not settlement_required and j.get("settlement_witness_status") in (None,"NOT_REQUIRED_POINTER_ASOF","PASS"))
