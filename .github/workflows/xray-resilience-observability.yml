@@ -80,11 +80,13 @@ jobs:
               if "real_money" in j: assert j["real_money"]=="NO-GO"
               if "alpha_authority" in j: assert j["alpha_authority"] is False
           sec=json.load(open(root/"canonical_sec_official_witness.json"))
-          if sec.get("status")=="READY":
+          if sec.get("status") in {"READY","READY_WITH_UNKNOWNS"}:
               assert sec.get("absence_never_clean") is True
+              assert sec.get("alpha_authority") is False
               req=json.load(open(root/"canonical_current_event_request.json"))
               assert sec.get("asof_et")==req.get("asof_et")
-              assert sec.get("weekly_scope_hash")==req.get("weekly_scope_hash")
+              assert sec.get("geometry_scope_hash")==req.get("geometry_scope_hash")
+              assert set(sec.get("results") or {})==set(req.get("geometry_scope") or [])
           print("XRAY_RESILIENCE_STRUCTURAL=PASS")
           PY
 
