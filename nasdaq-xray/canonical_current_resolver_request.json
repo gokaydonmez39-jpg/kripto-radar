@@ -30,9 +30,9 @@
   "master_unknown_count": 0,
   "master_unknown_detail": {},
   "master_unknown_symbols": [],
-  "official_footer": "File Creation Time: 1001202621:31|||||||",
+  "official_footer": "File Creation Time: 1002202603:03|||||||",
   "pointer_asof_et": "2026-09-30",
-  "price_unknown_count": 3403,
+  "price_unknown_count": 3400,
   "price_unknown_detail": {
     "AACG": {
       "price_result": {
@@ -7264,16 +7264,6 @@
       },
       "security_name": "Coca-Cola Consolidated, Inc. - Common Stock"
     },
-    "COLA": {
-      "price_result": {
-        "info": {
-          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
-        },
-        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
-        "status": "UNKNOWN"
-      },
-      "security_name": "Columbus Acquisition Corp - Ordinary Shares"
-    },
     "COLB": {
       "price_result": {
         "info": {
@@ -11803,16 +11793,6 @@
         "status": "UNKNOWN"
       },
       "security_name": "FS Bancorp, Inc. - Common Stock"
-    },
-    "FSEA": {
-      "price_result": {
-        "info": {
-          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
-        },
-        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
-        "status": "UNKNOWN"
-      },
-      "security_name": "First Seacoast Bancorp, Inc. - Common Stock"
     },
     "FSHP": {
       "price_result": {
@@ -21504,16 +21484,6 @@
       },
       "security_name": "NAPCO Security Technologies, Inc. - Common Stock"
     },
-    "NSTS": {
-      "price_result": {
-        "info": {
-          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
-        },
-        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
-        "status": "UNKNOWN"
-      },
-      "security_name": "NSTS Bancorp, Inc. - Common Stock"
-    },
     "NSYS": {
       "price_result": {
         "info": {
@@ -24932,7 +24902,7 @@
         "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
-      "security_name": "Aureus Greenway Holdings Inc. - Common Stock"
+      "security_name": "Powerus Corporation - Common Stock"
     },
     "PVLA": {
       "price_result": {
@@ -34789,7 +34759,6 @@
     "COHU",
     "COIN",
     "COKE",
-    "COLA",
     "COLB",
     "COLL",
     "COLM",
@@ -35243,7 +35212,6 @@
     "FRVO",
     "FSBC",
     "FSBW",
-    "FSEA",
     "FSHP",
     "FSLR",
     "FSLY",
@@ -36213,7 +36181,6 @@
     "NSIT",
     "NSPR",
     "NSSC",
-    "NSTS",
     "NSYS",
     "NTAP",
     "NTCL",
@@ -37470,8 +37437,8 @@
     "ZYBT",
     "ZYME"
   ],
-  "queue_hash": "9c3d5f4bc3ef68b9953b74dd0cf0bbc645ec01ed61919b076dc9fa363278c1e0",
-  "queue_total": 3403,
+  "queue_hash": "364359905320f408f7c897d03230eade4fc35c063279c01f51e51c91481b52c3",
+  "queue_total": 3400,
   "real_money": "NO-GO",
   "resolver_policy": "LONG_BRIDGE_DAILY_ONLY__NEVER_G9__FAIL_CLOSED__SAME_ASOF_QUEUE_BINDING",
   "schema": "XRAY_RESOLVER_EPOCH_REQUEST_V1",
@@ -37487,21 +37454,21 @@
     "NVDA",
     "MSFT"
   ],
-  "source_master_blob_sha": "ccdd3ef9f2cbb1c7aac71258eca0b1414703dedf",
+  "source_master_blob_sha": "d1780daefe9e572f359e14d6325ca931283e12cc",
   "source_master_path": "nasdaq-xray/canonical_current_master_manifest.json",
-  "source_overlay_blob_sha": "25477e9b2becbc8cd43994daf3e4d40b7609a0d1",
+  "source_overlay_blob_sha": "ef569dca0c5294c6be621720b84d3025aa3c7ab7",
   "source_overlay_path": "nasdaq-xray/canonical_current_resolution_overlay.json",
   "source_pointer_blob_sha": "01b5ec8cee0c4f3a0dc9d977f32c8d8950ca2234",
   "source_pointer_path": "nasdaq-xray/chatgpt_canonical_state_v2.json",
-  "source_price_blob_sha": "2c3e56ee6c4468cf9365fb6fbc3eb235d5aabece",
+  "source_price_blob_sha": "7bc1fa16d84ccdeb2a2fae01b0e73ef03e23c7ba",
   "source_price_path": "nasdaq-xray/canonical_current_price_dv20.json",
-  "source_state_blob_sha": "a43f588a86be9b58e5a61a4a092df4dc568212a3",
+  "source_state_blob_sha": "79b9a6010db4f04aa8140b839f76104afbcf2b0e",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
-  "source_unknowns_blob_sha": "2380ef9a7992f15fca781ddefa437fbb94ec4f92",
+  "source_unknowns_blob_sha": "d23268e36b2665f9f916c5c71b877f4e3f7ce1ad",
   "source_unknowns_path": "nasdaq-xray/canonical_current_unknowns.json",
   "status": "READY",
-  "symbol_count": 3403,
-  "symbol_hash": "9c3d5f4bc3ef68b9953b74dd0cf0bbc645ec01ed61919b076dc9fa363278c1e0",
+  "symbol_count": 3400,
+  "symbol_hash": "364359905320f408f7c897d03230eade4fc35c063279c01f51e51c91481b52c3",
   "symbols": [
     "AACG",
     "AACI",
@@ -38226,7 +38193,6 @@
     "COHU",
     "COIN",
     "COKE",
-    "COLA",
     "COLB",
     "COLL",
     "COLM",
@@ -38680,7 +38646,6 @@
     "FRVO",
     "FSBC",
     "FSBW",
-    "FSEA",
     "FSHP",
     "FSLR",
     "FSLY",
@@ -39650,7 +39615,6 @@
     "NSIT",
     "NSPR",
     "NSSC",
-    "NSTS",
     "NSYS",
     "NTAP",
     "NTCL",

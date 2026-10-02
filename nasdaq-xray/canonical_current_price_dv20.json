@@ -1,7 +1,7 @@
 {
   "asof_et": "2026-10-01",
   "counts": {
-    "UNKNOWN": 3403
+    "UNKNOWN": 3400
   },
   "exception_bridge_meta": {
     "path": "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261001.json",
@@ -38,7 +38,7 @@
   "pass_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "pass_symbols": [],
   "real_money": "NO-GO",
-  "reevaluated_count": 3403,
+  "reevaluated_count": 3400,
   "results": {
     "AACG": {
       "info": {
@@ -5101,13 +5101,6 @@
       "provenance": "DYNAMIC_BRIDGE_DEFERRED",
       "status": "UNKNOWN"
     },
-    "COLA": {
-      "info": {
-        "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
-      },
-      "provenance": "DYNAMIC_BRIDGE_DEFERRED",
-      "status": "UNKNOWN"
-    },
     "COLB": {
       "info": {
         "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
@@ -8273,13 +8266,6 @@
       "status": "UNKNOWN"
     },
     "FSBW": {
-      "info": {
-        "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
-      },
-      "provenance": "DYNAMIC_BRIDGE_DEFERRED",
-      "status": "UNKNOWN"
-    },
-    "FSEA": {
       "info": {
         "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
       },
@@ -15063,13 +15049,6 @@
       "status": "UNKNOWN"
     },
     "NSSC": {
-      "info": {
-        "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
-      },
-      "provenance": "DYNAMIC_BRIDGE_DEFERRED",
-      "status": "UNKNOWN"
-    },
-    "NSTS": {
       "info": {
         "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
       },
@@ -23864,14 +23843,14 @@
   },
   "reused_terminal_count": 0,
   "schema": "XRAY_CANONICAL_PRICE_DV20_V1",
-  "source_master_count": 3403,
-  "source_master_queue_hash": "9c3d5f4bc3ef68b9953b74dd0cf0bbc645ec01ed61919b076dc9fa363278c1e0",
+  "source_master_count": 3400,
+  "source_master_queue_hash": "364359905320f408f7c897d03230eade4fc35c063279c01f51e51c91481b52c3",
   "task_id": "6a825366222081918997094d76e6ae46",
   "thresholds": {
     "dv20": ">=50000000 exact20 median",
     "price": ">10"
   },
-  "unknown_count": 3403,
+  "unknown_count": 3400,
   "unknown_never_pass": true,
   "unknown_symbols": [
     "AACG",
@@ -24597,7 +24576,6 @@
     "COHU",
     "COIN",
     "COKE",
-    "COLA",
     "COLB",
     "COLL",
     "COLM",
@@ -25051,7 +25029,6 @@
     "FRVO",
     "FSBC",
     "FSBW",
-    "FSEA",
     "FSHP",
     "FSLR",
     "FSLY",
@@ -26021,7 +25998,6 @@
     "NSIT",
     "NSPR",
     "NSSC",
-    "NSTS",
     "NSYS",
     "NTAP",
     "NTCL",
