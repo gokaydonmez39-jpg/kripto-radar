@@ -1,0 +1,24 @@
+{
+  "schema": "XRAY_G9_ENTITLEMENT_AUTHORITY_V1",
+  "provider": "TRADESTATION",
+  "status": "UNPROVEN",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "required_claims": {
+    "lineage": "Exact API entitlement is consolidated UTP Tape-C UQDF+UTDF / National NBBO or documented equivalent",
+    "automated_use": "Exact retail/API entitlement permits intended automated/non-display own-account use",
+    "permanent_zero": "No recurring market-data/vendor/exchange/per-query/account-maintenance cost or activity/balance condition required to keep this entitlement"
+  },
+  "current_evidence": {
+    "turkey_application": "SUPPORTED_BY_TRADESTATION_APPLICATION_COUNTRY_LIST",
+    "api_marketdata_scope": "PROVEN",
+    "api_readaccount_scope": "PROVEN",
+    "api_matrix_scope": "PROVEN",
+    "nasdaq_l1_trades_inside_bid_ask": "PROVEN",
+    "marketdepth_quote_timestamp": "TECHNICALLY_EVIDENCED_BY_CURRENT_CLIENT_MODEL_NOT_PRIMARY_ENTITLEMENT_PROOF",
+    "permanent_zero": "NOT_PROVEN_ACCOUNT_INACTIVITY_FEE_CONDITION_EXISTS",
+    "automated_nondisplay_utp_right": "NOT_PROVEN"
+  },
+  "pass_rule": "STATUS_MUST_BE_PROVEN_FROM_PRIMARY_SOURCE_BEFORE_RUNTIME_G9_CAN_PASS",
+  "no_policy_weakening": true
+}
