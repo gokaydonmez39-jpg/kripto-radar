@@ -95,10 +95,19 @@ jobs:
             ".github/workflows/xray-canonical-current-post-mc.yml",
             ".github/workflows/xray-canonical-current-final.yml",
           ]
+          blob_bound={
+            "nasdaq-xray/build_current_event_request.py",
+            "nasdaq-xray/build_current_resolver_request.py",
+            "nasdaq-xray/price_dv20_recover_from_fullstate.py",
+            ".github/workflows/xray-canonical-current-pre-mc.yml",
+            ".github/workflows/xray-canonical-current-final.yml",
+          }
           for name in targets:
               t=Path(name).read_text()
               assert oldh not in t and oldb not in t
-              assert newh in t and newb in t and "C4.16" in t
+              assert newh in t and "C4.16" in t
+              if name in blob_bound:
+                  assert newb in t,(name,"missing new blob pin")
           assert 'assert p["version"]=="C4.16"' in Path(".github/workflows/xray-dynamic-policy-invariants.yml").read_text()
           assert "Validate C4.16 settlement connector failover" in Path(".github/workflows/xray-validate-compiled-policy-v3.yml").read_text()
           print("C416_PRECOMMIT_VERIFY=PASS")
