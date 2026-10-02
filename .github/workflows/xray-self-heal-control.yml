@@ -1,0 +1,152 @@
+name: XRAY Safe Self-Heal Control
+
+on:
+  schedule:
+    - cron: "7,27,47 * * * 1-5"
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: write
+  issues: write
+
+concurrency:
+  group: xray-safe-self-heal-control
+  cancel-in-progress: false
+
+jobs:
+  heal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 1}
+      - name: Inspect and safely recover critical workflows
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          repo="$GITHUB_REPOSITORY"
+          current_sha="$(git rev-parse HEAD)"
+          ledger="nasdaq-xray/self_heal_ledger.json"
+          workflows=(
+            xray-validate-compiled-policy-v3.yml
+            xray-dynamic-policy-invariants.yml
+            xray-dynamic-phase-regression.yml
+            xray-canonical-current-pre-mc.yml
+            xray-canonical-current-post-mc.yml
+            xray-canonical-current-final.yml
+            xray-resilience-observability.yml
+            nasdaq-xray-delivery.yml
+          )
+          python - <<'PY'
+          import json, pathlib
+          p=pathlib.Path("nasdaq-xray/self_heal_ledger.json")
+          try: j=json.load(open(p))
+          except Exception: j={"schema":"XRAY_SELF_HEAL_LEDGER_V1","execution":"NONE","real_money":"NO-GO","workflows":{}}
+          assert j.get("schema")=="XRAY_SELF_HEAL_LEDGER_V1"
+          assert j.get("execution")=="NONE" and j.get("real_money")=="NO-GO"
+          j.setdefault("workflows",{})
+          p.write_text(json.dumps(j,sort_keys=True,indent=2)+"\n")
+          PY
+
+          for wf in "${workflows[@]}"; do
+            payload="$(gh api "repos/$repo/actions/workflows/$wf/runs?branch=main&per_page=10")"
+            latest="$(printf '%s' "$payload" | jq -c '[.workflow_runs[] | select(.status=="completed")][0] // empty')"
+            if [ -z "$latest" ]; then
+              echo "XRAY_SELF_HEAL no_completed_run workflow=$wf"
+              continue
+            fi
+            id="$(printf '%s' "$latest" | jq -r '.id')"
+            conclusion="$(printf '%s' "$latest" | jq -r '.conclusion // "unknown"')"
+            head_sha="$(printf '%s' "$latest" | jq -r '.head_sha // ""')"
+            run_attempt="$(printf '%s' "$latest" | jq -r '.run_attempt // 1')"
+
+            if [ "$conclusion" = "success" ]; then
+              python - "$wf" "$id" "$head_sha" <<'PY'
+          import json,sys,datetime
+          p="nasdaq-xray/self_heal_ledger.json"
+          j=json.load(open(p)); w=j.setdefault("workflows",{}).setdefault(sys.argv[1],{})
+          w.update({"status":"PASS","latest_run_id":int(sys.argv[2]),"latest_head_sha":sys.argv[3],"recovery_attempted_for_run_id":None,"last_checked_at_utc":datetime.datetime.now(datetime.timezone.utc).isoformat()})
+          open(p,"w").write(json.dumps(j,sort_keys=True,indent=2)+"\n")
+          PY
+              alert="$(gh issue list --state open --search "[XRAY SYSTEM ALERT] $wf in:title" --json number --jq '.[0].number // empty')"
+              if [ -n "$alert" ]; then
+                gh issue close "$alert" --comment "Auto-resolved: latest completed workflow run is SUCCESS ($id)." >/dev/null || true
+              fi
+              continue
+            fi
+
+            already="$(python - "$wf" "$id" <<'PY'
+          import json,sys
+          j=json.load(open("nasdaq-xray/self_heal_ledger.json"))
+          w=(j.get("workflows") or {}).get(sys.argv[1]) or {}
+          print("yes" if str(w.get("recovery_attempted_for_run_id"))==sys.argv[2] else "no")
+          PY
+          )"
+
+            if [ "$already" = "no" ]; then
+              echo "XRAY_SELF_HEAL recovery workflow=$wf run=$id conclusion=$conclusion"
+              if [ "$head_sha" = "$current_sha" ] && [ "$run_attempt" -lt 2 ]; then
+                gh api -X POST "repos/$repo/actions/runs/$id/rerun-failed-jobs" >/dev/null ||                 gh workflow run "$wf" --ref main >/dev/null
+              else
+                gh workflow run "$wf" --ref main >/dev/null
+              fi
+              python - "$wf" "$id" "$head_sha" "$conclusion" <<'PY'
+          import json,sys,datetime
+          p="nasdaq-xray/self_heal_ledger.json"
+          j=json.load(open(p)); w=j.setdefault("workflows",{}).setdefault(sys.argv[1],{})
+          w.update({"status":"RECOVERY_DISPATCHED","latest_run_id":int(sys.argv[2]),"latest_head_sha":sys.argv[3],"latest_conclusion":sys.argv[4],"recovery_attempted_for_run_id":int(sys.argv[2]),"last_checked_at_utc":datetime.datetime.now(datetime.timezone.utc).isoformat()})
+          open(p,"w").write(json.dumps(j,sort_keys=True,indent=2)+"\n")
+          PY
+            else
+              echo "XRAY_SELF_HEAL unresolved workflow=$wf run=$id"
+              title="[XRAY SYSTEM ALERT] $wf — unresolved workflow failure"
+              existing="$(gh issue list --state open --search "$title in:title" --json number --jq '.[0].number // empty')"
+              if [ -z "$existing" ]; then
+                body="$(cat <<EOF
+          Critical XRAY workflow remains failed after one safe recovery attempt.
+
+          - Workflow: `$wf`
+          - Run: `$id`
+          - Conclusion: `$conclusion`
+          - Head SHA: `$head_sha`
+          - Current main: `$current_sha`
+          - EXECUTION: `NONE`
+          - REAL_MONEY: `NO-GO`
+
+          No alpha thresholds, market evidence, or production pointer were modified by self-heal.
+          Manual/root-cause review is required if a later run does not return SUCCESS.
+          EOF
+          )"
+                gh issue create --title "$title" --body "$body" >/dev/null
+              fi
+              python - "$wf" "$id" "$head_sha" "$conclusion" <<'PY'
+          import json,sys,datetime
+          p="nasdaq-xray/self_heal_ledger.json"
+          j=json.load(open(p)); w=j.setdefault("workflows",{}).setdefault(sys.argv[1],{})
+          w.update({"status":"UNRESOLVED_ALERTED","latest_run_id":int(sys.argv[2]),"latest_head_sha":sys.argv[3],"latest_conclusion":sys.argv[4],"recovery_attempted_for_run_id":int(sys.argv[2]),"last_checked_at_utc":datetime.datetime.now(datetime.timezone.utc).isoformat()})
+          open(p,"w").write(json.dumps(j,sort_keys=True,indent=2)+"\n")
+          PY
+            fi
+          done
+
+      - name: Commit self-heal ledger
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "xray-self-heal-bot"
+          git config user.email "xray-self-heal-bot@users.noreply.github.com"
+          cp nasdaq-xray/self_heal_ledger.json /tmp/self_heal_ledger.json
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp /tmp/self_heal_ledger.json nasdaq-xray/self_heal_ledger.json
+            git add nasdaq-xray/self_heal_ledger.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m "chore(xray): reconcile self-heal ledger [skip ci]"
+            if git push origin HEAD:main; then exit 0; fi
+            sleep $((attempt*2))
+          done
+          exit 1
