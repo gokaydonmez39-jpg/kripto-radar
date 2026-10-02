@@ -75,10 +75,9 @@ def main():
     settlement_core_symbol,settlement_core_source_path,settlement_core_source_blob_sha=prior_core_symbol(pointer_asof)
     if settlement_required:
         assert settlement_core_symbol, "SETTLEMENT_PRIOR_CURRENT_CORE_UNAVAILABLE"
-    bridge=ROOT/f"canonical_resolver_bridge_{asof.replace('-','')}.json"
-    settlement_already_proven=False
-    settlement_bridge_blob_sha=None
-    if bridge.exists():
+    bridge_candidates=sorted(ROOT.glob(f"canonical_resolver_bridge_{asof.replace('-','')}*.json"))
+    current_policy_bridges=[]
+    for bridge in bridge_candidates:
         try:
             br=json.loads(bridge.read_text())
             if (
@@ -93,10 +92,13 @@ def main():
               and br.get("compiled_policy_blob_sha")=="edda430faf4057c214fee483e0f7c503c2418462"
               and br.get("settlement_status")=="PASS"
             ):
-                settlement_already_proven=True
-                settlement_bridge_blob_sha=blob_sha(bridge)
+                current_policy_bridges.append((bridge,br))
         except Exception:
             pass
+    assert len(current_policy_bridges)<=1, "AMBIGUOUS_CURRENT_POLICY_RESOLVER_BRIDGE"
+    settlement_already_proven=bool(current_policy_bridges)
+    settlement_bridge_blob_sha=blob_sha(current_policy_bridges[0][0]) if current_policy_bridges else None
+    settlement_bridge_path=(str(current_policy_bridges[0][0].relative_to(ROOT.parent)).replace("\\","/") if current_policy_bridges else None)
     ready=bool(union) or bool(settlement_required and not settlement_already_proven)
     obj={
       "schema":"XRAY_RESOLVER_EPOCH_REQUEST_V1",
@@ -108,6 +110,7 @@ def main():
       "settlement_required":settlement_required,
       "settlement_already_proven":settlement_already_proven,
       "settlement_bridge_blob_sha":settlement_bridge_blob_sha,
+      "settlement_bridge_path":settlement_bridge_path,
       "compiled_policy_path":"nasdaq-xray/chatgpt_compiled_policy_v3.json",
       "compiled_policy_blob_sha":"edda430faf4057c214fee483e0f7c503c2418462",
       "compiled_policy_hash":"ba5134d39009fca2801d482302150732ba47c5a3f0c474e8764bf412cad49b1a",
