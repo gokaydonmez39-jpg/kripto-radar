@@ -1,1 +1,63 @@
-{"schema":"XRAY_SELF_HEAL_LEDGER_V1","execution":"NONE","real_money":"NO-GO","workflows":{}}
+{
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "schema": "XRAY_SELF_HEAL_LEDGER_V1",
+  "workflows": {
+    "nasdaq-xray-delivery.yml": {
+      "last_checked_at_utc": "2026-10-02T11:49:04.278105+00:00",
+      "latest_head_sha": "f45112ae3cd48d6d7014d906c209188998983153",
+      "latest_run_id": 37002764509,
+      "recovery_attempted_for_run_id": null,
+      "status": "PASS"
+    },
+    "xray-canonical-current-final.yml": {
+      "last_checked_at_utc": "2026-10-02T11:49:01.726583+00:00",
+      "latest_head_sha": "e0e4ca8c159e3d0762ec11ce5531e5f7443cb3f5",
+      "latest_run_id": 36992714423,
+      "recovery_attempted_for_run_id": null,
+      "status": "PASS"
+    },
+    "xray-canonical-current-post-mc.yml": {
+      "last_checked_at_utc": "2026-10-02T11:49:00.564003+00:00",
+      "latest_head_sha": "e84ebadcc6999420f4b12f3d2a3467692bef6cc0",
+      "latest_run_id": 36994283355,
+      "recovery_attempted_for_run_id": null,
+      "status": "PASS"
+    },
+    "xray-canonical-current-pre-mc.yml": {
+      "last_checked_at_utc": "2026-10-02T11:48:59.492668+00:00",
+      "latest_head_sha": "7347d65e40cf3731976538ee9fb458215bb2badd",
+      "latest_run_id": 36988963195,
+      "recovery_attempted_for_run_id": null,
+      "status": "PASS"
+    },
+    "xray-dynamic-phase-regression.yml": {
+      "last_checked_at_utc": "2026-10-02T11:48:58.366250+00:00",
+      "latest_head_sha": "569209566b958050b3338958441482057f2fe63f",
+      "latest_run_id": 36988902415,
+      "recovery_attempted_for_run_id": null,
+      "status": "PASS"
+    },
+    "xray-dynamic-policy-invariants.yml": {
+      "last_checked_at_utc": "2026-10-02T11:48:57.258080+00:00",
+      "latest_head_sha": "f6c2735b0ed6e3229ec4444a7f0849cb097cabd9",
+      "latest_run_id": 36997128479,
+      "recovery_attempted_for_run_id": null,
+      "status": "PASS"
+    },
+    "xray-resilience-observability.yml": {
+      "last_checked_at_utc": "2026-10-02T11:49:03.093848+00:00",
+      "latest_head_sha": "c2aa18d62a04d191e56291cd68afca154dc4d42a",
+      "latest_run_id": 37002853186,
+      "recovery_attempted_for_run_id": null,
+      "status": "PASS"
+    },
+    "xray-validate-compiled-policy-v3.yml": {
+      "last_checked_at_utc": "2026-10-02T11:48:55.768793+00:00",
+      "latest_head_sha": "961892d26474f28480a4ad1eab6ee1617ef7487f",
+      "latest_run_id": 36988846744,
+      "recovery_attempted_for_run_id": null,
+      "status": "PASS"
+    }
+  }
+}
