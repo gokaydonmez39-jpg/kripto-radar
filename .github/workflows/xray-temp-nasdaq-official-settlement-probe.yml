@@ -1,4 +1,4 @@
-name: XRAY TEMP C4.15 Production Migration
+name: XRAY TEMP Nasdaq Official Historical Probe
 
 on:
   push:
@@ -8,171 +8,36 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
-
-concurrency:
-  group: xray-c415-production-migration
-  cancel-in-progress: false
+  contents: read
 
 jobs:
-  apply:
+  probe:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
-        with: {fetch-depth: 1}
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - name: Install invariant runtime
-        run: python -m pip install --disable-pip-version-check akshare==1.18.95 pandas_market_calendars
-      - name: Apply validated C4.15 settlement-only migration atomically
+      - name: Probe Nasdaq official historical with ISO dates
         shell: bash
         run: |
-          set -euo pipefail
-          git config user.name "xray-dataplane-bot"
-          git config user.email "xray-dataplane-bot@users.noreply.github.com"
-          for attempt in 1 2 3 4 5; do
-            git fetch origin main
-            git reset --hard origin/main
-
-            if python - <<'PYCHECK'
-          import json,sys
-          from pathlib import Path
-          t=json.load(open("nasdaq-xray/chatgpt_compiled_policy_v3.json"))
-          p=json.loads(t["payload_json"])
-          if p.get("version")=="C4.15":
-              ok=(t.get("policy_hash")=="7454b9156b6161f1bd3f44d150f71e03f99b471466ce364aa5a490e29e39a015"
-                  and p.get("settlement_change",{}).get("id")=="SETTLEMENT_ZERO_DOLLAR_CROSSCHECK_V2"
-                  and "C4.15" in Path(".github/workflows/xray-validate-compiled-policy-v3.yml").read_text())
-              sys.exit(0 if ok else 2)
-          sys.exit(1)
-          PYCHECK
-            then
-              echo "C415_ALREADY_APPLIED=PASS"
-              exit 0
-            else
-              rc=$?
-              if [ "$rc" -eq 2 ]; then
-                echo "C415_PARTIAL_STATE_FORBIDDEN" >&2
-                exit 1
-              fi
-            fi
-
-            python nasdaq-xray/probes/c415_migration_dryrun.py
-
-            python - <<'PYVAL'
-          from pathlib import Path
-          p=Path(".github/workflows/xray-validate-compiled-policy-v3.yml")
-          p.write_text("""name: XRAY Validate Compiled Policy V3
-
-          on:
-            push:
-              branches: [main]
-              paths:
-                - ".github/workflows/xray-validate-compiled-policy-v3.yml"
-                - "nasdaq-xray/chatgpt_compiled_policy_v3.json"
-            workflow_dispatch:
-
-          permissions:
-            contents: read
-
-          jobs:
-            validate:
-              runs-on: ubuntu-latest
-              timeout-minutes: 5
-              steps:
-                - uses: actions/checkout@v4
-                - name: Validate C4.15 settlement migration and preserve C4.14 MC repair
-                  run: |
-                    python - <<'PY'
-                    import json,hashlib
-                    top=json.load(open("nasdaq-xray/chatgpt_compiled_policy_v3.json"))
-                    assert top["schema"]=="XRAY_GITHUB_COMPILED_POLICY_V3"
-                    assert top["execution"]=="NONE" and top["real_money"]=="NO-GO"
-                    payload=top["payload_json"]
-                    h=hashlib.sha256(payload.encode()).hexdigest()
-                    assert h==top["policy_hash"]=="7454b9156b6161f1bd3f44d150f71e03f99b471466ce364aa5a490e29e39a015"
-                    x=json.loads(payload)
-                    assert x["schema"]=="XRAY_COMPILED_POLICY_V1" and x["version"]=="C4.15"
-                    assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
-                    assert x["unknown_never_pass"] is True and x["zero_dollar_hard_cap"] is True
-                    assert x["hard_gates"]["price"]==">10"
-                    assert x["hard_gates"]["market_cap"]==">=2000000000 USD"
-                    assert x["hard_gates"]["dv20"]=="median exactly20 completed official-RTH Close*regular-session Volume >=50000000"
-                    e=x["mc_fail_evidence"]
-                    assert e["no_threshold_change"] is True and e["unknown_never_pass"] is True
-                    assert "MC_FAIL_FALLBACK_TWO_SOURCE" in e["two_source_subthreshold_fail"]
-                    assert "$1,800,000,000" in e["two_source_subthreshold_fail"]
-                    pc=x["policy_change"]
-                    assert pc["id"]=="MC_TWO_SOURCE_SUBTHRESHOLD_FAIL_EVIDENCE_V1"
-                    assert pc["base_policy_version"]=="C4.13" and pc["fail_evidence_only"] is True
-                    sc=x["settlement_change"]
-                    assert sc["id"]=="SETTLEMENT_ZERO_DOLLAR_CROSSCHECK_V2"
-                    assert sc["base_policy_hash"]=="bc4ad11c4029bf5feb5399ae3aa7af9c9c8dd7ad6c44119bac4e5734287b931e"
-                    assert sc["base_policy_version"]=="C4.14"
-                    assert "SETTLEMENT_CROSSCHECK_ONLY" in sc["invariants"]
-                    for sym in ["AAPL","NVDA","MSFT"]:
-                        o=sc["observed_20261002"][sym]
-                        assert o["alpaca"]==o["rallies"]==o["longbridge"]
-                    s=x["settlement"]
-                    assert s["primary"]=="ALPACA_HISTORICAL_SIP_DAILY_AFTER_15M"
-                    assert s["massive_polygon_role"]=="OPTIONAL_DIAGNOSTIC_ONLY_NOT_REQUIRED"
-                    assert s["zero_dollar_fail_closed"] is True
-                    assert "LONGBRIDGE_US_QUOTE" in s["latest_session_crosscheck"]
-                    assert "NON-G9" in s["g9_separation"]
-                    sp=top["source_proof"]
-                    assert sp["base_policy_hash"]=="bc4ad11c4029bf5feb5399ae3aa7af9c9c8dd7ad6c44119bac4e5734287b931e"
-                    assert sp["base_policy_blob_sha"]=="b41a40403c03e8884ee90d5cce2e0844d2bea0cd"
-                    assert sp["base_policy_version"]=="C4.14"
-                    print({"policy_hash":h,"version":x["version"],"status":"PASS"})
-                    PY
-          """)
-          PYVAL
-
-            python -m py_compile               nasdaq-xray/build_current_event_request.py               nasdaq-xray/build_current_event_state.py               nasdaq-xray/build_current_resolver_request.py               nasdaq-xray/build_current_terminal.py               nasdaq-xray/price_dv20_recover_from_fullstate.py               nasdaq-xray/test_dynamic_policy_invariants.py
-            python nasdaq-xray/test_dynamic_policy_invariants.py
-
-            python - <<'PYVERIFY'
-          import json,hashlib,subprocess
-          from pathlib import Path
-          oldh="bc4ad11c4029bf5feb5399ae3aa7af9c9c8dd7ad6c44119bac4e5734287b931e"
-          oldb="b41a40403c03e8884ee90d5cce2e0844d2bea0cd"
-          newh="7454b9156b6161f1bd3f44d150f71e03f99b471466ce364aa5a490e29e39a015"
-          newb="a11947566c170d47e4d806a9e17bd8830d7c83fc"
-          top=json.load(open("nasdaq-xray/chatgpt_compiled_policy_v3.json"))
-          p=json.loads(top["payload_json"])
-          assert hashlib.sha256(top["payload_json"].encode()).hexdigest()==top["policy_hash"]==newh
-          assert p["version"]=="C4.15"
-          assert subprocess.check_output(["git","hash-object","nasdaq-xray/chatgpt_compiled_policy_v3.json"],text=True).strip()==newb
-          targets=[
-            "nasdaq-xray/build_current_event_request.py",
-            "nasdaq-xray/build_current_event_state.py",
-            "nasdaq-xray/build_current_resolver_request.py",
-            "nasdaq-xray/build_current_terminal.py",
-            "nasdaq-xray/price_dv20_recover_from_fullstate.py",
-            ".github/workflows/xray-canonical-current-pre-mc.yml",
-            ".github/workflows/xray-canonical-current-post-mc.yml",
-            ".github/workflows/xray-canonical-current-final.yml",
-          ]
-          for name in targets:
-              t=Path(name).read_text()
-              assert oldh not in t and oldb not in t
-              assert newh in t and newb in t and "C4.15" in t
-          assert 'assert p["version"]=="C4.15"' in Path(".github/workflows/xray-dynamic-policy-invariants.yml").read_text()
-          assert "Validate C4.15 settlement migration" in Path(".github/workflows/xray-validate-compiled-policy-v3.yml").read_text()
-          print("C415_PRECOMMIT_VERIFY=PASS")
-          PYVERIFY
-
-            git diff --check
-            git add               nasdaq-xray/chatgpt_compiled_policy_v3.json               nasdaq-xray/build_current_event_request.py               nasdaq-xray/build_current_event_state.py               nasdaq-xray/build_current_resolver_request.py               nasdaq-xray/build_current_terminal.py               nasdaq-xray/price_dv20_recover_from_fullstate.py               .github/workflows/xray-canonical-current-pre-mc.yml               .github/workflows/xray-canonical-current-post-mc.yml               .github/workflows/xray-canonical-current-final.yml               .github/workflows/xray-dynamic-policy-invariants.yml               .github/workflows/xray-validate-compiled-policy-v3.yml
-            git commit -m "fix(xray): migrate zero-dollar settlement crosscheck to C4.15"
-            if git push origin HEAD:main; then
-              echo "C415_PRODUCTION_MIGRATION=PASS"
-              exit 0
-            fi
-            echo "C415_PUSH_RACE attempt=$attempt"
-            sleep $((attempt*3))
-          done
-          echo "C415_PRODUCTION_MIGRATION=FAIL" >&2
-          exit 1
+          python - <<'PY'
+          import json, urllib.request, urllib.parse
+          UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/126 Safari/537.36"
+          for sym in ["AAPL","NVDA","MSFT"]:
+              params=urllib.parse.urlencode({
+                  "assetclass":"stocks",
+                  "fromdate":"2026-10-01",
+                  "todate":"2026-10-02",
+                  "limit":"50"
+              })
+              url=f"https://api.nasdaq.com/api/quote/{sym}/historical?{params}"
+              req=urllib.request.Request(url,headers={
+                  "User-Agent":UA,
+                  "Accept":"application/json,text/plain,*/*",
+                  "Accept-Language":"en-US,en;q=0.9",
+                  "Referer":f"https://www.nasdaq.com/market-activity/stocks/{sym.lower()}/historical"
+              })
+              with urllib.request.urlopen(req,timeout=30) as resp:
+                  obj=json.loads(resp.read().decode("utf-8"))
+              rows=(((obj.get("data") or {}).get("tradesTable") or {}).get("rows") or [])
+              print("NASDAQ_OFFICIAL_ISO",sym,json.dumps(rows[:10],sort_keys=True))
+          PY
