@@ -6,7 +6,7 @@ from pathlib import Path
 
 ROOT=Path(__file__).resolve().parent
 TASK="6a825366222081918997094d76e6ae46"
-POLICY_HASH="a663cd5046e36cfb8f6b4674d0e9bea4c92edcf5398e73c8c4ed9eb01da36d60"
+POLICY_HASH="ba5134d39009fca2801d482302150732ba47c5a3f0c474e8764bf412cad49b1a"
 OUT=Path(os.getenv("XRAY_TERMINAL_OUT",str(ROOT/"canonical_current_terminal.json")))
 FILES={
  "pointer":ROOT/"chatgpt_canonical_state_v2.json",
@@ -47,7 +47,7 @@ def find_mc(price,price_blob):
               and j.get("input_blob_sha")==price_blob
               and j.get("input_pass_hash")==price["pass_hash"]
               and j.get("policy_hash")==POLICY_HASH
-              and j.get("policy_version")=="C4.12"
+              and j.get("policy_version")=="C4.13"
               and int(j.get("input_count",-1))==int(price["pass_count"])
               and set((j.get("results") or {}).keys())==set(price["pass_symbols"])
             ):
@@ -63,7 +63,7 @@ def main():
     pol=d["policy"]; ptr=d["pointer"]; m=d["master"]; p=d["price"]
     assert pol["schema"]=="XRAY_GITHUB_COMPILED_POLICY_V3" and pol["policy_hash"]==POLICY_HASH
     pp=json.loads(pol["payload_json"])
-    assert pp["version"]=="C4.12" and pp["hard_gates"]["order"]==["identity/type","PRICE","DV20","MC","HISTORY","LEGAL/SHELL","Stage1","deep/events"]
+    assert pp["version"]=="C4.13" and pp["hard_gates"]["order"]==["identity/type","PRICE","DV20","MC","HISTORY","LEGAL/SHELL","Stage1","deep/events"]
     assert pp["settlement"]["primary"]=="ALPACA_HISTORICAL_SIP_DAILY_AFTER_15M"
     assert "NON-G9" in pp["settlement"]["g9_separation"]
     assert p["task_id"]==m["task_id"]==TASK
@@ -92,7 +92,7 @@ def main():
         assert sw.get("schema")=="XRAY_RESOLVER_EPOCH_RESULT_V1" and sw.get("status")=="COMMITTED"
         assert sw.get("task_id")==TASK and sw.get("asof_et")==asof and sw.get("settlement_status")=="PASS"
         assert sw.get("queue_hash")==m["queue_hash"]
-        assert sw.get("compiled_policy_hash")==POLICY_HASH and sw.get("compiled_policy_version")=="C4.12"
+        assert sw.get("compiled_policy_hash")==POLICY_HASH and sw.get("compiled_policy_version")=="C4.13"
     else:
         assert mc.get("settlement_witness_status") in {None,"NOT_REQUIRED_POINTER_ASOF","PASS"}
     primary=set(mc.get("primary_pass_symbols") or [])
@@ -109,7 +109,7 @@ def main():
         assert x["task_id"]==TASK and x["asof_et"]==asof and x["execution"]=="NONE" and x["real_money"]=="NO-GO"
     assert h["unknown_count"]==0 and h["input_count"]==len(primary) and set(h["results"])==primary
     assert h.get("source_mc_blob_sha")==blob_sha(mc_path)
-    assert h.get("source_mc_policy_hash")==POLICY_HASH and h.get("source_mc_policy_version")=="C4.12"
+    assert h.get("source_mc_policy_hash")==POLICY_HASH and h.get("source_mc_policy_version")=="C4.13"
     hpass=set(h["pass_symbols"]); hfail=set(h["results"])-hpass
     assert hpass|hfail==primary and not (hpass&hfail)
     assert all((h["results"][s].get("status")=="FAIL_HISTORY") for s in hfail)
@@ -124,43 +124,43 @@ def main():
     assert si["task_id"]==TASK and si["asof_et"]==asof and si["execution"]=="NONE" and si["real_money"]=="NO-GO"
     assert si.get("source_mc_blob_sha")==blob_sha(mc_path)
     assert si.get("source_history_blob_sha")==sh["history"] and si.get("source_legal_blob_sha")==sh["legal"]
-    assert si.get("source_mc_policy_hash")==POLICY_HASH and si.get("source_mc_policy_version")=="C4.12"
+    assert si.get("source_mc_policy_hash")==POLICY_HASH and si.get("source_mc_policy_version")=="C4.13"
     assert si.get("source_history_pass_hash")==h.get("pass_hash") and si.get("source_legal_pass_hash")==lg.get("pass_hash")
     assert st["input_current_core_count"]==len(lpass) and set(st["results"])==lpass
     assert st.get("source_input_blob_sha")==sh["stage1_input"]
     assert st.get("source_legal_pass_hash")==lg.get("pass_hash")
-    assert st.get("source_mc_policy_hash")==POLICY_HASH and st.get("source_mc_policy_version")=="C4.12"
+    assert st.get("source_mc_policy_hash")==POLICY_HASH and st.get("source_mc_policy_version")=="C4.13"
     assert st["unknown_count"]==0
     weekly=set(st["weekly_pass"]); assert len(weekly)==st["weekly_pass_count"]
     assert rg["current_core_count"]==len(lpass) and rg["breadth_missing_count"]==0
     assert rg.get("source_input_blob_sha")==sh["stage1_input"]
     assert rg.get("source_legal_pass_hash")==lg.get("pass_hash")
-    assert rg.get("source_mc_policy_hash")==POLICY_HASH and rg.get("source_mc_policy_version")=="C4.12"
+    assert rg.get("source_mc_policy_hash")==POLICY_HASH and rg.get("source_mc_policy_version")=="C4.13"
 
     assert dg["task_id"]==TASK and dg["asof_et"]==asof and dg["execution"]=="NONE" and dg["real_money"]=="NO-GO"
     assert dg.get("source_stage1_blob_sha")==sh["stage1"]
-    assert dg.get("source_mc_policy_hash")==POLICY_HASH and dg.get("source_mc_policy_version")=="C4.12"
+    assert dg.get("source_mc_policy_hash")==POLICY_HASH and dg.get("source_mc_policy_version")=="C4.13"
 
     assert er["weekly_scope_count"]==len(weekly) and set(er["weekly_scope"])==weekly
-    assert er.get("compiled_policy_hash")==POLICY_HASH and er.get("compiled_policy_version")=="C4.12"
+    assert er.get("compiled_policy_hash")==POLICY_HASH and er.get("compiled_policy_version")=="C4.13"
     assert er.get("compiled_policy_blob_sha")==sh["policy"]
     assert er.get("source_stage1_blob_sha")==sh["stage1"]
     assert er.get("source_regime_blob_sha")==sh["regime"]
     assert er.get("source_deep_geometry_blob_sha")==sh["deep_geometry"]
     assert ev["weekly_scope_count"]==len(weekly) and set(ev["weekly_scope"])==weekly
     assert ev["source_request_blob_sha"]==sh["event_request"]
-    assert ev.get("compiled_policy_hash")==POLICY_HASH and ev.get("compiled_policy_version")=="C4.12"
+    assert ev.get("compiled_policy_hash")==POLICY_HASH and ev.get("compiled_policy_version")=="C4.13"
     assert ev.get("compiled_policy_blob_sha")==sh["policy"]
     assert set(ev["event_status_by_symbol"])==weekly
     assert ev["clean_discovery_count"]+ev["confirmed_block_count"]+ev["unresolved_count"]==len(weekly)
 
     assert fc["weekly_scope_count"]==len(weekly)
     assert fc.get("source_stage1_blob_sha")==sh["stage1"] and fc.get("source_event_blob_sha")==sh["events"]
-    assert fc.get("source_compiled_policy_hash")==POLICY_HASH and fc.get("source_compiled_policy_version")=="C4.12"
+    assert fc.get("source_compiled_policy_hash")==POLICY_HASH and fc.get("source_compiled_policy_version")=="C4.13"
     assert dp["input_weekly_pass_count"]==len(weekly) and set(dp["results"])==weekly
     assert dp.get("source_stage1_blob_sha")==sh["stage1"]
     assert dp.get("source_regime_blob_sha")==sh["regime"] and dp.get("source_event_blob_sha")==sh["events"]
-    assert dp.get("source_mc_policy_hash")==POLICY_HASH and dp.get("source_mc_policy_version")=="C4.12"
+    assert dp.get("source_mc_policy_hash")==POLICY_HASH and dp.get("source_mc_policy_version")=="C4.13"
     assert dp["event_state_fresh"] is True and dp["unknown_history_count"]==0
     assert dp["regime"]==rg["regime"]
 
@@ -171,7 +171,7 @@ def main():
     confirmed|={f"{s}|C" for s in (fc.get("confirmed") or {})}
     assert ft["input_confirmed_family_candidates"]==len(confirmed)
     assert ft.get("source_deep_blob_sha")==sh["deep"] and ft.get("source_family_c_blob_sha")==sh["family_c"]
-    assert ft.get("source_compiled_policy_hash")==POLICY_HASH and ft.get("source_compiled_policy_version")=="C4.12"
+    assert ft.get("source_compiled_policy_hash")==POLICY_HASH and ft.get("source_compiled_policy_version")=="C4.13"
     assert set(ft["results"])==confirmed
     final_unknown=sorted(k for k,v in ft["results"].items() if v.get("result")=="UNKNOWN")
     affected_event_unknown=sorted(ev.get("affected_geometry_event_unknown") or [])
@@ -201,7 +201,7 @@ def main():
     out={
       "schema":"XRAY_CANONICAL_CURRENT_TERMINAL_V1","status":"FULL_E2E_RESEARCH_PASS" if full else "PARTIAL",
       "task_id":TASK,"asof_et":asof,"execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
-      "compiled_policy_hash":POLICY_HASH,"compiled_policy_version":"C4.12",
+      "compiled_policy_hash":POLICY_HASH,"compiled_policy_version":"C4.13",
       "full_end_to_end_research_pass":full,"terminal_result":terminal_result,
       "pointer_asof_before_candidate":pointer_asof,
       "settlement_witness_required":settlement_witness_required,
