@@ -1,0 +1,24 @@
+{
+  "schema": "XRAY_ACCOUNT_GATE_CONTRACT_V1",
+  "provider": "LONGBRIDGE",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "mode": "READ_ONLY_ONLY",
+  "required_calls": [
+    "account_balance",
+    "stock_positions"
+  ],
+  "pass_rule": "Both calls must succeed under current OAuth authorization and return parseable current account state; empty/zero positions are valid known exposure, but permission errors are never PASS.",
+  "current_status": "ACCOUNT_BLOCKED_REAUTH_REQUIRED",
+  "current_error_code": 403308,
+  "repair": "Reconnect/re-authorize Longbridge OAuth with the full permissions required by the connector. Plain token refresh is insufficient because it preserves the old scopes.",
+  "forbidden_calls": [
+    "place_order",
+    "replace_order",
+    "cancel_order",
+    "preview_order",
+    "submit_order"
+  ],
+  "persistence_rule": "Never write balances, positions, account identifiers, or other private account values to the public repository. Runtime status only.",
+  "no_policy_weakening": true
+}
