@@ -4,9 +4,13 @@
     "UNKNOWN": 3400
   },
   "exception_bridge_meta": {
-    "path": "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261001.json",
-    "reason": "ValueError:POLICY_BINDING",
-    "status": "INVALID"
+    "paths": [
+      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261001.json"
+    ],
+    "rejected": [
+      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261001.json"
+    ],
+    "status": "ABSENT_CURRENT_POLICY"
   },
   "execution": "NONE",
   "expected20": [
