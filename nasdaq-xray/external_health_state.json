@@ -1,0 +1,19 @@
+{
+  "alpha_authority": false,
+  "execution": "NONE",
+  "generated_at_utc": "2026-10-02T11:36:06.248068+00:00",
+  "real_money": "NO-GO",
+  "schema": "XRAY_EXTERNAL_HEALTH_V1",
+  "sources": {
+    "cloudflare_radar": {
+      "reason": "CLOUDFLARE_RADAR_TOKEN_MISSING",
+      "status": "NOT_CONFIGURED_OPTIONAL"
+    },
+    "github_status": {
+      "description": "All Systems Operational",
+      "indicator": "none",
+      "status": "PASS"
+    }
+  },
+  "status": "PASS"
+}

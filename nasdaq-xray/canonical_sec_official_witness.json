@@ -1,0 +1,99 @@
+{
+  "absence_never_clean": true,
+  "alpha_authority": false,
+  "asof_et": "2026-10-01",
+  "authority": "SEC_PRIMARY_WITNESS_OPTIONAL",
+  "execution": "NONE",
+  "generated_at_utc": "2026-10-02T11:36:06.185634+00:00",
+  "geometry_scope": [
+    "CHA",
+    "COIN",
+    "FTNT",
+    "GH",
+    "MTCH",
+    "MU",
+    "NTSK",
+    "PFG",
+    "PLTR",
+    "ROKU",
+    "ULTA",
+    "WBD",
+    "WDAY"
+  ],
+  "geometry_scope_count": 13,
+  "geometry_scope_hash": "039e3e8586d644579676220b97fccc72235af29c80dbaed19779c1c333f82c58",
+  "real_money": "NO-GO",
+  "results": {
+    "CHA": {
+      "filings": [],
+      "identity_status": "UNKNOWN",
+      "reason": "HTTPError:HTTP Error 403: Forbidden"
+    },
+    "COIN": {
+      "filings": [],
+      "identity_status": "UNKNOWN",
+      "reason": "HTTPError:HTTP Error 403: Forbidden"
+    },
+    "FTNT": {
+      "filings": [],
+      "identity_status": "UNKNOWN",
+      "reason": "HTTPError:HTTP Error 403: Forbidden"
+    },
+    "GH": {
+      "filings": [],
+      "identity_status": "UNKNOWN",
+      "reason": "RuntimeError:CIRCUIT_OPEN:SEC_EFTS:119s"
+    },
+    "MTCH": {
+      "filings": [],
+      "identity_status": "UNKNOWN",
+      "reason": "RuntimeError:CIRCUIT_OPEN:SEC_EFTS:119s"
+    },
+    "MU": {
+      "filings": [],
+      "identity_status": "UNKNOWN",
+      "reason": "RuntimeError:CIRCUIT_OPEN:SEC_EFTS:119s"
+    },
+    "NTSK": {
+      "filings": [],
+      "identity_status": "UNKNOWN",
+      "reason": "RuntimeError:CIRCUIT_OPEN:SEC_EFTS:119s"
+    },
+    "PFG": {
+      "filings": [],
+      "identity_status": "UNKNOWN",
+      "reason": "RuntimeError:CIRCUIT_OPEN:SEC_EFTS:119s"
+    },
+    "PLTR": {
+      "filings": [],
+      "identity_status": "UNKNOWN",
+      "reason": "RuntimeError:CIRCUIT_OPEN:SEC_EFTS:119s"
+    },
+    "ROKU": {
+      "filings": [],
+      "identity_status": "UNKNOWN",
+      "reason": "RuntimeError:CIRCUIT_OPEN:SEC_EFTS:119s"
+    },
+    "ULTA": {
+      "filings": [],
+      "identity_status": "UNKNOWN",
+      "reason": "RuntimeError:CIRCUIT_OPEN:SEC_EFTS:119s"
+    },
+    "WBD": {
+      "filings": [],
+      "identity_status": "UNKNOWN",
+      "reason": "RuntimeError:CIRCUIT_OPEN:SEC_EFTS:119s"
+    },
+    "WDAY": {
+      "filings": [],
+      "identity_status": "UNKNOWN",
+      "reason": "RuntimeError:CIRCUIT_OPEN:SEC_EFTS:119s"
+    }
+  },
+  "schema": "XRAY_SEC_OFFICIAL_WITNESS_V1",
+  "scope_kind": "GEOMETRY_ONLY",
+  "status": "READY_WITH_UNKNOWNS",
+  "task_id": "6a825366222081918997094d76e6ae46",
+  "unknown_count": 13,
+  "weekly_scope_hash": "5ae986fc59c5f2c978114bef09245b5cbe0bcd6d734cf388c6d2f5454c5bba1e"
+}
