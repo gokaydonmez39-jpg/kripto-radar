@@ -9,6 +9,7 @@ on:
       - ".github/workflows/nasdaq-xray-delivery.yml"
   schedule:
     - cron: "*/15 * * * 1-5"
+    - cron: "7 * * * 0,6"
   workflow_dispatch:
 
 permissions:
