@@ -67,3 +67,48 @@ def fetch_json(provider,url,headers=None,timeout=20,cache_ttl=0,circuit_failures
     finally:
         with _LOCK:
             _INFLIGHT.pop(key,None); evt.set()
+
+
+def fetch_text(provider,url,headers=None,timeout=20,cache_ttl=0,circuit_failures=3,cooldown=120):
+    key=provider+"|TEXT|"+url
+    now_s=time.time()
+    with _LOCK:
+        hit=_MEM.get(key)
+        if hit and hit[0]>now_s: return hit[1]
+    l,p=_provider_state(provider)
+    open_until=float(p.get("open_until_epoch") or 0)
+    if open_until>now_s:
+        raise RuntimeError(f"CIRCUIT_OPEN:{provider}:{int(open_until-now_s)}s")
+    evt=None
+    with _LOCK:
+        evt=_INFLIGHT.get(key)
+        if evt is None:
+            evt=threading.Event(); _INFLIGHT[key]=evt; owner=True
+        else: owner=False
+    if not owner:
+        evt.wait(timeout+5)
+        with _LOCK:
+            hit=_MEM.get(key)
+        if hit and hit[0]>time.time(): return hit[1]
+        raise RuntimeError(f"SINGLE_FLIGHT_OWNER_FAILED:{provider}")
+    try:
+        req=urllib.request.Request(url,headers=headers or {})
+        with urllib.request.urlopen(req,timeout=timeout) as r:
+            data=r.read().decode("utf-8")
+        l,p=_provider_state(provider)
+        p.update({"status":"HEALTHY","consecutive_failures":0,"last_success_at_utc":now(),"last_error":None,"open_until_epoch":0})
+        l["updated_at_utc"]=now(); save_ledger(l)
+        with _LOCK: _MEM[key]=(time.time()+max(1,cache_ttl),data)
+        return data
+    except Exception as e:
+        l,p=_provider_state(provider)
+        n=int(p.get("consecutive_failures") or 0)+1
+        p.update({"status":"DEGRADED","consecutive_failures":n,"last_failure_at_utc":now(),"last_error":f"{type(e).__name__}:{str(e)[:240]}"})
+        if n>=circuit_failures:
+            p["open_until_epoch"]=time.time()+cooldown
+            p["status"]="CIRCUIT_OPEN"
+        l["updated_at_utc"]=now(); save_ledger(l)
+        raise
+    finally:
+        with _LOCK:
+            _INFLIGHT.pop(key,None); evt.set()
