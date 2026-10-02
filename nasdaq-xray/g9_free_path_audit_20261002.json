@@ -95,6 +95,42 @@
         "Consolidated US Network C/UTP data and regulatory snapshots have paid components"
       ],
       "conclusion": "Never strict permanent-$0 G9 based on current evidence"
+    },
+    {
+      "provider": "Webull OpenAPI",
+      "status": "NONQUALIFYING_FREE_PATH",
+      "proven": [
+        "Real-time US stock quote/order-book/tick APIs and streaming exist"
+      ],
+      "blocker": [
+        "Official Market Data API requires a separate Nasdaq Basic LV1 or Nasdaq TotalView LV2 Non-Display OpenAPI subscription for US stocks",
+        "Nasdaq Basic is explicitly excluded by strict G9 policy and is not consolidated National NBBO"
+      ],
+      "conclusion": "Technically callable but not permanent-$0 consolidated G9."
+    },
+    {
+      "provider": "Futu/Moomoo OpenAPI",
+      "status": "NONQUALIFYING_STRICT_G9",
+      "proven": [
+        "US real-time API market data is currently promoted as free for eligible users",
+        "Documented combined sources include Nasdaq Basic + Nasdaq TotalView + NYSE ArcaBook"
+      ],
+      "blocker": [
+        "Source mix is proprietary/direct-book combination, not explicit UTP consolidated Tape-C/National NBBO",
+        "Free access is stated as promotional rather than permanent"
+      ],
+      "conclusion": "Never strict G9 under current policy/evidence."
+    },
+    {
+      "provider": "Tradier",
+      "status": "TECHNICALLY_QUALIFIED_FEED_BUT_USER_JURISDICTION_BLOCKED",
+      "proven": [
+        "Tradier documentation describes real-time market data as an all-exchanges consolidated feed"
+      ],
+      "blocker": [
+        "Current official permitted/blocked-country page lists Turkey among countries where Tradier Brokerage cannot open accounts"
+      ],
+      "conclusion": "Not a lawful usable G9 path for a Turkey-resident user under current eligibility."
     }
   ],
   "runtime_probe": {
@@ -112,6 +148,6 @@
     "repair": "User must reconnect/re-authorize Longbridge OAuth; plain token refresh does not change scopes. After reauth, Health automatically probes only account_balance + stock_positions read-only."
   },
   "no_policy_weakening": true,
-  "updated_at_utc": "2026-10-02T18:00:50.344Z",
+  "updated_at_utc": "2026-10-02T18:01:26.903Z",
   "longbridge_reopen_condition": "Primary-source statement that free US LV1 OpenAPI is consolidated UTP Tape-C/National NBBO or documented equivalent, plus scheduler-callable raw PushDepth Sequence/timestamp evidence under the user's lawful entitlement."
 }
