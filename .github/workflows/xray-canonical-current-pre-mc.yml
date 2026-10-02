@@ -113,8 +113,8 @@ jobs:
           assert m["unknown_count"]==0 and m["pass_count"]==m["queue_total"]
           assert m["asof_et"]==p["asof_et"]==q["asof_et"]
           assert q["compiled_policy_path"]=="nasdaq-xray/chatgpt_compiled_policy_v3.json"
-          assert q["compiled_policy_blob_sha"]=="2dda2b520cb49f2dab02a971cb8993f927970220"
-          assert q["compiled_policy_hash"]=="9a7fdf46c2bda80343c4ecf0aca5eeb853faee435f758139e3f3f2582050e5c6"
+          assert q["compiled_policy_blob_sha"]=="2d335057b717f849274068e01837e5ea034d96de"
+          assert q["compiled_policy_hash"]=="a663cd5046e36cfb8f6b4674d0e9bea4c92edcf5398e73c8c4ed9eb01da36d60"
           assert q["compiled_policy_version"]=="C4.12"
           assert q["queue_hash"]==m["queue_hash"] and q["queue_total"]==m["queue_total"]
           assert q["symbol_count"]==len(q["symbols"])==len(set(q["symbols"]))
