@@ -3,32 +3,39 @@
     "GITHUB_REPO_VERIFY": {
       "consecutive_failures": 0,
       "last_error": null,
-      "last_success_at_utc": "2026-10-02T11:39:23.904510+00:00",
+      "last_success_at_utc": "2026-10-02T11:39:52.543025+00:00",
       "open_until_epoch": 0,
       "status": "HEALTHY"
     },
     "GITHUB_STATUS": {
       "consecutive_failures": 0,
       "last_error": null,
-      "last_success_at_utc": "2026-10-02T11:39:23.345233+00:00",
+      "last_success_at_utc": "2026-10-02T11:39:34.720576+00:00",
       "open_until_epoch": 0,
       "status": "HEALTHY"
     },
     "SEC_EFTS": {
       "consecutive_failures": 4,
       "last_error": "HTTPError:HTTP Error 403: Forbidden",
-      "last_failure_at_utc": "2026-10-02T11:39:23.038443+00:00",
-      "open_until_epoch": 1790941283.0384648,
+      "last_failure_at_utc": "2026-10-02T11:39:34.500754+00:00",
+      "open_until_epoch": 1790941294.5007746,
       "status": "CIRCUIT_OPEN"
     },
     "SEC_TICKER_MAP": {
       "consecutive_failures": 3,
       "last_error": "HTTPError:HTTP Error 403: Forbidden",
-      "last_failure_at_utc": "2026-10-02T11:39:22.937009+00:00",
-      "open_until_epoch": 1790941282.9370353,
+      "last_failure_at_utc": "2026-10-02T11:39:34.470791+00:00",
+      "open_until_epoch": 1790941294.4708188,
       "status": "CIRCUIT_OPEN"
+    },
+    "US_TREASURY_YIELD_CURVE": {
+      "consecutive_failures": 0,
+      "last_error": null,
+      "last_success_at_utc": "2026-10-02T11:39:52.021830+00:00",
+      "open_until_epoch": 0,
+      "status": "HEALTHY"
     }
   },
   "schema": "XRAY_PROVIDER_HEALTH_LEDGER_V1",
-  "updated_at_utc": "2026-10-02T11:39:23.904530+00:00"
+  "updated_at_utc": "2026-10-02T11:39:52.543042+00:00"
 }
