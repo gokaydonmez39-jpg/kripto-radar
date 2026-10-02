@@ -23,11 +23,34 @@ def num(x):
         return None
 
 def load_exception_bridge(asof,queue_hash):
-    path=ROOT/f"canonical_resolver_bridge_{asof.replace('-','')}.json"
-    if not path.exists():
-        return {},{"status":"ABSENT","path":str(path)}
+    paths=sorted(ROOT.glob(f"canonical_resolver_bridge_{asof.replace('-','')}*.json"))
+    matches=[]
+    rejected=[]
+    for path in paths:
+        try:
+            obj=json.loads(path.read_text())
+            if (
+              obj.get("schema")=="XRAY_RESOLVER_EPOCH_RESULT_V1"
+              and obj.get("status")=="COMMITTED"
+              and obj.get("task_id")==TASK_ID
+              and obj.get("execution")=="NONE" and obj.get("real_money")=="NO-GO"
+              and obj.get("asof_et")==asof and obj.get("queue_hash")==queue_hash
+              and obj.get("compiled_policy_hash")=="ba5134d39009fca2801d482302150732ba47c5a3f0c474e8764bf412cad49b1a"
+              and obj.get("compiled_policy_version")=="C4.13"
+              and obj.get("compiled_policy_blob_sha")=="edda430faf4057c214fee483e0f7c503c2418462"
+              and (obj.get("settlement_required") is not True or obj.get("settlement_status")=="PASS")
+            ):
+                matches.append((path,obj))
+            else:
+                rejected.append(str(path))
+        except Exception:
+            rejected.append(str(path))
+    if len(matches)==0:
+        return {},{"status":"ABSENT_CURRENT_POLICY","paths":[str(p) for p in paths],"rejected":rejected}
+    if len(matches)!=1:
+        return {},{"status":"AMBIGUOUS_CURRENT_POLICY","matches":[str(p) for p,_ in matches]}
+    path,obj=matches[0]
     try:
-        obj=json.loads(path.read_text())
         if obj.get("schema")!="XRAY_RESOLVER_EPOCH_RESULT_V1" or obj.get("status")!="COMMITTED":
             raise ValueError("SCHEMA_OR_STATUS")
         if obj.get("task_id")!=TASK_ID or obj.get("execution")!="NONE" or obj.get("real_money")!="NO-GO":
