@@ -12,9 +12,9 @@ REGIME=Path(os.getenv("XRAY_EVENT_REGIME",str(ROOT/"canonical_current_regime.jso
 OUT=Path(os.getenv("XRAY_EVENT_REQUEST_OUT",str(ROOT/"canonical_current_event_request.json")))
 TASK="6a825366222081918997094d76e6ae46"
 POLICY=ROOT/"chatgpt_compiled_policy_v3.json"
-POLICY_BLOB="2d335057b717f849274068e01837e5ea034d96de"
-POLICY_HASH="a663cd5046e36cfb8f6b4674d0e9bea4c92edcf5398e73c8c4ed9eb01da36d60"
-POLICY_VERSION="C4.12"
+POLICY_BLOB="edda430faf4057c214fee483e0f7c503c2418462"
+POLICY_HASH="ba5134d39009fca2801d482302150732ba47c5a3f0c474e8764bf412cad49b1a"
+POLICY_VERSION="C4.13"
 
 def blob_sha(p:Path)->str:
     b=p.read_bytes()
