@@ -3,46 +3,46 @@
     "CLOUDFLARE_STATUS": {
       "consecutive_failures": 0,
       "last_error": null,
-      "last_success_at_utc": "2026-10-02T11:40:03.456260+00:00",
+      "last_success_at_utc": "2026-10-02T11:46:05.220618+00:00",
       "open_until_epoch": 0,
       "status": "HEALTHY"
     },
     "GITHUB_REPO_VERIFY": {
       "consecutive_failures": 0,
       "last_error": null,
-      "last_success_at_utc": "2026-10-02T11:40:22.344387+00:00",
+      "last_success_at_utc": "2026-10-02T11:46:25.643351+00:00",
       "open_until_epoch": 0,
       "status": "HEALTHY"
     },
     "GITHUB_STATUS": {
       "consecutive_failures": 0,
       "last_error": null,
-      "last_success_at_utc": "2026-10-02T11:40:03.309068+00:00",
+      "last_success_at_utc": "2026-10-02T11:46:05.053737+00:00",
       "open_until_epoch": 0,
       "status": "HEALTHY"
     },
     "SEC_EFTS": {
-      "consecutive_failures": 4,
+      "consecutive_failures": 5,
       "last_error": "HTTPError:HTTP Error 403: Forbidden",
-      "last_failure_at_utc": "2026-10-02T11:39:23.038443+00:00",
-      "open_until_epoch": 1790941283.0384648,
+      "last_failure_at_utc": "2026-10-02T11:46:04.903668+00:00",
+      "open_until_epoch": 1790941684.9036875,
       "status": "CIRCUIT_OPEN"
     },
     "SEC_TICKER_MAP": {
-      "consecutive_failures": 3,
+      "consecutive_failures": 4,
       "last_error": "HTTPError:HTTP Error 403: Forbidden",
-      "last_failure_at_utc": "2026-10-02T11:39:22.937009+00:00",
-      "open_until_epoch": 1790941282.9370353,
+      "last_failure_at_utc": "2026-10-02T11:46:04.814173+00:00",
+      "open_until_epoch": 1790941684.8142004,
       "status": "CIRCUIT_OPEN"
     },
     "US_TREASURY_YIELD_CURVE": {
       "consecutive_failures": 0,
       "last_error": null,
-      "last_success_at_utc": "2026-10-02T11:40:21.931312+00:00",
+      "last_success_at_utc": "2026-10-02T11:46:24.963187+00:00",
       "open_until_epoch": 0,
       "status": "HEALTHY"
     }
   },
   "schema": "XRAY_PROVIDER_HEALTH_LEDGER_V1",
-  "updated_at_utc": "2026-10-02T11:40:22.344402+00:00"
+  "updated_at_utc": "2026-10-02T11:46:25.643369+00:00"
 }
