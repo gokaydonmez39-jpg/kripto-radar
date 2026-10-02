@@ -60,9 +60,9 @@ jobs:
                     and e.get("source_stage1_blob_sha")==r.get("source_stage1_blob_sha")
                     and e.get("source_regime_blob_sha")==r.get("source_regime_blob_sha")
                     and e.get("source_deep_geometry_blob_sha")==r.get("source_deep_geometry_blob_sha")
-                    and e.get("compiled_policy_hash")==r.get("compiled_policy_hash")=="ba5134d39009fca2801d482302150732ba47c5a3f0c474e8764bf412cad49b1a"
-                    and e.get("compiled_policy_version")==r.get("compiled_policy_version")=="C4.13"
-                    and e.get("compiled_policy_blob_sha")==r.get("compiled_policy_blob_sha")=="edda430faf4057c214fee483e0f7c503c2418462"
+                    and e.get("compiled_policy_hash")==r.get("compiled_policy_hash")=="bc4ad11c4029bf5feb5399ae3aa7af9c9c8dd7ad6c44119bac4e5734287b931e"
+                    and e.get("compiled_policy_version")==r.get("compiled_policy_version")=="C4.14"
+                    and e.get("compiled_policy_blob_sha")==r.get("compiled_policy_blob_sha")=="b41a40403c03e8884ee90d5cce2e0844d2bea0cd"
                   )
                   if ok: valid.append(fp)
               except Exception:
@@ -142,9 +142,9 @@ jobs:
           assert d["unknown_history_count"]==0,d["unknown_history"]
           assert set(e["event_status_by_symbol"])==set(d["results"])
           assert t["execution"]=="NONE" and t["real_money"]=="NO-GO"
-          assert t["compiled_policy_hash"]=="ba5134d39009fca2801d482302150732ba47c5a3f0c474e8764bf412cad49b1a"
+          assert t["compiled_policy_hash"]=="bc4ad11c4029bf5feb5399ae3aa7af9c9c8dd7ad6c44119bac4e5734287b931e"
           assert e.get("compiled_policy_hash")==t["compiled_policy_hash"]
-          assert e.get("compiled_policy_version")=="C4.13"
+          assert e.get("compiled_policy_version")=="C4.14"
           assert t["terminal_result"] in {"NO_CONFIRMED_SETUP","PRE_G9_SETUP_EXISTS","PARTIAL_UNKNOWN"}
           if t["full_end_to_end_research_pass"]:
               assert all(v==0 for v in t["blockers"].values()),t["blockers"]
