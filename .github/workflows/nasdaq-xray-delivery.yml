@@ -27,7 +27,7 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Prepare fail-closed registered research alert
+      - name: Prepare fail-closed registered research alerts
         id: prep
         shell: bash
         run: |
@@ -40,22 +40,33 @@ jobs:
             echo "ready=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Create deduplicated research candidate issue
+      - name: Create deduplicated research candidate issues
         if: steps.prep.outputs.ready == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          delivery_key=$(python -c 'import json; print(json.load(open("nasdaq-xray/material_alert_meta.json"))["delivery_key"])')
-          ticker=$(python -c 'import json; print(json.load(open("nasdaq-xray/material_alert_meta.json"))["symbol"])')
-          title="[XRAY RESEARCH AL ADAYI] $ticker — $delivery_key"
-          existing=$(gh issue list --state all --search "$delivery_key in:title" --json number --jq '.[0].number // empty')
-          if [ -n "$existing" ]; then
-            echo "Research candidate issue already exists: #$existing"
-          else
-            gh issue create --title "$title" --body-file nasdaq-xray/material_alert_issue.md --label "xray-signal" ||             gh issue create --title "$title" --body-file nasdaq-xray/material_alert_issue.md
-          fi
+          python - <<'PY' > /tmp/xray_delivery.tsv
+          import json
+          b=json.load(open("nasdaq-xray/.delivery_work/batch.json"))
+          for x in b["candidates"]:
+              vals=[x["delivery_key"],x["symbol"],x["body_file"]]
+              if any("\t" in str(v) or "\n" in str(v) for v in vals):
+                  raise SystemExit("unsafe delivery metadata")
+              print("\t".join(vals))
+          PY
+          while IFS=$'\t' read -r delivery_key ticker body_file; do
+            [ -n "$delivery_key" ] || continue
+            title="[XRAY RESEARCH AL ADAYI] $ticker — $delivery_key"
+            existing=$(gh issue list --state all --search "$delivery_key in:title" --json number --jq '.[0].number // empty')
+            if [ -n "$existing" ]; then
+              echo "Research candidate issue already exists: #$existing ($delivery_key)"
+            else
+              gh issue create --title "$title" --body-file "$body_file" --label "xray-signal" || \
+              gh issue create --title "$title" --body-file "$body_file"
+            fi
+          done < /tmp/xray_delivery.tsv
 
       - name: Delivery noop is healthy
         if: steps.prep.outputs.ready != 'true'
