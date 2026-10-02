@@ -35,9 +35,9 @@ def load_exception_bridge(asof,queue_hash):
         if obj.get("asof_et")!=asof or obj.get("queue_hash")!=queue_hash:
             raise ValueError("BINDING")
         if (
-          obj.get("compiled_policy_hash")!="987982f0d17fc0f01a28fe22540fc3e09d4e2f28e3aa1b40c0113e3112b44c16"
-          or obj.get("compiled_policy_version")!="C4.11"
-          or obj.get("compiled_policy_blob_sha")!="738402b627abaca89a5b9fdfea51ff6c468d752b"
+          obj.get("compiled_policy_hash")!="a663cd5046e36cfb8f6b4674d0e9bea4c92edcf5398e73c8c4ed9eb01da36d60"
+          or obj.get("compiled_policy_version")!="C4.12"
+          or obj.get("compiled_policy_blob_sha")!="2d335057b717f849274068e01837e5ea034d96de"
         ):
             raise ValueError("POLICY_BINDING")
         if obj.get("settlement_required") is True and obj.get("settlement_status")!="PASS":
@@ -47,10 +47,55 @@ def load_exception_bridge(asof,queue_hash):
         compact=obj.get("price_resolution_compact")
         encoding=obj.get("result_encoding")
         if compact is not None:
-            if encoding not in {"ALPACA_SIP_COMPACT_V1","ALPACA_SIP_COMPACT_V2"} or not isinstance(compact,dict):
+            if encoding not in {"ALPACA_SIP_COMPACT_V1","ALPACA_SIP_COMPACT_V2","RALLIES_SCANNER_EXACT20_V1"} or not isinstance(compact,dict):
                 raise ValueError("COMPACT_ENCODING")
-            src="ALPACA_HISTORICAL_SIP_DAILY_BATCH_NON_G9"
-            if encoding=="ALPACA_SIP_COMPACT_V2":
+            src="RALLIES_CANDLESTICK_SCANNER_EXACT20_PRIMARY" if encoding=="RALLIES_SCANNER_EXACT20_V1" else "ALPACA_HISTORICAL_SIP_DAILY_BATCH_NON_G9"
+            if encoding=="RALLIES_SCANNER_EXACT20_V1":
+                fp=compact.get("fail_price_symbols") or []
+                fd=compact.get("fail_dv20_symbols") or []
+                ps=compact.get("pass_price_dv20_symbols") or []
+                bc=compact.get("block_current_run") or {}
+                un=compact.get("unresolved_symbols") or []
+                if not all(isinstance(x,list) for x in [fp,fd,ps,un]) or not isinstance(bc,dict):
+                    raise ValueError("RALLIES_COMPACT_TYPES")
+                groups=[set(fp),set(fd),set(ps),set(bc),set(un)]
+                vals=[fp,fd,ps,bc,un]
+                if any(len(g)!=len(v) for g,v in zip(groups,vals)):
+                    raise ValueError("RALLIES_COMPACT_DUPLICATES")
+                for i in range(len(groups)):
+                    for j in range(i+1,len(groups)):
+                        if groups[i]&groups[j]: raise ValueError("RALLIES_COMPACT_OVERLAP")
+                req=set(obj.get("price_unknown_symbols") or obj.get("symbols") or [])
+                if set().union(*groups)!=req: raise ValueError("RALLIES_COMPACT_COVERAGE")
+                for sym in fp:
+                    prs[sym]={"decision":"FAIL_PRICE","source":src,"proof":"RALLIES_ASOF_CLOSE_LE_10","compact_terminal_proof":True}
+                for sym in fd:
+                    prs[sym]={"decision":"FAIL_DV20","source":src,"proof":"RALLIES_EXACT20_MEDIAN_LT_GATE","compact_terminal_proof":True}
+                for sym in ps:
+                    prs[sym]={
+                      "decision":"PASS_PRICE_DV20","known_session_count":20,"missing_sessions":[],
+                      "no_synthetic_bar":True,"source":src,"proof":"RALLIES_EXACT20_MEDIAN_GE_GATE",
+                      "compact_terminal_proof":True,
+                    }
+                allowed_block_reasons={
+                  "INSUFFICIENT_20_USABLE_DV20_SESSIONS_CONFIRMED",
+                  "RALLIES_PRIMARY_EXACT20_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
+                  "RALLIES_PRIMARY_EXACT20_INCOMPLETE_ZERO_TRADE_PLACEHOLDER_AMBIGUITY",
+                  "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
+                }
+                for sym,val in bc.items():
+                    if not isinstance(val,dict) or val.get("reason") not in allowed_block_reasons:
+                        raise ValueError("RALLIES_COMPACT_BLOCK_CURRENT")
+                    n=val.get("observed_usable_sessions")
+                    if n is not None and (not isinstance(n,int) or n<0 or n>=20):
+                        raise ValueError("RALLIES_COMPACT_BLOCK_COUNT")
+                    prs[sym]={
+                      "decision":"BLOCK_CURRENT_RUN","reason":val["reason"],
+                      "observed_usable_sessions":n,"source":src,
+                      "proof":"FAIL_CLOSED_CURRENT_RUN_NONPASS",
+                      "corroboration":val.get("corroboration"),
+                    }
+            elif encoding=="ALPACA_SIP_COMPACT_V2":
                 fp=compact.get("fail_price") or {}
                 fd=compact.get("fail_dv20") or {}
                 pm=compact.get("pass_price_dv20") or {}
@@ -158,7 +203,15 @@ def valid_bridge_price_resolution(x,asof):
           and x.get("no_synthetic_bar") is True and bool(x.get("source")) and bool(x.get("proof"))
         )
     if d=="PASS_PRICE_DV20":
-        dv=num(x.get("dv20")); known=x.get("known_session_count")
+        known=x.get("known_session_count")
+        if x.get("compact_terminal_proof") is True:
+            return (
+              known==20 and (x.get("missing_sessions") or [])==[]
+              and x.get("no_synthetic_bar") is True
+              and x.get("source")=="RALLIES_CANDLESTICK_SCANNER_EXACT20_PRIMARY"
+              and x.get("proof")=="RALLIES_EXACT20_MEDIAN_GE_GATE"
+            )
+        dv=num(x.get("dv20"))
         return (
           px is not None and px>HARD_PRICE and dv is not None and dv>=HARD_DV20
           and known==20 and (x.get("missing_sessions") or [])==[]
@@ -166,6 +219,13 @@ def valid_bridge_price_resolution(x,asof):
           and bool(x.get("source")) and bool(x.get("proof"))
         )
     if d=="BLOCK_CURRENT_RUN":
+        if x.get("source")=="RALLIES_CANDLESTICK_SCANNER_EXACT20_PRIMARY":
+            return x.get("reason") in {
+              "INSUFFICIENT_20_USABLE_DV20_SESSIONS_CONFIRMED",
+              "RALLIES_PRIMARY_EXACT20_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
+              "RALLIES_PRIMARY_EXACT20_INCOMPLETE_ZERO_TRADE_PLACEHOLDER_AMBIGUITY",
+              "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
+            } and bool(x.get("proof"))
         return x.get("trade_status")=="Halted" and bool(x.get("last_bar")) and bool(x.get("source"))
     if d=="BLOCK_POST_ASOF_LISTING":
         return bool(x.get("first_trade_date")) and str(x.get("first_trade_date"))>asof and bool(x.get("source"))
@@ -221,7 +281,7 @@ def main():
         results[sym]={
           "status":st,
           "info":{k:v for k,v in br.items() if k!="decision"},
-          "provenance":"LONG_BRIDGE_TASKSTATE_RESOLVER_BRIDGE",
+          "provenance":"AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
         }
 
     counts={}
