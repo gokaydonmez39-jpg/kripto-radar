@@ -17,33 +17,47 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
-      - name: Validate C4.11 settlement-only repair
+      - name: Validate C4.12 settlement-source-only repair
         run: |
           python - <<'PY'
           import json,hashlib
-          old=json.load(open("nasdaq-xray/chatgpt_compiled_policy_v2.json"))
+          v2=json.load(open("nasdaq-xray/chatgpt_compiled_policy_v2.json"))
           top=json.load(open("nasdaq-xray/chatgpt_compiled_policy_v3.json"))
           assert top["schema"]=="XRAY_GITHUB_COMPILED_POLICY_V3"
           assert top["execution"]=="NONE" and top["real_money"]=="NO-GO"
           payload=top["payload_json"]
           h=hashlib.sha256(payload.encode()).hexdigest()
           assert h==top["policy_hash"],(h,top["policy_hash"])
-          x=json.loads(payload); y=json.loads(old["payload_json"])
-          assert x["version"]=="C4.11"
+          x=json.loads(payload); y=json.loads(v2["payload_json"])
+          assert x["version"]=="C4.12"
           assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
           assert x["unknown_never_pass"] is True and x["zero_dollar_hard_cap"] is True
           for k in ["universe","hard_gates","mc","dv20","technical","geometry","setups","r1_rr","regime","events_account","lifecycle","g9","r92_r93","coverage","delivery"]:
               assert x[k]==y[k],k
-          assert x["policy_change"]["base_policy_hash"]==old["policy_hash"]
-          assert x["policy_change"]["no_alpha_threshold_change"] is True
-          assert x["policy_change"]["no_g9_change"] is True
-          assert x["policy_change"]["no_account_change"] is True
-          assert x["policy_change"]["no_execution_change"] is True
-          assert x["policy_change"]["settlement_method_change_only"] is True
+          pc=x["policy_change"]
+          assert pc["id"]=="SETTLEMENT_CROSSCHECK_PROVIDER_REPAIR_V2"
+          assert pc["base_policy_hash"]=="987982f0d17fc0f01a28fe22540fc3e09d4e2f28e3aa1b40c0113e3112b44c16"
+          assert pc["base_policy_version"]=="C4.11"
+          assert pc["no_alpha_threshold_change"] is True
+          assert pc["no_price_dv20_history_change"] is True
+          assert pc["no_mc_change"] is True
+          assert pc["no_g9_change"] is True
+          assert pc["no_account_change"] is True
+          assert pc["no_execution_change"] is True
+          assert pc["settlement_method_change_only"] is True
           s=x["settlement"]
-          assert "ALPACA_HISTORICAL_SIP_DAILY_AFTER_15M"==s["primary"]
+          assert s["primary"]=="ALPACA_HISTORICAL_SIP_DAILY_AFTER_15M"
           assert "NON-G9" in s["g9_separation"]
           assert "volume authority" in s["sequential"]
-          assert "OHLC" in s["crosscheck"]
+          assert "Massive/Polygon" in s["sequential"]
+          assert "Massive/Polygon" in s["crosscheck"]
+          assert "Longbridge" not in s["crosscheck"]
+          sp=top["source_proof"]
+          assert sp["base_policy_hash"]=="987982f0d17fc0f01a28fe22540fc3e09d4e2f28e3aa1b40c0113e3112b44c16"
+          assert sp["base_policy_version"]=="C4.11"
+          for sym in ["AAPL","NVDA","MSFT"]:
+              a=sp["observed_20261001"][sym]["alpaca_sip"]
+              m=sp["observed_20261001"][sym]["massive"]
+              assert all(round(float(a[k]),2)==round(float(m[k]),2) for k in ["o","h","l","c"])
           print({"policy_hash":h,"version":x["version"],"status":"PASS"})
           PY
