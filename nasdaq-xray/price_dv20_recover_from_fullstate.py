@@ -35,9 +35,9 @@ def load_exception_bridge(asof,queue_hash):
         if obj.get("asof_et")!=asof or obj.get("queue_hash")!=queue_hash:
             raise ValueError("BINDING")
         if (
-          obj.get("compiled_policy_hash")!="a663cd5046e36cfb8f6b4674d0e9bea4c92edcf5398e73c8c4ed9eb01da36d60"
-          or obj.get("compiled_policy_version")!="C4.12"
-          or obj.get("compiled_policy_blob_sha")!="2d335057b717f849274068e01837e5ea034d96de"
+          obj.get("compiled_policy_hash")!="ba5134d39009fca2801d482302150732ba47c5a3f0c474e8764bf412cad49b1a"
+          or obj.get("compiled_policy_version")!="C4.13"
+          or obj.get("compiled_policy_blob_sha")!="edda430faf4057c214fee483e0f7c503c2418462"
         ):
             raise ValueError("POLICY_BINDING")
         if obj.get("settlement_required") is True and obj.get("settlement_status")!="PASS":
@@ -47,7 +47,7 @@ def load_exception_bridge(asof,queue_hash):
         compact=obj.get("price_resolution_compact")
         encoding=obj.get("result_encoding")
         if compact is not None:
-            if encoding not in {"ALPACA_SIP_COMPACT_V1","ALPACA_SIP_COMPACT_V2","RALLIES_SCANNER_EXACT20_V1"} or not isinstance(compact,dict):
+            if encoding not in {"ALPACA_SIP_COMPACT_V1","ALPACA_SIP_COMPACT_V2","ALPACA_SIP_RALLIES_COMPACT_V3","RALLIES_SCANNER_EXACT20_V1"} or not isinstance(compact,dict):
                 raise ValueError("COMPACT_ENCODING")
             src="RALLIES_CANDLESTICK_SCANNER_EXACT20_PRIMARY" if encoding=="RALLIES_SCANNER_EXACT20_V1" else "ALPACA_HISTORICAL_SIP_DAILY_BATCH_NON_G9"
             if encoding=="RALLIES_SCANNER_EXACT20_V1":
@@ -95,6 +95,67 @@ def load_exception_bridge(asof,queue_hash):
                       "proof":"FAIL_CLOSED_CURRENT_RUN_NONPASS",
                       "corroboration":val.get("corroboration"),
                     }
+            elif encoding=="ALPACA_SIP_RALLIES_COMPACT_V3":
+                fp=compact.get("fail_price") or {}
+                fd=compact.get("fail_dv20") or {}
+                pm=compact.get("pass_price_dv20") or {}
+                fna=compact.get("fail_no_asof_bar") or {}
+                fis=compact.get("fail_dv20_insufficient_sessions") or {}
+                bc=compact.get("block_current_run") or {}
+                bp=compact.get("block_post_asof_listing") or {}
+                un=compact.get("unresolved_symbols") or []
+                if not all(isinstance(x,dict) for x in [fp,fd,pm,fna,fis,bc,bp]) or not isinstance(un,list):
+                    raise ValueError("COMPACT_V3_TYPES")
+                groups=[set(fp),set(fd),set(pm),set(fna),set(fis),set(bc),set(bp),set(un)]
+                vals=[fp,fd,pm,fna,fis,bc,bp,un]
+                if any(len(g)!=len(v) for g,v in zip(groups,vals)):
+                    raise ValueError("COMPACT_V3_DUPLICATES")
+                for i in range(len(groups)):
+                    for j in range(i+1,len(groups)):
+                        if groups[i]&groups[j]: raise ValueError("COMPACT_V3_OVERLAP")
+                req=set(obj.get("price_unknown_symbols") or obj.get("symbols") or [])
+                if set().union(*groups)!=req: raise ValueError("COMPACT_V3_COVERAGE")
+                src="ALPACA_SIP_RALLIES_MASSIVE_C4_13_NON_G9"
+                for sym,val in fp.items():
+                    px=num(val)
+                    if px is None or px>HARD_PRICE: raise ValueError("COMPACT_V3_FAIL_PRICE")
+                    prs[sym]={"decision":"FAIL_PRICE","price":px,"source":src,"proof":"ASOF_CLOSE_LE_10"}
+                for sym,val in fd.items():
+                    if not isinstance(val,(list,tuple)) or len(val)<3: raise ValueError("COMPACT_V3_FAIL_DV20_VALUE")
+                    px=num(val[0]); metric=num(val[1]); proof=str(val[2])
+                    if px is None or px<=HARD_PRICE or metric is None or metric>=HARD_DV20: raise ValueError("COMPACT_V3_FAIL_DV20_GATE")
+                    if proof not in {"EXACT20_MEDIAN_LT_GATE","DV20_UPPER_BOUND_LT_GATE"}: raise ValueError("COMPACT_V3_FAIL_DV20_PROOF")
+                    rec={"decision":"FAIL_DV20","price":px,"source":src,"proof":proof}
+                    if proof=="EXACT20_MEDIAN_LT_GATE": rec["dv20"]=metric
+                    else: rec["dv20_upper_bound"]=metric
+                    prs[sym]=rec
+                for sym,val in pm.items():
+                    if not isinstance(val,(list,tuple)) or len(val)<2: raise ValueError("COMPACT_V3_PASS_VALUE")
+                    px=num(val[0]); dv=num(val[1])
+                    if px is None or px<=HARD_PRICE or dv is None or dv<HARD_DV20: raise ValueError("COMPACT_V3_PASS_GATE")
+                    prs[sym]={"decision":"PASS_PRICE_DV20","price":px,"dv20":dv,"known_session_count":20,"missing_sessions":[],"no_synthetic_bar":True,"source":src,"proof":"EXACT20_MEDIAN_GE_GATE"}
+                for sym,val in fna.items():
+                    if not isinstance(val,dict) or val.get("proof")!="THREE_SOURCE_NO_ASOF_BAR":
+                        raise ValueError("COMPACT_V3_NO_ASOF_PROOF")
+                    sources=val.get("sources") or []
+                    if set(sources)!={"ALPACA_SIP","RALLIES","MASSIVE"}:
+                        raise ValueError("COMPACT_V3_NO_ASOF_SOURCES")
+                    prs[sym]={"decision":"FAIL_PRICE_NO_ASOF_BAR","source":src,"proof":"THREE_SOURCE_NO_ASOF_BAR","sources":sorted(sources),"no_synthetic_bar":True}
+                for sym,val in fis.items():
+                    if not isinstance(val,dict): raise ValueError("COMPACT_V3_INSUFFICIENT_VALUE")
+                    px=num(val.get("price")); n=val.get("known_session_count"); miss=val.get("missing_sessions") or []
+                    if px is None or px<=HARD_PRICE or not isinstance(n,int) or not (0<=n<20) or len(miss)!=(20-n):
+                        raise ValueError("COMPACT_V3_INSUFFICIENT_GATE")
+                    if val.get("proof")!="ALPACA_RALLIES_EXACT_MISSING_SET_MATCH":
+                        raise ValueError("COMPACT_V3_INSUFFICIENT_PROOF")
+                    prs[sym]={"decision":"FAIL_DV20_INSUFFICIENT_SESSIONS","price":px,"known_session_count":n,"missing_sessions":miss,"no_synthetic_bar":True,"source":src,"proof":"ALPACA_RALLIES_EXACT_MISSING_SET_MATCH"}
+                for sym,val in bc.items():
+                    if not isinstance(val,dict) or val.get("trade_status")!="Halted" or not val.get("last_bar"): raise ValueError("COMPACT_V3_BLOCK_CURRENT")
+                    prs[sym]={"decision":"BLOCK_CURRENT_RUN","trade_status":"Halted","last_bar":val["last_bar"],"source":src,"proof":"HALTED_NO_ASOF_BAR"}
+                for sym,val in bp.items():
+                    d=(val or {}).get("first_trade_date") if isinstance(val,dict) else val
+                    if not d or str(d)<=asof: raise ValueError("COMPACT_V3_POST_ASOF")
+                    prs[sym]={"decision":"BLOCK_POST_ASOF_LISTING","first_trade_date":str(d),"source":src,"proof":"FIRST_VALID_BAR_AFTER_ASOF"}
             elif encoding=="ALPACA_SIP_COMPACT_V2":
                 fp=compact.get("fail_price") or {}
                 fd=compact.get("fail_dv20") or {}
@@ -201,6 +262,23 @@ def valid_bridge_price_resolution(x,asof):
           px is not None and px>HARD_PRICE and isinstance(n,int) and 0<=n<20
           and x.get("reason")=="EXACT20_INSUFFICIENT_LISTED_SESSIONS"
           and x.get("no_synthetic_bar") is True and bool(x.get("source")) and bool(x.get("proof"))
+        )
+    if d=="FAIL_PRICE_NO_ASOF_BAR":
+        return (
+          x.get("proof")=="THREE_SOURCE_NO_ASOF_BAR"
+          and set(x.get("sources") or [])=={"ALPACA_SIP","RALLIES","MASSIVE"}
+          and x.get("no_synthetic_bar") is True
+          and bool(x.get("source"))
+        )
+    if d=="FAIL_DV20_INSUFFICIENT_SESSIONS":
+        n=x.get("known_session_count"); miss=x.get("missing_sessions") or []
+        return (
+          px is not None and px>HARD_PRICE
+          and isinstance(n,int) and 0<=n<20
+          and len(miss)==20-n
+          and x.get("proof")=="ALPACA_RALLIES_EXACT_MISSING_SET_MATCH"
+          and x.get("no_synthetic_bar") is True
+          and bool(x.get("source"))
         )
     if d=="PASS_PRICE_DV20":
         known=x.get("known_session_count")
