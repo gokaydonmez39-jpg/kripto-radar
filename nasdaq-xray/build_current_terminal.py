@@ -6,7 +6,7 @@ from pathlib import Path
 
 ROOT=Path(__file__).resolve().parent
 TASK="6a825366222081918997094d76e6ae46"
-POLICY_HASH="9a7fdf46c2bda80343c4ecf0aca5eeb853faee435f758139e3f3f2582050e5c6"
+POLICY_HASH="a663cd5046e36cfb8f6b4674d0e9bea4c92edcf5398e73c8c4ed9eb01da36d60"
 OUT=Path(os.getenv("XRAY_TERMINAL_OUT",str(ROOT/"canonical_current_terminal.json")))
 FILES={
  "pointer":ROOT/"chatgpt_canonical_state_v2.json",
