@@ -1,0 +1,135 @@
+name: XRAY Resilience + Official Witnesses
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/canonical_current_event_request.json"
+      - "nasdaq-xray/chatgpt_canonical_state_v2.json"
+      - "nasdaq-xray/resilience_runtime.py"
+      - "nasdaq-xray/sec_official_witness.py"
+      - "nasdaq-xray/external_health_probe.py"
+      - "nasdaq-xray/macro_context_probe.py"
+      - "nasdaq-xray/candidate_enrichment.py"
+      - "nasdaq-xray/free_solution_candidates.json"
+      - "nasdaq-xray/free_solution_verifier.py"
+      - ".github/workflows/xray-resilience-observability.yml"
+  schedule:
+    - cron: "17 * * * 1-5"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: xray-resilience-observability
+  cancel-in-progress: true
+
+jobs:
+  resilience:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+      CLOUDFLARE_RADAR_TOKEN: ${{ secrets.CLOUDFLARE_RADAR_TOKEN }}
+      XRAY_SEC_USER_AGENT: "NASDAQ-SWING-XRAY/1.0 research github.com/gokaydonmez39-jpg/kripto-radar"
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 1}
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+
+      - name: Compile resilience modules
+        run: |
+          python -m py_compile             nasdaq-xray/resilience_runtime.py             nasdaq-xray/sec_official_witness.py             nasdaq-xray/external_health_probe.py             nasdaq-xray/macro_context_probe.py             nasdaq-xray/candidate_enrichment.py             nasdaq-xray/free_solution_verifier.py
+
+      - name: SEC official witness
+        run: python nasdaq-xray/sec_official_witness.py
+
+      - name: External health witnesses
+        run: python nasdaq-xray/external_health_probe.py
+
+      - name: Macro context
+        run: python nasdaq-xray/macro_context_probe.py
+
+      - name: Candidate enrichment
+        run: python nasdaq-xray/candidate_enrichment.py
+
+      - name: Verify free/open-source solution references
+        run: python nasdaq-xray/free_solution_verifier.py
+
+      - name: Structural fail-closed audit
+        run: |
+          python - <<'PY'
+          import json, pathlib
+          root=pathlib.Path("nasdaq-xray")
+          checks={
+            "sec":("canonical_sec_official_witness.json","XRAY_SEC_OFFICIAL_WITNESS_V1"),
+            "health":("external_health_state.json","XRAY_EXTERNAL_HEALTH_V1"),
+            "macro":("canonical_macro_context.json","XRAY_MACRO_CONTEXT_V1"),
+            "enrichment":("canonical_candidate_enrichment.json","XRAY_CANDIDATE_ENRICHMENT_V1"),
+            "verify":("free_solution_verification.json","XRAY_FREE_SOLUTION_VERIFICATION_V1"),
+            "provider_ledger":("provider_health_ledger.json","XRAY_PROVIDER_HEALTH_LEDGER_V1"),
+          }
+          for name,(fn,schema) in checks.items():
+              p=root/fn
+              assert p.exists(),(name,"missing")
+              j=json.load(open(p))
+              assert j.get("schema")==schema,(name,j.get("schema"))
+              if "execution" in j: assert j["execution"]=="NONE"
+              if "real_money" in j: assert j["real_money"]=="NO-GO"
+              if "alpha_authority" in j: assert j["alpha_authority"] is False
+          sec=json.load(open(root/"canonical_sec_official_witness.json"))
+          if sec.get("status")=="READY":
+              assert sec.get("absence_never_clean") is True
+              req=json.load(open(root/"canonical_current_event_request.json"))
+              assert sec.get("asof_et")==req.get("asof_et")
+              assert sec.get("weekly_scope_hash")==req.get("weekly_scope_hash")
+          print("XRAY_RESILIENCE_STRUCTURAL=PASS")
+          PY
+
+      - name: Commit resilience artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "xray-resilience-bot"
+          git config user.email "xray-resilience-bot@users.noreply.github.com"
+          files=(
+            nasdaq-xray/canonical_sec_official_witness.json
+            nasdaq-xray/external_health_state.json
+            nasdaq-xray/canonical_macro_context.json
+            nasdaq-xray/canonical_candidate_enrichment.json
+            nasdaq-xray/free_solution_verification.json
+            nasdaq-xray/provider_health_ledger.json
+          )
+          tmpdir="$(mktemp -d)"
+          trap 'rm -rf "$tmpdir"' EXIT
+          for p in "${files[@]}"; do
+            [ -f "$p" ] || continue
+            mkdir -p "$tmpdir/$(dirname "$p")"
+            cp "$p" "$tmpdir/$p"
+          done
+          for attempt in 1 2 3 4 5; do
+            git rebase --abort >/dev/null 2>&1 || true
+            git fetch origin main
+            git reset --hard origin/main
+            for p in "${files[@]}"; do
+              if [ -f "$tmpdir/$p" ]; then
+                mkdir -p "$(dirname "$p")"
+                cp "$tmpdir/$p" "$p"
+              fi
+            done
+            git add "${files[@]}" 2>/dev/null || true
+            if git diff --cached --quiet; then
+              echo "XRAY_RESILIENCE_COMMIT=NO_CHANGE"
+              exit 0
+            fi
+            git commit -m "chore(xray): resilience witnesses [skip ci]"
+            if git push origin HEAD:main; then
+              echo "XRAY_RESILIENCE_COMMIT=PASS"
+              exit 0
+            fi
+            sleep $((attempt*2))
+          done
+          echo "XRAY_RESILIENCE_COMMIT=FAIL" >&2
+          exit 1
