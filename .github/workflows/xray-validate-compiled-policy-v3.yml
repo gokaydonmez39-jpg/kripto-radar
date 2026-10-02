@@ -17,7 +17,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
-      - name: Validate C4.14 MC fail-evidence-only repair
+      - name: Validate C4.15 settlement migration and prior MC repair
         run: |
           python - <<'PY'
           import json,hashlib
@@ -26,12 +26,14 @@ jobs:
           assert top["execution"]=="NONE" and top["real_money"]=="NO-GO"
           payload=top["payload_json"]
           h=hashlib.sha256(payload.encode()).hexdigest()
-          assert h==top["policy_hash"]
+          assert h==top["policy_hash"]=="7454b9156b6161f1bd3f44d150f71e03f99b471466ce364aa5a490e29e39a015"
           x=json.loads(payload)
           assert x["schema"]=="XRAY_COMPILED_POLICY_V1"
-          assert x["version"]=="C4.14"
+          assert x["version"]=="C4.15"
           assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
           assert x["unknown_never_pass"] is True and x["zero_dollar_hard_cap"] is True
+
+          # Preserve C4.14 MC fail-evidence semantics exactly.
           e=x["mc_fail_evidence"]
           assert e["no_threshold_change"] is True
           assert e["unknown_never_pass"] is True
@@ -51,12 +53,31 @@ jobs:
           assert pc["no_account_change"] is True
           assert pc["no_execution_change"] is True
           assert pc["fail_evidence_only"] is True
+
+          # C4.15 changes only the zero-dollar settlement crosscheck.
+          sc=x["settlement_change"]
+          assert sc["id"]=="SETTLEMENT_ZERO_DOLLAR_CROSSCHECK_V2"
+          assert sc["base_policy_hash"]=="bc4ad11c4029bf5feb5399ae3aa7af9c9c8dd7ad6c44119bac4e5734287b931e"
+          assert sc["base_policy_version"]=="C4.14"
+          assert "SETTLEMENT_CROSSCHECK_ONLY" in sc["invariants"]
+          for sym in ["AAPL","NVDA","MSFT"]:
+              o=sc["observed_20261002"][sym]
+              assert o["alpaca"]==o["rallies"]==o["longbridge"]
+
+          s=x["settlement"]
+          assert s["primary"]=="ALPACA_HISTORICAL_SIP_DAILY_AFTER_15M"
+          assert s["massive_polygon_role"]=="OPTIONAL_DIAGNOSTIC_ONLY_NOT_REQUIRED"
+          assert s["zero_dollar_fail_closed"] is True
+          assert "LONGBRIDGE_US_QUOTE" in s["latest_session_crosscheck"]
+          assert "NON-G9" in s["g9_separation"]
+
+          assert x["hard_gates"]["price"]==">10"
+          assert x["hard_gates"]["market_cap"]==">=2000000000 USD"
+          assert x["hard_gates"]["dv20"]=="median exactly20 completed official-RTH Close*regular-session Volume >=50000000"
+
           sp=top["source_proof"]
-          assert sp["base_policy_hash"]=="ba5134d39009fca2801d482302150732ba47c5a3f0c474e8764bf412cad49b1a"
-          assert sp["base_policy_version"]=="C4.13"
-          obs=sp["observed_20261001"]
-          for s in ["PARA","SPWR","XRX"]:
-              assert obs[s]["rallies_market_cap_usd"]<2_000_000_000
-              assert obs[s]["longbridge_market_cap_usd"]<2_000_000_000
+          assert sp["base_policy_hash"]=="bc4ad11c4029bf5feb5399ae3aa7af9c9c8dd7ad6c44119bac4e5734287b931e"
+          assert sp["base_policy_blob_sha"]=="b41a40403c03e8884ee90d5cce2e0844d2bea0cd"
+          assert sp["base_policy_version"]=="C4.14"
           print({"policy_hash":h,"version":x["version"],"status":"PASS"})
           PY

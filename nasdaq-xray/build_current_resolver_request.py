@@ -87,9 +87,9 @@ def main():
               and br.get("execution")=="NONE" and br.get("real_money")=="NO-GO"
               and br.get("asof_et")==asof
               and br.get("queue_hash")==s["queue_hash"]
-              and br.get("compiled_policy_hash")=="bc4ad11c4029bf5feb5399ae3aa7af9c9c8dd7ad6c44119bac4e5734287b931e"
-              and br.get("compiled_policy_version")=="C4.14"
-              and br.get("compiled_policy_blob_sha")=="b41a40403c03e8884ee90d5cce2e0844d2bea0cd"
+              and br.get("compiled_policy_hash")=="7454b9156b6161f1bd3f44d150f71e03f99b471466ce364aa5a490e29e39a015"
+              and br.get("compiled_policy_version")=="C4.15"
+              and br.get("compiled_policy_blob_sha")=="a11947566c170d47e4d806a9e17bd8830d7c83fc"
               and br.get("settlement_status")=="PASS"
             ):
                 current_policy_bridges.append((bridge,br))
@@ -112,10 +112,10 @@ def main():
       "settlement_bridge_blob_sha":settlement_bridge_blob_sha,
       "settlement_bridge_path":settlement_bridge_path,
       "compiled_policy_path":"nasdaq-xray/chatgpt_compiled_policy_v3.json",
-      "compiled_policy_blob_sha":"b41a40403c03e8884ee90d5cce2e0844d2bea0cd",
-      "compiled_policy_hash":"bc4ad11c4029bf5feb5399ae3aa7af9c9c8dd7ad6c44119bac4e5734287b931e",
-      "compiled_policy_version":"C4.14",
-      "settlement_policy":"ALPACA_HISTORICAL_SIP_DAILY_AFTER_15M__AAPL_NVDA_PLUS_ONE_PRIOR_CURRENT_CORE__RALLIES_MASSIVE_OHLC_0_01_CROSSCHECK__SIP_VOLUME_AUTHORITY__FAIL_CLOSED__DELAYED_SIP_NEVER_G9",
+      "compiled_policy_blob_sha":"a11947566c170d47e4d806a9e17bd8830d7c83fc",
+      "compiled_policy_hash":"7454b9156b6161f1bd3f44d150f71e03f99b471466ce364aa5a490e29e39a015",
+      "compiled_policy_version":"C4.15",
+      "settlement_policy":"ALPACA_HISTORICAL_SIP_DAILY_AFTER_15M__AAPL_NVDA_PLUS_ONE_PRIOR_CURRENT_CORE__RALLIES_LONGBRIDGE_QUOTE_OHLC_0_01_CROSSCHECK__SIP_VOLUME_AUTHORITY__FAIL_CLOSED__DELAYED_SIP_NEVER_G9",
       "settlement_symbols":["AAPL","NVDA",settlement_core_symbol] if settlement_required else [],
       "settlement_core_symbol":settlement_core_symbol,
       "settlement_core_source_path":settlement_core_source_path,
@@ -139,7 +139,7 @@ def main():
       "source_master_blob_sha":blob_sha(MASTER),
       "source_pointer_path":"nasdaq-xray/chatgpt_canonical_state_v2.json",
       "source_pointer_blob_sha":blob_sha(POINTER),
-      "resolver_policy":"ALPACA_SIP_BATCH_PRIMARY__MASSIVE_SETTLEMENT_CROSSCHECK__NEVER_G9__FAIL_CLOSED__SAME_ASOF_QUEUE_BINDING",
+      "resolver_policy":"ALPACA_SIP_BATCH_PRIMARY__RALLIES_LONGBRIDGE_LATEST_SETTLEMENT_CROSSCHECK__NEVER_G9__FAIL_CLOSED__SAME_ASOF_QUEUE_BINDING",
     }
     OUT.write_text(json.dumps(obj,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
     print(json.dumps({"asof":asof,"pointer_asof":pointer_asof,"status":obj["status"],"settlement_required":settlement_required,"settlement_already_proven":settlement_already_proven,"master_unknown":len(master_symbols),"price_unknown":len(price_symbols),"union":len(union),"symbol_hash":obj["symbol_hash"]},sort_keys=True))
