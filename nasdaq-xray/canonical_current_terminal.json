@@ -103,7 +103,7 @@
       "path": "nasdaq-xray/canonical_mc_bridge_20261001_c414r2.json"
     },
     "pointer": {
-      "blob_sha": "01b5ec8cee0c4f3a0dc9d977f32c8d8950ca2234",
+      "blob_sha": "84982e53a0b058cfa3f87d1f40efa11720603ad1",
       "path": "nasdaq-xray/chatgpt_canonical_state_v2.json"
     },
     "policy": {
@@ -130,8 +130,8 @@
   "execution": "NONE",
   "full_end_to_end_research_pass": true,
   "g9_global_status": "G9_BLOCKED_FREE_AUTOMATION_PATH",
-  "generated_at_utc": "2026-10-02T09:57:47.376662+00:00",
-  "pointer_asof_before_candidate": "2026-09-30",
+  "generated_at_utc": "2026-10-02T16:34:00.201261+00:00",
+  "pointer_asof_before_candidate": "2026-10-01",
   "r92_account_g9_applicable": false,
   "r92_candidates": [],
   "real_money": "NO-GO",
@@ -765,7 +765,7 @@
   },
   "settlement_witness_blob_sha": "d76ecb591e120f344690a9532c63f83f0da9906e",
   "settlement_witness_path": "nasdaq-xray/canonical_resolver_bridge_20261001_c414.json",
-  "settlement_witness_required": true,
+  "settlement_witness_required": false,
   "settlement_witness_status": "PASS",
   "status": "FULL_E2E_RESEARCH_PASS",
   "task_id": "6a825366222081918997094d76e6ae46",
