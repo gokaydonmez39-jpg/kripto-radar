@@ -43,6 +43,9 @@ jobs:
         run: |
           python -m py_compile             nasdaq-xray/resilience_runtime.py             nasdaq-xray/sec_official_witness.py             nasdaq-xray/external_health_probe.py             nasdaq-xray/macro_context_probe.py             nasdaq-xray/candidate_enrichment.py             nasdaq-xray/free_solution_verifier.py
 
+      - name: Single-flight + circuit-breaker self-test
+        run: python nasdaq-xray/resilience_selftest.py
+
       - name: SEC official witness
         run: python nasdaq-xray/sec_official_witness.py
 
