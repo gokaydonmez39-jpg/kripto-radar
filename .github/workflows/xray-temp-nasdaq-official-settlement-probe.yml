@@ -1,4 +1,4 @@
-name: XRAY TEMP Nasdaq Same-Day Official Probe
+name: XRAY TEMP C4.16 Settlement Failover Dry Run
 
 on:
   push:
@@ -11,34 +11,48 @@ permissions:
   contents: read
 
 jobs:
-  probe:
+  dry-run:
     runs-on: ubuntu-latest
-    timeout-minutes: 6
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
-      - name: Probe Nasdaq summary info chart
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install invariant runtime
+        run: python -m pip install --disable-pip-version-check akshare==1.18.95 pandas_market_calendars
+      - name: Apply C4.16 migration in worktree only
+        run: python nasdaq-xray/probes/c416_migration_dryrun.py
+      - name: Compile modified production Python
+        run: |
+          python -m py_compile \
+            nasdaq-xray/build_current_event_request.py \
+            nasdaq-xray/build_current_event_state.py \
+            nasdaq-xray/build_current_resolver_request.py \
+            nasdaq-xray/build_current_terminal.py \
+            nasdaq-xray/price_dv20_recover_from_fullstate.py \
+            nasdaq-xray/test_dynamic_policy_invariants.py
+      - name: Run deterministic alpha invariants
+        run: python nasdaq-xray/test_dynamic_policy_invariants.py
+      - name: Verify C4.16 policy and diff
         shell: bash
         run: |
           python - <<'PY'
-          import json, urllib.request, urllib.parse
-          UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/126 Safari/537.36"
-          for sym in ["AAPL","NVDA","MSFT"]:
-              headers={"User-Agent":UA,"Accept":"application/json,text/plain,*/*","Accept-Language":"en-US,en;q=0.9","Referer":f"https://www.nasdaq.com/market-activity/stocks/{sym.lower()}"}
-              for endpoint in ["summary","info","chart"]:
-                  params={"assetclass":"stocks"}
-                  if endpoint=="chart": params["charttype"]="real"
-                  url=f"https://api.nasdaq.com/api/quote/{sym}/{endpoint}?"+urllib.parse.urlencode(params)
-                  try:
-                      req=urllib.request.Request(url,headers=headers)
-                      with urllib.request.urlopen(req,timeout=30) as resp:
-                          obj=json.loads(resp.read().decode("utf-8"))
-                      data=obj.get("data")
-                      if endpoint=="summary":
-                          print("NASDAQ_SUMMARY",sym,json.dumps(data,sort_keys=True)[:12000])
-                      elif endpoint=="info":
-                          print("NASDAQ_INFO",sym,json.dumps(data,sort_keys=True)[:12000])
-                      else:
-                          print("NASDAQ_CHART",sym,json.dumps(data,sort_keys=True)[:12000])
-                  except Exception as e:
-                      print("NASDAQ_ENDPOINT_ERROR",sym,endpoint,type(e).__name__,str(e)[:300])
+          import json,hashlib,subprocess
+          from pathlib import Path
+          top=json.load(open("nasdaq-xray/chatgpt_compiled_policy_v3.json"))
+          p=json.loads(top["payload_json"])
+          assert p["version"]=="C4.16"
+          assert hashlib.sha256(top["payload_json"].encode()).hexdigest()==top["policy_hash"]
+          assert p["settlement_change"]["id"]=="SETTLEMENT_ZERO_DOLLAR_CROSSCHECK_V2"
+          assert p["settlement_fallback_change"]["id"]=="SETTLEMENT_ZERO_DOLLAR_CONNECTOR_FAILOVER_V1"
+          assert p["settlement"]["connector_failover"]=="RALLIES_LONGBRIDGE_DUAL_SOURCE_SETTLEMENT_V1"
+          assert p["g9"]["never"]==["IEX","delayed SIP","Nasdaq Basic","Cboe One","single/partial venue","last-only","unknown lineage"]
+          assert p["hard_gates"]["price"]==">10"
+          assert p["hard_gates"]["market_cap"]==">=2000000000 USD"
+          assert p["hard_gates"]["dv20"]=="median exactly20 completed official-RTH Close*regular-session Volume >=50000000"
+          print("C416_POLICY_VALIDATION=PASS",top["policy_hash"],subprocess.check_output(["git","hash-object","nasdaq-xray/chatgpt_compiled_policy_v3.json"],text=True).strip())
           PY
+          git diff --check
+          git diff --stat
+          echo C416_DRY_RUN=PASS
