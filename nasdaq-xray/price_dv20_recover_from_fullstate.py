@@ -35,9 +35,9 @@ def load_exception_bridge(asof,queue_hash):
               and obj.get("task_id")==TASK_ID
               and obj.get("execution")=="NONE" and obj.get("real_money")=="NO-GO"
               and obj.get("asof_et")==asof and obj.get("queue_hash")==queue_hash
-              and obj.get("compiled_policy_hash")=="7454b9156b6161f1bd3f44d150f71e03f99b471466ce364aa5a490e29e39a015"
-              and obj.get("compiled_policy_version")=="C4.15"
-              and obj.get("compiled_policy_blob_sha")=="a11947566c170d47e4d806a9e17bd8830d7c83fc"
+              and obj.get("compiled_policy_hash")=="a2bb9e857759e2b1c312fe1ec78ffefb4ac3e81c5c2012c921d245da0bc6a094"
+              and obj.get("compiled_policy_version")=="C4.16"
+              and obj.get("compiled_policy_blob_sha")=="9e159f46b86f700b66a7eb60886d0a8af8ee9b24"
               and (obj.get("settlement_required") is not True or obj.get("settlement_status")=="PASS")
             ):
                 matches.append((path,obj))
@@ -58,9 +58,9 @@ def load_exception_bridge(asof,queue_hash):
         if obj.get("asof_et")!=asof or obj.get("queue_hash")!=queue_hash:
             raise ValueError("BINDING")
         if (
-          obj.get("compiled_policy_hash")!="7454b9156b6161f1bd3f44d150f71e03f99b471466ce364aa5a490e29e39a015"
-          or obj.get("compiled_policy_version")!="C4.15"
-          or obj.get("compiled_policy_blob_sha")!="a11947566c170d47e4d806a9e17bd8830d7c83fc"
+          obj.get("compiled_policy_hash")!="a2bb9e857759e2b1c312fe1ec78ffefb4ac3e81c5c2012c921d245da0bc6a094"
+          or obj.get("compiled_policy_version")!="C4.16"
+          or obj.get("compiled_policy_blob_sha")!="9e159f46b86f700b66a7eb60886d0a8af8ee9b24"
         ):
             raise ValueError("POLICY_BINDING")
         if obj.get("settlement_required") is True and obj.get("settlement_status")!="PASS":

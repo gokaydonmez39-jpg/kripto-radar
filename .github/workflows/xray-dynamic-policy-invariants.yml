@@ -42,7 +42,7 @@ jobs:
           import json
           t=json.load(open("nasdaq-xray/chatgpt_compiled_policy_v3.json"))
           p=json.loads(t["payload_json"])
-          assert p["version"]=="C4.15"
+          assert p["version"]=="C4.16"
           assert p["hard_gates"]["dv20"]=="median exactly20 completed official-RTH Close*regular-session Volume >=50000000"
           assert p["unknown_never_pass"] is True
           print({"status":"PASS","policy_hash":t["policy_hash"]})
