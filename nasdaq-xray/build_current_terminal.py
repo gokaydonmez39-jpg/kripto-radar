@@ -79,6 +79,7 @@ def load_gate_reporting():
             allowed_live={
               "XRAY_ACCOUNT_LONGBRIDGE_OPENAPI_PROBE_V1":"LONGBRIDGE_DIRECT_OPENAPI",
               "XRAY_ACCOUNT_LONGBRIDGE_HOSTED_MCP_PROBE_V1":"LONGBRIDGE_HOSTED_MCP",
+              "XRAY_ACCOUNT_LONGBRIDGE_MCP_V2_PROBE_V1":"LONGBRIDGE_HOSTED_MCP_V2",
             }
             assert schema in allowed_live
             assert provider==allowed_live[schema]
