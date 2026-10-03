@@ -1,0 +1,30 @@
+{
+  "schema": "XRAY_G9_PROVIDER_DELTA_V1",
+  "generated_on": "2026-10-03",
+  "provider": "Strasmore",
+  "status": "NONQUALIFYING_FREE_DELAYED_NBBO_AND_FREE_TRADE_TAPE_ABSENT",
+  "evidence": [
+    "Official API docs state the no-key demo and Free access expose 5 days of equity NBBO quote tapes from the same warehouse, with SIP timestamps and CTA/UTP lineage.",
+    "Official Terms and API docs describe market data as delayed, generally current only to approximately the prior trading day; trade-tape coverage is current to the prior session with a one-to-two-day ingest lag.",
+    "The public product page explicitly labels Free MCP as 15-minute delayed stocks and T+1 options.",
+    "Tick-level equity trades (`stocks_trades`) are a paid-tier dataset; the no-key demo explicitly says no tick trades.",
+    "Terms §4.4 says market data comes from third-party exchanges/SIPs/OPRA and use remains subject to those providers' rules. Automated extraction through the programmatic API is allowed, but this does not convert delayed/free data into a lawful live non-display entitlement."
+  ],
+  "provisional_pass_gates": [
+    "A_CONSOLIDATED_SIP_NBBO_LINEAGE",
+    "D_PROGRAMMATIC_API_MCP_CALLABILITY"
+  ],
+  "failed_gates": [
+    "B_FRESHNESS_AND_FREE_TRADE_EVENT",
+    "C_LIVE_PERMANENT_ZERO_ENTITLEMENT"
+  ],
+  "primary_sources": [
+    "https://api.strasmore.com/docs",
+    "https://www.strasmore.com/",
+    "https://www.strasmore.com/terms/",
+    "https://www.strasmore.com/blog/why-stock-quotes-are-delayed-15-minutes",
+    "https://www.strasmore.com/blog/what-is-the-nbbo"
+  ],
+  "reopen_condition": "Free/MCP must provide same-run RTH realtime consolidated NBBO plus a free latest-trade event with independent event timestamp under explicit permanent-$0 automated/non-display rights; delayed or prior-session warehouse data remains non-G9.",
+  "no_policy_weakening": true
+}
