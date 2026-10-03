@@ -93,21 +93,25 @@
     },
     {
       "provider": "tastytrade / dxFeed",
-      "status": "TECHNICALLY_PROMISING_BUT_FAILS_STRICT_C_AND_JURISDICTION_UNPROVEN",
+      "status": "TECHNICALLY_STRONG_TAPE_C_BUT_STRICT_C_FAIL_FUNDED_ACCOUNT_REQUIRED",
       "evidence": [
-        "tastytrade API exposes real-time Quote+Trade via dxFeed/DXLink and API quote tokens.",
-        "dxFeed itself documents UTP UQDF/UTDF Tape-C and consolidated National BBO for Nasdaq-listed equities.",
-        "tastytrade REST real-time market data is available to funded account holders; support states unfunded accounts switch to delayed quotes and live quotes restore after funding.",
-        "No current primary-source proof obtained that a Turkey-resident user is eligible for onboarding under the exact current country list."
+        "dxFeed primary documentation states UTP UQDF/UTDF Tape C is the consolidated feed for Nasdaq-listed equities and UQDF carries consolidated National BBO while UTDF carries participant trade data.",
+        "tastytrade developer docs provide a sanctioned OAuth + DXLink market-data path, including API quote tokens and live quotes/trades.",
+        "tastytrade developer docs state real-time REST market data is available to funded account holders only.",
+        "tastytrade support states newly opened accounts left unfunded for 14 days switch to delayed quotes and live quotes return after funding.",
+        "Therefore live entitlement is funding-conditioned and fails strict G9-C even before jurisdiction is considered."
       ],
       "primary_sources": [
-        "https://developer.tastytrade.com/docs/concepts/streaming/",
-        "https://developer.tastytrade.com/docs/concepts/market-data/",
-        "https://developer.tastytrade.com/reference/accounts-and-customers/getApiQuoteTokens/",
         "https://dxfeed.com/market-data/equities-etfs/utp-tape-c/",
+        "https://developer.tastytrade.com/reference/accounts-and-customers/getApiQuoteTokens/",
+        "https://developer.tastytrade.com/docs/concepts/market-data/",
+        "https://developer.tastytrade.com/docs/guides/stream-market-data/",
         "https://support.tastytrade.com/support/s/solutions/articles/43000498775"
       ],
-      "reopen_condition": "Primary-source Turkey eligibility plus entitlement proof that exact API quote token carries consolidated UTP/NBBO with no required funding/balance/activity/recurring fee."
+      "failed_gates": [
+        "C"
+      ],
+      "reopen_condition": "Only if tastytrade explicitly grants real-time UTP/National-NBBO API/DXLink entitlement with no funding, balance, activity, subscription, per-query, account-maintenance, or recurring fee condition."
     },
     {
       "provider": "Alpaca",
