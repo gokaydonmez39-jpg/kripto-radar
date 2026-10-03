@@ -1,7 +1,7 @@
 {
   "schema": "XRAY_FINAL_GATE_OVERLAY_V2",
   "generated_on": "2026-10-03",
-  "generated_at_utc": "2026-10-03T11:04:01.826228+00:00",
+  "generated_at_utc": "2026-10-03T11:04:23.814365+00:00",
   "asof_et": "2026-10-02",
   "execution": "NONE",
   "real_money": "NO-GO",
@@ -35,7 +35,8 @@
     "authority_bound_registry_blob_sha": "098d92482ca5672d9c0930891414450fec13fa38",
     "current_saturation_count": 47,
     "current_registry_count": 47,
-    "authority_reviewed_count": 45,
+    "authority_saturation_count": 45,
+    "authority_registry_count": 45,
     "negative_cache_binding_exact": false,
     "negative_cache_ahead_while_blocked": true
   },
@@ -45,9 +46,9 @@
     "provider_model": "PROVIDER_NEUTRAL",
     "current_adapter": "LONGBRIDGE",
     "gate_path": "nasdaq-xray/account_gate_contract.json",
-    "gate_blob_sha": "b477def3d4a26679997d5e5c51ebba858754ed49",
-    "current_adapter_contract_blob_sha": "3c594c392edc6caeb0d46892e2adddfb696271db",
-    "gate_bound_adapter_contract_blob_sha": "3c594c392edc6caeb0d46892e2adddfb696271db",
+    "gate_blob_sha": "3b2fd727cd6415042c41285d582e767f801967d8",
+    "current_adapter_contract_blob_sha": "33c3a7a9064d63ea4cc7252b90038e8d83eb20d5",
+    "gate_bound_adapter_contract_blob_sha": "33c3a7a9064d63ea4cc7252b90038e8d83eb20d5",
     "adapter_binding_exact": true,
     "adapter_drift_while_blocked": false
   },
