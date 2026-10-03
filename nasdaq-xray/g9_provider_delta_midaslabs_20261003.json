@@ -1,0 +1,30 @@
+{
+  "schema": "XRAY_G9_PROVIDER_DELTA_V1",
+  "generated_on": "2026-10-03",
+  "provider": "Midas Labs / Midas Markets MCP (midasmarkets.xyz; not GetMidas Turkey)",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "status": "NONQUALIFYING_EQUITY_SURFACE_HIP3_PERPETUAL_MARKETS_NOT_US_CASH_NATIONAL_NBBO",
+  "evidence": [
+    "The public @midaslabs/mcp package is a hosted-account MCP bridge that advertises crypto, equities and prediction markets plus portfolio/trading tools; it requires a Midas developer API key.",
+    "Midas Labs' own website describes Midas Markets as an AI-native platform for global markets but does not document U.S. cash-equity CTA/UTP SIP/National-NBBO market-data lineage, independent quote/trade event timestamps, or a permanent-$0 read-only entitlement.",
+    "Public Hyperliquid ecosystem evidence identifies midasmarkets.xyz as a front-end routing trades through Hyperliquid, including HIP-3 equity markets; DefiLlama's public adapter specifically labels Midas volume as Hyperliquid perps/spot/HIP-3 equity markets.",
+    "Contemporary product descriptions explicitly characterize the stock instruments as HIP-3 stock perpetuals. Those are derivative/perpetual markets, not the underlying U.S. cash equities and therefore cannot constitute the National Best Bid and Offer for NASDAQ-listed cash securities.",
+    "Do not conflate this company/product with Midas Menkul / GetMidas in Turkey; they are distinct paths."
+  ],
+  "sources": [
+    "https://www.npmjs.com/package/@midaslabs/mcp",
+    "https://www.midaslabs.dev/",
+    "https://github.com/DefiLlama/dimension-adapters/blob/master/factory/hyperliquid.ts"
+  ],
+  "failed_gates": [
+    "A_US_CASH_EQUITY_CONSOLIDATED_NATIONAL_NBBO_LINEAGE",
+    "B_CASH_EQUITY_INDEPENDENT_QUOTE_AND_TRADE_EVENT_TIMESTAMPS",
+    "C_PERMANENT_ZERO_CASH_EQUITY_NONDIPLAY_ENTITLEMENT"
+  ],
+  "reopen_condition": "Only reopen for strict G9 if Midas Labs publishes a separate sanctioned U.S. cash-equity market-data API product with documented CTA/UTP National NBBO lineage, independent quote/trade event timestamps, and permanent-$0 automated/non-display entitlement. HIP-3/perpetual prices cannot qualify.",
+  "negative_cache_only": true,
+  "may_never_create_pass": true,
+  "unknown_never_pass": true,
+  "no_policy_weakening": true
+}
