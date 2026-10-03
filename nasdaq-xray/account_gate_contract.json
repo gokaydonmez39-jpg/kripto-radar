@@ -60,13 +60,16 @@
     "today_orders_read_only": "403308_SCOPE_DENIED"
   },
   "current_interpretation": "Fresh full reauthorization changed watchlist from denied to allowed, proving a new OAuth session took effect. However account/portfolio/trading-read APIs still return 403308. The active token therefore lacks the account/portfolio/trading scope family, or those scopes are unavailable for this account type/region.",
-  "next_repair": "Use Longbridge's official OAuth/Agent Auth flow and explicitly select account/portfolio permissions (and trading scope only if the consent model groups read-only trade/account APIs under it). If those scopes are not offered, treat this as an account-type/region eligibility block rather than retrying token refresh.",
+  "next_repair": "Do not repeat ordinary Longbridge reauthorization. Reopen Longbridge only if its account/portfolio scopes become available for this account; otherwise use a sanctioned provider-neutral broker adapter that passes same-run read-only account value/cash + equity positions/exposure.",
   "primary_adapter": "LONGBRIDGE",
   "adapter_contract": {
     "path": "nasdaq-xray/account_provider_adapter_contract.json",
-    "blob_sha": "2b297b6836aa99fc75a7f6f0bcac90290a875f45"
+    "blob_sha": "d5eab156468fecc55c8d6d9f90572fa21d0b9598"
   },
   "required_capability": "CURRENT_NASDAQ_ACCOUNT_VALUE_AND_EQUITY_EXPOSURE_READ_ONLY",
   "current_adapter": "LONGBRIDGE",
-  "no_account_provider_substitution_without_fresh_probe": true
+  "no_account_provider_substitution_without_fresh_probe": true,
+  "alternate_adapter_candidates": {
+    "IBKR_WEB_API": "PROMISING_BUT_NOT_CURRENTLY_SCHEDULER_CALLABLE"
+  }
 }
