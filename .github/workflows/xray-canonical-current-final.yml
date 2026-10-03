@@ -105,7 +105,7 @@ jobs:
         run: |
           set -euo pipefail
           actual="$(git hash-object nasdaq-xray/account_longbridge_openapi_probe.py)"
-          test "$actual" = "7bbaecf20d0ccd50af62856f05b6afb6558c9f83"
+          test "$actual" = "6ddfb82ca4268e40856e6f0eae0e53b79083092d"
           python nasdaq-xray/account_longbridge_openapi_probe_selftest.py
           python nasdaq-xray/account_same_run_terminal_selftest.py
           echo "XRAY_ACCOUNT_PRESECRET_GUARD=PASS"
