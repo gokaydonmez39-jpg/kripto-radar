@@ -1,0 +1,42 @@
+{
+  "schema": "XRAY_G9_PROVIDER_DELTA_V1",
+  "generated_on": "2026-10-03",
+  "provider": "Connect Trade broker-sourced realtime market-data API/MCP",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "status": "TECHNICALLY_STRONG_SANCTIONED_BROKER_CONNECTIVITY_BUT_STRICT_C_PAID_WRAPPER_AND_UNDERLYING_BROKER_ENTITLEMENT",
+  "evidence": [
+    "Connect Trade officially exposes realtime Level 1 quotes, trades/time-and-sales, bars, depth and options chains over WebSocket and says the data is sourced directly from the user's connected broker.",
+    "Connect Trade states its broker integrations use official sanctioned APIs and are compliance approved; it also exposes a Remote MCP/API surface.",
+    "Market data carries no additional Connect Trade licensing fee only when the user is already authorized for that data at the connected broker; therefore upstream entitlement conditions still apply.",
+    "Production Builder access is $19/month and includes only a 7-day free trial. Growth/Enterprise are also paid.",
+    "Consequently strict permanent-$0 gate C fails both at the Connect Trade platform layer and potentially at the underlying broker entitlement layer, even though D and the technical B surface are strong."
+  ],
+  "primary_sources": [
+    "https://connecttrade.com/docs/",
+    "https://connecttrade.com/docs/quickstart",
+    "https://connecttrade.com/docs/api",
+    "https://connecttrade.com/faq",
+    "https://connecttrade.com/pricing"
+  ],
+  "gate_analysis": {
+    "A": "DEPENDS_ON_CONNECTED_BROKER; cannot infer National NBBO lineage generically",
+    "B": "TECHNICALLY_STRONG_SEPARATE_QUOTES_AND_TRADES_STREAM",
+    "C": "FAIL_CONNECT_TRADE_PRODUCTION_IS_PAID_AND_BROKER_DATA_ENTITLEMENT_IS_A_PRECONDITION",
+    "D": "PASS_SANCTIONED_API_REMOTE_MCP_WEBSOCKET_SURFACE"
+  },
+  "failed_gates": [
+    "A_PROVIDER_SPECIFIC_NATIONAL_NBBO_LINEAGE",
+    "C_PERMANENT_ZERO_PLATFORM_ENTITLEMENT",
+    "C_UNDERLYING_BROKER_ENTITLEMENT_CONDITION"
+  ],
+  "provisional_pass_gates": [
+    "B_STREAMING_SCHEMA",
+    "D_SCHEDULER_CALLABILITY"
+  ],
+  "reopen_condition": "Connect Trade must offer permanent-$0 production access and a connected broker must independently grant this exact consolidated National-NBBO quote+trade automated/non-display entitlement permanently at $0 with no balance/funding/activity/subscription/per-query/account-maintenance condition.",
+  "negative_cache_only": true,
+  "may_never_create_pass": true,
+  "unknown_never_pass": true,
+  "no_policy_weakening": true
+}
