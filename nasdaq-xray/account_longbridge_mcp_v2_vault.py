@@ -28,7 +28,7 @@ from cryptography.fernet import Fernet, InvalidToken
 ROOT = Path(__file__).resolve().parent
 VAULT_PATH = ROOT / "account_longbridge_mcp_v2_token.enc"
 FERNET_KEY_ENV = "XRAY_ACCOUNT_TOKEN_FERNET_KEY"
-MAIN_MCP_URL = "https://mcp.longbridge.com"
+MAIN_MCP_URL = "https://mcp.longbridge.com/v2"
 AGENT_MCP_URL = "https://mcp.longbridge.com/agent"
 TOKEN_URL = "https://mcp.longbridge.com/oauth2/token"
 REFRESH_SKEW_SECONDS = 300
