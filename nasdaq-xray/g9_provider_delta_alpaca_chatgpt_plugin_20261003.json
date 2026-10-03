@@ -1,0 +1,68 @@
+{
+  "schema": "XRAY_G9_PROVIDER_DELTA_V1",
+  "generated_on": "2026-10-03",
+  "provider": "Alpaca ChatGPT market-data plugin / connected MCP surface",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "status": "HIGH_POTENTIAL_CHATGPT_LIVE_MARKET_DATA_SURFACE_HISTORICAL_SIP_A_B_CONFIRMED_LIVE_SIP_ENTITLEMENT_AND_STRICT_C_UNPROVEN",
+  "evidence": [
+    "The connected Alpaca ChatGPT market-data surface exposes stock quotes, trades, latest quote/trade and snapshot tools with explicit feed selectors including SIP.",
+    "A direct same-conversation historical SIP probe succeeded for AAPL on 2026-10-02 15:59:59 ET, returning Tape C quote events with bid/ask, exchange identifiers and UTC event timestamps, and separate Tape C trade events with exchange identifiers and independent UTC timestamps.",
+    "This proves the connector can retrieve exact CTA/UTP SIP-derived Tape C quote/trade data after the free historical-delay window and proves the required A/B payload shape for historical evidence.",
+    "The successful Saturday historical SIP read does NOT prove realtime RTH SIP entitlement because Alpaca Basic officially allows older SIP data while restricting recent SIP data; Alpaca states recent SIP trades/quotes inside the latest 15 minutes require Algo Trader Plus or another qualifying subscription.",
+    "The connected plugin's latest SIP quote/trade tools returned connector INTERNAL_ERROR on Saturday. This is not an entitlement PASS or FAIL and cannot substitute for a same-run RTH probe.",
+    "Alpaca's official March 2026 ChatGPT integration announcement and OpenAI's Alpaca plugin page both state that the ChatGPT integration exposes live stock/options/crypto market data. Neither reviewed page identifies the equity live feed as SIP rather than IEX.",
+    "Alpaca's March 2026 launch article says the integration can be enabled from a ChatGPT Plus plan. OpenAI's current plugin documentation says plugin availability/features depend on plan and a limited set is available on Free. Strict G9-C therefore cannot assume permanent-$0 access to this exact Alpaca plugin surface without current provider/platform proof that the qualifying SIP entitlement has no paid plan/subscription condition.",
+    "Historical XRAY scheduled tasks have successfully invoked the connected Alpaca market-data connector, proving scheduler-to-plugin technical callability for Alpaca reads in principle. A live strict-G9 RTH witness still requires the exact plugin surface to return recent SIP quote/trade events <=60s old in the scheduled run."
+  ],
+  "runtime_witness": {
+    "observed_on": "2026-10-03",
+    "requested_feed": "sip",
+    "symbol": "AAPL",
+    "event_window_et": "2026-10-02T15:55:00-04:00/2026-10-02T16:00:00-04:00",
+    "quote_example": {
+      "timestamp": "2026-10-02T19:59:59.980140+00:00",
+      "bid_price": 333.75,
+      "bid_size": 80,
+      "bid_exchange": "Q",
+      "ask_price": 333.8,
+      "ask_size": 14160,
+      "ask_exchange": "Q",
+      "tape": "C"
+    },
+    "trade_example": {
+      "timestamp": "2026-10-02T19:59:59.987994+00:00",
+      "exchange": "Q",
+      "price": 333.79,
+      "size": 480,
+      "tape": "C"
+    },
+    "interpretation": "HISTORICAL_SIP_LINEAGE_AND_INDEPENDENT_EVENT_SCHEMA_CONFIRMED; REALTIME_ENTITLEMENT_NOT_PROVEN"
+  },
+  "primary_sources": [
+    "https://docs.alpaca.markets/us/docs/market-data-faq",
+    "https://alpaca.markets/support/data-provider-alpaca",
+    "https://alpaca.markets/blog/openai-integrates-alpacas-market-data-functionality-as-part-of-chatgpt-for-financial-services/",
+    "https://openai.com/business/plugins/alpaca/",
+    "https://openai.com/business/plugins/",
+    "https://help.openai.com/en/articles/20001256-plugins-in-chatgpt"
+  ],
+  "failed_or_unproven_gates": [
+    "B_SAME_RUN_RTH_RECENT_SIP_FRESHNESS",
+    "C_LIVE_SIP_PERMANENT_ZERO_EXACT_PLUGIN_ENTITLEMENT",
+    "C_NO_SUBSCRIPTION_OR_PLATFORM_PLAN_CONDITION"
+  ],
+  "provisional_pass_gates": [
+    "A_HISTORICAL_EXACT_SIP_TAPE_C_LINEAGE",
+    "B_INDEPENDENT_QUOTE_AND_TRADE_EVENT_TIMESTAMP_SCHEMA",
+    "D_SCHEDULED_PLUGIN_READ_CALLABILITY_IN_PRINCIPLE"
+  ],
+  "required_unlock": [
+    "Primary-source Alpaca/OpenAI confirmation that the ChatGPT plugin's live US-equity quote/trade feed is consolidated CTA/UTP SIP/National NBBO rather than IEX.",
+    "Primary-source proof that the exact live SIP plugin entitlement is permanent-$0 for the user and does not require a paid Alpaca market-data plan, funding/balance/activity condition, or a paid ChatGPT subscription under the strict current policy.",
+    "Same-run US RTH scheduled latest quote + latest trade or bounded recent quote/trade probe with feed=sip proving <=60s quote/trade age and <=15s skew for AAPL and NVDA."
+  ],
+  "reopen_condition": "When the exact ChatGPT Alpaca live-feed entitlement and zero-dollar/no-subscription condition are primary-source proven, run same-run RTH scheduled SIP quote/trade witness. Do not infer realtime SIP from historical SIP success.",
+  "unknown_never_pass": true,
+  "no_policy_weakening": true
+}
