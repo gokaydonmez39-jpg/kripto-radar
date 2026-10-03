@@ -4,29 +4,27 @@
   "provider": "Charles Schwab Trader API / International",
   "execution": "NONE",
   "real_money": "NO-GO",
-  "status": "STRICT_G9_NOT_PROVEN__FREE_STREAMING_EVIDENCE_POINTS_AWAY_FROM_NBBO",
+  "status": "STRICT_G9_C_FAIL_FREE_STREAM_NOT_NBBO__STREAMING_NBBO_FEE_BEARING",
   "evidence": [
-    "Schwab Developer Portal confirms sanctioned OAuth 2.0 APIs and real-time API products exist, but public primary-source material reviewed does not establish exact Trader-API consolidated UTP/National-NBBO lineage plus independent quote/trade event timestamps plus unconditional permanent-$0 automated/non-display entitlement.",
-    "Schwab's current online market-data addendum says retail real-time quotations are supplied under exchange/CTA/CQ/Nasdaq agreements for personal subscriber use; that display/subscriber agreement is not proof of automated/non-display API entitlement.",
-    "Schwab Advisor Services states its free streaming U.S.-equity feed is indicative CBOE/Nasdaq proprietary data, excludes several live venues, and says streaming NBBO quotes are available for a fee. This is not a direct proof about retail Trader API pricing, but it is strong negative evidence against assuming any Schwab-branded free realtime feed is strict National NBBO.",
-    "Schwab's client-authorized data aggregation API is described as free to approved third-party aggregators, which is potentially useful for a provider-neutral ACCOUNT gate, but current ChatGPT plugin discovery did not expose a sanctioned Schwab/Intuit/Yodlee/eMoney investment-account connector in this workspace.",
-    "International account pages require residence in a qualifying country; public search evidence did not establish Turkey eligibility under the exact current application flow. Therefore jurisdiction remains unproven, not PASS."
+    "Schwab Developer Portal confirms sanctioned OAuth 2.0 APIs and real-time API products exist.",
+    "Schwab's current market-data addendum covers real-time quotations under NYSE/CTA/CQ/Nasdaq subscriber agreements for personal, non-business use; this does not itself prove automated/non-display Trader API entitlement.",
+    "Schwab Advisor Services explicitly states its free streaming U.S.-equity feed uses indicative CBOE and Nasdaq proprietary quotes, excludes NYSE/IEX/LTSE/MIAX/MEMX live quotes, and that streaming NBBO quotes are available for a fee.",
+    "Therefore the documented free Schwab streaming path is not strict National NBBO and the documented streaming NBBO path is fee-bearing, violating strict permanent-$0 G9-C.",
+    "Turkey eligibility and exact retail Trader API quote schema no longer need to be treated as the decisive blocker for the current strict-zero policy because C already fails on primary-source Schwab evidence."
   ],
   "primary_sources": [
     "https://developer.schwab.com/",
     "https://www.schwab.com/legal/electronic-services-agreement-online",
-    "https://advisorservices.schwab.com/whats-new/trading-and-investment-management",
-    "https://www.schwab.com/legal/public-security-tips-popup",
-    "https://international.schwab.com/open-account-intro"
+    "https://advisorservices.schwab.com/whats-new/trading-and-investment-management"
   ],
   "gate_assessment": {
-    "A": "UNPROVEN",
-    "B": "UNPROVEN_FOR_TRADER_API",
-    "C": "UNPROVEN_FOR_AUTOMATED_NONDISPLAY__FREE_ADVISOR_STREAM_IS_NOT_NBBO",
-    "D": "SANCTIONED_DEVELOPER_PLATFORM_EXISTS_BUT_CURRENT_WORKSPACE_CONNECTOR_NOT_ESTABLISHED",
-    "jurisdiction": "UNPROVEN_FOR_TURKEY"
+    "A": "FREE_STREAM_NONQUALIFYING_PROPRIETARY_PARTIAL_FEED; STREAMING_NBBO_AVAILABLE_SEPARATELY",
+    "B": "TRADER_API_EXACT_TIMESTAMP_SCHEMA_NOT_NEEDED_TO_REOPEN_WHILE_C_FAILS",
+    "C": "FAIL_STREAMING_NBBO_FEE_BEARING",
+    "D": "SANCTIONED_DEVELOPER_PLATFORM_EXISTS"
   },
   "account_gate_note": "Schwab data aggregation could be a sanctioned read-only account-data architecture only if the user actually has an eligible Schwab account and an approved aggregator/connector is connectable in this workspace; neither is currently proven.",
-  "reopen_condition": "Primary-source Trader API documentation proves exact consolidated UTP/National-NBBO lineage, independent quote/trade timestamps, unconditional permanent-$0 automated/non-display entitlement, Turkey-resident eligibility, and scheduler callability; OR a sanctioned Schwab account-data connector becomes connectable for provider-neutral ACCOUNT evidence.",
-  "no_policy_weakening": true
+  "reopen_condition": "Schwab primary-source terms change so consolidated streaming NBBO is available under unconditional permanent-$0 automated/non-display entitlement; then re-open Trader API schema, jurisdiction and same-run RTH callability.",
+  "no_policy_weakening": true,
+  "updated_on": "2026-10-03"
 }
