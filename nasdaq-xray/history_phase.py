@@ -53,11 +53,42 @@ def load_history_bridge(src,asof):
     HISTORY_BRIDGE_PATH=relpath(p)
     return entries
 
-def bridge_resolution(sym,asof):
+def bridge_resolution(sym,asof,sina_status=None,sina_info=None):
     e=HISTORY_BRIDGE.get(sym)
     if not e:
         return None
     mode=e.get("mode"); outcome=e.get("outcome")
+    if mode=="RALLIES_SINA_EXACT_TERMINAL_FAIL_V1" and outcome=="FAIL_HISTORY":
+        r=e.get("rallies_observation") or {}
+        assert e.get("can_create_pass") is False
+        assert e.get("proof")=="TWO_INDEPENDENT_SOURCES_EXACT_HISTORY_BELOW_GATE"
+        assert r.get("asof_present") is True and r.get("last_date")==asof
+        assert int(r.get("daily_bars",-1))<HARD_DAILY or int(r.get("completed_week_count",-1))<HARD_WEEKLY
+        # Static connector evidence can only become terminal when the live
+        # same-run Sina classification independently matches the exact history
+        # fingerprint. Any drift/mismatch simply leaves the symbol unresolved.
+        si=sina_info or {}
+        if sina_status!="POTENTIAL_FAIL_HISTORY":
+            return None
+        exact=(
+          si.get("asof_present") is True
+          and si.get("first_date")==r.get("first_date")
+          and si.get("last_date")==r.get("last_date")
+          and int(si.get("daily_bars",-1))==int(r.get("daily_bars",-2))
+          and int(si.get("completed_week_count",-1))==int(r.get("completed_week_count",-2))
+        )
+        if not exact:
+            return None
+        return "FAIL_HISTORY",{
+          "proof":"RALLIES_SINA_EXACT_TERMINAL_FAIL_V1",
+          "providers":["RALLIES_CONNECTOR_DAILY","SINA_US_DAILY"],
+          "first_date":r["first_date"],"last_date":r["last_date"],
+          "daily_bars":int(r["daily_bars"]),
+          "completed_week_count":int(r["completed_week_count"]),
+          "bridge_path":HISTORY_BRIDGE_PATH,
+          "thresholds":{"daily":HARD_DAILY,"weekly_completed":HARD_WEEKLY},
+          "can_create_pass":False
+        }
     if mode=="LISTING_AGE_TERMINAL_FAIL_V1" and outcome=="FAIL_HISTORY":
         ld=datetime.fromisoformat(e["listing_date"]).date()
         ad=datetime.fromisoformat(asof).date()
@@ -395,7 +426,7 @@ def eval_one(sym,asof):
     eb,em=eastmoney(sym,asof);es,ei=classify(eb,asof,"EASTMONEY_US_DAILY_NASDAQ_105")
     if es=="PASS_HISTORY":return sym,es,ei,{"sina":sm,"nasdaq":nm,"yahoo":ym,"eastmoney":em}
 
-    br=bridge_resolution(sym,asof)
+    br=bridge_resolution(sym,asof,ss,si)
     if br is not None:
         bst,binfo=br
         return sym,bst,binfo,{"sina":sm,"nasdaq":nm,"yahoo":ym,"eastmoney":em,"history_bridge":HISTORY_BRIDGE_PATH}
