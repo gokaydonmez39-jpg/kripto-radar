@@ -4,14 +4,17 @@
   "provider": "Wealthnow",
   "execution": "NONE",
   "real_money": "NO-GO",
-  "status": "HIGH_POTENTIAL__FREE_SNAPSHOT_B_C_D_ENGINEERING_READY__A_LINEAGE_UNPROVEN",
+  "status": "HIGH_POTENTIAL_FREE_SNAPSHOT_B_D_ENGINEERING_READY_A_AND_C_LICENSE_UNPROVEN",
   "evidence": [
     "Wealthnow Free hard-caps at its included monthly credit grant with no overage. Fundamentals and Market Data are included on Free; price_snapshot costs 1 credit.",
     "The Free fundamentals/price_snapshot route returns last trade price, independent trade event time (`as_of`/`time`), bid, ask, sizes, and independent quote event time (`quote_as_of`) while the exchange is in session, plus freshness/staleness fields. This is sufficient technical schema for strict G9-B subject to same-run RTH freshness <=60s and quote/trade skew <=15s.",
     "The dedicated Starter+ streaming quotes route is explicitly documented as consolidated top-of-book NBBO with best bid/ask, venue IDs, and quote timestamps; trade ticks are a separate stream. This proves Wealthnow has an NBBO-capable upstream path.",
     "However the Free price_snapshot reference and Market Data guide do not label its bid/ask as NBBO, consolidated, SIP, UTP, CTA, or as sourced from the Starter+ NBBO stream. The response source label `market-data:v2-snapshot` is an internal label, not primary-source lineage proof. Therefore strict G9-A remains unproven for the Free route.",
     "Wealthnow officially supports REST Bearer/API-key access, a hosted MCP endpoint, OAuth agent connections including ChatGPT custom MCP, SDKs, and agent use. Therefore canonical scheduler callability is technically implementable without exposing a key in repository files. D still requires the actual canonical scheduler credential to be configured and a same-run RTH probe.",
-    "Wealthnow API keys can be created with no expiry and lower per-key request limits. Free workspaces can hold multiple keys. This supports a dedicated read-only market-data scheduler key, but no credential is currently configured in XRAY."
+    "Wealthnow API keys can be created with no expiry and lower per-key request limits. Free workspaces can hold multiple keys. This supports a dedicated read-only market-data scheduler key, but no credential is currently configured in XRAY.",
+    "Wealthnow Terms of Service (updated 2026-09-27) expressly cover the API and permit programmatic use within access/rate controls, but market data is third-party content and users must comply with applicable exchange/provider rules.",
+    "The Terms grant only a limited service-use license and prohibit scraping/resale/redistribution; public docs do not explicitly state that Free price_snapshot carries an exchange/SIP non-display license for the intended automated scheduler use.",
+    "Therefore Free hard-cap cost and agent/API intent are proven, but strict G9-C's market-data non-display entitlement component remains unproven until Wealthnow identifies the applicable feed/license or confirms that the Free API entitlement covers this use without separate market-data fees/conditions."
   ],
   "primary_sources": [
     "https://app.wealthnow.io/docs/market-data",
@@ -20,17 +23,21 @@
     "https://app.wealthnow.io/docs/pricing-and-credits",
     "https://app.wealthnow.io/docs/quickstart",
     "https://app.wealthnow.io/docs/api-reference",
-    "https://app.wealthnow.io/docs/mcp-and-sdks"
+    "https://app.wealthnow.io/docs/mcp-and-sdks",
+    "https://wealthnow.io/terms"
   ],
-  "reopen_condition": "Obtain primary-source confirmation that the Free `fundamentals/price_snapshot` bid/ask are consolidated UTP/National NBBO (or a documented equivalent redistributor lineage). Then configure a dedicated Free-plan Wealthnow key or OAuth connection in the canonical scheduler and require same-run RTH bid/ask/last freshness <=60s and quote/trade skew <=15s.",
+  "reopen_condition": "Obtain primary-source Wealthnow confirmation that Free price_snapshot bid/ask are consolidated UTP/National NBBO (or documented equivalent) AND that the Free REST/MCP entitlement lawfully covers the intended automated/non-display use with no separate exchange/vendor/subscription/per-query/balance/funding/activity charge. Then configure scheduler credential and require same-run RTH B/D probe.",
   "no_policy_weakening": true,
   "failed_gates": [
     "A",
+    "C_NONDIPLAY_LICENSE",
     "D_RUNTIME"
   ],
   "provisional_pass_gates": [
     "B_SCHEMA",
-    "C_ZERO_DOLLAR_INTENDED_AUTOMATION"
+    "C_ZERO_DOLLAR_API_COST",
+    "D_TECHNICAL_SURFACE"
   ],
-  "technical_adapter_status": "READY_TO_IMPLEMENT_FAIL_CLOSED_BEHIND_A_AUTHORITY"
+  "technical_adapter_status": "READY_TO_IMPLEMENT_FAIL_CLOSED_BEHIND_A_AUTHORITY",
+  "last_checked_on": "2026-10-03"
 }
