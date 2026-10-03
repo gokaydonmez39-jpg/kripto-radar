@@ -9,7 +9,7 @@
     "C": "lawful automated/non-display permanent-$0 entitlement with no fee/balance/activity/per-query condition",
     "D": "scheduler callability"
   },
-  "unique_provider_paths_reviewed": 50,
+  "unique_provider_paths_reviewed": 51,
   "evidence_files": [
     {
       "path": "nasdaq-xray/g9_free_path_audit_20261003.json",
@@ -82,6 +82,10 @@
     {
       "path": "nasdaq-xray/g9_provider_delta_tradier_fennel_refresh_20261003.json",
       "blob_sha": "58133887f5f2aad22376bafe3f9d016a8e74a3a4"
+    },
+    {
+      "path": "nasdaq-xray/g9_provider_delta_eulerpool_20261003.json",
+      "blob_sha": "9332c610f53b46fe26e922feacc292fab21ac5d8"
     }
   ],
   "reviewed_provider_paths": [
@@ -134,7 +138,8 @@
     "Midas via TradingView official broker integration",
     "Midas via Alpaca Broker API partner infrastructure",
     "Foreks / ForInvest Web SDK",
-    "FlashAlpha Lab API"
+    "FlashAlpha Lab API",
+    "Eulerpool Financial Data API"
   ],
   "strongest_near_misses": [
     {
