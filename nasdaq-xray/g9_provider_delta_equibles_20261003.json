@@ -1,0 +1,28 @@
+{
+  "schema": "XRAY_G9_PROVIDER_DELTA_V1",
+  "generated_on": "2026-10-03",
+  "provider": "Equibles",
+  "status": "TECHNICALLY_CONSOLIDATED_SIP_BUT_REALTIME_API_PAID",
+  "evidence": [
+    "Official methodology says live intraday quotes are consolidated SIP last trade and bid/ask for active U.S. listings.",
+    "Official pricing/methodology says Free API/MCP is end-of-day only and declines intraday quote calls with an upgrade link.",
+    "Plus provides 15-minute-delayed intraday quotes; Pro provides real-time quotes.",
+    "Hosted MCP, OAuth and API-key callability are officially supported, so D is technically strong, but permanent-$0 realtime entitlement is absent."
+  ],
+  "provisional_pass_gates": [
+    "A_CONSOLIDATED_SIP_LINEAGE",
+    "D_MCP_REST_SCHEDULER_CALLABILITY"
+  ],
+  "failed_gates": [
+    "B_FREE_REALTIME_FRESHNESS",
+    "C_PERMANENT_ZERO_REALTIME_ENTITLEMENT"
+  ],
+  "primary_sources": [
+    "https://equibles.com/docs/methodology",
+    "https://equibles.com/docs/data",
+    "https://equibles.com/pricing",
+    "https://equibles.com/docs"
+  ],
+  "reopen_condition": "Free API/MCP tier must gain realtime consolidated SIP bid/ask+last with independent quote/trade event timestamps under permanent-$0 entitlement.",
+  "no_policy_weakening": true
+}
