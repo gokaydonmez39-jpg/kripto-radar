@@ -79,20 +79,12 @@ def bridge_resolution(sym,asof):
           "thresholds":{"daily":HARD_DAILY,"weekly_completed":HARD_WEEKLY}
         }
     if mode=="TICKER_LINEAGE_HISTORY_PASS_V1" and outcome=="PASS_HISTORY":
-        assert e.get("current_ticker")==sym
-        assert e.get("current_has_exact_asof_bar") is True
-        assert int(e.get("combined_unique_daily_bars",0))>=HARD_DAILY
-        assert int(e.get("combined_completed_week_count",0))>=HARD_WEEKLY
-        assert str(e.get("official_continuity_source") or "").startswith("https://www.nasdaq.com/")
-        assert e.get("predecessor_ticker") and e.get("ticker_change_effective_date")
-        return "PASS_HISTORY",{
-          "source":"HISTORY_EVIDENCE_BRIDGE_TICKER_LINEAGE",
-          "daily_bars":int(e["combined_unique_daily_bars"]),
-          "completed_week_count":int(e["combined_completed_week_count"]),
-          "predecessor_ticker":e["predecessor_ticker"],
-          "ticker_change_effective_date":e["ticker_change_effective_date"],
-          "bridge_path":HISTORY_BRIDGE_PATH
-        }
+        # PASS authority intentionally removed from the legacy bridge. Ticker
+        # continuity must pass continuity_composite_pass(), which requires the
+        # official unchanged-CUSIP registry plus live cross-source overlap and
+        # an exact current-ASOF bar. A manually prepared bridge must never
+        # bypass that check.
+        return None
     raise AssertionError(f"invalid history bridge entry for {sym}")
 
 def _is_transient(exc):
