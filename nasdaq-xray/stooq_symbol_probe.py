@@ -31,43 +31,40 @@ try:
         res["zip_bytes"]=zpath.stat().st_size
         found=set()
         with zipfile.ZipFile(zpath) as zf:
-            for name in zf.namelist():
-                if not name.lower().endswith(".txt"): continue
+            names=zf.namelist()
+            candidates=[]
+            for name in names:
+                base=Path(name).name.lower()
+                if any(base.startswith(s.lower()+".us") for s in TARGETS):
+                    candidates.append(name)
+            res["candidate_files"]=len(candidates)
+            for name in candidates:
                 try:
                     raw=zf.read(name).decode("utf-8","ignore")
                     rd=csv.reader(io.StringIO(raw))
                     next(rd,None)
-                    rows=[]
+                    rows=[];sym=None
                     for r in rd:
                         if len(r)<9: continue
-                        s=norm(r[0])
-                        if s not in TARGETS: continue
-                        d=r[2]
+                        if sym is None: sym=norm(r[0])
                         try:
-                            c=float(r[7]);v=float(r[8])
+                            d=r[2];c=float(r[7]);v=float(r[8])
                         except Exception:
                             continue
                         if len(d)==8 and c>0 and v>=0:
                             rows.append((d,c,v))
-                    if not rows: continue
-                    s=norm(next(csv.reader(io.StringIO(raw))).pop(0) if False else "")
-                except Exception:
-                    continue
-                # A Stooq text file is one symbol. Recover symbol from first data row.
-                try:
-                    rd2=csv.reader(io.StringIO(raw)); next(rd2,None); first=next(rd2)
-                    sym=norm(first[0])
-                except Exception:
-                    continue
-                if sym not in TARGETS: continue
-                rows.sort(key=lambda x:x[0])
-                found.add(sym)
-                res["results"][sym]={
-                  "rows":len(rows),"first":rows[0][0],"last":rows[-1][0],
-                  "has_asof_20261002":any(x[0]=="20261002" for x in rows)
-                }
+                    if sym not in TARGETS or not rows: continue
+                    rows.sort(key=lambda x:x[0])
+                    found.add(sym)
+                    res["results"][sym]={
+                      "rows":len(rows),"first":rows[0][0],"last":rows[-1][0],
+                      "has_asof_20261002":any(x[0]=="20261002" for x in rows),
+                      "zip_member":name
+                    }
+                except Exception as e:
+                    res["results"][Path(name).name]={"status":"ERROR","error":type(e).__name__+":"+str(e)[:240]}
         for s in sorted(TARGETS-found):
-            res["results"][s]={"rows":0,"status":"MISSING"}
+            res["results"].setdefault(s,{"rows":0,"status":"MISSING"})
     res["status"]="PASS"
 except Exception as e:
     res["status"]="ERROR"
