@@ -4,7 +4,7 @@
   "execution": "NONE",
   "real_money": "NO-GO",
   "purpose": "Negative-evidence cache only. This registry can skip unchanged dead paths but can never create G9 PASS.",
-  "provider_count": 56,
+  "provider_count": 57,
   "strict_g9_gates": {
     "A": "consolidated UTP Tape-C / National NBBO lineage",
     "B": "fresh bid+ask+last with independent quote/trade event timestamps",
@@ -13,8 +13,8 @@
   },
   "source_saturation": {
     "path": "nasdaq-xray/g9_search_saturation_20261003.json",
-    "blob_sha": "283e09ac9407d6cb1bfb213855fe5fde1e6b75d5",
-    "reviewed_paths": 56
+    "blob_sha": "8bece763bac88867bca878bbbc0173fe65a23d37",
+    "reviewed_paths": 57
   },
   "providers": [
     {
@@ -764,6 +764,19 @@
       "reopen_condition": "Official QUODD primary source must offer permanent-$0 production realtime consolidated UTP/National-NBBO API entitlement for this exact automated/non-display use with no exchange/vendor/subscription/per-query/balance/funding/activity/account-maintenance condition; then bind exact Tape-C lineage and run same-run RTH proof.",
       "negative_cache_only": true,
       "may_never_create_pass": true
+    },
+    {
+      "provider": "Tallac Options live equities API/TCP feed",
+      "status": "NONQUALIFYING_LIVE_FEED_FEE_BEARING_AND_NATIONAL_NBBO_LINEAGE_UNPROVEN",
+      "failed_gates": [
+        "A_CONSOLIDATED_UTP_NATIONAL_NBBO_LINEAGE",
+        "C_PERMANENT_ZERO_REALTIME_ENTITLEMENT"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_tallacoptions_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "Official Tallac primary source must make production realtime U.S.-equity API/TCP access permanently $0 and prove consolidated UTP Tape-C/National-NBBO lineage plus lawful automated/non-display entitlement; then run same-run RTH proof.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
     }
   ],
   "reopen_policy": "Reopen an existing negative path only on newer PRIMARY SOURCE evidence materially changing its listed failed gate(s). New previously-unreviewed providers are always eligible for research. Any reopened path still requires same-run RTH technical proof before G9 PASS.",
@@ -785,5 +798,9 @@
     "path": "nasdaq-xray/g9_provider_delta_quodd_20261003.json",
     "blob_sha": "c117df090ae3251fe4de94d3da811723a7149565",
     "result": "STRICT_C_PERMANENT_ZERO_FAIL"
+  },
+  "latest_tallac_audit": {
+    "path": "nasdaq-xray/g9_provider_delta_tallacoptions_20261003.json",
+    "result": "A_AND_C_FAIL"
   }
 }
