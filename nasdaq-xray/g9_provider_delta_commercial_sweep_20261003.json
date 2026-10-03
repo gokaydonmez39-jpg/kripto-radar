@@ -1,0 +1,139 @@
+{
+  "schema": "XRAY_G9_PROVIDER_DELTA_V1",
+  "generated_on": "2026-10-03",
+  "scope": "REMAINING_FREE_OR_LOW_COST_MARKET_DATA_VENDOR_SWEEP",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "providers": [
+    {
+      "provider": "Twelve Data",
+      "status": "NONQUALIFYING_PARTIAL_VENUE_FEED",
+      "evidence": [
+        "Basic is $0 and permits internal non-display use with real-time US equities.",
+        "Official US-equities source note says the default feed uses venues that collectively represent about 5% of US trading volume.",
+        "The same note directs users needing consolidated feeds from all major US exchanges to licensed full-market access."
+      ],
+      "sources": [
+        "https://twelvedata.com/pricing",
+        "https://support.twelvedata.com/en/articles/9935903-us-equities-market-data"
+      ],
+      "failed_gates": [
+        "A"
+      ]
+    },
+    {
+      "provider": "Tiingo IEX API",
+      "status": "NONQUALIFYING_SINGLE_VENUE",
+      "evidence": [
+        "Free individual API exists and the IEX feed exposes last/best bid/best ask.",
+        "Official documentation identifies the feed as IEX TOPS from the IEX Exchange, not consolidated National NBBO across all exchanges."
+      ],
+      "sources": [
+        "https://www.tiingo.com/pricing",
+        "https://www.tiingo.com/documentation/iex",
+        "https://www.tiingo.com/products/iex-api"
+      ],
+      "failed_gates": [
+        "A"
+      ]
+    },
+    {
+      "provider": "Finnhub Free",
+      "status": "NONQUALIFYING_STRICT_B",
+      "evidence": [
+        "Finnhub advertises a free realtime US-stock API.",
+        "The official realtime websocket endpoint documented for free stock streaming is a trades/last-price stream with symbol, price, timestamp, volume and conditions.",
+        "No independent best-bid/best-ask National NBBO quote event with bid/ask timestamps is established by this free websocket evidence."
+      ],
+      "sources": [
+        "https://finnhub.io/docs/api/websocket-trades",
+        "https://www.finnhub.io/"
+      ],
+      "failed_gates": [
+        "A",
+        "B"
+      ]
+    },
+    {
+      "provider": "Intrinio",
+      "status": "NONQUALIFYING_PERMANENT_ZERO",
+      "evidence": [
+        "Current Individual plan starts at $150/month; free access is a trial.",
+        "Included EquitiesEdge is proprietary derived/predicted bid-ask-last rather than SIP NBBO.",
+        "Other realtime products documented include IEX and Nasdaq Basic; delayed SIP is not fresh G9."
+      ],
+      "sources": [
+        "https://intrinio.com/pricing",
+        "https://intrinio.com/financial-market-data/equitiesedge",
+        "https://intrinio.com/nasdaq-basic"
+      ],
+      "failed_gates": [
+        "A",
+        "C"
+      ]
+    },
+    {
+      "provider": "Marketstack",
+      "status": "NONQUALIFYING_FREE_EOD_ONLY",
+      "evidence": [
+        "Free-forever plan provides end-of-day data only.",
+        "Intraday and real-time US data require paid plans and the documented intraday source is IEX."
+      ],
+      "sources": [
+        "https://marketstack.com/pricing/"
+      ],
+      "failed_gates": [
+        "A",
+        "B",
+        "C"
+      ]
+    },
+    {
+      "provider": "Databento",
+      "status": "NONQUALIFYING_PERMANENT_ZERO",
+      "evidence": [
+        "Free offer is $125 of historical-data credits, not a permanent realtime entitlement.",
+        "Live data requires license activation and pass-through license fees plus usage; usage-based live US Equities is not available."
+      ],
+      "sources": [
+        "https://databento.com/pricing/"
+      ],
+      "failed_gates": [
+        "C"
+      ]
+    },
+    {
+      "provider": "Benzinga",
+      "status": "NONQUALIFYING_FREE_REALTIME_PATH_UNPROVEN",
+      "evidence": [
+        "Documented delayed-stock-quotes product is 15-minute delayed.",
+        "Benzinga states real-time quotes can be licensed separately and require navigating real-time market-data agreements; no permanent-$0 National NBBO API entitlement is established."
+      ],
+      "sources": [
+        "https://www.benzinga.com/apis/cloud-product/benzinga-delayed-quote-api/",
+        "https://www.benzinga.com/apis/"
+      ],
+      "failed_gates": [
+        "B",
+        "C"
+      ]
+    },
+    {
+      "provider": "XigniteGlobalRealTime",
+      "status": "TECHNICALLY_NBBO_CAPABLE_BUT_STRICT_C_UNPROVEN",
+      "evidence": [
+        "Official product documentation explicitly offers US National Best Bid and Offer from SIP feeds including UTP Tape C and timestamps.",
+        "The same product states exchange market-data distribution is subject to licensing requirements and fees and directs users to sales; no permanent-$0 automated/non-display entitlement was found."
+      ],
+      "sources": [
+        "https://www.xignite.com/Product/global-real-time-stock-quote-data"
+      ],
+      "failed_gates": [
+        "C"
+      ]
+    }
+  ],
+  "conclusion": "NO_NEW_PROVIDER_PROVES_STRICT_A_B_C_D",
+  "interpretation": "Free realtime labels commonly resolve to partial-venue, trade-only, delayed, derived, capped/trial, or non-entitled data. Exact SIP/National-NBBO products remain licensed or otherwise fail the strict permanent-zero proof.",
+  "no_policy_weakening": true
+}
