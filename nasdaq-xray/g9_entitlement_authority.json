@@ -13,11 +13,11 @@
     "provider_qualifying_now": "NONE",
     "permanent_zero": "NO_CURRENT_PROVIDER_PROVEN",
     "automated_nondisplay_utp_right": "NO_CURRENT_PROVIDER_PROVEN",
-    "reviewed_provider_paths": 52,
+    "reviewed_provider_paths": 53,
     "search_saturation_result": "NO_REVIEWED_PROVIDER_PROVES_A_B_C_D_SIMULTANEOUSLY",
     "structural_fee_basis": "UTP_API_CLASSIFICATION_REQUIRES_PROVIDER_SPECIFIC_AUTHORIZATION_FOR_THIRD_PARTY_AUTOMATION",
     "strict_runtime_adapter": "FAIL_CLOSED_UNLESS_AUTHORITY_PROVEN",
-    "audit_20261003": "52_PROVIDER_PATH_PRIMARY_SOURCE_AND_LIVE_ENTITLEMENT_SATURATION",
+    "audit_20261003": "53_PROVIDER_PATH_PRIMARY_SOURCE_AND_LIVE_ENTITLEMENT_SATURATION",
     "midas_official_paths": "ATLAS_REALTIME_EXCHANGE_ENTITLEMENTS;TRADINGVIEW_BROKER_QUOTES;ALPACA_PARTNER_INFRA",
     "midas_alpaca_partner_path": "OFFICIAL_INFRA_CONFIRMED_EXACT_LIVE_SIP_ENDUSER_ENTITLEMENT_UNPROVEN",
     "high_potential_provider": "Wealthnow",
@@ -119,14 +119,14 @@
   ],
   "search_saturation": {
     "path": "nasdaq-xray/g9_search_saturation_20261003.json",
-    "blob_sha": "161cd68d97effa0b3724d812d96ceb39a97079a6",
-    "unique_provider_paths_reviewed": 52,
+    "blob_sha": "8cea3c808747934a8099bd5254b9f807a674b06b",
+    "unique_provider_paths_reviewed": 53,
     "result": "NO_REVIEWED_PROVIDER_PROVES_A_B_C_D_SIMULTANEOUSLY"
   },
   "negative_registry": {
     "path": "nasdaq-xray/g9_provider_registry_20261003.json",
-    "blob_sha": "7ef018c7d92a08b7ea1a653979b9ae377810350c",
-    "provider_count": 52,
+    "blob_sha": "05acc6c703f8dc7cd0b8cab8c2fecbcada54fe45",
+    "provider_count": 53,
     "role": "NEGATIVE_EVIDENCE_CACHE_ONLY_NEVER_PASS_AUTHORITY"
   },
   "midas_official_audit": {
