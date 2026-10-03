@@ -1,0 +1,32 @@
+{
+  "schema": "XRAY_G9_PROVIDER_DELTA_V1",
+  "generated_on": "2026-10-03",
+  "provider": "Charles Schwab Trader API / International",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "status": "STRICT_G9_NOT_PROVEN__FREE_STREAMING_EVIDENCE_POINTS_AWAY_FROM_NBBO",
+  "evidence": [
+    "Schwab Developer Portal confirms sanctioned OAuth 2.0 APIs and real-time API products exist, but public primary-source material reviewed does not establish exact Trader-API consolidated UTP/National-NBBO lineage plus independent quote/trade event timestamps plus unconditional permanent-$0 automated/non-display entitlement.",
+    "Schwab's current online market-data addendum says retail real-time quotations are supplied under exchange/CTA/CQ/Nasdaq agreements for personal subscriber use; that display/subscriber agreement is not proof of automated/non-display API entitlement.",
+    "Schwab Advisor Services states its free streaming U.S.-equity feed is indicative CBOE/Nasdaq proprietary data, excludes several live venues, and says streaming NBBO quotes are available for a fee. This is not a direct proof about retail Trader API pricing, but it is strong negative evidence against assuming any Schwab-branded free realtime feed is strict National NBBO.",
+    "Schwab's client-authorized data aggregation API is described as free to approved third-party aggregators, which is potentially useful for a provider-neutral ACCOUNT gate, but current ChatGPT plugin discovery did not expose a sanctioned Schwab/Intuit/Yodlee/eMoney investment-account connector in this workspace.",
+    "International account pages require residence in a qualifying country; public search evidence did not establish Turkey eligibility under the exact current application flow. Therefore jurisdiction remains unproven, not PASS."
+  ],
+  "primary_sources": [
+    "https://developer.schwab.com/",
+    "https://www.schwab.com/legal/electronic-services-agreement-online",
+    "https://advisorservices.schwab.com/whats-new/trading-and-investment-management",
+    "https://www.schwab.com/legal/public-security-tips-popup",
+    "https://international.schwab.com/open-account-intro"
+  ],
+  "gate_assessment": {
+    "A": "UNPROVEN",
+    "B": "UNPROVEN_FOR_TRADER_API",
+    "C": "UNPROVEN_FOR_AUTOMATED_NONDISPLAY__FREE_ADVISOR_STREAM_IS_NOT_NBBO",
+    "D": "SANCTIONED_DEVELOPER_PLATFORM_EXISTS_BUT_CURRENT_WORKSPACE_CONNECTOR_NOT_ESTABLISHED",
+    "jurisdiction": "UNPROVEN_FOR_TURKEY"
+  },
+  "account_gate_note": "Schwab data aggregation could be a sanctioned read-only account-data architecture only if the user actually has an eligible Schwab account and an approved aggregator/connector is connectable in this workspace; neither is currently proven.",
+  "reopen_condition": "Primary-source Trader API documentation proves exact consolidated UTP/National-NBBO lineage, independent quote/trade timestamps, unconditional permanent-$0 automated/non-display entitlement, Turkey-resident eligibility, and scheduler callability; OR a sanctioned Schwab account-data connector becomes connectable for provider-neutral ACCOUNT evidence.",
+  "no_policy_weakening": true
+}
