@@ -1,0 +1,46 @@
+{
+  "schema": "XRAY_G9_CONNECTOR_PROBE_V1",
+  "generated_on": "2026-10-03",
+  "provider": "Alpaca ChatGPT connector",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "probe_symbol": "AAPL",
+  "results": {
+    "iex_quote": "PASS_TECHNICAL_SINGLE_VENUE",
+    "iex_trade": "PASS_TECHNICAL_SINGLE_VENUE",
+    "delayed_sip_quote": "PASS_TECHNICAL_BUT_DELAYED",
+    "delayed_sip_trade": "PASS_TECHNICAL_BUT_DELAYED",
+    "live_sip_quote": "ERROR_INTERNAL_ERROR",
+    "live_sip_trade": "ERROR_INTERNAL_ERROR"
+  },
+  "observed_schema": {
+    "quote_fields": [
+      "timestamp",
+      "bid_price",
+      "bid_size",
+      "bid_exchange",
+      "ask_price",
+      "ask_size",
+      "ask_exchange",
+      "conditions",
+      "tape"
+    ],
+    "trade_fields": [
+      "timestamp",
+      "exchange",
+      "price",
+      "size",
+      "conditions",
+      "tape"
+    ],
+    "tape_observed": "C"
+  },
+  "interpretation": [
+    "The connector can deliver exact quote and trade event timestamps for IEX and delayed-SIP data.",
+    "IEX is single-venue and cannot satisfy strict National NBBO lineage.",
+    "Delayed SIP has correct consolidated lineage shape but cannot satisfy same-run RTH freshness.",
+    "Live SIP calls failed while IEX and delayed-SIP calls succeeded, consistent with live SIP entitlement not being available through the current connector/account surface. The generic internal_error is not by itself proof of the exact commercial reason, so XRAY records only that live SIP is not presently usable."
+  ],
+  "status": "NONQUALIFYING_CURRENT_CONNECTOR_LIVE_SIP_UNAVAILABLE",
+  "no_policy_weakening": true
+}
