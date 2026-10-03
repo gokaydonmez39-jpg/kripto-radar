@@ -17,7 +17,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
-      - name: Validate C4.16 settlement connector failover
+      - name: Validate C4.17 settlement connector failover
         run: |
           python - <<'PYV'
           import json,hashlib
@@ -25,15 +25,26 @@ jobs:
           assert top["schema"]=="XRAY_GITHUB_COMPILED_POLICY_V3"
           assert top["execution"]=="NONE" and top["real_money"]=="NO-GO"
           payload=top["payload_json"]; h=hashlib.sha256(payload.encode()).hexdigest()
-          assert h==top["policy_hash"]=="a2bb9e857759e2b1c312fe1ec78ffefb4ac3e81c5c2012c921d245da0bc6a094"
+          assert h==top["policy_hash"]=="26a95745a50b65e85f6ece24b6501af0994764a84ddd886edb70d1fcd770849c"
           x=json.loads(payload)
-          assert x["schema"]=="XRAY_COMPILED_POLICY_V1" and x["version"]=="C4.16"
+          assert x["schema"]=="XRAY_COMPILED_POLICY_V1" and x["version"]=="C4.17"
           assert x["unknown_never_pass"] is True and x["zero_dollar_hard_cap"] is True
           assert x["hard_gates"]["price"]==">10"
           assert x["hard_gates"]["market_cap"]==">=2000000000 USD"
           assert x["hard_gates"]["dv20"]=="median exactly20 completed official-RTH Close*regular-session Volume >=50000000"
           assert x["policy_change"]["id"]=="MC_TWO_SOURCE_SUBTHRESHOLD_FAIL_EVIDENCE_V1"
           assert x["settlement_change"]["id"]=="SETTLEMENT_ZERO_DOLLAR_CROSSCHECK_V2"
+          m=x["mc_identity_correction_change"]
+          assert m["id"]=="MC_SEC_SHARE_COUNT_VERIFIED_WATCH_V1"
+          assert m["base_policy_hash"]=="a2bb9e857759e2b1c312fe1ec78ffefb4ac3e81c5c2012c921d245da0bc6a094" and m["base_policy_version"]=="C4.16"
+          assert m["classification"]=="MC_PASS_FALLBACK_WATCH" and m["r92_eligible"] is False
+          assert m["requirements"]["longbridge_identity"].endswith("<=0.5%.")
+          assert "Every available finite USD market-cap observation" in m["requirements"]["threshold_safety"]
+          assert m["requirements"]["failure"].endswith("MC_UNKNOWN.")
+          mx=m["observed_20261002"]["MXL"]
+          assert mx["sec"]["registered_ticker"]=="MXL" and mx["sec"]["registered_exchange"]=="The Nasdaq Stock Market LLC"
+          assert mx["sec"]["shares_outstanding"]==mx["longbridge"]["total_shares"]==90693191
+          assert mx["minimum_observed_market_cap_usd"]>=2100000000 and mx["r92_eligible"] is False
           f=x["settlement_fallback_change"]
           assert f["id"]=="SETTLEMENT_ZERO_DOLLAR_CONNECTOR_FAILOVER_V1"
           assert f["base_policy_hash"]=="7454b9156b6161f1bd3f44d150f71e03f99b471466ce364aa5a490e29e39a015" and f["base_policy_version"]=="C4.15"

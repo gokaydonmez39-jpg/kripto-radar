@@ -41,6 +41,11 @@ jobs:
           import json,sys
           t=json.load(open("nasdaq-xray/chatgpt_compiled_policy_v3.json"))
           p=json.loads(t["payload_json"])
+          if p.get("version")=="C4.17":
+              ok=(t.get("policy_hash")=="26a95745a50b65e85f6ece24b6501af0994764a84ddd886edb70d1fcd770849c"
+                  and p.get("mc_identity_correction_change",{}).get("id")=="MC_SEC_SHARE_COUNT_VERIFIED_WATCH_V1"
+                  and p.get("settlement_fallback_change",{}).get("id")=="SETTLEMENT_ZERO_DOLLAR_CONNECTOR_FAILOVER_V1")
+              sys.exit(0 if ok else 2)
           if p.get("version")=="C4.16":
               ok=(t.get("policy_hash")=="a2bb9e857759e2b1c312fe1ec78ffefb4ac3e81c5c2012c921d245da0bc6a094"
                   and p.get("settlement_fallback_change",{}).get("id")=="SETTLEMENT_ZERO_DOLLAR_CONNECTOR_FAILOVER_V1")
@@ -48,7 +53,7 @@ jobs:
           sys.exit(1 if p.get("version")=="C4.15" else 2)
           PYCHECK
             then
-              echo "C416_ALREADY_APPLIED=PASS"
+              echo "C416_OR_SUCCESSOR_ALREADY_APPLIED=PASS"
               exit 0
             else
               rc=$?
