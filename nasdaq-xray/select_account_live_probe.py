@@ -63,8 +63,18 @@ def valid_pass(j: dict[str, Any]) -> bool:
     )
 
 
+def _downgrade_stale_pass(j: dict[str, Any]) -> dict[str, Any]:
+    out = dict(j)
+    if str(out.get("status")) == "PASS" and not same_run(out):
+        out["status"] = "BLOCKED_STALE_PROBE"
+        out["reason_code"] = "PASS_STATE_NOT_FROM_CURRENT_WORKFLOW_RUN"
+        out["balance_parseable"] = False
+        out["positions_parseable"] = False
+    return out
+
+
 def choose(states: Iterable[dict[str, Any]]) -> dict[str, Any]:
-    items = list(states)
+    items = [_downgrade_stale_pass(j) for j in states]
     if not items:
         return {
             "schema": "XRAY_ACCOUNT_EFFECTIVE_PROBE_V1",
