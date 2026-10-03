@@ -1,0 +1,58 @@
+{
+  "schema": "XRAY_G9_PROVIDER_DELTA_V1",
+  "generated_on": "2026-10-03",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "purpose": "Primary-source refresh for two superficially attractive realtime/NBBO paths; negative evidence only and never PASS authority.",
+  "providers": [
+    {
+      "provider": "Webull OpenAPI",
+      "status": "NONQUALIFYING_STRICT_C_OPENAPI_NONDISPLAY_SUBSCRIPTION_AND_ACCOUNT_VALUE_CONDITION",
+      "primary_source_findings": [
+        "Webull retail help documents National Best Bid and Offer per-query data as free for all users and describes coverage of 16 U.S. exchanges plus FINRA TRF.",
+        "Webull OpenAPI Market Data API separately states that U.S. stocks/ETFs require a Nasdaq Basic Level 1 or Nasdaq TotalView Level 2 subscription specifically for Non-Display OpenAPI usage.",
+        "Webull states mobile/desktop quote subscriptions do not transfer to OpenAPI; a separate OpenAPI market-data subscription is required.",
+        "Webull API eligibility help states an active Webull brokerage account is required and the API application requires a minimum net account value of $100.",
+        "Therefore the free display/per-query NBBO entitlement cannot be transferred to scheduler/non-display OpenAPI use, and the $100 account-value condition independently violates strict permanent-$0/no-balance-condition gate C."
+      ],
+      "primary_sources": [
+        "https://www.webull.com/help/faq/126-Available-market-data",
+        "https://developer.webull.com/apis/docs/market-data-api/overview/",
+        "https://developer.webull.com/apis/docs/market-data-api/getting-started/",
+        "https://developer.webull.com/apis/docs/market-data-api/subscribe-quotes/",
+        "https://www.webull.com/help/faq/10512-Does-Webull-offer-API",
+        "https://developer.webull.com/apis/docs/market-data-api/data-api/"
+      ],
+      "failed_gates": [
+        "C_AUTOMATED_NONDISPLAY_PERMANENT_ZERO",
+        "C_BALANCE_CONDITION"
+      ],
+      "reopen_condition": "Official Webull primary source must explicitly grant consolidated National-NBBO-capable OpenAPI/non-display access permanently at $0 with no separate market-data subscription and no minimum account value/funding/activity condition.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "Alpha Vantage",
+      "status": "NONQUALIFYING_STRICT_C_REALTIME_US_MARKET_DATA_PREMIUM_ONLY",
+      "primary_source_findings": [
+        "Alpha Vantage documents consolidated U.S. market coverage and identifies itself as a Nasdaq-licensed provider.",
+        "Its realtime U.S. quotes, realtime bid/ask and realtime intraday entitlement are explicitly premium-only; free/default quote freshness is not qualifying realtime G9.",
+        "Alpha Vantage support explicitly says realtime and 15-minute-delayed U.S. stock market data are premium-only because of exchange/FINRA/SEC market-data regulation.",
+        "Therefore strong lineage/licensing does not solve strict G9 because permanent-$0 realtime entitlement fails gate C."
+      ],
+      "primary_sources": [
+        "https://www.alphavantage.co/documentation/",
+        "https://www.alphavantage.co/realtime_data_policy/",
+        "https://www.alphavantage.co/support/",
+        "https://www.alphavantage.co/premium/"
+      ],
+      "failed_gates": [
+        "C_PERMANENT_ZERO_REALTIME_ENTITLEMENT"
+      ],
+      "reopen_condition": "Official Alpha Vantage primary source must make realtime consolidated U.S. NBBO/bid-ask/trade API entitlement permanently $0 for the exact automated personal use, with no subscription or other monetary condition.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    }
+  ],
+  "no_policy_weakening": true
+}
