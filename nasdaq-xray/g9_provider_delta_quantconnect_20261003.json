@@ -1,0 +1,43 @@
+{
+  "schema": "XRAY_G9_PROVIDER_DELTA_V1",
+  "generated_on": "2026-10-03",
+  "provider": "QuantConnect US Equities SIP / LEAN",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "status": "A_B_STRONG_DATA_FEED_FREE_BUT_STRICT_C_D_FAIL_PAID_LIVE_RUNTIME_AND_LOCAL_QC_FEED_UNAVAILABLE",
+  "evidence": [
+    "QuantConnect official US Equities documentation states its live US equity data consolidates across all exchanges, is powered by the Securities Information Processor (SIP), and has 100% market coverage.",
+    "QuantConnect supports live equity trade and quote tick data, making strict A/B technically strong when run in the qualifying live environment.",
+    "QuantConnect official pricing/deployment documentation gives the Free organization tier zero live trading nodes; Paper Trading and Live Trading are unavailable on Free.",
+    "The QuantConnect live data provider is supported in cloud but not as a local data provider. Local LEAN deployments must use a brokerage or supported third-party provider.",
+    "The LEAN CLI authentication and local live-deploy documentation require membership in an organization on a paid tier.",
+    "Therefore the free SIP dataset/data-provider statement cannot be converted into a permanent-$0 scheduler-callable strict G9 path: the qualifying live runtime is paid-tier conditioned and the QuantConnect SIP provider cannot be used as a free local-provider escape hatch."
+  ],
+  "primary_sources": [
+    "https://www.quantconnect.com/docs/v2/cloud-platform/datasets/quantconnect/us-equities",
+    "https://www.quantconnect.com/pricing",
+    "https://www.quantconnect.com/docs/v2/cloud-platform/live-trading/deployment",
+    "https://www.quantconnect.com/docs/v2/writing-algorithms/live-trading/data-providers",
+    "https://www.quantconnect.com/docs/v2/lean-cli/initialization/authentication",
+    "https://www.quantconnect.com/docs/v2/lean-cli/api-reference/lean-live-deploy"
+  ],
+  "gate_analysis": {
+    "A": "STRONG_PASS_SEMANTICS: official SIP, consolidated all exchanges, 100% coverage",
+    "B": "STRONG_TECHNICAL_PATH: live trade+quote ticks; same-run freshness still required if entitlement path existed",
+    "C": "FAIL: qualifying live runtime/CLI access is paid-tier conditioned",
+    "D": "FAIL_PERMANENT_ZERO: Free tier has zero live nodes; official QuantConnect SIP provider unavailable for local deployments"
+  },
+  "failed_gates": [
+    "C_PERMANENT_ZERO_RUNTIME_ENTITLEMENT",
+    "D_FREE_SCHEDULER_CALLABILITY"
+  ],
+  "provisional_pass_gates": [
+    "A_CONSOLIDATED_SIP_LINEAGE",
+    "B_TRADE_AND_QUOTE_TICK_TECHNICAL_SURFACE"
+  ],
+  "reopen_condition": "Only reopen if QuantConnect permits Free-tier scheduler/live access to the SIP US-equities provider, either through at least one free live node or an officially supported free local QuantConnect data-provider path, without paid-tier condition.",
+  "negative_cache_only": true,
+  "may_never_create_pass": true,
+  "unknown_never_pass": true,
+  "no_policy_weakening": true
+}
