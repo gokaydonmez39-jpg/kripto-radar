@@ -175,6 +175,7 @@ jobs:
         if: steps.event.outputs.ready == 'true'
         env:
           XRAY_ACCOUNT_TOKEN_FERNET_KEY: ${{ secrets.XRAY_ACCOUNT_TOKEN_FERNET_KEY }}
+          LONGBRIDGE_AGENT_AUTH_CODE: ${{ secrets.LONGBRIDGE_AGENT_AUTH_CODE }}
           LONGBRIDGE_MCP_V2_BEARER_TOKEN: ${{ secrets.LONGBRIDGE_MCP_V2_BEARER_TOKEN }}
           LONGBRIDGE_OAUTH_ACCESS_TOKEN: ${{ secrets.LONGBRIDGE_OAUTH_ACCESS_TOKEN }}
           LONGBRIDGE_OAUTH_CLIENT_ID: ${{ secrets.LONGBRIDGE_OAUTH_CLIENT_ID }}
