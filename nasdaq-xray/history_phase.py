@@ -9,6 +9,7 @@ import akshare as ak
 import pandas_market_calendars as mcal
 
 ROOT=Path(__file__).resolve().parent
+OFFICIAL_IDENTITY_EVIDENCE=ROOT/"history_official_identity_evidence.json"
 INPUT=Path(os.getenv("XRAY_HISTORY_INPUT", str(ROOT/"canonical_mc_input_20260930.json")))
 OUT=Path(os.getenv("XRAY_HISTORY_OUT", str(ROOT/"canonical_history_20260930.json")))
 TASK_ID="6a825366222081918997094d76e6ae46"
@@ -172,6 +173,107 @@ def classify(by,asof,source):
     if daily>=HARD_DAILY and weekly>=HARD_WEEKLY:return "PASS_HISTORY",info
     return "POTENTIAL_FAIL_HISTORY",info
 
+def load_official_identity_evidence():
+    try:
+        j=json.loads(OFFICIAL_IDENTITY_EVIDENCE.read_text())
+        if (
+          j.get("schema")=="XRAY_HISTORY_OFFICIAL_IDENTITY_EVIDENCE_V1"
+          and j.get("execution")=="NONE" and j.get("real_money")=="NO-GO"
+          and j.get("alpha_authority") is False and j.get("evidence_only") is True
+        ):
+            return j.get("records") or {}
+    except Exception:
+        pass
+    return {}
+
+OFFICIAL_RECORDS=load_official_identity_evidence()
+
+def official_listing_upper_bound_fail(sym,asof):
+    rec=OFFICIAL_RECORDS.get(sym) or {}
+    if rec.get("mode")!="OFFICIAL_LISTING_UPPER_BOUND_FAIL_ONLY":
+        return None
+    start=rec.get("earliest_public_trading_date")
+    if not start:
+        return None
+    try:
+        cal=mcal.get_calendar("NYSE")
+        sched=cal.schedule(start_date=start,end_date=asof)
+        sessions=[x.date().isoformat() for x in sched.index]
+        max_daily=len(sessions)
+        max_weekly=week_count({d:(1,1) for d in sessions},asof)
+    except Exception:
+        return None
+    if max_daily<HARD_DAILY or max_weekly<HARD_WEEKLY:
+        return {
+          "proof":"OFFICIAL_LISTING_DATE_HISTORY_UPPER_BOUND",
+          "source_registry":"nasdaq-xray/history_official_identity_evidence.json",
+          "mode":rec.get("mode"),
+          "earliest_public_trading_date":start,
+          "regular_way_trading_date":rec.get("regular_way_trading_date"),
+          "max_possible_daily_bars":max_daily,
+          "max_possible_completed_weeks":max_weekly,
+          "thresholds":{"daily":HARD_DAILY,"weekly_completed":HARD_WEEKLY},
+          "official_sources":rec.get("sources") or [],
+          "note":rec.get("note"),
+        }
+    return None
+
+def continuity_composite_pass(sym,asof,sb,si,yb,yi):
+    rec=OFFICIAL_RECORDS.get(sym) or {}
+    if rec.get("mode")!="OFFICIAL_TICKER_CONTINUITY_COMPOSITE_HISTORY":
+        return None
+    if rec.get("cusip_unchanged") is not True:
+        return None
+    effective=rec.get("effective_date")
+    predecessor=rec.get("predecessor_symbol")
+    if not effective or not predecessor:
+        return None
+    # Current symbol must be observed exactly on ASOF from one source.
+    if asof not in sb:
+        return None
+    # Long-history source may lag by one completed session, but must itself
+    # satisfy the 260-day/52-week history depth before composition.
+    if len(yb)<HARD_DAILY or week_count(yb,asof)<HARD_WEEKLY:
+        return None
+    # Verify that the two independent feeds represent the same post-change
+    # security over a meaningful overlap; no identity-only PASS.
+    common=sorted(d for d in set(sb)&set(yb) if effective<=d<=asof)
+    if len(common)<20:
+        return None
+    rel=[]
+    for d in common:
+        a=num(sb[d][0]); b=num(yb[d][0])
+        if a is None or b is None or a<=0 or b<=0:
+            continue
+        rel.append(abs(a-b)/max(a,b))
+    if len(rel)<20:
+        return None
+    rel_sorted=sorted(rel)
+    p95=rel_sorted[min(len(rel_sorted)-1,max(0,math.ceil(0.95*len(rel_sorted))-1))]
+    if p95>0.001:
+        return None
+    merged=dict(yb)
+    merged.update(sb)
+    daily=len(merged); weekly=week_count(merged,asof)
+    if daily<HARD_DAILY or weekly<HARD_WEEKLY or asof not in merged:
+        return None
+    return {
+      "source":"OFFICIAL_TICKER_CONTINUITY_COMPOSITE_HISTORY",
+      "proof":"UNCHANGED_CUSIP_PLUS_CROSS_SOURCE_OVERLAP",
+      "source_registry":"nasdaq-xray/history_official_identity_evidence.json",
+      "predecessor_symbol":predecessor,
+      "effective_date":effective,
+      "cusip_unchanged":True,
+      "daily_bars":daily,
+      "completed_week_count":weekly,
+      "asof_present":True,
+      "overlap_sessions":len(common),
+      "overlap_compared":len(rel),
+      "overlap_p95_relative_close_diff":p95,
+      "official_sources":rec.get("sources") or [],
+      "note":rec.get("note"),
+    }
+
 def aligned_first_bar_upper_bound_fail(a,b,asof):
     """Evidence-only terminal fail for young listings.
 
@@ -286,12 +388,18 @@ def eastmoney(sym,asof):
         return {},{"error":f"{type(e).__name__}:{str(e)[:160]}","secid":f"105.{sym}"}
 
 def eval_one(sym,asof):
+    official_fail=official_listing_upper_bound_fail(sym,asof)
+    if official_fail:
+        return sym,"FAIL_HISTORY",official_fail,{"official_identity_registry":True}
     sb,sm=sina(sym,asof);ss,si=classify(sb,asof,"SINA_US_DAILY")
     if ss=="PASS_HISTORY":return sym,ss,si,{"sina":sm}
     nb,nm=nasdaq(sym,asof);ns,ni=classify(nb,asof,"NASDAQ_OFFICIAL_HISTORICAL_API")
     if ns=="PASS_HISTORY":return sym,ns,ni,{"sina":sm,"nasdaq":nm}
     yb,ym=yahoo(sym,asof);ys,yi=classify(yb,asof,"YAHOO_CHART_FREE")
     if ys=="PASS_HISTORY":return sym,ys,yi,{"sina":sm,"nasdaq":nm,"yahoo":ym}
+    comp=continuity_composite_pass(sym,asof,sb,si,yb,yi)
+    if comp:
+        return sym,"PASS_HISTORY",comp,{"sina":sm,"nasdaq":nm,"yahoo":ym,"official_identity_registry":True}
     eb,em=eastmoney(sym,asof);es,ei=classify(eb,asof,"EASTMONEY_US_DAILY_NASDAQ_105")
     if es=="PASS_HISTORY":return sym,es,ei,{"sina":sm,"nasdaq":nm,"yahoo":ym,"eastmoney":em}
 
@@ -353,6 +461,8 @@ def main():
       "source_mc_blob_sha":blob_sha(INPUT),
       "source_mc_policy_hash":src.get("policy_hash"),
       "source_mc_policy_version":src.get("policy_version"),
+      "official_identity_evidence_path":"nasdaq-xray/history_official_identity_evidence.json",
+      "official_identity_evidence_blob_sha":blob_sha(OFFICIAL_IDENTITY_EVIDENCE) if OFFICIAL_IDENTITY_EVIDENCE.exists() else None,
       "input_count":len(syms),"thresholds":{"daily":HARD_DAILY,"weekly_completed":HARD_WEEKLY},
       "counts":dict(sorted(counts.items())),"unknown_count":len(unknown),"unknown_symbols":sorted(unknown),
       "pass_count":len(passes),"pass_symbols":passes,
