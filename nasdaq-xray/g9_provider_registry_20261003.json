@@ -603,16 +603,16 @@
     },
     {
       "provider": "Midas Mobile/Atlas official market-data path",
-      "status": "PROMISING_OFFICIAL_DISPLAY_DATA_BUT_STRICT_G9_UNPROVEN",
+      "status": "OFFICIAL_REALTIME_DISPLAY_ENTITLEMENT_STRICT_C_FAIL_CURRENT_USER_LICENSE",
       "failed_gates": [
-        "A",
-        "B",
-        "C",
-        "D"
+        "A_NATIONAL_NBBO_LINEAGE",
+        "B_INDEPENDENT_EVENT_TIMESTAMPS",
+        "C_CURRENT_DISPLAY_LICENSE_DOES_NOT_AUTHORIZE_AUTOMATED_NONDISPLAY",
+        "D_ENDUSER_API"
       ],
       "evidence_file": "nasdaq-xray/midas_official_path_audit_20261003.json",
       "last_checked_on": "2026-10-03",
-      "reopen_condition": "Primary-source product lineage proves consolidated UTP/National NBBO, sanctioned scheduler quote access exposes fresh bid+ask+last event timestamps, and automated/non-display use is explicitly authorized at permanent $0.",
+      "reopen_condition": "C only reopens on explicit Midas/Nasdaq authorization for this exact automated/non-display use at permanent $0; A/B/D additionally require exact National NBBO lineage and sanctioned scheduler fresh quote+trade event proof.",
       "negative_cache_only": true,
       "may_never_create_pass": true
     },
