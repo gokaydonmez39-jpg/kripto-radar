@@ -6,6 +6,7 @@ on:
     paths:
       - "nasdaq-xray/canonical_mc_bridge_*.json"
       - "nasdaq-xray/history_phase.py"
+      - "nasdaq-xray/history_official_identity_evidence.json"
       - "nasdaq-xray/legal_phase.py"
       - "nasdaq-xray/build_stage1_input.py"
       - "nasdaq-xray/stage1_shadow.py"
