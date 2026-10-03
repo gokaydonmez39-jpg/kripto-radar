@@ -9,7 +9,7 @@
     "C": "lawful automated/non-display permanent-$0 entitlement with no fee/balance/activity/per-query condition",
     "D": "scheduler callability"
   },
-  "unique_provider_paths_reviewed": 58,
+  "unique_provider_paths_reviewed": 59,
   "evidence_files": [
     {
       "path": "nasdaq-xray/g9_free_path_audit_20261003.json",
@@ -122,6 +122,10 @@
     {
       "path": "nasdaq-xray/g9_provider_delta_leandata_20261003.json",
       "blob_sha": "24361aeed5afb81d82fa3fdd8ea3e82b211138a1"
+    },
+    {
+      "path": "nasdaq-xray/g9_provider_delta_tickerlayer_20261003.json",
+      "blob_sha": "8ec88b1e24ddd1f23e67e5d0716f393a8ac74280"
     }
   ],
   "reviewed_provider_paths": [
@@ -182,7 +186,8 @@
     "AlgoArena hosted / open-source Alpaca SIP proxy",
     "QUODD QX Digital / real-time equities API",
     "Tallac Options live equities API/TCP feed",
-    "LeanData UK realtime US equities SIP WebSocket"
+    "LeanData UK realtime US equities SIP WebSocket",
+    "TickerLayer Stocks"
   ],
   "strongest_near_misses": [
     {
@@ -233,9 +238,9 @@
     "authority_file": "nasdaq-xray/g9_utp_fee_basis_20261003.json"
   },
   "latest_new_provider": {
-    "provider": "LeanData UK realtime US equities SIP WebSocket",
-    "evidence_file": "nasdaq-xray/g9_provider_delta_leandata_20261003.json",
-    "evidence_blob_sha": "24361aeed5afb81d82fa3fdd8ea3e82b211138a1",
-    "result": "A_B_D_STRONG_C_FAIL_30_DAY_FREE"
+    "provider": "TickerLayer Stocks",
+    "evidence_file": "nasdaq-xray/g9_provider_delta_tickerlayer_20261003.json",
+    "evidence_blob_sha": "8ec88b1e24ddd1f23e67e5d0716f393a8ac74280",
+    "result": "STRICT_A_FAIL_DERIVED_NON_EXCHANGE_FEED"
   }
 }
