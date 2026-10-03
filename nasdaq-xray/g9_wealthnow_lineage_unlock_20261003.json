@@ -4,7 +4,7 @@
   "provider": "WEALTHNOW",
   "execution": "NONE",
   "real_money": "NO-GO",
-  "current_status": "BLOCKED_A_FREE_SNAPSHOT_LINEAGE_AND_C_THIRD_PARTY_NONDISPLAY_LICENSE_GAP",
+  "current_status": "BLOCKED_A_FREE_SNAPSHOT_LINEAGE_AND_C_PROVIDER_UTP_CLASSIFICATION_GAP",
   "current_evidence": {
     "free_snapshot": {
       "route": "GET /api/v3/fundamentals/price_snapshot",
@@ -67,7 +67,9 @@
       "overage": "HARD_CAP",
       "api_agent_intent": "PROVEN_BY_REST_MCP_SDK_AGENT_DOCUMENTATION_AND_TERMS",
       "non_display_exchange_license": "NOT_EXPLICITLY_DOCUMENTED",
-      "terms_summary": "API use is covered by Wealthnow Terms; third-party market data and exchange/provider rules still apply; no explicit Free-plan SIP/NBBO non-display license found."
+      "terms_summary": "API use is covered by Wealthnow Terms; third-party market data and exchange/provider rules still apply; no explicit Free-plan SIP/NBBO non-display license found.",
+      "utp_nonprofessional_api_path": "STRUCTURALLY_POSSIBLE_UTP1APIS_$1_VENDOR_BILLED_BUT_WEALTHNOW_CLASSIFICATION_NOT_PROVEN",
+      "vendor_fee_absorption": "UNPROVEN"
     },
     "terms": {
       "updated": "2026-09-27",
@@ -76,6 +78,15 @@
       "exchange_rule_compliance_user_obligation": true,
       "automation_rule": "Bots/scripts are prohibited only when they burden the service or bypass rate/access controls; this supports general API automation but does not grant an exchange/SIP non-display license.",
       "explicit_free_snapshot_nondisplay_license_found": false
+    },
+    "remote_mcp": {
+      "endpoint": "https://mcp.wealthnow.io/mcp",
+      "transport": "Streamable HTTP",
+      "free_plan": "1000 credits/month, no card",
+      "auth": "OAuth 2.1 or API key",
+      "market_data_role": "read-only",
+      "chatgpt_tested_end_to_end": true,
+      "implication": "D_PROGRAMMATIC_SURFACE_STRONG; DOES_NOT_AUTHORIZE_A_OR_C"
     }
   },
   "prohibited_inferences": [
@@ -89,11 +100,12 @@
   ],
   "acceptable_primary_source_unlocks": [
     "Wealthnow official documentation or written provider confirmation explicitly states that Free `fundamentals/price_snapshot` equity bid/ask are consolidated National NBBO sourced from CTA/UTP SIP or names an equivalent licensed consolidated redistributor lineage.",
-    "The same confirmation explicitly states the Free REST/MCP/API entitlement permits the intended automated/non-display use and that no separate exchange/vendor market-data fee, subscription, per-query charge, balance, funding, activity, or account-maintenance condition applies.",
-    "A later official Free endpoint explicitly documented as National NBBO plus the same automated/non-display entitlement replaces price_snapshot.",
-    "Wealthnow formally binds Free price_snapshot to the same consolidated NBBO lineage as the documented streaming quote feed and confirms the Free API user's automated/non-display rights are covered without separate exchange fees."
+    "Wealthnow explicitly confirms that a single nonprofessional Free REST/MCP/API user using unattended third-party automation is covered under UTP1APIS or an equivalent approved nonprofessional uncontrolled market-data classification.",
+    "Wealthnow explicitly confirms any UTP/exchange/vendor assessment for that classification is absorbed by Wealthnow so the end user owes $0, with no subscription, per-query monetary charge, balance, funding, activity or account-maintenance condition.",
+    "A later official Free endpoint explicitly documented as National NBBO plus the same approved automated/non-display entitlement replaces price_snapshot.",
+    "Wealthnow formally binds Free price_snapshot to the same consolidated NBBO lineage as the documented streaming quote feed and confirms the Free user's market-data classification and fee coverage."
   ],
-  "exact_provider_question": "For a Free-plan API key, are the equity bid/ask fields returned by GET /api/v3/fundamentals/price_snapshot the consolidated U.S. National Best Bid and Offer (CTA/UTP SIP NBBO), rather than a single-venue or proprietary partial feed? If yes, please identify the feed or licensed redistributor lineage. Also, does the Free REST/MCP entitlement explicitly cover automated/non-display use of that quote data without any separate exchange/vendor market-data fee, subscription, per-query charge, balance, funding, activity, or account-maintenance condition beyond the Free hard-capped credits?",
+  "exact_provider_question": "For a Free-plan API key, are the equity bid/ask fields returned by GET /api/v3/fundamentals/price_snapshot the live consolidated U.S. National Best Bid and Offer sourced from CTA/UTP SIP, or from which named licensed consolidated redistributor/feed? Do quote_as_of and as_of/time represent independent upstream quote-event and trade-event times? Finally, for a single nonprofessional user calling the Free REST/MCP/API programmatically through unattended third-party automation, is that use covered under UTP1APIS or an equivalent approved nonprofessional uncontrolled classification, and does Wealthnow absorb all applicable UTP/exchange/vendor assessments so the user remains permanently $0 without any subscription, balance, funding, activity, account-maintenance or per-query monetary condition?",
   "post_unlock_required_probe": {
     "scheduler_secret": "WEALTHNOW_API_KEY",
     "symbols": [
@@ -123,9 +135,15 @@
     "https://app.wealthnow.io/docs/mcp-and-sdks",
     "https://wealthnow.io/api",
     "https://wealthnow.io/terms",
-    "https://wealthnow.io/disclosures"
+    "https://wealthnow.io/disclosures",
+    "https://github.com/Hlobo-dev/wealthnow-mcp",
+    "https://www.utpplan.com/DOC/UTP_POLICY_SUPPLEMENTAL_DOCUMENT_-_VRXML_Codes.pdf"
   ],
   "unknown_never_pass": true,
   "no_policy_weakening": true,
-  "last_checked_on": "2026-10-03"
+  "last_checked_on": "2026-10-03",
+  "utp_nonprofessional_api_refresh": {
+    "path": "nasdaq-xray/g9_utp_nonprofessional_api_refresh_20261003.json",
+    "blob_sha": "e557bb14abe883f1d07380f7301b465b0abb4a05"
+  }
 }
