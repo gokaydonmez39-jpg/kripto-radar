@@ -9,7 +9,7 @@
     "C": "lawful automated/non-display permanent-$0 entitlement with no fee/balance/activity/per-query condition",
     "D": "scheduler callability"
   },
-  "unique_provider_paths_reviewed": 41,
+  "unique_provider_paths_reviewed": 45,
   "evidence_files": [
     {
       "path": "nasdaq-xray/g9_free_path_audit_20261003.json",
@@ -54,6 +54,10 @@
     {
       "path": "nasdaq-xray/g9_provider_delta_exchange_native_sweep_20261003.json",
       "blob_sha": "97c1610475ca83fd4a70f66349e9091b8bac31c7"
+    },
+    {
+      "path": "nasdaq-xray/g9_provider_delta_retail_api_sweep_20261003.json",
+      "blob_sha": "9d47336b2dca809be57fbce4743a35f7b6b7f992"
     }
   ],
   "reviewed_provider_paths": [
@@ -97,7 +101,11 @@
     "MEMX MEMOIR Top / Last Sale",
     "NYSE Best Quote & Trades (BQT)",
     "MIAX Pearl Equities ToM",
-    "FINRA TRF / Equity API"
+    "FINRA TRF / Equity API",
+    "E*TRADE Developer API",
+    "QuoteMedia OnDemand / NBBO",
+    "MarketData.app",
+    "StockData.org"
   ],
   "strongest_near_misses": [
     {
