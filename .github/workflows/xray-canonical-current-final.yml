@@ -22,6 +22,8 @@ on:
       - "nasdaq-xray/account_longbridge_mcp_v2_probe_selftest.py"
       - "nasdaq-xray/account_longbridge_mcp_v2_vault.py"
       - "nasdaq-xray/account_longbridge_mcp_v2_vault_selftest.py"
+      - "nasdaq-xray/account_longbridge_mcp_v2_refresh.py"
+      - "nasdaq-xray/account_longbridge_mcp_v2_refresh_selftest.py"
       - "nasdaq-xray/account_longbridge_mcp_v2_bootstrap.py"
       - "nasdaq-xray/account_longbridge_mcp_v2_token.enc"
       - "nasdaq-xray/select_account_live_probe.py"
@@ -108,6 +110,7 @@ jobs:
             nasdaq-xray/account_longbridge_mcp_v2_probe.py \
             nasdaq-xray/account_longbridge_mcp_v2_vault.py \
             nasdaq-xray/account_longbridge_mcp_v2_bootstrap.py \
+            nasdaq-xray/account_longbridge_mcp_v2_refresh.py \
             nasdaq-xray/select_account_live_probe.py
 
       - name: Install zero-dollar runtime
@@ -124,6 +127,7 @@ jobs:
           python nasdaq-xray/account_longbridge_openapi_probe_selftest.py
           python nasdaq-xray/account_longbridge_mcp_v2_probe_selftest.py
           python nasdaq-xray/account_longbridge_mcp_v2_vault_selftest.py
+          python nasdaq-xray/account_longbridge_mcp_v2_refresh_selftest.py
           python nasdaq-xray/select_account_live_probe_selftest.py
           python nasdaq-xray/account_same_run_terminal_selftest.py
           echo "XRAY_ACCOUNT_PRESECRET_GUARD=PASS commit=$GITHUB_SHA"
@@ -171,8 +175,75 @@ jobs:
             echo "XRAY_ACCOUNT_DIRECT_RUNTIME=NO_SECRETS_NETWORK_FREE"
           fi
 
-      - name: Run same-run read-only ACCOUNT probe
+      - name: Persist restricted MCP v2 vault before account reads
+        id: account_vault
         if: steps.event.outputs.ready == 'true'
+        env:
+          XRAY_ACCOUNT_TOKEN_FERNET_KEY: ${{ secrets.XRAY_ACCOUNT_TOKEN_FERNET_KEY }}
+          LONGBRIDGE_AGENT_AUTH_CODE: ${{ secrets.LONGBRIDGE_AGENT_AUTH_CODE }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          vault="nasdaq-xray/account_longbridge_mcp_v2_token.enc"
+          bootstrap_state="nasdaq-xray/account_longbridge_mcp_v2_bootstrap_state.json"
+
+          if [[ ! -f "$vault" && -n "${LONGBRIDGE_AGENT_AUTH_CODE}" ]]; then
+            python nasdaq-xray/account_longbridge_mcp_v2_bootstrap.py
+          fi
+          if [[ -f "$vault" && ( -n "${XRAY_ACCOUNT_TOKEN_FERNET_KEY}" || -n "${LONGBRIDGE_AGENT_AUTH_CODE}" ) ]]; then
+            python nasdaq-xray/account_longbridge_mcp_v2_refresh.py
+          fi
+
+          if git diff --quiet -- "$vault" "$bootstrap_state" && [[ -z "$(git status --porcelain -- "$vault" "$bootstrap_state")" ]]; then
+            echo "restart_required=false" >> "$GITHUB_OUTPUT"
+            echo "XRAY_ACCOUNT_VAULT_PERSIST=NO_CHANGE"
+            exit 0
+          fi
+
+          git config user.name "xray-account-vault-bot"
+          git config user.email "xray-account-vault-bot@users.noreply.github.com"
+          tmpdir="$(mktemp -d)"
+          trap 'rm -rf "$tmpdir"' EXIT
+          for p in "$vault" "$bootstrap_state"; do
+            if [[ -f "$p" ]]; then
+              mkdir -p "$tmpdir/$(dirname "$p")"
+              cp "$p" "$tmpdir/$p"
+            fi
+          done
+
+          persisted=false
+          for attempt in 1 2 3 4 5; do
+            git rebase --abort >/dev/null 2>&1 || true
+            git fetch origin main
+            git reset --hard origin/main
+            for p in "$vault" "$bootstrap_state"; do
+              if [[ -f "$tmpdir/$p" ]]; then
+                mkdir -p "$(dirname "$p")"
+                cp "$tmpdir/$p" "$p"
+              fi
+            done
+            git add "$vault" "$bootstrap_state" 2>/dev/null || true
+            if git diff --cached --quiet; then
+              persisted=true
+              break
+            fi
+            git commit -m "chore(xray): persist restricted MCP v2 token vault"
+            if git push origin HEAD:main; then
+              persisted=true
+              break
+            fi
+            echo "XRAY_ACCOUNT_VAULT_PUSH_RACE attempt=$attempt"
+            sleep $((attempt*2))
+          done
+          if [[ "$persisted" != "true" ]]; then
+            echo "XRAY_ACCOUNT_VAULT_PERSIST=FAIL" >&2
+            exit 1
+          fi
+          echo "restart_required=true" >> "$GITHUB_OUTPUT"
+          echo "XRAY_ACCOUNT_VAULT_PERSIST=PASS_RESTART_REQUIRED"
+
+      - name: Run same-run read-only ACCOUNT probe
+        if: steps.event.outputs.ready == 'true' && steps.account_vault.outputs.restart_required != 'true'
         env:
           XRAY_ACCOUNT_TOKEN_FERNET_KEY: ${{ secrets.XRAY_ACCOUNT_TOKEN_FERNET_KEY }}
           LONGBRIDGE_AGENT_AUTH_CODE: ${{ secrets.LONGBRIDGE_AGENT_AUTH_CODE }}
@@ -188,9 +259,6 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [[ ! -f "nasdaq-xray/account_longbridge_mcp_v2_token.enc" && -n "${LONGBRIDGE_AGENT_AUTH_CODE}" ]]; then
-            python nasdaq-xray/account_longbridge_mcp_v2_bootstrap.py
-          fi
           python nasdaq-xray/account_longbridge_mcp_v2_probe.py
           v2_status="$(python -c 'import json; print(json.load(open("nasdaq-xray/account_longbridge_mcp_v2_probe_state.json")).get("status",""))')"
           if [[ "$v2_status" == "PASS" ]]; then
@@ -202,7 +270,7 @@ jobs:
           fi
 
       - name: Normalize event bridge
-        if: steps.event.outputs.ready == 'true'
+        if: steps.event.outputs.ready == 'true' && steps.account_vault.outputs.restart_required != 'true'
         env:
           XRAY_EVENT_BRIDGE: ${{ github.workspace }}/${{ steps.event.outputs.path }}
           XRAY_EVENT_REQUEST: ${{ github.workspace }}/nasdaq-xray/canonical_current_event_request.json
@@ -210,7 +278,7 @@ jobs:
         run: python nasdaq-xray/build_current_event_state.py
 
       - name: Run Family C
-        if: steps.event.outputs.ready == 'true'
+        if: steps.event.outputs.ready == 'true' && steps.account_vault.outputs.restart_required != 'true'
         env:
           XRAY_FAMILY_C_STAGE1: ${{ github.workspace }}/nasdaq-xray/canonical_current_stage1.json
           XRAY_FAMILY_C_EVENTS: ${{ github.workspace }}/nasdaq-xray/canonical_current_event_state.json
@@ -219,7 +287,7 @@ jobs:
         run: python nasdaq-xray/family_c_engine.py
 
       - name: Run deep full
-        if: steps.event.outputs.ready == 'true'
+        if: steps.event.outputs.ready == 'true' && steps.account_vault.outputs.restart_required != 'true'
         env:
           XRAY_STAGE1_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_current_stage1.json
           XRAY_REGIME_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_current_regime.json
@@ -229,7 +297,7 @@ jobs:
         run: python nasdaq-xray/deep_pre_r1_shadow.py
 
       - name: Run final tech
-        if: steps.event.outputs.ready == 'true'
+        if: steps.event.outputs.ready == 'true' && steps.account_vault.outputs.restart_required != 'true'
         env:
           XRAY_FINAL_DEEP_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_current_deep_full.json
           XRAY_FINAL_FAMILY_C_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_current_family_c.json
@@ -238,14 +306,14 @@ jobs:
         run: python nasdaq-xray/final_tech_shadow.py
 
       - name: Build dynamic terminal
-        if: steps.event.outputs.ready == 'true'
+        if: steps.event.outputs.ready == 'true' && steps.account_vault.outputs.restart_required != 'true'
         env:
           XRAY_TERMINAL_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_current_terminal.json
           XRAY_ACCOUNT_LIVE_PROBE_STATE: ${{ github.workspace }}/nasdaq-xray/account_effective_probe_state.json
         run: python nasdaq-xray/build_current_terminal.py
 
       - name: Structural terminal gate
-        if: steps.event.outputs.ready == 'true'
+        if: steps.event.outputs.ready == 'true' && steps.account_vault.outputs.restart_required != 'true'
         run: |
           python - <<'PY'
           import hashlib,json,os
@@ -307,7 +375,7 @@ jobs:
           PY
 
       - name: Build coherent V2 final-gate overlay
-        if: steps.event.outputs.ready == 'true'
+        if: steps.event.outputs.ready == 'true' && steps.account_vault.outputs.restart_required != 'true'
         run: |
           python nasdaq-xray/build_final_gate_overlay_v2.py
           python - <<'PY'
@@ -332,7 +400,7 @@ jobs:
           PY
 
       - name: Commit current final artifacts
-        if: steps.event.outputs.ready == 'true'
+        if: steps.event.outputs.ready == 'true' && steps.account_vault.outputs.restart_required != 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -341,7 +409,7 @@ jobs:
           git fetch origin main
           latest="$(git rev-parse origin/main)"
           if [[ "$latest" != "$GITHUB_SHA" ]]; then
-            changed="$(git diff --name-only "$GITHUB_SHA" "$latest" --               .github/workflows/xray-canonical-current-final.yml               nasdaq-xray/build_current_terminal.py               nasdaq-xray/build_final_gate_overlay_v2.py               nasdaq-xray/account_gate_contract.json               nasdaq-xray/account_provider_adapter_contract.json               nasdaq-xray/account_longbridge_openapi_probe.py               nasdaq-xray/account_longbridge_openapi_probe_selftest.py               nasdaq-xray/account_longbridge_mcp_v2_probe.py               nasdaq-xray/account_longbridge_mcp_v2_probe_selftest.py               nasdaq-xray/account_longbridge_mcp_v2_vault.py               nasdaq-xray/account_longbridge_mcp_v2_vault_selftest.py               nasdaq-xray/account_longbridge_mcp_v2_bootstrap.py               nasdaq-xray/account_longbridge_mcp_v2_token.enc               nasdaq-xray/select_account_live_probe.py               nasdaq-xray/select_account_live_probe_selftest.py               nasdaq-xray/account_same_run_terminal_selftest.py               nasdaq-xray/chatgpt_compiled_policy_v3.json || true)"
+            changed="$(git diff --name-only "$GITHUB_SHA" "$latest" --               .github/workflows/xray-canonical-current-final.yml               nasdaq-xray/build_current_terminal.py               nasdaq-xray/build_final_gate_overlay_v2.py               nasdaq-xray/account_gate_contract.json               nasdaq-xray/account_provider_adapter_contract.json               nasdaq-xray/account_longbridge_openapi_probe.py               nasdaq-xray/account_longbridge_openapi_probe_selftest.py               nasdaq-xray/account_longbridge_mcp_v2_probe.py               nasdaq-xray/account_longbridge_mcp_v2_probe_selftest.py               nasdaq-xray/account_longbridge_mcp_v2_vault.py               nasdaq-xray/account_longbridge_mcp_v2_vault_selftest.py               nasdaq-xray/account_longbridge_mcp_v2_bootstrap.py               nasdaq-xray/account_longbridge_mcp_v2_refresh.py               nasdaq-xray/account_longbridge_mcp_v2_refresh_selftest.py               nasdaq-xray/account_longbridge_mcp_v2_token.enc               nasdaq-xray/select_account_live_probe.py               nasdaq-xray/select_account_live_probe_selftest.py               nasdaq-xray/account_same_run_terminal_selftest.py               nasdaq-xray/chatgpt_compiled_policy_v3.json || true)"
             if [[ -n "$changed" ]]; then
               echo "XRAY_FACTORY_COMMIT=STALE_SOURCE_ABORT"
               printf '%s\n' "$changed"
