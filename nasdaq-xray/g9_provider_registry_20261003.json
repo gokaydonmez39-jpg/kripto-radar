@@ -4,7 +4,7 @@
   "execution": "NONE",
   "real_money": "NO-GO",
   "purpose": "Negative-evidence cache only. This registry can skip unchanged dead paths but can never create G9 PASS.",
-  "provider_count": 63,
+  "provider_count": 64,
   "strict_g9_gates": {
     "A": "consolidated UTP Tape-C / National NBBO lineage",
     "B": "fresh bid+ask+last with independent quote/trade event timestamps",
@@ -871,6 +871,18 @@
         "B_INDEPENDENT_NBBO_BID_ASK_AND_LAST_TRADE_EVENT_TIMESTAMPS",
         "D_READ_ONLY_HOSTED_MCP_TECHNICAL_SURFACE"
       ]
+    },
+    {
+      "provider": "IVolatility Data Cloud API / IVolAI",
+      "status": "NONQUALIFYING_STRICT_C_REALTIME_API_PAID_FREE_ONLY_TIME_LIMITED_TRIAL",
+      "failed_gates": [
+        "C_PERMANENT_ZERO_REALTIME_ENTITLEMENT"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_ivolatility_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "Permanent-$0 realtime U.S. equity/NBBO automated API entitlement replaces paid/trial-only access.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
     }
   ],
   "reopen_policy": "Reopen an existing negative path only on newer PRIMARY SOURCE evidence materially changing its listed failed gate(s). New previously-unreviewed providers are always eligible for research. Any reopened path still requires same-run RTH technical proof before G9 PASS.",
