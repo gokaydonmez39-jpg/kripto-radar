@@ -1,0 +1,60 @@
+name: XRAY Account Gate Reconciler
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/account_provider_adapter_contract.json"
+      - "nasdaq-xray/reconcile_account_gate.py"
+      - ".github/workflows/xray-account-gate-reconcile.yml"
+  schedule:
+    - cron: "12 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: xray-account-gate-reconciler
+  cancel-in-progress: true
+
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          ref: main
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+
+      - name: Compile
+        run: python -m py_compile nasdaq-xray/reconcile_account_gate.py
+
+      - name: Reconcile latest main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "xray-control-bot"
+          git config user.email "xray-control-bot@users.noreply.github.com"
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            python nasdaq-xray/reconcile_account_gate.py
+            git add nasdaq-xray/account_gate_contract.json
+            if git diff --cached --quiet; then
+              echo "XRAY_ACCOUNT_GATE_RECONCILE=NO_CHANGE"
+              exit 0
+            fi
+            git commit -m "chore(xray): reconcile account gate evidence [skip ci]"
+            if git push origin HEAD:main; then
+              echo "XRAY_ACCOUNT_GATE_RECONCILE=PASS"
+              exit 0
+            fi
+            echo "XRAY_ACCOUNT_GATE_RECONCILE_PUSH_RACE attempt=$attempt"
+            sleep $((attempt*2))
+          done
+          echo "XRAY_ACCOUNT_GATE_RECONCILE=FAIL" >&2
+          exit 1
