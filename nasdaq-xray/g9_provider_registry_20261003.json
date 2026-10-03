@@ -743,15 +743,14 @@
     },
     {
       "provider": "AlgoArena hosted / open-source Alpaca SIP proxy",
-      "status": "TECHNICALLY_SIP_BOUND_HOSTED_PATH_C_REDISTRIBUTION_ENTITLEMENT_UNPROVEN",
+      "status": "NONQUALIFYING_STRICT_C_ALPACA_SIP_REDISTRIBUTION_NOT_PERMANENT_ZERO_OR_UNCONDITIONALLY_AUTHORIZED",
       "failed_gates": [
-        "C_UPSTREAM_SIP_REDISTRIBUTION_AND_NONDIPLAY_RIGHTS",
-        "C_PERMANENT_ZERO_HOSTED_MARKET_DATA_ENTITLEMENT",
-        "B_SAME_RUN_RTH_FRESHNESS_NOT_YET_PROBED"
+        "C_LAWFUL_REDISTRIBUTION",
+        "C_PERMANENT_ZERO_ENDUSER_ENTITLEMENT"
       ],
       "evidence_file": "nasdaq-xray/g9_provider_delta_algoarena_20261003.json",
       "last_checked_on": "2026-10-03",
-      "reopen_condition": "Primary-source AlgoArena/Alpaca terms prove hosted downstream automated/non-display SIP/National-NBBO redistribution is authorized and permanent-$0, followed by same-run RTH freshness/skew probe.",
+      "reopen_condition": "Only reopen if AlgoArena or Alpaca publishes primary-source proof of a valid SIP/NBBO redistribution arrangement for the hosted service and explicit permanent-$0 end-user automated/non-display entitlement with no fee, funding, balance, activity, or subscription condition.",
       "negative_cache_only": true,
       "may_never_create_pass": true
     },
