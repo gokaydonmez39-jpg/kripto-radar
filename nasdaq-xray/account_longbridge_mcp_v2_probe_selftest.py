@@ -34,6 +34,8 @@ def main():
     assert missing["endpoint"]=="https://mcp.longbridge.com/v2"
     assert missing["required_oauth_scope"]=="account.read"
     assert missing["trade_write_scope_required"] is False
+    assert missing["tool_manifest_verified"] is False
+    assert missing["trade_write_surface_exposed"] is None
 
     for key in ("private_values_persisted","secret_values_persisted"):
         assert missing[key] is False
