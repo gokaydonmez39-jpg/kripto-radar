@@ -32,6 +32,18 @@
     "TRADING212_PUBLIC_API": {
       "status": "NOT_CONNECTED_AND_USER_JURISDICTION_UNSUPPORTED",
       "diagnostic": "Official Public API has account summary/positions, but current supported-country list does not include Turkey."
+    },
+    "IBKR_WEB_API": {
+      "status": "PROMISING_BUT_NOT_CURRENTLY_SCHEDULER_CALLABLE",
+      "evidence": [
+        "Official IBKR country list includes Turkey.",
+        "Official Web API exposes account summary and positions read endpoints.",
+        "Individual Web API access requires a fully open and funded IBKR Pro live account.",
+        "Retail authentication normally uses Client Portal Gateway; third-party direct OAuth requires IBKR approval/onboarding.",
+        "A surfaced ChatGPT/finance connector was not eligible for installation in the current workspace."
+      ],
+      "blocker": "No currently connected scheduler-callable IBKR account adapter; live individual API is funded-account + IBKR Pro dependent.",
+      "reopen_condition": "A sanctioned IBKR connector becomes connectable in this workspace OR a compliant scheduler-callable first-party API path is established, then same-run read-only account summary + positions succeed."
     }
   },
   "transition_to_pass": "Only fresh same-run provider readback satisfying the pass_rule may set ACCOUNT=PASS. Persisted prior PASS alone is insufficient.",
