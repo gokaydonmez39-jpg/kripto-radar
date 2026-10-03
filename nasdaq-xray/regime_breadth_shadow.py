@@ -4,7 +4,7 @@ Universe = canonical Bigdata-MC CURRENT_CORE names only.
 History accelerator = Sina. UNKNOWN!=PASS. Never G9.
 """
 from __future__ import annotations
-import json, math, os, urllib.parse, urllib.request, hashlib
+import json, math, os, urllib.parse, urllib.request, hashlib, time, threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
@@ -18,6 +18,68 @@ MC=Path(os.getenv("XRAY_MC_STATE", str(ROOT/"mc_final_state.json")))
 OUT=Path(os.getenv("XRAY_REGIME_OUT", str(ROOT/"regime_breadth_shadow.json")))
 TASK_ID="6a825366222081918997094d76e6ae46"
 WORKERS=int(os.getenv("XRAY_BREADTH_WORKERS","8"))
+PROVIDER_MAX_INFLIGHT=max(1,int(os.getenv("XRAY_BREADTH_PROVIDER_MAX_INFLIGHT","3")))
+RETRY_DELAYS=(0.0,1.0,2.5)
+_PROVIDER_SEM=threading.Semaphore(PROVIDER_MAX_INFLIGHT)
+OFFICIAL_IDENTITY_EVIDENCE=ROOT/"history_official_identity_evidence.json"
+
+def _retryable(exc):
+    s=str(exc).lower()
+    return any(x in s for x in ("timed out","timeout","connection reset","remote end closed","too many requests","rate limit","429","500","502","503","504"))
+
+def _call_with_retry(fn):
+    last=None
+    for delay in RETRY_DELAYS:
+        if delay: time.sleep(delay)
+        try:
+            with _PROVIDER_SEM:
+                return fn()
+        except Exception as e:
+            last=e
+            if not _retryable(e): raise
+    assert last is not None
+    raise last
+
+def _official_records():
+    try:
+        j=json.loads(OFFICIAL_IDENTITY_EVIDENCE.read_text())
+        if j.get("schema")=="XRAY_HISTORY_OFFICIAL_IDENTITY_EVIDENCE_V1" and j.get("evidence_only") is True and j.get("alpha_authority") is False:
+            return j.get("records") or {}
+    except Exception:
+        pass
+    return {}
+
+OFFICIAL_RECORDS=_official_records()
+
+def _normalize_sina_close(df):
+    if df is None or df.empty:return None
+    cols={str(c).lower():c for c in df.columns}
+    if "date" not in cols or "close" not in cols:return None
+    x=df[[cols["date"],cols["close"]]].copy();x.columns=["date","close"]
+    x["date"]=pd.to_datetime(x["date"],errors="coerce")
+    x["close"]=pd.to_numeric(x["close"],errors="coerce")
+    return x.dropna().drop_duplicates("date",keep="last").sort_values("date")
+
+def _sina_close(sym):
+    return _normalize_sina_close(_call_with_retry(lambda: ak.stock_us_daily(symbol=sym,adjust="")))
+
+def sina_close_history(sym,asof):
+    cur=_sina_close(sym)
+    rec=OFFICIAL_RECORDS.get(sym) or {}
+    if rec.get("mode")=="OFFICIAL_TICKER_CONTINUITY_COMPOSITE_HISTORY" and rec.get("cusip_unchanged") is True:
+        pred=rec.get("predecessor_symbol"); eff=rec.get("effective_date")
+        if pred and eff and cur is not None:
+            p=_sina_close(pred)
+            if p is not None:
+                eff_ts=pd.Timestamp(eff); asof_ts=pd.Timestamp(asof)
+                cur2=cur[(cur["date"]>=eff_ts)&(cur["date"]<=asof_ts)]
+                pred2=p[p["date"]<eff_ts]
+                if not cur2.empty and cur2["date"].dt.date.max().isoformat()==asof:
+                    x=pd.concat([pred2,cur2],ignore_index=True).sort_values("date").drop_duplicates("date",keep="last")
+                    return x,"SINA_OFFICIAL_TICKER_CONTINUITY_COMPOSITE"
+    if cur is None:return None,"SINA_EMPTY"
+    x=cur[cur["date"]<=pd.Timestamp(asof)]
+    return x,"SINA_US_DAILY"
 
 def blob_sha(p:Path):
     b=p.read_bytes()
@@ -38,9 +100,11 @@ def yahoo_close_history(sym,asof):
       "period1":int(start.timestamp()),"period2":int(end.timestamp()),"interval":"1d",
       "events":"history","includeAdjustedClose":"false"
     })
-    req=urllib.request.Request(url,headers={"User-Agent":UA,"Accept":"application/json,text/plain,*/*"})
-    with urllib.request.urlopen(req,timeout=25) as r:
-        obj=json.loads(r.read().decode("utf-8"))
+    def _once():
+        req=urllib.request.Request(url,headers={"User-Agent":UA,"Accept":"application/json,text/plain,*/*"})
+        with urllib.request.urlopen(req,timeout=25) as r:
+            return json.loads(r.read().decode("utf-8"))
+    obj=_call_with_retry(_once)
     res=((obj.get("chart") or {}).get("result") or [])
     if not res:return None,"YAHOO_EMPTY"
     z=res[0]; ts=z.get("timestamp") or []
@@ -57,26 +121,19 @@ def yahoo_close_history(sym,asof):
     x=pd.DataFrame(rows,columns=["date","close"])
     x["date"]=pd.to_datetime(x["date"],errors="coerce")
     x=x.dropna().drop_duplicates("date",keep="last").sort_values("date")
+    if x.empty or x["date"].dt.date.max().isoformat()!=asof:return None,f"YAHOO_ASOF_MISSING:{x['date'].dt.date.max().isoformat() if not x.empty else 'EMPTY'}"
     if len(x)<200:return None,f"YAHOO_LT200:{len(x)}"
     return x,None
 
 def hist(sym,asof):
     primary_error=None
     try:
-        df=ak.stock_us_daily(symbol=sym,adjust="")
-        if df is not None and not df.empty:
-            cols={c.lower():c for c in df.columns}
-            if "date" in cols and "close" in cols:
-                x=df[[cols["date"],cols["close"]]].copy()
-                x.columns=["date","close"]
-                x["date"]=pd.to_datetime(x["date"],errors="coerce")
-                x["close"]=pd.to_numeric(x["close"],errors="coerce")
-                x=x.dropna().sort_values("date")
-                x=x[x["date"]<=pd.Timestamp(asof)]
-                if len(x)>=200:return sym,x,None,"SINA_US_DAILY"
-                primary_error=f"SINA_LT200:{len(x)}"
-            else:primary_error="SINA_COLUMNS"
-        else:primary_error="SINA_EMPTY"
+        x,src=sina_close_history(sym,asof)
+        if x is not None and not x.empty:
+            last=x["date"].dt.date.max().isoformat()
+            if last==asof and len(x)>=200:return sym,x,None,src
+            primary_error=f"{src}_LT200_OR_ASOF:{len(x)}:{last}"
+        else:primary_error=str(src)
     except Exception as e:
         primary_error=f"SINA_{type(e).__name__}:{str(e)[:100]}"
     try:
@@ -151,6 +208,7 @@ def main():
       "history_source_by_symbol":history_source,
       "history_source_counts":{
         "SINA_US_DAILY":sum(1 for v in history_source.values() if v=="SINA_US_DAILY"),
+        "SINA_OFFICIAL_TICKER_CONTINUITY_COMPOSITE":sum(1 for v in history_source.values() if v=="SINA_OFFICIAL_TICKER_CONTINUITY_COMPOSITE"),
         "YAHOO_CHART_FREE_FALLBACK":sum(1 for v in history_source.values() if v=="YAHOO_CHART_FREE_FALLBACK")
       },
       "source_input_path":relpath(MC),"source_input_blob_sha":blob_sha(MC),
@@ -160,7 +218,7 @@ def main():
       "source_authority":"SHADOW_REGIME_ACCELERATOR_ONLY_SINA_PRIMARY_YAHOO_FALLBACK"
     }
     OUT.write_text(json.dumps(out,indent=2,sort_keys=True)+"\n")
-    print(json.dumps({k:out[k] for k in ["current_core_count","history_ok_count","breadth_missing_count","breadth_above_sma50_pct","nh20","nl20","regime"]},sort_keys=True))
+    print(json.dumps(dict({k:out[k] for k in ["current_core_count","history_ok_count","breadth_missing_count","breadth_above_sma50_pct","nh20","nl20","regime"]},provider_max_inflight=PROVIDER_MAX_INFLIGHT,retry_delays=RETRY_DELAYS),sort_keys=True))
 
 if __name__=="__main__":
     main()

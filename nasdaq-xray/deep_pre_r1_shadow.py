@@ -5,7 +5,7 @@ No signal, no R92 registration, no G9 authority.
 EXECUTION=NONE. REAL_MONEY=NO-GO. UNKNOWN!=PASS.
 """
 from __future__ import annotations
-import json, math, os, hashlib
+import json, math, os, hashlib, time, threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from statistics import median
@@ -20,6 +20,68 @@ OUT=Path(os.getenv("XRAY_DEEP_OUT", str(ROOT/"deep_pre_r1_shadow.json")))
 GEOMETRY_ONLY=os.getenv("XRAY_DEEP_GEOMETRY_ONLY","0")=="1"
 TASK_ID="6a825366222081918997094d76e6ae46"
 WORKERS=int(os.getenv("XRAY_DEEP_WORKERS","8"))
+PROVIDER_MAX_INFLIGHT=max(1,int(os.getenv("XRAY_DEEP_PROVIDER_MAX_INFLIGHT","3")))
+RETRY_DELAYS=(0.0,1.0,2.5)
+_PROVIDER_SEM=threading.Semaphore(PROVIDER_MAX_INFLIGHT)
+OFFICIAL_IDENTITY_EVIDENCE=ROOT/"history_official_identity_evidence.json"
+
+def _retryable(exc):
+    s=str(exc).lower()
+    return any(x in s for x in ("timed out","timeout","connection reset","remote end closed","too many requests","rate limit","429","500","502","503","504"))
+
+def _call_with_retry(fn):
+    last=None
+    for delay in RETRY_DELAYS:
+        if delay: time.sleep(delay)
+        try:
+            with _PROVIDER_SEM:
+                return fn()
+        except Exception as e:
+            last=e
+            if not _retryable(e): raise
+    assert last is not None
+    raise last
+
+def _official_records():
+    try:
+        j=json.loads(OFFICIAL_IDENTITY_EVIDENCE.read_text())
+        if j.get("schema")=="XRAY_HISTORY_OFFICIAL_IDENTITY_EVIDENCE_V1" and j.get("evidence_only") is True and j.get("alpha_authority") is False:
+            return j.get("records") or {}
+    except Exception:
+        pass
+    return {}
+
+OFFICIAL_RECORDS=_official_records()
+
+def _normalize_sina(df):
+    if df is None or df.empty:return None
+    cols={str(c).lower():c for c in df.columns}
+    need=["date","open","high","low","close","volume"]
+    if any(k not in cols for k in need):return None
+    x=df[[cols[k] for k in need]].copy();x.columns=need
+    x["date"]=pd.to_datetime(x["date"],errors="coerce")
+    for k in need[1:]:x[k]=pd.to_numeric(x[k],errors="coerce")
+    return x.dropna().drop_duplicates("date",keep="last").sort_values("date")
+
+def _sina_history(sym):
+    return _normalize_sina(_call_with_retry(lambda: ak.stock_us_daily(symbol=sym,adjust="")))
+
+def load_history(sym,asof):
+    cur=_sina_history(sym)
+    rec=OFFICIAL_RECORDS.get(sym) or {}
+    if rec.get("mode")=="OFFICIAL_TICKER_CONTINUITY_COMPOSITE_HISTORY" and rec.get("cusip_unchanged") is True:
+        pred=rec.get("predecessor_symbol"); eff=rec.get("effective_date")
+        if pred and eff and cur is not None:
+            p=_sina_history(pred)
+            if p is not None:
+                eff_ts=pd.Timestamp(eff); asof_ts=pd.Timestamp(asof)
+                cur2=cur[(cur["date"]>=eff_ts)&(cur["date"]<=asof_ts)]
+                pred2=p[p["date"]<eff_ts]
+                if not cur2.empty and cur2["date"].dt.date.max().isoformat()==asof:
+                    x=pd.concat([pred2,cur2],ignore_index=True).sort_values("date").drop_duplicates("date",keep="last")
+                    return x,"SINA_OFFICIAL_TICKER_CONTINUITY_COMPOSITE"
+    if cur is None:return None,"SINA_EMPTY"
+    return cur[cur["date"]<=pd.Timestamp(asof)],"SINA_US_DAILY"
 
 def blob_sha(p:Path):
     b=p.read_bytes()
@@ -31,18 +93,13 @@ def relpath(p:Path):
 
 def get_hist(sym,asof):
     try:
-        df=ak.stock_us_daily(symbol=sym,adjust="")
-        if df is None or df.empty:return sym,None,"EMPTY"
-        cols={c.lower():c for c in df.columns}
-        need=["date","open","high","low","close","volume"]
-        if any(k not in cols for k in need):return sym,None,"COLS"
-        x=df[[cols[k] for k in need]].copy();x.columns=need
-        x["date"]=pd.to_datetime(x["date"],errors="coerce")
-        for k in need[1:]:x[k]=pd.to_numeric(x[k],errors="coerce")
-        x=x.dropna().sort_values("date");x=x[x["date"]<=pd.Timestamp(asof)]
-        if len(x)<260:return sym,None,"LT260"
-        return sym,x.reset_index(drop=True),None
-    except Exception as e:return sym,None,f"{type(e).__name__}:{str(e)[:160]}"
+        x,src=load_history(sym,asof)
+        if x is None or x.empty:return sym,None,"EMPTY",None
+        last=x["date"].dt.date.max().isoformat()
+        if last!=asof:return sym,None,f"ASOF_MISSING:{last}",None
+        if len(x)<260:return sym,None,f"LT260:{len(x)}",None
+        return sym,x.reset_index(drop=True),None,src
+    except Exception as e:return sym,None,f"{type(e).__name__}:{str(e)[:160]}",None
 
 def atr14(df):
     h=df.high.astype(float);l=df.low.astype(float);c=df.close.astype(float)
@@ -188,13 +245,15 @@ def main():
         if ev.get("asof_et")!=asof or ev.get("task_id")!=TASK_ID or ev.get("execution")!="NONE" or ev.get("real_money")!="NO-GO":
             raise RuntimeError("EVENT_SAFETY_TASK_OR_ASOF")
     event_state_fresh=(not GEOMETRY_ONLY and ev.get("asof_et")==asof)
-    data={};unknown={}
+    data={};unknown={};history_source={}
     with ThreadPoolExecutor(max_workers=WORKERS) as ex:
         futs={ex.submit(get_hist,s,asof):s for s in syms+["QQQ"]}
         for fut in as_completed(futs):
-            s,x,e=fut.result()
+            s,x,e,src=fut.result()
             if x is None:unknown[s]=e
-            else:data[s]=x
+            else:
+                data[s]=x
+                history_source[s]=src
     if "QQQ" not in data:
         raise RuntimeError("QQQ_HISTORY_UNKNOWN")
     qqq=data["QQQ"]
@@ -239,6 +298,7 @@ def main():
       "b_armed_rs_event_pass_count":len(b_armed),"b_armed_rs_event_pass":sorted(b_armed),
       "d_dk3_pre_r1_count":len(d),"d_dk3_pre_r1":sorted(d),
       "unknown_history_count":len(unknown),"unknown_history":unknown,
+      "history_source_by_symbol":history_source,
       "state_caps":state_caps,"r92_ineligible":sorted(r92_ineligible & set(syms)),
       "source_stage1_path":relpath(STAGE1),"source_stage1_blob_sha":blob_sha(STAGE1),
       "source_regime_path":None if GEOMETRY_ONLY else relpath(REGIME),
@@ -253,7 +313,7 @@ def main():
       "authority":"SHADOW_DEEP_PREFILTER_ONLY_NO_SIGNAL"
     }
     OUT.write_text(json.dumps(out,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
-    print(json.dumps({"mode":out["mode"],"input_weekly_pass_count":len(syms),"a_geometry_count":len(a_geom),"b_breakout_count":len(b_break),"b_armed_count":len(b_armed),"d_geometry_rs_count":len(d_geom),"unknown_history_count":len(unknown)},sort_keys=True))
+    print(json.dumps({"mode":out["mode"],"input_weekly_pass_count":len(syms),"a_geometry_count":len(a_geom),"b_breakout_count":len(b_break),"b_armed_count":len(b_armed),"d_geometry_rs_count":len(d_geom),"unknown_history_count":len(unknown),"provider_max_inflight":PROVIDER_MAX_INFLIGHT,"retry_delays":RETRY_DELAYS},sort_keys=True))
 
 if __name__=="__main__":
     main()
