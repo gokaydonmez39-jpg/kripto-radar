@@ -1,0 +1,34 @@
+{
+  "schema": "XRAY_G9_UTP_NONPROFESSIONAL_API_REFRESH_V1",
+  "generated_on": "2026-10-03",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "purpose": "Resolve strict-G9 fee-classification assumptions for a single nonprofessional end user consuming realtime UTP Tape-C through an API/uncontrolled product.",
+  "primary_source_findings": [
+    "UTP Data Policies expressly lists Application Program Interface (API) as an Uncontrolled Product.",
+    "The current UTP Detailed Usage Reporting Codes document, updated 2024-10 with fees as of 2025, defines UTP1APIS = Real-Time Nonprofessional Uncontrolled Recipient and assesses $1/month, billable to the Vendor.",
+    "That supplemental document states that a qualifying Nonprofessional Uncontrolled Product Recipient may be reported at Nonprofessional rates when separately identified by the Vendor, with no redistribution and use restricted to one Subscriber.",
+    "The same supplemental footnote expressly prohibits third-party software only for the Professional Uncontrolled Recipient exception; it does not repeat that sentence in the Nonprofessional footnote.",
+    "However, the older September-2023 general Data Policies text contains a broader final sentence saying higher rates may apply when an Uncontrolled Recipient uses third-party software. Therefore the interaction between the older general sentence and the newer specialized UTP1APIS code cannot be assumed away without provider/UTP classification evidence.",
+    "The fee is assessed to the Vendor under UTP1APIS. Therefore permanent-$0 to the end user is economically possible if a qualifying vendor lawfully classifies the user under the nonprofessional uncontrolled category and absorbs the $1 monthly assessment."
+  ],
+  "sources": [
+    "https://www.utpplan.com/DOC/UTP_POLICY_SUPPLEMENTAL_DOCUMENT_-_VRXML_Codes.pdf",
+    "https://www.utpplan.com/DOC/DataPolicies.pdf",
+    "https://www.utpplan.com/DOC/SYSTEM%20APPLICATION-UTP%20V1%20FINAL.pdf"
+  ],
+  "strict_g9_effect": {
+    "threshold_change": false,
+    "old_overbroad_assumption_rejected": "API AUTOMATION DOES NOT AUTOMATICALLY IMPLY THE $3500 OWN-BEHALF NONDISPLAY FEE FOR A SINGLE QUALIFYING NONPROFESSIONAL RECIPIENT.",
+    "new_required_provider_proof": [
+      "Provider identifies its realtime Tape-C/NBBO upstream lineage or licensed redistributor.",
+      "Provider confirms the exact single-user automated API entitlement is lawful under UTP1APIS or an equivalent approved nonprofessional uncontrolled classification.",
+      "Provider absorbs any upstream/vendor assessment so the end user remains permanently $0.",
+      "No balance, funding, activity, account-maintenance, subscription, per-query or other end-user monetary condition.",
+      "No redistribution; one subscriber; user qualification as nonprofessional must be actually established by the provider rather than assumed by XRAY."
+    ]
+  },
+  "paper_invest_implication": "Paper Basic's $0/free-forever API + realtime NBBO + bot/algorithmic use is now economically compatible with strict G9-C in principle. C is not PROVEN until Paper identifies/attests its approved market-data classification and fee absorption (or equivalent licensed redistributor entitlement).",
+  "status": "STRUCTURAL_PATH_OPEN_PROVIDER_SPECIFIC_CLASSIFICATION_STILL_UNPROVEN",
+  "no_policy_weakening": true
+}
