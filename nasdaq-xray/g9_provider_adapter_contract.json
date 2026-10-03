@@ -1,0 +1,67 @@
+{
+  "schema": "XRAY_G9_PROVIDER_ADAPTER_CONTRACT_V1",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "purpose": "Separate legal/entitlement authority from provider-specific live quote mechanics. A provider adapter can prove only technical B/D; it can never self-authorize A/C.",
+  "normalized_output_per_symbol": {
+    "bid": "positive number",
+    "ask": "positive number",
+    "last": "positive number",
+    "bid_event_timestamp": "UTC event timestamp",
+    "ask_event_timestamp": "UTC event timestamp",
+    "trade_timestamp": "UTC event timestamp",
+    "bid_venue": "provider/exchange participant identifier when available",
+    "ask_venue": "provider/exchange participant identifier when available",
+    "is_delayed": "boolean; MUST be false",
+    "quote_age_seconds": "<=60 during RTH",
+    "trade_age_seconds": "<=60 during RTH",
+    "max_quote_trade_skew_seconds": "<=15"
+  },
+  "hard_invariants": [
+    "Authority status MUST equal PROVEN before any live provider call.",
+    "Authority provider MUST have an IMPLEMENTED adapter.",
+    "Adapter MUST NOT infer entitlement, price-plan eligibility, jurisdiction eligibility, or SIP lineage from payload shape.",
+    "bid <= ask; bid, ask and last > 0.",
+    "Independent quote and trade event timestamps are mandatory.",
+    "Weekend/off-RTH cannot produce a fresh strict G9 PASS.",
+    "Any unknown/delayed/stale/schema-mismatch/provider-error state fails closed.",
+    "No order, preview, replace, cancel, or execution endpoint may be called."
+  ],
+  "adapters": {
+    "TRADESTATION": {
+      "status": "IMPLEMENTED",
+      "runtime": "nasdaq-xray/strict_g9_probe.py",
+      "auth": "OAuth refresh-token -> read-only market-data calls",
+      "technical_scope": [
+        "snapshot bid/ask/last",
+        "market-depth bid/ask event timestamps",
+        "trade timestamp"
+      ],
+      "entitlement_status": "NOT_PROVEN_UNDER_CURRENT_STRICT_PERMANENT_ZERO_RULE"
+    },
+    "MASSIVE": {
+      "status": "NOT_IMPLEMENTED_AND_NOT_ENTITLED",
+      "reason": "Exact NBBO schema exists but current zero-dollar connector plan returns NOT_ENTITLED."
+    },
+    "TRADIER": {
+      "status": "NOT_IMPLEMENTED_JURISDICTION_BLOCKED",
+      "reason": "Consolidated realtime Brokerage API documented, but Turkey residency is blocked."
+    },
+    "FENNEL": {
+      "status": "NOT_IMPLEMENTED_JURISDICTION_BLOCKED",
+      "reason": "Consolidated NBBO API documented, but brokerage is for U.S.-resident retail investors."
+    },
+    "SCHWAB": {
+      "status": "NOT_IMPLEMENTED_AUTHORITY_UNPROVEN",
+      "reason": "Sanctioned Developer API exists, but exact Turkey eligibility + NBBO/timestamp entitlement chain is not proven."
+    },
+    "LONGBRIDGE": {
+      "status": "NOT_IMPLEMENTED_STRICT_C_FAIL",
+      "reason": "Consolidated US Data + NBBO is balance-conditioned under current official fee schedule."
+    }
+  },
+  "authority_file": "nasdaq-xray/g9_entitlement_authority.json",
+  "audit_file": "nasdaq-xray/g9_free_path_audit_20261003.json",
+  "no_policy_weakening": true,
+  "updated_on": "2026-10-03"
+}
