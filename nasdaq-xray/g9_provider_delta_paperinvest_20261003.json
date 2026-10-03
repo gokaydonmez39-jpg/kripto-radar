@@ -73,5 +73,20 @@
   "utp_nonprofessional_api_refresh": {
     "path": "nasdaq-xray/g9_utp_nonprofessional_api_refresh_20261003.json",
     "blob_sha": "e557bb14abe883f1d07380f7301b465b0abb4a05"
+  },
+  "official_clarification_route": {
+    "repository": "paperinvest/mcp-server",
+    "issue_number": 3,
+    "issue_url": "https://github.com/paperinvest/mcp-server/issues/3",
+    "opened_on": "2026-10-01",
+    "state": "OPEN",
+    "maintainer_comments_observed": 0,
+    "asks": [
+      "UTP Tape C / UQDF quote provenance and UTDF trade provenance or named licensed redistributor",
+      "quote timestamp and trade timestamp event semantics",
+      "Basic $0 unattended cloud-agent/non-display entitlement and any separate market-data fees",
+      "cloud scheduler REST support and MCP/trade-endpoint exposure"
+    ],
+    "authority_effect": "NONE_UNTIL_MAINTAINER_PRIMARY_SOURCE_REPLY; UNKNOWN_NEVER_PASS"
   }
 }
