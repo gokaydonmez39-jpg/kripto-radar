@@ -45,14 +45,14 @@
     },
     {
       "provider": "Webull OpenAPI",
-      "status": "NONQUALIFYING_STRICT_G9",
+      "status": "NONQUALIFYING_STRICT_C_OPENAPI_NONDISPLAY_SUBSCRIPTION_AND_ACCOUNT_VALUE_CONDITION",
       "failed_gates": [
-        "A",
-        "C"
+        "C_AUTOMATED_NONDISPLAY_PERMANENT_ZERO",
+        "C_BALANCE_CONDITION"
       ],
-      "evidence_file": "nasdaq-xray/g9_free_path_audit_20261003.json",
+      "evidence_file": "nasdaq-xray/g9_provider_delta_webull_alphavantage_refresh_20261003.json",
       "last_checked_on": "2026-10-03",
-      "reopen_condition": "Official OpenAPI entitlement grants permanent-$0 consolidated National NBBO non-display use without separate subscription.",
+      "reopen_condition": "Official OpenAPI entitlement grants permanent-$0 consolidated National-NBBO-capable non-display use with no separate market-data subscription and no minimum account value/funding/activity condition.",
       "negative_cache_only": true,
       "may_never_create_pass": true
     },
@@ -70,13 +70,13 @@
     },
     {
       "provider": "Alpha Vantage",
-      "status": "NONQUALIFYING_STRICT_PERMANENT_ZERO",
+      "status": "NONQUALIFYING_STRICT_C_REALTIME_US_MARKET_DATA_PREMIUM_ONLY",
       "failed_gates": [
-        "C"
+        "C_PERMANENT_ZERO_REALTIME_ENTITLEMENT"
       ],
-      "evidence_file": "nasdaq-xray/g9_free_path_audit_20261003.json",
+      "evidence_file": "nasdaq-xray/g9_provider_delta_webull_alphavantage_refresh_20261003.json",
       "last_checked_on": "2026-10-03",
-      "reopen_condition": "Official entitlement makes realtime consolidated NBBO permanently free for lawful automated use.",
+      "reopen_condition": "Official entitlement makes realtime consolidated U.S. NBBO/bid-ask/trade API permanently free for the exact automated use.",
       "negative_cache_only": true,
       "may_never_create_pass": true
     },
@@ -724,7 +724,7 @@
     },
     {
       "provider": "Paper Invest REST / Official MCP",
-      "status": "HIGH_POTENTIAL_FREE_REALTIME_NBBO_CLAIM_A_C_AND_B_EVENT_SEMANTICS_UNPROVEN",
+      "status": "HIGH_POTENTIAL_FREE_REALTIME_NBBO_CLAIM_A_C_LICENSE_AND_B_EVENT_SEMANTICS_UNPROVEN",
       "failed_gates": [
         "A_CONSOLIDATED_SIP_OR_EQUIVALENT_REDIStributor_LINEAGE",
         "B_INDEPENDENT_EVENT_TIMESTAMP_SEMANTICS_AND_LIVE_RTH_PROBE",
@@ -732,14 +732,20 @@
       ],
       "evidence_file": "nasdaq-xray/g9_provider_delta_paperinvest_20261003.json",
       "last_checked_on": "2026-10-03",
-      "reopen_condition": "Primary-source Paper confirmation proves exact consolidated NBBO lineage, independent upstream quote/trade event-time semantics and permanent-$0 automated/non-display entitlement; then same-run RTH probe.",
+      "reopen_condition": "Paper primary source proves exact CTA/UTP SIP or named consolidated redistributor lineage, upstream quote/trade event timestamp semantics, and explicit permanent-$0 automated/non-display market-data entitlement including upstream fee absorption; then same-run RTH live probe.",
       "negative_cache_only": true,
-      "may_never_create_pass": true
+      "may_never_create_pass": true,
+      "evidence_blob_sha": "7741af297be50a625aa946e7fd1dc67b5d0b98df"
     }
   ],
   "reopen_policy": "Reopen an existing negative path only on newer PRIMARY SOURCE evidence materially changing its listed failed gate(s). New previously-unreviewed providers are always eligible for research. Any reopened path still requires same-run RTH technical proof before G9 PASS.",
   "unknown_never_pass": true,
   "no_policy_weakening": true,
   "count_invariant": "provider_count == len(unique(providers[].provider)) == source_saturation.reviewed_paths",
-  "updated_on": "2026-10-03"
+  "updated_on": "2026-10-03",
+  "latest_entitlement_refresh": {
+    "path": "nasdaq-xray/g9_provider_delta_webull_alphavantage_refresh_20261003.json",
+    "commit_sha": "85290bdebed8133f3cfa017d98a097563f27e0b0",
+    "result": "WEBULL_C_FAIL_CONFIRMED; ALPHAVANTAGE_C_FAIL_CONFIRMED; NO_POLICY_WEAKENING"
+  }
 }
