@@ -13,7 +13,7 @@
     "provider_qualifying_now": "NONE",
     "permanent_zero": "NO_CURRENT_PROVIDER_PROVEN",
     "automated_nondisplay_utp_right": "NO_CURRENT_PROVIDER_PROVEN",
-    "reviewed_provider_paths": 36,
+    "reviewed_provider_paths": 41,
     "search_saturation_result": "NO_REVIEWED_PROVIDER_PROVES_A_B_C_D_SIMULTANEOUSLY",
     "structural_fee_basis": "DIRECT UTP REALTIME NONDISPLAY IS FEE-LIABLE",
     "strict_runtime_adapter": "FAIL_CLOSED_UNLESS_AUTHORITY_PROVEN",
@@ -102,6 +102,12 @@
       "provider": "Market-data and broker API sweep 3",
       "path": "nasdaq-xray/g9_provider_delta_marketdata_sweep_20261003.json",
       "blob_sha": "a85a8c8ef334425dcbccddcda8936afff494e05e",
+      "status": "NO_NEW_STRICT_G9_PROVIDER"
+    },
+    {
+      "provider": "Exchange-native and TRF sweep 4",
+      "path": "nasdaq-xray/g9_provider_delta_exchange_native_sweep_20261003.json",
+      "blob_sha": "97c1610475ca83fd4a70f66349e9091b8bac31c7",
       "status": "NO_NEW_STRICT_G9_PROVIDER"
     }
   ],
