@@ -4,7 +4,7 @@
   "provider": "AlgoArena hosted / open-source Alpaca SIP proxy",
   "execution": "NONE",
   "real_money": "NO-GO",
-  "status": "TECHNICALLY_SIP_BOUND_HOSTED_PATH_C_REDISTRIBUTION_ENTITLEMENT_UNPROVEN",
+  "status": "A_B_D_TECHNICALLY_STRONG_HOSTED_SIP_PATH_STRICT_C_REDISTRIBUTION_AUTHORIZATION_UNPROVEN",
   "findings": [
     "Official/open-source AlgoArena README states its market data comes from Alpaca's SIP feed (NBBO), exposes a REST paper-trading API, and names hosted base URL https://algoarena.markets/api/v1.",
     "The actual AlpacaClientService hard-codes `feed: 'sip'` on U.S.-equity data requests, so the SIP claim is present in production source code rather than only marketing text.",
@@ -33,12 +33,44 @@
     "D_SCHEDULER_FRIENDLY_REST_SURFACE"
   ],
   "failed_or_unproven_gates": [
-    "C_UPSTREAM_SIP_REDISTRIBUTION_AND_NONDIPLAY_RIGHTS",
-    "C_PERMANENT_ZERO_HOSTED_MARKET_DATA_ENTITLEMENT",
-    "B_SAME_RUN_RTH_FRESHNESS_NOT_YET_PROBED"
+    "C_WRITTEN_SIP_REDISTRIBUTION_AUTHORIZATION",
+    "C_PERMANENT_ZERO_ENDUSER_NONDISPLAY_ENTITLEMENT",
+    "B_LIVE_RTH_FRESHNESS_RUNTIME_VALIDATION"
   ],
-  "reopen_condition": "Primary-source AlgoArena/Alpaca licensing must prove hosted downstream automated/non-display redistribution of SIP/National-NBBO data is authorized and permanently $0 with no subscription/funding/balance/activity/per-query/account-maintenance condition; then obtain sanctioned read credential and perform same-run RTH quote/trade freshness/skew probe.",
+  "reopen_condition": "Primary-source written authorization from AlgoArena/Alpaca proves the hosted service may redistribute current full-market SIP/NBBO to end-user unattended private/non-display API clients permanently at $0 with no separate exchange/vendor/subscription/balance/funding/activity condition; then obtain a hosted CUID/API key and run same-RTH snapshot freshness/skew validation.",
   "negative_cache_only": true,
   "may_never_create_pass": true,
-  "no_policy_weakening": true
+  "no_policy_weakening": true,
+  "evidence": [
+    "AlgoArena's official repository states that equity market data comes from Alpaca's SIP feed (NBBO), and its Alpaca adapter hard-codes feed=sip on equity market-data requests.",
+    "The hosted agent guide publishes https://algoarena.markets/api/v1 and documents read-only market-data access using only an AlgoArena CUID, with a self-service API-key request workflow for user provisioning.",
+    "The canonical snapshot shape exposes latestQuote.timestamp and latestTrade.timestamp independently; quotes and snapshots are cached for 5 seconds, so the technical B/D surface is strong pending live RTH validation.",
+    "AlgoArena self-host configuration requires Alpaca credentials. Alpaca's official current support states Free market-data accounts receive realtime IEX only; current full-market SIP realtime requires the paid/full-market entitlement.",
+    "Alpaca's current customer agreement states users may not reproduce, distribute, sell, or commercially exploit Alpaca market data without written consent from Alpaca.",
+    "No primary-source AlgoArena document found proves that the hosted service possesses Alpaca/CTA/UTP written redistribution authorization covering end-user automated/non-display access, or that such access is permanently $0 with no separate upstream market-data fee/condition.",
+    "Therefore technical use of Alpaca SIP by the hosted backend is not sufficient to prove strict gate C; authority remains fail-closed."
+  ],
+  "technical_schema": {
+    "hosted_base_url": "https://algoarena.markets/api/v1",
+    "quote_route": "GET /market/quotes/{symbol}",
+    "snapshot_route": "GET /market/snapshots/{symbol}",
+    "equity_upstream": "Alpaca Market Data API with feed=sip forced in source",
+    "independent_quote_trade_timestamps_in_snapshot": true,
+    "quote_cache_ttl_seconds": 5,
+    "snapshot_cache_ttl_seconds": 5,
+    "hosted_market_data_auth": "X-AlgoArena-CUID",
+    "api_key_request_flow": true
+  },
+  "provisional_pass_gates": [
+    "A_ALPACA_SIP_LINEAGE_TECHNICALLY_BOUND",
+    "B_SCHEMA_INDEPENDENT_QUOTE_TRADE_TIMESTAMPS",
+    "D_HOSTED_REST_SCHEDULER_SURFACE"
+  ],
+  "primary_sources": [
+    "https://github.com/lawnchairsociety/AlgoArena",
+    "https://github.com/lawnchairsociety/AlgoArena/blob/main/packages/api/src/modules/market-data/alpaca-client.service.ts",
+    "https://github.com/lawnchairsociety/AlgoArena/blob/main/packages/web/public/agent-guide.md",
+    "https://alpaca.markets/support/data-provider-alpaca",
+    "https://files.alpaca.markets/disclosures/library/AcctAppMarginAndCustAgmt.pdf"
+  ]
 }
