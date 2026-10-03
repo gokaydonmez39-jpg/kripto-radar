@@ -4,40 +4,40 @@
   "provider": "Wealthnow",
   "execution": "NONE",
   "real_money": "NO-GO",
-  "status": "HIGH_POTENTIAL_FREE_SNAPSHOT_B_D_ENGINEERING_READY_A_AND_C_LICENSE_UNPROVEN",
+  "status": "HIGH_POTENTIAL_FREE_SNAPSHOT_B_SCHEMA_PROVEN_ADAPTER_IMPLEMENTED_A_AND_C_LICENSE_UNPROVEN",
   "evidence": [
-    "Wealthnow Free hard-caps at its included monthly credit grant with no overage. Fundamentals and Market Data are included on Free; price_snapshot costs 1 credit.",
-    "The Free fundamentals/price_snapshot route returns last trade price, independent trade event time (`as_of`/`time`), bid, ask, sizes, and independent quote event time (`quote_as_of`) while the exchange is in session, plus freshness/staleness fields. This is sufficient technical schema for strict G9-B subject to same-run RTH freshness <=60s and quote/trade skew <=15s.",
-    "The dedicated Starter+ streaming quotes route is explicitly documented as consolidated top-of-book NBBO with best bid/ask, venue IDs, and quote timestamps; trade ticks are a separate stream. This proves Wealthnow has an NBBO-capable upstream path.",
-    "However the Free price_snapshot reference and Market Data guide do not label its bid/ask as NBBO, consolidated, SIP, UTP, CTA, or as sourced from the Starter+ NBBO stream. The response source label `market-data:v2-snapshot` is an internal label, not primary-source lineage proof. Therefore strict G9-A remains unproven for the Free route.",
-    "Wealthnow officially supports REST Bearer/API-key access, a hosted MCP endpoint, OAuth agent connections including ChatGPT custom MCP, SDKs, and agent use. Therefore canonical scheduler callability is technically implementable without exposing a key in repository files. D still requires the actual canonical scheduler credential to be configured and a same-run RTH probe.",
-    "Wealthnow API keys can be created with no expiry and lower per-key request limits. Free workspaces can hold multiple keys. This supports a dedicated read-only market-data scheduler key, but no credential is currently configured in XRAY.",
-    "Wealthnow Terms of Service (updated 2026-09-27) expressly cover the API and permit programmatic use within access/rate controls, but market data is third-party content and users must comply with applicable exchange/provider rules.",
-    "The Terms grant only a limited service-use license and prohibit scraping/resale/redistribution; public docs do not explicitly state that Free price_snapshot carries an exchange/SIP non-display license for the intended automated scheduler use.",
-    "Therefore Free hard-cap cost and agent/API intent are proven, but strict G9-C's market-data non-display entitlement component remains unproven until Wealthnow identifies the applicable feed/license or confirms that the Free API entitlement covers this use without separate market-data fees/conditions."
+    "Wealthnow Developer API Free tier is documented at $0/no-card/free-forever style access with 1,000 monthly credits and a hard cap rather than automatic overage. Fundamentals and Market Data are included on Free; price_snapshot costs 1 credit.",
+    "The Free fundamentals/price_snapshot documentation now explicitly defines `as_of`/`time` as the UTC time of the last trade and `quote_as_of` as the instant when the quote last changed. The API response envelope `timestamp` is separately defined as API-answer time and not market time. This materially proves the required independent trade-time vs quote-time semantics at schema level.",
+    "The Free price_snapshot exposes last trade, bid, ask, bid/ask sizes, quote_as_of, as_of/time and freshness fields while the exchange is in session. Strict B still requires a same-run RTH runtime probe proving <=60s ages and <=15s quote/trade skew; schema semantics themselves are now primary-source documented.",
+    "The dedicated Starter+ streaming route is explicitly documented as consolidated top-of-book NBBO with best bid/ask, venue IDs and quote timestamps; a separate trade-tick stream exists. This proves Wealthnow has an NBBO-capable upstream product, but does NOT prove the Free price_snapshot uses that exact consolidated feed.",
+    "The Free price_snapshot docs still do not label its bid/ask as National NBBO, SIP/UTP/CTA, or name a licensed consolidated redistributor. Its `source: market-data:v2-snapshot` label is internal and cannot establish strict G9-A.",
+    "Wealthnow Terms of Service explicitly cover the API. Automated/bot use is not categorically prohibited; the prohibition targets automation that burdens the service or bypasses rate limits/access controls. This supports sanctioned programmatic API use within documented limits.",
+    "Those Terms also state that market data and other content come from third-party providers and prohibit scraping/resale/redistribution without consent. They do not identify the live equity vendor or expressly grant the exchange/SIP non-display entitlement required by strict G9-C.",
+    "The consumer-plan comparison currently shows a 15-minute Free market-data row, while the separate Developer API documentation shows Free+ live price_snapshot and an in-RTH live example. These appear to be separate product-plan surfaces, but XRAY must not transfer entitlements between them. Only the Developer API contract is relevant to the scheduler path.",
+    "The WEALTHNOW adapter is already implemented in nasdaq-xray/strict_g9_probe.py and remains authority-gated. It may not run until A and C are proven; after that a scheduler credential and same-run RTH probe are still required."
   ],
   "primary_sources": [
     "https://app.wealthnow.io/docs/market-data",
-    "https://app.wealthnow.io/docs/reference/fundamentals-price-snapshot",
     "https://app.wealthnow.io/docs/streaming",
-    "https://app.wealthnow.io/docs/pricing-and-credits",
     "https://app.wealthnow.io/docs/quickstart",
     "https://app.wealthnow.io/docs/api-reference",
-    "https://app.wealthnow.io/docs/mcp-and-sdks",
-    "https://wealthnow.io/terms"
+    "https://wealthnow.io/pricing",
+    "https://wealthnow.io/terms",
+    "https://wealthnow.io/disclosures"
   ],
-  "reopen_condition": "Obtain primary-source Wealthnow confirmation that Free price_snapshot bid/ask are consolidated UTP/National NBBO (or documented equivalent) AND that the Free REST/MCP entitlement lawfully covers the intended automated/non-display use with no separate exchange/vendor/subscription/per-query/balance/funding/activity charge. Then configure scheduler credential and require same-run RTH B/D probe.",
+  "reopen_condition": "Obtain primary-source Wealthnow confirmation that Free Developer API price_snapshot bid/ask are the consolidated U.S. National NBBO sourced from CTA/UTP SIP or a named licensed consolidated redistributor, and that the Free API entitlement covers automated/non-display use with all applicable exchange/vendor fees absorbed and no separate subscription/balance/funding/activity/account-maintenance charge. Then configure WEALTHNOW_API_KEY and require same-run RTH B/D freshness/skew proof.",
   "no_policy_weakening": true,
   "failed_gates": [
-    "A",
-    "C_NONDIPLAY_LICENSE",
-    "D_RUNTIME"
+    "A_FREE_ROUTE_NATIONAL_NBBO_LINEAGE",
+    "C_FREE_ROUTE_EXPLICIT_NONDIPLAY_MARKET_DATA_LICENSE",
+    "D_RUNTIME_CREDENTIAL_AND_RTH_PROBE"
   ],
   "provisional_pass_gates": [
-    "B_SCHEMA",
-    "C_ZERO_DOLLAR_API_COST",
-    "D_TECHNICAL_SURFACE"
+    "B_EVENT_TIMESTAMP_SCHEMA_PRIMARY_SOURCE",
+    "C_ZERO_DOLLAR_DEVELOPER_API_COST_WITH_HARD_CAP",
+    "C_SANCTIONED_PROGRAMMATIC_API_INTENT",
+    "D_TECHNICAL_ADAPTER_IMPLEMENTED"
   ],
-  "technical_adapter_status": "READY_TO_IMPLEMENT_FAIL_CLOSED_BEHIND_A_AUTHORITY",
+  "technical_adapter_status": "IMPLEMENTED_FAIL_CLOSED_BEHIND_AUTHORITY",
   "last_checked_on": "2026-10-03"
 }
