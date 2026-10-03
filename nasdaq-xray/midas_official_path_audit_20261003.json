@@ -31,20 +31,29 @@
       "current_best_inference": "Midas has genuine realtime exchange entitlements and may have custom partner data, but exact consolidated National NBBO lineage plus automated/non-display end-user rights remain unproven. Do not infer SIP/NBBO from 'realtime' branding or exchange verification alone."
     },
     "midas_via_tradingview": {
-      "status": "SANCTIONED_ACCOUNT_BRIDGE_PROMISING_G9_NONQUALIFYING",
+      "status": "SANCTIONED_ACCOUNT_READ_SURFACE_TECHNICALLY_SUFFICIENT_BUT_NOT_SCHEDULER_CALLABLE;G9_PARTIAL_B_ONLY",
       "evidence": [
-        "Midas and TradingView officially support a broker integration; users can connect their Midas account from TradingView's Trading Panel.",
-        "Midas support states the TradingView market-data path is CBOE One, so this path cannot satisfy strict G9-A National NBBO.",
-        "TradingView broker integration architecture exposes account, balance/state, positions, orders and quotes surfaces, and account-manager views include balance/equity/positions.",
-        "Midas support states TradingView-connected users can view up to 200 past Midas orders, confirming real authenticated account-state integration.",
-        "TradingView states it does not provide an end-user data API; its REST Broker API is for brokers integrating into TradingView. No scheduler-callable end-user TradingView connector is currently available in this ChatGPT workspace."
+        "Midas and TradingView officially support connecting a Midas brokerage account from TradingView's Trading Panel for U.S. equities.",
+        "TradingView's broker integration FAQ states a working /quotes implementation is needed for Sell/Buy fields, quote polling defaults to 500 ms and is capped at 1000 ms, and broker quote data is used in the order dialog.",
+        "TradingView quote schemas expose bid, ask and trade/last plus delayed-state metadata. This establishes a sanctioned broker-sourced bid/ask/last technical surface in the Midas integration.",
+        "TradingView's standard quote object does not expose independent bid-event, ask-event and trade-event timestamps required by strict G9-B; extended-session rtc_time is not an equivalent proof.",
+        "TradingView supports verifying Midas broker subscriptions for AMEX/NYSE Arca, NASDAQ, NYSE and OTC. These are exchange-specific entitlements and do not by themselves prove consolidated National NBBO/UTP lineage.",
+        "TradingView's Account/Broker integration exposes accounts, current balance/equity state and positions; its FAQ documents account-manager/balance/positions polling at sub-2-second intervals. This is technically sufficient in shape for the provider-neutral ACCOUNT gate.",
+        "No sanctioned end-user TradingView/Midas API or connector is callable from the canonical ChatGPT scheduler today; TradingView's REST Broker API is an integration interface for brokers rather than an end-user API."
       ],
-      "g9_failed_or_unproven": [
-        "A",
-        "D_USER_API"
+      "g9_assessment": {
+        "A": "UNPROVEN_CONSOLIDATED_NATIONAL_NBBO; EXCHANGE_SUBSCRIPTIONS_VERIFIED_ONLY",
+        "B": "PARTIAL_TECHNICAL_PROOF_BID_ASK_LAST_PRESENT; INDEPENDENT_QUOTE_TRADE_EVENT_TIMESTAMPS_NOT_PROVEN",
+        "C": "DISPLAY_PERSONAL_ENTITLEMENT_PROVEN; AUTOMATED_NONDISPLAY_RIGHT_NOT_EXPLICITLY_PROVEN",
+        "D": "NO_SANCTIONED_ENDUSER_SCHEDULER_CALLABLE_API"
+      },
+      "account_assessment": "TECHNICALLY_SUFFICIENT_READ_SURFACE_CONFIRMED_BUT_NOT_CURRENTLY_SCHEDULER_CALLABLE",
+      "account_required_surfaces": [
+        "accounts",
+        "balance/equity state",
+        "positions"
       ],
-      "account_assessment": "PROMISING_SANCTIONED_BUT_NOT_CURRENTLY_SCHEDULER_CALLABLE",
-      "account_reopen_condition": "A sanctioned TradingView or Midas connector/API becomes callable by the canonical scheduler and same-run account value/cash plus equity positions/exposure can be read without order actions."
+      "account_reopen_condition": "A sanctioned Midas or TradingView end-user connector/API becomes callable by the canonical scheduler, then fresh same-run account value/cash and equity positions/exposure both parse successfully without order actions."
     },
     "unofficial_mcp_midas": {
       "status": "TECHNICALLY_USEFUL_DIAGNOSTIC_ONLY",
@@ -98,7 +107,11 @@
     "https://webcdn.getmidas.com/uploads/2025/12/04155923/genel-cerceve-sozlesme.pdf",
     "https://www.getmidas.com/atlas/",
     "https://www.getmidas.com/destek/borsa-istanbul/matriks-entegrasyonu/matriks-platformunda-hangi-yatirim-urunlerinde-islem-yapabilirim",
-    "https://alpaca.markets/blog/how-midas-is-leveling-the-playing-field-for-turkish-investors/"
+    "https://alpaca.markets/blog/how-midas-is-leveling-the-playing-field-for-turkish-investors/",
+    "https://www.tradingview.com/support/solutions/43000479666-how-can-i-get-real-time-data-from-exchanges-that-i-have-already-purchased-with-my-broker/",
+    "https://www.tradingview.com/support/solutions/43000739323-how-does-the-source-of-real-time-data-affect-the-trading-experience/",
+    "https://www.tradingview.com/charting-library-docs/latest/api/interfaces/Broker.TradingQuotes/",
+    "https://www.tradingview.com/charting-library-docs/latest/trading_terminal/account-manager/"
   ],
   "no_policy_weakening": true,
   "unknown_never_pass": true,
@@ -133,5 +146,10 @@
       "evidence": "Alpaca standard Broker API market-data subscriptions are realtime IEX or delayed SIP; custom comprehensive arrangements exist.",
       "strict_g9_implication": "Do not assume live SIP/NBBO from partner status."
     }
+  },
+  "legal_entitlement": {
+    "nasdaq": "Midas-distributed Nasdaq participant agreement licenses nonprofessional/private subscriber information for personal use and prohibits redistribution/access by others; no explicit automated/non-display entitlement was found.",
+    "nyse": "Midas-distributed NYSE agreement is a Market Data Display Services agreement for nonprofessional subscribers and limits permitted use to the subscriber's own individual use.",
+    "strict_g9_c_implication": "Personal/display entitlement is not treated as proof of the explicit automated/non-display entitlement required by current strict G9-C."
   }
 }
