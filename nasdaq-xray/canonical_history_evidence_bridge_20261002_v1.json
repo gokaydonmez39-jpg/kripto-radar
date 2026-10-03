@@ -1,7 +1,7 @@
 {
   "schema": "XRAY_HISTORY_EVIDENCE_BRIDGE_V1",
   "status": "READY",
-  "authority": "CHAT_CONNECTOR_OFFICIAL_LISTING_AND_TICKER_LINEAGE_EVIDENCE",
+  "authority": "CHAT_CONNECTOR_FAIL_ONLY_EVIDENCE__DFTX_PASS_REQUIRES_RUNTIME_OFFICIAL_CONTINUITY",
   "task_id": "6a825366222081918997094d76e6ae46",
   "asof_et": "2026-10-02",
   "execution": "NONE",
@@ -20,7 +20,6 @@
   "scope_symbols": [
     "BLLN",
     "CBRS",
-    "DFTX",
     "EQPT",
     "FRVO",
     "HONA",
@@ -35,9 +34,9 @@
     "VSNT"
   ],
   "counts": {
-    "PASS_HISTORY": 1,
+    "PASS_HISTORY": 0,
     "FAIL_HISTORY": 14,
-    "TOTAL": 15
+    "TOTAL": 14
   },
   "entries": {
     "BLLN": {
@@ -312,21 +311,6 @@
         "first_observed_date": "2026-01-05",
         "note": "Diagnostic corroboration only."
       }
-    },
-    "DFTX": {
-      "mode": "TICKER_LINEAGE_HISTORY_PASS_V1",
-      "outcome": "PASS_HISTORY",
-      "current_ticker": "DFTX",
-      "predecessor_ticker": "MNMD",
-      "ticker_change_effective_date": "2026-01-15",
-      "official_continuity_source": "https://www.nasdaq.com/press-release/definium-therapeutics-common-shares-trade-under-new-nasdaq-ticker-symbol-dftx",
-      "official_continuity_fact": "Ticker-symbol change for the same company/security lineage; no shareholder action required.",
-      "rallies_predecessor_daily_bars": 406,
-      "rallies_current_daily_bars": 180,
-      "combined_unique_daily_bars": 586,
-      "combined_completed_week_count": 122,
-      "current_has_exact_asof_bar": true,
-      "proof": "OFFICIAL_TICKER_LINEAGE_PLUS_RALLIES_CONTIGUOUS_HISTORY"
     }
   }
 }
