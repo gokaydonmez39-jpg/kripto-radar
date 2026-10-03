@@ -4,7 +4,7 @@
   "execution": "NONE",
   "real_money": "NO-GO",
   "purpose": "Negative-evidence cache only. This registry can skip unchanged dead paths but can never create G9 PASS.",
-  "provider_count": 53,
+  "provider_count": 54,
   "strict_g9_gates": {
     "A": "consolidated UTP Tape-C / National NBBO lineage",
     "B": "fresh bid+ask+last with independent quote/trade event timestamps",
@@ -13,8 +13,8 @@
   },
   "source_saturation": {
     "path": "nasdaq-xray/g9_search_saturation_20261003.json",
-    "blob_sha": "0defe42e7c7ccfbfd9f63f6ce1bc72b32336d1a8",
-    "reviewed_paths": 53
+    "blob_sha": "e63bb0e40d31be0642e8843bd7d1d2942685a214",
+    "reviewed_paths": 54
   },
   "providers": [
     {
@@ -719,6 +719,20 @@
       "evidence_file": "nasdaq-xray/g9_provider_delta_siftingio_20261003.json",
       "last_checked_on": "2026-10-03",
       "reopen_condition": "Primary-source proof that the US-equity bid/ask stream is actual consolidated CTA/UTP National NBBO with SIP lineage while permanent-$0 internal automated entitlement remains available.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "Paper Invest REST / Official MCP",
+      "status": "HIGH_POTENTIAL_FREE_REALTIME_NBBO_CLAIM_A_C_AND_B_EVENT_SEMANTICS_UNPROVEN",
+      "failed_gates": [
+        "A_CONSOLIDATED_SIP_OR_EQUIVALENT_REDIStributor_LINEAGE",
+        "B_INDEPENDENT_EVENT_TIMESTAMP_SEMANTICS_AND_LIVE_RTH_PROBE",
+        "C_AUTOMATED_NONDISPLAY_MARKET_DATA_ENTITLEMENT"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_paperinvest_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "Primary-source Paper confirmation proves exact consolidated NBBO lineage, independent upstream quote/trade event-time semantics and permanent-$0 automated/non-display entitlement; then same-run RTH probe.",
       "negative_cache_only": true,
       "may_never_create_pass": true
     }
