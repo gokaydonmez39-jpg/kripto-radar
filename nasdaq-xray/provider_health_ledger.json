@@ -3,46 +3,65 @@
     "CLOUDFLARE_STATUS": {
       "consecutive_failures": 0,
       "last_error": null,
-      "last_success_at_utc": "2026-10-02T22:10:58.078185+00:00",
+      "last_error_code": null,
+      "last_error_retryable": null,
+      "last_http_status": null,
+      "last_success_at_utc": "2026-10-03T00:21:24.636312+00:00",
       "open_until_epoch": 0,
       "status": "HEALTHY"
     },
     "GITHUB_REPO_VERIFY": {
       "consecutive_failures": 0,
       "last_error": null,
-      "last_success_at_utc": "2026-10-02T22:11:16.932564+00:00",
+      "last_error_code": null,
+      "last_error_retryable": null,
+      "last_http_status": null,
+      "last_success_at_utc": "2026-10-03T00:21:45.417870+00:00",
       "open_until_epoch": 0,
       "status": "HEALTHY"
     },
     "GITHUB_STATUS": {
       "consecutive_failures": 0,
       "last_error": null,
-      "last_success_at_utc": "2026-10-02T22:10:57.998888+00:00",
+      "last_error_code": null,
+      "last_error_retryable": null,
+      "last_http_status": null,
+      "last_success_at_utc": "2026-10-03T00:21:24.436555+00:00",
       "open_until_epoch": 0,
       "status": "HEALTHY"
     },
     "SEC_EFTS": {
-      "consecutive_failures": 8,
+      "consecutive_failures": 0,
       "last_error": "HTTPError:HTTP Error 403: Forbidden",
-      "last_failure_at_utc": "2026-10-02T22:10:57.858074+00:00",
-      "open_until_epoch": 1790979177.8580997,
-      "status": "CIRCUIT_OPEN"
+      "last_error_code": "HTTP_DEFINITIVE",
+      "last_error_retryable": false,
+      "last_failure_at_utc": "2026-10-03T00:21:24.202454+00:00",
+      "last_http_status": 403,
+      "open_until_epoch": 0,
+      "status": "NONRETRYABLE_ERROR"
     },
     "SEC_TICKER_MAP": {
-      "consecutive_failures": 7,
+      "consecutive_failures": 0,
       "last_error": "HTTPError:HTTP Error 403: Forbidden",
-      "last_failure_at_utc": "2026-10-02T22:10:57.703204+00:00",
-      "open_until_epoch": 1790979177.703228,
-      "status": "CIRCUIT_OPEN"
+      "last_error_code": "HTTP_DEFINITIVE",
+      "last_error_retryable": false,
+      "last_failure_at_utc": "2026-10-03T00:21:23.164483+00:00",
+      "last_http_status": 403,
+      "open_until_epoch": 0,
+      "status": "NONRETRYABLE_ERROR"
     },
     "US_TREASURY_YIELD_CURVE": {
-      "consecutive_failures": 0,
-      "last_error": null,
+      "consecutive_failures": 1,
+      "last_error": "TimeoutError:The read operation timed out",
+      "last_error_code": "TRANSPORT_TRANSIENT",
+      "last_error_retryable": true,
+      "last_failure_at_utc": "2026-10-03T00:21:44.840917+00:00",
+      "last_http_status": null,
       "last_success_at_utc": "2026-10-02T22:11:16.554713+00:00",
       "open_until_epoch": 0,
-      "status": "HEALTHY"
+      "status": "DEGRADED"
     }
   },
   "schema": "XRAY_PROVIDER_HEALTH_LEDGER_V1",
-  "updated_at_utc": "2026-10-02T22:11:16.932580+00:00"
+  "updated_at_utc": "2026-10-03T00:21:45.417891+00:00"
 }
