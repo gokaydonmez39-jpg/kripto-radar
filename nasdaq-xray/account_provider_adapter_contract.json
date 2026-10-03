@@ -1,0 +1,40 @@
+{
+  "schema": "XRAY_ACCOUNT_PROVIDER_ADAPTER_CONTRACT_V1",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "policy_requirement": "Current NASDAQ account value/exposure must be known for TRUE FULL GO; unresolved account state caps final status but must not suppress a valid research candidate.",
+  "provider_neutral": true,
+  "pass_rule": "A sanctioned connected broker adapter must, in the same run, return parseable current account value/cash state and current equity positions/exposure. Empty positions are valid known exposure. Permission/auth/tool errors are never PASS.",
+  "persistence_rule": "Never persist balances, positions, account identifiers, buying power, or other private account values to the public repository; persist status/provenance only.",
+  "forbidden_actions": [
+    "place_order",
+    "preview_order",
+    "replace_order",
+    "cancel_order",
+    "submit_order",
+    "transfer_funds",
+    "withdraw"
+  ],
+  "adapters": {
+    "LONGBRIDGE": {
+      "status": "BLOCKED_SCOPE_NOT_GRANTED_OR_ACCOUNT_UNSUPPORTED",
+      "required_read_calls": [
+        "account_balance",
+        "stock_positions"
+      ],
+      "latest_error_code": 403308,
+      "diagnostic": "market-data + watchlist work after full reauth, while account_balance, stock_positions, fund_positions and today_orders remain scope-denied"
+    },
+    "ALPACA_CHATGPT_CONNECTOR": {
+      "status": "NO_ACCOUNT_ADAPTER_EXPOSED",
+      "diagnostic": "Current connected Alpaca tool surface exposes market/reference data but no account-balance/positions tools."
+    },
+    "TRADING212_PUBLIC_API": {
+      "status": "NOT_CONNECTED_AND_USER_JURISDICTION_UNSUPPORTED",
+      "diagnostic": "Official Public API has account summary/positions, but current supported-country list does not include Turkey."
+    }
+  },
+  "transition_to_pass": "Only fresh same-run provider readback satisfying the pass_rule may set ACCOUNT=PASS. Persisted prior PASS alone is insufficient.",
+  "no_policy_weakening": true,
+  "updated_on": "2026-10-03"
+}
