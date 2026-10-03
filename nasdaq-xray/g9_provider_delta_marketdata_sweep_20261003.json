@@ -1,0 +1,143 @@
+{
+  "schema": "XRAY_G9_PROVIDER_DELTA_V1",
+  "generated_on": "2026-10-03",
+  "scope": "MARKETDATA_AND_BROKER_API_SWEEP_3",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "providers": [
+    {
+      "provider": "Questrade API",
+      "status": "NONQUALIFYING_REALTIME_PACKAGE_REQUIRED_AND_STRICT_NBBO_PROOF_INCOMPLETE",
+      "failed_gates": [
+        "A",
+        "B",
+        "C"
+      ],
+      "evidence": [
+        "Official Questrade API is free and exposes account balances/positions plus Level-1 market quotes.",
+        "Official quote documentation states realtime quotes require subscription to a real-time data package; otherwise snap limits apply and delayed data is returned.",
+        "Quote payload exposes bid, ask and lastTradeTime but does not establish consolidated UTP/National-NBBO lineage or independent bid/ask event timestamps."
+      ],
+      "primary_sources": [
+        "https://www.questrade.com/api",
+        "https://www.questrade.com/api/documentation/rest-operations/market-calls/markets-quotes-id",
+        "https://www.questrade.com/api/documentation/streaming"
+      ],
+      "reopen_condition": "Realtime US-equity API becomes unconditional permanent-$0, primary-source lineage proves consolidated National NBBO, and independent quote/trade event timestamps are exposed."
+    },
+    {
+      "provider": "EODHD Real-Time WebSocket",
+      "status": "NONQUALIFYING_SINGLE_LIT_EXCHANGE_AND_PAID_REALTIME",
+      "failed_gates": [
+        "A",
+        "C"
+      ],
+      "evidence": [
+        "Official US WebSocket separates trade and quote streams with timestamps.",
+        "Official documentation says the US feed is a single lit-exchange source with no off-exchange or FINRA TRF prints.",
+        "Official documentation states real-time WebSocket streaming is offered on paid plans, not the free tier."
+      ],
+      "primary_sources": [
+        "https://eodhd.com/financial-apis/new-real-time-data-api-websockets",
+        "https://eodhd.com/pricing"
+      ],
+      "reopen_condition": "Free sanctioned US feed becomes proven consolidated UTP/National NBBO with no subscription condition."
+    },
+    {
+      "provider": "Financial Modeling Prep (FMP)",
+      "status": "NONQUALIFYING_FREE_EOD_REALTIME_PAID",
+      "failed_gates": [
+        "A",
+        "B",
+        "C"
+      ],
+      "evidence": [
+        "Official current plan comparison says Basic/free is end-of-day data.",
+        "Paid personal-use plans provide real-time access; realtime stock quote/WebSocket products are part of higher access tiers.",
+        "No primary-source proof found that the realtime quote feed is consolidated UTP/National NBBO with independent bid/ask/trade event timestamps."
+      ],
+      "primary_sources": [
+        "https://site.financialmodelingprep.com/datasets/market-data-real-time",
+        "https://site.financialmodelingprep.com/datasets/websocket",
+        "https://site.financialmodelingprep.com/insights/platform/api-access/before-you-pay-for-realtime-data-which-fmp-projects-work-with-endofday"
+      ],
+      "reopen_condition": "Free tier gains permanent realtime consolidated National NBBO with independent quote/trade timestamps."
+    },
+    {
+      "provider": "dxFeed Direct UTP Tape C",
+      "status": "TECHNICALLY_QUALIFYING_LINEAGE_BUT_DIRECT_ACCESS_PAID",
+      "failed_gates": [
+        "C"
+      ],
+      "evidence": [
+        "Official dxFeed UTP Tape-C product explicitly documents UQDF/UTDF consolidated feed and National BBO for Nasdaq-listed equities.",
+        "Technical A/B capability is strong in principle.",
+        "Direct dxFeed market-data access is sold under paid marketplace/subscription products; no permanent-$0 automated entitlement is established."
+      ],
+      "primary_sources": [
+        "https://dxfeed.com/market-data/equities-etfs/utp-tape-c/",
+        "https://dxfeed.com/market-data/"
+      ],
+      "reopen_condition": "Direct UTP Tape-C realtime entitlement becomes lawful permanent-$0 with no subscription/licensing condition."
+    },
+    {
+      "provider": "Cboe One Direct",
+      "status": "NONQUALIFYING_PARTIAL_EXCHANGE_AGGREGATE",
+      "failed_gates": [
+        "A",
+        "C"
+      ],
+      "evidence": [
+        "Official Cboe One aggregates quote/trade data from the four Cboe US equities exchanges only.",
+        "Official page says Cboe One quotes are within 1% of NBBO 97.77% of the time, demonstrating it is a reference to—not the consolidated National NBBO itself.",
+        "Cboe One is a licensed market-data product; no permanent-$0 automated entitlement is established."
+      ],
+      "primary_sources": [
+        "https://www.cboe.com/market_data_services/us/equities/cboe_one/"
+      ],
+      "reopen_condition": "Product becomes actual consolidated National NBBO from all U.S. venues under permanent-$0 automated entitlement."
+    },
+    {
+      "provider": "Nasdaq Basic / Nasdaq Data Link",
+      "status": "NONQUALIFYING_PROPRIETARY_MARKET_CENTER_BBO_AND_PREMIUM",
+      "failed_gates": [
+        "A",
+        "C"
+      ],
+      "evidence": [
+        "Nasdaq describes Basic as a proprietary exchange-provided alternative to consolidated Level-1 data.",
+        "Its BBO is based on liquidity within Nasdaq market centers; Nasdaq materials explicitly compare it to, rather than equate it with, NBBO.",
+        "Nasdaq Data Link NB/NBPL datasets are Premium and current exchange rules include nonzero administrative/consolidation fees for Basic Plus distribution."
+      ],
+      "primary_sources": [
+        "https://www.nasdaq.com/products/data/equities/nasdaq-basic",
+        "https://data.nasdaq.com/databases/NB/documentation",
+        "https://data.nasdaq.com/databases/NBPL",
+        "https://listingcenter.nasdaq.com/rulebook/phlx/rules/phlx-equity-7"
+      ],
+      "reopen_condition": "A sanctioned Nasdaq path exposes actual consolidated UTP National NBBO under unconditional permanent-$0 automated/non-display entitlement."
+    },
+    {
+      "provider": "Barchart OnDemand",
+      "status": "NONQUALIFYING_STRICT_G9_ENTITLEMENT_LINEAGE_AND_EVENT_PROOF_INCOMPLETE",
+      "failed_gates": [
+        "A",
+        "B",
+        "C"
+      ],
+      "evidence": [
+        "Official getQuote API can return realtime, delayed or end-of-day price data and exposes a trade timestamp.",
+        "Official OnDemand pages describe custom packages and contact-for-access market-data/API solutions rather than a proven permanent-$0 realtime entitlement.",
+        "Reviewed stock quote documentation does not establish consolidated UTP/National-NBBO lineage or independent bid/ask event timestamps."
+      ],
+      "primary_sources": [
+        "https://www.barchart.com/ondemand/api/getQuote",
+        "https://www.barchart.com/ondemand/api",
+        "https://www.barchart.com/ondemand/openapi"
+      ],
+      "reopen_condition": "Primary-source documentation proves consolidated UTP/National NBBO, independent quote/trade event timestamps, and permanent-$0 automated entitlement."
+    }
+  ],
+  "conclusion": "NO_NEW_STRICT_G9_PROVIDER",
+  "no_policy_weakening": true
+}
