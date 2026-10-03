@@ -36,5 +36,13 @@
     "blob_sha": "16b0a3a5454b6ded2029a6544b485d06efbedd26",
     "generated_on": "2026-10-03",
     "implication": "DIRECT UTP REALTIME NONDISPLAY IS FEE-LIABLE; ZERO-TO-END-USER REQUIRES EXPLICIT VENDOR/BROKER ABSORPTION PLUS AUTOMATED/NONDISPLAY ENTITLEMENT"
-  }
+  },
+  "supplemental_provider_evidence": [
+    {
+      "provider": "Wealthnow",
+      "path": "nasdaq-xray/g9_provider_delta_wealthnow_20261003.json",
+      "blob_sha": "d400ba559aea3a629138bb317f52ece43f63591c",
+      "status": "NONQUALIFYING_STRICT_G9"
+    }
+  ]
 }
