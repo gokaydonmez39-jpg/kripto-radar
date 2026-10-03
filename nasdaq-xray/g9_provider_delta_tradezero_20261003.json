@@ -1,0 +1,27 @@
+{
+  "schema": "XRAY_G9_PROVIDER_DELTA_V1",
+  "generated_on": "2026-10-03",
+  "provider": "TradeZero International Developer API",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "status": "NONQUALIFYING_EXECUTION_ACCOUNT_API_NO_MARKET_DATA",
+  "evidence": [
+    "TradeZero International Developer API is an official programmatic API for account state, positions and execution.",
+    "TradeZero states there is no additional API access fee.",
+    "TradeZero International states it does not accept U.S., Bahamian or Canadian residents; Turkey is not identified in that published exclusion statement.",
+    "TradeZero's official API page explicitly says market data must be sourced separately.",
+    "The FAQ explicitly says TradeZero Developer does not provide quotes, charts or historical prices.",
+    "Therefore the API cannot satisfy strict G9 A/B regardless of account/API cost or jurisdiction."
+  ],
+  "primary_sources": [
+    "https://tradezero.com/api-trading",
+    "https://developer.tradezero.com/docs/TradeZeroAPI/tradezero-developer-api"
+  ],
+  "failed_gates": [
+    "A",
+    "B"
+  ],
+  "account_gate_assessment": "POTENTIALLY_SANCTIONED_ACCOUNT_READ_ADAPTER_IF_USER_HAS_A_RELEVANT_TRADEZERO_ACCOUNT; NOT A CURRENT CONNECTED ACCOUNT SOURCE",
+  "reopen_condition": "Official TradeZero Developer API itself adds proven consolidated National NBBO quote+trade market data with independent event timestamps under permanent-$0 automated entitlement.",
+  "no_policy_weakening": true
+}
