@@ -171,21 +171,25 @@
     },
     {
       "provider": "Wealthnow",
-      "status": "HIGH_POTENTIAL__FREE_SNAPSHOT_B_C_D_ENGINEERING_READY__A_LINEAGE_UNPROVEN",
+      "status": "HIGH_POTENTIAL_B_D_READY_A_AND_C_NONDISPLAY_LICENSE_UNPROVEN",
       "failed_gates": [
-        "A",
-        "D_RUNTIME"
+        "A_LINEAGE",
+        "C_NONDIPLAY_LICENSE",
+        "D_RUNTIME_CREDENTIAL"
       ],
       "evidence_file": "nasdaq-xray/g9_provider_delta_wealthnow_20261003.json",
       "last_checked_on": "2026-10-03",
-      "reopen_condition": "Obtain primary-source proof that Free fundamentals/price_snapshot bid/ask are consolidated UTP/National NBBO or documented equivalent lineage; then configure canonical WEALTHNOW_API_KEY/OAuth and require same-run RTH freshness.",
+      "reopen_condition": "Wealthnow primary source must prove Free price_snapshot is consolidated UTP/National NBBO (or documented equivalent) and explicitly cover automated/non-display use with no separate market-data fee/condition; then same-run RTH B/D probe with scheduler credential.",
       "negative_cache_only": true,
       "may_never_create_pass": true,
       "provisional_pass_gates": [
         "B_SCHEMA",
         "C_ZERO_DOLLAR_INTENDED_AUTOMATION"
       ],
-      "technical_adapter": "IMPLEMENTED_FAIL_CLOSED_BEHIND_AUTHORITY"
+      "technical_adapter": "IMPLEMENTED_FAIL_CLOSED_BEHIND_AUTHORITY",
+      "evidence_blob_sha": "27cebdada76023a8e748dfedc8b04a0bced6bd26",
+      "lineage_unlock_file": "nasdaq-xray/g9_wealthnow_lineage_unlock_20261003.json",
+      "lineage_unlock_blob_sha": "7c82d30fe5763a299c0c1817ac8ed24ff6ee0407"
     },
     {
       "provider": "Twelve Data",
@@ -709,5 +713,6 @@
   "reopen_policy": "Reopen an existing negative path only on newer PRIMARY SOURCE evidence materially changing its listed failed gate(s). New previously-unreviewed providers are always eligible for research. Any reopened path still requires same-run RTH technical proof before G9 PASS.",
   "unknown_never_pass": true,
   "no_policy_weakening": true,
-  "count_invariant": "provider_count == len(unique(providers[].provider)) == source_saturation.reviewed_paths"
+  "count_invariant": "provider_count == len(unique(providers[].provider)) == source_saturation.reviewed_paths",
+  "updated_on": "2026-10-03"
 }
