@@ -8,6 +8,7 @@ sys.path.insert(0,str(ROOT))
 from price_dv20_phase import classify as price_classify
 from resolve_unknowns_fallback import classify as resolver_classify
 from deep_pre_r1_shadow import family_b
+import history_phase as history_mod
 from history_phase import official_listing_upper_bound_fail, continuity_composite_pass
 import pandas as pd
 
@@ -115,10 +116,26 @@ def main():
         bad_sb[d]=(30.0,1_000_000.0)
     assert continuity_composite_pass("DFTX","2026-10-02",bad_sb,{},yb,{}) is None
 
+    # Legacy evidence bridge must never resurrect a ticker-lineage PASS if the
+    # stricter live composite check fails.
+    old_bridge=history_mod.HISTORY_BRIDGE
+    try:
+        history_mod.HISTORY_BRIDGE={"DFTX":{
+          "mode":"TICKER_LINEAGE_HISTORY_PASS_V1","outcome":"PASS_HISTORY",
+          "current_ticker":"DFTX","current_has_exact_asof_bar":True,
+          "combined_unique_daily_bars":999,"combined_completed_week_count":200,
+          "official_continuity_source":"https://www.nasdaq.com/example",
+          "predecessor_ticker":"MNMD","ticker_change_effective_date":"2026-01-15"
+        }}
+        assert history_mod.bridge_resolution("DFTX","2026-10-02") is None
+    finally:
+        history_mod.HISTORY_BRIDGE=old_bridge
+
     print({"status":"PASS","invariants":[
         "EXACT20_REQUIRED_FOR_PASS","INCOMPLETE_NEVER_PASS",
         "OVERLAY_EXACT20_REQUIRED","SETUP_B_PIVOT_EXCLUDES_CURRENT_BAR",
-        "OFFICIAL_LISTING_HISTORY_FAIL_ONLY","CUSIP_CONTINUITY_REQUIRES_CROSS_SOURCE_OVERLAP"
+        "OFFICIAL_LISTING_HISTORY_FAIL_ONLY","CUSIP_CONTINUITY_REQUIRES_CROSS_SOURCE_OVERLAP",
+        "LEGACY_LINEAGE_BRIDGE_CANNOT_BYPASS_COMPOSITE"
     ]})
 
 if __name__=="__main__":
