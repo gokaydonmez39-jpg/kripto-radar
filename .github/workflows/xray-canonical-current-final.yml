@@ -146,6 +146,13 @@ jobs:
           assert d["unknown_history_count"]==0,d["unknown_history"]
           assert set(e["event_status_by_symbol"])==set(d["results"])
           assert t["execution"]=="NONE" and t["real_money"]=="NO-GO"
+          assert t.get("final_gate_reporting_zero_alpha") is True
+          g9=json.load(open("nasdaq-xray/strict_g9_runtime_state.json"))
+          ag=json.load(open("nasdaq-xray/account_gate_contract.json"))
+          assert g9["execution"]=="NONE" and g9["real_money"]=="NO-GO"
+          assert ag["execution"]=="NONE" and ag["real_money"]=="NO-GO" and ag["provider"]=="PROVIDER_NEUTRAL"
+          assert t["g9_global_status"]==("G9_PASS" if g9.get("g9_pass") is True else "G9_BLOCKED_FREE_AUTOMATION_PATH")
+          assert t["account_status"]==ag["current_status"]
           assert t["compiled_policy_hash"]=="26a95745a50b65e85f6ece24b6501af0994764a84ddd886edb70d1fcd770849c"
           assert e.get("compiled_policy_hash")==t["compiled_policy_hash"]
           assert e.get("compiled_policy_version")=="C4.17"
