@@ -149,10 +149,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [[ -f "nasdaq-xray/account_longbridge_mcp_v2_token.enc" && ( -n "${XRAY_ACCOUNT_TOKEN_FERNET_KEY}" || -n "${LONGBRIDGE_AGENT_AUTH_CODE}" ) ]]; then
+          if [[ -f "nasdaq-xray/account_longbridge_mcp_v2_token.enc" && -n "${XRAY_ACCOUNT_TOKEN_FERNET_KEY}" ]]; then
             echo "XRAY_ACCOUNT_V2_RUNTIME=READY_ENCRYPTED_VAULT_ACCOUNT_READ"
-          elif [[ ! -f "nasdaq-xray/account_longbridge_mcp_v2_token.enc" && -n "${LONGBRIDGE_AGENT_AUTH_CODE}" ]]; then
+          elif [[ ! -f "nasdaq-xray/account_longbridge_mcp_v2_token.enc" && -n "${LONGBRIDGE_AGENT_AUTH_CODE}" && -n "${XRAY_ACCOUNT_TOKEN_FERNET_KEY}" ]]; then
             echo "XRAY_ACCOUNT_V2_RUNTIME=READY_ONE_TIME_ACCOUNT_READ_BOOTSTRAP"
+          elif [[ ! -f "nasdaq-xray/account_longbridge_mcp_v2_token.enc" && -n "${LONGBRIDGE_AGENT_AUTH_CODE}" && -z "${XRAY_ACCOUNT_TOKEN_FERNET_KEY}" ]]; then
+            echo "XRAY_ACCOUNT_V2_RUNTIME=BLOCKED_VAULT_KEY_MISSING_BEFORE_AUTH_CODE_REDEEM"
           elif [[ -n "${XRAY_ACCOUNT_TOKEN_FERNET_KEY}" ]]; then
             echo "XRAY_ACCOUNT_V2_RUNTIME=BLOCKED_VAULT_FILE_MISSING"
           elif [[ -n "${LONGBRIDGE_MCP_V2_BEARER_TOKEN}" ]]; then
@@ -187,10 +189,10 @@ jobs:
           vault="nasdaq-xray/account_longbridge_mcp_v2_token.enc"
           bootstrap_state="nasdaq-xray/account_longbridge_mcp_v2_bootstrap_state.json"
 
-          if [[ ! -f "$vault" && -n "${LONGBRIDGE_AGENT_AUTH_CODE}" ]]; then
+          if [[ ! -f "$vault" && -n "${LONGBRIDGE_AGENT_AUTH_CODE}" && -n "${XRAY_ACCOUNT_TOKEN_FERNET_KEY}" ]]; then
             python nasdaq-xray/account_longbridge_mcp_v2_bootstrap.py
           fi
-          if [[ -f "$vault" && ( -n "${XRAY_ACCOUNT_TOKEN_FERNET_KEY}" || -n "${LONGBRIDGE_AGENT_AUTH_CODE}" ) ]]; then
+          if [[ -f "$vault" && -n "${XRAY_ACCOUNT_TOKEN_FERNET_KEY}" ]]; then
             python nasdaq-xray/account_longbridge_mcp_v2_refresh.py
           fi
 
