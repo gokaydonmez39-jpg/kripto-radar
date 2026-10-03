@@ -1,33 +1,37 @@
 #!/usr/bin/env python3
-"""Encrypted bearer vault for the official Longbridge hosted MCP ACCOUNT path.
-
-The documented Agent Auth flow is:
-  1) generate a one-time code at https://open.longbridge.com/connect,
-  2) redeem it with the `authenticate` tool on https://mcp.longbridge.com/agent,
-  3) use the returned Bearer on https://mcp.longbridge.com.
+"""Encrypted OAuth token vault for XRAY Longbridge MCP /v2 ACCOUNT reads.
 
 Only ciphertext is persisted in the repository. The Fernet key MUST come from
-GitHub Actions secrets. The one-time Agent Auth Code is never used as an
-encryption key and is never persisted.
+GitHub Actions secrets at runtime. The one-time Agent Auth Code is never used
+as an encryption key. Plain access/refresh tokens are never printed or written
+to repository files.
 """
 from __future__ import annotations
 
 import json
 import os
 import tempfile
+import time
 from pathlib import Path
-from typing import Any, Mapping
+from typing import Any, Callable, Mapping
+from urllib.error import HTTPError, URLError
+from urllib.parse import urlencode
+from urllib.request import Request, urlopen
 
 from cryptography.fernet import Fernet, InvalidToken
 
 ROOT = Path(__file__).resolve().parent
 VAULT_PATH = ROOT / "account_longbridge_mcp_v2_token.enc"
 FERNET_KEY_ENV = "XRAY_ACCOUNT_TOKEN_FERNET_KEY"
-MAIN_MCP_URL = "https://mcp.longbridge.com"
-AGENT_MCP_URL = "https://mcp.longbridge.com/agent"
+TOKEN_URL = "https://mcp.longbridge.com/oauth2/token"
+REFRESH_SKEW_SECONDS = 300
 
 
 class VaultError(RuntimeError):
+    pass
+
+
+class TokenRefreshError(RuntimeError):
     pass
 
 
@@ -68,22 +72,6 @@ def decrypt_payload(ciphertext: bytes, key: str) -> dict[str, Any]:
     return value
 
 
-def validate_payload(payload: Mapping[str, Any]) -> None:
-    if payload.get("schema") != "XRAY_LONGBRIDGE_OFFICIAL_MCP_AGENT_BEARER_V1":
-        raise VaultError("VAULT_SCHEMA_INVALID")
-    token = str(payload.get("bearer_token") or "").strip()
-    if len(token) < 16 or any(ch.isspace() for ch in token):
-        raise VaultError("VAULT_BEARER_TOKEN_INVALID")
-    if payload.get("main_endpoint") != MAIN_MCP_URL:
-        raise VaultError("VAULT_MAIN_ENDPOINT_INVALID")
-    if payload.get("agent_endpoint") != AGENT_MCP_URL:
-        raise VaultError("VAULT_AGENT_ENDPOINT_INVALID")
-    if payload.get("account_tools_verified") is not True:
-        raise VaultError("VAULT_ACCOUNT_TOOL_MANIFEST_NOT_VERIFIED")
-    if payload.get("write_surface_absent") is not True:
-        raise VaultError("VAULT_WRITE_SURFACE_NOT_ABSENT")
-
-
 def load_vault(path: Path = VAULT_PATH, *, key: str | None = None) -> dict[str, Any]:
     if not path.exists():
         raise VaultError("VAULT_FILE_MISSING")
@@ -112,11 +100,95 @@ def save_vault(payload: Mapping[str, Any], path: Path = VAULT_PATH, *, key: str 
             pass
 
 
-def bearer_from_vault(payload: Mapping[str, Any]) -> str:
+def _http_json(
+    method: str,
+    url: str,
+    *,
+    form: Mapping[str, str] | None = None,
+    headers: Mapping[str, str] | None = None,
+) -> dict[str, Any]:
+    body = urlencode(dict(form or {})).encode() if form is not None else None
+    hdrs = dict(headers or {})
+    if form is not None:
+        hdrs.setdefault("Content-Type", "application/x-www-form-urlencoded")
+    req = Request(url, data=body, headers=hdrs, method=method)
+    try:
+        with urlopen(req, timeout=20) as resp:
+            raw = resp.read()
+    except HTTPError as exc:
+        raise TokenRefreshError(f"HTTP_{getattr(exc,'code',0)}") from None
+    except (URLError, TimeoutError):
+        raise TokenRefreshError("NETWORK_ERROR") from None
+    try:
+        value = json.loads(raw.decode("utf-8"))
+    except Exception:
+        raise TokenRefreshError("TOKEN_RESPONSE_INVALID_JSON") from None
+    if not isinstance(value, dict):
+        raise TokenRefreshError("TOKEN_RESPONSE_NOT_OBJECT")
+    return value
+
+
+def validate_payload(payload: Mapping[str, Any]) -> None:
+    if payload.get("schema") != "XRAY_LONGBRIDGE_MCP_V2_ENCRYPTED_TOKEN_V1":
+        raise VaultError("VAULT_SCHEMA_INVALID")
+    required = ("client_id", "access_token", "refresh_token", "expires_at_epoch", "scopes")
+    if any(not payload.get(k) for k in required):
+        raise VaultError("VAULT_REQUIRED_FIELD_MISSING")
+    scopes = {str(x) for x in payload.get("scopes") or []}
+    if "account.read" not in scopes:
+        raise VaultError("VAULT_ACCOUNT_SCOPE_MISSING")
+    if "trade.write" in scopes:
+        raise VaultError("VAULT_TRADE_WRITE_SCOPE_FORBIDDEN")
+
+
+def access_token_from_vault(
+    payload: dict[str, Any],
+    *,
+    now_epoch: int | None = None,
+    http_json: Callable[..., dict[str, Any]] | None = None,
+) -> tuple[str, dict[str, Any], bool]:
+    """Return a usable access token, refreshing and returning updated state if needed."""
     validate_payload(payload)
-    return str(payload["bearer_token"])
+    now = int(time.time() if now_epoch is None else now_epoch)
+    expires_at = int(payload.get("expires_at_epoch") or 0)
+    if expires_at - now > REFRESH_SKEW_SECONDS:
+        return str(payload["access_token"]), payload, False
 
+    call = http_json or _http_json
+    form = {
+        "grant_type": "refresh_token",
+        "client_id": str(payload["client_id"]),
+        "refresh_token": str(payload["refresh_token"]),
+    }
+    result = call("POST", TOKEN_URL, form=form, headers={})
+    access = str(result.get("access_token") or "").strip()
+    if not access:
+        raise TokenRefreshError("REFRESH_ACCESS_TOKEN_MISSING")
+    try:
+        expires_in = int(result.get("expires_in"))
+    except (TypeError, ValueError):
+        raise TokenRefreshError("REFRESH_EXPIRES_IN_MISSING") from None
+    if expires_in <= REFRESH_SKEW_SECONDS:
+        raise TokenRefreshError("REFRESH_EXPIRY_TOO_SHORT")
 
-if __name__ == "__main__":
-    # Library-only module. Never print decrypted credential material.
-    raise SystemExit("library module")
+    returned_scope = str(result.get("scope") or "").split()
+    scopes = returned_scope or [str(x) for x in payload.get("scopes") or []]
+    scope_set = set(scopes)
+    if "account.read" not in scope_set:
+        raise TokenRefreshError("REFRESH_ACCOUNT_SCOPE_MISSING")
+    if "trade.write" in scope_set:
+        raise TokenRefreshError("REFRESH_TRADE_WRITE_SCOPE_FORBIDDEN")
+
+    refresh = str(result.get("refresh_token") or "").strip() or str(payload["refresh_token"])
+    updated = dict(payload)
+    updated.update({
+        "access_token": access,
+        "refresh_token": refresh,
+        "token_type": str(result.get("token_type") or payload.get("token_type") or "Bearer"),
+        "scopes": sorted(scope_set),
+        "issued_at_epoch": now,
+        "expires_at_epoch": now + expires_in,
+        "last_refresh_epoch": now,
+    })
+    validate_payload(updated)
+    return access, updated, True
