@@ -1,0 +1,71 @@
+{
+  "schema": "XRAY_HISTORY_OFFICIAL_IDENTITY_EVIDENCE_V1",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "alpha_authority": false,
+  "evidence_only": true,
+  "unknown_never_pass": true,
+  "records": {
+    "HONA": {
+      "mode": "OFFICIAL_LISTING_UPPER_BOUND_FAIL_ONLY",
+      "earliest_public_trading_date": "2026-06-15",
+      "regular_way_trading_date": "2026-06-29",
+      "sources": [
+        "https://www.nasdaq.com/press-release/honeywell-board-directors-approves-spin-honeywell-aerospace-2026-06-15",
+        "https://www.sec.gov/Archives/edgar/data/2089271/000162828026045874/hona-20260625.htm"
+      ],
+      "note": "Honeywell Aerospace when-issued trading expected from 2026-06-15 and regular-way Nasdaq trading from 2026-06-29. Earliest possible trading date is used for conservative history upper bound."
+    },
+    "INIO": {
+      "mode": "OFFICIAL_LISTING_UPPER_BOUND_FAIL_ONLY",
+      "earliest_public_trading_date": "2026-06-04",
+      "regular_way_trading_date": "2026-06-04",
+      "sources": [
+        "https://www.nasdaq.com/press-release/innio-announces-pricing-upsized-initial-public-offering-2026-06-04"
+      ],
+      "note": "INNIO shares expected to begin Nasdaq Global Select Market trading under INIO on 2026-06-04."
+    },
+    "SKHY": {
+      "mode": "OFFICIAL_LISTING_UPPER_BOUND_FAIL_ONLY",
+      "earliest_public_trading_date": "2026-07-10",
+      "regular_way_trading_date": "2026-07-13",
+      "predecessor_when_issued_symbol": "SKHYV",
+      "sources": [
+        "https://www.nasdaqtrader.com/TraderNews.aspx?id=ETA2026-37",
+        "https://www.nasdaqtrader.com/TraderNews.aspx?id=DTN2026-11"
+      ],
+      "note": "Nasdaq states SKHYV began when-issued trading 2026-07-10 and changed to SKHY for regular-way trading 2026-07-13; historical SKHYV information should carry over to SKHY."
+    },
+    "SOLS": {
+      "mode": "OFFICIAL_LISTING_UPPER_BOUND_FAIL_ONLY",
+      "earliest_public_trading_date": "2025-10-30",
+      "regular_way_trading_date": "2025-10-30",
+      "sources": [
+        "https://www.nasdaq.com/press-release/solstice-advanced-materials-completes-spin-honeywell-and-begins-trading-nasdaq-2025",
+        "https://www.sec.gov/Archives/edgar/data/2064953/000206495326000008/sols-20251231.htm"
+      ],
+      "note": "Solstice began regular-way Nasdaq trading as an independent public company under SOLS on 2025-10-30."
+    },
+    "VSNT": {
+      "mode": "OFFICIAL_LISTING_UPPER_BOUND_FAIL_ONLY",
+      "earliest_public_trading_date": "2026-01-05",
+      "regular_way_trading_date": "2026-01-05",
+      "sources": [
+        "https://www.nasdaq.com/press-release/versant-begins-trading-nasdaq-today-independent-company-following-completion-comcast",
+        "https://investors.versantmedia.com/investor-resources/investor-faqs"
+      ],
+      "note": "Versant commenced regular-way Nasdaq trading under VSNT on 2026-01-05 after separation from Comcast."
+    },
+    "DFTX": {
+      "mode": "OFFICIAL_TICKER_CONTINUITY_COMPOSITE_HISTORY",
+      "predecessor_symbol": "MNMD",
+      "effective_date": "2026-01-15",
+      "cusip_unchanged": true,
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1813814/000119312526009854/mnmd-20260109.htm",
+        "https://www.sec.gov/Archives/edgar/data/1813814/000119312526076742/dftx-20251231.htm"
+      ],
+      "note": "SEC states the issuer changed name from Mind Medicine (MindMed) Inc. to Definium Therapeutics, Inc.; CUSIP for the common shares remained unchanged; the same common shares traded as MNMD before 2026-01-15 and DFTX thereafter."
+    }
+  }
+}
