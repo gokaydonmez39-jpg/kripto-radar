@@ -89,6 +89,19 @@
       ],
       "blocker": "No Midas-controlled scheduler-callable read-only OAuth/API is currently exposed to this runtime.",
       "reopen_condition": "Midas publishes or explicitly authorizes a read-only OAuth/API/connector for its Alpaca-backed account and same-run account value/cash plus equity positions/exposure parse successfully."
+    },
+    "LONGBRIDGE_DIRECT_OPENAPI": {
+      "status": "OFFICIAL_READ_PATH_PREPARED_NOT_CANONICAL_SAME_RUN",
+      "sanctioned_surface": "Official Longbridge OpenAPI",
+      "required_read_calls": [
+        "account_balance",
+        "stock_positions"
+      ],
+      "diagnostic_probe": "nasdaq-xray/account_longbridge_openapi_probe.py",
+      "selftest": "nasdaq-xray/account_longbridge_openapi_probe_selftest.py",
+      "security_model": "Credential material must remain outside repository/chat; public probe state may contain status/provenance only.",
+      "canonical_gate_rule": "A standalone provider-path success is diagnostic only. ACCOUNT PASS still requires fresh same-run reads inside the canonical run with exact current adapter binding.",
+      "blocker": "No secure scheduler credential bridge callable inside the canonical automation is currently available from this chat runtime."
     }
   },
   "transition_to_pass": "Only fresh same-run provider readback satisfying the pass_rule may set ACCOUNT=PASS. Persisted prior PASS alone is insufficient.",
