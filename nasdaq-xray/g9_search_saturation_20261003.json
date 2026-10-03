@@ -9,7 +9,7 @@
     "C": "lawful automated/non-display permanent-$0 entitlement with no fee/balance/activity/per-query condition",
     "D": "scheduler callability"
   },
-  "unique_provider_paths_reviewed": 29,
+  "unique_provider_paths_reviewed": 35,
   "evidence_files": [
     {
       "path": "nasdaq-xray/g9_free_path_audit_20261003.json",
@@ -46,6 +46,10 @@
     {
       "path": "nasdaq-xray/g9_provider_delta_midas_20261003.json",
       "blob_sha": "4f229a07fb2881629c99cdc5274f6a540784219f"
+    },
+    {
+      "path": "nasdaq-xray/g9_provider_delta_marketdata_sweep_20261003.json",
+      "blob_sha": "a85a8c8ef334425dcbccddcda8936afff494e05e"
     }
   ],
   "reviewed_provider_paths": [
@@ -77,7 +81,14 @@
     "Saxo OpenAPI",
     "Trading 212 Public API",
     "XTB API / xAPI",
-    "Midas Atlas / unofficial mcp-midas"
+    "Midas Atlas / unofficial mcp-midas",
+    "Questrade API",
+    "EODHD Real-Time WebSocket",
+    "Financial Modeling Prep (FMP)",
+    "dxFeed Direct UTP Tape C",
+    "Cboe One Direct",
+    "Nasdaq Basic / Nasdaq Data Link",
+    "Barchart OnDemand"
   ],
   "strongest_near_misses": [
     {
@@ -109,6 +120,11 @@
       "provider": "Charles Schwab Trader API / International",
       "strength": "sanctioned OAuth developer platform and international brokerage footprint",
       "blocker": "current primary-source chain does not prove Turkey retail eligibility plus exact Trader-API consolidated NBBO/timestamps plus permanent-$0 entitlement"
+    },
+    {
+      "provider": "dxFeed Direct UTP Tape C",
+      "strength": "exact UTP UQDF/UTDF Tape-C + National BBO lineage",
+      "blocker": "direct realtime access is subscription/licensing based; no permanent-$0 automated entitlement"
     }
   ],
   "structural_result": "DIRECT UTP REALTIME NONDISPLAY IS FEE-LIABLE. A strict $0-to-end-user path can exist only if a broker/vendor lawfully absorbs upstream licensing and explicitly grants the exact automated/non-display API entitlement without balance/activity/per-query/subscription/account-maintenance conditions.",
