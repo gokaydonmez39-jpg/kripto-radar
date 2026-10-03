@@ -13,6 +13,8 @@ on:
       - "nasdaq-xray/history_official_identity_evidence.json"
       - "nasdaq-xray/price_dv20_recover_from_fullstate.py"
       - "nasdaq-xray/chatgpt_compiled_policy_v3.json"
+      - "nasdaq-xray/account_provider_adapter_contract.json"
+      - "nasdaq-xray/account_gate_contract.json"
       - "nasdaq-xray/requirements-runtime.txt"
       - ".github/workflows/xray-dynamic-policy-invariants.yml"
   workflow_dispatch:
@@ -42,6 +44,25 @@ jobs:
             nasdaq-xray/test_dynamic_policy_invariants.py
       - name: Run deterministic invariants
         run: python nasdaq-xray/test_dynamic_policy_invariants.py
+      - name: Verify provider-neutral ACCOUNT final gate
+        run: |
+          python - <<'PY'
+          import json
+          g=json.load(open("nasdaq-xray/account_gate_contract.json"))
+          a=json.load(open("nasdaq-xray/account_provider_adapter_contract.json"))
+          assert g["execution"]=="NONE" and g["real_money"]=="NO-GO"
+          assert a["execution"]=="NONE" and a["real_money"]=="NO-GO"
+          assert g["provider"]=="PROVIDER_NEUTRAL"
+          assert g["primary_adapter"]=="LONGBRIDGE"
+          assert g["adapter_contract"]["path"]=="nasdaq-xray/account_provider_adapter_contract.json"
+          assert g["adapter_contract"]["blob_sha"]
+          assert a["provider_neutral"] is True
+          assert a["adapters"]["LONGBRIDGE"]["status"]!="PASS"
+          assert g["current_status"]!="PASS"
+          assert "place_order" in a["forbidden_actions"]
+          assert a["no_policy_weakening"] is True
+          print("XRAY_ACCOUNT_PROVIDER_CONTRACT=PASS")
+          PY
       - name: Verify compiled policy hard gate
         run: |
           python - <<'PY'
