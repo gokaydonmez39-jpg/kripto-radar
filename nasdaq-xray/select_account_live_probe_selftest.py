@@ -63,7 +63,10 @@ def main():
     assert c["status"]=="BLOCKED_SCOPE_OR_TOKEN"
 
     stale_only=mod.choose([stale_v2])
-    assert stale_only["status"]=="PASS"
+    assert stale_only["status"]=="BLOCKED_STALE_PROBE"
+    assert stale_only["reason_code"]=="PASS_STATE_NOT_FROM_CURRENT_WORKFLOW_RUN"
+    assert stale_only["balance_parseable"] is False
+    assert stale_only["positions_parseable"] is False
     assert mod.valid_pass(stale_only) is False
 
     none=mod.choose([])
