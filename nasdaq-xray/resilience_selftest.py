@@ -32,6 +32,12 @@ def ratelimited(req,timeout=20):
     calls["n"]+=1
     raise urllib.error.HTTPError(req.full_url,429,"Too Many Requests",{},io.BytesIO(b""))
 
+def flaky_once(req,timeout=20):
+    calls["n"]+=1
+    if calls["n"]==1:
+        raise OSError("synthetic transient once")
+    return FakeResp(b'{"ok":true,"recovered":true}')
+
 try:
     rr._MEM.clear(); rr._INFLIGHT.clear()
     rr.urllib.request.urlopen=good
@@ -50,15 +56,25 @@ try:
     rr._MEM.clear(); rr._INFLIGHT.clear(); calls["n"]=0
     rr.urllib.request.urlopen=bad
     for i in range(3):
-        try: rr.fetch_json("SELFTEST_BREAKER",f"https://selftest.invalid/fail{i}",circuit_failures=3,cooldown=120)
+        try: rr.fetch_json("SELFTEST_BREAKER",f"https://selftest.invalid/fail{i}",circuit_failures=3,cooldown=120,retry_delays=(0,0),retry_jitter=0)
         except Exception: pass
-    assert calls["n"]==3,calls
+    assert calls["n"]==9,calls
     try:
         rr.fetch_json("SELFTEST_BREAKER","https://selftest.invalid/fourth",circuit_failures=3,cooldown=120)
         raise AssertionError("circuit did not open")
     except RuntimeError as e:
         assert str(e).startswith("CIRCUIT_OPEN:SELFTEST_BREAKER"),str(e)
-    assert calls["n"]==3,calls
+    assert calls["n"]==9,calls
+
+    # A transient owner failure should recover inside one logical fetch and
+    # publish the successful result to the single-flight cache.
+    rr._MEM.clear(); rr._INFLIGHT.clear(); calls["n"]=0
+    rr.urllib.request.urlopen=flaky_once
+    got=rr.fetch_json("SELFTEST_RETRY_RECOVERY","https://selftest.invalid/recover",retry_delays=(0,),retry_jitter=0)
+    assert got=={"ok":True,"recovered":True},got
+    assert calls["n"]==2,calls
+    led=json.loads(rr.LEDGER.read_text())
+    assert led["providers"]["SELFTEST_RETRY_RECOVERY"]["status"]=="HEALTHY"
 
     # Definitive 403 must not build transient failure count or open circuit.
     rr._MEM.clear(); rr._INFLIGHT.clear(); calls["n"]=0
@@ -79,9 +95,9 @@ try:
     rr._MEM.clear(); rr._INFLIGHT.clear(); calls["n"]=0
     rr.urllib.request.urlopen=ratelimited
     for i in range(2):
-        try: rr.fetch_json("SELFTEST_429",f"https://selftest.invalid/rate{i}",circuit_failures=2,cooldown=120)
+        try: rr.fetch_json("SELFTEST_429",f"https://selftest.invalid/rate{i}",circuit_failures=2,cooldown=120,retry_delays=(0,0),retry_jitter=0)
         except urllib.error.HTTPError as e: assert e.code==429
-    assert calls["n"]==2,calls
+    assert calls["n"]==6,calls
     led=json.loads(rr.LEDGER.read_text())
     p=led["providers"]["SELFTEST_429"]
     assert p["status"]=="CIRCUIT_OPEN",p
