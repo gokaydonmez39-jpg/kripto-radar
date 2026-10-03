@@ -1,0 +1,66 @@
+{
+  "schema": "XRAY_G9_PROVIDER_DELTA_V1",
+  "generated_on": "2026-10-03",
+  "scope": "INTERNATIONAL_BROKER_API_SWEEP_2",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "providers": [
+    {
+      "provider": "Saxo OpenAPI",
+      "status": "NONQUALIFYING_REALTIME_EXCHANGE_FEED_IS_SUBSCRIPTION_PAID",
+      "evidence": [
+        "Official OpenAPI supports streaming prices with bid/ask and account/position streams.",
+        "Official Saxo developer documentation states exchange-traded-product price feeds are paid through subscriptions and subject to venue licensing; access can be delayed or real time depending on feed rights.",
+        "Therefore current U.S.-equity realtime feed does not satisfy strict permanent-$0 G9-C; exact UTP/National-NBBO lineage is also not established by the generic price API."
+      ],
+      "primary_sources": [
+        "https://www.developer.saxo/openapi/learn/core-business-concepts",
+        "https://www.developer.saxo/openapi/learn/pricing",
+        "https://www.developer.saxo/openapi/learn/signalr-streaming"
+      ],
+      "failed_gates": [
+        "A",
+        "C"
+      ]
+    },
+    {
+      "provider": "Trading 212 Public API",
+      "status": "NONQUALIFYING_TURKEY_NOT_SUPPORTED_AND_NO_STRICT_NBBO_EVENT_API",
+      "evidence": [
+        "Official Public API supports account summary and real-time open-position state for eligible Invest/ISA accounts.",
+        "Current official supported-country list does not include Turkey.",
+        "Reviewed public API surface provides account, instruments, orders, positions and history but no sanctioned equity endpoint proving consolidated UTP/National NBBO with independent bid/ask/trade event timestamps."
+      ],
+      "primary_sources": [
+        "https://docs.trading212.com/api/section/authentication",
+        "https://docs.trading212.com/api/positions",
+        "https://helpcentre.trading212.com/hc/en-us/articles/12933782261917-What-are-the-supported-countries"
+      ],
+      "failed_gates": [
+        "A",
+        "B",
+        "D_FOR_USER_JURISDICTION"
+      ]
+    },
+    {
+      "provider": "XTB API / xAPI",
+      "status": "NONQUALIFYING_API_DISCONTINUED",
+      "evidence": [
+        "Official XTB Help Center states API access is no longer available and was discontinued on March 14, 2025.",
+        "Current XTB International country list also does not include Turkey under the listed eligible international jurisdictions.",
+        "Therefore there is no scheduler-callable current equity API path for strict G9."
+      ],
+      "primary_sources": [
+        "https://www.xtb.com/int/help-center/our-platforms-6-4/does-xtb-offer-investment-automation-tools-4",
+        "https://www.xtb.com/int/help-center/trading-account-2-1/which-countries-do-you-accept-clients-from"
+      ],
+      "failed_gates": [
+        "A",
+        "B",
+        "D"
+      ]
+    }
+  ],
+  "conclusion": "NO_NEW_STRICT_G9_PROVIDER",
+  "no_policy_weakening": true
+}
