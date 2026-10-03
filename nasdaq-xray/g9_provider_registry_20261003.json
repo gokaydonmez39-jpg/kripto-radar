@@ -171,15 +171,14 @@
     },
     {
       "provider": "Wealthnow",
-      "status": "NONQUALIFYING_STRICT_G9",
+      "status": "FREE_SNAPSHOT_HAS_TIMESTAMPS_BUT_NBBO_LINEAGE_UNPROVEN_AND_USAGE_CAPPED",
       "failed_gates": [
         "A",
-        "B",
         "C"
       ],
       "evidence_file": "nasdaq-xray/g9_provider_delta_wealthnow_20261003.json",
       "last_checked_on": "2026-10-03",
-      "reopen_condition": "Free route gains consolidated UTP/NBBO provenance, independent quote/trade event timestamps and uncapped permanent-$0 automated entitlement.",
+      "reopen_condition": "Free route is explicitly documented as consolidated UTP/National NBBO and entitlement becomes uncapped/no-per-call-credit under strict permanent-$0, then same-run RTH proof.",
       "negative_cache_only": true,
       "may_never_create_pass": true
     },
