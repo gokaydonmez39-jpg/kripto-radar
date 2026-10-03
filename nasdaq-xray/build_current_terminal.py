@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import glob,hashlib,json,os
+import glob,hashlib,json,os,re
 from datetime import datetime,timezone
 from pathlib import Path
 
@@ -120,7 +120,45 @@ def main():
 
     assert lg["input_count"]==len(hpass) and set(lg["results"])==hpass
     assert lg.get("source_history_blob_sha")==sh["history"] and lg.get("source_history_pass_hash")==h.get("pass_hash")
-    assert lg.get("source_master_blob_sha")==sh["full_state"]
+    legal_master_semantic_rebind=False
+    if lg.get("source_master_blob_sha")!=sh["full_state"]:
+        # The master file may be refreshed within the same ASOF without changing
+        # identity/legal semantics (e.g. footer timestamp / updated_at metadata).
+        # Never accept blob drift from count equality alone: recompute every LEGAL
+        # decision from the CURRENT full-state fields actually used by legal_phase.py.
+        cur=d["full_state"]
+        assert cur.get("task_id")==TASK and cur.get("asof_et")==asof
+        assert set(hpass)<=set((cur.get("security_names") or {}).keys())
+        proof={}
+        spp=lg.get("source_proof_path")
+        if spp:
+            pp=(ROOT.parent/spp)
+            assert pp.exists() and blob_sha(pp)==lg.get("source_proof_blob_sha")
+            px=load(pp)
+            if px.get("schema")=="XRAY_CANONICAL_LEGAL_PROOF_V1" and px.get("task_id")==TASK and px.get("asof_et")==asof:
+                proof=px.get("proofs") or {}
+        suspect=re.compile(r"\\bacquisition\\b|\\bspac\\b|\\bblank check\\b",re.I)
+        for s in sorted(hpass):
+            name=str((cur.get("security_names") or {}).get(s) or "")
+            disc=(cur.get("discovery") or {}).get(s) or {}
+            industry=str(disc.get("industry") or "").strip()
+            got=(lg.get("results") or {}).get(s) or {}
+            if industry.lower()=="blank checks":
+                assert got.get("status")=="BLOCK_LEGAL_SHELL" and got.get("reason")=="NASDAQ_SAME_RUN_INDUSTRY_BLANK_CHECKS",(s,got,industry)
+                assert got.get("security_name")==name,(s,got.get("security_name"),name)
+            elif suspect.search(name):
+                pv=proof.get(s)
+                if pv and pv.get("decision")=="OPERATING_PASS" and pv.get("source") in {"SEC","ISSUER","NASDAQ_OFFICIAL","BIGDATA_SEC_GROUNDED"}:
+                    assert got.get("status")=="PASS_LEGAL" and got.get("reason")=="EXPLICIT_OPERATING_PROOF" and got.get("proof")==pv,(s,got,pv)
+                elif pv and pv.get("decision")=="SHELL_BLOCK":
+                    assert got.get("status")=="BLOCK_LEGAL_SHELL" and got.get("reason")=="EXPLICIT_SHELL_PROOF" and got.get("proof")==pv,(s,got,pv)
+                else:
+                    assert got.get("status")=="UNKNOWN_LEGAL" and got.get("reason")=="SUSPECT_SPAC_ACQUISITION_REQUIRES_PROOF",(s,got)
+                    assert got.get("security_name")==name and got.get("industry")==industry,(s,got,name,industry)
+            else:
+                assert got.get("status")=="PASS_LEGAL" and got.get("reason")=="NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",(s,got)
+                assert got.get("security_name")==name,(s,got.get("security_name"),name)
+        legal_master_semantic_rebind=True
     assert (lg["counts"] or {}).get("UNKNOWN_LEGAL",0)==0 and not lg["unknown_symbols"]
     lpass=set(lg["pass_symbols"]); lblock=set(lg["blocked_symbols"])
     assert lpass|lblock==hpass and not (lpass&lblock)
@@ -243,6 +281,8 @@ def main():
         "policy_order_exact":True,"master_complete":True,"price_exact_master":True,"mc_exact_price_pass_set":True,
         "sequential_settlement_bound":(not settlement_witness_required) or mc.get("settlement_witness_status")=="PASS",
         "history_exact_mc_primary":True,"fallback_watch_excluded_after_mc":True,"legal_exact_history_pass":True,
+        "legal_master_blob_exact":lg.get("source_master_blob_sha")==sh["full_state"],
+        "legal_master_semantic_rebind":legal_master_semantic_rebind,
         "stage1_exact_legal_pass":True,"weekly_exact_event_scope":True,"regime_no_missing":True,
         "deep_exact_weekly_scope":True,"final_exact_confirmed_family_set":True,
         "exact_blob_provenance_chain":True,
