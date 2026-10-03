@@ -18,7 +18,7 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
-from account_longbridge_mcp_v2_vault import FERNET_KEY_ENV, VAULT_PATH, save_vault
+from account_longbridge_mcp_v2_vault import VAULT_PATH, save_vault
 
 ROOT = Path(__file__).resolve().parent
 OUT = ROOT / "account_longbridge_mcp_v2_bootstrap_state.json"
@@ -145,12 +145,11 @@ def _public(status: str, reason_code: str, *, scopes: list[str] | None = None, e
 
 def main() -> None:
     code = os.getenv(AUTH_CODE_ENV, "")
-    key = os.getenv(FERNET_KEY_ENV, "")
     try:
         client_id, raw_code = unpack_agent_code(code)
         token = _exchange(client_id, raw_code)
         vault = build_vault_payload(client_id, token)
-        save_vault(vault, key=key)
+        save_vault(vault)
         state = _public(
             "PASS",
             "ENCRYPTED_ACCOUNT_READ_VAULT_CREATED",
