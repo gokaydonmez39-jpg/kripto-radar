@@ -23,7 +23,7 @@ def load(p):
 
 def blob_sha(p):
     b=p.read_bytes()
-    return hashlib.sha1(f"blob {len(b)}\\0".encode()+b).hexdigest()
+    return hashlib.sha1(b"blob " + str(len(b)).encode() + bytes([0]) + b).hexdigest()
 
 def main():
     t=load(PATHS["terminal"])
