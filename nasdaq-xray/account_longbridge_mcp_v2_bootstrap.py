@@ -248,7 +248,7 @@ def build_vault_payload(
         "account_tools_verified": True,
         "write_surface_absent": True,
         "bootstrap_epoch": now,
-        "protocol": "OFFICIAL_AGENT_AUTH_CODE_TO_MAIN_MCP_REFRESHABLE",
+        "protocol": "OFFICIAL_AGENT_AUTH_CODE_TO_RESTRICTED_MCP_V2_REFRESHABLE",
     }
 
 
@@ -258,7 +258,7 @@ def _public(status: str, reason_code: str) -> dict[str, Any]:
         "status": status,
         "reason_code": reason_code,
         "provider": "LONGBRIDGE_HOSTED_MCP_V2",
-        "protocol": "OFFICIAL_AGENT_AUTH_CODE_TO_MAIN_MCP_REFRESHABLE",
+        "protocol": "OFFICIAL_AGENT_AUTH_CODE_TO_RESTRICTED_MCP_V2_REFRESHABLE",
         "agent_endpoint": AGENT_MCP_URL,
         "main_endpoint": MAIN_MCP_URL,
         "required_permission": "ACCOUNT",
