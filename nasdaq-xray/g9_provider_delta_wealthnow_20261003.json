@@ -1,0 +1,22 @@
+{
+  "schema": "XRAY_G9_PROVIDER_DELTA_V1",
+  "generated_on": "2026-10-03",
+  "provider": "Wealthnow",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "status": "NONQUALIFYING_STRICT_G9",
+  "evidence": [
+    "Free Developer API is $0 with 1,000 credits/month hard cap and market-data/fundamentals access.",
+    "Free price_snapshot exposes last trade time plus bid/ask, but documentation does not establish exact UTP/SIP National NBBO lineage for that route and does not expose independent quote-event timestamps for bid and ask.",
+    "The documented consolidated top-of-book NBBO quote stream is billed under quant_signals and requires Starter; current Starter price is $99/month.",
+    "Therefore the free route does not prove A/B and the exact consolidated streaming route fails permanent-$0 C."
+  ],
+  "primary_sources": [
+    "https://wealthnow.io/api",
+    "https://app.wealthnow.io/docs/pricing-and-credits",
+    "https://app.wealthnow.io/docs/market-data",
+    "https://app.wealthnow.io/docs/streaming"
+  ],
+  "reopen_condition": "Only if a Free route explicitly gains consolidated UTP/National NBBO provenance, independent quote and trade event timestamps, and an automated entitlement with no paid/per-query/usage-cap condition.",
+  "no_policy_weakening": true
+}
