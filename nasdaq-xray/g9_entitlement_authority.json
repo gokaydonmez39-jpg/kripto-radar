@@ -115,20 +115,20 @@
   ],
   "search_saturation": {
     "path": "nasdaq-xray/g9_search_saturation_20261003.json",
-    "blob_sha": "5ffd1f44b762caace001599f581144e3191ebfaf",
+    "blob_sha": "32823f225f97162b1f9669f8569795c5ab2629bd",
     "unique_provider_paths_reviewed": 48,
     "result": "NO_REVIEWED_PROVIDER_PROVES_A_B_C_D_SIMULTANEOUSLY"
   },
   "negative_registry": {
     "path": "nasdaq-xray/g9_provider_registry_20261003.json",
-    "blob_sha": "afa1a5a3e689d8c28e8b9958686043230e9e6ccc",
+    "blob_sha": "b95406a9bf77ef6f2fba82a780d63673fe6e2626",
     "provider_count": 48,
     "role": "NEGATIVE_EVIDENCE_CACHE_ONLY_NEVER_PASS_AUTHORITY"
   },
   "midas_official_audit": {
     "path": "nasdaq-xray/midas_official_path_audit_20261003.json",
-    "blob_sha": "0a59af0defc953bfce242815cd2a43b5d38157dc",
-    "result": "TRADINGVIEW_BROKER_BID_ASK_LAST_TECHNICALLY_PROVEN;INDEPENDENT_EVENT_TIMESTAMPS_NBBO_LINEAGE_AUTOMATED_NONDISPLAY_RIGHT_AND_ENDUSER_API_UNPROVEN"
+    "blob_sha": "f4ec36f1a66005895efaf06fbea1cb3e30d21dcd",
+    "result": "OFFICIAL_TRADINGVIEW_BROKER_READ_SURFACE_PROVEN;STRICT_G9_STILL_BLOCKED_ON_NBBO_LINEAGE_EVENT_TIMESTAMPS_AUTOMATED_NONDISPLAY_RIGHT_AND_ENDUSER_SCHEDULER_API"
   },
   "midas_alpaca_infrastructure_audit": {
     "path": "nasdaq-xray/midas_alpaca_infrastructure_audit_20261003.json",
