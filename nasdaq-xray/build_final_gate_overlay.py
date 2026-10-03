@@ -59,6 +59,13 @@ def main():
     bound_reg=(ga.get("negative_registry") or {}).get("blob_sha")
     assert bound_reg==actual_reg, f"G9_REGISTRY_BINDING_MISMATCH bound={bound_reg} actual={actual_reg}"
 
+    sat_count=int(gs.get("unique_provider_paths_reviewed") or 0)
+    reg_count=int(greg.get("provider_count") or 0)
+    auth_count=int((ga.get("current_evidence") or {}).get("reviewed_provider_paths") or 0)
+    assert sat_count==reg_count==auth_count, (
+        f"G9_PROVIDER_COUNT_BINDING_MISMATCH saturation={sat_count} registry={reg_count} authority={auth_count}"
+    )
+
     full=bool(t.get("full_end_to_end_research_pass"))
     g9_pass=gr.get("g9_pass") is True
     account_status=str(ag.get("current_status") or "UNKNOWN")
@@ -113,7 +120,9 @@ def main():
         "saturation_blob_sha":actual_sat,
         "registry_path":"nasdaq-xray/g9_provider_registry_20261003.json",
         "registry_blob_sha":actual_reg,
-        "provider_paths_reviewed":gs.get("unique_provider_paths_reviewed"),
+        "provider_paths_reviewed":sat_count,
+        "provider_registry_count":reg_count,
+        "authority_reviewed_count":auth_count,
       },
       "account":{
         "status":account_status,
