@@ -11,7 +11,7 @@
   "pass_rule": "Any sanctioned adapter listed as eligible by the provider-neutral ACCOUNT adapter contract may PASS only when same-run current account value/cash state AND equity positions/exposure both parse successfully. Longbridge remains the current primary adapter. Empty positions are valid known exposure; permission/auth/tool errors are never PASS.",
   "current_status": "ACCOUNT_BLOCKED_SCOPE_NOT_GRANTED_OR_ACCOUNT_UNSUPPORTED",
   "current_error_code": 403308,
-  "repair": "Reconnect/re-authorize Longbridge OAuth with the full permissions required by the connector. Plain token refresh is insufficient because it preserves the old scopes.",
+  "repair": "Do not repeat ordinary Longbridge reauthorization. Reopen Longbridge only if account/portfolio scopes become available for this account; otherwise use a sanctioned provider-neutral broker adapter that passes fresh same-run read-only account value/cash + equity positions/exposure.",
   "forbidden_calls": [
     "place_order",
     "replace_order",
@@ -24,18 +24,18 @@
   "last_verified_on": "2026-10-03",
   "last_probe_results": {
     "account_balance": {
-      "status": "BLOCKED_REAUTH_REQUIRED",
+      "status": "403308_SCOPE_DENIED",
       "error_code": 403308,
       "private_values_persisted": false
     },
     "stock_positions": {
-      "status": "BLOCKED_REAUTH_REQUIRED",
+      "status": "403308_SCOPE_DENIED",
       "error_code": 403308,
       "private_values_persisted": false
     }
   },
   "retry_class": "EXTERNAL_SCOPE_OR_ACCOUNT_ELIGIBILITY_BLOCK",
-  "reauth_rule": "Reconnect Longbridge and approve the full permission set requested by the connector (including watchlist/portfolio/trading OAuth scopes if presented). Plain token refresh or reconnect with the same limited scopes does not clear 403308.",
+  "reauth_rule": "Ordinary token refresh/reconnect has already been falsified as a repair: a new OAuth session enabled watchlist but account/portfolio/trading-read endpoints remained 403308. Retry only on a material scope/account-eligibility change.",
   "pass_transition_rule": "Only a fresh same-run success of BOTH account_balance and stock_positions may transition ACCOUNT to PASS.",
   "updated_on": "2026-10-03",
   "last_reauth_attempt": {
@@ -64,15 +64,16 @@
   "primary_adapter": "LONGBRIDGE",
   "adapter_contract": {
     "path": "nasdaq-xray/account_provider_adapter_contract.json",
-    "blob_sha": "62797485138f20d82e416d4de8edb4395f7e1268"
+    "blob_sha": "3c594c392edc6caeb0d46892e2adddfb696271db"
   },
   "required_capability": "CURRENT_NASDAQ_ACCOUNT_VALUE_AND_EQUITY_EXPOSURE_READ_ONLY",
   "current_adapter": "LONGBRIDGE",
   "no_account_provider_substitution_without_fresh_probe": true,
   "alternate_adapter_candidates": {
     "IBKR_WEB_API": "PROMISING_BUT_NOT_CURRENTLY_SCHEDULER_CALLABLE",
-    "MIDAS_ATLAS_COMMUNITY_CONNECTOR": "NOT_ELIGIBLE_UNOFFICIAL"
+    "MIDAS_ATLAS_COMMUNITY_CONNECTOR": "NOT_ELIGIBLE_UNOFFICIAL",
+    "ETRADE_DEVELOPER_API": "CANDIDATE_NOT_CONNECTED_USER_ACCOUNT_REQUIRED"
   },
   "adapter_registry_count": 6,
-  "adapter_registry_sync": "EVIDENCE_PIN_ONLY_NEVER_PASS_AUTHORITY"
+  "adapter_registry_sync": "EXACT_BLOB_PIN_REQUIRED_NEVER_PASS_AUTHORITY"
 }
