@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import json, threading, time
+import io, json, threading, time, urllib.error
 from pathlib import Path
 import resilience_runtime as rr
 
@@ -23,6 +23,14 @@ def good(req,timeout=20):
 def bad(req,timeout=20):
     calls["n"]+=1
     raise OSError("synthetic network failure")
+
+def forbidden(req,timeout=20):
+    calls["n"]+=1
+    raise urllib.error.HTTPError(req.full_url,403,"Forbidden",{},io.BytesIO(b""))
+
+def ratelimited(req,timeout=20):
+    calls["n"]+=1
+    raise urllib.error.HTTPError(req.full_url,429,"Too Many Requests",{},io.BytesIO(b""))
 
 try:
     rr._MEM.clear(); rr._INFLIGHT.clear()
@@ -51,6 +59,34 @@ try:
     except RuntimeError as e:
         assert str(e).startswith("CIRCUIT_OPEN:SELFTEST_BREAKER"),str(e)
     assert calls["n"]==3,calls
+
+    # Definitive 403 must not build transient failure count or open circuit.
+    rr._MEM.clear(); rr._INFLIGHT.clear(); calls["n"]=0
+    rr.urllib.request.urlopen=forbidden
+    for i in range(4):
+        try: rr.fetch_json("SELFTEST_403",f"https://selftest.invalid/forbidden{i}",circuit_failures=3,cooldown=120)
+        except urllib.error.HTTPError as e: assert e.code==403
+    assert calls["n"]==4,calls
+    led=json.loads(rr.LEDGER.read_text())
+    p=led["providers"]["SELFTEST_403"]
+    assert p["status"]=="NONRETRYABLE_ERROR",p
+    assert p["consecutive_failures"]==0,p
+    assert p["last_error_retryable"] is False,p
+    assert p["last_http_status"]==403,p
+    assert float(p.get("open_until_epoch") or 0)==0,p
+
+    # 429 is transient and must participate in the circuit breaker.
+    rr._MEM.clear(); rr._INFLIGHT.clear(); calls["n"]=0
+    rr.urllib.request.urlopen=ratelimited
+    for i in range(2):
+        try: rr.fetch_json("SELFTEST_429",f"https://selftest.invalid/rate{i}",circuit_failures=2,cooldown=120)
+        except urllib.error.HTTPError as e: assert e.code==429
+    assert calls["n"]==2,calls
+    led=json.loads(rr.LEDGER.read_text())
+    p=led["providers"]["SELFTEST_429"]
+    assert p["status"]=="CIRCUIT_OPEN",p
+    assert p["last_error_retryable"] is True,p
+    assert p["last_http_status"]==429,p
 
     led=json.loads(rr.LEDGER.read_text())
     assert led["providers"]["SELFTEST_SINGLE"]["status"]=="HEALTHY"
