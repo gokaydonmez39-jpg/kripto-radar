@@ -1,0 +1,30 @@
+{
+  "schema": "XRAY_G9_PROVIDER_DELTA_V1",
+  "generated_on": "2026-10-04",
+  "provider": "Ally Invest Developer API",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "status": "NONQUALIFYING_STRICT_C_FUNDED_ACCOUNT_CONDITION_AND_D_US_RESIDENCY",
+  "evidence": [
+    "Ally Invest officially states there is no minimum deposit required to open a Self-Directed brokerage cash account.",
+    "Ally's official real-time quote FAQ states real-time quotes are automatically enabled only for funded, non-professional accounts. This funding condition violates XRAY strict G9-C even though the cash account itself has no opening minimum.",
+    "Ally requires exchange market-data agreements for real-time market data; without them, only delayed data is available.",
+    "Ally's official account-opening FAQ requires the user to be a U.S. resident with a U.S. street address, so the current user in Türkiye is not eligible for the retail path.",
+    "Ally has a sanctioned Invest API surface, but its API agreement includes compliance testing and does not override the funded-account real-time market-data condition or U.S.-residency requirement."
+  ],
+  "primary_sources": [
+    "https://www.ally.com/invest/self-directed-trading/",
+    "https://www.ally.com/help/invest/quotes-and-tools/",
+    "https://www.ally.com/help/bank/opening-account/",
+    "https://www.ally.com/content/dam/pdf/invest/api-agreement.pdf"
+  ],
+  "failed_gates": [
+    "C_REALTIME_MARKET_DATA_REQUIRES_FUNDED_ACCOUNT",
+    "D_USER_JURISDICTION_US_RESIDENCY_REQUIRED"
+  ],
+  "reopen_condition": "Only reopen if Ally provides real-time consolidated National-NBBO API access to an unfunded account permanently at $0 and expands eligible retail residency to Türkiye.",
+  "negative_cache_only": true,
+  "may_never_create_pass": true,
+  "unknown_never_pass": true,
+  "no_policy_weakening": true
+}
