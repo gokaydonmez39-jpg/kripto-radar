@@ -97,5 +97,11 @@
     "blob_sha": "f39a3e87ad3b047b6866a16788caff06d7b1b672",
     "unique_provider_paths_reviewed": 28,
     "result": "NO_REVIEWED_PROVIDER_PROVES_A_B_C_D_SIMULTANEOUSLY"
+  },
+  "negative_registry": {
+    "path": "nasdaq-xray/g9_provider_registry_20261003.json",
+    "blob_sha": "a7f89a328a833e17369884b97eba582fd0b3654f",
+    "provider_count": 28,
+    "role": "NEGATIVE_EVIDENCE_CACHE_ONLY_NEVER_PASS_AUTHORITY"
   }
 }
