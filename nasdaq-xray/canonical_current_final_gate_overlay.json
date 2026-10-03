@@ -1,7 +1,7 @@
 {
   "schema": "XRAY_FINAL_GATE_OVERLAY_V2",
   "generated_on": "2026-10-03",
-  "generated_at_utc": "2026-10-03T11:02:55.060447+00:00",
+  "generated_at_utc": "2026-10-03T11:03:31.017264+00:00",
   "asof_et": "2026-10-02",
   "execution": "NONE",
   "real_money": "NO-GO",
@@ -26,7 +26,7 @@
     "provider": "NONE_CURRENTLY_QUALIFYING",
     "adapter_status": "BLOCKED_NO_PROVIDER_SELECTED",
     "authority_path": "nasdaq-xray/g9_entitlement_authority.json",
-    "authority_blob_sha": "b9bb8dd6ef207dd20413444623b93a0bfb7150ca",
+    "authority_blob_sha": "31eab586ea21fb09553bb208faba426f4e04344b",
     "runtime_path": "nasdaq-xray/strict_g9_runtime_state.json",
     "runtime_blob_sha": "fb077b1177153df149e63502818d190875c0b119",
     "current_saturation_blob_sha": "c80851f0a1c5a78d93a4523224095c9239ddb51b",
@@ -35,9 +35,9 @@
     "authority_bound_registry_blob_sha": "098d92482ca5672d9c0930891414450fec13fa38",
     "current_saturation_count": 45,
     "current_registry_count": 45,
-    "authority_reviewed_count": 41,
-    "negative_cache_binding_exact": false,
-    "negative_cache_ahead_while_blocked": true
+    "authority_reviewed_count": 45,
+    "negative_cache_binding_exact": true,
+    "negative_cache_ahead_while_blocked": false
   },
   "account": {
     "status": "ACCOUNT_BLOCKED_SCOPE_NOT_GRANTED_OR_ACCOUNT_UNSUPPORTED",
