@@ -115,7 +115,7 @@
   ],
   "search_saturation": {
     "path": "nasdaq-xray/g9_search_saturation_20261003.json",
-    "blob_sha": "a386f80aa8d99d209c735a1f986bda68d5ab484e",
+    "blob_sha": "b2a36dc019fcd8a29237f2d26c626dce503f3962",
     "unique_provider_paths_reviewed": 48,
     "result": "NO_REVIEWED_PROVIDER_PROVES_A_B_C_D_SIMULTANEOUSLY"
   },
@@ -127,8 +127,8 @@
   },
   "midas_official_audit": {
     "path": "nasdaq-xray/midas_official_path_audit_20261003.json",
-    "blob_sha": "df434607128d4cd6758d73949f40f8b1cbe85cc5",
-    "result": "ATLAS_LIVE_FREE;PUBLIC_ENDUSER_API_NOT_FOUND;MOBILE_ATLAS_G9_UNPROVEN;TRADINGVIEW_ACCOUNT_BRIDGE_NOT_SCHEDULER_CALLABLE;ALPACA_CHAIN_LIVE_SIP_NOT_PROVEN"
+    "blob_sha": "f38d415adb6a9ad5737f76262e1f7dd907da8a9a",
+    "result": "REALTIME_EXCHANGE_ENTITLEMENTS_PROVEN; NATIONAL_NBBO_AND_AUTOMATED_NONDISPLAY_ENDUSER_RIGHT_UNPROVEN; PUBLIC_ENDUSER_API_NOT_FOUND"
   },
   "midas_alpaca_infrastructure_audit": {
     "path": "nasdaq-xray/midas_alpaca_infrastructure_audit_20261003.json",
