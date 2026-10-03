@@ -6,6 +6,8 @@ on:
     paths:
       - "nasdaq-xray/account_longbridge_openapi_probe.py"
       - "nasdaq-xray/account_longbridge_openapi_probe_selftest.py"
+      - "nasdaq-xray/account_same_run_terminal_selftest.py"
+      - "nasdaq-xray/build_current_terminal.py"
       - "nasdaq-xray/requirements-account-probe.txt"
       - ".github/workflows/xray-account-openapi-selftest.yml"
   workflow_dispatch:
@@ -26,7 +28,14 @@ jobs:
 
       - name: Compile
         run: |
-          python -m py_compile             nasdaq-xray/account_longbridge_openapi_probe.py             nasdaq-xray/account_longbridge_openapi_probe_selftest.py
+          python -m py_compile \
+            nasdaq-xray/account_longbridge_openapi_probe.py \
+            nasdaq-xray/account_longbridge_openapi_probe_selftest.py \
+            nasdaq-xray/account_same_run_terminal_selftest.py \
+            nasdaq-xray/build_current_terminal.py
 
-      - name: Network-free selftest
+      - name: Network-free probe selftest
         run: python nasdaq-xray/account_longbridge_openapi_probe_selftest.py
+
+      - name: Network-free same-run terminal witness selftest
+        run: python nasdaq-xray/account_same_run_terminal_selftest.py
