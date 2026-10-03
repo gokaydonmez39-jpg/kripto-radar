@@ -8,6 +8,7 @@ on:
       - "nasdaq-xray/sina_stage.py"
       - "nasdaq-xray/resolve_unknowns_fallback.py"
       - "nasdaq-xray/price_dv20_phase.py"
+      - "nasdaq-xray/deep_pre_r1_shadow.py"
       - "nasdaq-xray/price_dv20_recover_from_fullstate.py"
       - "nasdaq-xray/chatgpt_compiled_policy_v3.json"
       - ".github/workflows/xray-dynamic-policy-invariants.yml"
@@ -33,6 +34,7 @@ jobs:
             nasdaq-xray/resolve_unknowns_fallback.py \
             nasdaq-xray/price_dv20_phase.py \
             nasdaq-xray/price_dv20_recover_from_fullstate.py \
+            nasdaq-xray/deep_pre_r1_shadow.py \
             nasdaq-xray/test_dynamic_policy_invariants.py
       - name: Run deterministic invariants
         run: python nasdaq-xray/test_dynamic_policy_invariants.py
