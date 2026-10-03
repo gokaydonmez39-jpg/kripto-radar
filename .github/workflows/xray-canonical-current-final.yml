@@ -14,6 +14,9 @@ on:
       - "nasdaq-xray/strict_g9_runtime_state.json"
       - "nasdaq-xray/account_gate_contract.json"
       - "nasdaq-xray/account_provider_adapter_contract.json"
+      - "nasdaq-xray/account_longbridge_openapi_probe.py"
+      - "nasdaq-xray/account_longbridge_openapi_probe_selftest.py"
+      - "nasdaq-xray/requirements-account-probe.txt"
       - "nasdaq-xray/chatgpt_compiled_policy_v3.json"
       - ".github/workflows/xray-canonical-current-final.yml"
   schedule:
@@ -95,6 +98,30 @@ jobs:
         if: steps.event.outputs.ready == 'true'
         run: python -m pip install --disable-pip-version-check -r nasdaq-xray/requirements-runtime.txt
 
+      - name: Prepare read-only ACCOUNT probe runtime
+        if: steps.event.outputs.ready == 'true'
+        env:
+          LONGBRIDGE_APP_KEY: ${{ secrets.LONGBRIDGE_APP_KEY }}
+          LONGBRIDGE_APP_SECRET: ${{ secrets.LONGBRIDGE_APP_SECRET }}
+          LONGBRIDGE_ACCESS_TOKEN: ${{ secrets.LONGBRIDGE_ACCESS_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -n "${LONGBRIDGE_APP_KEY}" && -n "${LONGBRIDGE_APP_SECRET}" && -n "${LONGBRIDGE_ACCESS_TOKEN}" ]]; then
+            python -m pip install --disable-pip-version-check -r nasdaq-xray/requirements-account-probe.txt
+            echo "XRAY_ACCOUNT_DIRECT_RUNTIME=READY"
+          else
+            echo "XRAY_ACCOUNT_DIRECT_RUNTIME=NO_SECRETS_NETWORK_FREE"
+          fi
+
+      - name: Run same-run read-only ACCOUNT probe
+        if: steps.event.outputs.ready == 'true'
+        env:
+          LONGBRIDGE_APP_KEY: ${{ secrets.LONGBRIDGE_APP_KEY }}
+          LONGBRIDGE_APP_SECRET: ${{ secrets.LONGBRIDGE_APP_SECRET }}
+          LONGBRIDGE_ACCESS_TOKEN: ${{ secrets.LONGBRIDGE_ACCESS_TOKEN }}
+        run: python nasdaq-xray/account_longbridge_openapi_probe.py
+
       - name: Normalize event bridge
         if: steps.event.outputs.ready == 'true'
         env:
@@ -135,13 +162,14 @@ jobs:
         if: steps.event.outputs.ready == 'true'
         env:
           XRAY_TERMINAL_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_current_terminal.json
+          XRAY_ACCOUNT_LIVE_PROBE_STATE: ${{ github.workspace }}/nasdaq-xray/account_longbridge_openapi_probe_state.json
         run: python nasdaq-xray/build_current_terminal.py
 
       - name: Structural terminal gate
         if: steps.event.outputs.ready == 'true'
         run: |
           python - <<'PY'
-          import hashlib,json
+          import hashlib,json,os
           def blob(path):
               b=open(path,"rb").read()
               return hashlib.sha1(f"blob {len(b)}\0".encode()+b).hexdigest()
@@ -162,7 +190,24 @@ jobs:
           assert g9["execution"]=="NONE" and g9["real_money"]=="NO-GO"
           assert ag["execution"]=="NONE" and ag["real_money"]=="NO-GO" and ag["provider"]=="PROVIDER_NEUTRAL"
           assert t["g9_global_status"]==("G9_PASS" if g9.get("g9_pass") is True else "G9_BLOCKED_FREE_AUTOMATION_PATH")
-          assert t["account_status"]==ag["current_status"]
+          lp=json.load(open("nasdaq-xray/account_longbridge_openapi_probe_state.json"))
+          live_pass=(
+            lp.get("schema")=="XRAY_ACCOUNT_LONGBRIDGE_OPENAPI_PROBE_V1"
+            and lp.get("provider")=="LONGBRIDGE_DIRECT_OPENAPI"
+            and lp.get("status")=="PASS"
+            and lp.get("network_attempted") is True
+            and lp.get("balance_parseable") is True
+            and lp.get("positions_parseable") is True
+            and str(lp.get("workflow_run_id") or "")==str(os.environ.get("GITHUB_RUN_ID") or "")
+          )
+          if live_pass:
+              assert t["account_status"]=="ACCOUNT_PASS"
+              le=t["evidence"]["account_live_probe"]
+              assert le["same_run_attested"] is True
+              assert le["workflow_run_id"]==str(os.environ["GITHUB_RUN_ID"])
+              assert le["private_values_persisted"] is False and le["secret_values_persisted"] is False
+          else:
+              assert t["account_status"]==ag["current_status"]
           assert t["evidence"]["g9_runtime"]["blob_sha"]==blob("nasdaq-xray/strict_g9_runtime_state.json")
           assert t["evidence"]["account_gate"]["blob_sha"]==blob("nasdaq-xray/account_gate_contract.json")
           assert t["evidence"]["account_gate"]["adapter_contract_blob_sha"]==blob("nasdaq-xray/account_provider_adapter_contract.json")
