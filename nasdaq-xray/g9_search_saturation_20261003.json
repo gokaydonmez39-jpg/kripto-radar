@@ -9,7 +9,7 @@
     "C": "lawful automated/non-display permanent-$0 entitlement with no fee/balance/activity/per-query condition",
     "D": "scheduler callability"
   },
-  "unique_provider_paths_reviewed": 45,
+  "unique_provider_paths_reviewed": 47,
   "evidence_files": [
     {
       "path": "nasdaq-xray/g9_free_path_audit_20261003.json",
@@ -58,6 +58,10 @@
     {
       "path": "nasdaq-xray/g9_provider_delta_retail_api_sweep_20261003.json",
       "blob_sha": "9d47336b2dca809be57fbce4743a35f7b6b7f992"
+    },
+    {
+      "path": "nasdaq-xray/midas_official_path_audit_20261003.json",
+      "blob_sha": "8167d809bcaef4eb7008b5a17c18970b69481478"
     }
   ],
   "reviewed_provider_paths": [
@@ -105,7 +109,9 @@
     "E*TRADE Developer API",
     "QuoteMedia OnDemand / NBBO",
     "MarketData.app",
-    "StockData.org"
+    "StockData.org",
+    "Midas Mobile/Atlas official market-data path",
+    "Midas via TradingView official broker integration"
   ],
   "strongest_near_misses": [
     {
