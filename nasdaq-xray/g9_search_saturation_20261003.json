@@ -9,7 +9,7 @@
     "C": "lawful automated/non-display permanent-$0 entitlement with no fee/balance/activity/per-query condition",
     "D": "scheduler callability"
   },
-  "unique_provider_paths_reviewed": 69,
+  "unique_provider_paths_reviewed": 70,
   "evidence_files": [
     {
       "path": "nasdaq-xray/g9_free_path_audit_20261003.json",
@@ -166,6 +166,10 @@
     {
       "path": "nasdaq-xray/g9_provider_delta_unusualwhales_20261004.json",
       "blob_sha": "b002c4a3d028839f53a4b0b9c2fe94e23f9e915e"
+    },
+    {
+      "path": "nasdaq-xray/g9_provider_delta_allyinvest_20261004.json",
+      "blob_sha": "147b74677a4d5aafb1d3a0729dcd5418388705f4"
     }
   ],
   "reviewed_provider_paths": [
@@ -237,7 +241,8 @@
     "AllTick Market Data API",
     "Midas Labs / Midas Markets MCP (midasmarkets.xyz; not GetMidas Turkey)",
     "Alpaca ChatGPT market-data plugin / connected MCP surface",
-    "Unusual Whales API / MCP"
+    "Unusual Whales API / MCP",
+    "Ally Invest Developer API"
   ],
   "strongest_near_misses": [
     {
@@ -288,9 +293,9 @@
     "authority_file": "nasdaq-xray/g9_utp_fee_basis_20261003.json"
   },
   "latest_new_provider": {
-    "provider": "Unusual Whales API / MCP",
-    "evidence_file": "nasdaq-xray/g9_provider_delta_unusualwhales_20261004.json",
-    "evidence_blob_sha": "b002c4a3d028839f53a4b0b9c2fe94e23f9e915e",
-    "result": "STRICT_C_FAIL_PAID_LIVE_API"
+    "provider": "Ally Invest Developer API",
+    "evidence_file": "nasdaq-xray/g9_provider_delta_allyinvest_20261004.json",
+    "evidence_blob_sha": "147b74677a4d5aafb1d3a0729dcd5418388705f4",
+    "result": "STRICT_C_AND_D_FAIL_FUNDED_US_ONLY"
   }
 }
