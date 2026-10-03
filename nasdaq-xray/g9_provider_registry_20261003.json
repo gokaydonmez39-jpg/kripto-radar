@@ -4,7 +4,7 @@
   "execution": "NONE",
   "real_money": "NO-GO",
   "purpose": "Negative-evidence cache only. This registry can skip unchanged dead paths but can never create G9 PASS.",
-  "provider_count": 66,
+  "provider_count": 67,
   "strict_g9_gates": {
     "A": "consolidated UTP Tape-C / National NBBO lineage",
     "B": "fresh bid+ask+last with independent quote/trade event timestamps",
@@ -908,6 +908,20 @@
       "evidence_file": "nasdaq-xray/g9_provider_delta_alltick_20261003.json",
       "last_checked_on": "2026-10-03",
       "reopen_condition": "Only reopen if AllTick Free permanently includes consolidated US National NBBO bid/ask plus last trade with independent event timestamps and explicit automated/non-display entitlement, without subscription/funding/balance/activity/per-query monetary condition.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "Midas Labs / Midas Markets MCP (midasmarkets.xyz; not GetMidas Turkey)",
+      "status": "NONQUALIFYING_EQUITY_SURFACE_HIP3_PERPETUAL_MARKETS_NOT_US_CASH_NATIONAL_NBBO",
+      "failed_gates": [
+        "A_US_CASH_EQUITY_CONSOLIDATED_NATIONAL_NBBO_LINEAGE",
+        "B_CASH_EQUITY_INDEPENDENT_QUOTE_AND_TRADE_EVENT_TIMESTAMPS",
+        "C_PERMANENT_ZERO_CASH_EQUITY_NONDIPLAY_ENTITLEMENT"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_midaslabs_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "Only reopen for strict G9 if Midas Labs publishes a separate sanctioned U.S. cash-equity market-data API product with documented CTA/UTP National NBBO lineage, independent quote/trade event timestamps, and permanent-$0 automated/non-display entitlement. HIP-3/perpetual prices cannot qualify.",
       "negative_cache_only": true,
       "may_never_create_pass": true
     }
