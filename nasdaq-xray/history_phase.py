@@ -159,5 +159,20 @@ def main():
       "results":dict(sorted(results.items()))
     }
     OUT.write_text(json.dumps(obj,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
-    print(json.dumps({"counts":obj["counts"],"unknown_count":obj["unknown_count"],"pass_count":obj["pass_count"],"pass_hash":obj["pass_hash"]},sort_keys=True))
+    print(json.dumps({
+      "counts":obj["counts"],
+      "unknown_count":obj["unknown_count"],
+      "unknown_symbols":obj["unknown_symbols"],
+      "unknown_diagnostics":{
+        s:{
+          "reason":obj["results"][s]["info"].get("reason"),
+          "sina":obj["results"][s]["info"].get("sina"),
+          "nasdaq":obj["results"][s]["info"].get("nasdaq"),
+          "yahoo":obj["results"][s]["info"].get("yahoo"),
+          "provider_meta":obj["results"][s].get("provider_meta"),
+        } for s in obj["unknown_symbols"]
+      },
+      "pass_count":obj["pass_count"],
+      "pass_hash":obj["pass_hash"]
+    },sort_keys=True))
 if __name__=="__main__":main()
