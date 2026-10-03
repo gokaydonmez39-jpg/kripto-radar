@@ -4,7 +4,7 @@
   "execution": "NONE",
   "real_money": "NO-GO",
   "purpose": "Negative-evidence cache only. This registry can skip unchanged dead paths but can never create G9 PASS.",
-  "provider_count": 45,
+  "provider_count": 47,
   "strict_g9_gates": {
     "A": "consolidated UTP Tape-C / National NBBO lineage",
     "B": "fresh bid+ask+last with independent quote/trade event timestamps",
@@ -13,8 +13,8 @@
   },
   "source_saturation": {
     "path": "nasdaq-xray/g9_search_saturation_20261003.json",
-    "blob_sha": "c80851f0a1c5a78d93a4523224095c9239ddb51b",
-    "reviewed_paths": 45
+    "blob_sha": "a6c0ba99db304fbe17693b41af25d0a521f86dde",
+    "reviewed_paths": 47
   },
   "providers": [
     {
@@ -598,6 +598,34 @@
       "evidence_file": "nasdaq-xray/g9_provider_delta_retail_api_sweep_20261003.json",
       "last_checked_on": "2026-10-03",
       "reopen_condition": "Provider changes to a proven consolidated UTP/National-NBBO source with independent quote/trade event timestamps and strict permanent-$0 automated entitlement.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "Midas Mobile/Atlas official market-data path",
+      "status": "PROMISING_OFFICIAL_DISPLAY_DATA_BUT_STRICT_G9_UNPROVEN",
+      "failed_gates": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "evidence_file": "nasdaq-xray/midas_official_path_audit_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "Primary-source product lineage proves consolidated UTP/National NBBO, sanctioned scheduler quote access exposes fresh bid+ask+last event timestamps, and automated/non-display use is explicitly authorized at permanent $0.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "Midas via TradingView official broker integration",
+      "status": "SANCTIONED_ACCOUNT_BRIDGE_BUT_G9_CBOE_ONE_AND_NO_END_USER_API",
+      "failed_gates": [
+        "A",
+        "D_USER_API"
+      ],
+      "evidence_file": "nasdaq-xray/midas_official_path_audit_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "TradingView/Midas exposes a sanctioned scheduler-callable end-user path and market-data lineage changes from CBOE One to strict National NBBO if considered for G9.",
       "negative_cache_only": true,
       "may_never_create_pass": true
     }
