@@ -238,7 +238,7 @@ def run_probe(
     passed = balance_ok and positions_ok
     return _state(
         status="PASS" if passed else "UNKNOWN_UNPARSEABLE_RESPONSE",
-        reason_code="SAME_RUN_OFFICIAL_MCP_V2_ACCOUNT_READ_PASS"
+        reason_code="SAME_RUN_READ_ONLY_ACCOUNT_PROBE_PASS"
         if passed
         else "READ_RESPONSE_NOT_PARSEABLE",
         network_attempted=True,
