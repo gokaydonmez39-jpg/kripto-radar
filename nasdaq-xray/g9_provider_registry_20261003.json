@@ -1,0 +1,386 @@
+{
+  "schema": "XRAY_G9_PROVIDER_REGISTRY_V1",
+  "generated_on": "2026-10-03",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "purpose": "Negative-evidence cache only. This registry can skip unchanged dead paths but can never create G9 PASS.",
+  "provider_count": 28,
+  "strict_g9_gates": {
+    "A": "consolidated UTP Tape-C / National NBBO lineage",
+    "B": "fresh bid+ask+last with independent quote/trade event timestamps",
+    "C": "lawful automated/non-display permanent-$0 entitlement with no fee/balance/activity/funding/per-query/subscription/account-maintenance condition",
+    "D": "scheduler callability"
+  },
+  "source_saturation": {
+    "path": "nasdaq-xray/g9_search_saturation_20261003.json",
+    "blob_sha": "f39a3e87ad3b047b6866a16788caff06d7b1b672",
+    "reviewed_paths": 28
+  },
+  "providers": [
+    {
+      "provider": "TradingView/Yahoo via atilaahmettaner/tradingview-mcp",
+      "status": "NONQUALIFYING_G9_ENGINEERING_REFERENCE_ONLY",
+      "failed_gates": [
+        "A",
+        "B"
+      ],
+      "evidence_file": "nasdaq-xray/g9_free_path_audit_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "Primary-source proof of consolidated UTP/National NBBO plus independent quote/trade event timestamps and lawful automated entitlement.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "Longbridge OpenAPI",
+      "status": "NONQUALIFYING_STRICT_PERMANENT_ZERO",
+      "failed_gates": [
+        "A",
+        "C"
+      ],
+      "evidence_file": "nasdaq-xray/g9_free_path_audit_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "Official OpenAPI terms make consolidated NBBO unconditional permanent-$0 with no balance/activity/fee condition, then live RTH probe.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "Webull OpenAPI",
+      "status": "NONQUALIFYING_STRICT_G9",
+      "failed_gates": [
+        "A",
+        "C"
+      ],
+      "evidence_file": "nasdaq-xray/g9_free_path_audit_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "Official OpenAPI entitlement grants permanent-$0 consolidated National NBBO non-display use without separate subscription.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "Massive",
+      "status": "TECHNICALLY_EXACT_BUT_CURRENT_ZERO_DOLLAR_PLAN_NOT_ENTITLED",
+      "failed_gates": [
+        "C"
+      ],
+      "evidence_file": "nasdaq-xray/g9_free_path_audit_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "Stocks Basic/free gains realtime NBBO+latest trade and live connector stops returning NOT_ENTITLED.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "Alpha Vantage",
+      "status": "NONQUALIFYING_STRICT_PERMANENT_ZERO",
+      "failed_gates": [
+        "C"
+      ],
+      "evidence_file": "nasdaq-xray/g9_free_path_audit_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "Official entitlement makes realtime consolidated NBBO permanently free for lawful automated use.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "tastytrade / dxFeed",
+      "status": "TECHNICALLY_STRONG_NBBO_PATH_BUT_STRICT_C_FAILS_FUNDED_ACCOUNT_CONDITION",
+      "failed_gates": [
+        "C"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_tastytrade_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "Realtime equity API/DXLink becomes permanently available without funding/balance/activity/subscription condition and jurisdiction eligibility is proven.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "Alpaca",
+      "status": "NONQUALIFYING_FREE_PATH",
+      "failed_gates": [
+        "A",
+        "C"
+      ],
+      "evidence_file": "nasdaq-xray/g9_free_path_audit_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "Permanent-$0 full SIP/NBBO entitlement replaces IEX-only free coverage.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "Interactive Brokers",
+      "status": "NONQUALIFYING_FREE_PATH",
+      "failed_gates": [
+        "A",
+        "C"
+      ],
+      "evidence_file": "nasdaq-xray/g9_free_path_audit_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "Permanent-$0 automated consolidated Tape-C/NBBO entitlement becomes unconditional, not snapshot/fee/balance conditioned.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "Tradier Brokerage API",
+      "status": "TECHNICALLY_QUALIFYING_DATA_PATH_BUT_TURKEY_RESIDENCY_BLOCKED",
+      "failed_gates": [
+        "D_JURISDICTION"
+      ],
+      "evidence_file": "nasdaq-xray/g9_free_path_audit_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "Tradier removes Turkey from blocked residency while retaining $0 API and consolidated realtime feed.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "Fennel API",
+      "status": "TECHNICALLY_PROMISING_NBBO_API_BUT_US_RESIDENT_ONLY",
+      "failed_gates": [
+        "D_JURISDICTION"
+      ],
+      "evidence_file": "nasdaq-xray/g9_free_path_audit_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "Eligibility expands to Turkey residents while permanent-$0 NBBO API remains available without conditions.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "Charles Schwab Trader API / International",
+      "status": "PROMISING_BUT_STRICT_G9_UNPROVEN",
+      "failed_gates": [
+        "A",
+        "B",
+        "C",
+        "D_JURISDICTION"
+      ],
+      "evidence_file": "nasdaq-xray/g9_free_path_audit_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "Primary-source proof of Turkey eligibility plus sanctioned Trader API exact consolidated NBBO/timestamps plus permanent-$0 entitlement.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "TradeStation API",
+      "status": "NONQUALIFYING_STRICT_PERMANENT_ZERO",
+      "failed_gates": [
+        "A",
+        "C"
+      ],
+      "evidence_file": "nasdaq-xray/g9_free_path_audit_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "Official terms remove inactivity/balance/activity conditions and prove exact consolidated Tape-C/NBBO API lineage.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "Wealthnow",
+      "status": "NONQUALIFYING_STRICT_G9",
+      "failed_gates": [
+        "A",
+        "B",
+        "C"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_wealthnow_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "Free route gains consolidated UTP/NBBO provenance, independent quote/trade event timestamps and uncapped permanent-$0 automated entitlement.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "Twelve Data",
+      "status": "NONQUALIFYING_PARTIAL_VENUE_FEED",
+      "failed_gates": [
+        "A"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_commercial_sweep_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "Free/internal-use feed becomes licensed consolidated all-major-exchange National NBBO without added cost/conditions.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "Tiingo IEX API",
+      "status": "NONQUALIFYING_SINGLE_VENUE",
+      "failed_gates": [
+        "A"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_commercial_sweep_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "Free API changes from IEX TOPS to proven consolidated National NBBO.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "Finnhub Free",
+      "status": "NONQUALIFYING_STRICT_B",
+      "failed_gates": [
+        "A",
+        "B"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_commercial_sweep_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "Free sanctioned stream adds proven consolidated NBBO bid/ask events with independent timestamps plus trade events.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "Intrinio",
+      "status": "NONQUALIFYING_PERMANENT_ZERO",
+      "failed_gates": [
+        "A",
+        "C"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_commercial_sweep_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "Permanent free consolidated SIP/NBBO replaces paid/trial/proprietary-derived paths.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "Marketstack",
+      "status": "NONQUALIFYING_FREE_EOD_ONLY",
+      "failed_gates": [
+        "A",
+        "B",
+        "C"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_commercial_sweep_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "Free tier gains realtime consolidated National NBBO plus independent event timestamps and permanent automated entitlement.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "Databento",
+      "status": "NONQUALIFYING_PERMANENT_ZERO",
+      "failed_gates": [
+        "C"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_commercial_sweep_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "Live US-equity consolidated entitlement becomes permanent-$0 with no pass-through license/usage fee.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "Benzinga",
+      "status": "NONQUALIFYING_FREE_REALTIME_PATH_UNPROVEN",
+      "failed_gates": [
+        "B",
+        "C"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_commercial_sweep_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "Primary source grants permanent-$0 realtime National NBBO with required independent quote/trade timestamps.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "XigniteGlobalRealTime",
+      "status": "TECHNICALLY_NBBO_CAPABLE_BUT_STRICT_C_UNPROVEN",
+      "failed_gates": [
+        "C"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_commercial_sweep_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "Exchange licensing/fees are explicitly absorbed under unconditional permanent-$0 automated/non-display entitlement.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "Public.com Individual API",
+      "status": "TECHNICALLY_STRONG_BUT_USER_JURISDICTION_BLOCKED_AND_A_UNPROVEN",
+      "failed_gates": [
+        "A",
+        "D_JURISDICTION"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_public_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "Public expands eligibility to Turkey residents and proves quote lineage is consolidated UTP/National NBBO.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "Moomoo / Futu OpenAPI",
+      "status": "NONQUALIFYING_PARTIAL_VENUE_AND_PROMOTIONAL_FREE",
+      "failed_gates": [
+        "A",
+        "C"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_broker_api_sweep_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "US API feed becomes proven consolidated National NBBO and free status becomes permanent rather than promotional.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "Tiger OpenAPI",
+      "status": "TECHNICALLY_STRONG_TIMESTAMPS_BUT_MARKET_DATA_PERMISSION_NOT_FREE_NBBO",
+      "failed_gates": [
+        "A",
+        "C"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_broker_api_sweep_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "Official quote permission becomes permanent-$0 consolidated UTP/NBBO.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "Robinhood Official Trading API",
+      "status": "NONQUALIFYING_EQUITY_API_PATH",
+      "failed_gates": [
+        "A",
+        "B",
+        "D"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_broker_api_sweep_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "Official sanctioned API adds US-equity National NBBO quote/trade endpoints and scheduler callability.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "Saxo OpenAPI",
+      "status": "NONQUALIFYING_REALTIME_EXCHANGE_FEED_IS_SUBSCRIPTION_PAID",
+      "failed_gates": [
+        "A",
+        "C"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_international_api_sweep_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "US-equity realtime consolidated NBBO becomes permanent-$0 without exchange-feed subscription/licensing condition.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "Trading 212 Public API",
+      "status": "NONQUALIFYING_TURKEY_NOT_SUPPORTED_AND_NO_STRICT_NBBO_EVENT_API",
+      "failed_gates": [
+        "A",
+        "B",
+        "D_JURISDICTION"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_international_api_sweep_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "Turkey becomes supported and sanctioned public API adds proven consolidated NBBO + independent quote/trade event timestamps.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "XTB API / xAPI",
+      "status": "NONQUALIFYING_API_DISCONTINUED",
+      "failed_gates": [
+        "A",
+        "B",
+        "D"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_international_api_sweep_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "Official US-equity API is restored with qualifying National NBBO/timestamps and strict permanent-$0 entitlement.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    }
+  ],
+  "reopen_policy": "Reopen an existing negative path only on newer PRIMARY SOURCE evidence materially changing its listed failed gate(s). New previously-unreviewed providers are always eligible for research. Any reopened path still requires same-run RTH technical proof before G9 PASS.",
+  "unknown_never_pass": true,
+  "no_policy_weakening": true
+}
