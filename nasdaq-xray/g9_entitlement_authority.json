@@ -13,11 +13,11 @@
     "provider_qualifying_now": "NONE",
     "permanent_zero": "NO_CURRENT_PROVIDER_PROVEN",
     "automated_nondisplay_utp_right": "NO_CURRENT_PROVIDER_PROVEN",
-    "reviewed_provider_paths": 68,
+    "reviewed_provider_paths": 69,
     "search_saturation_result": "NO_REVIEWED_PROVIDER_PROVES_A_B_C_D_SIMULTANEOUSLY",
     "structural_fee_basis": "UTP_API_IS_AN_UNCONTROLLED_PRODUCT; CURRENT_2024_10_USAGE_CODES_EXPOSE_A_$1_PER_MONTH_VENDOR_BILLED_NONPROFESSIONAL_UNCONTROLLED_CLASS, BUT PROVIDER_SPECIFIC_CLASSIFICATION_AND_FEE_ABSORPTION_REMAIN_UNPROVEN",
     "strict_runtime_adapter": "FAIL_CLOSED_UNLESS_AUTHORITY_PROVEN",
-    "audit_20261003": "63_PROVIDER_PATH_PRIMARY_SOURCE_AND_LIVE_ENTITLEMENT_SATURATION",
+    "audit_20261003": "69_PROVIDER_PATH_PRIMARY_SOURCE_AND_LIVE_ENTITLEMENT_SATURATION",
     "midas_official_paths": "ATLAS_REALTIME_EXCHANGE_ENTITLEMENTS;TRADINGVIEW_BROKER_QUOTES;ALPACA_PARTNER_INFRA",
     "midas_alpaca_partner_path": "OFFICIAL_INFRA_CONFIRMED_EXACT_LIVE_SIP_ENDUSER_ENTITLEMENT_UNPROVEN",
     "high_potential_provider": "Alpaca ChatGPT plugin + Paper Invest + Wealthnow",
@@ -32,7 +32,7 @@
     "conclusion": "G9_BLOCKED_FREE_AUTOMATION_PATH",
     "provider_count": 12
   },
-  "updated_on": "2026-10-03",
+  "updated_on": "2026-10-04",
   "structural_fee_basis": {
     "path": "nasdaq-xray/g9_utp_fee_basis_20261003.json",
     "blob_sha": "6109dbf1f422be8f9aaa3df938e20b4e26517159",
@@ -123,19 +123,31 @@
       "path": "nasdaq-xray/g9_provider_delta_tickerlayer_20261003.json",
       "blob_sha": "8ec88b1e24ddd1f23e67e5d0716f393a8ac74280",
       "status": "NONQUALIFYING_STRICT_A_DERIVED_NON_EXCHANGE_FEED"
+    },
+    {
+      "provider": "Unusual Whales API / MCP",
+      "path": "nasdaq-xray/g9_provider_delta_unusualwhales_20261004.json",
+      "blob_sha": "b002c4a3d028839f53a4b0b9c2fe94e23f9e915e",
+      "status": "NONQUALIFYING_STRICT_C_LIVE_API_MCP_PAID_FREE_ONLY_TIME_LIMITED_TRIAL"
+    },
+    {
+      "provider": "Alpaca ChatGPT market-data plugin / connected MCP surface",
+      "path": "nasdaq-xray/g9_provider_delta_alpaca_chatgpt_plugin_20261003.json",
+      "blob_sha": "58c4ef7d09ac46e4175b76b1e89d3964da2965a5",
+      "status": "HISTORICAL_SIP_CONFIRMED_STANDARD_LIVE_SIP_PAID_SPECIAL_CHATGPT_ENTITLEMENT_AWAITING_HUMAN_PROVIDER_CONFIRMATION"
     }
   ],
   "search_saturation": {
     "path": "nasdaq-xray/g9_search_saturation_20261003.json",
-    "blob_sha": "0b13eae8ae4b1e8da9cda4b747db1c565ab5ad21",
-    "unique_provider_paths_reviewed": 68,
+    "blob_sha": "6a0f2b0f1da1bc3bf224fa05d78af48ce94cca84",
+    "unique_provider_paths_reviewed": 69,
     "result": "NO_REVIEWED_PROVIDER_PROVES_A_B_C_D_SIMULTANEOUSLY"
   },
   "negative_registry": {
     "path": "nasdaq-xray/g9_provider_registry_20261003.json",
-    "blob_sha": "df269f53f3aac1153eca66dc2a783e7a9ea8b0ab",
-    "provider_count": 68,
-    "role": "PROVIDER_PATH_REGISTRY_MIXED_NEGATIVE_AND_NEARMISS; NEVER SELF-AUTHORIZES_PASS"
+    "blob_sha": "e410841162254ecd4305fbca0d5f036fc0913180",
+    "provider_count": 69,
+    "role": "NEGATIVE_EVIDENCE_CACHE_ONLY_NEVER_PASS_AUTHORITY"
   },
   "midas_official_audit": {
     "path": "nasdaq-xray/midas_official_path_audit_20261003.json",
