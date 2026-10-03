@@ -1,0 +1,63 @@
+{
+  "schema": "XRAY_G9_PROVIDER_DELTA_V1",
+  "generated_on": "2026-10-03",
+  "scope": "RETAIL_BROKER_API_SWEEP",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "providers": [
+    {
+      "provider": "Moomoo / Futu OpenAPI",
+      "status": "NONQUALIFYING_PARTIAL_VENUE_AND_PROMOTIONAL_FREE",
+      "evidence": [
+        "Official API FAQ says U.S. API realtime quote access is free during promotion, which is not permanent-$0 entitlement.",
+        "The API combines Nasdaq Basic + TotalView and NYSE ArcaBook; these are venue/direct-book products rather than proven consolidated UTP National NBBO.",
+        "The FAQ itself explains U.S. trading is distributed across multiple exchanges and app/API values may differ because of the API's selected source mix."
+      ],
+      "sources": [
+        "https://openapi.futunn.com/futu-api-doc/en/qa/quote.html"
+      ],
+      "failed_gates": [
+        "A",
+        "C"
+      ]
+    },
+    {
+      "provider": "Tiger OpenAPI",
+      "status": "TECHNICALLY_STRONG_TIMESTAMPS_BUT_MARKET_DATA_PERMISSION_NOT_FREE_NBBO",
+      "evidence": [
+        "Official OpenAPI exposes real-time U.S. stock quote data when active market quote permission is present.",
+        "Streaming examples expose independent latestPriceTimestamp, bidTimestamp and askTimestamp, which is technically useful for G9-B.",
+        "Official permission metadata says U.S. Level-1/Level-2 API quotes require purchasing quote permissions.",
+        "No primary-source proof found that the purchased quote is permanent-$0 consolidated UTP/National NBBO."
+      ],
+      "sources": [
+        "https://quant.itigerup.com/openapi/en/python/operation/quotation/stock.html",
+        "https://quant.itigerup.com/openapi/en/csharp/operation/subscribe/quotation.html",
+        "https://quant.itigerup.com/openapi/en/python/operation/quotation/common.html"
+      ],
+      "failed_gates": [
+        "A",
+        "C"
+      ]
+    },
+    {
+      "provider": "Robinhood Official Trading API",
+      "status": "NONQUALIFYING_EQUITY_API_PATH",
+      "evidence": [
+        "Current official developer documentation surfaced is for crypto trading and crypto market data.",
+        "The documented best-bid/ask endpoint accepts crypto trading pairs such as BTC-USD, not Nasdaq equities.",
+        "Therefore it is not a scheduler-callable U.S.-equity National NBBO path."
+      ],
+      "sources": [
+        "https://docs.robinhood.com/"
+      ],
+      "failed_gates": [
+        "A",
+        "B",
+        "D"
+      ]
+    }
+  ],
+  "conclusion": "NO_NEW_STRICT_G9_PROVIDER",
+  "no_policy_weakening": true
+}
