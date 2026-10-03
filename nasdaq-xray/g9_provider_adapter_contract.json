@@ -89,9 +89,10 @@
         "as_of/time trade-event timestamp",
         "same-run RTH freshness and quote/trade skew"
       ],
-      "entitlement_status": "A_LINEAGE_UNPROVEN_FREE_SNAPSHOT; C_PROVISIONALLY_SUPPORTED_BY_FREE_HARD_CAP",
-      "authority_rule": "Adapter may not be called unless g9_entitlement_authority.json explicitly marks provider WEALTHNOW and status PROVEN from primary-source National-NBBO lineage + permanent-$0 automated/non-display entitlement evidence.",
-      "evidence_file": "nasdaq-xray/g9_provider_delta_wealthnow_20261003.json"
+      "entitlement_status": "A_LINEAGE_UNPROVEN_FREE_SNAPSHOT; C_ZERO_DOLLAR_API_COST_PROVEN_BUT_NONDISPLAY_MARKET_DATA_LICENSE_UNPROVEN",
+      "authority_rule": "Adapter may not be called unless g9_entitlement_authority.json explicitly marks provider WEALTHNOW and status PROVEN from primary-source National-NBBO lineage plus explicit permanent-$0 automated/non-display market-data entitlement evidence.",
+      "evidence_file": "nasdaq-xray/g9_provider_delta_wealthnow_20261003.json",
+      "lineage_unlock_file": "nasdaq-xray/g9_wealthnow_lineage_unlock_20261003.json"
     }
   },
   "authority_file": "nasdaq-xray/g9_entitlement_authority.json",
