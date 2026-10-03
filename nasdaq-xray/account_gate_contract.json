@@ -1,6 +1,6 @@
 {
   "schema": "XRAY_ACCOUNT_GATE_CONTRACT_V1",
-  "provider": "LONGBRIDGE",
+  "provider": "PROVIDER_NEUTRAL",
   "execution": "NONE",
   "real_money": "NO-GO",
   "mode": "READ_ONLY_ONLY",
@@ -8,7 +8,7 @@
     "account_balance",
     "stock_positions"
   ],
-  "pass_rule": "Both calls must succeed under current OAuth authorization and return parseable current account state; empty/zero positions are valid known exposure, but permission errors are never PASS.",
+  "pass_rule": "Any sanctioned adapter listed as eligible by the provider-neutral ACCOUNT adapter contract may PASS only when same-run current account value/cash state AND equity positions/exposure both parse successfully. Longbridge remains the current primary adapter. Empty positions are valid known exposure; permission/auth/tool errors are never PASS.",
   "current_status": "ACCOUNT_BLOCKED_SCOPE_NOT_GRANTED_OR_ACCOUNT_UNSUPPORTED",
   "current_error_code": 403308,
   "repair": "Reconnect/re-authorize Longbridge OAuth with the full permissions required by the connector. Plain token refresh is insufficient because it preserves the old scopes.",
@@ -60,5 +60,13 @@
     "today_orders_read_only": "403308_SCOPE_DENIED"
   },
   "current_interpretation": "Fresh full reauthorization changed watchlist from denied to allowed, proving a new OAuth session took effect. However account/portfolio/trading-read APIs still return 403308. The active token therefore lacks the account/portfolio/trading scope family, or those scopes are unavailable for this account type/region.",
-  "next_repair": "Use Longbridge's official OAuth/Agent Auth flow and explicitly select account/portfolio permissions (and trading scope only if the consent model groups read-only trade/account APIs under it). If those scopes are not offered, treat this as an account-type/region eligibility block rather than retrying token refresh."
+  "next_repair": "Use Longbridge's official OAuth/Agent Auth flow and explicitly select account/portfolio permissions (and trading scope only if the consent model groups read-only trade/account APIs under it). If those scopes are not offered, treat this as an account-type/region eligibility block rather than retrying token refresh.",
+  "primary_adapter": "LONGBRIDGE",
+  "adapter_contract": {
+    "path": "nasdaq-xray/account_provider_adapter_contract.json",
+    "blob_sha": "2b297b6836aa99fc75a7f6f0bcac90290a875f45"
+  },
+  "required_capability": "CURRENT_NASDAQ_ACCOUNT_VALUE_AND_EQUITY_EXPOSURE_READ_ONLY",
+  "current_adapter": "LONGBRIDGE",
+  "no_account_provider_substitution_without_fresh_probe": true
 }
