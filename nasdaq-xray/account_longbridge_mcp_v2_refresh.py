@@ -48,10 +48,10 @@ def run() -> dict:
         return public_state("BLOCKED_MISSING_VAULT", "ENCRYPTED_VAULT_FILE_NOT_CONFIGURED")
     try:
         key = resolve_vault_key()
-        payload = load_vault(key=key)
+        payload = load_vault(VAULT_PATH, key=key)
         _token, updated, refreshed = access_token_from_vault(payload)
         if refreshed:
-            save_vault(updated, key=key)
+            save_vault(updated, VAULT_PATH, key=key)
         return public_state(
             "PASS",
             "ENCRYPTED_VAULT_REFRESHED" if refreshed else "ENCRYPTED_VAULT_TOKEN_STILL_VALID",
