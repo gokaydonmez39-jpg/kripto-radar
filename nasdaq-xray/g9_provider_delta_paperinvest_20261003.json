@@ -6,13 +6,14 @@
   "real_money": "NO-GO",
   "status": "HIGH_POTENTIAL_FREE_REALTIME_NBBO_CLAIM_A_C_AND_B_EVENT_SEMANTICS_UNPROVEN",
   "evidence": [
-    "Paper Invest Basic is officially $0/month free forever and includes API & MCP access; no credit card is required to obtain the free API key.",
-    "Paper's official developer page documents GET /v1/market-data/quote/{symbol} as a real-time NBBO quote with bid/ask sizes and documents a separate GET /v1/market-data/trade/{symbol} last-trade endpoint.",
+    "Paper Invest Basic is officially $0/month free forever and includes API & MCP access; its developer page says a free API key can be obtained with no credit card.",
+    "Paper's official developer materials explicitly target trading-bot and algorithmic/API use, and document GET /v1/market-data/quote/{symbol} as a real-time NBBO quote with bid/ask sizes plus a separate GET /v1/market-data/trade/{symbol} endpoint.",
     "Paper's official MCP server README describes paper.quote(symbol) as a real-time NBBO quote and proxies the official Paper market-data API; scheduler/API callability is technically plausible using a dedicated API key/JWT.",
-    "The REST quote and REST trade objects each expose a timestamp field, giving a technically promising path to separate quote/trade timestamps, but public docs do not explicitly define those timestamps as independent upstream quote-event and trade-event timestamps rather than service timestamps. Same-run RTH live validation is still required.",
-    "Basic plan excludes WebSocket market-data streaming; REST/API access remains documented on Basic. Do not infer free WebSocket entitlement from older/marketing wording because the dedicated WebSocket page explicitly requires PRO.",
-    "Public official docs repeatedly call the quote NBBO, but no primary-source Paper document found so far identifies the upstream CTA/UTP SIP or licensed consolidated redistributor lineage. Strict G9-A therefore remains unproven under XRAY's evidence rule.",
-    "No primary-source Paper market-data license/terms evidence found so far that explicitly grants this exact automated/non-display NBBO use with all upstream exchange/vendor fees absorbed at permanent $0. Free API pricing alone does not satisfy strict G9-C."
+    "The REST quote and REST trade objects each expose a timestamp field, creating a technically valid two-endpoint path for quote/trade freshness checks, but public docs do not explicitly define those values as independent upstream quote-event and trade-event timestamps rather than service timestamps. Same-run RTH live validation remains mandatory.",
+    "The dedicated WebSocket documentation requires PRO and wins over broader marketing wording that says free quote streaming. Strict G9 must therefore rely only on the documented Basic REST/API path unless Paper changes the dedicated entitlement page.",
+    "Paper's free/no-credit-card/API-and-bot wording materially supports zero-dollar programmatic use, but no primary-source Paper market-data license/terms statement found so far explicitly says upstream CTA/UTP/SIP or equivalent exchange/vendor non-display fees are absorbed for this Basic REST entitlement.",
+    "Public official docs repeatedly call the quote NBBO, but no primary-source Paper document found so far identifies CTA/UTP SIP or a named licensed consolidated redistributor as the lineage. Strict G9-A therefore remains unproven.",
+    "Accordingly, C is narrowed to one unresolved legal/entitlement question: whether the Basic REST market-data license explicitly covers automated/non-display consolidated NBBO use with no separate exchange/vendor fee or other monetary/account condition."
   ],
   "technical_schema": {
     "quote_route": "GET /v1/market-data/quote/{symbol}",
@@ -34,7 +35,9 @@
     ],
     "free_api_mcp_access": true,
     "websocket_free": false,
-    "live_probe_completed": false
+    "live_probe_completed": false,
+    "automated_api_use_explicitly_supported": true,
+    "no_credit_card_for_free_api_key": true
   },
   "primary_sources": [
     "https://paperinvest.io/pricing",
@@ -52,15 +55,16 @@
   },
   "failed_or_unproven_gates": [
     "A_CONSOLIDATED_SIP_OR_EQUIVALENT_REDIStributor_LINEAGE",
-    "B_INDEPENDENT_EVENT_TIMESTAMP_SEMANTICS_AND_LIVE_RTH_PROBE",
-    "C_AUTOMATED_NONDISPLAY_MARKET_DATA_ENTITLEMENT"
+    "B_INDEPENDENT_UPSTREAM_EVENT_TIMESTAMP_SEMANTICS_AND_LIVE_RTH_PROBE",
+    "C_EXPLICIT_UPSTREAM_NONDISPLAY_MARKET_DATA_LICENSE_FEE_ABSORPTION"
   ],
   "provisional_pass_gates": [
     "C_ZERO_DOLLAR_BASIC_API_MCP_COST",
+    "C_PROGRAMMATIC_AUTOMATED_USE_INTENT",
     "D_TECHNICAL_SCHEDULER_SURFACE"
   ],
-  "exact_provider_question": "For the Basic/free API, are the bid/ask values returned by GET /v1/market-data/quote/{symbol} the live consolidated U.S. National Best Bid and Offer sourced from CTA/UTP SIP or an identified licensed consolidated redistributor? Does `timestamp` represent the quote event time, while GET /v1/market-data/trade/{symbol}.timestamp independently represents the trade event time? Finally, does the Basic/free REST/MCP entitlement explicitly cover automated/non-display use of this quote/trade data with no separate exchange/vendor fee, subscription, balance, funding, activity, account-maintenance, or per-query charge?",
-  "reopen_condition": "Primary-source Paper confirmation proves exact consolidated NBBO lineage, independent upstream quote/trade event timestamp semantics, and permanent-$0 automated/non-display entitlement; then configure a dedicated read-only market-data API credential and require same-run RTH freshness/skew probe.",
+  "exact_provider_question": "For the Basic/free REST API, are the bid/ask values returned by GET /v1/market-data/quote/{symbol} the live consolidated U.S. National Best Bid and Offer sourced from CTA/UTP SIP or a named licensed consolidated redistributor? Does quote.timestamp represent the upstream quote-event time, while GET /v1/market-data/trade/{symbol}.timestamp independently represents the upstream trade-event time? Finally, does the Basic/free REST/API entitlement explicitly cover automated/non-display use of this consolidated quote/trade data with all applicable exchange/vendor market-data fees absorbed and with no separate subscription, balance, funding, activity, account-maintenance, or per-query charge?",
+  "reopen_condition": "Primary-source Paper confirmation proves exact consolidated NBBO lineage, upstream quote/trade event timestamp semantics, and explicit permanent-$0 automated/non-display market-data entitlement including upstream fee absorption; then configure a dedicated market-data credential and require same-run RTH freshness/skew probe.",
   "unknown_never_pass": true,
   "no_policy_weakening": true
 }
