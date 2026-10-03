@@ -1,0 +1,36 @@
+{
+  "schema": "XRAY_G9_PROVIDER_DELTA_V1",
+  "generated_on": "2026-10-03",
+  "provider": "FinFeedAPI Stock API / MCP",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "status": "TECHNICALLY_INTERESTING_NBBO_MCP_BUT_STRICT_C_PERMANENT_ZERO_FAIL_METERED_PAYG",
+  "evidence": [
+    "FinFeedAPI's official MCP tutorial exposes stock-market tools described as Level-1 quotes and gives 'Get me NBBO for TSLA' as an example, with REST/WebSocket/MCP programmatic surfaces.",
+    "Its official Stock API pricing is Pay-As-You-Go at $1 per credit with data-transfer/usage charges; Level 1, Level 2 and Level 3 data are billed under the metered tiers.",
+    "The Stock API FAQ explicitly states FinFeedAPI does not offer a traditional free plan. New qualified organizations receive $25 of non-expiring promotional credits, after which usage is billed; payment/billing infrastructure is part of the production model.",
+    "Therefore a free API key or signup credit is only a trial/credit grant and cannot satisfy XRAY's permanent-$0 end-user entitlement gate C.",
+    "Because C fails independently, XRAY does not infer strict A from glossary/tutorial wording alone; a future reopen would still require exact consolidated SIP/National-NBBO lineage and independent quote/trade event timestamp proof."
+  ],
+  "primary_sources": [
+    "https://www.finfeedapi.com/learn/academy/tutorials/finfeed-api-mcp-quick-start",
+    "https://www.finfeedapi.com/products/stock-api/pricing",
+    "https://www.finfeedapi.com/products/stock-api/faq",
+    "https://www.finfeedapi.com/learn/glossary/national-best-bid-and-offer-nbbo"
+  ],
+  "gate_analysis": {
+    "A": "UNPROVEN_STRICT_LINEAGE; tutorial/glossary NBBO wording alone is not sufficient",
+    "B": "PROGRAMMATIC_QUOTE_SURFACE_EXISTS_BUT_NOT_NEEDED_TO_CLOSE_AFTER_C_FAIL",
+    "C": "FAIL_METERED_PAYG; STARTUP CREDITS ARE NOT PERMANENT ZERO",
+    "D": "PASS_TECHNICAL_MCP_REST_WEBSOCKET_SURFACE"
+  },
+  "failed_gates": [
+    "A_EXACT_CONSOLIDATED_UTP_NATIONAL_NBBO_LINEAGE",
+    "C_PERMANENT_ZERO_ENDUSER_ENTITLEMENT"
+  ],
+  "reopen_condition": "FinFeedAPI must offer permanent-$0 production US-equity NBBO quote+trade access with no metered usage, subscription, trial expiry, payment-method, balance, funding, activity, account-maintenance or per-query monetary condition, while primary sources prove exact consolidated UTP/CTA lineage and independent quote/trade event timestamps.",
+  "negative_cache_only": true,
+  "may_never_create_pass": true,
+  "unknown_never_pass": true,
+  "no_policy_weakening": true
+}
