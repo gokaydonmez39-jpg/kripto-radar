@@ -20,6 +20,8 @@ on:
       - "nasdaq-xray/account_longbridge_mcp_probe_selftest.py"
       - "nasdaq-xray/account_longbridge_mcp_v2_probe.py"
       - "nasdaq-xray/account_longbridge_mcp_v2_probe_selftest.py"
+      - "nasdaq-xray/select_account_live_probe.py"
+      - "nasdaq-xray/select_account_live_probe_selftest.py"
       - "nasdaq-xray/account_same_run_terminal_selftest.py"
       - "nasdaq-xray/requirements-account-probe.txt"
       - "nasdaq-xray/requirements-account-mcp-probe.txt"
@@ -98,7 +100,9 @@ jobs:
             nasdaq-xray/deep_pre_r1_shadow.py \
             nasdaq-xray/final_tech_shadow.py \
             nasdaq-xray/build_current_terminal.py \
-            nasdaq-xray/build_final_gate_overlay_v2.py
+            nasdaq-xray/build_final_gate_overlay_v2.py \
+            nasdaq-xray/account_longbridge_mcp_v2_probe.py \
+            nasdaq-xray/select_account_live_probe.py
 
       - name: Install zero-dollar runtime
         if: steps.event.outputs.ready == 'true'
@@ -111,13 +115,11 @@ jobs:
           set -euo pipefail
           actual="$(git hash-object nasdaq-xray/account_longbridge_openapi_probe.py)"
           test "$actual" = "6ddfb82ca4268e40856e6f0eae0e53b79083092d"
-          hosted="$(git hash-object nasdaq-xray/account_longbridge_mcp_probe.py)"
-          test "$hosted" = "45a6abc9430506ee779a9b9a2a317b32fc1853ff"
           hosted_v2="$(git hash-object nasdaq-xray/account_longbridge_mcp_v2_probe.py)"
-          test "$hosted_v2" = "4f0e4b2a9f0c39d9573e5b9b7ea9207b17f9580a"
+          test "$hosted_v2" = "09dc43993832feaa09bd8ac114082736ebd857bc"
           python nasdaq-xray/account_longbridge_openapi_probe_selftest.py
-          python nasdaq-xray/account_longbridge_mcp_probe_selftest.py
           python nasdaq-xray/account_longbridge_mcp_v2_probe_selftest.py
+          python nasdaq-xray/select_account_live_probe_selftest.py
           python nasdaq-xray/account_same_run_terminal_selftest.py
           echo "XRAY_ACCOUNT_PRESECRET_GUARD=PASS"
 
@@ -125,7 +127,6 @@ jobs:
         if: steps.event.outputs.ready == 'true'
         env:
           LONGBRIDGE_MCP_V2_BEARER_TOKEN: ${{ secrets.LONGBRIDGE_MCP_V2_BEARER_TOKEN }}
-          LONGBRIDGE_MCP_BEARER_TOKEN: ${{ secrets.LONGBRIDGE_MCP_BEARER_TOKEN }}
           LONGBRIDGE_OAUTH_ACCESS_TOKEN: ${{ secrets.LONGBRIDGE_OAUTH_ACCESS_TOKEN }}
           LONGBRIDGE_OAUTH_CLIENT_ID: ${{ secrets.LONGBRIDGE_OAUTH_CLIENT_ID }}
           LONGBRIDGE_OAUTH_REFRESH_TOKEN: ${{ secrets.LONGBRIDGE_OAUTH_REFRESH_TOKEN }}
@@ -138,11 +139,12 @@ jobs:
         run: |
           set -euo pipefail
           if [[ -n "${LONGBRIDGE_MCP_V2_BEARER_TOKEN}" ]]; then
-            echo "XRAY_ACCOUNT_RUNTIME=READY_RESTRICTED_HOSTED_MCP_V2_ACCOUNT_READ"
-          elif [[ -n "${LONGBRIDGE_MCP_BEARER_TOKEN}" ]]; then
             python -m pip install --disable-pip-version-check -r nasdaq-xray/requirements-account-mcp-probe.txt
-            echo "XRAY_ACCOUNT_RUNTIME=READY_HOSTED_MCP_ACCOUNT_BEARER"
-          elif [[ -n "${LONGBRIDGE_OAUTH_ACCESS_TOKEN}" ]]; then
+            echo "XRAY_ACCOUNT_V2_RUNTIME=READY_RESTRICTED_MCP_ACCOUNT_READ"
+          else
+            echo "XRAY_ACCOUNT_V2_RUNTIME=NO_SECRET_NETWORK_FREE"
+          fi
+          if [[ -n "${LONGBRIDGE_OAUTH_ACCESS_TOKEN}" ]]; then
             echo "XRAY_ACCOUNT_DIRECT_RUNTIME=READY_OAUTH_ACCOUNT_BEARER"
           elif [[ -n "${LONGBRIDGE_OAUTH_CLIENT_ID}" && -n "${LONGBRIDGE_OAUTH_REFRESH_TOKEN}" ]]; then
             echo "XRAY_ACCOUNT_DIRECT_RUNTIME=READY_OAUTH_ACCOUNT_REFRESH"
@@ -161,7 +163,6 @@ jobs:
         if: steps.event.outputs.ready == 'true'
         env:
           LONGBRIDGE_MCP_V2_BEARER_TOKEN: ${{ secrets.LONGBRIDGE_MCP_V2_BEARER_TOKEN }}
-          LONGBRIDGE_MCP_BEARER_TOKEN: ${{ secrets.LONGBRIDGE_MCP_BEARER_TOKEN }}
           LONGBRIDGE_OAUTH_ACCESS_TOKEN: ${{ secrets.LONGBRIDGE_OAUTH_ACCESS_TOKEN }}
           LONGBRIDGE_OAUTH_CLIENT_ID: ${{ secrets.LONGBRIDGE_OAUTH_CLIENT_ID }}
           LONGBRIDGE_OAUTH_REFRESH_TOKEN: ${{ secrets.LONGBRIDGE_OAUTH_REFRESH_TOKEN }}
@@ -173,15 +174,18 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [[ -n "${LONGBRIDGE_MCP_V2_BEARER_TOKEN}" ]]; then
-            python nasdaq-xray/account_longbridge_mcp_v2_probe.py
-            cp nasdaq-xray/account_longbridge_mcp_v2_probe_state.json nasdaq-xray/account_live_probe_state.json
-          elif [[ -n "${LONGBRIDGE_MCP_BEARER_TOKEN}" ]]; then
-            python nasdaq-xray/account_longbridge_mcp_probe.py
-            cp nasdaq-xray/account_longbridge_mcp_probe_state.json nasdaq-xray/account_live_probe_state.json
+          python nasdaq-xray/account_longbridge_mcp_v2_probe.py
+          v2_status="$(python - <<'PY'
+import json
+print(json.load(open("nasdaq-xray/account_longbridge_mcp_v2_probe_state.json")).get("status",""))
+PY
+)"
+          if [[ "$v2_status" == "PASS" ]]; then
+            cp nasdaq-xray/account_longbridge_mcp_v2_probe_state.json nasdaq-xray/account_effective_probe_state.json
+            echo "XRAY_ACCOUNT_SELECTOR=V2_PASS_DIRECT_NOT_CALLED"
           else
             python nasdaq-xray/account_longbridge_openapi_probe.py
-            cp nasdaq-xray/account_longbridge_openapi_probe_state.json nasdaq-xray/account_live_probe_state.json
+            python nasdaq-xray/select_account_live_probe.py
           fi
 
       - name: Normalize event bridge
@@ -224,7 +228,7 @@ jobs:
         if: steps.event.outputs.ready == 'true'
         env:
           XRAY_TERMINAL_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_current_terminal.json
-          XRAY_ACCOUNT_LIVE_PROBE_STATE: ${{ github.workspace }}/nasdaq-xray/account_live_probe_state.json
+          XRAY_ACCOUNT_LIVE_PROBE_STATE: ${{ github.workspace }}/nasdaq-xray/account_effective_probe_state.json
         run: python nasdaq-xray/build_current_terminal.py
 
       - name: Structural terminal gate
@@ -252,10 +256,9 @@ jobs:
           assert g9["execution"]=="NONE" and g9["real_money"]=="NO-GO"
           assert ag["execution"]=="NONE" and ag["real_money"]=="NO-GO" and ag["provider"]=="PROVIDER_NEUTRAL"
           assert t["g9_global_status"]==("G9_PASS" if g9.get("g9_pass") is True else "G9_BLOCKED_FREE_AUTOMATION_PATH")
-          lp=json.load(open("nasdaq-xray/account_live_probe_state.json"))
+          lp=json.load(open("nasdaq-xray/account_effective_probe_state.json"))
           allowed={
             "XRAY_ACCOUNT_LONGBRIDGE_OPENAPI_PROBE_V1":"LONGBRIDGE_DIRECT_OPENAPI",
-            "XRAY_ACCOUNT_LONGBRIDGE_HOSTED_MCP_PROBE_V1":"LONGBRIDGE_HOSTED_MCP",
             "XRAY_ACCOUNT_LONGBRIDGE_MCP_V2_PROBE_V1":"LONGBRIDGE_HOSTED_MCP_V2",
           }
           live_pass=(
