@@ -144,16 +144,13 @@
     },
     {
       "provider": "Charles Schwab Trader API / International",
-      "status": "PROMISING_BUT_STRICT_G9_UNPROVEN",
+      "status": "STRICT_G9_C_FAIL_STREAMING_NBBO_FEE_BEARING",
       "failed_gates": [
-        "A",
-        "B",
-        "C",
-        "D_JURISDICTION"
+        "C"
       ],
-      "evidence_file": "nasdaq-xray/g9_free_path_audit_20261003.json",
+      "evidence_file": "nasdaq-xray/g9_provider_delta_schwab_deep_20261003.json",
       "last_checked_on": "2026-10-03",
-      "reopen_condition": "Primary-source proof of Turkey eligibility plus sanctioned Trader API exact consolidated NBBO/timestamps plus permanent-$0 entitlement.",
+      "reopen_condition": "Schwab makes consolidated streaming NBBO unconditional permanent-$0 for lawful automated/non-display use; then reassess API schema/jurisdiction/callability.",
       "negative_cache_only": true,
       "may_never_create_pass": true
     },
