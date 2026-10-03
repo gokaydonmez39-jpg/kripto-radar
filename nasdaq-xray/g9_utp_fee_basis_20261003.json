@@ -1,0 +1,36 @@
+{
+  "schema": "XRAY_G9_UTP_FEE_BASIS_V1",
+  "generated_on": "2026-10-03",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "source": {
+    "publisher": "UTP Plan",
+    "url": "https://www.utpplan.com/doc/DataPolicies.pdf",
+    "document": "UTP Data Policies & Fee Schedule",
+    "publication_label": "September 2023",
+    "relevant_pages": [
+      4,
+      5
+    ],
+    "current_site_usage": "The UTP Plan current Data Admin site still directs vendors to this Data Policies & Fee Schedule; UTP site in 2026 states pricing is located in UTP Data Policies."
+  },
+  "findings": {
+    "real_time_direct_access": "$2,500/month per firm",
+    "real_time_indirect_access": "$500/month per firm",
+    "real_time_non_display_electronic_trading_system": "$3,500/month per electronic trading system",
+    "real_time_non_display_own_behalf": "$3,500/month per firm",
+    "real_time_non_display_on_behalf_of_customers": "$3,500/month per firm",
+    "nonprofessional_display_subscriber": "$1/month per subscriber under the displayed controlled-product schedule",
+    "per_query": "$0.0075 per query",
+    "delayed_subscriber": "not currently fee liable",
+    "end_of_day_subscriber": "not currently fee liable"
+  },
+  "interpretation": [
+    "There is no direct-UQDF/UTDF permanent-$0 non-display loophole in the cited current UTP fee basis.",
+    "A $0-to-end-user strict G9 path could still exist only if a lawful vendor/broker absorbs upstream licensing costs and explicitly grants the user's automated/non-display API use without balance, activity, per-query, subscription, account-maintenance, or recurring fee conditions.",
+    "Retail display access being free-to-user does not prove automated/non-display API entitlement.",
+    "Delayed or end-of-day no-fee status does not qualify strict G9 because freshness is mandatory."
+  ],
+  "policy_effect": "NO_THRESHOLD_CHANGE; strengthens entitlement proof requirement only",
+  "no_policy_weakening": true
+}
