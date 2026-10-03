@@ -175,11 +175,7 @@ jobs:
         run: |
           set -euo pipefail
           python nasdaq-xray/account_longbridge_mcp_v2_probe.py
-          v2_status="$(python - <<'PY'
-import json
-print(json.load(open("nasdaq-xray/account_longbridge_mcp_v2_probe_state.json")).get("status",""))
-PY
-)"
+          v2_status="$(python -c 'import json; print(json.load(open("nasdaq-xray/account_longbridge_mcp_v2_probe_state.json")).get("status",""))')"
           if [[ "$v2_status" == "PASS" ]]; then
             cp nasdaq-xray/account_longbridge_mcp_v2_probe_state.json nasdaq-xray/account_effective_probe_state.json
             echo "XRAY_ACCOUNT_SELECTOR=V2_PASS_DIRECT_NOT_CALLED"
