@@ -1,0 +1,69 @@
+{
+  "schema": "XRAY_EXTERNAL_REFERENCE_AUDIT_V1",
+  "status": "REVIEWED",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "alpha_authority": false,
+  "source": {
+    "url": "https://x.com/zakiraicoder/status/2105466853317582891?s=46",
+    "post_id": "2105466853317582891",
+    "subject": "viral Claude Code + Binance trading-bot claim"
+  },
+  "claims_reviewed": {
+    "alleged_builder": "19-year-old Japanese engineering student",
+    "alleged_build_time": "2 days / 48 hours",
+    "alleged_starting_capital_usd": 68,
+    "alleged_first_night_profit_usd": 6732,
+    "alleged_total_profit_usd": 750000,
+    "alleged_architecture": [
+      "Claude Code trading logic",
+      "Binance live BTC data",
+      "50+ markets monitored simultaneously",
+      "execute on price gaps/arbitrage windows",
+      "24/7 operation"
+    ]
+  },
+  "evidence_assessment": {
+    "performance_claim": "UNVERIFIED_REJECTED_AS_EVIDENCE",
+    "independent_trade_log_found": false,
+    "independent_wallet_or_account_statement_found": false,
+    "original_source_code_found": false,
+    "verified_builder_identity_found": false,
+    "viral_copy_pattern": true,
+    "copy_pattern_note": "Same numbers and architecture copy recur across unrelated accounts with changing follow/DM calls-to-action.",
+    "conclusion": "Do not use claimed returns, win rate, arbitrage profitability or speed-edge assertions in XRAY validation."
+  },
+  "adopted_principles": [
+    {
+      "id": "PARALLEL_OBSERVATION_SEQUENTIAL_AUTHORITY",
+      "xray_adaptation": "Independent providers/phases may read concurrently where provider limits permit; deterministic merge and authority gates remain sequential/fail-closed."
+    },
+    {
+      "id": "DATA_PLANE_SEPARATED_FROM_DECISION_AUTHORITY",
+      "xray_adaptation": "Cheap/batch sources route work; authoritative exact evidence decides PASS/FAIL. Accelerator data never silently becomes alpha authority."
+    },
+    {
+      "id": "AUTOMATION_WITHOUT_EMOTIONAL_OVERRIDE",
+      "xray_adaptation": "Canonical policy and deterministic lifecycle rules govern research state; no discretionary override or execution."
+    }
+  ],
+  "rejected_principles": [
+    {
+      "id": "RETAIL_HFT_SPEED_EDGE",
+      "reason": "XRAY is 2–8 completed-session swing research, not sub-second cross-market arbitrage; latency-arbitrage claims are irrelevant and unverified."
+    },
+    {
+      "id": "AUTOMATIC_EXECUTION",
+      "reason": "EXECUTION=NONE and REAL_MONEY=NO-GO remain hard invariants."
+    },
+    {
+      "id": "CLAIMED_RETURN_AS_VALIDATION",
+      "reason": "No independently verifiable evidence; viral-copy pattern creates strong promotional-content risk."
+    }
+  ],
+  "risk_translation_for_xray": [
+    "Parallelism must respect provider-specific rate limits; observed Longbridge 429002 under parallel fan-out.",
+    "Partial data must remain visibly partial; exact set/hash completeness is required.",
+    "Any future execution research would need fees, spread, slippage, liquidity, queue position and market-impact modeling; none are inferred from the viral post."
+  ]
+}
