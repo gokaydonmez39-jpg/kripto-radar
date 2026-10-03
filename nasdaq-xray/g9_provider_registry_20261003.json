@@ -120,25 +120,27 @@
     },
     {
       "provider": "Tradier Brokerage API",
-      "status": "TECHNICALLY_QUALIFYING_DATA_PATH_BUT_TURKEY_RESIDENCY_BLOCKED",
+      "status": "TECHNICALLY_QUALIFYING_DATA_PATH_BUT_TURKEY_BLOCKED_AND_ACTIVITY_FEE_CONDITION",
       "failed_gates": [
+        "C_ACCOUNT_MAINTENANCE_ACTIVITY_CONDITION",
         "D_JURISDICTION"
       ],
       "evidence_file": "nasdaq-xray/g9_free_path_audit_20261003.json",
       "last_checked_on": "2026-10-03",
-      "reopen_condition": "Tradier removes Turkey from blocked residency while retaining $0 API and consolidated realtime feed.",
+      "reopen_condition": "Tradier removes Turkey from blocked residency and removes international account activity/inactivity fee conditions while retaining qualifying realtime consolidated data/API access.",
       "negative_cache_only": true,
       "may_never_create_pass": true
     },
     {
       "provider": "Fennel API",
-      "status": "TECHNICALLY_PROMISING_NBBO_API_BUT_US_RESIDENT_ONLY",
+      "status": "TECHNICALLY_STRONG_NBBO_API_BUT_PAID_AND_US_ACCOUNT_ONLY",
       "failed_gates": [
+        "C",
         "D_JURISDICTION"
       ],
       "evidence_file": "nasdaq-xray/g9_free_path_audit_20261003.json",
       "last_checked_on": "2026-10-03",
-      "reopen_condition": "Eligibility expands to Turkey residents while permanent-$0 NBBO API remains available without conditions.",
+      "reopen_condition": "Fennel offers permanent-$0 API market-data access and expands brokerage/API eligibility to Turkey residents while retaining qualifying NBBO/timestamp semantics.",
       "negative_cache_only": true,
       "may_never_create_pass": true
     },
