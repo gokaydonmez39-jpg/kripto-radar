@@ -34,8 +34,20 @@
       "private_values_persisted": false
     }
   },
-  "retry_class": "NONRETRYABLE_IN_RUN",
-  "reauth_rule": "Only an explicit OAuth reconnect/re-authorization that grants the required connector scopes can clear 403308. Plain access-token refresh MUST NOT be treated as repair.",
+  "retry_class": "USER_ACTION_REQUIRED",
+  "reauth_rule": "Reconnect Longbridge and approve the full permission set requested by the connector (including watchlist/portfolio/trading OAuth scopes if presented). Plain token refresh or reconnect with the same limited scopes does not clear 403308.",
   "pass_transition_rule": "Only a fresh same-run success of BOTH account_balance and stock_positions may transition ACCOUNT to PASS.",
-  "updated_on": "2026-10-03"
+  "updated_on": "2026-10-03",
+  "last_reauth_attempt": {
+    "user_reported_reauthorized": true,
+    "verification_result": "FAILED_SAME_SCOPE_ERROR",
+    "verified_calls": [
+      "account_balance",
+      "stock_positions"
+    ],
+    "error_code": 403308,
+    "error_message": "Target API is not in authorized scope",
+    "interpretation": "Connection refresh/re-authorization did not grant the connector scopes required by both read-only account endpoints."
+  },
+  "execution_guard": "Granting an OAuth trading scope does NOT authorize XRAY to place orders. XRAY execution remains NONE/REAL_MONEY=NO-GO and order/preview/replace/cancel endpoints remain forbidden."
 }
