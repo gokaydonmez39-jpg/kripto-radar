@@ -1,7 +1,7 @@
 {
   "schema": "XRAY_FINAL_GATE_OVERLAY_V2",
   "generated_on": "2026-10-03",
-  "generated_at_utc": "2026-10-03T11:37:40.342030+00:00",
+  "generated_at_utc": "2026-10-03T11:38:46.792693+00:00",
   "asof_et": "2026-10-02",
   "execution": "NONE",
   "real_money": "NO-GO",
@@ -9,7 +9,7 @@
   "binding_protocol": "FAIL_CLOSED_BLOCKED_CACHE_DRIFT_V1",
   "source_terminal": {
     "path": "nasdaq-xray/canonical_current_terminal.json",
-    "blob_sha": "bb760e3b55b0b38001cbfb64f4db18c741be22a2",
+    "blob_sha": "ae0046a3eac1c93e4ba90c26d30974e4689d1786",
     "full_end_to_end_research_pass": true,
     "terminal_result": "NO_CONFIRMED_SETUP"
   },
@@ -47,13 +47,13 @@
     "current_adapter": "LONGBRIDGE",
     "persisted_gate_status": "ACCOUNT_BLOCKED_SCOPE_NOT_GRANTED_OR_ACCOUNT_UNSUPPORTED",
     "same_run_live_witness_attested": false,
-    "live_probe_workflow_run_id": "37120038718",
+    "live_probe_workflow_run_id": "37120251114",
     "gate_path": "nasdaq-xray/account_gate_contract.json",
-    "gate_blob_sha": "4bbd8c749d61be94f8ea2afef961dbd925f56d3c",
+    "gate_blob_sha": "3647e690d6f8d66d16b2e375cfc429f5fdf62d77",
     "current_adapter_contract_blob_sha": "74ff539205baab8695bb10851dd4cc6d428b5412",
-    "gate_bound_adapter_contract_blob_sha": "fdbf3b957658fa30ccd7cb5f6b60a22187c508f5",
-    "adapter_binding_exact": false,
-    "adapter_drift_while_blocked": true
+    "gate_bound_adapter_contract_blob_sha": "74ff539205baab8695bb10851dd4cc6d428b5412",
+    "adapter_binding_exact": true,
+    "adapter_drift_while_blocked": false
   },
   "binding_integrity": {
     "fail_closed_safe": true,
