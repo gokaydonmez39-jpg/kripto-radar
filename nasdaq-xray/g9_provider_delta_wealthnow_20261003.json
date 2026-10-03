@@ -4,7 +4,7 @@
   "provider": "Wealthnow",
   "execution": "NONE",
   "real_money": "NO-GO",
-  "status": "HIGHEST_POTENTIAL_FREE_SNAPSHOT_B_D_STRONG_STRUCTURAL_C_PATH_OPEN_A_AND_PROVIDER_CLASSIFICATION_UNPROVEN",
+  "status": "HIGHEST_POTENTIAL_POLYGON_LINEAGE_STRONG_CURRENT_EXACT_FREE_ROUTE_BINDING_AND_C_PROVIDER_CLASSIFICATION_UNPROVEN",
   "evidence": [
     "Wealthnow Developer API Free tier is documented at $0/no-card/free-forever style access with 1,000 monthly credits and a hard cap rather than automatic overage. Fundamentals and Market Data are included on Free; price_snapshot costs 1 credit.",
     "The Free fundamentals/price_snapshot documentation now explicitly defines `as_of`/`time` as the UTC time of the last trade and `quote_as_of` as the instant when the quote last changed. The API response envelope `timestamp` is separately defined as API-answer time and not market time. This materially proves the required independent trade-time vs quote-time semantics at schema level.",
@@ -25,7 +25,12 @@
     "Current Wealthnow API docs explicitly label /api/market/quote/{ticker} as a live equity quote on the Free market_data product and /api/v3/fundamentals/price_snapshot as Free+; the API landing page markets real-time prices over REST/MCP for investing agents.",
     "Current Wealthnow streaming docs separately identify Starter+ quote SSE as consolidated best bid/ask NBBO and Free as 402 plan_required, proving entitlement boundaries are product-specific and must not be transferred across surfaces.",
     "Current disclosures state quotes and other content come from third-party data providers but do not name the equity market-data vendor; therefore upstream lineage cannot be established from disclosures alone.",
-    "Cross-vendor schema comparison shows Wealthnow's 2026 paid NBBO stream still describes quote sizes as upstream round-lot counts while public Alpaca and Massive stock quote schemas changed to share counts after the November 2025 CTA/UTP update. This weakens simple Alpaca/Massive fingerprint hypotheses but is not lineage proof."
+    "Cross-vendor schema comparison shows Wealthnow's 2026 paid NBBO stream still describes quote sizes as upstream round-lot counts while public Alpaca and Massive stock quote schemas changed to share counts after the November 2025 CTA/UTP update. This weakens simple Alpaca/Massive fingerprint hypotheses but is not lineage proof.",
+    "Tengu's public OpenAPI-generated tengu-firm 0.1.0 package (API v2.87, released 2026-07-19) identifies Polygon in per-vendor quota telemetry and explicitly describes FIRM's own U.S. equity intraday tape as Polygon capture.",
+    "Current Wealthnow Quickstart/API Reference formally binds the supported Free /api/market/quote/{ticker} live-equity route to fundamentals_price_snapshot as its OpenAPI/MCP spec equivalent / the same question.",
+    "Current price_snapshot documentation shows the route consumes live upstream quote/trade data, exposes independent quote_as_of and as_of/time market-event times, and fails closed with vendor_error when every live price source fails.",
+    "This is strong first-party architecture evidence for Polygon lineage, but XRAY still refuses to equate architecture/equivalence with an explicit current exact-route Polygon binding. A remains unproven until a current first-party route binding or provider confirmation is observed.",
+    "UTP official reporting rules independently show UTP1APIS is a $1/month Real-Time Nonprofessional Uncontrolled Recipient assessment billed to the Vendor, so Wealthnow's $0 Free API is structurally compatible if Tengu lawfully classifies and absorbs the assessment. Provider-specific confirmation is still mandatory under current strict policy."
   ],
   "primary_sources": [
     "https://app.wealthnow.io/docs/market-data",
@@ -38,11 +43,11 @@
     "https://wealthnow.io/api",
     "https://app.wealthnow.io/docs/pricing-and-credits"
   ],
-  "reopen_condition": "Primary-source Wealthnow confirmation of Free price_snapshot consolidated lineage + UTP1APIS/equivalent approved classification and vendor fee absorption; then configure WEALTHNOW_API_KEY and require same-run US-RTH B/D freshness and skew proof.",
+  "reopen_condition": "Current first-party Wealthnow/Tengu route binding or provider confirmation must explicitly bind Free /api/market/quote and/or fundamentals_price_snapshot bid/ask to Polygon consolidated U.S. equities or directly to CTA/UTP SIP National NBBO, AND confirm UTP1APIS/equivalent approved classification plus vendor fee absorption; then configure WEALTHNOW_API_KEY and require same-run US-RTH B/D freshness/skew proof.",
   "no_policy_weakening": true,
   "failed_gates": [
-    "A_FREE_ROUTE_EXACT_UTP_SIP_OR_NAMED_LICENSED_REDIStributor_LINEAGE",
-    "C_PROVIDER_CONFIRMED_UTP1APIS_OR_EQUIVALENT_NONPROFESSIONAL_API_CLASSIFICATION_AND_VENDOR_FEE_ABSORPTION",
+    "A_CURRENT_EXACT_FREE_ROUTE_TO_POLYGON_OR_DIRECT_UTP_NBBO_BINDING",
+    "C_PROVIDER_CONFIRMED_UTP1APIS_OR_EQUIVALENT_CLASSIFICATION_AND_VENDOR_FEE_ABSORPTION",
     "D_RUNTIME_CREDENTIAL_AND_SAME_RUN_RTH_PROBE"
   ],
   "provisional_pass_gates": [
@@ -51,7 +56,9 @@
     "C_ZERO_DOLLAR_DEVELOPER_API_COST_WITH_HARD_CAP",
     "C_SANCTIONED_PROGRAMMATIC_API_AND_REMOTE_MCP_INTENT",
     "C_STRUCTURAL_UTP_NONPROFESSIONAL_API_PATH_EXISTS",
-    "D_HOSTED_REMOTE_MCP_AND_TECHNICAL_ADAPTER_IMPLEMENTED"
+    "D_HOSTED_REMOTE_MCP_AND_TECHNICAL_ADAPTER_IMPLEMENTED",
+    "A_FIRST_PARTY_POLYGON_ARCHITECTURE_AND_EQUITY_TAPE_CAPTURE_STRONG",
+    "A_CURRENT_FREE_QUOTE_TO_PRICE_SNAPSHOT_SPEC_EQUIVALENCE_PRIMARY_SOURCE"
   ],
   "technical_adapter_status": "IMPLEMENTED_FAIL_CLOSED_BEHIND_AUTHORITY",
   "last_checked_on": "2026-10-03",
@@ -73,5 +80,10 @@
     "paid_stream_explicit_consolidated_nbbo": true,
     "third_party_market_data_vendor_named": false,
     "implication": "C_ENDUSER_ZERO_DOLLAR_AND_PROGRAMMATIC_INTENT_STRONG; A_LINEAGE_AND_PROVIDER_SPECIFIC_UTP_CLASSIFICATION_FEE_ABSORPTION_REMAIN_UNPROVEN"
+  },
+  "polygon_lineage_refresh": {
+    "path": "nasdaq-xray/g9_wealthnow_polygon_lineage_refresh_20261003.json",
+    "blob_sha": "56f38fbc73db3d858a3d89a4623c0df60b30e381",
+    "status": "STRONG_FIRST_PARTY_POLYGON_ARCHITECTURE_EVIDENCE_CURRENT_EXACT_FREE_ROUTE_BINDING_NOT_EXPLICIT"
   }
 }
