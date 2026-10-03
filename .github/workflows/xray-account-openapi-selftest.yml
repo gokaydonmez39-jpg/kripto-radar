@@ -1,0 +1,32 @@
+name: XRAY Account OpenAPI Selftest
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/account_longbridge_openapi_probe.py"
+      - "nasdaq-xray/account_longbridge_openapi_probe_selftest.py"
+      - "nasdaq-xray/requirements-account-probe.txt"
+      - ".github/workflows/xray-account-openapi-selftest.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  selftest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Compile
+        run: |
+          python -m py_compile             nasdaq-xray/account_longbridge_openapi_probe.py             nasdaq-xray/account_longbridge_openapi_probe_selftest.py
+
+      - name: Network-free selftest
+        run: python nasdaq-xray/account_longbridge_openapi_probe_selftest.py
