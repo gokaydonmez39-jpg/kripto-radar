@@ -74,7 +74,7 @@ def main():
     assert payload["client_id"] == PACKED_CLIENT_ID
     assert payload["scopes"] == ["account.read", "watchlist"]
     assert payload["expires_at_epoch"] == 1_003_600
-    assert payload["main_endpoint"] == "https://mcp.longbridge.com"
+    assert payload["main_endpoint"] == "https://mcp.longbridge.com/v2"
     assert payload["agent_endpoint"] == "https://mcp.longbridge.com/agent"
     assert payload["account_tools_verified"] is True
     assert payload["write_surface_absent"] is True
