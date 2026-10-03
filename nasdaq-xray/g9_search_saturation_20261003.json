@@ -9,7 +9,7 @@
     "C": "lawful automated/non-display permanent-$0 entitlement with no fee/balance/activity/per-query condition",
     "D": "scheduler callability"
   },
-  "unique_provider_paths_reviewed": 55,
+  "unique_provider_paths_reviewed": 56,
   "evidence_files": [
     {
       "path": "nasdaq-xray/g9_free_path_audit_20261003.json",
@@ -101,11 +101,19 @@
     },
     {
       "path": "nasdaq-xray/g9_provider_delta_paperinvest_20261003.json",
-      "blob_sha": "5e71a710510ac22640cacb6d871d2f4bbfaced77"
+      "blob_sha": "7741af297be50a625aa946e7fd1dc67b5d0b98df"
     },
     {
       "path": "nasdaq-xray/g9_provider_delta_algoarena_20261003.json",
       "commit_sha": "303d66a9c43aa1aea680ebe014847278fa940bb5"
+    },
+    {
+      "path": "nasdaq-xray/g9_provider_delta_webull_alphavantage_refresh_20261003.json",
+      "blob_sha": "8c4a240a401c7674524955e112fa15aeae7cb84a"
+    },
+    {
+      "path": "nasdaq-xray/g9_provider_delta_quodd_20261003.json",
+      "blob_sha": "c117df090ae3251fe4de94d3da811723a7149565"
     }
   ],
   "reviewed_provider_paths": [
@@ -163,7 +171,8 @@
     "Strasmore",
     "SiftingIO US Equities API",
     "Paper Invest REST / Official MCP",
-    "AlgoArena hosted / open-source Alpaca SIP proxy"
+    "AlgoArena hosted / open-source Alpaca SIP proxy",
+    "QUODD QX Digital / real-time equities API"
   ],
   "strongest_near_misses": [
     {
@@ -208,5 +217,15 @@
   "unknown_never_pass": true,
   "no_policy_weakening": true,
   "last_extended_on": "2026-10-03",
-  "count_invariant": "unique_provider_paths_reviewed == len(unique(reviewed_provider_paths))"
+  "count_invariant": "unique_provider_paths_reviewed == len(unique(reviewed_provider_paths))",
+  "latest_utp_scheduler_interpretation": {
+    "result": "THIRD_PARTY_SOFTWARE_DOES_NOT_SAFELY_QUALIFY_FOR_LOW_NONPROFESSIONAL_UNCONTROLLED_EXCEPTION; INVESTMENT_ANALYSIS_IS_EXPLICIT_NONDISPLAY_EXAMPLE; PROVIDER_SPECIFIC_ZERO_DOLLAR_AUTHORIZATION_STILL_REQUIRED",
+    "authority_file": "nasdaq-xray/g9_utp_fee_basis_20261003.json"
+  },
+  "latest_new_provider": {
+    "provider": "QUODD QX Digital / real-time equities API",
+    "evidence_file": "nasdaq-xray/g9_provider_delta_quodd_20261003.json",
+    "evidence_blob_sha": "c117df090ae3251fe4de94d3da811723a7149565",
+    "result": "STRICT_C_PERMANENT_ZERO_FAIL"
+  }
 }
