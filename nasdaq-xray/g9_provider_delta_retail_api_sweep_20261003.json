@@ -7,25 +7,27 @@
   "providers": [
     {
       "provider": "E*TRADE Developer API",
-      "status": "NONQUALIFYING_STRICT_G9_MARKET_DATA_FEES_AND_LINEAGE_UNPROVEN",
+      "status": "NONQUALIFYING_STRICT_G9_EXACT_SIP_API_ENTITLEMENT_C_AND_AUTONOMOUS_D_FAIL",
       "failed_gates": [
-        "A",
-        "B",
-        "C"
+        "A_EXACT_API_FEED_BINDING",
+        "C_PERMANENT_ZERO_EXCHANGE_VENDOR_FEES",
+        "D_DAILY_OAUTH_REAUTH"
       ],
       "evidence": [
-        "Official API provides balances, positions, watchlists and market quotes and requires OAuth plus an E*TRADE customer account.",
-        "Production quote access requires a Market Data Agreement and annual market-data attestation.",
-        "API Developer License states users remain liable for exchange/index/third-party market-data fees that may be levied and that E*TRADE uses third-party feeds whose equality to other feeds is not guaranteed.",
-        "Thus strict permanent-$0 entitlement is not proven, and exact consolidated UTP/National-NBBO lineage plus independent bid/ask/trade event timestamp semantics are not established by current primary-source chain."
+        "Official E*TRADE Market Data disclosure identifies real-time consolidated U.S. equities data from CTA and UTP SIPs as an available platform source, but also says equities may instead be Nasdaq Basic depending on the user's subscriptions and preferences. Provider-level consolidated SIP capability is proven; exact API-user feed binding is not.",
+        "Official Quote API exposes bid, ask, bidTime, askTime and timeOfLastTrade, giving a strong independent quote/trade time schema. Real-time API quotes require the Market Data Agreement and OAuth.",
+        "The API Developer License expressly permits personal non-commercial API analytics under a royalty-free API license, but separately makes the developer liable for exchange/index/vendor market-data fees levied on data accessed through E*TRADE. General 'Level I no data fee' marketing cannot be transferred to the exact CTA/UTP API entitlement without explicit binding evidence.",
+        "Official OAuth guide says the access token expires at midnight U.S. Eastern and the user must log in again to secure a new access token. Two-hour inactivity can be renewed, but midnight expiry cannot be made persistent by the documented Renew Access Token call. This violates XRAY's fully autonomous scheduler requirement unless E*TRADE documents another sanctioned noninteractive reauthorization path.",
+        "Therefore E*TRADE is a technically strong near-miss but cannot create strict G9 PASS under current evidence."
       ],
       "primary_sources": [
+        "https://us.etrade.com/l/f/disclosure-library/market-data",
         "https://developer.etrade.com/getting-started",
-        "https://developer.etrade.com/support/frequently-asked-questions",
-        "https://developer.etrade.com/support/terms-of-use"
+        "https://developer.etrade.com/getting-started/developer-guides",
+        "https://us.etrade.com/l/f/agreement-library/api-developer-licensing-agreement"
       ],
       "account_gate_assessment": "TECHNICALLY_STRONG_READ_SHAPE_BUT_REQUIRES_USER_ETRADE_ACCOUNT_AND_NO_CURRENT_CONNECTED_SANCTIONED_ADAPTER",
-      "reopen_condition": "Official terms prove exact consolidated National NBBO + independent event timestamps under unconditional permanent-$0 automated entitlement."
+      "reopen_condition": "Bind the exact API quote route to realtime CTA/UTP consolidated SIP/National NBBO for the user, prove that exact API market-data entitlement carries no exchange/vendor/subscription/balance/funding/activity fee, and document a sanctioned noninteractive credential flow that survives daily midnight expiry; then live same-run RTH B probe."
     },
     {
       "provider": "QuoteMedia OnDemand / NBBO",
