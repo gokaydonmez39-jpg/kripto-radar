@@ -4,7 +4,7 @@
   "provider": "WEALTHNOW",
   "execution": "NONE",
   "real_money": "NO-GO",
-  "current_status": "BLOCKED_A_LINEAGE_AND_C_NONDISPLAY_LICENSE_PRIMARY_SOURCE_GAP",
+  "current_status": "BLOCKED_A_FREE_SNAPSHOT_LINEAGE_AND_C_THIRD_PARTY_NONDISPLAY_LICENSE_GAP",
   "current_evidence": {
     "free_snapshot": {
       "route": "GET /api/v3/fundamentals/price_snapshot",
@@ -36,7 +36,18 @@
         "UQDF",
         "UTDF",
         "CTA"
-      ]
+      ],
+      "live_rth_example": {
+        "captured_at_utc": "2026-10-02T16:15:27.432530+00:00",
+        "ticker": "AAPL",
+        "bid": 332.79,
+        "ask": 332.82,
+        "trade_event_field": "as_of/time",
+        "quote_event_field": "quote_as_of",
+        "price_age_seconds": 0.17134451866149902,
+        "source_label": "market-data:v2-snapshot",
+        "interpretation": "B_SCHEMA_AND_FRESHNESS_EXAMPLE_STRONG; SOURCE_LABEL_IS_INTERNAL_AND_NOT_SIP_LINEAGE_PROOF"
+      }
     },
     "paid_stream": {
       "route": "GET /api/v3/stream/quotes",
@@ -46,7 +57,9 @@
         "consolidated best bid and best ask",
         "bid_exchange and ask_exchange passed through from upstream feed"
       ],
-      "strict_g9_role": "TECHNICAL_LINEAGE_REFERENCE_ONLY; PAID_ROUTE_CANNOT_SATISFY ZERO_DOLLAR C"
+      "strict_g9_role": "TECHNICAL_LINEAGE_REFERENCE_ONLY; PAID_ROUTE_CANNOT_SATISFY ZERO_DOLLAR C",
+      "explicit_nbbo_language": "top-of-book quotes (NBBO), consolidated best bid and best ask, venue IDs",
+      "free_plan_result": "402 plan_required"
     },
     "free_entitlement": {
       "plan": "Free",
@@ -55,6 +68,14 @@
       "api_agent_intent": "PROVEN_BY_REST_MCP_SDK_AGENT_DOCUMENTATION_AND_TERMS",
       "non_display_exchange_license": "NOT_EXPLICITLY_DOCUMENTED",
       "terms_summary": "API use is covered by Wealthnow Terms; third-party market data and exchange/provider rules still apply; no explicit Free-plan SIP/NBBO non-display license found."
+    },
+    "terms": {
+      "updated": "2026-09-27",
+      "api_covered": true,
+      "market_data_is_third_party_content": true,
+      "exchange_rule_compliance_user_obligation": true,
+      "automation_rule": "Bots/scripts are prohibited only when they burden the service or bypass rate/access controls; this supports general API automation but does not grant an exchange/SIP non-display license.",
+      "explicit_free_snapshot_nondisplay_license_found": false
     }
   },
   "prohibited_inferences": [
@@ -62,12 +83,15 @@
     "Do not infer `market-data:v2-snapshot` is SIP/UTP lineage from its internal source label.",
     "Do not infer consolidated daily volume proves consolidated quote lineage.",
     "Do not treat matching bid/ask values against an NBBO source as lineage proof.",
-    "Do not create G9 PASS from marketing terms such as live, realtime, institutional or consolidated volume."
+    "Do not create G9 PASS from marketing terms such as live, realtime, institutional or consolidated volume.",
+    "Do not transfer the paid Starter+ stream's explicit NBBO lineage to the Free price_snapshot route without provider confirmation.",
+    "Do not treat general API/agent permission as proof that third-party exchange/SIP non-display rights are included."
   ],
   "acceptable_primary_source_unlocks": [
     "Wealthnow official documentation or written provider confirmation explicitly states that Free `fundamentals/price_snapshot` equity bid/ask are consolidated National NBBO sourced from CTA/UTP SIP or names an equivalent licensed consolidated redistributor lineage.",
     "The same confirmation explicitly states the Free REST/MCP/API entitlement permits the intended automated/non-display use and that no separate exchange/vendor market-data fee, subscription, per-query charge, balance, funding, activity, or account-maintenance condition applies.",
-    "A later official Free endpoint explicitly documented as National NBBO plus the same automated/non-display entitlement replaces price_snapshot."
+    "A later official Free endpoint explicitly documented as National NBBO plus the same automated/non-display entitlement replaces price_snapshot.",
+    "Wealthnow formally binds Free price_snapshot to the same consolidated NBBO lineage as the documented streaming quote feed and confirms the Free API user's automated/non-display rights are covered without separate exchange fees."
   ],
   "exact_provider_question": "For a Free-plan API key, are the equity bid/ask fields returned by GET /api/v3/fundamentals/price_snapshot the consolidated U.S. National Best Bid and Offer (CTA/UTP SIP NBBO), rather than a single-venue or proprietary partial feed? If yes, please identify the feed or licensed redistributor lineage. Also, does the Free REST/MCP entitlement explicitly cover automated/non-display use of that quote data without any separate exchange/vendor market-data fee, subscription, per-query charge, balance, funding, activity, or account-maintenance condition beyond the Free hard-capped credits?",
   "post_unlock_required_probe": {
@@ -98,7 +122,8 @@
     "https://app.wealthnow.io/docs/pricing-and-credits",
     "https://app.wealthnow.io/docs/mcp-and-sdks",
     "https://wealthnow.io/api",
-    "https://wealthnow.io/terms"
+    "https://wealthnow.io/terms",
+    "https://wealthnow.io/disclosures"
   ],
   "unknown_never_pass": true,
   "no_policy_weakening": true,
