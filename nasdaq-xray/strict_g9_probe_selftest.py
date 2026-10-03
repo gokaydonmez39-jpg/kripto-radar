@@ -27,6 +27,7 @@ def run_case(authority, adapters, expect_status, expect_refresh_calls):
         mod.AUTH=auth
         mod.ADAPTER_CONTRACT=contract
         mod.OUT=out
+        mod.os.environ.pop("WEALTHNOW_API_KEY",None)
         calls={"refresh":0,"get_json":0,"depth":0}
         def fake_refresh():
             calls["refresh"]+=1
@@ -70,7 +71,22 @@ def main():
       {"SYNTHETIC_VENDOR":{"status":"IMPLEMENTED"}},
       "BLOCKED_PROVIDER_DISPATCH_NOT_IMPLEMENTED",0)
 
-    # 4) Only PROVEN + implemented + known dispatch may reach auth/provider path.
+    # 4) Wealthnow negative authority also stops before any provider call.
+    j=run_case(
+      {"provider":"WEALTHNOW","status":"BLOCKED_STRICT_PERMANENT_ZERO"},
+      {"WEALTHNOW":{"status":"IMPLEMENTED"}},
+      "BLOCKED_ENTITLEMENT_AUTHORITY_UNPROVEN",0)
+    assert j["adapter_status"]=="IMPLEMENTED"
+
+    # 5) PROVEN Wealthnow may reach its dispatch, but missing scheduler secret
+    # remains NOT_CONFIGURED and cannot trigger a data call.
+    j=run_case(
+      {"provider":"WEALTHNOW","status":"PROVEN"},
+      {"WEALTHNOW":{"status":"IMPLEMENTED"}},
+      "NOT_CONFIGURED",0)
+    assert j["reason"]=="WEALTHNOW_API_KEY_NOT_CONFIGURED"
+
+    # 6) Only PROVEN + implemented + known TradeStation dispatch may reach auth.
     j=run_case(
       {"provider":"TRADESTATION","status":"PROVEN"},
       {"TRADESTATION":{"status":"IMPLEMENTED"}},
