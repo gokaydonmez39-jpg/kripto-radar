@@ -4,7 +4,7 @@
   "execution": "NONE",
   "real_money": "NO-GO",
   "purpose": "Negative-evidence cache only. This registry can skip unchanged dead paths but can never create G9 PASS.",
-  "provider_count": 29,
+  "provider_count": 36,
   "strict_g9_gates": {
     "A": "consolidated UTP Tape-C / National NBBO lineage",
     "B": "fresh bid+ask+last with independent quote/trade event timestamps",
@@ -13,8 +13,8 @@
   },
   "source_saturation": {
     "path": "nasdaq-xray/g9_search_saturation_20261003.json",
-    "blob_sha": "3d94eccfc62c3647a0561d89157d58f012ff1ad0",
-    "reviewed_paths": 29
+    "blob_sha": "2bc2a686428d9c666c28669e29e3fbdf283724da",
+    "reviewed_paths": 36
   },
   "providers": [
     {
@@ -392,9 +392,103 @@
       "reopen_condition": "Midas provides or explicitly authorizes a sanctioned scheduler-callable read-only API/connector and qualifying automated/non-display market-data entitlement.",
       "negative_cache_only": true,
       "may_never_create_pass": true
+    },
+    {
+      "provider": "Questrade API",
+      "status": "NONQUALIFYING_REALTIME_PACKAGE_REQUIRED_AND_STRICT_NBBO_PROOF_INCOMPLETE",
+      "failed_gates": [
+        "A",
+        "B",
+        "C"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_marketdata_sweep_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "Realtime US-equity API becomes unconditional permanent-$0, consolidated National NBBO lineage is proven, and independent quote/trade event timestamps are exposed.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "EODHD Real-Time WebSocket",
+      "status": "NONQUALIFYING_SINGLE_LIT_EXCHANGE_AND_PAID_REALTIME",
+      "failed_gates": [
+        "A",
+        "C"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_marketdata_sweep_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "Free sanctioned US feed becomes proven consolidated UTP/National NBBO with no subscription condition.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "Financial Modeling Prep (FMP)",
+      "status": "NONQUALIFYING_FREE_EOD_REALTIME_PAID",
+      "failed_gates": [
+        "A",
+        "B",
+        "C"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_marketdata_sweep_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "Free tier gains permanent realtime consolidated National NBBO with independent quote/trade timestamps.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "dxFeed Direct UTP Tape C",
+      "status": "TECHNICALLY_QUALIFYING_LINEAGE_BUT_DIRECT_ACCESS_PAID",
+      "failed_gates": [
+        "C"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_marketdata_sweep_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "Direct UTP Tape-C realtime entitlement becomes lawful permanent-$0 with no subscription/licensing condition.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "Cboe One Direct",
+      "status": "NONQUALIFYING_PARTIAL_EXCHANGE_AGGREGATE",
+      "failed_gates": [
+        "A",
+        "C"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_marketdata_sweep_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "Product becomes actual consolidated National NBBO from all U.S. venues under permanent-$0 automated entitlement.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "Nasdaq Basic / Nasdaq Data Link",
+      "status": "NONQUALIFYING_PROPRIETARY_MARKET_CENTER_BBO_AND_PREMIUM",
+      "failed_gates": [
+        "A",
+        "C"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_marketdata_sweep_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "A sanctioned Nasdaq path exposes actual consolidated UTP National NBBO under unconditional permanent-$0 automated/non-display entitlement.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "Barchart OnDemand",
+      "status": "NONQUALIFYING_STRICT_G9_ENTITLEMENT_LINEAGE_AND_EVENT_PROOF_INCOMPLETE",
+      "failed_gates": [
+        "A",
+        "B",
+        "C"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_marketdata_sweep_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "Primary-source documentation proves consolidated UTP/National NBBO, independent quote/trade event timestamps, and permanent-$0 automated entitlement.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
     }
   ],
   "reopen_policy": "Reopen an existing negative path only on newer PRIMARY SOURCE evidence materially changing its listed failed gate(s). New previously-unreviewed providers are always eligible for research. Any reopened path still requires same-run RTH technical proof before G9 PASS.",
   "unknown_never_pass": true,
-  "no_policy_weakening": true
+  "no_policy_weakening": true,
+  "count_invariant": "provider_count == len(unique(providers[].provider)) == source_saturation.reviewed_paths"
 }
