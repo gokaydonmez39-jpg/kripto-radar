@@ -7,6 +7,7 @@ on:
       - "nasdaq-xray/canonical_current_event_request.json"
       - "nasdaq-xray/chatgpt_canonical_state_v2.json"
       - "nasdaq-xray/resilience_runtime.py"
+      - "nasdaq-xray/resilience_selftest.py"
       - "nasdaq-xray/sec_official_witness.py"
       - "nasdaq-xray/external_health_probe.py"
       - "nasdaq-xray/macro_context_probe.py"
@@ -83,6 +84,13 @@ jobs:
               if "execution" in j: assert j["execution"]=="NONE"
               if "real_money" in j: assert j["real_money"]=="NO-GO"
               if "alpha_authority" in j: assert j["alpha_authority"] is False
+          ledger=json.load(open(root/"provider_health_ledger.json"))
+          for provider,pstate in (ledger.get("providers") or {}).items():
+              hs=pstate.get("last_http_status")
+              if isinstance(hs,int) and 400 <= hs <= 499 and hs not in {408,425,429}:
+                  assert pstate.get("last_error_retryable") is False,(provider,pstate)
+                  assert int(pstate.get("consecutive_failures") or 0)==0,(provider,pstate)
+                  assert float(pstate.get("open_until_epoch") or 0)==0,(provider,pstate)
           sec=json.load(open(root/"canonical_sec_official_witness.json"))
           if sec.get("status") in {"READY","READY_WITH_UNKNOWNS"}:
               assert sec.get("absence_never_clean") is True
