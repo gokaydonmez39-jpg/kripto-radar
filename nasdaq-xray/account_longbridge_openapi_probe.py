@@ -57,12 +57,16 @@ def _public_state(
     network_attempted: bool,
     reason_code: str,
     auth_mode: str,
+    refresh_token_rotation_observed: bool = False,
+    refresh_persistence_required: bool = False,
 ) -> dict[str, Any]:
     return {
         "schema": "XRAY_ACCOUNT_LONGBRIDGE_OPENAPI_PROBE_V1",
         "generated_at_utc": _now_utc(),
         "provider": "LONGBRIDGE_DIRECT_OPENAPI",
         "auth_mode": auth_mode,
+        "refresh_token_rotation_observed": bool(refresh_token_rotation_observed),
+        "refresh_persistence_required": bool(refresh_persistence_required),
         "status": status,
         "reason_code": reason_code,
         "balance_parseable": bool(balance_parseable),
@@ -181,6 +185,24 @@ def _run_oauth(
             token_payload = http_json("POST", TOKEN_URL, headers={}, form=form)
             if not isinstance(token_payload, dict) or not token_payload.get("access_token"):
                 raise ProviderReadError(None)
+            returned_refresh = str(token_payload.get("refresh_token") or "").strip()
+            if returned_refresh and returned_refresh != refresh_token:
+                # Official Longbridge SDK persists a newly returned refresh token
+                # after refresh. GitHub Actions runners are ephemeral and this
+                # probe has no authorized secret-write channel, so accepting a
+                # rotated token would create a one-run PASS that cannot be
+                # guaranteed on the next scheduler run. Fail closed before
+                # reading account data; never serialize either token value.
+                return _public_state(
+                    status="BLOCKED_ROTATING_REFRESH_TOKEN_PERSISTENCE_REQUIRED",
+                    balance_parseable=False,
+                    positions_parseable=False,
+                    network_attempted=True,
+                    reason_code="OAUTH_REFRESH_TOKEN_ROTATED_BUT_SECURE_PERSISTENCE_UNAVAILABLE",
+                    auth_mode=auth_mode,
+                    refresh_token_rotation_observed=True,
+                    refresh_persistence_required=True,
+                )
             access_token = str(token_payload["access_token"])
         except BaseException as exc:
             code = _safe_error_code(exc)
