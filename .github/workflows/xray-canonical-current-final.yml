@@ -18,6 +18,8 @@ on:
       - "nasdaq-xray/account_longbridge_openapi_probe_selftest.py"
       - "nasdaq-xray/account_longbridge_mcp_probe.py"
       - "nasdaq-xray/account_longbridge_mcp_probe_selftest.py"
+      - "nasdaq-xray/account_longbridge_mcp_v2_probe.py"
+      - "nasdaq-xray/account_longbridge_mcp_v2_probe_selftest.py"
       - "nasdaq-xray/account_same_run_terminal_selftest.py"
       - "nasdaq-xray/requirements-account-probe.txt"
       - "nasdaq-xray/requirements-account-mcp-probe.txt"
@@ -111,14 +113,18 @@ jobs:
           test "$actual" = "6ddfb82ca4268e40856e6f0eae0e53b79083092d"
           hosted="$(git hash-object nasdaq-xray/account_longbridge_mcp_probe.py)"
           test "$hosted" = "45a6abc9430506ee779a9b9a2a317b32fc1853ff"
+          hosted_v2="$(git hash-object nasdaq-xray/account_longbridge_mcp_v2_probe.py)"
+          test "$hosted_v2" = "4f0e4b2a9f0c39d9573e5b9b7ea9207b17f9580a"
           python nasdaq-xray/account_longbridge_openapi_probe_selftest.py
           python nasdaq-xray/account_longbridge_mcp_probe_selftest.py
+          python nasdaq-xray/account_longbridge_mcp_v2_probe_selftest.py
           python nasdaq-xray/account_same_run_terminal_selftest.py
           echo "XRAY_ACCOUNT_PRESECRET_GUARD=PASS"
 
       - name: Prepare read-only ACCOUNT probe runtime
         if: steps.event.outputs.ready == 'true'
         env:
+          LONGBRIDGE_MCP_V2_BEARER_TOKEN: ${{ secrets.LONGBRIDGE_MCP_V2_BEARER_TOKEN }}
           LONGBRIDGE_MCP_BEARER_TOKEN: ${{ secrets.LONGBRIDGE_MCP_BEARER_TOKEN }}
           LONGBRIDGE_OAUTH_ACCESS_TOKEN: ${{ secrets.LONGBRIDGE_OAUTH_ACCESS_TOKEN }}
           LONGBRIDGE_OAUTH_CLIENT_ID: ${{ secrets.LONGBRIDGE_OAUTH_CLIENT_ID }}
@@ -131,7 +137,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [[ -n "${LONGBRIDGE_MCP_BEARER_TOKEN}" ]]; then
+          if [[ -n "${LONGBRIDGE_MCP_V2_BEARER_TOKEN}" ]]; then
+            echo "XRAY_ACCOUNT_RUNTIME=READY_RESTRICTED_HOSTED_MCP_V2_ACCOUNT_READ"
+          elif [[ -n "${LONGBRIDGE_MCP_BEARER_TOKEN}" ]]; then
             python -m pip install --disable-pip-version-check -r nasdaq-xray/requirements-account-mcp-probe.txt
             echo "XRAY_ACCOUNT_RUNTIME=READY_HOSTED_MCP_ACCOUNT_BEARER"
           elif [[ -n "${LONGBRIDGE_OAUTH_ACCESS_TOKEN}" ]]; then
@@ -152,6 +160,7 @@ jobs:
       - name: Run same-run read-only ACCOUNT probe
         if: steps.event.outputs.ready == 'true'
         env:
+          LONGBRIDGE_MCP_V2_BEARER_TOKEN: ${{ secrets.LONGBRIDGE_MCP_V2_BEARER_TOKEN }}
           LONGBRIDGE_MCP_BEARER_TOKEN: ${{ secrets.LONGBRIDGE_MCP_BEARER_TOKEN }}
           LONGBRIDGE_OAUTH_ACCESS_TOKEN: ${{ secrets.LONGBRIDGE_OAUTH_ACCESS_TOKEN }}
           LONGBRIDGE_OAUTH_CLIENT_ID: ${{ secrets.LONGBRIDGE_OAUTH_CLIENT_ID }}
@@ -164,7 +173,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [[ -n "${LONGBRIDGE_MCP_BEARER_TOKEN}" ]]; then
+          if [[ -n "${LONGBRIDGE_MCP_V2_BEARER_TOKEN}" ]]; then
+            python nasdaq-xray/account_longbridge_mcp_v2_probe.py
+            cp nasdaq-xray/account_longbridge_mcp_v2_probe_state.json nasdaq-xray/account_live_probe_state.json
+          elif [[ -n "${LONGBRIDGE_MCP_BEARER_TOKEN}" ]]; then
             python nasdaq-xray/account_longbridge_mcp_probe.py
             cp nasdaq-xray/account_longbridge_mcp_probe_state.json nasdaq-xray/account_live_probe_state.json
           else
@@ -244,6 +256,7 @@ jobs:
           allowed={
             "XRAY_ACCOUNT_LONGBRIDGE_OPENAPI_PROBE_V1":"LONGBRIDGE_DIRECT_OPENAPI",
             "XRAY_ACCOUNT_LONGBRIDGE_HOSTED_MCP_PROBE_V1":"LONGBRIDGE_HOSTED_MCP",
+            "XRAY_ACCOUNT_LONGBRIDGE_MCP_V2_PROBE_V1":"LONGBRIDGE_HOSTED_MCP_V2",
           }
           live_pass=(
             lp.get("schema") in allowed
