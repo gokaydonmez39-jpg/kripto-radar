@@ -68,8 +68,9 @@ def main():
     # BLOCKED gates remain fail-closed even when negative-evidence caches advance.
     # A PASS claim is different: current exact bindings are mandatory.
     account_live=(t.get("evidence") or {}).get("account_live_probe") or {}
+    account_live_provider=str(account_live.get("provider") or "")
     account_same_run_attested=(
-        account_live.get("provider")=="LONGBRIDGE_DIRECT_OPENAPI"
+        account_live_provider in {"LONGBRIDGE_DIRECT_OPENAPI","LONGBRIDGE_HOSTED_MCP_V2"}
         and account_live.get("status")=="PASS"
         and account_live.get("same_run_attested") is True
         and account_live.get("network_attempted") is True
@@ -156,7 +157,7 @@ def main():
             "status":account_status,
             "account_pass":account_pass,
             "provider_model":ag.get("provider"),
-            "current_adapter":("LONGBRIDGE_DIRECT_OPENAPI" if account_pass else ag.get("current_adapter")),
+            "current_adapter":(account_live_provider if account_pass else ag.get("current_adapter")),
             "persisted_gate_status":persisted_account_status,
             "same_run_live_witness_attested":account_same_run_attested,
             "live_probe_workflow_run_id":account_live.get("workflow_run_id"),
