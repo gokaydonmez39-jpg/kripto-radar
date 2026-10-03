@@ -4,7 +4,7 @@
   "execution": "NONE",
   "real_money": "NO-GO",
   "purpose": "Negative-evidence cache only. This registry can skip unchanged dead paths but can never create G9 PASS.",
-  "provider_count": 41,
+  "provider_count": 45,
   "strict_g9_gates": {
     "A": "consolidated UTP Tape-C / National NBBO lineage",
     "B": "fresh bid+ask+last with independent quote/trade event timestamps",
@@ -13,8 +13,8 @@
   },
   "source_saturation": {
     "path": "nasdaq-xray/g9_search_saturation_20261003.json",
-    "blob_sha": "8cc897241acd7662f7b6411fe9fc936b25b544e6",
-    "reviewed_paths": 41
+    "blob_sha": "c80851f0a1c5a78d93a4523224095c9239ddb51b",
+    "reviewed_paths": 45
   },
   "providers": [
     {
@@ -546,6 +546,58 @@
       "evidence_file": "nasdaq-xray/g9_provider_delta_exchange_native_sweep_20261003.json",
       "last_checked_on": "2026-10-03",
       "reopen_condition": "FINRA exposes a sanctioned realtime all-venue National NBBO quote+trade API with independent event timestamps and strict permanent-$0 automated entitlement.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "E*TRADE Developer API",
+      "status": "NONQUALIFYING_STRICT_G9_MARKET_DATA_FEES_AND_LINEAGE_UNPROVEN",
+      "failed_gates": [
+        "A",
+        "B",
+        "C"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_retail_api_sweep_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "Official terms prove exact consolidated National NBBO plus independent event timestamps under unconditional permanent-$0 automated entitlement.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "QuoteMedia OnDemand / NBBO",
+      "status": "TECHNICALLY_NBBO_CAPABLE_BUT_REALTIME_ENTITLEMENT_FEE_BEARING",
+      "failed_gates": [
+        "C"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_retail_api_sweep_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "Exact realtime NBBO API becomes permanent-$0 with no exchange/vendor/subscription/per-query/usage fee.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "MarketData.app",
+      "status": "NONQUALIFYING_FREE_DELAYED_REALTIME_PAID",
+      "failed_gates": [
+        "B",
+        "C"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_retail_api_sweep_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "Free tier gains actual realtime National-NBBO bid/ask+last with independent event timestamps under permanent-$0 automated entitlement.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "StockData.org",
+      "status": "NONQUALIFYING_IEX_TRADE_SOURCE",
+      "failed_gates": [
+        "A",
+        "B"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_retail_api_sweep_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "Provider changes to a proven consolidated UTP/National-NBBO source with independent quote/trade event timestamps and strict permanent-$0 automated entitlement.",
       "negative_cache_only": true,
       "may_never_create_pass": true
     }
