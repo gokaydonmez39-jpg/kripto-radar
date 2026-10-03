@@ -6,6 +6,7 @@ on:
     paths:
       - "nasdaq-xray/chatgpt_canonical_state_v2.json"
       - "nasdaq-xray/delivery_prepare.py"
+      - "nasdaq-xray/delivery_prepare_selftest.py"
       - ".github/workflows/nasdaq-xray-delivery.yml"
   schedule:
     - cron: "*/15 * * * 1-5"
