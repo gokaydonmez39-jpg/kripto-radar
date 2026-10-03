@@ -1,1 +1,21 @@
-{"schema":"XRAY_FREE_SOLUTION_CANDIDATES_V1","candidates":[{"repo":"Open-Dev-Society/kitbash","purpose":"verified open-source solution discovery"},{"repo":"Open-Dev-Society/OpenStock","purpose":"resilience and alert architecture reference"}]}
+{
+  "schema": "XRAY_FREE_SOLUTION_CANDIDATES_V1",
+  "candidates": [
+    {
+      "repo": "Open-Dev-Society/kitbash",
+      "purpose": "verified open-source solution discovery"
+    },
+    {
+      "repo": "Open-Dev-Society/OpenStock",
+      "purpose": "resilience and alert architecture reference"
+    },
+    {
+      "repo": "atilaahmettaner/tradingview-mcp",
+      "purpose": "reference-only: batch scanning, provider throttling, retry/jitter, partial-data envelopes, stale-data diagnostics; TradingView data itself is NOT XRAY alpha/G9 authority"
+    },
+    {
+      "repo": "grahammccain/chart-library-mcp",
+      "purpose": "non-authoritative completed-session historical analog/cohort diagnostic for prospective XRAY finalists; never creates PASS/FAIL or changes policy thresholds"
+    }
+  ]
+}
