@@ -15,7 +15,11 @@
     "Public official docs repeatedly call the quote NBBO, but no primary-source Paper document found so far identifies CTA/UTP SIP or a named licensed consolidated redistributor as the lineage. Strict G9-A therefore remains unproven.",
     "Accordingly, C is narrowed to one unresolved legal/entitlement question: whether the Basic REST market-data license explicitly covers automated/non-display consolidated NBBO use with no separate exchange/vendor fee or other monetary/account condition.",
     "UTP's current Detailed Usage Reporting Codes (updated 2024-10; fees as of 2025) define UTP1APIS = Real-Time Nonprofessional Uncontrolled Recipient at $1/month billable to the Vendor, and UTP Data Policies expressly list API as an Uncontrolled Product.",
-    "This means Paper's Basic $0/free-forever API can be economically compatible with strict G9-C if Paper lawfully classifies the exact single-user automated API entitlement under UTP1APIS or an equivalent approved category and absorbs the vendor assessment. XRAY must not assume that classification."
+    "This means Paper's Basic $0/free-forever API can be economically compatible with strict G9-C if Paper lawfully classifies the exact single-user automated API entitlement under UTP1APIS or an equivalent approved category and absorbs the vendor assessment. XRAY must not assume that classification.",
+    "Paper's current official pricing page explicitly lists Basic at $0/month, 'free forever', with API & MCP access; WebSocket market data is not included in Basic and is separately listed for Pro.",
+    "Paper's current official Market Data API page documents authenticated REST quote and trade endpoints as real-time market data, gives 1000-request high-rate-limit language for single quote/trade endpoints, and does not label those REST endpoints as Pro-only.",
+    "Paper's current official WebSocket market-data page explicitly labels WebSocket streaming as PRO-only and returns ENTITLEMENT_REQUIRED to non-PRO users, which resolves the product-boundary ambiguity: paid entitlement is specifically the streaming surface, while Basic still has API/MCP access.",
+    "Paper's current official API landing page tells developers to build trading bots and exposes GET /v1/market-data/quote/{symbol} as real-time NBBO with bid/ask sizes; this is direct evidence of intended programmatic API use, not display-only use."
   ],
   "technical_schema": {
     "quote_route": "GET /v1/market-data/quote/{symbol}",
@@ -47,7 +51,9 @@
     "https://docs.paperinvest.io/market-data",
     "https://docs.paperinvest.io/market-data-websocket",
     "https://paperinvest.io/mcp",
-    "https://github.com/paperinvest/mcp-server"
+    "https://github.com/paperinvest/mcp-server",
+    "https://paperinvest.io/",
+    "https://docs.paperinvest.io/mcp-protocol"
   ],
   "source_code_evidence": {
     "repo": "paperinvest/mcp-server",
@@ -88,5 +94,15 @@
       "cloud scheduler REST support and MCP/trade-endpoint exposure"
     ],
     "authority_effect": "NONE_UNTIL_MAINTAINER_PRIMARY_SOURCE_REPLY; UNKNOWN_NEVER_PASS"
+  },
+  "c_evidence_refresh": {
+    "observed_on": "2026-10-03",
+    "basic_plan_price": "$0/month",
+    "permanence_wording": "free forever",
+    "basic_api_mcp_access": true,
+    "rest_realtime_market_data_documented": true,
+    "websocket_pro_only": true,
+    "programmatic_bot_use_documented": true,
+    "effect": "STRONGLY_SUPPORTS_ENDUSER_ZERO_DOLLAR_PROGRAMMATIC_REST_USE_BUT_DOES_NOT_OVERRIDE_STRICT_PROVIDER_SPECIFIC_UTP1APIS_OR_EQUIVALENT_CLASSIFICATION_AND_FEE_ABSORPTION_REQUIREMENT"
   }
 }
