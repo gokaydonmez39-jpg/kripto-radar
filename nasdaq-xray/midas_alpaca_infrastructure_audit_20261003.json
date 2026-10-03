@@ -1,0 +1,39 @@
+{
+  "schema": "XRAY_MIDAS_ALPACA_INFRA_AUDIT_V1",
+  "generated_on": "2026-10-03",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "status": "OFFICIAL_INFRA_CONFIRMED_BUT_ENDUSER_G9_AND_ACCOUNT_API_NOT_PROVEN",
+  "findings": [
+    "Alpaca officially identifies Midas as a Broker API partner and states Midas uses Broker API for US stocks, including market data.",
+    "Alpaca's 2026 Midas case study says Midas plans API access for advanced users in its 2026-and-beyond roadmap; no current public Midas developer API release was found in the reviewed official sources.",
+    "Alpaca Broker API standard market-data subscriptions are realtime IEX or 15-minute delayed SIP. Custom comprehensive market-data arrangements exist for broker partners, so Midas could have a custom entitlement, but its exact feed/product is not proven publicly.",
+    "Alpaca documents SIP as consolidated CTA+UTP coverage of all US exchanges; recent/live SIP requires an appropriate entitlement.",
+    "Current connected Alpaca probe on 2026-10-03: delayed_sip AAPL quote succeeded with bid/ask and Tape C, while live sip quote and live sip trade did not succeed. Current canonical Alpaca connector therefore cannot establish live strict G9.",
+    "Alpaca Connect supports OAuth for direct Alpaca brokerage accounts, while broker partners can create their own OAuth service for correspondent end users.",
+    "Correspondent/broker-partner accounts do not provide personal Trading API key/secret access; account access remains broker-controlled. A Midas user therefore cannot assume direct personal Alpaca API credentials for the Midas-held account.",
+    "Midas's official TradingView integration demonstrates a sanctioned partner account bridge, but no scheduler-callable end-user Midas OAuth/API is currently exposed to this runtime."
+  ],
+  "g9_assessment": {
+    "A": "POSSIBLE_IF_MIDAS_CUSTOM_PARTNER_FEED_IS_LIVE_SIP_BUT_NOT_PROVEN",
+    "B": "CURRENT_PUBLIC_MIDAS_PATH_DOES_NOT_EXPOSE_REQUIRED_INDEPENDENT_QUOTE_AND_TRADE_EVENT_TIMESTAMPS",
+    "C": "FREE_CUSTOMER_DISPLAY_ENTITLEMENT_PROVEN_BUT_AUTOMATED_NONDISPLAY_ENDUSER_RIGHT_UNPROVEN",
+    "D": "NO_SANCTIONED_MIDAS_ENDUSER_SCHEDULER_API_CURRENTLY_AVAILABLE"
+  },
+  "account_assessment": {
+    "status": "PROMISING_PARTNER_OAUTH_ARCHITECTURE_BUT_NOT_ENDUSER_CALLABLE",
+    "direct_personal_alpaca_keys": "NOT_AVAILABLE_FOR_CORRESPONDENT_ACCOUNT",
+    "possible_path": "MIDAS_CONTROLLED_BROKER_PARTNER_OAUTH_OR_READONLY_CONNECTOR"
+  },
+  "primary_sources": [
+    "https://alpaca.markets/blog/midas-launches-turkeys-first-fully-digital-stock-brokerage-with-alpaca-broker-api/",
+    "https://alpaca.markets/blog/how-midas-is-leveling-the-playing-field-for-turkish-investors/",
+    "https://docs.alpaca.markets/us/v1.4.2/docs/about-market-data-api",
+    "https://docs.alpaca.markets/us/v1.1/docs/historical-stock-data-1",
+    "https://docs.alpaca.markets/us/docs/about-connect-api",
+    "https://docs.alpaca.markets/us/v1.1/docs/using-oauth2-and-trading-api"
+  ],
+  "reopen_condition": "Midas publishes or explicitly authorizes an end-user API/connector exposing read-only account state and/or proves its exact live market-data feed plus automated/non-display entitlement; then require same-run RTH technical proof.",
+  "unknown_never_pass": true,
+  "no_policy_weakening": true
+}
