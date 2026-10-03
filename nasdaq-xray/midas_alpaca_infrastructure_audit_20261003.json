@@ -9,10 +9,10 @@
     "Alpaca's 2026 Midas case study says Midas plans API access for advanced users in its 2026-and-beyond roadmap; no current public Midas developer API release was found in the reviewed official sources.",
     "Alpaca Broker API standard market-data subscriptions are realtime IEX or 15-minute delayed SIP. Custom comprehensive market-data arrangements exist for broker partners, so Midas could have a custom entitlement, but its exact feed/product is not proven publicly.",
     "Alpaca documents SIP as consolidated CTA+UTP coverage of all US exchanges; recent/live SIP requires an appropriate entitlement.",
-    "Current connected Alpaca probe on 2026-10-03: delayed_sip AAPL quote succeeded with bid/ask and Tape C, while live sip quote and live sip trade did not succeed. Current canonical Alpaca connector therefore cannot establish live strict G9.",
     "Alpaca Connect supports OAuth for direct Alpaca brokerage accounts, while broker partners can create their own OAuth service for correspondent end users.",
     "Correspondent/broker-partner accounts do not provide personal Trading API key/secret access; account access remains broker-controlled. A Midas user therefore cannot assume direct personal Alpaca API credentials for the Midas-held account.",
-    "Midas's official TradingView integration demonstrates a sanctioned partner account bridge, but no scheduler-callable end-user Midas OAuth/API is currently exposed to this runtime."
+    "Midas's official TradingView integration demonstrates a sanctioned partner account bridge, but no scheduler-callable end-user Midas OAuth/API is currently exposed to this runtime.",
+    "Current connected Alpaca probe on 2026-10-03: live feed=sip latest quote and latest trade both returned connector internal_error; delayed_sip latest quote and latest trade both succeeded for AAPL/NVDA with Tape C and independent event timestamps. Weekend delayed success is non-G9 and does not prove live SIP entitlement."
   ],
   "g9_assessment": {
     "A": "POSSIBLE_IF_MIDAS_CUSTOM_PARTNER_FEED_IS_LIVE_SIP_BUT_NOT_PROVEN",
@@ -35,5 +35,18 @@
   ],
   "reopen_condition": "Midas publishes or explicitly authorizes an end-user API/connector exposing read-only account state and/or proves its exact live market-data feed plus automated/non-display entitlement; then require same-run RTH technical proof.",
   "unknown_never_pass": true,
-  "no_policy_weakening": true
+  "no_policy_weakening": true,
+  "live_probe": {
+    "date": "2026-10-03",
+    "symbols": [
+      "AAPL",
+      "NVDA"
+    ],
+    "sip_latest_quote": "INTERNAL_ERROR",
+    "sip_latest_trade": "INTERNAL_ERROR",
+    "delayed_sip_latest_quote": "PASS_TAPE_C",
+    "delayed_sip_latest_trade": "PASS_TAPE_C",
+    "conclusion": "LIVE_SIP_NOT_PROVEN; DELAYED_SIP_NON_G9"
+  },
+  "updated_on": "2026-10-03"
 }
