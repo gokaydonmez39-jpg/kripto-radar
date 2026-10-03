@@ -13,11 +13,11 @@
     "provider_qualifying_now": "NONE",
     "permanent_zero": "NO_CURRENT_PROVIDER_PROVEN",
     "automated_nondisplay_utp_right": "NO_CURRENT_PROVIDER_PROVEN",
-    "reviewed_provider_paths": 69,
+    "reviewed_provider_paths": 70,
     "search_saturation_result": "NO_REVIEWED_PROVIDER_PROVES_A_B_C_D_SIMULTANEOUSLY",
     "structural_fee_basis": "UTP_API_IS_AN_UNCONTROLLED_PRODUCT; CURRENT_2024_10_USAGE_CODES_EXPOSE_A_$1_PER_MONTH_VENDOR_BILLED_NONPROFESSIONAL_UNCONTROLLED_CLASS, BUT PROVIDER_SPECIFIC_CLASSIFICATION_AND_FEE_ABSORPTION_REMAIN_UNPROVEN",
     "strict_runtime_adapter": "FAIL_CLOSED_UNLESS_AUTHORITY_PROVEN",
-    "audit_20261003": "69_PROVIDER_PATH_PRIMARY_SOURCE_AND_LIVE_ENTITLEMENT_SATURATION",
+    "audit_20261003": "70_PROVIDER_PATH_PRIMARY_SOURCE_AND_LIVE_ENTITLEMENT_SATURATION",
     "midas_official_paths": "ATLAS_REALTIME_EXCHANGE_ENTITLEMENTS;TRADINGVIEW_BROKER_QUOTES;ALPACA_PARTNER_INFRA",
     "midas_alpaca_partner_path": "OFFICIAL_INFRA_CONFIRMED_EXACT_LIVE_SIP_ENDUSER_ENTITLEMENT_UNPROVEN",
     "high_potential_provider": "Clear Street + Paper Invest + Wealthnow + Alpaca ChatGPT plugin",
@@ -141,18 +141,24 @@
       "path": "nasdaq-xray/g9_provider_delta_clearstreet_20261003.json",
       "blob_sha": "156ce0596e00531958c317524709f2c968b278a6",
       "status": "HIGHEST_POTENTIAL_CURRENT_FREE_REALTIME_NATIONAL_NBBO_MCP_ZERO_BALANCE_AND_TURKEY_ELIGIBILITY_UNPROVEN"
+    },
+    {
+      "provider": "Ally Invest Developer API",
+      "path": "nasdaq-xray/g9_provider_delta_allyinvest_20261004.json",
+      "blob_sha": "147b74677a4d5aafb1d3a0729dcd5418388705f4",
+      "status": "NONQUALIFYING_STRICT_C_FUNDED_ACCOUNT_CONDITION_AND_D_US_RESIDENCY"
     }
   ],
   "search_saturation": {
     "path": "nasdaq-xray/g9_search_saturation_20261003.json",
-    "blob_sha": "6a0f2b0f1da1bc3bf224fa05d78af48ce94cca84",
-    "unique_provider_paths_reviewed": 69,
+    "blob_sha": "8b1fcfbb77381775a59b1863c82e8ceefb0da3d6",
+    "unique_provider_paths_reviewed": 70,
     "result": "NO_REVIEWED_PROVIDER_PROVES_A_B_C_D_SIMULTANEOUSLY"
   },
   "negative_registry": {
     "path": "nasdaq-xray/g9_provider_registry_20261003.json",
-    "blob_sha": "e410841162254ecd4305fbca0d5f036fc0913180",
-    "provider_count": 69,
+    "blob_sha": "934b8dd2186f22f1a77b829d943181fd819e8cc8",
+    "provider_count": 70,
     "role": "NEGATIVE_EVIDENCE_CACHE_ONLY_NEVER_PASS_AUTHORITY"
   },
   "midas_official_audit": {
