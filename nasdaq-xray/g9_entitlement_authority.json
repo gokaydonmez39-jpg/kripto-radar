@@ -20,8 +20,8 @@
     "audit_20261003": "69_PROVIDER_PATH_PRIMARY_SOURCE_AND_LIVE_ENTITLEMENT_SATURATION",
     "midas_official_paths": "ATLAS_REALTIME_EXCHANGE_ENTITLEMENTS;TRADINGVIEW_BROKER_QUOTES;ALPACA_PARTNER_INFRA",
     "midas_alpaca_partner_path": "OFFICIAL_INFRA_CONFIRMED_EXACT_LIVE_SIP_ENDUSER_ENTITLEMENT_UNPROVEN",
-    "high_potential_provider": "Alpaca ChatGPT plugin + Paper Invest + Wealthnow",
-    "high_potential_reason": "Alpaca ChatGPT connector now has direct historical Tape-C SIP quote/trade runtime proof with independent event timestamps and scheduled connector callability in principle, but realtime-RTH SIP entitlement and strict permanent-zero/no-subscription rights remain unproven. Paper and Wealthnow retain their prior provider-specific A/C gaps."
+    "high_potential_provider": "Clear Street + Paper Invest + Wealthnow + Alpaca ChatGPT plugin",
+    "high_potential_reason": "Clear Street now has current official National-NBBO semantics with independent exchange timestamps, read-only hosted MCP, and a Sep. 30 2026 product statement that the real-time MCP is included at no cost with every account; remaining blockers are Turkey retail eligibility, zero-balance/no-activity retention, exact no-separate-fee entitlement scope, and same-run RTH witness. Paper and Wealthnow retain provider-specific lineage/classification gaps; Alpaca standard live SIP remains paid unless the ChatGPT integration proves a special platform-level entitlement."
   },
   "pass_rule": "STATUS_MUST_EQUAL_PROVEN_FROM_PRIMARY_SOURCE_AND_PROVIDER_MUST_HAVE_MATCHING_RUNTIME_ADAPTER_BEFORE_LIVE_RTH_TECHNICAL_PROBE_CAN_RUN",
   "no_policy_weakening": true,
@@ -135,6 +135,12 @@
       "path": "nasdaq-xray/g9_provider_delta_alpaca_chatgpt_plugin_20261003.json",
       "blob_sha": "58c4ef7d09ac46e4175b76b1e89d3964da2965a5",
       "status": "HISTORICAL_SIP_CONFIRMED_STANDARD_LIVE_SIP_PAID_SPECIAL_CHATGPT_ENTITLEMENT_AWAITING_HUMAN_PROVIDER_CONFIRMATION"
+    },
+    {
+      "provider": "Clear Street Trading API / read-only MCP",
+      "path": "nasdaq-xray/g9_provider_delta_clearstreet_20261003.json",
+      "blob_sha": "156ce0596e00531958c317524709f2c968b278a6",
+      "status": "HIGHEST_POTENTIAL_CURRENT_FREE_REALTIME_NATIONAL_NBBO_MCP_ZERO_BALANCE_AND_TURKEY_ELIGIBILITY_UNPROVEN"
     }
   ],
   "search_saturation": {
@@ -214,9 +220,9 @@
   },
   "clearstreet_near_miss": {
     "path": "nasdaq-xray/g9_provider_delta_clearstreet_20261003.json",
-    "blob_sha": "6c863af000f7211b31708648381fe66000031ccf",
-    "status": "B_D_STRONG_C_AND_TURKEY_ELIGIBILITY_UNPROVEN",
-    "role": "NEAR_MISS_ONLY_NEVER_PASS_WITHOUT_PRIMARY_SOURCE_ENTITLEMENT_AND_JURISDICTION_PROOF"
+    "blob_sha": "156ce0596e00531958c317524709f2c968b278a6",
+    "status": "HIGHEST_POTENTIAL_CURRENT_FREE_REALTIME_NATIONAL_NBBO_MCP_ZERO_BALANCE_AND_TURKEY_ELIGIBILITY_UNPROVEN",
+    "role": "PRIMARY_SOURCE_UNLOCK_LEAD; NEVER PASS UNTIL ZERO_BALANCE/NO_FEE + TURKEY ELIGIBILITY + SAME_RUN RTH ARE PROVEN"
   },
   "alpaca_chatgpt_plugin_lead": {
     "path": "nasdaq-xray/g9_provider_delta_alpaca_chatgpt_plugin_20261003.json",
