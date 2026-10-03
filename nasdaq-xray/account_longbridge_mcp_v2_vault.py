@@ -7,6 +7,8 @@ or written to repository files.
 """
 from __future__ import annotations
 
+import base64
+import hashlib
 import json
 import os
 import tempfile
@@ -22,6 +24,7 @@ from cryptography.fernet import Fernet, InvalidToken
 ROOT = Path(__file__).resolve().parent
 VAULT_PATH = ROOT / "account_longbridge_mcp_v2_token.enc"
 FERNET_KEY_ENV = "XRAY_ACCOUNT_TOKEN_FERNET_KEY"
+AUTH_CODE_KEY_ENV = "LONGBRIDGE_AGENT_AUTH_CODE"
 TOKEN_URL = "https://mcp.longbridge.com/oauth2/token"
 REFRESH_SKEW_SECONDS = 300
 
@@ -32,6 +35,25 @@ class VaultError(RuntimeError):
 
 class TokenRefreshError(RuntimeError):
     pass
+
+
+def _derive_key(seed: str) -> str:
+    value = (seed or "").strip()
+    if len(value) < 32:
+        raise VaultError("VAULT_DERIVATION_SEED_TOO_SHORT")
+    digest = hashlib.sha256(("XRAY_ACCOUNT_MCP_V2_VAULT_V1:" + value).encode()).digest()
+    return base64.urlsafe_b64encode(digest).decode()
+
+
+def resolve_vault_key(source_env: Mapping[str, str] | None = None) -> str:
+    source = os.environ if source_env is None else source_env
+    explicit = str(source.get(FERNET_KEY_ENV) or "").strip()
+    if explicit:
+        return explicit
+    seed = str(source.get(AUTH_CODE_KEY_ENV) or "").strip()
+    if seed:
+        return _derive_key(seed)
+    raise VaultError("VAULT_KEY_MISSING")
 
 
 def _fernet(key: str) -> Fernet:
@@ -66,12 +88,12 @@ def decrypt_payload(ciphertext: bytes, key: str) -> dict[str, Any]:
 def load_vault(path: Path = VAULT_PATH, *, key: str | None = None) -> dict[str, Any]:
     if not path.exists():
         raise VaultError("VAULT_FILE_MISSING")
-    secret = key if key is not None else os.getenv(FERNET_KEY_ENV, "")
+    secret = key if key is not None else resolve_vault_key()
     return decrypt_payload(path.read_bytes(), secret)
 
 
 def save_vault(payload: Mapping[str, Any], path: Path = VAULT_PATH, *, key: str | None = None) -> None:
-    secret = key if key is not None else os.getenv(FERNET_KEY_ENV, "")
+    secret = key if key is not None else resolve_vault_key()
     data = encrypt_payload(payload, secret)
     path.parent.mkdir(parents=True, exist_ok=True)
     fd, tmp = tempfile.mkstemp(prefix=path.name + ".", dir=str(path.parent))
