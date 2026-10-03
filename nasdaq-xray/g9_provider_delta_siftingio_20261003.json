@@ -1,0 +1,28 @@
+{
+  "schema": "XRAY_G9_PROVIDER_DELTA_V1",
+  "generated_on": "2026-10-03",
+  "provider": "SiftingIO US Equities API",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "status": "NONQUALIFYING_SYNTHETIC_REFERENCE_NOT_NATIONAL_NBBO",
+  "evidence": [
+    "SiftingIO officially offers a $0 free tier with REST + WebSocket, one connection, five live symbol subscriptions and internal non-commercial use.",
+    "US-equity symbol pages expose live price, bid, ask and timestamps; scheduler callability is technically plausible with an API key.",
+    "SiftingIO methodology describes its published equity/reference price as a multi-source consensus/reference value, not an official exchange-of-record print.",
+    "SiftingIO's own investor-relations guidance explicitly distinguishes its aggregated consensus reference price from official real-time exchange data and states the reference value should not be treated as an execution feed.",
+    "No primary-source documentation found that identifies the stock bid/ask stream as consolidated UTP/CTA National NBBO with SIP lineage.",
+    "Therefore A fails under strict G9 even though B/C/D are comparatively promising for small internal research workloads."
+  ],
+  "primary_sources": [
+    "https://sifting.io/product/stocks",
+    "https://sifting.io/docs/websocket",
+    "https://sifting.io/data-methodology",
+    "https://sifting.io/blog/market-data-behind-an-investor-relations-page",
+    "https://sifting.io/resources/use-cases/developer-data-api"
+  ],
+  "failed_gates": [
+    "A_NATIONAL_NBBO_LINEAGE"
+  ],
+  "reopen_condition": "SiftingIO publishes primary-source proof that its US-equity bid/ask stream is actual consolidated CTA/UTP National NBBO with SIP lineage rather than a synthetic/consensus reference feed, while the permanent-$0 internal automated entitlement remains available.",
+  "no_policy_weakening": true
+}
