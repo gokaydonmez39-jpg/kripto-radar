@@ -15,7 +15,11 @@
         "The exact Midas mobile/Atlas product lineage has not yet been proven as consolidated UTP Tape-C/National NBBO, and the public Atlas query shapes reviewed expose last price/session state but no independent bid/ask event timestamps.",
         "Atlas is now a live official Midas web product and explicitly offers free live market data and portfolio tracking, but its public product page does not document bid/ask/order-book lineage or an end-user API.",
         "No public developer/API endpoint or developer portal for Midas was found in the current official product/support surfaces; Alpaca's March 2026 Midas case study still describes advanced-user API access as roadmap.",
-        "Official Midas-Matriks integration is BIST-only and therefore does not satisfy the NASDAQ account/G9 use case."
+        "Official Midas-Matriks integration is BIST-only and therefore does not satisfy the NASDAQ account/G9 use case.",
+        "TradingView officially lists Midas as eligible to verify real-time NASDAQ, NYSE, AMEX/NYSE Arca and OTC exchange subscriptions from the connected broker account.",
+        "This proves exchange-level realtime entitlements exist on the Midas account, but exchange-level subscriptions do not by themselves prove a consolidated National NBBO across all protected venues.",
+        "The Midas-distributed Nasdaq subscriber agreement names Midas Menkul Değerler A.Ş. as distributor and licenses non-professional/private subscriber information for personal use; this is not explicit automated/non-display API permission.",
+        "Alpaca Broker API documentation states standard broker-partner equities plans are realtime IEX or 15-minute delayed SIP, while custom comprehensive market-data arrangements may be negotiated. Therefore Midas being an Alpaca partner does not prove its exact end-user feed is live SIP/NBBO."
       ],
       "g9_failed_or_unproven": [
         "A",
@@ -23,7 +27,8 @@
         "C",
         "D"
       ],
-      "reopen_condition": "Primary-source Midas/venue documentation identifies exact consolidated National NBBO/UTP lineage and explicitly permits the intended automated/non-display personal use, plus a sanctioned scheduler-callable quote path returns fresh bid+ask+last with independent event timestamps."
+      "reopen_condition": "Primary-source Midas/venue documentation identifies exact consolidated National NBBO/UTP lineage and explicitly permits the intended automated/non-display personal use, plus a sanctioned scheduler-callable quote path returns fresh bid+ask+last with independent event timestamps.",
+      "current_best_inference": "Midas has genuine realtime exchange entitlements and may have custom partner data, but exact consolidated National NBBO lineage plus automated/non-display end-user rights remain unproven. Do not infer SIP/NBBO from 'realtime' branding or exchange verification alone."
     },
     "midas_via_tradingview": {
       "status": "SANCTIONED_ACCOUNT_BRIDGE_PROMISING_G9_NONQUALIFYING",
@@ -111,6 +116,22 @@
       "status": "OFFICIAL_BUT_BIST_ONLY",
       "evidence": "Official Midas Matriks support states Midas login is supported on Matriks platforms, but tradable products through this integration are Borsa Istanbul equities only.",
       "account_or_g9_relevance": "NOT_A_NASDAQ_ACCOUNT_OR_G9_PATH"
+    },
+    "realtime_exchange_entitlements": {
+      "status": "PROVEN_AT_EXCHANGE_LEVEL_NOT_NATIONAL_NBBO",
+      "exchanges": [
+        "NASDAQ",
+        "NYSE",
+        "AMEX/NYSE Arca",
+        "OTC"
+      ],
+      "evidence": "TradingView broker-subscription verification officially supports these exchanges for Midas accounts.",
+      "strict_g9_implication": "A remains UNPROVEN because exchange realtime entitlement does not establish consolidated National NBBO."
+    },
+    "alpaca_partner_feed": {
+      "status": "EXACT_MIDAS_FEED_UNPROVEN",
+      "evidence": "Alpaca standard Broker API market-data subscriptions are realtime IEX or delayed SIP; custom comprehensive arrangements exist.",
+      "strict_g9_implication": "Do not assume live SIP/NBBO from partner status."
     }
   }
 }
