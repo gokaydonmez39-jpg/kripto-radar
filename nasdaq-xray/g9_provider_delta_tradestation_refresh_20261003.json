@@ -1,0 +1,31 @@
+{
+  "schema": "XRAY_G9_PROVIDER_DELTA_V1",
+  "generated_on": "2026-10-03",
+  "provider": "TradeStation API",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "status": "TECHNICALLY_IMPLEMENTED_STRICT_C_FAIL_FUNDED_ACCOUNT_REQUIRED_FOR_WEBAPI_KEY",
+  "evidence": [
+    "TradeStation API FAQ says obtaining a WebAPI key requires a TradeStation account and instructs users with an already funded TradeStation account to request the key from Client Experience.",
+    "TradeStation's current equities disclosures include NYSE American, NASDAQ Level 1 and NYSE realtime Level 1 at no separate data charge for qualified non-professional subscribers.",
+    "TradeStation API is a sanctioned REST market-data/brokerage surface and the XRAY adapter is already implemented, so this is not primarily an engineering-adapter gap.",
+    "The funded-account requirement for API-key issuance is an explicit funding/account condition and violates XRAY strict gate C even before resolving whether the API Level-1 bid/ask is exact CTA/UTP National NBBO.",
+    "Current TradeStation pricing/FAQ materials also contain account/service/inactivity fee conditions on some account configurations; XRAY does not rely on them as the decisive blocker because the funded-account API-key condition already fails strict C."
+  ],
+  "primary_sources": [
+    "https://api.tradestation.com/docs/faq/",
+    "https://api.tradestation.com/docs/",
+    "https://www.tradestation.com/stocks-etfs-pricing-disclosures/",
+    "https://www.tradestation.com/pricing/market-data-pricing/",
+    "https://www.tradestation.com/faqs/"
+  ],
+  "failed_gates": [
+    "C_FUNDING_CONDITION_FOR_WEBAPI_KEY",
+    "A_EXACT_CONSOLIDATED_NATIONAL_NBBO_API_BINDING_UNPROVEN"
+  ],
+  "technical_adapter_status": "IMPLEMENTED",
+  "reopen_condition": "TradeStation must explicitly offer the sanctioned market-data WebAPI key without a funded-account/balance/activity/fee condition and bind the exact API bid/ask route to consolidated National NBBO/CTA+UTP lineage; then require same-run RTH B/D proof.",
+  "negative_cache_only": true,
+  "may_never_create_pass": true,
+  "no_policy_weakening": true
+}
