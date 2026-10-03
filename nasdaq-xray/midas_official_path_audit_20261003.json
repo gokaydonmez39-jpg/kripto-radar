@@ -1,0 +1,68 @@
+{
+  "schema": "XRAY_MIDAS_OFFICIAL_PATH_AUDIT_V1",
+  "generated_on": "2026-10-03",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "purpose": "Assess Midas mobile/Atlas and official Midas-TradingView integration separately for strict G9 and provider-neutral ACCOUNT gates.",
+  "findings": {
+    "midas_mobile_atlas_market_data": {
+      "status": "PROMISING_BUT_STRICT_G9_UNPROVEN",
+      "evidence": [
+        "Midas officially advertises real-time U.S. market data free to its customers.",
+        "Midas support explicitly states TradingView market data is CBOE One while Midas has more comprehensive market-data licenses, proving the Midas app data path is distinct and broader than the TradingView path.",
+        "Midas publishes Nasdaq and NYSE subscriber/display agreements and acts as distributor/vendor for those agreements.",
+        "The Nasdaq subscriber agreement licenses non-professional/private subscriber information for personal use; no primary-source evidence found that grants the user's automated/non-display use required by strict G9-C.",
+        "The exact Midas mobile/Atlas product lineage has not yet been proven as consolidated UTP Tape-C/National NBBO, and the public Atlas query shapes reviewed expose last price/session state but no independent bid/ask event timestamps."
+      ],
+      "g9_failed_or_unproven": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "reopen_condition": "Primary-source Midas/venue documentation identifies exact consolidated National NBBO/UTP lineage and explicitly permits the intended automated/non-display personal use, plus a sanctioned scheduler-callable quote path returns fresh bid+ask+last with independent event timestamps."
+    },
+    "midas_via_tradingview": {
+      "status": "SANCTIONED_ACCOUNT_BRIDGE_PROMISING_G9_NONQUALIFYING",
+      "evidence": [
+        "Midas and TradingView officially support a broker integration; users can connect their Midas account from TradingView's Trading Panel.",
+        "Midas support states the TradingView market-data path is CBOE One, so this path cannot satisfy strict G9-A National NBBO.",
+        "TradingView broker integration architecture exposes account, balance/state, positions, orders and quotes surfaces, and account-manager views include balance/equity/positions.",
+        "Midas support states TradingView-connected users can view up to 200 past Midas orders, confirming real authenticated account-state integration.",
+        "TradingView states it does not provide an end-user data API; its REST Broker API is for brokers integrating into TradingView. No scheduler-callable end-user TradingView connector is currently available in this ChatGPT workspace."
+      ],
+      "g9_failed_or_unproven": [
+        "A",
+        "D_USER_API"
+      ],
+      "account_assessment": "PROMISING_SANCTIONED_BUT_NOT_CURRENTLY_SCHEDULER_CALLABLE",
+      "account_reopen_condition": "A sanctioned TradingView or Midas connector/API becomes callable by the canonical scheduler and same-run account value/cash plus equity positions/exposure can be read without order actions."
+    },
+    "unofficial_mcp_midas": {
+      "status": "TECHNICALLY_USEFUL_DIAGNOSTIC_ONLY",
+      "evidence": [
+        "Public community project is explicitly unofficial and states Midas has no public API.",
+        "It drives the Atlas web app session and reproduces internal GraphQL reads.",
+        "Its read path exposes portfolio value, cash/buying power and positions, which is technically sufficient in shape for ACCOUNT.",
+        "Its current public quote/snapshot path reviewed exposes last trade price/session status and OHLCV candles but no bid/ask quote-event timestamps required for strict G9.",
+        "Because it is not an official/sanctioned Midas integration, it is not eligible as canonical ACCOUNT authority."
+      ],
+      "canonical_use": "NOT_AUTHORITY"
+    }
+  },
+  "official_sources": [
+    "https://www.getmidas.com/abd-borsalari/",
+    "https://www.getmidas.com/midas-tradingview/",
+    "https://www.getmidas.com/destek/amerikan-borsalari/tradingview-entegrasyonu/uygulamada-gordugum-fiyat-ile-tradingviewdaki-fiyat-arasinda-fark-var-neden",
+    "https://www.getmidas.com/destek/amerikan-borsalari/tradingview-entegrasyonu/tradingviewda-midas-hesabima-nasil-baglanabilirim",
+    "https://www.getmidas.com/destek/amerikan-borsalari/tradingview-entegrasyonu/tradingview-uzerinden-islem-gecmisimin-tamamini-nasil-gorebilirim",
+    "https://www.tradingview.com/blog/en/midas-joins-tradingview-ecosystem-51852/",
+    "https://www.tradingview.com/support/solutions/43000474413-i-need-access-to-your-api-in-order-to-get-data-or-indicator-values/",
+    "https://tr.tradingview.com/broker-api-docs/faq/",
+    "https://webcdn.getmidas.com/uploads/2025/12/04160009/nasdaq-katilimci-sozlesmesi.pdf",
+    "https://webcdn.getmidas.com/uploads/2025/12/04160028/nyse-katilimci-sozlesmesi.pdf",
+    "https://webcdn.getmidas.com/uploads/2025/12/04155923/genel-cerceve-sozlesme.pdf"
+  ],
+  "no_policy_weakening": true,
+  "unknown_never_pass": true
+}
