@@ -9,7 +9,7 @@
     "C": "lawful automated/non-display permanent-$0 entitlement with no fee/balance/activity/per-query condition",
     "D": "scheduler callability"
   },
-  "unique_provider_paths_reviewed": 35,
+  "unique_provider_paths_reviewed": 36,
   "evidence_files": [
     {
       "path": "nasdaq-xray/g9_free_path_audit_20261003.json",
@@ -132,5 +132,6 @@
   "search_policy": "Do not reopen a negative path from marketing wording alone. Reopen only on newer primary-source change to the exact failed gate, then require scheduler-callable live-RTH proof.",
   "unknown_never_pass": true,
   "no_policy_weakening": true,
-  "last_extended_on": "2026-10-03"
+  "last_extended_on": "2026-10-03",
+  "count_invariant": "unique_provider_paths_reviewed == len(unique(reviewed_provider_paths))"
 }
