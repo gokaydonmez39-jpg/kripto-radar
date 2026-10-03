@@ -7,6 +7,8 @@ sys.path.insert(0,str(ROOT))
 
 from price_dv20_phase import classify as price_classify
 from resolve_unknowns_fallback import classify as resolver_classify
+from deep_pre_r1_shadow import family_b
+import pandas as pd
 
 def load_sina():
     spec=importlib.util.spec_from_file_location("sina_stage_test",ROOT/"sina_stage.py")
@@ -71,7 +73,29 @@ def main():
     assert st=="PASS",(st,info)
     assert info["known_session_count"]==20 and info["missing_sessions"]==[]
 
-    print({"status":"PASS","invariants":["EXACT20_REQUIRED_FOR_PASS","INCOMPLETE_NEVER_PASS","OVERLAY_EXACT20_REQUIRED"]})
+    # Setup-B regression: breakout pivot MUST come from the completed base and
+    # exclude the current breakout bar. Including the current bar makes the
+    # breakout inequality self-containing/unsatisfiable (a bug class observed
+    # in an external Donchian implementation).
+    rows=[]
+    for i in range(60):
+        if i < 39:
+            o=100.0; h=102.0; l=98.0; close=100.0; vol=1_000_000.0
+        elif i < 59:
+            o=100.0; h=100.5; l=99.5; close=100.0; vol=1_000_000.0
+        else:
+            o=101.0; h=150.0; l=100.8; close=102.0; vol=3_000_000.0
+        rows.append({"date":pd.Timestamp("2026-01-01")+pd.Timedelta(days=i),
+                     "open":o,"high":h,"low":l,"close":close,"volume":vol})
+    b=family_b(pd.DataFrame(rows))
+    assert b and b["pool"] is True,b
+    assert abs(float(b["P"])-100.5)<1e-9,b
+    assert b["breakout_confirmed"] is True,b
+
+    print({"status":"PASS","invariants":[
+        "EXACT20_REQUIRED_FOR_PASS","INCOMPLETE_NEVER_PASS",
+        "OVERLAY_EXACT20_REQUIRED","SETUP_B_PIVOT_EXCLUDES_CURRENT_BAR"
+    ]})
 
 if __name__=="__main__":
     main()
