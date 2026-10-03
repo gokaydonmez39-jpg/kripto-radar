@@ -30,7 +30,9 @@ jobs:
       TRADESTATION_REFRESH_TOKEN: ${{ secrets.TRADESTATION_REFRESH_TOKEN }}
     steps:
       - uses: actions/checkout@v4
-        with: {fetch-depth: 1}
+        with:
+          fetch-depth: 1
+          ref: main
       - uses: actions/setup-python@v5
         with: {python-version: "3.12"}
 
@@ -74,37 +76,44 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cp nasdaq-xray/strict_g9_runtime_state.json /tmp/new_g9.json
-          git fetch origin main
-          git reset --hard origin/main
+          git config user.name "xray-g9-bot"
+          git config user.email "xray-g9-bot@users.noreply.github.com"
           old="nasdaq-xray/strict_g9_runtime_state.json"
-          should_commit="$(python - <<'PY'
-          import json, pathlib
-          new=json.load(open("/tmp/new_g9.json"))
-          try: old=json.load(open("nasdaq-xray/strict_g9_runtime_state.json"))
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp "$old" /tmp/old_g9.json 2>/dev/null || echo '{}' > /tmp/old_g9.json
+
+            # Recompute from the exact latest-main authority + adapter contract.
+            # Never persist a runtime derived from an older push-event snapshot.
+            python nasdaq-xray/strict_g9_probe.py
+
+            should_commit="$(python - <<'PY'
+          import json
+          try: new=json.load(open("nasdaq-xray/strict_g9_runtime_state.json"))
+          except Exception: raise SystemExit("new runtime unreadable")
+          try: old=json.load(open("/tmp/old_g9.json"))
           except Exception: old={}
           keys=("status","reason","g9_pass","authority_status","technical_status","provider","adapter_contract_schema","adapter_status")
           changed=any(old.get(k)!=new.get(k) for k in keys)
-          # A real PASS is freshness-sensitive, so persist each successful RTH proof.
           print("yes" if changed or new.get("g9_pass") is True else "no")
           PY
-          )"
-          if [ "$should_commit" != "yes" ]; then
-            echo "XRAY_STRICT_G9_COMMIT=NO_SEMANTIC_CHANGE"
-            exit 0
-          fi
-          cp /tmp/new_g9.json "$old"
-          git config user.name "xray-g9-bot"
-          git config user.email "xray-g9-bot@users.noreply.github.com"
-          git add "$old"
-          git commit -m "chore(xray): refresh strict G9 gate [skip ci]"
-          for attempt in 1 2 3 4 5; do
+            )"
+
+            if [ "$should_commit" != "yes" ]; then
+              echo "XRAY_STRICT_G9_COMMIT=NO_SEMANTIC_CHANGE"
+              git reset --hard origin/main
+              exit 0
+            fi
+
+            git add "$old"
+            git commit -m "chore(xray): refresh strict G9 gate"
             if git push origin HEAD:main; then
               echo "XRAY_STRICT_G9_COMMIT=PASS"
               exit 0
             fi
-            git fetch origin main
-            git rebase origin/main || { git rebase --abort || true; git reset --hard origin/main; cp /tmp/new_g9.json "$old"; git add "$old"; git commit -m "chore(xray): refresh strict G9 gate [skip ci]"; }
+
+            echo "XRAY_STRICT_G9_PUSH_RACE attempt=$attempt"
             sleep $((attempt*2))
           done
           echo "XRAY_STRICT_G9_COMMIT=FAIL" >&2
