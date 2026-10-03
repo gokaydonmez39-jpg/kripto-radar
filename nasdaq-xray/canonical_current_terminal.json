@@ -62,7 +62,9 @@
   },
   "evidence": {
     "account_gate": {
-      "blob_sha": "7019419418d151e28e139616117bda3b10ae01d4",
+      "adapter_contract_blob_sha": "d5eab156468fecc55c8d6d9f90572fa21d0b9598",
+      "adapter_contract_path": "nasdaq-xray/account_provider_adapter_contract.json",
+      "blob_sha": "daf72a4f17e850bfccad28a0dfb9ec841a3c9203",
       "current_adapter": "LONGBRIDGE",
       "path": "nasdaq-xray/account_gate_contract.json",
       "provider": "PROVIDER_NEUTRAL"
@@ -146,7 +148,7 @@
   "final_gate_reporting_zero_alpha": true,
   "full_end_to_end_research_pass": true,
   "g9_global_status": "G9_BLOCKED_FREE_AUTOMATION_PATH",
-  "generated_at_utc": "2026-10-03T10:41:20.885128+00:00",
+  "generated_at_utc": "2026-10-03T10:49:35.054585+00:00",
   "pointer_asof_before_candidate": "2026-10-02",
   "r92_account_g9_applicable": false,
   "r92_candidates": [],
