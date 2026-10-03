@@ -8,25 +8,29 @@
   "source_terminal": {
     "path": "nasdaq-xray/canonical_current_terminal.json",
     "blob_sha": "df6a7de13fa44daf13c6b178ea827bd846444663",
-    "full_end_to_end_research_pass": true
+    "full_end_to_end_research_pass": true,
+    "terminal_result": "NO_CONFIRMED_SETUP"
   },
   "source_pointer": {
     "path": "nasdaq-xray/chatgpt_canonical_state_v2.json",
     "blob_sha": "547460a83f4392d35daeecb253bbe606034d7d25",
     "revision": 39,
-    "status": "TERMINAL_FULL_E2E_NO_CONFIRMED_SETUP"
+    "status": "TERMINAL_FULL_E2E_NO_CONFIRMED_SETUP",
+    "legacy_account_status": "UNKNOWN"
   },
   "strict_g9": {
     "status": "BLOCKED_ENTITLEMENT_AUTHORITY_UNPROVEN",
     "g9_pass": false,
     "provider": "NONE_CURRENTLY_QUALIFYING",
     "adapter_status": "BLOCKED_NO_PROVIDER_SELECTED",
+    "authority_path": "nasdaq-xray/g9_entitlement_authority.json",
+    "authority_blob_sha": "b2f31bccefec8660457701a82841964ab2e2f6fa",
     "runtime_path": "nasdaq-xray/strict_g9_runtime_state.json",
     "runtime_blob_sha": "fb077b1177153df149e63502818d190875c0b119",
-    "authority_path": "nasdaq-xray/g9_entitlement_authority.json",
-    "authority_blob_sha": "135e3bc2e054f79dec80088a2d156f7c6c705987",
     "saturation_path": "nasdaq-xray/g9_search_saturation_20261003.json",
     "saturation_blob_sha": "f39a3e87ad3b047b6866a16788caff06d7b1b672",
+    "registry_path": "nasdaq-xray/g9_provider_registry_20261003.json",
+    "registry_blob_sha": "a7f89a328a833e17369884b97eba582fd0b3654f",
     "provider_paths_reviewed": 28
   },
   "account": {
@@ -62,8 +66,7 @@
   },
   "stale_pointer_fields": {
     "pointer_account_status": "UNKNOWN",
-    "terminal_account_status": "ACCOUNT_BLOCKED_SCOPE_NOT_GRANTED_OR_ACCOUNT_UNSUPPORTED",
-    "interpretation": "Pointer account field is legacy/stale final-gate state. Current terminal and provider-neutral account gate agree on the blocked account status; never promote persisted status to PASS without fresh same-run account reads."
+    "interpretation": "Legacy pointer field only. Current terminal and exact-bound ACCOUNT contract supersede it for final-gate reporting. Never promote persisted status to PASS."
   },
   "weekend_guard": {
     "current_calendar_date": "2026-10-03",
