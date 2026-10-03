@@ -59,6 +59,23 @@
         "Benzinga",
         "Xignite"
       ]
+    },
+    {
+      "provider": "Public.com Individual API",
+      "path": "nasdaq-xray/g9_provider_delta_public_20261003.json",
+      "blob_sha": "0d8f01a6c47d4e67aab1a073281e77a6903dfc70",
+      "status": "JURISDICTION_BLOCKED_AND_A_UNPROVEN"
+    },
+    {
+      "provider": "Retail broker API sweep",
+      "path": "nasdaq-xray/g9_provider_delta_broker_api_sweep_20261003.json",
+      "blob_sha": "21a62beee9d9ce59dc92ca74b2ce5b94f0e7b57c",
+      "status": "NO_NEW_STRICT_G9_PROVIDER",
+      "covered": [
+        "Moomoo / Futu",
+        "Tiger OpenAPI",
+        "Robinhood Official Trading API"
+      ]
     }
   ]
 }
