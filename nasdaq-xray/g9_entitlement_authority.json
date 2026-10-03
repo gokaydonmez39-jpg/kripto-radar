@@ -13,11 +13,11 @@
     "provider_qualifying_now": "NONE",
     "permanent_zero": "NO_CURRENT_PROVIDER_PROVEN",
     "automated_nondisplay_utp_right": "NO_CURRENT_PROVIDER_PROVEN",
-    "reviewed_provider_paths": 49,
+    "reviewed_provider_paths": 50,
     "search_saturation_result": "NO_REVIEWED_PROVIDER_PROVES_A_B_C_D_SIMULTANEOUSLY",
     "structural_fee_basis": "UTP_API_CLASSIFICATION_REQUIRES_PROVIDER_SPECIFIC_AUTHORIZATION_FOR_THIRD_PARTY_AUTOMATION",
     "strict_runtime_adapter": "FAIL_CLOSED_UNLESS_AUTHORITY_PROVEN",
-    "audit_20261003": "49_PROVIDER_PATH_PRIMARY_SOURCE_AND_LIVE_ENTITLEMENT_SATURATION",
+    "audit_20261003": "50_PROVIDER_PATH_PRIMARY_SOURCE_AND_LIVE_ENTITLEMENT_SATURATION",
     "midas_official_paths": "ATLAS_REALTIME_EXCHANGE_ENTITLEMENTS;TRADINGVIEW_BROKER_QUOTES;ALPACA_PARTNER_INFRA",
     "midas_alpaca_partner_path": "OFFICIAL_INFRA_CONFIRMED_EXACT_LIVE_SIP_ENDUSER_ENTITLEMENT_UNPROVEN"
   },
@@ -115,14 +115,14 @@
   ],
   "search_saturation": {
     "path": "nasdaq-xray/g9_search_saturation_20261003.json",
-    "blob_sha": "19a54b238d4c0d6e7da8dfe26181c648e98d5c19",
-    "unique_provider_paths_reviewed": 49,
+    "blob_sha": "636fde9b0d884efa29012f1b9bc5e827b5135ce5",
+    "unique_provider_paths_reviewed": 50,
     "result": "NO_REVIEWED_PROVIDER_PROVES_A_B_C_D_SIMULTANEOUSLY"
   },
   "negative_registry": {
     "path": "nasdaq-xray/g9_provider_registry_20261003.json",
-    "blob_sha": "94a1263441c999859b57639f235a0192bd95f709",
-    "provider_count": 49,
+    "blob_sha": "42d8cc4db81ca50436dd6c5018aa02cd200adc34",
+    "provider_count": 50,
     "role": "NEGATIVE_EVIDENCE_CACHE_ONLY_NEVER_PASS_AUTHORITY"
   },
   "midas_official_audit": {
