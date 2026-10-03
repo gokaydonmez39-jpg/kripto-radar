@@ -94,7 +94,7 @@ def main():
     authority=json.loads(AUTH.read_text())
     base={
       "schema":"XRAY_STRICT_G9_RUNTIME_V1",
-      "provider":"TRADESTATION",
+      "provider":str(authority.get("provider") or "UNSPECIFIED").upper(),
       "generated_at_utc":now_iso(),
       "execution":"NONE",
       "real_money":"NO-GO",
@@ -105,7 +105,15 @@ def main():
     }
     if authority.get("status")!="PROVEN":
         base.update({"status":"BLOCKED_ENTITLEMENT_AUTHORITY_UNPROVEN","reason":"PRIMARY_SOURCE_LINEAGE_OR_AUTOMATED_PERMANENT_ZERO_RIGHT_NOT_PROVEN"})
-        # Continue to technical probe if credentials exist, but it cannot become PASS.
+        # Fail closed before any provider call. Negative/unproven entitlement
+        # evidence is authoritative for strict G9 and must not trigger
+        # credential refreshes or technical probes that cannot become PASS.
+        write(base); return
+
+    if str(authority.get("provider") or "").upper()!="TRADESTATION":
+        base.update({"status":"BLOCKED_PROVIDER_ADAPTER_NOT_IMPLEMENTED","reason":"PROVEN_AUTHORITY_HAS_NO_MATCHING_STRICT_G9_RUNTIME_ADAPTER"})
+        write(base); return
+
     token=None
     try:
         token,scope,err=refresh_token()
