@@ -20,6 +20,8 @@ REQUIRED_ENV = (
     "LONGBRIDGE_APP_SECRET",
     "LONGBRIDGE_ACCESS_TOKEN",
 )
+LEGACY_RISK_OPT_IN_ENV = "XRAY_ALLOW_LEGACY_TRADE_CAPABLE_CREDENTIAL"
+LEGACY_RISK_OPT_IN_VALUE = "I_UNDERSTAND_LEGACY_TOKEN_CAN_TRADE"
 
 
 def _now_utc() -> str:
@@ -94,6 +96,20 @@ def run_probe(
             positions_parseable=False,
             network_attempted=False,
             reason_code="REQUIRED_SECRET_ENV_NOT_CONFIGURED",
+        )
+
+    # Legacy Longbridge API credentials are broader than XRAY needs: official
+    # documentation warns that possession of the Legacy Access Token can allow
+    # trading through OpenAPI. The probe itself remains read-only, but it must
+    # never consume such a credential accidentally. A separate explicit secret
+    # opt-in is required before *any* network/context construction occurs.
+    if source_env.get(LEGACY_RISK_OPT_IN_ENV) != LEGACY_RISK_OPT_IN_VALUE:
+        return _public_state(
+            status="BLOCKED_HIGH_PRIVILEGE_CREDENTIAL_NOT_OPTED_IN",
+            balance_parseable=False,
+            positions_parseable=False,
+            network_attempted=False,
+            reason_code="LEGACY_TRADE_CAPABLE_CREDENTIAL_REQUIRES_EXPLICIT_OPT_IN",
         )
 
     if context_factory is None:
