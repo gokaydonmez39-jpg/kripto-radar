@@ -94,7 +94,9 @@ def best(side,kind):
 
 def wealthnow_snapshot(token,symbol):
     url="https://firm.wealthnow.io/api/v3/fundamentals/price_snapshot?"+urllib.parse.urlencode({"ticker":symbol})
-    return get_json(token,url)
+    req=urllib.request.Request(url,headers={"X-API-Key":token,"Accept":"application/json"})
+    with urllib.request.urlopen(req,timeout=20,context=ssl.create_default_context()) as r:
+        return json.loads(r.read().decode())
 
 def run_wealthnow_technical(base):
     token=os.getenv("WEALTHNOW_API_KEY","").strip()
@@ -189,7 +191,7 @@ def run_paper_invest_technical(base):
         write(base); return
     try:
         auth=paper_request_json("POST","https://api.paperinvest.io/v1/auth/token",payload={"apiKey":api_key})
-        token=(auth.get("access_token") if isinstance(auth,dict) else None) or (auth.get("accessToken") if isinstance(auth,dict) else None)
+        token=((auth.get("token") or auth.get("access_token") or auth.get("accessToken")) if isinstance(auth,dict) else None)
         if not token:
             raise RuntimeError("PAPER_AUTH_NO_ACCESS_TOKEN")
         utcnow=datetime.now(timezone.utc)
