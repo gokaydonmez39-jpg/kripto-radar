@@ -4,7 +4,7 @@
   "execution": "NONE",
   "real_money": "NO-GO",
   "purpose": "Negative-evidence cache only. This registry can skip unchanged dead paths but can never create G9 PASS.",
-  "provider_count": 50,
+  "provider_count": 51,
   "strict_g9_gates": {
     "A": "consolidated UTP Tape-C / National NBBO lineage",
     "B": "fresh bid+ask+last with independent quote/trade event timestamps",
@@ -13,8 +13,8 @@
   },
   "source_saturation": {
     "path": "nasdaq-xray/g9_search_saturation_20261003.json",
-    "blob_sha": "5d9a64539b3e841d16a47afb3388cad7bff10a1b",
-    "reviewed_paths": 50
+    "blob_sha": "bd2891eae3ccca76954c8b57d34c1a7b0f9a7fb5",
+    "reviewed_paths": 51
   },
   "providers": [
     {
@@ -672,6 +672,19 @@
       "evidence_file": "nasdaq-xray/g9_provider_delta_flashalpha_20261003.json",
       "last_checked_on": "2026-10-03",
       "reopen_condition": "Free plan becomes same-run RTH realtime NBBO with independent quote/trade event timestamps while remaining permanent-$0 for intended automated use.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "Eulerpool Financial Data API",
+      "status": "NONQUALIFYING_FREE_DELAYED_REALTIME_PAID",
+      "failed_gates": [
+        "B",
+        "C_REALTIME_ENTITLEMENT"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_eulerpool_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "Current official pricing restores permanent-$0 realtime NBBO/L2 API entitlement and same-run RTH freshness proof succeeds.",
       "negative_cache_only": true,
       "may_never_create_pass": true
     }
