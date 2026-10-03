@@ -49,6 +49,20 @@
       "status": "NOT_ELIGIBLE_UNOFFICIAL",
       "diagnostic": "Community connector can read portfolio-shaped data, but it is not an official Midas connector and is not connected to this scheduler.",
       "reopen_condition": "Official or explicitly authorized read-only Midas connector becomes available and fresh same-run account-state reads succeed."
+    },
+    "ETRADE_DEVELOPER_API": {
+      "status": "CANDIDATE_NOT_CONNECTED_USER_ACCOUNT_REQUIRED",
+      "required_read_capabilities": [
+        "current account balance/value",
+        "current equity positions/exposure"
+      ],
+      "sanctioned_surface": "Official E*TRADE Developer API with OAuth and live individual API key",
+      "diagnostics": [
+        "Official API exposes balances and current positions.",
+        "No E*TRADE account/connector is currently connected in this ChatGPT session.",
+        "This adapter may never PASS from documentation alone; it requires same-run authenticated readback from the user's own account."
+      ],
+      "g9_note": "Separate from ACCOUNT eligibility. E*TRADE market-data terms do not satisfy current strict G9 permanent-$0 proof."
     }
   },
   "transition_to_pass": "Only fresh same-run provider readback satisfying the pass_rule may set ACCOUNT=PASS. Persisted prior PASS alone is insufficient.",
