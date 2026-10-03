@@ -171,16 +171,20 @@
     },
     {
       "provider": "Wealthnow",
-      "status": "FREE_SNAPSHOT_HAS_TIMESTAMPS_BUT_NBBO_LINEAGE_UNPROVEN_AND_USAGE_CAPPED",
+      "status": "HIGH_POTENTIAL_FREE_AGENT_API__A_LINEAGE_AND_D_RUNTIME_UNPROVEN",
       "failed_gates": [
         "A",
-        "C"
+        "D_RUNTIME"
       ],
       "evidence_file": "nasdaq-xray/g9_provider_delta_wealthnow_20261003.json",
       "last_checked_on": "2026-10-03",
-      "reopen_condition": "Free route is explicitly documented as consolidated UTP/National NBBO and entitlement becomes uncapped/no-per-call-credit under strict permanent-$0, then same-run RTH proof.",
+      "reopen_condition": "Confirm Free price_snapshot is consolidated UTP/National NBBO or documented equivalent, connect it to canonical scheduler, then same-run RTH freshness proof.",
       "negative_cache_only": true,
-      "may_never_create_pass": true
+      "may_never_create_pass": true,
+      "provisional_pass_gates": [
+        "B_SCHEMA",
+        "C_ZERO_DOLLAR_INTENDED_AUTOMATION"
+      ]
     },
     {
       "provider": "Twelve Data",
