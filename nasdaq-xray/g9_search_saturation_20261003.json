@@ -9,7 +9,7 @@
     "C": "lawful automated/non-display permanent-$0 entitlement with no fee/balance/activity/per-query condition",
     "D": "scheduler callability"
   },
-  "unique_provider_paths_reviewed": 49,
+  "unique_provider_paths_reviewed": 50,
   "evidence_files": [
     {
       "path": "nasdaq-xray/g9_free_path_audit_20261003.json",
@@ -74,6 +74,10 @@
     {
       "path": "nasdaq-xray/g9_provider_delta_schwab_deep_20261003.json",
       "blob_sha": "2a091752b3dacb67582fdb4dcf1864020a2940f3"
+    },
+    {
+      "path": "nasdaq-xray/g9_provider_delta_flashalpha_20261003.json",
+      "blob_sha": "b48dd2d8b52fe4e88c8189bd5deeff4d83bf0fe4"
     }
   ],
   "reviewed_provider_paths": [
@@ -125,7 +129,8 @@
     "Midas Mobile/Atlas official market-data path",
     "Midas via TradingView official broker integration",
     "Midas via Alpaca Broker API partner infrastructure",
-    "Foreks / ForInvest Web SDK"
+    "Foreks / ForInvest Web SDK",
+    "FlashAlpha Lab API"
   ],
   "strongest_near_misses": [
     {
