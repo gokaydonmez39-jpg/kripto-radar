@@ -20,7 +20,12 @@
     "Wealthnow Terms of Service (updated 2026-09-27) explicitly cover the API as part of the Service and grant a limited license to access/use the Service under those Terms.",
     "The acceptable-use section does not ban ordinary API automation; it prohibits bots/scripts only when they burden the Service or bypass rate limits/access controls. This materially supports sanctioned unattended programmatic use within documented limits.",
     "The same Terms require compliance with exchange rules and prohibit scraping/resale/redistribution without written consent; they still do not identify the Free price_snapshot quote lineage or explicitly state UTP1APIS/equivalent classification and exchange/vendor fee absorption.",
-    "The Developer API Free plan is separately documented from the consumer-app plan: Free API has 1,000 credits/month, 30 req/min, no card, covers Market Data/Fundamentals/Public Filings, and hard-stops rather than billing overage."
+    "The Developer API Free plan is separately documented from the consumer-app plan: Free API has 1,000 credits/month, 30 req/min, no card, covers Market Data/Fundamentals/Public Filings, and hard-stops rather than billing overage.",
+    "Current Wealthnow API docs explicitly state the developer Free tier is $0 with 1,000 monthly credits, 30 req/min, no card, hard cap/no overage, and that Free includes Market Data and Fundamentals.",
+    "Current Wealthnow API docs explicitly label /api/market/quote/{ticker} as a live equity quote on the Free market_data product and /api/v3/fundamentals/price_snapshot as Free+; the API landing page markets real-time prices over REST/MCP for investing agents.",
+    "Current Wealthnow streaming docs separately identify Starter+ quote SSE as consolidated best bid/ask NBBO and Free as 402 plan_required, proving entitlement boundaries are product-specific and must not be transferred across surfaces.",
+    "Current disclosures state quotes and other content come from third-party data providers but do not name the equity market-data vendor; therefore upstream lineage cannot be established from disclosures alone.",
+    "Cross-vendor schema comparison shows Wealthnow's 2026 paid NBBO stream still describes quote sizes as upstream round-lot counts while public Alpaca and Massive stock quote schemas changed to share counts after the November 2025 CTA/UTP update. This weakens simple Alpaca/Massive fingerprint hypotheses but is not lineage proof."
   ],
   "primary_sources": [
     "https://app.wealthnow.io/docs/market-data",
@@ -54,5 +59,19 @@
     "path": "nasdaq-xray/g9_utp_nonprofessional_api_refresh_20261003.json",
     "blob_sha": "e557bb14abe883f1d07380f7301b465b0abb4a05"
   },
-  "exact_provider_question": "For a Free-plan API key, please confirm (1) whether the equity bid/ask fields returned by GET /api/v3/fundamentals/price_snapshot are the live consolidated U.S. National Best Bid and Offer sourced from CTA/UTP SIP, or identify the licensed consolidated redistributor/feed supplying them; (2) whether quote_as_of is the upstream quote-event time and as_of/time is independently the upstream last-trade event time; and (3) whether a single nonprofessional user consuming this Free REST/MCP/API programmatically through unattended third-party automation is lawfully covered under UTP1APIS or an equivalent approved nonprofessional uncontrolled classification, with any exchange/UTP/vendor assessment absorbed by Wealthnow so the end user remains permanently $0 and has no subscription, balance, funding, activity, account-maintenance or per-query monetary condition."
+  "exact_provider_question": "For a Free-plan API key, please confirm (1) whether the equity bid/ask fields returned by GET /api/v3/fundamentals/price_snapshot are the live consolidated U.S. National Best Bid and Offer sourced from CTA/UTP SIP, or identify the licensed consolidated redistributor/feed supplying them; (2) whether quote_as_of is the upstream quote-event time and as_of/time is independently the upstream last-trade event time; and (3) whether a single nonprofessional user consuming this Free REST/MCP/API programmatically through unattended third-party automation is lawfully covered under UTP1APIS or an equivalent approved nonprofessional uncontrolled classification, with any exchange/UTP/vendor assessment absorbed by Wealthnow so the end user remains permanently $0 and has no subscription, balance, funding, activity, account-maintenance or per-query monetary condition.",
+  "latest_primary_source_refresh": {
+    "observed_on": "2026-10-03",
+    "free_price": "$0",
+    "free_monthly_credits": 1000,
+    "free_rate_limit_rpm": 30,
+    "free_overage": "HARD_CAP_NONE",
+    "free_market_data": true,
+    "free_fundamentals": true,
+    "free_live_quote_documented": true,
+    "free_price_snapshot_documented": true,
+    "paid_stream_explicit_consolidated_nbbo": true,
+    "third_party_market_data_vendor_named": false,
+    "implication": "C_ENDUSER_ZERO_DOLLAR_AND_PROGRAMMATIC_INTENT_STRONG; A_LINEAGE_AND_PROVIDER_SPECIFIC_UTP_CLASSIFICATION_FEE_ABSORPTION_REMAIN_UNPROVEN"
+  }
 }
