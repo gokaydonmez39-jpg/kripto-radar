@@ -13,11 +13,11 @@
     "provider_qualifying_now": "NONE",
     "permanent_zero": "NO_CURRENT_PROVIDER_PROVEN",
     "automated_nondisplay_utp_right": "NO_CURRENT_PROVIDER_PROVEN",
-    "reviewed_provider_paths": 50,
+    "reviewed_provider_paths": 51,
     "search_saturation_result": "NO_REVIEWED_PROVIDER_PROVES_A_B_C_D_SIMULTANEOUSLY",
     "structural_fee_basis": "UTP_API_CLASSIFICATION_REQUIRES_PROVIDER_SPECIFIC_AUTHORIZATION_FOR_THIRD_PARTY_AUTOMATION",
     "strict_runtime_adapter": "FAIL_CLOSED_UNLESS_AUTHORITY_PROVEN",
-    "audit_20261003": "50_PROVIDER_PATH_PRIMARY_SOURCE_AND_LIVE_ENTITLEMENT_SATURATION",
+    "audit_20261003": "51_PROVIDER_PATH_PRIMARY_SOURCE_AND_LIVE_ENTITLEMENT_SATURATION",
     "midas_official_paths": "ATLAS_REALTIME_EXCHANGE_ENTITLEMENTS;TRADINGVIEW_BROKER_QUOTES;ALPACA_PARTNER_INFRA",
     "midas_alpaca_partner_path": "OFFICIAL_INFRA_CONFIRMED_EXACT_LIVE_SIP_ENDUSER_ENTITLEMENT_UNPROVEN",
     "high_potential_provider": "Wealthnow",
@@ -117,14 +117,14 @@
   ],
   "search_saturation": {
     "path": "nasdaq-xray/g9_search_saturation_20261003.json",
-    "blob_sha": "37e4e9d73b306311f3804ca7754ab88124b228c8",
-    "unique_provider_paths_reviewed": 50,
+    "blob_sha": "bd2891eae3ccca76954c8b57d34c1a7b0f9a7fb5",
+    "unique_provider_paths_reviewed": 51,
     "result": "NO_REVIEWED_PROVIDER_PROVES_A_B_C_D_SIMULTANEOUSLY"
   },
   "negative_registry": {
     "path": "nasdaq-xray/g9_provider_registry_20261003.json",
-    "blob_sha": "a9c3fde50714050bc1d448dbfddac3aef728b499",
-    "provider_count": 50,
+    "blob_sha": "7940e61bafffdb104950683b86ef765f9939e392",
+    "provider_count": 51,
     "role": "NEGATIVE_EVIDENCE_CACHE_ONLY_NEVER_PASS_AUTHORITY"
   },
   "midas_official_audit": {
@@ -151,5 +151,11 @@
     "blob_sha": "7c65e2c5748bd910afdee7de44bb31e85a1348bf",
     "status": "BLOCKED_A_LINEAGE_PRIMARY_SOURCE_GAP",
     "role": "PRIMARY_SOURCE_UNLOCK_CONTRACT_NEVER_PASS_BY_ITSELF"
+  },
+  "eulerpool_evidence": {
+    "path": "nasdaq-xray/g9_provider_delta_eulerpool_20261003.json",
+    "blob_sha": "9332c610f53b46fe26e922feacc292fab21ac5d8",
+    "status": "NONQUALIFYING_FREE_DELAYED_REALTIME_PAID",
+    "contradiction_resolution": "CURRENT_PRICING_AND_REALTIME_PRODUCT_PAGE_WIN_OVER_OLDER_MARKETING_BLOGS"
   }
 }
