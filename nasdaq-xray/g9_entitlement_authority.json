@@ -13,7 +13,7 @@
     "provider_qualifying_now": "NONE",
     "permanent_zero": "NO_CURRENT_PROVIDER_PROVEN",
     "automated_nondisplay_utp_right": "NO_CURRENT_PROVIDER_PROVEN",
-    "reviewed_provider_paths": 28,
+    "reviewed_provider_paths": 29,
     "search_saturation_result": "NO_REVIEWED_PROVIDER_PROVES_A_B_C_D_SIMULTANEOUSLY",
     "structural_fee_basis": "DIRECT UTP REALTIME NONDISPLAY IS FEE-LIABLE",
     "strict_runtime_adapter": "FAIL_CLOSED_UNLESS_AUTHORITY_PROVEN"
@@ -90,18 +90,24 @@
         "Trading 212 Public API",
         "XTB API / xAPI"
       ]
+    },
+    {
+      "provider": "Midas Atlas / unofficial mcp-midas",
+      "path": "nasdaq-xray/g9_provider_delta_midas_20261003.json",
+      "blob_sha": "4f229a07fb2881629c99cdc5274f6a540784219f",
+      "status": "NONQUALIFYING_DISPLAY_ONLY_AND_UNSANCTIONED_AUTOMATION"
     }
   ],
   "search_saturation": {
     "path": "nasdaq-xray/g9_search_saturation_20261003.json",
-    "blob_sha": "f39a3e87ad3b047b6866a16788caff06d7b1b672",
-    "unique_provider_paths_reviewed": 28,
+    "blob_sha": "3d94eccfc62c3647a0561d89157d58f012ff1ad0",
+    "unique_provider_paths_reviewed": 29,
     "result": "NO_REVIEWED_PROVIDER_PROVES_A_B_C_D_SIMULTANEOUSLY"
   },
   "negative_registry": {
     "path": "nasdaq-xray/g9_provider_registry_20261003.json",
-    "blob_sha": "a7f89a328a833e17369884b97eba582fd0b3654f",
-    "provider_count": 28,
+    "blob_sha": "f079b108b9cabb4c0b219aefcc1d2d0b8e0cfe31",
+    "provider_count": 29,
     "role": "NEGATIVE_EVIDENCE_CACHE_ONLY_NEVER_PASS_AUTHORITY"
   }
 }
