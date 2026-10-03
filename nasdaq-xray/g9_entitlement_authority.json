@@ -13,11 +13,11 @@
     "provider_qualifying_now": "NONE",
     "permanent_zero": "NO_CURRENT_PROVIDER_PROVEN",
     "automated_nondisplay_utp_right": "NO_CURRENT_PROVIDER_PROVEN",
-    "reviewed_provider_paths": 51,
+    "reviewed_provider_paths": 52,
     "search_saturation_result": "NO_REVIEWED_PROVIDER_PROVES_A_B_C_D_SIMULTANEOUSLY",
     "structural_fee_basis": "UTP_API_CLASSIFICATION_REQUIRES_PROVIDER_SPECIFIC_AUTHORIZATION_FOR_THIRD_PARTY_AUTOMATION",
     "strict_runtime_adapter": "FAIL_CLOSED_UNLESS_AUTHORITY_PROVEN",
-    "audit_20261003": "51_PROVIDER_PATH_PRIMARY_SOURCE_AND_LIVE_ENTITLEMENT_SATURATION",
+    "audit_20261003": "52_PROVIDER_PATH_PRIMARY_SOURCE_AND_LIVE_ENTITLEMENT_SATURATION",
     "midas_official_paths": "ATLAS_REALTIME_EXCHANGE_ENTITLEMENTS;TRADINGVIEW_BROKER_QUOTES;ALPACA_PARTNER_INFRA",
     "midas_alpaca_partner_path": "OFFICIAL_INFRA_CONFIRMED_EXACT_LIVE_SIP_ENDUSER_ENTITLEMENT_UNPROVEN",
     "high_potential_provider": "Wealthnow",
@@ -117,14 +117,14 @@
   ],
   "search_saturation": {
     "path": "nasdaq-xray/g9_search_saturation_20261003.json",
-    "blob_sha": "bd2891eae3ccca76954c8b57d34c1a7b0f9a7fb5",
-    "unique_provider_paths_reviewed": 51,
+    "blob_sha": "8f11cb077ee3883f6093aa428e9cfab48ad95ed8",
+    "unique_provider_paths_reviewed": 52,
     "result": "NO_REVIEWED_PROVIDER_PROVES_A_B_C_D_SIMULTANEOUSLY"
   },
   "negative_registry": {
     "path": "nasdaq-xray/g9_provider_registry_20261003.json",
-    "blob_sha": "7940e61bafffdb104950683b86ef765f9939e392",
-    "provider_count": 51,
+    "blob_sha": "2c198d85581a2a30e8671885176d7d36ec2ee26b",
+    "provider_count": 52,
     "role": "NEGATIVE_EVIDENCE_CACHE_ONLY_NEVER_PASS_AUTHORITY"
   },
   "midas_official_audit": {
@@ -157,5 +157,18 @@
     "blob_sha": "9332c610f53b46fe26e922feacc292fab21ac5d8",
     "status": "NONQUALIFYING_FREE_DELAYED_REALTIME_PAID",
     "contradiction_resolution": "CURRENT_PRICING_AND_REALTIME_PRODUCT_PAGE_WIN_OVER_OLDER_MARKETING_BLOGS"
+  },
+  "strasmore_evidence": {
+    "path": "nasdaq-xray/g9_provider_delta_strasmore_20261003.json",
+    "blob_sha": "572931cc8882d7c5d86be681720f4016696f70ce",
+    "status": "NONQUALIFYING_FREE_DELAYED_NBBO_AND_FREE_TRADE_TAPE_ABSENT",
+    "provisional_pass_gates": [
+      "A_CONSOLIDATED_SIP_NBBO_LINEAGE",
+      "D_PROGRAMMATIC_API_MCP_CALLABILITY"
+    ],
+    "failed_gates": [
+      "B_FRESHNESS_AND_FREE_TRADE_EVENT",
+      "C_LIVE_PERMANENT_ZERO_ENTITLEMENT"
+    ]
   }
 }
