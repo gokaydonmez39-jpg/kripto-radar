@@ -9,7 +9,7 @@
     "C": "lawful automated/non-display permanent-$0 entitlement with no fee/balance/activity/per-query condition",
     "D": "scheduler callability"
   },
-  "unique_provider_paths_reviewed": 61,
+  "unique_provider_paths_reviewed": 62,
   "evidence_files": [
     {
       "path": "nasdaq-xray/g9_free_path_audit_20261003.json",
@@ -134,6 +134,10 @@
     {
       "path": "nasdaq-xray/g9_provider_delta_connecttrade_20261003.json",
       "blob_sha": "9d5aaaa5aa23d78ef2467f8f8ceb7a41bd219530"
+    },
+    {
+      "path": "nasdaq-xray/g9_provider_delta_finfeedapi_20261003.json",
+      "blob_sha": "c6b3d969f9531ac1859809d8cae8d7d1bd01ef10"
     }
   ],
   "reviewed_provider_paths": [
@@ -197,7 +201,8 @@
     "LeanData UK realtime US equities SIP WebSocket",
     "TickerLayer Stocks",
     "DriveWealth consolidated NBBO / Apex-QUODD B2B market-data infrastructure",
-    "Connect Trade broker-sourced realtime market-data API/MCP"
+    "Connect Trade broker-sourced realtime market-data API/MCP",
+    "FinFeedAPI Stock API / MCP"
   ],
   "strongest_near_misses": [
     {
@@ -248,9 +253,9 @@
     "authority_file": "nasdaq-xray/g9_utp_fee_basis_20261003.json"
   },
   "latest_new_provider": {
-    "provider": "Connect Trade broker-sourced realtime market-data API/MCP",
-    "evidence_file": "nasdaq-xray/g9_provider_delta_connecttrade_20261003.json",
-    "evidence_blob_sha": "9d5aaaa5aa23d78ef2467f8f8ceb7a41bd219530",
-    "result": "B_D_STRONG_C_FAIL_PAID_WRAPPER_AND_BROKER_ENTITLEMENT"
+    "provider": "FinFeedAPI Stock API / MCP",
+    "evidence_file": "nasdaq-xray/g9_provider_delta_finfeedapi_20261003.json",
+    "evidence_blob_sha": "c6b3d969f9531ac1859809d8cae8d7d1bd01ef10",
+    "result": "STRICT_C_PERMANENT_ZERO_FAIL_METERED_PAYG"
   }
 }
