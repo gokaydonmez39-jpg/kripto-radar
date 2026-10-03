@@ -9,7 +9,7 @@
     "C": "lawful automated/non-display permanent-$0 entitlement with no fee/balance/activity/per-query condition",
     "D": "scheduler callability"
   },
-  "unique_provider_paths_reviewed": 57,
+  "unique_provider_paths_reviewed": 58,
   "evidence_files": [
     {
       "path": "nasdaq-xray/g9_free_path_audit_20261003.json",
@@ -118,6 +118,10 @@
     {
       "path": "nasdaq-xray/g9_provider_delta_tallacoptions_20261003.json",
       "blob_sha": "1f5c19eb2807365f280b0326802c15d8084daa71"
+    },
+    {
+      "path": "nasdaq-xray/g9_provider_delta_leandata_20261003.json",
+      "blob_sha": "24361aeed5afb81d82fa3fdd8ea3e82b211138a1"
     }
   ],
   "reviewed_provider_paths": [
@@ -177,7 +181,8 @@
     "Paper Invest REST / Official MCP",
     "AlgoArena hosted / open-source Alpaca SIP proxy",
     "QUODD QX Digital / real-time equities API",
-    "Tallac Options live equities API/TCP feed"
+    "Tallac Options live equities API/TCP feed",
+    "LeanData UK realtime US equities SIP WebSocket"
   ],
   "strongest_near_misses": [
     {
@@ -228,9 +233,9 @@
     "authority_file": "nasdaq-xray/g9_utp_fee_basis_20261003.json"
   },
   "latest_new_provider": {
-    "provider": "Tallac Options live equities API/TCP feed",
-    "evidence_file": "nasdaq-xray/g9_provider_delta_tallacoptions_20261003.json",
-    "evidence_blob_sha": "1f5c19eb2807365f280b0326802c15d8084daa71",
-    "result": "A_AND_C_FAIL"
+    "provider": "LeanData UK realtime US equities SIP WebSocket",
+    "evidence_file": "nasdaq-xray/g9_provider_delta_leandata_20261003.json",
+    "evidence_blob_sha": "24361aeed5afb81d82fa3fdd8ea3e82b211138a1",
+    "result": "A_B_D_STRONG_C_FAIL_30_DAY_FREE"
   }
 }
