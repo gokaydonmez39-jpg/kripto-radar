@@ -138,6 +138,40 @@ def yahoo(sym,asof):
         return by,{"usable":len(by),"exchangeName":(r.get("meta") or {}).get("exchangeName")}
     except Exception as e:return {},{"error":f"{type(e).__name__}:{str(e)[:160]}"}
 
+def eastmoney(sym,asof):
+    """Fourth-source recovery for Nasdaq-only symbols.
+
+    Eastmoney secid market 105 is Nasdaq. This source is consulted only after
+    Sina, official Nasdaq historical, and Yahoo did not produce a terminal
+    PASS. It never weakens the 260-daily/52-completed-week hard gates and still
+    requires an exact ASOF bar.
+    """
+    try:
+        end=datetime.fromisoformat(asof).date()
+        start=end-timedelta(days=1100)
+        secid=f"105.{sym}"
+        df,attempts=_call_with_retry(lambda: ak.stock_us_hist(
+          symbol=secid,period="daily",
+          start_date=start.strftime("%Y%m%d"),end_date=end.strftime("%Y%m%d"),
+          adjust=""
+        ))
+        by={}
+        if df is not None:
+            for r in df.to_dict(orient="records"):
+                try:
+                    d=r.get("日期",r.get("date"))
+                    day=d.date().isoformat() if hasattr(d,"date") else str(d)[:10]
+                    close_v=r.get("收盘",r.get("close"))
+                    vol_v=r.get("成交量",r.get("volume"))
+                    cv=num(close_v);vv=num(vol_v)
+                except Exception:
+                    continue
+                if day<=asof and cv is not None and cv>0 and vv is not None and vv>=0:
+                    by[day]=(cv,vv)
+        return by,{"usable":len(by),"attempts":attempts,"secid":secid,"market":"NASDAQ_105"}
+    except Exception as e:
+        return {},{"error":f"{type(e).__name__}:{str(e)[:160]}","secid":f"105.{sym}"}
+
 def eval_one(sym,asof):
     sb,sm=sina(sym,asof);ss,si=classify(sb,asof,"SINA_US_DAILY")
     if ss=="PASS_HISTORY":return sym,ss,si,{"sina":sm}
@@ -145,19 +179,26 @@ def eval_one(sym,asof):
     if ns=="PASS_HISTORY":return sym,ns,ni,{"sina":sm,"nasdaq":nm}
     yb,ym=yahoo(sym,asof);ys,yi=classify(yb,asof,"YAHOO_CHART_FREE")
     if ys=="PASS_HISTORY":return sym,ys,yi,{"sina":sm,"nasdaq":nm,"yahoo":ym}
+    eb,em=eastmoney(sym,asof);es,ei=classify(eb,asof,"EASTMONEY_US_DAILY_NASDAQ_105")
+    if es=="PASS_HISTORY":return sym,es,ei,{"sina":sm,"nasdaq":nm,"yahoo":ym,"eastmoney":em}
     # Terminal FAIL requires at least two independent providers to agree below either threshold.
-    fails=[x for x in [si if ss=="POTENTIAL_FAIL_HISTORY" else None,ni if ns=="POTENTIAL_FAIL_HISTORY" else None,yi if ys=="POTENTIAL_FAIL_HISTORY" else None] if x]
+    fails=[x for x in [
+      si if ss=="POTENTIAL_FAIL_HISTORY" else None,
+      ni if ns=="POTENTIAL_FAIL_HISTORY" else None,
+      yi if ys=="POTENTIAL_FAIL_HISTORY" else None,
+      ei if es=="POTENTIAL_FAIL_HISTORY" else None
+    ] if x]
     if len(fails)>=2:
         return sym,"FAIL_HISTORY",{
           "proof":"TWO_PROVIDER_BELOW_HISTORY_GATE",
           "provider_results":fails,
           "daily_max":max(x["daily_bars"] for x in fails),
           "weekly_max":max(x["completed_week_count"] for x in fails)
-        },{"sina":sm,"nasdaq":nm,"yahoo":ym}
+        },{"sina":sm,"nasdaq":nm,"yahoo":ym,"eastmoney":em}
     return sym,"UNKNOWN_HISTORY",{
       "reason":"INSUFFICIENT_AGREEMENT",
-      "sina":si,"nasdaq":ni,"yahoo":yi
-    },{"sina":sm,"nasdaq":nm,"yahoo":ym}
+      "sina":si,"nasdaq":ni,"yahoo":yi,"eastmoney":ei
+    },{"sina":sm,"nasdaq":nm,"yahoo":ym,"eastmoney":em}
 
 def main():
     src=json.loads(INPUT.read_text())
@@ -202,6 +243,7 @@ def main():
           "sina":obj["results"][s]["info"].get("sina"),
           "nasdaq":obj["results"][s]["info"].get("nasdaq"),
           "yahoo":obj["results"][s]["info"].get("yahoo"),
+          "eastmoney":obj["results"][s]["info"].get("eastmoney"),
           "provider_meta":obj["results"][s].get("provider_meta"),
         } for s in obj["unknown_symbols"]
       },
