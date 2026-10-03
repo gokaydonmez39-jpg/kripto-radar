@@ -1,0 +1,28 @@
+{
+  "schema": "XRAY_G9_PROVIDER_DELTA_V1",
+  "generated_on": "2026-10-03",
+  "provider": "TickerLayer Stocks",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "status": "NONQUALIFYING_STRICT_A_DERIVED_NON_EXCHANGE_FEED",
+  "evidence": [
+    "TickerLayer's official Stocks page describes U.S. and international equities as derived, non-exchange-sourced feeds.",
+    "Its official site says inputs are non-exchange-sourced, including OTC activity, peer-to-peer activity, contributor pricing, and CFD-style pricing references, with no direct venue connectivity.",
+    "TickerLayer benchmarks U.S. names against the NBBO and reports overlap/within-basis-point metrics; benchmark similarity is not National NBBO lineage.",
+    "Free tier provides REST request allowance, but strict G9 fails before entitlement analysis because the feed is explicitly not official exchange/consolidated SIP data."
+  ],
+  "primary_sources": [
+    "https://tickerlayer.com/data-assets/stocks",
+    "https://tickerlayer.com/",
+    "https://tickerlayer.com/docs/products/stocks",
+    "https://tickerlayer.com/learn/free-stock-api"
+  ],
+  "failed_gates": [
+    "A_CONSOLIDATED_UTP_NATIONAL_NBBO_LINEAGE"
+  ],
+  "reopen_condition": "Only reopen if TickerLayer replaces the derived/non-exchange U.S. stock feed with primary-source documented consolidated CTA/UTP SIP National NBBO lineage for the exact API product.",
+  "negative_cache_only": true,
+  "may_never_create_pass": true,
+  "unknown_never_pass": true,
+  "no_policy_weakening": true
+}
