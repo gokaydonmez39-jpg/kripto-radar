@@ -107,7 +107,10 @@ def load_gate_reporting():
             }
             if live_status=="PASS":
                 adapter=(aj.get("adapters") or {}).get(provider) or {}
-                assert adapter.get("status")=="ELIGIBLE_FRESH_SAME_RUN_ONLY"
+                assert adapter.get("status") in {
+                    "ELIGIBLE_FRESH_SAME_RUN_ONLY",
+                    "ELIGIBLE_FRESH_SAME_RUN_ONLY_BOOTSTRAP_READY",
+                }
                 assert same_run, "ACCOUNT_LIVE_PROBE_NOT_SAME_WORKFLOW_RUN"
                 assert live.get("network_attempted") is True
                 assert live.get("balance_parseable") is True
