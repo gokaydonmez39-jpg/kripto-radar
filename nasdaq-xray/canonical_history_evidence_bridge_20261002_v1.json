@@ -1,0 +1,269 @@
+{
+  "schema": "XRAY_HISTORY_EVIDENCE_BRIDGE_V1",
+  "status": "READY",
+  "authority": "CHAT_CONNECTOR_OFFICIAL_LISTING_AND_TICKER_LINEAGE_EVIDENCE",
+  "task_id": "6a825366222081918997094d76e6ae46",
+  "asof_et": "2026-10-02",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "no_threshold_change": true,
+  "no_synthetic_bars": true,
+  "thresholds": {
+    "daily": 260,
+    "weekly_completed": 52
+  },
+  "source_mc_path": "nasdaq-xray/canonical_mc_bridge_20261002_c417.json",
+  "source_mc_blob_sha": "164562824f9e3555b3084275c641cbb8dbff4d06",
+  "source_mc_policy_version": "C4.17",
+  "source_mc_policy_hash": "26a95745a50b65e85f6ece24b6501af0994764a84ddd886edb70d1fcd770849c",
+  "scope_symbols": [
+    "BLLN",
+    "CBRS",
+    "DFTX",
+    "EQPT",
+    "FRVO",
+    "HONA",
+    "INIO",
+    "MDLN",
+    "MMED",
+    "NAVN",
+    "QNT",
+    "SKHY",
+    "SOLS",
+    "SPCX",
+    "VSNT"
+  ],
+  "counts": {
+    "PASS_HISTORY": 1,
+    "FAIL_HISTORY": 14,
+    "TOTAL": 15
+  },
+  "entries": {
+    "BLLN": {
+      "mode": "LISTING_AGE_TERMINAL_FAIL_V1",
+      "outcome": "FAIL_HISTORY",
+      "listing_date": "2025-11-06",
+      "calendar_days_since_listing": 330,
+      "proof": "LISTING_AGE_LT_364_DAYS__52_COMPLETED_WEEKS_IMPOSSIBLE",
+      "listing_authority": "BIGDATA_CORPORATE_CALENDAR",
+      "listing_source_url": null,
+      "rallies_current_ticker_observation": {
+        "has_asof": true,
+        "daily_bars_observed": 227,
+        "first_observed_date": "2025-11-06",
+        "note": "Diagnostic corroboration only."
+      }
+    },
+    "CBRS": {
+      "mode": "LISTING_AGE_TERMINAL_FAIL_V1",
+      "outcome": "FAIL_HISTORY",
+      "listing_date": "2026-05-14",
+      "calendar_days_since_listing": 141,
+      "proof": "LISTING_AGE_LT_364_DAYS__52_COMPLETED_WEEKS_IMPOSSIBLE",
+      "listing_authority": "BIGDATA_CORPORATE_CALENDAR",
+      "listing_source_url": null,
+      "rallies_current_ticker_observation": {
+        "has_asof": true,
+        "daily_bars_observed": 98,
+        "first_observed_date": "2026-05-14",
+        "note": "Diagnostic corroboration only."
+      }
+    },
+    "EQPT": {
+      "mode": "LISTING_AGE_TERMINAL_FAIL_V1",
+      "outcome": "FAIL_HISTORY",
+      "listing_date": "2026-01-23",
+      "calendar_days_since_listing": 252,
+      "proof": "LISTING_AGE_LT_364_DAYS__52_COMPLETED_WEEKS_IMPOSSIBLE",
+      "listing_authority": "BIGDATA_CORPORATE_CALENDAR",
+      "listing_source_url": null,
+      "rallies_current_ticker_observation": {
+        "has_asof": true,
+        "daily_bars_observed": 175,
+        "first_observed_date": "2026-01-23",
+        "note": "Diagnostic corroboration only."
+      }
+    },
+    "FRVO": {
+      "mode": "LISTING_AGE_TERMINAL_FAIL_V1",
+      "outcome": "FAIL_HISTORY",
+      "listing_date": "2026-05-13",
+      "calendar_days_since_listing": 142,
+      "proof": "LISTING_AGE_LT_364_DAYS__52_COMPLETED_WEEKS_IMPOSSIBLE",
+      "listing_authority": "BIGDATA_CORPORATE_CALENDAR",
+      "listing_source_url": null,
+      "rallies_current_ticker_observation": {
+        "has_asof": true,
+        "daily_bars_observed": 99,
+        "first_observed_date": "2026-05-13",
+        "note": "Diagnostic corroboration only."
+      }
+    },
+    "HONA": {
+      "mode": "LISTING_AGE_TERMINAL_FAIL_V1",
+      "outcome": "FAIL_HISTORY",
+      "listing_date": "2026-06-29",
+      "calendar_days_since_listing": 95,
+      "proof": "LISTING_AGE_LT_364_DAYS__52_COMPLETED_WEEKS_IMPOSSIBLE",
+      "listing_authority": "NASDAQ_OFFICIAL",
+      "listing_source_url": "https://www.nasdaq.com/press-release/honeywell-aerospace-completes-spin-honeywell-technologies-and-begins-trading-nasdaq",
+      "rallies_current_ticker_observation": {
+        "has_asof": true,
+        "daily_bars_observed": 68,
+        "first_observed_date": "2026-06-29",
+        "note": "Diagnostic corroboration only."
+      }
+    },
+    "INIO": {
+      "mode": "LISTING_AGE_TERMINAL_FAIL_V1",
+      "outcome": "FAIL_HISTORY",
+      "listing_date": "2026-06-04",
+      "calendar_days_since_listing": 120,
+      "proof": "LISTING_AGE_LT_364_DAYS__52_COMPLETED_WEEKS_IMPOSSIBLE",
+      "listing_authority": "NASDAQ_OFFICIAL",
+      "listing_source_url": "https://www.nasdaq.com/press-release/innio-announces-pricing-upsized-initial-public-offering-2026-06-04",
+      "rallies_current_ticker_observation": {
+        "has_asof": true,
+        "daily_bars_observed": 84,
+        "first_observed_date": "2026-06-04",
+        "note": "Diagnostic corroboration only."
+      }
+    },
+    "MDLN": {
+      "mode": "LISTING_AGE_TERMINAL_FAIL_V1",
+      "outcome": "FAIL_HISTORY",
+      "listing_date": "2025-12-17",
+      "calendar_days_since_listing": 289,
+      "proof": "LISTING_AGE_LT_364_DAYS__52_COMPLETED_WEEKS_IMPOSSIBLE",
+      "listing_authority": "NASDAQ_OFFICIAL",
+      "listing_source_url": "https://www.nasdaq.com/press-release/medline-announces-pricing-upsized-initial-public-offering-2025-12-17",
+      "rallies_current_ticker_observation": {
+        "has_asof": true,
+        "daily_bars_observed": 199,
+        "first_observed_date": "2025-12-17",
+        "note": "Diagnostic corroboration only."
+      }
+    },
+    "MMED": {
+      "mode": "LISTING_AGE_TERMINAL_FAIL_V1",
+      "outcome": "FAIL_HISTORY",
+      "listing_date": "2026-03-06",
+      "calendar_days_since_listing": 210,
+      "proof": "LISTING_AGE_LT_364_DAYS__52_COMPLETED_WEEKS_IMPOSSIBLE",
+      "listing_authority": "BIGDATA_CORPORATE_CALENDAR",
+      "listing_source_url": null,
+      "rallies_current_ticker_observation": {
+        "has_asof": true,
+        "daily_bars_observed": 146,
+        "first_observed_date": "2026-03-06",
+        "note": "Diagnostic corroboration only."
+      }
+    },
+    "NAVN": {
+      "mode": "LISTING_AGE_TERMINAL_FAIL_V1",
+      "outcome": "FAIL_HISTORY",
+      "listing_date": "2025-10-31",
+      "calendar_days_since_listing": 336,
+      "proof": "LISTING_AGE_LT_364_DAYS__52_COMPLETED_WEEKS_IMPOSSIBLE",
+      "listing_authority": "BIGDATA_CORPORATE_CALENDAR",
+      "listing_source_url": null,
+      "rallies_current_ticker_observation": {
+        "has_asof": true,
+        "daily_bars_observed": 232,
+        "first_observed_date": "2025-10-30",
+        "note": "Diagnostic corroboration only."
+      }
+    },
+    "QNT": {
+      "mode": "LISTING_AGE_TERMINAL_FAIL_V1",
+      "outcome": "FAIL_HISTORY",
+      "listing_date": "2026-06-04",
+      "calendar_days_since_listing": 120,
+      "proof": "LISTING_AGE_LT_364_DAYS__52_COMPLETED_WEEKS_IMPOSSIBLE",
+      "listing_authority": "BIGDATA_CORPORATE_CALENDAR",
+      "listing_source_url": null,
+      "rallies_current_ticker_observation": {
+        "has_asof": true,
+        "daily_bars_observed": 84,
+        "first_observed_date": "2026-06-04",
+        "note": "Diagnostic corroboration only."
+      }
+    },
+    "SKHY": {
+      "mode": "LISTING_AGE_TERMINAL_FAIL_V1",
+      "outcome": "FAIL_HISTORY",
+      "listing_date": "2026-07-10",
+      "calendar_days_since_listing": 84,
+      "proof": "LISTING_AGE_LT_364_DAYS__52_COMPLETED_WEEKS_IMPOSSIBLE",
+      "listing_authority": "BIGDATA_CORPORATE_CALENDAR",
+      "listing_source_url": null,
+      "rallies_current_ticker_observation": {
+        "has_asof": true,
+        "daily_bars_observed": 59,
+        "first_observed_date": "2026-07-13",
+        "note": "Diagnostic corroboration only."
+      }
+    },
+    "SOLS": {
+      "mode": "LISTING_AGE_TERMINAL_FAIL_V1",
+      "outcome": "FAIL_HISTORY",
+      "listing_date": "2025-10-20",
+      "calendar_days_since_listing": 347,
+      "proof": "LISTING_AGE_LT_364_DAYS__52_COMPLETED_WEEKS_IMPOSSIBLE",
+      "listing_authority": "BIGDATA_CORPORATE_CALENDAR",
+      "listing_source_url": null,
+      "rallies_current_ticker_observation": {
+        "has_asof": true,
+        "daily_bars_observed": 232,
+        "first_observed_date": "2025-10-30",
+        "note": "Diagnostic corroboration only."
+      }
+    },
+    "SPCX": {
+      "mode": "LISTING_AGE_TERMINAL_FAIL_V1",
+      "outcome": "FAIL_HISTORY",
+      "listing_date": "2026-06-12",
+      "calendar_days_since_listing": 112,
+      "proof": "LISTING_AGE_LT_364_DAYS__52_COMPLETED_WEEKS_IMPOSSIBLE",
+      "listing_authority": "BIGDATA_CORPORATE_CALENDAR",
+      "listing_source_url": null,
+      "rallies_current_ticker_observation": {
+        "has_asof": true,
+        "daily_bars_observed": 290,
+        "first_observed_date": "2025-06-02",
+        "note": "Rallies pre-listing bars are explicitly ignored because official listing date bounds current-security history."
+      }
+    },
+    "VSNT": {
+      "mode": "LISTING_AGE_TERMINAL_FAIL_V1",
+      "outcome": "FAIL_HISTORY",
+      "listing_date": "2025-12-15",
+      "calendar_days_since_listing": 291,
+      "proof": "LISTING_AGE_LT_364_DAYS__52_COMPLETED_WEEKS_IMPOSSIBLE",
+      "listing_authority": "BIGDATA_CORPORATE_CALENDAR",
+      "listing_source_url": null,
+      "rallies_current_ticker_observation": {
+        "has_asof": true,
+        "daily_bars_observed": 188,
+        "first_observed_date": "2026-01-05",
+        "note": "Diagnostic corroboration only."
+      }
+    },
+    "DFTX": {
+      "mode": "TICKER_LINEAGE_HISTORY_PASS_V1",
+      "outcome": "PASS_HISTORY",
+      "current_ticker": "DFTX",
+      "predecessor_ticker": "MNMD",
+      "ticker_change_effective_date": "2026-01-15",
+      "official_continuity_source": "https://www.nasdaq.com/press-release/definium-therapeutics-common-shares-trade-under-new-nasdaq-ticker-symbol-dftx",
+      "official_continuity_fact": "Ticker-symbol change for the same company/security lineage; no shareholder action required.",
+      "rallies_predecessor_daily_bars": 406,
+      "rallies_current_daily_bars": 180,
+      "combined_unique_daily_bars": 586,
+      "combined_completed_week_count": 122,
+      "current_has_exact_asof_bar": true,
+      "proof": "OFFICIAL_TICKER_LINEAGE_PLUS_RALLIES_CONTIGUOUS_HISTORY"
+    }
+  }
+}
