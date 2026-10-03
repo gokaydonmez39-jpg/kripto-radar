@@ -5,6 +5,7 @@ from pathlib import Path
 
 ROOT=Path(__file__).resolve().parent
 REQ=Path(os.getenv("XRAY_EVENT_REQUEST",str(ROOT/"canonical_current_event_request.json")))
+BRIDGE_ENV=os.getenv("XRAY_EVENT_BRIDGE")
 OUT=Path(os.getenv("XRAY_EVENT_STATE_OUT",str(ROOT/"canonical_current_event_state.json")))
 TASK="6a825366222081918997094d76e6ae46"
 
@@ -15,8 +16,10 @@ def blob_sha(p:Path):
 def main():
     req=json.loads(REQ.read_text())
     asof=req["asof_et"]
-    bridge=ROOT/f"canonical_event_bridge_{asof.replace('-','')}.json"
-    if not bridge.exists(): raise RuntimeError("EVENT_BRIDGE_MISSING")
+    bridge=Path(BRIDGE_ENV) if BRIDGE_ENV else ROOT/f"canonical_event_bridge_{asof.replace('-','')}.json"
+    if not bridge.is_absolute():
+        bridge=(ROOT.parent/bridge).resolve()
+    if not bridge.exists(): raise RuntimeError(f"EVENT_BRIDGE_MISSING:{bridge}")
     ev=json.loads(bridge.read_text())
     assert req["schema"]=="XRAY_EVENT_EPOCH_REQUEST_V1" and req["status"]=="READY"
     assert ev["schema"]=="XRAY_EVENT_EPOCH_RESULT_V1" and ev["status"]=="COMMITTED"
