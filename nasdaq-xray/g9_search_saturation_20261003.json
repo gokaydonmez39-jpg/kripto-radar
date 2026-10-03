@@ -9,7 +9,7 @@
     "C": "lawful automated/non-display permanent-$0 entitlement with no fee/balance/activity/per-query condition",
     "D": "scheduler callability"
   },
-  "unique_provider_paths_reviewed": 62,
+  "unique_provider_paths_reviewed": 63,
   "evidence_files": [
     {
       "path": "nasdaq-xray/g9_free_path_audit_20261003.json",
@@ -138,6 +138,10 @@
     {
       "path": "nasdaq-xray/g9_provider_delta_finfeedapi_20261003.json",
       "blob_sha": "c6b3d969f9531ac1859809d8cae8d7d1bd01ef10"
+    },
+    {
+      "path": "nasdaq-xray/g9_provider_delta_clearstreet_20261003.json",
+      "blob_sha": "6c863af000f7211b31708648381fe66000031ccf"
     }
   ],
   "reviewed_provider_paths": [
@@ -202,7 +206,8 @@
     "TickerLayer Stocks",
     "DriveWealth consolidated NBBO / Apex-QUODD B2B market-data infrastructure",
     "Connect Trade broker-sourced realtime market-data API/MCP",
-    "FinFeedAPI Stock API / MCP"
+    "FinFeedAPI Stock API / MCP",
+    "Clear Street Trading API / read-only MCP"
   ],
   "strongest_near_misses": [
     {
@@ -253,9 +258,9 @@
     "authority_file": "nasdaq-xray/g9_utp_fee_basis_20261003.json"
   },
   "latest_new_provider": {
-    "provider": "FinFeedAPI Stock API / MCP",
-    "evidence_file": "nasdaq-xray/g9_provider_delta_finfeedapi_20261003.json",
-    "evidence_blob_sha": "c6b3d969f9531ac1859809d8cae8d7d1bd01ef10",
-    "result": "STRICT_C_PERMANENT_ZERO_FAIL_METERED_PAYG"
+    "provider": "Clear Street Trading API / read-only MCP",
+    "evidence_file": "nasdaq-xray/g9_provider_delta_clearstreet_20261003.json",
+    "evidence_blob_sha": "6c863af000f7211b31708648381fe66000031ccf",
+    "result": "B_D_STRONG_C_AND_TURKEY_ELIGIBILITY_UNPROVEN"
   }
 }
