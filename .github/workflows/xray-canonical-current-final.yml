@@ -105,7 +105,7 @@ jobs:
         run: |
           set -euo pipefail
           actual="$(git hash-object nasdaq-xray/account_longbridge_openapi_probe.py)"
-          test "$actual" = "75fc824b0e07114815b484462502c22bb390d838"
+          test "$actual" = "7bbaecf20d0ccd50af62856f05b6afb6558c9f83"
           python nasdaq-xray/account_longbridge_openapi_probe_selftest.py
           python nasdaq-xray/account_same_run_terminal_selftest.py
           echo "XRAY_ACCOUNT_PRESECRET_GUARD=PASS"
@@ -113,6 +113,10 @@ jobs:
       - name: Prepare read-only ACCOUNT probe runtime
         if: steps.event.outputs.ready == 'true'
         env:
+          LONGBRIDGE_OAUTH_ACCESS_TOKEN: ${{ secrets.LONGBRIDGE_OAUTH_ACCESS_TOKEN }}
+          LONGBRIDGE_OAUTH_CLIENT_ID: ${{ secrets.LONGBRIDGE_OAUTH_CLIENT_ID }}
+          LONGBRIDGE_OAUTH_REFRESH_TOKEN: ${{ secrets.LONGBRIDGE_OAUTH_REFRESH_TOKEN }}
+          LONGBRIDGE_OAUTH_CLIENT_SECRET: ${{ secrets.LONGBRIDGE_OAUTH_CLIENT_SECRET }}
           LONGBRIDGE_APP_KEY: ${{ secrets.LONGBRIDGE_APP_KEY }}
           LONGBRIDGE_APP_SECRET: ${{ secrets.LONGBRIDGE_APP_SECRET }}
           LONGBRIDGE_ACCESS_TOKEN: ${{ secrets.LONGBRIDGE_ACCESS_TOKEN }}
@@ -120,11 +124,17 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [[ -n "${LONGBRIDGE_APP_KEY}" && -n "${LONGBRIDGE_APP_SECRET}" && -n "${LONGBRIDGE_ACCESS_TOKEN}" && "${XRAY_ALLOW_LEGACY_TRADE_CAPABLE_CREDENTIAL}" == "I_UNDERSTAND_LEGACY_TOKEN_CAN_TRADE" ]]; then
+          if [[ -n "${LONGBRIDGE_OAUTH_ACCESS_TOKEN}" ]]; then
+            echo "XRAY_ACCOUNT_DIRECT_RUNTIME=READY_OAUTH_ACCOUNT_BEARER"
+          elif [[ -n "${LONGBRIDGE_OAUTH_CLIENT_ID}" && -n "${LONGBRIDGE_OAUTH_REFRESH_TOKEN}" ]]; then
+            echo "XRAY_ACCOUNT_DIRECT_RUNTIME=READY_OAUTH_ACCOUNT_REFRESH"
+          elif [[ -n "${LONGBRIDGE_OAUTH_CLIENT_ID}" || -n "${LONGBRIDGE_OAUTH_REFRESH_TOKEN}" || -n "${LONGBRIDGE_OAUTH_CLIENT_SECRET}" ]]; then
+            echo "XRAY_ACCOUNT_DIRECT_RUNTIME=BLOCKED_INCOMPLETE_OAUTH_SECRET_SET"
+          elif [[ -n "${LONGBRIDGE_APP_KEY}" && -n "${LONGBRIDGE_APP_SECRET}" && -n "${LONGBRIDGE_ACCESS_TOKEN}" && "${XRAY_ALLOW_LEGACY_TRADE_CAPABLE_CREDENTIAL}" == "I_UNDERSTAND_LEGACY_TOKEN_CAN_TRADE" ]]; then
             python -m pip install --disable-pip-version-check -r nasdaq-xray/requirements-account-probe.txt
-            echo "XRAY_ACCOUNT_DIRECT_RUNTIME=READY_EXPLICIT_HIGH_PRIVILEGE_OPT_IN"
+            echo "XRAY_ACCOUNT_DIRECT_RUNTIME=READY_EXPLICIT_HIGH_PRIVILEGE_LEGACY_OPT_IN"
           elif [[ -n "${LONGBRIDGE_APP_KEY}" || -n "${LONGBRIDGE_APP_SECRET}" || -n "${LONGBRIDGE_ACCESS_TOKEN}" ]]; then
-            echo "XRAY_ACCOUNT_DIRECT_RUNTIME=BLOCKED_HIGH_PRIVILEGE_CREDENTIAL_NOT_OPTED_IN"
+            echo "XRAY_ACCOUNT_DIRECT_RUNTIME=BLOCKED_HIGH_PRIVILEGE_LEGACY_NOT_OPTED_IN"
           else
             echo "XRAY_ACCOUNT_DIRECT_RUNTIME=NO_SECRETS_NETWORK_FREE"
           fi
@@ -132,6 +142,10 @@ jobs:
       - name: Run same-run read-only ACCOUNT probe
         if: steps.event.outputs.ready == 'true'
         env:
+          LONGBRIDGE_OAUTH_ACCESS_TOKEN: ${{ secrets.LONGBRIDGE_OAUTH_ACCESS_TOKEN }}
+          LONGBRIDGE_OAUTH_CLIENT_ID: ${{ secrets.LONGBRIDGE_OAUTH_CLIENT_ID }}
+          LONGBRIDGE_OAUTH_REFRESH_TOKEN: ${{ secrets.LONGBRIDGE_OAUTH_REFRESH_TOKEN }}
+          LONGBRIDGE_OAUTH_CLIENT_SECRET: ${{ secrets.LONGBRIDGE_OAUTH_CLIENT_SECRET }}
           LONGBRIDGE_APP_KEY: ${{ secrets.LONGBRIDGE_APP_KEY }}
           LONGBRIDGE_APP_SECRET: ${{ secrets.LONGBRIDGE_APP_SECRET }}
           LONGBRIDGE_ACCESS_TOKEN: ${{ secrets.LONGBRIDGE_ACCESS_TOKEN }}
