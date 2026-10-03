@@ -348,8 +348,10 @@ jobs:
             nasdaq-xray/canonical_current_final_tech.json
             nasdaq-xray/canonical_current_terminal.json
             nasdaq-xray/canonical_current_final_gate_overlay.json
-            nasdaq-xray/account_longbridge_mcp_v2_token.enc
           )
+          if [ -f nasdaq-xray/account_longbridge_mcp_v2_token.enc ]; then
+            files+=(nasdaq-xray/account_longbridge_mcp_v2_token.enc)
+          fi
           tmpdir="$(mktemp -d)"
           trap 'rm -rf "$tmpdir"' EXIT
           for p in "${files[@]}"; do
