@@ -20,7 +20,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: xray-canonical-current-final
+  group: xray-canonical-current-final-c417
   cancel-in-progress: true
 
 jobs:
