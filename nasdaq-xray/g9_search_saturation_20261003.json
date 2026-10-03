@@ -9,7 +9,7 @@
     "C": "lawful automated/non-display permanent-$0 entitlement with no fee/balance/activity/per-query condition",
     "D": "scheduler callability"
   },
-  "unique_provider_paths_reviewed": 63,
+  "unique_provider_paths_reviewed": 64,
   "evidence_files": [
     {
       "path": "nasdaq-xray/g9_free_path_audit_20261003.json",
@@ -142,6 +142,10 @@
     {
       "path": "nasdaq-xray/g9_provider_delta_clearstreet_20261003.json",
       "blob_sha": "6c863af000f7211b31708648381fe66000031ccf"
+    },
+    {
+      "path": "nasdaq-xray/g9_provider_delta_ivolatility_20261003.json",
+      "blob_sha": "22330aeb83ee160583378b187d086981c47e70dc"
     }
   ],
   "reviewed_provider_paths": [
@@ -207,7 +211,8 @@
     "DriveWealth consolidated NBBO / Apex-QUODD B2B market-data infrastructure",
     "Connect Trade broker-sourced realtime market-data API/MCP",
     "FinFeedAPI Stock API / MCP",
-    "Clear Street Trading API / read-only MCP"
+    "Clear Street Trading API / read-only MCP",
+    "IVolatility Data Cloud API / IVolAI"
   ],
   "strongest_near_misses": [
     {
@@ -258,9 +263,9 @@
     "authority_file": "nasdaq-xray/g9_utp_fee_basis_20261003.json"
   },
   "latest_new_provider": {
-    "provider": "Clear Street Trading API / read-only MCP",
-    "evidence_file": "nasdaq-xray/g9_provider_delta_clearstreet_20261003.json",
-    "evidence_blob_sha": "6c863af000f7211b31708648381fe66000031ccf",
-    "result": "B_D_STRONG_C_AND_TURKEY_ELIGIBILITY_UNPROVEN"
+    "provider": "IVolatility Data Cloud API / IVolAI",
+    "evidence_file": "nasdaq-xray/g9_provider_delta_ivolatility_20261003.json",
+    "evidence_blob_sha": "22330aeb83ee160583378b187d086981c47e70dc",
+    "result": "STRICT_C_FAIL_PAID_REALTIME_TRIAL_ONLY"
   }
 }
