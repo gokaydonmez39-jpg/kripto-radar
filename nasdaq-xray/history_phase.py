@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import json, math, os, urllib.parse, urllib.request, hashlib
+import json, math, os, urllib.parse, urllib.request, urllib.error, hashlib, time, threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -15,8 +15,37 @@ ASOF_ENV=os.getenv("XRAY_ASOF")
 HARD_DAILY=260
 HARD_WEEKLY=52
 WORKERS=int(os.getenv("XRAY_HISTORY_WORKERS","10"))
+PROVIDER_MAX_INFLIGHT=max(1,int(os.getenv("XRAY_HISTORY_PROVIDER_MAX_INFLIGHT","3")))
+RETRY_DELAYS=(0.0,1.0,2.5)
 UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/126 Safari/537.36"
 NY=ZoneInfo("America/New_York")
+_PROVIDER_SEM=threading.Semaphore(PROVIDER_MAX_INFLIGHT)
+
+def _is_transient(exc):
+    if isinstance(exc,urllib.error.HTTPError):
+        return exc.code in {408,425,429,500,502,503,504}
+    if isinstance(exc,(urllib.error.URLError,TimeoutError,ConnectionError,ConnectionResetError)):
+        return True
+    s=str(exc).lower()
+    return any(x in s for x in (
+      "timed out","timeout","temporarily unavailable","connection reset",
+      "remote end closed","too many requests","rate limit","429","502","503","504"
+    ))
+
+def _call_with_retry(fn):
+    last=None
+    for attempt,delay in enumerate(RETRY_DELAYS,1):
+        if delay:
+            time.sleep(delay)
+        try:
+            with _PROVIDER_SEM:
+                return fn(),attempt
+        except Exception as e:
+            last=e
+            if not _is_transient(e):
+                raise
+    assert last is not None
+    raise last
 
 def blob_sha(p:Path):
     b=p.read_bytes()
@@ -36,8 +65,12 @@ def num(x):
 
 def req_json(url,params=None,timeout=30):
     if params:url += ("&" if "?" in url else "?")+urllib.parse.urlencode(params)
-    req=urllib.request.Request(url,headers={"User-Agent":UA,"Accept":"application/json,text/plain,*/*","Referer":"https://www.nasdaq.com/"})
-    with urllib.request.urlopen(req,timeout=timeout) as r:return json.loads(r.read().decode())
+    def _once():
+        req=urllib.request.Request(url,headers={"User-Agent":UA,"Accept":"application/json,text/plain,*/*","Referer":"https://www.nasdaq.com/"})
+        with urllib.request.urlopen(req,timeout=timeout) as r:
+            return json.loads(r.read().decode())
+    out,_attempts=_call_with_retry(_once)
+    return out
 
 def week_count(by,asof):
     ad=datetime.fromisoformat(asof).date()
@@ -59,7 +92,7 @@ def classify(by,asof,source):
 
 def sina(sym,asof):
     try:
-        df=ak.stock_us_daily(symbol=sym,adjust="")
+        df,attempts=_call_with_retry(lambda: ak.stock_us_daily(symbol=sym,adjust=""))
         by={}
         if df is not None:
             for r in df.to_dict(orient="records"):
@@ -68,7 +101,7 @@ def sina(sym,asof):
                     c=float(r.get("close"));v=float(r.get("volume"))
                 except Exception:continue
                 if day<=asof and c>0 and v>=0 and math.isfinite(c) and math.isfinite(v):by[day]=(c,v)
-        return by,{"usable":len(by)}
+        return by,{"usable":len(by),"attempts":attempts}
     except Exception as e:return {},{"error":f"{type(e).__name__}:{str(e)[:160]}"}
 
 def nasdaq(sym,asof):
@@ -173,6 +206,8 @@ def main():
         } for s in obj["unknown_symbols"]
       },
       "pass_count":obj["pass_count"],
-      "pass_hash":obj["pass_hash"]
+      "pass_hash":obj["pass_hash"],
+      "provider_max_inflight":PROVIDER_MAX_INFLIGHT,
+      "retry_delays":RETRY_DELAYS
     },sort_keys=True))
 if __name__=="__main__":main()
