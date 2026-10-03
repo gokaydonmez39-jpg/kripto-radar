@@ -93,6 +93,20 @@
       "authority_rule": "Adapter may not be called unless g9_entitlement_authority.json explicitly marks provider WEALTHNOW and status PROVEN from primary-source National-NBBO lineage plus explicit permanent-$0 automated/non-display market-data entitlement evidence.",
       "evidence_file": "nasdaq-xray/g9_provider_delta_wealthnow_20261003.json",
       "lineage_unlock_file": "nasdaq-xray/g9_wealthnow_lineage_unlock_20261003.json"
+    },
+    "PAPER_INVEST": {
+      "status": "IMPLEMENTED",
+      "runtime": "nasdaq-xray/strict_g9_probe.py",
+      "auth": "Dedicated Paper Invest API key in scheduler secret PAPER_INVEST_API_KEY; exchanged for JWT at /v1/auth/token; secrets never persisted.",
+      "technical_scope": [
+        "GET /v1/market-data/quote/{symbol}: bid+ask quote snapshot",
+        "GET /v1/market-data/trade/{symbol}: independent last-trade read",
+        "quote timestamp + trade timestamp same-run RTH freshness/skew"
+      ],
+      "entitlement_status": "OFFICIAL_REALTIME_NBBO_CLAIM_AND_FREE_API_ACCESS_PROVEN; UPSTREAM_SIP/REDISTRIBUTOR_LINEAGE_AND_AUTOMATED_NONDISPLAY_MARKET_DATA_ENTITLEMENT_UNPROVEN; EVENT_TIMESTAMP_SEMANTICS_REQUIRE_LIVE_VALIDATION",
+      "authority_rule": "Adapter MUST NOT be called unless g9_entitlement_authority.json explicitly selects PAPER_INVEST and status PROVEN from primary-source consolidated NBBO lineage plus permanent-$0 automated/non-display market-data entitlement evidence.",
+      "evidence_file": "nasdaq-xray/g9_provider_delta_paperinvest_20261003.json",
+      "order_surface_policy": "XRAY adapter contains market-data reads only; Paper simulated order endpoints are outside the adapter and forbidden by EXECUTION=NONE."
     }
   },
   "authority_file": "nasdaq-xray/g9_entitlement_authority.json",
