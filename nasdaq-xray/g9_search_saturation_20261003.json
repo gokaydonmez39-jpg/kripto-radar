@@ -9,7 +9,7 @@
     "C": "lawful automated/non-display permanent-$0 entitlement with no fee/balance/activity/per-query condition",
     "D": "scheduler callability"
   },
-  "unique_provider_paths_reviewed": 64,
+  "unique_provider_paths_reviewed": 67,
   "evidence_files": [
     {
       "path": "nasdaq-xray/g9_free_path_audit_20261003.json",
@@ -146,6 +146,18 @@
     {
       "path": "nasdaq-xray/g9_provider_delta_ivolatility_20261003.json",
       "blob_sha": "22330aeb83ee160583378b187d086981c47e70dc"
+    },
+    {
+      "path": "nasdaq-xray/g9_provider_delta_quantconnect_20261003.json",
+      "blob_sha": "a7df14605eb674bfedb5b9048799d1252488de8a"
+    },
+    {
+      "path": "nasdaq-xray/g9_provider_delta_alltick_20261003.json",
+      "blob_sha": "15cafb4df6558dba43fc92255bea666854a7a76a"
+    },
+    {
+      "path": "nasdaq-xray/g9_provider_delta_midaslabs_20261003.json",
+      "blob_sha": "c88d199bbd73cc875bf3d421b1f6b18639543735"
     }
   ],
   "reviewed_provider_paths": [
@@ -212,7 +224,10 @@
     "Connect Trade broker-sourced realtime market-data API/MCP",
     "FinFeedAPI Stock API / MCP",
     "Clear Street Trading API / read-only MCP",
-    "IVolatility Data Cloud API / IVolAI"
+    "IVolatility Data Cloud API / IVolAI",
+    "QuantConnect US Equities SIP / LEAN",
+    "AllTick Market Data API",
+    "Midas Labs / Midas Markets MCP (midasmarkets.xyz; not GetMidas Turkey)"
   ],
   "strongest_near_misses": [
     {
@@ -263,9 +278,8 @@
     "authority_file": "nasdaq-xray/g9_utp_fee_basis_20261003.json"
   },
   "latest_new_provider": {
-    "provider": "IVolatility Data Cloud API / IVolAI",
-    "evidence_file": "nasdaq-xray/g9_provider_delta_ivolatility_20261003.json",
-    "evidence_blob_sha": "22330aeb83ee160583378b187d086981c47e70dc",
-    "result": "STRICT_C_FAIL_PAID_REALTIME_TRIAL_ONLY"
+    "provider": "Midas Labs / Midas Markets MCP (midasmarkets.xyz; not GetMidas Turkey)",
+    "evidence_file": "nasdaq-xray/g9_provider_delta_midaslabs_20261003.json",
+    "result": "STRICT_A_FAIL_HIP3_PERPETUAL_MARKET_NOT_US_CASH_NBBO"
   }
 }
