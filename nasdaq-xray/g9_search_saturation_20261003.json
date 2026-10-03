@@ -9,7 +9,7 @@
     "C": "lawful automated/non-display permanent-$0 entitlement with no fee/balance/activity/per-query condition",
     "D": "scheduler callability"
   },
-  "unique_provider_paths_reviewed": 53,
+  "unique_provider_paths_reviewed": 54,
   "evidence_files": [
     {
       "path": "nasdaq-xray/g9_free_path_audit_20261003.json",
@@ -98,6 +98,10 @@
     {
       "path": "nasdaq-xray/g9_provider_delta_siftingio_20261003.json",
       "blob_sha": "ab4b08a6e750cb8072ae83453d49fe3ea19802fe"
+    },
+    {
+      "path": "nasdaq-xray/g9_provider_delta_paperinvest_20261003.json",
+      "blob_sha": "5e71a710510ac22640cacb6d871d2f4bbfaced77"
     }
   ],
   "reviewed_provider_paths": [
@@ -153,7 +157,8 @@
     "FlashAlpha Lab API",
     "Eulerpool Financial Data API",
     "Strasmore",
-    "SiftingIO US Equities API"
+    "SiftingIO US Equities API",
+    "Paper Invest REST / Official MCP"
   ],
   "strongest_near_misses": [
     {
