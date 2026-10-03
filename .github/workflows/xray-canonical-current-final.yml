@@ -10,6 +10,7 @@ on:
       - "nasdaq-xray/deep_pre_r1_shadow.py"
       - "nasdaq-xray/final_tech_shadow.py"
       - "nasdaq-xray/build_current_terminal.py"
+      - "nasdaq-xray/build_final_gate_overlay.py"
       - "nasdaq-xray/strict_g9_runtime_state.json"
       - "nasdaq-xray/account_gate_contract.json"
       - "nasdaq-xray/account_provider_adapter_contract.json"
@@ -85,7 +86,8 @@ jobs:
             nasdaq-xray/family_c_engine.py \
             nasdaq-xray/deep_pre_r1_shadow.py \
             nasdaq-xray/final_tech_shadow.py \
-            nasdaq-xray/build_current_terminal.py
+            nasdaq-xray/build_current_terminal.py \
+            nasdaq-xray/build_final_gate_overlay.py
 
       - name: Install zero-dollar runtime
         if: steps.event.outputs.ready == 'true'
@@ -133,6 +135,10 @@ jobs:
           XRAY_TERMINAL_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_current_terminal.json
         run: python nasdaq-xray/build_current_terminal.py
 
+      - name: Build final-gate overlay
+        if: steps.event.outputs.ready == 'true'
+        run: python nasdaq-xray/build_final_gate_overlay.py
+
       - name: Structural terminal gate
         if: steps.event.outputs.ready == 'true'
         run: |
@@ -165,7 +171,15 @@ jobs:
               assert t["status"]=="FULL_E2E_RESEARCH_PASS"
           else:
               assert t["status"]=="PARTIAL"
-          print({"asof":a,"terminal_status":t["status"],"terminal_result":t["terminal_result"],"pre_g9":t["counts"]["pre_g9_tech_pass"],"blockers":t["blockers"]})
+          ov=json.load(open("nasdaq-xray/canonical_current_final_gate_overlay.json"))
+          assert ov["schema"]=="XRAY_FINAL_GATE_OVERLAY_V1"
+          assert ov["execution"]=="NONE" and ov["real_money"]=="NO-GO"
+          assert ov["asof_et"]==a
+          assert ov["source_terminal"]["blob_sha"]==__import__("hashlib").sha1((lambda b: f"blob {len(b)}\\0".encode()+b)(open("nasdaq-xray/canonical_current_terminal.json","rb").read())).hexdigest()
+          assert ov["strict_g9"]["g9_pass"]==(g9.get("g9_pass") is True)
+          assert ov["account"]["status"]==ag["current_status"]
+          assert ov["true_full_go"]["status"] in {"PASS","BLOCKED"}
+          print({"asof":a,"terminal_status":t["status"],"terminal_result":t["terminal_result"],"pre_g9":t["counts"]["pre_g9_tech_pass"],"blockers":t["blockers"],"true_full_go":ov["true_full_go"]["status"]})
           PY
 
       - name: Commit current final artifacts
@@ -181,6 +195,7 @@ jobs:
             nasdaq-xray/canonical_current_deep_full.json
             nasdaq-xray/canonical_current_final_tech.json
             nasdaq-xray/canonical_current_terminal.json
+            nasdaq-xray/canonical_current_final_gate_overlay.json
           )
           tmpdir="$(mktemp -d)"
           trap 'rm -rf "$tmpdir"' EXIT
