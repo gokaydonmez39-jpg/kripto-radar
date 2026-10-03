@@ -51,6 +51,8 @@ def _public_state(
         "execution": "NONE",
         "real_money": "NO-GO",
         "alpha_authority": False,
+        "workflow_run_id": os.getenv("GITHUB_RUN_ID") or None,
+        "workflow_run_attempt": os.getenv("GITHUB_RUN_ATTEMPT") or None,
     }
 
 
