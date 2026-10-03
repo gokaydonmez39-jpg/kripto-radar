@@ -4,7 +4,7 @@
   "execution": "NONE",
   "real_money": "NO-GO",
   "purpose": "Negative-evidence cache only. This registry can skip unchanged dead paths but can never create G9 PASS.",
-  "provider_count": 68,
+  "provider_count": 69,
   "strict_g9_gates": {
     "A": "consolidated UTP Tape-C / National NBBO lineage",
     "B": "fresh bid+ask+last with independent quote/trade event timestamps",
@@ -938,6 +938,19 @@
       "reopen_condition": "Primary-source Alpaca/OpenAI proof of live SIP feed and strict permanent-$0/no-subscription entitlement, then same-run scheduled RTH recent SIP quote/trade witness.",
       "negative_cache_only": false,
       "may_never_create_pass": false
+    },
+    {
+      "provider": "Unusual Whales API / MCP",
+      "status": "NONQUALIFYING_STRICT_C_LIVE_API_MCP_PAID_FREE_ONLY_TIME_LIMITED_TRIAL",
+      "failed_gates": [
+        "C_PERMANENT_ZERO_REALTIME_API_MCP_ENTITLEMENT"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_unusualwhales_20261004.json",
+      "evidence_blob_sha": "b002c4a3d028839f53a4b0b9c2fe94e23f9e915e",
+      "last_checked_on": "2026-10-04",
+      "reopen_condition": "Permanent-$0 production live National-NBBO API/MCP entitlement with no monetary/account condition.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
     }
   ],
   "reopen_policy": "Reopen an existing negative path only on newer PRIMARY SOURCE evidence materially changing its listed failed gate(s). New previously-unreviewed providers are always eligible for research. Any reopened path still requires same-run RTH technical proof before G9 PASS.",
