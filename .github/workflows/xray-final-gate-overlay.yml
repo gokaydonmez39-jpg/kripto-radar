@@ -40,8 +40,22 @@ jobs:
       - name: Compile
         run: python -m py_compile nasdaq-xray/build_final_gate_overlay.py
 
-      - name: Build overlay
-        run: python nasdaq-xray/build_final_gate_overlay.py
+      - name: Build overlay from coherent latest main
+        shell: bash
+        run: |
+          set -euo pipefail
+          for attempt in 1 2 3 4 5 6; do
+            git fetch origin main
+            git reset --hard origin/main
+            if python nasdaq-xray/build_final_gate_overlay.py; then
+              echo "XRAY_OVERLAY_BUILD=PASS attempt=$attempt"
+              exit 0
+            fi
+            echo "XRAY_OVERLAY_SOURCE_DRIFT attempt=$attempt"
+            sleep $((attempt*2))
+          done
+          echo "XRAY_OVERLAY_BUILD=FAIL" >&2
+          exit 1
 
       - name: Structural gate
         run: |
