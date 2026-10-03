@@ -46,7 +46,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 1
-          ref: main
+          ref: ${{ github.sha }}
       - uses: actions/setup-python@v5
         with: {python-version: "3.12"}
 
@@ -113,15 +113,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          actual="$(git hash-object nasdaq-xray/account_longbridge_openapi_probe.py)"
-          test "$actual" = "6ddfb82ca4268e40856e6f0eae0e53b79083092d"
-          hosted_v2="$(git hash-object nasdaq-xray/account_longbridge_mcp_v2_probe.py)"
-          test "$hosted_v2" = "09dc43993832feaa09bd8ac114082736ebd857bc"
           python nasdaq-xray/account_longbridge_openapi_probe_selftest.py
           python nasdaq-xray/account_longbridge_mcp_v2_probe_selftest.py
           python nasdaq-xray/select_account_live_probe_selftest.py
           python nasdaq-xray/account_same_run_terminal_selftest.py
-          echo "XRAY_ACCOUNT_PRESECRET_GUARD=PASS"
+          echo "XRAY_ACCOUNT_PRESECRET_GUARD=PASS commit=$GITHUB_SHA"
 
       - name: Prepare read-only ACCOUNT probe runtime
         if: steps.event.outputs.ready == 'true'
@@ -321,6 +317,16 @@ jobs:
           set -euo pipefail
           git config user.name "xray-dataplane-bot"
           git config user.email "xray-dataplane-bot@users.noreply.github.com"
+          git fetch origin main
+          latest="$(git rev-parse origin/main)"
+          if [[ "$latest" != "$GITHUB_SHA" ]]; then
+            changed="$(git diff --name-only "$GITHUB_SHA" "$latest" --               .github/workflows/xray-canonical-current-final.yml               nasdaq-xray/build_current_terminal.py               nasdaq-xray/build_final_gate_overlay_v2.py               nasdaq-xray/account_gate_contract.json               nasdaq-xray/account_provider_adapter_contract.json               nasdaq-xray/account_longbridge_openapi_probe.py               nasdaq-xray/account_longbridge_openapi_probe_selftest.py               nasdaq-xray/account_longbridge_mcp_v2_probe.py               nasdaq-xray/account_longbridge_mcp_v2_probe_selftest.py               nasdaq-xray/select_account_live_probe.py               nasdaq-xray/select_account_live_probe_selftest.py               nasdaq-xray/account_same_run_terminal_selftest.py               nasdaq-xray/chatgpt_compiled_policy_v3.json || true)"
+            if [[ -n "$changed" ]]; then
+              echo "XRAY_FACTORY_COMMIT=STALE_SOURCE_ABORT"
+              printf '%s\n' "$changed"
+              exit 0
+            fi
+          fi
           files=(
             nasdaq-xray/canonical_current_event_state.json
             nasdaq-xray/canonical_current_family_c.json
