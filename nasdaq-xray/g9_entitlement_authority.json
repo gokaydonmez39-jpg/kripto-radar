@@ -145,5 +145,11 @@
     "gate_b": "PROVISIONAL_SCHEMA_PASS_REQUIRES_SAME_RUN_RTH",
     "gate_c": "PROVISIONAL_ZERO_DOLLAR_AUTOMATION_PASS",
     "gate_d": "TECHNICAL_ADAPTER_IMPLEMENTED_BUT_CREDENTIAL_NOT_CONFIGURED"
+  },
+  "wealthnow_unlock_contract": {
+    "path": "nasdaq-xray/g9_wealthnow_lineage_unlock_20261003.json",
+    "blob_sha": "7c65e2c5748bd910afdee7de44bb31e85a1348bf",
+    "status": "BLOCKED_A_LINEAGE_PRIMARY_SOURCE_GAP",
+    "role": "PRIMARY_SOURCE_UNLOCK_CONTRACT_NEVER_PASS_BY_ITSELF"
   }
 }
