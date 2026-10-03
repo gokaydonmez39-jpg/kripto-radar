@@ -148,15 +148,17 @@
     },
     {
       "provider": "Charles Schwab Trader API / International",
-      "status": "STRICT_G9_C_FAIL_STREAMING_NBBO_FEE_BEARING",
+      "status": "STRICT_G9_C_AND_D_FAIL_NBBO_FEE_BEARING_AND_7DAY_HUMAN_REAUTH",
       "failed_gates": [
-        "C"
+        "C_PERMANENT_ZERO_NATIONAL_NBBO_ENTITLEMENT",
+        "D_INDEFINITE_UNATTENDED_SCHEDULER_AUTH"
       ],
       "evidence_file": "nasdaq-xray/g9_provider_delta_schwab_deep_20261003.json",
       "last_checked_on": "2026-10-03",
-      "reopen_condition": "Schwab makes consolidated streaming NBBO unconditional permanent-$0 for lawful automated/non-display use; then reassess API schema/jurisdiction/callability.",
+      "reopen_condition": "Schwab must grant exact consolidated National-NBBO Trader-API automated/non-display access permanently at $0 and replace the 7-day human browser reauthorization wall with an indefinitely renewable sanctioned noninteractive credential path.",
       "negative_cache_only": true,
-      "may_never_create_pass": true
+      "may_never_create_pass": true,
+      "evidence_blob_sha": "1d74a8e99509b344d0a57438dbaa9ceac39af8e3"
     },
     {
       "provider": "TradeStation API",
