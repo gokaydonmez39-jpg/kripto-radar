@@ -21,6 +21,78 @@ RETRY_DELAYS=(0.0,1.0,2.5)
 UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/126 Safari/537.36"
 NY=ZoneInfo("America/New_York")
 _PROVIDER_SEM=threading.Semaphore(PROVIDER_MAX_INFLIGHT)
+HISTORY_BRIDGE={}
+HISTORY_BRIDGE_PATH=None
+
+def load_history_bridge(src,asof):
+    global HISTORY_BRIDGE_PATH
+    raw=os.getenv("XRAY_HISTORY_EVIDENCE_BRIDGE")
+    p=Path(raw) if raw else ROOT/f"canonical_history_evidence_bridge_{asof.replace('-','')}_v1.json"
+    if not p.exists():
+        HISTORY_BRIDGE_PATH=None
+        return {}
+    j=json.loads(p.read_text())
+    assert j.get("schema")=="XRAY_HISTORY_EVIDENCE_BRIDGE_V1"
+    assert j.get("status")=="READY"
+    assert j.get("task_id")==TASK_ID
+    assert j.get("asof_et")==asof
+    assert j.get("execution")=="NONE" and j.get("real_money")=="NO-GO"
+    assert j.get("unknown_never_pass") is True
+    assert j.get("no_threshold_change") is True and j.get("no_synthetic_bars") is True
+    assert (j.get("thresholds") or {}).get("daily")==HARD_DAILY
+    assert (j.get("thresholds") or {}).get("weekly_completed")==HARD_WEEKLY
+    assert j.get("source_mc_path")==relpath(INPUT)
+    assert j.get("source_mc_blob_sha")==blob_sha(INPUT)
+    assert j.get("source_mc_policy_hash")==src.get("policy_hash")
+    assert j.get("source_mc_policy_version")==src.get("policy_version")
+    entries=j.get("entries") or {}
+    assert isinstance(entries,dict)
+    assert set(entries)==set(j.get("scope_symbols") or [])
+    assert int((j.get("counts") or {}).get("TOTAL",-1))==len(entries)
+    HISTORY_BRIDGE_PATH=relpath(p)
+    return entries
+
+def bridge_resolution(sym,asof):
+    e=HISTORY_BRIDGE.get(sym)
+    if not e:
+        return None
+    mode=e.get("mode"); outcome=e.get("outcome")
+    if mode=="LISTING_AGE_TERMINAL_FAIL_V1" and outcome=="FAIL_HISTORY":
+        ld=datetime.fromisoformat(e["listing_date"]).date()
+        ad=datetime.fromisoformat(asof).date()
+        age=(ad-ld).days
+        assert 0<=age<364
+        assert int(e.get("calendar_days_since_listing",-1))==age
+        assert e.get("proof")=="LISTING_AGE_LT_364_DAYS__52_COMPLETED_WEEKS_IMPOSSIBLE"
+        auth=e.get("listing_authority")
+        assert auth in {"BIGDATA_CORPORATE_CALENDAR","NASDAQ_OFFICIAL"}
+        if auth=="NASDAQ_OFFICIAL":
+            assert str(e.get("listing_source_url") or "").startswith("https://www.nasdaq.com/")
+        return "FAIL_HISTORY",{
+          "proof":"LISTING_AGE_TERMINAL_FAIL_V1",
+          "listing_date":e["listing_date"],
+          "calendar_days_since_listing":age,
+          "reason":"52_COMPLETED_WEEKS_IMPOSSIBLE_FROM_CURRENT_SECURITY_LISTING_DATE",
+          "authority":auth,
+          "bridge_path":HISTORY_BRIDGE_PATH,
+          "thresholds":{"daily":HARD_DAILY,"weekly_completed":HARD_WEEKLY}
+        }
+    if mode=="TICKER_LINEAGE_HISTORY_PASS_V1" and outcome=="PASS_HISTORY":
+        assert e.get("current_ticker")==sym
+        assert e.get("current_has_exact_asof_bar") is True
+        assert int(e.get("combined_unique_daily_bars",0))>=HARD_DAILY
+        assert int(e.get("combined_completed_week_count",0))>=HARD_WEEKLY
+        assert str(e.get("official_continuity_source") or "").startswith("https://www.nasdaq.com/")
+        assert e.get("predecessor_ticker") and e.get("ticker_change_effective_date")
+        return "PASS_HISTORY",{
+          "source":"HISTORY_EVIDENCE_BRIDGE_TICKER_LINEAGE",
+          "daily_bars":int(e["combined_unique_daily_bars"]),
+          "completed_week_count":int(e["combined_completed_week_count"]),
+          "predecessor_ticker":e["predecessor_ticker"],
+          "ticker_change_effective_date":e["ticker_change_effective_date"],
+          "bridge_path":HISTORY_BRIDGE_PATH
+        }
+    raise AssertionError(f"invalid history bridge entry for {sym}")
 
 def _is_transient(exc):
     if isinstance(exc,urllib.error.HTTPError):
@@ -223,6 +295,11 @@ def eval_one(sym,asof):
     eb,em=eastmoney(sym,asof);es,ei=classify(eb,asof,"EASTMONEY_US_DAILY_NASDAQ_105")
     if es=="PASS_HISTORY":return sym,es,ei,{"sina":sm,"nasdaq":nm,"yahoo":ym,"eastmoney":em}
 
+    br=bridge_resolution(sym,asof)
+    if br is not None:
+        bst,binfo=br
+        return sym,bst,binfo,{"sina":sm,"nasdaq":nm,"yahoo":ym,"eastmoney":em,"history_bridge":HISTORY_BRIDGE_PATH}
+
     # Recent-listing proof: two independent providers with the exact same
     # first bar can establish a hard maximum number of sessions even when a
     # latest provider bar is missing. Evidence-only: this can never create PASS.
@@ -251,9 +328,11 @@ def eval_one(sym,asof):
     },{"sina":sm,"nasdaq":nm,"yahoo":ym,"eastmoney":em}
 
 def main():
+    global HISTORY_BRIDGE
     src=json.loads(INPUT.read_text())
     asof=ASOF_ENV or src.get("asof_et")
     assert src["task_id"]==TASK_ID and src["asof_et"]==asof
+    HISTORY_BRIDGE=load_history_bridge(src,asof)
     assert src.get("schema") in {"XRAY_CANONICAL_MC_INPUT_20260930_V1","XRAY_CANONICAL_MC_INPUT_V2","XRAY_MC_EPOCH_RESULT_V1"}
     syms=src.get("current_core_symbols") or src.get("primary_pass_symbols") or []
     assert len(syms)==len(set(syms)) and len(syms)>0
@@ -280,6 +359,8 @@ def main():
       "pass_hash":hashlib.sha256("\n".join(passes).encode()).hexdigest(),
       "state_caps":src.get("state_caps") or {s:"NORMAL" for s in syms},
       "r92_ineligible":src.get("r92_ineligible") or src.get("fallback_watch_symbols") or [],
+      "history_evidence_bridge_path":HISTORY_BRIDGE_PATH,
+      "history_evidence_bridge_count":len(HISTORY_BRIDGE),
       "results":dict(sorted(results.items()))
     }
     OUT.write_text(json.dumps(obj,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
