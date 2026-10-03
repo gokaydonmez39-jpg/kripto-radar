@@ -9,7 +9,7 @@
     "C": "lawful automated/non-display permanent-$0 entitlement with no fee/balance/activity/per-query condition",
     "D": "scheduler callability"
   },
-  "unique_provider_paths_reviewed": 25,
+  "unique_provider_paths_reviewed": 28,
   "evidence_files": [
     {
       "path": "nasdaq-xray/g9_free_path_audit_20261003.json",
@@ -34,6 +34,14 @@
     {
       "path": "nasdaq-xray/g9_utp_fee_basis_20261003.json",
       "blob_sha": "16b0a3a5454b6ded2029a6544b485d06efbedd26"
+    },
+    {
+      "path": "nasdaq-xray/g9_provider_delta_tastytrade_20261003.json",
+      "blob_sha": "698e72209734cb4767280c08983dd19615066f63"
+    },
+    {
+      "path": "nasdaq-xray/g9_provider_delta_international_api_sweep_20261003.json",
+      "blob_sha": "7d43078bc7d007d66d5989f23f21c76b13176a2d"
     }
   ],
   "reviewed_provider_paths": [
@@ -61,7 +69,10 @@
     "Public.com Individual API",
     "Moomoo / Futu OpenAPI",
     "Tiger OpenAPI",
-    "Robinhood Official Trading API"
+    "Robinhood Official Trading API",
+    "Saxo OpenAPI",
+    "Trading 212 Public API",
+    "XTB API / xAPI"
   ],
   "strongest_near_misses": [
     {
@@ -81,8 +92,8 @@
     },
     {
       "provider": "tastytrade / dxFeed",
-      "strength": "dxFeed UTP Tape-C lineage and realtime Quote+Trade architecture",
-      "blocker": "live entitlement funded-account dependent and Turkey eligibility unproven"
+      "strength": "dxFeed composite/NBBO architecture + tastytrade sanctioned DXLink quote token/streaming API",
+      "blocker": "tastytrade realtime equity API entitlement is funded-account dependent; unfunded accounts switch to delayed quotes, violating strict permanent-$0/no-funding-condition G9-C"
     },
     {
       "provider": "XigniteGlobalRealTime",
@@ -99,5 +110,6 @@
   "current_result": "NO_REVIEWED_PROVIDER_PROVES_A_B_C_D_SIMULTANEOUSLY",
   "search_policy": "Do not reopen a negative path from marketing wording alone. Reopen only on newer primary-source change to the exact failed gate, then require scheduler-callable live-RTH proof.",
   "unknown_never_pass": true,
-  "no_policy_weakening": true
+  "no_policy_weakening": true,
+  "last_extended_on": "2026-10-03"
 }
