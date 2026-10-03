@@ -71,18 +71,18 @@
     },
     "account_live_probe": {
       "balance_parseable": false,
-      "blob_sha": "44de0d707286bf5f79681600750b0a2f1126fa0b",
+      "blob_sha": "6b3ae55c5aebed1d6f477978f628d9076a0c1b4e",
       "network_attempted": false,
-      "path": "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/account_live_probe_state.json",
+      "path": "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/account_effective_probe_state.json",
       "positions_parseable": false,
       "private_values_persisted": false,
-      "provider": "LONGBRIDGE_DIRECT_OPENAPI",
-      "reason_code": "REQUIRED_SECRET_ENV_NOT_CONFIGURED",
+      "provider": "LONGBRIDGE_HOSTED_MCP_V2",
+      "reason_code": "MCP_V2_BEARER_NOT_CONFIGURED",
       "same_run_attested": true,
       "secret_values_persisted": false,
       "status": "BLOCKED_MISSING_CREDENTIALS",
       "workflow_run_attempt": "1",
-      "workflow_run_id": "37127654835"
+      "workflow_run_id": "37127971954"
     },
     "deep": {
       "blob_sha": "ef9329735a208e28be983b0a5f23647b264e300d",
@@ -163,7 +163,7 @@
   "final_gate_reporting_zero_alpha": true,
   "full_end_to_end_research_pass": true,
   "g9_global_status": "G9_BLOCKED_FREE_AUTOMATION_PATH",
-  "generated_at_utc": "2026-10-03T13:53:23.818250+00:00",
+  "generated_at_utc": "2026-10-03T13:58:55.752595+00:00",
   "pointer_asof_before_candidate": "2026-10-02",
   "r92_account_g9_applicable": false,
   "r92_candidates": [],
