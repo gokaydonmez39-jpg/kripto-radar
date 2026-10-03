@@ -6,7 +6,7 @@
   "purpose": "Assess Midas mobile/Atlas and official Midas-TradingView integration separately for strict G9 and provider-neutral ACCOUNT gates.",
   "findings": {
     "midas_mobile_atlas_market_data": {
-      "status": "PROMISING_BUT_STRICT_G9_UNPROVEN",
+      "status": "OFFICIAL_REALTIME_DISPLAY_ENTITLEMENT_STRICT_C_FAIL_CURRENT_USER_LICENSE",
       "evidence": [
         "Midas officially advertises real-time U.S. market data free to its customers.",
         "Midas support explicitly states TradingView market data is CBOE One while Midas has more comprehensive market-data licenses, proving the Midas app data path is distinct and broader than the TradingView path.",
@@ -19,16 +19,20 @@
         "TradingView officially lists Midas as eligible to verify real-time NASDAQ, NYSE, AMEX/NYSE Arca and OTC exchange subscriptions from the connected broker account.",
         "This proves exchange-level realtime entitlements exist on the Midas account, but exchange-level subscriptions do not by themselves prove a consolidated National NBBO across all protected venues.",
         "The Midas-distributed Nasdaq subscriber agreement names Midas Menkul Değerler A.Ş. as distributor and licenses non-professional/private subscriber information for personal use; this is not explicit automated/non-display API permission.",
-        "Alpaca Broker API documentation states standard broker-partner equities plans are realtime IEX or 15-minute delayed SIP, while custom comprehensive market-data arrangements may be negotiated. Therefore Midas being an Alpaca partner does not prove its exact end-user feed is live SIP/NBBO."
+        "Alpaca Broker API documentation states standard broker-partner equities plans are realtime IEX or 15-minute delayed SIP, while custom comprehensive market-data arrangements may be negotiated. Therefore Midas being an Alpaca partner does not prove its exact end-user feed is live SIP/NBBO.",
+        "Nasdaq's current U.S. equities/options data policy defines Non-Display as access/use of exchange information by a machine or automated device without natural-person display access.",
+        "Nasdaq's non-display clarifications include automated investment analysis among non-display uses and state non-display is fee-liable/reportable unless an applicable exchange exclusion exists.",
+        "The Midas-distributed Nasdaq Global Subscriber Agreement licenses non-professional/private subscriber information for personal use. That display/personal subscriber entitlement is not an explicit non-display automated entitlement.",
+        "Therefore the current Midas customer display license cannot satisfy strict G9-C for the automated scheduler. Reopen C only on explicit Midas/Nasdaq authorization for this exact automated/non-display use at permanent $0."
       ],
       "g9_failed_or_unproven": [
         "A",
         "B",
-        "C",
+        "C_FAIL_CURRENT_DISPLAY_LICENSE",
         "D"
       ],
-      "reopen_condition": "Primary-source Midas/venue documentation identifies exact consolidated National NBBO/UTP lineage and explicitly permits the intended automated/non-display personal use, plus a sanctioned scheduler-callable quote path returns fresh bid+ask+last with independent event timestamps.",
-      "current_best_inference": "Midas has genuine realtime exchange entitlements and may have custom partner data, but exact consolidated National NBBO lineage plus automated/non-display end-user rights remain unproven. Do not infer SIP/NBBO from 'realtime' branding or exchange verification alone."
+      "reopen_condition": "For C: explicit primary-source Midas/Nasdaq authorization must grant this exact automated/non-display use at permanent $0. For A/B/D: exact consolidated National NBBO/UTP lineage plus sanctioned scheduler-callable fresh bid+ask+last with independent quote/trade timestamps must be proven.",
+      "current_best_inference": "Midas has genuine realtime exchange-level display entitlements and may use broader/custom partner data, but the current customer agreement is personal/display while XRAY automated analysis is Nasdaq Non-Display. Strict C therefore fails under the current user entitlement; A/B/D also remain unproven."
     },
     "midas_via_tradingview": {
       "status": "SANCTIONED_ACCOUNT_READ_SURFACE_TECHNICALLY_SUFFICIENT_BUT_NOT_SCHEDULER_CALLABLE;G9_PARTIAL_B_ONLY",
@@ -139,7 +143,7 @@
         "OTC"
       ],
       "evidence": "TradingView broker-subscription verification officially supports these exchanges for Midas accounts.",
-      "strict_g9_implication": "A remains UNPROVEN because exchange realtime entitlement does not establish consolidated National NBBO."
+      "strict_g9_implication": "Exchange realtime display entitlement is real, but current personal/display subscriber rights do not authorize XRAY automated Non-Display use; strict C fails absent a separate explicit non-display grant. A also remains unproven as National NBBO."
     },
     "alpaca_partner_feed": {
       "status": "EXACT_MIDAS_FEED_UNPROVEN",
