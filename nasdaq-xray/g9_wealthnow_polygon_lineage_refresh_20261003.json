@@ -1,0 +1,73 @@
+{
+  "schema": "XRAY_G9_WEALTHNOW_POLYGON_LINEAGE_REFRESH_V1",
+  "generated_on": "2026-10-03",
+  "provider": "WEALTHNOW / TENGU FIRM",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "purpose": "Bind first-party Tengu/Wealthnow market-data architecture to the named Polygon upstream without inferring an exact current Free price_snapshot lineage that is not explicitly documented.",
+  "findings": [
+    {
+      "claim": "Tengu's generated public OpenAPI client published on 2026-07-19 records Polygon as an active external API vendor.",
+      "evidence": "tengu_v3_api_quotas is described as per-vendor quota telemetry including Polygon.",
+      "source": "https://pypi.org/project/tengu-firm/0.1.0/"
+    },
+    {
+      "claim": "The same first-party OpenAPI generation explicitly describes U.S. equity intraday tape as FIRM's own Polygon capture.",
+      "evidence": "tengu_v3_tape_bars: intraday minute bars for one equity from FIRM's own Polygon capture (~10.5k tickers, extended hours included). Polygon capture is also named for index/options surfaces.",
+      "source": "https://pypi.org/project/tengu-firm/0.1.0/"
+    },
+    {
+      "claim": "The same OpenAPI generation contains the Free-route-era fundamentals_price_snapshot and live stream ingest/status surfaces in the same FIRM API version.",
+      "evidence": "tengu_v3_fundamentals_price_snapshot exists in API version 2.87; stream_ingest_status exposes a provider field, but no public indexed example currently reveals its runtime value.",
+      "source": "https://pypi.org/project/tengu-firm/0.1.0/"
+    },
+    {
+      "claim": "Current Wealthnow documentation still supports /api/market/quote/{ticker} as a Free live equity quote and explicitly calls fundamentals_price_snapshot its spec equivalent / the same question over OpenAPI/MCP.",
+      "evidence": "Current Quickstart/API Reference ties the legacy Free quote route to /api/v3/fundamentals/price_snapshot.",
+      "sources": [
+        "https://app.wealthnow.io/docs/quickstart",
+        "https://app.wealthnow.io/docs/api-reference"
+      ]
+    },
+    {
+      "claim": "Current price_snapshot is coupled to a live upstream market-data layer rather than silently synthesizing a quote when upstream data fail.",
+      "evidence": "Current Market Data docs state bid/ask are served only during a session when the quote was set in that session; quote_as_of is the quote-change time; when every price source fails the route returns 503 price_feed_unavailable with vendor_error naming the failure.",
+      "source": "https://app.wealthnow.io/docs/market-data"
+    },
+    {
+      "claim": "Current Tengu/Wealthnow Terms permit normal API automation within controls but do not themselves prove the UTP/SIP classification.",
+      "evidence": "Terms cover the API and prohibit bots/scripts only when they burden the Service or bypass rate/access controls; they require compliance with exchange rules and say market data are supplied by third parties.",
+      "source": "https://wealthnow.io/terms"
+    },
+    {
+      "claim": "UTP rules provide a structurally compatible zero-end-user-cost API classification.",
+      "evidence": "UTP1APIS is a Real-Time Nonprofessional Uncontrolled Recipient at $1/month billable to the Vendor; external distribution must be authorized and recipients/reporting handled under UTP rules.",
+      "sources": [
+        "https://www.utpplan.com/DOC/UTP_POLICY_SUPPLEMENTAL_DOCUMENT_-_VRXML_Codes.pdf",
+        "https://utpplan.com/PageParts/DataAdmin.html",
+        "https://utpplan.com/DOC/Datapolicies.pdf"
+      ]
+    }
+  ],
+  "polygon_lineage_implication": {
+    "status": "STRONG_FIRST_PARTY_POLYGON_ARCHITECTURE_EVIDENCE_CURRENT_EXACT_FREE_ROUTE_BINDING_NOT_EXPLICIT",
+    "what_is_proven": [
+      "Polygon was an active Tengu external vendor in the same public FIRM OpenAPI generation.",
+      "Tengu explicitly used Polygon capture for U.S. equity intraday tape.",
+      "Current Wealthnow Free live equity quote and price_snapshot remain supported and formally equivalent at the product/spec level.",
+      "Current price_snapshot uses live upstream quote/trade data with independent market-event timestamps and fails closed on upstream failure."
+    ],
+    "what_is_not_proven": [
+      "No current first-party sentence found that explicitly says the exact Free fundamentals_price_snapshot bid/ask route is sourced from Polygon.",
+      "No public stream_ingest_status runtime response has been observed showing provider=polygon for the current live quote producer.",
+      "No provider-specific UTP1APIS/equivalent classification or vendor fee-absorption confirmation has been found."
+    ]
+  },
+  "polygon_to_utp_rule": "If the exact current Free route is explicitly bound to Polygon's consolidated U.S. stock quote product, then Polygon's official consolidated stock/NBBO lineage can satisfy strict G9-A for Nasdaq Tape C; do not make that binding by inference.",
+  "unlocks_required": [
+    "First-party Wealthnow/Tengu documentation, live metadata, or written provider confirmation explicitly binds Free /api/market/quote and/or fundamentals_price_snapshot equity bid/ask to Polygon's consolidated U.S. equities feed, or directly to CTA/UTP SIP/National NBBO.",
+    "Provider-specific confirmation that the exact single-nonprofessional automated Free API use is lawfully classified under UTP1APIS or an equivalent approved category and that Tengu/Wealthnow absorbs all UTP/exchange/vendor assessments so the end user owes $0 without subscription, balance, funding, activity, account-maintenance, or per-query monetary conditions."
+  ],
+  "unknown_never_pass": true,
+  "no_policy_weakening": true
+}
