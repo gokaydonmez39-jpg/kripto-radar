@@ -1,0 +1,88 @@
+{
+  "schema": "XRAY_G9_PROVIDER_DELTA_V1",
+  "generated_on": "2026-10-03",
+  "scope": "RETAIL_AND_DATA_API_SWEEP_5",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "providers": [
+    {
+      "provider": "E*TRADE Developer API",
+      "status": "NONQUALIFYING_STRICT_G9_MARKET_DATA_FEES_AND_LINEAGE_UNPROVEN",
+      "failed_gates": [
+        "A",
+        "B",
+        "C"
+      ],
+      "evidence": [
+        "Official API provides balances, positions, watchlists and market quotes and requires OAuth plus an E*TRADE customer account.",
+        "Production quote access requires a Market Data Agreement and annual market-data attestation.",
+        "API Developer License states users remain liable for exchange/index/third-party market-data fees that may be levied and that E*TRADE uses third-party feeds whose equality to other feeds is not guaranteed.",
+        "Thus strict permanent-$0 entitlement is not proven, and exact consolidated UTP/National-NBBO lineage plus independent bid/ask/trade event timestamp semantics are not established by current primary-source chain."
+      ],
+      "primary_sources": [
+        "https://developer.etrade.com/getting-started",
+        "https://developer.etrade.com/support/frequently-asked-questions",
+        "https://developer.etrade.com/support/terms-of-use"
+      ],
+      "account_gate_assessment": "TECHNICALLY_STRONG_READ_SHAPE_BUT_REQUIRES_USER_ETRADE_ACCOUNT_AND_NO_CURRENT_CONNECTED_SANCTIONED_ADAPTER",
+      "reopen_condition": "Official terms prove exact consolidated National NBBO + independent event timestamps under unconditional permanent-$0 automated entitlement."
+    },
+    {
+      "provider": "QuoteMedia OnDemand / NBBO",
+      "status": "TECHNICALLY_NBBO_CAPABLE_BUT_REALTIME_ENTITLEMENT_FEE_BEARING",
+      "failed_gates": [
+        "C"
+      ],
+      "evidence": [
+        "Official QuoteMedia materials advertise NBBO, Level-1/2, trades/time-and-sales and historical NBBO APIs.",
+        "Official support/pricing materials show real-time data packages and exchange fees for market-data entitlement.",
+        "Therefore technical NBBO capability does not satisfy strict permanent-$0 automated/non-display G9-C."
+      ],
+      "primary_sources": [
+        "https://brochures.quotemedia.com/quotemedia-on-demand",
+        "https://api.quotemedia.com/supplement/docs/fees/pro/",
+        "https://support.quotemedia.com/support/solutions/articles/5000633029-real-time-data-packages-us-data"
+      ],
+      "reopen_condition": "Exact realtime NBBO API becomes permanent-$0 with no exchange/vendor/subscription/per-query/usage fee."
+    },
+    {
+      "provider": "MarketData.app",
+      "status": "NONQUALIFYING_FREE_DELAYED_REALTIME_PAID",
+      "failed_gates": [
+        "B",
+        "C"
+      ],
+      "evidence": [
+        "Official Free Forever/trial documentation limits stock pricing to historical/24-hour delayed data.",
+        "Realtime stock data is available on paid plans; real-time commercial quotes may also require exchange licensing.",
+        "The realtime midpoint SmartMid model is not a substitute for required independent National-NBBO bid/ask/trade event timestamps."
+      ],
+      "primary_sources": [
+        "https://www.marketdata.app/docs/account/free-accounts/",
+        "https://www.marketdata.app/docs/account/plan-limits/",
+        "https://www.marketdata.app/pricing/",
+        "https://www.marketdata.app/docs/api/stocks/prices/"
+      ],
+      "reopen_condition": "Free tier gains actual realtime National-NBBO bid/ask+last with independent event timestamps under permanent-$0 automated entitlement."
+    },
+    {
+      "provider": "StockData.org",
+      "status": "NONQUALIFYING_IEX_TRADE_SOURCE",
+      "failed_gates": [
+        "A",
+        "B"
+      ],
+      "evidence": [
+        "Official documentation says U.S. stock prices are updated from trade reports from IEX.",
+        "IEX trade reports are a single-venue/partial-market source, not consolidated National NBBO.",
+        "Quote documentation therefore cannot satisfy the required all-venue bid/ask lineage and independent National-NBBO quote-event proof."
+      ],
+      "primary_sources": [
+        "https://www.stockdata.org/documentation"
+      ],
+      "reopen_condition": "Provider changes to a proven consolidated UTP/National-NBBO source with independent quote/trade event timestamps and strict permanent-$0 automated entitlement."
+    }
+  ],
+  "conclusion": "NO_NEW_STRICT_G9_PROVIDER",
+  "no_policy_weakening": true
+}
