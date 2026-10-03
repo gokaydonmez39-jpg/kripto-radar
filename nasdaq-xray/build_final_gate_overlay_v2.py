@@ -44,7 +44,9 @@ def main():
 
     full=bool(t.get("full_end_to_end_research_pass"))
     g9_pass=gr.get("g9_pass") is True
-    account_status=str(ag.get("current_status") or "UNKNOWN")
+    persisted_account_status=str(ag.get("current_status") or "UNKNOWN")
+    terminal_account_status=str(t.get("account_status") or persisted_account_status)
+    account_status=terminal_account_status
     account_pass=account_status in {"PASS","ACCOUNT_PASS"}
     pre_g9=int((t.get("counts") or {}).get("pre_g9_tech_pass") or 0)
 
@@ -65,10 +67,23 @@ def main():
 
     # BLOCKED gates remain fail-closed even when negative-evidence caches advance.
     # A PASS claim is different: current exact bindings are mandatory.
+    account_live=(t.get("evidence") or {}).get("account_live_probe") or {}
+    account_same_run_attested=(
+        account_live.get("provider")=="LONGBRIDGE_DIRECT_OPENAPI"
+        and account_live.get("status")=="PASS"
+        and account_live.get("same_run_attested") is True
+        and account_live.get("network_attempted") is True
+        and account_live.get("balance_parseable") is True
+        and account_live.get("positions_parseable") is True
+        and account_live.get("private_values_persisted") is False
+        and account_live.get("secret_values_persisted") is False
+        and bool(account_live.get("workflow_run_id"))
+    )
     if account_pass:
         assert account_exact, (
             f"ACCOUNT_PASS_REQUIRES_EXACT_ADAPTER_BINDING bound={bound_aa} actual={actual_aa}"
         )
+        assert account_same_run_attested, "ACCOUNT_PASS_REQUIRES_SAME_RUN_LIVE_WITNESS"
     if g9_pass:
         assert str(ga.get("status") or "")=="PROVEN", "G9_PASS_REQUIRES_PROVEN_AUTHORITY"
         assert g9_sha_exact, (
@@ -141,7 +156,10 @@ def main():
             "status":account_status,
             "account_pass":account_pass,
             "provider_model":ag.get("provider"),
-            "current_adapter":ag.get("current_adapter"),
+            "current_adapter":("LONGBRIDGE_DIRECT_OPENAPI" if account_pass else ag.get("current_adapter")),
+            "persisted_gate_status":persisted_account_status,
+            "same_run_live_witness_attested":account_same_run_attested,
+            "live_probe_workflow_run_id":account_live.get("workflow_run_id"),
             "gate_path":"nasdaq-xray/"+FILES["account_gate"],
             "gate_blob_sha":blob_sha("account_gate"),
             "current_adapter_contract_blob_sha":actual_aa,
