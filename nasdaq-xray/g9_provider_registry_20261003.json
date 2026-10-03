@@ -559,15 +559,15 @@
     },
     {
       "provider": "E*TRADE Developer API",
-      "status": "NONQUALIFYING_STRICT_G9_MARKET_DATA_FEES_AND_LINEAGE_UNPROVEN",
+      "status": "NONQUALIFYING_STRICT_G9_EXACT_SIP_API_ENTITLEMENT_C_AND_AUTONOMOUS_D_FAIL",
       "failed_gates": [
-        "A",
-        "B",
-        "C"
+        "A_EXACT_API_FEED_BINDING",
+        "C_PERMANENT_ZERO_EXCHANGE_VENDOR_FEES",
+        "D_DAILY_OAUTH_REAUTH"
       ],
       "evidence_file": "nasdaq-xray/g9_provider_delta_retail_api_sweep_20261003.json",
       "last_checked_on": "2026-10-03",
-      "reopen_condition": "Official terms prove exact consolidated National NBBO plus independent event timestamps under unconditional permanent-$0 automated entitlement.",
+      "reopen_condition": "Exact API quote feed must be bound to realtime CTA/UTP consolidated SIP/National NBBO under permanent-$0 market-data entitlement and a sanctioned noninteractive credential flow must survive daily midnight expiry.",
       "negative_cache_only": true,
       "may_never_create_pass": true
     },
