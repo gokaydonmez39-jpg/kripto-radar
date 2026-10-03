@@ -64,12 +64,13 @@
   "primary_adapter": "LONGBRIDGE",
   "adapter_contract": {
     "path": "nasdaq-xray/account_provider_adapter_contract.json",
-    "blob_sha": "d5eab156468fecc55c8d6d9f90572fa21d0b9598"
+    "blob_sha": "cc410d16041ede9d775c052a24db6b58ccb2d393"
   },
   "required_capability": "CURRENT_NASDAQ_ACCOUNT_VALUE_AND_EQUITY_EXPOSURE_READ_ONLY",
   "current_adapter": "LONGBRIDGE",
   "no_account_provider_substitution_without_fresh_probe": true,
   "alternate_adapter_candidates": {
-    "IBKR_WEB_API": "PROMISING_BUT_NOT_CURRENTLY_SCHEDULER_CALLABLE"
+    "IBKR_WEB_API": "PROMISING_BUT_NOT_CURRENTLY_SCHEDULER_CALLABLE",
+    "MIDAS_ATLAS_COMMUNITY_CONNECTOR": "NOT_ELIGIBLE_UNOFFICIAL"
   }
 }
