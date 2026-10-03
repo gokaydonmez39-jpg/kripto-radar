@@ -27,12 +27,46 @@ FILES={
  "final":ROOT/"canonical_current_final_tech.json",
 }
 
+GATE_FILES={
+ "g9_runtime":ROOT/"strict_g9_runtime_state.json",
+ "account_gate":ROOT/"account_gate_contract.json",
+}
+
 def blob_sha(p:Path):
     b=p.read_bytes()
     return hashlib.sha1(f"blob {len(b)}\0".encode()+b).hexdigest()
 
 def load(p:Path):
     return json.loads(p.read_text())
+
+def load_gate_reporting():
+    # Final-gate reporting is explicitly zero-alpha. Missing/malformed gate
+    # evidence can only remain UNKNOWN/BLOCKED; it can never change FULL_E2E
+    # research calculations or create a candidate.
+    out={
+      "g9_global_status":"G9_BLOCKED_FREE_AUTOMATION_PATH",
+      "account_status":"UNKNOWN",
+      "evidence":{},
+    }
+    try:
+        p=GATE_FILES["g9_runtime"]; j=load(p)
+        assert j.get("schema")=="XRAY_STRICT_G9_RUNTIME_V1"
+        assert j.get("execution")=="NONE" and j.get("real_money")=="NO-GO"
+        out["g9_global_status"]="G9_PASS" if j.get("g9_pass") is True else "G9_BLOCKED_FREE_AUTOMATION_PATH"
+        out["evidence"]["g9_runtime"]={"path":"nasdaq-xray/strict_g9_runtime_state.json","blob_sha":blob_sha(p),"runtime_status":j.get("status"),"adapter_status":j.get("adapter_status")}
+    except Exception as e:
+        out["evidence"]["g9_runtime"]={"status":"UNKNOWN","reason":type(e).__name__}
+    try:
+        p=GATE_FILES["account_gate"]; j=load(p)
+        assert j.get("schema")=="XRAY_ACCOUNT_GATE_CONTRACT_V1"
+        assert j.get("execution")=="NONE" and j.get("real_money")=="NO-GO"
+        assert j.get("provider")=="PROVIDER_NEUTRAL"
+        status=str(j.get("current_status") or "UNKNOWN")
+        out["account_status"]=status if status else "UNKNOWN"
+        out["evidence"]["account_gate"]={"path":"nasdaq-xray/account_gate_contract.json","blob_sha":blob_sha(p),"provider":j.get("provider"),"current_adapter":j.get("current_adapter")}
+    except Exception as e:
+        out["evidence"]["account_gate"]={"status":"UNKNOWN","reason":type(e).__name__}
+    return out
 
 def find_mc(price,price_blob):
     valid=[]
@@ -61,6 +95,7 @@ def main():
     d={k:load(p) for k,p in FILES.items()}
     sh={k:blob_sha(p) for k,p in FILES.items()}
     pol=d["policy"]; ptr=d["pointer"]; m=d["master"]; p=d["price"]
+    gate_reporting=load_gate_reporting()
     assert pol["schema"]=="XRAY_GITHUB_COMPILED_POLICY_V3" and pol["policy_hash"]==POLICY_HASH
     pp=json.loads(pol["payload_json"])
     assert pp["version"]=="C4.17" and pp["hard_gates"]["order"]==["identity/type","PRICE","DV20","MC","HISTORY","LEGAL/SHELL","Stage1","deep/events"]
@@ -251,8 +286,9 @@ def main():
       "settlement_witness_path":mc.get("settlement_witness_path"),
       "settlement_witness_blob_sha":mc.get("settlement_witness_blob_sha"),
       "r92_account_g9_applicable":bool(full and pre),"r92_candidates":sorted(pre) if full else [],
-      "g9_global_status":ps.get("g9_status","G9_BLOCKED_FREE_AUTOMATION_PATH"),
-      "account_status":ps.get("account_status","UNKNOWN"),
+      "g9_global_status":gate_reporting["g9_global_status"],
+      "account_status":gate_reporting["account_status"],
+      "final_gate_reporting_zero_alpha":True,
       "blockers":blockers,
       "counts":{
         "master_total":m["queue_total"],"price_dv20_pass":p["pass_count"],
@@ -275,7 +311,8 @@ def main():
       },
       "evidence":{
         **{k:{"path":str(FILES[k].relative_to(ROOT.parent)).replace("\\","/"),"blob_sha":sh[k]} for k in FILES},
-        "mc":{"path":str(mc_path.relative_to(ROOT.parent)).replace("\\","/"),"blob_sha":blob_sha(mc_path)}
+        "mc":{"path":str(mc_path.relative_to(ROOT.parent)).replace("\\","/"),"blob_sha":blob_sha(mc_path)},
+        **gate_reporting["evidence"],
       },
       "checks":{
         "policy_order_exact":True,"master_complete":True,"price_exact_master":True,"mc_exact_price_pass_set":True,
@@ -287,6 +324,7 @@ def main():
         "deep_exact_weekly_scope":True,"final_exact_confirmed_family_set":True,
         "exact_blob_provenance_chain":True,
         "count_equality_never_substituted_for_set_equality":True,
+        "final_gate_reporting_does_not_affect_alpha":True,
       },
       "generated_at_utc":datetime.now(timezone.utc).isoformat()
     }
