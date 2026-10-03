@@ -1,0 +1,36 @@
+{
+  "schema": "XRAY_MIDAS_PUBLIC_SECONDARY_SOURCE_V1",
+  "generated_on": "2026-10-03",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "role": "NONAUTHORITATIVE_DIAGNOSTIC_AND_DISCOVERY_ONLY",
+  "allowed_uses": [
+    "Finalist-level cross-check of displayed last price, daily range, volume and market-cap metadata.",
+    "Discovery of company/news context that must be re-confirmed by compiled-policy authority sources before affecting any gate.",
+    "Diagnostic comparison when an authoritative provider path is failing or inconsistent.",
+    "Human-readable corroboration links in research notes when clearly labeled nonauthoritative."
+  ],
+  "forbidden_uses": [
+    "Strict G9 A/B/C/D PASS or live NBBO authority.",
+    "Universe completeness or security-type eligibility.",
+    "Price/DV20 PASS, market-cap primary/fallback PASS, history PASS, regime/breadth PASS, event confirmation, setup confirmation, R1/RR, R92/R93, candidate creation, or TRUE FULL GO.",
+    "Replacing missing authoritative data with public-page values.",
+    "Treating crawler/search timestamps, page render time or 'Son güncelleme' display text as an independent quote-event/trade-event timestamp.",
+    "High-volume per-symbol crawling across the full NASDAQ universe."
+  ],
+  "freshness_rule": "Public Midas web pages may be cached/indexed and are not proven scheduler-grade live feeds. Any value without an independently verifiable authoritative timestamp is diagnostic only.",
+  "coverage_rule": "No completeness claim. Use only on a bounded small set such as finalists/watch diagnostics; never use absence from Midas public pages as exclusion evidence.",
+  "market_data_findings": [
+    "Midas public U.S.-stock pages expose displayed last price, open/daily range, volume, market cap and selected financial statement fields.",
+    "Official Midas pages state live U.S. market data is free inside the Midas customer experience, while public web/search surfaces can be delayed or cached.",
+    "Public stock pages do not establish consolidated National NBBO provenance or independent bid/ask/trade event timestamps."
+  ],
+  "authority_sources": [
+    "https://www.getmidas.com/amerikan-borsasi/",
+    "https://www.getmidas.com/amerikan-borsasi/aapl-hisse/",
+    "https://www.getmidas.com/abd-borsalari/",
+    "https://www.getmidas.com/atlas/"
+  ],
+  "no_alpha_change": true,
+  "unknown_never_pass": true
+}
