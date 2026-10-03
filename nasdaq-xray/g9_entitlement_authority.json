@@ -13,7 +13,7 @@
     "provider_qualifying_now": "NONE",
     "permanent_zero": "NO_CURRENT_PROVIDER_PROVEN",
     "automated_nondisplay_utp_right": "NO_CURRENT_PROVIDER_PROVEN",
-    "reviewed_provider_paths": 64,
+    "reviewed_provider_paths": 67,
     "search_saturation_result": "NO_REVIEWED_PROVIDER_PROVES_A_B_C_D_SIMULTANEOUSLY",
     "structural_fee_basis": "UTP_API_IS_AN_UNCONTROLLED_PRODUCT; CURRENT_2024_10_USAGE_CODES_EXPOSE_A_$1_PER_MONTH_VENDOR_BILLED_NONPROFESSIONAL_UNCONTROLLED_CLASS, BUT PROVIDER_SPECIFIC_CLASSIFICATION_AND_FEE_ABSORPTION_REMAIN_UNPROVEN",
     "strict_runtime_adapter": "FAIL_CLOSED_UNLESS_AUTHORITY_PROVEN",
@@ -127,14 +127,14 @@
   ],
   "search_saturation": {
     "path": "nasdaq-xray/g9_search_saturation_20261003.json",
-    "blob_sha": "2d5b9b2fe710e2044e7deda3d1e7ad6e524134f5",
-    "unique_provider_paths_reviewed": 64,
+    "blob_sha": "2301063b904cbe5a4d224f178b4e857ba461205e",
+    "unique_provider_paths_reviewed": 67,
     "result": "NO_REVIEWED_PROVIDER_PROVES_A_B_C_D_SIMULTANEOUSLY"
   },
   "negative_registry": {
     "path": "nasdaq-xray/g9_provider_registry_20261003.json",
-    "blob_sha": "d232b8ce7d7167d08850552be2c673dbdf00e0d4",
-    "provider_count": 64,
+    "blob_sha": "080e69cf000a5af2e800d766514b650291ad32ed",
+    "provider_count": 67,
     "role": "NEGATIVE_EVIDENCE_CACHE_ONLY_NEVER_PASS_AUTHORITY"
   },
   "midas_official_audit": {
