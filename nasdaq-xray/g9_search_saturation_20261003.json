@@ -9,7 +9,7 @@
     "C": "lawful automated/non-display permanent-$0 entitlement with no fee/balance/activity/per-query condition",
     "D": "scheduler callability"
   },
-  "unique_provider_paths_reviewed": 28,
+  "unique_provider_paths_reviewed": 29,
   "evidence_files": [
     {
       "path": "nasdaq-xray/g9_free_path_audit_20261003.json",
@@ -42,6 +42,10 @@
     {
       "path": "nasdaq-xray/g9_provider_delta_international_api_sweep_20261003.json",
       "blob_sha": "7d43078bc7d007d66d5989f23f21c76b13176a2d"
+    },
+    {
+      "path": "nasdaq-xray/g9_provider_delta_midas_20261003.json",
+      "blob_sha": "4f229a07fb2881629c99cdc5274f6a540784219f"
     }
   ],
   "reviewed_provider_paths": [
@@ -72,7 +76,8 @@
     "Robinhood Official Trading API",
     "Saxo OpenAPI",
     "Trading 212 Public API",
-    "XTB API / xAPI"
+    "XTB API / xAPI",
+    "Midas Atlas / unofficial mcp-midas"
   ],
   "strongest_near_misses": [
     {
