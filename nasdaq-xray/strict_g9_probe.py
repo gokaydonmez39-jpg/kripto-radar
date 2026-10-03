@@ -7,6 +7,7 @@ from zoneinfo import ZoneInfo
 
 ROOT=Path(__file__).resolve().parent
 AUTH=ROOT/"g9_entitlement_authority.json"
+ADAPTER_CONTRACT=ROOT/"g9_provider_adapter_contract.json"
 OUT=ROOT/"strict_g9_runtime_state.json"
 SYMBOLS=("AAPL","NVDA")
 
@@ -92,9 +93,14 @@ def best(side,kind):
 
 def main():
     authority=json.loads(AUTH.read_text())
+    adapter_contract=json.loads(ADAPTER_CONTRACT.read_text())
+    provider=str(authority.get("provider") or "UNSPECIFIED").upper()
+    adapter=(adapter_contract.get("adapters") or {}).get(provider) or {}
     base={
       "schema":"XRAY_STRICT_G9_RUNTIME_V1",
-      "provider":str(authority.get("provider") or "UNSPECIFIED").upper(),
+      "provider":provider,
+      "adapter_contract_schema":adapter_contract.get("schema"),
+      "adapter_status":adapter.get("status","MISSING"),
       "generated_at_utc":now_iso(),
       "execution":"NONE",
       "real_money":"NO-GO",
@@ -110,8 +116,12 @@ def main():
         # credential refreshes or technical probes that cannot become PASS.
         write(base); return
 
-    if str(authority.get("provider") or "").upper()!="TRADESTATION":
-        base.update({"status":"BLOCKED_PROVIDER_ADAPTER_NOT_IMPLEMENTED","reason":"PROVEN_AUTHORITY_HAS_NO_MATCHING_STRICT_G9_RUNTIME_ADAPTER"})
+    if adapter.get("status")!="IMPLEMENTED":
+        base.update({"status":"BLOCKED_PROVIDER_ADAPTER_NOT_IMPLEMENTED","reason":"PROVEN_AUTHORITY_HAS_NO_IMPLEMENTED_STRICT_G9_RUNTIME_ADAPTER"})
+        write(base); return
+
+    if provider!="TRADESTATION":
+        base.update({"status":"BLOCKED_PROVIDER_DISPATCH_NOT_IMPLEMENTED","reason":"IMPLEMENTED_ADAPTER_HAS_NO_RUNTIME_DISPATCH"})
         write(base); return
 
     token=None
