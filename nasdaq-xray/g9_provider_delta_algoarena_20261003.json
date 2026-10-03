@@ -4,7 +4,7 @@
   "provider": "AlgoArena hosted / open-source Alpaca SIP proxy",
   "execution": "NONE",
   "real_money": "NO-GO",
-  "status": "A_B_D_TECHNICALLY_STRONG_HOSTED_SIP_PATH_STRICT_C_REDISTRIBUTION_AUTHORIZATION_UNPROVEN",
+  "status": "NONQUALIFYING_STRICT_C_ALPACA_SIP_REDISTRIBUTION_NOT_PERMANENT_ZERO_OR_UNCONDITIONALLY_AUTHORIZED",
   "findings": [
     "Official/open-source AlgoArena README states its market data comes from Alpaca's SIP feed (NBBO), exposes a REST paper-trading API, and names hosted base URL https://algoarena.markets/api/v1.",
     "The actual AlpacaClientService hard-codes `feed: 'sip'` on U.S.-equity data requests, so the SIP claim is present in production source code rather than only marketing text.",
@@ -33,11 +33,10 @@
     "D_SCHEDULER_FRIENDLY_REST_SURFACE"
   ],
   "failed_or_unproven_gates": [
-    "C_WRITTEN_SIP_REDISTRIBUTION_AUTHORIZATION",
-    "C_PERMANENT_ZERO_ENDUSER_NONDISPLAY_ENTITLEMENT",
-    "B_LIVE_RTH_FRESHNESS_RUNTIME_VALIDATION"
+    "C_LAWFUL_REDISTRIBUTION",
+    "C_PERMANENT_ZERO_ENDUSER_ENTITLEMENT"
   ],
-  "reopen_condition": "Primary-source written authorization from AlgoArena/Alpaca proves the hosted service may redistribute current full-market SIP/NBBO to end-user unattended private/non-display API clients permanently at $0 with no separate exchange/vendor/subscription/balance/funding/activity condition; then obtain a hosted CUID/API key and run same-RTH snapshot freshness/skew validation.",
+  "reopen_condition": "Only reopen if AlgoArena or Alpaca publishes primary-source proof of a valid SIP/NBBO redistribution arrangement for the hosted service and explicit permanent-$0 end-user automated/non-display entitlement with no fee, funding, balance, activity, or subscription condition.",
   "negative_cache_only": true,
   "may_never_create_pass": true,
   "no_policy_weakening": true,
@@ -48,7 +47,12 @@
     "AlgoArena self-host configuration requires Alpaca credentials. Alpaca's official current support states Free market-data accounts receive realtime IEX only; current full-market SIP realtime requires the paid/full-market entitlement.",
     "Alpaca's current customer agreement states users may not reproduce, distribute, sell, or commercially exploit Alpaca market data without written consent from Alpaca.",
     "No primary-source AlgoArena document found proves that the hosted service possesses Alpaca/CTA/UTP written redistribution authorization covering end-user automated/non-display access, or that such access is permanently $0 with no separate upstream market-data fee/condition.",
-    "Therefore technical use of Alpaca SIP by the hosted backend is not sufficient to prove strict gate C; authority remains fail-closed."
+    "Therefore technical use of Alpaca SIP by the hosted backend is not sufficient to prove strict gate C; authority remains fail-closed.",
+    "AlgoArena source code forces feed=sip on equity market-data requests and its hosted agent guide exposes read-only quote/snapshot endpoints from algoarena.markets.",
+    "AlgoArena self-hosted configuration requires Alpaca API credentials; hosted production therefore relies on server-side Alpaca credentials rather than end-user Alpaca credentials.",
+    "Alpaca's official support states Alpaca API market data cannot be redistributed via another platform without the relevant arrangement/consent.",
+    "Alpaca's Broker API guidance states premium SIP redistribution carries a cost that may be subsidized across partners but is not zero.",
+    "No primary-source evidence was found that AlgoArena holds a special redistribution agreement granting permanent-$0 SIP/NBBO API access to its end users."
   ],
   "technical_schema": {
     "hosted_base_url": "https://algoarena.markets/api/v1",
@@ -71,6 +75,10 @@
     "https://github.com/lawnchairsociety/AlgoArena/blob/main/packages/api/src/modules/market-data/alpaca-client.service.ts",
     "https://github.com/lawnchairsociety/AlgoArena/blob/main/packages/web/public/agent-guide.md",
     "https://alpaca.markets/support/data-provider-alpaca",
-    "https://files.alpaca.markets/disclosures/library/AcctAppMarginAndCustAgmt.pdf"
-  ]
+    "https://files.alpaca.markets/disclosures/library/AcctAppMarginAndCustAgmt.pdf",
+    "https://alpaca.markets/support/redistribute-alpaca-api",
+    "https://alpaca.markets/learn/getting-started-broker-api-webinar-recap",
+    "https://docs.alpaca.markets/us/docs/market-data-faq"
+  ],
+  "unknown_never_pass": true
 }
