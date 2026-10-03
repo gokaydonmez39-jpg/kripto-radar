@@ -32,7 +32,7 @@ def payload():
         "account_tools_verified": True,
         "write_surface_absent": True,
         "bootstrap_epoch": 100,
-        "protocol": "OFFICIAL_AGENT_AUTH_CODE_TO_MAIN_MCP_REFRESHABLE",
+        "protocol": "OFFICIAL_AGENT_AUTH_CODE_TO_RESTRICTED_MCP_V2_REFRESHABLE",
     }
 
 
