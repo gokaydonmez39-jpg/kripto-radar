@@ -1,0 +1,44 @@
+{
+  "schema": "XRAY_G9_PROVIDER_DELTA_V1",
+  "generated_on": "2026-10-03",
+  "provider": "AlgoArena hosted / open-source Alpaca SIP proxy",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "status": "TECHNICALLY_SIP_BOUND_HOSTED_PATH_C_REDISTRIBUTION_ENTITLEMENT_UNPROVEN",
+  "findings": [
+    "Official/open-source AlgoArena README states its market data comes from Alpaca's SIP feed (NBBO), exposes a REST paper-trading API, and names hosted base URL https://algoarena.markets/api/v1.",
+    "The actual AlpacaClientService hard-codes `feed: 'sip'` on U.S.-equity data requests, so the SIP claim is present in production source code rather than only marketing text.",
+    "The source maps Alpaca quote timestamps and snapshots containing latestTrade.timestamp plus latestQuote.timestamp, so B has a technically plausible independent quote/trade event-time route.",
+    "Hosted market-data endpoints are scheduler-friendly and rate-limited at 120 requests/minute per CUID; quote/snapshot cache TTL is 5 seconds.",
+    "The README simultaneously says self-hosting works with Alpaca free-tier credentials. That statement conflicts with current Alpaca entitlement behavior: the working free route is IEX-only and SIP is not a permanent-$0 Basic entitlement. A self-hosted free credential therefore cannot be assumed to satisfy G9.",
+    "For the hosted algoarena.markets service, no primary-source market-data terms or Alpaca redistribution/non-display licensing statement was found proving that the operator may redistribute SIP/NBBO data to downstream automated users permanently at $0.",
+    "The repository MIT license grants rights to the software, not to upstream exchange/SIP market data. It cannot satisfy strict G9-C.",
+    "Therefore AlgoArena is a genuinely distinct technical route but cannot authorize strict G9 without explicit upstream redistribution/non-display entitlement and permanent-$0 user terms."
+  ],
+  "source_code_evidence": {
+    "repository": "lawnchairsociety/AlgoArena",
+    "commit_observed": "58647ad9e827190477ba599e2a6fe00038838757",
+    "files": [
+      "README.md",
+      "packages/api/src/modules/market-data/alpaca-client.service.ts",
+      "packages/shared/src/constants/index.ts",
+      "packages/web/public/agent-guide.md",
+      "LICENSE"
+    ],
+    "critical_code_behavior": "dataRequest(...) always merges {feed:'sip'} for U.S. equities"
+  },
+  "provisional_gates": [
+    "A_TECHNICAL_UPSTREAM_ROUTE_ALPACA_SIP_CLAIM_AND_CODE_BINDING",
+    "B_TECHNICAL_QUOTE_AND_TRADE_TIMESTAMP_SHAPE",
+    "D_SCHEDULER_FRIENDLY_REST_SURFACE"
+  ],
+  "failed_or_unproven_gates": [
+    "C_UPSTREAM_SIP_REDISTRIBUTION_AND_NONDIPLAY_RIGHTS",
+    "C_PERMANENT_ZERO_HOSTED_MARKET_DATA_ENTITLEMENT",
+    "B_SAME_RUN_RTH_FRESHNESS_NOT_YET_PROBED"
+  ],
+  "reopen_condition": "Primary-source AlgoArena/Alpaca licensing must prove hosted downstream automated/non-display redistribution of SIP/National-NBBO data is authorized and permanently $0 with no subscription/funding/balance/activity/per-query/account-maintenance condition; then obtain sanctioned read credential and perform same-run RTH quote/trade freshness/skew probe.",
+  "negative_cache_only": true,
+  "may_never_create_pass": true,
+  "no_policy_weakening": true
+}
