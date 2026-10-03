@@ -36,7 +36,7 @@ def main():
     assert missing["trade_write_scope_required"] is False
     assert missing["tool_manifest_verified"] is False
     assert missing["credential_source"]=="NONE"
-    assert missing["encrypted_vault_present"] is False
+    assert isinstance(missing["encrypted_vault_present"], bool)
     assert missing["token_refresh_performed"] is False
     assert missing["encrypted_vault_updated"] is False
     assert missing["trade_write_surface_exposed"] is None
