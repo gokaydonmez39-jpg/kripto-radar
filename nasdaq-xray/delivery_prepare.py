@@ -3,7 +3,7 @@
 
 Authority is the canonical durable pointer. Candidates are deliverable only after
 canonical registered complete R92 records and their unique delivery keys in the
-same successful pointer CAS. G9/account are reported, not required, for research.
+same successful pointer CAS. G9/account are reported, not required, for research; blocked final-gate states must never suppress a registered R92 research candidate.
 EXECUTION always remains NONE and REAL_MONEY NO-GO.
 """
 from __future__ import annotations
