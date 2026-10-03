@@ -1,0 +1,103 @@
+{
+  "schema": "XRAY_G9_SEARCH_SATURATION_V1",
+  "generated_on": "2026-10-03",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "strict_g9_gates": {
+    "A": "consolidated UTP Tape-C / National NBBO lineage",
+    "B": "fresh bid+ask+last with independent quote/trade event timestamps",
+    "C": "lawful automated/non-display permanent-$0 entitlement with no fee/balance/activity/per-query condition",
+    "D": "scheduler callability"
+  },
+  "unique_provider_paths_reviewed": 25,
+  "evidence_files": [
+    {
+      "path": "nasdaq-xray/g9_free_path_audit_20261003.json",
+      "blob_sha": "e145b752f3585b2e00d90fba4fbe293380eef07d"
+    },
+    {
+      "path": "nasdaq-xray/g9_provider_delta_wealthnow_20261003.json",
+      "blob_sha": "d400ba559aea3a629138bb317f52ece43f63591c"
+    },
+    {
+      "path": "nasdaq-xray/g9_provider_delta_commercial_sweep_20261003.json",
+      "blob_sha": "e31ff703cdfed2b7f8c2e093803264b01e16df1c"
+    },
+    {
+      "path": "nasdaq-xray/g9_provider_delta_public_20261003.json",
+      "blob_sha": "0d8f01a6c47d4e67aab1a073281e77a6903dfc70"
+    },
+    {
+      "path": "nasdaq-xray/g9_provider_delta_broker_api_sweep_20261003.json",
+      "blob_sha": "21a62beee9d9ce59dc92ca74b2ce5b94f0e7b57c"
+    },
+    {
+      "path": "nasdaq-xray/g9_utp_fee_basis_20261003.json",
+      "blob_sha": "16b0a3a5454b6ded2029a6544b485d06efbedd26"
+    }
+  ],
+  "reviewed_provider_paths": [
+    "TradingView/Yahoo via atilaahmettaner/tradingview-mcp",
+    "Longbridge OpenAPI",
+    "Webull OpenAPI",
+    "Massive",
+    "Alpha Vantage",
+    "tastytrade / dxFeed",
+    "Alpaca",
+    "Interactive Brokers",
+    "Tradier Brokerage API",
+    "Fennel API",
+    "Charles Schwab Trader API / International",
+    "TradeStation API",
+    "Wealthnow",
+    "Twelve Data",
+    "Tiingo IEX API",
+    "Finnhub Free",
+    "Intrinio",
+    "Marketstack",
+    "Databento",
+    "Benzinga",
+    "XigniteGlobalRealTime",
+    "Public.com Individual API",
+    "Moomoo / Futu OpenAPI",
+    "Tiger OpenAPI",
+    "Robinhood Official Trading API"
+  ],
+  "strongest_near_misses": [
+    {
+      "provider": "Massive",
+      "strength": "exact National NBBO + trade API shape",
+      "blocker": "current free entitlement excludes required endpoints; live connector NOT_ENTITLED"
+    },
+    {
+      "provider": "Tradier Brokerage API",
+      "strength": "documented consolidated realtime US equity feed + $0 Lite/API",
+      "blocker": "official residency policy blocks Turkey"
+    },
+    {
+      "provider": "Public.com Individual API",
+      "strength": "sanctioned realtime API with separate last/bid/ask event timestamps and hosted MCP",
+      "blocker": "requires U.S. residential eligibility; exact UTP/National-NBBO lineage also unproven"
+    },
+    {
+      "provider": "tastytrade / dxFeed",
+      "strength": "dxFeed UTP Tape-C lineage and realtime Quote+Trade architecture",
+      "blocker": "live entitlement funded-account dependent and Turkey eligibility unproven"
+    },
+    {
+      "provider": "XigniteGlobalRealTime",
+      "strength": "explicit SIP NBBO/UTP Tape-C and timestamps",
+      "blocker": "exchange licensing/fee model; no permanent-$0 automated entitlement"
+    },
+    {
+      "provider": "Charles Schwab Trader API / International",
+      "strength": "sanctioned OAuth developer platform and international brokerage footprint",
+      "blocker": "current primary-source chain does not prove Turkey retail eligibility plus exact Trader-API consolidated NBBO/timestamps plus permanent-$0 entitlement"
+    }
+  ],
+  "structural_result": "DIRECT UTP REALTIME NONDISPLAY IS FEE-LIABLE. A strict $0-to-end-user path can exist only if a broker/vendor lawfully absorbs upstream licensing and explicitly grants the exact automated/non-display API entitlement without balance/activity/per-query/subscription/account-maintenance conditions.",
+  "current_result": "NO_REVIEWED_PROVIDER_PROVES_A_B_C_D_SIMULTANEOUSLY",
+  "search_policy": "Do not reopen a negative path from marketing wording alone. Reopen only on newer primary-source change to the exact failed gate, then require scheduler-callable live-RTH proof.",
+  "unknown_never_pass": true,
+  "no_policy_weakening": true
+}
