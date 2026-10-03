@@ -9,7 +9,7 @@
     "C": "lawful automated/non-display permanent-$0 entitlement with no fee/balance/activity/per-query condition",
     "D": "scheduler callability"
   },
-  "unique_provider_paths_reviewed": 67,
+  "unique_provider_paths_reviewed": 68,
   "evidence_files": [
     {
       "path": "nasdaq-xray/g9_free_path_audit_20261003.json",
@@ -158,6 +158,10 @@
     {
       "path": "nasdaq-xray/g9_provider_delta_midaslabs_20261003.json",
       "blob_sha": "c88d199bbd73cc875bf3d421b1f6b18639543735"
+    },
+    {
+      "path": "nasdaq-xray/g9_provider_delta_alpaca_chatgpt_plugin_20261003.json",
+      "blob_sha": "6010145c908a45c03ea864a3ec893b98d4c8e70a"
     }
   ],
   "reviewed_provider_paths": [
@@ -227,7 +231,8 @@
     "IVolatility Data Cloud API / IVolAI",
     "QuantConnect US Equities SIP / LEAN",
     "AllTick Market Data API",
-    "Midas Labs / Midas Markets MCP (midasmarkets.xyz; not GetMidas Turkey)"
+    "Midas Labs / Midas Markets MCP (midasmarkets.xyz; not GetMidas Turkey)",
+    "Alpaca ChatGPT market-data plugin / connected MCP surface"
   ],
   "strongest_near_misses": [
     {
@@ -278,8 +283,9 @@
     "authority_file": "nasdaq-xray/g9_utp_fee_basis_20261003.json"
   },
   "latest_new_provider": {
-    "provider": "Midas Labs / Midas Markets MCP (midasmarkets.xyz; not GetMidas Turkey)",
-    "evidence_file": "nasdaq-xray/g9_provider_delta_midaslabs_20261003.json",
-    "result": "STRICT_A_FAIL_HIP3_PERPETUAL_MARKET_NOT_US_CASH_NBBO"
+    "provider": "Alpaca ChatGPT market-data plugin / connected MCP surface",
+    "evidence_file": "nasdaq-xray/g9_provider_delta_alpaca_chatgpt_plugin_20261003.json",
+    "evidence_blob_sha": "6010145c908a45c03ea864a3ec893b98d4c8e70a",
+    "result": "HISTORICAL_SIP_A_B_CONFIRMED_LIVE_SIP_C_UNKNOWN"
   }
 }
