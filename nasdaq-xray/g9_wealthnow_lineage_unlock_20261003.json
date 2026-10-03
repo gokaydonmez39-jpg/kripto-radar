@@ -4,7 +4,7 @@
   "provider": "WEALTHNOW",
   "execution": "NONE",
   "real_money": "NO-GO",
-  "current_status": "BLOCKED_A_FREE_SNAPSHOT_LINEAGE_AND_C_PROVIDER_UTP_CLASSIFICATION_GAP",
+  "current_status": "BLOCKED_A_CURRENT_EXACT_FREE_ROUTE_BINDING_AND_C_PROVIDER_UTP_CLASSIFICATION_GAP",
   "current_evidence": {
     "free_snapshot": {
       "route": "GET /api/v3/fundamentals/price_snapshot",
@@ -47,7 +47,8 @@
         "price_age_seconds": 0.17134451866149902,
         "source_label": "market-data:v2-snapshot",
         "interpretation": "B_SCHEMA_AND_FRESHNESS_EXAMPLE_STRONG; SOURCE_LABEL_IS_INTERNAL_AND_NOT_SIP_LINEAGE_PROOF"
-      }
+      },
+      "lineage_status": "STRONG_POLYGON_ARCHITECTURE_CHAIN_EXACT_CURRENT_ROUTE_BINDING_UNPROVEN"
     },
     "paid_stream": {
       "route": "GET /api/v3/stream/quotes",
@@ -87,6 +88,22 @@
       "market_data_role": "read-only",
       "chatgpt_tested_end_to_end": true,
       "implication": "D_PROGRAMMATIC_SURFACE_STRONG; DOES_NOT_AUTHORIZE_A_OR_C"
+    },
+    "polygon_lineage_refresh": {
+      "path": "nasdaq-xray/g9_wealthnow_polygon_lineage_refresh_20261003.json",
+      "blob_sha": "56f38fbc73db3d858a3d89a4623c0df60b30e381",
+      "status": "STRONG_FIRST_PARTY_POLYGON_ARCHITECTURE_EVIDENCE_CURRENT_EXACT_FREE_ROUTE_BINDING_NOT_EXPLICIT",
+      "proven": [
+        "Tengu public OpenAPI generation records Polygon as an active external vendor.",
+        "The same OpenAPI generation explicitly labels U.S. equity intraday tape as FIRM's own Polygon capture.",
+        "Current Wealthnow Free live quote remains supported and current docs call fundamentals_price_snapshot its spec equivalent / the same question.",
+        "Current price_snapshot uses live upstream data and fails closed with vendor_error when all price sources fail."
+      ],
+      "unproven": [
+        "No current first-party sentence yet explicitly binds the exact Free price_snapshot bid/ask to Polygon or direct CTA/UTP SIP.",
+        "No public current stream_ingest_status response yet observed with provider=polygon.",
+        "No provider-specific UTP1APIS/equivalent classification plus vendor fee absorption confirmation."
+      ]
     }
   },
   "prohibited_inferences": [
@@ -103,7 +120,9 @@
     "Wealthnow explicitly confirms that a single nonprofessional Free REST/MCP/API user using unattended third-party automation is covered under UTP1APIS or an equivalent approved nonprofessional uncontrolled market-data classification.",
     "Wealthnow explicitly confirms any UTP/exchange/vendor assessment for that classification is absorbed by Wealthnow so the end user owes $0, with no subscription, per-query monetary charge, balance, funding, activity or account-maintenance condition.",
     "A later official Free endpoint explicitly documented as National NBBO plus the same approved automated/non-display entitlement replaces price_snapshot.",
-    "Wealthnow formally binds Free price_snapshot to the same consolidated NBBO lineage as the documented streaming quote feed and confirms the Free user's market-data classification and fee coverage."
+    "Wealthnow formally binds Free price_snapshot to the same consolidated NBBO lineage as the documented streaming quote feed and confirms the Free user's market-data classification and fee coverage.",
+    "A current first-party Wealthnow/Tengu capabilities manifest, ingest-status response, OpenAPI description, or support statement explicitly binds Free /api/market/quote and/or fundamentals_price_snapshot to Polygon/Massive consolidated U.S. equities.",
+    "A current first-party Wealthnow/Tengu statement directly identifies CTA/UTP SIP National NBBO as the Free snapshot bid/ask lineage."
   ],
   "exact_provider_question": "For a Free-plan API key, are the equity bid/ask fields returned by GET /api/v3/fundamentals/price_snapshot the live consolidated U.S. National Best Bid and Offer sourced from CTA/UTP SIP, or from which named licensed consolidated redistributor/feed? Do quote_as_of and as_of/time represent independent upstream quote-event and trade-event times? Finally, for a single nonprofessional user calling the Free REST/MCP/API programmatically through unattended third-party automation, is that use covered under UTP1APIS or an equivalent approved nonprofessional uncontrolled classification, and does Wealthnow absorb all applicable UTP/exchange/vendor assessments so the user remains permanently $0 without any subscription, balance, funding, activity, account-maintenance or per-query monetary condition?",
   "post_unlock_required_probe": {
@@ -137,7 +156,9 @@
     "https://wealthnow.io/terms",
     "https://wealthnow.io/disclosures",
     "https://github.com/Hlobo-dev/wealthnow-mcp",
-    "https://www.utpplan.com/DOC/UTP_POLICY_SUPPLEMENTAL_DOCUMENT_-_VRXML_Codes.pdf"
+    "https://www.utpplan.com/DOC/UTP_POLICY_SUPPLEMENTAL_DOCUMENT_-_VRXML_Codes.pdf",
+    "https://pypi.org/project/tengu-firm/0.1.0/",
+    "nasdaq-xray/g9_wealthnow_polygon_lineage_refresh_20261003.json"
   ],
   "unknown_never_pass": true,
   "no_policy_weakening": true,
