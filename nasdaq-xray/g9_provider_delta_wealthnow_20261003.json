@@ -4,19 +4,25 @@
   "provider": "Wealthnow",
   "execution": "NONE",
   "real_money": "NO-GO",
-  "status": "NONQUALIFYING_STRICT_G9",
+  "status": "FREE_SNAPSHOT_HAS_TIMESTAMPS_BUT_NBBO_LINEAGE_UNPROVEN_AND_USAGE_CAPPED",
   "evidence": [
-    "Free Developer API is $0 with 1,000 credits/month hard cap and market-data/fundamentals access.",
-    "Free price_snapshot exposes last trade time plus bid/ask, but documentation does not establish exact UTP/SIP National NBBO lineage for that route and does not expose independent quote-event timestamps for bid and ask.",
-    "The documented consolidated top-of-book NBBO quote stream is billed under quant_signals and requires Starter; current Starter price is $99/month.",
-    "Therefore the free route does not prove A/B and the exact consolidated streaming route fails permanent-$0 C."
+    "Wealthnow Free plan is $0 with 1,000 credits/month hard cap, 30 req/min, and includes market_data + fundamentals. Successful quote/price_snapshot calls debit 1 credit each; Free cannot overage beyond the grant.",
+    "Free `fundamentals/price_snapshot` returns live last trade plus bid/ask during session and exposes separate trade event time (`as_of`/`time`) and quote event time (`quote_as_of`), with explicit freshness fields. This materially improves prior B evidence.",
+    "Wealthnow's paid `/api/v3/stream/quotes` route is explicitly documented as consolidated top-of-book NBBO with venue IDs and live quote frames, but every stream route requires Starter or higher; current Starter is $99/month and the route costs 3 credits/connection.",
+    "The Free price_snapshot documentation does not explicitly state that its bid/ask fields are consolidated National NBBO/UTP SIP. Therefore strict A remains unproven for the Free route.",
+    "Because the Free route has a per-call credit debit and a 1,000-credit monthly hard cap, it does not satisfy the current strict C rule requiring permanent-$0 entitlement without per-query/usage-cap conditions. The exact consolidated NBBO streaming route also fails C because it is Starter+."
   ],
   "primary_sources": [
-    "https://wealthnow.io/api",
-    "https://app.wealthnow.io/docs/pricing-and-credits",
     "https://app.wealthnow.io/docs/market-data",
-    "https://app.wealthnow.io/docs/streaming"
+    "https://app.wealthnow.io/docs/streaming",
+    "https://app.wealthnow.io/docs/pricing-and-credits",
+    "https://app.wealthnow.io/docs/quickstart",
+    "https://app.wealthnow.io/docs/api-reference"
   ],
-  "reopen_condition": "Only if a Free route explicitly gains consolidated UTP/National NBBO provenance, independent quote and trade event timestamps, and an automated entitlement with no paid/per-query/usage-cap condition.",
-  "no_policy_weakening": true
+  "reopen_condition": "Only if a Free route is explicitly documented as consolidated UTP/National NBBO and the entitlement becomes uncapped/no-per-call-credit under the strict permanent-$0 rule, followed by same-run RTH freshness proof.",
+  "no_policy_weakening": true,
+  "failed_gates": [
+    "A",
+    "C"
+  ]
 }
