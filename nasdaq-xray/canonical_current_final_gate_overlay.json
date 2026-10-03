@@ -1,13 +1,14 @@
 {
-  "schema": "XRAY_FINAL_GATE_OVERLAY_V1",
+  "schema": "XRAY_FINAL_GATE_OVERLAY_V2",
   "generated_on": "2026-10-03",
+  "generated_at_utc": "2026-10-03T11:02:23.718340+00:00",
   "asof_et": "2026-10-02",
   "execution": "NONE",
   "real_money": "NO-GO",
   "alpha_authority": false,
   "source_terminal": {
     "path": "nasdaq-xray/canonical_current_terminal.json",
-    "blob_sha": "df6a7de13fa44daf13c6b178ea827bd846444663",
+    "blob_sha": "8106f92fd08fb984de34fafa371c5c109d6c1d7f",
     "full_end_to_end_research_pass": true,
     "terminal_result": "NO_CONFIRMED_SETUP"
   },
@@ -24,14 +25,18 @@
     "provider": "NONE_CURRENTLY_QUALIFYING",
     "adapter_status": "BLOCKED_NO_PROVIDER_SELECTED",
     "authority_path": "nasdaq-xray/g9_entitlement_authority.json",
-    "authority_blob_sha": "467ac2d22dfca19405d3b7317d220a3d391f3343",
+    "authority_blob_sha": "b9bb8dd6ef207dd20413444623b93a0bfb7150ca",
     "runtime_path": "nasdaq-xray/strict_g9_runtime_state.json",
     "runtime_blob_sha": "fb077b1177153df149e63502818d190875c0b119",
-    "saturation_path": "nasdaq-xray/g9_search_saturation_20261003.json",
-    "saturation_blob_sha": "8cc897241acd7662f7b6411fe9fc936b25b544e6",
-    "registry_path": "nasdaq-xray/g9_provider_registry_20261003.json",
-    "registry_blob_sha": "e271082f841e7cffe1220fc040dab0026a46643a",
-    "provider_paths_reviewed": 41
+    "current_saturation_blob_sha": "c80851f0a1c5a78d93a4523224095c9239ddb51b",
+    "current_registry_blob_sha": "098d92482ca5672d9c0930891414450fec13fa38",
+    "authority_bound_saturation_blob_sha": "c80851f0a1c5a78d93a4523224095c9239ddb51b",
+    "authority_bound_registry_blob_sha": "098d92482ca5672d9c0930891414450fec13fa38",
+    "current_saturation_count": 45,
+    "current_registry_count": 45,
+    "authority_reviewed_count": 41,
+    "negative_cache_binding_exact": false,
+    "negative_cache_ahead_while_blocked": true
   },
   "account": {
     "status": "ACCOUNT_BLOCKED_SCOPE_NOT_GRANTED_OR_ACCOUNT_UNSUPPORTED",
@@ -39,9 +44,18 @@
     "provider_model": "PROVIDER_NEUTRAL",
     "current_adapter": "LONGBRIDGE",
     "gate_path": "nasdaq-xray/account_gate_contract.json",
-    "gate_blob_sha": "7019419418d151e28e139616117bda3b10ae01d4",
-    "adapter_contract_path": "nasdaq-xray/account_provider_adapter_contract.json",
-    "adapter_contract_blob_sha": "2b297b6836aa99fc75a7f6f0bcac90290a875f45"
+    "gate_blob_sha": "b477def3d4a26679997d5e5c51ebba858754ed49",
+    "current_adapter_contract_blob_sha": "3c594c392edc6caeb0d46892e2adddfb696271db",
+    "gate_bound_adapter_contract_blob_sha": "3c594c392edc6caeb0d46892e2adddfb696271db",
+    "adapter_binding_exact": true,
+    "adapter_drift_while_blocked": false
+  },
+  "binding_integrity": {
+    "fail_closed_safe": true,
+    "pass_requires_exact_current_bindings": true,
+    "g9_pass_binding_exact": true,
+    "account_pass_binding_exact": true,
+    "blocked_negative_evidence_may_advance_without_creating_pass": true
   },
   "research_delivery": {
     "independent_of_g9_account": true,
@@ -66,7 +80,8 @@
   },
   "stale_pointer_fields": {
     "pointer_account_status": "UNKNOWN",
-    "interpretation": "Legacy pointer field only. Current terminal and exact-bound ACCOUNT contract supersede it for final-gate reporting. Never promote persisted status to PASS."
+    "terminal_account_status": "ACCOUNT_BLOCKED_SCOPE_NOT_GRANTED_OR_ACCOUNT_UNSUPPORTED",
+    "interpretation": "Persisted pointer state never creates PASS; current runtime gates control final-gate reporting."
   },
   "weekend_guard": {
     "current_calendar_date": "2026-10-03",
