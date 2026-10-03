@@ -1,0 +1,28 @@
+{
+  "schema": "XRAY_G9_PROVIDER_DELTA_V1",
+  "generated_on": "2026-10-03",
+  "provider": "Tallac Options live equities API/TCP feed",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "status": "NONQUALIFYING_LIVE_FEED_FEE_BEARING_AND_NATIONAL_NBBO_LINEAGE_UNPROVEN",
+  "evidence": [
+    "Tallac officially documents live stock/index/ETF snapshots and a TCP live feed with Last, LastSize, Bid, BidSize, Ask, AskSize, Volume, Open, High and Low.",
+    "Tallac pricing explicitly charges for Real-Time access per trading session (for example 5 tickers $0.50/session, 25 tickers $1/session, 100 tickers $2/session, all $25/session), while the Free Tier covers EOD plus limited historical intraday/options data rather than live real-time data.",
+    "Tallac states it retrieves raw data from multiple sources, but no primary-source statement found binds its U.S. equity bid/ask to consolidated UTP Tape-C / National NBBO or a named licensed consolidated redistributor.",
+    "Therefore strict permanent-$0 gate C fails independently of lineage, and gate A is also unproven."
+  ],
+  "primary_sources": [
+    "https://www.tallacoptions.com/apis",
+    "https://www.tallacoptions.com/Pricing",
+    "https://tallacoptions.com/About"
+  ],
+  "failed_gates": [
+    "A_CONSOLIDATED_UTP_NATIONAL_NBBO_LINEAGE",
+    "C_PERMANENT_ZERO_REALTIME_ENTITLEMENT"
+  ],
+  "reopen_condition": "Official Tallac primary source must make production realtime U.S.-equity API/TCP access permanently $0 and prove consolidated UTP Tape-C/National-NBBO lineage plus lawful automated/non-display entitlement; then run same-run RTH timestamp/freshness proof.",
+  "negative_cache_only": true,
+  "may_never_create_pass": true,
+  "unknown_never_pass": true,
+  "no_policy_weakening": true
+}
