@@ -25,6 +25,7 @@ def base_adapter():
       "adapters":{
         "LONGBRIDGE":{"status":"BLOCKED_SCOPE_NOT_GRANTED_OR_ACCOUNT_UNSUPPORTED"},
         "LONGBRIDGE_DIRECT_OPENAPI":{"status":"ELIGIBLE_FRESH_SAME_RUN_ONLY"},
+        "LONGBRIDGE_HOSTED_MCP":{"status":"ELIGIBLE_FRESH_SAME_RUN_ONLY"},
       },
     }
 
@@ -49,11 +50,12 @@ def g9():
       "adapter_status":"BLOCKED_NO_PROVIDER_SELECTED",
     }
 
-def live(run_id,status="PASS"):
+def live(run_id,status="PASS",provider="LONGBRIDGE_DIRECT_OPENAPI"):
     passed=status=="PASS"
+    schema=("XRAY_ACCOUNT_LONGBRIDGE_HOSTED_MCP_PROBE_V1" if provider=="LONGBRIDGE_HOSTED_MCP" else "XRAY_ACCOUNT_LONGBRIDGE_OPENAPI_PROBE_V1")
     return {
-      "schema":"XRAY_ACCOUNT_LONGBRIDGE_OPENAPI_PROBE_V1",
-      "provider":"LONGBRIDGE_DIRECT_OPENAPI",
+      "schema":schema,
+      "provider":provider,
       "execution":"NONE","real_money":"NO-GO",
       "status":status,
       "reason_code":"SAME_RUN_READ_ONLY_ACCOUNT_PROBE_PASS" if passed else "REQUIRED_SECRET_ENV_NOT_CONFIGURED",
@@ -103,6 +105,13 @@ def main():
         assert ev["private_values_persisted"] is False
         assert ev["secret_values_persisted"] is False
         assert passed["evidence"]["account_gate"]["current_adapter"]=="LONGBRIDGE_DIRECT_OPENAPI"
+
+        hosted=evaluate(td,live("run-hosted","PASS","LONGBRIDGE_HOSTED_MCP"),"run-hosted")
+        assert hosted["account_status"]=="ACCOUNT_PASS"
+        hev=hosted["evidence"]["account_live_probe"]
+        assert hev["provider"]=="LONGBRIDGE_HOSTED_MCP"
+        assert hev["same_run_attested"] is True
+        assert hosted["evidence"]["account_gate"]["current_adapter"]=="LONGBRIDGE_HOSTED_MCP"
 
         stale=evaluate(td,live("old-run"),"run-2")
         assert stale["account_status"]!="ACCOUNT_PASS"
