@@ -22,6 +22,7 @@ from pathlib import Path
 from typing import Any
 
 from account_longbridge_mcp_v2_vault import (
+    AUTH_CODE_KEY_ENV,
     FERNET_KEY_ENV,
     VAULT_PATH,
     TokenRefreshError,
@@ -29,6 +30,7 @@ from account_longbridge_mcp_v2_vault import (
     access_token_from_vault,
     load_vault,
     save_vault,
+    resolve_vault_key,
 )
 
 ROOT = Path(__file__).resolve().parent
@@ -228,10 +230,13 @@ async def _live_probe(
 
 def run_probe(env: dict[str, str] | None = None) -> dict[str, Any]:
     source = os.environ if env is None else env
-    vault_key = str(source.get(FERNET_KEY_ENV) or "").strip()
+    vault_material_present = bool(
+        str(source.get(FERNET_KEY_ENV) or "").strip()
+        or str(source.get(AUTH_CODE_KEY_ENV) or "").strip()
+    )
     explicit_token = str(source.get(TOKEN_ENV) or "").strip()
 
-    if vault_key:
+    if vault_material_present:
         if not VAULT_PATH.exists():
             return _state(
                 status="BLOCKED_MISSING_CREDENTIALS",
@@ -240,6 +245,7 @@ def run_probe(env: dict[str, str] | None = None) -> dict[str, Any]:
                 credential_source="ENCRYPTED_VAULT",
             )
         try:
+            vault_key = resolve_vault_key(source)
             payload = load_vault(key=vault_key)
             token, updated, refreshed = access_token_from_vault(payload)
             if refreshed:
