@@ -15,13 +15,13 @@
     "automated_nondisplay_utp_right": "NO_CURRENT_PROVIDER_PROVEN",
     "reviewed_provider_paths": 54,
     "search_saturation_result": "NO_REVIEWED_PROVIDER_PROVES_A_B_C_D_SIMULTANEOUSLY",
-    "structural_fee_basis": "UTP_API_CLASSIFICATION_REQUIRES_PROVIDER_SPECIFIC_AUTHORIZATION_FOR_THIRD_PARTY_AUTOMATION",
+    "structural_fee_basis": "UTP_API_IS_AN_UNCONTROLLED_PRODUCT; CURRENT_2024_10_USAGE_CODES_EXPOSE_A_$1_PER_MONTH_VENDOR_BILLED_NONPROFESSIONAL_UNCONTROLLED_CLASS, BUT PROVIDER_SPECIFIC_CLASSIFICATION_AND_FEE_ABSORPTION_REMAIN_UNPROVEN",
     "strict_runtime_adapter": "FAIL_CLOSED_UNLESS_AUTHORITY_PROVEN",
     "audit_20261003": "54_PROVIDER_PATH_PRIMARY_SOURCE_AND_LIVE_ENTITLEMENT_SATURATION",
     "midas_official_paths": "ATLAS_REALTIME_EXCHANGE_ENTITLEMENTS;TRADINGVIEW_BROKER_QUOTES;ALPACA_PARTNER_INFRA",
     "midas_alpaca_partner_path": "OFFICIAL_INFRA_CONFIRMED_EXACT_LIVE_SIP_ENDUSER_ENTITLEMENT_UNPROVEN",
-    "high_potential_provider": "Paper Invest + Wealthnow",
-    "high_potential_reason": "Paper Basic has free API/MCP and official realtime NBBO claims but lacks explicit upstream SIP/redistributor lineage and automated/non-display entitlement proof; Wealthnow Free snapshot has strong bid/ask/trade timestamp schema but Free-route NBBO lineage/license remain unproven."
+    "high_potential_provider": "Paper Invest",
+    "high_potential_reason": "Paper Basic is $0/free-forever with API/MCP, official realtime NBBO claims and explicit bot/programmatic use. Updated UTP evidence shows a lawful vendor-billed $1/month nonprofessional uncontrolled API category can exist. Remaining blockers are Paper's exact UTP/SIP or licensed-redistributor lineage, approved nonprofessional uncontrolled classification/fee absorption, and independent upstream quote/trade event timestamp semantics."
   },
   "pass_rule": "STATUS_MUST_EQUAL_PROVEN_FROM_PRIMARY_SOURCE_AND_PROVIDER_MUST_HAVE_MATCHING_RUNTIME_ADAPTER_BEFORE_LIVE_RTH_TECHNICAL_PROBE_CAN_RUN",
   "no_policy_weakening": true,
@@ -37,7 +37,7 @@
     "path": "nasdaq-xray/g9_utp_fee_basis_20261003.json",
     "blob_sha": "6109dbf1f422be8f9aaa3df938e20b4e26517159",
     "generated_on": "2026-10-03",
-    "implication": "VENDOR/DATA-FEED NONDISPLAY IS FEE-LIABLE; END-USER API IS AN UNCONTROLLED PRODUCT CLASS AND MAY HAVE NONPROFESSIONAL EXCEPTIONS, BUT THIRD-PARTY-SOFTWARE/SCHEDULER USE CANNOT BE ASSUMED LOW-FEE OR FREE. STRICT G9 REQUIRES PROVIDER-SPECIFIC PERMANENT-$0 AUTHORIZATION FOR THE EXACT AUTOMATED USE."
+    "implication": "A single qualifying nonprofessional API recipient can in principle be reported under UTP1APIS at $1/month billable to the Vendor. Therefore permanent-$0 to the end user is structurally possible if the provider lawfully classifies the exact API use and absorbs the assessment. Older general-policy third-party-software language creates an unresolved classification tension, so provider-specific confirmation remains mandatory."
   },
   "supplemental_provider_evidence": [
     {
@@ -175,5 +175,11 @@
     "blob_sha": "6109dbf1f422be8f9aaa3df938e20b4e26517159",
     "generated_on": "2026-10-03",
     "implication": "DIRECT REALTIME UTP NONDISPLAY INVESTMENT-ANALYSIS USE IS FEE-LIABLE; STRICT G9 REQUIRES A PROVIDER-SPECIFIC LAWFUL PERMANENT-$0 AUTOMATED/NONDISPLAY ENTITLEMENT THAT ABSORBS/RESOLVES UPSTREAM FEES."
+  },
+  "utp_nonprofessional_api_refresh": {
+    "path": "nasdaq-xray/g9_utp_nonprofessional_api_refresh_20261003.json",
+    "blob_sha": "e557bb14abe883f1d07380f7301b465b0abb4a05",
+    "status": "STRUCTURAL_PATH_OPEN_PROVIDER_SPECIFIC_CLASSIFICATION_STILL_UNPROVEN",
+    "effect": "NO_THRESHOLD_CHANGE; narrows G9-C blocker from presumed high non-display fee to provider-specific UTP1APIS/equivalent classification plus vendor fee absorption proof."
   }
 }
