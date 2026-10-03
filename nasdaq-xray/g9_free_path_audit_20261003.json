@@ -1,0 +1,145 @@
+{
+  "schema": "XRAY_G9_FREE_PATH_AUDIT_V3",
+  "task_id": "6a825366222081918997094d76e6ae46",
+  "generated_on": "2026-10-03",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "policy_version": "C4.17",
+  "policy_blob": "10d7af14870dfac0dc4566595d95a06f3faa854d",
+  "policy_hash": "26a95745a50b65e85f6ece24b6501af0994764a84ddd886edb70d1fcd770849c",
+  "strict_g9_required": {
+    "A": "Explicit consolidated UTP Tape-C UQDF+UTDF / National NBBO lineage or documented equivalent",
+    "B": "Machine bid+ask+last with independent quote/trade event timestamps and same-run RTH freshness",
+    "C": "Lawful intended automated/non-display permanent-$0 entitlement with no recurring vendor/exchange/per-query/account-maintenance/activity/balance condition",
+    "D": "Callable from canonical scheduler without exposed secrets"
+  },
+  "provider_findings": [
+    {
+      "provider": "TradingView/Yahoo via atilaahmettaner/tradingview-mcp",
+      "status": "NONQUALIFYING_G9_ENGINEERING_REFERENCE_ONLY",
+      "evidence": [
+        "Yahoo Chart path returns price/candle/meta fields but no proven National NBBO bid+ask lineage.",
+        "Service timestamp can represent retrieval/runtime time rather than an independent quote-event timestamp.",
+        "Internal code comments are not entitlement or SIP provenance authority."
+      ],
+      "useful_for": [
+        "async fanout",
+        "bounded retry",
+        "stale detection",
+        "cache",
+        "provider-failure semantics"
+      ],
+      "reopen_condition": "Primary-source entitlement/provenance proving consolidated UTP/NBBO plus scheduler-callable independent quote/trade timestamps."
+    },
+    {
+      "provider": "Longbridge OpenAPI",
+      "status": "NONQUALIFYING_STRICT_PERMANENT_ZERO",
+      "evidence": [
+        "Technically exposes US quote, recent trades and order-book depth.",
+        "Official US pricing distinguishes signup-free Nasdaq Basic from Consolidated US Data + NBBO (17 exchanges) requiring account balance >= $100.",
+        "Terms do not establish an unconditional permanent-free market-data entitlement."
+      ],
+      "primary_sources": [
+        "https://longbridgeus.zendesk.com/hc/en-us/articles/15016098154767-Fees-Charges",
+        "https://longbridgeus.zendesk.com/hc/en-us/articles/14864594652431-Long-Bridge-Securities-LLC-Terms-of-Service"
+      ],
+      "reopen_condition": "Newer primary-source terms prove consolidated UTP/NBBO for OpenAPI with no balance/activity/fee condition and live scheduler probe passes."
+    },
+    {
+      "provider": "Webull OpenAPI",
+      "status": "NONQUALIFYING_STRICT_G9",
+      "evidence": [
+        "Consumer NBBO-per-query may be free, but consumer subscriptions are independent from OpenAPI.",
+        "Official OpenAPI docs require a separate active OpenAPI market-data subscription for US stocks/ETFs.",
+        "US OpenAPI permissions documented around Nasdaq Basic/TotalView; consumer NBBO cannot be assumed to transfer to automated non-display API use."
+      ],
+      "primary_sources": [
+        "https://developer.webull.com/apis/docs/market-data-api/overview/",
+        "https://developer.webull.com/apis/docs/market-data-api/getting-started/",
+        "https://developer.webull.com/apis/docs/market-data-api/faq/",
+        "https://www.webull.com/help/faq/126-Available-Market-Data"
+      ],
+      "reopen_condition": "Primary-source OpenAPI entitlement explicitly grants permanent-$0 consolidated National NBBO non-display use."
+    },
+    {
+      "provider": "Massive",
+      "status": "TECHNICALLY_EXACT_BUT_CURRENT_PLAN_NOT_ENTITLED",
+      "evidence": [
+        "Catalog exposes exact stock National NBBO and latest-trade endpoints.",
+        "Live connector probes for /v2/last/nbbo/AAPL, /v2/last/trade/AAPL and /v3/quotes/AAPL returned NOT_ENTITLED on current plan."
+      ],
+      "primary_sources": [
+        "https://massive.com/docs/rest/stocks/trades-quotes/quotes",
+        "https://massive.com/docs/rest/stocks/overview"
+      ],
+      "paid_fallback_allowed": false,
+      "reopen_condition": "Current zero-dollar entitlement changes to include live NBBO+trade endpoints without paid upgrade."
+    },
+    {
+      "provider": "Alpha Vantage",
+      "status": "NONQUALIFYING_STRICT_PERMANENT_ZERO",
+      "evidence": [
+        "Documentation describes consolidated US NBBO capabilities.",
+        "Official support explicitly states realtime and 15-minute delayed US stock market data are premium-only."
+      ],
+      "primary_sources": [
+        "https://www.alphavantage.co/documentation/",
+        "https://www.alphavantage.co/support/",
+        "https://www.alphavantage.co/realtime_data_policy/"
+      ],
+      "reopen_condition": "Official entitlement makes realtime consolidated NBBO permanently free for lawful automated use."
+    },
+    {
+      "provider": "tastytrade / dxFeed",
+      "status": "TECHNICALLY_PROMISING_BUT_FAILS_STRICT_C_AND_JURISDICTION_UNPROVEN",
+      "evidence": [
+        "tastytrade API exposes real-time Quote+Trade via dxFeed/DXLink and API quote tokens.",
+        "dxFeed itself documents UTP UQDF/UTDF Tape-C and consolidated National BBO for Nasdaq-listed equities.",
+        "tastytrade REST real-time market data is available to funded account holders; support states unfunded accounts switch to delayed quotes and live quotes restore after funding.",
+        "No current primary-source proof obtained that a Turkey-resident user is eligible for onboarding under the exact current country list."
+      ],
+      "primary_sources": [
+        "https://developer.tastytrade.com/docs/concepts/streaming/",
+        "https://developer.tastytrade.com/docs/concepts/market-data/",
+        "https://developer.tastytrade.com/reference/accounts-and-customers/getApiQuoteTokens/",
+        "https://dxfeed.com/market-data/equities-etfs/utp-tape-c/",
+        "https://support.tastytrade.com/support/s/solutions/articles/43000498775"
+      ],
+      "reopen_condition": "Primary-source Turkey eligibility plus entitlement proof that exact API quote token carries consolidated UTP/NBBO with no required funding/balance/activity/recurring fee."
+    },
+    {
+      "provider": "Alpaca",
+      "status": "NONQUALIFYING_FREE_PATH",
+      "evidence": [
+        "Free Basic real-time equities coverage is IEX only.",
+        "Complete US exchange coverage is a paid tier; delayed SIP is non-G9 by policy."
+      ],
+      "primary_sources": [
+        "https://docs.alpaca.markets/us/v1.1/docs/about-market-data-api"
+      ],
+      "reopen_condition": "Permanent-$0 full SIP/NBBO entitlement becomes available."
+    },
+    {
+      "provider": "Interactive Brokers",
+      "status": "NONQUALIFYING_FREE_PATH",
+      "evidence": [
+        "Free streaming US equities data is Cboe One + IEX and explicitly non-consolidated.",
+        "Consolidated data is separately identified as NBBO; free snapshots are limited and not an unconditional streaming entitlement."
+      ],
+      "primary_sources": [
+        "https://api.ibkr.com/en/pricing/market-data-pricing.php"
+      ],
+      "reopen_condition": "Permanent-$0 automated consolidated Tape-C/NBBO entitlement without snapshot/fee/balance conditions."
+    }
+  ],
+  "account_gate": {
+    "provider": "Longbridge",
+    "status": "ACCOUNT_BLOCKED_REAUTH_REQUIRED",
+    "evidence": "Fresh 2026-10-03 read-only account_balance probe returned 403308 Target API is not in authorized scope. This is a scope/authorization error; ordinary token refresh does not add missing scopes.",
+    "repair": "Explicit reconnect/re-authorize Longbridge OAuth with required read-only portfolio/account scopes, then same-run account_balance + stock_positions parseability probe."
+  },
+  "current_conclusion": "G9_BLOCKED_FREE_AUTOMATION_PATH",
+  "falsification_condition": "Only reopen on newer PRIMARY SOURCE proof of exact lawful automated/non-display permanent-$0 consolidated UTP/National NBBO entitlement from a scheduler-callable provider, followed by same-run RTH bid/ask/last freshness proof.",
+  "no_policy_weakening": true,
+  "unknown_never_pass": true
+}
