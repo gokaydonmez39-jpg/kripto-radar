@@ -4,7 +4,7 @@
   "provider": "Paper Invest REST / Official MCP",
   "execution": "NONE",
   "real_money": "NO-GO",
-  "status": "HIGH_POTENTIAL_FREE_REALTIME_NBBO_CLAIM_A_C_AND_B_EVENT_SEMANTICS_UNPROVEN",
+  "status": "HIGHEST_POTENTIAL_STRUCTURAL_C_PATH_OPEN_A_CLASSIFICATION_AND_B_EVENT_SEMANTICS_UNPROVEN",
   "evidence": [
     "Paper Invest Basic is officially $0/month free forever and includes API & MCP access; its developer page says a free API key can be obtained with no credit card.",
     "Paper's official developer materials explicitly target trading-bot and algorithmic/API use, and document GET /v1/market-data/quote/{symbol} as a real-time NBBO quote with bid/ask sizes plus a separate GET /v1/market-data/trade/{symbol} endpoint.",
@@ -13,7 +13,9 @@
     "The dedicated WebSocket documentation requires PRO and wins over broader marketing wording that says free quote streaming. Strict G9 must therefore rely only on the documented Basic REST/API path unless Paper changes the dedicated entitlement page.",
     "Paper's free/no-credit-card/API-and-bot wording materially supports zero-dollar programmatic use, but no primary-source Paper market-data license/terms statement found so far explicitly says upstream CTA/UTP/SIP or equivalent exchange/vendor non-display fees are absorbed for this Basic REST entitlement.",
     "Public official docs repeatedly call the quote NBBO, but no primary-source Paper document found so far identifies CTA/UTP SIP or a named licensed consolidated redistributor as the lineage. Strict G9-A therefore remains unproven.",
-    "Accordingly, C is narrowed to one unresolved legal/entitlement question: whether the Basic REST market-data license explicitly covers automated/non-display consolidated NBBO use with no separate exchange/vendor fee or other monetary/account condition."
+    "Accordingly, C is narrowed to one unresolved legal/entitlement question: whether the Basic REST market-data license explicitly covers automated/non-display consolidated NBBO use with no separate exchange/vendor fee or other monetary/account condition.",
+    "UTP's current Detailed Usage Reporting Codes (updated 2024-10; fees as of 2025) define UTP1APIS = Real-Time Nonprofessional Uncontrolled Recipient at $1/month billable to the Vendor, and UTP Data Policies expressly list API as an Uncontrolled Product.",
+    "This means Paper's Basic $0/free-forever API can be economically compatible with strict G9-C if Paper lawfully classifies the exact single-user automated API entitlement under UTP1APIS or an equivalent approved category and absorbs the vendor assessment. XRAY must not assume that classification."
   ],
   "technical_schema": {
     "quote_route": "GET /v1/market-data/quote/{symbol}",
@@ -54,17 +56,22 @@
     "upstream_vendor_name_found": false
   },
   "failed_or_unproven_gates": [
-    "A_CONSOLIDATED_SIP_OR_EQUIVALENT_REDIStributor_LINEAGE",
-    "B_INDEPENDENT_UPSTREAM_EVENT_TIMESTAMP_SEMANTICS_AND_LIVE_RTH_PROBE",
-    "C_EXPLICIT_UPSTREAM_NONDISPLAY_MARKET_DATA_LICENSE_FEE_ABSORPTION"
+    "A_EXACT_UTP_SIP_OR_NAMED_LICENSED_REDIStributor_LINEAGE",
+    "B_INDEPENDENT_UPSTREAM_QUOTE_AND_TRADE_EVENT_TIMESTAMP_SEMANTICS_AND_LIVE_RTH_PROBE",
+    "C_PROVIDER_CONFIRMED_UTP1APIS_OR_EQUIVALENT_NONPROFESSIONAL_API_CLASSIFICATION_AND_VENDOR_FEE_ABSORPTION"
   ],
   "provisional_pass_gates": [
     "C_ZERO_DOLLAR_BASIC_API_MCP_COST",
     "C_PROGRAMMATIC_AUTOMATED_USE_INTENT",
+    "C_STRUCTURAL_UTP_NONPROFESSIONAL_API_PATH_EXISTS",
     "D_TECHNICAL_SCHEDULER_SURFACE"
   ],
-  "exact_provider_question": "For the Basic/free REST API, are the bid/ask values returned by GET /v1/market-data/quote/{symbol} the live consolidated U.S. National Best Bid and Offer sourced from CTA/UTP SIP or a named licensed consolidated redistributor? Does quote.timestamp represent the upstream quote-event time, while GET /v1/market-data/trade/{symbol}.timestamp independently represents the upstream trade-event time? Finally, does the Basic/free REST/API entitlement explicitly cover automated/non-display use of this consolidated quote/trade data with all applicable exchange/vendor market-data fees absorbed and with no separate subscription, balance, funding, activity, account-maintenance, or per-query charge?",
-  "reopen_condition": "Primary-source Paper confirmation proves exact consolidated NBBO lineage, upstream quote/trade event timestamp semantics, and explicit permanent-$0 automated/non-display market-data entitlement including upstream fee absorption; then configure a dedicated market-data credential and require same-run RTH freshness/skew probe.",
+  "exact_provider_question": "For the Basic/free REST API, please confirm (1) the bid/ask returned by GET /v1/market-data/quote/{symbol} are the live consolidated U.S. National Best Bid and Offer for Nasdaq-listed securities sourced from the UTP SIP (UQDF/UTDF) or identify the licensed consolidated redistributor that supplies them; (2) quote.timestamp is the upstream quote-event time and GET /v1/market-data/trade/{symbol}.timestamp is independently the upstream trade-event time; and (3) a single nonprofessional end user using the Basic REST API programmatically/through third-party automation is lawfully covered under UTP1APIS or an equivalent approved nonprofessional uncontrolled classification, with any UTP/exchange/vendor assessment absorbed by Paper so the user owes $0 permanently and has no subscription, funding, balance, activity, account-maintenance, or per-query condition.",
+  "reopen_condition": "Primary-source Paper confirmation of exact lineage + UTP1APIS/equivalent approved classification and vendor fee absorption + upstream event timestamp semantics; then configure a dedicated market-data credential and require same-run RTH freshness/skew probe.",
   "unknown_never_pass": true,
-  "no_policy_weakening": true
+  "no_policy_weakening": true,
+  "utp_nonprofessional_api_refresh": {
+    "path": "nasdaq-xray/g9_utp_nonprofessional_api_refresh_20261003.json",
+    "blob_sha": "e557bb14abe883f1d07380f7301b465b0abb4a05"
+  }
 }
