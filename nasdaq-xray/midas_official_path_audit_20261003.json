@@ -12,7 +12,10 @@
         "Midas support explicitly states TradingView market data is CBOE One while Midas has more comprehensive market-data licenses, proving the Midas app data path is distinct and broader than the TradingView path.",
         "Midas publishes Nasdaq and NYSE subscriber/display agreements and acts as distributor/vendor for those agreements.",
         "The Nasdaq subscriber agreement licenses non-professional/private subscriber information for personal use; no primary-source evidence found that grants the user's automated/non-display use required by strict G9-C.",
-        "The exact Midas mobile/Atlas product lineage has not yet been proven as consolidated UTP Tape-C/National NBBO, and the public Atlas query shapes reviewed expose last price/session state but no independent bid/ask event timestamps."
+        "The exact Midas mobile/Atlas product lineage has not yet been proven as consolidated UTP Tape-C/National NBBO, and the public Atlas query shapes reviewed expose last price/session state but no independent bid/ask event timestamps.",
+        "Atlas is now a live official Midas web product and explicitly offers free live market data and portfolio tracking, but its public product page does not document bid/ask/order-book lineage or an end-user API.",
+        "No public developer/API endpoint or developer portal for Midas was found in the current official product/support surfaces; Alpaca's March 2026 Midas case study still describes advanced-user API access as roadmap.",
+        "Official Midas-Matriks integration is BIST-only and therefore does not satisfy the NASDAQ account/G9 use case."
       ],
       "g9_failed_or_unproven": [
         "A",
@@ -87,9 +90,27 @@
     "https://tr.tradingview.com/broker-api-docs/faq/",
     "https://webcdn.getmidas.com/uploads/2025/12/04160009/nasdaq-katilimci-sozlesmesi.pdf",
     "https://webcdn.getmidas.com/uploads/2025/12/04160028/nyse-katilimci-sozlesmesi.pdf",
-    "https://webcdn.getmidas.com/uploads/2025/12/04155923/genel-cerceve-sozlesme.pdf"
+    "https://webcdn.getmidas.com/uploads/2025/12/04155923/genel-cerceve-sozlesme.pdf",
+    "https://www.getmidas.com/atlas/",
+    "https://www.getmidas.com/destek/borsa-istanbul/matriks-entegrasyonu/matriks-platformunda-hangi-yatirim-urunlerinde-islem-yapabilirim",
+    "https://alpaca.markets/blog/how-midas-is-leveling-the-playing-field-for-turkish-investors/"
   ],
   "no_policy_weakening": true,
   "unknown_never_pass": true,
-  "updated_on": "2026-10-03"
+  "updated_on": "2026-10-03",
+  "current_product_status": {
+    "atlas": {
+      "status": "LIVE_AND_FREE_TO_MIDAS_USERS",
+      "evidence": "Official Midas Atlas page is live and states free live market data, portfolio tracking, BIST/US stocks and US options."
+    },
+    "public_end_user_api": {
+      "status": "NOT_FOUND_AS_LIVE_PRODUCT",
+      "evidence": "Alpaca March 2026 Midas case study describes API access for advanced users as part of the 2026-and-beyond roadmap; current official Midas search surfaces Atlas but no public developer/API product."
+    },
+    "matriks": {
+      "status": "OFFICIAL_BUT_BIST_ONLY",
+      "evidence": "Official Midas Matriks support states Midas login is supported on Matriks platforms, but tradable products through this integration are Borsa Istanbul equities only.",
+      "account_or_g9_relevance": "NOT_A_NASDAQ_ACCOUNT_OR_G9_PATH"
+    }
+  }
 }
