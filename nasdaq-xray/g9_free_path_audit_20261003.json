@@ -63,17 +63,19 @@
     },
     {
       "provider": "Massive",
-      "status": "TECHNICALLY_EXACT_BUT_CURRENT_PLAN_NOT_ENTITLED",
+      "status": "TECHNICALLY_EXACT_BUT_CURRENT_ZERO_DOLLAR_PLAN_NOT_ENTITLED",
       "evidence": [
-        "Catalog exposes exact stock National NBBO and latest-trade endpoints.",
-        "Live connector probes for /v2/last/nbbo/AAPL, /v2/last/trade/AAPL and /v3/quotes/AAPL returned NOT_ENTITLED on current plan."
+        "Official endpoint schema exposes exact National NBBO bid/ask plus SIP and participant timestamps, and latest-trade exposes SIP/participant timestamps.",
+        "Current official plan table marks Last Quote (NBBO) NOT INCLUDED on Stocks Basic Free; realtime access appears only on Stocks Advanced.",
+        "Live connector probes for /v2/last/nbbo/AAPL, /v2/last/trade/AAPL and /v3/quotes/AAPL returned NOT_ENTITLED."
       ],
       "primary_sources": [
-        "https://massive.com/docs/rest/stocks/trades-quotes/quotes",
-        "https://massive.com/docs/rest/stocks/overview"
+        "https://massive.com/docs/rest/stocks/trades-quotes/last-quote?assetClass=stocks&license=personal&name=stocks_basic",
+        "https://massive.com/docs/rest/stocks/trades-quotes/last-trade?assetClass=stocks&license=personal&name=stocks_basic",
+        "https://massive.com/docs/rest/stocks/trades-quotes/quotes"
       ],
       "paid_fallback_allowed": false,
-      "reopen_condition": "Current zero-dollar entitlement changes to include live NBBO+trade endpoints without paid upgrade."
+      "reopen_condition": "Massive changes Stocks Basic/free entitlement to include realtime NBBO + latest trade, and live connector probe succeeds without paid upgrade."
     },
     {
       "provider": "Alpha Vantage",
@@ -130,6 +132,68 @@
         "https://api.ibkr.com/en/pricing/market-data-pricing.php"
       ],
       "reopen_condition": "Permanent-$0 automated consolidated Tape-C/NBBO entitlement without snapshot/fee/balance conditions."
+    },
+    {
+      "provider": "Tradier Brokerage API",
+      "status": "TECHNICALLY_QUALIFYING_DATA_PATH_BUT_TURKEY_RESIDENCY_BLOCKED",
+      "evidence": [
+        "Official docs state production Brokerage API provides realtime US equity data from a consolidated feed from all exchanges.",
+        "API access is included on every plan and Lite has a $0 monthly fee; official pages state no minimum balance required to open a Tradier account.",
+        "Official permitted/blocked-country list explicitly lists Turkey among countries whose residents cannot open Tradier Brokerage accounts."
+      ],
+      "primary_sources": [
+        "https://docs.tradier.com/docs/market-data",
+        "https://tradier.com/trade/stocks-and-options",
+        "https://support.tradier.com/kb/guide/en/permitted-and-blocked-countries-CLzSa0D1rf/Steps/4997916"
+      ],
+      "reopen_condition": "Tradier removes Turkey from the blocked-residency list while retaining $0 Lite API access and consolidated realtime US equity feed."
+    },
+    {
+      "provider": "Fennel API",
+      "status": "TECHNICALLY_PROMISING_NBBO_API_BUT_US_RESIDENT_ONLY",
+      "evidence": [
+        "Official API docs expose POST /markets/price/nbbo and describe it as the current consolidated National Best Bid and Offer across all U.S. exchanges.",
+        "API terms permit registered ultimate consumers to use market data in applications subject to no-redistribution rules.",
+        "Fennel Form CRS states brokerage services are offered to U.S.-resident retail investors, so a Turkey-resident path is not established."
+      ],
+      "primary_sources": [
+        "https://api.fennel.com/docs",
+        "https://fennel.com/disclosures/terms-of-use",
+        "https://fennel.com/files/disclosures/form-crs.pdf"
+      ],
+      "reopen_condition": "Primary-source eligibility expands to Turkey-resident retail users, with exact NBBO API entitlement available at permanent $0 and no funding/balance/activity condition."
+    },
+    {
+      "provider": "Charles Schwab Trader API / International",
+      "status": "PROMISING_BUT_STRICT_G9_UNPROVEN",
+      "evidence": [
+        "Schwab International currently advertises $0 minimum deposit for individual/joint brokerage accounts and real-time market information is governed by exchange agreements.",
+        "Schwab Developer Portal offers real-time APIs and OAuth-authorized applications, which could satisfy scheduler callability if the market-data endpoint is explicitly authorized.",
+        "Primary-source evidence obtained so far does not prove that a Turkey-resident applicant is currently eligible, nor that the Trader API's equity quote payload is explicitly consolidated Tape-C/NBBO under the exact market-data entitlement with permanent-$0 automated use.",
+        "General Schwab electronic-services terms prohibit automation unless the application is formally approved by Schwab, so only the sanctioned Developer/Trader API could qualify; screen scraping or unofficial automation is excluded."
+      ],
+      "primary_sources": [
+        "https://developer.schwab.com/",
+        "https://international.schwab.com/us-investing-brokerage-account",
+        "https://www.schwab.com/legal/electronic-services-agreement",
+        "https://www.schwab.com/legal/electronic-services-agreement-online"
+      ],
+      "reopen_condition": "Obtain primary-source proof of Turkey residency eligibility plus sanctioned Trader API quote documentation showing realtime consolidated National NBBO with independent bid/ask/trade timestamps and no recurring/balance/activity market-data fee."
+    },
+    {
+      "provider": "TradeStation API",
+      "status": "NONQUALIFYING_STRICT_PERMANENT_ZERO",
+      "evidence": [
+        "Qualified non-professional customers can receive major US equity Level-1 market data without a separate data fee.",
+        "Current official fee schedule imposes a $10 monthly inactivity fee unless minimum activity/balance conditions are met, violating strict permanent-$0/no-condition criterion.",
+        "Free Level-1 package wording does not by itself prove the exact consolidated Tape-C/National NBBO lineage required by strict G9."
+      ],
+      "primary_sources": [
+        "https://www.tradestation.com/pricing/service-fees/",
+        "https://www.tradestation.com/pricing/market-data-pricing/",
+        "https://www.tradestation.com/stocks-etfs-pricing-disclosures/"
+      ],
+      "reopen_condition": "Official terms remove inactivity/balance/activity conditions and primary-source API entitlement proves exact consolidated Tape-C/NBBO lineage."
     }
   ],
   "account_gate": {
@@ -139,7 +203,9 @@
     "repair": "Explicit reconnect/re-authorize Longbridge OAuth with required read-only portfolio/account scopes, then same-run account_balance + stock_positions parseability probe."
   },
   "current_conclusion": "G9_BLOCKED_FREE_AUTOMATION_PATH",
-  "falsification_condition": "Only reopen on newer PRIMARY SOURCE proof of exact lawful automated/non-display permanent-$0 consolidated UTP/National NBBO entitlement from a scheduler-callable provider, followed by same-run RTH bid/ask/last freshness proof.",
+  "falsification_condition": "Reopen only on newer PRIMARY SOURCE proof of exact lawful automated/non-display permanent-$0 consolidated UTP/National NBBO entitlement from a scheduler-callable provider, plus current user jurisdiction eligibility where an account is required, followed by same-run RTH bid/ask/last freshness proof.",
   "no_policy_weakening": true,
-  "unknown_never_pass": true
+  "unknown_never_pass": true,
+  "last_extended_on": "2026-10-03",
+  "provider_count": 12
 }
