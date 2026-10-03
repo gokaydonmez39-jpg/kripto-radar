@@ -10,6 +10,7 @@ on:
       - "nasdaq-xray/deep_pre_r1_shadow.py"
       - "nasdaq-xray/final_tech_shadow.py"
       - "nasdaq-xray/build_current_terminal.py"
+      - "nasdaq-xray/build_final_gate_overlay_v2.py"
       - "nasdaq-xray/strict_g9_runtime_state.json"
       - "nasdaq-xray/account_gate_contract.json"
       - "nasdaq-xray/account_provider_adapter_contract.json"
@@ -87,7 +88,8 @@ jobs:
             nasdaq-xray/family_c_engine.py \
             nasdaq-xray/deep_pre_r1_shadow.py \
             nasdaq-xray/final_tech_shadow.py \
-            nasdaq-xray/build_current_terminal.py
+            nasdaq-xray/build_current_terminal.py \
+            nasdaq-xray/build_final_gate_overlay_v2.py
 
       - name: Install zero-dollar runtime
         if: steps.event.outputs.ready == 'true'
@@ -176,6 +178,31 @@ jobs:
           print({"asof":a,"terminal_status":t["status"],"terminal_result":t["terminal_result"],"pre_g9":t["counts"]["pre_g9_tech_pass"],"blockers":t["blockers"]})
           PY
 
+      - name: Build coherent V2 final-gate overlay
+        if: steps.event.outputs.ready == 'true'
+        run: |
+          python nasdaq-xray/build_final_gate_overlay_v2.py
+          python - <<'PY'
+          import hashlib,json
+          def blob(path):
+              b=open(path,"rb").read()
+              return hashlib.sha1(f"blob {len(b)}\0".encode()+b).hexdigest()
+          o=json.load(open("nasdaq-xray/canonical_current_final_gate_overlay.json"))
+          t=json.load(open("nasdaq-xray/canonical_current_terminal.json"))
+          assert o["schema"]=="XRAY_FINAL_GATE_OVERLAY_V2"
+          assert o["execution"]=="NONE" and o["real_money"]=="NO-GO"
+          assert o["source_terminal"]["blob_sha"]==blob("nasdaq-xray/canonical_current_terminal.json")
+          assert o["source_terminal"]["blob_sha"]==blob("nasdaq-xray/canonical_current_terminal.json")
+          assert o["asof_et"]==t["asof_et"]
+          assert o["binding_integrity"]["fail_closed_safe"] is True
+          assert o["true_full_go"]["status"] in {"PASS","BLOCKED"}
+          if o["strict_g9"]["g9_pass"]:
+              assert o["strict_g9"]["negative_cache_binding_exact"] is True
+          if o["account"]["account_pass"]:
+              assert o["account"]["adapter_binding_exact"] is True
+          print({"overlay":o["schema"],"asof":o["asof_et"],"true_full_go":o["true_full_go"]["status"]})
+          PY
+
       - name: Commit current final artifacts
         if: steps.event.outputs.ready == 'true'
         shell: bash
@@ -189,6 +216,7 @@ jobs:
             nasdaq-xray/canonical_current_deep_full.json
             nasdaq-xray/canonical_current_final_tech.json
             nasdaq-xray/canonical_current_terminal.json
+            nasdaq-xray/canonical_current_final_gate_overlay.json
           )
           tmpdir="$(mktemp -d)"
           trap 'rm -rf "$tmpdir"' EXIT
