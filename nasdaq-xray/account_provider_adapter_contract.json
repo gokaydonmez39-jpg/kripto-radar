@@ -203,7 +203,34 @@
       "probe": "nasdaq-xray/account_longbridge_mcp_v2_probe.py",
       "private_persistence": "FORBIDDEN_PLAINTEXT; CIPHERTEXT_ONLY",
       "autonomous_refresh": "Supported: refresh token rotation is re-encrypted and committed before account reads, so an upstream read failure cannot strand the next run.",
-      "current_blocker": "One-time Longbridge account.read Agent Auth Code has not yet been configured as GitHub Actions secret LONGBRIDGE_AGENT_AUTH_CODE; encrypted vault therefore does not yet exist."
+      "current_blocker": "One-time Longbridge account.read Agent Auth Code has not yet been configured as GitHub Actions secret LONGBRIDGE_AGENT_AUTH_CODE; encrypted vault therefore does not yet exist.",
+      "upstream_source": {
+        "repository": "longbridge/longbridge-mcp",
+        "audited_commit": "9322ce27aca876b6e96f3359c95caae8dc75beea",
+        "account_read_scope_key": "account.read",
+        "account_read_production_scope_id": "6",
+        "trade_write_scope_key": "trade.write",
+        "trade_write_production_scope_id": "11",
+        "v2_scopes": [
+          "watchlist",
+          "account.read",
+          "trade.read"
+        ],
+        "v2_trade_write_advertised": false,
+        "v2_money_movement_exposed": false,
+        "enforcement": "LIST_AND_CALL_ALLOWLIST_EXECUTION_LAYER"
+      },
+      "security_evidence": [
+        "Official longbridge/longbridge-mcp source defines production account.read scope id 6.",
+        "Official /v2 scope set is watchlist + account.read + trade.read and deliberately excludes trade.write.",
+        "Official /v2 allowlist tests reject every tool assigned to trade.write and hard-excluded execution/money-movement tools.",
+        "Official scope catalogue maps account_balance and stock_positions to account.read.",
+        "Longbridge Agent Auth lets the user preselect permissions; the one-time code is exchanged for access+refresh tokens and the server remains stateless.",
+        "XRAY encrypted vault keeps token plaintext out of the public repository and persists refresh rotation as authenticated ciphertext only.",
+        "Official upstream /v2 is a default-out whitelist; list_tools and call_tool both enforce the restricted allowlist.",
+        "Official upstream tests assert every trade.write tool is absent and deposits/withdrawals/bank_cards money-movement tools are excluded from /v2.",
+        "Production OAuth scope mapping is account.read=6 and trade.write=11; XRAY bootstrap requires account.read and rejects trade.write."
+      ]
     }
   },
   "transition_to_pass": "Only fresh same-run provider readback satisfying the pass_rule may set ACCOUNT=PASS. Persisted prior PASS alone is insufficient.",
