@@ -4,7 +4,7 @@
   "provider": "Alpaca ChatGPT market-data plugin / connected MCP surface",
   "execution": "NONE",
   "real_money": "NO-GO",
-  "status": "HIGH_POTENTIAL_CHATGPT_LIVE_MARKET_DATA_SURFACE_HISTORICAL_SIP_A_B_CONFIRMED_LIVE_SIP_ENTITLEMENT_AND_STRICT_C_UNPROVEN",
+  "status": "HIGH_POTENTIAL_HISTORICAL_SIP_CONFIRMED_STANDARD_LIVE_SIP_PAID_SPECIAL_CHATGPT_ENTITLEMENT_UNPROVEN",
   "evidence": [
     "The connected Alpaca ChatGPT market-data surface exposes stock quotes, trades, latest quote/trade and snapshot tools with explicit feed selectors including SIP.",
     "A direct same-conversation historical SIP probe succeeded for AAPL on 2026-10-02 15:59:59 ET, returning Tape C quote events with bid/ask, exchange identifiers and UTC event timestamps, and separate Tape C trade events with exchange identifiers and independent UTC timestamps.",
@@ -13,7 +13,11 @@
     "The connected plugin's latest SIP quote/trade tools returned connector INTERNAL_ERROR on Saturday. This is not an entitlement PASS or FAIL and cannot substitute for a same-run RTH probe.",
     "Alpaca's official March 2026 ChatGPT integration announcement and OpenAI's Alpaca plugin page both state that the ChatGPT integration exposes live stock/options/crypto market data. Neither reviewed page identifies the equity live feed as SIP rather than IEX.",
     "Alpaca's March 2026 launch article says the integration can be enabled from a ChatGPT Plus plan. OpenAI's current plugin documentation says plugin availability/features depend on plan and a limited set is available on Free. Strict G9-C therefore cannot assume permanent-$0 access to this exact Alpaca plugin surface without current provider/platform proof that the qualifying SIP entitlement has no paid plan/subscription condition.",
-    "Historical XRAY scheduled tasks have successfully invoked the connected Alpaca market-data connector, proving scheduler-to-plugin technical callability for Alpaca reads in principle. A live strict-G9 RTH witness still requires the exact plugin surface to return recent SIP quote/trade events <=60s old in the scheduled run."
+    "Historical XRAY scheduled tasks have successfully invoked the connected Alpaca market-data connector, proving scheduler-to-plugin technical callability for Alpaca reads in principle. A live strict-G9 RTH witness still requires the exact plugin surface to return recent SIP quote/trade events <=60s old in the scheduled run.",
+    "Alpaca Support ticket #366689 replied on 2026-10-03 that standard U.S.-equity live SIP access requires Algo Trader Plus at $99/month, while Basic is IEX realtime and SIP historical data inside the latest 15 minutes is not available.",
+    "The same Alpaca Support response stated that it could not verify the exact live U.S.-equity feed used inside the ChatGPT integration, any special SIP entitlement specific to the integration, connector-specific timestamp behavior, or integration-specific fee/account requirements.",
+    "Alpaca Support also stated that the launch information describes enabling Alpaca from a ChatGPT Plus plan; this is additional evidence of a possible paid-platform condition, but XRAY will not assume exclusivity until a human/product-team confirmation.",
+    "Because the support response was explicitly marked automatically generated using AI, XRAY requested human Market Data/Partnerships/ChatGPT-integration escalation under ticket #366689 to choose between normal per-user IEX/SIP entitlement and a separate platform-level SIP agreement."
   ],
   "runtime_witness": {
     "observed_on": "2026-10-03",
@@ -49,8 +53,9 @@
   ],
   "failed_or_unproven_gates": [
     "B_SAME_RUN_RTH_RECENT_SIP_FRESHNESS",
-    "C_LIVE_SIP_PERMANENT_ZERO_EXACT_PLUGIN_ENTITLEMENT",
-    "C_NO_SUBSCRIPTION_OR_PLATFORM_PLAN_CONDITION"
+    "C_SPECIAL_CHATGPT_LIVE_SIP_PERMANENT_ZERO_ENTITLEMENT_UNPROVEN",
+    "C_STANDARD_ALPACA_LIVE_SIP_REQUIRES_99_USD_MONTHLY_ALGO_TRADER_PLUS",
+    "C_CHATGPT_PLAN_CONDITION_NOT_FULLY_RESOLVED"
   ],
   "provisional_pass_gates": [
     "A_HISTORICAL_EXACT_SIP_TAPE_C_LINEAGE",
@@ -62,7 +67,29 @@
     "Primary-source proof that the exact live SIP plugin entitlement is permanent-$0 for the user and does not require a paid Alpaca market-data plan, funding/balance/activity condition, or a paid ChatGPT subscription under the strict current policy.",
     "Same-run US RTH scheduled latest quote + latest trade or bounded recent quote/trade probe with feed=sip proving <=60s quote/trade age and <=15s skew for AAPL and NVDA."
   ],
-  "reopen_condition": "When the exact ChatGPT Alpaca live-feed entitlement and zero-dollar/no-subscription condition are primary-source proven, run same-run RTH scheduled SIP quote/trade witness. Do not infer realtime SIP from historical SIP success.",
+  "reopen_condition": "Human Alpaca/OpenAI confirmation must prove a separate ChatGPT platform-level live SIP/NBBO entitlement with permanent-$0 end-user market-data access and no paid ChatGPT/Alpaca plan condition; otherwise this path is strict-C fail. If proven, run same-run US-RTH recent SIP quote/trade witness.",
   "unknown_never_pass": true,
-  "no_policy_weakening": true
+  "no_policy_weakening": true,
+  "provider_support": {
+    "ticket": "366689",
+    "provider": "Alpaca Support",
+    "response_received_on": "2026-10-03",
+    "support_response_summary": {
+      "normal_basic_live_feed": "IEX",
+      "normal_recent_sip_requirement": "Algo Trader Plus",
+      "algo_trader_plus_price_usd_month": 99,
+      "chatgpt_special_sip_entitlement_verified": false,
+      "exact_chatgpt_equity_feed_verified": false,
+      "automation_personal_use": "generally permitted within subscription entitlements and API limits",
+      "response_marked_ai_generated": true
+    },
+    "escalation": {
+      "sent_on": "2026-10-04",
+      "subject": "Ticket #366689 escalation request — ChatGPT live SIP/NBBO entitlement",
+      "requested_human_team": "Market Data / Partnerships / ChatGPT integration",
+      "required_answer": "A = normal per-user entitlement; B = separate Alpaca/OpenAI platform-level live SIP entitlement",
+      "status": "AWAITING_HUMAN_PROVIDER_CONFIRMATION"
+    },
+    "authority_effect": "NO_PASS; PROVIDER-SPECIFIC SPECIAL_ENTITLEMENT REMAINS UNPROVEN"
+  }
 }
