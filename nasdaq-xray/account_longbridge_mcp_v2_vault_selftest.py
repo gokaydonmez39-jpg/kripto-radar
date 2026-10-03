@@ -62,6 +62,18 @@ def main():
         "TRADE_WRITE_SCOPE_FORBIDDEN",
     )
 
+    derived_seed = "A" * 96
+    derived1 = vault.resolve_vault_key({vault.AUTH_CODE_KEY_ENV: derived_seed})
+    derived2 = vault.resolve_vault_key({vault.AUTH_CODE_KEY_ENV: derived_seed})
+    assert derived1 == derived2
+    assert derived_seed not in derived1
+
+    explicit = Fernet.generate_key().decode()
+    assert vault.resolve_vault_key({
+        vault.FERNET_KEY_ENV: explicit,
+        vault.AUTH_CODE_KEY_ENV: derived_seed,
+    }) == explicit
+
     key = Fernet.generate_key().decode()
     encoded = vault.encrypt_payload(payload, key)
     assert b"private-access-token" not in encoded
