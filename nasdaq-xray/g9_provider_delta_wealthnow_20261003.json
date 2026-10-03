@@ -4,7 +4,7 @@
   "provider": "Wealthnow",
   "execution": "NONE",
   "real_money": "NO-GO",
-  "status": "HIGH_POTENTIAL_FREE_SNAPSHOT_B_SCHEMA_PROVEN_ADAPTER_IMPLEMENTED_A_AND_C_LICENSE_UNPROVEN",
+  "status": "HIGHEST_POTENTIAL_FREE_SNAPSHOT_B_D_STRONG_STRUCTURAL_C_PATH_OPEN_A_AND_PROVIDER_CLASSIFICATION_UNPROVEN",
   "evidence": [
     "Wealthnow Developer API Free tier is documented at $0/no-card/free-forever style access with 1,000 monthly credits and a hard cap rather than automatic overage. Fundamentals and Market Data are included on Free; price_snapshot costs 1 credit.",
     "The Free fundamentals/price_snapshot documentation now explicitly defines `as_of`/`time` as the UTC time of the last trade and `quote_as_of` as the instant when the quote last changed. The API response envelope `timestamp` is separately defined as API-answer time and not market time. This materially proves the required independent trade-time vs quote-time semantics at schema level.",
@@ -14,7 +14,9 @@
     "Wealthnow Terms of Service explicitly cover the API. Automated/bot use is not categorically prohibited; the prohibition targets automation that burdens the service or bypasses rate limits/access controls. This supports sanctioned programmatic API use within documented limits.",
     "Those Terms also state that market data and other content come from third-party providers and prohibit scraping/resale/redistribution without consent. They do not identify the live equity vendor or expressly grant the exchange/SIP non-display entitlement required by strict G9-C.",
     "The consumer-plan comparison currently shows a 15-minute Free market-data row, while the separate Developer API documentation shows Free+ live price_snapshot and an in-RTH live example. These appear to be separate product-plan surfaces, but XRAY must not transfer entitlements between them. Only the Developer API contract is relevant to the scheduler path.",
-    "The WEALTHNOW adapter is already implemented in nasdaq-xray/strict_g9_probe.py and remains authority-gated. It may not run until A and C are proven; after that a scheduler credential and same-run RTH probe are still required."
+    "The WEALTHNOW adapter is already implemented in nasdaq-xray/strict_g9_probe.py and remains authority-gated. It may not run until A and C are proven; after that a scheduler credential and same-run RTH probe are still required.",
+    "Current UTP Detailed Usage Reporting Codes define UTP1APIS = Real-Time Nonprofessional Uncontrolled Recipient at $1/month billable to the Vendor, while UTP policy expressly treats API as an Uncontrolled Product. Therefore Wealthnow's $0 Free API can be economically compatible with strict G9-C if Wealthnow lawfully classifies the exact single-user automated API use under UTP1APIS or an equivalent approved category and absorbs the assessment.",
+    "Wealthnow's official hosted remote MCP documentation states the Free plan provides 1,000 credits/month with no card, supports OAuth or API-key scripts, exposes read-only market-data tools, and has been tested end-to-end with ChatGPT. This materially strengthens scheduler/programmatic D, but cannot self-prove market-data lineage or UTP classification."
   ],
   "primary_sources": [
     "https://app.wealthnow.io/docs/market-data",
@@ -25,19 +27,26 @@
     "https://wealthnow.io/terms",
     "https://wealthnow.io/disclosures"
   ],
-  "reopen_condition": "Obtain primary-source Wealthnow confirmation that Free Developer API price_snapshot bid/ask are the consolidated U.S. National NBBO sourced from CTA/UTP SIP or a named licensed consolidated redistributor, and that the Free API entitlement covers automated/non-display use with all applicable exchange/vendor fees absorbed and no separate subscription/balance/funding/activity/account-maintenance charge. Then configure WEALTHNOW_API_KEY and require same-run RTH B/D freshness/skew proof.",
+  "reopen_condition": "Primary-source Wealthnow confirmation of Free price_snapshot consolidated lineage + UTP1APIS/equivalent approved classification and vendor fee absorption; then configure WEALTHNOW_API_KEY and require same-run US-RTH B/D freshness and skew proof.",
   "no_policy_weakening": true,
   "failed_gates": [
-    "A_FREE_ROUTE_NATIONAL_NBBO_LINEAGE",
-    "C_FREE_ROUTE_EXPLICIT_NONDIPLAY_MARKET_DATA_LICENSE",
-    "D_RUNTIME_CREDENTIAL_AND_RTH_PROBE"
+    "A_FREE_ROUTE_EXACT_UTP_SIP_OR_NAMED_LICENSED_REDIStributor_LINEAGE",
+    "C_PROVIDER_CONFIRMED_UTP1APIS_OR_EQUIVALENT_NONPROFESSIONAL_API_CLASSIFICATION_AND_VENDOR_FEE_ABSORPTION",
+    "D_RUNTIME_CREDENTIAL_AND_SAME_RUN_RTH_PROBE"
   ],
   "provisional_pass_gates": [
     "B_EVENT_TIMESTAMP_SCHEMA_PRIMARY_SOURCE",
+    "B_DOCUMENTED_LIVE_RTH_FRESHNESS_EXAMPLE",
     "C_ZERO_DOLLAR_DEVELOPER_API_COST_WITH_HARD_CAP",
-    "C_SANCTIONED_PROGRAMMATIC_API_INTENT",
-    "D_TECHNICAL_ADAPTER_IMPLEMENTED"
+    "C_SANCTIONED_PROGRAMMATIC_API_AND_REMOTE_MCP_INTENT",
+    "C_STRUCTURAL_UTP_NONPROFESSIONAL_API_PATH_EXISTS",
+    "D_HOSTED_REMOTE_MCP_AND_TECHNICAL_ADAPTER_IMPLEMENTED"
   ],
   "technical_adapter_status": "IMPLEMENTED_FAIL_CLOSED_BEHIND_AUTHORITY",
-  "last_checked_on": "2026-10-03"
+  "last_checked_on": "2026-10-03",
+  "utp_nonprofessional_api_refresh": {
+    "path": "nasdaq-xray/g9_utp_nonprofessional_api_refresh_20261003.json",
+    "blob_sha": "e557bb14abe883f1d07380f7301b465b0abb4a05"
+  },
+  "exact_provider_question": "For a Free-plan API key, please confirm (1) whether the equity bid/ask fields returned by GET /api/v3/fundamentals/price_snapshot are the live consolidated U.S. National Best Bid and Offer sourced from CTA/UTP SIP, or identify the licensed consolidated redistributor/feed supplying them; (2) whether quote_as_of is the upstream quote-event time and as_of/time is independently the upstream last-trade event time; and (3) whether a single nonprofessional user consuming this Free REST/MCP/API programmatically through unattended third-party automation is lawfully covered under UTP1APIS or an equivalent approved nonprofessional uncontrolled classification, with any exchange/UTP/vendor assessment absorbed by Wealthnow so the end user remains permanently $0 and has no subscription, balance, funding, activity, account-maintenance or per-query monetary condition."
 }
