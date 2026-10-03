@@ -1,0 +1,37 @@
+{
+  "schema": "XRAY_G9_PROVIDER_DELTA_V1",
+  "generated_on": "2026-10-03",
+  "provider": "DriveWealth consolidated NBBO / Apex-QUODD B2B market-data infrastructure",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "status": "TECHNICALLY_STRONG_UPSTREAM_B2B_ONLY_NO_PERMANENT_ZERO_ENDUSER_API_ENTITLEMENT",
+  "evidence": [
+    "DriveWealth officially documents a consolidated quote endpoint that fetches NBBO quote details for a security.",
+    "The DriveWealth endpoint is a back-office/partner API requiring partner bearer JWT and a dw-customer-user-id; it is not documented as a retail end-user self-service market-data API.",
+    "DriveWealth's integration documentation describes clients/partners as the entities building the customer-facing brokerage experience; in omnibus setups clients must source their own real-time market data.",
+    "Apex has an official strategic data partnership with QUODD to provide Apex clients access to real-time market-data feeds and Vendor-of-Record services, demonstrating the broker/fintech-absorbed licensing architecture.",
+    "Neither DriveWealth nor Apex/QUODD primary sources found here grant this project's retail end user permanent-$0 production automated/non-display National-NBBO API access. Production access is commercial/B2B integration territory; free sandbox/testing is not a permanent production entitlement."
+  ],
+  "primary_sources": [
+    "https://developer.drivewealth.com/apis/reference/get_quotes-vdr",
+    "https://developer.drivewealth.com/apis/docs/omnibus-setup",
+    "https://developer.drivewealth.com/apis/docs/mcp-tool-catalog",
+    "https://www.nasdaq.com/press-release/real-time-market-data-from-quodd-financial-now-available-on-apex-platform-2021-08-26",
+    "https://marketdata.quodd.com/pricing"
+  ],
+  "gate_analysis": {
+    "A": "TECHNICALLY_STRONG_CONSOLIDATED_NBBO_UPSTREAM",
+    "B": "TECHNICALLY_PLAUSIBLE_BUT_ENDUSER_SAME_RUN_EVENT_TIMESTAMP_PATH_NOT_ESTABLISHED",
+    "C": "FAIL_NO_PERMANENT_ZERO_RETAIL_PRODUCTION_AUTOMATED_ENTITLEMENT",
+    "D": "FAIL_FOR_CURRENT_USER; partner/back-office credentials required rather than retail self-service scheduler credential"
+  },
+  "failed_gates": [
+    "C_PERMANENT_ZERO_ENDUSER_ENTITLEMENT",
+    "D_RETAIL_ENDUSER_SCHEDULER_ACCESS"
+  ],
+  "reopen_condition": "A DriveWealth/Apex-powered retail broker or fintech must officially expose a sanctioned end-user read-only API/connector with consolidated National-NBBO quote+trade event timestamps and explicitly grant permanent-$0 automated/non-display use with no balance/funding/activity/subscription/per-query/account-maintenance condition.",
+  "negative_cache_only": true,
+  "may_never_create_pass": true,
+  "unknown_never_pass": true,
+  "no_policy_weakening": true
+}
