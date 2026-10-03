@@ -36,7 +36,7 @@
   },
   "retry_class": "EXTERNAL_SCOPE_OR_ACCOUNT_ELIGIBILITY_BLOCK",
   "reauth_rule": "Ordinary token refresh/reconnect has already been falsified as a repair: a new OAuth session enabled watchlist but account/portfolio/trading-read endpoints remained 403308. Retry only on a material scope/account-eligibility change.",
-  "pass_transition_rule": "ACCOUNT_PASS requires fresh same-run parseable account_balance + stock_positions from an eligible sanctioned adapter, exact adapter binding, and no exposed write surface for the restricted MCP path. Persisted status or encrypted vault existence alone can never PASS.",
+  "pass_transition_rule": "ACCOUNT_PASS requires fresh same-run parseable account_balance + stock_positions from an eligible sanctioned adapter, exact current adapter binding, current workflow-run attestation, and for restricted MCP /v2 verified absence of forbidden write surface. Encrypted vault existence alone never PASS.",
   "updated_on": "2026-10-03",
   "last_reauth_attempt": {
     "user_reported_reauthorized": true,
@@ -60,7 +60,7 @@
     "today_orders_read_only": "403308_SCOPE_DENIED"
   },
   "current_interpretation": "Fresh full reauthorization changed watchlist from denied to allowed, proving a new OAuth session took effect. However account/portfolio/trading-read APIs still return 403308. The active token therefore lacks the account/portfolio/trading scope family, or those scopes are unavailable for this account type/region.",
-  "next_repair": "Preferred repair: use official Longbridge hosted MCP /v2 with account.read only. Add a one-time Longbridge Agent Auth Code as GitHub Actions secret LONGBRIDGE_AGENT_AUTH_CODE; Final Factory will redeem it, persist only encrypted OAuth token state, verify /v2 write surface is absent, then require same-run account_balance + stock_positions. Ordinary ChatGPT-plugin reconnect remains falsified as a repair.",
+  "next_repair": "Preferred repair: official Longbridge hosted MCP /v2 with account.read only. Configure an independent XRAY_ACCOUNT_TOKEN_FERNET_KEY first, then a fresh one-time LONGBRIDGE_AGENT_AUTH_CODE carrying account.read and no trade.write. Final Factory must refuse code redemption without the key, persist only encrypted access+refresh state, verify /v2 write surface is absent, and obtain same-run account_balance + stock_positions.",
   "primary_adapter": "LONGBRIDGE",
   "adapter_contract": {
     "path": "nasdaq-xray/account_provider_adapter_contract.json",
@@ -85,7 +85,7 @@
   "binding_revalidation_note": "Exact adapter/gate binding revalidated after evidence-only Midas updates; no ACCOUNT PASS created and no execution capability added.",
   "binding_revalidation": {
     "status": "EXACT",
-    "adapter_blob_sha": "bf2de4696946c34e534f18060c29ea5247091f12",
+    "adapter_blob_sha": "9abf6ee307e8f728cc77edde03bb5e8f238564b0",
     "revalidated_on": "2026-10-03",
     "semantic_effect": "NONE_ZERO_ALPHA"
   },
@@ -93,10 +93,16 @@
     "status": "UPSTREAM_SOURCE_VERIFIED",
     "upstream_repository": "longbridge/longbridge-mcp",
     "upstream_commit": "9322ce27aca876b6e96f3359c95caae8dc75beea",
+    "endpoint": "https://mcp.longbridge.com/v2",
+    "token_proxy": "https://mcp.longbridge.com/oauth2/token",
     "required_scope": "account.read",
     "production_scope_id": "6",
+    "trade_write_scope": "trade.write",
+    "trade_write_production_scope_id": "11",
     "trade_write_scope_allowed": false,
     "money_movement_allowed": false,
+    "encryption_key_source": "INDEPENDENT_GITHUB_ACTIONS_SECRET_ONLY",
+    "agent_auth_code_used_as_encryption_key": false,
     "enforcement": "LIST_AND_CALL_ALLOWLIST"
   }
 }
