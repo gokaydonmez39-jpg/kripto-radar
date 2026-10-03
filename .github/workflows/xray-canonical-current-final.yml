@@ -139,7 +139,10 @@ jobs:
         if: steps.event.outputs.ready == 'true'
         run: |
           python - <<'PY'
-          import json
+          import hashlib,json
+          def blob(path):
+              b=open(path,"rb").read()
+              return hashlib.sha1(f"blob {len(b)}\0".encode()+b).hexdigest()
           e=json.load(open("nasdaq-xray/canonical_current_event_state.json"))
           c=json.load(open("nasdaq-xray/canonical_current_family_c.json"))
           d=json.load(open("nasdaq-xray/canonical_current_deep_full.json"))
@@ -158,6 +161,9 @@ jobs:
           assert ag["execution"]=="NONE" and ag["real_money"]=="NO-GO" and ag["provider"]=="PROVIDER_NEUTRAL"
           assert t["g9_global_status"]==("G9_PASS" if g9.get("g9_pass") is True else "G9_BLOCKED_FREE_AUTOMATION_PATH")
           assert t["account_status"]==ag["current_status"]
+          assert t["evidence"]["g9_runtime"]["blob_sha"]==blob("nasdaq-xray/strict_g9_runtime_state.json")
+          assert t["evidence"]["account_gate"]["blob_sha"]==blob("nasdaq-xray/account_gate_contract.json")
+          assert t["evidence"]["account_gate"]["adapter_contract_blob_sha"]==blob("nasdaq-xray/account_provider_adapter_contract.json")
           assert t["compiled_policy_hash"]=="26a95745a50b65e85f6ece24b6501af0994764a84ddd886edb70d1fcd770849c"
           assert e.get("compiled_policy_hash")==t["compiled_policy_hash"]
           assert e.get("compiled_policy_version")=="C4.17"
