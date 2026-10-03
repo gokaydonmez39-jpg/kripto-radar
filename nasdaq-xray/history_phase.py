@@ -6,6 +6,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 import akshare as ak
+import pandas_market_calendars as mcal
 
 ROOT=Path(__file__).resolve().parent
 INPUT=Path(os.getenv("XRAY_HISTORY_INPUT", str(ROOT/"canonical_mc_input_20260930.json")))
@@ -84,11 +85,51 @@ def week_count(by,asof):
     return len(weeks)
 
 def classify(by,asof,source):
-    if not by or asof not in by:return "UNKNOWN",{"reason":"ASOF_MISSING_OR_EMPTY","source":source,"daily_bars":len(by or {})}
+    dates=sorted(by or {})
+    base={
+      "source":source,
+      "daily_bars":len(dates),
+      "first_date":dates[0] if dates else None,
+      "last_date":dates[-1] if dates else None,
+      "asof_present":bool(asof in (by or {})),
+    }
+    if not by or asof not in by:
+        return "UNKNOWN",dict(base,reason="ASOF_MISSING_OR_EMPTY")
     daily=len(by);weekly=week_count(by,asof)
-    info={"source":source,"daily_bars":daily,"completed_week_count":weekly}
+    info=dict(base,completed_week_count=weekly)
     if daily>=HARD_DAILY and weekly>=HARD_WEEKLY:return "PASS_HISTORY",info
     return "POTENTIAL_FAIL_HISTORY",info
+
+def aligned_first_bar_upper_bound_fail(a,b,asof):
+    """Evidence-only terminal fail for young listings.
+
+    If two independent providers begin on the exact same first trading date,
+    the official US-equity session calendar gives a hard upper bound on the
+    number of completed sessions/weeks available to the current symbol. This
+    may only create FAIL, never PASS.
+    """
+    fa=(a or {}).get("first_date"); fb=(b or {}).get("first_date")
+    if not fa or fa!=fb:
+        return None
+    try:
+        cal=mcal.get_calendar("NYSE")
+        sched=cal.schedule(start_date=fa,end_date=asof)
+        sessions=[x.date().isoformat() for x in sched.index]
+        max_daily=len(sessions)
+        max_weekly=week_count({d:(1,1) for d in sessions},asof)
+    except Exception:
+        return None
+    if max_daily<HARD_DAILY or max_weekly<HARD_WEEKLY:
+        return {
+          "proof":"TWO_PROVIDER_ALIGNED_FIRST_BAR_UPPER_BOUND",
+          "providers":[a.get("source"),b.get("source")],
+          "first_date":fa,
+          "asof_et":asof,
+          "max_possible_daily_bars":max_daily,
+          "max_possible_completed_weeks":max_weekly,
+          "thresholds":{"daily":HARD_DAILY,"weekly_completed":HARD_WEEKLY},
+        }
+    return None
 
 def sina(sym,asof):
     try:
@@ -181,6 +222,15 @@ def eval_one(sym,asof):
     if ys=="PASS_HISTORY":return sym,ys,yi,{"sina":sm,"nasdaq":nm,"yahoo":ym}
     eb,em=eastmoney(sym,asof);es,ei=classify(eb,asof,"EASTMONEY_US_DAILY_NASDAQ_105")
     if es=="PASS_HISTORY":return sym,es,ei,{"sina":sm,"nasdaq":nm,"yahoo":ym,"eastmoney":em}
+
+    # Recent-listing proof: two independent providers with the exact same
+    # first bar can establish a hard maximum number of sessions even when a
+    # latest provider bar is missing. Evidence-only: this can never create PASS.
+    for aa,bb in ((si,yi),(si,ei),(yi,ei),(ni,yi),(ni,ei)):
+        proof=aligned_first_bar_upper_bound_fail(aa,bb,asof)
+        if proof:
+            return sym,"FAIL_HISTORY",proof,{"sina":sm,"nasdaq":nm,"yahoo":ym,"eastmoney":em}
+
     # Terminal FAIL requires at least two independent providers to agree below either threshold.
     fails=[x for x in [
       si if ss=="POTENTIAL_FAIL_HISTORY" else None,
