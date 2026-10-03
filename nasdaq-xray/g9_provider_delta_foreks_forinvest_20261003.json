@@ -1,0 +1,28 @@
+{
+  "schema": "XRAY_G9_PROVIDER_DELTA_V1",
+  "generated_on": "2026-10-03",
+  "provider": "Foreks / ForInvest Web SDK",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "status": "TECHNICALLY_CAPABLE_BUT_COMMERCIAL_PRODUCTION_ENTITLEMENT_REQUIRED",
+  "evidence": [
+    "Official ForInvest SDK documentation exposes authenticated WebSocket and REST services, symbol definitions, bid/ask field subscriptions, depth and snapshot services.",
+    "The SDK exposes license metadata, indicating feed capabilities are entitlement-controlled.",
+    "Official SDK legal disclaimer says not to put the SDK into production use and directs users to contact the ForInvest sales team for credentials/password information.",
+    "No primary-source permanent-$0 automated/non-display U.S. consolidated National NBBO entitlement was found.",
+    "Midas publicly identifies Foreks as the data provider on some BIST/FX/gold web surfaces, but no primary source binds Midas U.S. mobile/Atlas realtime data specifically to Foreks."
+  ],
+  "primary_sources": [
+    "https://fws.foreks.com/sdk-doc/index.html",
+    "https://fws.foreks.com/sdk-doc/classes/default.html",
+    "https://fws.foreks.com/sdk-doc/interfaces/_internal_.IPubsubConnectorService.html"
+  ],
+  "failed_or_unproven_gates": [
+    "A",
+    "C",
+    "D_ZERO_DOLLAR_PRODUCTION"
+  ],
+  "midas_relevance": "POSSIBLE_VENDOR_CLUE_ONLY_NOT_PROVEN_FOR_US_MOBILE_ATLAS",
+  "reopen_condition": "Primary-source documentation identifies a permanent-$0 production entitlement carrying consolidated U.S. National NBBO with scheduler-safe automated/non-display rights and exact quote/trade event timestamps.",
+  "no_policy_weakening": true
+}
