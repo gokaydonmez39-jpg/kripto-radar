@@ -66,7 +66,8 @@
       "last_checked_on": "2026-10-03",
       "reopen_condition": "Stocks Basic/free gains realtime NBBO+latest trade and live connector stops returning NOT_ENTITLED.",
       "negative_cache_only": true,
-      "may_never_create_pass": true
+      "may_never_create_pass": true,
+      "runtime_audit_file": "nasdaq-xray/g9_runtime_connector_audit_20261003.json"
     },
     {
       "provider": "Alpha Vantage",
@@ -103,7 +104,8 @@
       "last_checked_on": "2026-10-03",
       "reopen_condition": "Permanent-$0 full SIP/NBBO entitlement replaces IEX-only free coverage.",
       "negative_cache_only": true,
-      "may_never_create_pass": true
+      "may_never_create_pass": true,
+      "runtime_audit_file": "nasdaq-xray/g9_runtime_connector_audit_20261003.json"
     },
     {
       "provider": "Interactive Brokers",
@@ -158,14 +160,14 @@
     },
     {
       "provider": "TradeStation API",
-      "status": "NONQUALIFYING_STRICT_PERMANENT_ZERO",
+      "status": "TECHNICALLY_IMPLEMENTED_STRICT_C_FAIL_FUNDED_ACCOUNT_REQUIRED_FOR_WEBAPI_KEY",
       "failed_gates": [
-        "A",
-        "C"
+        "C_FUNDING_CONDITION_FOR_WEBAPI_KEY",
+        "A_EXACT_CONSOLIDATED_NATIONAL_NBBO_API_BINDING_UNPROVEN"
       ],
-      "evidence_file": "nasdaq-xray/g9_free_path_audit_20261003.json",
+      "evidence_file": "nasdaq-xray/g9_provider_delta_tradestation_refresh_20261003.json",
       "last_checked_on": "2026-10-03",
-      "reopen_condition": "Official terms remove inactivity/balance/activity conditions and prove exact consolidated Tape-C/NBBO API lineage.",
+      "reopen_condition": "Sanctioned WebAPI key becomes available without funded-account/balance/activity/fee condition and exact API bid/ask route is primary-source bound to consolidated National NBBO/CTA+UTP lineage.",
       "negative_cache_only": true,
       "may_never_create_pass": true
     },
@@ -747,5 +749,10 @@
     "path": "nasdaq-xray/g9_provider_delta_webull_alphavantage_refresh_20261003.json",
     "commit_sha": "85290bdebed8133f3cfa017d98a097563f27e0b0",
     "result": "WEBULL_C_FAIL_CONFIRMED; ALPHAVANTAGE_C_FAIL_CONFIRMED; NO_POLICY_WEAKENING"
+  },
+  "latest_runtime_connector_audit": {
+    "path": "nasdaq-xray/g9_runtime_connector_audit_20261003.json",
+    "commit_sha": "b6f53d0b64a93858cb6c22f2bf96d933bc0a1f3e",
+    "result": "MASSIVE_NOT_ENTITLED; ALPACA_FREE_ROUTE_IEX_ONLY"
   }
 }
