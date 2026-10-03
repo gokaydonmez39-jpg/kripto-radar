@@ -9,7 +9,7 @@
     "C": "lawful automated/non-display permanent-$0 entitlement with no fee/balance/activity/per-query condition",
     "D": "scheduler callability"
   },
-  "unique_provider_paths_reviewed": 48,
+  "unique_provider_paths_reviewed": 49,
   "evidence_files": [
     {
       "path": "nasdaq-xray/g9_free_path_audit_20261003.json",
@@ -66,6 +66,10 @@
     {
       "path": "nasdaq-xray/midas_alpaca_infrastructure_audit_20261003.json",
       "blob_sha": "3eb74431fa6bcff47cf2da249f2597a11012a932"
+    },
+    {
+      "path": "nasdaq-xray/g9_provider_delta_foreks_forinvest_20261003.json",
+      "blob_sha": "be3108907295842e4eda2e8bc16750e6fa6df188"
     }
   ],
   "reviewed_provider_paths": [
@@ -116,7 +120,8 @@
     "StockData.org",
     "Midas Mobile/Atlas official market-data path",
     "Midas via TradingView official broker integration",
-    "Midas via Alpaca Broker API partner infrastructure"
+    "Midas via Alpaca Broker API partner infrastructure",
+    "Foreks / ForInvest Web SDK"
   ],
   "strongest_near_misses": [
     {
