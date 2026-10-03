@@ -23,7 +23,8 @@
         "Nasdaq's current U.S. equities/options data policy defines Non-Display as access/use of exchange information by a machine or automated device without natural-person display access.",
         "Nasdaq's non-display clarifications include automated investment analysis among non-display uses and state non-display is fee-liable/reportable unless an applicable exchange exclusion exists.",
         "The Midas-distributed Nasdaq Global Subscriber Agreement licenses non-professional/private subscriber information for personal use. That display/personal subscriber entitlement is not an explicit non-display automated entitlement.",
-        "Therefore the current Midas customer display license cannot satisfy strict G9-C for the automated scheduler. Reopen C only on explicit Midas/Nasdaq authorization for this exact automated/non-display use at permanent $0."
+        "Therefore the current Midas customer display license cannot satisfy strict G9-C for the automated scheduler. Reopen C only on explicit Midas/Nasdaq authorization for this exact automated/non-display use at permanent $0.",
+        "Exact-text review of the Midas-distributed Nasdaq/NYSE subscriber agreements found no UTP/UQDF/UTDF/NBBO/Nasdaq Basic/TotalView/BBO/BQT/CTA product identifier; therefore product lineage cannot be inferred from the agreements."
       ],
       "g9_failed_or_unproven": [
         "A",
@@ -163,5 +164,24 @@
       "source": "https://webcdn.getmidas.com/uploads/2025/12/04155923/genel-cerceve-sozlesme.pdf",
       "location": "section 1.11, PDF page containing lines 468-470 in parsed source; visually confirmed"
     }
+  },
+  "product_lineage_search": {
+    "status": "NO_EXACT_NATIONAL_NBBO_PRODUCT_BINDING_FOUND",
+    "checked_terms": [
+      "UTP",
+      "UQDF",
+      "UTDF",
+      "NBBO",
+      "Nasdaq Basic",
+      "TotalView",
+      "BBO",
+      "Last Sale",
+      "BQT",
+      "Best Quote",
+      "CTA"
+    ],
+    "nasdaq_agreement_result": "No checked product identifier appears in the Midas-distributed Nasdaq participant agreement.",
+    "nyse_agreement_result": "No checked NBBO/BQT/Best Quote/CTA identifier appears in the Midas-distributed NYSE participant agreement.",
+    "implication": "The agreements prove subscriber/distributor rights and restrictions but do not identify the exact delivered feed. They cannot establish strict G9-A."
   }
 }
