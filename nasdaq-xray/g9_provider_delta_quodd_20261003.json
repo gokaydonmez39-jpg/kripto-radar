@@ -1,0 +1,35 @@
+{
+  "schema": "XRAY_G9_PROVIDER_DELTA_V1",
+  "generated_on": "2026-10-03",
+  "provider": "QUODD QX Digital / real-time equities API",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "status": "TECHNICALLY_STRONG_REALTIME_CONSOLIDATED_CAPABILITY_BUT_STRICT_C_PERMANENT_ZERO_FAIL",
+  "evidence": [
+    "QUODD officially provides real-time exchange pricing and programmatic API/data-feed delivery across U.S. equities and other assets.",
+    "QUODD's exchange-agreement guidance explicitly distinguishes consolidated tape from exchange-specific feeds, states consolidated real-time data is fee liable, and states APIs are data feeds.",
+    "QUODD's support surface exposes API subscription status and free-trial status rather than a permanent free production real-time entitlement.",
+    "QUODD advertises API testing free for 7 days; this is a trial and therefore cannot satisfy XRAY's permanent-$0 requirement.",
+    "QUODD's licensing guidance says real-time data is fee-liable and may require exchange agreements/end-user fees. No primary-source permanent-$0 production consolidated NBBO entitlement was found."
+  ],
+  "primary_sources": [
+    "https://www.quodd.com/pricing-data",
+    "https://www.quodd.com/exchange-agreements",
+    "https://www.quodd.com/support",
+    "https://marketdata.quodd.com/Excel-stock-quotes-demo"
+  ],
+  "gate_analysis": {
+    "A": "TECHNICALLY_PLAUSIBLE_CONSOLIDATED_TAPE_CAPABILITY_BUT_EXACT_SNAP_PRODUCT_TAPE_C_BINDING_NOT_NEEDED_TO_REJECT_PATH",
+    "B": "TECHNICALLY_STRONG_API_SCHEMA_REPORTED_WITH_BID_ASK_LAST_AND_SEPARATE_QUOTE_LAST_TIMESTAMPS; LIVE_RTH_NOT_RUN_BECAUSE_C_FAILS",
+    "C": "FAIL_PERMANENT_ZERO; official surface is subscription/trial/fee-liable real-time market data",
+    "D": "PASS_TECHNICAL_PROGRAMMATIC_API_SURFACE"
+  },
+  "failed_gates": [
+    "C_PERMANENT_ZERO_REALTIME_ENTITLEMENT"
+  ],
+  "reopen_condition": "Official QUODD primary source must offer permanent-$0 production realtime consolidated UTP/National-NBBO API entitlement for this exact automated/non-display use, with no exchange/vendor/subscription/per-query/balance/funding/activity/account-maintenance condition; then bind exact Tape-C lineage and run same-run RTH B probe.",
+  "negative_cache_only": true,
+  "may_never_create_pass": true,
+  "unknown_never_pass": true,
+  "no_policy_weakening": true
+}
