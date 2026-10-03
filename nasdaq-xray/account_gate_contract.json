@@ -85,8 +85,18 @@
   "binding_revalidation_note": "Exact adapter/gate binding revalidated after evidence-only Midas updates; no ACCOUNT PASS created and no execution capability added.",
   "binding_revalidation": {
     "status": "EXACT",
-    "adapter_blob_sha": "f4e8f5ef8e4674ee61f1851ffc837a708fc7e016",
+    "adapter_blob_sha": "bf2de4696946c34e534f18060c29ea5247091f12",
     "revalidated_on": "2026-10-03",
     "semantic_effect": "NONE_ZERO_ALPHA"
+  },
+  "restricted_mcp_v2_safety": {
+    "status": "UPSTREAM_SOURCE_VERIFIED",
+    "upstream_repository": "longbridge/longbridge-mcp",
+    "upstream_commit": "9322ce27aca876b6e96f3359c95caae8dc75beea",
+    "required_scope": "account.read",
+    "production_scope_id": "6",
+    "trade_write_scope_allowed": false,
+    "money_movement_allowed": false,
+    "enforcement": "LIST_AND_CALL_ALLOWLIST"
   }
 }
