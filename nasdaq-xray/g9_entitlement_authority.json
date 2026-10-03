@@ -117,13 +117,13 @@
   ],
   "search_saturation": {
     "path": "nasdaq-xray/g9_search_saturation_20261003.json",
-    "blob_sha": "8f11cb077ee3883f6093aa428e9cfab48ad95ed8",
+    "blob_sha": "161cd68d97effa0b3724d812d96ceb39a97079a6",
     "unique_provider_paths_reviewed": 52,
     "result": "NO_REVIEWED_PROVIDER_PROVES_A_B_C_D_SIMULTANEOUSLY"
   },
   "negative_registry": {
     "path": "nasdaq-xray/g9_provider_registry_20261003.json",
-    "blob_sha": "2c198d85581a2a30e8671885176d7d36ec2ee26b",
+    "blob_sha": "7ef018c7d92a08b7ea1a653979b9ae377810350c",
     "provider_count": 52,
     "role": "NEGATIVE_EVIDENCE_CACHE_ONLY_NEVER_PASS_AUTHORITY"
   },
@@ -170,5 +170,16 @@
       "B_FRESHNESS_AND_FREE_TRADE_EVENT",
       "C_LIVE_PERMANENT_ZERO_ENTITLEMENT"
     ]
+  },
+  "wealthnow_lineage_unlock": {
+    "path": "nasdaq-xray/g9_provider_delta_wealthnow_20261003.json",
+    "blob_sha": "27cebdada76023a8e748dfedc8b04a0bced6bd26",
+    "unlock_path": "nasdaq-xray/g9_wealthnow_lineage_unlock_20261003.json",
+    "unlock_blob_sha": "7c82d30fe5763a299c0c1817ac8ed24ff6ee0407",
+    "status": "HIGH_POTENTIAL_B_D_READY_A_AND_C_NONDISPLAY_LICENSE_UNPROVEN",
+    "gate_a": "UNPROVEN_FREE_SNAPSHOT_NATIONAL_NBBO_LINEAGE",
+    "gate_b": "PROVISIONAL_SCHEMA_PASS_REQUIRES_SAME_RUN_RTH",
+    "gate_c": "ZERO_DOLLAR_API_COST_PROVEN_BUT_NONDISPLAY_MARKET_DATA_LICENSE_UNPROVEN",
+    "gate_d": "TECHNICAL_ADAPTER_IMPLEMENTED_BUT_CREDENTIAL_NOT_CONFIGURED"
   }
 }
