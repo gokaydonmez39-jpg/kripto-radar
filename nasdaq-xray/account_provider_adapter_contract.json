@@ -115,7 +115,9 @@
         "Longbridge Account Assets and Stock Positions docs show OAuthBuilder/Config.from_oauth with TradeContext.account_balance and stock_positions.",
         "Agent Auth documentation exposes separately selectable market-data, account and trading permissions; account capability can be granted without a trading permission.",
         "Production probe prefers OAuth Bearer/refresh credentials, uses only the two read endpoints for OAuth, and remains network-free when secret input is absent/incomplete.",
-        "Network-free selftests cover OAuth bearer, OAuth refresh, scope denial, missing credentials, legacy opt-in guard, private-value non-persistence and stale/same-run terminal behavior."
+        "Network-free selftests cover OAuth bearer, OAuth refresh, scope denial, missing credentials, legacy opt-in guard, private-value non-persistence and stale/same-run terminal behavior.",
+        "Official Longbridge OAuth SDK persists refreshed tokens after each successful refresh and preserves the old refresh token only when the server omits a new one.",
+        "XRAY production probe detects a changed refresh token and fails closed before account reads when no authorized secure persistence channel exists."
       ],
       "required_scope": "OAUTH_ACCOUNT_PERMISSION",
       "trading_scope_required": false,
@@ -123,7 +125,10 @@
       "same_run_rule": "ACCOUNT_PASS may be created only when the production final-gate run itself invokes the read-only probe and both account_balance and stock_positions parse successfully in that exact workflow run.",
       "persisted_pass_rule": "A prior probe result or persisted PASS may never be reused to create current ACCOUNT_PASS.",
       "credential_mode": "OAUTH_PREFERRED_LEGACY_EXPLICIT_FALLBACK",
-      "trading_scope_required_for_xray": false
+      "trading_scope_required_for_xray": false,
+      "refresh_persistence_rule": "If OAuth refresh returns a different refresh_token than the configured input, ACCOUNT_PASS is forbidden unless the new token can be persisted to an authorized secure secret store. The current GitHub runner is ephemeral and has no secret-write channel.",
+      "rotation_fail_closed_status": "BLOCKED_ROTATING_REFRESH_TOKEN_PERSISTENCE_REQUIRED",
+      "oauth_durability": "Bearer-only can satisfy a fresh same-run read while valid, but autonomous renewal requires refresh-state persistence. Static refresh-secret use is accepted only when the server omits a replacement refresh token or returns the same token."
     }
   },
   "transition_to_pass": "Only fresh same-run provider readback satisfying the pass_rule may set ACCOUNT=PASS. Persisted prior PASS alone is insufficient.",
