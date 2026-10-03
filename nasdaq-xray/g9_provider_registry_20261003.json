@@ -4,7 +4,7 @@
   "execution": "NONE",
   "real_money": "NO-GO",
   "purpose": "Negative-evidence cache only. This registry can skip unchanged dead paths but can never create G9 PASS.",
-  "provider_count": 48,
+  "provider_count": 49,
   "strict_g9_gates": {
     "A": "consolidated UTP Tape-C / National NBBO lineage",
     "B": "fresh bid+ask+last with independent quote/trade event timestamps",
@@ -13,8 +13,8 @@
   },
   "source_saturation": {
     "path": "nasdaq-xray/g9_search_saturation_20261003.json",
-    "blob_sha": "980965e98dea3ac7883bc241f3e0af407aaa56a9",
-    "reviewed_paths": 48
+    "blob_sha": "206f5b3a1fb973fba696970e2b888aee1bdd9cf9",
+    "reviewed_paths": 49
   },
   "providers": [
     {
@@ -643,6 +643,20 @@
       "evidence_file": "nasdaq-xray/midas_alpaca_infrastructure_audit_20261003.json",
       "last_checked_on": "2026-10-03",
       "reopen_condition": "Midas or Alpaca primary-source evidence proves the exact Midas partner feed is live consolidated SIP/National NBBO, Midas grants permanent-$0 automated/non-display end-user use, and a sanctioned scheduler-callable path exposes fresh quote+trade event timestamps.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "Foreks / ForInvest Web SDK",
+      "status": "TECHNICALLY_CAPABLE_BUT_COMMERCIAL_PRODUCTION_ENTITLEMENT_REQUIRED",
+      "failed_gates": [
+        "A",
+        "C",
+        "D_ZERO_DOLLAR_PRODUCTION"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_foreks_forinvest_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "Primary-source proof of permanent-$0 production consolidated National NBBO with lawful automated/non-display use and scheduler callability.",
       "negative_cache_only": true,
       "may_never_create_pass": true
     }
