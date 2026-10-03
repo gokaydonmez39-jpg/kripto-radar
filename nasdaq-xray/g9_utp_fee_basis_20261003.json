@@ -32,14 +32,24 @@
     "nonprofessional_uncontrolled_exception": "A qualifying Nonprofessional Uncontrolled Recipient may be reported at Nonprofessional rates if separately identified, no redistribution occurs, and use is restricted to one Subscriber.",
     "third_party_software_constraint": "If an Uncontrolled Recipient uses third-party software, the UTP Plan may charge higher Professional Subscriber or Uncontrolled Recipient rates rather than the lower exception.",
     "external_uncontrolled_requirements": "External Uncontrolled Product Recipients are generally subject to UTP approval, Data Feed Request and Non-Display Declaration; recipients report usage and pay applicable fees directly to UTP.",
-    "subscriber_personal_use": "The End User Subscriber Agreement licenses Nonprofessional Subscribers only for personal use and explicitly contemplates receipt, processing, display and redistribution review."
+    "subscriber_personal_use": "The End User Subscriber Agreement licenses Nonprofessional Subscribers only for personal use and explicitly contemplates receipt, processing, display and redistribution review.",
+    "non_display_own_behalf_examples": [
+      "investment analysis",
+      "portfolio valuation",
+      "risk management",
+      "compliance",
+      "operations control",
+      "automated order/quote generation and price referencing"
+    ],
+    "non_display_own_behalf_fee_basis": "UTP Data Policies page 5/9: realtime non-display use on own behalf is $3,500/month per firm; policy examples expressly include investment analysis and portfolio valuation."
   },
   "interpretation": [
     "Do not equate every personal automated use with the $3,500 Vendor non-display fee: the Non-Display Policy's headline fees are assessed to Vendors/Data Feed Recipients, and the Subscriber Agreement separately recognizes personal receipt and processing.",
     "However, a vendor-delivered realtime API is expressly an Uncontrolled Product example. For an external automated scheduler using third-party software, the low Nonprofessional exception is not safely assumable; UTP approval/reporting/Non-Display Declaration and higher applicable fees may be triggered.",
     "Therefore strict G9-C cannot be satisfied merely because retail display data is free or because the user is Nonprofessional. A qualifying provider must give primary-source proof that the exact scheduler/API use is lawfully covered at permanent $0 to the user with no balance/activity/subscription/per-query/account-maintenance/funding condition.",
     "A vendor/broker may absorb upstream UTP costs, but fee absorption alone is insufficient unless the exact automated API entitlement/use classification is authorized.",
-    "Delayed or end-of-day no-fee status never qualifies strict G9 because same-run RTH freshness is mandatory."
+    "Delayed or end-of-day no-fee status never qualifies strict G9 because same-run RTH freshness is mandatory.",
+    "Direct consumption of realtime UTP data by an automated investment-analysis system is explicitly within the UTP non-display policy examples. Therefore direct-SIP ingestion is structurally incompatible with XRAY's strict permanent-$0 rule unless a qualifying vendor/broker lawfully absorbs the fees and explicitly grants the exact automated entitlement."
   ],
   "policy_effect": "NO_THRESHOLD_CHANGE; corrects fee-classification reasoning while preserving strict permanent-$0 entitlement proof requirement",
   "no_policy_weakening": true,
