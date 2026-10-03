@@ -27,16 +27,25 @@ def run_case(authority, adapters, expect_status, expect_refresh_calls):
         mod.AUTH=auth
         mod.ADAPTER_CONTRACT=contract
         mod.OUT=out
-        calls={"refresh":0}
+        calls={"refresh":0,"get_json":0,"depth":0}
         def fake_refresh():
             calls["refresh"]+=1
             return None,"","SELFTEST_NO_TOKEN"
+        def fake_get_json(*args,**kwargs):
+            calls["get_json"]+=1
+            raise AssertionError("unexpected provider snapshot call")
+        def fake_depth(*args,**kwargs):
+            calls["depth"]+=1
+            raise AssertionError("unexpected provider depth call")
         mod.refresh_token=fake_refresh
+        mod.get_json=fake_get_json
+        mod.stream_first_depth=fake_depth
         mod.is_rth=lambda: False
         mod.main()
         j=json.loads(out.read_text())
         assert j["status"]==expect_status,(j,expect_status)
         assert calls["refresh"]==expect_refresh_calls,(calls,j)
+        assert calls["get_json"]==0 and calls["depth"]==0,(calls,j)
         assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
         assert j["g9_pass"] is False
         return j
