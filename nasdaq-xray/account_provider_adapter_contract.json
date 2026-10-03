@@ -65,19 +65,19 @@
       "g9_note": "Separate from ACCOUNT eligibility. E*TRADE market-data terms do not satisfy current strict G9 permanent-$0 proof."
     },
     "MIDAS_VIA_TRADINGVIEW_OFFICIAL": {
-      "status": "PROMISING_SANCTIONED_BUT_NOT_CURRENTLY_SCHEDULER_CALLABLE",
+      "status": "TECHNICALLY_SUFFICIENT_READ_SURFACE_CONFIRMED_BUT_NOT_SCHEDULER_CALLABLE",
       "evidence": [
-        "Midas officially supports connecting the user's Midas brokerage account from TradingView's Trading Panel.",
-        "TradingView's broker integration/account manager architecture carries account balance/equity and positions.",
-        "TradingView does not expose an end-user data API; its REST Broker API is for brokers integrating into TradingView.",
-        "No TradingView/Midas account connector is currently callable from this canonical scheduler."
+        "Midas officially supports authenticated brokerage connection through TradingView Trading Panel.",
+        "TradingView broker integration exposes account metadata, balance/equity state and positions; these are the exact read categories needed by the provider-neutral ACCOUNT gate.",
+        "TradingView documents sub-2-second polling/update paths for balances, account manager and positions.",
+        "No sanctioned end-user TradingView/Midas connector or callable API is currently exposed to the canonical ChatGPT scheduler."
       ],
       "required_read_capability": [
         "current account value/cash state",
         "current equity positions/exposure"
       ],
-      "blocker": "No sanctioned scheduler-callable end-user Midas/TradingView account adapter in the current runtime.",
-      "reopen_condition": "A sanctioned Midas or TradingView connector/API becomes callable by the canonical scheduler, then fresh same-run read-only account value/cash and equity positions/exposure both parse successfully."
+      "blocker": "Technical read surface is proven, but canonical scheduler callability and user-token handoff are not available.",
+      "reopen_condition": "A sanctioned Midas or TradingView end-user connector/API becomes callable by the canonical scheduler, then fresh same-run read-only account value/cash and equity positions/exposure both parse successfully."
     },
     "MIDAS_ALPACA_CORRESPONDENT": {
       "status": "PROMISING_OFFICIAL_INFRA_BUT_ENDUSER_CREDENTIALS_NOT_AVAILABLE",
