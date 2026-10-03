@@ -91,17 +91,17 @@
       "reopen_condition": "Midas publishes or explicitly authorizes a read-only OAuth/API/connector for its Alpaca-backed account and same-run account value/cash plus equity positions/exposure parse successfully."
     },
     "LONGBRIDGE_DIRECT_OPENAPI": {
-      "status": "TECHNICALLY_SUFFICIENT_READ_ONLY_PATH_DEPLOYMENT_BRIDGE_BLOCKED",
-      "sanctioned_surface": "Official Longbridge OpenAPI",
+      "status": "ELIGIBLE_FRESH_SAME_RUN_ONLY",
+      "sanctioned_surface": "Official Longbridge OpenAPI Legacy API Key",
       "required_read_calls": [
         "account_balance",
         "stock_positions"
       ],
       "diagnostic_probe": "nasdaq-xray/account_longbridge_openapi_probe.py",
       "selftest": "nasdaq-xray/account_longbridge_openapi_probe_selftest.py",
-      "security_model": "Use least-privilege market-data + account authorization only. Never request/persist App Secret, Access Token, auth code, balances, positions, or account identifiers in chat/public repo.",
+      "security_model": "Credentials must be supplied only through secure runtime secrets. Probe output persists status/provenance/run metadata only; no balances, positions, account identifiers, or credentials.",
       "canonical_gate_rule": "Technical path is sufficient in shape but ACCOUNT remains blocked until the canonical scheduler itself can securely hold/redeem the account-scoped OAuth credential and perform same-run account_balance + stock_positions.",
-      "blocker": "SECURE_CANONICAL_SCHEDULER_OAUTH_CREDENTIAL_BRIDGE_NOT_AVAILABLE",
+      "blocker": "Secure runtime credentials are not yet configured for the production final-gate workflow.",
       "evidence": [
         "Official Longbridge OpenAPI exposes GET /v1/asset/account via TradeContext.account_balance and GET /v1/asset/stock via TradeContext.stock_positions.",
         "Official CLI/docs state account/portfolio reads require OAuth account permission; account scope is selectable separately from trading scope and least-privilege authorization is recommended.",
@@ -112,7 +112,9 @@
       ],
       "required_scope": "OAUTH_ACCOUNT_READ",
       "trading_scope_required": false,
-      "reopen_condition": "A supported canonical runtime exposes Longbridge OAuth account-scope authorization/redeem securely; then run same-run read-only account_balance + stock_positions with no order endpoints."
+      "reopen_condition": "A supported canonical runtime exposes Longbridge OAuth account-scope authorization/redeem securely; then run same-run read-only account_balance + stock_positions with no order endpoints.",
+      "same_run_rule": "ACCOUNT_PASS may be created only when the production final-gate run itself invokes the read-only probe and both account_balance and stock_positions parse successfully in that exact workflow run.",
+      "persisted_pass_rule": "A prior probe result or persisted PASS may never be reused to create current ACCOUNT_PASS."
     }
   },
   "transition_to_pass": "Only fresh same-run provider readback satisfying the pass_rule may set ACCOUNT=PASS. Persisted prior PASS alone is insufficient.",
