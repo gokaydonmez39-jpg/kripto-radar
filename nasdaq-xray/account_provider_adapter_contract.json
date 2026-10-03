@@ -76,8 +76,10 @@
         "current account value/cash state",
         "current equity positions/exposure"
       ],
-      "blocker": "Technical read surface is proven, but canonical scheduler callability and user-token handoff are not available.",
-      "reopen_condition": "A sanctioned Midas or TradingView end-user connector/API becomes callable by the canonical scheduler, then fresh same-run read-only account value/cash and equity positions/exposure both parse successfully."
+      "blocker": "Technical read surface is proven, but canonical scheduler callability, safe user-token handoff and a non-disruptive session model are not available.",
+      "reopen_condition": "A sanctioned Midas or TradingView end-user connector/API becomes scheduler-callable with a session-safe authorization model, then fresh same-run read-only account value/cash and equity positions/exposure both parse successfully.",
+      "session_constraint": "Midas support states the same customer account cannot be simultaneously connected to TradingView and the Midas application. A future canonical adapter must use an explicitly supported independent/service-token model or equivalent session-safe mechanism; it must not hijack or terminate the user's interactive Midas session.",
+      "session_constraint_source": "https://www.getmidas.com/destek/amerikan-borsalari/tradingview-entegrasyonu/ayni-anda-hem-tradingview-hem-de-midas-uygulamasina-baglanamiyorum-neden"
     },
     "MIDAS_ALPACA_CORRESPONDENT": {
       "status": "PROMISING_OFFICIAL_INFRA_BUT_ENDUSER_CREDENTIALS_NOT_AVAILABLE",
