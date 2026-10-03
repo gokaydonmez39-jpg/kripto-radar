@@ -47,15 +47,17 @@ jobs:
       - name: Verify provider-neutral ACCOUNT final gate
         run: |
           python - <<'PY'
-          import json
+          import json, subprocess
           g=json.load(open("nasdaq-xray/account_gate_contract.json"))
           a=json.load(open("nasdaq-xray/account_provider_adapter_contract.json"))
+          actual_blob=subprocess.check_output(["git","hash-object","nasdaq-xray/account_provider_adapter_contract.json"],text=True).strip()
           assert g["execution"]=="NONE" and g["real_money"]=="NO-GO"
           assert a["execution"]=="NONE" and a["real_money"]=="NO-GO"
           assert g["provider"]=="PROVIDER_NEUTRAL"
           assert g["primary_adapter"]=="LONGBRIDGE"
           assert g["adapter_contract"]["path"]=="nasdaq-xray/account_provider_adapter_contract.json"
-          assert g["adapter_contract"]["blob_sha"]
+          assert g["adapter_contract"]["blob_sha"]==actual_blob,(g["adapter_contract"]["blob_sha"],actual_blob)
+          assert g["adapter_registry_count"]==len(a["adapters"])
           assert a["provider_neutral"] is True
           assert a["adapters"]["LONGBRIDGE"]["status"]!="PASS"
           assert g["current_status"]!="PASS"
