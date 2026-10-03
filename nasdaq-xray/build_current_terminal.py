@@ -30,6 +30,7 @@ FILES={
 GATE_FILES={
  "g9_runtime":ROOT/"strict_g9_runtime_state.json",
  "account_gate":ROOT/"account_gate_contract.json",
+ "account_adapter":ROOT/"account_provider_adapter_contract.json",
 }
 
 def blob_sha(p:Path):
@@ -61,9 +62,14 @@ def load_gate_reporting():
         assert j.get("schema")=="XRAY_ACCOUNT_GATE_CONTRACT_V1"
         assert j.get("execution")=="NONE" and j.get("real_money")=="NO-GO"
         assert j.get("provider")=="PROVIDER_NEUTRAL"
+        ap=GATE_FILES["account_adapter"]; aj=load(ap)
+        assert aj.get("schema")=="XRAY_ACCOUNT_PROVIDER_ADAPTER_CONTRACT_V1"
+        bound=(j.get("adapter_contract") or {}).get("blob_sha")
+        actual=blob_sha(ap)
+        assert bound==actual, f"ACCOUNT_ADAPTER_BINDING_MISMATCH bound={bound} actual={actual}"
         status=str(j.get("current_status") or "UNKNOWN")
         out["account_status"]=status if status else "UNKNOWN"
-        out["evidence"]["account_gate"]={"path":"nasdaq-xray/account_gate_contract.json","blob_sha":blob_sha(p),"provider":j.get("provider"),"current_adapter":j.get("current_adapter")}
+        out["evidence"]["account_gate"]={"path":"nasdaq-xray/account_gate_contract.json","blob_sha":blob_sha(p),"provider":j.get("provider"),"current_adapter":j.get("current_adapter"),"adapter_contract_path":"nasdaq-xray/account_provider_adapter_contract.json","adapter_contract_blob_sha":actual}
     except Exception as e:
         out["evidence"]["account_gate"]={"status":"UNKNOWN","reason":type(e).__name__}
     return out
