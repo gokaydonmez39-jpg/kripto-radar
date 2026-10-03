@@ -20,5 +20,22 @@
     "submit_order"
   ],
   "persistence_rule": "Never write balances, positions, account identifiers, or other private account values to the public repository. Runtime status only.",
-  "no_policy_weakening": true
+  "no_policy_weakening": true,
+  "last_verified_on": "2026-10-03",
+  "last_probe_results": {
+    "account_balance": {
+      "status": "BLOCKED_REAUTH_REQUIRED",
+      "error_code": 403308,
+      "private_values_persisted": false
+    },
+    "stock_positions": {
+      "status": "BLOCKED_REAUTH_REQUIRED",
+      "error_code": 403308,
+      "private_values_persisted": false
+    }
+  },
+  "retry_class": "NONRETRYABLE_IN_RUN",
+  "reauth_rule": "Only an explicit OAuth reconnect/re-authorization that grants the required connector scopes can clear 403308. Plain access-token refresh MUST NOT be treated as repair.",
+  "pass_transition_rule": "Only a fresh same-run success of BOTH account_balance and stock_positions may transition ACCOUNT to PASS.",
+  "updated_on": "2026-10-03"
 }
