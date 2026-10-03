@@ -4,7 +4,7 @@
   "execution": "NONE",
   "real_money": "NO-GO",
   "purpose": "Negative-evidence cache only. This registry can skip unchanged dead paths but can never create G9 PASS.",
-  "provider_count": 51,
+  "provider_count": 52,
   "strict_g9_gates": {
     "A": "consolidated UTP Tape-C / National NBBO lineage",
     "B": "fresh bid+ask+last with independent quote/trade event timestamps",
@@ -13,8 +13,8 @@
   },
   "source_saturation": {
     "path": "nasdaq-xray/g9_search_saturation_20261003.json",
-    "blob_sha": "bd2891eae3ccca76954c8b57d34c1a7b0f9a7fb5",
-    "reviewed_paths": 51
+    "blob_sha": "8f11cb077ee3883f6093aa428e9cfab48ad95ed8",
+    "reviewed_paths": 52
   },
   "providers": [
     {
@@ -687,6 +687,23 @@
       "reopen_condition": "Current official pricing restores permanent-$0 realtime NBBO/L2 API entitlement and same-run RTH freshness proof succeeds.",
       "negative_cache_only": true,
       "may_never_create_pass": true
+    },
+    {
+      "provider": "Strasmore",
+      "status": "NONQUALIFYING_FREE_DELAYED_NBBO_AND_FREE_TRADE_TAPE_ABSENT",
+      "failed_gates": [
+        "B_FRESHNESS_AND_FREE_TRADE_EVENT",
+        "C_LIVE_PERMANENT_ZERO_ENTITLEMENT"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_strasmore_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "Free/MCP gains same-run RTH realtime consolidated NBBO + free latest-trade event under explicit permanent-$0 automated/non-display rights.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true,
+      "provisional_pass_gates": [
+        "A_CONSOLIDATED_SIP_NBBO_LINEAGE",
+        "D_PROGRAMMATIC_API_MCP_CALLABILITY"
+      ]
     }
   ],
   "reopen_policy": "Reopen an existing negative path only on newer PRIMARY SOURCE evidence materially changing its listed failed gate(s). New previously-unreviewed providers are always eligible for research. Any reopened path still requires same-run RTH technical proof before G9 PASS.",
