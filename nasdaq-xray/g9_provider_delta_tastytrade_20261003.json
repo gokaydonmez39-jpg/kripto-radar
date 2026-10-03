@@ -1,0 +1,28 @@
+{
+  "schema": "XRAY_G9_PROVIDER_DELTA_V1",
+  "generated_on": "2026-10-03",
+  "provider": "tastytrade / dxFeed",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "status": "TECHNICALLY_STRONG_NBBO_PATH_BUT_STRICT_C_FAILS_FUNDED_ACCOUNT_CONDITION",
+  "evidence": [
+    "Official tastytrade Developer Docs expose DXLink quote tokens tied to the customer and dxFeed realtime market-data streaming.",
+    "Official tastytrade REST market-data documentation states realtime REST quotes are available to funded account holders only; no delayed REST quotes are served.",
+    "Official tastytrade support says newly opened unfunded accounts switch to delayed quotes after 14 days and live quotes restore after funding.",
+    "Official dxFeed documentation states an unqualified Quote request returns NBBO combined from all exchanges and documents CTA/UTP aggregate feed codes.",
+    "Therefore the technical A/B/D direction is strong in principle, but live entitlement is funding-conditioned and fails strict G9-C regardless of unresolved Turkey eligibility."
+  ],
+  "primary_sources": [
+    "https://developer.tastytrade.com/reference/accounts-and-customers/getApiQuoteTokens/",
+    "https://developer.tastytrade.com/reference/market-data/getMarketDataByType/",
+    "https://developer.tastytrade.com/docs/concepts/streaming/",
+    "https://support.tastytrade.com/support/s/solutions/articles/43000498775",
+    "https://kb.dxfeed.com/en/data-services/historical-services/how-to-request-tick-data.html",
+    "https://kb.dxfeed.com/en/data-model/reference-data/exchange-codes.html"
+  ],
+  "failed_gates": [
+    "C"
+  ],
+  "reopen_condition": "Only if tastytrade explicitly grants realtime equity API/DXLink market data to an unfunded account permanently with no balance/funding/activity/subscription condition, and user jurisdiction eligibility is proven.",
+  "no_policy_weakening": true
+}
