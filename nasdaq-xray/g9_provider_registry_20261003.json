@@ -618,14 +618,16 @@
     },
     {
       "provider": "Midas via TradingView official broker integration",
-      "status": "SANCTIONED_ACCOUNT_BRIDGE_BUT_G9_CBOE_ONE_AND_NO_END_USER_API",
+      "status": "SANCTIONED_BROKER_QUOTES_PRESENT_BUT_STRICT_G9_A_B_C_D_INCOMPLETE",
       "failed_gates": [
-        "A",
-        "D_USER_API"
+        "A_NATIONAL_NBBO_LINEAGE",
+        "B_INDEPENDENT_EVENT_TIMESTAMPS",
+        "C_AUTOMATED_NONDISPLAY_RIGHT",
+        "D_ENDUSER_API"
       ],
       "evidence_file": "nasdaq-xray/midas_official_path_audit_20261003.json",
       "last_checked_on": "2026-10-03",
-      "reopen_condition": "TradingView/Midas exposes a sanctioned scheduler-callable end-user path and market-data lineage changes from CBOE One to strict National NBBO if considered for G9.",
+      "reopen_condition": "A sanctioned scheduler-callable end-user Midas/TradingView path exposes fresh broker-sourced bid+ask+last with independent quote/trade event timestamps, primary-source lineage proves consolidated National NBBO, and automated/non-display permanent-$0 entitlement is explicit.",
       "negative_cache_only": true,
       "may_never_create_pass": true
     },
