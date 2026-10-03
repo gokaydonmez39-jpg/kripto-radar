@@ -29,12 +29,16 @@ def main():
     missing=mod.run_probe(env={})
     assert missing["status"]=="BLOCKED_MISSING_CREDENTIALS"
     assert missing["network_attempted"] is False
-    assert missing["reason_code"]=="MCP_V2_BEARER_NOT_CONFIGURED"
+    assert missing["reason_code"]=="MCP_V2_BEARER_OR_VAULT_NOT_CONFIGURED"
     assert missing["provider"]=="LONGBRIDGE_HOSTED_MCP_V2"
     assert missing["endpoint"]=="https://mcp.longbridge.com/v2"
     assert missing["required_oauth_scope"]=="account.read"
     assert missing["trade_write_scope_required"] is False
     assert missing["tool_manifest_verified"] is False
+    assert missing["credential_source"]=="NONE"
+    assert missing["encrypted_vault_present"] is False
+    assert missing["token_refresh_performed"] is False
+    assert missing["encrypted_vault_updated"] is False
     assert missing["trade_write_surface_exposed"] is None
 
     for key in ("private_values_persisted","secret_values_persisted"):
