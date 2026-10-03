@@ -62,16 +62,16 @@
   },
   "evidence": {
     "account_gate": {
-      "adapter_contract_blob_sha": "38dbab9885fbc1087df800909a09b1edb5ce92a3",
+      "adapter_contract_blob_sha": "f4e8f5ef8e4674ee61f1851ffc837a708fc7e016",
       "adapter_contract_path": "nasdaq-xray/account_provider_adapter_contract.json",
-      "blob_sha": "b9ef00bff6e5bea6f96efc30d9db6c6ab2b660ec",
+      "blob_sha": "4533b9a91eb2bf4bebb1aa644950484850e290fc",
       "current_adapter": "LONGBRIDGE",
       "path": "nasdaq-xray/account_gate_contract.json",
       "provider": "PROVIDER_NEUTRAL"
     },
     "account_live_probe": {
       "balance_parseable": false,
-      "blob_sha": "0e947431ec3c9c0ef5effb361c43877879de8361",
+      "blob_sha": "0e921d1526ba0c522d1361f8e11bd5be0007a43c",
       "network_attempted": false,
       "path": "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/account_effective_probe_state.json",
       "positions_parseable": false,
@@ -82,7 +82,7 @@
       "secret_values_persisted": false,
       "status": "BLOCKED_MISSING_CREDENTIALS",
       "workflow_run_attempt": "1",
-      "workflow_run_id": "37128997660"
+      "workflow_run_id": "37129413201"
     },
     "deep": {
       "blob_sha": "ef9329735a208e28be983b0a5f23647b264e300d",
@@ -163,7 +163,7 @@
   "final_gate_reporting_zero_alpha": true,
   "full_end_to_end_research_pass": true,
   "g9_global_status": "G9_BLOCKED_FREE_AUTOMATION_PATH",
-  "generated_at_utc": "2026-10-03T14:16:57.666009+00:00",
+  "generated_at_utc": "2026-10-03T14:26:12.744469+00:00",
   "pointer_asof_before_candidate": "2026-10-02",
   "r92_account_g9_applicable": false,
   "r92_candidates": [],
