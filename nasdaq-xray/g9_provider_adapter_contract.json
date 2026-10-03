@@ -37,11 +37,13 @@
         "market-depth bid/ask event timestamps",
         "trade timestamp"
       ],
-      "entitlement_status": "NOT_PROVEN_UNDER_CURRENT_STRICT_PERMANENT_ZERO_RULE"
+      "entitlement_status": "STRICT_C_FAIL_FUNDED_ACCOUNT_REQUIRED_FOR_WEBAPI_KEY; A_EXACT_NATIONAL_NBBO_BINDING_UNPROVEN",
+      "authority_rule": "Adapter remains implemented but MUST NOT run unless authority is later proven from a no-funding/no-fee sanctioned WebAPI entitlement and exact consolidated National-NBBO lineage."
     },
     "MASSIVE": {
       "status": "NOT_IMPLEMENTED_AND_NOT_ENTITLED",
-      "reason": "Exact NBBO schema exists but current zero-dollar connector plan returns NOT_ENTITLED."
+      "reason": "Exact NBBO schema exists but current zero-dollar connector plan returns NOT_ENTITLED.",
+      "runtime_audit_file": "nasdaq-xray/g9_runtime_connector_audit_20261003.json"
     },
     "TRADIER": {
       "status": "NOT_IMPLEMENTED_JURISDICTION_BLOCKED",
