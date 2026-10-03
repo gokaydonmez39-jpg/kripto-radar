@@ -91,7 +91,7 @@
       "reopen_condition": "Midas publishes or explicitly authorizes a read-only OAuth/API/connector for its Alpaca-backed account and same-run account value/cash plus equity positions/exposure parse successfully."
     },
     "LONGBRIDGE_DIRECT_OPENAPI": {
-      "status": "OFFICIAL_READ_PATH_PREPARED_NOT_CANONICAL_SAME_RUN",
+      "status": "TECHNICALLY_SUFFICIENT_READ_ONLY_PATH_DEPLOYMENT_BRIDGE_BLOCKED",
       "sanctioned_surface": "Official Longbridge OpenAPI",
       "required_read_calls": [
         "account_balance",
@@ -99,9 +99,20 @@
       ],
       "diagnostic_probe": "nasdaq-xray/account_longbridge_openapi_probe.py",
       "selftest": "nasdaq-xray/account_longbridge_openapi_probe_selftest.py",
-      "security_model": "Credential material must remain outside repository/chat; public probe state may contain status/provenance only.",
-      "canonical_gate_rule": "A standalone provider-path success is diagnostic only. ACCOUNT PASS still requires fresh same-run reads inside the canonical run with exact current adapter binding.",
-      "blocker": "No secure scheduler credential bridge callable inside the canonical automation is currently available from this chat runtime."
+      "security_model": "Use least-privilege market-data + account authorization only. Never request/persist App Secret, Access Token, auth code, balances, positions, or account identifiers in chat/public repo.",
+      "canonical_gate_rule": "Technical path is sufficient in shape but ACCOUNT remains blocked until the canonical scheduler itself can securely hold/redeem the account-scoped OAuth credential and perform same-run account_balance + stock_positions.",
+      "blocker": "SECURE_CANONICAL_SCHEDULER_OAUTH_CREDENTIAL_BRIDGE_NOT_AVAILABLE",
+      "evidence": [
+        "Official Longbridge OpenAPI exposes GET /v1/asset/account via TradeContext.account_balance and GET /v1/asset/stock via TradeContext.stock_positions.",
+        "Official CLI/docs state account/portfolio reads require OAuth account permission; account scope is selectable separately from trading scope and least-privilege authorization is recommended.",
+        "Agent Auth Code can carry only the scopes explicitly selected on Longbridge Connect, including account without requiring trading scope.",
+        "OpenAPI activation/API use is available through Longbridge's official developer platform; credentials/tokens must stay outside repository and chat.",
+        "Current ChatGPT Longbridge connector exposes account_balance/stock_positions but no authenticate/Agent-Auth-Code redemption surface; its active OAuth token still returns 403308 on account reads.",
+        "ChatGPT plugin-management surface in this workspace cannot modify Longbridge OAuth/admin scopes, and no separate installable Longbridge plugin was surfaced."
+      ],
+      "required_scope": "OAUTH_ACCOUNT_READ",
+      "trading_scope_required": false,
+      "reopen_condition": "A supported canonical runtime exposes Longbridge OAuth account-scope authorization/redeem securely; then run same-run read-only account_balance + stock_positions with no order endpoints."
     }
   },
   "transition_to_pass": "Only fresh same-run provider readback satisfying the pass_rule may set ACCOUNT=PASS. Persisted prior PASS alone is insufficient.",
