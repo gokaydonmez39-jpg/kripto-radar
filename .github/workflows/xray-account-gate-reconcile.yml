@@ -48,7 +48,7 @@ jobs:
               echo "XRAY_ACCOUNT_GATE_RECONCILE=NO_CHANGE"
               exit 0
             fi
-            git commit -m "chore(xray): reconcile account gate evidence [skip ci]"
+            git commit -m "chore(xray): reconcile account gate evidence"
             if git push origin HEAD:main; then
               echo "XRAY_ACCOUNT_GATE_RECONCILE=PASS"
               exit 0
