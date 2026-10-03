@@ -68,7 +68,7 @@ def assert_public_only(state):
     assert "workflow_run_attempt" in state
 
 
-def oauth_http_factory(scope_fail=False):
+def oauth_http_factory(scope_fail=False, rotate_refresh=False):
     calls = []
 
     def http(method, url, headers=None, form=None):
@@ -80,7 +80,7 @@ def oauth_http_factory(scope_fail=False):
             assert (form or {}).get("refresh_token") == "oauth-refresh-secret"
             return {
                 "access_token": "oauth-refreshed-access-secret",
-                "refresh_token": "rotated-refresh-hidden",
+                "refresh_token": "rotated-refresh-hidden" if rotate_refresh else "oauth-refresh-secret",
                 "expires_in": 2592000,
                 "token_type": "Bearer",
             }
@@ -145,7 +145,24 @@ def main():
     assert refreshed["status"] == "PASS"
     assert refreshed["auth_mode"] == "OAUTH_REFRESH_ENV"
     assert refresh_calls[0][1] == mod.TOKEN_URL
+    assert refreshed["refresh_token_rotation_observed"] is False
+    assert refreshed["refresh_persistence_required"] is False
     assert_public_only(refreshed)
+
+    rotating_http, rotating_calls = oauth_http_factory(rotate_refresh=True)
+    rotating = mod.run_probe(
+        env={
+            "LONGBRIDGE_OAUTH_CLIENT_ID": "oauth-client",
+            "LONGBRIDGE_OAUTH_REFRESH_TOKEN": "oauth-refresh-secret",
+        },
+        http_json=rotating_http,
+    )
+    assert rotating["status"] == "BLOCKED_ROTATING_REFRESH_TOKEN_PERSISTENCE_REQUIRED"
+    assert rotating["reason_code"] == "OAUTH_REFRESH_TOKEN_ROTATED_BUT_SECURE_PERSISTENCE_UNAVAILABLE"
+    assert rotating["refresh_token_rotation_observed"] is True
+    assert rotating["refresh_persistence_required"] is True
+    assert len(rotating_calls) == 1 and rotating_calls[0][1] == mod.TOKEN_URL
+    assert_public_only(rotating)
 
     denied_http, _ = oauth_http_factory(scope_fail=True)
     denied = mod.run_probe(
