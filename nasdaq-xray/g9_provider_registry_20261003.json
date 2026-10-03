@@ -4,7 +4,7 @@
   "execution": "NONE",
   "real_money": "NO-GO",
   "purpose": "Negative-evidence cache only. This registry can skip unchanged dead paths but can never create G9 PASS.",
-  "provider_count": 28,
+  "provider_count": 29,
   "strict_g9_gates": {
     "A": "consolidated UTP Tape-C / National NBBO lineage",
     "B": "fresh bid+ask+last with independent quote/trade event timestamps",
@@ -13,8 +13,8 @@
   },
   "source_saturation": {
     "path": "nasdaq-xray/g9_search_saturation_20261003.json",
-    "blob_sha": "f39a3e87ad3b047b6866a16788caff06d7b1b672",
-    "reviewed_paths": 28
+    "blob_sha": "3d94eccfc62c3647a0561d89157d58f012ff1ad0",
+    "reviewed_paths": 29
   },
   "providers": [
     {
@@ -376,6 +376,20 @@
       "evidence_file": "nasdaq-xray/g9_provider_delta_international_api_sweep_20261003.json",
       "last_checked_on": "2026-10-03",
       "reopen_condition": "Official US-equity API is restored with qualifying National NBBO/timestamps and strict permanent-$0 entitlement.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "Midas Atlas / unofficial mcp-midas",
+      "status": "NONQUALIFYING_DISPLAY_ONLY_AND_UNSANCTIONED_AUTOMATION",
+      "failed_gates": [
+        "A",
+        "C",
+        "D_SANCTIONED_AUTOMATION"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_midas_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "Midas provides or explicitly authorizes a sanctioned scheduler-callable read-only API/connector and qualifying automated/non-display market-data entitlement.",
       "negative_cache_only": true,
       "may_never_create_pass": true
     }
