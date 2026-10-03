@@ -18,7 +18,7 @@
     "marketdepth_quote_timestamp": "TECHNICALLY_EVIDENCED_BY_CURRENT_CLIENT_MODEL_NOT_PRIMARY_ENTITLEMENT_PROOF",
     "permanent_zero": "NO_CURRENT_PROVIDER_PROVEN",
     "automated_nondisplay_utp_right": "NO_CURRENT_PROVIDER_PROVEN",
-    "audit_20261003": "EIGHT_PROVIDER_PRIMARY_SOURCE_PLUS_LIVE_ENTITLEMENT_REVIEW",
+    "audit_20261003": "TWENTY_EIGHT_PROVIDER_PATH_PRIMARY_SOURCE_AND_LIVE_ENTITLEMENT_SATURATION",
     "strict_runtime_adapter": "FAIL_CLOSED_UNLESS_AUTHORITY_PROVEN"
   },
   "pass_rule": "STATUS_MUST_EQUAL_PROVEN_FROM_PRIMARY_SOURCE_AND_PROVIDER_MUST_HAVE_MATCHING_RUNTIME_ADAPTER_BEFORE_LIVE_RTH_TECHNICAL_PROBE_CAN_RUN",
@@ -76,12 +76,29 @@
         "Tiger OpenAPI",
         "Robinhood Official Trading API"
       ]
+    },
+    {
+      "provider": "tastytrade / dxFeed",
+      "path": "nasdaq-xray/g9_provider_delta_tastytrade_20261003.json",
+      "blob_sha": "698e72209734cb4767280c08983dd19615066f63",
+      "status": "STRICT_C_FAIL_FUNDED_ACCOUNT_CONDITION"
+    },
+    {
+      "provider": "International broker API sweep",
+      "path": "nasdaq-xray/g9_provider_delta_international_api_sweep_20261003.json",
+      "blob_sha": "7d43078bc7d007d66d5989f23f21c76b13176a2d",
+      "status": "NO_NEW_STRICT_G9_PROVIDER",
+      "covered": [
+        "Saxo OpenAPI",
+        "Trading 212 Public API",
+        "XTB API / xAPI"
+      ]
     }
   ],
   "search_saturation": {
     "path": "nasdaq-xray/g9_search_saturation_20261003.json",
-    "blob_sha": "b274de33d4548d41e305d9c9bd44f9d5d8f5dcb5",
-    "unique_provider_paths_reviewed": 25,
+    "blob_sha": "ffa05a5fe9d8c74d382859b225088862ae4f1721",
+    "unique_provider_paths_reviewed": 28,
     "result": "NO_REVIEWED_PROVIDER_PROVES_A_B_C_D_SIMULTANEOUSLY"
   }
 }
