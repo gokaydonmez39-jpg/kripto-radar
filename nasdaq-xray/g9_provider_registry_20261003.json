@@ -4,7 +4,7 @@
   "execution": "NONE",
   "real_money": "NO-GO",
   "purpose": "Negative-evidence cache only. This registry can skip unchanged dead paths but can never create G9 PASS.",
-  "provider_count": 49,
+  "provider_count": 50,
   "strict_g9_gates": {
     "A": "consolidated UTP Tape-C / National NBBO lineage",
     "B": "fresh bid+ask+last with independent quote/trade event timestamps",
@@ -13,8 +13,8 @@
   },
   "source_saturation": {
     "path": "nasdaq-xray/g9_search_saturation_20261003.json",
-    "blob_sha": "206f5b3a1fb973fba696970e2b888aee1bdd9cf9",
-    "reviewed_paths": 49
+    "blob_sha": "636fde9b0d884efa29012f1b9bc5e827b5135ce5",
+    "reviewed_paths": 50
   },
   "providers": [
     {
@@ -654,6 +654,18 @@
       "evidence_file": "nasdaq-xray/g9_provider_delta_foreks_forinvest_20261003.json",
       "last_checked_on": "2026-10-03",
       "reopen_condition": "Primary-source proof of permanent-$0 production consolidated National NBBO with lawful automated/non-display use and scheduler callability.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "FlashAlpha Lab API",
+      "status": "NONQUALIFYING_FREE_15MIN_FRESHNESS_AND_TIMESTAMP_SCHEMA",
+      "failed_gates": [
+        "B"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_flashalpha_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "Free plan becomes same-run RTH realtime NBBO with independent quote/trade event timestamps while remaining permanent-$0 for intended automated use.",
       "negative_cache_only": true,
       "may_never_create_pass": true
     }
