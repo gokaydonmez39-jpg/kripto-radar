@@ -7,7 +7,7 @@ Synthetic P+3A is permitted only when trigger close is above every prior recorde
 No signal, no G9 authority, no R92 registration.
 """
 from __future__ import annotations
-import json, math, os, hashlib
+import json, math, os, hashlib, time, threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 import akshare as ak
@@ -20,7 +20,61 @@ FAMILY_C_ENV=os.getenv("XRAY_FINAL_FAMILY_C_STATE")
 FAMILY_C=Path(FAMILY_C_ENV) if FAMILY_C_ENV else None
 TASK_ID="6a825366222081918997094d76e6ae46"
 WORKERS=int(os.getenv("XRAY_FINAL_WORKERS","6"))
+PROVIDER_MAX_INFLIGHT=max(1,int(os.getenv("XRAY_FINAL_PROVIDER_MAX_INFLIGHT","3")))
+RETRY_DELAYS=(0.0,1.0,2.5)
+_PROVIDER_SEM=threading.Semaphore(PROVIDER_MAX_INFLIGHT)
+OFFICIAL_IDENTITY_EVIDENCE=ROOT/"history_official_identity_evidence.json"
 
+def _retryable(exc):
+    s=str(exc).lower()
+    return any(x in s for x in ("timed out","timeout","connection reset","remote end closed","too many requests","rate limit","429","500","502","503","504"))
+
+def _call_with_retry(fn):
+    last=None
+    for delay in RETRY_DELAYS:
+        if delay:time.sleep(delay)
+        try:
+            with _PROVIDER_SEM:return fn()
+        except Exception as e:
+            last=e
+            if not _retryable(e):raise
+    assert last is not None
+    raise last
+
+def _official_records():
+    try:
+        j=json.loads(OFFICIAL_IDENTITY_EVIDENCE.read_text())
+        if j.get("schema")=="XRAY_HISTORY_OFFICIAL_IDENTITY_EVIDENCE_V1" and j.get("evidence_only") is True and j.get("alpha_authority") is False:
+            return j.get("records") or {}
+    except Exception:pass
+    return {}
+
+OFFICIAL_RECORDS=_official_records()
+
+def _normalize_sina(df):
+    if df is None or df.empty:return None
+    cols={str(c).lower():c for c in df.columns};need=["date","high","low","close"]
+    if any(k not in cols for k in need):return None
+    x=df[[cols[k] for k in need]].copy();x.columns=need
+    x["date"]=pd.to_datetime(x["date"],errors="coerce")
+    for k in need[1:]:x[k]=pd.to_numeric(x[k],errors="coerce")
+    return x.dropna().drop_duplicates("date",keep="last").sort_values("date")
+
+def _sina_history(sym):return _normalize_sina(_call_with_retry(lambda:ak.stock_us_daily(symbol=sym,adjust="")))
+
+def load_history(sym,asof):
+    cur=_sina_history(sym);rec=OFFICIAL_RECORDS.get(sym) or {}
+    if rec.get("mode")=="OFFICIAL_TICKER_CONTINUITY_COMPOSITE_HISTORY" and rec.get("cusip_unchanged") is True:
+        pred=rec.get("predecessor_symbol");eff=rec.get("effective_date")
+        if pred and eff and cur is not None:
+            p=_sina_history(pred)
+            if p is not None:
+                eff_ts=pd.Timestamp(eff);asof_ts=pd.Timestamp(asof)
+                cur2=cur[(cur["date"]>=eff_ts)&(cur["date"]<=asof_ts)];pred2=p[p["date"]<eff_ts]
+                if not cur2.empty and cur2["date"].dt.date.max().isoformat()==asof:
+                    return pd.concat([pred2,cur2],ignore_index=True).sort_values("date").drop_duplicates("date",keep="last").reset_index(drop=True),"SINA_OFFICIAL_TICKER_CONTINUITY_COMPOSITE"
+    if cur is None:return None,"SINA_EMPTY"
+    return cur[cur["date"]<=pd.Timestamp(asof)].reset_index(drop=True),"SINA_US_DAILY"
 def blob_sha(p:Path):
     b=p.read_bytes()
     return hashlib.sha1(f"blob {len(b)}\0".encode()+b).hexdigest()
@@ -38,19 +92,13 @@ THRESH={
 
 def hist(sym,asof):
     try:
-        df=ak.stock_us_daily(symbol=sym,adjust="")
-        if df is None or df.empty:return sym,None,"EMPTY"
-        cols={c.lower():c for c in df.columns}
-        need=["date","high","low","close"]
-        if any(x not in cols for x in need):return sym,None,"COLS"
-        x=df[[cols[k] for k in need]].copy();x.columns=need
-        x["date"]=pd.to_datetime(x["date"],errors="coerce")
-        for k in need[1:]:x[k]=pd.to_numeric(x[k],errors="coerce")
-        x=x.dropna().sort_values("date")
-        x=x[x["date"]<=pd.Timestamp(asof)].reset_index(drop=True)
-        if len(x)<260:return sym,None,"LT260"
-        return sym,x,None
-    except Exception as e:return sym,None,f"{type(e).__name__}:{str(e)[:160]}"
+        x,src=load_history(sym,asof)
+        if x is None or x.empty:return sym,None,"EMPTY",None
+        last=x["date"].dt.date.max().isoformat()
+        if last!=asof:return sym,None,f"ASOF_MISSING:{last}",None
+        if len(x)<260:return sym,None,f"LT260:{len(x)}",None
+        return sym,x,None,src
+    except Exception as e:return sym,None,f"{type(e).__name__}:{str(e)[:160]}",None
 
 def eval_one(sym,fam,g,df,event_status,state_cap="NORMAL",r92_eligible=True):
     A=float(g["A"]);P=float(g["P"]);anchor=float(g["anchor"])
@@ -184,13 +232,15 @@ def main():
             candidates.append((sym,"C",g,g.get("event_status","CLEAN_DISCOVERY")))
             family_c_count+=1
     syms=sorted(set(x[0] for x in candidates))
-    data={};errors={}
+    data={};errors={};history_source={} 
     with ThreadPoolExecutor(max_workers=WORKERS) as ex:
         futs={ex.submit(hist,s,asof):s for s in syms}
         for fut in as_completed(futs):
-            s,x,e=fut.result()
+            s,x,e,src=fut.result()
             if x is None:errors[s]=e
-            else:data[s]=x
+            else:
+                data[s]=x
+                history_source[s]=src
 
     results={}
     for sym,fam,g,event in candidates:
@@ -213,6 +263,7 @@ def main():
       "fail_count":len(fails),"fail":fails,
       "state_caps":{s:state_caps.get(s,"NORMAL") for s in syms},
       "r92_ineligible":sorted(r92_ineligible & set(syms)),
+      "history_source_by_symbol":history_source,
       "source_deep_path":relpath(DEEP),"source_deep_blob_sha":blob_sha(DEEP),
       "source_family_c_path":relpath(FAMILY_C) if FAMILY_C is not None and FAMILY_C.exists() else None,
       "source_family_c_blob_sha":blob_sha(FAMILY_C) if FAMILY_C is not None and FAMILY_C.exists() else None,
@@ -223,7 +274,7 @@ def main():
       "authority":"EXTERNAL_SHADOW_NO_SIGNAL"
     }
     OUT.write_text(json.dumps(out,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
-    print(json.dumps({k:out[k] for k in ["input_confirmed_family_candidates","pre_g9_tech_pass_count","watch_count","fail_count"]},sort_keys=True))
+    print(json.dumps(dict({k:out[k] for k in ["input_confirmed_family_candidates","pre_g9_tech_pass_count","watch_count","fail_count"]},provider_max_inflight=PROVIDER_MAX_INFLIGHT,retry_delays=RETRY_DELAYS),sort_keys=True))
 
 if __name__=="__main__":
     main()

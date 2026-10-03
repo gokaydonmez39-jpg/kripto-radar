@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import json,math,os,hashlib
+import json,math,os,hashlib,time,threading
 from concurrent.futures import ThreadPoolExecutor,as_completed
 from datetime import datetime,timezone
 from pathlib import Path
@@ -16,7 +16,62 @@ EVENTS=Path(os.getenv("XRAY_FAMILY_C_EVENTS",str(ROOT/"canonical_current_event_s
 OUT=Path(os.getenv("XRAY_FAMILY_C_OUT",str(ROOT/"canonical_current_family_c.json")))
 TASK="6a825366222081918997094d76e6ae46"
 WORKERS=int(os.getenv("XRAY_FAMILY_C_WORKERS","8"))
+PROVIDER_MAX_INFLIGHT=max(1,int(os.getenv("XRAY_FAMILY_C_PROVIDER_MAX_INFLIGHT","3")))
+RETRY_DELAYS=(0.0,1.0,2.5)
+_PROVIDER_SEM=threading.Semaphore(PROVIDER_MAX_INFLIGHT)
+OFFICIAL_IDENTITY_EVIDENCE=ROOT/"history_official_identity_evidence.json"
 NY=ZoneInfo("America/New_York")
+
+def _retryable(exc):
+    s=str(exc).lower()
+    return any(x in s for x in ("timed out","timeout","connection reset","remote end closed","too many requests","rate limit","429","500","502","503","504"))
+
+def _call_with_retry(fn):
+    last=None
+    for delay in RETRY_DELAYS:
+        if delay:time.sleep(delay)
+        try:
+            with _PROVIDER_SEM:return fn()
+        except Exception as e:
+            last=e
+            if not _retryable(e):raise
+    assert last is not None
+    raise last
+
+def _official_records():
+    try:
+        j=json.loads(OFFICIAL_IDENTITY_EVIDENCE.read_text())
+        if j.get("schema")=="XRAY_HISTORY_OFFICIAL_IDENTITY_EVIDENCE_V1" and j.get("evidence_only") is True and j.get("alpha_authority") is False:
+            return j.get("records") or {}
+    except Exception:pass
+    return {}
+
+OFFICIAL_RECORDS=_official_records()
+
+def _normalize_sina(df):
+    if df is None or df.empty:return None
+    cols={str(c).lower():c for c in df.columns};need=["date","open","high","low","close","volume"]
+    if any(k not in cols for k in need):return None
+    x=df[[cols[k] for k in need]].copy();x.columns=need
+    x["date"]=pd.to_datetime(x["date"],errors="coerce")
+    for k in need[1:]:x[k]=pd.to_numeric(x[k],errors="coerce")
+    return x.dropna().drop_duplicates("date",keep="last").sort_values("date")
+
+def _sina_history(sym):return _normalize_sina(_call_with_retry(lambda:ak.stock_us_daily(symbol=sym,adjust="")))
+
+def load_history(sym,asof):
+    cur=_sina_history(sym);rec=OFFICIAL_RECORDS.get(sym) or {}
+    if rec.get("mode")=="OFFICIAL_TICKER_CONTINUITY_COMPOSITE_HISTORY" and rec.get("cusip_unchanged") is True:
+        pred=rec.get("predecessor_symbol");eff=rec.get("effective_date")
+        if pred and eff and cur is not None:
+            p=_sina_history(pred)
+            if p is not None:
+                eff_ts=pd.Timestamp(eff);asof_ts=pd.Timestamp(asof)
+                cur2=cur[(cur["date"]>=eff_ts)&(cur["date"]<=asof_ts)];pred2=p[p["date"]<eff_ts]
+                if not cur2.empty and cur2["date"].dt.date.max().isoformat()==asof:
+                    return pd.concat([pred2,cur2],ignore_index=True).sort_values("date").drop_duplicates("date",keep="last").reset_index(drop=True),"SINA_OFFICIAL_TICKER_CONTINUITY_COMPOSITE"
+    if cur is None:return None,"SINA_EMPTY"
+    return cur[cur["date"]<=pd.Timestamp(asof)].reset_index(drop=True),"SINA_US_DAILY"
 
 def blob_sha(p:Path):
     b=p.read_bytes()
@@ -28,19 +83,13 @@ def relpath(p:Path):
 
 def hist(sym,asof):
     try:
-        df=ak.stock_us_daily(symbol=sym,adjust="")
-        if df is None or df.empty:return sym,None,"EMPTY"
-        cols={c.lower():c for c in df.columns}
-        need=["date","open","high","low","close","volume"]
-        if any(k not in cols for k in need):return sym,None,"COLUMNS"
-        x=df[[cols[k] for k in need]].copy();x.columns=need
-        x["date"]=pd.to_datetime(x["date"],errors="coerce")
-        for k in need[1:]:x[k]=pd.to_numeric(x[k],errors="coerce")
-        x=x.dropna().drop_duplicates("date",keep="last").sort_values("date")
-        x=x[x["date"]<=pd.Timestamp(asof)].reset_index(drop=True)
-        if len(x)<260:return sym,None,f"LT260:{len(x)}"
-        return sym,x,None
-    except Exception as e:return sym,None,f"{type(e).__name__}:{str(e)[:160]}"
+        x,src=load_history(sym,asof)
+        if x is None or x.empty:return sym,None,"EMPTY",None
+        last=x["date"].dt.date.max().isoformat()
+        if last!=asof:return sym,None,f"ASOF_MISSING:{last}",None
+        if len(x)<260:return sym,None,f"LT260:{len(x)}",None
+        return sym,x,None,src
+    except Exception as e:return sym,None,f"{type(e).__name__}:{str(e)[:160]}",None
 
 def atr_wilder(df,end_idx,n=14):
     if end_idx< n:return None
@@ -150,13 +199,15 @@ def main():
     weekly=sorted(st.get("weekly_pass") or [])
     fce=ev.get("family_c_events") or {}
     target=sorted(set(weekly)&set(fce))
-    data={};errors={}
+    data={};errors={};history_source={} 
     with ThreadPoolExecutor(max_workers=WORKERS) as ex:
         futs={ex.submit(hist,s,asof):s for s in target}
         for fut in as_completed(futs):
-            s,x,e=fut.result()
+            s,x,e,src=fut.result()
             if x is None:errors[s]=e
-            else:data[s]=x
+            else:
+                data[s]=x
+                history_source[s]=src
     alls=sessions(asof)
     confirmed={};details={};unknown={}
     event_status_map=ev.get("event_status_by_symbol") or {}
@@ -178,6 +229,7 @@ def main():
       "confirmed_count":len(confirmed),"confirmed":dict(sorted(confirmed.items())),
       "unknown_count":len(unknown),"unknown":dict(sorted(unknown.items())),
       "details":dict(sorted(details.items())),
+      "history_source_by_symbol":history_source,
       "source_stage1_path":relpath(STAGE1),"source_stage1_blob_sha":blob_sha(STAGE1),
       "source_event_path":relpath(EVENTS),"source_event_blob_sha":blob_sha(EVENTS),
       "source_compiled_policy_hash":ev.get("compiled_policy_hash"),
@@ -192,5 +244,5 @@ def main():
       "authority":"C4_11_POST_EARNINGS_FAIL_CLOSED_POLICY_INHERITED"
     }
     OUT.write_text(json.dumps(out,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
-    print(json.dumps({"asof":asof,"weekly_scope":len(weekly),"event_symbols":len(target),"confirmed":len(confirmed),"unknown":len(unknown)},sort_keys=True))
+    print(json.dumps({"asof":asof,"weekly_scope":len(weekly),"event_symbols":len(target),"confirmed":len(confirmed),"unknown":len(unknown),"provider_max_inflight":PROVIDER_MAX_INFLIGHT,"retry_delays":RETRY_DELAYS},sort_keys=True))
 if __name__=="__main__":main()
