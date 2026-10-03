@@ -1,0 +1,30 @@
+{
+  "schema": "XRAY_G9_PROVIDER_DELTA_V1",
+  "generated_on": "2026-10-03",
+  "provider": "IVolatility Data Cloud API / IVolAI",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "status": "NONQUALIFYING_STRICT_C_REALTIME_API_PAID_FREE_ONLY_TIME_LIMITED_TRIAL",
+  "evidence": [
+    "IVolatility publishes bid, ask, last and separate bid/ask/last timestamps in its intraday stock-data schema, making the technical shape potentially useful for B.",
+    "Current IVolatility Data Cloud API pricing lists paid API plans, with the individual Builder plan at $63/month billed annually and a 7-day free trial; realtime U.S. data is a paid product surface.",
+    "IVolatility's current AI/API product page states that live/NBBO data is pulled using the user's IVolatility API key and instructs users to start a free trial.",
+    "A time-limited trial is not permanent-$0 entitlement; therefore strict G9-C fails before any runtime integration."
+  ],
+  "primary_sources": [
+    "https://www.ivolatility.com/doc/intraday_data_guide_jul18.pdf",
+    "https://www.ivolatility.com/data-cloud-api/",
+    "https://www.ivolatility.com/news/2961"
+  ],
+  "failed_gates": [
+    "C_PERMANENT_ZERO_REALTIME_ENTITLEMENT"
+  ],
+  "provisional_pass_gates": [
+    "B_TECHNICAL_BID_ASK_LAST_AND_SEPARATE_TIMESTAMP_SCHEMA"
+  ],
+  "reopen_condition": "Only reopen if IVolatility introduces permanent-$0 realtime U.S. equity/NBBO API entitlement for the exact automated personal use, without subscription, funding, balance, activity or per-query monetary conditions.",
+  "negative_cache_only": true,
+  "may_never_create_pass": true,
+  "unknown_never_pass": true,
+  "no_policy_weakening": true
+}
