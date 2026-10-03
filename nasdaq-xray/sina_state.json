@@ -6,7 +6,7 @@
     "FAIL_DV20": 265,
     "FAIL_PRICE": 8,
     "PASS": 483,
-    "UNKNOWN_RETRY": 2,
+    "UNKNOWN_RETRY_EXHAUSTED": 2,
     "UNKNOWN_STATIC": 46
   },
   "cursor": 805,
@@ -6519,9 +6519,9 @@
   "identity_authority": "NASDAQTRADER_EXPLICIT_TYPE_FILTER_V3_SPAC_DEFERRED_TO_LEGAL",
   "identity_ruleset": "V3_SPAC_DEFERRED_TO_LEGAL",
   "official_footer": "File Creation Time: 1002202618:01|||||||",
-  "pending_retry": 2,
+  "pending_retry": 0,
   "processed_new_this_run": 0,
-  "processed_retry_this_run": 2,
+  "processed_retry_this_run": 0,
   "queue": [
     "AAL",
     "AAOI",
@@ -8843,7 +8843,7 @@
         "source": "NASDAQ_SAME_RUN_SCREENER_METADATA"
       },
       "status": "BLOCK_LEGAL_SHELL",
-      "updated_at_utc": "2026-10-03T00:28:23.015695+00:00"
+      "updated_at_utc": "2026-10-03T00:36:46.703554+00:00"
     },
     "BSP": {
       "attempts": 1,
@@ -15970,10 +15970,10 @@
       "updated_at_utc": "2026-10-03T00:28:12.932607+00:00"
     },
     "SAIQ": {
-      "attempts": 3,
+      "attempts": 4,
       "info": "IndexError:list index out of range",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-10-03T00:28:23.015282+00:00"
+      "status": "UNKNOWN_RETRY_EXHAUSTED",
+      "updated_at_utc": "2026-10-03T00:36:41.713285+00:00"
     },
     "SANM": {
       "attempts": 1,
@@ -16670,10 +16670,10 @@
       "updated_at_utc": "2026-10-03T00:28:12.932778+00:00"
     },
     "SVA": {
-      "attempts": 3,
+      "attempts": 4,
       "info": "SyntaxError:invalid syntax (<string>, line 1)",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-10-03T00:28:23.015303+00:00"
+      "status": "UNKNOWN_RETRY_EXHAUSTED",
+      "updated_at_utc": "2026-10-03T00:36:41.713312+00:00"
     },
     "SWKS": {
       "attempts": 1,
@@ -19200,10 +19200,10 @@
     "ZS": "Zscaler, Inc. - Common Stock",
     "ZYME": "Zymeworks Inc. - Common Stock"
   },
-  "state_hash": "803992f2be5594fcae3ea8fce027e58c6b3b1d6147cbdefb6c6c06d42c6f2d67",
+  "state_hash": "f24a252e8d3b336b900be58e82fa53c89ca834a5524f6bde5ff9c76daeca4088",
   "status": "HISTORY_PARTIAL",
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_count": 48,
   "unknown_never_pass": true,
-  "updated_at_utc": "2026-10-03T00:28:23.016203+00:00"
+  "updated_at_utc": "2026-10-03T00:36:46.703804+00:00"
 }
