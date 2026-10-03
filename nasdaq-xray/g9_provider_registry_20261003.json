@@ -4,7 +4,7 @@
   "execution": "NONE",
   "real_money": "NO-GO",
   "purpose": "Negative-evidence cache only. This registry can skip unchanged dead paths but can never create G9 PASS.",
-  "provider_count": 62,
+  "provider_count": 63,
   "strict_g9_gates": {
     "A": "consolidated UTP Tape-C / National NBBO lineage",
     "B": "fresh bid+ask+last with independent quote/trade event timestamps",
@@ -851,6 +851,25 @@
       "reopen_condition": "Permanent-$0 production US-equity NBBO quote+trade access with no metered usage/subscription/trial/payment/account condition, plus primary-source consolidated lineage and independent event timestamps.",
       "negative_cache_only": true,
       "may_never_create_pass": true
+    },
+    {
+      "provider": "Clear Street Trading API / read-only MCP",
+      "status": "TECHNICALLY_EXACT_NBBO_EVENT_TIMESTAMPS_B_D_STRONG_BUT_RETAIL_ENTITLEMENT_PERMANENT_ZERO_AND_TURKEY_ELIGIBILITY_UNPROVEN",
+      "failed_gates": [
+        "A_EXACT_SIP_OR_LICENSED_REDIStributor_LINEAGE",
+        "C_PERMANENT_ZERO_UNFUNDED_RETAIL_MARKET_DATA_ENTITLEMENT",
+        "D_TURKEY_RETAIL_ELIGIBILITY"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_clearstreet_20261003.json",
+      "evidence_blob_sha": "6c863af000f7211b31708648381fe66000031ccf",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "Prove Turkey retail eligibility plus unfunded permanent-$0 realtime National-NBBO MCP/API entitlement and exact SIP/licensed redistributor lineage.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true,
+      "provisional_pass_gates": [
+        "B_INDEPENDENT_NBBO_BID_ASK_AND_LAST_TRADE_EVENT_TIMESTAMPS",
+        "D_READ_ONLY_HOSTED_MCP_TECHNICAL_SURFACE"
+      ]
     }
   ],
   "reopen_policy": "Reopen an existing negative path only on newer PRIMARY SOURCE evidence materially changing its listed failed gate(s). New previously-unreviewed providers are always eligible for research. Any reopened path still requires same-run RTH technical proof before G9 PASS.",
