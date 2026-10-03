@@ -9,7 +9,7 @@
     "C": "lawful automated/non-display permanent-$0 entitlement with no fee/balance/activity/per-query condition",
     "D": "scheduler callability"
   },
-  "unique_provider_paths_reviewed": 68,
+  "unique_provider_paths_reviewed": 69,
   "evidence_files": [
     {
       "path": "nasdaq-xray/g9_free_path_audit_20261003.json",
@@ -162,6 +162,10 @@
     {
       "path": "nasdaq-xray/g9_provider_delta_alpaca_chatgpt_plugin_20261003.json",
       "blob_sha": "6010145c908a45c03ea864a3ec893b98d4c8e70a"
+    },
+    {
+      "path": "nasdaq-xray/g9_provider_delta_unusualwhales_20261004.json",
+      "blob_sha": "b002c4a3d028839f53a4b0b9c2fe94e23f9e915e"
     }
   ],
   "reviewed_provider_paths": [
@@ -232,7 +236,8 @@
     "QuantConnect US Equities SIP / LEAN",
     "AllTick Market Data API",
     "Midas Labs / Midas Markets MCP (midasmarkets.xyz; not GetMidas Turkey)",
-    "Alpaca ChatGPT market-data plugin / connected MCP surface"
+    "Alpaca ChatGPT market-data plugin / connected MCP surface",
+    "Unusual Whales API / MCP"
   ],
   "strongest_near_misses": [
     {
@@ -276,16 +281,16 @@
   "search_policy": "Do not reopen a negative path from marketing wording alone. Reopen only on newer primary-source change to the exact failed gate, then require scheduler-callable live-RTH proof.",
   "unknown_never_pass": true,
   "no_policy_weakening": true,
-  "last_extended_on": "2026-10-03",
+  "last_extended_on": "2026-10-04",
   "count_invariant": "unique_provider_paths_reviewed == len(unique(reviewed_provider_paths))",
   "latest_utp_scheduler_interpretation": {
     "result": "THIRD_PARTY_SOFTWARE_DOES_NOT_SAFELY_QUALIFY_FOR_LOW_NONPROFESSIONAL_UNCONTROLLED_EXCEPTION; INVESTMENT_ANALYSIS_IS_EXPLICIT_NONDISPLAY_EXAMPLE; PROVIDER_SPECIFIC_ZERO_DOLLAR_AUTHORIZATION_STILL_REQUIRED",
     "authority_file": "nasdaq-xray/g9_utp_fee_basis_20261003.json"
   },
   "latest_new_provider": {
-    "provider": "Alpaca ChatGPT market-data plugin / connected MCP surface",
-    "evidence_file": "nasdaq-xray/g9_provider_delta_alpaca_chatgpt_plugin_20261003.json",
-    "evidence_blob_sha": "6010145c908a45c03ea864a3ec893b98d4c8e70a",
-    "result": "HISTORICAL_SIP_A_B_CONFIRMED_LIVE_SIP_C_UNKNOWN"
+    "provider": "Unusual Whales API / MCP",
+    "evidence_file": "nasdaq-xray/g9_provider_delta_unusualwhales_20261004.json",
+    "evidence_blob_sha": "b002c4a3d028839f53a4b0b9c2fe94e23f9e915e",
+    "result": "STRICT_C_FAIL_PAID_LIVE_API"
   }
 }
