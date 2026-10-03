@@ -78,6 +78,17 @@
       ],
       "blocker": "No sanctioned scheduler-callable end-user Midas/TradingView account adapter in the current runtime.",
       "reopen_condition": "A sanctioned Midas or TradingView connector/API becomes callable by the canonical scheduler, then fresh same-run read-only account value/cash and equity positions/exposure both parse successfully."
+    },
+    "MIDAS_ALPACA_CORRESPONDENT": {
+      "status": "PROMISING_OFFICIAL_INFRA_BUT_ENDUSER_CREDENTIALS_NOT_AVAILABLE",
+      "evidence": [
+        "Midas officially uses Alpaca Broker API for US brokerage infrastructure.",
+        "Alpaca broker partners can provide OAuth services to their correspondent end users.",
+        "Correspondent accounts do not receive personal Alpaca Trading API key/secret credentials.",
+        "A Midas-controlled OAuth or read-only connector would therefore be required for canonical access."
+      ],
+      "blocker": "No Midas-controlled scheduler-callable read-only OAuth/API is currently exposed to this runtime.",
+      "reopen_condition": "Midas publishes or explicitly authorizes a read-only OAuth/API/connector for its Alpaca-backed account and same-run account value/cash plus equity positions/exposure parse successfully."
     }
   },
   "transition_to_pass": "Only fresh same-run provider readback satisfying the pass_rule may set ACCOUNT=PASS. Persisted prior PASS alone is insufficient.",
