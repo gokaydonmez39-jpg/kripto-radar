@@ -235,6 +235,72 @@ def run_paper_invest_technical(base):
         base.update({"technical_status":"FAIL_CLOSED","status":"G9_NOT_PASS","reason":f"{type(e).__name__}:{str(e)[:240]}","g9_pass":False})
     write(base)
 
+def run_clearstreet_technical(base):
+    token=os.getenv("CLEARSTREET_API_KEY","").strip()
+    if not token:
+        base.update({"status":"NOT_CONFIGURED","reason":"CLEARSTREET_API_KEY_NOT_CONFIGURED","scheduler_callability":"BLOCKED_MISSING_SECRET"})
+        write(base); return
+    if not is_rth():
+        base.update({"technical_status":"NOT_RTH_NO_FRESHNESS_JUDGMENT","status":"WAITING_RTH","reason":"STRICT_G9_REQUIRES_LIVE_RTH_FRESHNESS_PROOF"})
+        write(base); return
+    try:
+        utcnow=datetime.now(timezone.utc)
+        details={}
+        for sym in SYMBOLS:
+            url="https://api.clearstreet.com/v1/market-data/snapshot?"+urllib.parse.urlencode({"instrument_ids":sym})
+            j=get_json(token,url)
+            rows=j.get("data") if isinstance(j,dict) else None
+            if not isinstance(rows,list) or not rows:
+                raise RuntimeError(f"CLEARSTREET_SNAPSHOT_SCHEMA_MISMATCH_{sym}")
+            snap=next((x for x in rows if isinstance(x,dict) and str(x.get("symbol") or "").upper()==sym),rows[0])
+            if not isinstance(snap,dict):
+                raise RuntimeError(f"CLEARSTREET_SNAPSHOT_ROW_INVALID_{sym}")
+            quote=snap.get("last_quote")
+            trade=snap.get("last_trade")
+            if not isinstance(quote,dict) or not isinstance(trade,dict):
+                raise RuntimeError(f"CLEARSTREET_QUOTE_TRADE_MISSING_{sym}")
+            bid=float(quote["bid"]); ask=float(quote["ask"]); last=float(trade["price"])
+            bts=parse_ts(quote.get("bid_timestamp"))
+            ats=parse_ts(quote.get("ask_timestamp"))
+            tts=parse_ts(trade.get("timestamp"))
+            if min(bid,ask,last)<=0 or bid>ask or not bts or not ats or not tts:
+                raise RuntimeError(f"CLEARSTREET_INVALID_NBBO_TRADE_{sym}")
+            bid_age=(utcnow-bts).total_seconds()
+            ask_age=(utcnow-ats).total_seconds()
+            trade_age=(utcnow-tts).total_seconds()
+            quote_age=max(bid_age,ask_age)
+            skew=max(abs((bts-tts).total_seconds()),abs((ats-tts).total_seconds()))
+            if bid_age<0 or ask_age<0 or trade_age<0:
+                raise RuntimeError(f"CLEARSTREET_FUTURE_TIMESTAMP_{sym}")
+            if quote_age>60:
+                raise RuntimeError(f"CLEARSTREET_QUOTE_STALE_{sym}:{quote_age:.1f}")
+            if trade_age>60:
+                raise RuntimeError(f"CLEARSTREET_TRADE_STALE_{sym}:{trade_age:.1f}")
+            if skew>15:
+                raise RuntimeError(f"CLEARSTREET_QUOTE_TRADE_SKEW_{sym}:{skew:.1f}")
+            details[sym]={
+              "bid":bid,"ask":ask,"last":last,
+              "bid_event_timestamp":bts.isoformat(),
+              "ask_event_timestamp":ats.isoformat(),
+              "trade_timestamp":tts.isoformat(),
+              "bid_venue":quote.get("bid_venue"),
+              "ask_venue":quote.get("ask_venue"),
+              "trade_venue":trade.get("venue"),
+              "quote_age_seconds":round(quote_age,3),
+              "trade_age_seconds":round(trade_age,3),
+              "max_quote_trade_skew_seconds":round(skew,3),
+              "is_delayed":False,
+              "provider_claim":"NATIONAL_NBBO"
+            }
+        base["scheduler_callability"]="PASS"
+        base["technical_evidence"]=details
+        base["technical_status"]="PASS"
+        base.update({"status":"G9_PASS","reason":"A_B_C_D_ALL_PROVEN","g9_pass":True})
+    except Exception as e:
+        base.update({"technical_status":"FAIL_CLOSED","status":"G9_NOT_PASS","reason":f"{type(e).__name__}:{str(e)[:240]}","g9_pass":False})
+    write(base)
+
+
 def main():
     authority=json.loads(AUTH.read_text())
     adapter_contract=json.loads(ADAPTER_CONTRACT.read_text())
@@ -269,6 +335,9 @@ def main():
 
     if provider=="PAPER_INVEST":
         run_paper_invest_technical(base); return
+
+    if provider=="CLEAR_STREET":
+        run_clearstreet_technical(base); return
 
     if provider!="TRADESTATION":
         base.update({"status":"BLOCKED_PROVIDER_DISPATCH_NOT_IMPLEMENTED","reason":"IMPLEMENTED_ADAPTER_HAS_NO_RUNTIME_DISPATCH"})

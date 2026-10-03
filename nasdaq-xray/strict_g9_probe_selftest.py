@@ -29,6 +29,7 @@ def run_case(authority, adapters, expect_status, expect_refresh_calls):
         mod.OUT=out
         mod.os.environ.pop("WEALTHNOW_API_KEY",None)
         mod.os.environ.pop("PAPER_INVEST_API_KEY",None)
+        mod.os.environ.pop("CLEARSTREET_API_KEY",None)
         calls={"refresh":0,"get_json":0,"depth":0,"paper":0}
         def fake_refresh():
             calls["refresh"]+=1
@@ -113,7 +114,27 @@ def main():
     for forbidden in ("/v1/orders","create_order","place_order","cancel_order"):
         assert forbidden not in source, forbidden
 
-    # 8) Only PROVEN + implemented + known TradeStation dispatch may reach auth.
+    # 8) Clear Street negative authority must stop before any provider call.
+    j=run_case(
+      {"provider":"CLEAR_STREET","status":"BLOCKED_STRICT_PERMANENT_ZERO"},
+      {"CLEAR_STREET":{"status":"IMPLEMENTED"}},
+      "BLOCKED_ENTITLEMENT_AUTHORITY_UNPROVEN",0)
+    assert j["adapter_status"]=="IMPLEMENTED"
+
+    # 9) PROVEN Clear Street may reach dispatch, but a missing API-key secret
+    # remains NOT_CONFIGURED and cannot trigger market-data calls.
+    j=run_case(
+      {"provider":"CLEAR_STREET","status":"PROVEN"},
+      {"CLEAR_STREET":{"status":"IMPLEMENTED"}},
+      "NOT_CONFIGURED",0)
+    assert j["reason"]=="CLEARSTREET_API_KEY_NOT_CONFIGURED"
+
+    source=SRC.read_text()
+    assert "https://api.clearstreet.com/v1/market-data/snapshot" in source
+    assert "bid_timestamp" in source and "ask_timestamp" in source
+    assert "last_trade" in source
+
+    # 10) Only PROVEN + implemented + known TradeStation dispatch may reach auth.
     j=run_case(
       {"provider":"TRADESTATION","status":"PROVEN"},
       {"TRADESTATION":{"status":"IMPLEMENTED"}},

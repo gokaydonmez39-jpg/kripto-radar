@@ -28,6 +28,9 @@ jobs:
       TRADESTATION_CLIENT_ID: ${{ secrets.TRADESTATION_CLIENT_ID }}
       TRADESTATION_CLIENT_SECRET: ${{ secrets.TRADESTATION_CLIENT_SECRET }}
       TRADESTATION_REFRESH_TOKEN: ${{ secrets.TRADESTATION_REFRESH_TOKEN }}
+      WEALTHNOW_API_KEY: ${{ secrets.WEALTHNOW_API_KEY }}
+      PAPER_INVEST_API_KEY: ${{ secrets.PAPER_INVEST_API_KEY }}
+      CLEARSTREET_API_KEY: ${{ secrets.CLEARSTREET_API_KEY }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -62,7 +65,7 @@ jobs:
               assert j["adapter_status"]=="IMPLEMENTED"
               assert j["status"]=="G9_PASS"
               assert j["authority_status"]=="PROVEN"
-              assert j["technical_status"]=="PASS_AWAITING_ENTITLEMENT_AUTHORITY"
+              assert j["technical_status"] in {"PASS","PASS_AWAITING_ENTITLEMENT_AUTHORITY"}
               assert set(j.get("technical_evidence",{}))=={"AAPL","NVDA"}
               for sym,v in j["technical_evidence"].items():
                   assert v["is_delayed"] is False

@@ -109,6 +109,21 @@
       "authority_rule": "Adapter MUST NOT be called unless g9_entitlement_authority.json explicitly selects PAPER_INVEST and status PROVEN from primary-source consolidated NBBO lineage plus permanent-$0 automated/non-display market-data entitlement evidence.",
       "evidence_file": "nasdaq-xray/g9_provider_delta_paperinvest_20261003.json",
       "order_surface_policy": "XRAY adapter contains market-data reads only; Paper simulated order endpoints are outside the adapter and forbidden by EXECUTION=NONE."
+    },
+    "CLEAR_STREET": {
+      "status": "IMPLEMENTED",
+      "runtime": "nasdaq-xray/strict_g9_probe.py",
+      "auth": "Dedicated Clear Street API key in scheduler secret CLEARSTREET_API_KEY; raw Bearer token; no OAuth exchange; never persisted.",
+      "technical_scope": [
+        "GET /v1/market-data/snapshot?instrument_ids={symbol}",
+        "National-best bid and ask with independent bid_timestamp and ask_timestamp exchange event times",
+        "Last-sale-eligible trade price with independent exchange timestamp and venue",
+        "same-run RTH quote/trade freshness and quote/trade skew"
+      ],
+      "entitlement_status": "OFFICIAL_NATIONAL_NBBO_SEMANTICS_AND_FREE_EVERY_ACCOUNT_MCP_PATH_STRONG; EXACT_SIP_OR_LICENSED_REDISTRIBUTOR_LINEAGE, UNFUNDED_PERMANENT_ZERO_MARKET_DATA_ENTITLEMENT, AND TURKEY_RETAIL_ELIGIBILITY NOT_YET_PROVEN",
+      "authority_rule": "Adapter MUST NOT be called unless g9_entitlement_authority.json explicitly selects CLEAR_STREET with status PROVEN from primary-source exact consolidated-SIP/licensed-redistributor lineage, permanent-$0 no-funding/no-balance/no-activity market-data entitlement for the intended automated use, and applicable user jurisdiction eligibility.",
+      "evidence_file": "nasdaq-xray/g9_provider_delta_clearstreet_20261003.json",
+      "order_surface_policy": "XRAY adapter contains only GET /v1/market-data/snapshot. Account/order/position mutation and execution endpoints are forbidden by EXECUTION=NONE."
     }
   },
   "authority_file": "nasdaq-xray/g9_entitlement_authority.json",
