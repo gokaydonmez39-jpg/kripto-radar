@@ -91,6 +91,62 @@ def best(side,kind):
     if not out: return None
     return max(out,key=lambda x:x[0]) if kind=="bid" else min(out,key=lambda x:x[0])
 
+
+def wealthnow_snapshot(token,symbol):
+    url="https://firm.wealthnow.io/api/v3/fundamentals/price_snapshot?"+urllib.parse.urlencode({"ticker":symbol})
+    return get_json(token,url)
+
+def run_wealthnow_technical(base):
+    token=os.getenv("WEALTHNOW_API_KEY","").strip()
+    if not token:
+        base.update({"status":"NOT_CONFIGURED","reason":"WEALTHNOW_API_KEY_NOT_CONFIGURED","scheduler_callability":"BLOCKED_MISSING_SECRET"})
+        write(base); return
+    if not is_rth():
+        base.update({"technical_status":"NOT_RTH_NO_FRESHNESS_JUDGMENT","status":"WAITING_RTH","reason":"STRICT_G9_REQUIRES_LIVE_RTH_FRESHNESS_PROOF"})
+        write(base); return
+    try:
+        utcnow=datetime.now(timezone.utc)
+        details={}
+        for sym in SYMBOLS:
+            j=wealthnow_snapshot(token,sym)
+            snap=j.get("snapshot") if isinstance(j,dict) else None
+            if not isinstance(snap,dict):
+                raise RuntimeError(f"WEALTHNOW_SNAPSHOT_SCHEMA_MISMATCH_{sym}")
+            if str(snap.get("market_session") or snap.get("session") or "").lower()!="regular":
+                raise RuntimeError(f"WEALTHNOW_NOT_REGULAR_SESSION_{sym}")
+            if snap.get("is_stale") is not False:
+                raise RuntimeError(f"WEALTHNOW_STALE_OR_UNKNOWN_{sym}")
+            bid=float(snap["bid"]); ask=float(snap["ask"]); last=float(snap["price"])
+            qts=parse_ts(snap.get("quote_as_of"))
+            tts=parse_ts(snap.get("as_of") or snap.get("time"))
+            if min(bid,ask,last)<=0 or bid>ask or not qts or not tts:
+                raise RuntimeError(f"WEALTHNOW_INVALID_QUOTE_{sym}")
+            quote_age=(utcnow-qts).total_seconds()
+            trade_age=(utcnow-tts).total_seconds()
+            skew=abs((qts-tts).total_seconds())
+            if quote_age<0 or trade_age<0:
+                raise RuntimeError(f"WEALTHNOW_FUTURE_TIMESTAMP_{sym}")
+            if quote_age>60:
+                raise RuntimeError(f"WEALTHNOW_QUOTE_STALE_{sym}:{quote_age:.1f}")
+            if trade_age>60:
+                raise RuntimeError(f"WEALTHNOW_TRADE_STALE_{sym}:{trade_age:.1f}")
+            if skew>15:
+                raise RuntimeError(f"WEALTHNOW_QUOTE_TRADE_SKEW_{sym}:{skew:.1f}")
+            details[sym]={
+              "bid":bid,"ask":ask,"last":last,
+              "bid_event_timestamp":qts.isoformat(),"ask_event_timestamp":qts.isoformat(),"trade_timestamp":tts.isoformat(),
+              "quote_age_seconds":round(quote_age,3),"trade_age_seconds":round(trade_age,3),
+              "max_quote_trade_skew_seconds":round(skew,3),
+              "source_label":snap.get("source"),"is_delayed":False
+            }
+        base["scheduler_callability"]="PASS"
+        base["technical_evidence"]=details
+        base["technical_status"]="PASS"
+        base.update({"status":"G9_PASS","reason":"A_B_C_D_ALL_PROVEN","g9_pass":True})
+    except Exception as e:
+        base.update({"technical_status":"FAIL_CLOSED","status":"G9_NOT_PASS","reason":f"{type(e).__name__}:{str(e)[:240]}","g9_pass":False})
+    write(base)
+
 def main():
     authority=json.loads(AUTH.read_text())
     adapter_contract=json.loads(ADAPTER_CONTRACT.read_text())
@@ -119,6 +175,9 @@ def main():
     if adapter.get("status")!="IMPLEMENTED":
         base.update({"status":"BLOCKED_PROVIDER_ADAPTER_NOT_IMPLEMENTED","reason":"PROVEN_AUTHORITY_HAS_NO_IMPLEMENTED_STRICT_G9_RUNTIME_ADAPTER"})
         write(base); return
+
+    if provider=="WEALTHNOW":
+        run_wealthnow_technical(base); return
 
     if provider!="TRADESTATION":
         base.update({"status":"BLOCKED_PROVIDER_DISPATCH_NOT_IMPLEMENTED","reason":"IMPLEMENTED_ADAPTER_HAS_NO_RUNTIME_DISPATCH"})
