@@ -101,28 +101,28 @@
       ],
       "diagnostic_probe": "nasdaq-xray/account_longbridge_openapi_probe.py",
       "selftest": "nasdaq-xray/account_longbridge_openapi_probe_selftest.py",
-      "security_model": "Credentials must be supplied only through secure runtime secrets. Probe output persists status/provenance/run metadata only; no balances, positions, account identifiers, or credentials.",
-      "canonical_gate_rule": "Only the production final-gate workflow may activate this adapter, using secure runtime secrets and fresh same-run read-only account_balance + stock_positions. No persisted provider result can create PASS.",
-      "blocker": "GitHub Actions secrets for the three official Legacy API Key credentials are not yet configured.",
-      "evidence": [
-        "Official Longbridge Getting Started documentation defines Legacy API Key as App Key + App Secret + Legacy Access Token from User Center, distinct from OAuth tokens.",
-        "Official Longbridge examples use Config.from_apikey_env() with TradeContext.account_balance().",
-        "Official Stock Positions documentation exposes TradeContext.stock_positions / GET /v1/asset/stock.",
-        "Probe source imports Longbridge only after all three secrets are present; without them it is network-free fail-closed.",
-        "Probe source contains no order/replace/cancel/submit/withdraw calls and persists no private account values or secrets.",
-        "Positive same-run and stale-run behavior is covered by network-free regression tests."
+      "preferred_auth_mode": "OAUTH_ACCOUNT_SCOPE",
+      "oauth_credentials_supported": [
+        "LONGBRIDGE_OAUTH_ACCESS_TOKEN",
+        "LONGBRIDGE_OAUTH_CLIENT_ID + LONGBRIDGE_OAUTH_REFRESH_TOKEN (+ optional client secret)"
       ],
-      "required_scope": "LEGACY_ACCESS_TOKEN_BOUND_LIVE_ACCOUNT_READ",
+      "legacy_fallback": "App Key + App Secret + Legacy Access Token is compatibility-only and requires explicit XRAY_ALLOW_LEGACY_TRADE_CAPABLE_CREDENTIAL opt-in before any network call.",
+      "security_model": "OAuth account scope is preferred. Probe performs only GET /v1/asset/account and GET /v1/asset/stock after OAuth token acquisition, or the equivalent SDK read calls on explicitly opted-in legacy credentials. It never persists balances, positions, account identifiers, access/refresh tokens, or secrets.",
+      "canonical_gate_rule": "Only the production final-gate workflow may activate this adapter from secure runtime secrets and fresh same-run parseable account_balance + stock_positions. No persisted provider result can create PASS.",
+      "blocker": "No OAuth account-scope or legacy OpenAPI credentials are currently configured in GitHub Actions secrets.",
+      "evidence": [
+        "Longbridge current documentation makes OAuth 2.0 the default for new integrations; legacy API-key mode is compatibility-only.",
+        "Longbridge Account Assets and Stock Positions docs show OAuthBuilder/Config.from_oauth with TradeContext.account_balance and stock_positions.",
+        "Agent Auth documentation exposes separately selectable market-data, account and trading permissions; account capability can be granted without a trading permission.",
+        "Production probe prefers OAuth Bearer/refresh credentials, uses only the two read endpoints for OAuth, and remains network-free when secret input is absent/incomplete.",
+        "Network-free selftests cover OAuth bearer, OAuth refresh, scope denial, missing credentials, legacy opt-in guard, private-value non-persistence and stale/same-run terminal behavior."
+      ],
+      "required_scope": "OAUTH_ACCOUNT_PERMISSION",
       "trading_scope_required": false,
-      "reopen_condition": "Configure the three Legacy API Key credentials as GitHub Actions secrets; then the final factory itself must obtain fresh same-run parseable account_balance + stock_positions.",
+      "reopen_condition": "Configure a Longbridge OAuth credential carrying ACCOUNT permission in GitHub Actions secrets (preferred), or explicitly opt in a legacy compatibility token; then the final factory itself must obtain fresh same-run parseable account_balance + stock_positions.",
       "same_run_rule": "ACCOUNT_PASS may be created only when the production final-gate run itself invokes the read-only probe and both account_balance and stock_positions parse successfully in that exact workflow run.",
       "persisted_pass_rule": "A prior probe result or persisted PASS may never be reused to create current ACCOUNT_PASS.",
-      "credential_mode": "LEGACY_API_KEY_ENV",
-      "required_credentials": [
-        "LONGBRIDGE_APP_KEY",
-        "LONGBRIDGE_APP_SECRET",
-        "LONGBRIDGE_ACCESS_TOKEN"
-      ],
+      "credential_mode": "OAUTH_PREFERRED_LEGACY_EXPLICIT_FALLBACK",
       "trading_scope_required_for_xray": false
     }
   },
