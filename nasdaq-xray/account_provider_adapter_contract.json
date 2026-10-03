@@ -131,7 +131,7 @@
       "oauth_durability": "Bearer-only can satisfy a fresh same-run read while valid, but autonomous renewal requires refresh-state persistence. Static refresh-secret use is accepted only when the server omits a replacement refresh token or returns the same token."
     },
     "LONGBRIDGE_HOSTED_MCP": {
-      "status": "ELIGIBLE_FRESH_SAME_RUN_ONLY",
+      "status": "SUPERSEDED_BY_RESTRICTED_V2",
       "sanctioned_surface": "Official Longbridge hosted MCP at https://mcp.longbridge.com",
       "authorization": "Agent Auth Code or standard OAuth 2.1; user pre-selects ACCOUNT permission. Trading permission is not required for XRAY.",
       "required_read_calls": [
@@ -151,6 +151,32 @@
       ],
       "blocker": "No least-privilege ACCOUNT-scoped hosted-MCP Bearer is currently configured in GitHub Actions secrets.",
       "reopen_condition": "Configure LONGBRIDGE_MCP_BEARER_TOKEN from a Longbridge Agent/Auth grant with ACCOUNT permission, then require same-run account_balance + stock_positions success.",
+      "same_run_rule": "Persisted prior PASS is never reusable.",
+      "trading_scope_required": false,
+      "execution": "NONE",
+      "canonical_use": "DO_NOT_PREFER_FULL_ENDPOINT_WHEN_RESTRICTED_V2_IS_AVAILABLE"
+    },
+    "LONGBRIDGE_HOSTED_MCP_V2": {
+      "status": "ELIGIBLE_FRESH_SAME_RUN_ONLY",
+      "sanctioned_surface": "Official Longbridge hosted MCP restricted /v2 endpoint at https://mcp.longbridge.com/v2",
+      "authorization": "OAuth 2.1 / Agent Auth with account.read. Longbridge source defines /v2 scopes as watchlist + account.read + trade.read and explicitly excludes trade.write.",
+      "required_read_calls": [
+        "account_balance",
+        "stock_positions"
+      ],
+      "diagnostic_probe": "nasdaq-xray/account_longbridge_mcp_v2_probe.py",
+      "selftest": "nasdaq-xray/account_longbridge_mcp_v2_probe_selftest.py",
+      "secret_env": "LONGBRIDGE_MCP_V2_BEARER_TOKEN",
+      "security_model": "The restricted /v2 server allowlist includes account_balance and stock_positions while submit_order, cancel_order, replace_order, fund order writes, DCA/grid writes and money-movement tools are excluded. XRAY additionally calls only the two required account reads and never persists raw account values or the bearer.",
+      "canonical_gate_rule": "Only fresh same-run parseable account_balance + stock_positions from the official /v2 endpoint may create ACCOUNT_PASS. Missing, expired or scope-denied token remains blocked.",
+      "evidence": [
+        "Longbridge longbridge-mcp endpoints.rs defines production AccountRead scope key account.read with id 6 and V2_SCOPES=[watchlist, account.read, trade.read], deliberately without trade.write.",
+        "Longbridge longbridge-mcp tools/mod.rs places account_balance and stock_positions on V2 and places submit_order, cancel_order, replace_order, withdrawals, DCA/grid write tools on no restricted endpoint.",
+        "Hosted MCP is stateless Streamable HTTP and forwards the bearer to upstream reads; no server-side session persistence is required by XRAY.",
+        "XRAY MCP V2 probe calls only account_balance and stock_positions and persists status/provenance only."
+      ],
+      "blocker": "No account.read-scoped /v2 Bearer is currently configured in GitHub Actions secrets.",
+      "reopen_condition": "Configure LONGBRIDGE_MCP_V2_BEARER_TOKEN from a Longbridge authorization carrying account.read, then require fresh same-run account_balance + stock_positions success.",
       "same_run_rule": "Persisted prior PASS is never reusable.",
       "trading_scope_required": false,
       "execution": "NONE"
