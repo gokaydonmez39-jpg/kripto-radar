@@ -4,7 +4,7 @@
   "execution": "NONE",
   "real_money": "NO-GO",
   "purpose": "Negative-evidence cache only. This registry can skip unchanged dead paths but can never create G9 PASS.",
-  "provider_count": 47,
+  "provider_count": 48,
   "strict_g9_gates": {
     "A": "consolidated UTP Tape-C / National NBBO lineage",
     "B": "fresh bid+ask+last with independent quote/trade event timestamps",
@@ -13,8 +13,8 @@
   },
   "source_saturation": {
     "path": "nasdaq-xray/g9_search_saturation_20261003.json",
-    "blob_sha": "a6c0ba99db304fbe17693b41af25d0a521f86dde",
-    "reviewed_paths": 47
+    "blob_sha": "980965e98dea3ac7883bc241f3e0af407aaa56a9",
+    "reviewed_paths": 48
   },
   "providers": [
     {
@@ -626,6 +626,21 @@
       "evidence_file": "nasdaq-xray/midas_official_path_audit_20261003.json",
       "last_checked_on": "2026-10-03",
       "reopen_condition": "TradingView/Midas exposes a sanctioned scheduler-callable end-user path and market-data lineage changes from CBOE One to strict National NBBO if considered for G9.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "Midas via Alpaca Broker API partner infrastructure",
+      "status": "OFFICIAL_PARTNER_INFRA_CONFIRMED_CUSTOM_LIVE_SIP_ENTITLEMENT_UNPROVEN",
+      "failed_gates": [
+        "A_PRODUCT_BINDING",
+        "B_ENDUSER_SURFACE",
+        "C_AUTOMATED_NONDISPLAY_RIGHT",
+        "D_ENDUSER_API"
+      ],
+      "evidence_file": "nasdaq-xray/midas_alpaca_infrastructure_audit_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "Midas or Alpaca primary-source evidence proves the exact Midas partner feed is live consolidated SIP/National NBBO, Midas grants permanent-$0 automated/non-display end-user use, and a sanctioned scheduler-callable path exposes fresh quote+trade event timestamps.",
       "negative_cache_only": true,
       "may_never_create_pass": true
     }
