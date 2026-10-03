@@ -1,0 +1,44 @@
+{
+  "schema": "XRAY_G9_PROVIDER_DELTA_V1",
+  "generated_on": "2026-10-03",
+  "provider": "Clear Street Trading API / read-only MCP",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "status": "TECHNICALLY_EXACT_NBBO_EVENT_TIMESTAMPS_B_D_STRONG_BUT_RETAIL_ENTITLEMENT_PERMANENT_ZERO_AND_TURKEY_ELIGIBILITY_UNPROVEN",
+  "evidence": [
+    "Clear Street's official 2026 changelog states GET /v1/market-data/snapshot reports the venue currently holding the national best bid and best offer (NBBO), with separate bid_venue/ask_venue and bid_timestamp/ask_timestamp exchange times.",
+    "The same snapshot exposes the last-sale trade venue and exchange timestamp. This is an unusually strong strict-B schema: bid, ask and last have independent exchange event-time evidence.",
+    "Clear Street's official read-only MCP endpoint exposes get_market_data_snapshot and cannot place/cancel orders, making the technical scheduler/read-only surface strong once an eligible account is authenticated.",
+    "The MCP/API requires a Clear Street trading account/account entitlement. Public documentation found here does not prove that an unfunded eligible retail account permanently retains the exact realtime NBBO market-data entitlement at $0, nor does it publish a separate exchange/SIP fee waiver/classification for this automated API use.",
+    "Clear Street Retail's current Founding Member program requires a $5,000 cash deposit to obtain Founding Member status. This condition cannot be generalized to every future/ordinary retail account, but that particular route fails XRAY's no-funding-condition rule.",
+    "Current public sources reviewed do not explicitly establish Turkey-resident retail account eligibility. Non-US tax-resident fields/withholding support in the API prove international tax handling exists but do not prove Turkey onboarding.",
+    "Therefore A/B are technically/semantically strong, while C and user-jurisdiction D remain fail-closed until exact unfunded entitlement and Turkey eligibility are primary-source proven."
+  ],
+  "primary_sources": [
+    "https://docs.clearstreet.com/changelog/",
+    "https://docs.clearstreet.com/guides/mcp/",
+    "https://docs.clearstreet.com/guides/instrument-data/",
+    "https://docs.clearstreet.com/",
+    "https://www.clearstreet.com/founders-club"
+  ],
+  "gate_analysis": {
+    "A": "STRONG_NATIONAL_NBBO_SEMANTICS_IN_OFFICIAL_MARKET_DATA_SNAPSHOT; EXACT UTP/CTA REDISTRIBUTOR LINEAGE NOT NAMED IN REVIEWED DOCS",
+    "B": "PRIMARY_SOURCE_STRONG: separate bid/ask exchange timestamps plus last-sale trade timestamp and venue",
+    "C": "UNPROVEN_FOR_UNFUNDED_PERMANENT_ZERO_RETAIL_API; Founding Member route has $5,000 funding condition",
+    "D": "TECHNICAL_READ_ONLY_MCP_PASS; CURRENT_USER_TURKEY_RETAIL_ELIGIBILITY_UNPROVEN"
+  },
+  "failed_or_unproven_gates": [
+    "A_EXACT_SIP_OR_LICENSED_REDIStributor_LINEAGE",
+    "C_PERMANENT_ZERO_UNFUNDED_RETAIL_MARKET_DATA_ENTITLEMENT",
+    "D_TURKEY_RETAIL_ELIGIBILITY"
+  ],
+  "provisional_pass_gates": [
+    "B_INDEPENDENT_NBBO_BID_ASK_AND_LAST_TRADE_EVENT_TIMESTAMPS",
+    "D_READ_ONLY_HOSTED_MCP_TECHNICAL_SURFACE"
+  ],
+  "reopen_condition": "Primary-source Clear Street evidence must prove Turkey-resident retail eligibility, an unfunded/no-balance/no-activity route to the same realtime National-NBBO snapshot/MCP entitlement permanently at $0 with no separate exchange/vendor fee, and exact consolidated SIP or named licensed redistributor lineage; then same-run RTH probe.",
+  "negative_cache_only": true,
+  "may_never_create_pass": true,
+  "unknown_never_pass": true,
+  "no_policy_weakening": true
+}
