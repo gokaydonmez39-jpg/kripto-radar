@@ -1,11 +1,17 @@
 {
-  "asof_et": "2026-10-01",
+  "asof_et": "2026-10-02",
   "authority": "EXTERNAL_SHADOW_NO_SIGNAL",
   "execution": "NONE",
-  "fail": [],
-  "fail_count": 0,
+  "fail": [
+    "VICR|D"
+  ],
+  "fail_count": 1,
   "family_c_confirmed_input_count": 0,
-  "input_confirmed_family_candidates": 0,
+  "history_source_by_symbol": {
+    "PI": "SINA_US_DAILY",
+    "VICR": "SINA_US_DAILY"
+  },
+  "input_confirmed_family_candidates": 2,
   "pre_g9_tech_pass": [],
   "pre_g9_tech_pass_count": 0,
   "r92_ineligible": [],
@@ -17,17 +23,117 @@
     "ALIGNED_60M",
     "DELIVERY_PROOF"
   ],
-  "results": {},
+  "results": {
+    "PI|D": {
+      "authority": "SHADOW_ONLY",
+      "event_status": "CLEAN_DISCOVERY",
+      "extension_veto": false,
+      "family": "D",
+      "geometry": {
+        "move3_atr": 1.8006452932104589,
+        "pivot_extension": 0.01580413586199514,
+        "risk_atr": 2.3777178589475274,
+        "risk_percent": 0.09330469733466588,
+        "x": 1.927717858947529
+      },
+      "levels": {
+        "A": 7.397348078616383,
+        "P": 186.66,
+        "S0": 170.92053038427673,
+        "T1": 190.0,
+        "anchor": 172.4,
+        "chase_limit": 190.3586740393082,
+        "close": 189.61,
+        "entry_high": 188.50933701965408,
+        "entry_low": 186.66,
+        "entry_model": 188.50933701965408
+      },
+      "lifecycle": "RETEST_REQUIRED",
+      "pre_g9_tech_pass": false,
+      "r92_eligible": true,
+      "result": "WATCH_RETEST_REQUIRED",
+      "risk_pass": false,
+      "rr": {
+        "basic": 0.0005870150230263914,
+        "basic_pass": false,
+        "basic_threshold": 2.0,
+        "severe": -0.1037234557111289,
+        "severe_pass": false,
+        "severe_threshold": 1.5
+      },
+      "state_cap": "NORMAL",
+      "target": {
+        "price_discovery": false,
+        "prior_max_high": 247.0635,
+        "source": "CONSERVATIVE_NEAREST_PRIOR_DAILY_HIGH",
+        "synthetic": false
+      },
+      "target_overlap": false,
+      "technical_hard_pass": false
+    },
+    "VICR|D": {
+      "authority": "SHADOW_ONLY",
+      "event_status": "CLEAN_DISCOVERY",
+      "extension_veto": true,
+      "family": "D",
+      "geometry": {
+        "move3_atr": 1.5204320250074168,
+        "pivot_extension": 0.5278464734395092,
+        "risk_atr": 1.8038385202356932,
+        "risk_percent": 0.16371945769014962,
+        "x": 1.3538385202356928
+      },
+      "levels": {
+        "A": 18.77624223276982,
+        "P": 202.18,
+        "S0": 173.00475155344603,
+        "T1": 310.11,
+        "anchor": 176.76,
+        "chase_limit": 211.56812111638493,
+        "close": 308.9,
+        "entry_high": 206.87406055819247,
+        "entry_low": 202.18,
+        "entry_model": 206.87406055819247
+      },
+      "lifecycle": "CHASE_NO_VALID_FILL",
+      "pre_g9_tech_pass": false,
+      "r92_eligible": true,
+      "result": "FAIL_CHASE",
+      "risk_pass": false,
+      "rr": {
+        "basic": 2.6440361756817197,
+        "basic_pass": true,
+        "basic_threshold": 2.0,
+        "severe": 2.1695190412982424,
+        "severe_pass": true,
+        "severe_threshold": 1.5
+      },
+      "state_cap": "NORMAL",
+      "target": {
+        "price_discovery": false,
+        "prior_max_high": 382.65,
+        "source": "CONSERVATIVE_NEAREST_PRIOR_DAILY_HIGH",
+        "synthetic": false
+      },
+      "target_overlap": false,
+      "technical_hard_pass": false
+    }
+  },
   "schema": "XRAY_FINAL_TECH_SHADOW_V1",
-  "source_compiled_policy_hash": "bc4ad11c4029bf5feb5399ae3aa7af9c9c8dd7ad6c44119bac4e5734287b931e",
-  "source_compiled_policy_version": "C4.14",
-  "source_deep_blob_sha": "49fedac99b8b0bf5c186ceacae9c71429a34ccb1",
+  "source_compiled_policy_hash": "26a95745a50b65e85f6ece24b6501af0994764a84ddd886edb70d1fcd770849c",
+  "source_compiled_policy_version": "C4.17",
+  "source_deep_blob_sha": "ef9329735a208e28be983b0a5f23647b264e300d",
   "source_deep_path": "nasdaq-xray/canonical_current_deep_full.json",
-  "source_family_c_blob_sha": "ab76de82456ebef636d6500bb58286bbad58925d",
+  "source_family_c_blob_sha": "d252310cd761b282862d6931d08e3cdbf0b5f7c3",
   "source_family_c_path": "nasdaq-xray/canonical_current_family_c.json",
-  "state_caps": {},
+  "state_caps": {
+    "PI": "NORMAL",
+    "VICR": "NORMAL"
+  },
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_never_pass": true,
-  "watch": [],
-  "watch_count": 0
+  "watch": [
+    "PI|D"
+  ],
+  "watch_count": 1
 }

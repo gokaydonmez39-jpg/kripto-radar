@@ -1,5 +1,5 @@
 {
-  "asof_et": "2026-10-01",
+  "asof_et": "2026-10-02",
   "authority": "C4_11_POST_EARNINGS_FAIL_CLOSED_POLICY_INHERITED",
   "confirmed": {},
   "confirmed_count": 0,
@@ -13,6 +13,9 @@
   },
   "event_symbol_count": 1,
   "execution": "NONE",
+  "history_source_by_symbol": {
+    "MU": "SINA_US_DAILY"
+  },
   "policy": {
     "base_atr": [
       0.3,
@@ -28,15 +31,15 @@
   },
   "real_money": "NO-GO",
   "schema": "XRAY_FAMILY_C_ENGINE_V1",
-  "source_compiled_policy_hash": "bc4ad11c4029bf5feb5399ae3aa7af9c9c8dd7ad6c44119bac4e5734287b931e",
-  "source_compiled_policy_version": "C4.14",
-  "source_event_blob_sha": "5888b36666f1224d8989553bdc14cd1741c9c3e0",
+  "source_compiled_policy_hash": "26a95745a50b65e85f6ece24b6501af0994764a84ddd886edb70d1fcd770849c",
+  "source_compiled_policy_version": "C4.17",
+  "source_event_blob_sha": "cd26b6522f69cccf2b71d8bb3659666f08413917",
   "source_event_path": "nasdaq-xray/canonical_current_event_state.json",
-  "source_stage1_blob_sha": "4db64fac206bcbbe645be3c11020d5b8442f7c1d",
+  "source_stage1_blob_sha": "a19154816768e9ea925453c4b0d8adf6704ee6d9",
   "source_stage1_path": "nasdaq-xray/canonical_current_stage1.json",
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown": {},
   "unknown_count": 0,
   "unknown_never_pass": true,
-  "weekly_scope_count": 54
+  "weekly_scope_count": 100
 }
