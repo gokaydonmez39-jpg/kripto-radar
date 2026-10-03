@@ -1,0 +1,40 @@
+{
+  "schema": "XRAY_G9_PROVIDER_DELTA_V1",
+  "generated_on": "2026-10-03",
+  "provider": "LeanData UK realtime US equities SIP WebSocket",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "status": "TECHNICALLY_STRONG_A_B_D_BUT_STRICT_C_FREE_IS_TIME_LIMITED_30_DAYS",
+  "evidence": [
+    "LeanData's official realtime subscription docs state that live U.S. equities trades, quotes and minute bars come from the consolidated SIP feed.",
+    "The documented stock trade frame includes symbol, price, size, event timestamp, exchange, conditions and tape; the quote frame separately includes bid/ask exchanges, prices, sizes, event timestamp, conditions and tape. Example Nasdaq-listed AAPL frames carry tape C.",
+    "The service exposes a scheduler-callable authenticated WebSocket stock channel with separate trades and quotes subscriptions, making A/B/D technically strong subject to same-run RTH validation.",
+    "The current plan matrix explicitly lists Free as 'Free (30 days)' with all WebSocket channels. The permanent plans with live WebSocket access are paid (Value/Standard/Premium).",
+    "Because XRAY requires permanent-$0 entitlement with no trial/expiry/subscription condition, a 30-day free period cannot satisfy strict gate C even if the feed is consolidated SIP and technically exact.",
+    "Legacy Basic is closed to new registration and REST-only, so it cannot be used as a permanent free live-WebSocket workaround."
+  ],
+  "primary_sources": [
+    "https://leandata.uk/docs/realtime/subscriptions/",
+    "https://leandata.uk/docs/market/overview/",
+    "https://leandata.uk/docs/market/stocks/"
+  ],
+  "gate_analysis": {
+    "A": "PROVISIONAL_PRIMARY_SOURCE_PASS_CONSOLIDATED_SIP; Nasdaq-listed examples expose tape C",
+    "B": "PROVISIONAL_SCHEMA_PASS_SEPARATE_TRADE_AND_QUOTE_EVENT_TIMESTAMPS; same-run RTH freshness/skew still required",
+    "C": "FAIL_FREE_ENTITLEMENT_IS_TIME_LIMITED_30_DAYS; permanent live plans are paid",
+    "D": "PASS_TECHNICAL_AUTHENTICATED_WEBSOCKET_SCHEDULER_SURFACE"
+  },
+  "failed_gates": [
+    "C_PERMANENT_ZERO_REALTIME_ENTITLEMENT"
+  ],
+  "provisional_pass_gates": [
+    "A_CONSOLIDATED_SIP_LINEAGE",
+    "B_SCHEMA_INDEPENDENT_TRADE_QUOTE_EVENTS",
+    "D_SCHEDULER_CALLABILITY"
+  ],
+  "reopen_condition": "Official LeanData plan must provide the same consolidated-SIP realtime stock trade+quote WebSocket entitlement permanently at $0, without expiry/trial/subscription/balance/funding/activity/per-query/account-maintenance conditions; then perform same-run RTH freshness/skew validation.",
+  "negative_cache_only": true,
+  "may_never_create_pass": true,
+  "unknown_never_pass": true,
+  "no_policy_weakening": true
+}
