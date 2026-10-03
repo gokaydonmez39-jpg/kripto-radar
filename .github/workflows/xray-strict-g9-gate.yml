@@ -6,6 +6,7 @@ on:
     paths:
       - "nasdaq-xray/strict_g9_probe.py"
       - "nasdaq-xray/g9_entitlement_authority.json"
+      - "nasdaq-xray/g9_provider_adapter_contract.json"
       - ".github/workflows/xray-strict-g9-gate.yml"
   schedule:
     - cron: "32 * * * 1-5"
@@ -49,7 +50,10 @@ jobs:
           assert j["real_money"]=="NO-GO"
           assert j["alpha_authority"] is False
           assert isinstance(j["g9_pass"],bool)
+          adapters=json.load(open("nasdaq-xray/g9_provider_adapter_contract.json"))
+          assert j["adapter_contract_schema"]==adapters["schema"]
           if j["g9_pass"]:
+              assert j["adapter_status"]=="IMPLEMENTED"
               assert j["status"]=="G9_PASS"
               assert j["authority_status"]=="PROVEN"
               assert j["technical_status"]=="PASS_AWAITING_ENTITLEMENT_AUTHORITY"
