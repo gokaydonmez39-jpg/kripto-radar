@@ -4,7 +4,7 @@
   "execution": "NONE",
   "real_money": "NO-GO",
   "purpose": "Negative-evidence cache only. This registry can skip unchanged dead paths but can never create G9 PASS.",
-  "provider_count": 69,
+  "provider_count": 70,
   "strict_g9_gates": {
     "A": "consolidated UTP Tape-C / National NBBO lineage",
     "B": "fresh bid+ask+last with independent quote/trade event timestamps",
@@ -953,6 +953,20 @@
       "evidence_blob_sha": "b002c4a3d028839f53a4b0b9c2fe94e23f9e915e",
       "last_checked_on": "2026-10-04",
       "reopen_condition": "Permanent-$0 production live National-NBBO API/MCP entitlement with no monetary/account condition.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "Ally Invest Developer API",
+      "status": "NONQUALIFYING_STRICT_C_FUNDED_ACCOUNT_CONDITION_AND_D_US_RESIDENCY",
+      "failed_gates": [
+        "C_REALTIME_MARKET_DATA_REQUIRES_FUNDED_ACCOUNT",
+        "D_USER_JURISDICTION_US_RESIDENCY_REQUIRED"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_allyinvest_20261004.json",
+      "evidence_blob_sha": "147b74677a4d5aafb1d3a0729dcd5418388705f4",
+      "last_checked_on": "2026-10-04",
+      "reopen_condition": "Unfunded permanent-$0 realtime consolidated NBBO API plus Türkiye retail eligibility.",
       "negative_cache_only": true,
       "may_never_create_pass": true
     }
