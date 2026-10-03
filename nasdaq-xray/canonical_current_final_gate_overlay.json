@@ -1,0 +1,72 @@
+{
+  "schema": "XRAY_FINAL_GATE_OVERLAY_V1",
+  "generated_on": "2026-10-03",
+  "asof_et": "2026-10-02",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "alpha_authority": false,
+  "source_terminal": {
+    "path": "nasdaq-xray/canonical_current_terminal.json",
+    "blob_sha": "d2908b7c02bb51d2833bab5347e88f8c2fcfb2ae",
+    "full_end_to_end_research_pass": true
+  },
+  "source_pointer": {
+    "path": "nasdaq-xray/chatgpt_canonical_state_v2.json",
+    "blob_sha": "547460a83f4392d35daeecb253bbe606034d7d25",
+    "revision": 39,
+    "status": "TERMINAL_FULL_E2E_NO_CONFIRMED_SETUP"
+  },
+  "strict_g9": {
+    "status": "BLOCKED_ENTITLEMENT_AUTHORITY_UNPROVEN",
+    "g9_pass": false,
+    "provider": "NONE_CURRENTLY_QUALIFYING",
+    "adapter_status": "BLOCKED_NO_PROVIDER_SELECTED",
+    "runtime_path": "nasdaq-xray/strict_g9_runtime_state.json",
+    "runtime_blob_sha": "fb077b1177153df149e63502818d190875c0b119",
+    "saturation_path": "nasdaq-xray/g9_search_saturation_20261003.json",
+    "saturation_blob_sha": "ffa05a5fe9d8c74d382859b225088862ae4f1721",
+    "provider_paths_reviewed": 28
+  },
+  "account": {
+    "status": "ACCOUNT_BLOCKED_SCOPE_NOT_GRANTED_OR_ACCOUNT_UNSUPPORTED",
+    "account_pass": false,
+    "provider_model": "PROVIDER_NEUTRAL",
+    "current_adapter": "LONGBRIDGE",
+    "gate_path": "nasdaq-xray/account_gate_contract.json",
+    "gate_blob_sha": "7019419418d151e28e139616117bda3b10ae01d4",
+    "adapter_contract_path": "nasdaq-xray/account_provider_adapter_contract.json",
+    "adapter_contract_blob_sha": "2b297b6836aa99fc75a7f6f0bcac90290a875f45"
+  },
+  "research_delivery": {
+    "independent_of_g9_account": true,
+    "pre_g9_tech_pass": 0,
+    "current_asof_has_deliverable_candidate": false,
+    "reason": "PRE_G9_TECH_PASS_ZERO"
+  },
+  "true_full_go": {
+    "status": "BLOCKED",
+    "required": [
+      "FULL_E2E_RESEARCH_PASS",
+      "STRICT_G9_PASS",
+      "SAME_RUN_ACCOUNT_PASS"
+    ],
+    "passed": [
+      "FULL_E2E_RESEARCH_PASS"
+    ],
+    "blocked": [
+      "STRICT_G9_PASS",
+      "SAME_RUN_ACCOUNT_PASS"
+    ]
+  },
+  "stale_pointer_fields": {
+    "pointer_account_status": "UNKNOWN",
+    "terminal_account_status": "UNKNOWN",
+    "interpretation": "Legacy/stale final-gate fields only. For current gate reporting use this overlay and its exact bound runtime contracts; do not promote UNKNOWN or persisted status to PASS."
+  },
+  "weekend_guard": {
+    "current_calendar_date": "2026-10-03",
+    "last_completed_us_rth_asof": "2026-10-02",
+    "asof_advanced_on_weekend": false
+  },
+  "no_policy_weakening": true
+}
