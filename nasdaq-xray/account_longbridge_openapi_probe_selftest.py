@@ -43,6 +43,7 @@ def creds():
         "LONGBRIDGE_APP_KEY": "test-key",
         "LONGBRIDGE_APP_SECRET": "test-secret",
         "LONGBRIDGE_ACCESS_TOKEN": "test-token",
+        "XRAY_ALLOW_LEGACY_TRADE_CAPABLE_CREDENTIAL": "I_UNDERSTAND_LEGACY_TOKEN_CAN_TRADE",
     }
 
 
@@ -77,6 +78,16 @@ def main():
     assert missing["network_attempted"] is False
     assert factory_called is False
     assert_public_only(missing)
+
+    no_opt_in_env = creds()
+    no_opt_in_env.pop("XRAY_ALLOW_LEGACY_TRADE_CAPABLE_CREDENTIAL")
+    factory_called = False
+    blocked_high_privilege = mod.run_probe(env=no_opt_in_env, context_factory=must_not_call)
+    assert blocked_high_privilege["status"] == "BLOCKED_HIGH_PRIVILEGE_CREDENTIAL_NOT_OPTED_IN"
+    assert blocked_high_privilege["reason_code"] == "LEGACY_TRADE_CAPABLE_CREDENTIAL_REQUIRES_EXPLICIT_OPT_IN"
+    assert blocked_high_privilege["network_attempted"] is False
+    assert factory_called is False
+    assert_public_only(blocked_high_privilege)
 
     ctx = FakeContext(
         balance=[{"value": "private-balance-value", "account": "account-id-123"}],
