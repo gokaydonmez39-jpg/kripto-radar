@@ -4,27 +4,38 @@
   "provider": "Charles Schwab Trader API / International",
   "execution": "NONE",
   "real_money": "NO-GO",
-  "status": "STRICT_G9_C_FAIL_FREE_STREAM_NOT_NBBO__STREAMING_NBBO_FEE_BEARING",
+  "status": "STRICT_G9_C_AND_D_FAIL_NBBO_FEE_BEARING_AND_7DAY_HUMAN_REAUTH",
   "evidence": [
-    "Schwab Developer Portal confirms sanctioned OAuth 2.0 APIs and real-time API products exist.",
-    "Schwab's current market-data addendum covers real-time quotations under NYSE/CTA/CQ/Nasdaq subscriber agreements for personal, non-business use; this does not itself prove automated/non-display Trader API entitlement.",
-    "Schwab Advisor Services explicitly states its free streaming U.S.-equity feed uses indicative CBOE and Nasdaq proprietary quotes, excludes NYSE/IEX/LTSE/MIAX/MEMX live quotes, and that streaming NBBO quotes are available for a fee.",
-    "Therefore the documented free Schwab streaming path is not strict National NBBO and the documented streaming NBBO path is fee-bearing, violating strict permanent-$0 G9-C.",
-    "Turkey eligibility and exact retail Trader API quote schema no longer need to be treated as the decisive blocker for the current strict-zero policy because C already fails on primary-source Schwab evidence."
+    "Schwab Developer Portal confirms a sanctioned OAuth 2.0 developer platform with real-time API products for self-directed traders.",
+    "Current Schwab One International account terms state there is no current account-opening minimum; older $10k/$25k documents are stale and are not used as the blocker.",
+    "Schwab's market-data agreements cover real-time quotations under NYSE/CTA/CQ/Nasdaq subscriber arrangements, but the current primary-source free Schwab streaming path identified in Schwab materials is proprietary/partial rather than strict National NBBO; streaming NBBO is separately fee-bearing.",
+    "Current Schwab Trader API implementations consistently expose a realtime NBBO quote schema with separate bidTime, askTime/quoteTime and tradeTime fields; this is strong technical B evidence but does not override entitlement authority.",
+    "The official Developer Portal auth page is live but its crawled public text does not expose token TTLs. Current Trader-API reference implementations and archived Schwab-auth documentation consistently report 30-minute access tokens and a 7-day refresh-token hard expiry, after which the browser authorization-code flow must be repeated by the user.",
+    "A seven-day interactive reauthorization wall is incompatible with XRAY's indefinite unattended scheduler-callability requirement D even if quote schema and account eligibility are otherwise sufficient.",
+    "Therefore Schwab has two independent current blockers under XRAY: permanent-$0 strict National-NBBO entitlement is not proven/free, and indefinite unattended D fails on recurrent human OAuth reauthorization."
   ],
   "primary_sources": [
     "https://developer.schwab.com/",
     "https://www.schwab.com/legal/electronic-services-agreement-online",
-    "https://advisorservices.schwab.com/whats-new/trading-and-investment-management"
+    "https://advisorservices.schwab.com/whats-new/trading-and-investment-management",
+    "https://international.schwab.com/",
+    "https://www.schwab.com/legal/schwab-one-account-agreement",
+    "https://developer.schwab.com/user-guides/get-started/authenticate-with-oauth",
+    "https://developer.schwab.com/products/trader-api--individual/details/documentation/Retail%20Trader%20API%20Production"
   ],
   "gate_assessment": {
-    "A": "FREE_STREAM_NONQUALIFYING_PROPRIETARY_PARTIAL_FEED; STREAMING_NBBO_AVAILABLE_SEPARATELY",
-    "B": "TRADER_API_EXACT_TIMESTAMP_SCHEMA_NOT_NEEDED_TO_REOPEN_WHILE_C_FAILS",
-    "C": "FAIL_STREAMING_NBBO_FEE_BEARING",
-    "D": "SANCTIONED_DEVELOPER_PLATFORM_EXISTS"
+    "A": "FREE_STREAM_NONQUALIFYING_PROPRIETARY_PARTIAL_FEED; STRICT_NBBO_FEED_NOT_PROVEN_PERMANENT_ZERO",
+    "B": "TECHNICALLY_STRONG_REALTIME_NBBO_SCHEMA_WITH_SEPARATE_QUOTE_AND_TRADE_TIMES; LIVE_RTH PROBE WOULD STILL BE REQUIRED",
+    "C": "FAIL_STREAMING_NBBO_FEE_BEARING_OR_EXACT_PERMANENT_ZERO_API_ENTITLEMENT_UNPROVEN",
+    "D": "FAIL_7_DAY_REFRESH_TOKEN_HARD_WALL_REQUIRES_INTERACTIVE_BROWSER_REAUTH"
   },
   "account_gate_note": "Schwab data aggregation could be a sanctioned read-only account-data architecture only if the user actually has an eligible Schwab account and an approved aggregator/connector is connectable in this workspace; neither is currently proven.",
-  "reopen_condition": "Schwab primary-source terms change so consolidated streaming NBBO is available under unconditional permanent-$0 automated/non-display entitlement; then re-open Trader API schema, jurisdiction and same-run RTH callability.",
+  "reopen_condition": "Reopen only if current Schwab primary sources both (1) grant consolidated National-NBBO Trader-API entitlement permanently at $0 for the exact automated/non-display use and (2) provide a sanctioned noninteractive credential mechanism that remains renewable indefinitely without periodic human/browser authorization. Then prove Turkey account eligibility and run same-RTH quote/trade freshness.",
   "no_policy_weakening": true,
-  "updated_on": "2026-10-03"
+  "updated_on": "2026-10-03",
+  "technical_corroboration_non_authority": [
+    "https://github.com/pashpashpash/schwab-cli/blob/main/docs/schwab-api/oauth.md",
+    "https://github.com/sbauwow/schwagent/blob/master/docs/schwab-api-reference.md",
+    "https://github.com/andrewparkk1/tt/blob/main/docs/schwab-api-reference.md"
+  ]
 }
