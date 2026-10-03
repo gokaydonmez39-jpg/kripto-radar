@@ -58,6 +58,26 @@
     "LONGBRIDGE": {
       "status": "NOT_IMPLEMENTED_STRICT_C_FAIL",
       "reason": "Consolidated US Data + NBBO is balance-conditioned under current official fee schedule."
+    },
+    "NONE_CURRENTLY_QUALIFYING": {
+      "status": "BLOCKED_NO_PROVIDER_SELECTED",
+      "reason": "Entitlement authority intentionally has no qualifying provider. This is a policy-evidence block, not a missing-adapter implementation fault."
+    },
+    "TASTYTRADE_DXFEED": {
+      "status": "NOT_IMPLEMENTED_STRICT_C_FAIL",
+      "reason": "Technically strong dxFeed NBBO route, but realtime tastytrade API entitlement is funding-conditioned."
+    },
+    "SAXO": {
+      "status": "NOT_IMPLEMENTED_STRICT_C_FAIL",
+      "reason": "Exchange-traded realtime feeds require paid venue subscriptions."
+    },
+    "TRADING212": {
+      "status": "NOT_IMPLEMENTED_JURISDICTION_AND_B_FAIL",
+      "reason": "Turkey is not in the current supported-country list and no strict NBBO quote-event API is proven."
+    },
+    "XTB": {
+      "status": "NOT_IMPLEMENTED_API_DISCONTINUED",
+      "reason": "Official API access was discontinued on 2025-03-14."
     }
   },
   "authority_file": "nasdaq-xray/g9_entitlement_authority.json",
