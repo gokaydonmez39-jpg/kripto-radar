@@ -1,5 +1,5 @@
 {
-  "schema": "XRAY_G9_UTP_FEE_BASIS_V1",
+  "schema": "XRAY_G9_UTP_FEE_BASIS_V2",
   "generated_on": "2026-10-03",
   "execution": "NONE",
   "real_money": "NO-GO",
@@ -9,28 +9,39 @@
     "document": "UTP Data Policies & Fee Schedule",
     "publication_label": "September 2023",
     "relevant_pages": [
+      3,
       4,
-      5
+      5,
+      6,
+      8,
+      9
     ],
     "current_site_usage": "The UTP Plan current Data Admin site still directs vendors to this Data Policies & Fee Schedule; UTP site in 2026 states pricing is located in UTP Data Policies."
   },
   "findings": {
-    "real_time_direct_access": "$2,500/month per firm",
-    "real_time_indirect_access": "$500/month per firm",
-    "real_time_non_display_electronic_trading_system": "$3,500/month per electronic trading system",
-    "real_time_non_display_own_behalf": "$3,500/month per firm",
-    "real_time_non_display_on_behalf_of_customers": "$3,500/month per firm",
-    "nonprofessional_display_subscriber": "$1/month per subscriber under the displayed controlled-product schedule",
-    "per_query": "$0.0075 per query",
-    "delayed_subscriber": "not currently fee liable",
-    "end_of_day_subscriber": "not currently fee liable"
+    "real_time_direct_access_vendor": "$2,500/month per firm",
+    "real_time_indirect_access_vendor": "$500/month per firm",
+    "real_time_non_display_electronic_trading_system_vendor": "$3,500/month per electronic trading system",
+    "real_time_non_display_own_behalf_vendor": "$3,500/month per firm",
+    "real_time_non_display_on_behalf_of_customers_vendor": "$3,500/month per firm",
+    "nonprofessional_controlled_display_subscriber": "$1/month per subscriber",
+    "per_query_controlled_product": "$0.0075 per query",
+    "delayed_controlled_subscriber": "not currently fee liable",
+    "end_of_day_controlled_subscriber": "not currently fee liable",
+    "api_classification": "API is expressly listed as an example of an Uncontrolled Product",
+    "nonprofessional_uncontrolled_exception": "A qualifying Nonprofessional Uncontrolled Recipient may be reported at Nonprofessional rates if separately identified, no redistribution occurs, and use is restricted to one Subscriber.",
+    "third_party_software_constraint": "If an Uncontrolled Recipient uses third-party software, the UTP Plan may charge higher Professional Subscriber or Uncontrolled Recipient rates rather than the lower exception.",
+    "external_uncontrolled_requirements": "External Uncontrolled Product Recipients are generally subject to UTP approval, Data Feed Request and Non-Display Declaration; recipients report usage and pay applicable fees directly to UTP.",
+    "subscriber_personal_use": "The End User Subscriber Agreement licenses Nonprofessional Subscribers only for personal use and explicitly contemplates receipt, processing, display and redistribution review."
   },
   "interpretation": [
-    "There is no direct-UQDF/UTDF permanent-$0 non-display loophole in the cited current UTP fee basis.",
-    "A $0-to-end-user strict G9 path could still exist only if a lawful vendor/broker absorbs upstream licensing costs and explicitly grants the user's automated/non-display API use without balance, activity, per-query, subscription, account-maintenance, or recurring fee conditions.",
-    "Retail display access being free-to-user does not prove automated/non-display API entitlement.",
-    "Delayed or end-of-day no-fee status does not qualify strict G9 because freshness is mandatory."
+    "Do not equate every personal automated use with the $3,500 Vendor non-display fee: the Non-Display Policy's headline fees are assessed to Vendors/Data Feed Recipients, and the Subscriber Agreement separately recognizes personal receipt and processing.",
+    "However, a vendor-delivered realtime API is expressly an Uncontrolled Product example. For an external automated scheduler using third-party software, the low Nonprofessional exception is not safely assumable; UTP approval/reporting/Non-Display Declaration and higher applicable fees may be triggered.",
+    "Therefore strict G9-C cannot be satisfied merely because retail display data is free or because the user is Nonprofessional. A qualifying provider must give primary-source proof that the exact scheduler/API use is lawfully covered at permanent $0 to the user with no balance/activity/subscription/per-query/account-maintenance/funding condition.",
+    "A vendor/broker may absorb upstream UTP costs, but fee absorption alone is insufficient unless the exact automated API entitlement/use classification is authorized.",
+    "Delayed or end-of-day no-fee status never qualifies strict G9 because same-run RTH freshness is mandatory."
   ],
-  "policy_effect": "NO_THRESHOLD_CHANGE; strengthens entitlement proof requirement only",
-  "no_policy_weakening": true
+  "policy_effect": "NO_THRESHOLD_CHANGE; corrects fee-classification reasoning while preserving strict permanent-$0 entitlement proof requirement",
+  "no_policy_weakening": true,
+  "updated_on": "2026-10-03"
 }
