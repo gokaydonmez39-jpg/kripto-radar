@@ -16,7 +16,11 @@
     "The consumer-plan comparison currently shows a 15-minute Free market-data row, while the separate Developer API documentation shows Free+ live price_snapshot and an in-RTH live example. These appear to be separate product-plan surfaces, but XRAY must not transfer entitlements between them. Only the Developer API contract is relevant to the scheduler path.",
     "The WEALTHNOW adapter is already implemented in nasdaq-xray/strict_g9_probe.py and remains authority-gated. It may not run until A and C are proven; after that a scheduler credential and same-run RTH probe are still required.",
     "Current UTP Detailed Usage Reporting Codes define UTP1APIS = Real-Time Nonprofessional Uncontrolled Recipient at $1/month billable to the Vendor, while UTP policy expressly treats API as an Uncontrolled Product. Therefore Wealthnow's $0 Free API can be economically compatible with strict G9-C if Wealthnow lawfully classifies the exact single-user automated API use under UTP1APIS or an equivalent approved category and absorbs the assessment.",
-    "Wealthnow's official hosted remote MCP documentation states the Free plan provides 1,000 credits/month with no card, supports OAuth or API-key scripts, exposes read-only market-data tools, and has been tested end-to-end with ChatGPT. This materially strengthens scheduler/programmatic D, but cannot self-prove market-data lineage or UTP classification."
+    "Wealthnow's official hosted remote MCP documentation states the Free plan provides 1,000 credits/month with no card, supports OAuth or API-key scripts, exposes read-only market-data tools, and has been tested end-to-end with ChatGPT. This materially strengthens scheduler/programmatic D, but cannot self-prove market-data lineage or UTP classification.",
+    "Wealthnow Terms of Service (updated 2026-09-27) explicitly cover the API as part of the Service and grant a limited license to access/use the Service under those Terms.",
+    "The acceptable-use section does not ban ordinary API automation; it prohibits bots/scripts only when they burden the Service or bypass rate limits/access controls. This materially supports sanctioned unattended programmatic use within documented limits.",
+    "The same Terms require compliance with exchange rules and prohibit scraping/resale/redistribution without written consent; they still do not identify the Free price_snapshot quote lineage or explicitly state UTP1APIS/equivalent classification and exchange/vendor fee absorption.",
+    "The Developer API Free plan is separately documented from the consumer-app plan: Free API has 1,000 credits/month, 30 req/min, no card, covers Market Data/Fundamentals/Public Filings, and hard-stops rather than billing overage."
   ],
   "primary_sources": [
     "https://app.wealthnow.io/docs/market-data",
@@ -25,7 +29,9 @@
     "https://app.wealthnow.io/docs/api-reference",
     "https://wealthnow.io/pricing",
     "https://wealthnow.io/terms",
-    "https://wealthnow.io/disclosures"
+    "https://wealthnow.io/disclosures",
+    "https://wealthnow.io/api",
+    "https://app.wealthnow.io/docs/pricing-and-credits"
   ],
   "reopen_condition": "Primary-source Wealthnow confirmation of Free price_snapshot consolidated lineage + UTP1APIS/equivalent approved classification and vendor fee absorption; then configure WEALTHNOW_API_KEY and require same-run US-RTH B/D freshness and skew proof.",
   "no_policy_weakening": true,
