@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import json, os, threading, time, urllib.error, urllib.request
+import hashlib, json, os, threading, time, urllib.error, urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -88,7 +88,23 @@ def _check_circuit(provider,now_s):
     if open_until>now_s:
         raise RuntimeError(f"CIRCUIT_OPEN:{provider}:{int(open_until-now_s)}s")
 
-def fetch_json(provider,url,headers=None,timeout=20,cache_ttl=0,circuit_failures=3,cooldown=120):
+def _retry_sleep(provider,url,attempt_index,base_delay,jitter):
+    """Deterministic bounded jitter so retries do not synchronize in herds."""
+    d=max(0.0,float(base_delay))
+    j=max(0.0,min(float(jitter),0.5))
+    if d<=0 or j<=0:
+        if d>0: time.sleep(d)
+        return
+    h=hashlib.sha256(f"{provider}|{url}|{attempt_index}".encode()).digest()
+    u=int.from_bytes(h[:8],"big")/(2**64-1)
+    factor=1.0 + j*(2*u-1)
+    time.sleep(max(0.0,d*factor))
+
+def _attempt_budget(timeout,retry_delays):
+    ds=[max(0.0,float(x)) for x in (retry_delays or ())]
+    return (len(ds)+1)*float(timeout)+sum(ds)+5.0
+
+def fetch_json(provider,url,headers=None,timeout=20,cache_ttl=0,circuit_failures=3,cooldown=120,retry_delays=(1.0,4.0),retry_jitter=0.20):
     key=provider+"|"+url
     now_s=time.time()
     with _LOCK:
@@ -102,26 +118,35 @@ def fetch_json(provider,url,headers=None,timeout=20,cache_ttl=0,circuit_failures
             evt=threading.Event(); _INFLIGHT[key]=evt; owner=True
         else: owner=False
     if not owner:
-        evt.wait(timeout+5)
+        evt.wait(_attempt_budget(timeout,retry_delays))
         with _LOCK:
             hit=_MEM.get(key)
         if hit and hit[0]>time.time(): return hit[1]
         raise RuntimeError(f"SINGLE_FLIGHT_OWNER_FAILED:{provider}")
     try:
-        req=urllib.request.Request(url,headers=headers or {"Accept":"application/json"})
-        with urllib.request.urlopen(req,timeout=timeout) as r:
-            data=json.loads(r.read().decode("utf-8"))
-        _record_success(provider)
-        with _LOCK: _MEM[key]=(time.time()+max(1,cache_ttl),data)
-        return data
-    except Exception as e:
-        _record_failure(provider,e,circuit_failures,cooldown)
-        raise
+        delays=tuple(retry_delays or ())
+        last=None
+        for attempt in range(len(delays)+1):
+            try:
+                req=urllib.request.Request(url,headers=headers or {"Accept":"application/json"})
+                with urllib.request.urlopen(req,timeout=timeout) as r:
+                    data=json.loads(r.read().decode("utf-8"))
+                _record_success(provider)
+                with _LOCK: _MEM[key]=(time.time()+max(1,cache_ttl),data)
+                return data
+            except Exception as e:
+                last=e
+                cls=classify_exception(e)
+                if (not cls["retryable"]) or attempt>=len(delays):
+                    _record_failure(provider,e,circuit_failures,cooldown)
+                    raise
+                _retry_sleep(provider,url,attempt+1,delays[attempt],retry_jitter)
+        raise last if last is not None else RuntimeError(f"RETRY_EXHAUSTED:{provider}")
     finally:
         with _LOCK:
             _INFLIGHT.pop(key,None); evt.set()
 
-def fetch_text(provider,url,headers=None,timeout=20,cache_ttl=0,circuit_failures=3,cooldown=120):
+def fetch_text(provider,url,headers=None,timeout=20,cache_ttl=0,circuit_failures=3,cooldown=120,retry_delays=(1.0,4.0),retry_jitter=0.20):
     key=provider+"|TEXT|"+url
     now_s=time.time()
     with _LOCK:
@@ -135,21 +160,30 @@ def fetch_text(provider,url,headers=None,timeout=20,cache_ttl=0,circuit_failures
             evt=threading.Event(); _INFLIGHT[key]=evt; owner=True
         else: owner=False
     if not owner:
-        evt.wait(timeout+5)
+        evt.wait(_attempt_budget(timeout,retry_delays))
         with _LOCK:
             hit=_MEM.get(key)
         if hit and hit[0]>time.time(): return hit[1]
         raise RuntimeError(f"SINGLE_FLIGHT_OWNER_FAILED:{provider}")
     try:
-        req=urllib.request.Request(url,headers=headers or {})
-        with urllib.request.urlopen(req,timeout=timeout) as r:
-            data=r.read().decode("utf-8")
-        _record_success(provider)
-        with _LOCK: _MEM[key]=(time.time()+max(1,cache_ttl),data)
-        return data
-    except Exception as e:
-        _record_failure(provider,e,circuit_failures,cooldown)
-        raise
+        delays=tuple(retry_delays or ())
+        last=None
+        for attempt in range(len(delays)+1):
+            try:
+                req=urllib.request.Request(url,headers=headers or {})
+                with urllib.request.urlopen(req,timeout=timeout) as r:
+                    data=r.read().decode("utf-8")
+                _record_success(provider)
+                with _LOCK: _MEM[key]=(time.time()+max(1,cache_ttl),data)
+                return data
+            except Exception as e:
+                last=e
+                cls=classify_exception(e)
+                if (not cls["retryable"]) or attempt>=len(delays):
+                    _record_failure(provider,e,circuit_failures,cooldown)
+                    raise
+                _retry_sleep(provider,url,attempt+1,delays[attempt],retry_jitter)
+        raise last if last is not None else RuntimeError(f"RETRY_EXHAUSTED:{provider}")
     finally:
         with _LOCK:
             _INFLIGHT.pop(key,None); evt.set()
