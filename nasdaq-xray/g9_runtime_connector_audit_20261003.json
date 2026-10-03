@@ -1,0 +1,75 @@
+{
+  "schema": "XRAY_G9_RUNTIME_CONNECTOR_AUDIT_V1",
+  "generated_on": "2026-10-03",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "purpose": "Read-only current-runtime entitlement diagnostics. This file can only falsify paths; it can never create G9 PASS.",
+  "findings": [
+    {
+      "provider": "Massive connected market-data app",
+      "status": "CURRENT_RUNTIME_NOT_ENTITLED_FOR_STRICT_US_EQUITY_NBBO_OR_TRADE_ENDPOINTS",
+      "probes": [
+        {
+          "path": "/v2/last/nbbo/AAPL",
+          "result": "NOT_ENTITLED",
+          "message": "Upgrade required"
+        },
+        {
+          "path": "/v2/last/trade/AAPL",
+          "result": "NOT_ENTITLED",
+          "message": "Upgrade required"
+        },
+        {
+          "path": "/v3/quotes/AAPL",
+          "result": "NOT_ENTITLED",
+          "message": "Upgrade required"
+        },
+        {
+          "path": "/v3/trades/AAPL",
+          "result": "NOT_ENTITLED",
+          "message": "Upgrade required"
+        }
+      ],
+      "schema_capability": "Exact NBBO + latest trade and v3 quote/trade endpoints exist, including SIP timestamps, but current zero-dollar connected entitlement cannot call them.",
+      "failed_gates": [
+        "C_CURRENT_RUNTIME_ENTITLEMENT"
+      ],
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "Alpaca connected market-data app",
+      "status": "FREE_WORKING_ROUTE_IS_IEX_ONLY; SIP_NOT_PROVEN_ENTITLED",
+      "probes": [
+        {
+          "route": "latest quote AAPL feed=iex",
+          "result": "PASS_SINGLE_VENUE_DIAGNOSTIC_ONLY",
+          "evidence_shape": "bid/ask + quote timestamp + exchange V + tape C"
+        },
+        {
+          "route": "latest trade AAPL feed=iex",
+          "result": "PASS_SINGLE_VENUE_DIAGNOSTIC_ONLY",
+          "evidence_shape": "last trade + trade timestamp + exchange V + tape C"
+        },
+        {
+          "route": "snapshot AAPL feed=iex",
+          "result": "PASS_SINGLE_VENUE_DIAGNOSTIC_ONLY",
+          "evidence_shape": "latest quote/trade + bars"
+        },
+        {
+          "route": "latest quote/trade feed=sip",
+          "result": "NO_QUALIFYING_ENTITLEMENT_PROVEN",
+          "evidence_shape": "connector call did not yield qualifying SIP data; connector schema itself identifies SIP as premium"
+        }
+      ],
+      "interpretation": "The connector is operational because IEX calls succeed. A Tape-C label on an IEX record identifies the listing tape; it does not transform a single-venue IEX quote into National NBBO.",
+      "failed_gates": [
+        "A_FREE_ROUTE_SINGLE_VENUE",
+        "C_SIP_PREMIUM_OR_NOT_PROVEN_FREE"
+      ],
+      "may_never_create_pass": true
+    }
+  ],
+  "weekend_note": "2026-10-03 is Saturday; no off-RTH payload can satisfy strict same-run freshness gate B.",
+  "unknown_never_pass": true,
+  "no_policy_weakening": true
+}
