@@ -4,7 +4,7 @@
   "execution": "NONE",
   "real_money": "NO-GO",
   "purpose": "Negative-evidence cache only. This registry can skip unchanged dead paths but can never create G9 PASS.",
-  "provider_count": 57,
+  "provider_count": 58,
   "strict_g9_gates": {
     "A": "consolidated UTP Tape-C / National NBBO lineage",
     "B": "fresh bid+ask+last with independent quote/trade event timestamps",
@@ -14,7 +14,7 @@
   "source_saturation": {
     "path": "nasdaq-xray/g9_search_saturation_20261003.json",
     "blob_sha": "8bece763bac88867bca878bbbc0173fe65a23d37",
-    "reviewed_paths": 57
+    "reviewed_paths": 58
   },
   "providers": [
     {
@@ -775,6 +775,18 @@
       "evidence_file": "nasdaq-xray/g9_provider_delta_tallacoptions_20261003.json",
       "last_checked_on": "2026-10-03",
       "reopen_condition": "Official Tallac primary source must make production realtime U.S.-equity API/TCP access permanently $0 and prove consolidated UTP Tape-C/National-NBBO lineage plus lawful automated/non-display entitlement; then run same-run RTH proof.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "TickerLayer Stocks",
+      "status": "NONQUALIFYING_STRICT_A_DERIVED_NON_EXCHANGE_FEED",
+      "failed_gates": [
+        "A"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_tickerlayer_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "Primary-source proof that the exact U.S. API feed changed from derived/non-exchange inputs to consolidated CTA/UTP National NBBO lineage.",
       "negative_cache_only": true,
       "may_never_create_pass": true
     }
