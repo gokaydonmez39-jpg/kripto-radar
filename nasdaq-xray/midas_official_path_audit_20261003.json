@@ -48,6 +48,32 @@
         "Because it is not an official/sanctioned Midas integration, it is not eligible as canonical ACCOUNT authority."
       ],
       "canonical_use": "NOT_AUTHORITY"
+    },
+    "midas_alpaca_chain": {
+      "status": "OFFICIAL_BACKEND_CONFIRMED_BUT_END_USER_LIVE_SIP_API_NOT_PROVEN",
+      "evidence": [
+        "Midas officially states U.S. brokerage activity is carried out through Alpaca Securities LLC.",
+        "Alpaca identifies Midas as an early and current Broker API partner.",
+        "Alpaca documents that full SIP uses CTA+UTP and can provide 100% U.S. market volume under entitled plans.",
+        "Current connected Alpaca tool surface exposes market-data quote/trade endpoints but no account/positions adapter.",
+        "Fresh 2026-10-03 connector probe: live feed=sip latest quote and latest trade both returned connector internal_error, while delayed_sip quote+trade succeeded and returned Tape C with independent quote/trade timestamps.",
+        "Weekend delayed_sip success proves delayed consolidated data callability only; it cannot establish live SIP entitlement or G9 freshness."
+      ],
+      "live_probe": {
+        "date": "2026-10-03",
+        "symbols": [
+          "AAPL",
+          "NVDA"
+        ],
+        "sip_latest_quote": "INTERNAL_ERROR",
+        "sip_latest_trade": "INTERNAL_ERROR",
+        "delayed_sip_latest_quote": "PASS_TAPE_C",
+        "delayed_sip_latest_trade": "PASS_TAPE_C",
+        "interpretation": "LIVE_SIP_NOT_PROVEN; DELAYED_SIP_NON_G9"
+      },
+      "g9_assessment": "PROMISING_BACKEND_CAPABILITY_BUT_A/C/D_END_USER_ENTITLEMENT_AND_LIVE_CALLABILITY_UNPROVEN",
+      "account_assessment": "NO_CONNECTED_ALPACA_ACCOUNT_ADAPTER_EXPOSED",
+      "reopen_condition": "A sanctioned user-callable Midas/Alpaca path exposes current account state and/or live SIP quote+trade under the user's lawful entitlement; for G9 additionally require fresh RTH bid+ask+last and explicit automated/non-display permission."
     }
   },
   "official_sources": [
@@ -64,5 +90,6 @@
     "https://webcdn.getmidas.com/uploads/2025/12/04155923/genel-cerceve-sozlesme.pdf"
   ],
   "no_policy_weakening": true,
-  "unknown_never_pass": true
+  "unknown_never_pass": true,
+  "updated_on": "2026-10-03"
 }
