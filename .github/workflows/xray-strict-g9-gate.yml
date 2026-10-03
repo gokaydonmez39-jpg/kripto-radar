@@ -79,7 +79,7 @@ jobs:
           new=json.load(open("/tmp/new_g9.json"))
           try: old=json.load(open("nasdaq-xray/strict_g9_runtime_state.json"))
           except Exception: old={}
-          keys=("status","reason","g9_pass","authority_status","technical_status","provider")
+          keys=("status","reason","g9_pass","authority_status","technical_status","provider","adapter_contract_schema","adapter_status")
           changed=any(old.get(k)!=new.get(k) for k in keys)
           # A real PASS is freshness-sensitive, so persist each successful RTH proof.
           print("yes" if changed or new.get("g9_pass") is True else "no")
