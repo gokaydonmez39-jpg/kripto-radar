@@ -4,7 +4,7 @@
   "execution": "NONE",
   "real_money": "NO-GO",
   "purpose": "Negative-evidence cache only. This registry can skip unchanged dead paths but can never create G9 PASS.",
-  "provider_count": 58,
+  "provider_count": 59,
   "strict_g9_gates": {
     "A": "consolidated UTP Tape-C / National NBBO lineage",
     "B": "fresh bid+ask+last with independent quote/trade event timestamps",
@@ -13,7 +13,7 @@
   },
   "source_saturation": {
     "path": "nasdaq-xray/g9_search_saturation_20261003.json",
-    "blob_sha": "8bece763bac88867bca878bbbc0173fe65a23d37",
+    "blob_sha": "3018b1f2cf2e1ac9fb5d7b6dd474988c1b16a016",
     "reviewed_paths": 58
   },
   "providers": [
@@ -789,6 +789,23 @@
       "reopen_condition": "Primary-source proof that the exact U.S. API feed changed from derived/non-exchange inputs to consolidated CTA/UTP National NBBO lineage.",
       "negative_cache_only": true,
       "may_never_create_pass": true
+    },
+    {
+      "provider": "LeanData UK realtime US equities SIP WebSocket",
+      "status": "TECHNICALLY_STRONG_A_B_D_BUT_STRICT_C_FREE_IS_TIME_LIMITED_30_DAYS",
+      "failed_gates": [
+        "C_PERMANENT_ZERO_REALTIME_ENTITLEMENT"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_leandata_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "Official LeanData plan must make the same consolidated-SIP realtime stock trade+quote WebSocket entitlement permanently $0 with no expiry/trial/subscription/balance/funding/activity/per-query/account-maintenance condition; then run same-run RTH proof.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true,
+      "provisional_pass_gates": [
+        "A_CONSOLIDATED_SIP_LINEAGE",
+        "B_SCHEMA_INDEPENDENT_TRADE_QUOTE_EVENTS",
+        "D_SCHEDULER_CALLABILITY"
+      ]
     }
   ],
   "reopen_policy": "Reopen an existing negative path only on newer PRIMARY SOURCE evidence materially changing its listed failed gate(s). New previously-unreviewed providers are always eligible for research. Any reopened path still requires same-run RTH technical proof before G9 PASS.",
@@ -814,5 +831,10 @@
   "latest_tallac_audit": {
     "path": "nasdaq-xray/g9_provider_delta_tallacoptions_20261003.json",
     "result": "A_AND_C_FAIL"
+  },
+  "latest_leandata_audit": {
+    "path": "nasdaq-xray/g9_provider_delta_leandata_20261003.json",
+    "blob_sha": "24361aeed5afb81d82fa3fdd8ea3e82b211138a1",
+    "result": "A_B_D_STRONG_C_FAIL_30_DAY_FREE"
   }
 }
