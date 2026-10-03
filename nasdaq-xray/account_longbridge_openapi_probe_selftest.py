@@ -60,6 +60,8 @@ def assert_public_only(state):
     assert state["secret_values_persisted"] is False
     assert state["execution"] == "NONE"
     assert state["real_money"] == "NO-GO"
+    assert "workflow_run_id" in state
+    assert "workflow_run_attempt" in state
 
 
 def main():
