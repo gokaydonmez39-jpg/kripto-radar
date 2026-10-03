@@ -9,9 +9,9 @@
     "stock_positions"
   ],
   "pass_rule": "Any sanctioned adapter listed as eligible by the provider-neutral ACCOUNT adapter contract may PASS only when same-run current account value/cash state AND equity positions/exposure both parse successfully. Longbridge remains the current primary adapter. Empty positions are valid known exposure; permission/auth/tool errors are never PASS.",
-  "current_status": "ACCOUNT_BLOCKED_SCOPE_NOT_GRANTED_OR_ACCOUNT_UNSUPPORTED",
-  "current_error_code": 403308,
-  "repair": "Do not repeat ordinary Longbridge reauthorization. Reopen Longbridge only if account/portfolio scopes become available for this account; otherwise use a sanctioned provider-neutral broker adapter that passes fresh same-run read-only account value/cash + equity positions/exposure.",
+  "current_status": "ACCOUNT_BOOTSTRAP_READY_CREDENTIALS_REQUIRED",
+  "current_error_code": null,
+  "repair": "Configure the two bootstrap secrets outside chat. Final Factory will redeem only against the official restricted /v2 surface, encrypt token state, commit ciphertext only, restart if needed, and require same-run account_balance + stock_positions before ACCOUNT_PASS.",
   "forbidden_calls": [
     "place_order",
     "replace_order",
@@ -34,7 +34,7 @@
       "private_values_persisted": false
     }
   },
-  "retry_class": "EXTERNAL_SCOPE_OR_ACCOUNT_ELIGIBILITY_BLOCK",
+  "retry_class": "ONE_TIME_SECURE_BOOTSTRAP_USER_ACTION_REQUIRED",
   "reauth_rule": "Ordinary token refresh/reconnect has already been falsified as a repair: a new OAuth session enabled watchlist but account/portfolio/trading-read endpoints remained 403308. Retry only on a material scope/account-eligibility change.",
   "pass_transition_rule": "ACCOUNT_PASS requires fresh same-run parseable account_balance + stock_positions from an eligible sanctioned adapter, exact current adapter binding, current workflow-run attestation, and for restricted MCP /v2 verified absence of forbidden write surface. Encrypted vault existence alone never PASS.",
   "updated_on": "2026-10-03",
@@ -59,7 +59,7 @@
     "fund_positions": "403308_SCOPE_DENIED",
     "today_orders_read_only": "403308_SCOPE_DENIED"
   },
-  "current_interpretation": "Fresh full reauthorization changed watchlist from denied to allowed, proving a new OAuth session took effect. However account/portfolio/trading-read APIs still return 403308. The active token therefore lacks the account/portfolio/trading scope family, or those scopes are unavailable for this account type/region.",
+  "current_interpretation": "Legacy ChatGPT Longbridge connector remains scope-denied (403308), but that is no longer the preferred repair path. The preferred LONGBRIDGE_HOSTED_MCP_V2 adapter is restricted to account.read, has encrypted refresh-state persistence, and is blocked only by missing bootstrap secrets.",
   "next_repair": "Preferred repair: official Longbridge hosted MCP /v2 with account.read only. Configure an independent XRAY_ACCOUNT_TOKEN_FERNET_KEY first, then a fresh one-time LONGBRIDGE_AGENT_AUTH_CODE carrying account.read and no trade.write. Final Factory must refuse code redemption without the key, persist only encrypted access+refresh state, verify /v2 write surface is absent, and obtain same-run account_balance + stock_positions.",
   "primary_adapter": "LONGBRIDGE",
   "adapter_contract": {
@@ -67,7 +67,7 @@
     "blob_sha": "3d89bf9ee0fffdcd39fad8b0c16b968c17167846"
   },
   "required_capability": "CURRENT_NASDAQ_ACCOUNT_VALUE_AND_EQUITY_EXPOSURE_READ_ONLY",
-  "current_adapter": "LONGBRIDGE",
+  "current_adapter": "LONGBRIDGE_HOSTED_MCP_V2",
   "no_account_provider_substitution_without_fresh_probe": true,
   "alternate_adapter_candidates": {
     "IBKR_WEB_API": "PROMISING_BUT_NOT_CURRENTLY_SCHEDULER_CALLABLE",
@@ -104,5 +104,11 @@
     "encryption_key_source": "INDEPENDENT_GITHUB_ACTIONS_SECRET_ONLY",
     "agent_auth_code_used_as_encryption_key": false,
     "enforcement": "LIST_AND_CALL_ALLOWLIST"
+  },
+  "current_blocker": "Restricted hosted MCP v2 account.read path is code-complete and CI-verified. Live bootstrap cannot occur until GitHub Actions contains XRAY_ACCOUNT_TOKEN_FERNET_KEY and a fresh one-time LONGBRIDGE_AGENT_AUTH_CODE; no trade.write permission is required.",
+  "legacy_connector_status": {
+    "status": "ACCOUNT_BLOCKED_SCOPE_NOT_GRANTED_OR_ACCOUNT_UNSUPPORTED",
+    "error_code": 403308,
+    "role": "DIAGNOSTIC_ONLY_NOT_CURRENT_REPAIR_PATH"
   }
 }
