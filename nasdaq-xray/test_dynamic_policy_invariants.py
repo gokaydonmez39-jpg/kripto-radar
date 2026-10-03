@@ -8,6 +8,7 @@ sys.path.insert(0,str(ROOT))
 from price_dv20_phase import classify as price_classify
 from resolve_unknowns_fallback import classify as resolver_classify
 from deep_pre_r1_shadow import family_b
+from history_phase import official_listing_upper_bound_fail, continuity_composite_pass
 import pandas as pd
 
 def load_sina():
@@ -92,9 +93,32 @@ def main():
     assert abs(float(b["P"])-100.5)<1e-9,b
     assert b["breakout_confirmed"] is True,b
 
+
+    # HISTORY evidence regression: official listing-date evidence can only
+    # produce a terminal upper-bound FAIL; it must never manufacture PASS.
+    hf=official_listing_upper_bound_fail("HONA","2026-10-02")
+    assert hf and hf["proof"]=="OFFICIAL_LISTING_DATE_HISTORY_UPPER_BOUND",hf
+    assert hf["max_possible_daily_bars"]<260 or hf["max_possible_completed_weeks"]<52,hf
+
+    # Ticker-continuity composite regression: same unchanged-CUSIP security
+    # may use predecessor history only when a long-history source and exact-ASOF
+    # source overlap closely on >=20 sessions.
+    ydates=[d.strftime("%Y-%m-%d") for d in pd.bdate_range("2025-01-02","2026-10-01")]
+    sdates=[d.strftime("%Y-%m-%d") for d in pd.bdate_range("2026-01-15","2026-10-02")]
+    yb={d:(20.0,1_000_000.0) for d in ydates}
+    sb={d:(20.0,1_000_000.0) for d in sdates}
+    comp=continuity_composite_pass("DFTX","2026-10-02",sb,{},yb,{})
+    assert comp and comp["proof"]=="UNCHANGED_CUSIP_PLUS_CROSS_SOURCE_OVERLAP",comp
+    assert comp["daily_bars"]>=260 and comp["completed_week_count"]>=52,comp
+    bad_sb=dict(sb)
+    for d in list(bad_sb)[-30:]:
+        bad_sb[d]=(30.0,1_000_000.0)
+    assert continuity_composite_pass("DFTX","2026-10-02",bad_sb,{},yb,{}) is None
+
     print({"status":"PASS","invariants":[
         "EXACT20_REQUIRED_FOR_PASS","INCOMPLETE_NEVER_PASS",
-        "OVERLAY_EXACT20_REQUIRED","SETUP_B_PIVOT_EXCLUDES_CURRENT_BAR"
+        "OVERLAY_EXACT20_REQUIRED","SETUP_B_PIVOT_EXCLUDES_CURRENT_BAR",
+        "OFFICIAL_LISTING_HISTORY_FAIL_ONLY","CUSIP_CONTINUITY_REQUIRES_CROSS_SOURCE_OVERLAP"
     ]})
 
 if __name__=="__main__":
