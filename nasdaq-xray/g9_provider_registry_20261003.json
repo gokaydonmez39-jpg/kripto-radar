@@ -4,7 +4,7 @@
   "execution": "NONE",
   "real_money": "NO-GO",
   "purpose": "Negative-evidence cache only. This registry can skip unchanged dead paths but can never create G9 PASS.",
-  "provider_count": 64,
+  "provider_count": 66,
   "strict_g9_gates": {
     "A": "consolidated UTP Tape-C / National NBBO lineage",
     "B": "fresh bid+ask+last with independent quote/trade event timestamps",
@@ -881,6 +881,33 @@
       "evidence_file": "nasdaq-xray/g9_provider_delta_ivolatility_20261003.json",
       "last_checked_on": "2026-10-03",
       "reopen_condition": "Permanent-$0 realtime U.S. equity/NBBO automated API entitlement replaces paid/trial-only access.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "QuantConnect US Equities SIP / LEAN",
+      "status": "A_B_STRONG_DATA_FEED_FREE_BUT_STRICT_C_D_FAIL_PAID_LIVE_RUNTIME_AND_LOCAL_QC_FEED_UNAVAILABLE",
+      "failed_gates": [
+        "C_PERMANENT_ZERO_RUNTIME_ENTITLEMENT",
+        "D_FREE_SCHEDULER_CALLABILITY"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_quantconnect_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "Only reopen if QuantConnect permits Free-tier scheduler/live access to the SIP US-equities provider, either through at least one free live node or an officially supported free local QuantConnect data-provider path, without paid-tier condition.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "AllTick Market Data API",
+      "status": "NONQUALIFYING_FREE_LATEST_PRICE_ONLY_ORDERBOOK_REALTIME_TICK_PAID_AND_NBBO_LINEAGE_UNPROVEN",
+      "failed_gates": [
+        "A_CONSOLIDATED_NATIONAL_NBBO_LINEAGE",
+        "B_FREE_BID_ASK_AND_INDEPENDENT_TRADE_EVENT_TIMESTAMPS",
+        "C_FREE_REALTIME_ORDERBOOK_TICK_ENTITLEMENT"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_alltick_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "Only reopen if AllTick Free permanently includes consolidated US National NBBO bid/ask plus last trade with independent event timestamps and explicit automated/non-display entitlement, without subscription/funding/balance/activity/per-query monetary condition.",
       "negative_cache_only": true,
       "may_never_create_pass": true
     }
