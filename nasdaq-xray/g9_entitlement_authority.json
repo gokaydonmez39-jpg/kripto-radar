@@ -17,7 +17,7 @@
     "search_saturation_result": "NO_REVIEWED_PROVIDER_PROVES_A_B_C_D_SIMULTANEOUSLY",
     "structural_fee_basis": "DIRECT UTP REALTIME NONDISPLAY IS FEE-LIABLE",
     "strict_runtime_adapter": "FAIL_CLOSED_UNLESS_AUTHORITY_PROVEN",
-    "audit_20261003": "45_PROVIDER_PATH_PRIMARY_SOURCE_AND_LIVE_ENTITLEMENT_SATURATION",
+    "audit_20261003": "48_PROVIDER_PATH_PRIMARY_SOURCE_AND_LIVE_ENTITLEMENT_SATURATION",
     "midas_official_paths": "REVIEWED_SEPARATELY_MOBILE_ATLAS_AND_TRADINGVIEW",
     "midas_alpaca_partner_path": "OFFICIAL_INFRA_CONFIRMED_EXACT_LIVE_SIP_ENDUSER_ENTITLEMENT_UNPROVEN"
   },
@@ -115,7 +115,7 @@
   ],
   "search_saturation": {
     "path": "nasdaq-xray/g9_search_saturation_20261003.json",
-    "blob_sha": "980965e98dea3ac7883bc241f3e0af407aaa56a9",
+    "blob_sha": "41a6a6ff558590556b0fcd33badf117e09853308",
     "unique_provider_paths_reviewed": 48,
     "result": "NO_REVIEWED_PROVIDER_PROVES_A_B_C_D_SIMULTANEOUSLY"
   },
@@ -127,12 +127,12 @@
   },
   "midas_official_audit": {
     "path": "nasdaq-xray/midas_official_path_audit_20261003.json",
-    "blob_sha": "8167d809bcaef4eb7008b5a17c18970b69481478",
-    "result": "MOBILE_ATLAS_PROMISING_BUT_G9_UNPROVEN;TRADINGVIEW_SANCTIONED_ACCOUNT_BRIDGE_BUT_G9_NONQUALIFYING"
+    "blob_sha": "9574bfa201a5c17bc01da77cedadcdf56e657c02",
+    "result": "MOBILE_ATLAS_PROMISING_BUT_G9_UNPROVEN;TRADINGVIEW_SANCTIONED_ACCOUNT_BRIDGE_BUT_G9_NONQUALIFYING;ALPACA_CHAIN_LIVE_SIP_NOT_PROVEN"
   },
   "midas_alpaca_infrastructure_audit": {
     "path": "nasdaq-xray/midas_alpaca_infrastructure_audit_20261003.json",
-    "blob_sha": "d2450edbb339863e5a1351a6d9474167a5497534",
+    "blob_sha": "3eb74431fa6bcff47cf2da249f2597a11012a932",
     "result": "OFFICIAL_INFRA_CONFIRMED_BUT_ENDUSER_G9_AND_ACCOUNT_API_NOT_PROVEN"
   }
 }
