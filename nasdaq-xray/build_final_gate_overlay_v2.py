@@ -58,9 +58,10 @@ def main():
     bound_reg=(ga.get("negative_registry") or {}).get("blob_sha")
     sat_count=int(gs.get("unique_provider_paths_reviewed") or 0)
     reg_count=int(greg.get("provider_count") or 0)
-    auth_count=int((ga.get("current_evidence") or {}).get("reviewed_provider_paths") or 0)
+    auth_sat_count=int((ga.get("search_saturation") or {}).get("unique_provider_paths_reviewed") or 0)
+    auth_reg_count=int((ga.get("negative_registry") or {}).get("provider_count") or 0)
     g9_sha_exact=bound_sat==actual_sat and bound_reg==actual_reg
-    g9_count_exact=sat_count==reg_count==auth_count
+    g9_count_exact=(sat_count==reg_count==auth_sat_count==auth_reg_count)
 
     # BLOCKED gates remain fail-closed even when negative-evidence caches advance.
     # A PASS claim is different: current exact bindings are mandatory.
@@ -74,7 +75,7 @@ def main():
             f"G9_PASS_REQUIRES_EXACT_CACHE_BINDINGS sat={bound_sat}/{actual_sat} reg={bound_reg}/{actual_reg}"
         )
         assert g9_count_exact, (
-            f"G9_PASS_REQUIRES_EXACT_COUNTS sat={sat_count} reg={reg_count} auth={auth_count}"
+            f"G9_PASS_REQUIRES_EXACT_COUNTS sat={sat_count} reg={reg_count} auth_sat={auth_sat_count} auth_reg={auth_reg_count}"
         )
 
     binding_safe=((not account_pass or account_exact) and
@@ -131,7 +132,8 @@ def main():
             "authority_bound_registry_blob_sha":bound_reg,
             "current_saturation_count":sat_count,
             "current_registry_count":reg_count,
-            "authority_reviewed_count":auth_count,
+            "authority_saturation_count":auth_sat_count,
+            "authority_registry_count":auth_reg_count,
             "negative_cache_binding_exact":g9_sha_exact and g9_count_exact,
             "negative_cache_ahead_while_blocked":(not g9_pass) and not (g9_sha_exact and g9_count_exact),
         },
@@ -190,6 +192,8 @@ def main():
         "pre_g9_tech_pass":pre_g9,
         "binding_fail_closed_safe":binding_safe,
         "g9_negative_cache_exact":g9_sha_exact and g9_count_exact,
+        "authority_saturation_count":auth_sat_count,
+        "authority_registry_count":auth_reg_count,
         "account_adapter_exact":account_exact,
     },sort_keys=True))
 
