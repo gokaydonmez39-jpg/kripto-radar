@@ -4,7 +4,7 @@
   "execution": "NONE",
   "real_money": "NO-GO",
   "purpose": "Negative-evidence cache only. This registry can skip unchanged dead paths but can never create G9 PASS.",
-  "provider_count": 61,
+  "provider_count": 62,
   "strict_g9_gates": {
     "A": "consolidated UTP Tape-C / National NBBO lineage",
     "B": "fresh bid+ask+last with independent quote/trade event timestamps",
@@ -14,7 +14,7 @@
   "source_saturation": {
     "path": "nasdaq-xray/g9_search_saturation_20261003.json",
     "blob_sha": "497135207d695387632cd495b4c0e66939a2162d",
-    "reviewed_paths": 61
+    "reviewed_paths": 62
   },
   "providers": [
     {
@@ -837,6 +837,20 @@
         "B_STREAMING_SCHEMA",
         "D_SCHEDULER_CALLABILITY"
       ]
+    },
+    {
+      "provider": "FinFeedAPI Stock API / MCP",
+      "status": "TECHNICALLY_INTERESTING_NBBO_MCP_BUT_STRICT_C_PERMANENT_ZERO_FAIL_METERED_PAYG",
+      "failed_gates": [
+        "A_EXACT_CONSOLIDATED_UTP_NATIONAL_NBBO_LINEAGE",
+        "C_PERMANENT_ZERO_ENDUSER_ENTITLEMENT"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_finfeedapi_20261003.json",
+      "evidence_blob_sha": "c6b3d969f9531ac1859809d8cae8d7d1bd01ef10",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "Permanent-$0 production US-equity NBBO quote+trade access with no metered usage/subscription/trial/payment/account condition, plus primary-source consolidated lineage and independent event timestamps.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
     }
   ],
   "reopen_policy": "Reopen an existing negative path only on newer PRIMARY SOURCE evidence materially changing its listed failed gate(s). New previously-unreviewed providers are always eligible for research. Any reopened path still requires same-run RTH technical proof before G9 PASS.",
