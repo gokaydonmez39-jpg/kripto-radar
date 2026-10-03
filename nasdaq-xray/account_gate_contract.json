@@ -36,7 +36,7 @@
   },
   "retry_class": "EXTERNAL_SCOPE_OR_ACCOUNT_ELIGIBILITY_BLOCK",
   "reauth_rule": "Ordinary token refresh/reconnect has already been falsified as a repair: a new OAuth session enabled watchlist but account/portfolio/trading-read endpoints remained 403308. Retry only on a material scope/account-eligibility change.",
-  "pass_transition_rule": "Only a fresh same-run success of BOTH account_balance and stock_positions may transition ACCOUNT to PASS.",
+  "pass_transition_rule": "ACCOUNT_PASS requires fresh same-run parseable account_balance + stock_positions from an eligible sanctioned adapter, exact adapter binding, and no exposed write surface for the restricted MCP path. Persisted status or encrypted vault existence alone can never PASS.",
   "updated_on": "2026-10-03",
   "last_reauth_attempt": {
     "user_reported_reauthorized": true,
@@ -60,7 +60,7 @@
     "today_orders_read_only": "403308_SCOPE_DENIED"
   },
   "current_interpretation": "Fresh full reauthorization changed watchlist from denied to allowed, proving a new OAuth session took effect. However account/portfolio/trading-read APIs still return 403308. The active token therefore lacks the account/portfolio/trading scope family, or those scopes are unavailable for this account type/region.",
-  "next_repair": "Do not repeat ordinary Longbridge reauthorization. Reopen Longbridge only if its account/portfolio scopes become available for this account; otherwise use a sanctioned provider-neutral broker adapter that passes same-run read-only account value/cash + equity positions/exposure.",
+  "next_repair": "Preferred repair: use official Longbridge hosted MCP /v2 with account.read only. Add a one-time Longbridge Agent Auth Code as GitHub Actions secret LONGBRIDGE_AGENT_AUTH_CODE; Final Factory will redeem it, persist only encrypted OAuth token state, verify /v2 write surface is absent, then require same-run account_balance + stock_positions. Ordinary ChatGPT-plugin reconnect remains falsified as a repair.",
   "primary_adapter": "LONGBRIDGE",
   "adapter_contract": {
     "path": "nasdaq-xray/account_provider_adapter_contract.json",
@@ -76,7 +76,8 @@
     "MIDAS_VIA_TRADINGVIEW_OFFICIAL": "TECHNICALLY_SUFFICIENT_READ_SURFACE_CONFIRMED_BUT_NOT_SCHEDULER_CALLABLE",
     "MIDAS_ALPACA_CORRESPONDENT": "PROMISING_OFFICIAL_INFRA_BUT_ENDUSER_CREDENTIALS_NOT_AVAILABLE",
     "LONGBRIDGE_DIRECT_OPENAPI": "ELIGIBLE_FRESH_SAME_RUN_ONLY_OAUTH_PREFERRED",
-    "LONGBRIDGE_HOSTED_MCP": "ELIGIBLE_FRESH_SAME_RUN_ONLY_ACCOUNT_SCOPE"
+    "LONGBRIDGE_HOSTED_MCP": "ELIGIBLE_FRESH_SAME_RUN_ONLY_ACCOUNT_SCOPE",
+    "LONGBRIDGE_HOSTED_MCP_V2": "ELIGIBLE_FRESH_SAME_RUN_ONLY_BOOTSTRAP_READY"
   },
   "adapter_registry_count": 11,
   "adapter_registry_sync": "EVIDENCE_PIN_ONLY_NEVER_PASS_AUTHORITY",
@@ -84,7 +85,7 @@
   "binding_revalidation_note": "Exact adapter/gate binding revalidated after evidence-only Midas updates; no ACCOUNT PASS created and no execution capability added.",
   "binding_revalidation": {
     "status": "EXACT",
-    "adapter_blob_sha": "38dbab9885fbc1087df800909a09b1edb5ce92a3",
+    "adapter_blob_sha": "f4e8f5ef8e4674ee61f1851ffc837a708fc7e016",
     "revalidated_on": "2026-10-03",
     "semantic_effect": "NONE_ZERO_ALPHA"
   }
