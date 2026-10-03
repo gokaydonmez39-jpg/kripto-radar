@@ -1,0 +1,96 @@
+{
+  "schema": "XRAY_G9_PROVIDER_DELTA_V1",
+  "generated_on": "2026-10-03",
+  "scope": "EXCHANGE_NATIVE_AND_TRF_SWEEP_4",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "providers": [
+    {
+      "provider": "IEX Exchange TOPS / DEEP",
+      "status": "NONQUALIFYING_SINGLE_VENUE_EXCHANGE_FEED",
+      "failed_gates": [
+        "A"
+      ],
+      "evidence": [
+        "Official IEX market-data site publishes TOPS/DEEP as IEX Exchange feeds.",
+        "These are IEX venue-native data, not the consolidated UTP Tape-C National NBBO across all U.S. exchanges.",
+        "Even perfect venue timestamps cannot substitute for consolidated lineage."
+      ],
+      "primary_sources": [
+        "https://iextrading.com/trading/market-data/index.html"
+      ],
+      "reopen_condition": "A sanctioned IEX product becomes actual consolidated UTP/National NBBO across all required venues, not IEX-only."
+    },
+    {
+      "provider": "MEMX MEMOIR Top / Last Sale",
+      "status": "NONQUALIFYING_SINGLE_VENUE_EXCHANGE_FEED",
+      "failed_gates": [
+        "A"
+      ],
+      "evidence": [
+        "Official MEMX documentation describes MEMOIR Top as real-time top-of-book best bid/best offer on the MEMX exchange.",
+        "MEMOIR Last Sale is exchange execution data from MEMX.",
+        "Therefore the feed is venue-native and cannot prove consolidated National NBBO."
+      ],
+      "primary_sources": [
+        "https://memx.com/insights/members-exchange-messaging-protocols-now-available"
+      ],
+      "reopen_condition": "MEMX offers a sanctioned consolidated UTP/National-NBBO product covering all required U.S. venues."
+    },
+    {
+      "provider": "NYSE Best Quote & Trades (BQT)",
+      "status": "NONQUALIFYING_NYSE_GROUP_AGGREGATE_AND_PAID_NONDISPLAY",
+      "failed_gates": [
+        "A",
+        "C"
+      ],
+      "evidence": [
+        "Official NYSE says BQT consolidates quotes/trades from NYSE, NYSE American, NYSE Arca, NYSE National and NYSE Texas.",
+        "It is presented as an alternative/reference to SIP data, not the National NBBO across all U.S. venues.",
+        "NYSE fee schedule contains substantial BQT access and non-display fees, violating strict permanent-$0 G9-C."
+      ],
+      "primary_sources": [
+        "https://www.nyse.com/data-products/catalog/nyse-bqt",
+        "https://www.nyse.com/publicdocs/nyse/data/NYSE_Market_Data_Fees.pdf"
+      ],
+      "reopen_condition": "NYSE product becomes actual all-venue National NBBO under unconditional permanent-$0 automated/non-display entitlement."
+    },
+    {
+      "provider": "MIAX Pearl Equities ToM",
+      "status": "NONQUALIFYING_SINGLE_VENUE_AND_PAID_NONDISPLAY",
+      "failed_gates": [
+        "A",
+        "C"
+      ],
+      "evidence": [
+        "MIAX Pearl Equities Top of Market is an exchange-native top-of-book feed, not consolidated National NBBO.",
+        "Current official fee schedule charges monthly distributor/user and non-display usage fees.",
+        "Non-display usage is explicitly fee-bearing."
+      ],
+      "primary_sources": [
+        "https://www.miaxglobal.com/sites/default/files/fee_schedule-files/MIAX_Pearl_Equities_Fee_Schedule_05012026.pdf"
+      ],
+      "reopen_condition": "MIAX offers actual consolidated UTP/National NBBO with permanent-$0 non-display entitlement."
+    },
+    {
+      "provider": "FINRA TRF / Equity API",
+      "status": "NONQUALIFYING_TRADE_REPORTING_NOT_NBBO_QUOTE_FEED",
+      "failed_gates": [
+        "A",
+        "B"
+      ],
+      "evidence": [
+        "FINRA TRFs are facilities for reporting transactions executed otherwise than on an exchange.",
+        "TRF data contributes trade reports to consolidated tapes but is not a consolidated best-bid/best-offer quote feed.",
+        "FINRA Developer Equity datasets expose OTC trade/equity data; they do not establish the required National NBBO quote-event stream."
+      ],
+      "primary_sources": [
+        "https://www.finra.org/filing-reporting/trade-reporting-facility-trf",
+        "https://developer.finra.org/docs"
+      ],
+      "reopen_condition": "FINRA exposes a sanctioned realtime all-venue National NBBO quote+trade API with independent event timestamps and strict permanent-$0 automated entitlement."
+    }
+  ],
+  "conclusion": "NO_NEW_STRICT_G9_PROVIDER",
+  "no_policy_weakening": true
+}
