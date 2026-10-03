@@ -1,5 +1,5 @@
 {
-  "account_status": "ACCOUNT_BLOCKED_SCOPE_NOT_GRANTED_OR_ACCOUNT_UNSUPPORTED",
+  "account_status": "ACCOUNT_BOOTSTRAP_READY_CREDENTIALS_REQUIRED",
   "asof_et": "2026-10-02",
   "blockers": {
     "affected_event_unknown": 0,
@@ -64,14 +64,14 @@
     "account_gate": {
       "adapter_contract_blob_sha": "3d89bf9ee0fffdcd39fad8b0c16b968c17167846",
       "adapter_contract_path": "nasdaq-xray/account_provider_adapter_contract.json",
-      "blob_sha": "6f03034237a864052d2c720979ec26469681096d",
-      "current_adapter": "LONGBRIDGE",
+      "blob_sha": "9743da01e0ee5025e57a5950321419af21e2e1c1",
+      "current_adapter": "LONGBRIDGE_HOSTED_MCP_V2",
       "path": "nasdaq-xray/account_gate_contract.json",
       "provider": "PROVIDER_NEUTRAL"
     },
     "account_live_probe": {
       "balance_parseable": false,
-      "blob_sha": "08c495a03f9b408a735f426012888c2eba60848d",
+      "blob_sha": "3c105a8fd1b19c28c27f848b903ccc4b80902c9e",
       "network_attempted": false,
       "path": "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/account_effective_probe_state.json",
       "positions_parseable": false,
@@ -82,7 +82,7 @@
       "secret_values_persisted": false,
       "status": "BLOCKED_MISSING_CREDENTIALS",
       "workflow_run_attempt": "1",
-      "workflow_run_id": "37136405554"
+      "workflow_run_id": "37137019421"
     },
     "deep": {
       "blob_sha": "ef9329735a208e28be983b0a5f23647b264e300d",
@@ -163,7 +163,7 @@
   "final_gate_reporting_zero_alpha": true,
   "full_end_to_end_research_pass": true,
   "g9_global_status": "G9_BLOCKED_FREE_AUTOMATION_PATH",
-  "generated_at_utc": "2026-10-03T16:20:57.568228+00:00",
+  "generated_at_utc": "2026-10-03T16:30:35.389751+00:00",
   "pointer_asof_before_candidate": "2026-10-02",
   "r92_account_g9_applicable": false,
   "r92_candidates": [],

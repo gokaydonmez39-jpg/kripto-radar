@@ -1,7 +1,7 @@
 {
   "schema": "XRAY_FINAL_GATE_OVERLAY_V2",
   "generated_on": "2026-10-03",
-  "generated_at_utc": "2026-10-03T16:29:14.366369+00:00",
+  "generated_at_utc": "2026-10-03T16:30:35.501277+00:00",
   "asof_et": "2026-10-02",
   "execution": "NONE",
   "real_money": "NO-GO",
@@ -9,7 +9,7 @@
   "binding_protocol": "FAIL_CLOSED_BLOCKED_CACHE_DRIFT_V1",
   "source_terminal": {
     "path": "nasdaq-xray/canonical_current_terminal.json",
-    "blob_sha": "2df0b6a6342b4f9580b54394707c1b132423da4b",
+    "blob_sha": "f5300db6499a61932c7fac725959155571b902fd",
     "full_end_to_end_research_pass": true,
     "terminal_result": "NO_CONFIRMED_SETUP"
   },
@@ -41,13 +41,13 @@
     "negative_cache_ahead_while_blocked": false
   },
   "account": {
-    "status": "ACCOUNT_BLOCKED_SCOPE_NOT_GRANTED_OR_ACCOUNT_UNSUPPORTED",
+    "status": "ACCOUNT_BOOTSTRAP_READY_CREDENTIALS_REQUIRED",
     "account_pass": false,
     "provider_model": "PROVIDER_NEUTRAL",
     "current_adapter": "LONGBRIDGE_HOSTED_MCP_V2",
     "persisted_gate_status": "ACCOUNT_BOOTSTRAP_READY_CREDENTIALS_REQUIRED",
     "same_run_live_witness_attested": false,
-    "live_probe_workflow_run_id": "37136405554",
+    "live_probe_workflow_run_id": "37137019421",
     "gate_path": "nasdaq-xray/account_gate_contract.json",
     "gate_blob_sha": "9743da01e0ee5025e57a5950321419af21e2e1c1",
     "current_adapter_contract_blob_sha": "3d89bf9ee0fffdcd39fad8b0c16b968c17167846",
@@ -85,7 +85,7 @@
   },
   "stale_pointer_fields": {
     "pointer_account_status": "UNKNOWN",
-    "terminal_account_status": "ACCOUNT_BLOCKED_SCOPE_NOT_GRANTED_OR_ACCOUNT_UNSUPPORTED",
+    "terminal_account_status": "ACCOUNT_BOOTSTRAP_READY_CREDENTIALS_REQUIRED",
     "interpretation": "Persisted pointer state never creates PASS; current runtime gates control final-gate reporting."
   },
   "weekend_guard": {
