@@ -159,7 +159,7 @@
     "LONGBRIDGE_HOSTED_MCP_V2": {
       "status": "ELIGIBLE_FRESH_SAME_RUN_ONLY_BOOTSTRAP_READY",
       "sanctioned_surface": "Official Longbridge hosted MCP restricted /v2 endpoint",
-      "authorization": "OAuth 2.1 / Agent Auth with account.read. Longbridge source defines /v2 scopes as watchlist + account.read + trade.read and explicitly excludes trade.write.",
+      "authorization": "Official Longbridge Agent Auth/OAuth path. Required production scope is account.read (id 6); trade.write (id 11) is forbidden. /v2 advertises watchlist + account.read + trade.read and excludes trade.write.",
       "required_read_calls": [
         "account_balance",
         "stock_positions"
@@ -167,7 +167,7 @@
       "diagnostic_probe": "nasdaq-xray/account_longbridge_mcp_v2_probe.py",
       "selftest": "nasdaq-xray/account_longbridge_mcp_v2_probe_selftest.py",
       "secret_env": "LONGBRIDGE_MCP_V2_BEARER_TOKEN",
-      "security_model": "The restricted /v2 server allowlist includes account_balance and stock_positions while submit_order, cancel_order, replace_order, fund order writes, DCA/grid writes and money-movement tools are excluded. XRAY additionally calls only the two required account reads and never persists raw account values or the bearer.",
+      "security_model": "Bootstrap consumes a one-time packed Agent Auth Code only after an independent Fernet key is present. Access+refresh token state is persisted only as Fernet ciphertext. Agent Auth Code is never an encryption key. /v2 is an upstream default-out allowlist and XRAY calls only account_balance + stock_positions after manifest verification that known write/money-movement surfaces are absent.",
       "canonical_gate_rule": "Only fresh same-run parseable account_balance + stock_positions from the official /v2 endpoint may create ACCOUNT_PASS. Missing, expired or scope-denied token remains blocked.",
       "evidence": [
         "Official longbridge/longbridge-mcp source defines production account.read scope id 6.",
@@ -177,9 +177,9 @@
         "Longbridge Agent Auth lets the user preselect permissions; the one-time code is exchanged for access+refresh tokens and the server remains stateless.",
         "XRAY encrypted vault keeps token plaintext out of the public repository and persists refresh rotation as authenticated ciphertext only."
       ],
-      "blocker": "No account.read-scoped /v2 Bearer is currently configured in GitHub Actions secrets.",
-      "reopen_condition": "Configure a one-time account.read Agent Auth Code as LONGBRIDGE_AGENT_AUTH_CODE (no trade.write). The next Final Factory must bootstrap encrypted vault and obtain same-run parseable account_balance + stock_positions with /v2 write surface absent.",
-      "same_run_rule": "Persisted prior PASS is never reusable.",
+      "blocker": "Encrypted /v2 vault has not yet been bootstrapped from a fresh account.read Agent Auth Code with an independent XRAY_ACCOUNT_TOKEN_FERNET_KEY.",
+      "reopen_condition": "Configure both XRAY_ACCOUNT_TOKEN_FERNET_KEY and a fresh one-time LONGBRIDGE_AGENT_AUTH_CODE carrying account.read and no trade.write; Final Factory must bootstrap ciphertext, refresh/persist rotation safely, verify /v2 manifest safety, and obtain fresh same-run parseable account_balance + stock_positions.",
+      "same_run_rule": "Persisted prior PASS is never reusable. ACCOUNT_PASS requires fresh same-workflow-run account_balance + stock_positions plus exact adapter binding and safe /v2 manifest.",
       "trading_scope_required": false,
       "execution": "NONE",
       "endpoint": "https://mcp.longbridge.com/v2",
@@ -193,22 +193,24 @@
       "trade_write_scope_advertised": false,
       "write_surface_rule": "Official upstream /v2 allowlist excludes every trade.write tool and hard-excludes execution/DCA/IPO-order/money-movement surfaces; XRAY additionally manifest-checks writes absent before account reads.",
       "credential_modes": [
-        "ONE_SECRET_ENCRYPTED_VAULT_FROM_AGENT_AUTH_CODE",
+        "TWO_SECRET_ONE_TIME_BOOTSTRAP_TO_ENCRYPTED_REFRESHABLE_VAULT",
         "EXPLICIT_BEARER_SECRET_FALLBACK"
       ],
-      "bootstrap": "Generate one Longbridge Agent Auth Code with account permission and no trading-write permission; store only as GitHub Actions secret LONGBRIDGE_AGENT_AUTH_CODE. Final Factory can redeem it once, derive an encryption key from the now-consumed high-entropy code, encrypt access+refresh state, and commit ciphertext only.",
+      "bootstrap": "Generate a Longbridge Agent Auth Code with account permission and no trade.write. Store it only as GitHub Actions secret LONGBRIDGE_AGENT_AUTH_CODE. Separately configure an independent Fernet key as XRAY_ACCOUNT_TOKEN_FERNET_KEY. Final Factory refuses to consume the one-time code if the Fernet key is absent, exchanges the packed code per the audited upstream Agent Auth implementation, encrypts access+refresh state, and persists ciphertext only.",
       "vault_path": "nasdaq-xray/account_longbridge_mcp_v2_token.enc",
       "vault_helper": "nasdaq-xray/account_longbridge_mcp_v2_vault.py",
       "bootstrap_script": "nasdaq-xray/account_longbridge_mcp_v2_bootstrap.py",
       "probe": "nasdaq-xray/account_longbridge_mcp_v2_probe.py",
-      "private_persistence": "FORBIDDEN_PLAINTEXT; CIPHERTEXT_ONLY",
-      "autonomous_refresh": "Supported: refresh token rotation is re-encrypted and committed before account reads, so an upstream read failure cannot strand the next run.",
-      "current_blocker": "One-time Longbridge account.read Agent Auth Code has not yet been configured as GitHub Actions secret LONGBRIDGE_AGENT_AUTH_CODE; encrypted vault therefore does not yet exist.",
+      "private_persistence": "PLAINTEXT_FORBIDDEN; ACCESS/REFRESH STATE MAY PERSIST ONLY AS FERNET CIPHERTEXT; FERNET KEY REMAINS ACTIONS SECRET",
+      "autonomous_refresh": "Supported: mcp.longbridge.com/oauth2/token refresh proxy is official upstream; refresh rotation is re-encrypted and committed before account reads. Any refresh that loses account.read or gains trade.write fails closed.",
+      "current_blocker": "Required bootstrap secrets are not yet configured: independent XRAY_ACCOUNT_TOKEN_FERNET_KEY plus fresh one-time account.read LONGBRIDGE_AGENT_AUTH_CODE.",
       "upstream_source": {
         "repository": "longbridge/longbridge-mcp",
         "audited_commit": "9322ce27aca876b6e96f3359c95caae8dc75beea",
         "account_read_scope_key": "account.read",
         "account_read_production_scope_id": "6",
+        "trade_read_scope_key": "trade.read",
+        "trade_read_production_scope_id": "10",
         "trade_write_scope_key": "trade.write",
         "trade_write_production_scope_id": "11",
         "v2_scopes": [
@@ -218,18 +220,24 @@
         ],
         "v2_trade_write_advertised": false,
         "v2_money_movement_exposed": false,
+        "v2_endpoint": "https://mcp.longbridge.com/v2",
+        "token_proxy": "https://mcp.longbridge.com/oauth2/token",
         "enforcement": "LIST_AND_CALL_ALLOWLIST_EXECUTION_LAYER"
       },
       "security_evidence": [
-        "Official longbridge/longbridge-mcp source defines production account.read scope id 6.",
-        "Official /v2 scope set is watchlist + account.read + trade.read and deliberately excludes trade.write.",
-        "Official /v2 allowlist tests reject every tool assigned to trade.write and hard-excluded execution/money-movement tools.",
-        "Official scope catalogue maps account_balance and stock_positions to account.read.",
-        "Longbridge Agent Auth lets the user preselect permissions; the one-time code is exchanged for access+refresh tokens and the server remains stateless.",
-        "XRAY encrypted vault keeps token plaintext out of the public repository and persists refresh rotation as authenticated ciphertext only.",
-        "Official upstream /v2 is a default-out whitelist; list_tools and call_tool both enforce the restricted allowlist.",
-        "Official upstream tests assert every trade.write tool is absent and deposits/withdrawals/bank_cards money-movement tools are excluded from /v2.",
-        "Production OAuth scope mapping is account.read=6 and trade.write=11; XRAY bootstrap requires account.read and rejects trade.write."
+        "Official longbridge/longbridge-mcp data/scopes.json maps account.read to production scope id 6 and includes account_balance + stock_positions.",
+        "Official source maps trade.write to production scope id 11.",
+        "Official src/endpoints.rs defines /v2 as the broader read-only subset deliberately without TradeWrite.",
+        "Official src/tools/mod.rs defines /v2 as a default-out whitelist and tests that trade.write tools are absent.",
+        "Official src/auth/middleware.rs and src/auth/metadata.rs identify /v2 as a restricted public endpoint with resource-specific OAuth metadata.",
+        "Official src/tools/authenticate.rs defines packed Agent Auth Code decoding and exchanges it for access+refresh tokens; the server remains stateless.",
+        "Official src/auth/oauth_proxy.rs and metadata expose mcp.longbridge.com/oauth2/token with refresh_token support.",
+        "XRAY requires a separate Actions-only Fernet key before consuming the one-time Agent Auth Code; the code is never used as an encryption key.",
+        "XRAY persists only encrypted token state, rejects loss of account.read or appearance of trade.write on refresh, and verifies write-surface absence before account reads."
+      ],
+      "secret_envs": [
+        "LONGBRIDGE_AGENT_AUTH_CODE (one-time bootstrap only)",
+        "XRAY_ACCOUNT_TOKEN_FERNET_KEY (independent persistent vault encryption key)"
       ]
     }
   },
