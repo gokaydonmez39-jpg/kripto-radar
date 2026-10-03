@@ -9,7 +9,7 @@
     "stock_positions"
   ],
   "pass_rule": "Both calls must succeed under current OAuth authorization and return parseable current account state; empty/zero positions are valid known exposure, but permission errors are never PASS.",
-  "current_status": "ACCOUNT_BLOCKED_REAUTH_REQUIRED",
+  "current_status": "ACCOUNT_BLOCKED_SCOPE_NOT_GRANTED_OR_ACCOUNT_UNSUPPORTED",
   "current_error_code": 403308,
   "repair": "Reconnect/re-authorize Longbridge OAuth with the full permissions required by the connector. Plain token refresh is insufficient because it preserves the old scopes.",
   "forbidden_calls": [
@@ -34,7 +34,7 @@
       "private_values_persisted": false
     }
   },
-  "retry_class": "USER_ACTION_REQUIRED",
+  "retry_class": "EXTERNAL_SCOPE_OR_ACCOUNT_ELIGIBILITY_BLOCK",
   "reauth_rule": "Reconnect Longbridge and approve the full permission set requested by the connector (including watchlist/portfolio/trading OAuth scopes if presented). Plain token refresh or reconnect with the same limited scopes does not clear 403308.",
   "pass_transition_rule": "Only a fresh same-run success of BOTH account_balance and stock_positions may transition ACCOUNT to PASS.",
   "updated_on": "2026-10-03",
@@ -49,5 +49,16 @@
     "error_message": "Target API is not in authorized scope",
     "interpretation": "Connection refresh/re-authorization did not grant the connector scopes required by both read-only account endpoints."
   },
-  "execution_guard": "Granting an OAuth trading scope does NOT authorize XRAY to place orders. XRAY execution remains NONE/REAL_MONEY=NO-GO and order/preview/replace/cancel endpoints remain forbidden."
+  "execution_guard": "Even if trading OAuth scope is granted for read API compatibility, XRAY execution remains NONE/REAL_MONEY=NO-GO and order placement/preview/replace/cancel endpoints remain forbidden.",
+  "scope_diagnostics": {
+    "market_status": "PASS",
+    "quote_AAPL_US": "PASS",
+    "watchlist": "PASS",
+    "account_balance": "403308_SCOPE_DENIED",
+    "stock_positions": "403308_SCOPE_DENIED",
+    "fund_positions": "403308_SCOPE_DENIED",
+    "today_orders_read_only": "403308_SCOPE_DENIED"
+  },
+  "current_interpretation": "Fresh full reauthorization changed watchlist from denied to allowed, proving a new OAuth session took effect. However account/portfolio/trading-read APIs still return 403308. The active token therefore lacks the account/portfolio/trading scope family, or those scopes are unavailable for this account type/region.",
+  "next_repair": "Use Longbridge's official OAuth/Agent Auth flow and explicitly select account/portfolio permissions (and trading scope only if the consent model groups read-only trade/account APIs under it). If those scopes are not offered, treat this as an account-type/region eligibility block rather than retrying token refresh."
 }
