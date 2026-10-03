@@ -1,0 +1,98 @@
+name: XRAY Final Gate Overlay
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/canonical_current_terminal.json"
+      - "nasdaq-xray/chatgpt_canonical_state_v2.json"
+      - "nasdaq-xray/strict_g9_runtime_state.json"
+      - "nasdaq-xray/g9_entitlement_authority.json"
+      - "nasdaq-xray/g9_search_saturation_20261003.json"
+      - "nasdaq-xray/g9_provider_registry_20261003.json"
+      - "nasdaq-xray/account_gate_contract.json"
+      - "nasdaq-xray/account_provider_adapter_contract.json"
+      - "nasdaq-xray/build_final_gate_overlay.py"
+      - ".github/workflows/xray-final-gate-overlay.yml"
+  schedule:
+    - cron: "15 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: xray-final-gate-overlay
+  cancel-in-progress: true
+
+jobs:
+  overlay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 1}
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+
+      - name: Compile
+        run: python -m py_compile nasdaq-xray/build_final_gate_overlay.py
+
+      - name: Build overlay
+        run: python nasdaq-xray/build_final_gate_overlay.py
+
+      - name: Structural gate
+        run: |
+          python - <<'PY'
+          import hashlib,json
+          def blob(path):
+              b=open(path,"rb").read()
+              return hashlib.sha1(f"blob {len(b)}\0".encode()+b).hexdigest()
+          o=json.load(open("nasdaq-xray/canonical_current_final_gate_overlay.json"))
+          t=json.load(open("nasdaq-xray/canonical_current_terminal.json"))
+          p=json.load(open("nasdaq-xray/chatgpt_canonical_state_v2.json"))
+          g=json.load(open("nasdaq-xray/strict_g9_runtime_state.json"))
+          a=json.load(open("nasdaq-xray/account_gate_contract.json"))
+          aa=json.load(open("nasdaq-xray/account_provider_adapter_contract.json"))
+          assert o["schema"]=="XRAY_FINAL_GATE_OVERLAY_V1"
+          assert o["execution"]=="NONE" and o["real_money"]=="NO-GO"
+          assert o["asof_et"]==t["asof_et"]==(p.get("state_json") or {}).get("asof_et")
+          assert o["source_terminal"]["blob_sha"]==blob("nasdaq-xray/canonical_current_terminal.json")
+          assert o["source_pointer"]["blob_sha"]==blob("nasdaq-xray/chatgpt_canonical_state_v2.json")
+          assert o["strict_g9"]["runtime_blob_sha"]==blob("nasdaq-xray/strict_g9_runtime_state.json")
+          assert o["account"]["gate_blob_sha"]==blob("nasdaq-xray/account_gate_contract.json")
+          assert o["account"]["adapter_contract_blob_sha"]==blob("nasdaq-xray/account_provider_adapter_contract.json")
+          assert o["strict_g9"]["g9_pass"]==(g.get("g9_pass") is True)
+          assert o["account"]["status"]==a["current_status"]
+          assert (a.get("adapter_contract") or {}).get("blob_sha")==blob("nasdaq-xray/account_provider_adapter_contract.json")
+          assert o["alpha_authority"] is False and o["no_policy_weakening"] is True
+          assert o["true_full_go"]["status"] in {"PASS","BLOCKED"}
+          print({"asof":o["asof_et"],"true_full_go":o["true_full_go"]["status"],"pre_g9":o["research_delivery"]["pre_g9_tech_pass"]})
+          PY
+
+      - name: Commit overlay
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "xray-control-bot"
+          git config user.email "xray-control-bot@users.noreply.github.com"
+          cp nasdaq-xray/canonical_current_final_gate_overlay.json /tmp/overlay.json
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp /tmp/overlay.json nasdaq-xray/canonical_current_final_gate_overlay.json
+            git add nasdaq-xray/canonical_current_final_gate_overlay.json
+            if git diff --cached --quiet; then
+              echo "XRAY_OVERLAY_COMMIT=NO_CHANGE"
+              exit 0
+            fi
+            git commit -m "chore(xray): refresh final-gate overlay [skip ci]"
+            if git push origin HEAD:main; then
+              echo "XRAY_OVERLAY_COMMIT=PASS"
+              exit 0
+            fi
+            echo "XRAY_OVERLAY_PUSH_RACE attempt=$attempt"
+            sleep $((attempt*2))
+          done
+          echo "XRAY_OVERLAY_COMMIT=FAIL" >&2
+          exit 1
