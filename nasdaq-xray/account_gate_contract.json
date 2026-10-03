@@ -64,7 +64,7 @@
   "primary_adapter": "LONGBRIDGE",
   "adapter_contract": {
     "path": "nasdaq-xray/account_provider_adapter_contract.json",
-    "blob_sha": "345c31dd8a48e24a7713fe4dab6c1fdbf69a6d58"
+    "blob_sha": "62797485138f20d82e416d4de8edb4395f7e1268"
   },
   "required_capability": "CURRENT_NASDAQ_ACCOUNT_VALUE_AND_EQUITY_EXPOSURE_READ_ONLY",
   "current_adapter": "LONGBRIDGE",
@@ -73,6 +73,6 @@
     "IBKR_WEB_API": "PROMISING_BUT_NOT_CURRENTLY_SCHEDULER_CALLABLE",
     "MIDAS_ATLAS_COMMUNITY_CONNECTOR": "NOT_ELIGIBLE_UNOFFICIAL"
   },
-  "adapter_registry_count": 5,
+  "adapter_registry_count": 6,
   "adapter_registry_sync": "EVIDENCE_PIN_ONLY_NEVER_PASS_AUTHORITY"
 }
