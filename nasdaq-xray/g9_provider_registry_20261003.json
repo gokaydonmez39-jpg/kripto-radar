@@ -4,7 +4,7 @@
   "execution": "NONE",
   "real_money": "NO-GO",
   "purpose": "Negative-evidence cache only. This registry can skip unchanged dead paths but can never create G9 PASS.",
-  "provider_count": 36,
+  "provider_count": 41,
   "strict_g9_gates": {
     "A": "consolidated UTP Tape-C / National NBBO lineage",
     "B": "fresh bid+ask+last with independent quote/trade event timestamps",
@@ -13,8 +13,8 @@
   },
   "source_saturation": {
     "path": "nasdaq-xray/g9_search_saturation_20261003.json",
-    "blob_sha": "2bc2a686428d9c666c28669e29e3fbdf283724da",
-    "reviewed_paths": 36
+    "blob_sha": "8cc897241acd7662f7b6411fe9fc936b25b544e6",
+    "reviewed_paths": 41
   },
   "providers": [
     {
@@ -483,6 +483,69 @@
       "evidence_file": "nasdaq-xray/g9_provider_delta_marketdata_sweep_20261003.json",
       "last_checked_on": "2026-10-03",
       "reopen_condition": "Primary-source documentation proves consolidated UTP/National NBBO, independent quote/trade event timestamps, and permanent-$0 automated entitlement.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "IEX Exchange TOPS / DEEP",
+      "status": "NONQUALIFYING_SINGLE_VENUE_EXCHANGE_FEED",
+      "failed_gates": [
+        "A"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_exchange_native_sweep_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "A sanctioned IEX product becomes actual consolidated UTP/National NBBO across all required venues.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "MEMX MEMOIR Top / Last Sale",
+      "status": "NONQUALIFYING_SINGLE_VENUE_EXCHANGE_FEED",
+      "failed_gates": [
+        "A"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_exchange_native_sweep_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "MEMX offers a sanctioned consolidated UTP/National-NBBO product covering all required U.S. venues.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "NYSE Best Quote & Trades (BQT)",
+      "status": "NONQUALIFYING_NYSE_GROUP_AGGREGATE_AND_PAID_NONDISPLAY",
+      "failed_gates": [
+        "A",
+        "C"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_exchange_native_sweep_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "NYSE product becomes actual all-venue National NBBO under unconditional permanent-$0 automated/non-display entitlement.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "MIAX Pearl Equities ToM",
+      "status": "NONQUALIFYING_SINGLE_VENUE_AND_PAID_NONDISPLAY",
+      "failed_gates": [
+        "A",
+        "C"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_exchange_native_sweep_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "MIAX offers actual consolidated UTP/National NBBO with permanent-$0 non-display entitlement.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true
+    },
+    {
+      "provider": "FINRA TRF / Equity API",
+      "status": "NONQUALIFYING_TRADE_REPORTING_NOT_NBBO_QUOTE_FEED",
+      "failed_gates": [
+        "A",
+        "B"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_exchange_native_sweep_20261003.json",
+      "last_checked_on": "2026-10-03",
+      "reopen_condition": "FINRA exposes a sanctioned realtime all-venue National NBBO quote+trade API with independent event timestamps and strict permanent-$0 automated entitlement.",
       "negative_cache_only": true,
       "may_never_create_pass": true
     }
