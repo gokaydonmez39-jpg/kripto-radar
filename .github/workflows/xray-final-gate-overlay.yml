@@ -31,7 +31,9 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-        with: {fetch-depth: 1}
+        with:
+          fetch-depth: 1
+          ref: main
       - uses: actions/setup-python@v5
         with: {python-version: "3.12"}
 
@@ -76,11 +78,10 @@ jobs:
           set -euo pipefail
           git config user.name "xray-control-bot"
           git config user.email "xray-control-bot@users.noreply.github.com"
-          cp nasdaq-xray/canonical_current_final_gate_overlay.json /tmp/overlay.json
           for attempt in 1 2 3 4 5; do
             git fetch origin main
             git reset --hard origin/main
-            cp /tmp/overlay.json nasdaq-xray/canonical_current_final_gate_overlay.json
+            python nasdaq-xray/build_final_gate_overlay.py
             git add nasdaq-xray/canonical_current_final_gate_overlay.json
             if git diff --cached --quiet; then
               echo "XRAY_OVERLAY_COMMIT=NO_CHANGE"
