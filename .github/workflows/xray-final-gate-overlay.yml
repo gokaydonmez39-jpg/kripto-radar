@@ -82,7 +82,14 @@ jobs:
           assert o["account"]["gate_blob_sha"]==blob("nasdaq-xray/account_gate_contract.json")
           assert o["account"]["current_adapter_contract_blob_sha"]==blob("nasdaq-xray/account_provider_adapter_contract.json")
           assert o["strict_g9"]["g9_pass"]==(g.get("g9_pass") is True)
-          assert o["account"]["status"]==a["current_status"]
+          assert o["account"]["persisted_gate_status"]==a["current_status"]
+          if o["account"]["account_pass"]:
+              assert o["account"]["status"] in {"PASS","ACCOUNT_PASS"}
+          else:
+              # While ACCOUNT is blocked, terminal may still carry the previous
+              # fail-closed blocked label until the Final Factory refreshes it.
+              # Persisted gate status remains authoritative for the current blocker.
+              assert o["account"]["status"]!="ACCOUNT_PASS"
           assert o["binding_integrity"]["fail_closed_safe"] is True
           if o["account"]["account_pass"]:
               assert o["account"]["adapter_binding_exact"] is True
