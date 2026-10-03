@@ -171,20 +171,21 @@
     },
     {
       "provider": "Wealthnow",
-      "status": "HIGH_POTENTIAL_FREE_AGENT_API__A_LINEAGE_AND_D_RUNTIME_UNPROVEN",
+      "status": "HIGH_POTENTIAL__FREE_SNAPSHOT_B_C_D_ENGINEERING_READY__A_LINEAGE_UNPROVEN",
       "failed_gates": [
         "A",
         "D_RUNTIME"
       ],
       "evidence_file": "nasdaq-xray/g9_provider_delta_wealthnow_20261003.json",
       "last_checked_on": "2026-10-03",
-      "reopen_condition": "Confirm Free price_snapshot is consolidated UTP/National NBBO or documented equivalent, connect it to canonical scheduler, then same-run RTH freshness proof.",
+      "reopen_condition": "Obtain primary-source proof that Free fundamentals/price_snapshot bid/ask are consolidated UTP/National NBBO or documented equivalent lineage; then configure canonical WEALTHNOW_API_KEY/OAuth and require same-run RTH freshness.",
       "negative_cache_only": true,
       "may_never_create_pass": true,
       "provisional_pass_gates": [
         "B_SCHEMA",
         "C_ZERO_DOLLAR_INTENDED_AUTOMATION"
-      ]
+      ],
+      "technical_adapter": "IMPLEMENTED_FAIL_CLOSED_BEHIND_AUTHORITY"
     },
     {
       "provider": "Twelve Data",
