@@ -21,7 +21,7 @@
     "midas_official_paths": "ATLAS_REALTIME_EXCHANGE_ENTITLEMENTS;TRADINGVIEW_BROKER_QUOTES;ALPACA_PARTNER_INFRA",
     "midas_alpaca_partner_path": "OFFICIAL_INFRA_CONFIRMED_EXACT_LIVE_SIP_ENDUSER_ENTITLEMENT_UNPROVEN",
     "high_potential_provider": "Wealthnow",
-    "high_potential_reason": "Free API/MCP is actual $0 and agent-intended; price_snapshot has independent quote/trade timestamps; Free-route National-NBBO lineage and actual scheduler binding remain unproven."
+    "high_potential_reason": "Free REST/MCP is $0 hard-capped and agent-intended; price_snapshot has quote/trade timestamps and a technical adapter exists. Free-route National-NBBO lineage and explicit automated/non-display market-data license remain unproven, and scheduler credential is not configured."
   },
   "pass_rule": "STATUS_MUST_EQUAL_PROVEN_FROM_PRIMARY_SOURCE_AND_PROVIDER_MUST_HAVE_MATCHING_RUNTIME_ADAPTER_BEFORE_LIVE_RTH_TECHNICAL_PROBE_CAN_RUN",
   "no_policy_weakening": true,
@@ -43,8 +43,10 @@
     {
       "provider": "Wealthnow",
       "path": "nasdaq-xray/g9_provider_delta_wealthnow_20261003.json",
-      "blob_sha": "d400ba559aea3a629138bb317f52ece43f63591c",
-      "status": "NONQUALIFYING_STRICT_G9"
+      "blob_sha": "27cebdada76023a8e748dfedc8b04a0bced6bd26",
+      "unlock_path": "nasdaq-xray/g9_wealthnow_lineage_unlock_20261003.json",
+      "unlock_blob_sha": "7c82d30fe5763a299c0c1817ac8ed24ff6ee0407",
+      "status": "HIGH_POTENTIAL_B_D_READY_A_AND_C_NONDISPLAY_LICENSE_UNPROVEN"
     },
     {
       "provider": "Commercial vendor sweep",
@@ -137,21 +139,6 @@
     "blob_sha": "3eb74431fa6bcff47cf2da249f2597a11012a932",
     "result": "OFFICIAL_INFRA_CONFIRMED_BUT_ENDUSER_G9_AND_ACCOUNT_API_NOT_PROVEN"
   },
-  "wealthnow_evidence": {
-    "path": "nasdaq-xray/g9_provider_delta_wealthnow_20261003.json",
-    "blob_sha": "6ee43a9d7a55a63a0764628c099294abb6f23e65",
-    "status": "HIGH_POTENTIAL__FREE_SNAPSHOT_B_C_D_ENGINEERING_READY__A_LINEAGE_UNPROVEN",
-    "gate_a": "UNPROVEN_FREE_SNAPSHOT_NATIONAL_NBBO_LINEAGE",
-    "gate_b": "PROVISIONAL_SCHEMA_PASS_REQUIRES_SAME_RUN_RTH",
-    "gate_c": "PROVISIONAL_ZERO_DOLLAR_AUTOMATION_PASS",
-    "gate_d": "TECHNICAL_ADAPTER_IMPLEMENTED_BUT_CREDENTIAL_NOT_CONFIGURED"
-  },
-  "wealthnow_unlock_contract": {
-    "path": "nasdaq-xray/g9_wealthnow_lineage_unlock_20261003.json",
-    "blob_sha": "7c65e2c5748bd910afdee7de44bb31e85a1348bf",
-    "status": "BLOCKED_A_LINEAGE_PRIMARY_SOURCE_GAP",
-    "role": "PRIMARY_SOURCE_UNLOCK_CONTRACT_NEVER_PASS_BY_ITSELF"
-  },
   "eulerpool_evidence": {
     "path": "nasdaq-xray/g9_provider_delta_eulerpool_20261003.json",
     "blob_sha": "9332c610f53b46fe26e922feacc292fab21ac5d8",
@@ -180,6 +167,7 @@
     "gate_a": "UNPROVEN_FREE_SNAPSHOT_NATIONAL_NBBO_LINEAGE",
     "gate_b": "PROVISIONAL_SCHEMA_PASS_REQUIRES_SAME_RUN_RTH",
     "gate_c": "ZERO_DOLLAR_API_COST_PROVEN_BUT_NONDISPLAY_MARKET_DATA_LICENSE_UNPROVEN",
-    "gate_d": "TECHNICAL_ADAPTER_IMPLEMENTED_BUT_CREDENTIAL_NOT_CONFIGURED"
+    "gate_d": "TECHNICAL_ADAPTER_IMPLEMENTED_BUT_CREDENTIAL_NOT_CONFIGURED",
+    "role": "PRIMARY_SOURCE_UNLOCK_CONTRACT_NEVER_PASS_BY_ITSELF"
   }
 }
