@@ -6,6 +6,7 @@ on:
     paths:
       - "nasdaq-xray/account_provider_adapter_contract.json"
       - "nasdaq-xray/reconcile_account_gate.py"
+      - "nasdaq-xray/reconcile_account_gate_selftest.py"
       - ".github/workflows/xray-account-gate-reconcile.yml"
   schedule:
     - cron: "12 * * * *"
@@ -31,7 +32,10 @@ jobs:
         with: {python-version: "3.12"}
 
       - name: Compile
-        run: python -m py_compile nasdaq-xray/reconcile_account_gate.py
+        run: python -m py_compile nasdaq-xray/reconcile_account_gate.py nasdaq-xray/reconcile_account_gate_selftest.py
+
+      - name: Run fail-closed reconciler selftest
+        run: python nasdaq-xray/reconcile_account_gate_selftest.py
 
       - name: Reconcile latest main
         shell: bash
