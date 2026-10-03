@@ -9,6 +9,8 @@ on:
       - "nasdaq-xray/resolve_unknowns_fallback.py"
       - "nasdaq-xray/price_dv20_phase.py"
       - "nasdaq-xray/deep_pre_r1_shadow.py"
+      - "nasdaq-xray/history_phase.py"
+      - "nasdaq-xray/history_official_identity_evidence.json"
       - "nasdaq-xray/price_dv20_recover_from_fullstate.py"
       - "nasdaq-xray/chatgpt_compiled_policy_v3.json"
       - "nasdaq-xray/requirements-runtime.txt"
@@ -36,6 +38,7 @@ jobs:
             nasdaq-xray/price_dv20_phase.py \
             nasdaq-xray/price_dv20_recover_from_fullstate.py \
             nasdaq-xray/deep_pre_r1_shadow.py \
+            nasdaq-xray/history_phase.py \
             nasdaq-xray/test_dynamic_policy_invariants.py
       - name: Run deterministic invariants
         run: python nasdaq-xray/test_dynamic_policy_invariants.py
