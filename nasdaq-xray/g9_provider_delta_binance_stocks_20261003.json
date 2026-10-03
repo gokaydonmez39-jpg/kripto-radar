@@ -1,0 +1,50 @@
+{
+  "schema": "XRAY_G9_PROVIDER_DELTA_V1",
+  "generated_on": "2026-10-03",
+  "provider": "Binance Stocks REST API / Alpaca-powered brokerage",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "status": "HIGH_POTENTIAL_PROGRAMMATIC_BROKER_ABSORBED_ROUTE_BUT_STRICT_B_EVENT_TIMESTAMPS_AND_A_LINEAGE_UNPROVEN",
+  "evidence": [
+    "Binance launched official REST API trading for Binance Stocks on 2026-07-20. Existing Binance API users can programmatically access US-listed stocks/ETFs; Nest Trading Limited routes securities activity to Alpaca Securities LLC for execution, clearing, settlement and custody.",
+    "Official Stocks Trading Market Data docs expose GET /sapi/v1/equity/market/quote using a standard X-MBX-APIKEY and state it returns latest best bid/best ask for a US equity, at most about 5 seconds stale.",
+    "The Latest Quote response contains symbol, bidPrice, askPrice, bidSize and askSize but no quote-event timestamp.",
+    "The reviewed Stocks Market Data REST catalog exposes Exchange Info, Tokenized Assets and Latest Quote; no separate latest-trade market-data endpoint with an independent trade-event timestamp was found. The stock WebSocket documentation reviewed is user/order-state streaming, not public quote/trade tape streaming.",
+    "Binance's official stock FAQ uses National Best Bid and Offer (NBBO) as the price-band reference for stock orders, but the Latest Quote API documentation itself does not explicitly bind its bid/ask payload to CTA/UTP SIP or state that it is the National NBBO.",
+    "Alpaca confirms Binance's US-equities product is powered by Alpaca Broker API. Alpaca's own SIP market-data product is consolidated CTA+UTP and provides latest quote/trade event timestamps, but Alpaca's Broker API market-data plans are partner-specific and can be IEX, delayed SIP or custom. Therefore XRAY may not infer that Binance Latest Quote is Alpaca live SIP without an explicit Binance/Alpaca product binding.",
+    "Binance's current stock FAQ states it does not currently charge account-maintenance, inactivity or custody fees for equity holdings. The market-data endpoint documents a normal Binance API key and IP request weight, with no separate market-data subscription fee shown in the reviewed docs. This materially supports a broker-absorbed zero-dollar data model, but does not by itself prove exact UTP/API classification or Turkey/user eligibility.",
+    "Binance product availability remains jurisdiction/account specific. A localized URL or page is not sufficient proof that the current user's Türkiye-resident account is eligible for Binance Stocks/API market data."
+  ],
+  "primary_sources": [
+    "https://developers.binance.com/en/docs/catalog/advanced-trading-stocks-trading/api/rest-api/market-data",
+    "https://www.binance.com/en/support/announcement/detail/95d746cb2b5e4d179c50d0026dd7dfbe",
+    "https://www.binance.com/en/support/faq/detail/a7469c7703524024b5bc2d492b03639d",
+    "https://www.binance.com/en-KZ/support/faq/detail/7ae9ef8636e74e8b9c3b625677b83310",
+    "https://alpaca.markets/blog/binance-launches-us-stocks-and-etfs-trading-with-alpaca/",
+    "https://docs.alpaca.markets/us/docs/market-data-faq",
+    "https://docs.alpaca.markets/us/v1.1/docs/about-market-data-api"
+  ],
+  "gate_analysis": {
+    "A": "UNPROVEN_FOR_BINANCE_LATEST_QUOTE. Product uses Alpaca brokerage infrastructure and Binance uses NBBO operationally, but exact Latest Quote -> consolidated CTA/UTP SIP binding is not primary-source proven.",
+    "B": "FAIL_CURRENT_SCHEMA. Quote freshness <=~5s is strong, but no quote-event timestamp and no independent last-trade event timestamp endpoint are exposed in reviewed market-data surface.",
+    "C": "PROMISING_NOT_PROVEN. No separate market-data subscription is documented and equity maintenance/inactivity/custody fees are currently $0, but exact automated UTP/nonprofessional classification and account/jurisdiction eligibility remain unproven.",
+    "D": "PASS_TECHNICAL_REST_API_KEY_SURFACE, subject to account/jurisdiction eligibility."
+  },
+  "failed_or_unproven_gates": [
+    "A_EXACT_CONSOLIDATED_CTA_UTP_NATIONAL_NBBO_LINEAGE",
+    "B_QUOTE_EVENT_TIMESTAMP",
+    "B_INDEPENDENT_LAST_TRADE_EVENT_TIMESTAMP",
+    "C_PROVIDER_MARKET_DATA_CLASSIFICATION_AND_USER_ELIGIBILITY",
+    "D_CURRENT_USER_TURKIYE_ACCOUNT_ELIGIBILITY"
+  ],
+  "provisional_pass_gates": [
+    "B_PRICE_FRESHNESS_WINDOW_APPROX_LE_5_SECONDS",
+    "C_NO_SEPARATE_MARKET_DATA_SUBSCRIPTION_VISIBLE_IN_REVIEWED_DOCS",
+    "D_SANCTIONED_REST_API_SURFACE"
+  ],
+  "reopen_condition": "Binance must expose/document an independent latest-trade event timestamp and quote-event timestamp (or equivalent timestamped quote/trade stream), explicitly bind its equity Latest Quote to consolidated National NBBO/CTA-UTP SIP or a named licensed redistributor, and prove the current user/account jurisdiction can use that market-data API permanently at $0 with no separate data/balance/funding/activity condition.",
+  "negative_cache_only": true,
+  "may_never_create_pass": true,
+  "unknown_never_pass": true,
+  "no_policy_weakening": true
+}
