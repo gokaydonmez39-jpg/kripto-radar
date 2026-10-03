@@ -9,7 +9,7 @@
     "C": "lawful automated/non-display permanent-$0 entitlement with no fee/balance/activity/per-query condition",
     "D": "scheduler callability"
   },
-  "unique_provider_paths_reviewed": 36,
+  "unique_provider_paths_reviewed": 41,
   "evidence_files": [
     {
       "path": "nasdaq-xray/g9_free_path_audit_20261003.json",
@@ -50,6 +50,10 @@
     {
       "path": "nasdaq-xray/g9_provider_delta_marketdata_sweep_20261003.json",
       "blob_sha": "a85a8c8ef334425dcbccddcda8936afff494e05e"
+    },
+    {
+      "path": "nasdaq-xray/g9_provider_delta_exchange_native_sweep_20261003.json",
+      "blob_sha": "97c1610475ca83fd4a70f66349e9091b8bac31c7"
     }
   ],
   "reviewed_provider_paths": [
@@ -88,7 +92,12 @@
     "dxFeed Direct UTP Tape C",
     "Cboe One Direct",
     "Nasdaq Basic / Nasdaq Data Link",
-    "Barchart OnDemand"
+    "Barchart OnDemand",
+    "IEX Exchange TOPS / DEEP",
+    "MEMX MEMOIR Top / Last Sale",
+    "NYSE Best Quote & Trades (BQT)",
+    "MIAX Pearl Equities ToM",
+    "FINRA TRF / Equity API"
   ],
   "strongest_near_misses": [
     {
