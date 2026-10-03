@@ -1,0 +1,24 @@
+{
+  "schema": "XRAY_G9_PROVIDER_DELTA_V1",
+  "generated_on": "2026-10-03",
+  "provider": "FlashAlpha Lab API",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "status": "NONQUALIFYING_FREE_15MIN_FRESHNESS_AND_TIMESTAMP_SCHEMA",
+  "evidence": [
+    "Official stock-quote docs describe bid, ask, mid, lastPrice and one lastUpdate field and call the quote NBBO.",
+    "Official pricing page states the Free plan is $0 but has 15-minute data freshness and only 5 requests/day.",
+    "The free stock-quote schema exposes one lastUpdate value rather than independent quote-event and trade-event timestamps required by strict G9-B.",
+    "Higher plans advertise lower-latency/live features, but paid fallback is forbidden."
+  ],
+  "primary_sources": [
+    "https://flashalpha.com/docs/lab-api-stock-quote",
+    "https://flashalpha.com/docs/lab-api-overview",
+    "https://flashalpha.com/pricing"
+  ],
+  "failed_gates": [
+    "B"
+  ],
+  "reopen_condition": "Free plan changes to same-run RTH realtime NBBO with independent quote/trade event timestamps while remaining permanent-$0 and lawful for the intended automated use.",
+  "no_policy_weakening": true
+}
