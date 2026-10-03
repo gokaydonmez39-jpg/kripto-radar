@@ -66,6 +66,17 @@ with tempfile.TemporaryDirectory() as td:
         if not matches:
             matches=list((p/".delivery_work").glob("*.md"))
         assert matches
+    # Negative max3 test: even fully registered candidates fail closed if
+    # the canonical pointer violates the compiled delivery cap.
+    cap=[
+        candidate(f"DELIVERY|RESEARCH_AL_ADAYI|2099-01-02|CAP{i}|B|cap{i:03d}",f"CAP{i}","B")
+        for i in range(1,5)
+    ]
+    (p/"chatgpt_canonical_state_v2.json").write_text(json.dumps(pointer(cap,[x["delivery_key"] for x in cap])))
+    if (p/".delivery_work").exists(): shutil.rmtree(p/".delivery_work")
+    cp_cap=run_case(p,False)
+    assert "DELIVERY_R92_COUNT_EXCEEDS_MAX3" in (cp_cap.stdout+cp_cap.stderr)
+
     # Negative safety-lock test: invalid real-money state must fail closed.
     bad=candidate("DELIVERY|RESEARCH_AL_ADAYI|2099-01-02|BAD|B|bad001","BAD","B")
     bad["real_money"]="GO"
