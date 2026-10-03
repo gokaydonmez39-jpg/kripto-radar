@@ -64,7 +64,7 @@
   "primary_adapter": "LONGBRIDGE",
   "adapter_contract": {
     "path": "nasdaq-xray/account_provider_adapter_contract.json",
-    "blob_sha": "b350f06a00270641654f47daa2daa4a6ec429783"
+    "blob_sha": "38dbab9885fbc1087df800909a09b1edb5ce92a3"
   },
   "required_capability": "CURRENT_NASDAQ_ACCOUNT_VALUE_AND_EQUITY_EXPOSURE_READ_ONLY",
   "current_adapter": "LONGBRIDGE",
@@ -77,7 +77,7 @@
     "MIDAS_ALPACA_CORRESPONDENT": "PROMISING_OFFICIAL_INFRA_BUT_ENDUSER_CREDENTIALS_NOT_AVAILABLE",
     "LONGBRIDGE_DIRECT_OPENAPI": "ELIGIBLE_FRESH_SAME_RUN_ONLY_OAUTH_PREFERRED"
   },
-  "adapter_registry_count": 10,
+  "adapter_registry_count": 11,
   "adapter_registry_sync": "EVIDENCE_PIN_ONLY_NEVER_PASS_AUTHORITY",
   "binding_revalidated_on": "2026-10-03",
   "binding_revalidation_note": "Exact adapter/gate binding revalidated after evidence-only Midas updates; no ACCOUNT PASS created and no execution capability added.",
