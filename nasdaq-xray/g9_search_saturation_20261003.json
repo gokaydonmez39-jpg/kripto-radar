@@ -9,7 +9,7 @@
     "C": "lawful automated/non-display permanent-$0 entitlement with no fee/balance/activity/per-query condition",
     "D": "scheduler callability"
   },
-  "unique_provider_paths_reviewed": 48,
+  "unique_provider_paths_reviewed": 50,
   "evidence_files": [
     {
       "path": "nasdaq-xray/g9_free_path_audit_20261003.json",
@@ -61,7 +61,7 @@
     },
     {
       "path": "nasdaq-xray/midas_official_path_audit_20261003.json",
-      "blob_sha": "8167d809bcaef4eb7008b5a17c18970b69481478"
+      "blob_sha": "9574bfa201a5c17bc01da77cedadcdf56e657c02"
     },
     {
       "path": "nasdaq-xray/midas_alpaca_infrastructure_audit_20261003.json",
@@ -116,7 +116,9 @@
     "StockData.org",
     "Midas Mobile/Atlas official market-data path",
     "Midas via TradingView official broker integration",
-    "Midas via Alpaca Broker API partner infrastructure"
+    "Midas via Alpaca Broker API partner infrastructure",
+    "Midas official mobile/Atlas market-data entitlement",
+    "Midas official TradingView broker integration"
   ],
   "strongest_near_misses": [
     {
@@ -153,6 +155,16 @@
       "provider": "dxFeed Direct UTP Tape C",
       "strength": "exact UTP UQDF/UTDF Tape-C + National BBO lineage",
       "blocker": "direct realtime access is subscription/licensing based; no permanent-$0 automated entitlement"
+    },
+    {
+      "provider": "Midas official mobile/Atlas market-data entitlement",
+      "strength": "free real-time U.S. data to Midas customers; TradingView recognizes Midas NASDAQ/NYSE/ARCA/OTC realtime entitlements; Midas is an Alpaca Broker API partner",
+      "blocker": "exact consolidated National NBBO lineage, independent bid/ask event timestamps, explicit automated/non-display permission, and sanctioned scheduler-callable live path remain unproven"
+    },
+    {
+      "provider": "Midas official TradingView broker integration",
+      "strength": "sanctioned broker connection exposes authenticated trading-account context and realtime exchange subscription verification",
+      "blocker": "TradingView provides no end-user data API; default U.S. chart feed is Cboe; canonical scheduler has no sanctioned callable Midas/TradingView account adapter"
     }
   ],
   "structural_result": "DIRECT UTP REALTIME NONDISPLAY IS FEE-LIABLE. A strict $0-to-end-user path can exist only if a broker/vendor lawfully absorbs upstream licensing and explicitly grants the exact automated/non-display API entitlement without balance/activity/per-query/subscription/account-maintenance conditions.",
