@@ -117,13 +117,13 @@
   ],
   "search_saturation": {
     "path": "nasdaq-xray/g9_search_saturation_20261003.json",
-    "blob_sha": "5d9a64539b3e841d16a47afb3388cad7bff10a1b",
+    "blob_sha": "37e4e9d73b306311f3804ca7754ab88124b228c8",
     "unique_provider_paths_reviewed": 50,
     "result": "NO_REVIEWED_PROVIDER_PROVES_A_B_C_D_SIMULTANEOUSLY"
   },
   "negative_registry": {
     "path": "nasdaq-xray/g9_provider_registry_20261003.json",
-    "blob_sha": "2963d77574f0484ffc9a8b2bdc92b678b278b47e",
+    "blob_sha": "a9c3fde50714050bc1d448dbfddac3aef728b499",
     "provider_count": 50,
     "role": "NEGATIVE_EVIDENCE_CACHE_ONLY_NEVER_PASS_AUTHORITY"
   },
@@ -136,5 +136,14 @@
     "path": "nasdaq-xray/midas_alpaca_infrastructure_audit_20261003.json",
     "blob_sha": "3eb74431fa6bcff47cf2da249f2597a11012a932",
     "result": "OFFICIAL_INFRA_CONFIRMED_BUT_ENDUSER_G9_AND_ACCOUNT_API_NOT_PROVEN"
+  },
+  "wealthnow_evidence": {
+    "path": "nasdaq-xray/g9_provider_delta_wealthnow_20261003.json",
+    "blob_sha": "6ee43a9d7a55a63a0764628c099294abb6f23e65",
+    "status": "HIGH_POTENTIAL__FREE_SNAPSHOT_B_C_D_ENGINEERING_READY__A_LINEAGE_UNPROVEN",
+    "gate_a": "UNPROVEN_FREE_SNAPSHOT_NATIONAL_NBBO_LINEAGE",
+    "gate_b": "PROVISIONAL_SCHEMA_PASS_REQUIRES_SAME_RUN_RTH",
+    "gate_c": "PROVISIONAL_ZERO_DOLLAR_AUTOMATION_PASS",
+    "gate_d": "TECHNICAL_ADAPTER_IMPLEMENTED_BUT_CREDENTIAL_NOT_CONFIGURED"
   }
 }
