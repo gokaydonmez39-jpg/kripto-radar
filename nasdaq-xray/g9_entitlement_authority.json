@@ -1,7 +1,7 @@
 {
   "schema": "XRAY_G9_ENTITLEMENT_AUTHORITY_V1",
-  "provider": "TRADESTATION",
-  "status": "UNPROVEN",
+  "provider": "NONE_CURRENTLY_QUALIFYING",
+  "status": "BLOCKED_STRICT_PERMANENT_ZERO",
   "execution": "NONE",
   "real_money": "NO-GO",
   "required_claims": {
@@ -16,9 +16,18 @@
     "api_matrix_scope": "PROVEN",
     "nasdaq_l1_trades_inside_bid_ask": "PROVEN",
     "marketdepth_quote_timestamp": "TECHNICALLY_EVIDENCED_BY_CURRENT_CLIENT_MODEL_NOT_PRIMARY_ENTITLEMENT_PROOF",
-    "permanent_zero": "NOT_PROVEN_ACCOUNT_INACTIVITY_FEE_CONDITION_EXISTS",
-    "automated_nondisplay_utp_right": "NOT_PROVEN"
+    "permanent_zero": "NO_CURRENT_PROVIDER_PROVEN",
+    "automated_nondisplay_utp_right": "NO_CURRENT_PROVIDER_PROVEN",
+    "audit_20261003": "EIGHT_PROVIDER_PRIMARY_SOURCE_PLUS_LIVE_ENTITLEMENT_REVIEW",
+    "strict_runtime_adapter": "FAIL_CLOSED_UNLESS_AUTHORITY_PROVEN"
   },
-  "pass_rule": "STATUS_MUST_BE_PROVEN_FROM_PRIMARY_SOURCE_BEFORE_RUNTIME_G9_CAN_PASS",
-  "no_policy_weakening": true
+  "pass_rule": "STATUS_MUST_EQUAL_PROVEN_FROM_PRIMARY_SOURCE_AND_PROVIDER_MUST_HAVE_MATCHING_RUNTIME_ADAPTER_BEFORE_LIVE_RTH_TECHNICAL_PROBE_CAN_RUN",
+  "no_policy_weakening": true,
+  "source_audit": {
+    "path": "nasdaq-xray/g9_free_path_audit_20261003.json",
+    "blob_sha": "e4575608a50e7bf5aa7c126202a0baad0f6f094f",
+    "generated_on": "2026-10-03",
+    "conclusion": "G9_BLOCKED_FREE_AUTOMATION_PATH"
+  },
+  "updated_on": "2026-10-03"
 }
