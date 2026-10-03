@@ -132,6 +132,7 @@ jobs:
         if: steps.event.outputs.ready == 'true'
         env:
           XRAY_ACCOUNT_TOKEN_FERNET_KEY: ${{ secrets.XRAY_ACCOUNT_TOKEN_FERNET_KEY }}
+          LONGBRIDGE_AGENT_AUTH_CODE: ${{ secrets.LONGBRIDGE_AGENT_AUTH_CODE }}
           LONGBRIDGE_MCP_V2_BEARER_TOKEN: ${{ secrets.LONGBRIDGE_MCP_V2_BEARER_TOKEN }}
           LONGBRIDGE_OAUTH_ACCESS_TOKEN: ${{ secrets.LONGBRIDGE_OAUTH_ACCESS_TOKEN }}
           LONGBRIDGE_OAUTH_CLIENT_ID: ${{ secrets.LONGBRIDGE_OAUTH_CLIENT_ID }}
@@ -144,8 +145,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [[ -n "${XRAY_ACCOUNT_TOKEN_FERNET_KEY}" && -f "nasdaq-xray/account_longbridge_mcp_v2_token.enc" ]]; then
+          if [[ -f "nasdaq-xray/account_longbridge_mcp_v2_token.enc" && ( -n "${XRAY_ACCOUNT_TOKEN_FERNET_KEY}" || -n "${LONGBRIDGE_AGENT_AUTH_CODE}" ) ]]; then
             echo "XRAY_ACCOUNT_V2_RUNTIME=READY_ENCRYPTED_VAULT_ACCOUNT_READ"
+          elif [[ ! -f "nasdaq-xray/account_longbridge_mcp_v2_token.enc" && -n "${LONGBRIDGE_AGENT_AUTH_CODE}" ]]; then
+            echo "XRAY_ACCOUNT_V2_RUNTIME=READY_ONE_TIME_ACCOUNT_READ_BOOTSTRAP"
           elif [[ -n "${XRAY_ACCOUNT_TOKEN_FERNET_KEY}" ]]; then
             echo "XRAY_ACCOUNT_V2_RUNTIME=BLOCKED_VAULT_FILE_MISSING"
           elif [[ -n "${LONGBRIDGE_MCP_V2_BEARER_TOKEN}" ]]; then
@@ -184,6 +187,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          if [[ ! -f "nasdaq-xray/account_longbridge_mcp_v2_token.enc" && -n "${LONGBRIDGE_AGENT_AUTH_CODE}" ]]; then
+            python nasdaq-xray/account_longbridge_mcp_v2_bootstrap.py
+          fi
           python nasdaq-xray/account_longbridge_mcp_v2_probe.py
           v2_status="$(python -c 'import json; print(json.load(open("nasdaq-xray/account_longbridge_mcp_v2_probe_state.json")).get("status",""))')"
           if [[ "$v2_status" == "PASS" ]]; then
@@ -351,6 +357,9 @@ jobs:
           )
           if [ -f nasdaq-xray/account_longbridge_mcp_v2_token.enc ]; then
             files+=(nasdaq-xray/account_longbridge_mcp_v2_token.enc)
+          fi
+          if [ -f nasdaq-xray/account_longbridge_mcp_v2_bootstrap_state.json ]; then
+            files+=(nasdaq-xray/account_longbridge_mcp_v2_bootstrap_state.json)
           fi
           tmpdir="$(mktemp -d)"
           trap 'rm -rf "$tmpdir"' EXIT
