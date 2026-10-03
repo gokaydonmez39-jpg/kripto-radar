@@ -28,7 +28,8 @@ def run_case(authority, adapters, expect_status, expect_refresh_calls):
         mod.ADAPTER_CONTRACT=contract
         mod.OUT=out
         mod.os.environ.pop("WEALTHNOW_API_KEY",None)
-        calls={"refresh":0,"get_json":0,"depth":0}
+        mod.os.environ.pop("PAPER_INVEST_API_KEY",None)
+        calls={"refresh":0,"get_json":0,"depth":0,"paper":0}
         def fake_refresh():
             calls["refresh"]+=1
             return None,"","SELFTEST_NO_TOKEN"
@@ -38,15 +39,19 @@ def run_case(authority, adapters, expect_status, expect_refresh_calls):
         def fake_depth(*args,**kwargs):
             calls["depth"]+=1
             raise AssertionError("unexpected provider depth call")
+        def fake_paper(*args,**kwargs):
+            calls["paper"]+=1
+            raise AssertionError("unexpected Paper provider call")
         mod.refresh_token=fake_refresh
         mod.get_json=fake_get_json
         mod.stream_first_depth=fake_depth
+        mod.paper_request_json=fake_paper
         mod.is_rth=lambda: False
         mod.main()
         j=json.loads(out.read_text())
         assert j["status"]==expect_status,(j,expect_status)
         assert calls["refresh"]==expect_refresh_calls,(calls,j)
-        assert calls["get_json"]==0 and calls["depth"]==0,(calls,j)
+        assert calls["get_json"]==0 and calls["depth"]==0 and calls["paper"]==0,(calls,j)
         assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
         assert j["g9_pass"] is False
         return j
@@ -86,7 +91,29 @@ def main():
       "NOT_CONFIGURED",0)
     assert j["reason"]=="WEALTHNOW_API_KEY_NOT_CONFIGURED"
 
-    # 6) Only PROVEN + implemented + known TradeStation dispatch may reach auth.
+    # 6) Paper Invest negative authority must stop before auth/data calls.
+    j=run_case(
+      {"provider":"PAPER_INVEST","status":"BLOCKED_STRICT_PERMANENT_ZERO"},
+      {"PAPER_INVEST":{"status":"IMPLEMENTED"}},
+      "BLOCKED_ENTITLEMENT_AUTHORITY_UNPROVEN",0)
+    assert j["adapter_status"]=="IMPLEMENTED"
+
+    # 7) PROVEN Paper Invest can reach dispatch, but missing secret remains
+    # NOT_CONFIGURED with no provider call.
+    j=run_case(
+      {"provider":"PAPER_INVEST","status":"PROVEN"},
+      {"PAPER_INVEST":{"status":"IMPLEMENTED"}},
+      "NOT_CONFIGURED",0)
+    assert j["reason"]=="PAPER_INVEST_API_KEY_NOT_CONFIGURED"
+
+    source=SRC.read_text()
+    assert "https://api.paperinvest.io/v1/auth/token" in source
+    assert "/v1/market-data/quote/" in source
+    assert "/v1/market-data/trade/" in source
+    for forbidden in ("/v1/orders","create_order","place_order","cancel_order"):
+        assert forbidden not in source, forbidden
+
+    # 8) Only PROVEN + implemented + known TradeStation dispatch may reach auth.
     j=run_case(
       {"provider":"TRADESTATION","status":"PROVEN"},
       {"TRADESTATION":{"status":"IMPLEMENTED"}},
