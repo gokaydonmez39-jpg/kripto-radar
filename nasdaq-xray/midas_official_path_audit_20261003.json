@@ -126,8 +126,9 @@
       "evidence": "Official Midas Atlas page is live and states free live market data, portfolio tracking, BIST/US stocks and US options."
     },
     "public_end_user_api": {
-      "status": "NOT_FOUND_AS_LIVE_PRODUCT",
-      "evidence": "Alpaca March 2026 Midas case study describes API access for advanced users as part of the 2026-and-beyond roadmap; current official Midas search surfaces Atlas but no public developer/API product."
+      "status": "NOT_FOUND_AS_LIVE_PRODUCT_AS_OF_2026_10_03",
+      "evidence": "Current official Midas product/support surfaces expose Atlas, TradingView and Matriks integrations but no public end-user developer/API product. Alpaca's 2026 Midas case study described advanced-user API access as roadmap rather than a then-live public API.",
+      "pass_effect": "NONE"
     },
     "matriks": {
       "status": "OFFICIAL_BUT_BIST_ONLY",
@@ -154,6 +155,13 @@
   "legal_entitlement": {
     "nasdaq": "Midas-distributed Nasdaq participant agreement licenses nonprofessional/private subscriber information for personal use and prohibits redistribution/access by others; no explicit automated/non-display entitlement was found.",
     "nyse": "Midas-distributed NYSE agreement is a Market Data Display Services agreement for nonprofessional subscribers and limits permitted use to the subscriber's own individual use.",
-    "strict_g9_c_implication": "Personal/display entitlement is not treated as proof of the explicit automated/non-display entitlement required by current strict G9-C."
+    "strict_g9_c_implication": "Personal/display entitlement is not treated as proof of the explicit automated/non-display entitlement required by current strict G9-C.",
+    "platform_third_party_intervention": {
+      "status": "EXPLICIT_PERMISSION_REQUIRED",
+      "evidence": "Midas General Framework Agreement §1.11 states the customer alone may use the Electronic Trading Platform and may not consent to third-party intervention in the platform without Midas permission.",
+      "implication": "Unofficial browser/session automation is not treated as a sanctioned canonical adapter. Official Midas-authorized integrations such as TradingView are evaluated separately.",
+      "source": "https://webcdn.getmidas.com/uploads/2025/12/04155923/genel-cerceve-sozlesme.pdf",
+      "location": "section 1.11, PDF page containing lines 468-470 in parsed source; visually confirmed"
+    }
   }
 }
