@@ -203,7 +203,7 @@
       "probe": "nasdaq-xray/account_longbridge_mcp_v2_probe.py",
       "private_persistence": "PLAINTEXT_FORBIDDEN; ACCESS/REFRESH STATE MAY PERSIST ONLY AS FERNET CIPHERTEXT; FERNET KEY REMAINS ACTIONS SECRET",
       "autonomous_refresh": "Supported: mcp.longbridge.com/oauth2/token refresh proxy is official upstream; refresh rotation is re-encrypted and committed before account reads. Any refresh that loses account.read or gains trade.write fails closed.",
-      "current_blocker": "Required bootstrap secrets are not yet configured: independent XRAY_ACCOUNT_TOKEN_FERNET_KEY plus fresh one-time account.read LONGBRIDGE_AGENT_AUTH_CODE.",
+      "current_blocker": "Required bootstrap secrets are not yet configured: independent XRAY_ACCOUNT_TOKEN_FERNET_KEY plus fresh one-time account.read LONGBRIDGE_AGENT_AUTH_CODE. No trade.write permission is required.",
       "upstream_source": {
         "repository": "longbridge/longbridge-mcp",
         "audited_commit": "9322ce27aca876b6e96f3359c95caae8dc75beea",
@@ -233,12 +233,17 @@
         "Official src/tools/authenticate.rs defines packed Agent Auth Code decoding and exchanges it for access+refresh tokens; the server remains stateless.",
         "Official src/auth/oauth_proxy.rs and metadata expose mcp.longbridge.com/oauth2/token with refresh_token support.",
         "XRAY requires a separate Actions-only Fernet key before consuming the one-time Agent Auth Code; the code is never used as an encryption key.",
-        "XRAY persists only encrypted token state, rejects loss of account.read or appearance of trade.write on refresh, and verifies write-surface absence before account reads."
+        "XRAY persists only encrypted token state, rejects loss of account.read or appearance of trade.write on refresh, and verifies write-surface absence before account reads.",
+        "XRAY bootstrap now verifies the post-auth tool manifest on the official restricted https://mcp.longbridge.com/v2 endpoint itself; the root MCP endpoint is not trusted as canonical bootstrap manifest authority.",
+        "Vault validation pins main_endpoint to https://mcp.longbridge.com/v2, and regression tests fail if the persisted endpoint drifts back to the root MCP surface."
       ],
       "secret_envs": [
         "LONGBRIDGE_AGENT_AUTH_CODE (one-time bootstrap only)",
         "XRAY_ACCOUNT_TOKEN_FERNET_KEY (independent persistent vault encryption key)"
-      ]
+      ],
+      "bootstrap_manifest_endpoint": "https://mcp.longbridge.com/v2",
+      "bootstrap_protocol": "OFFICIAL_AGENT_AUTH_CODE_TO_RESTRICTED_MCP_V2_REFRESHABLE",
+      "root_mcp_canonical_use": "FORBIDDEN_FOR_BOOTSTRAP_MANIFEST_AUTHORITY"
     }
   },
   "transition_to_pass": "Only fresh same-run provider readback satisfying the pass_rule may set ACCOUNT=PASS. Persisted prior PASS alone is insufficient.",
