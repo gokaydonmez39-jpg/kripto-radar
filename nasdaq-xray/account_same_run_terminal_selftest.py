@@ -25,7 +25,8 @@ def base_adapter():
       "adapters":{
         "LONGBRIDGE":{"status":"BLOCKED_SCOPE_NOT_GRANTED_OR_ACCOUNT_UNSUPPORTED"},
         "LONGBRIDGE_DIRECT_OPENAPI":{"status":"ELIGIBLE_FRESH_SAME_RUN_ONLY"},
-        "LONGBRIDGE_HOSTED_MCP":{"status":"ELIGIBLE_FRESH_SAME_RUN_ONLY"},
+        "LONGBRIDGE_HOSTED_MCP":{"status":"SUPERSEDED_BY_RESTRICTED_V2"},
+        "LONGBRIDGE_HOSTED_MCP_V2":{"status":"ELIGIBLE_FRESH_SAME_RUN_ONLY"},
       },
     }
 
@@ -52,7 +53,12 @@ def g9():
 
 def live(run_id,status="PASS",provider="LONGBRIDGE_DIRECT_OPENAPI"):
     passed=status=="PASS"
-    schema=("XRAY_ACCOUNT_LONGBRIDGE_HOSTED_MCP_PROBE_V1" if provider=="LONGBRIDGE_HOSTED_MCP" else "XRAY_ACCOUNT_LONGBRIDGE_OPENAPI_PROBE_V1")
+    schemas={
+      "LONGBRIDGE_DIRECT_OPENAPI":"XRAY_ACCOUNT_LONGBRIDGE_OPENAPI_PROBE_V1",
+      "LONGBRIDGE_HOSTED_MCP":"XRAY_ACCOUNT_LONGBRIDGE_HOSTED_MCP_PROBE_V1",
+      "LONGBRIDGE_HOSTED_MCP_V2":"XRAY_ACCOUNT_LONGBRIDGE_MCP_V2_PROBE_V1",
+    }
+    schema=schemas[provider]
     return {
       "schema":schema,
       "provider":provider,
@@ -106,12 +112,12 @@ def main():
         assert ev["secret_values_persisted"] is False
         assert passed["evidence"]["account_gate"]["current_adapter"]=="LONGBRIDGE_DIRECT_OPENAPI"
 
-        hosted=evaluate(td,live("run-hosted","PASS","LONGBRIDGE_HOSTED_MCP"),"run-hosted")
-        assert hosted["account_status"]=="ACCOUNT_PASS"
-        hev=hosted["evidence"]["account_live_probe"]
-        assert hev["provider"]=="LONGBRIDGE_HOSTED_MCP"
+        hosted_v2=evaluate(td,live("run-hosted-v2","PASS","LONGBRIDGE_HOSTED_MCP_V2"),"run-hosted-v2")
+        assert hosted_v2["account_status"]=="ACCOUNT_PASS"
+        hev=hosted_v2["evidence"]["account_live_probe"]
+        assert hev["provider"]=="LONGBRIDGE_HOSTED_MCP_V2"
         assert hev["same_run_attested"] is True
-        assert hosted["evidence"]["account_gate"]["current_adapter"]=="LONGBRIDGE_HOSTED_MCP"
+        assert hosted_v2["evidence"]["account_gate"]["current_adapter"]=="LONGBRIDGE_HOSTED_MCP_V2"
 
         stale=evaluate(td,live("old-run"),"run-2")
         assert stale["account_status"]!="ACCOUNT_PASS"
