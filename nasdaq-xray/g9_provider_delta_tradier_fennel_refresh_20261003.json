@@ -1,0 +1,48 @@
+{
+  "schema": "XRAY_G9_PROVIDER_DELTA_V1",
+  "generated_on": "2026-10-03",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "providers": [
+    {
+      "provider": "Tradier Brokerage API",
+      "status": "TECHNICALLY_QUALIFYING_DATA_PATH_BUT_TURKEY_BLOCKED_AND_ACTIVITY_FEE_CONDITION",
+      "findings": [
+        "Tradier official current permitted/blocked-country page lists Turkey among countries where Tradier Brokerage cannot open accounts.",
+        "Tradier official API docs state live Brokerage API provides real-time market data tied to a live Tradier Brokerage account.",
+        "Tradier official pricing/fee material lists an inactivity/activity-based fee for international accounts, so strict permanent-zero entitlement is not unconditional under the current C gate."
+      ],
+      "failed_gates": [
+        "C_ACCOUNT_MAINTENANCE_ACTIVITY_CONDITION",
+        "D_JURISDICTION"
+      ],
+      "primary_sources": [
+        "https://support.tradier.com/kb/guide/en/permitted-and-blocked-countries-CLzSa0D1rf/Steps/4997916",
+        "https://docs.tradier.com/docs/endpoints",
+        "https://production.tradier.com/individuals/pricing"
+      ],
+      "reopen_condition": "Turkey becomes permitted and international account activity/inactivity fee conditions are removed while qualifying realtime consolidated API data remains available."
+    },
+    {
+      "provider": "Fennel API",
+      "status": "TECHNICALLY_STRONG_NBBO_API_BUT_PAID_AND_US_ACCOUNT_ONLY",
+      "findings": [
+        "Fennel official API docs expose real-time price data and NBBO.",
+        "Fennel official account-creation support requires a legal U.S. residential address and U.S. citizenship/permanent residency/valid U.S. visa conditions.",
+        "Fennel official API product page currently prices Core Brokerage API access at $4.99/month and Premium API at $19.99/month."
+      ],
+      "failed_gates": [
+        "C",
+        "D_JURISDICTION"
+      ],
+      "primary_sources": [
+        "https://api.fennel.com/docs",
+        "https://help.fennel.com/article/149-creating-an-account",
+        "https://fennel.com/products/api"
+      ],
+      "reopen_condition": "Fennel offers permanent-$0 qualifying API access and expands brokerage/API eligibility to Turkey residents."
+    }
+  ],
+  "no_policy_weakening": true,
+  "unknown_never_pass": true
+}
