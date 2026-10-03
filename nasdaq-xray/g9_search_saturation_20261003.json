@@ -9,7 +9,7 @@
     "C": "lawful automated/non-display permanent-$0 entitlement with no fee/balance/activity/per-query condition",
     "D": "scheduler callability"
   },
-  "unique_provider_paths_reviewed": 59,
+  "unique_provider_paths_reviewed": 60,
   "evidence_files": [
     {
       "path": "nasdaq-xray/g9_free_path_audit_20261003.json",
@@ -126,6 +126,10 @@
     {
       "path": "nasdaq-xray/g9_provider_delta_tickerlayer_20261003.json",
       "blob_sha": "8ec88b1e24ddd1f23e67e5d0716f393a8ac74280"
+    },
+    {
+      "path": "nasdaq-xray/g9_provider_delta_drivewealth_apex_20261003.json",
+      "blob_sha": "cebf521838f05568cfdc3a53e355cfd7d8d06c0c"
     }
   ],
   "reviewed_provider_paths": [
@@ -187,7 +191,8 @@
     "QUODD QX Digital / real-time equities API",
     "Tallac Options live equities API/TCP feed",
     "LeanData UK realtime US equities SIP WebSocket",
-    "TickerLayer Stocks"
+    "TickerLayer Stocks",
+    "DriveWealth consolidated NBBO / Apex-QUODD B2B market-data infrastructure"
   ],
   "strongest_near_misses": [
     {
@@ -238,9 +243,9 @@
     "authority_file": "nasdaq-xray/g9_utp_fee_basis_20261003.json"
   },
   "latest_new_provider": {
-    "provider": "TickerLayer Stocks",
-    "evidence_file": "nasdaq-xray/g9_provider_delta_tickerlayer_20261003.json",
-    "evidence_blob_sha": "8ec88b1e24ddd1f23e67e5d0716f393a8ac74280",
-    "result": "STRICT_A_FAIL_DERIVED_NON_EXCHANGE_FEED"
+    "provider": "DriveWealth consolidated NBBO / Apex-QUODD B2B market-data infrastructure",
+    "evidence_file": "nasdaq-xray/g9_provider_delta_drivewealth_apex_20261003.json",
+    "evidence_blob_sha": "cebf521838f05568cfdc3a53e355cfd7d8d06c0c",
+    "result": "UPSTREAM_B2B_STRONG_ENDUSER_C_D_FAIL"
   }
 }
