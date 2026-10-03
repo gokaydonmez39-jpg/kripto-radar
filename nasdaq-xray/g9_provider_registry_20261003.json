@@ -855,20 +855,24 @@
     },
     {
       "provider": "Clear Street Trading API / read-only MCP",
-      "status": "TECHNICALLY_EXACT_NBBO_EVENT_TIMESTAMPS_B_D_STRONG_BUT_RETAIL_ENTITLEMENT_PERMANENT_ZERO_AND_TURKEY_ELIGIBILITY_UNPROVEN",
+      "status": "HIGHEST_POTENTIAL_NATIONAL_NBBO_B_D_STRONG_CURRENT_FREE_MCP_PRODUCT_C_STRONGLY_SUPPORTED_ZERO_BALANCE_AND_TURKEY_ELIGIBILITY_UNPROVEN",
       "failed_gates": [
-        "A_EXACT_SIP_OR_LICENSED_REDIStributor_LINEAGE",
-        "C_PERMANENT_ZERO_UNFUNDED_RETAIL_MARKET_DATA_ENTITLEMENT",
+        "B_SAME_RUN_RTH_LIVE_FRESHNESS_WITNESS",
+        "C_ZERO_BALANCE_UNFUNDED_NO_ACTIVITY_ACCOUNT_MAINTENANCE_CONFIRMATION",
+        "C_EXACT_RETAIL_NBBO_AGREEMENT_NO_SEPARATE_ENDUSER_EXCHANGE_VENDOR_FEE_CONFIRMATION",
         "D_TURKEY_RETAIL_ELIGIBILITY"
       ],
       "evidence_file": "nasdaq-xray/g9_provider_delta_clearstreet_20261003.json",
-      "evidence_blob_sha": "6c863af000f7211b31708648381fe66000031ccf",
-      "last_checked_on": "2026-10-03",
-      "reopen_condition": "Prove Turkey retail eligibility plus unfunded permanent-$0 realtime National-NBBO MCP/API entitlement and exact SIP/licensed redistributor lineage.",
-      "negative_cache_only": true,
-      "may_never_create_pass": true,
+      "evidence_blob_sha": "156ce0596e00531958c317524709f2c968b278a6",
+      "last_checked_on": "2026-10-04",
+      "reopen_condition": "Confirm Turkey retail eligibility and approved zero-balance/unfunded permanent-$0 real-time National-NBBO read-only MCP/snapshot entitlement with no activity/account-maintenance or separate exchange/vendor/API fee; then same-run US-RTH probe.",
+      "negative_cache_only": false,
+      "may_never_create_pass": false,
       "provisional_pass_gates": [
-        "B_INDEPENDENT_NBBO_BID_ASK_AND_LAST_TRADE_EVENT_TIMESTAMPS",
+        "A_NATIONAL_NBBO_PRODUCT_SEMANTICS_PRIMARY_SOURCE",
+        "B_INDEPENDENT_NBBO_BID_ASK_AND_LAST_TRADE_EXCHANGE_EVENT_TIMESTAMPS_SCHEMA",
+        "C_CURRENT_MCP_INCLUDED_AT_NO_COST_WITH_EVERY_ACCOUNT",
+        "C_CURRENT_MCP_REALTIME_STOCK_OPTIONS_PRICE_DATA",
         "D_READ_ONLY_HOSTED_MCP_TECHNICAL_SURFACE"
       ]
     },
