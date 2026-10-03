@@ -1,0 +1,33 @@
+{
+  "schema": "XRAY_G9_PROVIDER_DELTA_V1",
+  "generated_on": "2026-10-03",
+  "provider": "Eulerpool Financial Data API",
+  "status": "NONQUALIFYING_FREE_DELAYED_REALTIME_PAID",
+  "evidence": [
+    "Current official API pricing says Free market data is EOD + delayed quotes; real-time market data starts on Builder at $99/month.",
+    "Current official real-time data page says paid keys get live ticks while free keys receive delayed data, and explicitly states real-time is included only on paid plans.",
+    "Official last-quote endpoint describes NBBO bid/ask when available, and Level-2 endpoint exists, so the platform is technically NBBO/L2 capable.",
+    "Older 2026 marketing/blog pages advertise free real-time/Level-2 access, but newer/current authoritative pricing and realtime product pages contradict those claims; strict evidence precedence uses current plan/entitlement pages.",
+    "Free licensing permits broad API use with attribution and has a hard $0 tier, but delayed quotes cannot satisfy same-run RTH G9-B freshness."
+  ],
+  "failed_gates": [
+    "B",
+    "C_REALTIME_ENTITLEMENT"
+  ],
+  "primary_sources": [
+    "https://eulerpool.com/financial-data-api/pricing",
+    "https://eulerpool.com/financial-data-api/real-time-data",
+    "https://eulerpool.com/developers/api/market/last/quote",
+    "https://eulerpool.com/developers/api/market/l2",
+    "https://eulerpool.com/financial-data-api/licensing",
+    "https://eulerpool.com/blog/free-real-time-stock-quotes-api-json-no-credit-card",
+    "https://eulerpool.com/nl/blog/free-level-2-order-book-api-json-no-credit-card"
+  ],
+  "contradiction_resolution": {
+    "older_marketing_claim": "Free real-time / Level-2/NBBO",
+    "current_authoritative_plan_claim": "Free delayed; Builder+ realtime",
+    "precedence": "CURRENT_PRICING_AND_REALTIME_PRODUCT_PAGE_WIN"
+  },
+  "reopen_condition": "Current official pricing/entitlement must explicitly restore permanent-$0 real-time NBBO/L2 for API use, followed by same-run RTH quote+trade timestamp proof.",
+  "no_policy_weakening": true
+}
