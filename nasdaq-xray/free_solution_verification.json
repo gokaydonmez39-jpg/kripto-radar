@@ -1,7 +1,7 @@
 {
   "alpha_authority": false,
   "execution": "NONE",
-  "generated_at_utc": "2026-10-03T00:22:48.325014+00:00",
+  "generated_at_utc": "2026-10-03T00:30:09.987466+00:00",
   "real_money": "NO-GO",
   "results": [
     {
@@ -27,6 +27,30 @@
       "purpose": "resilience and alert architecture reference",
       "pushed_at": "2026-10-01T15:54:43Z",
       "repo": "Open-Dev-Society/OpenStock"
+    },
+    {
+      "archived": false,
+      "default_branch": "main",
+      "disabled": false,
+      "exists": true,
+      "fork": false,
+      "integration_verdict": "REVIEW",
+      "license": "MIT",
+      "purpose": "reference-only: batch scanning, provider throttling, retry/jitter, partial-data envelopes, stale-data diagnostics; TradingView data itself is NOT XRAY alpha/G9 authority",
+      "pushed_at": "2026-09-01T15:15:48Z",
+      "repo": "atilaahmettaner/tradingview-mcp"
+    },
+    {
+      "archived": false,
+      "default_branch": "master",
+      "disabled": false,
+      "exists": true,
+      "fork": false,
+      "integration_verdict": "REVIEW",
+      "license": "MIT",
+      "purpose": "non-authoritative completed-session historical analog/cohort diagnostic for prospective XRAY finalists; never creates PASS/FAIL or changes policy thresholds",
+      "pushed_at": "2026-09-10T20:43:49Z",
+      "repo": "grahammccain/chart-library-mcp"
     }
   ],
   "schema": "XRAY_FREE_SOLUTION_VERIFICATION_V1",
