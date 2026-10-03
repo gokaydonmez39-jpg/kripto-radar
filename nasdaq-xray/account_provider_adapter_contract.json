@@ -129,6 +129,31 @@
       "refresh_persistence_rule": "If OAuth refresh returns a different refresh_token than the configured input, ACCOUNT_PASS is forbidden unless the new token can be persisted to an authorized secure secret store. The current GitHub runner is ephemeral and has no secret-write channel.",
       "rotation_fail_closed_status": "BLOCKED_ROTATING_REFRESH_TOKEN_PERSISTENCE_REQUIRED",
       "oauth_durability": "Bearer-only can satisfy a fresh same-run read while valid, but autonomous renewal requires refresh-state persistence. Static refresh-secret use is accepted only when the server omits a replacement refresh token or returns the same token."
+    },
+    "LONGBRIDGE_HOSTED_MCP": {
+      "status": "ELIGIBLE_FRESH_SAME_RUN_ONLY",
+      "sanctioned_surface": "Official Longbridge hosted MCP at https://mcp.longbridge.com",
+      "authorization": "Agent Auth Code or standard OAuth 2.1; user pre-selects ACCOUNT permission. Trading permission is not required for XRAY.",
+      "required_read_calls": [
+        "account_balance",
+        "stock_positions"
+      ],
+      "diagnostic_probe": "nasdaq-xray/account_longbridge_mcp_probe.py",
+      "selftest": "nasdaq-xray/account_longbridge_mcp_probe_selftest.py",
+      "secret_env": "LONGBRIDGE_MCP_BEARER_TOKEN",
+      "security_model": "Static Bearer is supplied only through GitHub Actions secret. Probe lists tools then calls exactly account_balance and stock_positions. It never serializes token, balances, positions, account identifiers, buying power or other private values.",
+      "canonical_gate_rule": "Only a fresh same-run production workflow call with both read-only results parseable may create ACCOUNT_PASS. Missing/expired/scope-denied Bearer remains blocked.",
+      "evidence": [
+        "Longbridge Agent Auth Code documentation lets the user pre-select market-data, account and trading scopes; the code can never grant more than selected.",
+        "After redemption, Longbridge instructs clients to use the returned Bearer token directly against https://mcp.longbridge.com.",
+        "The main hosted MCP supports US accounts and routes them to the US data center.",
+        "This avoids the Direct OpenAPI refresh-token persistence problem because the canonical workflow consumes a pre-authorized hosted-MCP Bearer rather than refreshing OAuth state itself."
+      ],
+      "blocker": "No least-privilege ACCOUNT-scoped hosted-MCP Bearer is currently configured in GitHub Actions secrets.",
+      "reopen_condition": "Configure LONGBRIDGE_MCP_BEARER_TOKEN from a Longbridge Agent/Auth grant with ACCOUNT permission, then require same-run account_balance + stock_positions success.",
+      "same_run_rule": "Persisted prior PASS is never reusable.",
+      "trading_scope_required": false,
+      "execution": "NONE"
     }
   },
   "transition_to_pass": "Only fresh same-run provider readback satisfying the pass_rule may set ACCOUNT=PASS. Persisted prior PASS alone is insufficient.",
