@@ -102,6 +102,7 @@ def main():
         "execution":"NONE",
         "real_money":"NO-GO",
         "alpha_authority":False,
+        "binding_protocol":"FAIL_CLOSED_BLOCKED_CACHE_DRIFT_V1",
         "source_terminal":{
             "path":"nasdaq-xray/"+FILES["terminal"],
             "blob_sha":blob_sha("terminal"),
