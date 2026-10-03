@@ -42,6 +42,11 @@ with tempfile.TemporaryDirectory() as td:
     shutil.copy2(SRC,p/"delivery_prepare.py")
     a=candidate("DELIVERY|RESEARCH_AL_ADAYI|2099-01-02|AAA|B|abc123","AAA","B")
     b=candidate("DELIVERY|RESEARCH_AL_ADAYI|2099-01-02|BBB|C|def456","BBB","C")
+    # Research delivery MUST remain independent from TRUE-FULL-GO final gates.
+    # Prove a fully registered technical candidate is still deliverable while
+    # strict G9 and account are both blocked.
+    b["g9_status"]="G9_BLOCKED_FREE_AUTOMATION_PATH"
+    b["account_status"]="ACCOUNT_BLOCKED_SCOPE_NOT_GRANTED_OR_ACCOUNT_UNSUPPORTED"
     unregistered=candidate("DELIVERY|RESEARCH_AL_ADAYI|2099-01-02|CCC|D|zzz999","CCC","D")
     ptr=pointer([a,b,unregistered],[a["delivery_key"],b["delivery_key"]])
     (p/"chatgpt_canonical_state_v2.json").write_text(json.dumps(ptr))
@@ -51,6 +56,9 @@ with tempfile.TemporaryDirectory() as td:
     batch=json.load(open(p/".delivery_work/batch.json"))
     assert len(batch["candidates"])==2
     assert {x["symbol"] for x in batch["candidates"]}=={"AAA","BBB"}
+    body_text="\n".join(p.read_text() for p in (p/".delivery_work").glob("*.md"))
+    assert "G9_BLOCKED_FREE_AUTOMATION_PATH" in body_text
+    assert "ACCOUNT_BLOCKED_SCOPE_NOT_GRANTED_OR_ACCOUNT_UNSUPPORTED" in body_text
     for x in batch["candidates"]:
         body=(p.parent/x["body_file"]) if not str(x["body_file"]).startswith(".") else p/x["body_file"]
         # production paths are repository-root relative; in selftest resolve basename safely.
