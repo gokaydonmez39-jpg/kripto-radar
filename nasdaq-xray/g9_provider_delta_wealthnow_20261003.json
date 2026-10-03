@@ -4,24 +4,25 @@
   "provider": "Wealthnow",
   "execution": "NONE",
   "real_money": "NO-GO",
-  "status": "HIGH_POTENTIAL_FREE_AGENT_API__A_LINEAGE_AND_D_RUNTIME_UNPROVEN",
+  "status": "HIGH_POTENTIAL__FREE_SNAPSHOT_B_C_D_ENGINEERING_READY__A_LINEAGE_UNPROVEN",
   "evidence": [
-    "Compiled C4.17 gate C requires actual permanent $0 lawful intended automated/non-display use with no hidden vendor/exchange/per-query fees. It does not forbid a zero-dollar plan from having a non-monetary usage quota.",
-    "Wealthnow Free is $0, includes 1,000 credits/month, hard-caps with no overage, and explicitly supports REST, MCP, SDKs and AI-agent/ChatGPT connector use. This is strong evidence for intended automated use at actual $0 under the current compiled C wording.",
-    "Free `fundamentals/price_snapshot` returns last trade plus bid/ask during session, with independent trade event time (`as_of`/`time`) and quote event time (`quote_as_of`) plus freshness fields. This materially satisfies the B data-shape requirement subject to same-run RTH freshness.",
-    "Wealthnow's Starter+ `/api/v3/stream/quotes` is explicitly documented as consolidated NBBO, proving the platform has a National-BBO-capable quote path. However that exact stream is paid and cannot itself satisfy strict C.",
-    "The Free price_snapshot documentation still does not explicitly state that its bid/ask fields are consolidated UTP/National NBBO or that they are sourced from the same consolidated NBBO stream. Therefore strict A remains unproven for the Free route.",
-    "Wealthnow documents ChatGPT custom MCP connectivity and OAuth/API-key access, but no Wealthnow connector/key is currently attached to the canonical scheduler in this workspace. Therefore strict D is not yet proven in the actual production runtime."
+    "Wealthnow Free hard-caps at its included monthly credit grant with no overage. Fundamentals and Market Data are included on Free; price_snapshot costs 1 credit.",
+    "The Free fundamentals/price_snapshot route returns last trade price, independent trade event time (`as_of`/`time`), bid, ask, sizes, and independent quote event time (`quote_as_of`) while the exchange is in session, plus freshness/staleness fields. This is sufficient technical schema for strict G9-B subject to same-run RTH freshness <=60s and quote/trade skew <=15s.",
+    "The dedicated Starter+ streaming quotes route is explicitly documented as consolidated top-of-book NBBO with best bid/ask, venue IDs, and quote timestamps; trade ticks are a separate stream. This proves Wealthnow has an NBBO-capable upstream path.",
+    "However the Free price_snapshot reference and Market Data guide do not label its bid/ask as NBBO, consolidated, SIP, UTP, CTA, or as sourced from the Starter+ NBBO stream. The response source label `market-data:v2-snapshot` is an internal label, not primary-source lineage proof. Therefore strict G9-A remains unproven for the Free route.",
+    "Wealthnow officially supports REST Bearer/API-key access, a hosted MCP endpoint, OAuth agent connections including ChatGPT custom MCP, SDKs, and agent use. Therefore canonical scheduler callability is technically implementable without exposing a key in repository files. D still requires the actual canonical scheduler credential to be configured and a same-run RTH probe.",
+    "Wealthnow API keys can be created with no expiry and lower per-key request limits. Free workspaces can hold multiple keys. This supports a dedicated read-only market-data scheduler key, but no credential is currently configured in XRAY."
   ],
   "primary_sources": [
     "https://app.wealthnow.io/docs/market-data",
+    "https://app.wealthnow.io/docs/reference/fundamentals-price-snapshot",
     "https://app.wealthnow.io/docs/streaming",
     "https://app.wealthnow.io/docs/pricing-and-credits",
     "https://app.wealthnow.io/docs/quickstart",
     "https://app.wealthnow.io/docs/api-reference",
     "https://app.wealthnow.io/docs/mcp-and-sdks"
   ],
-  "reopen_condition": "Obtain primary-source confirmation that the Free price_snapshot bid/ask are consolidated UTP/National NBBO (or documented equivalent lineage), connect Wealthnow to the actual canonical scheduler without exposed secrets, then require same-run RTH freshness <=60s and quote/trade skew <=15s.",
+  "reopen_condition": "Obtain primary-source confirmation that the Free `fundamentals/price_snapshot` bid/ask are consolidated UTP/National NBBO (or a documented equivalent redistributor lineage). Then configure a dedicated Free-plan Wealthnow key or OAuth connection in the canonical scheduler and require same-run RTH bid/ask/last freshness <=60s and quote/trade skew <=15s.",
   "no_policy_weakening": true,
   "failed_gates": [
     "A",
@@ -30,5 +31,6 @@
   "provisional_pass_gates": [
     "B_SCHEMA",
     "C_ZERO_DOLLAR_INTENDED_AUTOMATION"
-  ]
+  ],
+  "technical_adapter_status": "READY_TO_IMPLEMENT_FAIL_CLOSED_BEHIND_A_AUTHORITY"
 }
