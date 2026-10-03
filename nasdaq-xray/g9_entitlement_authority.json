@@ -20,8 +20,8 @@
     "audit_20261003": "63_PROVIDER_PATH_PRIMARY_SOURCE_AND_LIVE_ENTITLEMENT_SATURATION",
     "midas_official_paths": "ATLAS_REALTIME_EXCHANGE_ENTITLEMENTS;TRADINGVIEW_BROKER_QUOTES;ALPACA_PARTNER_INFRA",
     "midas_alpaca_partner_path": "OFFICIAL_INFRA_CONFIRMED_EXACT_LIVE_SIP_ENDUSER_ENTITLEMENT_UNPROVEN",
-    "high_potential_provider": "Paper Invest + Wealthnow",
-    "high_potential_reason": "Paper Basic explicitly labels its free REST quote as realtime NBBO and supports programmatic API/MCP use, but still lacks exact UTP/SIP or named redistributor lineage, upstream quote/trade event timestamp semantics, and provider-confirmed UTP1APIS/equivalent classification plus fee absorption. Wealthnow Free price_snapshot has stronger documented independent quote/trade timestamp semantics, a live RTH freshness example, hosted remote MCP/API and an implemented adapter; its paid streaming surface explicitly proves Wealthnow operates a consolidated NBBO feed, but Free price_snapshot lineage and the exact UTP1APIS/equivalent classification/fee absorption remain unproven. Neither may create PASS by inference."
+    "high_potential_provider": "Wealthnow/Tengu + Paper Invest",
+    "high_potential_reason": "Wealthnow/Tengu now has strong first-party Polygon architecture evidence: its Jul-2026 public OpenAPI generation identifies Polygon as an active vendor and explicitly describes the U.S. equity tape as FIRM's own Polygon capture; current docs bind the Free live quote route to fundamentals_price_snapshot as the spec-equivalent question and document independent quote/trade event timestamps. Strict A still requires a current exact Free-route-to-Polygon/direct-UTP binding, and strict C still requires provider-specific UTP1APIS/equivalent classification plus vendor fee absorption. Paper remains a second strong path but still lacks exact lineage/classification/timestamp confirmation."
   },
   "pass_rule": "STATUS_MUST_EQUAL_PROVEN_FROM_PRIMARY_SOURCE_AND_PROVIDER_MUST_HAVE_MATCHING_RUNTIME_ADAPTER_BEFORE_LIVE_RTH_TECHNICAL_PROBE_CAN_RUN",
   "no_policy_weakening": true,
@@ -43,10 +43,12 @@
     {
       "provider": "Wealthnow",
       "path": "nasdaq-xray/g9_provider_delta_wealthnow_20261003.json",
-      "blob_sha": "64bab8196379d73190a30e7eedf27565ddb3d1a1",
+      "blob_sha": "92e3b315338082bc00fe5d0012c7d4b9fc7f255f",
       "unlock_path": "nasdaq-xray/g9_wealthnow_lineage_unlock_20261003.json",
-      "unlock_blob_sha": "2bb5705137a01602f86776f145a10b9790f8f034",
-      "status": "HIGHEST_POTENTIAL_FREE_SNAPSHOT_B_D_STRONG_STRUCTURAL_C_PATH_OPEN_A_AND_PROVIDER_CLASSIFICATION_UNPROVEN"
+      "unlock_blob_sha": "19a2d785ce9d2152dc82af0ee8ae9b57e684ca20",
+      "polygon_lineage_path": "nasdaq-xray/g9_wealthnow_polygon_lineage_refresh_20261003.json",
+      "polygon_lineage_blob_sha": "56f38fbc73db3d858a3d89a4623c0df60b30e381",
+      "status": "HIGHEST_POTENTIAL_POLYGON_LINEAGE_STRONG_CURRENT_EXACT_FREE_ROUTE_BINDING_AND_C_PROVIDER_CLASSIFICATION_UNPROVEN"
     },
     {
       "provider": "Commercial vendor sweep",
@@ -166,15 +168,17 @@
   },
   "wealthnow_lineage_unlock": {
     "path": "nasdaq-xray/g9_provider_delta_wealthnow_20261003.json",
-    "blob_sha": "64bab8196379d73190a30e7eedf27565ddb3d1a1",
+    "blob_sha": "92e3b315338082bc00fe5d0012c7d4b9fc7f255f",
     "unlock_path": "nasdaq-xray/g9_wealthnow_lineage_unlock_20261003.json",
-    "unlock_blob_sha": "2bb5705137a01602f86776f145a10b9790f8f034",
-    "status": "HIGHEST_POTENTIAL_FREE_SNAPSHOT_B_D_STRONG_STRUCTURAL_C_PATH_OPEN_A_AND_PROVIDER_CLASSIFICATION_UNPROVEN",
-    "gate_a": "FREE_SNAPSHOT_EXACT_NATIONAL_NBBO_LINEAGE_UNPROVEN",
-    "gate_b": "PRIMARY_SOURCE_EVENT_TIMESTAMP_SCHEMA_PLUS_LIVE_RTH_EXAMPLE_STRONG; SAME_RUN_RTH PROBE STILL REQUIRED",
-    "gate_c": "ZERO_DOLLAR_API_AND_PROGRAMMATIC_USE_PROVEN; PROVIDER UTP1APIS_OR_EQUIVALENT_CLASSIFICATION_AND_FEE_ABSORPTION_UNPROVEN",
-    "gate_d": "HOSTED_REMOTE_MCP_AND_ADAPTER_IMPLEMENTED; RUNTIME CREDENTIAL/SAME_RUN_PROBE NOT YET PRESENT",
-    "role": "PRIMARY_SOURCE_UNLOCK_CONTRACT_NEVER_PASS_BY_ITSELF"
+    "unlock_blob_sha": "19a2d785ce9d2152dc82af0ee8ae9b57e684ca20",
+    "polygon_lineage_path": "nasdaq-xray/g9_wealthnow_polygon_lineage_refresh_20261003.json",
+    "polygon_lineage_blob_sha": "56f38fbc73db3d858a3d89a4623c0df60b30e381",
+    "status": "HIGHEST_POTENTIAL_POLYGON_LINEAGE_STRONG_CURRENT_EXACT_FREE_ROUTE_BINDING_AND_C_PROVIDER_CLASSIFICATION_UNPROVEN",
+    "gate_a": "STRONG_FIRST_PARTY_POLYGON_ARCHITECTURE_AND_CURRENT_SPEC_EQUIVALENCE; EXACT_CURRENT_FREE_ROUTE_TO_POLYGON_OR_DIRECT_UTP_BINDING_UNPROVEN",
+    "gate_b": "PRIMARY_SOURCE_INDEPENDENT_QUOTE_TRADE_EVENT_TIMESTAMP_SCHEMA_PLUS_LIVE_RTH_EXAMPLE_STRONG; SAME_RUN_RTH PROBE STILL REQUIRED",
+    "gate_c": "ZERO_DOLLAR_API_AND_SANCTIONED_PROGRAMMATIC_USE_PROVEN; PROVIDER UTP1APIS_OR_EQUIVALENT CLASSIFICATION_AND FEE ABSORPTION UNPROVEN",
+    "gate_d": "HOSTED REMOTE MCP/API AND IMPLEMENTED ADAPTER; RUNTIME CREDENTIAL/SAME_RUN RTH PROBE NOT YET PRESENT",
+    "role": "PRIMARY_SOURCE_UNLOCK_CONTRACT_NEVER_PASS_BY_INFERENCE"
   },
   "utp_fee_basis": {
     "path": "nasdaq-xray/g9_utp_fee_basis_20261003.json",
