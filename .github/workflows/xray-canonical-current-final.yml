@@ -20,6 +20,10 @@ on:
       - "nasdaq-xray/account_longbridge_mcp_probe_selftest.py"
       - "nasdaq-xray/account_longbridge_mcp_v2_probe.py"
       - "nasdaq-xray/account_longbridge_mcp_v2_probe_selftest.py"
+      - "nasdaq-xray/account_longbridge_mcp_v2_vault.py"
+      - "nasdaq-xray/account_longbridge_mcp_v2_vault_selftest.py"
+      - "nasdaq-xray/account_longbridge_mcp_v2_bootstrap.py"
+      - "nasdaq-xray/account_longbridge_mcp_v2_token.enc"
       - "nasdaq-xray/select_account_live_probe.py"
       - "nasdaq-xray/select_account_live_probe_selftest.py"
       - "nasdaq-xray/account_same_run_terminal_selftest.py"
@@ -102,11 +106,15 @@ jobs:
             nasdaq-xray/build_current_terminal.py \
             nasdaq-xray/build_final_gate_overlay_v2.py \
             nasdaq-xray/account_longbridge_mcp_v2_probe.py \
+            nasdaq-xray/account_longbridge_mcp_v2_vault.py \
+            nasdaq-xray/account_longbridge_mcp_v2_bootstrap.py \
             nasdaq-xray/select_account_live_probe.py
 
       - name: Install zero-dollar runtime
         if: steps.event.outputs.ready == 'true'
-        run: python -m pip install --disable-pip-version-check -r nasdaq-xray/requirements-runtime.txt
+        run: |
+          python -m pip install --disable-pip-version-check -r nasdaq-xray/requirements-runtime.txt
+          python -m pip install --disable-pip-version-check -r nasdaq-xray/requirements-account-mcp-probe.txt
 
       - name: Verify read-only ACCOUNT probe guard before secrets
         if: steps.event.outputs.ready == 'true'
@@ -115,6 +123,7 @@ jobs:
           set -euo pipefail
           python nasdaq-xray/account_longbridge_openapi_probe_selftest.py
           python nasdaq-xray/account_longbridge_mcp_v2_probe_selftest.py
+          python nasdaq-xray/account_longbridge_mcp_v2_vault_selftest.py
           python nasdaq-xray/select_account_live_probe_selftest.py
           python nasdaq-xray/account_same_run_terminal_selftest.py
           echo "XRAY_ACCOUNT_PRESECRET_GUARD=PASS commit=$GITHUB_SHA"
@@ -122,6 +131,7 @@ jobs:
       - name: Prepare read-only ACCOUNT probe runtime
         if: steps.event.outputs.ready == 'true'
         env:
+          XRAY_ACCOUNT_TOKEN_FERNET_KEY: ${{ secrets.XRAY_ACCOUNT_TOKEN_FERNET_KEY }}
           LONGBRIDGE_MCP_V2_BEARER_TOKEN: ${{ secrets.LONGBRIDGE_MCP_V2_BEARER_TOKEN }}
           LONGBRIDGE_OAUTH_ACCESS_TOKEN: ${{ secrets.LONGBRIDGE_OAUTH_ACCESS_TOKEN }}
           LONGBRIDGE_OAUTH_CLIENT_ID: ${{ secrets.LONGBRIDGE_OAUTH_CLIENT_ID }}
@@ -134,8 +144,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [[ -n "${LONGBRIDGE_MCP_V2_BEARER_TOKEN}" ]]; then
-            python -m pip install --disable-pip-version-check -r nasdaq-xray/requirements-account-mcp-probe.txt
+          if [[ -n "${XRAY_ACCOUNT_TOKEN_FERNET_KEY}" && -f "nasdaq-xray/account_longbridge_mcp_v2_token.enc" ]]; then
+            echo "XRAY_ACCOUNT_V2_RUNTIME=READY_ENCRYPTED_VAULT_ACCOUNT_READ"
+          elif [[ -n "${XRAY_ACCOUNT_TOKEN_FERNET_KEY}" ]]; then
+            echo "XRAY_ACCOUNT_V2_RUNTIME=BLOCKED_VAULT_FILE_MISSING"
+          elif [[ -n "${LONGBRIDGE_MCP_V2_BEARER_TOKEN}" ]]; then
             echo "XRAY_ACCOUNT_V2_RUNTIME=READY_RESTRICTED_MCP_ACCOUNT_READ"
           else
             echo "XRAY_ACCOUNT_V2_RUNTIME=NO_SECRET_NETWORK_FREE"
@@ -158,6 +171,7 @@ jobs:
       - name: Run same-run read-only ACCOUNT probe
         if: steps.event.outputs.ready == 'true'
         env:
+          XRAY_ACCOUNT_TOKEN_FERNET_KEY: ${{ secrets.XRAY_ACCOUNT_TOKEN_FERNET_KEY }}
           LONGBRIDGE_MCP_V2_BEARER_TOKEN: ${{ secrets.LONGBRIDGE_MCP_V2_BEARER_TOKEN }}
           LONGBRIDGE_OAUTH_ACCESS_TOKEN: ${{ secrets.LONGBRIDGE_OAUTH_ACCESS_TOKEN }}
           LONGBRIDGE_OAUTH_CLIENT_ID: ${{ secrets.LONGBRIDGE_OAUTH_CLIENT_ID }}
@@ -320,7 +334,7 @@ jobs:
           git fetch origin main
           latest="$(git rev-parse origin/main)"
           if [[ "$latest" != "$GITHUB_SHA" ]]; then
-            changed="$(git diff --name-only "$GITHUB_SHA" "$latest" --               .github/workflows/xray-canonical-current-final.yml               nasdaq-xray/build_current_terminal.py               nasdaq-xray/build_final_gate_overlay_v2.py               nasdaq-xray/account_gate_contract.json               nasdaq-xray/account_provider_adapter_contract.json               nasdaq-xray/account_longbridge_openapi_probe.py               nasdaq-xray/account_longbridge_openapi_probe_selftest.py               nasdaq-xray/account_longbridge_mcp_v2_probe.py               nasdaq-xray/account_longbridge_mcp_v2_probe_selftest.py               nasdaq-xray/select_account_live_probe.py               nasdaq-xray/select_account_live_probe_selftest.py               nasdaq-xray/account_same_run_terminal_selftest.py               nasdaq-xray/chatgpt_compiled_policy_v3.json || true)"
+            changed="$(git diff --name-only "$GITHUB_SHA" "$latest" --               .github/workflows/xray-canonical-current-final.yml               nasdaq-xray/build_current_terminal.py               nasdaq-xray/build_final_gate_overlay_v2.py               nasdaq-xray/account_gate_contract.json               nasdaq-xray/account_provider_adapter_contract.json               nasdaq-xray/account_longbridge_openapi_probe.py               nasdaq-xray/account_longbridge_openapi_probe_selftest.py               nasdaq-xray/account_longbridge_mcp_v2_probe.py               nasdaq-xray/account_longbridge_mcp_v2_probe_selftest.py               nasdaq-xray/account_longbridge_mcp_v2_vault.py               nasdaq-xray/account_longbridge_mcp_v2_vault_selftest.py               nasdaq-xray/account_longbridge_mcp_v2_bootstrap.py               nasdaq-xray/account_longbridge_mcp_v2_token.enc               nasdaq-xray/select_account_live_probe.py               nasdaq-xray/select_account_live_probe_selftest.py               nasdaq-xray/account_same_run_terminal_selftest.py               nasdaq-xray/chatgpt_compiled_policy_v3.json || true)"
             if [[ -n "$changed" ]]; then
               echo "XRAY_FACTORY_COMMIT=STALE_SOURCE_ABORT"
               printf '%s\n' "$changed"
@@ -334,6 +348,7 @@ jobs:
             nasdaq-xray/canonical_current_final_tech.json
             nasdaq-xray/canonical_current_terminal.json
             nasdaq-xray/canonical_current_final_gate_overlay.json
+            nasdaq-xray/account_longbridge_mcp_v2_token.enc
           )
           tmpdir="$(mktemp -d)"
           trap 'rm -rf "$tmpdir"' EXIT
