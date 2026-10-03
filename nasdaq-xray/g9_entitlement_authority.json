@@ -115,18 +115,24 @@
       "path": "nasdaq-xray/g9_provider_delta_exchange_native_sweep_20261003.json",
       "blob_sha": "97c1610475ca83fd4a70f66349e9091b8bac31c7",
       "status": "NO_NEW_STRICT_G9_PROVIDER"
+    },
+    {
+      "provider": "TickerLayer Stocks",
+      "path": "nasdaq-xray/g9_provider_delta_tickerlayer_20261003.json",
+      "blob_sha": "8ec88b1e24ddd1f23e67e5d0716f393a8ac74280",
+      "status": "NONQUALIFYING_STRICT_A_DERIVED_NON_EXCHANGE_FEED"
     }
   ],
   "search_saturation": {
     "path": "nasdaq-xray/g9_search_saturation_20261003.json",
-    "blob_sha": "e63bb0e40d31be0642e8843bd7d1d2942685a214",
-    "unique_provider_paths_reviewed": 54,
+    "blob_sha": "1533fdd0997eca2b0f7c05dacbd9cc899c319151",
+    "unique_provider_paths_reviewed": 59,
     "result": "NO_REVIEWED_PROVIDER_PROVES_A_B_C_D_SIMULTANEOUSLY"
   },
   "negative_registry": {
     "path": "nasdaq-xray/g9_provider_registry_20261003.json",
-    "blob_sha": "5f2f2e223c0fc809cf4f6a12052979f3183b0d80",
-    "provider_count": 54,
+    "blob_sha": "8cb45d7637dfe4347ade709f6ada6a02d87181b6",
+    "provider_count": 59,
     "role": "NEGATIVE_EVIDENCE_CACHE_ONLY_NEVER_PASS_AUTHORITY"
   },
   "midas_official_audit": {
