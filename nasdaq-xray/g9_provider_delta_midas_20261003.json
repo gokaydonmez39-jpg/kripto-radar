@@ -1,0 +1,35 @@
+{
+  "schema": "XRAY_G9_PROVIDER_DELTA_V1",
+  "generated_on": "2026-10-03",
+  "provider": "Midas Atlas / unofficial mcp-midas",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "status": "NONQUALIFYING_DISPLAY_ONLY_AND_UNSANCTIONED_AUTOMATION",
+  "evidence": [
+    "Official Midas US-markets page advertises live market data to Midas customers at no added charge, but this is customer display access rather than proof of automated/non-display API entitlement.",
+    "Official Nasdaq participant agreement distributed by Midas licenses information to a nonprofessional/private subscriber for personal use and restricts onward access/use.",
+    "Official Midas General Framework Agreement section 1.11 states the customer may not consent to third-party intervention in the Electronic Trading Platform without Midas permission.",
+    "The open-source YakupEmreYerli/mcp-midas project explicitly identifies itself as unofficial, states that Midas has no public API, and drives Atlas with Playwright while issuing the web app's undocumented GraphQL calls from an authenticated browser session.",
+    "The unofficial MCP's get_portfolio/get_assets tools are read-oriented and order tools are disabled unless MIDAS_ORDERS_ENABLED=1, but technical read-only behavior does not make the integration sanctioned or establish lawful automated/non-display market-data entitlement.",
+    "Therefore this path cannot satisfy strict G9-C/D and cannot serve as the sanctioned provider-neutral ACCOUNT adapter in the canonical cloud scheduler."
+  ],
+  "primary_sources": [
+    "https://www.getmidas.com/abd-borsalari/",
+    "https://webcdn.getmidas.com/uploads/2025/12/04160009/nasdaq-katilimci-sozlesmesi.pdf",
+    "https://webcdn.getmidas.com/uploads/2025/12/04155923/genel-cerceve-sozlesme.pdf",
+    "https://github.com/YakupEmreYerli/mcp-midas/blob/main/README.md"
+  ],
+  "technical_observation": {
+    "portfolio_read_shape": "total portfolio value + cash/buying power + open positions is technically sufficient in shape for ACCOUNT if a sanctioned adapter existed",
+    "order_tools_default": "disabled unless MIDAS_ORDERS_ENABLED=1 according to project documentation",
+    "canonical_use": "NOT_ALLOWED_AS_AUTHORITY"
+  },
+  "failed_gates": [
+    "A",
+    "C",
+    "D_SANCTIONED_AUTOMATION"
+  ],
+  "account_gate_assessment": "TECHNICALLY_USEFUL_SHAPE_BUT_UNSANCTIONED_NOT_ELIGIBLE",
+  "reopen_condition": "Only if Midas provides or explicitly authorizes a sanctioned scheduler-callable read-only API/connector for portfolio/account state and separately grants the required automated/non-display market-data entitlement for G9.",
+  "no_policy_weakening": true
+}
