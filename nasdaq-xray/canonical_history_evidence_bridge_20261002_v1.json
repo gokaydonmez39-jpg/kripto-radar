@@ -41,64 +41,100 @@
   },
   "entries": {
     "BLLN": {
-      "mode": "LISTING_AGE_TERMINAL_FAIL_V1",
+      "mode": "RALLIES_SINA_EXACT_TERMINAL_FAIL_V1",
       "outcome": "FAIL_HISTORY",
-      "listing_date": "2025-11-06",
-      "calendar_days_since_listing": 330,
-      "proof": "LISTING_AGE_LT_364_DAYS__52_COMPLETED_WEEKS_IMPOSSIBLE",
-      "listing_authority": "BIGDATA_CORPORATE_CALENDAR",
-      "listing_source_url": null,
-      "rallies_current_ticker_observation": {
-        "has_asof": true,
-        "daily_bars_observed": 227,
-        "first_observed_date": "2025-11-06",
-        "note": "Diagnostic corroboration only."
-      }
+      "source_pair": [
+        "RALLIES_CONNECTOR_DAILY",
+        "SINA_US_DAILY_RUNTIME"
+      ],
+      "rallies_query_start": "2023-01-01",
+      "rallies_query_end": "2026-10-02",
+      "rallies_observation": {
+        "daily_bars": 227,
+        "completed_week_count": 47,
+        "first_date": "2025-11-06",
+        "last_date": "2026-10-02",
+        "asof_present": true
+      },
+      "runtime_requirement": "SINA first_date,last_date,daily_bars,completed_week_count and ASOF must exactly match Rallies witness",
+      "proof": "TWO_INDEPENDENT_SOURCES_EXACT_HISTORY_BELOW_GATE",
+      "thresholds": {
+        "daily": 260,
+        "weekly_completed": 52
+      },
+      "can_create_pass": false
     },
     "CBRS": {
-      "mode": "LISTING_AGE_TERMINAL_FAIL_V1",
+      "mode": "RALLIES_SINA_EXACT_TERMINAL_FAIL_V1",
       "outcome": "FAIL_HISTORY",
-      "listing_date": "2026-05-14",
-      "calendar_days_since_listing": 141,
-      "proof": "LISTING_AGE_LT_364_DAYS__52_COMPLETED_WEEKS_IMPOSSIBLE",
-      "listing_authority": "BIGDATA_CORPORATE_CALENDAR",
-      "listing_source_url": null,
-      "rallies_current_ticker_observation": {
-        "has_asof": true,
-        "daily_bars_observed": 98,
-        "first_observed_date": "2026-05-14",
-        "note": "Diagnostic corroboration only."
-      }
+      "source_pair": [
+        "RALLIES_CONNECTOR_DAILY",
+        "SINA_US_DAILY_RUNTIME"
+      ],
+      "rallies_query_start": "2023-01-01",
+      "rallies_query_end": "2026-10-02",
+      "rallies_observation": {
+        "daily_bars": 98,
+        "completed_week_count": 20,
+        "first_date": "2026-05-14",
+        "last_date": "2026-10-02",
+        "asof_present": true
+      },
+      "runtime_requirement": "SINA first_date,last_date,daily_bars,completed_week_count and ASOF must exactly match Rallies witness",
+      "proof": "TWO_INDEPENDENT_SOURCES_EXACT_HISTORY_BELOW_GATE",
+      "thresholds": {
+        "daily": 260,
+        "weekly_completed": 52
+      },
+      "can_create_pass": false
     },
     "EQPT": {
-      "mode": "LISTING_AGE_TERMINAL_FAIL_V1",
+      "mode": "RALLIES_SINA_EXACT_TERMINAL_FAIL_V1",
       "outcome": "FAIL_HISTORY",
-      "listing_date": "2026-01-23",
-      "calendar_days_since_listing": 252,
-      "proof": "LISTING_AGE_LT_364_DAYS__52_COMPLETED_WEEKS_IMPOSSIBLE",
-      "listing_authority": "BIGDATA_CORPORATE_CALENDAR",
-      "listing_source_url": null,
-      "rallies_current_ticker_observation": {
-        "has_asof": true,
-        "daily_bars_observed": 175,
-        "first_observed_date": "2026-01-23",
-        "note": "Diagnostic corroboration only."
-      }
+      "source_pair": [
+        "RALLIES_CONNECTOR_DAILY",
+        "SINA_US_DAILY_RUNTIME"
+      ],
+      "rallies_query_start": "2023-01-01",
+      "rallies_query_end": "2026-10-02",
+      "rallies_observation": {
+        "daily_bars": 175,
+        "completed_week_count": 36,
+        "first_date": "2026-01-23",
+        "last_date": "2026-10-02",
+        "asof_present": true
+      },
+      "runtime_requirement": "SINA first_date,last_date,daily_bars,completed_week_count and ASOF must exactly match Rallies witness",
+      "proof": "TWO_INDEPENDENT_SOURCES_EXACT_HISTORY_BELOW_GATE",
+      "thresholds": {
+        "daily": 260,
+        "weekly_completed": 52
+      },
+      "can_create_pass": false
     },
     "FRVO": {
-      "mode": "LISTING_AGE_TERMINAL_FAIL_V1",
+      "mode": "RALLIES_SINA_EXACT_TERMINAL_FAIL_V1",
       "outcome": "FAIL_HISTORY",
-      "listing_date": "2026-05-13",
-      "calendar_days_since_listing": 142,
-      "proof": "LISTING_AGE_LT_364_DAYS__52_COMPLETED_WEEKS_IMPOSSIBLE",
-      "listing_authority": "BIGDATA_CORPORATE_CALENDAR",
-      "listing_source_url": null,
-      "rallies_current_ticker_observation": {
-        "has_asof": true,
-        "daily_bars_observed": 99,
-        "first_observed_date": "2026-05-13",
-        "note": "Diagnostic corroboration only."
-      }
+      "source_pair": [
+        "RALLIES_CONNECTOR_DAILY",
+        "SINA_US_DAILY_RUNTIME"
+      ],
+      "rallies_query_start": "2023-01-01",
+      "rallies_query_end": "2026-10-02",
+      "rallies_observation": {
+        "daily_bars": 99,
+        "completed_week_count": 20,
+        "first_date": "2026-05-13",
+        "last_date": "2026-10-02",
+        "asof_present": true
+      },
+      "runtime_requirement": "SINA first_date,last_date,daily_bars,completed_week_count and ASOF must exactly match Rallies witness",
+      "proof": "TWO_INDEPENDENT_SOURCES_EXACT_HISTORY_BELOW_GATE",
+      "thresholds": {
+        "daily": 260,
+        "weekly_completed": 52
+      },
+      "can_create_pass": false
     },
     "HONA": {
       "mode": "LISTING_AGE_TERMINAL_FAIL_V1",
@@ -146,49 +182,76 @@
       }
     },
     "MMED": {
-      "mode": "LISTING_AGE_TERMINAL_FAIL_V1",
+      "mode": "RALLIES_SINA_EXACT_TERMINAL_FAIL_V1",
       "outcome": "FAIL_HISTORY",
-      "listing_date": "2026-03-06",
-      "calendar_days_since_listing": 210,
-      "proof": "LISTING_AGE_LT_364_DAYS__52_COMPLETED_WEEKS_IMPOSSIBLE",
-      "listing_authority": "BIGDATA_CORPORATE_CALENDAR",
-      "listing_source_url": null,
-      "rallies_current_ticker_observation": {
-        "has_asof": true,
-        "daily_bars_observed": 146,
-        "first_observed_date": "2026-03-06",
-        "note": "Diagnostic corroboration only."
-      }
+      "source_pair": [
+        "RALLIES_CONNECTOR_DAILY",
+        "SINA_US_DAILY_RUNTIME"
+      ],
+      "rallies_query_start": "2023-01-01",
+      "rallies_query_end": "2026-10-02",
+      "rallies_observation": {
+        "daily_bars": 146,
+        "completed_week_count": 30,
+        "first_date": "2026-03-06",
+        "last_date": "2026-10-02",
+        "asof_present": true
+      },
+      "runtime_requirement": "SINA first_date,last_date,daily_bars,completed_week_count and ASOF must exactly match Rallies witness",
+      "proof": "TWO_INDEPENDENT_SOURCES_EXACT_HISTORY_BELOW_GATE",
+      "thresholds": {
+        "daily": 260,
+        "weekly_completed": 52
+      },
+      "can_create_pass": false
     },
     "NAVN": {
-      "mode": "LISTING_AGE_TERMINAL_FAIL_V1",
+      "mode": "RALLIES_SINA_EXACT_TERMINAL_FAIL_V1",
       "outcome": "FAIL_HISTORY",
-      "listing_date": "2025-10-31",
-      "calendar_days_since_listing": 336,
-      "proof": "LISTING_AGE_LT_364_DAYS__52_COMPLETED_WEEKS_IMPOSSIBLE",
-      "listing_authority": "BIGDATA_CORPORATE_CALENDAR",
-      "listing_source_url": null,
-      "rallies_current_ticker_observation": {
-        "has_asof": true,
-        "daily_bars_observed": 232,
-        "first_observed_date": "2025-10-30",
-        "note": "Diagnostic corroboration only."
-      }
+      "source_pair": [
+        "RALLIES_CONNECTOR_DAILY",
+        "SINA_US_DAILY_RUNTIME"
+      ],
+      "rallies_query_start": "2023-01-01",
+      "rallies_query_end": "2026-10-02",
+      "rallies_observation": {
+        "daily_bars": 232,
+        "completed_week_count": 48,
+        "first_date": "2025-10-30",
+        "last_date": "2026-10-02",
+        "asof_present": true
+      },
+      "runtime_requirement": "SINA first_date,last_date,daily_bars,completed_week_count and ASOF must exactly match Rallies witness",
+      "proof": "TWO_INDEPENDENT_SOURCES_EXACT_HISTORY_BELOW_GATE",
+      "thresholds": {
+        "daily": 260,
+        "weekly_completed": 52
+      },
+      "can_create_pass": false
     },
     "QNT": {
-      "mode": "LISTING_AGE_TERMINAL_FAIL_V1",
+      "mode": "RALLIES_SINA_EXACT_TERMINAL_FAIL_V1",
       "outcome": "FAIL_HISTORY",
-      "listing_date": "2026-06-04",
-      "calendar_days_since_listing": 120,
-      "proof": "LISTING_AGE_LT_364_DAYS__52_COMPLETED_WEEKS_IMPOSSIBLE",
-      "listing_authority": "BIGDATA_CORPORATE_CALENDAR",
-      "listing_source_url": null,
-      "rallies_current_ticker_observation": {
-        "has_asof": true,
-        "daily_bars_observed": 84,
-        "first_observed_date": "2026-06-04",
-        "note": "Diagnostic corroboration only."
-      }
+      "source_pair": [
+        "RALLIES_CONNECTOR_DAILY",
+        "SINA_US_DAILY_RUNTIME"
+      ],
+      "rallies_query_start": "2023-01-01",
+      "rallies_query_end": "2026-10-02",
+      "rallies_observation": {
+        "daily_bars": 84,
+        "completed_week_count": 17,
+        "first_date": "2026-06-04",
+        "last_date": "2026-10-02",
+        "asof_present": true
+      },
+      "runtime_requirement": "SINA first_date,last_date,daily_bars,completed_week_count and ASOF must exactly match Rallies witness",
+      "proof": "TWO_INDEPENDENT_SOURCES_EXACT_HISTORY_BELOW_GATE",
+      "thresholds": {
+        "daily": 260,
+        "weekly_completed": 52
+      },
+      "can_create_pass": false
     },
     "SKHY": {
       "mode": "LISTING_AGE_TERMINAL_FAIL_V1",
