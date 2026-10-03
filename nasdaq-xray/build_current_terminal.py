@@ -74,8 +74,14 @@ def load_gate_reporting():
         if live_raw:
             lp=Path(live_raw)
             live=load(lp)
-            assert live.get("schema")=="XRAY_ACCOUNT_LONGBRIDGE_OPENAPI_PROBE_V1"
-            assert live.get("provider")=="LONGBRIDGE_DIRECT_OPENAPI"
+            schema=str(live.get("schema") or "")
+            provider=str(live.get("provider") or "")
+            allowed_live={
+              "XRAY_ACCOUNT_LONGBRIDGE_OPENAPI_PROBE_V1":"LONGBRIDGE_DIRECT_OPENAPI",
+              "XRAY_ACCOUNT_LONGBRIDGE_HOSTED_MCP_PROBE_V1":"LONGBRIDGE_HOSTED_MCP",
+            }
+            assert schema in allowed_live
+            assert provider==allowed_live[schema]
             assert live.get("execution")=="NONE" and live.get("real_money")=="NO-GO"
             assert live.get("private_values_persisted") is False
             assert live.get("secret_values_persisted") is False
@@ -86,7 +92,7 @@ def load_gate_reporting():
             out["evidence"]["account_live_probe"]={
               "path":str(lp),
               "blob_sha":blob_sha(lp),
-              "provider":"LONGBRIDGE_DIRECT_OPENAPI",
+              "provider":provider,
               "status":live_status,
               "reason_code":live.get("reason_code"),
               "workflow_run_id":probe_run or None,
@@ -99,15 +105,15 @@ def load_gate_reporting():
               "secret_values_persisted":False,
             }
             if live_status=="PASS":
-                direct=(aj.get("adapters") or {}).get("LONGBRIDGE_DIRECT_OPENAPI") or {}
-                assert direct.get("status")=="ELIGIBLE_FRESH_SAME_RUN_ONLY"
+                adapter=(aj.get("adapters") or {}).get(provider) or {}
+                assert adapter.get("status")=="ELIGIBLE_FRESH_SAME_RUN_ONLY"
                 assert same_run, "ACCOUNT_LIVE_PROBE_NOT_SAME_WORKFLOW_RUN"
                 assert live.get("network_attempted") is True
                 assert live.get("balance_parseable") is True
                 assert live.get("positions_parseable") is True
                 assert live.get("reason_code")=="SAME_RUN_READ_ONLY_ACCOUNT_PROBE_PASS"
                 out["account_status"]="ACCOUNT_PASS"
-                out["evidence"]["account_gate"]["current_adapter"]="LONGBRIDGE_DIRECT_OPENAPI"
+                out["evidence"]["account_gate"]["current_adapter"]=provider
     except Exception as e:
         out["evidence"]["account_gate"]={"status":"UNKNOWN","reason":type(e).__name__}
     return out
