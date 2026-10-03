@@ -5,7 +5,7 @@ History: Sina raw daily accelerator (shadow only, never G9/canonical fill author
 EXECUTION=NONE. REAL_MONEY=NO-GO. UNKNOWN!=PASS.
 """
 from __future__ import annotations
-import json, math, os, time, hashlib
+import json, math, os, time, hashlib, threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
@@ -19,6 +19,68 @@ MC=Path(os.getenv("XRAY_MC_STATE", str(ROOT/"mc_final_state.json")))
 OUT=Path(os.getenv("XRAY_STAGE1_OUT", str(ROOT/"stage1_shadow.json")))
 TASK_ID="6a825366222081918997094d76e6ae46"
 WORKERS=int(os.getenv("XRAY_STAGE1_WORKERS","8"))
+PROVIDER_MAX_INFLIGHT=max(1,int(os.getenv("XRAY_STAGE1_PROVIDER_MAX_INFLIGHT","3")))
+RETRY_DELAYS=(0.0,1.0,2.5)
+_PROVIDER_SEM=threading.Semaphore(PROVIDER_MAX_INFLIGHT)
+OFFICIAL_IDENTITY_EVIDENCE=ROOT/"history_official_identity_evidence.json"
+
+def _retryable(exc):
+    s=str(exc).lower()
+    return any(x in s for x in ("timed out","timeout","connection reset","remote end closed","too many requests","rate limit","429","500","502","503","504"))
+
+def _call_with_retry(fn):
+    last=None
+    for delay in RETRY_DELAYS:
+        if delay: time.sleep(delay)
+        try:
+            with _PROVIDER_SEM:
+                return fn()
+        except Exception as e:
+            last=e
+            if not _retryable(e): raise
+    assert last is not None
+    raise last
+
+def _official_records():
+    try:
+        j=json.loads(OFFICIAL_IDENTITY_EVIDENCE.read_text())
+        if j.get("schema")=="XRAY_HISTORY_OFFICIAL_IDENTITY_EVIDENCE_V1" and j.get("evidence_only") is True and j.get("alpha_authority") is False:
+            return j.get("records") or {}
+    except Exception:
+        pass
+    return {}
+
+OFFICIAL_RECORDS=_official_records()
+
+def _normalize_sina(df):
+    if df is None or df.empty:return None
+    cols={str(c).lower():c for c in df.columns}
+    need=["date","open","high","low","close","volume"]
+    if any(k not in cols for k in need):return None
+    x=df[[cols[k] for k in need]].copy();x.columns=need
+    x["date"]=pd.to_datetime(x["date"],errors="coerce")
+    for k in ["open","high","low","close","volume"]:x[k]=pd.to_numeric(x[k],errors="coerce")
+    return x.dropna().sort_values("date")
+
+def _sina_history(sym):
+    return _normalize_sina(_call_with_retry(lambda: ak.stock_us_daily(symbol=sym,adjust="")))
+
+def load_history(sym,asof):
+    cur=_sina_history(sym)
+    rec=OFFICIAL_RECORDS.get(sym) or {}
+    if rec.get("mode")=="OFFICIAL_TICKER_CONTINUITY_COMPOSITE_HISTORY" and rec.get("cusip_unchanged") is True:
+        pred=rec.get("predecessor_symbol"); eff=rec.get("effective_date")
+        if pred and eff and cur is not None:
+            p=_sina_history(pred)
+            if p is not None:
+                eff_ts=pd.Timestamp(eff); asof_ts=pd.Timestamp(asof)
+                cur2=cur[(cur["date"]>=eff_ts)&(cur["date"]<=asof_ts)]
+                pred2=p[p["date"]<eff_ts]
+                if not cur2.empty and cur2["date"].dt.date.max().isoformat()==asof:
+                    x=pd.concat([pred2,cur2],ignore_index=True).sort_values("date").drop_duplicates("date",keep="last")
+                    return x,"SINA_OFFICIAL_TICKER_CONTINUITY_COMPOSITE"
+    if cur is None:return None,"SINA_EMPTY"
+    return cur[cur["date"]<=pd.Timestamp(asof)],"SINA_US_DAILY"
 
 def blob_sha(p:Path):
     b=p.read_bytes()
@@ -107,18 +169,9 @@ def base_pool(df):
 
 def process(sym,asof,week_last):
     try:
-        df=ak.stock_us_daily(symbol=sym,adjust="")
-        if df is None or df.empty:return sym,{"status":"UNKNOWN","reason":"SINA_EMPTY"}
-        cols={c.lower():c for c in df.columns}
-        need=["date","open","high","low","close","volume"]
-        if any(k not in cols for k in need):return sym,{"status":"UNKNOWN","reason":"COLUMNS_MISSING"}
-        x=df[[cols[k] for k in need]].copy()
-        x.columns=need
-        x["date"]=pd.to_datetime(x["date"],errors="coerce")
-        for k in ["open","high","low","close","volume"]:x[k]=pd.to_numeric(x[k],errors="coerce")
-        x=x.dropna().sort_values("date")
-        x=x[x["date"]<=pd.Timestamp(asof)]
-        if len(x)<260:return sym,{"status":"HISTORY_FAIL","reason":"DAILY_LT260","bars":len(x)}
+        x,history_source=load_history(sym,asof)
+        if x is None or x.empty:return sym,{"status":"UNKNOWN","reason":"SINA_EMPTY"}
+        if len(x)<260:return sym,{"status":"HISTORY_FAIL","reason":"DAILY_LT260","bars":len(x),"history_source":history_source}
         wg=weekly_gate(x,asof,week_last)
         if not wg.get("pass"):
             return sym,{"status":"WEEKLY_FAIL","weekly":wg}
@@ -135,7 +188,7 @@ def process(sym,asof,week_last):
         dd120=last/h120-1 if h120>0 else None
         d_pool=bool((dd252 is not None and dd252<=-0.15) or (dd120 is not None and dd120<=-0.20))
         return sym,{
-          "status":"WEEKLY_PASS","weekly":wg,
+          "status":"WEEKLY_PASS","weekly":wg,"history_source":history_source,
           "a_trend_pool":a_pool,
           "b_tight_base_pool":b,
           "d_drawdown_pool":d_pool,
@@ -185,7 +238,7 @@ def main():
       "notes":["C post-earnings family is evaluated later from official earnings/event evidence.","No setup signal or R92 registration is created here."]
     }
     OUT.write_text(json.dumps(out,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
-    print(json.dumps({k:out[k] for k in ["input_current_core_count","weekly_pass_count","a_trend_pool_count","b_tight_base_pool_count","d_drawdown_pool_count","unknown_count"]},sort_keys=True))
+    print(json.dumps(dict({k:out[k] for k in ["input_current_core_count","weekly_pass_count","a_trend_pool_count","b_tight_base_pool_count","d_drawdown_pool_count","unknown_count"]},provider_max_inflight=PROVIDER_MAX_INFLIGHT,retry_delays=RETRY_DELAYS),sort_keys=True))
 
 if __name__=="__main__":
     main()
