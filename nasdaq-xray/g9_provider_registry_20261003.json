@@ -174,7 +174,7 @@
       "status": "HIGH_POTENTIAL_B_D_READY_A_AND_C_NONDISPLAY_LICENSE_UNPROVEN",
       "failed_gates": [
         "A_LINEAGE",
-        "C_NONDIPLAY_LICENSE",
+        "C_NONDISPLAY_LICENSE",
         "D_RUNTIME_CREDENTIAL"
       ],
       "evidence_file": "nasdaq-xray/g9_provider_delta_wealthnow_20261003.json",
@@ -184,7 +184,8 @@
       "may_never_create_pass": true,
       "provisional_pass_gates": [
         "B_SCHEMA",
-        "C_ZERO_DOLLAR_INTENDED_AUTOMATION"
+        "C_ZERO_DOLLAR_API_COST",
+        "D_TECHNICAL_SURFACE"
       ],
       "technical_adapter": "IMPLEMENTED_FAIL_CLOSED_BEHIND_AUTHORITY",
       "evidence_blob_sha": "27cebdada76023a8e748dfedc8b04a0bced6bd26",
