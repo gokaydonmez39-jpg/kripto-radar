@@ -58,6 +58,10 @@ jobs:
           assert g["adapter_contract"]["path"]=="nasdaq-xray/account_provider_adapter_contract.json"
           assert g["adapter_contract"]["blob_sha"]==actual_blob,(g["adapter_contract"]["blob_sha"],actual_blob)
           assert g["adapter_registry_count"]==len(a["adapters"])
+          alternates=set((g.get("alternate_adapter_candidates") or {}).keys())
+          assert alternates.issubset(set(a["adapters"])),(sorted(alternates-set(a["adapters"])))
+          assert all((a["adapters"][k].get("status")!="PASS") for k in alternates)
+          assert g.get("current_adapter") in a["adapters"]
           assert a["provider_neutral"] is True
           assert a["adapters"]["LONGBRIDGE"]["status"]!="PASS"
           assert g["current_status"]!="PASS"
