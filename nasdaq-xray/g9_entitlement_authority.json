@@ -20,8 +20,8 @@
     "audit_20261003": "61_PROVIDER_PATH_PRIMARY_SOURCE_AND_LIVE_ENTITLEMENT_SATURATION",
     "midas_official_paths": "ATLAS_REALTIME_EXCHANGE_ENTITLEMENTS;TRADINGVIEW_BROKER_QUOTES;ALPACA_PARTNER_INFRA",
     "midas_alpaca_partner_path": "OFFICIAL_INFRA_CONFIRMED_EXACT_LIVE_SIP_ENDUSER_ENTITLEMENT_UNPROVEN",
-    "high_potential_provider": "Paper Invest",
-    "high_potential_reason": "Paper Basic is $0/free-forever with API/MCP, official realtime NBBO claims and explicit bot/programmatic use. Updated UTP evidence exposes a vendor-billed nonprofessional uncontrolled API classification path, but Paper's exact Tape-C/redistributor lineage, approved classification/fee absorption, and independent upstream quote/trade event timestamp semantics remain unproven."
+    "high_potential_provider": "Paper Invest + Wealthnow",
+    "high_potential_reason": "Paper Basic explicitly labels its free REST quote as realtime NBBO and supports programmatic API/MCP use, but still lacks exact UTP/SIP or named redistributor lineage, upstream quote/trade event timestamp semantics, and provider-confirmed UTP1APIS/equivalent classification plus fee absorption. Wealthnow Free price_snapshot has stronger documented independent quote/trade timestamp semantics, a live RTH freshness example, hosted remote MCP/API and an implemented adapter; its paid streaming surface explicitly proves Wealthnow operates a consolidated NBBO feed, but Free price_snapshot lineage and the exact UTP1APIS/equivalent classification/fee absorption remain unproven. Neither may create PASS by inference."
   },
   "pass_rule": "STATUS_MUST_EQUAL_PROVEN_FROM_PRIMARY_SOURCE_AND_PROVIDER_MUST_HAVE_MATCHING_RUNTIME_ADAPTER_BEFORE_LIVE_RTH_TECHNICAL_PROBE_CAN_RUN",
   "no_policy_weakening": true,
@@ -43,10 +43,10 @@
     {
       "provider": "Wealthnow",
       "path": "nasdaq-xray/g9_provider_delta_wealthnow_20261003.json",
-      "blob_sha": "27cebdada76023a8e748dfedc8b04a0bced6bd26",
+      "blob_sha": "2dc06c38e4bcfe16460d050f0c5cfc8d62b57620",
       "unlock_path": "nasdaq-xray/g9_wealthnow_lineage_unlock_20261003.json",
-      "unlock_blob_sha": "85b8de37167e22182980311504acaac07e109afd",
-      "status": "HIGH_POTENTIAL_B_D_READY_A_AND_C_NONDISPLAY_LICENSE_UNPROVEN"
+      "unlock_blob_sha": "2bb5705137a01602f86776f145a10b9790f8f034",
+      "status": "HIGHEST_POTENTIAL_FREE_SNAPSHOT_B_D_STRONG_STRUCTURAL_C_PATH_OPEN_A_AND_PROVIDER_CLASSIFICATION_UNPROVEN"
     },
     {
       "provider": "Commercial vendor sweep",
@@ -166,14 +166,14 @@
   },
   "wealthnow_lineage_unlock": {
     "path": "nasdaq-xray/g9_provider_delta_wealthnow_20261003.json",
-    "blob_sha": "27cebdada76023a8e748dfedc8b04a0bced6bd26",
+    "blob_sha": "2dc06c38e4bcfe16460d050f0c5cfc8d62b57620",
     "unlock_path": "nasdaq-xray/g9_wealthnow_lineage_unlock_20261003.json",
-    "unlock_blob_sha": "85b8de37167e22182980311504acaac07e109afd",
-    "status": "HIGH_POTENTIAL_B_D_READY_A_AND_C_NONDISPLAY_LICENSE_UNPROVEN",
-    "gate_a": "UNPROVEN_FREE_SNAPSHOT_NATIONAL_NBBO_LINEAGE",
-    "gate_b": "PROVISIONAL_SCHEMA_PASS_REQUIRES_SAME_RUN_RTH",
-    "gate_c": "ZERO_DOLLAR_API_COST_PROVEN_BUT_NONDISPLAY_MARKET_DATA_LICENSE_UNPROVEN",
-    "gate_d": "TECHNICAL_ADAPTER_IMPLEMENTED_BUT_CREDENTIAL_NOT_CONFIGURED",
+    "unlock_blob_sha": "2bb5705137a01602f86776f145a10b9790f8f034",
+    "status": "HIGHEST_POTENTIAL_FREE_SNAPSHOT_B_D_STRONG_STRUCTURAL_C_PATH_OPEN_A_AND_PROVIDER_CLASSIFICATION_UNPROVEN",
+    "gate_a": "FREE_SNAPSHOT_EXACT_NATIONAL_NBBO_LINEAGE_UNPROVEN",
+    "gate_b": "PRIMARY_SOURCE_EVENT_TIMESTAMP_SCHEMA_PLUS_LIVE_RTH_EXAMPLE_STRONG; SAME_RUN_RTH PROBE STILL REQUIRED",
+    "gate_c": "ZERO_DOLLAR_API_AND_PROGRAMMATIC_USE_PROVEN; PROVIDER UTP1APIS_OR_EQUIVALENT_CLASSIFICATION_AND_FEE_ABSORPTION_UNPROVEN",
+    "gate_d": "HOSTED_REMOTE_MCP_AND_ADAPTER_IMPLEMENTED; RUNTIME CREDENTIAL/SAME_RUN_PROBE NOT YET PRESENT",
     "role": "PRIMARY_SOURCE_UNLOCK_CONTRACT_NEVER_PASS_BY_ITSELF"
   },
   "utp_fee_basis": {
@@ -187,5 +187,13 @@
     "blob_sha": "e557bb14abe883f1d07380f7301b465b0abb4a05",
     "status": "STRUCTURAL_PATH_OPEN_PROVIDER_SPECIFIC_CLASSIFICATION_STILL_UNPROVEN",
     "effect": "NO_THRESHOLD_CHANGE; narrows G9-C blocker from presumed high non-display fee to provider-specific UTP1APIS/equivalent classification plus vendor fee absorption proof."
+  },
+  "paper_invest_lead": {
+    "path": "nasdaq-xray/g9_provider_delta_paperinvest_20261003.json",
+    "blob_sha": "15bd8622bcf58580054f9eb4ebf4fc341407eb84",
+    "status": "HIGHEST_POTENTIAL_STRUCTURAL_C_PATH_OPEN_A_CLASSIFICATION_AND_B_EVENT_SEMANTICS_UNPROVEN",
+    "official_clarification_issue": "paperinvest/mcp-server#3",
+    "maintainer_comments_observed": 0,
+    "role": "PRIMARY_SOURCE_UNLOCK_CONTRACT_NEVER_PASS_BY_ITSELF"
   }
 }
