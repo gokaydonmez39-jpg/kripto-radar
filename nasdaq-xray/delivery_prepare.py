@@ -71,6 +71,9 @@ if not eligible:
     print("XRAY_DELIVERY_NOOP=NO_REGISTERED_RESEARCH_CANDIDATE")
     raise SystemExit(0)
 
+if len(eligible) > 3:
+    raise RuntimeError("DELIVERY_R92_COUNT_EXCEEDS_MAX3")
+
 eligible.sort(key=lambda x: (str(x["registered_at_utc"]), str(x["delivery_key"])))
 WORK.mkdir(exist_ok=True)
 entries = []
