@@ -1,35 +1,67 @@
 {
   "absence_never_clean": true,
   "alpha_authority": false,
-  "asof_et": "2026-10-01",
+  "asof_et": "2026-10-02",
   "authority": "SEC_PRIMARY_WITNESS_OPTIONAL",
   "execution": "NONE",
-  "generated_at_utc": "2026-10-03T00:35:42.320380+00:00",
+  "generated_at_utc": "2026-10-03T01:10:46.797307+00:00",
   "geometry_scope": [
-    "CHA",
+    "ASST",
+    "AUGO",
+    "BWIN",
+    "CLMT",
     "COIN",
+    "DXCM",
+    "FSLY",
     "FTNT",
     "GH",
-    "MTCH",
-    "MU",
-    "NTSK",
-    "PFG",
+    "HTFL",
+    "NVDA",
+    "OLLI",
+    "PI",
     "PLTR",
     "ROKU",
-    "ULTA",
+    "SAIL",
+    "SIMO",
+    "VICR",
     "WBD",
-    "WDAY"
+    "WIX"
   ],
-  "geometry_scope_count": 13,
-  "geometry_scope_hash": "039e3e8586d644579676220b97fccc72235af29c80dbaed19779c1c333f82c58",
+  "geometry_scope_count": 20,
+  "geometry_scope_hash": "6157d92dcae7c6c0f47a166e19149cab6643a36b2d3f92e71fa9fc01df6ae559",
   "real_money": "NO-GO",
   "results": {
-    "CHA": {
+    "ASST": {
+      "filings": [],
+      "identity_status": "UNKNOWN",
+      "reason": "HTTPError:HTTP Error 403: Forbidden"
+    },
+    "AUGO": {
+      "filings": [],
+      "identity_status": "UNKNOWN",
+      "reason": "HTTPError:HTTP Error 403: Forbidden"
+    },
+    "BWIN": {
+      "filings": [],
+      "identity_status": "UNKNOWN",
+      "reason": "HTTPError:HTTP Error 403: Forbidden"
+    },
+    "CLMT": {
       "filings": [],
       "identity_status": "UNKNOWN",
       "reason": "HTTPError:HTTP Error 403: Forbidden"
     },
     "COIN": {
+      "filings": [],
+      "identity_status": "UNKNOWN",
+      "reason": "HTTPError:HTTP Error 403: Forbidden"
+    },
+    "DXCM": {
+      "filings": [],
+      "identity_status": "UNKNOWN",
+      "reason": "HTTPError:HTTP Error 403: Forbidden"
+    },
+    "FSLY": {
       "filings": [],
       "identity_status": "UNKNOWN",
       "reason": "HTTPError:HTTP Error 403: Forbidden"
@@ -44,22 +76,22 @@
       "identity_status": "UNKNOWN",
       "reason": "HTTPError:HTTP Error 403: Forbidden"
     },
-    "MTCH": {
+    "HTFL": {
       "filings": [],
       "identity_status": "UNKNOWN",
       "reason": "HTTPError:HTTP Error 403: Forbidden"
     },
-    "MU": {
+    "NVDA": {
       "filings": [],
       "identity_status": "UNKNOWN",
       "reason": "HTTPError:HTTP Error 403: Forbidden"
     },
-    "NTSK": {
+    "OLLI": {
       "filings": [],
       "identity_status": "UNKNOWN",
       "reason": "HTTPError:HTTP Error 403: Forbidden"
     },
-    "PFG": {
+    "PI": {
       "filings": [],
       "identity_status": "UNKNOWN",
       "reason": "HTTPError:HTTP Error 403: Forbidden"
@@ -74,7 +106,17 @@
       "identity_status": "UNKNOWN",
       "reason": "HTTPError:HTTP Error 403: Forbidden"
     },
-    "ULTA": {
+    "SAIL": {
+      "filings": [],
+      "identity_status": "UNKNOWN",
+      "reason": "HTTPError:HTTP Error 403: Forbidden"
+    },
+    "SIMO": {
+      "filings": [],
+      "identity_status": "UNKNOWN",
+      "reason": "HTTPError:HTTP Error 403: Forbidden"
+    },
+    "VICR": {
       "filings": [],
       "identity_status": "UNKNOWN",
       "reason": "HTTPError:HTTP Error 403: Forbidden"
@@ -84,7 +126,7 @@
       "identity_status": "UNKNOWN",
       "reason": "HTTPError:HTTP Error 403: Forbidden"
     },
-    "WDAY": {
+    "WIX": {
       "filings": [],
       "identity_status": "UNKNOWN",
       "reason": "HTTPError:HTTP Error 403: Forbidden"
@@ -94,6 +136,6 @@
   "scope_kind": "GEOMETRY_ONLY",
   "status": "READY_WITH_UNKNOWNS",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 13,
-  "weekly_scope_hash": "5ae986fc59c5f2c978114bef09245b5cbe0bcd6d734cf388c6d2f5454c5bba1e"
+  "unknown_count": 20,
+  "weekly_scope_hash": "3f180528282372d18c4b94a42a19cf14ce159394a080ef2ba8c5ff382c9003a7"
 }
