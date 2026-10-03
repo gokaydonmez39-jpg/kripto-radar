@@ -66,6 +66,17 @@
         "https://www.sec.gov/Archives/edgar/data/1813814/000119312526076742/dftx-20251231.htm"
       ],
       "note": "SEC states the issuer changed name from Mind Medicine (MindMed) Inc. to Definium Therapeutics, Inc.; CUSIP for the common shares remained unchanged; the same common shares traded as MNMD before 2026-01-15 and DFTX thereafter."
+    },
+    "SPCX": {
+      "mode": "OFFICIAL_LISTING_UPPER_BOUND_FAIL_ONLY",
+      "earliest_public_trading_date": "2026-06-12",
+      "regular_way_trading_date": "2026-06-12",
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1181412/000162828026042466/spaceexplorationtechnologi.htm",
+        "https://www.sec.gov/Archives/edgar/data/1181412/000162828026042639/spaceexplorationtechnologi.htm",
+        "https://ir.spacex.com/updates/releases-details/2026/Space-Exploration-Technologies-Corp--Announces-Closing-of-Initial-Public-Offering-Including-Full-Exercise-of-Underwriters-Option-to-Purchase-Additional-Shares-2026-RgoR-Y1Vwh/default.aspx"
+      ],
+      "note": "SEC IPO materials and issuer IR establish first public Nasdaq trading under SPCX on 2026-06-12. Any pre-IPO SPCX ticker history from third-party feeds is identity contamination and must be ignored."
     }
   }
 }
