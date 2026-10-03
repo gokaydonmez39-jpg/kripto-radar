@@ -1,26 +1,10 @@
 {
+  "error": "HTTPError:HTTP Error 401: Unauthorized",
   "execution": "NONE",
   "real_money": "NO-GO",
-  "results": {
-    "aapl.us": {
-      "first": [],
-      "last": [],
-      "rows": 0,
-      "status": "FAIL"
-    },
-    "msft.us": {
-      "first": [],
-      "last": [],
-      "rows": 0,
-      "status": "FAIL"
-    },
-    "nvda.us": {
-      "first": [],
-      "last": [],
-      "rows": 0,
-      "status": "FAIL"
-    }
-  },
-  "status": "FAIL",
-  "updated_at_utc": "2026-09-30T23:24:40.397193+00:00"
+  "results": {},
+  "schema": "XRAY_STOOQ_BULK_HISTORY_PROBE_V1",
+  "source": "https://static.stooq.com/db/h/d_us_txt.zip",
+  "status": "ERROR",
+  "updated_at_utc": "2026-10-03T00:24:49.945263+00:00"
 }
