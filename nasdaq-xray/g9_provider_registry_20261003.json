@@ -125,7 +125,7 @@
         "C_ACCOUNT_MAINTENANCE_ACTIVITY_CONDITION",
         "D_JURISDICTION"
       ],
-      "evidence_file": "nasdaq-xray/g9_free_path_audit_20261003.json",
+      "evidence_file": "nasdaq-xray/g9_provider_delta_tradier_fennel_refresh_20261003.json",
       "last_checked_on": "2026-10-03",
       "reopen_condition": "Tradier removes Turkey from blocked residency and removes international account activity/inactivity fee conditions while retaining qualifying realtime consolidated data/API access.",
       "negative_cache_only": true,
@@ -138,7 +138,7 @@
         "C",
         "D_JURISDICTION"
       ],
-      "evidence_file": "nasdaq-xray/g9_free_path_audit_20261003.json",
+      "evidence_file": "nasdaq-xray/g9_provider_delta_tradier_fennel_refresh_20261003.json",
       "last_checked_on": "2026-10-03",
       "reopen_condition": "Fennel offers permanent-$0 API market-data access and expands brokerage/API eligibility to Turkey residents while retaining qualifying NBBO/timestamp semantics.",
       "negative_cache_only": true,
