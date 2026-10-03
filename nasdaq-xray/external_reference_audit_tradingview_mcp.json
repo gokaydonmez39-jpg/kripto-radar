@@ -1,0 +1,137 @@
+{
+  "schema": "XRAY_EXTERNAL_REFERENCE_AUDIT_V1",
+  "status": "REVIEWED",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "alpha_authority": false,
+  "source": {
+    "repo": "atilaahmettaner/tradingview-mcp",
+    "reviewed_head": "a1e54b07e5c21b375363607920f297c5adfbeed4",
+    "reviewed_version": "0.9.0",
+    "user_reference": "https://github.com/atilaahmettaner/tradingview-mcp"
+  },
+  "reviewed_surfaces": [
+    "README/CHANGELOG/INSTALLATION/OPENCLAW",
+    "server tool surface",
+    "screener_provider/scanner/screener/stock_screener",
+    "Yahoo/extended-hours",
+    "backtest/walk-forward",
+    "multi-agent rule summary",
+    "smart-money OHLCV proxy",
+    "options chain/unusual activity",
+    "indicator/trade-setup math",
+    "unit/stress tests",
+    "commit history",
+    "open/closed issues and PR history",
+    "dependency pins and runtime behavior"
+  ],
+  "adopted": [
+    {
+      "id": "BOUNDED_RETRY_JITTER",
+      "disposition": "IMPLEMENTED",
+      "xray_evidence": [
+        "nasdaq-xray/resilience_runtime.py",
+        "nasdaq-xray/resilience_selftest.py"
+      ],
+      "reason": "Transient 429/5xx/transport failures need bounded retries; definitive 4xx must not retry."
+    },
+    {
+      "id": "PROVIDER_THROTTLE_AND_BATCH",
+      "disposition": "IMPLEMENTED_OR_ENFORCED",
+      "xray_evidence": [
+        "nasdaq-xray/history_phase.py",
+        "automation C4.17 prompts"
+      ],
+      "reason": "Prevent provider fan-out/rate-limit cliffs; Longbridge 429002 reproduced under parallel calls."
+    },
+    {
+      "id": "COMPLETE_UNIVERSE_NO_SILENT_TRUNCATION",
+      "disposition": "ALREADY_STRONGER_IN_XRAY",
+      "xray_evidence": [
+        "exact queue_hash/set equality",
+        "UNKNOWN!=PASS"
+      ],
+      "reason": "External repo previously silently truncated scans; XRAY exact-set contracts prevent this class."
+    },
+    {
+      "id": "PARTIAL_DATA_NOT_COMPLETE",
+      "disposition": "ALREADY_STRONGER_IN_XRAY",
+      "xray_evidence": [
+        "unknown_count structural gates",
+        "exact set/hash binding"
+      ],
+      "reason": "Partial results must never be presented as full-coverage scans."
+    },
+    {
+      "id": "SETUP_B_PIVOT_EXCLUDES_BREAKOUT_BAR",
+      "disposition": "IMPLEMENTED_REGRESSION_TEST",
+      "xray_evidence": [
+        "nasdaq-xray/test_dynamic_policy_invariants.py"
+      ],
+      "reason": "Avoid self-containing breakout pivot that makes confirmation logically impossible."
+    },
+    {
+      "id": "STALE_DATA_PROVENANCE",
+      "disposition": "PRINCIPLE_ADOPTED",
+      "reason": "Stale data may be diagnostic only and can never create XRAY PASS/current claim."
+    },
+    {
+      "id": "DETERMINISTIC_RUNTIME_PINS",
+      "disposition": "IMPLEMENTED",
+      "xray_evidence": [
+        "nasdaq-xray/requirements-runtime.txt"
+      ],
+      "reason": "External repo history showed dependency drift silently changing screener behavior."
+    },
+    {
+      "id": "FRESH_OFFICIAL_SYMBOL_UNIVERSE",
+      "disposition": "ALREADY_STRONGER_IN_XRAY",
+      "reason": "External issue #96 showed bundled symbol lists stale after venue moves; XRAY uses fresh official Nasdaq identity state."
+    }
+  ],
+  "rejected_or_non_authoritative": [
+    {
+      "id": "TRADINGVIEW_SCANNER_AS_PRODUCTION_DATA",
+      "disposition": "REJECTED",
+      "reason": "TradingView terms/public-data constraints make automated/non-display production use unsuitable for XRAY authority; also free US realtime is not consolidated National NBBO."
+    },
+    {
+      "id": "STALE_WHILE_ERROR_FOR_ALPHA",
+      "disposition": "REJECTED",
+      "reason": "Serving hours-old cache is acceptable UX fallback but violates XRAY current-evidence semantics."
+    },
+    {
+      "id": "SMART_MONEY_PROXY_AS_INSTITUTIONAL_FLOW",
+      "disposition": "DIAGNOSTIC_ONLY",
+      "reason": "External implementation explicitly derives proxy from OHLCV and is not actual institutional-flow data."
+    },
+    {
+      "id": "MULTI_AGENT_SCORE_AS_PROBABILITY",
+      "disposition": "REJECTED",
+      "reason": "External maintainers themselves relabeled it deterministic rule agreement, not AI debate/probability."
+    },
+    {
+      "id": "OPTIONS_UNUSUAL_ACTIVITY_AS_ALPHA_GATE",
+      "disposition": "DIAGNOSTIC_ONLY",
+      "reason": "Yahoo public option-chain volume/OI may enrich risk/event context but does not satisfy existing XRAY setup authority."
+    },
+    {
+      "id": "EXTERNAL_STRATEGY_RANKINGS",
+      "disposition": "REJECTED_AS_ALPHA",
+      "reason": "RSI/Bollinger/MACD etc. rankings do not match canonical A/B/C/D policy and would introduce unvalidated alpha."
+    }
+  ],
+  "security_findings": [
+    {
+      "id": "MALICIOUS_CLONE_WARNING",
+      "source_issue": 101,
+      "rule": "Never install unofficial npm/TypeScript forks or lookalike Redis dependencies referenced by issue #101; only audited upstream/reference code."
+    }
+  ],
+  "related_reference": {
+    "repo": "grahammccain/chart-library-mcp",
+    "disposition": "REGISTERED_NONAUTHORITATIVE_DIAGNOSTIC",
+    "intended_use": "Completed-session historical analog/range research for prospective finalists only; no PASS/FAIL or threshold change.",
+    "integration_constraint": "Public research is free/read-only, but data/licensing and redistribution permissions must be respected before persisting outputs in public XRAY artifacts."
+  }
+}
