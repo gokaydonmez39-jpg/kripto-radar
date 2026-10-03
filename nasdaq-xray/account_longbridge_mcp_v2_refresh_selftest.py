@@ -27,7 +27,7 @@ def payload():
         "scopes": ["account.read"],
         "issued_at_epoch": 100,
         "expires_at_epoch": 9_999_999_999,
-        "main_endpoint": "https://mcp.longbridge.com",
+        "main_endpoint": "https://mcp.longbridge.com/v2",
         "agent_endpoint": "https://mcp.longbridge.com/agent",
         "account_tools_verified": True,
         "write_surface_absent": True,
