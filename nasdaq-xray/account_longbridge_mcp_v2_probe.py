@@ -63,7 +63,7 @@ def _state(
         "endpoint_class": "OFFICIAL_RESTRICTED_READ_SURFACE",
         "required_oauth_scope": "account.read",
         "trade_write_scope_required": False,
-        "trade_write_surface_exposed": not bool(write_surface_absent),
+        "trade_write_surface_exposed": (None if not manifest_verified else (not bool(write_surface_absent))),
         "tool_manifest_verified": bool(manifest_verified),
         "status": status,
         "reason_code": reason_code,
