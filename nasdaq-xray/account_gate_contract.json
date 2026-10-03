@@ -75,7 +75,7 @@
     "ETRADE_DEVELOPER_API": "CANDIDATE_NOT_CONNECTED_USER_ACCOUNT_REQUIRED",
     "MIDAS_VIA_TRADINGVIEW_OFFICIAL": "TECHNICALLY_SUFFICIENT_READ_SURFACE_CONFIRMED_BUT_NOT_SCHEDULER_CALLABLE",
     "MIDAS_ALPACA_CORRESPONDENT": "PROMISING_OFFICIAL_INFRA_BUT_ENDUSER_CREDENTIALS_NOT_AVAILABLE",
-    "LONGBRIDGE_DIRECT_OPENAPI": "OFFICIAL_READ_PATH_PREPARED_NOT_CANONICAL_SAME_RUN"
+    "LONGBRIDGE_DIRECT_OPENAPI": "ELIGIBLE_FRESH_SAME_RUN_ONLY_OAUTH_PREFERRED"
   },
   "adapter_registry_count": 9,
   "adapter_registry_sync": "EVIDENCE_PIN_ONLY_NEVER_PASS_AUTHORITY",
@@ -83,8 +83,9 @@
   "binding_revalidation_note": "Exact adapter/gate binding revalidated after evidence-only Midas updates; no ACCOUNT PASS created and no execution capability added.",
   "binding_revalidation": {
     "status": "EXACT",
-    "adapter_blob_sha": "74ff539205baab8695bb10851dd4cc6d428b5412",
+    "adapter_blob_sha": "69d46024a46c14621249708d721f902661cba8ec",
     "revalidated_on": "2026-10-03",
-    "semantic_effect": "NONE_ZERO_ALPHA"
+    "semantic_effect": "NONE_ZERO_ALPHA",
+    "note": "Direct Longbridge adapter metadata now prefers OAuth account permission; ACCOUNT remains blocked until fresh same-run successful reads."
   }
 }
