@@ -1,0 +1,31 @@
+{
+  "schema": "XRAY_G9_PROVIDER_DELTA_V1",
+  "generated_on": "2026-10-03",
+  "provider": "Public.com Individual API",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "status": "TECHNICALLY_STRONG_BUT_USER_JURISDICTION_BLOCKED_AND_A_UNPROVEN",
+  "evidence": [
+    "Official Individual API exposes realtime equity quotes through a sanctioned API and hosted MCP/ChatGPT integration.",
+    "Quote response includes last, bid, ask plus independent lastTimestamp, bidTimestamp and askTimestamp, satisfying the required technical timestamp shape in principle.",
+    "Public eligibility requires a valid Social Security Number, legal U.S. residential address, and U.S. citizen/permanent-resident/qualifying-visa status; the brokerage agreement says services are intended for U.S.-state residents/organized persons.",
+    "Public documentation reviewed does not establish that the equity quote is consolidated UTP/SIP National NBBO; market data is described as third-party data without exact lineage.",
+    "Therefore the path cannot be used for a Turkey-resident strict G9 runtime even though scheduler/API mechanics are attractive."
+  ],
+  "primary_sources": [
+    "https://public.com/api/docs/resources/market-data/get-quotes",
+    "https://public.com/api/docs",
+    "https://help.public.com/en/articles/4374819-who-can-create-an-account",
+    "https://help.public.com/en/articles/5802860-if-i-m-not-a-us-citizen-can-i-use-public",
+    "https://public.com/disclosures/public-brokerage-agreement"
+  ],
+  "gate_assessment": {
+    "A": "UNPROVEN",
+    "B": "TECHNICALLY_STRONG",
+    "C": "ACCOUNT_DEPENDENT_NOT_RELEVANT_AFTER_JURISDICTION_FAIL",
+    "D": "TECHNICALLY_STRONG",
+    "jurisdiction": "FAIL_FOR_TURKEY_RESIDENT"
+  },
+  "reopen_condition": "Only if Public expands account/API eligibility to Turkey residents and provides primary-source proof that equity quote data is consolidated UTP/National NBBO under the exact market-data entitlement.",
+  "no_policy_weakening": true
+}
