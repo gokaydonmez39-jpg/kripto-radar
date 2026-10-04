@@ -36,8 +36,61 @@ jobs:
         with: {fetch-depth: 1}
       - uses: actions/setup-python@v5
         with: {python-version: "3.12"}
+      - name: Frozen exact terminal no-op guard
+        id: freeze
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import hashlib,json,pathlib
+          root=pathlib.Path("nasdaq-xray")
+          def blob_sha(p):
+              b=p.read_bytes()
+              return hashlib.sha1(f"blob {len(b)}\0".encode()+b).hexdigest()
+          try:
+              t=json.load(open(root/"canonical_current_terminal.json"))
+              p=json.load(open(root/"chatgpt_canonical_state_v2.json"))
+              ps=p.get("state_json") or {}
+              if isinstance(ps,str): ps=json.loads(ps)
+              evidence=t.get("evidence") or {}
+              checks=[
+                ("master","canonical_current_master_manifest.json"),
+                ("price","canonical_current_price_dv20.json"),
+                ("history","canonical_current_history.json"),
+                ("legal","canonical_current_legal.json"),
+                ("stage1_input","canonical_current_stage1_input.json"),
+                ("stage1","canonical_current_stage1.json"),
+                ("regime","canonical_current_regime.json"),
+                ("deep_geometry","canonical_current_deep_geometry.json"),
+                ("event_request","canonical_current_event_request.json"),
+              ]
+              exact=(
+                t.get("status")=="FULL_E2E_RESEARCH_PASS"
+                and t.get("full_end_to_end_research_pass") is True
+                and str(t.get("asof_et") or "")==str(ps.get("asof_et") or "")
+                and ((ps.get("work_cursor") or {}).get("PHASE")=="TERMINAL")
+              )
+              for key,fn in checks:
+                  fp=root/fn
+                  ev=evidence.get(key) or {}
+                  exact=exact and fp.exists() and ev.get("blob_sha")==blob_sha(fp)
+              mc=evidence.get("mc") or {}
+              mcp=pathlib.Path(mc.get("path") or "")
+              exact=exact and mcp.exists() and mc.get("blob_sha")==blob_sha(mcp)
+              print("frozen="+("true" if exact else "false"))
+              print("reason="+("FROZEN_EXACT_COMPLETED_TERMINAL" if exact else "REBUILD_REQUIRED_OR_BINDING_DRIFT"))
+          except Exception as e:
+              print("frozen=false")
+              print("reason=FREEZE_GUARD_ERROR_"+type(e).__name__)
+          PY
+
+      - name: Frozen completed epoch healthy no-op
+        if: steps.freeze.outputs.frozen == 'true'
+        run: echo "XRAY_POST_MC=HEALTHY_NOOP_EXACT_TERMINAL"
+
       - name: Find exact-bound committed MC bridge
         id: mc
+        if: steps.freeze.outputs.frozen != 'true'
         shell: bash
         run: |
           set -e
