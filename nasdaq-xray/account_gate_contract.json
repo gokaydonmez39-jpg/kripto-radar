@@ -78,15 +78,16 @@
     "LONGBRIDGE_DIRECT_OPENAPI": "ELIGIBLE_FRESH_SAME_RUN_ONLY_OAUTH_PREFERRED",
     "LONGBRIDGE_HOSTED_MCP": "ELIGIBLE_FRESH_SAME_RUN_ONLY_ACCOUNT_SCOPE",
     "LONGBRIDGE_HOSTED_MCP_V2": "ELIGIBLE_FRESH_SAME_RUN_ONLY_BOOTSTRAP_READY",
-    "CLEAR_STREET_READ_ONLY_MCP": "CANDIDATE_TURKEY_ELIGIBILITY_AND_ZERO_BALANCE_RETENTION_UNPROVEN; technically capable balances+positions on an official read-only surface."
+    "CLEAR_STREET_READ_ONLY_MCP": "CANDIDATE_TURKEY_ELIGIBILITY_AND_ZERO_BALANCE_RETENTION_UNPROVEN; technically capable balances+positions on an official read-only surface.",
+    "RALLIES_ACCOUNT_READ_V1": "BLOCKED_NO_CURRENT_PORTFOLIO_WITNESS"
   },
   "adapter_registry_count": 13,
   "adapter_registry_sync": "EVIDENCE_PIN_ONLY_NEVER_PASS_AUTHORITY",
   "binding_revalidated_on": "2026-10-04",
-  "binding_revalidation_note": "Exact adapter/gate binding revalidated after adding fail-closed Clear Street alternative; current primary remains LONGBRIDGE_HOSTED_MCP_V2 and no ACCOUNT PASS is created.",
+  "binding_revalidation_note": "Exact adapter/gate binding synchronized to the current provider-neutral registry; no ACCOUNT PASS created.",
   "binding_revalidation": {
     "status": "EXACT",
-    "adapter_blob_sha": "5449326202d6dab2de99c8f384bcdd5e95834c0e",
+    "adapter_blob_sha": "2b224268b29ae9a09c8bd3e9ebec86907e8c3dd2",
     "revalidated_on": "2026-10-04",
     "semantic_effect": "NONE_ZERO_ALPHA"
   },
