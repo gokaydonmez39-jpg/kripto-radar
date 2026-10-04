@@ -1,0 +1,43 @@
+{
+  "schema": "XRAY_G9_PROVIDER_DELTA_PUBLIC_MCP_V1",
+  "generated_on": "2026-10-04",
+  "provider": "Public.com Hosted MCP / Individual API",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "status": "P1_NEAR_MISS_REOPENED_2026_HOSTED_MCP",
+  "evidence": {
+    "free_mcp": "Hosted MCP access included with Public brokerage account at no extra cost.",
+    "live_market_data": "Official MCP/API supports live market data during trading hours.",
+    "scheduler_callability": "Hosted MCP URL https://mcp.public.com/mcp plus official Python SDK/MCP server; API supports automated/quant use.",
+    "account_read": "Official MCP exposes balances, buying power, portfolio positions, orders and transactions.",
+    "quote_schema": "Official quote API exposes last, lastTimestamp, bid, bidSize, bidTimestamp, ask, askSize, askTimestamp.",
+    "timestamp_semantics": "Official SDK describes lastTimestamp as when last trade occurred; bidTimestamp/askTimestamp as when bid/ask were last updated.",
+    "personal_use": "Individual API explicitly permits personal, non-commercial use.",
+    "market_data_contract": "Public Market Data Addendum contains Nasdaq nonprofessional subscriber terms."
+  },
+  "unresolved": [
+    "Exact quote lineage is not explicitly documented as consolidated CTA/UTP SIP National NBBO.",
+    "Public SDK mentions data source example Xignite for one-day-change values, but this does not prove quote lineage.",
+    "Türkiye-resident individual account/API eligibility is not publicly confirmed; Public instructs non-US residents to contact Concierge.",
+    "No same-run RTH witness can run without an eligible authenticated Public account.",
+    "End-user SIP/UTP/CTA/non-display fee treatment for unattended read-only agent use is not explicitly documented."
+  ],
+  "gate_assessment": {
+    "A": "UNKNOWN",
+    "B": "STRONG_BUT_EVENT_SOURCE_SEMANTICS_NOT_EXCHANGE_SIP_PROVEN",
+    "C": "PARTIAL",
+    "D": "TECHNICALLY_PASSABLE_IF_ACCOUNT_ELIGIBLE"
+  },
+  "account_gate_potential": true,
+  "may_create_pass": false,
+  "source_urls": [
+    "https://public.com/mcp-trading",
+    "https://public.com/api",
+    "https://public.com/api/docs/resources/market-data/get-quotes",
+    "https://public.com/api/docs/templates/hosted-mcp",
+    "https://public.com/disclosures/public-market-data-addendum",
+    "https://github.com/PublicDotCom/publicdotcom-mcp-server",
+    "https://github.com/PublicDotCom/publicdotcom-py"
+  ],
+  "no_policy_weakening": true
+}
