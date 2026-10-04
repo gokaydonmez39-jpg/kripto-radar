@@ -32,6 +32,8 @@ GATE_FILES={
  "account_gate":ROOT/"account_gate_contract.json",
  "account_adapter":ROOT/"account_provider_adapter_contract.json",
 }
+OFFICIAL_HALT_GUARD=ROOT/"canonical_official_source_guard.json"
+HALT_GUARD_MAX_AGE_SECONDS=int(os.getenv("XRAY_HALT_GUARD_MAX_AGE_SECONDS","5400"))
 
 def blob_sha(p:Path):
     b=p.read_bytes()
@@ -314,6 +316,40 @@ def main():
         assert ft["results"][k].get("state_cap")!="WATCH"
         assert ft["results"][k].get("r92_eligible") is True
 
+    # Current operational candidate-safety overlay. This never creates alpha or
+    # rewrites historical event facts: it can only veto current deliverable
+    # candidates or fail closed when official halt state is unavailable/stale.
+    raw_pre=set(pre)
+    halt_vetoed=[]
+    halt_guard_unknown=0
+    halt_safety={
+      "status":"UNKNOWN","guard_path":"nasdaq-xray/canonical_official_source_guard.json",
+      "max_age_seconds":HALT_GUARD_MAX_AGE_SECONDS,"active_halt_symbols":[],
+      "vetoed_candidates":[],"zero_alpha":True,
+    }
+    try:
+        g=load(OFFICIAL_HALT_GUARD)
+        assert g.get("schema")=="XRAY_OFFICIAL_SOURCE_GUARD_V1"
+        assert g.get("execution")=="NONE" and g.get("real_money")=="NO-GO"
+        hs=((g.get("sources") or {}).get("trade_halts") or {})
+        assert hs.get("status")=="PASS"
+        gt=datetime.fromisoformat(str(g.get("generated_at_utc")).replace("Z","+00:00")).astimezone(timezone.utc)
+        age=(datetime.now(timezone.utc)-gt).total_seconds()
+        assert -60 <= age <= HALT_GUARD_MAX_AGE_SECONDS, f"HALT_GUARD_STALE:{age}"
+        active=set(str(x).upper() for x in (hs.get("active_halt_symbols") or []))
+        halt_vetoed=sorted(k for k in raw_pre if str(k).split("|",1)[0].upper() in active)
+        pre=raw_pre-set(halt_vetoed)
+        halt_safety.update({
+          "status":"PASS","guard_blob_sha":blob_sha(OFFICIAL_HALT_GUARD),
+          "generated_at_utc":g.get("generated_at_utc"),"age_seconds":round(age,3),
+          "active_halt_symbols":sorted(active),"vetoed_candidates":halt_vetoed,
+        })
+    except Exception as e:
+        if raw_pre:
+            halt_guard_unknown=1
+            pre=set()
+        halt_safety.update({"status":"UNKNOWN","reason":f"{type(e).__name__}:{str(e)[:180]}"})
+
     blockers={
       "master_unknown":int(m["unknown_count"]),
       "price_unknown":int(p["unknown_count"]),
@@ -326,6 +362,7 @@ def main():
       "affected_event_unknown":len(affected_event_unknown),
       "family_c_history_unknown":len(family_c_unknown),
       "final_unknown":len(final_unknown),
+      "candidate_halt_guard_unknown":halt_guard_unknown,
     }
     full=all(v==0 for v in blockers.values())
     terminal_result=("NO_CONFIRMED_SETUP" if not pre else "PRE_G9_SETUP_EXISTS") if full else "PARTIAL_UNKNOWN"
@@ -340,6 +377,7 @@ def main():
       "settlement_witness_path":mc.get("settlement_witness_path"),
       "settlement_witness_blob_sha":mc.get("settlement_witness_blob_sha"),
       "r92_account_g9_applicable":bool(full and pre),"r92_candidates":sorted(pre) if full else [],
+      "candidate_delivery_safety":halt_safety,
       "g9_global_status":gate_reporting["g9_global_status"],
       "account_status":gate_reporting["account_status"],
       "final_gate_reporting_zero_alpha":True,
@@ -355,17 +393,26 @@ def main():
         "deep_B_armed_non_r92":len(dp.get("b_armed_rs_event_pass",[])),
         "deep_C_confirmed":len(fc.get("confirmed") or {}),
         "deep_D_confirmed":len(dp.get("d_dk3_pre_r1",[])),
-        "final_confirmed_candidates":len(confirmed),"pre_g9_tech_pass":len(pre),
+        "final_confirmed_candidates":len(confirmed),
+        "pre_g9_tech_pass_before_halt_guard":len(raw_pre),
+        "halt_vetoed_candidates":len(halt_vetoed),
+        "pre_g9_tech_pass":len(pre),
       },
       "sets":{
         "mc_fallback_watch":sorted(watch),"mc_fallback_fail":sorted(fallback_fail),"history_pass":sorted(hpass),"history_fail":sorted(hfail),
         "legal_pass":sorted(lpass),"weekly_pass":sorted(weekly),"confirmed_family_candidates":sorted(confirmed),
+        "pre_g9_tech_pass_before_halt_guard":sorted(raw_pre),
+        "halt_vetoed_candidates":halt_vetoed,
         "pre_g9_tech_pass":sorted(pre),"affected_event_unknown":affected_event_unknown,
         "family_c_unknown":family_c_unknown,"final_unknown":final_unknown,
       },
       "evidence":{
         **{k:{"path":str(FILES[k].relative_to(ROOT.parent)).replace("\\","/"),"blob_sha":sh[k]} for k in FILES},
         "mc":{"path":str(mc_path.relative_to(ROOT.parent)).replace("\\","/"),"blob_sha":blob_sha(mc_path)},
+        "official_halt_guard":(
+          {"path":"nasdaq-xray/canonical_official_source_guard.json","blob_sha":blob_sha(OFFICIAL_HALT_GUARD)}
+          if OFFICIAL_HALT_GUARD.exists() else {"status":"MISSING"}
+        ),
         **gate_reporting["evidence"],
       },
       "checks":{
@@ -379,6 +426,7 @@ def main():
         "exact_blob_provenance_chain":True,
         "count_equality_never_substituted_for_set_equality":True,
         "final_gate_reporting_does_not_affect_alpha":True,
+        "candidate_delivery_halt_guard_fail_closed":halt_safety.get("status")=="PASS" or not raw_pre,
       },
       "generated_at_utc":datetime.now(timezone.utc).isoformat()
     }
