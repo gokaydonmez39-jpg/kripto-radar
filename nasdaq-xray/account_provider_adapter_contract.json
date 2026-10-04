@@ -263,18 +263,46 @@
       "trading_scope_required": false,
       "execution": "NONE",
       "private_persistence": "FORBIDDEN"
+    },
+    "RALLIES_ACCOUNT_READ_V1": {
+      "status": "BLOCKED_NO_CURRENT_PORTFOLIO_WITNESS",
+      "sanctioned_surface": "Connected Rallies authenticated read-only portfolio tools",
+      "required_read_calls": [
+        "get_users_portfolio_data"
+      ],
+      "optional_consistency_calls": [
+        "get_users_portfolio_exposure_analysis",
+        "get_users_financial_snapshot"
+      ],
+      "pass_contract": [
+        "Same run must return at least one current synchronized supported brokerage account.",
+        "Broker/institution identity must be present.",
+        "Account total/balance must be parseable finite and nonnegative.",
+        "Positions must be explicit; an empty list is valid only when provider explicitly reports a synchronized zero-position account.",
+        "Freshness/sync status must be parseable; stale or unknown freshness remains UNKNOWN.",
+        "No order/fund mutation tool may be called.",
+        "Persist only status/provenance; never persist balances, positions, account identifiers or transaction details."
+      ],
+      "current_witness": "2026-10-04 connected get_users_portfolio_data returned 'No portfolio data found for user'; therefore same-run ACCOUNT witness is absent.",
+      "blocker": "Authenticated Rallies surface is callable but no user portfolio/broker connection is currently available.",
+      "reopen_condition": "A supported brokerage is connected and the same canonical run receives parseable synchronized account balance/value plus explicit positions/exposure from allowlisted read-only calls.",
+      "same_run_rule": "Documentation or prior reads can never create ACCOUNT_PASS.",
+      "trading_scope_required": false,
+      "execution": "NONE",
+      "private_persistence": "FORBIDDEN"
     }
   },
   "transition_to_pass": "Only fresh same-run provider readback satisfying the pass_rule may set ACCOUNT=PASS. Persisted prior PASS alone is insufficient.",
   "no_policy_weakening": true,
   "updated_on": "2026-10-04",
-  "adapter_count": 12,
+  "adapter_count": 13,
   "latest_candidate_refresh": {
     "date": "2026-10-04",
     "added": [
-      "CLEAR_STREET_READ_ONLY_MCP"
+      "RALLIES_ACCOUNT_READ_V1"
     ],
     "pass_created": false,
-    "primary_adapter_unchanged": "LONGBRIDGE_HOSTED_MCP_V2"
+    "primary_adapter_unchanged": "LONGBRIDGE_HOSTED_MCP_V2",
+    "observed_rallies_witness": "NO_PORTFOLIO_DATA"
   }
 }
