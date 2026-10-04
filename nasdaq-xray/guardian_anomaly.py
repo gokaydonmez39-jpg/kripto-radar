@@ -38,13 +38,25 @@ def main():
         for x in (ps.get("r92") or [])
         if isinstance(x,dict) and x.get("delivery_key") and x.get("symbol")
     })
-    halt=((pit.get("sources") or {}).get("trade_halts") or {})
-    active=set(str(x).upper() for x in (halt.get("active_halt_symbols") or []))
-    intersection=sorted(set(candidate_symbols)&active)
-    if halt.get("status")!="PASS":
-        add("candidate_halt_guard","FAIL" if candidate_symbols else "DEGRADED",{"halt_feed_status":halt.get("status"),"registered_candidates":candidate_symbols})
+    src=pit.get("sources") or {}
+    halt=(src.get("trade_halts") or {})
+    sec=(src.get("security_status") or {})
+    safety=pit.get("candidate_safety") or {}
+    veto=set(str(x).upper() for x in (safety.get("veto_symbols") or []))
+    veto |= set(str(x).upper() for x in (halt.get("active_halt_symbols") or []))
+    veto |= set(str(x).upper() for x in (sec.get("suspension_symbols") or []))
+    intersection=sorted(set(candidate_symbols)&veto)
+    official_safety_pass=(halt.get("status")=="PASS" and sec.get("status")=="PASS")
+    if not official_safety_pass:
+        add("candidate_official_safety_guard","FAIL" if candidate_symbols else "DEGRADED",{
+          "halt_feed_status":halt.get("status"),"security_status_feed":sec.get("status"),
+          "registered_candidates":candidate_symbols
+        })
     else:
-        add("candidate_halt_guard","FAIL" if intersection else "PASS",{"registered_candidates":candidate_symbols,"active_halt_intersection":intersection})
+        add("candidate_official_safety_guard","FAIL" if intersection else "PASS",{
+          "registered_candidates":candidate_symbols,"veto_intersection":intersection,
+          "veto_symbol_count":len(veto)
+        })
     add("lineage_registry","PASS" if lineage.get("status") in {"COMPLETE_LINEAGE","COMPLETE_LINEAGE_SCHEMA"} else "DEGRADED",lineage.get("status"))
     add("deterministic_replay","PASS" if replay.get("status")=="PASS" else "FAIL",replay.get("status"))
     bad_delivery=[k for k,v in (delivery.get("deliveries") or {}).items() if v.get("backup_issue_status") not in {None,"DELIVERED"}]
