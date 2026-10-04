@@ -1,0 +1,36 @@
+{
+  "schema": "XRAY_PROVIDER_AUTOMATION_GOVERNANCE_V1",
+  "updated_on": "2026-10-04",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "no_paid_fallback": true,
+  "providers": {
+    "ALPHASTOCKS": {
+      "unattended_automation_allowed": false,
+      "authority": "OFFICIAL_TERMS_OF_USE_2026_09",
+      "rule": "DO_NOT_SCRAPE_CRAWL_OR_AUTOMATED_COLLECT_WITH_BOTS_OR_SCRIPTS",
+      "production_effect": "Any C4.17 fallback branch that requires a fresh AlphaStocks observation is UNAVAILABLE in unattended runtime and remains UNKNOWN; never synthesize, reuse stale evidence for a later ASOF, or weaken the fallback.",
+      "historical_evidence": "Existing immutable prior-ASOF evidence may remain as historical provenance only; it may not authorize a new automated call.",
+      "cutover": false
+    },
+    "BIGDATA": {
+      "unattended_automation_allowed": "ONLY_WITHIN_EXISTING_ZERO_DOLLAR_ENTITLEMENT",
+      "paid_top_up_allowed": false,
+      "production_role": "C4.17 MC primary remains unchanged until formally versioned migration passes regression.",
+      "failure_rule": "No credit/entitlement/callability => UNKNOWN or compiled fail evidence; never purchase or weaken threshold."
+    },
+    "ALPACA": {
+      "live_sip_g9_allowed": false,
+      "delayed_historical_sip_settlement_allowed": true,
+      "production_role": "Historical/delayed completed-session settlement only; NON-G9.",
+      "paid_upgrade_allowed": false
+    },
+    "LONGBRIDGE": {
+      "broad_market_data_core_allowed": false,
+      "narrow_account_read_candidate": true,
+      "narrow_settlement_crosscheck_allowed": true,
+      "paid_upgrade_allowed": false
+    }
+  }
+}
