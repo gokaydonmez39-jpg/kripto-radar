@@ -10,6 +10,7 @@ on:
       - "nasdaq-xray/deep_pre_r1_shadow.py"
       - "nasdaq-xray/final_tech_shadow.py"
       - "nasdaq-xray/build_current_terminal.py"
+      - "nasdaq-xray/canonical_official_source_guard.json"
       - "nasdaq-xray/build_final_gate_overlay_v2.py"
       - "nasdaq-xray/strict_g9_runtime_state.json"
       - "nasdaq-xray/account_gate_contract.json"
@@ -410,6 +411,16 @@ jobs:
           assert e.get("compiled_policy_hash")==t["compiled_policy_hash"]
           assert e.get("compiled_policy_version")=="C4.17"
           assert t["terminal_result"] in {"NO_CONFIRMED_SETUP","PRE_G9_SETUP_EXISTS","PARTIAL_UNKNOWN"}
+          hs=t.get("candidate_delivery_safety") or {}
+          raw=t.get("sets",{}).get("pre_g9_tech_pass_before_halt_guard") or []
+          safe=t.get("sets",{}).get("pre_g9_tech_pass") or []
+          veto=t.get("sets",{}).get("halt_vetoed_candidates") or []
+          assert set(safe).isdisjoint(set(veto))
+          assert set(safe)|set(veto)==set(raw)
+          if raw:
+              assert hs.get("status")=="PASS",hs
+              assert t["blockers"].get("candidate_halt_guard_unknown")==0
+          print("XRAY_TERMINAL_HALT_SAFETY=PASS raw=%d veto=%d safe=%d"%(len(raw),len(veto),len(safe)))
           if t["full_end_to_end_research_pass"]:
               assert all(v==0 for v in t["blockers"].values()),t["blockers"]
               assert t["status"]=="FULL_E2E_RESEARCH_PASS"
@@ -453,7 +464,7 @@ jobs:
           git fetch origin main
           latest="$(git rev-parse origin/main)"
           if [[ "$latest" != "$GITHUB_SHA" ]]; then
-            changed="$(git diff --name-only "$GITHUB_SHA" "$latest" --               .github/workflows/xray-canonical-current-final.yml               nasdaq-xray/build_current_terminal.py               nasdaq-xray/build_final_gate_overlay_v2.py               nasdaq-xray/account_gate_contract.json               nasdaq-xray/account_provider_adapter_contract.json               nasdaq-xray/account_longbridge_openapi_probe.py               nasdaq-xray/account_longbridge_openapi_probe_selftest.py               nasdaq-xray/account_longbridge_mcp_v2_probe.py               nasdaq-xray/account_longbridge_mcp_v2_probe_selftest.py               nasdaq-xray/account_longbridge_mcp_v2_vault.py               nasdaq-xray/account_longbridge_mcp_v2_vault_selftest.py               nasdaq-xray/account_longbridge_mcp_v2_bootstrap.py               nasdaq-xray/account_longbridge_mcp_v2_refresh.py               nasdaq-xray/account_longbridge_mcp_v2_refresh_selftest.py               nasdaq-xray/account_longbridge_mcp_v2_token.enc               nasdaq-xray/select_account_live_probe.py               nasdaq-xray/select_account_live_probe_selftest.py               nasdaq-xray/account_same_run_terminal_selftest.py               nasdaq-xray/chatgpt_compiled_policy_v3.json || true)"
+            changed="$(git diff --name-only "$GITHUB_SHA" "$latest" --               .github/workflows/xray-canonical-current-final.yml               nasdaq-xray/build_current_terminal.py               nasdaq-xray/canonical_official_source_guard.json               nasdaq-xray/build_final_gate_overlay_v2.py               nasdaq-xray/account_gate_contract.json               nasdaq-xray/account_provider_adapter_contract.json               nasdaq-xray/account_longbridge_openapi_probe.py               nasdaq-xray/account_longbridge_openapi_probe_selftest.py               nasdaq-xray/account_longbridge_mcp_v2_probe.py               nasdaq-xray/account_longbridge_mcp_v2_probe_selftest.py               nasdaq-xray/account_longbridge_mcp_v2_vault.py               nasdaq-xray/account_longbridge_mcp_v2_vault_selftest.py               nasdaq-xray/account_longbridge_mcp_v2_bootstrap.py               nasdaq-xray/account_longbridge_mcp_v2_refresh.py               nasdaq-xray/account_longbridge_mcp_v2_refresh_selftest.py               nasdaq-xray/account_longbridge_mcp_v2_token.enc               nasdaq-xray/select_account_live_probe.py               nasdaq-xray/select_account_live_probe_selftest.py               nasdaq-xray/account_same_run_terminal_selftest.py               nasdaq-xray/chatgpt_compiled_policy_v3.json || true)"
             if [[ -n "$changed" ]]; then
               echo "XRAY_FACTORY_COMMIT=STALE_SOURCE_ABORT"
               printf '%s\n' "$changed"
