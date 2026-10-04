@@ -26,10 +26,11 @@
     },
     {
       "detail": {
-        "active_halt_intersection": [],
-        "registered_candidates": []
+        "registered_candidates": [],
+        "veto_intersection": [],
+        "veto_symbol_count": 25
       },
-      "name": "candidate_halt_guard",
+      "name": "candidate_official_safety_guard",
       "state": "PASS"
     },
     {
@@ -56,7 +57,7 @@
     }
   ],
   "execution": "NONE",
-  "generated_at_utc": "2026-10-04T20:57:13.107851+00:00",
+  "generated_at_utc": "2026-10-04T20:58:41.477689+00:00",
   "real_money": "NO-GO",
   "schema": "XRAY_GUARDIAN_STATE_V1",
   "self_healing_may_not_change_alpha": true,
