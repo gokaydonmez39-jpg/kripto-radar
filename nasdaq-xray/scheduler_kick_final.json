@@ -1,9 +1,9 @@
 {
   "schema": "XRAY_SCHEDULER_FINAL_KICK_V1",
-  "sequence": 4,
-  "requested_at_utc": "2026-10-04T21:54:09Z",
-  "requested_by": "FOREGROUND_READINESS_AUDIT",
-  "reason": "OFFICIAL_SAFETY_BINDING_AHEAD_AFTER_RESILIENCE",
+  "sequence": 5,
+  "requested_at_utc": "2026-10-04T21:54:17Z",
+  "requested_by": "READINESS_DEEP_XRAY",
+  "reason": "REBIND_FINAL_TO_LATEST_OFFICIAL_SAFETY_GUARD",
   "execution": "NONE",
   "real_money": "NO-GO"
 }
