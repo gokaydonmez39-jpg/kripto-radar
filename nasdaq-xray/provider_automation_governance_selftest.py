@@ -14,3 +14,5 @@ assert j["providers"]["ALPACA"]["live_sip_g9_allowed"] is False
 assert j["providers"]["BIGDATA"]["paid_top_up_allowed"] is False
 assert j["providers"]["LONGBRIDGE"]["broad_market_data_core_allowed"] is False
 print("XRAY_PROVIDER_AUTOMATION_GOVERNANCE_SELFTEST=PASS")
+
+# READINESS_WORKFLOW_RUN_REBIND_PROBE_2026_10_05: no semantic change.
