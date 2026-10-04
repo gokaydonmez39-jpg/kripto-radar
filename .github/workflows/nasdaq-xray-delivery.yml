@@ -7,6 +7,8 @@ on:
       - "nasdaq-xray/chatgpt_canonical_state_v2.json"
       - "nasdaq-xray/delivery_prepare.py"
       - "nasdaq-xray/delivery_prepare_selftest.py"
+      - "nasdaq-xray/official_source_guard.py"
+      - "nasdaq-xray/resilience_runtime.py"
       - ".github/workflows/nasdaq-xray-delivery.yml"
   schedule:
     - cron: "*/15 * * * 1-5"
@@ -31,6 +33,22 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+
+      - name: Compile delivery safety modules
+        run: |
+          python -m py_compile             nasdaq-xray/resilience_runtime.py             nasdaq-xray/official_source_guard.py             nasdaq-xray/delivery_prepare.py             nasdaq-xray/delivery_prepare_selftest.py
+
+      - name: Refresh official Nasdaq halt guard
+        run: |
+          python nasdaq-xray/official_source_guard.py
+          python - <<'PY'
+          import json
+          g=json.load(open("nasdaq-xray/canonical_official_source_guard.json"))
+          h=(g.get("sources") or {}).get("trade_halts") or {}
+          assert g.get("schema")=="XRAY_OFFICIAL_SOURCE_GUARD_V1"
+          assert h.get("status")=="PASS",h
+          print("XRAY_DELIVERY_HALT_GUARD=PASS active="+str(len(h.get("active_halt_symbols") or [])))
+          PY
 
       - name: Synthetic registered-R92 delivery self-test
         run: python nasdaq-xray/delivery_prepare_selftest.py
