@@ -61,6 +61,10 @@ def run_case(gate,adapter_obj,expect_ok,expect_error=None):
         assert out["current_status"] not in {"PASS","ACCOUNT_PASS"}
         assert out["adapter_contract"]["blob_sha"]==mod.blob_sha(ap)
         assert out["adapter_registry_sync"]=="EVIDENCE_PIN_ONLY_NEVER_PASS_AUTHORITY"
+        assert out["binding_revalidation"]["status"]=="EXACT"
+        assert out["binding_revalidation"]["adapter_blob_sha"]==mod.blob_sha(ap)
+        if "RALLIES_ACCOUNT_READ_V1" in adapter_obj.get("adapters",{}):
+            assert out["alternate_adapter_candidates"]["RALLIES_ACCOUNT_READ_V1"]==adapter_obj["adapters"]["RALLIES_ACCOUNT_READ_V1"]["status"]
         assert out["no_policy_weakening"] is True
 
 def main():
@@ -74,6 +78,11 @@ def main():
     # 3) Current adapter disappearing from registry must fail closed.
     run_case(base_gate(),adapters(False),False,
              "CURRENT_ACCOUNT_ADAPTER_MISSING_FROM_REGISTRY")
+
+    # 4) A new read-only alternate is surfaced without changing blocked status.
+    a=adapters()
+    a["adapters"]["RALLIES_ACCOUNT_READ_V1"]={"status":"BLOCKED_NO_CURRENT_PORTFOLIO_WITNESS"}
+    run_case(base_gate(),a,True)
 
     print("XRAY_ACCOUNT_GATE_RECONCILER_SELFTEST=PASS")
 
