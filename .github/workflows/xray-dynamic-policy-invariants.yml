@@ -107,3 +107,4 @@ jobs:
           assert p["unknown_never_pass"] is True
           print({"status":"PASS","policy_hash":t["policy_hash"]})
           PY
+# XRAY_READINESS_REVALIDATE_20261005
