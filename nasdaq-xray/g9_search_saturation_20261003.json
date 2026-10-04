@@ -282,7 +282,7 @@
     }
   ],
   "structural_result": "DIRECT UTP REALTIME NONDISPLAY IS FEE-LIABLE. A strict $0-to-end-user path can exist only if a broker/vendor lawfully absorbs upstream licensing and explicitly grants the exact automated/non-display API entitlement without balance/activity/per-query/subscription/account-maintenance conditions.",
-  "current_result": "NO_REVIEWED_PROVIDER_PROVES_A_B_C_D_SIMULTANEOUSLY",
+  "current_result": "FINAL_EXTERNAL_BLOCKED_NO_INTERNAL_RESEARCH_PATH_REMAINS",
   "search_policy": "Do not reopen a negative path from marketing wording alone. Reopen only on newer primary-source change to the exact failed gate, then require scheduler-callable live-RTH proof.",
   "unknown_never_pass": true,
   "no_policy_weakening": true,
@@ -297,5 +297,10 @@
     "evidence_file": "nasdaq-xray/g9_provider_delta_allyinvest_20261004.json",
     "evidence_blob_sha": "147b74677a4d5aafb1d3a0729dcd5418388705f4",
     "result": "STRICT_C_AND_D_FAIL_FUNDED_US_ONLY"
+  },
+  "final_resolution": {
+    "path": "nasdaq-xray/g9_final_resolution_20261004.json",
+    "blob_sha": "fd499d7357f0950b3e61eee72ad27ed481076433",
+    "result": "FINAL_EXTERNAL_BLOCKED_NO_INTERNAL_RESEARCH_PATH_REMAINS"
   }
 }
