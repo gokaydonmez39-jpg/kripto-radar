@@ -44,6 +44,57 @@ def parse_security_status_html(txt):
             })
     return rows
 
+def derive_security_suspensions(rows):
+    """Event-source Nasdaq issue suspension state.
+
+    Suspension is sticky until a strictly later official Security Additions
+    event for the same symbol. Same-day conflicts fail closed to suspended.
+    Anticipated additions never clear a suspension.
+    """
+    by={}
+    for row in rows:
+        sym=str(row.get("Symbol") or "").strip().upper()
+        date=str(row.get("EffectiveDate") or "").strip()
+        event=str(row.get("IssueEvent") or "").strip().lower()
+        if not sym or not re.fullmatch(r"\d{4}-\d{2}-\d{2}",date):
+            continue
+        st=by.setdefault(sym,{"latest_suspension":None,"latest_addition":None,"events":[]})
+        if "suspension" in event:
+            st["latest_suspension"]=max(st["latest_suspension"] or date,date)
+        # Exact Security Additions clears only when strictly later. Do not let
+        # Anticipated Security Additions clear a real suspension.
+        if event=="security additions":
+            st["latest_addition"]=max(st["latest_addition"] or date,date)
+        if "suspension" in event or event=="security additions":
+            st["events"].append({"EffectiveDate":date,"IssueEvent":row.get("IssueEvent")})
+    suspended=[]
+    evidence={}
+    for sym,st in sorted(by.items()):
+        sd=st["latest_suspension"]; ad=st["latest_addition"]
+        is_suspended=bool(sd and (not ad or sd>=ad))
+        if is_suspended:
+            suspended.append(sym)
+            evidence[sym]={"latest_suspension":sd,"latest_addition":ad,"rule":"SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"}
+    return suspended,evidence
+
+def historical_security_status_rows():
+    p=ROOT/"official_pit_ledger.json"
+    if not p.exists():
+        return []
+    try:
+        j=json.loads(p.read_text(encoding="utf-8"))
+    except Exception:
+        return []
+    out=[]
+    for snap in j.get("snapshots") or []:
+        if not isinstance(snap,dict) or snap.get("source")!="security_status":
+            continue
+        payload=snap.get("payload") or {}
+        for row in payload.get("rows") or []:
+            if isinstance(row,dict):
+                out.append(row)
+    return out
+
 def pointer_asof():
     try:
         p=json.loads((ROOT/"chatgpt_canonical_state_v2.json").read_text())
@@ -80,10 +131,23 @@ def main():
         url=(SOURCES["security_status"]+"&from="+mmddyyyy(start)+"&to="+mmddyyyy(end))
         t=fetch_text("NASDAQ_SECURITY_STATUS",url,UA,timeout=20,cache_ttl=300)
         rows=parse_security_status_html(t)
-        susp=sorted({r["Symbol"] for r in rows if "suspension" in r.get("IssueEvent","").lower() and r.get("Symbol")})
+        hist=historical_security_status_rows()
+        # Deduplicate immutable event evidence before deriving sticky state.
+        seen=set(); merged=[]
+        for row in hist+rows:
+            key=(str(row.get("EffectiveDate") or ""),str(row.get("Symbol") or "").upper(),
+                 str(row.get("IssueEvent") or ""),str(row.get("CompanyName") or ""),
+                 str(row.get("OldFinancialStatus") or ""),str(row.get("NewFinancialStatus") or ""))
+            if key in seen: continue
+            seen.add(key); merged.append(row)
+        susp,susp_evidence=derive_security_suspensions(merged)
         out["sources"]["security_status"]={
           "status":"PASS","url":url,"query_start":start,"query_end":end,
-          "row_count":len(rows),"rows":rows[:500],"suspension_symbols":susp,
+          "row_count":len(rows),"rows":rows[:500],
+          "historical_event_rows_considered":len(merged),
+          "suspension_symbols":susp,
+          "suspension_state_evidence":susp_evidence,
+          "suspension_state_rule":"EVENT_SOURCED_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS",
           "symbol_change_mapping_rule":"UNKNOWN_UNLESS_CORROBORATED"
         }
     except Exception as e:
