@@ -13,10 +13,11 @@ on:
       - "nasdaq-xray/macro_context_probe.py"
       - "nasdaq-xray/candidate_enrichment.py"
       - "nasdaq-xray/free_solution_candidates.json"
-      - "nasdaq-xray/free_solution_verifier.py             nasdaq-xray/pit_vintage_store.py             nasdaq-xray/pit_vintage_store_selftest.py             nasdaq-xray/official_source_guard.py             nasdaq-xray/data_lineage_registry.py             nasdaq-xray/deterministic_replay_guard.py             nasdaq-xray/guardian_anomaly.py"
+      - "nasdaq-xray/free_solution_verifier.py"
       - "nasdaq-xray/pit_vintage_store.py"
       - "nasdaq-xray/pit_vintage_store_selftest.py"
       - "nasdaq-xray/official_source_guard.py"
+      - "nasdaq-xray/official_pit_ledger.py"
       - "nasdaq-xray/data_lineage_registry.py"
       - "nasdaq-xray/deterministic_replay_guard.py"
       - "nasdaq-xray/guardian_anomaly.py"
@@ -50,7 +51,20 @@ jobs:
 
       - name: Compile resilience modules
         run: |
-          python -m py_compile             nasdaq-xray/resilience_runtime.py             nasdaq-xray/sec_official_witness.py             nasdaq-xray/external_health_probe.py             nasdaq-xray/macro_context_probe.py             nasdaq-xray/candidate_enrichment.py             nasdaq-xray/free_solution_verifier.py
+          python -m py_compile \
+            nasdaq-xray/resilience_runtime.py \
+            nasdaq-xray/sec_official_witness.py \
+            nasdaq-xray/external_health_probe.py \
+            nasdaq-xray/macro_context_probe.py \
+            nasdaq-xray/candidate_enrichment.py \
+            nasdaq-xray/free_solution_verifier.py \
+            nasdaq-xray/pit_vintage_store.py \
+            nasdaq-xray/pit_vintage_store_selftest.py \
+            nasdaq-xray/official_source_guard.py \
+            nasdaq-xray/official_pit_ledger.py \
+            nasdaq-xray/data_lineage_registry.py \
+            nasdaq-xray/deterministic_replay_guard.py \
+            nasdaq-xray/guardian_anomaly.py
 
       - name: Single-flight + circuit-breaker self-test
         run: python nasdaq-xray/resilience_selftest.py
@@ -60,6 +74,9 @@ jobs:
 
       - name: Nasdaq official PIT + halt/system guard
         run: python nasdaq-xray/official_source_guard.py
+
+      - name: Append official PIT ledger
+        run: python nasdaq-xray/official_pit_ledger.py
 
       - name: SEC official witness
         run: python nasdaq-xray/sec_official_witness.py
@@ -98,6 +115,7 @@ jobs:
             "verify":("free_solution_verification.json","XRAY_FREE_SOLUTION_VERIFICATION_V1"),
             "provider_ledger":("provider_health_ledger.json","XRAY_PROVIDER_HEALTH_LEDGER_V1"),
             "official_guard":("canonical_official_source_guard.json","XRAY_OFFICIAL_SOURCE_GUARD_V1"),
+            "pit_ledger":("official_pit_ledger.json","XRAY_OFFICIAL_PIT_LEDGER_V1"),
             "lineage":("canonical_data_lineage_registry.json","XRAY_DATA_LINEAGE_REGISTRY_V1"),
             "replay":("canonical_replay_guard.json","XRAY_DETERMINISTIC_REPLAY_GUARD_V1"),
             "guardian":("canonical_guardian_state.json","XRAY_GUARDIAN_STATE_V1"),
@@ -117,6 +135,10 @@ jobs:
                   assert pstate.get("last_error_retryable") is False,(provider,pstate)
                   assert int(pstate.get("consecutive_failures") or 0)==0,(provider,pstate)
                   assert float(pstate.get("open_until_epoch") or 0)==0,(provider,pstate)
+          pit=json.load(open(root/"official_pit_ledger.json"))
+          assert pit.get("append_only_semantics") is True,pit
+          assert pit.get("unknown_never_pass") is True,pit
+          assert int(pit.get("snapshot_count") or 0)>0,pit
           replay=json.load(open(root/"canonical_replay_guard.json"))
           assert replay.get("status")=="PASS",replay
           assert replay.get("asof_consistent") is True,replay
@@ -151,6 +173,7 @@ jobs:
             nasdaq-xray/free_solution_verification.json
             nasdaq-xray/provider_health_ledger.json
             nasdaq-xray/canonical_official_source_guard.json
+            nasdaq-xray/official_pit_ledger.json
             nasdaq-xray/canonical_data_lineage_registry.json
             nasdaq-xray/canonical_replay_guard.json
             nasdaq-xray/canonical_guardian_state.json
