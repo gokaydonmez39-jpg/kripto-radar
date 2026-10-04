@@ -1,0 +1,137 @@
+{
+  "schema": "XRAY_RESEARCH_OVERLAY_SHADOW_V1",
+  "generated_on": "2026-10-04",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "status": "ACTIVE_SHADOW",
+  "alpha_authority": false,
+  "compiled_policy_authority": {
+    "path": "nasdaq-xray/chatgpt_compiled_policy_v3.json",
+    "required_version": "C4.17",
+    "rule": "THIS_SHADOW_CONTRACT_MAY_NOT_WEAKEN_REPLACE_OR_OVERRIDE_COMPILED_POLICY"
+  },
+  "global_guards": {
+    "can_create_candidate": false,
+    "can_suppress_candidate": false,
+    "can_change_setup_family": false,
+    "can_change_hard_gate": false,
+    "can_change_rr": false,
+    "can_change_g9": false,
+    "can_change_account_gate": false,
+    "can_create_r92_r93": false,
+    "can_emit_buy_sell_signal": false,
+    "permitted_role": "DIAGNOSTIC_RESEARCH_PRIORITY_AND_EXPLANATORY_OVERLAY_ONLY",
+    "unknown_never_pass": true,
+    "no_paid_dependency": true,
+    "no_proprietary_scrape": true,
+    "no_vendor_signal_copying": true
+  },
+  "modules": [
+    {
+      "id": "EXPECTANCY_ANALOG_SHADOW_V1",
+      "inspiration": "Nautilus Investment Research public methodology",
+      "source_urls": [
+        "https://www.nautilus-cap.com/technical-analysis/",
+        "https://www.nautilus-research.com/"
+      ],
+      "implementation_rule": "INDEPENDENT_REIMPLEMENTATION_OF_GENERIC_EVENT_STUDY_AND_ANALOG_STATISTICS_ONLY;DO_NOT_COPY_PROPRIETARY_SIGNALS_OR_DATA",
+      "inputs": "completed historical OHLCV and already-authorized canonical technical/context fields only",
+      "horizons_sessions": [
+        2,
+        3,
+        5,
+        8
+      ],
+      "outputs": [
+        "sample_n",
+        "mean_forward_return",
+        "median_forward_return",
+        "positive_rate",
+        "stdev_forward_return",
+        "mfe",
+        "mae",
+        "analog_similarity",
+        "regime_conditioned_sample_n"
+      ],
+      "guards": [
+        "event definition frozen before forward window",
+        "no future bar may influence event selection",
+        "overlapping-event handling must be explicit",
+        "corporate-action/split ambiguity=>UNKNOWN",
+        "N<30=>INSUFFICIENT_SAMPLE",
+        "shadow metrics cannot affect canonical PASS/FAIL"
+      ]
+    },
+    {
+      "id": "STRUCTURAL_CONTEXT_SHADOW_V1",
+      "inspiration": "Stoic Edge public price-structure/state-machine documentation",
+      "source_urls": [
+        "https://stoicedge.com/"
+      ],
+      "implementation_rule": "INDEPENDENT_GENERIC_PRICE_STRUCTURE_STATE_MACHINE;DO_NOT_COPY_INVITE_ONLY_OR_CLOSED_SOURCE_COMPASS_CODE_OR_SIGNALS",
+      "inputs": "completed OHLC bars plus already-computed canonical moving-average/swing fields",
+      "outputs": [
+        "primary_state",
+        "local_state",
+        "phase",
+        "range_state",
+        "break_retest_state",
+        "sweep_state",
+        "structure_invalidation",
+        "retry_count",
+        "context"
+      ],
+      "allowed_context_values": [
+        "LONG_CONTEXT",
+        "WAIT"
+      ],
+      "guards": [
+        "WAIT is the default on ambiguity/conflict/incomplete structure",
+        "no short candidate creation",
+        "context cannot create/suppress canonical candidate",
+        "retry logic is diagnostic until prospectively validated",
+        "closed-source vendor output is never an authority input"
+      ]
+    },
+    {
+      "id": "SUPPLY_CHAIN_DISCOVERY_SHADOW_V1",
+      "inspiration": "HyperTechInvest public supply-chain/bottleneck research",
+      "source_urls": [
+        "https://x.com/hypertechinvest",
+        "https://hypertechinvest.com/"
+      ],
+      "implementation_rule": "DISCOVERY_GRAPH_ONLY;SOCIAL_OR_NEWS_CLAIMS_MUST_BE_RECONFIRMED_BY_PRIMARY_SOURCE_BEFORE ANY CANDIDATE_RESEARCH_ADVANCEMENT",
+      "outputs": [
+        "theme",
+        "bottleneck_node",
+        "upstream_downstream_links",
+        "candidate_tickers",
+        "claimed_customer_or_capacity_link",
+        "primary_source_status",
+        "exposure_attribution_status"
+      ],
+      "guards": [
+        "X/social post is discovery-only",
+        "SEC/issuer IR/company filing/official customer-supplier evidence required for factual confirmation",
+        "theme adjacency alone is insufficient",
+        "must link driver to orders/backlog/revenue/margins/estimate revisions or mark NEEDS_EXPOSURE_ATTRIBUTION",
+        "self-reported returns never increase source authority",
+        "micro/small-cap liquidity and dilution risk must be explicit"
+      ]
+    }
+  ],
+  "prospective_validation": {
+    "promotion": "NEVER_AUTOMATIC",
+    "requirement": "SEPARATE_EXPLICIT_POLICY_REVISION_AFTER_PROSPECTIVE_EVIDENCE_AND_REGRESSION_TESTING",
+    "no_backfill_for_promotion": true,
+    "base_system_must_remain_unchanged": true,
+    "collect": [
+      "incremental_precision_vs_base",
+      "incremental_recall_vs_base",
+      "false_positive_delta",
+      "candidate_delay_delta",
+      "2_3_5_8_session_forward_outcomes",
+      "failure_and_unknown_rates"
+    ]
+  }
+}
