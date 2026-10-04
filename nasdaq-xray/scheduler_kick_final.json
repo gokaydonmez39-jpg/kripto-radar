@@ -1,9 +1,9 @@
 {
   "schema": "XRAY_SCHEDULER_FINAL_KICK_V1",
-  "sequence": 2,
-  "requested_at_utc": "2026-10-04T21:36:49Z",
-  "requested_by": "MANUAL_READINESS_PROOF",
-  "reason": "END_TO_END_FINAL_REBIND_FAILOVER_TEST",
+  "sequence": 3,
+  "requested_at_utc": "2026-10-04T21:53:59Z",
+  "requested_by": "READINESS_DEEP_XRAY",
+  "reason": "REBIND_FINAL_FACTORY_TO_LATEST_RESILIENCE_HEAD",
   "execution": "NONE",
   "real_money": "NO-GO"
 }
