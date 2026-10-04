@@ -13,6 +13,9 @@ assert len({x["name"] for x in g})==36
 for x in g:
     assert x["tier"]
     assert isinstance(x["runtime_paths"],list) and x["runtime_paths"]
+    for rel in x["runtime_paths"]:
+        rp=(ROOT.parent/rel) if str(rel).startswith(".github/") else (ROOT/rel)
+        assert rp.exists(),(x["id"],"missing_runtime_path",str(rp))
     if x["tier"].startswith(("SHADOW","RESEARCH","BLOCKED","DISCOVERY","POSTMORTEM","PROVENANCE","ENTITLEMENT","NONCANONICAL")):
         assert x["cutover"] is False,(x["id"],x["tier"])
 # Explicitly preserve the two final hard blockers.
