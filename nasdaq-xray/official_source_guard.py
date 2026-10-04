@@ -49,7 +49,22 @@ def main():
     try:
         t=fetch_text("NASDAQ_TRADE_HALTS",SOURCES["trade_halts"],UA,timeout=20,cache_ttl=60)
         rows=parse_rss(t)
-        out["sources"]["trade_halts"]={"status":"PASS","url":SOURCES["trade_halts"],"item_count":len(rows),"items":rows[:250],"active_state_inference":"FORBIDDEN_WITHOUT_EXPLICIT_FEED_FIELD"}
+        # Active-halt classification uses only explicit official feed fields:
+        # no ResumptionTradeTime/ResumptionDate => still unresolved/active for
+        # candidate-safety purposes. No inference from reason code or age.
+        active=sorted({
+            str(x.get("IssueSymbol") or "").strip().upper()
+            for x in rows
+            if str(x.get("IssueSymbol") or "").strip()
+            and not str(x.get("ResumptionTradeTime") or "").strip()
+            and not str(x.get("ResumptionDate") or "").strip()
+        })
+        out["sources"]["trade_halts"]={
+            "status":"PASS","url":SOURCES["trade_halts"],"item_count":len(rows),
+            "items":rows[:250],"active_halt_symbols":active,
+            "active_halt_count":len(active),
+            "active_state_rule":"EXPLICIT_EMPTY_RESUMPTION_FIELDS_ONLY"
+        }
     except Exception as e:
         out["sources"]["trade_halts"]={"status":"UNKNOWN","url":SOURCES["trade_halts"],"reason":f"{type(e).__name__}:{str(e)[:180]}"}
     for k in ("system_status_ipo","system_status_selfhelp"):
@@ -61,6 +76,11 @@ def main():
             out["sources"][k]={"status":"UNKNOWN","url":SOURCES[k],"reason":f"{type(e).__name__}:{str(e)[:180]}"}
     sts=[v.get("status") for v in out["sources"].values()]
     out["status"]="PASS" if sts and all(x=="PASS" for x in sts) else "DEGRADED"
+    out["candidate_safety"]={
+        "halt_guard_status":out["sources"].get("trade_halts",{}).get("status","UNKNOWN"),
+        "active_halt_symbols":out["sources"].get("trade_halts",{}).get("active_halt_symbols",[]),
+        "rule":"REGISTERED_RESEARCH_CANDIDATE_DELIVERY_MUST_FAIL_CLOSED_ON_ACTIVE_HALT_OR_UNKNOWN_HALT_FEED"
+    }
     OUT.write_text(json.dumps(out,sort_keys=True,indent=2)+"\n",encoding="utf-8")
     print(json.dumps({"status":out["status"],"sources":{k:v["status"] for k,v in out["sources"].items()}},sort_keys=True))
 if __name__=="__main__": main()
