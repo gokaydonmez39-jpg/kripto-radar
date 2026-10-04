@@ -1,6 +1,10 @@
 name: XRAY Final Gate Overlay V2
 
 on:
+  workflow_run:
+    workflows: ["XRAY Canonical Current Final Factory"]
+    types: [completed]
+    branches: [main]
   push:
     branches: [main]
     paths:
@@ -25,6 +29,7 @@ concurrency:
 
 jobs:
   overlay:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
