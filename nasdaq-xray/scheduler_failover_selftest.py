@@ -18,6 +18,12 @@ assert int(contract["stale_after_seconds"])>=3600
 assert 2700 <= int(contract["root_active_run_grace_seconds"]) <= 3600
 assert 3000 <= int(contract["final_active_run_grace_seconds"]) <= 4200
 assert contract["health_policy"]["active_run_suppression"] is True
+assert int(contract["kick_cooldown_seconds"]) == 180
+assert contract["double_actions_snapshot_required"] is True
+assert int(contract["health_policy"]["kick_cooldown_seconds"]) == 180
+assert contract["health_policy"]["double_actions_snapshot_required"] is True
+assert "requested_at_utc" in contract["kick_lease_rule"]
+assert "queued/in_progress" in contract["kick_lease_rule"]
 assert "queued or in_progress" in contract["health_policy"]["active_run_rule"]
 assert kick["schema"]=="XRAY_SCHEDULER_KICK_V1"
 assert kick["execution"]=="NONE" and kick["real_money"]=="NO-GO"
