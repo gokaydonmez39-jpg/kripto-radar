@@ -239,7 +239,7 @@ jobs:
               echo "XRAY_RESILIENCE_COMMIT=NO_CHANGE"
               exit 0
             fi
-            git commit -m "chore(xray): resilience witnesses [skip ci]"
+            git commit -m "chore(xray): resilience witnesses"
             if git push origin HEAD:main; then
               echo "XRAY_RESILIENCE_COMMIT=PASS"
               exit 0
