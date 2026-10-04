@@ -1,6 +1,9 @@
 name: XRAY Canonical Current Final Factory
 
 on:
+  workflow_run:
+    workflows: ["XRAY Resilience + Official Witnesses"]
+    types: [completed]
   push:
     branches: [main]
     paths:
@@ -47,6 +50,7 @@ concurrency:
 
 jobs:
   final:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 50
     steps:
