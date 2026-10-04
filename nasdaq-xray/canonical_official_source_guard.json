@@ -63,7 +63,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-10-04T20:58:18.741273+00:00",
+  "generated_at_utc": "2026-10-04T21:10:58.349945+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -73,6 +73,7 @@
   "schema": "XRAY_OFFICIAL_SOURCE_GUARD_V1",
   "sources": {
     "security_status": {
+      "historical_event_rows_considered": 19,
       "query_end": "2026-10-04",
       "query_start": "2026-10-02",
       "row_count": 19,
@@ -250,6 +251,44 @@
         }
       ],
       "status": "PASS",
+      "suspension_state_evidence": {
+        "COLA": {
+          "latest_addition": null,
+          "latest_suspension": "2026-10-02",
+          "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+        },
+        "COLAR": {
+          "latest_addition": null,
+          "latest_suspension": "2026-10-02",
+          "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+        },
+        "COLAU": {
+          "latest_addition": null,
+          "latest_suspension": "2026-10-02",
+          "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+        },
+        "FSEA": {
+          "latest_addition": null,
+          "latest_suspension": "2026-10-02",
+          "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+        },
+        "GFAIW": {
+          "latest_addition": null,
+          "latest_suspension": "2026-10-02",
+          "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+        },
+        "NSTS": {
+          "latest_addition": null,
+          "latest_suspension": "2026-10-02",
+          "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+        },
+        "THRMV": {
+          "latest_addition": null,
+          "latest_suspension": "2026-10-02",
+          "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+        }
+      },
+      "suspension_state_rule": "EVENT_SOURCED_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS",
       "suspension_symbols": [
         "COLA",
         "COLAR",
