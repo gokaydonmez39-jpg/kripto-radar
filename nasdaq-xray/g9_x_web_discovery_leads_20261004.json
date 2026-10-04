@@ -22,7 +22,9 @@
         "Official market-data snapshot exposes the national best bid and best offer (NBBO).",
         "Snapshot reports bid_venue/ask_venue MICs plus independent bid_timestamp and ask_timestamp exchange times.",
         "Snapshot last_trade reports venue and exchange timestamp.",
-        "MCP is OAuth-authenticated and scheduler/agent-capable in principle."
+        "MCP is OAuth-authenticated and scheduler/agent-capable in principle.",
+        "Official account schema supports NATURAL_PERSON account holders.",
+        "Official API exposes account balances and positions, making Clear Street a potential single-provider solution for both G9 and ACCOUNT if eligibility/fee conditions pass."
       ],
       "unresolved": [
         "Türkiye-resident individual retail account eligibility remains unproven.",
@@ -36,7 +38,12 @@
         "https://docs.clearstreet.com/changelog/",
         "https://docs.clearstreet.com/api/",
         "https://www.clearstreet.com/"
-      ]
+      ],
+      "dual_blocker_potential": {
+        "g9": true,
+        "account": true,
+        "reason": "Same official read-only MCP exposes live market-data snapshots plus account balances and positions while disallowing trading actions."
+      }
     },
     {
       "provider": "Paper Invest",
@@ -176,6 +183,28 @@
         "https://developer.webull.com/apis/docs/market-data-api/overview/",
         "https://developer.webull.com/apis/docs/market-data-api/getting-started/"
       ]
+    },
+    {
+      "provider": "trader2B Free ToroChallenge",
+      "priority": "CLOSED_CURRENT",
+      "status": "FREE_DISPLAY_DATA_BUT_AUTOMATION_API_PREMIUM_AND_NBBO_LINEAGE_UNPROVEN",
+      "proven": [
+        "Free ToroChallenge includes complimentary real-time US stock market data at no additional cost for evaluation/practice.",
+        "Free plan is best-efforts and may be delayed/unstable.",
+        "Automated bots/API trading are explicitly not permitted on the FREE $100K ToroChallenge; API access is an optional premium feature.",
+        "Market Data API exists commercially for platform/partner integrations."
+      ],
+      "unresolved": [
+        "No official proof the complimentary feed is consolidated National NBBO.",
+        "No free scheduler-callable market-data API entitlement.",
+        "No lawful automated/non-display entitlement on the free plan."
+      ],
+      "current_action": "Closed for strict G9 under current rules; reopen only if free account gains scheduler-callable consolidated NBBO with explicit automated-use rights.",
+      "source_urls": [
+        "https://trader2b.com/learn/us-market-data-guide/",
+        "https://trader2b.com/stocks/symbol/",
+        "https://trader2b.com/pro-services/prop-trading-technology/"
+      ]
     }
   ],
   "search_notes": [
@@ -193,5 +222,9 @@
     "Wealthnow",
     "Alpaca ChatGPT market-data plugin / connected MCP surface",
     "Stocklake"
-  ]
+  ],
+  "highest_leverage_lead": {
+    "provider": "Clear Street Trading API / read-only MCP",
+    "reason": "Could close both STRICT_G9 and SAME_RUN_ACCOUNT blockers with one sanctioned read-only surface if Türkiye eligibility and permanent-$0/no-activity market-data entitlement are confirmed."
+  }
 }
