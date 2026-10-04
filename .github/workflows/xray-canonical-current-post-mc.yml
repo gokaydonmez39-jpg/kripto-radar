@@ -17,7 +17,7 @@ on:
       - "nasdaq-xray/chatgpt_compiled_policy_v3.json"
       - ".github/workflows/xray-canonical-current-post-mc.yml"
   schedule:
-    - cron: "55 * * * 1-5"
+    - cron: "50 * * * 1-5"
   workflow_dispatch:
 
 permissions:
