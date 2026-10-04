@@ -126,23 +126,22 @@
       "order_surface_policy": "XRAY adapter contains only GET /v1/market-data/snapshot. Account/order/position mutation and execution endpoints are forbidden by EXECUTION=NONE."
     },
     "PUBLIC_COM_HOSTED_MCP": {
-      "status": "CANDIDATE_NOT_IMPLEMENTED_AUTHORITY_UNPROVEN",
+      "status": "NOT_IMPLEMENTED_JURISDICTION_BLOCKED",
       "sanctioned_surface": "Official Public hosted MCP https://mcp.public.com/mcp plus official Individual API/SDK",
       "technical_scope": [
         "real-time quote: last + bid + ask",
         "distinct lastTimestamp + bidTimestamp + askTimestamp",
         "hosted OAuth MCP",
-        "read-only portfolio/account data available on same provider surface"
+        "read-only portfolio/account data on same provider surface"
       ],
       "evidence_file": "nasdaq-xray/g9_provider_delta_public_mcp_20261004.json",
-      "evidence_blob_sha": "3d54046ad8e1febb3b9385fd6506ba04667ce1b1",
-      "entitlement_status": "A_CONSOLIDATED_SIP_NBBO_LINEAGE_UNKNOWN; C_EXACT_PERMANENT_ZERO_AUTOMATED_NONDISPLAY_MARKET_DATA_RIGHT_UNKNOWN; TURKEY_ELIGIBILITY_UNKNOWN",
-      "authority_rule": "Do not implement or call as strict G9 until primary-source A/C/jurisdiction evidence is sufficient. Payload shape alone cannot prove lineage or entitlement.",
-      "implementation_trigger": "Only after authority evidence proves exact consolidated National-NBBO lineage, lawful permanent-$0 automated/non-display use, and applicable user eligibility.",
-      "account_dual_gate_potential": true
+      "evidence_blob_sha": "d8ab27ba66df1c3394730bc8bc1fecb9eb562c9e",
+      "entitlement_status": "CURRENT_USER_PATH_FAILS_US_RESIDENCY/SSN/US_STATUS_ACCOUNT_ELIGIBILITY; A/C THEREFORE NOT PURSUED FOR CURRENT USER",
+      "authority_rule": "Do not implement for the current Türkiye-resident user unless Public's official eligibility policy changes. A/C would still require proof after any future jurisdiction change.",
+      "account_dual_gate_potential": false
     },
     "FORINVEST_HOSTED_MCP": {
-      "status": "CANDIDATE_NOT_IMPLEMENTED_A_B_C_UNPROVEN",
+      "status": "CANDIDATE_NOT_IMPLEMENTED_A_B_C_PRIMARY_SOURCE_REPLY_PENDING",
       "sanctioned_surface": "Official ForInvest StreamableHTTP MCP https://mcp.forinvest.com/mcp",
       "technical_scope": [
         "OAuth 2.0 + PKCE",
@@ -150,29 +149,63 @@
         "sanctioned ChatGPT/Claude/Cursor access"
       ],
       "evidence_file": "nasdaq-xray/g9_provider_delta_forinvest_mcp_20261004.json",
-      "evidence_blob_sha": "15f8d636d88752cbf846b5f900b26b470b815511",
-      "entitlement_status": "FREE_REALTIME_US_EQUITIES_NOT_PROVEN; CONSOLIDATED_SIP_NBBO_NOT_PROVEN; INDEPENDENT_QUOTE_TRADE_EVENT_SCHEMA_NOT_PROVEN",
-      "authority_rule": "Never infer U.S. strict G9 from generic 'real-time global markets' marketing text; exact U.S. plan entitlement/schema/lineage is required first."
+      "evidence_blob_sha": "33170dc1f3c0ae489e43f27f722fc144e91c8095",
+      "entitlement_status": "TURKEY_JURISDICTION_FIT; FREE_REALTIME_US_EQUITIES_NOT_PROVEN; CONSOLIDATED_SIP_NBBO_NOT_PROVEN; INDEPENDENT_QUOTE_TRADE_EVENT_SCHEMA_NOT_PROVEN; PROVIDER_REPLY_PENDING",
+      "authority_rule": "Never infer U.S. strict G9 from generic 'real-time global markets' marketing text; exact U.S. plan entitlement/schema/lineage is required first.",
+      "outreach": "Technical verification sent to info@forinvest.com on 2026-10-04."
     },
     "ROBINHOOD_AGENTIC_MCP": {
       "status": "NOT_IMPLEMENTED_STRICT_C_D_AND_A_FAIL",
       "reason": "2026 Agentic Trading MCP requires a funded Agentic Account, is U.S.-eligibility constrained, and does not establish continuous consolidated SIP/NBBO quote+trade semantics.",
       "evidence_file": "nasdaq-xray/g9_provider_delta_robinhood_agentic_20261004.json",
       "evidence_blob_sha": "92327745c3c08519fe8971f94a4e6407d81007b2"
+    },
+    "WEBULL_CLOUD_MCP": {
+      "status": "NOT_IMPLEMENTED_JURISDICTION_BLOCKED",
+      "sanctioned_surface": "Official Webull Cloud MCP",
+      "technical_scope": [
+        "authorized real-time/historical market data",
+        "authorized account balances and positions",
+        "hosted AI-assistant integration"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_webull_cloud_mcp_20261004.json",
+      "evidence_blob_sha": "84499fcfeeadc4d2cc7f11dd2e86234a97193e95",
+      "entitlement_status": "CURRENT_USER_PATH_FAILS_WEBULL_FINANCIAL_US_RESIDENCY_REQUIREMENT; strict permanent-$0 automated consolidated-NBBO entitlement also not proven",
+      "authority_rule": "Do not implement for a Türkiye-resident user unless Webull Financial account-residency policy changes and strict A+C are independently proven.",
+      "account_dual_gate_potential": false
+    },
+    "FREEDOM_TRADERNET_MCP": {
+      "status": "NOT_IMPLEMENTED_STRICT_C_FAIL_AND_TURKEY_LOCAL_NOT_LIVE",
+      "sanctioned_surface": "Official TraderNet/Freedom Streamable HTTP MCP https://tradernet.com/mcp/tn",
+      "technical_scope": [
+        "quotes_get including AAPL.US",
+        "portfolio_get",
+        "HMAC API-key/secret authentication",
+        "about 61 tools and real-time market-data surfaces"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_freedom_tradernet_mcp_20261004.json",
+      "evidence_blob_sha": "2482e32c6642ed19ccd6b22c189c17da9a5728dc",
+      "entitlement_status": "Freedom Finance Europe official terms make realtime Level-1 market data fee-bearing and funded-account dependent; Freedom Yatırım Türkiye is licensed but not yet operational.",
+      "authority_rule": "Never use for strict G9 under current terms. Reopen only after Türkiye operation launches and exact permanent-$0 consolidated NBBO+last-trade event entitlement is published.",
+      "account_dual_gate_potential": "FUTURE_ONLY"
     }
   },
   "authority_file": "nasdaq-xray/g9_entitlement_authority.json",
   "audit_file": "nasdaq-xray/g9_free_path_audit_20261003.json",
   "no_policy_weakening": true,
   "updated_on": "2026-10-04",
-  "adapter_count": 17,
+  "adapter_count": 19,
   "latest_candidate_refresh": {
     "date": "2026-10-04",
     "added": [
-      "PUBLIC_COM_HOSTED_MCP",
-      "FORINVEST_HOSTED_MCP",
-      "ROBINHOOD_AGENTIC_MCP"
+      "WEBULL_CLOUD_MCP",
+      "FREEDOM_TRADERNET_MCP"
     ],
-    "pass_created": false
+    "updated": [
+      "PUBLIC_COM_HOSTED_MCP",
+      "FORINVEST_HOSTED_MCP"
+    ],
+    "pass_created": false,
+    "result": "PUBLIC_AND_WEBULL_JURISDICTION_CLOSED; FREEDOM_REALTIME_PAID_CLOSED; FORINVEST_PRIMARY_SOURCE_REPLY_PENDING"
   }
 }
