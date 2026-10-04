@@ -4,21 +4,53 @@
   "execution": "NONE",
   "real_money": "NO-GO",
   "reviewed_provider_paths": 70,
-  "result": "FINAL_EXTERNAL_BLOCKED_NO_INTERNAL_RESEARCH_PATH_REMAINS",
+  "result": "FINAL_EXTERNAL_BLOCKED_AFTER_2026_MCP_REOPEN_SWEEP",
   "g9_pass": false,
   "pass_rule": "A+B+C+D must all be proven; UNKNOWN != PASS; runtime adapters cannot self-authorize lineage or entitlement.",
   "strongest_remaining_paths": [
     {
-      "provider": "Paper Invest REST / Official MCP",
+      "provider": "Clear Street Trading API / read-only MCP",
       "proven": [
-        "Official MCP/landing explicitly calls paper.quote(symbol) a real-time NBBO quote.",
-        "Basic product is documented as $0/free-forever with API/MCP programmatic use.",
-        "REST quote and separate trade endpoints exist; runtime adapter is implemented."
+        "Official read-only MCP exists.",
+        "Official snapshot semantics identify National Best Bid and Offer and separate exchange timestamps for bid/ask and last trade.",
+        "G9 runtime adapter is already IMPLEMENTED.",
+        "Same provider exposes balances and positions, creating potential ACCOUNT dual-unlock."
       ],
       "still_required": [
-        "Primary-source confirmation that quote/trade timestamps are independent upstream market-event times.",
-        "Provider-specific confirmation of lawful UTP1APIS/equivalent automated/non-display classification and fee absorption for the permanent-$0 Basic REST path.",
-        "Then same-run US-RTH freshness/skew probe with PAPER_INVEST_API_KEY."
+        "Türkiye-resident individual eligibility.",
+        "Zero-balance/no-funding/no-activity retention of read-only MCP/live market data.",
+        "No separate end-user SIP/UTP/CTA/exchange/vendor/non-display/API fee.",
+        "Then same-run US-RTH freshness/skew witness."
+      ]
+    },
+    {
+      "provider": "Public.com Hosted MCP / Individual API",
+      "proven": [
+        "Official hosted MCP/API supports live market data and account/portfolio reads.",
+        "Official quote schema provides last/bid/ask with distinct lastTimestamp/bidTimestamp/askTimestamp.",
+        "Official SDK describes the timestamps as last-trade and bid/ask update times.",
+        "Hosted MCP/Individual API are sanctioned programmatic surfaces."
+      ],
+      "still_required": [
+        "Exact consolidated CTA/UTP SIP National-NBBO lineage for the equity quote route.",
+        "Türkiye-resident individual account/API eligibility.",
+        "Exact lawful automated/non-display permanent-$0 market-data entitlement.",
+        "Implement G9 adapter only after authority proof, then same-run US-RTH witness."
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_public_mcp_20261004.json"
+    },
+    {
+      "provider": "Paper Invest REST / Official MCP",
+      "proven": [
+        "Official product calls quote endpoint real-time NBBO.",
+        "Basic is $0/free-forever with API/MCP programmatic use.",
+        "Separate quote/trade endpoints exist and G9 runtime adapter is IMPLEMENTED."
+      ],
+      "still_required": [
+        "Exact consolidated UTP/SIP or licensed equivalent upstream lineage.",
+        "Independent upstream quote/trade event-time semantics.",
+        "Lawful automated/non-display permanent-$0 entitlement.",
+        "Then same-run US-RTH freshness/skew witness."
       ],
       "official_clarification": "paperinvest/mcp-server#3"
     },
@@ -26,36 +58,52 @@
       "provider": "Wealthnow Free price_snapshot",
       "proven": [
         "Free REST/MCP market-data access.",
-        "Independent quote_as_of and trade as_of/time semantics documented.",
-        "Live RTH example and implemented authority-gated adapter."
+        "Free snapshot exposes bid/ask and distinct quote/trade timing fields.",
+        "Paid streaming docs explicitly describe consolidated NBBO.",
+        "G9 runtime adapter is IMPLEMENTED."
       ],
       "still_required": [
-        "Primary-source proof that Free snapshot bid/ask are National NBBO/SIP or named equivalent licensed consolidated feed.",
-        "Provider-specific UTP1APIS/equivalent classification and fee absorption.",
-        "Then same-run US-RTH probe with WEALTHNOW_API_KEY."
+        "Exact binding of Free snapshot route to consolidated NBBO/SIP or named licensed equivalent.",
+        "Lawful automated/non-display permanent-$0 entitlement.",
+        "Then same-run US-RTH freshness/skew witness."
       ]
     }
   ],
   "closed_paths": [
-    "AlgoArena: SIP redistribution/zero-dollar entitlement not proven and upstream redistribution constraints conflict with strict C.",
+    "Robinhood Agentic Trading: funded Agentic Account condition, U.S. eligibility and continuous consolidated SIP/NBBO not proven.",
+    "ForInvest Hosted MCP: scheduler surface strong but free-account U.S. realtime entitlement, exact consolidated SIP/NBBO and event-timestamp contract unproven.",
     "Massive: live NBBO/trade endpoints not entitled on current free access.",
-    "Webull: OpenAPI non-display subscription and minimum account-value condition.",
-    "Alpha Vantage: realtime US data premium-only.",
+    "Webull: OpenAPI non-display market-data subscription required.",
+    "Alpha Vantage: realtime U.S. data premium-only.",
     "LeanData: free access time-limited.",
     "TickerLayer: derived non-exchange feed.",
     "QUODD/Tallac/Xignite/dxFeed direct and similar: fee-bearing realtime market data."
   ],
-  "canonical_effect": "Do not repeat provider sweep unless a new primary-source entitlement/lineage fact appears. Only Paper/Wealthnow unlock evidence or a genuinely new provider can change G9 authority.",
+  "canonical_effect": "Do not repeat broad provider sweep without a new primary-source product/entitlement change. Prioritize Clear Street, Public.com, Paper Invest and Wealthnow unlock evidence. No provider may create G9 PASS without complete A+B+C+D and same-run US-RTH witness.",
   "external_dependencies_only": true,
   "no_policy_weakening": true,
   "registry": {
     "path": "nasdaq-xray/g9_provider_registry_20261003.json",
-    "blob_sha": "4eb5c68e1ae11c6f7c77e31e94d92b7aab89ba1a",
+    "blob_sha": "1b902965f621d4f223a47aa9c8e1f5604e8b65c1",
     "provider_count": 70
   },
   "evidence_blobs": {
+    "clear_street": "156ce0596e00531958c317524709f2c968b278a6",
+    "public_com": "3d54046ad8e1febb3b9385fd6506ba04667ce1b1",
     "paper": "9e0a105d09df8017e67fa7607ff99d8b077aa1a7",
     "wealthnow": "92e3b315338082bc00fe5d0012c7d4b9fc7f255f",
-    "algoarena": "cafc569219704c4ef0b22efbe9c070a25dd80a85"
-  }
+    "forinvest": "15f8d636d88752cbf846b5f900b26b470b815511",
+    "robinhood_agentic": "92327745c3c08519fe8971f94a4e6407d81007b2"
+  },
+  "adapter_contract": {
+    "path": "nasdaq-xray/g9_provider_adapter_contract.json",
+    "blob_sha": "08bc8842c442bff75d2f835d35e83a5cc932a36f",
+    "adapter_count": 17
+  },
+  "blockers": [
+    "No provider currently proves all A+B+C+D simultaneously.",
+    "Primary-source eligibility/licensing confirmations are still missing for the strongest providers.",
+    "2026-10-04 is Sunday; strict same-run RTH freshness cannot be proven off-market.",
+    "ACCOUNT remains separately blocked until fresh same-run read-only account value/cash and positions succeed."
+  ]
 }
