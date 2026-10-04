@@ -13,7 +13,14 @@ on:
       - "nasdaq-xray/macro_context_probe.py"
       - "nasdaq-xray/candidate_enrichment.py"
       - "nasdaq-xray/free_solution_candidates.json"
-      - "nasdaq-xray/free_solution_verifier.py"
+      - "nasdaq-xray/free_solution_verifier.py             nasdaq-xray/pit_vintage_store.py             nasdaq-xray/pit_vintage_store_selftest.py             nasdaq-xray/official_source_guard.py             nasdaq-xray/data_lineage_registry.py             nasdaq-xray/deterministic_replay_guard.py             nasdaq-xray/guardian_anomaly.py"
+      - "nasdaq-xray/pit_vintage_store.py"
+      - "nasdaq-xray/pit_vintage_store_selftest.py"
+      - "nasdaq-xray/official_source_guard.py"
+      - "nasdaq-xray/data_lineage_registry.py"
+      - "nasdaq-xray/deterministic_replay_guard.py"
+      - "nasdaq-xray/guardian_anomaly.py"
+      - "nasdaq-xray/free_core_migration_contract.json"
       - ".github/workflows/xray-resilience-observability.yml"
   schedule:
     - cron: "17 * * * 1-5"
@@ -48,6 +55,12 @@ jobs:
       - name: Single-flight + circuit-breaker self-test
         run: python nasdaq-xray/resilience_selftest.py
 
+      - name: PIT vintage-store self-test
+        run: python nasdaq-xray/pit_vintage_store_selftest.py
+
+      - name: Nasdaq official PIT + halt/system guard
+        run: python nasdaq-xray/official_source_guard.py
+
       - name: SEC official witness
         run: python nasdaq-xray/sec_official_witness.py
 
@@ -63,6 +76,15 @@ jobs:
       - name: Verify free/open-source solution references
         run: python nasdaq-xray/free_solution_verifier.py
 
+      - name: Build data-lineage registry
+        run: python nasdaq-xray/data_lineage_registry.py
+
+      - name: Deterministic replay guard
+        run: python nasdaq-xray/deterministic_replay_guard.py
+
+      - name: Guardian anomaly layer
+        run: python nasdaq-xray/guardian_anomaly.py
+
       - name: Structural fail-closed audit
         run: |
           python - <<'PY'
@@ -75,6 +97,10 @@ jobs:
             "enrichment":("canonical_candidate_enrichment.json","XRAY_CANDIDATE_ENRICHMENT_V1"),
             "verify":("free_solution_verification.json","XRAY_FREE_SOLUTION_VERIFICATION_V1"),
             "provider_ledger":("provider_health_ledger.json","XRAY_PROVIDER_HEALTH_LEDGER_V1"),
+            "official_guard":("canonical_official_source_guard.json","XRAY_OFFICIAL_SOURCE_GUARD_V1"),
+            "lineage":("canonical_data_lineage_registry.json","XRAY_DATA_LINEAGE_REGISTRY_V1"),
+            "replay":("canonical_replay_guard.json","XRAY_DETERMINISTIC_REPLAY_GUARD_V1"),
+            "guardian":("canonical_guardian_state.json","XRAY_GUARDIAN_STATE_V1"),
           }
           for name,(fn,schema) in checks.items():
               p=root/fn
@@ -91,6 +117,15 @@ jobs:
                   assert pstate.get("last_error_retryable") is False,(provider,pstate)
                   assert int(pstate.get("consecutive_failures") or 0)==0,(provider,pstate)
                   assert float(pstate.get("open_until_epoch") or 0)==0,(provider,pstate)
+          replay=json.load(open(root/"canonical_replay_guard.json"))
+          assert replay.get("status")=="PASS",replay
+          assert replay.get("asof_consistent") is True,replay
+          guardian=json.load(open(root/"canonical_guardian_state.json"))
+          assert guardian.get("status")!="FAIL_CLOSED",guardian
+          mig=json.load(open(root/"free_core_migration_contract.json"))
+          assert mig.get("execution")=="NONE" and mig.get("real_money")=="NO-GO"
+          assert mig["migration_candidates"]["market_cap"]["cutover"] is False
+          assert mig["migration_candidates"]["account"]["cutover"] is False
           sec=json.load(open(root/"canonical_sec_official_witness.json"))
           if sec.get("status") in {"READY","READY_WITH_UNKNOWNS"}:
               assert sec.get("absence_never_clean") is True
@@ -115,6 +150,10 @@ jobs:
             nasdaq-xray/canonical_candidate_enrichment.json
             nasdaq-xray/free_solution_verification.json
             nasdaq-xray/provider_health_ledger.json
+            nasdaq-xray/canonical_official_source_guard.json
+            nasdaq-xray/canonical_data_lineage_registry.json
+            nasdaq-xray/canonical_replay_guard.json
+            nasdaq-xray/canonical_guardian_state.json
           )
           tmpdir="$(mktemp -d)"
           trap 'rm -rf "$tmpdir"' EXIT
