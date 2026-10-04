@@ -728,15 +728,14 @@
     },
     {
       "provider": "Paper Invest REST / Official MCP",
-      "status": "HIGH_POTENTIAL_FREE_REALTIME_NBBO_CLAIM_A_C_LICENSE_AND_B_EVENT_SEMANTICS_UNPROVEN",
+      "status": "HIGHEST_POTENTIAL_FREE_REALTIME_NBBO_CLAIM_PROVIDER_SPECIFIC_UTP_CLASSIFICATION_AND_B_EVENT_SEMANTICS_UNPROVEN",
       "failed_gates": [
-        "A_CONSOLIDATED_SIP_OR_EQUIVALENT_REDIStributor_LINEAGE",
-        "B_INDEPENDENT_EVENT_TIMESTAMP_SEMANTICS_AND_LIVE_RTH_PROBE",
-        "C_AUTOMATED_NONDISPLAY_MARKET_DATA_ENTITLEMENT"
+        "B_INDEPENDENT_UPSTREAM_QUOTE_AND_TRADE_EVENT_TIMESTAMP_SEMANTICS_AND_LIVE_RTH_PROBE",
+        "C_PROVIDER_CONFIRMED_UTP1APIS_OR_EQUIVALENT_CLASSIFICATION_AND_FEE_ABSORPTION"
       ],
       "evidence_file": "nasdaq-xray/g9_provider_delta_paperinvest_20261003.json",
-      "last_checked_on": "2026-10-03",
-      "reopen_condition": "Paper primary source proves exact CTA/UTP SIP or named consolidated redistributor lineage, upstream quote/trade event timestamp semantics, and explicit permanent-$0 automated/non-display market-data entitlement including upstream fee absorption; then same-run RTH live probe.",
+      "last_checked_on": "2026-10-04",
+      "reopen_condition": "Paper primary-source confirmation of timestamp semantics and lawful permanent-$0 automated/non-display classification/fee absorption; then same-run RTH probe.",
       "negative_cache_only": true,
       "may_never_create_pass": true,
       "evidence_blob_sha": "7741af297be50a625aa946e7fd1dc67b5d0b98df"
@@ -749,8 +748,8 @@
         "C_PERMANENT_ZERO_ENDUSER_ENTITLEMENT"
       ],
       "evidence_file": "nasdaq-xray/g9_provider_delta_algoarena_20261003.json",
-      "last_checked_on": "2026-10-03",
-      "reopen_condition": "Only reopen if AlgoArena or Alpaca publishes primary-source proof of a valid SIP/NBBO redistribution arrangement for the hosted service and explicit permanent-$0 end-user automated/non-display entitlement with no fee, funding, balance, activity, or subscription condition.",
+      "last_checked_on": "2026-10-04",
+      "reopen_condition": "Primary-source AlgoArena/Alpaca proof of lawful SIP redistribution plus permanent-$0 end-user automated/non-display entitlement.",
       "negative_cache_only": true,
       "may_never_create_pass": true
     },
