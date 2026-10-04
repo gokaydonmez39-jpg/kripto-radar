@@ -33,7 +33,7 @@
   },
   "g9_closure": {
     "authority_path": "nasdaq-xray/g9_entitlement_authority.json",
-    "authority_blob_sha": "29f3436d5f8498cd160051fa92a41c549dec03ee",
+    "authority_blob_sha": "d8a0db6fdcdb8f5ab58de942e7a8ed34e92fddcb",
     "adapter_contract_path": "nasdaq-xray/g9_provider_adapter_contract.json",
     "adapter_contract_blob_sha": "08bc8842c442bff75d2f835d35e83a5cc932a36f",
     "provider_registry_path": "nasdaq-xray/g9_provider_registry_20261003.json",
@@ -82,7 +82,9 @@
         "dual_account_potential": true
       }
     ],
-    "pass_rule": "One provider must prove strict A+B+C+D under current C4.17 and have an IMPLEMENTED adapter; same-run fresh US-RTH witness is mandatory. No cross-provider mixing of A/B/C/D."
+    "pass_rule": "One provider must prove strict A+B+C+D under current C4.17 and have an IMPLEMENTED adapter; same-run fresh US-RTH witness is mandatory. No cross-provider mixing of A/B/C/D.",
+    "final_resolution_path": "nasdaq-xray/g9_final_resolution_20261004.json",
+    "final_resolution_blob_sha": "b0b6b83c2d2e291485dd0c1810ed92a9d25c1b03"
   },
   "account_closure": {
     "current_primary": "LONGBRIDGE_HOSTED_MCP_V2",
