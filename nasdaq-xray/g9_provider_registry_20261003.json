@@ -299,16 +299,19 @@
     },
     {
       "provider": "Public.com Individual API",
-      "status": "TECHNICALLY_STRONG_BUT_USER_JURISDICTION_BLOCKED_AND_A_UNPROVEN",
+      "status": "REOPENED_2026_HOSTED_MCP_STRONG_B_D_AND_ACCOUNT_READ_BUT_A_C_JURISDICTION_UNPROVEN",
       "failed_gates": [
-        "A",
-        "D_JURISDICTION"
+        "A_CONSOLIDATED_SIP_NBBO_LINEAGE",
+        "C_EXACT_PERMANENT_ZERO_MARKET_DATA_NONDISPLAY_RIGHT",
+        "D_JURISDICTION_TURKEY_ELIGIBILITY"
       ],
-      "evidence_file": "nasdaq-xray/g9_provider_delta_public_20261003.json",
-      "last_checked_on": "2026-10-03",
-      "reopen_condition": "Public expands eligibility to Turkey residents and proves quote lineage is consolidated UTP/National NBBO.",
-      "negative_cache_only": true,
-      "may_never_create_pass": true
+      "evidence_file": "nasdaq-xray/g9_provider_delta_public_mcp_20261004.json",
+      "last_checked_on": "2026-10-04",
+      "reopen_condition": "Public confirms Türkiye-resident individual eligibility, exact consolidated CTA/UTP National-NBBO quote lineage, and permanent-$0 automated/non-display market-data entitlement; then same-run RTH witness.",
+      "negative_cache_only": false,
+      "may_never_create_pass": false,
+      "evidence_blob_sha": "3d54046ad8e1febb3b9385fd6506ba04667ce1b1",
+      "surface_2026": "HOSTED_MCP_PLUS_OFFICIAL_SDK"
     },
     {
       "provider": "Moomoo / Futu OpenAPI",
@@ -338,17 +341,19 @@
     },
     {
       "provider": "Robinhood Official Trading API",
-      "status": "NONQUALIFYING_EQUITY_API_PATH",
+      "status": "RECHECKED_2026_AGENTIC_MCP_NONQUALIFYING_FUNDING_JURISDICTION_AND_CONTINUOUS_SIP_UNPROVEN",
       "failed_gates": [
-        "A",
-        "B",
-        "D"
+        "A_CONTINUOUS_CONSOLIDATED_SIP_NBBO_UNPROVEN",
+        "C_FUNDED_AGENTIC_ACCOUNT_CONDITION",
+        "D_JURISDICTION_US_TRADERS"
       ],
-      "evidence_file": "nasdaq-xray/g9_provider_delta_broker_api_sweep_20261003.json",
-      "last_checked_on": "2026-10-03",
-      "reopen_condition": "Official sanctioned API adds US-equity National NBBO quote/trade endpoints and scheduler callability.",
+      "evidence_file": "nasdaq-xray/g9_provider_delta_robinhood_agentic_20261004.json",
+      "last_checked_on": "2026-10-04",
+      "reopen_condition": "Robinhood offers Türkiye-resident eligible unfunded/no-activity read-only MCP with explicit consolidated SIP/NBBO quote+trade event timestamps at permanent $0.",
       "negative_cache_only": true,
-      "may_never_create_pass": true
+      "may_never_create_pass": true,
+      "evidence_blob_sha": "92327745c3c08519fe8971f94a4e6407d81007b2",
+      "surface_2026": "AGENTIC_TRADING_MCP"
     },
     {
       "provider": "Saxo OpenAPI",
@@ -660,17 +665,19 @@
     },
     {
       "provider": "Foreks / ForInvest Web SDK",
-      "status": "TECHNICALLY_CAPABLE_BUT_COMMERCIAL_PRODUCTION_ENTITLEMENT_REQUIRED",
+      "status": "REOPENED_FORINVEST_HOSTED_MCP_D_STRONG_A_B_C_UNPROVEN",
       "failed_gates": [
-        "A",
-        "C",
-        "D_ZERO_DOLLAR_PRODUCTION"
+        "A_CONSOLIDATED_US_SIP_NBBO_LINEAGE",
+        "B_EXACT_US_QUOTE_TRADE_EVENT_SCHEMA",
+        "C_FREE_REALTIME_US_ENTITLEMENT_AND_NONDISPLAY_RIGHT"
       ],
-      "evidence_file": "nasdaq-xray/g9_provider_delta_foreks_forinvest_20261003.json",
-      "last_checked_on": "2026-10-03",
-      "reopen_condition": "Primary-source proof of permanent-$0 production consolidated National NBBO with lawful automated/non-display use and scheduler callability.",
+      "evidence_file": "nasdaq-xray/g9_provider_delta_forinvest_mcp_20261004.json",
+      "last_checked_on": "2026-10-04",
+      "reopen_condition": "ForInvest documents free-account real-time U.S. consolidated NBBO bid+ask+last with independent event timestamps and lawful automated/non-display permanent-$0 entitlement.",
       "negative_cache_only": true,
-      "may_never_create_pass": true
+      "may_never_create_pass": true,
+      "evidence_blob_sha": "15f8d636d88752cbf846b5f900b26b470b815511",
+      "surface_2026": "OFFICIAL_HOSTED_MCP_STREAMABLE_HTTP"
     },
     {
       "provider": "FlashAlpha Lab API",
@@ -974,7 +981,7 @@
   "unknown_never_pass": true,
   "no_policy_weakening": true,
   "count_invariant": "provider_count == len(unique(providers[].provider)) == source_saturation.reviewed_paths",
-  "updated_on": "2026-10-03",
+  "updated_on": "2026-10-04",
   "latest_entitlement_refresh": {
     "path": "nasdaq-xray/g9_provider_delta_webull_alphavantage_refresh_20261003.json",
     "commit_sha": "85290bdebed8133f3cfa017d98a097563f27e0b0",
@@ -998,5 +1005,15 @@
     "path": "nasdaq-xray/g9_provider_delta_leandata_20261003.json",
     "blob_sha": "24361aeed5afb81d82fa3fdd8ea3e82b211138a1",
     "result": "A_B_D_STRONG_C_FAIL_30_DAY_FREE"
+  },
+  "latest_reopen_sweep": {
+    "generated_on": "2026-10-04",
+    "providers": [
+      "Public.com Individual API",
+      "Foreks / ForInvest Web SDK",
+      "Robinhood Official Trading API"
+    ],
+    "result": "PUBLIC_P1_NEAR_MISS;FORINVEST_UNPROVEN;ROBINHOOD_NONQUALIFYING",
+    "no_new_pass": true
   }
 }
