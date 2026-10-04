@@ -1,0 +1,127 @@
+{
+  "schema": "XRAY_TRUE_FULL_GO_CLOSURE_V1",
+  "generated_on": "2026-10-04",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "compiled_policy": {
+    "path": "nasdaq-xray/chatgpt_compiled_policy_v3.json",
+    "blob_sha": "10d7af14870dfac0dc4566595d95a06f3faa854d",
+    "version": "C4.17",
+    "immutable": true
+  },
+  "current_terminal": {
+    "path": "nasdaq-xray/canonical_current_terminal.json",
+    "blob_sha": "f5300db6499a61932c7fac725959155571b902fd",
+    "full_e2e_research_pass": true,
+    "asof_et": "2026-10-02"
+  },
+  "true_full_go": {
+    "status": "BLOCKED",
+    "required": [
+      "FULL_E2E_RESEARCH_PASS",
+      "STRICT_G9_PASS",
+      "SAME_RUN_ACCOUNT_PASS"
+    ],
+    "passed": [
+      "FULL_E2E_RESEARCH_PASS"
+    ],
+    "blocked": [
+      "STRICT_G9_PASS",
+      "SAME_RUN_ACCOUNT_PASS"
+    ],
+    "no_manual_override": true
+  },
+  "g9_closure": {
+    "authority_path": "nasdaq-xray/g9_entitlement_authority.json",
+    "authority_blob_sha": "29f3436d5f8498cd160051fa92a41c549dec03ee",
+    "adapter_contract_path": "nasdaq-xray/g9_provider_adapter_contract.json",
+    "adapter_contract_blob_sha": "08bc8842c442bff75d2f835d35e83a5cc932a36f",
+    "provider_registry_path": "nasdaq-xray/g9_provider_registry_20261003.json",
+    "provider_registry_blob_sha": "1b902965f621d4f223a47aa9c8e1f5604e8b65c1",
+    "priority": [
+      {
+        "provider": "CLEAR_STREET",
+        "adapter_status": "IMPLEMENTED",
+        "remaining": [
+          "Türkiye-resident individual eligibility",
+          "zero-balance/no-funding/no-activity retention",
+          "no separate end-user SIP/UTP/CTA/exchange/vendor/non-display/API fee",
+          "same-run US-RTH freshness/skew witness"
+        ],
+        "dual_account_potential": true
+      },
+      {
+        "provider": "PAPER_INVEST",
+        "adapter_status": "IMPLEMENTED",
+        "remaining": [
+          "exact consolidated UTP/SIP or licensed equivalent lineage",
+          "quote/trade upstream event-time semantics",
+          "lawful automated/non-display permanent-$0 entitlement",
+          "same-run US-RTH freshness/skew witness"
+        ]
+      },
+      {
+        "provider": "WEALTHNOW",
+        "adapter_status": "IMPLEMENTED",
+        "remaining": [
+          "exact Free snapshot route binding to consolidated NBBO lineage",
+          "lawful automated/non-display permanent-$0 entitlement",
+          "same-run US-RTH freshness/skew witness"
+        ]
+      },
+      {
+        "provider": "PUBLIC_COM_HOSTED_MCP",
+        "adapter_status": "CANDIDATE_NOT_IMPLEMENTED",
+        "remaining": [
+          "consolidated CTA/UTP SIP National-NBBO lineage",
+          "Türkiye-resident eligibility",
+          "automated/non-display permanent-$0 market-data right",
+          "implementation only after authority proof",
+          "same-run US-RTH witness"
+        ],
+        "dual_account_potential": true
+      }
+    ],
+    "pass_rule": "One provider must prove strict A+B+C+D under current C4.17 and have an IMPLEMENTED adapter; same-run fresh US-RTH witness is mandatory. No cross-provider mixing of A/B/C/D."
+  },
+  "account_closure": {
+    "current_primary": "LONGBRIDGE_HOSTED_MCP_V2",
+    "status": "BOOTSTRAP_READY_USER_CREDENTIAL_DEPENDENCY",
+    "current_connected_connector_error": "403308_SCOPE_DENIED",
+    "preferred_solution": {
+      "endpoint": "https://mcp.longbridge.com/v2",
+      "required_scope": "account.read",
+      "forbidden_scope": "trade.write",
+      "required_secure_inputs": [
+        "XRAY_ACCOUNT_TOKEN_FERNET_KEY",
+        "fresh one-time LONGBRIDGE_AGENT_AUTH_CODE carrying account.read and no trade.write"
+      ],
+      "rule": "Secrets must be configured outside chat. Never paste them into conversation or repository.",
+      "pass_condition": "Final Factory obtains fresh same-run parseable account_balance + stock_positions from restricted /v2 with forbidden write surface absent."
+    },
+    "alternate_dual_gate_paths": [
+      {
+        "provider": "CLEAR_STREET_READ_ONLY_MCP",
+        "status": "ELIGIBILITY_AND_CREDENTIALS_UNPROVEN",
+        "condition": "If Türkiye eligibility and a sanctioned authenticated read-only account surface are proven, fresh balance/value + positions may satisfy ACCOUNT independently of Longbridge."
+      },
+      {
+        "provider": "PUBLIC_COM_HOSTED_MCP",
+        "status": "ELIGIBILITY_AND_CREDENTIALS_UNPROVEN",
+        "condition": "If Türkiye eligibility and authenticated hosted MCP are proven, fresh balance/value + positions may satisfy ACCOUNT independently of Longbridge."
+      }
+    ]
+  },
+  "weekend_guard": {
+    "date": "2026-10-04",
+    "market_day": false,
+    "rule": "No fresh strict G9 B PASS can be created off-RTH. Next technical witness must occur during a valid U.S. RTH session after authority is proven."
+  },
+  "automatic_transition": {
+    "rule": "No task/prompt/manual claim may set TRUE_FULL_GO. It becomes eligible only when current terminal FULL_E2E remains PASS, G9 authority+adapter+same-run witness PASS, and ACCOUNT same-run read PASS are exact-bound in final overlay.",
+    "false_go_forbidden": true,
+    "stale_pass_forbidden": true,
+    "cross_provider_entitlement_inference_forbidden": true
+  },
+  "no_policy_weakening": true
+}
