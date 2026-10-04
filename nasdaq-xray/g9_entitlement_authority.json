@@ -14,7 +14,7 @@
     "permanent_zero": "NO_CURRENT_PROVIDER_PROVEN",
     "automated_nondisplay_utp_right": "NO_CURRENT_PROVIDER_PROVEN",
     "reviewed_provider_paths": 70,
-    "search_saturation_result": "NO_REVIEWED_PROVIDER_PROVES_A_B_C_D_SIMULTANEOUSLY",
+    "search_saturation_result": "FINAL_EXTERNAL_BLOCKED_NO_INTERNAL_RESEARCH_PATH_REMAINS",
     "structural_fee_basis": "UTP_API_IS_AN_UNCONTROLLED_PRODUCT; CURRENT_2024_10_USAGE_CODES_EXPOSE_A_$1_PER_MONTH_VENDOR_BILLED_NONPROFESSIONAL_UNCONTROLLED_CLASS, BUT PROVIDER_SPECIFIC_CLASSIFICATION_AND_FEE_ABSORPTION_REMAIN_UNPROVEN",
     "strict_runtime_adapter": "FAIL_CLOSED_UNLESS_AUTHORITY_PROVEN",
     "audit_20261003": "70_PROVIDER_PATH_PRIMARY_SOURCE_AND_LIVE_ENTITLEMENT_SATURATION",
@@ -151,13 +151,13 @@
   ],
   "search_saturation": {
     "path": "nasdaq-xray/g9_search_saturation_20261003.json",
-    "blob_sha": "8b1fcfbb77381775a59b1863c82e8ceefb0da3d6",
+    "blob_sha": "ae06fa37001c84da74bf2b7cfad5529e58db6b5e",
     "unique_provider_paths_reviewed": 70,
-    "result": "NO_REVIEWED_PROVIDER_PROVES_A_B_C_D_SIMULTANEOUSLY"
+    "result": "FINAL_EXTERNAL_BLOCKED_NO_INTERNAL_RESEARCH_PATH_REMAINS"
   },
   "negative_registry": {
     "path": "nasdaq-xray/g9_provider_registry_20261003.json",
-    "blob_sha": "934b8dd2186f22f1a77b829d943181fd819e8cc8",
+    "blob_sha": "4eb5c68e1ae11c6f7c77e31e94d92b7aab89ba1a",
     "provider_count": 70,
     "role": "NEGATIVE_EVIDENCE_CACHE_ONLY_NEVER_PASS_AUTHORITY"
   },
@@ -235,5 +235,11 @@
     "blob_sha": "6010145c908a45c03ea864a3ec893b98d4c8e70a",
     "status": "HIGH_POTENTIAL_CHATGPT_LIVE_MARKET_DATA_SURFACE_HISTORICAL_SIP_A_B_CONFIRMED_LIVE_SIP_ENTITLEMENT_AND_STRICT_C_UNPROVEN",
     "role": "HIGH_POTENTIAL_NEARMISS_NEVER_PASS_WITHOUT_C_AND_SAME_RUN_RTH"
+  },
+  "final_resolution": {
+    "path": "nasdaq-xray/g9_final_resolution_20261004.json",
+    "blob_sha": "fd499d7357f0950b3e61eee72ad27ed481076433",
+    "result": "FINAL_EXTERNAL_BLOCKED_NO_INTERNAL_RESEARCH_PATH_REMAINS",
+    "external_dependencies_only": true
   }
 }
