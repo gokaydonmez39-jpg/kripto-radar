@@ -9,6 +9,8 @@ on:
     paths:
       - "nasdaq-xray/canonical_event_bridge_*.json"
       - "nasdaq-xray/build_current_event_state.py"
+      - "nasdaq-xray/scheduler_kick_final.json"
+      - "nasdaq-xray/scheduler_failover_contract.json"
       - "nasdaq-xray/family_c_engine.py"
       - "nasdaq-xray/deep_pre_r1_shadow.py"
       - "nasdaq-xray/final_tech_shadow.py"
