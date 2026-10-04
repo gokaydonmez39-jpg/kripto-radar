@@ -15,7 +15,8 @@
     "Weekend/holiday guards in canonical phases remain authoritative; a kick cannot advance U.S. RTH ASOF by itself.",
     "No paid fallback, order, broker mutation, threshold change or provider entitlement upgrade.",
     "A kick write proves only trigger delivery; readiness requires observing the resulting workflow run and conclusion.",
-    "Never CAS-kick over a recent queued/in_progress root or final run; active work outranks stale completed-success age."
+    "Never CAS-kick over a recent queued/in_progress root or final run; active work outranks stale completed-success age.",
+    "Close commit-to-Actions visibility races: recent kick lease + second Actions snapshot are mandatory before CAS."
   ],
   "health_policy": {
     "weekday_stale_kick": true,
@@ -23,7 +24,9 @@
     "preopen_priority_window_et": "06:00-09:25",
     "reason": "If latest completed-success root workflow is older than 4500 seconds on a U.S. weekday, Health may CAS increment the kick file once and then require observed workflow evidence before treating the schedule as recovered.",
     "active_run_suppression": true,
-    "active_run_rule": "If a newer root/final run is queued or in_progress and its created_at age is within that workflow's active-run grace, Health MUST NOT kick. Mark recovery in progress and keep candidate emission fail-closed until a COMPLETED+SUCCESS witness exists."
+    "active_run_rule": "If a newer root/final run is queued or in_progress and its created_at age is within that workflow's active-run grace, Health MUST NOT kick. Mark recovery in progress and keep candidate emission fail-closed until a COMPLETED+SUCCESS witness exists.",
+    "kick_cooldown_seconds": 180,
+    "double_actions_snapshot_required": true
   },
   "updated_on": "2026-10-05",
   "final_workflow_name": "XRAY Canonical Current Final Factory",
@@ -32,5 +35,8 @@
   "final_rebind_rule": "If root freshness is proven but canonical_current_terminal.json official guard binding differs from current canonical_official_source_guard.json, Health may CAS increment the final kick once; recovery is PASS only after a newer Final Factory run is COMPLETED+SUCCESS and terminal exact-binds the current guard.",
   "max_total_kicks_per_health_run": 1,
   "root_active_run_grace_seconds": 3300,
-  "final_active_run_grace_seconds": 3600
+  "final_active_run_grace_seconds": 3600,
+  "kick_cooldown_seconds": 180,
+  "double_actions_snapshot_required": true,
+  "kick_lease_rule": "Before any root/final CAS kick, reject if requested_at_utc age <= kick_cooldown_seconds. If cooldown expired, refetch identical kick preimage and then re-read workflow runs. Abort CAS if any newer queued/in_progress run or any run created after the first Actions snapshot appears."
 }
