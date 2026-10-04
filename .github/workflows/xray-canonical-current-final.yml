@@ -79,6 +79,15 @@ jobs:
             then
               git show origin/main:nasdaq-xray/account_provider_adapter_contract.json > nasdaq-xray/account_provider_adapter_contract.json
               git show origin/main:nasdaq-xray/account_gate_contract.json > nasdaq-xray/account_gate_contract.json
+              python - "$adapter_blob" <<'PY'
+          import json,sys
+          b=sys.argv[1]
+          g=json.load(open("nasdaq-xray/account_gate_contract.json"))
+          assert g.get("binding_revalidation",{}).get("status")=="EXACT",g.get("binding_revalidation")
+          assert g.get("binding_revalidation",{}).get("adapter_blob_sha")==b,(g.get("binding_revalidation"),b)
+          assert g.get("adapter_contract",{}).get("blob_sha")==b
+          print("XRAY_ACCOUNT_CONTROL_BINDING_METADATA=PASS")
+          PY
               echo "XRAY_ACCOUNT_CONTROL_SYNC=PASS blob=$adapter_blob"
               break
             fi
