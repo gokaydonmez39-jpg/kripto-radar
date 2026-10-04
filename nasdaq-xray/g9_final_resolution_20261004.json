@@ -1,0 +1,61 @@
+{
+  "schema": "XRAY_G9_FINAL_RESOLUTION_V1",
+  "generated_on": "2026-10-04",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "reviewed_provider_paths": 70,
+  "result": "FINAL_EXTERNAL_BLOCKED_NO_INTERNAL_RESEARCH_PATH_REMAINS",
+  "g9_pass": false,
+  "pass_rule": "A+B+C+D must all be proven; UNKNOWN != PASS; runtime adapters cannot self-authorize lineage or entitlement.",
+  "strongest_remaining_paths": [
+    {
+      "provider": "Paper Invest REST / Official MCP",
+      "proven": [
+        "Official MCP/landing explicitly calls paper.quote(symbol) a real-time NBBO quote.",
+        "Basic product is documented as $0/free-forever with API/MCP programmatic use.",
+        "REST quote and separate trade endpoints exist; runtime adapter is implemented."
+      ],
+      "still_required": [
+        "Primary-source confirmation that quote/trade timestamps are independent upstream market-event times.",
+        "Provider-specific confirmation of lawful UTP1APIS/equivalent automated/non-display classification and fee absorption for the permanent-$0 Basic REST path.",
+        "Then same-run US-RTH freshness/skew probe with PAPER_INVEST_API_KEY."
+      ],
+      "official_clarification": "paperinvest/mcp-server#3"
+    },
+    {
+      "provider": "Wealthnow Free price_snapshot",
+      "proven": [
+        "Free REST/MCP market-data access.",
+        "Independent quote_as_of and trade as_of/time semantics documented.",
+        "Live RTH example and implemented authority-gated adapter."
+      ],
+      "still_required": [
+        "Primary-source proof that Free snapshot bid/ask are National NBBO/SIP or named equivalent licensed consolidated feed.",
+        "Provider-specific UTP1APIS/equivalent classification and fee absorption.",
+        "Then same-run US-RTH probe with WEALTHNOW_API_KEY."
+      ]
+    }
+  ],
+  "closed_paths": [
+    "AlgoArena: SIP redistribution/zero-dollar entitlement not proven and upstream redistribution constraints conflict with strict C.",
+    "Massive: live NBBO/trade endpoints not entitled on current free access.",
+    "Webull: OpenAPI non-display subscription and minimum account-value condition.",
+    "Alpha Vantage: realtime US data premium-only.",
+    "LeanData: free access time-limited.",
+    "TickerLayer: derived non-exchange feed.",
+    "QUODD/Tallac/Xignite/dxFeed direct and similar: fee-bearing realtime market data."
+  ],
+  "canonical_effect": "Do not repeat provider sweep unless a new primary-source entitlement/lineage fact appears. Only Paper/Wealthnow unlock evidence or a genuinely new provider can change G9 authority.",
+  "external_dependencies_only": true,
+  "no_policy_weakening": true,
+  "registry": {
+    "path": "nasdaq-xray/g9_provider_registry_20261003.json",
+    "blob_sha": "4eb5c68e1ae11c6f7c77e31e94d92b7aab89ba1a",
+    "provider_count": 70
+  },
+  "evidence_blobs": {
+    "paper": "9e0a105d09df8017e67fa7607ff99d8b077aa1a7",
+    "wealthnow": "92e3b315338082bc00fe5d0012c7d4b9fc7f255f",
+    "algoarena": "cafc569219704c4ef0b22efbe9c070a25dd80a85"
+  }
+}
