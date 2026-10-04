@@ -1,7 +1,7 @@
 {
   "schema": "XRAY_FINAL_GATE_OVERLAY_V2",
   "generated_on": "2026-10-04",
-  "generated_at_utc": "2026-10-04T16:03:00Z",
+  "generated_at_utc": "2026-10-04T16:44:03.347530+00:00",
   "asof_et": "2026-10-02",
   "execution": "NONE",
   "real_money": "NO-GO",
@@ -9,7 +9,7 @@
   "binding_protocol": "FAIL_CLOSED_BLOCKED_CACHE_DRIFT_V1",
   "source_terminal": {
     "path": "nasdaq-xray/canonical_current_terminal.json",
-    "blob_sha": "f5300db6499a61932c7fac725959155571b902fd",
+    "blob_sha": "d5bb92f2b5e27626fab33e369b2e9df8a627599b",
     "full_end_to_end_research_pass": true,
     "terminal_result": "NO_CONFIRMED_SETUP"
   },
@@ -47,7 +47,7 @@
     "current_adapter": "LONGBRIDGE_HOSTED_MCP_V2",
     "persisted_gate_status": "ACCOUNT_BOOTSTRAP_READY_CREDENTIALS_REQUIRED",
     "same_run_live_witness_attested": false,
-    "live_probe_workflow_run_id": "37137019421",
+    "live_probe_workflow_run_id": "37217772084",
     "gate_path": "nasdaq-xray/account_gate_contract.json",
     "gate_blob_sha": "40d5c4078486b688c8d3ee3e654af14f9bb48cc7",
     "current_adapter_contract_blob_sha": "5449326202d6dab2de99c8f384bcdd5e95834c0e",
@@ -93,15 +93,5 @@
     "last_completed_us_rth_asof": "2026-10-02",
     "asof_advanced_on_weekend": false
   },
-  "no_policy_weakening": true,
-  "final_research_refresh": {
-    "g9_authority_sha": "bc5cac63a9757c6e12c359eea244ba16ea5f9011",
-    "g9_saturation_sha": "2e47a4fd7d620cdda0106bfc60333c6ebf75eb07",
-    "g9_registry_sha": "3270ee56c94beca87bb834e14d9fb1355316db5a",
-    "g9_adapter_sha": "73435efe895c8387a6fa02e77125087d2a48d01b",
-    "g9_final_resolution_sha": "e14c6b5c000959d5e01d8bff4f32875610ff452b",
-    "account_gate_sha": "40d5c4078486b688c8d3ee3e654af14f9bb48cc7",
-    "account_adapter_sha": "5449326202d6dab2de99c8f384bcdd5e95834c0e",
-    "result": "BLOCKED_FAIL_CLOSED_NO_FALSE_GO_AFTER_FINAL_X_MCP_SWEEP"
-  }
+  "no_policy_weakening": true
 }
