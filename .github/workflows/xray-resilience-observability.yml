@@ -28,7 +28,6 @@ on:
       - "nasdaq-xray/provider_automation_governance.json"
       - "nasdaq-xray/provider_automation_governance_selftest.py"
       - "nasdaq-xray/scheduler_failover_selftest.py"
-      - "nasdaq-xray/scheduler_kick_dataplane.json"
       - "nasdaq-xray/scheduler_failover_contract.json"
       - ".github/workflows/xray-resilience-observability.yml"
   schedule:
