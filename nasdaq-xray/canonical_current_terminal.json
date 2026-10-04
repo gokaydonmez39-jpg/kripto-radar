@@ -4,6 +4,7 @@
   "blockers": {
     "affected_event_unknown": 0,
     "breadth_missing": 0,
+    "candidate_halt_guard_unknown": 0,
     "deep_history_unknown": 0,
     "family_c_history_unknown": 0,
     "final_unknown": 0,
@@ -14,7 +15,38 @@
     "price_unknown": 0,
     "stage1_unknown": 0
   },
+  "candidate_delivery_safety": {
+    "active_halt_symbols": [
+      "BKKT.W",
+      "CMND",
+      "EFTY",
+      "GUTS",
+      "HCHL",
+      "LAWR",
+      "MAGH",
+      "MAMK",
+      "MCTA",
+      "OST",
+      "PC",
+      "QRVO",
+      "SCNX",
+      "SVA",
+      "UCFI",
+      "UCFIW",
+      "VIVK",
+      "WKEY"
+    ],
+    "age_seconds": 133.706,
+    "generated_at_utc": "2026-10-04T20:58:18.741273+00:00",
+    "guard_blob_sha": "bdb6d7c3fe819cdfb6ae0383d1911c82223139b1",
+    "guard_path": "nasdaq-xray/canonical_official_source_guard.json",
+    "max_age_seconds": 5400,
+    "status": "PASS",
+    "vetoed_candidates": [],
+    "zero_alpha": true
+  },
   "checks": {
+    "candidate_delivery_halt_guard_fail_closed": true,
     "count_equality_never_substituted_for_set_equality": true,
     "deep_exact_weekly_scope": true,
     "exact_blob_provenance_chain": true,
@@ -45,6 +77,7 @@
     "event_confirmed_blocks": 0,
     "event_unresolved": 1,
     "final_confirmed_candidates": 2,
+    "halt_vetoed_candidates": 0,
     "history_fail": 14,
     "history_input": 470,
     "history_pass": 456,
@@ -57,6 +90,7 @@
     "mc_primary_pass": 470,
     "mc_unknown": 0,
     "pre_g9_tech_pass": 0,
+    "pre_g9_tech_pass_before_halt_guard": 0,
     "price_dv20_pass": 500,
     "weekly_pass": 100
   },
@@ -71,7 +105,7 @@
     },
     "account_live_probe": {
       "balance_parseable": false,
-      "blob_sha": "49747112935527409c4d9f009edcce4badc7a690",
+      "blob_sha": "d6b87b47e3413b86be63d1d8341931929013d2c2",
       "network_attempted": false,
       "path": "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/account_effective_probe_state.json",
       "positions_parseable": false,
@@ -82,7 +116,7 @@
       "secret_values_persisted": false,
       "status": "BLOCKED_MISSING_CREDENTIALS",
       "workflow_run_attempt": "1",
-      "workflow_run_id": "37233953301"
+      "workflow_run_id": "37234210936"
     },
     "deep": {
       "blob_sha": "ef9329735a208e28be983b0a5f23647b264e300d",
@@ -134,6 +168,10 @@
       "blob_sha": "164562824f9e3555b3084275c641cbb8dbff4d06",
       "path": "nasdaq-xray/canonical_mc_bridge_20261002_c417.json"
     },
+    "official_halt_guard": {
+      "blob_sha": "bdb6d7c3fe819cdfb6ae0383d1911c82223139b1",
+      "path": "nasdaq-xray/canonical_official_source_guard.json"
+    },
     "pointer": {
       "blob_sha": "547460a83f4392d35daeecb253bbe606034d7d25",
       "path": "nasdaq-xray/chatgpt_canonical_state_v2.json"
@@ -163,7 +201,7 @@
   "final_gate_reporting_zero_alpha": true,
   "full_end_to_end_research_pass": true,
   "g9_global_status": "G9_BLOCKED_FREE_AUTOMATION_PATH",
-  "generated_at_utc": "2026-10-04T20:56:25.643657+00:00",
+  "generated_at_utc": "2026-10-04T21:00:32.448694+00:00",
   "pointer_asof_before_candidate": "2026-10-02",
   "r92_account_g9_applicable": false,
   "r92_candidates": [],
@@ -177,6 +215,7 @@
     ],
     "family_c_unknown": [],
     "final_unknown": [],
+    "halt_vetoed_candidates": [],
     "history_fail": [
       "BLLN",
       "CBRS",
@@ -1131,6 +1170,7 @@
       "VOD"
     ],
     "pre_g9_tech_pass": [],
+    "pre_g9_tech_pass_before_halt_guard": [],
     "weekly_pass": [
       "AAPL",
       "ABCL",
