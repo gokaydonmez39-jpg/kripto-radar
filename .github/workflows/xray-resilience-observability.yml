@@ -27,6 +27,9 @@ on:
       - "nasdaq-xray/gem_registry_selftest.py"
       - "nasdaq-xray/provider_automation_governance.json"
       - "nasdaq-xray/provider_automation_governance_selftest.py"
+      - "nasdaq-xray/scheduler_failover_selftest.py"
+      - "nasdaq-xray/scheduler_kick_dataplane.json"
+      - "nasdaq-xray/scheduler_failover_contract.json"
       - ".github/workflows/xray-resilience-observability.yml"
   schedule:
     - cron: "47 * * * 1-5"
@@ -72,7 +75,11 @@ jobs:
             nasdaq-xray/deterministic_replay_guard.py \
             nasdaq-xray/guardian_anomaly.py \
             nasdaq-xray/gem_registry_selftest.py \
-            nasdaq-xray/provider_automation_governance_selftest.py
+            nasdaq-xray/provider_automation_governance_selftest.py \
+            nasdaq-xray/scheduler_failover_selftest.py
+
+      - name: Scheduler failover self-test
+        run: python nasdaq-xray/scheduler_failover_selftest.py
 
       - name: Single-flight + circuit-breaker self-test
         run: python nasdaq-xray/resilience_selftest.py
@@ -161,6 +168,13 @@ jobs:
           assert replay.get("asof_consistent") is True,replay
           guardian=json.load(open(root/"canonical_guardian_state.json"))
           assert guardian.get("status")!="FAIL_CLOSED",guardian
+          sched=json.load(open(root/"scheduler_failover_contract.json"))
+          assert sched.get("schema")=="XRAY_SCHEDULER_FAILOVER_CONTRACT_V1",sched
+          assert sched.get("max_kicks_per_health_run")==1,sched
+          assert int(sched.get("stale_after_seconds") or 0)>=3600,sched
+          kick=json.load(open(root/"scheduler_kick_dataplane.json"))
+          assert kick.get("schema")=="XRAY_SCHEDULER_KICK_V1",kick
+          assert kick.get("execution")=="NONE" and kick.get("real_money")=="NO-GO",kick
           gov=json.load(open(root/"provider_automation_governance.json"))
           assert gov.get("schema")=="XRAY_PROVIDER_AUTOMATION_GOVERNANCE_V1",gov
           assert gov["providers"]["ALPHASTOCKS"]["unattended_automation_allowed"] is False,gov
