@@ -116,5 +116,56 @@
     "store_only": "URLs, ids where public, timestamps, short factual summaries, derived tags and methodology notes",
     "rule": "Respect platform/provider terms; public archives are discovery aids, not canonical data authorities."
   },
-  "output_rule": "X_DISCOVERY_MAY_CREATE_RESEARCH_QUEUES_AND_METHOD_HYPOTHESES_ONLY;NO_TRADING_SIGNAL_NO_CANONICAL_GATE_PASS"
+  "output_rule": "X_DISCOVERY_MAY_CREATE_RESEARCH_QUEUES_AND_METHOD_HYPOTHESES_ONLY;NO_TRADING_SIGNAL_NO_CANONICAL_GATE_PASS",
+  "seed_networks": [
+    {
+      "source": "Qullamaggie official Must Follow X Accounts",
+      "source_url": "https://qullamaggie.net/must-read-list-2/",
+      "authority": "DISCOVERY_SEED_ONLY",
+      "accounts": [
+        "@MissLowRisk",
+        "@kyletrades_",
+        "@Q_Breakouts",
+        "@inninuM",
+        "@kjlosesmoney",
+        "@PressTradez",
+        "@pwrdbyJUNO",
+        "@TradingArchive",
+        "@finitrades",
+        "@Setups81",
+        "@JahanKusha",
+        "@AsymTrading",
+        "@1ChartMaster",
+        "@TheRRRGTrader",
+        "@traderCharlieM",
+        "@Billyonaire__",
+        "@StockDaddy3",
+        "@Nevonal",
+        "@mrkstructure",
+        "@StatBear",
+        "@nbn707",
+        "@stamatoudism",
+        "@tejano_trades",
+        "@Dannyl_ee"
+      ],
+      "account_status_default": "UNREVIEWED_DISCOVERY",
+      "rule": "NO ACCOUNT IN THIS LIST GAINS AUTHORITY UNTIL INDIVIDUAL METHOD/EVIDENCE/INCENTIVE AUDIT PASSES"
+    }
+  ],
+  "external_method_leads": [
+    {
+      "source": "Deepvue",
+      "role": "PAID_TOOL_METHODOLOGY_ONLY",
+      "useful_public_ideas": [
+        "multi-horizon relative-strength ranking",
+        "absolute-strength ranking",
+        "sector/group 3-month RS leadership",
+        "tight-range/relative-measured-volatility concepts",
+        "high-volume breakout and RVOL screening"
+      ],
+      "production_data_role": "FORBIDDEN_UNDER_ZERO_DOLLAR_HARD_CAP",
+      "implementation_rule": "ONLY_INDEPENDENT_GENERIC_REIMPLEMENTATION_AFTER FORMULA/EVIDENCE REVIEW;NO PROPRIETARY DATA OR SCREEN OUTPUT COPYING"
+    }
+  ],
+  "last_discovery_update": "2026-10-04"
 }
