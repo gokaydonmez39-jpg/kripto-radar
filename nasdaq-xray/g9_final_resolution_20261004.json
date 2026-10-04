@@ -3,17 +3,18 @@
   "generated_on": "2026-10-04",
   "execution": "NONE",
   "real_money": "NO-GO",
-  "reviewed_provider_paths": 70,
-  "result": "FINAL_EXTERNAL_BLOCKED_AFTER_2026_MCP_REOPEN_SWEEP",
+  "reviewed_provider_paths": 71,
+  "result": "FINAL_EXTERNAL_BLOCKED_AFTER_FINAL_2026_X_MCP_SWEEP",
   "g9_pass": false,
   "pass_rule": "A+B+C+D must all be proven; UNKNOWN != PASS; runtime adapters cannot self-authorize lineage or entitlement.",
   "strongest_remaining_paths": [
     {
       "provider": "Clear Street Trading API / read-only MCP",
+      "priority": "P1",
       "proven": [
         "Official read-only MCP exists.",
         "Official snapshot semantics identify National Best Bid and Offer and separate exchange timestamps for bid/ask and last trade.",
-        "G9 runtime adapter is already IMPLEMENTED.",
+        "G9 runtime adapter is IMPLEMENTED.",
         "Same provider exposes balances and positions, creating potential ACCOUNT dual-unlock."
       ],
       "still_required": [
@@ -24,23 +25,8 @@
       ]
     },
     {
-      "provider": "Public.com Hosted MCP / Individual API",
-      "proven": [
-        "Official hosted MCP/API supports live market data and account/portfolio reads.",
-        "Official quote schema provides last/bid/ask with distinct lastTimestamp/bidTimestamp/askTimestamp.",
-        "Official SDK describes the timestamps as last-trade and bid/ask update times.",
-        "Hosted MCP/Individual API are sanctioned programmatic surfaces."
-      ],
-      "still_required": [
-        "Exact consolidated CTA/UTP SIP National-NBBO lineage for the equity quote route.",
-        "Türkiye-resident individual account/API eligibility.",
-        "Exact lawful automated/non-display permanent-$0 market-data entitlement.",
-        "Implement G9 adapter only after authority proof, then same-run US-RTH witness."
-      ],
-      "evidence_file": "nasdaq-xray/g9_provider_delta_public_mcp_20261004.json"
-    },
-    {
       "provider": "Paper Invest REST / Official MCP",
+      "priority": "P1",
       "proven": [
         "Official product calls quote endpoint real-time NBBO.",
         "Basic is $0/free-forever with API/MCP programmatic use.",
@@ -56,6 +42,7 @@
     },
     {
       "provider": "Wealthnow Free price_snapshot",
+      "priority": "P1",
       "proven": [
         "Free REST/MCP market-data access.",
         "Free snapshot exposes bid/ask and distinct quote/trade timing fields.",
@@ -67,19 +54,38 @@
         "Lawful automated/non-display permanent-$0 entitlement.",
         "Then same-run US-RTH freshness/skew witness."
       ]
+    },
+    {
+      "provider": "ForInvest Hosted MCP",
+      "priority": "P2",
+      "proven": [
+        "Türkiye-native official hosted StreamableHTTP MCP.",
+        "Free ForInvest account can authenticate to the sanctioned MCP surface.",
+        "Read-only market-data/analytics tools are designed for ChatGPT/agent use."
+      ],
+      "still_required": [
+        "Free-account real-time U.S. equity entitlement.",
+        "Exact consolidated CTA/UTP National-NBBO lineage.",
+        "Separate last trade plus independent quote/trade market-event timestamps.",
+        "No separate end-user SIP/UTP/CTA/exchange/vendor/non-display/per-query fee.",
+        "Then implement adapter and obtain same-run US-RTH witness."
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_forinvest_mcp_20261004.json",
+      "outreach": "SENT_TO_INFO@FORINVEST.COM_2026-10-04_AWAITING_REPLY"
     }
   ],
   "closed_paths": [
+    "Public.com Hosted MCP: technically strong live quote/account surface, but official eligibility requires valid SSN, legal U.S. residential address and U.S. status/accepted visa; current Türkiye-resident path is jurisdiction-blocked.",
+    "Webull Cloud MCP/OpenAPI: 2026 Cloud MCP adds real-time market data and account reads, but Webull Financial does not open/maintain brokerage accounts for individuals residing outside the U.S.; strict permanent-$0 consolidated-NBBO entitlement is also not proven.",
+    "Freedom24 / TraderNet MCP: scheduler-callable MCP and official UTP-vendor relationship are strong, but official 2026 terms make real-time Level-1 market data fee-bearing and require account funds; Freedom Yatırım Türkiye is not yet operational.",
     "Robinhood Agentic Trading: funded Agentic Account condition, U.S. eligibility and continuous consolidated SIP/NBBO not proven.",
-    "ForInvest Hosted MCP: scheduler surface strong but free-account U.S. realtime entitlement, exact consolidated SIP/NBBO and event-timestamp contract unproven.",
     "Massive: live NBBO/trade endpoints not entitled on current free access.",
-    "Webull: OpenAPI non-display market-data subscription required.",
     "Alpha Vantage: realtime U.S. data premium-only.",
     "LeanData: free access time-limited.",
     "TickerLayer: derived non-exchange feed.",
     "QUODD/Tallac/Xignite/dxFeed direct and similar: fee-bearing realtime market data."
   ],
-  "canonical_effect": "Do not repeat broad provider sweep without a new primary-source product/entitlement change. Prioritize Clear Street, Public.com, Paper Invest and Wealthnow unlock evidence. No provider may create G9 PASS without complete A+B+C+D and same-run US-RTH witness.",
+  "canonical_effect": "Do not repeat broad X/provider sweeps absent a new primary-source product/entitlement change. Active external unlock paths are Clear Street, Paper Invest, Wealthnow and ForInvest. No provider may create G9 PASS without complete A+B+C+D and same-run US-RTH witness.",
   "external_dependencies_only": true,
   "no_policy_weakening": true,
   "registry": {
@@ -101,9 +107,19 @@
     "adapter_count": 17
   },
   "blockers": [
-    "No provider currently proves all A+B+C+D simultaneously.",
-    "Primary-source eligibility/licensing confirmations are still missing for the strongest providers.",
-    "2026-10-04 is Sunday; strict same-run RTH freshness cannot be proven off-market.",
-    "ACCOUNT remains separately blocked until fresh same-run read-only account value/cash and positions succeed."
-  ]
+    "No provider currently proves all strict A+B+C+D simultaneously.",
+    "Clear Street/Paper/Wealthnow/ForInvest require provider-specific primary-source entitlement or eligibility confirmation.",
+    "Same-run strict freshness witness must occur during U.S. RTH after authority becomes PROVEN."
+  ],
+  "latest_evidence": {
+    "saturation_path": "nasdaq-xray/g9_search_saturation_20261003.json",
+    "saturation_blob_sha": "2e47a4fd7d620cdda0106bfc60333c6ebf75eb07",
+    "registry_path": "nasdaq-xray/g9_provider_registry_20261003.json",
+    "registry_blob_sha": "3270ee56c94beca87bb834e14d9fb1355316db5a",
+    "adapter_path": "nasdaq-xray/g9_provider_adapter_contract.json",
+    "adapter_blob_sha": "73435efe895c8387a6fa02e77125087d2a48d01b",
+    "reviewed_provider_paths": 71,
+    "adapter_count": 19
+  },
+  "updated_on": "2026-10-04"
 }
