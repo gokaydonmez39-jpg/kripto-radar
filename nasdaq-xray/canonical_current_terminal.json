@@ -36,9 +36,9 @@
       "VIVK",
       "WKEY"
     ],
-    "age_seconds": 1.069,
-    "generated_at_utc": "2026-10-04T21:48:32.288776+00:00",
-    "guard_blob_sha": "60c3c8b18c95a1f78b49cfccbaa9526bbe31d0c2",
+    "age_seconds": 0.913,
+    "generated_at_utc": "2026-10-04T21:55:27.198324+00:00",
+    "guard_blob_sha": "acb477a88ef88a6859eff175a792a69388af302f",
     "guard_path": "nasdaq-xray/canonical_official_source_guard.json",
     "max_age_seconds": 5400,
     "security_status_suspension_symbols": [
@@ -141,7 +141,7 @@
     },
     "account_live_probe": {
       "balance_parseable": false,
-      "blob_sha": "ff62c7edc53cebb072864f484847000f61d9f7d5",
+      "blob_sha": "b0591fcd1058058b7e340c3bcf0b2558d03d9fb5",
       "network_attempted": false,
       "path": "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/account_effective_probe_state.json",
       "positions_parseable": false,
@@ -152,7 +152,7 @@
       "secret_values_persisted": false,
       "status": "BLOCKED_MISSING_CREDENTIALS",
       "workflow_run_attempt": "1",
-      "workflow_run_id": "37237488134"
+      "workflow_run_id": "37237950134"
     },
     "deep": {
       "blob_sha": "ef9329735a208e28be983b0a5f23647b264e300d",
@@ -205,7 +205,7 @@
       "path": "nasdaq-xray/canonical_mc_bridge_20261002_c417.json"
     },
     "official_halt_guard": {
-      "blob_sha": "60c3c8b18c95a1f78b49cfccbaa9526bbe31d0c2",
+      "blob_sha": "acb477a88ef88a6859eff175a792a69388af302f",
       "path": "nasdaq-xray/canonical_official_source_guard.json"
     },
     "pointer": {
@@ -237,7 +237,7 @@
   "final_gate_reporting_zero_alpha": true,
   "full_end_to_end_research_pass": true,
   "g9_global_status": "G9_BLOCKED_FREE_AUTOMATION_PATH",
-  "generated_at_utc": "2026-10-04T21:48:33.359597+00:00",
+  "generated_at_utc": "2026-10-04T21:55:28.112389+00:00",
   "pointer_asof_before_candidate": "2026-10-02",
   "r92_account_g9_applicable": false,
   "r92_candidates": [],
