@@ -6,6 +6,9 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/orchestrator_run.py"
+      - "nasdaq-xray/scheduler_kick_dataplane.json"
+      - "nasdaq-xray/scheduler_failover_contract.json"
+      - "nasdaq-xray/scheduler_failover_selftest.py"
       - "nasdaq-xray/sina_stage.py"
       - "nasdaq-xray/mc_zero_key.py"
       - "nasdaq-xray/mc_resolution_overlay.json"
@@ -47,6 +50,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+
+      - name: Scheduler failover self-test
+        run: python nasdaq-xray/scheduler_failover_selftest.py
 
       - name: Static compile gate
         run: python -m py_compile nasdaq-xray/orchestrator_run.py nasdaq-xray/sina_stage.py nasdaq-xray/mc_zero_key.py nasdaq-xray/production_core_build.py nasdaq-xray/stage1_shadow.py nasdaq-xray/regime_breadth_shadow.py nasdaq-xray/deep_pre_r1_shadow.py nasdaq-xray/final_tech_shadow.py
