@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# READINESS_REVALIDATION_2026_10_04: no semantic change; force independent overlay CI against current terminal.
 import hashlib
 import json
 from datetime import datetime, timezone
