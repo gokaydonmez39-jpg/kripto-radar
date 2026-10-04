@@ -83,9 +83,13 @@ if not OFFICIAL_GUARD.exists():
 g=json.loads(OFFICIAL_GUARD.read_text())
 if g.get("schema")!="XRAY_OFFICIAL_SOURCE_GUARD_V1":
     raise RuntimeError("DELIVERY_OFFICIAL_HALT_GUARD_SCHEMA_FAIL")
-halts=((g.get("sources") or {}).get("trade_halts") or {})
+sources=g.get("sources") or {}
+halts=(sources.get("trade_halts") or {})
+security=(sources.get("security_status") or {})
 if halts.get("status")!="PASS":
     raise RuntimeError("DELIVERY_OFFICIAL_HALT_FEED_UNKNOWN")
+if security.get("status")!="PASS":
+    raise RuntimeError("DELIVERY_OFFICIAL_SECURITY_STATUS_UNKNOWN")
 raw_ts=g.get("generated_at_utc")
 try:
     gt=datetime.fromisoformat(str(raw_ts).replace("Z","+00:00"))
@@ -94,10 +98,14 @@ except Exception as e:
     raise RuntimeError("DELIVERY_OFFICIAL_HALT_GUARD_TIME_UNPARSEABLE") from e
 if age < -60 or age > 900:
     raise RuntimeError("DELIVERY_OFFICIAL_HALT_GUARD_STALE")
-active=set(str(x).upper() for x in (halts.get("active_halt_symbols") or []))
-blocked=sorted({str(x.get("symbol") or "").upper() for x in eligible} & active)
+safety=g.get("candidate_safety") or {}
+veto=set(str(x).upper() for x in (safety.get("veto_symbols") or []))
+# Compatibility/fail-closed union if candidate_safety is missing a source field.
+veto |= set(str(x).upper() for x in (halts.get("active_halt_symbols") or []))
+veto |= set(str(x).upper() for x in (security.get("suspension_symbols") or []))
+blocked=sorted({str(x.get("symbol") or "").upper() for x in eligible} & veto)
 if blocked:
-    raise RuntimeError("DELIVERY_HALT_VETO:"+",".join(blocked))
+    raise RuntimeError("DELIVERY_OFFICIAL_SAFETY_VETO:"+",".join(blocked))
 
 eligible.sort(key=lambda x: (str(x["registered_at_utc"]), str(x["delivery_key"])))
 WORK.mkdir(exist_ok=True)
