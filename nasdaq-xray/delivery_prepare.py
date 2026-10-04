@@ -9,12 +9,14 @@ EXECUTION always remains NONE and REAL_MONEY NO-GO.
 from __future__ import annotations
 import json
 import re
+from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 POINTER = ROOT / "chatgpt_canonical_state_v2.json"
 WORK = ROOT / ".delivery_work"
 BATCH = WORK / "batch.json"
+OFFICIAL_GUARD = ROOT / "canonical_official_source_guard.json"
 
 if not POINTER.exists():
     print("XRAY_DELIVERY_NOOP=NO_POINTER")
@@ -73,6 +75,29 @@ if not eligible:
 
 if len(eligible) > 3:
     raise RuntimeError("DELIVERY_R92_COUNT_EXCEEDS_MAX3")
+
+# Candidate delivery is fail-closed on the official Nasdaq halt feed.
+# The delivery workflow refreshes this guard immediately before this script.
+if not OFFICIAL_GUARD.exists():
+    raise RuntimeError("DELIVERY_OFFICIAL_HALT_GUARD_MISSING")
+g=json.loads(OFFICIAL_GUARD.read_text())
+if g.get("schema")!="XRAY_OFFICIAL_SOURCE_GUARD_V1":
+    raise RuntimeError("DELIVERY_OFFICIAL_HALT_GUARD_SCHEMA_FAIL")
+halts=((g.get("sources") or {}).get("trade_halts") or {})
+if halts.get("status")!="PASS":
+    raise RuntimeError("DELIVERY_OFFICIAL_HALT_FEED_UNKNOWN")
+raw_ts=g.get("generated_at_utc")
+try:
+    gt=datetime.fromisoformat(str(raw_ts).replace("Z","+00:00"))
+    age=(datetime.now(timezone.utc)-gt.astimezone(timezone.utc)).total_seconds()
+except Exception as e:
+    raise RuntimeError("DELIVERY_OFFICIAL_HALT_GUARD_TIME_UNPARSEABLE") from e
+if age < -60 or age > 900:
+    raise RuntimeError("DELIVERY_OFFICIAL_HALT_GUARD_STALE")
+active=set(str(x).upper() for x in (halts.get("active_halt_symbols") or []))
+blocked=sorted({str(x.get("symbol") or "").upper() for x in eligible} & active)
+if blocked:
+    raise RuntimeError("DELIVERY_HALT_VETO:"+",".join(blocked))
 
 eligible.sort(key=lambda x: (str(x["registered_at_utc"]), str(x["delivery_key"])))
 WORK.mkdir(exist_ok=True)
