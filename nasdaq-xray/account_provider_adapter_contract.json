@@ -244,9 +244,37 @@
       "bootstrap_manifest_endpoint": "https://mcp.longbridge.com/v2",
       "bootstrap_protocol": "OFFICIAL_AGENT_AUTH_CODE_TO_RESTRICTED_MCP_V2_REFRESHABLE",
       "root_mcp_canonical_use": "FORBIDDEN_FOR_BOOTSTRAP_MANIFEST_AUTHORITY"
+    },
+    "CLEAR_STREET_READ_ONLY_MCP": {
+      "status": "CANDIDATE_ELIGIBILITY_AND_ENTITLEMENT_UNPROVEN",
+      "sanctioned_surface": "Official Clear Street read-only hosted MCP / API",
+      "required_read_capabilities": [
+        "current account balance/value/cash state",
+        "current equity positions/exposure"
+      ],
+      "evidence": [
+        "Official read-only MCP exposes account/portfolio balances and positions.",
+        "Read-only MCP cannot place or cancel orders.",
+        "Same provider has technically strong National-NBBO market-data snapshot semantics, creating potential G9+ACCOUNT consolidation."
+      ],
+      "blocker": "Türkiye-resident individual account eligibility and unconditional zero-balance/no-activity account/MCP retention are not proven.",
+      "reopen_condition": "Primary-source Clear Street confirms Türkiye eligibility and account can retain read-only MCP with no funding/activity requirement; then fresh same-run balance + positions must parse.",
+      "same_run_rule": "Documentation can never create ACCOUNT_PASS; current account value/cash and positions must both parse in the same canonical workflow run.",
+      "trading_scope_required": false,
+      "execution": "NONE",
+      "private_persistence": "FORBIDDEN"
     }
   },
   "transition_to_pass": "Only fresh same-run provider readback satisfying the pass_rule may set ACCOUNT=PASS. Persisted prior PASS alone is insufficient.",
   "no_policy_weakening": true,
-  "updated_on": "2026-10-03"
+  "updated_on": "2026-10-04",
+  "adapter_count": 12,
+  "latest_candidate_refresh": {
+    "date": "2026-10-04",
+    "added": [
+      "CLEAR_STREET_READ_ONLY_MCP"
+    ],
+    "pass_created": false,
+    "primary_adapter_unchanged": "LONGBRIDGE_HOSTED_MCP_V2"
+  }
 }
