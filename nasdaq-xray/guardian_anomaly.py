@@ -19,6 +19,7 @@ def main():
     replay=load("canonical_replay_guard.json")
     ledger=load("provider_health_ledger.json")
     delivery=load("delivery_ledger.json")
+    pointer=load("chatgpt_canonical_state_v2.json")
     checks=[]; add=lambda name,state,detail: checks.append({"name":name,"state":state,"detail":detail})
     add("master_identity","PASS" if master.get("completion_proof",{}).get("identity_authority_v3") is True else "FAIL","official identity proof")
     pc=price.get("pass_count"); uc=price.get("unknown_count")
@@ -28,6 +29,22 @@ def main():
     else:
         add("event_complete_for_terminal","NOT_APPLICABLE",terminal.get("status"))
     add("official_source_guard","PASS" if pit.get("status")=="PASS" else "DEGRADED",pit.get("status"))
+    ps=pointer.get("state_json") or {}
+    if isinstance(ps,str):
+        try: ps=json.loads(ps)
+        except Exception: ps={}
+    candidate_symbols=sorted({
+        str(x.get("symbol") or "").upper()
+        for x in (ps.get("r92") or [])
+        if isinstance(x,dict) and x.get("delivery_key") and x.get("symbol")
+    })
+    halt=((pit.get("sources") or {}).get("trade_halts") or {})
+    active=set(str(x).upper() for x in (halt.get("active_halt_symbols") or []))
+    intersection=sorted(set(candidate_symbols)&active)
+    if halt.get("status")!="PASS":
+        add("candidate_halt_guard","FAIL" if candidate_symbols else "DEGRADED",{"halt_feed_status":halt.get("status"),"registered_candidates":candidate_symbols})
+    else:
+        add("candidate_halt_guard","FAIL" if intersection else "PASS",{"registered_candidates":candidate_symbols,"active_halt_intersection":intersection})
     add("lineage_registry","PASS" if lineage.get("status") in {"COMPLETE_LINEAGE","COMPLETE_LINEAGE_SCHEMA"} else "DEGRADED",lineage.get("status"))
     add("deterministic_replay","PASS" if replay.get("status")=="PASS" else "FAIL",replay.get("status"))
     bad_delivery=[k for k,v in (delivery.get("deliveries") or {}).items() if v.get("backup_issue_status") not in {None,"DELIVERED"}]
