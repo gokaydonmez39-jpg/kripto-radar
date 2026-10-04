@@ -1,0 +1,36 @@
+{
+  "schema": "XRAY_G9_PROVIDER_DELTA_WEBULL_CLOUD_MCP_V1",
+  "generated_on": "2026-10-04",
+  "provider": "Webull Cloud MCP / OpenAPI",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "status": "NONQUALIFYING_USER_JURISDICTION_AND_STRICT_C",
+  "evidence": {
+    "cloud_mcp": "Official Webull Cloud MCP expansion announced 2026-09-29; hosted MCP exposes real-time/historical market data plus account balances, positions and order history to authorized AI assistants.",
+    "least_privilege": "Official Cloud MCP capability groups separately authorize Account Infos, Order Query, Market Data and Security Master.",
+    "automation": "Webull CLI/Cloud MCP explicitly supports scripts, scheduled jobs and AI-driven tooling.",
+    "jurisdiction": "Official Webull Financial account policy requires U.S. residency/accepted U.S. visa; Webull states it does not open or maintain accounts for individuals residing outside the United States.",
+    "consumer_nbbo": "Consumer offering has NBBO products, but full continuous National NBBO is fee-bearing and free per-query/display availability does not prove strict automated Cloud-MCP/OpenAPI entitlement.",
+    "openapi_marketdata": "OpenAPI market-data entitlement is separate from consumer app entitlements."
+  },
+  "failed_gates": [
+    "D_USER_JURISDICTION_TURKEY_RESIDENT_INELIGIBLE",
+    "C_PERMANENT_ZERO_AUTOMATED_CONSOLIDATED_NBBO_ENTITLEMENT_NOT_PROVEN"
+  ],
+  "gate_assessment": {
+    "A": "NOT_NEEDED_TO_RESOLVE_CURRENT_USER_PATH_AFTER_JURISDICTION_FAIL",
+    "B": "TECHNICALLY_PROMISING_BUT_NOT_RELEVANT_AFTER_JURISDICTION_FAIL",
+    "C": "FAIL_OR_UNPROVEN_FOR_STRICT_ZERO_DOLLAR",
+    "D": "FAIL_USER_JURISDICTION"
+  },
+  "account_gate_potential_for_current_user": false,
+  "reopen_condition": "Only reopen if Webull Financial officially supports Türkiye-resident individual accounts and grants the exact scheduler-callable consolidated NBBO+trade event feed at permanent $0 with lawful automated/non-display rights.",
+  "may_create_pass": false,
+  "source_urls": [
+    "https://www.webull.com/news/15661785982567424",
+    "https://developer.webull.com/apis/docs/AI-friendly-Resources/mcp/",
+    "https://www.webull.com/help/faq/10863-Trading-Abroad",
+    "https://www.webull.com/help/faq/622-Account-Opening-Process"
+  ],
+  "no_policy_weakening": true
+}
