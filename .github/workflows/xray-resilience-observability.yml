@@ -22,6 +22,8 @@ on:
       - "nasdaq-xray/deterministic_replay_guard.py"
       - "nasdaq-xray/guardian_anomaly.py"
       - "nasdaq-xray/free_core_migration_contract.json"
+      - "nasdaq-xray/gem_integration_registry.json"
+      - "nasdaq-xray/gem_registry_selftest.py"
       - ".github/workflows/xray-resilience-observability.yml"
   schedule:
     - cron: "47 * * * 1-5"
@@ -64,10 +66,14 @@ jobs:
             nasdaq-xray/official_pit_ledger.py \
             nasdaq-xray/data_lineage_registry.py \
             nasdaq-xray/deterministic_replay_guard.py \
-            nasdaq-xray/guardian_anomaly.py
+            nasdaq-xray/guardian_anomaly.py \
+            nasdaq-xray/gem_registry_selftest.py
 
       - name: Single-flight + circuit-breaker self-test
         run: python nasdaq-xray/resilience_selftest.py
+
+      - name: 36-of-36 gem integration registry self-test
+        run: python nasdaq-xray/gem_registry_selftest.py
 
       - name: PIT vintage-store self-test
         run: python nasdaq-xray/pit_vintage_store_selftest.py
@@ -144,6 +150,10 @@ jobs:
           assert replay.get("asof_consistent") is True,replay
           guardian=json.load(open(root/"canonical_guardian_state.json"))
           assert guardian.get("status")!="FAIL_CLOSED",guardian
+          gems=json.load(open(root/"gem_integration_registry.json"))
+          assert gems.get("schema")=="XRAY_GEM_INTEGRATION_REGISTRY_V1",gems
+          assert gems.get("expected_gem_count")==36 and len(gems.get("gems") or [])==36,gems
+          assert [x.get("id") for x in gems["gems"]]==list(range(1,37)),gems
           mig=json.load(open(root/"free_core_migration_contract.json"))
           assert mig.get("execution")=="NONE" and mig.get("real_money")=="NO-GO"
           assert mig["migration_candidates"]["market_cap"]["cutover"] is False
