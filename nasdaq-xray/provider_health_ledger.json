@@ -6,7 +6,7 @@
       "last_error_code": null,
       "last_error_retryable": null,
       "last_http_status": null,
-      "last_success_at_utc": "2026-10-04T20:54:29.479064+00:00",
+      "last_success_at_utc": "2026-10-04T20:56:33.486051+00:00",
       "open_until_epoch": 0,
       "status": "HEALTHY"
     },
@@ -16,7 +16,7 @@
       "last_error_code": null,
       "last_error_retryable": null,
       "last_http_status": null,
-      "last_success_at_utc": "2026-10-04T20:54:48.732609+00:00",
+      "last_success_at_utc": "2026-10-04T20:57:12.911582+00:00",
       "open_until_epoch": 0,
       "status": "HEALTHY"
     },
@@ -26,7 +26,7 @@
       "last_error_code": null,
       "last_error_retryable": null,
       "last_http_status": null,
-      "last_success_at_utc": "2026-10-04T20:54:29.368698+00:00",
+      "last_success_at_utc": "2026-10-04T20:56:33.409812+00:00",
       "open_until_epoch": 0,
       "status": "HEALTHY"
     },
@@ -36,7 +36,17 @@
       "last_error_code": null,
       "last_error_retryable": null,
       "last_http_status": null,
-      "last_success_at_utc": "2026-10-04T20:54:27.391578+00:00",
+      "last_success_at_utc": "2026-10-04T20:56:31.051991+00:00",
+      "open_until_epoch": 0,
+      "status": "HEALTHY"
+    },
+    "NASDAQ_SECURITY_STATUS": {
+      "consecutive_failures": 0,
+      "last_error": null,
+      "last_error_code": null,
+      "last_error_retryable": null,
+      "last_http_status": null,
+      "last_success_at_utc": "2026-10-04T20:56:30.850211+00:00",
       "open_until_epoch": 0,
       "status": "HEALTHY"
     },
@@ -46,7 +56,7 @@
       "last_error_code": null,
       "last_error_retryable": null,
       "last_http_status": null,
-      "last_success_at_utc": "2026-10-04T20:54:27.651224+00:00",
+      "last_success_at_utc": "2026-10-04T20:56:31.771675+00:00",
       "open_until_epoch": 0,
       "status": "HEALTHY"
     },
@@ -56,7 +66,7 @@
       "last_error_code": null,
       "last_error_retryable": null,
       "last_http_status": null,
-      "last_success_at_utc": "2026-10-04T20:54:27.893769+00:00",
+      "last_success_at_utc": "2026-10-04T20:56:31.939929+00:00",
       "open_until_epoch": 0,
       "status": "HEALTHY"
     },
@@ -66,7 +76,7 @@
       "last_error_code": null,
       "last_error_retryable": null,
       "last_http_status": null,
-      "last_success_at_utc": "2026-10-04T20:54:27.539315+00:00",
+      "last_success_at_utc": "2026-10-04T20:56:31.148145+00:00",
       "open_until_epoch": 0,
       "status": "HEALTHY"
     },
@@ -75,7 +85,7 @@
       "last_error": "HTTPError:HTTP Error 403: Forbidden",
       "last_error_code": "HTTP_DEFINITIVE",
       "last_error_retryable": false,
-      "last_failure_at_utc": "2026-10-04T20:54:29.142776+00:00",
+      "last_failure_at_utc": "2026-10-04T20:56:33.268735+00:00",
       "last_http_status": 403,
       "open_until_epoch": 0,
       "status": "NONRETRYABLE_ERROR"
@@ -85,7 +95,7 @@
       "last_error": "HTTPError:HTTP Error 403: Forbidden",
       "last_error_code": "HTTP_DEFINITIVE",
       "last_error_retryable": false,
-      "last_failure_at_utc": "2026-10-04T20:54:28.194272+00:00",
+      "last_failure_at_utc": "2026-10-04T20:56:32.163259+00:00",
       "last_http_status": 403,
       "open_until_epoch": 0,
       "status": "NONRETRYABLE_ERROR"
@@ -97,11 +107,11 @@
       "last_error_retryable": null,
       "last_failure_at_utc": "2026-10-03T00:21:44.840917+00:00",
       "last_http_status": null,
-      "last_success_at_utc": "2026-10-04T20:54:48.001379+00:00",
+      "last_success_at_utc": "2026-10-04T20:57:12.209652+00:00",
       "open_until_epoch": 0,
       "status": "HEALTHY"
     }
   },
   "schema": "XRAY_PROVIDER_HEALTH_LEDGER_V1",
-  "updated_at_utc": "2026-10-04T20:54:48.732624+00:00"
+  "updated_at_utc": "2026-10-04T20:57:12.911608+00:00"
 }
