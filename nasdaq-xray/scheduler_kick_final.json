@@ -1,9 +1,9 @@
 {
   "schema": "XRAY_SCHEDULER_FINAL_KICK_V1",
-  "sequence": 0,
-  "requested_at_utc": null,
-  "requested_by": "SEED",
-  "reason": "INITIAL_SEED",
+  "sequence": 1,
+  "requested_at_utc": "2026-10-04T21:34:45.663Z",
+  "requested_by": "XRAY_READINESS_REPAIR",
+  "reason": "STALE_TERMINAL_OFFICIAL_GUARD_BINDING",
   "execution": "NONE",
   "real_money": "NO-GO"
 }
