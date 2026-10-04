@@ -331,18 +331,30 @@ def main():
         g=load(OFFICIAL_HALT_GUARD)
         assert g.get("schema")=="XRAY_OFFICIAL_SOURCE_GUARD_V1"
         assert g.get("execution")=="NONE" and g.get("real_money")=="NO-GO"
-        hs=((g.get("sources") or {}).get("trade_halts") or {})
+        src=(g.get("sources") or {})
+        hs=(src.get("trade_halts") or {})
+        ss=(src.get("security_status") or {})
         assert hs.get("status")=="PASS"
+        assert ss.get("status")=="PASS"
         gt=datetime.fromisoformat(str(g.get("generated_at_utc")).replace("Z","+00:00")).astimezone(timezone.utc)
         age=(datetime.now(timezone.utc)-gt).total_seconds()
-        assert -60 <= age <= HALT_GUARD_MAX_AGE_SECONDS, f"HALT_GUARD_STALE:{age}"
+        assert -60 <= age <= HALT_GUARD_MAX_AGE_SECONDS, f"OFFICIAL_SAFETY_GUARD_STALE:{age}"
+        safety=g.get("candidate_safety") or {}
+        veto=set(str(x).upper() for x in (safety.get("veto_symbols") or []))
+        # Backward-safe reconstruction is only diagnostic redundancy; both
+        # source feeds above must still PASS.
         active=set(str(x).upper() for x in (hs.get("active_halt_symbols") or []))
-        halt_vetoed=sorted(k for k in raw_pre if str(k).split("|",1)[0].upper() in active)
+        susp=set(str(x).upper() for x in (ss.get("suspension_symbols") or []))
+        assert veto==(active|susp), (sorted(veto),sorted(active|susp))
+        halt_vetoed=sorted(k for k in raw_pre if str(k).split("|",1)[0].upper() in veto)
         pre=raw_pre-set(halt_vetoed)
         halt_safety.update({
           "status":"PASS","guard_blob_sha":blob_sha(OFFICIAL_HALT_GUARD),
           "generated_at_utc":g.get("generated_at_utc"),"age_seconds":round(age,3),
-          "active_halt_symbols":sorted(active),"vetoed_candidates":halt_vetoed,
+          "active_halt_symbols":sorted(active),
+          "security_status_suspension_symbols":sorted(susp),
+          "veto_symbols":sorted(veto),
+          "vetoed_candidates":halt_vetoed,
         })
     except Exception as e:
         if raw_pre:
