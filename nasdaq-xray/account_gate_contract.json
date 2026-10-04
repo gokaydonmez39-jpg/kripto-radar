@@ -37,7 +37,7 @@
   "retry_class": "ONE_TIME_SECURE_BOOTSTRAP_USER_ACTION_REQUIRED",
   "reauth_rule": "Ordinary token refresh/reconnect has already been falsified as a repair: a new OAuth session enabled watchlist but account/portfolio/trading-read endpoints remained 403308. Retry only on a material scope/account-eligibility change.",
   "pass_transition_rule": "ACCOUNT_PASS requires fresh same-run parseable account_balance + stock_positions from an eligible sanctioned adapter, exact current adapter binding, current workflow-run attestation, and for restricted MCP /v2 verified absence of forbidden write surface. Encrypted vault existence alone never PASS.",
-  "updated_on": "2026-10-03",
+  "updated_on": "2026-10-04",
   "last_reauth_attempt": {
     "user_reported_reauthorized": true,
     "verification_result": "FAILED_SAME_SCOPE_ERROR",
@@ -77,16 +77,17 @@
     "MIDAS_ALPACA_CORRESPONDENT": "PROMISING_OFFICIAL_INFRA_BUT_ENDUSER_CREDENTIALS_NOT_AVAILABLE",
     "LONGBRIDGE_DIRECT_OPENAPI": "ELIGIBLE_FRESH_SAME_RUN_ONLY_OAUTH_PREFERRED",
     "LONGBRIDGE_HOSTED_MCP": "ELIGIBLE_FRESH_SAME_RUN_ONLY_ACCOUNT_SCOPE",
-    "LONGBRIDGE_HOSTED_MCP_V2": "ELIGIBLE_FRESH_SAME_RUN_ONLY_BOOTSTRAP_READY"
+    "LONGBRIDGE_HOSTED_MCP_V2": "ELIGIBLE_FRESH_SAME_RUN_ONLY_BOOTSTRAP_READY",
+    "CLEAR_STREET_READ_ONLY_MCP": "CANDIDATE_TURKEY_ELIGIBILITY_AND_ZERO_BALANCE_RETENTION_UNPROVEN; technically capable balances+positions on an official read-only surface."
   },
   "adapter_registry_count": 12,
   "adapter_registry_sync": "EVIDENCE_PIN_ONLY_NEVER_PASS_AUTHORITY",
-  "binding_revalidated_on": "2026-10-03",
-  "binding_revalidation_note": "Exact adapter/gate binding revalidated after evidence-only Midas updates; no ACCOUNT PASS created and no execution capability added.",
+  "binding_revalidated_on": "2026-10-04",
+  "binding_revalidation_note": "Exact adapter/gate binding revalidated after adding fail-closed Clear Street alternative; current primary remains LONGBRIDGE_HOSTED_MCP_V2 and no ACCOUNT PASS is created.",
   "binding_revalidation": {
     "status": "EXACT",
-    "adapter_blob_sha": "3d89bf9ee0fffdcd39fad8b0c16b968c17167846",
-    "revalidated_on": "2026-10-03",
+    "adapter_blob_sha": "5449326202d6dab2de99c8f384bcdd5e95834c0e",
+    "revalidated_on": "2026-10-04",
     "semantic_effect": "NONE_ZERO_ALPHA"
   },
   "restricted_mcp_v2_safety": {
