@@ -9,7 +9,7 @@
     "C": "lawful automated/non-display permanent-$0 entitlement with no fee/balance/activity/per-query condition",
     "D": "scheduler callability"
   },
-  "unique_provider_paths_reviewed": 70,
+  "unique_provider_paths_reviewed": 71,
   "evidence_files": [
     {
       "path": "nasdaq-xray/g9_free_path_audit_20261003.json",
@@ -170,6 +170,22 @@
     {
       "path": "nasdaq-xray/g9_provider_delta_allyinvest_20261004.json",
       "blob_sha": "147b74677a4d5aafb1d3a0729dcd5418388705f4"
+    },
+    {
+      "path": "nasdaq-xray/g9_provider_delta_public_mcp_20261004.json",
+      "blob_sha": "d8ab27ba66df1c3394730bc8bc1fecb9eb562c9e"
+    },
+    {
+      "path": "nasdaq-xray/g9_provider_delta_forinvest_mcp_20261004.json",
+      "blob_sha": "33170dc1f3c0ae489e43f27f722fc144e91c8095"
+    },
+    {
+      "path": "nasdaq-xray/g9_provider_delta_webull_cloud_mcp_20261004.json",
+      "blob_sha": "84499fcfeeadc4d2cc7f11dd2e86234a97193e95"
+    },
+    {
+      "path": "nasdaq-xray/g9_provider_delta_freedom_tradernet_mcp_20261004.json",
+      "blob_sha": "2482e32c6642ed19ccd6b22c189c17da9a5728dc"
     }
   ],
   "reviewed_provider_paths": [
@@ -242,48 +258,39 @@
     "Midas Labs / Midas Markets MCP (midasmarkets.xyz; not GetMidas Turkey)",
     "Alpaca ChatGPT market-data plugin / connected MCP surface",
     "Unusual Whales API / MCP",
-    "Ally Invest Developer API"
+    "Ally Invest Developer API",
+    "Freedom24 / TraderNet MCP"
   ],
   "strongest_near_misses": [
     {
+      "provider": "Clear Street Trading API / read-only MCP",
+      "strength": "official National-NBBO semantics + independent exchange timestamps + read-only hosted MCP + account balances/positions",
+      "blocker": "Türkiye retail eligibility and unconditional zero-balance/permanent-$0 automated market-data entitlement remain unproven"
+    },
+    {
+      "provider": "Paper Invest REST / Official MCP",
+      "strength": "$0/free-forever API+MCP and official real-time NBBO claim with implemented adapter",
+      "blocker": "exact UTP/SIP or licensed redistributor lineage, timestamp semantics and provider-specific automated/non-display fee treatment remain unconfirmed"
+    },
+    {
+      "provider": "Wealthnow Free price_snapshot",
+      "strength": "$0 Free snapshot exposes bid/ask/last and distinct timing fields; paid streaming product explicitly documents consolidated NBBO",
+      "blocker": "exact binding of the Free snapshot route to consolidated NBBO/SIP plus provider-specific automated/non-display fee treatment remain unconfirmed"
+    },
+    {
+      "provider": "ForInvest Hosted MCP",
+      "strength": "Türkiye-native official hosted StreamableHTTP MCP with sanctioned ChatGPT/agent usage; jurisdiction fit is strong",
+      "blocker": "free-account real-time U.S. equity entitlement, consolidated CTA/UTP NBBO lineage and independent quote/trade event schema are not documented; primary-source clarification requested"
+    },
+    {
       "provider": "Massive",
       "strength": "exact National NBBO + trade API shape",
-      "blocker": "current free entitlement excludes required endpoints; live connector NOT_ENTITLED"
-    },
-    {
-      "provider": "Tradier Brokerage API",
-      "strength": "documented consolidated realtime US equity feed + $0 Lite/API",
-      "blocker": "official residency policy blocks Turkey"
-    },
-    {
-      "provider": "Public.com Individual API",
-      "strength": "sanctioned realtime API with separate last/bid/ask event timestamps and hosted MCP",
-      "blocker": "requires U.S. residential eligibility; exact UTP/National-NBBO lineage also unproven"
-    },
-    {
-      "provider": "tastytrade / dxFeed",
-      "strength": "dxFeed composite/NBBO architecture + tastytrade sanctioned DXLink quote token/streaming API",
-      "blocker": "tastytrade realtime equity API entitlement is funded-account dependent; unfunded accounts switch to delayed quotes, violating strict permanent-$0/no-funding-condition G9-C"
-    },
-    {
-      "provider": "XigniteGlobalRealTime",
-      "strength": "explicit SIP NBBO/UTP Tape-C and timestamps",
-      "blocker": "exchange licensing/fee model; no permanent-$0 automated entitlement"
-    },
-    {
-      "provider": "Charles Schwab Trader API / International",
-      "strength": "sanctioned OAuth developer platform and international brokerage footprint",
-      "blocker": "current primary-source chain does not prove Turkey retail eligibility plus exact Trader-API consolidated NBBO/timestamps plus permanent-$0 entitlement"
-    },
-    {
-      "provider": "dxFeed Direct UTP Tape C",
-      "strength": "exact UTP UQDF/UTDF Tape-C + National BBO lineage",
-      "blocker": "direct realtime access is subscription/licensing based; no permanent-$0 automated entitlement"
+      "blocker": "current free entitlement excludes required endpoints; live connector returned NOT_ENTITLED"
     }
   ],
   "structural_result": "DIRECT UTP REALTIME NONDISPLAY IS FEE-LIABLE. A strict $0-to-end-user path can exist only if a broker/vendor lawfully absorbs upstream licensing and explicitly grants the exact automated/non-display API entitlement without balance/activity/per-query/subscription/account-maintenance conditions.",
-  "current_result": "FINAL_EXTERNAL_BLOCKED_AFTER_2026_MCP_REOPEN_SWEEP",
-  "search_policy": "Broad sweep is considered saturated at 70 provider identities. Reopen only on a newer primary-source product/entitlement surface or exact failed-gate change; social/X discovery is lead generation only and never authority.",
+  "current_result": "FINAL_EXTERNAL_BLOCKED_AFTER_FINAL_2026_X_MCP_SWEEP",
+  "search_policy": "Broad search is saturated at 71 distinct provider identities for current public evidence. Reopen only on a newer primary-source product/entitlement change or provider reply that changes a failed/unknown gate; X/social discovery is lead generation only and never authority.",
   "unknown_never_pass": true,
   "no_policy_weakening": true,
   "last_extended_on": "2026-10-04",
@@ -293,8 +300,10 @@
     "authority_file": "nasdaq-xray/g9_utp_fee_basis_20261003.json"
   },
   "latest_new_provider": {
-    "provider": "NONE_NEW_IDENTITY",
-    "note": "2026-10-04 sweep reopened existing provider identities through new MCP/product surfaces; provider identity count remains 70."
+    "provider": "Freedom24 / TraderNet MCP",
+    "note": "New identity discovered in final 2026 MCP sweep. Official UTP-vendor relationship and scheduler-callable MCP are strong, but real-time Level 1 is explicitly fee-bearing/funding-dependent and Türkiye local brokerage is not yet operational.",
+    "evidence_path": "nasdaq-xray/g9_provider_delta_freedom_tradernet_mcp_20261004.json",
+    "evidence_blob_sha": "2482e32c6642ed19ccd6b22c189c17da9a5728dc"
   },
   "final_resolution": {
     "path": "nasdaq-xray/g9_final_resolution_20261004.json",
@@ -303,43 +312,44 @@
   },
   "latest_reopen_sweep": {
     "date": "2026-10-04",
-    "identity_count_unchanged": 70,
-    "evidence_only_reopens": [
+    "identity_count": 71,
+    "evidence_updates": [
       {
         "provider": "Public.com Individual API",
-        "new_surface": "Hosted MCP + official SDK",
-        "evidence_path": "nasdaq-xray/g9_provider_delta_public_mcp_20261004.json",
-        "evidence_blob_sha": "3d54046ad8e1febb3b9385fd6506ba04667ce1b1",
-        "result": "P1_NEAR_MISS_A_C_JURISDICTION_UNPROVEN"
+        "result": "CLOSED_US_RESIDENCY_REQUIRED",
+        "evidence_blob_sha": "d8ab27ba66df1c3394730bc8bc1fecb9eb562c9e"
       },
       {
-        "provider": "Foreks / ForInvest Web SDK",
-        "new_surface": "ForInvest Hosted MCP",
-        "evidence_path": "nasdaq-xray/g9_provider_delta_forinvest_mcp_20261004.json",
-        "evidence_blob_sha": "15f8d636d88752cbf846b5f900b26b470b815511",
-        "result": "D_STRONG_A_B_C_UNPROVEN"
+        "provider": "Webull OpenAPI / Cloud MCP",
+        "result": "CLOSED_US_RESIDENCY_REQUIRED_AND_STRICT_C_UNPROVEN",
+        "evidence_blob_sha": "84499fcfeeadc4d2cc7f11dd2e86234a97193e95"
       },
       {
-        "provider": "Robinhood Official Trading API",
-        "new_surface": "Agentic Trading MCP",
-        "evidence_path": "nasdaq-xray/g9_provider_delta_robinhood_agentic_20261004.json",
-        "evidence_blob_sha": "92327745c3c08519fe8971f94a4e6407d81007b2",
-        "result": "NONQUALIFYING_FUNDING_JURISDICTION_CONTINUOUS_SIP_UNPROVEN"
+        "provider": "Foreks / ForInvest Hosted MCP",
+        "result": "OPEN_PRIMARY_SOURCE_REPLY_PENDING_A_B_C",
+        "evidence_blob_sha": "33170dc1f3c0ae489e43f27f722fc144e91c8095"
+      },
+      {
+        "provider": "Freedom24 / TraderNet MCP",
+        "result": "CLOSED_CURRENT_PAID_REALTIME_AND_TURKEY_LOCAL_NOT_LIVE",
+        "evidence_blob_sha": "2482e32c6642ed19ccd6b22c189c17da9a5728dc"
       }
     ],
-    "no_new_provider_identity": true,
     "no_g9_pass": true
   },
   "latest_current_evidence": {
     "registry_path": "nasdaq-xray/g9_provider_registry_20261003.json",
-    "registry_blob_sha": "1b902965f621d4f223a47aa9c8e1f5604e8b65c1",
-    "registry_provider_count": 70,
+    "registry_blob_sha": "3270ee56c94beca87bb834e14d9fb1355316db5a",
+    "registry_provider_count": 71,
     "adapter_path": "nasdaq-xray/g9_provider_adapter_contract.json",
-    "adapter_blob_sha": "08bc8842c442bff75d2f835d35e83a5cc932a36f",
-    "adapter_count": 17,
+    "adapter_blob_sha": "73435efe895c8387a6fa02e77125087d2a48d01b",
+    "adapter_count": 19,
     "clear_street_blob_sha": "156ce0596e00531958c317524709f2c968b278a6",
-    "public_com_blob_sha": "3d54046ad8e1febb3b9385fd6506ba04667ce1b1",
+    "public_com_blob_sha": "d8ab27ba66df1c3394730bc8bc1fecb9eb562c9e",
     "paper_blob_sha": "9e0a105d09df8017e67fa7607ff99d8b077aa1a7",
-    "wealthnow_blob_sha": "92e3b315338082bc00fe5d0012c7d4b9fc7f255f"
+    "wealthnow_blob_sha": "92e3b315338082bc00fe5d0012c7d4b9fc7f255f",
+    "forinvest_blob_sha": "33170dc1f3c0ae489e43f27f722fc144e91c8095",
+    "webull_cloud_blob_sha": "84499fcfeeadc4d2cc7f11dd2e86234a97193e95",
+    "freedom_tradernet_blob_sha": "2482e32c6642ed19ccd6b22c189c17da9a5728dc"
   }
 }
