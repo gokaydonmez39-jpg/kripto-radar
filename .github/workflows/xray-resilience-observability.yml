@@ -17,6 +17,7 @@ on:
       - "nasdaq-xray/pit_vintage_store.py"
       - "nasdaq-xray/pit_vintage_store_selftest.py"
       - "nasdaq-xray/official_source_guard.py"
+      - "nasdaq-xray/official_source_guard_selftest.py"
       - "nasdaq-xray/official_pit_ledger.py"
       - "nasdaq-xray/data_lineage_registry.py"
       - "nasdaq-xray/deterministic_replay_guard.py"
@@ -63,6 +64,7 @@ jobs:
             nasdaq-xray/pit_vintage_store.py \
             nasdaq-xray/pit_vintage_store_selftest.py \
             nasdaq-xray/official_source_guard.py \
+            nasdaq-xray/official_source_guard_selftest.py \
             nasdaq-xray/official_pit_ledger.py \
             nasdaq-xray/data_lineage_registry.py \
             nasdaq-xray/deterministic_replay_guard.py \
@@ -77,6 +79,9 @@ jobs:
 
       - name: PIT vintage-store self-test
         run: python nasdaq-xray/pit_vintage_store_selftest.py
+
+      - name: Nasdaq Security Status state-machine self-test
+        run: python nasdaq-xray/official_source_guard_selftest.py
 
       - name: Nasdaq official PIT + halt/system guard
         run: python nasdaq-xray/official_source_guard.py
