@@ -205,8 +205,9 @@
   },
   "midas_official_audit": {
     "path": "nasdaq-xray/midas_official_path_audit_20261003.json",
-    "blob_sha": "f4ec36f1a66005895efaf06fbea1cb3e30d21dcd",
-    "result": "OFFICIAL_TRADINGVIEW_BROKER_READ_SURFACE_PROVEN;STRICT_G9_STILL_BLOCKED_ON_NBBO_LINEAGE_EVENT_TIMESTAMPS_AUTOMATED_NONDISPLAY_RIGHT_AND_ENDUSER_SCHEDULER_API"
+    "blob_sha": "a0d603ba2e527bea48816dd8421da27c1835cdf4",
+    "result": "OFFICIAL_TRADINGVIEW_BROKER_READ_SURFACE_PROVEN;STRICT_G9_STILL_BLOCKED_ON_NBBO_LINEAGE_EVENT_TIMESTAMPS_AUTOMATED_NONDISPLAY_RIGHT_AND_ENDUSER_SCHEDULER_API",
+    "reconcile_note": "2026-10-04 zero-alpha repin to current audit blob. Current audit only strengthens negative evidence/product-lineage uncertainty; no gate is weakened and no PASS is created."
   },
   "midas_alpaca_infrastructure_audit": {
     "path": "nasdaq-xray/midas_alpaca_infrastructure_audit_20261003.json",
