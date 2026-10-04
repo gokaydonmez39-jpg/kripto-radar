@@ -18,6 +18,8 @@ on:
       - "nasdaq-xray/account_gate_contract.json"
       - "nasdaq-xray/account_provider_adapter_contract.json"
       - ".github/workflows/xray-final-gate-overlay-v2.yml"
+  schedule:
+    - cron: "55 * * * 1-5"
   workflow_dispatch:
 
 permissions:
