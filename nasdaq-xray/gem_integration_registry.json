@@ -1,0 +1,371 @@
+{
+  "schema": "XRAY_GEM_INTEGRATION_REGISTRY_V1",
+  "inventory_date": "2026-10-04",
+  "expected_gem_count": 36,
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "rule": "A gem is integrated only in its approved role. SHADOW/RESEARCH/BLOCKED entries may never create alpha, G9, ACCOUNT, R92, delivery, or TRUE_FULL_GO PASS.",
+  "gems": [
+    {
+      "id": 1,
+      "name": "NASDAQ Security Status Updates",
+      "tier": "PRODUCTION_SAFETY_PIT",
+      "runtime_paths": [
+        "canonical_official_source_guard.json",
+        "official_pit_ledger.json",
+        "delivery_prepare.py",
+        "build_current_terminal.py"
+      ],
+      "cutover": true
+    },
+    {
+      "id": 2,
+      "name": "NASDAQ Symbol Directory",
+      "tier": "PRODUCTION_AUTHORITY",
+      "runtime_paths": [
+        "sina_stage.py",
+        "canonical_current_master_manifest.json"
+      ],
+      "cutover": true
+    },
+    {
+      "id": 3,
+      "name": "NASDAQ Trading System Adds/Deletes",
+      "tier": "PRODUCTION_PIT_SUPPORT",
+      "runtime_paths": [
+        "canonical_official_source_guard.json",
+        "official_pit_ledger.json"
+      ],
+      "cutover": true
+    },
+    {
+      "id": 4,
+      "name": "NASDAQ Trade Halt RSS",
+      "tier": "PRODUCTION_SAFETY_VETO",
+      "runtime_paths": [
+        "canonical_official_source_guard.json",
+        "delivery_prepare.py",
+        "build_current_terminal.py",
+        "canonical_guardian_state.json"
+      ],
+      "cutover": true
+    },
+    {
+      "id": 5,
+      "name": "NASDAQ System Status",
+      "tier": "PRODUCTION_GUARDIAN_DIAGNOSTIC",
+      "runtime_paths": [
+        "canonical_official_source_guard.json",
+        "canonical_guardian_state.json"
+      ],
+      "cutover": true
+    },
+    {
+      "id": 6,
+      "name": "SEC EDGAR API",
+      "tier": "PRODUCTION_EVENT_LEGAL_AUTHORITY",
+      "runtime_paths": [
+        "sec_official_witness.py",
+        "canonical_sec_official_witness.json"
+      ],
+      "cutover": true
+    },
+    {
+      "id": 7,
+      "name": "SEC Bulk CompanyFacts",
+      "tier": "SHADOW_DATA_LAKE",
+      "runtime_paths": [
+        "pit_vintage_store.py",
+        "free_core_migration_contract.json"
+      ],
+      "cutover": false
+    },
+    {
+      "id": 8,
+      "name": "SEC Bulk Submissions",
+      "tier": "SHADOW_DATA_LAKE",
+      "runtime_paths": [
+        "pit_vintage_store.py",
+        "free_core_migration_contract.json"
+      ],
+      "cutover": false
+    },
+    {
+      "id": 9,
+      "name": "EdgarTools",
+      "tier": "SHADOW_PARSER_ENGINE",
+      "runtime_paths": [
+        "x_research_shadow_20261004_round11_edgartools_pit.md",
+        "free_core_migration_contract.json"
+      ],
+      "cutover": false
+    },
+    {
+      "id": 10,
+      "name": "Rallies",
+      "tier": "PRODUCTION_RESEARCH_DATA_NON_G9",
+      "runtime_paths": [
+        "chatgpt_compiled_policy_v3.json",
+        "provider_health_ledger.json"
+      ],
+      "cutover": true
+    },
+    {
+      "id": 11,
+      "name": "Rallies + SEC Market Cap Motor",
+      "tier": "SHADOW_MIGRATION",
+      "runtime_paths": [
+        "free_core_migration_contract.json",
+        "x_research_shadow_20261004_round6_rallies_sec_replacement.md"
+      ],
+      "cutover": false
+    },
+    {
+      "id": 12,
+      "name": "Rallies OpenFactor",
+      "tier": "SHADOW_RISK_OVERLAY",
+      "runtime_paths": [
+        "free_core_migration_contract.json",
+        "x_research_shadow_20261004_round8_openfactor_lineage_risk.md"
+      ],
+      "cutover": false
+    },
+    {
+      "id": 13,
+      "name": "OpenFactor Public Data",
+      "tier": "SHADOW_RISK_DATA",
+      "runtime_paths": [
+        "x_research_shadow_20261004_round8_openfactor_lineage_risk.md"
+      ],
+      "cutover": false
+    },
+    {
+      "id": 14,
+      "name": "Rallies / Massive Lineage",
+      "tier": "PROVENANCE_EVIDENCE_ONLY",
+      "runtime_paths": [
+        "canonical_data_lineage_registry.json",
+        "x_research_shadow_20261004_round10_rallies_live_g9_lineage.md"
+      ],
+      "cutover": false
+    },
+    {
+      "id": 15,
+      "name": "Paper Invest",
+      "tier": "BLOCKED_G9_CANDIDATE",
+      "runtime_paths": [
+        "g9_provider_adapter_contract.json",
+        "strict_g9_probe.py",
+        "g9_entitlement_authority.json"
+      ],
+      "cutover": false
+    },
+    {
+      "id": 16,
+      "name": "Clear Street",
+      "tier": "BLOCKED_G9_ACCOUNT_CANDIDATE",
+      "runtime_paths": [
+        "g9_provider_registry_20261003.json",
+        "account_provider_adapter_contract.json"
+      ],
+      "cutover": false
+    },
+    {
+      "id": 17,
+      "name": "UTP1APIS",
+      "tier": "ENTITLEMENT_AUTHORITY_RESEARCH",
+      "runtime_paths": [
+        "g9_entitlement_authority.json",
+        "g9_search_saturation_20261003.json"
+      ],
+      "cutover": false
+    },
+    {
+      "id": 18,
+      "name": "ForInvest MCP",
+      "tier": "BLOCKED_G9_CANDIDATE",
+      "runtime_paths": [
+        "g9_provider_registry_20261003.json",
+        "g9_search_saturation_20261003.json"
+      ],
+      "cutover": false
+    },
+    {
+      "id": 19,
+      "name": "XFINLAB PIT Architecture",
+      "tier": "ARCHITECTURE_PATTERN_APPLIED",
+      "runtime_paths": [
+        "pit_vintage_store.py",
+        "official_pit_ledger.json",
+        "canonical_replay_guard.json"
+      ],
+      "cutover": true
+    },
+    {
+      "id": 20,
+      "name": "Big Movers / Survivorship Bias",
+      "tier": "RESEARCH_LAB_ONLY",
+      "runtime_paths": [
+        "x_research_shadow_20261004_round1.md"
+      ],
+      "cutover": false
+    },
+    {
+      "id": 21,
+      "name": "fin-data-mcp",
+      "tier": "ENGINEERING_PATTERN_APPLIED",
+      "runtime_paths": [
+        "resilience_runtime.py",
+        "provider_health_ledger.json"
+      ],
+      "cutover": true
+    },
+    {
+      "id": 22,
+      "name": "Equibles",
+      "tier": "RESEARCH_EVENT_DATALAKE_SHADOW",
+      "runtime_paths": [
+        "x_research_shadow_20261004_round1.md"
+      ],
+      "cutover": false
+    },
+    {
+      "id": 23,
+      "name": "X Community Notes Open Data",
+      "tier": "POSTMORTEM_SOURCE_DILIGENCE",
+      "runtime_paths": [
+        "x_research_shadow_20261004_round4_xmining_quality_events.md"
+      ],
+      "cutover": false
+    },
+    {
+      "id": 24,
+      "name": "X Official MCP",
+      "tier": "RESEARCH_OPTIONAL_PAID_NOT_CORE",
+      "runtime_paths": [
+        "x_research_discovery_protocol_v1.json"
+      ],
+      "cutover": false
+    },
+    {
+      "id": 25,
+      "name": "last30days",
+      "tier": "RESEARCH_ENGINEERING_ONLY",
+      "runtime_paths": [
+        "x_research_discovery_protocol_v1.json"
+      ],
+      "cutover": false
+    },
+    {
+      "id": 26,
+      "name": "X Event Discovery Accounts",
+      "tier": "DISCOVERY_ONLY",
+      "runtime_paths": [
+        "x_research_discovery_protocol_v1.json",
+        "x_research_shadow_20261004_round4_xmining_quality_events.md"
+      ],
+      "cutover": false
+    },
+    {
+      "id": 27,
+      "name": "MertMetinDev Research Seeds",
+      "tier": "DISCOVERY_SEEDS",
+      "runtime_paths": [
+        "x_research_discovery_protocol_v1.json"
+      ],
+      "cutover": false
+    },
+    {
+      "id": 28,
+      "name": "Free Software != Free Raw Data",
+      "tier": "PRODUCTION_GOVERNANCE_RULE",
+      "runtime_paths": [
+        "free_core_migration_contract.json",
+        "canonical_data_lineage_registry.json"
+      ],
+      "cutover": true
+    },
+    {
+      "id": 29,
+      "name": "Data Lineage Registry",
+      "tier": "PRODUCTION_CONTROL_PLANE",
+      "runtime_paths": [
+        "data_lineage_registry.py",
+        "canonical_data_lineage_registry.json"
+      ],
+      "cutover": true
+    },
+    {
+      "id": 30,
+      "name": "Deterministic Replay",
+      "tier": "PRODUCTION_CONTROL_PLANE",
+      "runtime_paths": [
+        "deterministic_replay_guard.py",
+        "canonical_replay_guard.json"
+      ],
+      "cutover": true
+    },
+    {
+      "id": 31,
+      "name": "Self-Healing / Guardian",
+      "tier": "PRODUCTION_CONTROL_PLANE",
+      "runtime_paths": [
+        "resilience_runtime.py",
+        "guardian_anomaly.py",
+        "canonical_guardian_state.json"
+      ],
+      "cutover": true
+    },
+    {
+      "id": 32,
+      "name": "Rallies Account Read",
+      "tier": "BLOCKED_ACCOUNT_CANDIDATE",
+      "runtime_paths": [
+        "account_provider_adapter_contract.json",
+        "account_gate_contract.json"
+      ],
+      "cutover": false
+    },
+    {
+      "id": 33,
+      "name": "Longbridge Reality",
+      "tier": "PRODUCTION_ACCOUNT_NARROW_ROLE",
+      "runtime_paths": [
+        "account_provider_adapter_contract.json",
+        "account_gate_contract.json"
+      ],
+      "cutover": true
+    },
+    {
+      "id": 34,
+      "name": "Alpaca Reality",
+      "tier": "PRODUCTION_SETTLEMENT_NON_G9",
+      "runtime_paths": [
+        "chatgpt_compiled_policy_v3.json",
+        "strict_g9_runtime_state.json"
+      ],
+      "cutover": true
+    },
+    {
+      "id": 35,
+      "name": "Bigdata Reality",
+      "tier": "PRODUCTION_TECH_DEBT_MIGRATION_REQUIRED",
+      "runtime_paths": [
+        "chatgpt_compiled_policy_v3.json",
+        "free_core_migration_contract.json"
+      ],
+      "cutover": true
+    },
+    {
+      "id": 36,
+      "name": "AlphaStocks Reality",
+      "tier": "NONCANONICAL_AUTOMATION_RESTRICTED",
+      "runtime_paths": [
+        "free_core_migration_contract.json",
+        "x_research_shadow_20261004_round5_free_unlimited_audit.md"
+      ],
+      "cutover": false
+    }
+  ]
+}
