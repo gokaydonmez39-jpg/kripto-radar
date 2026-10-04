@@ -22,5 +22,10 @@
     "preopen_priority_window_et": "06:00-09:25",
     "reason": "If latest completed-success root workflow is older than 4500 seconds on a U.S. weekday, Health may CAS increment the kick file once and then require observed workflow evidence before treating the schedule as recovered."
   },
-  "updated_on": "2026-10-05"
+  "updated_on": "2026-10-05",
+  "final_workflow_name": "XRAY Canonical Current Final Factory",
+  "final_workflow_path": ".github/workflows/xray-canonical-current-final.yml",
+  "final_kick_path": "nasdaq-xray/scheduler_kick_final.json",
+  "final_rebind_rule": "If root freshness is proven but canonical_current_terminal.json official guard binding differs from current canonical_official_source_guard.json, Health may CAS increment the final kick once; recovery is PASS only after a newer Final Factory run is COMPLETED+SUCCESS and terminal exact-binds the current guard.",
+  "max_total_kicks_per_health_run": 1
 }
