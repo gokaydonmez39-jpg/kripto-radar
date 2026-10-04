@@ -1,0 +1,38 @@
+{
+  "schema": "XRAY_G9_PROVIDER_DELTA_FREEDOM_TRADERNET_MCP_V1",
+  "generated_on": "2026-10-04",
+  "provider": "Freedom24 / TraderNet MCP",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "status": "TECHNICALLY_STRONG_MCP_BUT_STRICT_C_FAIL_PAID_REALTIME_AND_TURKEY_LOCAL_NOT_LIVE",
+  "evidence": {
+    "mcp": "Official TraderNet/Freedom MCP endpoint https://tradernet.com/mcp/tn provides about 61 tools including quotes, portfolio, orders, news, alerts, analytics and tariffs.",
+    "scheduler": "Streamable HTTP with HMAC API key/secret; official integration examples smoke-test reference_get_market_status, quotes_get for AAPL.US and portfolio_get.",
+    "us_equity": "Official MCP examples explicitly query AAPL.US.",
+    "account_read": "portfolio_get is available via HMAC, giving potential read-only account capability.",
+    "utp_vendor": "Freedom Finance Europe official 2026 General Terms state it is an official vendor under the UTP Plan Subscriber Agreement and official Nasdaq market-data distributor.",
+    "entitlement": "Official 2026 terms state default Level 1 market data is 15-minute delayed; real-time Level 1 is provided only by request and is charged under the fee schedule, with account funds required to pay the fee.",
+    "turkey_local": "Freedom Yatırım received Türkiye brokerage operating license in August 2026 but official company statements say it is still preparing and testing before commencing operations."
+  },
+  "failed_gates": [
+    "C_PERMANENT_ZERO_REALTIME_ENTITLEMENT",
+    "C_FUNDING_REQUIRED_TO_PAY_REALTIME_DATA_FEE",
+    "D_CURRENT_TURKEY_LOCAL_SERVICE_NOT_YET_OPERATIONAL"
+  ],
+  "gate_assessment": {
+    "A": "STRUCTURALLY_STRONG_UTP_VENDOR_RELATION_BUT_EXACT_QUOTES_GET_NBBO_SEMANTICS_NOT_PROVEN",
+    "B": "PARTIAL_QUOTES_AND_REALTIME_MCP_PROVEN_INDEPENDENT_EVENT_TIMESTAMPS_NOT_PROVEN",
+    "C": "FAIL_PAID_REALTIME",
+    "D": "GLOBAL_MCP_STRONG_BUT_CURRENT_TURKEY_LOCAL_OPERATION_NOT_LIVE"
+  },
+  "account_gate_potential": "FUTURE_ONLY_IF_TURKEY_LOCAL_OPERATION_LAUNCHES_WITH_SANCTIONED_API_KEYS",
+  "reopen_condition": "Reopen only after Freedom Yatırım starts Türkiye operations and publishes a permanent-$0 scheduler-callable U.S. consolidated NBBO+last-trade entitlement with independent event timestamps and read-only account access.",
+  "may_create_pass": false,
+  "source_urls": [
+    "https://github.com/tradernet-api/tradernet-mcp-codex",
+    "https://tradernet.com/mcp/tn",
+    "https://freedom24.com/download/documents/1175/General_Terms_of_Business_05062026",
+    "https://ir.freedomholdingcorp.com/press-releases/detail/111/freedom-yatrm-becomes-the-first-foreign-brokerage-firm"
+  ],
+  "no_policy_weakening": true
+}
