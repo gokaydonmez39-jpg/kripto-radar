@@ -4,7 +4,7 @@
   "provider": "ForInvest Hosted MCP",
   "execution": "NONE",
   "real_money": "NO-GO",
-  "status": "TURKEY_NATIVE_HOSTED_MCP_BUT_STRICT_G9_UNPROVEN",
+  "status": "TURKEY_NATIVE_HOSTED_MCP_HIGHEST_NEW_JURISDICTION_FIT_BUT_A_B_C_UNPROVEN",
   "evidence": {
     "hosted_mcp": "Official StreamableHTTP endpoint https://mcp.forinvest.com/mcp.",
     "auth": "OAuth 2.0 + PKCE; free ForInvest account can authenticate.",
@@ -33,5 +33,19 @@
     "https://mcp.forinvest.com/privacy",
     "https://www.forinvest.com/destek"
   ],
-  "no_policy_weakening": true
+  "no_policy_weakening": true,
+  "outreach": {
+    "sent_on": "2026-10-04",
+    "recipient": "info@forinvest.com",
+    "thread_status": "AWAITING_PRIMARY_SOURCE_REPLY",
+    "questions": [
+      "free-account realtime NASDAQ/NYSE entitlement",
+      "consolidated National NBBO/CTA-UTP SIP lineage",
+      "separate last trade",
+      "independent quote/trade market-event timestamps",
+      "cloud scheduler read-only automated-use permission",
+      "separate SIP/UTP/CTA/exchange/vendor/non-display/per-query fees",
+      "upstream provider/product identity"
+    ]
+  }
 }
