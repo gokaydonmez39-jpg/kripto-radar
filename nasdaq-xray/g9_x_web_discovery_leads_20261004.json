@@ -14,6 +14,31 @@
   ],
   "leads": [
     {
+      "provider": "Clear Street Trading API / read-only MCP",
+      "priority": "P1",
+      "status": "TECHNICALLY_STRONGEST_A_B_D_NEAR_MISS",
+      "proven": [
+        "Official read-only hosted MCP endpoint exposes account data, live market data and news while being unable to place or cancel orders.",
+        "Official market-data snapshot exposes the national best bid and best offer (NBBO).",
+        "Snapshot reports bid_venue/ask_venue MICs plus independent bid_timestamp and ask_timestamp exchange times.",
+        "Snapshot last_trade reports venue and exchange timestamp.",
+        "MCP is OAuth-authenticated and scheduler/agent-capable in principle."
+      ],
+      "unresolved": [
+        "Türkiye-resident individual retail account eligibility remains unproven.",
+        "Whether read-only MCP/live market data remains available with zero balance, no funding and no trading activity remains unproven.",
+        "Whether any separate SIP/UTP/CTA/exchange/vendor/non-display/API fee is charged to the end user remains unproven.",
+        "Same-run RTH A+B freshness witness cannot run until an eligible account/credential exists."
+      ],
+      "current_action": "Primary-source clarification email already sent to concierge@clearstreet.com; await reply and continue official onboarding/fee documentation search.",
+      "source_urls": [
+        "https://docs.clearstreet.com/guides/mcp/",
+        "https://docs.clearstreet.com/changelog/",
+        "https://docs.clearstreet.com/api/",
+        "https://www.clearstreet.com/"
+      ]
+    },
+    {
       "provider": "Paper Invest",
       "priority": "P1",
       "status": "STRONGEST_ZERO_DOLLAR_NEAR_MISS",
@@ -66,6 +91,26 @@
       ]
     },
     {
+      "provider": "Alpaca ChatGPT market-data plugin / connected MCP surface",
+      "priority": "P2",
+      "status": "LIVE_MARKET_DATA_SURFACE_BUT_STRICT_FREE_SIP_ENTITLEMENT_UNPROVEN",
+      "proven": [
+        "OpenAI/Alpaca official integration states ChatGPT can access live and historical stock market data including quotes and snapshots.",
+        "Alpaca official support states standard Free stock data is IEX, while consolidated CTA+UTP SIP is the Unlimited plan.",
+        "Current connected surface previously returned delayed_sip and IEX data but fresh feed=sip latest quote/trade failed entitlement."
+      ],
+      "unresolved": [
+        "Whether ChatGPT receives a special platform-level live SIP entitlement distinct from standard Alpaca Free remains unconfirmed.",
+        "If special entitlement exists, permanent-$0 end-user status and automated/non-display rights remain unconfirmed."
+      ],
+      "current_action": "Human clarification email sent to Alpaca support referencing ticket 366689; AI/support boilerplate must not create PASS.",
+      "source_urls": [
+        "https://openai.com/business/plugins/alpaca/",
+        "https://alpaca.markets/blog/openai-integrates-alpacas-market-data-functionality-as-part-of-chatgpt-for-financial-services/",
+        "https://alpaca.markets/support/data-provider-alpaca"
+      ]
+    },
+    {
       "provider": "Stocklake",
       "priority": "P3",
       "status": "RESEARCH_TOOL_NOT_G9_YET",
@@ -83,6 +128,20 @@
       "source_urls": [
         "https://api.stocklake.dev/docs",
         "https://www.stocklake.dev/"
+      ]
+    },
+    {
+      "provider": "Eulerpool",
+      "priority": "CLOSED_CURRENT",
+      "status": "STRICT_B_C_FAIL_FREE_DELAYED",
+      "proven": [
+        "Official current real-time-data page says free tier is delayed; paid plans get live ticks",
+        "Marketing blog claiming free L2/NBBO is contradicted by current product page"
+      ],
+      "unresolved": [],
+      "current_action": "Current product/pricing page outranks older marketing blog; keep nonqualifying.",
+      "source_urls": [
+        "https://eulerpool.com/financial-data-api/real-time-data"
       ]
     },
     {
@@ -117,20 +176,6 @@
         "https://developer.webull.com/apis/docs/market-data-api/overview/",
         "https://developer.webull.com/apis/docs/market-data-api/getting-started/"
       ]
-    },
-    {
-      "provider": "Eulerpool",
-      "priority": "CLOSED_CURRENT",
-      "status": "STRICT_B_C_FAIL_FREE_DELAYED",
-      "proven": [
-        "Official current real-time-data page says free tier is delayed; paid plans get live ticks",
-        "Marketing blog claiming free L2/NBBO is contradicted by current product page"
-      ],
-      "unresolved": [],
-      "current_action": "Current product/pricing page outranks older marketing blog; keep nonqualifying.",
-      "source_urls": [
-        "https://eulerpool.com/financial-data-api/real-time-data"
-      ]
     }
   ],
   "search_notes": [
@@ -140,5 +185,13 @@
     "Provider-specific primary-source statements are required for any G9 authority upgrade."
   ],
   "no_policy_weakening": true,
-  "unknown_never_pass": true
+  "unknown_never_pass": true,
+  "last_updated_at": "2026-10-04T19:03:00+03:00",
+  "current_priority_order": [
+    "Clear Street Trading API / read-only MCP",
+    "Paper Invest",
+    "Wealthnow",
+    "Alpaca ChatGPT market-data plugin / connected MCP surface",
+    "Stocklake"
+  ]
 }
