@@ -37,6 +37,19 @@ def main():
     }
     g["adapter_registry_count"]=len(a.get("adapters") or {})
     g["adapter_registry_sync"]="EVIDENCE_PIN_ONLY_NEVER_PASS_AUTHORITY"
+    # Keep human/diagnostic binding metadata synchronized too. Stale historical
+    # adapter SHAs are not allowed to masquerade as current revalidation proof.
+    g["binding_revalidation"]={
+      "status":"EXACT",
+      "adapter_blob_sha":actual,
+      "revalidated_on":"2026-10-04",
+      "semantic_effect":"NONE_ZERO_ALPHA",
+    }
+    g["binding_revalidated_on"]="2026-10-04"
+    g["binding_revalidation_note"]="Exact adapter/gate binding synchronized to the current provider-neutral registry; no ACCOUNT PASS created."
+    # Surface the Rallies read-only adapter as an explicit alternate when present.
+    if "RALLIES_ACCOUNT_READ_V1" in (a.get("adapters") or {}):
+        g.setdefault("alternate_adapter_candidates",{})["RALLIES_ACCOUNT_READ_V1"]=a["adapters"]["RALLIES_ACCOUNT_READ_V1"].get("status","UNKNOWN")
     g["no_policy_weakening"]=True
     GATE.write_text(json.dumps(g,indent=2)+"\n")
     print(json.dumps({
