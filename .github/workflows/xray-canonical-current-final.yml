@@ -15,7 +15,8 @@ on:
       - "nasdaq-xray/deep_pre_r1_shadow.py"
       - "nasdaq-xray/final_tech_shadow.py"
       - "nasdaq-xray/build_current_terminal.py"
-      - "nasdaq-xray/canonical_official_source_guard.json"
+      - "nasdaq-xray/official_source_guard.py"
+      - "nasdaq-xray/resilience_runtime.py"
       - "nasdaq-xray/build_final_gate_overlay_v2.py"
       - "nasdaq-xray/strict_g9_runtime_state.json"
       - "nasdaq-xray/account_gate_contract.json"
@@ -155,6 +156,8 @@ jobs:
             nasdaq-xray/deep_pre_r1_shadow.py \
             nasdaq-xray/final_tech_shadow.py \
             nasdaq-xray/build_current_terminal.py \
+            nasdaq-xray/official_source_guard.py \
+            nasdaq-xray/resilience_runtime.py \
             nasdaq-xray/build_final_gate_overlay_v2.py \
             nasdaq-xray/account_longbridge_mcp_v2_probe.py \
             nasdaq-xray/account_longbridge_mcp_v2_vault.py \
@@ -356,6 +359,26 @@ jobs:
           XRAY_FINAL_WORKERS: "6"
         run: python nasdaq-xray/final_tech_shadow.py
 
+      - name: Refresh official Nasdaq safety guard for atomic terminal binding
+        if: steps.event.outputs.ready == 'true' && steps.account_vault.outputs.restart_required != 'true'
+        run: |
+          python nasdaq-xray/official_source_guard.py
+          python - <<'PY'
+          import json
+          g=json.load(open("nasdaq-xray/canonical_official_source_guard.json"))
+          assert g.get("schema")=="XRAY_OFFICIAL_SOURCE_GUARD_V1",g
+          assert g.get("execution")=="NONE" and g.get("real_money")=="NO-GO",g
+          s=g.get("sources") or {}
+          assert (s.get("trade_halts") or {}).get("status")=="PASS",s.get("trade_halts")
+          assert (s.get("security_status") or {}).get("status")=="PASS",s.get("security_status")
+          safety=g.get("candidate_safety") or {}
+          active=set(s.get("trade_halts",{}).get("active_halt_symbols") or [])
+          susp=set(s.get("security_status",{}).get("suspension_symbols") or [])
+          veto=set(safety.get("veto_symbols") or [])
+          assert veto==active|susp,(sorted(veto),sorted(active|susp))
+          print("XRAY_FINAL_OFFICIAL_SAFETY_REFRESH=PASS veto="+str(len(veto)))
+          PY
+
       - name: Build dynamic terminal
         if: steps.event.outputs.ready == 'true' && steps.account_vault.outputs.restart_required != 'true'
         env:
@@ -470,7 +493,7 @@ jobs:
           git fetch origin main
           latest="$(git rev-parse origin/main)"
           if [[ "$latest" != "$GITHUB_SHA" ]]; then
-            changed="$(git diff --name-only "$GITHUB_SHA" "$latest" --               .github/workflows/xray-canonical-current-final.yml               nasdaq-xray/build_current_terminal.py               nasdaq-xray/canonical_official_source_guard.json               nasdaq-xray/build_final_gate_overlay_v2.py               nasdaq-xray/account_gate_contract.json               nasdaq-xray/account_provider_adapter_contract.json               nasdaq-xray/account_longbridge_openapi_probe.py               nasdaq-xray/account_longbridge_openapi_probe_selftest.py               nasdaq-xray/account_longbridge_mcp_v2_probe.py               nasdaq-xray/account_longbridge_mcp_v2_probe_selftest.py               nasdaq-xray/account_longbridge_mcp_v2_vault.py               nasdaq-xray/account_longbridge_mcp_v2_vault_selftest.py               nasdaq-xray/account_longbridge_mcp_v2_bootstrap.py               nasdaq-xray/account_longbridge_mcp_v2_refresh.py               nasdaq-xray/account_longbridge_mcp_v2_refresh_selftest.py               nasdaq-xray/account_longbridge_mcp_v2_token.enc               nasdaq-xray/select_account_live_probe.py               nasdaq-xray/select_account_live_probe_selftest.py               nasdaq-xray/account_same_run_terminal_selftest.py               nasdaq-xray/chatgpt_compiled_policy_v3.json || true)"
+            changed="$(git diff --name-only "$GITHUB_SHA" "$latest" --               .github/workflows/xray-canonical-current-final.yml               nasdaq-xray/build_current_terminal.py               nasdaq-xray/official_source_guard.py               nasdaq-xray/resilience_runtime.py               nasdaq-xray/build_final_gate_overlay_v2.py               nasdaq-xray/account_gate_contract.json               nasdaq-xray/account_provider_adapter_contract.json               nasdaq-xray/account_longbridge_openapi_probe.py               nasdaq-xray/account_longbridge_openapi_probe_selftest.py               nasdaq-xray/account_longbridge_mcp_v2_probe.py               nasdaq-xray/account_longbridge_mcp_v2_probe_selftest.py               nasdaq-xray/account_longbridge_mcp_v2_vault.py               nasdaq-xray/account_longbridge_mcp_v2_vault_selftest.py               nasdaq-xray/account_longbridge_mcp_v2_bootstrap.py               nasdaq-xray/account_longbridge_mcp_v2_refresh.py               nasdaq-xray/account_longbridge_mcp_v2_refresh_selftest.py               nasdaq-xray/account_longbridge_mcp_v2_token.enc               nasdaq-xray/select_account_live_probe.py               nasdaq-xray/select_account_live_probe_selftest.py               nasdaq-xray/account_same_run_terminal_selftest.py               nasdaq-xray/chatgpt_compiled_policy_v3.json || true)"
             if [[ -n "$changed" ]]; then
               echo "XRAY_FACTORY_COMMIT=STALE_SOURCE_ABORT"
               printf '%s\n' "$changed"
@@ -478,6 +501,7 @@ jobs:
             fi
           fi
           files=(
+            nasdaq-xray/canonical_official_source_guard.json
             nasdaq-xray/canonical_current_event_state.json
             nasdaq-xray/canonical_current_family_c.json
             nasdaq-xray/canonical_current_deep_full.json
