@@ -36,18 +36,26 @@ jobs:
 
       - name: Compile delivery safety modules
         run: |
-          python -m py_compile             nasdaq-xray/resilience_runtime.py             nasdaq-xray/official_source_guard.py             nasdaq-xray/delivery_prepare.py             nasdaq-xray/delivery_prepare_selftest.py
+          python -m py_compile \
+            nasdaq-xray/resilience_runtime.py \
+            nasdaq-xray/official_source_guard.py \
+            nasdaq-xray/delivery_prepare.py \
+            nasdaq-xray/delivery_prepare_selftest.py
 
-      - name: Refresh official Nasdaq halt guard
+      - name: Refresh official Nasdaq halt + Security Status guard
         run: |
           python nasdaq-xray/official_source_guard.py
           python - <<'PY'
           import json
           g=json.load(open("nasdaq-xray/canonical_official_source_guard.json"))
-          h=(g.get("sources") or {}).get("trade_halts") or {}
+          s=g.get("sources") or {}
+          h=s.get("trade_halts") or {}
+          ss=s.get("security_status") or {}
           assert g.get("schema")=="XRAY_OFFICIAL_SOURCE_GUARD_V1"
           assert h.get("status")=="PASS",h
-          print("XRAY_DELIVERY_HALT_GUARD=PASS active="+str(len(h.get("active_halt_symbols") or [])))
+          assert ss.get("status")=="PASS",ss
+          safety=g.get("candidate_safety") or {}
+          print("XRAY_DELIVERY_OFFICIAL_SAFETY_GUARD=PASS veto="+str(len(safety.get("veto_symbols") or [])))
           PY
 
       - name: Synthetic registered-R92 delivery self-test
