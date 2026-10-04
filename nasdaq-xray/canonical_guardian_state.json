@@ -1,0 +1,57 @@
+{
+  "alpha_authority": false,
+  "checks": [
+    {
+      "detail": "official identity proof",
+      "name": "master_identity",
+      "state": "PASS"
+    },
+    {
+      "detail": {
+        "pass_count": 500,
+        "unknown_count": 0
+      },
+      "name": "price_dv20_counts",
+      "state": "PASS"
+    },
+    {
+      "detail": 0,
+      "name": "event_complete_for_terminal",
+      "state": "PASS"
+    },
+    {
+      "detail": "PASS",
+      "name": "official_source_guard",
+      "state": "PASS"
+    },
+    {
+      "detail": "PARTIAL_LINEAGE",
+      "name": "lineage_registry",
+      "state": "DEGRADED"
+    },
+    {
+      "detail": "PASS",
+      "name": "deterministic_replay",
+      "state": "PASS"
+    },
+    {
+      "detail": {
+        "missing_or_failed": []
+      },
+      "name": "delivery_ledger",
+      "state": "PASS"
+    },
+    {
+      "detail": [],
+      "name": "provider_circuit_breakers",
+      "state": "PASS"
+    }
+  ],
+  "execution": "NONE",
+  "generated_at_utc": "2026-10-04T20:45:57.198503+00:00",
+  "real_money": "NO-GO",
+  "schema": "XRAY_GUARDIAN_STATE_V1",
+  "self_healing_may_not_change_alpha": true,
+  "status": "DEGRADED",
+  "unknown_never_pass": true
+}

@@ -1,0 +1,106 @@
+{
+  "alpha_authority": false,
+  "artifacts": [
+    {
+      "asof_et": null,
+      "path": "chatgpt_compiled_policy_v3.json",
+      "schema": "XRAY_GITHUB_COMPILED_POLICY_V3",
+      "sha256": "f970b06fbf63d16ad69d933df22f279be8d2bcfbcd216f748b6505699a695321",
+      "status": "PRESENT"
+    },
+    {
+      "asof_et": "2026-10-02",
+      "path": "canonical_current_master_manifest.json",
+      "schema": "XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1",
+      "sha256": "ec07605c36ba332f77c1827aec12a374dac16f3f316a427c39a985dffbcbe297",
+      "status": "PRESENT"
+    },
+    {
+      "asof_et": "2026-10-02",
+      "path": "canonical_current_price_dv20.json",
+      "schema": "XRAY_CANONICAL_PRICE_DV20_V1",
+      "sha256": "67f435f7a3ea709c40f90548c3111fae28859b0c5b15e94f359748bed7e4c586",
+      "status": "PRESENT"
+    },
+    {
+      "asof_et": "2026-10-02",
+      "path": "canonical_current_history.json",
+      "schema": "XRAY_CANONICAL_HISTORY_V1",
+      "sha256": "c21e25b7d409d86e8c9ef3e30f37bf9e0b72745f4124f2d5788541e29771d0fa",
+      "status": "PRESENT"
+    },
+    {
+      "asof_et": "2026-10-02",
+      "path": "canonical_current_legal.json",
+      "schema": "XRAY_CANONICAL_LEGAL_V1",
+      "sha256": "a7b19a3071b30ae721b4bd51d05093fedc7fb8223cf3cd97408136ee1c0b37a1",
+      "status": "PRESENT"
+    },
+    {
+      "asof_et": "2026-10-02",
+      "path": "canonical_current_stage1.json",
+      "schema": "XRAY_STAGE1_SHADOW_V1",
+      "sha256": "4f80ad5db0e814661e736677fd7dba84eb35f581a7130deafd363672463c96d2",
+      "status": "PRESENT"
+    },
+    {
+      "asof_et": "2026-10-02",
+      "path": "canonical_current_regime.json",
+      "schema": "XRAY_REGIME_BREADTH_SHADOW_V1",
+      "sha256": "d7e23f44a34d451702bff56cad6289ec7441b37891cc10932f622d53d8d10152",
+      "status": "PRESENT"
+    },
+    {
+      "asof_et": "2026-10-02",
+      "path": "canonical_current_deep_geometry.json",
+      "schema": "XRAY_DEEP_GEOMETRY_V1",
+      "sha256": "65fa688bb557bb268335eae391ddbc87d46381acdbd58e150a7c35dbac350286",
+      "status": "PRESENT"
+    },
+    {
+      "asof_et": "2026-10-02",
+      "path": "canonical_current_event_state.json",
+      "schema": "XRAY_CANONICAL_EVENT_STATE_V1",
+      "sha256": "0683adde09fef6d1aceb243a12ac59c0549ebaf27ebc294058eab464abb2eac0",
+      "status": "PRESENT"
+    },
+    {
+      "asof_et": "2026-10-02",
+      "path": "canonical_current_final_tech.json",
+      "schema": "XRAY_FINAL_TECH_SHADOW_V1",
+      "sha256": "da1995801a4a0a26b3196258af35cfeb11785ef15b1d944b35006ed7e8e90fe5",
+      "status": "PRESENT"
+    },
+    {
+      "asof_et": "2026-10-02",
+      "path": "canonical_current_terminal.json",
+      "schema": "XRAY_CANONICAL_CURRENT_TERMINAL_V1",
+      "sha256": "15264f0d3cc1c26fb35b7184fd6d7da535671fdfcbb4d15e654cddd516ac4dcb",
+      "status": "PRESENT"
+    },
+    {
+      "asof_et": null,
+      "path": "chatgpt_canonical_state_v2.json",
+      "schema": "XRAY_GITHUB_DURABLE_STATE_V3",
+      "sha256": "e598ab87d3675fc6b5181d012fbf502fef35f313a23f46b315bcf2ef31ca0622",
+      "status": "PRESENT"
+    }
+  ],
+  "asof_consistent": true,
+  "asof_values": [
+    "2026-10-02"
+  ],
+  "candidate_delivery_keys": [],
+  "execution": "NONE",
+  "generated_at_utc": "2026-10-04T20:45:57.142956+00:00",
+  "real_money": "NO-GO",
+  "replay_rule": "ONLY_FROZEN_ASOF_EVIDENCE_MAY_BE_USED; LATER_VINTAGES_NEVER_BACKFILL_PRIOR_DECISION",
+  "schema": "XRAY_DETERMINISTIC_REPLAY_GUARD_V1",
+  "semantic_diff": {
+    "added": [],
+    "removed": [],
+    "unchanged": []
+  },
+  "status": "PASS",
+  "unknown_never_pass": true
+}
