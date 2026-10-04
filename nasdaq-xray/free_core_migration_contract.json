@@ -51,5 +51,70 @@
     "infer provider_actual from configured provider",
     "convert UNKNOWN to PASS"
   ],
-  "updated_on": "2026-10-04"
+  "updated_on": "2026-10-04",
+  "support_programs": {
+    "NASDAQ_PIT_UNIVERSE_V1": {
+      "status": "ACTIVE_SUPPORT_LAYER",
+      "runtime": [
+        "official_source_guard.py",
+        "canonical_official_source_guard.json",
+        "pit_vintage_store.py"
+      ],
+      "sources": [
+        "NASDAQTRADER_SYMBOL_DIRECTORY",
+        "TRADING_SYSTEM_ADDS_DELETES",
+        "TRADE_HALT_RSS",
+        "SYSTEM_STATUS_RSS"
+      ],
+      "production_alpha_change": false,
+      "symbol_change_rule": "UNKNOWN_UNLESS_OFFICIAL_OLD_TO_NEW_CONTINUITY_IS_CORROBORATED"
+    },
+    "SEC_LOCAL_PIT_DATALAKE_V1": {
+      "status": "INFRASTRUCTURE_INTEGRATED_SOURCE_INGEST_REMAINS_FAIR_ACCESS_BOUND",
+      "runtime": [
+        "pit_vintage_store.py",
+        "pit_vintage_store_selftest.py",
+        "sec_official_witness.py"
+      ],
+      "bulk_sources": [
+        "https://www.sec.gov/Archives/edgar/daily-index/xbrl/companyfacts.zip",
+        "https://www.sec.gov/Archives/edgar/daily-index/bulkdata/submissions.zip"
+      ],
+      "pit_fields": [
+        "period_end",
+        "filed_timestamp",
+        "available_at",
+        "accession",
+        "source",
+        "vintage"
+      ],
+      "rule": "LATER_RESTATEMENT_OR_CURRENT_FACT_NEVER_BACKFILLS_AN_EARLIER_ASOF"
+    },
+    "EVIDENCE_REPLAY_GUARDIAN_V2": {
+      "status": "ACTIVE",
+      "runtime": [
+        "data_lineage_registry.py",
+        "deterministic_replay_guard.py",
+        "guardian_anomaly.py"
+      ],
+      "outputs": [
+        "canonical_data_lineage_registry.json",
+        "canonical_replay_guard.json",
+        "canonical_guardian_state.json"
+      ]
+    },
+    "OPENFACTOR_RISK_OVERLAY_V1": {
+      "status": "SHADOW_DIAGNOSTIC_CONTRACT",
+      "hard_gate": false,
+      "alpha_creator": false,
+      "public_model": "openfactor-us1000",
+      "missing_or_stale": "UNKNOWN_DIAGNOSTIC_ONLY",
+      "public_outputs": [
+        "https://openfactor-data.rallies.ai/factors/openfactor-us1000/latest/metadata.json",
+        "https://openfactor-data.rallies.ai/factors/openfactor-us1000/latest/exposures.csv",
+        "https://openfactor-data.rallies.ai/factors/openfactor-us1000/latest/factor_covariance.csv",
+        "https://openfactor-data.rallies.ai/factors/openfactor-us1000/latest/idiosyncratic_risk.csv"
+      ]
+    }
+  }
 }
