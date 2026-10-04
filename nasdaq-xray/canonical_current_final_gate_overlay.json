@@ -1,7 +1,7 @@
 {
   "schema": "XRAY_FINAL_GATE_OVERLAY_V2",
   "generated_on": "2026-10-04",
-  "generated_at_utc": "2026-10-04T16:42:14.773503+00:00",
+  "generated_at_utc": "2026-10-04T16:42:49.499158+00:00",
   "asof_et": "2026-10-02",
   "execution": "NONE",
   "real_money": "NO-GO",
@@ -49,11 +49,11 @@
     "same_run_live_witness_attested": false,
     "live_probe_workflow_run_id": "37137019421",
     "gate_path": "nasdaq-xray/account_gate_contract.json",
-    "gate_blob_sha": "9743da01e0ee5025e57a5950321419af21e2e1c1",
+    "gate_blob_sha": "40d5c4078486b688c8d3ee3e654af14f9bb48cc7",
     "current_adapter_contract_blob_sha": "5449326202d6dab2de99c8f384bcdd5e95834c0e",
-    "gate_bound_adapter_contract_blob_sha": "3d89bf9ee0fffdcd39fad8b0c16b968c17167846",
-    "adapter_binding_exact": false,
-    "adapter_drift_while_blocked": true
+    "gate_bound_adapter_contract_blob_sha": "5449326202d6dab2de99c8f384bcdd5e95834c0e",
+    "adapter_binding_exact": true,
+    "adapter_drift_while_blocked": false
   },
   "binding_integrity": {
     "fail_closed_safe": true,
