@@ -56,6 +56,39 @@ jobs:
       - uses: actions/setup-python@v5
         with: {python-version: "3.12"}
 
+      - name: Synchronize reconciled ACCOUNT control-plane
+        shell: bash
+        run: |
+          set -euo pipefail
+          # account_provider_adapter_contract is reconciled into account_gate_contract
+          # by a separate workflow. Never build a terminal from an intermediate
+          # pre-reconcile push snapshot.
+          for attempt in $(seq 1 12); do
+            git fetch origin main --quiet
+            git show origin/main:nasdaq-xray/account_provider_adapter_contract.json >/tmp/xray_account_adapter.json
+            git show origin/main:nasdaq-xray/account_gate_contract.json >/tmp/xray_account_gate.json
+            adapter_blob=$(git rev-parse origin/main:nasdaq-xray/account_provider_adapter_contract.json)
+            if python - "$adapter_blob" <<'PY'
+          import json,sys
+          a=json.load(open("/tmp/xray_account_adapter.json"))
+          g=json.load(open("/tmp/xray_account_gate.json"))
+          b=sys.argv[1]
+          ok=(g.get("adapter_contract",{}).get("blob_sha")==b and g.get("adapter_registry_count")==len(a.get("adapters") or {}))
+          raise SystemExit(0 if ok else 1)
+          PY
+            then
+              git show origin/main:nasdaq-xray/account_provider_adapter_contract.json > nasdaq-xray/account_provider_adapter_contract.json
+              git show origin/main:nasdaq-xray/account_gate_contract.json > nasdaq-xray/account_gate_contract.json
+              echo "XRAY_ACCOUNT_CONTROL_SYNC=PASS blob=$adapter_blob"
+              break
+            fi
+            if [[ "$attempt" == "12" ]]; then
+              echo "XRAY_ACCOUNT_CONTROL_SYNC=FAIL_RECONCILE_TIMEOUT" >&2
+              exit 1
+            fi
+            sleep 5
+          done
+
       - name: Find exact-bound committed event bridge
         id: event
         shell: bash
