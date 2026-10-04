@@ -24,8 +24,8 @@ on:
       - "nasdaq-xray/free_core_migration_contract.json"
       - ".github/workflows/xray-resilience-observability.yml"
   schedule:
-    - cron: "17 * * * 1-5"
-    - cron: "17 */3 * * 0,6"
+    - cron: "47 * * * 1-5"
+    - cron: "47 */3 * * 0,6"
   workflow_dispatch:
 
 permissions:
