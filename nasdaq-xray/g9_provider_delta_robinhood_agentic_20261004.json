@@ -1,0 +1,30 @@
+{
+  "schema": "XRAY_G9_PROVIDER_DELTA_ROBINHOOD_AGENTIC_V1",
+  "generated_on": "2026-10-04",
+  "provider": "Robinhood Agentic Trading / Trading MCP",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "status": "NONQUALIFYING_STRICT_C_D_JURISDICTION_AND_DATA_LINEAGE",
+  "evidence": {
+    "launched": "Official Agentic Trading launched May 27 2026 with Robinhood Trading MCP.",
+    "account_read": "External agent can read accounts, positions, balances and transactions.",
+    "market_data": "Trading MCP exposes Robinhood data sources/tools; Robinhood Agents use dozens of market data sources.",
+    "consumer_data_sources": "Robinhood Legend stock data sources include Nasdaq Basic, NYSE BQT, Cboe One, MEMX, IEX, Blue Ocean and OTC Markets.",
+    "nbbo_scope": "Robinhood says NBBO is available at time of placing securities trade, not that all streaming market-data fields are consolidated SIP NBBO.",
+    "funding": "Agentic setup requires creating and funding a dedicated Agentic Account."
+  },
+  "failed_gates": [
+    "C_ZERO_DOLLAR_NO_FUNDING_CONDITION",
+    "A_CONTINUOUS_CONSOLIDATED_SIP_NBBO_UNPROVEN",
+    "D_USER_JURISDICTION_ELIGIBLE_US_TRADERS_ONLY"
+  ],
+  "reopen_condition": "Only reopen if Robinhood offers Türkiye-resident eligible, unfunded/no-activity read-only MCP with explicitly consolidated SIP/NBBO quote+trade timestamps at permanent $0.",
+  "may_create_pass": false,
+  "source_urls": [
+    "https://robinhood.com/us/en/newsroom/robinhood-is-now-open-to-agents/",
+    "https://robinhood.com/us/en/support/articles/agentic-trading-overview/",
+    "https://robinhood.com/us/en/agentic-trading/",
+    "https://robinhood.com/us/en/support/articles/market-data-sources-for-robinhood-legend/"
+  ],
+  "no_policy_weakening": true
+}
