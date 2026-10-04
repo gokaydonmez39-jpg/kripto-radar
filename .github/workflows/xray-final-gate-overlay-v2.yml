@@ -13,6 +13,7 @@ on:
       - "nasdaq-xray/g9_provider_registry_20261003.json"
       - "nasdaq-xray/account_gate_contract.json"
       - "nasdaq-xray/account_provider_adapter_contract.json"
+      - ".github/workflows/xray-final-gate-overlay-v2.yml"
   workflow_dispatch:
 
 permissions:
@@ -81,3 +82,5 @@ jobs:
             echo "XRAY_OVERLAY=RACE_DEFERRED_TO_NEWER_RUN"
             exit 0
           fi
+
+# READINESS_EXACT_TERMINAL_OVERLAY_2026_10_05: self-trigger for independent current-terminal validation.
