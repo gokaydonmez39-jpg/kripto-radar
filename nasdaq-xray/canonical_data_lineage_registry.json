@@ -3,7 +3,7 @@
   "configured_provider_not_actual_provider": true,
   "execution": "NONE",
   "gate_unknowns_are_preserved": true,
-  "generated_at_utc": "2026-10-04T20:49:03.139945+00:00",
+  "generated_at_utc": "2026-10-04T20:51:51.050581+00:00",
   "incomplete_receipt_count": 0,
   "note": "COMPLETE_LINEAGE_SCHEMA means every tracked field has an explicit provenance/entitlement/license classification; it does not convert blocked G9 or ACCOUNT into PASS.",
   "real_money": "NO-GO",
@@ -130,7 +130,7 @@
     },
     {
       "artifact": "account_gate_contract.json",
-      "artifact_sha256": "98d0a8ea33c817e780644f2072be3f8eb40ec0af81d98104d57b80e1497dd836",
+      "artifact_sha256": "4d84e9fb9a942ad1056cc14bd7f90631103550a544ba315b259e9718d9e02efe",
       "authority_class": "ACCOUNT_ADAPTER_GATE",
       "endpoint": "PROVIDER_NEUTRAL_READ_ONLY_ACCOUNT_ADAPTER_GATE",
       "entitlement_class": "CURRENT_ADAPTER_UNRESOLVED",
