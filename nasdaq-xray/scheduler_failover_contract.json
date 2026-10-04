@@ -6,7 +6,7 @@
   "root_workflow_name": "NASDAQ SWING XRAY Autonomous Data Plane",
   "root_workflow_path": ".github/workflows/nasdaq-xray-daily.yml",
   "kick_path": "nasdaq-xray/scheduler_kick_dataplane.json",
-  "stale_after_seconds": 5400,
+  "stale_after_seconds": 4500,
   "max_kicks_per_health_run": 1,
   "trigger_mode": "GITHUB_CONTENTS_CAS_PUSH",
   "downstream_rule": "Root success triggers XRAY Canonical Current Pre-MC Factory via workflow_run; downstream canonical workflows retain their existing push/workflow_run/schedule guards.",
@@ -20,7 +20,7 @@
     "weekday_stale_kick": true,
     "weekend_stale_kick": false,
     "preopen_priority_window_et": "06:00-09:25",
-    "reason": "If latest completed-success root workflow is older than stale_after_seconds on a U.S. weekday, Health may CAS increment the kick file once and then wait for observed workflow evidence."
+    "reason": "If latest completed-success root workflow is older than 4500 seconds on a U.S. weekday, Health may CAS increment the kick file once and then require observed workflow evidence before treating the schedule as recovered."
   },
   "updated_on": "2026-10-05"
 }
