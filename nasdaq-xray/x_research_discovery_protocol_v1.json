@@ -1,0 +1,120 @@
+{
+  "schema": "XRAY_X_RESEARCH_DISCOVERY_PROTOCOL_V1",
+  "generated_on": "2026-10-04",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "status": "ACTIVE_DISCOVERY_ONLY",
+  "alpha_authority": false,
+  "purpose": "SYSTEMATIC_X_AND_PUBLIC-WEB_DISCOVERY_OF_REUSABLE_NASDAQ_SWING_RESEARCH_METHODS_DATA_TOOLS_AND_PRIMARY-SOURCE_LEADS",
+  "access_reality": {
+    "direct_x_search": "NOT_RELIABLY_CALLABLE_IN_CURRENT_RUNTIME",
+    "fallback": "SEARCH_ENGINE_INDEXED_X_PAGES_PUBLIC_MIRRORS_OFFICIAL_LINKED_SITES_AND_PUBLIC_ARCHIVES",
+    "rule": "NEVER_CLAIM_COMPLETE_X_COVERAGE;TRACK_QUERY_FAMILIES_AND_DISCOVERED_SOURCE_COUNTS_INSTEAD"
+  },
+  "query_families": [
+    "NASDAQ swing trading",
+    "stock breakout momentum",
+    "relative strength stocks",
+    "VCP volatility contraction pattern",
+    "Qullamaggie breakout episodic pivot",
+    "Minervini trend template",
+    "O'Neil CANSLIM breakout",
+    "Stockbee momentum scans",
+    "earnings gap episodic pivot",
+    "post earnings drift",
+    "high relative volume breakout",
+    "volume dry up tight base",
+    "higher low tightening range",
+    "market breadth momentum",
+    "risk management position sizing",
+    "semiconductor supply chain bottleneck stocks",
+    "AI infrastructure supplier bottleneck",
+    "earnings revisions estimate inflection",
+    "institutional sponsorship growth stocks"
+  ],
+  "source_scoring": {
+    "A": "PRIMARY_ORIGINAL_METHODOLOGY_WITH_REPRODUCIBLE_RULES_OR_PRIMARY_SOURCE_DATA",
+    "B": "CONSISTENT_RESEARCHER_WITH_EXPLICIT_RULES_AND_CHECKABLE_HISTORY",
+    "C": "USEFUL_DISCOVERY_OR_WATCHLIST_SOURCE_REQUIRING_FULL_REVALIDATION",
+    "D": "PROMOTIONAL_ALERT_FEED_UNVERIFIED_RETURN_CLAIMS_PUMP_OR_NONREPRODUCIBLE",
+    "rule": "ONLY_A_B_MAY_INFLUENCE_RESEARCH_PRIORITY;NONE_MAY_CREATE_CANONICAL_PASS"
+  },
+  "reject_or_downweight": [
+    "penny/low-float pump accounts",
+    "paid alerts with no reproducible method",
+    "screenshots without timestamps/source data",
+    "unverified win-rate/PnL claims",
+    "deleted-loser/survivorship-biased track records",
+    "copy-trade calls without invalidation",
+    "affiliate-heavy content where incentives dominate evidence",
+    "single-post claims with no primary-source path"
+  ],
+  "extraction_fields": [
+    "profile_or_source",
+    "source_url",
+    "method_family",
+    "universe",
+    "time_horizon",
+    "entry_logic",
+    "invalidation_logic",
+    "risk_logic",
+    "data_dependency",
+    "reproducibility",
+    "cost",
+    "api_or_mcp",
+    "license_or_terms_risk",
+    "evidence_quality",
+    "canonical_fit",
+    "next_validation"
+  ],
+  "primary_source_reconfirmation": [
+    "SEC filings",
+    "issuer IR",
+    "exchange/Nasdaq official sources",
+    "official provider docs",
+    "official earnings releases/transcripts",
+    "official customer/supplier disclosures"
+  ],
+  "seed_sources": [
+    {
+      "source": "HyperTechInvest",
+      "handle": "@hypertechinvest",
+      "role": "SUPPLY_CHAIN_DISCOVERY",
+      "status": "SHADOW_INCLUDED"
+    },
+    {
+      "source": "Serenity",
+      "handle": "@aleabitoreddit",
+      "role": "AI_SEMI_SUPPLY_CHAIN_DISCOVERY",
+      "public_archive": "https://github.com/yan-labs/serenity-aleabitoreddit",
+      "archive_note": "Public archive reports 6,592 tweets through 2026-09-17; use derived methodology/metadata, not raw-tweet redistribution.",
+      "status": "RESEARCH_LEAD"
+    },
+    {
+      "source": "Qullamaggie",
+      "handle": "@Qullamaggie",
+      "role": "BREAKOUT_EPISODIC_PIVOT_METHOD_DISCOVERY",
+      "official_site": "https://qullamaggie.com/",
+      "status": "RESEARCH_LEAD"
+    },
+    {
+      "source": "AsymTrading",
+      "handle": "@AsymTrading",
+      "role": "HIGH_ADR_HIGH_MOMENTUM_TIGHT_RANGE_BREAKOUT_DISCOVERY",
+      "status": "RESEARCH_LEAD_NEEDS_METHOD_AUDIT"
+    },
+    {
+      "source": "Steve Jacobs",
+      "handle": "@SteveDJacobs",
+      "role": "SYSTEMATIC_SWING_SCREEN_AND_MULTI-METHOD_WATCHLIST_DISCOVERY",
+      "status": "RESEARCH_LEAD_NEEDS_MODEL_AUDIT"
+    }
+  ],
+  "copyright_and_terms": {
+    "store_full_tweets": false,
+    "redistribute_full_tweets": false,
+    "store_only": "URLs, ids where public, timestamps, short factual summaries, derived tags and methodology notes",
+    "rule": "Respect platform/provider terms; public archives are discovery aids, not canonical data authorities."
+  },
+  "output_rule": "X_DISCOVERY_MAY_CREATE_RESEARCH_QUEUES_AND_METHOD_HYPOTHESES_ONLY;NO_TRADING_SIGNAL_NO_CANONICAL_GATE_PASS"
+}
