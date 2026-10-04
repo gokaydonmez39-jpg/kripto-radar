@@ -1,7 +1,7 @@
 {
   "schema": "XRAY_FINAL_GATE_OVERLAY_V2",
   "generated_on": "2026-10-04",
-  "generated_at_utc": "2026-10-04T16:30:51.704750+00:00",
+  "generated_at_utc": "2026-10-04T16:30:59.480Z",
   "asof_et": "2026-10-02",
   "execution": "NONE",
   "real_money": "NO-GO",
@@ -93,5 +93,13 @@
     "last_completed_us_rth_asof": "2026-10-02",
     "asof_advanced_on_weekend": false
   },
-  "no_policy_weakening": true
+  "no_policy_weakening": true,
+  "final_research_refresh": {
+    "g9_authority_sha": "675f546f52ed2de144f1984c998306b97939ee2e",
+    "g9_saturation_sha": "01d4a0a5e1abdf3f0c29fb3d0a6d6b1b4f60e627",
+    "g9_registry_sha": "1b902965f621d4f223a47aa9c8e1f5604e8b65c1",
+    "g9_adapter_sha": "08bc8842c442bff75d2f835d35e83a5cc932a36f",
+    "g9_final_resolution_sha": "b0b6b83c2d2e291485dd0c1810ed92a9d25c1b03",
+    "result": "BLOCKED_FAIL_CLOSED_NO_FALSE_GO"
+  }
 }
