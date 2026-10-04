@@ -205,6 +205,83 @@
         "https://trader2b.com/stocks/symbol/",
         "https://trader2b.com/pro-services/prop-trading-technology/"
       ]
+    },
+    {
+      "provider": "Public.com Hosted MCP / Individual API",
+      "priority": "P1",
+      "status": "REOPENED_2026_DUAL_G9_ACCOUNT_NEAR_MISS",
+      "proven": [
+        "Hosted MCP included with eligible Public brokerage account at no extra cost.",
+        "Official MCP/API supports live market data and read-only account/portfolio data.",
+        "Official quote schema exposes last/bid/ask with distinct lastTimestamp/bidTimestamp/askTimestamp.",
+        "Official SDK describes lastTimestamp as last-trade time and bid/ask timestamps as update times.",
+        "Official Python SDK and MCP server are published by Public."
+      ],
+      "unresolved": [
+        "Exact consolidated CTA/UTP SIP National-NBBO lineage is not explicitly documented.",
+        "Türkiye-resident individual account/API eligibility remains unconfirmed.",
+        "Exact automated/non-display market-data fee treatment remains unconfirmed.",
+        "Same-run RTH witness requires eligible authenticated account."
+      ],
+      "current_action": "Treat as P1 candidate; no PASS until exact A/C/jurisdiction proof and live RTH witness.",
+      "source_urls": [
+        "https://public.com/mcp-trading",
+        "https://public.com/api",
+        "https://public.com/api/docs/resources/market-data/get-quotes",
+        "https://public.com/api/docs/templates/hosted-mcp",
+        "https://github.com/PublicDotCom/publicdotcom-mcp-server",
+        "https://github.com/PublicDotCom/publicdotcom-py"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_public_mcp_20261004.json",
+      "evidence_blob_sha": "3d54046ad8e1febb3b9385fd6506ba04667ce1b1",
+      "dual_blocker_potential": {
+        "g9": true,
+        "account": true
+      }
+    },
+    {
+      "provider": "ForInvest Hosted MCP",
+      "priority": "P3",
+      "status": "TURKEY_NATIVE_D_STRONG_A_B_C_UNPROVEN",
+      "proven": [
+        "Official hosted StreamableHTTP MCP with OAuth/PKCE.",
+        "Free ForInvest account can authenticate.",
+        "Market-data tools are read-only and global-market capable.",
+        "ChatGPT/Claude/Cursor are sanctioned clients."
+      ],
+      "unresolved": [
+        "Free-account real-time U.S. equity entitlement.",
+        "Consolidated CTA/UTP SIP/NBBO lineage.",
+        "Bid/ask/last independent event timestamps.",
+        "Automated/non-display exchange/vendor fee treatment."
+      ],
+      "current_action": "Keep in P3 until official U.S.-equity entitlement/schema/lineage proof appears.",
+      "source_urls": [
+        "https://mcp.forinvest.com/",
+        "https://mcp.forinvest.com/docs",
+        "https://mcp.forinvest.com/privacy"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_forinvest_mcp_20261004.json",
+      "evidence_blob_sha": "15f8d636d88752cbf846b5f900b26b470b815511"
+    },
+    {
+      "provider": "Robinhood Agentic Trading / Trading MCP",
+      "priority": "CLOSED_CURRENT",
+      "status": "STRICT_FAIL_FUNDING_JURISDICTION_AND_CONTINUOUS_SIP_UNPROVEN",
+      "proven": [
+        "Official 2026 Agentic Trading MCP exists and can read accounts/positions/balances.",
+        "Agentic setup requires funding a dedicated Agentic Account.",
+        "Consumer data stack uses multiple partial/venue products; continuous consolidated SIP NBBO is not established."
+      ],
+      "unresolved": [],
+      "current_action": "Closed unless funding/jurisdiction/data-lineage conditions materially change.",
+      "source_urls": [
+        "https://robinhood.com/us/en/newsroom/robinhood-is-now-open-to-agents/",
+        "https://robinhood.com/us/en/support/articles/agentic-trading-overview/",
+        "https://robinhood.com/us/en/support/articles/market-data-sources-for-robinhood-legend/"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_robinhood_agentic_20261004.json",
+      "evidence_blob_sha": "92327745c3c08519fe8971f94a4e6407d81007b2"
     }
   ],
   "search_notes": [
@@ -218,13 +295,25 @@
   "last_updated_at": "2026-10-04T19:03:00+03:00",
   "current_priority_order": [
     "Clear Street Trading API / read-only MCP",
+    "Public.com Hosted MCP / Individual API",
     "Paper Invest",
     "Wealthnow",
     "Alpaca ChatGPT market-data plugin / connected MCP surface",
+    "ForInvest Hosted MCP",
     "Stocklake"
   ],
   "highest_leverage_lead": {
     "provider": "Clear Street Trading API / read-only MCP",
     "reason": "Could close both STRICT_G9 and SAME_RUN_ACCOUNT blockers with one sanctioned read-only surface if Türkiye eligibility and permanent-$0/no-activity market-data entitlement are confirmed."
-  }
+  },
+  "highest_leverage_leads": [
+    {
+      "provider": "Clear Street Trading API / read-only MCP",
+      "reason": "Potential single-provider G9+ACCOUNT unlock if Türkiye eligibility and permanent-$0/no-activity entitlement are proven."
+    },
+    {
+      "provider": "Public.com Hosted MCP / Individual API",
+      "reason": "Potential G9+ACCOUNT unlock with hosted MCP, live quotes and portfolio reads; exact SIP lineage and Türkiye eligibility remain unresolved."
+    }
+  ]
 }
