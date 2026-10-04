@@ -1,0 +1,144 @@
+{
+  "schema": "XRAY_G9_X_WEB_DISCOVERY_LEADS_V1",
+  "generated_on": "2026-10-04",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "role": "NONAUTHORITATIVE_DISCOVERY_AND_EVIDENCE_CACHE_ONLY",
+  "may_create_pass": false,
+  "compiled_policy": "C4.17",
+  "strict_g9_required": [
+    "A_CONSOLIDATED_NBBO_LINEAGE",
+    "B_INDEPENDENT_QUOTE_TRADE_EVENT_TIMESTAMPS_FRESH",
+    "C_LAWFUL_AUTOMATED_PERMANENT_ZERO",
+    "D_SCHEDULER_CALLABLE"
+  ],
+  "leads": [
+    {
+      "provider": "Paper Invest",
+      "priority": "P1",
+      "status": "STRONGEST_ZERO_DOLLAR_NEAR_MISS",
+      "proven": [
+        "Basic plan is $0/month free forever",
+        "Basic includes API and MCP access",
+        "Official API docs expose real-time quote endpoint with bid/ask/bidSize/askSize/last/lastSize/timestamp",
+        "Separate official last-trade endpoint exposes price/size/side/timestamp",
+        "Official product pages call the quote NBBO and explicitly support trading bots/algorithmic API use",
+        "Official open-source MCP calls Paper REST endpoints directly without alternate market-data transformation"
+      ],
+      "unresolved": [
+        "Exact upstream lineage: UTP Tape C UQDF+UTDF/SIP or named equivalent redistributor is not documented",
+        "Quote endpoint timestamp semantic is not explicitly documented as upstream quote-event time",
+        "Trade endpoint timestamp semantic is not explicitly documented as upstream trade-event time",
+        "Exact lawful non-display/automated UTP classification and end-user fee absorption remain unconfirmed"
+      ],
+      "current_action": "Provider clarification issue paperinvest/mcp-server#3 is open; await primary-source response while continuing public-source checks.",
+      "source_urls": [
+        "https://paperinvest.io/pricing",
+        "https://docs.paperinvest.io/market-data",
+        "https://paperinvest.io/paper-trading-api",
+        "https://github.com/paperinvest/mcp-server"
+      ]
+    },
+    {
+      "provider": "Wealthnow",
+      "priority": "P1",
+      "status": "STRONG_FREE_SNAPSHOT_NEAR_MISS",
+      "proven": [
+        "Free plan is $0 with 1,000 monthly credits and no overage",
+        "Free covers market_data, fundamentals, public_filings",
+        "Free fundamentals_price_snapshot returns last trade with as_of/time and price_age_seconds",
+        "Free price_snapshot returns bid/ask with separate quote_as_of during market session",
+        "Live captured AAPL example shows sub-second price age and simultaneous bid/ask/trade timestamps",
+        "Paid streaming docs explicitly define quote stream as consolidated NBBO and separate trade ticks with freshness metadata",
+        "MCP/OpenAPI and REST programmatic use are officially supported"
+      ],
+      "unresolved": [
+        "Exact binding of the Free price_snapshot bid/ask route to the documented consolidated NBBO streaming plant is not explicitly stated",
+        "Named upstream vendor/SIP lineage for the exact Free snapshot route remains unproven",
+        "Lawful UTP1APIS/equivalent automated non-display classification and provider fee absorption remain unconfirmed"
+      ],
+      "current_action": "Primary-source email sent to Wealthnow asking exact Free-route lineage/classification; do not infer streaming lineage onto Free snapshot without reply.",
+      "source_urls": [
+        "https://app.wealthnow.io/docs/market-data",
+        "https://app.wealthnow.io/docs/streaming",
+        "https://app.wealthnow.io/docs/pricing-and-credits",
+        "https://app.wealthnow.io/docs/mcp-and-sdks"
+      ]
+    },
+    {
+      "provider": "Stocklake",
+      "priority": "P3",
+      "status": "RESEARCH_TOOL_NOT_G9_YET",
+      "proven": [
+        "Free key never expires; 200 calls/day; guest 25 calls/day",
+        "Native MCP and OAuth supported",
+        "Real-time prices, screener, market pulse and research tools available"
+      ],
+      "unresolved": [
+        "No public proof of consolidated NBBO bid/ask",
+        "No public proof of independent quote/trade event timestamps",
+        "No public market-data upstream lineage found"
+      ],
+      "current_action": "Keep as non-G9 research/discovery candidate only unless exact NBBO lineage and timestamp contract appear.",
+      "source_urls": [
+        "https://api.stocklake.dev/docs",
+        "https://www.stocklake.dev/"
+      ]
+    },
+    {
+      "provider": "Massive",
+      "priority": "CLOSED_CURRENT",
+      "status": "STRICT_C_FAIL_PAID_LIVE_NBBO",
+      "proven": [
+        "Official docs identify SIP-based real-time NBBO and nanosecond timestamps",
+        "Basic is free forever but end-of-day only",
+        "Real-time NBBO REST/WebSocket requires Advanced $199/month",
+        "Current connected live NBBO and last-trade calls returned NOT_ENTITLED"
+      ],
+      "unresolved": [],
+      "current_action": "Do not reopen unless official plan changes to permanent-$0 live NBBO.",
+      "source_urls": [
+        "https://massive.com/pricing?product=stocks",
+        "https://massive.com/docs/rest/stocks/trades-quotes/last-quote"
+      ]
+    },
+    {
+      "provider": "Webull OpenAPI",
+      "priority": "CLOSED_CURRENT",
+      "status": "STRICT_C_FAIL_SEPARATE_OPENAPI_MARKET_DATA_SUBSCRIPTION",
+      "proven": [
+        "Consumer Webull offers some free NBBO per-query display data",
+        "Official OpenAPI docs require a separate OpenAPI market-data subscription for US stocks/ETFs",
+        "OpenAPI non-display permissions are independent from app/desktop entitlements"
+      ],
+      "unresolved": [],
+      "current_action": "Do not treat free consumer per-query NBBO as OpenAPI entitlement.",
+      "source_urls": [
+        "https://developer.webull.com/apis/docs/market-data-api/overview/",
+        "https://developer.webull.com/apis/docs/market-data-api/getting-started/"
+      ]
+    },
+    {
+      "provider": "Eulerpool",
+      "priority": "CLOSED_CURRENT",
+      "status": "STRICT_B_C_FAIL_FREE_DELAYED",
+      "proven": [
+        "Official current real-time-data page says free tier is delayed; paid plans get live ticks",
+        "Marketing blog claiming free L2/NBBO is contradicted by current product page"
+      ],
+      "unresolved": [],
+      "current_action": "Current product/pricing page outranks older marketing blog; keep nonqualifying.",
+      "source_urls": [
+        "https://eulerpool.com/financial-data-api/real-time-data"
+      ]
+    }
+  ],
+  "search_notes": [
+    "X indexing is incomplete/noisy; provider names found on X are always followed to official docs.",
+    "Do not claim complete X coverage.",
+    "Do not promote any lead from social posts alone.",
+    "Provider-specific primary-source statements are required for any G9 authority upgrade."
+  ],
+  "no_policy_weakening": true,
+  "unknown_never_pass": true
+}
