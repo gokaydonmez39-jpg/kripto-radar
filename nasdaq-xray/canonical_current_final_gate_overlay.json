@@ -1,7 +1,7 @@
 {
   "schema": "XRAY_FINAL_GATE_OVERLAY_V2",
   "generated_on": "2026-10-04",
-  "generated_at_utc": "2026-10-04T16:42:49.499158+00:00",
+  "generated_at_utc": "2026-10-04T16:03:00Z",
   "asof_et": "2026-10-02",
   "execution": "NONE",
   "real_money": "NO-GO",
@@ -93,5 +93,15 @@
     "last_completed_us_rth_asof": "2026-10-02",
     "asof_advanced_on_weekend": false
   },
-  "no_policy_weakening": true
+  "no_policy_weakening": true,
+  "final_research_refresh": {
+    "g9_authority_sha": "bc5cac63a9757c6e12c359eea244ba16ea5f9011",
+    "g9_saturation_sha": "2e47a4fd7d620cdda0106bfc60333c6ebf75eb07",
+    "g9_registry_sha": "3270ee56c94beca87bb834e14d9fb1355316db5a",
+    "g9_adapter_sha": "73435efe895c8387a6fa02e77125087d2a48d01b",
+    "g9_final_resolution_sha": "e14c6b5c000959d5e01d8bff4f32875610ff452b",
+    "account_gate_sha": "40d5c4078486b688c8d3ee3e654af14f9bb48cc7",
+    "account_adapter_sha": "5449326202d6dab2de99c8f384bcdd5e95834c0e",
+    "result": "BLOCKED_FAIL_CLOSED_NO_FALSE_GO_AFTER_FINAL_X_MCP_SWEEP"
+  }
 }
