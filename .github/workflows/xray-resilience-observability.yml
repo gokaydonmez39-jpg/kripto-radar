@@ -25,6 +25,8 @@ on:
       - "nasdaq-xray/free_core_migration_contract.json"
       - "nasdaq-xray/gem_integration_registry.json"
       - "nasdaq-xray/gem_registry_selftest.py"
+      - "nasdaq-xray/provider_automation_governance.json"
+      - "nasdaq-xray/provider_automation_governance_selftest.py"
       - ".github/workflows/xray-resilience-observability.yml"
   schedule:
     - cron: "47 * * * 1-5"
@@ -69,13 +71,17 @@ jobs:
             nasdaq-xray/data_lineage_registry.py \
             nasdaq-xray/deterministic_replay_guard.py \
             nasdaq-xray/guardian_anomaly.py \
-            nasdaq-xray/gem_registry_selftest.py
+            nasdaq-xray/gem_registry_selftest.py \
+            nasdaq-xray/provider_automation_governance_selftest.py
 
       - name: Single-flight + circuit-breaker self-test
         run: python nasdaq-xray/resilience_selftest.py
 
       - name: 36-of-36 gem integration registry self-test
         run: python nasdaq-xray/gem_registry_selftest.py
+
+      - name: Provider automation governance self-test
+        run: python nasdaq-xray/provider_automation_governance_selftest.py
 
       - name: PIT vintage-store self-test
         run: python nasdaq-xray/pit_vintage_store_selftest.py
@@ -155,6 +161,11 @@ jobs:
           assert replay.get("asof_consistent") is True,replay
           guardian=json.load(open(root/"canonical_guardian_state.json"))
           assert guardian.get("status")!="FAIL_CLOSED",guardian
+          gov=json.load(open(root/"provider_automation_governance.json"))
+          assert gov.get("schema")=="XRAY_PROVIDER_AUTOMATION_GOVERNANCE_V1",gov
+          assert gov["providers"]["ALPHASTOCKS"]["unattended_automation_allowed"] is False,gov
+          assert gov["providers"]["BIGDATA"]["paid_top_up_allowed"] is False,gov
+          assert gov["providers"]["ALPACA"]["live_sip_g9_allowed"] is False,gov
           gems=json.load(open(root/"gem_integration_registry.json"))
           assert gems.get("schema")=="XRAY_GEM_INTEGRATION_REGISTRY_V1",gems
           assert gems.get("expected_gem_count")==36 and len(gems.get("gems") or [])==36,gems
