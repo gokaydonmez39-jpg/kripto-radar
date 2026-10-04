@@ -265,14 +265,14 @@
   },
   "final_resolution": {
     "path": "nasdaq-xray/g9_final_resolution_20261004.json",
-    "blob_sha": "fd499d7357f0950b3e61eee72ad27ed481076433",
+    "blob_sha": "b0b6b83c2d2e291485dd0c1810ed92a9d25c1b03",
     "result": "FINAL_EXTERNAL_BLOCKED_AFTER_2026_MCP_REOPEN_SWEEP",
     "external_dependencies_only": true,
     "strict_g9_pass": false,
     "blockers": [
       "No provider currently proves all strict A+B+C+D simultaneously.",
-      "Sunday/off-RTH cannot provide same-run fresh B witness.",
-      "Highest-leverage providers still require primary-source eligibility/entitlement confirmation."
+      "Strongest paths require primary-source entitlement/eligibility confirmation.",
+      "Off-RTH cannot provide the mandatory same-run fresh B witness."
     ]
   },
   "adapter_contract": {
