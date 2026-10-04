@@ -4,7 +4,7 @@
   "provider": "Public.com Hosted MCP / Individual API",
   "execution": "NONE",
   "real_money": "NO-GO",
-  "status": "P1_NEAR_MISS_REOPENED_2026_HOSTED_MCP",
+  "status": "NONQUALIFYING_USER_JURISDICTION_US_RESIDENCY_REQUIRED",
   "evidence": {
     "free_mcp": "Hosted MCP access included with Public brokerage account at no extra cost.",
     "live_market_data": "Official MCP/API supports live market data during trading hours.",
@@ -13,22 +13,22 @@
     "quote_schema": "Official quote API exposes last, lastTimestamp, bid, bidSize, bidTimestamp, ask, askSize, askTimestamp.",
     "timestamp_semantics": "Official SDK describes lastTimestamp as when last trade occurred; bidTimestamp/askTimestamp as when bid/ask were last updated.",
     "personal_use": "Individual API explicitly permits personal, non-commercial use.",
-    "market_data_contract": "Public Market Data Addendum contains Nasdaq nonprofessional subscriber terms."
+    "market_data_contract": "Public Market Data Addendum contains Nasdaq nonprofessional subscriber terms.",
+    "jurisdiction": "Official Public account requirements require a valid SSN, legal U.S. residential address, and U.S. citizen/permanent-resident or accepted valid U.S. visa status."
   },
   "unresolved": [
     "Exact quote lineage is not explicitly documented as consolidated CTA/UTP SIP National NBBO.",
     "Public SDK mentions data source example Xignite for one-day-change values, but this does not prove quote lineage.",
-    "Türkiye-resident individual account/API eligibility is not publicly confirmed; Public instructs non-US residents to contact Concierge.",
     "No same-run RTH witness can run without an eligible authenticated Public account.",
     "End-user SIP/UTP/CTA/non-display fee treatment for unattended read-only agent use is not explicitly documented."
   ],
   "gate_assessment": {
-    "A": "UNKNOWN",
-    "B": "STRONG_BUT_EVENT_SOURCE_SEMANTICS_NOT_EXCHANGE_SIP_PROVEN",
-    "C": "PARTIAL",
-    "D": "TECHNICALLY_PASSABLE_IF_ACCOUNT_ELIGIBLE"
+    "A": "UNKNOWN_BUT_NOT_NEEDED_TO_RESOLVE_CURRENT_USER_PATH_AFTER_JURISDICTION_FAIL",
+    "B": "STRONG_SCHEMA",
+    "C": "UNRESOLVED_BUT_MOOT_FOR_CURRENT_USER_PATH",
+    "D": "FAIL_USER_JURISDICTION"
   },
-  "account_gate_potential": true,
+  "account_gate_potential": false,
   "may_create_pass": false,
   "source_urls": [
     "https://public.com/mcp-trading",
@@ -39,5 +39,9 @@
     "https://github.com/PublicDotCom/publicdotcom-mcp-server",
     "https://github.com/PublicDotCom/publicdotcom-py"
   ],
-  "no_policy_weakening": true
+  "no_policy_weakening": true,
+  "failed_gates": [
+    "D_USER_JURISDICTION_TURKEY_RESIDENT_INELIGIBLE"
+  ],
+  "reopen_condition": "Only reopen for this user if Public officially supports Türkiye-resident individual brokerage/API accounts; then A/C and same-run RTH evidence would still be required."
 }
