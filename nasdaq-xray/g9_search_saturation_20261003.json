@@ -282,8 +282,8 @@
     }
   ],
   "structural_result": "DIRECT UTP REALTIME NONDISPLAY IS FEE-LIABLE. A strict $0-to-end-user path can exist only if a broker/vendor lawfully absorbs upstream licensing and explicitly grants the exact automated/non-display API entitlement without balance/activity/per-query/subscription/account-maintenance conditions.",
-  "current_result": "FINAL_EXTERNAL_BLOCKED_NO_INTERNAL_RESEARCH_PATH_REMAINS",
-  "search_policy": "Do not reopen a negative path from marketing wording alone. Reopen only on newer primary-source change to the exact failed gate, then require scheduler-callable live-RTH proof.",
+  "current_result": "FINAL_EXTERNAL_BLOCKED_AFTER_2026_MCP_REOPEN_SWEEP",
+  "search_policy": "Broad sweep is considered saturated at 70 provider identities. Reopen only on a newer primary-source product/entitlement surface or exact failed-gate change; social/X discovery is lead generation only and never authority.",
   "unknown_never_pass": true,
   "no_policy_weakening": true,
   "last_extended_on": "2026-10-04",
@@ -293,14 +293,53 @@
     "authority_file": "nasdaq-xray/g9_utp_fee_basis_20261003.json"
   },
   "latest_new_provider": {
-    "provider": "Ally Invest Developer API",
-    "evidence_file": "nasdaq-xray/g9_provider_delta_allyinvest_20261004.json",
-    "evidence_blob_sha": "147b74677a4d5aafb1d3a0729dcd5418388705f4",
-    "result": "STRICT_C_AND_D_FAIL_FUNDED_US_ONLY"
+    "provider": "NONE_NEW_IDENTITY",
+    "note": "2026-10-04 sweep reopened existing provider identities through new MCP/product surfaces; provider identity count remains 70."
   },
   "final_resolution": {
     "path": "nasdaq-xray/g9_final_resolution_20261004.json",
-    "blob_sha": "fd499d7357f0950b3e61eee72ad27ed481076433",
-    "result": "FINAL_EXTERNAL_BLOCKED_NO_INTERNAL_RESEARCH_PATH_REMAINS"
+    "blob_sha": "b0b6b83c2d2e291485dd0c1810ed92a9d25c1b03",
+    "result": "FINAL_EXTERNAL_BLOCKED_AFTER_2026_MCP_REOPEN_SWEEP"
+  },
+  "latest_reopen_sweep": {
+    "date": "2026-10-04",
+    "identity_count_unchanged": 70,
+    "evidence_only_reopens": [
+      {
+        "provider": "Public.com Individual API",
+        "new_surface": "Hosted MCP + official SDK",
+        "evidence_path": "nasdaq-xray/g9_provider_delta_public_mcp_20261004.json",
+        "evidence_blob_sha": "3d54046ad8e1febb3b9385fd6506ba04667ce1b1",
+        "result": "P1_NEAR_MISS_A_C_JURISDICTION_UNPROVEN"
+      },
+      {
+        "provider": "Foreks / ForInvest Web SDK",
+        "new_surface": "ForInvest Hosted MCP",
+        "evidence_path": "nasdaq-xray/g9_provider_delta_forinvest_mcp_20261004.json",
+        "evidence_blob_sha": "15f8d636d88752cbf846b5f900b26b470b815511",
+        "result": "D_STRONG_A_B_C_UNPROVEN"
+      },
+      {
+        "provider": "Robinhood Official Trading API",
+        "new_surface": "Agentic Trading MCP",
+        "evidence_path": "nasdaq-xray/g9_provider_delta_robinhood_agentic_20261004.json",
+        "evidence_blob_sha": "92327745c3c08519fe8971f94a4e6407d81007b2",
+        "result": "NONQUALIFYING_FUNDING_JURISDICTION_CONTINUOUS_SIP_UNPROVEN"
+      }
+    ],
+    "no_new_provider_identity": true,
+    "no_g9_pass": true
+  },
+  "latest_current_evidence": {
+    "registry_path": "nasdaq-xray/g9_provider_registry_20261003.json",
+    "registry_blob_sha": "1b902965f621d4f223a47aa9c8e1f5604e8b65c1",
+    "registry_provider_count": 70,
+    "adapter_path": "nasdaq-xray/g9_provider_adapter_contract.json",
+    "adapter_blob_sha": "08bc8842c442bff75d2f835d35e83a5cc932a36f",
+    "adapter_count": 17,
+    "clear_street_blob_sha": "156ce0596e00531958c317524709f2c968b278a6",
+    "public_com_blob_sha": "3d54046ad8e1febb3b9385fd6506ba04667ce1b1",
+    "paper_blob_sha": "9e0a105d09df8017e67fa7607ff99d8b077aa1a7",
+    "wealthnow_blob_sha": "92e3b315338082bc00fe5d0012c7d4b9fc7f255f"
   }
 }
