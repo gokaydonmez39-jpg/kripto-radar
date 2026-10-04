@@ -13,16 +13,17 @@
     "provider_qualifying_now": "NONE",
     "permanent_zero": "NO_CURRENT_PROVIDER_PROVEN",
     "automated_nondisplay_utp_right": "NO_CURRENT_PROVIDER_PROVEN",
-    "reviewed_provider_paths": 70,
-    "search_saturation_result": "FINAL_DEEP_RESEARCH_COMPLETE_NO_PROVIDER_CURRENTLY_PROVES_ALL_A_B_C_D",
+    "reviewed_provider_paths": 71,
+    "search_saturation_result": "FINAL_EXTERNAL_BLOCKED_AFTER_FINAL_2026_X_MCP_SWEEP",
     "structural_fee_basis": "UTP_API_IS_AN_UNCONTROLLED_PRODUCT; CURRENT_2024_10_USAGE_CODES_EXPOSE_A_$1_PER_MONTH_VENDOR_BILLED_NONPROFESSIONAL_UNCONTROLLED_CLASS, BUT PROVIDER_SPECIFIC_CLASSIFICATION_AND_FEE_ABSORPTION_REMAIN_UNPROVEN",
     "strict_runtime_adapter": "FAIL_CLOSED_UNLESS_AUTHORITY_PROVEN",
     "audit_20261003": "70_PROVIDER_PATH_PRIMARY_SOURCE_AND_LIVE_ENTITLEMENT_SATURATION",
     "midas_official_paths": "ATLAS_REALTIME_EXCHANGE_ENTITLEMENTS;TRADINGVIEW_BROKER_QUOTES;ALPACA_PARTNER_INFRA",
     "midas_alpaca_partner_path": "OFFICIAL_INFRA_CONFIRMED_EXACT_LIVE_SIP_ENDUSER_ENTITLEMENT_UNPROVEN",
-    "high_potential_provider": "Clear Street + Public.com Hosted MCP + Paper Invest + Wealthnow + Alpaca ChatGPT plugin",
-    "high_potential_reason": "Clear Street remains the highest-leverage dual G9+ACCOUNT candidate with official National-NBBO semantics, independent exchange timestamps and read-only MCP, but Türkiye eligibility and unconditional permanent-$0 entitlement remain unproven. Public.com is reopened by its 2026 hosted MCP/official SDK with live quotes, separate last/bid/ask timestamps and account reads, but exact consolidated SIP/NBBO lineage, Türkiye eligibility and automated/non-display fee treatment remain unproven. Paper and Wealthnow remain strong zero-dollar near-misses with provider-specific lineage/licensing gaps. Alpaca live SIP remains entitlement-blocked in the connected runtime.",
-    "latest_reopen_sweep": "PUBLIC_HOSTED_MCP_P1;FORINVEST_HOSTED_MCP_P3;ROBINHOOD_AGENTIC_CLOSED"
+    "high_potential_provider": "Clear Street + Paper Invest + Wealthnow + ForInvest Hosted MCP + Alpaca ChatGPT plugin",
+    "high_potential_reason": "Clear Street remains the highest-leverage dual G9+ACCOUNT candidate with official National-NBBO semantics and exchange timestamps but Türkiye eligibility/unconditional permanent-$0 entitlement unproven. Paper and Wealthnow remain strongest zero-dollar technical near-misses pending provider-specific lineage/licensing confirmation. ForInvest is the strongest Türkiye-native new MCP lead but exact free U.S. realtime NBBO/timestamp/fee terms are pending primary-source reply. Alpaca connected live SIP remains entitlement-blocked.",
+    "latest_reopen_sweep": "PUBLIC_CLOSED_US_RESIDENCY;WEBULL_CLOSED_US_RESIDENCY;FREEDOM_TRADERNET_CLOSED_PAID_REALTIME;FORINVEST_REPLY_PENDING",
+    "audit_20261004": "71_PROVIDER_PATH_FINAL_X_MCP_REOPEN_AND_PRIMARY_SOURCE_AUDIT"
   },
   "pass_rule": "STATUS_MUST_EQUAL_PROVEN_FROM_PRIMARY_SOURCE_AND_PROVIDER_MUST_HAVE_MATCHING_RUNTIME_ADAPTER_BEFORE_LIVE_RTH_TECHNICAL_PROBE_CAN_RUN",
   "no_policy_weakening": true,
@@ -152,21 +153,21 @@
     {
       "provider": "Public.com Hosted MCP / Individual API",
       "path": "nasdaq-xray/g9_provider_delta_public_mcp_20261004.json",
-      "blob_sha": "3d54046ad8e1febb3b9385fd6506ba04667ce1b1",
-      "status": "P1_NEAR_MISS_REOPENED_2026_HOSTED_MCP",
+      "blob_sha": "d8ab27ba66df1c3394730bc8bc1fecb9eb562c9e",
+      "status": "NONQUALIFYING_USER_JURISDICTION_US_RESIDENCY_REQUIRED",
       "gate_a": "UNKNOWN_EXACT_CONSOLIDATED_CTA_UTP_NBBO_LINEAGE",
       "gate_b": "STRONG_SCHEMA_DISTINCT_LAST_BID_ASK_TIMESTAMPS_BUT_UPSTREAM_EVENT_SOURCE_NOT_PROVEN",
       "gate_c": "PARTIAL_FREE_MCP_PERSONAL_USE_STRONG_BUT_EXACT_AUTOMATED_NONDISPLAY_FEE_RIGHT_UNPROVEN",
       "gate_d": "HOSTED_MCP_TECHNICALLY_STRONG_IF_USER_ELIGIBLE",
       "account_dual_gate_potential": true,
-      "role": "PRIMARY_SOURCE_UNLOCK_LEAD_NEVER_PASS_BY_INFERENCE"
+      "role": "NEGATIVE_EVIDENCE_CACHE_ONLY"
     },
     {
       "provider": "ForInvest Hosted MCP",
       "path": "nasdaq-xray/g9_provider_delta_forinvest_mcp_20261004.json",
-      "blob_sha": "15f8d636d88752cbf846b5f900b26b470b815511",
-      "status": "TURKEY_NATIVE_HOSTED_MCP_D_STRONG_A_B_C_UNPROVEN",
-      "role": "SECONDARY_UNLOCK_LEAD; NEVER PASS FROM GENERIC REALTIME_GLOBAL_MARKETS_CLAIM"
+      "blob_sha": "33170dc1f3c0ae489e43f27f722fc144e91c8095",
+      "status": "TURKEY_NATIVE_HOSTED_MCP_HIGHEST_NEW_JURISDICTION_FIT_BUT_A_B_C_UNPROVEN",
+      "role": "PRIMARY_SOURCE_UNLOCK_LEAD; provider clarification email sent 2026-10-04"
     },
     {
       "provider": "Robinhood Agentic Trading / Trading MCP",
@@ -174,18 +175,32 @@
       "blob_sha": "92327745c3c08519fe8971f94a4e6407d81007b2",
       "status": "NONQUALIFYING_FUNDED_ACCOUNT_US_JURISDICTION_CONTINUOUS_SIP_UNPROVEN",
       "role": "NEGATIVE_EVIDENCE_CACHE_ONLY"
+    },
+    {
+      "provider": "Webull Cloud MCP / OpenAPI",
+      "path": "nasdaq-xray/g9_provider_delta_webull_cloud_mcp_20261004.json",
+      "blob_sha": "84499fcfeeadc4d2cc7f11dd2e86234a97193e95",
+      "status": "NONQUALIFYING_USER_JURISDICTION_AND_STRICT_C",
+      "role": "NEGATIVE_EVIDENCE_CACHE_ONLY"
+    },
+    {
+      "provider": "Freedom24 / TraderNet MCP",
+      "path": "nasdaq-xray/g9_provider_delta_freedom_tradernet_mcp_20261004.json",
+      "blob_sha": "2482e32c6642ed19ccd6b22c189c17da9a5728dc",
+      "status": "NONQUALIFYING_CURRENT_PAID_REALTIME_AND_TURKEY_LOCAL_NOT_OPERATIONAL",
+      "role": "NEGATIVE_EVIDENCE_CACHE_ONLY; future reopen after local launch/entitlement change"
     }
   ],
   "search_saturation": {
     "path": "nasdaq-xray/g9_search_saturation_20261003.json",
-    "blob_sha": "01d4a0a5e1abdf3f0c29fb3d0a6d6b1b4f60e627",
-    "unique_provider_paths_reviewed": 70,
-    "result": "FINAL_EXTERNAL_BLOCKED_AFTER_2026_MCP_REOPEN_SWEEP"
+    "blob_sha": "2e47a4fd7d620cdda0106bfc60333c6ebf75eb07",
+    "unique_provider_paths_reviewed": 71,
+    "result": "FINAL_EXTERNAL_BLOCKED_AFTER_FINAL_2026_X_MCP_SWEEP"
   },
   "negative_registry": {
     "path": "nasdaq-xray/g9_provider_registry_20261003.json",
-    "blob_sha": "1b902965f621d4f223a47aa9c8e1f5604e8b65c1",
-    "provider_count": 70,
+    "blob_sha": "3270ee56c94beca87bb834e14d9fb1355316db5a",
+    "provider_count": 71,
     "role": "NEGATIVE_EVIDENCE_CACHE_ONLY_NEVER_PASS_AUTHORITY"
   },
   "midas_official_audit": {
@@ -254,7 +269,7 @@
   "clearstreet_near_miss": {
     "path": "nasdaq-xray/g9_provider_delta_clearstreet_20261003.json",
     "blob_sha": "156ce0596e00531958c317524709f2c968b278a6",
-    "status": "HIGHEST_POTENTIAL_CURRENT_FREE_REALTIME_NATIONAL_NBBO_MCP_ZERO_BALANCE_AND_TURKEY_ELIGIBILITY_UNPROVEN",
+    "status": "HIGHEST_LEVERAGE_DUAL_G9_ACCOUNT_NEAR_MISS_TURKEY_AND_UNCONDITIONAL_ZERO_DOLLAR_UNPROVEN",
     "role": "PRIMARY_SOURCE_UNLOCK_LEAD; NEVER PASS UNTIL ZERO_BALANCE/NO_FEE + TURKEY ELIGIBILITY + SAME_RUN RTH ARE PROVEN"
   },
   "alpaca_chatgpt_plugin_lead": {
@@ -265,20 +280,20 @@
   },
   "final_resolution": {
     "path": "nasdaq-xray/g9_final_resolution_20261004.json",
-    "blob_sha": "b0b6b83c2d2e291485dd0c1810ed92a9d25c1b03",
-    "result": "FINAL_EXTERNAL_BLOCKED_AFTER_2026_MCP_REOPEN_SWEEP",
+    "blob_sha": "e14c6b5c000959d5e01d8bff4f32875610ff452b",
+    "result": "FINAL_EXTERNAL_BLOCKED_AFTER_FINAL_2026_X_MCP_SWEEP",
     "external_dependencies_only": true,
     "strict_g9_pass": false,
     "blockers": [
       "No provider currently proves all strict A+B+C+D simultaneously.",
-      "Strongest paths require primary-source entitlement/eligibility confirmation.",
-      "Off-RTH cannot provide the mandatory same-run fresh B witness."
+      "Active unlock paths require provider-specific primary-source entitlement/eligibility confirmation.",
+      "Same-run US-RTH B witness is mandatory after authority proof."
     ]
   },
   "adapter_contract": {
     "path": "nasdaq-xray/g9_provider_adapter_contract.json",
-    "blob_sha": "08bc8842c442bff75d2f835d35e83a5cc932a36f",
-    "adapter_count": 17,
-    "note": "Public and ForInvest added as fail-closed candidates; Robinhood Agentic recorded nonqualifying. Existing Clear/Paper/Wealthnow implemented adapters remain the only current near-miss technical paths."
+    "blob_sha": "73435efe895c8387a6fa02e77125087d2a48d01b",
+    "adapter_count": 19,
+    "note": "Clear/Paper/Wealthnow adapters are implemented but authority-blocked. ForInvest is a fail-closed Türkiye-native candidate. Public/Webull/Freedom are closed for the current path."
   }
 }
