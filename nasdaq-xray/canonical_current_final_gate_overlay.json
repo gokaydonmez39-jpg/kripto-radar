@@ -1,7 +1,7 @@
 {
   "schema": "XRAY_FINAL_GATE_OVERLAY_V2",
   "generated_on": "2026-10-04",
-  "generated_at_utc": "2026-10-04T16:30:33.255007+00:00",
+  "generated_at_utc": "2026-10-04T16:30:47.267814+00:00",
   "asof_et": "2026-10-02",
   "execution": "NONE",
   "real_money": "NO-GO",
@@ -26,19 +26,19 @@
     "provider": "NONE_CURRENTLY_QUALIFYING",
     "adapter_status": "BLOCKED_NO_PROVIDER_SELECTED",
     "authority_path": "nasdaq-xray/g9_entitlement_authority.json",
-    "authority_blob_sha": "d8a0db6fdcdb8f5ab58de942e7a8ed34e92fddcb",
+    "authority_blob_sha": "675f546f52ed2de144f1984c998306b97939ee2e",
     "runtime_path": "nasdaq-xray/strict_g9_runtime_state.json",
     "runtime_blob_sha": "fb077b1177153df149e63502818d190875c0b119",
     "current_saturation_blob_sha": "01d4a0a5e1abdf3f0c29fb3d0a6d6b1b4f60e627",
     "current_registry_blob_sha": "1b902965f621d4f223a47aa9c8e1f5604e8b65c1",
-    "authority_bound_saturation_blob_sha": "ae06fa37001c84da74bf2b7cfad5529e58db6b5e",
+    "authority_bound_saturation_blob_sha": "01d4a0a5e1abdf3f0c29fb3d0a6d6b1b4f60e627",
     "authority_bound_registry_blob_sha": "1b902965f621d4f223a47aa9c8e1f5604e8b65c1",
     "current_saturation_count": 70,
     "current_registry_count": 70,
     "authority_saturation_count": 70,
     "authority_registry_count": 70,
-    "negative_cache_binding_exact": false,
-    "negative_cache_ahead_while_blocked": true
+    "negative_cache_binding_exact": true,
+    "negative_cache_ahead_while_blocked": false
   },
   "account": {
     "status": "ACCOUNT_BOOTSTRAP_READY_CREDENTIALS_REQUIRED",
