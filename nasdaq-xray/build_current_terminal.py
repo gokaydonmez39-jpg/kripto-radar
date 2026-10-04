@@ -1,4 +1,4 @@
-# READINESS_REVALIDATION_2026_10_04_PROVIDER_GOVERNANCE_CURRENT_GUARD
+# READINESS_FINAL_REBIND_AFTER_RESILIENCE_2026_10_04
 #!/usr/bin/env python3
 from __future__ import annotations
 import glob,hashlib,json,os,re
