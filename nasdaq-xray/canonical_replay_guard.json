@@ -75,7 +75,7 @@
       "asof_et": "2026-10-02",
       "path": "canonical_current_terminal.json",
       "schema": "XRAY_CANONICAL_CURRENT_TERMINAL_V1",
-      "sha256": "15264f0d3cc1c26fb35b7184fd6d7da535671fdfcbb4d15e654cddd516ac4dcb",
+      "sha256": "97d12824b67f6571d7175adda722723a3b086498ec166230f04792aafaa8ce63",
       "status": "PRESENT"
     },
     {
@@ -92,7 +92,7 @@
   ],
   "candidate_delivery_keys": [],
   "execution": "NONE",
-  "generated_at_utc": "2026-10-04T20:45:57.142956+00:00",
+  "generated_at_utc": "2026-10-04T20:49:03.184990+00:00",
   "real_money": "NO-GO",
   "replay_rule": "ONLY_FROZEN_ASOF_EVIDENCE_MAY_BE_USED; LATER_VINTAGES_NEVER_BACKFILL_PRIOR_DECISION",
   "schema": "XRAY_DETERMINISTIC_REPLAY_GUARD_V1",
