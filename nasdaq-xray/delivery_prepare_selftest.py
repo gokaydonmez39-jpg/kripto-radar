@@ -30,13 +30,20 @@ def pointer(r92,keys):
         }
     }
 
-def write_guard(p,active=None,status="PASS"):
+def write_guard(p,active=None,status="PASS",suspended=None,security_status=None):
     active=active or []
+    suspended=suspended or []
+    security_status=security_status or status
+    veto=sorted(set(active)|set(suspended))
     g={
         "schema":"XRAY_OFFICIAL_SOURCE_GUARD_V1",
-        "status":status,
+        "status":"PASS" if status=="PASS" and security_status=="PASS" else "DEGRADED",
         "generated_at_utc":datetime.now(timezone.utc).isoformat(),
-        "sources":{"trade_halts":{"status":status,"active_halt_symbols":active}},
+        "sources":{
+          "trade_halts":{"status":status,"active_halt_symbols":active},
+          "security_status":{"status":security_status,"suspension_symbols":suspended},
+        },
+        "candidate_safety":{"veto_symbols":veto},
     }
     (p/"canonical_official_source_guard.json").write_text(json.dumps(g))
 
@@ -85,7 +92,7 @@ with tempfile.TemporaryDirectory() as td:
     write_guard(p,["HALT"])
     if (p/".delivery_work").exists(): shutil.rmtree(p/".delivery_work")
     cp_halt=run_case(p,False)
-    assert "DELIVERY_HALT_VETO:HALT" in (cp_halt.stdout+cp_halt.stderr)
+    assert "DELIVERY_OFFICIAL_SAFETY_VETO:HALT" in (cp_halt.stdout+cp_halt.stderr)
 
     # Negative unknown-halt-feed test.
     safe=candidate("DELIVERY|RESEARCH_AL_ADAYI|2099-01-02|SAFE|B|safe001","SAFE","B")
@@ -94,6 +101,22 @@ with tempfile.TemporaryDirectory() as td:
     if (p/".delivery_work").exists(): shutil.rmtree(p/".delivery_work")
     cp_guard=run_case(p,False)
     assert "DELIVERY_OFFICIAL_HALT_FEED_UNKNOWN" in (cp_guard.stdout+cp_guard.stderr)
+
+    # Negative official Security Status suspension veto.
+    suspended=candidate("DELIVERY|RESEARCH_AL_ADAYI|2099-01-02|SUSP|B|susp001","SUSP","B")
+    (p/"chatgpt_canonical_state_v2.json").write_text(json.dumps(pointer([suspended],[suspended["delivery_key"]])))
+    write_guard(p,suspended=["SUSP"])
+    if (p/".delivery_work").exists(): shutil.rmtree(p/".delivery_work")
+    cp_susp=run_case(p,False)
+    assert "DELIVERY_OFFICIAL_SAFETY_VETO:SUSP" in (cp_susp.stdout+cp_susp.stderr)
+
+    # Negative unknown Security Status feed: do not deliver when official
+    # listing/suspension safety is unavailable.
+    (p/"chatgpt_canonical_state_v2.json").write_text(json.dumps(pointer([safe],[safe["delivery_key"]])))
+    write_guard(p,security_status="UNKNOWN")
+    if (p/".delivery_work").exists(): shutil.rmtree(p/".delivery_work")
+    cp_sec=run_case(p,False)
+    assert "DELIVERY_OFFICIAL_SECURITY_STATUS_UNKNOWN" in (cp_sec.stdout+cp_sec.stderr)
 
     # Negative max3 test: even fully registered candidates fail closed if
     # the canonical pointer violates the compiled delivery cap.
