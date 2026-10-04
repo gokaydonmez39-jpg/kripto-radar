@@ -1,0 +1,55 @@
+{
+  "schema": "XRAY_FREE_CORE_MIGRATION_CONTRACT_V1",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "objective": "PERMANENT_ZERO_COST_PLUS_AUTOMATION_WITH_LOCAL_CACHE; EXTERNAL SAFETY RATE LIMITS ARE ALLOWED WHEN THEY DO NOT CREATE PAID USAGE METERING",
+  "current_production": {
+    "universe": "NASDAQTRADER",
+    "dv20": "RALLIES",
+    "market_cap_primary": "BIGDATA",
+    "settlement_primary": "ALPACA_HISTORICAL_SIP",
+    "settlement_failover": "RALLIES_PLUS_LONGBRIDGE",
+    "account_primary_candidate": "LONGBRIDGE_HOSTED_MCP_V2",
+    "g9": "BLOCKED"
+  },
+  "migration_candidates": {
+    "market_cap": {
+      "candidate": "RALLIES_SEC_MC_V1",
+      "status": "SHADOW_ONLY",
+      "cutover": false,
+      "required": [
+        "full-universe same-ASOF regression",
+        "corporate-action cases",
+        "multiple share classes",
+        "IPO/new listing/delisted cases",
+        "near-$2B boundary tests",
+        "failure injection",
+        "PIT share-count vintage"
+      ]
+    },
+    "settlement": {
+      "candidate": "ZERO_COST_REPLACEMENT",
+      "status": "UNPROVEN",
+      "cutover": false
+    },
+    "account": {
+      "candidate": "RALLIES_ACCOUNT_READ_V1",
+      "status": "BLOCKED_NO_CURRENT_PORTFOLIO_WITNESS",
+      "cutover": false
+    },
+    "risk_overlay": {
+      "candidate": "OPENFACTOR_RISK_OVERLAY_V1",
+      "status": "SHADOW_DIAGNOSTIC_ONLY",
+      "hard_gate": false
+    }
+  },
+  "forbidden": [
+    "replace production authority from documentation only",
+    "infer unlimited from free",
+    "infer NBBO from realtime",
+    "infer provider_actual from configured provider",
+    "convert UNKNOWN to PASS"
+  ],
+  "updated_on": "2026-10-04"
+}
