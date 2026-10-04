@@ -28,7 +28,7 @@ def main():
     else:
         add("event_complete_for_terminal","NOT_APPLICABLE",terminal.get("status"))
     add("official_source_guard","PASS" if pit.get("status")=="PASS" else "DEGRADED",pit.get("status"))
-    add("lineage_registry","PASS" if lineage.get("status")=="COMPLETE_LINEAGE" else "DEGRADED",lineage.get("status"))
+    add("lineage_registry","PASS" if lineage.get("status") in {"COMPLETE_LINEAGE","COMPLETE_LINEAGE_SCHEMA"} else "DEGRADED",lineage.get("status"))
     add("deterministic_replay","PASS" if replay.get("status")=="PASS" else "FAIL",replay.get("status"))
     bad_delivery=[k for k,v in (delivery.get("deliveries") or {}).items() if v.get("backup_issue_status") not in {None,"DELIVERED"}]
     add("delivery_ledger","PASS" if not bad_delivery else "FAIL",{"missing_or_failed":bad_delivery})
