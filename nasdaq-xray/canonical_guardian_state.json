@@ -25,6 +25,14 @@
       "state": "PASS"
     },
     {
+      "detail": {
+        "active_halt_intersection": [],
+        "registered_candidates": []
+      },
+      "name": "candidate_halt_guard",
+      "state": "PASS"
+    },
+    {
       "detail": "COMPLETE_LINEAGE_SCHEMA",
       "name": "lineage_registry",
       "state": "PASS"
@@ -48,7 +56,7 @@
     }
   ],
   "execution": "NONE",
-  "generated_at_utc": "2026-10-04T20:53:13.551763+00:00",
+  "generated_at_utc": "2026-10-04T20:54:48.926306+00:00",
   "real_money": "NO-GO",
   "schema": "XRAY_GUARDIAN_STATE_V1",
   "self_healing_may_not_change_alpha": true,
