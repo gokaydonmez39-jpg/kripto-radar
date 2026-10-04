@@ -4,7 +4,7 @@
   "execution": "NONE",
   "real_money": "NO-GO",
   "purpose": "Negative-evidence cache only. This registry can skip unchanged dead paths but can never create G9 PASS.",
-  "provider_count": 70,
+  "provider_count": 71,
   "strict_g9_gates": {
     "A": "consolidated UTP Tape-C / National NBBO lineage",
     "B": "fresh bid+ask+last with independent quote/trade event timestamps",
@@ -13,8 +13,9 @@
   },
   "source_saturation": {
     "path": "nasdaq-xray/g9_search_saturation_20261003.json",
-    "blob_sha": "497135207d695387632cd495b4c0e66939a2162d",
-    "reviewed_paths": 62
+    "reviewed_paths": 71,
+    "binding": "PATH_AND_COUNT_ONLY; authoritative exact SHA is bound downstream by g9_entitlement_authority.json to avoid cyclic file-hash dependency.",
+    "blob_sha": null
   },
   "providers": [
     {
@@ -45,16 +46,18 @@
     },
     {
       "provider": "Webull OpenAPI",
-      "status": "NONQUALIFYING_STRICT_C_OPENAPI_NONDISPLAY_SUBSCRIPTION_AND_ACCOUNT_VALUE_CONDITION",
+      "status": "RECHECKED_2026_CLOUD_MCP_NONQUALIFYING_US_RESIDENCY_AND_STRICT_C",
       "failed_gates": [
-        "C_AUTOMATED_NONDISPLAY_PERMANENT_ZERO",
-        "C_BALANCE_CONDITION"
+        "D_USER_JURISDICTION_TURKEY_RESIDENT_INELIGIBLE",
+        "C_PERMANENT_ZERO_AUTOMATED_CONSOLIDATED_NBBO_ENTITLEMENT_NOT_PROVEN"
       ],
-      "evidence_file": "nasdaq-xray/g9_provider_delta_webull_alphavantage_refresh_20261003.json",
-      "last_checked_on": "2026-10-03",
-      "reopen_condition": "Official OpenAPI entitlement grants permanent-$0 consolidated National-NBBO-capable non-display use with no separate market-data subscription and no minimum account value/funding/activity condition.",
+      "evidence_file": "nasdaq-xray/g9_provider_delta_webull_cloud_mcp_20261004.json",
+      "evidence_blob_sha": "84499fcfeeadc4d2cc7f11dd2e86234a97193e95",
+      "last_checked_on": "2026-10-04",
+      "reopen_condition": "Webull Financial officially supports Türkiye-resident individual accounts and grants permanent-$0 scheduler-callable consolidated NBBO+trade event data with lawful automated/non-display rights.",
       "negative_cache_only": true,
-      "may_never_create_pass": true
+      "may_never_create_pass": true,
+      "surface_2026": "CLOUD_MCP_PLUS_CLI_PLUS_OPENAPI"
     },
     {
       "provider": "Massive",
@@ -299,18 +302,16 @@
     },
     {
       "provider": "Public.com Individual API",
-      "status": "REOPENED_2026_HOSTED_MCP_STRONG_B_D_AND_ACCOUNT_READ_BUT_A_C_JURISDICTION_UNPROVEN",
+      "status": "NONQUALIFYING_2026_HOSTED_MCP_TECHNICALLY_STRONG_BUT_US_RESIDENCY_REQUIRED",
       "failed_gates": [
-        "A_CONSOLIDATED_SIP_NBBO_LINEAGE",
-        "C_EXACT_PERMANENT_ZERO_MARKET_DATA_NONDISPLAY_RIGHT",
-        "D_JURISDICTION_TURKEY_ELIGIBILITY"
+        "D_USER_JURISDICTION_TURKEY_RESIDENT_INELIGIBLE"
       ],
       "evidence_file": "nasdaq-xray/g9_provider_delta_public_mcp_20261004.json",
+      "evidence_blob_sha": "d8ab27ba66df1c3394730bc8bc1fecb9eb562c9e",
       "last_checked_on": "2026-10-04",
-      "reopen_condition": "Public confirms Türkiye-resident individual eligibility, exact consolidated CTA/UTP National-NBBO quote lineage, and permanent-$0 automated/non-display market-data entitlement; then same-run RTH witness.",
-      "negative_cache_only": false,
-      "may_never_create_pass": false,
-      "evidence_blob_sha": "3d54046ad8e1febb3b9385fd6506ba04667ce1b1",
+      "reopen_condition": "Public officially expands individual brokerage/API/MCP eligibility to Türkiye residents; then exact consolidated SIP/NBBO lineage and permanent-$0 automated/non-display entitlement still require proof.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true,
       "surface_2026": "HOSTED_MCP_PLUS_OFFICIAL_SDK"
     },
     {
@@ -665,19 +666,20 @@
     },
     {
       "provider": "Foreks / ForInvest Web SDK",
-      "status": "REOPENED_FORINVEST_HOSTED_MCP_D_STRONG_A_B_C_UNPROVEN",
+      "status": "REOPENED_FORINVEST_HOSTED_MCP_TURKEY_FIT_D_STRONG_A_B_C_PRIMARY_SOURCE_REPLY_PENDING",
       "failed_gates": [
         "A_CONSOLIDATED_US_SIP_NBBO_LINEAGE",
         "B_EXACT_US_QUOTE_TRADE_EVENT_SCHEMA",
         "C_FREE_REALTIME_US_ENTITLEMENT_AND_NONDISPLAY_RIGHT"
       ],
       "evidence_file": "nasdaq-xray/g9_provider_delta_forinvest_mcp_20261004.json",
+      "evidence_blob_sha": "33170dc1f3c0ae489e43f27f722fc144e91c8095",
       "last_checked_on": "2026-10-04",
-      "reopen_condition": "ForInvest documents free-account real-time U.S. consolidated NBBO bid+ask+last with independent event timestamps and lawful automated/non-display permanent-$0 entitlement.",
-      "negative_cache_only": true,
-      "may_never_create_pass": true,
-      "evidence_blob_sha": "15f8d636d88752cbf846b5f900b26b470b815511",
-      "surface_2026": "OFFICIAL_HOSTED_MCP_STREAMABLE_HTTP"
+      "reopen_condition": "Primary-source ForInvest confirmation proves free-account real-time U.S. consolidated NBBO bid+ask+last with independent event timestamps and lawful automated/non-display permanent-$0 entitlement.",
+      "negative_cache_only": false,
+      "may_never_create_pass": false,
+      "surface_2026": "OFFICIAL_HOSTED_MCP_STREAMABLE_HTTP",
+      "primary_source_outreach": "SENT_2026-10-04_AWAITING_REPLY"
     },
     {
       "provider": "FlashAlpha Lab API",
@@ -975,6 +977,22 @@
       "reopen_condition": "Unfunded permanent-$0 realtime consolidated NBBO API plus Türkiye retail eligibility.",
       "negative_cache_only": true,
       "may_never_create_pass": true
+    },
+    {
+      "provider": "Freedom24 / TraderNet MCP",
+      "status": "NONQUALIFYING_STRICT_C_PAID_REALTIME_AND_TURKEY_LOCAL_NOT_OPERATIONAL",
+      "failed_gates": [
+        "C_PERMANENT_ZERO_REALTIME_ENTITLEMENT",
+        "C_FUNDING_REQUIRED_TO_PAY_REALTIME_DATA_FEE",
+        "D_CURRENT_TURKEY_LOCAL_SERVICE_NOT_YET_OPERATIONAL"
+      ],
+      "evidence_file": "nasdaq-xray/g9_provider_delta_freedom_tradernet_mcp_20261004.json",
+      "evidence_blob_sha": "2482e32c6642ed19ccd6b22c189c17da9a5728dc",
+      "last_checked_on": "2026-10-04",
+      "reopen_condition": "Freedom Yatırım starts Türkiye operations and publishes permanent-$0 scheduler-callable U.S. consolidated NBBO+last-trade event data plus read-only account access.",
+      "negative_cache_only": true,
+      "may_never_create_pass": true,
+      "surface_2026": "OFFICIAL_TRADERNET_STREAMABLE_HTTP_MCP"
     }
   ],
   "reopen_policy": "Reopen an existing negative path only on newer PRIMARY SOURCE evidence materially changing its listed failed gate(s). New previously-unreviewed providers are always eligible for research. Any reopened path still requires same-run RTH technical proof before G9 PASS.",
@@ -983,9 +1001,14 @@
   "count_invariant": "provider_count == len(unique(providers[].provider)) == source_saturation.reviewed_paths",
   "updated_on": "2026-10-04",
   "latest_entitlement_refresh": {
-    "path": "nasdaq-xray/g9_provider_delta_webull_alphavantage_refresh_20261003.json",
-    "commit_sha": "85290bdebed8133f3cfa017d98a097563f27e0b0",
-    "result": "WEBULL_C_FAIL_CONFIRMED; ALPHAVANTAGE_C_FAIL_CONFIRMED; NO_POLICY_WEAKENING"
+    "date": "2026-10-04",
+    "result": "PUBLIC_AND_WEBULL_JURISDICTION_CLOSED; FREEDOM_REALTIME_FEE_CLOSED; FORINVEST_PRIMARY_SOURCE_REPLY_PENDING; NO_G9_PASS",
+    "evidence": [
+      "nasdaq-xray/g9_provider_delta_public_mcp_20261004.json",
+      "nasdaq-xray/g9_provider_delta_webull_cloud_mcp_20261004.json",
+      "nasdaq-xray/g9_provider_delta_freedom_tradernet_mcp_20261004.json",
+      "nasdaq-xray/g9_provider_delta_forinvest_mcp_20261004.json"
+    ]
   },
   "latest_runtime_connector_audit": {
     "path": "nasdaq-xray/g9_runtime_connector_audit_20261003.json",
