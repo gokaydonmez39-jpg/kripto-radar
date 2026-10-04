@@ -1,7 +1,7 @@
 {
   "schema": "XRAY_FINAL_GATE_OVERLAY_V2",
   "generated_on": "2026-10-04",
-  "generated_at_utc": "2026-10-04T16:26:30.885Z",
+  "generated_at_utc": "2026-10-04T16:28:34.559974+00:00",
   "asof_et": "2026-10-02",
   "execution": "NONE",
   "real_money": "NO-GO",
@@ -26,7 +26,7 @@
     "provider": "NONE_CURRENTLY_QUALIFYING",
     "adapter_status": "BLOCKED_NO_PROVIDER_SELECTED",
     "authority_path": "nasdaq-xray/g9_entitlement_authority.json",
-    "authority_blob_sha": "29f3436d5f8498cd160051fa92a41c549dec03ee",
+    "authority_blob_sha": "d8a0db6fdcdb8f5ab58de942e7a8ed34e92fddcb",
     "runtime_path": "nasdaq-xray/strict_g9_runtime_state.json",
     "runtime_blob_sha": "fb077b1177153df149e63502818d190875c0b119",
     "current_saturation_blob_sha": "ae06fa37001c84da74bf2b7cfad5529e58db6b5e",
@@ -93,12 +93,5 @@
     "last_completed_us_rth_asof": "2026-10-02",
     "asof_advanced_on_weekend": false
   },
-  "no_policy_weakening": true,
-  "final_research_refresh": {
-    "date": "2026-10-04",
-    "g9_authority_sha": "29f3436d5f8498cd160051fa92a41c549dec03ee",
-    "g9_registry_sha": "1b902965f621d4f223a47aa9c8e1f5604e8b65c1",
-    "g9_adapter_sha": "08bc8842c442bff75d2f835d35e83a5cc932a36f",
-    "result": "BLOCKED_FAIL_CLOSED_NO_FALSE_GO"
-  }
+  "no_policy_weakening": true
 }
