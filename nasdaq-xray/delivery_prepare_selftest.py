@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 import json, shutil, subprocess, sys, tempfile
+from datetime import datetime, timezone
 from pathlib import Path
 
 HERE=Path(__file__).resolve().parent
@@ -29,6 +30,16 @@ def pointer(r92,keys):
         }
     }
 
+def write_guard(p,active=None,status="PASS"):
+    active=active or []
+    g={
+        "schema":"XRAY_OFFICIAL_SOURCE_GUARD_V1",
+        "status":status,
+        "generated_at_utc":datetime.now(timezone.utc).isoformat(),
+        "sources":{"trade_halts":{"status":status,"active_halt_symbols":active}},
+    }
+    (p/"canonical_official_source_guard.json").write_text(json.dumps(g))
+
 def run_case(p,expect_ok):
     cp=subprocess.run([sys.executable,str(p/"delivery_prepare.py")],cwd=p,text=True,capture_output=True)
     if expect_ok and cp.returncode!=0:
@@ -50,6 +61,7 @@ with tempfile.TemporaryDirectory() as td:
     unregistered=candidate("DELIVERY|RESEARCH_AL_ADAYI|2099-01-02|CCC|D|zzz999","CCC","D")
     ptr=pointer([a,b,unregistered],[a["delivery_key"],b["delivery_key"]])
     (p/"chatgpt_canonical_state_v2.json").write_text(json.dumps(ptr))
+    write_guard(p)
     cp=run_case(p,True)
     assert "XRAY_DELIVERY_READY=PASS" in cp.stdout
     assert "XRAY_DELIVERY_COUNT=2" in cp.stdout
@@ -66,6 +78,23 @@ with tempfile.TemporaryDirectory() as td:
         if not matches:
             matches=list((p/".delivery_work").glob("*.md"))
         assert matches
+    # Negative halt-veto test: a registered candidate on the current official
+    # active-halt set must never be delivered.
+    halted=candidate("DELIVERY|RESEARCH_AL_ADAYI|2099-01-02|HALT|B|halt001","HALT","B")
+    (p/"chatgpt_canonical_state_v2.json").write_text(json.dumps(pointer([halted],[halted["delivery_key"]])))
+    write_guard(p,["HALT"])
+    if (p/".delivery_work").exists(): shutil.rmtree(p/".delivery_work")
+    cp_halt=run_case(p,False)
+    assert "DELIVERY_HALT_VETO:HALT" in (cp_halt.stdout+cp_halt.stderr)
+
+    # Negative unknown-halt-feed test.
+    safe=candidate("DELIVERY|RESEARCH_AL_ADAYI|2099-01-02|SAFE|B|safe001","SAFE","B")
+    (p/"chatgpt_canonical_state_v2.json").write_text(json.dumps(pointer([safe],[safe["delivery_key"]])))
+    write_guard(p,status="UNKNOWN")
+    if (p/".delivery_work").exists(): shutil.rmtree(p/".delivery_work")
+    cp_guard=run_case(p,False)
+    assert "DELIVERY_OFFICIAL_HALT_FEED_UNKNOWN" in (cp_guard.stdout+cp_guard.stderr)
+
     # Negative max3 test: even fully registered candidates fail closed if
     # the canonical pointer violates the compiled delivery cap.
     cap=[
@@ -73,6 +102,7 @@ with tempfile.TemporaryDirectory() as td:
         for i in range(1,5)
     ]
     (p/"chatgpt_canonical_state_v2.json").write_text(json.dumps(pointer(cap,[x["delivery_key"] for x in cap])))
+    write_guard(p)
     if (p/".delivery_work").exists(): shutil.rmtree(p/".delivery_work")
     cp_cap=run_case(p,False)
     assert "DELIVERY_R92_COUNT_EXCEEDS_MAX3" in (cp_cap.stdout+cp_cap.stderr)
@@ -81,6 +111,7 @@ with tempfile.TemporaryDirectory() as td:
     bad=candidate("DELIVERY|RESEARCH_AL_ADAYI|2099-01-02|BAD|B|bad001","BAD","B")
     bad["real_money"]="GO"
     (p/"chatgpt_canonical_state_v2.json").write_text(json.dumps(pointer([bad],[bad["delivery_key"]])))
+    write_guard(p)
     if (p/".delivery_work").exists(): shutil.rmtree(p/".delivery_work")
     run_case(p,False)
 
