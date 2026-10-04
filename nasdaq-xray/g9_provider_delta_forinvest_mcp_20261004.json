@@ -1,0 +1,37 @@
+{
+  "schema": "XRAY_G9_PROVIDER_DELTA_FORINVEST_MCP_V1",
+  "generated_on": "2026-10-04",
+  "provider": "ForInvest Hosted MCP",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "status": "TURKEY_NATIVE_HOSTED_MCP_BUT_STRICT_G9_UNPROVEN",
+  "evidence": {
+    "hosted_mcp": "Official StreamableHTTP endpoint https://mcp.forinvest.com/mcp.",
+    "auth": "OAuth 2.0 + PKCE; free ForInvest account can authenticate.",
+    "read_only": "Market-data MCP tools are read-only.",
+    "global_markets": "Official docs advertise real-time and historical data for BIST and global markets.",
+    "automation": "ChatGPT/Claude/Cursor supported; sanctioned MCP usage.",
+    "backend": "Privacy policy identifies Foreks Cloud APIs and Foreks PubSub WebSocket."
+  },
+  "unresolved": [
+    "Exact U.S. equity quote schema (bid/ask/last and independent event timestamps) not publicly documented.",
+    "Exact U.S. data lineage (CTA/UTP consolidated SIP/NBBO) not documented.",
+    "Free-account entitlement for real-time U.S. equities is not proven.",
+    "ForInvest plan/support pages distinguish paid live-data plans and note free-market-data contexts can be delayed; MCP docs do not resolve entitlement by market.",
+    "Exchange/vendor/non-display fee treatment for automated U.S. data use is not documented."
+  ],
+  "gate_assessment": {
+    "A": "UNKNOWN",
+    "B": "UNKNOWN",
+    "C": "UNKNOWN",
+    "D": "STRONG"
+  },
+  "may_create_pass": false,
+  "source_urls": [
+    "https://mcp.forinvest.com/",
+    "https://mcp.forinvest.com/docs",
+    "https://mcp.forinvest.com/privacy",
+    "https://www.forinvest.com/destek"
+  ],
+  "no_policy_weakening": true
+}
