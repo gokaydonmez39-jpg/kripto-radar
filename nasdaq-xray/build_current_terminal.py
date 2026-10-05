@@ -135,7 +135,7 @@ def mc_semantic_input_match(price,j):
     )
 
 def find_mc(price,price_blob):
-    valid=[]
+    exact=[]; semantic=[]
     current_pass=set(price["pass_symbols"])
     for fp in glob.glob(str(ROOT/"canonical_mc_bridge_*.json")):
         try:
@@ -151,7 +151,7 @@ def find_mc(price,price_blob):
               and j.get("policy_version")=="C4.17"
             ):
                 blob_exact=(j.get("input_blob_sha")==price_blob)
-                valid.append((Path(fp),j,{
+                row=(Path(fp),j,{
                   "blob_exact":blob_exact,
                   "semantic_rebind":not blob_exact,
                   "recorded_input_blob_sha":j.get("input_blob_sha"),
@@ -159,11 +159,16 @@ def find_mc(price,price_blob):
                   "pass_hash_exact":True,
                   "pass_set_exact":True,
                   "pass_count_exact":True,
-                }))
+                })
+                (exact if blob_exact else semantic).append(row)
         except Exception:
             pass
-    if len(valid)!=1: raise RuntimeError(f"MC_BRIDGE_BINDING_MATCHES:{len(valid)}")
-    return valid[0]
+    # Exact content-address binding always outranks a semantic rebind. Semantic
+    # fallback is allowed only when no exact-bound bridge exists and is itself unique.
+    if len(exact)==1:return exact[0]
+    if len(exact)>1:raise RuntimeError(f"MC_BRIDGE_EXACT_BINDING_MATCHES:{len(exact)}")
+    if len(semantic)!=1:raise RuntimeError(f"MC_BRIDGE_SEMANTIC_BINDING_MATCHES:{len(semantic)}")
+    return semantic[0]
 
 def main():
     d={k:load(p) for k,p in FILES.items()}
