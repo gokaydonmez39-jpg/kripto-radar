@@ -454,6 +454,7 @@ def main():
             assert rr.get("setup_id")==rec.get("setup_id"),(key,rr.get("setup_id"),rec.get("setup_id"))
         assert rec.get("state") in {"WATCH_RETEST_REQUIRED","WATCH_RECONFIRMATION_REQUIRED","WATCH_HISTORICAL_SETUP",
                                    "WATCH_CHASE_RETEST_REQUIRED","WATCH_EXTENSION_RESET_REQUIRED",
+                                   "WATCH_REGIME_REVALIDATION_REQUIRED","WATCH_REGIME_UNKNOWN",
                                    "PRE_G9_TECH_PASS","WATCH_MC_FALLBACK_CAP","WATCH_SYNTHETIC_PRICE_DISCOVERY_CAP"}
         lifecycle_backed.add(key)
     extra_lifecycle=final_set-current_confirmed
@@ -552,6 +553,7 @@ def main():
       "affected_event_unknown":len(affected_event_unknown),
       "family_c_history_unknown":len(family_c_unknown),
       "final_unknown":len(final_unknown),
+      "lifecycle_regime_unknown":int(ft.get("regime_revalidation_unknown_count",0)),
       "candidate_halt_guard_unknown":halt_guard_unknown,
       "alpha_semantic_conformance_unknown":0 if ft.get("policy_semantics_exact") is True else 1,
       "alpha_source_binding_unknown":0 if alpha_source_binding_exact else 1,
@@ -591,6 +593,7 @@ def main():
         "deep_C_confirmed":len(c_regime_confirmed),
         "deep_D_confirmed":len(dp.get("d_dk3_pre_r1",[])),
         "final_confirmed_candidates":len(confirmed),
+        "lifecycle_regime_unknown":int(ft.get("regime_revalidation_unknown_count",0)),
         "pre_g9_tech_pass_before_halt_guard":len(raw_pre),
         "halt_vetoed_candidates":len(halt_vetoed),
         "pre_g9_tech_pass":len(pre),
