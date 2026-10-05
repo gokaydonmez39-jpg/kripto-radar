@@ -172,11 +172,12 @@ def rvol20(df):
     if len(prev)!=20:return None
     return v/median(prev)
 
-def family_b(df):
+def family_b(df,eligible_trigger_dates=None):
     # New triggers are discovered in the current/prior five completed sessions,
-    # matching the inclusive C4.17 retest window; the earliest valid trigger wins.
-    # on the next day and forbids later cherry-picked trigger replacement.
-    recent=find_recent_b_trigger(df,5)
+    # matching the inclusive C4.17 retest window. Weekly-at-trigger eligibility
+    # participates in trigger selection so an earlier weekly-fail breakout cannot
+    # mask a later weekly-pass breakout.
+    recent=find_recent_b_trigger(df,5,eligible_trigger_dates)
     if recent:
         return {"pool":True,**recent}
     # No recent trigger: current completed bar may still define an ARMED base.
@@ -200,18 +201,20 @@ def active_hl_and_sh(df):
                 hl=i
         prev=i
     if hl is None:return None
-    # nearest prior confirmed SH structurally before/around active HL; for recovery require a high before reclaim
     prior_h=[i for i in hs if i<hl]
     later_h=[i for i in hs if i>hl]
     return {"hl":hl,"prior_hs":prior_h,"later_hs":later_h,"hs":hs,"ls":ls}
 
-def family_d(df,qqq):
+def family_d(df,qqq,eligible_trigger_dates=None):
     # Evaluate the earliest valid reclaim in today/prior five completed sessions.
-    # Every structural/RS/ATR input is sliced at that candidate trigger, preventing
+    # Every structural/RS/ATR input is sliced at the candidate trigger, preventing
     # current-day look-ahead from manufacturing or replacing a historical trigger.
+    allowed=None if eligible_trigger_dates is None else set(str(x) for x in eligible_trigger_dates)
     last_idx=len(df)-1
     diagnostic=None
     for t in range(max(0,last_idx-5),last_idx+1):
+        td=df.date.iloc[t].date().isoformat()
+        if allowed is not None and td not in allowed:continue
         x=df.iloc[:t+1].reset_index(drop=True)
         q=qqq[qqq.date<=x.date.iloc[-1]].reset_index(drop=True)
         st=active_hl_and_sh(x)
@@ -232,7 +235,7 @@ def family_d(df,qqq):
         g={"pool":pool,"hl_date":x.date.iloc[hl].strftime("%Y-%m-%d"),"P":P,"anchor":anchor,
            "A":A,"d":d,"close":close,"ema50":ema50,"rs20":rs20,"rs60":rs60,"rvol20":rv,
            "dd252":dd252,"dd120":dd120,"dd252_definition":"CURRENT_CLOSE_VS_MAX_HIGH_252",
-           "dd120_definition":"MAX_DRAWDOWN_CLOSE_120","trigger_date":x.date.iloc[-1].strftime("%Y-%m-%d"),
+           "dd120_definition":"MAX_DRAWDOWN_CLOSE_120","trigger_date":td,
            "trigger_age_sessions":last_idx-t}
         diagnostic=g
         reclaim=bool(pool and d is not None and 0.30<=d<=2.05 and close>P and close>ema50
@@ -247,47 +250,61 @@ def family_d(df,qqq):
         return diagnostic
     return {"pool":False,"reason":"NO_RECENT_VALID_D_STRUCTURE","dk3_pre_r1":False,"trigger_date":None}
 
-def family_a(df):
-    st=active_hl_and_sh(df)
+def _family_a_at_trigger(df,t):
+    """Evaluate A using only information available through candidate trigger t."""
+    if t<=0 or t>=len(df):return {"pool":False,"reason":"A_TRIGGER_INDEX"}
+    x=df.iloc[:t+1].reset_index(drop=True)
+    st=active_hl_and_sh(x)
     if not st:return {"pool":False,"reason":"NO_ACTIVE_HL"}
-    hl=st["hl"]; hs=st["hs"]
-    prev_h=[i for i in hs if i<hl]
+    hl=st["hl"];prev_h=[i for i in st["hs"] if i<hl]
     if not prev_h:return {"pool":False,"reason":"NO_SH"}
     sh=prev_h[-1]
-    hl_available=hl+2
-    # Earliest eligible reversal after HL confirmation; never cherry-pick a later prettier trigger.
-    trigger=None; sessions_since_confirm=None
-    for i in range(max(hl_available+1,1),len(df)):
-        age=i-(sh+2)
-        if age<2: continue
-        if age>8: break
-        if float(df.close.iloc[i])>float(df.high.iloc[i-1]):
-            trigger=i; sessions_since_confirm=age; break
-    if trigger is None:
-        last_age=(len(df)-1)-(sh+2)
-        return {"pool":False,"reason":"SH_AGE" if last_age>8 else "NO_REVERSAL","sessions_since_confirm":last_age}
-    if not trend_pullback_stage1_at(df,trigger):
+    sessions_since_confirm=t-(sh+2)
+    if sessions_since_confirm<2 or sessions_since_confirm>8:
+        return {"pool":False,"reason":"SH_AGE","sessions_since_confirm":sessions_since_confirm}
+    if t<hl+3:
+        return {"pool":False,"reason":"HL_NOT_CONFIRMED_BEFORE_REVERSAL","sessions_since_confirm":sessions_since_confirm}
+    if float(x.close.iloc[t])<=float(x.high.iloc[t-1]):
+        return {"pool":False,"reason":"NO_REVERSAL","sessions_since_confirm":sessions_since_confirm}
+    if not trend_pullback_stage1_at(x,t):
         return {"pool":False,"reason":"A_STAGE1_AT_TRIGGER_FAIL",
-                "trigger_date":df.date.iloc[trigger].strftime("%Y-%m-%d"),
+                "trigger_date":x.date.iloc[t].strftime("%Y-%m-%d"),
                 "sessions_since_confirm":sessions_since_confirm}
-    Aser=atr14(df)
-    if Aser is None or trigger<1 or pd.isna(Aser.iloc[trigger-1]):return {"pool":False,"reason":"ATR"}
-    A=float(Aser.iloc[trigger-1]); anchor=float(df.low.iloc[hl]); SH=float(df.high.iloc[sh])
-    P=float(df.high.iloc[trigger-1])
-    # C4.17 A-family proximity uses the single bar immediately before
-    # the reversal trigger. Never use trigger-day low or a multi-bar minimum.
-    prelow=family_a_pretrigger_low(df,trigger)
+    Aser=atr14(x)
+    if Aser is None or pd.isna(Aser.iloc[t-1]):return {"pool":False,"reason":"ATR"}
+    A=float(Aser.iloc[t-1]);anchor=float(x.low.iloc[hl]);SH=float(x.high.iloc[sh])
+    P=float(x.high.iloc[t-1]);prelow=family_a_pretrigger_low(x,t)
     near_hl=abs(prelow-anchor)<=0.5*A
-    d=(P-anchor)/A if A>0 else None
-    depth=(SH-anchor)/A if A>0 else None
-    geom=bool(near_hl and d is not None and depth is not None and 0.30<=d<=1.07 and 2.15<=depth<=4.00)
-    return {"pool":geom,"sh_date":df.date.iloc[sh].strftime("%Y-%m-%d"),"hl_date":df.date.iloc[hl].strftime("%Y-%m-%d"),
-            "trigger_date":df.date.iloc[trigger].strftime("%Y-%m-%d"),"sessions_since_confirm":sessions_since_confirm,
+    d=(P-anchor)/A if A>0 else None;depth=(SH-anchor)/A if A>0 else None
+    geom=bool(near_hl and d is not None and depth is not None
+              and 0.30<=d<=1.07 and 2.15<=depth<=4.00)
+    return {"pool":geom,"sh_date":x.date.iloc[sh].strftime("%Y-%m-%d"),
+            "hl_date":x.date.iloc[hl].strftime("%Y-%m-%d"),
+            "trigger_date":x.date.iloc[t].strftime("%Y-%m-%d"),
+            "sessions_since_confirm":sessions_since_confirm,
             "P":P,"anchor":anchor,"A":A,"d":d,"depth":depth,"prelow_near_hl":near_hl}
 
-def evaluate_recent_families(df,qqq):
-    """Exact A/B/D evaluation for a weekly-pass symbol; independent of today's cheap Stage1 pools."""
-    return family_a(df),family_b(df),family_d(df,qqq)
+def family_a(df,eligible_trigger_dates=None):
+    # Reconstruct missed A triggers inside the five-session retest window using
+    # trigger-time structure. A newer HL formed after an old trigger must not
+    # erase a still-valid frozen setup that was not recorded because of an outage.
+    if df.empty:return {"pool":False,"reason":"EMPTY"}
+    allowed=None if eligible_trigger_dates is None else set(str(x) for x in eligible_trigger_dates)
+    last=len(df)-1;diagnostic=None
+    for t in range(max(1,last-5),last+1):
+        td=df.date.iloc[t].date().isoformat()
+        if allowed is not None and td not in allowed:continue
+        g=_family_a_at_trigger(df,t);diagnostic=g
+        if g.get("pool"):
+            g["trigger_age_sessions"]=last-t
+            return g
+    return diagnostic or {"pool":False,"reason":"NO_RECENT_VALID_A_STRUCTURE"}
+
+def evaluate_recent_families(df,qqq,eligible_trigger_dates=None):
+    """Exact A/B/D evaluation in the five-session retest horizon, weekly-at-trigger aware."""
+    return (family_a(df,eligible_trigger_dates),
+            family_b(df,eligible_trigger_dates),
+            family_d(df,qqq,eligible_trigger_dates))
 
 def _lifecycle_scope(asof):
     """Carry active prospective setups across later official sessions.
@@ -430,8 +447,8 @@ def main():
         # Exact recent-trigger evaluation must not depend on today's cheap Stage1
         # snapshot pool. A/B/D re-check their mandatory conditions at the actual
         # candidate trigger; this preserves valid triggers from the prior 3 sessions.
-        A,B,D=evaluate_recent_families(x,qqq)
         weekly_dates=set(strow.get("recent_weekly_pass_dates") or [])
+        A,B,D=evaluate_recent_families(x,qqq,weekly_dates)
         def bind_weekly(g,flag):
             if not isinstance(g,dict): return
             td=str(g.get("trigger_date") or "")

@@ -151,6 +151,12 @@ def main():
     bf5.loc[t5,["open","high","low","close","volume"]]=[100.8,102.5,100.7,102.0,3_000_000.0]
     b5=find_recent_b_trigger(bf5,5)
     assert b5 and b5["breakout_confirmed"] is True and b5["trigger_age_sessions"]==5,b5
+    # Weekly-at-trigger eligibility participates in trigger selection.
+    allowed_date=bf.date.iloc[t].date().isoformat()
+    only_allowed=find_recent_b_trigger(bf5,5,{allowed_date})
+    assert only_allowed is None,only_allowed
+    original_allowed=find_recent_b_trigger(bf,5,{allowed_date})
+    assert original_allowed and original_allowed["trigger_age_sessions"]==2,original_allowed
     # Production deep evaluator must not suppress a recent trigger merely
     # because today's cheap Stage1 snapshot pool changed.
     _,bdeep,_=evaluate_recent_families(bf,bf.copy())
