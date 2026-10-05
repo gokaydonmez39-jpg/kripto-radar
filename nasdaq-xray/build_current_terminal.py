@@ -559,6 +559,7 @@ def main():
       "alpha_semantic_conformance_unknown":0 if ft.get("policy_semantics_exact") is True else 1,
       "alpha_source_binding_unknown":0 if alpha_source_binding_exact else 1,
       "lifecycle_semantic_binding_unknown":0 if ft.get("lifecycle_semantics_exact") is True else 1,
+      "detailed_legal_review_unknown":0 if ft.get("detailed_legal_review_exact") is True else 1,
     }
     full=all(v==0 for v in blockers.values())
     candidate_local_ready=candidate_local_research_ready(pre,halt_safety,ft,alpha_source_binding_exact)
