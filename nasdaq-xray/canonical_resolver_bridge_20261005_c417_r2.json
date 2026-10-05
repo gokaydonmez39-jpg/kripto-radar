@@ -1,0 +1,803 @@
+{
+  "schema": "XRAY_RESOLVER_EPOCH_RESULT_V1",
+  "status": "COMMITTED",
+  "authority": "FOREGROUND_OPERATOR_C417_CURRENT_SCOPE_REPAIR",
+  "task_id": "6a825366222081918997094d76e6ae46",
+  "source_result_task_id": "6abe7ffd2a9c8191ace5e8a0acbea6c2",
+  "asof_et": "2026-10-05",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "queue_hash": "471aecc17272736108fa2e3fea3db2ac02c0691991a4f3440e153fafb137a785",
+  "queue_total": 3401,
+  "pointer_asof_et": "2026-10-02",
+  "compiled_policy_path": "nasdaq-xray/chatgpt_compiled_policy_v3.json",
+  "compiled_policy_blob_sha": "10d7af14870dfac0dc4566595d95a06f3faa854d",
+  "compiled_policy_hash": "26a95745a50b65e85f6ece24b6501af0994764a84ddd886edb70d1fcd770849c",
+  "compiled_policy_version": "C4.17",
+  "settlement_required": true,
+  "settlement_status": "PASS",
+  "settlement_method": "RALLIES_LONGBRIDGE_DUAL_SOURCE_SETTLEMENT_V1",
+  "settlement_symbols": [
+    "AAPL",
+    "NVDA",
+    "MSFT"
+  ],
+  "settlement_evidence": {
+    "AAPL": {
+      "rallies": {
+        "open": 332.815,
+        "high": 336.21,
+        "low": 331.65,
+        "close": 332.89,
+        "volume": 34431149.547371
+      },
+      "longbridge": {
+        "open": 332.815,
+        "high": 336.21,
+        "low": 331.65,
+        "close": 332.89,
+        "volume": 34352039,
+        "timestamp": "2026-10-05T20:00:01Z",
+        "trade_status": "Normal"
+      },
+      "ohlc_round_0p01_exact": true,
+      "volume_rel_diff": 0.0022979
+    },
+    "NVDA": {
+      "rallies": {
+        "open": 236.09,
+        "high": 240.0983,
+        "low": 235.15,
+        "close": 238.9,
+        "volume": 126479354.257674
+      },
+      "longbridge": {
+        "open": 236.09,
+        "high": 240.098,
+        "low": 235.15,
+        "close": 238.9,
+        "volume": 126658354,
+        "timestamp": "2026-10-05T20:00:00Z",
+        "trade_status": "Normal"
+      },
+      "ohlc_round_0p01_exact": true,
+      "volume_rel_diff": 0.0014132
+    },
+    "MSFT": {
+      "rallies": {
+        "open": 521.62,
+        "high": 532.35,
+        "low": 521.47,
+        "close": 525.18,
+        "volume": 26540802.677331
+      },
+      "longbridge": {
+        "open": 521.62,
+        "high": 532.35,
+        "low": 521.47,
+        "close": 525.18,
+        "volume": 26576450,
+        "timestamp": "2026-10-05T20:00:01Z",
+        "trade_status": "Normal"
+      },
+      "ohlc_round_0p01_exact": true,
+      "volume_rel_diff": 0.0013414
+    }
+  },
+  "settlement_evidence_provenance": {
+    "role": "SETTLEMENT_ONLY_REUSE_EXACT_SAME_ASOF",
+    "source_bridge_path": "nasdaq-xray/canonical_resolver_bridge_20261005_c417.json",
+    "source_bridge_blob_sha": "1034597dc1ad551ec8edfca9120a0ef7b22a37bc"
+  },
+  "volume_authority": "RALLIES_AND_LONGBRIDGE_FINITE_POSITIVE_REL_DIFF_LE_5PCT",
+  "g9": "NOT_CLAIMED",
+  "result_encoding": "RALLIES_SCANNER_EXACT20_V1",
+  "source": "RALLIES_BULK_EXACT20_FAST_PATH",
+  "scanner_proof": {
+    "timeframe": "1day",
+    "asof_et": "2026-10-05",
+    "expected20": [
+      "2026-09-08",
+      "2026-09-09",
+      "2026-09-10",
+      "2026-09-11",
+      "2026-09-14",
+      "2026-09-15",
+      "2026-09-16",
+      "2026-09-17",
+      "2026-09-18",
+      "2026-09-21",
+      "2026-09-22",
+      "2026-09-23",
+      "2026-09-24",
+      "2026-09-25",
+      "2026-09-28",
+      "2026-09-29",
+      "2026-09-30",
+      "2026-10-01",
+      "2026-10-02",
+      "2026-10-05"
+    ],
+    "exact20_required": true,
+    "no_synthetic_bar": true,
+    "price_gate": ">10",
+    "dv20_gate": ">=50000000"
+  },
+  "master_unknown_count": 0,
+  "master_unknown_symbols": [],
+  "price_unknown_count": 0,
+  "price_unknown_symbols": [],
+  "price_blocked_count": 125,
+  "price_blocked_symbols": [
+    "AACO",
+    "ACCV",
+    "ADAC",
+    "ADRX",
+    "AEAQ",
+    "ALDF",
+    "ALPX",
+    "ANGH",
+    "APAC",
+    "APLM",
+    "APMC",
+    "ARCI",
+    "ARCL",
+    "ARTC",
+    "BID",
+    "BLZR",
+    "BPAC",
+    "BREZ",
+    "BRKH",
+    "CAII",
+    "CAPN",
+    "CAQ",
+    "CHAR",
+    "CHEC",
+    "CRAN",
+    "CRAQ",
+    "CTAA",
+    "CTW",
+    "DMAA",
+    "DTSQ",
+    "DYOR",
+    "EFTY",
+    "EGHA",
+    "EMIS",
+    "EURK",
+    "EWAV",
+    "FACT",
+    "FDMM",
+    "FIGX",
+    "FMAC",
+    "FSHP",
+    "FVAV",
+    "GIX",
+    "GPAC",
+    "GRAL",
+    "GSHR",
+    "GTEN",
+    "GTERA",
+    "GUAC",
+    "HACQ",
+    "HCAC",
+    "HCHL",
+    "HCIC",
+    "HLXC",
+    "IACO",
+    "IACQ",
+    "IDAC",
+    "IEAG",
+    "ILAG",
+    "ILLU",
+    "INAC",
+    "ISNR",
+    "KBON",
+    "KELYB",
+    "KRKR",
+    "LATA",
+    "LAWR",
+    "LCCC",
+    "LFAC",
+    "LKSP",
+    "LPAA",
+    "LPCV",
+    "LRE",
+    "LWAC",
+    "MAGH",
+    "MAMK",
+    "MAYS",
+    "MCAH",
+    "MCTA",
+    "MLAA",
+    "MYX",
+    "NCEW",
+    "NCO",
+    "NHIV",
+    "NMP",
+    "NOEM",
+    "OBA",
+    "OHAC",
+    "ONCH",
+    "ORIQ",
+    "OST",
+    "PACH",
+    "PALO",
+    "PC",
+    "PGAC",
+    "PLCI",
+    "PTAC",
+    "QADR",
+    "QRVO",
+    "RANG",
+    "RDAG",
+    "RNGT",
+    "RREV",
+    "RZAI",
+    "SAAQ",
+    "SHOT",
+    "SORN",
+    "SSEA",
+    "SUMA",
+    "SVA",
+    "SVCC",
+    "SVIV",
+    "TCGX",
+    "TLNC",
+    "TVAI",
+    "TWLV",
+    "UCFI",
+    "UYSC",
+    "VHCP",
+    "WENN",
+    "WQEY",
+    "WTG",
+    "XCBE",
+    "YIBO",
+    "ZKP"
+  ],
+  "symbols": [
+    "AACO",
+    "ACCV",
+    "ADAC",
+    "ADRX",
+    "AEAQ",
+    "ALDF",
+    "ALPX",
+    "ANGH",
+    "APAC",
+    "APLM",
+    "APMC",
+    "ARCI",
+    "ARCL",
+    "ARTC",
+    "BID",
+    "BLZR",
+    "BPAC",
+    "BREZ",
+    "BRKH",
+    "CAII",
+    "CAPN",
+    "CAQ",
+    "CHAR",
+    "CHEC",
+    "CRAN",
+    "CRAQ",
+    "CTAA",
+    "CTW",
+    "DMAA",
+    "DTSQ",
+    "DYOR",
+    "EFTY",
+    "EGHA",
+    "EMIS",
+    "EURK",
+    "EWAV",
+    "FACT",
+    "FDMM",
+    "FIGX",
+    "FMAC",
+    "FSHP",
+    "FVAV",
+    "GIX",
+    "GPAC",
+    "GRAL",
+    "GSHR",
+    "GTEN",
+    "GTERA",
+    "GUAC",
+    "HACQ",
+    "HCAC",
+    "HCHL",
+    "HCIC",
+    "HLXC",
+    "IACO",
+    "IACQ",
+    "IDAC",
+    "IEAG",
+    "ILAG",
+    "ILLU",
+    "INAC",
+    "ISNR",
+    "KBON",
+    "KELYB",
+    "KRKR",
+    "LATA",
+    "LAWR",
+    "LCCC",
+    "LFAC",
+    "LKSP",
+    "LPAA",
+    "LPCV",
+    "LRE",
+    "LWAC",
+    "MAGH",
+    "MAMK",
+    "MAYS",
+    "MCAH",
+    "MCTA",
+    "MLAA",
+    "MYX",
+    "NCEW",
+    "NCO",
+    "NHIV",
+    "NMP",
+    "NOEM",
+    "OBA",
+    "OHAC",
+    "ONCH",
+    "ORIQ",
+    "OST",
+    "PACH",
+    "PALO",
+    "PC",
+    "PGAC",
+    "PLCI",
+    "PTAC",
+    "QADR",
+    "QRVO",
+    "RANG",
+    "RDAG",
+    "RNGT",
+    "RREV",
+    "RZAI",
+    "SAAQ",
+    "SHOT",
+    "SORN",
+    "SSEA",
+    "SUMA",
+    "SVA",
+    "SVCC",
+    "SVIV",
+    "TCGX",
+    "TLNC",
+    "TVAI",
+    "TWLV",
+    "UCFI",
+    "UYSC",
+    "VHCP",
+    "WENN",
+    "WQEY",
+    "WTG",
+    "XCBE",
+    "YIBO",
+    "ZKP"
+  ],
+  "symbol_count": 125,
+  "symbol_hash": "1db39576108dad1ea2e673de99fe6ef207f6f8685f65659bd7094cbe4bdaae9a",
+  "price_resolutions": {},
+  "price_resolution_compact": {
+    "fail_price_symbols": [],
+    "fail_dv20_symbols": [],
+    "pass_price_dv20_symbols": [],
+    "block_current_run": {
+      "AACO": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "ACCV": {
+        "reason": "INSUFFICIENT_20_USABLE_DV20_SESSIONS_CONFIRMED"
+      },
+      "ADAC": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "ADRX": {
+        "reason": "INSUFFICIENT_20_USABLE_DV20_SESSIONS_CONFIRMED"
+      },
+      "AEAQ": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "ALDF": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "ALPX": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "ANGH": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "APAC": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "APLM": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "APMC": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "ARCI": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "ARCL": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "ARTC": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "BID": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "BLZR": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "BPAC": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "BREZ": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "BRKH": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "CAII": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "CAPN": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "CAQ": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "CHAR": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "CHEC": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "CRAN": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "CRAQ": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "CTAA": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "CTW": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "DMAA": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "DTSQ": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "DYOR": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "EFTY": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "EGHA": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "EMIS": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "EURK": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "EWAV": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "FACT": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "FDMM": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "FIGX": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "FMAC": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "FSHP": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "FVAV": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "GIX": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "GPAC": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "GRAL": {
+        "reason": "INSUFFICIENT_20_USABLE_DV20_SESSIONS_CONFIRMED"
+      },
+      "GSHR": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "GTEN": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "GTERA": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "GUAC": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "HACQ": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "HCAC": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "HCHL": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "HCIC": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "HLXC": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "IACO": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "IACQ": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "IDAC": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "IEAG": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "ILAG": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "ILLU": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "INAC": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "ISNR": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "KBON": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "KELYB": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "KRKR": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "LATA": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "LAWR": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "LCCC": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "LFAC": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "LKSP": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "LPAA": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "LPCV": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "LRE": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "LWAC": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "MAGH": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "MAMK": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "MAYS": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "MCAH": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "MCTA": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "MLAA": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "MYX": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "NCEW": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "NCO": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "NHIV": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "NMP": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "NOEM": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "OBA": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "OHAC": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "ONCH": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "ORIQ": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "OST": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "PACH": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "PALO": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "PC": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "PGAC": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "PLCI": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "PTAC": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "QADR": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "QRVO": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "RANG": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "RDAG": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "RNGT": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "RREV": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "RZAI": {
+        "reason": "INSUFFICIENT_20_USABLE_DV20_SESSIONS_CONFIRMED"
+      },
+      "SAAQ": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "SHOT": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "SORN": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "SSEA": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "SUMA": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "SVA": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "SVCC": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "SVIV": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "TCGX": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "TLNC": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "TVAI": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "TWLV": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "UCFI": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "UYSC": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "VHCP": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "WENN": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "WQEY": {
+        "reason": "INSUFFICIENT_20_USABLE_DV20_SESSIONS_CONFIRMED"
+      },
+      "WTG": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "XCBE": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "YIBO": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      },
+      "ZKP": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN"
+      }
+    },
+    "unresolved_symbols": []
+  },
+  "counts": {
+    "FAIL_PRICE": 0,
+    "FAIL_DV20": 0,
+    "PASS_PRICE_DV20": 0,
+    "BLOCK_CURRENT_RUN": 125,
+    "UNRESOLVED": 0,
+    "TOTAL": 125
+  },
+  "source_master_path": "nasdaq-xray/canonical_current_master_manifest.json",
+  "source_master_blob_sha": "d0de81102c032f3c2c89e83a3b021a34a7e8bad0",
+  "source_price_path": "nasdaq-xray/canonical_current_price_dv20.json",
+  "source_price_blob_sha": "6d8cfe63d3168a1817d90b85a3ae3b1a997867ef",
+  "source_request_path": "nasdaq-xray/canonical_current_resolver_request.json",
+  "source_request_blob_sha": "88ce13d1bd4cfa6f32a5d2f85511a2dc815a3a21",
+  "source_manifest_path": "nasdaq-xray/canonical_current_resolver_chunk_manifest.json",
+  "source_manifest_blob_sha": "b0d514497b0f8c2cd5c08551f299eb33de1f5476",
+  "committed_by": "FOREGROUND_OPERATOR_REPAIR",
+  "no_policy_weakening": true,
+  "alpha_or_threshold_change": false,
+  "recovery_note": "Current 125-symbol terminal-block resolver scope committed as deterministic r2; prior 3401-symbol bridge retained immutable and reused only for same-ASOF settlement evidence.",
+  "audit": {
+    "exact_request_scope": true,
+    "request_blob_exact": true,
+    "manifest_blob_exact": true,
+    "source_price_blob_exact": true,
+    "partition_pairwise_disjoint": true,
+    "partition_exact_union": true,
+    "coverage_complete": true,
+    "partial_data": false,
+    "settlement_same_asof_reuse": true
+  }
+}
