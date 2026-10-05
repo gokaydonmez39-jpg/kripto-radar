@@ -13,6 +13,7 @@ from alpha_semantics import (
 )
 from final_tech_shadow import eval_one,_is_depositary_security_name,lifecycle_state_persists
 from deep_pre_r1_shadow import evaluate_recent_families
+from stage1_shadow import recent_weekly_context
 from family_c_engine import eval_event
 from build_current_event_request import lifecycle_scope_from_final,event_geometry_scope
 from regime_breadth_shadow import close_only_scale_breaks
@@ -246,6 +247,25 @@ def main():
     assert ls==["OLDW"],ls
     assert event_geometry_scope(["FRESH"],ls)==["FRESH","OLDW"]
 
+    # Trigger-time weekly scope: a valid Thursday context must survive a
+    # Friday weekly-close failure so recent-trigger discovery cannot be erased.
+    dates=pd.bdate_range("2025-01-06",periods=60*5)
+    wr=[]
+    for i,dte in enumerate(dates):
+        w=i//5
+        cl=100.0+w
+        if i==len(dates)-1: cl=20.0
+        wr.append({"date":dte,"open":cl,"high":cl+1.0,"low":cl-1.0,"close":cl,"volume":1e6})
+    wdf=pd.DataFrame(wr)
+    wl={}
+    for k,g in wdf.assign(week=wdf["date"].dt.to_period("W-FRI")).groupby("week"):
+        wl[k.start_time.date().isoformat()]=g["date"].iloc[-1].date().isoformat()
+    pass_dates,wctx=recent_weekly_context(wdf,wl,3)
+    fri=wdf.date.iloc[-1].date().isoformat()
+    thu=wdf.date.iloc[-2].date().isoformat()
+    assert fri not in pass_dates,(pass_dates,wctx[fri])
+    assert thu in pass_dates,(pass_dates,wctx[thu])
+
     # Family C canonical pivot includes reaction high. A breakout above only the
     # consolidation high must not pass if it remains below reaction high.
     dates=pd.bdate_range("2026-06-01",periods=36)
@@ -287,7 +307,7 @@ def main():
       "WILDER_FIRST_TR_UNDEFINED","EMA_SMA_SEED","D_DRAWDOWN_DEFINITIONS",
       "R1_STRUCTURAL_TRIGGER_MINUS1","R1_ENTRY_OVERLAP","EXTENSION_RESET","EXTENSION_TIGHT_BASE_RESET","RETEST_BAR","FAMILY_A_TRIGGER_MINUS1_LOW","SETUP_ID_STABLE",
       "B_RECENT_TRIGGER_PERSISTENCE","DEEP_RECENT_TRIGGER_INDEPENDENT_OF_CURRENT_STAGE1","A_STAGE1_ASOF_TRIGGER","MECHANICAL_SCALE_BREAK_GUARD","BREADTH_CLOSE_ONLY_SCALE_GUARD","SPLIT_ONLY_RECONCILIATION","SPLIT_RAW_CROSSCHECK","HISTORICAL_DISCOVERY_WATCH","CHASE_FROZEN_RETEST_RECOVERY","ANCHOR_AVAILABLE_S0_CHRONOLOGY",
-      "ADR_RATIO_FAIL_CLOSED_CLASSIFICATION","PROSPECTIVE_LIFECYCLE_PERSISTENCE","FROZEN_LIFECYCLE_EVENT_SCOPE","ANCIENT_SCALE_BREAK_OUTSIDE_TECH_HORIZON",
+      "ADR_RATIO_FAIL_CLOSED_CLASSIFICATION","PROSPECTIVE_LIFECYCLE_PERSISTENCE","FROZEN_LIFECYCLE_EVENT_SCOPE","ANCIENT_SCALE_BREAK_OUTSIDE_TECH_HORIZON","TRIGGER_TIME_WEEKLY_SCOPE",
       "FAMILY_C_REACTION_HIGH_PIVOT","FAMILY_C_PERSISTENT_GAP_FLOOR"
     ]})
 
