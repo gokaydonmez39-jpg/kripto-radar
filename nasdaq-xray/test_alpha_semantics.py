@@ -10,7 +10,7 @@ from alpha_semantics import (
     find_recent_b_trigger,mechanical_scale_breaks,
     apply_split_events,mechanical_split_suspects
 )
-from final_tech_shadow import eval_one
+from final_tech_shadow import eval_one,_is_depositary_security_name
 
 def frame(n=90):
     rows=[]
@@ -144,10 +144,14 @@ def main():
     rr=eval_one("TEST","D",cg,cf,"CLEAN_DISCOVERY",frozen=cfr,recorded_before=True)
     assert rr["result"]=="PRE_G9_TECH_PASS",rr
 
+    assert _is_depositary_security_name("Example Corp - American Depositary Shares") is True
+    assert _is_depositary_security_name("Example Corp - Common Stock") is False
+
     print({"status":"PASS","tests":[
       "WILDER_FIRST_TR_UNDEFINED","EMA_SMA_SEED","D_DRAWDOWN_DEFINITIONS",
       "R1_STRUCTURAL_TRIGGER_MINUS1","R1_ENTRY_OVERLAP","EXTENSION_RESET","RETEST_BAR","SETUP_ID_STABLE",
-      "B_RECENT_TRIGGER_PERSISTENCE","MECHANICAL_SCALE_BREAK_GUARD","SPLIT_ONLY_RECONCILIATION","HISTORICAL_DISCOVERY_WATCH","CHASE_FROZEN_RETEST_RECOVERY"
+      "B_RECENT_TRIGGER_PERSISTENCE","MECHANICAL_SCALE_BREAK_GUARD","SPLIT_ONLY_RECONCILIATION","HISTORICAL_DISCOVERY_WATCH","CHASE_FROZEN_RETEST_RECOVERY",
+      "ADR_RATIO_FAIL_CLOSED_CLASSIFICATION"
     ]})
 
 if __name__=="__main__":
