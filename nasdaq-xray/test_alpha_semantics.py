@@ -160,6 +160,13 @@ def main():
     ss=mechanical_split_suspects(sf)
     assert ss,ss
 
+    # QQQ/regime is close-only, so fractional common split ratios must also be
+    # visible to the fail-closed scale guard (a 3:2 split is below 1.8x).
+    frac_close=frame(40)[["date","close"]].copy()
+    frac_close.loc[19,"close"]=150.0;frac_close.loc[20:,"close"]=100.0
+    fcb=close_only_scale_breaks(frac_close)
+    assert fcb and any(abs(float(x["nearest_common_factor"])-1.5)<1e-12 for x in fcb),fcb
+
     # Finalists get a stricter candidate-scoped check for fractional split-like
     # gaps that are below the universe-wide severe scale-break threshold.
     frac=frame(40)
