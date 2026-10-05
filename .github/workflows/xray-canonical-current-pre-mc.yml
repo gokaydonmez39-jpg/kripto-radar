@@ -295,7 +295,8 @@ jobs:
           assert q["symbol_count"]==len(q["symbols"])==len(set(q["symbols"]))
           assert q["master_unknown_count"]==len(q["master_unknown_symbols"])==0
           assert q["price_unknown_count"]==len(q["price_unknown_symbols"])
-          assert set(q["symbols"])==set(q["master_unknown_symbols"])|set(q["price_unknown_symbols"])
+          assert q.get("price_blocked_count",0)==len(q.get("price_blocked_symbols") or [])
+          assert set(q["symbols"])==set(q["master_unknown_symbols"])|set(q["price_unknown_symbols"])|set(q.get("price_blocked_symbols") or [])
           if q["settlement_required"]:
               assert q["pointer_asof_et"] < q["asof_et"]
               assert len(q["settlement_symbols"])==3 and len(set(q["settlement_symbols"]))==3
@@ -307,7 +308,7 @@ jobs:
           assert len(p["results"])==m["queue_total"]
           assert sum(p["counts"].values())==m["queue_total"]
           assert p["pass_count"]==len(p["pass_symbols"])==len(set(p["pass_symbols"]))
-          print({"asof":m["asof_et"],"master_status":m["status"],"master_unknown":m["unknown_count"],"price_dv20_unknown":p["unknown_count"],"price_dv20_pass":p["pass_count"],"resolver_request_status":q["status"],"settlement_required":q["settlement_required"]})
+          print({"asof":m["asof_et"],"master_status":m["status"],"master_unknown":m["unknown_count"],"price_dv20_unknown":p["unknown_count"],"price_dv20_blocked":p.get("blocked_count",(p.get("counts") or {}).get("BLOCK_CURRENT_RUN",0)),"price_dv20_pass":p["pass_count"],"resolver_request_status":q["status"],"settlement_required":q["settlement_required"]})
           PY
       - name: Commit current pre-MC artifacts
         if: steps.rollover.outputs.build == 'true' || steps.rollover.outputs.coverage_repair == 'true'
