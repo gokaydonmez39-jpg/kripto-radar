@@ -162,6 +162,8 @@ def hist(sym,asof):
         else:primary_error=str(src)
     except Exception as e:
         primary_error=f"SINA_{type(e).__name__}:{str(e)[:100]}"
+    if HISTORY_CACHE_REQUIRED and sym!="QQQ":
+        return sym,None,primary_error,None
     try:
         y,e=yahoo_close_history(sym,asof)
         if y is not None:return sym,y,None,"YAHOO_CHART_FREE_FALLBACK"
