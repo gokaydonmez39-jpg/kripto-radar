@@ -116,6 +116,10 @@ def validate(asof:str):
 def restore_once(good:str,files:list[str],asof:str):
     run("git","fetch","origin","main")
     run("git","reset","--hard","origin/main")
+    # This module owns the recovery commit after reset; configure an explicit
+    # bot identity here rather than depending on a prior shell step.
+    run("git","config","user.name","xray-dataplane-bot")
+    run("git","config","user.email","xray-dataplane-bot@users.noreply.github.com")
     for p in glob.glob(str(ROOT/"canonical_current_resolver_chunk_[0-9][0-9][0-9][0-9].json")):
         pathlib.Path(p).unlink(missing_ok=True)
     for p in files:
