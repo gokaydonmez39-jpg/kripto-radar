@@ -366,9 +366,19 @@ def main():
     pre=set(ft.get("pre_g9_tech_pass") or [])
     assert len(pre)==int(ft.get("pre_g9_tech_pass_count",len(pre)))
     assert pre<=confirmed
+    candidate_tier_caps={}
     for k in pre:
-        assert ft["results"][k].get("state_cap")!="WATCH"
-        assert ft["results"][k].get("r92_eligible") is True
+        row=ft["results"][k]
+        assert row.get("state_cap")!="WATCH"
+        assert row.get("r92_eligible") is True
+        synthetic=bool((row.get("target") or {}).get("synthetic") or row.get("price_discovery_cap"))
+        cap=row.get("research_tier_cap")
+        if synthetic:
+            assert cap=="ORANGE",(k,cap)
+        elif cap is not None:
+            assert cap in {"ORANGE"},(k,cap)
+        if cap is not None:
+            candidate_tier_caps[k]=cap
 
     # Current operational candidate-safety overlay. This never creates alpha or
     # rewrites historical event facts: it can only veto current deliverable
@@ -477,7 +487,8 @@ def main():
         "confirmed_family_candidates":sorted(confirmed),
         "pre_g9_tech_pass_before_halt_guard":sorted(raw_pre),
         "halt_vetoed_candidates":halt_vetoed,
-        "pre_g9_tech_pass":sorted(pre),"affected_event_unknown":affected_event_unknown,
+        "pre_g9_tech_pass":sorted(pre),"candidate_research_tier_caps":dict(sorted(candidate_tier_caps.items())),
+        "affected_event_unknown":affected_event_unknown,
         "family_c_unknown":family_c_unknown,"final_unknown":final_unknown,
       },
       "evidence":{
