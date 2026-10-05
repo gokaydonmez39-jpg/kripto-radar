@@ -164,6 +164,7 @@ def main():
     frozen={"setup_id":"TEST-HIST","symbol":"TEST","family":"D","trigger_date":td,
             "A":10.0,"P":100.0,"anchor":97.0,"entry_low":100.0,"entry_high":102.5,
             "entry_model":102.5,"chase_limit":105.0,"S0":95.0,"T1":150.0,
+            "anchor_available_idx":trigger_idx-1,"anchor_available_date":hf.date.iloc[trigger_idx-1].date().isoformat(),
             "target_source":"TEST","target_zone":None,"target_overlap":False,
             "synthetic_target":False,"source_geometry":{"trigger_date":td,"P":100.0,"anchor":97.0}}
     g={"trigger_date":td,"P":100.0,"anchor":97.0}
@@ -179,6 +180,7 @@ def main():
     cfr={"setup_id":"TEST-CHASE","symbol":"TEST","family":"D","trigger_date":ctd,
          "A":10.0,"P":100.0,"anchor":97.0,"entry_low":100.0,"entry_high":102.5,
          "entry_model":102.5,"chase_limit":105.0,"S0":95.0,"T1":150.0,
+         "anchor_available_idx":cti-1,"anchor_available_date":cf.date.iloc[cti-1].date().isoformat(),
          "target_source":"TEST","target_zone":None,"target_overlap":False,
          "synthetic_target":False,"source_geometry":{"trigger_date":ctd,"P":100.0,"anchor":97.0}}
     cg={"trigger_date":ctd,"P":100.0,"anchor":97.0}
@@ -188,6 +190,22 @@ def main():
     cf.loc[len(cf)-1,["open","high","low","close"]]=[102.2,103.0,101.0,102.0]
     rr=eval_one("TEST","D",cg,cf,"CLEAN_DISCOVERY",frozen=cfr,recorded_before=True)
     assert rr["result"]=="PRE_G9_TECH_PASS",rr
+
+    # B/C anchors are available at trigger-1 close, so a trigger-day low at/below
+    # S0 must invalidate even when all later bars stay above S0.
+    bf2=frame(270)
+    bf2[["open","high","low","close"]]=[102.0,104.0,99.0,102.0]
+    bti=len(bf2)-2;btd=bf2.date.iloc[bti].date().isoformat()
+    bfr={"setup_id":"TEST-BREACH","symbol":"TEST","family":"B","trigger_date":btd,
+         "A":10.0,"P":100.0,"anchor":97.0,"entry_low":100.0,"entry_high":102.5,
+         "entry_model":102.5,"chase_limit":105.0,"S0":95.0,"T1":150.0,
+         "anchor_available_idx":bti-1,"anchor_available_date":bf2.date.iloc[bti-1].date().isoformat(),
+         "target_source":"TEST","target_zone":None,"target_overlap":False,
+         "synthetic_target":False,"source_geometry":{"trigger_date":btd,"P":100.0,"anchor":97.0}}
+    bf2.loc[bti,"low"]=94.0
+    br=eval_one("TEST","B",{"trigger_date":btd,"P":100.0,"anchor":97.0},bf2,
+                "CLEAN_DISCOVERY",frozen=bfr,recorded_before=True)
+    assert br["result"]=="FAIL_INVALIDATED_S0" and br["invalidation"]["first_breach_date"]==btd,br
 
     # Prospectively discovered technical passes and resolvable watches survive
     # across later deep-scope changes; historical backfill must never self-promote.
@@ -251,7 +269,7 @@ def main():
     print({"status":"PASS","tests":[
       "WILDER_FIRST_TR_UNDEFINED","EMA_SMA_SEED","D_DRAWDOWN_DEFINITIONS",
       "R1_STRUCTURAL_TRIGGER_MINUS1","R1_ENTRY_OVERLAP","EXTENSION_RESET","RETEST_BAR","FAMILY_A_TRIGGER_MINUS1_LOW","SETUP_ID_STABLE",
-      "B_RECENT_TRIGGER_PERSISTENCE","DEEP_RECENT_TRIGGER_INDEPENDENT_OF_CURRENT_STAGE1","A_STAGE1_ASOF_TRIGGER","MECHANICAL_SCALE_BREAK_GUARD","BREADTH_CLOSE_ONLY_SCALE_GUARD","SPLIT_ONLY_RECONCILIATION","SPLIT_RAW_CROSSCHECK","HISTORICAL_DISCOVERY_WATCH","CHASE_FROZEN_RETEST_RECOVERY",
+      "B_RECENT_TRIGGER_PERSISTENCE","DEEP_RECENT_TRIGGER_INDEPENDENT_OF_CURRENT_STAGE1","A_STAGE1_ASOF_TRIGGER","MECHANICAL_SCALE_BREAK_GUARD","BREADTH_CLOSE_ONLY_SCALE_GUARD","SPLIT_ONLY_RECONCILIATION","SPLIT_RAW_CROSSCHECK","HISTORICAL_DISCOVERY_WATCH","CHASE_FROZEN_RETEST_RECOVERY","ANCHOR_AVAILABLE_S0_CHRONOLOGY",
       "ADR_RATIO_FAIL_CLOSED_CLASSIFICATION","PROSPECTIVE_LIFECYCLE_PERSISTENCE","FROZEN_LIFECYCLE_EVENT_SCOPE","ANCIENT_SCALE_BREAK_OUTSIDE_TECH_HORIZON",
       "FAMILY_C_REACTION_HIGH_PIVOT","FAMILY_C_PERSISTENT_GAP_FLOOR"
     ]})
