@@ -6,8 +6,7 @@
     "FAIL_DV20": 264,
     "FAIL_PRICE": 8,
     "PASS": 483,
-    "UNKNOWN_RETRY": 3,
-    "UNKNOWN_RETRY_EXHAUSTED": 1,
+    "UNKNOWN_RETRY_EXHAUSTED": 4,
     "UNKNOWN_STATIC": 47
   },
   "cursor": 807,
@@ -6538,9 +6537,9 @@
   "identity_authority": "NASDAQTRADER_EXPLICIT_TYPE_FILTER_V3_SPAC_DEFERRED_TO_LEGAL",
   "identity_ruleset": "V3_SPAC_DEFERRED_TO_LEGAL",
   "official_footer": "File Creation Time: 1005202614:01|||||||",
-  "pending_retry": 3,
+  "pending_retry": 0,
   "processed_new_this_run": 0,
-  "processed_retry_this_run": 4,
+  "processed_retry_this_run": 0,
   "queue": [
     "AAL",
     "AAOI",
@@ -8892,7 +8891,7 @@
         "source": "NASDAQ_SAME_RUN_SCREENER_METADATA"
       },
       "status": "BLOCK_LEGAL_SHELL",
-      "updated_at_utc": "2026-10-05T18:30:14.900994+00:00"
+      "updated_at_utc": "2026-10-05T18:46:18.235941+00:00"
     },
     "BSP": {
       "attempts": 1,
@@ -16701,10 +16700,10 @@
       "updated_at_utc": "2026-10-05T18:30:04.346216+00:00"
     },
     "SVA": {
-      "attempts": 3,
+      "attempts": 4,
       "info": "SyntaxError:invalid syntax (<string>, line 1)",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-10-05T18:30:14.900617+00:00"
+      "status": "UNKNOWN_RETRY_EXHAUSTED",
+      "updated_at_utc": "2026-10-05T18:46:13.198986+00:00"
     },
     "SWKS": {
       "attempts": 1,
@@ -16805,10 +16804,10 @@
       "updated_at_utc": "2026-10-05T18:30:04.346256+00:00"
     },
     "TBCV": {
-      "attempts": 3,
+      "attempts": 4,
       "info": "IndexError:list index out of range",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-10-05T18:30:14.900592+00:00"
+      "status": "UNKNOWN_RETRY_EXHAUSTED",
+      "updated_at_utc": "2026-10-05T18:46:13.198982+00:00"
     },
     "TCBI": {
       "attempts": 1,
@@ -18087,10 +18086,10 @@
       "updated_at_utc": "2026-10-05T18:30:13.107629+00:00"
     },
     "WQEY": {
-      "attempts": 2,
+      "attempts": 4,
       "info": "IndexError:list index out of range",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-10-05T18:30:14.900608+00:00"
+      "status": "UNKNOWN_RETRY_EXHAUSTED",
+      "updated_at_utc": "2026-10-05T18:46:14.226938+00:00"
     },
     "WSBC": {
       "attempts": 1,
@@ -19231,10 +19230,10 @@
     "ZM": "Zoom Communications, Inc. - Class A Common Stock",
     "ZS": "Zscaler, Inc. - Common Stock"
   },
-  "state_hash": "acc5132ea0b89d4c82fe726de16546c505dcf3828317badd50032ccb6f6a3476",
+  "state_hash": "c427e7f567bb80420da6c93c4b246002bc6497f5d3dc9a2ccf02423ab7835c79",
   "status": "HISTORY_PARTIAL",
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_count": 51,
   "unknown_never_pass": true,
-  "updated_at_utc": "2026-10-05T18:30:14.901395+00:00"
+  "updated_at_utc": "2026-10-05T18:46:18.236119+00:00"
 }
