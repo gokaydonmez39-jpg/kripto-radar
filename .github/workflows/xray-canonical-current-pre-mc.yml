@@ -355,7 +355,7 @@ jobs:
                 cp "$tmpdir/$p" "$p"
               fi
             done
-            git add -A -- "${files[@]}" nasdaq-xray/canonical_current_resolver_chunk_[0-9][0-9][0-9][0-9].json 2>/dev/null || true
+            git add -A -- "${files[@]}" 'nasdaq-xray/canonical_current_resolver_chunk_*.json' 2>/dev/null || true
             if git diff --cached --quiet; then
               echo "XRAY_FACTORY_COMMIT=NO_CHANGE"
               exit 0
