@@ -397,7 +397,8 @@ jobs:
           XRAY_LEGAL_GUARD_FAMILY_C: ${{ github.workspace }}/nasdaq-xray/canonical_current_family_c.json
           XRAY_LEGAL_GUARD_LIFECYCLE: ${{ github.workspace }}/nasdaq-xray/canonical_candidate_lifecycle_registry.json
           XRAY_LEGAL_GUARD_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_candidate_legal_guard.json
-          XRAY_SEC_USER_AGENT: "NASDAQ-SWING-XRAY compliance research; contact via repository owner"
+          XRAY_SEC_USER_AGENT: "NASDAQ-SWING-XRAY research bot; xray-dataplane-bot@users.noreply.github.com"
+          XRAY_SEC_MIN_INTERVAL_SECONDS: "0.22"
         run: python nasdaq-xray/build_candidate_legal_guard.py
 
       - name: Validate detailed finalist legal guard binding
