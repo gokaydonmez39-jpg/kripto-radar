@@ -610,6 +610,7 @@ def test_workflow_race_and_pre_mc_freeze_contracts():
     assert 'declared=manifest.get("chunks") or []' in recsrc
     assert 'assert existing_rel==declared_paths' in recsrc
     assert 'assert blob(cp)==row["blob_sha"]' in recsrc
+    assert "\'nasdaq-xray/canonical_current_resolver_chunk_*.json\'" in pre
     assert 'assert req["source_price_blob_sha"]==blob(ROOT/"canonical_current_price_dv20.json")' in recsrc
     assert 'assert int(price["source_master_count"])==int(master["queue_total"])' in recsrc
     assert '"resolver_chunks":len(declared)' in recsrc
