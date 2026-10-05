@@ -9,6 +9,7 @@ from zoneinfo import ZoneInfo
 import akshare as ak
 import pandas as pd
 import pandas_market_calendars as mcal
+from alpha_semantics import wilder_atr as _policy_atr
 
 ROOT=Path(__file__).resolve().parent
 STAGE1=Path(os.getenv("XRAY_FAMILY_C_STAGE1",str(ROOT/"canonical_current_stage1.json")))
@@ -92,14 +93,10 @@ def hist(sym,asof):
     except Exception as e:return sym,None,f"{type(e).__name__}:{str(e)[:160]}",None
 
 def atr_wilder(df,end_idx,n=14):
-    if end_idx< n:return None
-    z=df.iloc[:end_idx+1]
-    h=z.high.astype(float);l=z.low.astype(float);c=z.close.astype(float)
-    pc=c.shift(1)
-    tr=pd.concat([(h-l).abs(),(h-pc).abs(),(l-pc).abs()],axis=1).max(axis=1).to_list()
-    if len(tr)<n:return None
-    a=sum(tr[:n])/n
-    for v in tr[n:]:a=((n-1)*a+v)/n
+    if end_idx<1:return None
+    s=_policy_atr(df.iloc[:end_idx+1].copy(),n)
+    if len(s)==0 or pd.isna(s.iloc[-1]):return None
+    a=float(s.iloc[-1])
     return a if math.isfinite(a) and a>0 else None
 
 def rvol20_at(df,idx):
