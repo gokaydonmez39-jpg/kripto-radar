@@ -28,7 +28,9 @@ permissions:
 
 concurrency:
   group: xray-canonical-current-post-mc
-  cancel-in-progress: true
+  # Preserve single-writer ordering but never preempt an exact-bound epoch in flight.
+  # New triggers queue and the freeze/no-op guards collapse redundant work.
+  cancel-in-progress: false
 
 jobs:
   post-mc:
