@@ -14,6 +14,7 @@ from alpha_semantics import (
 import final_tech_shadow as final_mod
 from final_tech_shadow import eval_one,_is_depositary_security_name,lifecycle_state_persists
 from deep_pre_r1_shadow import evaluate_recent_families
+import stage1_shadow as stage1_mod
 from stage1_shadow import recent_weekly_context
 from family_c_engine import eval_event
 from build_current_event_request import lifecycle_scope_from_final,event_geometry_scope
@@ -307,6 +308,29 @@ def main():
     thu=wdf.date.iloc[-2].date().isoformat()
     assert fri not in pass_dates,(pass_dates,wctx[fri])
     assert thu in pass_dates,(pass_dates,wctx[thu])
+
+    # Stage1 process must bind the computed recent weekly context into its output.
+    # This catches a runtime NameError class that py_compile cannot detect.
+    olds=(stage1_mod.load_history,stage1_mod.weekly_gate,stage1_mod.mechanical_scale_breaks,
+          stage1_mod.mechanical_split_suspects,stage1_mod.recent_weekly_context,
+          stage1_mod.base_pool,stage1_mod.drawdown_metrics)
+    try:
+        sx=frame(300)
+        stage1_mod.load_history=lambda sym,asof:(sx.copy(),"TEST")
+        stage1_mod.weekly_gate=lambda df,asof,week_last:{"pass":True}
+        stage1_mod.mechanical_scale_breaks=lambda df,lookback=260:[]
+        stage1_mod.mechanical_split_suspects=lambda df,lookback=260:[]
+        stage1_mod.recent_weekly_context=lambda df,week_last,n:(["2026-10-02"],{"2026-10-02":{"pass":True}})
+        stage1_mod.base_pool=lambda df:[]
+        stage1_mod.drawdown_metrics=lambda df:{"current_drawdown_252":-0.16,"max_drawdown_close_120":-0.21}
+        _,sr=stage1_mod.process("TEST","2026-10-02",{})
+        assert sr["status"]=="WEEKLY_PASS",sr
+        assert sr["recent_weekly_context"]=={"2026-10-02":{"pass":True}},sr
+        assert sr["corporate_action_status"]=="PASS_NO_LOCAL_SPLIT_DISCONTINUITY",sr
+    finally:
+        (stage1_mod.load_history,stage1_mod.weekly_gate,stage1_mod.mechanical_scale_breaks,
+         stage1_mod.mechanical_split_suspects,stage1_mod.recent_weekly_context,
+         stage1_mod.base_pool,stage1_mod.drawdown_metrics)=olds
 
     # Family C canonical pivot includes reaction high. A breakout above only the
     # consolidation high must not pass if it remains below reaction high.
