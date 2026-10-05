@@ -5,6 +5,7 @@ on:
   push:
     branches: [main]
     paths:
+      - "nasdaq-xray/canonical_current_price_dv20.json"
       - "nasdaq-xray/canonical_mc_bridge_*.json"
       - "nasdaq-xray/history_phase.py"
       - "nasdaq-xray/history_official_identity_evidence.json"
