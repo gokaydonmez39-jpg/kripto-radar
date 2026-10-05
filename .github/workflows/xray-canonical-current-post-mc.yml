@@ -441,9 +441,12 @@ jobs:
           assert h["asof_et"]==l["asof_et"]==s["asof_et"]==r["asof_et"]==d["asof_et"]==e["asof_et"]==asof
           assert h["unknown_count"]==0,h["unknown_symbols"]
           assert l["counts"]["UNKNOWN_LEGAL"]==0,l["unknown_symbols"]
-          assert s["unknown_count"]==0,s["unknown"]
-          assert r["breadth_missing_count"]==0,r["breadth_missing"]
-          assert d["unknown_history_count"]==0,d["unknown_history"]
+          stage1_unknown=set(s.get("unknown") or [])
+          breadth_missing=set(r.get("breadth_missing") or [])
+          deep_history_unknown=set(d.get("unknown_history") or [])
+          assert len(stage1_unknown)==int(s.get("unknown_count",len(stage1_unknown)))
+          assert len(breadth_missing)==int(r.get("breadth_missing_count",len(breadth_missing)))
+          assert len(deep_history_unknown)==int(d.get("unknown_history_count",len(deep_history_unknown)))
           assert s["input_current_core_count"]==l["counts"]["PASS_LEGAL"]
           assert r["current_core_count"]==l["counts"]["PASS_LEGAL"]
           assert d["input_weekly_pass_count"]==s["weekly_pass_count"]
@@ -453,6 +456,16 @@ jobs:
           assert e["weekly_scope_count"]==len(trigger_weekly)
           assert set(e["weekly_scope"])==trigger_weekly
           assert set(e.get("current_weekly_scope") or [])==set(s["weekly_pass"])
+          assert not (stage1_unknown & trigger_weekly),"UNKNOWN_STAGE1_LEAKED_INTO_TRIGGER_SCOPE"
+          cov=e.get("coverage_unknowns") or {}
+          assert set((cov.get("stage1") or {}).get("symbols") or [])==stage1_unknown
+          assert int((cov.get("stage1") or {}).get("count",-1))==len(stage1_unknown)
+          assert set((cov.get("breadth") or {}).get("symbols") or [])==breadth_missing
+          assert int((cov.get("breadth") or {}).get("count",-1))==len(breadth_missing)
+          assert set((cov.get("deep_history") or {}).get("symbols") or [])==deep_history_unknown
+          assert int((cov.get("deep_history") or {}).get("count",-1))==len(deep_history_unknown)
+          assert e.get("upstream_coverage_complete") is (not (stage1_unknown or breadth_missing or deep_history_unknown))
+          assert e.get("request_scope_complete") is True
           fresh=set(e.get("fresh_geometry_scope") or [])
           lifecycle=set(e.get("lifecycle_scope") or [])
           geometry=set(e["geometry_scope"])
@@ -460,7 +473,15 @@ jobs:
           assert fresh<=set(e["weekly_scope"])
           assert lifecycle<=set(l["pass_symbols"])
           assert geometry==fresh|lifecycle
-          print({"asof":asof,"history_pass":h["pass_count"],"legal_pass":l["counts"]["PASS_LEGAL"],"weekly_pass":s["weekly_pass_count"],"weekly_trigger_scope":len(trigger_weekly),"regime":r["regime"],"A":d["a_geometry_count"],"B_breakout":d["b_breakout_count"],"B_armed":d["b_armed_count"],"D":d["d_geometry_rs_count"],"fresh_geometry":len(fresh),"lifecycle_scope":len(lifecycle),"event_request_geometry":e["geometry_scope_count"]})
+          print({"asof":asof,"history_pass":h["pass_count"],"legal_pass":l["counts"]["PASS_LEGAL"],
+                 "stage1_unknown":len(stage1_unknown),"breadth_missing":len(breadth_missing),
+                 "deep_history_unknown":len(deep_history_unknown),
+                 "weekly_pass":s["weekly_pass_count"],"weekly_trigger_scope":len(trigger_weekly),
+                 "regime":r["regime"],"A":d["a_geometry_count"],"B_breakout":d["b_breakout_count"],
+                 "B_armed":d["b_armed_count"],"D":d["d_geometry_rs_count"],
+                 "fresh_geometry":len(fresh),"lifecycle_scope":len(lifecycle),
+                 "event_request_geometry":e["geometry_scope_count"],
+                 "upstream_coverage_complete":e.get("upstream_coverage_complete")})
           PY
       - name: Commit current post-MC artifacts
         if: steps.mc.outputs.ready == 'true'
