@@ -61,11 +61,15 @@ def test_resistance_role_change_state_machine():
     try:
         d=frame(70)
         d.loc[20,"high"]=120.0; d.loc[18:19,"high"]=[105.0,106.0]; d.loc[21:22,"high"]=[106.0,105.0]
-        d.loc[40,["open","high","low","close"]]=[121.0,123.0,121.0,121.5]
+        # Breakout/retest bars use equal-high plateaus so they cannot themselves
+        # become new strict 5-bar swing highs and mutate the tested resistance zone.
+        d.loc[39:41,"high"]=121.0
+        d.loc[40,["open","low","close"]]=[120.2,120.1,120.5]
         z1=alpha.resistance_zones(d,60,10.0)
         t1=[z for z in z1 if any(abs(float(p.get("price",0))-120.0)<1e-12 for p in (z.get("points") or []))]
         assert t1 and t1[0]["active"] is True,t1
-        d.loc[45,["open","high","low","close"]]=[121.0,122.0,119.5,121.0]
+        d.loc[44:46,"high"]=121.0
+        d.loc[45,["open","low","close"]]=[120.4,119.5,120.5]
         z2=alpha.resistance_zones(d,60,10.0)
         t2=[z for z in z2 if any(abs(float(p.get("price",0))-120.0)<1e-12 for p in (z.get("points") or []))]
         assert t2 and t2[0]["active"] is False,t2
