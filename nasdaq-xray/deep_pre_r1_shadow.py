@@ -231,7 +231,9 @@ def family_a(df):
     if Aser is None or trigger<1 or pd.isna(Aser.iloc[trigger-1]):return {"pool":False,"reason":"ATR"}
     A=float(Aser.iloc[trigger-1]); anchor=float(df.low.iloc[hl]); SH=float(df.high.iloc[sh])
     P=float(df.high.iloc[trigger-1])
-    prelow=float(df.low.iloc[max(hl,trigger-2):trigger+1].min())
+    # C4.17 A-family proximity uses the single bar immediately before
+    # the reversal trigger. Never use trigger-day low or a multi-bar minimum.
+    prelow=float(df.low.iloc[trigger-1])
     near_hl=abs(prelow-anchor)<=0.5*A
     d=(P-anchor)/A if A>0 else None
     depth=(SH-anchor)/A if A>0 else None
