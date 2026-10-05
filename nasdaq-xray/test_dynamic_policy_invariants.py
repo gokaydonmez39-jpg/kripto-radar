@@ -6,6 +6,7 @@ ROOT=pathlib.Path(__file__).resolve().parent
 sys.path.insert(0,str(ROOT))
 
 from price_dv20_phase import classify as price_classify
+from price_dv20_recover_from_fullstate import apply_terminal_overrides
 from resolve_unknowns_fallback import classify as resolver_classify
 from deep_pre_r1_shadow import family_b
 from build_current_terminal import mc_semantic_input_match
@@ -45,6 +46,30 @@ def main():
 
     st,info=price_classify(low,exp[-1],exp,"TEST")
     assert st=="FAIL_DV20",(st,info)
+
+    # Operator resolver evidence may terminally resolve only an existing block,
+    # never manufacture PASS or rewrite a non-blocked row.
+    base={"NEW":{
+      "decision":"BLOCK_CURRENT_RUN","reason":"INSUFFICIENT_20_USABLE_DV20_SESSIONS_CONFIRMED",
+      "source":"RALLIES_CANDLESTICK_SCANNER_EXACT20_PRIMARY","proof":"FAIL_CLOSED_CURRENT_RUN_NONPASS"
+    }}
+    ov={"NEW":{
+      "decision":"FAIL_DV20_INSUFFICIENT_SESSIONS","price":20.0,
+      "known_session_count":3,"missing_sessions":exp[:-3],
+      "no_synthetic_bar":True,"proof":"ALPACA_RALLIES_EXACT_MISSING_SET_MATCH"
+    }}
+    resolved=apply_terminal_overrides({k:dict(v) for k,v in base.items()},ov)
+    assert resolved["NEW"]["decision"]=="FAIL_DV20_INSUFFICIENT_SESSIONS",resolved
+    try:
+        apply_terminal_overrides({"NEW":dict(base["NEW"])},{"NEW":{"decision":"PASS_PRICE_DV20"}})
+        raise AssertionError("terminal override manufactured PASS")
+    except ValueError:
+        pass
+    try:
+        apply_terminal_overrides({"NEW":{"decision":"FAIL_PRICE","price":5.0,"source":"X","proof":"X"}},ov)
+        raise AssertionError("terminal override rewrote non-blocked row")
+    except ValueError:
+        pass
 
     history_prefix={f"H{i:03d}":(100.0,1_000_000.0) for i in range(260)}
     rich_exact={**history_prefix,**exact}
@@ -143,7 +168,7 @@ def main():
         history_mod.HISTORY_BRIDGE=old_bridge
 
     print({"status":"PASS","invariants":[
-        "EXACT20_REQUIRED_FOR_PASS","INCOMPLETE_NEVER_PASS",
+        "EXACT20_REQUIRED_FOR_PASS","INCOMPLETE_NEVER_PASS","BLOCKED_TERMINAL_OVERRIDE_FAIL_ONLY",
         "OVERLAY_EXACT20_REQUIRED","SETUP_B_PIVOT_EXCLUDES_CURRENT_BAR",
         "MC_SEMANTIC_REBIND_REQUIRES_HASH_SET_COUNT",
         "OFFICIAL_LISTING_HISTORY_FAIL_ONLY","CUSIP_CONTINUITY_REQUIRES_CROSS_SOURCE_OVERLAP",
