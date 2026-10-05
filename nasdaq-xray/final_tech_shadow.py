@@ -286,17 +286,20 @@ def main():
             if g.get("confirmed"):
                 candidates.append((sym,"C",g,event_map.get(sym,g.get("event_status","CLEAN_DISCOVERY"))));family_c_count+=1
 
-    # Carry frozen retest/reconfirmation records even if the family engine no longer emits
-    # the same row, but only while the symbol remains in current weekly/deep scope.
-    current_pairs={(s,f) for s,f,_,_ in candidates}
+    # Existing prospective frozen setups have priority over newly discovered geometry
+    # for the same symbol/family. A new trigger may take over only after the prior
+    # frozen setup actually fails/expires in this evaluation.
+    fresh_candidates=list(candidates)
+    frozen_candidates=[]
     deep_scope=set((d.get("results") or {}).keys())
     for rec in old_records.values():
         sym=rec.get("symbol");fam=rec.get("family")
-        if not sym or fam not in THRESH or (sym,fam) in current_pairs or sym not in deep_scope:continue
+        if not sym or fam not in THRESH or sym not in deep_scope:continue
         if rec.get("state") not in {"WATCH_RETEST_REQUIRED","WATCH_RECONFIRMATION_REQUIRED"}:continue
         g=rec.get("source_geometry")
         if isinstance(g,dict):
-            candidates.append((sym,fam,g,event_map.get(sym,(d.get("results",{}).get(sym) or {}).get("event_status"))))
+            frozen_candidates.append((sym,fam,g,event_map.get(sym,(d.get("results",{}).get(sym) or {}).get("event_status"))))
+    candidates=frozen_candidates+fresh_candidates
 
     syms=sorted(set(x[0] for x in candidates));data={};errors={};history_source={}
     with ThreadPoolExecutor(max_workers=WORKERS) as ex:
@@ -338,7 +341,12 @@ def main():
         if prior and isinstance(prior.get("frozen_geometry"),dict):
             frozen=prior["frozen_geometry"]
         res=eval_one(sym,fam,g,data[sym],event,state_caps.get(sym,"NORMAL"),sym not in r92_ineligible,frozen,recorded_before=bool(prior))
-        results[key]=res
+        existing=results.get(key)
+        existing_live=bool(existing and existing.get("observation_mode")=="PROSPECTIVE_RECORDED"
+                           and not str(existing.get("result","")).startswith("FAIL_")
+                           and existing.get("result")!="UNKNOWN")
+        if not existing_live:
+            results[key]=res
         state=str(res.get("result") or "")
         if state in {"WATCH_RETEST_REQUIRED","WATCH_RECONFIRMATION_REQUIRED"}:
             new_records[frozen["setup_id"]]={
