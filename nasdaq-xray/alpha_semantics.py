@@ -4,7 +4,7 @@
 No execution. No account access. No signal delivery. Pure calculations only.
 """
 from __future__ import annotations
-import hashlib, math, time
+import hashlib, math, time, json
 from typing import Any
 from datetime import timedelta
 import pandas as pd
@@ -81,6 +81,34 @@ def session_age(df:pd.DataFrame,trigger_date:str,asof:str)->int|None:
     if trigger_date not in dates or asof not in dates:return None
     a=dates.index(trigger_date); b=dates.index(asof)
     return b-a if b>=a else None
+
+def history_fingerprint(df:pd.DataFrame,asof:str|None=None,lookback:int=320)->dict[str,Any]:
+    """Deterministic OHLCV binding for cross-phase exact-history verification."""
+    if df is None or df.empty:raise ValueError("EMPTY_HISTORY_FINGERPRINT")
+    need=("date","open","high","low","close","volume")
+    if any(c not in df.columns for c in need):raise ValueError("HISTORY_FINGERPRINT_COLUMNS_MISSING")
+    x=df[list(need)].copy()
+    x["date"]=pd.to_datetime(x["date"],errors="coerce")
+    for c in need[1:]:x[c]=pd.to_numeric(x[c],errors="coerce")
+    x=x.dropna().drop_duplicates("date",keep="last").sort_values("date")
+    if asof is not None:x=x[x["date"]<=pd.Timestamp(asof)]
+    if x.empty:raise ValueError("EMPTY_HISTORY_FINGERPRINT_ASOF")
+    if lookback>0:x=x.tail(int(lookback))
+    rows=[]
+    for _,r in x.iterrows():
+        rows.append([
+          r["date"].date().isoformat(),
+          *[format(float(r[c]),".12g") for c in need[1:]]
+        ])
+    raw=json.dumps(rows,separators=(",",":"),ensure_ascii=True).encode()
+    return {
+      "schema":"XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
+      "sha256":hashlib.sha256(raw).hexdigest(),
+      "rows":len(rows),
+      "first_date":rows[0][0],
+      "last_date":rows[-1][0],
+      "lookback":int(lookback),
+    }
 
 def _base_high_points(prior:pd.DataFrame, atr:pd.Series)->list[dict[str,Any]]:
     pts=[]
