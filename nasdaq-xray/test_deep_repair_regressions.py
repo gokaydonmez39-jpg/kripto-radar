@@ -158,6 +158,18 @@ def test_workflow_race_and_pre_mc_freeze_contracts():
     assert "CORPORATE_ACTION_RECONCILIATION_UNPROVEN_FOR_FINALISTS" in ftsrc
     assert "and lifecycle_semantics_exact" in ftsrc
 
+    er_src=(ROOT/"build_current_event_request.py").read_text()
+    term_src=(ROOT/"build_current_terminal.py").read_text()
+    assert 'assert int(s.get("unknown_count",0))==0' not in er_src
+    assert 'assert int(r.get("breadth_missing_count",0))==0' not in er_src
+    assert '"coverage_unknowns"' in er_src and '"coverage_complete"' in er_src
+    assert 'assert st["unknown_count"]==0' not in term_src
+    assert 'rg["current_core_count"]==len(lpass) and rg["breadth_missing_count"]==0' not in term_src
+    assert '"stage1_unknown":int(st["unknown_count"])' in term_src
+    assert '"breadth_missing":int(rg["breadth_missing_count"])' in term_src
+    assert "candidate_local_research_ready" in term_src
+    assert "PARTIAL_UNKNOWN" in term_src
+
     pre=(REPO/".github/workflows/xray-canonical-current-pre-mc.yml").read_text()
     marker="- name: Completed-session epoch rollover guard"; assert marker in pre
     guard=pre.split(marker,1)[1].split("- name: Recover corrupted frozen pre-MC snapshot",1)[0]
@@ -180,6 +192,6 @@ def main():
     print({"status":"PASS","tests":["R1_NO_FUTURE_MUTATION","R1_PLUS2_CONFIRMATION_NO_LEAK",
       "RESISTANCE_ROLE_CHANGE_STATE_MACHINE","CORPORATE_ACTION_NONE_VS_SCALE_BREAK_FAIL_CLOSED","RETEST_WINDOW_EXPIRES_AFTER_5","MODEL_HORIZON_EXPIRES_AFTER_8",
       "FROZEN_LEVELS_NEXT_ASOF_STABLE","LIFECYCLE_PERSISTENCE_ROUNDTRIP",
-      "FINAL_ALPHA_STALE_SOURCE_GUARD","PRE_MC_COMPLETED_ASOF_FREEZE_TRUTH_TABLE"]})
+      "FINAL_ALPHA_STALE_SOURCE_GUARD","PARTIAL_COVERAGE_DOES_NOT_GLOBAL_ABORT","PRE_MC_COMPLETED_ASOF_FREEZE_TRUTH_TABLE"]})
 
 if __name__=="__main__": main()

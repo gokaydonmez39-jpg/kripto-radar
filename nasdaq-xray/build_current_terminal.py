@@ -363,12 +363,17 @@ def main():
     assert st.get("source_input_blob_sha")==sh["stage1_input"]
     assert st.get("source_legal_pass_hash")==lg.get("pass_hash")
     assert st.get("source_mc_policy_hash")==POLICY_HASH and st.get("source_mc_policy_version")=="C4.17"
-    assert st["unknown_count"]==0
+    stage1_unknown=set(st.get("unknown") or [])
+    assert len(stage1_unknown)==int(st.get("unknown_count",len(stage1_unknown)))
     weekly=set(st["weekly_pass"]); assert len(weekly)==st["weekly_pass_count"]
     trigger_weekly=set(st.get("recent_weekly_scope") or st["weekly_pass"])
     assert len(trigger_weekly)==int(st.get("recent_weekly_scope_count",len(trigger_weekly)))
     assert weekly<=trigger_weekly
-    assert rg["current_core_count"]==len(lpass) and rg["breadth_missing_count"]==0
+    assert not (stage1_unknown&trigger_weekly),"UNKNOWN_STAGE1_LEAKED_INTO_TRIGGER_SCOPE"
+    breadth_missing=set(rg.get("breadth_missing") or [])
+    assert len(breadth_missing)==int(rg.get("breadth_missing_count",len(breadth_missing)))
+    assert rg["current_core_count"]==len(lpass)
+    assert breadth_missing<=lpass
     assert rg.get("source_input_blob_sha")==sh["stage1_input"]
     assert rg.get("source_legal_pass_hash")==lg.get("pass_hash")
     assert rg.get("source_mc_policy_hash")==POLICY_HASH and rg.get("source_mc_policy_version")=="C4.17"
@@ -377,6 +382,12 @@ def main():
     assert dg.get("source_stage1_blob_sha")==sh["stage1"]
     assert dg.get("source_mc_policy_hash")==POLICY_HASH and dg.get("source_mc_policy_version")=="C4.17"
 
+    er_cov=er.get("coverage_unknowns") or {}
+    assert set((er_cov.get("stage1") or {}).get("symbols") or [])==stage1_unknown
+    assert int((er_cov.get("stage1") or {}).get("count",-1))==len(stage1_unknown)
+    assert set((er_cov.get("breadth") or {}).get("symbols") or [])==breadth_missing
+    assert int((er_cov.get("breadth") or {}).get("count",-1))==len(breadth_missing)
+    assert er.get("coverage_complete") is (not (stage1_unknown or breadth_missing or set((er_cov.get("deep_history") or {}).get("symbols") or [])))
     assert er["weekly_scope_count"]==len(trigger_weekly) and set(er["weekly_scope"])==trigger_weekly
     assert set(er.get("current_weekly_scope") or [])==weekly
     assert er.get("compiled_policy_hash")==POLICY_HASH and er.get("compiled_policy_version")=="C4.17"

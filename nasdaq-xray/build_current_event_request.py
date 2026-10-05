@@ -66,14 +66,18 @@ def main():
     assert d["asof_et"]==r["asof_et"]==asof
     assert s["execution"]==d["execution"]==r["execution"]=="NONE"
     assert s["real_money"]==d["real_money"]==r["real_money"]=="NO-GO"
-    assert int(s.get("unknown_count",0))==0
-    assert int(r.get("breadth_missing_count",0))==0
-    assert int(d.get("unknown_history_count",0))==0
+    stage1_unknown=sorted(set(s.get("unknown") or []))
+    breadth_missing=sorted(set(r.get("breadth_missing") or []))
+    deep_history_unknown=sorted(set(d.get("unknown_history") or []))
+    assert len(stage1_unknown)==int(s.get("unknown_count",len(stage1_unknown)))
+    assert len(breadth_missing)==int(r.get("breadth_missing_count",len(breadth_missing)))
+    assert len(deep_history_unknown)==int(d.get("unknown_history_count",len(deep_history_unknown)))
     current_weekly=sorted(set(s.get("weekly_pass") or []))
     assert len(current_weekly)==int(s.get("weekly_pass_count",len(current_weekly)))
     weekly=sorted(set(s.get("recent_weekly_scope") or current_weekly))
     assert len(weekly)==int(s.get("recent_weekly_scope_count",len(weekly)))
     assert set(current_weekly)<=set(weekly),"CURRENT_WEEKLY_NOT_SUBSET_OF_TRIGGER_SCOPE"
+    assert not (set(stage1_unknown)&set(weekly)),"UNKNOWN_STAGE1_LEAKED_INTO_WEEKLY_SCOPE"
     assert int(d.get("input_weekly_pass_count",-1))==len(current_weekly)
     assert int(d.get("input_weekly_trigger_scope_count",-1))==len(weekly)
     assert set(d.get("weekly_trigger_scope") or [])==set(weekly)
@@ -97,6 +101,12 @@ def main():
       "compiled_policy_blob_sha":POLICY_BLOB,
       "compiled_policy_hash":POLICY_HASH,
       "compiled_policy_version":POLICY_VERSION,
+      "coverage_unknowns":{
+        "stage1":{"count":len(stage1_unknown),"symbols":stage1_unknown},
+        "breadth":{"count":len(breadth_missing),"symbols":breadth_missing},
+        "deep_history":{"count":len(deep_history_unknown),"symbols":deep_history_unknown},
+      },
+      "coverage_complete":not (stage1_unknown or breadth_missing or deep_history_unknown),
       "current_weekly_scope":current_weekly,"current_weekly_scope_count":len(current_weekly),
       "current_weekly_scope_hash":hash_lines(current_weekly),
       "weekly_scope":weekly,"weekly_scope_count":len(weekly),"weekly_scope_hash":hash_lines(weekly),
@@ -114,7 +124,11 @@ def main():
       "official_confirmation":"ISSUER_IR_OR_SEC_PRIMARY;DISCOVERY_ONLY_NEVER_BLOCKS_OR_CLEARS_BY_ITSELF"
     }
     OUT.write_text(json.dumps(obj,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
-    print(json.dumps({"asof":asof,"current_weekly_scope_count":len(current_weekly),
+    print(json.dumps({"asof":asof,"coverage_complete":obj["coverage_complete"],
+                      "stage1_unknown_count":len(stage1_unknown),
+                      "breadth_missing_count":len(breadth_missing),
+                      "deep_history_unknown_count":len(deep_history_unknown),
+                      "current_weekly_scope_count":len(current_weekly),
                       "weekly_scope_count":len(weekly),
                       "fresh_geometry_scope_count":len(fresh_geometry),
                       "lifecycle_scope_count":len(lifecycle_scope),
