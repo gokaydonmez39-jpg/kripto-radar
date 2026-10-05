@@ -98,6 +98,10 @@ THRESH={
  "C":{"basic":2.0,"severe":1.5},
  "D":{"basic":2.0,"severe":1.5},
 }
+LIFECYCLE_WATCH_STATES={
+ "WATCH_RETEST_REQUIRED","WATCH_RECONFIRMATION_REQUIRED",
+ "WATCH_CHASE_RETEST_REQUIRED","WATCH_EXTENSION_RESET_REQUIRED"
+}
 
 def hist(sym,asof):
     try:
@@ -207,15 +211,17 @@ def eval_one(sym,fam,g,df,event_status,state_cap="NORMAL",r92_eligible=True,froz
     if hard_pass and mc_cap_blocks: result="WATCH_MC_FALLBACK_CAP"
     elif hard_pass and synthetic_cap: result="WATCH_SYNTHETIC_PRICE_DISCOVERY_CAP"
     elif hard_pass: result="PRE_G9_TECH_PASS"
-    elif historical_new and lifecycle not in {"INVALIDATED_S0","EXPIRED_RETEST_WINDOW","EXPIRED_HORIZON","CHASE_NO_VALID_FILL"}:
+    elif historical_new and lifecycle not in {"INVALIDATED_S0","EXPIRED_RETEST_WINDOW","EXPIRED_HORIZON"}:
         result="WATCH_HISTORICAL_SETUP"
-    elif lifecycle=="RETEST_REQUIRED": result="WATCH_RETEST_REQUIRED"
-    elif lifecycle=="RECONFIRMATION_REQUIRED": result="WATCH_RECONFIRMATION_REQUIRED"
     elif lifecycle=="INVALIDATED_S0": result="FAIL_INVALIDATED_S0"
     elif lifecycle in {"EXPIRED_RETEST_WINDOW","EXPIRED_HORIZON"}: result="FAIL_EXPIRED"
-    elif lifecycle=="CHASE_NO_VALID_FILL": result="FAIL_CHASE"
     elif not event_pass: result="WATCH_EVENT_UNKNOWN_OR_BLOCKED"
+    elif lifecycle=="CHASE_NO_VALID_FILL" and age<=5: result="WATCH_CHASE_RETEST_REQUIRED"
+    elif extension_veto and age<=5: result="WATCH_EXTENSION_RESET_REQUIRED"
+    elif lifecycle=="CHASE_NO_VALID_FILL": result="FAIL_CHASE"
     elif extension_veto: result="FAIL_EXTENSION"
+    elif lifecycle=="RETEST_REQUIRED": result="WATCH_RETEST_REQUIRED"
+    elif lifecycle=="RECONFIRMATION_REQUIRED": result="WATCH_RECONFIRMATION_REQUIRED"
     elif not risk_pass: result="FAIL_RISK_GEOMETRY"
     elif target_overlap: result="FAIL_R1_ENTRY_OVERLAP"
     elif not rr_pass: result="FAIL_RR"
@@ -295,7 +301,7 @@ def main():
     for rec in old_records.values():
         sym=rec.get("symbol");fam=rec.get("family")
         if not sym or fam not in THRESH or sym not in deep_scope:continue
-        if rec.get("state") not in {"WATCH_RETEST_REQUIRED","WATCH_RECONFIRMATION_REQUIRED"}:continue
+        if rec.get("state") not in LIFECYCLE_WATCH_STATES:continue
         g=rec.get("source_geometry")
         if isinstance(g,dict):
             frozen_candidates.append((sym,fam,g,event_map.get(sym,(d.get("results",{}).get(sym) or {}).get("event_status"))))
@@ -348,7 +354,7 @@ def main():
         if not existing_live:
             results[key]=res
         state=str(res.get("result") or "")
-        if state in {"WATCH_RETEST_REQUIRED","WATCH_RECONFIRMATION_REQUIRED"}:
+        if state in LIFECYCLE_WATCH_STATES:
             new_records[frozen["setup_id"]]={
               "setup_id":frozen["setup_id"],"symbol":sym,"family":fam,"trigger_date":frozen["trigger_date"],
               "state":state,"last_asof":asof,"frozen_geometry":frozen,"source_geometry":g,
