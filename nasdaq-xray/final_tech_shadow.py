@@ -191,8 +191,13 @@ def _empty_lifecycle_registry():
     return {"schema":"XRAY_CANDIDATE_LIFECYCLE_REGISTRY_V1",
             "execution":"NONE","real_money":"NO-GO","records":{}}
 
-def load_lifecycle_registry(final_path:Path|None=OUT, sidecar_path:Path|None=LIFECYCLE):
-    """Load durable lifecycle state; a valid sidecar overrides embedded prior-final state."""
+def load_lifecycle_registry(final_path:Path|None=OUT, sidecar_path:Path|None=LIFECYCLE, asof:str|None=None):
+    """Load durable lifecycle state without accepting future-dated evidence.
+
+    A valid sidecar overrides the embedded prior-Final copy. When an ASOF is
+    supplied, any registry or record dated later than that ASOF is a fail-closed
+    integrity error rather than silently usable look-ahead state.
+    """
     registry=_empty_lifecycle_registry()
     for p,embedded in ((final_path,True),(sidecar_path,False)):
         if p is None:
@@ -203,10 +208,22 @@ def load_lifecycle_registry(final_path:Path|None=OUT, sidecar_path:Path|None=LIF
         try:
             obj=json.loads(p.read_text())
             cand=(obj.get("lifecycle_registry") or {}) if embedded else obj
-            if (cand.get("schema")==registry["schema"]
+            if not (cand.get("schema")==registry["schema"]
                 and cand.get("execution")=="NONE" and cand.get("real_money")=="NO-GO"
                 and isinstance(cand.get("records"),dict)):
-                registry=cand
+                continue
+            if asof:
+                src_asof=str(cand.get("asof_et") or obj.get("asof_et") or "")
+                if src_asof and src_asof>asof:
+                    raise RuntimeError("LIFECYCLE_REGISTRY_FUTURE_ASOF")
+                for rec in (cand.get("records") or {}).values():
+                    if not isinstance(rec,dict): continue
+                    last=str(rec.get("last_asof") or "")
+                    if last and last>asof:
+                        raise RuntimeError("LIFECYCLE_RECORD_FUTURE_ASOF")
+            registry=cand
+        except RuntimeError:
+            raise
         except Exception:
             continue
     return registry
@@ -473,7 +490,7 @@ def main():
         if ev.get("asof_et")!=asof:raise RuntimeError("FINAL_EVENT_ASOF_MISMATCH")
         event_map=ev.get("event_status_by_symbol") or {}
 
-    registry=load_lifecycle_registry()
+    registry=load_lifecycle_registry(asof=asof)
     old_records=registry.get("records") or {}
     current_frozen_binding=frozen_semantics_binding()
 
