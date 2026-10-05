@@ -11,6 +11,7 @@ from alpha_semantics import (
     apply_split_events,mechanical_split_suspects,_verify_split_events_against_raw,
     family_a_pretrigger_low,trend_pullback_stage1_at
 )
+import final_tech_shadow as final_mod
 from final_tech_shadow import eval_one,_is_depositary_security_name,lifecycle_state_persists
 from deep_pre_r1_shadow import evaluate_recent_families
 from stage1_shadow import recent_weekly_context
@@ -155,6 +156,29 @@ def main():
     assert cb and 1.8<=cb[0]["ratio"]<=2.2,cb
     ss=mechanical_split_suspects(sf)
     assert ss,ss
+
+    # Finalists get a stricter candidate-scoped check for fractional split-like
+    # gaps that are below the universe-wide severe scale-break threshold.
+    frac=frame(40)
+    frac.loc[19,["open","high","low","close"]]=[150.0,152.0,148.0,150.0]
+    frac.loc[20,["open","high","low","close"]]=[100.0,102.0,98.0,100.0]
+    assert mechanical_scale_breaks(frac,40)==[],mechanical_scale_breaks(frac,40)
+    assert mechanical_split_suspects(frac,40),mechanical_split_suspects(frac,40)
+    old_split_lookup=final_mod.split_consistent_history
+    calls=[]
+    try:
+        def _fake_split_lookup(sym,df):
+            calls.append(sym)
+            return df,"PASS_NO_SPLIT_EVENTS_CROSSCHECKED",[]
+        final_mod.split_consistent_history=_fake_split_lookup
+        fx,fst,fev,flookup=final_mod.candidate_corporate_action_reconcile(
+            "TEST",frac,{"corporate_action_status":"PASS_NO_LOCAL_SPLIT_DISCONTINUITY","split_events":[]}
+        )
+        assert flookup is True and calls==["TEST"],(flookup,calls)
+        assert fst=="PASS_NO_SPLIT_EVENTS_CROSSCHECKED" and fev==[],(fst,fev)
+        assert len(fx)==len(frac)
+    finally:
+        final_mod.split_consistent_history=old_split_lookup
     adjusted=apply_split_events(sf,[{"date":sf.date.iloc[20].date().isoformat(),
                                      "ratio":2.0,"numerator":2.0,"denominator":1.0}])
     assert abs(float(adjusted.close.iloc[19])-50.0)<1e-12,adjusted.iloc[18:22]
@@ -307,7 +331,7 @@ def main():
       "WILDER_FIRST_TR_UNDEFINED","EMA_SMA_SEED","D_DRAWDOWN_DEFINITIONS",
       "R1_STRUCTURAL_TRIGGER_MINUS1","R1_ENTRY_OVERLAP","EXTENSION_RESET","EXTENSION_TIGHT_BASE_RESET","RETEST_BAR","FAMILY_A_TRIGGER_MINUS1_LOW","SETUP_ID_STABLE",
       "B_RECENT_TRIGGER_PERSISTENCE","DEEP_RECENT_TRIGGER_INDEPENDENT_OF_CURRENT_STAGE1","A_STAGE1_ASOF_TRIGGER","MECHANICAL_SCALE_BREAK_GUARD","BREADTH_CLOSE_ONLY_SCALE_GUARD","SPLIT_ONLY_RECONCILIATION","SPLIT_RAW_CROSSCHECK","HISTORICAL_DISCOVERY_WATCH","CHASE_FROZEN_RETEST_RECOVERY","ANCHOR_AVAILABLE_S0_CHRONOLOGY",
-      "ADR_RATIO_FAIL_CLOSED_CLASSIFICATION","PROSPECTIVE_LIFECYCLE_PERSISTENCE","FROZEN_LIFECYCLE_EVENT_SCOPE","ANCIENT_SCALE_BREAK_OUTSIDE_TECH_HORIZON","TRIGGER_TIME_WEEKLY_SCOPE",
+      "ADR_RATIO_FAIL_CLOSED_CLASSIFICATION","FINALIST_FRACTIONAL_SPLIT_VERIFICATION","PROSPECTIVE_LIFECYCLE_PERSISTENCE","FROZEN_LIFECYCLE_EVENT_SCOPE","ANCIENT_SCALE_BREAK_OUTSIDE_TECH_HORIZON","TRIGGER_TIME_WEEKLY_SCOPE",
       "FAMILY_C_REACTION_HIGH_PIVOT","FAMILY_C_PERSISTENT_GAP_FLOOR"
     ]})
 
