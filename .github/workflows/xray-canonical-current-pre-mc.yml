@@ -133,17 +133,26 @@ jobs:
           coverage_repair=bool(
               same_completed_epoch and price_ok and blocked_count>0 and not block_recovery_attempted
           )
+          resolver_refresh=False
+          if same_completed_epoch and price_ok and blocked_count>0 and block_recovery_attempted:
+              try:
+                  rq=json.load(open("nasdaq-xray/canonical_current_resolver_request.json"))
+                  resolver_refresh=set(rq.get("price_blocked_symbols") or [])!=set(px.get("blocked_symbols") or [])
+              except Exception:
+                  resolver_refresh=True
           build=not same_completed_epoch
           with open(os.environ["GITHUB_OUTPUT"],"a") as out:
               out.write(f"build={'true' if build else 'false'}\n")
               out.write(f"recover={'true' if recover else 'false'}\n")
               out.write(f"coverage_repair={'true' if coverage_repair else 'false'}\n")
+              out.write(f"resolver_refresh={'true' if resolver_refresh else 'false'}\n")
               out.write(f"latest_completed={latest_completed}\n")
               out.write(f"pointer_asof={pointer_asof}\n")
           print({
               "build":build,
               "recover":recover,
               "coverage_repair":coverage_repair,
+              "resolver_refresh":resolver_refresh,
               "price_ok":price_ok,
               "blocked_count":blocked_count,
               "block_recovery_attempted":block_recovery_attempted,
@@ -154,6 +163,7 @@ jobs:
               "reason":(
                   "RECOVER_FROZEN_COMPLETED_EPOCH" if recover else
                   "REPAIR_BLOCKED_PRICE_DV20_COVERAGE" if coverage_repair else
+                  "REFRESH_BLOCKED_RESOLVER_REQUEST" if resolver_refresh else
                   "FREEZE_COMPLETED_EPOCH_UNTIL_NEXT_RTH_CLOSE" if same_completed_epoch else
                   "NEW_COMPLETED_EPOCH"
               ),
@@ -232,7 +242,7 @@ jobs:
           echo "XRAY_PRE_MC_RECOVERY=PASS"
 
       - name: Frozen completed epoch healthy no-op
-        if: steps.rollover.outputs.build != 'true' && steps.rollover.outputs.recover != 'true' && steps.rollover.outputs.coverage_repair != 'true'
+        if: steps.rollover.outputs.build != 'true' && steps.rollover.outputs.recover != 'true' && steps.rollover.outputs.coverage_repair != 'true' && steps.rollover.outputs.resolver_refresh != 'true'
         run: echo "XRAY_PRE_MC=HEALTHY_NOOP_COMPLETED_EPOCH pointer_asof=${{ steps.rollover.outputs.pointer_asof }} latest_completed=${{ steps.rollover.outputs.latest_completed }}"
       - name: Build identity-only full universe
         if: steps.rollover.outputs.build == 'true'
@@ -273,10 +283,10 @@ jobs:
         if: steps.rollover.outputs.build == 'true' || steps.rollover.outputs.coverage_repair == 'true'
         run: python nasdaq-xray/price_dv20_recover_from_fullstate.py
       - name: Build resolver bridge request
-        if: steps.rollover.outputs.build == 'true' || steps.rollover.outputs.coverage_repair == 'true'
+        if: steps.rollover.outputs.build == 'true' || steps.rollover.outputs.coverage_repair == 'true' || steps.rollover.outputs.resolver_refresh == 'true'
         run: python nasdaq-xray/build_current_resolver_request.py
       - name: Structural gate
-        if: steps.rollover.outputs.build == 'true' || steps.rollover.outputs.coverage_repair == 'true'
+        if: steps.rollover.outputs.build == 'true' || steps.rollover.outputs.coverage_repair == 'true' || steps.rollover.outputs.resolver_refresh == 'true'
         run: |
           python - <<'PY'
           import json
@@ -311,7 +321,7 @@ jobs:
           print({"asof":m["asof_et"],"master_status":m["status"],"master_unknown":m["unknown_count"],"price_dv20_unknown":p["unknown_count"],"price_dv20_blocked":p.get("blocked_count",(p.get("counts") or {}).get("BLOCK_CURRENT_RUN",0)),"price_dv20_pass":p["pass_count"],"resolver_request_status":q["status"],"settlement_required":q["settlement_required"]})
           PY
       - name: Commit current pre-MC artifacts
-        if: steps.rollover.outputs.build == 'true' || steps.rollover.outputs.coverage_repair == 'true'
+        if: steps.rollover.outputs.build == 'true' || steps.rollover.outputs.coverage_repair == 'true' || steps.rollover.outputs.resolver_refresh == 'true'
         shell: bash
         run: |
           set -euo pipefail
