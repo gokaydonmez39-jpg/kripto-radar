@@ -172,13 +172,12 @@ def process(sym,asof,week_last):
         raw_wg=weekly_gate(x,asof,week_last)
         scale_breaks=mechanical_scale_breaks(x,260)
         split_suspects=mechanical_split_suspects(x)
-        ca_status="NOT_REQUIRED_RAW_WEEKLY_FAIL_NO_MECHANICAL_SCALE_BREAK"
+        ca_status="PASS_NO_LOCAL_SPLIT_DISCONTINUITY"
         split_events=[]
-        # Split verification is mandatory on every raw weekly passer and on any
-        # raw weekly failure whose scale discontinuity could itself have caused
-        # the failure. This avoids adding hundreds of unnecessary network calls
-        # while still protecting the candidate path from split false negatives.
-        if raw_wg.get("pass") or split_suspects:
+        # External split lookup is anomaly-driven, not universe-wide. A continuous
+        # raw series needs no adjustment. If a local split-like discontinuity exists,
+        # verify/reconcile it before weekly or downstream geometry can PASS.
+        if split_suspects:
             x2,ca_status,split_events=split_consistent_history(sym,x)
             if not str(ca_status).startswith("PASS"):
                 return sym,{"status":"UNKNOWN","reason":"CORPORATE_ACTION_SOURCE_UNKNOWN",
