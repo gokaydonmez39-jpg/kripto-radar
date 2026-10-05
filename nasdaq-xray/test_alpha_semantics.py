@@ -11,6 +11,7 @@ from alpha_semantics import (
     apply_split_events,mechanical_split_suspects,_verify_split_events_against_raw
 )
 from final_tech_shadow import eval_one,_is_depositary_security_name
+from regime_breadth_shadow import close_only_scale_breaks
 
 def frame(n=90):
     rows=[]
@@ -102,6 +103,11 @@ def main():
     sf.loc[20:,"open"]=50.0;sf.loc[20:,"high"]=52.0;sf.loc[20:,"low"]=48.0;sf.loc[20:,"close"]=50.0
     sb=mechanical_scale_breaks(sf,40)
     assert sb and 1.8<=sb[0]["ratio"]<=2.2,sb
+    # Regime breadth uses date+close only; corporate-action guard must never
+    # regress to an OHLC/open dependency.
+    close_only=sf[["date","close"]].copy()
+    cb=close_only_scale_breaks(close_only)
+    assert cb and 1.8<=cb[0]["ratio"]<=2.2,cb
     ss=mechanical_split_suspects(sf)
     assert ss,ss
     adjusted=apply_split_events(sf,[{"date":sf.date.iloc[20].date().isoformat(),
@@ -162,7 +168,7 @@ def main():
     print({"status":"PASS","tests":[
       "WILDER_FIRST_TR_UNDEFINED","EMA_SMA_SEED","D_DRAWDOWN_DEFINITIONS",
       "R1_STRUCTURAL_TRIGGER_MINUS1","R1_ENTRY_OVERLAP","EXTENSION_RESET","RETEST_BAR","SETUP_ID_STABLE",
-      "B_RECENT_TRIGGER_PERSISTENCE","MECHANICAL_SCALE_BREAK_GUARD","SPLIT_ONLY_RECONCILIATION","SPLIT_RAW_CROSSCHECK","HISTORICAL_DISCOVERY_WATCH","CHASE_FROZEN_RETEST_RECOVERY",
+      "B_RECENT_TRIGGER_PERSISTENCE","MECHANICAL_SCALE_BREAK_GUARD","BREADTH_CLOSE_ONLY_SCALE_GUARD","SPLIT_ONLY_RECONCILIATION","SPLIT_RAW_CROSSCHECK","HISTORICAL_DISCOVERY_WATCH","CHASE_FROZEN_RETEST_RECOVERY",
       "ADR_RATIO_FAIL_CLOSED_CLASSIFICATION","ANCIENT_SCALE_BREAK_OUTSIDE_TECH_HORIZON"
     ]})
 
