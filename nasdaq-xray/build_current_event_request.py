@@ -9,6 +9,7 @@ ROOT=Path(__file__).resolve().parent
 STAGE1=Path(os.getenv("XRAY_EVENT_STAGE1",str(ROOT/"canonical_current_stage1.json")))
 DEEP=Path(os.getenv("XRAY_EVENT_DEEP",str(ROOT/"canonical_current_deep_geometry.json")))
 REGIME=Path(os.getenv("XRAY_EVENT_REGIME",str(ROOT/"canonical_current_regime.json")))
+PREV_FINAL=Path(os.getenv("XRAY_EVENT_PREV_FINAL",str(ROOT/"canonical_current_final_tech.json")))
 OUT=Path(os.getenv("XRAY_EVENT_REQUEST_OUT",str(ROOT/"canonical_current_event_request.json")))
 TASK="6a825366222081918997094d76e6ae46"
 POLICY=ROOT/"chatgpt_compiled_policy_v3.json"
@@ -54,13 +55,27 @@ def main():
     assert len(weekly)==int(s.get("weekly_pass_count",len(weekly)))
     assert int(d.get("input_weekly_pass_count",-1))==len(weekly)
     past,future=sessions(asof)
-    finalists=sorted(set(
+    fresh_geometry=sorted(set(
         (d.get("a_geometry") or [])+
         (d.get("b_breakout") or [])+
         (d.get("b_armed") or [])+
         (d.get("d_geometry_rs") or [])
     ))
-    assert set(finalists)<=set(weekly)
+    assert set(fresh_geometry)<=set(weekly)
+    lifecycle_scope=[]
+    if PREV_FINAL.exists():
+        try:
+            pf=json.loads(PREV_FINAL.read_text())
+            lr=pf.get("lifecycle_registry") or {}
+            if (pf.get("asof_et")==asof and lr.get("schema")=="XRAY_CANDIDATE_LIFECYCLE_REGISTRY_V1"
+                and lr.get("execution")=="NONE" and lr.get("real_money")=="NO-GO"):
+                lifecycle_scope=sorted(set(
+                    str(rec.get("symbol")) for rec in (lr.get("records") or {}).values()
+                    if rec.get("symbol")
+                ))
+        except Exception:
+            lifecycle_scope=[]
+    finalists=sorted(set(fresh_geometry)|set(lifecycle_scope))
     obj={
       "schema":"XRAY_EVENT_EPOCH_REQUEST_V1","status":"READY","task_id":TASK,"asof_et":asof,
       "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
@@ -69,6 +84,10 @@ def main():
       "compiled_policy_hash":POLICY_HASH,
       "compiled_policy_version":POLICY_VERSION,
       "weekly_scope":weekly,"weekly_scope_count":len(weekly),"weekly_scope_hash":hash_lines(weekly),
+      "fresh_geometry_scope":fresh_geometry,"fresh_geometry_scope_count":len(fresh_geometry),
+      "fresh_geometry_scope_hash":hash_lines(fresh_geometry),
+      "lifecycle_scope":lifecycle_scope,"lifecycle_scope_count":len(lifecycle_scope),
+      "lifecycle_scope_hash":hash_lines(lifecycle_scope),
       "geometry_scope":finalists,"geometry_scope_count":len(finalists),"geometry_scope_hash":hash_lines(finalists),
       "past_family_c_sessions":past,"future_horizon_sessions":future,
       "market_close_semantics":"ASOF_COMPLETED_RTH;EVENT_AFTER_ASOF_CLOSE_BEFORE_NEXT_RTH_COUNTS_INSIDE_HORIZON",
@@ -79,6 +98,9 @@ def main():
       "official_confirmation":"ISSUER_IR_OR_SEC_PRIMARY;DISCOVERY_ONLY_NEVER_BLOCKS_OR_CLEARS_BY_ITSELF"
     }
     OUT.write_text(json.dumps(obj,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
-    print(json.dumps({"asof":asof,"weekly_scope_count":len(weekly),"geometry_scope_count":len(finalists),"past":past,"future":future},sort_keys=True))
+    print(json.dumps({"asof":asof,"weekly_scope_count":len(weekly),
+                      "fresh_geometry_scope_count":len(fresh_geometry),
+                      "lifecycle_scope_count":len(lifecycle_scope),
+                      "geometry_scope_count":len(finalists),"past":past,"future":future},sort_keys=True))
 
 if __name__=="__main__": main()
