@@ -21,6 +21,7 @@ from alpha_semantics import (
     mechanical_scale_breaks,
     split_consistent_history,
     apply_split_events,
+    family_a_pretrigger_low,
 )
 
 ROOT=Path(__file__).resolve().parent
@@ -233,7 +234,7 @@ def family_a(df):
     P=float(df.high.iloc[trigger-1])
     # C4.17 A-family proximity uses the single bar immediately before
     # the reversal trigger. Never use trigger-day low or a multi-bar minimum.
-    prelow=float(df.low.iloc[trigger-1])
+    prelow=family_a_pretrigger_low(df,trigger)
     near_hl=abs(prelow-anchor)<=0.5*A
     d=(P-anchor)/A if A>0 else None
     depth=(SH-anchor)/A if A>0 else None
