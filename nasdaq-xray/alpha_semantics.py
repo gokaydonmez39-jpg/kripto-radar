@@ -288,9 +288,17 @@ def apply_split_events(df:pd.DataFrame,events:list[dict[str,Any]])->pd.DataFrame
     return x
 
 def _verify_split_events_against_raw(df:pd.DataFrame,events:list[dict[str,Any]])->tuple[bool,str]:
+    """Cross-check provider-declared split events against raw OHLC.
+
+    A mechanical 2x/3x-like price move is a discovery trigger, not proof of a
+    corporate action. Large earnings/clinical/news gaps can legitimately resemble
+    common split factors. Therefore only provider-declared split events are
+    ratio/date-validated here. A successful split lookup with no event leaves the
+    move as ordinary market price discovery at Stage1/breadth; finalist-level
+    primary corporate-action review remains separately fail-closed.
+    """
     x=df.copy().sort_values("date").reset_index(drop=True)
     dates=x["date"].dt.date.astype(str).tolist()
-    matched_days=set()
     for e in events:
         day=str(e["date"])
         if day not in dates:return False,"SPLIT_EVENT_DATE_NOT_IN_RAW_HISTORY:"+day
@@ -300,19 +308,10 @@ def _verify_split_events_against_raw(df:pd.DataFrame,events:list[dict[str,Any]])
         if pc<=0 or op<=0 or ratio<=0:return False,"INVALID_SPLIT_CROSSCHECK_VALUES:"+day
         observed=pc/op
         rel=abs(observed/ratio-1.0)
-        # Independent raw Sina scale break should approximately agree with Yahoo's
-        # split ratio. 35% leaves room for a very large overnight market move but
-        # rejects an unrelated/mis-dated corporate-action event.
+        # Independent raw Sina scale break should approximately agree with the
+        # provider split ratio. 35% leaves room for a large overnight move while
+        # rejecting an unrelated or mis-dated declared split.
         if rel>0.35:return False,f"SPLIT_RATIO_RAW_CONFLICT:{day}:{observed:.6f}:{ratio:.6f}"
-        matched_days.add(day)
-    # Broad split_suspects() is discovery-only: it decides when a raw weekly
-    # failure deserves an external split lookup. It must not hard-veto ordinary
-    # earnings/news gaps. Fail closed only for a severe, recent scale break inside
-    # the technical horizon (the same 260-session horizon used by core geometry).
-    for s in mechanical_scale_breaks(x,260):
-        day=str(s["date"])
-        near=any(abs((pd.Timestamp(day)-pd.Timestamp(ed)).days)<=3 for ed in matched_days)
-        if not near:return False,"MECHANICAL_SCALE_BREAK_WITHOUT_VERIFIED_SPLIT:"+day
     return True,"PASS"
 
 def split_consistent_history(symbol:str,df:pd.DataFrame,lookback:int=260)->tuple[pd.DataFrame,str,list[dict[str,Any]]]:
