@@ -169,7 +169,7 @@ jobs:
                           ok=False
                       else:
                           sb=sw.read_bytes()
-                          ssha=hashlib.sha1(f"blob {len(sb)}\\0".encode()+sb).hexdigest()
+                          ssha=hashlib.sha1(f"blob {len(sb)}\0".encode()+sb).hexdigest()
                           try: sj=json.loads(sb)
                           except Exception: sj={}
                           ok=(
