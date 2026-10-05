@@ -4,9 +4,11 @@
 No execution. No account access. No signal delivery. Pure calculations only.
 """
 from __future__ import annotations
-import hashlib, math
+import hashlib, math, time
 from typing import Any
+from datetime import timedelta
 import pandas as pd
+import pandas_market_calendars as mcal
 
 def wilder_atr(df: pd.DataFrame, n: int = 14) -> pd.Series:
     """Wilder ATR with the first TR undefined and the first n valid TRs as seed."""
@@ -109,27 +111,40 @@ def _base_high_points(prior:pd.DataFrame, atr:pd.Series)->list[dict[str,Any]]:
     return pts
 
 def _weekly_swing_points(prior:pd.DataFrame)->list[dict[str,Any]]:
-    # Only use a week if the observed final bar is Friday. Holiday-short weeks are omitted
-    # rather than guessed; daily/base/gap sources remain available.
+    """Completed weekly swing highs using the official Nasdaq session calendar."""
+    if prior.empty:return []
     x=prior.copy()
     x["week"]=x["date"].dt.to_period("W-FRI")
+    cal=mcal.get_calendar("NASDAQ")
+    start=(x["date"].min()-pd.Timedelta(days=10)).date().isoformat()
+    end=(x["date"].max()+pd.Timedelta(days=2)).date().isoformat()
+    sched=cal.schedule(start_date=start,end_date=end)
+    week_last={}
+    for idx,_ in sched.iterrows():
+        d=idx.date()
+        k=pd.Timestamp(d).to_period("W-FRI")
+        week_last[k]=d.isoformat()
     rows=[]
-    for _,g in x.groupby("week"):
-        if int(g["date"].iloc[-1].weekday())!=4: continue
-        rows.append({"date":g["date"].iloc[-1],"high":float(g["high"].max()),"low":float(g["low"].min()),
-                     "close":float(g["close"].iloc[-1])})
+    for k,g in x.groupby("week"):
+        expected=week_last.get(k)
+        if not expected: continue
+        got=g["date"].dt.date.max().isoformat()
+        if got!=expected: continue
+        rows.append({"date":g["date"].iloc[-1],"high":float(g["high"].max()),
+                     "low":float(g["low"].min()),"close":float(g["close"].iloc[-1])})
     if len(rows)<5:return []
     w=pd.DataFrame(rows).reset_index(drop=True)
-    hs,_=strict_swings(w)
-    pts=[]
+    hs,_=strict_swings(w);pts=[]
+    daily_dates=prior["date"].dt.date.astype(str).tolist()
     for i in hs[-52:]:
+        if i+2>=len(w): continue
         d=w["date"].iloc[i].date().isoformat()
-        # bind confirmation to the corresponding daily row at/after week+2 confirmation.
-        confirm_week=min(i+2,len(w)-1)
-        cd=w["date"].iloc[confirm_week].date().isoformat()
-        daily_idx=max(j for j,z in enumerate(prior["date"].dt.date.astype(str).tolist()) if z<=cd)
+        cd=w["date"].iloc[i+2].date().isoformat()
+        eligible=[j for j,z in enumerate(daily_dates) if z<=cd]
+        if not eligible:continue
+        daily_idx=max(eligible)
         pts.append({"price":float(w["high"].iloc[i]),"kind":"WEEKLY_SWING_HIGH",
-                    "occurrence_idx":daily_idx,"confirmed_idx":daily_idx,"date":d})
+                    "occurrence_idx":i,"confirmed_idx":daily_idx,"date":d})
     return pts
 
 def _gap_down_zones(prior:pd.DataFrame)->list[dict[str,Any]]:
@@ -169,6 +184,68 @@ def _cluster_points(points:list[dict[str,Any]],A:float)->list[dict[str,Any]]:
                       "points":cl,"active_from_idx":max(int(x["confirmed_idx"]) for x in cl),
                       "occurrence_dates":sorted(set(x["date"] for x in cl)),"active":True})
     return zones
+
+_SPLIT_CACHE:dict[str,tuple[str,list[dict[str,Any]]]]={}
+
+def fetch_yahoo_split_events(symbol:str,start_date:str,end_date:str,retries:int=3)->tuple[str,list[dict[str,Any]]]:
+    """Fetch split-only events. PASS with [] means the provider explicitly returned no splits."""
+    key=f"{symbol}|{start_date}|{end_date}"
+    if key in _SPLIT_CACHE:return _SPLIT_CACHE[key]
+    try:
+        from curl_cffi import requests as crequests
+    except Exception:
+        return "UNKNOWN_TRANSPORT_MISSING",[]
+    p1=int(pd.Timestamp(start_date,tz="UTC").timestamp())
+    p2=int((pd.Timestamp(end_date,tz="UTC")+pd.Timedelta(days=2)).timestamp())
+    url=f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}"
+    params={"period1":p1,"period2":p2,"interval":"1d","events":"splits","includeAdjustedClose":"false"}
+    last=None
+    for attempt in range(retries):
+        try:
+            resp=crequests.get(url,params=params,impersonate="chrome",timeout=12)
+            if int(resp.status_code)!=200:
+                raise RuntimeError(f"HTTP_{resp.status_code}")
+            data=resp.json();result=(data.get("chart") or {}).get("result") or []
+            if not result:raise RuntimeError("NO_CHART_RESULT")
+            events=((result[0].get("events") or {}).get("splits") or {})
+            out=[]
+            for _,e in events.items():
+                num=float(e.get("numerator"));den=float(e.get("denominator"))
+                ts=e.get("date")
+                if not (math.isfinite(num) and math.isfinite(den) and num>0 and den>0 and ts is not None):
+                    raise RuntimeError("INVALID_SPLIT_EVENT")
+                day=pd.Timestamp(int(ts),unit="s",tz="UTC").date().isoformat()
+                if start_date<=day<=end_date:
+                    out.append({"date":day,"numerator":num,"denominator":den,
+                                "ratio":num/den,"splitRatio":e.get("splitRatio")})
+            out=sorted(out,key=lambda z:z["date"])
+            ans=("PASS",out);_SPLIT_CACHE[key]=ans;return ans
+        except Exception as exc:
+            last=exc
+            if attempt+1<retries:time.sleep(0.6*(attempt+1))
+    ans=(f"UNKNOWN:{type(last).__name__}:{str(last)[:100]}",[])
+    _SPLIT_CACHE[key]=ans;return ans
+
+def apply_split_events(df:pd.DataFrame,events:list[dict[str,Any]])->pd.DataFrame:
+    """Convert pre-split raw OHLCV to the latest share scale using split-only ratios."""
+    x=df.copy().sort_values("date").reset_index(drop=True)
+    for e in sorted(events,key=lambda z:z["date"]):
+        ratio=float(e["ratio"])
+        if not math.isfinite(ratio) or ratio<=0:raise ValueError("INVALID_SPLIT_RATIO")
+        event_day=pd.Timestamp(e["date"])
+        mask=x["date"]<event_day
+        for col in ("open","high","low","close"):
+            if col in x.columns:x.loc[mask,col]=x.loc[mask,col].astype(float)/ratio
+        if "volume" in x.columns:x.loc[mask,"volume"]=x.loc[mask,"volume"].astype(float)*ratio
+    return x
+
+def split_consistent_history(symbol:str,df:pd.DataFrame)->tuple[pd.DataFrame,str,list[dict[str,Any]]]:
+    if df is None or df.empty:return df,"UNKNOWN_EMPTY_HISTORY",[]
+    start=df["date"].min().date().isoformat();end=df["date"].max().date().isoformat()
+    status,events=fetch_yahoo_split_events(symbol,start,end)
+    if status!="PASS":return df,status,events
+    if not events:return df,"PASS_NO_SPLIT_EVENTS",[]
+    return apply_split_events(df,events),"PASS_SPLIT_RECONCILED",events
 
 def resistance_zones(df:pd.DataFrame,trigger_idx:int,A:float)->list[dict[str,Any]]:
     """Structural resistance set known by trigger-1; no trigger/current look-ahead."""
