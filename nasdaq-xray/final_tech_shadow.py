@@ -50,16 +50,41 @@ def _load_adr_bridge(asof):
         return j.get("records") or {}
     except Exception:return {}
 
+def _candidate_legal_scope_hash(symbols):
+    xs=sorted(set(str(x) for x in symbols if str(x)))
+    return hashlib.sha256(("\n".join(xs)+"\n").encode()).hexdigest()
+
 def _load_candidate_legal_guard(asof):
-    """Detailed finalist filing/legal review. Missing/invalid evidence is UNKNOWN, never PASS."""
-    if not CANDIDATE_LEGAL_GUARD.exists():return {},None
+    """Load exact-bound finalist legal evidence; any binding drift stays UNKNOWN."""
+    if not CANDIDATE_LEGAL_GUARD.exists():return {},None,"CANDIDATE_LEGAL_GUARD_MISSING"
     try:
         j=json.loads(CANDIDATE_LEGAL_GUARD.read_text())
-        if j.get("schema")!="XRAY_CANDIDATE_LEGAL_GUARD_V1" or j.get("asof_et")!=asof:return {},None
-        if j.get("task_id")!=TASK_ID or j.get("execution")!="NONE" or j.get("real_money")!="NO-GO":return {},None
-        if j.get("unknown_never_pass") is not True:return {},None
-        return j.get("records") or {},j
-    except Exception:return {},None
+        if j.get("schema")!="XRAY_CANDIDATE_LEGAL_GUARD_V1" or j.get("asof_et")!=asof:
+            return {},None,"CANDIDATE_LEGAL_GUARD_SCHEMA_OR_ASOF_MISMATCH"
+        if j.get("task_id")!=TASK_ID or j.get("execution")!="NONE" or j.get("real_money")!="NO-GO":
+            return {},None,"CANDIDATE_LEGAL_GUARD_SAFETY_OR_TASK_MISMATCH"
+        if j.get("unknown_never_pass") is not True:
+            return {},None,"CANDIDATE_LEGAL_GUARD_UNKNOWN_POLICY_MISMATCH"
+        expected_deep=blob_sha(DEEP)
+        expected_fc=blob_sha(FAMILY_C) if FAMILY_C is not None and FAMILY_C.exists() else None
+        expected_lifecycle=blob_sha(LIFECYCLE) if LIFECYCLE.exists() else None
+        if j.get("source_deep_blob_sha")!=expected_deep:
+            return {},None,"CANDIDATE_LEGAL_GUARD_DEEP_BINDING_MISMATCH"
+        if j.get("source_family_c_blob_sha")!=expected_fc:
+            return {},None,"CANDIDATE_LEGAL_GUARD_FAMILY_C_BINDING_MISMATCH"
+        if j.get("source_lifecycle_blob_sha")!=expected_lifecycle:
+            return {},None,"CANDIDATE_LEGAL_GUARD_LIFECYCLE_BINDING_MISMATCH"
+        scope=sorted(set(str(x) for x in (j.get("candidate_scope") or [])))
+        if int(j.get("candidate_scope_count",-1))!=len(scope):
+            return {},None,"CANDIDATE_LEGAL_GUARD_SCOPE_COUNT_MISMATCH"
+        if j.get("candidate_scope_hash")!=_candidate_legal_scope_hash(scope):
+            return {},None,"CANDIDATE_LEGAL_GUARD_SCOPE_HASH_MISMATCH"
+        records=j.get("records") or {}
+        if set(records)!=set(scope):
+            return {},None,"CANDIDATE_LEGAL_GUARD_RECORD_SCOPE_MISMATCH"
+        return records,j,None
+    except Exception as exc:
+        return {},None,"CANDIDATE_LEGAL_GUARD_PARSE_ERROR:"+type(exc).__name__
 
 def _retryable(exc):
     s=str(exc).lower()
@@ -414,7 +439,7 @@ def main():
     if legal.get("asof_et")!=asof or legal.get("execution")!="NONE" or legal.get("real_money")!="NO-GO":
         raise RuntimeError("LEGAL_STATE_SAFETY_OR_ASOF_MISMATCH")
     adr_bridge=_load_adr_bridge(asof)
-    candidate_legal_records,candidate_legal_guard=_load_candidate_legal_guard(asof)
+    candidate_legal_records,candidate_legal_guard,candidate_legal_guard_error=_load_candidate_legal_guard(asof)
     state_caps=d.get("state_caps") or {};r92_ineligible=set(d.get("r92_ineligible") or [])
     event_map={}
     if EVENTS is not None and EVENTS.exists():
@@ -645,7 +670,9 @@ def main():
       "source_legal_path":relpath(LEGAL),"source_legal_blob_sha":blob_sha(LEGAL),
       "candidate_legal_guard_path":relpath(CANDIDATE_LEGAL_GUARD) if CANDIDATE_LEGAL_GUARD.exists() else None,
       "candidate_legal_guard_blob_sha":blob_sha(CANDIDATE_LEGAL_GUARD) if CANDIDATE_LEGAL_GUARD.exists() else None,
-      "detailed_legal_review_exact":bool(candidate_legal_guard is not None) and all(
+      "candidate_legal_guard_exact_binding":bool(candidate_legal_guard is not None and candidate_legal_guard_error is None),
+      "candidate_legal_guard_binding_error":candidate_legal_guard_error,
+      "detailed_legal_review_exact":bool(candidate_legal_guard is not None and candidate_legal_guard_error is None) and all(
           ((candidate_legal_records or {}).get(str(k).split("|",1)[0]) or {}).get("status")=="PASS"
           for k in results if (results.get(k) or {}).get("reason")!="REGIME_FINALIST_NOT_PASS"
       ),
