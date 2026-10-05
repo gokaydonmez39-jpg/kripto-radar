@@ -255,7 +255,8 @@ def evaluate_recent_families(df,qqq):
 def main():
     st=json.loads(STAGE1.read_text())
     asof=st["asof_et"]
-    syms=sorted(set(st["weekly_pass"]))
+    current_weekly=sorted(set(st["weekly_pass"]))
+    syms=sorted(set(st.get("recent_weekly_scope") or current_weekly))
     state_caps={s:(st.get("state_caps") or {}).get(s,"NORMAL") for s in syms}
     r92_ineligible=set(st.get("r92_ineligible") or [])
     assert st.get("task_id")==TASK_ID and st.get("execution")=="NONE" and st.get("real_money")=="NO-GO"
@@ -304,6 +305,24 @@ def main():
         # snapshot pool. A/B/D re-check their mandatory conditions at the actual
         # candidate trigger; this preserves valid triggers from the prior 3 sessions.
         A,B,D=evaluate_recent_families(x,qqq)
+        weekly_dates=set(strow.get("recent_weekly_pass_dates") or [])
+        def bind_weekly(g,flag):
+            if not isinstance(g,dict): return
+            td=str(g.get("trigger_date") or "")
+            if flag and td and td not in weekly_dates:
+                g[flag]=False
+                g["reason"]="WEEKLY_AT_TRIGGER_FAIL"
+                g["weekly_pass_at_trigger"]=False
+            elif flag and td:
+                g["weekly_pass_at_trigger"]=True
+        bind_weekly(A,"pool")
+        bind_weekly(B,"breakout_confirmed")
+        bind_weekly(D,"dk3_pre_r1")
+        # An ARMED B has no trigger yet; it exists only if the current ASOF itself
+        # has weekly support. A historical weekly-pass day cannot manufacture a
+        # new current ARMED state.
+        if isinstance(B,dict) and B.get("pool") and not B.get("breakout_confirmed") and asof not in weekly_dates:
+            B["pool"]=False; B["reason"]="CURRENT_WEEKLY_FAIL_FOR_ARMED"
         event="DEFERRED" if GEOMETRY_ONLY else "UNKNOWN_STALE_EVENT_STATE"
         if event_state_fresh:
             event="CLEAN_DISCOVERY"
@@ -329,7 +348,10 @@ def main():
       "schema":"XRAY_DEEP_GEOMETRY_V1" if GEOMETRY_ONLY else "XRAY_DEEP_PRE_R1_SHADOW_V1",
       "task_id":TASK_ID,"asof_et":asof,"execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
       "mode":"GEOMETRY_ONLY_REGIME_EVENT_DEFERRED" if GEOMETRY_ONLY else "FULL_SHADOW",
-      "regime":rg.get("regime"),"input_weekly_pass_count":len(syms),
+      "regime":rg.get("regime"),
+      "input_weekly_pass_count":len(current_weekly),
+      "input_weekly_trigger_scope_count":len(syms),
+      "weekly_trigger_scope":syms,
       "a_geometry_count":len(a_geom),"a_geometry":sorted(a_geom),
       "b_breakout_count":len(b_break),"b_breakout":sorted(b_break),
       "b_armed_count":len(b_armed),"b_armed":sorted(b_armed),
@@ -355,7 +377,7 @@ def main():
       "authority":"SHADOW_DEEP_PREFILTER_ONLY_NO_SIGNAL"
     }
     OUT.write_text(json.dumps(out,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
-    print(json.dumps({"mode":out["mode"],"input_weekly_pass_count":len(syms),"a_geometry_count":len(a_geom),"b_breakout_count":len(b_break),"b_armed_count":len(b_armed),"d_geometry_rs_count":len(d_geom),"unknown_history_count":len(unknown),"provider_max_inflight":PROVIDER_MAX_INFLIGHT,"retry_delays":RETRY_DELAYS},sort_keys=True))
+    print(json.dumps({"mode":out["mode"],"input_weekly_pass_count":len(current_weekly),"input_weekly_trigger_scope_count":len(syms),"a_geometry_count":len(a_geom),"b_breakout_count":len(b_break),"b_armed_count":len(b_armed),"d_geometry_rs_count":len(d_geom),"unknown_history_count":len(unknown),"provider_max_inflight":PROVIDER_MAX_INFLIGHT,"retry_delays":RETRY_DELAYS},sort_keys=True))
 
 if __name__=="__main__":
     main()
