@@ -9,7 +9,7 @@ from zoneinfo import ZoneInfo
 import akshare as ak
 import pandas as pd
 import pandas_market_calendars as mcal
-from alpha_semantics import wilder_atr as _policy_atr, apply_split_events
+from alpha_semantics import wilder_atr as _policy_atr, apply_split_events, history_fingerprint
 
 ROOT=Path(__file__).resolve().parent
 STAGE1=Path(os.getenv("XRAY_FAMILY_C_STAGE1",str(ROOT/"canonical_current_stage1.json")))
@@ -21,6 +21,9 @@ PROVIDER_MAX_INFLIGHT=max(1,int(os.getenv("XRAY_FAMILY_C_PROVIDER_MAX_INFLIGHT",
 RETRY_DELAYS=(0.0,1.0,2.5)
 _PROVIDER_SEM=threading.Semaphore(PROVIDER_MAX_INFLIGHT)
 OFFICIAL_IDENTITY_EVIDENCE=ROOT/"history_official_identity_evidence.json"
+HISTORY_BINDING_ENV=os.getenv("XRAY_FAMILY_C_HISTORY_BINDING_STATE")
+HISTORY_BINDING=Path(HISTORY_BINDING_ENV) if HISTORY_BINDING_ENV else None
+HISTORY_BINDING_REQUIRED=os.getenv("XRAY_FAMILY_C_HISTORY_BINDING_REQUIRED","0")=="1"
 NY=ZoneInfo("America/New_York")
 
 def _retryable(exc):
@@ -212,21 +215,39 @@ def eval_event(sym,df,e,asof,all_sessions,event_status,weekly_pass_dates=None):
 def main():
     st=json.loads(STAGE1.read_text());ev=json.loads(EVENTS.read_text())
     asof=st["asof_et"]
+    history_binding={}
+    if HISTORY_BINDING is not None:
+        if not HISTORY_BINDING.exists():
+            if HISTORY_BINDING_REQUIRED:raise RuntimeError("FAMILY_C_HISTORY_BINDING_MISSING")
+        else:
+            hb=json.loads(HISTORY_BINDING.read_text())
+            if hb.get("asof_et")!=asof or hb.get("execution")!="NONE" or hb.get("real_money")!="NO-GO":
+                raise RuntimeError("FAMILY_C_HISTORY_BINDING_SAFETY_OR_ASOF_MISMATCH")
+            history_binding=hb.get("history_fingerprint_by_symbol") or {}
     assert st["task_id"]==ev["task_id"]==TASK and ev["asof_et"]==asof
     assert st["execution"]==ev["execution"]=="NONE" and st["real_money"]==ev["real_money"]=="NO-GO"
     weekly=sorted(st.get("weekly_pass") or [])
     trigger_weekly=sorted(st.get("recent_weekly_scope") or weekly)
     fce=ev.get("family_c_events") or {}
     target=sorted(set(trigger_weekly)&set(fce))
-    data={};errors={};history_source={} 
+    data={};errors={};history_source={};history_fps={} 
     with ThreadPoolExecutor(max_workers=WORKERS) as ex:
         futs={ex.submit(hist,s,asof):s for s in target}
         for fut in as_completed(futs):
             s,x,e,src=fut.result()
             if x is None:errors[s]=e
             else:
+                fp=history_fingerprint(x,asof)
+                exp=history_binding.get(s)
+                if exp is not None and fp!=exp:
+                    errors[s]="HISTORY_FINGERPRINT_MISMATCH"
+                    continue
+                if HISTORY_BINDING_REQUIRED and exp is None:
+                    errors[s]="HISTORY_FINGERPRINT_BINDING_MISSING"
+                    continue
                 data[s]=x
                 history_source[s]=src
+                history_fps[s]=fp
     alls=sessions(asof)
     confirmed={};details={};unknown={}
     event_status_map=ev.get("event_status_by_symbol") or {}
@@ -258,6 +279,8 @@ def main():
       "event_symbol_count":len(target),
       "confirmed_count":len(confirmed),"confirmed":dict(sorted(confirmed.items())),
       "unknown_count":len(unknown),"unknown":dict(sorted(unknown.items())),
+      "history_fingerprint_by_symbol":dict(sorted(history_fps.items())),
+      "history_fingerprint_semantics":"RAW_OR_OFFICIAL_COMPOSITE_ASOF_TAIL320_V1",
       "details":dict(sorted(details.items())),
       "history_source_by_symbol":history_source,
       "source_stage1_path":relpath(STAGE1),"source_stage1_blob_sha":blob_sha(STAGE1),
