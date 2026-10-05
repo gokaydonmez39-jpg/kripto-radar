@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import json, math, os, urllib.parse, urllib.request, urllib.error, hashlib, time, threading
+import json, math, os, urllib.parse, urllib.request, urllib.error, hashlib, time, threading, socket
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 import akshare as ak
 import pandas_market_calendars as mcal
+import requests
 
 ROOT=Path(__file__).resolve().parent
 OFFICIAL_IDENTITY_EVIDENCE=ROOT/"history_official_identity_evidence.json"
@@ -19,9 +20,23 @@ HARD_WEEKLY=52
 WORKERS=int(os.getenv("XRAY_HISTORY_WORKERS","10"))
 PROVIDER_MAX_INFLIGHT=max(1,int(os.getenv("XRAY_HISTORY_PROVIDER_MAX_INFLIGHT","3")))
 RETRY_DELAYS=(0.0,1.0,2.5)
+HTTP_TIMEOUT_SECONDS=max(5.0,float(os.getenv("XRAY_HISTORY_HTTP_TIMEOUT_SECONDS","20")))
 UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/126 Safari/537.36"
 NY=ZoneInfo("America/New_York")
 _PROVIDER_SEM=threading.Semaphore(PROVIDER_MAX_INFLIGHT)
+
+# Akshare may issue requests without an explicit timeout. One blocked socket must
+# never hold the entire completed-session HISTORY epoch until the workflow timeout.
+# Preserve explicit provider timeouts, but bound omitted/None timeouts fail-closed.
+socket.setdefaulttimeout(HTTP_TIMEOUT_SECONDS)
+if not getattr(requests.sessions.Session.request,"_xray_bounded_timeout",False):
+    _XRAY_ORIGINAL_SESSION_REQUEST=requests.sessions.Session.request
+    def _xray_bounded_session_request(self,*args,**kwargs):
+        if kwargs.get("timeout") is None:
+            kwargs["timeout"]=HTTP_TIMEOUT_SECONDS
+        return _XRAY_ORIGINAL_SESSION_REQUEST(self,*args,**kwargs)
+    _xray_bounded_session_request._xray_bounded_timeout=True
+    requests.sessions.Session.request=_xray_bounded_session_request
 HISTORY_BRIDGE={}
 HISTORY_BRIDGE_PATH=None
 HISTORY_CACHE_DIR=os.getenv("XRAY_HISTORY_CACHE_DIR")
