@@ -187,6 +187,26 @@ def _cluster_points(points:list[dict[str,Any]],A:float)->list[dict[str,Any]]:
 
 _SPLIT_CACHE:dict[str,tuple[str,list[dict[str,Any]]]]={}
 
+def mechanical_split_suspects(df:pd.DataFrame)->list[dict[str,Any]]:
+    """Cheap local detector used only to decide when a failed weekly raw series needs split verification."""
+    if df is None or len(df)<2:return []
+    common=(1.25,1.5,2.0,3.0,4.0,5.0,10.0,20.0,25.0,50.0,100.0)
+    out=[]
+    for i in range(1,len(df)):
+        prev=float(df["close"].iloc[i-1]);op=float(df["open"].iloc[i])
+        if prev<=0 or op<=0:continue
+        q=op/prev
+        if 0.82<=q<=1.22:continue
+        best=None
+        for r in common:
+            for target in (r,1.0/r):
+                err=abs(q/target-1.0)
+                if best is None or err<best[0]:best=(err,r,target)
+        if best and best[0]<=0.12:
+            out.append({"date":df["date"].iloc[i].date().isoformat(),"open_prev_close_ratio":q,
+                        "matched_split_ratio":best[1],"directional_target":best[2],"relative_error":best[0]})
+    return out
+
 def fetch_yahoo_split_events(symbol:str,start_date:str,end_date:str,retries:int=3)->tuple[str,list[dict[str,Any]]]:
     """Fetch split-only events. PASS with [] means the provider explicitly returned no splits."""
     key=f"{symbol}|{start_date}|{end_date}"
