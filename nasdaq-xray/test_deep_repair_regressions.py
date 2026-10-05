@@ -454,6 +454,20 @@ def test_workflow_race_and_pre_mc_freeze_contracts():
     assert 'ft.get("candidate_legal_guard_exact_binding") is True' in term_src
     assert '"candidate_pre_g9_legal_pass"' in term_src
     assert '"all_finalists_detailed_legal_review_exact"' in term_src
+    assert '"regime_no_missing":True' not in term_src
+    assert '"regime_no_missing":bool(not breadth_missing and rg.get("regime") in {"STRONG","MIXED","WEAK"})' in term_src
+
+    # Repair-time CI must be latest-wins and must exercise the detailed legal
+    # guard itself; otherwise rapid source commits can starve production runs
+    # and legal-guard changes can bypass deterministic regression coverage.
+    phase_wf=(REPO/".github/workflows/xray-dynamic-phase-regression.yml").read_text()
+    policy_wf=(REPO/".github/workflows/xray-dynamic-policy-invariants.yml").read_text()
+    for wf,group in ((phase_wf,"xray-dynamic-phase-regression"),(policy_wf,"xray-dynamic-policy-invariants")):
+        assert f"group: {group}" in wf
+        assert "cancel-in-progress: true" in wf
+        push=wf.split("permissions:",1)[0]
+        assert '"nasdaq-xray/build_candidate_legal_guard.py"' in push
+        assert "nasdaq-xray/build_candidate_legal_guard.py \\" in wf
 
     pre=(REPO/".github/workflows/xray-canonical-current-pre-mc.yml").read_text()
     marker="- name: Completed-session epoch rollover guard"; assert marker in pre

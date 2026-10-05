@@ -650,7 +650,7 @@ def main():
         "history_exact_mc_primary":True,"history_mc_blob_exact":history_mc_blob_exact,"history_mc_semantic_rebind":history_mc_semantic_rebind,"stage1_input_mc_blob_exact":stage1_input_mc_blob_exact,"stage1_input_mc_semantic_rebind":stage1_input_mc_semantic_rebind,"fallback_watch_excluded_after_mc":True,"legal_exact_history_pass":True,
         "legal_master_blob_exact":lg.get("source_master_blob_sha")==sh["full_state"],
         "legal_master_semantic_rebind":legal_master_semantic_rebind,
-        "stage1_exact_legal_pass":True,"weekly_exact_event_scope":True,"regime_no_missing":True,
+        "stage1_exact_legal_pass":True,"weekly_exact_event_scope":True,"regime_no_missing":bool(not breadth_missing and rg.get("regime") in {"STRONG","MIXED","WEAK"}),
         "deep_exact_weekly_scope":True,
         "deep_exact_trigger_weekly_scope":True,
         "current_weekly_subset_of_trigger_scope":weekly<=trigger_weekly,
