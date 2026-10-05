@@ -236,8 +236,9 @@ def main():
     finally:
         alpha_mod.fetch_yahoo_split_events=old_fetch
 
-    # A newly discovered trigger older than three completed sessions is WATCH only;
-    # the same frozen setup may become actionable only when it was prospectively recorded.
+    # R92/R93 is prospective-only, but current research eligibility is not.
+    # A still-valid setup first discovered on session 4/5 may be PRE_G9 now;
+    # only pre-registration observations are forbidden from validation backfill.
     hf=frame(270)
     hf[["open","high","low","close"]]=[101.0,103.0,99.0,102.0]
     trigger_idx=len(hf)-5
@@ -250,7 +251,10 @@ def main():
             "synthetic_target":False,"source_geometry":{"trigger_date":td,"P":100.0,"anchor":97.0}}
     g={"trigger_date":td,"P":100.0,"anchor":97.0}
     hr=eval_one("TEST","D",g,hf,"CLEAN_DISCOVERY",frozen=frozen,recorded_before=False)
-    assert hr["result"]=="WATCH_HISTORICAL_SETUP",hr
+    assert hr["result"]=="PRE_G9_TECH_PASS" and hr["pre_g9_tech_pass"] is True,hr
+    assert hr["historical_discovery_age_gt3"] is True,hr
+    assert hr["r92_backfill_allowed"] is False,hr
+    assert hr["r92_observation_rule"]=="REGISTER_NOW_OBSERVE_FUTURE_ONLY_NO_BACKFILL",hr
     pr=eval_one("TEST","D",g,hf,"CLEAN_DISCOVERY",frozen=frozen,recorded_before=True)
     assert pr["result"]=="PRE_G9_TECH_PASS",pr
 
@@ -425,7 +429,7 @@ def main():
     print({"status":"PASS","tests":[
       "WILDER_FIRST_TR_UNDEFINED","EMA_SMA_SEED","D_DRAWDOWN_DEFINITIONS",
       "R1_STRUCTURAL_TRIGGER_MINUS1","R1_ENTRY_OVERLAP","EXTENSION_RESET","EXTENSION_TIGHT_BASE_RESET","RETEST_BAR","FAMILY_A_TRIGGER_MINUS1_LOW","SETUP_ID_STABLE",
-      "B_RECENT_TRIGGER_PERSISTENCE","DEEP_RECENT_TRIGGER_INDEPENDENT_OF_CURRENT_STAGE1","A_STAGE1_ASOF_TRIGGER","MECHANICAL_SCALE_BREAK_GUARD","BREADTH_CLOSE_ONLY_SCALE_GUARD","SPLIT_ONLY_RECONCILIATION","SPLIT_RAW_CROSSCHECK","UNDECLARED_SCALE_MOVE_MARKET_GAP","HISTORICAL_DISCOVERY_WATCH","CHASE_FROZEN_RETEST_RECOVERY","ANCHOR_AVAILABLE_S0_CHRONOLOGY",
+      "B_RECENT_TRIGGER_PERSISTENCE","DEEP_RECENT_TRIGGER_INDEPENDENT_OF_CURRENT_STAGE1","A_STAGE1_ASOF_TRIGGER","MECHANICAL_SCALE_BREAK_GUARD","BREADTH_CLOSE_ONLY_SCALE_GUARD","SPLIT_ONLY_RECONCILIATION","SPLIT_RAW_CROSSCHECK","UNDECLARED_SCALE_MOVE_MARKET_GAP","HISTORICAL_DISCOVERY_RESEARCH_ELIGIBLE_NO_R92_BACKFILL","CHASE_FROZEN_RETEST_RECOVERY","ANCHOR_AVAILABLE_S0_CHRONOLOGY",
       "ADR_RATIO_FAIL_CLOSED_CLASSIFICATION","FINALIST_FRACTIONAL_SPLIT_VERIFICATION","SYNTHETIC_PRICE_DISCOVERY_ORANGE_CAP","PROSPECTIVE_LIFECYCLE_PERSISTENCE","FROZEN_LIFECYCLE_EVENT_SCOPE","ANCIENT_SCALE_BREAK_OUTSIDE_TECH_HORIZON","TRIGGER_TIME_WEEKLY_SCOPE",
       "FAMILY_C_REACTION_HIGH_PIVOT","FAMILY_C_PERSISTENT_GAP_FLOOR","SPLIT_RECONCILIATION_ACTIVE_HORIZON_ONLY"
     ]})
