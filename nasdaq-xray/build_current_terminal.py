@@ -324,6 +324,7 @@ def main():
         rr=ft["results"][key]
         assert rr.get("setup_id")==rec.get("setup_id"),(key,rr.get("setup_id"),rec.get("setup_id"))
         assert rec.get("state") in {"WATCH_RETEST_REQUIRED","WATCH_RECONFIRMATION_REQUIRED","WATCH_HISTORICAL_SETUP",
+                                   "WATCH_CHASE_RETEST_REQUIRED","WATCH_EXTENSION_RESET_REQUIRED",
                                    "PRE_G9_TECH_PASS","WATCH_MC_FALLBACK_CAP","WATCH_SYNTHETIC_PRICE_DISCOVERY_CAP"}
         lifecycle_backed.add(key)
     extra_lifecycle=final_set-current_confirmed
