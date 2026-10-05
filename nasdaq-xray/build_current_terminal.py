@@ -242,7 +242,37 @@ def main():
     for x in [h,lg,st,rg,er,ev,fc,dp,ft]:
         assert x["task_id"]==TASK and x["asof_et"]==asof and x["execution"]=="NONE" and x["real_money"]=="NO-GO"
     assert h["unknown_count"]==0 and h["input_count"]==len(primary) and set(h["results"])==primary
-    assert h.get("source_mc_blob_sha")==blob_sha(mc_path)
+    history_mc_blob_exact=(h.get("source_mc_blob_sha")==blob_sha(mc_path))
+    history_mc_semantic_rebind=False
+    if not history_mc_blob_exact:
+        # HISTORY consumes only the MC primary-pass symbol set. A same-ASOF MC
+        # bridge may be re-bound after an exact PRICE artifact refresh without
+        # changing that set. Accept that metadata-only drift only when the old
+        # source bridge is itself present and proves exact semantic equivalence.
+        source_matches=[]
+        for fp in glob.glob(str(ROOT/"canonical_mc_bridge_*.json")):
+            try:
+                sj=json.load(open(fp)); sp=Path(fp)
+                if blob_sha(sp)!=h.get("source_mc_blob_sha"): continue
+                if not (
+                    sj.get("schema")=="XRAY_MC_EPOCH_RESULT_V1"
+                    and sj.get("status")=="COMMITTED"
+                    and sj.get("task_id")==TASK
+                    and sj.get("execution")=="NONE" and sj.get("real_money")=="NO-GO"
+                    and sj.get("asof_et")==asof
+                    and sj.get("policy_hash")==POLICY_HASH and sj.get("policy_version")=="C4.17"
+                    and sj.get("input_pass_hash")==mc.get("input_pass_hash")==p.get("pass_hash")
+                    and set(sj.get("primary_pass_symbols") or [])==primary
+                    and set(sj.get("primary_fail_symbols") or [])==mcfail
+                    and set(sj.get("fallback_watch_symbols") or [])==watch
+                    and set(sj.get("fallback_fail_symbols") or sj.get("fallback_two_source_fail_symbols") or [])==fallback_fail
+                    and set(sj.get("unknown_symbols") or [])==mcunk
+                ): continue
+                source_matches.append(sp)
+            except Exception:
+                pass
+        assert len(source_matches)==1,("HISTORY_MC_SEMANTIC_SOURCE_MATCHES",len(source_matches))
+        history_mc_semantic_rebind=True
     assert h.get("source_mc_policy_hash")==POLICY_HASH and h.get("source_mc_policy_version")=="C4.17"
     hpass=set(h["pass_symbols"]); hfail=set(h["results"])-hpass
     assert hpass|hfail==primary and not (hpass&hfail)
@@ -554,7 +584,7 @@ def main():
         "mc_input_blob_exact":mc_binding["blob_exact"],
         "mc_input_semantic_rebind":mc_binding["semantic_rebind"],
         "sequential_settlement_bound":(not settlement_witness_required) or mc.get("settlement_witness_status")=="PASS",
-        "history_exact_mc_primary":True,"fallback_watch_excluded_after_mc":True,"legal_exact_history_pass":True,
+        "history_exact_mc_primary":True,"history_mc_blob_exact":history_mc_blob_exact,"history_mc_semantic_rebind":history_mc_semantic_rebind,"fallback_watch_excluded_after_mc":True,"legal_exact_history_pass":True,
         "legal_master_blob_exact":lg.get("source_master_blob_sha")==sh["full_state"],
         "legal_master_semantic_rebind":legal_master_semantic_rebind,
         "stage1_exact_legal_pass":True,"weekly_exact_event_scope":True,"regime_no_missing":True,
