@@ -375,10 +375,12 @@ def resistance_zones(df:pd.DataFrame,trigger_idx:int,A:float)->list[dict[str,Any
 
 def nearest_active_resistance(df:pd.DataFrame,trigger_idx:int,A:float,entry_low:float,entry_high:float,entry_model:float)->dict[str,Any]:
     zones=resistance_zones(df,trigger_idx,A)
-    # Any active zone that reaches into the entry band is the first obstacle
-    # and may not be skipped merely because its upper bound is below E_MODEL.
-    # Zones wholly below ENTRY_LOW are support/context, not overhead resistance.
-    eligible=[z for z in zones if z.get("active") and float(z["upper"])>=entry_low]
+    # Any active zone that extends ABOVE the pivot into the entry band is the
+    # first overhead obstacle and may not be skipped merely because its upper
+    # bound is below E_MODEL. A zone whose upper edge is exactly ENTRY_LOW=P
+    # is the just-reclaimed pivot/support boundary, not an overhead target.
+    # Zones wholly at/below ENTRY_LOW are support/context.
+    eligible=[z for z in zones if z.get("active") and float(z["upper"])>entry_low]
     if not eligible:
         prior=df.iloc[:trigger_idx]
         prior_max=float(prior["high"].max()) if len(prior) else float("nan")

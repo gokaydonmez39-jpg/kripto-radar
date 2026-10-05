@@ -60,6 +60,32 @@ def test_r1_no_future_mutation_and_confirmation():
     finally:
         alpha._base_high_points,alpha._weekly_swing_points,alpha._gap_down_zones=oldb,oldw,oldg
 
+def test_r1_pivot_boundary_is_not_overhead_but_entry_overlap_is():
+    d=frame(80)
+    old=alpha.resistance_zones
+    try:
+        # A zone ending exactly at P is the reclaimed pivot boundary and must
+        # not become T1. The next true overhead zone is selected.
+        alpha.resistance_zones=lambda df,ti,A:[
+          {"lower":99.0,"upper":100.0,"active":True,"kind":"PIVOT_BOUNDARY","points":[]},
+          {"lower":130.0,"upper":132.0,"active":True,"kind":"OVERHEAD","points":[]},
+        ]
+        r=alpha.nearest_active_resistance(d,70,10.0,100.0,102.5,102.5)
+        assert r["status"]=="PASS" and abs(float(r["T1"])-130.0)<1e-12,r
+        assert r["target_overlap"] is False,r
+
+        # A zone that extends even slightly above P genuinely overlaps the entry
+        # band and must remain the nearest veto; do not skip it for a prettier R/R.
+        alpha.resistance_zones=lambda df,ti,A:[
+          {"lower":99.5,"upper":100.1,"active":True,"kind":"ENTRY_OVERLAP","points":[]},
+          {"lower":130.0,"upper":132.0,"active":True,"kind":"OVERHEAD","points":[]},
+        ]
+        r2=alpha.nearest_active_resistance(d,70,10.0,100.0,102.5,102.5)
+        assert r2["status"]=="PASS" and abs(float(r2["T1"])-99.5)<1e-12,r2
+        assert r2["target_overlap"] is True,r2
+    finally:
+        alpha.resistance_zones=old
+
 def test_resistance_role_change_state_machine():
     oldb,oldw,oldg,olds=alpha._base_high_points,alpha._weekly_swing_points,alpha._gap_down_zones,alpha.strict_swings
     alpha._base_high_points=lambda prior,atr:[]
@@ -722,7 +748,7 @@ def test_workflow_race_and_pre_mc_freeze_contracts():
     assert core("2026-10-02","2026-10-05","2026-10-02",False)=={"build":True,"recover":False}
 
 def main():
-    test_r1_no_future_mutation_and_confirmation(); test_resistance_role_change_state_machine()
+    test_r1_no_future_mutation_and_confirmation(); test_r1_pivot_boundary_is_not_overhead_but_entry_overlap_is(); test_resistance_role_change_state_machine()
     test_final_history_normalizer_preserves_ohlcv()
     test_regime_interval_bounds_and_finalist_gate()
     test_corporate_action_absence_vs_real_scale_break()
@@ -738,7 +764,7 @@ def main():
     test_resolver_bridge_bound_to_exact_pre_run_price_and_scope()
     test_family_c_event_request_covers_boundary_amc_source_session(); test_candidate_legal_guard_phrase_severity()
     test_workflow_race_and_pre_mc_freeze_contracts()
-    print({"status":"PASS","tests":["R1_NO_FUTURE_MUTATION","R1_PLUS2_CONFIRMATION_NO_LEAK",
+    print({"status":"PASS","tests":["R1_NO_FUTURE_MUTATION","R1_PLUS2_CONFIRMATION_NO_LEAK","R1_PIVOT_BOUNDARY_NOT_OVERHEAD",
       "RESISTANCE_ROLE_CHANGE_STATE_MACHINE","FINAL_HISTORY_OHLCV_BINDING","REGIME_INTERVAL_BOUNDS_AND_FINALIST_GATE","CORPORATE_ACTION_NONE_VS_SCALE_BREAK_FAIL_CLOSED","D_RECLAIM_AFTER_HL_AVAILABILITY","FAMILY_A_TRIGGER_TIME_RECONSTRUCTION","FAMILY_A_FINAL_GEOMETRY_REVALIDATION","RETEST_WINDOW_EXPIRES_AFTER_5","MODEL_HORIZON_EXPIRES_AFTER_8",
       "FROZEN_LEVELS_NEXT_ASOF_STABLE","LIFECYCLE_REGIME_REVALIDATION_PERSISTS","LIFECYCLE_PERSISTENCE_ROUNDTRIP","MC_BRIDGE_IMMUTABLE_SUPERSESSION",
       "FINAL_ALPHA_STALE_SOURCE_GUARD","PARTIAL_COVERAGE_DOES_NOT_GLOBAL_ABORT",
