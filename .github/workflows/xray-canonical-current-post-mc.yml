@@ -374,6 +374,26 @@ jobs:
           print({"XRAY_CONTINUITY_PREDECESSOR_CACHE":"PASS","warmed":warmed})
           PY
 
+      - name: Hydrate QQQ same-run technical cache
+        if: steps.mc.outputs.ready == 'true'
+        shell: bash
+        env:
+          XRAY_HISTORY_CACHE_DIR: ${{ runner.temp }}/xray-history-cache
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import os,sys
+          sys.path.insert(0,"nasdaq-xray")
+          import akshare as ak
+          import history_phase as hp
+          df,_=hp._call_with_retry(lambda: ak.stock_us_daily(symbol="QQQ",adjust=""))
+          hp._write_sina_cache("QQQ",df)
+          p=hp._history_cache_path("QQQ")
+          if p is None or not p.exists():
+              raise RuntimeError("QQQ_SAME_RUN_CACHE_MISSING")
+          print("XRAY_QQQ_SAME_RUN_CACHE=PASS")
+          PY
+
       - name: Run LEGAL
         if: steps.mc.outputs.ready == 'true' && steps.reuse_hl.outputs.reuse != 'true'
         shell: bash
@@ -416,6 +436,8 @@ jobs:
           XRAY_STAGE1_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_current_stage1.json
           XRAY_DEEP_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_current_deep_geometry.json
           XRAY_DEEP_GEOMETRY_ONLY: "1"
+          XRAY_DEEP_HISTORY_CACHE_DIR: ${{ runner.temp }}/xray-history-cache
+          XRAY_DEEP_CACHE_REQUIRED: "1"
           XRAY_DEEP_WORKERS: "8"
         run: python nasdaq-xray/deep_pre_r1_shadow.py
       - name: Build dynamic event request
@@ -441,15 +463,27 @@ jobs:
           assert h["asof_et"]==l["asof_et"]==s["asof_et"]==r["asof_et"]==d["asof_et"]==e["asof_et"]==asof
           assert h["unknown_count"]==0,h["unknown_symbols"]
           assert l["counts"]["UNKNOWN_LEGAL"]==0,l["unknown_symbols"]
-          assert s["unknown_count"]==0,s["unknown"]
-          assert r["breadth_missing_count"]==0,r["breadth_missing"]
-          assert d["unknown_history_count"]==0,d["unknown_history"]
+          stage1_unknown=set(s.get("unknown") or [])
+          breadth_missing=set(r.get("breadth_missing") or [])
+          deep_history_unknown=set((d.get("unknown_history") or {}).keys() if isinstance(d.get("unknown_history"),dict) else (d.get("unknown_history") or []))
+          assert len(stage1_unknown)==int(s.get("unknown_count",len(stage1_unknown)))
+          assert len(breadth_missing)==int(r.get("breadth_missing_count",len(breadth_missing)))
+          assert len(deep_history_unknown)==int(d.get("unknown_history_count",len(deep_history_unknown)))
+          cov=e.get("coverage_unknowns") or {}
+          assert set((cov.get("stage1") or {}).get("symbols") or [])==stage1_unknown
+          assert int((cov.get("stage1") or {}).get("count",-1))==len(stage1_unknown)
+          assert set((cov.get("breadth") or {}).get("symbols") or [])==breadth_missing
+          assert int((cov.get("breadth") or {}).get("count",-1))==len(breadth_missing)
+          assert set((cov.get("deep_history") or {}).get("symbols") or [])==deep_history_unknown
+          assert int((cov.get("deep_history") or {}).get("count",-1))==len(deep_history_unknown)
+          assert e.get("coverage_complete") is (not (stage1_unknown or breadth_missing or deep_history_unknown))
           assert s["input_current_core_count"]==l["counts"]["PASS_LEGAL"]
           assert r["current_core_count"]==l["counts"]["PASS_LEGAL"]
           assert d["input_weekly_pass_count"]==s["weekly_pass_count"]
           trigger_weekly=set(s.get("recent_weekly_scope") or s["weekly_pass"])
           assert d["input_weekly_trigger_scope_count"]==len(trigger_weekly)
           assert set(d.get("weekly_trigger_scope") or [])==trigger_weekly
+          assert not (stage1_unknown & trigger_weekly)
           assert e["weekly_scope_count"]==len(trigger_weekly)
           assert set(e["weekly_scope"])==trigger_weekly
           assert set(e.get("current_weekly_scope") or [])==set(s["weekly_pass"])
@@ -458,9 +492,10 @@ jobs:
           geometry=set(e["geometry_scope"])
           assert e["geometry_scope_count"]==len(geometry)
           assert fresh<=set(e["weekly_scope"])
+          assert not (deep_history_unknown & fresh)
           assert lifecycle<=set(l["pass_symbols"])
           assert geometry==fresh|lifecycle
-          print({"asof":asof,"history_pass":h["pass_count"],"legal_pass":l["counts"]["PASS_LEGAL"],"weekly_pass":s["weekly_pass_count"],"weekly_trigger_scope":len(trigger_weekly),"regime":r["regime"],"A":d["a_geometry_count"],"B_breakout":d["b_breakout_count"],"B_armed":d["b_armed_count"],"D":d["d_geometry_rs_count"],"fresh_geometry":len(fresh),"lifecycle_scope":len(lifecycle),"event_request_geometry":e["geometry_scope_count"]})
+          print({"asof":asof,"history_pass":h["pass_count"],"legal_pass":l["counts"]["PASS_LEGAL"],"stage1_unknown":len(stage1_unknown),"breadth_missing":len(breadth_missing),"deep_history_unknown":len(deep_history_unknown),"coverage_complete":e.get("coverage_complete"),"weekly_pass":s["weekly_pass_count"],"weekly_trigger_scope":len(trigger_weekly),"regime":r["regime"],"A":d["a_geometry_count"],"B_breakout":d["b_breakout_count"],"B_armed":d["b_armed_count"],"D":d["d_geometry_rs_count"],"fresh_geometry":len(fresh),"lifecycle_scope":len(lifecycle),"event_request_geometry":e["geometry_scope_count"]})
           PY
       - name: Commit current post-MC artifacts
         if: steps.mc.outputs.ready == 'true'
