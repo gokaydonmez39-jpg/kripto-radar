@@ -361,7 +361,18 @@ def eval_one(sym,fam,g,df,event_status,state_cap="NORMAL",r92_eligible=True,froz
         cost=cost_mult*A;E=entry_model+cost;S=S0-cost;T=T1-cost;den=E-S
         return (T-E)/den if den>0 else float("-inf")
     basic=rr(0.10);severe=rr(0.25);th=THRESH[fam]
-    risk_pass=bool(0.30<=x<=2.05 and 0.75<=risk_atr<=2.50 and risk_pct<=0.08)
+    if fam=="A":
+        depth=g.get("depth")
+        try: depth=float(depth)
+        except Exception: depth=float("nan")
+        family_geometry_pass=bool(
+            0.30<=x<=1.07
+            and math.isfinite(depth) and 2.15<=depth<=4.00
+            and g.get("prelow_near_hl") is True
+        )
+    else:
+        family_geometry_pass=bool(0.30<=x<=2.05)
+    risk_pass=bool(family_geometry_pass and 0.75<=risk_atr<=2.50 and risk_pct<=0.08)
     rr_pass=bool(basic>=th["basic"] and severe>=th["severe"])
     target_overlap=bool(frozen.get("target_overlap") or T1<=entry_high)
     event_pass=(event_status=="CLEAN_DISCOVERY")
@@ -408,7 +419,8 @@ def eval_one(sym,fam,g,df,event_status,state_cap="NORMAL",r92_eligible=True,froz
                 "zone":frozen.get("target_zone")},
       "rr":{"basic":basic,"basic_threshold":th["basic"],"basic_pass":basic>=th["basic"],
             "severe":severe,"severe_threshold":th["severe"],"severe_pass":severe>=th["severe"]},
-      "risk_pass":risk_pass,"extension_veto":extension_veto,"target_overlap":target_overlap,
+      "risk_pass":risk_pass,"family_geometry_pass":family_geometry_pass,
+      "extension_veto":extension_veto,"target_overlap":target_overlap,
       "technical_hard_pass":hard_pass,"regime_finalist_status":regime_finalist_status,
       "state_cap":state_cap,"r92_eligible":bool(r92_eligible),
       "price_discovery_cap":synthetic_cap,
