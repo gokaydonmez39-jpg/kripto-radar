@@ -5,7 +5,7 @@ extension/reset, lifecycle and corporate-action consistency checks.
 No execution, no real-money authority, no G9 authority.
 """
 from __future__ import annotations
-import json, math, os, hashlib, time, threading
+import json, math, os, hashlib, time, threading, subprocess, sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 import akshare as ak
@@ -261,7 +261,17 @@ def eval_one(sym,fam,g,df,event_status,state_cap="NORMAL",r92_eligible=True,froz
       "frozen_geometry":frozen,"authority":"C4_17_DETERMINISTIC_TECHNICAL"
     }
 
+def _run_embedded_semantic_selftest():
+    p=ROOT/"test_alpha_semantics.py"
+    if not p.exists():raise RuntimeError("ALPHA_SEMANTIC_SELFTEST_MISSING")
+    cp=subprocess.run([sys.executable,str(p)],cwd=str(ROOT.parent),text=True,capture_output=True,timeout=60)
+    if cp.returncode!=0:
+        tail=(cp.stdout+"\n"+cp.stderr)[-4000:]
+        raise RuntimeError("ALPHA_SEMANTIC_SELFTEST_FAIL:"+tail.replace("\n"," | "))
+    return "PASS"
+
 def main():
+    semantic_selftest_status=_run_embedded_semantic_selftest()
     d=json.loads(DEEP.read_text());asof=d["asof_et"]
     if d.get("task_id")!=TASK_ID or d.get("execution")!="NONE" or d.get("real_money")!="NO-GO":
         raise RuntimeError("DEEP_SAFETY_OR_TASK_MISMATCH")
@@ -434,8 +444,9 @@ def main():
         "final_tech_shadow.py":blob_sha(Path(__file__).resolve())
       },
       "results":results,
-      "policy_semantics_exact":True,
-      "semantic_audit_status":"PASS_IMPLEMENTATION_CONFORMANCE",
+      "policy_semantics_exact":semantic_selftest_status=="PASS",
+      "embedded_semantic_selftest":semantic_selftest_status,
+      "semantic_audit_status":"PASS_IMPLEMENTATION_CONFORMANCE" if semantic_selftest_status=="PASS" else "BLOCKED_SELFTEST",
       "semantic_known_gaps":[],
       "semantic_repairs":["ACTIVE_STRUCTURAL_R1_TRIGGER_MINUS1","FROZEN_RETEST_5_SESSION_REGISTRY",
                           "S0_POST_TRIGGER_BREACH","EXTENSION_CLOSE_T_MINUS_CLOSE_TMINUS3_WITH_RETEST_RESET",
