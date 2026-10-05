@@ -1,9 +1,9 @@
 {
   "schema": "XRAY_SCHEDULER_KICK_V1",
-  "sequence": 1,
-  "requested_at_utc": "2026-10-04T21:26:56Z",
-  "requested_by": "MANUAL_READINESS_PROOF",
-  "reason": "END_TO_END_SCHEDULER_FAILOVER_TEST",
+  "sequence": 2,
+  "requested_at_utc": "2026-10-05T11:20:58Z",
+  "requested_by": "READINESS_DEEP_XRAY",
+  "reason": "PREOPEN_STALE_ROOT_RECOVERY",
   "execution": "NONE",
   "real_money": "NO-GO"
 }
