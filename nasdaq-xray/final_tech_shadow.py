@@ -134,6 +134,43 @@ def lifecycle_state_persists(state):
     """Prospective lifecycle persistence; historical backfill is intentionally excluded."""
     return str(state or "") in LIFECYCLE_PERSIST_STATES
 
+def _empty_lifecycle_registry():
+    return {"schema":"XRAY_CANDIDATE_LIFECYCLE_REGISTRY_V1",
+            "execution":"NONE","real_money":"NO-GO","records":{}}
+
+def load_lifecycle_registry(final_path:Path|None=OUT, sidecar_path:Path|None=LIFECYCLE):
+    """Load durable lifecycle state; a valid sidecar overrides embedded prior-final state."""
+    registry=_empty_lifecycle_registry()
+    for p,embedded in ((final_path,True),(sidecar_path,False)):
+        if p is None:
+            continue
+        p=Path(p)
+        if not p.exists():
+            continue
+        try:
+            obj=json.loads(p.read_text())
+            cand=(obj.get("lifecycle_registry") or {}) if embedded else obj
+            if (cand.get("schema")==registry["schema"]
+                and cand.get("execution")=="NONE" and cand.get("real_money")=="NO-GO"
+                and isinstance(cand.get("records"),dict)):
+                registry=cand
+        except Exception:
+            continue
+    return registry
+
+def persist_lifecycle_registry(registry:dict,path:Path|None=None):
+    """Persist and exact-readback JSON before any downstream final artifact is emitted."""
+    p=Path(path) if path is not None else LIFECYCLE_OUT
+    p.parent.mkdir(parents=True,exist_ok=True)
+    p.write_text(json.dumps(registry,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
+    try:
+        reread=json.loads(p.read_text())
+    except Exception as exc:
+        raise RuntimeError("LIFECYCLE_REGISTRY_READBACK_PARSE_FAIL") from exc
+    if reread!=registry:
+        raise RuntimeError("LIFECYCLE_REGISTRY_ROUNDTRIP_MISMATCH")
+    return reread
+
 def hist(sym,asof):
     try:
         x,src=load_history(sym,asof)
@@ -346,22 +383,7 @@ def main():
         if ev.get("asof_et")!=asof:raise RuntimeError("FINAL_EVENT_ASOF_MISMATCH")
         event_map=ev.get("event_status_by_symbol") or {}
 
-    registry={"schema":"XRAY_CANDIDATE_LIFECYCLE_REGISTRY_V1","execution":"NONE","real_money":"NO-GO","records":{}}
-    # Durable lifecycle state is embedded in the already-committed final artifact.
-    # This avoids a second mutable sidecar and survives ordinary Final Factory runs.
-    if OUT.exists():
-        try:
-            old_out=json.loads(OUT.read_text())
-            old=old_out.get("lifecycle_registry") or {}
-            if old.get("schema")==registry["schema"] and old.get("execution")=="NONE" and old.get("real_money")=="NO-GO":
-                registry=old
-        except Exception:pass
-    if LIFECYCLE.exists():
-        try:
-            old=json.loads(LIFECYCLE.read_text())
-            if old.get("schema")==registry["schema"] and old.get("execution")=="NONE" and old.get("real_money")=="NO-GO":
-                registry=old
-        except Exception:pass
+    registry=load_lifecycle_registry()
     old_records=registry.get("records") or {}
     current_frozen_binding=frozen_semantics_binding()
 
@@ -494,7 +516,7 @@ def main():
     # artifact so the workflow can atomically persist the registry alongside
     # the terminal/final artifacts. Without this file, frozen retest levels are
     # lost between runs even though the final artifact embeds a copy.
-    LIFECYCLE_OUT.write_text(json.dumps(registry,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
+    persist_lifecycle_registry(registry)
 
     passes=[k for k,v in results.items() if v.get("pre_g9_tech_pass")]
     watches=[k for k,v in results.items() if str(v.get("result","")).startswith("WATCH_")]
