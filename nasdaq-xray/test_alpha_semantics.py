@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import pathlib,sys
+import pathlib,sys,tempfile
 import pandas as pd
 ROOT=pathlib.Path(__file__).resolve().parent
 sys.path.insert(0,str(ROOT))
@@ -15,6 +15,7 @@ import final_tech_shadow as final_mod
 from final_tech_shadow import eval_one,_is_depositary_security_name,lifecycle_state_persists
 from deep_pre_r1_shadow import evaluate_recent_families
 import stage1_shadow as stage1_mod
+import history_phase as history_mod
 from stage1_shadow import recent_weekly_context
 from family_c_engine import eval_event
 from build_current_event_request import lifecycle_scope_from_final,event_geometry_scope
@@ -331,6 +332,20 @@ def main():
         (stage1_mod.load_history,stage1_mod.weekly_gate,stage1_mod.mechanical_scale_breaks,
          stage1_mod.mechanical_split_suspects,stage1_mod.recent_weekly_context,
          stage1_mod.base_pool,stage1_mod.drawdown_metrics)=olds
+
+    # Same-run HISTORY -> Stage1 OHLCV cache roundtrip. Cache is transport only;
+    # wrong-ASOF reads must return None so the normal fail-closed fetch path remains authoritative.
+    with tempfile.TemporaryDirectory() as td:
+        old_h=history_mod.HISTORY_CACHE_DIR;old_s=stage1_mod.HISTORY_CACHE_DIR
+        try:
+            history_mod.HISTORY_CACHE_DIR=td;stage1_mod.HISTORY_CACHE_DIR=td
+            cx=frame(300);casof=cx["date"].iloc[-1].date().isoformat()
+            history_mod._write_sina_cache("CACHE_TEST",cx)
+            cached=stage1_mod._cached_sina_history("CACHE_TEST",casof)
+            assert cached is not None and len(cached)==len(cx),("SAME_RUN_HISTORY_CACHE_ROUNDTRIP",cached)
+            assert stage1_mod._cached_sina_history("CACHE_TEST","2025-01-01") is None
+        finally:
+            history_mod.HISTORY_CACHE_DIR=old_h;stage1_mod.HISTORY_CACHE_DIR=old_s
 
     # Family C canonical pivot includes reaction high. A breakout above only the
     # consolidation high must not pass if it remains below reaction high.
