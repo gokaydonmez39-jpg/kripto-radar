@@ -106,7 +106,8 @@ def main():
         "breadth":{"count":len(breadth_missing),"symbols":breadth_missing},
         "deep_history":{"count":len(deep_history_unknown),"symbols":deep_history_unknown},
       },
-      "coverage_complete":not (stage1_unknown or breadth_missing or deep_history_unknown),
+      "upstream_coverage_complete":not (stage1_unknown or breadth_missing or deep_history_unknown),
+      "request_scope_complete":True,
       "current_weekly_scope":current_weekly,"current_weekly_scope_count":len(current_weekly),
       "current_weekly_scope_hash":hash_lines(current_weekly),
       "weekly_scope":weekly,"weekly_scope_count":len(weekly),"weekly_scope_hash":hash_lines(weekly),
@@ -124,7 +125,7 @@ def main():
       "official_confirmation":"ISSUER_IR_OR_SEC_PRIMARY;DISCOVERY_ONLY_NEVER_BLOCKS_OR_CLEARS_BY_ITSELF"
     }
     OUT.write_text(json.dumps(obj,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
-    print(json.dumps({"asof":asof,"coverage_complete":obj["coverage_complete"],
+    print(json.dumps({"asof":asof,"upstream_coverage_complete":obj["upstream_coverage_complete"],
                       "stage1_unknown_count":len(stage1_unknown),
                       "breadth_missing_count":len(breadth_missing),
                       "deep_history_unknown_count":len(deep_history_unknown),
