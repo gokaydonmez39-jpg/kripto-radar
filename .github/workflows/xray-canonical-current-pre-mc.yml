@@ -106,22 +106,30 @@ jobs:
               raise RuntimeError(f"POINTER_ASOF_FUTURE:{pointer_asof}>{latest_completed}")
 
           same_completed_epoch=bool(pointer_asof and latest_completed==pointer_asof)
-          # Pre-MC data is an immutable completed-session snapshot. Terminal health
-          # (for example a later alpha-semantic audit blocker) must never cause the
-          # same ASOF to be rebuilt from identity-only discovery and overwrite a
-          # previously validated PRICE/DV20 snapshot.
+          # A validated completed-session PRICE/DV20 snapshot is immutable even
+          # while the production pointer is still on the prior ASOF waiting for
+          # resolver/MC/Post-MC. Pointer lag must never force a same-ASOF rebuild.
           price_ok=False
+          price_asof=""
           try:
               px=json.load(open("nasdaq-xray/canonical_current_price_dv20.json"))
+              price_asof=str(px.get("asof_et") or "")
+          except Exception:
+              px={}
+              price_asof=""
+          current_epoch_artifact_exists=bool(price_asof and price_asof==latest_completed)
+          active_completed_epoch=bool(same_completed_epoch or current_epoch_artifact_exists)
+          frozen_asof=(pointer_asof if same_completed_epoch else latest_completed if current_epoch_artifact_exists else "")
+          try:
               price_ok=(
-                  px.get("asof_et")==pointer_asof
+                  bool(frozen_asof) and px.get("asof_et")==frozen_asof
                   and px.get("execution")=="NONE" and px.get("real_money")=="NO-GO"
                   and int(px.get("unknown_count",-1))==0
                   and int(px.get("pass_count",0))>0
               )
           except Exception:
               price_ok=False
-          recover=bool(same_completed_epoch and not price_ok)
+          recover=bool(active_completed_epoch and not price_ok)
           blocked_count=0
           block_recovery_attempted=False
           try:
@@ -131,17 +139,17 @@ jobs:
           except Exception:
               pass
           coverage_repair=bool(
-              same_completed_epoch and price_ok and blocked_count>0 and not block_recovery_attempted
+              active_completed_epoch and price_ok and blocked_count>0 and not block_recovery_attempted
           )
           resolver_refresh=False
-          if same_completed_epoch and price_ok and blocked_count>0 and block_recovery_attempted:
+          if active_completed_epoch and price_ok and blocked_count>0 and block_recovery_attempted:
               try:
                   rq=json.load(open("nasdaq-xray/canonical_current_resolver_request.json"))
                   resolver_refresh=set(rq.get("price_blocked_symbols") or [])!=set(px.get("blocked_symbols") or [])
               except Exception:
                   resolver_refresh=True
           bridge_refresh=False
-          if same_completed_epoch and price_ok and blocked_count>0:
+          if active_completed_epoch and price_ok and blocked_count>0:
               try:
                   import glob
                   blocked=set(px.get("blocked_symbols") or [])
@@ -152,7 +160,7 @@ jobs:
                           if (
                               b.get("schema")=="XRAY_RESOLVER_EPOCH_RESULT_V1"
                               and b.get("status")=="COMMITTED"
-                              and b.get("asof_et")==pointer_asof
+                              and b.get("asof_et")==frozen_asof
                               and b.get("queue_hash")==qh
                               and b.get("compiled_policy_version")=="C4.17"
                               and b.get("compiled_policy_hash")=="26a95745a50b65e85f6ece24b6501af0994764a84ddd886edb70d1fcd770849c"
@@ -164,7 +172,7 @@ jobs:
                           pass
               except Exception:
                   bridge_refresh=False
-          build=not same_completed_epoch
+          build=not active_completed_epoch
           with open(os.environ["GITHUB_OUTPUT"],"a") as out:
               out.write(f"build={'true' if build else 'false'}\n")
               out.write(f"recover={'true' if recover else 'false'}\n")
@@ -173,6 +181,7 @@ jobs:
               out.write(f"bridge_refresh={'true' if bridge_refresh else 'false'}\n")
               out.write(f"latest_completed={latest_completed}\n")
               out.write(f"pointer_asof={pointer_asof}\n")
+              out.write(f"recovery_asof={frozen_asof}\n")
           print({
               "build":build,
               "recover":recover,
@@ -184,6 +193,10 @@ jobs:
               "block_recovery_attempted":block_recovery_attempted,
               "latest_completed":latest_completed,
               "pointer_asof":pointer_asof,
+              "price_asof":price_asof,
+              "frozen_asof":frozen_asof,
+              "current_epoch_artifact_exists":current_epoch_artifact_exists,
+              "active_completed_epoch":active_completed_epoch,
               "terminal_asof":terminal_asof,
               "phase":phase,
               "reason":(
@@ -191,7 +204,7 @@ jobs:
                   "REPAIR_BLOCKED_PRICE_DV20_COVERAGE" if coverage_repair else
                   "REFRESH_BLOCKED_RESOLVER_REQUEST" if resolver_refresh else
                   "APPLY_TERMINAL_OVERRIDE_BRIDGE" if bridge_refresh else
-                  "FREEZE_COMPLETED_EPOCH_UNTIL_NEXT_RTH_CLOSE" if same_completed_epoch else
+                  "FREEZE_COMPLETED_EPOCH_UNTIL_NEXT_RTH_CLOSE" if active_completed_epoch else
                   "NEW_COMPLETED_EPOCH"
               ),
           })
@@ -204,7 +217,7 @@ jobs:
           git config user.name "xray-dataplane-bot"
           git config user.email "xray-dataplane-bot@users.noreply.github.com"
           git fetch --depth=100 origin main
-          asof="${{ steps.rollover.outputs.pointer_asof }}"
+          asof="${{ steps.rollover.outputs.recovery_asof }}"
           files=(
             nasdaq-xray/canonical_current_full_state.json
             nasdaq-xray/canonical_current_full_candidates.json
@@ -213,6 +226,7 @@ jobs:
             nasdaq-xray/canonical_current_master_manifest.json
             nasdaq-xray/canonical_current_price_dv20.json
             nasdaq-xray/canonical_current_resolver_request.json
+            nasdaq-xray/canonical_current_resolver_chunk_manifest.json
           )
           good=""
           while read -r sha; do
@@ -241,8 +255,212 @@ jobs:
             exit 1
           fi
           echo "XRAY_PRE_MC_RECOVERY_SOURCE=$good"
+          good_chunks=()
+          while IFS= read -r p; do
+            [[ -n "$p" ]] && good_chunks+=("$p")
+          done < <(git ls-tree -r --name-only "$good" -- nasdaq-xray | grep -E '^nasdaq-xray/canonical_current_resolver_chunk_[0-9]{4}\.json          python - "$asof" <<'PY'
+          import json,sys
+          a=sys.argv[1]
+          p=json.load(open("nasdaq-xray/canonical_current_price_dv20.json"))
+          m=json.load(open("nasdaq-xray/canonical_current_master_manifest.json"))
+          q=json.load(open("nasdaq-xray/canonical_current_resolver_request.json"))
+          cm=json.load(open("nasdaq-xray/canonical_current_resolver_chunk_manifest.json"))
+          assert p["asof_et"]==m["asof_et"]==q["asof_et"]==a
+          assert p["execution"]=="NONE" and p["real_money"]=="NO-GO"
+          assert p["unknown_count"]==0 and p["pass_count"]>0
+          assert p["source_master_queue_hash"]==m["queue_hash"]
+          assert q["queue_hash"]==m["queue_hash"]
+          import hashlib,pathlib
+          def blob(path):
+              b=pathlib.Path(path).read_bytes()
+              return hashlib.sha1(b"blob "+str(len(b)).encode()+b"\0"+b).hexdigest()
+          assert cm["request_blob_sha"]==blob("nasdaq-xray/canonical_current_resolver_request.json")
+          assert cm["queue_hash"]==q["queue_hash"]
+          assert cm["symbol_hash"]==q["symbol_hash"]
+          assert int(cm["symbol_count"])==int(q["symbol_count"])
+          chunks=sorted(pathlib.Path("nasdaq-xray").glob("canonical_current_resolver_chunk_[0-9][0-9][0-9][0-9].json"))
+          assert len(chunks)==int(cm["chunk_count"])
+          rebuilt=[]
+          for cp in chunks:
+              cj=json.load(open(cp))
+              assert cj["request_blob_sha"]==cm["request_blob_sha"]
+              assert cj["symbol_hash"]==cm["symbol_hash"]
+              rebuilt.extend(cj["symbols"])
+          assert rebuilt==q["symbols"]
+          print({"recovered_asof":a,"price_pass":p["pass_count"],"price_unknown":p["unknown_count"],"resolver_chunks":len(chunks)})
+          PY
+          git add "${files[@]}"
+          if git diff --cached --quiet; then
+            echo "XRAY_PRE_MC_RECOVERY=NO_CHANGE"
+            exit 0
+          fi
+          git commit -m "fix(xray): restore validated frozen pre-MC epoch [skip ci]"
+          git push origin HEAD:main
+          echo "XRAY_PRE_MC_RECOVERY=PASS"
+
+      - name: Frozen completed epoch healthy no-op
+        if: steps.rollover.outputs.build != 'true' && steps.rollover.outputs.recover != 'true' && steps.rollover.outputs.coverage_repair != 'true' && steps.rollover.outputs.resolver_refresh != 'true' && steps.rollover.outputs.bridge_refresh != 'true'
+        run: echo "XRAY_PRE_MC=HEALTHY_NOOP_COMPLETED_EPOCH pointer_asof=${{ steps.rollover.outputs.pointer_asof }} latest_completed=${{ steps.rollover.outputs.latest_completed }}"
+      - name: Build identity-only full universe
+        if: steps.rollover.outputs.build == 'true'
+        timeout-minutes: 8
+        run: python nasdaq-xray/sina_stage.py
+      - name: Extract unresolved set
+        if: steps.rollover.outputs.build == 'true'
+        run: python nasdaq-xray/extract_unknown_manifest.py
+      - name: Prepare identity-only no-op overlay
+        if: steps.rollover.outputs.build == 'true'
+        run: |
+          python - <<'PY'
+          import json,pathlib
+          from datetime import datetime,timezone
+          root=pathlib.Path("nasdaq-xray")
+          s=json.load(open(root/"canonical_current_full_state.json"))
+          obj={
+            "schema":"XRAY_HISTORY_IDENTITY_RESOLUTION_OVERLAY_V1",
+            "task_id":"6a825366222081918997094d76e6ae46",
+            "execution":"NONE","real_money":"NO-GO",
+            "base_asof_et":s["asof_et"],
+            "resolver":"IDENTITY_ONLY_NOOP_MARKET_GATES_DEFERRED",
+            "generated_at_utc":datetime.now(timezone.utc).isoformat(),
+            "max_age_hours":24,
+            "manifest_unknown_count":0,
+            "current_resolution_count":0,
+            "current_unresolved_count":0,
+            "resolution_count":0,
+            "unresolved_count":0,
+            "resolutions":{},"unresolved":{},
+          }
+          (root/"canonical_current_resolution_overlay.json").write_text(json.dumps(obj,sort_keys=True,indent=2)+"\n")
+          PY
+      - name: Build current master manifest
+        if: steps.rollover.outputs.build == 'true'
+        run: python nasdaq-xray/build_current_master_manifest.py
+      - name: Build policy-ordered PRICE-DV20
+        if: steps.rollover.outputs.build == 'true' || steps.rollover.outputs.coverage_repair == 'true' || steps.rollover.outputs.bridge_refresh == 'true'
+        run: python nasdaq-xray/price_dv20_recover_from_fullstate.py
+      - name: Build resolver bridge request
+        if: steps.rollover.outputs.build == 'true' || steps.rollover.outputs.coverage_repair == 'true' || steps.rollover.outputs.resolver_refresh == 'true' || steps.rollover.outputs.bridge_refresh == 'true'
+        run: python nasdaq-xray/build_current_resolver_request.py
+      - name: Structural gate
+        if: steps.rollover.outputs.build == 'true' || steps.rollover.outputs.coverage_repair == 'true' || steps.rollover.outputs.resolver_refresh == 'true' || steps.rollover.outputs.bridge_refresh == 'true'
+        run: |
+          python - <<'PY'
+          import json
+          m=json.load(open("nasdaq-xray/canonical_current_master_manifest.json"))
+          p=json.load(open("nasdaq-xray/canonical_current_price_dv20.json"))
+          q=json.load(open("nasdaq-xray/canonical_current_resolver_request.json"))
+          cm=json.load(open("nasdaq-xray/canonical_current_resolver_chunk_manifest.json"))
+          assert m["task_id"]==p["task_id"]==q["task_id"]=="6a825366222081918997094d76e6ae46"
+          assert m["phase"]=="MASTER_IDENTITY" and m["status"]=="HISTORY_COMPLETE"
+          assert m["unknown_count"]==0 and m["pass_count"]==m["queue_total"]
+          assert m["asof_et"]==p["asof_et"]==q["asof_et"]
+          assert q["compiled_policy_path"]=="nasdaq-xray/chatgpt_compiled_policy_v3.json"
+          assert q["compiled_policy_blob_sha"]=="10d7af14870dfac0dc4566595d95a06f3faa854d"
+          assert q["compiled_policy_hash"]=="26a95745a50b65e85f6ece24b6501af0994764a84ddd886edb70d1fcd770849c"
+          assert q["compiled_policy_version"]=="C4.17"
+          assert cm["schema"]=="XRAY_RESOLVER_REQUEST_CHUNK_MANIFEST_V1"
+          assert cm["task_id"]==q["task_id"] and cm["asof_et"]==q["asof_et"]
+          assert cm["execution"]=="NONE" and cm["real_money"]=="NO-GO" and cm["unknown_never_pass"] is True
+          assert cm["compiled_policy_blob_sha"]==q["compiled_policy_blob_sha"] and cm["compiled_policy_hash"]==q["compiled_policy_hash"] and cm["compiled_policy_version"]==q["compiled_policy_version"]
+          assert cm["queue_hash"]==q["queue_hash"] and cm["symbol_hash"]==q["symbol_hash"] and cm["symbol_count"]==q["symbol_count"]
+          assert cm["coverage_complete"] is True and cm["chunk_size"]<=100
+          assert cm["chunk_count"]==len(cm["chunks"])
+          import hashlib,pathlib
+          rb=pathlib.Path("nasdaq-xray/canonical_current_resolver_request.json").read_bytes()
+          rsha=hashlib.sha1(b"blob "+str(len(rb)).encode()+b"\0"+rb).hexdigest()
+          assert cm["request_blob_sha"]==rsha
+          rebuilt=[]
+          for i,row in enumerate(cm["chunks"],1):
+              cp=pathlib.Path(row["path"]); cb=cp.read_bytes(); csha=hashlib.sha1(b"blob "+str(len(cb)).encode()+b"\0"+cb).hexdigest()
+              cj=json.loads(cb)
+              assert row["chunk_index"]==i and row["blob_sha"]==csha
+              assert cj["request_blob_sha"]==rsha and cj["queue_hash"]==q["queue_hash"] and cj["symbol_hash"]==q["symbol_hash"]
+              assert cj["chunk_index"]==i and cj["chunk_total"]==cm["chunk_count"] and cj["symbol_count"]==len(cj["symbols"])<=100
+              assert row["symbol_count"]==cj["symbol_count"] and row["chunk_symbol_hash"]==cj["chunk_symbol_hash"]
+              rebuilt.extend(cj["symbols"])
+          assert rebuilt==q["symbols"] and len(rebuilt)==len(set(rebuilt))==q["symbol_count"]
+          assert q["queue_hash"]==m["queue_hash"] and q["queue_total"]==m["queue_total"]
+          assert q["symbol_count"]==len(q["symbols"])==len(set(q["symbols"]))
+          assert q["master_unknown_count"]==len(q["master_unknown_symbols"])==0
+          assert q["price_unknown_count"]==len(q["price_unknown_symbols"])
+          assert q.get("price_blocked_count",0)==len(q.get("price_blocked_symbols") or [])
+          assert set(q["symbols"])==set(q["master_unknown_symbols"])|set(q["price_unknown_symbols"])|set(q.get("price_blocked_symbols") or [])
+          if q["settlement_required"]:
+              assert q["pointer_asof_et"] < q["asof_et"]
+              assert len(q["settlement_symbols"])==3 and len(set(q["settlement_symbols"]))==3
+              assert {"AAPL","NVDA"}<=set(q["settlement_symbols"])
+              assert q["settlement_core_symbol"] not in {"AAPL","NVDA"}
+              assert q["settlement_core_source_path"] and q["settlement_core_source_blob_sha"]
+          assert p["source_master_queue_hash"]==m["queue_hash"]
+          assert p["source_master_count"]==m["queue_total"]
+          assert len(p["results"])==m["queue_total"]
+          assert sum(p["counts"].values())==m["queue_total"]
+          assert p["pass_count"]==len(p["pass_symbols"])==len(set(p["pass_symbols"]))
+          print({"asof":m["asof_et"],"master_status":m["status"],"master_unknown":m["unknown_count"],"price_dv20_unknown":p["unknown_count"],"price_dv20_blocked":p.get("blocked_count",(p.get("counts") or {}).get("BLOCK_CURRENT_RUN",0)),"price_dv20_pass":p["pass_count"],"resolver_request_status":q["status"],"settlement_required":q["settlement_required"]})
+          PY
+      - name: Commit current pre-MC artifacts
+        if: steps.rollover.outputs.build == 'true' || steps.rollover.outputs.coverage_repair == 'true' || steps.rollover.outputs.resolver_refresh == 'true' || steps.rollover.outputs.bridge_refresh == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "xray-dataplane-bot"
+          git config user.email "xray-dataplane-bot@users.noreply.github.com"
+          files=(
+            nasdaq-xray/canonical_current_full_state.json
+            nasdaq-xray/canonical_current_full_candidates.json
+            nasdaq-xray/canonical_current_unknowns.json
+            nasdaq-xray/canonical_current_resolution_overlay.json
+            nasdaq-xray/canonical_current_master_manifest.json
+            nasdaq-xray/canonical_current_price_dv20.json
+            nasdaq-xray/canonical_current_resolver_request.json
+            nasdaq-xray/canonical_current_resolver_chunk_manifest.json
+          )
+          while IFS= read -r p; do files+=("$p"); done < <(find nasdaq-xray -maxdepth 1 -type f -name "canonical_current_resolver_chunk_[0-9][0-9][0-9][0-9].json" | sort)
+          tmpdir="$(mktemp -d)"
+          trap 'rm -rf "$tmpdir"' EXIT
+          for p in "${files[@]}"; do
+            if [ -f "$p" ]; then
+              mkdir -p "$tmpdir/$(dirname "$p")"
+              cp "$p" "$tmpdir/$p"
+            fi
+          done
+          for attempt in 1 2 3 4 5; do
+            git rebase --abort >/dev/null 2>&1 || true
+            git fetch origin main
+            git reset --hard origin/main
+            rm -f nasdaq-xray/canonical_current_resolver_chunk_[0-9][0-9][0-9][0-9].json
+            for p in "${files[@]}"; do
+              if [ -f "$tmpdir/$p" ]; then
+                mkdir -p "$(dirname "$p")"
+                cp "$tmpdir/$p" "$p"
+              fi
+            done
+            git add -A -- "${files[@]}" nasdaq-xray/canonical_current_resolver_chunk_[0-9][0-9][0-9][0-9].json 2>/dev/null || true
+            if git diff --cached --quiet; then
+              echo "XRAY_FACTORY_COMMIT=NO_CHANGE"
+              exit 0
+            fi
+            git commit -m "chore(xray): current epoch pre-MC factory [skip ci]"
+            if git push origin HEAD:main; then
+              echo "XRAY_FACTORY_COMMIT=PASS"
+              exit 0
+            fi
+            echo "XRAY_FACTORY_PUSH_RACE attempt=$attempt"
+            sleep $((attempt*2))
+          done
+          echo "XRAY_FACTORY_COMMIT=FAIL" >&2
+          exit 1
+# XRAY_CONTROL_KICK_20261003_PREMC_NO_SEMANTIC_CHANGE
+ || true)
+          if [[ "${#good_chunks[@]}" -eq 0 ]]; then
+            echo "XRAY_PRE_MC_RECOVERY=FAIL_NO_RESOLVER_CHUNKS" >&2
+            exit 1
+          fi
+          files+=("${good_chunks[@]}")
           git fetch origin main
           git reset --hard origin/main
+          rm -f nasdaq-xray/canonical_current_resolver_chunk_[0-9][0-9][0-9][0-9].json
           for p in "${files[@]}"; do
             git checkout "$good" -- "$p"
           done

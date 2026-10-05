@@ -590,15 +590,28 @@ def test_workflow_race_and_pre_mc_freeze_contracts():
     marker="- name: Completed-session epoch rollover guard"; assert marker in pre
     guard=pre.split(marker,1)[1].split("- name: Recover corrupted frozen pre-MC snapshot",1)[0]
     assert "same_completed_epoch=bool(pointer_asof and latest_completed==pointer_asof)" in guard
-    assert "recover=bool(same_completed_epoch and not price_ok)" in guard
-    assert "build=not same_completed_epoch" in guard
+    assert "current_epoch_artifact_exists=bool(price_asof and price_asof==latest_completed)" in guard
+    assert "active_completed_epoch=bool(same_completed_epoch or current_epoch_artifact_exists)" in guard
+    assert "recover=bool(active_completed_epoch and not price_ok)" in guard
+    assert "build=not active_completed_epoch" in guard
+    assert 'out.write(f"recovery_asof={frozen_asof}\\n")' in guard
     assert "terminal_result" not in guard and "FULL_E2E_RESEARCH_PASS" not in guard
-    def core(pointer_asof,latest_completed,price_ok):
+    recovery=pre.split("- name: Recover corrupted frozen pre-MC snapshot",1)[1].split("- name: Frozen completed epoch healthy no-op",1)[0]
+    assert 'asof="${{ steps.rollover.outputs.recovery_asof }}"' in recovery
+    assert "canonical_current_resolver_chunk_manifest.json" in recovery
+    assert "git ls-tree -r --name-only" in recovery
+    assert "rm -f nasdaq-xray/canonical_current_resolver_chunk_" in recovery
+    assert 'assert rebuilt==q["symbols"]' in recovery
+    def core(pointer_asof,latest_completed,price_asof,price_ok):
         same=bool(pointer_asof and latest_completed==pointer_asof)
-        return {"build":not same,"recover":bool(same and not price_ok)}
-    assert core("2026-10-02","2026-10-02",True)=={"build":False,"recover":False}
-    assert core("2026-10-02","2026-10-02",False)=={"build":False,"recover":True}
-    assert core("2026-10-02","2026-10-05",True)=={"build":True,"recover":False}
+        current=bool(price_asof and price_asof==latest_completed)
+        active=bool(same or current)
+        return {"build":not active,"recover":bool(active and not price_ok)}
+    assert core("2026-10-02","2026-10-02","2026-10-02",True)=={"build":False,"recover":False}
+    assert core("2026-10-02","2026-10-02","2026-10-02",False)=={"build":False,"recover":True}
+    assert core("2026-10-02","2026-10-05","2026-10-05",True)=={"build":False,"recover":False}
+    assert core("2026-10-02","2026-10-05","2026-10-05",False)=={"build":False,"recover":True}
+    assert core("2026-10-02","2026-10-05","2026-10-02",False)=={"build":True,"recover":False}
 
 def main():
     test_r1_no_future_mutation_and_confirmation(); test_resistance_role_change_state_machine()
