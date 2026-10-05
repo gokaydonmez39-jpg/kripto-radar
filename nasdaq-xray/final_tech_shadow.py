@@ -15,6 +15,7 @@ from alpha_semantics import (
     nearest_active_resistance, extension_diagnostics, retest_bar,
     apply_split_events, split_consistent_history, mechanical_scale_breaks,
     mechanical_split_suspects,
+    history_fingerprint,
 )
 
 ROOT=Path(__file__).resolve().parent
@@ -429,13 +430,22 @@ def main():
             frozen_candidates.append((sym,fam,g,event_map.get(sym,rec.get("event_status"))))
     candidates=frozen_candidates+fresh_candidates
 
-    syms=sorted(set(x[0] for x in candidates));data={};errors={};history_source={}
+    syms=sorted(set(x[0] for x in candidates));data={};errors={};history_source={};history_fps={}
+    expected_history_fps=d.get("history_fingerprint_by_symbol") or {}
     with ThreadPoolExecutor(max_workers=WORKERS) as ex:
         futs={ex.submit(hist,s,asof):s for s in syms}
         for fut in as_completed(futs):
             s,x,e,src=fut.result()
             if x is None:errors[s]=e
-            else:data[s]=x;history_source[s]=src
+            else:
+                fp=history_fingerprint(x,asof)
+                exp=expected_history_fps.get(s)
+                if exp is None:
+                    errors[s]="HISTORY_FINGERPRINT_BINDING_MISSING"
+                elif fp!=exp:
+                    errors[s]="HISTORY_FINGERPRINT_MISMATCH"
+                else:
+                    data[s]=x;history_source[s]=src;history_fps[s]=fp
 
     corporate_action_errors={}; corporate_action_verification={}
     for s in list(data):
@@ -536,15 +546,22 @@ def main():
         if str(v.get("reason","")).startswith("CORPORATE_ACTION")
         or str(v.get("corporate_action_status","")).startswith("UNKNOWN")
     )
+    history_binding_unresolved=sorted(
+        k for k,v in results.items()
+        if "HISTORY_FINGERPRINT" in str(v.get("reason",""))
+    )
     semantic_known_gaps=[]
     if not lifecycle_semantics_exact:
         semantic_known_gaps.append("FROZEN_LIFECYCLE_PERSISTENCE_BINDING_NOT_EXACT")
     if corporate_semantics_unresolved:
         semantic_known_gaps.append("CORPORATE_ACTION_RECONCILIATION_UNPROVEN_FOR_FINALISTS")
+    if history_binding_unresolved:
+        semantic_known_gaps.append("CROSS_PHASE_HISTORY_BINDING_UNPROVEN_FOR_FINALISTS")
     policy_semantics_exact=bool(
         semantic_selftest_status=="PASS"
         and lifecycle_semantics_exact
         and not corporate_semantics_unresolved
+        and not history_binding_unresolved
     )
     if semantic_selftest_status!="PASS":
         semantic_audit_status="BLOCKED_SELFTEST"
@@ -552,6 +569,8 @@ def main():
         semantic_audit_status="BLOCKED_LIFECYCLE_PERSISTENCE"
     elif corporate_semantics_unresolved:
         semantic_audit_status="BLOCKED_CORPORATE_ACTION_RECONCILIATION"
+    elif history_binding_unresolved:
+        semantic_audit_status="BLOCKED_CROSS_PHASE_HISTORY_BINDING"
     else:
         semantic_audit_status="PASS_IMPLEMENTATION_CONFORMANCE"
     out={
@@ -562,6 +581,8 @@ def main():
       "watch_count":len(watches),"watch":sorted(watches),"fail_count":len(fails),"fail":sorted(fails),
       "state_caps":{s:state_caps.get(s,"NORMAL") for s in syms},
       "r92_ineligible":sorted(r92_ineligible & set(syms)),"history_source_by_symbol":history_source,
+      "history_fingerprint_by_symbol":history_fps,
+      "history_fingerprint_semantics":"RAW_OR_OFFICIAL_COMPOSITE_ASOF_TAIL320_V1",
       "corporate_action_verification":corporate_action_verification,
       "source_deep_path":relpath(DEEP),"source_deep_blob_sha":blob_sha(DEEP),
       "source_family_c_path":relpath(FAMILY_C) if FAMILY_C is not None and FAMILY_C.exists() else None,
