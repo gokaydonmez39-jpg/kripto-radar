@@ -420,6 +420,7 @@ def main():
       "candidate_halt_guard_unknown":halt_guard_unknown,
       "alpha_semantic_conformance_unknown":0 if ft.get("policy_semantics_exact") is True else 1,
       "alpha_source_binding_unknown":0 if alpha_source_binding_exact else 1,
+      "lifecycle_semantic_binding_unknown":0 if ft.get("lifecycle_semantics_exact") is True else 1,
     }
     full=all(v==0 for v in blockers.values())
     terminal_result=("NO_CONFIRMED_SETUP" if not pre else "PRE_G9_SETUP_EXISTS") if full else "PARTIAL_UNKNOWN"
@@ -485,6 +486,7 @@ def main():
         "deep_exact_weekly_scope":True,
         "final_exact_confirmed_family_set":True,
         "final_extra_rows_exact_lifecycle_backed":extra_lifecycle<=lifecycle_backed,
+        "lifecycle_frozen_semantics_exact":ft.get("lifecycle_semantics_exact") is True,
         "alpha_semantic_conformance_exact":ft.get("policy_semantics_exact") is True,
         "alpha_source_binding_exact":alpha_source_binding_exact,
         "alpha_source_blobs_exact":alpha_source_blobs_exact,
