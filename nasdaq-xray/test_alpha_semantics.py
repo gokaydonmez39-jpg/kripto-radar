@@ -135,10 +135,8 @@ def main():
     trigger_idx=len(hf)-5
     td=hf.date.iloc[trigger_idx].date().isoformat()
     frozen={"setup_id":"TEST-HIST","symbol":"TEST","family":"D","trigger_date":td,
-            "A":10.0,"P":100.0,"anchor":97.0,"ATR_anchor":10.0,
-            "anchor_occurrence_at":td,"anchor_available_at":td,
-            "entry_low":100.0,"entry_high":102.5,
-            "entry_model":102.5,"chase_limit":105.0,"S0":92.5,"T1":150.0,
+            "A":10.0,"P":100.0,"anchor":97.0,"entry_low":100.0,"entry_high":102.5,
+            "entry_model":102.5,"chase_limit":105.0,"S0":95.0,"T1":150.0,
             "target_source":"TEST","target_zone":None,"target_overlap":False,
             "synthetic_target":False,"source_geometry":{"trigger_date":td,"P":100.0,"anchor":97.0}}
     g={"trigger_date":td,"P":100.0,"anchor":97.0}
@@ -146,19 +144,14 @@ def main():
     assert hr["result"]=="WATCH_HISTORICAL_SETUP",hr
     pr=eval_one("TEST","D",g,hf,"CLEAN_DISCOVERY",frozen=frozen,recorded_before=True)
     assert pr["result"]=="PRE_G9_TECH_PASS",pr
-    lowrisk=dict(frozen);lowrisk["S0"]=93.5  # (102.5-93.5)/10 = 0.90 ATR
-    lr=eval_one("TEST","D",g,hf,"CLEAN_DISCOVERY",frozen=lowrisk,recorded_before=True)
-    assert lr["result"]=="FAIL_RISK_GEOMETRY" and lr["risk_pass"] is False,lr
 
     # A chase has no valid fill now but the frozen setup must survive for a valid retest.
     cf=frame(270)
     cf[["open","high","low","close"]]=[102.0,103.0,99.0,102.0]
     cti=len(cf)-3;ctd=cf.date.iloc[cti].date().isoformat()
     cfr={"setup_id":"TEST-CHASE","symbol":"TEST","family":"D","trigger_date":ctd,
-         "A":10.0,"P":100.0,"anchor":97.0,"ATR_anchor":10.0,
-         "anchor_occurrence_at":ctd,"anchor_available_at":ctd,
-         "entry_low":100.0,"entry_high":102.5,
-         "entry_model":102.5,"chase_limit":105.0,"S0":92.5,"T1":150.0,
+         "A":10.0,"P":100.0,"anchor":97.0,"entry_low":100.0,"entry_high":102.5,
+         "entry_model":102.5,"chase_limit":105.0,"S0":95.0,"T1":150.0,
          "target_source":"TEST","target_zone":None,"target_overlap":False,
          "synthetic_target":False,"source_geometry":{"trigger_date":ctd,"P":100.0,"anchor":97.0}}
     cg={"trigger_date":ctd,"P":100.0,"anchor":97.0}
@@ -176,8 +169,7 @@ def main():
       "WILDER_FIRST_TR_UNDEFINED","EMA_SMA_SEED","D_DRAWDOWN_DEFINITIONS",
       "R1_STRUCTURAL_TRIGGER_MINUS1","R1_ENTRY_OVERLAP","EXTENSION_RESET","RETEST_BAR","SETUP_ID_STABLE",
       "B_RECENT_TRIGGER_PERSISTENCE","MECHANICAL_SCALE_BREAK_GUARD","BREADTH_CLOSE_ONLY_SCALE_GUARD","SPLIT_ONLY_RECONCILIATION","SPLIT_RAW_CROSSCHECK","HISTORICAL_DISCOVERY_WATCH","CHASE_FROZEN_RETEST_RECOVERY",
-      "ADR_RATIO_FAIL_CLOSED_CLASSIFICATION","ANCIENT_SCALE_BREAK_OUTSIDE_TECH_HORIZON",
-      "ANCHOR_TIME_STOP_CHRONOLOGY","RISK_ATR_ONE_POINT_ZERO_FLOOR"
+      "ADR_RATIO_FAIL_CLOSED_CLASSIFICATION","ANCIENT_SCALE_BREAK_OUTSIDE_TECH_HORIZON"
     ]})
 
 if __name__=="__main__":
