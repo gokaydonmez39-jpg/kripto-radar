@@ -204,6 +204,26 @@ def test_candidate_legal_guard_scope_is_candidate_local():
     lifecycle={"records":{"old":{"symbol":"L"}}}
     assert legal_guard_mod.candidate_scope(deep,fc,lifecycle)==["A","B","C","D","L"]
 
+def test_candidate_legal_guard_lifecycle_fallback_matches_final():
+    old_prev,old_side=legal_guard_mod.PREV_FINAL,legal_guard_mod.LIFECYCLE
+    try:
+        with tempfile.TemporaryDirectory() as td:
+            td=Path(td)
+            prev=td/"prev_final.json"; side=td/"lifecycle.json"
+            embedded={"schema":"XRAY_CANDIDATE_LIFECYCLE_REGISTRY_V1","task_id":ft.TASK_ID,
+                      "execution":"NONE","real_money":"NO-GO","records":{"p":{"symbol":"PI"}}}
+            prev.write_text(json.dumps({"lifecycle_registry":embedded}))
+            legal_guard_mod.PREV_FINAL=prev;legal_guard_mod.LIFECYCLE=side
+            got,src=legal_guard_mod.load_lifecycle_state()
+            assert src=="PREVIOUS_FINAL_EMBEDDED" and got["records"]["p"]["symbol"]=="PI",(src,got)
+            sidecar={"schema":"XRAY_CANDIDATE_LIFECYCLE_REGISTRY_V1","task_id":ft.TASK_ID,
+                     "execution":"NONE","real_money":"NO-GO","records":{"s":{"symbol":"SWKS"}}}
+            side.write_text(json.dumps(sidecar))
+            got2,src2=legal_guard_mod.load_lifecycle_state()
+            assert src2=="SIDECAR" and set(got2["records"])=={"s"},(src2,got2)
+    finally:
+        legal_guard_mod.PREV_FINAL,legal_guard_mod.LIFECYCLE=old_prev,old_side
+
 def test_candidate_legal_guard_phrase_severity():
     boiler="the credit agreement contains customary events of default and financial covenants and other standard provisions"
     assert legal_guard_mod._phrase_flags(boiler,legal_guard_mod.HARD_PHRASES)==[]
@@ -346,7 +366,7 @@ def main():
       "RESISTANCE_ROLE_CHANGE_STATE_MACHINE","FINAL_HISTORY_OHLCV_BINDING","REGIME_INTERVAL_BOUNDS_AND_FINALIST_GATE","CORPORATE_ACTION_NONE_VS_SCALE_BREAK_FAIL_CLOSED","RETEST_WINDOW_EXPIRES_AFTER_5","MODEL_HORIZON_EXPIRES_AFTER_8",
       "FROZEN_LEVELS_NEXT_ASOF_STABLE","LIFECYCLE_REGIME_REVALIDATION_PERSISTS","LIFECYCLE_PERSISTENCE_ROUNDTRIP",
       "FINAL_ALPHA_STALE_SOURCE_GUARD","PARTIAL_COVERAGE_DOES_NOT_GLOBAL_ABORT",
-      "DETAILED_FINALIST_LEGAL_FAIL_CLOSED","FINAL_VERIFIED_MARKET_GAP_NOT_DOUBLE_BLOCKED","DETAILED_LEGAL_GUARD_EXACT_SOURCE_BINDING","DETAILED_LEGAL_GUARD_POLICY_BINDING","DETAILED_LEGAL_GUARD_NONCIRCULAR_LIFECYCLE","DETAILED_LEGAL_GUARD_BOILERPLATE_SEVERITY","DETAILED_LEGAL_GUARD_ANNUAL_PLUS_QUARTERLY_SCOPE","DETAILED_LEGAL_GUARD_NO_SELF_TRIGGER",
+      "DETAILED_FINALIST_LEGAL_FAIL_CLOSED","FINAL_VERIFIED_MARKET_GAP_NOT_DOUBLE_BLOCKED","DETAILED_LEGAL_GUARD_EXACT_SOURCE_BINDING","DETAILED_LEGAL_GUARD_POLICY_BINDING","DETAILED_LEGAL_GUARD_NONCIRCULAR_LIFECYCLE","DETAILED_LEGAL_GUARD_LIFECYCLE_FALLBACK_PARITY","DETAILED_LEGAL_GUARD_BOILERPLATE_SEVERITY","DETAILED_LEGAL_GUARD_ANNUAL_PLUS_QUARTERLY_SCOPE","DETAILED_LEGAL_GUARD_NO_SELF_TRIGGER",
       "POST_MC_PARTIAL_COVERAGE_GATE","PRE_MC_COMPLETED_ASOF_FREEZE_TRUTH_TABLE"]})
 
 if __name__=="__main__": main()
