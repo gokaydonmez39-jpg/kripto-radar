@@ -81,6 +81,49 @@ jobs:
       - name: Run deterministic alpha semantics regression
         run: python nasdaq-xray/test_alpha_semantics.py
 
+      - name: Assert Family-C event ATR and trigger ATR separation
+        run: |
+          python - <<'PY'
+          import sys
+          sys.path.insert(0,"nasdaq-xray")
+          import pandas as pd
+          import family_c_engine as fc
+          rows=[]
+          dates=pd.bdate_range("2025-12-01",periods=32)
+          for i,d in enumerate(dates):
+              rows.append({"date":d,"open":100.0,"high":101.0,"low":99.0,"close":100.0,"volume":1_000_000.0})
+          df=pd.DataFrame(rows)
+          r0=21
+          # pre-event close=100, reaction opening gap=+6; reaction floor stays intact.
+          df.loc[r0,["open","high","low","close"]]=[106.0,112.0,104.0,110.0]
+          df.loc[r0+1,["open","high","low","close"]]=[109.0,111.0,103.0,109.0]
+          df.loc[r0+2,["open","high","low","close"]]=[108.0,110.0,102.0,108.0]
+          for i in range(r0+3,r0+6):
+              df.loc[i,["open","high","low","close"]]=[107.0,110.0,105.0,108.0]
+          t=r0+6
+          df.loc[t,["open","high","low","close"]]=[111.0,114.0,106.0,113.0]
+          rs=df.date.iloc[r0].date().isoformat()
+          td=df.date.iloc[t].date().isoformat()
+          old_reaction,old_atr,old_rvol=fc.reaction_session,fc.atr_wilder,fc.rvol20_at
+          try:
+              fc.reaction_session=lambda edt,sessions:(rs,"AMC")
+              pre=r0-1
+              fc.atr_wilder=lambda frame,end_idx,n=14: 10.0 if end_idx==pre else 20.0
+              fc.rvol20_at=lambda frame,idx:2.0
+              g,d=fc.eval_event("TEST",df,{"event_datetime_et":"2026-01-01T16:30:00-05:00"},
+                                df.date.iloc[-1].date().isoformat(),[], "CLEAN_DISCOVERY",
+                                weekly_pass_dates={td})
+              assert g and g["confirmed"] is True,(g,d)
+              assert abs(g["A_pre_event"]-10.0)<1e-12,g
+              assert abs(g["A_trigger"]-20.0)<1e-12,g
+              assert abs(g["A"]-20.0)<1e-12,g
+              assert abs(g["gap_atr"]-0.6)<1e-12,g
+              assert abs(g["base_width_atr"]-0.35)<1e-12,g
+          finally:
+              fc.reaction_session,fc.atr_wilder,fc.rvol20_at=old_reaction,old_atr,old_rvol
+          print("FAMILY_C_EVENT_TRIGGER_ATR_SEPARATION=PASS")
+          PY
+
       - name: Assert identity type guard
         run: |
           python - <<'PY'
