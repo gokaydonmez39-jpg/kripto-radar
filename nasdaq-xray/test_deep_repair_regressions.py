@@ -77,6 +77,13 @@ def test_resistance_role_change_state_machine():
     finally:
         alpha._base_high_points,alpha._weekly_swing_points,alpha._gap_down_zones,alpha.strict_swings=oldb,oldw,oldg,olds
 
+def test_final_history_normalizer_preserves_ohlcv():
+    d=frame(40)
+    x=ft._normalize_sina(d)
+    assert x is not None and list(x.columns)==["date","open","high","low","close","volume"],x.columns
+    fp=alpha.history_fingerprint(x,x.date.iloc[-1].date().isoformat())
+    assert fp["rows"]==40 and fp["last_date"]==x.date.iloc[-1].date().isoformat(),fp
+
 def test_corporate_action_absence_vs_real_scale_break():
     clean=frame(300)
     x,status,events,lookup=ft.candidate_corporate_action_reconcile("TEST",clean,drow={})
