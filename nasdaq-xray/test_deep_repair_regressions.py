@@ -138,6 +138,9 @@ def test_lifecycle_persistence_roundtrip():
 
 def test_workflow_race_and_pre_mc_freeze_contracts():
     final_wf=(REPO/".github/workflows/xray-canonical-current-final.yml").read_text()
+    assert "Fail closed when exact event binding is unavailable" in final_wf
+    assert "steps.event.outputs.ready != 'true'" in final_wf
+    assert "XRAY_FINAL_EVENT_BINDING=FAIL_CLOSED" in final_wf
     critical=["nasdaq-xray/alpha_semantics.py","nasdaq-xray/test_alpha_semantics.py",
       "nasdaq-xray/test_deep_repair_regressions.py","nasdaq-xray/family_c_engine.py",
       "nasdaq-xray/deep_pre_r1_shadow.py","nasdaq-xray/final_tech_shadow.py"]
@@ -150,6 +153,9 @@ def test_workflow_race_and_pre_mc_freeze_contracts():
     assert 'r.get(k)!=v for k,v in current_sources.items()' in final_wf
 
     post=(REPO/".github/workflows/xray-canonical-current-post-mc.yml").read_text()
+    assert "Fail closed when exact MC binding is unavailable" in post
+    assert "steps.freeze.outputs.frozen != 'true' && steps.mc.outputs.ready != 'true'" in post
+    assert "XRAY_POST_MC_BINDING=FAIL_CLOSED" in post
     assert "Revalidate reused HISTORY and hydrate same-run technical cache" in post
     assert "old.get(\"pass_hash\")==new.get(\"pass_hash\")" in post
     assert 'XRAY_STAGE1_CACHE_REQUIRED: "1"' in post
