@@ -34,6 +34,7 @@ RETRY_DELAYS=(0.0,1.0,2.5)
 _PROVIDER_SEM=threading.Semaphore(PROVIDER_MAX_INFLIGHT)
 OFFICIAL_IDENTITY_EVIDENCE=ROOT/"history_official_identity_evidence.json"
 LEGAL=Path(os.getenv("XRAY_FINAL_LEGAL_STATE",str(ROOT/"canonical_current_legal.json")))
+CANDIDATE_LEGAL_GUARD=Path(os.getenv("XRAY_FINAL_CANDIDATE_LEGAL_GUARD",str(ROOT/"canonical_candidate_legal_guard.json")))
 ADR_RATIO_BRIDGE=Path(os.getenv("XRAY_ADR_RATIO_BRIDGE",str(ROOT/"canonical_adr_ratio_bridge.json")))
 
 def _is_depositary_security_name(name):
@@ -48,6 +49,17 @@ def _load_adr_bridge(asof):
         if j.get("execution")!="NONE" or j.get("real_money")!="NO-GO":return {}
         return j.get("records") or {}
     except Exception:return {}
+
+def _load_candidate_legal_guard(asof):
+    """Detailed finalist filing/legal review. Missing/invalid evidence is UNKNOWN, never PASS."""
+    if not CANDIDATE_LEGAL_GUARD.exists():return {},None
+    try:
+        j=json.loads(CANDIDATE_LEGAL_GUARD.read_text())
+        if j.get("schema")!="XRAY_CANDIDATE_LEGAL_GUARD_V1" or j.get("asof_et")!=asof:return {},None
+        if j.get("task_id")!=TASK_ID or j.get("execution")!="NONE" or j.get("real_money")!="NO-GO":return {},None
+        if j.get("unknown_never_pass") is not True:return {},None
+        return j.get("records") or {},j
+    except Exception:return {},None
 
 def _retryable(exc):
     s=str(exc).lower()
@@ -406,6 +418,7 @@ def main():
     if legal.get("asof_et")!=asof or legal.get("execution")!="NONE" or legal.get("real_money")!="NO-GO":
         raise RuntimeError("LEGAL_STATE_SAFETY_OR_ASOF_MISMATCH")
     adr_bridge=_load_adr_bridge(asof)
+    candidate_legal_records,candidate_legal_guard=_load_candidate_legal_guard(asof)
     state_caps=d.get("state_caps") or {};r92_ineligible=set(d.get("r92_ineligible") or [])
     event_map={}
     if EVENTS is not None and EVENTS.exists():
@@ -504,6 +517,14 @@ def main():
         lrow=(legal.get("results") or {}).get(sym) or {}
         if lrow.get("status")!="PASS_LEGAL":
             results[key]={"result":"UNKNOWN","reason":"LEGAL_IDENTITY_NOT_PASS","legal_status":lrow.get("status")}
+            continue
+        # Global LEGAL is only the shell/identity screen. C4.17's detailed
+        # finalist filing review is a separate exact-ASOF evidence gate.
+        cg=(candidate_legal_records or {}).get(sym) or {}
+        if cg.get("status")!="PASS":
+            results[key]={"result":"UNKNOWN","reason":"DETAILED_LEGAL_REVIEW_NOT_PROVEN",
+                          "candidate_legal_status":cg.get("status") or "MISSING",
+                          "candidate_legal_reason":cg.get("reason")}
             continue
         secname=lrow.get("security_name")
         if _is_depositary_security_name(secname):
@@ -626,6 +647,12 @@ def main():
       "source_family_c_path":relpath(FAMILY_C) if FAMILY_C is not None and FAMILY_C.exists() else None,
       "source_family_c_blob_sha":blob_sha(FAMILY_C) if FAMILY_C is not None and FAMILY_C.exists() else None,
       "source_legal_path":relpath(LEGAL),"source_legal_blob_sha":blob_sha(LEGAL),
+      "candidate_legal_guard_path":relpath(CANDIDATE_LEGAL_GUARD) if CANDIDATE_LEGAL_GUARD.exists() else None,
+      "candidate_legal_guard_blob_sha":blob_sha(CANDIDATE_LEGAL_GUARD) if CANDIDATE_LEGAL_GUARD.exists() else None,
+      "detailed_legal_review_exact":bool(candidate_legal_guard is not None) and all(
+          ((candidate_legal_records or {}).get(str(k).split("|",1)[0]) or {}).get("status")=="PASS"
+          for k in results if (results.get(k) or {}).get("reason")!="REGIME_FINALIST_NOT_PASS"
+      ),
       "adr_ratio_bridge_path":relpath(ADR_RATIO_BRIDGE) if ADR_RATIO_BRIDGE.exists() else None,
       "adr_ratio_bridge_blob_sha":blob_sha(ADR_RATIO_BRIDGE) if ADR_RATIO_BRIDGE.exists() else None,
       "lifecycle_registry":registry,
