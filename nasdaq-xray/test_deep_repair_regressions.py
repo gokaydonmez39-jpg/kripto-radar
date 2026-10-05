@@ -148,6 +148,9 @@ def test_workflow_race_and_pre_mc_freeze_contracts():
     assert 'XRAY_STAGE1_CACHE_REQUIRED: "1"' in post
     assert 'XRAY_BREADTH_CACHE_REQUIRED: "1"' in post
     assert "XRAY_BREADTH_HISTORY_CACHE_DIR" in post
+    assert "XRAY_TECHNICAL_BENCHMARK_CACHE" in post
+    assert 'XRAY_DEEP_CACHE_REQUIRED: "1"' in post
+    assert "XRAY_DEEP_HISTORY_CACHE_DIR" in post
 
     # Partial upstream coverage must remain fail-closed in the terminal, but it
     # must not globally abort event/final evaluation of the known candidate scope.
