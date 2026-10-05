@@ -185,28 +185,34 @@ def _trigger_date(fam,g):
     return str(g.get("trigger_date") or g.get("breakout_session") or "")
 
 def candidate_corporate_action_reconcile(sym,df,drow=None):
-    """Candidate-scoped split verification without universe-wide provider dependence.
+    """Candidate-scoped corporate-action integrity, fail-closed on real scale breaks.
 
-    Stage1 hard-checks severe close-scale breaks. Finalists additionally verify
-    fractional split-like open gaps (for example 5:4 / 3:2) so unadjusted OHLC
-    cannot silently distort ATR, weekly structure or R1. Ordinary gaps pass when
-    the split-event source explicitly returns no matching split.
+    Absence of an inherited Stage1 corporate_action_status is not evidence of a
+    corporate action and must not auto-demote a clean finalist to UNKNOWN.
+    Conversely, Yahoo split events are diagnostic/cross-check evidence only;
+    a material recent scale break may not be certified by that source alone.
     """
     x=df.reset_index(drop=True)
     inherited_status=None; inherited_events=[]
     if drow is not None:
         inherited_status=drow.get("corporate_action_status")
-        if not str(inherited_status).startswith("PASS"):
-            return x,inherited_status or "MISSING",[],False
         inherited_events=drow.get("split_events") or []
-        if inherited_events:
-            return apply_split_events(x,inherited_events).reset_index(drop=True),inherited_status,inherited_events,False
+        if inherited_status is not None and not str(inherited_status).startswith("PASS"):
+            return x,inherited_status,[],False
+
     severe=mechanical_scale_breaks(x,260)
     fractional=mechanical_split_suspects(x,260)
     if severe or fractional:
+        # Retain the existing provider lookup only as diagnostic evidence and
+        # raw-series cross-check. It is not promoted to primary CA authority.
         x2,status,events=split_consistent_history(sym,x)
-        return x2.reset_index(drop=True),status,events,True
-    return x,(inherited_status or "PASS_NO_LOCAL_SPLIT_DISCONTINUITY"),inherited_events,False
+        if not str(status).startswith("PASS"):
+            return x2.reset_index(drop=True),status,events,True
+        return x,"UNKNOWN_PRIMARY_CORPORATE_ACTION_EVIDENCE_REQUIRED",events,True
+
+    # No mechanically significant split/ratio discontinuity inside the maximum
+    # technical horizon: no corporate-action adjustment is required for this setup.
+    return x,"PASS_NO_LOCAL_SPLIT_DISCONTINUITY",[],False
 
 def _frozen_geometry(sym,fam,g,df):
     td=_trigger_date(fam,g)
@@ -521,6 +527,33 @@ def main():
     passes=[k for k,v in results.items() if v.get("pre_g9_tech_pass")]
     watches=[k for k,v in results.items() if str(v.get("result","")).startswith("WATCH_")]
     fails=[k for k,v in results.items() if str(v.get("result","")).startswith("FAIL_")]
+    lifecycle_semantics_exact=all(
+        rec.get("frozen_semantics_blobs")==current_frozen_binding
+        for rec in registry.get("records",{}).values()
+    )
+    corporate_semantics_unresolved=sorted(
+        k for k,v in results.items()
+        if str(v.get("reason","")).startswith("CORPORATE_ACTION")
+        or str(v.get("corporate_action_status","")).startswith("UNKNOWN")
+    )
+    semantic_known_gaps=[]
+    if not lifecycle_semantics_exact:
+        semantic_known_gaps.append("FROZEN_LIFECYCLE_PERSISTENCE_BINDING_NOT_EXACT")
+    if corporate_semantics_unresolved:
+        semantic_known_gaps.append("CORPORATE_ACTION_RECONCILIATION_UNPROVEN_FOR_FINALISTS")
+    policy_semantics_exact=bool(
+        semantic_selftest_status=="PASS"
+        and lifecycle_semantics_exact
+        and not corporate_semantics_unresolved
+    )
+    if semantic_selftest_status!="PASS":
+        semantic_audit_status="BLOCKED_SELFTEST"
+    elif not lifecycle_semantics_exact:
+        semantic_audit_status="BLOCKED_LIFECYCLE_PERSISTENCE"
+    elif corporate_semantics_unresolved:
+        semantic_audit_status="BLOCKED_CORPORATE_ACTION_RECONCILIATION"
+    else:
+        semantic_audit_status="PASS_IMPLEMENTATION_CONFORMANCE"
     out={
       "schema":"XRAY_FINAL_TECH_SHADOW_V1","task_id":TASK_ID,"asof_et":asof,
       "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
@@ -538,10 +571,7 @@ def main():
       "adr_ratio_bridge_blob_sha":blob_sha(ADR_RATIO_BRIDGE) if ADR_RATIO_BRIDGE.exists() else None,
       "lifecycle_registry":registry,
       "lifecycle_frozen_semantics_binding":current_frozen_binding,
-      "lifecycle_semantics_exact":all(
-          rec.get("frozen_semantics_blobs")==current_frozen_binding
-          for rec in registry.get("records",{}).values()
-      ),
+      "lifecycle_semantics_exact":lifecycle_semantics_exact,
       "source_compiled_policy_hash":d.get("source_mc_policy_hash"),"source_compiled_policy_version":d.get("source_mc_policy_version"),
       "source_workflow_sha":os.getenv("GITHUB_SHA"),
       "semantic_impl_blobs":{
@@ -553,10 +583,11 @@ def main():
         "final_tech_shadow.py":blob_sha(Path(__file__).resolve())
       },
       "results":results,
-      "policy_semantics_exact":semantic_selftest_status=="PASS",
+      "policy_semantics_exact":policy_semantics_exact,
       "embedded_semantic_selftest":semantic_selftest_status,
-      "semantic_audit_status":"PASS_IMPLEMENTATION_CONFORMANCE" if semantic_selftest_status=="PASS" else "BLOCKED_SELFTEST",
-      "semantic_known_gaps":[],
+      "semantic_audit_status":semantic_audit_status,
+      "semantic_known_gaps":semantic_known_gaps,
+      "corporate_semantics_unresolved_finalists":corporate_semantics_unresolved,
       "semantic_repairs":["ACTIVE_STRUCTURAL_R1_TRIGGER_MINUS1","FROZEN_RETEST_5_SESSION_REGISTRY",
                           "S0_POST_TRIGGER_BREACH","EXTENSION_CLOSE_T_MINUS_CLOSE_TMINUS3_WITH_RETEST_RESET",
                           "TRIGGER_MINUS1_WILDER_ATR","FAMILY_A_0P5A_INHERITED_CANONICAL_RULE",
