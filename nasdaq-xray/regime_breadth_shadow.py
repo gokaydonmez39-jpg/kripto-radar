@@ -145,6 +145,10 @@ def hist(sym,asof):
     except Exception as e:
         return sym,None,f"{primary_error}|YAHOO_{type(e).__name__}:{str(e)[:100]}",None
 
+def close_only_scale_breaks(df):
+    """Regime/breadth histories contain only date+close; this guard must stay close-only safe."""
+    return mechanical_scale_breaks(df,260)
+
 def main():
     mc=json.loads(MC.read_text())
     syms=list(mc["current_core_mc_pass"])
@@ -174,7 +178,7 @@ def main():
         # For regime math we need only the last 200 sessions; a severe recent
         # scale break is fail-closed, while ancient artifacts are irrelevant.
         qdf=data["QQQ"].reset_index(drop=True)
-        qqq_breaks=mechanical_scale_breaks(qdf,260)
+        qqq_breaks=close_only_scale_breaks(qdf)
         if qqq_breaks:
             qqq_ca_status="UNKNOWN_RECENT_QQQ_SCALE_BREAK"
             missing["QQQ"]="CORPORATE_ACTION_UNKNOWN:"+qqq_ca_status
@@ -205,7 +209,7 @@ def main():
         # Breadth history is intentionally close-only. Never call an OHLC/open-based
         # detector here; Stage1 owns split-event discovery/reconciliation. This local
         # check is a second fail-closed guard for severe recent close-scale breaks.
-        breaks=mechanical_scale_breaks(x,260)
+        breaks=close_only_scale_breaks(x)
         if split_events:
             x=apply_split_events(x,split_events).reset_index(drop=True)
         elif breaks and not str(ca_status).startswith("PASS"):
