@@ -127,10 +127,27 @@ def main():
     pr=eval_one("TEST","D",g,hf,"CLEAN_DISCOVERY",frozen=frozen,recorded_before=True)
     assert pr["result"]=="PRE_G9_TECH_PASS",pr
 
+    # A chase has no valid fill now but the frozen setup must survive for a valid retest.
+    cf=frame(270)
+    cf[["open","high","low","close"]]=[102.0,103.0,99.0,102.0]
+    cti=len(cf)-3;ctd=cf.date.iloc[cti].date().isoformat()
+    cfr={"setup_id":"TEST-CHASE","symbol":"TEST","family":"D","trigger_date":ctd,
+         "A":10.0,"P":100.0,"anchor":97.0,"entry_low":100.0,"entry_high":102.5,
+         "entry_model":102.5,"chase_limit":105.0,"S0":95.0,"T1":150.0,
+         "target_source":"TEST","target_zone":None,"target_overlap":False,
+         "synthetic_target":False,"source_geometry":{"trigger_date":ctd,"P":100.0,"anchor":97.0}}
+    cg={"trigger_date":ctd,"P":100.0,"anchor":97.0}
+    cf.loc[len(cf)-1,["open","high","low","close"]]=[105.5,107.0,105.0,106.0]
+    cr=eval_one("TEST","D",cg,cf,"CLEAN_DISCOVERY",frozen=cfr,recorded_before=True)
+    assert cr["result"]=="WATCH_CHASE_RETEST_REQUIRED",cr
+    cf.loc[len(cf)-1,["open","high","low","close"]]=[102.2,103.0,101.0,102.0]
+    rr=eval_one("TEST","D",cg,cf,"CLEAN_DISCOVERY",frozen=cfr,recorded_before=True)
+    assert rr["result"]=="PRE_G9_TECH_PASS",rr
+
     print({"status":"PASS","tests":[
       "WILDER_FIRST_TR_UNDEFINED","EMA_SMA_SEED","D_DRAWDOWN_DEFINITIONS",
       "R1_STRUCTURAL_TRIGGER_MINUS1","R1_ENTRY_OVERLAP","EXTENSION_RESET","RETEST_BAR","SETUP_ID_STABLE",
-      "B_RECENT_TRIGGER_PERSISTENCE","MECHANICAL_SCALE_BREAK_GUARD","SPLIT_ONLY_RECONCILIATION","HISTORICAL_DISCOVERY_WATCH"
+      "B_RECENT_TRIGGER_PERSISTENCE","MECHANICAL_SCALE_BREAK_GUARD","SPLIT_ONLY_RECONCILIATION","HISTORICAL_DISCOVERY_WATCH","CHASE_FROZEN_RETEST_RECOVERY"
     ]})
 
 if __name__=="__main__":
