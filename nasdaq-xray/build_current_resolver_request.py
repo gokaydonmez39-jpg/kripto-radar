@@ -62,14 +62,17 @@ def main():
     master_symbols=[]
     price_symbols=sorted(p.get("unknown_symbols") or [])
     assert len(price_symbols)==int(p.get("unknown_count",len(price_symbols)))
+    blocked_symbols=sorted(p.get("blocked_symbols") or [])
+    if "blocked_count" in p:
+        assert len(blocked_symbols)==int(p.get("blocked_count",len(blocked_symbols)))
     master_detail={}
     price_detail={}
-    for sym in price_symbols:
+    for sym in sorted(set(price_symbols)|set(blocked_symbols)):
         price_detail[sym]={
           "security_name":(s.get("security_names") or {}).get(sym),
           "price_result":(p.get("results") or {}).get(sym),
         }
-    union=sorted(set(master_symbols)|set(price_symbols))
+    union=sorted(set(master_symbols)|set(price_symbols)|set(blocked_symbols))
     pointer_asof=str(ps.get("asof_et") or "")
     settlement_required=bool(pointer_asof and asof>pointer_asof)
     settlement_core_symbol,settlement_core_source_path,settlement_core_source_blob_sha=prior_core_symbol(pointer_asof)
@@ -125,6 +128,7 @@ def main():
       "master_unknown_count":len(master_symbols),"master_unknown_symbols":master_symbols,
       "master_unknown_detail":master_detail,
       "price_unknown_count":len(price_symbols),"price_unknown_symbols":price_symbols,
+      "price_blocked_count":len(blocked_symbols),"price_blocked_symbols":blocked_symbols,
       "price_unknown_detail":price_detail,
       "symbols":union,"symbol_count":len(union),"symbol_hash":hash_lines(union),
       "source_state_path":"nasdaq-xray/canonical_current_full_state.json",
@@ -142,7 +146,7 @@ def main():
       "resolver_policy":"ALPACA_SIP_PREFERRED__RALLIES_LONGBRIDGE_DUAL_SOURCE_CONNECTOR_FAILOVER__NEVER_G9__FAIL_CLOSED__SAME_ASOF_QUEUE_BINDING",
     }
     OUT.write_text(json.dumps(obj,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
-    print(json.dumps({"asof":asof,"pointer_asof":pointer_asof,"status":obj["status"],"settlement_required":settlement_required,"settlement_already_proven":settlement_already_proven,"master_unknown":len(master_symbols),"price_unknown":len(price_symbols),"union":len(union),"symbol_hash":obj["symbol_hash"]},sort_keys=True))
+    print(json.dumps({"asof":asof,"pointer_asof":pointer_asof,"status":obj["status"],"settlement_required":settlement_required,"settlement_already_proven":settlement_already_proven,"master_unknown":len(master_symbols),"price_unknown":len(price_symbols),"price_blocked":len(blocked_symbols),"union":len(union),"symbol_hash":obj["symbol_hash"]},sort_keys=True))
 
 if __name__=="__main__":
     main()
