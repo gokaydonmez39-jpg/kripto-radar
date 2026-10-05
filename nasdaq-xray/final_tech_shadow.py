@@ -373,6 +373,13 @@ def _run_embedded_semantic_selftest():
         raise RuntimeError("ALPHA_SEMANTIC_SELFTEST_FAIL:"+tail.replace("\n"," | "))
     return "PASS"
 
+def _regime_finalist_allowed(deep,sym):
+    regime=str(deep.get("regime") or "UNKNOWN")
+    if regime not in {"STRONG","MIXED","WEAK"}:
+        return False
+    row=(deep.get("results") or {}).get(sym) or {}
+    return row.get("regime_finalist_pass") is True
+
 def main():
     semantic_selftest_status=_run_embedded_semantic_selftest()
     d=json.loads(DEEP.read_text());asof=d["asof_et"]
@@ -394,20 +401,27 @@ def main():
     old_records=registry.get("records") or {}
     current_frozen_binding=frozen_semantics_binding()
 
-    candidates=[]
+    candidates=[];regime_filtered_out=[]
     for sym,r in (d.get("results") or {}).items():
         event=event_map.get(sym,r.get("event_status"))
-        if r.get("A",{}).get("pool"): candidates.append((sym,"A",r["A"],event))
-        if r.get("B",{}).get("breakout_confirmed"): candidates.append((sym,"B",r["B"],event))
-        if r.get("D",{}).get("dk3_pre_r1"): candidates.append((sym,"D",r["D"],event))
+        allowed=_regime_finalist_allowed(d,sym)
+        for fam,flag in (("A",r.get("A",{}).get("pool")),("B",r.get("B",{}).get("breakout_confirmed")),("D",r.get("D",{}).get("dk3_pre_r1"))):
+            if not flag: continue
+            if allowed:
+                candidates.append((sym,fam,r[fam],event))
+            else:
+                regime_filtered_out.append(f"{sym}|{fam}")
     family_c_count=0
     if FAMILY_C is not None and FAMILY_C.exists():
         fc=json.loads(FAMILY_C.read_text())
         if fc.get("task_id")!=TASK_ID or fc.get("asof_et")!=asof:raise RuntimeError("FAMILY_C_ASOF_OR_TASK_MISMATCH")
         if fc.get("execution")!="NONE" or fc.get("real_money")!="NO-GO":raise RuntimeError("FAMILY_C_SAFETY_MISMATCH")
         for sym,g in sorted((fc.get("confirmed") or {}).items()):
-            if g.get("confirmed"):
+            if not g.get("confirmed"): continue
+            if _regime_finalist_allowed(d,sym):
                 candidates.append((sym,"C",g,event_map.get(sym,g.get("event_status","CLEAN_DISCOVERY"))));family_c_count+=1
+            else:
+                regime_filtered_out.append(f"{sym}|C")
 
     # Existing prospective frozen setups have priority over newly discovered geometry
     # for the same symbol/family. A new trigger may take over only after the prior
@@ -427,7 +441,10 @@ def main():
             r92_ineligible.add(sym)
         g=rec.get("source_geometry")
         if isinstance(g,dict):
-            frozen_candidates.append((sym,fam,g,event_map.get(sym,rec.get("event_status"))))
+            if _regime_finalist_allowed(d,sym):
+                frozen_candidates.append((sym,fam,g,event_map.get(sym,rec.get("event_status"))))
+            else:
+                regime_filtered_out.append(f"{sym}|{fam}|LIFECYCLE")
     candidates=frozen_candidates+fresh_candidates
 
     syms=sorted(set(x[0] for x in candidates));data={};errors={};history_source={};history_fps={}
@@ -577,6 +594,7 @@ def main():
       "schema":"XRAY_FINAL_TECH_SHADOW_V1","task_id":TASK_ID,"asof_et":asof,
       "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
       "input_confirmed_family_candidates":len(results),"family_c_confirmed_input_count":family_c_count,
+      "regime_filtered_out":sorted(set(regime_filtered_out)),
       "pre_g9_tech_pass_count":len(passes),"pre_g9_tech_pass":sorted(passes),
       "watch_count":len(watches),"watch":sorted(watches),"fail_count":len(fails),"fail":sorted(fails),
       "state_caps":{s:state_caps.get(s,"NORMAL") for s in syms},
@@ -613,7 +631,7 @@ def main():
                           "S0_POST_TRIGGER_BREACH","EXTENSION_CLOSE_T_MINUS_CLOSE_TMINUS3_WITH_RETEST_RESET",
                           "TRIGGER_MINUS1_WILDER_ATR","FAMILY_A_0P5A_INHERITED_CANONICAL_RULE",
                           "SPLIT_EVENT_RECONCILIATION","FINALIST_FRACTIONAL_SPLIT_VERIFICATION",
-                          "ADR_RATIO_FAIL_CLOSED_BRIDGE"],
+                          "ADR_RATIO_FAIL_CLOSED_BRIDGE","REGIME_FINALIST_GATE_ALL_FAMILIES"],
       "remaining_nontech_gates":["OFFICIAL_EVENT_FINAL_REVIEW","ACCOUNT_GATE","G9","DELIVERY_PROOF"],
       "authority":"C4_17_DETERMINISTIC_TECHNICAL_FAIL_CLOSED"
     }
