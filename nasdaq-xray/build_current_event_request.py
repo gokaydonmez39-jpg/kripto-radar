@@ -69,9 +69,13 @@ def main():
     assert int(s.get("unknown_count",0))==0
     assert int(r.get("breadth_missing_count",0))==0
     assert int(d.get("unknown_history_count",0))==0
-    weekly=sorted(set(s.get("weekly_pass") or []))
-    assert len(weekly)==int(s.get("weekly_pass_count",len(weekly)))
-    assert int(d.get("input_weekly_pass_count",-1))==len(weekly)
+    current_weekly=sorted(set(s.get("weekly_pass") or []))
+    assert len(current_weekly)==int(s.get("weekly_pass_count",len(current_weekly)))
+    weekly=sorted(set(s.get("recent_weekly_scope") or current_weekly))
+    assert len(weekly)==int(s.get("recent_weekly_scope_count",len(weekly)))
+    assert int(d.get("input_weekly_pass_count",-1))==len(current_weekly)
+    assert int(d.get("input_weekly_trigger_scope_count",-1))==len(weekly)
+    assert set(d.get("weekly_trigger_scope") or [])==set(weekly)
     past,future=sessions(asof)
     fresh_geometry=sorted(set(
         (d.get("a_geometry") or [])+
@@ -92,6 +96,8 @@ def main():
       "compiled_policy_blob_sha":POLICY_BLOB,
       "compiled_policy_hash":POLICY_HASH,
       "compiled_policy_version":POLICY_VERSION,
+      "current_weekly_scope":current_weekly,"current_weekly_scope_count":len(current_weekly),
+      "current_weekly_scope_hash":hash_lines(current_weekly),
       "weekly_scope":weekly,"weekly_scope_count":len(weekly),"weekly_scope_hash":hash_lines(weekly),
       "fresh_geometry_scope":fresh_geometry,"fresh_geometry_scope_count":len(fresh_geometry),
       "fresh_geometry_scope_hash":hash_lines(fresh_geometry),
@@ -107,7 +113,8 @@ def main():
       "official_confirmation":"ISSUER_IR_OR_SEC_PRIMARY;DISCOVERY_ONLY_NEVER_BLOCKS_OR_CLEARS_BY_ITSELF"
     }
     OUT.write_text(json.dumps(obj,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
-    print(json.dumps({"asof":asof,"weekly_scope_count":len(weekly),
+    print(json.dumps({"asof":asof,"current_weekly_scope_count":len(current_weekly),
+                      "weekly_scope_count":len(weekly),
                       "fresh_geometry_scope_count":len(fresh_geometry),
                       "lifecycle_scope_count":len(lifecycle_scope),
                       "geometry_scope_count":len(finalists),"past":past,"future":future},sort_keys=True))
