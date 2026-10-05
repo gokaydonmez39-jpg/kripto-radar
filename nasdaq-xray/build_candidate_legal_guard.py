@@ -146,15 +146,27 @@ def load_lifecycle_state()->tuple[dict|None,str]:
 
 
 def candidate_scope(deep:dict,fc:dict|None,lifecycle:dict|None)->list[str]:
+    """Exact finalist-local legal scope.
+
+    Fresh A/B/D/C geometry is reviewed only when the current Deep regime gate
+    says that symbol is finalist-eligible. Raw geometry rejected by MIXED RS or
+    an UNKNOWN regime must not create an unrelated legal UNKNOWN and globally
+    poison FULL_E2E. Prospectively recorded lifecycle symbols remain in scope
+    because Final may carry them through retest/reconfirmation revalidation.
+    """
     syms=set()
-    for sym,row in (deep.get("results") or {}).items():
-        if not isinstance(row,dict): continue
+    rows=deep.get("results") or {}
+    for sym,row in rows.items():
+        if not isinstance(row,dict) or row.get("regime_finalist_pass") is not True:
+            continue
         if ((row.get("A") or {}).get("pool")
             or (row.get("B") or {}).get("breakout_confirmed")
             or (row.get("D") or {}).get("dk3_pre_r1")):
             syms.add(str(sym))
     for sym,g in ((fc or {}).get("confirmed") or {}).items():
-        if isinstance(g,dict) and g.get("confirmed"): syms.add(str(sym))
+        if (isinstance(g,dict) and g.get("confirmed")
+            and ((rows.get(sym) or {}).get("regime_finalist_pass") is True)):
+            syms.add(str(sym))
     for rec in ((lifecycle or {}).get("records") or {}).values():
         if isinstance(rec,dict) and rec.get("symbol"): syms.add(str(rec["symbol"]))
     return sorted(syms)
