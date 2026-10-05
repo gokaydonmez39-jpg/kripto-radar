@@ -1,0 +1,232 @@
+#!/usr/bin/env python3
+"""Deterministic C4.17 alpha semantics shared by XRAY technical stages.
+
+No execution. No account access. No signal delivery. Pure calculations only.
+"""
+from __future__ import annotations
+import hashlib, math
+from typing import Any
+import pandas as pd
+
+def wilder_atr(df: pd.DataFrame, n: int = 14) -> pd.Series:
+    """Wilder ATR with the first TR undefined and the first n valid TRs as seed."""
+    h=df["high"].astype(float); l=df["low"].astype(float); c=df["close"].astype(float)
+    tr=pd.Series(float("nan"),index=df.index,dtype="float64")
+    if len(df)>1:
+        pc=c.shift(1)
+        vals=pd.concat([(h-l).abs(),(h-pc).abs(),(l-pc).abs()],axis=1).max(axis=1)
+        tr.iloc[1:]=vals.iloc[1:]
+    out=pd.Series(float("nan"),index=df.index,dtype="float64")
+    valid=tr.dropna()
+    if len(valid)<n:return out
+    seed_pos=valid.index[n-1]
+    seed=float(valid.iloc[:n].mean())
+    out.loc[seed_pos]=seed
+    started=False; prev=seed
+    for idx in df.index:
+        if idx==seed_pos:
+            started=True; continue
+        if not started: continue
+        x=tr.loc[idx]
+        if pd.isna(x): continue
+        prev=((n-1)*prev+float(x))/n
+        out.loc[idx]=prev
+    return out
+
+def ema_seeded(series: pd.Series, n: int) -> pd.Series:
+    """EMA seeded by the first n values' SMA, matching the canonical contract."""
+    s=series.astype(float)
+    out=pd.Series(float("nan"),index=s.index,dtype="float64")
+    if len(s)<n:return out
+    seed=float(s.iloc[:n].mean())
+    out.iloc[n-1]=seed
+    alpha=2.0/(n+1.0); prev=seed
+    for i in range(n,len(s)):
+        prev=alpha*float(s.iloc[i])+(1-alpha)*prev
+        out.iloc[i]=prev
+    return out
+
+def strict_swings(df: pd.DataFrame) -> tuple[list[int],list[int]]:
+    hs=[]; ls=[]; H=df["high"].astype(float).tolist(); L=df["low"].astype(float).tolist()
+    for i in range(2,len(df)-2):
+        if all(H[i]>H[j] for j in (i-2,i-1,i+1,i+2)): hs.append(i)
+        if all(L[i]<L[j] for j in (i-2,i-1,i+1,i+2)): ls.append(i)
+    return hs,ls
+
+def drawdown_metrics(df: pd.DataFrame) -> dict[str,float]:
+    """Canonical D-pool metrics: current close vs 252 high; worst close DD inside 120."""
+    c=df["close"].astype(float); h=df["high"].astype(float)
+    cur=float(c.iloc[-1])
+    hi252=float(h.iloc[-252:].max())
+    current_dd252=cur/hi252-1 if hi252>0 else float("nan")
+    w=c.iloc[-120:].reset_index(drop=True)
+    running=w.cummax()
+    dd=w/running-1.0
+    max_dd120=float(dd.min()) if len(dd) else float("nan")
+    return {"current_drawdown_252":current_dd252,"max_drawdown_close_120":max_dd120}
+
+def trigger_index(df: pd.DataFrame, trigger_date: str) -> int | None:
+    ds=df["date"].dt.date.astype(str).tolist()
+    try:return ds.index(str(trigger_date))
+    except ValueError:return None
+
+def setup_id(symbol:str,family:str,trigger_date:str,P:float,anchor:float,A:float)->str:
+    raw=f"{symbol}|{family}|{trigger_date}|{P:.8f}|{anchor:.8f}|{A:.8f}"
+    return hashlib.sha256(raw.encode()).hexdigest()[:24]
+
+def session_age(df:pd.DataFrame,trigger_date:str,asof:str)->int|None:
+    dates=[d.date().isoformat() for d in df["date"]]
+    if trigger_date not in dates or asof not in dates:return None
+    a=dates.index(trigger_date); b=dates.index(asof)
+    return b-a if b>=a else None
+
+def _base_high_points(prior:pd.DataFrame, atr:pd.Series)->list[dict[str,Any]]:
+    pts=[]
+    # t is a hypothetical trigger index; base excludes t.
+    for t in range(26,len(prior)):
+        A=atr.iloc[t-1]
+        if pd.isna(A) or not math.isfinite(float(A)) or float(A)<=0: continue
+        tr=pd.concat([
+          (prior["high"]-prior["low"]).abs(),
+          (prior["high"]-prior["close"].shift(1)).abs(),
+          (prior["low"]-prior["close"].shift(1)).abs()
+        ],axis=1).max(axis=1)
+        passing=[]
+        for n in (5,10,15,20):
+            if t<n+20: continue
+            base=prior.iloc[t-n:t]
+            bh=float(base["high"].max()); bl=float(base["low"].min())
+            width=(bh-bl)/float(A)
+            last5=float(tr.iloc[t-5:t].mean())
+            prev20=float(tr.iloc[t-25:t-5].mean())
+            if 0.30<=width<=2.05 and prev20>0 and last5<=0.8*prev20:
+                passing.append((n,bh))
+        if passing:
+            n,bh=max(passing,key=lambda z:z[0])
+            pts.append({"price":bh,"kind":"BASE_HIGH","occurrence_idx":t-1,
+                        "confirmed_idx":t-1,"date":prior["date"].iloc[t-1].date().isoformat(),
+                        "window":n})
+    return pts
+
+def _weekly_swing_points(prior:pd.DataFrame)->list[dict[str,Any]]:
+    # Only use a week if the observed final bar is Friday. Holiday-short weeks are omitted
+    # rather than guessed; daily/base/gap sources remain available.
+    x=prior.copy()
+    x["week"]=x["date"].dt.to_period("W-FRI")
+    rows=[]
+    for _,g in x.groupby("week"):
+        if int(g["date"].iloc[-1].weekday())!=4: continue
+        rows.append({"date":g["date"].iloc[-1],"high":float(g["high"].max()),"low":float(g["low"].min()),
+                     "close":float(g["close"].iloc[-1])})
+    if len(rows)<5:return []
+    w=pd.DataFrame(rows).reset_index(drop=True)
+    hs,_=strict_swings(w)
+    pts=[]
+    for i in hs[-52:]:
+        d=w["date"].iloc[i].date().isoformat()
+        # bind confirmation to the corresponding daily row at/after week+2 confirmation.
+        confirm_week=min(i+2,len(w)-1)
+        cd=w["date"].iloc[confirm_week].date().isoformat()
+        daily_idx=max(j for j,z in enumerate(prior["date"].dt.date.astype(str).tolist()) if z<=cd)
+        pts.append({"price":float(w["high"].iloc[i]),"kind":"WEEKLY_SWING_HIGH",
+                    "occurrence_idx":daily_idx,"confirmed_idx":daily_idx,"date":d})
+    return pts
+
+def _gap_down_zones(prior:pd.DataFrame)->list[dict[str,Any]]:
+    zones=[]
+    for i in range(1,len(prior)):
+        prev_low=float(prior["low"].iloc[i-1]); cur_high=float(prior["high"].iloc[i])
+        if cur_high < prev_low:
+            lower,upper=cur_high,prev_low
+            filled=False
+            for j in range(i+1,len(prior)):
+                if float(prior["high"].iloc[j])>=upper:
+                    filled=True; break
+            if not filled:
+                zones.append({"lower":lower,"upper":upper,"kind":"UNFILLED_GAP_DOWN",
+                              "active":True,"points":[],"active_from_idx":i,
+                              "occurrence_dates":[prior["date"].iloc[i].date().isoformat()]})
+    return zones
+
+def _cluster_points(points:list[dict[str,Any]],A:float)->list[dict[str,Any]]:
+    if not points:return []
+    points=sorted(points,key=lambda x:(float(x["price"]),x["date"],x["kind"]))
+    clusters=[]
+    cur=[]
+    for p in points:
+        trial=cur+[p]
+        vals=[float(x["price"]) for x in trial]
+        ref=sum(vals)/len(vals)
+        tol=max(0.35*A,ref*0.005)
+        if cur and max(vals)-min(vals)>tol:
+            clusters.append(cur);cur=[p]
+        else:cur=trial
+    if cur:clusters.append(cur)
+    zones=[]
+    for cl in clusters:
+        vals=[float(x["price"]) for x in cl]
+        zones.append({"lower":min(vals),"upper":max(vals),"kind":"STRUCTURAL_CLUSTER",
+                      "points":cl,"active_from_idx":max(int(x["confirmed_idx"]) for x in cl),
+                      "occurrence_dates":sorted(set(x["date"] for x in cl)),"active":True})
+    return zones
+
+def resistance_zones(df:pd.DataFrame,trigger_idx:int,A:float)->list[dict[str,Any]]:
+    """Structural resistance set known by trigger-1; no trigger/current look-ahead."""
+    if trigger_idx<=2:return []
+    prior=df.iloc[:trigger_idx].copy().reset_index(drop=True)
+    cutoff=len(prior)-1
+    hs,_=strict_swings(prior)
+    pts=[]
+    for i in hs:
+        if i+2>cutoff or i<max(0,cutoff-120): continue
+        pts.append({"price":float(prior["high"].iloc[i]),"kind":"DAILY_SWING_HIGH",
+                    "occurrence_idx":i,"confirmed_idx":i+2,
+                    "date":prior["date"].iloc[i].date().isoformat()})
+    atr=wilder_atr(prior,14)
+    pts.extend(_base_high_points(prior,atr))
+    pts.extend(_weekly_swing_points(prior))
+    zones=_cluster_points(pts,A)+_gap_down_zones(prior)
+    # A resistance remains active after a close above it until a later successful
+    # role-change retest closes back above the zone. A single close never erases supply.
+    for z in zones:
+        lo=float(z["lower"]); hi=float(z["upper"]); af=int(z["active_from_idx"])
+        breakout=None; role_change=None
+        for i in range(af+1,len(prior)):
+            if breakout is None and float(prior["close"].iloc[i])>hi:
+                breakout=i; continue
+            if breakout is not None and i>breakout:
+                touched=float(prior["low"].iloc[i])<=hi and float(prior["high"].iloc[i])>=lo
+                if touched and float(prior["close"].iloc[i])>hi:
+                    role_change=i; break
+        if role_change is not None:
+            z["active"]=False; z["broken_at"]=prior["date"].iloc[role_change].date().isoformat()
+        elif breakout is not None:
+            z["breakout_unconfirmed_role_change"]=prior["date"].iloc[breakout].date().isoformat()
+    return sorted(zones,key=lambda z:(float(z["lower"]),float(z["upper"]),z["kind"]))
+
+def nearest_active_resistance(df:pd.DataFrame,trigger_idx:int,A:float,entry_low:float,entry_high:float,entry_model:float)->dict[str,Any]:
+    zones=resistance_zones(df,trigger_idx,A)
+    eligible=[z for z in zones if z.get("active") and float(z["upper"])>entry_model]
+    if not eligible:
+        prior=df.iloc[:trigger_idx]
+        prior_max=float(prior["high"].max()) if len(prior) else float("nan")
+        return {"status":"NONE_OBSERVED","zones":zones,"prior_max_high":prior_max}
+    z=min(eligible,key=lambda q:(float(q["lower"]),float(q["upper"])))
+    overlap=not (float(z["upper"])<entry_low or float(z["lower"])>entry_high)
+    return {"status":"PASS","T1":float(z["lower"]),"zone":z,"target_overlap":overlap,"zones":zones}
+
+def retest_bar(row:pd.Series,P:float,entry_high:float)->bool:
+    return float(row["low"])<=entry_high and float(row["close"])>P and float(row["close"])<=entry_high
+
+def extension_diagnostics(df:pd.DataFrame,A:float,P:float,entry_high:float)->dict[str,Any]:
+    t=len(df)-1; close=float(df["close"].iloc[t])
+    pivot_extension=(close/P)-1 if P>0 else float("inf")
+    move3=None; reset=False
+    if t>=3:
+        move3=(close-float(df["close"].iloc[t-3]))/A
+        for i in range(t-2,t):
+            if retest_bar(df.iloc[i],P,entry_high):
+                reset=True; break
+    veto=bool(pivot_extension>=0.08 or (move3 is not None and move3>2.0 and not reset))
+    return {"pivot_extension":pivot_extension,"move3_atr":move3,
+            "reset_between_tminus3_and_t":reset,"extension_veto":veto}
