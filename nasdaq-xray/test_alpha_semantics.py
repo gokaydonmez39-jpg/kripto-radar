@@ -82,6 +82,23 @@ def main():
     assert ex2["move3_atr"]>2.0 and ex2["reset_between_tminus3_and_t"] is False,ex2
     assert ex2["extension_veto"] is True,ex2
 
+    # A newly completed tight base between t-3 and t is also a canonical reset.
+    br=[]
+    for i in range(36):
+        if i<30:
+            o=100.0;h=105.0;l=95.0;cl=100.0
+        elif i<35:
+            o=100.0;h=101.5;l=98.5;cl=100.0
+        else:
+            o=129.0;h=131.0;l=129.0;cl=130.0
+        br.append({"date":pd.Timestamp("2026-03-02")+pd.Timedelta(days=i),
+                   "open":o,"high":h,"low":l,"close":cl,"volume":1_000_000.0})
+    breset=pd.DataFrame(br)
+    bx=extension_diagnostics(breset,10.0,125.0,127.5)
+    assert bx["move3_atr"]>2.0 and bx["pivot_extension"]<0.08,bx
+    assert bx["reset_between_tminus3_and_t"] is True and bx["reset_kind"]=="TIGHT_BASE",bx
+    assert bx["extension_veto"] is False,bx
+
     row=pd.Series({"low":121.5,"close":122.0})
     assert retest_bar(row,120.0,122.5) is True
 
@@ -268,7 +285,7 @@ def main():
 
     print({"status":"PASS","tests":[
       "WILDER_FIRST_TR_UNDEFINED","EMA_SMA_SEED","D_DRAWDOWN_DEFINITIONS",
-      "R1_STRUCTURAL_TRIGGER_MINUS1","R1_ENTRY_OVERLAP","EXTENSION_RESET","RETEST_BAR","FAMILY_A_TRIGGER_MINUS1_LOW","SETUP_ID_STABLE",
+      "R1_STRUCTURAL_TRIGGER_MINUS1","R1_ENTRY_OVERLAP","EXTENSION_RESET","EXTENSION_TIGHT_BASE_RESET","RETEST_BAR","FAMILY_A_TRIGGER_MINUS1_LOW","SETUP_ID_STABLE",
       "B_RECENT_TRIGGER_PERSISTENCE","DEEP_RECENT_TRIGGER_INDEPENDENT_OF_CURRENT_STAGE1","A_STAGE1_ASOF_TRIGGER","MECHANICAL_SCALE_BREAK_GUARD","BREADTH_CLOSE_ONLY_SCALE_GUARD","SPLIT_ONLY_RECONCILIATION","SPLIT_RAW_CROSSCHECK","HISTORICAL_DISCOVERY_WATCH","CHASE_FROZEN_RETEST_RECOVERY","ANCHOR_AVAILABLE_S0_CHRONOLOGY",
       "ADR_RATIO_FAIL_CLOSED_CLASSIFICATION","PROSPECTIVE_LIFECYCLE_PERSISTENCE","FROZEN_LIFECYCLE_EVENT_SCOPE","ANCIENT_SCALE_BREAK_OUTSIDE_TECH_HORIZON",
       "FAMILY_C_REACTION_HIGH_PIVOT","FAMILY_C_PERSISTENT_GAP_FLOOR"
