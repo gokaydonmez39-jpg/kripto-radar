@@ -372,7 +372,7 @@ def main():
       "source_mc_policy_hash":st.get("source_mc_policy_hash"),
       "source_mc_policy_version":st.get("source_mc_policy_version"),
       "results":outres,
-      "remaining_gates":["REGIME_BREADTH","R1_NEAREST_RESISTANCE","BASIC_SEVERE_RR","EXTENSION_CHASE","OFFICIAL_EVENT_FINALIST_REVIEW","ACCOUNT_GATE","G9","ALIGNED_60M","NON_SYNTHETIC_TARGET"],
+      "remaining_gates":["REGIME_BREADTH","R1_NEAREST_RESISTANCE","BASIC_SEVERE_RR","EXTENSION_CHASE","OFFICIAL_EVENT_FINALIST_REVIEW","ACCOUNT_GATE","G9","NON_SYNTHETIC_TARGET"],
       "event_state_fresh":event_state_fresh,
       "authority":"SHADOW_DEEP_PREFILTER_ONLY_NO_SIGNAL"
     }
