@@ -135,7 +135,7 @@ jobs:
           pointer_asof=str(ps.get("asof_et") or "")
           settlement_required=bool(pointer_asof and expected_asof>pointer_asof)
           expected_path="nasdaq-xray/canonical_current_price_dv20.json"
-          exact=[]; semantic=[]
+          rows=[]
           for fp in glob.glob("nasdaq-xray/canonical_mc_bridge_*.json"):
               try:
                   j=json.load(open(fp))
@@ -146,11 +146,6 @@ jobs:
                     and j.get("execution")=="NONE" and j.get("real_money")=="NO-GO"
                     and j.get("asof_et")==expected_asof
                     and j.get("input_path")==expected_path
-                    # Byte-level PRICE/DV20 metadata may change after a fail-only
-                    # residual-block resolution while the investable pass universe
-                    # remains exactly identical. Permit that metadata-only rebind
-                    # only when pass hash + exact pass set + exact count all match
-                    # below; never substitute count equality for set equality.
                     and j.get("input_pass_hash")==expected_hash
                     and j.get("policy_hash")=="26a95745a50b65e85f6ece24b6501af0994764a84ddd886edb70d1fcd770849c"
                     and j.get("policy_version")=="C4.17"
@@ -174,7 +169,7 @@ jobs:
                           ok=False
                       else:
                           sb=sw.read_bytes()
-                          ssha=hashlib.sha1(f"blob {len(sb)}\0".encode()+sb).hexdigest()
+                          ssha=hashlib.sha1(f"blob {len(sb)}\\0".encode()+sb).hexdigest()
                           try: sj=json.loads(sb)
                           except Exception: sj={}
                           ok=(
@@ -188,9 +183,29 @@ jobs:
                             and sj.get("settlement_status")=="PASS"
                           )
                   if ok:
-                      (exact if j.get("input_blob_sha")==price_blob else semantic).append(fp)
+                      fb=pathlib.Path(fp).read_bytes()
+                      fsha=hashlib.sha1(f"blob {len(fb)}\\0".encode()+fb).hexdigest()
+                      rows.append((fp,j,j.get("input_blob_sha")==price_blob,fsha))
               except Exception:
                   pass
+          # Immutable supersession is valid only when the successor names an
+          # already-valid same-epoch predecessor by exact path + Git blob SHA.
+          valid=[]
+          for row in rows:
+              fp,j,is_exact,fsha=row
+              sp=j.get("supersedes_mc_bridge_path"); ss=j.get("supersedes_mc_bridge_blob_sha")
+              if not sp and not ss:
+                  valid.append(row); continue
+              if not sp or not ss:
+                  continue
+              pred=next((x for x in rows if x[0]==sp and x[3]==ss),None)
+              if pred is None:
+                  continue
+              valid.append(row)
+          superseded={j.get("supersedes_mc_bridge_path") for _,j,_,_ in valid if j.get("supersedes_mc_bridge_path") and j.get("supersedes_mc_bridge_blob_sha")}
+          active=[row for row in valid if row[0] not in superseded]
+          exact=[row[0] for row in active if row[2]]
+          semantic=[row[0] for row in active if not row[2]]
           if len(exact)==1:
               fp=exact[0]
           elif len(exact)>1:
