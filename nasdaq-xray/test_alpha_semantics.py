@@ -301,7 +301,8 @@ def main():
          "anchor_available_idx":pdi-1,"anchor_available_date":pdf.date.iloc[pdi-1].date().isoformat(),
          "target_source":"SYNTHETIC_P_PLUS_3A_PRICE_DISCOVERY","target_zone":None,
          "target_overlap":False,"synthetic_target":True,
-         "source_geometry":{"trigger_date":pdd,"P":200.0,"anchor":190.0}}
+         "source_geometry":{"trigger_date":pdd,"P":200.0,"anchor":190.0,
+                            "depth":3.0,"prelow_near_hl":True}}
     pr=eval_one("TEST","A",pfr["source_geometry"],pdf,"CLEAN_DISCOVERY",frozen=pfr,recorded_before=False)
     assert pr["result"]=="PRE_G9_TECH_PASS" and pr["pre_g9_tech_pass"] is True,pr
     assert pr["research_tier_cap"]=="ORANGE" and pr["price_discovery_cap"] is True,pr
