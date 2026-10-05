@@ -7,6 +7,7 @@ import alpha_semantics as alpha
 import final_tech_shadow as ft
 import build_candidate_legal_guard as legal_guard_mod
 import build_current_terminal as terminal_mod
+import build_current_event_request as event_req_mod
 import regime_breadth_shadow as rb
 from final_tech_shadow import eval_one, load_lifecycle_registry, persist_lifecycle_registry
 
@@ -246,8 +247,36 @@ def test_candidate_legal_guard_scope_is_candidate_local():
       "N":{"regime_finalist_pass":True,"A":{},"B":{},"D":{}},
     }}
     fc={"confirmed":{"C":{"confirmed":True},"DROP":{"confirmed":True},"X":{"confirmed":False}}}
-    lifecycle={"records":{"old":{"symbol":"L"}}}
+    lifecycle={"records":{
+      "old":{"symbol":"L","state":"WATCH_RETEST_REQUIRED"},
+      "dead":{"symbol":"DEAD","state":"FAIL_EXPIRED"},
+    }}
     assert legal_guard_mod.candidate_scope(deep,fc,lifecycle)==["A","B","C","D","L"]
+
+def test_cross_session_lifecycle_scope_persists_active_only():
+    prev={
+      "asof_et":"2026-10-02",
+      "lifecycle_registry":{
+        "schema":"XRAY_CANDIDATE_LIFECYCLE_REGISTRY_V1",
+        "execution":"NONE","real_money":"NO-GO","asof_et":"2026-10-02",
+        "records":{
+          "pi":{"symbol":"PI","state":"WATCH_RETEST_REQUIRED","last_asof":"2026-10-02"},
+          "dead":{"symbol":"DEAD","state":"FAIL_EXPIRED","last_asof":"2026-10-02"},
+        },
+      },
+    }
+    assert event_req_mod.lifecycle_scope_from_final(prev,"2026-10-05")==["PI"]
+    future={**prev,"asof_et":"2026-10-06"}
+    assert event_req_mod.lifecycle_scope_from_final(future,"2026-10-05")==[]
+    side={
+      "schema":"XRAY_CANDIDATE_LIFECYCLE_REGISTRY_V1",
+      "execution":"NONE","real_money":"NO-GO","asof_et":"2026-10-05",
+      "records":{
+        "swks":{"symbol":"SWKS","state":"PRE_G9_TECH_PASS","last_asof":"2026-10-05"},
+        "dead2":{"symbol":"DEAD2","state":"FAIL_INVALIDATED_S0","last_asof":"2026-10-05"},
+      },
+    }
+    assert event_req_mod.lifecycle_scope_from_final(prev,"2026-10-05",side)==["SWKS"]
 
 def test_candidate_legal_guard_lifecycle_fallback_matches_final():
     old_prev,old_side=legal_guard_mod.PREV_FINAL,legal_guard_mod.LIFECYCLE
@@ -410,13 +439,16 @@ def main():
     test_family_a_final_geometry_revalidation()
     test_lifecycle_expiry_and_frozen_stability(); test_lifecycle_regime_revalidation_persists_without_pass(); test_lifecycle_persistence_roundtrip()
     test_candidate_local_legal_unknown_does_not_globally_suppress()
-    test_candidate_legal_guard_scope_is_candidate_local(); test_candidate_legal_guard_phrase_severity()
+    test_candidate_legal_guard_scope_is_candidate_local()
+    test_cross_session_lifecycle_scope_persists_active_only()
+    test_candidate_legal_guard_lifecycle_fallback_matches_final()
+    test_candidate_legal_guard_phrase_severity()
     test_workflow_race_and_pre_mc_freeze_contracts()
     print({"status":"PASS","tests":["R1_NO_FUTURE_MUTATION","R1_PLUS2_CONFIRMATION_NO_LEAK",
       "RESISTANCE_ROLE_CHANGE_STATE_MACHINE","FINAL_HISTORY_OHLCV_BINDING","REGIME_INTERVAL_BOUNDS_AND_FINALIST_GATE","CORPORATE_ACTION_NONE_VS_SCALE_BREAK_FAIL_CLOSED","FAMILY_A_FINAL_GEOMETRY_REVALIDATION","RETEST_WINDOW_EXPIRES_AFTER_5","MODEL_HORIZON_EXPIRES_AFTER_8",
       "FROZEN_LEVELS_NEXT_ASOF_STABLE","LIFECYCLE_REGIME_REVALIDATION_PERSISTS","LIFECYCLE_PERSISTENCE_ROUNDTRIP",
       "FINAL_ALPHA_STALE_SOURCE_GUARD","PARTIAL_COVERAGE_DOES_NOT_GLOBAL_ABORT",
-      "DETAILED_FINALIST_LEGAL_FAIL_CLOSED","CANDIDATE_LOCAL_LEGAL_UNKNOWN_ISOLATION","FINAL_VERIFIED_MARKET_GAP_NOT_DOUBLE_BLOCKED","DETAILED_LEGAL_GUARD_EXACT_SOURCE_BINDING","DETAILED_LEGAL_GUARD_POLICY_BINDING","DETAILED_LEGAL_GUARD_NONCIRCULAR_LIFECYCLE","DETAILED_LEGAL_GUARD_LIFECYCLE_FALLBACK_PARITY","DETAILED_LEGAL_GUARD_BOILERPLATE_SEVERITY","DETAILED_LEGAL_GUARD_ANNUAL_PLUS_QUARTERLY_SCOPE","DETAILED_LEGAL_GUARD_EMPTY_SCOPE_NO_NETWORK","TERMINAL_DETAILED_LEGAL_FULL_E2E_BLOCKER","DETAILED_LEGAL_GUARD_NO_SELF_TRIGGER",
+      "DETAILED_FINALIST_LEGAL_FAIL_CLOSED","CANDIDATE_LOCAL_LEGAL_UNKNOWN_ISOLATION","FINAL_VERIFIED_MARKET_GAP_NOT_DOUBLE_BLOCKED","DETAILED_LEGAL_GUARD_EXACT_SOURCE_BINDING","DETAILED_LEGAL_GUARD_POLICY_BINDING","DETAILED_LEGAL_GUARD_NONCIRCULAR_LIFECYCLE","CROSS_SESSION_LIFECYCLE_ACTIVE_ONLY","DETAILED_LEGAL_GUARD_LIFECYCLE_FALLBACK_PARITY","DETAILED_LEGAL_GUARD_BOILERPLATE_SEVERITY","DETAILED_LEGAL_GUARD_ANNUAL_PLUS_QUARTERLY_SCOPE","DETAILED_LEGAL_GUARD_EMPTY_SCOPE_NO_NETWORK","TERMINAL_DETAILED_LEGAL_FULL_E2E_BLOCKER","DETAILED_LEGAL_GUARD_NO_SELF_TRIGGER",
       "POST_MC_PARTIAL_COVERAGE_GATE","PRE_MC_COMPLETED_ASOF_FREEZE_TRUTH_TABLE"]})
 
 if __name__=="__main__": main()
