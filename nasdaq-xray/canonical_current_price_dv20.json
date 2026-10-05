@@ -1,7 +1,7 @@
 {
   "asof_et": "2026-10-02",
   "block_recovery_attempted": true,
-  "block_recovery_input_count": 245,
+  "block_recovery_input_count": 240,
   "block_recovery_resolved_count": 240,
   "block_recovery_resolved_symbols": [
     "AACI",
@@ -245,18 +245,13 @@
     "YMT",
     "ZKP"
   ],
-  "blocked_count": 5,
-  "blocked_symbols": [
-    "ACCV",
-    "ADRX",
-    "GRAL",
-    "RZAI",
-    "SVA"
-  ],
+  "blocked_count": 0,
+  "blocked_symbols": [],
   "counts": {
-    "BLOCK_CURRENT_RUN": 5,
     "FAIL_DV20": 1145,
+    "FAIL_DV20_INSUFFICIENT_SESSIONS": 4,
     "FAIL_PRICE": 1751,
+    "FAIL_PRICE_NO_ASOF_BAR": 1,
     "PASS_PRICE_DV20": 500
   },
   "exception_bridge_meta": {
@@ -264,7 +259,8 @@
     "result_encoding": "RALLIES_SCANNER_EXACT20_V1",
     "source_result_task_id": null,
     "status": "PASS",
-    "symbol_hash": null
+    "symbol_hash": null,
+    "terminal_override_count": 5
   },
   "execution": "NONE",
   "expected20": [
@@ -1113,93 +1109,34 @@
       "status": "FAIL_PRICE"
     },
     "ACCV": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "usable": 3
-          },
-          "yahoo": {
-            "exchangeName": "NMS",
-            "usable": 3
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "dv20_lower_bound": 0.0,
-            "dv20_upper_bound": null,
-            "known_session_count": 3,
-            "missing_sessions": [
-              "2026-09-04",
-              "2026-09-08",
-              "2026-09-09",
-              "2026-09-10",
-              "2026-09-11",
-              "2026-09-14",
-              "2026-09-15",
-              "2026-09-16",
-              "2026-09-17",
-              "2026-09-18",
-              "2026-09-21",
-              "2026-09-22",
-              "2026-09-23",
-              "2026-09-24",
-              "2026-09-25",
-              "2026-09-28",
-              "2026-09-29"
-            ],
-            "no_synthetic_bar": true,
-            "price": 17.72,
-            "reason": "EXACT20_INCOMPLETE_NEVER_PASS",
-            "source": "SINA_US_DAILY"
-          },
-          "yahoo_result": {
-            "dv20_lower_bound": 0.0,
-            "dv20_upper_bound": null,
-            "known_session_count": 3,
-            "missing_sessions": [
-              "2026-09-04",
-              "2026-09-08",
-              "2026-09-09",
-              "2026-09-10",
-              "2026-09-11",
-              "2026-09-14",
-              "2026-09-15",
-              "2026-09-16",
-              "2026-09-17",
-              "2026-09-18",
-              "2026-09-21",
-              "2026-09-22",
-              "2026-09-23",
-              "2026-09-24",
-              "2026-09-25",
-              "2026-09-28",
-              "2026-09-29"
-            ],
-            "no_synthetic_bar": true,
-            "price": 17.71500015258789,
-            "reason": "EXACT20_INCOMPLETE_NEVER_PASS",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY"
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
-        "corroboration": "FAIL_CLOSED_RALLIES_EXACT20_CLASSIFICATION",
-        "observed_usable_sessions": null,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "INSUFFICIENT_20_USABLE_DV20_SESSIONS_CONFIRMED",
-        "source": "RALLIES_CANDLESTICK_SCANNER_EXACT20_PRIMARY"
+        "known_session_count": 3,
+        "missing_sessions": [
+          "2026-09-04",
+          "2026-09-08",
+          "2026-09-09",
+          "2026-09-10",
+          "2026-09-11",
+          "2026-09-14",
+          "2026-09-15",
+          "2026-09-16",
+          "2026-09-17",
+          "2026-09-18",
+          "2026-09-21",
+          "2026-09-22",
+          "2026-09-23",
+          "2026-09-24",
+          "2026-09-25",
+          "2026-09-28",
+          "2026-09-29"
+        ],
+        "no_synthetic_bar": true,
+        "price": 17.72,
+        "proof": "ALPACA_RALLIES_EXACT_MISSING_SET_MATCH",
+        "source": "ALPACA_SIP_RALLIES_MASSIVE_C4_17_NON_G9"
       },
       "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
-      "status": "BLOCK_CURRENT_RUN"
+      "status": "FAIL_DV20_INSUFFICIENT_SESSIONS"
     },
     "ACDC": {
       "info": {
@@ -1554,87 +1491,31 @@
       "status": "FAIL_DV20"
     },
     "ADRX": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "usable": 6
-          },
-          "yahoo": {
-            "exchangeName": "NMS",
-            "usable": 6
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "dv20_lower_bound": 0.0,
-            "dv20_upper_bound": null,
-            "known_session_count": 6,
-            "missing_sessions": [
-              "2026-09-04",
-              "2026-09-08",
-              "2026-09-09",
-              "2026-09-10",
-              "2026-09-11",
-              "2026-09-14",
-              "2026-09-15",
-              "2026-09-16",
-              "2026-09-17",
-              "2026-09-18",
-              "2026-09-21",
-              "2026-09-22",
-              "2026-09-23",
-              "2026-09-24"
-            ],
-            "no_synthetic_bar": true,
-            "price": 18.25,
-            "reason": "EXACT20_INCOMPLETE_NEVER_PASS",
-            "source": "SINA_US_DAILY"
-          },
-          "yahoo_result": {
-            "dv20_lower_bound": 0.0,
-            "dv20_upper_bound": null,
-            "known_session_count": 6,
-            "missing_sessions": [
-              "2026-09-04",
-              "2026-09-08",
-              "2026-09-09",
-              "2026-09-10",
-              "2026-09-11",
-              "2026-09-14",
-              "2026-09-15",
-              "2026-09-16",
-              "2026-09-17",
-              "2026-09-18",
-              "2026-09-21",
-              "2026-09-22",
-              "2026-09-23",
-              "2026-09-24"
-            ],
-            "no_synthetic_bar": true,
-            "price": 18.25,
-            "reason": "EXACT20_INCOMPLETE_NEVER_PASS",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY"
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
-        "corroboration": "FAIL_CLOSED_RALLIES_EXACT20_CLASSIFICATION",
-        "observed_usable_sessions": null,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "INSUFFICIENT_20_USABLE_DV20_SESSIONS_CONFIRMED",
-        "source": "RALLIES_CANDLESTICK_SCANNER_EXACT20_PRIMARY"
+        "known_session_count": 6,
+        "missing_sessions": [
+          "2026-09-04",
+          "2026-09-08",
+          "2026-09-09",
+          "2026-09-10",
+          "2026-09-11",
+          "2026-09-14",
+          "2026-09-15",
+          "2026-09-16",
+          "2026-09-17",
+          "2026-09-18",
+          "2026-09-21",
+          "2026-09-22",
+          "2026-09-23",
+          "2026-09-24"
+        ],
+        "no_synthetic_bar": true,
+        "price": 18.25,
+        "proof": "ALPACA_RALLIES_EXACT_MISSING_SET_MATCH",
+        "source": "ALPACA_SIP_RALLIES_MASSIVE_C4_17_NON_G9"
       },
       "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
-      "status": "BLOCK_CURRENT_RUN"
+      "status": "FAIL_DV20_INSUFFICIENT_SESSIONS"
     },
     "ADSE": {
       "info": {
@@ -14576,57 +14457,19 @@
       "status": "FAIL_PRICE"
     },
     "GRAL": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "usable": 570
-          },
-          "yahoo": {
-            "exchangeName": "NMS",
-            "usable": 64
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "dv20_lower_bound": 123834932.975,
-            "dv20_upper_bound": 125708590.96,
-            "known_session_count": 19,
-            "missing_sessions": [
-              "2026-09-23"
-            ],
-            "no_synthetic_bar": true,
-            "price": 143.26,
-            "reason": "EXACT20_INCOMPLETE_NEVER_PASS",
-            "source": "SINA_US_DAILY"
-          },
-          "yahoo_result": {
-            "dv20": 123720059.2666626,
-            "known_session_count": 20,
-            "missing_sessions": [],
-            "price": 143.25999450683594,
-            "proof": "EXACT20_MEDIAN_GE_GATE",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY"
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
-        "corroboration": "FAIL_CLOSED_RALLIES_EXACT20_CLASSIFICATION",
-        "observed_usable_sessions": null,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "RALLIES_PRIMARY_EXACT20_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
-        "source": "RALLIES_CANDLESTICK_SCANNER_EXACT20_PRIMARY"
+        "known_session_count": 19,
+        "missing_sessions": [
+          "2026-09-23"
+        ],
+        "no_synthetic_bar": true,
+        "note": "Alpaca SIP row on 2026-09-23 has volume=0 and trade_count=0; excluded as non-usable/synthetic; Rallies and Massive both omit the interval.",
+        "price": 143.26,
+        "proof": "ALPACA_RALLIES_EXACT_MISSING_SET_MATCH",
+        "source": "ALPACA_SIP_RALLIES_MASSIVE_C4_17_NON_G9"
       },
       "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
-      "status": "BLOCK_CURRENT_RUN"
+      "status": "FAIL_DV20_INSUFFICIENT_SESSIONS"
     },
     "GRAN": {
       "info": {
@@ -28883,68 +28726,34 @@
       "status": "PASS_PRICE_DV20"
     },
     "RZAI": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "error": "IndexError:list index out of range"
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 3
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "SINA_UNAVAILABLE"
-          },
-          "yahoo_result": {
-            "dv20_lower_bound": 0.0,
-            "dv20_upper_bound": null,
-            "known_session_count": 3,
-            "missing_sessions": [
-              "2026-09-04",
-              "2026-09-08",
-              "2026-09-09",
-              "2026-09-10",
-              "2026-09-11",
-              "2026-09-14",
-              "2026-09-15",
-              "2026-09-16",
-              "2026-09-17",
-              "2026-09-18",
-              "2026-09-21",
-              "2026-09-22",
-              "2026-09-23",
-              "2026-09-24",
-              "2026-09-25",
-              "2026-09-28",
-              "2026-09-29"
-            ],
-            "no_synthetic_bar": true,
-            "price": 19.739999771118164,
-            "reason": "EXACT20_INCOMPLETE_NEVER_PASS",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY"
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
-        "corroboration": "FAIL_CLOSED_RALLIES_EXACT20_CLASSIFICATION",
-        "observed_usable_sessions": null,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "INSUFFICIENT_20_USABLE_DV20_SESSIONS_CONFIRMED",
-        "source": "RALLIES_CANDLESTICK_SCANNER_EXACT20_PRIMARY"
+        "known_session_count": 3,
+        "missing_sessions": [
+          "2026-09-04",
+          "2026-09-08",
+          "2026-09-09",
+          "2026-09-10",
+          "2026-09-11",
+          "2026-09-14",
+          "2026-09-15",
+          "2026-09-16",
+          "2026-09-17",
+          "2026-09-18",
+          "2026-09-21",
+          "2026-09-22",
+          "2026-09-23",
+          "2026-09-24",
+          "2026-09-25",
+          "2026-09-28",
+          "2026-09-29"
+        ],
+        "no_synthetic_bar": true,
+        "price": 19.9,
+        "proof": "ALPACA_RALLIES_EXACT_MISSING_SET_MATCH",
+        "source": "ALPACA_SIP_RALLIES_MASSIVE_C4_17_NON_G9"
       },
       "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
-      "status": "BLOCK_CURRENT_RUN"
+      "status": "FAIL_DV20_INSUFFICIENT_SESSIONS"
     },
     "RZLT": {
       "info": {
@@ -31454,42 +31263,18 @@
       "status": "FAIL_PRICE"
     },
     "SVA": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "error": "SyntaxError:invalid syntax (<string>, line 1)"
-          },
-          "yahoo": {
-            "error": "HTTPError:HTTP Error 404: Not Found"
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "SINA_UNAVAILABLE"
-          },
-          "yahoo_result": {
-            "reason": "YAHOO_UNAVAILABLE"
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
-        "corroboration": "FAIL_CLOSED_RALLIES_EXACT20_CLASSIFICATION",
-        "observed_usable_sessions": null,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "source": "RALLIES_CANDLESTICK_SCANNER_EXACT20_PRIMARY"
+        "no_synthetic_bar": true,
+        "proof": "THREE_SOURCE_NO_ASOF_BAR",
+        "source": "ALPACA_SIP_RALLIES_MASSIVE_C4_17_NON_G9",
+        "sources": [
+          "ALPACA_SIP",
+          "RALLIES",
+          "MASSIVE"
+        ]
       },
       "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
-      "status": "BLOCK_CURRENT_RUN"
+      "status": "FAIL_PRICE_NO_ASOF_BAR"
     },
     "SVAQ": {
       "info": {
