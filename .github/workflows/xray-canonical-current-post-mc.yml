@@ -29,7 +29,7 @@ permissions:
 concurrency:
   # V3 cuts over from stale V1/V2 HISTORY runs after the bounded-network repair.
   # Older generations are commit-time stale by workflow SHA and cannot publish.
-  group: xray-canonical-current-post-mc-v6
+  group: xray-canonical-current-post-mc-v7
   # Preserve single-writer ordering but never preempt an exact-bound epoch in flight.
   # New triggers queue and the freeze/no-op guards collapse redundant work.
   cancel-in-progress: false
