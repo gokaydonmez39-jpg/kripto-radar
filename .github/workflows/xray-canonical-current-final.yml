@@ -115,10 +115,9 @@ jobs:
         shell: bash
         run: |
           python - <<'PY' > /tmp/event_out
-          import glob,hashlib,json,pathlib
+          import glob,json,pathlib,subprocess
           def bsha(p):
-              p=pathlib.Path(p); b=p.read_bytes()
-              return hashlib.sha1(f"blob {len(b)}\\0".encode()+b).hexdigest()
+              return subprocess.check_output(["git","hash-object",str(p)],text=True).strip()
           reqp=pathlib.Path("nasdaq-xray/canonical_current_event_request.json")
           if not reqp.exists():
               print("ready=false"); raise SystemExit
@@ -133,6 +132,9 @@ jobs:
           if any(r.get(k)!=v for k,v in current_sources.items()):
               print("ready=false")
               print("current_source_binding=false")
+              for k,v in current_sources.items():
+                  print(f"{k}_actual={v}")
+                  print(f"{k}_expected={r.get(k)}")
               raise SystemExit
           valid=[]
           for fp in glob.glob("nasdaq-xray/canonical_event_bridge_*.json"):
@@ -163,6 +165,13 @@ jobs:
           PY
           cat /tmp/event_out >> "$GITHUB_OUTPUT"
           cat /tmp/event_out
+
+      - name: Fail closed when exact event binding is unavailable
+        if: steps.event.outputs.ready != 'true'
+        shell: bash
+        run: |
+          echo "XRAY_FINAL_EVENT_BINDING=FAIL_CLOSED" >&2
+          exit 1
 
       - name: Compile
         run: |
