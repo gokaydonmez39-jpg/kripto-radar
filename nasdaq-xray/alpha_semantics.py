@@ -434,12 +434,19 @@ def retest_bar(row:pd.Series,P:float,entry_high:float)->bool:
 def extension_diagnostics(df:pd.DataFrame,A:float,P:float,entry_high:float)->dict[str,Any]:
     t=len(df)-1; close=float(df["close"].iloc[t])
     pivot_extension=(close/P)-1 if P>0 else float("inf")
-    move3=None; reset=False
+    move3=None; reset=False; reset_kind=None
     if t>=3:
         move3=(close-float(df["close"].iloc[t-3]))/A
+        # Canonical reset may be either a valid retest inside the frozen entry
+        # band or a newly completed tight base known before the current close.
         for i in range(t-2,t):
             if retest_bar(df.iloc[i],P,entry_high):
-                reset=True; break
+                reset=True; reset_kind="RETEST"; break
+        if not reset:
+            for candidate_t in (t-1,t):
+                if candidate_t>=0 and tight_base_at(df,candidate_t) is not None:
+                    reset=True; reset_kind="TIGHT_BASE"; break
     veto=bool(pivot_extension>=0.08 or (move3 is not None and move3>2.0 and not reset))
     return {"pivot_extension":pivot_extension,"move3_atr":move3,
-            "reset_between_tminus3_and_t":reset,"extension_veto":veto}
+            "reset_between_tminus3_and_t":reset,"reset_kind":reset_kind,
+            "extension_veto":veto}
