@@ -79,6 +79,15 @@ jobs:
               mc=evidence.get("mc") or {}
               mcp=pathlib.Path(mc.get("path") or "")
               exact=exact and mcp.exists() and mc.get("blob_sha")==blob_sha(mcp)
+              # A FULL artifact snapshot is frozen only while the alpha source
+              # implementation that produced it is still exact-current.
+              try:
+                  ft=json.load(open(root/"canonical_current_final_tech.json"))
+                  impl=ft.get("semantic_impl_blobs") or {}
+                  for fn in ("alpha_semantics.py","stage1_shadow.py","regime_breadth_shadow.py","deep_pre_r1_shadow.py"):
+                      exact=exact and impl.get(fn)==blob_sha(root/fn)
+              except Exception:
+                  exact=False
               print("frozen="+("true" if exact else "false"))
               print("reason="+("FROZEN_EXACT_COMPLETED_TERMINAL" if exact else "REBUILD_REQUIRED_OR_BINDING_DRIFT"))
           except Exception as e:
