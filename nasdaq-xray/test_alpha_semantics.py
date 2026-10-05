@@ -6,8 +6,10 @@ ROOT=pathlib.Path(__file__).resolve().parent
 sys.path.insert(0,str(ROOT))
 from alpha_semantics import (
     wilder_atr,ema_seeded,drawdown_metrics,nearest_active_resistance,
-    extension_diagnostics,retest_bar,setup_id
+    extension_diagnostics,retest_bar,setup_id,
+    find_recent_b_trigger,mechanical_scale_breaks
 )
+from final_tech_shadow import eval_one
 
 def frame(n=90):
     rows=[]
@@ -78,9 +80,49 @@ def main():
     assert retest_bar(row,120.0,122.5) is True
     assert setup_id("TEST","D","2026-10-02",120,100,10)==setup_id("TEST","D","2026-10-02",120,100,10)
 
+    # B trigger persists when it happened two completed sessions ago.
+    rows=[]
+    for i in range(70):
+        if i<48:
+            o=100.0;h=102.0;l=98.0;cl=100.0;vol=1_000_000.0
+        else:
+            o=100.0;h=100.5;l=99.5;cl=100.0;vol=1_000_000.0
+        rows.append({"date":pd.Timestamp("2026-04-01")+pd.Timedelta(days=i),
+                     "open":o,"high":h,"low":l,"close":cl,"volume":vol})
+    bf=pd.DataFrame(rows)
+    t=len(bf)-3
+    bf.loc[t,"open"]=100.8;bf.loc[t,"high"]=102.5;bf.loc[t,"low"]=100.7
+    bf.loc[t,"close"]=102.0;bf.loc[t,"volume"]=3_000_000.0
+    b=find_recent_b_trigger(bf,3)
+    assert b and b["breakout_confirmed"] is True and b["trigger_age_sessions"]==2,b
+
+    # A likely mechanical split/ADR-ratio scale discontinuity is never silently ignored.
+    sf=frame(40)
+    sf.loc[20:,"open"]=50.0;sf.loc[20:,"high"]=52.0;sf.loc[20:,"low"]=48.0;sf.loc[20:,"close"]=50.0
+    sb=mechanical_scale_breaks(sf,40)
+    assert sb and 1.8<=sb[0]["ratio"]<=2.2,sb
+
+    # A newly discovered trigger older than three completed sessions is WATCH only;
+    # the same frozen setup may become actionable only when it was prospectively recorded.
+    hf=frame(270)
+    hf[["open","high","low","close"]]=[101.0,103.0,99.0,102.0]
+    trigger_idx=len(hf)-5
+    td=hf.date.iloc[trigger_idx].date().isoformat()
+    frozen={"setup_id":"TEST-HIST","symbol":"TEST","family":"D","trigger_date":td,
+            "A":10.0,"P":100.0,"anchor":97.0,"entry_low":100.0,"entry_high":102.5,
+            "entry_model":102.5,"chase_limit":105.0,"S0":95.0,"T1":150.0,
+            "target_source":"TEST","target_zone":None,"target_overlap":False,
+            "synthetic_target":False,"source_geometry":{"trigger_date":td,"P":100.0,"anchor":97.0}}
+    g={"trigger_date":td,"P":100.0,"anchor":97.0}
+    hr=eval_one("TEST","D",g,hf,"CLEAN_DISCOVERY",frozen=frozen,recorded_before=False)
+    assert hr["result"]=="WATCH_HISTORICAL_SETUP",hr
+    pr=eval_one("TEST","D",g,hf,"CLEAN_DISCOVERY",frozen=frozen,recorded_before=True)
+    assert pr["result"]=="PRE_G9_TECH_PASS",pr
+
     print({"status":"PASS","tests":[
       "WILDER_FIRST_TR_UNDEFINED","EMA_SMA_SEED","D_DRAWDOWN_DEFINITIONS",
-      "R1_STRUCTURAL_TRIGGER_MINUS1","R1_ENTRY_OVERLAP","EXTENSION_RESET","RETEST_BAR","SETUP_ID_STABLE"
+      "R1_STRUCTURAL_TRIGGER_MINUS1","R1_ENTRY_OVERLAP","EXTENSION_RESET","RETEST_BAR","SETUP_ID_STABLE",
+      "B_RECENT_TRIGGER_PERSISTENCE","MECHANICAL_SCALE_BREAK_GUARD","HISTORICAL_DISCOVERY_WATCH"
     ]})
 
 if __name__=="__main__":
