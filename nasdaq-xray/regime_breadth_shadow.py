@@ -12,7 +12,7 @@ from zoneinfo import ZoneInfo
 import akshare as ak
 import pandas as pd
 import pandas_market_calendars as mcal
-from alpha_semantics import apply_split_events, mechanical_split_suspects, mechanical_scale_breaks
+from alpha_semantics import apply_split_events, mechanical_scale_breaks
 
 ROOT=Path(__file__).resolve().parent
 STAGE1=Path(os.getenv("XRAY_REGIME_STAGE1", str(ROOT/"canonical_current_stage1.json")))
@@ -202,7 +202,10 @@ def main():
         strow=(st.get("results") or {}).get(s) or {}
         ca_status=strow.get("corporate_action_status")
         split_events=strow.get("split_events") or []
-        breaks=mechanical_split_suspects(x)
+        # Breadth history is intentionally close-only. Never call an OHLC/open-based
+        # detector here; Stage1 owns split-event discovery/reconciliation. This local
+        # check is a second fail-closed guard for severe recent close-scale breaks.
+        breaks=mechanical_scale_breaks(x,260)
         if split_events:
             x=apply_split_events(x,split_events).reset_index(drop=True)
         elif breaks and not str(ca_status).startswith("PASS"):
