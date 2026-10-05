@@ -321,6 +321,7 @@ jobs:
           m=json.load(open("nasdaq-xray/canonical_current_master_manifest.json"))
           p=json.load(open("nasdaq-xray/canonical_current_price_dv20.json"))
           q=json.load(open("nasdaq-xray/canonical_current_resolver_request.json"))
+          cm=json.load(open("nasdaq-xray/canonical_current_resolver_chunk_manifest.json"))
           assert m["task_id"]==p["task_id"]==q["task_id"]=="6a825366222081918997094d76e6ae46"
           assert m["phase"]=="MASTER_IDENTITY" and m["status"]=="HISTORY_COMPLETE"
           assert m["unknown_count"]==0 and m["pass_count"]==m["queue_total"]

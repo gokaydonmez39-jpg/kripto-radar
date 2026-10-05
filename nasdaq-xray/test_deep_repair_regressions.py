@@ -437,6 +437,8 @@ def test_workflow_race_and_pre_mc_freeze_contracts():
     assert "canonical_current_resolver_chunk_manifest.json" in pre_mc_wf
     assert 'canonical_current_resolver_chunk_[0-9][0-9][0-9][0-9].json' in pre_mc_wf
     assert 'rebuilt==q["symbols"]' in pre_mc_wf
+    structural_gate=pre_mc_wf.split("- name: Structural gate",1)[1].split("- name: Commit current pre-MC artifacts",1)[0]
+    assert 'cm=json.load(open("nasdaq-xray/canonical_current_resolver_chunk_manifest.json"))' in structural_gate
 
     # C4.17 detailed legal/filing review is finalist-local. The global LEGAL
     # phase is only a shell/identity screen and may never by itself authorize R92.
