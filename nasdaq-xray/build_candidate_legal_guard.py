@@ -35,7 +35,9 @@ LIFECYCLE=Path(os.getenv("XRAY_LEGAL_GUARD_LIFECYCLE",str(ROOT/"canonical_candid
 PREV_FINAL=Path(os.getenv("XRAY_LEGAL_GUARD_PREV_FINAL",str(ROOT/"canonical_current_final_tech.json")))
 OUT=Path(os.getenv("XRAY_LEGAL_GUARD_OUT",str(ROOT/"canonical_candidate_legal_guard.json")))
 TASK_ID="6a825366222081918997094d76e6ae46"
-USER_AGENT=os.getenv("XRAY_SEC_USER_AGENT","XRAY research compliance contact: xray-noreply@example.invalid")
+USER_AGENT=os.getenv("XRAY_SEC_USER_AGENT","NASDAQ-SWING-XRAY research bot; xray-dataplane-bot@users.noreply.github.com")
+SEC_MIN_INTERVAL_SECONDS=float(os.getenv("XRAY_SEC_MIN_INTERVAL_SECONDS","0.22"))
+_SEC_LAST_REQUEST_AT=0.0
 PERIODIC={"10-K","10-Q","20-F","40-F"}
 ANNUAL={"10-K","20-F","40-F"}
 OFFERING_PREFIX=("S-3","F-3","424B")
@@ -79,15 +81,20 @@ def scope_hash(symbols:list[str])->str:
 
 
 def _fetch(url:str,limit:int=15_000_000,retries:int=3)->bytes:
+    global _SEC_LAST_REQUEST_AT
     last=None
     for attempt in range(retries):
         try:
+            now=time.monotonic()
+            wait=SEC_MIN_INTERVAL_SECONDS-(now-_SEC_LAST_REQUEST_AT)
+            if wait>0: time.sleep(wait)
             req=urllib.request.Request(url,headers={
                 "User-Agent":USER_AGENT,
                 "Accept-Encoding":"identity",
                 "Accept":"application/json,text/html,*/*",
             })
             with urllib.request.urlopen(req,timeout=20) as r:
+                _SEC_LAST_REQUEST_AT=time.monotonic()
                 data=r.read(limit+1)
                 if len(data)>limit: raise RuntimeError("SEC_RESPONSE_TOO_LARGE")
                 return data
