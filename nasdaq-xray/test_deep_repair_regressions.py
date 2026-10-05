@@ -262,6 +262,18 @@ def test_workflow_race_and_pre_mc_freeze_contracts():
     assert "candidate_local_research_ready" in term_src
     assert "PARTIAL_UNKNOWN" in term_src
 
+    # C4.17 detailed legal/filing review is finalist-local. The global LEGAL
+    # phase is only a shell/identity screen and may never by itself authorize R92.
+    legal_src=(ROOT/"legal_phase.py").read_text()
+    assert '"legal_scope":"GLOBAL_SHELL_IDENTITY_ONLY"' in legal_src
+    assert '"detailed_candidate_filing_review_complete":False' in legal_src
+    assert '"SEPARATE_FINALIST_GUARD_REQUIRED"' in legal_src
+    assert "_load_candidate_legal_guard" in ftsrc
+    assert "DETAILED_LEGAL_REVIEW_NOT_PROVEN" in ftsrc
+    assert '"detailed_legal_review_exact"' in ftsrc
+    assert 'ft.get("detailed_legal_review_exact") is True' in term_src
+    assert '"candidate_detailed_legal_review_exact"' in term_src
+
     pre=(REPO/".github/workflows/xray-canonical-current-pre-mc.yml").read_text()
     marker="- name: Completed-session epoch rollover guard"; assert marker in pre
     guard=pre.split(marker,1)[1].split("- name: Recover corrupted frozen pre-MC snapshot",1)[0]
@@ -287,6 +299,7 @@ def main():
       "RESISTANCE_ROLE_CHANGE_STATE_MACHINE","FINAL_HISTORY_OHLCV_BINDING","REGIME_INTERVAL_BOUNDS_AND_FINALIST_GATE","CORPORATE_ACTION_NONE_VS_SCALE_BREAK_FAIL_CLOSED","RETEST_WINDOW_EXPIRES_AFTER_5","MODEL_HORIZON_EXPIRES_AFTER_8",
       "FROZEN_LEVELS_NEXT_ASOF_STABLE","LIFECYCLE_REGIME_REVALIDATION_PERSISTS","LIFECYCLE_PERSISTENCE_ROUNDTRIP",
       "FINAL_ALPHA_STALE_SOURCE_GUARD","PARTIAL_COVERAGE_DOES_NOT_GLOBAL_ABORT",
+      "DETAILED_FINALIST_LEGAL_FAIL_CLOSED",
       "POST_MC_PARTIAL_COVERAGE_GATE","PRE_MC_COMPLETED_ASOF_FREEZE_TRUTH_TABLE"]})
 
 if __name__=="__main__": main()
