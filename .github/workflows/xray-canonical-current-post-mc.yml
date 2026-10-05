@@ -401,24 +401,35 @@ jobs:
           asof=str(h["asof_et"])
           passed=set(h.get("pass_symbols") or [])
 
+          need=["date","open","high","low","close","volume"]
+          def read_qqq_cache():
+              qp=hp._history_cache_path("QQQ")
+              if qp is None or not qp.exists():
+                  return None
+              q=pd.read_csv(qp,compression="gzip")
+              cols={str(c).lower():c for c in q.columns}
+              if any(k not in cols for k in need):
+                  return None
+              q=q[[cols[k] for k in need]].copy(); q.columns=need
+              q["date"]=pd.to_datetime(q["date"],errors="coerce")
+              for k in need[1:]: q[k]=pd.to_numeric(q[k],errors="coerce")
+              q=q.dropna().drop_duplicates("date",keep="last").sort_values("date")
+              return q[q["date"]<=pd.Timestamp(asof)].reset_index(drop=True)
+          def qqq_valid(q):
+              return bool(q is not None and len(q)>=260 and not q.empty
+                          and q["date"].dt.date.max().isoformat()==asof)
+
           qdf,_=hp._call_with_retry(lambda: ak.stock_us_daily(symbol="QQQ",adjust=""))
           hp._write_sina_cache("QQQ",qdf)
-          qp=hp._history_cache_path("QQQ")
-          if qp is None or not qp.exists():
-              raise RuntimeError("TECHNICAL_BENCHMARK_CACHE_MISSING:QQQ")
-          q=pd.read_csv(qp,compression="gzip")
-          cols={str(c).lower():c for c in q.columns}
-          need=["date","open","high","low","close","volume"]
-          if any(k not in cols for k in need):
-              raise RuntimeError("TECHNICAL_BENCHMARK_CACHE_COLUMNS:QQQ")
-          q=q[[cols[k] for k in need]].copy(); q.columns=need
-          q["date"]=pd.to_datetime(q["date"],errors="coerce")
-          for k in need[1:]: q[k]=pd.to_numeric(q[k],errors="coerce")
-          q=q.dropna().drop_duplicates("date",keep="last").sort_values("date")
-          q=q[q["date"]<=pd.Timestamp(asof)]
-          if len(q)<260 or q.empty or q["date"].dt.date.max().isoformat()!=asof:
+          q=read_qqq_cache(); qsource="SINA_US_DAILY"
+          if not qqq_valid(q):
+              ydf,ymeta=hp.yahoo_ohlcv("QQQ",asof)
+              hp._write_sina_cache("QQQ",ydf)
+              q=read_qqq_cache(); qsource=str((ymeta or {}).get("source") or "YAHOO_CHART_FREE_RAW_OHLCV")
+          if not qqq_valid(q):
               raise RuntimeError("TECHNICAL_BENCHMARK_CACHE_ASOF_OR_HISTORY:QQQ")
-          print({"XRAY_TECHNICAL_BENCHMARK_CACHE":"PASS","symbol":"QQQ","bars":len(q),"asof":asof})
+          print({"XRAY_TECHNICAL_BENCHMARK_CACHE":"PASS","symbol":"QQQ",
+                 "bars":len(q),"asof":asof,"source":qsource})
 
           warmed=[]
           for sym,rec in sorted((hp.OFFICIAL_RECORDS or {}).items()):
