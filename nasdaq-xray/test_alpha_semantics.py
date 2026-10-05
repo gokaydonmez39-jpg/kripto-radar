@@ -8,7 +8,8 @@ from alpha_semantics import (
     wilder_atr,ema_seeded,drawdown_metrics,nearest_active_resistance,
     extension_diagnostics,retest_bar,setup_id,
     find_recent_b_trigger,mechanical_scale_breaks,
-    apply_split_events,mechanical_split_suspects,_verify_split_events_against_raw
+    apply_split_events,mechanical_split_suspects,_verify_split_events_against_raw,
+    family_a_pretrigger_low
 )
 from final_tech_shadow import eval_one,_is_depositary_security_name
 from regime_breadth_shadow import close_only_scale_breaks
@@ -80,6 +81,14 @@ def main():
 
     row=pd.Series({"low":121.5,"close":122.0})
     assert retest_bar(row,120.0,122.5) is True
+
+    # Family A proximity is bound to exactly trigger-1, not a multi-bar minimum
+    # and not the trigger bar's low.
+    af=frame(8)
+    af.loc[4,"low"]=99.0
+    af.loc[5,"low"]=120.0
+    af.loc[6,"low"]=80.0
+    assert family_a_pretrigger_low(af,6)==120.0
     assert setup_id("TEST","D","2026-10-02",120,100,10)==setup_id("TEST","D","2026-10-02",120,100,10)
 
     # B trigger persists when it happened two completed sessions ago.
@@ -167,7 +176,7 @@ def main():
 
     print({"status":"PASS","tests":[
       "WILDER_FIRST_TR_UNDEFINED","EMA_SMA_SEED","D_DRAWDOWN_DEFINITIONS",
-      "R1_STRUCTURAL_TRIGGER_MINUS1","R1_ENTRY_OVERLAP","EXTENSION_RESET","RETEST_BAR","SETUP_ID_STABLE",
+      "R1_STRUCTURAL_TRIGGER_MINUS1","R1_ENTRY_OVERLAP","EXTENSION_RESET","RETEST_BAR","FAMILY_A_TRIGGER_MINUS1_LOW","SETUP_ID_STABLE",
       "B_RECENT_TRIGGER_PERSISTENCE","MECHANICAL_SCALE_BREAK_GUARD","BREADTH_CLOSE_ONLY_SCALE_GUARD","SPLIT_ONLY_RECONCILIATION","SPLIT_RAW_CROSSCHECK","HISTORICAL_DISCOVERY_WATCH","CHASE_FROZEN_RETEST_RECOVERY",
       "ADR_RATIO_FAIL_CLOSED_CLASSIFICATION","ANCIENT_SCALE_BREAK_OUTSIDE_TECH_HORIZON"
     ]})
