@@ -356,6 +356,14 @@ def main():
       "source_family_c_blob_sha":blob_sha(FAMILY_C) if FAMILY_C is not None and FAMILY_C.exists() else None,
       "lifecycle_registry":registry,
       "source_compiled_policy_hash":d.get("source_mc_policy_hash"),"source_compiled_policy_version":d.get("source_mc_policy_version"),
+      "source_workflow_sha":os.getenv("GITHUB_SHA"),
+      "semantic_impl_blobs":{
+        "alpha_semantics.py":blob_sha(ROOT/"alpha_semantics.py"),
+        "stage1_shadow.py":blob_sha(ROOT/"stage1_shadow.py"),
+        "deep_pre_r1_shadow.py":blob_sha(ROOT/"deep_pre_r1_shadow.py"),
+        "family_c_engine.py":blob_sha(ROOT/"family_c_engine.py"),
+        "final_tech_shadow.py":blob_sha(Path(__file__).resolve())
+      },
       "results":results,
       "policy_semantics_exact":False,
       "semantic_audit_status":"BLOCKED_CORPORATE_ACTION_RECONCILIATION",
