@@ -15,7 +15,7 @@ import pandas as pd
 import pandas_market_calendars as mcal
 from alpha_semantics import (
     wilder_atr as _policy_atr, ema_seeded, drawdown_metrics,
-    find_recent_b_trigger, mechanical_scale_breaks,
+    find_recent_b_trigger, mechanical_scale_breaks, split_consistent_history,
 )
 
 ROOT=Path(__file__).resolve().parent
@@ -165,10 +165,31 @@ def process(sym,asof,week_last):
     try:
         x,history_source=load_history(sym,asof)
         if x is None or x.empty:return sym,{"status":"UNKNOWN","reason":"SINA_EMPTY"}
+        x=x.reset_index(drop=True)
         if len(x)<260:return sym,{"status":"HISTORY_FAIL","reason":"DAILY_LT260","bars":len(x),"history_source":history_source}
+
+        raw_wg=weekly_gate(x,asof,week_last)
+        scale_breaks=mechanical_scale_breaks(x,260)
+        ca_status="NOT_REQUIRED_RAW_WEEKLY_FAIL_NO_MECHANICAL_SCALE_BREAK"
+        split_events=[]
+        # Split verification is mandatory on every raw weekly passer and on any
+        # raw weekly failure whose scale discontinuity could itself have caused
+        # the failure. This avoids adding hundreds of unnecessary network calls
+        # while still protecting the candidate path from split false negatives.
+        if raw_wg.get("pass") or scale_breaks:
+            x2,ca_status,split_events=split_consistent_history(sym,x)
+            if not str(ca_status).startswith("PASS"):
+                return sym,{"status":"UNKNOWN","reason":"CORPORATE_ACTION_SOURCE_UNKNOWN",
+                            "corporate_action_status":ca_status,"mechanical_scale_breaks":scale_breaks,
+                            "history_source":history_source}
+            x=x2.reset_index(drop=True)
+
         wg=weekly_gate(x,asof,week_last)
         if not wg.get("pass"):
-            return sym,{"status":"WEEKLY_FAIL","weekly":wg}
+            return sym,{"status":"WEEKLY_FAIL","weekly":wg,"raw_weekly":raw_wg,
+                        "corporate_action_status":ca_status,"split_events":split_events,
+                        "mechanical_scale_breaks":scale_breaks,"history_source":history_source}
+
         close=x["close"].astype(float)
         sma50=close.rolling(50).mean()
         recent20_high=x["high"].astype(float).rolling(20).max()
@@ -178,22 +199,18 @@ def process(sym,asof,week_last):
             a_pool=bool(last>float(sma50.iloc[-1]) and float(sma50.iloc[-1])>float(sma50.iloc[-21]) and rh>0 and 0.88*rh<=last<=rh)
         b=base_pool(x)
         b_recent=find_recent_b_trigger(x,3)
-        scale_breaks=mechanical_scale_breaks(x,260)
         last=float(close.iloc[-1])
         dd=drawdown_metrics(x)
         dd252=dd["current_drawdown_252"]; dd120=dd["max_drawdown_close_120"]
         d_pool=bool((math.isfinite(dd252) and dd252<=-0.15) or (math.isfinite(dd120) and dd120<=-0.20))
         return sym,{
-          "status":"WEEKLY_PASS","weekly":wg,"history_source":history_source,
-          "a_trend_pool":a_pool,
-          "b_tight_base_pool":b,
-          "b_recent_trigger":b_recent,
+          "status":"WEEKLY_PASS","weekly":wg,"raw_weekly":raw_wg,"history_source":history_source,
+          "corporate_action_status":ca_status,"split_events":split_events,
           "mechanical_scale_breaks":scale_breaks,
-          "d_drawdown_pool":d_pool,
-          "dd252":dd252,"dd120":dd120,
+          "a_trend_pool":a_pool,"b_tight_base_pool":b,"b_recent_trigger":b_recent,
+          "d_drawdown_pool":d_pool,"dd252":dd252,"dd120":dd120,
           "dd252_definition":"CURRENT_CLOSE_VS_MAX_HIGH_252",
-          "dd120_definition":"MAX_DRAWDOWN_CLOSE_120",
-          "last_close":last
+          "dd120_definition":"MAX_DRAWDOWN_CLOSE_120","last_close":last
         }
     except Exception as e:
         return sym,{"status":"UNKNOWN","reason":f"{type(e).__name__}:{str(e)[:180]}"}
