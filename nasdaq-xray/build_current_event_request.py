@@ -73,6 +73,7 @@ def main():
     assert len(current_weekly)==int(s.get("weekly_pass_count",len(current_weekly)))
     weekly=sorted(set(s.get("recent_weekly_scope") or current_weekly))
     assert len(weekly)==int(s.get("recent_weekly_scope_count",len(weekly)))
+    assert set(current_weekly)<=set(weekly),"CURRENT_WEEKLY_NOT_SUBSET_OF_TRIGGER_SCOPE"
     assert int(d.get("input_weekly_pass_count",-1))==len(current_weekly)
     assert int(d.get("input_weekly_trigger_scope_count",-1))==len(weekly)
     assert set(d.get("weekly_trigger_scope") or [])==set(weekly)
