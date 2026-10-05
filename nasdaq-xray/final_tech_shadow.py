@@ -270,7 +270,16 @@ def main():
       "source_compiled_policy_hash":d.get("source_mc_policy_hash"),
       "source_compiled_policy_version":d.get("source_mc_policy_version"),
       "results":results,
-      "remaining_nontech_gates":["OFFICIAL_EVENT_FINAL_REVIEW","ACCOUNT_GATE","G9","ALIGNED_60M","DELIVERY_PROOF"],
+      "policy_semantics_exact":False,
+      "semantic_audit_status":"BLOCKED_KNOWN_GAPS",
+      "semantic_known_gaps":[
+        "R1_IMPLEMENTATION_USES_NEAREST_ANY_PRIOR_DAILY_HIGH_NOT_CERTIFIED_ELIGIBLE_ACTIVE_RESISTANCE",
+        "RETEST_FROZEN_5_SESSION_LIFECYCLE_NOT_IMPLEMENTED",
+        "FAMILY_A_PRELOW_NEAR_HL_0P5A_GATE_NOT_EXPLICITLY_BOUND_TO_C4_17",
+        "EXTENSION_RESET_SEMANTICS_NOT_IMPLEMENTED",
+        "CORPORATE_ACTION_ADJUSTMENT_RECONCILIATION_NOT_PROVEN"
+      ],
+      "remaining_nontech_gates":["OFFICIAL_EVENT_FINAL_REVIEW","ACCOUNT_GATE","G9","DELIVERY_PROOF"],
       "authority":"EXTERNAL_SHADOW_NO_SIGNAL"
     }
     OUT.write_text(json.dumps(out,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
