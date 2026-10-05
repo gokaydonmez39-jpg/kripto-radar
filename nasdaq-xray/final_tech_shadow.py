@@ -199,33 +199,29 @@ def _trigger_date(fam,g):
     return str(g.get("trigger_date") or g.get("breakout_session") or "")
 
 def candidate_corporate_action_reconcile(sym,df,drow=None):
-    """Candidate-scoped corporate-action integrity, fail-closed on real scale breaks.
+    """Candidate-scoped price-scale integrity.
 
-    Absence of an inherited Stage1 corporate_action_status is not evidence of a
-    corporate action and must not auto-demote a clean finalist to UNKNOWN.
-    Conversely, Yahoo split events are diagnostic/cross-check evidence only;
-    a material recent scale break may not be certified by that source alone.
+    Mechanical factor-like gaps are discovery triggers, not corporate-action proof.
+    The shared split reconciler validates any provider-declared split against raw
+    OHLC and otherwise preserves legitimate market/news gaps. Finalist-level
+    material legal/corporate-action risk is handled separately by the mandatory
+    exact-ASOF candidate legal guard; do not double-count an ordinary price gap as
+    an unverified corporate action here.
     """
     x=df.reset_index(drop=True)
-    inherited_status=None; inherited_events=[]
     if drow is not None:
         inherited_status=drow.get("corporate_action_status")
-        inherited_events=drow.get("split_events") or []
         if inherited_status is not None and not str(inherited_status).startswith("PASS"):
             return x,inherited_status,[],False
 
     severe=mechanical_scale_breaks(x,260)
     fractional=mechanical_split_suspects(x,260)
     if severe or fractional:
-        # Retain the existing provider lookup only as diagnostic evidence and
-        # raw-series cross-check. It is not promoted to primary CA authority.
         x2,status,events=split_consistent_history(sym,x)
         if not str(status).startswith("PASS"):
             return x2.reset_index(drop=True),status,events,True
-        return x,"UNKNOWN_PRIMARY_CORPORATE_ACTION_EVIDENCE_REQUIRED",events,True
+        return x2.reset_index(drop=True),status,events,True
 
-    # No mechanically significant split/ratio discontinuity inside the maximum
-    # technical horizon: no corporate-action adjustment is required for this setup.
     return x,"PASS_NO_LOCAL_SPLIT_DISCONTINUITY",[],False
 
 def _frozen_geometry(sym,fam,g,df):
