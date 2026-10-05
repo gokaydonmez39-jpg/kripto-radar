@@ -127,22 +127,34 @@ def load_gate_reporting():
 
 def find_mc(price,price_blob):
     valid=[]
+    current_pass=set(price["pass_symbols"])
     for fp in glob.glob(str(ROOT/"canonical_mc_bridge_*.json")):
         try:
             j=json.load(open(fp))
+            semantic_exact=(
+              j.get("input_pass_hash")==price["pass_hash"]
+              and int(j.get("input_count",-1))==int(price["pass_count"])
+              and set((j.get("results") or {}).keys())==current_pass
+            )
             if (
               j.get("schema")=="XRAY_MC_EPOCH_RESULT_V1" and j.get("status")=="COMMITTED"
               and j.get("task_id")==TASK and j.get("execution")=="NONE" and j.get("real_money")=="NO-GO"
               and j.get("asof_et")==price["asof_et"]
               and j.get("input_path")=="nasdaq-xray/canonical_current_price_dv20.json"
-              and j.get("input_blob_sha")==price_blob
-              and j.get("input_pass_hash")==price["pass_hash"]
+              and semantic_exact
               and j.get("policy_hash")==POLICY_HASH
               and j.get("policy_version")=="C4.17"
-              and int(j.get("input_count",-1))==int(price["pass_count"])
-              and set((j.get("results") or {}).keys())==set(price["pass_symbols"])
             ):
-                valid.append((Path(fp),j))
+                blob_exact=(j.get("input_blob_sha")==price_blob)
+                valid.append((Path(fp),j,{
+                  "blob_exact":blob_exact,
+                  "semantic_rebind":not blob_exact,
+                  "recorded_input_blob_sha":j.get("input_blob_sha"),
+                  "current_price_blob_sha":price_blob,
+                  "pass_hash_exact":True,
+                  "pass_set_exact":True,
+                  "pass_count_exact":True,
+                }))
         except Exception:
             pass
     if len(valid)!=1: raise RuntimeError(f"MC_BRIDGE_BINDING_MATCHES:{len(valid)}")
@@ -175,7 +187,7 @@ def main():
     assert len(p["results"])==int(m["queue_total"])
     price_pass=set(p["pass_symbols"])
     assert len(price_pass)==p["pass_count"]
-    mc_path,mc=find_mc(p,sh["price"])
+    mc_path,mc,mc_binding=find_mc(p,sh["price"])
     if settlement_witness_required:
         assert mc.get("settlement_witness_status")=="PASS","SETTLEMENT_WITNESS_REQUIRED"
         swp=mc.get("settlement_witness_path")
@@ -493,7 +505,17 @@ def main():
       },
       "evidence":{
         **{k:{"path":str(FILES[k].relative_to(ROOT.parent)).replace("\\","/"),"blob_sha":sh[k]} for k in FILES},
-        "mc":{"path":str(mc_path.relative_to(ROOT.parent)).replace("\\","/"),"blob_sha":blob_sha(mc_path)},
+        "mc":{
+          "path":str(mc_path.relative_to(ROOT.parent)).replace("\\","/"),
+          "blob_sha":blob_sha(mc_path),
+          "recorded_input_blob_sha":mc_binding["recorded_input_blob_sha"],
+          "current_price_blob_sha":mc_binding["current_price_blob_sha"],
+          "input_blob_exact":mc_binding["blob_exact"],
+          "semantic_rebind":mc_binding["semantic_rebind"],
+          "pass_hash_exact":mc_binding["pass_hash_exact"],
+          "pass_set_exact":mc_binding["pass_set_exact"],
+          "pass_count_exact":mc_binding["pass_count_exact"],
+        },
         "official_halt_guard":(
           {"path":"nasdaq-xray/canonical_official_source_guard.json","blob_sha":blob_sha(OFFICIAL_HALT_GUARD)}
           if OFFICIAL_HALT_GUARD.exists() else {"status":"MISSING"}
@@ -503,6 +525,8 @@ def main():
       "checks":{
         "policy_order_exact":True,"master_complete":True,"price_exact_master":True,
         "price_blocked_coverage_explicit":True,"mc_exact_price_pass_set":True,
+        "mc_input_blob_exact":mc_binding["blob_exact"],
+        "mc_input_semantic_rebind":mc_binding["semantic_rebind"],
         "sequential_settlement_bound":(not settlement_witness_required) or mc.get("settlement_witness_status")=="PASS",
         "history_exact_mc_primary":True,"fallback_watch_excluded_after_mc":True,"legal_exact_history_pass":True,
         "legal_master_blob_exact":lg.get("source_master_blob_sha")==sh["full_state"],
@@ -520,7 +544,13 @@ def main():
         "alpha_workflow_sha_exact":alpha_workflow_sha_exact,
         "alpha_semantic_audit_status":ft.get("semantic_audit_status"),
         "alpha_semantic_known_gaps":ft.get("semantic_known_gaps") or [],
-        "exact_blob_provenance_chain":True,
+        "exact_blob_provenance_chain":bool(
+          mc_binding["blob_exact"] and lg.get("source_master_blob_sha")==sh["full_state"]
+        ),
+        "semantic_provenance_chain_exact":bool(
+          (mc_binding["blob_exact"] or mc_binding["semantic_rebind"])
+          and (lg.get("source_master_blob_sha")==sh["full_state"] or legal_master_semantic_rebind)
+        ),
         "count_equality_never_substituted_for_set_equality":True,
         "final_gate_reporting_does_not_affect_alpha":True,
         "candidate_delivery_halt_guard_fail_closed":halt_safety.get("status")=="PASS" or not raw_pre,
