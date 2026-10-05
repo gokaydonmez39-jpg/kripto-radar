@@ -151,6 +151,32 @@ def test_corporate_action_absence_vs_real_scale_break():
     finally:
         ft.split_consistent_history=old
 
+def test_family_a_final_geometry_revalidation():
+    d=frame(300)
+    ti=298
+    td=d.date.iloc[ti].date().isoformat()
+    base={"setup_id":"A-VALID","symbol":"TEST","family":"A","trigger_date":td,
+          "A":10.0,"P":100.0,"anchor":97.0,"entry_low":100.0,"entry_high":102.5,
+          "entry_model":102.5,"chase_limit":105.0,"S0":95.0,"T1":150.0,
+          "anchor_available_idx":ti-1,
+          "anchor_available_date":d.date.iloc[ti-1].date().isoformat(),
+          "target_source":"TEST_STRUCTURAL","target_zone":None,"target_overlap":False,
+          "synthetic_target":False}
+    good_g={"trigger_date":td,"P":100.0,"anchor":97.0,"depth":3.0,"prelow_near_hl":True}
+    good=dict(base,source_geometry=good_g)
+    rg=eval_one("TEST","A",good_g,d,"CLEAN_DISCOVERY",frozen=good,recorded_before=True)
+    assert rg.get("family_geometry_pass") is True,rg
+
+    bad_g={"trigger_date":td,"P":100.0,"anchor":97.0,"depth":4.5,"prelow_near_hl":True}
+    bad=dict(base,setup_id="A-BAD-DEPTH",source_geometry=bad_g)
+    rb=eval_one("TEST","A",bad_g,d,"CLEAN_DISCOVERY",frozen=bad,recorded_before=True)
+    assert rb.get("family_geometry_pass") is False and rb.get("risk_pass") is False,rb
+
+    far_g={"trigger_date":td,"P":100.0,"anchor":97.0,"depth":3.0,"prelow_near_hl":False}
+    far=dict(base,setup_id="A-BAD-HL",source_geometry=far_g)
+    rf=eval_one("TEST","A",far_g,d,"CLEAN_DISCOVERY",frozen=far,recorded_before=True)
+    assert rf.get("family_geometry_pass") is False and rf.get("risk_pass") is False,rf
+
 def test_lifecycle_expiry_and_frozen_stability():
     d=frame(300)
     f6=frozen(d,len(d)-7,"TEST-AGE6")
@@ -381,12 +407,13 @@ def main():
     test_final_history_normalizer_preserves_ohlcv()
     test_regime_interval_bounds_and_finalist_gate()
     test_corporate_action_absence_vs_real_scale_break()
+    test_family_a_final_geometry_revalidation()
     test_lifecycle_expiry_and_frozen_stability(); test_lifecycle_regime_revalidation_persists_without_pass(); test_lifecycle_persistence_roundtrip()
     test_candidate_local_legal_unknown_does_not_globally_suppress()
     test_candidate_legal_guard_scope_is_candidate_local(); test_candidate_legal_guard_phrase_severity()
     test_workflow_race_and_pre_mc_freeze_contracts()
     print({"status":"PASS","tests":["R1_NO_FUTURE_MUTATION","R1_PLUS2_CONFIRMATION_NO_LEAK",
-      "RESISTANCE_ROLE_CHANGE_STATE_MACHINE","FINAL_HISTORY_OHLCV_BINDING","REGIME_INTERVAL_BOUNDS_AND_FINALIST_GATE","CORPORATE_ACTION_NONE_VS_SCALE_BREAK_FAIL_CLOSED","RETEST_WINDOW_EXPIRES_AFTER_5","MODEL_HORIZON_EXPIRES_AFTER_8",
+      "RESISTANCE_ROLE_CHANGE_STATE_MACHINE","FINAL_HISTORY_OHLCV_BINDING","REGIME_INTERVAL_BOUNDS_AND_FINALIST_GATE","CORPORATE_ACTION_NONE_VS_SCALE_BREAK_FAIL_CLOSED","FAMILY_A_FINAL_GEOMETRY_REVALIDATION","RETEST_WINDOW_EXPIRES_AFTER_5","MODEL_HORIZON_EXPIRES_AFTER_8",
       "FROZEN_LEVELS_NEXT_ASOF_STABLE","LIFECYCLE_REGIME_REVALIDATION_PERSISTS","LIFECYCLE_PERSISTENCE_ROUNDTRIP",
       "FINAL_ALPHA_STALE_SOURCE_GUARD","PARTIAL_COVERAGE_DOES_NOT_GLOBAL_ABORT",
       "DETAILED_FINALIST_LEGAL_FAIL_CLOSED","CANDIDATE_LOCAL_LEGAL_UNKNOWN_ISOLATION","FINAL_VERIFIED_MARKET_GAP_NOT_DOUBLE_BLOCKED","DETAILED_LEGAL_GUARD_EXACT_SOURCE_BINDING","DETAILED_LEGAL_GUARD_POLICY_BINDING","DETAILED_LEGAL_GUARD_NONCIRCULAR_LIFECYCLE","DETAILED_LEGAL_GUARD_LIFECYCLE_FALLBACK_PARITY","DETAILED_LEGAL_GUARD_BOILERPLATE_SEVERITY","DETAILED_LEGAL_GUARD_ANNUAL_PLUS_QUARTERLY_SCOPE","DETAILED_LEGAL_GUARD_EMPTY_SCOPE_NO_NETWORK","TERMINAL_DETAILED_LEGAL_FULL_E2E_BLOCKER","DETAILED_LEGAL_GUARD_NO_SELF_TRIGGER",
