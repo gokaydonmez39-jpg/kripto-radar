@@ -376,6 +376,7 @@ def main():
       "family_c_history_unknown":len(family_c_unknown),
       "final_unknown":len(final_unknown),
       "candidate_halt_guard_unknown":halt_guard_unknown,
+      "alpha_semantic_conformance_unknown":0 if ft.get("policy_semantics_exact") is True else 1,
     }
     full=all(v==0 for v in blockers.values())
     terminal_result=("NO_CONFIRMED_SETUP" if not pre else "PRE_G9_SETUP_EXISTS") if full else "PARTIAL_UNKNOWN"
@@ -436,6 +437,9 @@ def main():
         "legal_master_semantic_rebind":legal_master_semantic_rebind,
         "stage1_exact_legal_pass":True,"weekly_exact_event_scope":True,"regime_no_missing":True,
         "deep_exact_weekly_scope":True,"final_exact_confirmed_family_set":True,
+        "alpha_semantic_conformance_exact":ft.get("policy_semantics_exact") is True,
+        "alpha_semantic_audit_status":ft.get("semantic_audit_status"),
+        "alpha_semantic_known_gaps":ft.get("semantic_known_gaps") or [],
         "exact_blob_provenance_chain":True,
         "count_equality_never_substituted_for_set_equality":True,
         "final_gate_reporting_does_not_affect_alpha":True,
