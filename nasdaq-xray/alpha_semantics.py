@@ -277,9 +277,11 @@ def _verify_split_events_against_raw(df:pd.DataFrame,events:list[dict[str,Any]])
         # rejects an unrelated/mis-dated corporate-action event.
         if rel>0.35:return False,f"SPLIT_RATIO_RAW_CONFLICT:{day}:{observed:.6f}:{ratio:.6f}"
         matched_days.add(day)
-    # A mechanically split-like break without a corresponding event is unresolved,
-    # not silently treated as a genuine market gap.
-    for s in mechanical_split_suspects(x):
+    # Broad split_suspects() is discovery-only: it decides when a raw weekly
+    # failure deserves an external split lookup. It must not hard-veto ordinary
+    # earnings/news gaps. Fail closed only for a severe, recent scale break inside
+    # the technical horizon (the same 260-session horizon used by core geometry).
+    for s in mechanical_scale_breaks(x,260):
         day=str(s["date"])
         near=any(abs((pd.Timestamp(day)-pd.Timestamp(ed)).days)<=3 for ed in matched_days)
         if not near:return False,"MECHANICAL_SCALE_BREAK_WITHOUT_VERIFIED_SPLIT:"+day
