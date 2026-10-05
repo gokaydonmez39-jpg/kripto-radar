@@ -13,7 +13,10 @@ from pathlib import Path
 import akshare as ak
 import pandas as pd
 import pandas_market_calendars as mcal
-from alpha_semantics import wilder_atr as _policy_atr, ema_seeded, drawdown_metrics
+from alpha_semantics import (
+    wilder_atr as _policy_atr, ema_seeded, drawdown_metrics,
+    find_recent_b_trigger, mechanical_scale_breaks,
+)
 
 ROOT=Path(__file__).resolve().parent
 MC=Path(os.getenv("XRAY_MC_STATE", str(ROOT/"mc_final_state.json")))
@@ -174,6 +177,8 @@ def process(sym,asof,week_last):
             rh=float(recent20_high.iloc[-1]); last=float(close.iloc[-1])
             a_pool=bool(last>float(sma50.iloc[-1]) and float(sma50.iloc[-1])>float(sma50.iloc[-21]) and rh>0 and 0.88*rh<=last<=rh)
         b=base_pool(x)
+        b_recent=find_recent_b_trigger(x,3)
+        scale_breaks=mechanical_scale_breaks(x,260)
         last=float(close.iloc[-1])
         dd=drawdown_metrics(x)
         dd252=dd["current_drawdown_252"]; dd120=dd["max_drawdown_close_120"]
@@ -182,6 +187,8 @@ def process(sym,asof,week_last):
           "status":"WEEKLY_PASS","weekly":wg,"history_source":history_source,
           "a_trend_pool":a_pool,
           "b_tight_base_pool":b,
+          "b_recent_trigger":b_recent,
+          "mechanical_scale_breaks":scale_breaks,
           "d_drawdown_pool":d_pool,
           "dd252":dd252,"dd120":dd120,
           "dd252_definition":"CURRENT_CLOSE_VS_MAX_HIGH_252",
@@ -208,7 +215,7 @@ def main():
         r["r92_eligible"]=s not in r92_ineligible
     weekly=[s for s,r in results.items() if r.get("status")=="WEEKLY_PASS"]
     a=[s for s in weekly if results[s].get("a_trend_pool")]
-    b=[s for s in weekly if results[s].get("b_tight_base_pool")]
+    b=[s for s in weekly if results[s].get("b_tight_base_pool") or results[s].get("b_recent_trigger")]
     d=[s for s in weekly if results[s].get("d_drawdown_pool")]
     unknown=[s for s,r in results.items() if r.get("status")=="UNKNOWN"]
     out={
