@@ -125,6 +125,19 @@ def load_gate_reporting():
         out["evidence"]["account_gate"]={"status":"UNKNOWN","reason":type(e).__name__}
     return out
 
+def candidate_local_research_ready(pre,halt_safety,ft,alpha_source_binding_exact):
+    """Candidate-local research readiness is independent of global coverage completeness.
+    UNKNOWN safety/semantic evidence never passes. This function cannot create alpha;
+    it only preserves already-proven PRE_G9 candidates from unrelated global blockers.
+    """
+    return bool(
+      pre
+      and (halt_safety or {}).get("status")=="PASS"
+      and ft.get("policy_semantics_exact") is True
+      and bool(alpha_source_binding_exact)
+      and ft.get("lifecycle_semantics_exact") is True
+    )
+
 def mc_semantic_input_match(price,j):
     current_pass=set(price.get("pass_symbols") or [])
     return bool(
@@ -467,6 +480,7 @@ def main():
       "lifecycle_semantic_binding_unknown":0 if ft.get("lifecycle_semantics_exact") is True else 1,
     }
     full=all(v==0 for v in blockers.values())
+    candidate_local_ready=candidate_local_research_ready(pre,halt_safety,ft,alpha_source_binding_exact)
     terminal_result=("NO_CONFIRMED_SETUP" if not pre else "PRE_G9_SETUP_EXISTS") if full else "PARTIAL_UNKNOWN"
     out={
       "schema":"XRAY_CANONICAL_CURRENT_TERMINAL_V1","status":"FULL_E2E_RESEARCH_PASS" if full else "PARTIAL",
@@ -478,7 +492,9 @@ def main():
       "settlement_witness_status":mc.get("settlement_witness_status"),
       "settlement_witness_path":mc.get("settlement_witness_path"),
       "settlement_witness_blob_sha":mc.get("settlement_witness_blob_sha"),
-      "r92_account_g9_applicable":bool(full and pre),"r92_candidates":sorted(pre) if full else [],
+      "candidate_local_research_pass":candidate_local_ready,
+      "r92_account_g9_applicable":candidate_local_ready,
+      "r92_candidates":sorted(pre) if candidate_local_ready else [],
       "candidate_delivery_safety":halt_safety,
       "g9_global_status":gate_reporting["g9_global_status"],
       "account_status":gate_reporting["account_status"],
@@ -564,6 +580,8 @@ def main():
         "count_equality_never_substituted_for_set_equality":True,
         "final_gate_reporting_does_not_affect_alpha":True,
         "candidate_delivery_halt_guard_fail_closed":halt_safety.get("status")=="PASS" or not raw_pre,
+        "candidate_local_research_independent_of_global_coverage":True,
+        "candidate_local_research_pass":candidate_local_ready,
       },
       "generated_at_utc":datetime.now(timezone.utc).isoformat()
     }
