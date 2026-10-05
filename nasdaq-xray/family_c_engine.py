@@ -152,15 +152,24 @@ def eval_event(sym,df,e,asof,all_sessions,event_status):
     rv0=rvol20_at(df,r0)
     lows=[float(df.low.iloc[i]) for i in [r0,r0+1,r0+2]]
     reaction_ok=bool(gap_atr>=0.50 and rv0 is not None and rv0>=1.5 and min(lows)>pre_close)
+    reaction_high=float(df.high.iloc[r0])
     base_start=r0+3
     latest=min(r0+10,len(df)-1)
     confirmed=None
+    floor_breach_date=None
     if reaction_ok:
         # At least three completed consolidation bars after reaction0+1+2.
+        # Canonical C4.17 pivot includes reaction high; GAP_FLOOR must remain
+        # intact through consolidation and the breakout trigger.
         for t in range(base_start+3,latest+1):
             base=df.iloc[base_start:t]
             if len(base)<3:continue
-            P=float(base.high.max());anchor=float(base.low.min())
+            floor_slice=df.iloc[r0:t+1]
+            breached=floor_slice[floor_slice["low"].astype(float)<=pre_close]
+            if not breached.empty:
+                floor_breach_date=breached.date.iloc[0].date().isoformat()
+                break
+            P=max(reaction_high,float(base.high.max()));anchor=float(base.low.min())
             width=(P-anchor)/A
             rv=rvol20_at(df,t)
             close=float(df.close.iloc[t])
@@ -171,14 +180,15 @@ def eval_event(sym,df,e,asof,all_sessions,event_status):
                   "event_datetime_et":edt.isoformat(),"reaction_mode":mode,
                   "reaction_session":rs,"pre_event_close":pre_close,
                   "gap_atr":gap_atr,"reaction_rvol20":rv0,
-                  "reaction_lows":lows,"consolidation_bars":len(base),
+                  "reaction_lows":lows,"reaction_high":reaction_high,
+                  "gap_floor_intact":True,"consolidation_bars":len(base),
                   "base_width_atr":width,
                   "breakout_session":df.date.iloc[t].date().isoformat(),
                   "breakout_close":close,"breakout_rvol20":rv,
                   "sessions_from_reaction":t-r0,
                   "official_source_url":e.get("official_source_url"),
                   "event_source":e.get("source") or e.get("official_source"),
-                  "authority":"C4_10_FAMILY_C_CONSERVATIVE_FAIL_CLOSED"
+                  "authority":"C4_17_FAMILY_C_FAIL_CLOSED"
                 }
                 # First valid trigger wins. A later prettier breakout must not
                 # silently replace scenario identity or frozen geometry.
@@ -186,7 +196,8 @@ def eval_event(sym,df,e,asof,all_sessions,event_status):
     detail={
       "event_datetime_et":edt.isoformat(),"reaction_mode":mode,"reaction_session":rs,
       "pre_event_close":pre_close,"A":A,"gap_atr":gap_atr,"reaction_rvol20":rv0,
-      "reaction_lows":lows,"reaction_ok":reaction_ok,
+      "reaction_lows":lows,"reaction_high":reaction_high,"reaction_ok":reaction_ok,
+      "gap_floor_breach_date":floor_breach_date,
       "confirmed":bool(confirmed)
     }
     return confirmed,detail
