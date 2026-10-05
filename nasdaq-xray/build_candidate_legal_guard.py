@@ -25,6 +25,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parent
+POLICY=ROOT/"chatgpt_compiled_policy_v3.json"
+POLICY_BLOB="10d7af14870dfac0dc4566595d95a06f3faa854d"
+POLICY_HASH="26a95745a50b65e85f6ece24b6501af0994764a84ddd886edb70d1fcd770849c"
+POLICY_VERSION="C4.17"
 DEEP=Path(os.getenv("XRAY_LEGAL_GUARD_DEEP",str(ROOT/"canonical_current_deep_full.json")))
 FAMILY_C=Path(os.getenv("XRAY_LEGAL_GUARD_FAMILY_C",str(ROOT/"canonical_current_family_c.json")))
 LIFECYCLE=Path(os.getenv("XRAY_LEGAL_GUARD_LIFECYCLE",str(ROOT/"canonical_candidate_lifecycle_registry.json")))
@@ -241,6 +245,14 @@ def review_symbol(symbol:str,cik10:str,asof:str)->dict:
 
 
 def main():
+    if not POLICY.exists() or blob_sha(POLICY)!=POLICY_BLOB:
+        raise RuntimeError("COMPILED_POLICY_BLOB_MISMATCH")
+    policy=json.loads(POLICY.read_text())
+    if policy.get("schema")!="XRAY_GITHUB_COMPILED_POLICY_V3" or policy.get("policy_hash")!=POLICY_HASH:
+        raise RuntimeError("COMPILED_POLICY_AUTHORITY_MISMATCH")
+    payload=json.loads(policy.get("payload_json") or "{}")
+    if payload.get("version")!=POLICY_VERSION:
+        raise RuntimeError("COMPILED_POLICY_VERSION_MISMATCH")
     deep=json.loads(DEEP.read_text())
     asof=str(deep.get("asof_et") or "")
     if deep.get("task_id")!=TASK_ID or deep.get("execution")!="NONE" or deep.get("real_money")!="NO-GO":
@@ -276,6 +288,10 @@ def main():
       "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
       "authority":"SEC_EDGAR_PRIMARY_DETAILED_FINALIST_REVIEW_V1",
       "review_scope":"LATEST_PERIODIC_FILING_THROUGH_ASOF",
+      "compiled_policy_path":"nasdaq-xray/chatgpt_compiled_policy_v3.json",
+      "compiled_policy_blob_sha":POLICY_BLOB,
+      "compiled_policy_hash":POLICY_HASH,
+      "compiled_policy_version":POLICY_VERSION,
       "candidate_scope":scope,"candidate_scope_count":len(scope),"candidate_scope_hash":scope_hash(scope),
       "source_deep_path":str(DEEP.relative_to(DEEP.parent.parent)),
       "source_deep_blob_sha":blob_sha(DEEP),
@@ -283,6 +299,8 @@ def main():
       "source_family_c_blob_sha":blob_sha(FAMILY_C),
       "source_lifecycle_path":str(LIFECYCLE.relative_to(LIFECYCLE.parent.parent)) if LIFECYCLE.exists() else None,
       "source_lifecycle_blob_sha":blob_sha(LIFECYCLE),
+      "source_lifecycle_binding_role":"DIAGNOSTIC_PRE_FINAL_SCOPE_AUGMENTATION",
+      "authoritative_binding_note":"DEEP_AND_FAMILY_C_AND_POLICY_EXACT;LIFECYCLE_BLOB_IS_NOT_AUTHORITY_BECAUSE_FINAL_MUTATES_IT_IN_RUN",
       "pass_symbols":sorted(s for s,r in records.items() if r.get("status")=="PASS"),
       "unknown_symbols":sorted(s for s,r in records.items() if r.get("status")!="PASS"),
       "records":dict(sorted(records.items())),
