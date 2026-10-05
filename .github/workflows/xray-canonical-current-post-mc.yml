@@ -219,6 +219,14 @@ jobs:
           PY
           cat /tmp/mc_out >> "$GITHUB_OUTPUT"
           cat /tmp/mc_out
+
+      - name: Fail closed when exact MC binding is unavailable
+        if: steps.freeze.outputs.frozen != 'true' && steps.mc.outputs.ready != 'true'
+        shell: bash
+        run: |
+          echo "XRAY_POST_MC_BINDING=FAIL_CLOSED" >&2
+          exit 1
+
       - name: Reuse exact same-ASOF HISTORY and LEGAL
         id: reuse_hl
         if: steps.mc.outputs.ready == 'true'
