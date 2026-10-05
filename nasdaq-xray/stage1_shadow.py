@@ -73,14 +73,15 @@ def _normalize_sina(df):
     for k in ["open","high","low","close","volume"]:x[k]=pd.to_numeric(x[k],errors="coerce")
     return x.dropna().sort_values("date")
 
-def _cached_sina_history(sym,asof):
+def _cached_sina_history(sym,asof,require_asof=True):
     p=_history_cache_path(sym)
     if p is None or not p.exists():return None
     try:
         x=_normalize_sina(pd.read_csv(p,compression="gzip"))
         if x is None or x.empty:return None
         x=x[x["date"]<=pd.Timestamp(asof)].reset_index(drop=True)
-        if x.empty or x["date"].dt.date.max().isoformat()!=asof:return None
+        if x.empty:return None
+        if require_asof and x["date"].dt.date.max().isoformat()!=asof:return None
         return x
     except Exception:
         return None
@@ -97,7 +98,7 @@ def load_history(sym,asof):
     if rec.get("mode")=="OFFICIAL_TICKER_CONTINUITY_COMPOSITE_HISTORY" and rec.get("cusip_unchanged") is True:
         pred=rec.get("predecessor_symbol"); eff=rec.get("effective_date")
         if pred and eff and cur is not None:
-            p=_cached_sina_history(pred,asof)
+            p=_cached_sina_history(pred,asof,require_asof=False)
             if p is None and HISTORY_CACHE_REQUIRED:
                 return None,"SINA_PREDECESSOR_SAME_RUN_CACHE_MISSING"
             if p is None:p=_sina_history(pred)
