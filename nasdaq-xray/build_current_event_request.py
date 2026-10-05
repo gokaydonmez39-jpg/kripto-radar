@@ -10,7 +10,14 @@ STAGE1=Path(os.getenv("XRAY_EVENT_STAGE1",str(ROOT/"canonical_current_stage1.jso
 DEEP=Path(os.getenv("XRAY_EVENT_DEEP",str(ROOT/"canonical_current_deep_geometry.json")))
 REGIME=Path(os.getenv("XRAY_EVENT_REGIME",str(ROOT/"canonical_current_regime.json")))
 PREV_FINAL=Path(os.getenv("XRAY_EVENT_PREV_FINAL",str(ROOT/"canonical_current_final_tech.json")))
+LIFECYCLE=Path(os.getenv("XRAY_EVENT_LIFECYCLE_REGISTRY",str(ROOT/"canonical_candidate_lifecycle_registry.json")))
 OUT=Path(os.getenv("XRAY_EVENT_REQUEST_OUT",str(ROOT/"canonical_current_event_request.json")))
+LIFECYCLE_ACTIVE_STATES={
+    "WATCH_RETEST_REQUIRED","WATCH_RECONFIRMATION_REQUIRED",
+    "WATCH_CHASE_RETEST_REQUIRED","WATCH_EXTENSION_RESET_REQUIRED",
+    "WATCH_REGIME_REVALIDATION_REQUIRED","WATCH_REGIME_UNKNOWN",
+    "PRE_G9_TECH_PASS","WATCH_EVENT_UNKNOWN_OR_BLOCKED","WATCH_MC_FALLBACK_CAP",
+}
 TASK="6a825366222081918997094d76e6ae46"
 POLICY=ROOT/"chatgpt_compiled_policy_v3.json"
 POLICY_BLOB="10d7af14870dfac0dc4566595d95a06f3faa854d"
@@ -24,17 +31,38 @@ def blob_sha(p:Path)->str:
 def hash_lines(xs):
     return hashlib.sha256("\n".join(xs).encode()).hexdigest()
 
-def lifecycle_scope_from_final(final_obj,asof):
-    """Return frozen prospective lifecycle symbols that still require current event research."""
+def lifecycle_scope_from_final(final_obj,asof,sidecar_obj=None):
+    """Return active prospective lifecycle symbols through later ASOFs.
+
+    Embedded prior-Final state is accepted when it is not future-dated; an exact
+    valid sidecar overrides it. Dead/expired/failed audit records are excluded
+    from current Event scope so they cannot create unrelated event UNKNOWNs.
+    """
     try:
-        lr=(final_obj or {}).get("lifecycle_registry") or {}
-        if ((final_obj or {}).get("asof_et")!=asof
-            or lr.get("schema")!="XRAY_CANDIDATE_LIFECYCLE_REGISTRY_V1"
-            or lr.get("execution")!="NONE" or lr.get("real_money")!="NO-GO"):
-            return []
+        chosen=None
+        f=final_obj or {}
+        lr=f.get("lifecycle_registry") or {}
+        fa=str(f.get("asof_et") or "")
+        if (fa and fa<=asof
+            and lr.get("schema")=="XRAY_CANDIDATE_LIFECYCLE_REGISTRY_V1"
+            and lr.get("execution")=="NONE" and lr.get("real_money")=="NO-GO"
+            and isinstance(lr.get("records"),dict)):
+            chosen=lr
+        if sidecar_obj is not None:
+            sc=sidecar_obj or {}
+            sa=str(sc.get("asof_et") or "")
+            if (sa and sa<=asof
+                and sc.get("schema")=="XRAY_CANDIDATE_LIFECYCLE_REGISTRY_V1"
+                and sc.get("execution")=="NONE" and sc.get("real_money")=="NO-GO"
+                and isinstance(sc.get("records"),dict)):
+                chosen=sc
+            else:
+                return []
+        if not chosen:return []
         return sorted(set(
-            str(rec.get("symbol")) for rec in (lr.get("records") or {}).values()
-            if rec.get("symbol")
+            str(rec.get("symbol")) for rec in (chosen.get("records") or {}).values()
+            if rec.get("symbol") and str(rec.get("state") or "") in LIFECYCLE_ACTIVE_STATES
+            and str(rec.get("last_asof") or chosen.get("asof_et") or "")<=asof
         ))
     except Exception:
         return []
@@ -90,9 +118,12 @@ def main():
     ))
     assert set(fresh_geometry)<=set(weekly)
     lifecycle_scope=[]
-    if PREV_FINAL.exists():
-        try:lifecycle_scope=lifecycle_scope_from_final(json.loads(PREV_FINAL.read_text()),asof)
-        except Exception:lifecycle_scope=[]
+    try:
+        prev=json.loads(PREV_FINAL.read_text()) if PREV_FINAL.exists() else {}
+        side=json.loads(LIFECYCLE.read_text()) if LIFECYCLE.exists() else None
+        lifecycle_scope=lifecycle_scope_from_final(prev,asof,side)
+    except Exception:
+        lifecycle_scope=[]
     finalists=event_geometry_scope(fresh_geometry,lifecycle_scope)
     obj={
       "schema":"XRAY_EVENT_EPOCH_REQUEST_V1","status":"READY","task_id":TASK,"asof_et":asof,
