@@ -129,6 +129,17 @@ def test_lifecycle_persistence_roundtrip():
         final.write_text(json.dumps({"lifecycle_registry":stale}))
         assert load_lifecycle_registry(final,side)==reg
 
+def test_cross_phase_history_fingerprint():
+    d=frame(340)
+    asof=d.date.iloc[-2].date().isoformat()
+    fp=alpha.history_fingerprint(d,asof)
+    d2=d.copy()
+    d2.loc[len(d2)-1,["open","high","low","close","volume"]]=[999.0,1000.0,998.0,999.5,99_000_000.0]
+    assert alpha.history_fingerprint(d2,asof)==fp
+    d3=d.copy()
+    d3.loc[len(d3)-2,"close"]=101.123456
+    assert alpha.history_fingerprint(d3,asof)!=fp
+
 def test_workflow_race_and_pre_mc_freeze_contracts():
     final_wf=(REPO/".github/workflows/xray-canonical-current-final.yml").read_text()
     critical=["nasdaq-xray/alpha_semantics.py","nasdaq-xray/test_alpha_semantics.py",
@@ -148,15 +159,31 @@ def test_workflow_race_and_pre_mc_freeze_contracts():
     assert 'XRAY_STAGE1_CACHE_REQUIRED: "1"' in post
     assert 'XRAY_BREADTH_CACHE_REQUIRED: "1"' in post
     assert "XRAY_BREADTH_HISTORY_CACHE_DIR" in post
+    assert "Hydrate QQQ same-run technical cache" in post
+    assert 'XRAY_DEEP_CACHE_REQUIRED: "1"' in post
+    assert "XRAY_DEEP_HISTORY_CACHE_DIR" in post
+    assert 'assert s["unknown_count"]==0' not in post
+    assert 'assert r["breadth_missing_count"]==0' not in post
+    assert 'assert d["unknown_history_count"]==0' not in post
+    assert 'coverage_complete' in post
 
     s1=(ROOT/"stage1_shadow.py").read_text()
     reg=(ROOT/"regime_breadth_shadow.py").read_text()
     assert "SINA_SAME_RUN_CACHE_MISSING" in s1 and "HISTORY_CACHE_REQUIRED" in s1
-    assert "HISTORY_CACHE_REQUIRED and sym!=\"QQQ\"" in reg
+    assert "if HISTORY_CACHE_REQUIRED:" in reg
+    assert 'sym!="QQQ"' not in reg
 
     ftsrc=(ROOT/"final_tech_shadow.py").read_text()
     assert "CORPORATE_ACTION_RECONCILIATION_UNPROVEN_FOR_FINALISTS" in ftsrc
+    assert "CROSS_PHASE_HISTORY_BINDING_UNPROVEN_FOR_FINALISTS" in ftsrc
+    assert "HISTORY_FINGERPRINT_MISMATCH" in ftsrc
     assert "and lifecycle_semantics_exact" in ftsrc
+
+    deepsrc=(ROOT/"deep_pre_r1_shadow.py").read_text()
+    assert "SINA_SAME_RUN_CACHE_MISSING" in deepsrc
+    assert "HISTORY_FINGERPRINT_BINDING_MISSING" in deepsrc
+    assert 'XRAY_DEEP_HISTORY_BINDING_REQUIRED' in final_wf
+    assert 'XRAY_FAMILY_C_HISTORY_BINDING_REQUIRED' in final_wf
 
     er_src=(ROOT/"build_current_event_request.py").read_text()
     term_src=(ROOT/"build_current_terminal.py").read_text()
@@ -187,10 +214,12 @@ def test_workflow_race_and_pre_mc_freeze_contracts():
 def main():
     test_r1_no_future_mutation_and_confirmation(); test_resistance_role_change_state_machine()
     test_corporate_action_absence_vs_real_scale_break()
+    test_cross_phase_history_fingerprint()
     test_lifecycle_expiry_and_frozen_stability(); test_lifecycle_persistence_roundtrip()
     test_workflow_race_and_pre_mc_freeze_contracts()
     print({"status":"PASS","tests":["R1_NO_FUTURE_MUTATION","R1_PLUS2_CONFIRMATION_NO_LEAK",
-      "RESISTANCE_ROLE_CHANGE_STATE_MACHINE","CORPORATE_ACTION_NONE_VS_SCALE_BREAK_FAIL_CLOSED","RETEST_WINDOW_EXPIRES_AFTER_5","MODEL_HORIZON_EXPIRES_AFTER_8",
+      "RESISTANCE_ROLE_CHANGE_STATE_MACHINE","CORPORATE_ACTION_NONE_VS_SCALE_BREAK_FAIL_CLOSED",
+      "CROSS_PHASE_HISTORY_FINGERPRINT","RETEST_WINDOW_EXPIRES_AFTER_5","MODEL_HORIZON_EXPIRES_AFTER_8",
       "FROZEN_LEVELS_NEXT_ASOF_STABLE","LIFECYCLE_PERSISTENCE_ROUNDTRIP",
       "FINAL_ALPHA_STALE_SOURCE_GUARD","PARTIAL_COVERAGE_DOES_NOT_GLOBAL_ABORT","PRE_MC_COMPLETED_ASOF_FREEZE_TRUTH_TABLE"]})
 
