@@ -69,7 +69,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-10-05T06:21:07.534865+00:00",
+  "generated_at_utc": "2026-10-05T11:27:30.290894+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -871,115 +871,196 @@
       "url": "https://www.nasdaqtrader.com/rss.aspx?feed=tradehalts"
     },
     "trading_system_adds_deletes": {
-      "row_count": 12,
+      "row_count": 21,
       "rows": [
         {
-          "BX Action": "Add",
-          "Company Name": "Collaborative Investment Series Trust",
-          "Effective Date": "10/2/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "Z",
-          "Symbol": "BCOM"
+          "BX Action": "Delete",
+          "Company Name": "Bitwise Funds Trust",
+          "Effective Date": "10/5/2026",
+          "NASDAQ Action": "Delete",
+          "PSX Action": "Delete",
+          "Primary Listing Market": "P",
+          "Symbol": "AETH"
         },
         {
           "BX Action": "Delete",
-          "Company Name": "Columbus Acquisition Corp",
-          "Effective Date": "10/2/2026",
+          "Company Name": "DigitalBridge Group, Inc.",
+          "Effective Date": "10/5/2026",
           "NASDAQ Action": "Delete",
           "PSX Action": "Delete",
-          "Primary Listing Market": "G",
-          "Symbol": "COLA"
-        },
-        {
-          "BX Action": "Delete",
-          "Company Name": "Columbus Acquisition Corp",
-          "Effective Date": "10/2/2026",
-          "NASDAQ Action": "Delete",
-          "PSX Action": "Delete",
-          "Primary Listing Market": "G",
-          "Symbol": "COLAR"
-        },
-        {
-          "BX Action": "Delete",
-          "Company Name": "Columbus Acquisition Corp",
-          "Effective Date": "10/2/2026",
-          "NASDAQ Action": "Delete",
-          "PSX Action": "Delete",
-          "Primary Listing Market": "G",
-          "Symbol": "COLAU"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "Dynex Capital, Inc.",
-          "Effective Date": "10/2/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
           "Primary Listing Market": "N",
-          "Symbol": "DX-D"
+          "Symbol": "DBRG-H"
         },
         {
           "BX Action": "Delete",
-          "Company Name": "First Seacoast Bancorp, Inc.",
-          "Effective Date": "10/2/2026",
+          "Company Name": "DigitalBridge Group, Inc.",
+          "Effective Date": "10/5/2026",
           "NASDAQ Action": "Delete",
           "PSX Action": "Delete",
-          "Primary Listing Market": "S",
-          "Symbol": "FSEA"
+          "Primary Listing Market": "N",
+          "Symbol": "DBRG-I"
         },
         {
           "BX Action": "Delete",
-          "Company Name": "Guardforce AI Co., Limited",
-          "Effective Date": "10/2/2026",
+          "Company Name": "DigitalBridge Group, Inc.",
+          "Effective Date": "10/5/2026",
           "NASDAQ Action": "Delete",
           "PSX Action": "Delete",
-          "Primary Listing Market": "S",
-          "Symbol": "GFAIW"
+          "Primary Listing Market": "N",
+          "Symbol": "DBRG-J"
         },
         {
           "BX Action": "Add",
-          "Company Name": "Corgi MANGOS ETF",
-          "Effective Date": "10/2/2026",
+          "Company Name": "DFA Investment Dimensions Group Inc.",
+          "Effective Date": "10/5/2026",
           "NASDAQ Action": "Add",
           "PSX Action": "Add",
-          "Primary Listing Market": "Z",
-          "Symbol": "MN"
+          "Primary Listing Market": "P",
+          "Symbol": "DFAC"
         },
         {
           "BX Action": "Delete",
-          "Company Name": "NSTS Bancorp, Inc.",
-          "Effective Date": "10/2/2026",
+          "Company Name": "Dimensional ETF Trust",
+          "Effective Date": "10/5/2026",
           "NASDAQ Action": "Delete",
           "PSX Action": "Delete",
-          "Primary Listing Market": "S",
-          "Symbol": "NSTS"
+          "Primary Listing Market": "P",
+          "Symbol": "DFAC"
+        },
+        {
+          "BX Action": "Delete",
+          "Company Name": "Dimensional ETF Trust",
+          "Effective Date": "10/5/2026",
+          "NASDAQ Action": "Delete",
+          "PSX Action": "Delete",
+          "Primary Listing Market": "P",
+          "Symbol": "DFAS"
         },
         {
           "BX Action": "Add",
-          "Company Name": "WISeSat.Space Holdings Corp.",
-          "Effective Date": "10/2/2026",
+          "Company Name": "DFA Investment Dimensions Group Inc.",
+          "Effective Date": "10/5/2026",
           "NASDAQ Action": "Add",
           "PSX Action": "Add",
-          "Primary Listing Market": "S",
-          "Symbol": "SAIQ"
+          "Primary Listing Market": "P",
+          "Symbol": "DFAS"
         },
         {
           "BX Action": "Delete",
-          "Company Name": "Gentherm Inc",
-          "Effective Date": "10/2/2026",
+          "Company Name": "Dimensional ETF Trust",
+          "Effective Date": "10/5/2026",
           "NASDAQ Action": "Delete",
           "PSX Action": "Delete",
+          "Primary Listing Market": "P",
+          "Symbol": "DFAT"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "DFA Investment Dimensions Group Inc.",
+          "Effective Date": "10/5/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "P",
+          "Symbol": "DFAT"
+        },
+        {
+          "BX Action": "Delete",
+          "Company Name": "Direct Digital Holdings, Inc.",
+          "Effective Date": "10/5/2026",
+          "NASDAQ Action": "Delete",
+          "PSX Action": "Delete",
+          "Primary Listing Market": "S",
+          "Symbol": "DRCT"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "Inflection Point Acquisition Corp. VIII",
+          "Effective Date": "10/5/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "G",
+          "Symbol": "IPHX"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "Inflection Point Acquisition Corp. VIII",
+          "Effective Date": "10/5/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "G",
+          "Symbol": "IPHXW"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "Runway Growth Finance Corp.",
+          "Effective Date": "10/5/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
           "Primary Listing Market": "Q",
-          "Symbol": "THRMV"
+          "Symbol": "RWAYM"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "Thunder Bridge Capital Partners V, Ltd.",
+          "Effective Date": "10/5/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "G",
+          "Symbol": "TBCV"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "Thunder Bridge Capital Partners V, Ltd.",
+          "Effective Date": "10/5/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "G",
+          "Symbol": "TBCVW"
         },
         {
           "BX Action": "Delete",
-          "Company Name": "NorthStar Earth & Space Enterprises, Inc.",
-          "Effective Date": "10/2/2026",
+          "Company Name": "Two Harbors Investments Corp",
+          "Effective Date": "10/5/2026",
           "NASDAQ Action": "Delete",
           "PSX Action": "Delete",
           "Primary Listing Market": "N",
-          "Symbol": "VACI="
+          "Symbol": "TWOD"
+        },
+        {
+          "BX Action": "Delete",
+          "Company Name": "Waldencast plc",
+          "Effective Date": "10/5/2026",
+          "NASDAQ Action": "Delete",
+          "PSX Action": "Delete",
+          "Primary Listing Market": "S",
+          "Symbol": "WALD"
+        },
+        {
+          "BX Action": "Delete",
+          "Company Name": "Waldencast plc",
+          "Effective Date": "10/5/2026",
+          "NASDAQ Action": "Delete",
+          "PSX Action": "Delete",
+          "Primary Listing Market": "S",
+          "Symbol": "WALDW"
+        },
+        {
+          "BX Action": "Delete",
+          "Company Name": "Listed Funds Trust",
+          "Effective Date": "10/5/2026",
+          "NASDAQ Action": "Delete",
+          "PSX Action": "Delete",
+          "Primary Listing Market": "P",
+          "Symbol": "XBNB"
+        },
+        {
+          "BX Action": "Delete",
+          "Company Name": "USCF ETF Trust",
+          "Effective Date": "10/5/2026",
+          "NASDAQ Action": "Delete",
+          "PSX Action": "Delete",
+          "Primary Listing Market": "P",
+          "Symbol": "ZSC"
         }
       ],
       "status": "PASS",
