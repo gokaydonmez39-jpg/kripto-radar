@@ -9,7 +9,7 @@ from zoneinfo import ZoneInfo
 import akshare as ak
 import pandas as pd
 import pandas_market_calendars as mcal
-from alpha_semantics import wilder_atr as _policy_atr
+from alpha_semantics import wilder_atr as _policy_atr, apply_split_events
 
 ROOT=Path(__file__).resolve().parent
 STAGE1=Path(os.getenv("XRAY_FAMILY_C_STAGE1",str(ROOT/"canonical_current_stage1.json")))
@@ -214,9 +214,17 @@ def main():
     for s in target:
         if s not in data:
             unknown[s]={"reason":"HISTORY_"+errors.get(s,"MISSING")};continue
+        strow=(st.get("results") or {}).get(s) or {}
+        ca_status=strow.get("corporate_action_status")
+        if not str(ca_status).startswith("PASS"):
+            unknown[s]={"reason":"CORPORATE_ACTION_NOT_VERIFIED","status":ca_status};continue
+        x=data[s]
+        split_events=strow.get("split_events") or []
+        if split_events:x=apply_split_events(x,split_events)
+        x=x.reset_index(drop=True)
         best=None;dd=[]
         for e in fce.get(s) or []:
-            g,d=eval_event(s,data[s],e,asof,alls,event_status_map.get(s,"CLEAN_DISCOVERY"))
+            g,d=eval_event(s,x,e,asof,alls,event_status_map.get(s,"CLEAN_DISCOVERY"))
             dd.append(d)
             if g is not None:
                 if best is None or g["breakout_session"]>best["breakout_session"]:best=g
