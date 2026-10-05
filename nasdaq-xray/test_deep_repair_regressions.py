@@ -368,8 +368,13 @@ def test_candidate_legal_guard_phrase_severity():
 def test_workflow_race_and_pre_mc_freeze_contracts():
     final_wf=(REPO/".github/workflows/xray-canonical-current-final.yml").read_text()
     assert "Fail closed when exact event binding is unavailable" in final_wf
-    assert "steps.event.outputs.ready != 'true'" in final_wf
+    assert "steps.event.outputs.ready != 'true' && steps.event.outputs.upstream_epoch_drift != 'true'" in final_wf
     assert "XRAY_FINAL_EVENT_BINDING=FAIL_CLOSED" in final_wf
+    assert "Healthy no-op while current upstream epoch is incomplete" in final_wf
+    assert 'print("upstream_epoch_drift=true")' in final_wf
+    assert 'master_asof!=req_asof or price_asof!=req_asof' in final_wf
+    assert 'int(p.get("unknown_count",-1))!=0' in final_wf
+    assert "XRAY_FINAL_UPSTREAM_EPOCH=WAITING_NOOP" in final_wf
     critical=["nasdaq-xray/alpha_semantics.py","nasdaq-xray/test_alpha_semantics.py",
       "nasdaq-xray/test_deep_repair_regressions.py","nasdaq-xray/family_c_engine.py",
       "nasdaq-xray/deep_pre_r1_shadow.py","nasdaq-xray/build_candidate_legal_guard.py",

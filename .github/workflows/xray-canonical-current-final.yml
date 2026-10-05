@@ -126,6 +126,27 @@ jobs:
           r=json.load(open(reqp))
           if r.get("schema")!="XRAY_EVENT_EPOCH_REQUEST_V1" or r.get("status")!="READY":
               print("ready=false"); raise SystemExit
+          # Final is downstream of the current pre-MC epoch. An exact old Event
+          # request is not current authority after MASTER/PRICE roll to a newer
+          # ASOF. Treat that as a healthy upstream-incomplete no-op, not as a
+          # Final data failure and never mix old Deep/Event with new PRICE.
+          try:
+              m=json.load(open("nasdaq-xray/canonical_current_master_manifest.json"))
+              p=json.load(open("nasdaq-xray/canonical_current_price_dv20.json"))
+          except Exception:
+              print("ready=false"); print("upstream_epoch_drift=true"); raise SystemExit
+          req_asof=str(r.get("asof_et") or "")
+          master_asof=str(m.get("asof_et") or "")
+          price_asof=str(p.get("asof_et") or "")
+          if (not req_asof or master_asof!=req_asof or price_asof!=req_asof
+              or int(p.get("unknown_count",-1))!=0):
+              print("ready=false")
+              print("upstream_epoch_drift=true")
+              print("request_asof="+req_asof)
+              print("master_asof="+master_asof)
+              print("price_asof="+price_asof)
+              print("price_unknown_count="+str(p.get("unknown_count")))
+              raise SystemExit
           current_sources={
             "source_stage1_blob_sha":bsha("nasdaq-xray/canonical_current_stage1.json"),
             "source_regime_blob_sha":bsha("nasdaq-xray/canonical_current_regime.json"),
@@ -168,8 +189,12 @@ jobs:
           cat /tmp/event_out >> "$GITHUB_OUTPUT"
           cat /tmp/event_out
 
+      - name: Healthy no-op while current upstream epoch is incomplete
+        if: steps.event.outputs.ready != 'true' && steps.event.outputs.upstream_epoch_drift == 'true'
+        run: echo "XRAY_FINAL_UPSTREAM_EPOCH=WAITING_NOOP"
+
       - name: Fail closed when exact event binding is unavailable
-        if: steps.event.outputs.ready != 'true'
+        if: steps.event.outputs.ready != 'true' && steps.event.outputs.upstream_epoch_drift != 'true'
         shell: bash
         run: |
           echo "XRAY_FINAL_EVENT_BINDING=FAIL_CLOSED" >&2
