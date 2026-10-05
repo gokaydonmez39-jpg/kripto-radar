@@ -597,11 +597,16 @@ def test_workflow_race_and_pre_mc_freeze_contracts():
     assert 'out.write(f"recovery_asof={frozen_asof}\\n")' in guard
     assert "terminal_result" not in guard and "FULL_E2E_RESEARCH_PASS" not in guard
     recovery=pre.split("- name: Recover corrupted frozen pre-MC snapshot",1)[1].split("- name: Frozen completed epoch healthy no-op",1)[0]
-    assert 'asof="${{ steps.rollover.outputs.recovery_asof }}"' in recovery
-    assert "canonical_current_resolver_chunk_manifest.json" in recovery
-    assert "git ls-tree -r --name-only" in recovery
-    assert "rm -f nasdaq-xray/canonical_current_resolver_chunk_" in recovery
-    assert 'assert rebuilt==q["symbols"]' in recovery
+    assert "XRAY_RECOVERY_ASOF:" in recovery
+    assert "steps.rollover.outputs.recovery_asof" in recovery
+    assert "python nasdaq-xray/recover_pre_mc_snapshot.py" in recovery
+    recsrc=(ROOT/"recover_pre_mc_snapshot.py").read_text()
+    assert "NO_VALID_SAME_ASOF_PRICE_SNAPSHOT" in recsrc
+    assert "canonical_current_resolver_chunk_manifest.json" in recsrc
+    assert "git\",\"ls-tree\",\"-r\",\"--name-only" in recsrc
+    assert "canonical_current_resolver_chunk_[0-9][0-9][0-9][0-9].json" in recsrc
+    assert 'assert rebuilt==req["symbols"]' in recsrc
+    assert "RECOVERY_PUSH_RACE_EXHAUSTED" in recsrc
     def core(pointer_asof,latest_completed,price_asof,price_ok):
         same=bool(pointer_asof and latest_completed==pointer_asof)
         current=bool(price_asof and price_asof==latest_completed)

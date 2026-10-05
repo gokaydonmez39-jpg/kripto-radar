@@ -16,6 +16,7 @@ on:
       - "nasdaq-xray/build_candidate_legal_guard.py"
       - "nasdaq-xray/sec_ticker_cik_cache.json"
       - "nasdaq-xray/build_current_terminal.py"
+      - "nasdaq-xray/recover_pre_mc_snapshot.py"
       - "nasdaq-xray/sina_stage.py"
       - "nasdaq-xray/resolve_unknowns_fallback.py"
       - "nasdaq-xray/price_dv20_phase.py"
@@ -59,6 +60,7 @@ jobs:
             nasdaq-xray/final_tech_shadow.py \
             nasdaq-xray/build_candidate_legal_guard.py \
             nasdaq-xray/build_current_terminal.py \
+            nasdaq-xray/recover_pre_mc_snapshot.py \
             nasdaq-xray/sina_stage.py \
             nasdaq-xray/resolve_unknowns_fallback.py \
             nasdaq-xray/price_dv20_phase.py \

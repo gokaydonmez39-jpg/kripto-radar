@@ -20,6 +20,7 @@ on:
       - "nasdaq-xray/sec_ticker_cik_cache.json"
       - "nasdaq-xray/build_current_event_request.py"
       - "nasdaq-xray/build_current_terminal.py"
+      - "nasdaq-xray/recover_pre_mc_snapshot.py"
       - "nasdaq-xray/test_alpha_semantics.py"
       - "nasdaq-xray/test_deep_repair_regressions.py"
       - ".github/workflows/xray-canonical-current-pre-mc.yml"
@@ -65,6 +66,7 @@ jobs:
             nasdaq-xray/build_candidate_legal_guard.py \
             nasdaq-xray/build_current_event_request.py \
             nasdaq-xray/build_current_terminal.py \
+            nasdaq-xray/recover_pre_mc_snapshot.py \
             nasdaq-xray/test_alpha_semantics.py \
             nasdaq-xray/test_deep_repair_regressions.py
       - name: Assert no frozen 20260930 ASOF constants
