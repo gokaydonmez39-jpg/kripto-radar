@@ -9,6 +9,7 @@ import build_candidate_legal_guard as legal_guard_mod
 import build_current_terminal as terminal_mod
 import build_current_event_request as event_req_mod
 import regime_breadth_shadow as rb
+import deep_pre_r1_shadow as deep_mod
 from final_tech_shadow import eval_one, load_lifecycle_registry, persist_lifecycle_registry
 
 ROOT=Path(__file__).resolve().parent
@@ -277,6 +278,18 @@ def test_cross_session_lifecycle_scope_persists_active_only():
       },
     }
     assert event_req_mod.lifecycle_scope_from_final(prev,"2026-10-05",side)==["SWKS"]
+
+    old_prev,old_side=deep_mod.PREV_FINAL,deep_mod.LIFECYCLE
+    try:
+        with tempfile.TemporaryDirectory() as td:
+            td=Path(td); pf=td/"final.json"; sc=td/"lifecycle.json"
+            pf.write_text(json.dumps(prev))
+            deep_mod.PREV_FINAL=pf; deep_mod.LIFECYCLE=sc
+            assert deep_mod._lifecycle_scope("2026-10-05")==["PI"]
+            sc.write_text(json.dumps(side))
+            assert deep_mod._lifecycle_scope("2026-10-05")==["SWKS"]
+    finally:
+        deep_mod.PREV_FINAL,deep_mod.LIFECYCLE=old_prev,old_side
 
 def test_candidate_legal_guard_lifecycle_fallback_matches_final():
     old_prev,old_side=legal_guard_mod.PREV_FINAL,legal_guard_mod.LIFECYCLE
