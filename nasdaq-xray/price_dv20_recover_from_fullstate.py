@@ -385,9 +385,36 @@ def main():
           "provenance":"AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
         }
 
+    # Resolver BLOCK_CURRENT_RUN is fail-closed, but it must not silently
+    # disappear from completeness. Re-evaluate non-halt blocks through the
+    # independent zero-dollar exact20 chain (Sina -> Nasdaq official -> Yahoo
+    # fail-only). Only terminal PASS/FAIL may replace the authenticated block.
+    blocked_before=sorted(
+        sym for sym,x in results.items()
+        if x.get("status")=="BLOCK_CURRENT_RUN"
+        and (x.get("info") or {}).get("trade_status")!="Halted"
+    )
+    recovered_blocks=[]
+    if blocked_before:
+        with ThreadPoolExecutor(max_workers=WORKERS) as ex:
+            futs={ex.submit(eval_one,sym,exp20,asof):sym for sym in blocked_before}
+            for fut in as_completed(futs):
+                sym,st,info,meta=fut.result()
+                if st in {"PASS_PRICE_DV20","FAIL_PRICE","FAIL_DV20"}:
+                    results[sym]={
+                      "status":st,"info":info,"provider_meta":meta,
+                      "provenance":"BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+                    }
+                    recovered_blocks.append(sym)
+                else:
+                    results[sym]["block_recovery_attempt"]={
+                      "status":"UNRESOLVED","provider_result":info,"provider_meta":meta
+                    }
+
     counts={}
     for r in results.values():counts[r["status"]]=counts.get(r["status"],0)+1
     unknown=sorted(s for s,r in results.items() if r["status"]=="UNKNOWN")
+    blocked=sorted(s for s,r in results.items() if r["status"]=="BLOCK_CURRENT_RUN")
     passes=sorted(s for s,r in results.items() if r["status"]=="PASS_PRICE_DV20")
     obj={
       "schema":"XRAY_CANONICAL_PRICE_DV20_V1","task_id":TASK_ID,"asof_et":asof,
@@ -397,10 +424,15 @@ def main():
       "reused_terminal_count":len(queue)-len(redo),"reevaluated_count":len(redo),
       "exception_bridge_meta":exception_bridge_meta,
       "counts":dict(sorted(counts.items())),"unknown_count":len(unknown),"unknown_symbols":unknown,
+      "blocked_count":len(blocked),"blocked_symbols":blocked,
+      "block_recovery_attempted":True,
+      "block_recovery_input_count":len(blocked_before),
+      "block_recovery_resolved_count":len(recovered_blocks),
+      "block_recovery_resolved_symbols":sorted(recovered_blocks),
       "pass_count":len(passes),"pass_symbols":passes,
       "pass_hash":hashlib.sha256("\n".join(passes).encode()).hexdigest(),
       "results":dict(sorted(results.items()))
     }
     OUT.write_text(json.dumps(obj,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
-    print(json.dumps({"reused":obj["reused_terminal_count"],"reevaluated":obj["reevaluated_count"],"counts":obj["counts"],"unknown_count":obj["unknown_count"],"pass_count":obj["pass_count"],"pass_hash":obj["pass_hash"]},sort_keys=True))
+    print(json.dumps({"reused":obj["reused_terminal_count"],"reevaluated":obj["reevaluated_count"],"counts":obj["counts"],"unknown_count":obj["unknown_count"],"blocked_count":obj["blocked_count"],"block_recovery_input":obj["block_recovery_input_count"],"block_recovery_resolved":obj["block_recovery_resolved_count"],"pass_count":obj["pass_count"],"pass_hash":obj["pass_hash"]},sort_keys=True))
 if __name__=="__main__":main()
