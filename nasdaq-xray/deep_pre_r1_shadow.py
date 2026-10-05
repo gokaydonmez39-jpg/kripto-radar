@@ -19,6 +19,7 @@ from alpha_semantics import (
     tight_base_at,
     find_recent_b_trigger,
     mechanical_scale_breaks,
+    mechanical_split_suspects,
     split_consistent_history,
     apply_split_events,
     family_a_pretrigger_low,
@@ -391,10 +392,16 @@ def main():
         qexp=(json.loads(HISTORY_BINDING.read_text()).get("qqq_history_fingerprint") if HISTORY_BINDING is not None and HISTORY_BINDING.exists() else None)
         if qexp is None or history_fps.get("QQQ")!=qexp:
             raise RuntimeError("QQQ_HISTORY_FINGERPRINT_BINDING_MISMATCH")
-    qqq,qqq_ca_status,qqq_split_events=split_consistent_history("QQQ",data["QQQ"])
-    if not str(qqq_ca_status).startswith("PASS"):
-        raise RuntimeError("QQQ_CORPORATE_ACTION_UNKNOWN:"+str(qqq_ca_status))
-    qqq=qqq.reset_index(drop=True)
+    qqq=data["QQQ"].reset_index(drop=True)
+    qqq_scale_breaks=mechanical_scale_breaks(qqq,260)
+    qqq_split_suspects=mechanical_split_suspects(qqq,260)
+    qqq_ca_status="PASS_NO_LOCAL_SPLIT_DISCONTINUITY"
+    qqq_split_events=[]
+    if qqq_scale_breaks or qqq_split_suspects:
+        qqq,qqq_ca_status,qqq_split_events=split_consistent_history("QQQ",qqq)
+        if not str(qqq_ca_status).startswith("PASS"):
+            raise RuntimeError("QQQ_CORPORATE_ACTION_UNKNOWN:"+str(qqq_ca_status))
+        qqq=qqq.reset_index(drop=True)
     outres={}
     for s in syms:
         x=data.get(s)
