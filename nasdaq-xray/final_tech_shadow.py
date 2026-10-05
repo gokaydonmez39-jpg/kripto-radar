@@ -67,13 +67,23 @@ def _load_candidate_legal_guard(asof):
             return {},None,"CANDIDATE_LEGAL_GUARD_UNKNOWN_POLICY_MISMATCH"
         expected_deep=blob_sha(DEEP)
         expected_fc=blob_sha(FAMILY_C) if FAMILY_C is not None and FAMILY_C.exists() else None
-        expected_lifecycle=blob_sha(LIFECYCLE) if LIFECYCLE.exists() else None
+        if j.get("compiled_policy_path")!="nasdaq-xray/chatgpt_compiled_policy_v3.json":
+            return {},None,"CANDIDATE_LEGAL_GUARD_POLICY_PATH_MISMATCH"
+        if j.get("compiled_policy_blob_sha")!="10d7af14870dfac0dc4566595d95a06f3faa854d":
+            return {},None,"CANDIDATE_LEGAL_GUARD_POLICY_BLOB_MISMATCH"
+        if j.get("compiled_policy_hash")!="26a95745a50b65e85f6ece24b6501af0994764a84ddd886edb70d1fcd770849c":
+            return {},None,"CANDIDATE_LEGAL_GUARD_POLICY_HASH_MISMATCH"
+        if j.get("compiled_policy_version")!="C4.17":
+            return {},None,"CANDIDATE_LEGAL_GUARD_POLICY_VERSION_MISMATCH"
         if j.get("source_deep_blob_sha")!=expected_deep:
             return {},None,"CANDIDATE_LEGAL_GUARD_DEEP_BINDING_MISMATCH"
         if j.get("source_family_c_blob_sha")!=expected_fc:
             return {},None,"CANDIDATE_LEGAL_GUARD_FAMILY_C_BINDING_MISMATCH"
-        if j.get("source_lifecycle_blob_sha")!=expected_lifecycle:
-            return {},None,"CANDIDATE_LEGAL_GUARD_LIFECYCLE_BINDING_MISMATCH"
+        # Lifecycle is deliberately diagnostic only. Final mutates the durable
+        # registry later in this same run, so requiring its pre-Final blob here
+        # would make the just-produced legal guard self-stale after persistence.
+        if j.get("source_lifecycle_binding_role")!="DIAGNOSTIC_PRE_FINAL_SCOPE_AUGMENTATION":
+            return {},None,"CANDIDATE_LEGAL_GUARD_LIFECYCLE_ROLE_MISMATCH"
         scope=sorted(set(str(x) for x in (j.get("candidate_scope") or [])))
         if int(j.get("candidate_scope_count",-1))!=len(scope):
             return {},None,"CANDIDATE_LEGAL_GUARD_SCOPE_COUNT_MISMATCH"
@@ -573,6 +583,11 @@ def main():
         regime_status=_regime_finalist_status(d,sym)
         res=eval_one(sym,fam,g,data[sym],event,state_caps.get(sym,"NORMAL"),sym not in r92_ineligible,
                      frozen,recorded_before=prior_recorded,regime_finalist_status=regime_status)
+        res["candidate_legal_review_status"]=cg.get("status")
+        res["candidate_legal_review_reason"]=cg.get("reason")
+        res["candidate_legal_risk_flags"]=sorted(set(cg.get("risk_flags") or []))
+        res["candidate_legal_hard_flags"]=sorted(set(cg.get("hard_legal_flags") or []))
+        res["candidate_legal_latest_periodic"]=cg.get("latest_periodic")
         existing=results.get(key)
         existing_live=bool(existing and existing.get("observation_mode")=="PROSPECTIVE_RECORDED"
                            and not str(existing.get("result","")).startswith("FAIL_")
