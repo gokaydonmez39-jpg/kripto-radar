@@ -105,6 +105,12 @@ def relpath(p:Path):
     try:return str(p.relative_to(ROOT.parent)).replace("\\","/")
     except Exception:return str(p)
 
+def frozen_semantics_binding():
+    return {
+      "alpha_semantics.py":blob_sha(ROOT/"alpha_semantics.py"),
+      "final_tech_shadow.py":blob_sha(Path(__file__).resolve()),
+    }
+
 THRESH={
  "A":{"basic":1.5,"severe":1.1},
  "B":{"basic":2.0,"severe":1.5},
@@ -304,6 +310,7 @@ def main():
                 registry=old
         except Exception:pass
     old_records=registry.get("records") or {}
+    current_frozen_binding=frozen_semantics_binding()
 
     candidates=[]
     for sym,r in (d.get("results") or {}).items():
@@ -383,9 +390,14 @@ def main():
         if err:
             results[key]=err;continue
         prior=old_records.get(frozen["setup_id"])
-        if prior and isinstance(prior.get("frozen_geometry"),dict):
+        prior_recorded=bool(prior)
+        # Frozen levels are reusable only when they were produced by the exact
+        # current frozen-geometry implementation. A semantic repair migrates the
+        # record by recomputing levels, while preserving prospective-record status.
+        if (prior and isinstance(prior.get("frozen_geometry"),dict)
+            and prior.get("frozen_semantics_blobs")==current_frozen_binding):
             frozen=prior["frozen_geometry"]
-        res=eval_one(sym,fam,g,data[sym],event,state_caps.get(sym,"NORMAL"),sym not in r92_ineligible,frozen,recorded_before=bool(prior))
+        res=eval_one(sym,fam,g,data[sym],event,state_caps.get(sym,"NORMAL"),sym not in r92_ineligible,frozen,recorded_before=prior_recorded)
         existing=results.get(key)
         existing_live=bool(existing and existing.get("observation_mode")=="PROSPECTIVE_RECORDED"
                            and not str(existing.get("result","")).startswith("FAIL_")
@@ -397,11 +409,14 @@ def main():
             new_records[frozen["setup_id"]]={
               "setup_id":frozen["setup_id"],"symbol":sym,"family":fam,"trigger_date":frozen["trigger_date"],
               "state":state,"last_asof":asof,"frozen_geometry":frozen,"source_geometry":g,
+              "frozen_semantics_blobs":current_frozen_binding,
               "event_status":event,"state_cap":state_caps.get(sym,"NORMAL"),"r92_eligible":sym not in r92_ineligible
             }
         elif frozen["setup_id"] in new_records:
             new_records[frozen["setup_id"]]["state"]=state
             new_records[frozen["setup_id"]]["last_asof"]=asof
+            new_records[frozen["setup_id"]]["frozen_geometry"]=frozen
+            new_records[frozen["setup_id"]]["frozen_semantics_blobs"]=current_frozen_binding
 
     # Drop records that are safely beyond both retest and model horizons.
     pruned={}
@@ -433,6 +448,11 @@ def main():
       "adr_ratio_bridge_path":relpath(ADR_RATIO_BRIDGE) if ADR_RATIO_BRIDGE.exists() else None,
       "adr_ratio_bridge_blob_sha":blob_sha(ADR_RATIO_BRIDGE) if ADR_RATIO_BRIDGE.exists() else None,
       "lifecycle_registry":registry,
+      "lifecycle_frozen_semantics_binding":current_frozen_binding,
+      "lifecycle_semantics_exact":all(
+          rec.get("frozen_semantics_blobs")==current_frozen_binding
+          for rec in registry.get("records",{}).values()
+      ),
       "source_compiled_policy_hash":d.get("source_mc_policy_hash"),"source_compiled_policy_version":d.get("source_mc_policy_version"),
       "source_workflow_sha":os.getenv("GITHUB_SHA"),
       "semantic_impl_blobs":{
