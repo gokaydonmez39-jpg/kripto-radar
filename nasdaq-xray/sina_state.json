@@ -6,7 +6,7 @@
     "FAIL_DV20": 264,
     "FAIL_PRICE": 8,
     "PASS": 483,
-    "UNKNOWN_RETRY": 2,
+    "UNKNOWN_RETRY_EXHAUSTED": 2,
     "UNKNOWN_STATIC": 47
   },
   "cursor": 805,
@@ -6519,9 +6519,9 @@
   "identity_authority": "NASDAQTRADER_EXPLICIT_TYPE_FILTER_V3_SPAC_DEFERRED_TO_LEGAL",
   "identity_ruleset": "V3_SPAC_DEFERRED_TO_LEGAL",
   "official_footer": "File Creation Time: 1005202607:00|||||||",
-  "pending_retry": 2,
+  "pending_retry": 0,
   "processed_new_this_run": 0,
-  "processed_retry_this_run": 2,
+  "processed_retry_this_run": 0,
   "queue": [
     "AAL",
     "AAOI",
@@ -8871,7 +8871,7 @@
         "source": "NASDAQ_SAME_RUN_SCREENER_METADATA"
       },
       "status": "BLOCK_LEGAL_SHELL",
-      "updated_at_utc": "2026-10-05T11:23:54.664121+00:00"
+      "updated_at_utc": "2026-10-05T11:30:06.815205+00:00"
     },
     "BSP": {
       "attempts": 1,
@@ -16674,10 +16674,10 @@
       "updated_at_utc": "2026-10-05T11:23:41.585564+00:00"
     },
     "SVA": {
-      "attempts": 3,
+      "attempts": 4,
       "info": "SyntaxError:invalid syntax (<string>, line 1)",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-10-05T11:23:54.663743+00:00"
+      "status": "UNKNOWN_RETRY_EXHAUSTED",
+      "updated_at_utc": "2026-10-05T11:29:59.643988+00:00"
     },
     "SWKS": {
       "attempts": 1,
@@ -18054,10 +18054,10 @@
       "updated_at_utc": "2026-10-05T11:23:52.801864+00:00"
     },
     "WQEY": {
-      "attempts": 2,
+      "attempts": 4,
       "info": "IndexError:list index out of range",
-      "status": "UNKNOWN_RETRY",
-      "updated_at_utc": "2026-10-05T11:23:54.663724+00:00"
+      "status": "UNKNOWN_RETRY_EXHAUSTED",
+      "updated_at_utc": "2026-10-05T11:30:01.041730+00:00"
     },
     "WSBC": {
       "attempts": 1,
@@ -19196,10 +19196,10 @@
     "ZM": "Zoom Communications, Inc. - Class A Common Stock",
     "ZS": "Zscaler, Inc. - Common Stock"
   },
-  "state_hash": "f2f079c58cc4c58726bd1945f8dc2a33b05b755a74f6931b0e2c382164e51b28",
+  "state_hash": "aab9d4ba7a12c56c506340e08cc03e69c478938c28dbe42b2b9ade06225a5f23",
   "status": "HISTORY_PARTIAL",
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_count": 49,
   "unknown_never_pass": true,
-  "updated_at_utc": "2026-10-05T11:23:54.664548+00:00"
+  "updated_at_utc": "2026-10-05T11:30:06.815521+00:00"
 }
