@@ -20,6 +20,7 @@ kick=json.loads((ROOT/"scheduler_kick_dataplane.json").read_text())
 final_kick=json.loads((ROOT/"scheduler_kick_final.json").read_text())
 final_wf=(ROOT.parent/".github/workflows/xray-canonical-current-final.yml").read_text()
 wf=(ROOT.parent/".github/workflows/nasdaq-xray-daily.yml").read_text()
+orch=(ROOT/"orchestrator_run.py").read_text()
 
 assert contract["schema"]=="XRAY_SCHEDULER_FAILOVER_CONTRACT_V1"
 assert contract["execution"]=="NONE" and contract["real_money"]=="NO-GO"
@@ -65,4 +66,12 @@ assert '"nasdaq-xray/history_official_identity_evidence.json"' in wf
 assert '"nasdaq-xray/requirements-runtime.txt"' in wf
 assert "python nasdaq-xray/test_alpha_semantics.py" in wf
 assert 'name: NASDAQ SWING XRAY Autonomous Data Plane' in wf
+assert '"nasdaq-xray/final_tech_shadow.py"' not in wf
+assert "nasdaq-xray/final_tech_shadow.json" not in wf
+assert 'run("final_tech_shadow.py")' not in orch
+assert '"XRAY_DEEP_GEOMETRY_ONLY":"1"' in orch
+assert '"status":"DEFERRED_TO_CANONICAL_FINAL_FACTORY"' in orch
+assert '"alpha_semantics.py"' in orch
+assert '"history_official_identity_evidence.json"' in orch
+assert "CANONICAL_EVENTS_LEGAL_R1_RR_LIFECYCLE_DEFERRED" in orch
 print("XRAY_SCHEDULER_FAILOVER_SELFTEST=PASS")
