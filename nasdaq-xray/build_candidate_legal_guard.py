@@ -54,6 +54,12 @@ HARD_PHRASES={
     "SUBSTANTIAL_DOUBT_GOING_CONCERN":"substantial doubt about our ability to continue as a going concern",
     "FILED_CHAPTER_11":"filed a voluntary petition under chapter 11",
 }
+LIFECYCLE_ACTIVE_STATES={
+    "WATCH_RETEST_REQUIRED","WATCH_RECONFIRMATION_REQUIRED",
+    "WATCH_CHASE_RETEST_REQUIRED","WATCH_EXTENSION_RESET_REQUIRED",
+    "WATCH_REGIME_REVALIDATION_REQUIRED","WATCH_REGIME_UNKNOWN",
+    "PRE_G9_TECH_PASS","WATCH_EVENT_UNKNOWN_OR_BLOCKED","WATCH_MC_FALLBACK_CAP",
+}
 RISK_PHRASES={
     "GOING_CONCERN_REFERENCE":"going concern",
     "BANKRUPTCY_REFERENCE":"bankruptcy",
@@ -168,7 +174,9 @@ def candidate_scope(deep:dict,fc:dict|None,lifecycle:dict|None)->list[str]:
             and ((rows.get(sym) or {}).get("regime_finalist_pass") is True)):
             syms.add(str(sym))
     for rec in ((lifecycle or {}).get("records") or {}).values():
-        if isinstance(rec,dict) and rec.get("symbol"): syms.add(str(rec["symbol"]))
+        if (isinstance(rec,dict) and rec.get("symbol")
+            and str(rec.get("state") or "") in LIFECYCLE_ACTIVE_STATES):
+            syms.add(str(rec["symbol"]))
     return sorted(syms)
 
 
