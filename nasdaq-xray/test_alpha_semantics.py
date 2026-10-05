@@ -7,7 +7,8 @@ sys.path.insert(0,str(ROOT))
 from alpha_semantics import (
     wilder_atr,ema_seeded,drawdown_metrics,nearest_active_resistance,
     extension_diagnostics,retest_bar,setup_id,
-    find_recent_b_trigger,mechanical_scale_breaks
+    find_recent_b_trigger,mechanical_scale_breaks,
+    apply_split_events,mechanical_split_suspects
 )
 from final_tech_shadow import eval_one
 
@@ -101,6 +102,13 @@ def main():
     sf.loc[20:,"open"]=50.0;sf.loc[20:,"high"]=52.0;sf.loc[20:,"low"]=48.0;sf.loc[20:,"close"]=50.0
     sb=mechanical_scale_breaks(sf,40)
     assert sb and 1.8<=sb[0]["ratio"]<=2.2,sb
+    ss=mechanical_split_suspects(sf)
+    assert ss,ss
+    adjusted=apply_split_events(sf,[{"date":sf.date.iloc[20].date().isoformat(),
+                                     "ratio":2.0,"numerator":2.0,"denominator":1.0}])
+    assert abs(float(adjusted.close.iloc[19])-50.0)<1e-12,adjusted.iloc[18:22]
+    assert abs(float(adjusted.volume.iloc[19])-2_000_000.0)<1e-12,adjusted.iloc[18:22]
+    assert abs(float(adjusted.close.iloc[20])-50.0)<1e-12,adjusted.iloc[18:22]
 
     # A newly discovered trigger older than three completed sessions is WATCH only;
     # the same frozen setup may become actionable only when it was prospectively recorded.
@@ -122,7 +130,7 @@ def main():
     print({"status":"PASS","tests":[
       "WILDER_FIRST_TR_UNDEFINED","EMA_SMA_SEED","D_DRAWDOWN_DEFINITIONS",
       "R1_STRUCTURAL_TRIGGER_MINUS1","R1_ENTRY_OVERLAP","EXTENSION_RESET","RETEST_BAR","SETUP_ID_STABLE",
-      "B_RECENT_TRIGGER_PERSISTENCE","MECHANICAL_SCALE_BREAK_GUARD","HISTORICAL_DISCOVERY_WATCH"
+      "B_RECENT_TRIGGER_PERSISTENCE","MECHANICAL_SCALE_BREAK_GUARD","SPLIT_ONLY_RECONCILIATION","HISTORICAL_DISCOVERY_WATCH"
     ]})
 
 if __name__=="__main__":
