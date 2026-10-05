@@ -13,6 +13,7 @@ from alpha_semantics import (
 )
 from final_tech_shadow import eval_one,_is_depositary_security_name,lifecycle_state_persists
 from deep_pre_r1_shadow import evaluate_recent_families
+from family_c_engine import eval_event
 from build_current_event_request import lifecycle_scope_from_final,event_geometry_scope
 from regime_breadth_shadow import close_only_scale_breaks
 
@@ -210,6 +211,40 @@ def main():
     assert ls==["OLDW"],ls
     assert event_geometry_scope(["FRESH"],ls)==["FRESH","OLDW"]
 
+    # Family C canonical pivot includes reaction high. A breakout above only the
+    # consolidation high must not pass if it remains below reaction high.
+    dates=pd.bdate_range("2026-06-01",periods=36)
+    rows=[]
+    for dte in dates:
+        rows.append({"date":dte,"open":100.0,"high":102.0,"low":98.0,"close":100.0,"volume":1_000_000.0})
+    cdf=pd.DataFrame(rows)
+    r0=25
+    cdf.loc[r0,["open","high","low","close","volume"]]=[103.0,110.0,101.0,107.0,2_000_000.0]
+    cdf.loc[r0+1,["open","high","low","close","volume"]]=[106.0,108.0,102.0,106.0,1_200_000.0]
+    cdf.loc[r0+2,["open","high","low","close","volume"]]=[106.0,107.0,102.5,106.0,1_100_000.0]
+    for j,h in zip((r0+3,r0+4,r0+5),(106.5,107.0,107.5)):
+        cdf.loc[j,["open","high","low","close","volume"]]=[105.0,h,104.0,105.5,900_000.0]
+    t=r0+6
+    cdf.loc[t,["open","high","low","close","volume"]]=[107.0,109.0,105.0,108.5,2_000_000.0]
+    sess=[d.date().isoformat() for d in cdf["date"]]
+    edt=cdf.date.iloc[r0].date().isoformat()+"T08:00:00-04:00"
+    ce={"event_datetime_et":edt,"official_source_url":"TEST","source":"TEST"}
+    cg,cd=eval_event("TEST",cdf,ce,cdf.date.iloc[-1].date().isoformat(),sess,"CLEAN_DISCOVERY")
+    assert cg is None,(cg,cd)
+
+    # Once price actually clears the reaction-high pivot, the same valid structure can confirm.
+    cdf2=cdf.copy()
+    cdf2.loc[t,["open","high","low","close","volume"]]=[109.0,112.0,105.0,111.5,2_000_000.0]
+    cg2,cd2=eval_event("TEST",cdf2,ce,cdf2.date.iloc[-1].date().isoformat(),sess,"CLEAN_DISCOVERY")
+    assert cg2 and abs(float(cg2["P"])-110.0)<1e-12,(cg2,cd2)
+    assert cg2.get("gap_floor_intact") is True,(cg2,cd2)
+
+    # GAP_FLOOR is persistent through consolidation and breakout, not only reaction0+1+2.
+    cdf3=cdf2.copy()
+    cdf3.loc[r0+4,"low"]=99.0
+    cg3,cd3=eval_event("TEST",cdf3,ce,cdf3.date.iloc[-1].date().isoformat(),sess,"CLEAN_DISCOVERY")
+    assert cg3 is None and cd3.get("gap_floor_breach_date")==cdf3.date.iloc[r0+4].date().isoformat(),(cg3,cd3)
+
     assert _is_depositary_security_name("Example Corp - American Depositary Shares") is True
     assert _is_depositary_security_name("Example Corp - Common Stock") is False
 
@@ -217,7 +252,8 @@ def main():
       "WILDER_FIRST_TR_UNDEFINED","EMA_SMA_SEED","D_DRAWDOWN_DEFINITIONS",
       "R1_STRUCTURAL_TRIGGER_MINUS1","R1_ENTRY_OVERLAP","EXTENSION_RESET","RETEST_BAR","FAMILY_A_TRIGGER_MINUS1_LOW","SETUP_ID_STABLE",
       "B_RECENT_TRIGGER_PERSISTENCE","DEEP_RECENT_TRIGGER_INDEPENDENT_OF_CURRENT_STAGE1","A_STAGE1_ASOF_TRIGGER","MECHANICAL_SCALE_BREAK_GUARD","BREADTH_CLOSE_ONLY_SCALE_GUARD","SPLIT_ONLY_RECONCILIATION","SPLIT_RAW_CROSSCHECK","HISTORICAL_DISCOVERY_WATCH","CHASE_FROZEN_RETEST_RECOVERY",
-      "ADR_RATIO_FAIL_CLOSED_CLASSIFICATION","PROSPECTIVE_LIFECYCLE_PERSISTENCE","FROZEN_LIFECYCLE_EVENT_SCOPE","ANCIENT_SCALE_BREAK_OUTSIDE_TECH_HORIZON"
+      "ADR_RATIO_FAIL_CLOSED_CLASSIFICATION","PROSPECTIVE_LIFECYCLE_PERSISTENCE","FROZEN_LIFECYCLE_EVENT_SCOPE","ANCIENT_SCALE_BREAK_OUTSIDE_TECH_HORIZON",
+      "FAMILY_C_REACTION_HIGH_PIVOT","FAMILY_C_PERSISTENT_GAP_FLOOR"
     ]})
 
 if __name__=="__main__":
