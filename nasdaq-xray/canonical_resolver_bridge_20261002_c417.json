@@ -11137,5 +11137,118 @@
     },
     "partition_exact_union": true,
     "settlement_preserved": true
+  },
+  "terminal_overrides": {
+    "ACCV": {
+      "decision": "FAIL_DV20_INSUFFICIENT_SESSIONS",
+      "price": 17.72,
+      "known_session_count": 3,
+      "missing_sessions": [
+        "2026-09-04",
+        "2026-09-08",
+        "2026-09-09",
+        "2026-09-10",
+        "2026-09-11",
+        "2026-09-14",
+        "2026-09-15",
+        "2026-09-16",
+        "2026-09-17",
+        "2026-09-18",
+        "2026-09-21",
+        "2026-09-22",
+        "2026-09-23",
+        "2026-09-24",
+        "2026-09-25",
+        "2026-09-28",
+        "2026-09-29"
+      ],
+      "no_synthetic_bar": true,
+      "proof": "ALPACA_RALLIES_EXACT_MISSING_SET_MATCH"
+    },
+    "ADRX": {
+      "decision": "FAIL_DV20_INSUFFICIENT_SESSIONS",
+      "price": 18.25,
+      "known_session_count": 6,
+      "missing_sessions": [
+        "2026-09-04",
+        "2026-09-08",
+        "2026-09-09",
+        "2026-09-10",
+        "2026-09-11",
+        "2026-09-14",
+        "2026-09-15",
+        "2026-09-16",
+        "2026-09-17",
+        "2026-09-18",
+        "2026-09-21",
+        "2026-09-22",
+        "2026-09-23",
+        "2026-09-24"
+      ],
+      "no_synthetic_bar": true,
+      "proof": "ALPACA_RALLIES_EXACT_MISSING_SET_MATCH"
+    },
+    "GRAL": {
+      "decision": "FAIL_DV20_INSUFFICIENT_SESSIONS",
+      "price": 143.26,
+      "known_session_count": 19,
+      "missing_sessions": [
+        "2026-09-23"
+      ],
+      "no_synthetic_bar": true,
+      "proof": "ALPACA_RALLIES_EXACT_MISSING_SET_MATCH",
+      "note": "Alpaca SIP row on 2026-09-23 has volume=0 and trade_count=0; excluded as non-usable/synthetic; Rallies and Massive both omit the interval."
+    },
+    "RZAI": {
+      "decision": "FAIL_DV20_INSUFFICIENT_SESSIONS",
+      "price": 19.9,
+      "known_session_count": 3,
+      "missing_sessions": [
+        "2026-09-04",
+        "2026-09-08",
+        "2026-09-09",
+        "2026-09-10",
+        "2026-09-11",
+        "2026-09-14",
+        "2026-09-15",
+        "2026-09-16",
+        "2026-09-17",
+        "2026-09-18",
+        "2026-09-21",
+        "2026-09-22",
+        "2026-09-23",
+        "2026-09-24",
+        "2026-09-25",
+        "2026-09-28",
+        "2026-09-29"
+      ],
+      "no_synthetic_bar": true,
+      "proof": "ALPACA_RALLIES_EXACT_MISSING_SET_MATCH"
+    },
+    "SVA": {
+      "decision": "FAIL_PRICE_NO_ASOF_BAR",
+      "proof": "THREE_SOURCE_NO_ASOF_BAR",
+      "sources": [
+        "ALPACA_SIP",
+        "RALLIES",
+        "MASSIVE"
+      ],
+      "no_synthetic_bar": true
+    }
+  },
+  "terminal_override_evidence": {
+    "observed_at_utc": "2026-10-05T17:20:00Z",
+    "execution": "NONE",
+    "real_money": "NO-GO",
+    "g9": "NOT_CLAIMED",
+    "evidence_scope": "RESIDUAL_BLOCKED_PRICE_DV20_ONLY",
+    "policy_binding": "C4.17",
+    "proof_notes": {
+      "ACCV": "Alpaca SIP/Rallies/Massive each show only 2026-09-30,10-01,10-02.",
+      "ADRX": "Alpaca SIP/Rallies/Massive each show only 2026-09-25,09-28,09-29,09-30,10-01,10-02.",
+      "GRAL": "Alpaca SIP has zero-volume/zero-trade placeholder on 2026-09-23; usable set is 19 and matches Rallies/Massive.",
+      "RZAI": "Alpaca SIP/Rallies/Massive each show only 2026-09-30,10-01,10-02.",
+      "SVA": "Alpaca SIP 0 bars, Rallies no price data, Massive empty."
+    }
   }
 }
