@@ -18,6 +18,7 @@ on:
       - "nasdaq-xray/family_c_engine.py"
       - "nasdaq-xray/deep_pre_r1_shadow.py"
       - "nasdaq-xray/final_tech_shadow.py"
+      - "nasdaq-xray/build_candidate_legal_guard.py"
       - "nasdaq-xray/canonical_candidate_legal_guard.json"
       - "nasdaq-xray/build_current_terminal.py"
       - "nasdaq-xray/official_source_guard.py"
@@ -183,6 +184,7 @@ jobs:
             nasdaq-xray/test_deep_repair_regressions.py \
             nasdaq-xray/family_c_engine.py \
             nasdaq-xray/deep_pre_r1_shadow.py \
+            nasdaq-xray/build_candidate_legal_guard.py \
             nasdaq-xray/final_tech_shadow.py \
             nasdaq-xray/build_current_terminal.py \
             nasdaq-xray/official_source_guard.py \
@@ -389,6 +391,44 @@ jobs:
           XRAY_DEEP_WORKERS: "8"
         run: python nasdaq-xray/deep_pre_r1_shadow.py
 
+      - name: Build exact-bound detailed finalist legal guard
+        if: steps.event.outputs.ready == 'true' && steps.account_vault.outputs.restart_required != 'true'
+        env:
+          XRAY_LEGAL_GUARD_DEEP: ${{ github.workspace }}/nasdaq-xray/canonical_current_deep_full.json
+          XRAY_LEGAL_GUARD_FAMILY_C: ${{ github.workspace }}/nasdaq-xray/canonical_current_family_c.json
+          XRAY_LEGAL_GUARD_LIFECYCLE: ${{ github.workspace }}/nasdaq-xray/canonical_candidate_lifecycle_registry.json
+          XRAY_LEGAL_GUARD_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_candidate_legal_guard.json
+          XRAY_SEC_USER_AGENT: "NASDAQ-SWING-XRAY compliance research; contact via repository owner"
+        run: python nasdaq-xray/build_candidate_legal_guard.py
+
+      - name: Validate detailed finalist legal guard binding
+        if: steps.event.outputs.ready == 'true' && steps.account_vault.outputs.restart_required != 'true'
+        run: |
+          python - <<'PY'
+          import hashlib,json,pathlib
+          root=pathlib.Path("nasdaq-xray")
+          def bsha(p):
+              b=p.read_bytes()
+              return hashlib.sha1(f"blob {len(b)}\0".encode()+b).hexdigest()
+          g=json.load(open(root/"canonical_candidate_legal_guard.json"))
+          d=root/"canonical_current_deep_full.json"
+          f=root/"canonical_current_family_c.json"
+          l=root/"canonical_candidate_lifecycle_registry.json"
+          assert g.get("schema")=="XRAY_CANDIDATE_LEGAL_GUARD_V1",g
+          assert g.get("execution")=="NONE" and g.get("real_money")=="NO-GO" and g.get("unknown_never_pass") is True,g
+          assert g.get("source_deep_blob_sha")==bsha(d),g.get("source_deep_blob_sha")
+          assert g.get("source_family_c_blob_sha")==bsha(f),g.get("source_family_c_blob_sha")
+          expected_lifecycle=bsha(l) if l.exists() else None
+          assert g.get("source_lifecycle_blob_sha")==expected_lifecycle,(g.get("source_lifecycle_blob_sha"),expected_lifecycle)
+          scope=sorted(set(g.get("candidate_scope") or []))
+          h=hashlib.sha256(("\n".join(scope)+"\n").encode()).hexdigest()
+          assert g.get("candidate_scope_count")==len(scope)
+          assert g.get("candidate_scope_hash")==h
+          assert set(g.get("records") or {})==set(scope)
+          print({"XRAY_DETAILED_LEGAL_GUARD_BINDING":"PASS","scope_count":len(scope),
+                 "unknown_symbols":g.get("unknown_symbols")})
+          PY
+
       - name: Run final tech
         if: steps.event.outputs.ready == 'true' && steps.account_vault.outputs.restart_required != 'true'
         env:
@@ -532,7 +572,7 @@ jobs:
           git fetch origin main
           latest="$(git rev-parse origin/main)"
           if [[ "$latest" != "$GITHUB_SHA" ]]; then
-            changed="$(git diff --name-only "$GITHUB_SHA" "$latest" --               .github/workflows/xray-canonical-current-final.yml               nasdaq-xray/canonical_current_history.json               nasdaq-xray/canonical_current_legal.json               nasdaq-xray/canonical_current_stage1_input.json               nasdaq-xray/canonical_current_stage1.json               nasdaq-xray/canonical_current_regime.json               nasdaq-xray/canonical_current_deep_geometry.json               nasdaq-xray/canonical_current_event_request.json               nasdaq-xray/alpha_semantics.py               nasdaq-xray/test_alpha_semantics.py               nasdaq-xray/test_deep_repair_regressions.py               nasdaq-xray/stage1_shadow.py               nasdaq-xray/deep_pre_r1_shadow.py               nasdaq-xray/family_c_engine.py               nasdaq-xray/final_tech_shadow.py               nasdaq-xray/canonical_candidate_legal_guard.json               nasdaq-xray/build_current_terminal.py               nasdaq-xray/official_source_guard.py               nasdaq-xray/resilience_runtime.py               nasdaq-xray/build_final_gate_overlay_v2.py               nasdaq-xray/account_gate_contract.json               nasdaq-xray/account_provider_adapter_contract.json               nasdaq-xray/account_longbridge_openapi_probe.py               nasdaq-xray/account_longbridge_openapi_probe_selftest.py               nasdaq-xray/account_longbridge_mcp_v2_probe.py               nasdaq-xray/account_longbridge_mcp_v2_probe_selftest.py               nasdaq-xray/account_longbridge_mcp_v2_vault.py               nasdaq-xray/account_longbridge_mcp_v2_vault_selftest.py               nasdaq-xray/account_longbridge_mcp_v2_bootstrap.py               nasdaq-xray/account_longbridge_mcp_v2_refresh.py               nasdaq-xray/account_longbridge_mcp_v2_refresh_selftest.py               nasdaq-xray/account_longbridge_mcp_v2_token.enc               nasdaq-xray/select_account_live_probe.py               nasdaq-xray/select_account_live_probe_selftest.py               nasdaq-xray/account_same_run_terminal_selftest.py               nasdaq-xray/chatgpt_compiled_policy_v3.json || true)"
+            changed="$(git diff --name-only "$GITHUB_SHA" "$latest" --               .github/workflows/xray-canonical-current-final.yml               nasdaq-xray/canonical_current_history.json               nasdaq-xray/canonical_current_legal.json               nasdaq-xray/canonical_current_stage1_input.json               nasdaq-xray/canonical_current_stage1.json               nasdaq-xray/canonical_current_regime.json               nasdaq-xray/canonical_current_deep_geometry.json               nasdaq-xray/canonical_current_event_request.json               nasdaq-xray/alpha_semantics.py               nasdaq-xray/test_alpha_semantics.py               nasdaq-xray/test_deep_repair_regressions.py               nasdaq-xray/stage1_shadow.py               nasdaq-xray/deep_pre_r1_shadow.py               nasdaq-xray/family_c_engine.py               nasdaq-xray/build_candidate_legal_guard.py               nasdaq-xray/final_tech_shadow.py               nasdaq-xray/canonical_candidate_legal_guard.json               nasdaq-xray/build_current_terminal.py               nasdaq-xray/official_source_guard.py               nasdaq-xray/resilience_runtime.py               nasdaq-xray/build_final_gate_overlay_v2.py               nasdaq-xray/account_gate_contract.json               nasdaq-xray/account_provider_adapter_contract.json               nasdaq-xray/account_longbridge_openapi_probe.py               nasdaq-xray/account_longbridge_openapi_probe_selftest.py               nasdaq-xray/account_longbridge_mcp_v2_probe.py               nasdaq-xray/account_longbridge_mcp_v2_probe_selftest.py               nasdaq-xray/account_longbridge_mcp_v2_vault.py               nasdaq-xray/account_longbridge_mcp_v2_vault_selftest.py               nasdaq-xray/account_longbridge_mcp_v2_bootstrap.py               nasdaq-xray/account_longbridge_mcp_v2_refresh.py               nasdaq-xray/account_longbridge_mcp_v2_refresh_selftest.py               nasdaq-xray/account_longbridge_mcp_v2_token.enc               nasdaq-xray/select_account_live_probe.py               nasdaq-xray/select_account_live_probe_selftest.py               nasdaq-xray/account_same_run_terminal_selftest.py               nasdaq-xray/chatgpt_compiled_policy_v3.json || true)"
             if [[ -n "$changed" ]]; then
               echo "XRAY_FACTORY_COMMIT=STALE_SOURCE_ABORT"
               printf '%s\n' "$changed"
@@ -544,6 +584,7 @@ jobs:
             nasdaq-xray/canonical_current_event_state.json
             nasdaq-xray/canonical_current_family_c.json
             nasdaq-xray/canonical_current_deep_full.json
+            nasdaq-xray/canonical_candidate_legal_guard.json
             nasdaq-xray/canonical_candidate_lifecycle_registry.json
             nasdaq-xray/canonical_current_final_tech.json
             nasdaq-xray/canonical_current_terminal.json
