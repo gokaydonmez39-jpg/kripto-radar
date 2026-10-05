@@ -13,6 +13,7 @@ from pathlib import Path
 import akshare as ak
 import pandas as pd
 import pandas_market_calendars as mcal
+from alpha_semantics import wilder_atr as _policy_atr, ema_seeded, drawdown_metrics
 
 ROOT=Path(__file__).resolve().parent
 MC=Path(os.getenv("XRAY_MC_STATE", str(ROOT/"mc_final_state.json")))
@@ -91,17 +92,7 @@ def relpath(p:Path):
     except Exception:return str(p)
 
 def wilder_atr(df, n=14):
-    h=df["high"].astype(float); l=df["low"].astype(float); c=df["close"].astype(float)
-    pc=c.shift(1)
-    tr=pd.concat([(h-l).abs(),(h-pc).abs(),(l-pc).abs()],axis=1).max(axis=1)
-    if len(tr)<n+1: return None
-    vals=tr.to_list()
-    atr=sum(vals[:n])/n
-    series=[None]*(n-1)+[atr]
-    for x in vals[n:]:
-        atr=((n-1)*atr+x)/n
-        series.append(atr)
-    return pd.Series(series,index=df.index,dtype="float64")
+    return _policy_atr(df,n)
 
 def build_week_last(asof):
     cal=mcal.get_calendar("NASDAQ")
@@ -126,7 +117,7 @@ def weekly_gate(df, asof, week_last):
     groups=sorted(groups)
     if len(groups)<52: return {"pass":False,"reason":"WEEKLY_HISTORY_LT52","weeks":len(groups)}
     closes=pd.Series([v for _,v in groups],dtype="float64")
-    ema10=closes.ewm(span=10,adjust=False).mean()
+    ema10=ema_seeded(closes,10)
     sma30=closes.rolling(30).mean()
     if len(ema10)<4 or pd.isna(sma30.iloc[-1]):
         return {"pass":False,"reason":"WEEKLY_INDICATOR_MISSING","weeks":len(groups)}
@@ -183,16 +174,18 @@ def process(sym,asof,week_last):
             rh=float(recent20_high.iloc[-1]); last=float(close.iloc[-1])
             a_pool=bool(last>float(sma50.iloc[-1]) and float(sma50.iloc[-1])>float(sma50.iloc[-21]) and rh>0 and 0.88*rh<=last<=rh)
         b=base_pool(x)
-        h252=float(close.iloc[-252:].max()); h120=float(close.iloc[-120:].max()); last=float(close.iloc[-1])
-        dd252=last/h252-1 if h252>0 else None
-        dd120=last/h120-1 if h120>0 else None
-        d_pool=bool((dd252 is not None and dd252<=-0.15) or (dd120 is not None and dd120<=-0.20))
+        last=float(close.iloc[-1])
+        dd=drawdown_metrics(x)
+        dd252=dd["current_drawdown_252"]; dd120=dd["max_drawdown_close_120"]
+        d_pool=bool((math.isfinite(dd252) and dd252<=-0.15) or (math.isfinite(dd120) and dd120<=-0.20))
         return sym,{
           "status":"WEEKLY_PASS","weekly":wg,"history_source":history_source,
           "a_trend_pool":a_pool,
           "b_tight_base_pool":b,
           "d_drawdown_pool":d_pool,
           "dd252":dd252,"dd120":dd120,
+          "dd252_definition":"CURRENT_CLOSE_VS_MAX_HIGH_252",
+          "dd120_definition":"MAX_DRAWDOWN_CLOSE_120",
           "last_close":last
         }
     except Exception as e:
