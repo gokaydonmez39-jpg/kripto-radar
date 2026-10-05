@@ -87,19 +87,41 @@ def test_final_history_normalizer_preserves_ohlcv():
 
 def test_regime_interval_bounds_and_finalist_gate():
     q={"close":749.58,"sma50":716.817,"sma200":668.60405,"sma50_slope20":5.7836}
-    regime,meta=rb.classify_regime_bounds(q,456,174,77,54,9)
-    assert regime=="MIXED" and meta["strong_possible"] is False,(regime,meta)
+
+    # Interval math remains a diagnostic only: current observed values make STRONG
+    # impossible even under the most favorable completion of the 9 missing members.
+    diagnostic,meta=rb.classify_regime_bounds(q,456,174,77,54,9)
+    assert diagnostic=="MIXED" and meta["strong_possible"] is False,(diagnostic,meta)
     assert meta["breadth_above_sma50_pct_max"]<0.55,meta
+
+    # C4.17 production authority is stricter: any missing CURRENT_CORE breadth
+    # member is BREADTH_UNKNOWN / max WATCH. Diagnostic certainty may not promote it.
+    regime,prod=rb.classify_regime_policy(q,456,174,77,54,9)
+    assert regime=="UNKNOWN",(regime,prod)
+    assert prod["diagnostic_interval_regime"]=="MIXED",prod
+    assert prod["method"]=="C4_17_STRICT_BREADTH_MISSING_FAIL_CLOSED_V1",prod
 
     regime2,meta2=rb.classify_regime_bounds(q,100,54,20,19,2)
     assert regime2=="UNKNOWN" and meta2["strong_possible"] is True and meta2["strong_guaranteed"] is False,(regime2,meta2)
+    prod2,pmeta2=rb.classify_regime_policy(q,100,54,20,19,2)
+    assert prod2=="UNKNOWN" and pmeta2["diagnostic_interval_regime"]=="UNKNOWN",(prod2,pmeta2)
 
+    # Even a diagnostically guaranteed STRONG classification cannot bypass the
+    # compiled policy while one breadth member is missing.
     regime3,meta3=rb.classify_regime_bounds(q,100,56,25,20,1)
     assert regime3=="STRONG" and meta3["strong_guaranteed"] is True,(regime3,meta3)
+    prod3,pmeta3=rb.classify_regime_policy(q,100,56,25,20,1)
+    assert prod3=="UNKNOWN" and pmeta3["diagnostic_interval_regime"]=="STRONG",(prod3,pmeta3)
+
+    # With exact breadth coverage the production classifier may use the normal class.
+    exact,pmeta4=rb.classify_regime_policy(q,100,56,25,20,0)
+    assert exact=="STRONG" and pmeta4["method"]=="C4_17_EXACT_BREADTH_CLASSIFICATION_V1",(exact,pmeta4)
 
     weak_q={"close":90.0,"sma50":100.0,"sma200":95.0,"sma50_slope20":-1.0}
-    regime4,_=rb.classify_regime_bounds(weak_q,100,0,0,0,100)
-    assert regime4=="WEAK",regime4
+    weak_diag,_=rb.classify_regime_bounds(weak_q,100,0,0,0,100)
+    assert weak_diag=="WEAK",weak_diag
+    weak_prod,_=rb.classify_regime_policy(weak_q,100,0,0,0,100)
+    assert weak_prod=="UNKNOWN",weak_prod
 
     assert ft._regime_finalist_allowed({"regime":"MIXED","results":{"X":{"regime_finalist_pass":True}}},"X")
     assert not ft._regime_finalist_allowed({"regime":"MIXED","results":{"X":{"regime_finalist_pass":False}}},"X")
