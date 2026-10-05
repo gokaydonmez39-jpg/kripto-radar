@@ -162,7 +162,9 @@ def test_workflow_race_and_pre_mc_freeze_contracts():
     term_src=(ROOT/"build_current_terminal.py").read_text()
     assert 'assert int(s.get("unknown_count",0))==0' not in er_src
     assert 'assert int(r.get("breadth_missing_count",0))==0' not in er_src
-    assert '"coverage_unknowns"' in er_src and '"coverage_complete"' in er_src
+    assert '"coverage_unknowns"' in er_src and '"upstream_coverage_complete"' in er_src
+    assert '"request_scope_complete":True' in er_src
+    assert '"coverage_complete":not (' not in er_src
     assert 'assert st["unknown_count"]==0' not in term_src
     assert 'rg["current_core_count"]==len(lpass) and rg["breadth_missing_count"]==0' not in term_src
     assert '"stage1_unknown":int(st["unknown_count"])' in term_src
