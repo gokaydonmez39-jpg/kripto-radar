@@ -255,6 +255,9 @@ def test_candidate_legal_guard_scope_is_candidate_local():
     assert legal_guard_mod.candidate_scope(deep,fc,lifecycle)==["A","B","C","D","L"]
 
 def test_cross_session_lifecycle_scope_persists_active_only():
+    assert deep_mod.LIFECYCLE_ACTIVE_STATES==ft.LIFECYCLE_PERSIST_STATES
+    assert event_req_mod.LIFECYCLE_ACTIVE_STATES==ft.LIFECYCLE_PERSIST_STATES
+    assert legal_guard_mod.LIFECYCLE_ACTIVE_STATES==ft.LIFECYCLE_PERSIST_STATES
     prev={
       "asof_et":"2026-10-02",
       "lifecycle_registry":{
