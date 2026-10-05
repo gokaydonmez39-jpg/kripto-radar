@@ -448,7 +448,7 @@ def test_workflow_race_and_pre_mc_freeze_contracts():
     push_block=final_wf.split("permissions:",1)[0]
     assert '"nasdaq-xray/build_candidate_legal_guard.py"' in push_block
     assert '"nasdaq-xray/canonical_candidate_legal_guard.json"' not in push_block
-    ca_block=ftsrc[ftsrc.index("def candidate_corporate_action_reconcile"):ftsrc.index("def _normalize_sina")]
+    ca_block=ftsrc[ftsrc.index("def candidate_corporate_action_reconcile"):ftsrc.index("def _frozen_geometry")]
     assert "UNKNOWN_PRIMARY_CORPORATE_ACTION_EVIDENCE_REQUIRED" not in ca_block
     assert "return x2.reset_index(drop=True),status,events,True" in ca_block
     assert 'ft.get("candidate_legal_guard_exact_binding") is True' in term_src
