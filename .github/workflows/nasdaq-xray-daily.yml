@@ -14,6 +14,10 @@ on:
       - "nasdaq-xray/mc_resolution_overlay.json"
       - "nasdaq-xray/history_resolution_overlay.json"
       - "nasdaq-xray/production_core_build.py"
+      - "nasdaq-xray/alpha_semantics.py"
+      - "nasdaq-xray/test_alpha_semantics.py"
+      - "nasdaq-xray/history_official_identity_evidence.json"
+      - "nasdaq-xray/requirements-runtime.txt"
       - "nasdaq-xray/stage1_shadow.py"
       - "nasdaq-xray/regime_breadth_shadow.py"
       - "nasdaq-xray/deep_pre_r1_shadow.py"
@@ -55,10 +59,13 @@ jobs:
         run: python nasdaq-xray/scheduler_failover_selftest.py
 
       - name: Static compile gate
-        run: python -m py_compile nasdaq-xray/orchestrator_run.py nasdaq-xray/sina_stage.py nasdaq-xray/mc_zero_key.py nasdaq-xray/production_core_build.py nasdaq-xray/stage1_shadow.py nasdaq-xray/regime_breadth_shadow.py nasdaq-xray/deep_pre_r1_shadow.py nasdaq-xray/final_tech_shadow.py
+        run: python -m py_compile nasdaq-xray/orchestrator_run.py nasdaq-xray/sina_stage.py nasdaq-xray/mc_zero_key.py nasdaq-xray/production_core_build.py nasdaq-xray/alpha_semantics.py nasdaq-xray/test_alpha_semantics.py nasdaq-xray/stage1_shadow.py nasdaq-xray/regime_breadth_shadow.py nasdaq-xray/deep_pre_r1_shadow.py nasdaq-xray/final_tech_shadow.py
 
       - name: Install zero-dollar research runtime
         run: python -m pip install --disable-pip-version-check -r nasdaq-xray/requirements-runtime.txt
+
+      - name: Verify deterministic alpha semantics
+        run: python nasdaq-xray/test_alpha_semantics.py
 
       - name: Run autonomous XRAY data plane
         run: python nasdaq-xray/orchestrator_run.py
