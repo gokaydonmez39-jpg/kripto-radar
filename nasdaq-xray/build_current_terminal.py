@@ -125,17 +125,22 @@ def load_gate_reporting():
         out["evidence"]["account_gate"]={"status":"UNKNOWN","reason":type(e).__name__}
     return out
 
+def mc_semantic_input_match(price,j):
+    current_pass=set(price.get("pass_symbols") or [])
+    return bool(
+      j.get("input_pass_hash")==price.get("pass_hash")
+      and int(j.get("input_count",-1))==int(price.get("pass_count",-2))
+      and set((j.get("results") or {}).keys())==current_pass
+      and len(current_pass)==int(price.get("pass_count",-2))
+    )
+
 def find_mc(price,price_blob):
     valid=[]
     current_pass=set(price["pass_symbols"])
     for fp in glob.glob(str(ROOT/"canonical_mc_bridge_*.json")):
         try:
             j=json.load(open(fp))
-            semantic_exact=(
-              j.get("input_pass_hash")==price["pass_hash"]
-              and int(j.get("input_count",-1))==int(price["pass_count"])
-              and set((j.get("results") or {}).keys())==current_pass
-            )
+            semantic_exact=mc_semantic_input_match(price,j)
             if (
               j.get("schema")=="XRAY_MC_EPOCH_RESULT_V1" and j.get("status")=="COMMITTED"
               and j.get("task_id")==TASK and j.get("execution")=="NONE" and j.get("real_money")=="NO-GO"
