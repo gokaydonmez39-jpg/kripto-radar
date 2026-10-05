@@ -13,7 +13,7 @@ import pandas as pd
 from alpha_semantics import (
     wilder_atr, trigger_index, setup_id, session_age,
     nearest_active_resistance, extension_diagnostics, retest_bar,
-    apply_split_events, split_consistent_history,
+    apply_split_events, split_consistent_history, mechanical_scale_breaks,
 )
 
 ROOT=Path(__file__).resolve().parent
@@ -376,13 +376,14 @@ def main():
                 data[s]=apply_split_events(data[s],split_events).reset_index(drop=True)
         else:
             # Frozen lifecycle symbol may no longer be in current weekly/deep scope.
-            # Revalidate its raw history independently rather than treating absence
-            # from deep as a corporate-action failure.
-            x2,ca_status,split_events=split_consistent_history(s,data[s])
-            if not str(ca_status).startswith("PASS"):
-                corporate_action_errors[s]=ca_status or "MISSING"
-                continue
-            data[s]=x2.reset_index(drop=True)
+            # A continuous raw series needs no network lookup. Only a mechanical
+            # scale discontinuity requires external split reconciliation.
+            if mechanical_scale_breaks(data[s],260):
+                x2,ca_status,split_events=split_consistent_history(s,data[s])
+                if not str(ca_status).startswith("PASS"):
+                    corporate_action_errors[s]=ca_status or "MISSING"
+                    continue
+                data[s]=x2.reset_index(drop=True)
 
     results={};new_records=dict(old_records)
     seen=set()
