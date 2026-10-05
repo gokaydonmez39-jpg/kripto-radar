@@ -37,6 +37,7 @@ OUT=Path(os.getenv("XRAY_LEGAL_GUARD_OUT",str(ROOT/"canonical_candidate_legal_gu
 TASK_ID="6a825366222081918997094d76e6ae46"
 USER_AGENT=os.getenv("XRAY_SEC_USER_AGENT","XRAY research compliance contact: xray-noreply@example.invalid")
 PERIODIC={"10-K","10-Q","20-F","40-F"}
+ANNUAL={"10-K","20-F","40-F"}
 OFFERING_PREFIX=("S-3","F-3","424B")
 REVIEW_FORMS={"8-K","6-K","10-K","10-Q","20-F","40-F"}
 HARD_ITEMS={"1.03":"BANKRUPTCY_OR_RECEIVERSHIP",
@@ -55,6 +56,7 @@ RISK_PHRASES={
     "GOING_CONCERN_REFERENCE":"going concern",
     "BANKRUPTCY_REFERENCE":"bankruptcy",
     "EVENT_OF_DEFAULT_REFERENCE":"event of default",
+    "COVENANT_REFERENCE":"covenant",
     "DELISTING_REFERENCE":"delisting",
     "ATM_OR_AT_THE_MARKET":"at-the-market",
     "SECONDARY_OFFERING":"secondary offering",
@@ -207,9 +209,22 @@ def review_symbol(symbol:str,cik10:str,asof:str)->dict:
     if not periodic:
         return {"status":"UNKNOWN","reason":"NO_PERIODIC_FILING_BEFORE_ASOF",
                 "cik":cik10,"sec_submissions_url":company_url}
+    annual=[x for x in filings if str(x.get("form")).upper() in ANNUAL]
+    if not annual:
+        return {"status":"UNKNOWN","reason":"NO_RECENT_ANNUAL_FILING_BEFORE_ASOF",
+                "cik":cik10,"sec_submissions_url":company_url}
+    annual.sort(key=lambda x:(str(x["filingDate"]),str(x["accessionNumber"])),reverse=True)
     periodic.sort(key=lambda x:(str(x["filingDate"]),str(x["accessionNumber"])),reverse=True)
+    latest_annual=annual[0]
+    quarterlies=[x for x in filings if str(x.get("form")).upper()=="10-Q"]
+    quarterlies.sort(key=lambda x:(str(x["filingDate"]),str(x["accessionNumber"])),reverse=True)
+    latest_quarterly=quarterlies[0] if quarterlies else None
     latest=periodic[0]
-    start=str(latest["filingDate"])
+    # C4.17 requires recent 10-K/10-Q plus material current/offering filings.
+    # Starting at the latest annual filing guarantees the annual report is read,
+    # all later quarterlies are read, and intervening 8-K/6-K/offering evidence
+    # cannot be skipped merely because a newer 10-Q exists.
+    start=str(latest_annual["filingDate"])
     scoped=[x for x in filings if start<=str(x.get("filingDate"))<=asof]
     scoped.sort(key=lambda x:(str(x["filingDate"]),str(x["accessionNumber"])))
 
@@ -262,7 +277,16 @@ def review_symbol(symbol:str,cik10:str,asof:str)->dict:
                          "report_date":latest.get("reportDate"),
                          "accession_number":latest.get("accessionNumber"),
                          "url":_doc_url(cik10,latest)},
-      "review_window":{"start_filing_date":start,"end_asof":asof},
+      "latest_annual":{"form":latest_annual.get("form"),"filing_date":latest_annual.get("filingDate"),
+                       "report_date":latest_annual.get("reportDate"),
+                       "accession_number":latest_annual.get("accessionNumber"),
+                       "url":_doc_url(cik10,latest_annual)},
+      "latest_quarterly":({"form":latest_quarterly.get("form"),"filing_date":latest_quarterly.get("filingDate"),
+                           "report_date":latest_quarterly.get("reportDate"),
+                           "accession_number":latest_quarterly.get("accessionNumber"),
+                           "url":_doc_url(cik10,latest_quarterly)} if latest_quarterly else None),
+      "review_window":{"start_filing_date":start,"end_asof":asof,
+                       "basis":"LATEST_ANNUAL_THROUGH_ASOF_INCLUDING_ALL_LATER_PERIODIC_CURRENT_AND_OFFERING_FILINGS"},
       "reviewed_filing_count":len(scoped),
       "reviewed_primary_documents":docs,
       "hard_legal_flags":hard,
@@ -319,7 +343,7 @@ def main():
       "schema":"XRAY_CANDIDATE_LEGAL_GUARD_V1","task_id":TASK_ID,"asof_et":asof,
       "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
       "authority":"SEC_EDGAR_PRIMARY_DETAILED_FINALIST_REVIEW_V1",
-      "review_scope":"LATEST_PERIODIC_FILING_THROUGH_ASOF",
+      "review_scope":"LATEST_ANNUAL_THROUGH_ASOF_WITH_ALL_LATER_PERIODIC_CURRENT_AND_OFFERING_FILINGS",
       "compiled_policy_path":"nasdaq-xray/chatgpt_compiled_policy_v3.json",
       "compiled_policy_blob_sha":POLICY_BLOB,
       "compiled_policy_hash":POLICY_HASH,
