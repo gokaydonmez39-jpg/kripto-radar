@@ -157,8 +157,50 @@ def mc_semantic_input_match(price,j):
       and len(current_pass)==int(price.get("pass_count",-2))
     )
 
+def _mc_bridge_relpath(p:Path):
+    return str(p.relative_to(ROOT.parent)).replace("\\\\","/")
+
+def _mc_supersession_valid(row,rows,price):
+    """Validate an explicit immutable MC predecessor supersession proof.
+
+    A successor may suppress a predecessor only when both predecessor path and
+    Git blob SHA are exact and the predecessor itself is the same current
+    ASOF/policy/pass-set epoch. A bad/missing proof makes the successor
+    ineligible; it never silently suppresses anything.
+    """
+    p,j,_=row
+    sp=j.get("supersedes_mc_bridge_path"); ss=j.get("supersedes_mc_bridge_blob_sha")
+    if not sp and not ss:return True
+    if not sp or not ss:return False
+    pred=None
+    for rp,rj,rb in rows:
+        if _mc_bridge_relpath(rp)==sp:
+            pred=(rp,rj,rb);break
+    if pred is None:return False
+    pp,pj,_=pred
+    try:
+        return bool(
+          blob_sha(pp)==ss
+          and pj.get("schema")=="XRAY_MC_EPOCH_RESULT_V1"
+          and pj.get("status")=="COMMITTED"
+          and pj.get("task_id")==TASK
+          and pj.get("asof_et")==price.get("asof_et")
+          and pj.get("policy_hash")==POLICY_HASH and pj.get("policy_version")=="C4.17"
+          and mc_semantic_input_match(price,pj)
+        )
+    except Exception:
+        return False
+
+def _active_mc_rows(rows,price):
+    valid=[r for r in rows if _mc_supersession_valid(r,rows,price)]
+    superseded=set()
+    for _,j,_ in valid:
+        sp=j.get("supersedes_mc_bridge_path"); ss=j.get("supersedes_mc_bridge_blob_sha")
+        if sp and ss:superseded.add(sp)
+    return [r for r in valid if _mc_bridge_relpath(r[0]) not in superseded]
+
 def find_mc(price,price_blob):
-    exact=[]; semantic=[]
+    rows=[]
     current_pass=set(price["pass_symbols"])
     for fp in glob.glob(str(ROOT/"canonical_mc_bridge_*.json")):
         try:
@@ -174,7 +216,7 @@ def find_mc(price,price_blob):
               and j.get("policy_version")=="C4.17"
             ):
                 blob_exact=(j.get("input_blob_sha")==price_blob)
-                row=(Path(fp),j,{
+                rows.append((Path(fp),j,{
                   "blob_exact":blob_exact,
                   "semantic_rebind":not blob_exact,
                   "recorded_input_blob_sha":j.get("input_blob_sha"),
@@ -182,12 +224,15 @@ def find_mc(price,price_blob):
                   "pass_hash_exact":True,
                   "pass_set_exact":True,
                   "pass_count_exact":True,
-                })
-                (exact if blob_exact else semantic).append(row)
+                }))
         except Exception:
             pass
-    # Exact content-address binding always outranks a semantic rebind. Semantic
-    # fallback is allowed only when no exact-bound bridge exists and is itself unique.
+    active=_active_mc_rows(rows,price)
+    exact=[r for r in active if r[2]["blob_exact"]]
+    semantic=[r for r in active if not r[2]["blob_exact"]]
+    # Exact content-address binding always outranks a semantic rebind. Explicit
+    # immutable supersession may retire a proven predecessor, but ambiguity among
+    # remaining active authorities still fails closed.
     if len(exact)==1:return exact[0]
     if len(exact)>1:raise RuntimeError(f"MC_BRIDGE_EXACT_BINDING_MATCHES:{len(exact)}")
     if len(semantic)!=1:raise RuntimeError(f"MC_BRIDGE_SEMANTIC_BINDING_MATCHES:{len(semantic)}")
