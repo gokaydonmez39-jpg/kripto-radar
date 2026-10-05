@@ -322,7 +322,13 @@ def main():
         key=f"{sym}|{fam}" if sym and fam else ""
         if key not in final_set: continue
         rr=ft["results"][key]
-        assert rr.get("setup_id")==rec.get("setup_id"),(key,rr.get("setup_id"),rec.get("setup_id"))
+        # A frozen setup may be temporarily UNKNOWN during same-ASOF revalidation
+        # (history/legal/corporate-action source uncertainty). Preserve its durable
+        # identity for a later retry, but never let UNKNOWN become PASS.
+        if rr.get("result")=="UNKNOWN":
+            assert rr.get("reason"),(key,rr)
+        else:
+            assert rr.get("setup_id")==rec.get("setup_id"),(key,rr.get("setup_id"),rec.get("setup_id"))
         assert rec.get("state") in {"WATCH_RETEST_REQUIRED","WATCH_RECONFIRMATION_REQUIRED","WATCH_HISTORICAL_SETUP",
                                    "WATCH_CHASE_RETEST_REQUIRED","WATCH_EXTENSION_RESET_REQUIRED",
                                    "PRE_G9_TECH_PASS","WATCH_MC_FALLBACK_CAP","WATCH_SYNTHETIC_PRICE_DISCOVERY_CAP"}
