@@ -9,7 +9,7 @@ from zoneinfo import ZoneInfo
 import akshare as ak
 import pandas as pd
 import pandas_market_calendars as mcal
-from alpha_semantics import wilder_atr as _policy_atr, apply_split_events, history_fingerprint
+from alpha_semantics import (\n    wilder_atr as _policy_atr, apply_split_events, history_fingerprint,\n    mechanical_scale_breaks, mechanical_split_suspects, split_consistent_history,\n)
 
 ROOT=Path(__file__).resolve().parent
 STAGE1=Path(os.getenv("XRAY_FAMILY_C_STAGE1",str(ROOT/"canonical_current_stage1.json")))
@@ -94,6 +94,25 @@ def hist(sym,asof):
         if len(x)<260:return sym,None,f"LT260:{len(x)}",None
         return sym,x,None,src
     except Exception as e:return sym,None,f"{type(e).__name__}:{str(e)[:160]}",None
+
+def candidate_corporate_action_reconcile(sym,df,strow=None):
+    """Candidate-scoped price-scale integrity for Family C.
+
+    A missing inherited Stage1 status is not evidence of a corporate action.
+    Explicit non-PASS inherited evidence remains fail-closed. Mechanical
+    split-like discontinuities are independently reconciled before event
+    geometry is evaluated, matching the Final engine's current semantics.
+    """
+    x=df.reset_index(drop=True)
+    inherited=(strow or {}).get("corporate_action_status")
+    if inherited is not None and not str(inherited).startswith("PASS"):
+        return x,inherited,[],False
+    severe=mechanical_scale_breaks(x,260)
+    fractional=mechanical_split_suspects(x,260)
+    if severe or fractional:
+        x2,status,events=split_consistent_history(sym,x)
+        return x2.reset_index(drop=True),status,events,True
+    return x,"PASS_NO_LOCAL_SPLIT_DISCONTINUITY",[],False
 
 def atr_wilder(df,end_idx,n=14):
     if end_idx<1:return None
@@ -255,12 +274,10 @@ def main():
         if s not in data:
             unknown[s]={"reason":"HISTORY_"+errors.get(s,"MISSING")};continue
         strow=(st.get("results") or {}).get(s) or {}
-        ca_status=strow.get("corporate_action_status")
+        x,ca_status,split_events,ca_lookup=candidate_corporate_action_reconcile(s,data[s],strow)
         if not str(ca_status).startswith("PASS"):
-            unknown[s]={"reason":"CORPORATE_ACTION_NOT_VERIFIED","status":ca_status};continue
-        x=data[s]
-        split_events=strow.get("split_events") or []
-        if split_events:x=apply_split_events(x,split_events)
+            unknown[s]={"reason":"CORPORATE_ACTION_NOT_VERIFIED","status":ca_status,
+                        "candidate_scoped_external_lookup":ca_lookup};continue
         x=x.reset_index(drop=True)
         best=None;dd=[]
         for e in fce.get(s) or []:
