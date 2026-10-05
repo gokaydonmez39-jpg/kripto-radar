@@ -77,7 +77,7 @@ OFFICIAL_RECORDS=_official_records()
 
 def _normalize_sina(df):
     if df is None or df.empty:return None
-    cols={str(c).lower():c for c in df.columns};need=["date","high","low","close"]
+    cols={str(c).lower():c for c in df.columns};need=["date","open","high","low","close","volume"]
     if any(k not in cols for k in need):return None
     x=df[[cols[k] for k in need]].copy();x.columns=need
     x["date"]=pd.to_datetime(x["date"],errors="coerce")
