@@ -27,9 +27,9 @@ permissions:
   contents: write
 
 concurrency:
-  # V2 group breaks out of pre-guard stale in-flight runs; old-group runs are
-  # commit-time stale by workflow SHA and cannot publish current artifacts.
-  group: xray-canonical-current-post-mc-v2
+  # V3 cuts over from stale V1/V2 HISTORY runs after the bounded-network repair.
+  # Older generations are commit-time stale by workflow SHA and cannot publish.
+  group: xray-canonical-current-post-mc-v3
   # Preserve single-writer ordering but never preempt an exact-bound epoch in flight.
   # New triggers queue and the freeze/no-op guards collapse redundant work.
   cancel-in-progress: false
@@ -346,15 +346,18 @@ jobs:
         run: python nasdaq-xray/test_alpha_semantics.py
       - name: Run HISTORY
         if: steps.mc.outputs.ready == 'true' && steps.reuse_hl.outputs.reuse != 'true'
+        timeout-minutes: 12
         shell: bash
         run: |
           XRAY_HISTORY_INPUT="$GITHUB_WORKSPACE/${{ steps.mc.outputs.path }}" \
           XRAY_HISTORY_CACHE_DIR="$RUNNER_TEMP/xray-history-cache" \
           XRAY_HISTORY_OUT="$GITHUB_WORKSPACE/nasdaq-xray/canonical_current_history.json" \
-          XRAY_ASOF="${{ steps.mc.outputs.asof }}" XRAY_HISTORY_WORKERS="10" \
+          XRAY_HISTORY_HTTP_TIMEOUT_SECONDS="20" XRAY_HISTORY_PROVIDER_MAX_INFLIGHT="3" \
+          XRAY_ASOF="${{ steps.mc.outputs.asof }}" XRAY_HISTORY_WORKERS="4" \
           python nasdaq-xray/history_phase.py
       - name: Revalidate reused HISTORY and hydrate same-run technical cache
         if: steps.mc.outputs.ready == 'true' && steps.reuse_hl.outputs.reuse == 'true'
+        timeout-minutes: 12
         shell: bash
         env:
           XRAY_HISTORY_CACHE_DIR: ${{ runner.temp }}/xray-history-cache
@@ -363,7 +366,8 @@ jobs:
           XRAY_HISTORY_INPUT="$GITHUB_WORKSPACE/${{ steps.mc.outputs.path }}" \
           XRAY_HISTORY_CACHE_DIR="$RUNNER_TEMP/xray-history-cache" \
           XRAY_HISTORY_OUT="$RUNNER_TEMP/xray-history-revalidated.json" \
-          XRAY_ASOF="${{ steps.mc.outputs.asof }}" XRAY_HISTORY_WORKERS="10" \
+          XRAY_HISTORY_HTTP_TIMEOUT_SECONDS="20" XRAY_HISTORY_PROVIDER_MAX_INFLIGHT="3" \
+          XRAY_ASOF="${{ steps.mc.outputs.asof }}" XRAY_HISTORY_WORKERS="4" \
           python nasdaq-xray/history_phase.py
           python - <<'PY'
           import json, os
