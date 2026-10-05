@@ -77,6 +77,17 @@
         "https://ir.spacex.com/updates/releases-details/2026/Space-Exploration-Technologies-Corp--Announces-Closing-of-Initial-Public-Offering-Including-Full-Exercise-of-Underwriters-Option-to-Purchase-Additional-Shares-2026-RgoR-Y1Vwh/default.aspx"
       ],
       "note": "SEC IPO materials and issuer IR establish first public Nasdaq trading under SPCX on 2026-06-12. Any pre-IPO SPCX ticker history from third-party feeds is identity contamination and must be ignored."
+    },
+    "ECHO": {
+      "mode": "OFFICIAL_TICKER_CONTINUITY_COMPOSITE_HISTORY",
+      "predecessor_symbol": "SATS",
+      "effective_date": "2026-06-24",
+      "cusip_unchanged": true,
+      "sources": [
+        "https://ir.echostar.com/news-releases/news-release-details/echostar-changing-stocker-ticker-sats-echo-marking-companys-next",
+        "https://www.sec.gov/Archives/edgar/data/1415404/000110465926085813/xslSCHEDULE_13D_X02/primary_doc.xml"
+      ],
+      "note": "EchoStar issuer IR states the Nasdaq ticker changed from SATS to ECHO effective 2026-06-24, with no change to the common-stock CUSIP or capital structure. Pre-effective ECHO rows from third-party symbol history are identity contamination; use SATS before the effective date and ECHO on/after it."
     }
   }
 }
