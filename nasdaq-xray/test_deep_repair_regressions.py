@@ -134,8 +134,10 @@ def test_corporate_action_absence_vs_real_scale_break():
     assert status=="PASS_NO_LOCAL_SPLIT_DISCONTINUITY",(status,events,lookup)
     assert events==[] and lookup is False
 
-    # A material scale break must remain UNKNOWN without primary CA authority,
-    # even when the diagnostic split provider appears internally consistent.
+    # A material factor-like move is only a discovery trigger. When the split
+    # reconciler returns exact verified scale evidence, Final must use that
+    # adjusted history instead of double-blocking it as an unknown corporate
+    # action. Detailed legal risk is independently fail-closed in the SEC guard.
     suspect=frame(300)
     suspect.loc[200:,["open","high","low","close"]]=[50.0,52.0,49.0,51.0]
     old=ft.split_consistent_history
@@ -143,7 +145,7 @@ def test_corporate_action_absence_vs_real_scale_break():
         [{"date":df.date.iloc[200].date().isoformat(),"numerator":2.0,"denominator":1.0,"ratio":2.0}])
     try:
         _,status2,events2,lookup2=ft.candidate_corporate_action_reconcile("TEST",suspect,drow={})
-        assert status2=="UNKNOWN_PRIMARY_CORPORATE_ACTION_EVIDENCE_REQUIRED",(status2,events2,lookup2)
+        assert status2=="PASS_SPLIT_RECONCILED_CROSSCHECKED",(status2,events2,lookup2)
         assert lookup2 is True and events2
     finally:
         ft.split_consistent_history=old
