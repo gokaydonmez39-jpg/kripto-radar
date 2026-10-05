@@ -2,7 +2,7 @@ name: XRAY Dynamic Phase Regression
 
 on:
   push:
-    branches: [main]
+    branches: [main, xray-deep-repair-20261005b]
     paths:
       - "nasdaq-xray/price_dv20_phase.py"
       - "nasdaq-xray/price_dv20_recover_from_fullstate.py"
