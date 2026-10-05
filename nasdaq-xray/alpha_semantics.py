@@ -259,13 +259,41 @@ def apply_split_events(df:pd.DataFrame,events:list[dict[str,Any]])->pd.DataFrame
         if "volume" in x.columns:x.loc[mask,"volume"]=x.loc[mask,"volume"].astype(float)*ratio
     return x
 
+def _verify_split_events_against_raw(df:pd.DataFrame,events:list[dict[str,Any]])->tuple[bool,str]:
+    x=df.copy().sort_values("date").reset_index(drop=True)
+    dates=x["date"].dt.date.astype(str).tolist()
+    matched_days=set()
+    for e in events:
+        day=str(e["date"])
+        if day not in dates:return False,"SPLIT_EVENT_DATE_NOT_IN_RAW_HISTORY:"+day
+        i=dates.index(day)
+        if i<1:return False,"SPLIT_EVENT_HAS_NO_PRIOR_BAR:"+day
+        pc=float(x["close"].iloc[i-1]);op=float(x["open"].iloc[i]);ratio=float(e["ratio"])
+        if pc<=0 or op<=0 or ratio<=0:return False,"INVALID_SPLIT_CROSSCHECK_VALUES:"+day
+        observed=pc/op
+        rel=abs(observed/ratio-1.0)
+        # Independent raw Sina scale break should approximately agree with Yahoo's
+        # split ratio. 35% leaves room for a very large overnight market move but
+        # rejects an unrelated/mis-dated corporate-action event.
+        if rel>0.35:return False,f"SPLIT_RATIO_RAW_CONFLICT:{day}:{observed:.6f}:{ratio:.6f}"
+        matched_days.add(day)
+    # A mechanically split-like break without a corresponding event is unresolved,
+    # not silently treated as a genuine market gap.
+    for s in mechanical_split_suspects(x):
+        day=str(s["date"])
+        near=any(abs((pd.Timestamp(day)-pd.Timestamp(ed)).days)<=3 for ed in matched_days)
+        if not near:return False,"MECHANICAL_SCALE_BREAK_WITHOUT_VERIFIED_SPLIT:"+day
+    return True,"PASS"
+
 def split_consistent_history(symbol:str,df:pd.DataFrame)->tuple[pd.DataFrame,str,list[dict[str,Any]]]:
     if df is None or df.empty:return df,"UNKNOWN_EMPTY_HISTORY",[]
     start=df["date"].min().date().isoformat();end=df["date"].max().date().isoformat()
     status,events=fetch_yahoo_split_events(symbol,start,end)
     if status!="PASS":return df,status,events
-    if not events:return df,"PASS_NO_SPLIT_EVENTS",[]
-    return apply_split_events(df,events),"PASS_SPLIT_RECONCILED",events
+    ok,reason=_verify_split_events_against_raw(df,events)
+    if not ok:return df,"UNKNOWN:"+reason,events
+    if not events:return df,"PASS_NO_SPLIT_EVENTS_CROSSCHECKED",[]
+    return apply_split_events(df,events),"PASS_SPLIT_RECONCILED_CROSSCHECKED",events
 
 def resistance_zones(df:pd.DataFrame,trigger_idx:int,A:float)->list[dict[str,Any]]:
     """Structural resistance set known by trigger-1; no trigger/current look-ahead."""
