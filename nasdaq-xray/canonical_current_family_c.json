@@ -3,14 +3,7 @@
   "authority": "C4_11_POST_EARNINGS_FAIL_CLOSED_POLICY_INHERITED",
   "confirmed": {},
   "confirmed_count": 0,
-  "details": {
-    "MU": [
-      {
-        "reaction_session": "2026-10-01",
-        "reason": "REACTION_0_1_2_INCOMPLETE"
-      }
-    ]
-  },
+  "details": {},
   "event_symbol_count": 1,
   "execution": "NONE",
   "history_source_by_symbol": {
@@ -38,8 +31,13 @@
   "source_stage1_blob_sha": "a19154816768e9ea925453c4b0d8adf6704ee6d9",
   "source_stage1_path": "nasdaq-xray/canonical_current_stage1.json",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown": {},
-  "unknown_count": 0,
+  "unknown": {
+    "MU": {
+      "reason": "CORPORATE_ACTION_NOT_VERIFIED",
+      "status": null
+    }
+  },
+  "unknown_count": 1,
   "unknown_never_pass": true,
   "weekly_scope_count": 100
 }

@@ -59,7 +59,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-10-05T15:28:15.197579+00:00",
+  "generated_at_utc": "2026-10-05T16:16:24.599093+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -595,8 +595,19 @@
       "url": "https://www.nasdaqtrader.com/Trader.aspx?id=nasdaq-security-status-updates&from=10/02/2026&to=10/05/2026"
     },
     "system_status_ipo": {
-      "item_count": 0,
-      "items": [],
+      "item_count": 1,
+      "items": [
+        {
+          "Market": "NASDAQ Options,PHLX",
+          "Message": "<p>Nasdaq PHLX, NTX&nbsp;Options, Nasdaq ISE, Nasdaq MRX, Nasdaq Options Market &amp; Nasdaq GEMX&nbsp;will remove symbol <strong>GPMT</strong> before the opening on, Tuesday, October 6, 2026. All open GTC orders in symbol <strong>GPMT </strong>will be cancelled after the close of business today. Please contact Nasdaq Option Listings at 215-496-1266 with any questions.</p><br><br><br>",
+          "Message_dt": "Mon, 05 Oct 2026 15:57:48 GMT",
+          "SubjectLine": "Option Notice: Option Delisting",
+          "Time": "11:57:48",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Time</th><th align=\"left\">Market</th><th align=\"left\">Message</th></tr><tr><td valign=\"top\">11:57:48</td><td valign=\"top\">NASDAQ Options,PHLX</td><td valign=\"top\"><p>Nasdaq PHLX, NTX&nbsp;Options, Nasdaq ISE, Nasdaq MRX, Nasdaq Options Market &amp; Nasdaq GEMX&nbsp;will remove symbol <strong>GPMT</strong> before the opening on, Tuesday, October 6, 2026. All open GTC orders in symbol <strong>GPMT </strong>will be cancelled after the close of business today. Please contact Nasdaq Option Listings at 215-496-1266 with any questions.</p><br><br><br></td></tr></table>",
+          "pubDate": "Mon, 05 Oct 2026 15:57:48 GMT",
+          "title": "Option Notice: Option Delisting"
+        }
+      ],
       "status": "PASS",
       "url": "https://www.nasdaqtrader.com/rss.aspx?feed=systemstatus&subject=IPO"
     },
@@ -636,8 +647,8 @@
           "ReasonCode": "LUDP",
           "ResumptionDate": "10/05/2026",
           "ResumptionQuoteTime": "11:25:03",
-          "ResumptionTradeTime": "",
-          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/05/2026                    </td><td valign=\"top\">11:25:03.303</td><td valign=\"top\">WQEY</td><td valign=\"top\">WISeQey Corp Ord</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/05/2026                    </td><td valign=\"top\">11:25:03                      </td><td valign=\"top\"></td></tr></table>",
+          "ResumptionTradeTime": "11:30:03",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/05/2026                    </td><td valign=\"top\">11:25:03.303</td><td valign=\"top\">WQEY</td><td valign=\"top\">WISeQey Corp Ord</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/05/2026                    </td><td valign=\"top\">11:25:03                      </td><td valign=\"top\">11:30:03                      </td></tr></table>",
           "pubDate": "Mon, 05 Oct 2026 04:00:00 GMT",
           "title": "WQEY"
         },
