@@ -158,6 +158,16 @@ def _frozen_geometry(sym,fam,g,df):
     if not all(math.isfinite(v) for v in (A,P,anchor)) or A<=0:
         return None,{"result":"UNKNOWN","reason":"NONFINITE_GEOMETRY"}
     entry_low=P;entry_high=P+0.25*A;entry_model=entry_high;chase=P+0.50*A;S0=anchor-0.20*A
+    if fam in {"A","D"}:
+        hld=str(g.get("hl_date") or "")
+        hi=trigger_index(df,hld) if hld else None
+        if hi is None or hi+2>ti:
+            return None,{"result":"UNKNOWN","reason":"ANCHOR_AVAILABILITY_UNRESOLVED","trigger_date":td,"hl_date":hld}
+        anchor_available_idx=hi+2
+    else:
+        # B/C anchor is the completed base/consolidation low known at trigger-1 close.
+        anchor_available_idx=ti-1
+    anchor_available_date=df["date"].iloc[anchor_available_idx].date().isoformat()
     r1=nearest_active_resistance(df,ti,A,entry_low,entry_high,entry_model)
     trigger_close=float(df["close"].iloc[ti])
     synthetic=False
@@ -175,6 +185,7 @@ def _frozen_geometry(sym,fam,g,df):
       "setup_id":setup_id(sym,fam,td,P,anchor,A),"symbol":sym,"family":fam,"trigger_date":td,
       "A":A,"P":P,"anchor":anchor,"entry_low":entry_low,"entry_high":entry_high,
       "entry_model":entry_model,"chase_limit":chase,"S0":S0,"T1":T1,
+      "anchor_available_idx":anchor_available_idx,"anchor_available_date":anchor_available_date,
       "target_source":target_source,"target_zone":zone,"target_overlap":target_overlap,
       "synthetic_target":synthetic,"source_geometry":g,
     }
@@ -194,8 +205,13 @@ def eval_one(sym,fam,g,df,event_status,state_cap="NORMAL",r92_eligible=True,froz
     ti=trigger_index(df,td)
     if ti is None:return {"result":"UNKNOWN","reason":"TRIGGER_DATE_NOT_IN_HISTORY","trigger_date":td}
 
-    # C4.17 hard invalidation: any post-trigger low <= frozen S0 kills this setup.
-    post=df.iloc[ti+1:]
+    # C4.17 hard invalidation begins only after ANCHOR_AVAILABLE_AT.
+    # This includes trigger-day lows for B/C, and any pre-trigger sessions after
+    # a confirmed A/D HL became available.
+    ai=frozen.get("anchor_available_idx")
+    if not isinstance(ai,int) or ai<0 or ai>=len(df) or ai>ti:
+        return {"result":"UNKNOWN","reason":"ANCHOR_AVAILABILITY_INDEX_INVALID","trigger_date":td}
+    post=df.iloc[ai+1:]
     breach_rows=post[post["low"].astype(float)<=S0]
     breached=not breach_rows.empty
     breach_date=None if not breached else breach_rows.date.iloc[0].date().isoformat()
