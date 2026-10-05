@@ -22,6 +22,23 @@ def num(x):
     except Exception:
         return None
 
+def apply_terminal_overrides(prs,overrides):
+    """Strict operator evidence may only turn an existing fail-closed block into
+    a C4.17 terminal FAIL. It can never manufacture PASS or change non-blocked rows.
+    """
+    if overrides is None:return prs
+    if not isinstance(overrides,dict):raise ValueError("TERMINAL_OVERRIDE_TYPES")
+    source="ALPACA_SIP_RALLIES_MASSIVE_C4_17_NON_G9"
+    for sym,x in overrides.items():
+        prior=prs.get(sym) or {}
+        if prior.get("decision")!="BLOCK_CURRENT_RUN":raise ValueError("TERMINAL_OVERRIDE_NOT_BLOCKED")
+        if not isinstance(x,dict) or x.get("decision") not in {"FAIL_PRICE_NO_ASOF_BAR","FAIL_DV20_INSUFFICIENT_SESSIONS"}:
+            raise ValueError("TERMINAL_OVERRIDE_DECISION")
+        rec=dict(x);rec["source"]=source
+        if not valid_bridge_price_resolution(rec,None):raise ValueError("TERMINAL_OVERRIDE_PROOF")
+        prs[sym]=rec
+    return prs
+
 def load_exception_bridge(asof,queue_hash):
     paths=sorted(ROOT.glob(f"canonical_resolver_bridge_{asof.replace('-','')}*.json"))
     matches=[]
@@ -262,7 +279,8 @@ def load_exception_bridge(asof,queue_hash):
                     d=(val or {}).get("first_trade_date") if isinstance(val,dict) else val
                     if not d or str(d)<=asof: raise ValueError("COMPACT_POST_ASOF")
                     prs[sym]={"decision":"BLOCK_POST_ASOF_LISTING","first_trade_date":str(d),"source":src,"proof":"FIRST_VALID_BAR_AFTER_ASOF"}
-        return prs,{"status":"PASS","path":str(path),"symbol_hash":obj.get("symbol_hash"),"source_result_task_id":obj.get("source_result_task_id"),"result_encoding":encoding or "EXPANDED_V1"}
+        prs=apply_terminal_overrides(prs,obj.get("terminal_overrides"))
+        return prs,{"status":"PASS","path":str(path),"symbol_hash":obj.get("symbol_hash"),"source_result_task_id":obj.get("source_result_task_id"),"result_encoding":encoding or "EXPANDED_V1","terminal_override_count":len(obj.get("terminal_overrides") or {})}
     except Exception as e:
         return {},{"status":"INVALID","path":str(path),"reason":f"{type(e).__name__}:{str(e)[:160]}"}
 
