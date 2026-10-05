@@ -34,7 +34,7 @@ GATE_FILES={
  "account_adapter":ROOT/"account_provider_adapter_contract.json",
 }
 OFFICIAL_HALT_GUARD=ROOT/"canonical_official_source_guard.json"
-HALT_GUARD_MAX_AGE_SECONDS=int(os.getenv("XRAY_HALT_GUARD_MAX_AGE_SECONDS","5400"))
+HALT_GUARD_MAX_AGE_SECONDS=int(os.getenv("XRAY_HALT_GUARD_MAX_AGE_SECONDS","900"))
 
 def blob_sha(p:Path):
     b=p.read_bytes()
