@@ -6,6 +6,7 @@ import pandas as pd
 import alpha_semantics as alpha
 import final_tech_shadow as ft
 import build_candidate_legal_guard as legal_guard_mod
+import build_current_terminal as terminal_mod
 import regime_breadth_shadow as rb
 from final_tech_shadow import eval_one, load_lifecycle_registry, persist_lifecycle_registry
 
@@ -193,6 +194,21 @@ def test_lifecycle_persistence_roundtrip():
         final.write_text(json.dumps({"lifecycle_registry":stale}))
         assert load_lifecycle_registry(final,side)==reg
 
+def test_candidate_local_legal_unknown_does_not_globally_suppress():
+    ft={
+      "policy_semantics_exact":True,
+      "lifecycle_semantics_exact":True,
+      "candidate_legal_guard_exact_binding":True,
+      "detailed_legal_review_exact":False,
+      "results":{
+        "GOOD|D":{"candidate_legal_review_status":"PASS"},
+        "OTHER|D":{"candidate_legal_review_status":"UNKNOWN"},
+      },
+    }
+    safety={"status":"PASS"}
+    assert terminal_mod.candidate_local_research_ready({"GOOD|D"},safety,ft,True) is True
+    assert terminal_mod.candidate_local_research_ready({"GOOD|D","OTHER|D"},safety,ft,True) is False
+
 def test_candidate_legal_guard_scope_is_candidate_local():
     deep={"results":{
       "A":{"A":{"pool":True},"B":{},"D":{}},
@@ -339,8 +355,9 @@ def test_workflow_race_and_pre_mc_freeze_contracts():
     ca_block=ftsrc[ftsrc.index("def candidate_corporate_action_reconcile"):ftsrc.index("def _normalize_sina")]
     assert "UNKNOWN_PRIMARY_CORPORATE_ACTION_EVIDENCE_REQUIRED" not in ca_block
     assert "return x2.reset_index(drop=True),status,events,True" in ca_block
-    assert 'ft.get("detailed_legal_review_exact") is True' in term_src
-    assert '"candidate_detailed_legal_review_exact"' in term_src
+    assert 'ft.get("candidate_legal_guard_exact_binding") is True' in term_src
+    assert '"candidate_pre_g9_legal_pass"' in term_src
+    assert '"all_finalists_detailed_legal_review_exact"' in term_src
 
     pre=(REPO/".github/workflows/xray-canonical-current-pre-mc.yml").read_text()
     marker="- name: Completed-session epoch rollover guard"; assert marker in pre
@@ -362,13 +379,14 @@ def main():
     test_regime_interval_bounds_and_finalist_gate()
     test_corporate_action_absence_vs_real_scale_break()
     test_lifecycle_expiry_and_frozen_stability(); test_lifecycle_regime_revalidation_persists_without_pass(); test_lifecycle_persistence_roundtrip()
+    test_candidate_local_legal_unknown_does_not_globally_suppress()
     test_candidate_legal_guard_scope_is_candidate_local(); test_candidate_legal_guard_phrase_severity()
     test_workflow_race_and_pre_mc_freeze_contracts()
     print({"status":"PASS","tests":["R1_NO_FUTURE_MUTATION","R1_PLUS2_CONFIRMATION_NO_LEAK",
       "RESISTANCE_ROLE_CHANGE_STATE_MACHINE","FINAL_HISTORY_OHLCV_BINDING","REGIME_INTERVAL_BOUNDS_AND_FINALIST_GATE","CORPORATE_ACTION_NONE_VS_SCALE_BREAK_FAIL_CLOSED","RETEST_WINDOW_EXPIRES_AFTER_5","MODEL_HORIZON_EXPIRES_AFTER_8",
       "FROZEN_LEVELS_NEXT_ASOF_STABLE","LIFECYCLE_REGIME_REVALIDATION_PERSISTS","LIFECYCLE_PERSISTENCE_ROUNDTRIP",
       "FINAL_ALPHA_STALE_SOURCE_GUARD","PARTIAL_COVERAGE_DOES_NOT_GLOBAL_ABORT",
-      "DETAILED_FINALIST_LEGAL_FAIL_CLOSED","FINAL_VERIFIED_MARKET_GAP_NOT_DOUBLE_BLOCKED","DETAILED_LEGAL_GUARD_EXACT_SOURCE_BINDING","DETAILED_LEGAL_GUARD_POLICY_BINDING","DETAILED_LEGAL_GUARD_NONCIRCULAR_LIFECYCLE","DETAILED_LEGAL_GUARD_LIFECYCLE_FALLBACK_PARITY","DETAILED_LEGAL_GUARD_BOILERPLATE_SEVERITY","DETAILED_LEGAL_GUARD_ANNUAL_PLUS_QUARTERLY_SCOPE","DETAILED_LEGAL_GUARD_EMPTY_SCOPE_NO_NETWORK","TERMINAL_DETAILED_LEGAL_FULL_E2E_BLOCKER","DETAILED_LEGAL_GUARD_NO_SELF_TRIGGER",
+      "DETAILED_FINALIST_LEGAL_FAIL_CLOSED","CANDIDATE_LOCAL_LEGAL_UNKNOWN_ISOLATION","FINAL_VERIFIED_MARKET_GAP_NOT_DOUBLE_BLOCKED","DETAILED_LEGAL_GUARD_EXACT_SOURCE_BINDING","DETAILED_LEGAL_GUARD_POLICY_BINDING","DETAILED_LEGAL_GUARD_NONCIRCULAR_LIFECYCLE","DETAILED_LEGAL_GUARD_LIFECYCLE_FALLBACK_PARITY","DETAILED_LEGAL_GUARD_BOILERPLATE_SEVERITY","DETAILED_LEGAL_GUARD_ANNUAL_PLUS_QUARTERLY_SCOPE","DETAILED_LEGAL_GUARD_EMPTY_SCOPE_NO_NETWORK","TERMINAL_DETAILED_LEGAL_FULL_E2E_BLOCKER","DETAILED_LEGAL_GUARD_NO_SELF_TRIGGER",
       "POST_MC_PARTIAL_COVERAGE_GATE","PRE_MC_COMPLETED_ASOF_FREEZE_TRUTH_TABLE"]})
 
 if __name__=="__main__": main()
