@@ -67,6 +67,10 @@ def _load_candidate_legal_guard(asof):
             return {},None,"CANDIDATE_LEGAL_GUARD_UNKNOWN_POLICY_MISMATCH"
         expected_deep=blob_sha(DEEP)
         expected_fc=blob_sha(FAMILY_C) if FAMILY_C is not None and FAMILY_C.exists() else None
+        policy_path=ROOT/"chatgpt_compiled_policy_v3.json"
+        if (not policy_path.exists()
+            or blob_sha(policy_path)!="10d7af14870dfac0dc4566595d95a06f3faa854d"):
+            return {},None,"CANDIDATE_LEGAL_GUARD_CURRENT_POLICY_AUTHORITY_DRIFT"
         if j.get("compiled_policy_path")!="nasdaq-xray/chatgpt_compiled_policy_v3.json":
             return {},None,"CANDIDATE_LEGAL_GUARD_POLICY_PATH_MISMATCH"
         if j.get("compiled_policy_blob_sha")!="10d7af14870dfac0dc4566595d95a06f3faa854d":
