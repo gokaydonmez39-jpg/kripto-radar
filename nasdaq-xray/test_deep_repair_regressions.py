@@ -162,6 +162,17 @@ def test_lifecycle_expiry_and_frozen_stability():
         assert a["levels"][k]==b["levels"][k]==float(fs[k]),(k,a["levels"],b["levels"],fs)
     assert a["setup_id"]==b["setup_id"]==fs["setup_id"],(a,b)
 
+def test_lifecycle_regime_revalidation_persists_without_pass():
+    d=frame(300); ti=len(d)-1
+    fs=frozen(d,ti,"TEST-REGIME")
+    fail=eval_one("TEST","D",fs["source_geometry"],d,"CLEAN_DISCOVERY",frozen=fs,
+                  recorded_before=True,regime_finalist_status="FAIL")
+    assert fail["pre_g9_tech_pass"] is False and fail["result"]=="WATCH_REGIME_REVALIDATION_REQUIRED",fail
+    unk=eval_one("TEST","D",fs["source_geometry"],d,"CLEAN_DISCOVERY",frozen=fs,
+                 recorded_before=True,regime_finalist_status="UNKNOWN")
+    assert unk["pre_g9_tech_pass"] is False and unk["result"]=="WATCH_REGIME_UNKNOWN",unk
+    assert ft.lifecycle_state_persists(fail["result"]) and ft.lifecycle_state_persists(unk["result"])
+
 def test_lifecycle_persistence_roundtrip():
     reg={"schema":"XRAY_CANDIDATE_LIFECYCLE_REGISTRY_V1","task_id":"6a825366222081918997094d76e6ae46",
       "asof_et":"2026-10-02","execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
@@ -240,10 +251,14 @@ def test_workflow_race_and_pre_mc_freeze_contracts():
     assert '"stage1_unknown":int(st["unknown_count"])' in term_src
     assert '"breadth_missing":int(rg["breadth_missing_count"])' in term_src
     assert '"regime_unknown":0 if rg.get("regime") in {"STRONG","MIXED","WEAK"} else 1' in term_src
+    assert '"lifecycle_regime_unknown":int(ft.get("regime_revalidation_unknown_count",0))' in term_src
     deep_src=(ROOT/"deep_pre_r1_shadow.py").read_text()
     assert '"regime_finalist_pass":regime_finalist_pass' in deep_src
     assert 'outres[s].get("regime_finalist_pass") is True' in deep_src
+    assert '"lifecycle_revalidation":dict(sorted(lifecycle_revalidation.items()))' in deep_src
+    assert "history_syms=sorted(set(syms)|set(lifecycle_scope))" in deep_src
     assert "_regime_finalist_allowed" in ftsrc
+    assert "WATCH_REGIME_REVALIDATION_REQUIRED" in ftsrc and "WATCH_REGIME_UNKNOWN" in ftsrc
     assert "candidate_local_research_ready" in term_src
     assert "PARTIAL_UNKNOWN" in term_src
 
@@ -266,11 +281,11 @@ def main():
     test_final_history_normalizer_preserves_ohlcv()
     test_regime_interval_bounds_and_finalist_gate()
     test_corporate_action_absence_vs_real_scale_break()
-    test_lifecycle_expiry_and_frozen_stability(); test_lifecycle_persistence_roundtrip()
+    test_lifecycle_expiry_and_frozen_stability(); test_lifecycle_regime_revalidation_persists_without_pass(); test_lifecycle_persistence_roundtrip()
     test_workflow_race_and_pre_mc_freeze_contracts()
     print({"status":"PASS","tests":["R1_NO_FUTURE_MUTATION","R1_PLUS2_CONFIRMATION_NO_LEAK",
       "RESISTANCE_ROLE_CHANGE_STATE_MACHINE","FINAL_HISTORY_OHLCV_BINDING","REGIME_INTERVAL_BOUNDS_AND_FINALIST_GATE","CORPORATE_ACTION_NONE_VS_SCALE_BREAK_FAIL_CLOSED","RETEST_WINDOW_EXPIRES_AFTER_5","MODEL_HORIZON_EXPIRES_AFTER_8",
-      "FROZEN_LEVELS_NEXT_ASOF_STABLE","LIFECYCLE_PERSISTENCE_ROUNDTRIP",
+      "FROZEN_LEVELS_NEXT_ASOF_STABLE","LIFECYCLE_REGIME_REVALIDATION_PERSISTS","LIFECYCLE_PERSISTENCE_ROUNDTRIP",
       "FINAL_ALPHA_STALE_SOURCE_GUARD","PARTIAL_COVERAGE_DOES_NOT_GLOBAL_ABORT",
       "POST_MC_PARTIAL_COVERAGE_GATE","PRE_MC_COMPLETED_ASOF_FREEZE_TRUTH_TABLE"]})
 
