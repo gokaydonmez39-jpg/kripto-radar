@@ -387,7 +387,8 @@ def main():
     assert int((er_cov.get("stage1") or {}).get("count",-1))==len(stage1_unknown)
     assert set((er_cov.get("breadth") or {}).get("symbols") or [])==breadth_missing
     assert int((er_cov.get("breadth") or {}).get("count",-1))==len(breadth_missing)
-    assert er.get("coverage_complete") is (not (stage1_unknown or breadth_missing or set((er_cov.get("deep_history") or {}).get("symbols") or [])))
+    assert er.get("upstream_coverage_complete") is (not (stage1_unknown or breadth_missing or set((er_cov.get("deep_history") or {}).get("symbols") or [])))
+    assert er.get("request_scope_complete") is True
     assert er["weekly_scope_count"]==len(trigger_weekly) and set(er["weekly_scope"])==trigger_weekly
     assert set(er.get("current_weekly_scope") or [])==weekly
     assert er.get("compiled_policy_hash")==POLICY_HASH and er.get("compiled_policy_version")=="C4.17"
