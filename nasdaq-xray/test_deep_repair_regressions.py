@@ -433,9 +433,10 @@ def test_workflow_race_and_pre_mc_freeze_contracts():
     assert "XRAY_RESOLVER_REQUEST_CHUNK_V1" in resolver_src
     assert "CHUNK_SIZE=max(1,min(100" in resolver_src
     assert '"request_blob_sha":request_blob' in resolver_src
-    assert "canonical_current_resolver_chunk_manifest.json" in pre
-    assert 'canonical_current_resolver_chunk_[0-9][0-9][0-9][0-9].json' in pre
-    assert 'rebuilt==q["symbols"]' in pre
+    pre_mc_wf=(REPO/".github/workflows/xray-canonical-current-pre-mc.yml").read_text()
+    assert "canonical_current_resolver_chunk_manifest.json" in pre_mc_wf
+    assert 'canonical_current_resolver_chunk_[0-9][0-9][0-9][0-9].json' in pre_mc_wf
+    assert 'rebuilt==q["symbols"]' in pre_mc_wf
 
     # C4.17 detailed legal/filing review is finalist-local. The global LEGAL
     # phase is only a shell/identity screen and may never by itself authorize R92.
