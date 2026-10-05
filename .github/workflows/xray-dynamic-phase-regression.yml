@@ -2,7 +2,7 @@ name: XRAY Dynamic Phase Regression
 
 on:
   push:
-    branches: [main]
+    branches: [main, "xray-postmc-cache-binding-20261005"]
     paths:
       - "nasdaq-xray/price_dv20_phase.py"
       - "nasdaq-xray/price_dv20_recover_from_fullstate.py"
