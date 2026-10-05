@@ -421,7 +421,11 @@ def main():
     current_confirmed|={f"{s}|A" for s in dp.get("a_geometry_rs_event_pass",[])}
     current_confirmed|={f"{s}|B" for s in dp.get("b_breakout_rs_event_pass",[])}
     current_confirmed|={f"{s}|D" for s in dp.get("d_dk3_pre_r1",[])}
-    current_confirmed|={f"{s}|C" for s in (fc.get("confirmed") or {})}
+    c_regime_confirmed={
+        s for s in (fc.get("confirmed") or {})
+        if ((dp.get("results") or {}).get(s) or {}).get("regime_finalist_pass") is True
+    }
+    current_confirmed|={f"{s}|C" for s in c_regime_confirmed}
     assert ft.get("source_deep_blob_sha")==sh["deep"] and ft.get("source_family_c_blob_sha")==sh["family_c"]
     assert ft.get("source_legal_blob_sha")==sh["legal"]
     assert ft.get("source_compiled_policy_hash")==POLICY_HASH and ft.get("source_compiled_policy_version")=="C4.17"
@@ -543,6 +547,7 @@ def main():
       "legal_unknown":int((lg["counts"] or {}).get("UNKNOWN_LEGAL",0)),
       "stage1_unknown":int(st["unknown_count"]),
       "breadth_missing":int(rg["breadth_missing_count"]),
+      "regime_unknown":0 if rg.get("regime") in {"STRONG","MIXED","WEAK"} else 1,
       "deep_history_unknown":int(dp["unknown_history_count"]),
       "affected_event_unknown":len(affected_event_unknown),
       "family_c_history_unknown":len(family_c_unknown),
@@ -583,7 +588,7 @@ def main():
         "deep_A_confirmed":len(dp.get("a_geometry_rs_event_pass",[])),
         "deep_B_breakout_confirmed":len(dp.get("b_breakout_rs_event_pass",[])),
         "deep_B_armed_non_r92":len(dp.get("b_armed_rs_event_pass",[])),
-        "deep_C_confirmed":len(fc.get("confirmed") or {}),
+        "deep_C_confirmed":len(c_regime_confirmed),
         "deep_D_confirmed":len(dp.get("d_dk3_pre_r1",[])),
         "final_confirmed_candidates":len(confirmed),
         "pre_g9_tech_pass_before_halt_guard":len(raw_pre),
@@ -594,6 +599,7 @@ def main():
         "mc_fallback_watch":sorted(watch),"mc_fallback_fail":sorted(fallback_fail),"history_pass":sorted(hpass),"history_fail":sorted(hfail),
         "legal_pass":sorted(lpass),"weekly_pass":sorted(weekly),
         "current_confirmed_family_candidates":sorted(current_confirmed),
+        "family_c_regime_finalist_pass":sorted(c_regime_confirmed),
         "lifecycle_backed_family_candidates":sorted(lifecycle_backed),
         "confirmed_family_candidates":sorted(confirmed),
         "pre_g9_tech_pass_before_halt_guard":sorted(raw_pre),
