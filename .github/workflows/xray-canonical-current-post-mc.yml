@@ -287,8 +287,12 @@ jobs:
           assert s["input_current_core_count"]==l["counts"]["PASS_LEGAL"]
           assert r["current_core_count"]==l["counts"]["PASS_LEGAL"]
           assert d["input_weekly_pass_count"]==s["weekly_pass_count"]
-          assert e["weekly_scope_count"]==s["weekly_pass_count"]
-          assert set(e["weekly_scope"])==set(s["weekly_pass"])
+          trigger_weekly=set(s.get("recent_weekly_scope") or s["weekly_pass"])
+          assert d["input_weekly_trigger_scope_count"]==len(trigger_weekly)
+          assert set(d.get("weekly_trigger_scope") or [])==trigger_weekly
+          assert e["weekly_scope_count"]==len(trigger_weekly)
+          assert set(e["weekly_scope"])==trigger_weekly
+          assert set(e.get("current_weekly_scope") or [])==set(s["weekly_pass"])
           fresh=set(e.get("fresh_geometry_scope") or [])
           lifecycle=set(e.get("lifecycle_scope") or [])
           geometry=set(e["geometry_scope"])
@@ -296,7 +300,7 @@ jobs:
           assert fresh<=set(e["weekly_scope"])
           assert lifecycle<=set(l["pass_symbols"])
           assert geometry==fresh|lifecycle
-          print({"asof":asof,"history_pass":h["pass_count"],"legal_pass":l["counts"]["PASS_LEGAL"],"weekly_pass":s["weekly_pass_count"],"regime":r["regime"],"A":d["a_geometry_count"],"B_breakout":d["b_breakout_count"],"B_armed":d["b_armed_count"],"D":d["d_geometry_rs_count"],"fresh_geometry":len(fresh),"lifecycle_scope":len(lifecycle),"event_request_geometry":e["geometry_scope_count"]})
+          print({"asof":asof,"history_pass":h["pass_count"],"legal_pass":l["counts"]["PASS_LEGAL"],"weekly_pass":s["weekly_pass_count"],"weekly_trigger_scope":len(trigger_weekly),"regime":r["regime"],"A":d["a_geometry_count"],"B_breakout":d["b_breakout_count"],"B_armed":d["b_armed_count"],"D":d["d_geometry_rs_count"],"fresh_geometry":len(fresh),"lifecycle_scope":len(lifecycle),"event_request_geometry":e["geometry_scope_count"]})
           PY
       - name: Commit current post-MC artifacts
         if: steps.mc.outputs.ready == 'true'
