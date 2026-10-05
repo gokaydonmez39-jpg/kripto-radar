@@ -12,7 +12,7 @@ from zoneinfo import ZoneInfo
 import akshare as ak
 import pandas as pd
 import pandas_market_calendars as mcal
-from alpha_semantics import split_consistent_history, apply_split_events, mechanical_split_suspects
+from alpha_semantics import apply_split_events, mechanical_split_suspects, mechanical_scale_breaks
 
 ROOT=Path(__file__).resolve().parent
 STAGE1=Path(os.getenv("XRAY_REGIME_STAGE1", str(ROOT/"canonical_current_stage1.json")))
@@ -169,12 +169,19 @@ def main():
     if "QQQ" not in data:
         regime="UNKNOWN";q={}
     else:
-        qdf,qqq_ca_status,qqq_split_events=split_consistent_history("QQQ",data["QQQ"])
-        if not str(qqq_ca_status).startswith("PASS"):
-            missing["QQQ"]="CORPORATE_ACTION_UNKNOWN:"+str(qqq_ca_status)
+        # Regime history is close-only (Sina or Yahoo fallback). Do not pass it
+        # through the OHLC split reconciler, which requires an open column.
+        # For regime math we need only the last 200 sessions; a severe recent
+        # scale break is fail-closed, while ancient artifacts are irrelevant.
+        qdf=data["QQQ"].reset_index(drop=True)
+        qqq_breaks=mechanical_scale_breaks(qdf,260)
+        if qqq_breaks:
+            qqq_ca_status="UNKNOWN_RECENT_QQQ_SCALE_BREAK"
+            missing["QQQ"]="CORPORATE_ACTION_UNKNOWN:"+qqq_ca_status
             regime="UNKNOWN";q={}
         else:
-            qdf=qdf.reset_index(drop=True);c=qdf["close"]
+            qqq_ca_status="PASS_NO_RECENT_QQQ_SCALE_BREAK"
+            c=qdf["close"]
             sma50=c.rolling(50).mean(); sma200=c.rolling(200).mean()
             slope20=float(sma50.iloc[-1]-sma50.iloc[-21]) if len(sma50)>=21 else float("nan")
             qclose=float(c.iloc[-1])
