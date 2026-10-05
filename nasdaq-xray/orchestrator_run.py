@@ -14,14 +14,16 @@ ROOT=Path(__file__).resolve().parent
 STATE=ROOT/"orchestrator_state.json"
 TASK_ID="6a825366222081918997094d76e6ae46"
 
-PIPELINE_SCRIPTS=[
+ENGINE_FILES=[
  "sina_stage.py",
  "mc_zero_key.py",
  "production_core_build.py",
+ "alpha_semantics.py",
  "stage1_shadow.py",
  "regime_breadth_shadow.py",
  "deep_pre_r1_shadow.py",
- "final_tech_shadow.py",
+ "history_official_identity_evidence.json",
+ "requirements-runtime.txt",
 ]
 
 def readj(path):
@@ -35,7 +37,7 @@ def sha_file(path):
 
 def stable_engine_hash():
     h=hashlib.sha256()
-    for name in PIPELINE_SCRIPTS:
+    for name in ENGINE_FILES:
         p=ROOT/name
         h.update(name.encode()); h.update(b"\0"); h.update(p.read_bytes()); h.update(b"\0")
     return h.hexdigest()
@@ -79,77 +81,85 @@ def main():
         return
 
     cand_hash=sha_file("sina_candidates.json")
-    event_hash=sha_file("event_official_state.json")
     engine_hash=stable_engine_hash()
     old=readj("orchestrator_state.json")
-    fingerprint=hashlib.sha256((cand_hash+"|"+event_hash+"|"+engine_hash).encode()).hexdigest()
+    fingerprint=hashlib.sha256((cand_hash+"|"+engine_hash).encode()).hexdigest()
 
-    # Same completed epoch + same official-event evidence + same engine code => zero-data-plane no-op.
-    if old.get("fingerprint")==fingerprint and old.get("status") in {"ENGINE_PASS_FULL_GO_BLOCKED","ENGINE_PASS_NO_CONFIRMED_SETUP"}:
-        print("XRAY_ORCHESTRATOR=NOOP_UNCHANGED_EPOCH")
+    # Root is a data-plane support layer, not canonical candidate authority.
+    # It must never depend on stale/current Canonical Event, Legal, lifecycle or
+    # finalist artifacts from a different ASOF.
+    if old.get("fingerprint")==fingerprint and old.get("status")=="DATA_PLANE_PASS_CANONICAL_DOWNSTREAM_DEFERRED":
+        print("XRAY_ORCHESTRATOR=NOOP_UNCHANGED_DATA_PLANE")
         return
 
-    # 2) Fail-closed zero-key MC and autonomous shadow core.
+    # 2) Fail-closed zero-key MC and autonomous support core.
     run("mc_zero_key.py")
     run("production_core_build.py")
     core=readj("production_core_state.json")
 
-    # 3) Technical stack on one identical core state.
+    # 3) Root-owned technical diagnostics only. Deep runs geometry-only so this
+    # layer never consumes Canonical Event/Legal/Final evidence. All event,
+    # detailed legal, R1/RR, lifecycle, official-safety and candidate authority
+    # remains exclusively in the canonical Post-MC/Final chain.
     common_env={"XRAY_MC_STATE":str(ROOT/"production_core_state.json")}
     run("stage1_shadow.py",common_env)
     run("regime_breadth_shadow.py",common_env)
-    run("deep_pre_r1_shadow.py")
-    run("final_tech_shadow.py")
+    run("deep_pre_r1_shadow.py",{
+        "XRAY_DEEP_GEOMETRY_ONLY":"1",
+        "XRAY_STAGE1_STATE":str(ROOT/"stage1_shadow.json"),
+        "XRAY_DEEP_OUT":str(ROOT/"deep_pre_r1_shadow.json"),
+    })
 
     st1=readj("stage1_shadow.json")
     rg=readj("regime_breadth_shadow.json")
     deep=readj("deep_pre_r1_shadow.json")
-    final=readj("final_tech_shadow.json")
     mc=readj("mc_zero_key_state.json")
 
-    pre_g9=final.get("pre_g9_tech_pass") or []
-    event_fresh=bool(deep.get("event_state_fresh"))
-    final_unknown=[k for k,v in (final.get("results") or {}).items() if str(v.get("result",""))=="UNKNOWN"]
     coverage_faults=[]
     if int(ss.get("unknown_count",0) or 0)>0: coverage_faults.append("HARD_GATE_UNKNOWN_REMAINS")
     if int(mc.get("unresolved_count",0) or 0)>0: coverage_faults.append("MC_UNRESOLVED_REMAINS")
     if int(st1.get("unknown_count",0) or 0)>0: coverage_faults.append("STAGE1_UNKNOWN_REMAINS")
     if int(rg.get("breadth_missing_count",0) or 0)>0: coverage_faults.append("BREADTH_MISSING_REMAINS")
     if int(deep.get("unknown_history_count",0) or 0)>0: coverage_faults.append("DEEP_HISTORY_UNKNOWN_REMAINS")
-    if final_unknown: coverage_faults.append("FINAL_TECH_UNKNOWN_REMAINS")
-    if not event_fresh: coverage_faults.append("OFFICIAL_EVENT_STATE_STALE_OR_MISSING")
 
     blockers=list(coverage_faults)
+    blockers.append("CANONICAL_EVENTS_LEGAL_R1_RR_LIFECYCLE_DEFERRED")
     blockers.append("G9_BLOCKED_NO_AUTHORIZED_ZERO_DOLLAR_RUNTIME_SOURCE")
     blockers.append("ACCOUNT_GATE_UNKNOWN")
     blockers.append("OBSERVED_IPHONE_SIGNAL_DELIVERY_UNPROVEN")
 
-    if coverage_faults:
-        status="ENGINE_PARTIAL_UNKNOWN"
-    else:
-        status="ENGINE_PASS_FULL_GO_BLOCKED" if pre_g9 else "ENGINE_PASS_NO_CONFIRMED_SETUP"
+    status="DATA_PLANE_PARTIAL_UNKNOWN" if coverage_faults else "DATA_PLANE_PASS_CANONICAL_DOWNSTREAM_DEFERRED"
     out={
       "schema":"XRAY_ORCHESTRATOR_V1","task_id":TASK_ID,
       "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
       "updated_at_utc":datetime.now(timezone.utc).isoformat(),
       "status":status,"asof_et":ss.get("asof_et"),
       "fingerprint":fingerprint,
-      "candidate_hash":cand_hash,"event_hash":event_hash,"engine_hash":engine_hash,
+      "candidate_hash":cand_hash,"engine_hash":engine_hash,
       "history":{"status":ss.get("status"),"queue_total":ss.get("queue_total"),"counts":ss.get("counts")},
       "mc":{"current_core_count":core.get("current_core_count"),"unresolved_count":mc.get("unresolved_count"),"definitive_fail_count":mc.get("definitive_fail_count")},
       "stage1":{"weekly_pass_count":st1.get("weekly_pass_count"),"unknown_count":st1.get("unknown_count")},
       "regime":{"regime":rg.get("regime"),"breadth_missing_count":rg.get("breadth_missing_count"),"breadth_above_sma50_pct":rg.get("breadth_above_sma50_pct"),"nh20":rg.get("nh20"),"nl20":rg.get("nl20")},
-      "deep":{"a_pass":deep.get("a_geometry_rs_event_pass") or [],"b_breakout_pass":deep.get("b_breakout_rs_event_pass") or [],"b_armed":deep.get("b_armed_rs_event_pass") or [],"d_pass":deep.get("d_dk3_pre_r1") or [],"event_state_fresh":event_fresh},
-      "final_tech":{"pre_g9_tech_pass":pre_g9,"watch":final.get("watch") or [],"fail":final.get("fail") or [],"unknown":final_unknown},
+      "deep_geometry":{
+        "a_geometry_count":deep.get("a_geometry_count"),
+        "b_breakout_count":deep.get("b_breakout_count"),
+        "b_armed_count":deep.get("b_armed_count"),
+        "d_geometry_count":deep.get("d_geometry_rs_count"),
+        "unknown_history_count":deep.get("unknown_history_count"),
+        "event_and_regime_finalist_authority":"DEFERRED_TO_CANONICAL_CHAIN"
+      },
+      "final_tech":{"status":"DEFERRED_TO_CANONICAL_FINAL_FACTORY","pre_g9_tech_pass":[]},
       "coverage_faults":coverage_faults,
       "g9_status":"BLOCKED",
       "account_gate":"UNKNOWN_NOT_CONFIGURED",
       "full_go_blockers":blockers,
-      "authority":"EXTERNAL_AUTONOMOUS_SHADOW_DATA_PLANE; CHATGPT_CANONICAL_STATE_UNCHANGED"
+      "authority":"EXTERNAL_AUTONOMOUS_SUPPORT_DATA_PLANE_ONLY; CANONICAL_CANDIDATE_AUTHORITY_UNCHANGED"
     }
     STATE.write_text(json.dumps(out,indent=2,sort_keys=True)+"\n")
     print("XRAY_ORCHESTRATOR="+status)
-    print(json.dumps({"asof":out["asof_et"],"core":core.get("current_core_count"),"weekly":st1.get("weekly_pass_count"),"regime":rg.get("regime"),"pre_g9":pre_g9,"blockers":blockers},sort_keys=True))
+    print(json.dumps({"asof":out["asof_et"],"core":core.get("current_core_count"),
+                      "weekly":st1.get("weekly_pass_count"),"regime":rg.get("regime"),
+                      "coverage_faults":coverage_faults},sort_keys=True))
 
 if __name__=="__main__":
     main()
