@@ -18,7 +18,7 @@ from deep_pre_r1_shadow import evaluate_recent_families
 import stage1_shadow as stage1_mod
 import history_phase as history_mod
 from stage1_shadow import recent_weekly_context
-from family_c_engine import eval_event
+from family_c_engine import eval_event,candidate_corporate_action_reconcile as family_c_ca_reconcile
 from build_current_event_request import lifecycle_scope_from_final,event_geometry_scope
 from regime_breadth_shadow import close_only_scale_breaks,new_high_low20_flags
 
@@ -529,6 +529,16 @@ def main():
     reach=eval_one("REACH","B",rg,rf,"CLEAN_DISCOVERY",frozen=frozen,recorded_before=True)
     assert reach["result"]=="PRE_G9_TECH_PASS" and reach["pre_g9_tech_pass"] is True,reach
 
+    # Missing inherited Stage1 corporate-action metadata is not itself evidence
+    # of a corporate action. Family C must independently validate price-scale
+    # integrity and remain fail-closed only on explicit non-PASS evidence.
+    fc=frame(300)
+    fc[["open","high","low","close"]]=[100.0,101.0,99.0,100.0]
+    _,fs,fe,fl=family_c_ca_reconcile("TEST",fc,{})
+    assert fs=="PASS_NO_LOCAL_SPLIT_DISCONTINUITY" and fe==[] and fl is False,(fs,fe,fl)
+    _,fs,fe,fl=family_c_ca_reconcile("TEST",fc,{"corporate_action_status":"UNKNOWN_EXPLICIT"})
+    assert fs=="UNKNOWN_EXPLICIT" and fl is False,(fs,fl)
+
     assert _is_depositary_security_name("Example Corp - American Depositary Shares") is True
     assert _is_depositary_security_name("Example Corp - Common Stock") is False
 
@@ -537,7 +547,7 @@ def main():
       "R1_STRUCTURAL_TRIGGER_MINUS1","R1_ENTRY_OVERLAP","EXTENSION_RESET","EXTENSION_TIGHT_BASE_RESET","RETEST_BAR","FAMILY_A_TRIGGER_MINUS1_LOW","SETUP_ID_STABLE",
       "B_RECENT_TRIGGER_PERSISTENCE","DEEP_RECENT_TRIGGER_INDEPENDENT_OF_CURRENT_STAGE1","A_STAGE1_ASOF_TRIGGER","MECHANICAL_SCALE_BREAK_GUARD","BREADTH_CLOSE_ONLY_SCALE_GUARD","SPLIT_ONLY_RECONCILIATION","SPLIT_RAW_CROSSCHECK","UNDECLARED_SCALE_MOVE_MARKET_GAP","HISTORICAL_DISCOVERY_RESEARCH_ELIGIBLE_NO_R92_BACKFILL","CHASE_FROZEN_RETEST_RECOVERY","ANCHOR_AVAILABLE_S0_CHRONOLOGY",
       "ADR_RATIO_FAIL_CLOSED_CLASSIFICATION","FINALIST_FRACTIONAL_SPLIT_VERIFICATION","SYNTHETIC_PRICE_DISCOVERY_ORANGE_CAP","PROSPECTIVE_LIFECYCLE_PERSISTENCE","FROZEN_LIFECYCLE_EVENT_SCOPE","ANCIENT_SCALE_BREAK_OUTSIDE_TECH_HORIZON","TRIGGER_TIME_WEEKLY_SCOPE","BREADTH_NH20_NL20_PRIOR20_STRICT",
-      "HISTORY_PASS_EXACT_ASOF_CACHE_BINDING","FAMILY_C_REACTION_HIGH_PIVOT","FAMILY_C_PERSISTENT_GAP_FLOOR","FULL_R1_TO_PRE_G9_REACHABILITY","SPLIT_RECONCILIATION_ACTIVE_HORIZON_ONLY"
+      "HISTORY_PASS_EXACT_ASOF_CACHE_BINDING","FAMILY_C_REACTION_HIGH_PIVOT","FAMILY_C_PERSISTENT_GAP_FLOOR","FAMILY_C_MISSING_INHERITED_CA_NOT_AUTO_UNKNOWN","FAMILY_C_EXPLICIT_CA_UNKNOWN_FAIL_CLOSED","FULL_R1_TO_PRE_G9_REACHABILITY","SPLIT_RECONCILIATION_ACTIVE_HORIZON_ONLY"
     ]})
 
 if __name__=="__main__":
