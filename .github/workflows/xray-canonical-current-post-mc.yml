@@ -27,12 +27,10 @@ permissions:
   contents: write
 
 concurrency:
-  # V3 cuts over from stale V1/V2 HISTORY runs after the bounded-network repair.
-  # Older generations are commit-time stale by workflow SHA and cannot publish.
+  # Only production-relevant source/authority changes trigger this workflow.
+  # A newer exact authority makes the older run non-publishable, so latest wins.
   group: xray-canonical-current-post-mc-v8
-  # Preserve single-writer ordering but never preempt an exact-bound epoch in flight.
-  # New triggers queue and the freeze/no-op guards collapse redundant work.
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   post-mc:
