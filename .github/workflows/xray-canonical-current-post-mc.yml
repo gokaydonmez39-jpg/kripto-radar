@@ -199,12 +199,17 @@ jobs:
           else:
               fp=None
           if fp is None:
+              duplicate=bool(len(exact)>1 or len(semantic)>1)
               print("ready=false")
+              print("binding_fault="+("true" if duplicate else "false"))
+              print("pending_reason="+("DUPLICATE_MC_BINDING" if duplicate else "EXACT_MC_NOT_COMMITTED_YET"))
               print("expected_asof="+str(expected_asof))
               print("exact_binding_matches="+str(len(exact)))
               print("semantic_binding_matches="+str(len(semantic)))
           else:
               print("ready=true")
+              print("binding_fault=false")
+              print("pending_reason=NONE")
               print("path="+fp)
               print("asof="+expected_asof)
               try:
@@ -220,12 +225,16 @@ jobs:
           cat /tmp/mc_out >> "$GITHUB_OUTPUT"
           cat /tmp/mc_out
 
-      - name: Fail closed when exact MC binding is unavailable
-        if: steps.freeze.outputs.frozen != 'true' && steps.mc.outputs.ready != 'true'
+      - name: Fail closed on ambiguous MC binding
+        if: steps.freeze.outputs.frozen != 'true' && steps.mc.outputs.ready != 'true' && steps.mc.outputs.binding_fault == 'true'
         shell: bash
         run: |
-          echo "XRAY_POST_MC_BINDING=FAIL_CLOSED" >&2
+          echo "XRAY_POST_MC_BINDING=FAIL_CLOSED_DUPLICATE" >&2
           exit 1
+
+      - name: Healthy no-op while resolver or MC commit is pending
+        if: steps.freeze.outputs.frozen != 'true' && steps.mc.outputs.ready != 'true' && steps.mc.outputs.binding_fault != 'true'
+        run: echo "XRAY_POST_MC=BLOCKED_UPSTREAM_PENDING reason=${{ steps.mc.outputs.pending_reason }}"
 
       - name: Reuse exact same-ASOF HISTORY and LEGAL
         id: reuse_hl

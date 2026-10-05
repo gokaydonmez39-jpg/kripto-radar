@@ -418,12 +418,14 @@ def test_workflow_race_and_pre_mc_freeze_contracts():
     assert 'r.get(k)!=v for k,v in current_sources.items()' in final_wf
 
     post=(REPO/".github/workflows/xray-canonical-current-post-mc.yml").read_text()
-    assert "Fail closed when exact MC binding is unavailable" in post
+    assert "Fail closed on ambiguous MC binding" in post
     post_stale=post[post.index('changed="$(git diff'):]
     for p in ("nasdaq-xray/canonical_current_master_manifest.json","nasdaq-xray/canonical_current_price_dv20.json"):
         assert p in post_stale,("POST_MC_UPSTREAM_STALE_GUARD_MISSING",p)
-    assert "steps.freeze.outputs.frozen != 'true' && steps.mc.outputs.ready != 'true'" in post
-    assert "XRAY_POST_MC_BINDING=FAIL_CLOSED" in post
+    assert "steps.mc.outputs.binding_fault == 'true'" in post
+    assert "XRAY_POST_MC_BINDING=FAIL_CLOSED_DUPLICATE" in post
+    assert "Healthy no-op while resolver or MC commit is pending" in post
+    assert "XRAY_POST_MC=BLOCKED_UPSTREAM_PENDING" in post
     assert "Revalidate reused HISTORY and hydrate same-run technical cache" in post
     assert "old.get(\"pass_hash\")==new.get(\"pass_hash\")" in post
     assert 'XRAY_STAGE1_CACHE_REQUIRED: "1"' in post
