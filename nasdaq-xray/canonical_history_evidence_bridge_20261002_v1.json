@@ -13,8 +13,8 @@
     "daily": 260,
     "weekly_completed": 52
   },
-  "source_mc_path": "nasdaq-xray/canonical_mc_bridge_20261002_c417.json",
-  "source_mc_blob_sha": "164562824f9e3555b3084275c641cbb8dbff4d06",
+  "source_mc_path": "nasdaq-xray/canonical_mc_bridge_20261002_c417r2.json",
+  "source_mc_blob_sha": "4cd5ea0437f236393d4c7c6a02b581aef0b930fb",
   "source_mc_policy_version": "C4.17",
   "source_mc_policy_hash": "26a95745a50b65e85f6ece24b6501af0994764a84ddd886edb70d1fcd770849c",
   "scope_symbols": [
@@ -312,5 +312,17 @@
         "note": "Diagnostic corroboration only."
       }
     }
+  },
+  "semantic_rebind": {
+    "status": "PASS_EXACT_MC_RESULTS_REBIND",
+    "prior_source_mc_path": "nasdaq-xray/canonical_mc_bridge_20261002_c417.json",
+    "prior_source_mc_blob_sha": "164562824f9e3555b3084275c641cbb8dbff4d06",
+    "rebound_source_mc_path": "nasdaq-xray/canonical_mc_bridge_20261002_c417r2.json",
+    "rebound_source_mc_blob_sha": "4cd5ea0437f236393d4c7c6a02b581aef0b930fb",
+    "primary_pass_set_exact": true,
+    "mc_results_exact": true,
+    "mc_counts_exact": true,
+    "policy_exact": true,
+    "history_entries_unchanged": true
   }
 }
