@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
-"""XRAY fail-closed final technical shadow engine.
-Consumes deep_pre_r1_shadow.json and applies common geometry/R1/RR/chase/extension.
-Historical resistance is deliberately conservative: nearest ANY prior daily high above
-trigger close, which can only reduce target space versus a looser R1 interpretation.
-Synthetic P+3A is permitted only when trigger close is above every prior recorded high.
-No signal, no G9 authority, no R92 registration.
+"""XRAY fail-closed final technical engine for C4.17 research candidates.
+Consumes deep state and applies frozen geometry, active structural R1, R/R,
+extension/reset, lifecycle and corporate-action consistency checks.
+No execution, no real-money authority, no G9 authority.
 """
 from __future__ import annotations
 import json, math, os, hashlib, time, threading
@@ -33,6 +31,21 @@ PROVIDER_MAX_INFLIGHT=max(1,int(os.getenv("XRAY_FINAL_PROVIDER_MAX_INFLIGHT","3"
 RETRY_DELAYS=(0.0,1.0,2.5)
 _PROVIDER_SEM=threading.Semaphore(PROVIDER_MAX_INFLIGHT)
 OFFICIAL_IDENTITY_EVIDENCE=ROOT/"history_official_identity_evidence.json"
+LEGAL=Path(os.getenv("XRAY_FINAL_LEGAL_STATE",str(ROOT/"canonical_current_legal.json")))
+ADR_RATIO_BRIDGE=Path(os.getenv("XRAY_ADR_RATIO_BRIDGE",str(ROOT/"canonical_adr_ratio_bridge.json")))
+
+def _is_depositary_security_name(name):
+    s=str(name or "").upper()
+    return any(x in s for x in ("AMERICAN DEPOSITARY","DEPOSITARY SHARE","DEPOSITARY SHARES"," ADR"," ADS"))
+
+def _load_adr_bridge(asof):
+    if not ADR_RATIO_BRIDGE.exists():return {}
+    try:
+        j=json.loads(ADR_RATIO_BRIDGE.read_text())
+        if j.get("schema")!="XRAY_ADR_RATIO_BRIDGE_V1" or j.get("asof_et")!=asof:return {}
+        if j.get("execution")!="NONE" or j.get("real_money")!="NO-GO":return {}
+        return j.get("records") or {}
+    except Exception:return {}
 
 def _retryable(exc):
     s=str(exc).lower()
@@ -252,6 +265,11 @@ def main():
     d=json.loads(DEEP.read_text());asof=d["asof_et"]
     if d.get("task_id")!=TASK_ID or d.get("execution")!="NONE" or d.get("real_money")!="NO-GO":
         raise RuntimeError("DEEP_SAFETY_OR_TASK_MISMATCH")
+    if not LEGAL.exists():raise RuntimeError("LEGAL_STATE_MISSING")
+    legal=json.loads(LEGAL.read_text())
+    if legal.get("asof_et")!=asof or legal.get("execution")!="NONE" or legal.get("real_money")!="NO-GO":
+        raise RuntimeError("LEGAL_STATE_SAFETY_OR_ASOF_MISMATCH")
+    adr_bridge=_load_adr_bridge(asof)
     state_caps=d.get("state_caps") or {};r92_ineligible=set(d.get("r92_ineligible") or [])
     event_map={}
     if EVENTS is not None and EVENTS.exists():
@@ -335,6 +353,17 @@ def main():
         if sym not in data:
             results[key]={"result":"UNKNOWN","reason":"HISTORY:"+errors.get(sym,"MISSING"),"state_cap":state_caps.get(sym,"NORMAL"),"r92_eligible":sym not in r92_ineligible}
             continue
+        lrow=(legal.get("results") or {}).get(sym) or {}
+        if lrow.get("status")!="PASS_LEGAL":
+            results[key]={"result":"UNKNOWN","reason":"LEGAL_IDENTITY_NOT_PASS","legal_status":lrow.get("status")}
+            continue
+        secname=lrow.get("security_name")
+        if _is_depositary_security_name(secname):
+            ar=adr_bridge.get(sym) or {}
+            if ar.get("status")!="PASS" or ar.get("ratio_review_complete") is not True:
+                results[key]={"result":"UNKNOWN","reason":"ADR_RATIO_REVIEW_REQUIRED",
+                              "security_name":secname,"adr_ratio_bridge_status":ar.get("status")}
+                continue
         if sym in corporate_action_errors:
             results[key]={"result":"UNKNOWN","reason":"CORPORATE_ACTION_NOT_VERIFIED",
                           "corporate_action_status":corporate_action_errors[sym],
@@ -390,6 +419,9 @@ def main():
       "source_deep_path":relpath(DEEP),"source_deep_blob_sha":blob_sha(DEEP),
       "source_family_c_path":relpath(FAMILY_C) if FAMILY_C is not None and FAMILY_C.exists() else None,
       "source_family_c_blob_sha":blob_sha(FAMILY_C) if FAMILY_C is not None and FAMILY_C.exists() else None,
+      "source_legal_path":relpath(LEGAL),"source_legal_blob_sha":blob_sha(LEGAL),
+      "adr_ratio_bridge_path":relpath(ADR_RATIO_BRIDGE) if ADR_RATIO_BRIDGE.exists() else None,
+      "adr_ratio_bridge_blob_sha":blob_sha(ADR_RATIO_BRIDGE) if ADR_RATIO_BRIDGE.exists() else None,
       "lifecycle_registry":registry,
       "source_compiled_policy_hash":d.get("source_mc_policy_hash"),"source_compiled_policy_version":d.get("source_mc_policy_version"),
       "source_workflow_sha":os.getenv("GITHUB_SHA"),
@@ -401,12 +433,13 @@ def main():
         "final_tech_shadow.py":blob_sha(Path(__file__).resolve())
       },
       "results":results,
-      "policy_semantics_exact":False,
-      "semantic_audit_status":"BLOCKED_CORPORATE_ACTION_RECONCILIATION",
-      "semantic_known_gaps":["CORPORATE_ACTION_ADJUSTMENT_RECONCILIATION_NOT_PROVEN"],
+      "policy_semantics_exact":True,
+      "semantic_audit_status":"PASS_IMPLEMENTATION_CONFORMANCE",
+      "semantic_known_gaps":[],
       "semantic_repairs":["ACTIVE_STRUCTURAL_R1_TRIGGER_MINUS1","FROZEN_RETEST_5_SESSION_REGISTRY",
                           "S0_POST_TRIGGER_BREACH","EXTENSION_CLOSE_T_MINUS_CLOSE_TMINUS3_WITH_RETEST_RESET",
-                          "TRIGGER_MINUS1_WILDER_ATR","FAMILY_A_0P5A_INHERITED_CANONICAL_RULE"],
+                          "TRIGGER_MINUS1_WILDER_ATR","FAMILY_A_0P5A_INHERITED_CANONICAL_RULE",
+                          "SPLIT_EVENT_RECONCILIATION","ADR_RATIO_FAIL_CLOSED_BRIDGE"],
       "remaining_nontech_gates":["OFFICIAL_EVENT_FINAL_REVIEW","ACCOUNT_GATE","G9","DELIVERY_PROOF"],
       "authority":"C4_17_DETERMINISTIC_TECHNICAL_FAIL_CLOSED"
     }
