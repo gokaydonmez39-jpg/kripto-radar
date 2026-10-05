@@ -4,6 +4,7 @@ from pathlib import Path
 import json, tempfile
 import pandas as pd
 import alpha_semantics as alpha
+import final_tech_shadow as ft
 from final_tech_shadow import eval_one, load_lifecycle_registry, persist_lifecycle_registry
 
 ROOT=Path(__file__).resolve().parent
@@ -72,6 +73,26 @@ def test_resistance_role_change_state_machine():
     finally:
         alpha._base_high_points,alpha._weekly_swing_points,alpha._gap_down_zones=oldb,oldw,oldg
 
+def test_corporate_action_absence_vs_real_scale_break():
+    clean=frame(300)
+    x,status,events,lookup=ft.candidate_corporate_action_reconcile("TEST",clean,drow={})
+    assert status=="PASS_NO_LOCAL_SPLIT_DISCONTINUITY",(status,events,lookup)
+    assert events==[] and lookup is False
+
+    # A material scale break must remain UNKNOWN without primary CA authority,
+    # even when the diagnostic split provider appears internally consistent.
+    suspect=frame(300)
+    suspect.loc[200:,["open","high","low","close"]]=[50.0,52.0,49.0,51.0]
+    old=ft.split_consistent_history
+    ft.split_consistent_history=lambda sym,df:(df,"PASS_SPLIT_RECONCILED_CROSSCHECKED",
+        [{"date":df.date.iloc[200].date().isoformat(),"numerator":2.0,"denominator":1.0,"ratio":2.0}])
+    try:
+        _,status2,events2,lookup2=ft.candidate_corporate_action_reconcile("TEST",suspect,drow={})
+        assert status2=="UNKNOWN_PRIMARY_CORPORATE_ACTION_EVIDENCE_REQUIRED",(status2,events2,lookup2)
+        assert lookup2 is True and events2
+    finally:
+        ft.split_consistent_history=old
+
 def test_lifecycle_expiry_and_frozen_stability():
     d=frame(300)
     f6=frozen(d,len(d)-7,"TEST-AGE6")
@@ -114,6 +135,25 @@ def test_workflow_race_and_pre_mc_freeze_contracts():
     assert "nasdaq-xray/canonical_candidate_lifecycle_registry.json" in final_wf
     assert "python nasdaq-xray/test_alpha_semantics.py" in final_wf
     assert "python nasdaq-xray/test_deep_repair_regressions.py" in final_wf
+    assert "current_source_binding=false" in final_wf
+    assert 'r.get(k)!=v for k,v in current_sources.items()' in final_wf
+
+    post=(REPO/".github/workflows/xray-canonical-current-post-mc.yml").read_text()
+    assert "Revalidate reused HISTORY and hydrate same-run technical cache" in post
+    assert "old.get(\"pass_hash\")==new.get(\"pass_hash\")" in post
+    assert 'XRAY_STAGE1_CACHE_REQUIRED: "1"' in post
+    assert 'XRAY_BREADTH_CACHE_REQUIRED: "1"' in post
+    assert "XRAY_BREADTH_HISTORY_CACHE_DIR" in post
+
+    s1=(ROOT/"stage1_shadow.py").read_text()
+    reg=(ROOT/"regime_breadth_shadow.py").read_text()
+    assert "SINA_SAME_RUN_CACHE_MISSING" in s1 and "HISTORY_CACHE_REQUIRED" in s1
+    assert "HISTORY_CACHE_REQUIRED and sym!=\"QQQ\"" in reg
+
+    ftsrc=(ROOT/"final_tech_shadow.py").read_text()
+    assert "CORPORATE_ACTION_RECONCILIATION_UNPROVEN_FOR_FINALISTS" in ftsrc
+    assert "and lifecycle_semantics_exact" in ftsrc
+
     pre=(REPO/".github/workflows/xray-canonical-current-pre-mc.yml").read_text()
     marker="- name: Completed-session epoch rollover guard"; assert marker in pre
     guard=pre.split(marker,1)[1].split("- name: Recover corrupted frozen pre-MC snapshot",1)[0]
@@ -130,10 +170,11 @@ def test_workflow_race_and_pre_mc_freeze_contracts():
 
 def main():
     test_r1_no_future_mutation_and_confirmation(); test_resistance_role_change_state_machine()
+    test_corporate_action_absence_vs_real_scale_break()
     test_lifecycle_expiry_and_frozen_stability(); test_lifecycle_persistence_roundtrip()
     test_workflow_race_and_pre_mc_freeze_contracts()
     print({"status":"PASS","tests":["R1_NO_FUTURE_MUTATION","R1_PLUS2_CONFIRMATION_NO_LEAK",
-      "RESISTANCE_ROLE_CHANGE_STATE_MACHINE","RETEST_WINDOW_EXPIRES_AFTER_5","MODEL_HORIZON_EXPIRES_AFTER_8",
+      "RESISTANCE_ROLE_CHANGE_STATE_MACHINE","CORPORATE_ACTION_NONE_VS_SCALE_BREAK_FAIL_CLOSED","RETEST_WINDOW_EXPIRES_AFTER_5","MODEL_HORIZON_EXPIRES_AFTER_8",
       "FROZEN_LEVELS_NEXT_ASOF_STABLE","LIFECYCLE_PERSISTENCE_ROUNDTRIP",
       "FINAL_ALPHA_STALE_SOURCE_GUARD","PRE_MC_COMPLETED_ASOF_FREEZE_TRUTH_TABLE"]})
 
