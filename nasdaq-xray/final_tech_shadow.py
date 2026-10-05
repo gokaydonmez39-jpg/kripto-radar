@@ -400,16 +400,19 @@ def eval_one(sym,fam,g,df,event_status,state_cap="NORMAL",r92_eligible=True,froz
     event_pass=(event_status=="CLEAN_DISCOVERY")
     entry_ready=lifecycle in {"ENTRY_BAND","RETEST_ENTRY_BAND"}
     historical_new=bool(age>3 and not recorded_before)
+    # R92/R93 is prospective-only, but that restriction governs observation
+    # accounting, not current research eligibility. A still-valid setup first
+    # discovered on session 4/5 may be a current PRE_G9 research candidate;
+    # prior bars simply cannot be backfilled into validation statistics.
+    r92_backfill_allowed=False
     regime_pass=(regime_finalist_status=="PASS")
     hard_pass=bool(risk_pass and rr_pass and not target_overlap and not extension_veto
-                   and entry_ready and event_pass and regime_pass and not breached and not historical_new)
+                   and entry_ready and event_pass and regime_pass and not breached)
     mc_cap_blocks=bool(state_cap=="WATCH" or not r92_eligible)
     synthetic_cap=bool(frozen.get("synthetic_target"))
 
     if hard_pass and mc_cap_blocks: result="WATCH_MC_FALLBACK_CAP"
     elif hard_pass: result="PRE_G9_TECH_PASS"
-    elif historical_new and lifecycle not in {"INVALIDATED_S0","EXPIRED_RETEST_WINDOW","EXPIRED_HORIZON"}:
-        result="WATCH_HISTORICAL_SETUP"
     elif lifecycle=="INVALIDATED_S0": result="FAIL_INVALIDATED_S0"
     elif lifecycle in {"EXPIRED_RETEST_WINDOW","EXPIRED_HORIZON"}: result="FAIL_EXPIRED"
     elif not event_pass: result="WATCH_EVENT_UNKNOWN_OR_BLOCKED"
@@ -444,6 +447,10 @@ def eval_one(sym,fam,g,df,event_status,state_cap="NORMAL",r92_eligible=True,froz
       "risk_pass":risk_pass,"family_geometry_pass":family_geometry_pass,
       "extension_veto":extension_veto,"target_overlap":target_overlap,
       "technical_hard_pass":hard_pass,"regime_finalist_status":regime_finalist_status,
+      "discovered_after_trigger":bool(age>0 and not recorded_before),
+      "historical_discovery_age_gt3":historical_new,
+      "r92_backfill_allowed":r92_backfill_allowed,
+      "r92_observation_rule":"REGISTER_NOW_OBSERVE_FUTURE_ONLY_NO_BACKFILL",
       "state_cap":state_cap,"r92_eligible":bool(r92_eligible),
       "price_discovery_cap":synthetic_cap,
       "research_tier_cap":"ORANGE" if synthetic_cap else None,
