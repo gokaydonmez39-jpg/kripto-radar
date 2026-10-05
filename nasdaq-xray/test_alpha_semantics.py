@@ -20,7 +20,7 @@ import history_phase as history_mod
 from stage1_shadow import recent_weekly_context
 from family_c_engine import eval_event
 from build_current_event_request import lifecycle_scope_from_final,event_geometry_scope
-from regime_breadth_shadow import close_only_scale_breaks
+from regime_breadth_shadow import close_only_scale_breaks,new_high_low20_flags
 
 def frame(n=90):
     rows=[]
@@ -378,6 +378,15 @@ def main():
     assert thu in pass_dates,(pass_dates,wctx[thu])
     assert prior_fri in pass_dates,(pass_dates,wctx.get(prior_fri))
 
+    # Breadth NEW_HIGH20/NEW_LOW20 excludes today's close from the prior-20
+    # window and equality is never a pass.
+    ties=pd.Series([100.0]*21)
+    assert new_high_low20_flags(ties)==(False,False),new_high_low20_flags(ties)
+    hi=pd.Series([float(i) for i in range(1,21)]+[21.0])
+    lo=pd.Series([float(i) for i in range(2,22)]+[1.0])
+    assert new_high_low20_flags(hi)==(True,False),new_high_low20_flags(hi)
+    assert new_high_low20_flags(lo)==(False,True),new_high_low20_flags(lo)
+
     # Stage1 process must bind the computed recent weekly context into its output.
     # This catches a runtime NameError class that py_compile cannot detect.
     olds=(stage1_mod.load_history,stage1_mod.weekly_gate,stage1_mod.mechanical_scale_breaks,
@@ -471,7 +480,7 @@ def main():
       "WILDER_FIRST_TR_UNDEFINED","EMA_SMA_SEED","D_DRAWDOWN_DEFINITIONS",
       "R1_STRUCTURAL_TRIGGER_MINUS1","R1_ENTRY_OVERLAP","EXTENSION_RESET","EXTENSION_TIGHT_BASE_RESET","RETEST_BAR","FAMILY_A_TRIGGER_MINUS1_LOW","SETUP_ID_STABLE",
       "B_RECENT_TRIGGER_PERSISTENCE","DEEP_RECENT_TRIGGER_INDEPENDENT_OF_CURRENT_STAGE1","A_STAGE1_ASOF_TRIGGER","MECHANICAL_SCALE_BREAK_GUARD","BREADTH_CLOSE_ONLY_SCALE_GUARD","SPLIT_ONLY_RECONCILIATION","SPLIT_RAW_CROSSCHECK","UNDECLARED_SCALE_MOVE_MARKET_GAP","HISTORICAL_DISCOVERY_RESEARCH_ELIGIBLE_NO_R92_BACKFILL","CHASE_FROZEN_RETEST_RECOVERY","ANCHOR_AVAILABLE_S0_CHRONOLOGY",
-      "ADR_RATIO_FAIL_CLOSED_CLASSIFICATION","FINALIST_FRACTIONAL_SPLIT_VERIFICATION","SYNTHETIC_PRICE_DISCOVERY_ORANGE_CAP","PROSPECTIVE_LIFECYCLE_PERSISTENCE","FROZEN_LIFECYCLE_EVENT_SCOPE","ANCIENT_SCALE_BREAK_OUTSIDE_TECH_HORIZON","TRIGGER_TIME_WEEKLY_SCOPE",
+      "ADR_RATIO_FAIL_CLOSED_CLASSIFICATION","FINALIST_FRACTIONAL_SPLIT_VERIFICATION","SYNTHETIC_PRICE_DISCOVERY_ORANGE_CAP","PROSPECTIVE_LIFECYCLE_PERSISTENCE","FROZEN_LIFECYCLE_EVENT_SCOPE","ANCIENT_SCALE_BREAK_OUTSIDE_TECH_HORIZON","TRIGGER_TIME_WEEKLY_SCOPE","BREADTH_NH20_NL20_PRIOR20_STRICT",
       "FAMILY_C_REACTION_HIGH_PIVOT","FAMILY_C_PERSISTENT_GAP_FLOOR","SPLIT_RECONCILIATION_ACTIVE_HORIZON_ONLY"
     ]})
 
