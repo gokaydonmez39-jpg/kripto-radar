@@ -24,6 +24,25 @@ NY=ZoneInfo("America/New_York")
 _PROVIDER_SEM=threading.Semaphore(PROVIDER_MAX_INFLIGHT)
 HISTORY_BRIDGE={}
 HISTORY_BRIDGE_PATH=None
+HISTORY_CACHE_DIR=os.getenv("XRAY_HISTORY_CACHE_DIR")
+
+def _history_cache_path(sym):
+    if not HISTORY_CACHE_DIR:return None
+    return Path(HISTORY_CACHE_DIR)/(hashlib.sha256(sym.encode()).hexdigest()+".csv.gz")
+
+def _write_sina_cache(sym,df):
+    """Best-effort same-run transport cache; never an alpha authority."""
+    if not HISTORY_CACHE_DIR or df is None or getattr(df,"empty",True):return
+    try:
+        cols={str(c).lower():c for c in df.columns};need=["date","open","high","low","close","volume"]
+        if any(k not in cols for k in need):return
+        x=df[[cols[k] for k in need]].copy();x.columns=need
+        p=_history_cache_path(sym);p.parent.mkdir(parents=True,exist_ok=True)
+        tmp=p.with_suffix(p.suffix+".tmp")
+        x.to_csv(tmp,index=False,compression="gzip")
+        os.replace(tmp,p)
+    except Exception:
+        pass
 
 def load_history_bridge(src,asof):
     global HISTORY_BRIDGE_PATH
@@ -331,6 +350,7 @@ def aligned_first_bar_upper_bound_fail(a,b,asof):
 def sina(sym,asof):
     try:
         df,attempts=_call_with_retry(lambda: ak.stock_us_daily(symbol=sym,adjust=""))
+        _write_sina_cache(sym,df)
         by={}
         if df is not None:
             for r in df.to_dict(orient="records"):
