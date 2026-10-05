@@ -28,6 +28,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: xray-dynamic-phase-regression
+  cancel-in-progress: true
+
 jobs:
   regression:
     runs-on: ubuntu-latest
