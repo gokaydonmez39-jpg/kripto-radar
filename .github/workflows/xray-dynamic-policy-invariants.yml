@@ -19,6 +19,7 @@ on:
       - "nasdaq-xray/sina_stage.py"
       - "nasdaq-xray/resolve_unknowns_fallback.py"
       - "nasdaq-xray/price_dv20_phase.py"
+      - "nasdaq-xray/build_current_resolver_request.py"
       - "nasdaq-xray/deep_pre_r1_shadow.py"
       - "nasdaq-xray/history_phase.py"
       - "nasdaq-xray/history_official_identity_evidence.json"
@@ -61,6 +62,7 @@ jobs:
             nasdaq-xray/sina_stage.py \
             nasdaq-xray/resolve_unknowns_fallback.py \
             nasdaq-xray/price_dv20_phase.py \
+            nasdaq-xray/build_current_resolver_request.py \
             nasdaq-xray/price_dv20_recover_from_fullstate.py \
             nasdaq-xray/deep_pre_r1_shadow.py \
             nasdaq-xray/history_phase.py \

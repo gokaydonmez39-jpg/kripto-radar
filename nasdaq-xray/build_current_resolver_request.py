@@ -15,6 +15,72 @@ CHUNK_MANIFEST=Path(os.getenv("XRAY_RESOLVER_CHUNK_MANIFEST_OUT",str(ROOT/"canon
 CHUNK_SIZE=max(1,min(100,int(os.getenv("XRAY_RESOLVER_CHUNK_SIZE","100"))))
 TASK="6a825366222081918997094d76e6ae46"
 
+# Raw provenance refreshes must not invalidate bounded provider progress when
+# every decision-bearing resolver input is unchanged. Exact request-blob
+# binding is preserved by keeping the already-materialized request byte-stable.
+RESOLVER_RESUME_METADATA_ONLY_FIELDS={
+    "official_footer",
+    "source_state_blob_sha",
+    "source_unknowns_blob_sha",
+    "source_overlay_blob_sha",
+    "source_master_blob_sha",
+    "source_pointer_blob_sha",
+}
+
+def resolver_resume_semantic_view(obj):
+    return {k:v for k,v in obj.items() if k not in RESOLVER_RESUME_METADATA_ONLY_FIELDS}
+
+def can_preserve_existing_request(new_obj):
+    if not OUT.exists() or not CHUNK_MANIFEST.exists():
+        return False
+    try:
+        old=json.loads(OUT.read_text())
+        if resolver_resume_semantic_view(old)!=resolver_resume_semantic_view(new_obj):
+            return False
+        rb=blob_sha(OUT)
+        cm=json.loads(CHUNK_MANIFEST.read_text())
+        if not (
+            cm.get("schema")=="XRAY_RESOLVER_REQUEST_CHUNK_MANIFEST_V1"
+            and cm.get("task_id")==TASK
+            and cm.get("execution")=="NONE" and cm.get("real_money")=="NO-GO"
+            and cm.get("unknown_never_pass") is True
+            and cm.get("request_blob_sha")==rb
+            and cm.get("asof_et")==old.get("asof_et")
+            and cm.get("compiled_policy_blob_sha")==old.get("compiled_policy_blob_sha")
+            and cm.get("compiled_policy_hash")==old.get("compiled_policy_hash")
+            and cm.get("compiled_policy_version")==old.get("compiled_policy_version")
+            and cm.get("queue_hash")==old.get("queue_hash")
+            and cm.get("symbol_hash")==old.get("symbol_hash")
+            and int(cm.get("symbol_count",-1))==int(old.get("symbol_count",-2))
+            and cm.get("coverage_complete") is True
+            and int(cm.get("chunk_count",-1))==len(cm.get("chunks") or [])
+        ):
+            return False
+        rebuilt=[]
+        for i,row in enumerate(cm.get("chunks") or [],1):
+            cp=ROOT/Path(str(row.get("path") or "")).name
+            if not cp.exists() or blob_sha(cp)!=row.get("blob_sha"):
+                return False
+            cj=json.loads(cp.read_text())
+            if not (
+                int(row.get("chunk_index",-1))==i
+                and cj.get("schema")=="XRAY_RESOLVER_REQUEST_CHUNK_V1"
+                and cj.get("request_blob_sha")==rb
+                and cj.get("queue_hash")==old.get("queue_hash")
+                and cj.get("symbol_hash")==old.get("symbol_hash")
+                and int(cj.get("chunk_index",-1))==i
+                and int(cj.get("chunk_total",-1))==int(cm.get("chunk_count",-2))
+                and int(cj.get("symbol_count",-1))==len(cj.get("symbols") or [])
+                and row.get("chunk_symbol_hash")==cj.get("chunk_symbol_hash")
+                and row.get("chunk_symbol_hash")==hash_lines(cj.get("symbols") or [])
+            ):
+                return False
+            rebuilt.extend(cj.get("symbols") or [])
+        return rebuilt==old.get("symbols") and len(rebuilt)==len(set(rebuilt))==int(old.get("symbol_count",-1))
+    except Exception:
+        return False
+
+
 def blob_sha(p:Path)->str:
     b=p.read_bytes()
     return hashlib.sha1(f"blob {len(b)}\0".encode()+b).hexdigest()
@@ -202,10 +268,14 @@ def main():
       "source_pointer_blob_sha":blob_sha(POINTER),
       "resolver_policy":"ALPACA_SIP_PREFERRED__RALLIES_LONGBRIDGE_DUAL_SOURCE_CONNECTOR_FAILOVER__NEVER_G9__FAIL_CLOSED__SAME_ASOF_QUEUE_BINDING",
     }
-    OUT.write_text(json.dumps(obj,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
-    chunks=write_chunk_manifest(obj)
-    assert chunks["coverage_complete"] is True and chunks["symbol_count"]==obj["symbol_count"]
-    print(json.dumps({"asof":asof,"pointer_asof":pointer_asof,"status":obj["status"],"settlement_required":settlement_required,"settlement_already_proven":settlement_already_proven,"master_unknown":len(master_symbols),"price_unknown":len(price_symbols),"price_blocked":len(blocked_symbols),"union":len(union),"symbol_hash":obj["symbol_hash"],"resolver_chunks":chunks["chunk_count"]},sort_keys=True))
+    preserved=can_preserve_existing_request(obj)
+    if preserved:
+        chunks=json.loads(CHUNK_MANIFEST.read_text())
+    else:
+        OUT.write_text(json.dumps(obj,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
+        chunks=write_chunk_manifest(obj)
+        assert chunks["coverage_complete"] is True and chunks["symbol_count"]==obj["symbol_count"]
+    print(json.dumps({"asof":asof,"pointer_asof":pointer_asof,"status":obj["status"],"settlement_required":settlement_required,"settlement_already_proven":settlement_already_proven,"master_unknown":len(master_symbols),"price_unknown":len(price_symbols),"price_blocked":len(blocked_symbols),"union":len(union),"symbol_hash":obj["symbol_hash"],"resolver_chunks":chunks["chunk_count"],"metadata_only_request_preserved":preserved},sort_keys=True))
 
 if __name__=="__main__":
     main()

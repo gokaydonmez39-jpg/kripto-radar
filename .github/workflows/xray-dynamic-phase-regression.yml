@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/price_dv20_phase.py"
+      - "nasdaq-xray/build_current_resolver_request.py"
       - "nasdaq-xray/price_dv20_recover_from_fullstate.py"
       - "nasdaq-xray/history_phase.py"
       - "nasdaq-xray/legal_phase.py"
@@ -51,6 +52,7 @@ jobs:
           python -m py_compile \
             nasdaq-xray/sina_stage.py \
             nasdaq-xray/price_dv20_phase.py \
+            nasdaq-xray/build_current_resolver_request.py \
             nasdaq-xray/price_dv20_recover_from_fullstate.py \
             nasdaq-xray/history_phase.py \
             nasdaq-xray/legal_phase.py \

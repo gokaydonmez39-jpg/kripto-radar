@@ -6,6 +6,7 @@ import pandas as pd
 import alpha_semantics as alpha
 import final_tech_shadow as ft
 import build_candidate_legal_guard as legal_guard_mod
+import build_current_resolver_request as resolver_req_mod
 import build_current_terminal as terminal_mod
 import build_current_event_request as event_req_mod
 import regime_breadth_shadow as rb
@@ -336,6 +337,33 @@ def test_future_lifecycle_evidence_rejected():
         finally:
             legal_guard_mod.PREV_FINAL,legal_guard_mod.LIFECYCLE=old_prev,old_side
 
+def test_resolver_metadata_only_resume_identity():
+    base={
+      "schema":"XRAY_RESOLVER_EPOCH_REQUEST_V1","status":"READY",
+      "task_id":resolver_req_mod.TASK,"asof_et":"2026-10-05",
+      "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
+      "queue_hash":"Q","queue_total":2,"pointer_asof_et":"2026-10-02",
+      "settlement_required":True,"settlement_already_proven":False,
+      "compiled_policy_blob_sha":"P","compiled_policy_hash":"H","compiled_policy_version":"C4.17",
+      "expected20":["2026-09-08","2026-10-05"],
+      "price_unknown_count":2,"price_unknown_symbols":["AAA","BBB"],
+      "price_unknown_detail":{"AAA":{"price_result":{"status":"UNKNOWN"}},"BBB":{"price_result":{"status":"UNKNOWN"}}},
+      "price_blocked_count":0,"price_blocked_symbols":[],
+      "symbols":["AAA","BBB"],"symbol_count":2,"symbol_hash":"S",
+      "source_price_blob_sha":"PRICE",
+      "source_state_blob_sha":"STATE1","source_unknowns_blob_sha":"UNK1",
+      "source_overlay_blob_sha":"OV1","source_master_blob_sha":"M1",
+      "source_pointer_blob_sha":"PTR1","official_footer":"FOOTER1",
+    }
+    meta={**base,"source_state_blob_sha":"STATE2","source_unknowns_blob_sha":"UNK2",
+          "source_overlay_blob_sha":"OV2","source_master_blob_sha":"M2",
+          "source_pointer_blob_sha":"PTR2","official_footer":"FOOTER2"}
+    assert resolver_req_mod.resolver_resume_semantic_view(base)==resolver_req_mod.resolver_resume_semantic_view(meta)
+    assert resolver_req_mod.resolver_resume_semantic_view(base)!=resolver_req_mod.resolver_resume_semantic_view({**meta,"source_price_blob_sha":"PRICE2"})
+    assert resolver_req_mod.resolver_resume_semantic_view(base)!=resolver_req_mod.resolver_resume_semantic_view({**meta,"symbol_hash":"S2"})
+    changed={**meta,"price_unknown_detail":{"AAA":{"price_result":{"status":"PASS_PRICE_DV20"}},"BBB":{"price_result":{"status":"UNKNOWN"}}}}
+    assert resolver_req_mod.resolver_resume_semantic_view(base)!=resolver_req_mod.resolver_resume_semantic_view(changed)
+
 def test_candidate_legal_guard_phrase_severity():
     boiler="the credit agreement contains customary events of default and financial covenants and other standard provisions"
     assert legal_guard_mod._phrase_flags(boiler,legal_guard_mod.HARD_PHRASES)==[]
@@ -536,6 +564,7 @@ def main():
     test_cross_session_lifecycle_scope_persists_active_only()
     test_candidate_legal_guard_lifecycle_fallback_matches_final()
     test_future_lifecycle_evidence_rejected()
+    test_resolver_metadata_only_resume_identity()
     test_candidate_legal_guard_phrase_severity()
     test_workflow_race_and_pre_mc_freeze_contracts()
     print({"status":"PASS","tests":["R1_NO_FUTURE_MUTATION","R1_PLUS2_CONFIRMATION_NO_LEAK",
