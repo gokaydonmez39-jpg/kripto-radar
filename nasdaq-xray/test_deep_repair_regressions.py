@@ -155,6 +155,26 @@ def test_corporate_action_absence_vs_real_scale_break():
     finally:
         ft.split_consistent_history=old
 
+def test_d_reclaim_cannot_use_same_bar_that_confirms_hl():
+    d=frame(100);q=frame(100);t=len(d)-6
+    d.loc[t,"close"]=110.0; d.loc[t,"volume"]=2_000_000.0
+    old_active,old_atr,old_rs,old_dd=deep_mod.active_hl_and_sh,deep_mod.atr14,deep_mod.common_rs,deep_mod.drawdown_metrics
+    try:
+        def fake_active(x):
+            if len(x)!=t+1:return None
+            # HL center t-2 is confirmed only by completed bar t itself.
+            return {"hl":t-2,"prior_hs":[t-6],"later_hs":[],"hs":[t-6],"ls":[t-8,t-2]}
+        deep_mod.active_hl_and_sh=fake_active
+        deep_mod.atr14=lambda x:pd.Series([10.0]*len(x),index=x.index,dtype="float64")
+        deep_mod.common_rs=lambda s,qqq,n:0.10
+        deep_mod.drawdown_metrics=lambda x:{"current_drawdown_252":-0.20,"max_drawdown_close_120":-0.20}
+        td=d.date.iloc[t].date().isoformat()
+        g=deep_mod.family_d(d,q,{td})
+        assert g.get("dk3_pre_r1") is not True,g
+        assert g.get("trigger_date") is None,g
+    finally:
+        deep_mod.active_hl_and_sh,deep_mod.atr14,deep_mod.common_rs,deep_mod.drawdown_metrics=old_active,old_atr,old_rs,old_dd
+
 def test_family_a_trigger_time_reconstruction_survives_later_structure():
     d=frame(100);t=len(d)-6
     d.loc[t-6,"high"]=130.0
@@ -706,7 +726,7 @@ def main():
     test_final_history_normalizer_preserves_ohlcv()
     test_regime_interval_bounds_and_finalist_gate()
     test_corporate_action_absence_vs_real_scale_break()
-    test_family_a_trigger_time_reconstruction_survives_later_structure(); test_family_a_final_geometry_revalidation()
+    test_d_reclaim_cannot_use_same_bar_that_confirms_hl(); test_family_a_trigger_time_reconstruction_survives_later_structure(); test_family_a_final_geometry_revalidation()
     test_lifecycle_expiry_and_frozen_stability(); test_lifecycle_regime_revalidation_persists_without_pass(); test_lifecycle_persistence_roundtrip()
     test_mc_bridge_immutable_supersession()
     test_candidate_local_legal_unknown_does_not_globally_suppress()
@@ -719,7 +739,7 @@ def main():
     test_family_c_event_request_covers_boundary_amc_source_session(); test_candidate_legal_guard_phrase_severity()
     test_workflow_race_and_pre_mc_freeze_contracts()
     print({"status":"PASS","tests":["R1_NO_FUTURE_MUTATION","R1_PLUS2_CONFIRMATION_NO_LEAK",
-      "RESISTANCE_ROLE_CHANGE_STATE_MACHINE","FINAL_HISTORY_OHLCV_BINDING","REGIME_INTERVAL_BOUNDS_AND_FINALIST_GATE","CORPORATE_ACTION_NONE_VS_SCALE_BREAK_FAIL_CLOSED","FAMILY_A_TRIGGER_TIME_RECONSTRUCTION","FAMILY_A_FINAL_GEOMETRY_REVALIDATION","RETEST_WINDOW_EXPIRES_AFTER_5","MODEL_HORIZON_EXPIRES_AFTER_8",
+      "RESISTANCE_ROLE_CHANGE_STATE_MACHINE","FINAL_HISTORY_OHLCV_BINDING","REGIME_INTERVAL_BOUNDS_AND_FINALIST_GATE","CORPORATE_ACTION_NONE_VS_SCALE_BREAK_FAIL_CLOSED","D_RECLAIM_AFTER_HL_AVAILABILITY","FAMILY_A_TRIGGER_TIME_RECONSTRUCTION","FAMILY_A_FINAL_GEOMETRY_REVALIDATION","RETEST_WINDOW_EXPIRES_AFTER_5","MODEL_HORIZON_EXPIRES_AFTER_8",
       "FROZEN_LEVELS_NEXT_ASOF_STABLE","LIFECYCLE_REGIME_REVALIDATION_PERSISTS","LIFECYCLE_PERSISTENCE_ROUNDTRIP","MC_BRIDGE_IMMUTABLE_SUPERSESSION",
       "FINAL_ALPHA_STALE_SOURCE_GUARD","PARTIAL_COVERAGE_DOES_NOT_GLOBAL_ABORT",
       "DETAILED_FINALIST_LEGAL_FAIL_CLOSED","CANDIDATE_LOCAL_LEGAL_UNKNOWN_ISOLATION","FINAL_VERIFIED_MARKET_GAP_NOT_DOUBLE_BLOCKED","DETAILED_LEGAL_GUARD_EXACT_SOURCE_BINDING","DETAILED_LEGAL_GUARD_POLICY_BINDING","DETAILED_LEGAL_GUARD_NONCIRCULAR_LIFECYCLE","CROSS_SESSION_LIFECYCLE_ACTIVE_ONLY","FAMILY_C_EVENT_REQUEST_BOUNDARY_AMC","FUTURE_LIFECYCLE_EVIDENCE_REJECTED","DETAILED_LEGAL_GUARD_LIFECYCLE_FALLBACK_PARITY","DETAILED_LEGAL_GUARD_BOILERPLATE_SEVERITY","DETAILED_LEGAL_GUARD_ANNUAL_PLUS_QUARTERLY_SCOPE","DETAILED_LEGAL_GUARD_EMPTY_SCOPE_NO_NETWORK","TERMINAL_DETAILED_LEGAL_FULL_E2E_BLOCKER","DETAILED_LEGAL_GUARD_NO_SELF_TRIGGER",
