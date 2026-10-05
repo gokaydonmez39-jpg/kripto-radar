@@ -59,7 +59,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-10-05T16:44:02.789598+00:00",
+  "generated_at_utc": "2026-10-05T16:50:38.809980+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -635,8 +635,23 @@
         "UCFIW"
       ],
       "active_state_rule": "EXPLICIT_EMPTY_RESUMPTION_FIELDS_ONLY",
-      "item_count": 59,
+      "item_count": 60,
       "items": [
+        {
+          "HaltDate": "10/05/2026",
+          "HaltTime": "12:43:57.443",
+          "IssueName": "Nexalin Technology, Inc Cm Stk",
+          "IssueSymbol": "NXL",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "10/05/2026",
+          "ResumptionQuoteTime": "12:43:57",
+          "ResumptionTradeTime": "12:48:57",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/05/2026                    </td><td valign=\"top\">12:43:57.443</td><td valign=\"top\">NXL</td><td valign=\"top\">Nexalin Technology, Inc Cm Stk</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/05/2026                    </td><td valign=\"top\">12:43:57                      </td><td valign=\"top\">12:48:57                      </td></tr></table>",
+          "pubDate": "Mon, 05 Oct 2026 04:00:00 GMT",
+          "title": "NXL"
+        },
         {
           "HaltDate": "10/05/2026",
           "HaltTime": "11:25:03.303",
