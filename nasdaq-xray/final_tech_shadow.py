@@ -135,44 +135,6 @@ def hist(sym,asof):
 def _trigger_date(fam,g):
     return str(g.get("trigger_date") or g.get("breakout_session") or "")
 
-def _anchor_context(fam,g,df,ti,atr):
-    """Return anchor occurrence/availability and ATR known at availability."""
-    if fam in ("A","D"):
-        hd=str(g.get("hl_date") or "")
-        oi=trigger_index(df,hd) if hd else None
-        if oi is None:return None,"ANCHOR_HL_DATE_MISSING"
-        ai=oi+2  # strict 5-bar swing is known only after two completed right bars
-    elif fam=="B":
-        try:n=int(g.get("window") or 0)
-        except Exception:n=0
-        if n<=0 or ti-n<0:return None,"BASE_WINDOW_MISSING"
-        base=df.iloc[ti-n:ti]
-        if base.empty:return None,"BASE_EMPTY"
-        oi=int(base["low"].astype(float).idxmin()); ai=ti-1
-    elif fam=="C":
-        try:n=int(g.get("consolidation_bars") or 0)
-        except Exception:n=0
-        if n<3 or ti-n<0:return None,"CONSOLIDATION_WINDOW_MISSING"
-        base=df.iloc[ti-n:ti]
-        if base.empty:return None,"CONSOLIDATION_EMPTY"
-        oi=int(base["low"].astype(float).idxmin()); ai=ti-1
-    else:
-        return None,"UNSUPPORTED_FAMILY"
-    if ai<0 or ai>=len(df) or ai>ti:return None,"ANCHOR_AVAILABILITY_INVALID"
-    av=atr.iloc[ai]
-    if pd.isna(av) or not math.isfinite(float(av)) or float(av)<=0:
-        return None,"ATR_ANCHOR_MISSING"
-    anchor=float(g["anchor"])
-    observed=float(df["low"].iloc[oi])
-    if not math.isfinite(anchor) or abs(anchor-observed)>max(1e-8,abs(anchor)*1e-8):
-        return None,"ANCHOR_VALUE_MISMATCH"
-    return {
-      "anchor_occurrence_idx":oi,"anchor_available_idx":ai,
-      "anchor_occurrence_at":df["date"].iloc[oi].date().isoformat(),
-      "anchor_available_at":df["date"].iloc[ai].date().isoformat(),
-      "ATR_anchor":float(av),
-    },None
-
 def _frozen_geometry(sym,fam,g,df):
     td=_trigger_date(fam,g)
     if not td:return None,{"result":"UNKNOWN","reason":"TRIGGER_DATE_MISSING"}
@@ -184,11 +146,7 @@ def _frozen_geometry(sym,fam,g,df):
     A=float(atr.iloc[ti-1]);P=float(g["P"]);anchor=float(g["anchor"])
     if not all(math.isfinite(v) for v in (A,P,anchor)) or A<=0:
         return None,{"result":"UNKNOWN","reason":"NONFINITE_GEOMETRY"}
-    actx,aerr=_anchor_context(fam,g,df,ti,atr)
-    if aerr:
-        return None,{"result":"UNKNOWN","reason":aerr,"trigger_date":td}
-    entry_low=P;entry_high=P+0.25*A;entry_model=entry_high;chase=P+0.50*A
-    S0=anchor-0.20*float(actx["ATR_anchor"])
+    entry_low=P;entry_high=P+0.25*A;entry_model=entry_high;chase=P+0.50*A;S0=anchor-0.20*A
     r1=nearest_active_resistance(df,ti,A,entry_low,entry_high,entry_model)
     trigger_close=float(df["close"].iloc[ti])
     synthetic=False
@@ -204,9 +162,7 @@ def _frozen_geometry(sym,fam,g,df):
         T1=P+3*A; synthetic=True;target_source="SYNTHETIC_P_PLUS_3A_PRICE_DISCOVERY";target_overlap=False;zone=None
     frozen={
       "setup_id":setup_id(sym,fam,td,P,anchor,A),"symbol":sym,"family":fam,"trigger_date":td,
-      "A":A,"P":P,"anchor":anchor,"ATR_anchor":float(actx["ATR_anchor"]),
-      "anchor_occurrence_at":actx["anchor_occurrence_at"],"anchor_available_at":actx["anchor_available_at"],
-      "entry_low":entry_low,"entry_high":entry_high,
+      "A":A,"P":P,"anchor":anchor,"entry_low":entry_low,"entry_high":entry_high,
       "entry_model":entry_model,"chase_limit":chase,"S0":S0,"T1":T1,
       "target_source":target_source,"target_zone":zone,"target_overlap":target_overlap,
       "synthetic_target":synthetic,"source_geometry":g,
@@ -227,12 +183,8 @@ def eval_one(sym,fam,g,df,event_status,state_cap="NORMAL",r92_eligible=True,froz
     ti=trigger_index(df,td)
     if ti is None:return {"result":"UNKNOWN","reason":"TRIGGER_DATE_NOT_IN_HISTORY","trigger_date":td}
 
-    # Canonical hard invalidation begins only after the anchor becomes knowable.
-    # For a close-confirmed anchor, same-day earlier lows are not retroactive breaches.
-    aad=str(frozen.get("anchor_available_at") or "")
-    ai=trigger_index(df,aad) if aad else None
-    if ai is None:return {"result":"UNKNOWN","reason":"ANCHOR_AVAILABLE_AT_MISSING","trigger_date":td}
-    post=df.iloc[ai+1:]
+    # C4.17 hard invalidation: any post-trigger low <= frozen S0 kills this setup.
+    post=df.iloc[ti+1:]
     breach_rows=post[post["low"].astype(float)<=S0]
     breached=not breach_rows.empty
     breach_date=None if not breached else breach_rows.date.iloc[0].date().isoformat()
@@ -264,7 +216,7 @@ def eval_one(sym,fam,g,df,event_status,state_cap="NORMAL",r92_eligible=True,froz
         cost=cost_mult*A;E=entry_model+cost;S=S0-cost;T=T1-cost;den=E-S
         return (T-E)/den if den>0 else float("-inf")
     basic=rr(0.10);severe=rr(0.25);th=THRESH[fam]
-    risk_pass=bool(0.30<=x<=2.05 and 1.00<=risk_atr<=2.50 and risk_pct<=0.08)
+    risk_pass=bool(0.30<=x<=2.05 and 0.75<=risk_atr<=2.50 and risk_pct<=0.08)
     rr_pass=bool(basic>=th["basic"] and severe>=th["severe"])
     target_overlap=bool(frozen.get("target_overlap") or T1<=entry_high)
     event_pass=(event_status=="CLEAN_DISCOVERY")
@@ -297,9 +249,7 @@ def eval_one(sym,fam,g,df,event_status,state_cap="NORMAL",r92_eligible=True,froz
     return {
       "result":result,"family":fam,"event_status":event_status,"setup_id":frozen["setup_id"],
       "trigger_date":td,"lifecycle_age_sessions":age,
-      "levels":{"A":A,"P":P,"anchor":anchor,"ATR_anchor":frozen.get("ATR_anchor"),
-                "anchor_occurrence_at":frozen.get("anchor_occurrence_at"),"anchor_available_at":frozen.get("anchor_available_at"),
-                "close":close,"entry_low":entry_low,
+      "levels":{"A":A,"P":P,"anchor":anchor,"close":close,"entry_low":entry_low,
                 "entry_high":entry_high,"entry_model":entry_model,"chase_limit":chase,"S0":S0,"T1":T1},
       "geometry":{"x":x,"risk_atr":risk_atr,"risk_percent":risk_pct,
                   "pivot_extension":ext["pivot_extension"],"move3_atr":ext["move3_atr"],
@@ -520,8 +470,7 @@ def main():
       "semantic_known_gaps":[],
       "semantic_repairs":["ACTIVE_STRUCTURAL_R1_TRIGGER_MINUS1","FROZEN_RETEST_5_SESSION_REGISTRY",
                           "S0_POST_TRIGGER_BREACH","EXTENSION_CLOSE_T_MINUS_CLOSE_TMINUS3_WITH_RETEST_RESET",
-                          "TRIGGER_MINUS1_WILDER_ATR","ANCHOR_AVAILABLE_AT_ATR_STOP","ANCHOR_CHRONOLOGY_BREACH",
-                          "RISK_ATR_1P0_TO_2P5","FAMILY_A_0P5A_INHERITED_CANONICAL_RULE",
+                          "TRIGGER_MINUS1_WILDER_ATR","FAMILY_A_0P5A_INHERITED_CANONICAL_RULE",
                           "SPLIT_EVENT_RECONCILIATION","ADR_RATIO_FAIL_CLOSED_BRIDGE"],
       "remaining_nontech_gates":["OFFICIAL_EVENT_FINAL_REVIEW","ACCOUNT_GATE","G9","DELIVERY_PROOF"],
       "authority":"C4_17_DETERMINISTIC_TECHNICAL_FAIL_CLOSED"
