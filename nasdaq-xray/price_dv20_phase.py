@@ -67,6 +67,14 @@ def classify(by,asof,exp20,source):
           "no_synthetic_bar":True}
     if upper<HARD_DV20:
         info["proof"]="DV20_UPPER_BOUND_LT_GATE";return "FAIL_DV20",info
+    # Monotone lower-bound proof: missing regular-session dollar volume cannot
+    # be negative. If the exact20 median remains above the hard gate even when
+    # every missing observation is replaced with zero, the true exact median
+    # is guaranteed to pass. This does not synthesize a bar or weaken C4.17.
+    if lower>=HARD_DV20:
+        info["proof"]="DV20_LOWER_BOUND_GE_GATE"
+        info["dv20_lower_bound"]=lower
+        return "PASS_PRICE_DV20",info
     info["reason"]="EXACT20_INCOMPLETE_NEVER_PASS";return "UNKNOWN",info
 
 def sina(sym,asof):
