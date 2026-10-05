@@ -9,7 +9,7 @@ from price_dv20_phase import classify as price_classify
 from price_dv20_recover_from_fullstate import apply_terminal_overrides
 from resolve_unknowns_fallback import classify as resolver_classify
 from deep_pre_r1_shadow import family_b
-from build_current_terminal import mc_semantic_input_match
+from build_current_terminal import mc_semantic_input_match, candidate_local_research_ready
 import history_phase as history_mod
 from history_phase import official_listing_upper_bound_fail, continuity_composite_pass
 import pandas as pd
@@ -131,6 +131,17 @@ def main():
     assert mc_semantic_input_match(price_sem,{"input_pass_hash":"X","input_count":2,"results":{"AAA":{},"BBB":{}}}) is False
     assert mc_semantic_input_match(price_sem,{"input_pass_hash":"H","input_count":1,"results":{"AAA":{},"BBB":{}}}) is False
 
+    # Candidate-local research delivery must not depend on unrelated global
+    # coverage completeness. It still fails closed on official safety and semantic
+    # conformance, and cannot create a candidate from an empty PRE_G9 set.
+    ft_ok={"policy_semantics_exact":True,"lifecycle_semantics_exact":True}
+    assert candidate_local_research_ready({"AAA"},{"status":"PASS"},ft_ok,True) is True
+    assert candidate_local_research_ready(set(),{"status":"PASS"},ft_ok,True) is False
+    assert candidate_local_research_ready({"AAA"},{"status":"UNKNOWN"},ft_ok,True) is False
+    assert candidate_local_research_ready({"AAA"},{"status":"PASS"},{"policy_semantics_exact":False,"lifecycle_semantics_exact":True},True) is False
+    assert candidate_local_research_ready({"AAA"},{"status":"PASS"},ft_ok,False) is False
+    assert candidate_local_research_ready({"AAA"},{"status":"PASS"},{"policy_semantics_exact":True,"lifecycle_semantics_exact":False},True) is False
+
     # HISTORY evidence regression: official listing-date evidence can only
     # produce a terminal upper-bound FAIL; it must never manufacture PASS.
     hf=official_listing_upper_bound_fail("HONA","2026-10-02")
@@ -171,6 +182,7 @@ def main():
         "EXACT20_REQUIRED_FOR_PASS","INCOMPLETE_NEVER_PASS","BLOCKED_TERMINAL_OVERRIDE_FAIL_ONLY",
         "OVERLAY_EXACT20_REQUIRED","SETUP_B_PIVOT_EXCLUDES_CURRENT_BAR",
         "MC_SEMANTIC_REBIND_REQUIRES_HASH_SET_COUNT",
+        "CANDIDATE_LOCAL_RESEARCH_INDEPENDENT_GLOBAL_COVERAGE_FAIL_CLOSED",
         "OFFICIAL_LISTING_HISTORY_FAIL_ONLY","CUSIP_CONTINUITY_REQUIRES_CROSS_SOURCE_OVERLAP",
         "LEGACY_LINEAGE_BRIDGE_CANNOT_BYPASS_COMPOSITE"
     ]})
