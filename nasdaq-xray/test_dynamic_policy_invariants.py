@@ -155,6 +155,19 @@ def main():
     assert hf and hf["proof"]=="OFFICIAL_LISTING_DATE_HISTORY_UPPER_BOUND",hf
     assert hf["max_possible_daily_bars"]<260 or hf["max_possible_completed_weeks"]<52,hf
 
+    # Completed-week counting must use the official Nasdaq calendar. Thursday
+    # 2026-10-01 is not a completed week; Friday 2026-10-02 is. The following
+    # Monday must not increment the count again until that new week completes.
+    cal=history_mod.mcal.get_calendar("NASDAQ")
+    sched=cal.schedule(start_date="2025-08-01",end_date="2026-10-05")
+    ds=[idx.date().isoformat() for idx,_ in sched.iterrows()]
+    by={d:(100.0,1_000_000.0) for d in ds}
+    w_thu=history_mod.week_count({d:v for d,v in by.items() if d<="2026-10-01"},"2026-10-01")
+    w_fri=history_mod.week_count({d:v for d,v in by.items() if d<="2026-10-02"},"2026-10-02")
+    w_mon=history_mod.week_count({d:v for d,v in by.items() if d<="2026-10-05"},"2026-10-05")
+    assert w_fri==w_thu+1,(w_thu,w_fri,w_mon)
+    assert w_mon==w_fri,(w_thu,w_fri,w_mon)
+
     # Ticker-continuity composite regression: same unchanged-CUSIP security
     # may use predecessor history only when a long-history source and exact-ASOF
     # source overlap closely on >=20 sessions.
