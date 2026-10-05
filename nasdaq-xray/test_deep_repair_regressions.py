@@ -224,6 +224,40 @@ def test_lifecycle_persistence_roundtrip():
         final.write_text(json.dumps({"lifecycle_registry":stale}))
         assert load_lifecycle_registry(final,side)==reg
 
+def test_mc_bridge_immutable_supersession():
+    price={"asof_et":"2026-10-05","pass_symbols":["AAA"],"pass_count":1,"pass_hash":"H"}
+    common={
+      "schema":"XRAY_MC_EPOCH_RESULT_V1","status":"COMMITTED","task_id":terminal_mod.TASK,
+      "execution":"NONE","real_money":"NO-GO","asof_et":"2026-10-05",
+      "input_path":"nasdaq-xray/canonical_current_price_dv20.json","input_blob_sha":"PB",
+      "input_pass_hash":"H","input_count":1,"policy_hash":terminal_mod.POLICY_HASH,"policy_version":"C4.17",
+      "results":{"AAA":{"status":"MC_PASS_PRIMARY"}},
+    }
+    old_root=terminal_mod.ROOT
+    try:
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td)/"nasdaq-xray";root.mkdir()
+            terminal_mod.ROOT=root
+            base=root/"canonical_mc_bridge_20261005_c417.json"
+            base.write_text(json.dumps(common))
+            base_sha=terminal_mod.blob_sha(base)
+            r2=root/"canonical_mc_bridge_20261005_c417_r2.json"
+            repaired={**common,"supersedes_mc_bridge_path":"nasdaq-xray/canonical_mc_bridge_20261005_c417.json",
+                      "supersedes_mc_bridge_blob_sha":base_sha}
+            r2.write_text(json.dumps(repaired))
+            got=terminal_mod.find_mc(price,"PB")
+            assert got[0].name==r2.name,(got[0],r2)
+
+            repaired["supersedes_mc_bridge_blob_sha"]="0"*40
+            r2.write_text(json.dumps(repaired))
+            raised=False
+            try: terminal_mod.find_mc(price,"PB")
+            except RuntimeError as e:
+                raised="MC_BRIDGE_EXACT_BINDING_MATCHES:2" in str(e)
+            assert raised
+    finally:
+        terminal_mod.ROOT=old_root
+
 def test_candidate_local_legal_unknown_does_not_globally_suppress():
     ft={
       "policy_semantics_exact":True,
@@ -472,6 +506,7 @@ def test_workflow_race_and_pre_mc_freeze_contracts():
     assert "XRAY_POST_MC_BINDING=FAIL_CLOSED_DUPLICATE" in post
     assert "Healthy no-op while resolver or MC commit is pending" in post
     assert "XRAY_POST_MC=BLOCKED_UPSTREAM_PENDING" in post
+    assert "supersedes_mc_bridge_path" in post and "supersedes_mc_bridge_blob_sha" in post
     assert "Revalidate reused HISTORY and hydrate same-run technical cache" in post
     assert "old.get(\"pass_hash\")==new.get(\"pass_hash\")" in post
     assert 'XRAY_STAGE1_CACHE_REQUIRED: "1"' in post
@@ -633,6 +668,7 @@ def main():
     test_corporate_action_absence_vs_real_scale_break()
     test_family_a_final_geometry_revalidation()
     test_lifecycle_expiry_and_frozen_stability(); test_lifecycle_regime_revalidation_persists_without_pass(); test_lifecycle_persistence_roundtrip()
+    test_mc_bridge_immutable_supersession()
     test_candidate_local_legal_unknown_does_not_globally_suppress()
     test_candidate_legal_guard_scope_is_candidate_local()
     test_cross_session_lifecycle_scope_persists_active_only()
@@ -644,7 +680,7 @@ def main():
     test_workflow_race_and_pre_mc_freeze_contracts()
     print({"status":"PASS","tests":["R1_NO_FUTURE_MUTATION","R1_PLUS2_CONFIRMATION_NO_LEAK",
       "RESISTANCE_ROLE_CHANGE_STATE_MACHINE","FINAL_HISTORY_OHLCV_BINDING","REGIME_INTERVAL_BOUNDS_AND_FINALIST_GATE","CORPORATE_ACTION_NONE_VS_SCALE_BREAK_FAIL_CLOSED","FAMILY_A_FINAL_GEOMETRY_REVALIDATION","RETEST_WINDOW_EXPIRES_AFTER_5","MODEL_HORIZON_EXPIRES_AFTER_8",
-      "FROZEN_LEVELS_NEXT_ASOF_STABLE","LIFECYCLE_REGIME_REVALIDATION_PERSISTS","LIFECYCLE_PERSISTENCE_ROUNDTRIP",
+      "FROZEN_LEVELS_NEXT_ASOF_STABLE","LIFECYCLE_REGIME_REVALIDATION_PERSISTS","LIFECYCLE_PERSISTENCE_ROUNDTRIP","MC_BRIDGE_IMMUTABLE_SUPERSESSION",
       "FINAL_ALPHA_STALE_SOURCE_GUARD","PARTIAL_COVERAGE_DOES_NOT_GLOBAL_ABORT",
       "DETAILED_FINALIST_LEGAL_FAIL_CLOSED","CANDIDATE_LOCAL_LEGAL_UNKNOWN_ISOLATION","FINAL_VERIFIED_MARKET_GAP_NOT_DOUBLE_BLOCKED","DETAILED_LEGAL_GUARD_EXACT_SOURCE_BINDING","DETAILED_LEGAL_GUARD_POLICY_BINDING","DETAILED_LEGAL_GUARD_NONCIRCULAR_LIFECYCLE","CROSS_SESSION_LIFECYCLE_ACTIVE_ONLY","FUTURE_LIFECYCLE_EVIDENCE_REJECTED","DETAILED_LEGAL_GUARD_LIFECYCLE_FALLBACK_PARITY","DETAILED_LEGAL_GUARD_BOILERPLATE_SEVERITY","DETAILED_LEGAL_GUARD_ANNUAL_PLUS_QUARTERLY_SCOPE","DETAILED_LEGAL_GUARD_EMPTY_SCOPE_NO_NETWORK","TERMINAL_DETAILED_LEGAL_FULL_E2E_BLOCKER","DETAILED_LEGAL_GUARD_NO_SELF_TRIGGER",
       "POST_MC_PARTIAL_COVERAGE_GATE","PRE_MC_COMPLETED_ASOF_FREEZE_TRUTH_TABLE"]})
