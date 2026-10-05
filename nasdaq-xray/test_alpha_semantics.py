@@ -439,6 +439,44 @@ def main():
         finally:
             history_mod.HISTORY_CACHE_DIR=old_h;stage1_mod.HISTORY_CACHE_DIR=old_s
 
+    # HISTORY PASS must be transport-complete for downstream Stage1. The exact
+    # bug class: Sina lacks exact ASOF, official Nasdaq proves HISTORY PASS, and
+    # the old early-return skipped Yahoo OHLCV hydration, creating Stage1 cache
+    # missing UNKNOWNs for otherwise eligible symbols.
+    with tempfile.TemporaryDirectory() as td:
+        old_cache=history_mod.HISTORY_CACHE_DIR
+        olds=(history_mod.official_listing_upper_bound_fail,history_mod.sina,history_mod.nasdaq,
+              history_mod.yahoo,history_mod.yahoo_ohlcv,history_mod.continuity_composite_pass,
+              history_mod.eastmoney,history_mod.bridge_resolution)
+        try:
+            history_mod.HISTORY_CACHE_DIR=td
+            asof="2026-10-02"
+            ds=pd.bdate_range(end=asof,periods=320)
+            by={d.date().isoformat():(100.0,1_000_000.0) for d in ds}
+            raw=pd.DataFrame({
+              "date":ds,"open":[100.0]*len(ds),"high":[101.0]*len(ds),
+              "low":[99.0]*len(ds),"close":[100.0]*len(ds),"volume":[1_000_000.0]*len(ds)
+            })
+            calls=[]
+            history_mod.official_listing_upper_bound_fail=lambda sym,a:None
+            history_mod.sina=lambda sym,a:({},{"usable":0})
+            history_mod.nasdaq=lambda sym,a:(by,{"usable":len(by)})
+            history_mod.yahoo=lambda sym,a:(_ for _ in ()).throw(AssertionError("HISTORY_YAHOO_SHOULD_NOT_BE_NEEDED_AFTER_NASDAQ_PASS"))
+            history_mod.yahoo_ohlcv=lambda sym,a:(calls.append((sym,a)) or raw.copy(),{"source":"TEST_RAW_OHLCV"})
+            history_mod.continuity_composite_pass=lambda *args,**kwargs:None
+            history_mod.eastmoney=lambda sym,a:({},{"usable":0})
+            history_mod.bridge_resolution=lambda *args,**kwargs:None
+            sym,st,info,meta=history_mod.eval_one("CACHE_NASDAQ_PASS",asof)
+            assert sym=="CACHE_NASDAQ_PASS" and st=="PASS_HISTORY",(sym,st,info,meta)
+            assert calls==[("CACHE_NASDAQ_PASS",asof)],calls
+            assert history_mod._technical_cache_exact("CACHE_NASDAQ_PASS",asof) is True
+            assert (meta.get("technical_cache") or {}).get("status")=="PASS_YAHOO_EXACT_ASOF_HYDRATED",meta
+        finally:
+            history_mod.HISTORY_CACHE_DIR=old_cache
+            (history_mod.official_listing_upper_bound_fail,history_mod.sina,history_mod.nasdaq,
+             history_mod.yahoo,history_mod.yahoo_ohlcv,history_mod.continuity_composite_pass,
+             history_mod.eastmoney,history_mod.bridge_resolution)=olds
+
     # Family C canonical pivot includes reaction high. A breakout above only the
     # consolidation high must not pass if it remains below reaction high.
     dates=pd.bdate_range("2026-06-01",periods=36)
@@ -499,7 +537,7 @@ def main():
       "R1_STRUCTURAL_TRIGGER_MINUS1","R1_ENTRY_OVERLAP","EXTENSION_RESET","EXTENSION_TIGHT_BASE_RESET","RETEST_BAR","FAMILY_A_TRIGGER_MINUS1_LOW","SETUP_ID_STABLE",
       "B_RECENT_TRIGGER_PERSISTENCE","DEEP_RECENT_TRIGGER_INDEPENDENT_OF_CURRENT_STAGE1","A_STAGE1_ASOF_TRIGGER","MECHANICAL_SCALE_BREAK_GUARD","BREADTH_CLOSE_ONLY_SCALE_GUARD","SPLIT_ONLY_RECONCILIATION","SPLIT_RAW_CROSSCHECK","UNDECLARED_SCALE_MOVE_MARKET_GAP","HISTORICAL_DISCOVERY_RESEARCH_ELIGIBLE_NO_R92_BACKFILL","CHASE_FROZEN_RETEST_RECOVERY","ANCHOR_AVAILABLE_S0_CHRONOLOGY",
       "ADR_RATIO_FAIL_CLOSED_CLASSIFICATION","FINALIST_FRACTIONAL_SPLIT_VERIFICATION","SYNTHETIC_PRICE_DISCOVERY_ORANGE_CAP","PROSPECTIVE_LIFECYCLE_PERSISTENCE","FROZEN_LIFECYCLE_EVENT_SCOPE","ANCIENT_SCALE_BREAK_OUTSIDE_TECH_HORIZON","TRIGGER_TIME_WEEKLY_SCOPE","BREADTH_NH20_NL20_PRIOR20_STRICT",
-      "FAMILY_C_REACTION_HIGH_PIVOT","FAMILY_C_PERSISTENT_GAP_FLOOR","FULL_R1_TO_PRE_G9_REACHABILITY","SPLIT_RECONCILIATION_ACTIVE_HORIZON_ONLY"
+      "HISTORY_PASS_EXACT_ASOF_CACHE_BINDING","FAMILY_C_REACTION_HIGH_PIVOT","FAMILY_C_PERSISTENT_GAP_FLOOR","FULL_R1_TO_PRE_G9_REACHABILITY","SPLIT_RECONCILIATION_ACTIVE_HORIZON_ONLY"
     ]})
 
 if __name__=="__main__":
