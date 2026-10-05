@@ -313,6 +313,7 @@ jobs:
         shell: bash
         run: |
           XRAY_HISTORY_INPUT="$GITHUB_WORKSPACE/${{ steps.mc.outputs.path }}" \
+          XRAY_HISTORY_CACHE_DIR="$RUNNER_TEMP/xray-history-cache" \
           XRAY_HISTORY_OUT="$GITHUB_WORKSPACE/nasdaq-xray/canonical_current_history.json" \
           XRAY_ASOF="${{ steps.mc.outputs.asof }}" XRAY_HISTORY_WORKERS="10" \
           python nasdaq-xray/history_phase.py
@@ -339,6 +340,7 @@ jobs:
         env:
           XRAY_MC_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_current_stage1_input.json
           XRAY_STAGE1_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_current_stage1.json
+          XRAY_STAGE1_HISTORY_CACHE_DIR: ${{ runner.temp }}/xray-history-cache
           XRAY_STAGE1_WORKERS: "8"
         run: python nasdaq-xray/stage1_shadow.py
       - name: Run regime breadth
