@@ -44,7 +44,7 @@ jobs:
         run: |
           set -euo pipefail
           python - <<'PY' >> "$GITHUB_OUTPUT"
-          import hashlib,json,pathlib
+          import hashlib,json,os,pathlib
           root=pathlib.Path("nasdaq-xray")
           def blob_sha(p):
               b=p.read_bytes()
@@ -79,6 +79,12 @@ jobs:
               mc=evidence.get("mc") or {}
               mcp=pathlib.Path(mc.get("path") or "")
               exact=exact and mcp.exists() and mc.get("blob_sha")==blob_sha(mcp)
+              # Any push reaching this workflow means a declared Post-MC input
+              # (MC bridge, policy, history/legal/alpha source, or this workflow)
+              # changed. Never reuse a frozen snapshot on such a push; rebuild once
+              # and let later schedule/dispatch runs no-op only after exact artifacts exist.
+              if os.getenv("GITHUB_EVENT_NAME")=="push":
+                  exact=False
               # A FULL artifact snapshot is frozen only while the alpha source
               # implementation that produced it is still exact-current.
               try:
