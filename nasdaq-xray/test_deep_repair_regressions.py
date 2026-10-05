@@ -5,6 +5,7 @@ import json, tempfile
 import pandas as pd
 import alpha_semantics as alpha
 import final_tech_shadow as ft
+import build_candidate_legal_guard as legal_guard_mod
 import regime_breadth_shadow as rb
 from final_tech_shadow import eval_one, load_lifecycle_registry, persist_lifecycle_registry
 
@@ -190,6 +191,17 @@ def test_lifecycle_persistence_roundtrip():
         final.write_text(json.dumps({"lifecycle_registry":stale}))
         assert load_lifecycle_registry(final,side)==reg
 
+def test_candidate_legal_guard_scope_is_candidate_local():
+    deep={"results":{
+      "A":{"A":{"pool":True},"B":{},"D":{}},
+      "B":{"A":{},"B":{"breakout_confirmed":True},"D":{}},
+      "D":{"A":{},"B":{},"D":{"dk3_pre_r1":True}},
+      "N":{"A":{},"B":{},"D":{}},
+    }}
+    fc={"confirmed":{"C":{"confirmed":True},"X":{"confirmed":False}}}
+    lifecycle={"records":{"old":{"symbol":"L"}}}
+    assert legal_guard_mod.candidate_scope(deep,fc,lifecycle)==["A","B","C","D","L"]
+
 def test_workflow_race_and_pre_mc_freeze_contracts():
     final_wf=(REPO/".github/workflows/xray-canonical-current-final.yml").read_text()
     assert "Fail closed when exact event binding is unavailable" in final_wf
@@ -197,7 +209,8 @@ def test_workflow_race_and_pre_mc_freeze_contracts():
     assert "XRAY_FINAL_EVENT_BINDING=FAIL_CLOSED" in final_wf
     critical=["nasdaq-xray/alpha_semantics.py","nasdaq-xray/test_alpha_semantics.py",
       "nasdaq-xray/test_deep_repair_regressions.py","nasdaq-xray/family_c_engine.py",
-      "nasdaq-xray/deep_pre_r1_shadow.py","nasdaq-xray/final_tech_shadow.py"]
+      "nasdaq-xray/deep_pre_r1_shadow.py","nasdaq-xray/build_candidate_legal_guard.py",
+      "nasdaq-xray/final_tech_shadow.py"]
     stale=final_wf[final_wf.index('changed="$(git diff'):]
     for p in critical: assert p in stale,("FINAL_STALE_GUARD_MISSING",p)
     assert "nasdaq-xray/canonical_candidate_lifecycle_registry.json" in final_wf
@@ -271,6 +284,17 @@ def test_workflow_race_and_pre_mc_freeze_contracts():
     assert "_load_candidate_legal_guard" in ftsrc
     assert "DETAILED_LEGAL_REVIEW_NOT_PROVEN" in ftsrc
     assert '"detailed_legal_review_exact"' in ftsrc
+    assert "CANDIDATE_LEGAL_GUARD_DEEP_BINDING_MISMATCH" in ftsrc
+    assert "CANDIDATE_LEGAL_GUARD_FAMILY_C_BINDING_MISMATCH" in ftsrc
+    assert "CANDIDATE_LEGAL_GUARD_LIFECYCLE_BINDING_MISMATCH" in ftsrc
+    assert '"candidate_legal_guard_exact_binding"' in ftsrc
+    assert "Build exact-bound detailed finalist legal guard" in final_wf
+    assert "python nasdaq-xray/build_candidate_legal_guard.py" in final_wf
+    assert "Validate detailed finalist legal guard binding" in final_wf
+    assert "nasdaq-xray/canonical_candidate_legal_guard.json" in final_wf
+    push_block=final_wf.split("permissions:",1)[0]
+    assert '"nasdaq-xray/build_candidate_legal_guard.py"' in push_block
+    assert '"nasdaq-xray/canonical_candidate_legal_guard.json"' not in push_block
     ca_block=ftsrc[ftsrc.index("def candidate_corporate_action_reconcile"):ftsrc.index("def _normalize_sina")]
     assert "UNKNOWN_PRIMARY_CORPORATE_ACTION_EVIDENCE_REQUIRED" not in ca_block
     assert "return x2.reset_index(drop=True),status,events,True" in ca_block
@@ -297,12 +321,13 @@ def main():
     test_regime_interval_bounds_and_finalist_gate()
     test_corporate_action_absence_vs_real_scale_break()
     test_lifecycle_expiry_and_frozen_stability(); test_lifecycle_regime_revalidation_persists_without_pass(); test_lifecycle_persistence_roundtrip()
+    test_candidate_legal_guard_scope_is_candidate_local()
     test_workflow_race_and_pre_mc_freeze_contracts()
     print({"status":"PASS","tests":["R1_NO_FUTURE_MUTATION","R1_PLUS2_CONFIRMATION_NO_LEAK",
       "RESISTANCE_ROLE_CHANGE_STATE_MACHINE","FINAL_HISTORY_OHLCV_BINDING","REGIME_INTERVAL_BOUNDS_AND_FINALIST_GATE","CORPORATE_ACTION_NONE_VS_SCALE_BREAK_FAIL_CLOSED","RETEST_WINDOW_EXPIRES_AFTER_5","MODEL_HORIZON_EXPIRES_AFTER_8",
       "FROZEN_LEVELS_NEXT_ASOF_STABLE","LIFECYCLE_REGIME_REVALIDATION_PERSISTS","LIFECYCLE_PERSISTENCE_ROUNDTRIP",
       "FINAL_ALPHA_STALE_SOURCE_GUARD","PARTIAL_COVERAGE_DOES_NOT_GLOBAL_ABORT",
-      "DETAILED_FINALIST_LEGAL_FAIL_CLOSED","FINAL_VERIFIED_MARKET_GAP_NOT_DOUBLE_BLOCKED",
+      "DETAILED_FINALIST_LEGAL_FAIL_CLOSED","FINAL_VERIFIED_MARKET_GAP_NOT_DOUBLE_BLOCKED","DETAILED_LEGAL_GUARD_EXACT_SOURCE_BINDING","DETAILED_LEGAL_GUARD_NO_SELF_TRIGGER",
       "POST_MC_PARTIAL_COVERAGE_GATE","PRE_MC_COMPLETED_ASOF_FREEZE_TRUTH_TABLE"]})
 
 if __name__=="__main__": main()
