@@ -362,6 +362,8 @@ jobs:
           XRAY_FAMILY_C_STAGE1: ${{ github.workspace }}/nasdaq-xray/canonical_current_stage1.json
           XRAY_FAMILY_C_EVENTS: ${{ github.workspace }}/nasdaq-xray/canonical_current_event_state.json
           XRAY_FAMILY_C_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_current_family_c.json
+          XRAY_FAMILY_C_HISTORY_BINDING_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_current_deep_geometry.json
+          XRAY_FAMILY_C_HISTORY_BINDING_REQUIRED: "1"
           XRAY_FAMILY_C_WORKERS: "8"
         run: python nasdaq-xray/family_c_engine.py
 
@@ -372,6 +374,8 @@ jobs:
           XRAY_REGIME_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_current_regime.json
           XRAY_EVENT_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_current_event_state.json
           XRAY_DEEP_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_current_deep_full.json
+          XRAY_DEEP_HISTORY_BINDING_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_current_deep_geometry.json
+          XRAY_DEEP_HISTORY_BINDING_REQUIRED: "1"
           XRAY_DEEP_WORKERS: "8"
         run: python nasdaq-xray/deep_pre_r1_shadow.py
 
