@@ -13,7 +13,7 @@ import pandas as pd
 from alpha_semantics import (
     wilder_atr, trigger_index, setup_id, session_age,
     nearest_active_resistance, extension_diagnostics, retest_bar,
-    apply_split_events,
+    apply_split_events, split_consistent_history,
 )
 
 ROOT=Path(__file__).resolve().parent
@@ -120,6 +120,13 @@ THRESH={
 LIFECYCLE_WATCH_STATES={
  "WATCH_RETEST_REQUIRED","WATCH_RECONFIRMATION_REQUIRED",
  "WATCH_CHASE_RETEST_REQUIRED","WATCH_EXTENSION_RESET_REQUIRED"
+}
+# States discovered prospectively that must keep their frozen geometry until
+# explicit invalidation/expiry. WATCH_HISTORICAL_SETUP is deliberately excluded:
+# backfilled historical triggers may never become prospective by mere persistence.
+LIFECYCLE_PERSIST_STATES=LIFECYCLE_WATCH_STATES | {
+ "PRE_G9_TECH_PASS","WATCH_EVENT_UNKNOWN_OR_BLOCKED",
+ "WATCH_MC_FALLBACK_CAP","WATCH_SYNTHETIC_PRICE_DISCOVERY_CAP"
 }
 
 def hist(sym,asof):
@@ -335,11 +342,17 @@ def main():
     deep_scope=set((d.get("results") or {}).keys())
     for rec in old_records.values():
         sym=rec.get("symbol");fam=rec.get("family")
-        if not sym or fam not in THRESH or sym not in deep_scope:continue
-        if rec.get("state") not in LIFECYCLE_WATCH_STATES:continue
+        if not sym or fam not in THRESH:continue
+        if rec.get("state") not in LIFECYCLE_PERSIST_STATES:continue
+        # A prospectively recorded frozen setup survives current weekly/deep-scope
+        # changes until its explicit S0/event/expiry lifecycle says otherwise.
+        if rec.get("state_cap") is not None:
+            state_caps.setdefault(sym,rec.get("state_cap"))
+        if rec.get("r92_eligible") is False:
+            r92_ineligible.add(sym)
         g=rec.get("source_geometry")
         if isinstance(g,dict):
-            frozen_candidates.append((sym,fam,g,event_map.get(sym,(d.get("results",{}).get(sym) or {}).get("event_status"))))
+            frozen_candidates.append((sym,fam,g,event_map.get(sym,rec.get("event_status"))))
     candidates=frozen_candidates+fresh_candidates
 
     syms=sorted(set(x[0] for x in candidates));data={};errors={};history_source={}
@@ -352,14 +365,24 @@ def main():
 
     corporate_action_errors={}
     for s in list(data):
-        drow=(d.get("results") or {}).get(s) or {}
-        ca_status=drow.get("corporate_action_status")
-        if not str(ca_status).startswith("PASS"):
-            corporate_action_errors[s]=ca_status or "MISSING"
-            continue
-        split_events=drow.get("split_events") or []
-        if split_events:
-            data[s]=apply_split_events(data[s],split_events).reset_index(drop=True)
+        drow=(d.get("results") or {}).get(s)
+        if drow is not None:
+            ca_status=drow.get("corporate_action_status")
+            if not str(ca_status).startswith("PASS"):
+                corporate_action_errors[s]=ca_status or "MISSING"
+                continue
+            split_events=drow.get("split_events") or []
+            if split_events:
+                data[s]=apply_split_events(data[s],split_events).reset_index(drop=True)
+        else:
+            # Frozen lifecycle symbol may no longer be in current weekly/deep scope.
+            # Revalidate its raw history independently rather than treating absence
+            # from deep as a corporate-action failure.
+            x2,ca_status,split_events=split_consistent_history(s,data[s])
+            if not str(ca_status).startswith("PASS"):
+                corporate_action_errors[s]=ca_status or "MISSING"
+                continue
+            data[s]=x2.reset_index(drop=True)
 
     results={};new_records=dict(old_records)
     seen=set()
@@ -405,7 +428,7 @@ def main():
         if not existing_live:
             results[key]=res
         state=str(res.get("result") or "")
-        if state in LIFECYCLE_WATCH_STATES:
+        if state in LIFECYCLE_PERSIST_STATES:
             new_records[frozen["setup_id"]]={
               "setup_id":frozen["setup_id"],"symbol":sym,"family":fam,"trigger_date":frozen["trigger_date"],
               "state":state,"last_asof":asof,"frozen_geometry":frozen,"source_geometry":g,
