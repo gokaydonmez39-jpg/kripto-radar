@@ -348,7 +348,8 @@ def main():
                     and set(sj.get("fallback_watch_symbols") or [])==watch
                     and set(sj.get("fallback_fail_symbols") or sj.get("fallback_two_source_fail_symbols") or [])==fallback_fail
                     and set(sj.get("unknown_symbols") or [])==mcunk
-                    and set(si.get("current_core_mc_pass") or [])==primary
+                    and set(si.get("current_core_symbols") or [])==lpass
+                    and set(si.get("current_core_mc_pass") or [])==lpass
                 ): continue
                 si_matches.append(sp)
             except Exception:
