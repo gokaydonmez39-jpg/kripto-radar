@@ -603,7 +603,6 @@ def test_workflow_race_and_pre_mc_freeze_contracts():
     recsrc=(ROOT/"recover_pre_mc_snapshot.py").read_text()
     assert "NO_VALID_SAME_ASOF_PRICE_SNAPSHOT" in recsrc
     assert "canonical_current_resolver_chunk_manifest.json" in recsrc
-    assert "git\",\"ls-tree\",\"-r\",\"--name-only" in recsrc
     assert "canonical_current_resolver_chunk_[0-9][0-9][0-9][0-9].json" in recsrc
     assert 'assert rebuilt==req["symbols"]' in recsrc
     assert "RECOVERY_PUSH_RACE_EXHAUSTED" in recsrc
@@ -611,6 +610,10 @@ def test_workflow_race_and_pre_mc_freeze_contracts():
     assert 'declared=manifest.get("chunks") or []' in recsrc
     assert 'assert existing_rel==declared_paths' in recsrc
     assert 'assert blob(cp)==row["blob_sha"]' in recsrc
+    assert 'assert req["source_price_blob_sha"]==blob(ROOT/"canonical_current_price_dv20.json")' in recsrc
+    assert 'assert int(price["source_master_count"])==int(master["queue_total"])' in recsrc
+    assert '"resolver_chunks":len(declared)' in recsrc
+    assert '"resolver_chunks":len(chunks)' not in recsrc
     def core(pointer_asof,latest_completed,price_asof,price_ok):
         same=bool(pointer_asof and latest_completed==pointer_asof)
         current=bool(price_asof and price_asof==latest_completed)

@@ -84,6 +84,8 @@ def validate(asof:str):
     assert int(price["unknown_count"])==0 and int(price["pass_count"])>0
     assert price["source_master_queue_hash"]==master["queue_hash"]
     assert req["queue_hash"]==master["queue_hash"]
+    assert int(price["source_master_count"])==int(master["queue_total"])
+    assert req["source_price_blob_sha"]==blob(ROOT/"canonical_current_price_dv20.json")
     assert manifest["request_blob_sha"]==blob(ROOT/"canonical_current_resolver_request.json")
     assert manifest["queue_hash"]==req["queue_hash"]
     assert manifest["symbol_hash"]==req["symbol_hash"]
@@ -108,7 +110,7 @@ def validate(asof:str):
     return {
       "asof":asof,"price_pass":price["pass_count"],"price_unknown":price["unknown_count"],
       "price_blocked":price.get("blocked_count",(price.get("counts") or {}).get("BLOCK_CURRENT_RUN",0)),
-      "resolver_symbols":req["symbol_count"],"resolver_chunks":len(chunks),
+      "resolver_symbols":req["symbol_count"],"resolver_chunks":len(declared),
     }
 
 def restore_once(good:str,files:list[str],asof:str):
