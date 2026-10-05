@@ -29,6 +29,7 @@ RETRY_DELAYS=(0.0,1.0,2.5)
 _PROVIDER_SEM=threading.Semaphore(PROVIDER_MAX_INFLIGHT)
 OFFICIAL_IDENTITY_EVIDENCE=ROOT/"history_official_identity_evidence.json"
 HISTORY_CACHE_DIR=os.getenv("XRAY_STAGE1_HISTORY_CACHE_DIR")
+HISTORY_CACHE_REQUIRED=os.getenv("XRAY_STAGE1_CACHE_REQUIRED","0")=="1"
 
 def _history_cache_path(sym):
     if not HISTORY_CACHE_DIR:return None
@@ -89,12 +90,16 @@ def _sina_history(sym):
 
 def load_history(sym,asof):
     cur=_cached_sina_history(sym,asof)
+    if cur is None and HISTORY_CACHE_REQUIRED:
+        return None,"SINA_SAME_RUN_CACHE_MISSING"
     if cur is None:cur=_sina_history(sym)
     rec=OFFICIAL_RECORDS.get(sym) or {}
     if rec.get("mode")=="OFFICIAL_TICKER_CONTINUITY_COMPOSITE_HISTORY" and rec.get("cusip_unchanged") is True:
         pred=rec.get("predecessor_symbol"); eff=rec.get("effective_date")
         if pred and eff and cur is not None:
             p=_cached_sina_history(pred,asof)
+            if p is None and HISTORY_CACHE_REQUIRED:
+                return None,"SINA_PREDECESSOR_SAME_RUN_CACHE_MISSING"
             if p is None:p=_sina_history(pred)
             if p is not None:
                 eff_ts=pd.Timestamp(eff); asof_ts=pd.Timestamp(asof)
