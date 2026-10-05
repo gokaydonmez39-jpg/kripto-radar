@@ -1,7 +1,7 @@
 {
   "schema": "XRAY_FINAL_GATE_OVERLAY_V2",
   "generated_on": "2026-10-05",
-  "generated_at_utc": "2026-10-05T13:52:59.021615+00:00",
+  "generated_at_utc": "2026-10-05T14:46:32.996546+00:00",
   "asof_et": "2026-10-02",
   "execution": "NONE",
   "real_money": "NO-GO",
@@ -9,9 +9,9 @@
   "binding_protocol": "FAIL_CLOSED_BLOCKED_CACHE_DRIFT_V1",
   "source_terminal": {
     "path": "nasdaq-xray/canonical_current_terminal.json",
-    "blob_sha": "e7d60a31d37a3544654d2c39b0eeca31474afbd6",
-    "full_end_to_end_research_pass": true,
-    "terminal_result": "NO_CONFIRMED_SETUP"
+    "blob_sha": "25ade6a7519f86ba6899dbcce042beec7c36f0f2",
+    "full_end_to_end_research_pass": false,
+    "terminal_result": "PARTIAL_UNKNOWN"
   },
   "source_pointer": {
     "path": "nasdaq-xray/chatgpt_canonical_state_v2.json",
@@ -47,7 +47,7 @@
     "current_adapter": "LONGBRIDGE_HOSTED_MCP_V2",
     "persisted_gate_status": "ACCOUNT_BOOTSTRAP_READY_CREDENTIALS_REQUIRED",
     "same_run_live_witness_attested": false,
-    "live_probe_workflow_run_id": "37320081122",
+    "live_probe_workflow_run_id": "37327169595",
     "gate_path": "nasdaq-xray/account_gate_contract.json",
     "gate_blob_sha": "3bc1d79497970cdfa805d7aa836c7231ea905e6b",
     "current_adapter_contract_blob_sha": "2b224268b29ae9a09c8bd3e9ebec86907e8c3dd2",
@@ -75,10 +75,9 @@
       "STRICT_G9_PASS",
       "SAME_RUN_ACCOUNT_PASS"
     ],
-    "passed": [
-      "FULL_E2E_RESEARCH_PASS"
-    ],
+    "passed": [],
     "blocked": [
+      "FULL_E2E_RESEARCH_PASS",
       "STRICT_G9_PASS",
       "SAME_RUN_ACCOUNT_PASS"
     ]

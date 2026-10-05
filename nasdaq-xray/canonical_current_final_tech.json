@@ -12,6 +12,7 @@
     "VICR": "SINA_US_DAILY"
   },
   "input_confirmed_family_candidates": 2,
+  "policy_semantics_exact": false,
   "pre_g9_tech_pass": [],
   "pre_g9_tech_pass_count": 0,
   "r92_ineligible": [],
@@ -20,7 +21,6 @@
     "OFFICIAL_EVENT_FINAL_REVIEW",
     "ACCOUNT_GATE",
     "G9",
-    "ALIGNED_60M",
     "DELIVERY_PROOF"
   ],
   "results": {
@@ -120,6 +120,14 @@
     }
   },
   "schema": "XRAY_FINAL_TECH_SHADOW_V1",
+  "semantic_audit_status": "BLOCKED_KNOWN_GAPS",
+  "semantic_known_gaps": [
+    "R1_IMPLEMENTATION_USES_NEAREST_ANY_PRIOR_DAILY_HIGH_NOT_CERTIFIED_ELIGIBLE_ACTIVE_RESISTANCE",
+    "RETEST_FROZEN_5_SESSION_LIFECYCLE_NOT_IMPLEMENTED",
+    "FAMILY_A_PRELOW_NEAR_HL_0P5A_GATE_NOT_EXPLICITLY_BOUND_TO_C4_17",
+    "EXTENSION_RESET_SEMANTICS_NOT_IMPLEMENTED",
+    "CORPORATE_ACTION_ADJUSTMENT_RECONCILIATION_NOT_PROVEN"
+  ],
   "source_compiled_policy_hash": "26a95745a50b65e85f6ece24b6501af0994764a84ddd886edb70d1fcd770849c",
   "source_compiled_policy_version": "C4.17",
   "source_deep_blob_sha": "ef9329735a208e28be983b0a5f23647b264e300d",
