@@ -162,6 +162,17 @@ def base_pool(df):
             out.append({"window":n,"base_high":bh,"base_low":bl,"width_atr":width,"atr14_frozen":A})
     return out
 
+def recent_weekly_context(df,week_last,max_age=3):
+    """Weekly gate as knowable on current/prior completed trigger sessions."""
+    passed=[]; ctx={}
+    if df is None or df.empty:return passed,ctx
+    for idx in range(max(0,len(df)-1-max_age),len(df)):
+        td=df["date"].iloc[idx].date().isoformat()
+        wi=weekly_gate(df.iloc[:idx+1].copy(),td,week_last)
+        ctx[td]=wi
+        if wi.get("pass"):passed.append(td)
+    return passed,ctx
+
 def process(sym,asof,week_last):
     try:
         x,history_source=load_history(sym,asof)
@@ -191,18 +202,11 @@ def process(sym,asof,week_last):
         # completed sessions. Preserve the weekly context that was actually
         # knowable on each candidate trigger date; today's weekly status must
         # never erase a valid recent trigger.
-        recent_weekly_pass_dates=[]
-        recent_weekly_context={}
-        for idx in range(max(0,len(x)-4),len(x)):
-            td=x["date"].iloc[idx].date().isoformat()
-            wi=weekly_gate(x.iloc[:idx+1].copy(),td,week_last)
-            recent_weekly_context[td]=wi
-            if wi.get("pass"):
-                recent_weekly_pass_dates.append(td)
+        recent_weekly_pass_dates,recent_weekly_context_map=recent_weekly_context(x,week_last,3)
         if not wg.get("pass"):
             return sym,{"status":"WEEKLY_FAIL","weekly":wg,"raw_weekly":raw_wg,
                         "recent_weekly_pass_dates":recent_weekly_pass_dates,
-                        "recent_weekly_context":recent_weekly_context,
+                        "recent_weekly_context":recent_weekly_context_map,
                         "corporate_action_status":ca_status,"split_events":split_events,
                         "mechanical_scale_breaks":scale_breaks,"mechanical_split_suspects":split_suspects,
                         "history_source":history_source}
