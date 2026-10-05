@@ -172,8 +172,32 @@ def hist(sym,asof):
         return sym,None,f"{primary_error}|YAHOO_{type(e).__name__}:{str(e)[:100]}",None
 
 def close_only_scale_breaks(df):
-    """Regime/breadth histories contain only date+close; this guard must stay close-only safe."""
-    return mechanical_scale_breaks(df,260)
+    """Close-only split/ratio discontinuity guard for regime/breadth.
+
+    Severe 2x+ breaks reuse the shared detector. Fractional common split ratios
+    (for example 5:4 or 3:2) are added from close-to-close data so QQQ regime
+    cannot silently use an unadjusted split series. For ordinary breadth names,
+    Stage1 corporate-action status remains the authority that distinguishes a
+    verified split from a legitimate market/news gap.
+    """
+    out=list(mechanical_scale_breaks(df,260))
+    if df is None or len(df)<2:return out
+    seen={str(x.get("date")) for x in out}
+    common=(1.25,1.5,2.0,3.0,4.0,5.0,10.0,20.0,25.0,50.0,100.0)
+    start=max(1,len(df)-260)
+    for i in range(start,len(df)):
+        pc=float(df["close"].iloc[i-1]);cc=float(df["close"].iloc[i])
+        if pc<=0 or cc<=0:continue
+        ratio=max(pc/cc,cc/pc)
+        if ratio<1.18:continue
+        nearest=min(common,key=lambda x:abs(ratio-x))
+        rel=abs(ratio-nearest)/nearest
+        day=df["date"].iloc[i].date().isoformat()
+        if rel<=0.08 and day not in seen:
+            out.append({"date":day,"ratio":ratio,"nearest_common_factor":nearest,
+                        "relative_error":rel,"source":"CLOSE_ONLY_COMMON_RATIO"})
+            seen.add(day)
+    return sorted(out,key=lambda x:str(x.get("date") or ""))
 
 def classify_regime_bounds(q,total,above50,nh20,nl20,missing_count):
     """Fail-closed regime classification using bounds for unresolved breadth members.
