@@ -298,15 +298,36 @@ def main():
     assert dp["event_state_fresh"] is True and dp["unknown_history_count"]==0
     assert dp["regime"]==rg["regime"]
 
-    confirmed=set()
-    confirmed|={f"{s}|A" for s in dp.get("a_geometry_rs_event_pass",[])}
-    confirmed|={f"{s}|B" for s in dp.get("b_breakout_rs_event_pass",[])}
-    confirmed|={f"{s}|D" for s in dp.get("d_dk3_pre_r1",[])}
-    confirmed|={f"{s}|C" for s in (fc.get("confirmed") or {})}
-    assert ft["input_confirmed_family_candidates"]==len(confirmed)
+    current_confirmed=set()
+    current_confirmed|={f"{s}|A" for s in dp.get("a_geometry_rs_event_pass",[])}
+    current_confirmed|={f"{s}|B" for s in dp.get("b_breakout_rs_event_pass",[])}
+    current_confirmed|={f"{s}|D" for s in dp.get("d_dk3_pre_r1",[])}
+    current_confirmed|={f"{s}|C" for s in (fc.get("confirmed") or {})}
     assert ft.get("source_deep_blob_sha")==sh["deep"] and ft.get("source_family_c_blob_sha")==sh["family_c"]
     assert ft.get("source_compiled_policy_hash")==POLICY_HASH and ft.get("source_compiled_policy_version")=="C4.17"
-    assert set(ft["results"])==confirmed
+    final_set=set(ft["results"])
+    assert ft["input_confirmed_family_candidates"]==len(final_set)
+    assert current_confirmed<=final_set,(sorted(current_confirmed),sorted(final_set))
+    # A prior prospectively recorded setup may remain in the final engine during
+    # its frozen retest/reconfirmation window even after it drops out of today's
+    # fresh deep-trigger set. Every such extra row must be exactly backed by the
+    # durable lifecycle registry and matching setup_id; no unbound extra is allowed.
+    lreg=ft.get("lifecycle_registry") or {}
+    assert lreg.get("schema")=="XRAY_CANDIDATE_LIFECYCLE_REGISTRY_V1"
+    assert lreg.get("execution")=="NONE" and lreg.get("real_money")=="NO-GO"
+    lifecycle_backed=set()
+    for rec in (lreg.get("records") or {}).values():
+        sym=str(rec.get("symbol") or ""); fam=str(rec.get("family") or "")
+        key=f"{sym}|{fam}" if sym and fam else ""
+        if key not in final_set: continue
+        rr=ft["results"][key]
+        assert rr.get("setup_id")==rec.get("setup_id"),(key,rr.get("setup_id"),rec.get("setup_id"))
+        assert rec.get("state") in {"WATCH_RETEST_REQUIRED","WATCH_RECONFIRMATION_REQUIRED","WATCH_HISTORICAL_SETUP",
+                                   "PRE_G9_TECH_PASS","WATCH_MC_FALLBACK_CAP","WATCH_SYNTHETIC_PRICE_DISCOVERY_CAP"}
+        lifecycle_backed.add(key)
+    extra_lifecycle=final_set-current_confirmed
+    assert extra_lifecycle<=lifecycle_backed,(sorted(extra_lifecycle),sorted(lifecycle_backed))
+    confirmed=final_set
     expected_alpha_blobs={
       "alpha_semantics.py":blob_sha(ROOT/"alpha_semantics.py"),
       "stage1_shadow.py":blob_sha(ROOT/"stage1_shadow.py"),
@@ -427,7 +448,10 @@ def main():
       },
       "sets":{
         "mc_fallback_watch":sorted(watch),"mc_fallback_fail":sorted(fallback_fail),"history_pass":sorted(hpass),"history_fail":sorted(hfail),
-        "legal_pass":sorted(lpass),"weekly_pass":sorted(weekly),"confirmed_family_candidates":sorted(confirmed),
+        "legal_pass":sorted(lpass),"weekly_pass":sorted(weekly),
+        "current_confirmed_family_candidates":sorted(current_confirmed),
+        "lifecycle_backed_family_candidates":sorted(lifecycle_backed),
+        "confirmed_family_candidates":sorted(confirmed),
         "pre_g9_tech_pass_before_halt_guard":sorted(raw_pre),
         "halt_vetoed_candidates":halt_vetoed,
         "pre_g9_tech_pass":sorted(pre),"affected_event_unknown":affected_event_unknown,
@@ -449,7 +473,9 @@ def main():
         "legal_master_blob_exact":lg.get("source_master_blob_sha")==sh["full_state"],
         "legal_master_semantic_rebind":legal_master_semantic_rebind,
         "stage1_exact_legal_pass":True,"weekly_exact_event_scope":True,"regime_no_missing":True,
-        "deep_exact_weekly_scope":True,"final_exact_confirmed_family_set":True,
+        "deep_exact_weekly_scope":True,
+        "final_exact_confirmed_family_set":True,
+        "final_extra_rows_exact_lifecycle_backed":extra_lifecycle<=lifecycle_backed,
         "alpha_semantic_conformance_exact":ft.get("policy_semantics_exact") is True,
         "alpha_source_binding_exact":alpha_source_binding_exact,
         "alpha_source_blobs_exact":alpha_source_blobs_exact,
