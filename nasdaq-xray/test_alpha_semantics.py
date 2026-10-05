@@ -473,6 +473,24 @@ def main():
     cg3,cd3=eval_event("TEST",cdf3,ce,cdf3.date.iloc[-1].date().isoformat(),sess,"CLEAN_DISCOVERY")
     assert cg3 is None and cd3.get("gap_floor_breach_date")==cdf3.date.iloc[r0+4].date().isoformat(),(cg3,cd3)
 
+    # Full positive reachability: actual structural R1 -> frozen geometry -> RR -> PRE_G9.
+    # This prevents a self-lock where individually valid gates can never compose into a candidate.
+    rf=frame(100)
+    rf[["open","high","low","close","volume"]]=[100.0,105.0,95.0,100.0,1_000_000.0]
+    rf.loc[35,"high"]=150.0
+    rf.loc[33:34,"high"]=[105.0,106.0]
+    rf.loc[36:37,"high"]=[106.0,105.0]
+    rti=len(rf)-1
+    rf.loc[rti,["open","high","low","close","volume"]]=[100.0,103.0,95.0,101.0,2_000_000.0]
+    rtd=rf.date.iloc[rti].date().isoformat()
+    rg={"trigger_date":rtd,"P":100.0,"anchor":96.5}
+    frozen,err=final_mod._frozen_geometry("REACH","B",rg,rf)
+    assert err is None and frozen is not None,(frozen,err)
+    assert frozen["target_source"]=="STRUCTURAL_ACTIVE_R1_LOWER_BOUND",frozen
+    assert float(frozen["T1"])>float(frozen["entry_high"]),frozen
+    reach=eval_one("REACH","B",rg,rf,"CLEAN_DISCOVERY",frozen=frozen,recorded_before=True)
+    assert reach["result"]=="PRE_G9_TECH_PASS" and reach["pre_g9_tech_pass"] is True,reach
+
     assert _is_depositary_security_name("Example Corp - American Depositary Shares") is True
     assert _is_depositary_security_name("Example Corp - Common Stock") is False
 
@@ -481,7 +499,7 @@ def main():
       "R1_STRUCTURAL_TRIGGER_MINUS1","R1_ENTRY_OVERLAP","EXTENSION_RESET","EXTENSION_TIGHT_BASE_RESET","RETEST_BAR","FAMILY_A_TRIGGER_MINUS1_LOW","SETUP_ID_STABLE",
       "B_RECENT_TRIGGER_PERSISTENCE","DEEP_RECENT_TRIGGER_INDEPENDENT_OF_CURRENT_STAGE1","A_STAGE1_ASOF_TRIGGER","MECHANICAL_SCALE_BREAK_GUARD","BREADTH_CLOSE_ONLY_SCALE_GUARD","SPLIT_ONLY_RECONCILIATION","SPLIT_RAW_CROSSCHECK","UNDECLARED_SCALE_MOVE_MARKET_GAP","HISTORICAL_DISCOVERY_RESEARCH_ELIGIBLE_NO_R92_BACKFILL","CHASE_FROZEN_RETEST_RECOVERY","ANCHOR_AVAILABLE_S0_CHRONOLOGY",
       "ADR_RATIO_FAIL_CLOSED_CLASSIFICATION","FINALIST_FRACTIONAL_SPLIT_VERIFICATION","SYNTHETIC_PRICE_DISCOVERY_ORANGE_CAP","PROSPECTIVE_LIFECYCLE_PERSISTENCE","FROZEN_LIFECYCLE_EVENT_SCOPE","ANCIENT_SCALE_BREAK_OUTSIDE_TECH_HORIZON","TRIGGER_TIME_WEEKLY_SCOPE","BREADTH_NH20_NL20_PRIOR20_STRICT",
-      "FAMILY_C_REACTION_HIGH_PIVOT","FAMILY_C_PERSISTENT_GAP_FLOOR","SPLIT_RECONCILIATION_ACTIVE_HORIZON_ONLY"
+      "FAMILY_C_REACTION_HIGH_PIVOT","FAMILY_C_PERSISTENT_GAP_FLOOR","FULL_R1_TO_PRE_G9_REACHABILITY","SPLIT_RECONCILIATION_ACTIVE_HORIZON_ONLY"
     ]})
 
 if __name__=="__main__":
