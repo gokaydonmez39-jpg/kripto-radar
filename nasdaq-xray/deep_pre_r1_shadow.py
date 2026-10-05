@@ -350,7 +350,15 @@ def main():
             x=apply_split_events(x,split_events)
         x=x.reset_index(drop=True)
         rs20=common_rs(x,qqq,20);rs60=common_rs(x,qqq,60)
-        mix_pass=True if GEOMETRY_ONLY else (bool(rs20 is not None and rs60 is not None and rs20>0 and rs60>0) if rg.get("regime")=="MIXED" else True)
+        regime_name=str(rg.get("regime") or "UNKNOWN")
+        if GEOMETRY_ONLY:
+            mix_pass=True
+            regime_finalist_pass=None
+        else:
+            regime_known=regime_name in {"STRONG","MIXED","WEAK"}
+            mix_pass=(bool(rs20 is not None and rs60 is not None and rs20>0 and rs60>0)
+                      if regime_name=="MIXED" else regime_known)
+            regime_finalist_pass=bool(regime_known and mix_pass)
         # Exact recent-trigger evaluation must not depend on today's cheap Stage1
         # snapshot pool. A/B/D re-check their mandatory conditions at the actual
         # candidate trigger; this preserves valid triggers from the prior 3 sessions.
@@ -379,6 +387,7 @@ def main():
             if s in (ev.get("confirmed_blocks") or {}): event="BLOCK_CONFIRMED_8SESSION"
             elif s in (ev.get("unresolved") or {}): event="UNKNOWN"
         outres[s]={"status":"EVALUATED","rs20":rs20,"rs60":rs60,"mixed_rs_pass":mix_pass,
+                   "regime_finalist_pass":regime_finalist_pass,
                    "A":A,"B":B,"D":D,"event_status":event,
                    "mechanical_scale_breaks":mechanical_scale_breaks(x,260),
                    "corporate_action_status":ca_status,"split_events":split_events,
@@ -390,10 +399,10 @@ def main():
     if GEOMETRY_ONLY:
         a=a_geom;b=b_break;d=d_geom
     else:
-        a=[s for s in a_geom if outres[s].get("mixed_rs_pass") and outres[s].get("event_status")=="CLEAN_DISCOVERY"]
-        b=[s for s in b_break if outres[s].get("mixed_rs_pass") and outres[s].get("event_status")=="CLEAN_DISCOVERY"]
-        b_armed=[s for s in b_armed if outres[s].get("mixed_rs_pass") and outres[s].get("event_status")=="CLEAN_DISCOVERY"]
-        d=[s for s in d_geom if outres[s].get("event_status")=="CLEAN_DISCOVERY"]
+        a=[s for s in a_geom if outres[s].get("regime_finalist_pass") is True and outres[s].get("event_status")=="CLEAN_DISCOVERY"]
+        b=[s for s in b_break if outres[s].get("regime_finalist_pass") is True and outres[s].get("event_status")=="CLEAN_DISCOVERY"]
+        b_armed=[s for s in b_armed if outres[s].get("regime_finalist_pass") is True and outres[s].get("event_status")=="CLEAN_DISCOVERY"]
+        d=[s for s in d_geom if outres[s].get("regime_finalist_pass") is True and outres[s].get("event_status")=="CLEAN_DISCOVERY"]
     out={
       "schema":"XRAY_DEEP_GEOMETRY_V1" if GEOMETRY_ONLY else "XRAY_DEEP_PRE_R1_SHADOW_V1",
       "task_id":TASK_ID,"asof_et":asof,"execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
