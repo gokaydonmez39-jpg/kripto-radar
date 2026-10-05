@@ -7,6 +7,7 @@ import alpha_semantics as alpha
 import final_tech_shadow as ft
 import build_candidate_legal_guard as legal_guard_mod
 import build_current_resolver_request as resolver_req_mod
+import price_dv20_recover_from_fullstate as price_recover_mod
 import build_current_terminal as terminal_mod
 import build_current_event_request as event_req_mod
 import regime_breadth_shadow as rb
@@ -364,6 +365,51 @@ def test_resolver_metadata_only_resume_identity():
     changed={**meta,"price_unknown_detail":{"AAA":{"price_result":{"status":"PASS_PRICE_DV20"}},"BBB":{"price_result":{"status":"UNKNOWN"}}}}
     assert resolver_req_mod.resolver_resume_semantic_view(base)!=resolver_req_mod.resolver_resume_semantic_view(changed)
 
+def test_resolver_bridge_bound_to_exact_pre_run_price_and_scope():
+    old_out,old_req,old_manifest=price_recover_mod.OUT,price_recover_mod.RESOLVER_REQUEST,price_recover_mod.RESOLVER_CHUNK_MANIFEST
+    try:
+        with tempfile.TemporaryDirectory() as td:
+            td=Path(td)
+            out=td/"price.json"; req=td/"request.json"; manifest=td/"manifest.json"
+            out.write_text(json.dumps({"schema":"XRAY_CANONICAL_PRICE_DV20_V1","asof_et":"2026-10-05","results":{}})+"\n")
+            pb=price_recover_mod.git_blob_sha(out)
+            q={
+              "schema":"XRAY_RESOLVER_EPOCH_REQUEST_V1","status":"READY","task_id":price_recover_mod.TASK_ID,
+              "asof_et":"2026-10-05","execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
+              "queue_hash":"Q","compiled_policy_blob_sha":"10d7af14870dfac0dc4566595d95a06f3faa854d",
+              "compiled_policy_hash":"26a95745a50b65e85f6ece24b6501af0994764a84ddd886edb70d1fcd770849c",
+              "compiled_policy_version":"C4.17","source_price_blob_sha":pb,
+              "symbols":["AAA","BBB"],"symbol_count":2,"symbol_hash":"S",
+              "price_unknown_symbols":["AAA","BBB"],
+            }
+            req.write_text(json.dumps(q,sort_keys=True)+"\n")
+            rb=price_recover_mod.git_blob_sha(req)
+            cm={
+              "schema":"XRAY_RESOLVER_REQUEST_CHUNK_MANIFEST_V1","task_id":price_recover_mod.TASK_ID,
+              "asof_et":"2026-10-05","execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
+              "request_blob_sha":rb,"queue_hash":"Q","symbol_hash":"S","symbol_count":2,"coverage_complete":True,
+            }
+            manifest.write_text(json.dumps(cm,sort_keys=True)+"\n")
+            price_recover_mod.OUT=out; price_recover_mod.RESOLVER_REQUEST=req; price_recover_mod.RESOLVER_CHUNK_MANIFEST=manifest
+            bridge={
+              "source_price_blob_sha":pb,"source_request_blob_sha":"OLD_REQUEST","source_manifest_blob_sha":"OLD_MANIFEST",
+              "symbols":["AAA","BBB"],"symbol_count":2,"symbol_hash":"S","price_unknown_symbols":["AAA","BBB"],
+            }
+            ok,role,reason=price_recover_mod.resolver_bridge_input_binding(bridge,"2026-10-05","Q")
+            assert ok and role=="SEMANTIC_REBIND_EXACT_SOURCE_PRICE_AND_SCOPE" and reason is None,(ok,role,reason)
+            bridge2={**bridge,"source_price_blob_sha":"WRONG"}
+            assert price_recover_mod.resolver_bridge_input_binding(bridge2,"2026-10-05","Q")[0] is False
+            bridge3={**bridge,"symbols":["AAA"],"symbol_count":1,"symbol_hash":"X","price_unknown_symbols":["AAA"]}
+            assert price_recover_mod.resolver_bridge_input_binding(bridge3,"2026-10-05","Q")[0] is False
+            q2={**q,"source_price_blob_sha":"WRONG"}
+            req.write_text(json.dumps(q2,sort_keys=True)+"\n")
+            cm["request_blob_sha"]=price_recover_mod.git_blob_sha(req)
+            manifest.write_text(json.dumps(cm,sort_keys=True)+"\n")
+            assert price_recover_mod.resolver_bridge_input_binding(bridge,"2026-10-05","Q")[0] is False
+    finally:
+        price_recover_mod.OUT,price_recover_mod.RESOLVER_REQUEST,price_recover_mod.RESOLVER_CHUNK_MANIFEST=old_out,old_req,old_manifest
+
+
 def test_candidate_legal_guard_phrase_severity():
     boiler="the credit agreement contains customary events of default and financial covenants and other standard provisions"
     assert legal_guard_mod._phrase_flags(boiler,legal_guard_mod.HARD_PHRASES)==[]
@@ -567,6 +613,7 @@ def main():
     test_candidate_legal_guard_lifecycle_fallback_matches_final()
     test_future_lifecycle_evidence_rejected()
     test_resolver_metadata_only_resume_identity()
+    test_resolver_bridge_bound_to_exact_pre_run_price_and_scope()
     test_candidate_legal_guard_phrase_severity()
     test_workflow_race_and_pre_mc_freeze_contracts()
     print({"status":"PASS","tests":["R1_NO_FUTURE_MUTATION","R1_PLUS2_CONFIRMATION_NO_LEAK",

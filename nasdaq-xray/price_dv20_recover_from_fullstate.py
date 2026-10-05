@@ -13,6 +13,78 @@ WORKERS=int(os.getenv("XRAY_PHASE_WORKERS","12"))
 DEFER_TO_BRIDGE=os.getenv("XRAY_DYNAMIC_AUTHENTICATED_PRICE_BRIDGE","0")=="1"
 HARD_PRICE=10.0
 HARD_DV20=50_000_000.0
+RESOLVER_REQUEST=Path(os.getenv("XRAY_CURRENT_RESOLVER_REQUEST",str(ROOT/"canonical_current_resolver_request.json")))
+RESOLVER_CHUNK_MANIFEST=Path(os.getenv("XRAY_CURRENT_RESOLVER_CHUNK_MANIFEST",str(ROOT/"canonical_current_resolver_chunk_manifest.json")))
+
+
+def git_blob_sha(path:Path)->str:
+    b=path.read_bytes()
+    return hashlib.sha1(b"blob "+str(len(b)).encode()+b"\0"+b).hexdigest()
+
+
+def resolver_bridge_input_binding(obj,asof,queue_hash):
+    """Bind a resolver bridge to the exact pre-run PRICE state and resolver scope.
+
+    Request/manifest provenance SHAs may differ only when current request
+    semantics are independently identical: same exact source PRICE blob,
+    ASOF/queue/policy, ordered symbol scope and unknown scope, with the current
+    chunk manifest exactly bound to the current request bytes.
+    """
+    try:
+        if not OUT.exists() or not RESOLVER_REQUEST.exists() or not RESOLVER_CHUNK_MANIFEST.exists():
+            return False,None,"CURRENT_INPUT_ARTIFACT_MISSING"
+        prior_price_blob=git_blob_sha(OUT)
+        if obj.get("source_price_blob_sha")!=prior_price_blob:
+            return False,None,"SOURCE_PRICE_BLOB_MISMATCH"
+        q=json.loads(RESOLVER_REQUEST.read_text())
+        cm=json.loads(RESOLVER_CHUNK_MANIFEST.read_text())
+        if not (
+          q.get("schema")=="XRAY_RESOLVER_EPOCH_REQUEST_V1"
+          and q.get("status")=="READY"
+          and q.get("task_id")==TASK_ID
+          and q.get("execution")=="NONE" and q.get("real_money")=="NO-GO"
+          and q.get("unknown_never_pass") is True
+          and q.get("asof_et")==asof and q.get("queue_hash")==queue_hash
+          and q.get("compiled_policy_blob_sha")=="10d7af14870dfac0dc4566595d95a06f3faa854d"
+          and q.get("compiled_policy_hash")=="26a95745a50b65e85f6ece24b6501af0994764a84ddd886edb70d1fcd770849c"
+          and q.get("compiled_policy_version")=="C4.17"
+          and q.get("source_price_blob_sha")==prior_price_blob
+        ):
+            return False,None,"CURRENT_REQUEST_BINDING_MISMATCH"
+        q_symbols=list(q.get("symbols") or [])
+        b_symbols=list(obj.get("symbols") or [])
+        q_unknown=list(q.get("price_unknown_symbols") or [])
+        b_unknown=list(obj.get("price_unknown_symbols") or obj.get("symbols") or [])
+        if (
+          q.get("symbol_hash")!=obj.get("symbol_hash")
+          or int(q.get("symbol_count",-1))!=int(obj.get("symbol_count",-2))
+          or q_symbols!=b_symbols
+          or q_unknown!=b_unknown
+        ):
+            return False,None,"CURRENT_REQUEST_SCOPE_MISMATCH"
+        rq_blob=git_blob_sha(RESOLVER_REQUEST)
+        cm_blob=git_blob_sha(RESOLVER_CHUNK_MANIFEST)
+        if not (
+          cm.get("schema")=="XRAY_RESOLVER_REQUEST_CHUNK_MANIFEST_V1"
+          and cm.get("task_id")==TASK_ID
+          and cm.get("execution")=="NONE" and cm.get("real_money")=="NO-GO"
+          and cm.get("unknown_never_pass") is True
+          and cm.get("asof_et")==asof
+          and cm.get("request_blob_sha")==rq_blob
+          and cm.get("queue_hash")==q.get("queue_hash")
+          and cm.get("symbol_hash")==q.get("symbol_hash")
+          and int(cm.get("symbol_count",-1))==int(q.get("symbol_count",-2))
+          and cm.get("coverage_complete") is True
+        ):
+            return False,None,"CURRENT_MANIFEST_BINDING_MISMATCH"
+        role=(
+          "EXACT_CURRENT_REQUEST_MANIFEST"
+          if obj.get("source_request_blob_sha")==rq_blob and obj.get("source_manifest_blob_sha")==cm_blob
+          else "SEMANTIC_REBIND_EXACT_SOURCE_PRICE_AND_SCOPE"
+        )
+        return True,role,None
+    except Exception as exc:
+        return False,None,"INPUT_BINDING_ERROR:"+type(exc).__name__
 
 
 def num(x):
@@ -46,7 +118,7 @@ def load_exception_bridge(asof,queue_hash):
     for path in paths:
         try:
             obj=json.loads(path.read_text())
-            if (
+            base_ok=(
               obj.get("schema")=="XRAY_RESOLVER_EPOCH_RESULT_V1"
               and obj.get("status")=="COMMITTED"
               and obj.get("task_id")==TASK_ID
@@ -56,17 +128,19 @@ def load_exception_bridge(asof,queue_hash):
               and obj.get("compiled_policy_version")=="C4.17"
               and obj.get("compiled_policy_blob_sha")=="10d7af14870dfac0dc4566595d95a06f3faa854d"
               and (obj.get("settlement_required") is not True or obj.get("settlement_status")=="PASS")
-            ):
-                matches.append((path,obj))
+            )
+            binding_ok,binding_role,binding_reason=resolver_bridge_input_binding(obj,asof,queue_hash) if base_ok else (False,None,"BASE_BINDING")
+            if base_ok and binding_ok:
+                matches.append((path,obj,binding_role))
             else:
-                rejected.append(str(path))
+                rejected.append(str(path)+":"+str(binding_reason))
         except Exception:
             rejected.append(str(path))
     if len(matches)==0:
         return {},{"status":"ABSENT_CURRENT_POLICY","paths":[str(p) for p in paths],"rejected":rejected}
     if len(matches)!=1:
-        return {},{"status":"AMBIGUOUS_CURRENT_POLICY","matches":[str(p) for p,_ in matches]}
-    path,obj=matches[0]
+        return {},{"status":"AMBIGUOUS_CURRENT_POLICY","matches":[str(x[0]) for x in matches]}
+    path,obj,binding_role=matches[0]
     try:
         if obj.get("schema")!="XRAY_RESOLVER_EPOCH_RESULT_V1" or obj.get("status")!="COMMITTED":
             raise ValueError("SCHEMA_OR_STATUS")
@@ -280,7 +354,7 @@ def load_exception_bridge(asof,queue_hash):
                     if not d or str(d)<=asof: raise ValueError("COMPACT_POST_ASOF")
                     prs[sym]={"decision":"BLOCK_POST_ASOF_LISTING","first_trade_date":str(d),"source":src,"proof":"FIRST_VALID_BAR_AFTER_ASOF"}
         prs=apply_terminal_overrides(prs,obj.get("terminal_overrides"))
-        return prs,{"status":"PASS","path":str(path),"symbol_hash":obj.get("symbol_hash"),"source_result_task_id":obj.get("source_result_task_id"),"result_encoding":encoding or "EXPANDED_V1","terminal_override_count":len(obj.get("terminal_overrides") or {})}
+        return prs,{"status":"PASS","path":str(path),"symbol_hash":obj.get("symbol_hash"),"source_result_task_id":obj.get("source_result_task_id"),"result_encoding":encoding or "EXPANDED_V1","terminal_override_count":len(obj.get("terminal_overrides") or {}),"input_binding_role":binding_role}
     except Exception as e:
         return {},{"status":"INVALID","path":str(path),"reason":f"{type(e).__name__}:{str(e)[:160]}"}
 
