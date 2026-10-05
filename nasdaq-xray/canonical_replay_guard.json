@@ -12,14 +12,14 @@
       "asof_et": "2026-10-02",
       "path": "canonical_current_master_manifest.json",
       "schema": "XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1",
-      "sha256": "ec07605c36ba332f77c1827aec12a374dac16f3f316a427c39a985dffbcbe297",
+      "sha256": "ed53fb860bef975b5fd95600fa8eb6d1be9164cccf81c4300f554c7403a1ea0e",
       "status": "PRESENT"
     },
     {
       "asof_et": "2026-10-02",
       "path": "canonical_current_price_dv20.json",
       "schema": "XRAY_CANONICAL_PRICE_DV20_V1",
-      "sha256": "67f435f7a3ea709c40f90548c3111fae28859b0c5b15e94f359748bed7e4c586",
+      "sha256": "0ade222cf33278a4d8a121c063d6d4adc80a011b70d131bccd9bc2fefcaef881",
       "status": "PRESENT"
     },
     {
@@ -68,14 +68,14 @@
       "asof_et": "2026-10-02",
       "path": "canonical_current_final_tech.json",
       "schema": "XRAY_FINAL_TECH_SHADOW_V1",
-      "sha256": "da1995801a4a0a26b3196258af35cfeb11785ef15b1d944b35006ed7e8e90fe5",
+      "sha256": "0d91f374845275698a7773c664371c30381e65a3ed8ea9e67e3ca894983d2b71",
       "status": "PRESENT"
     },
     {
       "asof_et": "2026-10-02",
       "path": "canonical_current_terminal.json",
       "schema": "XRAY_CANONICAL_CURRENT_TERMINAL_V1",
-      "sha256": "d025303e207453924409a2fbac73a1997cc8805f6323c575f41d66f4b3dec19a",
+      "sha256": "70c1af009bd7e66abc296998ebfc7137390ca9fcbec434092d29617387d9bee9",
       "status": "PRESENT"
     },
     {
@@ -92,7 +92,7 @@
   ],
   "candidate_delivery_keys": [],
   "execution": "NONE",
-  "generated_at_utc": "2026-10-05T11:29:54.972690+00:00",
+  "generated_at_utc": "2026-10-05T15:16:47.897508+00:00",
   "real_money": "NO-GO",
   "replay_rule": "ONLY_FROZEN_ASOF_EVIDENCE_MAY_BE_USED; LATER_VINTAGES_NEVER_BACKFILL_PRIOR_DECISION",
   "schema": "XRAY_DETERMINISTIC_REPLAY_GUARD_V1",

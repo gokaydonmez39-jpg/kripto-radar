@@ -8,16 +8,16 @@
     },
     {
       "detail": {
-        "pass_count": 500,
-        "unknown_count": 0
+        "pass_count": 0,
+        "unknown_count": 3401
       },
       "name": "price_dv20_counts",
       "state": "PASS"
     },
     {
-      "detail": 0,
+      "detail": "PARTIAL",
       "name": "event_complete_for_terminal",
-      "state": "PASS"
+      "state": "NOT_APPLICABLE"
     },
     {
       "detail": "PASS",
@@ -57,7 +57,7 @@
     }
   ],
   "execution": "NONE",
-  "generated_at_utc": "2026-10-05T11:29:55.030829+00:00",
+  "generated_at_utc": "2026-10-05T15:16:47.944299+00:00",
   "real_money": "NO-GO",
   "schema": "XRAY_GUARDIAN_STATE_V1",
   "self_healing_may_not_change_alpha": true,

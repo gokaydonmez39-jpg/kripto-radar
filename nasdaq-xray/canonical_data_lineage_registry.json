@@ -3,14 +3,14 @@
   "configured_provider_not_actual_provider": true,
   "execution": "NONE",
   "gate_unknowns_are_preserved": true,
-  "generated_at_utc": "2026-10-05T11:29:54.900261+00:00",
+  "generated_at_utc": "2026-10-05T15:16:47.854236+00:00",
   "incomplete_receipt_count": 0,
   "note": "COMPLETE_LINEAGE_SCHEMA means every tracked field has an explicit provenance/entitlement/license classification; it does not convert blocked G9 or ACCOUNT into PASS.",
   "real_money": "NO-GO",
   "records": [
     {
       "artifact": "canonical_current_master_manifest.json",
-      "artifact_sha256": "ec07605c36ba332f77c1827aec12a374dac16f3f316a427c39a985dffbcbe297",
+      "artifact_sha256": "ed53fb860bef975b5fd95600fa8eb6d1be9164cccf81c4300f554c7403a1ea0e",
       "authority_class": "T0_EXCHANGE_IDENTITY",
       "endpoint": "NASDAQTRADER_SYMBOL_DIRECTORY",
       "entitlement_class": "OFFICIAL_PUBLIC_CURRENT_DAY_DATA",
@@ -30,7 +30,7 @@
     },
     {
       "artifact": "canonical_current_price_dv20.json",
-      "artifact_sha256": "67f435f7a3ea709c40f90548c3111fae28859b0c5b15e94f359748bed7e4c586",
+      "artifact_sha256": "0ade222cf33278a4d8a121c063d6d4adc80a011b70d131bccd9bc2fefcaef881",
       "authority_class": "COMPILED_DV20_PRIMARY",
       "endpoint": "RALLIES_CONNECTED_CHATGPT_MARKET_DATA",
       "entitlement_class": "CURRENT_CONNECTED_PLATFORM_ACCESS_ZERO_COST_SURFACE",
