@@ -134,13 +134,20 @@ def main():
     # Candidate-local research delivery must not depend on unrelated global
     # coverage completeness. It still fails closed on official safety and semantic
     # conformance, and cannot create a candidate from an empty PRE_G9 set.
-    ft_ok={"policy_semantics_exact":True,"lifecycle_semantics_exact":True}
+    ft_ok={
+      "policy_semantics_exact":True,
+      "lifecycle_semantics_exact":True,
+      "candidate_legal_guard_exact_binding":True,
+      "results":{"AAA":{"candidate_legal_review_status":"PASS"}},
+    }
     assert candidate_local_research_ready({"AAA"},{"status":"PASS"},ft_ok,True) is True
     assert candidate_local_research_ready(set(),{"status":"PASS"},ft_ok,True) is False
     assert candidate_local_research_ready({"AAA"},{"status":"UNKNOWN"},ft_ok,True) is False
-    assert candidate_local_research_ready({"AAA"},{"status":"PASS"},{"policy_semantics_exact":False,"lifecycle_semantics_exact":True},True) is False
+    assert candidate_local_research_ready({"AAA"},{"status":"PASS"},{**ft_ok,"policy_semantics_exact":False},True) is False
     assert candidate_local_research_ready({"AAA"},{"status":"PASS"},ft_ok,False) is False
-    assert candidate_local_research_ready({"AAA"},{"status":"PASS"},{"policy_semantics_exact":True,"lifecycle_semantics_exact":False},True) is False
+    assert candidate_local_research_ready({"AAA"},{"status":"PASS"},{**ft_ok,"lifecycle_semantics_exact":False},True) is False
+    assert candidate_local_research_ready({"AAA"},{"status":"PASS"},{**ft_ok,"candidate_legal_guard_exact_binding":False},True) is False
+    assert candidate_local_research_ready({"AAA"},{"status":"PASS"},{**ft_ok,"results":{"AAA":{"candidate_legal_review_status":"UNKNOWN"}}},True) is False
 
     # HISTORY evidence regression: official listing-date evidence can only
     # produce a terminal upper-bound FAIL; it must never manufacture PASS.
