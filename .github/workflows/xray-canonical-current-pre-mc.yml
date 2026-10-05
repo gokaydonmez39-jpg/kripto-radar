@@ -339,11 +339,11 @@ jobs:
           assert cm["chunk_count"]==len(cm["chunks"])
           import hashlib,pathlib
           rb=pathlib.Path("nasdaq-xray/canonical_current_resolver_request.json").read_bytes()
-          rsha=hashlib.sha1(f"blob {len(rb)}\\0".encode()+rb).hexdigest()
+          rsha=hashlib.sha1(b"blob "+str(len(rb)).encode()+b"\0"+rb).hexdigest()
           assert cm["request_blob_sha"]==rsha
           rebuilt=[]
           for i,row in enumerate(cm["chunks"],1):
-              cp=pathlib.Path(row["path"]); cb=cp.read_bytes(); csha=hashlib.sha1(f"blob {len(cb)}\\0".encode()+cb).hexdigest()
+              cp=pathlib.Path(row["path"]); cb=cp.read_bytes(); csha=hashlib.sha1(b"blob "+str(len(cb)).encode()+b"\0"+cb).hexdigest()
               cj=json.loads(cb)
               assert row["chunk_index"]==i and row["blob_sha"]==csha
               assert cj["request_blob_sha"]==rsha and cj["queue_hash"]==q["queue_hash"] and cj["symbol_hash"]==q["symbol_hash"]
