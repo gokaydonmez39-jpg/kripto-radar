@@ -59,7 +59,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-10-05T11:30:05.012520+00:00",
+  "generated_at_utc": "2026-10-05T13:01:34.022499+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -69,10 +69,10 @@
   "schema": "XRAY_OFFICIAL_SOURCE_GUARD_V1",
   "sources": {
     "security_status": {
-      "historical_event_rows_considered": 45,
+      "historical_event_rows_considered": 50,
       "query_end": "2026-10-05",
       "query_start": "2026-10-02",
-      "row_count": 45,
+      "row_count": 50,
       "rows": [
         {
           "CompanyName": "Alpha Modus Holdings, Inc. Class A Common Stock",
@@ -336,10 +336,28 @@
           "Symbol": "IPHX"
         },
         {
+          "CompanyName": "Inflection Point Acquisition Corp. VIII Class A Ordinary Shares",
+          "DowngradeReason": "",
+          "EffectiveDate": "2026-10-05",
+          "IssueEvent": "Security Additions",
+          "NewFinancialStatus": "",
+          "OldFinancialStatus": "",
+          "Symbol": "IPHX"
+        },
+        {
           "CompanyName": "Inflection Point Acquisition Corp. VIII Warrant",
           "DowngradeReason": "",
           "EffectiveDate": "2026-10-05",
           "IssueEvent": "Anticipated Security Additions",
+          "NewFinancialStatus": "",
+          "OldFinancialStatus": "",
+          "Symbol": "IPHXW"
+        },
+        {
+          "CompanyName": "Inflection Point Acquisition Corp. VIII Warrant",
+          "DowngradeReason": "",
+          "EffectiveDate": "2026-10-05",
+          "IssueEvent": "Security Additions",
           "NewFinancialStatus": "",
           "OldFinancialStatus": "",
           "Symbol": "IPHXW"
@@ -399,6 +417,15 @@
           "Symbol": "RWAYM"
         },
         {
+          "CompanyName": "Runway Growth Finance Corp. 7.75% Notes Due 2031",
+          "DowngradeReason": "",
+          "EffectiveDate": "2026-10-05",
+          "IssueEvent": "Security Additions",
+          "NewFinancialStatus": "",
+          "OldFinancialStatus": "",
+          "Symbol": "RWAYM"
+        },
+        {
           "CompanyName": "Scienture Holdings, Inc. Common Stock",
           "DowngradeReason": "",
           "EffectiveDate": "2026-10-05",
@@ -417,10 +444,28 @@
           "Symbol": "TBCV"
         },
         {
+          "CompanyName": "Thunder Bridge Capital Partners V, Ltd. Class A Ordinary Shares",
+          "DowngradeReason": "",
+          "EffectiveDate": "2026-10-05",
+          "IssueEvent": "Security Additions",
+          "NewFinancialStatus": "",
+          "OldFinancialStatus": "",
+          "Symbol": "TBCV"
+        },
+        {
           "CompanyName": "Thunder Bridge Capital Partners V, Ltd. Warrants",
           "DowngradeReason": "",
           "EffectiveDate": "2026-10-05",
           "IssueEvent": "Anticipated Security Additions",
+          "NewFinancialStatus": "",
+          "OldFinancialStatus": "",
+          "Symbol": "TBCVW"
+        },
+        {
+          "CompanyName": "Thunder Bridge Capital Partners V, Ltd. Warrants",
+          "DowngradeReason": "",
+          "EffectiveDate": "2026-10-05",
+          "IssueEvent": "Security Additions",
           "NewFinancialStatus": "",
           "OldFinancialStatus": "",
           "Symbol": "TBCVW"
@@ -910,6 +955,15 @@
           "Symbol": "DBRG-J"
         },
         {
+          "BX Action": "Delete",
+          "Company Name": "Dimensional ETF Trust",
+          "Effective Date": "10/5/2026",
+          "NASDAQ Action": "Delete",
+          "PSX Action": "Delete",
+          "Primary Listing Market": "P",
+          "Symbol": "DFAC"
+        },
+        {
           "BX Action": "Add",
           "Company Name": "DFA Investment Dimensions Group Inc.",
           "Effective Date": "10/5/2026",
@@ -919,29 +973,20 @@
           "Symbol": "DFAC"
         },
         {
-          "BX Action": "Delete",
-          "Company Name": "Dimensional ETF Trust",
+          "BX Action": "Add",
+          "Company Name": "DFA Investment Dimensions Group Inc.",
           "Effective Date": "10/5/2026",
-          "NASDAQ Action": "Delete",
-          "PSX Action": "Delete",
-          "Primary Listing Market": "P",
-          "Symbol": "DFAC"
-        },
-        {
-          "BX Action": "Delete",
-          "Company Name": "Dimensional ETF Trust",
-          "Effective Date": "10/5/2026",
-          "NASDAQ Action": "Delete",
-          "PSX Action": "Delete",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
           "Primary Listing Market": "P",
           "Symbol": "DFAS"
         },
         {
-          "BX Action": "Add",
-          "Company Name": "DFA Investment Dimensions Group Inc.",
+          "BX Action": "Delete",
+          "Company Name": "Dimensional ETF Trust",
           "Effective Date": "10/5/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
+          "NASDAQ Action": "Delete",
+          "PSX Action": "Delete",
           "Primary Listing Market": "P",
           "Symbol": "DFAS"
         },
