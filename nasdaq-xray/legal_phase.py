@@ -25,9 +25,19 @@ def main():
     asof=ASOF_ENV or h.get("asof_et")
     assert h["schema"] in {"XRAY_CANONICAL_HISTORY_V1","XRAY_CANONICAL_HISTORY_V2"} and h["task_id"]==TASK_ID and h["asof_et"]==asof
     if h["schema"]=="XRAY_CANONICAL_HISTORY_V2":
-        assert h["input_count"]==456 and h["pass_count"]==442 and h["unknown_count"]==0
+        # Epoch-agnostic structural invariants. Never pin LEGAL to a historical
+        # universe size: MC/HISTORY membership legitimately changes each session.
+        h_results=h.get("results") or {}
+        h_pass=list(h.get("pass_symbols") or [])
+        h_counts=h.get("counts") or {}
+        assert h["unknown_count"]==0
+        assert int(h["input_count"])==len(h_results)==sum(int(v) for v in h_counts.values())
+        assert int(h["pass_count"])==len(h_pass)==len(set(h_pass))
+        assert set(h_pass)=={s for s,v in h_results.items() if (v or {}).get("status")=="PASS_HISTORY"}
         assert h["c4_14_scope"]["mode"]=="MC_PRIMARY_PASS_ONLY"
-        assert h["r92_ineligible"]==[] and set(h["state_caps"].values())=={"NORMAL"}
+        assert h["r92_ineligible"]==[]
+        assert set((h.get("state_caps") or {}).keys())==set(h_results)
+        assert set((h.get("state_caps") or {}).values())=={"NORMAL"}
     assert m["task_id"]==TASK_ID and m["asof_et"]==asof
     proof={}
     if PROOF.exists():
