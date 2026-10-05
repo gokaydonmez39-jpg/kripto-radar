@@ -189,15 +189,32 @@ def req_json(url,params=None,timeout=30):
     return out
 
 def week_count(by,asof):
+    """Count completed Nasdaq trading weeks through ASOF.
+
+    The ASOF week counts only when ASOF is that week's final official Nasdaq
+    session and the source contains that exact final session. This avoids the
+    prior off-by-one bug that always discarded the current calendar week,
+    including completed Friday/holiday-short weeks.
+    """
+    if not by:
+        return 0
     ad=datetime.fromisoformat(asof).date()
-    monday=ad-timedelta(days=ad.weekday())
-    weeks=set()
-    for d in by:
-        dt=datetime.fromisoformat(d).date()
-        if dt<monday:
-            iso=dt.isocalendar()
-            weeks.add((iso.year,iso.week))
-    return len(weeks)
+    first=min(datetime.fromisoformat(d).date() for d in by)
+    cal=mcal.get_calendar("NASDAQ")
+    sched=cal.schedule(
+        start_date=(first-timedelta(days=7)).isoformat(),
+        end_date=ad.isoformat(),
+    )
+    week_last={}
+    for idx,_ in sched.iterrows():
+        d=idx.date()
+        iso=d.isocalendar()
+        week_last[(iso.year,iso.week)]=d.isoformat()
+    observed=set(by)
+    return sum(
+        1 for last in week_last.values()
+        if last<=asof and last in observed
+    )
 
 def classify(by,asof,source):
     dates=sorted(by or {})
