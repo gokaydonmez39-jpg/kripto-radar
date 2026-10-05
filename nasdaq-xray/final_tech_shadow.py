@@ -145,7 +145,7 @@ def _frozen_geometry(sym,fam,g,df):
     }
     return frozen,None
 
-def eval_one(sym,fam,g,df,event_status,state_cap="NORMAL",r92_eligible=True,frozen=None):
+def eval_one(sym,fam,g,df,event_status,state_cap="NORMAL",r92_eligible=True,frozen=None,recorded_before=False):
     if frozen is None:
         frozen,err=_frozen_geometry(sym,fam,g,df)
         if err:return err
@@ -197,13 +197,17 @@ def eval_one(sym,fam,g,df,event_status,state_cap="NORMAL",r92_eligible=True,froz
     target_overlap=bool(frozen.get("target_overlap") or T1<=entry_high)
     event_pass=(event_status=="CLEAN_DISCOVERY")
     entry_ready=lifecycle in {"ENTRY_BAND","RETEST_ENTRY_BAND"}
-    hard_pass=bool(risk_pass and rr_pass and not target_overlap and not extension_veto and entry_ready and event_pass and not breached)
+    historical_new=bool(age>3 and not recorded_before)
+    hard_pass=bool(risk_pass and rr_pass and not target_overlap and not extension_veto
+                   and entry_ready and event_pass and not breached and not historical_new)
     mc_cap_blocks=bool(state_cap=="WATCH" or not r92_eligible)
     synthetic_cap=bool(frozen.get("synthetic_target"))
 
     if hard_pass and mc_cap_blocks: result="WATCH_MC_FALLBACK_CAP"
     elif hard_pass and synthetic_cap: result="WATCH_SYNTHETIC_PRICE_DISCOVERY_CAP"
     elif hard_pass: result="PRE_G9_TECH_PASS"
+    elif historical_new and lifecycle not in {"INVALIDATED_S0","EXPIRED_RETEST_WINDOW","EXPIRED_HORIZON","CHASE_NO_VALID_FILL"}:
+        result="WATCH_HISTORICAL_SETUP"
     elif lifecycle=="RETEST_REQUIRED": result="WATCH_RETEST_REQUIRED"
     elif lifecycle=="RECONFIRMATION_REQUIRED": result="WATCH_RECONFIRMATION_REQUIRED"
     elif lifecycle=="INVALIDATED_S0": result="FAIL_INVALIDATED_S0"
@@ -225,6 +229,7 @@ def eval_one(sym,fam,g,df,event_status,state_cap="NORMAL",r92_eligible=True,froz
                   "pivot_extension":ext["pivot_extension"],"move3_atr":ext["move3_atr"],
                   "reset_between_tminus3_and_t":ext["reset_between_tminus3_and_t"]},
       "lifecycle":lifecycle,"current_retest":current_retest,
+      "observation_mode":"PROSPECTIVE_RECORDED" if recorded_before else ("DISCOVERED_HISTORICAL" if historical_new else "CURRENT_DISCOVERY"),
       "invalidation":{"breached":breached,"first_breach_date":breach_date},
       "target":{"source":frozen["target_source"],"synthetic":synthetic_cap,
                 "zone":frozen.get("target_zone")},
@@ -309,13 +314,19 @@ def main():
         if sym not in data:
             results[key]={"result":"UNKNOWN","reason":"HISTORY:"+errors.get(sym,"MISSING"),"state_cap":state_caps.get(sym,"NORMAL"),"r92_eligible":sym not in r92_ineligible}
             continue
+        scale_breaks=((d.get("results") or {}).get(sym) or {}).get("mechanical_scale_breaks") or []
+        if scale_breaks:
+            results[key]={"result":"UNKNOWN","reason":"CORPORATE_ACTION_SCALE_BREAK_SUSPECTED",
+                          "mechanical_scale_breaks":scale_breaks,
+                          "state_cap":state_caps.get(sym,"NORMAL"),"r92_eligible":sym not in r92_ineligible}
+            continue
         frozen,err=_frozen_geometry(sym,fam,g,data[sym])
         if err:
             results[key]=err;continue
         prior=old_records.get(frozen["setup_id"])
         if prior and isinstance(prior.get("frozen_geometry"),dict):
             frozen=prior["frozen_geometry"]
-        res=eval_one(sym,fam,g,data[sym],event,state_caps.get(sym,"NORMAL"),sym not in r92_ineligible,frozen)
+        res=eval_one(sym,fam,g,data[sym],event,state_caps.get(sym,"NORMAL"),sym not in r92_ineligible,frozen,recorded_before=bool(prior))
         results[key]=res
         state=str(res.get("result") or "")
         if state in {"WATCH_RETEST_REQUIRED","WATCH_RECONFIRMATION_REQUIRED"}:
