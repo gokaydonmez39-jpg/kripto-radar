@@ -124,8 +124,8 @@ def _clean_html(raw:bytes)->str:
     return re.sub(r"\s+"," ",s).lower()
 
 
-def load_lifecycle_state()->tuple[dict|None,str]:
-    """Mirror Final lifecycle fallback: embedded previous-final, then sidecar override."""
+def load_lifecycle_state(asof:str|None=None)->tuple[dict|None,str]:
+    """Mirror Final lifecycle fallback and reject future-dated look-ahead state."""
     chosen=None;source="NONE"
     if PREV_FINAL.exists():
         try:
@@ -134,20 +134,32 @@ def load_lifecycle_state()->tuple[dict|None,str]:
             if (cand.get("schema")=="XRAY_CANDIDATE_LIFECYCLE_REGISTRY_V1"
                 and cand.get("execution")=="NONE" and cand.get("real_money")=="NO-GO"
                 and isinstance(cand.get("records"),dict)):
+                src_asof=str(cand.get("asof_et") or j.get("asof_et") or "")
+                if asof and src_asof and src_asof>asof:
+                    raise RuntimeError("LIFECYCLE_REGISTRY_FUTURE_ASOF")
                 chosen=cand;source="PREVIOUS_FINAL_EMBEDDED"
+        except RuntimeError:
+            raise
         except Exception:
             pass
     if LIFECYCLE.exists():
         try:
             cand=json.loads(LIFECYCLE.read_text())
-            if (cand.get("schema")=="XRAY_CANDIDATE_LIFECYCLE_REGISTRY_V1"
+            if not (cand.get("schema")=="XRAY_CANDIDATE_LIFECYCLE_REGISTRY_V1"
                 and cand.get("execution")=="NONE" and cand.get("real_money")=="NO-GO"
                 and isinstance(cand.get("records"),dict)):
-                chosen=cand;source="SIDECAR"
-            else:
                 raise RuntimeError("LIFECYCLE_SIDECAR_INVALID")
+            src_asof=str(cand.get("asof_et") or "")
+            if asof and src_asof and src_asof>asof:
+                raise RuntimeError("LIFECYCLE_REGISTRY_FUTURE_ASOF")
+            for rec in (cand.get("records") or {}).values():
+                if not isinstance(rec,dict): continue
+                last=str(rec.get("last_asof") or "")
+                if asof and last and last>asof:
+                    raise RuntimeError("LIFECYCLE_RECORD_FUTURE_ASOF")
+            chosen=cand;source="SIDECAR"
         except Exception as exc:
-            raise RuntimeError("LIFECYCLE_SIDECAR_PARSE_OR_SCHEMA_FAIL") from exc
+            raise RuntimeError("LIFECYCLE_SIDECAR_PARSE_SCHEMA_OR_TIME_FAIL") from exc
     return chosen,source
 
 
@@ -349,7 +361,7 @@ def main():
     if fc is not None and (fc.get("task_id")!=TASK_ID or fc.get("asof_et")!=asof
                            or fc.get("execution")!="NONE" or fc.get("real_money")!="NO-GO"):
         raise RuntimeError("FAMILY_C_SAFETY_OR_ASOF_MISMATCH")
-    lifecycle,lifecycle_source=load_lifecycle_state()
+    lifecycle,lifecycle_source=load_lifecycle_state(asof)
     if lifecycle is not None and (lifecycle.get("task_id") not in (None,TASK_ID)
                                   or lifecycle.get("execution")!="NONE"
                                   or lifecycle.get("real_money")!="NO-GO"):
