@@ -276,11 +276,15 @@ def main():
     if not POLICY.exists() or blob_sha(POLICY)!=POLICY_BLOB:
         raise RuntimeError("COMPILED_POLICY_BLOB_MISMATCH")
     policy=json.loads(POLICY.read_text())
-    if policy.get("schema")!="XRAY_GITHUB_COMPILED_POLICY_V3" or policy.get("policy_hash")!=POLICY_HASH:
+    if (policy.get("schema")!="XRAY_GITHUB_COMPILED_POLICY_V3"
+        or policy.get("policy_hash")!=POLICY_HASH
+        or policy.get("execution")!="NONE" or policy.get("real_money")!="NO-GO"):
         raise RuntimeError("COMPILED_POLICY_AUTHORITY_MISMATCH")
     payload=json.loads(policy.get("payload_json") or "{}")
-    if payload.get("version")!=POLICY_VERSION:
-        raise RuntimeError("COMPILED_POLICY_VERSION_MISMATCH")
+    if (payload.get("version")!=POLICY_VERSION
+        or payload.get("unknown_never_pass") is not True
+        or payload.get("execution")!="NONE" or payload.get("real_money")!="NO-GO"):
+        raise RuntimeError("COMPILED_POLICY_VERSION_OR_SAFETY_MISMATCH")
     deep=json.loads(DEEP.read_text())
     asof=str(deep.get("asof_et") or "")
     if deep.get("task_id")!=TASK_ID or deep.get("execution")!="NONE" or deep.get("real_money")!="NO-GO":
