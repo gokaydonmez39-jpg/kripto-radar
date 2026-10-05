@@ -9,7 +9,10 @@ from zoneinfo import ZoneInfo
 import akshare as ak
 import pandas as pd
 import pandas_market_calendars as mcal
-from alpha_semantics import (\n    wilder_atr as _policy_atr, apply_split_events, history_fingerprint,\n    mechanical_scale_breaks, mechanical_split_suspects, split_consistent_history,\n)
+from alpha_semantics import (
+    wilder_atr as _policy_atr, apply_split_events, history_fingerprint,
+    mechanical_scale_breaks, mechanical_split_suspects, split_consistent_history,
+)
 
 ROOT=Path(__file__).resolve().parent
 STAGE1=Path(os.getenv("XRAY_FAMILY_C_STAGE1",str(ROOT/"canonical_current_stage1.json")))
