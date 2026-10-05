@@ -248,6 +248,15 @@ def main():
         event_map=ev.get("event_status_by_symbol") or {}
 
     registry={"schema":"XRAY_CANDIDATE_LIFECYCLE_REGISTRY_V1","execution":"NONE","real_money":"NO-GO","records":{}}
+    # Durable lifecycle state is embedded in the already-committed final artifact.
+    # This avoids a second mutable sidecar and survives ordinary Final Factory runs.
+    if OUT.exists():
+        try:
+            old_out=json.loads(OUT.read_text())
+            old=old_out.get("lifecycle_registry") or {}
+            if old.get("schema")==registry["schema"] and old.get("execution")=="NONE" and old.get("real_money")=="NO-GO":
+                registry=old
+        except Exception:pass
     if LIFECYCLE.exists():
         try:
             old=json.loads(LIFECYCLE.read_text())
@@ -330,7 +339,6 @@ def main():
     registry={"schema":"XRAY_CANDIDATE_LIFECYCLE_REGISTRY_V1","task_id":TASK_ID,"asof_et":asof,
               "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
               "records":dict(sorted(pruned.items()))}
-    LIFECYCLE_OUT.write_text(json.dumps(registry,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
 
     passes=[k for k,v in results.items() if v.get("pre_g9_tech_pass")]
     watches=[k for k,v in results.items() if str(v.get("result","")).startswith("WATCH_")]
@@ -346,7 +354,7 @@ def main():
       "source_deep_path":relpath(DEEP),"source_deep_blob_sha":blob_sha(DEEP),
       "source_family_c_path":relpath(FAMILY_C) if FAMILY_C is not None and FAMILY_C.exists() else None,
       "source_family_c_blob_sha":blob_sha(FAMILY_C) if FAMILY_C is not None and FAMILY_C.exists() else None,
-      "source_lifecycle_registry_path":relpath(LIFECYCLE_OUT),"source_lifecycle_registry_blob_sha":blob_sha(LIFECYCLE_OUT),
+      "lifecycle_registry":registry,
       "source_compiled_policy_hash":d.get("source_mc_policy_hash"),"source_compiled_policy_version":d.get("source_mc_policy_version"),
       "results":results,
       "policy_semantics_exact":False,
