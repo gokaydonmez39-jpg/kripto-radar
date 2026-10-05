@@ -374,6 +374,26 @@ jobs:
           print({"XRAY_CONTINUITY_PREDECESSOR_CACHE":"PASS","warmed":warmed})
           PY
 
+      - name: Hydrate QQQ same-run technical cache
+        if: steps.mc.outputs.ready == 'true'
+        shell: bash
+        env:
+          XRAY_HISTORY_CACHE_DIR: ${{ runner.temp }}/xray-history-cache
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import os,sys
+          sys.path.insert(0,"nasdaq-xray")
+          import akshare as ak
+          import history_phase as hp
+          df,_=hp._call_with_retry(lambda: ak.stock_us_daily(symbol="QQQ",adjust=""))
+          hp._write_sina_cache("QQQ",df)
+          p=hp._history_cache_path("QQQ")
+          if p is None or not p.exists():
+              raise RuntimeError("QQQ_SAME_RUN_CACHE_MISSING")
+          print("XRAY_QQQ_SAME_RUN_CACHE=PASS")
+          PY
+
       - name: Run LEGAL
         if: steps.mc.outputs.ready == 'true' && steps.reuse_hl.outputs.reuse != 'true'
         shell: bash
@@ -416,6 +436,8 @@ jobs:
           XRAY_STAGE1_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_current_stage1.json
           XRAY_DEEP_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_current_deep_geometry.json
           XRAY_DEEP_GEOMETRY_ONLY: "1"
+          XRAY_DEEP_HISTORY_CACHE_DIR: ${{ runner.temp }}/xray-history-cache
+          XRAY_DEEP_CACHE_REQUIRED: "1"
           XRAY_DEEP_WORKERS: "8"
         run: python nasdaq-xray/deep_pre_r1_shadow.py
       - name: Build dynamic event request
