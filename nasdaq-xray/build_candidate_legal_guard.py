@@ -32,6 +32,7 @@ POLICY_VERSION="C4.17"
 DEEP=Path(os.getenv("XRAY_LEGAL_GUARD_DEEP",str(ROOT/"canonical_current_deep_full.json")))
 FAMILY_C=Path(os.getenv("XRAY_LEGAL_GUARD_FAMILY_C",str(ROOT/"canonical_current_family_c.json")))
 LIFECYCLE=Path(os.getenv("XRAY_LEGAL_GUARD_LIFECYCLE",str(ROOT/"canonical_candidate_lifecycle_registry.json")))
+PREV_FINAL=Path(os.getenv("XRAY_LEGAL_GUARD_PREV_FINAL",str(ROOT/"canonical_current_final_tech.json")))
 OUT=Path(os.getenv("XRAY_LEGAL_GUARD_OUT",str(ROOT/"canonical_candidate_legal_guard.json")))
 TASK_ID="6a825366222081918997094d76e6ae46"
 USER_AGENT=os.getenv("XRAY_SEC_USER_AGENT","XRAY research compliance contact: xray-noreply@example.invalid")
@@ -106,6 +107,33 @@ def _clean_html(raw:bytes)->str:
     s=re.sub(r"(?s)<[^>]+>"," ",s)
     s=html.unescape(s)
     return re.sub(r"\s+"," ",s).lower()
+
+
+def load_lifecycle_state()->tuple[dict|None,str]:
+    """Mirror Final lifecycle fallback: embedded previous-final, then sidecar override."""
+    chosen=None;source="NONE"
+    if PREV_FINAL.exists():
+        try:
+            j=json.loads(PREV_FINAL.read_text())
+            cand=j.get("lifecycle_registry") or {}
+            if (cand.get("schema")=="XRAY_CANDIDATE_LIFECYCLE_REGISTRY_V1"
+                and cand.get("execution")=="NONE" and cand.get("real_money")=="NO-GO"
+                and isinstance(cand.get("records"),dict)):
+                chosen=cand;source="PREVIOUS_FINAL_EMBEDDED"
+        except Exception:
+            pass
+    if LIFECYCLE.exists():
+        try:
+            cand=json.loads(LIFECYCLE.read_text())
+            if (cand.get("schema")=="XRAY_CANDIDATE_LIFECYCLE_REGISTRY_V1"
+                and cand.get("execution")=="NONE" and cand.get("real_money")=="NO-GO"
+                and isinstance(cand.get("records"),dict)):
+                chosen=cand;source="SIDECAR"
+            else:
+                raise RuntimeError("LIFECYCLE_SIDECAR_INVALID")
+        except Exception as exc:
+            raise RuntimeError("LIFECYCLE_SIDECAR_PARSE_OR_SCHEMA_FAIL") from exc
+    return chosen,source
 
 
 def candidate_scope(deep:dict,fc:dict|None,lifecycle:dict|None)->list[str]:
@@ -261,8 +289,8 @@ def main():
     if fc is not None and (fc.get("task_id")!=TASK_ID or fc.get("asof_et")!=asof
                            or fc.get("execution")!="NONE" or fc.get("real_money")!="NO-GO"):
         raise RuntimeError("FAMILY_C_SAFETY_OR_ASOF_MISMATCH")
-    lifecycle=json.loads(LIFECYCLE.read_text()) if LIFECYCLE.exists() else None
-    if lifecycle is not None and (lifecycle.get("task_id")!=TASK_ID
+    lifecycle,lifecycle_source=load_lifecycle_state()
+    if lifecycle is not None and (lifecycle.get("task_id") not in (None,TASK_ID)
                                   or lifecycle.get("execution")!="NONE"
                                   or lifecycle.get("real_money")!="NO-GO"):
         raise RuntimeError("LIFECYCLE_SAFETY_OR_TASK_MISMATCH")
@@ -299,6 +327,9 @@ def main():
       "source_family_c_blob_sha":blob_sha(FAMILY_C),
       "source_lifecycle_path":str(LIFECYCLE.relative_to(LIFECYCLE.parent.parent)) if LIFECYCLE.exists() else None,
       "source_lifecycle_blob_sha":blob_sha(LIFECYCLE),
+      "source_lifecycle_fallback_path":str(PREV_FINAL.relative_to(PREV_FINAL.parent.parent)) if PREV_FINAL.exists() else None,
+      "source_lifecycle_fallback_blob_sha":blob_sha(PREV_FINAL) if lifecycle_source=="PREVIOUS_FINAL_EMBEDDED" else None,
+      "source_lifecycle_scope_source":lifecycle_source,
       "source_lifecycle_binding_role":"DIAGNOSTIC_PRE_FINAL_SCOPE_AUGMENTATION",
       "authoritative_binding_note":"DEEP_AND_FAMILY_C_AND_POLICY_EXACT;LIFECYCLE_BLOB_IS_NOT_AUTHORITY_BECAUSE_FINAL_MUTATES_IT_IN_RUN",
       "pass_symbols":sorted(s for s,r in records.items() if r.get("status")=="PASS"),
