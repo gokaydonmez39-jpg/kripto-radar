@@ -175,6 +175,46 @@ def close_only_scale_breaks(df):
     """Regime/breadth histories contain only date+close; this guard must stay close-only safe."""
     return mechanical_scale_breaks(df,260)
 
+def classify_regime_bounds(q,total,above50,nh20,nl20,missing_count):
+    """Fail-closed regime classification using bounds for unresolved breadth members.
+
+    Missing member values are never imputed. A regime is returned only when every
+    possible completion of the missing breadth observations yields the same class.
+    """
+    total=int(total or 0); missing=max(0,int(missing_count or 0))
+    if total<=0 or not isinstance(q,dict) or not q:
+        return "UNKNOWN",{"method":"INTERVAL_BOUND_FAIL_CLOSED_V1","reason":"QQQ_OR_DENOMINATOR_MISSING"}
+    try:
+        qc=float(q["close"]); q50=float(q["sma50"]); q200=float(q["sma200"]); slope=float(q["sma50_slope20"])
+        if not all(math.isfinite(v) for v in (qc,q50,q200,slope)):
+            raise ValueError("NONFINITE_QQQ")
+    except Exception:
+        return "UNKNOWN",{"method":"INTERVAL_BOUND_FAIL_CLOSED_V1","reason":"QQQ_NONFINITE_OR_INCOMPLETE"}
+    missing=min(missing,total)
+    bmin=float(above50)/total; bmax=float(above50+missing)/total
+    nh_min=int(nh20); nh_max=int(nh20)+missing
+    nl_min=int(nl20); nl_max=int(nl20)+missing
+    weak=bool(qc<q200 or slope<0)
+    qqq_strong=bool(qc>q50 and qc>q200 and slope>0)
+    strong_possible=bool(qqq_strong and bmax>=0.55 and nh_max>nl_min)
+    strong_guaranteed=bool(qqq_strong and bmin>=0.55 and nh_min>nl_max)
+    if weak:
+        regime="WEAK"; reason="QQQ_WEAK_INDEPENDENT_OF_BREADTH"
+    elif strong_guaranteed:
+        regime="STRONG"; reason="STRONG_GUARANTEED_FOR_ALL_MISSING_COMPLETIONS"
+    elif not strong_possible:
+        regime="MIXED"; reason="STRONG_IMPOSSIBLE_FOR_ALL_MISSING_COMPLETIONS"
+    else:
+        regime="UNKNOWN"; reason="MISSING_BREADTH_CAN_CHANGE_STRONG_VS_MIXED"
+    return regime,{
+      "method":"INTERVAL_BOUND_FAIL_CLOSED_V1","reason":reason,
+      "missing_count":missing,
+      "breadth_above_sma50_pct_min":bmin,"breadth_above_sma50_pct_max":bmax,
+      "nh20_min":nh_min,"nh20_max":nh_max,"nl20_min":nl_min,"nl20_max":nl_max,
+      "qqq_weak":weak,"qqq_strong_prerequisites":qqq_strong,
+      "strong_possible":strong_possible,"strong_guaranteed":strong_guaranteed,
+    }
+
 def main():
     mc=json.loads(MC.read_text())
     syms=list(mc["current_core_mc_pass"])
@@ -253,15 +293,9 @@ def main():
         if last<=float(win.min())+1e-12:nl20+=1
 
     breadth_pct=above50/len(syms) if syms else None
-    if breadth_missing or "QQQ" not in data:
-        regime="UNKNOWN"
-    else:
-        if q["close"]<q["sma200"] or q["sma50_slope20"]<0:
-            regime="WEAK"
-        elif q["close"]>q["sma50"] and q["close"]>q["sma200"] and q["sma50_slope20"]>0 and breadth_pct>=0.55 and nh20>nl20:
-            regime="STRONG"
-        else:
-            regime="MIXED"
+    regime,regime_resolution=classify_regime_bounds(
+        q,len(syms),above50,nh20,nl20,len(breadth_missing)
+    )
 
     out={
       "schema":"XRAY_REGIME_BREADTH_SHADOW_V1","task_id":TASK_ID,"asof_et":asof,
@@ -270,6 +304,7 @@ def main():
       "breadth_missing_count":len(breadth_missing),"breadth_missing":sorted(breadth_missing),
       "qqq":q,"breadth_above_sma50_count":above50,"breadth_above_sma50_pct":breadth_pct,
       "nh20":nh20,"nl20":nl20,"regime":regime,
+      "regime_resolution":regime_resolution,
       "qqq_corporate_action_status":qqq_ca_status,"qqq_split_events":qqq_split_events,
       "corporate_action_status_by_symbol":corporate_action_status_by_symbol,
       "history_source_by_symbol":history_source,
