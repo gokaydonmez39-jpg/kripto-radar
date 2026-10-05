@@ -215,6 +215,27 @@ def classify_regime_bounds(q,total,above50,nh20,nl20,missing_count):
       "strong_possible":strong_possible,"strong_guaranteed":strong_guaranteed,
     }
 
+
+def classify_regime_policy(q,total,above50,nh20,nl20,missing_count):
+    """C4.17 production regime gate.
+
+    Interval bounds are diagnostic only. C4.17 explicitly requires exact CURRENT_CORE
+    breadth; any missing member history/split ambiguity is BREADTH_UNKNOWN with max
+    WATCH authority and must never be promoted to STRONG/MIXED/WEAK.
+    """
+    diagnostic,meta=classify_regime_bounds(q,total,above50,nh20,nl20,missing_count)
+    missing=max(0,int(missing_count or 0))
+    out=dict(meta or {})
+    out["policy_rule"]="exact CURRENT_CORE only; missing member history/split ambiguity=>BREADTH_UNKNOWN max WATCH"
+    out["diagnostic_interval_regime"]=diagnostic
+    if missing>0:
+        out["method"]="C4_17_STRICT_BREADTH_MISSING_FAIL_CLOSED_V1"
+        out["reason"]="BREADTH_MEMBER_MISSING_POLICY_REQUIRES_UNKNOWN_MAX_WATCH"
+        out["missing_count"]=missing
+        return "UNKNOWN",out
+    out["method"]="C4_17_EXACT_BREADTH_CLASSIFICATION_V1"
+    return diagnostic,out
+
 def main():
     mc=json.loads(MC.read_text())
     syms=list(mc["current_core_mc_pass"])
@@ -293,7 +314,7 @@ def main():
         if last<=float(win.min())+1e-12:nl20+=1
 
     breadth_pct=above50/len(syms) if syms else None
-    regime,regime_resolution=classify_regime_bounds(
+    regime,regime_resolution=classify_regime_policy(
         q,len(syms),above50,nh20,nl20,len(breadth_missing)
     )
 
