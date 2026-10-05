@@ -473,6 +473,11 @@ def main():
     registry={"schema":"XRAY_CANDIDATE_LIFECYCLE_REGISTRY_V1","task_id":TASK_ID,"asof_et":asof,
               "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
               "records":dict(sorted(pruned.items()))}
+    # Durable prospective setup state. This must be written before the final
+    # artifact so the workflow can atomically persist the registry alongside
+    # the terminal/final artifacts. Without this file, frozen retest levels are
+    # lost between runs even though the final artifact embeds a copy.
+    LIFECYCLE_OUT.write_text(json.dumps(registry,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
 
     passes=[k for k,v in results.items() if v.get("pre_g9_tech_pass")]
     watches=[k for k,v in results.items() if str(v.get("result","")).startswith("WATCH_")]
