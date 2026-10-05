@@ -28,6 +28,11 @@ PROVIDER_MAX_INFLIGHT=max(1,int(os.getenv("XRAY_STAGE1_PROVIDER_MAX_INFLIGHT","3
 RETRY_DELAYS=(0.0,1.0,2.5)
 _PROVIDER_SEM=threading.Semaphore(PROVIDER_MAX_INFLIGHT)
 OFFICIAL_IDENTITY_EVIDENCE=ROOT/"history_official_identity_evidence.json"
+HISTORY_CACHE_DIR=os.getenv("XRAY_STAGE1_HISTORY_CACHE_DIR")
+
+def _history_cache_path(sym):
+    if not HISTORY_CACHE_DIR:return None
+    return Path(HISTORY_CACHE_DIR)/(hashlib.sha256(sym.encode()).hexdigest()+".csv.gz")
 
 def _retryable(exc):
     s=str(exc).lower()
@@ -67,16 +72,30 @@ def _normalize_sina(df):
     for k in ["open","high","low","close","volume"]:x[k]=pd.to_numeric(x[k],errors="coerce")
     return x.dropna().sort_values("date")
 
+def _cached_sina_history(sym,asof):
+    p=_history_cache_path(sym)
+    if p is None or not p.exists():return None
+    try:
+        x=_normalize_sina(pd.read_csv(p,compression="gzip"))
+        if x is None or x.empty:return None
+        x=x[x["date"]<=pd.Timestamp(asof)].reset_index(drop=True)
+        if x.empty or x["date"].dt.date.max().isoformat()!=asof:return None
+        return x
+    except Exception:
+        return None
+
 def _sina_history(sym):
     return _normalize_sina(_call_with_retry(lambda: ak.stock_us_daily(symbol=sym,adjust="")))
 
 def load_history(sym,asof):
-    cur=_sina_history(sym)
+    cur=_cached_sina_history(sym,asof)
+    if cur is None:cur=_sina_history(sym)
     rec=OFFICIAL_RECORDS.get(sym) or {}
     if rec.get("mode")=="OFFICIAL_TICKER_CONTINUITY_COMPOSITE_HISTORY" and rec.get("cusip_unchanged") is True:
         pred=rec.get("predecessor_symbol"); eff=rec.get("effective_date")
         if pred and eff and cur is not None:
-            p=_sina_history(pred)
+            p=_cached_sina_history(pred,asof)
+            if p is None:p=_sina_history(pred)
             if p is not None:
                 eff_ts=pd.Timestamp(eff); asof_ts=pd.Timestamp(asof)
                 cur2=cur[(cur["date"]>=eff_ts)&(cur["date"]<=asof_ts)]
