@@ -527,6 +527,8 @@ jobs:
           if [[ "$latest" != "$GITHUB_SHA" ]]; then
             changed="$(git diff --name-only "$GITHUB_SHA" "$latest" -- \
               .github/workflows/xray-canonical-current-post-mc.yml \
+              nasdaq-xray/canonical_current_master_manifest.json \
+              nasdaq-xray/canonical_current_price_dv20.json \
               nasdaq-xray/alpha_semantics.py \
               nasdaq-xray/test_alpha_semantics.py \
               nasdaq-xray/history_phase.py \
