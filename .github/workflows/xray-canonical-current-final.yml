@@ -53,7 +53,9 @@ permissions:
 
 concurrency:
   group: xray-canonical-current-final-c417
-  cancel-in-progress: true
+  # Single-writer, non-preemptive: exact-bound Final runs must reach atomic commit.
+  # Redundant later triggers queue and are collapsed by binding/stale-source guards.
+  cancel-in-progress: false
 
 jobs:
   final:
