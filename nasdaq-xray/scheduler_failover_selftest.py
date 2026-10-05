@@ -59,5 +59,10 @@ assert final_kick["execution"]=="NONE" and final_kick["real_money"]=="NO-GO"
 assert '"nasdaq-xray/scheduler_kick_final.json"' in final_wf or "'nasdaq-xray/scheduler_kick_final.json'" in final_wf
 assert '"30 * * * *"' in wf or "'30 * * * *'" in wf
 assert '"nasdaq-xray/scheduler_kick_dataplane.json"' in wf or "'nasdaq-xray/scheduler_kick_dataplane.json'" in wf
+assert '"nasdaq-xray/alpha_semantics.py"' in wf
+assert '"nasdaq-xray/test_alpha_semantics.py"' in wf
+assert '"nasdaq-xray/history_official_identity_evidence.json"' in wf
+assert '"nasdaq-xray/requirements-runtime.txt"' in wf
+assert "python nasdaq-xray/test_alpha_semantics.py" in wf
 assert 'name: NASDAQ SWING XRAY Autonomous Data Plane' in wf
 print("XRAY_SCHEDULER_FAILOVER_SELFTEST=PASS")
