@@ -13,6 +13,7 @@ from alpha_semantics import (
 )
 from final_tech_shadow import eval_one,_is_depositary_security_name,lifecycle_state_persists
 from deep_pre_r1_shadow import evaluate_recent_families
+from build_current_event_request import lifecycle_scope_from_final,event_geometry_scope
 from regime_breadth_shadow import close_only_scale_breaks
 
 def frame(n=90):
@@ -195,6 +196,20 @@ def main():
     assert lifecycle_state_persists("WATCH_HISTORICAL_SETUP") is False
     assert lifecycle_state_persists("FAIL_RR") is False
 
+    # Frozen lifecycle symbols remain in event research even after leaving current
+    # weekly/fresh geometry scope.
+    faux_final={
+      "asof_et":"2026-10-02",
+      "lifecycle_registry":{
+        "schema":"XRAY_CANDIDATE_LIFECYCLE_REGISTRY_V1",
+        "execution":"NONE","real_money":"NO-GO",
+        "records":{"id1":{"symbol":"OLDW","state":"WATCH_RETEST_REQUIRED"}}
+      }
+    }
+    ls=lifecycle_scope_from_final(faux_final,"2026-10-02")
+    assert ls==["OLDW"],ls
+    assert event_geometry_scope(["FRESH"],ls)==["FRESH","OLDW"]
+
     assert _is_depositary_security_name("Example Corp - American Depositary Shares") is True
     assert _is_depositary_security_name("Example Corp - Common Stock") is False
 
@@ -202,7 +217,7 @@ def main():
       "WILDER_FIRST_TR_UNDEFINED","EMA_SMA_SEED","D_DRAWDOWN_DEFINITIONS",
       "R1_STRUCTURAL_TRIGGER_MINUS1","R1_ENTRY_OVERLAP","EXTENSION_RESET","RETEST_BAR","FAMILY_A_TRIGGER_MINUS1_LOW","SETUP_ID_STABLE",
       "B_RECENT_TRIGGER_PERSISTENCE","DEEP_RECENT_TRIGGER_INDEPENDENT_OF_CURRENT_STAGE1","A_STAGE1_ASOF_TRIGGER","MECHANICAL_SCALE_BREAK_GUARD","BREADTH_CLOSE_ONLY_SCALE_GUARD","SPLIT_ONLY_RECONCILIATION","SPLIT_RAW_CROSSCHECK","HISTORICAL_DISCOVERY_WATCH","CHASE_FROZEN_RETEST_RECOVERY",
-      "ADR_RATIO_FAIL_CLOSED_CLASSIFICATION","PROSPECTIVE_LIFECYCLE_PERSISTENCE","ANCIENT_SCALE_BREAK_OUTSIDE_TECH_HORIZON"
+      "ADR_RATIO_FAIL_CLOSED_CLASSIFICATION","PROSPECTIVE_LIFECYCLE_PERSISTENCE","FROZEN_LIFECYCLE_EVENT_SCOPE","ANCIENT_SCALE_BREAK_OUTSIDE_TECH_HORIZON"
     ]})
 
 if __name__=="__main__":
