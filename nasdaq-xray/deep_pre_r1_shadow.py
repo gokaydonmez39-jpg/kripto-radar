@@ -19,6 +19,8 @@ from alpha_semantics import (
     tight_base_at,
     find_recent_b_trigger,
     mechanical_scale_breaks,
+    split_consistent_history,
+    apply_split_events,
 )
 
 ROOT=Path(__file__).resolve().parent
@@ -265,12 +267,25 @@ def main():
                 history_source[s]=src
     if "QQQ" not in data:
         raise RuntimeError("QQQ_HISTORY_UNKNOWN")
-    qqq=data["QQQ"]
+    qqq,qqq_ca_status,qqq_split_events=split_consistent_history("QQQ",data["QQQ"])
+    if not str(qqq_ca_status).startswith("PASS"):
+        raise RuntimeError("QQQ_CORPORATE_ACTION_UNKNOWN:"+str(qqq_ca_status))
+    qqq=qqq.reset_index(drop=True)
     outres={}
     for s in syms:
         x=data.get(s)
         if x is None:
             outres[s]={"status":"UNKNOWN","reason":unknown.get(s),"state_cap":state_caps.get(s,"NORMAL"),"r92_eligible":s not in r92_ineligible};continue
+        strow=(st.get("results") or {}).get(s) or {}
+        ca_status=strow.get("corporate_action_status")
+        split_events=strow.get("split_events") or []
+        if not str(ca_status).startswith("PASS"):
+            outres[s]={"status":"UNKNOWN","reason":"CORPORATE_ACTION_NOT_VERIFIED",
+                       "corporate_action_status":ca_status,"state_cap":state_caps.get(s,"NORMAL"),
+                       "r92_eligible":s not in r92_ineligible};continue
+        if split_events:
+            x=apply_split_events(x,split_events)
+        x=x.reset_index(drop=True)
         rs20=common_rs(x,qqq,20);rs60=common_rs(x,qqq,60)
         mix_pass=True if GEOMETRY_ONLY else (bool(rs20 is not None and rs60 is not None and rs20>0 and rs60>0) if rg.get("regime")=="MIXED" else True)
         A=family_a(x) if s in st["a_trend_pool"] else {"pool":False,"reason":"NOT_A_STAGE1"}
@@ -284,6 +299,7 @@ def main():
         outres[s]={"status":"EVALUATED","rs20":rs20,"rs60":rs60,"mixed_rs_pass":mix_pass,
                    "A":A,"B":B,"D":D,"event_status":event,
                    "mechanical_scale_breaks":mechanical_scale_breaks(x,260),
+                   "corporate_action_status":ca_status,"split_events":split_events,
                    "state_cap":state_caps.get(s,"NORMAL"),"r92_eligible":s not in r92_ineligible}
     a_geom=[s for s,r in outres.items() if r.get("A",{}).get("pool")]
     b_break=[s for s,r in outres.items() if r.get("B",{}).get("breakout_confirmed")]
@@ -311,6 +327,7 @@ def main():
       "d_dk3_pre_r1_count":len(d),"d_dk3_pre_r1":sorted(d),
       "unknown_history_count":len(unknown),"unknown_history":unknown,
       "history_source_by_symbol":history_source,
+      "qqq_corporate_action_status":qqq_ca_status,"qqq_split_events":qqq_split_events,
       "state_caps":state_caps,"r92_ineligible":sorted(r92_ineligible & set(syms)),
       "source_stage1_path":relpath(STAGE1),"source_stage1_blob_sha":blob_sha(STAGE1),
       "source_regime_path":None if GEOMETRY_ONLY else relpath(REGIME),
