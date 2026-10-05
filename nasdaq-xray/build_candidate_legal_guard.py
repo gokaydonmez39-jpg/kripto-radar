@@ -220,11 +220,16 @@ def _item_set(items)->set[str]:
 
 
 def _phrase_flags(text:str,phrases:dict)->list[str]:
+    # SEC credit-agreement boilerplate commonly uses the plural
+    # "events of default". Normalize only this grammatical variant so the
+    # detailed review records the same non-blocking default-risk reference
+    # without broadening it into a hard legal veto.
+    scan=text.replace("events of default","event of default")
     out=[]
     for flag,p in phrases.items():
         if isinstance(p,tuple):
-            if all(x in text for x in p): out.append(flag)
-        elif p in text: out.append(flag)
+            if all(x in scan for x in p): out.append(flag)
+        elif p in scan: out.append(flag)
     return out
 
 
