@@ -6,6 +6,9 @@ on:
     paths:
       - "nasdaq-xray/test_dynamic_policy_invariants.py"
       - "nasdaq-xray/test_alpha_semantics.py"
+      - "nasdaq-xray/test_deep_repair_regressions.py"
+      - ".github/workflows/xray-canonical-current-pre-mc.yml"
+      - ".github/workflows/xray-canonical-current-final.yml"
       - "nasdaq-xray/alpha_semantics.py"
       - "nasdaq-xray/stage1_shadow.py"
       - "nasdaq-xray/family_c_engine.py"
@@ -43,6 +46,7 @@ jobs:
           python -m py_compile \
             nasdaq-xray/alpha_semantics.py \
             nasdaq-xray/test_alpha_semantics.py \
+            nasdaq-xray/test_deep_repair_regressions.py \
             nasdaq-xray/stage1_shadow.py \
             nasdaq-xray/family_c_engine.py \
             nasdaq-xray/final_tech_shadow.py \
@@ -58,6 +62,7 @@ jobs:
         run: |
           python nasdaq-xray/test_dynamic_policy_invariants.py
           python nasdaq-xray/test_alpha_semantics.py
+          python nasdaq-xray/test_deep_repair_regressions.py
       - name: Verify provider-neutral ACCOUNT final gate
         shell: bash
         run: |
