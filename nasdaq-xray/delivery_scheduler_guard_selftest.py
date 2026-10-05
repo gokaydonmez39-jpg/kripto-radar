@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from datetime import datetime,timezone
+from pathlib import Path
 from delivery_scheduler_guard import evaluate_readiness
 
 CONTRACT={
@@ -43,5 +44,9 @@ sun_final=[run(created="2026-10-04T12:30:00Z",updated="2026-10-04T12:40:00Z")]
 sun_final_kick={"requested_at_utc":"2026-10-04T11:00:00Z"}
 ok,why=evaluate_readiness(SUN,CONTRACT,sun_root_kick,sun_final_kick,sun_root,sun_final)
 assert ok and why=="PASS",(ok,why)
+
+workflow=(Path(__file__).resolve().parent.parent/".github/workflows/nasdaq-xray-delivery.yml").read_text()
+assert 'workflow_run:' in workflow and 'workflows: ["XRAY Canonical Current Final Factory"]' in workflow
+assert "github.event.workflow_run.conclusion == 'success'" in workflow
 
 print("XRAY_DELIVERY_SCHEDULER_GUARD_SELFTEST=PASS")
