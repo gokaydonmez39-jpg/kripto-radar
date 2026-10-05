@@ -136,6 +136,7 @@ def candidate_local_research_ready(pre,halt_safety,ft,alpha_source_binding_exact
       and ft.get("policy_semantics_exact") is True
       and bool(alpha_source_binding_exact)
       and ft.get("lifecycle_semantics_exact") is True
+      and ft.get("detailed_legal_review_exact") is True
     )
 
 def mc_semantic_input_match(price,j):
@@ -663,6 +664,7 @@ def main():
         "final_gate_reporting_does_not_affect_alpha":True,
         "candidate_delivery_halt_guard_fail_closed":halt_safety.get("status")=="PASS" or not raw_pre,
         "candidate_local_research_independent_of_global_coverage":True,
+        "candidate_detailed_legal_review_exact":ft.get("detailed_legal_review_exact") is True,
         "candidate_local_research_pass":candidate_local_ready,
       },
       "generated_at_utc":datetime.now(timezone.utc).isoformat()
