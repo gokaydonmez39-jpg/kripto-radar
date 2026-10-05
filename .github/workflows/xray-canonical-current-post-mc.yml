@@ -133,7 +133,7 @@ jobs:
           pointer_asof=str(ps.get("asof_et") or "")
           settlement_required=bool(pointer_asof and expected_asof>pointer_asof)
           expected_path="nasdaq-xray/canonical_current_price_dv20.json"
-          valid=[]
+          exact=[]; semantic=[]
           for fp in glob.glob("nasdaq-xray/canonical_mc_bridge_*.json"):
               try:
                   j=json.load(open(fp))
@@ -185,15 +185,24 @@ jobs:
                             and sj.get("compiled_policy_version")=="C4.17"
                             and sj.get("settlement_status")=="PASS"
                           )
-                  if ok: valid.append(fp)
+                  if ok:
+                      (exact if j.get("input_blob_sha")==price_blob else semantic).append(fp)
               except Exception:
                   pass
-          if len(valid)!=1:
+          if len(exact)==1:
+              fp=exact[0]
+          elif len(exact)>1:
+              fp=None
+          elif len(semantic)==1:
+              fp=semantic[0]
+          else:
+              fp=None
+          if fp is None:
               print("ready=false")
               print("expected_asof="+str(expected_asof))
-              print("binding_matches="+str(len(valid)))
+              print("exact_binding_matches="+str(len(exact)))
+              print("semantic_binding_matches="+str(len(semantic)))
           else:
-              fp=valid[0]
               print("ready=true")
               print("path="+fp)
               print("asof="+expected_asof)
