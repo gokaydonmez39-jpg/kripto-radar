@@ -25,22 +25,32 @@ def frozen(df,trigger_idx,setup):
       "synthetic_target":False,"source_geometry":{"trigger_date":td,"P":100.0,"anchor":97.0}}
 
 def test_r1_no_future_mutation_and_confirmation():
-    d=frame(100)
-    d.loc[35,"high"]=120.0; d.loc[33:34,"high"]=[105.0,106.0]; d.loc[36:37,"high"]=[106.0,105.0]
-    trigger=80
-    r1=alpha.nearest_active_resistance(d,trigger,10.0,100.0,102.5,102.5)
-    assert r1["status"]=="PASS" and 110.0<r1["T1"]<125.0,r1
-    mutated=d.copy(); mutated.loc[trigger:,["open","high","low","close"]]=[900.0,999.0,800.0,950.0]
-    r2=alpha.nearest_active_resistance(mutated,trigger,10.0,100.0,102.5,102.5)
-    assert r2["status"]==r1["status"] and abs(float(r2["T1"])-float(r1["T1"]))<1e-12,(r1,r2)
-    assert bool(r2["target_overlap"])==bool(r1["target_overlap"]),(r1,r2)
-    d3=d.copy(); d3.loc[78,"high"]=140.0; d3.loc[76:77,"high"]=[105.0,106.0]; d3.loc[79,"high"]=106.0
-    r3=alpha.nearest_active_resistance(d3,trigger,10.0,100.0,102.5,102.5)
-    assert r3["status"]=="PASS" and float(r3["T1"])<130.0,r3
-    leak=d3.date.iloc[78].date().isoformat()
-    for z in r3["zones"]:
-        for p in z.get("points") or []:
-            assert not (p.get("kind")=="DAILY_SWING_HIGH" and p.get("date")==leak),(z,p)
+    # Isolate daily swing evidence. Otherwise a legitimately nearer base-high
+    # zone can be selected before the synthetic 120 swing and invalidate the
+    # test assumption without indicating a look-ahead bug.
+    oldb,oldw,oldg=alpha._base_high_points,alpha._weekly_swing_points,alpha._gap_down_zones
+    alpha._base_high_points=lambda prior,atr:[]
+    alpha._weekly_swing_points=lambda prior:[]
+    alpha._gap_down_zones=lambda prior:[]
+    try:
+        d=frame(100)
+        d.loc[35,"high"]=120.0; d.loc[33:34,"high"]=[105.0,106.0]; d.loc[36:37,"high"]=[106.0,105.0]
+        trigger=80
+        r1=alpha.nearest_active_resistance(d,trigger,10.0,100.0,102.5,102.5)
+        assert r1["status"]=="PASS" and abs(float(r1["T1"])-120.0)<1e-12,r1
+        mutated=d.copy(); mutated.loc[trigger:,["open","high","low","close"]]=[900.0,999.0,800.0,950.0]
+        r2=alpha.nearest_active_resistance(mutated,trigger,10.0,100.0,102.5,102.5)
+        assert r2["status"]==r1["status"] and abs(float(r2["T1"])-float(r1["T1"]))<1e-12,(r1,r2)
+        assert bool(r2["target_overlap"])==bool(r1["target_overlap"]),(r1,r2)
+        d3=d.copy(); d3.loc[78,"high"]=140.0; d3.loc[76:77,"high"]=[105.0,106.0]; d3.loc[79,"high"]=106.0
+        r3=alpha.nearest_active_resistance(d3,trigger,10.0,100.0,102.5,102.5)
+        assert r3["status"]=="PASS" and abs(float(r3["T1"])-120.0)<1e-12,r3
+        leak=d3.date.iloc[78].date().isoformat()
+        for z in r3["zones"]:
+            for p in z.get("points") or []:
+                assert not (p.get("kind")=="DAILY_SWING_HIGH" and p.get("date")==leak),(z,p)
+    finally:
+        alpha._base_high_points,alpha._weekly_swing_points,alpha._gap_down_zones=oldb,oldw,oldg
 
 def test_resistance_role_change_state_machine():
     oldb,oldw,oldg=alpha._base_high_points,alpha._weekly_swing_points,alpha._gap_down_zones
