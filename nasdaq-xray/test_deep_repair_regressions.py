@@ -236,6 +236,7 @@ def test_candidate_legal_guard_phrase_severity():
     assert 'ANNUAL={"10-K","20-F","40-F"}' in src
     assert "NO_RECENT_ANNUAL_FILING_BEFORE_ASOF" in src
     assert "LATEST_ANNUAL_THROUGH_ASOF_WITH_ALL_LATER_PERIODIC_CURRENT_AND_OFFERING_FILINGS" in src
+    assert "_ticker_cik_map() if scope else {}" in src
 
 def test_workflow_race_and_pre_mc_freeze_contracts():
     final_wf=(REPO/".github/workflows/xray-canonical-current-final.yml").read_text()
@@ -300,6 +301,7 @@ def test_workflow_race_and_pre_mc_freeze_contracts():
     assert '"breadth_missing":int(rg["breadth_missing_count"])' in term_src
     assert '"regime_unknown":0 if rg.get("regime") in {"STRONG","MIXED","WEAK"} else 1' in term_src
     assert '"lifecycle_regime_unknown":int(ft.get("regime_revalidation_unknown_count",0))' in term_src
+    assert '"detailed_legal_review_unknown":0 if ft.get("detailed_legal_review_exact") is True else 1' in term_src
     deep_src=(ROOT/"deep_pre_r1_shadow.py").read_text()
     assert '"regime_finalist_pass":regime_finalist_pass' in deep_src
     assert 'outres[s].get("regime_finalist_pass") is True' in deep_src
@@ -366,7 +368,7 @@ def main():
       "RESISTANCE_ROLE_CHANGE_STATE_MACHINE","FINAL_HISTORY_OHLCV_BINDING","REGIME_INTERVAL_BOUNDS_AND_FINALIST_GATE","CORPORATE_ACTION_NONE_VS_SCALE_BREAK_FAIL_CLOSED","RETEST_WINDOW_EXPIRES_AFTER_5","MODEL_HORIZON_EXPIRES_AFTER_8",
       "FROZEN_LEVELS_NEXT_ASOF_STABLE","LIFECYCLE_REGIME_REVALIDATION_PERSISTS","LIFECYCLE_PERSISTENCE_ROUNDTRIP",
       "FINAL_ALPHA_STALE_SOURCE_GUARD","PARTIAL_COVERAGE_DOES_NOT_GLOBAL_ABORT",
-      "DETAILED_FINALIST_LEGAL_FAIL_CLOSED","FINAL_VERIFIED_MARKET_GAP_NOT_DOUBLE_BLOCKED","DETAILED_LEGAL_GUARD_EXACT_SOURCE_BINDING","DETAILED_LEGAL_GUARD_POLICY_BINDING","DETAILED_LEGAL_GUARD_NONCIRCULAR_LIFECYCLE","DETAILED_LEGAL_GUARD_LIFECYCLE_FALLBACK_PARITY","DETAILED_LEGAL_GUARD_BOILERPLATE_SEVERITY","DETAILED_LEGAL_GUARD_ANNUAL_PLUS_QUARTERLY_SCOPE","DETAILED_LEGAL_GUARD_NO_SELF_TRIGGER",
+      "DETAILED_FINALIST_LEGAL_FAIL_CLOSED","FINAL_VERIFIED_MARKET_GAP_NOT_DOUBLE_BLOCKED","DETAILED_LEGAL_GUARD_EXACT_SOURCE_BINDING","DETAILED_LEGAL_GUARD_POLICY_BINDING","DETAILED_LEGAL_GUARD_NONCIRCULAR_LIFECYCLE","DETAILED_LEGAL_GUARD_LIFECYCLE_FALLBACK_PARITY","DETAILED_LEGAL_GUARD_BOILERPLATE_SEVERITY","DETAILED_LEGAL_GUARD_ANNUAL_PLUS_QUARTERLY_SCOPE","DETAILED_LEGAL_GUARD_EMPTY_SCOPE_NO_NETWORK","TERMINAL_DETAILED_LEGAL_FULL_E2E_BLOCKER","DETAILED_LEGAL_GUARD_NO_SELF_TRIGGER",
       "POST_MC_PARTIAL_COVERAGE_GATE","PRE_MC_COMPLETED_ASOF_FREEZE_TRUTH_TABLE"]})
 
 if __name__=="__main__": main()
