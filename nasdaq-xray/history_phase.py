@@ -6,6 +6,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 import akshare as ak
+import pandas as pd
 import pandas_market_calendars as mcal
 import requests
 
@@ -429,6 +430,48 @@ def yahoo(sym,asof):
             if day<=asof:by[day]=(c,v)
         return by,{"usable":len(by),"exchangeName":(r.get("meta") or {}).get("exchangeName")}
     except Exception as e:return {},{"error":f"{type(e).__name__}:{str(e)[:160]}"}
+
+def yahoo_ohlcv(sym,asof):
+    """Return raw daily OHLCV through ASOF from Yahoo chart.
+
+    This is a non-G9 technical-history fallback used only when the primary
+    same-run cache cannot provide an exact completed ASOF bar. No synthetic
+    bars are created and adjusted-close substitution is disabled.
+    """
+    try:
+        end=datetime.fromisoformat(asof).replace(tzinfo=NY)+timedelta(days=1)
+        start=end-timedelta(days=1100)
+        ticker=sym.replace(".","-")
+        o=req_json(f"https://query1.finance.yahoo.com/v8/finance/chart/{urllib.parse.quote(ticker)}",
+          {"period1":int(start.timestamp()),"period2":int(end.timestamp()),
+           "interval":"1d","events":"history","includeAdjustedClose":"false"},25)
+        res=((o.get("chart") or {}).get("result") or [])
+        if not res:
+            return None,{"error":str((o.get("chart") or {}).get("error"))}
+        rr=res[0]
+        q=(((rr.get("indicators") or {}).get("quote") or [{}])[0])
+        ts=rr.get("timestamp") or []
+        opens=q.get("open") or []; highs=q.get("high") or []; lows=q.get("low") or []
+        closes=q.get("close") or []; vols=q.get("volume") or []
+        n=min(len(ts),len(opens),len(highs),len(lows),len(closes),len(vols))
+        rows=[]
+        for i in range(n):
+            vals=[num(opens[i]),num(highs[i]),num(lows[i]),num(closes[i]),num(vols[i])]
+            if any(v is None for v in vals): continue
+            o_,h_,l_,c_,v_=vals
+            if min(o_,h_,l_,c_)<=0 or v_<0: continue
+            day=datetime.fromtimestamp(int(ts[i]),timezone.utc).astimezone(NY).date().isoformat()
+            if day<=asof:
+                rows.append({"date":day,"open":o_,"high":h_,"low":l_,"close":c_,"volume":v_})
+        if not rows:
+            return None,{"usable":0,"exchangeName":(rr.get("meta") or {}).get("exchangeName")}
+        df=pd.DataFrame(rows)
+        df["date"]=pd.to_datetime(df["date"],errors="coerce")
+        df=df.dropna().drop_duplicates("date",keep="last").sort_values("date").reset_index(drop=True)
+        return df,{"usable":len(df),"exchangeName":(rr.get("meta") or {}).get("exchangeName"),
+                   "source":"YAHOO_CHART_FREE_RAW_OHLCV"}
+    except Exception as e:
+        return None,{"error":f"{type(e).__name__}:{str(e)[:160]}"}
 
 def eastmoney(sym,asof):
     """Fourth-source recovery for Nasdaq-only symbols.
