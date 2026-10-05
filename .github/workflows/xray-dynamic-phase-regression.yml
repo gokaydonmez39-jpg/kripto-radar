@@ -15,6 +15,7 @@ on:
       - "nasdaq-xray/deep_pre_r1_shadow.py"
       - "nasdaq-xray/family_c_engine.py"
       - "nasdaq-xray/final_tech_shadow.py"
+      - "nasdaq-xray/build_candidate_legal_guard.py"
       - "nasdaq-xray/build_current_event_request.py"
       - "nasdaq-xray/build_current_terminal.py"
       - "nasdaq-xray/test_alpha_semantics.py"
@@ -58,6 +59,7 @@ jobs:
             nasdaq-xray/deep_pre_r1_shadow.py \
             nasdaq-xray/family_c_engine.py \
             nasdaq-xray/final_tech_shadow.py \
+            nasdaq-xray/build_candidate_legal_guard.py \
             nasdaq-xray/build_current_event_request.py \
             nasdaq-xray/build_current_terminal.py \
             nasdaq-xray/test_alpha_semantics.py \
