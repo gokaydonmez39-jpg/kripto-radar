@@ -1,0 +1,156 @@
+{
+  "schema": "XRAY_RESOLVER_EPOCH_RESULT_V1",
+  "status": "COMMITTED",
+  "authority": "FOREGROUND_OPERATOR_C417_RESIDUAL_PRICE_DV20_EXACT_EVIDENCE",
+  "task_id": "6a825366222081918997094d76e6ae46",
+  "asof_et": "2026-10-02",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "queue_hash": "9ee96babaaef75d415a4e672e49fc8e8dac74abfc5993e0d7083c51875746d0b",
+  "queue_total": 3401,
+  "pointer_asof_et": "2026-10-02",
+  "compiled_policy_path": "nasdaq-xray/chatgpt_compiled_policy_v3.json",
+  "compiled_policy_blob_sha": "10d7af14870dfac0dc4566595d95a06f3faa854d",
+  "compiled_policy_hash": "26a95745a50b65e85f6ece24b6501af0994764a84ddd886edb70d1fcd770849c",
+  "compiled_policy_version": "C4.17",
+  "settlement_required": false,
+  "settlement_status": "NOT_REQUIRED_POINTER_ASOF",
+  "result_encoding": "ALPACA_SIP_RALLIES_COMPACT_V3",
+  "symbols": [
+    "ACCV",
+    "ADRX",
+    "GRAL",
+    "RZAI",
+    "SVA"
+  ],
+  "symbol_count": 5,
+  "price_resolution_compact": {
+    "fail_price": {},
+    "fail_dv20": {},
+    "pass_price_dv20": {},
+    "fail_no_asof_bar": {
+      "SVA": {
+        "proof": "THREE_SOURCE_NO_ASOF_BAR",
+        "sources": [
+          "ALPACA_SIP",
+          "RALLIES",
+          "MASSIVE"
+        ]
+      }
+    },
+    "fail_dv20_insufficient_sessions": {
+      "ACCV": {
+        "price": 17.72,
+        "known_session_count": 3,
+        "missing_sessions": [
+          "2026-09-04",
+          "2026-09-08",
+          "2026-09-09",
+          "2026-09-10",
+          "2026-09-11",
+          "2026-09-14",
+          "2026-09-15",
+          "2026-09-16",
+          "2026-09-17",
+          "2026-09-18",
+          "2026-09-21",
+          "2026-09-22",
+          "2026-09-23",
+          "2026-09-24",
+          "2026-09-25",
+          "2026-09-28",
+          "2026-09-29"
+        ],
+        "proof": "ALPACA_RALLIES_EXACT_MISSING_SET_MATCH"
+      },
+      "ADRX": {
+        "price": 18.25,
+        "known_session_count": 6,
+        "missing_sessions": [
+          "2026-09-04",
+          "2026-09-08",
+          "2026-09-09",
+          "2026-09-10",
+          "2026-09-11",
+          "2026-09-14",
+          "2026-09-15",
+          "2026-09-16",
+          "2026-09-17",
+          "2026-09-18",
+          "2026-09-21",
+          "2026-09-22",
+          "2026-09-23",
+          "2026-09-24"
+        ],
+        "proof": "ALPACA_RALLIES_EXACT_MISSING_SET_MATCH"
+      },
+      "GRAL": {
+        "price": 143.26,
+        "known_session_count": 19,
+        "missing_sessions": [
+          "2026-09-23"
+        ],
+        "proof": "ALPACA_RALLIES_EXACT_MISSING_SET_MATCH"
+      },
+      "RZAI": {
+        "price": 19.9,
+        "known_session_count": 3,
+        "missing_sessions": [
+          "2026-09-04",
+          "2026-09-08",
+          "2026-09-09",
+          "2026-09-10",
+          "2026-09-11",
+          "2026-09-14",
+          "2026-09-15",
+          "2026-09-16",
+          "2026-09-17",
+          "2026-09-18",
+          "2026-09-21",
+          "2026-09-22",
+          "2026-09-23",
+          "2026-09-24",
+          "2026-09-25",
+          "2026-09-28",
+          "2026-09-29"
+        ],
+        "proof": "ALPACA_RALLIES_EXACT_MISSING_SET_MATCH"
+      }
+    },
+    "block_current_run": {},
+    "block_post_asof_listing": {},
+    "unresolved_symbols": []
+  },
+  "evidence": {
+    "ACCV": {
+      "alpaca_sip_usable_sessions": 3,
+      "rallies_usable_sessions": 3,
+      "massive_usable_sessions": 3
+    },
+    "ADRX": {
+      "alpaca_sip_usable_sessions": 6,
+      "rallies_usable_sessions": 6,
+      "massive_usable_sessions": 6
+    },
+    "GRAL": {
+      "alpaca_sip_rows": 20,
+      "alpaca_sip_usable_sessions": 19,
+      "zero_trade_placeholder_date": "2026-09-23",
+      "rallies_usable_sessions": 19,
+      "massive_usable_sessions": 19
+    },
+    "RZAI": {
+      "alpaca_sip_usable_sessions": 3,
+      "rallies_usable_sessions": 3,
+      "massive_usable_sessions": 3
+    },
+    "SVA": {
+      "alpaca_sip_usable_asof": false,
+      "rallies_usable_asof": false,
+      "massive_usable_asof": false
+    }
+  },
+  "no_policy_weakening": true,
+  "note": "Residual frozen-epoch PRICE/DV20 blockers resolved only with C4.17 accepted terminal evidence. GRAL 2026-09-23 Alpaca SIP row has volume=0 and trade_count=0 and is excluded as non-usable/synthetic; Rallies and Massive both omit that interval."
+}
