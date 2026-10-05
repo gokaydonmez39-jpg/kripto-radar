@@ -36,19 +36,22 @@
       "VIVK",
       "WKEY"
     ],
-    "age_seconds": 0.894,
-    "generated_at_utc": "2026-10-04T22:09:51.343808+00:00",
-    "guard_blob_sha": "c2b8c470ee238bbec2a8c38d96d1e4d5d1314780",
+    "age_seconds": 1.143,
+    "generated_at_utc": "2026-10-05T06:21:07.534865+00:00",
+    "guard_blob_sha": "a0355047b9d56bf5d72f462f4b29255c1a43dd09",
     "guard_path": "nasdaq-xray/canonical_official_source_guard.json",
     "max_age_seconds": 5400,
     "security_status_suspension_symbols": [
       "COLA",
       "COLAR",
       "COLAU",
+      "DRCT",
       "FSEA",
       "GFAIW",
       "NSTS",
-      "THRMV"
+      "THRMV",
+      "WALD",
+      "WALDW"
     ],
     "status": "PASS",
     "veto_symbols": [
@@ -57,6 +60,7 @@
       "COLA",
       "COLAR",
       "COLAU",
+      "DRCT",
       "EFTY",
       "FSEA",
       "GFAIW",
@@ -76,6 +80,8 @@
       "UCFI",
       "UCFIW",
       "VIVK",
+      "WALD",
+      "WALDW",
       "WKEY"
     ],
     "vetoed_candidates": [],
@@ -141,7 +147,7 @@
     },
     "account_live_probe": {
       "balance_parseable": false,
-      "blob_sha": "516deb22298da72650e3a0d8b8a4b278af4a7c55",
+      "blob_sha": "778eaffd95481b9200ea3cf17000db43177fa532",
       "network_attempted": false,
       "path": "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/account_effective_probe_state.json",
       "positions_parseable": false,
@@ -152,7 +158,7 @@
       "secret_values_persisted": false,
       "status": "BLOCKED_MISSING_CREDENTIALS",
       "workflow_run_attempt": "1",
-      "workflow_run_id": "37238887765"
+      "workflow_run_id": "37271865666"
     },
     "deep": {
       "blob_sha": "ef9329735a208e28be983b0a5f23647b264e300d",
@@ -205,7 +211,7 @@
       "path": "nasdaq-xray/canonical_mc_bridge_20261002_c417.json"
     },
     "official_halt_guard": {
-      "blob_sha": "c2b8c470ee238bbec2a8c38d96d1e4d5d1314780",
+      "blob_sha": "a0355047b9d56bf5d72f462f4b29255c1a43dd09",
       "path": "nasdaq-xray/canonical_official_source_guard.json"
     },
     "pointer": {
@@ -237,7 +243,7 @@
   "final_gate_reporting_zero_alpha": true,
   "full_end_to_end_research_pass": true,
   "g9_global_status": "G9_BLOCKED_FREE_AUTOMATION_PATH",
-  "generated_at_utc": "2026-10-04T22:09:52.239487+00:00",
+  "generated_at_utc": "2026-10-05T06:21:08.679253+00:00",
   "pointer_asof_before_candidate": "2026-10-02",
   "r92_account_g9_applicable": false,
   "r92_candidates": [],
