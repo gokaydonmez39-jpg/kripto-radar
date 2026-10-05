@@ -26,7 +26,12 @@
     "active_run_suppression": true,
     "active_run_rule": "If a newer root/final run is queued or in_progress and its created_at age is within that workflow's active-run grace, Health MUST NOT kick. Mark recovery in progress and keep candidate emission fail-closed until a COMPLETED+SUCCESS witness exists.",
     "kick_cooldown_seconds": 180,
-    "double_actions_snapshot_required": true
+    "double_actions_snapshot_required": true,
+    "weekday_time_zone": "America/New_York",
+    "preopen_priority_window_is_gate": false,
+    "stale_root_action": "CAS_KICK_REQUIRED_ON_US_WEEKDAY_WHEN_PREDICATES_TRUE",
+    "health_action_omission_is_fault": true,
+    "weekend_age_only_kick_forbidden": true
   },
   "updated_on": "2026-10-05",
   "final_workflow_name": "XRAY Canonical Current Final Factory",
