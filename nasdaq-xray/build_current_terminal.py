@@ -335,6 +335,7 @@ def main():
       "stage1_shadow.py":blob_sha(ROOT/"stage1_shadow.py"),
       "deep_pre_r1_shadow.py":blob_sha(ROOT/"deep_pre_r1_shadow.py"),
       "family_c_engine.py":blob_sha(ROOT/"family_c_engine.py"),
+      "regime_breadth_shadow.py":blob_sha(ROOT/"regime_breadth_shadow.py"),
       "final_tech_shadow.py":blob_sha(ROOT/"final_tech_shadow.py"),
     }
     final_alpha_blobs=ft.get("semantic_impl_blobs") or {}
