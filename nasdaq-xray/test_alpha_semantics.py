@@ -355,8 +355,8 @@ def main():
     # Stage1 process must bind the computed recent weekly context into its output.
     # This catches a runtime NameError class that py_compile cannot detect.
     olds=(stage1_mod.load_history,stage1_mod.weekly_gate,stage1_mod.mechanical_scale_breaks,
-          stage1_mod.mechanical_split_suspects,stage1_mod.recent_weekly_context,
-          stage1_mod.base_pool,stage1_mod.drawdown_metrics)
+          stage1_mod.mechanical_split_suspects,stage1_mod.split_consistent_history,
+          stage1_mod.recent_weekly_context,stage1_mod.base_pool,stage1_mod.drawdown_metrics)
     try:
         sx=frame(300)
         stage1_mod.load_history=lambda sym,asof:(sx.copy(),"TEST")
@@ -370,10 +370,25 @@ def main():
         assert sr["status"]=="WEEKLY_PASS",sr
         assert sr["recent_weekly_context"]=={"2026-10-02":{"pass":True}},sr
         assert sr["corporate_action_status"]=="PASS_NO_LOCAL_SPLIT_DISCONTINUITY",sr
+
+        # Fractional split-like gaps (for example 3:2) are below the severe
+        # 1.8x scale-break threshold but still must invoke exact split
+        # reconciliation before Stage1 geometry is trusted.
+        calls=[]
+        stage1_mod.mechanical_scale_breaks=lambda df,lookback=260:[]
+        stage1_mod.mechanical_split_suspects=lambda df,lookback=260:[{"date":"2026-09-30","matched_split_ratio":1.5}]
+        def _split_check(sym,df):
+            calls.append(sym)
+            return df.copy(),"PASS_NO_SPLIT_EVENTS_CROSSCHECKED",[]
+        stage1_mod.split_consistent_history=_split_check
+        _,sr2=stage1_mod.process("FRAC","2026-10-02",{})
+        assert calls==["FRAC"],calls
+        assert sr2["status"]=="WEEKLY_PASS",sr2
+        assert sr2["corporate_action_status"]=="PASS_NO_SPLIT_EVENTS_CROSSCHECKED",sr2
     finally:
         (stage1_mod.load_history,stage1_mod.weekly_gate,stage1_mod.mechanical_scale_breaks,
-         stage1_mod.mechanical_split_suspects,stage1_mod.recent_weekly_context,
-         stage1_mod.base_pool,stage1_mod.drawdown_metrics)=olds
+         stage1_mod.mechanical_split_suspects,stage1_mod.split_consistent_history,
+         stage1_mod.recent_weekly_context,stage1_mod.base_pool,stage1_mod.drawdown_metrics)=olds
 
     # Same-run HISTORY -> Stage1 OHLCV cache roundtrip. Cache is transport only;
     # wrong-ASOF reads must return None so the normal fail-closed fetch path remains authoritative.
