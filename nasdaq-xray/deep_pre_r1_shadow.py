@@ -11,6 +11,12 @@ from pathlib import Path
 from statistics import median
 import akshare as ak
 import pandas as pd
+from alpha_semantics import (
+    wilder_atr as _policy_atr,
+    ema_seeded,
+    strict_swings as _policy_swings,
+    drawdown_metrics,
+)
 
 ROOT=Path(__file__).resolve().parent
 STAGE1=Path(os.getenv("XRAY_STAGE1_STATE", str(ROOT/"stage1_shadow.json")))
@@ -102,28 +108,10 @@ def get_hist(sym,asof):
     except Exception as e:return sym,None,f"{type(e).__name__}:{str(e)[:160]}",None
 
 def atr14(df):
-    h=df.high.astype(float);l=df.low.astype(float);c=df.close.astype(float)
-    pc=c.shift(1)
-    tr=pd.concat([(h-l).abs(),(h-pc).abs(),(l-pc).abs()],axis=1).max(axis=1).to_list()
-    if len(tr)<15:return None
-    a=sum(tr[:14])/14
-    vals=[None]*13+[a]
-    for x in tr[14:]:
-        a=(13*a+x)/14
-        vals.append(a)
-    return pd.Series(vals,index=df.index,dtype="float64")
+    return _policy_atr(df,14)
 
 def strict_swings(df):
-    hs=[];ls=[]
-    H=df.high.to_list();L=df.low.to_list()
-    n=len(df)
-    for i in range(2,n-2):
-        h=H[i]; l=L[i]
-        if all(h>H[j] for j in [i-2,i-1,i+1,i+2]):
-            hs.append(i)
-        if all(l<L[j] for j in [i-2,i-1,i+1,i+2]):
-            ls.append(i)
-    return hs,ls
+    return _policy_swings(df)
 
 def common_rs(stock,qqq,n):
     s={d.strftime("%Y-%m-%d"):float(c) for d,c in zip(stock.date,stock.close)}
@@ -159,7 +147,9 @@ def family_b(df):
     n,P,anchor,b=max(passing,key=lambda z:z[0])
     rv=rvol20(df); close=float(df.close.iloc[-1])
     confirmed=bool(close>P and rv is not None and rv>=1.5)
-    return {"pool":True,"window":n,"P":P,"anchor":anchor,"b":b,"A":A,"rvol20":rv,"close":close,"breakout_confirmed":confirmed}
+    return {"pool":True,"window":n,"P":P,"anchor":anchor,"b":b,"A":A,"rvol20":rv,"close":close,
+            "breakout_confirmed":confirmed,
+            "trigger_date":df.date.iloc[-1].strftime("%Y-%m-%d") if confirmed else None}
 
 def active_hl_and_sh(df):
     hs,ls=strict_swings(df)
@@ -192,42 +182,50 @@ def family_d(df,rs20,rs60):
     if Aser is None or pd.isna(Aser.iloc[-2]):return {"pool":False,"reason":"ATR"}
     A=float(Aser.iloc[-2]); d=(P-anchor)/A if A>0 else None
     c=df.close.astype(float); last=float(c.iloc[-1])
-    ema50=float(c.ewm(span=50,adjust=False).mean().iloc[-1])
+    ema50s=ema_seeded(c,50)
+    if pd.isna(ema50s.iloc[-1]):return {"pool":False,"reason":"EMA50"}
+    ema50=float(ema50s.iloc[-1])
     rv=rvol20(df)
-    h252=float(c.iloc[-252:].max());h120=float(c.iloc[-120:].max())
-    dd252=last/h252-1;dd120=last/h120-1
+    dd=drawdown_metrics(df)
+    dd252=dd["current_drawdown_252"];dd120=dd["max_drawdown_close_120"]
     pool=bool(dd252<=-0.15 or dd120<=-0.20)
     reclaim=bool(pool and d is not None and 0.30<=d<=2.05 and last>P and last>ema50 and rs20 is not None and rs60 is not None and rs20>0 and rs60>0 and rv is not None and rv>=1.2)
-    return {"pool":pool,"hl_date":df.date.iloc[hl].strftime("%Y-%m-%d"),"P":P,"anchor":anchor,"A":A,"d":d,"close":last,"ema50":ema50,"rs20":rs20,"rs60":rs60,"rvol20":rv,"dd252":dd252,"dd120":dd120,"dk3_pre_r1":reclaim}
+    return {"pool":pool,"hl_date":df.date.iloc[hl].strftime("%Y-%m-%d"),"P":P,"anchor":anchor,"A":A,"d":d,"close":last,"ema50":ema50,"rs20":rs20,"rs60":rs60,"rvol20":rv,
+            "dd252":dd252,"dd120":dd120,"dd252_definition":"CURRENT_CLOSE_VS_MAX_HIGH_252",
+            "dd120_definition":"MAX_DRAWDOWN_CLOSE_120","dk3_pre_r1":reclaim,
+            "trigger_date":df.date.iloc[-1].strftime("%Y-%m-%d") if reclaim else None}
 
 def family_a(df):
     st=active_hl_and_sh(df)
     if not st:return {"pool":False,"reason":"NO_ACTIVE_HL"}
     hl=st["hl"]; hs=st["hs"]
-    # SH must precede HL and trigger within 2-8 sessions after confirmed SH availability.
     prev_h=[i for i in hs if i<hl]
     if not prev_h:return {"pool":False,"reason":"NO_SH"}
     sh=prev_h[-1]
-    sessions_since_confirm=(len(df)-1)-(sh+2)
-    if not (2<=sessions_since_confirm<=8):
-        return {"pool":False,"reason":"SH_AGE","sessions_since_confirm":sessions_since_confirm}
-    Aser=atr14(df)
-    if Aser is None or pd.isna(Aser.iloc[-2]):return {"pool":False,"reason":"ATR"}
-    A=float(Aser.iloc[-2]); anchor=float(df.low.iloc[hl]); SH=float(df.high.iloc[sh])
-    # Find later reversal bar whose close > prior high; P is that prior high, after HL is confirmed.
     hl_available=hl+2
-    trigger=None
+    # Earliest eligible reversal after HL confirmation; never cherry-pick a later prettier trigger.
+    trigger=None; sessions_since_confirm=None
     for i in range(max(hl_available+1,1),len(df)):
+        age=i-(sh+2)
+        if age<2: continue
+        if age>8: break
         if float(df.close.iloc[i])>float(df.high.iloc[i-1]):
-            trigger=i
-    if trigger is None:return {"pool":False,"reason":"NO_REVERSAL"}
+            trigger=i; sessions_since_confirm=age; break
+    if trigger is None:
+        last_age=(len(df)-1)-(sh+2)
+        return {"pool":False,"reason":"SH_AGE" if last_age>8 else "NO_REVERSAL","sessions_since_confirm":last_age}
+    Aser=atr14(df)
+    if Aser is None or trigger<1 or pd.isna(Aser.iloc[trigger-1]):return {"pool":False,"reason":"ATR"}
+    A=float(Aser.iloc[trigger-1]); anchor=float(df.low.iloc[hl]); SH=float(df.high.iloc[sh])
     P=float(df.high.iloc[trigger-1])
     prelow=float(df.low.iloc[max(hl,trigger-2):trigger+1].min())
     near_hl=abs(prelow-anchor)<=0.5*A
     d=(P-anchor)/A if A>0 else None
     depth=(SH-anchor)/A if A>0 else None
     geom=bool(near_hl and d is not None and depth is not None and 0.30<=d<=1.07 and 2.15<=depth<=4.00)
-    return {"pool":geom,"sh_date":df.date.iloc[sh].strftime("%Y-%m-%d"),"hl_date":df.date.iloc[hl].strftime("%Y-%m-%d"),"trigger_date":df.date.iloc[trigger].strftime("%Y-%m-%d"),"P":P,"anchor":anchor,"A":A,"d":d,"depth":depth,"prelow_near_hl":near_hl}
+    return {"pool":geom,"sh_date":df.date.iloc[sh].strftime("%Y-%m-%d"),"hl_date":df.date.iloc[hl].strftime("%Y-%m-%d"),
+            "trigger_date":df.date.iloc[trigger].strftime("%Y-%m-%d"),"sessions_since_confirm":sessions_since_confirm,
+            "P":P,"anchor":anchor,"A":A,"d":d,"depth":depth,"prelow_near_hl":near_hl}
 
 def main():
     st=json.loads(STAGE1.read_text())
