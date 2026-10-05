@@ -2,10 +2,10 @@
   "alpha_authority": false,
   "append_only_semantics": true,
   "execution": "NONE",
-  "last_ingest_at_utc": "2026-10-05T00:11:40.069470+00:00",
+  "last_ingest_at_utc": "2026-10-05T06:13:13.078616+00:00",
   "real_money": "NO-GO",
   "schema": "XRAY_OFFICIAL_PIT_LEDGER_V1",
-  "snapshot_count": 8,
+  "snapshot_count": 10,
   "snapshots": [
     {
       "guard_generated_at_utc": "2026-10-04T20:54:27.194776+00:00",
@@ -991,6 +991,568 @@
       },
       "payload_sha256": "c18cf5c14cce57dccbb734aa4aa9e36ca7681bb25924950da2a48b58b7a955ac",
       "source": "security_status",
+      "source_status": "PASS"
+    },
+    {
+      "guard_generated_at_utc": "2026-10-05T06:13:12.026760+00:00",
+      "observed_at_utc": "2026-10-05T06:13:13.078445+00:00",
+      "payload": {
+        "historical_event_rows_considered": 45,
+        "query_end": "2026-10-05",
+        "query_start": "2026-10-02",
+        "row_count": 45,
+        "rows": [
+          {
+            "CompanyName": "Alpha Modus Holdings, Inc. Class A Common Stock",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-02",
+            "IssueEvent": "Financial Status Changes",
+            "NewFinancialStatus": "N-Normal",
+            "OldFinancialStatus": "D-Deficient",
+            "Symbol": "AMOD"
+          },
+          {
+            "CompanyName": "Alpha Modus Holdings, Inc. Warrant",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-02",
+            "IssueEvent": "Financial Status Changes",
+            "NewFinancialStatus": "N-Normal",
+            "OldFinancialStatus": "D-Deficient",
+            "Symbol": "AMODW"
+          },
+          {
+            "CompanyName": "Columbus Acquisition Corp Ordinary Shares",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-02",
+            "IssueEvent": "Issue Suspensions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "COLA"
+          },
+          {
+            "CompanyName": "Columbus Acquisition Corp Rights",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-02",
+            "IssueEvent": "Issue Suspensions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "COLAR"
+          },
+          {
+            "CompanyName": "Columbus Acquisition Corp Unit",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-02",
+            "IssueEvent": "Issue Suspensions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "COLAU"
+          },
+          {
+            "CompanyName": "Cycurion, Inc. Common Stock",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-02",
+            "IssueEvent": "Financial Status Changes",
+            "NewFinancialStatus": "N-Normal",
+            "OldFinancialStatus": "D-Deficient",
+            "Symbol": "CYCU"
+          },
+          {
+            "CompanyName": "E-Home Household Service Holdings Limited Ordinary Shares",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-02",
+            "IssueEvent": "Financial Status Changes",
+            "NewFinancialStatus": "N-Normal",
+            "OldFinancialStatus": "D-Deficient",
+            "Symbol": "EJH"
+          },
+          {
+            "CompanyName": "First Seacoast Bancorp, Inc. Common Stock",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-02",
+            "IssueEvent": "Issue Suspensions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "FSEA"
+          },
+          {
+            "CompanyName": "Guardforce AI Co., Limited Warrant",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-02",
+            "IssueEvent": "Issue Suspensions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "GFAIW"
+          },
+          {
+            "CompanyName": "Gulf Resources, Inc. (NV) Common Stock",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-02",
+            "IssueEvent": "Financial Status Changes",
+            "NewFinancialStatus": "N-Normal",
+            "OldFinancialStatus": "E-Delinquent",
+            "Symbol": "GURE"
+          },
+          {
+            "CompanyName": "Megan Holdings Limited Class A Ordinary Shares",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-02",
+            "IssueEvent": "Financial Status Changes",
+            "NewFinancialStatus": "N-Normal",
+            "OldFinancialStatus": "D-Deficient",
+            "Symbol": "MGN"
+          },
+          {
+            "CompanyName": "NSTS Bancorp, Inc. Common Stock",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-02",
+            "IssueEvent": "Issue Suspensions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "NSTS"
+          },
+          {
+            "CompanyName": "OpenWorld, Inc. Common Stock",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-02",
+            "IssueEvent": "Financial Status Changes",
+            "NewFinancialStatus": "N-Normal",
+            "OldFinancialStatus": "D-Deficient",
+            "Symbol": "OPNW"
+          },
+          {
+            "CompanyName": "Powerus Corporation Common Stock",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-02",
+            "IssueEvent": "Name/Symbol Changes",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "PUSA"
+          },
+          {
+            "CompanyName": "ReTo Eco-Solutions, Inc. Class A Shares",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-02",
+            "IssueEvent": "Name/Symbol Changes",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "RETO"
+          },
+          {
+            "CompanyName": "WISeSat.Space Holdings Corp. Ordinary Shares",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-02",
+            "IssueEvent": "Anticipated Security Additions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "SAIQ"
+          },
+          {
+            "CompanyName": "WISeSat.Space Holdings Corp. Ordinary Shares",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-02",
+            "IssueEvent": "Security Additions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "SAIQ"
+          },
+          {
+            "CompanyName": "Gentherm Inc Common Stock When-Issued",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-02",
+            "IssueEvent": "Issue Suspensions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "THRMV"
+          },
+          {
+            "CompanyName": "Zhongchao Inc. Class A Ordinary Shares",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-02",
+            "IssueEvent": "Name/Symbol Changes",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "ZCMD"
+          },
+          {
+            "CompanyName": "Clearmind Medicine Inc. Common Shares",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-05",
+            "IssueEvent": "Name/Symbol Changes",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "CMND"
+          },
+          {
+            "CompanyName": "Direct Digital Holdings, Inc. Class A Common Stock",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-05",
+            "IssueEvent": "Issue Suspensions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "DRCT"
+          },
+          {
+            "CompanyName": "Dyadic International, Inc. Common Stock",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-05",
+            "IssueEvent": "Financial Status Changes",
+            "NewFinancialStatus": "D-Deficient",
+            "OldFinancialStatus": "N-Normal",
+            "Symbol": "DYAI"
+          },
+          {
+            "CompanyName": "Fractyl Health, Inc. Common Stock",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-05",
+            "IssueEvent": "Name/Symbol Changes",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "GUTS"
+          },
+          {
+            "CompanyName": "Hennessy Capital Investment Corp. VII Rights",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-05",
+            "IssueEvent": "Issue Deletions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "HVIIR"
+          },
+          {
+            "CompanyName": "Hennessy Capital Investment Corp. VII Unit",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-05",
+            "IssueEvent": "Issue Deletions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "HVIIU"
+          },
+          {
+            "CompanyName": "Inflection Point Acquisition Corp. V Class A Ordinary Shares",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-05",
+            "IssueEvent": "Issue Deletions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "IPEX"
+          },
+          {
+            "CompanyName": "Inflection Point Acquisition Corp. V Rights",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-05",
+            "IssueEvent": "Issue Deletions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "IPEXR"
+          },
+          {
+            "CompanyName": "Inflection Point Acquisition Corp. V Units",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-05",
+            "IssueEvent": "Issue Deletions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "IPEXU"
+          },
+          {
+            "CompanyName": "Inflection Point Acquisition Corp. VIII Class A Ordinary Shares",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-05",
+            "IssueEvent": "Anticipated Security Additions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "IPHX"
+          },
+          {
+            "CompanyName": "Inflection Point Acquisition Corp. VIII Warrant",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-05",
+            "IssueEvent": "Anticipated Security Additions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "IPHXW"
+          },
+          {
+            "CompanyName": "Jasper Therapeutics, Inc. Warrants",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-05",
+            "IssueEvent": "Issue Deletions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "JSPRW"
+          },
+          {
+            "CompanyName": "KLX Energy Services Holdings, Inc. Rights",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-05",
+            "IssueEvent": "Issue Deletions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "KLXER"
+          },
+          {
+            "CompanyName": "Leslie's, Inc. Common Stock",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-05",
+            "IssueEvent": "Financial Status Changes",
+            "NewFinancialStatus": "D-Deficient",
+            "OldFinancialStatus": "N-Normal",
+            "Symbol": "LESL"
+          },
+          {
+            "CompanyName": "Lantern Pharma Inc. Common Stock",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-05",
+            "IssueEvent": "Financial Status Changes",
+            "NewFinancialStatus": "D-Deficient",
+            "OldFinancialStatus": "N-Normal",
+            "Symbol": "LTRN"
+          },
+          {
+            "CompanyName": "Outlook Therapeutics, Inc. Common Stock",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-05",
+            "IssueEvent": "Financial Status Changes",
+            "NewFinancialStatus": "D-Deficient",
+            "OldFinancialStatus": "N-Normal",
+            "Symbol": "OTLK"
+          },
+          {
+            "CompanyName": "Runway Growth Finance Corp. 7.75% Notes Due 2031",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-05",
+            "IssueEvent": "Anticipated Security Additions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "RWAYM"
+          },
+          {
+            "CompanyName": "Scienture Holdings, Inc. Common Stock",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-05",
+            "IssueEvent": "Name/Symbol Changes",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "SCNX"
+          },
+          {
+            "CompanyName": "Thunder Bridge Capital Partners V, Ltd. Class A Ordinary Shares",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-05",
+            "IssueEvent": "Anticipated Security Additions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "TBCV"
+          },
+          {
+            "CompanyName": "Thunder Bridge Capital Partners V, Ltd. Warrants",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-05",
+            "IssueEvent": "Anticipated Security Additions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "TBCVW"
+          },
+          {
+            "CompanyName": "Theravance Biopharma, Inc. Ordinary Shares",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-05",
+            "IssueEvent": "Issue Deletions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "TBPH"
+          },
+          {
+            "CompanyName": "Vivakor, Inc. Common Stock",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-05",
+            "IssueEvent": "Name/Symbol Changes",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "VIVK"
+          },
+          {
+            "CompanyName": "Waldencast plc Class A Ordinary Share",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-05",
+            "IssueEvent": "Issue Suspensions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "WALD"
+          },
+          {
+            "CompanyName": "Waldencast plc Warrant",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-05",
+            "IssueEvent": "Issue Suspensions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "WALDW"
+          },
+          {
+            "CompanyName": "WISeQey Corp Ordinary Shares",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-05",
+            "IssueEvent": "Name/Symbol Changes",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "WQEY"
+          },
+          {
+            "CompanyName": "zSpace, Inc. Common stock",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-05",
+            "IssueEvent": "Issue Deletions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "ZSPC"
+          }
+        ],
+        "status": "PASS",
+        "suspension_state_evidence": {
+          "COLA": {
+            "latest_addition": null,
+            "latest_suspension": "2026-10-02",
+            "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+          },
+          "COLAR": {
+            "latest_addition": null,
+            "latest_suspension": "2026-10-02",
+            "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+          },
+          "COLAU": {
+            "latest_addition": null,
+            "latest_suspension": "2026-10-02",
+            "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+          },
+          "DRCT": {
+            "latest_addition": null,
+            "latest_suspension": "2026-10-05",
+            "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+          },
+          "FSEA": {
+            "latest_addition": null,
+            "latest_suspension": "2026-10-02",
+            "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+          },
+          "GFAIW": {
+            "latest_addition": null,
+            "latest_suspension": "2026-10-02",
+            "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+          },
+          "NSTS": {
+            "latest_addition": null,
+            "latest_suspension": "2026-10-02",
+            "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+          },
+          "THRMV": {
+            "latest_addition": null,
+            "latest_suspension": "2026-10-02",
+            "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+          },
+          "WALD": {
+            "latest_addition": null,
+            "latest_suspension": "2026-10-05",
+            "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+          },
+          "WALDW": {
+            "latest_addition": null,
+            "latest_suspension": "2026-10-05",
+            "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+          }
+        },
+        "suspension_state_rule": "EVENT_SOURCED_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS",
+        "suspension_symbols": [
+          "COLA",
+          "COLAR",
+          "COLAU",
+          "DRCT",
+          "FSEA",
+          "GFAIW",
+          "NSTS",
+          "THRMV",
+          "WALD",
+          "WALDW"
+        ],
+        "symbol_change_mapping_rule": "UNKNOWN_UNLESS_CORROBORATED",
+        "url": "https://www.nasdaqtrader.com/Trader.aspx?id=nasdaq-security-status-updates&from=10/02/2026&to=10/05/2026"
+      },
+      "payload_sha256": "b4b0770d279c54548d03cc7c677d4ad097c8c3f1a5d9feb078642ea4b1e408ff",
+      "source": "security_status",
+      "source_status": "PASS"
+    },
+    {
+      "guard_generated_at_utc": "2026-10-05T06:13:12.026760+00:00",
+      "observed_at_utc": "2026-10-05T06:13:13.078613+00:00",
+      "payload": {
+        "active_halt_symbols": [
+          "BKKT.W",
+          "CMND",
+          "EFTY",
+          "GUTS",
+          "HCHL",
+          "LAWR",
+          "MAGH",
+          "MAMK",
+          "MCTA",
+          "OST",
+          "PC",
+          "QRVO",
+          "SCNX",
+          "SVA",
+          "UCFI",
+          "UCFIW",
+          "VIVK",
+          "WKEY"
+        ],
+        "halt_guard_status": "PASS",
+        "rule": "REGISTERED_RESEARCH_CANDIDATE_DELIVERY_MUST_FAIL_CLOSED_ON_ACTIVE_HALT_SECURITY_SUSPENSION_OR_UNKNOWN_OFFICIAL_SAFETY_FEED",
+        "security_status_guard_status": "PASS",
+        "security_status_suspension_symbols": [
+          "COLA",
+          "COLAR",
+          "COLAU",
+          "DRCT",
+          "FSEA",
+          "GFAIW",
+          "NSTS",
+          "THRMV",
+          "WALD",
+          "WALDW"
+        ],
+        "veto_symbols": [
+          "BKKT.W",
+          "CMND",
+          "COLA",
+          "COLAR",
+          "COLAU",
+          "DRCT",
+          "EFTY",
+          "FSEA",
+          "GFAIW",
+          "GUTS",
+          "HCHL",
+          "LAWR",
+          "MAGH",
+          "MAMK",
+          "MCTA",
+          "NSTS",
+          "OST",
+          "PC",
+          "QRVO",
+          "SCNX",
+          "SVA",
+          "THRMV",
+          "UCFI",
+          "UCFIW",
+          "VIVK",
+          "WALD",
+          "WALDW",
+          "WKEY"
+        ]
+      },
+      "payload_sha256": "b07d4892769cd8358c52febe5a782d327844b859789660c1a33ca4b42635fec7",
+      "source": "candidate_safety",
       "source_status": "PASS"
     }
   ],
