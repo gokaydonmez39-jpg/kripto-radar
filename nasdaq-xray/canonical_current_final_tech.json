@@ -13,8 +13,8 @@
   },
   "input_confirmed_family_candidates": 1,
   "lifecycle_frozen_semantics_binding": {
-    "alpha_semantics.py": "48e875aec0c9af7b906aa33afa53ba7cd11e9702",
-    "final_tech_shadow.py": "f014fe78e967f6274fa0b8b75c618fd97b83aea6"
+    "alpha_semantics.py": "e602aaf797b4807c77d08116b39d2d4d2ee36695",
+    "final_tech_shadow.py": "1d4ca600f65a04bebd12a4c73146ad8179374adf"
   },
   "lifecycle_registry": {
     "asof_et": "2026-10-02",
@@ -232,12 +232,12 @@
   "schema": "XRAY_FINAL_TECH_SHADOW_V1",
   "semantic_audit_status": "PASS_IMPLEMENTATION_CONFORMANCE",
   "semantic_impl_blobs": {
-    "alpha_semantics.py": "48e875aec0c9af7b906aa33afa53ba7cd11e9702",
-    "deep_pre_r1_shadow.py": "81cde2c247ed54ca42ae19ddd193f87c76a95d6e",
-    "family_c_engine.py": "2bc8266b2add32eab139b4b1b48d3b6c7e97e647",
-    "final_tech_shadow.py": "f014fe78e967f6274fa0b8b75c618fd97b83aea6",
+    "alpha_semantics.py": "e602aaf797b4807c77d08116b39d2d4d2ee36695",
+    "deep_pre_r1_shadow.py": "4e94c6cf85fb7cad0600fc3eed4affc29f05d0a5",
+    "family_c_engine.py": "a08149be4e9c9d8f772443159fe1903304019b2a",
+    "final_tech_shadow.py": "1d4ca600f65a04bebd12a4c73146ad8179374adf",
     "regime_breadth_shadow.py": "d34c15b69779b8bce79096a9c949fecdf6552bfd",
-    "stage1_shadow.py": "d777544316161ecc9066581d64b001294ddcf57f"
+    "stage1_shadow.py": "9f9dba9b663fe90d8c4f05ee492f7fcb3cf85244"
   },
   "semantic_known_gaps": [],
   "semantic_repairs": [
@@ -252,13 +252,13 @@
   ],
   "source_compiled_policy_hash": "26a95745a50b65e85f6ece24b6501af0994764a84ddd886edb70d1fcd770849c",
   "source_compiled_policy_version": "C4.17",
-  "source_deep_blob_sha": "36da5eb774d4163b95c26190ad073a2277e3f877",
+  "source_deep_blob_sha": "0143c25280b68936d28f4c80522db468a9b2c86d",
   "source_deep_path": "nasdaq-xray/canonical_current_deep_full.json",
-  "source_family_c_blob_sha": "713a98d973c3c9eaee50e085d59420f727683636",
+  "source_family_c_blob_sha": "6ab66cee0560e791e55632aa2d41a3314b82289e",
   "source_family_c_path": "nasdaq-xray/canonical_current_family_c.json",
   "source_legal_blob_sha": "3f2d51ac747b7a68be0a2d4716e75b243e0e56a3",
   "source_legal_path": "nasdaq-xray/canonical_current_legal.json",
-  "source_workflow_sha": "689398677c9392f33532faeaec9ede420c5f86f9",
+  "source_workflow_sha": "f292e07211fe17184c299e5527bde67055cc4f40",
   "state_caps": {
     "PI": "NORMAL"
   },

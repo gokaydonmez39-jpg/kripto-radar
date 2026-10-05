@@ -34,9 +34,9 @@
       "UCFI",
       "UCFIW"
     ],
-    "age_seconds": 0.689,
-    "generated_at_utc": "2026-10-05T16:54:32.764618+00:00",
-    "guard_blob_sha": "798178389f6c0258e11f8f46a56b34ee2eb115f8",
+    "age_seconds": 0.606,
+    "generated_at_utc": "2026-10-05T17:06:42.719445+00:00",
+    "guard_blob_sha": "ae785b79488fb856debc27cb91c94bb9aab675d1",
     "guard_path": "nasdaq-xray/canonical_official_source_guard.json",
     "max_age_seconds": 900,
     "security_status_suspension_symbols": [
@@ -148,7 +148,7 @@
     },
     "account_live_probe": {
       "balance_parseable": false,
-      "blob_sha": "6c6565e325987444b9c52c22783dd062c89f0da0",
+      "blob_sha": "6543b09f0a0f455a72f0350e3173b8aab1013b15",
       "network_attempted": false,
       "path": "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/account_effective_probe_state.json",
       "positions_parseable": false,
@@ -159,10 +159,10 @@
       "secret_values_persisted": false,
       "status": "BLOCKED_MISSING_CREDENTIALS",
       "workflow_run_attempt": "1",
-      "workflow_run_id": "37344275375"
+      "workflow_run_id": "37345826000"
     },
     "deep": {
-      "blob_sha": "36da5eb774d4163b95c26190ad073a2277e3f877",
+      "blob_sha": "0143c25280b68936d28f4c80522db468a9b2c86d",
       "path": "nasdaq-xray/canonical_current_deep_full.json"
     },
     "deep_geometry": {
@@ -178,11 +178,11 @@
       "path": "nasdaq-xray/canonical_current_event_state.json"
     },
     "family_c": {
-      "blob_sha": "713a98d973c3c9eaee50e085d59420f727683636",
+      "blob_sha": "6ab66cee0560e791e55632aa2d41a3314b82289e",
       "path": "nasdaq-xray/canonical_current_family_c.json"
     },
     "final": {
-      "blob_sha": "bb335333c7f80b5a86d03702dcbee0188221e345",
+      "blob_sha": "d21a106510e3f5d77137fd5951c60a79cec75ce6",
       "path": "nasdaq-xray/canonical_current_final_tech.json"
     },
     "full_state": {
@@ -212,7 +212,7 @@
       "path": "nasdaq-xray/canonical_mc_bridge_20261002_c417.json"
     },
     "official_halt_guard": {
-      "blob_sha": "798178389f6c0258e11f8f46a56b34ee2eb115f8",
+      "blob_sha": "ae785b79488fb856debc27cb91c94bb9aab675d1",
       "path": "nasdaq-xray/canonical_official_source_guard.json"
     },
     "pointer": {
@@ -244,7 +244,7 @@
   "final_gate_reporting_zero_alpha": true,
   "full_end_to_end_research_pass": false,
   "g9_global_status": "G9_BLOCKED_FREE_AUTOMATION_PATH",
-  "generated_at_utc": "2026-10-05T16:54:33.455271+00:00",
+  "generated_at_utc": "2026-10-05T17:06:43.326756+00:00",
   "pointer_asof_before_candidate": "2026-10-02",
   "r92_account_g9_applicable": false,
   "r92_candidates": [],
