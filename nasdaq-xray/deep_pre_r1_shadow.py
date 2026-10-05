@@ -23,6 +23,7 @@ from alpha_semantics import (
     apply_split_events,
     family_a_pretrigger_low,
     trend_pullback_stage1_at,
+    history_fingerprint,
 )
 
 ROOT=Path(__file__).resolve().parent
@@ -37,6 +38,11 @@ PROVIDER_MAX_INFLIGHT=max(1,int(os.getenv("XRAY_DEEP_PROVIDER_MAX_INFLIGHT","3")
 RETRY_DELAYS=(0.0,1.0,2.5)
 _PROVIDER_SEM=threading.Semaphore(PROVIDER_MAX_INFLIGHT)
 OFFICIAL_IDENTITY_EVIDENCE=ROOT/"history_official_identity_evidence.json"
+HISTORY_CACHE_DIR=os.getenv("XRAY_DEEP_HISTORY_CACHE_DIR")
+HISTORY_CACHE_REQUIRED=os.getenv("XRAY_DEEP_CACHE_REQUIRED","0")=="1"
+HISTORY_BINDING_ENV=os.getenv("XRAY_DEEP_HISTORY_BINDING_STATE")
+HISTORY_BINDING=Path(HISTORY_BINDING_ENV) if HISTORY_BINDING_ENV else None
+HISTORY_BINDING_REQUIRED=os.getenv("XRAY_DEEP_HISTORY_BINDING_REQUIRED","0")=="1"
 
 def _retryable(exc):
     s=str(exc).lower()
@@ -76,25 +82,47 @@ def _normalize_sina(df):
     for k in need[1:]:x[k]=pd.to_numeric(x[k],errors="coerce")
     return x.dropna().drop_duplicates("date",keep="last").sort_values("date")
 
+def _history_cache_path(sym):
+    if not HISTORY_CACHE_DIR:return None
+    return Path(HISTORY_CACHE_DIR)/(hashlib.sha256(sym.encode()).hexdigest()+".csv.gz")
+
+def _cached_sina_history(sym,asof,require_asof=True):
+    p=_history_cache_path(sym)
+    if p is None or not p.exists():return None
+    try:
+        x=_normalize_sina(pd.read_csv(p,compression="gzip"))
+        if x is None or x.empty:return None
+        x=x[x["date"]<=pd.Timestamp(asof)].reset_index(drop=True)
+        if x.empty:return None
+        if require_asof and x["date"].dt.date.max().isoformat()!=asof:return None
+        return x
+    except Exception:return None
+
 def _sina_history(sym):
     return _normalize_sina(_call_with_retry(lambda: ak.stock_us_daily(symbol=sym,adjust="")))
 
 def load_history(sym,asof):
-    cur=_sina_history(sym)
+    cur=_cached_sina_history(sym,asof)
+    if cur is None and HISTORY_CACHE_REQUIRED:
+        return None,"SINA_SAME_RUN_CACHE_MISSING"
+    if cur is None:cur=_sina_history(sym)
     rec=OFFICIAL_RECORDS.get(sym) or {}
     if rec.get("mode")=="OFFICIAL_TICKER_CONTINUITY_COMPOSITE_HISTORY" and rec.get("cusip_unchanged") is True:
         pred=rec.get("predecessor_symbol"); eff=rec.get("effective_date")
         if pred and eff and cur is not None:
-            p=_sina_history(pred)
+            p=_cached_sina_history(pred,asof,require_asof=False)
+            if p is None and HISTORY_CACHE_REQUIRED:
+                return None,"SINA_PREDECESSOR_SAME_RUN_CACHE_MISSING"
+            if p is None:p=_sina_history(pred)
             if p is not None:
                 eff_ts=pd.Timestamp(eff); asof_ts=pd.Timestamp(asof)
                 cur2=cur[(cur["date"]>=eff_ts)&(cur["date"]<=asof_ts)]
                 pred2=p[p["date"]<eff_ts]
                 if not cur2.empty and cur2["date"].dt.date.max().isoformat()==asof:
                     x=pd.concat([pred2,cur2],ignore_index=True).sort_values("date").drop_duplicates("date",keep="last")
-                    return x,"SINA_OFFICIAL_TICKER_CONTINUITY_COMPOSITE"
+                    return x.reset_index(drop=True),"SINA_OFFICIAL_TICKER_CONTINUITY_COMPOSITE"
     if cur is None:return None,"SINA_EMPTY"
-    return cur[cur["date"]<=pd.Timestamp(asof)],"SINA_US_DAILY"
+    return cur[cur["date"]<=pd.Timestamp(asof)].reset_index(drop=True),"SINA_US_DAILY"
 
 def blob_sha(p:Path):
     b=p.read_bytes()
@@ -255,6 +283,15 @@ def evaluate_recent_families(df,qqq):
 def main():
     st=json.loads(STAGE1.read_text())
     asof=st["asof_et"]
+    history_binding={}
+    if HISTORY_BINDING is not None:
+        if not HISTORY_BINDING.exists():
+            if HISTORY_BINDING_REQUIRED:raise RuntimeError("DEEP_HISTORY_BINDING_MISSING")
+        else:
+            hb=json.loads(HISTORY_BINDING.read_text())
+            if hb.get("asof_et")!=asof or hb.get("execution")!="NONE" or hb.get("real_money")!="NO-GO":
+                raise RuntimeError("DEEP_HISTORY_BINDING_SAFETY_OR_ASOF_MISMATCH")
+            history_binding=hb.get("history_fingerprint_by_symbol") or {}
     current_weekly=sorted(set(st["weekly_pass"]))
     syms=sorted(set(st.get("recent_weekly_scope") or current_weekly))
     state_caps={s:(st.get("state_caps") or {}).get(s,"NORMAL") for s in syms}
@@ -269,17 +306,30 @@ def main():
         if ev.get("asof_et")!=asof or ev.get("task_id")!=TASK_ID or ev.get("execution")!="NONE" or ev.get("real_money")!="NO-GO":
             raise RuntimeError("EVENT_SAFETY_TASK_OR_ASOF")
     event_state_fresh=(not GEOMETRY_ONLY and ev.get("asof_et")==asof)
-    data={};unknown={};history_source={}
+    data={};unknown={};history_source={};history_fps={}
     with ThreadPoolExecutor(max_workers=WORKERS) as ex:
         futs={ex.submit(get_hist,s,asof):s for s in syms+["QQQ"]}
         for fut in as_completed(futs):
             s,x,e,src=fut.result()
             if x is None:unknown[s]=e
             else:
+                fp=history_fingerprint(x,asof)
+                exp=history_binding.get(s)
+                if exp is not None and fp!=exp:
+                    unknown[s]="HISTORY_FINGERPRINT_MISMATCH"
+                    continue
+                if HISTORY_BINDING_REQUIRED and s!="QQQ" and exp is None:
+                    unknown[s]="HISTORY_FINGERPRINT_BINDING_MISSING"
+                    continue
                 data[s]=x
                 history_source[s]=src
+                history_fps[s]=fp
     if "QQQ" not in data:
-        raise RuntimeError("QQQ_HISTORY_UNKNOWN")
+        raise RuntimeError("QQQ_HISTORY_UNKNOWN:"+str(unknown.get("QQQ")))
+    if HISTORY_BINDING_REQUIRED:
+        qexp=(json.loads(HISTORY_BINDING.read_text()).get("qqq_history_fingerprint") if HISTORY_BINDING is not None and HISTORY_BINDING.exists() else None)
+        if qexp is None or history_fps.get("QQQ")!=qexp:
+            raise RuntimeError("QQQ_HISTORY_FINGERPRINT_BINDING_MISMATCH")
     qqq,qqq_ca_status,qqq_split_events=split_consistent_history("QQQ",data["QQQ"])
     if not str(qqq_ca_status).startswith("PASS"):
         raise RuntimeError("QQQ_CORPORATE_ACTION_UNKNOWN:"+str(qqq_ca_status))
@@ -362,6 +412,9 @@ def main():
       "d_dk3_pre_r1_count":len(d),"d_dk3_pre_r1":sorted(d),
       "unknown_history_count":len(unknown),"unknown_history":unknown,
       "history_source_by_symbol":history_source,
+      "history_fingerprint_by_symbol":{k:v for k,v in history_fps.items() if k!="QQQ"},
+      "qqq_history_fingerprint":history_fps.get("QQQ"),
+      "history_fingerprint_semantics":"RAW_OR_OFFICIAL_COMPOSITE_ASOF_TAIL320_V1",
       "qqq_corporate_action_status":qqq_ca_status,"qqq_split_events":qqq_split_events,
       "state_caps":state_caps,"r92_ineligible":sorted(r92_ineligible & set(syms)),
       "source_stage1_path":relpath(STAGE1),"source_stage1_blob_sha":blob_sha(STAGE1),
