@@ -6,6 +6,8 @@ on:
     paths:
       - "nasdaq-xray/chatgpt_canonical_state_v2.json"
       - "nasdaq-xray/delivery_prepare.py"
+      - "nasdaq-xray/delivery_scheduler_guard.py"
+      - "nasdaq-xray/delivery_scheduler_guard_selftest.py"
       - "nasdaq-xray/delivery_prepare_selftest.py"
       - "nasdaq-xray/official_source_guard.py"
       - "nasdaq-xray/resilience_runtime.py"
@@ -16,6 +18,7 @@ on:
   workflow_dispatch:
 
 permissions:
+  actions: read
   contents: write
   issues: write
 
@@ -40,7 +43,9 @@ jobs:
             nasdaq-xray/resilience_runtime.py \
             nasdaq-xray/official_source_guard.py \
             nasdaq-xray/delivery_prepare.py \
-            nasdaq-xray/delivery_prepare_selftest.py
+            nasdaq-xray/delivery_prepare_selftest.py \
+            nasdaq-xray/delivery_scheduler_guard.py \
+            nasdaq-xray/delivery_scheduler_guard_selftest.py
 
       - name: Refresh official Nasdaq halt + Security Status guard
         run: |
@@ -59,10 +64,28 @@ jobs:
           PY
 
       - name: Synthetic registered-R92 delivery self-test
-        run: python nasdaq-xray/delivery_prepare_selftest.py
+        run: |
+          python nasdaq-xray/delivery_prepare_selftest.py
+          python nasdaq-xray/delivery_scheduler_guard_selftest.py
+
+      - name: Verify scheduler and final recovery readiness
+        id: scheduler
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          out=$(python nasdaq-xray/delivery_scheduler_guard.py)
+          echo "$out"
+          if echo "$out" | grep -q "XRAY_DELIVERY_SCHEDULER_READY=PASS"; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Prepare fail-closed registered research alerts
         id: prep
+        if: steps.scheduler.outputs.ready == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -163,5 +186,5 @@ jobs:
           exit 1
 
       - name: Delivery noop is healthy
-        if: steps.prep.outputs.ready != 'true'
-        run: echo "XRAY_DELIVERY_HEALTH=PASS_NO_REGISTERED_CANDIDATE"
+        if: steps.scheduler.outputs.ready != 'true' || steps.prep.outputs.ready != 'true'
+        run: echo "XRAY_DELIVERY_HEALTH=PASS_NO_DELIVERABLE_CANDIDATE_OR_SCHEDULER_BLOCKED"
