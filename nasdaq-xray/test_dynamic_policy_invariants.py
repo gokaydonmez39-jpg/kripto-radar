@@ -8,6 +8,7 @@ sys.path.insert(0,str(ROOT))
 from price_dv20_phase import classify as price_classify
 from resolve_unknowns_fallback import classify as resolver_classify
 from deep_pre_r1_shadow import family_b
+from build_current_terminal import mc_semantic_input_match
 import history_phase as history_mod
 from history_phase import official_listing_upper_bound_fail, continuity_composite_pass
 import pandas as pd
@@ -95,6 +96,16 @@ def main():
     assert b["breakout_confirmed"] is True,b
 
 
+    # MC semantic rebind regression: byte-level metadata drift may rebind only
+    # when pass_hash, exact pass set, and pass_count all match. Count equality alone
+    # must never substitute for set equality.
+    price_sem={"pass_hash":"H","pass_count":2,"pass_symbols":["AAA","BBB"]}
+    bridge_good={"input_pass_hash":"H","input_count":2,"results":{"AAA":{},"BBB":{}}}
+    assert mc_semantic_input_match(price_sem,bridge_good) is True
+    assert mc_semantic_input_match(price_sem,{"input_pass_hash":"H","input_count":2,"results":{"AAA":{},"CCC":{}}}) is False
+    assert mc_semantic_input_match(price_sem,{"input_pass_hash":"X","input_count":2,"results":{"AAA":{},"BBB":{}}}) is False
+    assert mc_semantic_input_match(price_sem,{"input_pass_hash":"H","input_count":1,"results":{"AAA":{},"BBB":{}}}) is False
+
     # HISTORY evidence regression: official listing-date evidence can only
     # produce a terminal upper-bound FAIL; it must never manufacture PASS.
     hf=official_listing_upper_bound_fail("HONA","2026-10-02")
@@ -134,6 +145,7 @@ def main():
     print({"status":"PASS","invariants":[
         "EXACT20_REQUIRED_FOR_PASS","INCOMPLETE_NEVER_PASS",
         "OVERLAY_EXACT20_REQUIRED","SETUP_B_PIVOT_EXCLUDES_CURRENT_BAR",
+        "MC_SEMANTIC_REBIND_REQUIRES_HASH_SET_COUNT",
         "OFFICIAL_LISTING_HISTORY_FAIL_ONLY","CUSIP_CONTINUITY_REQUIRES_CROSS_SOURCE_OVERLAP",
         "LEGACY_LINEAGE_BRIDGE_CANNOT_BYPASS_COMPOSITE"
     ]})
