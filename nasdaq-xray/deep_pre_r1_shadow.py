@@ -248,6 +248,10 @@ def family_a(df):
             "trigger_date":df.date.iloc[trigger].strftime("%Y-%m-%d"),"sessions_since_confirm":sessions_since_confirm,
             "P":P,"anchor":anchor,"A":A,"d":d,"depth":depth,"prelow_near_hl":near_hl}
 
+def evaluate_recent_families(df,qqq):
+    """Exact A/B/D evaluation for a weekly-pass symbol; independent of today's cheap Stage1 pools."""
+    return family_a(df),family_b(df),family_d(df,qqq)
+
 def main():
     st=json.loads(STAGE1.read_text())
     asof=st["asof_et"]
@@ -299,9 +303,7 @@ def main():
         # Exact recent-trigger evaluation must not depend on today's cheap Stage1
         # snapshot pool. A/B/D re-check their mandatory conditions at the actual
         # candidate trigger; this preserves valid triggers from the prior 3 sessions.
-        A=family_a(x)
-        B=family_b(x)
-        D=family_d(x,qqq)
+        A,B,D=evaluate_recent_families(x,qqq)
         event="DEFERRED" if GEOMETRY_ONLY else "UNKNOWN_STALE_EVENT_STATE"
         if event_state_fresh:
             event="CLEAN_DISCOVERY"
