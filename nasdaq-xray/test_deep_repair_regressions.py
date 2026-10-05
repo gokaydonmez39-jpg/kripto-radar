@@ -554,6 +554,9 @@ def test_workflow_race_and_pre_mc_freeze_contracts():
     deep_src=(ROOT/"deep_pre_r1_shadow.py").read_text()
     assert '"regime_finalist_pass":regime_finalist_pass' in deep_src
     assert 'outres[s].get("regime_finalist_pass") is True' in deep_src
+    assert "qqq_scale_breaks=mechanical_scale_breaks(qqq,260)" in deep_src
+    assert "qqq_split_suspects=mechanical_split_suspects(qqq,260)" in deep_src
+    assert "if qqq_scale_breaks or qqq_split_suspects:" in deep_src
     assert '"lifecycle_revalidation":dict(sorted(lifecycle_revalidation.items()))' in deep_src
     assert "history_syms=sorted(set(syms)|set(lifecycle_scope))" in deep_src
     assert "_regime_finalist_allowed" in ftsrc
