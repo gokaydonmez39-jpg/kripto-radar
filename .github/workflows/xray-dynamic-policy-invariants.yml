@@ -10,6 +10,7 @@ on:
       - "nasdaq-xray/stage1_shadow.py"
       - "nasdaq-xray/family_c_engine.py"
       - "nasdaq-xray/final_tech_shadow.py"
+      - "nasdaq-xray/build_current_terminal.py"
       - "nasdaq-xray/sina_stage.py"
       - "nasdaq-xray/resolve_unknowns_fallback.py"
       - "nasdaq-xray/price_dv20_phase.py"
@@ -45,6 +46,7 @@ jobs:
             nasdaq-xray/stage1_shadow.py \
             nasdaq-xray/family_c_engine.py \
             nasdaq-xray/final_tech_shadow.py \
+            nasdaq-xray/build_current_terminal.py \
             nasdaq-xray/sina_stage.py \
             nasdaq-xray/resolve_unknowns_fallback.py \
             nasdaq-xray/price_dv20_phase.py \
