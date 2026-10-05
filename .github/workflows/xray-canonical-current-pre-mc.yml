@@ -258,8 +258,20 @@ jobs:
           good_chunks=()
           while IFS= read -r p; do
             [[ -n "$p" ]] && good_chunks+=("$p")
-          done < <(git ls-tree -r --name-only "$good" -- nasdaq-xray | grep -E '^nasdaq-xray/canonical_current_resolver_chunk_[0-9]{4}\.json          python - "$asof" <<'PY'
-          import json,sys
+          done < <(git ls-tree -r --name-only "$good" -- nasdaq-xray | grep -E '^nasdaq-xray/canonical_current_resolver_chunk_[0-9]{4}\.json$' || true)
+          if [[ "${#good_chunks[@]}" -eq 0 ]]; then
+            echo "XRAY_PRE_MC_RECOVERY=FAIL_NO_RESOLVER_CHUNKS" >&2
+            exit 1
+          fi
+          files+=("${good_chunks[@]}")
+          git fetch origin main
+          git reset --hard origin/main
+          rm -f nasdaq-xray/canonical_current_resolver_chunk_[0-9][0-9][0-9][0-9].json
+          for p in "${files[@]}"; do
+            git checkout "$good" -- "$p"
+          done
+          python - "$asof" <<'PY'
+          import hashlib,json,pathlib,sys
           a=sys.argv[1]
           p=json.load(open("nasdaq-xray/canonical_current_price_dv20.json"))
           m=json.load(open("nasdaq-xray/canonical_current_master_manifest.json"))
@@ -270,7 +282,6 @@ jobs:
           assert p["unknown_count"]==0 and p["pass_count"]>0
           assert p["source_master_queue_hash"]==m["queue_hash"]
           assert q["queue_hash"]==m["queue_hash"]
-          import hashlib,pathlib
           def blob(path):
               b=pathlib.Path(path).read_bytes()
               return hashlib.sha1(b"blob "+str(len(b)).encode()+b"\0"+b).hexdigest()
@@ -289,7 +300,7 @@ jobs:
           assert rebuilt==q["symbols"]
           print({"recovered_asof":a,"price_pass":p["pass_count"],"price_unknown":p["unknown_count"],"resolver_chunks":len(chunks)})
           PY
-          git add "${files[@]}"
+          git add -A -- "${files[@]}" nasdaq-xray/canonical_current_resolver_chunk_[0-9][0-9][0-9][0-9].json 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "XRAY_PRE_MC_RECOVERY=NO_CHANGE"
             exit 0
