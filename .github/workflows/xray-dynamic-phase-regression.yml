@@ -9,6 +9,15 @@ on:
       - "nasdaq-xray/history_phase.py"
       - "nasdaq-xray/legal_phase.py"
       - "nasdaq-xray/sina_stage.py"
+      - "nasdaq-xray/alpha_semantics.py"
+      - "nasdaq-xray/stage1_shadow.py"
+      - "nasdaq-xray/regime_breadth_shadow.py"
+      - "nasdaq-xray/deep_pre_r1_shadow.py"
+      - "nasdaq-xray/family_c_engine.py"
+      - "nasdaq-xray/final_tech_shadow.py"
+      - "nasdaq-xray/build_current_event_request.py"
+      - "nasdaq-xray/build_current_terminal.py"
+      - "nasdaq-xray/test_alpha_semantics.py"
       - ".github/workflows/xray-dynamic-phase-regression.yml"
   workflow_dispatch:
 
@@ -31,7 +40,16 @@ jobs:
             nasdaq-xray/price_dv20_phase.py \
             nasdaq-xray/price_dv20_recover_from_fullstate.py \
             nasdaq-xray/history_phase.py \
-            nasdaq-xray/legal_phase.py
+            nasdaq-xray/legal_phase.py \
+            nasdaq-xray/alpha_semantics.py \
+            nasdaq-xray/stage1_shadow.py \
+            nasdaq-xray/regime_breadth_shadow.py \
+            nasdaq-xray/deep_pre_r1_shadow.py \
+            nasdaq-xray/family_c_engine.py \
+            nasdaq-xray/final_tech_shadow.py \
+            nasdaq-xray/build_current_event_request.py \
+            nasdaq-xray/build_current_terminal.py \
+            nasdaq-xray/test_alpha_semantics.py
       - name: Assert no frozen 20260930 ASOF constants
         run: |
           python - <<'PY'
@@ -41,6 +59,13 @@ jobs:
             Path("nasdaq-xray/price_dv20_recover_from_fullstate.py"),
             Path("nasdaq-xray/history_phase.py"),
             Path("nasdaq-xray/legal_phase.py"),
+            Path("nasdaq-xray/stage1_shadow.py"),
+            Path("nasdaq-xray/regime_breadth_shadow.py"),
+            Path("nasdaq-xray/deep_pre_r1_shadow.py"),
+            Path("nasdaq-xray/family_c_engine.py"),
+            Path("nasdaq-xray/final_tech_shadow.py"),
+            Path("nasdaq-xray/build_current_event_request.py"),
+            Path("nasdaq-xray/build_current_terminal.py"),
           ]
           bad=[]
           for p in paths:
@@ -50,6 +75,9 @@ jobs:
           assert not bad,bad
           print("DYNAMIC_ASOF_STATIC_GATE=PASS")
           PY
+      - name: Run deterministic alpha semantics regression
+        run: python nasdaq-xray/test_alpha_semantics.py
+
       - name: Assert identity type guard
         run: |
           python - <<'PY'
