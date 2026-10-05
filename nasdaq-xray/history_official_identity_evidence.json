@@ -88,6 +88,27 @@
         "https://www.sec.gov/Archives/edgar/data/1415404/000110465926085813/xslSCHEDULE_13D_X02/primary_doc.xml"
       ],
       "note": "EchoStar issuer IR states the Nasdaq ticker changed from SATS to ECHO effective 2026-06-24, with no change to the common-stock CUSIP or capital structure. Pre-effective ECHO rows from third-party symbol history are identity contamination; use SATS before the effective date and ECHO on/after it."
+    },
+    "BSP": {
+      "mode": "OFFICIAL_LISTING_UPPER_BOUND_FAIL_ONLY",
+      "earliest_public_trading_date": "2026-07-01",
+      "regular_way_trading_date": "2026-07-01",
+      "sources": [
+        "https://www.nasdaq.com/press-release/bending-spoons-spa-announces-closing-initial-public-offering-2026-07-02",
+        "https://www.nasdaq.com/events/bending-spoons-rings-opening-bell"
+      ],
+      "note": "Bending Spoons ordinary shares began trading on the Nasdaq Global Select Market under BSP on 2026-07-01. Any pre-IPO BSP rows from third-party feeds cannot establish public trading history for this security."
+    },
+    "LIFE": {
+      "mode": "OFFICIAL_LISTING_UPPER_BOUND_FAIL_ONLY",
+      "earliest_public_trading_date": "2026-01-29",
+      "regular_way_trading_date": "2026-01-29",
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1788451/000119312526108887/life-20251231.htm",
+        "https://www.sec.gov/Archives/edgar/data/1788451/000135445726000102/0001354457-26-000102-index.htm",
+        "https://www.nasdaq.com/events/ethos-rings-closing-bell"
+      ],
+      "note": "Ethos Technologies Class A common stock began Nasdaq trading under LIFE on 2026-01-29; SEC states there was no public trading market before that date. The listing-age upper bound is fail-only and cannot manufacture a history PASS."
     }
   }
 }
