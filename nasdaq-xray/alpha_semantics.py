@@ -403,6 +403,22 @@ def mechanical_scale_breaks(df:pd.DataFrame,lookback:int=260)->list[dict[str,Any
                         "nearest_common_factor":nearest,"relative_error":rel})
     return out
 
+def trend_pullback_stage1_at(df:pd.DataFrame,idx:int)->bool:
+    """C4.17 A Stage1 gate evaluated as-of the candidate trigger, never today's snapshot."""
+    if idx<69 or idx>=len(df):
+        return False
+    close=df["close"].astype(float)
+    sma50=close.rolling(50).mean()
+    recent20=df["high"].astype(float).rolling(20).max()
+    if pd.isna(sma50.iloc[idx]) or pd.isna(sma50.iloc[idx-20]) or pd.isna(recent20.iloc[idx]):
+        return False
+    last=float(close.iloc[idx]); rh=float(recent20.iloc[idx])
+    return bool(
+        rh>0 and last>float(sma50.iloc[idx])
+        and float(sma50.iloc[idx])>float(sma50.iloc[idx-20])
+        and 0.88*rh<=last<=rh
+    )
+
 def family_a_pretrigger_low(df:pd.DataFrame,trigger_idx:int)->float:
     """C4.17 A-family HL proximity uses only the bar immediately before reversal."""
     if trigger_idx<=0 or trigger_idx>=len(df):
