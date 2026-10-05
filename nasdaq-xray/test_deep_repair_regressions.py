@@ -148,6 +148,9 @@ def test_workflow_race_and_pre_mc_freeze_contracts():
     assert 'XRAY_STAGE1_CACHE_REQUIRED: "1"' in post
     assert 'XRAY_BREADTH_CACHE_REQUIRED: "1"' in post
     assert "XRAY_BREADTH_HISTORY_CACHE_DIR" in post
+    assert "XRAY_TECHNICAL_BENCHMARK_CACHE" in post
+    assert 'XRAY_DEEP_CACHE_REQUIRED: "1"' in post
+    assert "XRAY_DEEP_HISTORY_CACHE_DIR" in post
 
     s1=(ROOT/"stage1_shadow.py").read_text()
     reg=(ROOT/"regime_breadth_shadow.py").read_text()
