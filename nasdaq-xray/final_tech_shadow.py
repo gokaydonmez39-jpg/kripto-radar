@@ -14,6 +14,7 @@ from alpha_semantics import (
     wilder_atr, trigger_index, setup_id, session_age,
     nearest_active_resistance, extension_diagnostics, retest_bar,
     apply_split_events, split_consistent_history, mechanical_scale_breaks,
+    mechanical_split_suspects,
 )
 
 ROOT=Path(__file__).resolve().parent
@@ -145,6 +146,30 @@ def hist(sym,asof):
 
 def _trigger_date(fam,g):
     return str(g.get("trigger_date") or g.get("breakout_session") or "")
+
+def candidate_corporate_action_reconcile(sym,df,drow=None):
+    """Candidate-scoped split verification without universe-wide provider dependence.
+
+    Stage1 hard-checks severe close-scale breaks. Finalists additionally verify
+    fractional split-like open gaps (for example 5:4 / 3:2) so unadjusted OHLC
+    cannot silently distort ATR, weekly structure or R1. Ordinary gaps pass when
+    the split-event source explicitly returns no matching split.
+    """
+    x=df.reset_index(drop=True)
+    inherited_status=None; inherited_events=[]
+    if drow is not None:
+        inherited_status=drow.get("corporate_action_status")
+        if not str(inherited_status).startswith("PASS"):
+            return x,inherited_status or "MISSING",[],False
+        inherited_events=drow.get("split_events") or []
+        if inherited_events:
+            return apply_split_events(x,inherited_events).reset_index(drop=True),inherited_status,inherited_events,False
+    severe=mechanical_scale_breaks(x,260)
+    fractional=mechanical_split_suspects(x,260)
+    if severe or fractional:
+        x2,status,events=split_consistent_history(sym,x)
+        return x2.reset_index(drop=True),status,events,True
+    return x,(inherited_status or "PASS_NO_LOCAL_SPLIT_DISCONTINUITY"),inherited_events,False
 
 def _frozen_geometry(sym,fam,g,df):
     td=_trigger_date(fam,g)
@@ -383,27 +408,18 @@ def main():
             if x is None:errors[s]=e
             else:data[s]=x;history_source[s]=src
 
-    corporate_action_errors={}
+    corporate_action_errors={}; corporate_action_verification={}
     for s in list(data):
         drow=(d.get("results") or {}).get(s)
-        if drow is not None:
-            ca_status=drow.get("corporate_action_status")
-            if not str(ca_status).startswith("PASS"):
-                corporate_action_errors[s]=ca_status or "MISSING"
-                continue
-            split_events=drow.get("split_events") or []
-            if split_events:
-                data[s]=apply_split_events(data[s],split_events).reset_index(drop=True)
-        else:
-            # Frozen lifecycle symbol may no longer be in current weekly/deep scope.
-            # A continuous raw series needs no network lookup. Only a mechanical
-            # scale discontinuity requires external split reconciliation.
-            if mechanical_scale_breaks(data[s],260):
-                x2,ca_status,split_events=split_consistent_history(s,data[s])
-                if not str(ca_status).startswith("PASS"):
-                    corporate_action_errors[s]=ca_status or "MISSING"
-                    continue
-                data[s]=x2.reset_index(drop=True)
+        x2,ca_status,split_events,lookup=candidate_corporate_action_reconcile(s,data[s],drow)
+        corporate_action_verification[s]={
+            "status":ca_status,"split_events":split_events,
+            "candidate_scoped_external_lookup":lookup,
+        }
+        if not str(ca_status).startswith("PASS"):
+            corporate_action_errors[s]=ca_status or "MISSING"
+            continue
+        data[s]=x2
 
     results={};new_records=dict(old_records)
     seen=set()
@@ -490,6 +506,7 @@ def main():
       "watch_count":len(watches),"watch":sorted(watches),"fail_count":len(fails),"fail":sorted(fails),
       "state_caps":{s:state_caps.get(s,"NORMAL") for s in syms},
       "r92_ineligible":sorted(r92_ineligible & set(syms)),"history_source_by_symbol":history_source,
+      "corporate_action_verification":corporate_action_verification,
       "source_deep_path":relpath(DEEP),"source_deep_blob_sha":blob_sha(DEEP),
       "source_family_c_path":relpath(FAMILY_C) if FAMILY_C is not None and FAMILY_C.exists() else None,
       "source_family_c_blob_sha":blob_sha(FAMILY_C) if FAMILY_C is not None and FAMILY_C.exists() else None,
@@ -520,7 +537,8 @@ def main():
       "semantic_repairs":["ACTIVE_STRUCTURAL_R1_TRIGGER_MINUS1","FROZEN_RETEST_5_SESSION_REGISTRY",
                           "S0_POST_TRIGGER_BREACH","EXTENSION_CLOSE_T_MINUS_CLOSE_TMINUS3_WITH_RETEST_RESET",
                           "TRIGGER_MINUS1_WILDER_ATR","FAMILY_A_0P5A_INHERITED_CANONICAL_RULE",
-                          "SPLIT_EVENT_RECONCILIATION","ADR_RATIO_FAIL_CLOSED_BRIDGE"],
+                          "SPLIT_EVENT_RECONCILIATION","FINALIST_FRACTIONAL_SPLIT_VERIFICATION",
+                          "ADR_RATIO_FAIL_CLOSED_BRIDGE"],
       "remaining_nontech_gates":["OFFICIAL_EVENT_FINAL_REVIEW","ACCOUNT_GATE","G9","DELIVERY_PROOF"],
       "authority":"C4_17_DETERMINISTIC_TECHNICAL_FAIL_CLOSED"
     }
