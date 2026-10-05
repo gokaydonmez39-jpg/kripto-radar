@@ -36,6 +36,9 @@ jobs:
       - name: Install deterministic runtime
         run: python -m pip install --disable-pip-version-check -r nasdaq-xray/requirements-runtime.txt
 
+      - name: Install regression runtime
+        run: python -m pip install --disable-pip-version-check -r nasdaq-xray/requirements-runtime.txt
+
       - name: Compile dynamic phase scripts
         run: |
           python -m py_compile \
