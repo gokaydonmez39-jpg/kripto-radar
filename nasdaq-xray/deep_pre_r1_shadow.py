@@ -44,6 +44,13 @@ HISTORY_BINDING_ENV=os.getenv("XRAY_DEEP_HISTORY_BINDING_STATE")
 HISTORY_BINDING=Path(HISTORY_BINDING_ENV) if HISTORY_BINDING_ENV else None
 HISTORY_BINDING_REQUIRED=os.getenv("XRAY_DEEP_HISTORY_BINDING_REQUIRED","0")=="1"
 PREV_FINAL=Path(os.getenv("XRAY_DEEP_PREV_FINAL",str(ROOT/"canonical_current_final_tech.json")))
+LIFECYCLE=Path(os.getenv("XRAY_DEEP_LIFECYCLE_REGISTRY",str(ROOT/"canonical_candidate_lifecycle_registry.json")))
+LIFECYCLE_ACTIVE_STATES={
+    "WATCH_RETEST_REQUIRED","WATCH_RECONFIRMATION_REQUIRED",
+    "WATCH_CHASE_RETEST_REQUIRED","WATCH_EXTENSION_RESET_REQUIRED",
+    "WATCH_REGIME_REVALIDATION_REQUIRED","WATCH_REGIME_UNKNOWN",
+    "PRE_G9_TECH_PASS","WATCH_EVENT_UNKNOWN_OR_BLOCKED","WATCH_MC_FALLBACK_CAP",
+}
 
 def _retryable(exc):
     s=str(exc).lower()
@@ -282,14 +289,39 @@ def evaluate_recent_families(df,qqq):
     return family_a(df),family_b(df),family_d(df,qqq)
 
 def _lifecycle_scope(asof):
-    if not PREV_FINAL.exists(): return []
+    """Carry active prospective setups across later official sessions.
+
+    Same-ASOF equality is intentionally NOT required: lifecycle horizon is 2-8
+    sessions and must survive into later ASOFs. A future-dated registry is never
+    accepted. Valid sidecar state overrides the embedded prior-Final copy.
+    """
+    chosen=None
     try:
-        f=json.loads(PREV_FINAL.read_text())
-        lr=f.get("lifecycle_registry") or {}
-        if (f.get("asof_et")!=asof or lr.get("schema")!="XRAY_CANDIDATE_LIFECYCLE_REGISTRY_V1"
-            or lr.get("execution")!="NONE" or lr.get("real_money")!="NO-GO"):
-            return []
-        return sorted(set(str(r.get("symbol")) for r in (lr.get("records") or {}).values() if r.get("symbol")))
+        if PREV_FINAL.exists():
+            f=json.loads(PREV_FINAL.read_text())
+            lr=f.get("lifecycle_registry") or {}
+            fa=str(f.get("asof_et") or "")
+            if (fa and fa<=asof
+                and lr.get("schema")=="XRAY_CANDIDATE_LIFECYCLE_REGISTRY_V1"
+                and lr.get("execution")=="NONE" and lr.get("real_money")=="NO-GO"
+                and isinstance(lr.get("records"),dict)):
+                chosen=lr
+        if LIFECYCLE.exists():
+            lr=json.loads(LIFECYCLE.read_text())
+            la=str(lr.get("asof_et") or "")
+            if (la and la<=asof
+                and lr.get("schema")=="XRAY_CANDIDATE_LIFECYCLE_REGISTRY_V1"
+                and lr.get("execution")=="NONE" and lr.get("real_money")=="NO-GO"
+                and isinstance(lr.get("records"),dict)):
+                chosen=lr
+            else:
+                return []
+        if not chosen:return []
+        return sorted(set(
+            str(rec.get("symbol")) for rec in (chosen.get("records") or {}).values()
+            if rec.get("symbol") and str(rec.get("state") or "") in LIFECYCLE_ACTIVE_STATES
+            and str(rec.get("last_asof") or chosen.get("asof_et") or "")<=asof
+        ))
     except Exception:
         return []
 
