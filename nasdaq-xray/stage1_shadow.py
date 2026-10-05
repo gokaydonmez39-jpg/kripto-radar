@@ -227,7 +227,7 @@ def process(sym,asof,week_last):
         return sym,{
           "status":"WEEKLY_PASS","weekly":wg,"raw_weekly":raw_wg,"history_source":history_source,
           "recent_weekly_pass_dates":recent_weekly_pass_dates,
-          "recent_weekly_context":recent_weekly_context,
+          "recent_weekly_context":recent_weekly_context_map,
           "corporate_action_status":ca_status,"split_events":split_events,
           "mechanical_scale_breaks":scale_breaks,"mechanical_split_suspects":split_suspects,
           "a_trend_pool":a_pool,"b_tight_base_pool":b,"b_recent_trigger":b_recent,
