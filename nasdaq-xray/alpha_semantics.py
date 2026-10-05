@@ -403,6 +403,15 @@ def mechanical_scale_breaks(df:pd.DataFrame,lookback:int=260)->list[dict[str,Any
                         "nearest_common_factor":nearest,"relative_error":rel})
     return out
 
+def family_a_pretrigger_low(df:pd.DataFrame,trigger_idx:int)->float:
+    """C4.17 A-family HL proximity uses only the bar immediately before reversal."""
+    if trigger_idx<=0 or trigger_idx>=len(df):
+        raise IndexError("INVALID_FAMILY_A_TRIGGER_INDEX")
+    v=float(df["low"].iloc[trigger_idx-1])
+    if not math.isfinite(v):
+        raise ValueError("INVALID_FAMILY_A_PRETRIGGER_LOW")
+    return v
+
 def retest_bar(row:pd.Series,P:float,entry_high:float)->bool:
     return float(row["low"])<=entry_high and float(row["close"])>P and float(row["close"])<=entry_high
 
