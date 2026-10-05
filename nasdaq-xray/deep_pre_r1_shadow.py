@@ -43,6 +43,7 @@ HISTORY_CACHE_REQUIRED=os.getenv("XRAY_DEEP_CACHE_REQUIRED","0")=="1"
 HISTORY_BINDING_ENV=os.getenv("XRAY_DEEP_HISTORY_BINDING_STATE")
 HISTORY_BINDING=Path(HISTORY_BINDING_ENV) if HISTORY_BINDING_ENV else None
 HISTORY_BINDING_REQUIRED=os.getenv("XRAY_DEEP_HISTORY_BINDING_REQUIRED","0")=="1"
+PREV_FINAL=Path(os.getenv("XRAY_DEEP_PREV_FINAL",str(ROOT/"canonical_current_final_tech.json")))
 
 def _retryable(exc):
     s=str(exc).lower()
@@ -280,6 +281,32 @@ def evaluate_recent_families(df,qqq):
     """Exact A/B/D evaluation for a weekly-pass symbol; independent of today's cheap Stage1 pools."""
     return family_a(df),family_b(df),family_d(df,qqq)
 
+def _lifecycle_scope(asof):
+    if not PREV_FINAL.exists(): return []
+    try:
+        f=json.loads(PREV_FINAL.read_text())
+        lr=f.get("lifecycle_registry") or {}
+        if (f.get("asof_et")!=asof or lr.get("schema")!="XRAY_CANDIDATE_LIFECYCLE_REGISTRY_V1"
+            or lr.get("execution")!="NONE" or lr.get("real_money")!="NO-GO"):
+            return []
+        return sorted(set(str(r.get("symbol")) for r in (lr.get("records") or {}).values() if r.get("symbol")))
+    except Exception:
+        return []
+
+def _regime_finalist_metrics(x,qqq,regime_name):
+    rs20=common_rs(x,qqq,20);rs60=common_rs(x,qqq,60)
+    regime_name=str(regime_name or "UNKNOWN")
+    if regime_name not in {"STRONG","MIXED","WEAK"}:
+        status="UNKNOWN"
+    elif regime_name=="MIXED":
+        if rs20 is None or rs60 is None:
+            status="UNKNOWN"
+        else:
+            status="PASS" if rs20>0 and rs60>0 else "FAIL"
+    else:
+        status="PASS"
+    return rs20,rs60,status
+
 def main():
     st=json.loads(STAGE1.read_text())
     asof=st["asof_et"]
@@ -294,6 +321,8 @@ def main():
             history_binding=hb.get("history_fingerprint_by_symbol") or {}
     current_weekly=sorted(set(st["weekly_pass"]))
     syms=sorted(set(st.get("recent_weekly_scope") or current_weekly))
+    lifecycle_scope=_lifecycle_scope(asof)
+    history_syms=sorted(set(syms)|set(lifecycle_scope))
     state_caps={s:(st.get("state_caps") or {}).get(s,"NORMAL") for s in syms}
     r92_ineligible=set(st.get("r92_ineligible") or [])
     assert st.get("task_id")==TASK_ID and st.get("execution")=="NONE" and st.get("real_money")=="NO-GO"
@@ -308,7 +337,7 @@ def main():
     event_state_fresh=(not GEOMETRY_ONLY and ev.get("asof_et")==asof)
     data={};unknown={};history_source={};history_fps={}
     with ThreadPoolExecutor(max_workers=WORKERS) as ex:
-        futs={ex.submit(get_hist,s,asof):s for s in syms+["QQQ"]}
+        futs={ex.submit(get_hist,s,asof):s for s in history_syms+["QQQ"]}
         for fut in as_completed(futs):
             s,x,e,src=fut.result()
             if x is None:unknown[s]=e
@@ -349,16 +378,16 @@ def main():
         if split_events:
             x=apply_split_events(x,split_events)
         x=x.reset_index(drop=True)
-        rs20=common_rs(x,qqq,20);rs60=common_rs(x,qqq,60)
         regime_name=str(rg.get("regime") or "UNKNOWN")
         if GEOMETRY_ONLY:
+            rs20=common_rs(x,qqq,20);rs60=common_rs(x,qqq,60)
             mix_pass=True
+            regime_finalist_status="DEFERRED"
             regime_finalist_pass=None
         else:
-            regime_known=regime_name in {"STRONG","MIXED","WEAK"}
-            mix_pass=(bool(rs20 is not None and rs60 is not None and rs20>0 and rs60>0)
-                      if regime_name=="MIXED" else regime_known)
-            regime_finalist_pass=bool(regime_known and mix_pass)
+            rs20,rs60,regime_finalist_status=_regime_finalist_metrics(x,qqq,regime_name)
+            mix_pass=(regime_finalist_status=="PASS")
+            regime_finalist_pass=(regime_finalist_status=="PASS")
         # Exact recent-trigger evaluation must not depend on today's cheap Stage1
         # snapshot pool. A/B/D re-check their mandatory conditions at the actual
         # candidate trigger; this preserves valid triggers from the prior 3 sessions.
@@ -387,11 +416,47 @@ def main():
             if s in (ev.get("confirmed_blocks") or {}): event="BLOCK_CONFIRMED_8SESSION"
             elif s in (ev.get("unresolved") or {}): event="UNKNOWN"
         outres[s]={"status":"EVALUATED","rs20":rs20,"rs60":rs60,"mixed_rs_pass":mix_pass,
+                   "regime_finalist_status":regime_finalist_status,
                    "regime_finalist_pass":regime_finalist_pass,
                    "A":A,"B":B,"D":D,"event_status":event,
                    "mechanical_scale_breaks":mechanical_scale_breaks(x,260),
                    "corporate_action_status":ca_status,"split_events":split_events,
                    "state_cap":state_caps.get(s,"NORMAL"),"r92_eligible":s not in r92_ineligible}
+    lifecycle_revalidation={}
+    if not GEOMETRY_ONLY:
+        event_map=ev.get("event_status_by_symbol") or {}
+        for s in lifecycle_scope:
+            if s in outres:
+                rr=outres[s]
+                lifecycle_revalidation[s]={
+                  "status":"PASS" if rr.get("regime_finalist_status")=="PASS" else rr.get("regime_finalist_status","UNKNOWN"),
+                  "regime_finalist_status":rr.get("regime_finalist_status","UNKNOWN"),
+                  "regime_finalist_pass":rr.get("regime_finalist_pass") is True,
+                  "rs20":rr.get("rs20"),"rs60":rr.get("rs60"),"event_status":rr.get("event_status"),
+                }
+                continue
+            x=data.get(s)
+            strow=(st.get("results") or {}).get(s) or {}
+            ca_status=strow.get("corporate_action_status")
+            if x is None:
+                lifecycle_revalidation[s]={"status":"UNKNOWN","reason":"HISTORY_"+str(unknown.get(s,"MISSING")),
+                                           "regime_finalist_status":"UNKNOWN","regime_finalist_pass":False}
+                continue
+            if not str(ca_status).startswith("PASS"):
+                lifecycle_revalidation[s]={"status":"UNKNOWN","reason":"CORPORATE_ACTION_NOT_VERIFIED",
+                                           "corporate_action_status":ca_status,
+                                           "regime_finalist_status":"UNKNOWN","regime_finalist_pass":False}
+                continue
+            split_events=strow.get("split_events") or []
+            if split_events:x=apply_split_events(x,split_events)
+            x=x.reset_index(drop=True)
+            rs20,rs60,rf_status=_regime_finalist_metrics(x,qqq,rg.get("regime"))
+            lifecycle_revalidation[s]={
+              "status":rf_status,"regime_finalist_status":rf_status,
+              "regime_finalist_pass":rf_status=="PASS","rs20":rs20,"rs60":rs60,
+              "event_status":event_map.get(s,"UNKNOWN"),
+            }
+
     a_geom=[s for s,r in outres.items() if r.get("A",{}).get("pool")]
     b_break=[s for s,r in outres.items() if r.get("B",{}).get("breakout_confirmed")]
     b_armed=[s for s,r in outres.items() if r.get("B",{}).get("pool") and not r.get("B",{}).get("breakout_confirmed")]
@@ -419,6 +484,9 @@ def main():
       "b_breakout_rs_event_pass_count":len(b),"b_breakout_rs_event_pass":sorted(b),
       "b_armed_rs_event_pass_count":len(b_armed),"b_armed_rs_event_pass":sorted(b_armed),
       "d_dk3_pre_r1_count":len(d),"d_dk3_pre_r1":sorted(d),
+      "lifecycle_revalidation_scope":lifecycle_scope,
+      "lifecycle_revalidation_scope_count":len(lifecycle_scope),
+      "lifecycle_revalidation":dict(sorted(lifecycle_revalidation.items())),
       "unknown_history_count":len(unknown),"unknown_history":unknown,
       "history_source_by_symbol":history_source,
       "history_fingerprint_by_symbol":{k:v for k,v in history_fps.items() if k!="QQQ"},
