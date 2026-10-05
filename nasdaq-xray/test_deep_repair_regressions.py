@@ -348,7 +348,22 @@ def test_candidate_legal_guard_phrase_severity():
     assert 'ANNUAL={"10-K","20-F","40-F"}' in src
     assert "NO_RECENT_ANNUAL_FILING_BEFORE_ASOF" in src
     assert "LATEST_ANNUAL_THROUGH_ASOF_WITH_ALL_LATER_PERIODIC_CURRENT_AND_OFFERING_FILINGS" in src
-    assert "_ticker_cik_map() if scope else {}" in src
+    assert "_ticker_cik_map(scope) if scope else ({},{},[])" in src
+    old_cache=legal_guard_mod.CIK_CACHE
+    try:
+        with tempfile.TemporaryDirectory() as td:
+            cp=Path(td)/"sec_ticker_cik_cache.json"
+            cp.write_text(json.dumps({
+              "schema":"XRAY_SEC_TICKER_CIK_CACHE_V1","execution":"NONE","real_money":"NO-GO",
+              "unknown_never_pass":True,"records":{"PI":{"cik":"0001114995","title":"IMPINJ INC"}}
+            }))
+            legal_guard_mod.CIK_CACHE=cp
+            cmap,csrc,cerr=legal_guard_mod._ticker_cik_map(["PI","MISS"],allow_network=False)
+            assert cmap["PI"]=="0001114995" and "MISS" not in cmap,(cmap,csrc,cerr)
+            assert csrc["PI"]=="DURABLE_SEC_COMPANY_TICKERS_SNAPSHOT"
+            assert cerr==[]
+    finally:
+        legal_guard_mod.CIK_CACHE=old_cache
 
 def test_workflow_race_and_pre_mc_freeze_contracts():
     final_wf=(REPO/".github/workflows/xray-canonical-current-final.yml").read_text()
@@ -455,6 +470,8 @@ def test_workflow_race_and_pre_mc_freeze_contracts():
     assert "DIAGNOSTIC_PRE_FINAL_SCOPE_AUGMENTATION" in ftsrc
     assert "CANDIDATE_LEGAL_GUARD_POLICY_BLOB_MISMATCH" in ftsrc
     assert "CANDIDATE_LEGAL_GUARD_POLICY_HASH_MISMATCH" in ftsrc
+    assert "CANDIDATE_LEGAL_GUARD_CIK_CACHE_PATH_MISMATCH" in ftsrc
+    assert "CANDIDATE_LEGAL_GUARD_CIK_CACHE_BINDING_MISMATCH" in ftsrc
     assert '"candidate_legal_guard_exact_binding"' in ftsrc
     assert '"candidate_legal_risk_flags"' in ftsrc
     assert "Build exact-bound detailed finalist legal guard" in final_wf
@@ -463,6 +480,8 @@ def test_workflow_race_and_pre_mc_freeze_contracts():
     assert "nasdaq-xray/canonical_candidate_legal_guard.json" in final_wf
     push_block=final_wf.split("permissions:",1)[0]
     assert '"nasdaq-xray/build_candidate_legal_guard.py"' in push_block
+    assert '"nasdaq-xray/sec_ticker_cik_cache.json"' in push_block
+    assert "nasdaq-xray/sec_ticker_cik_cache.json" in stale
     assert '"nasdaq-xray/canonical_candidate_legal_guard.json"' not in push_block
     ca_block=ftsrc[ftsrc.index("def candidate_corporate_action_reconcile"):ftsrc.index("def _frozen_geometry")]
     assert "UNKNOWN_PRIMARY_CORPORATE_ACTION_EVIDENCE_REQUIRED" not in ca_block
@@ -483,6 +502,7 @@ def test_workflow_race_and_pre_mc_freeze_contracts():
         assert "cancel-in-progress: true" in wf
         push=wf.split("permissions:",1)[0]
         assert '"nasdaq-xray/build_candidate_legal_guard.py"' in push
+        assert '"nasdaq-xray/sec_ticker_cik_cache.json"' in push
         assert "nasdaq-xray/build_candidate_legal_guard.py \\" in wf
 
     pre=(REPO/".github/workflows/xray-canonical-current-pre-mc.yml").read_text()

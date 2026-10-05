@@ -34,6 +34,7 @@ FAMILY_C=Path(os.getenv("XRAY_LEGAL_GUARD_FAMILY_C",str(ROOT/"canonical_current_
 LIFECYCLE=Path(os.getenv("XRAY_LEGAL_GUARD_LIFECYCLE",str(ROOT/"canonical_candidate_lifecycle_registry.json")))
 PREV_FINAL=Path(os.getenv("XRAY_LEGAL_GUARD_PREV_FINAL",str(ROOT/"canonical_current_final_tech.json")))
 OUT=Path(os.getenv("XRAY_LEGAL_GUARD_OUT",str(ROOT/"canonical_candidate_legal_guard.json")))
+CIK_CACHE=Path(os.getenv("XRAY_SEC_CIK_CACHE",str(ROOT/"sec_ticker_cik_cache.json")))
 TASK_ID="6a825366222081918997094d76e6ae46"
 USER_AGENT=os.getenv("XRAY_SEC_USER_AGENT","NASDAQ-SWING-XRAY research bot; xray-dataplane-bot@users.noreply.github.com")
 SEC_MIN_INTERVAL_SECONDS=float(os.getenv("XRAY_SEC_MIN_INTERVAL_SECONDS","0.22"))
@@ -192,15 +193,83 @@ def candidate_scope(deep:dict,fc:dict|None,lifecycle:dict|None)->list[str]:
     return sorted(syms)
 
 
-def _ticker_cik_map()->dict[str,str]:
-    j=_fetch_json("https://www.sec.gov/files/company_tickers.json")
-    out={}
-    for row in j.values():
+def _load_cik_cache()->tuple[dict[str,str],dict[str,str]]:
+    """Load durable SEC ticker->CIK evidence; malformed cache fails closed."""
+    if not CIK_CACHE.exists(): return {},{}
+    j=json.loads(CIK_CACHE.read_text())
+    if (j.get("schema")!="XRAY_SEC_TICKER_CIK_CACHE_V1"
+        or j.get("execution")!="NONE" or j.get("real_money")!="NO-GO"
+        or j.get("unknown_never_pass") is not True):
+        raise RuntimeError("SEC_CIK_CACHE_SCHEMA_OR_SAFETY_FAIL")
+    out={};sources={}
+    for ticker,row in (j.get("records") or {}).items():
         if not isinstance(row,dict): continue
-        t=str(row.get("ticker") or "").upper()
-        cik=row.get("cik_str")
-        if t and cik is not None: out[t]=str(int(cik)).zfill(10)
-    return out
+        t=str(ticker or "").upper().strip()
+        cik=str(row.get("cik") or "").strip()
+        if not t or not re.fullmatch(r"\d{10}",cik):
+            raise RuntimeError("SEC_CIK_CACHE_RECORD_INVALID")
+        out[t]=cik
+        sources[t]="DURABLE_SEC_COMPANY_TICKERS_SNAPSHOT"
+    return out,sources
+
+
+def _merge_company_ticker_payload(j:dict,out:dict[str,str],sources:dict[str,str],label:str)->None:
+    rows=[]
+    if isinstance(j.get("fields"),list) and isinstance(j.get("data"),list):
+        fields=[str(x) for x in j["fields"]]
+        for raw in j["data"]:
+            if isinstance(raw,list):
+                rows.append(dict(zip(fields,raw)))
+    else:
+        rows=[x for x in j.values() if isinstance(x,dict)]
+    for row in rows:
+        t=str(row.get("ticker") or "").upper().strip()
+        cik=row.get("cik_str",row.get("cik"))
+        try: c=str(int(cik)).zfill(10)
+        except Exception: continue
+        if t:
+            out[t]=c
+            sources[t]=label
+
+
+def _ticker_cik_map(scope:list[str]|None=None,allow_network:bool=True)->tuple[dict[str,str],dict[str,str],list[str]]:
+    """Resolve ticker->CIK without turning one SEC mapping outage into a global crash.
+
+    Durable official SEC snapshot evidence is authoritative for cached symbols.
+    Missing symbols may be filled only from official SEC endpoints. If every
+    official mapping endpoint is unavailable, unresolved symbols stay absent and
+    are emitted as UNKNOWN by the caller; UNKNOWN never becomes PASS.
+    """
+    out,sources=_load_cik_cache()
+    errors=[]
+    need={str(x).upper() for x in (scope or []) if str(x)}
+    if not allow_network or (need and need<=set(out)):
+        return out,sources,errors
+
+    for url,label in (
+        ("https://www.sec.gov/files/company_tickers.json","SEC_COMPANY_TICKERS_JSON_LIVE"),
+        ("https://www.sec.gov/files/company_tickers_exchange.json","SEC_COMPANY_TICKERS_EXCHANGE_JSON_LIVE"),
+    ):
+        try:
+            _merge_company_ticker_payload(_fetch_json(url),out,sources,label)
+        except Exception as exc:
+            errors.append(f"{label}:{type(exc).__name__}:{str(exc)[:120]}")
+        if need and need<=set(out): return out,sources,errors
+
+    try:
+        raw=_fetch("https://www.sec.gov/include/ticker.txt",limit=2_000_000).decode("utf-8","replace")
+        for line in raw.splitlines():
+            p=line.strip().split("\t")
+            if len(p)<2: continue
+            t=p[0].upper().strip()
+            try: c=str(int(p[1])).zfill(10)
+            except Exception: continue
+            if t:
+                out[t]=c
+                sources[t]="SEC_TICKER_TXT_LIVE"
+    except Exception as exc:
+        errors.append(f"SEC_TICKER_TXT_LIVE:{type(exc).__name__}:{str(exc)[:120]}")
+    return out,sources,errors
 
 
 def _recent_filings(sub:dict)->list[dict]:
@@ -371,7 +440,7 @@ def main():
     # No finalist/lifecycle candidate means there is nothing to query from SEC.
     # Produce an exact empty guard without making external network availability
     # a false FULL_E2E blocker for an empty candidate scope.
-    cikmap=_ticker_cik_map() if scope else {}
+    cikmap,cik_sources,cik_mapping_errors=_ticker_cik_map(scope) if scope else ({},{},[])
     records={}
     for sym in scope:
         cik=cikmap.get(sym.upper())
@@ -384,6 +453,7 @@ def main():
             records[sym]={"status":"UNKNOWN",
                           "reason":f"SEC_REVIEW_ERROR:{type(exc).__name__}:{str(exc)[:180]}",
                           "cik":cik}
+        records[sym]["cik_mapping_source"]=cik_sources.get(sym.upper(),"UNKNOWN")
         time.sleep(0.12)
 
     out={
@@ -395,6 +465,10 @@ def main():
       "compiled_policy_blob_sha":POLICY_BLOB,
       "compiled_policy_hash":POLICY_HASH,
       "compiled_policy_version":POLICY_VERSION,
+      "source_cik_cache_path":"nasdaq-xray/sec_ticker_cik_cache.json",
+      "source_cik_cache_blob_sha":blob_sha(CIK_CACHE),
+      "cik_mapping_errors":cik_mapping_errors,
+      "cik_mapping_sources":{s:cik_sources.get(s.upper(),"MISSING") for s in scope},
       "candidate_scope":scope,"candidate_scope_count":len(scope),"candidate_scope_hash":scope_hash(scope),
       "source_deep_path":str(DEEP.relative_to(DEEP.parent.parent)),
       "source_deep_blob_sha":blob_sha(DEEP),

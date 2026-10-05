@@ -35,6 +35,7 @@ _PROVIDER_SEM=threading.Semaphore(PROVIDER_MAX_INFLIGHT)
 OFFICIAL_IDENTITY_EVIDENCE=ROOT/"history_official_identity_evidence.json"
 LEGAL=Path(os.getenv("XRAY_FINAL_LEGAL_STATE",str(ROOT/"canonical_current_legal.json")))
 CANDIDATE_LEGAL_GUARD=Path(os.getenv("XRAY_FINAL_CANDIDATE_LEGAL_GUARD",str(ROOT/"canonical_candidate_legal_guard.json")))
+SEC_CIK_CACHE=Path(os.getenv("XRAY_SEC_CIK_CACHE",str(ROOT/"sec_ticker_cik_cache.json")))
 ADR_RATIO_BRIDGE=Path(os.getenv("XRAY_ADR_RATIO_BRIDGE",str(ROOT/"canonical_adr_ratio_bridge.json")))
 
 def _is_depositary_security_name(name):
@@ -83,6 +84,10 @@ def _load_candidate_legal_guard(asof):
             return {},None,"CANDIDATE_LEGAL_GUARD_DEEP_BINDING_MISMATCH"
         if j.get("source_family_c_blob_sha")!=expected_fc:
             return {},None,"CANDIDATE_LEGAL_GUARD_FAMILY_C_BINDING_MISMATCH"
+        if j.get("source_cik_cache_path")!="nasdaq-xray/sec_ticker_cik_cache.json":
+            return {},None,"CANDIDATE_LEGAL_GUARD_CIK_CACHE_PATH_MISMATCH"
+        if j.get("source_cik_cache_blob_sha")!=blob_sha(SEC_CIK_CACHE):
+            return {},None,"CANDIDATE_LEGAL_GUARD_CIK_CACHE_BINDING_MISMATCH"
         # Lifecycle is deliberately diagnostic only. Final mutates the durable
         # registry later in this same run, so requiring its pre-Final blob here
         # would make the just-produced legal guard self-stale after persistence.
