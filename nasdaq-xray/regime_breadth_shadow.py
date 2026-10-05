@@ -24,6 +24,12 @@ PROVIDER_MAX_INFLIGHT=max(1,int(os.getenv("XRAY_BREADTH_PROVIDER_MAX_INFLIGHT","
 RETRY_DELAYS=(0.0,1.0,2.5)
 _PROVIDER_SEM=threading.Semaphore(PROVIDER_MAX_INFLIGHT)
 OFFICIAL_IDENTITY_EVIDENCE=ROOT/"history_official_identity_evidence.json"
+HISTORY_CACHE_DIR=os.getenv("XRAY_BREADTH_HISTORY_CACHE_DIR")
+HISTORY_CACHE_REQUIRED=os.getenv("XRAY_BREADTH_CACHE_REQUIRED","0")=="1"
+
+def _history_cache_path(sym):
+    if not HISTORY_CACHE_DIR:return None
+    return Path(HISTORY_CACHE_DIR)/(hashlib.sha256(sym.encode()).hexdigest()+".csv.gz")
 
 def _retryable(exc):
     s=str(exc).lower()
@@ -62,16 +68,34 @@ def _normalize_sina_close(df):
     x["close"]=pd.to_numeric(x["close"],errors="coerce")
     return x.dropna().drop_duplicates("date",keep="last").sort_values("date")
 
+def _cached_sina_close(sym,asof,require_asof=True):
+    p=_history_cache_path(sym)
+    if p is None or not p.exists():return None
+    try:
+        x=_normalize_sina_close(pd.read_csv(p,compression="gzip"))
+        if x is None or x.empty:return None
+        x=x[x["date"]<=pd.Timestamp(asof)].reset_index(drop=True)
+        if x.empty:return None
+        if require_asof and x["date"].dt.date.max().isoformat()!=asof:return None
+        return x
+    except Exception:
+        return None
+
 def _sina_close(sym):
     return _normalize_sina_close(_call_with_retry(lambda: ak.stock_us_daily(symbol=sym,adjust="")))
 
 def sina_close_history(sym,asof):
-    cur=_sina_close(sym)
+    cur=_cached_sina_close(sym,asof)
+    if cur is None and HISTORY_CACHE_REQUIRED:
+        return None,"SINA_SAME_RUN_CACHE_MISSING"
+    if cur is None:cur=_sina_close(sym)
     rec=OFFICIAL_RECORDS.get(sym) or {}
     if rec.get("mode")=="OFFICIAL_TICKER_CONTINUITY_COMPOSITE_HISTORY" and rec.get("cusip_unchanged") is True:
         pred=rec.get("predecessor_symbol"); eff=rec.get("effective_date")
         if pred and eff and cur is not None:
-            p=_sina_close(pred)
+            p=_cached_sina_close(pred,asof,require_asof=False)
+            if p is None and not HISTORY_CACHE_REQUIRED:
+                p=_sina_close(pred)
             if p is not None:
                 eff_ts=pd.Timestamp(eff); asof_ts=pd.Timestamp(asof)
                 cur2=cur[(cur["date"]>=eff_ts)&(cur["date"]<=asof_ts)]
