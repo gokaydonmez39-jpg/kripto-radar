@@ -2,7 +2,7 @@ name: XRAY Dynamic Phase Regression
 
 on:
   push:
-    branches: [main, "xray-event-coverage-semantics-20261005"]
+    branches: [main]
     paths:
       - "nasdaq-xray/price_dv20_phase.py"
       - "nasdaq-xray/price_dv20_recover_from_fullstate.py"
