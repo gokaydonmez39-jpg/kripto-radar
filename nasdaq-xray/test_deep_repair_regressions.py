@@ -149,6 +149,16 @@ def test_workflow_race_and_pre_mc_freeze_contracts():
     assert 'XRAY_BREADTH_CACHE_REQUIRED: "1"' in post
     assert "XRAY_BREADTH_HISTORY_CACHE_DIR" in post
 
+    # Partial upstream coverage must remain fail-closed in the terminal, but it
+    # must not globally abort event/final evaluation of the known candidate scope.
+    post_gate=post.split("- name: Structural post-MC gate",1)[1].split("- name: Commit current post-MC artifacts",1)[0]
+    assert 'assert s["unknown_count"]==0' not in post_gate
+    assert 'assert r["breadth_missing_count"]==0' not in post_gate
+    assert 'coverage_unknowns' in post_gate
+    assert 'upstream_coverage_complete' in post_gate
+    assert 'request_scope_complete' in post_gate
+    assert 'UNKNOWN_STAGE1_LEAKED_INTO_TRIGGER_SCOPE' in post_gate
+
     s1=(ROOT/"stage1_shadow.py").read_text()
     reg=(ROOT/"regime_breadth_shadow.py").read_text()
     assert "SINA_SAME_RUN_CACHE_MISSING" in s1 and "HISTORY_CACHE_REQUIRED" in s1
@@ -194,6 +204,7 @@ def main():
     print({"status":"PASS","tests":["R1_NO_FUTURE_MUTATION","R1_PLUS2_CONFIRMATION_NO_LEAK",
       "RESISTANCE_ROLE_CHANGE_STATE_MACHINE","CORPORATE_ACTION_NONE_VS_SCALE_BREAK_FAIL_CLOSED","RETEST_WINDOW_EXPIRES_AFTER_5","MODEL_HORIZON_EXPIRES_AFTER_8",
       "FROZEN_LEVELS_NEXT_ASOF_STABLE","LIFECYCLE_PERSISTENCE_ROUNDTRIP",
-      "FINAL_ALPHA_STALE_SOURCE_GUARD","PARTIAL_COVERAGE_DOES_NOT_GLOBAL_ABORT","PRE_MC_COMPLETED_ASOF_FREEZE_TRUTH_TABLE"]})
+      "FINAL_ALPHA_STALE_SOURCE_GUARD","PARTIAL_COVERAGE_DOES_NOT_GLOBAL_ABORT",
+      "POST_MC_PARTIAL_COVERAGE_GATE","PRE_MC_COMPLETED_ASOF_FREEZE_TRUTH_TABLE"]})
 
 if __name__=="__main__": main()
