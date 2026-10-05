@@ -2,7 +2,7 @@ name: XRAY Dynamic Phase Regression
 
 on:
   push:
-    branches: [main, xray-deep-repair-20261005b]
+    branches: [main]
     paths:
       - "nasdaq-xray/price_dv20_phase.py"
       - "nasdaq-xray/price_dv20_recover_from_fullstate.py"
@@ -21,6 +21,7 @@ on:
       - "nasdaq-xray/test_deep_repair_regressions.py"
       - ".github/workflows/xray-canonical-current-pre-mc.yml"
       - ".github/workflows/xray-canonical-current-final.yml"
+      - ".github/workflows/xray-canonical-current-post-mc.yml"
       - ".github/workflows/xray-dynamic-phase-regression.yml"
   workflow_dispatch:
 
