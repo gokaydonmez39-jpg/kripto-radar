@@ -315,15 +315,30 @@ def _verify_split_events_against_raw(df:pd.DataFrame,events:list[dict[str,Any]])
         if not near:return False,"MECHANICAL_SCALE_BREAK_WITHOUT_VERIFIED_SPLIT:"+day
     return True,"PASS"
 
-def split_consistent_history(symbol:str,df:pd.DataFrame)->tuple[pd.DataFrame,str,list[dict[str,Any]]]:
+def split_consistent_history(symbol:str,df:pd.DataFrame,lookback:int=260)->tuple[pd.DataFrame,str,list[dict[str,Any]]]:
+    """Reconcile split events only inside the active technical horizon.
+
+    Stage1/Final call this function only after a recent mechanical split-like
+    discontinuity is detected. Ancient provider split events outside that same
+    horizon are irrelevant to current technical geometry and must not poison
+    the current decision merely because an old vendor/raw scale disagrees.
+    """
     if df is None or df.empty:return df,"UNKNOWN_EMPTY_HISTORY",[]
-    start=df["date"].min().date().isoformat();end=df["date"].max().date().isoformat()
+    x=df.copy().sort_values("date").reset_index(drop=True)
+    if len(x)<2:return x,"UNKNOWN_INSUFFICIENT_HISTORY",[]
+    horizon=max(2,int(lookback or 260))
+    start_idx=max(1,len(x)-horizon)
+    start=x["date"].iloc[start_idx].date().isoformat()
+    end=x["date"].iloc[-1].date().isoformat()
     status,events=fetch_yahoo_split_events(symbol,start,end)
-    if status!="PASS":return df,status,events
-    ok,reason=_verify_split_events_against_raw(df,events)
-    if not ok:return df,"UNKNOWN:"+reason,events
-    if not events:return df,"PASS_NO_SPLIT_EVENTS_CROSSCHECKED",[]
-    return apply_split_events(df,events),"PASS_SPLIT_RECONCILED_CROSSCHECKED",events
+    if status!="PASS":return x,status,events
+    # Defensive range filter: even if a provider returns an out-of-window event,
+    # current technical decisions are bound only to the active horizon.
+    events=[e for e in events if start<=str(e.get("date") or "")<=end]
+    ok,reason=_verify_split_events_against_raw(x,events)
+    if not ok:return x,"UNKNOWN:"+reason,events
+    if not events:return x,"PASS_NO_SPLIT_EVENTS_CROSSCHECKED",[]
+    return apply_split_events(x,events),"PASS_SPLIT_RECONCILED_CROSSCHECKED",events
 
 def resistance_zones(df:pd.DataFrame,trigger_idx:int,A:float)->list[dict[str,Any]]:
     """Structural resistance set known by trigger-1; no trigger/current look-ahead."""
