@@ -59,6 +59,9 @@ def main():
     obj={
       "schema":"XRAY_CANONICAL_LEGAL_V1","task_id":TASK_ID,"asof_et":asof,
       "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
+      "legal_scope":"GLOBAL_SHELL_IDENTITY_ONLY",
+      "detailed_candidate_filing_review_complete":False,
+      "detailed_candidate_filing_review_authority":"SEPARATE_FINALIST_GUARD_REQUIRED",
       "source_history_schema":h.get("schema"),
       "source_history_path":relpath(HISTORY),"source_history_blob_sha":blob_sha(HISTORY),
       "source_history_pass_hash":h.get("pass_hash"),
