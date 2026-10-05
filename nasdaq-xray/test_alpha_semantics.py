@@ -11,7 +11,7 @@ from alpha_semantics import (
     apply_split_events,mechanical_split_suspects,_verify_split_events_against_raw,
     family_a_pretrigger_low
 )
-from final_tech_shadow import eval_one,_is_depositary_security_name
+from final_tech_shadow import eval_one,_is_depositary_security_name,lifecycle_state_persists
 from regime_breadth_shadow import close_only_scale_breaks
 
 def frame(n=90):
@@ -171,6 +171,14 @@ def main():
     rr=eval_one("TEST","D",cg,cf,"CLEAN_DISCOVERY",frozen=cfr,recorded_before=True)
     assert rr["result"]=="PRE_G9_TECH_PASS",rr
 
+    # Prospectively discovered technical passes and resolvable watches survive
+    # across later deep-scope changes; historical backfill must never self-promote.
+    assert lifecycle_state_persists("PRE_G9_TECH_PASS") is True
+    assert lifecycle_state_persists("WATCH_RETEST_REQUIRED") is True
+    assert lifecycle_state_persists("WATCH_EVENT_UNKNOWN_OR_BLOCKED") is True
+    assert lifecycle_state_persists("WATCH_HISTORICAL_SETUP") is False
+    assert lifecycle_state_persists("FAIL_RR") is False
+
     assert _is_depositary_security_name("Example Corp - American Depositary Shares") is True
     assert _is_depositary_security_name("Example Corp - Common Stock") is False
 
@@ -178,7 +186,7 @@ def main():
       "WILDER_FIRST_TR_UNDEFINED","EMA_SMA_SEED","D_DRAWDOWN_DEFINITIONS",
       "R1_STRUCTURAL_TRIGGER_MINUS1","R1_ENTRY_OVERLAP","EXTENSION_RESET","RETEST_BAR","FAMILY_A_TRIGGER_MINUS1_LOW","SETUP_ID_STABLE",
       "B_RECENT_TRIGGER_PERSISTENCE","MECHANICAL_SCALE_BREAK_GUARD","BREADTH_CLOSE_ONLY_SCALE_GUARD","SPLIT_ONLY_RECONCILIATION","SPLIT_RAW_CROSSCHECK","HISTORICAL_DISCOVERY_WATCH","CHASE_FROZEN_RETEST_RECOVERY",
-      "ADR_RATIO_FAIL_CLOSED_CLASSIFICATION","ANCIENT_SCALE_BREAK_OUTSIDE_TECH_HORIZON"
+      "ADR_RATIO_FAIL_CLOSED_CLASSIFICATION","PROSPECTIVE_LIFECYCLE_PERSISTENCE","ANCIENT_SCALE_BREAK_OUTSIDE_TECH_HORIZON"
     ]})
 
 if __name__=="__main__":
