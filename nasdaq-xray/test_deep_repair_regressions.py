@@ -204,6 +204,13 @@ def test_candidate_legal_guard_scope_is_candidate_local():
     lifecycle={"records":{"old":{"symbol":"L"}}}
     assert legal_guard_mod.candidate_scope(deep,fc,lifecycle)==["A","B","C","D","L"]
 
+def test_candidate_legal_guard_phrase_severity():
+    boiler="the credit agreement contains customary events of default and other standard provisions"
+    assert legal_guard_mod._phrase_flags(boiler,legal_guard_mod.HARD_PHRASES)==[]
+    assert "EVENT_OF_DEFAULT_REFERENCE" in legal_guard_mod._phrase_flags(boiler,legal_guard_mod.RISK_PHRASES)
+    hard="management concluded there is substantial doubt about our ability to continue as a going concern"
+    assert "SUBSTANTIAL_DOUBT_GOING_CONCERN" in legal_guard_mod._phrase_flags(hard,legal_guard_mod.HARD_PHRASES)
+
 def test_workflow_race_and_pre_mc_freeze_contracts():
     final_wf=(REPO/".github/workflows/xray-canonical-current-final.yml").read_text()
     assert "Fail closed when exact event binding is unavailable" in final_wf
@@ -288,8 +295,12 @@ def test_workflow_race_and_pre_mc_freeze_contracts():
     assert '"detailed_legal_review_exact"' in ftsrc
     assert "CANDIDATE_LEGAL_GUARD_DEEP_BINDING_MISMATCH" in ftsrc
     assert "CANDIDATE_LEGAL_GUARD_FAMILY_C_BINDING_MISMATCH" in ftsrc
-    assert "CANDIDATE_LEGAL_GUARD_LIFECYCLE_BINDING_MISMATCH" in ftsrc
+    assert "CANDIDATE_LEGAL_GUARD_LIFECYCLE_BINDING_MISMATCH" not in ftsrc
+    assert "DIAGNOSTIC_PRE_FINAL_SCOPE_AUGMENTATION" in ftsrc
+    assert "CANDIDATE_LEGAL_GUARD_POLICY_BLOB_MISMATCH" in ftsrc
+    assert "CANDIDATE_LEGAL_GUARD_POLICY_HASH_MISMATCH" in ftsrc
     assert '"candidate_legal_guard_exact_binding"' in ftsrc
+    assert '"candidate_legal_risk_flags"' in ftsrc
     assert "Build exact-bound detailed finalist legal guard" in final_wf
     assert "python nasdaq-xray/build_candidate_legal_guard.py" in final_wf
     assert "Validate detailed finalist legal guard binding" in final_wf
@@ -323,13 +334,13 @@ def main():
     test_regime_interval_bounds_and_finalist_gate()
     test_corporate_action_absence_vs_real_scale_break()
     test_lifecycle_expiry_and_frozen_stability(); test_lifecycle_regime_revalidation_persists_without_pass(); test_lifecycle_persistence_roundtrip()
-    test_candidate_legal_guard_scope_is_candidate_local()
+    test_candidate_legal_guard_scope_is_candidate_local(); test_candidate_legal_guard_phrase_severity()
     test_workflow_race_and_pre_mc_freeze_contracts()
     print({"status":"PASS","tests":["R1_NO_FUTURE_MUTATION","R1_PLUS2_CONFIRMATION_NO_LEAK",
       "RESISTANCE_ROLE_CHANGE_STATE_MACHINE","FINAL_HISTORY_OHLCV_BINDING","REGIME_INTERVAL_BOUNDS_AND_FINALIST_GATE","CORPORATE_ACTION_NONE_VS_SCALE_BREAK_FAIL_CLOSED","RETEST_WINDOW_EXPIRES_AFTER_5","MODEL_HORIZON_EXPIRES_AFTER_8",
       "FROZEN_LEVELS_NEXT_ASOF_STABLE","LIFECYCLE_REGIME_REVALIDATION_PERSISTS","LIFECYCLE_PERSISTENCE_ROUNDTRIP",
       "FINAL_ALPHA_STALE_SOURCE_GUARD","PARTIAL_COVERAGE_DOES_NOT_GLOBAL_ABORT",
-      "DETAILED_FINALIST_LEGAL_FAIL_CLOSED","FINAL_VERIFIED_MARKET_GAP_NOT_DOUBLE_BLOCKED","DETAILED_LEGAL_GUARD_EXACT_SOURCE_BINDING","DETAILED_LEGAL_GUARD_NO_SELF_TRIGGER",
+      "DETAILED_FINALIST_LEGAL_FAIL_CLOSED","FINAL_VERIFIED_MARKET_GAP_NOT_DOUBLE_BLOCKED","DETAILED_LEGAL_GUARD_EXACT_SOURCE_BINDING","DETAILED_LEGAL_GUARD_POLICY_BINDING","DETAILED_LEGAL_GUARD_NONCIRCULAR_LIFECYCLE","DETAILED_LEGAL_GUARD_BOILERPLATE_SEVERITY","DETAILED_LEGAL_GUARD_NO_SELF_TRIGGER",
       "POST_MC_PARTIAL_COVERAGE_GATE","PRE_MC_COMPLETED_ASOF_FREEZE_TRUTH_TABLE"]})
 
 if __name__=="__main__": main()
