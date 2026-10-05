@@ -317,6 +317,63 @@ jobs:
           XRAY_HISTORY_OUT="$GITHUB_WORKSPACE/nasdaq-xray/canonical_current_history.json" \
           XRAY_ASOF="${{ steps.mc.outputs.asof }}" XRAY_HISTORY_WORKERS="10" \
           python nasdaq-xray/history_phase.py
+      - name: Revalidate reused HISTORY and hydrate same-run technical cache
+        if: steps.mc.outputs.ready == 'true' && steps.reuse_hl.outputs.reuse == 'true'
+        shell: bash
+        env:
+          XRAY_HISTORY_CACHE_DIR: ${{ runner.temp }}/xray-history-cache
+        run: |
+          set -euo pipefail
+          XRAY_HISTORY_INPUT="$GITHUB_WORKSPACE/${{ steps.mc.outputs.path }}" \
+          XRAY_HISTORY_CACHE_DIR="$RUNNER_TEMP/xray-history-cache" \
+          XRAY_HISTORY_OUT="$RUNNER_TEMP/xray-history-revalidated.json" \
+          XRAY_ASOF="${{ steps.mc.outputs.asof }}" XRAY_HISTORY_WORKERS="10" \
+          python nasdaq-xray/history_phase.py
+          python - <<'PY'
+          import json, os
+          old=json.load(open("nasdaq-xray/canonical_current_history.json"))
+          new=json.load(open(os.path.join(os.environ["RUNNER_TEMP"],"xray-history-revalidated.json")))
+          assert old.get("asof_et")==new.get("asof_et"),(old.get("asof_et"),new.get("asof_et"))
+          assert int(new.get("unknown_count",-1))==0,new.get("unknown_symbols")
+          assert old.get("input_count")==new.get("input_count"),(old.get("input_count"),new.get("input_count"))
+          assert old.get("pass_hash")==new.get("pass_hash"),(old.get("pass_hash"),new.get("pass_hash"))
+          assert set(old.get("pass_symbols") or [])==set(new.get("pass_symbols") or [])
+          old_status={k:(v or {}).get("status") for k,v in (old.get("results") or {}).items()}
+          new_status={k:(v or {}).get("status") for k,v in (new.get("results") or {}).items()}
+          assert old_status==new_status
+          print({"XRAY_REUSED_HISTORY_REVALIDATION":"PASS","pass_count":new.get("pass_count")})
+          PY
+
+      - name: Hydrate official ticker-continuity predecessor cache
+        if: steps.mc.outputs.ready == 'true'
+        shell: bash
+        env:
+          XRAY_HISTORY_CACHE_DIR: ${{ runner.temp }}/xray-history-cache
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, os, pathlib, sys
+          sys.path.insert(0,"nasdaq-xray")
+          import akshare as ak
+          import history_phase as hp
+          h=json.load(open("nasdaq-xray/canonical_current_history.json"))
+          passed=set(h.get("pass_symbols") or [])
+          warmed=[]
+          for sym,rec in sorted((hp.OFFICIAL_RECORDS or {}).items()):
+              if sym not in passed: continue
+              if rec.get("mode")!="OFFICIAL_TICKER_CONTINUITY_COMPOSITE_HISTORY" or rec.get("cusip_unchanged") is not True:
+                  continue
+              pred=rec.get("predecessor_symbol")
+              if not pred: raise RuntimeError("CONTINUITY_PREDECESSOR_MISSING:"+sym)
+              df,_=hp._call_with_retry(lambda p=pred: ak.stock_us_daily(symbol=p,adjust=""))
+              hp._write_sina_cache(pred,df)
+              cp=hp._history_cache_path(pred)
+              if cp is None or not cp.exists():
+                  raise RuntimeError("CONTINUITY_PREDECESSOR_CACHE_MISSING:"+sym+":"+pred)
+              warmed.append(sym+"<-"+pred)
+          print({"XRAY_CONTINUITY_PREDECESSOR_CACHE":"PASS","warmed":warmed})
+          PY
+
       - name: Run LEGAL
         if: steps.mc.outputs.ready == 'true' && steps.reuse_hl.outputs.reuse != 'true'
         shell: bash
@@ -341,6 +398,7 @@ jobs:
           XRAY_MC_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_current_stage1_input.json
           XRAY_STAGE1_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_current_stage1.json
           XRAY_STAGE1_HISTORY_CACHE_DIR: ${{ runner.temp }}/xray-history-cache
+          XRAY_STAGE1_CACHE_REQUIRED: "1"
           XRAY_STAGE1_WORKERS: "8"
         run: python nasdaq-xray/stage1_shadow.py
       - name: Run regime breadth
@@ -348,6 +406,8 @@ jobs:
         env:
           XRAY_MC_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_current_stage1_input.json
           XRAY_REGIME_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_current_regime.json
+          XRAY_BREADTH_HISTORY_CACHE_DIR: ${{ runner.temp }}/xray-history-cache
+          XRAY_BREADTH_CACHE_REQUIRED: "1"
           XRAY_BREADTH_WORKERS: "8"
         run: python nasdaq-xray/regime_breadth_shadow.py
       - name: Run deep geometry only
