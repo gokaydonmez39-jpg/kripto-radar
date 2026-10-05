@@ -421,7 +421,7 @@ def tight_base_at(df:pd.DataFrame,t:int)->dict[str,Any]|None:
             "breakout_confirmed":bool(close>P and rv is not None and rv>=1.5),
             "trigger_date":df["date"].iloc[t].date().isoformat()}
 
-def find_recent_b_trigger(df:pd.DataFrame,max_age:int=3)->dict[str,Any]|None:
+def find_recent_b_trigger(df:pd.DataFrame,max_age:int=5)->dict[str,Any]|None:
     """Earliest valid B trigger among the current and prior max_age completed sessions."""
     if df.empty:return None
     last=len(df)-1

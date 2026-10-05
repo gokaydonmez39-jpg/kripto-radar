@@ -140,12 +140,23 @@ def main():
     t=len(bf)-3
     bf.loc[t,"open"]=100.8;bf.loc[t,"high"]=102.5;bf.loc[t,"low"]=100.7
     bf.loc[t,"close"]=102.0;bf.loc[t,"volume"]=3_000_000.0
-    b=find_recent_b_trigger(bf,3)
+    b=find_recent_b_trigger(bf,5)
     assert b and b["breakout_confirmed"] is True and b["trigger_age_sessions"]==2,b
-    # Production deep evaluator must not suppress that recent B trigger merely
+    # The retest window is inclusive through session 5. A setup first
+    # rediscovered on session 5 remains current research-eligible; R92
+    # observation accounting stays prospective/no-backfill in Final.
+    bf5=bf.copy()
+    bf5.loc[t,["open","high","low","close","volume"]]=[100.0,100.5,99.5,100.0,1_000_000.0]
+    t5=len(bf5)-6
+    bf5.loc[t5,["open","high","low","close","volume"]]=[100.8,102.5,100.7,102.0,3_000_000.0]
+    b5=find_recent_b_trigger(bf5,5)
+    assert b5 and b5["breakout_confirmed"] is True and b5["trigger_age_sessions"]==5,b5
+    # Production deep evaluator must not suppress a recent trigger merely
     # because today's cheap Stage1 snapshot pool changed.
     _,bdeep,_=evaluate_recent_families(bf,bf.copy())
     assert bdeep.get("breakout_confirmed") is True and bdeep.get("trigger_age_sessions")==2,bdeep
+    _,bdeep5,_=evaluate_recent_families(bf5,bf5.copy())
+    assert bdeep5.get("breakout_confirmed") is True and bdeep5.get("trigger_age_sessions")==5,bdeep5
 
     # A likely mechanical split/ADR-ratio scale discontinuity is never silently ignored.
     sf=frame(40)
@@ -353,11 +364,13 @@ def main():
     wl={}
     for k,g in wdf.assign(week=wdf["date"].dt.to_period("W-FRI")).groupby("week"):
         wl[k.start_time.date().isoformat()]=g["date"].iloc[-1].date().isoformat()
-    pass_dates,wctx=recent_weekly_context(wdf,wl,3)
+    pass_dates,wctx=recent_weekly_context(wdf,wl,5)
     fri=wdf.date.iloc[-1].date().isoformat()
     thu=wdf.date.iloc[-2].date().isoformat()
+    prior_fri=wdf.date.iloc[-6].date().isoformat()
     assert fri not in pass_dates,(pass_dates,wctx[fri])
     assert thu in pass_dates,(pass_dates,wctx[thu])
+    assert prior_fri in pass_dates,(pass_dates,wctx.get(prior_fri))
 
     # Stage1 process must bind the computed recent weekly context into its output.
     # This catches a runtime NameError class that py_compile cannot detect.

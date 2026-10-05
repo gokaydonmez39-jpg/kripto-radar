@@ -176,7 +176,7 @@ def family_b(df):
     # New triggers are discovered only in the current/previous three completed sessions,
     # with the earliest valid trigger winning. This prevents a breakout from disappearing
     # on the next day and forbids later cherry-picked trigger replacement.
-    recent=find_recent_b_trigger(df,3)
+    recent=find_recent_b_trigger(df,5)
     if recent:
         return {"pool":True,**recent}
     # No recent trigger: current completed bar may still define an ARMED base.
@@ -206,12 +206,12 @@ def active_hl_and_sh(df):
     return {"hl":hl,"prior_hs":prior_h,"later_hs":later_h,"hs":hs,"ls":ls}
 
 def family_d(df,qqq):
-    # Evaluate the earliest valid reclaim in today/prior three completed sessions.
+    # Evaluate the earliest valid reclaim in today/prior five completed sessions.
     # Every structural/RS/ATR input is sliced at that candidate trigger, preventing
     # current-day look-ahead from manufacturing or replacing a historical trigger.
     last_idx=len(df)-1
     diagnostic=None
-    for t in range(max(0,last_idx-3),last_idx+1):
+    for t in range(max(0,last_idx-5),last_idx+1):
         x=df.iloc[:t+1].reset_index(drop=True)
         q=qqq[qqq.date<=x.date.iloc[-1]].reset_index(drop=True)
         st=active_hl_and_sh(x)
