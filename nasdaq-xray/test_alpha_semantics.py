@@ -249,6 +249,24 @@ def main():
                 "CLEAN_DISCOVERY",frozen=bfr,recorded_before=True)
     assert br["result"]=="FAIL_INVALIDATED_S0" and br["invalidation"]["first_breach_date"]==btd,br
 
+    # C4.17 price discovery permits synthetic P+3A only with a hard ORANGE cap.
+    # It is still a research-eligible PRE_G9 technical candidate; the cap must
+    # survive in machine-readable output rather than suppressing the candidate.
+    pdf=frame(270)
+    pdf[["open","high","low","close"]]=[200.0,204.0,196.0,200.0]
+    pdi=len(pdf)-1;pdd=pdf.date.iloc[pdi].date().isoformat()
+    pdf.loc[pdi,["open","high","low","close"]]=[200.5,202.0,199.0,201.0]
+    pfr={"setup_id":"TEST-PRICE-DISCOVERY","symbol":"TEST","family":"A","trigger_date":pdd,
+         "A":10.0,"P":200.0,"anchor":190.0,"entry_low":200.0,"entry_high":202.5,
+         "entry_model":202.5,"chase_limit":205.0,"S0":188.0,"T1":230.0,
+         "anchor_available_idx":pdi-1,"anchor_available_date":pdf.date.iloc[pdi-1].date().isoformat(),
+         "target_source":"SYNTHETIC_P_PLUS_3A_PRICE_DISCOVERY","target_zone":None,
+         "target_overlap":False,"synthetic_target":True,
+         "source_geometry":{"trigger_date":pdd,"P":200.0,"anchor":190.0}}
+    pr=eval_one("TEST","A",pfr["source_geometry"],pdf,"CLEAN_DISCOVERY",frozen=pfr,recorded_before=False)
+    assert pr["result"]=="PRE_G9_TECH_PASS" and pr["pre_g9_tech_pass"] is True,pr
+    assert pr["research_tier_cap"]=="ORANGE" and pr["price_discovery_cap"] is True,pr
+
     # Prospectively discovered technical passes and resolvable watches survive
     # across later deep-scope changes; historical backfill must never self-promote.
     assert lifecycle_state_persists("PRE_G9_TECH_PASS") is True
@@ -331,7 +349,7 @@ def main():
       "WILDER_FIRST_TR_UNDEFINED","EMA_SMA_SEED","D_DRAWDOWN_DEFINITIONS",
       "R1_STRUCTURAL_TRIGGER_MINUS1","R1_ENTRY_OVERLAP","EXTENSION_RESET","EXTENSION_TIGHT_BASE_RESET","RETEST_BAR","FAMILY_A_TRIGGER_MINUS1_LOW","SETUP_ID_STABLE",
       "B_RECENT_TRIGGER_PERSISTENCE","DEEP_RECENT_TRIGGER_INDEPENDENT_OF_CURRENT_STAGE1","A_STAGE1_ASOF_TRIGGER","MECHANICAL_SCALE_BREAK_GUARD","BREADTH_CLOSE_ONLY_SCALE_GUARD","SPLIT_ONLY_RECONCILIATION","SPLIT_RAW_CROSSCHECK","HISTORICAL_DISCOVERY_WATCH","CHASE_FROZEN_RETEST_RECOVERY","ANCHOR_AVAILABLE_S0_CHRONOLOGY",
-      "ADR_RATIO_FAIL_CLOSED_CLASSIFICATION","FINALIST_FRACTIONAL_SPLIT_VERIFICATION","PROSPECTIVE_LIFECYCLE_PERSISTENCE","FROZEN_LIFECYCLE_EVENT_SCOPE","ANCIENT_SCALE_BREAK_OUTSIDE_TECH_HORIZON","TRIGGER_TIME_WEEKLY_SCOPE",
+      "ADR_RATIO_FAIL_CLOSED_CLASSIFICATION","FINALIST_FRACTIONAL_SPLIT_VERIFICATION","SYNTHETIC_PRICE_DISCOVERY_ORANGE_CAP","PROSPECTIVE_LIFECYCLE_PERSISTENCE","FROZEN_LIFECYCLE_EVENT_SCOPE","ANCIENT_SCALE_BREAK_OUTSIDE_TECH_HORIZON","TRIGGER_TIME_WEEKLY_SCOPE",
       "FAMILY_C_REACTION_HIGH_PIVOT","FAMILY_C_PERSISTENT_GAP_FLOOR"
     ]})
 
