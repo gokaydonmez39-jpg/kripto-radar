@@ -190,8 +190,22 @@ def main():
     sev={"date":sf.date.iloc[20].date().isoformat(),"ratio":2.0,"numerator":2.0,"denominator":1.0}
     ok,why=_verify_split_events_against_raw(sf,[sev])
     assert ok,(ok,why)
-    bad,why2=_verify_split_events_against_raw(sf,[])
-    assert bad is False and "WITHOUT_VERIFIED_SPLIT" in why2,(bad,why2)
+    # A successful split lookup with no declared split means the severe move is
+    # an ordinary market gap at Stage1/breadth, not automatic CA ambiguity.
+    gap_ok,gap_why=_verify_split_events_against_raw(sf,[])
+    assert gap_ok is True,(gap_ok,gap_why)
+    old_fetch_gap=alpha_mod.fetch_yahoo_split_events
+    try:
+        alpha_mod.fetch_yahoo_split_events=lambda sym,start,end:("PASS",[])
+        _,gap_status,gap_events=alpha_mod.split_consistent_history("TEST",sf,40)
+        assert gap_status=="PASS_NO_SPLIT_EVENTS_CROSSCHECKED",(gap_status,gap_events)
+        assert gap_events==[]
+    finally:
+        alpha_mod.fetch_yahoo_split_events=old_fetch_gap
+    # A provider-declared split that conflicts with raw OHLC still fails closed.
+    wrong={"date":sf.date.iloc[20].date().isoformat(),"ratio":4.0,"numerator":4.0,"denominator":1.0}
+    bad,why2=_verify_split_events_against_raw(sf,[wrong])
+    assert bad is False and "SPLIT_RATIO_RAW_CONFLICT" in why2,(bad,why2)
 
     # Historical provider artifacts outside the current 260-session technical
     # horizon must not poison today's geometry/regime.
@@ -407,7 +421,7 @@ def main():
     print({"status":"PASS","tests":[
       "WILDER_FIRST_TR_UNDEFINED","EMA_SMA_SEED","D_DRAWDOWN_DEFINITIONS",
       "R1_STRUCTURAL_TRIGGER_MINUS1","R1_ENTRY_OVERLAP","EXTENSION_RESET","EXTENSION_TIGHT_BASE_RESET","RETEST_BAR","FAMILY_A_TRIGGER_MINUS1_LOW","SETUP_ID_STABLE",
-      "B_RECENT_TRIGGER_PERSISTENCE","DEEP_RECENT_TRIGGER_INDEPENDENT_OF_CURRENT_STAGE1","A_STAGE1_ASOF_TRIGGER","MECHANICAL_SCALE_BREAK_GUARD","BREADTH_CLOSE_ONLY_SCALE_GUARD","SPLIT_ONLY_RECONCILIATION","SPLIT_RAW_CROSSCHECK","HISTORICAL_DISCOVERY_WATCH","CHASE_FROZEN_RETEST_RECOVERY","ANCHOR_AVAILABLE_S0_CHRONOLOGY",
+      "B_RECENT_TRIGGER_PERSISTENCE","DEEP_RECENT_TRIGGER_INDEPENDENT_OF_CURRENT_STAGE1","A_STAGE1_ASOF_TRIGGER","MECHANICAL_SCALE_BREAK_GUARD","BREADTH_CLOSE_ONLY_SCALE_GUARD","SPLIT_ONLY_RECONCILIATION","SPLIT_RAW_CROSSCHECK","UNDECLARED_SCALE_MOVE_MARKET_GAP","HISTORICAL_DISCOVERY_WATCH","CHASE_FROZEN_RETEST_RECOVERY","ANCHOR_AVAILABLE_S0_CHRONOLOGY",
       "ADR_RATIO_FAIL_CLOSED_CLASSIFICATION","FINALIST_FRACTIONAL_SPLIT_VERIFICATION","SYNTHETIC_PRICE_DISCOVERY_ORANGE_CAP","PROSPECTIVE_LIFECYCLE_PERSISTENCE","FROZEN_LIFECYCLE_EVENT_SCOPE","ANCIENT_SCALE_BREAK_OUTSIDE_TECH_HORIZON","TRIGGER_TIME_WEEKLY_SCOPE",
       "FAMILY_C_REACTION_HIGH_PIVOT","FAMILY_C_PERSISTENT_GAP_FLOOR","SPLIT_RECONCILIATION_ACTIVE_HORIZON_ONLY"
     ]})
