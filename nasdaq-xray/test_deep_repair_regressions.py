@@ -5,6 +5,7 @@ import json, tempfile
 import pandas as pd
 import alpha_semantics as alpha
 import final_tech_shadow as ft
+import regime_breadth_shadow as rb
 from final_tech_shadow import eval_one, load_lifecycle_registry, persist_lifecycle_registry
 
 ROOT=Path(__file__).resolve().parent
@@ -83,6 +84,26 @@ def test_final_history_normalizer_preserves_ohlcv():
     assert x is not None and list(x.columns)==["date","open","high","low","close","volume"],x.columns
     fp=alpha.history_fingerprint(x,x.date.iloc[-1].date().isoformat())
     assert fp["rows"]==40 and fp["last_date"]==x.date.iloc[-1].date().isoformat(),fp
+
+def test_regime_interval_bounds_and_finalist_gate():
+    q={"close":749.58,"sma50":716.817,"sma200":668.60405,"sma50_slope20":5.7836}
+    regime,meta=rb.classify_regime_bounds(q,456,174,77,54,9)
+    assert regime=="MIXED" and meta["strong_possible"] is False,(regime,meta)
+    assert meta["breadth_above_sma50_pct_max"]<0.55,meta
+
+    regime2,meta2=rb.classify_regime_bounds(q,100,54,20,19,2)
+    assert regime2=="UNKNOWN" and meta2["strong_possible"] is True and meta2["strong_guaranteed"] is False,(regime2,meta2)
+
+    regime3,meta3=rb.classify_regime_bounds(q,100,56,25,20,1)
+    assert regime3=="STRONG" and meta3["strong_guaranteed"] is True,(regime3,meta3)
+
+    weak_q={"close":90.0,"sma50":100.0,"sma200":95.0,"sma50_slope20":-1.0}
+    regime4,_=rb.classify_regime_bounds(weak_q,100,0,0,0,100)
+    assert regime4=="WEAK",regime4
+
+    assert ft._regime_finalist_allowed({"regime":"MIXED","results":{"X":{"regime_finalist_pass":True}}},"X")
+    assert not ft._regime_finalist_allowed({"regime":"MIXED","results":{"X":{"regime_finalist_pass":False}}},"X")
+    assert not ft._regime_finalist_allowed({"regime":"UNKNOWN","results":{"X":{"regime_finalist_pass":True}}},"X")
 
 def test_corporate_action_absence_vs_real_scale_break():
     clean=frame(300)
@@ -196,6 +217,11 @@ def test_workflow_race_and_pre_mc_freeze_contracts():
     assert 'rg["current_core_count"]==len(lpass) and rg["breadth_missing_count"]==0' not in term_src
     assert '"stage1_unknown":int(st["unknown_count"])' in term_src
     assert '"breadth_missing":int(rg["breadth_missing_count"])' in term_src
+    assert '"regime_unknown":0 if rg.get("regime") in {"STRONG","MIXED","WEAK"} else 1' in term_src
+    deep_src=(ROOT/"deep_pre_r1_shadow.py").read_text()
+    assert '"regime_finalist_pass":regime_finalist_pass' in deep_src
+    assert 'outres[s].get("regime_finalist_pass") is True' in deep_src
+    assert "_regime_finalist_allowed" in ftsrc
     assert "candidate_local_research_ready" in term_src
     assert "PARTIAL_UNKNOWN" in term_src
 
@@ -216,11 +242,12 @@ def test_workflow_race_and_pre_mc_freeze_contracts():
 def main():
     test_r1_no_future_mutation_and_confirmation(); test_resistance_role_change_state_machine()
     test_final_history_normalizer_preserves_ohlcv()
+    test_regime_interval_bounds_and_finalist_gate()
     test_corporate_action_absence_vs_real_scale_break()
     test_lifecycle_expiry_and_frozen_stability(); test_lifecycle_persistence_roundtrip()
     test_workflow_race_and_pre_mc_freeze_contracts()
     print({"status":"PASS","tests":["R1_NO_FUTURE_MUTATION","R1_PLUS2_CONFIRMATION_NO_LEAK",
-      "RESISTANCE_ROLE_CHANGE_STATE_MACHINE","FINAL_HISTORY_OHLCV_BINDING","CORPORATE_ACTION_NONE_VS_SCALE_BREAK_FAIL_CLOSED","RETEST_WINDOW_EXPIRES_AFTER_5","MODEL_HORIZON_EXPIRES_AFTER_8",
+      "RESISTANCE_ROLE_CHANGE_STATE_MACHINE","FINAL_HISTORY_OHLCV_BINDING","REGIME_INTERVAL_BOUNDS_AND_FINALIST_GATE","CORPORATE_ACTION_NONE_VS_SCALE_BREAK_FAIL_CLOSED","RETEST_WINDOW_EXPIRES_AFTER_5","MODEL_HORIZON_EXPIRES_AFTER_8",
       "FROZEN_LEVELS_NEXT_ASOF_STABLE","LIFECYCLE_PERSISTENCE_ROUNDTRIP",
       "FINAL_ALPHA_STALE_SOURCE_GUARD","PARTIAL_COVERAGE_DOES_NOT_GLOBAL_ABORT",
       "POST_MC_PARTIAL_COVERAGE_GATE","PRE_MC_COMPLETED_ASOF_FREEZE_TRUTH_TABLE"]})
