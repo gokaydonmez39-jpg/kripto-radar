@@ -4,6 +4,7 @@
   "blockers": {
     "affected_event_unknown": 0,
     "alpha_semantic_conformance_unknown": 1,
+    "alpha_source_binding_unknown": 0,
     "breadth_missing": 0,
     "candidate_halt_guard_unknown": 0,
     "deep_history_unknown": 0,
@@ -32,9 +33,9 @@
       "UCFI",
       "UCFIW"
     ],
-    "age_seconds": 1.935,
-    "generated_at_utc": "2026-10-05T14:46:30.967972+00:00",
-    "guard_blob_sha": "85a3b971309b125872f36808aecf57a059fe2321",
+    "age_seconds": 1.494,
+    "generated_at_utc": "2026-10-05T15:28:15.197579+00:00",
+    "guard_blob_sha": "ef1c01f49738b0f4809201944fde8b35202d7232",
     "guard_path": "nasdaq-xray/canonical_official_source_guard.json",
     "max_age_seconds": 900,
     "security_status_suspension_symbols": [
@@ -79,15 +80,14 @@
     "zero_alpha": true
   },
   "checks": {
-    "alpha_semantic_audit_status": "BLOCKED_KNOWN_GAPS",
+    "alpha_semantic_audit_status": "BLOCKED_CORPORATE_ACTION_RECONCILIATION",
     "alpha_semantic_conformance_exact": false,
     "alpha_semantic_known_gaps": [
-      "R1_IMPLEMENTATION_USES_NEAREST_ANY_PRIOR_DAILY_HIGH_NOT_CERTIFIED_ELIGIBLE_ACTIVE_RESISTANCE",
-      "RETEST_FROZEN_5_SESSION_LIFECYCLE_NOT_IMPLEMENTED",
-      "FAMILY_A_PRELOW_NEAR_HL_0P5A_GATE_NOT_EXPLICITLY_BOUND_TO_C4_17",
-      "EXTENSION_RESET_SEMANTICS_NOT_IMPLEMENTED",
       "CORPORATE_ACTION_ADJUSTMENT_RECONCILIATION_NOT_PROVEN"
     ],
+    "alpha_source_binding_exact": true,
+    "alpha_source_blobs_exact": true,
+    "alpha_workflow_sha_exact": true,
     "candidate_delivery_halt_guard_fail_closed": true,
     "count_equality_never_substituted_for_set_equality": true,
     "deep_exact_weekly_scope": true,
@@ -147,7 +147,7 @@
     },
     "account_live_probe": {
       "balance_parseable": false,
-      "blob_sha": "4c0aec518de15a2dd86e26c7cdbd0dc6151dbde8",
+      "blob_sha": "6e204b0282d56add74b9b91c210a8a9443ef7746",
       "network_attempted": false,
       "path": "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/account_effective_probe_state.json",
       "positions_parseable": false,
@@ -158,10 +158,10 @@
       "secret_values_persisted": false,
       "status": "BLOCKED_MISSING_CREDENTIALS",
       "workflow_run_attempt": "1",
-      "workflow_run_id": "37327169595"
+      "workflow_run_id": "37332753658"
     },
     "deep": {
-      "blob_sha": "ef9329735a208e28be983b0a5f23647b264e300d",
+      "blob_sha": "eb63176873e1a1937a391cbf1ec8d5bf83e502aa",
       "path": "nasdaq-xray/canonical_current_deep_full.json"
     },
     "deep_geometry": {
@@ -181,7 +181,7 @@
       "path": "nasdaq-xray/canonical_current_family_c.json"
     },
     "final": {
-      "blob_sha": "f62e2419993922d6aed125914235b316637a8fc7",
+      "blob_sha": "909f9dc254cea19b2284dac4f9e1f6269d6347d8",
       "path": "nasdaq-xray/canonical_current_final_tech.json"
     },
     "full_state": {
@@ -211,7 +211,7 @@
       "path": "nasdaq-xray/canonical_mc_bridge_20261002_c417.json"
     },
     "official_halt_guard": {
-      "blob_sha": "85a3b971309b125872f36808aecf57a059fe2321",
+      "blob_sha": "ef1c01f49738b0f4809201944fde8b35202d7232",
       "path": "nasdaq-xray/canonical_official_source_guard.json"
     },
     "pointer": {
@@ -243,7 +243,7 @@
   "final_gate_reporting_zero_alpha": true,
   "full_end_to_end_research_pass": false,
   "g9_global_status": "G9_BLOCKED_FREE_AUTOMATION_PATH",
-  "generated_at_utc": "2026-10-05T14:46:32.904156+00:00",
+  "generated_at_utc": "2026-10-05T15:28:16.693080+00:00",
   "pointer_asof_before_candidate": "2026-10-02",
   "r92_account_g9_applicable": false,
   "r92_candidates": [],

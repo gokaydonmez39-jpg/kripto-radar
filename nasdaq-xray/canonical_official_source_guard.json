@@ -59,7 +59,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-10-05T15:16:25.379164+00:00",
+  "generated_at_utc": "2026-10-05T15:28:15.197579+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -624,8 +624,23 @@
         "UCFIW"
       ],
       "active_state_rule": "EXPLICIT_EMPTY_RESUMPTION_FIELDS_ONLY",
-      "item_count": 58,
+      "item_count": 59,
       "items": [
+        {
+          "HaltDate": "10/05/2026",
+          "HaltTime": "11:25:03.303",
+          "IssueName": "WISeQey Corp Ord",
+          "IssueSymbol": "WQEY",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "10/05/2026",
+          "ResumptionQuoteTime": "11:25:03",
+          "ResumptionTradeTime": "",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/05/2026                    </td><td valign=\"top\">11:25:03.303</td><td valign=\"top\">WQEY</td><td valign=\"top\">WISeQey Corp Ord</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/05/2026                    </td><td valign=\"top\">11:25:03                      </td><td valign=\"top\"></td></tr></table>",
+          "pubDate": "Mon, 05 Oct 2026 04:00:00 GMT",
+          "title": "WQEY"
+        },
         {
           "HaltDate": "10/05/2026",
           "HaltTime": "11:14:21.906",
@@ -636,8 +651,8 @@
           "ReasonCode": "LUDP",
           "ResumptionDate": "10/05/2026",
           "ResumptionQuoteTime": "11:14:21",
-          "ResumptionTradeTime": "",
-          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/05/2026                    </td><td valign=\"top\">11:14:21.906</td><td valign=\"top\">WQEY</td><td valign=\"top\">WISeQey Corp Ord</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/05/2026                    </td><td valign=\"top\">11:14:21                      </td><td valign=\"top\"></td></tr></table>",
+          "ResumptionTradeTime": "11:24:21",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/05/2026                    </td><td valign=\"top\">11:14:21.906</td><td valign=\"top\">WQEY</td><td valign=\"top\">WISeQey Corp Ord</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/05/2026                    </td><td valign=\"top\">11:14:21                      </td><td valign=\"top\">11:24:21                      </td></tr></table>",
           "pubDate": "Mon, 05 Oct 2026 04:00:00 GMT",
           "title": "WQEY"
         },

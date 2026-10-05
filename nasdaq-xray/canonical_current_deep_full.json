@@ -165,9 +165,17 @@
   "results": {
     "AAPL": {
       "A": {
+        "A": 7.551633202691719,
+        "P": 331.78,
+        "anchor": 309.9,
+        "d": 2.89738648749532,
+        "depth": 2.768937452172177,
+        "hl_date": "2026-09-09",
         "pool": false,
-        "reason": "SH_AGE",
-        "sessions_since_confirm": 18
+        "prelow_near_hl": false,
+        "sessions_since_confirm": 6,
+        "sh_date": "2026-09-03",
+        "trigger_date": "2026-09-16"
       },
       "B": {
         "pool": false,
@@ -187,14 +195,15 @@
     },
     "ABCL": {
       "A": {
-        "A": 0.7901904772416237,
+        "A": 0.7894368090810264,
         "P": 14.2299,
         "anchor": 11.78,
-        "d": 3.1003917037219284,
-        "depth": 1.5059660098081948,
+        "d": 3.1033516195576176,
+        "depth": 1.5074037418970436,
         "hl_date": "2026-09-24",
         "pool": false,
         "prelow_near_hl": false,
+        "sessions_since_confirm": 3,
         "sh_date": "2026-09-22",
         "trigger_date": "2026-09-29"
       },
@@ -224,6 +233,7 @@
         "hl_date": "2026-09-23",
         "pool": false,
         "prelow_near_hl": false,
+        "sessions_since_confirm": 6,
         "sh_date": "2026-09-22",
         "trigger_date": "2026-10-02"
       },
@@ -237,15 +247,18 @@
         "anchor": 92.38,
         "close": 107.21,
         "d": 1.0025187441258965,
-        "dd120": -0.2637181512258775,
-        "dd252": -0.2637181512258775,
+        "dd120": -0.4762035574479776,
+        "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
+        "dd252": -0.2726594301221168,
+        "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
         "dk3_pre_r1": false,
         "ema50": 95.01178027825217,
         "hl_date": "2026-09-23",
         "pool": true,
         "rs20": 0.3458242564002443,
         "rs60": 0.35741236279387256,
-        "rvol20": 0.8906079616366648
+        "rvol20": 0.8906079616366648,
+        "trigger_date": null
       },
       "event_status": "UNKNOWN",
       "mixed_rs_pass": true,
@@ -257,16 +270,17 @@
     },
     "AMD": {
       "A": {
-        "A": 23.782776772856373,
-        "P": 619.3,
+        "A": 24.242990370768403,
+        "P": 615.17,
         "anchor": 596.07,
-        "d": 0.9767572652202934,
-        "depth": 1.8050877914725492,
+        "d": 0.7878566013469285,
+        "depth": 1.7708211463782075,
         "hl_date": "2026-09-28",
         "pool": false,
         "prelow_near_hl": true,
+        "sessions_since_confirm": 2,
         "sh_date": "2026-09-25",
-        "trigger_date": "2026-10-02"
+        "trigger_date": "2026-10-01"
       },
       "B": {
         "pool": false,
@@ -286,9 +300,17 @@
     },
     "APA": {
       "A": {
+        "A": 1.4800432332476838,
+        "P": 42.95,
+        "anchor": 40.46,
+        "d": 1.6823832872342201,
+        "depth": 3.1012607583956058,
+        "hl_date": "2026-08-26",
         "pool": false,
-        "reason": "SH_AGE",
-        "sessions_since_confirm": 28
+        "prelow_near_hl": true,
+        "sessions_since_confirm": 5,
+        "sh_date": "2026-08-20",
+        "trigger_date": "2026-08-31"
       },
       "B": {
         "pool": false,
@@ -321,15 +343,18 @@
         "anchor": 279.2,
         "close": 307.49,
         "d": 3.125771756744715,
-        "dd120": -0.3003003686342328,
-        "dd252": -0.3003003686342328,
+        "dd120": -0.4882583170254403,
+        "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
+        "dd252": -0.3207643030704661,
+        "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
         "dk3_pre_r1": false,
-        "ema50": 277.2925836224507,
+        "ema50": 277.29258362245,
         "hl_date": "2026-09-28",
         "pool": true,
         "rs20": 0.21357020101365443,
         "rs60": -0.09506417482628338,
-        "rvol20": 1.0603558168892158
+        "rvol20": 1.0603558168892158,
+        "trigger_date": null
       },
       "event_status": "CLEAN_DISCOVERY",
       "mixed_rs_pass": false,
@@ -342,7 +367,8 @@
     "ASST": {
       "A": {
         "pool": false,
-        "reason": "NO_REVERSAL"
+        "reason": "NO_REVERSAL",
+        "sessions_since_confirm": 7
       },
       "B": {
         "A": 1.8050349962793937,
@@ -353,6 +379,7 @@
         "close": 30.03,
         "pool": true,
         "rvol20": 1.3233303494116686,
+        "trigger_date": null,
         "window": 10
       },
       "D": {
@@ -369,9 +396,17 @@
     },
     "ATRC": {
       "A": {
+        "A": 1.7123929118028125,
+        "P": 41.5,
+        "anchor": 37.98,
+        "d": 2.0556029960986795,
+        "depth": 1.9329675900814283,
+        "hl_date": "2026-08-05",
         "pool": false,
-        "reason": "SH_AGE",
-        "sessions_since_confirm": 44
+        "prelow_near_hl": false,
+        "sessions_since_confirm": 6,
+        "sh_date": "2026-07-29",
+        "trigger_date": "2026-08-10"
       },
       "B": {
         "pool": false,
@@ -395,31 +430,35 @@
         "reason": "NOT_A_STAGE1"
       },
       "B": {
-        "A": 4.324276474093792,
+        "A": 4.3242764740868145,
         "P": 85.0,
         "anchor": 77.0,
-        "b": 1.8500204711532704,
+        "b": 1.8500204711562556,
         "breakout_confirmed": false,
         "close": 81.95,
         "pool": true,
         "rvol20": 0.8994985416939276,
+        "trigger_date": null,
         "window": 5
       },
       "D": {
-        "A": 4.324276474093792,
+        "A": 4.3242764740868145,
         "P": 78.94,
         "anchor": 74.09,
         "close": 81.95,
-        "d": 1.1215749106366688,
-        "dd120": -0.24912955836540218,
-        "dd252": -0.24912955836540218,
+        "d": 1.1215749106384787,
+        "dd120": -0.5412314458493678,
+        "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
+        "dd252": -0.25716771965446283,
+        "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
         "dk3_pre_r1": false,
-        "ema50": 79.4462853006883,
+        "ema50": 79.4462514736054,
         "hl_date": "2026-08-18",
         "pool": true,
         "rs20": -0.10950690022700693,
         "rs60": 0.2478250983982726,
-        "rvol20": 0.8994985416939276
+        "rvol20": 0.8994985416939276,
+        "trigger_date": null
       },
       "event_status": "CLEAN_DISCOVERY",
       "mixed_rs_pass": false,
@@ -431,9 +470,17 @@
     },
     "AVT": {
       "A": {
+        "A": 3.630507710126177,
+        "P": 98.37,
+        "anchor": 90.9,
+        "d": 2.057563458456443,
+        "depth": 2.484500989996936,
+        "hl_date": "2026-09-16",
         "pool": false,
-        "reason": "SH_AGE",
-        "sessions_since_confirm": 13
+        "prelow_near_hl": false,
+        "sessions_since_confirm": 6,
+        "sh_date": "2026-09-11",
+        "trigger_date": "2026-09-23"
       },
       "B": {
         "pool": false,
@@ -461,6 +508,7 @@
         "hl_date": "2026-09-24",
         "pool": false,
         "prelow_near_hl": false,
+        "sessions_since_confirm": 7,
         "sh_date": "2026-09-21",
         "trigger_date": "2026-10-02"
       },
@@ -474,15 +522,18 @@
         "anchor": 69.6001,
         "close": 85.87,
         "d": 1.672778389292877,
-        "dd120": -0.3902577575800611,
-        "dd252": -0.3902577575800611,
+        "dd120": -0.7374849108854648,
+        "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
+        "dd252": -0.40018161497625027,
+        "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
         "dk3_pre_r1": false,
         "ema50": 70.8175673591761,
         "hl_date": "2026-09-24",
         "pool": true,
         "rs20": 0.4628909365994658,
         "rs60": 0.32465448650178286,
-        "rvol20": 0.9532720597988736
+        "rvol20": 0.9532720597988736,
+        "trigger_date": null
       },
       "event_status": "CLEAN_DISCOVERY",
       "mixed_rs_pass": true,
@@ -551,6 +602,7 @@
         "close": 31.77,
         "pool": true,
         "rvol20": 0.7119743782853428,
+        "trigger_date": null,
         "window": 10
       },
       "D": {
@@ -618,6 +670,7 @@
         "hl_date": "2026-09-28",
         "pool": false,
         "prelow_near_hl": false,
+        "sessions_since_confirm": 6,
         "sh_date": "2026-09-22",
         "trigger_date": "2026-10-02"
       },
@@ -639,9 +692,17 @@
     },
     "CLMT": {
       "A": {
+        "A": 1.5263096540031225,
+        "P": 35.66,
+        "anchor": 31.7,
+        "d": 2.594493187941204,
+        "depth": 2.673114193636395,
+        "hl_date": "2026-06-24",
         "pool": false,
-        "reason": "SH_AGE",
-        "sessions_since_confirm": 75
+        "prelow_near_hl": true,
+        "sessions_since_confirm": 8,
+        "sh_date": "2026-06-12",
+        "trigger_date": "2026-06-29"
       },
       "B": {
         "A": 2.35587099851818,
@@ -652,6 +713,7 @@
         "close": 55.28,
         "pool": true,
         "rvol20": 1.120539406453613,
+        "trigger_date": null,
         "window": 5
       },
       "D": {
@@ -668,9 +730,17 @@
     },
     "COHU": {
       "A": {
+        "A": 3.8211005267450444,
+        "P": 55.16,
+        "anchor": 48.14,
+        "d": 1.83716705458673,
+        "depth": 2.7649102466821667,
+        "hl_date": "2026-09-15",
         "pool": false,
-        "reason": "SH_AGE",
-        "sessions_since_confirm": 13
+        "prelow_near_hl": true,
+        "sessions_since_confirm": 3,
+        "sh_date": "2026-09-11",
+        "trigger_date": "2026-09-18"
       },
       "B": {
         "pool": false,
@@ -702,6 +772,7 @@
         "close": 183.0,
         "pool": true,
         "rvol20": 1.6924987198473576,
+        "trigger_date": null,
         "window": 5
       },
       "D": {
@@ -710,15 +781,18 @@
         "anchor": 146.02,
         "close": 183.0,
         "d": 0.7678153792887982,
-        "dd120": -0.15512465373961215,
-        "dd252": -0.5274614609962042,
+        "dd120": -0.3420129270544783,
+        "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
+        "dd252": -0.5449572309528545,
+        "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
         "dk3_pre_r1": false,
         "ema50": 178.51567214043004,
         "hl_date": "2026-08-18",
         "pool": true,
         "rs20": -0.09076493318874046,
         "rs60": 0.11448626833147224,
-        "rvol20": 1.6924987198473576
+        "rvol20": 1.6924987198473576,
+        "trigger_date": null
       },
       "event_status": "CLEAN_DISCOVERY",
       "mixed_rs_pass": false,
@@ -787,15 +861,18 @@
         "anchor": 141.0955,
         "close": 150.28,
         "d": 1.8178370121043934,
-        "dd120": -0.022378350247202694,
-        "dd252": -0.18219416630387453,
+        "dd120": -0.24264897215716885,
+        "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
+        "dd252": -0.2094687006838506,
+        "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
         "dk3_pre_r1": false,
         "ema50": 139.72515604715264,
         "hl_date": "2026-09-28",
         "pool": true,
         "rs20": 0.04931814713944971,
         "rs60": -0.04241412810315748,
-        "rvol20": 0.9216424846640773
+        "rvol20": 0.9216424846640773,
+        "trigger_date": null
       },
       "event_status": "CLEAN_DISCOVERY",
       "mixed_rs_pass": false,
@@ -807,9 +884,17 @@
     },
     "DOCU": {
       "A": {
+        "A": 2.7084709365285966,
+        "P": 66.9899,
+        "anchor": 63.633,
+        "d": 1.2394077982252554,
+        "depth": 2.4984576754119274,
+        "hl_date": "2026-09-09",
         "pool": false,
-        "reason": "SH_AGE",
-        "sessions_since_confirm": 17
+        "prelow_near_hl": true,
+        "sessions_since_confirm": 3,
+        "sh_date": "2026-09-04",
+        "trigger_date": "2026-09-14"
       },
       "B": {
         "pool": false,
@@ -843,15 +928,18 @@
         "anchor": 128.465,
         "close": 144.27,
         "d": 2.561381821560591,
-        "dd120": -0.09161314695882117,
-        "dd252": -0.5845595646039105,
+        "dd120": -0.15438861604331933,
+        "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
+        "dd252": -0.5913031161473088,
+        "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
         "dk3_pre_r1": false,
         "ema50": 141.29932817090508,
         "hl_date": "2026-08-17",
         "pool": true,
         "rs20": -0.13028363507289054,
         "rs60": 0.07124353470186495,
-        "rvol20": 0.686651575708273
+        "rvol20": 0.686651575708273,
+        "trigger_date": null
       },
       "event_status": "CLEAN_DISCOVERY",
       "mixed_rs_pass": false,
@@ -875,6 +963,7 @@
         "close": 85.36,
         "pool": true,
         "rvol20": 0.6402558935761563,
+        "trigger_date": null,
         "window": 5
       },
       "D": {
@@ -913,7 +1002,8 @@
     "EXEL": {
       "A": {
         "pool": false,
-        "reason": "NO_REVERSAL"
+        "reason": "NO_REVERSAL",
+        "sessions_since_confirm": 8
       },
       "B": {
         "pool": false,
@@ -947,15 +1037,18 @@
         "anchor": 34.05,
         "close": 35.75,
         "d": 2.103928984984484,
-        "dd120": -0.06901041666666663,
-        "dd252": -0.17702578268876612,
+        "dd120": -0.20890840652446674,
+        "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
+        "dd252": -0.1902604756511891,
+        "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
         "dk3_pre_r1": false,
         "ema50": 34.550356990001134,
         "hl_date": "2026-08-12",
         "pool": true,
         "rs20": -0.08284822065558584,
         "rs60": 0.24984290719711222,
-        "rvol20": 1.607291143530613
+        "rvol20": 1.607291143530613,
+        "trigger_date": null
       },
       "event_status": "CLEAN_DISCOVERY",
       "mixed_rs_pass": false,
@@ -975,6 +1068,7 @@
         "hl_date": "2026-09-29",
         "pool": false,
         "prelow_near_hl": false,
+        "sessions_since_confirm": 5,
         "sh_date": "2026-09-23",
         "trigger_date": "2026-10-02"
       },
@@ -1073,6 +1167,7 @@
         "close": 25.81,
         "pool": true,
         "rvol20": 0.5759527873652803,
+        "trigger_date": null,
         "window": 5
       },
       "D": {
@@ -1081,15 +1176,18 @@
         "anchor": 24.14,
         "close": 25.81,
         "d": 3.027982705853558,
-        "dd120": -0.2024103831891224,
-        "dd252": -0.2295522388059702,
+        "dd120": -0.49891841779975277,
+        "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
+        "dd252": -0.25875933371625504,
+        "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
         "dk3_pre_r1": false,
         "ema50": 23.964408212934384,
         "hl_date": "2026-09-28",
         "pool": true,
         "rs20": 0.17004049414136535,
         "rs60": 0.2250084707216331,
-        "rvol20": 0.5759527873652803
+        "rvol20": 0.5759527873652803,
+        "trigger_date": null
       },
       "event_status": "CLEAN_DISCOVERY",
       "mixed_rs_pass": true,
@@ -1109,6 +1207,7 @@
         "hl_date": "2026-09-28",
         "pool": false,
         "prelow_near_hl": false,
+        "sessions_since_confirm": 4,
         "sh_date": "2026-09-24",
         "trigger_date": "2026-10-02"
       },
@@ -1121,6 +1220,7 @@
         "close": 180.95,
         "pool": true,
         "rvol20": 1.0591046497391605,
+        "trigger_date": null,
         "window": 5
       },
       "D": {
@@ -1150,6 +1250,7 @@
         "close": 177.8,
         "pool": true,
         "rvol20": 1.0184692451237078,
+        "trigger_date": null,
         "window": 10
       },
       "D": {
@@ -1166,9 +1267,17 @@
     },
     "GILD": {
       "A": {
+        "A": 4.05099607256538,
+        "P": 134.32,
+        "anchor": 129.02,
+        "d": 1.3083202020098836,
+        "depth": 2.1673681837069463,
+        "hl_date": "2026-08-06",
         "pool": false,
-        "reason": "SH_AGE",
-        "sessions_since_confirm": 39
+        "prelow_near_hl": true,
+        "sessions_since_confirm": 2,
+        "sh_date": "2026-08-05",
+        "trigger_date": "2026-08-11"
       },
       "B": {
         "pool": false,
@@ -1188,9 +1297,17 @@
     },
     "GMAB": {
       "A": {
+        "A": 0.8220055005410253,
+        "P": 31.55,
+        "anchor": 30.52,
+        "d": 1.253032977665087,
+        "depth": 1.5450018268297652,
+        "hl_date": "2026-08-11",
         "pool": false,
-        "reason": "SH_AGE",
-        "sessions_since_confirm": 37
+        "prelow_near_hl": true,
+        "sessions_since_confirm": 3,
+        "sh_date": "2026-08-07",
+        "trigger_date": "2026-08-14"
       },
       "B": {
         "pool": false,
@@ -1210,9 +1327,17 @@
     },
     "GTLB": {
       "A": {
+        "A": 2.0951666989312705,
+        "P": 40.89,
+        "anchor": 33.8901,
+        "d": 3.340975209070764,
+        "depth": 0.5536075008216086,
+        "hl_date": "2026-08-06",
         "pool": false,
-        "reason": "SH_AGE",
-        "sessions_since_confirm": 44
+        "prelow_near_hl": false,
+        "sessions_since_confirm": 7,
+        "sh_date": "2026-07-29",
+        "trigger_date": "2026-08-11"
       },
       "B": {
         "pool": false,
@@ -1232,9 +1357,17 @@
     },
     "HALO": {
       "A": {
+        "A": 2.9556231752533613,
+        "P": 109.76,
+        "anchor": 103.47,
+        "d": 2.128146799180791,
+        "depth": 2.094312986793176,
+        "hl_date": "2026-08-31",
         "pool": false,
-        "reason": "SH_AGE",
-        "sessions_since_confirm": 24
+        "prelow_near_hl": false,
+        "sessions_since_confirm": 4,
+        "sh_date": "2026-08-26",
+        "trigger_date": "2026-09-03"
       },
       "B": {
         "pool": false,
@@ -1254,9 +1387,17 @@
     },
     "HOOD": {
       "A": {
+        "A": 6.909284701010328,
+        "P": 120.5699,
+        "anchor": 101.7045,
+        "d": 2.7304418353525604,
+        "depth": 3.40780573082435,
+        "hl_date": "2026-09-16",
         "pool": false,
-        "reason": "SH_AGE",
-        "sessions_since_confirm": 16
+        "prelow_near_hl": false,
+        "sessions_since_confirm": 7,
+        "sh_date": "2026-09-08",
+        "trigger_date": "2026-09-21"
       },
       "B": {
         "pool": false,
@@ -1268,15 +1409,18 @@
         "anchor": 101.7045,
         "close": 112.74,
         "d": 3.853563438332129,
-        "dd120": -0.09605516356638877,
-        "dd252": -0.26052735143644246,
+        "dd120": -0.2636324968098681,
+        "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
+        "dd252": -0.26725547072369094,
+        "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
         "dk3_pre_r1": false,
         "ema50": 108.76922952396167,
         "hl_date": "2026-09-16",
         "pool": true,
         "rs20": -0.13453655278514676,
         "rs60": -0.05495292462380286,
-        "rvol20": 1.5139941315364471
+        "rvol20": 1.5139941315364471,
+        "trigger_date": null
       },
       "event_status": "CLEAN_DISCOVERY",
       "mixed_rs_pass": false,
@@ -1288,19 +1432,28 @@
     },
     "HTFL": {
       "A": {
+        "A": 1.8546746199265989,
+        "P": 26.99,
+        "anchor": 23.19,
+        "d": 2.048876907665015,
+        "depth": 3.1218413935211697,
+        "hl_date": "2026-04-02",
         "pool": false,
-        "reason": "SH_AGE",
-        "sessions_since_confirm": 130
+        "prelow_near_hl": false,
+        "sessions_since_confirm": 7,
+        "sh_date": "2026-03-25",
+        "trigger_date": "2026-04-08"
       },
       "B": {
-        "A": 2.309329724873575,
+        "A": 2.3093297246589657,
         "P": 51.19,
         "anchor": 48.1,
-        "b": 1.3380505896225623,
+        "b": 1.338050589746909,
         "breakout_confirmed": false,
         "close": 49.32,
         "pool": true,
         "rvol20": 1.0476190779969692,
+        "trigger_date": null,
         "window": 5
       },
       "D": {
@@ -1325,6 +1478,7 @@
         "hl_date": "2026-09-28",
         "pool": false,
         "prelow_near_hl": false,
+        "sessions_since_confirm": 6,
         "sh_date": "2026-09-22",
         "trigger_date": "2026-10-02"
       },
@@ -1347,7 +1501,8 @@
     "ILMN": {
       "A": {
         "pool": false,
-        "reason": "NO_REVERSAL"
+        "reason": "NO_REVERSAL",
+        "sessions_since_confirm": 8
       },
       "B": {
         "pool": false,
@@ -1380,15 +1535,18 @@
         "anchor": 113.97,
         "close": 119.33,
         "d": 2.2173864606947027,
-        "dd120": -0.15332765715907481,
-        "dd252": -0.15332765715907481,
+        "dd120": -0.4190435646374344,
+        "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
+        "dd252": -0.1617140850017562,
+        "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
         "dk3_pre_r1": false,
         "ema50": 106.35738529933002,
         "hl_date": "2026-09-29",
         "pool": true,
         "rs20": 0.2463189865943849,
         "rs60": 0.02313088706845412,
-        "rvol20": 0.9765601238938836
+        "rvol20": 0.9765601238938836,
+        "trigger_date": null
       },
       "event_status": "CLEAN_DISCOVERY",
       "mixed_rs_pass": true,
@@ -1400,9 +1558,17 @@
     },
     "IOVA": {
       "A": {
+        "A": 0.5130438525439992,
+        "P": 9.38,
+        "anchor": 8.04,
+        "d": 2.61186250133478,
+        "depth": 1.6957614747472076,
+        "hl_date": "2026-09-10",
         "pool": false,
-        "reason": "SH_AGE",
-        "sessions_since_confirm": 16
+        "prelow_near_hl": false,
+        "sessions_since_confirm": 4,
+        "sh_date": "2026-09-08",
+        "trigger_date": "2026-09-16"
       },
       "B": {
         "pool": false,
@@ -1422,16 +1588,17 @@
     },
     "LITE": {
       "A": {
-        "A": 67.14608548238712,
-        "P": 1078.04,
+        "A": 63.69271513487845,
+        "P": 1009.45,
         "anchor": 881.23,
-        "d": 2.931071835179797,
-        "depth": 1.7986156472469088,
+        "d": 2.013103064117707,
+        "depth": 1.896135213332517,
         "hl_date": "2026-09-28",
         "pool": false,
         "prelow_near_hl": false,
+        "sessions_since_confirm": 5,
         "sh_date": "2026-09-22",
-        "trigger_date": "2026-10-02"
+        "trigger_date": "2026-10-01"
       },
       "B": {
         "pool": false,
@@ -1451,9 +1618,17 @@
     },
     "MANH": {
       "A": {
+        "A": 8.659972609196947,
+        "P": 207.37,
+        "anchor": 189.35,
+        "d": 2.08083799027986,
+        "depth": 1.5762174565660425,
+        "hl_date": "2026-08-17",
         "pool": false,
-        "reason": "SH_AGE",
-        "sessions_since_confirm": 32
+        "prelow_near_hl": false,
+        "sessions_since_confirm": 2,
+        "sh_date": "2026-08-14",
+        "trigger_date": "2026-08-20"
       },
       "B": {
         "pool": false,
@@ -1495,7 +1670,8 @@
     "META": {
       "A": {
         "pool": false,
-        "reason": "NO_REVERSAL"
+        "reason": "NO_REVERSAL",
+        "sessions_since_confirm": 4
       },
       "B": {
         "pool": false,
@@ -1516,7 +1692,8 @@
     "MKTX": {
       "A": {
         "pool": false,
-        "reason": "NO_REVERSAL"
+        "reason": "NO_REVERSAL",
+        "sessions_since_confirm": 3
       },
       "B": {
         "pool": false,
@@ -1528,15 +1705,18 @@
         "anchor": 163.77,
         "close": 164.14,
         "d": 0.7281240873230331,
-        "dd120": -0.053948126801152796,
-        "dd252": -0.15221321212747285,
+        "dd120": -0.37123919308357345,
+        "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
+        "dd252": -0.1624014492383845,
+        "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
         "dk3_pre_r1": false,
         "ema50": 157.0017086760256,
         "hl_date": "2026-09-30",
         "pool": true,
         "rs20": -0.037881246966323,
         "rs60": 0.38955020403049945,
-        "rvol20": 0.639515870641884
+        "rvol20": 0.639515870641884,
+        "trigger_date": null
       },
       "event_status": "CLEAN_DISCOVERY",
       "mixed_rs_pass": false,
@@ -1548,9 +1728,17 @@
     },
     "MRNA": {
       "A": {
+        "A": 3.8854398388653357,
+        "P": 61.4,
+        "anchor": 53.71,
+        "d": 1.979183906820111,
+        "depth": 1.4772072758887782,
+        "hl_date": "2026-08-06",
         "pool": false,
-        "reason": "SH_AGE",
-        "sessions_since_confirm": 39
+        "prelow_near_hl": false,
+        "sessions_since_confirm": 3,
+        "sh_date": "2026-08-05",
+        "trigger_date": "2026-08-12"
       },
       "B": {
         "pool": false,
@@ -1570,16 +1758,17 @@
     },
     "MRVL": {
       "A": {
-        "A": 13.08862170553804,
-        "P": 270.2799,
+        "A": 13.118523375194812,
+        "P": 265.0,
         "anchor": 248.1415,
-        "d": 1.691423321573487,
-        "depth": 1.4774970531708118,
+        "d": 1.28509128030956,
+        "depth": 1.4741293243846356,
         "hl_date": "2026-09-28",
         "pool": false,
         "prelow_near_hl": false,
+        "sessions_since_confirm": 2,
         "sh_date": "2026-09-25",
-        "trigger_date": "2026-10-02"
+        "trigger_date": "2026-10-01"
       },
       "B": {
         "pool": false,
@@ -1599,9 +1788,17 @@
     },
     "MRX": {
       "A": {
+        "A": 2.0116944929789757,
+        "P": 47.02,
+        "anchor": 42.0,
+        "d": 2.4954087300633017,
+        "depth": 1.5509313222704162,
+        "hl_date": "2026-04-02",
         "pool": false,
-        "reason": "SH_AGE",
-        "sessions_since_confirm": 126
+        "prelow_near_hl": false,
+        "sessions_since_confirm": 3,
+        "sh_date": "2026-03-31",
+        "trigger_date": "2026-04-08"
       },
       "B": {
         "pool": false,
@@ -1644,7 +1841,8 @@
     "MSTR": {
       "A": {
         "pool": false,
-        "reason": "NO_REVERSAL"
+        "reason": "NO_REVERSAL",
+        "sessions_since_confirm": 6
       },
       "B": {
         "pool": false,
@@ -1656,15 +1854,18 @@
         "anchor": 152.02,
         "close": 160.01,
         "d": 2.141808206263767,
-        "dd120": -0.18337246095743598,
-        "dd252": -0.5551447079429509,
+        "dd120": -0.5799224252322139,
+        "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
+        "dd252": -0.5618685140056405,
+        "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
         "dk3_pre_r1": false,
         "ema50": 133.5172440332711,
         "hl_date": "2026-09-30",
         "pool": true,
         "rs20": 0.05785315088330867,
         "rs60": 0.6444332595202791,
-        "rvol20": 1.4146707561355236
+        "rvol20": 1.4146707561355236,
+        "trigger_date": null
       },
       "event_status": "CLEAN_DISCOVERY",
       "mixed_rs_pass": true,
@@ -1676,9 +1877,17 @@
     },
     "MU": {
       "A": {
+        "A": 72.75358738525377,
+        "P": 984.0,
+        "anchor": 844.62,
+        "d": 1.9157818192790663,
+        "depth": 1.1595304511004596,
+        "hl_date": "2026-08-11",
         "pool": false,
-        "reason": "SH_AGE",
-        "sessions_since_confirm": 39
+        "prelow_near_hl": false,
+        "sessions_since_confirm": 6,
+        "sh_date": "2026-08-05",
+        "trigger_date": "2026-08-17"
       },
       "B": {
         "pool": false,
@@ -1706,6 +1915,7 @@
         "hl_date": "2026-09-28",
         "pool": false,
         "prelow_near_hl": true,
+        "sessions_since_confirm": 4,
         "sh_date": "2026-09-24",
         "trigger_date": "2026-10-02"
       },
@@ -1719,15 +1929,18 @@
         "anchor": 228.38,
         "close": 242.81,
         "d": 1.2946098951270437,
-        "dd120": -0.1530573092887788,
-        "dd252": -0.1530573092887788,
+        "dd120": -0.48299557012801286,
+        "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
+        "dd252": -0.1902554525445208,
+        "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
         "dk3_pre_r1": false,
-        "ema50": 222.89166277489738,
+        "ema50": 222.89166274707466,
         "hl_date": "2026-09-28",
         "pool": true,
         "rs20": 0.10370533827893258,
         "rs60": 0.0836757255046483,
-        "rvol20": 0.9146407801501584
+        "rvol20": 0.9146407801501584,
+        "trigger_date": null
       },
       "event_status": "CLEAN_DISCOVERY",
       "mixed_rs_pass": true,
@@ -1739,9 +1952,17 @@
     },
     "NDSN": {
       "A": {
+        "A": 6.644879408093759,
+        "P": 310.555,
+        "anchor": 292.97,
+        "d": 2.6463986658028236,
+        "depth": 1.5831589038600524,
+        "hl_date": "2026-07-31",
         "pool": false,
-        "reason": "SH_AGE",
-        "sessions_since_confirm": 45
+        "prelow_near_hl": false,
+        "sessions_since_confirm": 4,
+        "sh_date": "2026-07-28",
+        "trigger_date": "2026-08-05"
       },
       "B": {
         "pool": false,
@@ -1762,7 +1983,8 @@
     "NICE": {
       "A": {
         "pool": false,
-        "reason": "NO_REVERSAL"
+        "reason": "NO_REVERSAL",
+        "sessions_since_confirm": 5
       },
       "B": {
         "pool": false,
@@ -1774,15 +1996,18 @@
         "anchor": 105.66,
         "close": 113.9,
         "d": 4.372164196582617,
-        "dd120": -0.08887289016878652,
-        "dd252": -0.17589175891758924,
+        "dd120": -0.3348532117430605,
+        "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
+        "dd252": -0.19279225137257205,
+        "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
         "dk3_pre_r1": false,
         "ema50": 105.2754015148413,
         "hl_date": "2026-09-29",
         "pool": true,
         "rs20": 0.006843498748983379,
         "rs60": 0.12307039363530059,
-        "rvol20": 1.0036005092992077
+        "rvol20": 1.0036005092992077,
+        "trigger_date": null
       },
       "event_status": "CLEAN_DISCOVERY",
       "mixed_rs_pass": true,
@@ -1794,16 +2019,17 @@
     },
     "NTAP": {
       "A": {
-        "A": 7.749436974679946,
-        "P": 215.215,
+        "A": 7.894594573695067,
+        "P": 201.39,
         "anchor": 190.89,
-        "d": 3.138937716311274,
-        "depth": 1.283964245726504,
+        "d": 1.3300239679167556,
+        "depth": 1.2603560457877847,
         "hl_date": "2026-09-22",
         "pool": false,
-        "prelow_near_hl": false,
+        "prelow_near_hl": true,
+        "sessions_since_confirm": 3,
         "sh_date": "2026-09-21",
-        "trigger_date": "2026-10-02"
+        "trigger_date": "2026-09-28"
       },
       "B": {
         "pool": false,
@@ -1823,16 +2049,17 @@
     },
     "NTNX": {
       "A": {
-        "A": 2.0625352788448623,
-        "P": 71.97,
+        "A": 2.058114915679082,
+        "P": 71.25,
         "anchor": 66.25,
-        "d": 2.773285896570713,
-        "depth": 2.341778125950444,
+        "d": 2.4294075913395887,
+        "depth": 2.346807733234042,
         "hl_date": "2026-09-28",
         "pool": false,
         "prelow_near_hl": false,
+        "sessions_since_confirm": 5,
         "sh_date": "2026-09-22",
-        "trigger_date": "2026-10-02"
+        "trigger_date": "2026-10-01"
       },
       "B": {
         "pool": false,
@@ -1852,9 +2079,17 @@
     },
     "NTRA": {
       "A": {
+        "A": 11.086529896463043,
+        "P": 343.0,
+        "anchor": 320.65,
+        "d": 2.015959926931725,
+        "depth": 1.012940938677552,
+        "hl_date": "2026-09-10",
         "pool": false,
-        "reason": "SH_AGE",
-        "sessions_since_confirm": 15
+        "prelow_near_hl": true,
+        "sessions_since_confirm": 2,
+        "sh_date": "2026-09-09",
+        "trigger_date": "2026-09-15"
       },
       "B": {
         "pool": false,
@@ -1874,29 +2109,40 @@
     },
     "NTSK": {
       "A": {
+        "A": 0.9580624929158165,
+        "P": 15.1,
+        "anchor": 13.31,
+        "d": 1.8683541138868942,
+        "depth": 2.4319916677969085,
+        "hl_date": "2026-09-08",
         "pool": false,
-        "reason": "SH_AGE",
-        "sessions_since_confirm": 18
+        "prelow_near_hl": false,
+        "sessions_since_confirm": 4,
+        "sh_date": "2026-09-03",
+        "trigger_date": "2026-09-14"
       },
       "B": {
         "pool": false,
         "reason": "NOT_B_STAGE1"
       },
       "D": {
-        "A": 0.9545271980344688,
+        "A": 0.9545271975877336,
         "P": 15.64,
         "anchor": 13.31,
         "close": 17.75,
-        "d": 2.4409990671799187,
-        "dd120": -0.0441572428648358,
-        "dd252": -0.26834295136026387,
+        "d": 2.4409990683223484,
+        "dd120": -0.3413685847589424,
+        "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
+        "dd252": -0.28943154523618897,
+        "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
         "dk3_pre_r1": false,
-        "ema50": 15.500607850857229,
+        "ema50": 15.500749681377702,
         "hl_date": "2026-09-08",
         "pool": true,
         "rs20": 0.18510275563706635,
         "rs60": 0.37900305222991415,
-        "rvol20": 0.7655708952903961
+        "rvol20": 0.7655708952903961,
+        "trigger_date": null
       },
       "event_status": "CLEAN_DISCOVERY",
       "mixed_rs_pass": true,
@@ -1916,6 +2162,7 @@
         "hl_date": "2026-09-24",
         "pool": false,
         "prelow_near_hl": false,
+        "sessions_since_confirm": 6,
         "sh_date": "2026-09-22",
         "trigger_date": "2026-10-02"
       },
@@ -1928,6 +2175,7 @@
         "close": 233.95,
         "pool": true,
         "rvol20": 1.3510943660731098,
+        "trigger_date": null,
         "window": 5
       },
       "D": {
@@ -1944,14 +2192,15 @@
     },
     "OKTA": {
       "A": {
-        "A": 9.723276772578723,
+        "A": 9.808913447392468,
         "P": 212.39,
         "anchor": 190.5,
-        "d": 2.251298663196904,
-        "depth": 2.262611721805935,
+        "d": 2.2316437103254354,
+        "depth": 2.242858000327072,
         "hl_date": "2026-09-28",
         "pool": false,
         "prelow_near_hl": false,
+        "sessions_since_confirm": 3,
         "sh_date": "2026-09-24",
         "trigger_date": "2026-10-01"
       },
@@ -1973,9 +2222,17 @@
     },
     "OLLI": {
       "A": {
+        "A": 3.464499659971675,
+        "P": 78.35,
+        "anchor": 73.17,
+        "d": 1.4951653942556147,
+        "depth": 1.4836197155354964,
+        "hl_date": "2026-09-16",
         "pool": false,
-        "reason": "SH_AGE",
-        "sessions_since_confirm": 12
+        "prelow_near_hl": true,
+        "sessions_since_confirm": 3,
+        "sh_date": "2026-09-14",
+        "trigger_date": "2026-09-21"
       },
       "B": {
         "A": 3.1155406565158623,
@@ -1986,6 +2243,7 @@
         "close": 88.055,
         "pool": true,
         "rvol20": 0.9261747625274394,
+        "trigger_date": null,
         "window": 5
       },
       "D": {
@@ -1994,15 +2252,18 @@
         "anchor": 73.17,
         "close": 88.055,
         "d": 1.649793909525838,
-        "dd120": -0.07534390423185966,
-        "dd252": -0.33718479488144515,
+        "dd120": -0.35020476740522943,
+        "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
+        "dd252": -0.33932322929171665,
+        "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
         "dk3_pre_r1": false,
         "ema50": 78.17554311242009,
         "hl_date": "2026-09-16",
         "pool": true,
         "rs20": 0.14406912852425036,
         "rs60": 0.3334192487822474,
-        "rvol20": 0.9261747625274394
+        "rvol20": 0.9261747625274394,
+        "trigger_date": null
       },
       "event_status": "CLEAN_DISCOVERY",
       "mixed_rs_pass": true,
@@ -2022,6 +2283,7 @@
         "hl_date": "2026-09-28",
         "pool": false,
         "prelow_near_hl": false,
+        "sessions_since_confirm": 4,
         "sh_date": "2026-09-24",
         "trigger_date": "2026-10-02"
       },
@@ -2064,16 +2326,17 @@
     },
     "PI": {
       "A": {
-        "A": 7.397348078616383,
-        "P": 185.725,
+        "A": 7.364067161586875,
+        "P": 183.37,
         "anchor": 172.4,
-        "d": 1.8013212111133112,
-        "depth": 1.927717858947529,
+        "d": 1.489665935859836,
+        "depth": 1.936429922093095,
         "hl_date": "2026-09-24",
         "pool": false,
-        "prelow_near_hl": false,
+        "prelow_near_hl": true,
+        "sessions_since_confirm": 5,
         "sh_date": "2026-09-22",
-        "trigger_date": "2026-10-02"
+        "trigger_date": "2026-10-01"
       },
       "B": {
         "A": 7.397348078616383,
@@ -2084,6 +2347,7 @@
         "close": 189.61,
         "pool": true,
         "rvol20": 1.330393640498407,
+        "trigger_date": null,
         "window": 10
       },
       "D": {
@@ -2092,15 +2356,18 @@
         "anchor": 172.4,
         "close": 189.61,
         "d": 1.927717858947529,
-        "dd120": 0.0,
-        "dd252": -0.21619610598983086,
+        "dd120": -0.24229323308270667,
+        "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
+        "dd252": -0.23254547919866753,
+        "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
         "dk3_pre_r1": true,
         "ema50": 168.7626591000357,
         "hl_date": "2026-09-24",
         "pool": true,
         "rs20": 0.036709533029966934,
         "rs60": 0.2670172009159848,
-        "rvol20": 1.330393640498407
+        "rvol20": 1.330393640498407,
+        "trigger_date": "2026-10-02"
       },
       "event_status": "CLEAN_DISCOVERY",
       "mixed_rs_pass": true,
@@ -2113,7 +2380,8 @@
     "PLTR": {
       "A": {
         "pool": false,
-        "reason": "NO_REVERSAL"
+        "reason": "NO_REVERSAL",
+        "sessions_since_confirm": 4
       },
       "B": {
         "A": 6.254286255152506,
@@ -2124,6 +2392,7 @@
         "close": 188.75,
         "pool": true,
         "rvol20": 0.8151255891728094,
+        "trigger_date": null,
         "window": 5
       },
       "D": {
@@ -2154,15 +2423,18 @@
         "anchor": 175.97,
         "close": 184.87,
         "d": 0.888564459802007,
-        "dd120": -0.2635248187395427,
-        "dd252": -0.2635248187395427,
+        "dd120": -0.411959206437734,
+        "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
+        "dd252": -0.2887426900584795,
+        "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
         "dk3_pre_r1": false,
         "ema50": 179.2739670197987,
         "hl_date": "2026-09-18",
         "pool": true,
         "rs20": 0.05000884219036017,
         "rs60": -0.06659205198376472,
-        "rvol20": 0.8476176743179634
+        "rvol20": 0.8476176743179634,
+        "trigger_date": null
       },
       "event_status": "CLEAN_DISCOVERY",
       "mixed_rs_pass": false,
@@ -2174,9 +2446,17 @@
     },
     "QLYS": {
       "A": {
+        "A": 4.6981953054453,
+        "P": 113.78,
+        "anchor": 106.75,
+        "d": 1.4963192338666922,
+        "depth": 1.5644304934452598,
+        "hl_date": "2026-06-08",
         "pool": false,
-        "reason": "SH_AGE",
-        "sessions_since_confirm": 81
+        "prelow_near_hl": true,
+        "sessions_since_confirm": 5,
+        "sh_date": "2026-06-04",
+        "trigger_date": "2026-06-15"
       },
       "B": {
         "pool": false,
@@ -2218,9 +2498,17 @@
     },
     "RGEN": {
       "A": {
+        "A": 7.720431220451112,
+        "P": 149.97,
+        "anchor": 139.3975,
+        "d": 1.3694183262709294,
+        "depth": 1.8914098944782458,
+        "hl_date": "2026-07-31",
         "pool": false,
-        "reason": "SH_AGE",
-        "sessions_since_confirm": 45
+        "prelow_near_hl": true,
+        "sessions_since_confirm": 4,
+        "sh_date": "2026-07-28",
+        "trigger_date": "2026-08-05"
       },
       "B": {
         "pool": false,
@@ -2252,6 +2540,7 @@
         "close": 152.39,
         "pool": true,
         "rvol20": 0.7578509023489083,
+        "trigger_date": null,
         "window": 5
       },
       "D": {
@@ -2268,19 +2557,28 @@
     },
     "SAIL": {
       "A": {
+        "A": 1.2472832919855237,
+        "P": 21.76,
+        "anchor": 19.37,
+        "d": 1.9161645276234003,
+        "depth": 1.150500459054216,
+        "hl_date": "2026-09-18",
         "pool": false,
-        "reason": "SH_AGE",
-        "sessions_since_confirm": 9
+        "prelow_near_hl": true,
+        "sessions_since_confirm": 3,
+        "sh_date": "2026-09-17",
+        "trigger_date": "2026-09-24"
       },
       "B": {
-        "A": 1.1682229844714824,
+        "A": 1.1682229844714662,
         "P": 22.25,
         "anchor": 19.89,
-        "b": 2.0201622732732747,
+        "b": 2.0201622732733027,
         "breakout_confirmed": false,
         "close": 20.43,
         "pool": true,
         "rvol20": 1.2384745948537799,
+        "trigger_date": null,
         "window": 5
       },
       "D": {
@@ -2297,14 +2595,15 @@
     },
     "SDGR": {
       "A": {
-        "A": 1.8027283133616796,
+        "A": 1.7570695231886932,
         "P": 30.6,
         "anchor": 27.69,
-        "d": 1.614219945640899,
-        "depth": 2.1660501868517454,
+        "d": 1.656166680712208,
+        "depth": 2.2223366511494937,
         "hl_date": "2026-09-25",
         "pool": false,
         "prelow_near_hl": true,
+        "sessions_since_confirm": 4,
         "sh_date": "2026-09-22",
         "trigger_date": "2026-09-30"
       },
@@ -2338,6 +2637,7 @@
         "close": 280.5,
         "pool": true,
         "rvol20": 0.9119621305812614,
+        "trigger_date": null,
         "window": 10
       },
       "D": {
@@ -2346,15 +2646,18 @@
         "anchor": 265.0,
         "close": 280.5,
         "d": 1.413434900169912,
-        "dd120": -0.1674087266251113,
-        "dd252": -0.1674087266251113,
+        "dd120": -0.37761947165330956,
+        "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
+        "dd252": -0.20985915492957752,
+        "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
         "dk3_pre_r1": false,
         "ema50": 263.8010508290819,
         "hl_date": "2026-09-24",
         "pool": true,
         "rs20": 0.13941015284214653,
         "rs60": -0.16530472879282276,
-        "rvol20": 0.9119621305812614
+        "rvol20": 0.9119621305812614,
+        "trigger_date": null
       },
       "event_status": "CLEAN_DISCOVERY",
       "mixed_rs_pass": false,
@@ -2380,15 +2683,18 @@
         "anchor": 39.85,
         "close": 43.69,
         "d": 0.26546403955805625,
-        "dd120": -0.1291608530994619,
-        "dd252": -0.25545330606680305,
+        "dd120": -0.5250149491728124,
+        "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
+        "dd252": -0.25671997277985714,
+        "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
         "dk3_pre_r1": false,
         "ema50": 37.46057979649779,
         "hl_date": "2026-09-24",
         "pool": true,
         "rs20": 0.10457075749410238,
         "rs60": 0.4928144085522641,
-        "rvol20": 1.2837885829698257
+        "rvol20": 1.2837885829698257,
+        "trigger_date": null
       },
       "event_status": "CLEAN_DISCOVERY",
       "mixed_rs_pass": true,
@@ -2400,16 +2706,17 @@
     },
     "SMTC": {
       "A": {
-        "A": 11.367105233599432,
-        "P": 188.35,
+        "A": 11.215344097722465,
+        "P": 183.18,
         "anchor": 162.561,
-        "d": 2.268739443334406,
-        "depth": 2.4701979459997196,
+        "d": 1.838463431914422,
+        "depth": 2.5036235852720803,
         "hl_date": "2026-09-24",
         "pool": false,
         "prelow_near_hl": false,
+        "sessions_since_confirm": 6,
         "sh_date": "2026-09-21",
-        "trigger_date": "2026-10-02"
+        "trigger_date": "2026-10-01"
       },
       "B": {
         "pool": false,
@@ -2429,9 +2736,17 @@
     },
     "SWKS": {
       "A": {
+        "A": 2.8455453272194715,
+        "P": 67.84,
+        "anchor": 64.47,
+        "d": 1.184307263624932,
+        "depth": 1.2774352828714033,
+        "hl_date": "2026-08-28",
         "pool": false,
-        "reason": "SH_AGE",
-        "sessions_since_confirm": 23
+        "prelow_near_hl": true,
+        "sessions_since_confirm": 2,
+        "sh_date": "2026-08-27",
+        "trigger_date": "2026-09-02"
       },
       "B": {
         "pool": false,
@@ -2451,9 +2766,17 @@
     },
     "TEAM": {
       "A": {
+        "A": 9.156395868055787,
+        "P": 192.87,
+        "anchor": 160.962,
+        "d": 3.484777248580796,
+        "depth": 1.8476702235016267,
+        "hl_date": "2026-08-26",
         "pool": false,
-        "reason": "SH_AGE",
-        "sessions_since_confirm": 28
+        "prelow_near_hl": false,
+        "sessions_since_confirm": 8,
+        "sh_date": "2026-08-20",
+        "trigger_date": "2026-09-03"
       },
       "B": {
         "pool": false,
@@ -2474,7 +2797,8 @@
     "TECH": {
       "A": {
         "pool": false,
-        "reason": "NO_REVERSAL"
+        "reason": "NO_REVERSAL",
+        "sessions_since_confirm": 2
       },
       "B": {
         "pool": false,
@@ -2507,15 +2831,18 @@
         "anchor": 74.81,
         "close": 76.63,
         "d": 1.3920772183157426,
-        "dd120": -0.09931828866948755,
-        "dd252": -0.25782082324455213,
+        "dd120": -0.3254870129870131,
+        "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
+        "dd252": -0.26543328220858897,
+        "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
         "dk3_pre_r1": false,
-        "ema50": 66.70122333927291,
+        "ema50": 66.70122333641794,
         "hl_date": "2026-09-24",
         "pool": true,
         "rs20": 0.13467092659630397,
         "rs60": 0.20229814115959122,
-        "rvol20": 0.9265611104152378
+        "rvol20": 0.9265611104152378,
+        "trigger_date": null
       },
       "event_status": "CLEAN_DISCOVERY",
       "mixed_rs_pass": true,
@@ -2549,9 +2876,17 @@
     },
     "TRMD": {
       "A": {
+        "A": 0.9927165223614052,
+        "P": 32.74,
+        "anchor": 29.925,
+        "d": 2.835653418262723,
+        "depth": 2.63418603508242,
+        "hl_date": "2026-08-26",
         "pool": false,
-        "reason": "SH_AGE",
-        "sessions_since_confirm": 27
+        "prelow_near_hl": false,
+        "sessions_since_confirm": 4,
+        "sh_date": "2026-08-21",
+        "trigger_date": "2026-08-31"
       },
       "B": {
         "pool": false,
@@ -2616,7 +2951,8 @@
     "ULTA": {
       "A": {
         "pool": false,
-        "reason": "NO_REVERSAL"
+        "reason": "NO_REVERSAL",
+        "sessions_since_confirm": 6
       },
       "B": {
         "pool": false,
@@ -2628,15 +2964,18 @@
         "anchor": 534.05,
         "close": 543.69,
         "d": 2.0184421732613247,
-        "dd120": -0.049891653851530715,
-        "dd252": -0.23079426162247807,
+        "dd120": -0.21230602544386967,
+        "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
+        "dd252": -0.23956239276646474,
+        "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
         "dk3_pre_r1": false,
         "ema50": 532.8030235144357,
         "hl_date": "2026-09-28",
         "pool": true,
         "rs20": -0.06563364234846569,
         "rs60": 0.13987033155740858,
-        "rvol20": 0.7322525159638564
+        "rvol20": 0.7322525159638564,
+        "trigger_date": null
       },
       "event_status": "CLEAN_DISCOVERY",
       "mixed_rs_pass": false,
@@ -2661,15 +3000,18 @@
         "anchor": 176.76,
         "close": 308.9,
         "d": 1.3538385202356928,
-        "dd120": -0.18663436726525884,
-        "dd252": -0.18663436726525884,
+        "dd120": -0.5366001369213755,
+        "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
+        "dd252": -0.192734875212335,
+        "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
         "dk3_pre_r1": true,
         "ema50": 237.8140188121323,
         "hl_date": "2026-09-15",
         "pool": true,
         "rs20": 0.6544527335546584,
         "rs60": 0.07436772265274882,
-        "rvol20": 1.4167784749169092
+        "rvol20": 1.4167784749169092,
+        "trigger_date": "2026-10-02"
       },
       "event_status": "CLEAN_DISCOVERY",
       "mixed_rs_pass": true,
@@ -2681,9 +3023,17 @@
     },
     "VRNS": {
       "A": {
+        "A": 2.162354126699202,
+        "P": 45.98,
+        "anchor": 40.89,
+        "d": 2.3539160108662673,
+        "depth": 1.9330783743459732,
+        "hl_date": "2026-09-02",
         "pool": false,
-        "reason": "SH_AGE",
-        "sessions_since_confirm": 23
+        "prelow_near_hl": false,
+        "sessions_since_confirm": 6,
+        "sh_date": "2026-08-27",
+        "trigger_date": "2026-09-09"
       },
       "B": {
         "pool": false,
@@ -2695,15 +3045,18 @@
         "anchor": 40.89,
         "close": 47.57,
         "d": 2.1735862410838807,
-        "dd120": -0.01826436900216688,
-        "dd252": -0.24861791186226512,
+        "dd120": -0.17140485577920728,
+        "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
+        "dd252": -0.25555555555555554,
+        "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
         "dk3_pre_r1": false,
         "ema50": 44.753805912398484,
         "hl_date": "2026-09-02",
         "pool": true,
         "rs20": -0.02074992426490596,
         "rs60": 0.0019852432941287468,
-        "rvol20": 0.5940405290500442
+        "rvol20": 0.5940405290500442,
+        "trigger_date": null
       },
       "event_status": "CLEAN_DISCOVERY",
       "mixed_rs_pass": false,
@@ -2738,7 +3091,8 @@
     "WBD": {
       "A": {
         "pool": false,
-        "reason": "NO_REVERSAL"
+        "reason": "NO_REVERSAL",
+        "sessions_since_confirm": 7
       },
       "B": {
         "A": 0.3566973972080563,
@@ -2749,6 +3103,7 @@
         "close": 30.94,
         "pool": true,
         "rvol20": 2.095769091224154,
+        "trigger_date": null,
         "window": 5
       },
       "D": {
@@ -2765,9 +3120,17 @@
     },
     "WDAY": {
       "A": {
+        "A": 11.613897967420664,
+        "P": 195.7799,
+        "anchor": 173.165,
+        "d": 1.947227370469362,
+        "depth": 1.0896427741572932,
+        "hl_date": "2026-08-12",
         "pool": false,
-        "reason": "SH_AGE",
-        "sessions_since_confirm": 36
+        "prelow_near_hl": false,
+        "sessions_since_confirm": 5,
+        "sh_date": "2026-08-10",
+        "trigger_date": "2026-08-19"
       },
       "B": {
         "pool": false,
@@ -2779,15 +3142,18 @@
         "anchor": 173.165,
         "close": 186.14,
         "d": 1.5825492440189908,
-        "dd120": -0.10042528513435145,
-        "dd252": -0.2423169292139863,
+        "dd120": -0.28105323411562666,
+        "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
+        "dd252": -0.24761519805982224,
+        "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
         "dk3_pre_r1": false,
         "ema50": 181.8541611365503,
         "hl_date": "2026-08-12",
         "pool": true,
         "rs20": -0.1387206360660238,
         "rs60": 0.29831598471395715,
-        "rvol20": 0.6794767721965932
+        "rvol20": 0.6794767721965932,
+        "trigger_date": null
       },
       "event_status": "CLEAN_DISCOVERY",
       "mixed_rs_pass": false,
@@ -2811,6 +3177,7 @@
         "close": 72.62,
         "pool": true,
         "rvol20": 0.702000635273944,
+        "trigger_date": null,
         "window": 5
       },
       "D": {
@@ -2819,15 +3186,18 @@
         "anchor": 59.195,
         "close": 72.62,
         "d": 1.8567269134535382,
-        "dd120": -0.1782743988684582,
-        "dd252": -0.5273981517636339,
+        "dd120": -0.49838709677419357,
+        "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
+        "dd252": -0.548214507900958,
+        "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
         "dk3_pre_r1": false,
         "ema50": 73.01144557528887,
         "hl_date": "2026-08-07",
         "pool": true,
         "rs20": -0.14373731719976657,
         "rs60": 0.4230713201559131,
-        "rvol20": 0.702000635273944
+        "rvol20": 0.702000635273944,
+        "trigger_date": null
       },
       "event_status": "CLEAN_DISCOVERY",
       "mixed_rs_pass": false,
@@ -2869,6 +3239,7 @@
         "hl_date": "2026-09-28",
         "pool": false,
         "prelow_near_hl": false,
+        "sessions_since_confirm": 5,
         "sh_date": "2026-09-23",
         "trigger_date": "2026-10-02"
       },
@@ -2890,9 +3261,17 @@
     },
     "ZBRA": {
       "A": {
+        "A": 11.24875132605875,
+        "P": 349.99,
+        "anchor": 338.665,
+        "d": 1.0067784122638217,
+        "depth": 1.6090674845011177,
+        "hl_date": "2026-09-16",
         "pool": false,
-        "reason": "SH_AGE",
-        "sessions_since_confirm": 13
+        "prelow_near_hl": true,
+        "sessions_since_confirm": 4,
+        "sh_date": "2026-09-11",
+        "trigger_date": "2026-09-21"
       },
       "B": {
         "pool": false,
@@ -2913,7 +3292,8 @@
     "ZS": {
       "A": {
         "pool": false,
-        "reason": "NO_REVERSAL"
+        "reason": "NO_REVERSAL",
+        "sessions_since_confirm": 4
       },
       "B": {
         "pool": false,
@@ -2925,15 +3305,18 @@
         "anchor": 187.6705,
         "close": 196.6,
         "d": 3.04733695718709,
-        "dd120": -0.08404770778978754,
-        "dd252": -0.41535075980610814,
+        "dd120": -0.32936078006500547,
+        "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
+        "dd252": -0.4165998991067984,
+        "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
         "dk3_pre_r1": false,
         "ema50": 180.87853384618086,
         "hl_date": "2026-09-28",
         "pool": true,
         "rs20": 0.05866500838519806,
         "rs60": 0.289437401239782,
-        "rvol20": 0.569124487363108
+        "rvol20": 0.569124487363108,
+        "trigger_date": null
       },
       "event_status": "CLEAN_DISCOVERY",
       "mixed_rs_pass": true,
