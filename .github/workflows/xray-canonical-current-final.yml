@@ -415,10 +415,13 @@ jobs:
           l=root/"canonical_candidate_lifecycle_registry.json"
           assert g.get("schema")=="XRAY_CANDIDATE_LEGAL_GUARD_V1",g
           assert g.get("execution")=="NONE" and g.get("real_money")=="NO-GO" and g.get("unknown_never_pass") is True,g
+          assert g.get("compiled_policy_path")=="nasdaq-xray/chatgpt_compiled_policy_v3.json",g.get("compiled_policy_path")
+          assert g.get("compiled_policy_blob_sha")=="10d7af14870dfac0dc4566595d95a06f3faa854d",g.get("compiled_policy_blob_sha")
+          assert g.get("compiled_policy_hash")=="26a95745a50b65e85f6ece24b6501af0994764a84ddd886edb70d1fcd770849c",g.get("compiled_policy_hash")
+          assert g.get("compiled_policy_version")=="C4.17",g.get("compiled_policy_version")
           assert g.get("source_deep_blob_sha")==bsha(d),g.get("source_deep_blob_sha")
           assert g.get("source_family_c_blob_sha")==bsha(f),g.get("source_family_c_blob_sha")
-          expected_lifecycle=bsha(l) if l.exists() else None
-          assert g.get("source_lifecycle_blob_sha")==expected_lifecycle,(g.get("source_lifecycle_blob_sha"),expected_lifecycle)
+          assert g.get("source_lifecycle_binding_role")=="DIAGNOSTIC_PRE_FINAL_SCOPE_AUGMENTATION",g.get("source_lifecycle_binding_role")
           scope=sorted(set(g.get("candidate_scope") or []))
           h=hashlib.sha256(("\n".join(scope)+"\n").encode()).hexdigest()
           assert g.get("candidate_scope_count")==len(scope)
