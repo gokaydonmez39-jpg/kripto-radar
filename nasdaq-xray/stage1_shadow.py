@@ -201,7 +201,8 @@ def recent_weekly_context(df,week_last,max_age=3):
 def process(sym,asof,week_last):
     try:
         x,history_source=load_history(sym,asof)
-        if x is None or x.empty:return sym,{"status":"UNKNOWN","reason":"SINA_EMPTY"}
+        if x is None or x.empty:
+            return sym,{"status":"UNKNOWN","reason":history_source or "SINA_EMPTY","history_source":history_source}
         x=x.reset_index(drop=True)
         if len(x)<260:return sym,{"status":"HISTORY_FAIL","reason":"DAILY_LT260","bars":len(x),"history_source":history_source}
 
@@ -305,7 +306,11 @@ def main():
       "notes":["C post-earnings family is evaluated later from official earnings/event evidence.","No setup signal or R92 registration is created here."]
     }
     OUT.write_text(json.dumps(out,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
-    print(json.dumps(dict({k:out[k] for k in ["input_current_core_count","weekly_pass_count","a_trend_pool_count","b_tight_base_pool_count","d_drawdown_pool_count","unknown_count"]},provider_max_inflight=PROVIDER_MAX_INFLIGHT,retry_delays=RETRY_DELAYS),sort_keys=True))
+    summary=dict({k:out[k] for k in ["input_current_core_count","weekly_pass_count","a_trend_pool_count","b_tight_base_pool_count","d_drawdown_pool_count","unknown_count"]},
+                 provider_max_inflight=PROVIDER_MAX_INFLIGHT,retry_delays=RETRY_DELAYS)
+    summary["unknown_symbols"]=sorted(unknown)
+    summary["unknown_reasons"]={s:results[s].get("reason") for s in sorted(unknown)}
+    print(json.dumps(summary,sort_keys=True))
 
 if __name__=="__main__":
     main()
