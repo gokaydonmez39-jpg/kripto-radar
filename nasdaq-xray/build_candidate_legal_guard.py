@@ -43,13 +43,14 @@ RISK_ITEMS={"1.01":"MATERIAL_DEFINITIVE_AGREEMENT",
             "3.02":"UNREGISTERED_SALE_OF_EQUITY",
             "5.01":"CHANGE_IN_CONTROL"}
 HARD_PHRASES={
-    "SUBSTANTIAL_DOUBT_GOING_CONCERN":("substantial doubt","going concern"),
-    "CHAPTER_11":"chapter 11",
-    "FILED_FOR_BANKRUPTCY":"filed for bankruptcy",
-    "EVENT_OF_DEFAULT":"event of default",
-    "NOTICE_OF_DELISTING":"notice of delisting",
+    "SUBSTANTIAL_DOUBT_GOING_CONCERN":"substantial doubt about our ability to continue as a going concern",
+    "FILED_CHAPTER_11":"filed a voluntary petition under chapter 11",
 }
 RISK_PHRASES={
+    "GOING_CONCERN_REFERENCE":"going concern",
+    "BANKRUPTCY_REFERENCE":"bankruptcy",
+    "EVENT_OF_DEFAULT_REFERENCE":"event of default",
+    "DELISTING_REFERENCE":"delisting",
     "ATM_OR_AT_THE_MARKET":"at-the-market",
     "SECONDARY_OFFERING":"secondary offering",
     "CONVERTIBLE_SECURITY":"convertible",
@@ -70,7 +71,7 @@ def scope_hash(symbols:list[str])->str:
     return hashlib.sha256(("\n".join(symbols)+"\n").encode()).hexdigest()
 
 
-def _fetch(url:str,limit:int=4_000_000,retries:int=3)->bytes:
+def _fetch(url:str,limit:int=15_000_000,retries:int=3)->bytes:
     last=None
     for attempt in range(retries):
         try:
