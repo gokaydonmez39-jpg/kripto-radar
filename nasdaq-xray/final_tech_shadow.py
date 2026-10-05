@@ -127,7 +127,7 @@ LIFECYCLE_WATCH_STATES={
 # backfilled historical triggers may never become prospective by mere persistence.
 LIFECYCLE_PERSIST_STATES=LIFECYCLE_WATCH_STATES | {
  "PRE_G9_TECH_PASS","WATCH_EVENT_UNKNOWN_OR_BLOCKED",
- "WATCH_MC_FALLBACK_CAP","WATCH_SYNTHETIC_PRICE_DISCOVERY_CAP"
+ "WATCH_MC_FALLBACK_CAP"
 }
 
 def lifecycle_state_persists(state):
@@ -280,7 +280,6 @@ def eval_one(sym,fam,g,df,event_status,state_cap="NORMAL",r92_eligible=True,froz
     synthetic_cap=bool(frozen.get("synthetic_target"))
 
     if hard_pass and mc_cap_blocks: result="WATCH_MC_FALLBACK_CAP"
-    elif hard_pass and synthetic_cap: result="WATCH_SYNTHETIC_PRICE_DISCOVERY_CAP"
     elif hard_pass: result="PRE_G9_TECH_PASS"
     elif historical_new and lifecycle not in {"INVALIDATED_S0","EXPIRED_RETEST_WINDOW","EXPIRED_HORIZON"}:
         result="WATCH_HISTORICAL_SETUP"
@@ -315,7 +314,9 @@ def eval_one(sym,fam,g,df,event_status,state_cap="NORMAL",r92_eligible=True,froz
             "severe":severe,"severe_threshold":th["severe"],"severe_pass":severe>=th["severe"]},
       "risk_pass":risk_pass,"extension_veto":extension_veto,"target_overlap":target_overlap,
       "technical_hard_pass":hard_pass,"state_cap":state_cap,"r92_eligible":bool(r92_eligible),
-      "pre_g9_tech_pass":bool(hard_pass and not mc_cap_blocks and not synthetic_cap),
+      "price_discovery_cap":synthetic_cap,
+      "research_tier_cap":"ORANGE" if synthetic_cap else None,
+      "pre_g9_tech_pass":bool(hard_pass and not mc_cap_blocks),
       "frozen_geometry":frozen,"authority":"C4_17_DETERMINISTIC_TECHNICAL"
     }
 
