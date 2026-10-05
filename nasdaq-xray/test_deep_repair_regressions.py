@@ -162,7 +162,8 @@ def test_workflow_race_and_pre_mc_freeze_contracts():
     s1=(ROOT/"stage1_shadow.py").read_text()
     reg=(ROOT/"regime_breadth_shadow.py").read_text()
     assert "SINA_SAME_RUN_CACHE_MISSING" in s1 and "HISTORY_CACHE_REQUIRED" in s1
-    assert "HISTORY_CACHE_REQUIRED and sym!=\"QQQ\"" in reg
+    assert "if HISTORY_CACHE_REQUIRED:" in reg
+    assert 'HISTORY_CACHE_REQUIRED and sym!="QQQ"' not in reg
 
     ftsrc=(ROOT/"final_tech_shadow.py").read_text()
     assert "CORPORATE_ACTION_RECONCILIATION_UNPROVEN_FOR_FINALISTS" in ftsrc
