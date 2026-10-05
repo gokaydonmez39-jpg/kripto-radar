@@ -12,8 +12,10 @@ from zoneinfo import ZoneInfo
 import akshare as ak
 import pandas as pd
 import pandas_market_calendars as mcal
+from alpha_semantics import split_consistent_history, apply_split_events, mechanical_scale_breaks
 
 ROOT=Path(__file__).resolve().parent
+STAGE1=Path(os.getenv("XRAY_REGIME_STAGE1", str(ROOT/"canonical_current_stage1.json")))
 MC=Path(os.getenv("XRAY_MC_STATE", str(ROOT/"mc_final_state.json")))
 OUT=Path(os.getenv("XRAY_REGIME_OUT", str(ROOT/"regime_breadth_shadow.json")))
 TASK_ID="6a825366222081918997094d76e6ae46"
@@ -147,6 +149,12 @@ def main():
     mc=json.loads(MC.read_text())
     syms=list(mc["current_core_mc_pass"])
     asof=mc["asof_et"]
+    st={}
+    if STAGE1.exists():
+        try:
+            qst=json.loads(STAGE1.read_text())
+            if qst.get("asof_et")==asof and qst.get("task_id")==TASK_ID:st=qst
+        except Exception:st={}
     data={};missing={};history_source={}
     with ThreadPoolExecutor(max_workers=WORKERS) as ex:
         futs={ex.submit(hist,s,asof):s for s in syms+["QQQ"]}
@@ -157,27 +165,44 @@ def main():
                 data[s]=x
                 history_source[s]=src
 
+    qqq_ca_status=None;qqq_split_events=[]
     if "QQQ" not in data:
-        regime="UNKNOWN"
-        q={}
+        regime="UNKNOWN";q={}
     else:
-        qdf=data["QQQ"]; c=qdf["close"]
-        sma50=c.rolling(50).mean(); sma200=c.rolling(200).mean()
-        slope20=float(sma50.iloc[-1]-sma50.iloc[-21]) if len(sma50)>=21 else float("nan")
-        qclose=float(c.iloc[-1])
-        q={
-          "close":qclose,"sma50":float(sma50.iloc[-1]),"sma200":float(sma200.iloc[-1]),
-          "sma50_slope20":slope20
-        }
-        regime="PENDING_BREADTH"
+        qdf,qqq_ca_status,qqq_split_events=split_consistent_history("QQQ",data["QQQ"])
+        if not str(qqq_ca_status).startswith("PASS"):
+            missing["QQQ"]="CORPORATE_ACTION_UNKNOWN:"+str(qqq_ca_status)
+            regime="UNKNOWN";q={}
+        else:
+            qdf=qdf.reset_index(drop=True);c=qdf["close"]
+            sma50=c.rolling(50).mean(); sma200=c.rolling(200).mean()
+            slope20=float(sma50.iloc[-1]-sma50.iloc[-21]) if len(sma50)>=21 else float("nan")
+            qclose=float(c.iloc[-1])
+            q={
+              "close":qclose,"sma50":float(sma50.iloc[-1]),"sma200":float(sma200.iloc[-1]),
+              "sma50_slope20":slope20
+            }
+            regime="PENDING_BREADTH"
 
     eligible=[s for s in syms if s in data]
     above50=0; nh20=0; nl20=0
     breadth_missing=[]
+    corporate_action_status_by_symbol={}
     for s in syms:
         x=data.get(s)
         if x is None:
             breadth_missing.append(s);continue
+        strow=(st.get("results") or {}).get(s) or {}
+        ca_status=strow.get("corporate_action_status")
+        split_events=strow.get("split_events") or []
+        breaks=mechanical_scale_breaks(x,260)
+        if split_events:
+            x=apply_split_events(x,split_events).reset_index(drop=True)
+        elif breaks and not str(ca_status).startswith("PASS"):
+            breadth_missing.append(s)
+            corporate_action_status_by_symbol[s]=ca_status or "UNKNOWN_SCALE_BREAK"
+            continue
+        corporate_action_status_by_symbol[s]=ca_status or ("PASS_NO_MECHANICAL_SCALE_BREAK" if not breaks else "PASS_VERIFIED")
         c=x["close"]
         if len(c)<200:
             breadth_missing.append(s);continue
@@ -205,6 +230,8 @@ def main():
       "breadth_missing_count":len(breadth_missing),"breadth_missing":sorted(breadth_missing),
       "qqq":q,"breadth_above_sma50_count":above50,"breadth_above_sma50_pct":breadth_pct,
       "nh20":nh20,"nl20":nl20,"regime":regime,
+      "qqq_corporate_action_status":qqq_ca_status,"qqq_split_events":qqq_split_events,
+      "corporate_action_status_by_symbol":corporate_action_status_by_symbol,
       "history_source_by_symbol":history_source,
       "history_source_counts":{
         "SINA_US_DAILY":sum(1 for v in history_source.values() if v=="SINA_US_DAILY"),
