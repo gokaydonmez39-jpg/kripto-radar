@@ -494,6 +494,57 @@ def yahoo_ohlcv(sym,asof):
     except Exception as e:
         return None,{"error":f"{type(e).__name__}:{str(e)[:160]}"}
 
+def _technical_cache_exact(sym,asof):
+    """True only when the same-run OHLCV transport cache contains exact ASOF."""
+    if not HISTORY_CACHE_DIR:
+        return True
+    p=_history_cache_path(sym)
+    if p is None or not p.exists():
+        return False
+    try:
+        x=pd.read_csv(p,compression="gzip")
+        cols={str(k).lower():k for k in x.columns};need=["date","open","high","low","close","volume"]
+        if any(k not in cols for k in need):
+            return False
+        x=x[[cols[k] for k in need]].copy();x.columns=need
+        x["date"]=pd.to_datetime(x["date"],errors="coerce")
+        x=x.dropna(subset=["date"])
+        x=x[x["date"]<=pd.Timestamp(asof)]
+        return bool(not x.empty and x["date"].dt.date.max().isoformat()==asof)
+    except Exception:
+        return False
+
+def _ensure_technical_cache(sym,asof):
+    """Hydrate exact-ASOF OHLCV for Stage1 without changing HISTORY authority."""
+    if not HISTORY_CACHE_DIR:
+        return True,{"status":"CACHE_DISABLED"}
+    if _technical_cache_exact(sym,asof):
+        return True,{"status":"PASS_EXISTING_EXACT_ASOF"}
+    df,meta=yahoo_ohlcv(sym,asof)
+    if df is not None and not df.empty:
+        _write_sina_cache(sym,df)
+    ok=_technical_cache_exact(sym,asof)
+    return ok,{
+      "status":"PASS_YAHOO_EXACT_ASOF_HYDRATED" if ok else "UNKNOWN_EXACT_ASOF_OHLCV_CACHE",
+      "source":"YAHOO_CHART_FREE_RAW_OHLCV",
+      "provider_meta":meta,
+    }
+
+def _history_pass(sym,asof,status,info,meta):
+    """Bind a hard-gate PASS to an exact same-run technical transport cache."""
+    ok,cache_meta=_ensure_technical_cache(sym,asof)
+    outmeta=dict(meta or {})
+    outmeta["technical_cache"]=cache_meta
+    if ok:
+        return sym,status,info,outmeta
+    return sym,"UNKNOWN_HISTORY",{
+      "reason":"TECHNICAL_CACHE_EXACT_ASOF_UNAVAILABLE",
+      "history_gate_would_pass":True,
+      "history_gate_status":status,
+      "history_gate_info":info,
+      "technical_cache":cache_meta,
+    },outmeta
+
 def eastmoney(sym,asof):
     """Fourth-source recovery for Nasdaq-only symbols.
 
@@ -533,20 +584,26 @@ def eval_one(sym,asof):
     if official_fail:
         return sym,"FAIL_HISTORY",official_fail,{"official_identity_registry":True}
     sb,sm=sina(sym,asof);ss,si=classify(sb,asof,"SINA_US_DAILY")
-    if ss=="PASS_HISTORY":return sym,ss,si,{"sina":sm}
+    if ss=="PASS_HISTORY":
+        return _history_pass(sym,asof,ss,si,{"sina":sm})
     nb,nm=nasdaq(sym,asof);ns,ni=classify(nb,asof,"NASDAQ_OFFICIAL_HISTORICAL_API")
-    if ns=="PASS_HISTORY":return sym,ns,ni,{"sina":sm,"nasdaq":nm}
+    if ns=="PASS_HISTORY":
+        return _history_pass(sym,asof,ns,ni,{"sina":sm,"nasdaq":nm})
     yb,ym=yahoo(sym,asof);ys,yi=classify(yb,asof,"YAHOO_CHART_FREE")
-    if ys=="PASS_HISTORY":return sym,ys,yi,{"sina":sm,"nasdaq":nm,"yahoo":ym}
+    if ys=="PASS_HISTORY":
+        return _history_pass(sym,asof,ys,yi,{"sina":sm,"nasdaq":nm,"yahoo":ym})
     comp=continuity_composite_pass(sym,asof,sb,si,yb,yi)
     if comp:
-        return sym,"PASS_HISTORY",comp,{"sina":sm,"nasdaq":nm,"yahoo":ym,"official_identity_registry":True}
+        return _history_pass(sym,asof,"PASS_HISTORY",comp,{"sina":sm,"nasdaq":nm,"yahoo":ym,"official_identity_registry":True})
     eb,em=eastmoney(sym,asof);es,ei=classify(eb,asof,"EASTMONEY_US_DAILY_NASDAQ_105")
-    if es=="PASS_HISTORY":return sym,es,ei,{"sina":sm,"nasdaq":nm,"yahoo":ym,"eastmoney":em}
+    if es=="PASS_HISTORY":
+        return _history_pass(sym,asof,es,ei,{"sina":sm,"nasdaq":nm,"yahoo":ym,"eastmoney":em})
 
     br=bridge_resolution(sym,asof,ss,si)
     if br is not None:
         bst,binfo=br
+        if bst=="PASS_HISTORY":
+            return _history_pass(sym,asof,bst,binfo,{"sina":sm,"nasdaq":nm,"yahoo":ym,"eastmoney":em,"history_bridge":HISTORY_BRIDGE_PATH})
         return sym,bst,binfo,{"sina":sm,"nasdaq":nm,"yahoo":ym,"eastmoney":em,"history_bridge":HISTORY_BRIDGE_PATH}
 
     # Recent-listing proof: two independent providers with the exact same
