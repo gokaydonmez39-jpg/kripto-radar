@@ -203,7 +203,9 @@ def week_count(by,asof):
     cal=mcal.get_calendar("NASDAQ")
     sched=cal.schedule(
         start_date=(first-timedelta(days=7)).isoformat(),
-        end_date=ad.isoformat(),
+        # Look past ASOF so a midweek ASOF cannot masquerade as that week's
+        # final official session merely because the calendar query was truncated.
+        end_date=(ad+timedelta(days=7)).isoformat(),
     )
     week_last={}
     for idx,_ in sched.iterrows():
