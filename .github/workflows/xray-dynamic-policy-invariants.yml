@@ -31,6 +31,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: xray-dynamic-policy-invariants
+  cancel-in-progress: true
+
 jobs:
   invariants:
     runs-on: ubuntu-latest
