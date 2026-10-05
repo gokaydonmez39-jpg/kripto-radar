@@ -16,6 +16,9 @@ from alpha_semantics import (
     ema_seeded,
     strict_swings as _policy_swings,
     drawdown_metrics,
+    tight_base_at,
+    find_recent_b_trigger,
+    mechanical_scale_breaks,
 )
 
 ROOT=Path(__file__).resolve().parent
@@ -129,27 +132,17 @@ def rvol20(df):
     return v/median(prev)
 
 def family_b(df):
-    Aser=atr14(df)
-    if Aser is None or pd.isna(Aser.iloc[-2]):return None
-    A=float(Aser.iloc[-2])
-    if not math.isfinite(A) or A<=0:return None
-    tr=pd.concat([(df.high-df.low).abs(),(df.high-df.close.shift(1)).abs(),(df.low-df.close.shift(1)).abs()],axis=1).max(axis=1)
-    passing=[]
-    for n in [5,10,15,20]:
-        if len(df)<n+26:continue
-        base=df.iloc[-(n+1):-1]
-        bh=float(base.high.max());bl=float(base.low.min())
-        b=(bh-bl)/A
-        last5=float(tr.iloc[-6:-1].mean());prev20=float(tr.iloc[-26:-6].mean())
-        if 0.30<=b<=2.05 and prev20>0 and last5<=0.8*prev20:
-            passing.append((n,bh,bl,b))
-    if not passing:return {"pool":False}
-    n,P,anchor,b=max(passing,key=lambda z:z[0])
-    rv=rvol20(df); close=float(df.close.iloc[-1])
-    confirmed=bool(close>P and rv is not None and rv>=1.5)
-    return {"pool":True,"window":n,"P":P,"anchor":anchor,"b":b,"A":A,"rvol20":rv,"close":close,
-            "breakout_confirmed":confirmed,
-            "trigger_date":df.date.iloc[-1].strftime("%Y-%m-%d") if confirmed else None}
+    # New triggers are discovered only in the current/previous three completed sessions,
+    # with the earliest valid trigger winning. This prevents a breakout from disappearing
+    # on the next day and forbids later cherry-picked trigger replacement.
+    recent=find_recent_b_trigger(df,3)
+    if recent:
+        return {"pool":True,**recent}
+    # No recent trigger: current completed bar may still define an ARMED base.
+    t=len(df)-1
+    g=tight_base_at(df,t)
+    if not g:return {"pool":False}
+    return {"pool":True,**g,"breakout_confirmed":False,"trigger_date":None}
 
 def active_hl_and_sh(df):
     hs,ls=strict_swings(df)
@@ -171,29 +164,47 @@ def active_hl_and_sh(df):
     later_h=[i for i in hs if i>hl]
     return {"hl":hl,"prior_hs":prior_h,"later_hs":later_h,"hs":hs,"ls":ls}
 
-def family_d(df,rs20,rs60):
-    st=active_hl_and_sh(df)
-    if not st:return {"pool":False,"reason":"NO_ACTIVE_HL"}
-    hl=st["hl"]; prior=st["prior_hs"]
-    if not prior:return {"pool":False,"reason":"NO_MEANINGFUL_SH"}
-    sh=prior[-1]
-    P=float(df.high.iloc[sh]); anchor=float(df.low.iloc[hl])
-    Aser=atr14(df)
-    if Aser is None or pd.isna(Aser.iloc[-2]):return {"pool":False,"reason":"ATR"}
-    A=float(Aser.iloc[-2]); d=(P-anchor)/A if A>0 else None
-    c=df.close.astype(float); last=float(c.iloc[-1])
-    ema50s=ema_seeded(c,50)
-    if pd.isna(ema50s.iloc[-1]):return {"pool":False,"reason":"EMA50"}
-    ema50=float(ema50s.iloc[-1])
-    rv=rvol20(df)
-    dd=drawdown_metrics(df)
-    dd252=dd["current_drawdown_252"];dd120=dd["max_drawdown_close_120"]
-    pool=bool(dd252<=-0.15 or dd120<=-0.20)
-    reclaim=bool(pool and d is not None and 0.30<=d<=2.05 and last>P and last>ema50 and rs20 is not None and rs60 is not None and rs20>0 and rs60>0 and rv is not None and rv>=1.2)
-    return {"pool":pool,"hl_date":df.date.iloc[hl].strftime("%Y-%m-%d"),"P":P,"anchor":anchor,"A":A,"d":d,"close":last,"ema50":ema50,"rs20":rs20,"rs60":rs60,"rvol20":rv,
-            "dd252":dd252,"dd120":dd120,"dd252_definition":"CURRENT_CLOSE_VS_MAX_HIGH_252",
-            "dd120_definition":"MAX_DRAWDOWN_CLOSE_120","dk3_pre_r1":reclaim,
-            "trigger_date":df.date.iloc[-1].strftime("%Y-%m-%d") if reclaim else None}
+def family_d(df,qqq):
+    # Evaluate the earliest valid reclaim in today/prior three completed sessions.
+    # Every structural/RS/ATR input is sliced at that candidate trigger, preventing
+    # current-day look-ahead from manufacturing or replacing a historical trigger.
+    last_idx=len(df)-1
+    diagnostic=None
+    for t in range(max(0,last_idx-3),last_idx+1):
+        x=df.iloc[:t+1].reset_index(drop=True)
+        q=qqq[qqq.date<=x.date.iloc[-1]].reset_index(drop=True)
+        st=active_hl_and_sh(x)
+        if not st:continue
+        hl=st["hl"];prior=st["prior_hs"]
+        if not prior:continue
+        sh=prior[-1];P=float(x.high.iloc[sh]);anchor=float(x.low.iloc[hl])
+        Aser=atr14(x)
+        if Aser is None or t<1 or pd.isna(Aser.iloc[-2]):continue
+        A=float(Aser.iloc[-2]);d=(P-anchor)/A if A>0 else None
+        cc=x.close.astype(float);close=float(cc.iloc[-1])
+        ema50s=ema_seeded(cc,50)
+        if pd.isna(ema50s.iloc[-1]):continue
+        ema50=float(ema50s.iloc[-1]);rv=rvol20(x)
+        rs20=common_rs(x,q,20);rs60=common_rs(x,q,60)
+        dd=drawdown_metrics(x);dd252=dd["current_drawdown_252"];dd120=dd["max_drawdown_close_120"]
+        pool=bool(dd252<=-0.15 or dd120<=-0.20)
+        g={"pool":pool,"hl_date":x.date.iloc[hl].strftime("%Y-%m-%d"),"P":P,"anchor":anchor,
+           "A":A,"d":d,"close":close,"ema50":ema50,"rs20":rs20,"rs60":rs60,"rvol20":rv,
+           "dd252":dd252,"dd120":dd120,"dd252_definition":"CURRENT_CLOSE_VS_MAX_HIGH_252",
+           "dd120_definition":"MAX_DRAWDOWN_CLOSE_120","trigger_date":x.date.iloc[-1].strftime("%Y-%m-%d"),
+           "trigger_age_sessions":last_idx-t}
+        diagnostic=g
+        reclaim=bool(pool and d is not None and 0.30<=d<=2.05 and close>P and close>ema50
+                     and rs20 is not None and rs60 is not None and rs20>0 and rs60>0
+                     and rv is not None and rv>=1.2)
+        if reclaim:
+            g["dk3_pre_r1"]=True
+            return g
+    if diagnostic is not None:
+        diagnostic["dk3_pre_r1"]=False
+        diagnostic["trigger_date"]=None
+        return diagnostic
+    return {"pool":False,"reason":"NO_RECENT_VALID_D_STRUCTURE","dk3_pre_r1":False,"trigger_date":None}
 
 def family_a(df):
     st=active_hl_and_sh(df)
@@ -264,13 +275,16 @@ def main():
         mix_pass=True if GEOMETRY_ONLY else (bool(rs20 is not None and rs60 is not None and rs20>0 and rs60>0) if rg.get("regime")=="MIXED" else True)
         A=family_a(x) if s in st["a_trend_pool"] else {"pool":False,"reason":"NOT_A_STAGE1"}
         B=family_b(x) if s in st["b_tight_base_pool"] else {"pool":False,"reason":"NOT_B_STAGE1"}
-        D=family_d(x,rs20,rs60) if s in st["d_drawdown_pool"] else {"pool":False,"reason":"NOT_D_STAGE1"}
+        D=family_d(x,qqq) if s in st["d_drawdown_pool"] else {"pool":False,"reason":"NOT_D_STAGE1"}
         event="DEFERRED" if GEOMETRY_ONLY else "UNKNOWN_STALE_EVENT_STATE"
         if event_state_fresh:
             event="CLEAN_DISCOVERY"
             if s in (ev.get("confirmed_blocks") or {}): event="BLOCK_CONFIRMED_8SESSION"
             elif s in (ev.get("unresolved") or {}): event="UNKNOWN"
-        outres[s]={"status":"EVALUATED","rs20":rs20,"rs60":rs60,"mixed_rs_pass":mix_pass,"A":A,"B":B,"D":D,"event_status":event,"state_cap":state_caps.get(s,"NORMAL"),"r92_eligible":s not in r92_ineligible}
+        outres[s]={"status":"EVALUATED","rs20":rs20,"rs60":rs60,"mixed_rs_pass":mix_pass,
+                   "A":A,"B":B,"D":D,"event_status":event,
+                   "mechanical_scale_breaks":mechanical_scale_breaks(x,260),
+                   "state_cap":state_caps.get(s,"NORMAL"),"r92_eligible":s not in r92_ineligible}
     a_geom=[s for s,r in outres.items() if r.get("A",{}).get("pool")]
     b_break=[s for s,r in outres.items() if r.get("B",{}).get("breakout_confirmed")]
     b_armed=[s for s,r in outres.items() if r.get("B",{}).get("pool") and not r.get("B",{}).get("breakout_confirmed")]
