@@ -178,7 +178,10 @@ def main():
             "TEST",frac,{"corporate_action_status":"PASS_NO_LOCAL_SPLIT_DISCONTINUITY","split_events":[]}
         )
         assert flookup is True and calls==["TEST"],(flookup,calls)
-        assert fst=="UNKNOWN_PRIMARY_CORPORATE_ACTION_EVIDENCE_REQUIRED" and fev==[],(fst,fev)
+        # A successful exact split lookup with no declared event proves there is
+        # no split to reconcile. Factor-like news gaps are not corporate-action
+        # UNKNOWN at Final; detailed legal risk is handled by the SEC guard.
+        assert fst=="PASS_NO_SPLIT_EVENTS_CROSSCHECKED" and fev==[],(fst,fev)
         assert len(fx)==len(frac)
     finally:
         final_mod.split_consistent_history=old_split_lookup
