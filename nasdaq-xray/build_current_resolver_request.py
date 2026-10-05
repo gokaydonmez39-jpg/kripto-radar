@@ -11,6 +11,8 @@ PRICE=Path(os.getenv("XRAY_RESOLVER_PRICE",str(ROOT/"canonical_current_price_dv2
 MASTER=Path(os.getenv("XRAY_MASTER_MANIFEST",str(ROOT/"canonical_current_master_manifest.json")))
 POINTER=Path(os.getenv("XRAY_RESOLVER_POINTER",str(ROOT/"chatgpt_canonical_state_v2.json")))
 OUT=Path(os.getenv("XRAY_RESOLVER_REQUEST_OUT",str(ROOT/"canonical_current_resolver_request.json")))
+CHUNK_MANIFEST=Path(os.getenv("XRAY_RESOLVER_CHUNK_MANIFEST_OUT",str(ROOT/"canonical_current_resolver_chunk_manifest.json")))
+CHUNK_SIZE=max(1,min(100,int(os.getenv("XRAY_RESOLVER_CHUNK_SIZE","100"))))
 TASK="6a825366222081918997094d76e6ae46"
 
 def blob_sha(p:Path)->str:
@@ -36,6 +38,61 @@ def prior_core_symbol(pointer_asof):
         except Exception:
             pass
     return None,None,None
+
+def write_chunk_manifest(request_obj):
+    # A large exact resolver scope is materialized into small content-addressed
+    # chunks so provider-reader invocations can resume durably without parsing
+    # one oversized request payload. Chunks carry no alpha decisions.
+    for old in ROOT.glob("canonical_current_resolver_chunk_*.json"):
+        if old.name!="canonical_current_resolver_chunk_manifest.json":
+            old.unlink()
+    symbols=list(request_obj.get("symbols") or [])
+    request_blob=blob_sha(OUT)
+    chunk_rows=[]
+    total=(len(symbols)+CHUNK_SIZE-1)//CHUNK_SIZE
+    for i in range(total):
+        xs=symbols[i*CHUNK_SIZE:(i+1)*CHUNK_SIZE]
+        path=ROOT/f"canonical_current_resolver_chunk_{i+1:04d}.json"
+        obj={
+          "schema":"XRAY_RESOLVER_REQUEST_CHUNK_V1",
+          "task_id":TASK,"asof_et":request_obj["asof_et"],
+          "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
+          "request_path":"nasdaq-xray/canonical_current_resolver_request.json",
+          "request_blob_sha":request_blob,
+          "compiled_policy_blob_sha":request_obj["compiled_policy_blob_sha"],
+          "compiled_policy_hash":request_obj["compiled_policy_hash"],
+          "compiled_policy_version":request_obj["compiled_policy_version"],
+          "queue_hash":request_obj["queue_hash"],
+          "symbol_hash":request_obj["symbol_hash"],
+          "chunk_index":i+1,"chunk_total":total,
+          "symbol_count":len(xs),"symbols":xs,"chunk_symbol_hash":hash_lines(xs),
+        }
+        path.write_text(json.dumps(obj,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
+        chunk_rows.append({
+          "chunk_index":i+1,
+          "path":str(path.relative_to(ROOT.parent)).replace("\\","/"),
+          "blob_sha":blob_sha(path),
+          "symbol_count":len(xs),
+          "chunk_symbol_hash":obj["chunk_symbol_hash"],
+        })
+    manifest={
+      "schema":"XRAY_RESOLVER_REQUEST_CHUNK_MANIFEST_V1",
+      "task_id":TASK,"asof_et":request_obj["asof_et"],
+      "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
+      "request_path":"nasdaq-xray/canonical_current_resolver_request.json",
+      "request_blob_sha":request_blob,
+      "compiled_policy_blob_sha":request_obj["compiled_policy_blob_sha"],
+      "compiled_policy_hash":request_obj["compiled_policy_hash"],
+      "compiled_policy_version":request_obj["compiled_policy_version"],
+      "queue_hash":request_obj["queue_hash"],
+      "symbol_hash":request_obj["symbol_hash"],
+      "symbol_count":len(symbols),
+      "chunk_size":CHUNK_SIZE,"chunk_count":total,
+      "chunks":chunk_rows,
+      "coverage_complete":sum(x["symbol_count"] for x in chunk_rows)==len(symbols),
+    }
+    CHUNK_MANIFEST.write_text(json.dumps(manifest,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
+    return manifest
 
 def main():
     s=json.loads(STATE.read_text())
@@ -146,7 +203,9 @@ def main():
       "resolver_policy":"ALPACA_SIP_PREFERRED__RALLIES_LONGBRIDGE_DUAL_SOURCE_CONNECTOR_FAILOVER__NEVER_G9__FAIL_CLOSED__SAME_ASOF_QUEUE_BINDING",
     }
     OUT.write_text(json.dumps(obj,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
-    print(json.dumps({"asof":asof,"pointer_asof":pointer_asof,"status":obj["status"],"settlement_required":settlement_required,"settlement_already_proven":settlement_already_proven,"master_unknown":len(master_symbols),"price_unknown":len(price_symbols),"price_blocked":len(blocked_symbols),"union":len(union),"symbol_hash":obj["symbol_hash"]},sort_keys=True))
+    chunks=write_chunk_manifest(obj)
+    assert chunks["coverage_complete"] is True and chunks["symbol_count"]==obj["symbol_count"]
+    print(json.dumps({"asof":asof,"pointer_asof":pointer_asof,"status":obj["status"],"settlement_required":settlement_required,"settlement_already_proven":settlement_already_proven,"master_unknown":len(master_symbols),"price_unknown":len(price_symbols),"price_blocked":len(blocked_symbols),"union":len(union),"symbol_hash":obj["symbol_hash"],"resolver_chunks":chunks["chunk_count"]},sort_keys=True))
 
 if __name__=="__main__":
     main()

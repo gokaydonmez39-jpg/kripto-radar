@@ -428,6 +428,14 @@ def test_workflow_race_and_pre_mc_freeze_contracts():
     assert "WATCH_REGIME_REVALIDATION_REQUIRED" in ftsrc and "WATCH_REGIME_UNKNOWN" in ftsrc
     assert "candidate_local_research_ready" in term_src
     assert "PARTIAL_UNKNOWN" in term_src
+    resolver_src=(ROOT/"build_current_resolver_request.py").read_text()
+    assert "XRAY_RESOLVER_REQUEST_CHUNK_MANIFEST_V1" in resolver_src
+    assert "XRAY_RESOLVER_REQUEST_CHUNK_V1" in resolver_src
+    assert "CHUNK_SIZE=max(1,min(100" in resolver_src
+    assert '"request_blob_sha":request_blob' in resolver_src
+    assert "canonical_current_resolver_chunk_manifest.json" in pre
+    assert 'canonical_current_resolver_chunk_[0-9][0-9][0-9][0-9].json' in pre
+    assert 'rebuilt==q["symbols"]' in pre
 
     # C4.17 detailed legal/filing review is finalist-local. The global LEGAL
     # phase is only a shell/identity screen and may never by itself authorize R92.

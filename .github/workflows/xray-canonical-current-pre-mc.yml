@@ -252,6 +252,7 @@ jobs:
           p=json.load(open("nasdaq-xray/canonical_current_price_dv20.json"))
           m=json.load(open("nasdaq-xray/canonical_current_master_manifest.json"))
           q=json.load(open("nasdaq-xray/canonical_current_resolver_request.json"))
+          cm=json.load(open("nasdaq-xray/canonical_current_resolver_chunk_manifest.json"))
           assert p["asof_et"]==m["asof_et"]==q["asof_et"]==a
           assert p["execution"]=="NONE" and p["real_money"]=="NO-GO"
           assert p["unknown_count"]==0 and p["pass_count"]>0
@@ -328,6 +329,27 @@ jobs:
           assert q["compiled_policy_blob_sha"]=="10d7af14870dfac0dc4566595d95a06f3faa854d"
           assert q["compiled_policy_hash"]=="26a95745a50b65e85f6ece24b6501af0994764a84ddd886edb70d1fcd770849c"
           assert q["compiled_policy_version"]=="C4.17"
+          assert cm["schema"]=="XRAY_RESOLVER_REQUEST_CHUNK_MANIFEST_V1"
+          assert cm["task_id"]==q["task_id"] and cm["asof_et"]==q["asof_et"]
+          assert cm["execution"]=="NONE" and cm["real_money"]=="NO-GO" and cm["unknown_never_pass"] is True
+          assert cm["compiled_policy_blob_sha"]==q["compiled_policy_blob_sha"] and cm["compiled_policy_hash"]==q["compiled_policy_hash"] and cm["compiled_policy_version"]==q["compiled_policy_version"]
+          assert cm["queue_hash"]==q["queue_hash"] and cm["symbol_hash"]==q["symbol_hash"] and cm["symbol_count"]==q["symbol_count"]
+          assert cm["coverage_complete"] is True and cm["chunk_size"]<=100
+          assert cm["chunk_count"]==len(cm["chunks"])
+          import hashlib,pathlib
+          rb=pathlib.Path("nasdaq-xray/canonical_current_resolver_request.json").read_bytes()
+          rsha=hashlib.sha1(f"blob {len(rb)}\\0".encode()+rb).hexdigest()
+          assert cm["request_blob_sha"]==rsha
+          rebuilt=[]
+          for i,row in enumerate(cm["chunks"],1):
+              cp=pathlib.Path(row["path"]); cb=cp.read_bytes(); csha=hashlib.sha1(f"blob {len(cb)}\\0".encode()+cb).hexdigest()
+              cj=json.loads(cb)
+              assert row["chunk_index"]==i and row["blob_sha"]==csha
+              assert cj["request_blob_sha"]==rsha and cj["queue_hash"]==q["queue_hash"] and cj["symbol_hash"]==q["symbol_hash"]
+              assert cj["chunk_index"]==i and cj["chunk_total"]==cm["chunk_count"] and cj["symbol_count"]==len(cj["symbols"])<=100
+              assert row["symbol_count"]==cj["symbol_count"] and row["chunk_symbol_hash"]==cj["chunk_symbol_hash"]
+              rebuilt.extend(cj["symbols"])
+          assert rebuilt==q["symbols"] and len(rebuilt)==len(set(rebuilt))==q["symbol_count"]
           assert q["queue_hash"]==m["queue_hash"] and q["queue_total"]==m["queue_total"]
           assert q["symbol_count"]==len(q["symbols"])==len(set(q["symbols"]))
           assert q["master_unknown_count"]==len(q["master_unknown_symbols"])==0
@@ -362,7 +384,9 @@ jobs:
             nasdaq-xray/canonical_current_master_manifest.json
             nasdaq-xray/canonical_current_price_dv20.json
             nasdaq-xray/canonical_current_resolver_request.json
+            nasdaq-xray/canonical_current_resolver_chunk_manifest.json
           )
+          while IFS= read -r p; do files+=("$p"); done < <(find nasdaq-xray -maxdepth 1 -type f -name "canonical_current_resolver_chunk_[0-9][0-9][0-9][0-9].json" | sort)
           tmpdir="$(mktemp -d)"
           trap 'rm -rf "$tmpdir"' EXIT
           for p in "${files[@]}"; do
@@ -375,13 +399,14 @@ jobs:
             git rebase --abort >/dev/null 2>&1 || true
             git fetch origin main
             git reset --hard origin/main
+            rm -f nasdaq-xray/canonical_current_resolver_chunk_[0-9][0-9][0-9][0-9].json
             for p in "${files[@]}"; do
               if [ -f "$tmpdir/$p" ]; then
                 mkdir -p "$(dirname "$p")"
                 cp "$tmpdir/$p" "$p"
               fi
             done
-            git add "${files[@]}" 2>/dev/null || true
+            git add -A -- "${files[@]}" nasdaq-xray/canonical_current_resolver_chunk_[0-9][0-9][0-9][0-9].json 2>/dev/null || true
             if git diff --cached --quiet; then
               echo "XRAY_FACTORY_COMMIT=NO_CHANGE"
               exit 0
