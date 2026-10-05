@@ -422,13 +422,34 @@ def yahoo(sym,asof):
           {"period1":int(start.timestamp()),"period2":int(end.timestamp()),"interval":"1d","events":"history","includeAdjustedClose":"false"},25)
         res=((o.get("chart") or {}).get("result") or [])
         if not res:return {},{"error":str((o.get("chart") or {}).get("error"))}
-        r=res[0];q=(((r.get("indicators") or {}).get("quote") or [{}])[0]);by={}
-        for t,c,v in zip(r.get("timestamp") or [],q.get("close") or [],q.get("volume") or []):
-            c=num(c);v=num(v)
+        rr=res[0];q=(((rr.get("indicators") or {}).get("quote") or [{}])[0]);by={}
+        ts=rr.get("timestamp") or []
+        opens=q.get("open") or [];highs=q.get("high") or [];lows=q.get("low") or []
+        closes=q.get("close") or [];vols=q.get("volume") or []
+        n=min(len(ts),len(opens),len(highs),len(lows),len(closes),len(vols))
+        rows=[]
+        for i in range(n):
+            c=num(closes[i]);v=num(vols[i])
             if c is None or c<=0 or v is None or v<0:continue
-            day=datetime.fromtimestamp(int(t),timezone.utc).astimezone(NY).date().isoformat()
-            if day<=asof:by[day]=(c,v)
-        return by,{"usable":len(by),"exchangeName":(r.get("meta") or {}).get("exchangeName")}
+            day=datetime.fromtimestamp(int(ts[i]),timezone.utc).astimezone(NY).date().isoformat()
+            if day>asof:continue
+            by[day]=(c,v)
+            vals=[num(opens[i]),num(highs[i]),num(lows[i]),c,v]
+            if any(x is None for x in vals):continue
+            o_,h_,l_,c_,v_=vals
+            if min(o_,h_,l_,c_)<=0 or v_<0:continue
+            rows.append({"date":day,"open":o_,"high":h_,"low":l_,"close":c_,"volume":v_})
+        cache_written=False
+        if rows and rows[-1]["date"]==asof:
+            df=pd.DataFrame(rows)
+            df["date"]=pd.to_datetime(df["date"],errors="coerce")
+            df=df.dropna().drop_duplicates("date",keep="last").sort_values("date").reset_index(drop=True)
+            if not df.empty and df["date"].dt.date.max().isoformat()==asof:
+                _write_sina_cache(sym,df)
+                cache_written=True
+        return by,{"usable":len(by),"exchangeName":(rr.get("meta") or {}).get("exchangeName"),
+                   "technical_cache_exact_asof_written":cache_written,
+                   "technical_cache_source":"YAHOO_CHART_FREE_OHLCV" if cache_written else None}
     except Exception as e:return {},{"error":f"{type(e).__name__}:{str(e)[:160]}"}
 
 def yahoo_ohlcv(sym,asof):
