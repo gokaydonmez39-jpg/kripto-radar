@@ -344,7 +344,7 @@ jobs:
           print({"XRAY_REUSED_HISTORY_REVALIDATION":"PASS","pass_count":new.get("pass_count")})
           PY
 
-      - name: Hydrate official ticker-continuity predecessor cache
+      - name: Hydrate technical benchmark and ticker-continuity cache
         if: steps.mc.outputs.ready == 'true'
         shell: bash
         env:
@@ -353,11 +353,36 @@ jobs:
           set -euo pipefail
           python - <<'PY'
           import json, os, pathlib, sys
+          import pandas as pd
           sys.path.insert(0,"nasdaq-xray")
           import akshare as ak
           import history_phase as hp
           h=json.load(open("nasdaq-xray/canonical_current_history.json"))
+          asof=str(h["asof_et"])
           passed=set(h.get("pass_symbols") or [])
+
+          # QQQ is the C4.17 regime benchmark and is intentionally outside the
+          # operating-common-equity core. Because breadth now forbids provider
+          # drift when CACHE_REQUIRED=1, hydrate and verify QQQ explicitly.
+          qdf,_=hp._call_with_retry(lambda: ak.stock_us_daily(symbol="QQQ",adjust=""))
+          hp._write_sina_cache("QQQ",qdf)
+          qp=hp._history_cache_path("QQQ")
+          if qp is None or not qp.exists():
+              raise RuntimeError("TECHNICAL_BENCHMARK_CACHE_MISSING:QQQ")
+          q=pd.read_csv(qp,compression="gzip")
+          cols={str(c).lower():c for c in q.columns}
+          need=["date","open","high","low","close","volume"]
+          if any(k not in cols for k in need):
+              raise RuntimeError("TECHNICAL_BENCHMARK_CACHE_COLUMNS:QQQ")
+          q=q[[cols[k] for k in need]].copy(); q.columns=need
+          q["date"]=pd.to_datetime(q["date"],errors="coerce")
+          for k in need[1:]: q[k]=pd.to_numeric(q[k],errors="coerce")
+          q=q.dropna().drop_duplicates("date",keep="last").sort_values("date")
+          q=q[q["date"]<=pd.Timestamp(asof)]
+          if len(q)<260 or q.empty or q["date"].dt.date.max().isoformat()!=asof:
+              raise RuntimeError("TECHNICAL_BENCHMARK_CACHE_ASOF_OR_HISTORY:QQQ")
+          print({"XRAY_TECHNICAL_BENCHMARK_CACHE":"PASS","symbol":"QQQ","bars":len(q),"asof":asof})
+
           warmed=[]
           for sym,rec in sorted((hp.OFFICIAL_RECORDS or {}).items()):
               if sym not in passed: continue
@@ -416,6 +441,8 @@ jobs:
           XRAY_STAGE1_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_current_stage1.json
           XRAY_DEEP_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_current_deep_geometry.json
           XRAY_DEEP_GEOMETRY_ONLY: "1"
+          XRAY_DEEP_HISTORY_CACHE_DIR: ${{ runner.temp }}/xray-history-cache
+          XRAY_DEEP_CACHE_REQUIRED: "1"
           XRAY_DEEP_WORKERS: "8"
         run: python nasdaq-xray/deep_pre_r1_shadow.py
       - name: Build dynamic event request
