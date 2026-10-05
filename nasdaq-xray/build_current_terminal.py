@@ -324,7 +324,37 @@ def main():
     assert lpass|lblock==hpass and not (lpass&lblock)
 
     assert si["task_id"]==TASK and si["asof_et"]==asof and si["execution"]=="NONE" and si["real_money"]=="NO-GO"
-    assert si.get("source_mc_blob_sha")==blob_sha(mc_path)
+    stage1_input_mc_blob_exact=(si.get("source_mc_blob_sha")==blob_sha(mc_path))
+    stage1_input_mc_semantic_rebind=False
+    if not stage1_input_mc_blob_exact:
+        # Same rule as HISTORY: Stage1 input may survive an MC metadata-only
+        # rebind only when the old bridge is present and all consumed MC sets,
+        # ASOF, PRICE pass-hash and C4.17 policy are exactly equivalent.
+        si_matches=[]
+        for fp in glob.glob(str(ROOT/"canonical_mc_bridge_*.json")):
+            try:
+                sj=json.load(open(fp)); sp=Path(fp)
+                if blob_sha(sp)!=si.get("source_mc_blob_sha"): continue
+                if not (
+                    sj.get("schema")=="XRAY_MC_EPOCH_RESULT_V1"
+                    and sj.get("status")=="COMMITTED"
+                    and sj.get("task_id")==TASK
+                    and sj.get("execution")=="NONE" and sj.get("real_money")=="NO-GO"
+                    and sj.get("asof_et")==asof
+                    and sj.get("policy_hash")==POLICY_HASH and sj.get("policy_version")=="C4.17"
+                    and sj.get("input_pass_hash")==mc.get("input_pass_hash")==p.get("pass_hash")
+                    and set(sj.get("primary_pass_symbols") or [])==primary
+                    and set(sj.get("primary_fail_symbols") or [])==mcfail
+                    and set(sj.get("fallback_watch_symbols") or [])==watch
+                    and set(sj.get("fallback_fail_symbols") or sj.get("fallback_two_source_fail_symbols") or [])==fallback_fail
+                    and set(sj.get("unknown_symbols") or [])==mcunk
+                    and set(si.get("current_core_mc_pass") or [])==primary
+                ): continue
+                si_matches.append(sp)
+            except Exception:
+                pass
+        assert len(si_matches)==1,("STAGE1_INPUT_MC_SEMANTIC_SOURCE_MATCHES",len(si_matches))
+        stage1_input_mc_semantic_rebind=True
     assert si.get("source_history_blob_sha")==sh["history"] and si.get("source_legal_blob_sha")==sh["legal"]
     assert si.get("source_mc_policy_hash")==POLICY_HASH and si.get("source_mc_policy_version")=="C4.17"
     assert si.get("source_history_pass_hash")==h.get("pass_hash") and si.get("source_legal_pass_hash")==lg.get("pass_hash")
@@ -584,7 +614,7 @@ def main():
         "mc_input_blob_exact":mc_binding["blob_exact"],
         "mc_input_semantic_rebind":mc_binding["semantic_rebind"],
         "sequential_settlement_bound":(not settlement_witness_required) or mc.get("settlement_witness_status")=="PASS",
-        "history_exact_mc_primary":True,"history_mc_blob_exact":history_mc_blob_exact,"history_mc_semantic_rebind":history_mc_semantic_rebind,"fallback_watch_excluded_after_mc":True,"legal_exact_history_pass":True,
+        "history_exact_mc_primary":True,"history_mc_blob_exact":history_mc_blob_exact,"history_mc_semantic_rebind":history_mc_semantic_rebind,"stage1_input_mc_blob_exact":stage1_input_mc_blob_exact,"stage1_input_mc_semantic_rebind":stage1_input_mc_semantic_rebind,"fallback_watch_excluded_after_mc":True,"legal_exact_history_pass":True,
         "legal_master_blob_exact":lg.get("source_master_blob_sha")==sh["full_state"],
         "legal_master_semantic_rebind":legal_master_semantic_rebind,
         "stage1_exact_legal_pass":True,"weekly_exact_event_scope":True,"regime_no_missing":True,
