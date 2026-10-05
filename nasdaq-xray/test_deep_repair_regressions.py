@@ -205,11 +205,17 @@ def test_candidate_legal_guard_scope_is_candidate_local():
     assert legal_guard_mod.candidate_scope(deep,fc,lifecycle)==["A","B","C","D","L"]
 
 def test_candidate_legal_guard_phrase_severity():
-    boiler="the credit agreement contains customary events of default and other standard provisions"
+    boiler="the credit agreement contains customary events of default and financial covenants and other standard provisions"
     assert legal_guard_mod._phrase_flags(boiler,legal_guard_mod.HARD_PHRASES)==[]
-    assert "EVENT_OF_DEFAULT_REFERENCE" in legal_guard_mod._phrase_flags(boiler,legal_guard_mod.RISK_PHRASES)
+    risk=legal_guard_mod._phrase_flags(boiler,legal_guard_mod.RISK_PHRASES)
+    assert "EVENT_OF_DEFAULT_REFERENCE" in risk
+    assert "COVENANT_REFERENCE" in risk
     hard="management concluded there is substantial doubt about our ability to continue as a going concern"
     assert "SUBSTANTIAL_DOUBT_GOING_CONCERN" in legal_guard_mod._phrase_flags(hard,legal_guard_mod.HARD_PHRASES)
+    src=(ROOT/"build_candidate_legal_guard.py").read_text()
+    assert 'ANNUAL={"10-K","20-F","40-F"}' in src
+    assert "NO_RECENT_ANNUAL_FILING_BEFORE_ASOF" in src
+    assert "LATEST_ANNUAL_THROUGH_ASOF_WITH_ALL_LATER_PERIODIC_CURRENT_AND_OFFERING_FILINGS" in src
 
 def test_workflow_race_and_pre_mc_freeze_contracts():
     final_wf=(REPO/".github/workflows/xray-canonical-current-final.yml").read_text()
@@ -340,7 +346,7 @@ def main():
       "RESISTANCE_ROLE_CHANGE_STATE_MACHINE","FINAL_HISTORY_OHLCV_BINDING","REGIME_INTERVAL_BOUNDS_AND_FINALIST_GATE","CORPORATE_ACTION_NONE_VS_SCALE_BREAK_FAIL_CLOSED","RETEST_WINDOW_EXPIRES_AFTER_5","MODEL_HORIZON_EXPIRES_AFTER_8",
       "FROZEN_LEVELS_NEXT_ASOF_STABLE","LIFECYCLE_REGIME_REVALIDATION_PERSISTS","LIFECYCLE_PERSISTENCE_ROUNDTRIP",
       "FINAL_ALPHA_STALE_SOURCE_GUARD","PARTIAL_COVERAGE_DOES_NOT_GLOBAL_ABORT",
-      "DETAILED_FINALIST_LEGAL_FAIL_CLOSED","FINAL_VERIFIED_MARKET_GAP_NOT_DOUBLE_BLOCKED","DETAILED_LEGAL_GUARD_EXACT_SOURCE_BINDING","DETAILED_LEGAL_GUARD_POLICY_BINDING","DETAILED_LEGAL_GUARD_NONCIRCULAR_LIFECYCLE","DETAILED_LEGAL_GUARD_BOILERPLATE_SEVERITY","DETAILED_LEGAL_GUARD_NO_SELF_TRIGGER",
+      "DETAILED_FINALIST_LEGAL_FAIL_CLOSED","FINAL_VERIFIED_MARKET_GAP_NOT_DOUBLE_BLOCKED","DETAILED_LEGAL_GUARD_EXACT_SOURCE_BINDING","DETAILED_LEGAL_GUARD_POLICY_BINDING","DETAILED_LEGAL_GUARD_NONCIRCULAR_LIFECYCLE","DETAILED_LEGAL_GUARD_BOILERPLATE_SEVERITY","DETAILED_LEGAL_GUARD_ANNUAL_PLUS_QUARTERLY_SCOPE","DETAILED_LEGAL_GUARD_NO_SELF_TRIGGER",
       "POST_MC_PARTIAL_COVERAGE_GATE","PRE_MC_COMPLETED_ASOF_FREEZE_TRUTH_TABLE"]})
 
 if __name__=="__main__": main()
