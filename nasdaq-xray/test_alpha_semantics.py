@@ -48,7 +48,7 @@ def main():
     d.loc[35,"high"]=120.0
     d.loc[34,"high"]=106.0;d.loc[36,"high"]=106.0
     d.loc[33,"high"]=105.5;d.loc[37,"high"]=105.5
-    d.loc[70,"high"]=107.0  # ordinary prior high, not a confirmed structural swing
+    d.loc[69:71,"high"]=107.0  # plateau: ordinary highs, never a strict confirmed swing
     d.loc[80,"high"]=130.0  # trigger-day/future point must never leak into trigger-1 R1
     r=nearest_active_resistance(d,80,10.0,100.0,102.5,102.5)
     assert r["status"]=="PASS",r
