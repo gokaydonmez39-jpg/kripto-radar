@@ -180,9 +180,9 @@ LIFECYCLE_WATCH_STATES={
  "WATCH_CHASE_RETEST_REQUIRED","WATCH_EXTENSION_RESET_REQUIRED",
  "WATCH_REGIME_REVALIDATION_REQUIRED","WATCH_REGIME_UNKNOWN"
 }
-# States discovered prospectively that must keep their frozen geometry until
-# explicit invalidation/expiry. WATCH_HISTORICAL_SETUP is deliberately excluded:
-# backfilled historical triggers may never become prospective by mere persistence.
+# Current research-eligible passes and resolvable watches keep frozen geometry
+# until explicit invalidation/expiry. R92 validation remains prospective-only:
+# registration may start now, but pre-registration observations are never backfilled.
 LIFECYCLE_PERSIST_STATES=LIFECYCLE_WATCH_STATES | {
  "PRE_G9_TECH_PASS","WATCH_EVENT_UNKNOWN_OR_BLOCKED",
  "WATCH_MC_FALLBACK_CAP"
