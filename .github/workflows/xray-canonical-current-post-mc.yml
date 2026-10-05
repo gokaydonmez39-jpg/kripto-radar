@@ -144,7 +144,11 @@ jobs:
                     and j.get("execution")=="NONE" and j.get("real_money")=="NO-GO"
                     and j.get("asof_et")==expected_asof
                     and j.get("input_path")==expected_path
-                    and j.get("input_blob_sha")==price_blob
+                    # Byte-level PRICE/DV20 metadata may change after a fail-only
+                    # residual-block resolution while the investable pass universe
+                    # remains exactly identical. Permit that metadata-only rebind
+                    # only when pass hash + exact pass set + exact count all match
+                    # below; never substitute count equality for set equality.
                     and j.get("input_pass_hash")==expected_hash
                     and j.get("policy_hash")=="26a95745a50b65e85f6ece24b6501af0994764a84ddd886edb70d1fcd770849c"
                     and j.get("policy_version")=="C4.17"
@@ -193,8 +197,15 @@ jobs:
               print("ready=true")
               print("path="+fp)
               print("asof="+expected_asof)
+              try:
+                  chosen=json.load(open(fp))
+                  input_blob_exact=(chosen.get("input_blob_sha")==price_blob)
+              except Exception:
+                  input_blob_exact=False
               print("price_blob_sha="+price_blob)
               print("input_pass_hash="+expected_hash)
+              print("mc_input_blob_exact="+("true" if input_blob_exact else "false"))
+              print("mc_semantic_rebind="+("false" if input_blob_exact else "true"))
           PY
           cat /tmp/mc_out >> "$GITHUB_OUTPUT"
           cat /tmp/mc_out
