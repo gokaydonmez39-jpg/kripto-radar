@@ -516,12 +516,16 @@ def test_workflow_race_and_pre_mc_freeze_contracts():
     assert 'master_asof!=req_asof or price_asof!=req_asof' in final_wf
     assert 'int(p.get("unknown_count",-1))!=0' in final_wf
     assert "XRAY_FINAL_UPSTREAM_EPOCH=WAITING_NOOP" in final_wf
-    critical=["nasdaq-xray/alpha_semantics.py","nasdaq-xray/test_alpha_semantics.py",
-      "nasdaq-xray/test_deep_repair_regressions.py","nasdaq-xray/family_c_engine.py",
+    # Production source drift must stale-abort an in-flight Final. Test-only
+    # file edits are intentionally excluded so a test maintenance commit cannot
+    # preempt or invalidate an otherwise exact-bound production epoch.
+    critical=["nasdaq-xray/alpha_semantics.py","nasdaq-xray/family_c_engine.py",
       "nasdaq-xray/deep_pre_r1_shadow.py","nasdaq-xray/build_candidate_legal_guard.py",
       "nasdaq-xray/final_tech_shadow.py"]
+    test_only=["nasdaq-xray/test_alpha_semantics.py","nasdaq-xray/test_deep_repair_regressions.py"]
     stale=final_wf[final_wf.index('changed="$(git diff'):]
     for p in critical: assert p in stale,("FINAL_STALE_GUARD_MISSING",p)
+    for p in test_only: assert p not in stale,("FINAL_TEST_ONLY_SHOULD_NOT_STALE_PRODUCTION",p)
     for p in ("nasdaq-xray/canonical_current_master_manifest.json","nasdaq-xray/canonical_current_price_dv20.json"):
         assert p in stale,("FINAL_UPSTREAM_STALE_GUARD_MISSING",p)
     assert "nasdaq-xray/canonical_candidate_lifecycle_registry.json" in final_wf
