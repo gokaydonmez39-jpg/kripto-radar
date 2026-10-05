@@ -304,6 +304,7 @@ def main():
     current_confirmed|={f"{s}|D" for s in dp.get("d_dk3_pre_r1",[])}
     current_confirmed|={f"{s}|C" for s in (fc.get("confirmed") or {})}
     assert ft.get("source_deep_blob_sha")==sh["deep"] and ft.get("source_family_c_blob_sha")==sh["family_c"]
+    assert ft.get("source_legal_blob_sha")==sh["legal"]
     assert ft.get("source_compiled_policy_hash")==POLICY_HASH and ft.get("source_compiled_policy_version")=="C4.17"
     final_set=set(ft["results"])
     assert ft["input_confirmed_family_candidates"]==len(final_set)
