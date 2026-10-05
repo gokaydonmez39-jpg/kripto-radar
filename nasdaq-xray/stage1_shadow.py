@@ -211,11 +211,13 @@ def process(sym,asof,week_last):
         split_suspects=mechanical_split_suspects(x)
         ca_status="PASS_NO_LOCAL_SPLIT_DISCONTINUITY"
         split_events=[]
-        # External split lookup is anomaly-driven, not gap-driven. Ordinary
-        # earnings/news gaps are common and must not turn the universe UNKNOWN.
-        # Only a recent close-to-close mechanical scale discontinuity can require
-        # split verification; open-gap suspects remain diagnostic evidence.
-        if scale_breaks:
+        # External split lookup is anomaly-driven, not universal. Ordinary
+        # earnings/news gaps remain valid market moves when the split provider
+        # explicitly returns no event. Both severe close-to-close scale breaks
+        # and fractional common-ratio suspects (for example 3:2 or 5:4) require
+        # verification so an unadjusted split cannot suppress a setup upstream
+        # before the finalist-level corporate-action guard sees it.
+        if scale_breaks or split_suspects:
             x2,ca_status,split_events=split_consistent_history(sym,x)
             if not str(ca_status).startswith("PASS"):
                 return sym,{"status":"UNKNOWN","reason":"CORPORATE_ACTION_SOURCE_UNKNOWN",
