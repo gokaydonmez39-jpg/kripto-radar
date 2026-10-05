@@ -555,6 +555,9 @@ jobs:
               .github/workflows/xray-canonical-current-post-mc.yml \
               nasdaq-xray/canonical_current_master_manifest.json \
               nasdaq-xray/canonical_current_price_dv20.json \
+              nasdaq-xray/canonical_mc_bridge_*.json \
+              nasdaq-xray/history_official_identity_evidence.json \
+              nasdaq-xray/canonical_history_evidence_bridge_*.json \
               nasdaq-xray/alpha_semantics.py \
               nasdaq-xray/test_alpha_semantics.py \
               nasdaq-xray/history_phase.py \
