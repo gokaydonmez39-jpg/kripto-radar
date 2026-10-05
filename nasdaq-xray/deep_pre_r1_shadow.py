@@ -173,8 +173,8 @@ def rvol20(df):
     return v/median(prev)
 
 def family_b(df):
-    # New triggers are discovered only in the current/previous three completed sessions,
-    # with the earliest valid trigger winning. This prevents a breakout from disappearing
+    # New triggers are discovered in the current/prior five completed sessions,
+    # matching the inclusive C4.17 retest window; the earliest valid trigger wins.
     # on the next day and forbids later cherry-picked trigger replacement.
     recent=find_recent_b_trigger(df,5)
     if recent:
