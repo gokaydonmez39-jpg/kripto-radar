@@ -211,12 +211,15 @@ def test_candidate_local_legal_unknown_does_not_globally_suppress():
 
 def test_candidate_legal_guard_scope_is_candidate_local():
     deep={"results":{
-      "A":{"A":{"pool":True},"B":{},"D":{}},
-      "B":{"A":{},"B":{"breakout_confirmed":True},"D":{}},
-      "D":{"A":{},"B":{},"D":{"dk3_pre_r1":True}},
-      "N":{"A":{},"B":{},"D":{}},
+      "A":{"regime_finalist_pass":True,"A":{"pool":True},"B":{},"D":{}},
+      "B":{"regime_finalist_pass":True,"A":{},"B":{"breakout_confirmed":True},"D":{}},
+      "C":{"regime_finalist_pass":True,"A":{},"B":{},"D":{}},
+      "D":{"regime_finalist_pass":True,"A":{},"B":{},"D":{"dk3_pre_r1":True}},
+      "DROP":{"regime_finalist_pass":False,"A":{},"B":{"breakout_confirmed":True},"D":{}},
+      "UNK":{"regime_finalist_pass":None,"A":{},"B":{},"D":{"dk3_pre_r1":True}},
+      "N":{"regime_finalist_pass":True,"A":{},"B":{},"D":{}},
     }}
-    fc={"confirmed":{"C":{"confirmed":True},"X":{"confirmed":False}}}
+    fc={"confirmed":{"C":{"confirmed":True},"DROP":{"confirmed":True},"X":{"confirmed":False}}}
     lifecycle={"records":{"old":{"symbol":"L"}}}
     assert legal_guard_mod.candidate_scope(deep,fc,lifecycle)==["A","B","C","D","L"]
 
