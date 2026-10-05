@@ -121,7 +121,8 @@ THRESH={
 }
 LIFECYCLE_WATCH_STATES={
  "WATCH_RETEST_REQUIRED","WATCH_RECONFIRMATION_REQUIRED",
- "WATCH_CHASE_RETEST_REQUIRED","WATCH_EXTENSION_RESET_REQUIRED"
+ "WATCH_CHASE_RETEST_REQUIRED","WATCH_EXTENSION_RESET_REQUIRED",
+ "WATCH_REGIME_REVALIDATION_REQUIRED","WATCH_REGIME_UNKNOWN"
 }
 # States discovered prospectively that must keep their frozen geometry until
 # explicit invalidation/expiry. WATCH_HISTORICAL_SETUP is deliberately excluded:
@@ -260,7 +261,8 @@ def _frozen_geometry(sym,fam,g,df):
     }
     return frozen,None
 
-def eval_one(sym,fam,g,df,event_status,state_cap="NORMAL",r92_eligible=True,frozen=None,recorded_before=False):
+def eval_one(sym,fam,g,df,event_status,state_cap="NORMAL",r92_eligible=True,frozen=None,recorded_before=False,
+             regime_finalist_status="PASS"):
     if frozen is None:
         frozen,err=_frozen_geometry(sym,fam,g,df)
         if err:return err
@@ -318,8 +320,9 @@ def eval_one(sym,fam,g,df,event_status,state_cap="NORMAL",r92_eligible=True,froz
     event_pass=(event_status=="CLEAN_DISCOVERY")
     entry_ready=lifecycle in {"ENTRY_BAND","RETEST_ENTRY_BAND"}
     historical_new=bool(age>3 and not recorded_before)
+    regime_pass=(regime_finalist_status=="PASS")
     hard_pass=bool(risk_pass and rr_pass and not target_overlap and not extension_veto
-                   and entry_ready and event_pass and not breached and not historical_new)
+                   and entry_ready and event_pass and regime_pass and not breached and not historical_new)
     mc_cap_blocks=bool(state_cap=="WATCH" or not r92_eligible)
     synthetic_cap=bool(frozen.get("synthetic_target"))
 
@@ -330,6 +333,8 @@ def eval_one(sym,fam,g,df,event_status,state_cap="NORMAL",r92_eligible=True,froz
     elif lifecycle=="INVALIDATED_S0": result="FAIL_INVALIDATED_S0"
     elif lifecycle in {"EXPIRED_RETEST_WINDOW","EXPIRED_HORIZON"}: result="FAIL_EXPIRED"
     elif not event_pass: result="WATCH_EVENT_UNKNOWN_OR_BLOCKED"
+    elif regime_finalist_status=="UNKNOWN": result="WATCH_REGIME_UNKNOWN"
+    elif not regime_pass: result="WATCH_REGIME_REVALIDATION_REQUIRED"
     elif lifecycle=="CHASE_NO_VALID_FILL" and age<=5: result="WATCH_CHASE_RETEST_REQUIRED"
     elif extension_veto and age<=5: result="WATCH_EXTENSION_RESET_REQUIRED"
     elif lifecycle=="CHASE_NO_VALID_FILL": result="FAIL_CHASE"
@@ -357,7 +362,8 @@ def eval_one(sym,fam,g,df,event_status,state_cap="NORMAL",r92_eligible=True,froz
       "rr":{"basic":basic,"basic_threshold":th["basic"],"basic_pass":basic>=th["basic"],
             "severe":severe,"severe_threshold":th["severe"],"severe_pass":severe>=th["severe"]},
       "risk_pass":risk_pass,"extension_veto":extension_veto,"target_overlap":target_overlap,
-      "technical_hard_pass":hard_pass,"state_cap":state_cap,"r92_eligible":bool(r92_eligible),
+      "technical_hard_pass":hard_pass,"regime_finalist_status":regime_finalist_status,
+      "state_cap":state_cap,"r92_eligible":bool(r92_eligible),
       "price_discovery_cap":synthetic_cap,
       "research_tier_cap":"ORANGE" if synthetic_cap else None,
       "pre_g9_tech_pass":bool(hard_pass and not mc_cap_blocks),
@@ -373,12 +379,22 @@ def _run_embedded_semantic_selftest():
         raise RuntimeError("ALPHA_SEMANTIC_SELFTEST_FAIL:"+tail.replace("\n"," | "))
     return "PASS"
 
-def _regime_finalist_allowed(deep,sym):
+def _regime_finalist_status(deep,sym):
     regime=str(deep.get("regime") or "UNKNOWN")
     if regime not in {"STRONG","MIXED","WEAK"}:
-        return False
-    row=(deep.get("results") or {}).get(sym) or {}
-    return row.get("regime_finalist_pass") is True
+        return "UNKNOWN"
+    row=(deep.get("results") or {}).get(sym)
+    if isinstance(row,dict):
+        st=str(row.get("regime_finalist_status") or "")
+        if st in {"PASS","FAIL","UNKNOWN"}: return st
+        if row.get("regime_finalist_pass") is True: return "PASS"
+        if row.get("regime_finalist_pass") is False: return "FAIL"
+    lr=(deep.get("lifecycle_revalidation") or {}).get(sym) or {}
+    st=str(lr.get("regime_finalist_status") or lr.get("status") or "")
+    return st if st in {"PASS","FAIL","UNKNOWN"} else "UNKNOWN"
+
+def _regime_finalist_allowed(deep,sym):
+    return _regime_finalist_status(deep,sym)=="PASS"
 
 def main():
     semantic_selftest_status=_run_embedded_semantic_selftest()
@@ -441,10 +457,9 @@ def main():
             r92_ineligible.add(sym)
         g=rec.get("source_geometry")
         if isinstance(g,dict):
-            if _regime_finalist_allowed(d,sym):
-                frozen_candidates.append((sym,fam,g,event_map.get(sym,rec.get("event_status"))))
-            else:
-                regime_filtered_out.append(f"{sym}|{fam}|LIFECYCLE")
+            lr=(d.get("lifecycle_revalidation") or {}).get(sym) or {}
+            current_event=event_map.get(sym,lr.get("event_status",rec.get("event_status")))
+            frozen_candidates.append((sym,fam,g,current_event))
     candidates=frozen_candidates+fresh_candidates
 
     syms=sorted(set(x[0] for x in candidates));data={};errors={};history_source={};history_fps={}
@@ -513,7 +528,9 @@ def main():
         if (prior and isinstance(prior.get("frozen_geometry"),dict)
             and prior.get("frozen_semantics_blobs")==current_frozen_binding):
             frozen=prior["frozen_geometry"]
-        res=eval_one(sym,fam,g,data[sym],event,state_caps.get(sym,"NORMAL"),sym not in r92_ineligible,frozen,recorded_before=prior_recorded)
+        regime_status=_regime_finalist_status(d,sym)
+        res=eval_one(sym,fam,g,data[sym],event,state_caps.get(sym,"NORMAL"),sym not in r92_ineligible,
+                     frozen,recorded_before=prior_recorded,regime_finalist_status=regime_status)
         existing=results.get(key)
         existing_live=bool(existing and existing.get("observation_mode")=="PROSPECTIVE_RECORDED"
                            and not str(existing.get("result","")).startswith("FAIL_")
@@ -553,6 +570,7 @@ def main():
 
     passes=[k for k,v in results.items() if v.get("pre_g9_tech_pass")]
     watches=[k for k,v in results.items() if str(v.get("result","")).startswith("WATCH_")]
+    regime_revalidation_unknown=sorted(k for k,v in results.items() if v.get("result")=="WATCH_REGIME_UNKNOWN")
     fails=[k for k,v in results.items() if str(v.get("result","")).startswith("FAIL_")]
     lifecycle_semantics_exact=all(
         rec.get("frozen_semantics_blobs")==current_frozen_binding
@@ -595,6 +613,8 @@ def main():
       "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
       "input_confirmed_family_candidates":len(results),"family_c_confirmed_input_count":family_c_count,
       "regime_filtered_out":sorted(set(regime_filtered_out)),
+      "regime_revalidation_unknown_count":len(regime_revalidation_unknown),
+      "regime_revalidation_unknown":regime_revalidation_unknown,
       "pre_g9_tech_pass_count":len(passes),"pre_g9_tech_pass":sorted(passes),
       "watch_count":len(watches),"watch":sorted(watches),"fail_count":len(fails),"fail":sorted(fails),
       "state_caps":{s:state_caps.get(s,"NORMAL") for s in syms},
@@ -631,7 +651,8 @@ def main():
                           "S0_POST_TRIGGER_BREACH","EXTENSION_CLOSE_T_MINUS_CLOSE_TMINUS3_WITH_RETEST_RESET",
                           "TRIGGER_MINUS1_WILDER_ATR","FAMILY_A_0P5A_INHERITED_CANONICAL_RULE",
                           "SPLIT_EVENT_RECONCILIATION","FINALIST_FRACTIONAL_SPLIT_VERIFICATION",
-                          "ADR_RATIO_FAIL_CLOSED_BRIDGE","REGIME_FINALIST_GATE_ALL_FAMILIES"],
+                          "ADR_RATIO_FAIL_CLOSED_BRIDGE","REGIME_FINALIST_GATE_ALL_FAMILIES",
+                          "LIFECYCLE_REGIME_REVALIDATION_PRESERVED"],
       "remaining_nontech_gates":["OFFICIAL_EVENT_FINAL_REVIEW","ACCOUNT_GATE","G9","DELIVERY_PROOF"],
       "authority":"C4_17_DETERMINISTIC_TECHNICAL_FAIL_CLOSED"
     }
