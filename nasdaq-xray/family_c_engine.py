@@ -180,6 +180,9 @@ def eval_event(sym,df,e,asof,all_sessions,event_status):
                   "event_source":e.get("source") or e.get("official_source"),
                   "authority":"C4_10_FAMILY_C_CONSERVATIVE_FAIL_CLOSED"
                 }
+                # First valid trigger wins. A later prettier breakout must not
+                # silently replace scenario identity or frozen geometry.
+                break
     detail={
       "event_datetime_et":edt.isoformat(),"reaction_mode":mode,"reaction_session":rs,
       "pre_event_close":pre_close,"A":A,"gap_atr":gap_atr,"reaction_rvol20":rv0,
