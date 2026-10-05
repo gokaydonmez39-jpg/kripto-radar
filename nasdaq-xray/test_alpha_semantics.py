@@ -4,6 +4,7 @@ import pathlib,sys,tempfile
 import pandas as pd
 ROOT=pathlib.Path(__file__).resolve().parent
 sys.path.insert(0,str(ROOT))
+import alpha_semantics as alpha_mod
 from alpha_semantics import (
     wilder_atr,ema_seeded,drawdown_metrics,nearest_active_resistance,
     extension_diagnostics,retest_bar,setup_id,
@@ -199,6 +200,25 @@ def main():
     ok_old,why_old=_verify_split_events_against_raw(old,[])
     assert ok_old is True,(ok_old,why_old)
 
+    # split_consistent_history must use the same active 260-session horizon.
+    # A stale provider event far outside that horizon cannot make today's
+    # Stage1/breadth UNKNOWN even if the provider erroneously returns it.
+    old_fetch=alpha_mod.fetch_yahoo_split_events
+    split_calls=[]
+    try:
+        ancient_day=old.date.iloc[20].date().isoformat()
+        def _fake_windowed_splits(sym,start,end):
+            split_calls.append((sym,start,end))
+            return "PASS",[{"date":ancient_day,"numerator":2.0,"denominator":1.0,"ratio":2.0}]
+        alpha_mod.fetch_yahoo_split_events=_fake_windowed_splits
+        hx,hstatus,hevents=alpha_mod.split_consistent_history("TEST",old,260)
+        assert hstatus=="PASS_NO_SPLIT_EVENTS_CROSSCHECKED",(hstatus,hevents,split_calls)
+        assert hevents==[],hevents
+        assert split_calls and split_calls[0][1]>ancient_day,split_calls
+        assert len(hx)==len(old)
+    finally:
+        alpha_mod.fetch_yahoo_split_events=old_fetch
+
     # A newly discovered trigger older than three completed sessions is WATCH only;
     # the same frozen setup may become actionable only when it was prospectively recorded.
     hf=frame(270)
@@ -389,7 +409,7 @@ def main():
       "R1_STRUCTURAL_TRIGGER_MINUS1","R1_ENTRY_OVERLAP","EXTENSION_RESET","EXTENSION_TIGHT_BASE_RESET","RETEST_BAR","FAMILY_A_TRIGGER_MINUS1_LOW","SETUP_ID_STABLE",
       "B_RECENT_TRIGGER_PERSISTENCE","DEEP_RECENT_TRIGGER_INDEPENDENT_OF_CURRENT_STAGE1","A_STAGE1_ASOF_TRIGGER","MECHANICAL_SCALE_BREAK_GUARD","BREADTH_CLOSE_ONLY_SCALE_GUARD","SPLIT_ONLY_RECONCILIATION","SPLIT_RAW_CROSSCHECK","HISTORICAL_DISCOVERY_WATCH","CHASE_FROZEN_RETEST_RECOVERY","ANCHOR_AVAILABLE_S0_CHRONOLOGY",
       "ADR_RATIO_FAIL_CLOSED_CLASSIFICATION","FINALIST_FRACTIONAL_SPLIT_VERIFICATION","SYNTHETIC_PRICE_DISCOVERY_ORANGE_CAP","PROSPECTIVE_LIFECYCLE_PERSISTENCE","FROZEN_LIFECYCLE_EVENT_SCOPE","ANCIENT_SCALE_BREAK_OUTSIDE_TECH_HORIZON","TRIGGER_TIME_WEEKLY_SCOPE",
-      "FAMILY_C_REACTION_HIGH_PIVOT","FAMILY_C_PERSISTENT_GAP_FLOOR"
+      "FAMILY_C_REACTION_HIGH_PIVOT","FAMILY_C_PERSISTENT_GAP_FLOOR","SPLIT_RECONCILIATION_ACTIVE_HORIZON_ONLY"
     ]})
 
 if __name__=="__main__":
