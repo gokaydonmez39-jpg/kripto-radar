@@ -187,8 +187,22 @@ def process(sym,asof,week_last):
             x=x2.reset_index(drop=True)
 
         wg=weekly_gate(x,asof,week_last)
+        # New-candidate discovery is allowed on the current or prior three
+        # completed sessions. Preserve the weekly context that was actually
+        # knowable on each candidate trigger date; today's weekly status must
+        # never erase a valid recent trigger.
+        recent_weekly_pass_dates=[]
+        recent_weekly_context={}
+        for idx in range(max(0,len(x)-4),len(x)):
+            td=x["date"].iloc[idx].date().isoformat()
+            wi=weekly_gate(x.iloc[:idx+1].copy(),td,week_last)
+            recent_weekly_context[td]=wi
+            if wi.get("pass"):
+                recent_weekly_pass_dates.append(td)
         if not wg.get("pass"):
             return sym,{"status":"WEEKLY_FAIL","weekly":wg,"raw_weekly":raw_wg,
+                        "recent_weekly_pass_dates":recent_weekly_pass_dates,
+                        "recent_weekly_context":recent_weekly_context,
                         "corporate_action_status":ca_status,"split_events":split_events,
                         "mechanical_scale_breaks":scale_breaks,"mechanical_split_suspects":split_suspects,
                         "history_source":history_source}
@@ -208,6 +222,8 @@ def process(sym,asof,week_last):
         d_pool=bool((math.isfinite(dd252) and dd252<=-0.15) or (math.isfinite(dd120) and dd120<=-0.20))
         return sym,{
           "status":"WEEKLY_PASS","weekly":wg,"raw_weekly":raw_wg,"history_source":history_source,
+          "recent_weekly_pass_dates":recent_weekly_pass_dates,
+          "recent_weekly_context":recent_weekly_context,
           "corporate_action_status":ca_status,"split_events":split_events,
           "mechanical_scale_breaks":scale_breaks,"mechanical_split_suspects":split_suspects,
           "a_trend_pool":a_pool,"b_tight_base_pool":b,"b_recent_trigger":b_recent,
@@ -234,6 +250,7 @@ def main():
         r["state_cap"]=state_caps.get(s,"NORMAL")
         r["r92_eligible"]=s not in r92_ineligible
     weekly=[s for s,r in results.items() if r.get("status")=="WEEKLY_PASS"]
+    recent_weekly=[s for s,r in results.items() if r.get("recent_weekly_pass_dates")]
     a=[s for s in weekly if results[s].get("a_trend_pool")]
     b=[s for s in weekly if results[s].get("b_tight_base_pool") or results[s].get("b_recent_trigger")]
     d=[s for s in weekly if results[s].get("d_drawdown_pool")]
@@ -243,6 +260,7 @@ def main():
       "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
       "input_current_core_count":len(syms),
       "weekly_pass_count":len(weekly),"weekly_pass":sorted(weekly),
+      "recent_weekly_scope_count":len(recent_weekly),"recent_weekly_scope":sorted(recent_weekly),
       "a_trend_pool_count":len(a),"a_trend_pool":sorted(a),
       "b_tight_base_pool_count":len(b),"b_tight_base_pool":sorted(b),
       "d_drawdown_pool_count":len(d),"d_drawdown_pool":sorted(d),
