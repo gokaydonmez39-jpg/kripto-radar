@@ -163,6 +163,9 @@ def main():
     assert m["asof_et"]==asof and m["status"]=="HISTORY_COMPLETE"
     assert m["unknown_count"]==0 and m["pending_retry"]==0
     assert p["execution"]=="NONE" and p["real_money"]=="NO-GO" and p["unknown_count"]==0
+    price_blocked_count=int(p.get("blocked_count",(p.get("counts") or {}).get("BLOCK_CURRENT_RUN",0)) or 0)
+    if "blocked_symbols" in p:
+        assert price_blocked_count==len(set(p.get("blocked_symbols") or []))
     assert p["source_master_queue_hash"]==m["queue_hash"] and int(p["source_master_count"])==int(m["queue_total"])
     ps=ptr.get("state_json") or {}
     if isinstance(ps,str): ps=json.loads(ps)
@@ -416,6 +419,7 @@ def main():
     blockers={
       "master_unknown":int(m["unknown_count"]),
       "price_unknown":int(p["unknown_count"]),
+      "price_blocked_current_run":price_blocked_count,
       "mc_unknown":len(mcunk),
       "history_unknown":int(h["unknown_count"]),
       "legal_unknown":int((lg["counts"] or {}).get("UNKNOWN_LEGAL",0)),
@@ -450,6 +454,7 @@ def main():
       "blockers":blockers,
       "counts":{
         "master_total":m["queue_total"],"price_dv20_pass":p["pass_count"],
+        "price_dv20_blocked_current_run":price_blocked_count,
         "mc_primary_pass":len(primary),"mc_primary_fail":len(mcfail),"mc_fallback_watch":len(watch),"mc_fallback_fail":len(fallback_fail),"mc_unknown":len(mcunk),
         "history_input":h["input_count"],"history_pass":len(hpass),"history_fail":len(hfail),
         "legal_pass":len(lpass),"legal_blocked":len(lblock),
@@ -485,7 +490,8 @@ def main():
         **gate_reporting["evidence"],
       },
       "checks":{
-        "policy_order_exact":True,"master_complete":True,"price_exact_master":True,"mc_exact_price_pass_set":True,
+        "policy_order_exact":True,"master_complete":True,"price_exact_master":True,
+        "price_blocked_coverage_explicit":True,"mc_exact_price_pass_set":True,
         "sequential_settlement_bound":(not settlement_witness_required) or mc.get("settlement_witness_status")=="PASS",
         "history_exact_mc_primary":True,"fallback_watch_excluded_after_mc":True,"legal_exact_history_pass":True,
         "legal_master_blob_exact":lg.get("source_master_blob_sha")==sh["full_state"],
