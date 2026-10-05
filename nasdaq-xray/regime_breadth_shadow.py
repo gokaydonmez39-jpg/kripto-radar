@@ -199,6 +199,18 @@ def close_only_scale_breaks(df):
             seen.add(day)
     return sorted(out,key=lambda x:str(x.get("date") or ""))
 
+def new_high_low20_flags(close):
+    """Canonical NEW_HIGH20/NEW_LOW20: compare current close to PRIOR 20 closes.
+
+    Current bar is excluded from the comparison window and equality is not PASS.
+    """
+    c=pd.Series(close,dtype="float64")
+    if len(c)<21:return False,False
+    last=float(c.iloc[-1]);prior=c.iloc[-21:-1].astype(float)
+    if len(prior)!=20 or not math.isfinite(last) or prior.isna().any():
+        return False,False
+    return last>float(prior.max()), last<float(prior.min())
+
 def classify_regime_bounds(q,total,above50,nh20,nl20,missing_count):
     """Fail-closed regime classification using bounds for unresolved breadth members.
 
@@ -333,9 +345,9 @@ def main():
             breadth_missing.append(s);continue
         last=float(c.iloc[-1]); sma50=float(c.rolling(50).mean().iloc[-1])
         if last>sma50:above50+=1
-        win=c.iloc[-20:]
-        if last>=float(win.max())-1e-12:nh20+=1
-        if last<=float(win.min())+1e-12:nl20+=1
+        is_nh20,is_nl20=new_high_low20_flags(c)
+        if is_nh20:nh20+=1
+        if is_nl20:nl20+=1
 
     breadth_pct=above50/len(syms) if syms else None
     regime,regime_resolution=classify_regime_policy(
