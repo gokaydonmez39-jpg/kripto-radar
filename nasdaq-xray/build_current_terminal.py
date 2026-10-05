@@ -307,6 +307,18 @@ def main():
     assert ft.get("source_deep_blob_sha")==sh["deep"] and ft.get("source_family_c_blob_sha")==sh["family_c"]
     assert ft.get("source_compiled_policy_hash")==POLICY_HASH and ft.get("source_compiled_policy_version")=="C4.17"
     assert set(ft["results"])==confirmed
+    expected_alpha_blobs={
+      "alpha_semantics.py":blob_sha(ROOT/"alpha_semantics.py"),
+      "stage1_shadow.py":blob_sha(ROOT/"stage1_shadow.py"),
+      "deep_pre_r1_shadow.py":blob_sha(ROOT/"deep_pre_r1_shadow.py"),
+      "family_c_engine.py":blob_sha(ROOT/"family_c_engine.py"),
+      "final_tech_shadow.py":blob_sha(ROOT/"final_tech_shadow.py"),
+    }
+    final_alpha_blobs=ft.get("semantic_impl_blobs") or {}
+    alpha_source_blobs_exact=(final_alpha_blobs==expected_alpha_blobs)
+    run_sha=os.getenv("GITHUB_SHA")
+    alpha_workflow_sha_exact=(not run_sha) or (ft.get("source_workflow_sha")==run_sha)
+    alpha_source_binding_exact=bool(alpha_source_blobs_exact and alpha_workflow_sha_exact)
     final_unknown=sorted(k for k,v in ft["results"].items() if v.get("result")=="UNKNOWN")
     affected_event_unknown=sorted(ev.get("affected_geometry_event_unknown") or [])
     family_c_unknown=sorted((fc.get("unknown") or {}).keys())
@@ -377,6 +389,7 @@ def main():
       "final_unknown":len(final_unknown),
       "candidate_halt_guard_unknown":halt_guard_unknown,
       "alpha_semantic_conformance_unknown":0 if ft.get("policy_semantics_exact") is True else 1,
+      "alpha_source_binding_unknown":0 if alpha_source_binding_exact else 1,
     }
     full=all(v==0 for v in blockers.values())
     terminal_result=("NO_CONFIRMED_SETUP" if not pre else "PRE_G9_SETUP_EXISTS") if full else "PARTIAL_UNKNOWN"
@@ -438,6 +451,9 @@ def main():
         "stage1_exact_legal_pass":True,"weekly_exact_event_scope":True,"regime_no_missing":True,
         "deep_exact_weekly_scope":True,"final_exact_confirmed_family_set":True,
         "alpha_semantic_conformance_exact":ft.get("policy_semantics_exact") is True,
+        "alpha_source_binding_exact":alpha_source_binding_exact,
+        "alpha_source_blobs_exact":alpha_source_blobs_exact,
+        "alpha_workflow_sha_exact":alpha_workflow_sha_exact,
         "alpha_semantic_audit_status":ft.get("semantic_audit_status"),
         "alpha_semantic_known_gaps":ft.get("semantic_known_gaps") or [],
         "exact_blob_provenance_chain":True,
