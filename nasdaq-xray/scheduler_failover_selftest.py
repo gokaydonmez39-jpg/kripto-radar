@@ -4,6 +4,17 @@ import json
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parent
+
+def _must_kick_root(*, us_weekday: bool, root_age: int, stale_after: int, has_active: bool, kick_age: int, cooldown: int, preimages_equal: bool, second_snapshot_new_run: bool) -> bool:
+    return (
+        us_weekday
+        and root_age > stale_after
+        and not has_active
+        and kick_age > cooldown
+        and preimages_equal
+        and not second_snapshot_new_run
+    )
+
 contract=json.loads((ROOT/"scheduler_failover_contract.json").read_text())
 kick=json.loads((ROOT/"scheduler_kick_dataplane.json").read_text())
 final_kick=json.loads((ROOT/"scheduler_kick_final.json").read_text())
@@ -22,6 +33,20 @@ assert int(contract["kick_cooldown_seconds"]) == 180
 assert contract["double_actions_snapshot_required"] is True
 assert int(contract["health_policy"]["kick_cooldown_seconds"]) == 180
 assert contract["health_policy"]["double_actions_snapshot_required"] is True
+assert contract["health_policy"]["weekday_time_zone"]=="America/New_York"
+assert contract["health_policy"]["preopen_priority_window_is_gate"] is False
+assert contract["health_policy"]["stale_root_action"]=="CAS_KICK_REQUIRED_ON_US_WEEKDAY_WHEN_PREDICATES_TRUE"
+assert contract["health_policy"]["health_action_omission_is_fault"] is True
+assert contract["health_policy"]["weekend_age_only_kick_forbidden"] is True
+
+_stale=int(contract["stale_after_seconds"])
+_cool=int(contract["kick_cooldown_seconds"])
+assert _must_kick_root(us_weekday=True, root_age=_stale+1, stale_after=_stale, has_active=False, kick_age=_cool+1, cooldown=_cool, preimages_equal=True, second_snapshot_new_run=False) is True
+assert _must_kick_root(us_weekday=False, root_age=_stale+9999, stale_after=_stale, has_active=False, kick_age=_cool+9999, cooldown=_cool, preimages_equal=True, second_snapshot_new_run=False) is False
+assert _must_kick_root(us_weekday=True, root_age=_stale+1, stale_after=_stale, has_active=True, kick_age=_cool+1, cooldown=_cool, preimages_equal=True, second_snapshot_new_run=False) is False
+assert _must_kick_root(us_weekday=True, root_age=_stale+1, stale_after=_stale, has_active=False, kick_age=_cool, cooldown=_cool, preimages_equal=True, second_snapshot_new_run=False) is False
+assert _must_kick_root(us_weekday=True, root_age=_stale+1, stale_after=_stale, has_active=False, kick_age=_cool+1, cooldown=_cool, preimages_equal=False, second_snapshot_new_run=False) is False
+assert _must_kick_root(us_weekday=True, root_age=_stale+1, stale_after=_stale, has_active=False, kick_age=_cool+1, cooldown=_cool, preimages_equal=True, second_snapshot_new_run=True) is False
 assert "requested_at_utc" in contract["kick_lease_rule"]
 assert "queued/in_progress" in contract["kick_lease_rule"]
 assert "queued or in_progress" in contract["health_policy"]["active_run_rule"]
