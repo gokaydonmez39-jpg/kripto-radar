@@ -15,7 +15,8 @@ import pandas as pd
 import pandas_market_calendars as mcal
 from alpha_semantics import (
     wilder_atr as _policy_atr, ema_seeded, drawdown_metrics,
-    find_recent_b_trigger, mechanical_scale_breaks, split_consistent_history,
+    find_recent_b_trigger, mechanical_scale_breaks, mechanical_split_suspects,
+    split_consistent_history,
 )
 
 ROOT=Path(__file__).resolve().parent
@@ -170,25 +171,27 @@ def process(sym,asof,week_last):
 
         raw_wg=weekly_gate(x,asof,week_last)
         scale_breaks=mechanical_scale_breaks(x,260)
+        split_suspects=mechanical_split_suspects(x)
         ca_status="NOT_REQUIRED_RAW_WEEKLY_FAIL_NO_MECHANICAL_SCALE_BREAK"
         split_events=[]
         # Split verification is mandatory on every raw weekly passer and on any
         # raw weekly failure whose scale discontinuity could itself have caused
         # the failure. This avoids adding hundreds of unnecessary network calls
         # while still protecting the candidate path from split false negatives.
-        if raw_wg.get("pass") or scale_breaks:
+        if raw_wg.get("pass") or split_suspects:
             x2,ca_status,split_events=split_consistent_history(sym,x)
             if not str(ca_status).startswith("PASS"):
                 return sym,{"status":"UNKNOWN","reason":"CORPORATE_ACTION_SOURCE_UNKNOWN",
                             "corporate_action_status":ca_status,"mechanical_scale_breaks":scale_breaks,
-                            "history_source":history_source}
+                            "mechanical_split_suspects":split_suspects,"history_source":history_source}
             x=x2.reset_index(drop=True)
 
         wg=weekly_gate(x,asof,week_last)
         if not wg.get("pass"):
             return sym,{"status":"WEEKLY_FAIL","weekly":wg,"raw_weekly":raw_wg,
                         "corporate_action_status":ca_status,"split_events":split_events,
-                        "mechanical_scale_breaks":scale_breaks,"history_source":history_source}
+                        "mechanical_scale_breaks":scale_breaks,"mechanical_split_suspects":split_suspects,
+                        "history_source":history_source}
 
         close=x["close"].astype(float)
         sma50=close.rolling(50).mean()
@@ -206,7 +209,7 @@ def process(sym,asof,week_last):
         return sym,{
           "status":"WEEKLY_PASS","weekly":wg,"raw_weekly":raw_wg,"history_source":history_source,
           "corporate_action_status":ca_status,"split_events":split_events,
-          "mechanical_scale_breaks":scale_breaks,
+          "mechanical_scale_breaks":scale_breaks,"mechanical_split_suspects":split_suspects,
           "a_trend_pool":a_pool,"b_tight_base_pool":b,"b_recent_trigger":b_recent,
           "d_drawdown_pool":d_pool,"dd252":dd252,"dd120":dd120,
           "dd252_definition":"CURRENT_CLOSE_VS_MAX_HIGH_252",
