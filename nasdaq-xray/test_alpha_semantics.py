@@ -9,9 +9,10 @@ from alpha_semantics import (
     extension_diagnostics,retest_bar,setup_id,
     find_recent_b_trigger,mechanical_scale_breaks,
     apply_split_events,mechanical_split_suspects,_verify_split_events_against_raw,
-    family_a_pretrigger_low
+    family_a_pretrigger_low,trend_pullback_stage1_at
 )
 from final_tech_shadow import eval_one,_is_depositary_security_name,lifecycle_state_persists
+from deep_pre_r1_shadow import evaluate_recent_families
 from regime_breadth_shadow import close_only_scale_breaks
 
 def frame(n=90):
@@ -89,6 +90,17 @@ def main():
     af.loc[5,"low"]=120.0
     af.loc[6,"low"]=80.0
     assert family_a_pretrigger_low(af,6)==120.0
+
+    # A-family Stage1 is evaluated at the candidate trigger, not today's bar.
+    rows=[]
+    for i in range(90):
+        cl=100.0+i*0.25
+        rows.append({"date":pd.Timestamp("2026-01-02")+pd.Timedelta(days=i),
+                     "open":cl-0.2,"high":cl+1.0,"low":cl-1.0,"close":cl,"volume":1e6})
+    at=pd.DataFrame(rows)
+    assert trend_pullback_stage1_at(at,80) is True
+    at.loc[89,["open","high","low","close"]]=[80.0,81.0,79.0,80.0]
+    assert trend_pullback_stage1_at(at,80) is True
     assert setup_id("TEST","D","2026-10-02",120,100,10)==setup_id("TEST","D","2026-10-02",120,100,10)
 
     # B trigger persists when it happened two completed sessions ago.
@@ -106,6 +118,10 @@ def main():
     bf.loc[t,"close"]=102.0;bf.loc[t,"volume"]=3_000_000.0
     b=find_recent_b_trigger(bf,3)
     assert b and b["breakout_confirmed"] is True and b["trigger_age_sessions"]==2,b
+    # Production deep evaluator must not suppress that recent B trigger merely
+    # because today's cheap Stage1 snapshot pool changed.
+    _,bdeep,_=evaluate_recent_families(bf,bf.copy())
+    assert bdeep.get("breakout_confirmed") is True and bdeep.get("trigger_age_sessions")==2,bdeep
 
     # A likely mechanical split/ADR-ratio scale discontinuity is never silently ignored.
     sf=frame(40)
@@ -185,7 +201,7 @@ def main():
     print({"status":"PASS","tests":[
       "WILDER_FIRST_TR_UNDEFINED","EMA_SMA_SEED","D_DRAWDOWN_DEFINITIONS",
       "R1_STRUCTURAL_TRIGGER_MINUS1","R1_ENTRY_OVERLAP","EXTENSION_RESET","RETEST_BAR","FAMILY_A_TRIGGER_MINUS1_LOW","SETUP_ID_STABLE",
-      "B_RECENT_TRIGGER_PERSISTENCE","MECHANICAL_SCALE_BREAK_GUARD","BREADTH_CLOSE_ONLY_SCALE_GUARD","SPLIT_ONLY_RECONCILIATION","SPLIT_RAW_CROSSCHECK","HISTORICAL_DISCOVERY_WATCH","CHASE_FROZEN_RETEST_RECOVERY",
+      "B_RECENT_TRIGGER_PERSISTENCE","DEEP_RECENT_TRIGGER_INDEPENDENT_OF_CURRENT_STAGE1","A_STAGE1_ASOF_TRIGGER","MECHANICAL_SCALE_BREAK_GUARD","BREADTH_CLOSE_ONLY_SCALE_GUARD","SPLIT_ONLY_RECONCILIATION","SPLIT_RAW_CROSSCHECK","HISTORICAL_DISCOVERY_WATCH","CHASE_FROZEN_RETEST_RECOVERY",
       "ADR_RATIO_FAIL_CLOSED_CLASSIFICATION","PROSPECTIVE_LIFECYCLE_PERSISTENCE","ANCIENT_SCALE_BREAK_OUTSIDE_TECH_HORIZON"
     ]})
 
