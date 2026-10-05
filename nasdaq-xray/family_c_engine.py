@@ -145,10 +145,10 @@ def eval_event(sym,df,e,asof,all_sessions,event_status,weekly_pass_dates=None):
     if r0<21:return None,{"reason":"PRE_EVENT_HISTORY_LT21"}
     if r0+2>=len(df):return None,{"reason":"REACTION_0_1_2_INCOMPLETE","reaction_session":rs}
     pre=r0-1
-    A=atr_wilder(df,pre,14)
-    if A is None:return None,{"reason":"ATR_PRE_EVENT_MISSING"}
+    A_event=atr_wilder(df,pre,14)
+    if A_event is None:return None,{"reason":"ATR_PRE_EVENT_MISSING"}
     pre_close=float(df.close.iloc[pre]);open0=float(df.open.iloc[r0])
-    gap_atr=(open0-pre_close)/A
+    gap_atr=(open0-pre_close)/A_event
     rv0=rvol20_at(df,r0)
     lows=[float(df.low.iloc[i]) for i in [r0,r0+1,r0+2]]
     reaction_ok=bool(gap_atr>=0.50 and rv0 is not None and rv0>=1.5 and min(lows)>pre_close)
@@ -173,12 +173,16 @@ def eval_event(sym,df,e,asof,all_sessions,event_status,weekly_pass_dates=None):
             if weekly_pass_dates is not None and trigger_day not in weekly_pass_dates:
                 continue
             P=max(reaction_high,float(base.high.max()));anchor=float(base.low.min())
-            width=(P-anchor)/A
+            # GAP_ATR is event-relative and uses ATR_pre_event. The base/scenario
+            # geometry is trigger-relative and must use Wilder ATR14 known at t-1.
+            A_trigger=atr_wilder(df,t-1,14)
+            if A_trigger is None:continue
+            width=(P-anchor)/A_trigger
             rv=rvol20_at(df,t)
             close=float(df.close.iloc[t])
             if 0.30<=width<=2.05 and close>P and rv is not None and rv>=1.5:
                 confirmed={
-                  "confirmed":True,"A":A,"P":P,"anchor":anchor,
+                  "confirmed":True,"A":A_trigger,"A_trigger":A_trigger,"A_pre_event":A_event,"P":P,"anchor":anchor,
                   "event_status":event_status,
                   "event_datetime_et":edt.isoformat(),"reaction_mode":mode,
                   "reaction_session":rs,"pre_event_close":pre_close,
@@ -198,7 +202,7 @@ def eval_event(sym,df,e,asof,all_sessions,event_status,weekly_pass_dates=None):
                 break
     detail={
       "event_datetime_et":edt.isoformat(),"reaction_mode":mode,"reaction_session":rs,
-      "pre_event_close":pre_close,"A":A,"gap_atr":gap_atr,"reaction_rvol20":rv0,
+      "pre_event_close":pre_close,"A_pre_event":A_event,"gap_atr":gap_atr,"reaction_rvol20":rv0,
       "reaction_lows":lows,"reaction_high":reaction_high,"reaction_ok":reaction_ok,
       "gap_floor_breach_date":floor_breach_date,
       "confirmed":bool(confirmed)
