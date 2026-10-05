@@ -266,6 +266,9 @@ def main():
     assert st.get("source_mc_policy_hash")==POLICY_HASH and st.get("source_mc_policy_version")=="C4.17"
     assert st["unknown_count"]==0
     weekly=set(st["weekly_pass"]); assert len(weekly)==st["weekly_pass_count"]
+    trigger_weekly=set(st.get("recent_weekly_scope") or st["weekly_pass"])
+    assert len(trigger_weekly)==int(st.get("recent_weekly_scope_count",len(trigger_weekly)))
+    assert weekly<=trigger_weekly
     assert rg["current_core_count"]==len(lpass) and rg["breadth_missing_count"]==0
     assert rg.get("source_input_blob_sha")==sh["stage1_input"]
     assert rg.get("source_legal_pass_hash")==lg.get("pass_hash")
@@ -275,23 +278,28 @@ def main():
     assert dg.get("source_stage1_blob_sha")==sh["stage1"]
     assert dg.get("source_mc_policy_hash")==POLICY_HASH and dg.get("source_mc_policy_version")=="C4.17"
 
-    assert er["weekly_scope_count"]==len(weekly) and set(er["weekly_scope"])==weekly
+    assert er["weekly_scope_count"]==len(trigger_weekly) and set(er["weekly_scope"])==trigger_weekly
+    assert set(er.get("current_weekly_scope") or [])==weekly
     assert er.get("compiled_policy_hash")==POLICY_HASH and er.get("compiled_policy_version")=="C4.17"
     assert er.get("compiled_policy_blob_sha")==sh["policy"]
     assert er.get("source_stage1_blob_sha")==sh["stage1"]
     assert er.get("source_regime_blob_sha")==sh["regime"]
     assert er.get("source_deep_geometry_blob_sha")==sh["deep_geometry"]
-    assert ev["weekly_scope_count"]==len(weekly) and set(ev["weekly_scope"])==weekly
+    assert ev["weekly_scope_count"]==len(trigger_weekly) and set(ev["weekly_scope"])==trigger_weekly
     assert ev["source_request_blob_sha"]==sh["event_request"]
     assert ev.get("compiled_policy_hash")==POLICY_HASH and ev.get("compiled_policy_version")=="C4.17"
     assert ev.get("compiled_policy_blob_sha")==sh["policy"]
-    assert set(ev["event_status_by_symbol"])==weekly
-    assert ev["clean_discovery_count"]+ev["confirmed_block_count"]+ev["unresolved_count"]==len(weekly)
+    assert set(ev["event_status_by_symbol"])==trigger_weekly
+    assert ev["clean_discovery_count"]+ev["confirmed_block_count"]+ev["unresolved_count"]==len(trigger_weekly)
 
     assert fc["weekly_scope_count"]==len(weekly)
+    assert int(fc.get("weekly_trigger_scope_count",-1))==len(trigger_weekly)
     assert fc.get("source_stage1_blob_sha")==sh["stage1"] and fc.get("source_event_blob_sha")==sh["events"]
     assert fc.get("source_compiled_policy_hash")==POLICY_HASH and fc.get("source_compiled_policy_version")=="C4.17"
-    assert dp["input_weekly_pass_count"]==len(weekly) and set(dp["results"])==weekly
+    assert dp["input_weekly_pass_count"]==len(weekly)
+    assert dp["input_weekly_trigger_scope_count"]==len(trigger_weekly)
+    assert set(dp.get("weekly_trigger_scope") or [])==trigger_weekly
+    assert set(dp["results"])==trigger_weekly
     assert dp.get("source_stage1_blob_sha")==sh["stage1"]
     assert dp.get("source_regime_blob_sha")==sh["regime"] and dp.get("source_event_blob_sha")==sh["events"]
     assert dp.get("source_mc_policy_hash")==POLICY_HASH and dp.get("source_mc_policy_version")=="C4.17"
@@ -484,6 +492,8 @@ def main():
         "legal_master_semantic_rebind":legal_master_semantic_rebind,
         "stage1_exact_legal_pass":True,"weekly_exact_event_scope":True,"regime_no_missing":True,
         "deep_exact_weekly_scope":True,
+        "deep_exact_trigger_weekly_scope":True,
+        "current_weekly_subset_of_trigger_scope":weekly<=trigger_weekly,
         "final_exact_confirmed_family_set":True,
         "final_extra_rows_exact_lifecycle_backed":extra_lifecycle<=lifecycle_backed,
         "lifecycle_frozen_semantics_exact":ft.get("lifecycle_semantics_exact") is True,
