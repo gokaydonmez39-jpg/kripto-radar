@@ -187,12 +187,12 @@ def _cluster_points(points:list[dict[str,Any]],A:float)->list[dict[str,Any]]:
 
 _SPLIT_CACHE:dict[str,tuple[str,list[dict[str,Any]]]]={}
 
-def mechanical_split_suspects(df:pd.DataFrame)->list[dict[str,Any]]:
-    """Cheap local detector used only to decide when a failed weekly raw series needs split verification."""
+def mechanical_split_suspects(df:pd.DataFrame,lookback:int=260)->list[dict[str,Any]]:
+    """Discovery-only split suspect detector, bounded to the active technical horizon."""
     if df is None or len(df)<2:return []
     common=(1.25,1.5,2.0,3.0,4.0,5.0,10.0,20.0,25.0,50.0,100.0)
-    out=[]
-    for i in range(1,len(df)):
+    out=[]; start=max(1,len(df)-lookback)
+    for i in range(start,len(df)):
         prev=float(df["close"].iloc[i-1]);op=float(df["open"].iloc[i])
         if prev<=0 or op<=0:continue
         q=op/prev
