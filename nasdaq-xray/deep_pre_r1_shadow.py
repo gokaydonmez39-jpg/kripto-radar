@@ -221,6 +221,10 @@ def family_d(df,qqq,eligible_trigger_dates=None):
         if not st:continue
         hl=st["hl"];prior=st["prior_hs"]
         if not prior:continue
+        # A strict 5-bar swing low centered at hl is only confirmed at hl+2
+        # close. The reclaim trigger must occur AFTER that availability point;
+        # the confirmation bar itself cannot retroactively use the new HL.
+        if t<hl+3:continue
         sh=prior[-1];P=float(x.high.iloc[sh]);anchor=float(x.low.iloc[hl])
         Aser=atr14(x)
         if Aser is None or t<1 or pd.isna(Aser.iloc[-2]):continue
