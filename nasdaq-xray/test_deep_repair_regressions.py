@@ -54,28 +54,28 @@ def test_r1_no_future_mutation_and_confirmation():
         alpha._base_high_points,alpha._weekly_swing_points,alpha._gap_down_zones=oldb,oldw,oldg
 
 def test_resistance_role_change_state_machine():
-    oldb,oldw,oldg=alpha._base_high_points,alpha._weekly_swing_points,alpha._gap_down_zones
+    oldb,oldw,oldg,olds=alpha._base_high_points,alpha._weekly_swing_points,alpha._gap_down_zones,alpha.strict_swings
     alpha._base_high_points=lambda prior,atr:[]
     alpha._weekly_swing_points=lambda prior:[]
     alpha._gap_down_zones=lambda prior:[]
+    # Hold the structural evidence set fixed. Otherwise the synthetic breakout
+    # and retest bars can themselves become newly confirmed swing highs and
+    # create a legitimately new active resistance cluster.
+    alpha.strict_swings=lambda prior:([20],[])
     try:
         d=frame(70)
         d.loc[20,"high"]=120.0; d.loc[18:19,"high"]=[105.0,106.0]; d.loc[21:22,"high"]=[106.0,105.0]
-        # Breakout/retest bars use equal-high plateaus so they cannot themselves
-        # become new strict 5-bar swing highs and mutate the tested resistance zone.
-        d.loc[39:41,"high"]=121.0
-        d.loc[40,["open","low","close"]]=[120.2,120.1,120.5]
+        d.loc[40,["open","high","low","close"]]=[121.0,123.0,121.0,121.5]
         z1=alpha.resistance_zones(d,60,10.0)
         t1=[z for z in z1 if any(abs(float(p.get("price",0))-120.0)<1e-12 for p in (z.get("points") or []))]
         assert t1 and t1[0]["active"] is True,t1
-        d.loc[44:46,"high"]=121.0
-        d.loc[45,["open","low","close"]]=[120.4,119.5,120.5]
+        d.loc[45,["open","high","low","close"]]=[121.0,122.0,119.5,121.0]
         z2=alpha.resistance_zones(d,60,10.0)
         t2=[z for z in z2 if any(abs(float(p.get("price",0))-120.0)<1e-12 for p in (z.get("points") or []))]
         assert t2 and t2[0]["active"] is False,t2
         assert t2[0].get("broken_at")==d.date.iloc[45].date().isoformat(),t2[0]
     finally:
-        alpha._base_high_points,alpha._weekly_swing_points,alpha._gap_down_zones=oldb,oldw,oldg
+        alpha._base_high_points,alpha._weekly_swing_points,alpha._gap_down_zones,alpha.strict_swings=oldb,oldw,oldg,olds
 
 def test_corporate_action_absence_vs_real_scale_break():
     clean=frame(300)
