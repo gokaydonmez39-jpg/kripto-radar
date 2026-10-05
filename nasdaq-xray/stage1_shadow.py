@@ -174,10 +174,11 @@ def process(sym,asof,week_last):
         split_suspects=mechanical_split_suspects(x)
         ca_status="PASS_NO_LOCAL_SPLIT_DISCONTINUITY"
         split_events=[]
-        # External split lookup is anomaly-driven, not universe-wide. A continuous
-        # raw series needs no adjustment. If a local split-like discontinuity exists,
-        # verify/reconcile it before weekly or downstream geometry can PASS.
-        if split_suspects:
+        # External split lookup is anomaly-driven, not gap-driven. Ordinary
+        # earnings/news gaps are common and must not turn the universe UNKNOWN.
+        # Only a recent close-to-close mechanical scale discontinuity can require
+        # split verification; open-gap suspects remain diagnostic evidence.
+        if scale_breaks:
             x2,ca_status,split_events=split_consistent_history(sym,x)
             if not str(ca_status).startswith("PASS"):
                 return sym,{"status":"UNKNOWN","reason":"CORPORATE_ACTION_SOURCE_UNKNOWN",
