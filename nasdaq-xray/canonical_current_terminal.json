@@ -12,6 +12,7 @@
     "final_unknown": 1,
     "history_unknown": 0,
     "legal_unknown": 0,
+    "lifecycle_semantic_binding_unknown": 1,
     "master_unknown": 0,
     "mc_unknown": 0,
     "price_unknown": 0,
@@ -33,9 +34,9 @@
       "UCFI",
       "UCFIW"
     ],
-    "age_seconds": 2.004,
-    "generated_at_utc": "2026-10-05T16:16:24.599093+00:00",
-    "guard_blob_sha": "d78bfbfbb0cdf81f8bbdf8777eec878e9a7b2e2e",
+    "age_seconds": 1.598,
+    "generated_at_utc": "2026-10-05T16:25:33.120715+00:00",
+    "guard_blob_sha": "e7afa62d04b9dbfd06d104e24fa6aa659ac10d19",
     "guard_path": "nasdaq-xray/canonical_official_source_guard.json",
     "max_age_seconds": 900,
     "security_status_suspension_symbols": [
@@ -98,6 +99,7 @@
     "legal_exact_history_pass": true,
     "legal_master_blob_exact": false,
     "legal_master_semantic_rebind": true,
+    "lifecycle_frozen_semantics_exact": false,
     "master_complete": true,
     "mc_exact_price_pass_set": true,
     "policy_order_exact": true,
@@ -146,7 +148,7 @@
     },
     "account_live_probe": {
       "balance_parseable": false,
-      "blob_sha": "f261baf70d4b3755344764dc96b8d6775d8cd26d",
+      "blob_sha": "d6c0d48617076c2a6e74b7e107cd39ba30cf6cd9",
       "network_attempted": false,
       "path": "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/account_effective_probe_state.json",
       "positions_parseable": false,
@@ -157,7 +159,7 @@
       "secret_values_persisted": false,
       "status": "BLOCKED_MISSING_CREDENTIALS",
       "workflow_run_attempt": "1",
-      "workflow_run_id": "37339397980"
+      "workflow_run_id": "37340598461"
     },
     "deep": {
       "blob_sha": "36da5eb774d4163b95c26190ad073a2277e3f877",
@@ -180,7 +182,7 @@
       "path": "nasdaq-xray/canonical_current_family_c.json"
     },
     "final": {
-      "blob_sha": "173a55bfb648d13bd556315cce56b6d05ab0debc",
+      "blob_sha": "867436d5200e83c6633fd5011f1f68141ac30353",
       "path": "nasdaq-xray/canonical_current_final_tech.json"
     },
     "full_state": {
@@ -210,7 +212,7 @@
       "path": "nasdaq-xray/canonical_mc_bridge_20261002_c417.json"
     },
     "official_halt_guard": {
-      "blob_sha": "d78bfbfbb0cdf81f8bbdf8777eec878e9a7b2e2e",
+      "blob_sha": "e7afa62d04b9dbfd06d104e24fa6aa659ac10d19",
       "path": "nasdaq-xray/canonical_official_source_guard.json"
     },
     "pointer": {
@@ -242,7 +244,7 @@
   "final_gate_reporting_zero_alpha": true,
   "full_end_to_end_research_pass": false,
   "g9_global_status": "G9_BLOCKED_FREE_AUTOMATION_PATH",
-  "generated_at_utc": "2026-10-05T16:16:26.604523+00:00",
+  "generated_at_utc": "2026-10-05T16:25:34.719201+00:00",
   "pointer_asof_before_candidate": "2026-10-02",
   "r92_account_g9_applicable": false,
   "r92_candidates": [],
