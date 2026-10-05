@@ -56,11 +56,19 @@ def find_good(asof:str)->str:
     raise RuntimeError("NO_VALID_SAME_ASOF_PRICE_SNAPSHOT")
 
 def files_at(sha:str):
-    cp=run("git","ls-tree","-r","--name-only",sha,"--","nasdaq-xray")
-    chunks=[x for x in cp.stdout.splitlines() if CHUNK_RE.match(x)]
-    if not chunks:
-        raise RuntimeError("NO_RESOLVER_CHUNKS_IN_SNAPSHOT")
-    for p in STATIC:
+    manifest=show_json(sha,"nasdaq-xray/canonical_current_resolver_chunk_manifest.json")
+    if not manifest or manifest.get("schema")!="XRAY_RESOLVER_REQUEST_CHUNK_MANIFEST_V1":
+        raise RuntimeError("SNAPSHOT_MANIFEST_INVALID")
+    declared=manifest.get("chunks") or []
+    if len(declared)!=int(manifest.get("chunk_count",-1)) or not declared:
+        raise RuntimeError("SNAPSHOT_MANIFEST_CHUNK_COUNT_INVALID")
+    chunks=[]
+    for i,row in enumerate(declared,1):
+        p=str(row.get("path") or "")
+        if not CHUNK_RE.match(p) or int(row.get("chunk_index",-1))!=i or p in chunks:
+            raise RuntimeError("SNAPSHOT_MANIFEST_CHUNK_DECLARATION_INVALID")
+        chunks.append(p)
+    for p in STATIC+chunks:
         probe=run("git","cat-file","-e",f"{sha}:{p}",check=False)
         if probe.returncode!=0:
             raise RuntimeError("SNAPSHOT_FILE_MISSING:"+p)
@@ -80,13 +88,21 @@ def validate(asof:str):
     assert manifest["queue_hash"]==req["queue_hash"]
     assert manifest["symbol_hash"]==req["symbol_hash"]
     assert int(manifest["symbol_count"])==int(req["symbol_count"])
-    chunks=sorted(ROOT.glob("canonical_current_resolver_chunk_[0-9][0-9][0-9][0-9].json"))
-    assert len(chunks)==int(manifest["chunk_count"])
+    declared=manifest.get("chunks") or []
+    declared_paths=[str(x.get("path") or "") for x in declared]
+    existing=sorted(ROOT.glob("canonical_current_resolver_chunk_[0-9][0-9][0-9][0-9].json"))
+    existing_rel=["nasdaq-xray/"+x.name for x in existing]
+    assert existing_rel==declared_paths
     rebuilt=[]
-    for cp in chunks:
+    for i,row in enumerate(declared,1):
+        cp=REPO/row["path"]
         cj=json.load(open(cp))
+        assert int(row["chunk_index"])==i
+        assert blob(cp)==row["blob_sha"]
         assert cj["request_blob_sha"]==manifest["request_blob_sha"]
         assert cj["symbol_hash"]==manifest["symbol_hash"]
+        assert int(cj["chunk_index"])==i
+        assert int(cj["symbol_count"])==len(cj["symbols"])==int(row["symbol_count"])
         rebuilt.extend(cj["symbols"])
     assert rebuilt==req["symbols"]
     return {

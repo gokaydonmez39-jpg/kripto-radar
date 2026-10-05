@@ -607,6 +607,10 @@ def test_workflow_race_and_pre_mc_freeze_contracts():
     assert "canonical_current_resolver_chunk_[0-9][0-9][0-9][0-9].json" in recsrc
     assert 'assert rebuilt==req["symbols"]' in recsrc
     assert "RECOVERY_PUSH_RACE_EXHAUSTED" in recsrc
+    assert 'manifest=show_json(sha,"nasdaq-xray/canonical_current_resolver_chunk_manifest.json")' in recsrc
+    assert 'declared=manifest.get("chunks") or []' in recsrc
+    assert 'assert existing_rel==declared_paths' in recsrc
+    assert 'assert blob(cp)==row["blob_sha"]' in recsrc
     def core(pointer_asof,latest_completed,price_asof,price_ok):
         same=bool(pointer_asof and latest_completed==pointer_asof)
         current=bool(price_asof and price_asof==latest_completed)
