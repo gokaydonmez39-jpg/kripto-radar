@@ -22,6 +22,7 @@ from alpha_semantics import (
     split_consistent_history,
     apply_split_events,
     family_a_pretrigger_low,
+    trend_pullback_stage1_at,
 )
 
 ROOT=Path(__file__).resolve().parent
@@ -228,6 +229,10 @@ def family_a(df):
     if trigger is None:
         last_age=(len(df)-1)-(sh+2)
         return {"pool":False,"reason":"SH_AGE" if last_age>8 else "NO_REVERSAL","sessions_since_confirm":last_age}
+    if not trend_pullback_stage1_at(df,trigger):
+        return {"pool":False,"reason":"A_STAGE1_AT_TRIGGER_FAIL",
+                "trigger_date":df.date.iloc[trigger].strftime("%Y-%m-%d"),
+                "sessions_since_confirm":sessions_since_confirm}
     Aser=atr14(df)
     if Aser is None or trigger<1 or pd.isna(Aser.iloc[trigger-1]):return {"pool":False,"reason":"ATR"}
     A=float(Aser.iloc[trigger-1]); anchor=float(df.low.iloc[hl]); SH=float(df.high.iloc[sh])
@@ -291,9 +296,12 @@ def main():
         x=x.reset_index(drop=True)
         rs20=common_rs(x,qqq,20);rs60=common_rs(x,qqq,60)
         mix_pass=True if GEOMETRY_ONLY else (bool(rs20 is not None and rs60 is not None and rs20>0 and rs60>0) if rg.get("regime")=="MIXED" else True)
-        A=family_a(x) if s in st["a_trend_pool"] else {"pool":False,"reason":"NOT_A_STAGE1"}
-        B=family_b(x) if s in st["b_tight_base_pool"] else {"pool":False,"reason":"NOT_B_STAGE1"}
-        D=family_d(x,qqq) if s in st["d_drawdown_pool"] else {"pool":False,"reason":"NOT_D_STAGE1"}
+        # Exact recent-trigger evaluation must not depend on today's cheap Stage1
+        # snapshot pool. A/B/D re-check their mandatory conditions at the actual
+        # candidate trigger; this preserves valid triggers from the prior 3 sessions.
+        A=family_a(x)
+        B=family_b(x)
+        D=family_d(x,qqq)
         event="DEFERRED" if GEOMETRY_ONLY else "UNKNOWN_STALE_EVENT_STATE"
         if event_state_fresh:
             event="CLEAN_DISCOVERY"
