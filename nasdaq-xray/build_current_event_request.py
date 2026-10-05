@@ -24,6 +24,24 @@ def blob_sha(p:Path)->str:
 def hash_lines(xs):
     return hashlib.sha256("\n".join(xs).encode()).hexdigest()
 
+def lifecycle_scope_from_final(final_obj,asof):
+    """Return frozen prospective lifecycle symbols that still require current event research."""
+    try:
+        lr=(final_obj or {}).get("lifecycle_registry") or {}
+        if ((final_obj or {}).get("asof_et")!=asof
+            or lr.get("schema")!="XRAY_CANDIDATE_LIFECYCLE_REGISTRY_V1"
+            or lr.get("execution")!="NONE" or lr.get("real_money")!="NO-GO"):
+            return []
+        return sorted(set(
+            str(rec.get("symbol")) for rec in (lr.get("records") or {}).values()
+            if rec.get("symbol")
+        ))
+    except Exception:
+        return []
+
+def event_geometry_scope(fresh_geometry,lifecycle_scope):
+    return sorted(set(fresh_geometry or [])|set(lifecycle_scope or []))
+
 def sessions(asof):
     d=datetime.fromisoformat(asof).date()
     cal=mcal.get_calendar("NASDAQ")
@@ -64,18 +82,9 @@ def main():
     assert set(fresh_geometry)<=set(weekly)
     lifecycle_scope=[]
     if PREV_FINAL.exists():
-        try:
-            pf=json.loads(PREV_FINAL.read_text())
-            lr=pf.get("lifecycle_registry") or {}
-            if (pf.get("asof_et")==asof and lr.get("schema")=="XRAY_CANDIDATE_LIFECYCLE_REGISTRY_V1"
-                and lr.get("execution")=="NONE" and lr.get("real_money")=="NO-GO"):
-                lifecycle_scope=sorted(set(
-                    str(rec.get("symbol")) for rec in (lr.get("records") or {}).values()
-                    if rec.get("symbol")
-                ))
-        except Exception:
-            lifecycle_scope=[]
-    finalists=sorted(set(fresh_geometry)|set(lifecycle_scope))
+        try:lifecycle_scope=lifecycle_scope_from_final(json.loads(PREV_FINAL.read_text()),asof)
+        except Exception:lifecycle_scope=[]
+    finalists=event_geometry_scope(fresh_geometry,lifecycle_scope)
     obj={
       "schema":"XRAY_EVENT_EPOCH_REQUEST_V1","status":"READY","task_id":TASK,"asof_et":asof,
       "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
