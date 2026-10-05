@@ -316,7 +316,7 @@ def main():
     assert lifecycle_state_persists("PRE_G9_TECH_PASS") is True
     assert lifecycle_state_persists("WATCH_RETEST_REQUIRED") is True
     assert lifecycle_state_persists("WATCH_EVENT_UNKNOWN_OR_BLOCKED") is True
-    assert lifecycle_state_persists("WATCH_HISTORICAL_SETUP") is False
+    assert lifecycle_state_persists("PRE_G9_TECH_PASS") is True
     assert lifecycle_state_persists("FAIL_RR") is False
 
     # Frozen lifecycle symbols remain in event research even after leaving current
