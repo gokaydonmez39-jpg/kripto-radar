@@ -15,6 +15,7 @@ import pandas as pd
 from alpha_semantics import (
     wilder_atr, trigger_index, setup_id, session_age,
     nearest_active_resistance, extension_diagnostics, retest_bar,
+    apply_split_events,
 )
 
 ROOT=Path(__file__).resolve().parent
@@ -305,6 +306,17 @@ def main():
             if x is None:errors[s]=e
             else:data[s]=x;history_source[s]=src
 
+    corporate_action_errors={}
+    for s in list(data):
+        drow=(d.get("results") or {}).get(s) or {}
+        ca_status=drow.get("corporate_action_status")
+        if not str(ca_status).startswith("PASS"):
+            corporate_action_errors[s]=ca_status or "MISSING"
+            continue
+        split_events=drow.get("split_events") or []
+        if split_events:
+            data[s]=apply_split_events(data[s],split_events).reset_index(drop=True)
+
     results={};new_records=dict(old_records)
     seen=set()
     for sym,fam,g,event in candidates:
@@ -314,10 +326,9 @@ def main():
         if sym not in data:
             results[key]={"result":"UNKNOWN","reason":"HISTORY:"+errors.get(sym,"MISSING"),"state_cap":state_caps.get(sym,"NORMAL"),"r92_eligible":sym not in r92_ineligible}
             continue
-        scale_breaks=((d.get("results") or {}).get(sym) or {}).get("mechanical_scale_breaks") or []
-        if scale_breaks:
-            results[key]={"result":"UNKNOWN","reason":"CORPORATE_ACTION_SCALE_BREAK_SUSPECTED",
-                          "mechanical_scale_breaks":scale_breaks,
+        if sym in corporate_action_errors:
+            results[key]={"result":"UNKNOWN","reason":"CORPORATE_ACTION_NOT_VERIFIED",
+                          "corporate_action_status":corporate_action_errors[sym],
                           "state_cap":state_caps.get(sym,"NORMAL"),"r92_eligible":sym not in r92_ineligible}
             continue
         frozen,err=_frozen_geometry(sym,fam,g,data[sym])
