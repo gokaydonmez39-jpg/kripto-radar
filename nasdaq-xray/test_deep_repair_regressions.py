@@ -250,11 +250,12 @@ def test_mc_bridge_immutable_supersession():
 
             repaired["supersedes_mc_bridge_blob_sha"]="0"*40
             r2.write_text(json.dumps(repaired))
-            raised=False
-            try: terminal_mod.find_mc(price,"PB")
-            except RuntimeError as e:
-                raised="MC_BRIDGE_EXACT_BINDING_MATCHES:2" in str(e)
-            assert raised
+            # A malformed successor is ineligible and MUST NOT suppress its
+            # predecessor. The still-valid immutable predecessor remains the
+            # sole active authority; this is fail-closed without manufacturing
+            # duplicate authority.
+            got2=terminal_mod.find_mc(price,"PB")
+            assert got2[0].name==base.name,(got2[0],base)
     finally:
         terminal_mod.ROOT=old_root
 
