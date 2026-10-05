@@ -295,6 +295,64 @@ def nearest_active_resistance(df:pd.DataFrame,trigger_idx:int,A:float,entry_low:
     overlap=not (float(z["upper"])<entry_low or float(z["lower"])>entry_high)
     return {"status":"PASS","T1":float(z["lower"]),"zone":z,"target_overlap":overlap,"zones":zones}
 
+def rvol20_at(df:pd.DataFrame,idx:int)->float|None:
+    """Exact trigger-volume ratio versus the prior 20 completed rows; trigger excluded."""
+    if idx<20:return None
+    vals=[float(v) for v in df["volume"].iloc[idx-20:idx] if math.isfinite(float(v)) and float(v)>=0]
+    if len(vals)!=20:return None
+    med=float(pd.Series(vals,dtype="float64").median())
+    if not math.isfinite(med) or med<=0:return None
+    v=float(df["volume"].iloc[idx])
+    return v/med if math.isfinite(v) and v>=0 else None
+
+def tight_base_at(df:pd.DataFrame,t:int)->dict[str,Any]|None:
+    """C4.17 B geometry at trigger t; trigger is excluded from base and contraction windows."""
+    if t<26 or t>=len(df):return None
+    atr=wilder_atr(df,14)
+    if t-1>=len(atr) or pd.isna(atr.iloc[t-1]):return None
+    A=float(atr.iloc[t-1])
+    if not math.isfinite(A) or A<=0:return None
+    tr=pd.concat([(df["high"]-df["low"]).abs(),(df["high"]-df["close"].shift(1)).abs(),
+                  (df["low"]-df["close"].shift(1)).abs()],axis=1).max(axis=1)
+    passing=[]
+    for n in (5,10,15,20):
+        if t<n+20:continue
+        base=df.iloc[t-n:t]
+        bh=float(base["high"].max());bl=float(base["low"].min());width=(bh-bl)/A
+        last5=float(tr.iloc[t-5:t].mean());prev20=float(tr.iloc[t-25:t-5].mean())
+        if 0.30<=width<=2.05 and prev20>0 and last5<=0.8*prev20:
+            passing.append((n,bh,bl,width))
+    if not passing:return None
+    n,P,anchor,width=max(passing,key=lambda z:z[0])
+    rv=rvol20_at(df,t);close=float(df["close"].iloc[t])
+    return {"window":n,"P":P,"anchor":anchor,"b":width,"A":A,"rvol20":rv,"close":close,
+            "breakout_confirmed":bool(close>P and rv is not None and rv>=1.5),
+            "trigger_date":df["date"].iloc[t].date().isoformat()}
+
+def find_recent_b_trigger(df:pd.DataFrame,max_age:int=3)->dict[str,Any]|None:
+    """Earliest valid B trigger among the current and prior max_age completed sessions."""
+    if df.empty:return None
+    last=len(df)-1
+    for t in range(max(0,last-max_age),last+1):
+        g=tight_base_at(df,t)
+        if g and g.get("breakout_confirmed"):
+            g["trigger_age_sessions"]=last-t
+            return g
+    return None
+
+def mechanical_scale_breaks(df:pd.DataFrame,lookback:int=260)->list[dict[str,Any]]:
+    """Detect likely split/ADR-ratio scale breaks in unadjusted OHLC; diagnostic/fail-closed only."""
+    out=[]; start=max(1,len(df)-lookback); common=(2.0,3.0,4.0,5.0,10.0,20.0)
+    for i in range(start,len(df)):
+        pc=float(df["close"].iloc[i-1]);cc=float(df["close"].iloc[i])
+        if pc<=0 or cc<=0:continue
+        ratio=max(pc/cc,cc/pc)
+        nearest=min(common,key=lambda x:abs(ratio-x));rel=abs(ratio-nearest)/nearest
+        if ratio>=1.8 and rel<=0.08:
+            out.append({"date":df["date"].iloc[i].date().isoformat(),"ratio":ratio,
+                        "nearest_common_factor":nearest,"relative_error":rel})
+    return out
+
 def retest_bar(row:pd.Series,P:float,entry_high:float)->bool:
     return float(row["low"])<=entry_high and float(row["close"])>P and float(row["close"])<=entry_high
 
