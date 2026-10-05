@@ -126,17 +126,26 @@ def load_gate_reporting():
     return out
 
 def candidate_local_research_ready(pre,halt_safety,ft,alpha_source_binding_exact):
-    """Candidate-local research readiness is independent of global coverage completeness.
-    UNKNOWN safety/semantic evidence never passes. This function cannot create alpha;
-    it only preserves already-proven PRE_G9 candidates from unrelated global blockers.
+    """Candidate-local readiness must not inherit another finalist's UNKNOWN.
+
+    The legal guard itself must be exact-bound, while every candidate that
+    survives into the current PRE_G9 set must have its own detailed legal PASS.
+    A different finalist's legal UNKNOWN can keep FULL_E2E partial but may not
+    suppress an independently proven candidate.
     """
+    rows=ft.get("results") or {}
+    pre_legal_exact=bool(pre) and all(
+        (rows.get(k) or {}).get("candidate_legal_review_status")=="PASS"
+        for k in pre
+    )
     return bool(
       pre
       and (halt_safety or {}).get("status")=="PASS"
       and ft.get("policy_semantics_exact") is True
       and bool(alpha_source_binding_exact)
       and ft.get("lifecycle_semantics_exact") is True
-      and ft.get("detailed_legal_review_exact") is True
+      and ft.get("candidate_legal_guard_exact_binding") is True
+      and pre_legal_exact
     )
 
 def mc_semantic_input_match(price,j):
@@ -665,7 +674,12 @@ def main():
         "final_gate_reporting_does_not_affect_alpha":True,
         "candidate_delivery_halt_guard_fail_closed":halt_safety.get("status")=="PASS" or not raw_pre,
         "candidate_local_research_independent_of_global_coverage":True,
-        "candidate_detailed_legal_review_exact":ft.get("detailed_legal_review_exact") is True,
+        "candidate_legal_guard_exact_binding":ft.get("candidate_legal_guard_exact_binding") is True,
+        "candidate_pre_g9_legal_pass":bool(pre) and all(
+          ((ft.get("results") or {}).get(k) or {}).get("candidate_legal_review_status")=="PASS"
+          for k in pre
+        ),
+        "all_finalists_detailed_legal_review_exact":ft.get("detailed_legal_review_exact") is True,
         "candidate_local_research_pass":candidate_local_ready,
       },
       "generated_at_utc":datetime.now(timezone.utc).isoformat()
