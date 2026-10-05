@@ -27,7 +27,9 @@ permissions:
   contents: write
 
 concurrency:
-  group: xray-canonical-current-post-mc
+  # V2 group breaks out of pre-guard stale in-flight runs; old-group runs are
+  # commit-time stale by workflow SHA and cannot publish current artifacts.
+  group: xray-canonical-current-post-mc-v2
   # Preserve single-writer ordering but never preempt an exact-bound epoch in flight.
   # New triggers queue and the freeze/no-op guards collapse redundant work.
   cancel-in-progress: false
