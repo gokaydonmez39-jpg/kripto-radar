@@ -18,6 +18,9 @@ on:
       - "nasdaq-xray/build_current_event_request.py"
       - "nasdaq-xray/build_current_terminal.py"
       - "nasdaq-xray/test_alpha_semantics.py"
+      - "nasdaq-xray/test_deep_repair_regressions.py"
+      - ".github/workflows/xray-canonical-current-pre-mc.yml"
+      - ".github/workflows/xray-canonical-current-final.yml"
       - ".github/workflows/xray-dynamic-phase-regression.yml"
   workflow_dispatch:
 
@@ -52,7 +55,8 @@ jobs:
             nasdaq-xray/final_tech_shadow.py \
             nasdaq-xray/build_current_event_request.py \
             nasdaq-xray/build_current_terminal.py \
-            nasdaq-xray/test_alpha_semantics.py
+            nasdaq-xray/test_alpha_semantics.py \
+            nasdaq-xray/test_deep_repair_regressions.py
       - name: Assert no frozen 20260930 ASOF constants
         run: |
           python - <<'PY'
@@ -79,7 +83,9 @@ jobs:
           print("DYNAMIC_ASOF_STATIC_GATE=PASS")
           PY
       - name: Run deterministic alpha semantics regression
-        run: python nasdaq-xray/test_alpha_semantics.py
+        run: |
+          python nasdaq-xray/test_alpha_semantics.py
+          python nasdaq-xray/test_deep_repair_regressions.py
 
       - name: Assert Family-C event ATR and trigger ATR separation
         run: |
