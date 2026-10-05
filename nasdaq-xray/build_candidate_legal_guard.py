@@ -331,7 +331,10 @@ def main():
         raise RuntimeError("LIFECYCLE_SAFETY_OR_TASK_MISMATCH")
 
     scope=candidate_scope(deep,fc,lifecycle)
-    cikmap=_ticker_cik_map()
+    # No finalist/lifecycle candidate means there is nothing to query from SEC.
+    # Produce an exact empty guard without making external network availability
+    # a false FULL_E2E blocker for an empty candidate scope.
+    cikmap=_ticker_cik_map() if scope else {}
     records={}
     for sym in scope:
         cik=cikmap.get(sym.upper())
