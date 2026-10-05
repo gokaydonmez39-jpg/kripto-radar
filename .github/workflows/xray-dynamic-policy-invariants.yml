@@ -5,6 +5,11 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/test_dynamic_policy_invariants.py"
+      - "nasdaq-xray/test_alpha_semantics.py"
+      - "nasdaq-xray/alpha_semantics.py"
+      - "nasdaq-xray/stage1_shadow.py"
+      - "nasdaq-xray/family_c_engine.py"
+      - "nasdaq-xray/final_tech_shadow.py"
       - "nasdaq-xray/sina_stage.py"
       - "nasdaq-xray/resolve_unknowns_fallback.py"
       - "nasdaq-xray/price_dv20_phase.py"
@@ -35,6 +40,11 @@ jobs:
       - name: Compile policy-critical code
         run: |
           python -m py_compile \
+            nasdaq-xray/alpha_semantics.py \
+            nasdaq-xray/test_alpha_semantics.py \
+            nasdaq-xray/stage1_shadow.py \
+            nasdaq-xray/family_c_engine.py \
+            nasdaq-xray/final_tech_shadow.py \
             nasdaq-xray/sina_stage.py \
             nasdaq-xray/resolve_unknowns_fallback.py \
             nasdaq-xray/price_dv20_phase.py \
@@ -43,7 +53,9 @@ jobs:
             nasdaq-xray/history_phase.py \
             nasdaq-xray/test_dynamic_policy_invariants.py
       - name: Run deterministic invariants
-        run: python nasdaq-xray/test_dynamic_policy_invariants.py
+        run: |
+          python nasdaq-xray/test_dynamic_policy_invariants.py
+          python nasdaq-xray/test_alpha_semantics.py
       - name: Verify provider-neutral ACCOUNT final gate
         shell: bash
         run: |
