@@ -129,6 +129,10 @@ LIFECYCLE_PERSIST_STATES=LIFECYCLE_WATCH_STATES | {
  "WATCH_MC_FALLBACK_CAP","WATCH_SYNTHETIC_PRICE_DISCOVERY_CAP"
 }
 
+def lifecycle_state_persists(state):
+    """Prospective lifecycle persistence; historical backfill is intentionally excluded."""
+    return str(state or "") in LIFECYCLE_PERSIST_STATES
+
 def hist(sym,asof):
     try:
         x,src=load_history(sym,asof)
@@ -343,7 +347,7 @@ def main():
     for rec in old_records.values():
         sym=rec.get("symbol");fam=rec.get("family")
         if not sym or fam not in THRESH:continue
-        if rec.get("state") not in LIFECYCLE_PERSIST_STATES:continue
+        if not lifecycle_state_persists(rec.get("state")):continue
         # A prospectively recorded frozen setup survives current weekly/deep-scope
         # changes until its explicit S0/event/expiry lifecycle says otherwise.
         if rec.get("state_cap") is not None:
@@ -429,7 +433,7 @@ def main():
         if not existing_live:
             results[key]=res
         state=str(res.get("result") or "")
-        if state in LIFECYCLE_PERSIST_STATES:
+        if lifecycle_state_persists(state):
             new_records[frozen["setup_id"]]={
               "setup_id":frozen["setup_id"],"symbol":sym,"family":fam,"trigger_date":frozen["trigger_date"],
               "state":state,"last_asof":asof,"frozen_geometry":frozen,"source_geometry":g,
