@@ -184,7 +184,7 @@ jobs:
                           )
                   if ok:
                       fb=pathlib.Path(fp).read_bytes()
-                      fsha=hashlib.sha1(f"blob {len(fb)}\\0".encode()+fb).hexdigest()
+                      fsha=hashlib.sha1(f"blob {len(fb)}\0".encode()+fb).hexdigest()
                       rows.append((fp,j,j.get("input_blob_sha")==price_blob,fsha))
               except Exception:
                   pass
