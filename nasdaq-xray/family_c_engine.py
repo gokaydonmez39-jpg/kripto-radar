@@ -134,7 +134,7 @@ def reaction_session(event_et,all_sessions):
         return None,"RTH_OR_AMBIGUOUS"
     return None,"NO_NEXT_SESSION"
 
-def eval_event(sym,df,e,asof,all_sessions,event_status):
+def eval_event(sym,df,e,asof,all_sessions,event_status,weekly_pass_dates=None):
     edt=parse_event_dt(e)
     if edt is None:return None,{"reason":"EVENT_TIME_UNPARSEABLE"}
     rs,mode=reaction_session(edt,all_sessions)
@@ -169,6 +169,9 @@ def eval_event(sym,df,e,asof,all_sessions,event_status):
             if not breached.empty:
                 floor_breach_date=breached.date.iloc[0].date().isoformat()
                 break
+            trigger_day=df.date.iloc[t].date().isoformat()
+            if weekly_pass_dates is not None and trigger_day not in weekly_pass_dates:
+                continue
             P=max(reaction_high,float(base.high.max()));anchor=float(base.low.min())
             width=(P-anchor)/A
             rv=rvol20_at(df,t)
@@ -208,8 +211,9 @@ def main():
     assert st["task_id"]==ev["task_id"]==TASK and ev["asof_et"]==asof
     assert st["execution"]==ev["execution"]=="NONE" and st["real_money"]==ev["real_money"]=="NO-GO"
     weekly=sorted(st.get("weekly_pass") or [])
+    trigger_weekly=sorted(st.get("recent_weekly_scope") or weekly)
     fce=ev.get("family_c_events") or {}
-    target=sorted(set(weekly)&set(fce))
+    target=sorted(set(trigger_weekly)&set(fce))
     data={};errors={};history_source={} 
     with ThreadPoolExecutor(max_workers=WORKERS) as ex:
         futs={ex.submit(hist,s,asof):s for s in target}
@@ -235,7 +239,8 @@ def main():
         x=x.reset_index(drop=True)
         best=None;dd=[]
         for e in fce.get(s) or []:
-            g,d=eval_event(s,x,e,asof,alls,event_status_map.get(s,"CLEAN_DISCOVERY"))
+            weekly_dates=set(strow.get("recent_weekly_pass_dates") or [])
+            g,d=eval_event(s,x,e,asof,alls,event_status_map.get(s,"CLEAN_DISCOVERY"),weekly_dates)
             dd.append(d)
             if g is not None:
                 if best is None or g["breakout_session"]>best["breakout_session"]:best=g
@@ -244,7 +249,9 @@ def main():
     out={
       "schema":"XRAY_FAMILY_C_ENGINE_V1","task_id":TASK,"asof_et":asof,
       "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
-      "weekly_scope_count":len(weekly),"event_symbol_count":len(target),
+      "weekly_scope_count":len(weekly),
+      "weekly_trigger_scope_count":len(trigger_weekly),
+      "event_symbol_count":len(target),
       "confirmed_count":len(confirmed),"confirmed":dict(sorted(confirmed.items())),
       "unknown_count":len(unknown),"unknown":dict(sorted(unknown.items())),
       "details":dict(sorted(details.items())),
@@ -263,5 +270,5 @@ def main():
       "authority":"C4_11_POST_EARNINGS_FAIL_CLOSED_POLICY_INHERITED"
     }
     OUT.write_text(json.dumps(out,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
-    print(json.dumps({"asof":asof,"weekly_scope":len(weekly),"event_symbols":len(target),"confirmed":len(confirmed),"unknown":len(unknown),"provider_max_inflight":PROVIDER_MAX_INFLIGHT,"retry_delays":RETRY_DELAYS},sort_keys=True))
+    print(json.dumps({"asof":asof,"weekly_scope":len(weekly),"weekly_trigger_scope":len(trigger_weekly),"event_symbols":len(target),"confirmed":len(confirmed),"unknown":len(unknown),"provider_max_inflight":PROVIDER_MAX_INFLIGHT,"retry_delays":RETRY_DELAYS},sort_keys=True))
 if __name__=="__main__":main()
