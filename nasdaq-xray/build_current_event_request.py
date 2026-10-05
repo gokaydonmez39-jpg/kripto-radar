@@ -77,9 +77,13 @@ def sessions(asof):
     ds=[x.date().isoformat() for x in sched.index]
     if asof not in ds: raise RuntimeError("ASOF_NOT_OFFICIAL_SESSION")
     i=ds.index(asof)
-    past=ds[max(0,i-9):i+1]
+    # Family C may confirm a breakout 10 completed sessions after reaction0.
+    # For AMC events reaction0 is the NEXT RTH, so the source earnings event can
+    # sit one additional completed session before that reaction. Keep current
+    # ASOF + prior 11 official sessions (12 total) to cover the exact boundary.
+    past=ds[max(0,i-11):i+1]
     future=ds[i+1:i+9]
-    if len(past)!=10 or len(future)!=8: raise RuntimeError("SESSION_WINDOW_INCOMPLETE")
+    if len(past)!=12 or len(future)!=8: raise RuntimeError("SESSION_WINDOW_INCOMPLETE")
     return past,future
 
 def main():
@@ -148,6 +152,7 @@ def main():
       "lifecycle_scope_hash":hash_lines(lifecycle_scope),
       "geometry_scope":finalists,"geometry_scope_count":len(finalists),"geometry_scope_hash":hash_lines(finalists),
       "past_family_c_sessions":past,"future_horizon_sessions":future,
+      "family_c_breakout_max_sessions":10,"family_c_amc_source_lookback_extra_sessions":1,
       "market_close_semantics":"ASOF_COMPLETED_RTH;EVENT_AFTER_ASOF_CLOSE_BEFORE_NEXT_RTH_COUNTS_INSIDE_HORIZON",
       "source_stage1_path":"nasdaq-xray/canonical_current_stage1.json","source_stage1_blob_sha":blob_sha(STAGE1),
       "source_regime_path":"nasdaq-xray/canonical_current_regime.json","source_regime_blob_sha":blob_sha(REGIME),
