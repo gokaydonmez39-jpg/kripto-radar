@@ -304,11 +304,14 @@ def main():
     er=d["event_request"]; ev=d["events"]; fc=d["family_c"]; dp=d["deep"]; ft=d["final"]
     for x in [h,lg,st,rg,er,ev,fc,dp,ft]:
         assert x["task_id"]==TASK and x["asof_et"]==asof and x["execution"]=="NONE" and x["real_money"]=="NO-GO"
-    assert h["unknown_count"]==0 and h["input_count"]==len(primary) and set(h["results"])==primary
+    mc_technical_scope=primary|watch
+    assert h["unknown_count"]==0 and h["input_count"]==len(mc_technical_scope) and set(h["results"])==mc_technical_scope
+    assert set((h.get("state_caps") or {}).keys())==mc_technical_scope
+    assert {s for s,c in (h.get("state_caps") or {}).items() if c=="WATCH"}==watch
     history_mc_blob_exact=(h.get("source_mc_blob_sha")==blob_sha(mc_path))
     history_mc_semantic_rebind=False
     if not history_mc_blob_exact:
-        # HISTORY consumes only the MC primary-pass symbol set. A same-ASOF MC
+        # HISTORY consumes the MC technical scope: primary PASS plus fallback WATCH.
         # bridge may be re-bound after an exact PRICE artifact refresh without
         # changing that set. Accept that metadata-only drift only when the old
         # source bridge is itself present and proves exact semantic equivalence.
@@ -338,7 +341,7 @@ def main():
         history_mc_semantic_rebind=True
     assert h.get("source_mc_policy_hash")==POLICY_HASH and h.get("source_mc_policy_version")=="C4.17"
     hpass=set(h["pass_symbols"]); hfail=set(h["results"])-hpass
-    assert hpass|hfail==primary and not (hpass&hfail)
+    assert hpass|hfail==mc_technical_scope and not (hpass&hfail)
     assert all((h["results"][s].get("status")=="FAIL_HISTORY") for s in hfail)
 
     assert lg["input_count"]==len(hpass) and set(lg["results"])==hpass
@@ -706,7 +709,7 @@ def main():
         "mc_input_blob_exact":mc_binding["blob_exact"],
         "mc_input_semantic_rebind":mc_binding["semantic_rebind"],
         "sequential_settlement_bound":(not settlement_witness_required) or mc.get("settlement_witness_status")=="PASS",
-        "history_exact_mc_primary":True,"history_mc_blob_exact":history_mc_blob_exact,"history_mc_semantic_rebind":history_mc_semantic_rebind,"stage1_input_mc_blob_exact":stage1_input_mc_blob_exact,"stage1_input_mc_semantic_rebind":stage1_input_mc_semantic_rebind,"fallback_watch_excluded_after_mc":True,"legal_exact_history_pass":True,
+        "history_exact_mc_technical_scope":True,"history_mc_blob_exact":history_mc_blob_exact,"history_mc_semantic_rebind":history_mc_semantic_rebind,"stage1_input_mc_blob_exact":stage1_input_mc_blob_exact,"stage1_input_mc_semantic_rebind":stage1_input_mc_semantic_rebind,"fallback_watch_preserved_through_history":True,"legal_exact_history_pass":True,
         "legal_master_blob_exact":lg.get("source_master_blob_sha")==sh["full_state"],
         "legal_master_semantic_rebind":legal_master_semantic_rebind,
         "stage1_exact_legal_pass":True,"weekly_exact_event_scope":True,"regime_no_missing":bool(not breadth_missing and rg.get("regime") in {"STRONG","MIXED","WEAK"}),

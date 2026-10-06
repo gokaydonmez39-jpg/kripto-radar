@@ -295,6 +295,26 @@ jobs:
           print("FAMILY_C_EVENT_TRIGGER_ATR_SEPARATION=PASS")
           PY
 
+      - name: Assert MC fallback WATCH remains in technical radar scope
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          h=Path("nasdaq-xray/history_phase.py").read_text()
+          s=Path("nasdaq-xray/build_stage1_input.py").read_text()
+          t=Path("nasdaq-xray/build_current_terminal.py").read_text()
+          assert 'syms=sorted(set(src.get("current_core_symbols") or []) or (set(primary)|set(watch)))' in h
+          assert '"mc_scope":{"mode":"PRIMARY_PLUS_FALLBACK_WATCH"' in h
+          assert 'eligible=primary|watch' in s
+          assert '"included_fallback_watch_symbols"' in s
+          assert 'mc_technical_scope=primary|watch' in t
+          assert 'h["input_count"]==len(mc_technical_scope)' in t
+          assert 'set(h["results"])==mc_technical_scope' in t
+          assert 'hpass|hfail==mc_technical_scope' in t
+          assert '"fallback_watch_preserved_through_history":True' in t
+          assert 'fallback_watch_excluded_after_mc' not in t
+          print("MC_FALLBACK_WATCH_TECHNICAL_SCOPE=PASS")
+          PY
+
       - name: Assert identity type guard
         run: |
           python - <<'PY'
