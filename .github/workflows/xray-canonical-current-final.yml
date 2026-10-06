@@ -244,6 +244,8 @@ jobs:
                     and e.get("source_stage1_blob_sha")==r.get("source_stage1_blob_sha")
                     and e.get("source_regime_blob_sha")==r.get("source_regime_blob_sha")
                     and e.get("source_deep_geometry_blob_sha")==r.get("source_deep_geometry_blob_sha")
+                    and e.get("source_request_path")=="nasdaq-xray/canonical_current_event_request.json"
+                    and e.get("source_request_blob_sha")==bsha(reqp)
                     and e.get("compiled_policy_hash")==r.get("compiled_policy_hash")=="68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4"
                     and e.get("compiled_policy_version")==r.get("compiled_policy_version")=="C4.17"
                     and e.get("compiled_policy_blob_sha")==r.get("compiled_policy_blob_sha")=="16c50cc8f887a5234a4be23862d7c8d0e564b0ac"
