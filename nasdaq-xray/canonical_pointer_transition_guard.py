@@ -32,11 +32,38 @@ def main():
         ap=REPO/proof["anchor_snapshot_path"]; a=load(ap)
         assert state_hash(int(a["revision"]),a["state_json"])==a["state_hash"]==proof["anchor_state_hash"]
         assert p["prev_state_hash"]==a["state_hash"]
-    for k,m in (t.get("evidence") or {}).items():
-        if not isinstance(m,dict): continue
+    # Pointer durability binds immutable canonical research evidence, not
+    # mutable operational witnesses (halt/G9/account runtime files can refresh
+    # after the terminal was built without changing alpha or terminal history).
+    immutable_terminal_keys={"master","price","history","legal","stage1_input","stage1",
+      "regime","deep_geometry","event_request","events","family_c","deep","final","policy","full_state"}
+    for k in immutable_terminal_keys:
+        m=(t.get("evidence") or {}).get(k) or {}
         rel=m.get("path"); sha=m.get("blob_sha")
-        if rel and sha and str(rel).startswith("nasdaq-xray/"):
-            fp=REPO/rel
-            if fp.exists(): assert blob(fp)==sha,(k,blob(fp),sha)
+        assert rel and sha,(k,m)
+        fp=REPO/rel
+        assert fp.exists(),(k,rel)
+        assert blob(fp)==sha,(k,blob(fp),sha)
+    mc=(t.get("evidence") or {}).get("mc") or {}
+    assert mc.get("path") and mc.get("blob_sha")
+    assert blob(REPO/mc["path"])==mc["blob_sha"]
+    # The recovered pointer itself must persist exact terminal/evidence SHAs.
+    df=s.get("deep_final_evidence") or {}
+    assert df.get("terminal_path")=="nasdaq-xray/canonical_current_terminal.json"
+    assert df.get("terminal_blob_sha")==blob(tp),(df.get("terminal_blob_sha"),blob(tp))
+    evidence_fields=("master_identity_evidence","price_dv30_evidence","mc_evidence",
+      "history_evidence","legal_evidence","stage1_evidence","regime_breadth_evidence",
+      "event_evidence","settlement_resolver_evidence")
+    for name in evidence_fields:
+        m=s.get(name) or {}
+        rel=m.get("path"); sha=m.get("blob_sha")
+        assert rel and sha,(name,m)
+        fp=REPO/rel
+        assert fp.exists(),(name,rel)
+        assert blob(fp)==sha,(name,blob(fp),sha)
+    for rel_key,sha_key in (("deep_path","deep_blob_sha"),("final_path","final_blob_sha")):
+        rel=df.get(rel_key); sha=df.get(sha_key)
+        assert rel and sha,(rel_key,df)
+        assert blob(REPO/rel)==sha,(rel_key,blob(REPO/rel),sha)
     print(json.dumps({"XRAY_POINTER_TRANSITION_GUARD":"PASS","revision":rev,"state_hash":p["state_hash"],"asof_et":s["asof_et"],"status":s["status"]},sort_keys=True))
 if __name__=="__main__": main()
