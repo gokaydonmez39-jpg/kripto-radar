@@ -140,7 +140,7 @@ jobs:
             "official_guard":("canonical_official_source_guard.json","XRAY_OFFICIAL_SOURCE_GUARD_V1"),
             "pit_ledger":("official_pit_ledger.json","XRAY_OFFICIAL_PIT_LEDGER_V1"),
             "lineage":("canonical_data_lineage_registry.json","XRAY_DATA_LINEAGE_REGISTRY_V1"),
-            "replay":("canonical_replay_guard.json","XRAY_DETERMINISTIC_REPLAY_GUARD_V1"),
+            "replay":("canonical_replay_guard.json","XRAY_DETERMINISTIC_REPLAY_GUARD_V2"),
             "guardian":("canonical_guardian_state.json","XRAY_GUARDIAN_STATE_V1"),
           }
           for name,(fn,schema) in checks.items():
