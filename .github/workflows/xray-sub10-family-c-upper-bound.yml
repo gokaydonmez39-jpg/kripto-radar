@@ -1,0 +1,142 @@
+name: XRAY Sub10 Family C Geometry Upper Bound
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/xray-sub10-family-c-upper-bound.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: xray-sub10-family-c-upper-bound
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install zero-dollar runtime
+        run: python -m pip install --disable-pip-version-check -r nasdaq-xray/requirements-runtime.txt
+      - name: Scan Family C geometry independent of event discovery
+        env:
+          PYTHONPATH: nasdaq-xray
+        run: |
+          python - <<'PY'
+          import json, math
+          from pathlib import Path
+          from statistics import median
+          import pandas as pd
+          import family_c_engine as fc
+          import stage1_shadow as s1
+          import final_tech_shadow as ft
+
+          ASOF="2026-10-05"
+          SYMBOLS=["AGNC","AUR","BULL","CCC","ERIC","FRMI","GRAB","KEEL","ONDS","OPEN","PLUG","PSKY","QS","RXRX","SBET","SOUN"]
+          week_last=s1.build_week_last(ASOF)
+          out={}
+
+          def scan_symbol(sym):
+              x,src=fc.load_history(sym,ASOF)
+              if x is None or x.empty:
+                  return {"status":"UNKNOWN_HISTORY","reason":"EMPTY"}
+              x=x.reset_index(drop=True)
+              if len(x)<260:
+                  return {"status":"HISTORY_FAIL","bars":len(x),"history_source":src}
+              st_status=s1.process(sym,ASOF)[1]
+              weekly_dates=set(st_status.get("recent_weekly_pass_dates") or [])
+              # Family C may have broken out several sessions before ASOF and still
+              # be in the 8-session candidate lifecycle. Scan a conservative 30-session
+              # reaction window; every real BMO/AMC event maps to one of these sessions.
+              start=max(21,len(x)-30)
+              candidates=[]
+              for r0 in range(start,len(x)-5):
+                  pre=r0-1
+                  A_event=fc.atr_wilder(x,pre,14)
+                  if A_event is None: continue
+                  pre_close=float(x.close.iloc[pre]); open0=float(x.open.iloc[r0])
+                  gap_atr=(open0-pre_close)/A_event
+                  rv0=fc.rvol20_at(x,r0)
+                  lows=[float(x.low.iloc[i]) for i in (r0,r0+1,r0+2)]
+                  if not (gap_atr>=0.50 and rv0 is not None and rv0>=1.5 and min(lows)>pre_close):
+                      continue
+                  reaction_high=float(x.high.iloc[r0])
+                  base_start=r0+3
+                  latest=min(r0+10,len(x)-1)
+                  for t in range(base_start+3,latest+1):
+                      base=x.iloc[base_start:t]
+                      if len(base)<3: continue
+                      if (x.iloc[r0:t+1]["low"].astype(float)<=pre_close).any(): break
+                      trigger_day=x.date.iloc[t].date().isoformat()
+                      # Upper bound: do not require weekly here; record it separately.
+                      P=max(reaction_high,float(base.high.max()))
+                      anchor=float(base.low.min())
+                      A_trigger=fc.atr_wilder(x,t-1,14)
+                      if A_trigger is None: continue
+                      width=(P-anchor)/A_trigger
+                      rv=fc.rvol20_at(x,t)
+                      close=float(x.close.iloc[t])
+                      if 0.30<=width<=2.05 and close>P and rv is not None and rv>=1.5:
+                          g={"confirmed":True,"A":A_trigger,"P":P,"anchor":anchor,
+                             "trigger_date":trigger_day,"breakout_session":trigger_day,
+                             "reaction_session":x.date.iloc[r0].date().isoformat(),
+                             "gap_atr":gap_atr,"reaction_rvol20":rv0,
+                             "base_width_atr":width,"breakout_rvol20":rv,
+                             "weekly_pass_at_trigger":trigger_day in weekly_dates}
+                          frozen,err=ft._frozen_geometry(sym,"C",g,x)
+                          final=None if err else ft.eval_one(sym,"C",g,x,"CLEAN_DISCOVERY",
+                                                           frozen=frozen,recorded_before=False,
+                                                           regime_finalist_status="PASS")
+                          candidates.append({"geometry":g,"final_error":err,"final":final})
+                          break
+              return {"status":"EVALUATED","history_source":src,
+                      "weekly_dates":sorted(weekly_dates),"c_geometry_upper_bound":candidates}
+
+          for sym in SYMBOLS:
+              try: out[sym]=scan_symbol(sym)
+              except Exception as e: out[sym]={"status":"UNKNOWN_EXCEPTION","reason":f"{type(e).__name__}:{str(e)[:180]}"}
+
+          geom=[]
+          weekly_geom=[]
+          pre=[]
+          for sym,row in out.items():
+              cs=row.get("c_geometry_upper_bound") or []
+              if cs: geom.append(sym)
+              if any((c.get("geometry") or {}).get("weekly_pass_at_trigger") for c in cs):
+                  weekly_geom.append(sym)
+              for c in cs:
+                  g=c.get("geometry") or {}
+                  f=c.get("final") or {}
+                  if g.get("weekly_pass_at_trigger") and f.get("pre_g9_tech_pass") is True:
+                      pre.append(sym+"|C")
+          print("XRAY_SUB10_C_UPPER_BOUND="+json.dumps({
+              "asof_et":ASOF,
+              "symbol_count":len(SYMBOLS),
+              "geometry_any_day_symbols":sorted(geom),
+              "geometry_with_weekly_symbols":sorted(weekly_geom),
+              "technical_pre_g9_upper_bound":sorted(set(pre)),
+              "statuses":{s:r.get("status") for s,r in out.items()},
+          },sort_keys=True))
+          for sym,row in sorted(out.items()):
+              if row.get("c_geometry_upper_bound"):
+                  print("XRAY_SUB10_C_DETAIL="+json.dumps({
+                      "symbol":sym,
+                      "candidates":[{
+                          "reaction_session":(c.get("geometry") or {}).get("reaction_session"),
+                          "trigger_date":(c.get("geometry") or {}).get("trigger_date"),
+                          "weekly_pass":(c.get("geometry") or {}).get("weekly_pass_at_trigger"),
+                          "final_result":(c.get("final") or {}).get("result"),
+                          "pre_g9":(c.get("final") or {}).get("pre_g9_tech_pass"),
+                          "risk_percent":((c.get("final") or {}).get("geometry") or {}).get("risk_percent"),
+                          "rr_basic":((c.get("final") or {}).get("rr") or {}).get("basic"),
+                          "rr_severe":((c.get("final") or {}).get("rr") or {}).get("severe"),
+                      } for c in row.get("c_geometry_upper_bound") or []]
+                  },sort_keys=True))
+          PY
