@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Restore the last validated immutable Pre-MC snapshot for one completed ASOF.
 
-Zero-alpha recovery only. It restores an already-committed PRICE/DV20 snapshot
+Zero-alpha recovery only. It restores an already-committed PRICE/DV30 snapshot
 and its exact resolver request/manifest/chunks; it never manufactures market
 data or changes C4.17 thresholds.
 """
@@ -25,6 +25,7 @@ CHUNK_RE=re.compile(r"^nasdaq-xray/canonical_current_resolver_chunk_[0-9]{4}\.js
 CURRENT_POLICY_HASH="68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4"
 CURRENT_POLICY_BLOB="16c50cc8f887a5234a4be23862d7c8d0e564b0ac"
 CURRENT_PRICE_RULE=">=5"
+CURRENT_DV30_RULE=">=50000000 exact30 median"
 
 def run(*args,check=True,text=True):
     return subprocess.run(args,cwd=REPO,check=check,text=text,capture_output=True)
@@ -54,6 +55,8 @@ def find_good(asof:str)->str:
             p.get("asof_et")==asof
             and p.get("execution")=="NONE" and p.get("real_money")=="NO-GO"
             and (p.get("thresholds") or {}).get("price")==CURRENT_PRICE_RULE
+            and (p.get("thresholds") or {}).get("dv30")==CURRENT_DV30_RULE
+            and p.get("gate_order")==["PRICE","DV30"]
             and int(p.get("unknown_count",-1))==0
             and int(p.get("pass_count",0))>0
             and isinstance(q,dict)
@@ -91,6 +94,8 @@ def validate(asof:str):
     assert price["asof_et"]==master["asof_et"]==req["asof_et"]==asof
     assert price["execution"]=="NONE" and price["real_money"]=="NO-GO"
     assert (price.get("thresholds") or {}).get("price")==CURRENT_PRICE_RULE
+    assert (price.get("thresholds") or {}).get("dv30")==CURRENT_DV30_RULE
+    assert price.get("gate_order")==["PRICE","DV30"]
     assert int(price["unknown_count"])==0 and int(price["pass_count"])>0
     assert price["source_master_queue_hash"]==master["queue_hash"]
     assert req["queue_hash"]==master["queue_hash"]

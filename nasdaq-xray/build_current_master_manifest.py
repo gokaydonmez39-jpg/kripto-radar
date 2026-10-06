@@ -11,6 +11,13 @@ ALLOWED_EXCLUSION_REASONS={
   "TEST_ISSUE","ETF","NEXTSHARES","WARRANT","RIGHT","UNIT",
   "PREFERRED","DEBT","ETN","FUND","WHEN_ISSUED"
 }
+FULL_IDENTITY_AUTHORITIES={
+  "FULL_IDENTITY_NO_PREFILTER",
+  "CANONICAL_FROZEN_FULL_IDENTITY_SAME_ASOF",
+}
+
+def valid_full_identity_authority(dm):
+    return bool(isinstance(dm,dict) and dm.get("full_identity") is True and dm.get("authority") in FULL_IDENTITY_AUTHORITIES)
 
 def blob_sha(p):
     b=p.read_bytes()
@@ -35,7 +42,7 @@ def main():
       "security_names_exact":set(names)==set(q),
       "discovery_exact":set(disc)==set(q),
       "full_identity":bool(dm.get("full_identity")),
-      "authority_full_identity":dm.get("authority")=="FULL_IDENTITY_NO_PREFILTER",
+      "authority_full_identity":valid_full_identity_authority(dm),
       "official_footer_present":bool(s.get("official_footer")),
       "identity_authority_v3":s.get("identity_authority")=="NASDAQTRADER_EXPLICIT_TYPE_FILTER_V3_SPAC_DEFERRED_TO_LEGAL",
       "exclusion_reasons_policy_exact":set(exc).issubset(ALLOWED_EXCLUSION_REASONS) and "SPAC" not in exc,

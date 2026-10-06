@@ -10,6 +10,7 @@ from price_dv30_recover_from_fullstate import apply_terminal_overrides
 from resolve_unknowns_fallback import classify as resolver_classify
 from deep_pre_r1_shadow import family_b
 from build_current_terminal import mc_semantic_input_match, candidate_local_research_ready
+from build_current_master_manifest import valid_full_identity_authority
 import history_phase as history_mod
 from history_phase import official_listing_upper_bound_fail, continuity_composite_pass
 import pandas as pd
@@ -53,11 +54,18 @@ def main():
     st,info=price_classify(low,exp[-1],exp,"TEST")
     assert st=="FAIL_DV30",(st,info)
 
+    sina_window=load_sina()
+    _,completed30=sina_window.completed_sessions()
+    assert len(completed30)==30,len(completed30)
+    assert valid_full_identity_authority({"full_identity":True,"authority":"FULL_IDENTITY_NO_PREFILTER"}) is True
+    assert valid_full_identity_authority({"full_identity":True,"authority":"CANONICAL_FROZEN_FULL_IDENTITY_SAME_ASOF"}) is True
+    assert valid_full_identity_authority({"full_identity":True,"authority":"DISCOVERY_PREFILTER_ONLY_NOT_CANONICAL_MC"}) is False
+
     # Operator resolver evidence may terminally resolve only an existing block,
     # never manufacture PASS or rewrite a non-blocked row.
     base={"NEW":{
       "decision":"BLOCK_CURRENT_RUN","reason":"INSUFFICIENT_30_USABLE_DV30_SESSIONS_CONFIRMED",
-      "source":"RALLIES_CANDLESTICK_SCANNER_EXACT20_PRIMARY","proof":"FAIL_CLOSED_CURRENT_RUN_NONPASS"
+      "source":"RALLIES_CANDLESTICK_SCANNER_EXACT30_PRIMARY","proof":"FAIL_CLOSED_CURRENT_RUN_NONPASS"
     }}
     ov={"NEW":{
       "decision":"FAIL_DV30_INSUFFICIENT_SESSIONS","price":20.0,
@@ -101,11 +109,28 @@ def main():
       "decision":"PASS_HARD_GATES","price":100.0,"bars":300,
       "dv30_lower_bound":100_000_000.0,"dv30_upper_bound":100_000_000.0,
       "known_session_count":30,"missing_sessions":[],
-      "no_synthetic_bar":True,"source":"TEST","proof":"EXACT20_MEDIAN"
+      "no_synthetic_bar":True,"source":"TEST","proof":"EXACT30_MEDIAN"
     }
     st,info=sina.resolution_result("ZZZZ",good_overlay,exp)
     assert st=="PASS",(st,info)
     assert info["known_session_count"]==30 and info["missing_sessions"]==[]
+
+    from price_dv30_recover_from_fullstate import valid_bridge_price_resolution
+    assert valid_bridge_price_resolution({
+      "decision":"PASS_PRICE_DV30","price":100.0,"dv30":100_000_000.0,
+      "known_session_count":30,"missing_sessions":[],"no_synthetic_bar":True,
+      "source":"TEST","proof":"EXACT30_MEDIAN_GE_GATE"
+    },"2026-10-05") is True
+    assert valid_bridge_price_resolution({
+      "decision":"PASS_PRICE_DV30","price":100.0,"dv30":100_000_000.0,
+      "known_session_count":20,"missing_sessions":[],"no_synthetic_bar":True,
+      "source":"TEST","proof":"EXACT30_MEDIAN_GE_GATE"
+    },"2026-10-05") is False
+    assert valid_bridge_price_resolution({
+      "decision":"FAIL_DV30_INSUFFICIENT_SESSIONS","price":20.0,
+      "known_session_count":29,"missing_sessions":["2026-09-01"],
+      "no_synthetic_bar":True,"source":"TEST","proof":"ALPACA_RALLIES_EXACT_MISSING_SET_MATCH"
+    },"2026-10-05") is True
 
     # Setup-B regression: breakout pivot MUST come from the completed base and
     # exclude the current breakout bar. Including the current bar makes the
@@ -213,8 +238,8 @@ def main():
         history_mod.HISTORY_BRIDGE=old_bridge
 
     print({"status":"PASS","invariants":[
-        "EXACT20_REQUIRED_FOR_PASS","INCOMPLETE_NEVER_PASS","BLOCKED_TERMINAL_OVERRIDE_FAIL_ONLY",
-        "OVERLAY_EXACT20_REQUIRED","SETUP_B_PIVOT_EXCLUDES_CURRENT_BAR",
+        "EXACT30_REQUIRED_FOR_PASS","INCOMPLETE_NEVER_PASS","BLOCKED_TERMINAL_OVERRIDE_FAIL_ONLY",
+        "OVERLAY_EXACT30_REQUIRED","SETUP_B_PIVOT_EXCLUDES_CURRENT_BAR",
         "MC_SEMANTIC_REBIND_REQUIRES_HASH_SET_COUNT",
         "CANDIDATE_LOCAL_RESEARCH_INDEPENDENT_GLOBAL_COVERAGE_FAIL_CLOSED",
         "OFFICIAL_LISTING_HISTORY_FAIL_ONLY","CUSIP_CONTINUITY_REQUIRES_CROSS_SOURCE_OVERLAP",

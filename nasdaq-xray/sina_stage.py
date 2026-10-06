@@ -229,7 +229,7 @@ def completed_sessions():
             sessions.append(idx.date().isoformat())
     if len(sessions)<260:
         raise RuntimeError("CALENDAR_TOO_SHORT")
-    return sessions[-1],sessions[-20:]
+    return sessions[-1],sessions[-30:]
 
 def parse_hist(sym,asof,expected30):
     try:
@@ -275,9 +275,9 @@ def parse_hist(sym,asof,expected30):
             # only to nonnegative values. No synthetic bar is inserted.
             m=len(missing)
             low=sorted(known_dv+[0.0]*m)
-            lower=(low[9]+low[10])/2.0
+            lower=(low[14]+low[15])/2.0
             high=sorted(known_dv+[float("inf")]*m)
-            upper=(high[9]+high[10])/2.0
+            upper=(high[14]+high[15])/2.0
             info={
               "price":price,"bars":bars,"reason":"EXACT30_MISSING",
               "dates":missing,"known_session_count":len(known_dv),
@@ -365,7 +365,7 @@ def resolution_result(sym,ov,expected30):
           px is None or px<HARD_PRICE or not isinstance(bars,int) or bars<HARD_HISTORY
           or lo is None or hi is None or lo<HARD_DV30 or hi<lo
           or ov.get("no_synthetic_bar") is not True
-          or not isinstance(known,int) or known!=20 or missing!=[]
+          or not isinstance(known,int) or known!=30 or missing!=[]
           or lo!=hi
         ):
             return "UNKNOWN_STATIC",{"reason":"RESOLUTION_PASS_BOUND_INVALID","symbol":sym}

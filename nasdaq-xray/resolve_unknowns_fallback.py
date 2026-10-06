@@ -129,9 +129,9 @@ def classify(by,asof,exp30,source):
         }
     m=len(miss)
     low=sorted(vals+[0.0]*m)
-    lower=(low[9]+low[10])/2.0
+    lower=(low[14]+low[15])/2.0
     high=sorted(vals+[float("inf")]*m)
-    upper=(high[9]+high[10])/2.0
+    upper=(high[14]+high[15])/2.0
     if upper<HARD_DV30:
         return "FAIL_DV30",{
             "price":price,"dv30":upper,"bars":bars,"source":source,

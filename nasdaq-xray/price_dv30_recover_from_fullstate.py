@@ -324,7 +324,7 @@ def load_exception_bridge(asof,queue_hash):
                     if not isinstance(val,dict) or val.get("reason") not in allowed_block_reasons:
                         raise ValueError("RALLIES_COMPACT_BLOCK_CURRENT")
                     n=val.get("observed_usable_sessions")
-                    if n is not None and (not isinstance(n,int) or n<0 or n>=20):
+                    if n is not None and (not isinstance(n,int) or n<0 or n>=30):
                         raise ValueError("RALLIES_COMPACT_BLOCK_COUNT")
                     prs[sym]={
                       "decision":"BLOCK_CURRENT_RUN","reason":val["reason"],
@@ -381,7 +381,7 @@ def load_exception_bridge(asof,queue_hash):
                 for sym,val in fis.items():
                     if not isinstance(val,dict): raise ValueError("COMPACT_V3_INSUFFICIENT_VALUE")
                     px=num(val.get("price")); n=val.get("known_session_count"); miss=val.get("missing_sessions") or []
-                    if px is None or px<HARD_PRICE or not isinstance(n,int) or not (0<=n<20) or len(miss)!=(20-n):
+                    if px is None or px<HARD_PRICE or not isinstance(n,int) or not (0<=n<30) or len(miss)!=(30-n):
                         raise ValueError("COMPACT_V3_INSUFFICIENT_GATE")
                     if val.get("proof")!="ALPACA_RALLIES_EXACT_MISSING_SET_MATCH":
                         raise ValueError("COMPACT_V3_INSUFFICIENT_PROOF")
@@ -497,7 +497,7 @@ def valid_bridge_price_resolution(x,asof):
             return px is not None and px>=HARD_PRICE and dv<HARD_DV30 and bool(x.get("source")) and bool(x.get("proof"))
         n=x.get("observed_completed_sessions")
         return (
-          px is not None and px>=HARD_PRICE and isinstance(n,int) and 0<=n<20
+          px is not None and px>=HARD_PRICE and isinstance(n,int) and 0<=n<30
           and x.get("reason")=="EXACT30_INSUFFICIENT_LISTED_SESSIONS"
           and x.get("no_synthetic_bar") is True and bool(x.get("source")) and bool(x.get("proof"))
         )
@@ -512,8 +512,8 @@ def valid_bridge_price_resolution(x,asof):
         n=x.get("known_session_count"); miss=x.get("missing_sessions") or []
         return (
           px is not None and px>=HARD_PRICE
-          and isinstance(n,int) and 0<=n<20
-          and len(miss)==20-n
+          and isinstance(n,int) and 0<=n<30
+          and len(miss)==30-n
           and x.get("proof")=="ALPACA_RALLIES_EXACT_MISSING_SET_MATCH"
           and x.get("no_synthetic_bar") is True
           and bool(x.get("source"))
@@ -522,7 +522,7 @@ def valid_bridge_price_resolution(x,asof):
         known=x.get("known_session_count")
         if x.get("compact_terminal_proof") is True:
             return (
-              known==20 and (x.get("missing_sessions") or [])==[]
+              known==30 and (x.get("missing_sessions") or [])==[]
               and x.get("no_synthetic_bar") is True
               and x.get("source")=="RALLIES_CANDLESTICK_SCANNER_EXACT30_PRIMARY"
               and x.get("proof")=="RALLIES_EXACT30_MEDIAN_GE_GATE"
@@ -530,7 +530,7 @@ def valid_bridge_price_resolution(x,asof):
         dv=num(x.get("dv30"))
         return (
           px is not None and px>=HARD_PRICE and dv is not None and dv>=HARD_DV30
-          and known==20 and (x.get("missing_sessions") or [])==[]
+          and known==30 and (x.get("missing_sessions") or [])==[]
           and x.get("no_synthetic_bar") is True
           and bool(x.get("source")) and bool(x.get("proof"))
         )
