@@ -35,6 +35,34 @@ def sha_file(path):
     if not p.exists(): return "MISSING"
     return hashlib.sha256(p.read_bytes()).hexdigest()
 
+def hash_lines(items):
+    return hashlib.sha256("\n".join(items).encode()).hexdigest()
+
+def frozen_identity_partition_ok(ss):
+    """Validate PASS+UNKNOWN identity partition without promoting UNKNOWN into the queue."""
+    try:
+        q=list(ss.get("queue") or [])
+        dm=ss.get("discovery_meta") or {}
+        unknown=sorted(set(ss.get("identity_unknown_symbols") or []))
+        detail=ss.get("identity_unknown_detail") or {}
+        raw=int(ss.get("raw_identity_total",-1))
+        return bool(
+          ss.get("identity_partition_policy")=="MASTER_SPAC_UNKNOWN_PARTITION_V2_FROZEN_GUARD"
+          and dm.get("identity_partition_policy")=="MASTER_SPAC_UNKNOWN_PARTITION_V2_FROZEN_GUARD"
+          and int(ss.get("queue_total",-1))==len(q)==len(set(q))
+          and ss.get("queue_hash")==hash_lines(q)
+          and set(detail)==set(unknown)
+          and not (set(q)&set(unknown))
+          and int(dm.get("identity_unknown_count",-1))==len(unknown)
+          and dm.get("identity_unknown_hash")==hash_lines(unknown)
+          and raw==len(q)+len(unknown)
+          and int(dm.get("raw_identity_total",-1))==raw
+          and int(dm.get("discovery_queue_total",-1))==raw
+          and all((detail.get(x) or {}).get("unknown_never_pass") is True for x in unknown)
+        )
+    except Exception:
+        return False
+
 def stable_engine_hash():
     h=hashlib.sha256()
     for name in ENGINE_FILES:
@@ -72,8 +100,8 @@ def main():
             frozen_hash=str(dm.get("frozen_queue_hash") or "")
             if not frozen_hash or frozen_hash!=str(ss.get("queue_hash") or ""):
                 raise RuntimeError("FROZEN_FULL_UNIVERSE_HASH_MISMATCH")
-            if int(ss.get("queue_total",0) or 0)!=int(dm.get("discovery_queue_total",0) or 0):
-                raise RuntimeError("FROZEN_FULL_UNIVERSE_COUNT_MISMATCH")
+            if not frozen_identity_partition_ok(ss):
+                raise RuntimeError("FROZEN_FULL_UNIVERSE_PARTITION_MISMATCH")
         print("XRAY_HISTORY_STATUS="+str(ss.get("status"))+" CURSOR="+str(ss.get("cursor"))+"/"+str(ss.get("queue_total"))+" FULL_IDENTITY=1 AUTHORITY="+authority,flush=True)
         if ss.get("status")=="HISTORY_COMPLETE":
             break
@@ -128,6 +156,8 @@ def main():
     mc=readj("mc_zero_key_state.json")
 
     coverage_faults=[]
+    identity_unknown_count=len(set(ss.get("identity_unknown_symbols") or []))
+    if identity_unknown_count>0: coverage_faults.append("MASTER_IDENTITY_UNKNOWN_REMAINS")
     if int(ss.get("unknown_count",0) or 0)>0: coverage_faults.append("HARD_GATE_UNKNOWN_REMAINS")
     if int(mc.get("unresolved_count",0) or 0)>0: coverage_faults.append("MC_UNRESOLVED_REMAINS")
     if int(st1.get("unknown_count",0) or 0)>0: coverage_faults.append("STAGE1_UNKNOWN_REMAINS")
@@ -148,7 +178,11 @@ def main():
       "status":status,"asof_et":ss.get("asof_et"),
       "fingerprint":fingerprint,
       "candidate_hash":cand_hash,"engine_hash":engine_hash,
-      "history":{"status":ss.get("status"),"queue_total":ss.get("queue_total"),"queue_hash":ss.get("queue_hash"),"full_universe_identity":True,"counts":ss.get("counts")},
+      "history":{"status":ss.get("status"),"queue_total":ss.get("queue_total"),"queue_hash":ss.get("queue_hash"),
+                 "raw_identity_total":ss.get("raw_identity_total"),
+                 "identity_unknown_count":len(set(ss.get("identity_unknown_symbols") or [])),
+                 "identity_partition_policy":ss.get("identity_partition_policy"),
+                 "full_universe_identity":True,"counts":ss.get("counts")},
       "mc":{"current_core_count":core.get("current_core_count"),"unresolved_count":mc.get("unresolved_count"),"definitive_fail_count":mc.get("definitive_fail_count")},
       "stage1":{"weekly_pass_count":st1.get("weekly_pass_count"),"unknown_count":st1.get("unknown_count")},
       "regime":{"regime":rg.get("regime"),"breadth_missing_count":rg.get("breadth_missing_count"),"breadth_above_sma50_pct":rg.get("breadth_above_sma50_pct"),"nh20":rg.get("nh20"),"nl20":rg.get("nl20")},
