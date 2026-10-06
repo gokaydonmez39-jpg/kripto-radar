@@ -537,6 +537,8 @@ def main():
     alpha_workflow_sha_exact=(not run_sha) or (ft.get("source_workflow_sha")==run_sha)
     alpha_source_binding_exact=bool(alpha_source_blobs_exact and alpha_workflow_sha_exact)
     final_unknown=sorted(k for k,v in ft["results"].items() if v.get("result")=="UNKNOWN")
+    final_watch=sorted(k for k,v in ft["results"].items() if str(v.get("result","")).startswith("WATCH_"))
+    final_fail=sorted(k for k,v in ft["results"].items() if str(v.get("result","")).startswith("FAIL_"))
     affected_event_unknown=sorted(ev.get("affected_geometry_event_unknown") or [])
     family_c_unknown=sorted((fc.get("unknown") or {}).keys())
     pre=set(ft.get("pre_g9_tech_pass") or [])
@@ -657,6 +659,7 @@ def main():
         "deep_C_confirmed":len(c_regime_confirmed),
         "deep_D_confirmed":len(dp.get("d_dk3_pre_r1",[])),
         "final_confirmed_candidates":len(confirmed),
+        "final_watch":len(final_watch),"final_fail":len(final_fail),
         "lifecycle_regime_unknown":int(ft.get("regime_revalidation_unknown_count",0)),
         "pre_g9_tech_pass_before_halt_guard":len(raw_pre),
         "halt_vetoed_candidates":len(halt_vetoed),
@@ -669,6 +672,8 @@ def main():
         "family_c_regime_finalist_pass":sorted(c_regime_confirmed),
         "lifecycle_backed_family_candidates":sorted(lifecycle_backed),
         "confirmed_family_candidates":sorted(confirmed),
+        "b_armed_non_r92":sorted(dp.get("b_armed_rs_event_pass",[])),
+        "final_watch":final_watch,"final_fail":final_fail,
         "pre_g9_tech_pass_before_halt_guard":sorted(raw_pre),
         "halt_vetoed_candidates":halt_vetoed,
         "pre_g9_tech_pass":sorted(pre),"candidate_research_tier_caps":dict(sorted(candidate_tier_caps.items())),

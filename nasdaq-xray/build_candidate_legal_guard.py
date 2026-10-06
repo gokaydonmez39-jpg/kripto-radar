@@ -37,6 +37,8 @@ LIFECYCLE=Path(os.getenv("XRAY_LEGAL_GUARD_LIFECYCLE",str(ROOT/"canonical_candid
 PREV_FINAL=Path(os.getenv("XRAY_LEGAL_GUARD_PREV_FINAL",str(ROOT/"canonical_current_final_tech.json")))
 OUT=Path(os.getenv("XRAY_LEGAL_GUARD_OUT",str(ROOT/"canonical_candidate_legal_guard.json")))
 CIK_CACHE=Path(os.getenv("XRAY_SEC_CIK_CACHE",str(ROOT/"sec_ticker_cik_cache.json")))
+SCOPE_OVERRIDE_ENV=os.getenv("XRAY_LEGAL_GUARD_SCOPE_FILE")
+SCOPE_OVERRIDE=Path(SCOPE_OVERRIDE_ENV) if SCOPE_OVERRIDE_ENV else None
 TASK_ID="6a825366222081918997094d76e6ae46"
 USER_AGENT=os.getenv("XRAY_SEC_USER_AGENT","NASDAQ-SWING-XRAY research bot; xray-dataplane-bot@users.noreply.github.com")
 SEC_MIN_INTERVAL_SECONDS=float(os.getenv("XRAY_SEC_MIN_INTERVAL_SECONDS","0.22"))
@@ -169,6 +171,40 @@ def load_lifecycle_state(asof:str|None=None)->tuple[dict|None,str]:
         except Exception as exc:
             raise RuntimeError("LIFECYCLE_SIDECAR_PARSE_SCHEMA_OR_TIME_FAIL") from exc
     return chosen,source
+
+
+def _display_path(path:Path)->str:
+    try: return str(path.relative_to(ROOT.parent)).replace("\\\\","/")
+    except Exception: return str(path).replace("\\\\","/")
+
+
+def _load_scope_override(asof:str)->tuple[list[str]|None,dict|None]:
+    """Load exact-bound technical survivors that actually require detailed SEC review.
+
+    This override may only narrow the broad finalist scope. Binding drift is a
+    hard failure and UNKNOWN is never promoted to PASS.
+    """
+    if SCOPE_OVERRIDE is None:
+        return None,None
+    if not SCOPE_OVERRIDE.exists():
+        raise RuntimeError("PRELEGAL_SCOPE_OVERRIDE_MISSING")
+    j=json.loads(SCOPE_OVERRIDE.read_text())
+    if (j.get("schema")!="XRAY_PRELEGAL_SURVIVOR_SCOPE_V1"
+        or j.get("task_id")!=TASK_ID or j.get("asof_et")!=asof
+        or j.get("execution")!="NONE" or j.get("real_money")!="NO-GO"
+        or j.get("unknown_never_pass") is not True):
+        raise RuntimeError("PRELEGAL_SCOPE_OVERRIDE_SCHEMA_SAFETY_OR_ASOF_FAIL")
+    if j.get("source_deep_blob_sha")!=blob_sha(DEEP):
+        raise RuntimeError("PRELEGAL_SCOPE_OVERRIDE_DEEP_BINDING_MISMATCH")
+    expected_fc=blob_sha(FAMILY_C) if FAMILY_C.exists() else None
+    if j.get("source_family_c_blob_sha")!=expected_fc:
+        raise RuntimeError("PRELEGAL_SCOPE_OVERRIDE_FAMILY_C_BINDING_MISMATCH")
+    syms=sorted(set(str(x).upper().strip() for x in (j.get("symbols") or []) if str(x).strip()))
+    if int(j.get("symbol_count",-1))!=len(syms):
+        raise RuntimeError("PRELEGAL_SCOPE_OVERRIDE_COUNT_MISMATCH")
+    if j.get("symbol_hash")!=scope_hash(syms):
+        raise RuntimeError("PRELEGAL_SCOPE_OVERRIDE_HASH_MISMATCH")
+    return syms,j
 
 
 def candidate_scope(deep:dict,fc:dict|None,lifecycle:dict|None)->list[str]:
@@ -715,7 +751,11 @@ def main():
                                   or lifecycle.get("real_money")!="NO-GO"):
         raise RuntimeError("LIFECYCLE_SAFETY_OR_TASK_MISMATCH")
 
-    scope=candidate_scope(deep,fc,lifecycle)
+    broad_scope=candidate_scope(deep,fc,lifecycle)
+    override_scope,scope_override=_load_scope_override(asof)
+    scope=override_scope if override_scope is not None else broad_scope
+    if override_scope is not None and not set(scope)<=set(broad_scope):
+        raise RuntimeError("PRELEGAL_SCOPE_OVERRIDE_NOT_SUBSET_OF_BROAD_SCOPE")
     # No finalist/lifecycle candidate means there is nothing to query from SEC.
     # Produce an exact empty guard without making external network availability
     # a false FULL_E2E blocker for an empty candidate scope.
@@ -749,6 +789,10 @@ def main():
       "cik_mapping_errors":cik_mapping_errors,
       "cik_mapping_sources":{s:cik_sources.get(s.upper(),"MISSING") for s in scope},
       "candidate_scope":scope,"candidate_scope_count":len(scope),"candidate_scope_hash":scope_hash(scope),
+      "candidate_scope_source":"PRELEGAL_SURVIVOR_SCOPE_EXACT" if scope_override is not None else "BROAD_FINALIST_SCOPE",
+      "broad_candidate_scope_count":len(broad_scope),"broad_candidate_scope_hash":scope_hash(broad_scope),
+      "source_scope_override_path":_display_path(SCOPE_OVERRIDE) if scope_override is not None else None,
+      "source_scope_override_blob_sha":blob_sha(SCOPE_OVERRIDE) if scope_override is not None else None,
       "source_deep_path":str(DEEP.relative_to(DEEP.parent.parent)),
       "source_deep_blob_sha":blob_sha(DEEP),
       "source_family_c_path":str(FAMILY_C.relative_to(FAMILY_C.parent.parent)) if FAMILY_C.exists() else None,

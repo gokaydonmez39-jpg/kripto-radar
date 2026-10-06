@@ -422,6 +422,51 @@ jobs:
           XRAY_DEEP_WORKERS: "8"
         run: python nasdaq-xray/deep_pre_r1_shadow.py
 
+      - name: Build exact pre-legal technical survivor scope
+        if: steps.event.outputs.ready == 'true' && steps.account_vault.outputs.restart_required != 'true'
+        env:
+          XRAY_FINAL_DEEP_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_current_deep_full.json
+          XRAY_FINAL_FAMILY_C_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_current_family_c.json
+          XRAY_FINAL_OUT: /tmp/xray_prelegal/final_prelegal.json
+          XRAY_FINAL_LIFECYCLE_OUT: /tmp/xray_prelegal/lifecycle.json
+          XRAY_FINAL_CANDIDATE_LEGAL_GUARD: /tmp/xray_prelegal/absent_guard.json
+          XRAY_FINAL_WORKERS: "6"
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/xray_prelegal
+          mkdir -p /tmp/xray_prelegal
+          python nasdaq-xray/final_tech_shadow.py
+          python - <<'PY'
+          import hashlib,json,pathlib
+          root=pathlib.Path("nasdaq-xray")
+          def bsha(p):
+              b=p.read_bytes()
+              return hashlib.sha1(f"blob {len(b)}\\0".encode()+b).hexdigest()
+          f=json.load(open("/tmp/xray_prelegal/final_prelegal.json"))
+          d=root/"canonical_current_deep_full.json"
+          c=root/"canonical_current_family_c.json"
+          asof=f["asof_et"]
+          keys=sorted(set(f.get("detailed_legal_required_candidate_keys") or []))
+          symbols=sorted(set(str(k).split("|",1)[0].upper() for k in keys))
+          for k in keys:
+              row=(f.get("results") or {}).get(k) or {}
+              assert row.get("technical_prelegal_result")=="PRE_G9_TECH_PASS",(k,row.get("technical_prelegal_result"))
+              assert row.get("pre_g9_tech_pass") is False,(k,row.get("pre_g9_tech_pass"))
+          h=hashlib.sha256(("\\n".join(symbols)+"\\n").encode()).hexdigest()
+          out={
+            "schema":"XRAY_PRELEGAL_SURVIVOR_SCOPE_V1",
+            "task_id":"6a825366222081918997094d76e6ae46",
+            "asof_et":asof,"execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
+            "source_deep_blob_sha":bsha(d),
+            "source_family_c_blob_sha":bsha(c),
+            "required_candidate_keys":keys,
+            "symbols":symbols,"symbol_count":len(symbols),"symbol_hash":h,
+            "authority":"C4_17_TECHNICAL_PRELEGAL_SURVIVORS_ONLY",
+          }
+          (root/"canonical_prelegal_survivor_scope.json").write_text(json.dumps(out,sort_keys=True,indent=2)+"\\n")
+          print({"XRAY_PRELEGAL_SURVIVOR_SCOPE":"PASS","asof":asof,"keys":keys,"symbols":symbols})
+          PY
+
       - name: Build exact-bound detailed finalist legal guard
         if: steps.event.outputs.ready == 'true' && steps.account_vault.outputs.restart_required != 'true'
         env:
@@ -429,6 +474,7 @@ jobs:
           XRAY_LEGAL_GUARD_FAMILY_C: ${{ github.workspace }}/nasdaq-xray/canonical_current_family_c.json
           XRAY_LEGAL_GUARD_LIFECYCLE: ${{ github.workspace }}/nasdaq-xray/canonical_candidate_lifecycle_registry.json
           XRAY_LEGAL_GUARD_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_candidate_legal_guard.json
+          XRAY_LEGAL_GUARD_SCOPE_FILE: ${{ github.workspace }}/nasdaq-xray/canonical_prelegal_survivor_scope.json
           XRAY_SEC_USER_AGENT: "NASDAQ-SWING-XRAY research bot; xray-dataplane-bot@users.noreply.github.com"
           XRAY_SEC_MIN_INTERVAL_SECONDS: "0.22"
         run: python nasdaq-xray/build_candidate_legal_guard.py
@@ -443,6 +489,7 @@ jobs:
               b=p.read_bytes()
               return hashlib.sha1(f"blob {len(b)}\0".encode()+b).hexdigest()
           g=json.load(open(root/"canonical_candidate_legal_guard.json"))
+          ps=json.load(open(root/"canonical_prelegal_survivor_scope.json"))
           d=root/"canonical_current_deep_full.json"
           f=root/"canonical_current_family_c.json"
           l=root/"canonical_candidate_lifecycle_registry.json"
@@ -463,6 +510,12 @@ jobs:
           assert g.get("candidate_scope_count")==len(scope)
           assert g.get("candidate_scope_hash")==h
           assert set(g.get("records") or {})==set(scope)
+          assert ps.get("schema")=="XRAY_PRELEGAL_SURVIVOR_SCOPE_V1",ps
+          assert ps.get("execution")=="NONE" and ps.get("real_money")=="NO-GO" and ps.get("unknown_never_pass") is True,ps
+          assert g.get("candidate_scope_source")=="PRELEGAL_SURVIVOR_SCOPE_EXACT",g.get("candidate_scope_source")
+          assert scope==sorted(set(ps.get("symbols") or [])),(scope,ps.get("symbols"))
+          assert g.get("source_scope_override_blob_sha")==bsha(root/"canonical_prelegal_survivor_scope.json")
+          assert int(g.get("broad_candidate_scope_count",-1))>=len(scope)
           print({"XRAY_DETAILED_LEGAL_GUARD_BINDING":"PASS","scope_count":len(scope),
                  "unknown_symbols":g.get("unknown_symbols")})
           PY
@@ -636,6 +689,7 @@ jobs:
             nasdaq-xray/canonical_current_event_state.json
             nasdaq-xray/canonical_current_family_c.json
             nasdaq-xray/canonical_current_deep_full.json
+            nasdaq-xray/canonical_prelegal_survivor_scope.json
             nasdaq-xray/canonical_candidate_legal_guard.json
             nasdaq-xray/canonical_candidate_lifecycle_registry.json
             nasdaq-xray/canonical_current_final_tech.json
