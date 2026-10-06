@@ -146,8 +146,8 @@ jobs:
               identity_replay=bool(
                   active_completed_epoch
                   and (
-                      mf.get("identity_ruleset")!="V4_SPAC_EXCLUDED_AT_MASTER"
-                      or mf.get("identity_authority")!="NASDAQTRADER_EXPLICIT_TYPE_FILTER_V4_SPAC_EXCLUDED_AT_MASTER"
+                      mf.get("identity_ruleset")!="V5_SEC_SPAC_PROOF_AT_MASTER"
+                      or mf.get("identity_authority")!="NASDAQTRADER_EXPLICIT_TYPE_FILTER_V5_SEC_SPAC_PROOF_AT_MASTER"
                   )
               )
           except Exception:
