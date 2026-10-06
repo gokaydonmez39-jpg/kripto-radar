@@ -457,10 +457,9 @@ jobs:
           XRAY_ASOF="${{ steps.mc.outputs.asof }}" XRAY_HISTORY_WORKERS="8" \
           python nasdaq-xray/history_phase.py
           python - <<'PY'
-          import hashlib,json,os,pathlib
+          import json,os,pathlib,subprocess
           def blob_sha(p):
-              b=pathlib.Path(p).read_bytes()
-              return hashlib.sha1(f"blob {len(b)}\\0".encode()+b).hexdigest()
+              return subprocess.check_output(["git","hash-object",str(p)],text=True).strip()
           canonical=pathlib.Path("nasdaq-xray/canonical_current_history.json")
           revalidated=pathlib.Path(os.environ["RUNNER_TEMP"])/"xray-history-revalidated.json"
           current_mc=pathlib.Path("${{ steps.mc.outputs.path }}")
@@ -641,10 +640,9 @@ jobs:
           e=json.load(open("nasdaq-xray/canonical_current_event_request.json"))
           asof="${{ steps.mc.outputs.asof }}"
           assert h["asof_et"]==l["asof_et"]==s["asof_et"]==r["asof_et"]==d["asof_et"]==e["asof_et"]==asof
-          import hashlib,pathlib
+          import pathlib,subprocess
           def bsha(p):
-              b=pathlib.Path(p).read_bytes()
-              return hashlib.sha1(f"blob {len(b)}\\0".encode()+b).hexdigest()
+              return subprocess.check_output(["git","hash-object",str(p)],text=True).strip()
           mc_path=pathlib.Path("${{ steps.mc.outputs.path }}")
           hp=pathlib.Path("nasdaq-xray/canonical_current_history.json")
           lp=pathlib.Path("nasdaq-xray/canonical_current_legal.json")

@@ -926,6 +926,7 @@ def test_post_mc_exact_source_rebind_workflow_contract():
     assert "MC_AUTHORITY_ARTIFACT_MUTATION_FORBIDDEN_USE_SUCCESSOR" in wf
     assert '"XRAY_REUSED_HISTORY_PROMOTION":"EXACT_CURRENT_MC"' in wf
     assert 'canonical.write_bytes(revalidated.read_bytes())' in wf
+    assert wf.count('subprocess.check_output(["git","hash-object",str(p)],text=True).strip()') >= 2
     legal=wf[wf.index("- name: Run LEGAL"):wf.index("- name: Build exact Stage1 input")]
     assert "steps.reuse_hl.outputs.reuse" not in legal
     assert '"POST_MC_EXACT_SOURCE_CHAIN":"PASS"' in wf
