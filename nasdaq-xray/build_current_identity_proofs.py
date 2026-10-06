@@ -86,27 +86,27 @@ def latest_prior(prefix:str,asof:str):
             continue
     return best
 
-def sec_index():
-    raw=load_json_url(SEC_TICKERS)
-    out={}
-    for row in (raw or {}).values():
-        if not isinstance(row,dict):
-            continue
-        ticker=str(row.get("ticker") or "").strip().upper()
-        cik=row.get("cik_str")
-        if ticker and cik is not None:
-            out[ticker]=int(cik)
-    if not out:
-        raise RuntimeError("SEC_TICKER_INDEX_EMPTY")
-    return out
+def cik_from_prior_row(row:dict):
+    row=row or {}
+    raw=row.get("cik")
+    if raw is not None:
+        try:
+            return int(str(raw).strip())
+        except Exception:
+            pass
+    url=str(row.get("source_url") or "")
+    for pat in (r"/data/(\d+)/",r"[?&]CIK=(\d+)",r"cik=(\d+)"):
+        m=re.search(pat,url,re.I)
+        if m:
+            return int(m.group(1))
+    return None
 
 def latest_filing_date(sub:dict,asof:str):
     recent=((sub.get("filings") or {}).get("recent") or {})
     dates=[str(x) for x in (recent.get("filingDate") or []) if str(x)<=asof and re.fullmatch(r"20\d{2}-\d{2}-\d{2}",str(x))]
     return max(dates) if dates else None
 
-def sec_current_row(sym:str,asof:str,idx:dict,want_blank:bool):
-    cik=idx.get(sym)
+def sec_current_row(sym:str,asof:str,cik:int|None,want_blank:bool):
     if cik is None:
         return None
     sub=load_json_url(f"{SEC_SUBMISSIONS}/CIK{cik:010d}.json")
@@ -185,12 +185,12 @@ def main():
     if prior_sec:
         blank_seed=dict(prior_sec[2].get("proofs") or {})
 
-    idx=sec_index()
     operating={}
     for sym,old in sorted(operating_seed.items()):
         if sym not in names:
             continue
-        row=sec_current_row(sym,asof,idx,False)
+        cik=cik_from_prior_row(old)
+        row=sec_current_row(sym,asof,cik,False)
         if row is None:
             raise RuntimeError("OPERATING_OVERRIDE_REVALIDATION_FAILED:"+sym)
         operating[sym]={
@@ -221,7 +221,8 @@ def main():
     for sym,old in sorted(blank_seed.items()):
         if sym not in names:
             continue
-        row=sec_current_row(sym,asof,idx,True)
+        cik=cik_from_prior_row(old)
+        row=sec_current_row(sym,asof,cik,True)
         if row is None:
             raise RuntimeError("SEC_SPAC_REVALIDATION_FAILED:"+sym)
         proofs[sym]=row
