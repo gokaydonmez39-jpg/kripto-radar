@@ -50,7 +50,7 @@ jobs:
               x=x.reset_index(drop=True)
               if len(x)<260:
                   return {"status":"HISTORY_FAIL","bars":len(x),"history_source":src}
-              st_status=s1.process(sym,ASOF)[1]
+              st_status=s1.process(sym,ASOF,week_last)[1]
               weekly_dates=set(st_status.get("recent_weekly_pass_dates") or [])
               # Family C may have broken out several sessions before ASOF and still
               # be in the 8-session candidate lifecycle. Scan a conservative 30-session
