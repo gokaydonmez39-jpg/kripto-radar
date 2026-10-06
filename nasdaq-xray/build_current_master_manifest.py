@@ -44,8 +44,8 @@ def main():
       "full_identity":bool(dm.get("full_identity")),
       "authority_full_identity":valid_full_identity_authority(dm),
       "official_footer_present":bool(s.get("official_footer")),
-      "identity_authority_v4":s.get("identity_authority")=="NASDAQTRADER_EXPLICIT_TYPE_FILTER_V4_SPAC_EXCLUDED_AT_MASTER",
-      "identity_ruleset_v4":s.get("identity_ruleset")=="V4_SPAC_EXCLUDED_AT_MASTER",
+      "identity_authority_v5":s.get("identity_authority")=="NASDAQTRADER_EXPLICIT_TYPE_FILTER_V5_SEC_SPAC_PROOF_AT_MASTER",
+      "identity_ruleset_v5":s.get("identity_ruleset")=="V5_SEC_SPAC_PROOF_AT_MASTER",
       "exclusion_reasons_policy_exact":set(exc).issubset(ALLOWED_EXCLUSION_REASONS),
     }
     complete=all(proof.values())
