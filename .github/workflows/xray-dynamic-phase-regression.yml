@@ -410,7 +410,7 @@ jobs:
           unresolved={"B":{"reason":"BIGDATA_PROVIDER_CREDIT_EXHAUSTED","fail_closed":True}}
           bridge={
             "pagination_complete":False,"partial_data":True,
-            "discovery_unavailable_symbols":["B"],
+            "discovery_unavailable_symbols":["B","MXL"],
             "provider_unavailable_but_officially_resolved_symbols":["MXL"],
             "official_horizon_clearance":{
               "MXL":{"authority":"ISSUER_IR_PRIMARY","official_source_url":"https://example.invalid/mxl",
@@ -421,7 +421,7 @@ jobs:
               bridge,weekly,status,unresolved,
               ["2026-10-06","2026-10-15"])
           assert ok and mode=="PARTIAL_PROVIDER_FAIL_CLOSED_WITH_DIRECT_PRIMARY_RESOLUTION",(ok,mode)
-          bad=dict(bridge,discovery_unavailable_symbols=["A","B"])
+          bad=dict(bridge,discovery_unavailable_symbols=["A","B","MXL"])
           ok,_=e.fail_closed_discovery_coverage(bad,weekly,status,unresolved,["2026-10-15"])
           assert not ok
           bad2=dict(bridge,official_horizon_clearance={
