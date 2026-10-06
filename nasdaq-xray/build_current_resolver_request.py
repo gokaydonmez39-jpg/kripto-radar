@@ -31,7 +31,10 @@ def resolver_resume_semantic_view(obj):
     return {k:v for k,v in obj.items() if k not in RESOLVER_RESUME_METADATA_ONLY_FIELDS}
 
 def _resolver_bridge_rel(path):
-    return str(path.relative_to(ROOT.parent)).replace("\\","/")
+    try:
+        return str(path.relative_to(ROOT.parent)).replace("\\","/")
+    except ValueError:
+        return str(path).replace("\\","/")
 
 def active_resolver_bridge_rows(rows):
     """Return non-superseded authorities; malformed successor links fail closed."""

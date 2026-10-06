@@ -324,7 +324,10 @@ def expand_rallies_scanner_exact30_v2(compact,req):
     return out
 
 def _resolver_bridge_rel(path):
-    return str(path.relative_to(ROOT.parent)).replace("\\","/")
+    try:
+        return str(path.relative_to(ROOT.parent)).replace("\\","/")
+    except ValueError:
+        return str(path).replace("\\","/")
 
 def active_resolver_bridge_matches(rows):
     """Reduce exact/semantic matches to valid non-superseded resolver authority."""
