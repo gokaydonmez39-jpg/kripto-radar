@@ -168,7 +168,7 @@ jobs:
                   import glob,hashlib,pathlib
                   pp=pathlib.Path("nasdaq-xray/canonical_current_price_dv20.json")
                   pb=pp.read_bytes()
-                  current_price_blob=hashlib.sha1(b"blob "+str(len(pb)).encode()+b"\\0"+pb).hexdigest()
+                  current_price_blob=hashlib.sha1(b"blob "+str(len(pb)).encode()+b"\0"+pb).hexdigest()
                   for fp in glob.glob("nasdaq-xray/canonical_resolver_bridge_*.json"):
                       try:
                           b=json.load(open(fp))
