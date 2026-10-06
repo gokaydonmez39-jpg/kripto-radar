@@ -9,7 +9,7 @@ OUT=Path(os.getenv("XRAY_MASTER_MANIFEST",str(ROOT/"canonical_current_master_man
 TASK="6a825366222081918997094d76e6ae46"
 ALLOWED_EXCLUSION_REASONS={
   "TEST_ISSUE","ETF","NEXTSHARES","WARRANT","RIGHT","UNIT",
-  "PREFERRED","DEBT","ETN","FUND","WHEN_ISSUED"
+  "PREFERRED","DEBT","ETN","FUND","WHEN_ISSUED","SPAC_BLANK_CHECK"
 }
 FULL_IDENTITY_AUTHORITIES={
   "FULL_IDENTITY_NO_PREFILTER",
@@ -44,8 +44,9 @@ def main():
       "full_identity":bool(dm.get("full_identity")),
       "authority_full_identity":valid_full_identity_authority(dm),
       "official_footer_present":bool(s.get("official_footer")),
-      "identity_authority_v3":s.get("identity_authority")=="NASDAQTRADER_EXPLICIT_TYPE_FILTER_V3_SPAC_DEFERRED_TO_LEGAL",
-      "exclusion_reasons_policy_exact":set(exc).issubset(ALLOWED_EXCLUSION_REASONS) and "SPAC" not in exc,
+      "identity_authority_v4":s.get("identity_authority")=="NASDAQTRADER_EXPLICIT_TYPE_FILTER_V4_SPAC_EXCLUDED_AT_MASTER",
+      "identity_ruleset_v4":s.get("identity_ruleset")=="V4_SPAC_EXCLUDED_AT_MASTER",
+      "exclusion_reasons_policy_exact":set(exc).issubset(ALLOWED_EXCLUSION_REASONS),
     }
     complete=all(proof.values())
     identity_pass=sorted(q) if complete else []
