@@ -1,0 +1,134 @@
+name: XRAY 5.2 Family A Hard-Gate Shadow
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/xray-52-family-a-hardgate-shadow.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: xray-52-family-a-hardgate-shadow
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install runtime
+        run: python -m pip install --disable-pip-version-check -r nasdaq-xray/requirements-runtime.txt
+      - name: Evaluate 5.2 Family A hard gates for shadow-only symbols
+        env:
+          PYTHONPATH: nasdaq-xray
+        run: |
+          python - <<'PY'
+          import json,math
+          from pathlib import Path
+          import pandas as pd
+          import deep_pre_r1_shadow as deep
+          import alpha_semantics as alpha
+
+          root=Path("nasdaq-xray")
+          sh=json.loads((root/"canonical_shadow_c417_vs_52_a.json").read_text())
+          asof=sh["asof_et"]
+          symbols=sh.get("a52_only_symbols") or []
+          _,qqq,qerr,qsrc=deep.get_hist("QQQ",asof)
+          if qqq is None: raise RuntimeError("QQQ_HISTORY_UNKNOWN:"+str(qerr))
+          qqq=qqq.reset_index(drop=True)
+          out={}
+
+          def idx_for(df,day):
+              hit=df.index[df["date"].dt.date.astype(str)==day].tolist()
+              return hit[0] if hit else None
+
+          for sym in symbols:
+              row=(sh.get("rows") or {}).get(sym) or {}
+              g=row.get("a52") or {}
+              _,x,err,src=deep.get_hist(sym,asof)
+              if x is None:
+                  out[sym]={"status":"UNKNOWN_HISTORY","reason":err}; continue
+              x=x.reset_index(drop=True)
+              ti=idx_for(x,str(g.get("trigger_date") or ""))
+              hi=idx_for(x,str(g.get("hl_date") or ""))
+              if ti is None or hi is None or hi+2>ti:
+                  out[sym]={"status":"UNKNOWN_INDEX_BINDING","ti":ti,"hi":hi}; continue
+              atr=alpha.wilder_atr(x,14)
+              A=float(g["A_trigger"])
+              atr_anchor=float(atr.iloc[hi+2]) if hi+2<len(atr) and pd.notna(atr.iloc[hi+2]) else float("nan")
+              P=float(g["P"]); anchor=float(g["anchor"])
+              entry_low=P; entry_high=P+0.25*A; entry_model=entry_high; chase=P+0.50*A
+              S0=anchor-0.20*atr_anchor if math.isfinite(atr_anchor) else float("nan")
+              risk=entry_model-S0
+              risk_atr=risk/A if A>0 else float("inf")
+              risk_pct=risk/entry_model if entry_model>0 else float("inf")
+              risk_pass=math.isfinite(S0) and S0<entry_model and 1.0<=risk_atr<=2.5 and risk_pct<=0.08
+
+              r1=alpha.nearest_active_resistance(x,ti,A,entry_low,entry_high,entry_model)
+              trigger_close=float(x.close.iloc[ti])
+              if r1.get("status")=="PASS":
+                  T1=float(r1["T1"]); overlap=bool(r1.get("target_overlap")); target_source="STRUCTURAL"
+              else:
+                  prior=r1.get("prior_max_high")
+                  price_discovery=prior is not None and math.isfinite(float(prior)) and trigger_close>float(prior)
+                  if price_discovery:
+                      T1=P+3*A; overlap=False; target_source="PRICE_DISCOVERY_PROJECTION_NOT_ORANGE"
+                  else:
+                      T1=None; overlap=None; target_source="R1_UNRESOLVED"
+
+              def rr(cost_mult):
+                  if T1 is None or not math.isfinite(S0): return None
+                  c=cost_mult*A; E=entry_model+c; S=S0-c; T=T1-c; den=E-S
+                  return (T-E)/den if den>0 else None
+              basic=rr(0.10); severe=rr(0.25)
+              rr_pass=(basic is not None and severe is not None and basic>=2.0 and severe>=1.5 and not overlap and target_source=="STRUCTURAL")
+
+              avail=hi+2
+              breach=False; breach_date=None
+              if math.isfinite(S0):
+                  z=x.iloc[avail+1:]
+                  z=z[z["low"].astype(float)<=S0]
+                  if not z.empty:
+                      breach=True; breach_date=z.date.iloc[0].date().isoformat()
+
+              close=float(x.close.iloc[-1])
+              if close<P: entry_state="BELOW_PIVOT_RECONFIRM"
+              elif close<=entry_high: entry_state="IN_BAND"
+              elif close<chase: entry_state="ABOVE_BAND_BELOW_CHASE"
+              else: entry_state="CHASE_VETO"
+              ext=alpha.extension_diagnostics(x,A,P,entry_high)
+              extension_veto=bool(ext.get("extension_veto"))
+              rs20=deep.common_rs(x,qqq,20); rs60=deep.common_rs(x,qqq,60)
+              mixed_rs_pass=rs20 is not None and rs60 is not None and rs20>0 and rs60>0
+
+              hard_pass=bool(risk_pass and rr_pass and not breach and not extension_veto and entry_state=="IN_BAND" and mixed_rs_pass)
+              out[sym]={
+                "status":"EVALUATED","history_source":src,
+                "trigger_date":g.get("trigger_date"),"hl_date":g.get("hl_date"),
+                "A_scenario":A,"ATR_anchor":atr_anchor,"P":P,"anchor":anchor,
+                "entry_low":entry_low,"entry_high":entry_high,"entry_model":entry_model,
+                "chase_limit":chase,"S0":S0,"current_close":close,
+                "risk_atr":risk_atr,"risk_percent":risk_pct,"risk_pass":risk_pass,
+                "r1_status":r1.get("status"),"T1":T1,"target_overlap":overlap,
+                "target_source":target_source,"rr_stress_basic":basic,"rr_severe":severe,"rr_pass":rr_pass,
+                "breached":breach,"breach_date":breach_date,
+                "entry_state":entry_state,"extension_veto":extension_veto,
+                "pivot_extension":ext.get("pivot_extension"),"move3_atr":ext.get("move3_atr"),
+                "rs20":rs20,"rs60":rs60,"mixed_rs_pass":mixed_rs_pass,
+                "hard_gate_upper_bound_pass":hard_pass,
+                "note":"Event/legal/sector-RS/score not evaluated; hard pass is necessary not sufficient for 5.2 orange."
+              }
+          print("XRAY_52_A_HARDGATE="+json.dumps({
+              "asof_et":asof,
+              "symbols":symbols,
+              "hard_gate_upper_bound_pass":[s for s,r in out.items() if r.get("hard_gate_upper_bound_pass")],
+              "results":out
+          },sort_keys=True))
+          PY
