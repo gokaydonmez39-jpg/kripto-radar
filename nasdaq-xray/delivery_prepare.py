@@ -101,7 +101,7 @@ if not isinstance(r92, list):
 required = [
     "delivery_key","asof_et","symbol","setup","entry_low","entry_high",
     "chase_limit","stop","r1","rr_basic","rr_severe","regime","event_status",
-    "mc_class","mc_source","dv20","liquidity","pass_reason","g9_status",
+    "mc_class","mc_source","liquidity","pass_reason","g9_status",
     "account_status","registered_at_utc","execution","real_money",
 ]
 eligible = []
@@ -120,6 +120,8 @@ for x in r92:
         raise RuntimeError("DELIVERY_DUPLICATE_R92_KEY")
     seen.add(key)
     missing = [k for k in required if x.get(k) is None]
+    if x.get("dv30") is None and x.get("dv20") is None:
+        missing.append("dv30_or_legacy_dv20")
     if missing:
         raise RuntimeError("DELIVERY_R92_FIELDS_MISSING:" + ",".join(missing))
     eligible.append(x)
@@ -169,6 +171,8 @@ entries = []
 for idx, x in enumerate(eligible, 1):
     safe = re.sub(r"[^A-Za-z0-9_.-]+", "_", x["delivery_key"])[-140:]
     body_path = WORK / f"{idx:03d}_{safe}.md"
+    dv_field = "dv30" if x.get("dv30") is not None else "dv20"
+    dv_label = "DV30" if dv_field == "dv30" else "DV20 (legacy registered record)"
     body = f"""# XRAY RESEARCH AL ADAYI
 
 **Research / forward-test only. Broker emri veya otomatik execution değildir.**
@@ -186,7 +190,7 @@ for idx, x in enumerate(eligible, 1):
 - Regime: **{x['regime']}**
 - Event status: **{x['event_status']}**
 - MC: **{x['mc_class']}** / {x['mc_source']}
-- DV20: **{x['dv20']}**
+- {dv_label}: **{x[dv_field]}**
 - Liquidity: **{x['liquidity']}**
 - Pass reason: {x['pass_reason']}
 - G9: **{x['g9_status']}**

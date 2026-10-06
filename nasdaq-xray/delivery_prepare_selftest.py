@@ -7,18 +7,24 @@ from pathlib import Path
 HERE=Path(__file__).resolve().parent
 SRC=HERE/"delivery_prepare.py"
 
-def candidate(key,sym,setup):
-    return {
+def candidate(key,sym,setup,legacy_dv20=False):
+    out={
         "schema":"XRAY_RESEARCH_CANDIDATE_R92_V1",
         "delivery_key":key,"asof_et":"2099-01-02","symbol":sym,"setup":setup,
         "entry_low":100.0,"entry_high":101.0,"chase_limit":102.0,"stop":96.0,
         "r1":111.0,"rr_basic":2.2,"rr_severe":1.7,"regime":"TEST",
         "event_status":"CLEAN_TEST","mc_class":"MC_PASS_PRIMARY","mc_source":"SELFTEST",
-        "dv20":100000000,"liquidity":"DV20_POLICY_PASS","pass_reason":"SELFTEST_ONLY",
+        "liquidity":"DV30_POLICY_PASS","pass_reason":"SELFTEST_ONLY",
         "g9_status":"BLOCKED_TEST","account_status":"UNKNOWN_TEST",
         "registered_at_utc":"2099-01-03T00:00:00Z",
         "execution":"NONE","real_money":"NO-GO",
     }
+    if legacy_dv20:
+        out["dv20"]=100000000
+        out["liquidity"]="DV20_POLICY_PASS_LEGACY"
+    else:
+        out["dv30"]=100000000
+    return out
 
 def pointer(r92,keys):
     return {
@@ -89,7 +95,7 @@ with tempfile.TemporaryDirectory() as td:
     p=Path(td)
     shutil.copy2(SRC,p/"delivery_prepare.py")
     a=candidate("DELIVERY|RESEARCH_AL_ADAYI|2099-01-02|AAA|B|abc123","AAA","B")
-    b=candidate("DELIVERY|RESEARCH_AL_ADAYI|2099-01-02|BBB|C|def456","BBB","C")
+    b=candidate("DELIVERY|RESEARCH_AL_ADAYI|2099-01-02|BBB|C|def456","BBB","C",legacy_dv20=True)
     # Research delivery MUST remain independent from TRUE-FULL-GO final gates.
     # Prove a fully registered technical candidate is still deliverable while
     # strict G9 and account are both blocked.
@@ -109,6 +115,8 @@ with tempfile.TemporaryDirectory() as td:
     body_text="\n".join(x.read_text() for x in (p/".delivery_work").glob("*.md"))
     assert "G9_BLOCKED_FREE_AUTOMATION_PATH" in body_text
     assert "ACCOUNT_BLOCKED_SCOPE_NOT_GRANTED_OR_ACCOUNT_UNSUPPORTED" in body_text
+    assert "DV30:" in body_text
+    assert "DV20 (legacy registered record):" in body_text
     for x in batch["candidates"]:
         # production paths are repository-root relative; in selftest resolve basename safely.
         matches=list((p/".delivery_work").glob("*"+x["symbol"]+"*"))

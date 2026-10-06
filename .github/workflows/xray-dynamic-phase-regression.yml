@@ -413,6 +413,12 @@ jobs:
             "canonical_current_price_dv30.json",
           ]:
               assert x in d,x
+          for x in [
+            "dv30_or_legacy_dv20",
+            'dv_field = "dv30"',
+            "DV20 (legacy registered record)",
+          ]:
+              assert x in d,x
           print("STALE_TERMINAL_DELIVERY_AUTHORITY_GUARD=PASS")
           PY
 
