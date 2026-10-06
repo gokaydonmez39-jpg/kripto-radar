@@ -3,30 +3,24 @@
   "calibration_pass": false,
   "comparable_current_policy_session_count": 1,
   "current_finalist_diagnostics": {
-    "asof_et": "2026-10-05",
-    "candidate_count": 13,
-    "family_counts": {
-      "B": 1,
-      "D": 12
-    },
-    "kill_reason_counts": {
-      "FAIL_R1_ENTRY_OVERLAP": 1,
-      "FAIL_RISK_GEOMETRY": 12
-    },
+    "asof_et": "2026-10-06",
+    "candidate_count": 0,
+    "family_counts": {},
+    "kill_reason_counts": {},
     "pre_g9_count": 0,
-    "risk_fail_count": 12,
-    "risk_percent_max": 0.1857006665398489,
-    "risk_percent_median": 0.1172068349398287,
-    "risk_percent_min": 0.012865079042536745,
-    "rr_basic_fail_count": 13,
-    "rr_basic_max": 0.7690469261217284,
-    "rr_severe_fail_count": 13,
-    "rr_severe_max": 0.5754224440510413,
-    "target_overlap_count": 7
+    "risk_fail_count": 0,
+    "risk_percent_max": null,
+    "risk_percent_median": null,
+    "risk_percent_min": null,
+    "rr_basic_fail_count": 0,
+    "rr_basic_max": null,
+    "rr_severe_fail_count": 0,
+    "rr_severe_max": null,
+    "target_overlap_count": 0
   },
   "current_policy_version": "C4.17",
   "execution": "NONE",
-  "generated_at_utc": "2026-10-06T20:16:08.503199+00:00",
+  "generated_at_utc": "2026-10-06T23:02:14.994616+00:00",
   "interpretation": {
     "empirical_calibration": "NOT_PROVEN",
     "functional_reachability": "DECLARED_POSITIVE_TEST_EXISTS",
@@ -76,11 +70,11 @@
       "terminal_status": "FULL_E2E_RESEARCH_PASS"
     },
     {
-      "asof_et": "2026-10-05",
+      "asof_et": "2026-10-06",
       "comparable_to_current_c417": true,
       "compiled_policy_version": "C4.17",
       "dv30_semantics_observed": true,
-      "final_confirmed_candidates": 13,
+      "final_confirmed_candidates": 0,
       "final_path": "nasdaq-xray/canonical_current_final_tech.json",
       "full_end_to_end_research_pass": false,
       "pre_g9_tech_pass": 0,
@@ -97,12 +91,12 @@
   "target_comparable_sessions": 60,
   "unknown_never_pass": true,
   "zero_pre_g9_comparable_dates": [
-    "2026-10-05"
+    "2026-10-06"
   ],
   "zero_pre_g9_snapshot_dates": [
     "2026-09-29",
     "2026-09-30",
     "2026-10-01",
-    "2026-10-05"
+    "2026-10-06"
   ]
 }

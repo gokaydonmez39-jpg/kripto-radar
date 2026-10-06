@@ -1,46 +1,14 @@
 {
-  "asof_et": "2026-10-05",
+  "asof_et": "2026-10-06",
   "authority": "C4_11_POST_EARNINGS_FAIL_CLOSED_POLICY_INHERITED",
   "confirmed": {},
   "confirmed_count": 0,
-  "details": {
-    "MU": [
-      {
-        "A_pre_event": 45.083906497690954,
-        "confirmed": false,
-        "event_datetime_et": "2026-09-30T16:30:00-04:00",
-        "gap_atr": -0.2446549302590913,
-        "gap_floor_breach_date": null,
-        "pre_event_close": 1065.11,
-        "reaction_high": 1098.9,
-        "reaction_lows": [
-          1022.9,
-          1072.01,
-          1055.5601
-        ],
-        "reaction_mode": "AMC",
-        "reaction_ok": false,
-        "reaction_rvol20": 1.986809896917105,
-        "reaction_session": "2026-10-01"
-      }
-    ]
-  },
-  "event_symbol_count": 1,
+  "details": {},
+  "event_symbol_count": 0,
   "execution": "NONE",
-  "history_fingerprint_by_symbol": {
-    "MU": {
-      "first_date": "2025-06-27",
-      "last_date": "2026-10-05",
-      "lookback": 320,
-      "rows": 320,
-      "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-      "sha256": "ba00ce7fba97d8aca1878a1ace2fc96e4559d359db7a15bf84a8785ccd0ea72e"
-    }
-  },
+  "history_fingerprint_by_symbol": {},
   "history_fingerprint_semantics": "RAW_OR_OFFICIAL_COMPOSITE_ASOF_TAIL320_V1",
-  "history_source_by_symbol": {
-    "MU": "SINA_US_DAILY"
-  },
+  "history_source_by_symbol": {},
   "policy": {
     "base_atr": [
       0.3,
@@ -58,14 +26,14 @@
   "schema": "XRAY_FAMILY_C_ENGINE_V1",
   "source_compiled_policy_hash": "68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4",
   "source_compiled_policy_version": "C4.17",
-  "source_event_blob_sha": "b7ee80a11144a9e566eefddb1a7b0f075976cbb4",
+  "source_event_blob_sha": "93ed6e22e45917e3222ba4a24f806b60d6dba2f3",
   "source_event_path": "nasdaq-xray/canonical_current_event_state.json",
-  "source_stage1_blob_sha": "964a558ed64e969265e5c6455457f4cf07857399",
+  "source_stage1_blob_sha": "2bffabc722845c643dfa8b44d68f1047e752d88e",
   "source_stage1_path": "nasdaq-xray/canonical_current_stage1.json",
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown": {},
   "unknown_count": 0,
   "unknown_never_pass": true,
-  "weekly_scope_count": 103,
-  "weekly_trigger_scope_count": 121
+  "weekly_scope_count": 97,
+  "weekly_trigger_scope_count": 115
 }
