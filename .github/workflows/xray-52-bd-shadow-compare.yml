@@ -1,0 +1,186 @@
+name: XRAY 5.2 B-D Shadow Compare
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/xray-52-bd-shadow-compare.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: xray-52-bd-shadow-compare
+  cancel-in-progress: true
+
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install runtime
+        run: python -m pip install --disable-pip-version-check -r nasdaq-xray/requirements-runtime.txt
+      - name: Compare 5.2 B-D geometry and necessary hard gates
+        env:
+          PYTHONPATH: nasdaq-xray
+        run: |
+          python - <<'PY'
+          import json,math
+          from pathlib import Path
+          from statistics import median
+          import pandas as pd
+          import alpha_semantics as alpha
+          import deep_pre_r1_shadow as deep
+
+          root=Path("nasdaq-xray")
+          st=json.loads((root/"canonical_current_stage1.json").read_text())
+          dp=json.loads((root/"canonical_current_deep_full.json").read_text())
+          asof=dp["asof_et"]
+          scope=sorted(dp.get("weekly_trigger_scope") or [])
+          strows=st.get("results") or {}
+          _,qqq,qerr,qsrc=deep.get_hist("QQQ",asof)
+          if qqq is None: raise RuntimeError("QQQ_HISTORY_UNKNOWN:"+str(qerr))
+          qqq=qqq.reset_index(drop=True)
+
+          def tr_series(x):
+              return pd.concat([(x.high-x.low).abs(),(x.high-x.close.shift(1)).abs(),
+                                (x.low-x.close.shift(1)).abs()],axis=1).max(axis=1)
+
+          def rvol(x,t):
+              if t<20:return None
+              vals=[float(v) for v in x.volume.iloc[t-20:t] if math.isfinite(float(v)) and float(v)>=0]
+              if len(vals)!=20:return None
+              m=median(vals)
+              return float(x.volume.iloc[t])/m if m>0 else None
+
+          def b52_at(x,t):
+              atr=alpha.wilder_atr(x,14)
+              if t<26 or t>=len(x) or pd.isna(atr.iloc[t-1]): return None
+              A=float(atr.iloc[t-1])
+              trs=tr_series(x); passing=[]
+              for n in (5,10,15,20):
+                  if t<n+20: continue
+                  base=x.iloc[t-n:t]
+                  bh=float(base.high.max()); bl=float(base.low.min())
+                  width=(bh-bl)/A
+                  last5=float(trs.iloc[t-5:t].mean()); prev20=float(trs.iloc[t-25:t-5].mean())
+                  if width<=3.0 and prev20>0 and last5<=0.8*prev20:
+                      passing.append((n,bh,bl,width))
+              if not passing:return None
+              n,P,anchor,width=max(passing,key=lambda z:z[0])
+              rv=rvol(x,t); close=float(x.close.iloc[t])
+              return {"window":n,"P":P,"anchor":anchor,"A":A,"base_width_atr":width,
+                      "rvol20":rv,"trigger_date":x.date.iloc[t].date().isoformat(),
+                      "confirmed":bool(close>P and rv is not None and rv>=1.5),
+                      "anchor_available_idx":t-1}
+
+          def d52_at(x,t):
+              q=qqq[qqq.date<=x.date.iloc[t]].reset_index(drop=True)
+              xx=x.iloc[:t+1].reset_index(drop=True)
+              stc=deep.active_hl_and_sh(xx)
+              if not stc:return None
+              hl=stc["hl"]; prior=stc["prior_hs"]
+              if not prior or t<hl+3:return None
+              sh=prior[-1]; P=float(xx.high.iloc[sh]); anchor=float(xx.low.iloc[hl])
+              atr=alpha.wilder_atr(xx,14)
+              if t<1 or pd.isna(atr.iloc[t-1]):return None
+              A=float(atr.iloc[t-1]);close=float(xx.close.iloc[-1])
+              ema50=deep.ema_seeded(xx.close.astype(float),50)
+              if pd.isna(ema50.iloc[-1]):return None
+              rv=deep.rvol20(xx);rs20=deep.common_rs(xx,q,20);rs60=deep.common_rs(xx,q,60)
+              dd=deep.drawdown_metrics(xx)
+              pool=bool(dd["current_drawdown_252"]<=-0.15 or dd["max_drawdown_close_120"]<=-0.20)
+              entry_high=P+0.25*A
+              ext=alpha.extension_diagnostics(xx,A,P,entry_high)
+              ok=bool(pool and close>P and close>float(ema50.iloc[-1])
+                      and rs20 is not None and rs60 is not None and rs20>0 and rs60>0
+                      and rv is not None and rv>=1.2 and not bool(ext.get("extension_veto")))
+              return {"P":P,"anchor":anchor,"A":A,"hl_date":xx.date.iloc[hl].date().isoformat(),
+                      "trigger_date":xx.date.iloc[t].date().isoformat(),"rvol20":rv,
+                      "rs20":rs20,"rs60":rs60,"pool":pool,"dk3":ok,
+                      "anchor_available_idx":hl+2}
+
+          def hard52(sym,fam,g,x):
+              ti=next((i for i,d in enumerate(x.date.dt.date.astype(str)) if d==g["trigger_date"]),None)
+              if ti is None:return {"status":"UNKNOWN_TRIGGER_INDEX"}
+              A=float(g["A"]);P=float(g["P"]);anchor=float(g["anchor"])
+              ai=int(g["anchor_available_idx"])
+              atr=alpha.wilder_atr(x,14)
+              if ai>=len(atr) or pd.isna(atr.iloc[ai]):return {"status":"UNKNOWN_ATR_ANCHOR"}
+              Aa=float(atr.iloc[ai])
+              el=P;eh=P+0.25*A;em=eh;ch=P+0.50*A;S0=anchor-0.20*Aa
+              risk=em-S0;risk_atr=risk/A;risk_pct=risk/em
+              risk_pass=S0<em and 1.0<=risk_atr<=2.5 and risk_pct<=0.08
+              r1=alpha.nearest_active_resistance(x,ti,A,el,eh,em)
+              target_source="UNRESOLVED";T1=None;overlap=None
+              if r1.get("status")=="PASS":
+                  T1=float(r1["T1"]);overlap=bool(r1.get("target_overlap"));target_source="STRUCTURAL"
+              else:
+                  pm=r1.get("prior_max_high");tc=float(x.close.iloc[ti])
+                  if pm is not None and math.isfinite(float(pm)) and tc>float(pm):
+                      T1=P+3*A;overlap=False;target_source="PRICE_DISCOVERY"
+              def rr(c):
+                  if T1 is None:return None
+                  cc=c*A;E=em+cc;S=S0-cc;T=T1-cc;den=E-S
+                  return (T-E)/den if den>0 else None
+              rb=rr(.10);rs=rr(.25)
+              rr_pass=target_source=="STRUCTURAL" and not overlap and rb is not None and rs is not None and rb>=2 and rs>=1.5
+              breach=False
+              z=x.iloc[ai+1:]
+              if not z.empty: breach=bool((z.low.astype(float)<=S0).any())
+              close=float(x.close.iloc[-1])
+              state="BELOW_PIVOT" if close<P else ("IN_BAND" if close<=eh else ("ABOVE_BAND_BELOW_CHASE" if close<ch else "CHASE_VETO"))
+              ext=alpha.extension_diagnostics(x,A,P,eh); extv=bool(ext.get("extension_veto"))
+              rs20=deep.common_rs(x,qqq,20);rs60=deep.common_rs(x,qqq,60)
+              mix=rs20 is not None and rs60 is not None and rs20>0 and rs60>0
+              hard=bool(risk_pass and rr_pass and not breach and not extv and state=="IN_BAND" and mix)
+              return {"status":"EVALUATED","risk_atr":risk_atr,"risk_percent":risk_pct,"risk_pass":risk_pass,
+                      "S0":S0,"ATR_anchor":Aa,"entry_high":eh,"chase_limit":ch,"current_close":close,
+                      "entry_state":state,"r1_status":r1.get("status"),"T1":T1,"target_overlap":overlap,
+                      "rr_basic":rb,"rr_severe":rs,"rr_pass":rr_pass,"breached":breach,
+                      "extension_veto":extv,"rs20":rs20,"rs60":rs60,"mixed_rs_pass":mix,
+                      "hard_gate_upper_bound_pass":hard}
+
+          rows={};b52=[];d52=[];b_only=[];d_only=[];hard=[]
+          for sym in scope:
+              _,x,err,src=deep.get_hist(sym,asof)
+              if x is None:
+                  rows[sym]={"status":"UNKNOWN_HISTORY","reason":err};continue
+              x=x.reset_index(drop=True)
+              weekly=set((strows.get(sym) or {}).get("recent_weekly_pass_dates") or [])
+              old=(dp.get("results") or {}).get(sym) or {}
+              oldb=bool((old.get("B") or {}).get("breakout_confirmed"))
+              oldd=bool((old.get("D") or {}).get("dk3_pre_r1"))
+              bb=None;dd=None
+              for t in range(max(0,len(x)-1-3),len(x)):
+                  td=x.date.iloc[t].date().isoformat()
+                  if td not in weekly:continue
+                  if bb is None:
+                      z=b52_at(x,t)
+                      if z and z.get("confirmed"):bb=z
+                  if dd is None:
+                      z=d52_at(x,t)
+                      if z and z.get("dk3"):dd=z
+              rec={"status":"EVALUATED","c417_B":oldb,"c417_D":oldd,"b52":bb,"d52":dd}
+              if bb:
+                  b52.append(sym);rec["b52_hard"]=hard52(sym,"B",bb,x)
+                  if not oldb:b_only.append(sym)
+                  if rec["b52_hard"].get("hard_gate_upper_bound_pass"):hard.append(sym+"|B")
+              if dd:
+                  d52.append(sym);rec["d52_hard"]=hard52(sym,"D",dd,x)
+                  if not oldd:d_only.append(sym)
+                  if rec["d52_hard"].get("hard_gate_upper_bound_pass"):hard.append(sym+"|D")
+              rows[sym]=rec
+          print("XRAY_52_BD_SHADOW="+json.dumps({
+              "asof_et":asof,"scope_count":len(scope),
+              "b52_geometry":sorted(b52),"d52_geometry":sorted(d52),
+              "b52_only_vs_c417":sorted(b_only),"d52_only_vs_c417":sorted(d_only),
+              "hard_gate_upper_bound_pass":sorted(hard),
+              "details":{s:rows[s] for s in sorted(set(b52+d52))}
+          },sort_keys=True))
+          PY
