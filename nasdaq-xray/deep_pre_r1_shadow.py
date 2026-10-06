@@ -302,13 +302,14 @@ def _family_a_at_trigger(df,t):
             "P":P,"anchor":anchor,"A":A,"d":d,"depth":depth,"prelow_near_hl":near_hl}
 
 def family_a(df,eligible_trigger_dates=None):
-    # Reconstruct missed A triggers inside the five-session retest window using
-    # trigger-time structure. A newer HL formed after an old trigger must not
-    # erase a still-valid frozen setup that was not recorded because of an outage.
+    # New A triggers are discovered only inside the canonical current/prior
+    # three-session window. Already-recorded A setups may remain alive through
+    # the separate five-session retest lifecycle; an unrecorded age-4/5 trigger
+    # must not be resurrected today as a new candidate.
     if df.empty:return {"pool":False,"reason":"EMPTY"}
     allowed=None if eligible_trigger_dates is None else set(str(x) for x in eligible_trigger_dates)
     last=len(df)-1;diagnostic=None
-    for t in range(max(1,last-5),last+1):
+    for t in range(max(1,last-NEW_TRIGGER_DISCOVERY_MAX_AGE),last+1):
         td=df.date.iloc[t].date().isoformat()
         if allowed is not None and td not in allowed:continue
         g=_family_a_at_trigger(df,t);diagnostic=g
@@ -318,7 +319,7 @@ def family_a(df,eligible_trigger_dates=None):
     return diagnostic or {"pool":False,"reason":"NO_RECENT_VALID_A_STRUCTURE"}
 
 def evaluate_recent_families(df,qqq,eligible_trigger_dates=None):
-    """Exact A/B/D evaluation in the five-session retest horizon, weekly-at-trigger aware."""
+    """Discover new A/B/D triggers in the canonical three-session window; lifecycle carries recorded retests separately."""
     return (family_a(df,eligible_trigger_dates),
             family_b(df,eligible_trigger_dates),
             family_d(df,qqq,eligible_trigger_dates))
