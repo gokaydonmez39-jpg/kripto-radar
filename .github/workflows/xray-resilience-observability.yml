@@ -21,6 +21,7 @@ on:
       - "nasdaq-xray/official_pit_ledger.py"
       - "nasdaq-xray/data_lineage_registry.py"
       - "nasdaq-xray/deterministic_replay_guard.py"
+      - "nasdaq-xray/canonical_pointer_transition_guard.py"
       - "nasdaq-xray/guardian_anomaly.py"
       - "nasdaq-xray/free_core_migration_contract.json"
       - "nasdaq-xray/gem_integration_registry.json"
@@ -72,6 +73,7 @@ jobs:
             nasdaq-xray/official_pit_ledger.py \
             nasdaq-xray/data_lineage_registry.py \
             nasdaq-xray/deterministic_replay_guard.py \
+          nasdaq-xray/canonical_pointer_transition_guard.py \
             nasdaq-xray/guardian_anomaly.py \
             nasdaq-xray/gem_registry_selftest.py \
             nasdaq-xray/provider_automation_governance_selftest.py \
@@ -121,6 +123,9 @@ jobs:
 
       - name: Deterministic replay guard
         run: python nasdaq-xray/deterministic_replay_guard.py
+
+      - name: Canonical pointer transition guard
+        run: python nasdaq-xray/canonical_pointer_transition_guard.py
 
       - name: Guardian anomaly layer
         run: python nasdaq-xray/guardian_anomaly.py
