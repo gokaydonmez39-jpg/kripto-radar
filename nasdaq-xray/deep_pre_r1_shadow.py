@@ -19,6 +19,7 @@ from alpha_semantics import (
     drawdown_metrics,
     tight_base_at,
     find_recent_b_trigger,
+    NEW_TRIGGER_DISCOVERY_MAX_AGE,
     mechanical_scale_breaks,
     mechanical_split_suspects,
     split_consistent_history,
@@ -188,7 +189,7 @@ def family_b(df,eligible_trigger_dates=None):
     # The five-session retest window applies only after durable discovery/registration.
     # Weekly-at-trigger eligibility participates in trigger selection so an earlier
     # weekly-fail breakout cannot mask a later weekly-pass breakout.
-    recent=find_recent_b_trigger(df,3,eligible_trigger_dates)
+    recent=find_recent_b_trigger(df,NEW_TRIGGER_DISCOVERY_MAX_AGE,eligible_trigger_dates)
     if recent:
         return {"pool":True,**recent}
     # No recent trigger: current completed bar may still define an ARMED base.
@@ -224,7 +225,7 @@ def family_d(df,qqq,eligible_trigger_dates=None):
     allowed=None if eligible_trigger_dates is None else set(str(x) for x in eligible_trigger_dates)
     last_idx=len(df)-1
     diagnostic=None
-    for t in range(max(0,last_idx-3),last_idx+1):
+    for t in range(max(0,last_idx-NEW_TRIGGER_DISCOVERY_MAX_AGE),last_idx+1):
         td=df.date.iloc[t].date().isoformat()
         if allowed is not None and td not in allowed:continue
         x=df.iloc[:t+1].reset_index(drop=True)
