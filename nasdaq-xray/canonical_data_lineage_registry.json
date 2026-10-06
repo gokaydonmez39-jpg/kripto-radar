@@ -3,14 +3,14 @@
   "configured_provider_not_actual_provider": true,
   "execution": "NONE",
   "gate_unknowns_are_preserved": true,
-  "generated_at_utc": "2026-10-06T21:14:11.317965+00:00",
+  "generated_at_utc": "2026-10-06T23:17:12.055648+00:00",
   "incomplete_receipt_count": 0,
   "note": "COMPLETE_LINEAGE_SCHEMA means every tracked field has an explicit provenance/entitlement/license classification; it does not convert blocked G9 or ACCOUNT into PASS.",
   "real_money": "NO-GO",
   "records": [
     {
       "artifact": "canonical_current_master_manifest.json",
-      "artifact_sha256": "cbfddbcaa6ad46a433ac7824ebe8c52e0bdc07d3ca706f45ae4bed49945c1acf",
+      "artifact_sha256": "d399b64a97658ef70039c84bd44943f77c26af244d5a25a98d660e733a4deed4",
       "authority_class": "T0_EXCHANGE_IDENTITY",
       "endpoint": "NASDAQTRADER_SYMBOL_DIRECTORY",
       "entitlement_class": "OFFICIAL_PUBLIC_CURRENT_DAY_DATA",
@@ -26,7 +26,7 @@
       "receipt_complete": true,
       "received_at": "ARTIFACT_TIMESTAMP_NOT_EMBEDDED",
       "schema_version": "XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1",
-      "source_timestamp": "2026-10-05"
+      "source_timestamp": "2026-10-06"
     },
     {
       "artifact": "canonical_current_price_dv20.json",
@@ -70,7 +70,7 @@
     },
     {
       "artifact": "canonical_current_event_state.json",
-      "artifact_sha256": "6364d616d2cc5da319317ab5ef65418398b54cfeb018cbf240d2ca18558f543d",
+      "artifact_sha256": "730df0a65f25ccc49ad0cf53c5ef9d29ca0e68103ba5c2540690e1bba90b11aa",
       "authority_class": "CANONICAL_EVENT_TASKSTATE_BRIDGE_NORMALIZED",
       "endpoint": "SEC_ISSUER_IR_NASDAQ_OFFICIAL_RESOLUTION_CHAIN",
       "entitlement_class": "PUBLIC_OFFICIAL_WITH_FAIR_ACCESS_OR_SOURCE_CADENCE",
@@ -86,7 +86,7 @@
       "receipt_complete": true,
       "received_at": "ARTIFACT_TIMESTAMP_NOT_EMBEDDED",
       "schema_version": "XRAY_CANONICAL_EVENT_STATE_V1",
-      "source_timestamp": "2026-10-05"
+      "source_timestamp": "2026-10-06"
     },
     {
       "artifact": "canonical_resolver_bridge_20261002_c417.json",

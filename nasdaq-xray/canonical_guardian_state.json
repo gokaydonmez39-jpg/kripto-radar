@@ -5,15 +5,20 @@
       "detail": {
         "authority": "NASDAQTRADER_EXPLICIT_TYPE_FILTER_V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER",
         "authority_full_identity": true,
+        "coverage_complete": false,
+        "coverage_status": "PARTIAL_UNKNOWN",
         "identity_authority_v6": true,
-        "unknown_count": 0
+        "partition_integrity": true,
+        "pass_count": 3161,
+        "raw_identity_total": 3399,
+        "unknown_count": 238
       },
       "name": "master_identity",
       "state": "PASS"
     },
     {
       "detail": {
-        "pass_count": 504,
+        "pass_count": 508,
         "schema": "XRAY_CANONICAL_PRICE_DV30_V1",
         "unknown_count": 0
       },
@@ -63,7 +68,7 @@
     }
   ],
   "execution": "NONE",
-  "generated_at_utc": "2026-10-06T21:14:11.615527+00:00",
+  "generated_at_utc": "2026-10-06T23:17:12.258594+00:00",
   "real_money": "NO-GO",
   "schema": "XRAY_GUARDIAN_STATE_V1",
   "self_healing_may_not_change_alpha": true,

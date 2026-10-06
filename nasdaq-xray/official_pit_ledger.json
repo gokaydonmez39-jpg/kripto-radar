@@ -2,10 +2,10 @@
   "alpha_authority": false,
   "append_only_semantics": true,
   "execution": "NONE",
-  "last_ingest_at_utc": "2026-10-06T21:13:46.498677+00:00",
+  "last_ingest_at_utc": "2026-10-06T23:16:50.303423+00:00",
   "real_money": "NO-GO",
   "schema": "XRAY_OFFICIAL_PIT_LEDGER_V1",
-  "snapshot_count": 24,
+  "snapshot_count": 25,
   "snapshots": [
     {
       "guard_generated_at_utc": "2026-10-04T20:54:27.194776+00:00",
@@ -7095,6 +7095,284 @@
       },
       "payload_sha256": "6233129df3027b646699fd64790da88702ae3d27a4dc14e1741c07d27c00e990",
       "source": "candidate_safety",
+      "source_status": "PASS"
+    },
+    {
+      "guard_generated_at_utc": "2026-10-06T23:16:48.391210+00:00",
+      "observed_at_utc": "2026-10-06T23:16:50.303023+00:00",
+      "payload": {
+        "historical_event_rows_considered": 69,
+        "query_end": "2026-10-06",
+        "query_start": "2026-10-06",
+        "row_count": 19,
+        "rows": [
+          {
+            "CompanyName": "Blaize Holdings, Inc. Common Stock",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-06",
+            "IssueEvent": "Financial Status Changes",
+            "NewFinancialStatus": "D-Deficient",
+            "OldFinancialStatus": "N-Normal",
+            "Symbol": "BZAI"
+          },
+          {
+            "CompanyName": "CBAK Energy Technology Limited Ordinary Shares",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-06",
+            "IssueEvent": "Financial Status Changes",
+            "NewFinancialStatus": "N-Normal",
+            "OldFinancialStatus": "D-Deficient",
+            "Symbol": "CBAT"
+          },
+          {
+            "CompanyName": "Qwest Corporation 6.500% Senior Notes due 2051",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-06",
+            "IssueEvent": "Anticipated Security Additions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "CTGG"
+          },
+          {
+            "CompanyName": "Qwest Corporation 6.500% Senior Notes due 2051",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-06",
+            "IssueEvent": "Security Additions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "CTGG"
+          },
+          {
+            "CompanyName": "Qwest Corporation 6.750% Senior Notes due 2052",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-06",
+            "IssueEvent": "Anticipated Security Additions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "CTHH"
+          },
+          {
+            "CompanyName": "Qwest Corporation 6.750% Senior Notes due 2052",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-06",
+            "IssueEvent": "Security Additions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "CTHH"
+          },
+          {
+            "CompanyName": "E-Power Inc. Class A Ordinary Shares",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-06",
+            "IssueEvent": "Financial Status Changes",
+            "NewFinancialStatus": "N-Normal",
+            "OldFinancialStatus": "D-Deficient",
+            "Symbol": "EPOW"
+          },
+          {
+            "CompanyName": "iShares Ethereum Trust ETF Shares",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-06",
+            "IssueEvent": "Name/Symbol Changes",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "ETHA"
+          },
+          {
+            "CompanyName": "Gaxos.ai Inc. Common Stock",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-06",
+            "IssueEvent": "Financial Status Changes",
+            "NewFinancialStatus": "D-Deficient",
+            "OldFinancialStatus": "N-Normal",
+            "Symbol": "GXAI"
+          },
+          {
+            "CompanyName": "iTonic Holdings Ltd Class A Ordinary Shares",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-06",
+            "IssueEvent": "Name/Symbol Changes",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "ITOC"
+          },
+          {
+            "CompanyName": "Leslie's, Inc. Common Stock",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-06",
+            "IssueEvent": "Issue Suspensions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "LESL"
+          },
+          {
+            "CompanyName": "Lumen Technologies, Inc. Common Stock",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-06",
+            "IssueEvent": "Anticipated Security Additions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "LUMN"
+          },
+          {
+            "CompanyName": "Lumen Technologies, Inc. Common Stock",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-06",
+            "IssueEvent": "Security Additions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "LUMN"
+          },
+          {
+            "CompanyName": "National Healthcare Properties, Inc. 7.125% Series B Cumulative Redeemable Perpetual Preferred Stock",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-06",
+            "IssueEvent": "Issue Suspensions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "NHPBP"
+          },
+          {
+            "CompanyName": "NANO-X IMAGING LTD Ordinary Shares",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-06",
+            "IssueEvent": "Financial Status Changes",
+            "NewFinancialStatus": "D-Deficient",
+            "OldFinancialStatus": "N-Normal",
+            "Symbol": "NNOX"
+          },
+          {
+            "CompanyName": "Pine Tree Acquisition Corp. Units",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-06",
+            "IssueEvent": "Anticipated Security Additions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "PAXGU"
+          },
+          {
+            "CompanyName": "Pine Tree Acquisition Corp. Units",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-06",
+            "IssueEvent": "Security Additions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "PAXGU"
+          },
+          {
+            "CompanyName": "Paramount Skydance Corporation Class B Common Stock",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-06",
+            "IssueEvent": "Issue Suspensions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "PSKY"
+          },
+          {
+            "CompanyName": "Qorvo, Inc. Common Stock",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-06",
+            "IssueEvent": "Issue Suspensions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "QRVO"
+          }
+        ],
+        "status": "PASS",
+        "suspension_state_evidence": {
+          "COLA": {
+            "latest_addition": null,
+            "latest_suspension": "2026-10-02",
+            "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+          },
+          "COLAR": {
+            "latest_addition": null,
+            "latest_suspension": "2026-10-02",
+            "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+          },
+          "COLAU": {
+            "latest_addition": null,
+            "latest_suspension": "2026-10-02",
+            "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+          },
+          "DRCT": {
+            "latest_addition": null,
+            "latest_suspension": "2026-10-05",
+            "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+          },
+          "FSEA": {
+            "latest_addition": null,
+            "latest_suspension": "2026-10-02",
+            "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+          },
+          "GFAIW": {
+            "latest_addition": null,
+            "latest_suspension": "2026-10-02",
+            "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+          },
+          "LESL": {
+            "latest_addition": null,
+            "latest_suspension": "2026-10-06",
+            "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+          },
+          "NHPBP": {
+            "latest_addition": null,
+            "latest_suspension": "2026-10-06",
+            "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+          },
+          "NSTS": {
+            "latest_addition": null,
+            "latest_suspension": "2026-10-02",
+            "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+          },
+          "PSKY": {
+            "latest_addition": null,
+            "latest_suspension": "2026-10-06",
+            "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+          },
+          "QRVO": {
+            "latest_addition": null,
+            "latest_suspension": "2026-10-06",
+            "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+          },
+          "THRMV": {
+            "latest_addition": null,
+            "latest_suspension": "2026-10-02",
+            "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+          },
+          "WALD": {
+            "latest_addition": null,
+            "latest_suspension": "2026-10-05",
+            "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+          },
+          "WALDW": {
+            "latest_addition": null,
+            "latest_suspension": "2026-10-05",
+            "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+          }
+        },
+        "suspension_state_rule": "EVENT_SOURCED_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS",
+        "suspension_symbols": [
+          "COLA",
+          "COLAR",
+          "COLAU",
+          "DRCT",
+          "FSEA",
+          "GFAIW",
+          "LESL",
+          "NHPBP",
+          "NSTS",
+          "PSKY",
+          "QRVO",
+          "THRMV",
+          "WALD",
+          "WALDW"
+        ],
+        "symbol_change_mapping_rule": "UNKNOWN_UNLESS_CORROBORATED",
+        "url": "https://www.nasdaqtrader.com/Trader.aspx?id=nasdaq-security-status-updates&from=10/06/2026&to=10/06/2026"
+      },
+      "payload_sha256": "f168e0dd72bc76004e93349bf18a4d6eea7339c84c3858c0a5f1832fa659829c",
+      "source": "security_status",
       "source_status": "PASS"
     }
   ],
