@@ -464,7 +464,7 @@ jobs:
             "symbols":symbols,"symbol_count":len(symbols),"symbol_hash":h,
             "authority":"C4_17_TECHNICAL_PRELEGAL_SURVIVORS_ONLY",
           }
-          (root/"canonical_prelegal_survivor_scope.json").write_text(json.dumps(out,sort_keys=True,indent=2)+"\\n")
+          (root/"canonical_prelegal_survivor_scope.json").write_text(json.dumps(out,sort_keys=True,indent=2)+"\n")
           print({"XRAY_PRELEGAL_SURVIVOR_SCOPE":"PASS","asof":asof,"keys":keys,"symbols":symbols})
           PY
 
