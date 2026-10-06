@@ -882,6 +882,27 @@ def test_history_bridge_semantic_rebind_requires_exact_mc_partitions():
         history_mod.HISTORY_BRIDGE_BINDING_ROLE=old_role
 
 
+
+def test_post_mc_exact_source_rebind_workflow_contract():
+    wf=(Path(__file__).resolve().parent.parent/".github/workflows/xray-canonical-current-post-mc.yml").read_text()
+    assert "MC_AUTHORITY_ARTIFACT_MUTATION_FORBIDDEN_USE_SUCCESSOR" in wf
+    assert '"XRAY_REUSED_HISTORY_PROMOTION":"EXACT_CURRENT_MC"' in wf
+    assert 'canonical.write_bytes(revalidated.read_bytes())' in wf
+    legal=wf[wf.index("- name: Run LEGAL"):wf.index("- name: Build exact Stage1 input")]
+    assert "steps.reuse_hl.outputs.reuse" not in legal
+    assert '"POST_MC_EXACT_SOURCE_CHAIN":"PASS"' in wf
+    for needle in (
+        'assert h.get("source_mc_blob_sha")==bsha(mc_path)',
+        'assert l.get("source_history_blob_sha")==bsha(hp)',
+        'assert si.get("source_mc_path")==mc_rel and si.get("source_mc_blob_sha")==bsha(mc_path)',
+        'assert si.get("source_history_blob_sha")==bsha(hp)',
+        'assert si.get("source_legal_blob_sha")==bsha(lp)',
+        'assert s.get("source_input_blob_sha")==bsha(sip)',
+        'assert r.get("source_input_blob_sha")==bsha(sip)',
+        'assert d.get("source_stage1_blob_sha")==bsha(sp)',
+    ):
+        assert needle in wf,needle
+
 def main():
     test_r1_no_future_mutation_and_confirmation(); test_r1_pivot_boundary_is_not_overhead_but_entry_overlap_is(); test_resistance_role_change_state_machine()
     test_final_history_normalizer_preserves_ohlcv()
@@ -891,6 +912,7 @@ def main():
     test_lifecycle_expiry_and_frozen_stability(); test_lifecycle_regime_revalidation_persists_without_pass(); test_lifecycle_persistence_roundtrip()
     test_mc_bridge_immutable_supersession()
     test_history_bridge_semantic_rebind_requires_exact_mc_partitions()
+    test_post_mc_exact_source_rebind_workflow_contract()
     test_candidate_local_legal_unknown_does_not_globally_suppress()
     test_candidate_legal_guard_scope_is_candidate_local()
     test_cross_session_lifecycle_scope_persists_active_only()
@@ -904,7 +926,7 @@ def main():
     test_workflow_race_and_pre_mc_freeze_contracts()
     print({"status":"PASS","tests":["R1_NO_FUTURE_MUTATION","R1_PLUS2_CONFIRMATION_NO_LEAK","R1_PIVOT_BOUNDARY_NOT_OVERHEAD",
       "RESISTANCE_ROLE_CHANGE_STATE_MACHINE","FINAL_HISTORY_OHLCV_BINDING","REGIME_INTERVAL_BOUNDS_AND_FINALIST_GATE","CORPORATE_ACTION_NONE_VS_SCALE_BREAK_FAIL_CLOSED","D_RECLAIM_AFTER_HL_AVAILABILITY","FAMILY_A_TRIGGER_TIME_RECONSTRUCTION","FAMILY_A_AGE5_UNRECORDED_NOT_REDISCOVERED","FAMILY_A_FINAL_GEOMETRY_REVALIDATION","RETEST_WINDOW_EXPIRES_AFTER_5","MODEL_HORIZON_EXPIRES_AFTER_8",
-      "FROZEN_LEVELS_NEXT_ASOF_STABLE","LIFECYCLE_REGIME_REVALIDATION_PERSISTS","LIFECYCLE_PERSISTENCE_ROUNDTRIP","MC_BRIDGE_IMMUTABLE_SUPERSESSION","HISTORY_BRIDGE_SEMANTIC_REBIND_EXACT_MC_PARTITIONS",
+      "FROZEN_LEVELS_NEXT_ASOF_STABLE","LIFECYCLE_REGIME_REVALIDATION_PERSISTS","LIFECYCLE_PERSISTENCE_ROUNDTRIP","MC_BRIDGE_IMMUTABLE_SUPERSESSION","HISTORY_BRIDGE_SEMANTIC_REBIND_EXACT_MC_PARTITIONS","POST_MC_EXACT_SOURCE_REBIND_WORKFLOW_CONTRACT",
       "FINAL_ALPHA_STALE_SOURCE_GUARD","PARTIAL_COVERAGE_DOES_NOT_GLOBAL_ABORT",
       "DETAILED_FINALIST_LEGAL_FAIL_CLOSED","CANDIDATE_LOCAL_LEGAL_UNKNOWN_ISOLATION","FINAL_VERIFIED_MARKET_GAP_NOT_DOUBLE_BLOCKED","DETAILED_LEGAL_GUARD_EXACT_SOURCE_BINDING","DETAILED_LEGAL_GUARD_POLICY_BINDING","DETAILED_LEGAL_GUARD_NONCIRCULAR_LIFECYCLE","CROSS_SESSION_LIFECYCLE_ACTIVE_ONLY","FAMILY_C_EVENT_REQUEST_BOUNDARY_AMC","FUTURE_LIFECYCLE_EVIDENCE_REJECTED","DETAILED_LEGAL_GUARD_LIFECYCLE_FALLBACK_PARITY","DETAILED_LEGAL_GUARD_BOILERPLATE_SEVERITY","DETAILED_LEGAL_GUARD_ANNUAL_PLUS_QUARTERLY_SCOPE","DETAILED_LEGAL_GUARD_EMPTY_SCOPE_NO_NETWORK","TERMINAL_DETAILED_LEGAL_FULL_E2E_BLOCKER","DETAILED_LEGAL_GUARD_NO_SELF_TRIGGER",
       "POST_MC_PARTIAL_COVERAGE_GATE","TERMINAL_LIFECYCLE_STATE_CONTRACT","PRE_MC_COMPLETED_ASOF_FREEZE_TRUTH_TABLE"]})
