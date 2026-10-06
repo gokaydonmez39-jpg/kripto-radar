@@ -1,0 +1,57 @@
+{
+  "schema": "XRAY_MASTER_ASOF_IDENTITY_PROOF_V1",
+  "asof_et": "2026-10-05",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "authority": "NASDAQTRADER_SEC_EXACT_ASOF_IDENTITY_RECONCILIATION",
+  "applicability": "EXACT_ASOF_ONLY_NO_FORWARD_CARRY",
+  "remove_from_asof": {
+    "LUMN": {
+      "security_name": "Lumen Technologies, Inc. - Common Stock",
+      "effective_date": "2026-10-06",
+      "reason": "NASDAQ_LISTING_BEGINS_AFTER_ASOF",
+      "source_url": "https://www.nasdaqtrader.com/TraderNews.aspx?id=DTN2026-21"
+    }
+  },
+  "restore_to_asof": {
+    "LESL": {
+      "security_name": "Leslie's, Inc. - Common Stock",
+      "effective_date": "2026-10-06",
+      "reason": "NASDAQ_SUSPENSION_EFFECTIVE_AFTER_ASOF",
+      "source_url": "https://www.nasdaqtrader.com/Trader.aspx?id=nasdaq-security-status-updates"
+    },
+    "PSKY": {
+      "security_name": "Paramount Skydance Corporation - Class B Common Stock",
+      "effective_date": "2026-10-06",
+      "reason": "NYSE_TRANSFER_EFFECTIVE_AFTER_ASOF",
+      "source_url": "https://www.nasdaqtrader.com/TraderNews.aspx?id=2026-697"
+    },
+    "QRVO": {
+      "security_name": "Qorvo, Inc. - Common Stock",
+      "effective_date": "2026-10-06",
+      "reason": "NASDAQ_SUSPENSION_EFFECTIVE_AFTER_ASOF",
+      "source_url": "https://www.nasdaqtrader.com/TraderNews.aspx?id=ECA2026-702"
+    }
+  },
+  "operating_overrides": {
+    "INV": {
+      "security_name": "Innventure, Inc. - Common Stock",
+      "evidence_date": "2026-09-21",
+      "reason": "CURRENT_OPERATING_COMPANY_POST_DESPAC",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/2001557/000200155726000175/a991innventureprboardcfoch.htm"
+    },
+    "MLEC": {
+      "security_name": "Moolec Science SA - Ordinary Shares",
+      "evidence_date": "2026-09-02",
+      "reason": "CURRENT_OPERATING_FOREIGN_ISSUER",
+      "source_url": "https://www.sec.gov/edgar/browse/index.html?cik=1937737"
+    },
+    "PRE": {
+      "security_name": "Prenetics Global Limited - Class A Ordinary Share",
+      "evidence_date": "2026-09-08",
+      "reason": "CURRENT_OPERATING_FOREIGN_ISSUER",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1876431/000162828026060821/preneticsglobalf-1a2resale.htm"
+    }
+  }
+}

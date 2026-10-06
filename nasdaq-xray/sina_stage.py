@@ -27,7 +27,7 @@ import pandas_market_calendars as mcal
 
 TASK_ID="6a825366222081918997094d76e6ae46"
 BUILD="2026-10-02.1"
-IDENTITY_RULESET="V5_SEC_SPAC_PROOF_AT_MASTER"
+IDENTITY_RULESET="V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER"
 NASDAQ_DIR="https://www.nasdaqtrader.com/dynamic/SymDir/nasdaqlisted.txt"
 NASDAQ_SCREENER="https://api.nasdaq.com/api/screener/stocks"
 SEC_TICKERS="https://www.sec.gov/files/company_tickers.json"
@@ -41,6 +41,7 @@ STATE=Path(os.getenv("XRAY_SINA_STATE", str(ROOT/"sina_state.json")))
 CAND=Path(os.getenv("XRAY_SINA_CAND", str(ROOT/"sina_candidates.json")))
 RESOLUTION_OVERLAY=Path(os.getenv("XRAY_HISTORY_RESOLUTION_OVERLAY", str(ROOT/"history_resolution_overlay.json")))
 SEC_SPAC_PROOF=ROOT/"master_sec_spac_proof_20261005.json"
+ASOF_IDENTITY_PROOF=ROOT/"master_asof_identity_proof_20261005.json"
 FULL_IDENTITY=os.getenv("XRAY_FULL_IDENTITY","0")=="1"
 IDENTITY_ONLY=os.getenv("XRAY_IDENTITY_ONLY","0")=="1"
 
@@ -110,6 +111,60 @@ def load_sec_spac_proof(asof):
             raise RuntimeError("SEC_SPAC_PROOF_ROW_INVALID:"+sym)
         out[sym]=row
     return out,git_blob_sha(SEC_SPAC_PROOF)
+
+
+def load_asof_identity_proof(asof):
+    if not ASOF_IDENTITY_PROOF.exists():
+        return {},None
+    j=json.loads(ASOF_IDENTITY_PROOF.read_text(encoding="utf-8"))
+    if str(j.get("asof_et") or "")!=asof:
+        return {},None
+    if not (
+      j.get("schema")=="XRAY_MASTER_ASOF_IDENTITY_PROOF_V1"
+      and j.get("execution")=="NONE" and j.get("real_money")=="NO-GO"
+      and j.get("unknown_never_pass") is True
+      and j.get("authority")=="NASDAQTRADER_SEC_EXACT_ASOF_IDENTITY_RECONCILIATION"
+      and j.get("applicability")=="EXACT_ASOF_ONLY_NO_FORWARD_CARRY"
+    ):
+        raise RuntimeError("ASOF_IDENTITY_PROOF_HEADER_INVALID")
+    restore=j.get("restore_to_asof") or {}
+    remove=j.get("remove_from_asof") or {}
+    operating=j.get("operating_overrides") or {}
+    if not all(isinstance(x,dict) for x in (restore,remove,operating)):
+        raise RuntimeError("ASOF_IDENTITY_PROOF_BODY_INVALID")
+    groups=[set(restore),set(remove),set(operating)]
+    if any(groups[a]&groups[b] for a in range(len(groups)) for b in range(a+1,len(groups))):
+        raise RuntimeError("ASOF_IDENTITY_PROOF_OVERLAP")
+    for sym,row in restore.items():
+        if not isinstance(row,dict) or not row.get("security_name") or str(row.get("effective_date") or "")<=asof:
+            raise RuntimeError("ASOF_IDENTITY_RESTORE_INVALID:"+sym)
+        if not str(row.get("source_url") or "").startswith("https://www.nasdaqtrader.com/"):
+            raise RuntimeError("ASOF_IDENTITY_RESTORE_SOURCE_INVALID:"+sym)
+    for sym,row in remove.items():
+        if not isinstance(row,dict) or not row.get("security_name") or str(row.get("effective_date") or "")<=asof:
+            raise RuntimeError("ASOF_IDENTITY_REMOVE_INVALID:"+sym)
+        if not str(row.get("source_url") or "").startswith("https://www.nasdaqtrader.com/"):
+            raise RuntimeError("ASOF_IDENTITY_REMOVE_SOURCE_INVALID:"+sym)
+    for sym,row in operating.items():
+        if not isinstance(row,dict) or not row.get("security_name") or str(row.get("evidence_date") or "")>asof:
+            raise RuntimeError("ASOF_IDENTITY_OPERATING_INVALID:"+sym)
+        if not str(row.get("source_url") or "").startswith("https://www.sec.gov/"):
+            raise RuntimeError("ASOF_IDENTITY_OPERATING_SOURCE_INVALID:"+sym)
+    return j,git_blob_sha(ASOF_IDENTITY_PROOF)
+
+def apply_asof_identity_proof(names,excluded,proof):
+    names=dict(names);excluded=dict(excluded)
+    for sym,row in (proof.get("remove_from_asof") or {}).items():
+        names.pop(sym,None)
+        excluded[sym]={
+          "reason":"POST_ASOF_LISTING","security_name":row["security_name"],
+          "source":"NASDAQTRADER_EXACT_EFFECTIVE_DATE","effective_date":row["effective_date"],
+          "source_url":row["source_url"],
+        }
+    for sym,row in (proof.get("restore_to_asof") or {}).items():
+        excluded.pop(sym,None)
+        names[sym]=row["security_name"]
+    return names,excluded
 
 def request_json(url,params=None,headers=None,timeout=45):
     if params:
@@ -242,19 +297,20 @@ def num(x):
     except Exception:
         return None
 
-def build_discovery(official,force_all=False,sec_spac_proof=None):
+def build_discovery(official,force_all=False,sec_spac_proof=None,operating_overrides=None):
     rows=screener_rows()
     off=set(official)
     prefilter={}
     screener_excluded={}
     sec_spac_proof=sec_spac_proof or {}
+    operating_overrides=operating_overrides or {}
     missing=set(off)
     exact_hard_mc_price_count=0
     for r in rows:
         sym=str(r.get("symbol") or "").strip().upper()
         if sym not in off:continue
         missing.discard(sym)
-        if sym in sec_spac_proof:
+        if sym in sec_spac_proof and sym not in operating_overrides:
             pr=sec_spac_proof[sym]
             screener_excluded[sym]={
               "reason":"SPAC_BLANK_CHECK",
@@ -266,7 +322,7 @@ def build_discovery(official,force_all=False,sec_spac_proof=None):
             }
             continue
         industry=str(r.get("industry") or "").strip()
-        if industry.lower()=="blank checks":
+        if industry.lower()=="blank checks" and sym not in operating_overrides:
             screener_excluded[sym]={
               "reason":"SPAC_BLANK_CHECK",
               "security_name":official.get(sym) or str(r.get("name") or "").strip(),
@@ -324,7 +380,7 @@ def build_discovery(official,force_all=False,sec_spac_proof=None):
               "country":r.get("country"),
             }
     for sym in sorted(missing):
-        if sym in sec_spac_proof:
+        if sym in sec_spac_proof and sym not in operating_overrides:
             pr=sec_spac_proof[sym]
             screener_excluded[sym]={
               "reason":"SPAC_BLANK_CHECK",
@@ -586,6 +642,8 @@ def canonical_frozen_identity(asof):
         q=list(st.get("queue") or [])
         sec_proof,sec_blob=load_sec_spac_proof(asof)
         sec_count=len(sec_proof)
+        asof_proof,asof_blob=load_asof_identity_proof(asof)
+        asof_counts={k:len(asof_proof.get(k) or {}) for k in ("restore_to_asof","remove_from_asof","operating_overrides")}
         dm=st.get("discovery_meta") or {}
         mf_sec=mf.get("sec_spac_proof") or {}
         mf_cp=mf.get("completion_proof") or {}
@@ -606,6 +664,9 @@ def canonical_frozen_identity(asof):
           or int(dm.get("sec_spac_proof_count",-1))!=sec_count
           or mf_sec.get("blob_sha")!=sec_blob
           or int(mf_sec.get("count",-1))!=sec_count
+          or dm.get("asof_identity_proof_blob_sha")!=asof_blob
+          or (mf.get("asof_identity_proof") or {}).get("blob_sha")!=asof_blob
+          or (mf.get("asof_identity_proof") or {}).get("counts")!=asof_counts
         ):
             return None
         return {
@@ -629,16 +690,20 @@ def canonical_frozen_identity(asof):
 def main():
     asof,expected30=completed_sessions()
     sec_spac_proof,sec_spac_blob=load_sec_spac_proof(asof)
+    asof_identity_proof,asof_identity_blob=load_asof_identity_proof(asof)
+    operating_overrides=asof_identity_proof.get("operating_overrides") or {}
     sec_identity_token="SEC_SPAC_PROOF:"+str(sec_spac_blob or "NONE")
+    asof_identity_token="ASOF_IDENTITY_PROOF:"+str(asof_identity_blob or "NONE")
     frozen=canonical_frozen_identity(asof)
     if frozen is not None:
         names=dict(frozen["security_names"])
         excluded={}
         footer=str(frozen.get("official_footer") or "CANONICAL_FROZEN_IDENTITY")
-        identity_token="CANONICAL_FROZEN:"+str(frozen.get("source_state_hash") or frozen["queue_hash"])+"|"+sec_identity_token
+        identity_token="CANONICAL_FROZEN:"+str(frozen.get("source_state_hash") or frozen["queue_hash"])+"|"+sec_identity_token+"|"+asof_identity_token
     else:
         names,excluded,footer=official_nasdaq()
-        identity_token=footer+"|"+sec_identity_token
+        names,excluded=apply_asof_identity_proof(names,excluded,asof_identity_proof)
+        identity_token=footer+"|"+sec_identity_token+"|"+asof_identity_token
     state=load(STATE)
     epoch_key=IDENTITY_RULESET+"|"+("FULL_IDENTITY" if FULL_IDENTITY else "DISCOVERY_PREFILTER")+"|"+identity_token+"|"+asof
 
@@ -656,10 +721,13 @@ def main():
             })
             ex_serial=[]
         else:
-            queue,discovery,meta,screener_excluded=build_discovery(names,FULL_IDENTITY,sec_spac_proof)
+            queue,discovery,meta,screener_excluded=build_discovery(names,FULL_IDENTITY,sec_spac_proof,operating_overrides)
             meta.update({
               "sec_spac_proof_path":("nasdaq-xray/"+SEC_SPAC_PROOF.name) if sec_spac_blob else None,
               "sec_spac_proof_blob_sha":sec_spac_blob,
+              "asof_identity_proof_path":("nasdaq-xray/"+ASOF_IDENTITY_PROOF.name) if asof_identity_blob else None,
+              "asof_identity_proof_blob_sha":asof_identity_blob,
+              "asof_identity_proof_counts":{k:len(asof_identity_proof.get(k) or {}) for k in ("restore_to_asof","remove_from_asof","operating_overrides")},
             })
             excluded.update(screener_excluded)
             ex_serial=[s+"|"+excluded[s]["reason"] for s in sorted(excluded)]
@@ -674,7 +742,7 @@ def main():
           "asof_et":asof,
           "expected30":expected30,
           "official_footer":footer,
-          "identity_authority":(frozen.get("identity_authority") if frozen is not None else "NASDAQTRADER_EXPLICIT_TYPE_FILTER_V5_SEC_SPAC_PROOF_AT_MASTER"),
+          "identity_authority":(frozen.get("identity_authority") if frozen is not None else "NASDAQTRADER_EXPLICIT_TYPE_FILTER_V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER"),
           "identity_ruleset":IDENTITY_RULESET,
           "discovery_source":("CANONICAL_FROZEN_FULL_IDENTITY_SAME_ASOF" if frozen is not None else ("NASDAQTRADER_FULL_IDENTITY_PLUS_NASDAQ_SCREENER_METADATA_ONLY" if FULL_IDENTITY else "NASDAQ_OFFICIAL_WEB_SCREENER_PREFILTER_ONLY")),
           "history_source":"SINA_US_DAILY_ACCELERATOR_NOT_G9",
