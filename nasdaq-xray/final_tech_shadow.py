@@ -192,6 +192,16 @@ def lifecycle_state_persists(state):
     """Prospective lifecycle persistence; historical backfill is intentionally excluded."""
     return str(state or "") in LIFECYCLE_PERSIST_STATES
 
+def detailed_legal_required_for_technical_state(state):
+    """Detailed SEC review is required only for technically live candidate states.
+
+    A terminal technical FAIL needs no legal waiver to remain FAIL. Technical
+    UNKNOWN likewise remains UNKNOWN on its own evidence. This function can
+    never create PASS; PRE_G9/WATCH states still require exact legal PASS.
+    """
+    s=str(state or "")
+    return s=="PRE_G9_TECH_PASS" or s.startswith("WATCH_")
+
 def reconcile_final_result_scope(results,fresh_current_keys,registry):
     """Keep only current fresh finalists or still-live lifecycle carries.
 
@@ -634,14 +644,11 @@ def main():
         if lrow.get("status")!="PASS_LEGAL":
             results[key]={"result":"UNKNOWN","reason":"LEGAL_IDENTITY_NOT_PASS","legal_status":lrow.get("status")}
             continue
-        # Global LEGAL is only the shell/identity screen. C4.17's detailed
-        # finalist filing review is a separate exact-ASOF evidence gate.
+        # Global LEGAL is only the shell/identity screen. Detailed SEC review
+        # is finalist-local, but it must not erase a terminal technical FAIL.
+        # Evaluate technical geometry first; only live PRE_G9/WATCH states need
+        # exact detailed legal PASS before they remain live.
         cg=(candidate_legal_records or {}).get(sym) or {}
-        if cg.get("status")!="PASS":
-            results[key]={"result":"UNKNOWN","reason":"DETAILED_LEGAL_REVIEW_NOT_PROVEN",
-                          "candidate_legal_status":cg.get("status") or "MISSING",
-                          "candidate_legal_reason":cg.get("reason")}
-            continue
         secname=lrow.get("security_name")
         if _is_depositary_security_name(secname):
             ar=adr_bridge.get(sym) or {}
@@ -673,6 +680,18 @@ def main():
         res["candidate_legal_risk_flags"]=sorted(set(cg.get("risk_flags") or []))
         res["candidate_legal_hard_flags"]=sorted(set(cg.get("hard_legal_flags") or []))
         res["candidate_legal_latest_periodic"]=cg.get("latest_periodic")
+        technical_prelegal_result=str(res.get("result") or "")
+        if detailed_legal_required_for_technical_state(technical_prelegal_result) and cg.get("status")!="PASS":
+            res={
+              **res,
+              "result":"UNKNOWN",
+              "reason":"DETAILED_LEGAL_REVIEW_NOT_PROVEN",
+              "technical_prelegal_result":technical_prelegal_result,
+              "technical_prelegal_pass":bool(res.get("pre_g9_tech_pass")),
+              "pre_g9_tech_pass":False,
+              "candidate_legal_status":cg.get("status") or "MISSING",
+              "candidate_legal_reason":cg.get("reason"),
+            }
         existing=results.get(key)
         existing_live=bool(existing and existing.get("observation_mode")=="PROSPECTIVE_RECORDED"
                            and not str(existing.get("result","")).startswith("FAIL_")
@@ -784,7 +803,9 @@ def main():
       "candidate_legal_guard_binding_error":candidate_legal_guard_error,
       "detailed_legal_review_exact":bool(candidate_legal_guard is not None and candidate_legal_guard_error is None) and all(
           ((candidate_legal_records or {}).get(str(k).split("|",1)[0]) or {}).get("status")=="PASS"
-          for k in results if (results.get(k) or {}).get("reason")!="REGIME_FINALIST_NOT_PASS"
+          for k,v in results.items()
+          if detailed_legal_required_for_technical_state(v.get("result"))
+          or detailed_legal_required_for_technical_state(v.get("technical_prelegal_result"))
       ),
       "adr_ratio_bridge_path":relpath(ADR_RATIO_BRIDGE) if ADR_RATIO_BRIDGE.exists() else None,
       "adr_ratio_bridge_blob_sha":blob_sha(ADR_RATIO_BRIDGE) if ADR_RATIO_BRIDGE.exists() else None,
