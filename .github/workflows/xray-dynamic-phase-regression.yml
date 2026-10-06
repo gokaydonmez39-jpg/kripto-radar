@@ -589,6 +589,35 @@ jobs:
           print("PRICE_PUBLICATION_REPLAY_WORKFLOW_CONTRACT=PASS")
           PY
 
+      - name: Assert root frozen identity partition semantics
+        run: |
+          python - <<'PY'
+          import sys,hashlib
+          sys.path.insert(0,"nasdaq-xray")
+          import orchestrator_run as o
+          q=["AAA","BBB","CCC"]
+          unk=["SP1","SP2"]
+          h=lambda xs: hashlib.sha256("\n".join(xs).encode()).hexdigest()
+          ss={
+            "queue":q,"queue_total":3,"queue_hash":h(q),
+            "identity_partition_policy":"MASTER_SPAC_UNKNOWN_PARTITION_V2_FROZEN_GUARD",
+            "identity_unknown_symbols":unk,
+            "identity_unknown_detail":{x:{"unknown_never_pass":True} for x in unk},
+            "raw_identity_total":5,
+            "discovery_meta":{
+              "identity_partition_policy":"MASTER_SPAC_UNKNOWN_PARTITION_V2_FROZEN_GUARD",
+              "identity_unknown_count":2,"identity_unknown_hash":h(unk),
+              "raw_identity_total":5,"discovery_queue_total":5,
+            },
+          }
+          assert o.frozen_identity_partition_ok(ss) is True
+          bad=dict(ss,queue=q+["SP1"],queue_total=4,queue_hash=h(q+["SP1"]))
+          assert o.frozen_identity_partition_ok(bad) is False
+          bad2=dict(ss,raw_identity_total=4)
+          assert o.frozen_identity_partition_ok(bad2) is False
+          print("ROOT_FROZEN_IDENTITY_PARTITION=PASS")
+          PY
+
       - name: Assert identity type guard
         run: |
           python - <<'PY'
