@@ -165,6 +165,43 @@ jobs:
           print("GLOBAL_ASOF_SENTINEL_FAIL_CLOSED=PASS")
           PY
 
+      - name: Assert PRICE publication lag recheck is fail-closed and local
+        run: |
+          python - <<'PY'
+          import sys
+          sys.path.insert(0,"nasdaq-xray")
+          import price_dv30_recover_from_fullstate as r
+          asof="2026-10-06"
+          exp=[f"2026-09-{d:02d}" for d in range(1,30)]+[asof]
+          px={
+            "schema":"XRAY_CANONICAL_PRICE_DV30_V1","asof_et":asof,
+            "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
+            "source_master_count":3,"thresholds":{"price":">=5","dv30":">=50000000 exact30 median"},
+            "gate_order":["PRICE","DV30"],"counts":{"UNKNOWN":3},
+            "pass_count":0,"blocked_count":0,"unknown_count":3,
+            "global_asof_sentinel_fast_fail":True,
+            "global_asof_sentinel":{"status":"GLOBAL_SENTINELS_NONTERMINAL"},
+            "results":{x:{"status":"UNKNOWN","provenance":"GLOBAL_ASOF_SENTINEL_FAIL_CLOSED",
+              "info":{"reason":"GLOBAL_ASOF_SENTINEL_NONTERMINAL_FAIL_CLOSED"}} for x in ("AAPL","MSFT","NVDA")},
+          }
+          assert r.publication_lag_artifact(px,asof) is True
+          assert r.publication_lag_artifact(dict(px,global_asof_sentinel_fast_fail=False),asof) is False
+          old_sina,old_nasdaq=r.sina,r.nasdaq
+          try:
+              r.sina=lambda sym,a: ({"2026-10-05":(100.0,1_000_000.0)},{"fixture":"lag"})
+              r.nasdaq=lambda sym,a: ({"2026-10-05":(100.0,1_000_000.0)},{"fixture":"lag"})
+              started,meta=r.publication_recheck(asof,exp)
+              assert started is False and meta["status"]=="GLOBAL_SENTINELS_NONTERMINAL",(started,meta)
+              r.sina=lambda sym,a: ({asof:(100.0,1_000_000.0)},{"fixture":"published"}) if sym=="AAPL" else ({"2026-10-05":(100.0,1_000_000.0)},{"fixture":"lag"})
+              started,meta=r.publication_recheck(asof,exp)
+              assert started is True and meta["status"]=="TERMINAL_SENTINEL_OBSERVED",(started,meta)
+          finally:
+              r.sina,r.nasdaq=old_sina,old_nasdaq
+          assert r.should_defer_redo_to_bridge("CURRENT_PRICE_ARTIFACT",True,False) is True
+          assert r.should_defer_redo_to_bridge("CURRENT_PRICE_ARTIFACT",True,True) is False
+          print("PRICE_PUBLICATION_LAG_RECHECK=PASS")
+          PY
+
       - name: Assert incomplete PRICE snapshot routes to resolver, not corruption recovery
         run: |
           python - <<'PY'
@@ -537,6 +574,19 @@ jobs:
           assert "dv30_or_legacy_dv20" not in d
           assert "DV20 (legacy registered record)" not in d
           print("STALE_TERMINAL_DELIVERY_AUTHORITY_GUARD=PASS")
+          PY
+
+      - name: Assert publication replay is wired through Pre-MC persistence
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          w=Path(".github/workflows/xray-canonical-current-pre-mc.yml").read_text()
+          p=Path("nasdaq-xray/price_dv30_recover_from_fullstate.py").read_text()
+          for x in ["publication_lag_artifact","publication_recheck","publication_replay",
+                    "REPLAY_PRICE_AFTER_ASOF_PUBLICATION","XRAY_PRICE_FORCE_LOCAL_REEVALUATION"]:
+              assert x in w or x in p,x
+          assert "force_local_reevaluation" in p and "and not force_local" in p
+          print("PRICE_PUBLICATION_REPLAY_WORKFLOW_CONTRACT=PASS")
           PY
 
       - name: Assert identity type guard
