@@ -64,9 +64,17 @@ def main():
         run("sina_stage.py",{"XRAY_FULL_IDENTITY":"1"})
         ss=readj("sina_state.json")
         dm=ss.get("discovery_meta") or {}
-        if dm.get("full_identity") is not True or dm.get("authority")!="FULL_IDENTITY_NO_PREFILTER":
+        authority=str(dm.get("authority") or "")
+        allowed={"FULL_IDENTITY_NO_PREFILTER","CANONICAL_FROZEN_FULL_IDENTITY_SAME_ASOF"}
+        if dm.get("full_identity") is not True or authority not in allowed:
             raise RuntimeError("FULL_UNIVERSE_IDENTITY_NOT_PROVEN")
-        print("XRAY_HISTORY_STATUS="+str(ss.get("status"))+" CURSOR="+str(ss.get("cursor"))+"/"+str(ss.get("queue_total"))+" FULL_IDENTITY=1",flush=True)
+        if authority=="CANONICAL_FROZEN_FULL_IDENTITY_SAME_ASOF":
+            frozen_hash=str(dm.get("frozen_queue_hash") or "")
+            if not frozen_hash or frozen_hash!=str(ss.get("queue_hash") or ""):
+                raise RuntimeError("FROZEN_FULL_UNIVERSE_HASH_MISMATCH")
+            if int(ss.get("queue_total",0) or 0)!=int(dm.get("discovery_queue_total",0) or 0):
+                raise RuntimeError("FROZEN_FULL_UNIVERSE_COUNT_MISMATCH")
+        print("XRAY_HISTORY_STATUS="+str(ss.get("status"))+" CURSOR="+str(ss.get("cursor"))+"/"+str(ss.get("queue_total"))+" FULL_IDENTITY=1 AUTHORITY="+authority,flush=True)
         if ss.get("status")=="HISTORY_COMPLETE":
             break
     ss=readj("sina_state.json")
