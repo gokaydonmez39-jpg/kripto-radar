@@ -275,6 +275,40 @@ jobs:
           echo "XRAY_POST_MC_BINDING=FAIL_CLOSED_DUPLICATE" >&2
           exit 1
 
+      - name: Diagnose current PRICE to MC scope delta
+        if: steps.freeze.outputs.frozen != 'true' && steps.mc.outputs.ready != 'true' && steps.mc.outputs.binding_fault != 'true'
+        shell: bash
+        run: |
+          python - <<'PY'
+          import glob,json
+          p=json.load(open("nasdaq-xray/canonical_current_price_dv30.json"))
+          cur=set(p.get("pass_symbols") or [])
+          rows=[]
+          for fp in sorted(glob.glob("nasdaq-xray/canonical_mc_bridge_*.json")):
+              try:
+                  j=json.load(open(fp))
+                  if not (
+                    j.get("schema")=="XRAY_MC_EPOCH_RESULT_V1"
+                    and j.get("status")=="COMMITTED"
+                    and j.get("asof_et")==p.get("asof_et")
+                    and j.get("policy_hash")=="68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4"
+                    and j.get("policy_version")=="C4.17"
+                  ):
+                      continue
+                  old=set(j.get("input_pass_symbols") or (j.get("results") or {}).keys())
+                  rows.append({
+                    "path":fp,
+                    "input_pass_hash":j.get("input_pass_hash"),
+                    "current_pass_hash":p.get("pass_hash"),
+                    "old_count":len(old),"current_count":len(cur),"overlap":len(old&cur),
+                    "added_to_mc":sorted(cur-old),
+                    "removed_from_mc":sorted(old-cur),
+                  })
+              except Exception:
+                  pass
+          print(json.dumps({"XRAY_MC_SCOPE_DELTA":rows},sort_keys=True))
+          PY
+
       - name: Healthy no-op while resolver or MC commit is pending
         if: steps.freeze.outputs.frozen != 'true' && steps.mc.outputs.ready != 'true' && steps.mc.outputs.binding_fault != 'true'
         run: echo "XRAY_POST_MC=BLOCKED_UPSTREAM_PENDING reason=${{ steps.mc.outputs.pending_reason }}"
