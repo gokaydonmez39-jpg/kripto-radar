@@ -484,6 +484,21 @@ def _regime_finalist_status(deep,sym):
 def _regime_finalist_allowed(deep,sym):
     return _regime_finalist_status(deep,sym)=="PASS"
 
+def _fresh_deep_family_confirmed(deep,sym,fam):
+    """Fresh Final scope must exactly match Deep's event+RS confirmed sets.
+
+    Raw per-symbol geometry flags may still be true for an event-blocked name.
+    Such a row is not a fresh finalist. Only an already-recorded lifecycle setup
+    may survive separately through the frozen lifecycle path.
+    """
+    fields={
+      "A":"a_geometry_rs_event_pass",
+      "B":"b_breakout_rs_event_pass",
+      "D":"d_dk3_pre_r1",
+    }
+    field=fields.get(fam)
+    return bool(field and sym in set(deep.get(field) or []))
+
 def main():
     semantic_selftest_status=_run_embedded_semantic_selftest()
     d=json.loads(DEEP.read_text());asof=d["asof_et"]
@@ -512,6 +527,11 @@ def main():
         allowed=_regime_finalist_allowed(d,sym)
         for fam,flag in (("A",r.get("A",{}).get("pool")),("B",r.get("B",{}).get("breakout_confirmed")),("D",r.get("D",{}).get("dk3_pre_r1"))):
             if not flag: continue
+            # A raw geometry flag alone is insufficient. Fresh finalist scope is
+            # the exact Deep event+RS confirmed set. Event-blocked/unknown rows
+            # can only persist through an already-recorded lifecycle setup.
+            if not _fresh_deep_family_confirmed(d,sym,fam):
+                continue
             if allowed:
                 candidates.append((sym,fam,r[fam],event))
             else:
