@@ -8,6 +8,9 @@ REQ=Path(os.getenv("XRAY_EVENT_REQUEST",str(ROOT/"canonical_current_event_reques
 BRIDGE_ENV=os.getenv("XRAY_EVENT_BRIDGE")
 OUT=Path(os.getenv("XRAY_EVENT_STATE_OUT",str(ROOT/"canonical_current_event_state.json")))
 TASK="6a825366222081918997094d76e6ae46"
+POLICY_BLOB="16c50cc8f887a5234a4be23862d7c8d0e564b0ac"
+POLICY_HASH="68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4"
+POLICY_VERSION="C4.17"
 
 def blob_sha(p:Path):
     b=p.read_bytes()
@@ -25,8 +28,9 @@ def main():
     assert ev["schema"]=="XRAY_EVENT_EPOCH_RESULT_V1" and ev["status"]=="COMMITTED"
     assert req["task_id"]==ev["task_id"]==TASK and ev["asof_et"]==asof
     assert req["execution"]==ev["execution"]=="NONE" and req["real_money"]==ev["real_money"]=="NO-GO"
-    assert req.get("compiled_policy_hash")=="bbb6ea5aa3126fbcdeda2246bc52d1ad04885d27e8e52fb07797e0114dedce55"
-    assert req.get("compiled_policy_version")=="C4.17"
+    assert req.get("compiled_policy_blob_sha")==POLICY_BLOB
+    assert req.get("compiled_policy_hash")==POLICY_HASH
+    assert req.get("compiled_policy_version")==POLICY_VERSION
     assert ev.get("compiled_policy_hash")==req.get("compiled_policy_hash")
     assert ev.get("compiled_policy_version")==req.get("compiled_policy_version")
     assert ev.get("compiled_policy_blob_sha")==req.get("compiled_policy_blob_sha")

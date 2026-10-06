@@ -295,6 +295,27 @@ jobs:
           print("FAMILY_C_EVENT_TRIGGER_ATR_SEPARATION=PASS")
           PY
 
+      - name: Assert event pipeline binds current DV30 C4.17 policy
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          current_blob="16c50cc8f887a5234a4be23862d7c8d0e564b0ac"
+          current_hash="68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4"
+          old_blob="299199aa10b6eb6fdf35071f233ac12bd814dc32"
+          old_hash="bbb6ea5aa3126fbcdeda2246bc52d1ad04885d27e8e52fb07797e0114dedce55"
+          req=Path("nasdaq-xray/build_current_event_request.py").read_text()
+          state=Path("nasdaq-xray/build_current_event_state.py").read_text()
+          assert f'POLICY_BLOB="{current_blob}"' in req
+          assert f'POLICY_HASH="{current_hash}"' in req
+          assert old_blob not in req and old_hash not in req
+          assert f'POLICY_BLOB="{current_blob}"' in state
+          assert f'POLICY_HASH="{current_hash}"' in state
+          assert 'req.get("compiled_policy_blob_sha")==POLICY_BLOB' in state
+          assert 'req.get("compiled_policy_hash")==POLICY_HASH' in state
+          assert old_blob not in state and old_hash not in state
+          print("EVENT_PIPELINE_CURRENT_DV30_POLICY_BINDING=PASS")
+          PY
+
       - name: Assert MC fallback WATCH remains in technical radar scope
         run: |
           python - <<'PY'
