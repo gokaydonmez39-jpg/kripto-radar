@@ -1,0 +1,36 @@
+name: XRAY SEC Endpoint Probe
+on:
+  push:
+    paths:
+      - ".github/workflows/xray-sec-endpoint-probe.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Probe official SEC surfaces
+        shell: bash
+        run: |
+          set -u
+          ua='NASDAQ-SWING-XRAY research bot; xray-dataplane-bot@users.noreply.github.com'
+          urls=(
+            'https://data.sec.gov/submissions/CIK0001703057.json'
+            'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=1703057&owner=exclude&count=10&output=atom'
+            'https://www.sec.gov/Archives/edgar/data/1703057/000170305726000012/0001703057-26-000012-index.htm'
+            'https://www.sec.gov/Archives/edgar/data/1703057/000170305726000012/abcl-20251231.htm'
+            'https://www.sec.gov/Archives/edgar/data/1703057/000170305726000012/index.json'
+            'https://efts.sec.gov/LATEST/search-index?q=ABCL&dateRange=custom&startdt=2026-01-01&enddt=2026-10-05'
+            'https://www.sec.gov/files/company_tickers.json'
+            'https://www.sec.gov/Archives/edgar/daily-index/bulkdata/submissions.zip'
+          )
+          for u in "${urls[@]}"; do
+            code=$(curl -L -A "$ua" -H 'Accept-Encoding: identity' -H 'Accept-Language: en-US,en;q=0.9' -H 'Referer: https://www.sec.gov/' --connect-timeout 8 --max-time 20 -sS -o /tmp/sec_probe_body -w '%{http_code}' "$u" || true)
+            bytes=$(wc -c </tmp/sec_probe_body 2>/dev/null || echo 0)
+            ctype=$(file -b --mime-type /tmp/sec_probe_body 2>/dev/null || echo unknown)
+            echo "SEC_PROBE code=$code bytes=$bytes type=$ctype url=$u"
+          done
