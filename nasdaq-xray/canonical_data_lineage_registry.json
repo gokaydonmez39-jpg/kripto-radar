@@ -3,14 +3,14 @@
   "configured_provider_not_actual_provider": true,
   "execution": "NONE",
   "gate_unknowns_are_preserved": true,
-  "generated_at_utc": "2026-10-05T15:16:47.854236+00:00",
+  "generated_at_utc": "2026-10-06T16:16:23.676591+00:00",
   "incomplete_receipt_count": 0,
   "note": "COMPLETE_LINEAGE_SCHEMA means every tracked field has an explicit provenance/entitlement/license classification; it does not convert blocked G9 or ACCOUNT into PASS.",
   "real_money": "NO-GO",
   "records": [
     {
       "artifact": "canonical_current_master_manifest.json",
-      "artifact_sha256": "ed53fb860bef975b5fd95600fa8eb6d1be9164cccf81c4300f554c7403a1ea0e",
+      "artifact_sha256": "d6e40013c6e6bc51024719a314036e5fc7d16b8b5c7b9868c8239028bf43ec17",
       "authority_class": "T0_EXCHANGE_IDENTITY",
       "endpoint": "NASDAQTRADER_SYMBOL_DIRECTORY",
       "entitlement_class": "OFFICIAL_PUBLIC_CURRENT_DAY_DATA",
@@ -26,11 +26,11 @@
       "receipt_complete": true,
       "received_at": "ARTIFACT_TIMESTAMP_NOT_EMBEDDED",
       "schema_version": "XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1",
-      "source_timestamp": "2026-10-02"
+      "source_timestamp": "2026-10-05"
     },
     {
       "artifact": "canonical_current_price_dv20.json",
-      "artifact_sha256": "0ade222cf33278a4d8a121c063d6d4adc80a011b70d131bccd9bc2fefcaef881",
+      "artifact_sha256": "48500f415689392de44c10c524fe601e979c56f0f367b555d89015136e8e9de1",
       "authority_class": "COMPILED_DV20_PRIMARY",
       "endpoint": "RALLIES_CONNECTED_CHATGPT_MARKET_DATA",
       "entitlement_class": "CURRENT_CONNECTED_PLATFORM_ACCESS_ZERO_COST_SURFACE",
@@ -42,11 +42,11 @@
       "health": "PASS_ARTIFACT_PRESENT",
       "license_class": "SURFACE_SPECIFIC_TERMS_NO_TRANSFER_TO_B2B_API",
       "provider_actual": "RALLIES",
-      "provider_requested": "Rallies exact prior20 official sessions",
+      "provider_requested": "UNSPECIFIED_IN_POLICY",
       "receipt_complete": true,
       "received_at": "ARTIFACT_TIMESTAMP_NOT_EMBEDDED",
       "schema_version": "XRAY_CANONICAL_PRICE_DV20_V1",
-      "source_timestamp": "2026-10-02"
+      "source_timestamp": "2026-10-05"
     },
     {
       "artifact": "canonical_mc_bridge_20261002_c417.json",
@@ -70,7 +70,7 @@
     },
     {
       "artifact": "canonical_current_event_state.json",
-      "artifact_sha256": "0683adde09fef6d1aceb243a12ac59c0549ebaf27ebc294058eab464abb2eac0",
+      "artifact_sha256": "0d611b50de1c2b4874b4d15dfd69bdba83c289e9399a38ee011d37c1dd3ae6a9",
       "authority_class": "CANONICAL_EVENT_TASKSTATE_BRIDGE_NORMALIZED",
       "endpoint": "SEC_ISSUER_IR_NASDAQ_OFFICIAL_RESOLUTION_CHAIN",
       "entitlement_class": "PUBLIC_OFFICIAL_WITH_FAIR_ACCESS_OR_SOURCE_CADENCE",
@@ -86,11 +86,11 @@
       "receipt_complete": true,
       "received_at": "ARTIFACT_TIMESTAMP_NOT_EMBEDDED",
       "schema_version": "XRAY_CANONICAL_EVENT_STATE_V1",
-      "source_timestamp": "2026-10-02"
+      "source_timestamp": "2026-10-05"
     },
     {
       "artifact": "canonical_resolver_bridge_20261002_c417.json",
-      "artifact_sha256": "ce2bd91806b431d13c6f973ca92e3c52340d2894d5d73356bb80e07801a1bb8d",
+      "artifact_sha256": "281d4a16e44a233f42891f0713657f7c488577a672670869e8345d6140c6e68e",
       "authority_class": "FOREGROUND_OPERATOR_RECOVERY_C417_MC_ONLY_POLICY_MIGRATION",
       "endpoint": "ALPACA_CONNECTED_HISTORICAL_SIP_WITH_RALLIES_LONGBRIDGE_FAILOVER",
       "entitlement_class": "ZERO_DOLLAR_DELAYED_HISTORICAL_WITH_PROVIDER_LIMITS",
