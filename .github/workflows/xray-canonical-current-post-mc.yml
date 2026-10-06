@@ -140,6 +140,32 @@ jobs:
           for fp in glob.glob("nasdaq-xray/canonical_mc_bridge_*.json"):
               try:
                   j=json.load(open(fp))
+                  expected_set=set(p.get("pass_symbols") or [])
+                  primary=set(j.get("primary_pass_symbols") or [])
+                  mcfail=set(j.get("primary_fail_symbols") or [])
+                  watch=set(j.get("fallback_watch_symbols") or [])
+                  fallback_fail=set(j.get("fallback_fail_symbols") or j.get("fallback_two_source_fail_symbols") or [])
+                  mcunk=set(j.get("unknown_symbols") or [])
+                  groups=[primary,mcfail,watch,fallback_fail,mcunk]
+                  counts=j.get("counts") or {}
+                  results=j.get("results") or {}
+                  disjoint=all(not (groups[a]&groups[b]) for a in range(len(groups)) for b in range(a+1,len(groups)))
+                  partition_ok=(
+                    disjoint
+                    and primary|mcfail|watch|fallback_fail|mcunk==expected_set
+                    and set(results)==expected_set
+                    and int(counts.get("MC_PASS_PRIMARY",-1))==len(primary)
+                    and int(counts.get("MC_FAIL_PRIMARY",-1))==len(mcfail)
+                    and int(counts.get("MC_PASS_FALLBACK_WATCH",-1))==len(watch)
+                    and int(counts.get("MC_FAIL_FALLBACK_TWO_SOURCE",counts.get("MC_FAIL_FALLBACK",-1)))==len(fallback_fail)
+                    and int(counts.get("MC_UNKNOWN",-1))==len(mcunk)
+                    and int(counts.get("TOTAL",-1))==len(expected_set)
+                    and all((results.get(s) or {}).get("status")=="MC_PASS_PRIMARY" for s in primary)
+                    and all((results.get(s) or {}).get("status")=="MC_FAIL_PRIMARY" for s in mcfail)
+                    and all((results.get(s) or {}).get("status")=="MC_PASS_FALLBACK_WATCH" for s in watch)
+                    and all((results.get(s) or {}).get("status")=="MC_FAIL_FALLBACK_TWO_SOURCE" for s in fallback_fail)
+                    and all((results.get(s) or {}).get("status")=="MC_UNKNOWN" for s in mcunk)
+                  )
                   ok=(
                     j.get("schema")=="XRAY_MC_EPOCH_RESULT_V1"
                     and j.get("status")=="COMMITTED"
@@ -152,7 +178,7 @@ jobs:
                     and j.get("policy_version")=="C4.17"
                     and int(j.get("input_count",-1))==int(expected_count)
                     and (j.get("counts") or {}).get("TOTAL")==expected_count
-                    and int((j.get("counts") or {}).get("MC_UNKNOWN",-1))==0
+                    and partition_ok
                     and set((j.get("results") or {}).keys())==set(p.get("pass_symbols") or [])
                     and (
                       (not settlement_required and j.get("settlement_witness_status") in (None,"NOT_REQUIRED_POINTER_ASOF","PASS"))
@@ -293,7 +319,7 @@ jobs:
                         and set(sj.get("fallback_watch_symbols") or [])==set(mc.get("fallback_watch_symbols") or [])
                         and set(sj.get("fallback_fail_symbols") or sj.get("fallback_two_source_fail_symbols") or [])==
                             set(mc.get("fallback_fail_symbols") or mc.get("fallback_two_source_fail_symbols") or [])
-                        and set(sj.get("unknown_symbols") or [])==set(mc.get("unknown_symbols") or [])==set()
+                        and set(sj.get("unknown_symbols") or [])==set(mc.get("unknown_symbols") or [])
                       ):
                           old_matches.append(sp)
                   except Exception:

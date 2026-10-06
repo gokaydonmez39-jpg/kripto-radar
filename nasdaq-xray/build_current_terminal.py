@@ -298,7 +298,20 @@ def main():
         for j in range(i+1,len(groups)):
             assert not (groups[i]&groups[j])
     assert primary|mcfail|watch|fallback_fail|mcunk==price_pass
-    assert len(mcunk)==0 and (mc.get("counts") or {}).get("MC_UNKNOWN",0)==0
+    mc_counts=mc.get("counts") or {}
+    mc_results=mc.get("results") or {}
+    assert int(mc_counts.get("MC_PASS_PRIMARY",-1))==len(primary)
+    assert int(mc_counts.get("MC_FAIL_PRIMARY",-1))==len(mcfail)
+    assert int(mc_counts.get("MC_PASS_FALLBACK_WATCH",-1))==len(watch)
+    assert int(mc_counts.get("MC_FAIL_FALLBACK_TWO_SOURCE",mc_counts.get("MC_FAIL_FALLBACK",-1)))==len(fallback_fail)
+    assert int(mc_counts.get("MC_UNKNOWN",-1))==len(mcunk)
+    assert int(mc_counts.get("TOTAL",-1))==len(price_pass)
+    assert set(mc_results)==price_pass
+    assert all((mc_results.get(s) or {}).get("status")=="MC_PASS_PRIMARY" for s in primary)
+    assert all((mc_results.get(s) or {}).get("status")=="MC_FAIL_PRIMARY" for s in mcfail)
+    assert all((mc_results.get(s) or {}).get("status")=="MC_PASS_FALLBACK_WATCH" for s in watch)
+    assert all((mc_results.get(s) or {}).get("status")=="MC_FAIL_FALLBACK_TWO_SOURCE" for s in fallback_fail)
+    assert all((mc_results.get(s) or {}).get("status")=="MC_UNKNOWN" for s in mcunk)
 
     h=d["history"]; lg=d["legal"]; si=d["stage1_input"]; st=d["stage1"]; rg=d["regime"]; dg=d["deep_geometry"]
     er=d["event_request"]; ev=d["events"]; fc=d["family_c"]; dp=d["deep"]; ft=d["final"]

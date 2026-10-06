@@ -324,12 +324,31 @@ jobs:
             "CURRENT_DV30_MC_CHAIN_NOT_EXACT",
             'mc.get("input_path")=="nasdaq-xray/canonical_current_price_dv30.json"',
             'mc.get("input_pass_hash")==p.get("pass_hash")',
-            'int((mc.get("counts") or {}).get("MC_UNKNOWN",-1))==0',
+            'mc_partition_exact',
             'h.get("source_mc_policy_hash")=="68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4"',
           ]
           missing=[x for x in required if x not in t]
           assert not missing,missing
           print("FINAL_STALE_SAME_ASOF_MC_GUARD=PASS")
+          PY
+
+      - name: Assert MC UNKNOWN remains blocked but does not freeze known technical scope
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          post=Path(".github/workflows/xray-canonical-current-post-mc.yml").read_text()
+          final=Path(".github/workflows/xray-canonical-current-final.yml").read_text()
+          term=Path("nasdaq-xray/build_current_terminal.py").read_text()
+          assert 'and partition_ok' in post
+          assert 'int((j.get("counts") or {}).get("MC_UNKNOWN",-1))==0' not in post
+          assert 'set(sj.get("unknown_symbols") or [])==set(mc.get("unknown_symbols") or [])==set()' not in post
+          assert 'mc_partition_exact' in final
+          assert 'int((mc.get("counts") or {}).get("MC_UNKNOWN",-1))==0' not in final
+          assert 'assert len(mcunk)==0' not in term
+          assert 'int(mc_counts.get("MC_UNKNOWN",-1))==len(mcunk)' in term
+          assert '"mc_unknown":len(mcunk)' in term
+          assert 'mc_technical_scope=primary|watch' in term
+          print("MC_PARTIAL_UNKNOWN_FAIL_CLOSED_TECHNICAL_SCOPE=PASS")
           PY
 
       - name: Assert blocked-only resolver scope binds exactly
