@@ -456,32 +456,12 @@
       "proof": "ALPACA_RALLIES_EXACT_MISSING_SET_MATCH"
     },
     "TLAC": {
-      "decision": "FAIL_DV30_INSUFFICIENT_SESSIONS",
-      "price": 9.83,
-      "known_session_count": 12,
-      "missing_sessions": [
-        "2026-08-24",
-        "2026-08-25",
-        "2026-08-26",
-        "2026-08-27",
-        "2026-08-28",
-        "2026-08-31",
-        "2026-09-01",
-        "2026-09-02",
-        "2026-09-03",
-        "2026-09-04",
-        "2026-09-08",
-        "2026-09-09",
-        "2026-09-10",
-        "2026-09-11",
-        "2026-09-14",
-        "2026-09-15",
-        "2026-09-16",
-        "2026-10-01"
-      ],
-      "no_synthetic_bar": true,
-      "source": "ALPACA_SIP_RALLIES_MASSIVE_C4_17_NON_G9",
-      "proof": "ALPACA_RALLIES_EXACT_MISSING_SET_MATCH"
+      "decision": "BLOCK_CURRENT_RUN",
+      "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
+      "observed_usable_sessions": 12,
+      "source": "RALLIES_CANDLESTICK_SCANNER_EXACT30_PRIMARY",
+      "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
+      "corroboration": "RALLIES_12_SESSIONS;ALPACA_SIP_AND_LONGBRIDGE_13_SESSIONS;2026-10-01_PROVIDER_DISAGREEMENT"
     },
     "XIII": {
       "decision": "FAIL_DV30_INSUFFICIENT_SESSIONS",
@@ -539,7 +519,7 @@
       "observed_usable_sessions": 29,
       "source": "RALLIES_CANDLESTICK_SCANNER_EXACT30_PRIMARY",
       "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-      "corroboration": "ALPACA_SIP_AND_RALLIES_ZERO_VOLUME_2026-09-23;MASSIVE_NO_BAR_2026-09-23"
+      "corroboration": "ALPACA_SIP_ZERO_VOLUME_PLACEHOLDER_2026-09-23;RALLIES_LONGBRIDGE_MASSIVE_OMIT_2026-09-23"
     },
     "WQEY": {
       "decision": "BLOCK_CURRENT_RUN",
@@ -638,12 +618,17 @@
     "policy_weakening": false
   },
   "counts": {
-    "FAIL_DV30_INSUFFICIENT_SESSIONS": 14,
+    "FAIL_DV30_INSUFFICIENT_SESSIONS": 13,
     "FAIL_PRICE_NO_ASOF_BAR": 2,
-    "BLOCK_CURRENT_RUN": 2,
+    "BLOCK_CURRENT_RUN": 3,
     "PASS_PRICE_DV30": 0,
     "TOTAL": 18
   },
   "no_policy_weakening": true,
-  "alpha_or_threshold_change": false
+  "alpha_or_threshold_change": false,
+  "recovery_note": "Resolve 18 current DV30 exceptions fail-closed: 13 exact Alpaca/Rallies insufficient-session FAILs, 2 three-source no-ASOF FAILs, 3 source-alignment/zero-trade BLOCKs (GRAL, TLAC, WQEY). No PASS manufactured.",
+  "audit": {
+    "tlac_provider_disagreement_fail_closed": true,
+    "pass_manufactured": false
+  }
 }

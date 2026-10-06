@@ -1,19 +1,20 @@
 {
   "asof_et": "2026-10-05",
   "block_recovery_attempted": true,
-  "block_recovery_input_count": 2,
+  "block_recovery_input_count": 3,
   "block_recovery_resolved_count": 0,
   "block_recovery_resolved_symbols": [],
-  "blocked_count": 2,
+  "blocked_count": 3,
   "blocked_symbols": [
     "GRAL",
+    "TLAC",
     "WQEY"
   ],
   "bridge_defer_enabled": true,
   "counts": {
-    "BLOCK_CURRENT_RUN": 2,
+    "BLOCK_CURRENT_RUN": 3,
     "FAIL_DV30": 1576,
-    "FAIL_DV30_INSUFFICIENT_SESSIONS": 14,
+    "FAIL_DV30_INSUFFICIENT_SESSIONS": 13,
     "FAIL_PRICE": 1303,
     "FAIL_PRICE_NO_ASOF_BAR": 2,
     "PASS_PRICE_DV30": 504
@@ -627,8 +628,8 @@
     },
     "AACO": {
       "info": {
-        "dv30": 0.0,
-        "price": 10.0,
+        "dv30": 0,
+        "price": 10,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
@@ -971,7 +972,7 @@
     },
     "ACAA": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 10.020000457763672,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -1427,7 +1428,7 @@
     },
     "ADAC": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 10.149999618530273,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -1782,7 +1783,7 @@
     },
     "AEAQ": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 10.079999923706055,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -2110,7 +2111,7 @@
     "AGCC": {
       "info": {
         "dv30": 116264.6494,
-        "price": 15.0,
+        "price": 15,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "SINA_US_DAILY"
       },
@@ -2654,7 +2655,7 @@
     },
     "AKTS": {
       "info": {
-        "dv30": 6745498.0,
+        "dv30": 6745498,
         "price": 18.52,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "SINA_US_DAILY"
@@ -2781,7 +2782,7 @@
     },
     "ALF": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 10.920000076293945,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -2954,7 +2955,7 @@
     },
     "ALLR": {
       "info": {
-        "price": 1.0,
+        "price": 1,
         "proof": "ASOF_CLOSE_LT_5",
         "source": "SINA_US_DAILY"
       },
@@ -3914,7 +3915,7 @@
     "AOSL": {
       "info": {
         "dv30": 13382715.49,
-        "price": 29.0,
+        "price": 29,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "SINA_US_DAILY"
       },
@@ -4067,7 +4068,7 @@
     },
     "APMC": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 9.970000267028809,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -4418,7 +4419,7 @@
     },
     "ARCI": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 10.079999923706055,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -4442,7 +4443,7 @@
     "ARCL": {
       "info": {
         "dv30": 7976.000213623047,
-        "price": 10.0,
+        "price": 10,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
@@ -4865,7 +4866,7 @@
     },
     "ASO": {
       "info": {
-        "dv30": 78733495.0,
+        "dv30": 78733495,
         "known_session_count": 30,
         "missing_sessions": [],
         "price": 51.98,
@@ -7178,7 +7179,7 @@
     },
     "BKHA": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 12.279999732971191,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -7940,7 +7941,7 @@
     },
     "BPAC": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 10.1899995803833,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -8023,7 +8024,7 @@
     },
     "BRBI": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 13.760000228881836,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -8061,7 +8062,7 @@
     },
     "BREZ": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 10.0600004196167,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -8582,7 +8583,7 @@
         "dv30": 129973258.14500001,
         "known_session_count": 30,
         "missing_sessions": [],
-        "price": 62.0,
+        "price": 62,
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "SINA_US_DAILY"
       },
@@ -9203,7 +9204,7 @@
     },
     "CAPN": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 11.25,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -9256,7 +9257,7 @@
     "CAQ": {
       "info": {
         "dv30": 1002.9999732971191,
-        "price": 10.0,
+        "price": 10,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
@@ -9643,7 +9644,7 @@
     },
     "CCAQ": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 10.489999771118164,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -10329,7 +10330,7 @@
     },
     "CEPS": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 10.270000457763672,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -10352,7 +10353,7 @@
     },
     "CEPV": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 10.270000457763672,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -11263,7 +11264,7 @@
     },
     "CLFD": {
       "info": {
-        "dv30": 4289792.0,
+        "dv30": 4289792,
         "price": 33.16,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "SINA_US_DAILY"
@@ -11611,7 +11612,7 @@
     "CMND": {
       "info": {
         "dv30": 121281.00779999999,
-        "price": 6.0,
+        "price": 6,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "SINA_US_DAILY"
       },
@@ -12471,7 +12472,7 @@
     },
     "CRAN": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 10.100000381469727,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -12722,7 +12723,7 @@
     "CRNC": {
       "info": {
         "dv30": 4411706.665,
-        "price": 8.0,
+        "price": 8,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "SINA_US_DAILY"
       },
@@ -12846,7 +12847,7 @@
     "CRVL": {
       "info": {
         "dv30": 12888398.71,
-        "price": 76.0,
+        "price": 76,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "SINA_US_DAILY"
       },
@@ -13104,7 +13105,7 @@
     },
     "CTAA": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 9.949999809265137,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -13489,7 +13490,7 @@
     },
     "CVGI": {
       "info": {
-        "price": 3.0,
+        "price": 3,
         "proof": "ASOF_CLOSE_LT_5",
         "source": "SINA_US_DAILY"
       },
@@ -14727,7 +14728,7 @@
     "DOO": {
       "info": {
         "dv30": 14327289.455,
-        "price": 55.0,
+        "price": 55,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "SINA_US_DAILY"
       },
@@ -15162,7 +15163,7 @@
     },
     "DTSQ": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 11.579999923706055,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -15754,7 +15755,7 @@
     },
     "EFTY": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 15.020000457763672,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -15807,7 +15808,7 @@
     },
     "EGHA": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 10.430000305175781,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -16194,7 +16195,7 @@
     },
     "EMIS": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 10.270000457763672,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -16461,7 +16462,7 @@
     },
     "EOLS": {
       "info": {
-        "dv30": 6561325.0,
+        "dv30": 6561325,
         "price": 7.47,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "SINA_US_DAILY"
@@ -16673,7 +16674,7 @@
     "ESCA": {
       "info": {
         "dv30": 566702.155,
-        "price": 19.0,
+        "price": 19,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "SINA_US_DAILY"
       },
@@ -16734,7 +16735,7 @@
     "ESOA": {
       "info": {
         "dv30": 1180824.48,
-        "price": 11.0,
+        "price": 11,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "SINA_US_DAILY"
       },
@@ -17500,7 +17501,7 @@
     },
     "FBDT": {
       "info": {
-        "price": 1.0,
+        "price": 1,
         "proof": "ASOF_CLOSE_LT_5",
         "source": "SINA_US_DAILY"
       },
@@ -18127,7 +18128,7 @@
     },
     "FHTX": {
       "info": {
-        "price": 2.0,
+        "price": 2,
         "proof": "ASOF_CLOSE_LT_5",
         "source": "SINA_US_DAILY"
       },
@@ -18592,7 +18593,7 @@
     },
     "FMAC": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 10.100000381469727,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -18836,7 +18837,7 @@
     },
     "FORR": {
       "info": {
-        "dv30": 1122356.0,
+        "dv30": 1122356,
         "price": 11.23,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "SINA_US_DAILY"
@@ -18851,7 +18852,7 @@
     },
     "FORTY": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 118.1500015258789,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -19446,7 +19447,7 @@
     },
     "FTHA": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 9.989999771118164,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -19634,7 +19635,7 @@
     },
     "FVAV": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 10.25,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -19748,7 +19749,7 @@
         "dv30": 195225788.295,
         "known_session_count": 30,
         "missing_sessions": [],
-        "price": 95.0,
+        "price": 95,
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "SINA_US_DAILY"
       },
@@ -20018,7 +20019,7 @@
     },
     "GCGR": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 10.130000114440918,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -20386,7 +20387,7 @@
     },
     "GFUZ": {
       "info": {
-        "dv30": 984272.0,
+        "dv30": 984272,
         "price": 7.53,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "SINA_US_DAILY"
@@ -21206,7 +21207,7 @@
     },
     "GPAT": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 11.105999946594238,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -21427,7 +21428,7 @@
     "GRNQ": {
       "info": {
         "dv30_lower_bound": 289868.125,
-        "dv30_upper_bound": 575712.0,
+        "dv30_upper_bound": 575712,
         "known_session_count": 29,
         "missing_sessions": [
           "2026-08-25"
@@ -21579,7 +21580,7 @@
     },
     "GSHR": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 10.579999923706055,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -21646,7 +21647,7 @@
     },
     "GSRF": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 10.265000343322754,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -21752,7 +21753,7 @@
     },
     "GTEN": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 10.470000267028809,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -22011,7 +22012,7 @@
     },
     "HACQ": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 10.039999961853027,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -23622,7 +23623,7 @@
     },
     "HVMC": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 10.289999961853027,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -23808,7 +23809,7 @@
     "IACO": {
       "info": {
         "dv30": 11488.499736785889,
-        "price": 10.0,
+        "price": 10,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
@@ -24150,7 +24151,7 @@
     },
     "IDAC": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 9.989999771118164,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -24250,7 +24251,7 @@
     },
     "IEAG": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 10.180000305175781,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -24318,7 +24319,7 @@
     },
     "IGAC": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 10.100000381469727,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -24400,7 +24401,7 @@
     },
     "IKT": {
       "info": {
-        "price": 2.0,
+        "price": 2,
         "proof": "ASOF_CLOSE_LT_5",
         "source": "SINA_US_DAILY"
       },
@@ -24810,7 +24811,7 @@
     },
     "INAC": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 10.390000343322754,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -25102,7 +25103,7 @@
     "INNV": {
       "info": {
         "dv30": 2699862.9,
-        "price": 9.0,
+        "price": 9,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "SINA_US_DAILY"
       },
@@ -25224,7 +25225,7 @@
     },
     "INTG": {
       "info": {
-        "dv30": 2515729.0,
+        "dv30": 2515729,
         "price": 28.245,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "SINA_US_DAILY"
@@ -26307,7 +26308,7 @@
     },
     "JBDI": {
       "info": {
-        "price": 1.0,
+        "price": 1,
         "proof": "ASOF_CLOSE_LT_5",
         "source": "SINA_US_DAILY"
       },
@@ -26589,7 +26590,7 @@
     "JMSB": {
       "info": {
         "dv30": 1497633.38,
-        "price": 23.0,
+        "price": 23,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "SINA_US_DAILY"
       },
@@ -26762,7 +26763,7 @@
     },
     "JVA": {
       "info": {
-        "price": 4.0,
+        "price": 4,
         "proof": "ASOF_CLOSE_LT_5",
         "source": "SINA_US_DAILY"
       },
@@ -26907,7 +26908,7 @@
     "KARO": {
       "info": {
         "dv30": 3749413.5599999996,
-        "price": 61.0,
+        "price": 61,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "SINA_US_DAILY"
       },
@@ -27410,7 +27411,7 @@
     "KMDA": {
       "info": {
         "dv30": 1028582.59,
-        "price": 8.0,
+        "price": 8,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "SINA_US_DAILY"
       },
@@ -27614,7 +27615,7 @@
     },
     "KRKR": {
       "info": {
-        "price": 3.0,
+        "price": 3,
         "proof": "ASOF_CLOSE_LT_5",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
@@ -27864,7 +27865,7 @@
     },
     "KTWO": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 10.09000015258789,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -28064,7 +28065,7 @@
     },
     "LAFA": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 10.199999809265137,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -28325,7 +28326,7 @@
     },
     "LCCC": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 10.539999961853027,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -28539,7 +28540,7 @@
     },
     "LFAC": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 10.069999694824219,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -29167,7 +29168,7 @@
     },
     "LKSP": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 10.260000228881836,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -29505,7 +29506,7 @@
     },
     "LPAA": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 10.850000381469727,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -29564,7 +29565,7 @@
     },
     "LPCV": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 10.079999923706055,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -29996,7 +29997,7 @@
     },
     "LWAC": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 10.350000381469727,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -30020,7 +30021,7 @@
     "LWAY": {
       "info": {
         "dv30": 2556729.33,
-        "price": 21.0,
+        "price": 21,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "SINA_US_DAILY"
       },
@@ -30228,7 +30229,7 @@
     },
     "MAGH": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 6.760000228881836,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -30289,8 +30290,8 @@
     },
     "MAMK": {
       "info": {
-        "dv30": 0.0,
-        "price": 13.0,
+        "dv30": 0,
+        "price": 13,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
@@ -30406,7 +30407,7 @@
     },
     "MAT": {
       "info": {
-        "dv30": 54173896.0,
+        "dv30": 54173896,
         "known_session_count": 30,
         "missing_sessions": [],
         "price": 16.05,
@@ -30832,7 +30833,7 @@
     },
     "MCTA": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 29.354999542236328,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -31193,7 +31194,7 @@
     },
     "META": {
       "info": {
-        "dv30": 11826884370.0,
+        "dv30": 11826884370,
         "known_session_count": 30,
         "missing_sessions": [],
         "price": 741.9,
@@ -31943,7 +31944,7 @@
     "MMYT": {
       "info": {
         "dv30": 33925828.68,
-        "price": 45.0,
+        "price": 45,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "SINA_US_DAILY"
       },
@@ -32608,7 +32609,7 @@
     "MSBI": {
       "info": {
         "dv30": 4261623.574999999,
-        "price": 33.0,
+        "price": 33,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "SINA_US_DAILY"
       },
@@ -32912,7 +32913,7 @@
     "MUZE": {
       "info": {
         "dv30_lower_bound": 21046.025,
-        "dv30_upper_bound": 1268655.0,
+        "dv30_upper_bound": 1268655,
         "known_session_count": 19,
         "missing_sessions": [
           "2026-08-24",
@@ -33147,7 +33148,7 @@
     },
     "MYX": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 10.029999732971191,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -33284,7 +33285,7 @@
     },
     "NAMS": {
       "info": {
-        "dv30": 36533715.0,
+        "dv30": 36533715,
         "price": 22.8,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "SINA_US_DAILY"
@@ -34054,7 +34055,7 @@
     },
     "NHIV": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 10.050000190734863,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -34484,7 +34485,7 @@
     },
     "NOEM": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 10.510000228881836,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -35066,7 +35067,7 @@
     "NUTX": {
       "info": {
         "dv30": 31292059.810000002,
-        "price": 225.0,
+        "price": 225,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "SINA_US_DAILY"
       },
@@ -35361,7 +35362,7 @@
     "NWS": {
       "info": {
         "dv30": 34077688.75,
-        "price": 32.0,
+        "price": 32,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "SINA_US_DAILY"
       },
@@ -35481,7 +35482,7 @@
     "NXPL": {
       "info": {
         "dv30": 115982.965,
-        "price": 9.0,
+        "price": 9,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "SINA_US_DAILY"
       },
@@ -35999,7 +36000,7 @@
     },
     "OHAC": {
       "info": {
-        "dv30": 7000.0,
+        "dv30": 7000,
         "price": 9.989999771118164,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -36053,7 +36054,7 @@
     },
     "OIM": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 10.130000114440918,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -37372,7 +37373,7 @@
     },
     "PALO": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 9.989999771118164,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -37746,7 +37747,7 @@
     },
     "PC": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 9.399999618530273,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -38082,7 +38083,7 @@
           "2026-10-01"
         ],
         "no_synthetic_bar": true,
-        "price": 10.0,
+        "price": 10,
         "proof": "DV30_UPPER_BOUND_LT_GATE",
         "source": "SINA_US_DAILY"
       },
@@ -38331,7 +38332,7 @@
     },
     "PGAC": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 10.779999732971191,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -39240,7 +39241,7 @@
     },
     "PONO": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 10.039999961853027,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -39701,7 +39702,7 @@
     "PRPO": {
       "info": {
         "dv30": 2525513.325,
-        "price": 24.0,
+        "price": 24,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "SINA_US_DAILY"
       },
@@ -39960,7 +39961,7 @@
     },
     "PTAC": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 9.960000038146973,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -40461,7 +40462,7 @@
     },
     "QETA": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 11.789999961853027,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -41020,7 +41021,7 @@
     },
     "RANG": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 10.859999656677246,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -41057,7 +41058,7 @@
     },
     "RAPP": {
       "info": {
-        "dv30": 16414201.0,
+        "dv30": 16414201,
         "price": 32.19,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "SINA_US_DAILY"
@@ -41520,7 +41521,7 @@
     },
     "REBN": {
       "info": {
-        "price": 2.0,
+        "price": 2,
         "proof": "ASOF_CLOSE_LT_5",
         "source": "SINA_US_DAILY"
       },
@@ -42391,7 +42392,7 @@
     },
     "RNGT": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 10.1899995803833,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -42488,7 +42489,7 @@
     },
     "ROCK": {
       "info": {
-        "dv30": 11921968.0,
+        "dv30": 11921968,
         "price": 40.32,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "SINA_US_DAILY"
@@ -42713,7 +42714,7 @@
     },
     "RREV": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 9.920000076293945,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -43038,7 +43039,7 @@
     "RYM": {
       "info": {
         "dv30": 220367.89250000002,
-        "price": 19.0,
+        "price": 19,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "SINA_US_DAILY"
       },
@@ -43687,7 +43688,7 @@
     },
     "SCPQ": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 10.069999694824219,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -43992,7 +43993,7 @@
     },
     "SENEB": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 180.22999572753906,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -44045,7 +44046,7 @@
     },
     "SERA": {
       "info": {
-        "price": 2.0,
+        "price": 2,
         "proof": "ASOF_CLOSE_LT_5",
         "source": "SINA_US_DAILY"
       },
@@ -44261,7 +44262,7 @@
     "SGC": {
       "info": {
         "dv30": 421714.2,
-        "price": 13.0,
+        "price": 13,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "SINA_US_DAILY"
       },
@@ -45359,7 +45360,7 @@
     "SMTI": {
       "info": {
         "dv30": 6718579.245,
-        "price": 35.0,
+        "price": 35,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "SINA_US_DAILY"
       },
@@ -45637,7 +45638,7 @@
     },
     "SOCA": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 10.359999656677246,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -45782,7 +45783,7 @@
     },
     "SORN": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 10.039999961853027,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -46152,7 +46153,7 @@
     },
     "SRBK": {
       "info": {
-        "dv30": 347532.0,
+        "dv30": 347532,
         "price": 18.56,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "SINA_US_DAILY"
@@ -46857,7 +46858,7 @@
     },
     "SUMA": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 9.949999809265137,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -47535,7 +47536,7 @@
     },
     "TAVI": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 10.770000457763672,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -47713,7 +47714,7 @@
           "2026-09-28"
         ],
         "no_synthetic_bar": true,
-        "price": 17.0,
+        "price": 17,
         "proof": "DV30_UPPER_BOUND_LT_GATE",
         "source": "SINA_US_DAILY"
       },
@@ -47840,7 +47841,7 @@
     },
     "TDIC": {
       "info": {
-        "price": 2.0,
+        "price": 2,
         "proof": "ASOF_CLOSE_LT_5",
         "source": "SINA_US_DAILY"
       },
@@ -47882,7 +47883,7 @@
     },
     "TDWD": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 10.130000114440918,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -48354,7 +48355,7 @@
     "TKNO": {
       "info": {
         "dv30": 1497625.9500000002,
-        "price": 9.0,
+        "price": 9,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "SINA_US_DAILY"
       },
@@ -48367,35 +48368,29 @@
       "status": "FAIL_DV30"
     },
     "TLAC": {
+      "status": "BLOCK_CURRENT_RUN",
       "info": {
-        "known_session_count": 12,
-        "missing_sessions": [
-          "2026-08-24",
-          "2026-08-25",
-          "2026-08-26",
-          "2026-08-27",
-          "2026-08-28",
-          "2026-08-31",
-          "2026-09-01",
-          "2026-09-02",
-          "2026-09-03",
-          "2026-09-04",
-          "2026-09-08",
-          "2026-09-09",
-          "2026-09-10",
-          "2026-09-11",
-          "2026-09-14",
-          "2026-09-15",
-          "2026-09-16",
-          "2026-10-01"
-        ],
-        "no_synthetic_bar": true,
-        "price": 9.83,
-        "proof": "ALPACA_RALLIES_EXACT_MISSING_SET_MATCH",
-        "source": "ALPACA_SIP_RALLIES_MASSIVE_C4_17_NON_G9"
+        "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
+        "observed_usable_sessions": 12,
+        "source": "RALLIES_CANDLESTICK_SCANNER_EXACT30_PRIMARY",
+        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
+        "corroboration": "RALLIES_12_SESSIONS;ALPACA_SIP_AND_LONGBRIDGE_13_SESSIONS;2026-10-01_PROVIDER_DISAGREEMENT"
       },
       "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
-      "status": "FAIL_DV30_INSUFFICIENT_SESSIONS"
+      "block_recovery_attempt": {
+        "status": "UNRESOLVED",
+        "provider_result": {
+          "reason": "CROSS_PROVIDER_SESSION_SET_DISAGREEMENT",
+          "rallies_known_session_count": 12,
+          "alpaca_sip_known_session_count": 13,
+          "longbridge_known_session_count": 13,
+          "disputed_session": "2026-10-01",
+          "no_synthetic_pass": true
+        },
+        "provider_meta": {
+          "role": "FORENSIC_READBACK_ONLY"
+        }
+      }
     },
     "TLF": {
       "info": {
@@ -48884,7 +48879,7 @@
     },
     "TPCS": {
       "info": {
-        "dv30": 76422.0,
+        "dv30": 76422,
         "price": 5.33,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "SINA_US_DAILY"
@@ -49017,7 +49012,7 @@
     },
     "TRGS": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 9.970000267028809,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -49548,7 +49543,7 @@
     },
     "TTWO": {
       "info": {
-        "dv30": 522473144.0,
+        "dv30": 522473144,
         "known_session_count": 30,
         "missing_sessions": [],
         "price": 203.46,
@@ -49832,7 +49827,7 @@
         "dv30": 288862877.17999995,
         "known_session_count": 30,
         "missing_sessions": [],
-        "price": 205.0,
+        "price": 205,
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "SINA_US_DAILY"
       },
@@ -49958,7 +49953,7 @@
         "dv30": 421785692.82,
         "known_session_count": 30,
         "missing_sessions": [],
-        "price": 110.0,
+        "price": 110,
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "SINA_US_DAILY"
       },
@@ -50022,7 +50017,7 @@
     },
     "UCFI": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 5.510000228881836,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -50151,7 +50146,7 @@
     "UG": {
       "info": {
         "dv30": 50197.520000000004,
-        "price": 7.0,
+        "price": 7,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "SINA_US_DAILY"
       },
@@ -50689,8 +50684,8 @@
     },
     "UYSC": {
       "info": {
-        "dv30": 0.0,
-        "price": 11.0,
+        "dv30": 0,
+        "price": 11,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
@@ -50873,7 +50868,7 @@
     "VCRE": {
       "info": {
         "dv30": 186027.945,
-        "price": 9.0,
+        "price": 9,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "SINA_US_DAILY"
       },
@@ -51113,7 +51108,7 @@
     },
     "VHCP": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 10.069999694824219,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -51507,7 +51502,7 @@
     },
     "VNME": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 10.3100004196167,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -51530,7 +51525,7 @@
     },
     "VNOM": {
       "info": {
-        "dv30": 62596079.0,
+        "dv30": 62596079,
         "known_session_count": 30,
         "missing_sessions": [],
         "price": 40.87,
@@ -51651,7 +51646,7 @@
     "VRDN": {
       "info": {
         "dv30": 28901087.98,
-        "price": 19.0,
+        "price": 19,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "SINA_US_DAILY"
       },
@@ -51885,7 +51880,7 @@
     "VSTM": {
       "info": {
         "dv30": 15105966.825,
-        "price": 8.0,
+        "price": 8,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "SINA_US_DAILY"
       },
@@ -52692,7 +52687,7 @@
     },
     "WLII": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 10.289999961853027,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -52855,7 +52850,7 @@
             "reason": "SINA_UNAVAILABLE"
           },
           "yahoo_result": {
-            "dv30_lower_bound": 0.0,
+            "dv30_lower_bound": 0,
             "dv30_upper_bound": null,
             "known_session_count": 1,
             "missing_sessions": [
@@ -53057,7 +53052,7 @@
     },
     "WSTN": {
       "info": {
-        "dv30": 0.0,
+        "dv30": 0,
         "price": 10.149999618530273,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -53197,7 +53192,7 @@
     },
     "WVVI": {
       "info": {
-        "price": 2.0,
+        "price": 2,
         "proof": "ASOF_CLOSE_LT_5",
         "source": "SINA_US_DAILY"
       },
@@ -53816,7 +53811,7 @@
           "2026-10-01"
         ],
         "no_synthetic_bar": true,
-        "price": 10.0,
+        "price": 10,
         "proof": "DV30_UPPER_BOUND_LT_GATE",
         "source": "SINA_US_DAILY"
       },
@@ -54615,7 +54610,7 @@
     },
     "ZSQR": {
       "info": {
-        "price": 4.0,
+        "price": 4,
         "proof": "ASOF_CLOSE_LT_5",
         "source": "SINA_US_DAILY"
       },
