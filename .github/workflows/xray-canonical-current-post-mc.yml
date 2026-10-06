@@ -350,8 +350,8 @@ jobs:
           XRAY_HISTORY_INPUT="$GITHUB_WORKSPACE/${{ steps.mc.outputs.path }}" \
           XRAY_HISTORY_CACHE_DIR="$RUNNER_TEMP/xray-history-cache" \
           XRAY_HISTORY_OUT="$GITHUB_WORKSPACE/nasdaq-xray/canonical_current_history.json" \
-          XRAY_HISTORY_HTTP_TIMEOUT_SECONDS="20" XRAY_HISTORY_PROVIDER_MAX_INFLIGHT="3" \
-          XRAY_ASOF="${{ steps.mc.outputs.asof }}" XRAY_HISTORY_WORKERS="4" \
+          XRAY_HISTORY_HTTP_TIMEOUT_SECONDS="20" XRAY_HISTORY_PROVIDER_MAX_INFLIGHT="6" \
+          XRAY_ASOF="${{ steps.mc.outputs.asof }}" XRAY_HISTORY_WORKERS="8" \
           python nasdaq-xray/history_phase.py
       - name: Revalidate reused HISTORY and hydrate same-run technical cache
         if: steps.mc.outputs.ready == 'true' && steps.reuse_hl.outputs.reuse == 'true'
@@ -364,8 +364,8 @@ jobs:
           XRAY_HISTORY_INPUT="$GITHUB_WORKSPACE/${{ steps.mc.outputs.path }}" \
           XRAY_HISTORY_CACHE_DIR="$RUNNER_TEMP/xray-history-cache" \
           XRAY_HISTORY_OUT="$RUNNER_TEMP/xray-history-revalidated.json" \
-          XRAY_HISTORY_HTTP_TIMEOUT_SECONDS="20" XRAY_HISTORY_PROVIDER_MAX_INFLIGHT="3" \
-          XRAY_ASOF="${{ steps.mc.outputs.asof }}" XRAY_HISTORY_WORKERS="4" \
+          XRAY_HISTORY_HTTP_TIMEOUT_SECONDS="20" XRAY_HISTORY_PROVIDER_MAX_INFLIGHT="6" \
+          XRAY_ASOF="${{ steps.mc.outputs.asof }}" XRAY_HISTORY_WORKERS="8" \
           python nasdaq-xray/history_phase.py
           python - <<'PY'
           import json, os
