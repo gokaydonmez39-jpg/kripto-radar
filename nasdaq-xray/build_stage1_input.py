@@ -51,5 +51,5 @@ def main():
       "excluded_fallback_watch_count":len(watch-set(syms))
     }
     OUT.write_text(json.dumps(obj,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
-    print(json.dumps({"asof":asof,"current_core_count":len(syms),"fallback_watch_excluded":len(watch)},sort_keys=True))
+    print(json.dumps({"asof":asof,"current_core_count":len(syms),"fallback_watch_included":len(set(syms)&watch),"fallback_watch_excluded":len(watch-set(syms))},sort_keys=True))
 if __name__=="__main__":main()
