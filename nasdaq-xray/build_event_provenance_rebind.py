@@ -74,6 +74,13 @@ def validate_bridge_scope(bridge: dict, req: dict) -> None:
     assert sr.get("no_event_semantics_change") is True
     assert list(bridge.get("past_family_c_sessions") or [])==list(req.get("past_family_c_sessions") or [])
     assert list(bridge.get("future_horizon_sessions") or [])==list(req.get("future_horizon_sessions") or [])
+    rd=req.get("required_discovery") or {}
+    sp=bridge.get("source_policy") or {}
+    if rd.get("required") is False or rd.get("role")=="OPTIONAL_ACCELERATOR_ONLY":
+        assert sp.get("discovery")=="OPTIONAL_PROVIDER_NEUTRAL_DISCOVERY_ACCELERATOR"
+        assert sp.get("official_confirmation")=="ISSUER_IR_OR_SEC_PRIMARY_REQUIRED_TO_CLEAR_OR_BLOCK"
+        assert sp.get("provider_unavailable_rule")=="DIRECT_OFFICIAL_PRIMARY_BEFORE_GEOMETRY_UNKNOWN"
+        assert sp.get("unknown_never_pass") is True
 
 def load_valid_rows(req: dict):
     stamp=str(req["asof_et"]).replace("-","")
