@@ -59,7 +59,7 @@ def main():
 
     # 1) Progress/refresh official universe + PRICE/DV20/HISTORY.
     # Repeated local invocations are resumable and bounded; same epoch does zero new work once complete.
-    max_loops=5
+    max_loops=max(1,min(16,int(os.getenv("XRAY_ORCHESTRATOR_MAX_LOOPS","12"))))
     for i in range(max_loops):
         run("sina_stage.py",{"XRAY_FULL_IDENTITY":"1"})
         ss=readj("sina_state.json")
