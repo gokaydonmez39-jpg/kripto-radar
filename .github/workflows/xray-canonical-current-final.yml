@@ -609,11 +609,41 @@ jobs:
           git fetch origin main
           latest="$(git rev-parse origin/main)"
           if [[ "$latest" != "$GITHUB_SHA" ]]; then
-            changed="$(git diff --name-only "$GITHUB_SHA" "$latest" --               .github/workflows/xray-canonical-current-final.yml               nasdaq-xray/canonical_current_master_manifest.json               nasdaq-xray/canonical_current_price_dv20.json               nasdaq-xray/canonical_mc_bridge_*.json               nasdaq-xray/canonical_current_history.json               nasdaq-xray/canonical_current_legal.json               nasdaq-xray/canonical_current_stage1_input.json               nasdaq-xray/canonical_current_stage1.json               nasdaq-xray/canonical_current_regime.json               nasdaq-xray/canonical_current_deep_geometry.json               nasdaq-xray/canonical_benchmark_cache/**               nasdaq-xray/canonical_current_event_request.json               nasdaq-xray/canonical_event_bridge_*.json               nasdaq-xray/alpha_semantics.py               nasdaq-xray/stage1_shadow.py               nasdaq-xray/deep_pre_r1_shadow.py               nasdaq-xray/family_c_engine.py               nasdaq-xray/build_candidate_legal_guard.py               nasdaq-xray/sec_ticker_cik_cache.json               nasdaq-xray/final_tech_shadow.py               nasdaq-xray/build_current_terminal.py               nasdaq-xray/official_source_guard.py               nasdaq-xray/resilience_runtime.py               nasdaq-xray/build_final_gate_overlay_v2.py               nasdaq-xray/account_gate_contract.json               nasdaq-xray/account_provider_adapter_contract.json               nasdaq-xray/account_longbridge_openapi_probe.py               nasdaq-xray/account_longbridge_openapi_probe_selftest.py               nasdaq-xray/account_longbridge_mcp_v2_probe.py               nasdaq-xray/account_longbridge_mcp_v2_probe_selftest.py               nasdaq-xray/account_longbridge_mcp_v2_vault.py               nasdaq-xray/account_longbridge_mcp_v2_vault_selftest.py               nasdaq-xray/account_longbridge_mcp_v2_bootstrap.py               nasdaq-xray/account_longbridge_mcp_v2_refresh.py               nasdaq-xray/account_longbridge_mcp_v2_refresh_selftest.py               nasdaq-xray/account_longbridge_mcp_v2_token.enc               nasdaq-xray/select_account_live_probe.py               nasdaq-xray/select_account_live_probe_selftest.py               nasdaq-xray/account_same_run_terminal_selftest.py               nasdaq-xray/chatgpt_compiled_policy_v3.json || true)"
-            if [[ -n "$changed" ]]; then
+            # Hard source/authority drift is always stale. Benchmark-cache gzip
+            # blobs are handled separately below because deterministic CSV
+            # payloads can acquire a different gzip mtime header without any
+            # change in the OHLCV data actually consumed by Final.
+            changed="$(git diff --name-only "$GITHUB_SHA" "$latest" --               .github/workflows/xray-canonical-current-final.yml               nasdaq-xray/canonical_current_master_manifest.json               nasdaq-xray/canonical_current_price_dv20.json               nasdaq-xray/canonical_mc_bridge_*.json               nasdaq-xray/canonical_current_history.json               nasdaq-xray/canonical_current_legal.json               nasdaq-xray/canonical_current_stage1_input.json               nasdaq-xray/canonical_current_stage1.json               nasdaq-xray/canonical_current_regime.json               nasdaq-xray/canonical_current_deep_geometry.json               nasdaq-xray/canonical_current_event_request.json               nasdaq-xray/canonical_event_bridge_*.json               nasdaq-xray/alpha_semantics.py               nasdaq-xray/stage1_shadow.py               nasdaq-xray/deep_pre_r1_shadow.py               nasdaq-xray/family_c_engine.py               nasdaq-xray/build_candidate_legal_guard.py               nasdaq-xray/sec_ticker_cik_cache.json               nasdaq-xray/final_tech_shadow.py               nasdaq-xray/build_current_terminal.py               nasdaq-xray/official_source_guard.py               nasdaq-xray/resilience_runtime.py               nasdaq-xray/build_final_gate_overlay_v2.py               nasdaq-xray/account_gate_contract.json               nasdaq-xray/account_provider_adapter_contract.json               nasdaq-xray/account_longbridge_openapi_probe.py               nasdaq-xray/account_longbridge_openapi_probe_selftest.py               nasdaq-xray/account_longbridge_mcp_v2_probe.py               nasdaq-xray/account_longbridge_mcp_v2_probe_selftest.py               nasdaq-xray/account_longbridge_mcp_v2_vault.py               nasdaq-xray/account_longbridge_mcp_v2_vault_selftest.py               nasdaq-xray/account_longbridge_mcp_v2_bootstrap.py               nasdaq-xray/account_longbridge_mcp_v2_refresh.py               nasdaq-xray/account_longbridge_mcp_v2_refresh_selftest.py               nasdaq-xray/account_longbridge_mcp_v2_token.enc               nasdaq-xray/select_account_live_probe.py               nasdaq-xray/select_account_live_probe_selftest.py               nasdaq-xray/account_same_run_terminal_selftest.py               nasdaq-xray/chatgpt_compiled_policy_v3.json || true)"
+            cache_changed="$(git diff --name-only "$GITHUB_SHA" "$latest" -- 'nasdaq-xray/canonical_benchmark_cache/**' || true)"
+            semantic_cache_changed=""
+            if [[ -n "$cache_changed" ]]; then
+              export XRAY_STALE_BASE="$GITHUB_SHA" XRAY_STALE_LATEST="$latest" XRAY_CACHE_CHANGED="$cache_changed"
+              semantic_cache_changed="$(python - <<'PY'
+import gzip,os,subprocess
+base=os.environ["XRAY_STALE_BASE"]; latest=os.environ["XRAY_STALE_LATEST"]
+paths=[x for x in os.environ.get("XRAY_CACHE_CHANGED","").splitlines() if x]
+bad=[]
+for p in paths:
+    try:
+        a=subprocess.check_output(["git","show",f"{base}:{p}"])
+        b=subprocess.check_output(["git","show",f"{latest}:{p}"])
+        if gzip.decompress(a)!=gzip.decompress(b):
+            bad.append(p)
+    except Exception:
+        # Missing, malformed, or non-gzip cache evidence is real semantic drift.
+        bad.append(p)
+print("\n".join(bad))
+PY
+)"
+            fi
+            all_changed="$(printf '%s\n%s\n' "$changed" "$semantic_cache_changed" | sed '/^$/d' | sort -u)"
+            if [[ -n "$all_changed" ]]; then
               echo "XRAY_FACTORY_COMMIT=STALE_SOURCE_ABORT"
-              printf '%s\n' "$changed"
+              printf '%s\n' "$all_changed"
               exit 0
+            fi
+            if [[ -n "$cache_changed" ]]; then
+              echo "XRAY_BENCHMARK_CACHE_DRIFT=BYTE_ONLY_GZIP_HEADER_OR_EXACT_PAYLOAD"
             fi
           fi
           files=(
