@@ -1,0 +1,79 @@
+name: XRAY Canonical Pointer Transition
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/canonical_current_terminal.json"
+      - "nasdaq-xray/build_canonical_pointer_transition.py"
+      - "nasdaq-xray/canonical_pointer_transition_guard.py"
+      - "nasdaq-xray/deterministic_replay_guard.py"
+      - ".github/workflows/xray-canonical-pointer-transition.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: xray-canonical-pointer-transition
+  cancel-in-progress: true
+
+jobs:
+  advance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 2}
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - name: Compile + deterministic transition selftest
+        run: |
+          python -m py_compile nasdaq-xray/build_canonical_pointer_transition.py nasdaq-xray/canonical_pointer_transition_guard.py nasdaq-xray/deterministic_replay_guard.py
+          python nasdaq-xray/build_canonical_pointer_transition.py --selftest
+      - name: Build next canonical pointer revision
+        id: build
+        run: |
+          set -euo pipefail
+          python nasdaq-xray/build_canonical_pointer_transition.py | tee /tmp/pointer_transition
+          cat /tmp/pointer_transition
+      - name: Verify pointer transition and immutable evidence
+        run: python nasdaq-xray/canonical_pointer_transition_guard.py
+      - name: Build and verify Replay V2
+        run: |
+          python nasdaq-xray/deterministic_replay_guard.py
+          python - <<'PY'
+          import json
+          p=json.load(open("nasdaq-xray/chatgpt_canonical_state_v2.json"))
+          t=json.load(open("nasdaq-xray/canonical_current_terminal.json"))
+          r=json.load(open("nasdaq-xray/canonical_replay_guard.json"))
+          assert r["schema"]=="XRAY_DETERMINISTIC_REPLAY_GUARD_V2"
+          assert r["status"]=="PASS",r
+          assert r["asof_consistent"] is True,r
+          assert r["asof_values"]==[t["asof_et"]],r["asof_values"]
+          assert p["state_json"]["asof_et"]==t["asof_et"]
+          print("XRAY_POINTER_REPLAY_ACCEPTANCE=PASS revision=%s asof=%s"%(p["revision"],t["asof_et"]))
+          PY
+      - name: Commit pointer snapshot and Replay V2 with stale-source protection
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "xray-pointer-bot"
+          git config user.email "xray-pointer-bot@users.noreply.github.com"
+          snapshot="$(python - <<'PY'
+          import json
+          print(json.load(open("nasdaq-xray/chatgpt_canonical_state_v2.json"))["immutable_snapshot_path"])
+          PY
+          )"
+          git add nasdaq-xray/chatgpt_canonical_state_v2.json nasdaq-xray/canonical_replay_guard.json "$snapshot"
+          git diff --cached --quiet && exit 0
+          git commit -m "chore(xray): advance canonical pointer to current terminal [skip ci]"
+          git fetch origin main
+          changed="$(git diff --name-only "$GITHUB_SHA" origin/main --             nasdaq-xray/canonical_current_master_manifest.json             nasdaq-xray/canonical_current_price_dv30.json             nasdaq-xray/canonical_mc_bridge_*.json             nasdaq-xray/canonical_current_history.json             nasdaq-xray/canonical_current_legal.json             nasdaq-xray/canonical_current_stage1_input.json             nasdaq-xray/canonical_current_stage1.json             nasdaq-xray/canonical_current_regime.json             nasdaq-xray/canonical_current_deep_geometry.json             nasdaq-xray/canonical_current_event_request.json             nasdaq-xray/canonical_current_event_state.json             nasdaq-xray/canonical_current_deep_full.json             nasdaq-xray/canonical_current_final_tech.json             nasdaq-xray/canonical_current_terminal.json             nasdaq-xray/chatgpt_canonical_state_v2.json || true)"
+          if [[ -n "$changed" ]]; then
+            echo "XRAY_POINTER_TRANSITION=STALE_SOURCE_ABORT"
+            printf '%s\n' "$changed"
+            exit 1
+          fi
+          git rebase origin/main
+          git push origin HEAD:main
