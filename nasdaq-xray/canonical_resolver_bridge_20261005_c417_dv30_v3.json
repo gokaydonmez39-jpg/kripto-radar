@@ -1,0 +1,378 @@
+{
+  "schema": "XRAY_RESOLVER_EPOCH_RESULT_V1",
+  "status": "COMMITTED",
+  "authority": "FOREGROUND_OPERATOR_C417_DV30_V6_EXACT_ASOF_REBIND",
+  "task_id": "6a825366222081918997094d76e6ae46",
+  "asof_et": "2026-10-05",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "queue_hash": "a4944046b565cddaf339e95434d9a312bb52b8533b752fdbbd667bb79057f854",
+  "queue_total": 3247,
+  "compiled_policy_path": "nasdaq-xray/chatgpt_compiled_policy_v3.json",
+  "compiled_policy_blob_sha": "16c50cc8f887a5234a4be23862d7c8d0e564b0ac",
+  "compiled_policy_hash": "68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4",
+  "compiled_policy_version": "C4.17",
+  "source_price_path": "nasdaq-xray/canonical_current_price_dv30.json",
+  "source_price_blob_sha": "72efff0bee1781702a8a394f41dcdc1aab3be16e",
+  "source_request_path": "nasdaq-xray/canonical_current_resolver_request.json",
+  "source_request_blob_sha": "3b26c62f8c2bb252b1466b83a9341a3e6341ba96",
+  "source_manifest_path": "nasdaq-xray/canonical_current_resolver_chunk_manifest.json",
+  "source_manifest_blob_sha": "4b5a6e994dde868cd5d16e8e37da277f578530e5",
+  "source_master_path": "nasdaq-xray/canonical_current_master_manifest.json",
+  "source_master_blob_sha": "ca9a6b2ae32587a525336607f0aff231139ae20c",
+  "symbols": [
+    "ACCV",
+    "ADRX",
+    "CHWM",
+    "ETRA",
+    "GRAL",
+    "OIG",
+    "QRVO",
+    "RZAI",
+    "SVA",
+    "WQEY"
+  ],
+  "symbol_count": 10,
+  "symbol_hash": "c87b75088a0c87ce1a56b9e1149bd9ed8fe5ddb779c5319358d3c08dbaf61edc",
+  "price_unknown_count": 10,
+  "price_unknown_symbols": [
+    "ACCV",
+    "ADRX",
+    "CHWM",
+    "ETRA",
+    "GRAL",
+    "OIG",
+    "QRVO",
+    "RZAI",
+    "SVA",
+    "WQEY"
+  ],
+  "price_blocked_count": 0,
+  "price_blocked_symbols": [],
+  "result_encoding": "EXPANDED_V1",
+  "price_resolutions": {
+    "ACCV": {
+      "decision": "FAIL_DV30_INSUFFICIENT_SESSIONS",
+      "price": 16.46,
+      "known_session_count": 4,
+      "missing_sessions": [
+        "2026-08-24",
+        "2026-08-25",
+        "2026-08-26",
+        "2026-08-27",
+        "2026-08-28",
+        "2026-08-31",
+        "2026-09-01",
+        "2026-09-02",
+        "2026-09-03",
+        "2026-09-04",
+        "2026-09-08",
+        "2026-09-09",
+        "2026-09-10",
+        "2026-09-11",
+        "2026-09-14",
+        "2026-09-15",
+        "2026-09-16",
+        "2026-09-17",
+        "2026-09-18",
+        "2026-09-21",
+        "2026-09-22",
+        "2026-09-23",
+        "2026-09-24",
+        "2026-09-25",
+        "2026-09-28",
+        "2026-09-29"
+      ],
+      "no_synthetic_bar": true,
+      "source": "ALPACA_SIP_RALLIES_MASSIVE_C4_17_NON_G9",
+      "proof": "ALPACA_RALLIES_EXACT_MISSING_SET_MATCH"
+    },
+    "ADRX": {
+      "decision": "FAIL_DV30_INSUFFICIENT_SESSIONS",
+      "price": 19.05,
+      "known_session_count": 7,
+      "missing_sessions": [
+        "2026-08-24",
+        "2026-08-25",
+        "2026-08-26",
+        "2026-08-27",
+        "2026-08-28",
+        "2026-08-31",
+        "2026-09-01",
+        "2026-09-02",
+        "2026-09-03",
+        "2026-09-04",
+        "2026-09-08",
+        "2026-09-09",
+        "2026-09-10",
+        "2026-09-11",
+        "2026-09-14",
+        "2026-09-15",
+        "2026-09-16",
+        "2026-09-17",
+        "2026-09-18",
+        "2026-09-21",
+        "2026-09-22",
+        "2026-09-23",
+        "2026-09-24"
+      ],
+      "no_synthetic_bar": true,
+      "source": "ALPACA_SIP_RALLIES_MASSIVE_C4_17_NON_G9",
+      "proof": "ALPACA_RALLIES_EXACT_MISSING_SET_MATCH"
+    },
+    "CHWM": {
+      "decision": "FAIL_DV30_INSUFFICIENT_SESSIONS",
+      "price": 5.49,
+      "known_session_count": 3,
+      "missing_sessions": [
+        "2026-08-24",
+        "2026-08-25",
+        "2026-08-26",
+        "2026-08-27",
+        "2026-08-28",
+        "2026-08-31",
+        "2026-09-01",
+        "2026-09-02",
+        "2026-09-03",
+        "2026-09-04",
+        "2026-09-08",
+        "2026-09-09",
+        "2026-09-10",
+        "2026-09-11",
+        "2026-09-14",
+        "2026-09-15",
+        "2026-09-16",
+        "2026-09-17",
+        "2026-09-18",
+        "2026-09-21",
+        "2026-09-22",
+        "2026-09-23",
+        "2026-09-24",
+        "2026-09-25",
+        "2026-09-28",
+        "2026-09-29",
+        "2026-09-30"
+      ],
+      "no_synthetic_bar": true,
+      "source": "ALPACA_SIP_RALLIES_MASSIVE_C4_17_NON_G9",
+      "proof": "ALPACA_RALLIES_EXACT_MISSING_SET_MATCH"
+    },
+    "ETRA": {
+      "decision": "FAIL_DV30_INSUFFICIENT_SESSIONS",
+      "price": 9.74,
+      "known_session_count": 12,
+      "missing_sessions": [
+        "2026-08-24",
+        "2026-08-25",
+        "2026-08-26",
+        "2026-08-27",
+        "2026-08-28",
+        "2026-08-31",
+        "2026-09-01",
+        "2026-09-02",
+        "2026-09-03",
+        "2026-09-04",
+        "2026-09-08",
+        "2026-09-09",
+        "2026-09-10",
+        "2026-09-11",
+        "2026-09-14",
+        "2026-09-15",
+        "2026-09-16",
+        "2026-09-17"
+      ],
+      "no_synthetic_bar": true,
+      "source": "ALPACA_SIP_RALLIES_MASSIVE_C4_17_NON_G9",
+      "proof": "ALPACA_RALLIES_EXACT_MISSING_SET_MATCH"
+    },
+    "GRAL": {
+      "decision": "BLOCK_CURRENT_RUN",
+      "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_ZERO_TRADE_PLACEHOLDER_AMBIGUITY",
+      "observed_usable_sessions": 29,
+      "source": "RALLIES_CANDLESTICK_SCANNER_EXACT30_PRIMARY",
+      "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
+      "corroboration": "ALPACA_SIP_ZERO_VOLUME_PLACEHOLDER_2026-09-23;RALLIES_LONGBRIDGE_MASSIVE_OMIT_2026-09-23"
+    },
+    "OIG": {
+      "decision": "FAIL_DV30_INSUFFICIENT_SESSIONS",
+      "price": 9.14,
+      "known_session_count": 12,
+      "missing_sessions": [
+        "2026-08-24",
+        "2026-08-25",
+        "2026-08-26",
+        "2026-08-27",
+        "2026-08-28",
+        "2026-08-31",
+        "2026-09-01",
+        "2026-09-02",
+        "2026-09-03",
+        "2026-09-04",
+        "2026-09-08",
+        "2026-09-09",
+        "2026-09-10",
+        "2026-09-11",
+        "2026-09-14",
+        "2026-09-15",
+        "2026-09-16",
+        "2026-09-17"
+      ],
+      "no_synthetic_bar": true,
+      "source": "ALPACA_SIP_RALLIES_MASSIVE_C4_17_NON_G9",
+      "proof": "ALPACA_RALLIES_EXACT_MISSING_SET_MATCH"
+    },
+    "QRVO": {
+      "decision": "FAIL_PRICE_NO_ASOF_BAR",
+      "source": "ALPACA_SIP_RALLIES_MASSIVE_C4_17_NON_G9",
+      "proof": "THREE_SOURCE_NO_ASOF_BAR",
+      "sources": [
+        "ALPACA_SIP",
+        "MASSIVE",
+        "RALLIES"
+      ],
+      "no_synthetic_bar": true
+    },
+    "RZAI": {
+      "decision": "FAIL_DV30_INSUFFICIENT_SESSIONS",
+      "price": 12.91,
+      "known_session_count": 4,
+      "missing_sessions": [
+        "2026-08-24",
+        "2026-08-25",
+        "2026-08-26",
+        "2026-08-27",
+        "2026-08-28",
+        "2026-08-31",
+        "2026-09-01",
+        "2026-09-02",
+        "2026-09-03",
+        "2026-09-04",
+        "2026-09-08",
+        "2026-09-09",
+        "2026-09-10",
+        "2026-09-11",
+        "2026-09-14",
+        "2026-09-15",
+        "2026-09-16",
+        "2026-09-17",
+        "2026-09-18",
+        "2026-09-21",
+        "2026-09-22",
+        "2026-09-23",
+        "2026-09-24",
+        "2026-09-25",
+        "2026-09-28",
+        "2026-09-29"
+      ],
+      "no_synthetic_bar": true,
+      "source": "ALPACA_SIP_RALLIES_MASSIVE_C4_17_NON_G9",
+      "proof": "ALPACA_RALLIES_EXACT_MISSING_SET_MATCH"
+    },
+    "SVA": {
+      "decision": "FAIL_PRICE_NO_ASOF_BAR",
+      "source": "ALPACA_SIP_RALLIES_MASSIVE_C4_17_NON_G9",
+      "proof": "THREE_SOURCE_NO_ASOF_BAR",
+      "sources": [
+        "ALPACA_SIP",
+        "MASSIVE",
+        "RALLIES"
+      ],
+      "no_synthetic_bar": true
+    },
+    "WQEY": {
+      "decision": "BLOCK_CURRENT_RUN",
+      "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
+      "observed_usable_sessions": 1,
+      "source": "RALLIES_CANDLESTICK_SCANNER_EXACT30_PRIMARY",
+      "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
+      "corroboration": "MASSIVE_TICKER_CHANGE_2026-10-05;ALPACA_STOCK_MERGER_WKEY_TO_WQEY;RALLIES_CURRENT_TICKER_ONLY_1_SESSION"
+    }
+  },
+  "settlement_required": true,
+  "settlement_status": "PASS",
+  "settlement_method": "RALLIES_LONGBRIDGE_DUAL_SOURCE_SETTLEMENT_V1",
+  "settlement_symbols": [
+    "AAPL",
+    "NVDA",
+    "MSFT"
+  ],
+  "settlement_evidence": {
+    "AAPL": {
+      "rallies": {
+        "open": 332.815,
+        "high": 336.21,
+        "low": 331.65,
+        "close": 332.89,
+        "volume": 34400850.337603
+      },
+      "longbridge": {
+        "open": 332.815,
+        "high": 336.21,
+        "low": 331.65,
+        "close": 332.89,
+        "volume": 34400850
+      }
+    },
+    "NVDA": {
+      "rallies": {
+        "open": 236.09,
+        "high": 240.0983,
+        "low": 235.15,
+        "close": 238.9,
+        "volume": 127171519.768743
+      },
+      "longbridge": {
+        "open": 236.09,
+        "high": 240.098,
+        "low": 235.15,
+        "close": 238.9,
+        "volume": 127171519
+      }
+    },
+    "MSFT": {
+      "rallies": {
+        "open": 521.62,
+        "high": 532.35,
+        "low": 521.47,
+        "close": 525.18,
+        "volume": 26604760.672552
+      },
+      "longbridge": {
+        "open": 521.62,
+        "high": 532.35,
+        "low": 521.47,
+        "close": 525.18,
+        "volume": 26604760
+      }
+    }
+  },
+  "semantic_rebind": {
+    "predecessor_path": "nasdaq-xray/canonical_resolver_bridge_20261005_c417_dv30_v1.json",
+    "predecessor_blob_sha": "de6895ce8bcfbcb51d1d9bbb0a766523ab8b6c38",
+    "rule": "SAME_ASOF_IMMUTABLE_CANONICAL_RESOLVER_EVIDENCE_REBOUND_TO_V6_EXACT_ASOF_MASTER_AND_CURRENT_REQUEST;NO_PASS_MANUFACTURED",
+    "v6_master_blob_sha": "ca9a6b2ae32587a525336607f0aff231139ae20c",
+    "v6_asof_identity_proof_blob_sha": "83a6a7d060a7e9dacff0c863b212273cbe317610",
+    "v6_sec_spac_proof_blob_sha": "5999e4037ac7249d1b4f4d17f2095b11913ea62a"
+  },
+  "audit": {
+    "pass_manufactured": false,
+    "thresholds_changed": false,
+    "alpha_policy_changed": false,
+    "terminal_fail_symbols": [
+      "ACCV",
+      "ADRX",
+      "CHWM",
+      "ETRA",
+      "OIG",
+      "QRVO",
+      "RZAI",
+      "SVA"
+    ],
+    "fail_closed_block_symbols": [
+      "GRAL",
+      "WQEY"
+    ],
+    "yahoo_diagnostic_never_used_to_manufacture_pass": true
+  }
+}
