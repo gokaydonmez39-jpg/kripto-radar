@@ -192,6 +192,25 @@ def lifecycle_state_persists(state):
     """Prospective lifecycle persistence; historical backfill is intentionally excluded."""
     return str(state or "") in LIFECYCLE_PERSIST_STATES
 
+def reconcile_final_result_scope(results,fresh_current_keys,registry):
+    """Keep only current fresh finalists or still-live lifecycle carries.
+
+    Final evaluation may emit an UNKNOWN row for a lifecycle carry before the
+    record is subsequently pruned by the 8-session horizon. Such an expired
+    carry must disappear from the final result set as well; otherwise Terminal
+    sees an unbacked historical row. This helper never creates PASS and never
+    changes a result payload.
+    """
+    fresh=set(str(x) for x in (fresh_current_keys or []))
+    live=set()
+    for rec in ((registry or {}).get("records") or {}).values():
+        if not isinstance(rec,dict): continue
+        sym=str(rec.get("symbol") or ""); fam=str(rec.get("family") or "")
+        if sym and fam: live.add(f"{sym}|{fam}")
+    keep=fresh|live
+    dropped=sorted(set(results)-keep)
+    return {k:v for k,v in results.items() if k in keep},dropped
+
 def _empty_lifecycle_registry():
     return {"schema":"XRAY_CANDIDATE_LIFECYCLE_REGISTRY_V1",
             "execution":"NONE","real_money":"NO-GO","records":{}}
@@ -552,6 +571,7 @@ def main():
     # for the same symbol/family. A new trigger may take over only after the prior
     # frozen setup actually fails/expires in this evaluation.
     fresh_candidates=list(candidates)
+    fresh_current_candidate_keys=sorted(set(f"{sym}|{fam}" for sym,fam,_g,_event in fresh_candidates))
     frozen_candidates=[]
     deep_scope=set((d.get("results") or {}).keys())
     for rec in old_records.values():
@@ -690,6 +710,13 @@ def main():
     # lost between runs even though the final artifact embeds a copy.
     persist_lifecycle_registry(registry)
 
+    # A lifecycle-only row can be evaluated before its record is pruned for
+    # expiry. Reconcile the emitted result scope after pruning so downstream
+    # Terminal never receives an unbacked historical carry.
+    results,pruned_final_result_keys=reconcile_final_result_scope(
+        results,fresh_current_candidate_keys,registry
+    )
+
     passes=[k for k,v in results.items() if v.get("pre_g9_tech_pass")]
     watches=[k for k,v in results.items() if str(v.get("result","")).startswith("WATCH_")]
     regime_revalidation_unknown=sorted(k for k,v in results.items() if v.get("result")=="WATCH_REGIME_UNKNOWN")
@@ -734,6 +761,9 @@ def main():
       "schema":"XRAY_FINAL_TECH_SHADOW_V1","task_id":TASK_ID,"asof_et":asof,
       "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
       "input_confirmed_family_candidates":len(results),"family_c_confirmed_input_count":family_c_count,
+      "fresh_current_candidate_keys":fresh_current_candidate_keys,
+      "fresh_current_candidate_count":len(fresh_current_candidate_keys),
+      "pruned_final_result_keys":pruned_final_result_keys,
       "regime_filtered_out":sorted(set(regime_filtered_out)),
       "regime_revalidation_unknown_count":len(regime_revalidation_unknown),
       "regime_revalidation_unknown":regime_revalidation_unknown,
