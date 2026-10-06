@@ -706,7 +706,14 @@ def main():
     assert src["task_id"]==TASK_ID and src["asof_et"]==asof
     HISTORY_BRIDGE=load_history_bridge(src,asof)
     assert src.get("schema") in {"XRAY_CANONICAL_MC_INPUT_20260930_V1","XRAY_CANONICAL_MC_INPUT_V2","XRAY_MC_EPOCH_RESULT_V1"}
-    syms=src.get("current_core_symbols") or src.get("primary_pass_symbols") or []
+    # C4.17 MC fallback PASS is WATCH-only/R92-ineligible, not an alpha-universe exclusion.
+    # Carry both primary PASS and fallback WATCH through HISTORY; the WATCH cap is
+    # preserved downstream and prevents PRE_G9 while still allowing technical radar discovery.
+    primary=sorted(set(src.get("primary_pass_symbols") or []))
+    watch=sorted(set(src.get("fallback_watch_symbols") or []))
+    syms=sorted(set(src.get("current_core_symbols") or []) or (set(primary)|set(watch)))
+    if not set(primary).issubset(syms) or not set(watch).issubset(syms):
+        syms=sorted(set(syms)|set(primary)|set(watch))
     assert len(syms)==len(set(syms)) and len(syms)>0
     results={};unknown=[]
     with ThreadPoolExecutor(max_workers=WORKERS) as ex:
@@ -731,8 +738,10 @@ def main():
       "counts":dict(sorted(counts.items())),"unknown_count":len(unknown),"unknown_symbols":sorted(unknown),
       "pass_count":len(passes),"pass_symbols":passes,
       "pass_hash":hashlib.sha256("\n".join(passes).encode()).hexdigest(),
-      "state_caps":src.get("state_caps") or {s:"NORMAL" for s in syms},
-      "r92_ineligible":src.get("r92_ineligible") or src.get("fallback_watch_symbols") or [],
+      "state_caps":{s:("WATCH" if s in set(watch) else (src.get("state_caps") or {}).get(s,"NORMAL")) for s in syms},
+      "r92_ineligible":sorted(set(src.get("r92_ineligible") or [])|set(watch)),
+      "mc_scope":{"mode":"PRIMARY_PLUS_FALLBACK_WATCH","primary_count":len(primary),
+                  "fallback_watch_count":len(watch),"input_count":len(syms)},
       "history_evidence_bridge_path":HISTORY_BRIDGE_PATH,
       "history_evidence_bridge_count":len(HISTORY_BRIDGE),
       "results":dict(sorted(results.items()))

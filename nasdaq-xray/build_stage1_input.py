@@ -29,8 +29,11 @@ def main():
     watch=set(mc.get("fallback_watch_symbols") or [])
     hp=set(h.get("pass_symbols") or [])
     lp=set(lg.get("pass_symbols") or [])
-    assert hp<=primary and lp<=hp and not (lp&watch)
+    eligible=primary|watch
+    assert hp<=eligible and lp<=hp
     syms=sorted(lp)
+    inherited_caps=lg.get("state_caps") or h.get("state_caps") or mc.get("state_caps") or {}
+    inherited_r92=set(lg.get("r92_ineligible") or h.get("r92_ineligible") or mc.get("r92_ineligible") or [])
     obj={
       "schema":"XRAY_CANONICAL_STAGE1_INPUT_V2","task_id":TASK,"asof_et":asof,
       "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
@@ -40,8 +43,12 @@ def main():
       "source_mc_policy_hash":mc.get("policy_hash"),"source_mc_policy_version":mc.get("policy_version"),
       "source_history_pass_hash":h.get("pass_hash"),"source_legal_pass_hash":lg.get("pass_hash"),
       "current_core_mc_pass":syms,"current_core_symbols":syms,"current_core_count":len(syms),
-      "state_caps":{s:"NORMAL" for s in syms},"r92_ineligible":[],
-      "excluded_fallback_watch_symbols":sorted(watch),"excluded_fallback_watch_count":len(watch)
+      "state_caps":{s:("WATCH" if s in watch else inherited_caps.get(s,"NORMAL")) for s in syms},
+      "r92_ineligible":sorted((inherited_r92|watch)&set(syms)),
+      "included_fallback_watch_symbols":sorted(set(syms)&watch),
+      "included_fallback_watch_count":len(set(syms)&watch),
+      "excluded_fallback_watch_symbols":sorted(watch-set(syms)),
+      "excluded_fallback_watch_count":len(watch-set(syms))
     }
     OUT.write_text(json.dumps(obj,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
     print(json.dumps({"asof":asof,"current_core_count":len(syms),"fallback_watch_excluded":len(watch)},sort_keys=True))

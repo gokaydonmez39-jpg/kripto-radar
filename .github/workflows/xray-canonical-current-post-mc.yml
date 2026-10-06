@@ -299,6 +299,8 @@ jobs:
                   except Exception:
                       pass
               primary=set(mc.get("primary_pass_symbols") or [])
+              watch=set(mc.get("fallback_watch_symbols") or [])
+              eligible=primary|watch
               hpass=set(h.get("pass_symbols") or [])
               hresults=set((h.get("results") or {}).keys())
               lpass=set(l.get("pass_symbols") or [])
@@ -307,8 +309,8 @@ jobs:
               reuse=(
                 len(old_matches)==1
                 and h.get("unknown_count")==0
-                and int(h.get("input_count",-1))==len(primary)
-                and hresults==primary
+                and int(h.get("input_count",-1))==len(eligible)
+                and hresults==eligible
                 and h.get("source_mc_policy_hash")==mc.get("policy_hash")
                 and h.get("source_mc_policy_version")==mc.get("policy_version")
                 and l.get("source_history_blob_sha")==bsha(hp)

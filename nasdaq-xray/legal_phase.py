@@ -34,10 +34,11 @@ def main():
         assert int(h["input_count"])==len(h_results)==sum(int(v) for v in h_counts.values())
         assert int(h["pass_count"])==len(h_pass)==len(set(h_pass))
         assert set(h_pass)=={s for s,v in h_results.items() if (v or {}).get("status")=="PASS_HISTORY"}
-        assert h["c4_14_scope"]["mode"]=="MC_PRIMARY_PASS_ONLY"
-        assert h["r92_ineligible"]==[]
+        scope=h.get("mc_scope") or h.get("c4_14_scope") or {}
+        assert scope.get("mode") in {"PRIMARY_PLUS_FALLBACK_WATCH","MC_PRIMARY_PASS_ONLY"}
+        assert set(h.get("r92_ineligible") or [])<=set(h_results)
         assert set((h.get("state_caps") or {}).keys())==set(h_results)
-        assert set((h.get("state_caps") or {}).values())=={"NORMAL"}
+        assert set((h.get("state_caps") or {}).values())<={"NORMAL","WATCH"}
     assert m["task_id"]==TASK_ID and m["asof_et"]==asof
     proof={}
     if PROOF.exists():
