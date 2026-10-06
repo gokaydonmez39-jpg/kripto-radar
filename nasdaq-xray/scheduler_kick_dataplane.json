@@ -1,9 +1,9 @@
 {
   "schema": "XRAY_SCHEDULER_KICK_V1",
-  "sequence": 6,
-  "requested_at_utc": "2026-10-06T00:09:41Z",
-  "requested_by": "FOREGROUND_FULL_UNIVERSE_RECOVERY",
-  "reason": "FULL_UNIVERSE_3401_CONTINUE_FROM_PARTIAL_HISTORY",
+  "sequence": 7,
+  "requested_at_utc": "2026-10-06T16:51:16Z",
+  "requested_by": "XRAY_HEALTH_FAILOVER",
+  "reason": "STALE_GITHUB_SCHEDULE",
   "execution": "NONE",
   "real_money": "NO-GO"
 }
