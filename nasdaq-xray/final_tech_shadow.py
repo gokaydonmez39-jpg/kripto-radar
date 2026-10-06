@@ -843,8 +843,13 @@ def main():
       "authority":"C4_17_DETERMINISTIC_TECHNICAL_FAIL_CLOSED"
     }
     OUT.write_text(json.dumps(out,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
+    unknown_prelegal={
+      k:(v.get("technical_prelegal_result") or v.get("reason"))
+      for k,v in sorted(results.items()) if v.get("result")=="UNKNOWN"
+    }
     print(json.dumps(dict({k:out[k] for k in ["input_confirmed_family_candidates","pre_g9_tech_pass_count","watch_count","fail_count"]},
-                          lifecycle_records=len(registry["records"]),provider_max_inflight=PROVIDER_MAX_INFLIGHT,retry_delays=RETRY_DELAYS),sort_keys=True))
+                          lifecycle_records=len(registry["records"]),provider_max_inflight=PROVIDER_MAX_INFLIGHT,
+                          retry_delays=RETRY_DELAYS,unknown_prelegal=unknown_prelegal),sort_keys=True))
 
 if __name__=="__main__":
     main()
