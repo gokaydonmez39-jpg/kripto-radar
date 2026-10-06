@@ -423,7 +423,7 @@ def tight_base_at(df:pd.DataFrame,t:int)->dict[str,Any]|None:
             "breakout_confirmed":bool(close>P and rv is not None and rv>=1.5),
             "trigger_date":df["date"].iloc[t].date().isoformat()}
 
-def find_recent_b_trigger(df:pd.DataFrame,max_age:int=5,eligible_dates=None)->dict[str,Any]|None:
+def find_recent_b_trigger(df:pd.DataFrame,max_age:int=3,eligible_dates=None)->dict[str,Any]|None:
     """Earliest valid B trigger inside the retest horizon and optional weekly-eligible dates."""
     if df.empty:return None
     allowed=None if eligible_dates is None else set(str(x) for x in eligible_dates)
