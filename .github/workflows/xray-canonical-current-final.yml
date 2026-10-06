@@ -180,9 +180,9 @@ jobs:
                     and e.get("source_stage1_blob_sha")==r.get("source_stage1_blob_sha")
                     and e.get("source_regime_blob_sha")==r.get("source_regime_blob_sha")
                     and e.get("source_deep_geometry_blob_sha")==r.get("source_deep_geometry_blob_sha")
-                    and e.get("compiled_policy_hash")==r.get("compiled_policy_hash")=="26a95745a50b65e85f6ece24b6501af0994764a84ddd886edb70d1fcd770849c"
+                    and e.get("compiled_policy_hash")==r.get("compiled_policy_hash")=="bbb6ea5aa3126fbcdeda2246bc52d1ad04885d27e8e52fb07797e0114dedce55"
                     and e.get("compiled_policy_version")==r.get("compiled_policy_version")=="C4.17"
-                    and e.get("compiled_policy_blob_sha")==r.get("compiled_policy_blob_sha")=="10d7af14870dfac0dc4566595d95a06f3faa854d"
+                    and e.get("compiled_policy_blob_sha")==r.get("compiled_policy_blob_sha")=="299199aa10b6eb6fdf35071f233ac12bd814dc32"
                   )
                   if ok: valid.append(fp)
               except Exception:
@@ -499,8 +499,8 @@ jobs:
           assert g.get("schema")=="XRAY_CANDIDATE_LEGAL_GUARD_V1",g
           assert g.get("execution")=="NONE" and g.get("real_money")=="NO-GO" and g.get("unknown_never_pass") is True,g
           assert g.get("compiled_policy_path")=="nasdaq-xray/chatgpt_compiled_policy_v3.json",g.get("compiled_policy_path")
-          assert g.get("compiled_policy_blob_sha")=="10d7af14870dfac0dc4566595d95a06f3faa854d",g.get("compiled_policy_blob_sha")
-          assert g.get("compiled_policy_hash")=="26a95745a50b65e85f6ece24b6501af0994764a84ddd886edb70d1fcd770849c",g.get("compiled_policy_hash")
+          assert g.get("compiled_policy_blob_sha")=="299199aa10b6eb6fdf35071f233ac12bd814dc32",g.get("compiled_policy_blob_sha")
+          assert g.get("compiled_policy_hash")=="bbb6ea5aa3126fbcdeda2246bc52d1ad04885d27e8e52fb07797e0114dedce55",g.get("compiled_policy_hash")
           assert g.get("compiled_policy_version")=="C4.17",g.get("compiled_policy_version")
           assert g.get("source_deep_blob_sha")==bsha(d),g.get("source_deep_blob_sha")
           assert g.get("source_family_c_blob_sha")==bsha(f),g.get("source_family_c_blob_sha")
@@ -609,7 +609,7 @@ jobs:
           assert t["evidence"]["g9_runtime"]["blob_sha"]==blob("nasdaq-xray/strict_g9_runtime_state.json")
           assert t["evidence"]["account_gate"]["blob_sha"]==blob("nasdaq-xray/account_gate_contract.json")
           assert t["evidence"]["account_gate"]["adapter_contract_blob_sha"]==blob("nasdaq-xray/account_provider_adapter_contract.json")
-          assert t["compiled_policy_hash"]=="26a95745a50b65e85f6ece24b6501af0994764a84ddd886edb70d1fcd770849c"
+          assert t["compiled_policy_hash"]=="bbb6ea5aa3126fbcdeda2246bc52d1ad04885d27e8e52fb07797e0114dedce55"
           assert e.get("compiled_policy_hash")==t["compiled_policy_hash"]
           assert e.get("compiled_policy_version")=="C4.17"
           assert t["terminal_result"] in {"NO_CONFIRMED_SETUP","PRE_G9_SETUP_EXISTS","PARTIAL_UNKNOWN"}

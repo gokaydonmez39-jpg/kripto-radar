@@ -70,13 +70,13 @@ def _load_candidate_legal_guard(asof):
         expected_fc=blob_sha(FAMILY_C) if FAMILY_C is not None and FAMILY_C.exists() else None
         policy_path=ROOT/"chatgpt_compiled_policy_v3.json"
         if (not policy_path.exists()
-            or blob_sha(policy_path)!="10d7af14870dfac0dc4566595d95a06f3faa854d"):
+            or blob_sha(policy_path)!="299199aa10b6eb6fdf35071f233ac12bd814dc32"):
             return {},None,"CANDIDATE_LEGAL_GUARD_CURRENT_POLICY_AUTHORITY_DRIFT"
         if j.get("compiled_policy_path")!="nasdaq-xray/chatgpt_compiled_policy_v3.json":
             return {},None,"CANDIDATE_LEGAL_GUARD_POLICY_PATH_MISMATCH"
-        if j.get("compiled_policy_blob_sha")!="10d7af14870dfac0dc4566595d95a06f3faa854d":
+        if j.get("compiled_policy_blob_sha")!="299199aa10b6eb6fdf35071f233ac12bd814dc32":
             return {},None,"CANDIDATE_LEGAL_GUARD_POLICY_BLOB_MISMATCH"
-        if j.get("compiled_policy_hash")!="26a95745a50b65e85f6ece24b6501af0994764a84ddd886edb70d1fcd770849c":
+        if j.get("compiled_policy_hash")!="bbb6ea5aa3126fbcdeda2246bc52d1ad04885d27e8e52fb07797e0114dedce55":
             return {},None,"CANDIDATE_LEGAL_GUARD_POLICY_HASH_MISMATCH"
         if j.get("compiled_policy_version")!="C4.17":
             return {},None,"CANDIDATE_LEGAL_GUARD_POLICY_VERSION_MISMATCH"

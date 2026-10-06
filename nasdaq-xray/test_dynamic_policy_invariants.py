@@ -33,6 +33,12 @@ def main():
     st,info=price_classify(exact,exp[-1],exp,"TEST")
     assert st=="PASS_PRICE_DV20",(st,info)
     assert info["known_session_count"]==20 and info["missing_sessions"]==[]
+    at_floor=bars(exp,price=5.0,volume=20_000_000.0)
+    st,info=price_classify(at_floor,exp[-1],exp,"TEST")
+    assert st=="PASS_PRICE_DV20",(st,info)
+    below_floor=bars(exp,price=4.99,volume=20_000_000.0)
+    st,info=price_classify(below_floor,exp[-1],exp,"TEST")
+    assert st=="FAIL_PRICE",(st,info)
 
     st,info=price_classify(incomplete,exp[-1],exp,"TEST")
     assert st=="UNKNOWN",(st,info)
@@ -66,7 +72,7 @@ def main():
     except ValueError:
         pass
     try:
-        apply_terminal_overrides({"NEW":{"decision":"FAIL_PRICE","price":5.0,"source":"X","proof":"X"}},ov)
+        apply_terminal_overrides({"NEW":{"decision":"FAIL_PRICE","price":4.99,"source":"X","proof":"X"}},ov)
         raise AssertionError("terminal override rewrote non-blocked row")
     except ValueError:
         pass

@@ -28,8 +28,8 @@ from pathlib import Path
 
 ROOT=Path(__file__).resolve().parent
 POLICY=ROOT/"chatgpt_compiled_policy_v3.json"
-POLICY_BLOB="10d7af14870dfac0dc4566595d95a06f3faa854d"
-POLICY_HASH="26a95745a50b65e85f6ece24b6501af0994764a84ddd886edb70d1fcd770849c"
+POLICY_BLOB="299199aa10b6eb6fdf35071f233ac12bd814dc32"
+POLICY_HASH="bbb6ea5aa3126fbcdeda2246bc52d1ad04885d27e8e52fb07797e0114dedce55"
 POLICY_VERSION="C4.17"
 DEEP=Path(os.getenv("XRAY_LEGAL_GUARD_DEEP",str(ROOT/"canonical_current_deep_full.json")))
 FAMILY_C=Path(os.getenv("XRAY_LEGAL_GUARD_FAMILY_C",str(ROOT/"canonical_current_family_c.json")))

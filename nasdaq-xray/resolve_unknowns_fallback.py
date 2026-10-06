@@ -11,7 +11,7 @@ ROOT=Path(__file__).resolve().parent
 MANIFEST=Path(os.getenv("XRAY_UNKNOWN_MANIFEST", str(ROOT/"canonical_full_hard_gate_20260930_unknowns.json")))
 OUT=Path(os.getenv("XRAY_RESOLUTION_OUT", str(ROOT/"history_resolution_overlay.json")))
 TASK_ID="6a825366222081918997094d76e6ae46"
-HARD_PRICE=10.0
+HARD_PRICE=5.0
 HARD_DV20=50_000_000.0
 HARD_HISTORY=260
 UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/126 Safari/537.36"
@@ -112,7 +112,7 @@ def classify(by,asof,exp20,source):
     if asof not in by:
         return None,{"reason":"ASOF_MISSING","bars":bars,"source":source}
     price=by[asof][0]
-    if price<=HARD_PRICE:
+    if price<HARD_PRICE:
         return "FAIL_PRICE",{"price":price,"bars":bars,"source":source,"proof":"EXACT_ASOF_DAILY_CLOSE"}
     if bars<HARD_HISTORY:
         return "POTENTIAL_FAIL_HISTORY",{"price":price,"bars":bars,"source":source}
@@ -222,7 +222,7 @@ def valid_bridge_history_resolution(x):
         return isinstance(b,int) and 0<=b<HARD_HISTORY and bool(x.get("source")) and bool(x.get("proof"))
     if d=="FAIL_PRICE":
         p=num(x.get("price"))
-        return p is not None and p<=HARD_PRICE and bool(x.get("source")) and bool(x.get("proof"))
+        return p is not None and p<HARD_PRICE and bool(x.get("source")) and bool(x.get("proof"))
     if d=="BLOCK_CURRENT_RUN":
         return x.get("trade_status")=="Halted" and bool(x.get("last_bar")) and bool(x.get("source"))
     return False

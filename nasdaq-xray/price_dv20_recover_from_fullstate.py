@@ -11,7 +11,7 @@ OUT=Path(os.getenv("XRAY_PRICE_DV20_RECOVER_OUT",str(ROOT/"canonical_price_dv20_
 TASK_ID="6a825366222081918997094d76e6ae46"
 WORKERS=int(os.getenv("XRAY_PHASE_WORKERS","12"))
 DEFER_TO_BRIDGE=os.getenv("XRAY_DYNAMIC_AUTHENTICATED_PRICE_BRIDGE","0")=="1"
-HARD_PRICE=10.0
+HARD_PRICE=5.0
 HARD_DV20=50_000_000.0
 RESOLVER_REQUEST=Path(os.getenv("XRAY_CURRENT_RESOLVER_REQUEST",str(ROOT/"canonical_current_resolver_request.json")))
 RESOLVER_CHUNK_MANIFEST=Path(os.getenv("XRAY_CURRENT_RESOLVER_CHUNK_MANIFEST",str(ROOT/"canonical_current_resolver_chunk_manifest.json")))
@@ -45,8 +45,8 @@ def resolver_bridge_input_binding(obj,asof,queue_hash):
           and q.get("execution")=="NONE" and q.get("real_money")=="NO-GO"
           and q.get("unknown_never_pass") is True
           and q.get("asof_et")==asof and q.get("queue_hash")==queue_hash
-          and q.get("compiled_policy_blob_sha")=="10d7af14870dfac0dc4566595d95a06f3faa854d"
-          and q.get("compiled_policy_hash")=="26a95745a50b65e85f6ece24b6501af0994764a84ddd886edb70d1fcd770849c"
+          and q.get("compiled_policy_blob_sha")=="299199aa10b6eb6fdf35071f233ac12bd814dc32"
+          and q.get("compiled_policy_hash")=="bbb6ea5aa3126fbcdeda2246bc52d1ad04885d27e8e52fb07797e0114dedce55"
           and q.get("compiled_policy_version")=="C4.17"
           and q.get("source_price_blob_sha")==prior_price_blob
         ):
@@ -124,9 +124,9 @@ def load_exception_bridge(asof,queue_hash):
               and obj.get("task_id")==TASK_ID
               and obj.get("execution")=="NONE" and obj.get("real_money")=="NO-GO"
               and obj.get("asof_et")==asof and obj.get("queue_hash")==queue_hash
-              and obj.get("compiled_policy_hash")=="26a95745a50b65e85f6ece24b6501af0994764a84ddd886edb70d1fcd770849c"
+              and obj.get("compiled_policy_hash")=="bbb6ea5aa3126fbcdeda2246bc52d1ad04885d27e8e52fb07797e0114dedce55"
               and obj.get("compiled_policy_version")=="C4.17"
-              and obj.get("compiled_policy_blob_sha")=="10d7af14870dfac0dc4566595d95a06f3faa854d"
+              and obj.get("compiled_policy_blob_sha")=="299199aa10b6eb6fdf35071f233ac12bd814dc32"
               and (obj.get("settlement_required") is not True or obj.get("settlement_status")=="PASS")
             )
             binding_ok,binding_role,binding_reason=resolver_bridge_input_binding(obj,asof,queue_hash) if base_ok else (False,None,"BASE_BINDING")
@@ -149,9 +149,9 @@ def load_exception_bridge(asof,queue_hash):
         if obj.get("asof_et")!=asof or obj.get("queue_hash")!=queue_hash:
             raise ValueError("BINDING")
         if (
-          obj.get("compiled_policy_hash")!="26a95745a50b65e85f6ece24b6501af0994764a84ddd886edb70d1fcd770849c"
+          obj.get("compiled_policy_hash")!="bbb6ea5aa3126fbcdeda2246bc52d1ad04885d27e8e52fb07797e0114dedce55"
           or obj.get("compiled_policy_version")!="C4.17"
-          or obj.get("compiled_policy_blob_sha")!="10d7af14870dfac0dc4566595d95a06f3faa854d"
+          or obj.get("compiled_policy_blob_sha")!="299199aa10b6eb6fdf35071f233ac12bd814dc32"
         ):
             raise ValueError("POLICY_BINDING")
         if obj.get("settlement_required") is True and obj.get("settlement_status")!="PASS":
@@ -182,7 +182,7 @@ def load_exception_bridge(asof,queue_hash):
                 req=set(obj.get("price_unknown_symbols") or obj.get("symbols") or [])
                 if set().union(*groups)!=req: raise ValueError("RALLIES_COMPACT_COVERAGE")
                 for sym in fp:
-                    prs[sym]={"decision":"FAIL_PRICE","source":src,"proof":"RALLIES_ASOF_CLOSE_LE_10","compact_terminal_proof":True}
+                    prs[sym]={"decision":"FAIL_PRICE","source":src,"proof":"RALLIES_ASOF_CLOSE_LT_5","compact_terminal_proof":True}
                 for sym in fd:
                     prs[sym]={"decision":"FAIL_DV20","source":src,"proof":"RALLIES_EXACT20_MEDIAN_LT_GATE","compact_terminal_proof":True}
                 for sym in ps:
@@ -232,12 +232,12 @@ def load_exception_bridge(asof,queue_hash):
                 src="ALPACA_SIP_RALLIES_MASSIVE_C4_13_NON_G9"
                 for sym,val in fp.items():
                     px=num(val)
-                    if px is None or px>HARD_PRICE: raise ValueError("COMPACT_V3_FAIL_PRICE")
-                    prs[sym]={"decision":"FAIL_PRICE","price":px,"source":src,"proof":"ASOF_CLOSE_LE_10"}
+                    if px is None or px>=HARD_PRICE: raise ValueError("COMPACT_V3_FAIL_PRICE")
+                    prs[sym]={"decision":"FAIL_PRICE","price":px,"source":src,"proof":"ASOF_CLOSE_LT_5"}
                 for sym,val in fd.items():
                     if not isinstance(val,(list,tuple)) or len(val)<3: raise ValueError("COMPACT_V3_FAIL_DV20_VALUE")
                     px=num(val[0]); metric=num(val[1]); proof=str(val[2])
-                    if px is None or px<=HARD_PRICE or metric is None or metric>=HARD_DV20: raise ValueError("COMPACT_V3_FAIL_DV20_GATE")
+                    if px is None or px<HARD_PRICE or metric is None or metric>=HARD_DV20: raise ValueError("COMPACT_V3_FAIL_DV20_GATE")
                     if proof not in {"EXACT20_MEDIAN_LT_GATE","DV20_UPPER_BOUND_LT_GATE"}: raise ValueError("COMPACT_V3_FAIL_DV20_PROOF")
                     rec={"decision":"FAIL_DV20","price":px,"source":src,"proof":proof}
                     if proof=="EXACT20_MEDIAN_LT_GATE": rec["dv20"]=metric
@@ -246,7 +246,7 @@ def load_exception_bridge(asof,queue_hash):
                 for sym,val in pm.items():
                     if not isinstance(val,(list,tuple)) or len(val)<2: raise ValueError("COMPACT_V3_PASS_VALUE")
                     px=num(val[0]); dv=num(val[1])
-                    if px is None or px<=HARD_PRICE or dv is None or dv<HARD_DV20: raise ValueError("COMPACT_V3_PASS_GATE")
+                    if px is None or px<HARD_PRICE or dv is None or dv<HARD_DV20: raise ValueError("COMPACT_V3_PASS_GATE")
                     prs[sym]={"decision":"PASS_PRICE_DV20","price":px,"dv20":dv,"known_session_count":20,"missing_sessions":[],"no_synthetic_bar":True,"source":src,"proof":"EXACT20_MEDIAN_GE_GATE"}
                 for sym,val in fna.items():
                     if not isinstance(val,dict) or val.get("proof")!="THREE_SOURCE_NO_ASOF_BAR":
@@ -258,7 +258,7 @@ def load_exception_bridge(asof,queue_hash):
                 for sym,val in fis.items():
                     if not isinstance(val,dict): raise ValueError("COMPACT_V3_INSUFFICIENT_VALUE")
                     px=num(val.get("price")); n=val.get("known_session_count"); miss=val.get("missing_sessions") or []
-                    if px is None or px<=HARD_PRICE or not isinstance(n,int) or not (0<=n<20) or len(miss)!=(20-n):
+                    if px is None or px<HARD_PRICE or not isinstance(n,int) or not (0<=n<20) or len(miss)!=(20-n):
                         raise ValueError("COMPACT_V3_INSUFFICIENT_GATE")
                     if val.get("proof")!="ALPACA_RALLIES_EXACT_MISSING_SET_MATCH":
                         raise ValueError("COMPACT_V3_INSUFFICIENT_PROOF")
@@ -290,12 +290,12 @@ def load_exception_bridge(asof,queue_hash):
                 if set().union(*groups)!=req: raise ValueError("COMPACT_COVERAGE")
                 for sym,val in fp.items():
                     px=num(val)
-                    if px is None or px>HARD_PRICE: raise ValueError("COMPACT_FAIL_PRICE_GATE")
-                    prs[sym]={"decision":"FAIL_PRICE","price":px,"source":src,"proof":"ASOF_CLOSE_LE_10"}
+                    if px is None or px>=HARD_PRICE: raise ValueError("COMPACT_FAIL_PRICE_GATE")
+                    prs[sym]={"decision":"FAIL_PRICE","price":px,"source":src,"proof":"ASOF_CLOSE_LT_5"}
                 for sym,val in fd.items():
                     if not isinstance(val,(list,tuple)) or len(val)<3: raise ValueError("COMPACT_FAIL_DV20_VALUE")
                     px=num(val[0]); metric=num(val[1]); proof=str(val[2])
-                    if px is None or px<=HARD_PRICE or metric is None or metric>=HARD_DV20:
+                    if px is None or px<HARD_PRICE or metric is None or metric>=HARD_DV20:
                         raise ValueError("COMPACT_FAIL_DV20_GATE")
                     if proof not in {"EXACT20_MEDIAN_LT_GATE","DV20_UPPER_BOUND_LT_GATE"}:
                         raise ValueError("COMPACT_FAIL_DV20_PROOF")
@@ -306,7 +306,7 @@ def load_exception_bridge(asof,queue_hash):
                 for sym,val in pm.items():
                     if not isinstance(val,(list,tuple)) or len(val)<2: raise ValueError("COMPACT_PASS_VALUE")
                     px=num(val[0]); dv=num(val[1])
-                    if px is None or px<=HARD_PRICE or dv is None or dv<HARD_DV20:
+                    if px is None or px<HARD_PRICE or dv is None or dv<HARD_DV20:
                         raise ValueError("COMPACT_PASS_GATE")
                     prs[sym]={
                       "decision":"PASS_PRICE_DV20","price":px,"dv20":dv,
@@ -339,12 +339,12 @@ def load_exception_bridge(asof,queue_hash):
                 req=set(obj.get("price_unknown_symbols") or obj.get("symbols") or [])
                 if set().union(*groups)!=req: raise ValueError("COMPACT_COVERAGE")
                 # V1 is accepted for historical backward compatibility only.
-                for sym in fp: prs[sym]={"decision":"FAIL_PRICE","source":src,"proof":"ASOF_CLOSE_LE_10","compact_terminal_proof":True}
+                for sym in fp: prs[sym]={"decision":"FAIL_PRICE","source":src,"proof":"ASOF_CLOSE_LT_5","compact_terminal_proof":True}
                 for sym in fd: prs[sym]={"decision":"FAIL_DV20","source":src,"proof":"EXACT20_OR_UPPER_BOUND_LT_GATE","compact_terminal_proof":True}
                 for sym,val in pm.items():
                     px=num(val[0] if isinstance(val,(list,tuple)) else val.get("price"))
                     dv=num(val[1] if isinstance(val,(list,tuple)) else val.get("dv20"))
-                    if px is None or px<=HARD_PRICE or dv is None or dv<HARD_DV20: raise ValueError("COMPACT_PASS_GATE")
+                    if px is None or px<HARD_PRICE or dv is None or dv<HARD_DV20: raise ValueError("COMPACT_PASS_GATE")
                     prs[sym]={"decision":"PASS_PRICE_DV20","price":px,"dv20":dv,"known_session_count":20,"missing_sessions":[],"no_synthetic_bar":True,"source":src,"proof":"EXACT20_MEDIAN_GE_GATE"}
                 for sym,val in bc.items():
                     if not isinstance(val,dict) or val.get("trade_status")!="Halted" or not val.get("last_bar"): raise ValueError("COMPACT_BLOCK_CURRENT")
@@ -365,16 +365,16 @@ def valid_bridge_price_resolution(x,asof):
     if d=="FAIL_PRICE":
         if x.get("compact_terminal_proof") is True:
             return bool(x.get("source")) and bool(x.get("proof"))
-        return px is not None and px<=HARD_PRICE and bool(x.get("source")) and bool(x.get("proof"))
+        return px is not None and px<HARD_PRICE and bool(x.get("source")) and bool(x.get("proof"))
     if d=="FAIL_DV20":
         if x.get("compact_terminal_proof") is True:
             return bool(x.get("source")) and bool(x.get("proof"))
         dv=num(x.get("dv20"))
         if dv is not None:
-            return px is not None and px>HARD_PRICE and dv<HARD_DV20 and bool(x.get("source")) and bool(x.get("proof"))
+            return px is not None and px>=HARD_PRICE and dv<HARD_DV20 and bool(x.get("source")) and bool(x.get("proof"))
         n=x.get("observed_completed_sessions")
         return (
-          px is not None and px>HARD_PRICE and isinstance(n,int) and 0<=n<20
+          px is not None and px>=HARD_PRICE and isinstance(n,int) and 0<=n<20
           and x.get("reason")=="EXACT20_INSUFFICIENT_LISTED_SESSIONS"
           and x.get("no_synthetic_bar") is True and bool(x.get("source")) and bool(x.get("proof"))
         )
@@ -388,7 +388,7 @@ def valid_bridge_price_resolution(x,asof):
     if d=="FAIL_DV20_INSUFFICIENT_SESSIONS":
         n=x.get("known_session_count"); miss=x.get("missing_sessions") or []
         return (
-          px is not None and px>HARD_PRICE
+          px is not None and px>=HARD_PRICE
           and isinstance(n,int) and 0<=n<20
           and len(miss)==20-n
           and x.get("proof")=="ALPACA_RALLIES_EXACT_MISSING_SET_MATCH"
@@ -406,7 +406,7 @@ def valid_bridge_price_resolution(x,asof):
             )
         dv=num(x.get("dv20"))
         return (
-          px is not None and px>HARD_PRICE and dv is not None and dv>=HARD_DV20
+          px is not None and px>=HARD_PRICE and dv is not None and dv>=HARD_DV20
           and known==20 and (x.get("missing_sessions") or [])==[]
           and x.get("no_synthetic_bar") is True
           and bool(x.get("source")) and bool(x.get("proof"))
@@ -512,7 +512,7 @@ def main():
       "schema":"XRAY_CANONICAL_PRICE_DV20_V1","task_id":TASK_ID,"asof_et":asof,
       "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
       "source_master_queue_hash":s["queue_hash"],"source_master_count":len(queue),
-      "expected20":exp20,"gate_order":["PRICE","DV20"],"thresholds":{"price":">10","dv20":">=50000000 exact20 median"},
+      "expected20":exp20,"gate_order":["PRICE","DV20"],"thresholds":{"price":">=5","dv20":">=50000000 exact20 median"},
       "reused_terminal_count":len(queue)-len(redo),"reevaluated_count":len(redo),
       "exception_bridge_meta":exception_bridge_meta,
       "counts":dict(sorted(counts.items())),"unknown_count":len(unknown),"unknown_symbols":unknown,

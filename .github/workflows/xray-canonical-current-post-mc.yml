@@ -148,7 +148,7 @@ jobs:
                     and j.get("asof_et")==expected_asof
                     and j.get("input_path")==expected_path
                     and j.get("input_pass_hash")==expected_hash
-                    and j.get("policy_hash")=="26a95745a50b65e85f6ece24b6501af0994764a84ddd886edb70d1fcd770849c"
+                    and j.get("policy_hash")=="bbb6ea5aa3126fbcdeda2246bc52d1ad04885d27e8e52fb07797e0114dedce55"
                     and j.get("policy_version")=="C4.17"
                     and int(j.get("input_count",-1))==int(expected_count)
                     and (j.get("counts") or {}).get("TOTAL")==expected_count
@@ -179,7 +179,7 @@ jobs:
                             and sj.get("status")=="COMMITTED"
                             and sj.get("asof_et")==expected_asof
                             and sj.get("queue_hash")==m.get("queue_hash")
-                            and sj.get("compiled_policy_hash")=="26a95745a50b65e85f6ece24b6501af0994764a84ddd886edb70d1fcd770849c"
+                            and sj.get("compiled_policy_hash")=="bbb6ea5aa3126fbcdeda2246bc52d1ad04885d27e8e52fb07797e0114dedce55"
                             and sj.get("compiled_policy_version")=="C4.17"
                             and sj.get("settlement_status")=="PASS"
                           )
@@ -285,7 +285,7 @@ jobs:
                         and sj.get("task_id")==mc.get("task_id")
                         and sj.get("execution")=="NONE" and sj.get("real_money")=="NO-GO"
                         and sj.get("asof_et")==mc.get("asof_et")==p.get("asof_et")==h.get("asof_et")==l.get("asof_et")
-                        and sj.get("policy_hash")==mc.get("policy_hash")=="26a95745a50b65e85f6ece24b6501af0994764a84ddd886edb70d1fcd770849c"
+                        and sj.get("policy_hash")==mc.get("policy_hash")=="bbb6ea5aa3126fbcdeda2246bc52d1ad04885d27e8e52fb07797e0114dedce55"
                         and sj.get("policy_version")==mc.get("policy_version")=="C4.17"
                         and sj.get("input_pass_hash")==mc.get("input_pass_hash")==p.get("pass_hash")
                         and set(sj.get("primary_pass_symbols") or [])==set(mc.get("primary_pass_symbols") or [])

@@ -45,7 +45,7 @@ MAX_ATTEMPTS=int(os.getenv("XRAY_SINA_MAX_ATTEMPTS","4"))
 # Wide discovery floors only. Canonical thresholds remain $10 / $2B / $50M / 260 bars.
 DISCOVERY_PRICE_FLOOR=9.0
 DISCOVERY_MC_FLOOR=1_800_000_000.0
-HARD_PRICE=10.0
+HARD_PRICE=5.0
 HARD_DV20=50_000_000.0
 HARD_HISTORY=260
 
@@ -153,7 +153,7 @@ def build_discovery(official,force_all=False):
         px=num(r.get("lastsale"))
         mc=num(r.get("marketCap"))
         vol=num(r.get("volume"))
-        if px is not None and mc is not None and px>HARD_PRICE and mc>=2_000_000_000:
+        if px is not None and mc is not None and px>=HARD_PRICE and mc>=2_000_000_000:
             exact_hard_mc_price_count+=1
         if force_all:
             prefilter[sym]={
@@ -252,7 +252,7 @@ def parse_hist(sym,asof,expected20):
         # incompleteness can mimic a young listing. Route it to the independent resolver.
         if asof in by:
             price=by[asof][0]
-            if price<=HARD_PRICE:
+            if price<HARD_PRICE:
                 return "FAIL_PRICE",{"price":price,"bars":bars,"proof":"ASOF_CLOSE"}
         else:
             return "UNKNOWN_STATIC",{
@@ -344,7 +344,7 @@ def resolution_result(sym,ov,expected20):
         return "FAIL_DV20",{"price":px,"dv20":dv,"bars":bars,"resolution_source":ov.get("source"),"proof":ov.get("proof")}
     if d=="FAIL_PRICE":
         px=num(ov.get("price")); bars=ov.get("bars")
-        if px is None or px>HARD_PRICE:
+        if px is None or px>=HARD_PRICE:
             return "UNKNOWN_STATIC",{"reason":"RESOLUTION_FAIL_PRICE_INVALID","symbol":sym}
         return "FAIL_PRICE",{"price":px,"bars":bars,"resolution_source":ov.get("source")}
     if d=="EXCLUDE":
@@ -361,7 +361,7 @@ def resolution_result(sym,ov,expected20):
         lo=num(ov.get("dv20_lower_bound")); hi=num(ov.get("dv20_upper_bound"))
         missing=ov.get("missing_sessions") or []; known=ov.get("known_session_count")
         if (
-          px is None or px<=HARD_PRICE or not isinstance(bars,int) or bars<HARD_HISTORY
+          px is None or px<HARD_PRICE or not isinstance(bars,int) or bars<HARD_HISTORY
           or lo is None or hi is None or lo<HARD_DV20 or hi<lo
           or ov.get("no_synthetic_bar") is not True
           or not isinstance(known,int) or known!=20 or missing!=[]

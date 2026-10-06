@@ -14,7 +14,7 @@ INPUT=Path(os.getenv("XRAY_PHASE_INPUT", str(ROOT/"canonical_full_hard_gate_2026
 OUT=Path(os.getenv("XRAY_PRICE_DV20_OUT", str(ROOT/"canonical_price_dv20_20260930.json")))
 TASK_ID="6a825366222081918997094d76e6ae46"
 ASOF_ENV=os.getenv("XRAY_ASOF")
-HARD_PRICE=10.0
+HARD_PRICE=5.0
 HARD_DV20=50_000_000.0
 WORKERS=int(os.getenv("XRAY_PHASE_WORKERS","12"))
 UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/126 Safari/537.36"
@@ -50,8 +50,8 @@ def classify(by,asof,exp20,source):
     if asof not in by:
         return "UNKNOWN",{"reason":"ASOF_MISSING","source":source,"usable_bars":len(by)}
     price=by[asof][0]
-    if price<=HARD_PRICE:
-        return "FAIL_PRICE",{"price":price,"source":source,"proof":"ASOF_CLOSE_LE_10"}
+    if price<HARD_PRICE:
+        return "FAIL_PRICE",{"price":price,"source":source,"proof":"ASOF_CLOSE_LT_5"}
     vals=[by[d][0]*by[d][1] for d in exp20 if d in by]
     missing=[d for d in exp20 if d not in by]
     if not missing:
@@ -154,7 +154,7 @@ def main():
         "schema":"XRAY_CANONICAL_PRICE_DV20_V1","task_id":TASK_ID,"asof_et":asof,
         "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
         "source_master_queue_hash":src["queue_hash"],"source_master_count":len(queue),
-        "expected20":exp20,"gate_order":["PRICE","DV20"],"thresholds":{"price":">10","dv20":">=50000000 exact20 median"},
+        "expected20":exp20,"gate_order":["PRICE","DV20"],"thresholds":{"price":">=5","dv20":">=50000000 exact20 median"},
         "counts":dict(sorted(counts.items())),"unknown_count":len(unknowns),"unknown_symbols":sorted(unknowns),
         "pass_count":len(pass_syms),"pass_symbols":pass_syms,
         "pass_hash":hashlib.sha256("\n".join(pass_syms).encode()).hexdigest(),

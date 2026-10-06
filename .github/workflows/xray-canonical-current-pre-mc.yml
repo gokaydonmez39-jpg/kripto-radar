@@ -165,7 +165,7 @@ jobs:
                               and b.get("asof_et")==frozen_asof
                               and b.get("queue_hash")==qh
                               and b.get("compiled_policy_version")=="C4.17"
-                              and b.get("compiled_policy_hash")=="26a95745a50b65e85f6ece24b6501af0994764a84ddd886edb70d1fcd770849c"
+                              and b.get("compiled_policy_hash")=="bbb6ea5aa3126fbcdeda2246bc52d1ad04885d27e8e52fb07797e0114dedce55"
                               and blocked & set((b.get("terminal_overrides") or {}).keys())
                           ):
                               bridge_refresh=True
@@ -275,8 +275,8 @@ jobs:
           assert m["unknown_count"]==0 and m["pass_count"]==m["queue_total"]
           assert m["asof_et"]==p["asof_et"]==q["asof_et"]
           assert q["compiled_policy_path"]=="nasdaq-xray/chatgpt_compiled_policy_v3.json"
-          assert q["compiled_policy_blob_sha"]=="10d7af14870dfac0dc4566595d95a06f3faa854d"
-          assert q["compiled_policy_hash"]=="26a95745a50b65e85f6ece24b6501af0994764a84ddd886edb70d1fcd770849c"
+          assert q["compiled_policy_blob_sha"]=="299199aa10b6eb6fdf35071f233ac12bd814dc32"
+          assert q["compiled_policy_hash"]=="bbb6ea5aa3126fbcdeda2246bc52d1ad04885d27e8e52fb07797e0114dedce55"
           assert q["compiled_policy_version"]=="C4.17"
           assert cm["schema"]=="XRAY_RESOLVER_REQUEST_CHUNK_MANIFEST_V1"
           assert cm["task_id"]==q["task_id"] and cm["asof_et"]==q["asof_et"]
