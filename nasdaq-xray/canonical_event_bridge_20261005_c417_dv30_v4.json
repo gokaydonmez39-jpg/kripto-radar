@@ -2,8 +2,9 @@
   "affected_geometry_event_unknown": [],
   "affected_geometry_event_unknown_count": 0,
   "asof_et": "2026-10-05",
-  "authority": "CANONICAL_EVENT_TASKSTATE_BRIDGE_NORMALIZED",
+  "authority": "CANONICAL_EVENT_BRIDGE_C4_17_DV30_PROVENANCE_REBIND_V4",
   "clean_discovery_count": 115,
+  "committed_by": "XRAY_FINAL_EVENT_PROVENANCE_REBIND_FACTORY",
   "compiled_policy_blob_sha": "16c50cc8f887a5234a4be23862d7c8d0e564b0ac",
   "compiled_policy_hash": "68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4",
   "compiled_policy_path": "nasdaq-xray/chatgpt_compiled_policy_v3.json",
@@ -11,7 +12,6 @@
   "confirmed_block_count": 0,
   "confirmed_blocks": {},
   "coverage_complete": false,
-  "discovery_coverage_mode": "PARTIAL_PROVIDER_FAIL_CLOSED_WITH_PRIMARY_CLEARANCE",
   "discovery_hits": [
     {
       "category": "earnings-call",
@@ -44,6 +44,45 @@
       "window_role": "FUTURE_HORIZON_NON_GEOMETRY"
     }
   ],
+  "discovery_proof": {
+    "added_scope_diagnostic_provider": "RALLIES_EARNINGS_DATA",
+    "added_scope_fail_closed_unknown": [
+      "AMLX",
+      "FRSH",
+      "MMSI",
+      "ONC",
+      "WAY"
+    ],
+    "added_scope_officially_resolved": [
+      "MXL"
+    ],
+    "added_scope_provider_status": "CREDIT_EXHAUSTED",
+    "event_semantics_unchanged_from_prior_policy": true,
+    "new_policy_hash": "68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4",
+    "old_policy_hash": "26a95745a50b65e85f6ece24b6501af0994764a84ddd886edb70d1fcd770849c",
+    "provider": "BIGDATA_CORPORATE_CALENDAR",
+    "request_blob_sha": "3694be1f5e39c848469d6706ae79ebf35791884b",
+    "retained_scope_count": 115,
+    "retained_scope_provider_pagination_complete": true,
+    "retained_scope_source_blob_sha": "55f8ca6183d191653070872ebc46515c354295f7",
+    "retained_scope_source_bridge": "nasdaq-xray/canonical_event_bridge_20261005_c417_r2.json",
+    "scope_added": [
+      "AMLX",
+      "FRSH",
+      "MMSI",
+      "MXL",
+      "ONC",
+      "WAY"
+    ],
+    "scope_removed": [
+      "BWIN",
+      "NEOG",
+      "NICE",
+      "NSIT",
+      "SDGR",
+      "WGS"
+    ]
+  },
   "discovery_unavailable_symbols": [
     "AMLX",
     "FRSH",
@@ -190,6 +229,16 @@
       }
     ]
   },
+  "future_horizon_sessions": [
+    "2026-10-06",
+    "2026-10-07",
+    "2026-10-08",
+    "2026-10-09",
+    "2026-10-12",
+    "2026-10-13",
+    "2026-10-14",
+    "2026-10-15"
+  ],
   "geometry_scope": [
     "ABCL",
     "AUGO",
@@ -236,13 +285,58 @@
   },
   "pagination_complete": false,
   "partial_data": true,
+  "past_family_c_sessions": [
+    "2026-09-18",
+    "2026-09-21",
+    "2026-09-22",
+    "2026-09-23",
+    "2026-09-24",
+    "2026-09-25",
+    "2026-09-28",
+    "2026-09-29",
+    "2026-09-30",
+    "2026-10-01",
+    "2026-10-02",
+    "2026-10-05"
+  ],
   "provider_unavailable_but_officially_resolved_symbols": [
     "MXL"
   ],
   "real_money": "NO-GO",
-  "schema": "XRAY_CANONICAL_EVENT_STATE_V1",
-  "source_bridge_blob_sha": "e97906a5dd612559cec130ac4d9225b3ef81b232",
-  "source_bridge_path": "nasdaq-xray/canonical_event_bridge_20261005_c417_dv30_v4.json",
+  "rebind_proof": {
+    "added_scope_count": 6,
+    "affected_geometry_unknown_count": 0,
+    "event_semantics_unchanged": true,
+    "exact_current_deep_geometry_binding": true,
+    "exact_current_regime_binding": true,
+    "exact_current_stage1_binding": true,
+    "mxl_primary_official_horizon_clearance": true,
+    "no_alpha_threshold_change": true,
+    "no_event_provider_refetch": true,
+    "prior_provider_event_evidence_reused_for_retained_scope": true,
+    "provenance_only_current_request_rebind": true,
+    "provider_budget_failure_explicit": true,
+    "removed_scope_count": 6,
+    "retained_scope_count": 115
+  },
+  "rebound_from_bridge": "nasdaq-xray/canonical_event_bridge_20261005_c417_r2.json",
+  "rebound_from_bridge_blob_sha": "55f8ca6183d191653070872ebc46515c354295f7",
+  "schema": "XRAY_EVENT_EPOCH_RESULT_V1",
+  "semantic_rebind": {
+    "affected_geometry_event_unknown_count": 0,
+    "current_request_blob_sha": "eae1d11fdc129680325090c8db9e924c11122797",
+    "geometry_scope_hash": "54692d99a1c96d22f52cc3b7774b1d50a694e92cf60e94afa9ad7f91c8622dd4",
+    "lifecycle_scope_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "no_alpha_threshold_change": true,
+    "no_event_provider_refetch": true,
+    "no_event_semantics_change": true,
+    "predecessor_blob_sha": "2148fd3e62b88ef3427bb023a9572235b9a9a4e4",
+    "predecessor_path": "nasdaq-xray/canonical_event_bridge_20261005_c417_dv30_v3.json",
+    "rule": "SAME_ASOF_IDENTICAL_WEEKLY_GEOMETRY_LIFECYCLE_AND_EVENT_HORIZON;EVENT_DECISIONS_REUSED;SOURCE_BLOBS_REBOUND_ONLY",
+    "weekly_scope_hash": "af4e35653982960de7a0fe2b24b3ced595ac3ed35734264c6f93274196f5604e"
+  },
+  "source_deep_geometry_blob_sha": "2c43ebf15f5cdd608863929deb54b401a79ae49c",
+  "source_deep_geometry_path": "nasdaq-xray/canonical_current_deep_geometry.json",
   "source_policy": {
     "clean_rule": "RETAINED_SCOPE_PRIOR_COMPLETE_DISCOVERY_OR_EXPLICIT_ISSUER_PRIMARY_NEXT_EVENT_OUTSIDE_HORIZON",
     "discovery": "BIGDATA_CORPORATE_CALENDAR_EARNINGS_CALL_ENTITY_TARGETED",
@@ -251,8 +345,15 @@
     "provider_unavailable_rule": "EXPLICIT_UNKNOWN_FAIL_CLOSED;NEVER_CLEAN_BY_ABSENCE",
     "unknown_never_pass": true
   },
+  "source_regime_blob_sha": "cab4b939d37146556430bda4f350a8d4e9b878d9",
+  "source_regime_path": "nasdaq-xray/canonical_current_regime.json",
   "source_request_blob_sha": "eae1d11fdc129680325090c8db9e924c11122797",
   "source_request_path": "nasdaq-xray/canonical_current_event_request.json",
+  "source_stage1_blob_sha": "964a558ed64e969265e5c6455457f4cf07857399",
+  "source_stage1_path": "nasdaq-xray/canonical_current_stage1.json",
+  "status": "COMMITTED",
+  "supersedes_event_bridge_blob_sha": "2148fd3e62b88ef3427bb023a9572235b9a9a4e4",
+  "supersedes_event_bridge_path": "nasdaq-xray/canonical_event_bridge_20261005_c417_dv30_v3.json",
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_never_pass": true,
   "unresolved": {
