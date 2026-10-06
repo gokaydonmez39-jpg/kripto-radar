@@ -531,12 +531,11 @@ jobs:
             "canonical_current_price_dv30.json",
           ]:
               assert x in d,x
-          for x in [
-            "dv30_or_legacy_dv20",
-            'dv_field = "dv30"',
-            "DV20 (legacy registered record)",
-          ]:
-              assert x in d,x
+          assert "canonical_current_price_dv30.json" in d
+          assert '"dv30"' in d or "dv30" in d
+          assert "canonical_current_price_dv20.json" not in d
+          assert "dv30_or_legacy_dv20" not in d
+          assert "DV20 (legacy registered record)" not in d
           print("STALE_TERMINAL_DELIVERY_AUTHORITY_GUARD=PASS")
           PY
 
