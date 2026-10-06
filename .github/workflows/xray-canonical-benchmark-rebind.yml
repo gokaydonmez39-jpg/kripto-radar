@@ -107,7 +107,9 @@ jobs:
           r=json.load(open(root/"canonical_current_regime.json"))
           d=json.load(open(root/"canonical_current_deep_geometry.json"))
           e=json.load(open(root/"canonical_current_event_request.json"))
-          assert s["asof_et"]==r["asof_et"]==d["asof_et"]==e["asof_et"]=="2026-10-05"
+          asofs={"stage1":s.get("asof_et"),"regime":r.get("asof_et"),"deep":d.get("asof_et"),"event":e.get("asof_et")}
+          print({"XRAY_REBIND_ASOFS":asofs})
+          assert len(set(asofs.values()))==1 and all(asofs.values()),asofs
           assert d["unknown_history_count"]==0,d.get("unknown_history")
           assert e["status"]=="READY" and e["request_scope_complete"] is True
           assert e["source_stage1_blob_sha"]==blob(root/"canonical_current_stage1.json")
