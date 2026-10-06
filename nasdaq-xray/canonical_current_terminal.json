@@ -8,9 +8,9 @@
     "breadth_missing": 0,
     "candidate_halt_guard_unknown": 0,
     "deep_history_unknown": 0,
-    "detailed_legal_review_unknown": 1,
+    "detailed_legal_review_unknown": 0,
     "family_c_history_unknown": 0,
-    "final_unknown": 11,
+    "final_unknown": 0,
     "history_unknown": 0,
     "legal_unknown": 0,
     "lifecycle_regime_unknown": 0,
@@ -42,9 +42,9 @@
       "UCFIW",
       "WBD"
     ],
-    "age_seconds": 1.89,
-    "generated_at_utc": "2026-10-06T10:06:19.967348+00:00",
-    "guard_blob_sha": "b70855b07c5a50006a8d36e0e28eb0ac26f4eace",
+    "age_seconds": 1.391,
+    "generated_at_utc": "2026-10-06T10:22:18.489157+00:00",
+    "guard_blob_sha": "7f92c0f8ecec04103f32146695be5c08d6ada4a0",
     "guard_path": "nasdaq-xray/canonical_official_source_guard.json",
     "max_age_seconds": 900,
     "security_status_suspension_symbols": [
@@ -95,7 +95,7 @@
   },
   "candidate_local_research_pass": false,
   "checks": {
-    "all_finalists_detailed_legal_review_exact": false,
+    "all_finalists_detailed_legal_review_exact": true,
     "alpha_semantic_audit_status": "PASS_IMPLEMENTATION_CONFORMANCE",
     "alpha_semantic_conformance_exact": true,
     "alpha_semantic_known_gaps": [],
@@ -183,7 +183,7 @@
     },
     "account_live_probe": {
       "balance_parseable": false,
-      "blob_sha": "db28eb0f68fdb20791ad19e008c52817fb12cb18",
+      "blob_sha": "4cbbcd1db67814f9c57d154afa1ea31b7a4661c8",
       "network_attempted": false,
       "path": "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/account_effective_probe_state.json",
       "positions_parseable": false,
@@ -194,7 +194,7 @@
       "secret_values_persisted": false,
       "status": "BLOCKED_MISSING_CREDENTIALS",
       "workflow_run_attempt": "1",
-      "workflow_run_id": "37446842115"
+      "workflow_run_id": "37448557125"
     },
     "deep": {
       "blob_sha": "e576090c015fd75c2538b6c642f6be59f8190b7b",
@@ -217,7 +217,7 @@
       "path": "nasdaq-xray/canonical_current_family_c.json"
     },
     "final": {
-      "blob_sha": "c5be9cb4f7c36d0113c977e712f761a5eb503142",
+      "blob_sha": "80e6b30d325a6f63850448802569f9d1c1c32984",
       "path": "nasdaq-xray/canonical_current_final_tech.json"
     },
     "full_state": {
@@ -254,7 +254,7 @@
       "semantic_rebind": false
     },
     "official_halt_guard": {
-      "blob_sha": "b70855b07c5a50006a8d36e0e28eb0ac26f4eace",
+      "blob_sha": "7f92c0f8ecec04103f32146695be5c08d6ada4a0",
       "path": "nasdaq-xray/canonical_official_source_guard.json"
     },
     "pointer": {
@@ -284,9 +284,9 @@
   },
   "execution": "NONE",
   "final_gate_reporting_zero_alpha": true,
-  "full_end_to_end_research_pass": false,
+  "full_end_to_end_research_pass": true,
   "g9_global_status": "G9_BLOCKED_FREE_AUTOMATION_PATH",
-  "generated_at_utc": "2026-10-06T10:06:21.857989+00:00",
+  "generated_at_utc": "2026-10-06T10:22:19.881644+00:00",
   "pointer_asof_before_candidate": "2026-10-02",
   "r92_account_g9_applicable": false,
   "r92_candidates": [],
@@ -325,19 +325,7 @@
     ],
     "family_c_regime_finalist_pass": [],
     "family_c_unknown": [],
-    "final_unknown": [
-      "ABCL|D",
-      "IBRX|D",
-      "IOVA|D",
-      "LITE|D",
-      "MRNA|D",
-      "PI|D",
-      "QLYS|D",
-      "RGEN|D",
-      "SWKS|D",
-      "TRMD|D",
-      "VICR|D"
-    ],
+    "final_unknown": [],
     "halt_vetoed_candidates": [],
     "history_fail": [
       "BLLN",
@@ -1290,7 +1278,17 @@
       "ZS"
     ],
     "lifecycle_backed_family_candidates": [
-      "PI|D"
+      "ABCL|D",
+      "IBRX|D",
+      "IOVA|D",
+      "LITE|D",
+      "MRNA|D",
+      "PI|D",
+      "QLYS|D",
+      "RGEN|D",
+      "SWKS|D",
+      "TRMD|D",
+      "VICR|D"
     ],
     "mc_fallback_fail": [],
     "mc_fallback_watch": [
@@ -1427,8 +1425,8 @@
   "settlement_witness_path": "nasdaq-xray/canonical_resolver_bridge_20261005_c417.json",
   "settlement_witness_required": true,
   "settlement_witness_status": "PASS",
-  "status": "PARTIAL",
+  "status": "FULL_E2E_RESEARCH_PASS",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "terminal_result": "PARTIAL_UNKNOWN",
+  "terminal_result": "NO_CONFIRMED_SETUP",
   "unknown_never_pass": true
 }
