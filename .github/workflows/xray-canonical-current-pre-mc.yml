@@ -13,6 +13,7 @@ on:
     paths:
       - "nasdaq-xray/sina_stage.py"
       - "nasdaq-xray/master_sec_spac_proof_20261005.json"
+      - "nasdaq-xray/master_asof_identity_proof_20261005.json"
       - "nasdaq-xray/resolve_unknowns_fallback.py"
       - "nasdaq-xray/extract_unknown_manifest.py"
       - "nasdaq-xray/build_current_master_manifest.py"
@@ -149,16 +150,25 @@ jobs:
               proof_bytes=proof_path.read_bytes()
               proof_blob=hashlib.sha1(b"blob "+str(len(proof_bytes)).encode()+b"\0"+proof_bytes).hexdigest()
               proof_count=len(proof.get("proofs") or {}) if proof.get("asof_et")==latest_completed else 0
+              asof_path=pathlib.Path("nasdaq-xray/master_asof_identity_proof_20261005.json")
+              asof_proof=json.load(open(asof_path))
+              asof_bytes=asof_path.read_bytes()
+              asof_blob=hashlib.sha1(b"blob "+str(len(asof_bytes)).encode()+b"\0"+asof_bytes).hexdigest()
+              asof_counts={k:len(asof_proof.get(k) or {}) for k in ("restore_to_asof","remove_from_asof","operating_overrides")} if asof_proof.get("asof_et")==latest_completed else {}
               msec=mf.get("sec_spac_proof") or {}
+              masof=mf.get("asof_identity_proof") or {}
               mcp=mf.get("completion_proof") or {}
               identity_replay=bool(
                   active_completed_epoch
                   and (
-                      mf.get("identity_ruleset")!="V5_SEC_SPAC_PROOF_AT_MASTER"
-                      or mf.get("identity_authority")!="NASDAQTRADER_EXPLICIT_TYPE_FILTER_V5_SEC_SPAC_PROOF_AT_MASTER"
+                      mf.get("identity_ruleset")!="V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER"
+                      or mf.get("identity_authority")!="NASDAQTRADER_EXPLICIT_TYPE_FILTER_V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER"
                       or mcp.get("sec_spac_proof_binding") is not True
+                      or mcp.get("asof_identity_proof_binding") is not True
                       or msec.get("blob_sha")!=(proof_blob if proof_count else None)
                       or int(msec.get("count",-1))!=proof_count
+                      or masof.get("blob_sha")!=(asof_blob if asof_counts else None)
+                      or (masof.get("counts") or {})!=asof_counts
                   )
               )
           except Exception:
@@ -243,7 +253,7 @@ jobs:
               "terminal_asof":terminal_asof,
               "phase":phase,
               "reason":(
-                  "REPLAY_COMPLETED_EPOCH_UNDER_CURRENT_IDENTITY_POLICY_V5" if identity_replay else
+                  "REPLAY_COMPLETED_EPOCH_UNDER_CURRENT_IDENTITY_POLICY_V6" if identity_replay else
                   "REBUILD_DEFERRED_DV30_BOOTSTRAP" if bootstrap_rebuild else
                   "REPLAY_COMPLETED_EPOCH_UNDER_CURRENT_PRICE_POLICY" if policy_replay else
                   "RECOVER_FROZEN_COMPLETED_EPOCH" if recover else
