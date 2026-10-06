@@ -402,15 +402,84 @@ def result_counts(results):
         out[k]=out.get(k,0)+1
     return dict(sorted(out.items()))
 
+def canonical_frozen_identity(asof):
+    """Reuse the exact same-ASOF canonical identity snapshot for FULL_IDENTITY.
+
+    A live Nasdaq directory is correct for *today*, but it must not mutate a
+    previously completed ASOF universe when the next calendar day begins before
+    the next completed US RTH session. This is support-plane binding only; it
+    never creates canonical alpha authority.
+    """
+    if not FULL_IDENTITY:
+        return None
+    sp=ROOT/"canonical_current_full_state.json"
+    mp=ROOT/"canonical_current_master_manifest.json"
+    if not sp.exists() or not mp.exists():
+        return None
+    try:
+        st=json.loads(sp.read_text(encoding="utf-8"))
+        mf=json.loads(mp.read_text(encoding="utf-8"))
+        q=list(st.get("queue") or [])
+        if (
+          st.get("schema")!="XRAY_NASDAQ_SCREENER_SINA_V2"
+          or str(st.get("asof_et") or "")!=asof
+          or str(mf.get("asof_et") or "")!=asof
+          or int(mf.get("unknown_count",-1))!=0
+          or int(st.get("queue_total",-1))!=len(q)
+          or int(mf.get("queue_total",-1))!=len(q)
+          or len(q)!=len(set(q))
+          or st.get("queue_hash")!=sha_lines(q)
+          or mf.get("queue_hash")!=st.get("queue_hash")
+        ):
+            return None
+        return {
+          "queue":q,
+          "queue_hash":st["queue_hash"],
+          "security_names":dict(st.get("security_names") or {}),
+          "discovery":dict(st.get("discovery") or {}),
+          "discovery_meta":dict(st.get("discovery_meta") or {}),
+          "official_footer":st.get("official_footer"),
+          "identity_authority":st.get("identity_authority"),
+          "explicit_excluded_count":int(st.get("explicit_excluded_count",0) or 0),
+          "explicit_excluded_hash":st.get("explicit_excluded_hash"),
+          "explicit_excluded_reason_counts":dict(st.get("explicit_excluded_reason_counts") or {}),
+          "source_state_hash":st.get("state_hash"),
+          "source_state_path":"nasdaq-xray/canonical_current_full_state.json",
+          "source_manifest_path":"nasdaq-xray/canonical_current_master_manifest.json",
+        }
+    except Exception:
+        return None
+
 def main():
-    names,excluded,footer=official_nasdaq()
     asof,expected20=completed_sessions()
+    frozen=canonical_frozen_identity(asof)
+    if frozen is not None:
+        names=dict(frozen["security_names"])
+        excluded={}
+        footer=str(frozen.get("official_footer") or "CANONICAL_FROZEN_IDENTITY")
+        identity_token="CANONICAL_FROZEN:"+str(frozen.get("source_state_hash") or frozen["queue_hash"])
+    else:
+        names,excluded,footer=official_nasdaq()
+        identity_token=footer
     state=load(STATE)
-    epoch_key=IDENTITY_RULESET+"|"+("FULL_IDENTITY" if FULL_IDENTITY else "DISCOVERY_PREFILTER")+"|"+footer+"|"+asof
+    epoch_key=IDENTITY_RULESET+"|"+("FULL_IDENTITY" if FULL_IDENTITY else "DISCOVERY_PREFILTER")+"|"+identity_token+"|"+asof
 
     if state.get("schema")!="XRAY_NASDAQ_SCREENER_SINA_V2" or state.get("epoch_key")!=epoch_key:
-        queue,discovery,meta=build_discovery(names,FULL_IDENTITY)
-        ex_serial=[s+"|"+excluded[s]["reason"] for s in sorted(excluded)]
+        if frozen is not None:
+            queue=list(frozen["queue"])
+            discovery=dict(frozen["discovery"])
+            meta=dict(frozen["discovery_meta"])
+            meta.update({
+              "authority":"CANONICAL_FROZEN_FULL_IDENTITY_SAME_ASOF",
+              "full_identity":True,
+              "frozen_identity_path":frozen["source_state_path"],
+              "frozen_manifest_path":frozen["source_manifest_path"],
+              "frozen_queue_hash":frozen["queue_hash"],
+            })
+            ex_serial=[]
+        else:
+            queue,discovery,meta=build_discovery(names,FULL_IDENTITY)
+            ex_serial=[s+"|"+excluded[s]["reason"] for s in sorted(excluded)]
         state={
           "schema":"XRAY_NASDAQ_SCREENER_SINA_V2",
           "build":BUILD,
@@ -422,9 +491,9 @@ def main():
           "asof_et":asof,
           "expected20":expected20,
           "official_footer":footer,
-          "identity_authority":"NASDAQTRADER_EXPLICIT_TYPE_FILTER_V3_SPAC_DEFERRED_TO_LEGAL",
+          "identity_authority":(frozen.get("identity_authority") if frozen is not None else "NASDAQTRADER_EXPLICIT_TYPE_FILTER_V3_SPAC_DEFERRED_TO_LEGAL"),
           "identity_ruleset":IDENTITY_RULESET,
-          "discovery_source":"NASDAQTRADER_FULL_IDENTITY_PLUS_NASDAQ_SCREENER_METADATA_ONLY" if FULL_IDENTITY else "NASDAQ_OFFICIAL_WEB_SCREENER_PREFILTER_ONLY",
+          "discovery_source":("CANONICAL_FROZEN_FULL_IDENTITY_SAME_ASOF" if frozen is not None else ("NASDAQTRADER_FULL_IDENTITY_PLUS_NASDAQ_SCREENER_METADATA_ONLY" if FULL_IDENTITY else "NASDAQ_OFFICIAL_WEB_SCREENER_PREFILTER_ONLY")),
           "history_source":"SINA_US_DAILY_ACCELERATOR_NOT_G9",
           "queue":queue,
           "queue_hash":sha_lines(queue),
@@ -432,9 +501,9 @@ def main():
           "discovery":discovery,
           "discovery_meta":meta,
           "security_names":{s:names[s] for s in queue},
-          "explicit_excluded_count":len(excluded),
-          "explicit_excluded_hash":sha_lines(ex_serial),
-          "explicit_excluded_reason_counts":exclusion_counts(excluded),
+          "explicit_excluded_count":(frozen["explicit_excluded_count"] if frozen is not None else len(excluded)),
+          "explicit_excluded_hash":(frozen["explicit_excluded_hash"] if frozen is not None else sha_lines(ex_serial)),
+          "explicit_excluded_reason_counts":(frozen["explicit_excluded_reason_counts"] if frozen is not None else exclusion_counts(excluded)),
           "cursor":0,
           "results":{},
           "status":"HISTORY_PARTIAL",
