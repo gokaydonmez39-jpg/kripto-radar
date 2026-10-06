@@ -10,6 +10,8 @@ from datetime import timedelta
 import pandas as pd
 import pandas_market_calendars as mcal
 
+NEW_TRIGGER_DISCOVERY_MAX_AGE=3
+
 def wilder_atr(df: pd.DataFrame, n: int = 14) -> pd.Series:
     """Wilder ATR with the first TR undefined and the first n valid TRs as seed."""
     h=df["high"].astype(float); l=df["low"].astype(float); c=df["close"].astype(float)
@@ -423,7 +425,7 @@ def tight_base_at(df:pd.DataFrame,t:int)->dict[str,Any]|None:
             "breakout_confirmed":bool(close>P and rv is not None and rv>=1.5),
             "trigger_date":df["date"].iloc[t].date().isoformat()}
 
-def find_recent_b_trigger(df:pd.DataFrame,max_age:int=3,eligible_dates=None)->dict[str,Any]|None:
+def find_recent_b_trigger(df:pd.DataFrame,max_age:int=NEW_TRIGGER_DISCOVERY_MAX_AGE,eligible_dates=None)->dict[str,Any]|None:
     """Earliest valid B trigger inside the retest horizon and optional weekly-eligible dates."""
     if df.empty:return None
     allowed=None if eligible_dates is None else set(str(x) for x in eligible_dates)
