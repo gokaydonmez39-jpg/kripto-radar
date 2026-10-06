@@ -89,7 +89,7 @@ def hash_lines(xs):
     return hashlib.sha256("\n".join(xs).encode()).hexdigest()
 
 def prior_core_symbol(pointer_asof):
-    candidates=[]
+    # First prefer an exact terminal snapshot for the prior pointer epoch.
     cur=ROOT/"canonical_current_terminal.json"
     static=ROOT/f"canonical_terminal_{str(pointer_asof).replace('-','')}.json"
     for q in [cur,static]:
@@ -98,12 +98,55 @@ def prior_core_symbol(pointer_asof):
             x=json.loads(q.read_text())
             if x.get("task_id")!=TASK or x.get("asof_et")!=pointer_asof: continue
             lp=sorted(((x.get("sets") or {}).get("legal_pass") or []))
-            if "MSFT" in lp: return "MSFT",str(q.relative_to(ROOT.parent)).replace("\\","/"),blob_sha(q)
+            if "MSFT" in lp: return "MSFT",str(q.relative_to(ROOT.parent)).replace("\\\\","/"),blob_sha(q)
             eligible=[s for s in lp if s not in {"AAPL","NVDA"}]
-            if eligible: return eligible[0],str(q.relative_to(ROOT.parent)).replace("\\","/"),blob_sha(q)
+            if eligible: return eligible[0],str(q.relative_to(ROOT.parent)).replace("\\\\","/"),blob_sha(q)
         except Exception:
             pass
-    return None,None,None
+
+    # The canonical-current terminal path is mutable across epochs. When the
+    # prior terminal bytes are no longer materialized, recover the already-proven
+    # third settlement core only from the durable pointer's exact-bound resolver
+    # evidence. This is settlement evidence only; it cannot create alpha PASS.
+    try:
+        ptr=json.loads(POINTER.read_text())
+        if ptr.get("schema")!="XRAY_GITHUB_DURABLE_STATE_V3" or ptr.get("authority")!="GITHUB_CURRENT_POINTER":
+            return None,None,None
+        ps=ptr.get("state_json") or {}
+        if isinstance(ps,str): ps=json.loads(ps)
+        if not isinstance(ps,dict) or ps.get("task_id")!=TASK or ps.get("asof_et")!=pointer_asof:
+            return None,None,None
+        ev=ps.get("settlement_resolver_evidence") or {}
+        if ev.get("asof_et")!=pointer_asof or ev.get("settlement_status")!="PASS":
+            return None,None,None
+        rel=str(ev.get("path") or "")
+        expected_blob=str(ev.get("blob_sha") or "")
+        if not rel or not expected_blob:
+            return None,None,None
+        q=(ROOT.parent/rel).resolve()
+        if ROOT.parent.resolve() not in q.parents or not q.exists() or blob_sha(q)!=expected_blob:
+            return None,None,None
+        br=json.loads(q.read_text())
+        if not (
+          br.get("schema")=="XRAY_RESOLVER_EPOCH_RESULT_V1"
+          and br.get("status")=="COMMITTED"
+          and br.get("task_id")==TASK
+          and br.get("execution")=="NONE" and br.get("real_money")=="NO-GO"
+          and br.get("unknown_never_pass") is True
+          and br.get("asof_et")==pointer_asof
+          and br.get("settlement_status")=="PASS"
+          and br.get("compiled_policy_version")=="C4.17"
+        ):
+            return None,None,None
+        syms=[str(x).upper() for x in (br.get("settlement_symbols") or []) if str(x)]
+        if len(syms)!=3 or len(set(syms))!=3 or not {"AAPL","NVDA"}<=set(syms):
+            return None,None,None
+        core=[x for x in syms if x not in {"AAPL","NVDA"}]
+        if len(core)!=1:
+            return None,None,None
+        return core[0],rel,expected_blob
+    except Exception:
+        return None,None,None
 
 def write_chunk_manifest(request_obj):
     # A large exact resolver scope is materialized into small content-addressed

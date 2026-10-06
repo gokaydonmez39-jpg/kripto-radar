@@ -69,6 +69,40 @@ jobs:
             nasdaq-xray/recover_pre_mc_snapshot.py \
             nasdaq-xray/test_alpha_semantics.py \
             nasdaq-xray/test_deep_repair_regressions.py
+      - name: Assert pointer-bound prior settlement core fallback
+        run: |
+          python - <<'PY'
+          import hashlib,json,pathlib,sys,tempfile
+          sys.path.insert(0,"nasdaq-xray")
+          import build_current_resolver_request as m
+          with tempfile.TemporaryDirectory() as td:
+              repo=pathlib.Path(td)/"repo"; root=repo/"nasdaq-xray"; root.mkdir(parents=True)
+              bridge=root/"prior_bridge.json"
+              obj={
+                "schema":"XRAY_RESOLVER_EPOCH_RESULT_V1","status":"COMMITTED",
+                "task_id":m.TASK,"execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
+                "asof_et":"2026-10-02","settlement_status":"PASS","compiled_policy_version":"C4.17",
+                "settlement_symbols":["AAPL","NVDA","MSFT"]
+              }
+              bridge.write_text(json.dumps(obj,sort_keys=True)+"\n")
+              b=bridge.read_bytes(); sha=hashlib.sha1(f"blob {len(b)}\\0".encode()+b).hexdigest()
+              pointer=root/"pointer.json"
+              pointer.write_text(json.dumps({
+                "schema":"XRAY_GITHUB_DURABLE_STATE_V3","authority":"GITHUB_CURRENT_POINTER",
+                "state_json":{"task_id":m.TASK,"asof_et":"2026-10-02",
+                  "settlement_resolver_evidence":{"path":"nasdaq-xray/prior_bridge.json","blob_sha":sha,
+                    "asof_et":"2026-10-02","settlement_status":"PASS"}}
+              }))
+              old_root,old_ptr=m.ROOT,m.POINTER
+              try:
+                  m.ROOT=root;m.POINTER=pointer
+                  core,path,got=m.prior_core_symbol("2026-10-02")
+                  assert (core,path,got)==("MSFT","nasdaq-xray/prior_bridge.json",sha),(core,path,got)
+              finally:
+                  m.ROOT,m.POINTER=old_root,old_ptr
+          print("POINTER_SETTLEMENT_CORE_FALLBACK=PASS")
+          PY
+
       - name: Assert old stricter PRICE pass survives corrected floor
         run: |
           python - <<'PY'
