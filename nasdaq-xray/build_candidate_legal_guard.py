@@ -179,7 +179,7 @@ def candidate_scope(deep:dict,fc:dict|None,lifecycle:dict|None)->list[str]:
     rows=deep.get("results") or {}
     for sym,g in ((fc or {}).get("confirmed") or {}).items():
         if (isinstance(g,dict) and g.get("confirmed")
-            and ((rows.get(sym) or {}).get("regime_finalist_pass") is True):
+            and ((rows.get(sym) or {}).get("regime_finalist_pass") is True)):
             syms.add(str(sym))
 
     for rec in ((lifecycle or {}).get("records") or {}).values():
