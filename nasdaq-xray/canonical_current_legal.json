@@ -3,15 +3,15 @@
   "blocked_symbols": [],
   "counts": {
     "BLOCK_LEGAL_SHELL": 0,
-    "PASS_LEGAL": 464,
+    "PASS_LEGAL": 475,
     "UNKNOWN_LEGAL": 0
   },
   "detailed_candidate_filing_review_authority": "SEPARATE_FINALIST_GUARD_REQUIRED",
   "detailed_candidate_filing_review_complete": false,
   "execution": "NONE",
-  "input_count": 464,
+  "input_count": 475,
   "legal_scope": "GLOBAL_SHELL_IDENTITY_ONLY",
-  "pass_hash": "98d5e757b3af30397902a305343003420124eca2147ce90e2fa0fa4a6c2da8ab",
+  "pass_hash": "41c1dcff43cf6686923f53554fba3583cb66471098807f2bb8770e96048ae0db",
   "pass_symbols": [
     "AAL",
     "AAOI",
@@ -30,6 +30,7 @@
     "AEIS",
     "AEP",
     "AFRM",
+    "AGNC",
     "AKAM",
     "ALAB",
     "ALGM",
@@ -42,6 +43,7 @@
     "AMD",
     "AMGN",
     "AMKR",
+    "AMLX",
     "AMZN",
     "APA",
     "APLD",
@@ -58,15 +60,15 @@
     "ASTS",
     "ATRC",
     "AUGO",
+    "AUR",
     "AVAV",
     "AVGO",
     "AVT",
-    "AXGN",
     "AXON",
     "AXSM",
     "AXTI",
-    "BAND",
     "BBIO",
+    "BIDU",
     "BIIB",
     "BKNG",
     "BKR",
@@ -74,19 +76,21 @@
     "BNTX",
     "BPOP",
     "BRKR",
+    "BRZE",
     "BSY",
     "BTDR",
     "BTSG",
-    "BWIN",
+    "BULL",
     "BZ",
     "CACC",
     "CAI",
     "CAKE",
     "CALM",
-    "CAMT",
     "CART",
     "CASY",
     "CBSH",
+    "CCC",
+    "CCEP",
     "CDNA",
     "CDNS",
     "CDW",
@@ -109,6 +113,7 @@
     "CLSK",
     "CMCSA",
     "CME",
+    "COCO",
     "COGT",
     "COHU",
     "COIN",
@@ -116,6 +121,7 @@
     "COLB",
     "COO",
     "CORT",
+    "CORZ",
     "COST",
     "CPB",
     "CPRT",
@@ -147,7 +153,6 @@
     "DPZ",
     "DUOL",
     "DXCM",
-    "DYN",
     "EBAY",
     "ECHO",
     "ELVN",
@@ -156,6 +161,7 @@
     "ENTG",
     "EQIX",
     "ERAS",
+    "ERIC",
     "ESLT",
     "EVRG",
     "EWBC",
@@ -169,8 +175,10 @@
     "FAST",
     "FCFS",
     "FCNCA",
+    "FER",
     "FFIV",
     "FIGR",
+    "FISV",
     "FIVE",
     "FIVN",
     "FLEX",
@@ -180,6 +188,7 @@
     "FOXA",
     "FROG",
     "FRPT",
+    "FRSH",
     "FSLR",
     "FSLY",
     "FTAI",
@@ -210,6 +219,7 @@
     "HSIC",
     "HST",
     "HTFL",
+    "HTHT",
     "HUT",
     "HWC",
     "IBKR",
@@ -232,10 +242,12 @@
     "ISRG",
     "JAZZ",
     "JBHT",
+    "JD",
     "JKHY",
     "KDP",
     "KLAC",
     "KLIC",
+    "KMB",
     "KRYS",
     "KSPI",
     "KTOS",
@@ -244,7 +256,6 @@
     "LECO",
     "LFST",
     "LFUS",
-    "LGN",
     "LGND",
     "LIN",
     "LITE",
@@ -275,10 +286,12 @@
     "MIRM",
     "MKSI",
     "MKTX",
+    "MMSI",
     "MNDY",
     "MNST",
     "MORN",
     "MPWR",
+    "MRCY",
     "MRNA",
     "MRVL",
     "MRX",
@@ -287,17 +300,16 @@
     "MTCH",
     "MTSI",
     "MU",
+    "MXL",
     "MYRG",
     "NBIS",
     "NBIX",
     "NDAQ",
     "NDSN",
-    "NEOG",
     "NESR",
     "NFLX",
-    "NICE",
-    "NSIT",
     "NTAP",
+    "NTES",
     "NTNX",
     "NTRA",
     "NTRS",
@@ -315,6 +327,7 @@
     "OLLI",
     "ON",
     "ONB",
+    "ONC",
     "ORKA",
     "ORLY",
     "OUST",
@@ -336,6 +349,7 @@
     "POOL",
     "POWL",
     "PRAX",
+    "PSKY",
     "PTC",
     "PTCT",
     "PTEN",
@@ -363,6 +377,7 @@
     "RPRX",
     "RRR",
     "RVMD",
+    "RYAAY",
     "RYTM",
     "SAIA",
     "SAIC",
@@ -371,11 +386,10 @@
     "SBAC",
     "SBLK",
     "SBUX",
-    "SDGR",
     "SEDG",
     "SEIC",
-    "SEZL",
     "SFM",
+    "SHOP",
     "SIMO",
     "SIRI",
     "SITM",
@@ -388,6 +402,7 @@
     "SNPS",
     "SNY",
     "SOFI",
+    "SOUN",
     "SRRK",
     "SSNC",
     "SSRM",
@@ -399,7 +414,6 @@
     "SYNA",
     "SYRE",
     "TARS",
-    "TCBI",
     "TCOM",
     "TEAM",
     "TECH",
@@ -413,6 +427,7 @@
     "TMUS",
     "TNGX",
     "TPG",
+    "TRI",
     "TRMB",
     "TRMD",
     "TROW",
@@ -431,7 +446,6 @@
     "TXN",
     "TXRH",
     "UAL",
-    "UBSI",
     "UCTT",
     "ULTA",
     "UMBF",
@@ -453,23 +467,20 @@
     "VSAT",
     "VSEC",
     "VTRS",
+    "WAY",
     "WBD",
     "WDAY",
     "WDC",
     "WFRD",
-    "WGS",
     "WING",
     "WIX",
-    "WMG",
     "WMT",
-    "WSC",
     "WTFC",
     "WTW",
     "WULF",
     "WWD",
     "WYNN",
     "XEL",
-    "XENE",
     "XMTR",
     "XP",
     "Z",
@@ -479,26 +490,34 @@
     "ZS"
   ],
   "r92_ineligible": [
-    "AMRX",
+    "AGNC",
+    "AMLX",
+    "AUR",
     "BIDU",
     "BRZE",
+    "BULL",
+    "CCC",
     "CCEP",
     "COCO",
     "CORZ",
+    "ERIC",
     "FER",
     "FISV",
     "FRSH",
     "HTHT",
     "JD",
     "KMB",
+    "MMSI",
+    "MRCY",
     "MXL",
     "NTES",
     "ONC",
-    "PAGP",
+    "PSKY",
     "RYAAY",
     "SHOP",
+    "SOUN",
     "TRI",
-    "VOD"
+    "WAY"
   ],
   "real_money": "NO-GO",
   "results": {
@@ -587,6 +606,11 @@
       "security_name": "Affirm Holdings, Inc. - Class A Common Stock",
       "status": "PASS_LEGAL"
     },
+    "AGNC": {
+      "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
+      "security_name": "AGNC Investment Corp. - Common Stock",
+      "status": "PASS_LEGAL"
+    },
     "AKAM": {
       "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
       "security_name": "Akamai Technologies, Inc. - Common Stock",
@@ -645,6 +669,11 @@
     "AMKR": {
       "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
       "security_name": "Amkor Technology, Inc. - Common Stock",
+      "status": "PASS_LEGAL"
+    },
+    "AMLX": {
+      "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
+      "security_name": "Amylyx Pharmaceuticals, Inc. - Common Stock",
       "status": "PASS_LEGAL"
     },
     "AMZN": {
@@ -727,6 +756,11 @@
       "security_name": "Aura Minerals Inc. - Common Shares",
       "status": "PASS_LEGAL"
     },
+    "AUR": {
+      "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
+      "security_name": "Aurora Innovation, Inc.  - Class A Common Stock",
+      "status": "PASS_LEGAL"
+    },
     "AVAV": {
       "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
       "security_name": "AeroVironment, Inc. - Common Stock",
@@ -740,11 +774,6 @@
     "AVT": {
       "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
       "security_name": "Avnet, Inc. - Common Stock",
-      "status": "PASS_LEGAL"
-    },
-    "AXGN": {
-      "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
-      "security_name": "Axogen, Inc. - Common Stock",
       "status": "PASS_LEGAL"
     },
     "AXON": {
@@ -762,14 +791,14 @@
       "security_name": "AXT Inc - Common Stock",
       "status": "PASS_LEGAL"
     },
-    "BAND": {
-      "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
-      "security_name": "Bandwidth Inc. - Class A Common Stock",
-      "status": "PASS_LEGAL"
-    },
     "BBIO": {
       "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
       "security_name": "BridgeBio Pharma, Inc. - Common Stock",
+      "status": "PASS_LEGAL"
+    },
+    "BIDU": {
+      "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
+      "security_name": "Baidu, Inc. - American Depositary Shares, each representing 8 ordinary share",
       "status": "PASS_LEGAL"
     },
     "BIIB": {
@@ -807,6 +836,11 @@
       "security_name": "Bruker Corporation - Common Stock",
       "status": "PASS_LEGAL"
     },
+    "BRZE": {
+      "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
+      "security_name": "Braze, Inc. - Class A Common Stock",
+      "status": "PASS_LEGAL"
+    },
     "BSY": {
       "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
       "security_name": "Bentley Systems, Incorporated - Class B Common Stock",
@@ -822,9 +856,9 @@
       "security_name": "BrightSpring Health Services, Inc. - Common Stock",
       "status": "PASS_LEGAL"
     },
-    "BWIN": {
+    "BULL": {
       "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
-      "security_name": "The Baldwin Insurance Group, Inc. - Class A Common Stock",
+      "security_name": "Webull Corporation - Class A Ordinary Shares",
       "status": "PASS_LEGAL"
     },
     "BZ": {
@@ -852,11 +886,6 @@
       "security_name": "Cal-Maine Foods, Inc. - Common Stock",
       "status": "PASS_LEGAL"
     },
-    "CAMT": {
-      "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
-      "security_name": "Camtek Ltd. - Ordinary Shares",
-      "status": "PASS_LEGAL"
-    },
     "CART": {
       "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
       "security_name": "Maplebear Inc. - Common Stock",
@@ -870,6 +899,16 @@
     "CBSH": {
       "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
       "security_name": "Commerce Bancshares, Inc. - Common Stock",
+      "status": "PASS_LEGAL"
+    },
+    "CCC": {
+      "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
+      "security_name": "CCC Intelligent Solutions Holdings Inc. - Common Stock",
+      "status": "PASS_LEGAL"
+    },
+    "CCEP": {
+      "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
+      "security_name": "Coca-Cola Europacific Partners plc - Ordinary Shares",
       "status": "PASS_LEGAL"
     },
     "CDNA": {
@@ -982,6 +1021,11 @@
       "security_name": "CME Group Inc. - Class A Common Stock",
       "status": "PASS_LEGAL"
     },
+    "COCO": {
+      "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
+      "security_name": "The Vita Coco Company, Inc. - Common Stock",
+      "status": "PASS_LEGAL"
+    },
     "COGT": {
       "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
       "security_name": "Cogent Biosciences, Inc. - Common Stock",
@@ -1015,6 +1059,11 @@
     "CORT": {
       "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
       "security_name": "Corcept Therapeutics Incorporated - Common Stock",
+      "status": "PASS_LEGAL"
+    },
+    "CORZ": {
+      "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
+      "security_name": "Core Scientific, Inc. - Common Stock",
       "status": "PASS_LEGAL"
     },
     "COST": {
@@ -1172,11 +1221,6 @@
       "security_name": "DexCom, Inc. - Common Stock",
       "status": "PASS_LEGAL"
     },
-    "DYN": {
-      "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
-      "security_name": "Dyne Therapeutics, Inc. - Common Stock",
-      "status": "PASS_LEGAL"
-    },
     "EBAY": {
       "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
       "security_name": "eBay Inc. - Common Stock",
@@ -1215,6 +1259,11 @@
     "ERAS": {
       "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
       "security_name": "Erasca, Inc. - Common Stock",
+      "status": "PASS_LEGAL"
+    },
+    "ERIC": {
+      "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
+      "security_name": "Ericsson - American Depositary Shares each representing 1 underlying Class B share",
       "status": "PASS_LEGAL"
     },
     "ESLT": {
@@ -1282,6 +1331,11 @@
       "security_name": "First Citizens BancShares, Inc. - Class A Common Stock",
       "status": "PASS_LEGAL"
     },
+    "FER": {
+      "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
+      "security_name": "Ferrovial N.V. - Ordinary Shares",
+      "status": "PASS_LEGAL"
+    },
     "FFIV": {
       "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
       "security_name": "F5, Inc. - Common Stock",
@@ -1290,6 +1344,11 @@
     "FIGR": {
       "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
       "security_name": "Figure Technology Solutions, Inc. - Class A Common Stock",
+      "status": "PASS_LEGAL"
+    },
+    "FISV": {
+      "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
+      "security_name": "Fiserv, Inc. - Common Stock",
       "status": "PASS_LEGAL"
     },
     "FIVE": {
@@ -1335,6 +1394,11 @@
     "FRPT": {
       "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
       "security_name": "Freshpet, Inc. - Common Stock",
+      "status": "PASS_LEGAL"
+    },
+    "FRSH": {
+      "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
+      "security_name": "Freshworks Inc. - Class A Common Stock",
       "status": "PASS_LEGAL"
     },
     "FSLR": {
@@ -1487,6 +1551,11 @@
       "security_name": "Heartflow, Inc. - Common Stock",
       "status": "PASS_LEGAL"
     },
+    "HTHT": {
+      "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
+      "security_name": "H World Group Limited - American Depositary Shares",
+      "status": "PASS_LEGAL"
+    },
     "HUT": {
       "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
       "security_name": "Hut 8 Corp. - Common Stock",
@@ -1597,6 +1666,11 @@
       "security_name": "J.B. Hunt Transport Services, Inc. - Common Stock",
       "status": "PASS_LEGAL"
     },
+    "JD": {
+      "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
+      "security_name": "JD.com, Inc. - American Depositary Shares",
+      "status": "PASS_LEGAL"
+    },
     "JKHY": {
       "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
       "security_name": "Jack Henry & Associates, Inc. - Common Stock",
@@ -1615,6 +1689,11 @@
     "KLIC": {
       "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
       "security_name": "Kulicke and Soffa Industries, Inc. - Common Stock",
+      "status": "PASS_LEGAL"
+    },
+    "KMB": {
+      "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
+      "security_name": "Kimberly-Clark Corporation - Common Stock",
       "status": "PASS_LEGAL"
     },
     "KRYS": {
@@ -1655,11 +1734,6 @@
     "LFUS": {
       "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
       "security_name": "Littelfuse, Inc. - Common Stock",
-      "status": "PASS_LEGAL"
-    },
-    "LGN": {
-      "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
-      "security_name": "Legence Corp. - Class A Common stock",
       "status": "PASS_LEGAL"
     },
     "LGND": {
@@ -1812,6 +1886,11 @@
       "security_name": "MarketAxess Holdings, Inc. - Common Stock",
       "status": "PASS_LEGAL"
     },
+    "MMSI": {
+      "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
+      "security_name": "Merit Medical Systems, Inc. - Common Stock",
+      "status": "PASS_LEGAL"
+    },
     "MNDY": {
       "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
       "security_name": "monday.com Ltd. - Ordinary Shares",
@@ -1830,6 +1909,11 @@
     "MPWR": {
       "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
       "security_name": "Monolithic Power Systems, Inc. - Common Stock",
+      "status": "PASS_LEGAL"
+    },
+    "MRCY": {
+      "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
+      "security_name": "Mercury Systems Inc - Common Stock",
       "status": "PASS_LEGAL"
     },
     "MRNA": {
@@ -1872,6 +1956,11 @@
       "security_name": "Micron Technology, Inc. - Common Stock",
       "status": "PASS_LEGAL"
     },
+    "MXL": {
+      "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
+      "security_name": "MaxLinear, Inc - Common Stock",
+      "status": "PASS_LEGAL"
+    },
     "MYRG": {
       "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
       "security_name": "MYR Group, Inc. - Common Stock",
@@ -1897,11 +1986,6 @@
       "security_name": "Nordson Corporation - Common Stock",
       "status": "PASS_LEGAL"
     },
-    "NEOG": {
-      "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
-      "security_name": "Neogen Corporation - Common Stock",
-      "status": "PASS_LEGAL"
-    },
     "NESR": {
       "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
       "security_name": "National Energy Services Reunited Corp - Ordinary Shares",
@@ -1912,19 +1996,14 @@
       "security_name": "Netflix, Inc. - Common Stock",
       "status": "PASS_LEGAL"
     },
-    "NICE": {
-      "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
-      "security_name": "NICE Ltd - American Depositary Shares each representing one Ordinary Share",
-      "status": "PASS_LEGAL"
-    },
-    "NSIT": {
-      "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
-      "security_name": "Insight Enterprises, Inc. - Common Stock",
-      "status": "PASS_LEGAL"
-    },
     "NTAP": {
       "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
       "security_name": "NetApp, Inc. - Common Stock",
+      "status": "PASS_LEGAL"
+    },
+    "NTES": {
+      "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
+      "security_name": "NetEase, Inc. - American Depositary Shares, each representing 5 ordinary shares",
       "status": "PASS_LEGAL"
     },
     "NTNX": {
@@ -2010,6 +2089,11 @@
     "ONB": {
       "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
       "security_name": "Old National Bancorp - Common Stock",
+      "status": "PASS_LEGAL"
+    },
+    "ONC": {
+      "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
+      "security_name": "BeOne Medicines Ltd. - American Depositary Shares",
       "status": "PASS_LEGAL"
     },
     "ORKA": {
@@ -2115,6 +2199,11 @@
     "PRAX": {
       "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
       "security_name": "Praxis Precision Medicines, Inc. - Common Stock",
+      "status": "PASS_LEGAL"
+    },
+    "PSKY": {
+      "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
+      "security_name": "Paramount Skydance Corporation - Class B Common Stock",
       "status": "PASS_LEGAL"
     },
     "PTC": {
@@ -2252,6 +2341,11 @@
       "security_name": "Revolution Medicines, Inc. - Common Stock",
       "status": "PASS_LEGAL"
     },
+    "RYAAY": {
+      "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
+      "security_name": "Ryanair Holdings plc - American Depositary Shares, each representing five Ordinary Shares",
+      "status": "PASS_LEGAL"
+    },
     "RYTM": {
       "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
       "security_name": "Rhythm Pharmaceuticals, Inc. - Common Stock",
@@ -2292,11 +2386,6 @@
       "security_name": "Starbucks Corporation - Common Stock",
       "status": "PASS_LEGAL"
     },
-    "SDGR": {
-      "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
-      "security_name": "Schrodinger, Inc. - Common Stock",
-      "status": "PASS_LEGAL"
-    },
     "SEDG": {
       "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
       "security_name": "SolarEdge Technologies, Inc. - Common Stock",
@@ -2307,14 +2396,14 @@
       "security_name": "SEI Investments Company - Common Stock",
       "status": "PASS_LEGAL"
     },
-    "SEZL": {
-      "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
-      "security_name": "Sezzle Inc. - Common Stock",
-      "status": "PASS_LEGAL"
-    },
     "SFM": {
       "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
       "security_name": "Sprouts Farmers Market, Inc. - Common Stock",
+      "status": "PASS_LEGAL"
+    },
+    "SHOP": {
+      "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
+      "security_name": "Shopify Inc. - Class A Subordinate Voting Shares",
       "status": "PASS_LEGAL"
     },
     "SIMO": {
@@ -2377,6 +2466,11 @@
       "security_name": "SoFi Technologies, Inc.  - Common Stock",
       "status": "PASS_LEGAL"
     },
+    "SOUN": {
+      "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
+      "security_name": "SoundHound AI, Inc. - Class A Common Stock",
+      "status": "PASS_LEGAL"
+    },
     "SRRK": {
       "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
       "security_name": "Scholar Rock Holding Corporation - Common Stock",
@@ -2430,11 +2524,6 @@
     "TARS": {
       "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
       "security_name": "Tarsus Pharmaceuticals, Inc. - Common Stock",
-      "status": "PASS_LEGAL"
-    },
-    "TCBI": {
-      "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
-      "security_name": "Texas Capital Bancshares, Inc. - Common Stock",
       "status": "PASS_LEGAL"
     },
     "TCOM": {
@@ -2500,6 +2589,11 @@
     "TPG": {
       "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
       "security_name": "TPG Inc. - Class A Common Stock",
+      "status": "PASS_LEGAL"
+    },
+    "TRI": {
+      "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
+      "security_name": "Thomson Reuters Corp - Common Shares",
       "status": "PASS_LEGAL"
     },
     "TRMB": {
@@ -2590,11 +2684,6 @@
     "UAL": {
       "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
       "security_name": "United Airlines Holdings, Inc. - Common Stock",
-      "status": "PASS_LEGAL"
-    },
-    "UBSI": {
-      "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
-      "security_name": "United Bankshares, Inc. - Common Stock",
       "status": "PASS_LEGAL"
     },
     "UCTT": {
@@ -2702,6 +2791,11 @@
       "security_name": "Viatris Inc. - Common Stock",
       "status": "PASS_LEGAL"
     },
+    "WAY": {
+      "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
+      "security_name": "Waystar Holding Corp. - Common Stock",
+      "status": "PASS_LEGAL"
+    },
     "WBD": {
       "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
       "security_name": "Warner Bros. Discovery, Inc. - Series A Common Stock",
@@ -2722,11 +2816,6 @@
       "security_name": "Weatherford International plc - Ordinary shares",
       "status": "PASS_LEGAL"
     },
-    "WGS": {
-      "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
-      "security_name": "GeneDx Holdings Corp. - Class A Common Stock",
-      "status": "PASS_LEGAL"
-    },
     "WING": {
       "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
       "security_name": "Wingstop Inc. - Common Stock",
@@ -2737,19 +2826,9 @@
       "security_name": "Wix.com Ltd. - Ordinary Shares",
       "status": "PASS_LEGAL"
     },
-    "WMG": {
-      "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
-      "security_name": "Warner Music Group Corp. - Class A Common Stock",
-      "status": "PASS_LEGAL"
-    },
     "WMT": {
       "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
       "security_name": "Walmart Inc. - Common Stock",
-      "status": "PASS_LEGAL"
-    },
-    "WSC": {
-      "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
-      "security_name": "WillScot Holdings Corporation - Class A Common Stock",
       "status": "PASS_LEGAL"
     },
     "WTFC": {
@@ -2780,11 +2859,6 @@
     "XEL": {
       "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
       "security_name": "Xcel Energy Inc. - Common Stock",
-      "status": "PASS_LEGAL"
-    },
-    "XENE": {
-      "reason": "NO_SPAC_SHELL_INDICATOR_IN_OFFICIAL_IDENTITY_OR_SCREENER",
-      "security_name": "Xenon Pharmaceuticals Inc. - Common Shares",
       "status": "PASS_LEGAL"
     },
     "XMTR": {
@@ -2824,35 +2898,504 @@
     }
   },
   "schema": "XRAY_CANONICAL_LEGAL_V1",
-  "source_history_blob_sha": "ebd162fb9cb78e17bdd0a9f4cbd21c0058d813e0",
-  "source_history_pass_hash": "98d5e757b3af30397902a305343003420124eca2147ce90e2fa0fa4a6c2da8ab",
+  "source_history_blob_sha": "0fef3d354e1acab59fc41d4849ea391e30bb6586",
+  "source_history_pass_hash": "41c1dcff43cf6686923f53554fba3583cb66471098807f2bb8770e96048ae0db",
   "source_history_path": "nasdaq-xray/canonical_current_history.json",
   "source_history_schema": "XRAY_CANONICAL_HISTORY_V1",
-  "source_master_blob_sha": "2b04d03ac4e67ecd8bd0fa5bde1f0663ce5dc7fb",
+  "source_master_blob_sha": "26dd40330f68ca1b758d2a37f07e92edc5e6e6a3",
   "source_master_path": "nasdaq-xray/canonical_current_full_state.json",
   "source_proof_blob_sha": null,
   "source_proof_path": null,
   "state_caps": {
-    "AMRX": "WATCH",
+    "AAL": "NORMAL",
+    "AAOI": "NORMAL",
+    "AAON": "NORMAL",
+    "AAPL": "NORMAL",
+    "ABCL": "NORMAL",
+    "ABNB": "NORMAL",
+    "ABVX": "NORMAL",
+    "ACGL": "NORMAL",
+    "ACMR": "NORMAL",
+    "ADBE": "NORMAL",
+    "ADI": "NORMAL",
+    "ADP": "NORMAL",
+    "ADSK": "NORMAL",
+    "AEHR": "NORMAL",
+    "AEIS": "NORMAL",
+    "AEP": "NORMAL",
+    "AFRM": "NORMAL",
+    "AGNC": "WATCH",
+    "AKAM": "NORMAL",
+    "ALAB": "NORMAL",
+    "ALGM": "NORMAL",
+    "ALGN": "NORMAL",
+    "ALKS": "NORMAL",
+    "ALM": "NORMAL",
+    "ALNY": "NORMAL",
+    "AMAT": "NORMAL",
+    "AMBA": "NORMAL",
+    "AMD": "NORMAL",
+    "AMGN": "NORMAL",
+    "AMKR": "NORMAL",
+    "AMLX": "WATCH",
+    "AMZN": "NORMAL",
+    "APA": "NORMAL",
+    "APLD": "NORMAL",
+    "APP": "NORMAL",
+    "APPF": "NORMAL",
+    "ARGX": "NORMAL",
+    "ARM": "NORMAL",
+    "ARQT": "NORMAL",
+    "ARWR": "NORMAL",
+    "ASML": "NORMAL",
+    "ASND": "NORMAL",
+    "ASO": "NORMAL",
+    "ASST": "NORMAL",
+    "ASTS": "NORMAL",
+    "ATRC": "NORMAL",
+    "AUGO": "NORMAL",
+    "AUR": "WATCH",
+    "AVAV": "NORMAL",
+    "AVGO": "NORMAL",
+    "AVT": "NORMAL",
+    "AXON": "NORMAL",
+    "AXSM": "NORMAL",
+    "AXTI": "NORMAL",
+    "BBIO": "NORMAL",
     "BIDU": "WATCH",
+    "BIIB": "NORMAL",
+    "BKNG": "NORMAL",
+    "BKR": "NORMAL",
+    "BLLN": "NORMAL",
+    "BMRN": "NORMAL",
+    "BNTX": "NORMAL",
+    "BPOP": "NORMAL",
+    "BRKR": "NORMAL",
     "BRZE": "WATCH",
+    "BSP": "NORMAL",
+    "BSY": "NORMAL",
+    "BTDR": "NORMAL",
+    "BTSG": "NORMAL",
+    "BULL": "WATCH",
+    "BZ": "NORMAL",
+    "CACC": "NORMAL",
+    "CAI": "NORMAL",
+    "CAKE": "NORMAL",
+    "CALM": "NORMAL",
+    "CART": "NORMAL",
+    "CASY": "NORMAL",
+    "CBRS": "NORMAL",
+    "CBSH": "NORMAL",
+    "CCC": "WATCH",
     "CCEP": "WATCH",
+    "CDNA": "NORMAL",
+    "CDNS": "NORMAL",
+    "CDW": "NORMAL",
+    "CELC": "NORMAL",
+    "CELH": "NORMAL",
+    "CENX": "NORMAL",
+    "CG": "NORMAL",
+    "CGNX": "NORMAL",
+    "CGON": "NORMAL",
+    "CHDN": "NORMAL",
+    "CHEF": "NORMAL",
+    "CHKP": "NORMAL",
+    "CHRD": "NORMAL",
+    "CHRW": "NORMAL",
+    "CHTR": "NORMAL",
+    "CHYM": "NORMAL",
+    "CIFR": "NORMAL",
+    "CINF": "NORMAL",
+    "CLMT": "NORMAL",
+    "CLSK": "NORMAL",
+    "CMCSA": "NORMAL",
+    "CME": "NORMAL",
     "COCO": "WATCH",
+    "COGT": "NORMAL",
+    "COHU": "NORMAL",
+    "COIN": "NORMAL",
+    "COKE": "NORMAL",
+    "COLB": "NORMAL",
+    "COO": "NORMAL",
+    "CORT": "NORMAL",
     "CORZ": "WATCH",
+    "COST": "NORMAL",
+    "CPB": "NORMAL",
+    "CPRT": "NORMAL",
+    "CRDO": "NORMAL",
+    "CROX": "NORMAL",
+    "CRSP": "NORMAL",
+    "CRUS": "NORMAL",
+    "CRWD": "NORMAL",
+    "CRWV": "NORMAL",
+    "CSCO": "NORMAL",
+    "CSGP": "NORMAL",
+    "CSX": "NORMAL",
+    "CTAS": "NORMAL",
+    "CTSH": "NORMAL",
+    "CVCO": "NORMAL",
+    "CVLT": "NORMAL",
+    "CYTK": "NORMAL",
+    "CZR": "NORMAL",
+    "DASH": "NORMAL",
+    "DAVE": "NORMAL",
+    "DBX": "NORMAL",
+    "DDOG": "NORMAL",
+    "DFTX": "NORMAL",
+    "DKNG": "NORMAL",
+    "DLTR": "NORMAL",
+    "DNTH": "NORMAL",
+    "DOCU": "NORMAL",
+    "DOX": "NORMAL",
+    "DPZ": "NORMAL",
+    "DUOL": "NORMAL",
+    "DXCM": "NORMAL",
+    "EBAY": "NORMAL",
+    "ECHO": "NORMAL",
+    "ELVN": "NORMAL",
+    "ENPH": "NORMAL",
+    "ENSG": "NORMAL",
+    "ENTG": "NORMAL",
+    "EQIX": "NORMAL",
+    "ERAS": "NORMAL",
+    "ERIC": "WATCH",
+    "ESLT": "NORMAL",
+    "EVRG": "NORMAL",
+    "EWBC": "NORMAL",
+    "EWTX": "NORMAL",
+    "EXC": "NORMAL",
+    "EXE": "NORMAL",
+    "EXEL": "NORMAL",
+    "EXLS": "NORMAL",
+    "EXPE": "NORMAL",
+    "FANG": "NORMAL",
+    "FAST": "NORMAL",
+    "FCFS": "NORMAL",
+    "FCNCA": "NORMAL",
     "FER": "WATCH",
+    "FFIV": "NORMAL",
+    "FIGR": "NORMAL",
     "FISV": "WATCH",
+    "FIVE": "NORMAL",
+    "FIVN": "NORMAL",
+    "FLEX": "NORMAL",
+    "FLY": "NORMAL",
+    "FORM": "NORMAL",
+    "FOX": "NORMAL",
+    "FOXA": "NORMAL",
+    "FROG": "NORMAL",
+    "FRPT": "NORMAL",
     "FRSH": "WATCH",
+    "FRVO": "NORMAL",
+    "FSLR": "NORMAL",
+    "FSLY": "NORMAL",
+    "FTAI": "NORMAL",
+    "FTNT": "NORMAL",
+    "FUTU": "NORMAL",
+    "FWONK": "NORMAL",
+    "GEHC": "NORMAL",
+    "GEN": "NORMAL",
+    "GFS": "NORMAL",
+    "GH": "NORMAL",
+    "GILD": "NORMAL",
+    "GLBE": "NORMAL",
+    "GLNG": "NORMAL",
+    "GLPI": "NORMAL",
+    "GLXY": "NORMAL",
+    "GMAB": "NORMAL",
+    "GOOG": "NORMAL",
+    "GOOGL": "NORMAL",
+    "GTLB": "NORMAL",
+    "GTX": "NORMAL",
+    "HALO": "NORMAL",
+    "HAS": "NORMAL",
+    "HBAN": "NORMAL",
+    "HLNE": "NORMAL",
+    "HON": "NORMAL",
+    "HONA": "NORMAL",
+    "HOOD": "NORMAL",
+    "HQY": "NORMAL",
+    "HSIC": "NORMAL",
+    "HST": "NORMAL",
+    "HTFL": "NORMAL",
     "HTHT": "WATCH",
+    "HUT": "NORMAL",
+    "HWC": "NORMAL",
+    "IBKR": "NORMAL",
+    "IBRX": "NORMAL",
+    "ICLR": "NORMAL",
+    "IDCC": "NORMAL",
+    "IDXX": "NORMAL",
+    "IESC": "NORMAL",
+    "ILMN": "NORMAL",
+    "INCY": "NORMAL",
+    "INDV": "NORMAL",
+    "INIO": "NORMAL",
+    "INOD": "NORMAL",
+    "INSM": "NORMAL",
+    "INTC": "NORMAL",
+    "INTU": "NORMAL",
+    "IONS": "NORMAL",
+    "IOVA": "NORMAL",
+    "IREN": "NORMAL",
+    "IRTC": "NORMAL",
+    "ISRG": "NORMAL",
+    "JAZZ": "NORMAL",
+    "JBHT": "NORMAL",
     "JD": "WATCH",
+    "JKHY": "NORMAL",
+    "KDP": "NORMAL",
+    "KLAC": "NORMAL",
+    "KLIC": "NORMAL",
     "KMB": "WATCH",
+    "KRYS": "NORMAL",
+    "KSPI": "NORMAL",
+    "KTOS": "NORMAL",
+    "KYMR": "NORMAL",
+    "LAMR": "NORMAL",
+    "LECO": "NORMAL",
+    "LFST": "NORMAL",
+    "LFUS": "NORMAL",
+    "LGND": "NORMAL",
+    "LIN": "NORMAL",
+    "LITE": "NORMAL",
+    "LKQ": "NORMAL",
+    "LNT": "NORMAL",
+    "LNTH": "NORMAL",
+    "LOGI": "NORMAL",
+    "LPLA": "NORMAL",
+    "LQDA": "NORMAL",
+    "LRCX": "NORMAL",
+    "LSCC": "NORMAL",
+    "LSTR": "NORMAL",
+    "LULU": "NORMAL",
+    "LUNR": "NORMAL",
+    "LYFT": "NORMAL",
+    "MANH": "NORMAL",
+    "MAR": "NORMAL",
+    "MARA": "NORMAL",
+    "MAT": "NORMAL",
+    "MCHP": "NORMAL",
+    "MDB": "NORMAL",
+    "MDGL": "NORMAL",
+    "MDLN": "NORMAL",
+    "MDLZ": "NORMAL",
+    "MEDP": "NORMAL",
+    "MELI": "NORMAL",
+    "META": "NORMAL",
+    "MIDD": "NORMAL",
+    "MIRM": "NORMAL",
+    "MKSI": "NORMAL",
+    "MKTX": "NORMAL",
+    "MMED": "NORMAL",
+    "MMSI": "WATCH",
+    "MNDY": "NORMAL",
+    "MNST": "NORMAL",
+    "MORN": "NORMAL",
+    "MPWR": "NORMAL",
+    "MRCY": "WATCH",
+    "MRNA": "NORMAL",
+    "MRVL": "NORMAL",
+    "MRX": "NORMAL",
+    "MSFT": "NORMAL",
+    "MSTR": "NORMAL",
+    "MTCH": "NORMAL",
+    "MTSI": "NORMAL",
+    "MU": "NORMAL",
     "MXL": "WATCH",
+    "MYRG": "NORMAL",
+    "NAVN": "NORMAL",
+    "NBIS": "NORMAL",
+    "NBIX": "NORMAL",
+    "NDAQ": "NORMAL",
+    "NDSN": "NORMAL",
+    "NESR": "NORMAL",
+    "NFLX": "NORMAL",
+    "NTAP": "NORMAL",
     "NTES": "WATCH",
+    "NTNX": "NORMAL",
+    "NTRA": "NORMAL",
+    "NTRS": "NORMAL",
+    "NTSK": "NORMAL",
+    "NVDA": "NORMAL",
+    "NVMI": "NORMAL",
+    "NVTS": "NORMAL",
+    "NWSA": "NORMAL",
+    "NXPI": "NORMAL",
+    "NXST": "NORMAL",
+    "NXT": "NORMAL",
+    "ODFL": "NORMAL",
+    "OKTA": "NORMAL",
+    "OLED": "NORMAL",
+    "OLLI": "NORMAL",
+    "ON": "NORMAL",
+    "ONB": "NORMAL",
     "ONC": "WATCH",
-    "PAGP": "WATCH",
+    "ORKA": "NORMAL",
+    "ORLY": "NORMAL",
+    "OUST": "NORMAL",
+    "OZK": "NORMAL",
+    "PANW": "NORMAL",
+    "PAYX": "NORMAL",
+    "PCAR": "NORMAL",
+    "PCTY": "NORMAL",
+    "PCVX": "NORMAL",
+    "PDD": "NORMAL",
+    "PEGA": "NORMAL",
+    "PENG": "NORMAL",
+    "PEP": "NORMAL",
+    "PFG": "NORMAL",
+    "PI": "NORMAL",
+    "PLTR": "NORMAL",
+    "PLXS": "NORMAL",
+    "PODD": "NORMAL",
+    "POOL": "NORMAL",
+    "POWL": "NORMAL",
+    "PRAX": "NORMAL",
+    "PSKY": "WATCH",
+    "PTC": "NORMAL",
+    "PTCT": "NORMAL",
+    "PTEN": "NORMAL",
+    "PTGX": "NORMAL",
+    "PYPL": "NORMAL",
+    "QBTS": "NORMAL",
+    "QCOM": "NORMAL",
+    "QLYS": "NORMAL",
+    "QNT": "NORMAL",
+    "REG": "NORMAL",
+    "REGN": "NORMAL",
+    "RELY": "NORMAL",
+    "RGEN": "NORMAL",
+    "RGLD": "NORMAL",
+    "RGTI": "NORMAL",
+    "RIOT": "NORMAL",
+    "RIVN": "NORMAL",
+    "RKLB": "NORMAL",
+    "RLAY": "NORMAL",
+    "RMBS": "NORMAL",
+    "ROAD": "NORMAL",
+    "ROIV": "NORMAL",
+    "ROKU": "NORMAL",
+    "ROP": "NORMAL",
+    "ROST": "NORMAL",
+    "RPRX": "NORMAL",
+    "RRR": "NORMAL",
+    "RVMD": "NORMAL",
     "RYAAY": "WATCH",
+    "RYTM": "NORMAL",
+    "SAIA": "NORMAL",
+    "SAIC": "NORMAL",
+    "SAIL": "NORMAL",
+    "SANM": "NORMAL",
+    "SBAC": "NORMAL",
+    "SBLK": "NORMAL",
+    "SBUX": "NORMAL",
+    "SEDG": "NORMAL",
+    "SEIC": "NORMAL",
+    "SFM": "NORMAL",
     "SHOP": "WATCH",
+    "SIMO": "NORMAL",
+    "SIRI": "NORMAL",
+    "SITM": "NORMAL",
+    "SKHY": "NORMAL",
+    "SLAB": "NORMAL",
+    "SLS": "NORMAL",
+    "SMCI": "NORMAL",
+    "SMMT": "NORMAL",
+    "SMTC": "NORMAL",
+    "SNEX": "NORMAL",
+    "SNPS": "NORMAL",
+    "SNY": "NORMAL",
+    "SOFI": "NORMAL",
+    "SOLS": "NORMAL",
+    "SOUN": "WATCH",
+    "SPCX": "NORMAL",
+    "SRRK": "NORMAL",
+    "SSNC": "NORMAL",
+    "SSRM": "NORMAL",
+    "STLD": "NORMAL",
+    "STRL": "NORMAL",
+    "STX": "NORMAL",
+    "SWKS": "NORMAL",
+    "SYM": "NORMAL",
+    "SYNA": "NORMAL",
+    "SYRE": "NORMAL",
+    "TARS": "NORMAL",
+    "TCOM": "NORMAL",
+    "TEAM": "NORMAL",
+    "TECH": "NORMAL",
+    "TEM": "NORMAL",
+    "TENB": "NORMAL",
+    "TER": "NORMAL",
+    "TGTX": "NORMAL",
+    "TIGO": "NORMAL",
+    "TLN": "NORMAL",
+    "TMDX": "NORMAL",
+    "TMUS": "NORMAL",
+    "TNGX": "NORMAL",
+    "TPG": "NORMAL",
     "TRI": "WATCH",
-    "VOD": "WATCH"
+    "TRMB": "NORMAL",
+    "TRMD": "NORMAL",
+    "TROW": "NORMAL",
+    "TSCO": "NORMAL",
+    "TSEM": "NORMAL",
+    "TSLA": "NORMAL",
+    "TTAN": "NORMAL",
+    "TTD": "NORMAL",
+    "TTEK": "NORMAL",
+    "TTMI": "NORMAL",
+    "TTWO": "NORMAL",
+    "TVTX": "NORMAL",
+    "TW": "NORMAL",
+    "TWST": "NORMAL",
+    "TXG": "NORMAL",
+    "TXN": "NORMAL",
+    "TXRH": "NORMAL",
+    "UAL": "NORMAL",
+    "UCTT": "NORMAL",
+    "ULTA": "NORMAL",
+    "UMBF": "NORMAL",
+    "UPST": "NORMAL",
+    "URBN": "NORMAL",
+    "UTHR": "NORMAL",
+    "VCTR": "NORMAL",
+    "VCYT": "NORMAL",
+    "VERA": "NORMAL",
+    "VIAV": "NORMAL",
+    "VICR": "NORMAL",
+    "VKTX": "NORMAL",
+    "VLY": "NORMAL",
+    "VNOM": "NORMAL",
+    "VRNS": "NORMAL",
+    "VRSK": "NORMAL",
+    "VRSN": "NORMAL",
+    "VRTX": "NORMAL",
+    "VSAT": "NORMAL",
+    "VSEC": "NORMAL",
+    "VSNT": "NORMAL",
+    "VTRS": "NORMAL",
+    "WAY": "WATCH",
+    "WBD": "NORMAL",
+    "WDAY": "NORMAL",
+    "WDC": "NORMAL",
+    "WFRD": "NORMAL",
+    "WING": "NORMAL",
+    "WIX": "NORMAL",
+    "WMT": "NORMAL",
+    "WTFC": "NORMAL",
+    "WTW": "NORMAL",
+    "WULF": "NORMAL",
+    "WWD": "NORMAL",
+    "WYNN": "NORMAL",
+    "XEL": "NORMAL",
+    "XMTR": "NORMAL",
+    "XP": "NORMAL",
+    "Z": "NORMAL",
+    "ZBRA": "NORMAL",
+    "ZION": "NORMAL",
+    "ZM": "NORMAL",
+    "ZS": "NORMAL"
   },
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_never_pass": true,

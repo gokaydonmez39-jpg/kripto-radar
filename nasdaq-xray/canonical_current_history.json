@@ -1,17 +1,23 @@
 {
   "asof_et": "2026-10-05",
   "counts": {
-    "FAIL_HISTORY": 16,
-    "PASS_HISTORY": 464
+    "FAIL_HISTORY": 14,
+    "PASS_HISTORY": 475
   },
   "execution": "NONE",
   "history_evidence_bridge_count": 1,
   "history_evidence_bridge_path": "nasdaq-xray/canonical_history_evidence_bridge_20261005_v1.json",
-  "input_count": 480,
+  "input_count": 489,
+  "mc_scope": {
+    "fallback_watch_count": 28,
+    "input_count": 489,
+    "mode": "PRIMARY_PLUS_FALLBACK_WATCH",
+    "primary_count": 461
+  },
   "official_identity_evidence_blob_sha": "fd8d5029d7aa3a08a253b9a4f866817705886247",
   "official_identity_evidence_path": "nasdaq-xray/history_official_identity_evidence.json",
-  "pass_count": 464,
-  "pass_hash": "98d5e757b3af30397902a305343003420124eca2147ce90e2fa0fa4a6c2da8ab",
+  "pass_count": 475,
+  "pass_hash": "41c1dcff43cf6686923f53554fba3583cb66471098807f2bb8770e96048ae0db",
   "pass_symbols": [
     "AAL",
     "AAOI",
@@ -30,6 +36,7 @@
     "AEIS",
     "AEP",
     "AFRM",
+    "AGNC",
     "AKAM",
     "ALAB",
     "ALGM",
@@ -42,6 +49,7 @@
     "AMD",
     "AMGN",
     "AMKR",
+    "AMLX",
     "AMZN",
     "APA",
     "APLD",
@@ -58,15 +66,15 @@
     "ASTS",
     "ATRC",
     "AUGO",
+    "AUR",
     "AVAV",
     "AVGO",
     "AVT",
-    "AXGN",
     "AXON",
     "AXSM",
     "AXTI",
-    "BAND",
     "BBIO",
+    "BIDU",
     "BIIB",
     "BKNG",
     "BKR",
@@ -74,19 +82,21 @@
     "BNTX",
     "BPOP",
     "BRKR",
+    "BRZE",
     "BSY",
     "BTDR",
     "BTSG",
-    "BWIN",
+    "BULL",
     "BZ",
     "CACC",
     "CAI",
     "CAKE",
     "CALM",
-    "CAMT",
     "CART",
     "CASY",
     "CBSH",
+    "CCC",
+    "CCEP",
     "CDNA",
     "CDNS",
     "CDW",
@@ -109,6 +119,7 @@
     "CLSK",
     "CMCSA",
     "CME",
+    "COCO",
     "COGT",
     "COHU",
     "COIN",
@@ -116,6 +127,7 @@
     "COLB",
     "COO",
     "CORT",
+    "CORZ",
     "COST",
     "CPB",
     "CPRT",
@@ -147,7 +159,6 @@
     "DPZ",
     "DUOL",
     "DXCM",
-    "DYN",
     "EBAY",
     "ECHO",
     "ELVN",
@@ -156,6 +167,7 @@
     "ENTG",
     "EQIX",
     "ERAS",
+    "ERIC",
     "ESLT",
     "EVRG",
     "EWBC",
@@ -169,8 +181,10 @@
     "FAST",
     "FCFS",
     "FCNCA",
+    "FER",
     "FFIV",
     "FIGR",
+    "FISV",
     "FIVE",
     "FIVN",
     "FLEX",
@@ -180,6 +194,7 @@
     "FOXA",
     "FROG",
     "FRPT",
+    "FRSH",
     "FSLR",
     "FSLY",
     "FTAI",
@@ -210,6 +225,7 @@
     "HSIC",
     "HST",
     "HTFL",
+    "HTHT",
     "HUT",
     "HWC",
     "IBKR",
@@ -232,10 +248,12 @@
     "ISRG",
     "JAZZ",
     "JBHT",
+    "JD",
     "JKHY",
     "KDP",
     "KLAC",
     "KLIC",
+    "KMB",
     "KRYS",
     "KSPI",
     "KTOS",
@@ -244,7 +262,6 @@
     "LECO",
     "LFST",
     "LFUS",
-    "LGN",
     "LGND",
     "LIN",
     "LITE",
@@ -275,10 +292,12 @@
     "MIRM",
     "MKSI",
     "MKTX",
+    "MMSI",
     "MNDY",
     "MNST",
     "MORN",
     "MPWR",
+    "MRCY",
     "MRNA",
     "MRVL",
     "MRX",
@@ -287,17 +306,16 @@
     "MTCH",
     "MTSI",
     "MU",
+    "MXL",
     "MYRG",
     "NBIS",
     "NBIX",
     "NDAQ",
     "NDSN",
-    "NEOG",
     "NESR",
     "NFLX",
-    "NICE",
-    "NSIT",
     "NTAP",
+    "NTES",
     "NTNX",
     "NTRA",
     "NTRS",
@@ -315,6 +333,7 @@
     "OLLI",
     "ON",
     "ONB",
+    "ONC",
     "ORKA",
     "ORLY",
     "OUST",
@@ -336,6 +355,7 @@
     "POOL",
     "POWL",
     "PRAX",
+    "PSKY",
     "PTC",
     "PTCT",
     "PTEN",
@@ -363,6 +383,7 @@
     "RPRX",
     "RRR",
     "RVMD",
+    "RYAAY",
     "RYTM",
     "SAIA",
     "SAIC",
@@ -371,11 +392,10 @@
     "SBAC",
     "SBLK",
     "SBUX",
-    "SDGR",
     "SEDG",
     "SEIC",
-    "SEZL",
     "SFM",
+    "SHOP",
     "SIMO",
     "SIRI",
     "SITM",
@@ -388,6 +408,7 @@
     "SNPS",
     "SNY",
     "SOFI",
+    "SOUN",
     "SRRK",
     "SSNC",
     "SSRM",
@@ -399,7 +420,6 @@
     "SYNA",
     "SYRE",
     "TARS",
-    "TCBI",
     "TCOM",
     "TEAM",
     "TECH",
@@ -413,6 +433,7 @@
     "TMUS",
     "TNGX",
     "TPG",
+    "TRI",
     "TRMB",
     "TRMD",
     "TROW",
@@ -431,7 +452,6 @@
     "TXN",
     "TXRH",
     "UAL",
-    "UBSI",
     "UCTT",
     "ULTA",
     "UMBF",
@@ -453,23 +473,20 @@
     "VSAT",
     "VSEC",
     "VTRS",
+    "WAY",
     "WBD",
     "WDAY",
     "WDC",
     "WFRD",
-    "WGS",
     "WING",
     "WIX",
-    "WMG",
     "WMT",
-    "WSC",
     "WTFC",
     "WTW",
     "WULF",
     "WWD",
     "WYNN",
     "XEL",
-    "XENE",
     "XMTR",
     "XP",
     "Z",
@@ -479,26 +496,34 @@
     "ZS"
   ],
   "r92_ineligible": [
-    "AMRX",
+    "AGNC",
+    "AMLX",
+    "AUR",
     "BIDU",
     "BRZE",
+    "BULL",
+    "CCC",
     "CCEP",
     "COCO",
     "CORZ",
+    "ERIC",
     "FER",
     "FISV",
     "FRSH",
     "HTHT",
     "JD",
     "KMB",
+    "MMSI",
+    "MRCY",
     "MXL",
     "NTES",
     "ONC",
-    "PAGP",
+    "PSKY",
     "RYAAY",
     "SHOP",
+    "SOUN",
     "TRI",
-    "VOD"
+    "WAY"
   ],
   "real_money": "NO-GO",
   "results": {
@@ -842,6 +867,26 @@
       },
       "status": "PASS_HISTORY"
     },
+    "AGNC": {
+      "info": {
+        "asof_present": true,
+        "completed_week_count": 858,
+        "daily_bars": 4142,
+        "first_date": "2010-04-13",
+        "last_date": "2026-10-05",
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "attempts": 1,
+          "usable": 4142
+        },
+        "technical_cache": {
+          "status": "PASS_EXISTING_EXACT_ASOF"
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
     "AKAM": {
       "info": {
         "asof_present": true,
@@ -1075,6 +1120,26 @@
         "sina": {
           "attempts": 1,
           "usable": 5287
+        },
+        "technical_cache": {
+          "status": "PASS_EXISTING_EXACT_ASOF"
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "AMLX": {
+      "info": {
+        "asof_present": true,
+        "completed_week_count": 248,
+        "daily_bars": 1189,
+        "first_date": "2022-01-07",
+        "last_date": "2026-10-05",
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "attempts": 1,
+          "usable": 1189
         },
         "technical_cache": {
           "status": "PASS_EXISTING_EXACT_ASOF"
@@ -1402,6 +1467,26 @@
       },
       "status": "PASS_HISTORY"
     },
+    "AUR": {
+      "info": {
+        "asof_present": true,
+        "completed_week_count": 257,
+        "daily_bars": 1233,
+        "first_date": "2021-11-04",
+        "last_date": "2026-10-05",
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "attempts": 1,
+          "usable": 1233
+        },
+        "technical_cache": {
+          "status": "PASS_EXISTING_EXACT_ASOF"
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
     "AVAV": {
       "info": {
         "asof_present": true,
@@ -1455,26 +1540,6 @@
         "sina": {
           "attempts": 1,
           "usable": 2114
-        },
-        "technical_cache": {
-          "status": "PASS_EXISTING_EXACT_ASOF"
-        }
-      },
-      "status": "PASS_HISTORY"
-    },
-    "AXGN": {
-      "info": {
-        "asof_present": true,
-        "completed_week_count": 846,
-        "daily_bars": 4079,
-        "first_date": "2010-07-19",
-        "last_date": "2026-10-05",
-        "source": "SINA_US_DAILY"
-      },
-      "provider_meta": {
-        "sina": {
-          "attempts": 1,
-          "usable": 4079
         },
         "technical_cache": {
           "status": "PASS_EXISTING_EXACT_ASOF"
@@ -1542,26 +1607,6 @@
       },
       "status": "PASS_HISTORY"
     },
-    "BAND": {
-      "info": {
-        "asof_present": true,
-        "completed_week_count": 465,
-        "daily_bars": 2235,
-        "first_date": "2017-11-10",
-        "last_date": "2026-10-05",
-        "source": "SINA_US_DAILY"
-      },
-      "provider_meta": {
-        "sina": {
-          "attempts": 1,
-          "usable": 2235
-        },
-        "technical_cache": {
-          "status": "PASS_EXISTING_EXACT_ASOF"
-        }
-      },
-      "status": "PASS_HISTORY"
-    },
     "BBIO": {
       "info": {
         "asof_present": true,
@@ -1575,6 +1620,26 @@
         "sina": {
           "attempts": 1,
           "usable": 1828
+        },
+        "technical_cache": {
+          "status": "PASS_EXISTING_EXACT_ASOF"
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "BIDU": {
+      "info": {
+        "asof_present": true,
+        "completed_week_count": 1019,
+        "daily_bars": 4918,
+        "first_date": "2007-03-19",
+        "last_date": "2026-10-05",
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "attempts": 1,
+          "usable": 4918
         },
         "technical_cache": {
           "status": "PASS_EXISTING_EXACT_ASOF"
@@ -1673,9 +1738,9 @@
         },
         "yahoo": {
           "exchangeName": "NMS",
-          "technical_cache_exact_asof_written": false,
-          "technical_cache_source": null,
-          "usable": 227
+          "technical_cache_exact_asof_written": true,
+          "technical_cache_source": "YAHOO_CHART_FREE_OHLCV",
+          "usable": 228
         }
       },
       "status": "FAIL_HISTORY"
@@ -1753,6 +1818,26 @@
         "sina": {
           "attempts": 1,
           "usable": 5287
+        },
+        "technical_cache": {
+          "status": "PASS_EXISTING_EXACT_ASOF"
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "BRZE": {
+      "info": {
+        "asof_present": true,
+        "completed_week_count": 255,
+        "daily_bars": 1224,
+        "first_date": "2021-11-17",
+        "last_date": "2026-10-05",
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "attempts": 1,
+          "usable": 1224
         },
         "technical_cache": {
           "status": "PASS_EXISTING_EXACT_ASOF"
@@ -1844,19 +1929,19 @@
       },
       "status": "PASS_HISTORY"
     },
-    "BWIN": {
+    "BULL": {
       "info": {
         "asof_present": true,
-        "completed_week_count": 124,
-        "daily_bars": 596,
-        "first_date": "2024-05-20",
+        "completed_week_count": 78,
+        "daily_bars": 372,
+        "first_date": "2025-04-11",
         "last_date": "2026-10-05",
         "source": "SINA_US_DAILY"
       },
       "provider_meta": {
         "sina": {
           "attempts": 1,
-          "usable": 596
+          "usable": 372
         },
         "technical_cache": {
           "status": "PASS_EXISTING_EXACT_ASOF"
@@ -1964,26 +2049,6 @@
       },
       "status": "PASS_HISTORY"
     },
-    "CAMT": {
-      "info": {
-        "asof_present": true,
-        "completed_week_count": 1043,
-        "daily_bars": 5033,
-        "first_date": "2001-01-02",
-        "last_date": "2026-10-05",
-        "source": "SINA_US_DAILY"
-      },
-      "provider_meta": {
-        "sina": {
-          "attempts": 1,
-          "usable": 5033
-        },
-        "technical_cache": {
-          "status": "PASS_EXISTING_EXACT_ASOF"
-        }
-      },
-      "status": "PASS_HISTORY"
-    },
     "CART": {
       "info": {
         "asof_present": true,
@@ -2055,9 +2120,9 @@
         },
         "yahoo": {
           "exchangeName": "NMS",
-          "technical_cache_exact_asof_written": false,
-          "technical_cache_source": null,
-          "usable": 98
+          "technical_cache_exact_asof_written": true,
+          "technical_cache_source": "YAHOO_CHART_FREE_OHLCV",
+          "usable": 99
         }
       },
       "status": "FAIL_HISTORY"
@@ -2075,6 +2140,46 @@
         "sina": {
           "attempts": 1,
           "usable": 5287
+        },
+        "technical_cache": {
+          "status": "PASS_EXISTING_EXACT_ASOF"
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "CCC": {
+      "info": {
+        "asof_present": true,
+        "completed_week_count": 1773,
+        "daily_bars": 8555,
+        "first_date": "1987-06-02",
+        "last_date": "2026-10-05",
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "attempts": 1,
+          "usable": 8555
+        },
+        "technical_cache": {
+          "status": "PASS_EXISTING_EXACT_ASOF"
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "CCEP": {
+      "info": {
+        "asof_present": true,
+        "completed_week_count": 264,
+        "daily_bars": 1271,
+        "first_date": "2021-09-13",
+        "last_date": "2026-10-05",
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "attempts": 1,
+          "usable": 1271
         },
         "technical_cache": {
           "status": "PASS_EXISTING_EXACT_ASOF"
@@ -2522,6 +2627,26 @@
       },
       "status": "PASS_HISTORY"
     },
+    "COCO": {
+      "info": {
+        "asof_present": true,
+        "completed_week_count": 259,
+        "daily_bars": 1243,
+        "first_date": "2021-10-21",
+        "last_date": "2026-10-05",
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "attempts": 1,
+          "usable": 1243
+        },
+        "technical_cache": {
+          "status": "PASS_EXISTING_EXACT_ASOF"
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
     "COGT": {
       "info": {
         "asof_present": true,
@@ -2655,6 +2780,26 @@
         "sina": {
           "attempts": 1,
           "usable": 4465
+        },
+        "technical_cache": {
+          "status": "PASS_EXISTING_EXACT_ASOF"
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "CORZ": {
+      "info": {
+        "asof_present": true,
+        "completed_week_count": 191,
+        "daily_bars": 916,
+        "first_date": "2022-01-20",
+        "last_date": "2026-10-05",
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "attempts": 1,
+          "usable": 916
         },
         "technical_cache": {
           "status": "PASS_EXISTING_EXACT_ASOF"
@@ -3106,28 +3251,16 @@
       "info": {
         "asof_present": true,
         "completed_week_count": 157,
-        "cusip_unchanged": true,
         "daily_bars": 755,
-        "effective_date": "2026-01-15",
-        "note": "SEC states the issuer changed name from Mind Medicine (MindMed) Inc. to Definium Therapeutics, Inc.; CUSIP for the common shares remained unchanged; the same common shares traded as MNMD before 2026-01-15 and DFTX thereafter.",
-        "official_sources": [
-          "https://www.sec.gov/Archives/edgar/data/1813814/000119312526009854/mnmd-20260109.htm",
-          "https://www.sec.gov/Archives/edgar/data/1813814/000119312526076742/dftx-20251231.htm"
-        ],
-        "overlap_compared": 180,
-        "overlap_p95_relative_close_diff": 4.762958895972749e-08,
-        "overlap_sessions": 180,
-        "predecessor_symbol": "MNMD",
-        "proof": "UNCHANGED_CUSIP_PLUS_CROSS_SOURCE_OVERLAP",
-        "source": "OFFICIAL_TICKER_CONTINUITY_COMPOSITE_HISTORY",
-        "source_registry": "nasdaq-xray/history_official_identity_evidence.json"
+        "first_date": "2023-10-02",
+        "last_date": "2026-10-05",
+        "source": "YAHOO_CHART_FREE"
       },
       "provider_meta": {
         "nasdaq": {
           "rows": 0,
           "usable": 0
         },
-        "official_identity_registry": true,
         "sina": {
           "attempts": 1,
           "usable": 181
@@ -3137,9 +3270,9 @@
         },
         "yahoo": {
           "exchangeName": "NMS",
-          "technical_cache_exact_asof_written": false,
-          "technical_cache_source": null,
-          "usable": 754
+          "technical_cache_exact_asof_written": true,
+          "technical_cache_source": "YAHOO_CHART_FREE_OHLCV",
+          "usable": 755
         }
       },
       "status": "PASS_HISTORY"
@@ -3304,26 +3437,6 @@
       },
       "status": "PASS_HISTORY"
     },
-    "DYN": {
-      "info": {
-        "asof_present": true,
-        "completed_week_count": 316,
-        "daily_bars": 1519,
-        "first_date": "2020-09-17",
-        "last_date": "2026-10-05",
-        "source": "SINA_US_DAILY"
-      },
-      "provider_meta": {
-        "sina": {
-          "attempts": 1,
-          "usable": 1519
-        },
-        "technical_cache": {
-          "status": "PASS_EXISTING_EXACT_ASOF"
-        }
-      },
-      "status": "PASS_HISTORY"
-    },
     "EBAY": {
       "info": {
         "asof_present": true,
@@ -3464,44 +3577,6 @@
       },
       "status": "PASS_HISTORY"
     },
-    "EQPT": {
-      "info": {
-        "asof_et": "2026-10-05",
-        "first_date": "2026-01-23",
-        "max_possible_completed_weeks": 37,
-        "max_possible_daily_bars": 176,
-        "proof": "TWO_PROVIDER_ALIGNED_FIRST_BAR_UPPER_BOUND",
-        "providers": [
-          "SINA_US_DAILY",
-          "YAHOO_CHART_FREE"
-        ],
-        "thresholds": {
-          "daily": 260,
-          "weekly_completed": 52
-        }
-      },
-      "provider_meta": {
-        "eastmoney": {
-          "error": "ConnectionError:('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))",
-          "secid": "105.EQPT"
-        },
-        "nasdaq": {
-          "rows": 0,
-          "usable": 0
-        },
-        "sina": {
-          "attempts": 1,
-          "usable": 176
-        },
-        "yahoo": {
-          "exchangeName": "NMS",
-          "technical_cache_exact_asof_written": false,
-          "technical_cache_source": null,
-          "usable": 175
-        }
-      },
-      "status": "FAIL_HISTORY"
-    },
     "ERAS": {
       "info": {
         "asof_present": true,
@@ -3515,6 +3590,26 @@
         "sina": {
           "attempts": 1,
           "usable": 1311
+        },
+        "technical_cache": {
+          "status": "PASS_EXISTING_EXACT_ASOF"
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "ERIC": {
+      "info": {
+        "asof_present": true,
+        "completed_week_count": 1228,
+        "daily_bars": 5922,
+        "first_date": "2001-01-02",
+        "last_date": "2026-10-05",
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "attempts": 1,
+          "usable": 5922
         },
         "technical_cache": {
           "status": "PASS_EXISTING_EXACT_ASOF"
@@ -3782,6 +3877,26 @@
       },
       "status": "PASS_HISTORY"
     },
+    "FER": {
+      "info": {
+        "asof_present": true,
+        "completed_week_count": 126,
+        "daily_bars": 603,
+        "first_date": "2024-05-09",
+        "last_date": "2026-10-05",
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "attempts": 1,
+          "usable": 603
+        },
+        "technical_cache": {
+          "status": "PASS_EXISTING_EXACT_ASOF"
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
     "FFIV": {
       "info": {
         "asof_present": true,
@@ -3815,6 +3930,26 @@
         "sina": {
           "attempts": 1,
           "usable": 268
+        },
+        "technical_cache": {
+          "status": "PASS_EXISTING_EXACT_ASOF"
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "FISV": {
+      "info": {
+        "asof_present": true,
+        "completed_week_count": 1957,
+        "daily_bars": 9457,
+        "first_date": "1986-09-25",
+        "last_date": "2026-10-05",
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "attempts": 1,
+          "usable": 9457
         },
         "technical_cache": {
           "status": "PASS_EXISTING_EXACT_ASOF"
@@ -4002,6 +4137,26 @@
       },
       "status": "PASS_HISTORY"
     },
+    "FRSH": {
+      "info": {
+        "asof_present": true,
+        "completed_week_count": 527,
+        "daily_bars": 2537,
+        "first_date": "2014-05-02",
+        "last_date": "2026-10-05",
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "attempts": 1,
+          "usable": 2537
+        },
+        "technical_cache": {
+          "status": "PASS_EXISTING_EXACT_ASOF"
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
     "FRVO": {
       "info": {
         "asof_et": "2026-10-05",
@@ -4033,9 +4188,9 @@
         },
         "yahoo": {
           "exchangeName": "NMS",
-          "technical_cache_exact_asof_written": false,
-          "technical_cache_source": null,
-          "usable": 99
+          "technical_cache_exact_asof_written": true,
+          "technical_cache_source": "YAHOO_CHART_FREE_OHLCV",
+          "usable": 100
         }
       },
       "status": "FAIL_HISTORY"
@@ -4664,6 +4819,26 @@
       },
       "status": "PASS_HISTORY"
     },
+    "HTHT": {
+      "info": {
+        "asof_present": true,
+        "completed_week_count": 860,
+        "daily_bars": 4149,
+        "first_date": "2010-04-06",
+        "last_date": "2026-10-05",
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "attempts": 1,
+          "usable": 4149
+        },
+        "technical_cache": {
+          "status": "PASS_EXISTING_EXACT_ASOF"
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
     "HUT": {
       "info": {
         "asof_present": true,
@@ -5127,6 +5302,26 @@
       },
       "status": "PASS_HISTORY"
     },
+    "JD": {
+      "info": {
+        "asof_present": true,
+        "completed_week_count": 646,
+        "daily_bars": 3110,
+        "first_date": "2014-05-22",
+        "last_date": "2026-10-05",
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "attempts": 1,
+          "usable": 3110
+        },
+        "technical_cache": {
+          "status": "PASS_EXISTING_EXACT_ASOF"
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
     "JKHY": {
       "info": {
         "asof_present": true,
@@ -5200,6 +5395,26 @@
         "sina": {
           "attempts": 1,
           "usable": 5287
+        },
+        "technical_cache": {
+          "status": "PASS_EXISTING_EXACT_ASOF"
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "KMB": {
+      "info": {
+        "asof_present": true,
+        "completed_week_count": 2036,
+        "daily_bars": 9837,
+        "first_date": "1984-12-17",
+        "last_date": "2026-10-05",
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "attempts": 1,
+          "usable": 9837
         },
         "technical_cache": {
           "status": "PASS_EXISTING_EXACT_ASOF"
@@ -5367,26 +5582,6 @@
       },
       "status": "PASS_HISTORY"
     },
-    "LGN": {
-      "info": {
-        "asof_present": true,
-        "completed_week_count": 56,
-        "daily_bars": 267,
-        "first_date": "2025-09-12",
-        "last_date": "2026-10-05",
-        "source": "SINA_US_DAILY"
-      },
-      "provider_meta": {
-        "sina": {
-          "attempts": 1,
-          "usable": 267
-        },
-        "technical_cache": {
-          "status": "PASS_EXISTING_EXACT_ASOF"
-        }
-      },
-      "status": "PASS_HISTORY"
-    },
     "LGND": {
       "info": {
         "asof_present": true,
@@ -5406,31 +5601,6 @@
         }
       },
       "status": "PASS_HISTORY"
-    },
-    "LIFE": {
-      "info": {
-        "earliest_public_trading_date": "2026-01-29",
-        "max_possible_completed_weeks": 36,
-        "max_possible_daily_bars": 172,
-        "mode": "OFFICIAL_LISTING_UPPER_BOUND_FAIL_ONLY",
-        "note": "Ethos Technologies Class A common stock began Nasdaq trading under LIFE on 2026-01-29; SEC states there was no public trading market before that date. The listing-age upper bound is fail-only and cannot manufacture a history PASS.",
-        "official_sources": [
-          "https://www.sec.gov/Archives/edgar/data/1788451/000119312526108887/life-20251231.htm",
-          "https://www.sec.gov/Archives/edgar/data/1788451/000135445726000102/0001354457-26-000102-index.htm",
-          "https://www.nasdaq.com/events/ethos-rings-closing-bell"
-        ],
-        "proof": "OFFICIAL_LISTING_DATE_HISTORY_UPPER_BOUND",
-        "regular_way_trading_date": "2026-01-29",
-        "source_registry": "nasdaq-xray/history_official_identity_evidence.json",
-        "thresholds": {
-          "daily": 260,
-          "weekly_completed": 52
-        }
-      },
-      "provider_meta": {
-        "official_identity_registry": true
-      },
-      "status": "FAIL_HISTORY"
     },
     "LIN": {
       "info": {
@@ -5883,9 +6053,9 @@
         },
         "yahoo": {
           "exchangeName": "NMS",
-          "technical_cache_exact_asof_written": false,
-          "technical_cache_source": null,
-          "usable": 199
+          "technical_cache_exact_asof_written": true,
+          "technical_cache_source": "YAHOO_CHART_FREE_OHLCV",
+          "usable": 200
         }
       },
       "status": "FAIL_HISTORY"
@@ -6081,12 +6251,32 @@
         },
         "yahoo": {
           "exchangeName": "NMS",
-          "technical_cache_exact_asof_written": false,
-          "technical_cache_source": null,
-          "usable": 146
+          "technical_cache_exact_asof_written": true,
+          "technical_cache_source": "YAHOO_CHART_FREE_OHLCV",
+          "usable": 147
         }
       },
       "status": "FAIL_HISTORY"
+    },
+    "MMSI": {
+      "info": {
+        "asof_present": true,
+        "completed_week_count": 1097,
+        "daily_bars": 5287,
+        "first_date": "2001-01-02",
+        "last_date": "2026-10-05",
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "attempts": 1,
+          "usable": 5287
+        },
+        "technical_cache": {
+          "status": "PASS_EXISTING_EXACT_ASOF"
+        }
+      },
+      "status": "PASS_HISTORY"
     },
     "MNDY": {
       "info": {
@@ -6161,6 +6351,26 @@
         "sina": {
           "attempts": 1,
           "usable": 4312
+        },
+        "technical_cache": {
+          "status": "PASS_EXISTING_EXACT_ASOF"
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "MRCY": {
+      "info": {
+        "asof_present": true,
+        "completed_week_count": 1097,
+        "daily_bars": 5287,
+        "first_date": "2001-01-02",
+        "last_date": "2026-10-05",
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "attempts": 1,
+          "usable": 5287
         },
         "technical_cache": {
           "status": "PASS_EXISTING_EXACT_ASOF"
@@ -6328,6 +6538,26 @@
       },
       "status": "PASS_HISTORY"
     },
+    "MXL": {
+      "info": {
+        "asof_present": true,
+        "completed_week_count": 251,
+        "daily_bars": 1207,
+        "first_date": "2021-12-13",
+        "last_date": "2026-10-05",
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "attempts": 1,
+          "usable": 1207
+        },
+        "technical_cache": {
+          "status": "PASS_EXISTING_EXACT_ASOF"
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
     "MYRG": {
       "info": {
         "asof_present": true,
@@ -6379,9 +6609,9 @@
         },
         "yahoo": {
           "exchangeName": "NMS",
-          "technical_cache_exact_asof_written": false,
-          "technical_cache_source": null,
-          "usable": 232
+          "technical_cache_exact_asof_written": true,
+          "technical_cache_source": "YAHOO_CHART_FREE_OHLCV",
+          "usable": 233
         }
       },
       "status": "FAIL_HISTORY"
@@ -6466,26 +6696,6 @@
       },
       "status": "PASS_HISTORY"
     },
-    "NEOG": {
-      "info": {
-        "asof_present": true,
-        "completed_week_count": 1097,
-        "daily_bars": 5287,
-        "first_date": "2001-01-02",
-        "last_date": "2026-10-05",
-        "source": "SINA_US_DAILY"
-      },
-      "provider_meta": {
-        "sina": {
-          "attempts": 1,
-          "usable": 5287
-        },
-        "technical_cache": {
-          "status": "PASS_EXISTING_EXACT_ASOF"
-        }
-      },
-      "status": "PASS_HISTORY"
-    },
     "NESR": {
       "info": {
         "asof_present": true,
@@ -6526,46 +6736,6 @@
       },
       "status": "PASS_HISTORY"
     },
-    "NICE": {
-      "info": {
-        "asof_present": true,
-        "completed_week_count": 1096,
-        "daily_bars": 5286,
-        "first_date": "2001-01-02",
-        "last_date": "2026-10-05",
-        "source": "SINA_US_DAILY"
-      },
-      "provider_meta": {
-        "sina": {
-          "attempts": 1,
-          "usable": 5286
-        },
-        "technical_cache": {
-          "status": "PASS_EXISTING_EXACT_ASOF"
-        }
-      },
-      "status": "PASS_HISTORY"
-    },
-    "NSIT": {
-      "info": {
-        "asof_present": true,
-        "completed_week_count": 1097,
-        "daily_bars": 5287,
-        "first_date": "2001-01-02",
-        "last_date": "2026-10-05",
-        "source": "SINA_US_DAILY"
-      },
-      "provider_meta": {
-        "sina": {
-          "attempts": 1,
-          "usable": 5287
-        },
-        "technical_cache": {
-          "status": "PASS_EXISTING_EXACT_ASOF"
-        }
-      },
-      "status": "PASS_HISTORY"
-    },
     "NTAP": {
       "info": {
         "asof_present": true,
@@ -6579,6 +6749,26 @@
         "sina": {
           "attempts": 1,
           "usable": 6577
+        },
+        "technical_cache": {
+          "status": "PASS_EXISTING_EXACT_ASOF"
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "NTES": {
+      "info": {
+        "asof_present": true,
+        "completed_week_count": 1370,
+        "daily_bars": 6592,
+        "first_date": "2000-06-30",
+        "last_date": "2026-10-05",
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "attempts": 1,
+          "usable": 6592
         },
         "technical_cache": {
           "status": "PASS_EXISTING_EXACT_ASOF"
@@ -6919,6 +7109,26 @@
         "sina": {
           "attempts": 1,
           "usable": 3259
+        },
+        "technical_cache": {
+          "status": "PASS_EXISTING_EXACT_ASOF"
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "ONC": {
+      "info": {
+        "asof_present": true,
+        "completed_week_count": 557,
+        "daily_bars": 2683,
+        "first_date": "2016-02-03",
+        "last_date": "2026-10-05",
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "attempts": 1,
+          "usable": 2683
         },
         "technical_cache": {
           "status": "PASS_EXISTING_EXACT_ASOF"
@@ -7346,6 +7556,26 @@
       },
       "status": "PASS_HISTORY"
     },
+    "PSKY": {
+      "info": {
+        "asof_present": true,
+        "completed_week_count": 61,
+        "daily_bars": 292,
+        "first_date": "2025-08-07",
+        "last_date": "2026-10-05",
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "attempts": 1,
+          "usable": 292
+        },
+        "technical_cache": {
+          "status": "PASS_EXISTING_EXACT_ASOF"
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
     "PTC": {
       "info": {
         "asof_present": true,
@@ -7537,9 +7767,9 @@
         },
         "yahoo": {
           "exchangeName": "NGM",
-          "technical_cache_exact_asof_written": false,
-          "technical_cache_source": null,
-          "usable": 84
+          "technical_cache_exact_asof_written": true,
+          "technical_cache_source": "YAHOO_CHART_FREE_OHLCV",
+          "usable": 85
         }
       },
       "status": "FAIL_HISTORY"
@@ -7924,6 +8154,26 @@
       },
       "status": "PASS_HISTORY"
     },
+    "RYAAY": {
+      "info": {
+        "asof_present": true,
+        "completed_week_count": 1027,
+        "daily_bars": 4948,
+        "first_date": "2001-01-02",
+        "last_date": "2026-10-05",
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "attempts": 1,
+          "usable": 4948
+        },
+        "technical_cache": {
+          "status": "PASS_EXISTING_EXACT_ASOF"
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
     "RYTM": {
       "info": {
         "asof_present": true,
@@ -8084,26 +8334,6 @@
       },
       "status": "PASS_HISTORY"
     },
-    "SDGR": {
-      "info": {
-        "asof_present": true,
-        "completed_week_count": 348,
-        "daily_bars": 1674,
-        "first_date": "2020-02-06",
-        "last_date": "2026-10-05",
-        "source": "SINA_US_DAILY"
-      },
-      "provider_meta": {
-        "sina": {
-          "attempts": 1,
-          "usable": 1674
-        },
-        "technical_cache": {
-          "status": "PASS_EXISTING_EXACT_ASOF"
-        }
-      },
-      "status": "PASS_HISTORY"
-    },
     "SEDG": {
       "info": {
         "asof_present": true,
@@ -8144,26 +8374,6 @@
       },
       "status": "PASS_HISTORY"
     },
-    "SEZL": {
-      "info": {
-        "asof_present": true,
-        "completed_week_count": 160,
-        "daily_bars": 768,
-        "first_date": "2023-08-17",
-        "last_date": "2026-10-05",
-        "source": "SINA_US_DAILY"
-      },
-      "provider_meta": {
-        "sina": {
-          "attempts": 1,
-          "usable": 768
-        },
-        "technical_cache": {
-          "status": "PASS_EXISTING_EXACT_ASOF"
-        }
-      },
-      "status": "PASS_HISTORY"
-    },
     "SFM": {
       "info": {
         "asof_present": true,
@@ -8177,6 +8387,26 @@
         "sina": {
           "attempts": 1,
           "usable": 3260
+        },
+        "technical_cache": {
+          "status": "PASS_EXISTING_EXACT_ASOF"
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "SHOP": {
+      "info": {
+        "asof_present": true,
+        "completed_week_count": 594,
+        "daily_bars": 2859,
+        "first_date": "2015-05-22",
+        "last_date": "2026-10-05",
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "attempts": 1,
+          "usable": 2859
         },
         "technical_cache": {
           "status": "PASS_EXISTING_EXACT_ASOF"
@@ -8472,6 +8702,26 @@
       },
       "status": "FAIL_HISTORY"
     },
+    "SOUN": {
+      "info": {
+        "asof_present": true,
+        "completed_week_count": 232,
+        "daily_bars": 1113,
+        "first_date": "2022-04-28",
+        "last_date": "2026-10-05",
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "attempts": 1,
+          "usable": 1113
+        },
+        "technical_cache": {
+          "status": "PASS_EXISTING_EXACT_ASOF"
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
     "SPCX": {
       "info": {
         "earliest_public_trading_date": "2026-06-12",
@@ -8710,26 +8960,6 @@
         "sina": {
           "attempts": 1,
           "usable": 1498
-        },
-        "technical_cache": {
-          "status": "PASS_EXISTING_EXACT_ASOF"
-        }
-      },
-      "status": "PASS_HISTORY"
-    },
-    "TCBI": {
-      "info": {
-        "asof_present": true,
-        "completed_week_count": 961,
-        "daily_bars": 4633,
-        "first_date": "2003-08-13",
-        "last_date": "2026-10-05",
-        "source": "SINA_US_DAILY"
-      },
-      "provider_meta": {
-        "sina": {
-          "attempts": 1,
-          "usable": 4633
         },
         "technical_cache": {
           "status": "PASS_EXISTING_EXACT_ASOF"
@@ -8990,6 +9220,26 @@
         "sina": {
           "attempts": 1,
           "usable": 1185
+        },
+        "technical_cache": {
+          "status": "PASS_EXISTING_EXACT_ASOF"
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
+    "TRI": {
+      "info": {
+        "asof_present": true,
+        "completed_week_count": 992,
+        "daily_bars": 4787,
+        "first_date": "2002-06-12",
+        "last_date": "2026-10-05",
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "attempts": 1,
+          "usable": 4787
         },
         "technical_cache": {
           "status": "PASS_EXISTING_EXACT_ASOF"
@@ -9350,26 +9600,6 @@
         "sina": {
           "attempts": 1,
           "usable": 2029
-        },
-        "technical_cache": {
-          "status": "PASS_EXISTING_EXACT_ASOF"
-        }
-      },
-      "status": "PASS_HISTORY"
-    },
-    "UBSI": {
-      "info": {
-        "asof_present": true,
-        "completed_week_count": 1097,
-        "daily_bars": 5287,
-        "first_date": "2001-01-02",
-        "last_date": "2026-10-05",
-        "source": "SINA_US_DAILY"
-      },
-      "provider_meta": {
-        "sina": {
-          "attempts": 1,
-          "usable": 5287
         },
         "technical_cache": {
           "status": "PASS_EXISTING_EXACT_ASOF"
@@ -9821,6 +10051,26 @@
       },
       "status": "PASS_HISTORY"
     },
+    "WAY": {
+      "info": {
+        "asof_present": true,
+        "completed_week_count": 122,
+        "daily_bars": 583,
+        "first_date": "2024-06-07",
+        "last_date": "2026-10-05",
+        "source": "SINA_US_DAILY"
+      },
+      "provider_meta": {
+        "sina": {
+          "attempts": 1,
+          "usable": 583
+        },
+        "technical_cache": {
+          "status": "PASS_EXISTING_EXACT_ASOF"
+        }
+      },
+      "status": "PASS_HISTORY"
+    },
     "WBD": {
       "info": {
         "asof_present": true,
@@ -9901,26 +10151,6 @@
       },
       "status": "PASS_HISTORY"
     },
-    "WGS": {
-      "info": {
-        "asof_present": true,
-        "completed_week_count": 195,
-        "daily_bars": 937,
-        "first_date": "2023-01-10",
-        "last_date": "2026-10-05",
-        "source": "SINA_US_DAILY"
-      },
-      "provider_meta": {
-        "sina": {
-          "attempts": 1,
-          "usable": 937
-        },
-        "technical_cache": {
-          "status": "PASS_EXISTING_EXACT_ASOF"
-        }
-      },
-      "status": "PASS_HISTORY"
-    },
     "WING": {
       "info": {
         "asof_present": true,
@@ -9961,26 +10191,6 @@
       },
       "status": "PASS_HISTORY"
     },
-    "WMG": {
-      "info": {
-        "asof_present": true,
-        "completed_week_count": 331,
-        "daily_bars": 1593,
-        "first_date": "2020-06-03",
-        "last_date": "2026-10-05",
-        "source": "SINA_US_DAILY"
-      },
-      "provider_meta": {
-        "sina": {
-          "attempts": 1,
-          "usable": 1593
-        },
-        "technical_cache": {
-          "status": "PASS_EXISTING_EXACT_ASOF"
-        }
-      },
-      "status": "PASS_HISTORY"
-    },
     "WMT": {
       "info": {
         "asof_present": true,
@@ -9994,26 +10204,6 @@
         "sina": {
           "attempts": 1,
           "usable": 13084
-        },
-        "technical_cache": {
-          "status": "PASS_EXISTING_EXACT_ASOF"
-        }
-      },
-      "status": "PASS_HISTORY"
-    },
-    "WSC": {
-      "info": {
-        "asof_present": true,
-        "completed_week_count": 462,
-        "daily_bars": 2222,
-        "first_date": "2017-11-30",
-        "last_date": "2026-10-05",
-        "source": "SINA_US_DAILY"
-      },
-      "provider_meta": {
-        "sina": {
-          "attempts": 1,
-          "usable": 2222
         },
         "technical_cache": {
           "status": "PASS_EXISTING_EXACT_ASOF"
@@ -10134,26 +10324,6 @@
         "sina": {
           "attempts": 1,
           "usable": 2201
-        },
-        "technical_cache": {
-          "status": "PASS_EXISTING_EXACT_ASOF"
-        }
-      },
-      "status": "PASS_HISTORY"
-    },
-    "XENE": {
-      "info": {
-        "asof_present": true,
-        "completed_week_count": 622,
-        "daily_bars": 2995,
-        "first_date": "2014-11-05",
-        "last_date": "2026-10-05",
-        "source": "SINA_US_DAILY"
-      },
-      "provider_meta": {
-        "sina": {
-          "attempts": 1,
-          "usable": 2995
         },
         "technical_cache": {
           "status": "PASS_EXISTING_EXACT_ASOF"
@@ -10303,31 +10473,500 @@
     }
   },
   "schema": "XRAY_CANONICAL_HISTORY_V1",
-  "source_mc_artifact": "nasdaq-xray/canonical_mc_bridge_20261005_c417_r2.json",
-  "source_mc_blob_sha": "d405670a4f05809d05f69ee2ab804fd99eb5b1de",
-  "source_mc_policy_hash": "26a95745a50b65e85f6ece24b6501af0994764a84ddd886edb70d1fcd770849c",
+  "source_mc_artifact": "nasdaq-xray/canonical_mc_bridge_20261005_c417_dv30_v1.json",
+  "source_mc_blob_sha": "38905137f3b6cf6a6c025aac7f993c1934aa48ca",
+  "source_mc_policy_hash": "68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4",
   "source_mc_policy_version": "C4.17",
   "state_caps": {
-    "AMRX": "WATCH",
+    "AAL": "NORMAL",
+    "AAOI": "NORMAL",
+    "AAON": "NORMAL",
+    "AAPL": "NORMAL",
+    "ABCL": "NORMAL",
+    "ABNB": "NORMAL",
+    "ABVX": "NORMAL",
+    "ACGL": "NORMAL",
+    "ACMR": "NORMAL",
+    "ADBE": "NORMAL",
+    "ADI": "NORMAL",
+    "ADP": "NORMAL",
+    "ADSK": "NORMAL",
+    "AEHR": "NORMAL",
+    "AEIS": "NORMAL",
+    "AEP": "NORMAL",
+    "AFRM": "NORMAL",
+    "AGNC": "WATCH",
+    "AKAM": "NORMAL",
+    "ALAB": "NORMAL",
+    "ALGM": "NORMAL",
+    "ALGN": "NORMAL",
+    "ALKS": "NORMAL",
+    "ALM": "NORMAL",
+    "ALNY": "NORMAL",
+    "AMAT": "NORMAL",
+    "AMBA": "NORMAL",
+    "AMD": "NORMAL",
+    "AMGN": "NORMAL",
+    "AMKR": "NORMAL",
+    "AMLX": "WATCH",
+    "AMZN": "NORMAL",
+    "APA": "NORMAL",
+    "APLD": "NORMAL",
+    "APP": "NORMAL",
+    "APPF": "NORMAL",
+    "ARGX": "NORMAL",
+    "ARM": "NORMAL",
+    "ARQT": "NORMAL",
+    "ARWR": "NORMAL",
+    "ASML": "NORMAL",
+    "ASND": "NORMAL",
+    "ASO": "NORMAL",
+    "ASST": "NORMAL",
+    "ASTS": "NORMAL",
+    "ATRC": "NORMAL",
+    "AUGO": "NORMAL",
+    "AUR": "WATCH",
+    "AVAV": "NORMAL",
+    "AVGO": "NORMAL",
+    "AVT": "NORMAL",
+    "AXON": "NORMAL",
+    "AXSM": "NORMAL",
+    "AXTI": "NORMAL",
+    "BBIO": "NORMAL",
     "BIDU": "WATCH",
+    "BIIB": "NORMAL",
+    "BKNG": "NORMAL",
+    "BKR": "NORMAL",
+    "BLLN": "NORMAL",
+    "BMRN": "NORMAL",
+    "BNTX": "NORMAL",
+    "BPOP": "NORMAL",
+    "BRKR": "NORMAL",
     "BRZE": "WATCH",
+    "BSP": "NORMAL",
+    "BSY": "NORMAL",
+    "BTDR": "NORMAL",
+    "BTSG": "NORMAL",
+    "BULL": "WATCH",
+    "BZ": "NORMAL",
+    "CACC": "NORMAL",
+    "CAI": "NORMAL",
+    "CAKE": "NORMAL",
+    "CALM": "NORMAL",
+    "CART": "NORMAL",
+    "CASY": "NORMAL",
+    "CBRS": "NORMAL",
+    "CBSH": "NORMAL",
+    "CCC": "WATCH",
     "CCEP": "WATCH",
+    "CDNA": "NORMAL",
+    "CDNS": "NORMAL",
+    "CDW": "NORMAL",
+    "CELC": "NORMAL",
+    "CELH": "NORMAL",
+    "CENX": "NORMAL",
+    "CG": "NORMAL",
+    "CGNX": "NORMAL",
+    "CGON": "NORMAL",
+    "CHDN": "NORMAL",
+    "CHEF": "NORMAL",
+    "CHKP": "NORMAL",
+    "CHRD": "NORMAL",
+    "CHRW": "NORMAL",
+    "CHTR": "NORMAL",
+    "CHYM": "NORMAL",
+    "CIFR": "NORMAL",
+    "CINF": "NORMAL",
+    "CLMT": "NORMAL",
+    "CLSK": "NORMAL",
+    "CMCSA": "NORMAL",
+    "CME": "NORMAL",
     "COCO": "WATCH",
+    "COGT": "NORMAL",
+    "COHU": "NORMAL",
+    "COIN": "NORMAL",
+    "COKE": "NORMAL",
+    "COLB": "NORMAL",
+    "COO": "NORMAL",
+    "CORT": "NORMAL",
     "CORZ": "WATCH",
+    "COST": "NORMAL",
+    "CPB": "NORMAL",
+    "CPRT": "NORMAL",
+    "CRDO": "NORMAL",
+    "CROX": "NORMAL",
+    "CRSP": "NORMAL",
+    "CRUS": "NORMAL",
+    "CRWD": "NORMAL",
+    "CRWV": "NORMAL",
+    "CSCO": "NORMAL",
+    "CSGP": "NORMAL",
+    "CSX": "NORMAL",
+    "CTAS": "NORMAL",
+    "CTSH": "NORMAL",
+    "CVCO": "NORMAL",
+    "CVLT": "NORMAL",
+    "CYTK": "NORMAL",
+    "CZR": "NORMAL",
+    "DASH": "NORMAL",
+    "DAVE": "NORMAL",
+    "DBX": "NORMAL",
+    "DDOG": "NORMAL",
+    "DFTX": "NORMAL",
+    "DKNG": "NORMAL",
+    "DLTR": "NORMAL",
+    "DNTH": "NORMAL",
+    "DOCU": "NORMAL",
+    "DOX": "NORMAL",
+    "DPZ": "NORMAL",
+    "DUOL": "NORMAL",
+    "DXCM": "NORMAL",
+    "EBAY": "NORMAL",
+    "ECHO": "NORMAL",
+    "ELVN": "NORMAL",
+    "ENPH": "NORMAL",
+    "ENSG": "NORMAL",
+    "ENTG": "NORMAL",
+    "EQIX": "NORMAL",
+    "ERAS": "NORMAL",
+    "ERIC": "WATCH",
+    "ESLT": "NORMAL",
+    "EVRG": "NORMAL",
+    "EWBC": "NORMAL",
+    "EWTX": "NORMAL",
+    "EXC": "NORMAL",
+    "EXE": "NORMAL",
+    "EXEL": "NORMAL",
+    "EXLS": "NORMAL",
+    "EXPE": "NORMAL",
+    "FANG": "NORMAL",
+    "FAST": "NORMAL",
+    "FCFS": "NORMAL",
+    "FCNCA": "NORMAL",
     "FER": "WATCH",
+    "FFIV": "NORMAL",
+    "FIGR": "NORMAL",
     "FISV": "WATCH",
+    "FIVE": "NORMAL",
+    "FIVN": "NORMAL",
+    "FLEX": "NORMAL",
+    "FLY": "NORMAL",
+    "FORM": "NORMAL",
+    "FOX": "NORMAL",
+    "FOXA": "NORMAL",
+    "FROG": "NORMAL",
+    "FRPT": "NORMAL",
     "FRSH": "WATCH",
+    "FRVO": "NORMAL",
+    "FSLR": "NORMAL",
+    "FSLY": "NORMAL",
+    "FTAI": "NORMAL",
+    "FTNT": "NORMAL",
+    "FUTU": "NORMAL",
+    "FWONK": "NORMAL",
+    "GEHC": "NORMAL",
+    "GEN": "NORMAL",
+    "GFS": "NORMAL",
+    "GH": "NORMAL",
+    "GILD": "NORMAL",
+    "GLBE": "NORMAL",
+    "GLNG": "NORMAL",
+    "GLPI": "NORMAL",
+    "GLXY": "NORMAL",
+    "GMAB": "NORMAL",
+    "GOOG": "NORMAL",
+    "GOOGL": "NORMAL",
+    "GTLB": "NORMAL",
+    "GTX": "NORMAL",
+    "HALO": "NORMAL",
+    "HAS": "NORMAL",
+    "HBAN": "NORMAL",
+    "HLNE": "NORMAL",
+    "HON": "NORMAL",
+    "HONA": "NORMAL",
+    "HOOD": "NORMAL",
+    "HQY": "NORMAL",
+    "HSIC": "NORMAL",
+    "HST": "NORMAL",
+    "HTFL": "NORMAL",
     "HTHT": "WATCH",
+    "HUT": "NORMAL",
+    "HWC": "NORMAL",
+    "IBKR": "NORMAL",
+    "IBRX": "NORMAL",
+    "ICLR": "NORMAL",
+    "IDCC": "NORMAL",
+    "IDXX": "NORMAL",
+    "IESC": "NORMAL",
+    "ILMN": "NORMAL",
+    "INCY": "NORMAL",
+    "INDV": "NORMAL",
+    "INIO": "NORMAL",
+    "INOD": "NORMAL",
+    "INSM": "NORMAL",
+    "INTC": "NORMAL",
+    "INTU": "NORMAL",
+    "IONS": "NORMAL",
+    "IOVA": "NORMAL",
+    "IREN": "NORMAL",
+    "IRTC": "NORMAL",
+    "ISRG": "NORMAL",
+    "JAZZ": "NORMAL",
+    "JBHT": "NORMAL",
     "JD": "WATCH",
+    "JKHY": "NORMAL",
+    "KDP": "NORMAL",
+    "KLAC": "NORMAL",
+    "KLIC": "NORMAL",
     "KMB": "WATCH",
+    "KRYS": "NORMAL",
+    "KSPI": "NORMAL",
+    "KTOS": "NORMAL",
+    "KYMR": "NORMAL",
+    "LAMR": "NORMAL",
+    "LECO": "NORMAL",
+    "LFST": "NORMAL",
+    "LFUS": "NORMAL",
+    "LGND": "NORMAL",
+    "LIN": "NORMAL",
+    "LITE": "NORMAL",
+    "LKQ": "NORMAL",
+    "LNT": "NORMAL",
+    "LNTH": "NORMAL",
+    "LOGI": "NORMAL",
+    "LPLA": "NORMAL",
+    "LQDA": "NORMAL",
+    "LRCX": "NORMAL",
+    "LSCC": "NORMAL",
+    "LSTR": "NORMAL",
+    "LULU": "NORMAL",
+    "LUNR": "NORMAL",
+    "LYFT": "NORMAL",
+    "MANH": "NORMAL",
+    "MAR": "NORMAL",
+    "MARA": "NORMAL",
+    "MAT": "NORMAL",
+    "MCHP": "NORMAL",
+    "MDB": "NORMAL",
+    "MDGL": "NORMAL",
+    "MDLN": "NORMAL",
+    "MDLZ": "NORMAL",
+    "MEDP": "NORMAL",
+    "MELI": "NORMAL",
+    "META": "NORMAL",
+    "MIDD": "NORMAL",
+    "MIRM": "NORMAL",
+    "MKSI": "NORMAL",
+    "MKTX": "NORMAL",
+    "MMED": "NORMAL",
+    "MMSI": "WATCH",
+    "MNDY": "NORMAL",
+    "MNST": "NORMAL",
+    "MORN": "NORMAL",
+    "MPWR": "NORMAL",
+    "MRCY": "WATCH",
+    "MRNA": "NORMAL",
+    "MRVL": "NORMAL",
+    "MRX": "NORMAL",
+    "MSFT": "NORMAL",
+    "MSTR": "NORMAL",
+    "MTCH": "NORMAL",
+    "MTSI": "NORMAL",
+    "MU": "NORMAL",
     "MXL": "WATCH",
+    "MYRG": "NORMAL",
+    "NAVN": "NORMAL",
+    "NBIS": "NORMAL",
+    "NBIX": "NORMAL",
+    "NDAQ": "NORMAL",
+    "NDSN": "NORMAL",
+    "NESR": "NORMAL",
+    "NFLX": "NORMAL",
+    "NTAP": "NORMAL",
     "NTES": "WATCH",
+    "NTNX": "NORMAL",
+    "NTRA": "NORMAL",
+    "NTRS": "NORMAL",
+    "NTSK": "NORMAL",
+    "NVDA": "NORMAL",
+    "NVMI": "NORMAL",
+    "NVTS": "NORMAL",
+    "NWSA": "NORMAL",
+    "NXPI": "NORMAL",
+    "NXST": "NORMAL",
+    "NXT": "NORMAL",
+    "ODFL": "NORMAL",
+    "OKTA": "NORMAL",
+    "OLED": "NORMAL",
+    "OLLI": "NORMAL",
+    "ON": "NORMAL",
+    "ONB": "NORMAL",
     "ONC": "WATCH",
-    "PAGP": "WATCH",
+    "ORKA": "NORMAL",
+    "ORLY": "NORMAL",
+    "OUST": "NORMAL",
+    "OZK": "NORMAL",
+    "PANW": "NORMAL",
+    "PAYX": "NORMAL",
+    "PCAR": "NORMAL",
+    "PCTY": "NORMAL",
+    "PCVX": "NORMAL",
+    "PDD": "NORMAL",
+    "PEGA": "NORMAL",
+    "PENG": "NORMAL",
+    "PEP": "NORMAL",
+    "PFG": "NORMAL",
+    "PI": "NORMAL",
+    "PLTR": "NORMAL",
+    "PLXS": "NORMAL",
+    "PODD": "NORMAL",
+    "POOL": "NORMAL",
+    "POWL": "NORMAL",
+    "PRAX": "NORMAL",
+    "PSKY": "WATCH",
+    "PTC": "NORMAL",
+    "PTCT": "NORMAL",
+    "PTEN": "NORMAL",
+    "PTGX": "NORMAL",
+    "PYPL": "NORMAL",
+    "QBTS": "NORMAL",
+    "QCOM": "NORMAL",
+    "QLYS": "NORMAL",
+    "QNT": "NORMAL",
+    "REG": "NORMAL",
+    "REGN": "NORMAL",
+    "RELY": "NORMAL",
+    "RGEN": "NORMAL",
+    "RGLD": "NORMAL",
+    "RGTI": "NORMAL",
+    "RIOT": "NORMAL",
+    "RIVN": "NORMAL",
+    "RKLB": "NORMAL",
+    "RLAY": "NORMAL",
+    "RMBS": "NORMAL",
+    "ROAD": "NORMAL",
+    "ROIV": "NORMAL",
+    "ROKU": "NORMAL",
+    "ROP": "NORMAL",
+    "ROST": "NORMAL",
+    "RPRX": "NORMAL",
+    "RRR": "NORMAL",
+    "RVMD": "NORMAL",
     "RYAAY": "WATCH",
+    "RYTM": "NORMAL",
+    "SAIA": "NORMAL",
+    "SAIC": "NORMAL",
+    "SAIL": "NORMAL",
+    "SANM": "NORMAL",
+    "SBAC": "NORMAL",
+    "SBLK": "NORMAL",
+    "SBUX": "NORMAL",
+    "SEDG": "NORMAL",
+    "SEIC": "NORMAL",
+    "SFM": "NORMAL",
     "SHOP": "WATCH",
+    "SIMO": "NORMAL",
+    "SIRI": "NORMAL",
+    "SITM": "NORMAL",
+    "SKHY": "NORMAL",
+    "SLAB": "NORMAL",
+    "SLS": "NORMAL",
+    "SMCI": "NORMAL",
+    "SMMT": "NORMAL",
+    "SMTC": "NORMAL",
+    "SNEX": "NORMAL",
+    "SNPS": "NORMAL",
+    "SNY": "NORMAL",
+    "SOFI": "NORMAL",
+    "SOLS": "NORMAL",
+    "SOUN": "WATCH",
+    "SPCX": "NORMAL",
+    "SRRK": "NORMAL",
+    "SSNC": "NORMAL",
+    "SSRM": "NORMAL",
+    "STLD": "NORMAL",
+    "STRL": "NORMAL",
+    "STX": "NORMAL",
+    "SWKS": "NORMAL",
+    "SYM": "NORMAL",
+    "SYNA": "NORMAL",
+    "SYRE": "NORMAL",
+    "TARS": "NORMAL",
+    "TCOM": "NORMAL",
+    "TEAM": "NORMAL",
+    "TECH": "NORMAL",
+    "TEM": "NORMAL",
+    "TENB": "NORMAL",
+    "TER": "NORMAL",
+    "TGTX": "NORMAL",
+    "TIGO": "NORMAL",
+    "TLN": "NORMAL",
+    "TMDX": "NORMAL",
+    "TMUS": "NORMAL",
+    "TNGX": "NORMAL",
+    "TPG": "NORMAL",
     "TRI": "WATCH",
-    "VOD": "WATCH"
+    "TRMB": "NORMAL",
+    "TRMD": "NORMAL",
+    "TROW": "NORMAL",
+    "TSCO": "NORMAL",
+    "TSEM": "NORMAL",
+    "TSLA": "NORMAL",
+    "TTAN": "NORMAL",
+    "TTD": "NORMAL",
+    "TTEK": "NORMAL",
+    "TTMI": "NORMAL",
+    "TTWO": "NORMAL",
+    "TVTX": "NORMAL",
+    "TW": "NORMAL",
+    "TWST": "NORMAL",
+    "TXG": "NORMAL",
+    "TXN": "NORMAL",
+    "TXRH": "NORMAL",
+    "UAL": "NORMAL",
+    "UCTT": "NORMAL",
+    "ULTA": "NORMAL",
+    "UMBF": "NORMAL",
+    "UPST": "NORMAL",
+    "URBN": "NORMAL",
+    "UTHR": "NORMAL",
+    "VCTR": "NORMAL",
+    "VCYT": "NORMAL",
+    "VERA": "NORMAL",
+    "VIAV": "NORMAL",
+    "VICR": "NORMAL",
+    "VKTX": "NORMAL",
+    "VLY": "NORMAL",
+    "VNOM": "NORMAL",
+    "VRNS": "NORMAL",
+    "VRSK": "NORMAL",
+    "VRSN": "NORMAL",
+    "VRTX": "NORMAL",
+    "VSAT": "NORMAL",
+    "VSEC": "NORMAL",
+    "VSNT": "NORMAL",
+    "VTRS": "NORMAL",
+    "WAY": "WATCH",
+    "WBD": "NORMAL",
+    "WDAY": "NORMAL",
+    "WDC": "NORMAL",
+    "WFRD": "NORMAL",
+    "WING": "NORMAL",
+    "WIX": "NORMAL",
+    "WMT": "NORMAL",
+    "WTFC": "NORMAL",
+    "WTW": "NORMAL",
+    "WULF": "NORMAL",
+    "WWD": "NORMAL",
+    "WYNN": "NORMAL",
+    "XEL": "NORMAL",
+    "XMTR": "NORMAL",
+    "XP": "NORMAL",
+    "Z": "NORMAL",
+    "ZBRA": "NORMAL",
+    "ZION": "NORMAL",
+    "ZM": "NORMAL",
+    "ZS": "NORMAL"
   },
   "task_id": "6a825366222081918997094d76e6ae46",
   "thresholds": {
