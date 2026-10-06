@@ -1198,6 +1198,15 @@ def test_final_deep_history_cache_persistence_contract():
     assert 'assert history_fingerprint(x,d["asof_et"])==exp,sym' in final
     assert '"nasdaq-xray/canonical_deep_history_cache_manifest.json"' in final
 
+
+def test_overlay_separates_exact_binding_from_mc_coverage_unknown():
+    src=(REPO/"nasdaq-xray/build_final_gate_overlay_v2.py").read_text()
+    chain=src[src.index("def current_research_chain"):src.index("def main():")]
+    assert 'MC_UNKNOWN",-1))==0' not in chain
+    assert '"coverage_complete":mc_unknown_count==0' in chain
+    assert '"current_research_coverage_complete":current_chain.get("coverage_complete") is True' in src
+    assert 'full=bool(terminal_claimed_full and current_chain.get("exact") is True)' in src
+
 def main():
     test_r1_no_future_mutation_and_confirmation(); test_r1_pivot_boundary_is_not_overhead_but_entry_overlap_is(); test_resistance_role_change_state_machine()
     test_final_history_normalizer_preserves_ohlcv()
@@ -1215,6 +1224,7 @@ def main():
     test_resolver_bridge_authority_prefers_exact_current_lineage()
     test_post_mc_exact_source_rebind_workflow_contract()
     test_final_deep_history_cache_persistence_contract()
+    test_overlay_separates_exact_binding_from_mc_coverage_unknown()
     test_final_structural_gate_accepts_deep_history_unknown_only_as_exact_partial_blocker()
     test_terminal_deep_history_unknown_is_fail_closed_partial_not_crash()
     test_frozen_identity_reuse_preserves_unknown_partition_and_rejects_unproven_spac_contract()

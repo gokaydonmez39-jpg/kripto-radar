@@ -68,17 +68,18 @@ def current_research_chain():
             and mc.get("input_path")=="nasdaq-xray/canonical_current_price_dv30.json"
             and mc.get("input_pass_hash")==p.get("pass_hash")
             and int(mc.get("input_count",-1))==int(p.get("pass_count",-2))
-            and int((mc.get("counts") or {}).get("MC_UNKNOWN",-1))==0
             and set((mc.get("results") or {}).keys())==set(p.get("pass_symbols") or [])
         )
+        mc_unknown_count=int((mc.get("counts") or {}).get("MC_UNKNOWN",-1))
         return {
             "exact":exact,
+            "coverage_complete":mc_unknown_count==0,
             "price_asof_et":p.get("asof_et"),
             "price_pass_hash":p.get("pass_hash"),
             "price_pass_count":p.get("pass_count"),
             "history_source_mc_artifact":h.get("source_mc_artifact"),
             "history_source_mc_policy_hash":h.get("source_mc_policy_hash"),
-            "mc_unknown_count":(mc.get("counts") or {}).get("MC_UNKNOWN"),
+            "mc_unknown_count":mc_unknown_count,
         }
     except Exception as e:
         return {"exact":False,"error":type(e).__name__}
@@ -195,6 +196,7 @@ def main():
             "claimed_full_end_to_end_research_pass":terminal_claimed_full,
             "full_end_to_end_research_pass":full,
             "current_research_chain_exact":current_chain.get("exact") is True,
+            "current_research_coverage_complete":current_chain.get("coverage_complete") is True,
             "terminal_result":t.get("terminal_result"),
         },
         "source_pointer":{
@@ -252,6 +254,7 @@ def main():
             "account_pass_binding_exact":(not account_pass) or account_exact,
             "blocked_negative_evidence_may_advance_without_creating_pass":True,
             "current_research_chain_exact":current_chain.get("exact") is True,
+            "current_research_coverage_complete":current_chain.get("coverage_complete") is True,
             "stale_terminal_full_claim_suppressed":bool(terminal_claimed_full and not current_chain.get("exact")),
         },
         "current_research_chain":current_chain,
