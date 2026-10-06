@@ -913,6 +913,26 @@ def test_mc_supersession_selector_allows_newer_direct_successor_over_obsolete_an
         failed="AMBIGUOUS_ACTIVE_MC_AUTHORITY" in str(e)
     assert failed
 
+
+def test_mc_provenance_exact_requires_full_scope_resolver_handoff():
+    mc={
+      "input_blob_sha":"PRICE",
+      "settlement_witness_status":"PASS",
+      "settlement_witness_path":"resolver_v2.json",
+      "settlement_witness_blob_sha":"R2",
+    }
+    assert mc_rebind_mod.mc_provenance_exact(
+      mc,"PRICE","resolver_v2.json","R2","resolver_v4.json","R4"
+    ) is False
+    mc["resolver_handoff_provenance_path"]="resolver_v4.json"
+    mc["resolver_handoff_provenance_blob_sha"]="R4"
+    assert mc_rebind_mod.mc_provenance_exact(
+      mc,"PRICE","resolver_v2.json","R2","resolver_v4.json","R4"
+    ) is True
+    assert mc_rebind_mod.mc_provenance_exact(
+      mc,"PRICE","resolver_v2.json","R2","resolver_v4.json","DIFFERENT"
+    ) is False
+
 def test_mc_provenance_rebind_preserves_all_outcomes_and_watch_caps():
     pred={
       "counts":{"MC_PASS_PRIMARY":1,"MC_FAIL_PRIMARY":1,"MC_PASS_FALLBACK_WATCH":1,
@@ -936,12 +956,15 @@ def test_mc_provenance_rebind_preserves_all_outcomes_and_watch_caps():
     before=mc_rebind_mod.mc_outcome_snapshot(pred)
     out=mc_rebind_mod.build_successor_obj(
       pred,"nasdaq-xray/pred.json","PRED_BLOB","CURRENT",
-      "nasdaq-xray/resolver.json","RESOLVER_BLOB",4
+      "nasdaq-xray/resolver.json","RESOLVER_BLOB",4,
+      "nasdaq-xray/resolver_v4.json","RESOLVER_V4_BLOB"
     )
     assert mc_rebind_mod.mc_outcome_snapshot(out)==before
     assert out["input_blob_sha"]=="CURRENT"
     assert out["supersedes_mc_bridge_path"]=="nasdaq-xray/pred.json"
     assert out["supersedes_mc_bridge_blob_sha"]=="PRED_BLOB"
+    assert out["resolver_handoff_provenance_path"]=="nasdaq-xray/resolver_v4.json"
+    assert out["resolver_handoff_provenance_blob_sha"]=="RESOLVER_V4_BLOB"
     assert out["semantic_repair"]["no_market_cap_remeasurement"] is True
     assert out["semantic_repair"]["fallback_watch_preserved"] is True
     assert out["semantic_repair"]["r92_ineligible_preserved"] is True
@@ -1152,6 +1175,7 @@ def main():
     test_mc_bridge_immutable_supersession()
     test_history_bridge_semantic_rebind_requires_exact_mc_partitions()
     test_mc_supersession_selector_allows_newer_direct_successor_over_obsolete_ancestor()
+    test_mc_provenance_exact_requires_full_scope_resolver_handoff()
     test_mc_provenance_rebind_preserves_all_outcomes_and_watch_caps()
     test_event_provenance_rebind_preserves_event_semantics_and_exact_sources()
     test_final_workflow_auto_rebinds_event_provenance_and_persists_successor()

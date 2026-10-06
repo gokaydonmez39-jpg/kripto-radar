@@ -110,6 +110,60 @@ def current_settlement_witness(request: dict, master: dict, price: dict) -> tupl
     return wp, ws
 
 
+
+def current_full_scope_resolver_handoff(master: dict, price: dict, request: dict) -> tuple[str, str]:
+    stamp = price["asof_et"].replace("-", "")
+    current_price_blob = blob_sha(PRICE)
+    current_request_blob = blob_sha(REQUEST)
+    rows = []
+    for p in sorted(ROOT.glob(f"canonical_resolver_bridge_{stamp}_c417_dv30_v*.json")):
+        try:
+            j = json.loads(p.read_text())
+            h = j.get("current_handoff") or {}
+            assert j.get("schema") == "XRAY_RESOLVER_EPOCH_RESULT_V1"
+            assert j.get("status") == "COMMITTED"
+            assert j.get("task_id") == TASK
+            assert j.get("execution") == "NONE" and j.get("real_money") == "NO-GO"
+            assert j.get("unknown_never_pass") is True
+            assert j.get("asof_et") == price.get("asof_et") == master.get("asof_et")
+            assert j.get("bridge_role") == "FULL_SCOPE_MC_HANDOFF_PROVENANCE"
+            assert j.get("queue_hash") == master.get("queue_hash")
+            assert j.get("compiled_policy_hash") == POLICY_HASH
+            assert j.get("compiled_policy_version") == POLICY_VERSION
+            assert j.get("coverage_complete") is True and j.get("partial_data") is False
+            assert j.get("settlement_status") == "PASS"
+            assert h.get("price_path") == PRICE_REL
+            assert h.get("price_blob_sha") == current_price_blob
+            assert int(h.get("pass_count", -1)) == int(price.get("pass_count", -2))
+            assert h.get("pass_hash") == price.get("pass_hash")
+            assert int(h.get("blocked_count", -1)) == int(price.get("blocked_count", -2))
+            assert h.get("no_new_pass_beyond_resolver") is True
+            assert h.get("residual_request_path") == REQUEST_REL
+            assert h.get("residual_request_blob_sha") == current_request_blob
+            wp = str(j.get("settlement_witness_path") or "")
+            ws = str(j.get("settlement_witness_blob_sha") or "")
+            assert wp and ws
+            validate_settlement_witness(REPO / wp, ws, master, price["asof_et"])
+            rows.append((relpath(p), blob_sha(p)))
+        except Exception:
+            continue
+    assert len(rows) == 1, ("AMBIGUOUS_OR_MISSING_FULL_SCOPE_RESOLVER_HANDOFF", rows)
+    return rows[0]
+
+
+def mc_provenance_exact(mc: dict, current_price_blob: str,
+                        settlement_path: str, settlement_blob: str,
+                        handoff_path: str, handoff_blob: str) -> bool:
+    return bool(
+        mc.get("input_blob_sha") == current_price_blob
+        and mc.get("settlement_witness_status") == "PASS"
+        and mc.get("settlement_witness_path") == settlement_path
+        and mc.get("settlement_witness_blob_sha") == settlement_blob
+        and mc.get("resolver_handoff_provenance_path") == handoff_path
+        and mc.get("resolver_handoff_provenance_blob_sha") == handoff_blob
+    )
+
+
 def validate_mc_semantics(mc: dict, price: dict, pass_symbols: list[str], pass_hash: str) -> None:
     assert mc.get("schema") == "XRAY_MC_EPOCH_RESULT_V1"
     assert mc.get("status") == "COMMITTED"
@@ -235,7 +289,8 @@ def next_successor_path(price: dict, rows) -> tuple[Path, int]:
 
 def build_successor_obj(predecessor: dict, predecessor_path: str, predecessor_blob: str,
                         current_price_blob: str, settlement_path: str, settlement_blob: str,
-                        version: int) -> dict:
+                        version: int, resolver_handoff_path: str | None = None,
+                        resolver_handoff_blob: str | None = None) -> dict:
     out = deepcopy(predecessor)
     before = mc_outcome_snapshot(predecessor)
 
@@ -244,6 +299,9 @@ def build_successor_obj(predecessor: dict, predecessor_path: str, predecessor_bl
     out["settlement_witness_status"] = "PASS"
     out["settlement_witness_path"] = settlement_path
     out["settlement_witness_blob_sha"] = settlement_blob
+    if resolver_handoff_path and resolver_handoff_blob:
+        out["resolver_handoff_provenance_path"] = resolver_handoff_path
+        out["resolver_handoff_provenance_blob_sha"] = resolver_handoff_blob
     out["committed_by"] = "XRAY_POST_MC_PROVENANCE_REBIND_FACTORY"
     out["bridge_revision"] = version
     out["supersedes_mc_bridge_path"] = predecessor_path
@@ -260,13 +318,14 @@ def build_successor_obj(predecessor: dict, predecessor_path: str, predecessor_bl
         "removed_from_mc": [],
         "overlap": predecessor.get("input_count"),
         "settlement_witness_rebound_to_current_resolver_request": True,
+        "resolver_full_scope_handoff_rebound": bool(resolver_handoff_path and resolver_handoff_blob),
         "no_mc_classification_change": True,
         "no_threshold_change": True,
         "no_market_cap_remeasurement": True,
         "fallback_watch_preserved": True,
         "r92_ineligible_preserved": True,
         "unknown_never_pass": True,
-        "rationale": "CURRENT_PRICE_CONTENT_ADDRESS_CHANGED_WITH_IDENTICAL_504_PASS_SET;IMMUTABLE_SUCCESSOR_ONLY",
+        "rationale": f"CURRENT_PROVENANCE_REBIND_WITH_IDENTICAL_{predecessor.get('input_count')}_PASS_SET;IMMUTABLE_SUCCESSOR_ONLY",
     }
     audit = deepcopy(predecessor.get("audit") or {})
     audit.update({
@@ -278,6 +337,7 @@ def build_successor_obj(predecessor: dict, predecessor_path: str, predecessor_bl
         "provenance_only_rebind_no_remeasurement": True,
         "fallback_watch_preserved": True,
         "r92_ineligible_preserved": True,
+        "resolver_full_scope_handoff_exact": bool(resolver_handoff_path and resolver_handoff_blob),
     })
     out["audit"] = audit
 
@@ -292,12 +352,17 @@ def main() -> None:
     pass_symbols, pass_hash = validate_price(price, master)
     current_price_blob = blob_sha(PRICE)
     settlement_path, settlement_blob = current_settlement_witness(request, master, price)
+    handoff_path, handoff_blob = current_full_scope_resolver_handoff(master, price, request)
 
     rows = load_valid_mc_rows(price, pass_symbols, pass_hash, master)
     active = select_active_mc(rows)
     predecessor = active["obj"]
 
-    if predecessor.get("input_blob_sha") == current_price_blob:
+    if mc_provenance_exact(
+        predecessor, current_price_blob,
+        settlement_path, settlement_blob,
+        handoff_path, handoff_blob,
+    ):
         print("ready=true")
         print("created=false")
         print("path=" + active["path"])
@@ -317,10 +382,14 @@ def main() -> None:
         settlement_path,
         settlement_blob,
         version,
+        handoff_path,
+        handoff_blob,
     )
     validate_mc_semantics(successor, price, pass_symbols, pass_hash)
     assert successor["input_blob_sha"] == current_price_blob
     assert successor["supersedes_mc_bridge_blob_sha"] == active["blob"]
+    assert successor["resolver_handoff_provenance_path"] == handoff_path
+    assert successor["resolver_handoff_provenance_blob_sha"] == handoff_blob
     assert mc_outcome_snapshot(successor) == mc_outcome_snapshot(predecessor)
 
     out_path.write_text(json.dumps(successor, ensure_ascii=False, sort_keys=True, indent=2) + "\n")
