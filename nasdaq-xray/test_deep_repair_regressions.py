@@ -8,6 +8,7 @@ import final_tech_shadow as ft
 import build_candidate_legal_guard as legal_guard_mod
 import build_current_resolver_request as resolver_req_mod
 import build_mc_provenance_rebind as mc_rebind_mod
+import build_current_resolver_request as resolver_request_mod
 import build_event_provenance_rebind as event_rebind_mod
 import price_dv30_recover_from_fullstate as price_recover_mod
 import history_phase as history_mod
@@ -1118,6 +1119,29 @@ def test_pre_mc_settlement_bridge_forces_resolver_refresh_contract():
     noop=wf[wf.index("- name: Frozen completed epoch healthy no-op"):wf.index("- name: Recover corrupted frozen pre-MC snapshot") if wf.index("- name: Recover corrupted frozen pre-MC snapshot")>wf.index("- name: Frozen completed epoch healthy no-op") else len(wf)]
     assert "steps.rollover.outputs.resolver_refresh != 'true'" in wf
 
+
+def test_resolver_successor_selector_prefers_active_v3_over_superseded_v2():
+    v2=REPO/"nasdaq-xray/canonical_resolver_bridge_20261006_c417_dv30_v2.json"
+    v3=REPO/"nasdaq-xray/canonical_resolver_bridge_20261006_c417_dv30_v3.json"
+    j2=json.loads(v2.read_text()); j3=json.loads(v3.read_text())
+    rows=[(v2,j2),(v3,j3)]
+    active=resolver_request_mod.active_resolver_bridge_rows(rows)
+    assert [x[0].name for x in active]==[v3.name]
+    selected=resolver_request_mod.select_current_policy_resolver_bridge(
+        rows,j3["source_price_blob_sha"],j3["source_request_blob_sha"])
+    assert selected[0].name==v3.name
+    matches=[(v2,j2,"SEMANTIC_REBIND"),(v3,j3,"EXACT_CURRENT_REQUEST")]
+    active_matches=price_recover_mod.active_resolver_bridge_matches(matches)
+    assert [x[0].name for x in active_matches]==[v3.name]
+    assert j3["supersedes_resolver_bridge_path"]=="nasdaq-xray/"+v2.name
+    assert j3["supersedes_resolver_bridge_blob_sha"]==price_recover_mod.git_blob_sha(v2)
+
+def test_pre_mc_rejects_resolver_bridge_mutation_contract():
+    wf=(REPO/".github/workflows/xray-canonical-current-pre-mc.yml").read_text()
+    assert "RESOLVER_AUTHORITY_ARTIFACT_MUTATION_FORBIDDEN_USE_SUCCESSOR" in wf
+    assert "git diff --name-status" in wf
+    assert "canonical_resolver_bridge_*.json" in wf
+
 def main():
     test_r1_no_future_mutation_and_confirmation(); test_r1_pivot_boundary_is_not_overhead_but_entry_overlap_is(); test_resistance_role_change_state_machine()
     test_final_history_normalizer_preserves_ohlcv()
@@ -1145,6 +1169,8 @@ def main():
     test_resolver_bridge_bound_to_exact_pre_run_price_and_scope()
     test_rallies_exact30_v2_preserves_upper_bound_fail_semantics()
     test_pre_mc_settlement_bridge_forces_resolver_refresh_contract()
+    test_resolver_successor_selector_prefers_active_v3_over_superseded_v2()
+    test_pre_mc_rejects_resolver_bridge_mutation_contract()
     test_family_c_event_request_covers_boundary_amc_source_session(); test_candidate_legal_guard_phrase_severity()
     test_workflow_race_and_pre_mc_freeze_contracts()
     print({"status":"PASS","tests":["R1_NO_FUTURE_MUTATION","R1_PLUS2_CONFIRMATION_NO_LEAK","R1_PIVOT_BOUNDARY_NOT_OVERHEAD",

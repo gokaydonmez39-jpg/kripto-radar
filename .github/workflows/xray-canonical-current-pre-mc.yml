@@ -63,6 +63,29 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with: {fetch-depth: 1}
+      - name: Enforce immutable resolver authority artifacts
+        if: github.event_name == 'push'
+        shell: bash
+        run: |
+          set -euo pipefail
+          before="${{ github.event.before }}"
+          after="${{ github.sha }}"
+          if [[ -z "$before" || "$before" =~ ^0+$ ]]; then
+            exit 0
+          fi
+          git fetch --no-tags --depth=1 origin "$before"
+          bad=0
+          while read -r status path rest; do
+            [[ -z "${status:-}" ]] && continue
+            case "$status" in
+              A*) ;;
+              *)
+                echo "RESOLVER_AUTHORITY_ARTIFACT_MUTATION_FORBIDDEN_USE_SUCCESSOR status=$status path=$path" >&2
+                bad=1
+                ;;
+            esac
+          done < <(git diff --name-status "$before" "$after" -- 'nasdaq-xray/canonical_resolver_bridge_*.json')
+          [[ "$bad" -eq 0 ]]
       - uses: actions/setup-python@v5
         with: {python-version: "3.12"}
       - name: Compile factory

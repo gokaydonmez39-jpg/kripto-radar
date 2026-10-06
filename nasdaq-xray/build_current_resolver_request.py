@@ -30,8 +30,33 @@ RESOLVER_RESUME_METADATA_ONLY_FIELDS={
 def resolver_resume_semantic_view(obj):
     return {k:v for k,v in obj.items() if k not in RESOLVER_RESUME_METADATA_ONLY_FIELDS}
 
+def _resolver_bridge_rel(path):
+    return str(path.relative_to(ROOT.parent)).replace("\\","/")
+
+def active_resolver_bridge_rows(rows):
+    """Return non-superseded authorities; malformed successor links fail closed."""
+    by_path={_resolver_bridge_rel(row[0]):row for row in rows}
+    valid=[]
+    superseded=set()
+    for row in rows:
+        path,obj=row[0],row[1]
+        sp=obj.get("supersedes_resolver_bridge_path")
+        ss=obj.get("supersedes_resolver_bridge_blob_sha")
+        if bool(sp)!=bool(ss):
+            continue
+        if sp:
+            pred=(ROOT.parent/sp).resolve()
+            repo_root=ROOT.parent.resolve()
+            if repo_root not in pred.parents or not pred.exists() or blob_sha(pred)!=ss:
+                continue
+            superseded.add(sp)
+        valid.append(row)
+    active=[row for row in valid if _resolver_bridge_rel(row[0]) not in superseded]
+    return active
+
 def select_current_policy_resolver_bridge(rows,current_price_blob,current_request_blob):
-    """Choose one settlement authority by exact current lineage before semantic fallback."""
+    """Choose one active settlement authority by exact lineage, then semantic fallback."""
+    rows=active_resolver_bridge_rows(rows)
     exact_price=[
       row for row in rows
       if row[1].get("source_price_path")=="nasdaq-xray/canonical_current_price_dv30.json"

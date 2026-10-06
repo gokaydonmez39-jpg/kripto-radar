@@ -323,6 +323,28 @@ def expand_rallies_scanner_exact30_v2(compact,req):
                   "corroboration":val.get("corroboration"),"no_synthetic_bar":True}
     return out
 
+def _resolver_bridge_rel(path):
+    return str(path.relative_to(ROOT.parent)).replace("\\","/")
+
+def active_resolver_bridge_matches(rows):
+    """Reduce exact/semantic matches to valid non-superseded resolver authority."""
+    valid=[]
+    superseded=set()
+    repo_root=ROOT.parent.resolve()
+    for row in rows:
+        path,obj=row[0],row[1]
+        sp=obj.get("supersedes_resolver_bridge_path")
+        ss=obj.get("supersedes_resolver_bridge_blob_sha")
+        if bool(sp)!=bool(ss):
+            continue
+        if sp:
+            pred=(ROOT.parent/sp).resolve()
+            if repo_root not in pred.parents or not pred.exists() or git_blob_sha(pred)!=ss:
+                continue
+            superseded.add(sp)
+        valid.append(row)
+    return [row for row in valid if _resolver_bridge_rel(row[0]) not in superseded]
+
 def load_exception_bridge(asof,queue_hash):
     paths=sorted(ROOT.glob(f"canonical_resolver_bridge_{asof.replace('-','')}*.json"))
     matches=[]
@@ -350,6 +372,9 @@ def load_exception_bridge(asof,queue_hash):
             rejected.append(str(path))
     if len(matches)==0:
         return {},{"status":"ABSENT_CURRENT_POLICY","paths":[str(p) for p in paths],"rejected":rejected}
+    matches=active_resolver_bridge_matches(matches)
+    if len(matches)==0:
+        return {},{"status":"NO_ACTIVE_CURRENT_POLICY","paths":[str(p) for p in paths],"rejected":rejected}
     if len(matches)!=1:
         return {},{"status":"AMBIGUOUS_CURRENT_POLICY","matches":[str(x[0]) for x in matches]}
     path,obj,binding_role=matches[0]
