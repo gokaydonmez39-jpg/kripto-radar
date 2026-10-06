@@ -363,7 +363,7 @@ def test_candidate_legal_guard_scope_is_candidate_local():
       "old":{"symbol":"L","state":"WATCH_RETEST_REQUIRED"},
       "dead":{"symbol":"DEAD","state":"FAIL_EXPIRED"},
     }}
-    assert legal_guard_mod.candidate_scope(deep,fc,lifecycle)==["A","B","C","D","L"]
+    got=legal_guard_mod.candidate_scope(deep,fc,lifecycle)\n    expected=["A","B","C","D","L"]\n    assert got==expected,(got,expected,sorted(legal_guard_mod.LIFECYCLE_ACTIVE_STATES),deep,fc,lifecycle)
 
 def test_cross_session_lifecycle_scope_persists_active_only():
     assert deep_mod.LIFECYCLE_ACTIVE_STATES==ft.LIFECYCLE_PERSIST_STATES
