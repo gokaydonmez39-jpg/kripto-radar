@@ -36,6 +36,14 @@ GATE_FILES={
 OFFICIAL_HALT_GUARD=ROOT/"canonical_official_source_guard.json"
 HALT_GUARD_MAX_AGE_SECONDS=int(os.getenv("XRAY_HALT_GUARD_MAX_AGE_SECONDS","900"))
 
+LIFECYCLE_TERMINAL_ALLOWED_STATES={
+ "WATCH_RETEST_REQUIRED","WATCH_RECONFIRMATION_REQUIRED","WATCH_HISTORICAL_SETUP",
+ "WATCH_CHASE_RETEST_REQUIRED","WATCH_EXTENSION_RESET_REQUIRED",
+ "WATCH_REGIME_REVALIDATION_REQUIRED","WATCH_REGIME_UNKNOWN",
+ "WATCH_EVENT_UNKNOWN_OR_BLOCKED","PRE_G9_TECH_PASS","WATCH_MC_FALLBACK_CAP",
+ "WATCH_SYNTHETIC_PRICE_DISCOVERY_CAP"
+}
+
 def blob_sha(p:Path):
     b=p.read_bytes()
     return hashlib.sha1(f"blob {len(b)}\0".encode()+b).hexdigest()
@@ -510,10 +518,7 @@ def main():
             assert rr.get("reason"),(key,rr)
         else:
             assert rr.get("setup_id")==rec.get("setup_id"),(key,rr.get("setup_id"),rec.get("setup_id"))
-        assert rec.get("state") in {"WATCH_RETEST_REQUIRED","WATCH_RECONFIRMATION_REQUIRED","WATCH_HISTORICAL_SETUP",
-                                   "WATCH_CHASE_RETEST_REQUIRED","WATCH_EXTENSION_RESET_REQUIRED",
-                                   "WATCH_REGIME_REVALIDATION_REQUIRED","WATCH_REGIME_UNKNOWN",
-                                   "PRE_G9_TECH_PASS","WATCH_MC_FALLBACK_CAP","WATCH_SYNTHETIC_PRICE_DISCOVERY_CAP"}
+        assert rec.get("state") in LIFECYCLE_TERMINAL_ALLOWED_STATES,(key,rec.get("state"))
         lifecycle_backed.add(key)
     extra_lifecycle=final_set-current_confirmed
     assert extra_lifecycle<=lifecycle_backed,(sorted(extra_lifecycle),sorted(lifecycle_backed))
