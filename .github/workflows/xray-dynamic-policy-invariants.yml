@@ -19,12 +19,12 @@ on:
       - "nasdaq-xray/recover_pre_mc_snapshot.py"
       - "nasdaq-xray/sina_stage.py"
       - "nasdaq-xray/resolve_unknowns_fallback.py"
-      - "nasdaq-xray/price_dv20_phase.py"
+      - "nasdaq-xray/price_dv30_phase.py"
       - "nasdaq-xray/build_current_resolver_request.py"
       - "nasdaq-xray/deep_pre_r1_shadow.py"
       - "nasdaq-xray/history_phase.py"
       - "nasdaq-xray/history_official_identity_evidence.json"
-      - "nasdaq-xray/price_dv20_recover_from_fullstate.py"
+      - "nasdaq-xray/price_dv30_recover_from_fullstate.py"
       - "nasdaq-xray/chatgpt_compiled_policy_v3.json"
       - "nasdaq-xray/account_provider_adapter_contract.json"
       - "nasdaq-xray/account_gate_contract.json"
@@ -63,9 +63,9 @@ jobs:
             nasdaq-xray/recover_pre_mc_snapshot.py \
             nasdaq-xray/sina_stage.py \
             nasdaq-xray/resolve_unknowns_fallback.py \
-            nasdaq-xray/price_dv20_phase.py \
+            nasdaq-xray/price_dv30_phase.py \
             nasdaq-xray/build_current_resolver_request.py \
-            nasdaq-xray/price_dv20_recover_from_fullstate.py \
+            nasdaq-xray/price_dv30_recover_from_fullstate.py \
             nasdaq-xray/deep_pre_r1_shadow.py \
             nasdaq-xray/history_phase.py \
             nasdaq-xray/test_dynamic_policy_invariants.py
@@ -133,7 +133,7 @@ jobs:
           t=json.load(open("nasdaq-xray/chatgpt_compiled_policy_v3.json"))
           p=json.loads(t["payload_json"])
           assert p["version"]=="C4.17"
-          assert p["hard_gates"]["dv20"]=="median exactly20 completed official-RTH Close*regular-session Volume >=50000000"
+          assert p["hard_gates"]["dv30"]=="median exactly30 completed official-RTH Close*regular-session Volume >=50000000"
           assert p["unknown_never_pass"] is True
           print({"status":"PASS","policy_hash":t["policy_hash"]})
           PY

@@ -4,9 +4,9 @@ on:
   push:
     branches: [main]
     paths:
-      - "nasdaq-xray/price_dv20_phase.py"
+      - "nasdaq-xray/price_dv30_phase.py"
       - "nasdaq-xray/build_current_resolver_request.py"
-      - "nasdaq-xray/price_dv20_recover_from_fullstate.py"
+      - "nasdaq-xray/price_dv30_recover_from_fullstate.py"
       - "nasdaq-xray/history_phase.py"
       - "nasdaq-xray/legal_phase.py"
       - "nasdaq-xray/sina_stage.py"
@@ -52,9 +52,9 @@ jobs:
         run: |
           python -m py_compile \
             nasdaq-xray/sina_stage.py \
-            nasdaq-xray/price_dv20_phase.py \
+            nasdaq-xray/price_dv30_phase.py \
             nasdaq-xray/build_current_resolver_request.py \
-            nasdaq-xray/price_dv20_recover_from_fullstate.py \
+            nasdaq-xray/price_dv30_recover_from_fullstate.py \
             nasdaq-xray/history_phase.py \
             nasdaq-xray/legal_phase.py \
             nasdaq-xray/alpha_semantics.py \
@@ -124,10 +124,10 @@ jobs:
           python - <<'PY'
           import sys
           sys.path.insert(0,"nasdaq-xray")
-          import price_dv20_recover_from_fullstate as r
-          assert r.monotonic_legacy_pass_reusable({"price":">10","dv20":">=50000000 exact20 median"}) is True
-          assert r.monotonic_legacy_pass_reusable({"price":">=5","dv20":">=50000000 exact20 median"}) is False
-          assert r.monotonic_legacy_pass_reusable({"price":">10","dv20":">=60000000 exact20 median"}) is False
+          import price_dv30_recover_from_fullstate as r
+          assert r.monotonic_legacy_pass_reusable({"price":">10","dv30":">=50000000 exact30 median"}) is True
+          assert r.monotonic_legacy_pass_reusable({"price":">=5","dv30":">=50000000 exact30 median"}) is False
+          assert r.monotonic_legacy_pass_reusable({"price":">10","dv30":">=60000000 exact30 median"}) is False
           print("MONOTONIC_LEGACY_PRICE_PASS_REUSE=PASS")
           PY
 
@@ -136,37 +136,37 @@ jobs:
           python - <<'PY'
           import sys
           sys.path.insert(0,"nasdaq-xray")
-          import price_dv20_recover_from_fullstate as r
+          import price_dv30_recover_from_fullstate as r
           px={
             "asof_et":"2026-10-05","execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
             "source_master_count":3,"source_master_queue_hash":"Q",
-            "counts":{"PASS_PRICE_DV20":1,"UNKNOWN":1,"BLOCK_CURRENT_RUN":1},
+            "counts":{"PASS_PRICE_DV30":1,"UNKNOWN":1,"BLOCK_CURRENT_RUN":1},
             "results":{"PASS":{},"U":{},"B":{}},
             "pass_count":1,"pass_symbols":["PASS"],
             "unknown_count":1,"unknown_symbols":["U"],
             "blocked_count":1,"blocked_symbols":["B"],
           }
           assert r.price_snapshot_integrity(px,"2026-10-05") is True,px
-          broken=dict(px,counts={"PASS_PRICE_DV20":1,"UNKNOWN":1})
+          broken=dict(px,counts={"PASS_PRICE_DV30":1,"UNKNOWN":1})
           assert r.price_snapshot_integrity(broken,"2026-10-05") is False,broken
           base={
             "schema":"XRAY_RESOLVER_EPOCH_RESULT_V1","status":"COMMITTED",
             "task_id":r.TASK_ID,"execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
             "asof_et":"2026-10-05","queue_hash":"Q","compiled_policy_version":"C4.17",
-            "compiled_policy_hash":"bbb6ea5aa3126fbcdeda2246bc52d1ad04885d27e8e52fb07797e0114dedce55",
+            "compiled_policy_hash":"68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4",
             "source_price_blob_sha":"P","price_resolutions":{},
             "price_resolution_compact":{"block_current_run":{"U":{"reason":"X"}}},
           }
           assert r.bridge_refresh_relevant(px,base,"2026-10-05","P") is True
           px_after=dict(px,unknown_count=0,unknown_symbols=[],blocked_count=2,blocked_symbols=["U","B"],
-                        counts={"PASS_PRICE_DV20":1,"BLOCK_CURRENT_RUN":2})
+                        counts={"PASS_PRICE_DV30":1,"BLOCK_CURRENT_RUN":2})
           assert r.bridge_refresh_relevant(px_after,base,"2026-10-05","P") is False
-          terminal=dict(base,price_resolution_compact={},terminal_overrides={"B":{"decision":"FAIL_DV20"}})
+          terminal=dict(base,price_resolution_compact={},terminal_overrides={"B":{"decision":"FAIL_DV30"}})
           assert r.bridge_refresh_relevant(px_after,terminal,"2026-10-05","P") is True
           assert r.bridge_replacement_allowed("UNKNOWN","BLOCK_CURRENT_RUN") is True
-          assert r.bridge_replacement_allowed("BLOCK_CURRENT_RUN","FAIL_DV20") is True
+          assert r.bridge_replacement_allowed("BLOCK_CURRENT_RUN","FAIL_DV30") is True
           assert r.bridge_replacement_allowed("BLOCK_CURRENT_RUN","BLOCK_CURRENT_RUN") is False
-          assert r.bridge_replacement_allowed("PASS_PRICE_DV20","FAIL_DV20") is False
+          assert r.bridge_replacement_allowed("PASS_PRICE_DV30","FAIL_DV30") is False
           print("PRICE_RESOLVER_INCOMPLETE_SNAPSHOT_ROUTING=PASS")
           PY
 
@@ -175,8 +175,8 @@ jobs:
           python - <<'PY'
           from pathlib import Path
           paths=[
-            Path("nasdaq-xray/price_dv20_phase.py"),
-            Path("nasdaq-xray/price_dv20_recover_from_fullstate.py"),
+            Path("nasdaq-xray/price_dv30_phase.py"),
+            Path("nasdaq-xray/price_dv30_recover_from_fullstate.py"),
             Path("nasdaq-xray/history_phase.py"),
             Path("nasdaq-xray/legal_phase.py"),
             Path("nasdaq-xray/stage1_shadow.py"),

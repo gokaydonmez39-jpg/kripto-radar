@@ -15,8 +15,8 @@ on:
       - "nasdaq-xray/resolve_unknowns_fallback.py"
       - "nasdaq-xray/extract_unknown_manifest.py"
       - "nasdaq-xray/build_current_master_manifest.py"
-      - "nasdaq-xray/price_dv20_phase.py"
-      - "nasdaq-xray/price_dv20_recover_from_fullstate.py"
+      - "nasdaq-xray/price_dv30_phase.py"
+      - "nasdaq-xray/price_dv30_recover_from_fullstate.py"
       - "nasdaq-xray/build_current_resolver_request.py"
       - "nasdaq-xray/recover_pre_mc_snapshot.py"
       - "nasdaq-xray/canonical_resolver_bridge_*.json"
@@ -54,7 +54,7 @@ jobs:
       XRAY_MASTER_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_current_full_state.json
       XRAY_MASTER_MANIFEST: ${{ github.workspace }}/nasdaq-xray/canonical_current_master_manifest.json
       XRAY_FULLSTATE_INPUT: ${{ github.workspace }}/nasdaq-xray/canonical_current_full_state.json
-      XRAY_PRICE_DV20_RECOVER_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_current_price_dv20.json
+      XRAY_PRICE_DV30_RECOVER_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_current_price_dv30.json
       XRAY_PHASE_WORKERS: "12"
     steps:
       - uses: actions/checkout@v4
@@ -68,8 +68,8 @@ jobs:
             nasdaq-xray/resolve_unknowns_fallback.py \
             nasdaq-xray/extract_unknown_manifest.py \
             nasdaq-xray/build_current_master_manifest.py \
-            nasdaq-xray/price_dv20_phase.py \
-            nasdaq-xray/price_dv20_recover_from_fullstate.py \
+            nasdaq-xray/price_dv30_phase.py \
+            nasdaq-xray/price_dv30_recover_from_fullstate.py \
             nasdaq-xray/build_current_resolver_request.py \
             nasdaq-xray/recover_pre_mc_snapshot.py
       - name: Install zero-dollar runtime
@@ -84,7 +84,7 @@ jobs:
           from datetime import datetime, timezone, timedelta
           import pandas_market_calendars as mcal
           sys.path.insert(0,"nasdaq-xray")
-          from price_dv20_recover_from_fullstate import price_snapshot_integrity, bridge_refresh_relevant
+          from price_dv30_recover_from_fullstate import price_snapshot_integrity, bridge_refresh_relevant
 
           ptr=json.load(open("nasdaq-xray/chatgpt_canonical_state_v2.json"))
           ps=ptr.get("state_json") or {}
@@ -110,7 +110,7 @@ jobs:
               raise RuntimeError(f"POINTER_ASOF_FUTURE:{pointer_asof}>{latest_completed}")
 
           same_completed_epoch=bool(pointer_asof and latest_completed==pointer_asof)
-          # A validated completed-session PRICE/DV20 snapshot is immutable even
+          # A validated completed-session PRICE/DV30 snapshot is immutable even
           # while the production pointer is still on the prior ASOF waiting for
           # resolver/MC/Post-MC. Pointer lag must never force a same-ASOF rebuild.
           price_ok=False
@@ -119,7 +119,7 @@ jobs:
           policy_replay=False
           price_asof=""
           try:
-              px=json.load(open("nasdaq-xray/canonical_current_price_dv20.json"))
+              px=json.load(open("nasdaq-xray/canonical_current_price_dv30.json"))
               price_asof=str(px.get("asof_et") or "")
           except Exception:
               px={}
@@ -131,8 +131,8 @@ jobs:
               price_integrity_ok=price_snapshot_integrity(px,frozen_asof)
               price_semantics_ok=(
                   (px.get("thresholds") or {}).get("price")==">=5"
-                  and (px.get("thresholds") or {}).get("dv20")==">=50000000 exact20 median"
-                  and px.get("gate_order")==["PRICE","DV20"]
+                  and (px.get("thresholds") or {}).get("dv30")==">=50000000 exact30 median"
+                  and px.get("gate_order")==["PRICE","DV30"]
               )
               price_ok=bool(price_integrity_ok and price_semantics_ok)
           except Exception:
@@ -144,7 +144,7 @@ jobs:
           blocked_count=0
           block_recovery_attempted=False
           try:
-              px=json.load(open("nasdaq-xray/canonical_current_price_dv20.json"))
+              px=json.load(open("nasdaq-xray/canonical_current_price_dv30.json"))
               blocked_count=int(px.get("blocked_count",(px.get("counts") or {}).get("BLOCK_CURRENT_RUN",0)) or 0)
               block_recovery_attempted=px.get("block_recovery_attempted") is True
           except Exception:
@@ -166,7 +166,7 @@ jobs:
           if active_completed_epoch and price_ok:
               try:
                   import glob,hashlib,pathlib
-                  pp=pathlib.Path("nasdaq-xray/canonical_current_price_dv20.json")
+                  pp=pathlib.Path("nasdaq-xray/canonical_current_price_dv30.json")
                   pb=pp.read_bytes()
                   current_price_blob=hashlib.sha1(b"blob "+str(len(pb)).encode()+b"\0"+pb).hexdigest()
                   for fp in glob.glob("nasdaq-xray/canonical_resolver_bridge_*.json"):
@@ -213,7 +213,7 @@ jobs:
               "reason":(
                   "REPLAY_COMPLETED_EPOCH_UNDER_CURRENT_PRICE_POLICY" if policy_replay else
                   "RECOVER_FROZEN_COMPLETED_EPOCH" if recover else
-                  "REPAIR_BLOCKED_PRICE_DV20_COVERAGE" if coverage_repair else
+                  "REPAIR_BLOCKED_PRICE_DV30_COVERAGE" if coverage_repair else
                   "REFRESH_BLOCKED_RESOLVER_REQUEST" if resolver_refresh else
                   "APPLY_TERMINAL_OVERRIDE_BRIDGE" if bridge_refresh else
                   "FREEZE_COMPLETED_EPOCH_UNTIL_NEXT_RTH_CLOSE" if active_completed_epoch else
@@ -265,12 +265,12 @@ jobs:
       - name: Build current master manifest
         if: steps.rollover.outputs.build == 'true'
         run: python nasdaq-xray/build_current_master_manifest.py
-      - name: Build policy-ordered PRICE-DV20
+      - name: Build policy-ordered PRICE-DV30
         if: steps.rollover.outputs.build == 'true' || steps.rollover.outputs.policy_replay == 'true' || steps.rollover.outputs.coverage_repair == 'true' || steps.rollover.outputs.bridge_refresh == 'true'
         env:
           XRAY_PRICE_FORCE_POLICY_REPLAY: ${{ steps.rollover.outputs.policy_replay == 'true' && '1' || '0' }}
           XRAY_PRICE_USE_CURRENT_BASELINE: ${{ (steps.rollover.outputs.bridge_refresh == 'true' || steps.rollover.outputs.coverage_repair == 'true') && '1' || '0' }}
-        run: python nasdaq-xray/price_dv20_recover_from_fullstate.py
+        run: python nasdaq-xray/price_dv30_recover_from_fullstate.py
       - name: Build resolver bridge request
         if: steps.rollover.outputs.build == 'true' || steps.rollover.outputs.policy_replay == 'true' || steps.rollover.outputs.coverage_repair == 'true' || steps.rollover.outputs.resolver_refresh == 'true' || steps.rollover.outputs.bridge_refresh == 'true'
         run: python nasdaq-xray/build_current_resolver_request.py
@@ -280,7 +280,7 @@ jobs:
           python - <<'PY'
           import json
           m=json.load(open("nasdaq-xray/canonical_current_master_manifest.json"))
-          p=json.load(open("nasdaq-xray/canonical_current_price_dv20.json"))
+          p=json.load(open("nasdaq-xray/canonical_current_price_dv30.json"))
           q=json.load(open("nasdaq-xray/canonical_current_resolver_request.json"))
           cm=json.load(open("nasdaq-xray/canonical_current_resolver_chunk_manifest.json"))
           assert m["task_id"]==p["task_id"]==q["task_id"]=="6a825366222081918997094d76e6ae46"
@@ -288,8 +288,8 @@ jobs:
           assert m["unknown_count"]==0 and m["pass_count"]==m["queue_total"]
           assert m["asof_et"]==p["asof_et"]==q["asof_et"]
           assert q["compiled_policy_path"]=="nasdaq-xray/chatgpt_compiled_policy_v3.json"
-          assert q["compiled_policy_blob_sha"]=="299199aa10b6eb6fdf35071f233ac12bd814dc32"
-          assert q["compiled_policy_hash"]=="bbb6ea5aa3126fbcdeda2246bc52d1ad04885d27e8e52fb07797e0114dedce55"
+          assert q["compiled_policy_blob_sha"]=="16c50cc8f887a5234a4be23862d7c8d0e564b0ac"
+          assert q["compiled_policy_hash"]=="68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4"
           assert q["compiled_policy_version"]=="C4.17"
           assert cm["schema"]=="XRAY_RESOLVER_REQUEST_CHUNK_MANIFEST_V1"
           assert cm["task_id"]==q["task_id"] and cm["asof_et"]==q["asof_et"]
@@ -329,7 +329,7 @@ jobs:
           assert len(p["results"])==m["queue_total"]
           assert sum(p["counts"].values())==m["queue_total"]
           assert p["pass_count"]==len(p["pass_symbols"])==len(set(p["pass_symbols"]))
-          print({"asof":m["asof_et"],"master_status":m["status"],"master_unknown":m["unknown_count"],"price_dv20_unknown":p["unknown_count"],"price_dv20_blocked":p.get("blocked_count",(p.get("counts") or {}).get("BLOCK_CURRENT_RUN",0)),"price_dv20_pass":p["pass_count"],"resolver_request_status":q["status"],"settlement_required":q["settlement_required"]})
+          print({"asof":m["asof_et"],"master_status":m["status"],"master_unknown":m["unknown_count"],"price_dv30_unknown":p["unknown_count"],"price_dv30_blocked":p.get("blocked_count",(p.get("counts") or {}).get("BLOCK_CURRENT_RUN",0)),"price_dv30_pass":p["pass_count"],"resolver_request_status":q["status"],"settlement_required":q["settlement_required"]})
           PY
       - name: Commit current pre-MC artifacts
         if: steps.rollover.outputs.build == 'true' || steps.rollover.outputs.policy_replay == 'true' || steps.rollover.outputs.coverage_repair == 'true' || steps.rollover.outputs.resolver_refresh == 'true' || steps.rollover.outputs.bridge_refresh == 'true'
@@ -344,7 +344,7 @@ jobs:
             nasdaq-xray/canonical_current_unknowns.json
             nasdaq-xray/canonical_current_resolution_overlay.json
             nasdaq-xray/canonical_current_master_manifest.json
-            nasdaq-xray/canonical_current_price_dv20.json
+            nasdaq-xray/canonical_current_price_dv30.json
             nasdaq-xray/canonical_current_resolver_request.json
             nasdaq-xray/canonical_current_resolver_chunk_manifest.json
           )

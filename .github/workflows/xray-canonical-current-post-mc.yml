@@ -5,7 +5,7 @@ on:
   push:
     branches: [main]
     paths:
-      - "nasdaq-xray/canonical_current_price_dv20.json"
+      - "nasdaq-xray/canonical_current_price_dv30.json"
       - "nasdaq-xray/canonical_mc_bridge_*.json"
       - "nasdaq-xray/history_phase.py"
       - "nasdaq-xray/history_official_identity_evidence.json"
@@ -60,7 +60,7 @@ jobs:
               evidence=t.get("evidence") or {}
               checks=[
                 ("master","canonical_current_master_manifest.json"),
-                ("price","canonical_current_price_dv20.json"),
+                ("price","canonical_current_price_dv30.json"),
                 ("history","canonical_current_history.json"),
                 ("legal","canonical_current_legal.json"),
                 ("stage1_input","canonical_current_stage1_input.json"),
@@ -116,7 +116,7 @@ jobs:
           set -e
           python - <<'PY' > /tmp/mc_out
           import glob,hashlib,json,pathlib
-          price_path=pathlib.Path("nasdaq-xray/canonical_current_price_dv20.json")
+          price_path=pathlib.Path("nasdaq-xray/canonical_current_price_dv30.json")
           master_path=pathlib.Path("nasdaq-xray/canonical_current_master_manifest.json")
           pointer_path=pathlib.Path("nasdaq-xray/chatgpt_canonical_state_v2.json")
           if not price_path.exists() or not master_path.exists() or not pointer_path.exists():
@@ -126,7 +126,7 @@ jobs:
           ps=ptr.get("state_json") or {}
           if isinstance(ps,str): ps=json.loads(ps)
           if not isinstance(ps,dict): print("ready=false"); raise SystemExit
-          if p.get("schema")!="XRAY_CANONICAL_PRICE_DV20_V1" or m.get("schema")!="XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1":
+          if p.get("schema")!="XRAY_CANONICAL_PRICE_DV30_V1" or m.get("schema")!="XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1":
               print("ready=false"); raise SystemExit
           if p.get("asof_et")!=m.get("asof_et") or p.get("source_master_queue_hash")!=m.get("queue_hash") or p.get("source_master_count")!=m.get("queue_total"):
               print("ready=false"); raise SystemExit
@@ -135,7 +135,7 @@ jobs:
           expected_asof=p["asof_et"]; expected_hash=p["pass_hash"]; expected_count=p["pass_count"]
           pointer_asof=str(ps.get("asof_et") or "")
           settlement_required=bool(pointer_asof and expected_asof>pointer_asof)
-          expected_path="nasdaq-xray/canonical_current_price_dv20.json"
+          expected_path="nasdaq-xray/canonical_current_price_dv30.json"
           rows=[]
           for fp in glob.glob("nasdaq-xray/canonical_mc_bridge_*.json"):
               try:
@@ -148,7 +148,7 @@ jobs:
                     and j.get("asof_et")==expected_asof
                     and j.get("input_path")==expected_path
                     and j.get("input_pass_hash")==expected_hash
-                    and j.get("policy_hash")=="bbb6ea5aa3126fbcdeda2246bc52d1ad04885d27e8e52fb07797e0114dedce55"
+                    and j.get("policy_hash")=="68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4"
                     and j.get("policy_version")=="C4.17"
                     and int(j.get("input_count",-1))==int(expected_count)
                     and (j.get("counts") or {}).get("TOTAL")==expected_count
@@ -179,7 +179,7 @@ jobs:
                             and sj.get("status")=="COMMITTED"
                             and sj.get("asof_et")==expected_asof
                             and sj.get("queue_hash")==m.get("queue_hash")
-                            and sj.get("compiled_policy_hash")=="bbb6ea5aa3126fbcdeda2246bc52d1ad04885d27e8e52fb07797e0114dedce55"
+                            and sj.get("compiled_policy_hash")=="68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4"
                             and sj.get("compiled_policy_version")=="C4.17"
                             and sj.get("settlement_status")=="PASS"
                           )
@@ -268,7 +268,7 @@ jobs:
               return hashlib.sha1(f"blob {len(b)}\0".encode()+b).hexdigest()
           reuse=False;reason="NOT_EVALUATED"
           try:
-              curp=root/"canonical_current_price_dv20.json"
+              curp=root/"canonical_current_price_dv30.json"
               curmc=pathlib.Path(os.environ["XRAY_SELECTED_MC"])
               hp=root/"canonical_current_history.json"
               lp=root/"canonical_current_legal.json"
@@ -285,7 +285,7 @@ jobs:
                         and sj.get("task_id")==mc.get("task_id")
                         and sj.get("execution")=="NONE" and sj.get("real_money")=="NO-GO"
                         and sj.get("asof_et")==mc.get("asof_et")==p.get("asof_et")==h.get("asof_et")==l.get("asof_et")
-                        and sj.get("policy_hash")==mc.get("policy_hash")=="bbb6ea5aa3126fbcdeda2246bc52d1ad04885d27e8e52fb07797e0114dedce55"
+                        and sj.get("policy_hash")==mc.get("policy_hash")=="68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4"
                         and sj.get("policy_version")==mc.get("policy_version")=="C4.17"
                         and sj.get("input_pass_hash")==mc.get("input_pass_hash")==p.get("pass_hash")
                         and set(sj.get("primary_pass_symbols") or [])==set(mc.get("primary_pass_symbols") or [])
@@ -595,7 +595,7 @@ jobs:
             changed="$(git diff --name-only "$GITHUB_SHA" "$latest" -- \
               .github/workflows/xray-canonical-current-post-mc.yml \
               nasdaq-xray/canonical_current_master_manifest.json \
-              nasdaq-xray/canonical_current_price_dv20.json \
+              nasdaq-xray/canonical_current_price_dv30.json \
               nasdaq-xray/canonical_mc_bridge_*.json \
               nasdaq-xray/history_official_identity_evidence.json \
               nasdaq-xray/canonical_history_evidence_bridge_*.json \

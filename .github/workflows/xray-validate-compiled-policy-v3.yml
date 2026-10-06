@@ -25,15 +25,18 @@ jobs:
           assert top["schema"]=="XRAY_GITHUB_COMPILED_POLICY_V3"
           assert top["execution"]=="NONE" and top["real_money"]=="NO-GO"
           payload=top["payload_json"]; h=hashlib.sha256(payload.encode()).hexdigest()
-          assert h==top["policy_hash"]=="bbb6ea5aa3126fbcdeda2246bc52d1ad04885d27e8e52fb07797e0114dedce55"
+          assert h==top["policy_hash"]=="68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4"
           x=json.loads(payload)
           assert x["schema"]=="XRAY_COMPILED_POLICY_V1" and x["version"]=="C4.17"
           assert x["unknown_never_pass"] is True and x["zero_dollar_hard_cap"] is True
           assert x["hard_gates"]["price"]==">=5"
           assert x["hard_gates"]["market_cap"]==">=2000000000 USD"
-          assert x["hard_gates"]["dv20"]=="median exactly20 completed official-RTH Close*regular-session Volume >=50000000"
+          assert x["hard_gates"]["dv30"]=="median exactly30 completed official-RTH Close*regular-session Volume >=50000000"
           assert x["price_gate_correction_change"]["id"]=="PRICE_FLOOR_LATEST_USER_SPEC_CORRECTION_V1"
           assert x["price_gate_correction_change"]["corrected_rule"]==">=5"
+          assert x["liquidity_gate_correction_change"]["id"]=="DV30_LATEST_USER_SPEC_CORRECTION_V1"
+          assert x["liquidity_gate_correction_change"]["corrected_rule"].startswith("DV30 median exactly30")
+          assert x["rvol20"]["role"]=="SETUP_CONFIRMATION_ONLY_NOT_ALPHA_LIQUIDITY_GATE"
           assert x["policy_change"]["id"]=="MC_TWO_SOURCE_SUBTHRESHOLD_FAIL_EVIDENCE_V1"
           assert x["settlement_change"]["id"]=="SETTLEMENT_ZERO_DOLLAR_CROSSCHECK_V2"
           m=x["mc_identity_correction_change"]
