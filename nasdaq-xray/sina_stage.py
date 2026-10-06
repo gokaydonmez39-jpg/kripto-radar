@@ -42,8 +42,9 @@ RETRY_BATCH=int(os.getenv("XRAY_SINA_RETRY_BATCH","20"))
 WORKERS=int(os.getenv("XRAY_SINA_HISTORY_WORKERS","8"))
 MAX_ATTEMPTS=int(os.getenv("XRAY_SINA_MAX_ATTEMPTS","4"))
 
-# Wide discovery floors only. Canonical thresholds remain $10 / $2B / $50M / 260 bars.
-DISCOVERY_PRICE_FLOOR=9.0
+# Discovery may be equal to or wider than canonical gates, never stricter.
+# Current canonical price floor is >=$5; recovery/discovery must not pre-drop eligible names.
+DISCOVERY_PRICE_FLOOR=5.0
 DISCOVERY_MC_FLOOR=1_800_000_000.0
 HARD_PRICE=5.0
 HARD_DV20=50_000_000.0
