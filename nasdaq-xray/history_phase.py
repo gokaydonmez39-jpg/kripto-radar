@@ -82,17 +82,82 @@ def load_history_bridge(src,asof):
     assert j.get("source_mc_policy_hash")==src.get("policy_hash")
     assert j.get("source_mc_policy_version")==src.get("policy_version")
     entries=j.get("entries") or {}
+    if any((x or {}).get("outcome")=="PASS_HISTORY" for x in entries.values()):
+        assert j.get("source_price_blob_sha")==src.get("input_blob_sha")
+        assert j.get("source_price_path")==src.get("input_path")
     assert isinstance(entries,dict)
     assert set(entries)==set(j.get("scope_symbols") or [])
     assert int((j.get("counts") or {}).get("TOTAL",-1))==len(entries)
     HISTORY_BRIDGE_PATH=relpath(p)
     return entries
 
-def bridge_resolution(sym,asof,sina_status=None,sina_info=None):
+def _bridge_rallies_frame(e,asof):
+    rows=e.get("bars") or []
+    if not isinstance(rows,list) or not rows:
+        raise AssertionError("RALLIES_PASS_BARS_MISSING")
+    parsed=[];seen=set()
+    for r in rows:
+        if not isinstance(r,dict):
+            raise AssertionError("RALLIES_PASS_BAR_TYPE")
+        day=str(r.get("date") or "")[:10]
+        if len(day)!=10 or day in seen or day>asof:
+            raise AssertionError("RALLIES_PASS_BAR_DATE")
+        vals=[num(r.get(k)) for k in ("open","high","low","close","volume")]
+        if any(v is None for v in vals):
+            raise AssertionError("RALLIES_PASS_BAR_NUMERIC")
+        o,h,l,c,v=vals
+        if min(o,h,l,c)<=0 or v<0 or l>min(o,c) or h<max(o,c) or l>h:
+            raise AssertionError("RALLIES_PASS_BAR_OHLC")
+        seen.add(day);parsed.append({"date":pd.Timestamp(day),"open":o,"high":h,"low":l,"close":c,"volume":v})
+    x=pd.DataFrame(parsed).sort_values("date").reset_index(drop=True)
+    by={r["date"].date().isoformat():(float(r["close"]),float(r["volume"])) for _,r in x.iterrows()}
+    return x,by
+
+def _bridge_overlap_close_proof(authority_by,peer_by,min_sessions=20,max_p95=0.001):
+    common=sorted(set(authority_by or {}) & set(peer_by or {}))
+    rel=[]
+    for d in common:
+        a=num((authority_by[d] or [None])[0]); b=num((peer_by[d] or [None])[0])
+        if a is None or b is None or a<=0 or b<=0: continue
+        rel.append(abs(a-b)/max(a,b))
+    if len(rel)<min_sessions:
+        return None
+    rel.sort()
+    p95=rel[min(len(rel)-1,max(0,math.ceil(0.95*len(rel))-1))]
+    if p95>max_p95:
+        return None
+    return {"overlap_sessions":len(common),"overlap_compared":len(rel),"overlap_p95_relative_close_diff":p95}
+
+def bridge_resolution(sym,asof,sina_status=None,sina_info=None,sina_by=None,yahoo_by=None):
     e=HISTORY_BRIDGE.get(sym)
     if not e:
         return None
     mode=e.get("mode"); outcome=e.get("outcome")
+    if mode=="RALLIES_CROSS_SOURCE_EXACT_HISTORY_PASS_V1" and outcome=="PASS_HISTORY":
+        assert e.get("source")=="RALLIES_CONNECTOR_DAILY"
+        assert e.get("proof")=="RALLIES_EXACT_ASOF_PLUS_LAGGING_CROSS_SOURCE_OVERLAP"
+        assert e.get("no_synthetic_bars") is True and e.get("can_create_pass") is True
+        x,rb=_bridge_rallies_frame(e,asof)
+        rs,ri=classify(rb,asof,"RALLIES_CONNECTOR_DAILY")
+        if rs!="PASS_HISTORY":
+            return None
+        proofs={}
+        sp=_bridge_overlap_close_proof(rb,sina_by or {})
+        yp=_bridge_overlap_close_proof(rb,yahoo_by or {})
+        if sp is not None: proofs["SINA_US_DAILY"]=sp
+        if yp is not None: proofs["YAHOO_CHART_FREE"]=yp
+        if not proofs:
+            return None
+        _write_sina_cache(sym,x)
+        return "PASS_HISTORY",{
+          **ri,
+          "proof":"RALLIES_CROSS_SOURCE_EXACT_HISTORY_PASS_V1",
+          "providers":["RALLIES_CONNECTOR_DAILY",*sorted(proofs)],
+          "cross_source_overlap":proofs,
+          "bridge_path":HISTORY_BRIDGE_PATH,
+          "no_synthetic_bars":True,
+          "thresholds":{"daily":HARD_DAILY,"weekly_completed":HARD_WEEKLY},
+        }
     if mode=="RALLIES_SINA_EXACT_TERMINAL_FAIL_V1" and outcome=="FAIL_HISTORY":
         r=e.get("rallies_observation") or {}
         assert e.get("can_create_pass") is False
@@ -599,7 +664,7 @@ def eval_one(sym,asof):
     if es=="PASS_HISTORY":
         return _history_pass(sym,asof,es,ei,{"sina":sm,"nasdaq":nm,"yahoo":ym,"eastmoney":em})
 
-    br=bridge_resolution(sym,asof,ss,si)
+    br=bridge_resolution(sym,asof,ss,si,sb,yb)
     if br is not None:
         bst,binfo=br
         if bst=="PASS_HISTORY":
