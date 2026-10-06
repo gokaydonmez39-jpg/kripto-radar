@@ -1,6 +1,6 @@
 name: XRAY Canonical Current Final Factory
 
-# manual semantic-repair replay trigger: 2026-10-06
+# manual semantic-repair replay trigger: 2026-10-06-pass2
 on:
   workflow_run:
     workflows: ["XRAY Resilience + Official Witnesses", "XRAY Canonical Current Post-MC Factory"]
