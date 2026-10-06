@@ -753,6 +753,13 @@ def test_workflow_race_and_pre_mc_freeze_contracts():
     assert core("2026-10-02","2026-10-05","2026-10-05",False)=={"build":False,"recover":True}
     assert core("2026-10-02","2026-10-05","2026-10-02",False)=={"build":True,"recover":False}
 
+def test_terminal_lifecycle_state_contract_covers_final_persistence():
+    # Terminal may accept extra diagnostic states, but it must never reject a
+    # lifecycle state that Final is explicitly allowed to persist.
+    assert set(ft.LIFECYCLE_PERSIST_STATES) <= set(terminal_mod.LIFECYCLE_TERMINAL_ALLOWED_STATES)
+    assert "WATCH_EVENT_UNKNOWN_OR_BLOCKED" in terminal_mod.LIFECYCLE_TERMINAL_ALLOWED_STATES
+
+
 def main():
     test_r1_no_future_mutation_and_confirmation(); test_r1_pivot_boundary_is_not_overhead_but_entry_overlap_is(); test_resistance_role_change_state_machine()
     test_final_history_normalizer_preserves_ohlcv()
@@ -766,6 +773,7 @@ def main():
     test_cross_session_lifecycle_scope_persists_active_only()
     test_candidate_legal_guard_lifecycle_fallback_matches_final()
     test_future_lifecycle_evidence_rejected()
+    test_terminal_lifecycle_state_contract_covers_final_persistence()
     test_resolver_metadata_only_resume_identity()
     test_resolver_bridge_bound_to_exact_pre_run_price_and_scope()
     test_family_c_event_request_covers_boundary_amc_source_session(); test_candidate_legal_guard_phrase_severity()
@@ -775,6 +783,6 @@ def main():
       "FROZEN_LEVELS_NEXT_ASOF_STABLE","LIFECYCLE_REGIME_REVALIDATION_PERSISTS","LIFECYCLE_PERSISTENCE_ROUNDTRIP","MC_BRIDGE_IMMUTABLE_SUPERSESSION",
       "FINAL_ALPHA_STALE_SOURCE_GUARD","PARTIAL_COVERAGE_DOES_NOT_GLOBAL_ABORT",
       "DETAILED_FINALIST_LEGAL_FAIL_CLOSED","CANDIDATE_LOCAL_LEGAL_UNKNOWN_ISOLATION","FINAL_VERIFIED_MARKET_GAP_NOT_DOUBLE_BLOCKED","DETAILED_LEGAL_GUARD_EXACT_SOURCE_BINDING","DETAILED_LEGAL_GUARD_POLICY_BINDING","DETAILED_LEGAL_GUARD_NONCIRCULAR_LIFECYCLE","CROSS_SESSION_LIFECYCLE_ACTIVE_ONLY","FAMILY_C_EVENT_REQUEST_BOUNDARY_AMC","FUTURE_LIFECYCLE_EVIDENCE_REJECTED","DETAILED_LEGAL_GUARD_LIFECYCLE_FALLBACK_PARITY","DETAILED_LEGAL_GUARD_BOILERPLATE_SEVERITY","DETAILED_LEGAL_GUARD_ANNUAL_PLUS_QUARTERLY_SCOPE","DETAILED_LEGAL_GUARD_EMPTY_SCOPE_NO_NETWORK","TERMINAL_DETAILED_LEGAL_FULL_E2E_BLOCKER","DETAILED_LEGAL_GUARD_NO_SELF_TRIGGER",
-      "POST_MC_PARTIAL_COVERAGE_GATE","PRE_MC_COMPLETED_ASOF_FREEZE_TRUTH_TABLE"]})
+      "POST_MC_PARTIAL_COVERAGE_GATE","TERMINAL_LIFECYCLE_STATE_CONTRACT","PRE_MC_COMPLETED_ASOF_FREEZE_TRUTH_TABLE"]})
 
 if __name__=="__main__": main()
