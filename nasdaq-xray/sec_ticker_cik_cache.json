@@ -6,7 +6,7 @@
   "authority": "SEC_COMPANY_TICKERS_PRIMARY_SNAPSHOT",
   "source_url": "https://www.sec.gov/files/company_tickers.json",
   "source_retrieved_at_utc": "2026-10-05T21:59:00Z",
-  "scope_note": "Current regime-qualified finalist/legal scope cache. Missing future symbols remain UNKNOWN unless an official SEC network fallback resolves them.",
+  "scope_note": "Current regime-qualified finalist/legal scope cache. Official SEC filing pages independently verified missing finalist CIKs on 2026-10-06; missing future symbols remain UNKNOWN unless official SEC evidence resolves them.",
   "records": {
     "ABCL": {
       "cik": "0001703057",
@@ -47,6 +47,22 @@
     "WBD": {
       "cik": "0001437107",
       "title": "Warner Bros. Discovery, Inc."
+    },
+    "IBRX": {
+      "cik": "0001326110",
+      "title": "ImmunityBio, Inc."
+    },
+    "MRNA": {
+      "cik": "0001682852",
+      "title": "Moderna, Inc."
+    },
+    "QLYS": {
+      "cik": "0001107843",
+      "title": "QUALYS, INC."
+    },
+    "VICR": {
+      "cik": "0000751978",
+      "title": "VICOR CORP"
     }
   }
 }
