@@ -11,7 +11,7 @@ def load(fn):
     except Exception:return {}
 def main():
     master=load("canonical_current_master_manifest.json")
-    price=load("canonical_current_price_dv20.json")
+    price=load("canonical_current_price_dv30.json")
     event=load("canonical_current_event_state.json")
     terminal=load("canonical_current_terminal.json")
     pit=load("canonical_official_source_guard.json")
@@ -21,9 +21,28 @@ def main():
     delivery=load("delivery_ledger.json")
     pointer=load("chatgpt_canonical_state_v2.json")
     checks=[]; add=lambda name,state,detail: checks.append({"name":name,"state":state,"detail":detail})
-    add("master_identity","PASS" if master.get("completion_proof",{}).get("identity_authority_v3") is True else "FAIL","official identity proof")
+    mp=master.get("completion_proof",{})
+    master_identity_ok=bool(
+        master.get("schema")=="XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1"
+        and master.get("status")=="HISTORY_COMPLETE"
+        and int(master.get("unknown_count",-1))==0
+        and mp.get("identity_authority_v6") is True
+        and mp.get("authority_full_identity") is True
+        and mp.get("full_identity") is True
+        and mp.get("queue_hash_exact") is True
+        and mp.get("queue_total_exact") is True
+        and mp.get("queue_unique") is True
+        and mp.get("asof_identity_proof_binding") is True
+        and mp.get("sec_spac_proof_binding") is True
+    )
+    add("master_identity","PASS" if master_identity_ok else "FAIL",{
+      "authority":master.get("identity_authority"),
+      "identity_authority_v6":mp.get("identity_authority_v6"),
+      "authority_full_identity":mp.get("authority_full_identity"),
+      "unknown_count":master.get("unknown_count")
+    })
     pc=price.get("pass_count"); uc=price.get("unknown_count")
-    add("price_dv20_counts","PASS" if isinstance(pc,int) and isinstance(uc,int) and pc>=0 and uc>=0 else "UNKNOWN",{"pass_count":pc,"unknown_count":uc})
+    add("price_dv30_counts","PASS" if price.get("schema")=="XRAY_CANONICAL_PRICE_DV30_V1" and isinstance(pc,int) and isinstance(uc,int) and pc>=0 and uc>=0 else "UNKNOWN",{"pass_count":pc,"unknown_count":uc,"schema":price.get("schema")})
     if terminal.get("status")=="FULL_E2E_RESEARCH_PASS":
         add("event_complete_for_terminal","PASS" if event.get("affected_geometry_event_unknown_count")==0 else "FAIL",event.get("affected_geometry_event_unknown_count"))
     else:
