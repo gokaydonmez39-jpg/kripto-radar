@@ -42,9 +42,10 @@
   "master_unknown_symbols": [],
   "official_footer": "File Creation Time: 1005202618:01|||||||",
   "pointer_asof_et": "2026-10-02",
-  "price_blocked_count": 2,
+  "price_blocked_count": 3,
   "price_blocked_symbols": [
     "GRAL",
+    "TLAC",
     "WQEY"
   ],
   "price_unknown_count": 0,
@@ -105,6 +106,34 @@
       },
       "security_name": "GRAIL, Inc. - Common Stock"
     },
+    "TLAC": {
+      "price_result": {
+        "block_recovery_attempt": {
+          "provider_meta": {
+            "role": "FORENSIC_READBACK_ONLY"
+          },
+          "provider_result": {
+            "alpaca_sip_known_session_count": 13,
+            "disputed_session": "2026-10-01",
+            "longbridge_known_session_count": 13,
+            "no_synthetic_pass": true,
+            "rallies_known_session_count": 12,
+            "reason": "CROSS_PROVIDER_SESSION_SET_DISAGREEMENT"
+          },
+          "status": "UNRESOLVED"
+        },
+        "info": {
+          "corroboration": "RALLIES_12_SESSIONS;ALPACA_SIP_AND_LONGBRIDGE_13_SESSIONS;2026-10-01_PROVIDER_DISAGREEMENT",
+          "observed_usable_sessions": 12,
+          "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
+          "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
+          "source": "RALLIES_CANDLESTICK_SCANNER_EXACT30_PRIMARY"
+        },
+        "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+        "status": "BLOCK_CURRENT_RUN"
+      },
+      "security_name": "Three Lions Acquisition Corp. - Ordinary Shares"
+    },
     "WQEY": {
       "price_result": {
         "block_recovery_attempt": {
@@ -130,7 +159,7 @@
               "reason": "SINA_UNAVAILABLE"
             },
             "yahoo_result": {
-              "dv30_lower_bound": 0.0,
+              "dv30_lower_bound": 0,
               "dv30_upper_bound": null,
               "known_session_count": 1,
               "missing_sessions": [
@@ -192,7 +221,7 @@
   "resolver_policy": "ALPACA_SIP_PREFERRED__RALLIES_LONGBRIDGE_DUAL_SOURCE_CONNECTOR_FAILOVER__NEVER_G9__FAIL_CLOSED__SAME_ASOF_QUEUE_BINDING",
   "schema": "XRAY_RESOLVER_EPOCH_REQUEST_V1",
   "settlement_already_proven": true,
-  "settlement_bridge_blob_sha": "05446a51270a32bb1b7d978ab2c01d828175bf16",
+  "settlement_bridge_blob_sha": "de6895ce8bcfbcb51d1d9bbb0a766523ab8b6c38",
   "settlement_bridge_path": "nasdaq-xray/canonical_resolver_bridge_20261005_c417_dv30_v1.json",
   "settlement_core_source_blob_sha": "0f39f1429c8e44dd2651c32f906d39a5cab836ef",
   "settlement_core_source_path": "nasdaq-xray/pointer_evidence_archive/0f39f1429c8e44dd2651c32f906d39a5cab836ef.json",
@@ -210,17 +239,18 @@
   "source_overlay_path": "nasdaq-xray/canonical_current_resolution_overlay.json",
   "source_pointer_blob_sha": "547460a83f4392d35daeecb253bbe606034d7d25",
   "source_pointer_path": "nasdaq-xray/chatgpt_canonical_state_v2.json",
-  "source_price_blob_sha": "e4623a0f512ffcebe3cfb44b397b5476a2129962",
+  "source_price_blob_sha": "644915f58bf1957194b3410348e91ad90f5cd14d",
   "source_price_path": "nasdaq-xray/canonical_current_price_dv30.json",
   "source_state_blob_sha": "26dd40330f68ca1b758d2a37f07e92edc5e6e6a3",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
   "source_unknowns_blob_sha": "cb3712dec9ddd11e03cd6f8571d991c114a15784",
   "source_unknowns_path": "nasdaq-xray/canonical_current_unknowns.json",
   "status": "READY",
-  "symbol_count": 2,
-  "symbol_hash": "0a10a3443c62b0a5ea56b38fb98f89f5b81104d5e706d22bed5a01472f565892",
+  "symbol_count": 3,
+  "symbol_hash": "4fe50131e29f22da9ec64f0aa5d74beb4a5355686cab1fe1bd669da59bee8d0f",
   "symbols": [
     "GRAL",
+    "TLAC",
     "WQEY"
   ],
   "task_id": "6a825366222081918997094d76e6ae46",
