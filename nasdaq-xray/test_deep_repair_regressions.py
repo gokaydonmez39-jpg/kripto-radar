@@ -345,7 +345,11 @@ def test_candidate_local_legal_unknown_does_not_globally_suppress():
     assert terminal_mod.candidate_local_research_ready({"GOOD|D","OTHER|D"},safety,ft,True) is False
 
 def test_candidate_legal_guard_scope_is_candidate_local():
-    deep={"results":{
+    deep={
+      "a_geometry_rs_event_pass":["A"],
+      "b_breakout_rs_event_pass":["B"],
+      "d_dk3_pre_r1":["D"],
+      "results":{
       "A":{"regime_finalist_pass":True,"A":{"pool":True},"B":{},"D":{}},
       "B":{"regime_finalist_pass":True,"A":{},"B":{"breakout_confirmed":True},"D":{}},
       "C":{"regime_finalist_pass":True,"A":{},"B":{},"D":{}},
