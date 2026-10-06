@@ -883,6 +883,44 @@ def test_history_bridge_semantic_rebind_requires_exact_mc_partitions():
 
 
 
+
+def test_resolver_bridge_authority_prefers_exact_current_lineage():
+    stale=(Path("v3.json"),{
+      "source_price_path":"nasdaq-xray/canonical_current_price_dv30.json",
+      "source_price_blob_sha":"OLD_PRICE",
+      "source_request_path":"nasdaq-xray/canonical_current_resolver_request.json",
+      "source_request_blob_sha":"OLD_REQUEST",
+    })
+    request_exact=(Path("v4.json"),{
+      "source_price_path":"nasdaq-xray/canonical_current_price_dv30.json",
+      "source_price_blob_sha":"BASELINE_PRICE",
+      "source_request_path":"nasdaq-xray/canonical_current_resolver_request.json",
+      "source_request_blob_sha":"CURRENT_REQUEST",
+    })
+    got=resolver_req_mod.select_current_policy_resolver_bridge(
+        [stale,request_exact],"RECOVERED_PRICE","CURRENT_REQUEST"
+    )
+    assert got[0].name=="v4.json",got
+    price_exact=(Path("v5.json"),{
+      "source_price_path":"nasdaq-xray/canonical_current_price_dv30.json",
+      "source_price_blob_sha":"RECOVERED_PRICE",
+      "source_request_path":"nasdaq-xray/canonical_current_resolver_request.json",
+      "source_request_blob_sha":"NEW_REQUEST",
+    })
+    got2=resolver_req_mod.select_current_policy_resolver_bridge(
+        [stale,request_exact,price_exact],"RECOVERED_PRICE","CURRENT_REQUEST"
+    )
+    assert got2[0].name=="v5.json",got2
+    failed=False
+    try:
+        resolver_req_mod.select_current_policy_resolver_bridge(
+            [price_exact,(Path("dup.json"),dict(price_exact[1]))],
+            "RECOVERED_PRICE","CURRENT_REQUEST"
+        )
+    except AssertionError as e:
+        failed="EXACT_PRICE" in str(e)
+    assert failed
+
 def test_post_mc_exact_source_rebind_workflow_contract():
     wf=(Path(__file__).resolve().parent.parent/".github/workflows/xray-canonical-current-post-mc.yml").read_text()
     assert "MC_AUTHORITY_ARTIFACT_MUTATION_FORBIDDEN_USE_SUCCESSOR" in wf
@@ -912,6 +950,7 @@ def main():
     test_lifecycle_expiry_and_frozen_stability(); test_lifecycle_regime_revalidation_persists_without_pass(); test_lifecycle_persistence_roundtrip()
     test_mc_bridge_immutable_supersession()
     test_history_bridge_semantic_rebind_requires_exact_mc_partitions()
+    test_resolver_bridge_authority_prefers_exact_current_lineage()
     test_post_mc_exact_source_rebind_workflow_contract()
     test_candidate_local_legal_unknown_does_not_globally_suppress()
     test_candidate_legal_guard_scope_is_candidate_local()
@@ -926,7 +965,7 @@ def main():
     test_workflow_race_and_pre_mc_freeze_contracts()
     print({"status":"PASS","tests":["R1_NO_FUTURE_MUTATION","R1_PLUS2_CONFIRMATION_NO_LEAK","R1_PIVOT_BOUNDARY_NOT_OVERHEAD",
       "RESISTANCE_ROLE_CHANGE_STATE_MACHINE","FINAL_HISTORY_OHLCV_BINDING","REGIME_INTERVAL_BOUNDS_AND_FINALIST_GATE","CORPORATE_ACTION_NONE_VS_SCALE_BREAK_FAIL_CLOSED","D_RECLAIM_AFTER_HL_AVAILABILITY","FAMILY_A_TRIGGER_TIME_RECONSTRUCTION","FAMILY_A_AGE5_UNRECORDED_NOT_REDISCOVERED","FAMILY_A_FINAL_GEOMETRY_REVALIDATION","RETEST_WINDOW_EXPIRES_AFTER_5","MODEL_HORIZON_EXPIRES_AFTER_8",
-      "FROZEN_LEVELS_NEXT_ASOF_STABLE","LIFECYCLE_REGIME_REVALIDATION_PERSISTS","LIFECYCLE_PERSISTENCE_ROUNDTRIP","MC_BRIDGE_IMMUTABLE_SUPERSESSION","HISTORY_BRIDGE_SEMANTIC_REBIND_EXACT_MC_PARTITIONS","POST_MC_EXACT_SOURCE_REBIND_WORKFLOW_CONTRACT",
+      "FROZEN_LEVELS_NEXT_ASOF_STABLE","LIFECYCLE_REGIME_REVALIDATION_PERSISTS","LIFECYCLE_PERSISTENCE_ROUNDTRIP","MC_BRIDGE_IMMUTABLE_SUPERSESSION","HISTORY_BRIDGE_SEMANTIC_REBIND_EXACT_MC_PARTITIONS","RESOLVER_BRIDGE_EXACT_CURRENT_LINEAGE","POST_MC_EXACT_SOURCE_REBIND_WORKFLOW_CONTRACT",
       "FINAL_ALPHA_STALE_SOURCE_GUARD","PARTIAL_COVERAGE_DOES_NOT_GLOBAL_ABORT",
       "DETAILED_FINALIST_LEGAL_FAIL_CLOSED","CANDIDATE_LOCAL_LEGAL_UNKNOWN_ISOLATION","FINAL_VERIFIED_MARKET_GAP_NOT_DOUBLE_BLOCKED","DETAILED_LEGAL_GUARD_EXACT_SOURCE_BINDING","DETAILED_LEGAL_GUARD_POLICY_BINDING","DETAILED_LEGAL_GUARD_NONCIRCULAR_LIFECYCLE","CROSS_SESSION_LIFECYCLE_ACTIVE_ONLY","FAMILY_C_EVENT_REQUEST_BOUNDARY_AMC","FUTURE_LIFECYCLE_EVIDENCE_REJECTED","DETAILED_LEGAL_GUARD_LIFECYCLE_FALLBACK_PARITY","DETAILED_LEGAL_GUARD_BOILERPLATE_SEVERITY","DETAILED_LEGAL_GUARD_ANNUAL_PLUS_QUARTERLY_SCOPE","DETAILED_LEGAL_GUARD_EMPTY_SCOPE_NO_NETWORK","TERMINAL_DETAILED_LEGAL_FULL_E2E_BLOCKER","DETAILED_LEGAL_GUARD_NO_SELF_TRIGGER",
       "POST_MC_PARTIAL_COVERAGE_GATE","TERMINAL_LIFECYCLE_STATE_CONTRACT","PRE_MC_COMPLETED_ASOF_FREEZE_TRUTH_TABLE"]})

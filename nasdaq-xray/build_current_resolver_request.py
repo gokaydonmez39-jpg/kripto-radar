@@ -30,6 +30,28 @@ RESOLVER_RESUME_METADATA_ONLY_FIELDS={
 def resolver_resume_semantic_view(obj):
     return {k:v for k,v in obj.items() if k not in RESOLVER_RESUME_METADATA_ONLY_FIELDS}
 
+def select_current_policy_resolver_bridge(rows,current_price_blob,current_request_blob):
+    """Choose one settlement authority by exact current lineage before semantic fallback."""
+    exact_price=[
+      row for row in rows
+      if row[1].get("source_price_path")=="nasdaq-xray/canonical_current_price_dv30.json"
+      and row[1].get("source_price_blob_sha")==current_price_blob
+    ]
+    assert len(exact_price)<=1, "AMBIGUOUS_CURRENT_POLICY_RESOLVER_BRIDGE_EXACT_PRICE"
+    if exact_price:
+        return exact_price[0]
+    exact_request=[
+      row for row in rows
+      if current_request_blob
+      and row[1].get("source_request_path")=="nasdaq-xray/canonical_current_resolver_request.json"
+      and row[1].get("source_request_blob_sha")==current_request_blob
+    ]
+    assert len(exact_request)<=1, "AMBIGUOUS_CURRENT_POLICY_RESOLVER_BRIDGE_EXACT_REQUEST"
+    if exact_request:
+        return exact_request[0]
+    assert len(rows)<=1, "AMBIGUOUS_CURRENT_POLICY_RESOLVER_BRIDGE"
+    return rows[0] if rows else None
+
 def can_preserve_existing_request(new_obj):
     if not OUT.exists() or not CHUNK_MANIFEST.exists():
         return False
@@ -274,10 +296,14 @@ def main():
                 current_policy_bridges.append((bridge,br))
         except Exception:
             pass
-    assert len(current_policy_bridges)<=1, "AMBIGUOUS_CURRENT_POLICY_RESOLVER_BRIDGE"
-    settlement_already_proven=bool(current_policy_bridges)
-    settlement_bridge_blob_sha=blob_sha(current_policy_bridges[0][0]) if current_policy_bridges else None
-    settlement_bridge_path=(str(current_policy_bridges[0][0].relative_to(ROOT.parent)).replace("\\","/") if current_policy_bridges else None)
+    current_price_blob=blob_sha(PRICE)
+    current_request_blob=blob_sha(OUT) if OUT.exists() else None
+    selected_policy_bridge=select_current_policy_resolver_bridge(
+        current_policy_bridges,current_price_blob,current_request_blob
+    )
+    settlement_already_proven=selected_policy_bridge is not None
+    settlement_bridge_blob_sha=blob_sha(selected_policy_bridge[0]) if selected_policy_bridge else None
+    settlement_bridge_path=(str(selected_policy_bridge[0].relative_to(ROOT.parent)).replace("\\","/") if selected_policy_bridge else None)
     ready=bool(union) or bool(settlement_required and not settlement_already_proven)
     obj={
       "schema":"XRAY_RESOLVER_EPOCH_REQUEST_V1",
