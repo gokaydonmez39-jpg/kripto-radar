@@ -5,7 +5,8 @@ No signal, no R92 registration, no G9 authority.
 EXECUTION=NONE. REAL_MONEY=NO-GO. UNKNOWN!=PASS.
 """
 from __future__ import annotations
-import json, math, os, hashlib, time, threading
+import json, math, os, hashlib, time, threading, socket
+import requests
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from statistics import median
@@ -38,6 +39,16 @@ WORKERS=int(os.getenv("XRAY_DEEP_WORKERS","8"))
 PROVIDER_MAX_INFLIGHT=max(1,int(os.getenv("XRAY_DEEP_PROVIDER_MAX_INFLIGHT","3")))
 RETRY_DELAYS=(0.0,1.0,2.5)
 _PROVIDER_SEM=threading.Semaphore(PROVIDER_MAX_INFLIGHT)
+HTTP_TIMEOUT_SECONDS=max(5.0,float(os.getenv("XRAY_DEEP_HTTP_TIMEOUT_SECONDS","20")))
+socket.setdefaulttimeout(HTTP_TIMEOUT_SECONDS)
+if not getattr(requests.sessions.Session.request,"_xray_deep_bounded_timeout",False):
+    _XRAY_DEEP_ORIGINAL_SESSION_REQUEST=requests.sessions.Session.request
+    def _xray_deep_bounded_session_request(self,*args,**kwargs):
+        if kwargs.get("timeout") is None:
+            kwargs["timeout"]=HTTP_TIMEOUT_SECONDS
+        return _XRAY_DEEP_ORIGINAL_SESSION_REQUEST(self,*args,**kwargs)
+    _xray_deep_bounded_session_request._xray_deep_bounded_timeout=True
+    requests.sessions.Session.request=_xray_deep_bounded_session_request
 OFFICIAL_IDENTITY_EVIDENCE=ROOT/"history_official_identity_evidence.json"
 HISTORY_CACHE_DIR=os.getenv("XRAY_DEEP_HISTORY_CACHE_DIR")
 HISTORY_CACHE_REQUIRED=os.getenv("XRAY_DEEP_CACHE_REQUIRED","0")=="1"
