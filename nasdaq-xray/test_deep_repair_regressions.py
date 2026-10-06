@@ -7,6 +7,7 @@ import alpha_semantics as alpha
 import final_tech_shadow as ft
 import build_candidate_legal_guard as legal_guard_mod
 import build_current_resolver_request as resolver_req_mod
+import build_mc_provenance_rebind as mc_rebind_mod
 import price_dv30_recover_from_fullstate as price_recover_mod
 import history_phase as history_mod
 import build_current_terminal as terminal_mod
@@ -884,6 +885,41 @@ def test_history_bridge_semantic_rebind_requires_exact_mc_partitions():
 
 
 
+def test_mc_provenance_rebind_preserves_all_outcomes_and_watch_caps():
+    pred={
+      "counts":{"MC_PASS_PRIMARY":1,"MC_FAIL_PRIMARY":1,"MC_PASS_FALLBACK_WATCH":1,
+                "MC_FAIL_FALLBACK_TWO_SOURCE":1,"MC_UNKNOWN":1,"TOTAL":5},
+      "input_pass_symbols":["A","B","C","D","E"],
+      "primary_pass_symbols":["A"],"primary_fail_symbols":["B"],
+      "fallback_watch_symbols":["C"],"fallback_fail_symbols":["D"],
+      "fallback_two_source_fail_symbols":["D"],"unknown_symbols":["E"],
+      "state_caps":{"C":"WATCH"},"r92_ineligible":["C"],
+      "current_core_symbols":["A","C"],
+      "results":{
+        "A":{"status":"MC_PASS_PRIMARY","market_cap_usd":3000000000},
+        "B":{"status":"MC_FAIL_PRIMARY","market_cap_usd":1000000000},
+        "C":{"status":"MC_PASS_FALLBACK_WATCH","market_cap_usd":2500000000},
+        "D":{"status":"MC_FAIL_FALLBACK_TWO_SOURCE","market_cap_usd":1000000000},
+        "E":{"status":"MC_UNKNOWN","reason":"UNPROVEN"},
+      },
+      "input_blob_sha":"OLD","input_pass_hash":"H","input_count":5,
+      "audit":{"no_threshold_weakening":True},
+    }
+    before=mc_rebind_mod.mc_outcome_snapshot(pred)
+    out=mc_rebind_mod.build_successor_obj(
+      pred,"nasdaq-xray/pred.json","PRED_BLOB","CURRENT",
+      "nasdaq-xray/resolver.json","RESOLVER_BLOB",4
+    )
+    assert mc_rebind_mod.mc_outcome_snapshot(out)==before
+    assert out["input_blob_sha"]=="CURRENT"
+    assert out["supersedes_mc_bridge_path"]=="nasdaq-xray/pred.json"
+    assert out["supersedes_mc_bridge_blob_sha"]=="PRED_BLOB"
+    assert out["semantic_repair"]["no_market_cap_remeasurement"] is True
+    assert out["semantic_repair"]["fallback_watch_preserved"] is True
+    assert out["semantic_repair"]["r92_ineligible_preserved"] is True
+    assert out["results"]==pred["results"]
+    assert out["state_caps"]=={"C":"WATCH"} and out["r92_ineligible"]==["C"]
+
 def test_resolver_bridge_authority_prefers_exact_current_lineage():
     stale=(Path("v3.json"),{
       "source_price_path":"nasdaq-xray/canonical_current_price_dv30.json",
@@ -951,6 +987,7 @@ def main():
     test_lifecycle_expiry_and_frozen_stability(); test_lifecycle_regime_revalidation_persists_without_pass(); test_lifecycle_persistence_roundtrip()
     test_mc_bridge_immutable_supersession()
     test_history_bridge_semantic_rebind_requires_exact_mc_partitions()
+    test_mc_provenance_rebind_preserves_all_outcomes_and_watch_caps()
     test_resolver_bridge_authority_prefers_exact_current_lineage()
     test_post_mc_exact_source_rebind_workflow_contract()
     test_candidate_local_legal_unknown_does_not_globally_suppress()
@@ -966,7 +1003,7 @@ def main():
     test_workflow_race_and_pre_mc_freeze_contracts()
     print({"status":"PASS","tests":["R1_NO_FUTURE_MUTATION","R1_PLUS2_CONFIRMATION_NO_LEAK","R1_PIVOT_BOUNDARY_NOT_OVERHEAD",
       "RESISTANCE_ROLE_CHANGE_STATE_MACHINE","FINAL_HISTORY_OHLCV_BINDING","REGIME_INTERVAL_BOUNDS_AND_FINALIST_GATE","CORPORATE_ACTION_NONE_VS_SCALE_BREAK_FAIL_CLOSED","D_RECLAIM_AFTER_HL_AVAILABILITY","FAMILY_A_TRIGGER_TIME_RECONSTRUCTION","FAMILY_A_AGE5_UNRECORDED_NOT_REDISCOVERED","FAMILY_A_FINAL_GEOMETRY_REVALIDATION","RETEST_WINDOW_EXPIRES_AFTER_5","MODEL_HORIZON_EXPIRES_AFTER_8",
-      "FROZEN_LEVELS_NEXT_ASOF_STABLE","LIFECYCLE_REGIME_REVALIDATION_PERSISTS","LIFECYCLE_PERSISTENCE_ROUNDTRIP","MC_BRIDGE_IMMUTABLE_SUPERSESSION","HISTORY_BRIDGE_SEMANTIC_REBIND_EXACT_MC_PARTITIONS","RESOLVER_BRIDGE_EXACT_CURRENT_LINEAGE","POST_MC_EXACT_SOURCE_REBIND_WORKFLOW_CONTRACT",
+      "FROZEN_LEVELS_NEXT_ASOF_STABLE","LIFECYCLE_REGIME_REVALIDATION_PERSISTS","LIFECYCLE_PERSISTENCE_ROUNDTRIP","MC_BRIDGE_IMMUTABLE_SUPERSESSION","HISTORY_BRIDGE_SEMANTIC_REBIND_EXACT_MC_PARTITIONS","MC_PROVENANCE_REBIND_PRESERVES_OUTCOMES","RESOLVER_BRIDGE_EXACT_CURRENT_LINEAGE","POST_MC_EXACT_SOURCE_REBIND_WORKFLOW_CONTRACT",
       "FINAL_ALPHA_STALE_SOURCE_GUARD","PARTIAL_COVERAGE_DOES_NOT_GLOBAL_ABORT",
       "DETAILED_FINALIST_LEGAL_FAIL_CLOSED","CANDIDATE_LOCAL_LEGAL_UNKNOWN_ISOLATION","FINAL_VERIFIED_MARKET_GAP_NOT_DOUBLE_BLOCKED","DETAILED_LEGAL_GUARD_EXACT_SOURCE_BINDING","DETAILED_LEGAL_GUARD_POLICY_BINDING","DETAILED_LEGAL_GUARD_NONCIRCULAR_LIFECYCLE","CROSS_SESSION_LIFECYCLE_ACTIVE_ONLY","FAMILY_C_EVENT_REQUEST_BOUNDARY_AMC","FUTURE_LIFECYCLE_EVIDENCE_REJECTED","DETAILED_LEGAL_GUARD_LIFECYCLE_FALLBACK_PARITY","DETAILED_LEGAL_GUARD_BOILERPLATE_SEVERITY","DETAILED_LEGAL_GUARD_ANNUAL_PLUS_QUARTERLY_SCOPE","DETAILED_LEGAL_GUARD_EMPTY_SCOPE_NO_NETWORK","TERMINAL_DETAILED_LEGAL_FULL_E2E_BLOCKER","DETAILED_LEGAL_GUARD_NO_SELF_TRIGGER",
       "POST_MC_PARTIAL_COVERAGE_GATE","TERMINAL_LIFECYCLE_STATE_CONTRACT","PRE_MC_COMPLETED_ASOF_FREEZE_TRUTH_TABLE"]})

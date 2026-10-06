@@ -7,6 +7,7 @@ on:
     paths:
       - "nasdaq-xray/canonical_current_price_dv30.json"
       - "nasdaq-xray/canonical_mc_bridge_*.json"
+      - "nasdaq-xray/build_mc_provenance_rebind.py"
       - "nasdaq-xray/history_phase.py"
       - "nasdaq-xray/history_official_identity_evidence.json"
       - "nasdaq-xray/canonical_history_evidence_bridge_*.json"
@@ -135,6 +136,14 @@ jobs:
         if: steps.freeze.outputs.frozen == 'true'
         run: echo "XRAY_POST_MC=HEALTHY_NOOP_EXACT_TERMINAL"
 
+      - name: Rebind exact current MC provenance without remeasurement
+        id: mc_rebind
+        if: steps.freeze.outputs.frozen != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python nasdaq-xray/build_mc_provenance_rebind.py | tee /tmp/mc_rebind_out
+          cat /tmp/mc_rebind_out >> "$GITHUB_OUTPUT"
       - name: Find exact-bound committed MC bridge
         id: mc
         if: steps.freeze.outputs.frozen != 'true'
@@ -726,6 +735,7 @@ jobs:
               nasdaq-xray/canonical_current_master_manifest.json \
               nasdaq-xray/canonical_current_price_dv30.json \
               nasdaq-xray/canonical_mc_bridge_*.json \
+              nasdaq-xray/build_mc_provenance_rebind.py \
               nasdaq-xray/history_official_identity_evidence.json \
               nasdaq-xray/canonical_history_evidence_bridge_*.json \
               nasdaq-xray/alpha_semantics.py \
@@ -753,6 +763,9 @@ jobs:
             nasdaq-xray/canonical_benchmark_cache/e9c5d7403d908b95343d66b100aef3bf7d4c0a33fec8b152e0b02e4c68a22b61.csv.gz
             nasdaq-xray/canonical_current_event_request.json
           )
+          if [[ "${{ steps.mc_rebind.outputs.created }}" == "true" && -n "${{ steps.mc_rebind.outputs.path }}" ]]; then
+            files+=("${{ steps.mc_rebind.outputs.path }}")
+          fi
           tmpdir="$(mktemp -d)"
           trap 'rm -rf "$tmpdir"' EXIT
           for p in "${files[@]}"; do
