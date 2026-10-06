@@ -1,0 +1,2052 @@
+{
+  "a52_only_symbols": [
+    "AMD",
+    "NBIS",
+    "TECH"
+  ],
+  "alpha_authority": "NONE_DIAGNOSTIC_ONLY",
+  "asof_et": "2026-10-05",
+  "c417_only_symbols": [],
+  "counts": {
+    "a52_only": 3,
+    "a52_pool": 3,
+    "both": 0,
+    "c417_only": 0,
+    "c417_pool": 0,
+    "history_ready": 121,
+    "history_unknown": 0,
+    "neither": 118,
+    "scope": 121
+  },
+  "execution": "NONE",
+  "production_policy": "C4.17_UNCHANGED",
+  "purpose": "MEASURE_POLICY_GENERATION_SIGNAL_STARVATION_WITHOUT_CHANGING_ALPHA",
+  "real_money": "NO-GO",
+  "rows": {
+    "AAPL": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 19
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 19
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "ABCL": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_NO_REVERSAL",
+        "sessions_since_confirm": 7
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "NO_REVERSAL",
+        "sessions_since_confirm": 7
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "AEHR": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_NO_REVERSAL",
+        "sessions_since_confirm": 7
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "NO_REVERSAL",
+        "sessions_since_confirm": 7
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "AMD": {
+      "a52": {
+        "A_peak": 24.711991614651122,
+        "A_trigger": 24.242990370768403,
+        "P": 615.17,
+        "anchor": 596.07,
+        "depth_52": 1.7372132796673427,
+        "hl_date": "2026-09-28",
+        "peak": 639.0,
+        "pool": true,
+        "prelow_near_hl": true,
+        "pullback_min": 596.07,
+        "reason": "A52_PASS",
+        "sessions_since_confirm": 2,
+        "sh_date": "2026-09-25",
+        "trigger_age_sessions": 2,
+        "trigger_date": "2026-10-01"
+      },
+      "bucket": "a52_only",
+      "c417": {
+        "pool": false,
+        "reason": "NO_REVERSAL",
+        "sessions_since_confirm": 4
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "APA": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 29
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 29
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "APPF": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 43
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 43
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "ARGX": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 85
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 85
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "ARM": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_NO_REVERSAL",
+        "sessions_since_confirm": 6
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "NO_REVERSAL",
+        "sessions_since_confirm": 6
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "ASST": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_NO_REVERSAL",
+        "sessions_since_confirm": 8
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "NO_REVERSAL",
+        "sessions_since_confirm": 8
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "ATRC": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 45
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 45
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "AUGO": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_HL_NOT_CONFIRMED_BEFORE_REVERSAL",
+        "sessions_since_confirm": 7
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "HL_NOT_CONFIRMED_BEFORE_REVERSAL",
+        "sessions_since_confirm": 7
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "AVT": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_HL_NOT_CONFIRMED_BEFORE_REVERSAL",
+        "sessions_since_confirm": 4
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "HL_NOT_CONFIRMED_BEFORE_REVERSAL",
+        "sessions_since_confirm": 4
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "AXTI": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_NO_REVERSAL",
+        "sessions_since_confirm": 8
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "NO_REVERSAL",
+        "sessions_since_confirm": 8
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "BIIB": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 13
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 13
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "BRKR": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 1
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 1
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "BWIN": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 12
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 12
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "CAI": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 36
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 36
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "CDNA": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 20
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 20
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "CHEF": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_HL_NOT_CONFIRMED_BEFORE_REVERSAL",
+        "sessions_since_confirm": 7
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "HL_NOT_CONFIRMED_BEFORE_REVERSAL",
+        "sessions_since_confirm": 7
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "CLMT": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 76
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 76
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "CLSK": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 129
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 129
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "COHU": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 14
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 14
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "COIN": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 34
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 34
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "COKE": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 39
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 39
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "CORT": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_HL_NOT_CONFIRMED_BEFORE_REVERSAL",
+        "sessions_since_confirm": 2
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "HL_NOT_CONFIRMED_BEFORE_REVERSAL",
+        "sessions_since_confirm": 2
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "CRWD": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_NO_REVERSAL",
+        "sessions_since_confirm": 5
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "NO_REVERSAL",
+        "sessions_since_confirm": 5
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "CVLT": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_STAGE1_AT_TRIGGER_FAIL",
+        "sessions_since_confirm": 5
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "A_STAGE1_AT_TRIGGER_FAIL",
+        "sessions_since_confirm": 5,
+        "trigger_date": "2026-10-05",
+        "weekly_pass_at_trigger": true
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "DOCU": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 18
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 18
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "DUOL": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 34
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 34
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "DXCM": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 41
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 41
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "ENTG": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 17
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 17
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "EXEL": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 9
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 9
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "EXLS": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 45
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 45
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "FFIV": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_NO_REVERSAL",
+        "sessions_since_confirm": 6
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "NO_REVERSAL",
+        "sessions_since_confirm": 6
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "FIVN": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_NO_REVERSAL",
+        "sessions_since_confirm": 6
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "NO_REVERSAL",
+        "sessions_since_confirm": 6
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "FORM": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 14
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 14
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "FROG": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 47
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 47
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "FSLY": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_NO_REVERSAL",
+        "sessions_since_confirm": 6
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "NO_REVERSAL",
+        "sessions_since_confirm": 6
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "FTNT": {
+      "a52": {
+        "A_peak": 6.848020927003913,
+        "A_trigger": 6.306316363060196,
+        "P": 183.09,
+        "anchor": 169.56,
+        "depth_52": 1.7245858512828773,
+        "hl_date": "2026-09-28",
+        "peak": 181.37,
+        "pool": false,
+        "prelow_near_hl": false,
+        "pullback_min": 169.56,
+        "reason": "A52_GEOMETRY_FAIL",
+        "sessions_since_confirm": 5,
+        "sh_date": "2026-09-24",
+        "trigger_date": "2026-10-05"
+      },
+      "bucket": "neither",
+      "c417": {
+        "A": 6.306316363060196,
+        "P": 183.09,
+        "anchor": 169.56,
+        "d": 2.145468007163924,
+        "depth": 1.8727255849671796,
+        "hl_date": "2026-09-28",
+        "pool": false,
+        "prelow_near_hl": false,
+        "sessions_since_confirm": 5,
+        "sh_date": "2026-09-24",
+        "trigger_date": "2026-10-05",
+        "weekly_pass_at_trigger": true
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "GH": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 10
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 10
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "GILD": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 40
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 40
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "GMAB": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 38
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 38
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "GTLB": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 45
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 45
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "HALO": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 25
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 25
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "HOOD": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 1
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 1
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "HTFL": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 131
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 131
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "HUT": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 109
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 109
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "IBRX": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_NO_REVERSAL",
+        "sessions_since_confirm": 7
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "NO_REVERSAL",
+        "sessions_since_confirm": 7
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "ILMN": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 1
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 1
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "INCY": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 38
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 38
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "INTC": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_NO_REVERSAL",
+        "sessions_since_confirm": 5
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "NO_REVERSAL",
+        "sessions_since_confirm": 5
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "IOVA": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 17
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 17
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "LITE": {
+      "a52": {
+        "A_peak": 66.25596228166728,
+        "A_trigger": 66.2331936622166,
+        "P": 1091.61,
+        "anchor": 881.23,
+        "depth_52": 1.8227793520918567,
+        "hl_date": "2026-09-28",
+        "peak": 1002.0,
+        "pool": false,
+        "prelow_near_hl": false,
+        "pullback_min": 881.23,
+        "reason": "A52_GEOMETRY_FAIL",
+        "sessions_since_confirm": 7,
+        "sh_date": "2026-09-22",
+        "trigger_date": "2026-10-05"
+      },
+      "bucket": "neither",
+      "c417": {
+        "A": 66.2331936622166,
+        "P": 1091.61,
+        "anchor": 881.23,
+        "d": 3.1763529488389035,
+        "depth": 1.8234059588899825,
+        "hl_date": "2026-09-28",
+        "pool": false,
+        "prelow_near_hl": false,
+        "sessions_since_confirm": 7,
+        "sh_date": "2026-09-22",
+        "trigger_date": "2026-10-05",
+        "weekly_pass_at_trigger": true
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "MANH": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 33
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 33
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "MARA": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 12
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 12
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "MEDP": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 36
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 36
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "META": {
+      "a52": {
+        "A_peak": 26.89806058261629,
+        "A_trigger": 25.41495806464271,
+        "P": 741.58,
+        "anchor": 713.19,
+        "depth_52": 2.4771005253464695,
+        "hl_date": "2026-09-28",
+        "peak": 779.8192,
+        "pool": false,
+        "prelow_near_hl": false,
+        "pullback_min": 713.19,
+        "reason": "A52_GEOMETRY_FAIL",
+        "sessions_since_confirm": 5,
+        "sh_date": "2026-09-24",
+        "trigger_date": "2026-10-05"
+      },
+      "bucket": "neither",
+      "c417": {
+        "A": 25.41495806464271,
+        "P": 741.58,
+        "anchor": 713.19,
+        "d": 1.1170586993608365,
+        "depth": 2.6216529584872506,
+        "hl_date": "2026-09-28",
+        "pool": false,
+        "prelow_near_hl": false,
+        "sessions_since_confirm": 5,
+        "sh_date": "2026-09-24",
+        "trigger_date": "2026-10-05",
+        "weekly_pass_at_trigger": true
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "MKTX": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_NO_REVERSAL",
+        "sessions_since_confirm": 4
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "NO_REVERSAL",
+        "sessions_since_confirm": 4
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "MRNA": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 40
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 40
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "MRVL": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_NO_REVERSAL",
+        "sessions_since_confirm": 4
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "NO_REVERSAL",
+        "sessions_since_confirm": 4
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "MRX": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 127
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 127
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "MSFT": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 13
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 13
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "MSTR": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_NO_REVERSAL",
+        "sessions_since_confirm": 7
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "NO_REVERSAL",
+        "sessions_since_confirm": 7
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "MTCH": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 120
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 120
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "MU": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 40
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 40
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "NBIS": {
+      "a52": {
+        "A_peak": 17.010056786001368,
+        "A_trigger": 16.074340292260672,
+        "P": 239.63,
+        "anchor": 228.38,
+        "depth_52": 1.2233939170106618,
+        "hl_date": "2026-09-28",
+        "peak": 249.19,
+        "pool": true,
+        "prelow_near_hl": true,
+        "pullback_min": 228.38,
+        "reason": "A52_PASS",
+        "sessions_since_confirm": 4,
+        "sh_date": "2026-09-24",
+        "trigger_age_sessions": 1,
+        "trigger_date": "2026-10-02"
+      },
+      "bucket": "a52_only",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 1
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "NDSN": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_HL_NOT_CONFIRMED_BEFORE_REVERSAL",
+        "sessions_since_confirm": 2
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "HL_NOT_CONFIRMED_BEFORE_REVERSAL",
+        "sessions_since_confirm": 2
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "NEOG": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 17
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 17
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "NESR": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 73
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 73
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "NICE": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_NO_REVERSAL",
+        "sessions_since_confirm": 6
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "NO_REVERSAL",
+        "sessions_since_confirm": 6
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "NSIT": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_NO_REVERSAL",
+        "sessions_since_confirm": 4
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "NO_REVERSAL",
+        "sessions_since_confirm": 4
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "NTAP": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_NO_REVERSAL",
+        "sessions_since_confirm": 8
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "NO_REVERSAL",
+        "sessions_since_confirm": 8
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "NTNX": {
+      "a52": {
+        "A_peak": 2.1242795394934033,
+        "A_trigger": 2.003068473213087,
+        "P": 72.75,
+        "anchor": 66.25,
+        "depth_52": 2.273712056348221,
+        "hl_date": "2026-09-28",
+        "peak": 71.08,
+        "pool": false,
+        "prelow_near_hl": false,
+        "pullback_min": 66.25,
+        "reason": "A52_GEOMETRY_FAIL",
+        "sessions_since_confirm": 7,
+        "sh_date": "2026-09-22",
+        "trigger_date": "2026-10-05"
+      },
+      "bucket": "neither",
+      "c417": {
+        "A": 2.003068473213087,
+        "P": 72.75,
+        "anchor": 66.25,
+        "d": 3.245021369426011,
+        "depth": 2.4113004945119427,
+        "hl_date": "2026-09-28",
+        "pool": false,
+        "prelow_near_hl": false,
+        "sessions_since_confirm": 7,
+        "sh_date": "2026-09-22",
+        "trigger_date": "2026-10-05",
+        "weekly_pass_at_trigger": true
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "NTRA": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 16
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 16
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "NTSK": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_HL_NOT_CONFIRMED_BEFORE_REVERSAL",
+        "sessions_since_confirm": 6
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "HL_NOT_CONFIRMED_BEFORE_REVERSAL",
+        "sessions_since_confirm": 6
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "NVDA": {
+      "a52": {
+        "A_peak": 6.2479150124022835,
+        "A_trigger": 5.90973623531359,
+        "P": 237.88,
+        "anchor": 221.09,
+        "depth_52": 1.4228746681657947,
+        "hl_date": "2026-09-24",
+        "peak": 229.98,
+        "pool": false,
+        "prelow_near_hl": false,
+        "pullback_min": 221.09,
+        "reason": "A52_GEOMETRY_FAIL",
+        "sessions_since_confirm": 7,
+        "sh_date": "2026-09-22",
+        "trigger_date": "2026-10-05"
+      },
+      "bucket": "neither",
+      "c417": {
+        "A": 5.90973623531359,
+        "P": 237.88,
+        "anchor": 221.09,
+        "d": 2.8410743443457696,
+        "depth": 1.5042972555827197,
+        "hl_date": "2026-09-24",
+        "pool": false,
+        "prelow_near_hl": false,
+        "sessions_since_confirm": 7,
+        "sh_date": "2026-09-22",
+        "trigger_date": "2026-10-05",
+        "weekly_pass_at_trigger": true
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "OKTA": {
+      "a52": {
+        "A_peak": 9.784920881447748,
+        "A_trigger": 9.472328431680243,
+        "P": 216.59,
+        "anchor": 190.5,
+        "depth_52": 2.2483574743779577,
+        "hl_date": "2026-09-28",
+        "peak": 212.5,
+        "pool": false,
+        "prelow_near_hl": false,
+        "pullback_min": 190.5,
+        "reason": "A52_GEOMETRY_FAIL",
+        "sessions_since_confirm": 5,
+        "sh_date": "2026-09-24",
+        "trigger_date": "2026-10-05"
+      },
+      "bucket": "neither",
+      "c417": {
+        "A": 9.472328431680243,
+        "P": 216.59,
+        "anchor": 190.5,
+        "d": 2.75433861781459,
+        "depth": 2.322554602986622,
+        "hl_date": "2026-09-28",
+        "pool": false,
+        "prelow_near_hl": false,
+        "sessions_since_confirm": 5,
+        "sh_date": "2026-09-24",
+        "trigger_date": "2026-10-05",
+        "weekly_pass_at_trigger": true
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "OLLI": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 13
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 13
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "PANW": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_NO_REVERSAL",
+        "sessions_since_confirm": 5
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "NO_REVERSAL",
+        "sessions_since_confirm": 5
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "PCTY": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 45
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 45
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "PFG": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 68
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 68
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "PI": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_NO_REVERSAL",
+        "sessions_since_confirm": 7
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "NO_REVERSAL",
+        "sessions_since_confirm": 7
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "PLTR": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_NO_REVERSAL",
+        "sessions_since_confirm": 5
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "NO_REVERSAL",
+        "sessions_since_confirm": 5
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "PTGX": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 57
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 57
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "QCOM": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 17
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 17
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "QLYS": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 82
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 82
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "REGN": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 65
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 65
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "RGEN": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_HL_NOT_CONFIRMED_BEFORE_REVERSAL",
+        "sessions_since_confirm": 3
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "HL_NOT_CONFIRMED_BEFORE_REVERSAL",
+        "sessions_since_confirm": 3
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "RGLD": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 33
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 33
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "RIOT": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 287
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 287
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "ROKU": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 52
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 52
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "SAIC": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 35
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 35
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "SAIL": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 10
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 10
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "SDGR": {
+      "a52": {
+        "A_peak": 1.6384017647503069,
+        "A_trigger": 1.8068191481215596,
+        "P": 31.14,
+        "anchor": 27.69,
+        "depth_52": 2.3832982141563375,
+        "hl_date": "2026-09-25",
+        "peak": 31.5948,
+        "pool": false,
+        "prelow_near_hl": false,
+        "pullback_min": 27.69,
+        "reason": "A52_GEOMETRY_FAIL",
+        "sessions_since_confirm": 7,
+        "sh_date": "2026-09-22",
+        "trigger_date": "2026-10-05"
+      },
+      "bucket": "neither",
+      "c417": {
+        "A": 1.8068191481215596,
+        "P": 31.14,
+        "anchor": 27.69,
+        "d": 1.9094329410814332,
+        "depth": 2.1611460140100807,
+        "hl_date": "2026-09-25",
+        "pool": false,
+        "prelow_near_hl": false,
+        "sessions_since_confirm": 7,
+        "sh_date": "2026-09-22",
+        "trigger_date": "2026-10-05",
+        "weekly_pass_at_trigger": true
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "SEIC": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 51
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 51
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "SIMO": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_HL_NOT_CONFIRMED_BEFORE_REVERSAL",
+        "sessions_since_confirm": 2
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "HL_NOT_CONFIRMED_BEFORE_REVERSAL",
+        "sessions_since_confirm": 2
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "SLAB": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_NO_REVERSAL",
+        "sessions_since_confirm": 6
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "NO_REVERSAL",
+        "sessions_since_confirm": 6
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "SMCI": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_HL_NOT_CONFIRMED_BEFORE_REVERSAL",
+        "sessions_since_confirm": 4
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "HL_NOT_CONFIRMED_BEFORE_REVERSAL",
+        "sessions_since_confirm": 4
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "SMTC": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_HL_NOT_CONFIRMED_BEFORE_REVERSAL",
+        "sessions_since_confirm": 4
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "HL_NOT_CONFIRMED_BEFORE_REVERSAL",
+        "sessions_since_confirm": 4
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "SSRM": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 33
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 33
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "SWKS": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 24
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 24
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "TARS": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 24
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 24
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "TEAM": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 29
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 29
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "TECH": {
+      "a52": {
+        "A_peak": 0.21273460954482232,
+        "A_trigger": 0.1973298412955466,
+        "P": 72.47,
+        "anchor": 72.33,
+        "depth_52": 1.5042216247027012,
+        "hl_date": "2026-09-30",
+        "peak": 72.65,
+        "pool": true,
+        "prelow_near_hl": true,
+        "pullback_min": 72.33,
+        "reason": "A52_PASS",
+        "sessions_since_confirm": 3,
+        "sh_date": "2026-09-28",
+        "trigger_age_sessions": 0,
+        "trigger_date": "2026-10-05"
+      },
+      "bucket": "a52_only",
+      "c417": {
+        "A": 0.1973298412955466,
+        "P": 72.47,
+        "anchor": 72.33,
+        "d": 0.7094720143737334,
+        "depth": 1.6216503185685645,
+        "hl_date": "2026-09-30",
+        "pool": false,
+        "prelow_near_hl": true,
+        "sessions_since_confirm": 3,
+        "sh_date": "2026-09-28",
+        "trigger_date": "2026-10-05",
+        "weekly_pass_at_trigger": true
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "TEM": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 9
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 9
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "TGTX": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 16
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 16
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "TRMD": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 28
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 28
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "TWST": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 20
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 20
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "TXG": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 1
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 1
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "ULTA": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_HL_NOT_CONFIRMED_BEFORE_REVERSAL",
+        "sessions_since_confirm": 2
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "HL_NOT_CONFIRMED_BEFORE_REVERSAL",
+        "sessions_since_confirm": 2
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "VICR": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 14
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 14
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "VRNS": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 24
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 24
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "VTRS": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 19
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 19
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "WBD": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_NO_REVERSAL",
+        "sessions_since_confirm": 8
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "NO_REVERSAL",
+        "sessions_since_confirm": 8
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "WDAY": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 37
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 37
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "WGS": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 52
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 52
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "WIX": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 41
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 41
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "XMTR": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 17
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 17
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "XP": {
+      "a52": {
+        "A_peak": 0.7470978852258019,
+        "A_trigger": 0.8105559640324189,
+        "P": 21.72,
+        "anchor": 19.78,
+        "depth_52": 2.395937714987631,
+        "hl_date": "2026-09-28",
+        "peak": 21.57,
+        "pool": false,
+        "prelow_near_hl": false,
+        "pullback_min": 19.78,
+        "reason": "A52_GEOMETRY_FAIL",
+        "sessions_since_confirm": 6,
+        "sh_date": "2026-09-23",
+        "trigger_date": "2026-10-05"
+      },
+      "bucket": "neither",
+      "c417": {
+        "A": 0.8105559640324189,
+        "P": 21.72,
+        "anchor": 19.78,
+        "d": 2.3934189446324345,
+        "depth": 2.2083607788103405,
+        "hl_date": "2026-09-28",
+        "pool": false,
+        "prelow_near_hl": false,
+        "sessions_since_confirm": 6,
+        "sh_date": "2026-09-23",
+        "trigger_date": "2026-10-05",
+        "weekly_pass_at_trigger": true
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "ZBRA": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_SH_AGE",
+        "sessions_since_confirm": 14
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 14
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    },
+    "ZS": {
+      "a52": {
+        "pool": false,
+        "reason": "A52_NO_REVERSAL",
+        "sessions_since_confirm": 5
+      },
+      "bucket": "neither",
+      "c417": {
+        "pool": false,
+        "reason": "NO_REVERSAL",
+        "sessions_since_confirm": 5
+      },
+      "history_source": "SINA_US_DAILY",
+      "status": "EVALUATED"
+    }
+  },
+  "schema": "XRAY_POLICY_GENERATION_SHADOW_COMPARE_V1",
+  "shadow_policy": "NASDAQ-SWING-RADAR-5.2_FAMILY_A_ONLY",
+  "unknown_never_pass": true
+}
