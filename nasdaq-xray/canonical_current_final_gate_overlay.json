@@ -1,7 +1,7 @@
 {
   "schema": "XRAY_FINAL_GATE_OVERLAY_V2",
   "generated_on": "2026-10-06",
-  "generated_at_utc": "2026-10-06T20:16:24.780673+00:00",
+  "generated_at_utc": "2026-10-06T20:42:17.654737+00:00",
   "asof_et": "2026-10-05",
   "execution": "NONE",
   "real_money": "NO-GO",
@@ -17,13 +17,13 @@
   },
   "source_pointer": {
     "path": "nasdaq-xray/chatgpt_canonical_state_v2.json",
-    "blob_sha": "547460a83f4392d35daeecb253bbe606034d7d25",
-    "revision": 39,
-    "status": "TERMINAL_FULL_E2E_NO_CONFIRMED_SETUP",
-    "asof_et": "2026-10-02",
-    "epoch_relation_to_terminal": "LAGGING_DURABLE_POINTER_PENDING_ATOMIC_FINAL_COMMIT",
+    "blob_sha": "1fc24500a12946c8e2ebf453ce865c2c785b9260",
+    "revision": 40,
+    "status": "TERMINAL_PARTIAL_UNKNOWN",
+    "asof_et": "2026-10-05",
+    "epoch_relation_to_terminal": "EXACT_SAME_ASOF",
     "alpha_authority": false,
-    "legacy_account_status": "UNKNOWN"
+    "legacy_account_status": "ACCOUNT_BOOTSTRAP_READY_CREDENTIALS_REQUIRED"
   },
   "strict_g9": {
     "status": "BLOCKED_ENTITLEMENT_AUTHORITY_UNPROVEN",
@@ -63,7 +63,7 @@
   "binding_integrity": {
     "fail_closed_safe": true,
     "pointer_not_a_pass_authority": true,
-    "pointer_epoch_relation": "LAGGING_DURABLE_POINTER_PENDING_ATOMIC_FINAL_COMMIT",
+    "pointer_epoch_relation": "EXACT_SAME_ASOF",
     "pointer_future_drift_blocked": true,
     "pass_requires_exact_current_bindings": true,
     "g9_pass_binding_exact": true,
@@ -102,7 +102,7 @@
     ]
   },
   "stale_pointer_fields": {
-    "pointer_account_status": "UNKNOWN",
+    "pointer_account_status": "ACCOUNT_BOOTSTRAP_READY_CREDENTIALS_REQUIRED",
     "terminal_account_status": "ACCOUNT_BOOTSTRAP_READY_CREDENTIALS_REQUIRED",
     "interpretation": "Persisted pointer state never creates PASS; current runtime gates control final-gate reporting."
   },
