@@ -708,10 +708,14 @@ def main():
               "event_status":event,"state_cap":state_caps.get(sym,"NORMAL"),"r92_eligible":sym not in r92_ineligible
             }
         elif frozen["setup_id"] in new_records:
-            new_records[frozen["setup_id"]]["state"]=state
-            new_records[frozen["setup_id"]]["last_asof"]=asof
-            new_records[frozen["setup_id"]]["frozen_geometry"]=frozen
-            new_records[frozen["setup_id"]]["frozen_semantics_blobs"]=current_frozen_binding
+            # The registry is an ACTIVE lifecycle registry, not a terminal-result
+            # history. A temporary UNKNOWN must preserve the last proven active
+            # state for retry identity, while a deterministic terminal FAIL
+            # retires the active record entirely.
+            if state=="UNKNOWN":
+                pass
+            else:
+                new_records.pop(frozen["setup_id"],None)
 
     # Drop records that are safely beyond both retest and model horizons.
     pruned={}
