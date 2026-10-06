@@ -26,25 +26,22 @@
       "BKKT.W",
       "BLFS",
       "EFTY",
-      "ETHA",
       "HCHL",
-      "ITOC",
       "LAWR",
       "MAGH",
       "MAMK",
       "MCTA",
       "OST",
       "PC",
-      "QRVO",
       "SLP",
       "SVA",
       "UCFI",
       "UCFIW",
       "WBD"
     ],
-    "age_seconds": 1.391,
-    "generated_at_utc": "2026-10-06T10:22:18.489157+00:00",
-    "guard_blob_sha": "7f92c0f8ecec04103f32146695be5c08d6ada4a0",
+    "age_seconds": 1.6,
+    "generated_at_utc": "2026-10-06T10:32:07.163581+00:00",
+    "guard_blob_sha": "59179307601485d365081172bfcb2373797a52f9",
     "guard_path": "nasdaq-xray/canonical_official_source_guard.json",
     "max_age_seconds": 900,
     "security_status_suspension_symbols": [
@@ -68,11 +65,9 @@
       "COLAU",
       "DRCT",
       "EFTY",
-      "ETHA",
       "FSEA",
       "GFAIW",
       "HCHL",
-      "ITOC",
       "LAWR",
       "MAGH",
       "MAMK",
@@ -80,7 +75,6 @@
       "NSTS",
       "OST",
       "PC",
-      "QRVO",
       "SLP",
       "SVA",
       "THRMV",
@@ -183,7 +177,7 @@
     },
     "account_live_probe": {
       "balance_parseable": false,
-      "blob_sha": "4cbbcd1db67814f9c57d154afa1ea31b7a4661c8",
+      "blob_sha": "8ced651dd74a0612513ed58ff5e3fc43fda4ae4c",
       "network_attempted": false,
       "path": "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/account_effective_probe_state.json",
       "positions_parseable": false,
@@ -194,10 +188,10 @@
       "secret_values_persisted": false,
       "status": "BLOCKED_MISSING_CREDENTIALS",
       "workflow_run_attempt": "1",
-      "workflow_run_id": "37448557125"
+      "workflow_run_id": "37449726646"
     },
     "deep": {
-      "blob_sha": "e576090c015fd75c2538b6c642f6be59f8190b7b",
+      "blob_sha": "fbfaf86fbedc9dc314cbe6529e85bc565c9fd68a",
       "path": "nasdaq-xray/canonical_current_deep_full.json"
     },
     "deep_geometry": {
@@ -217,7 +211,7 @@
       "path": "nasdaq-xray/canonical_current_family_c.json"
     },
     "final": {
-      "blob_sha": "80e6b30d325a6f63850448802569f9d1c1c32984",
+      "blob_sha": "7866f7612244a439de75b5e418d441d433cef4f8",
       "path": "nasdaq-xray/canonical_current_final_tech.json"
     },
     "full_state": {
@@ -254,7 +248,7 @@
       "semantic_rebind": false
     },
     "official_halt_guard": {
-      "blob_sha": "7f92c0f8ecec04103f32146695be5c08d6ada4a0",
+      "blob_sha": "59179307601485d365081172bfcb2373797a52f9",
       "path": "nasdaq-xray/canonical_official_source_guard.json"
     },
     "pointer": {
@@ -286,7 +280,7 @@
   "final_gate_reporting_zero_alpha": true,
   "full_end_to_end_research_pass": true,
   "g9_global_status": "G9_BLOCKED_FREE_AUTOMATION_PATH",
-  "generated_at_utc": "2026-10-06T10:22:19.881644+00:00",
+  "generated_at_utc": "2026-10-06T10:32:08.764047+00:00",
   "pointer_asof_before_candidate": "2026-10-02",
   "r92_account_g9_applicable": false,
   "r92_candidates": [],
@@ -1277,19 +1271,7 @@
       "ZM",
       "ZS"
     ],
-    "lifecycle_backed_family_candidates": [
-      "ABCL|D",
-      "IBRX|D",
-      "IOVA|D",
-      "LITE|D",
-      "MRNA|D",
-      "PI|D",
-      "QLYS|D",
-      "RGEN|D",
-      "SWKS|D",
-      "TRMD|D",
-      "VICR|D"
-    ],
+    "lifecycle_backed_family_candidates": [],
     "mc_fallback_fail": [],
     "mc_fallback_watch": [
       "AMRX",

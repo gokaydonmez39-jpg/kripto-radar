@@ -1168,6 +1168,46 @@
   "input_weekly_pass_count": 103,
   "input_weekly_trigger_scope_count": 121,
   "lifecycle_revalidation": {
+    "ABCL": {
+      "event_status": "CLEAN_DISCOVERY",
+      "regime_finalist_pass": true,
+      "regime_finalist_status": "PASS",
+      "rs20": 0.1462280782741352,
+      "rs60": 0.9442272896992701,
+      "status": "PASS"
+    },
+    "IBRX": {
+      "event_status": "CLEAN_DISCOVERY",
+      "regime_finalist_pass": true,
+      "regime_finalist_status": "PASS",
+      "rs20": 0.2213891238370067,
+      "rs60": 0.2115246806448683,
+      "status": "PASS"
+    },
+    "IOVA": {
+      "event_status": "CLEAN_DISCOVERY",
+      "regime_finalist_pass": true,
+      "regime_finalist_status": "PASS",
+      "rs20": 0.5305080579232913,
+      "rs60": 2.209392270547711,
+      "status": "PASS"
+    },
+    "LITE": {
+      "event_status": "CLEAN_DISCOVERY",
+      "regime_finalist_pass": true,
+      "regime_finalist_status": "PASS",
+      "rs20": 0.17776281193771482,
+      "rs60": 0.3059252594070041,
+      "status": "PASS"
+    },
+    "MRNA": {
+      "event_status": "CLEAN_DISCOVERY",
+      "regime_finalist_pass": true,
+      "regime_finalist_status": "PASS",
+      "rs20": 0.32739727493530846,
+      "rs60": 1.8557612927992126,
+      "status": "PASS"
+    },
     "PI": {
       "event_status": "CLEAN_DISCOVERY",
       "regime_finalist_pass": true,
@@ -1175,12 +1215,62 @@
       "rs20": 0.020282148996124905,
       "rs60": 0.23359130858581478,
       "status": "PASS"
+    },
+    "QLYS": {
+      "event_status": "CLEAN_DISCOVERY",
+      "regime_finalist_pass": true,
+      "regime_finalist_status": "PASS",
+      "rs20": 0.10047048525470359,
+      "rs60": 0.24839001408731276,
+      "status": "PASS"
+    },
+    "RGEN": {
+      "event_status": "CLEAN_DISCOVERY",
+      "regime_finalist_pass": true,
+      "regime_finalist_status": "PASS",
+      "rs20": 0.07498710737458159,
+      "rs60": 0.2604633733662325,
+      "status": "PASS"
+    },
+    "SWKS": {
+      "event_status": "CLEAN_DISCOVERY",
+      "regime_finalist_pass": true,
+      "regime_finalist_status": "PASS",
+      "rs20": 0.07778639210643878,
+      "rs60": 0.33329835182081813,
+      "status": "PASS"
+    },
+    "TRMD": {
+      "event_status": "CLEAN_DISCOVERY",
+      "regime_finalist_pass": true,
+      "regime_finalist_status": "PASS",
+      "rs20": 0.10939289968889354,
+      "rs60": 0.33595679156332947,
+      "status": "PASS"
+    },
+    "VICR": {
+      "event_status": "CLEAN_DISCOVERY",
+      "regime_finalist_pass": true,
+      "regime_finalist_status": "PASS",
+      "rs20": 0.5410228549269815,
+      "rs60": 0.07776868410382987,
+      "status": "PASS"
     }
   },
   "lifecycle_revalidation_scope": [
-    "PI"
+    "ABCL",
+    "IBRX",
+    "IOVA",
+    "LITE",
+    "MRNA",
+    "PI",
+    "QLYS",
+    "RGEN",
+    "SWKS",
+    "TRMD",
+    "VICR"
   ],
-  "lifecycle_revalidation_scope_count": 1,
+  "lifecycle_revalidation_scope_count": 11,
   "mode": "FULL_SHADOW",
   "qqq_corporate_action_status": "PASS_NO_LOCAL_SPLIT_DISCONTINUITY",
   "qqq_history_fingerprint": {
