@@ -431,6 +431,36 @@ jobs:
           print("EVENT_PARTIAL_DISCOVERY_FAIL_CLOSED=PASS")
           PY
 
+      - name: Assert C4.17 event UNKNOWN remains visible as WATCH research scope
+        run: |
+          python - <<'PY'
+          import sys
+          from pathlib import Path
+          sys.path.insert(0,"nasdaq-xray")
+          import final_tech_shadow as ft
+          deep={
+            "a_geometry_rs_event_pass":["CLEANA"],
+            "b_breakout_rs_event_pass":[],
+            "d_dk3_pre_r1":[],
+            "a_geometry_rs_event_watch":["UNKA"],
+            "b_breakout_rs_event_watch":["UNKB"],
+            "d_dk3_event_watch":["UNKD"],
+          }
+          assert ft._fresh_deep_family_confirmed(deep,"CLEANA","A") is True
+          assert ft._fresh_deep_family_confirmed(deep,"UNKA","A") is True
+          assert ft._fresh_deep_family_confirmed(deep,"UNKB","B") is True
+          assert ft._fresh_deep_family_confirmed(deep,"UNKD","D") is True
+          assert ft._fresh_deep_family_confirmed(deep,"DROP","D") is False
+          final_src=Path("nasdaq-xray/final_tech_shadow.py").read_text()
+          deep_src=Path("nasdaq-xray/deep_pre_r1_shadow.py").read_text()
+          assert 'elif not event_pass: result="WATCH_EVENT_UNKNOWN_OR_BLOCKED"' in final_src
+          assert '"a_geometry_rs_event_watch_count"' in deep_src
+          assert '"b_breakout_rs_event_watch_count"' in deep_src
+          assert '"b_armed_rs_event_watch_count"' in deep_src
+          assert '"d_dk3_event_watch_count"' in deep_src
+          print("EVENT_UNKNOWN_MAX_WATCH_REACHABILITY=PASS")
+          PY
+
       - name: Assert MC fallback WATCH remains in technical radar scope
         run: |
           python - <<'PY'
