@@ -157,8 +157,18 @@ def main():
       "source_stage1_path":"nasdaq-xray/canonical_current_stage1.json","source_stage1_blob_sha":blob_sha(STAGE1),
       "source_regime_path":"nasdaq-xray/canonical_current_regime.json","source_regime_blob_sha":blob_sha(REGIME),
       "source_deep_geometry_path":"nasdaq-xray/canonical_current_deep_geometry.json","source_deep_geometry_blob_sha":blob_sha(DEEP),
-      "required_discovery":{"provider":"BIGDATA_CORPORATE_CALENDAR","exchanges":["XNAS","XNGS","XNMS","XNCM","XNGM"],"category":"earnings-call"},
-      "official_confirmation":"ISSUER_IR_OR_SEC_PRIMARY;DISCOVERY_ONLY_NEVER_BLOCKS_OR_CLEARS_BY_ITSELF"
+      "required_discovery":{
+        "required":False,
+        "role":"OPTIONAL_ACCELERATOR_ONLY",
+        "provider":"PROVIDER_NEUTRAL_ZERO_DOLLAR_DISCOVERY",
+        "preferred_providers":["PUBLIC_WEB","BIGDATA_IF_ZERO_DOLLAR_CALLABLE","QUARTR_IF_ZERO_DOLLAR_CALLABLE"],
+        "exchanges":["XNAS","XNGS","XNMS","XNCM","XNGM"],
+        "category":"earnings-call",
+        "paid_topup_forbidden":True,
+        "provider_failure_never_clears_or_blocks":True,
+        "geometry_direct_official_fallback_required":True
+      },
+      "official_confirmation":"ISSUER_IR_OR_SEC_PRIMARY;DISCOVERY_OPTIONAL_NEVER_BLOCKS_OR_CLEARS_BY_ITSELF;GEOMETRY_SCOPE_MUST_ATTEMPT_DIRECT_OFFICIAL_PRIMARY_WHEN_DISCOVERY_UNAVAILABLE"
     }
     OUT.write_text(json.dumps(obj,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
     print(json.dumps({"asof":asof,"upstream_coverage_complete":obj["upstream_coverage_complete"],
