@@ -1,233 +1,96 @@
 {
   "asof_et": "2026-10-06",
-  "chunk_count": 32,
+  "chunk_count": 1,
   "chunk_size": 100,
   "chunks": [
     {
-      "blob_sha": "ca18be3603c6ab990f59ef05865914d83ffd8455",
+      "blob_sha": "b984a30e703723da180f44c9e4c4de3d7bf217e9",
       "chunk_index": 1,
-      "chunk_symbol_hash": "27541e456c7d9b94a70b647dbd6844739ad508af8707443dbb76cd3da30182e8",
+      "chunk_symbol_hash": "507f63c1e9486f4664f5757bfa6f132001247f23907e86be468a9e396dd02254",
       "path": "nasdaq-xray/canonical_current_resolver_chunk_0001.json",
-      "symbol_count": 100
-    },
-    {
-      "blob_sha": "f9878b7567d8cbd647b58c779f2df030daf79cf5",
-      "chunk_index": 2,
-      "chunk_symbol_hash": "eb92fd8f6d6ff5fec629dcc117b0f7e7874e331147f77130a50e23dbca079c41",
-      "path": "nasdaq-xray/canonical_current_resolver_chunk_0002.json",
-      "symbol_count": 100
-    },
-    {
-      "blob_sha": "b960e1266de44ee80577514366e682689f23936a",
-      "chunk_index": 3,
-      "chunk_symbol_hash": "8ce10b24686095f9066f3db6032aa2db3cded581940ed1552d4d57b59d57e5e5",
-      "path": "nasdaq-xray/canonical_current_resolver_chunk_0003.json",
-      "symbol_count": 100
-    },
-    {
-      "blob_sha": "b30dee1b3ffdac4e44e366db5d581a4405073907",
-      "chunk_index": 4,
-      "chunk_symbol_hash": "fb89248fc450c7c7042365c0d14335180c259e7ea8844c5e385d2606913f6ca3",
-      "path": "nasdaq-xray/canonical_current_resolver_chunk_0004.json",
-      "symbol_count": 100
-    },
-    {
-      "blob_sha": "355a559a05efd7d2ae069490adc0bedb6b49ccd5",
-      "chunk_index": 5,
-      "chunk_symbol_hash": "a8736ec5ea8cef2b1b4a1f8dacec8ce402d2f16413abde27d9b9ecb03475faea",
-      "path": "nasdaq-xray/canonical_current_resolver_chunk_0005.json",
-      "symbol_count": 100
-    },
-    {
-      "blob_sha": "f3f59e3f025f9d2db61df4a9f944ef364c9c2993",
-      "chunk_index": 6,
-      "chunk_symbol_hash": "f8381c2037dfd8c8d2f6955e94245bc69e9aa8e18be5628f4ac3ff868e1b1a7c",
-      "path": "nasdaq-xray/canonical_current_resolver_chunk_0006.json",
-      "symbol_count": 100
-    },
-    {
-      "blob_sha": "ec6f5fe7b5c15b0796389c4126c5e5e2f985c489",
-      "chunk_index": 7,
-      "chunk_symbol_hash": "d0e5b80ada854d5a46e12206ed325ca5e389aa830ba8fa8226b7b247cb95ca17",
-      "path": "nasdaq-xray/canonical_current_resolver_chunk_0007.json",
-      "symbol_count": 100
-    },
-    {
-      "blob_sha": "775e057ae3e18a2778034909f5918ad99dc6404f",
-      "chunk_index": 8,
-      "chunk_symbol_hash": "299afc2541a48741d7e7a455beed4785fc49ac96eb47132386034dccb2b1a8e2",
-      "path": "nasdaq-xray/canonical_current_resolver_chunk_0008.json",
-      "symbol_count": 100
-    },
-    {
-      "blob_sha": "f85403a383f7c35f54e20ba94fe0340761b189de",
-      "chunk_index": 9,
-      "chunk_symbol_hash": "44742583e3470dda5f4f6f3e180976796ad574c0ffe6086acfe93c7ce28d751b",
-      "path": "nasdaq-xray/canonical_current_resolver_chunk_0009.json",
-      "symbol_count": 100
-    },
-    {
-      "blob_sha": "357cf38619a62ba1b89fd476b93331c3ca238c6b",
-      "chunk_index": 10,
-      "chunk_symbol_hash": "b5f3f498f6dcb4e8c20556af2bfedc810e0d5cb91a04319768ffa777dd0b7161",
-      "path": "nasdaq-xray/canonical_current_resolver_chunk_0010.json",
-      "symbol_count": 100
-    },
-    {
-      "blob_sha": "a1612f7d09dc8957fbe1926dcaa7b940cebf4be3",
-      "chunk_index": 11,
-      "chunk_symbol_hash": "b450f4d896f81f1d834f1e09038bc5b64cfbc6ffa1cc3277d585366d0483db02",
-      "path": "nasdaq-xray/canonical_current_resolver_chunk_0011.json",
-      "symbol_count": 100
-    },
-    {
-      "blob_sha": "20d760ed837552824c664c2a5c24d85ddfa516ab",
-      "chunk_index": 12,
-      "chunk_symbol_hash": "78eaf18bc8d857d306d1c3c56dfb90c2461d2f48a52590738ad1058136991164",
-      "path": "nasdaq-xray/canonical_current_resolver_chunk_0012.json",
-      "symbol_count": 100
-    },
-    {
-      "blob_sha": "1c93e5144b479ef3cfb6fe2de5ee62e8210786cc",
-      "chunk_index": 13,
-      "chunk_symbol_hash": "a09cd02fa83194008f1ea4f2d3df05570a3f187a5c2ae6ef1c6c465e76bb12e1",
-      "path": "nasdaq-xray/canonical_current_resolver_chunk_0013.json",
-      "symbol_count": 100
-    },
-    {
-      "blob_sha": "77878e65f8275ec6cb67baca1246a685a9aa46f6",
-      "chunk_index": 14,
-      "chunk_symbol_hash": "ee220b89ecef3a9ae15ef47e968488c2ccbb2ea2ee23e62df5916479a5b05828",
-      "path": "nasdaq-xray/canonical_current_resolver_chunk_0014.json",
-      "symbol_count": 100
-    },
-    {
-      "blob_sha": "cfb472b8b9e54080c64d2a27e0416c72414ab798",
-      "chunk_index": 15,
-      "chunk_symbol_hash": "a1c90bedcc3cff6e68e7bc9e80596ed41d29cace413c557ae1e41fa4af35c51c",
-      "path": "nasdaq-xray/canonical_current_resolver_chunk_0015.json",
-      "symbol_count": 100
-    },
-    {
-      "blob_sha": "7468ed991774220618993c9e50e71e6d8c7af66b",
-      "chunk_index": 16,
-      "chunk_symbol_hash": "b07363dbaaac7b52aff97dbd12e63a19d4db1aca75a53d2b30a0a74d13b627cd",
-      "path": "nasdaq-xray/canonical_current_resolver_chunk_0016.json",
-      "symbol_count": 100
-    },
-    {
-      "blob_sha": "a49167ada5b33fb6d655980b9b35e778b3ad0bbe",
-      "chunk_index": 17,
-      "chunk_symbol_hash": "bc8622cf9224766d718053afacf6ae713b18b4a9f930a9cf1cb1bed83ae78cd4",
-      "path": "nasdaq-xray/canonical_current_resolver_chunk_0017.json",
-      "symbol_count": 100
-    },
-    {
-      "blob_sha": "e271275098ef2ad45c2b47e253080c9d268a9358",
-      "chunk_index": 18,
-      "chunk_symbol_hash": "7f8a3946bd7aa100c5b73479c3466316b364830b56b6fb66ce020892b6dd259a",
-      "path": "nasdaq-xray/canonical_current_resolver_chunk_0018.json",
-      "symbol_count": 100
-    },
-    {
-      "blob_sha": "ddd7e45d233eb38f07c347d3c27e5875156782d2",
-      "chunk_index": 19,
-      "chunk_symbol_hash": "4c729ff093d10216c4598357abce6d3a03836327e076ab43f09f4c2b5beb02fc",
-      "path": "nasdaq-xray/canonical_current_resolver_chunk_0019.json",
-      "symbol_count": 100
-    },
-    {
-      "blob_sha": "1e14a21ee4d47ef8eba74199373c723dcbd10869",
-      "chunk_index": 20,
-      "chunk_symbol_hash": "c0061aa813776af875827e1fb69b9170d995de42c11876b98af4945ae282f6d0",
-      "path": "nasdaq-xray/canonical_current_resolver_chunk_0020.json",
-      "symbol_count": 100
-    },
-    {
-      "blob_sha": "b4ae8efe1f91ee726ffda0c52277cb8220d14ae3",
-      "chunk_index": 21,
-      "chunk_symbol_hash": "8328a9638f9c863d31b28ee9a878e66da104515c5e93a58cc18d6f615a6df097",
-      "path": "nasdaq-xray/canonical_current_resolver_chunk_0021.json",
-      "symbol_count": 100
-    },
-    {
-      "blob_sha": "858d71439a20dc0fcb939ebd2ab415b9ff5625e7",
-      "chunk_index": 22,
-      "chunk_symbol_hash": "a2161f5a80f5af52d807c0ca836f9459dd6bb4a771fb65f278ace3afe6090eb1",
-      "path": "nasdaq-xray/canonical_current_resolver_chunk_0022.json",
-      "symbol_count": 100
-    },
-    {
-      "blob_sha": "202ad0a14d69fbf5e9d126b259f055230c4b2627",
-      "chunk_index": 23,
-      "chunk_symbol_hash": "ee61ec62bbeb38e95db5a80b04291fbb7808a7e949f7b8506f0b03b6ee003710",
-      "path": "nasdaq-xray/canonical_current_resolver_chunk_0023.json",
-      "symbol_count": 100
-    },
-    {
-      "blob_sha": "591e6ddda4ae5c35766c2ea23a8a1ec835410ef0",
-      "chunk_index": 24,
-      "chunk_symbol_hash": "7178af4bf51fed04a09b1782df5b6ded7a20167441e4e7f881e08d65af3ba2af",
-      "path": "nasdaq-xray/canonical_current_resolver_chunk_0024.json",
-      "symbol_count": 100
-    },
-    {
-      "blob_sha": "8daee8e2050b19b2ce891363422646faa87e1f31",
-      "chunk_index": 25,
-      "chunk_symbol_hash": "0403160364870a88884a1febfd0102ae5c7e61c24bf82c0f4c46991d87ace6ec",
-      "path": "nasdaq-xray/canonical_current_resolver_chunk_0025.json",
-      "symbol_count": 100
-    },
-    {
-      "blob_sha": "e6795e2f749353cd3e896e595c256f68b51137c5",
-      "chunk_index": 26,
-      "chunk_symbol_hash": "8f6013869194c8f9ca362bb2b41e305d771cc196a45eb5fd272cee4fda13d7c4",
-      "path": "nasdaq-xray/canonical_current_resolver_chunk_0026.json",
-      "symbol_count": 100
-    },
-    {
-      "blob_sha": "24245d8a282a98e71ded40ccdbc9b344622d6e68",
-      "chunk_index": 27,
-      "chunk_symbol_hash": "47397cab0a41d22bfc421d132213b5ba98ebed42d72640ec9dce5f6e76403550",
-      "path": "nasdaq-xray/canonical_current_resolver_chunk_0027.json",
-      "symbol_count": 100
-    },
-    {
-      "blob_sha": "f733549c06cb4895c688a13f796b87162d382228",
-      "chunk_index": 28,
-      "chunk_symbol_hash": "bd260443c129a8a7bc74637cc7cc7a8956e88cc9b84d3bfbe2d6a895409212b7",
-      "path": "nasdaq-xray/canonical_current_resolver_chunk_0028.json",
-      "symbol_count": 100
-    },
-    {
-      "blob_sha": "cebcea8999d0ea607a2c6bf354d1b5a20e1d11c0",
-      "chunk_index": 29,
-      "chunk_symbol_hash": "5c16224ec84653c00ee1633710c24509c764f382948a5377792c67c2625936df",
-      "path": "nasdaq-xray/canonical_current_resolver_chunk_0029.json",
-      "symbol_count": 100
-    },
-    {
-      "blob_sha": "3c0f4745c9680f0dfacd31dcf011b37950ac781e",
-      "chunk_index": 30,
-      "chunk_symbol_hash": "10b13a50840643fa52f287d0bfbc75c0fe4f21ecc9c83007d8d48b373581b833",
-      "path": "nasdaq-xray/canonical_current_resolver_chunk_0030.json",
-      "symbol_count": 100
-    },
-    {
-      "blob_sha": "cbef3c37dc5adf6f08678d6924f1a02b50e815df",
-      "chunk_index": 31,
-      "chunk_symbol_hash": "58d62fdc7f4afbbf16bc0a239fd1d8c34f81fceb2d0d48abafaecd8c8c56a649",
-      "path": "nasdaq-xray/canonical_current_resolver_chunk_0031.json",
-      "symbol_count": 100
-    },
-    {
-      "blob_sha": "171102b8c3c34ca77c2bf9228d64899ca7fbee0f",
-      "chunk_index": 32,
-      "chunk_symbol_hash": "1377ff5a4a151ce34d7dc3d6dc5987fa204a63705359b0140c1ff4b94c4ca22b",
-      "path": "nasdaq-xray/canonical_current_resolver_chunk_0032.json",
-      "symbol_count": 61
+      "symbol_count": 45
     }
   ],
+  "compact_authority": {
+    "asof_et": "2026-10-06",
+    "compiled_policy_blob_sha": "16c50cc8f887a5234a4be23862d7c8d0e564b0ac",
+    "compiled_policy_hash": "68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4",
+    "compiled_policy_version": "C4.17",
+    "execution": "NONE",
+    "expected30": [
+      "2026-08-25",
+      "2026-08-26",
+      "2026-08-27",
+      "2026-08-28",
+      "2026-08-31",
+      "2026-09-01",
+      "2026-09-02",
+      "2026-09-03",
+      "2026-09-04",
+      "2026-09-08",
+      "2026-09-09",
+      "2026-09-10",
+      "2026-09-11",
+      "2026-09-14",
+      "2026-09-15",
+      "2026-09-16",
+      "2026-09-17",
+      "2026-09-18",
+      "2026-09-21",
+      "2026-09-22",
+      "2026-09-23",
+      "2026-09-24",
+      "2026-09-25",
+      "2026-09-28",
+      "2026-09-29",
+      "2026-09-30",
+      "2026-10-01",
+      "2026-10-02",
+      "2026-10-05",
+      "2026-10-06"
+    ],
+    "global_asof_sentinel_fast_fail": false,
+    "master_unknown_count": 238,
+    "master_unknown_hash": "f5fefe060771b594bb45d83a602ae796fd8a312231909ca3852c50eecf149a70",
+    "price_blocked_count": 45,
+    "price_blocked_hash": "507f63c1e9486f4664f5757bfa6f132001247f23907e86be468a9e396dd02254",
+    "price_gate_order": [
+      "PRICE",
+      "DV30"
+    ],
+    "price_thresholds": {
+      "dv30": ">=50000000 exact30 median",
+      "price": ">=5"
+    },
+    "price_unknown_count": 0,
+    "price_unknown_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "real_money": "NO-GO",
+    "request_blob_sha": "abf4699c3c318cfd5e40b1162eb25c98a9723e4e",
+    "request_path": "nasdaq-xray/canonical_current_resolver_request.json",
+    "resolver_symbol_count": 45,
+    "resolver_symbol_hash": "507f63c1e9486f4664f5757bfa6f132001247f23907e86be468a9e396dd02254",
+    "schema": "XRAY_RESOLVER_COMPACT_INPUT_AUTHORITY_V1",
+    "settlement_required": true,
+    "settlement_symbols": [
+      "AAPL",
+      "NVDA",
+      "MSFT"
+    ],
+    "source_master_blob_sha": "13ca281598b13c2f4ecd53c39132618a230ed1a0",
+    "source_master_path": "nasdaq-xray/canonical_current_master_manifest.json",
+    "source_price_blob_sha": "c11e9be640b4d81e67d82be7822226a387807d67",
+    "source_price_counts": {
+      "BLOCK_CURRENT_RUN": 45,
+      "FAIL_DV30": 1317,
+      "FAIL_PRICE": 1291,
+      "PASS_PRICE_DV30": 508
+    },
+    "source_price_pass_count": 508,
+    "source_price_pass_hash": "63d66ef437b893c96ae7775e62d1a2c4d54a18695da2e7b0e8dd89022538882d",
+    "source_price_path": "nasdaq-xray/canonical_current_price_dv30.json",
+    "task_id": "6a825366222081918997094d76e6ae46",
+    "unknown_never_pass": true
+  },
   "compiled_policy_blob_sha": "16c50cc8f887a5234a4be23862d7c8d0e564b0ac",
   "compiled_policy_hash": "68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4",
   "compiled_policy_version": "C4.17",
@@ -235,11 +98,11 @@
   "execution": "NONE",
   "queue_hash": "f583de3888d099300a0d4b0baf67d557ab98007aa33fb93142a9172213ea6867",
   "real_money": "NO-GO",
-  "request_blob_sha": "75c3aeec1d346186444c27aaa13ea528bf13aa08",
+  "request_blob_sha": "abf4699c3c318cfd5e40b1162eb25c98a9723e4e",
   "request_path": "nasdaq-xray/canonical_current_resolver_request.json",
   "schema": "XRAY_RESOLVER_REQUEST_CHUNK_MANIFEST_V1",
-  "symbol_count": 3161,
-  "symbol_hash": "f583de3888d099300a0d4b0baf67d557ab98007aa33fb93142a9172213ea6867",
+  "symbol_count": 45,
+  "symbol_hash": "507f63c1e9486f4664f5757bfa6f132001247f23907e86be468a9e396dd02254",
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_never_pass": true
 }
