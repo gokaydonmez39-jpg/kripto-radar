@@ -1,0 +1,120 @@
+name: XRAY Price Gate Shadow Audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/xray-price-gate-shadow-audit.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: xray-price-gate-shadow-audit
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install zero-dollar runtime
+        run: python -m pip install --disable-pip-version-check -r nasdaq-xray/requirements-runtime.txt
+      - name: Audit legacy price gate without changing canonical policy
+        env:
+          PYTHONPATH: nasdaq-xray
+        run: |
+          python - <<'PY'
+          import json, math
+          from concurrent.futures import ThreadPoolExecutor, as_completed
+          from pathlib import Path
+          import price_dv20_phase as p
+
+          root=Path("nasdaq-xray")
+          full=json.loads((root/"canonical_current_full_state.json").read_text())
+          price=json.loads((root/"canonical_current_price_dv20.json").read_text())
+          asof=price["asof_et"]
+          exp20=price["expected20"]
+          discovery=full.get("discovery") or {}
+          pres=price.get("results") or {}
+
+          scope=[]
+          for sym,row in pres.items():
+              if (row or {}).get("status")!="FAIL_PRICE":
+                  continue
+              d=discovery.get(sym) or {}
+              mc=d.get("screener_market_cap")
+              try: mc=float(mc)
+              except Exception: continue
+              if math.isfinite(mc) and mc>=2_000_000_000:
+                  scope.append(sym)
+
+          def dv_only(by):
+              if asof not in by:
+                  return "UNKNOWN",{"reason":"ASOF_MISSING"}
+              vals=[]
+              missing=[]
+              for d in exp20:
+                  if d not in by:
+                      missing.append(d)
+                  else:
+                      c,v=by[d]
+                      vals.append(float(c)*float(v))
+              if missing:
+                  return "UNKNOWN",{"reason":"EXACT20_INCOMPLETE","missing_sessions":missing}
+              s=sorted(vals)
+              dv=(s[9]+s[10])/2.0
+              return ("PASS_DV20" if dv>=50_000_000 else "FAIL_DV20"),{"dv20":dv,"price":by[asof][0]}
+
+          def one(sym):
+              by,meta=p.sina(sym,asof)
+              if by:
+                  st,info=dv_only(by)
+                  if st!="UNKNOWN":
+                      return sym,st,info,"SINA_US_DAILY",meta
+              nby,nmeta=p.nasdaq(sym,asof)
+              if nby:
+                  st,info=dv_only(nby)
+                  if st!="UNKNOWN":
+                      return sym,st,info,"NASDAQ_OFFICIAL_HISTORICAL_API",nmeta
+              return sym,"UNKNOWN",{"reason":"NO_PASS_FAIL_EXACT20_FROM_PASS_AUTHORITY"},None,{"sina":meta,"nasdaq":nmeta}
+
+          out={}
+          with ThreadPoolExecutor(max_workers=12) as ex:
+              futs={ex.submit(one,s):s for s in sorted(scope)}
+              for fut in as_completed(futs):
+                  sym,st,info,src,meta=fut.result()
+                  out[sym]={"status":st,"info":info,"source":src,"meta":meta}
+
+          counts={}
+          for r in out.values(): counts[r["status"]]=counts.get(r["status"],0)+1
+          passes=sorted(s for s,r in out.items() if r["status"]=="PASS_DV20")
+          payload={
+              "schema":"XRAY_PRICE_GATE_SHADOW_AUDIT_V1",
+              "asof_et":asof,
+              "execution":"NONE",
+              "real_money":"NO-GO",
+              "canonical_policy_changed":False,
+              "authority":"DIAGNOSTIC_ONLY_NOT_ALPHA_AUTHORITY",
+              "question":"Among canonical FAIL_PRICE symbols, which screener-MC>=2B names would pass exact DV20 if the >10 price hard gate were absent?",
+              "prefilter_note":"screener_market_cap is discovery-only prefilter; canonical MC must still be proven later",
+              "scope_count":len(scope),
+              "counts":dict(sorted(counts.items())),
+              "shadow_dv20_pass_count":len(passes),
+              "shadow_dv20_pass_symbols":passes,
+              "results":dict(sorted(out.items())),
+          }
+          Path("/tmp/xray_price_gate_shadow_audit.json").write_text(json.dumps(payload,indent=2,sort_keys=True))
+          print("XRAY_PRICE_GATE_SHADOW_AUDIT="+json.dumps({
+              "asof_et":asof,
+              "scope_count":len(scope),
+              "counts":payload["counts"],
+              "shadow_dv20_pass_count":len(passes),
+              "shadow_dv20_pass_symbols":passes,
+          },sort_keys=True))
+          PY
