@@ -758,11 +758,13 @@ def test_workflow_race_and_pre_mc_freeze_contracts():
     assert "recover=bool(active_completed_epoch and not price_integrity_ok and not bootstrap_rebuild)" in guard
     assert "XRAY_PRICE_FORCE_POLICY_REPLAY" in pre
     assert "identity_replay=bool(" in guard
-    assert 'mf.get("identity_ruleset")!="V5_SEC_SPAC_PROOF_AT_MASTER"' in guard
+    assert 'mf.get("identity_ruleset")!="V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER"' in guard
     assert 'mcp.get("sec_spac_proof_binding") is not True' in guard
     assert 'msec.get("blob_sha")!=(proof_blob if proof_count else None)' in guard
+    assert 'mcp.get("asof_identity_proof_binding") is not True' in guard
+    assert 'masof.get("blob_sha")!=(asof_blob if asof_counts else None)' in guard
     assert "build=bool(not active_completed_epoch or bootstrap_rebuild or identity_replay)" in guard
-    assert "REPLAY_COMPLETED_EPOCH_UNDER_CURRENT_IDENTITY_POLICY_V5" in guard
+    assert "REPLAY_COMPLETED_EPOCH_UNDER_CURRENT_IDENTITY_POLICY_V6" in guard
     assert "REBUILD_DEFERRED_DV30_BOOTSTRAP" in guard
     assert 'out.write(f"recovery_asof={frozen_asof}\\n")' in guard
     assert "terminal_result" not in guard and "FULL_E2E_RESEARCH_PASS" not in guard
