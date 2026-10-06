@@ -585,6 +585,8 @@ jobs:
           XRAY_FINAL_OUT: /tmp/xray_prelegal/final_prelegal.json
           XRAY_FINAL_LIFECYCLE_OUT: /tmp/xray_prelegal/lifecycle.json
           XRAY_FINAL_CANDIDATE_LEGAL_GUARD: /tmp/xray_prelegal/absent_guard.json
+          XRAY_FINAL_HISTORY_CACHE_DIR: ${{ github.workspace }}/nasdaq-xray/canonical_benchmark_cache
+          XRAY_FINAL_CACHE_REQUIRED: "1"
           XRAY_FINAL_WORKERS: "6"
         run: |
           set -euo pipefail
@@ -683,6 +685,8 @@ jobs:
           XRAY_FINAL_DEEP_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_current_deep_full.json
           XRAY_FINAL_FAMILY_C_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_current_family_c.json
           XRAY_FINAL_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_current_final_tech.json
+          XRAY_FINAL_HISTORY_CACHE_DIR: ${{ github.workspace }}/nasdaq-xray/canonical_benchmark_cache
+          XRAY_FINAL_CACHE_REQUIRED: "1"
           XRAY_FINAL_WORKERS: "6"
         run: python nasdaq-xray/final_tech_shadow.py
 
