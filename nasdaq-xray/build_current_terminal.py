@@ -499,7 +499,8 @@ def main():
     assert dp.get("source_stage1_blob_sha")==sh["stage1"]
     assert dp.get("source_regime_blob_sha")==sh["regime"] and dp.get("source_event_blob_sha")==sh["events"]
     assert dp.get("source_mc_policy_hash")==POLICY_HASH and dp.get("source_mc_policy_version")=="C4.17"
-    assert dp["event_state_fresh"] is True and dp["unknown_history_count"]==0
+    assert dp["event_state_fresh"] is True
+    assert isinstance(dp.get("unknown_history_count"),int) and int(dp["unknown_history_count"])>=0
     assert dp["regime"]==rg["regime"]
 
     current_confirmed=set()

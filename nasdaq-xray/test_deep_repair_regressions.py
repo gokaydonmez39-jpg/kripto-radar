@@ -1165,6 +1165,15 @@ def test_pre_mc_rejects_resolver_bridge_mutation_contract():
     assert "git diff --name-status" in wf
     assert "canonical_resolver_bridge_*.json" in wf
 
+
+def test_terminal_deep_history_unknown_is_fail_closed_partial_not_crash():
+    src=(REPO/"nasdaq-xray/build_current_terminal.py").read_text()
+    assert 'assert dp["event_state_fresh"] is True' in src
+    assert 'dp["unknown_history_count"]==0' not in src
+    assert '"deep_history_unknown":int(dp["unknown_history_count"])' in src
+    assert 'full=all(v==0 for v in blockers.values())' in src
+    assert 'terminal_result=("NO_CONFIRMED_SETUP" if not pre else "PRE_G9_SETUP_EXISTS") if full else "PARTIAL_UNKNOWN"' in src
+
 def main():
     test_r1_no_future_mutation_and_confirmation(); test_r1_pivot_boundary_is_not_overhead_but_entry_overlap_is(); test_resistance_role_change_state_machine()
     test_final_history_normalizer_preserves_ohlcv()
@@ -1181,6 +1190,7 @@ def main():
     test_final_workflow_auto_rebinds_event_provenance_and_persists_successor()
     test_resolver_bridge_authority_prefers_exact_current_lineage()
     test_post_mc_exact_source_rebind_workflow_contract()
+    test_terminal_deep_history_unknown_is_fail_closed_partial_not_crash()
     test_frozen_identity_reuse_preserves_unknown_partition_and_rejects_unproven_spac_contract()
     test_candidate_local_legal_unknown_does_not_globally_suppress()
     test_candidate_legal_guard_scope_is_candidate_local()
