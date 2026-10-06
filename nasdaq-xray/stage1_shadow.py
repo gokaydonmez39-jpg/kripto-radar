@@ -15,7 +15,7 @@ import pandas as pd
 import pandas_market_calendars as mcal
 from alpha_semantics import (
     wilder_atr as _policy_atr, ema_seeded, drawdown_metrics,
-    find_recent_b_trigger, mechanical_scale_breaks, mechanical_split_suspects,
+    find_recent_b_trigger, NEW_TRIGGER_DISCOVERY_MAX_AGE, mechanical_scale_breaks, mechanical_split_suspects,
     split_consistent_history,
 )
 
@@ -187,7 +187,7 @@ def base_pool(df):
             out.append({"window":n,"base_high":bh,"base_low":bl,"width_atr":width,"atr14_frozen":A})
     return out
 
-def recent_weekly_context(df,week_last,max_age=3):
+def recent_weekly_context(df,week_last,max_age=NEW_TRIGGER_DISCOVERY_MAX_AGE):
     """Weekly gate as knowable on current/prior completed trigger sessions."""
     passed=[]; ctx={}
     if df is None or df.empty:return passed,ctx
@@ -230,7 +230,7 @@ def process(sym,asof,week_last):
         # completed sessions. Preserve the weekly context that was actually
         # knowable on each candidate trigger date; today's weekly status must
         # never erase a valid recent trigger.
-        recent_weekly_pass_dates,recent_weekly_context_map=recent_weekly_context(x,week_last,3)
+        recent_weekly_pass_dates,recent_weekly_context_map=recent_weekly_context(x,week_last,NEW_TRIGGER_DISCOVERY_MAX_AGE)
         if not wg.get("pass"):
             return sym,{"status":"WEEKLY_FAIL","weekly":wg,"raw_weekly":raw_wg,
                         "recent_weekly_pass_dates":recent_weekly_pass_dates,
@@ -247,7 +247,7 @@ def process(sym,asof,week_last):
             rh=float(recent20_high.iloc[-1]); last=float(close.iloc[-1])
             a_pool=bool(last>float(sma50.iloc[-1]) and float(sma50.iloc[-1])>float(sma50.iloc[-21]) and rh>0 and 0.88*rh<=last<=rh)
         b=base_pool(x)
-        b_recent=find_recent_b_trigger(x,3)
+        b_recent=find_recent_b_trigger(x,NEW_TRIGGER_DISCOVERY_MAX_AGE)
         last=float(close.iloc[-1])
         dd=drawdown_metrics(x)
         dd252=dd["current_drawdown_252"]; dd120=dd["max_drawdown_close_120"]
