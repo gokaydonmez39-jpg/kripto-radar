@@ -758,7 +758,7 @@ def test_workflow_race_and_pre_mc_freeze_contracts():
     assert "recover=bool(active_completed_epoch and not price_integrity_ok and not bootstrap_rebuild)" in guard
     assert "XRAY_PRICE_FORCE_POLICY_REPLAY" in pre
     assert "identity_replay=bool(" in guard
-    assert 'mf.get("identity_ruleset")!="V4_SPAC_EXCLUDED_AT_MASTER"' in guard
+    assert 'mf.get("identity_ruleset")!="V5_SEC_SPAC_PROOF_AT_MASTER"' in guard
     assert "build=bool(not active_completed_epoch or bootstrap_rebuild or identity_replay)" in guard
     assert "REPLAY_COMPLETED_EPOCH_UNDER_CURRENT_IDENTITY_POLICY" in guard
     assert "REBUILD_DEFERRED_DV30_BOOTSTRAP" in guard
