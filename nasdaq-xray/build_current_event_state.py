@@ -34,9 +34,16 @@ def fail_closed_discovery_coverage(ev,weekly,status,unresolved,future_sessions):
         return True,"COMPLETE_PROVIDER_DISCOVERY"
     if not partial or not unavailable:
         return False,"PARTIAL_DISCOVERY_NOT_EXPLICIT"
-    if not unavailable<=weekly or not unavailable<=unresolved_keys:
-        return False,"UNAVAILABLE_SCOPE_NOT_EXACT_UNKNOWN"
-    for sym in unavailable:
+    if not unavailable<=weekly:
+        return False,"UNAVAILABLE_SCOPE_OUTSIDE_WEEKLY"
+    if not resolved<=unavailable or not resolved<=weekly or resolved&unresolved_keys:
+        return False,"OFFICIAL_RESOLUTION_SCOPE_INVALID"
+    unresolved_unavailable=unavailable-resolved
+    if not unresolved_unavailable<=unresolved_keys:
+        return False,"UNRESOLVED_UNAVAILABLE_SCOPE_NOT_EXACT_UNKNOWN"
+    if unavailable != (unresolved_unavailable|resolved):
+        return False,"UNAVAILABLE_PARTITION_INCOMPLETE"
+    for sym in unresolved_unavailable:
         rec=(unresolved or {}).get(sym) or {}
         if status.get(sym)!="UNKNOWN" or rec.get("fail_closed") is not True:
             return False,"UNAVAILABLE_SYMBOL_NOT_FAIL_CLOSED_UNKNOWN"
@@ -51,8 +58,6 @@ def fail_closed_discovery_coverage(ev,weekly,status,unresolved,future_sessions):
 
     horizon=max(future_sessions or [""])
     horizon_set=set(future_sessions or [])
-    if not resolved<=weekly or resolved&unresolved_keys:
-        return False,"OFFICIAL_RESOLUTION_SCOPE_INVALID"
     for sym in resolved:
         rec=clearance.get(sym) or {}
         st=status.get(sym)
