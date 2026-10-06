@@ -521,19 +521,29 @@ def _regime_finalist_allowed(deep,sym):
     return _regime_finalist_status(deep,sym)=="PASS"
 
 def _fresh_deep_family_confirmed(deep,sym,fam):
-    """Fresh Final scope must exactly match Deep's event+RS confirmed sets.
+    """Return fresh research scope, including C4.17 event-capped WATCH rows.
 
-    Raw per-symbol geometry flags may still be true for an event-blocked name.
-    Such a row is not a fresh finalist. Only an already-recorded lifecycle setup
-    may survive separately through the frozen lifecycle path.
+    CLEAN event rows come from Deep's event-pass sets. Event UNKNOWN or an
+    official in-horizon block must not be promoted to PRE_G9/R92, but C4.17
+    explicitly caps them at WATCH rather than deleting otherwise valid geometry.
+    Deep emits dedicated event-watch sets so Final can still evaluate frozen
+    risk/R1/RR and preserve the strongest deterministic non-pass diagnosis.
     """
-    fields={
+    pass_fields={
       "A":"a_geometry_rs_event_pass",
       "B":"b_breakout_rs_event_pass",
       "D":"d_dk3_pre_r1",
     }
-    field=fields.get(fam)
-    return bool(field and sym in set(deep.get(field) or []))
+    watch_fields={
+      "A":"a_geometry_rs_event_watch",
+      "B":"b_breakout_rs_event_watch",
+      "D":"d_dk3_event_watch",
+    }
+    pf=pass_fields.get(fam); wf=watch_fields.get(fam)
+    return bool(
+        (pf and sym in set(deep.get(pf) or []))
+        or (wf and sym in set(deep.get(wf) or []))
+    )
 
 def main():
     semantic_selftest_status=_run_embedded_semantic_selftest()
@@ -563,9 +573,10 @@ def main():
         allowed=_regime_finalist_allowed(d,sym)
         for fam,flag in (("A",r.get("A",{}).get("pool")),("B",r.get("B",{}).get("breakout_confirmed")),("D",r.get("D",{}).get("dk3_pre_r1"))):
             if not flag: continue
-            # A raw geometry flag alone is insufficient. Fresh finalist scope is
-            # the exact Deep event+RS confirmed set. Event-blocked/unknown rows
-            # can only persist through an already-recorded lifecycle setup.
+            # Raw geometry alone is insufficient. Fresh Final scope is Deep's
+            # exact event-pass OR event-watch set. The latter is research-visible
+            # only as WATCH; eval_one() requires CLEAN_DISCOVERY for hard_pass,
+            # so UNKNOWN/BLOCK can never become PRE_G9/R92 through this path.
             if not _fresh_deep_family_confirmed(d,sym,fam):
                 continue
             if allowed:
