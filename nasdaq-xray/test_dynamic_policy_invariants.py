@@ -243,19 +243,26 @@ def main():
     sina_src=(ROOT/"sina_stage.py").read_text()
     master_src=(ROOT/"build_current_master_manifest.py").read_text()
     pre_mc_src=(ROOT.parent/".github/workflows/xray-canonical-current-pre-mc.yml").read_text()
-    assert 'IDENTITY_RULESET="V5_SEC_SPAC_PROOF_AT_MASTER"' in sina_src,sina_src
+    assert 'IDENTITY_RULESET="V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER"' in sina_src,sina_src
     assert 'industry.lower()=="blank checks"' in sina_src and '"reason":"SPAC_BLANK_CHECK"' in sina_src,sina_src
     assert "sec_blank_check_proof" in sina_src and 'sic=="6770"' in sina_src,sina_src
     assert "SEC_SUBMISSIONS_SIC_6770" in sina_src,sina_src
-    assert 'NASDAQTRADER_EXPLICIT_TYPE_FILTER_V5_SEC_SPAC_PROOF_AT_MASTER' in sina_src,sina_src
-    assert '"SPAC_BLANK_CHECK"' in master_src and 'identity_ruleset_v5' in master_src,master_src
-    assert 'REPLAY_COMPLETED_EPOCH_UNDER_CURRENT_IDENTITY_POLICY_V5' in pre_mc_src,pre_mc_src
-    assert 'mf.get("identity_ruleset")!="V5_SEC_SPAC_PROOF_AT_MASTER"' in pre_mc_src,pre_mc_src
+    assert 'NASDAQTRADER_EXPLICIT_TYPE_FILTER_V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER' in sina_src,sina_src
+    assert '"SPAC_BLANK_CHECK"' in master_src and 'identity_ruleset_v6' in master_src,master_src
+    assert 'REPLAY_COMPLETED_EPOCH_UNDER_CURRENT_IDENTITY_POLICY_V6' in pre_mc_src,pre_mc_src
+    assert 'mf.get("identity_ruleset")!="V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER"' in pre_mc_src,pre_mc_src
     assert 'sec_identity_token="SEC_SPAC_PROOF:"' in sina_src,sina_src
     assert 'mf_cp.get("sec_spac_proof_binding") is not True' in sina_src,sina_src
     assert 'dm.get("sec_spac_proof_blob_sha")!=sec_blob' in sina_src,sina_src
     assert 'mcp.get("sec_spac_proof_binding") is not True' in pre_mc_src,pre_mc_src
     assert 'msec.get("blob_sha")!=(proof_blob if proof_count else None)' in pre_mc_src,pre_mc_src
+    assert 'ASOF_IDENTITY_PROOF=ROOT/"master_asof_identity_proof_20261005.json"' in sina_src,sina_src
+    assert '"POST_ASOF_LISTING"' in master_src,master_src
+    assert 'asof_identity_proof_binding' in master_src,master_src
+    assert 'apply_asof_identity_proof(names,excluded,asof_identity_proof)' in sina_src,sina_src
+    assert 'sym not in operating_overrides' in sina_src,sina_src
+    assert 'mcp.get("asof_identity_proof_binding") is not True' in pre_mc_src,pre_mc_src
+    assert 'masof.get("blob_sha")!=(asof_blob if asof_counts else None)' in pre_mc_src,pre_mc_src
 
     # Replay guard must be bound to the current C4.17 DV30 artifact and must
     # inspect the durable pointer's nested ASOF. A stale pointer can never be
@@ -272,7 +279,7 @@ def main():
         "MC_SEMANTIC_REBIND_REQUIRES_HASH_SET_COUNT",
         "CANDIDATE_LOCAL_RESEARCH_INDEPENDENT_GLOBAL_COVERAGE_FAIL_CLOSED",
         "OFFICIAL_LISTING_HISTORY_FAIL_ONLY","CUSIP_CONTINUITY_REQUIRES_CROSS_SOURCE_OVERLAP",
-        "LEGACY_LINEAGE_BRIDGE_CANNOT_BYPASS_COMPOSITE","REPLAY_GUARD_DV30_AND_NESTED_POINTER_ASOF_FAIL_CLOSED","SPAC_EXCLUDED_AT_MASTER_BEFORE_PRICE","SEC_SIC_6770_PROOF_FOR_SCREENER_MISSING_SPAC"
+        "LEGACY_LINEAGE_BRIDGE_CANNOT_BYPASS_COMPOSITE","REPLAY_GUARD_DV30_AND_NESTED_POINTER_ASOF_FAIL_CLOSED","SPAC_EXCLUDED_AT_MASTER_BEFORE_PRICE","SEC_SIC_6770_PROOF_FOR_SCREENER_MISSING_SPAC","EXACT_ASOF_IDENTITY_ROLLBACK_AND_OPERATING_OVERRIDE"
     ]})
 
 if __name__=="__main__":
