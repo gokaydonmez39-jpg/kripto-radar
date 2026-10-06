@@ -619,21 +619,21 @@ jobs:
             if [[ -n "$cache_changed" ]]; then
               export XRAY_STALE_BASE="$GITHUB_SHA" XRAY_STALE_LATEST="$latest" XRAY_CACHE_CHANGED="$cache_changed"
               semantic_cache_changed="$(python - <<'PY'
-import gzip,os,subprocess
-base=os.environ["XRAY_STALE_BASE"]; latest=os.environ["XRAY_STALE_LATEST"]
-paths=[x for x in os.environ.get("XRAY_CACHE_CHANGED","").splitlines() if x]
-bad=[]
-for p in paths:
-    try:
-        a=subprocess.check_output(["git","show",f"{base}:{p}"])
-        b=subprocess.check_output(["git","show",f"{latest}:{p}"])
-        if gzip.decompress(a)!=gzip.decompress(b):
-            bad.append(p)
-    except Exception:
-        # Missing, malformed, or non-gzip cache evidence is real semantic drift.
-        bad.append(p)
-print("\n".join(bad))
-PY
+          import gzip,os,subprocess
+          base=os.environ["XRAY_STALE_BASE"]; latest=os.environ["XRAY_STALE_LATEST"]
+          paths=[x for x in os.environ.get("XRAY_CACHE_CHANGED","").splitlines() if x]
+          bad=[]
+          for p in paths:
+              try:
+                  a=subprocess.check_output(["git","show",f"{base}:{p}"])
+                  b=subprocess.check_output(["git","show",f"{latest}:{p}"])
+                  if gzip.decompress(a)!=gzip.decompress(b):
+                      bad.append(p)
+              except Exception:
+                  # Missing, malformed, or non-gzip cache evidence is real semantic drift.
+                  bad.append(p)
+          print("\n".join(bad))
+          PY
 )"
             fi
             all_changed="$(printf '%s\n%s\n' "$changed" "$semantic_cache_changed" | sed '/^$/d' | sort -u)"
