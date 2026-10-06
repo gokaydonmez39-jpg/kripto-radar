@@ -1,0 +1,158 @@
+name: XRAY Canonical Benchmark Rebind
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/xray-canonical-benchmark-rebind.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: xray-canonical-benchmark-rebind
+  cancel-in-progress: false
+
+jobs:
+  rebind:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install zero-dollar runtime
+        run: python -m pip install --disable-pip-version-check -r nasdaq-xray/requirements-runtime.txt
+
+      - name: Compile deterministic rebind path
+        run: |
+          python -m py_compile \
+            nasdaq-xray/history_phase.py \
+            nasdaq-xray/alpha_semantics.py \
+            nasdaq-xray/deep_pre_r1_shadow.py \
+            nasdaq-xray/build_current_event_request.py
+
+      - name: Materialize exact QQQ benchmark snapshot
+        env:
+          XRAY_HISTORY_CACHE_DIR: ${{ github.workspace }}/nasdaq-xray/canonical_benchmark_cache
+          XRAY_HISTORY_HTTP_TIMEOUT_SECONDS: "20"
+          XRAY_HISTORY_PROVIDER_MAX_INFLIGHT: "3"
+        run: |
+          python - <<'PY'
+          import hashlib,sys
+          sys.path.insert(0,"nasdaq-xray")
+          import akshare as ak
+          import history_phase as hp
+          df,_=hp._call_with_retry(lambda: ak.stock_us_daily(symbol="QQQ",adjust=""))
+          hp._write_sina_cache("QQQ",df)
+          p=hp._history_cache_path("QQQ")
+          if p is None or not p.exists():
+              raise RuntimeError("QQQ_CANONICAL_CACHE_WRITE_FAILED")
+          print("XRAY_QQQ_CANONICAL_CACHE="+str(p))
+          PY
+
+      - name: Rebuild exact deep geometry against canonical QQQ snapshot
+        env:
+          XRAY_STAGE1_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_current_stage1.json
+          XRAY_DEEP_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_current_deep_geometry.json
+          XRAY_DEEP_GEOMETRY_ONLY: "1"
+          XRAY_DEEP_HISTORY_CACHE_DIR: ${{ github.workspace }}/nasdaq-xray/canonical_benchmark_cache
+          XRAY_DEEP_WORKERS: "8"
+        run: python nasdaq-xray/deep_pre_r1_shadow.py
+
+      - name: Verify QQQ snapshot binding
+        run: |
+          python - <<'PY'
+          import hashlib,json,pathlib,sys
+          import pandas as pd
+          sys.path.insert(0,"nasdaq-xray")
+          from alpha_semantics import history_fingerprint
+          root=pathlib.Path("nasdaq-xray")
+          h=hashlib.sha256(b"QQQ").hexdigest()
+          p=root/"canonical_benchmark_cache"/(h+".csv.gz")
+          d=json.load(open(root/"canonical_current_deep_geometry.json"))
+          q=pd.read_csv(p,compression="gzip")
+          fp=history_fingerprint(q,d["asof_et"])
+          if fp!=d.get("qqq_history_fingerprint"):
+              raise RuntimeError("QQQ_CANONICAL_CACHE_FINGERPRINT_MISMATCH")
+          if int(d.get("unknown_history_count",-1))!=0:
+              raise RuntimeError("DEEP_GEOMETRY_HISTORY_UNKNOWN")
+          print({"XRAY_QQQ_CANONICAL_BINDING":"PASS","fingerprint":fp,
+                 "A":d.get("a_geometry_count"),"B":d.get("b_breakout_count"),
+                 "B_armed":d.get("b_armed_count"),"D":d.get("d_geometry_rs_count")})
+          PY
+
+      - name: Rebuild exact event request
+        env:
+          XRAY_EVENT_STAGE1: ${{ github.workspace }}/nasdaq-xray/canonical_current_stage1.json
+          XRAY_EVENT_REGIME: ${{ github.workspace }}/nasdaq-xray/canonical_current_regime.json
+          XRAY_EVENT_DEEP: ${{ github.workspace }}/nasdaq-xray/canonical_current_deep_geometry.json
+          XRAY_EVENT_REQUEST_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_current_event_request.json
+        run: python nasdaq-xray/build_current_event_request.py
+
+      - name: Structural rebind gate
+        run: |
+          python - <<'PY'
+          import hashlib,json,pathlib
+          root=pathlib.Path("nasdaq-xray")
+          def blob(p):
+              b=p.read_bytes()
+              return hashlib.sha1(f"blob {len(b)}\\0".encode()+b).hexdigest()
+          s=json.load(open(root/"canonical_current_stage1.json"))
+          r=json.load(open(root/"canonical_current_regime.json"))
+          d=json.load(open(root/"canonical_current_deep_geometry.json"))
+          e=json.load(open(root/"canonical_current_event_request.json"))
+          assert s["asof_et"]==r["asof_et"]==d["asof_et"]==e["asof_et"]=="2026-10-05"
+          assert d["unknown_history_count"]==0,d.get("unknown_history")
+          assert e["status"]=="READY" and e["request_scope_complete"] is True
+          assert e["source_stage1_blob_sha"]==blob(root/"canonical_current_stage1.json")
+          assert e["source_regime_blob_sha"]==blob(root/"canonical_current_regime.json")
+          assert e["source_deep_geometry_blob_sha"]==blob(root/"canonical_current_deep_geometry.json")
+          print({"XRAY_BENCHMARK_REBIND":"PASS","weekly":e["weekly_scope_count"],
+                 "geometry":e["geometry_scope_count"],"deep_blob":e["source_deep_geometry_blob_sha"]})
+          PY
+
+      - name: Commit deterministic benchmark rebind
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "xray-dataplane-bot"
+          git config user.email "xray-dataplane-bot@users.noreply.github.com"
+          files=(
+            nasdaq-xray/canonical_benchmark_cache/e9c5d7403d908b95343d66b100aef3bf7d4c0a33fec8b152e0b02e4c68a22b61.csv.gz
+            nasdaq-xray/canonical_current_deep_geometry.json
+            nasdaq-xray/canonical_current_event_request.json
+          )
+          tmpdir="$(mktemp -d)"
+          trap 'rm -rf "$tmpdir"' EXIT
+          for p in "${files[@]}"; do
+            mkdir -p "$tmpdir/$(dirname "$p")"
+            cp "$p" "$tmpdir/$p"
+          done
+          for attempt in 1 2 3 4 5; do
+            git rebase --abort >/dev/null 2>&1 || true
+            git fetch origin main
+            git reset --hard origin/main
+            for p in "${files[@]}"; do
+              mkdir -p "$(dirname "$p")"
+              cp "$tmpdir/$p" "$p"
+            done
+            git add "${files[@]}"
+            if git diff --cached --quiet; then
+              echo "XRAY_BENCHMARK_REBIND_COMMIT=NO_CHANGE"
+              exit 0
+            fi
+            git commit -m "chore(xray): deterministic QQQ benchmark rebind [skip ci]"
+            if git push origin HEAD:main; then
+              echo "XRAY_BENCHMARK_REBIND_COMMIT=PASS"
+              exit 0
+            fi
+            sleep $((attempt*2))
+          done
+          echo "XRAY_BENCHMARK_REBIND_COMMIT=FAIL" >&2
+          exit 1
