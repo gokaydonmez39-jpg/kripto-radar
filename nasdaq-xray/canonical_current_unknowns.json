@@ -1,23 +1,23 @@
 {
   "asof_et": "2026-10-05",
   "by_reason": {
-    "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY": 3242
+    "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY": 3247
   },
   "by_status": {
-    "UNKNOWN_STATIC": 3242
+    "UNKNOWN_STATIC": 3247
   },
   "execution": "NONE",
-  "official_footer": "File Creation Time: 1006202612:11|||||||",
+  "official_footer": "File Creation Time: 1006202614:01|||||||",
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_UNKNOWN_MANIFEST_V2",
   "source_counts": {
-    "UNKNOWN_STATIC": 3242
+    "UNKNOWN_STATIC": 3247
   },
-  "source_queue_hash": "ded6d8d07631c193583077f1215b95a45bcedbcc201d5f592427247b75e5da3d",
-  "source_state_hash": "c90485f738bc24ac649235475b8a9db15e8c5d86ab4734672317f18601238e0c",
-  "source_unknown_count": 3242,
+  "source_queue_hash": "a4944046b565cddaf339e95434d9a312bb52b8533b752fdbbd667bb79057f854",
+  "source_state_hash": "b0ed9b97aac31d9aeb6b6cb9f3c1febe0310268afa4b4afc8096d22d5a9b5c42",
+  "source_unknown_count": 3247,
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 3242,
+  "unknown_count": 3247,
   "unknowns": {
     "AACG": {
       "attempts": 0,
@@ -26749,6 +26749,24 @@
       "security_name": "Intrusion Inc. - Common Stock",
       "status": "UNKNOWN_STATIC"
     },
+    "INV": {
+      "attempts": 0,
+      "discovery": {
+        "country": "United States",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "Blank Checks",
+        "screener_market_cap": 43626286.0,
+        "screener_price": 0.5156,
+        "screener_volume": 3585992.0,
+        "sector": "Finance"
+      },
+      "info": {
+        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
+        "source": "MASTER_IDENTITY_ONLY_MODE"
+      },
+      "security_name": "Innventure, Inc. - Common Stock",
+      "status": "UNKNOWN_STATIC"
+    },
     "INVA": {
       "attempts": 0,
       "discovery": {
@@ -30025,6 +30043,24 @@
       "security_name": "LENZ Therapeutics, Inc. - Common Stock",
       "status": "UNKNOWN_STATIC"
     },
+    "LESL": {
+      "attempts": 0,
+      "discovery": {
+        "country": null,
+        "discovery_reason": "OFFICIAL_SCREENER_MISSING_FORCE_QUEUE",
+        "industry": null,
+        "screener_market_cap": null,
+        "screener_price": null,
+        "screener_volume": null,
+        "sector": null
+      },
+      "info": {
+        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
+        "source": "MASTER_IDENTITY_ONLY_MODE"
+      },
+      "security_name": "Leslie's, Inc. - Common Stock",
+      "status": "UNKNOWN_STATIC"
+    },
     "LEXX": {
       "attempts": 0,
       "discovery": {
@@ -31607,24 +31643,6 @@
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
       "security_name": "lululemon athletica inc. - Common Stock",
-      "status": "UNKNOWN_STATIC"
-    },
-    "LUMN": {
-      "attempts": 0,
-      "discovery": {
-        "country": "United States",
-        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
-        "industry": "Telecommunications Equipment",
-        "screener_market_cap": 5796723170.0,
-        "screener_price": 5.62,
-        "screener_volume": 13139076.0,
-        "sector": "Telecommunications"
-      },
-      "info": {
-        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
-        "source": "MASTER_IDENTITY_ONLY_MODE"
-      },
-      "security_name": "Lumen Technologies, Inc.  - Common Stock",
       "status": "UNKNOWN_STATIC"
     },
     "LUNG": {
@@ -33587,6 +33605,24 @@
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
       "security_name": "Melco Resorts & Entertainment Limited - American Depositary Shares",
+      "status": "UNKNOWN_STATIC"
+    },
+    "MLEC": {
+      "attempts": 0,
+      "discovery": {
+        "country": "Luxembourg",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "Blank Checks",
+        "screener_market_cap": 3528933.0,
+        "screener_price": 4.86,
+        "screener_volume": 55717.0,
+        "sector": "Finance"
+      },
+      "info": {
+        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
+        "source": "MASTER_IDENTITY_ONLY_MODE"
+      },
+      "security_name": "Moolec Science SA - Ordinary Shares",
       "status": "UNKNOWN_STATIC"
     },
     "MLGO": {
@@ -41941,6 +41977,24 @@
       "security_name": "Perdoceo Education Corporation - Common Stock",
       "status": "UNKNOWN_STATIC"
     },
+    "PRE": {
+      "attempts": 0,
+      "discovery": {
+        "country": "Hong Kong",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "Blank Checks",
+        "screener_market_cap": 355014611.0,
+        "screener_price": 20.96,
+        "screener_volume": 156398.0,
+        "sector": "Finance"
+      },
+      "info": {
+        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
+        "source": "MASTER_IDENTITY_ONLY_MODE"
+      },
+      "security_name": "Prenetics Global Limited - Class A Ordinary Share",
+      "status": "UNKNOWN_STATIC"
+    },
     "PRFX": {
       "attempts": 0,
       "discovery": {
@@ -42317,6 +42371,24 @@
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
       "security_name": "Power Solutions International, Inc. - Common Stock",
+      "status": "UNKNOWN_STATIC"
+    },
+    "PSKY": {
+      "attempts": 0,
+      "discovery": {
+        "country": null,
+        "discovery_reason": "OFFICIAL_SCREENER_MISSING_FORCE_QUEUE",
+        "industry": null,
+        "screener_market_cap": null,
+        "screener_price": null,
+        "screener_volume": null,
+        "sector": null
+      },
+      "info": {
+        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
+        "source": "MASTER_IDENTITY_ONLY_MODE"
+      },
+      "security_name": "Paramount Skydance Corporation - Class B Common Stock",
       "status": "UNKNOWN_STATIC"
     },
     "PSMT": {
@@ -43145,6 +43217,24 @@
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
       "security_name": "Quest Resource Holding Corporation - Common Stock",
+      "status": "UNKNOWN_STATIC"
+    },
+    "QRVO": {
+      "attempts": 0,
+      "discovery": {
+        "country": null,
+        "discovery_reason": "OFFICIAL_SCREENER_MISSING_FORCE_QUEUE",
+        "industry": null,
+        "screener_market_cap": null,
+        "screener_price": null,
+        "screener_volume": null,
+        "sector": null
+      },
+      "info": {
+        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
+        "source": "MASTER_IDENTITY_ONLY_MODE"
+      },
+      "security_name": "Qorvo, Inc. - Common Stock",
       "status": "UNKNOWN_STATIC"
     },
     "QS": {
