@@ -17,7 +17,8 @@
       "SVA",
       "UCFI",
       "UCFIW",
-      "WBD"
+      "WBD",
+      "WZRD"
     ],
     "halt_guard_status": "PASS",
     "rule": "REGISTERED_RESEARCH_CANDIDATE_DELIVERY_MUST_FAIL_CLOSED_ON_ACTIVE_HALT_SECURITY_SUSPENSION_OR_UNKNOWN_OFFICIAL_SAFETY_FEED",
@@ -59,11 +60,12 @@
       "UCFIW",
       "WALD",
       "WALDW",
-      "WBD"
+      "WBD",
+      "WZRD"
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-10-06T16:30:18.387638+00:00",
+  "generated_at_utc": "2026-10-06T16:51:07.830168+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -632,7 +634,7 @@
       "url": "https://www.nasdaqtrader.com/rss.aspx?feed=systemstatus&subject=SELFHELP"
     },
     "trade_halts": {
-      "active_halt_count": 15,
+      "active_halt_count": 16,
       "active_halt_symbols": [
         "BKKT.W",
         "BLFS",
@@ -648,11 +650,57 @@
         "SVA",
         "UCFI",
         "UCFIW",
-        "WBD"
+        "WBD",
+        "WZRD"
       ],
       "active_state_rule": "EXPLICIT_EMPTY_RESUMPTION_FIELDS_ONLY",
-      "item_count": 51,
+      "item_count": 54,
       "items": [
+        {
+          "HaltDate": "10/06/2026",
+          "HaltTime": "12:49:54.200",
+          "IssueName": "Opportunistic Trader ETF",
+          "IssueSymbol": "WZRD",
+          "Market": "Non NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "M",
+          "ResumptionDate": "",
+          "ResumptionQuoteTime": "",
+          "ResumptionTradeTime": "",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/06/2026                    </td><td valign=\"top\">12:49:54.200</td><td valign=\"top\">WZRD</td><td valign=\"top\">Opportunistic Trader ETF</td><td valign=\"top\">Non NASDAQ</td><td valign=\"top\">M</td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td></tr></table>",
+          "pubDate": "Tue, 06 Oct 2026 04:00:00 GMT",
+          "title": "WZRD"
+        },
+        {
+          "HaltDate": "10/06/2026",
+          "HaltTime": "12:46:43.506",
+          "IssueName": "Future Vision II Acq Cp Units",
+          "IssueSymbol": "FVNNU",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "10/06/2026",
+          "ResumptionQuoteTime": "12:46:43",
+          "ResumptionTradeTime": "",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/06/2026                    </td><td valign=\"top\">12:46:43.506</td><td valign=\"top\">FVNNU</td><td valign=\"top\">Future Vision II Acq Cp Units</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/06/2026                    </td><td valign=\"top\">12:46:43                      </td><td valign=\"top\"></td></tr></table>",
+          "pubDate": "Tue, 06 Oct 2026 04:00:00 GMT",
+          "title": "FVNNU"
+        },
+        {
+          "HaltDate": "10/06/2026",
+          "HaltTime": "12:38:44.196",
+          "IssueName": "Opportunistic Trader ETF",
+          "IssueSymbol": "WZRD",
+          "Market": "Non NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "M",
+          "ResumptionDate": "10/06/2026",
+          "ResumptionQuoteTime": "12:49:14",
+          "ResumptionTradeTime": "12:49:14",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/06/2026                    </td><td valign=\"top\">12:38:44.196</td><td valign=\"top\">WZRD</td><td valign=\"top\">Opportunistic Trader ETF</td><td valign=\"top\">Non NASDAQ</td><td valign=\"top\">M</td><td valign=\"top\"></td><td valign=\"top\">10/06/2026                    </td><td valign=\"top\">12:49:14                      </td><td valign=\"top\">12:49:14                      </td></tr></table>",
+          "pubDate": "Tue, 06 Oct 2026 04:00:00 GMT",
+          "title": "WZRD"
+        },
         {
           "HaltDate": "10/06/2026",
           "HaltTime": "12:25:27.136",
@@ -663,8 +711,8 @@
           "ReasonCode": "LUDP",
           "ResumptionDate": "10/06/2026",
           "ResumptionQuoteTime": "12:25:27",
-          "ResumptionTradeTime": "",
-          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/06/2026                    </td><td valign=\"top\">12:25:27.136</td><td valign=\"top\">FVNNU</td><td valign=\"top\">Future Vision II Acq Cp Units</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/06/2026                    </td><td valign=\"top\">12:25:27                      </td><td valign=\"top\"></td></tr></table>",
+          "ResumptionTradeTime": "12:45:28",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/06/2026                    </td><td valign=\"top\">12:25:27.136</td><td valign=\"top\">FVNNU</td><td valign=\"top\">Future Vision II Acq Cp Units</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/06/2026                    </td><td valign=\"top\">12:25:27                      </td><td valign=\"top\">12:45:28                      </td></tr></table>",
           "pubDate": "Tue, 06 Oct 2026 04:00:00 GMT",
           "title": "FVNNU"
         },
