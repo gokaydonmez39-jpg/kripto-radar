@@ -491,6 +491,30 @@ jobs:
           XRAY_DEEP_CACHE_REQUIRED: "1"
           XRAY_DEEP_WORKERS: "8"
         run: python nasdaq-xray/deep_pre_r1_shadow.py
+      - name: Persist exact QQQ benchmark snapshot
+        if: steps.mc.outputs.ready == 'true'
+        env:
+          XRAY_QQQ_SOURCE_CACHE_DIR: ${{ runner.temp }}/xray-history-cache
+        run: |
+          python - <<'PY'
+          import hashlib,json,os,pathlib,shutil,sys
+          import pandas as pd
+          sys.path.insert(0,"nasdaq-xray")
+          from alpha_semantics import history_fingerprint
+          h=hashlib.sha256(b"QQQ").hexdigest()
+          src=pathlib.Path(os.environ["XRAY_QQQ_SOURCE_CACHE_DIR"])/(h+".csv.gz")
+          dst=pathlib.Path("nasdaq-xray/canonical_benchmark_cache")/(h+".csv.gz")
+          if not src.exists():
+              raise RuntimeError("QQQ_CANONICAL_CACHE_SOURCE_MISSING")
+          dst.parent.mkdir(parents=True,exist_ok=True)
+          shutil.copy2(src,dst)
+          d=json.load(open("nasdaq-xray/canonical_current_deep_geometry.json"))
+          q=pd.read_csv(dst,compression="gzip")
+          fp=history_fingerprint(q,d["asof_et"])
+          if fp!=d.get("qqq_history_fingerprint"):
+              raise RuntimeError("QQQ_CANONICAL_CACHE_FINGERPRINT_MISMATCH")
+          print({"XRAY_QQQ_CANONICAL_SNAPSHOT":"PASS","path":str(dst),"fingerprint":fp})
+          PY
       - name: Build dynamic event request
         if: steps.mc.outputs.ready == 'true'
         env:
@@ -595,6 +619,7 @@ jobs:
             nasdaq-xray/canonical_current_stage1.json
             nasdaq-xray/canonical_current_regime.json
             nasdaq-xray/canonical_current_deep_geometry.json
+            nasdaq-xray/canonical_benchmark_cache/e9c5d7403d908b95343d66b100aef3bf7d4c0a33fec8b152e0b02e4c68a22b61.csv.gz
             nasdaq-xray/canonical_current_event_request.json
           )
           tmpdir="$(mktemp -d)"
