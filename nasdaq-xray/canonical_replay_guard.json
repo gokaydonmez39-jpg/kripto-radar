@@ -9,90 +9,90 @@
       "status": "PRESENT"
     },
     {
-      "asof_et": "2026-10-05",
+      "asof_et": "2026-10-06",
       "path": "canonical_current_master_manifest.json",
       "schema": "XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1",
-      "sha256": "cbfddbcaa6ad46a433ac7824ebe8c52e0bdc07d3ca706f45ae4bed49945c1acf",
+      "sha256": "d399b64a97658ef70039c84bd44943f77c26af244d5a25a98d660e733a4deed4",
       "status": "PRESENT"
     },
     {
-      "asof_et": "2026-10-05",
+      "asof_et": "2026-10-06",
       "path": "canonical_current_price_dv30.json",
       "schema": "XRAY_CANONICAL_PRICE_DV30_V1",
-      "sha256": "e7debefd117f731d8e1d79300ac0c69e5be707f9567814b31d13f2dff4c0f3e7",
+      "sha256": "6301ece6a834319261f01eed5e45eb6e42ddee3da8e267fdb121fa7635050cd4",
       "status": "PRESENT"
     },
     {
-      "asof_et": "2026-10-05",
+      "asof_et": "2026-10-06",
       "path": "canonical_current_history.json",
       "schema": "XRAY_CANONICAL_HISTORY_V1",
-      "sha256": "56ca4ed52962a7fe952a519a377667486b830f22362fdc40cb98b6082f841bde",
+      "sha256": "3fa4c59ab10b8878f3dc9545dcf26949e1ed6d6e54c2645a0a5f6abffb1eaa45",
       "status": "PRESENT"
     },
     {
-      "asof_et": "2026-10-05",
+      "asof_et": "2026-10-06",
       "path": "canonical_current_legal.json",
       "schema": "XRAY_CANONICAL_LEGAL_V1",
-      "sha256": "a9b3870c1320cecc99dea05e25101206eae8dfaa7369e9f2663cb1431ffb221d",
+      "sha256": "f19a43337abef06ae3e78158636786d514fa30b62374e010cf307818dfe2b521",
       "status": "PRESENT"
     },
     {
-      "asof_et": "2026-10-05",
+      "asof_et": "2026-10-06",
       "path": "canonical_current_stage1.json",
       "schema": "XRAY_STAGE1_SHADOW_V1",
-      "sha256": "9885705bb97e73c970f080acdc6497a0ddd618533fe02d1345ffc84dd9bf6b15",
+      "sha256": "0bc9bba85e3ec803328e595fe51e1816758c0d6d8fe5d563ffc4a3c9592ddf35",
       "status": "PRESENT"
     },
     {
-      "asof_et": "2026-10-05",
+      "asof_et": "2026-10-06",
       "path": "canonical_current_regime.json",
       "schema": "XRAY_REGIME_BREADTH_SHADOW_V1",
-      "sha256": "81629033ab5a90b17bd22f970544785b71289e3e544bff56caca2e7c9850eb4d",
+      "sha256": "f54ad3bb0fde3aee993fb77c4bd98892da678659f9e2b4efc9933ae1126c4db9",
       "status": "PRESENT"
     },
     {
-      "asof_et": "2026-10-05",
+      "asof_et": "2026-10-06",
       "path": "canonical_current_deep_geometry.json",
       "schema": "XRAY_DEEP_GEOMETRY_V1",
-      "sha256": "b37c2de0839f421c8267d0b98e8e5823bbf3a71574d2184716bef5911b43c821",
+      "sha256": "497d3c30cf32afe319e9b25548fcbf6037091bb310ee1554a0f5f6beda672004",
       "status": "PRESENT"
     },
     {
-      "asof_et": "2026-10-05",
+      "asof_et": "2026-10-06",
       "path": "canonical_current_event_state.json",
       "schema": "XRAY_CANONICAL_EVENT_STATE_V1",
-      "sha256": "6364d616d2cc5da319317ab5ef65418398b54cfeb018cbf240d2ca18558f543d",
+      "sha256": "730df0a65f25ccc49ad0cf53c5ef9d29ca0e68103ba5c2540690e1bba90b11aa",
       "status": "PRESENT"
     },
     {
-      "asof_et": "2026-10-05",
+      "asof_et": "2026-10-06",
       "path": "canonical_current_final_tech.json",
       "schema": "XRAY_FINAL_TECH_SHADOW_V1",
-      "sha256": "634ab8c88d15fc8f06828196a25a4ca738614273c234e8c34de4c87497712156",
+      "sha256": "c2b325bcc3dd354999b4a7c7560af982cccf60c0fff82aa919e57c7f478e0d28",
       "status": "PRESENT"
     },
     {
-      "asof_et": "2026-10-05",
+      "asof_et": "2026-10-06",
       "path": "canonical_current_terminal.json",
       "schema": "XRAY_CANONICAL_CURRENT_TERMINAL_V1",
-      "sha256": "9c8a54ea590cbd563a4f890d79ea8447d607154dc7487c19c3377d4fd375f75b",
+      "sha256": "ffe1ae180f392e3c276b08e66750a4f4704e798b8da0aa75ded05801627bc9bb",
       "status": "PRESENT"
     },
     {
-      "asof_et": "2026-10-05",
+      "asof_et": "2026-10-06",
       "path": "chatgpt_canonical_state_v2.json",
       "schema": "XRAY_GITHUB_DURABLE_STATE_V3",
-      "sha256": "5b1225e981364a0a1c21e69b437548b881ba680b8b45e5672e7e19ea2cd30920",
+      "sha256": "43123364860a24c95d499c9f0017c77eaf65ff2b0437dbbfbf3fd5e0a189491c",
       "status": "PRESENT"
     }
   ],
   "asof_consistent": true,
   "asof_values": [
-    "2026-10-05"
+    "2026-10-06"
   ],
   "candidate_delivery_keys": [],
   "execution": "NONE",
-  "generated_at_utc": "2026-10-06T21:14:11.401759+00:00",
+  "generated_at_utc": "2026-10-06T23:06:24.469176+00:00",
   "policy_binding": {
     "dv30_exact30_bound": true,
     "legacy_dv20_forbidden": true,
