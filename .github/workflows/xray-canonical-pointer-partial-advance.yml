@@ -1,0 +1,64 @@
+name: XRAY Canonical Pointer Partial Advance
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/canonical_current_terminal.json"
+      - "nasdaq-xray/advance_canonical_pointer_partial.py"
+      - "nasdaq-xray/canonical_pointer_transition_guard.py"
+      - ".github/workflows/xray-canonical-pointer-partial-advance.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: xray-canonical-pointer-partial-advance
+  cancel-in-progress: true
+
+jobs:
+  advance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 1}
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - name: Build deterministic partial pointer transition
+        run: |
+          python -m py_compile nasdaq-xray/advance_canonical_pointer_partial.py nasdaq-xray/canonical_pointer_transition_guard.py
+          python nasdaq-xray/advance_canonical_pointer_partial.py | tee /tmp/pointer_advance
+      - name: Verify transition guard
+        run: python nasdaq-xray/canonical_pointer_transition_guard.py
+      - name: Commit pointer and immutable snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -q '"status": "NOOP_ALREADY_BOUND"' /tmp/pointer_advance; then
+            echo "XRAY_POINTER_ADVANCE=NOOP_ALREADY_BOUND"
+            exit 0
+          fi
+          snapshot="$(python - <<'PY'
+          import json
+          print(json.load(open("nasdaq-xray/chatgpt_canonical_state_v2.json"))["immutable_snapshot_path"])
+          PY
+          )"
+          git config user.name "xray-state-transition-bot"
+          git config user.email "xray-state-transition-bot@users.noreply.github.com"
+          git add nasdaq-xray/chatgpt_canonical_state_v2.json "$snapshot"
+          git diff --cached --quiet && exit 0
+          git fetch origin main
+          latest="$(git rev-parse origin/main)"
+          if [[ "$latest" != "$GITHUB_SHA" ]]; then
+            changed="$(git diff --name-only "$GITHUB_SHA" "$latest" -- nasdaq-xray/chatgpt_canonical_state_v2.json nasdaq-xray/canonical_current_terminal.json || true)"
+            if [[ -n "$changed" ]]; then
+              echo "XRAY_POINTER_ADVANCE=STALE_SOURCE_ABORT"
+              printf '%s\n' "$changed"
+              exit 1
+            fi
+            git rebase origin/main
+          fi
+          git commit -m "chore(xray): advance canonical partial pointer [skip ci]" || true
+          git push origin HEAD:main
