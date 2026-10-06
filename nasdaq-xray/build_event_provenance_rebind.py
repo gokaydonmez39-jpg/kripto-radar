@@ -67,11 +67,32 @@ def validate_bridge_scope(bridge: dict, req: dict) -> None:
     assert bridge.get("geometry_scope_count")==req.get("geometry_scope_count")
     assert bridge.get("geometry_scope_hash")==req.get("geometry_scope_hash")
     sr=bridge.get("semantic_rebind") or {}
-    assert sr.get("lifecycle_scope_hash")==req.get("lifecycle_scope_hash")
-    assert sr.get("weekly_scope_hash")==req.get("weekly_scope_hash")
-    assert sr.get("geometry_scope_hash")==req.get("geometry_scope_hash")
-    assert sr.get("no_alpha_threshold_change") is True
-    assert sr.get("no_event_semantics_change") is True
+    opr=bridge.get("official_primary_refresh") or {}
+    if opr:
+        assert opr.get("schema")=="XRAY_EVENT_OFFICIAL_PRIMARY_REFRESH_V1"
+        assert opr.get("lifecycle_scope_hash")==req.get("lifecycle_scope_hash")
+        assert opr.get("weekly_scope_hash")==req.get("weekly_scope_hash")
+        assert opr.get("geometry_scope_hash")==req.get("geometry_scope_hash")
+        assert opr.get("no_alpha_threshold_change") is True
+        assert opr.get("official_primary_only") is True
+        assert opr.get("unknown_never_pass") is True
+        resolved=set(opr.get("resolved_symbols") or [])
+        geometry=set(req.get("geometry_scope") or [])
+        assert resolved and resolved<=geometry
+        assert resolved==set(bridge.get("provider_unavailable_but_officially_resolved_symbols") or [])
+        clearance=bridge.get("official_horizon_clearance") or {}
+        status=bridge.get("event_status_by_symbol") or {}
+        for sym in resolved:
+            rec=clearance.get(sym) or {}
+            assert status.get(sym) in {"CLEAN_DISCOVERY","BLOCK_CONFIRMED_8SESSION"}
+            assert rec.get("authority") in {"ISSUER_IR_PRIMARY","SEC_PRIMARY"}
+            assert rec.get("official_source_url")
+    else:
+        assert sr.get("lifecycle_scope_hash")==req.get("lifecycle_scope_hash")
+        assert sr.get("weekly_scope_hash")==req.get("weekly_scope_hash")
+        assert sr.get("geometry_scope_hash")==req.get("geometry_scope_hash")
+        assert sr.get("no_alpha_threshold_change") is True
+        assert sr.get("no_event_semantics_change") is True
     assert list(bridge.get("past_family_c_sessions") or [])==list(req.get("past_family_c_sessions") or [])
     assert list(bridge.get("future_horizon_sessions") or [])==list(req.get("future_horizon_sessions") or [])
     rd=req.get("required_discovery") or {}
