@@ -56,9 +56,10 @@ permissions:
 
 concurrency:
   group: xray-canonical-current-final-c417
-  # Single-writer, non-preemptive: exact-bound Final runs must reach atomic commit.
-  # Redundant later triggers queue and are collapsed by binding/stale-source guards.
-  cancel-in-progress: false
+  # A newer source-code/authority push makes an older run non-committable by the
+  # stale-source guard, so cancel it immediately. Redundant schedule/workflow_run
+  # triggers remain non-preemptive so a valid exact-bound writer can finish.
+  cancel-in-progress: ${{ github.event_name == 'push' }}
 
 jobs:
   final:
