@@ -9,6 +9,9 @@ on:
     paths:
       - ".github/workflows/xray-canonical-current-final.yml"
       - "nasdaq-xray/canonical_event_bridge_*.json"
+      - "nasdaq-xray/canonical_current_deep_geometry.json"
+      - "nasdaq-xray/canonical_current_event_request.json"
+      - "nasdaq-xray/canonical_benchmark_cache/**"
       - "nasdaq-xray/build_current_event_state.py"
       - "nasdaq-xray/scheduler_kick_final.json"
       - "nasdaq-xray/scheduler_failover_contract.json"
