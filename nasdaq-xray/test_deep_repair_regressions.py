@@ -560,6 +560,8 @@ def test_candidate_legal_guard_phrase_severity():
 
 def test_workflow_race_and_pre_mc_freeze_contracts():
     final_wf=(REPO/".github/workflows/xray-canonical-current-final.yml").read_text()
+    assert "group: xray-canonical-current-final-c417" in final_wf
+    assert "cancel-in-progress: ${{ github.event_name == 'push' }}" in final_wf
     assert "Fail closed when exact event binding is unavailable" in final_wf
     assert "steps.event.outputs.ready != 'true' && steps.event.outputs.upstream_epoch_drift != 'true'" in final_wf
     assert "XRAY_FINAL_EVENT_BINDING=FAIL_CLOSED" in final_wf
