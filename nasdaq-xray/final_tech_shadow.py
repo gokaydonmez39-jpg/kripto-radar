@@ -447,6 +447,13 @@ def eval_one(sym,fam,g,df,event_status,state_cap="NORMAL",r92_eligible=True,froz
     elif hard_pass: result="PRE_G9_TECH_PASS"
     elif lifecycle=="INVALIDATED_S0": result="FAIL_INVALIDATED_S0"
     elif lifecycle in {"EXPIRED_RETEST_WINDOW","EXPIRED_HORIZON"}: result="FAIL_EXPIRED"
+    # Frozen risk/R1/RR failures are terminal for this setup. They must outrank
+    # transient lifecycle/event/regime WATCH labels because a retest, later
+    # event resolution, or regime revalidation cannot repair frozen geometry.
+    # This changes diagnosis only; it never creates a PASS.
+    elif not risk_pass: result="FAIL_RISK_GEOMETRY"
+    elif target_overlap: result="FAIL_R1_ENTRY_OVERLAP"
+    elif not rr_pass: result="FAIL_RR"
     elif not event_pass: result="WATCH_EVENT_UNKNOWN_OR_BLOCKED"
     elif regime_finalist_status=="UNKNOWN": result="WATCH_REGIME_UNKNOWN"
     elif not regime_pass: result="WATCH_REGIME_REVALIDATION_REQUIRED"
@@ -456,9 +463,6 @@ def eval_one(sym,fam,g,df,event_status,state_cap="NORMAL",r92_eligible=True,froz
     elif extension_veto: result="FAIL_EXTENSION"
     elif lifecycle=="RETEST_REQUIRED": result="WATCH_RETEST_REQUIRED"
     elif lifecycle=="RECONFIRMATION_REQUIRED": result="WATCH_RECONFIRMATION_REQUIRED"
-    elif not risk_pass: result="FAIL_RISK_GEOMETRY"
-    elif target_overlap: result="FAIL_R1_ENTRY_OVERLAP"
-    elif not rr_pass: result="FAIL_RR"
     else: result="FAIL_OTHER"
 
     return {
