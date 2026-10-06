@@ -8,7 +8,7 @@ import alpha_semantics as alpha_mod
 from alpha_semantics import (
     wilder_atr,ema_seeded,drawdown_metrics,nearest_active_resistance,
     extension_diagnostics,retest_bar,setup_id,
-    find_recent_b_trigger,mechanical_scale_breaks,
+    find_recent_b_trigger,NEW_TRIGGER_DISCOVERY_MAX_AGE,mechanical_scale_breaks,
     apply_split_events,mechanical_split_suspects,_verify_split_events_against_raw,
     family_a_pretrigger_low,trend_pullback_stage1_at
 )
@@ -31,6 +31,7 @@ def frame(n=90):
     return pd.DataFrame(rows)
 
 def main():
+    assert NEW_TRIGGER_DISCOVERY_MAX_AGE==3,NEW_TRIGGER_DISCOVERY_MAX_AGE
     # Wilder first TR is undefined; first ATR seed is after 14 valid transitions.
     d=frame(20)
     a=wilder_atr(d,14)
@@ -140,7 +141,7 @@ def main():
     t=len(bf)-3
     bf.loc[t,"open"]=100.8;bf.loc[t,"high"]=102.5;bf.loc[t,"low"]=100.7
     bf.loc[t,"close"]=102.0;bf.loc[t,"volume"]=3_000_000.0
-    b=find_recent_b_trigger(bf,3)
+    b=find_recent_b_trigger(bf,NEW_TRIGGER_DISCOVERY_MAX_AGE)
     assert b and b["breakout_confirmed"] is True and b["trigger_age_sessions"]==2,b
     # New discovery is bounded to current/prior three completed sessions.
     # A five-session-old trigger may remain live only if it was already durably
@@ -149,13 +150,13 @@ def main():
     bf5.loc[t,["open","high","low","close","volume"]]=[100.0,100.5,99.5,100.0,1_000_000.0]
     t5=len(bf5)-6
     bf5.loc[t5,["open","high","low","close","volume"]]=[100.8,102.5,100.7,102.0,3_000_000.0]
-    b5=find_recent_b_trigger(bf5,3)
+    b5=find_recent_b_trigger(bf5,NEW_TRIGGER_DISCOVERY_MAX_AGE)
     assert b5 is None,b5
     # Weekly-at-trigger eligibility participates in trigger selection.
     allowed_date=bf.date.iloc[t].date().isoformat()
-    only_allowed=find_recent_b_trigger(bf5,3,{allowed_date})
+    only_allowed=find_recent_b_trigger(bf5,NEW_TRIGGER_DISCOVERY_MAX_AGE,{allowed_date})
     assert only_allowed is None,only_allowed
-    original_allowed=find_recent_b_trigger(bf,3,{allowed_date})
+    original_allowed=find_recent_b_trigger(bf,NEW_TRIGGER_DISCOVERY_MAX_AGE,{allowed_date})
     assert original_allowed and original_allowed["trigger_age_sessions"]==2,original_allowed
     # Production deep evaluator must not suppress a recent trigger merely
     # because today's cheap Stage1 snapshot pool changed.
@@ -370,7 +371,7 @@ def main():
     wl={}
     for k,g in wdf.assign(week=wdf["date"].dt.to_period("W-FRI")).groupby("week"):
         wl[k.start_time.date().isoformat()]=g["date"].iloc[-1].date().isoformat()
-    pass_dates,wctx=recent_weekly_context(wdf,wl,3)
+    pass_dates,wctx=recent_weekly_context(wdf,wl,NEW_TRIGGER_DISCOVERY_MAX_AGE)
     fri=wdf.date.iloc[-1].date().isoformat()
     thu=wdf.date.iloc[-2].date().isoformat()
     prior_fri=wdf.date.iloc[-6].date().isoformat()
