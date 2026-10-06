@@ -117,6 +117,7 @@ jobs:
           price_integrity_ok=False
           price_semantics_ok=False
           policy_replay=False
+          identity_replay=False
           price_asof=""
           try:
               px=json.load(open("nasdaq-xray/canonical_current_price_dv30.json"))
@@ -140,6 +141,17 @@ jobs:
               price_semantics_ok=False
               price_ok=False
           policy_replay=bool(active_completed_epoch and price_integrity_ok and not price_semantics_ok)
+          try:
+              mf=json.load(open("nasdaq-xray/canonical_current_master_manifest.json"))
+              identity_replay=bool(
+                  active_completed_epoch
+                  and (
+                      mf.get("identity_ruleset")!="V4_SPAC_EXCLUDED_AT_MASTER"
+                      or mf.get("identity_authority")!="NASDAQTRADER_EXPLICIT_TYPE_FILTER_V4_SPAC_EXCLUDED_AT_MASTER"
+                  )
+              )
+          except Exception:
+              identity_replay=bool(active_completed_epoch)
           bootstrap_rebuild=bool(
               current_epoch_artifact_exists
               and price_semantics_ok
@@ -184,12 +196,13 @@ jobs:
                           pass
               except Exception:
                   bridge_refresh=False
-          build=bool(not active_completed_epoch or bootstrap_rebuild)
+          build=bool(not active_completed_epoch or bootstrap_rebuild or identity_replay)
           with open(os.environ["GITHUB_OUTPUT"],"a") as out:
               out.write(f"build={'true' if build else 'false'}\n")
               out.write(f"bootstrap_rebuild={'true' if bootstrap_rebuild else 'false'}\n")
               out.write(f"recover={'true' if recover else 'false'}\n")
               out.write(f"policy_replay={'true' if policy_replay else 'false'}\n")
+              out.write(f"identity_replay={'true' if identity_replay else 'false'}\n")
               out.write(f"coverage_repair={'true' if coverage_repair else 'false'}\n")
               out.write(f"resolver_refresh={'true' if resolver_refresh else 'false'}\n")
               out.write(f"bridge_refresh={'true' if bridge_refresh else 'false'}\n")
@@ -201,6 +214,7 @@ jobs:
               "recover":recover,
               "bootstrap_rebuild":bootstrap_rebuild,
               "policy_replay":policy_replay,
+              "identity_replay":identity_replay,
               "price_integrity_ok":price_integrity_ok,
               "price_semantics_ok":price_semantics_ok,
               "coverage_repair":coverage_repair,
@@ -218,6 +232,7 @@ jobs:
               "terminal_asof":terminal_asof,
               "phase":phase,
               "reason":(
+                  "REPLAY_COMPLETED_EPOCH_UNDER_CURRENT_IDENTITY_POLICY" if identity_replay else
                   "REBUILD_DEFERRED_DV30_BOOTSTRAP" if bootstrap_rebuild else
                   "REPLAY_COMPLETED_EPOCH_UNDER_CURRENT_PRICE_POLICY" if policy_replay else
                   "RECOVER_FROZEN_COMPLETED_EPOCH" if recover else
