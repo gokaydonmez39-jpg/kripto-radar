@@ -40,24 +40,36 @@ def fail_closed_discovery_coverage(ev,weekly,status,unresolved,future_sessions):
         rec=(unresolved or {}).get(sym) or {}
         if status.get(sym)!="UNKNOWN" or rec.get("fail_closed") is not True:
             return False,"UNAVAILABLE_SYMBOL_NOT_FAIL_CLOSED_UNKNOWN"
-        if rec.get("reason") not in {"BIGDATA_PROVIDER_CREDIT_EXHAUSTED","REQUIRED_DISCOVERY_PROVIDER_UNAVAILABLE"}:
+        if rec.get("reason") not in {
+            "BIGDATA_PROVIDER_CREDIT_EXHAUSTED",
+            "REQUIRED_DISCOVERY_PROVIDER_UNAVAILABLE",
+            "OPTIONAL_DISCOVERY_PROVIDER_UNAVAILABLE",
+            "OFFICIAL_PRIMARY_UNRESOLVED_AFTER_DIRECT_ATTEMPT",
+            "OFFICIAL_PRIMARY_NOT_FOUND",
+        }:
             return False,"UNAVAILABLE_REASON_NOT_ALLOWED"
 
     horizon=max(future_sessions or [""])
+    horizon_set=set(future_sessions or [])
     if not resolved<=weekly or resolved&unresolved_keys:
         return False,"OFFICIAL_RESOLUTION_SCOPE_INVALID"
     for sym in resolved:
         rec=clearance.get(sym) or {}
-        if status.get(sym)!="CLEAN_DISCOVERY":
-            return False,"OFFICIAL_RESOLUTION_NOT_CLEAN"
+        st=status.get(sym)
         if rec.get("authority") not in {"ISSUER_IR_PRIMARY","SEC_PRIMARY"}:
             return False,"OFFICIAL_RESOLUTION_AUTHORITY_INVALID"
         if not rec.get("official_source_url"):
             return False,"OFFICIAL_RESOLUTION_SOURCE_MISSING"
-        nxt=str(rec.get("next_event_date") or "")
-        if not horizon or not nxt or nxt<=horizon:
-            return False,"OFFICIAL_NEXT_EVENT_NOT_OUTSIDE_HORIZON"
-    return True,"PARTIAL_PROVIDER_FAIL_CLOSED_WITH_PRIMARY_CLEARANCE"
+        nxt=str(rec.get("next_event_date") or rec.get("event_date") or "")[:10]
+        if st=="CLEAN_DISCOVERY":
+            if not horizon or not nxt or nxt<=horizon:
+                return False,"OFFICIAL_NEXT_EVENT_NOT_OUTSIDE_HORIZON"
+        elif st=="BLOCK_CONFIRMED_8SESSION":
+            if not nxt or nxt not in horizon_set:
+                return False,"OFFICIAL_BLOCK_EVENT_NOT_INSIDE_HORIZON"
+        else:
+            return False,"OFFICIAL_RESOLUTION_STATUS_INVALID"
+    return True,"PARTIAL_PROVIDER_FAIL_CLOSED_WITH_DIRECT_PRIMARY_RESOLUTION"
 
 
 def main():
