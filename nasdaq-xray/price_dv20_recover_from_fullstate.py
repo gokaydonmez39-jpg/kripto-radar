@@ -565,7 +565,7 @@ def main():
       "expected20":exp20,"gate_order":["PRICE","DV20"],"thresholds":{"price":">=5","dv20":">=50000000 exact20 median"},
       "reused_terminal_count":len(queue)-len(redo),"reevaluated_count":len(redo),
       "policy_replay":FORCE_POLICY_REPLAY,"policy_replay_baseline_source":baseline_source,
-      "policy_replay_input_count":len(policy_redo),"monotonic_legacy_pass_reuse_count":obj["monotonic_legacy_pass_reuse_count"],
+      "policy_replay_input_count":len(policy_redo),
       "monotonic_legacy_pass_reuse_count":sum(1 for x in results.values() if x.get("provenance")=="PRIOR_STRICTER_PRICE_PASS_MONOTONIC_REUSE"),
       "policy_replay_symbols":sorted(policy_redo),
       "exception_bridge_meta":exception_bridge_meta,
