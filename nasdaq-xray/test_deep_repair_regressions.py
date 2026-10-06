@@ -1081,6 +1081,31 @@ def test_frozen_identity_reuse_preserves_unknown_partition_and_rejects_unproven_
     assert 'int(mf.get("unknown_count",-1))==len(identity_unknown)' in src
     assert 'sorted(mf.get("unknown_symbols") or [])==identity_unknown' in src
 
+
+def test_rallies_exact30_v2_preserves_upper_bound_fail_semantics():
+    compact={
+      "fail_price":{"LOW":4.99},
+      "fail_dv30":{
+        "EXACT":{"price":10.0,"metric":40_000_000.0,"proof":"EXACT30_MEDIAN_LT_GATE","known_session_count":30,"missing_session_count":0},
+        "UPPER":{"price":11.0,"metric":1_000_000.0,"proof":"DV30_UPPER_BOUND_LT_GATE","known_session_count":28,"missing_session_count":2},
+      },
+      "pass_price_dv30":{"PASS":{"price":20.0,"dv30":80_000_000.0,"known_session_count":30}},
+      "block_current_run":{"MISS":{"reason":"INSUFFICIENT_30_USABLE_DV30_SESSIONS_CONFIRMED","observed_usable_sessions":29}},
+      "unresolved_symbols":[],
+    }
+    req={"LOW","EXACT","UPPER","PASS","MISS"}
+    out=price_recover_mod.expand_rallies_scanner_exact30_v2(compact,req)
+    assert out["EXACT"]["proof"]=="EXACT30_MEDIAN_LT_GATE" and out["EXACT"]["known_session_count"]==30
+    assert out["UPPER"]["proof"]=="DV30_UPPER_BOUND_LT_GATE" and out["UPPER"]["known_session_count"]==28
+    assert out["UPPER"]["dv30_upper_bound"]==1_000_000.0 and "dv30" not in out["UPPER"]
+    assert out["PASS"]["decision"]=="PASS_PRICE_DV30" and out["PASS"]["known_session_count"]==30
+    bad=json.loads(json.dumps(compact)); bad["fail_dv30"]["UPPER"]["known_session_count"]=30
+    try:
+        price_recover_mod.expand_rallies_scanner_exact30_v2(bad,req)
+        raise AssertionError("upper-bound proof accepted as exact30")
+    except ValueError:
+        pass
+
 def main():
     test_r1_no_future_mutation_and_confirmation(); test_r1_pivot_boundary_is_not_overhead_but_entry_overlap_is(); test_resistance_role_change_state_machine()
     test_final_history_normalizer_preserves_ohlcv()
@@ -1106,6 +1131,7 @@ def main():
     test_terminal_lifecycle_state_contract_covers_final_persistence()
     test_resolver_metadata_only_resume_identity()
     test_resolver_bridge_bound_to_exact_pre_run_price_and_scope()
+    test_rallies_exact30_v2_preserves_upper_bound_fail_semantics()
     test_family_c_event_request_covers_boundary_amc_source_session(); test_candidate_legal_guard_phrase_severity()
     test_workflow_race_and_pre_mc_freeze_contracts()
     print({"status":"PASS","tests":["R1_NO_FUTURE_MUTATION","R1_PLUS2_CONFIRMATION_NO_LEAK","R1_PIVOT_BOUNDARY_NOT_OVERHEAD",

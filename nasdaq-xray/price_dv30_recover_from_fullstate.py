@@ -248,6 +248,81 @@ def apply_terminal_overrides(prs,overrides):
         prs[sym]=rec
     return prs
 
+def expand_rallies_scanner_exact30_v2(compact,req):
+    if not isinstance(compact,dict):
+        raise ValueError("RALLIES_V2_TYPES")
+    fp=compact.get("fail_price") or {}
+    fd=compact.get("fail_dv30") or {}
+    pm=compact.get("pass_price_dv30") or {}
+    bc=compact.get("block_current_run") or {}
+    un=compact.get("unresolved_symbols") or []
+    if not all(isinstance(x,dict) for x in [fp,fd,pm,bc]) or not isinstance(un,list):
+        raise ValueError("RALLIES_V2_TYPES")
+    groups=[set(fp),set(fd),set(pm),set(bc),set(un)]
+    vals=[fp,fd,pm,bc,un]
+    if any(len(g)!=len(v) for g,v in zip(groups,vals)):
+        raise ValueError("RALLIES_V2_DUPLICATES")
+    for i in range(len(groups)):
+        for j in range(i+1,len(groups)):
+            if groups[i]&groups[j]:
+                raise ValueError("RALLIES_V2_OVERLAP")
+    if set().union(*groups)!=set(req):
+        raise ValueError("RALLIES_V2_COVERAGE")
+    src="RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
+    out={}
+    for sym,val in fp.items():
+        px=num(val)
+        if px is None or px>=HARD_PRICE:
+            raise ValueError("RALLIES_V2_FAIL_PRICE_GATE")
+        out[sym]={"decision":"FAIL_PRICE","price":px,"source":src,"proof":"ASOF_CLOSE_LT_5","compact_terminal_proof":True}
+    for sym,val in fd.items():
+        if not isinstance(val,dict):
+            raise ValueError("RALLIES_V2_FAIL_DV30_VALUE")
+        px=num(val.get("price")); metric=num(val.get("metric")); proof=str(val.get("proof") or "")
+        n=val.get("known_session_count"); missing=val.get("missing_session_count")
+        if px is None or px<HARD_PRICE or metric is None or metric>=HARD_DV30 or not isinstance(n,int):
+            raise ValueError("RALLIES_V2_FAIL_DV30_GATE")
+        rec={"decision":"FAIL_DV30","price":px,"source":src,"proof":proof,"known_session_count":n,
+             "no_synthetic_bar":True,"compact_terminal_proof":True}
+        if proof=="EXACT30_MEDIAN_LT_GATE":
+            if n!=30 or missing not in {0,None}:
+                raise ValueError("RALLIES_V2_EXACT30_PROOF")
+            rec["dv30"]=metric; rec["missing_sessions"]=[]
+        elif proof=="DV30_UPPER_BOUND_LT_GATE":
+            if not (16<=n<30) or missing!=30-n:
+                raise ValueError("RALLIES_V2_UPPER_BOUND_PROOF")
+            rec["dv30_upper_bound"]=metric
+            rec["missing_session_count"]=missing
+        else:
+            raise ValueError("RALLIES_V2_FAIL_DV30_PROOF")
+        out[sym]=rec
+    for sym,val in pm.items():
+        if not isinstance(val,dict):
+            raise ValueError("RALLIES_V2_PASS_VALUE")
+        px=num(val.get("price")); dv=num(val.get("dv30")); n=val.get("known_session_count")
+        if px is None or px<HARD_PRICE or dv is None or dv<HARD_DV30 or n!=30:
+            raise ValueError("RALLIES_V2_PASS_GATE")
+        out[sym]={"decision":"PASS_PRICE_DV30","price":px,"dv30":dv,"known_session_count":30,
+                  "missing_sessions":[],"no_synthetic_bar":True,"source":src,
+                  "proof":"EXACT30_MEDIAN_GE_GATE","compact_terminal_proof":True}
+    allowed={
+      "INSUFFICIENT_30_USABLE_DV30_SESSIONS_CONFIRMED",
+      "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
+      "RALLIES_PRIMARY_EXACT30_INCOMPLETE_ZERO_TRADE_PLACEHOLDER_AMBIGUITY",
+      "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
+      "UNKNOWN_INTEGRITY_CONFLICT",
+    }
+    for sym,val in bc.items():
+        if not isinstance(val,dict) or val.get("reason") not in allowed:
+            raise ValueError("RALLIES_V2_BLOCK_CURRENT")
+        n=val.get("observed_usable_sessions")
+        if n is not None and (not isinstance(n,int) or n<0 or n>=30):
+            raise ValueError("RALLIES_V2_BLOCK_COUNT")
+        out[sym]={"decision":"BLOCK_CURRENT_RUN","reason":val["reason"],"observed_usable_sessions":n,
+                  "source":src,"proof":"FAIL_CLOSED_CURRENT_RUN_NONPASS",
+                  "corroboration":val.get("corroboration"),"no_synthetic_bar":True}
+    return out
+
 def load_exception_bridge(asof,queue_hash):
     paths=sorted(ROOT.glob(f"canonical_resolver_bridge_{asof.replace('-','')}*.json"))
     matches=[]
@@ -298,10 +373,13 @@ def load_exception_bridge(asof,queue_hash):
         compact=obj.get("price_resolution_compact")
         encoding=obj.get("result_encoding")
         if compact is not None:
-            if encoding not in {"ALPACA_SIP_COMPACT_V1","ALPACA_SIP_COMPACT_V2","ALPACA_SIP_RALLIES_COMPACT_V3","RALLIES_SCANNER_EXACT30_V1"} or not isinstance(compact,dict):
+            if encoding not in {"ALPACA_SIP_COMPACT_V1","ALPACA_SIP_COMPACT_V2","ALPACA_SIP_RALLIES_COMPACT_V3","RALLIES_SCANNER_EXACT30_V1","RALLIES_SCANNER_EXACT30_V2"} or not isinstance(compact,dict):
                 raise ValueError("COMPACT_ENCODING")
-            src="RALLIES_CANDLESTICK_SCANNER_EXACT30_PRIMARY" if encoding=="RALLIES_SCANNER_EXACT30_V1" else "ALPACA_HISTORICAL_SIP_DAILY_BATCH_NON_G9"
-            if encoding=="RALLIES_SCANNER_EXACT30_V1":
+            src="RALLIES_CANDLESTICK_SCANNER_EXACT30_PRIMARY" if encoding in {"RALLIES_SCANNER_EXACT30_V1","RALLIES_SCANNER_EXACT30_V2"} else "ALPACA_HISTORICAL_SIP_DAILY_BATCH_NON_G9"
+            if encoding=="RALLIES_SCANNER_EXACT30_V2":
+                req=set(obj.get("price_unknown_symbols") or obj.get("symbols") or [])
+                prs.update(expand_rallies_scanner_exact30_v2(compact,req))
+            elif encoding=="RALLIES_SCANNER_EXACT30_V1":
                 fp=compact.get("fail_price_symbols") or []
                 fd=compact.get("fail_dv30_symbols") or []
                 ps=compact.get("pass_price_dv30_symbols") or []
