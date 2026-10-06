@@ -420,7 +420,7 @@ jobs:
           ok,mode=e.fail_closed_discovery_coverage(
               bridge,weekly,status,unresolved,
               ["2026-10-06","2026-10-15"])
-          assert ok and mode=="PARTIAL_PROVIDER_FAIL_CLOSED_WITH_PRIMARY_CLEARANCE",(ok,mode)
+          assert ok and mode=="PARTIAL_PROVIDER_FAIL_CLOSED_WITH_DIRECT_PRIMARY_RESOLUTION",(ok,mode)
           bad=dict(bridge,discovery_unavailable_symbols=["A","B"])
           ok,_=e.fail_closed_discovery_coverage(bad,weekly,status,unresolved,["2026-10-15"])
           assert not ok
