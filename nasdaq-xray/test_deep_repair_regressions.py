@@ -1069,6 +1069,18 @@ def test_price_snapshot_integrity_accepts_fail_closed_zero_pass_partial():
     bad=dict(px); bad["counts"]={"UNKNOWN":2}
     assert price_recover_mod.price_snapshot_integrity(bad,"2026-10-06") is False
 
+
+def test_frozen_identity_reuse_preserves_unknown_partition_and_rejects_unproven_spac_contract():
+    src=(REPO/"nasdaq-xray/sina_stage.py").read_text()
+    assert 'identity_unknown_symbols=list(frozen["identity_unknown_symbols"])' in src
+    assert 'identity_unknown_detail=dict(frozen["identity_unknown_detail"])' in src
+    assert '"identity_unknown_count":len(identity_unknown_symbols)' in src
+    assert '"identity_unknown_hash":sha_lines(identity_unknown_symbols)' in src
+    assert 'or unproven_spac' in src
+    assert 'frozen_partition_exact=bool(' in src
+    assert 'int(mf.get("unknown_count",-1))==len(identity_unknown)' in src
+    assert 'sorted(mf.get("unknown_symbols") or [])==identity_unknown' in src
+
 def main():
     test_r1_no_future_mutation_and_confirmation(); test_r1_pivot_boundary_is_not_overhead_but_entry_overlap_is(); test_resistance_role_change_state_machine()
     test_final_history_normalizer_preserves_ohlcv()
@@ -1084,6 +1096,7 @@ def main():
     test_final_workflow_auto_rebinds_event_provenance_and_persists_successor()
     test_resolver_bridge_authority_prefers_exact_current_lineage()
     test_post_mc_exact_source_rebind_workflow_contract()
+    test_frozen_identity_reuse_preserves_unknown_partition_and_rejects_unproven_spac_contract()
     test_candidate_local_legal_unknown_does_not_globally_suppress()
     test_candidate_legal_guard_scope_is_candidate_local()
     test_cross_session_lifecycle_scope_persists_active_only()

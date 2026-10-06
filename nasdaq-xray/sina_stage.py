@@ -605,12 +605,11 @@ def result_counts(results):
     return dict(sorted(out.items()))
 
 def canonical_frozen_identity(asof):
-    """Reuse the exact same-ASOF canonical identity snapshot for FULL_IDENTITY.
+    """Reuse only an exact same-ASOF canonical identity partition.
 
-    A live Nasdaq directory is correct for *today*, but it must not mutate a
-    previously completed ASOF universe when the next calendar day begins before
-    the next completed US RTH session. This is support-plane binding only; it
-    never creates canonical alpha authority.
+    Frozen reuse is support-plane binding only. It may preserve a proven
+    PASS+UNKNOWN identity partition, but it must never promote an unproven
+    SPAC/blank-check name into the PRICE queue.
     """
     if not FULL_IDENTITY:
         return None
@@ -622,13 +621,41 @@ def canonical_frozen_identity(asof):
         st=json.loads(sp.read_text(encoding="utf-8"))
         mf=json.loads(mp.read_text(encoding="utf-8"))
         q=list(st.get("queue") or [])
+        identity_unknown=sorted(set(st.get("identity_unknown_symbols") or []))
+        identity_unknown_detail=st.get("identity_unknown_detail") or {}
+        raw_identity_total=int(st.get("raw_identity_total",-1))
         sec_proof,sec_blob=load_sec_spac_proof(asof)
         sec_count=len(sec_proof)
         asof_proof,asof_blob=load_asof_identity_proof(asof)
+        operating_overrides=asof_proof.get("operating_overrides") or {}
         asof_counts={k:len(asof_proof.get(k) or {}) for k in ("restore_to_asof","remove_from_asof","operating_overrides")}
         dm=st.get("discovery_meta") or {}
         mf_sec=mf.get("sec_spac_proof") or {}
         mf_cp=mf.get("completion_proof") or {}
+        disc=st.get("discovery") or {}
+        names=st.get("security_names") or {}
+        unproven_spac=[]
+        for sym in q:
+            row=disc.get(sym) or {}
+            industry=str(row.get("industry") or "").strip()
+            security_name=str(names.get(sym) or "").strip()
+            suspect=(industry.lower()=="blank checks" or bool(SPAC_SUSPECT.search(security_name)))
+            if suspect and sym not in operating_overrides and sym not in sec_proof:
+                unproven_spac.append(sym)
+        frozen_partition_exact=bool(
+          len(identity_unknown)==len(set(identity_unknown))
+          and set(identity_unknown_detail)==set(identity_unknown)
+          and not (set(identity_unknown)&set(q))
+          and int(dm.get("identity_unknown_count",-1))==len(identity_unknown)
+          and dm.get("identity_unknown_hash")==sha_lines(identity_unknown)
+          and raw_identity_total==len(q)+len(identity_unknown)
+          and int(dm.get("raw_identity_total",-1))==raw_identity_total
+          and int(mf.get("unknown_count",-1))==len(identity_unknown)
+          and sorted(mf.get("unknown_symbols") or [])==identity_unknown
+          and int(mf.get("pass_count",-1))==len(q)
+          and sorted(mf.get("pass_symbols") or [])==sorted(q)
+          and all((identity_unknown_detail.get(sym) or {}).get("unknown_never_pass") is True for sym in identity_unknown)
+        )
         if (
           st.get("schema")!="XRAY_NASDAQ_SCREENER_SINA_V2"
           or st.get("identity_ruleset")!=IDENTITY_RULESET
@@ -640,7 +667,8 @@ def canonical_frozen_identity(asof):
           or mf_cp.get("identity_unknown_partition_exact") is not True
           or str(st.get("asof_et") or "")!=asof
           or str(mf.get("asof_et") or "")!=asof
-          or int(mf.get("unknown_count",-1))!=0
+          or not frozen_partition_exact
+          or unproven_spac
           or int(st.get("queue_total",-1))!=len(q)
           or int(mf.get("queue_total",-1))!=len(q)
           or len(q)!=len(set(q))
@@ -662,6 +690,9 @@ def canonical_frozen_identity(asof):
           "security_names":dict(st.get("security_names") or {}),
           "discovery":dict(st.get("discovery") or {}),
           "discovery_meta":dict(st.get("discovery_meta") or {}),
+          "identity_unknown_symbols":identity_unknown,
+          "identity_unknown_detail":dict(identity_unknown_detail),
+          "raw_identity_total":raw_identity_total,
           "official_footer":st.get("official_footer"),
           "identity_authority":st.get("identity_authority"),
           "explicit_excluded_count":int(st.get("explicit_excluded_count",0) or 0),
@@ -701,8 +732,8 @@ def main():
             queue=list(frozen["queue"])
             discovery=dict(frozen["discovery"])
             meta=dict(frozen["discovery_meta"])
-            identity_unknown_symbols=[]
-            identity_unknown_detail={}
+            identity_unknown_symbols=list(frozen["identity_unknown_symbols"])
+            identity_unknown_detail=dict(frozen["identity_unknown_detail"])
             meta.update({
               "authority":"CANONICAL_FROZEN_FULL_IDENTITY_SAME_ASOF",
               "full_identity":True,
@@ -710,9 +741,9 @@ def main():
               "frozen_manifest_path":frozen["source_manifest_path"],
               "frozen_queue_hash":frozen["queue_hash"],
               "identity_partition_policy":IDENTITY_PARTITION_POLICY,
-              "identity_unknown_count":0,
-              "identity_unknown_hash":sha_lines([]),
-              "raw_identity_total":len(queue),
+              "identity_unknown_count":len(identity_unknown_symbols),
+              "identity_unknown_hash":sha_lines(identity_unknown_symbols),
+              "raw_identity_total":int(frozen["raw_identity_total"]),
             })
             ex_serial=[]
         else:
