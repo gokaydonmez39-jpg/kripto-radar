@@ -11,6 +11,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 import pandas as pd
 import deep_pre_r1_shadow as deep
+import final_tech_shadow as ft
 
 ROOT=Path(__file__).resolve().parent
 STAGE1=ROOT/"canonical_current_stage1.json"
@@ -68,9 +69,9 @@ def eval_a52_at_trigger(df,t):
         "trigger_date":x.date.iloc[t].strftime("%Y-%m-%d"),
         "sessions_since_confirm":sessions,
         "P":p,"anchor":anchor,
-        "A_trigger":a_trigger,"A_peak":a_peak,
+        "A":a_trigger,"A_trigger":a_trigger,"A_peak":a_peak,
         "peak":peak,"pullback_min":pullback_min,
-        "depth_52":depth,"prelow_near_hl":near_hl,
+        "depth":depth,"depth_52":depth,"prelow_near_hl":near_hl,
     }
 
 def family_a52(df,eligible_trigger_dates):
@@ -138,8 +139,51 @@ def main():
         elif old_pass: bucket="c417_only"
         else: bucket="neither"
         counts[bucket]+=1
-        rows[s]={"status":"EVALUATED","history_source":src,"bucket":bucket,"c417":old,"a52":new}
 
+        upper=None
+        if new_pass:
+            frozen,ferr=ft._frozen_geometry(s,"A",new,x)
+            if ferr:
+                upper={"status":"UNKNOWN","reason":"FROZEN_GEOMETRY_"+str(ferr.get("reason"))}
+            else:
+                drow=((dp.get("results") or {}).get(s) or {})
+                base=ft.eval_one(
+                    s,"A",new,x,drow.get("event_status","UNKNOWN"),
+                    frozen=frozen,recorded_before=False,
+                    regime_finalist_status=drow.get("regime_finalist_status","UNKNOWN")
+                )
+                geo=base.get("geometry") or {}
+                rr=base.get("rr") or {}
+                inv=base.get("invalidation") or {}
+                risk_atr=geo.get("risk_atr"); risk_pct=geo.get("risk_percent")
+                lifecycle=base.get("lifecycle")
+                risk52=bool(isinstance(risk_atr,(int,float)) and isinstance(risk_pct,(int,float))
+                            and 1.0<=float(risk_atr)<=2.5 and float(risk_pct)<=0.08)
+                rr52=bool(float(rr.get("basic",float("-inf")))>=2.0 and float(rr.get("severe",float("-inf")))>=1.5)
+                entry_ready=lifecycle in {"ENTRY_BAND","RETEST_ENTRY_BAND"}
+                event_pass=drow.get("event_status")=="CLEAN_DISCOVERY"
+                regime_pass=drow.get("regime_finalist_status")=="PASS"
+                pre_score=bool(risk52 and rr52 and not base.get("target_overlap")
+                               and not base.get("extension_veto") and entry_ready
+                               and event_pass and regime_pass and not inv.get("breached"))
+                upper={
+                    "status":"EVALUATED",
+                    "lifecycle":lifecycle,
+                    "risk_atr":risk_atr,"risk_percent":risk_pct,"risk_pass_52":risk52,
+                    "rr_basic":rr.get("basic"),"rr_severe":rr.get("severe"),"rr_pass_52":rr52,
+                    "target_overlap":base.get("target_overlap"),
+                    "extension_veto":base.get("extension_veto"),
+                    "event_pass":event_pass,"regime_pass":regime_pass,
+                    "breached":inv.get("breached"),
+                    "pre_score_technical_upper_bound_52":pre_score,
+                    "note":"Not AL/PRE_G9 authority: 5.2 score, detailed legal, halt/live, G9 and ACCOUNT are not promoted by this shadow."
+                }
+        rows[s]={"status":"EVALUATED","history_source":src,"bucket":bucket,"c417":old,"a52":new,"a52_final_upper_bound":upper}
+
+    upper_bound_symbols=sorted([
+        s for s,v in rows.items()
+        if ((v.get("a52_final_upper_bound") or {}).get("pre_score_technical_upper_bound_52") is True)
+    ])
     out={
       "schema":"XRAY_POLICY_GENERATION_SHADOW_COMPARE_V1",
       "asof_et":asof,
@@ -151,10 +195,11 @@ def main():
       "counts":counts,
       "a52_only_symbols":sorted([s for s,v in rows.items() if v.get("bucket")=="a52_only"]),
       "c417_only_symbols":sorted([s for s,v in rows.items() if v.get("bucket")=="c417_only"]),
+      "a52_pre_score_technical_upper_bound_symbols":upper_bound_symbols,
       "rows":dict(sorted(rows.items())),
     }
     OUT.write_text(json.dumps(out,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
-    print(json.dumps({k:out[k] for k in ("schema","asof_et","alpha_authority","counts","a52_only_symbols","c417_only_symbols")},sort_keys=True))
+    print(json.dumps({k:out[k] for k in ("schema","asof_et","alpha_authority","counts","a52_only_symbols","c417_only_symbols","a52_pre_score_technical_upper_bound_symbols")},sort_keys=True))
 
 if __name__=="__main__":
     main()
