@@ -46,7 +46,8 @@ ok,why=evaluate_readiness(SUN,CONTRACT,sun_root_kick,sun_final_kick,sun_root,sun
 assert ok and why=="PASS",(ok,why)
 
 workflow=(Path(__file__).resolve().parent.parent/".github/workflows/nasdaq-xray-delivery.yml").read_text()
-assert 'workflow_run:' in workflow and 'workflows: ["XRAY Canonical Current Final Factory"]' in workflow
+assert 'workflow_run:' in workflow
+assert 'workflows: ["XRAY Canonical Current Final Factory", "NASDAQ SWING XRAY Autonomous Data Plane"]' in workflow
 assert "github.event.workflow_run.conclusion == 'success'" in workflow
 
 print("XRAY_DELIVERY_SCHEDULER_GUARD_SELFTEST=PASS")
