@@ -40,6 +40,7 @@ if not getattr(requests.sessions.Session.request,"_xray_bounded_timeout",False):
     requests.sessions.Session.request=_xray_bounded_session_request
 HISTORY_BRIDGE={}
 HISTORY_BRIDGE_PATH=None
+HISTORY_BRIDGE_BINDING_ROLE=None
 HISTORY_CACHE_DIR=os.getenv("XRAY_HISTORY_CACHE_DIR")
 
 def _history_cache_path(sym):
@@ -60,12 +61,41 @@ def _write_sina_cache(sym,df):
     except Exception:
         pass
 
+def _mc_partition_semantic_view(j):
+    def ss(key,*alts):
+        v=j.get(key)
+        if v is None:
+            for a in alts:
+                v=j.get(a)
+                if v is not None: break
+        return sorted(set(v or []))
+    results=j.get("results") or {}
+    return {
+      "schema":j.get("schema"),"status":j.get("status"),"task_id":j.get("task_id"),
+      "execution":j.get("execution"),"real_money":j.get("real_money"),"asof_et":j.get("asof_et"),
+      "policy_hash":j.get("policy_hash"),"policy_version":j.get("policy_version"),
+      "input_path":j.get("input_path"),"input_pass_hash":j.get("input_pass_hash"),
+      "input_count":int(j.get("input_count",-1)),
+      "primary_pass_symbols":ss("primary_pass_symbols"),
+      "primary_fail_symbols":ss("primary_fail_symbols"),
+      "fallback_watch_symbols":ss("fallback_watch_symbols"),
+      "fallback_fail_symbols":ss("fallback_fail_symbols","fallback_two_source_fail_symbols"),
+      "unknown_symbols":ss("unknown_symbols"),
+      "current_core_symbols":ss("current_core_symbols"),
+      "r92_ineligible":ss("r92_ineligible"),
+      "result_statuses":{s:(results.get(s) or {}).get("status") for s in sorted(results)},
+    }
+
+def mc_partition_semantic_equivalent(current,prior):
+    return _mc_partition_semantic_view(current)==_mc_partition_semantic_view(prior)
+
 def load_history_bridge(src,asof):
-    global HISTORY_BRIDGE_PATH
+    global HISTORY_BRIDGE_PATH,HISTORY_BRIDGE_BINDING_ROLE
     raw=os.getenv("XRAY_HISTORY_EVIDENCE_BRIDGE")
     p=Path(raw) if raw else ROOT/f"canonical_history_evidence_bridge_{asof.replace('-','')}_v1.json"
     if not p.exists():
         HISTORY_BRIDGE_PATH=None
+        HISTORY_BRIDGE_BINDING_ROLE=None
         return {}
     j=json.loads(p.read_text())
     assert j.get("schema")=="XRAY_HISTORY_EVIDENCE_BRIDGE_V1"
@@ -77,18 +107,41 @@ def load_history_bridge(src,asof):
     assert j.get("no_threshold_change") is True and j.get("no_synthetic_bars") is True
     assert (j.get("thresholds") or {}).get("daily")==HARD_DAILY
     assert (j.get("thresholds") or {}).get("weekly_completed")==HARD_WEEKLY
-    assert j.get("source_mc_path")==relpath(INPUT)
-    assert j.get("source_mc_blob_sha")==blob_sha(INPUT)
+
+    current_path=relpath(INPUT)
+    current_blob=blob_sha(INPUT)
+    exact=(j.get("source_mc_path")==current_path and j.get("source_mc_blob_sha")==current_blob)
+    prior=None
+    if exact:
+        binding_role="EXACT_CURRENT_MC"
+    else:
+        pred_rel=str(j.get("source_mc_path") or "")
+        assert pred_rel and j.get("source_mc_blob_sha")
+        pred=ROOT.parent/pred_rel
+        assert pred.exists()
+        assert blob_sha(pred)==j.get("source_mc_blob_sha")
+        prior=json.loads(pred.read_text())
+        assert mc_partition_semantic_equivalent(src,prior)
+        binding_role="SEMANTIC_REBIND_EXACT_MC_PARTITIONS"
+
     assert j.get("source_mc_policy_hash")==src.get("policy_hash")
     assert j.get("source_mc_policy_version")==src.get("policy_version")
     entries=j.get("entries") or {}
     if any((x or {}).get("outcome")=="PASS_HISTORY" for x in entries.values()):
-        assert j.get("source_price_blob_sha")==src.get("input_blob_sha")
-        assert j.get("source_price_path")==src.get("input_path")
+        if exact:
+            assert j.get("source_price_blob_sha")==src.get("input_blob_sha")
+            assert j.get("source_price_path")==src.get("input_path")
+        else:
+            assert prior is not None
+            assert j.get("source_price_blob_sha")==prior.get("input_blob_sha")
+            assert j.get("source_price_path")==prior.get("input_path")==src.get("input_path")
+            assert prior.get("input_pass_hash")==src.get("input_pass_hash")
+            assert int(prior.get("input_count",-1))==int(src.get("input_count",-2))
     assert isinstance(entries,dict)
     assert set(entries)==set(j.get("scope_symbols") or [])
     assert int((j.get("counts") or {}).get("TOTAL",-1))==len(entries)
     HISTORY_BRIDGE_PATH=relpath(p)
+    HISTORY_BRIDGE_BINDING_ROLE=binding_role
     return entries
 
 def _bridge_rallies_frame(e,asof):
@@ -744,6 +797,7 @@ def main():
                   "fallback_watch_count":len(watch),"input_count":len(syms)},
       "history_evidence_bridge_path":HISTORY_BRIDGE_PATH,
       "history_evidence_bridge_count":len(HISTORY_BRIDGE),
+      "history_evidence_bridge_binding_role":HISTORY_BRIDGE_BINDING_ROLE,
       "results":dict(sorted(results.items()))
     }
     OUT.write_text(json.dumps(obj,ensure_ascii=False,sort_keys=True,indent=2)+"\n")

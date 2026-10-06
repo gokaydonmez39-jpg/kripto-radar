@@ -8,6 +8,7 @@ import final_tech_shadow as ft
 import build_candidate_legal_guard as legal_guard_mod
 import build_current_resolver_request as resolver_req_mod
 import price_dv30_recover_from_fullstate as price_recover_mod
+import history_phase as history_mod
 import build_current_terminal as terminal_mod
 import build_current_event_request as event_req_mod
 import regime_breadth_shadow as rb
@@ -827,6 +828,60 @@ def test_terminal_lifecycle_state_contract_covers_final_persistence():
     assert "WATCH_EVENT_UNKNOWN_OR_BLOCKED" in terminal_mod.LIFECYCLE_TERMINAL_ALLOWED_STATES
 
 
+def test_history_bridge_semantic_rebind_requires_exact_mc_partitions():
+    old_root,old_input=history_mod.ROOT,history_mod.INPUT
+    old_path=history_mod.HISTORY_BRIDGE_PATH
+    old_role=getattr(history_mod,"HISTORY_BRIDGE_BINDING_ROLE",None)
+    try:
+        with tempfile.TemporaryDirectory() as td:
+            repo=Path(td); root=repo/"nasdaq-xray"; root.mkdir()
+            current={
+              "schema":"XRAY_MC_EPOCH_RESULT_V1","status":"COMMITTED","task_id":history_mod.TASK_ID,
+              "execution":"NONE","real_money":"NO-GO","asof_et":"2026-10-05",
+              "input_path":"nasdaq-xray/canonical_current_price_dv30.json",
+              "input_blob_sha":"NEW_PRICE","input_pass_hash":"H","input_count":2,
+              "policy_hash":terminal_mod.POLICY_HASH,"policy_version":"C4.17",
+              "primary_pass_symbols":["AAA"],"primary_fail_symbols":[],
+              "fallback_watch_symbols":["BBB"],"fallback_fail_symbols":[],"unknown_symbols":[],
+              "current_core_symbols":["AAA","BBB"],"r92_ineligible":["BBB"],
+              "results":{"AAA":{"status":"MC_PASS_PRIMARY"},"BBB":{"status":"MC_PASS_FALLBACK_WATCH"}},
+            }
+            prior=json.loads(json.dumps(current));prior["input_blob_sha"]="OLD_PRICE"
+            cp=root/"current.json"; pp=root/"pred.json"
+            cp.write_text(json.dumps(current)); pp.write_text(json.dumps(prior))
+            history_mod.ROOT=root;history_mod.INPUT=cp
+            bridge={
+              "schema":"XRAY_HISTORY_EVIDENCE_BRIDGE_V1","status":"READY","task_id":history_mod.TASK_ID,
+              "asof_et":"2026-10-05","execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
+              "no_threshold_change":True,"no_synthetic_bars":True,
+              "thresholds":{"daily":history_mod.HARD_DAILY,"weekly_completed":history_mod.HARD_WEEKLY},
+              "source_mc_path":"nasdaq-xray/pred.json","source_mc_blob_sha":history_mod.blob_sha(pp),
+              "source_mc_policy_hash":terminal_mod.POLICY_HASH,"source_mc_policy_version":"C4.17",
+              "source_price_path":"nasdaq-xray/canonical_current_price_dv30.json","source_price_blob_sha":"OLD_PRICE",
+              "scope_symbols":["AAA"],"counts":{"PASS_HISTORY":1,"FAIL_HISTORY":0,"TOTAL":1},
+              "entries":{"AAA":{"outcome":"PASS_HISTORY"}},
+            }
+            bp=root/"canonical_history_evidence_bridge_20261005_v1.json";bp.write_text(json.dumps(bridge))
+            got=history_mod.load_history_bridge(current,"2026-10-05")
+            assert set(got)=={"AAA"}
+            assert history_mod.HISTORY_BRIDGE_BINDING_ROLE=="SEMANTIC_REBIND_EXACT_MC_PARTITIONS"
+
+            bad=json.loads(json.dumps(prior))
+            bad["fallback_watch_symbols"]=[]
+            bad["primary_pass_symbols"]=["AAA","BBB"]
+            bad["results"]["BBB"]["status"]="MC_PASS_PRIMARY"
+            pp.write_text(json.dumps(bad))
+            bridge["source_mc_blob_sha"]=history_mod.blob_sha(pp);bp.write_text(json.dumps(bridge))
+            failed=False
+            try: history_mod.load_history_bridge(current,"2026-10-05")
+            except AssertionError: failed=True
+            assert failed
+    finally:
+        history_mod.ROOT,history_mod.INPUT=old_root,old_input
+        history_mod.HISTORY_BRIDGE_PATH=old_path
+        history_mod.HISTORY_BRIDGE_BINDING_ROLE=old_role
+
+
 def main():
     test_r1_no_future_mutation_and_confirmation(); test_r1_pivot_boundary_is_not_overhead_but_entry_overlap_is(); test_resistance_role_change_state_machine()
     test_final_history_normalizer_preserves_ohlcv()
@@ -835,6 +890,7 @@ def main():
     test_d_reclaim_cannot_use_same_bar_that_confirms_hl(); test_family_a_trigger_time_reconstruction_survives_later_structure(); test_family_a_age5_unrecorded_trigger_is_not_rediscovered(); test_family_a_final_geometry_revalidation()
     test_lifecycle_expiry_and_frozen_stability(); test_lifecycle_regime_revalidation_persists_without_pass(); test_lifecycle_persistence_roundtrip()
     test_mc_bridge_immutable_supersession()
+    test_history_bridge_semantic_rebind_requires_exact_mc_partitions()
     test_candidate_local_legal_unknown_does_not_globally_suppress()
     test_candidate_legal_guard_scope_is_candidate_local()
     test_cross_session_lifecycle_scope_persists_active_only()
@@ -848,7 +904,7 @@ def main():
     test_workflow_race_and_pre_mc_freeze_contracts()
     print({"status":"PASS","tests":["R1_NO_FUTURE_MUTATION","R1_PLUS2_CONFIRMATION_NO_LEAK","R1_PIVOT_BOUNDARY_NOT_OVERHEAD",
       "RESISTANCE_ROLE_CHANGE_STATE_MACHINE","FINAL_HISTORY_OHLCV_BINDING","REGIME_INTERVAL_BOUNDS_AND_FINALIST_GATE","CORPORATE_ACTION_NONE_VS_SCALE_BREAK_FAIL_CLOSED","D_RECLAIM_AFTER_HL_AVAILABILITY","FAMILY_A_TRIGGER_TIME_RECONSTRUCTION","FAMILY_A_AGE5_UNRECORDED_NOT_REDISCOVERED","FAMILY_A_FINAL_GEOMETRY_REVALIDATION","RETEST_WINDOW_EXPIRES_AFTER_5","MODEL_HORIZON_EXPIRES_AFTER_8",
-      "FROZEN_LEVELS_NEXT_ASOF_STABLE","LIFECYCLE_REGIME_REVALIDATION_PERSISTS","LIFECYCLE_PERSISTENCE_ROUNDTRIP","MC_BRIDGE_IMMUTABLE_SUPERSESSION",
+      "FROZEN_LEVELS_NEXT_ASOF_STABLE","LIFECYCLE_REGIME_REVALIDATION_PERSISTS","LIFECYCLE_PERSISTENCE_ROUNDTRIP","MC_BRIDGE_IMMUTABLE_SUPERSESSION","HISTORY_BRIDGE_SEMANTIC_REBIND_EXACT_MC_PARTITIONS",
       "FINAL_ALPHA_STALE_SOURCE_GUARD","PARTIAL_COVERAGE_DOES_NOT_GLOBAL_ABORT",
       "DETAILED_FINALIST_LEGAL_FAIL_CLOSED","CANDIDATE_LOCAL_LEGAL_UNKNOWN_ISOLATION","FINAL_VERIFIED_MARKET_GAP_NOT_DOUBLE_BLOCKED","DETAILED_LEGAL_GUARD_EXACT_SOURCE_BINDING","DETAILED_LEGAL_GUARD_POLICY_BINDING","DETAILED_LEGAL_GUARD_NONCIRCULAR_LIFECYCLE","CROSS_SESSION_LIFECYCLE_ACTIVE_ONLY","FAMILY_C_EVENT_REQUEST_BOUNDARY_AMC","FUTURE_LIFECYCLE_EVIDENCE_REJECTED","DETAILED_LEGAL_GUARD_LIFECYCLE_FALLBACK_PARITY","DETAILED_LEGAL_GUARD_BOILERPLATE_SEVERITY","DETAILED_LEGAL_GUARD_ANNUAL_PLUS_QUARTERLY_SCOPE","DETAILED_LEGAL_GUARD_EMPTY_SCOPE_NO_NETWORK","TERMINAL_DETAILED_LEGAL_FULL_E2E_BLOCKER","DETAILED_LEGAL_GUARD_NO_SELF_TRIGGER",
       "POST_MC_PARTIAL_COVERAGE_GATE","TERMINAL_LIFECYCLE_STATE_CONTRACT","PRE_MC_COMPLETED_ASOF_FREEZE_TRUTH_TABLE"]})
