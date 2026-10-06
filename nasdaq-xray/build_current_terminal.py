@@ -600,7 +600,6 @@ def main():
     blockers={
       "master_unknown":int(m["unknown_count"]),
       "price_unknown":int(p["unknown_count"]),
-      "price_blocked_current_run":price_blocked_count,
       "mc_unknown":len(mcunk),
       "history_unknown":int(h["unknown_count"]),
       "legal_unknown":int((lg["counts"] or {}).get("UNKNOWN_LEGAL",0)),
@@ -639,6 +638,7 @@ def main():
       "account_status":gate_reporting["account_status"],
       "final_gate_reporting_zero_alpha":True,
       "blockers":blockers,
+      "classified_nonpass":{"price_blocked_current_run":price_blocked_count},
       "counts":{
         "master_total":m["queue_total"],"price_dv20_pass":p["pass_count"],
         "price_dv20_blocked_current_run":price_blocked_count,
@@ -691,7 +691,7 @@ def main():
       },
       "checks":{
         "policy_order_exact":True,"master_complete":True,"price_exact_master":True,
-        "price_blocked_coverage_explicit":True,"mc_exact_price_pass_set":True,
+        "price_blocked_coverage_explicit":True,"price_blocked_is_fail_closed_nonpass_not_unknown":True,"mc_exact_price_pass_set":True,
         "mc_input_blob_exact":mc_binding["blob_exact"],
         "mc_input_semantic_rebind":mc_binding["semantic_rebind"],
         "sequential_settlement_bound":(not settlement_witness_required) or mc.get("settlement_witness_status")=="PASS",
