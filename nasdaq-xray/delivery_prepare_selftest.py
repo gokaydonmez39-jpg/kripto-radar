@@ -147,7 +147,7 @@ def run_case(p,expect_ok=True):
     return cp
 
 with tempfile.TemporaryDirectory() as td:
-    p=Path(td); shutil.copy2(SRC,p/"delivery_prepare.py")
+    p=Path(td)/"nasdaq-xray"; p.mkdir(); shutil.copy2(SRC,p/"delivery_prepare.py")
     a=candidate("DELIVERY|RESEARCH_AL_ADAYI|2099-01-02|AAA|B|a","AAA","B",100000000.0)
     b=candidate("DELIVERY|RESEARCH_AL_ADAYI|2099-01-02|BBB|C|b","BBB","C",120000000.0)
 

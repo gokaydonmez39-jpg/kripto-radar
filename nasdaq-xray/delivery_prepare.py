@@ -25,7 +25,6 @@ OFFICIAL_GUARD = ROOT / "canonical_official_source_guard.json"
 CURRENT_PRICE = ROOT / "canonical_current_price_dv30.json"
 CURRENT_HISTORY = ROOT / "canonical_current_history.json"
 CURRENT_POLICY_HASH = "68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4"
-TASK = "6a825366222081919a86ee6c418b1146"  # overwritten below only to make accidental use impossible
 TASK = "6a825366222081918997094d76e6ae46"
 
 def git_blob_sha(p: Path):
