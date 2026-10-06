@@ -713,7 +713,17 @@ def main():
             # state for retry identity, while a deterministic terminal FAIL
             # retires the active record entirely.
             if state=="UNKNOWN":
-                pass
+                # Preserve the last proven ACTIVE state for retry identity, but
+                # rebind the durable record to the current geometry/semantic
+                # implementation. This never promotes UNKNOWN to PASS.
+                carried=new_records[frozen["setup_id"]]
+                carried["last_asof"]=asof
+                carried["frozen_geometry"]=frozen
+                carried["source_geometry"]=g
+                carried["frozen_semantics_blobs"]=current_frozen_binding
+                carried["event_status"]=event
+                carried["state_cap"]=state_caps.get(sym,"NORMAL")
+                carried["r92_eligible"]=sym not in r92_ineligible
             else:
                 new_records.pop(frozen["setup_id"],None)
 
