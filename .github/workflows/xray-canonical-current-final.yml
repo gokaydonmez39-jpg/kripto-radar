@@ -141,6 +141,39 @@ jobs:
               p=json.load(open("nasdaq-xray/canonical_current_price_dv30.json"))
           except Exception:
               print("ready=false"); print("upstream_epoch_drift=true"); raise SystemExit
+          # Same-ASOF is insufficient after an upstream policy/source migration.
+          # Final may run only when HISTORY is bound through a zero-UNKNOWN MC
+          # bridge to the exact current DV30 pass set and current C4.17 hash.
+          try:
+              h=json.load(open("nasdaq-xray/canonical_current_history.json"))
+              mc_rel=str(h.get("source_mc_artifact") or "")
+              mc_path=pathlib.Path(mc_rel)
+              mc=json.load(open(mc_path)) if mc_rel and mc_path.exists() else {}
+              current_mc_exact=(
+                h.get("asof_et")==p.get("asof_et")
+                and h.get("source_mc_policy_hash")=="68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4"
+                and h.get("source_mc_policy_version")=="C4.17"
+                and h.get("source_mc_blob_sha")==bsha(mc_path)
+                and mc.get("schema")=="XRAY_MC_EPOCH_RESULT_V1"
+                and mc.get("status")=="COMMITTED"
+                and mc.get("asof_et")==p.get("asof_et")
+                and mc.get("policy_hash")=="68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4"
+                and mc.get("policy_version")=="C4.17"
+                and mc.get("input_path")=="nasdaq-xray/canonical_current_price_dv30.json"
+                and mc.get("input_pass_hash")==p.get("pass_hash")
+                and int(mc.get("input_count",-1))==int(p.get("pass_count",-2))
+                and int((mc.get("counts") or {}).get("MC_UNKNOWN",-1))==0
+                and set((mc.get("results") or {}).keys())==set(p.get("pass_symbols") or [])
+              )
+          except Exception:
+              current_mc_exact=False
+          if not current_mc_exact:
+              print("ready=false")
+              print("upstream_epoch_drift=true")
+              print("upstream_reason=CURRENT_DV30_MC_CHAIN_NOT_EXACT")
+              print("history_source_mc_policy_hash="+str((h if 'h' in locals() else {}).get("source_mc_policy_hash")))
+              print("current_price_pass_hash="+str(p.get("pass_hash")))
+              raise SystemExit
           req_asof=str(r.get("asof_et") or "")
           master_asof=str(m.get("asof_et") or "")
           price_asof=str(p.get("asof_et") or "")
