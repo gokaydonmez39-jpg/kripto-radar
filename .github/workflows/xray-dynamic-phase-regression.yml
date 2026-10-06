@@ -88,15 +88,18 @@ jobs:
           import build_current_resolver_request as m
           with tempfile.TemporaryDirectory() as td:
               repo=pathlib.Path(td)/"repo"; root=repo/"nasdaq-xray"; root.mkdir(parents=True)
-              bridge=root/"prior_bridge.json"
-              obj={
+              exact={
                 "schema":"XRAY_RESOLVER_EPOCH_RESULT_V1","status":"COMMITTED",
                 "task_id":m.TASK,"execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
                 "asof_et":"2026-10-02","settlement_status":"PASS","compiled_policy_version":"C4.17",
                 "settlement_symbols":["AAPL","NVDA","MSFT"]
               }
-              bridge.write_text(json.dumps(obj,sort_keys=True)+"\n")
-              b=bridge.read_bytes(); sha=hashlib.sha1(f"blob {len(b)}\0".encode()+b).hexdigest()
+              payload=json.dumps(exact,sort_keys=True)+"\n"
+              b=payload.encode(); sha=hashlib.sha1(f"blob {len(b)}\0".encode()+b).hexdigest()
+              # Pointer path has drifted, but an immutable exact-SHA archive exists.
+              current=root/"prior_bridge.json"; current.write_text(payload+"DRIFT")
+              archive=root/"pointer_evidence_archive"/(sha+".json")
+              archive.parent.mkdir(parents=True); archive.write_text(payload)
               pointer=root/"pointer.json"
               pointer.write_text(json.dumps({
                 "schema":"XRAY_GITHUB_DURABLE_STATE_V3","authority":"GITHUB_CURRENT_POINTER",
@@ -108,7 +111,9 @@ jobs:
               try:
                   m.ROOT=root;m.POINTER=pointer
                   core,path,got=m.prior_core_symbol("2026-10-02")
-                  assert (core,path,got)==("MSFT","nasdaq-xray/prior_bridge.json",sha),(core,path,got)
+                  assert core=="MSFT",(core,path,got)
+                  assert path=="nasdaq-xray/pointer_evidence_archive/"+sha+".json",(core,path,got)
+                  assert got==sha,(core,path,got)
               finally:
                   m.ROOT,m.POINTER=old_root,old_ptr
           print("POINTER_SETTLEMENT_CORE_FALLBACK=PASS")

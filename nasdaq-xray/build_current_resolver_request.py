@@ -124,9 +124,19 @@ def prior_core_symbol(pointer_asof):
         if not rel or not expected_blob:
             return None,None,None
         q=(ROOT.parent/rel).resolve()
-        if ROOT.parent.resolve() not in q.parents or not q.exists() or blob_sha(q)!=expected_blob:
+        repo_root=ROOT.parent.resolve()
+        if repo_root not in q.parents:
             return None,None,None
-        br=json.loads(q.read_text())
+        resolved_path=q
+        if not q.exists() or blob_sha(q)!=expected_blob:
+            # canonical_current-style evidence paths are mutable. The pointer
+            # remains authoritative through its immutable Git blob SHA; accept
+            # only an explicitly materialized local archive with that exact blob.
+            archive=(ROOT/"pointer_evidence_archive"/(expected_blob+".json")).resolve()
+            if repo_root not in archive.parents or not archive.exists() or blob_sha(archive)!=expected_blob:
+                return None,None,None
+            resolved_path=archive
+        br=json.loads(resolved_path.read_text())
         if not (
           br.get("schema")=="XRAY_RESOLVER_EPOCH_RESULT_V1"
           and br.get("status")=="COMMITTED"
@@ -144,7 +154,7 @@ def prior_core_symbol(pointer_asof):
         core=[x for x in syms if x not in {"AAPL","NVDA"}]
         if len(core)!=1:
             return None,None,None
-        return core[0],rel,expected_blob
+        return core[0],str(resolved_path.relative_to(ROOT.parent)).replace("\\","/"),expected_blob
     except Exception:
         return None,None,None
 
