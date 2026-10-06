@@ -216,7 +216,8 @@ def reconcile_final_result_scope(results,fresh_current_keys,registry):
     for rec in ((registry or {}).get("records") or {}).values():
         if not isinstance(rec,dict): continue
         sym=str(rec.get("symbol") or ""); fam=str(rec.get("family") or "")
-        if sym and fam: live.add(f"{sym}|{fam}")
+        if sym and fam and lifecycle_state_persists(rec.get("state")):
+            live.add(f"{sym}|{fam}")
     keep=fresh|live
     dropped=sorted(set(results)-keep)
     return {k:v for k,v in results.items() if k in keep},dropped
