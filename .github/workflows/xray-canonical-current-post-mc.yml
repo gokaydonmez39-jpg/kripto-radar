@@ -50,7 +50,18 @@ jobs:
             exit 0
           fi
           git fetch --no-tags --depth=1 origin "$before"
-          while IFS=      - uses: actions/setup-python@v5
+          git diff --name-status "$before" "$after" -- 'nasdaq-xray/canonical_mc_bridge_*.json' |
+          while read -r status path rest; do
+            [ -z "${status:-}" ] && continue
+            case "$status" in
+              A*) ;;
+              *)
+                echo "MC_AUTHORITY_ARTIFACT_MUTATION_FORBIDDEN_USE_SUCCESSOR status=$status path=$path" >&2
+                exit 1
+                ;;
+            esac
+          done
+      - uses: actions/setup-python@v5
         with: {python-version: "3.12"}
       - name: Frozen exact terminal no-op guard
         id: freeze
