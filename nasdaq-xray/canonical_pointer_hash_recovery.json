@@ -1,0 +1,59 @@
+{
+  "schema": "XRAY_POINTER_HASH_RECOVERY_AUDIT_V1",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "source_pointer": {
+    "revision": 39,
+    "blob_sha": "547460a83f4392d35daeecb253bbe606034d7d25",
+    "stored_state_hash": "545e1f05dffec5551f57dae07c2b47224a36edd120c0d48cc8efc53d0040d71a",
+    "recomputed_state_hash": "bdd5913d3563b782537f80ec93eaea2fa0f38e954211a6c03a70a3ec2ea85920",
+    "hash_valid": false
+  },
+  "verified_anchor": {
+    "revision": 21,
+    "path": "nasdaq-xray/state/REV21_b272b2b3e8dba584c72a16b16d3e6b499ba076608ef7e1fbd4abf1387ba91cb4.json",
+    "blob_sha": "bb0c8465b9a03c2ba278792bb351f108e84526e1",
+    "state_hash": "b272b2b3e8dba584c72a16b16d3e6b499ba076608ef7e1fbd4abf1387ba91cb4",
+    "hash_valid": true
+  },
+  "recovered_pointer": {
+    "revision": 40,
+    "state_hash": "3c72809b60408e967f1da5369dd01836b09daa726dc23660b374b934bbeba462",
+    "prev_state_hash": "b272b2b3e8dba584c72a16b16d3e6b499ba076608ef7e1fbd4abf1387ba91cb4",
+    "asof_et": "2026-10-05",
+    "status": "TERMINAL_PARTIAL_UNKNOWN",
+    "snapshot_path": "nasdaq-xray/state/REV40_3c72809b60408e967f1da5369dd01836b09daa726dc23660b374b934bbeba462.json",
+    "hash_valid": true
+  },
+  "terminal_binding": {
+    "path": "nasdaq-xray/canonical_current_terminal.json",
+    "blob_sha": "fc5ceda32724f97071432f3167a41225664b5319",
+    "status": "PARTIAL",
+    "terminal_result": "PARTIAL_UNKNOWN",
+    "full_end_to_end_research_pass": false,
+    "blockers": {
+      "affected_event_unknown": 0,
+      "alpha_semantic_conformance_unknown": 0,
+      "alpha_source_binding_unknown": 0,
+      "breadth_missing": 0,
+      "candidate_halt_guard_unknown": 0,
+      "deep_history_unknown": 0,
+      "detailed_legal_review_unknown": 0,
+      "family_c_history_unknown": 0,
+      "final_unknown": 0,
+      "history_unknown": 0,
+      "legal_unknown": 0,
+      "lifecycle_regime_unknown": 0,
+      "lifecycle_semantic_binding_unknown": 0,
+      "master_unknown": 0,
+      "mc_unknown": 4,
+      "price_blocked_current_run": 1,
+      "price_unknown": 0,
+      "regime_unknown": 0,
+      "stage1_unknown": 0
+    }
+  },
+  "candidate_promotion": false,
+  "result": "PASS"
+}
