@@ -42,10 +42,9 @@
   "master_unknown_symbols": [],
   "official_footer": "File Creation Time: 1006202614:01|||||||",
   "pointer_asof_et": "2026-10-02",
-  "price_blocked_count": 2,
+  "price_blocked_count": 1,
   "price_blocked_symbols": [
-    "GRAL",
-    "WQEY"
+    "GRAL"
   ],
   "price_unknown_count": 0,
   "price_unknown_detail": {
@@ -100,89 +99,10 @@
           "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_ZERO_TRADE_PLACEHOLDER_AMBIGUITY",
           "source": "RALLIES_CANDLESTICK_SCANNER_EXACT30_PRIMARY"
         },
-        "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+        "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
         "status": "BLOCK_CURRENT_RUN"
       },
       "security_name": "GRAIL, Inc. - Common Stock"
-    },
-    "WQEY": {
-      "price_result": {
-        "block_recovery_attempt": {
-          "provider_meta": {
-            "nasdaq": {
-              "rows": 0,
-              "usable": 0
-            },
-            "sina": {
-              "error": "IndexError:list index out of range"
-            },
-            "yahoo": {
-              "exchangeName": "NGM",
-              "usable": 1
-            }
-          },
-          "provider_result": {
-            "nasdaq_result": {
-              "reason": "NASDAQ_UNAVAILABLE"
-            },
-            "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-            "sina_result": {
-              "reason": "SINA_UNAVAILABLE"
-            },
-            "yahoo_result": {
-              "dv30_lower_bound": 0.0,
-              "dv30_upper_bound": null,
-              "known_session_count": 1,
-              "missing_sessions": [
-                "2026-08-24",
-                "2026-08-25",
-                "2026-08-26",
-                "2026-08-27",
-                "2026-08-28",
-                "2026-08-31",
-                "2026-09-01",
-                "2026-09-02",
-                "2026-09-03",
-                "2026-09-04",
-                "2026-09-08",
-                "2026-09-09",
-                "2026-09-10",
-                "2026-09-11",
-                "2026-09-14",
-                "2026-09-15",
-                "2026-09-16",
-                "2026-09-17",
-                "2026-09-18",
-                "2026-09-21",
-                "2026-09-22",
-                "2026-09-23",
-                "2026-09-24",
-                "2026-09-25",
-                "2026-09-28",
-                "2026-09-29",
-                "2026-09-30",
-                "2026-10-01",
-                "2026-10-02"
-              ],
-              "no_synthetic_bar": true,
-              "price": 13.399999618530273,
-              "reason": "EXACT30_INCOMPLETE_NEVER_PASS",
-              "source": "YAHOO_CHART_FREE_FAIL_ONLY"
-            }
-          },
-          "status": "UNRESOLVED"
-        },
-        "info": {
-          "corroboration": "MASSIVE_TICKER_CHANGE_2026-10-05;ALPACA_STOCK_MERGER_WKEY_TO_WQEY;RALLIES_CURRENT_TICKER_ONLY_1_SESSION",
-          "observed_usable_sessions": 1,
-          "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-          "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
-          "source": "RALLIES_CANDLESTICK_SCANNER_EXACT30_PRIMARY"
-        },
-        "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
-        "status": "BLOCK_CURRENT_RUN"
-      },
-      "security_name": "WISeQey Corp - Ordinary Shares"
     }
   },
   "price_unknown_symbols": [],
@@ -192,8 +112,8 @@
   "resolver_policy": "ALPACA_SIP_PREFERRED__RALLIES_LONGBRIDGE_DUAL_SOURCE_CONNECTOR_FAILOVER__NEVER_G9__FAIL_CLOSED__SAME_ASOF_QUEUE_BINDING",
   "schema": "XRAY_RESOLVER_EPOCH_REQUEST_V1",
   "settlement_already_proven": true,
-  "settlement_bridge_blob_sha": "4aa1a974c7991adb487218f34bb13d3ae9bce8fc",
-  "settlement_bridge_path": "nasdaq-xray/canonical_resolver_bridge_20261005_c417_dv30_v3.json",
+  "settlement_bridge_blob_sha": "5fd4bfa1b3faf625c5af117e2ca3afc015051965",
+  "settlement_bridge_path": "nasdaq-xray/canonical_resolver_bridge_20261005_c417_dv30_v4.json",
   "settlement_core_source_blob_sha": "0f39f1429c8e44dd2651c32f906d39a5cab836ef",
   "settlement_core_source_path": "nasdaq-xray/pointer_evidence_archive/0f39f1429c8e44dd2651c32f906d39a5cab836ef.json",
   "settlement_core_symbol": "MSFT",
@@ -210,18 +130,17 @@
   "source_overlay_path": "nasdaq-xray/canonical_current_resolution_overlay.json",
   "source_pointer_blob_sha": "547460a83f4392d35daeecb253bbe606034d7d25",
   "source_pointer_path": "nasdaq-xray/chatgpt_canonical_state_v2.json",
-  "source_price_blob_sha": "1b0dc34a3e84ab99e02c431b65d75291371fd9da",
+  "source_price_blob_sha": "ec88ef038f8ba1ecd00dd15752b215a48bce252f",
   "source_price_path": "nasdaq-xray/canonical_current_price_dv30.json",
   "source_state_blob_sha": "b7069ff63e8b3bf55a0a90e5fdf908f5a5e2d6bb",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
   "source_unknowns_blob_sha": "5294187339b1323b36e776bf593acd33d5fcc60c",
   "source_unknowns_path": "nasdaq-xray/canonical_current_unknowns.json",
   "status": "READY",
-  "symbol_count": 2,
-  "symbol_hash": "0a10a3443c62b0a5ea56b38fb98f89f5b81104d5e706d22bed5a01472f565892",
+  "symbol_count": 1,
+  "symbol_hash": "9735de30c8179b3e2eb328ad4ff160a5b824a7656a85048d3fa8582b2fe66a1c",
   "symbols": [
-    "GRAL",
-    "WQEY"
+    "GRAL"
   ],
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_never_pass": true

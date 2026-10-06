@@ -1,18 +1,17 @@
 {
   "asof_et": "2026-10-05",
   "block_recovery_attempted": true,
-  "block_recovery_input_count": 2,
+  "block_recovery_input_count": 1,
   "block_recovery_resolved_count": 0,
   "block_recovery_resolved_symbols": [],
-  "blocked_count": 2,
+  "blocked_count": 1,
   "blocked_symbols": [
-    "GRAL",
-    "WQEY"
+    "GRAL"
   ],
   "bridge_defer_enabled": true,
   "counts": {
-    "BLOCK_CURRENT_RUN": 2,
-    "FAIL_DV30": 1430,
+    "BLOCK_CURRENT_RUN": 1,
+    "FAIL_DV30": 1431,
     "FAIL_DV30_INSUFFICIENT_SESSIONS": 6,
     "FAIL_PRICE": 1303,
     "FAIL_PRICE_NO_ASOF_BAR": 2,
@@ -21,11 +20,11 @@
   "current_baseline_reuse": true,
   "exception_bridge_meta": {
     "input_binding_role": "EXACT_CURRENT_REQUEST_MANIFEST",
-    "path": "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261005_c417_dv30_v3.json",
+    "path": "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261005_c417_dv30_v4.json",
     "result_encoding": "EXPANDED_V1",
     "source_result_task_id": null,
     "status": "PASS",
-    "symbol_hash": "c87b75088a0c87ce1a56b9e1149bd9ed8fe5ddb779c5319358d3c08dbaf61edc",
+    "symbol_hash": "0a10a3443c62b0a5ea56b38fb98f89f5b81104d5e706d22bed5a01472f565892",
     "terminal_override_count": 0
   },
   "execution": "NONE",
@@ -580,7 +579,7 @@
   "policy_replay_symbols": [],
   "real_money": "NO-GO",
   "redo_deferred_to_bridge": true,
-  "reevaluated_count": 10,
+  "reevaluated_count": 0,
   "results": {
     "AACG": {
       "info": {
@@ -990,7 +989,7 @@
         "proof": "ALPACA_RALLIES_EXACT_MISSING_SET_MATCH",
         "source": "ALPACA_SIP_RALLIES_MASSIVE_C4_17_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "FAIL_DV30_INSUFFICIENT_SESSIONS"
     },
     "ACDC": {
@@ -1543,7 +1542,7 @@
         "proof": "ALPACA_RALLIES_EXACT_MISSING_SET_MATCH",
         "source": "ALPACA_SIP_RALLIES_MASSIVE_C4_17_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "FAIL_DV30_INSUFFICIENT_SESSIONS"
     },
     "ADSE": {
@@ -10119,7 +10118,7 @@
         "proof": "ALPACA_RALLIES_EXACT_MISSING_SET_MATCH",
         "source": "ALPACA_SIP_RALLIES_MASSIVE_C4_17_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "FAIL_DV30_INSUFFICIENT_SESSIONS"
     },
     "CHYM": {
@@ -15711,7 +15710,7 @@
         "proof": "ALPACA_RALLIES_EXACT_MISSING_SET_MATCH",
         "source": "ALPACA_SIP_RALLIES_MASSIVE_C4_17_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "FAIL_DV30_INSUFFICIENT_SESSIONS"
     },
     "ETS": {
@@ -19880,7 +19879,7 @@
         "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_ZERO_TRADE_PLACEHOLDER_AMBIGUITY",
         "source": "RALLIES_CANDLESTICK_SCANNER_EXACT30_PRIMARY"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "BLOCK_CURRENT_RUN"
     },
     "GRAN": {
@@ -33454,7 +33453,7 @@
         "proof": "ALPACA_RALLIES_EXACT_MISSING_SET_MATCH",
         "source": "ALPACA_SIP_RALLIES_MASSIVE_C4_17_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "FAIL_DV30_INSUFFICIENT_SESSIONS"
     },
     "OIM": {
@@ -37775,7 +37774,7 @@
           "RALLIES"
         ]
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "FAIL_PRICE_NO_ASOF_BAR"
     },
     "QS": {
@@ -40016,7 +40015,7 @@
         "proof": "ALPACA_RALLIES_EXACT_MISSING_SET_MATCH",
         "source": "ALPACA_SIP_RALLIES_MASSIVE_C4_17_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "FAIL_DV30_INSUFFICIENT_SESSIONS"
     },
     "RZLT": {
@@ -43756,7 +43755,7 @@
           "RALLIES"
         ]
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "FAIL_PRICE_NO_ASOF_BAR"
     },
     "SVC": {
@@ -49200,80 +49199,25 @@
       "status": "FAIL_PRICE"
     },
     "WQEY": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "error": "IndexError:list index out of range"
-          },
-          "yahoo": {
-            "exchangeName": "NGM",
-            "usable": 1
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "SINA_UNAVAILABLE"
-          },
-          "yahoo_result": {
-            "dv30_lower_bound": 0.0,
-            "dv30_upper_bound": null,
-            "known_session_count": 1,
-            "missing_sessions": [
-              "2026-08-24",
-              "2026-08-25",
-              "2026-08-26",
-              "2026-08-27",
-              "2026-08-28",
-              "2026-08-31",
-              "2026-09-01",
-              "2026-09-02",
-              "2026-09-03",
-              "2026-09-04",
-              "2026-09-08",
-              "2026-09-09",
-              "2026-09-10",
-              "2026-09-11",
-              "2026-09-14",
-              "2026-09-15",
-              "2026-09-16",
-              "2026-09-17",
-              "2026-09-18",
-              "2026-09-21",
-              "2026-09-22",
-              "2026-09-23",
-              "2026-09-24",
-              "2026-09-25",
-              "2026-09-28",
-              "2026-09-29",
-              "2026-09-30",
-              "2026-10-01",
-              "2026-10-02"
-            ],
-            "no_synthetic_bar": true,
-            "price": 13.399999618530273,
-            "reason": "EXACT30_INCOMPLETE_NEVER_PASS",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY"
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
-        "corroboration": "MASSIVE_TICKER_CHANGE_2026-10-05;ALPACA_STOCK_MERGER_WKEY_TO_WQEY;RALLIES_CURRENT_TICKER_ONLY_1_SESSION",
-        "observed_usable_sessions": 1,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
-        "source": "RALLIES_CANDLESTICK_SCANNER_EXACT30_PRIMARY"
+        "conversion_ratio": "0.5 WQEY ordinary share per 1 WKEY ADS",
+        "current_security": "WISeQey Corp Ordinary Shares",
+        "current_symbol": "WQEY",
+        "first_trade_date": "2026-10-05",
+        "nasdaq_source_url": "https://www.nasdaqtrader.com/TraderNews.aspx?id=ECA2026-712",
+        "no_synthetic_bar": true,
+        "observed_completed_sessions": 1,
+        "price": 13.4,
+        "prior_security": "WISeKey International Holding Ltd American Depositary Shares",
+        "prior_symbol": "WKEY",
+        "proof": "WQEY_ORDINARY_SHARES_COMMENCED_NASDAQ_TRADING_2026-10-05;ASOF_2026-10-05_HAS_ONLY_ONE_COMPLETED_LISTED_SESSION",
+        "rallies_asof_close": 13.4,
+        "reason": "EXACT30_INSUFFICIENT_LISTED_SESSIONS",
+        "sec_source_url": "https://www.sec.gov/Archives/edgar/data/2107968/000121390026106458/ea0307480-8k12b_wiseqey.htm",
+        "source": "NASDAQ_TRADER_ECA_2026_712_PLUS_SEC_6K_PLUS_RALLIES_EXACT_ASOF"
       },
       "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
-      "status": "BLOCK_CURRENT_RUN"
+      "status": "FAIL_DV30"
     },
     "WRAP": {
       "info": {
@@ -50919,7 +50863,7 @@
       "status": "FAIL_DV30"
     }
   },
-  "reused_terminal_count": 3237,
+  "reused_terminal_count": 3247,
   "schema": "XRAY_CANONICAL_PRICE_DV30_V1",
   "source_master_count": 3247,
   "source_master_queue_hash": "a4944046b565cddaf339e95434d9a312bb52b8533b752fdbbd667bb79057f854",
