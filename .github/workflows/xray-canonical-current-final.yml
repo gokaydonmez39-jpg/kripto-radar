@@ -495,7 +495,7 @@ jobs:
           root=pathlib.Path("nasdaq-xray")
           def bsha(p):
               b=p.read_bytes()
-              return hashlib.sha1(f"blob {len(b)}\\0".encode()+b).hexdigest()
+              return hashlib.sha1(f"blob {len(b)}\0".encode()+b).hexdigest()
           f=json.load(open("/tmp/xray_prelegal/final_prelegal.json"))
           d=root/"canonical_current_deep_full.json"
           c=root/"canonical_current_family_c.json"
@@ -506,7 +506,7 @@ jobs:
               row=(f.get("results") or {}).get(k) or {}
               assert row.get("technical_prelegal_result")=="PRE_G9_TECH_PASS",(k,row.get("technical_prelegal_result"))
               assert row.get("pre_g9_tech_pass") is False,(k,row.get("pre_g9_tech_pass"))
-          h=hashlib.sha256(("\\n".join(symbols)+"\\n").encode()).hexdigest()
+          h=hashlib.sha256(("\n".join(symbols)+"\n").encode()).hexdigest()
           out={
             "schema":"XRAY_PRELEGAL_SURVIVOR_SCOPE_V1",
             "task_id":"6a825366222081918997094d76e6ae46",

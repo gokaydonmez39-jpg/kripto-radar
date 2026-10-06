@@ -216,6 +216,18 @@ jobs:
           assert not bad,bad
           print("DYNAMIC_ASOF_STATIC_GATE=PASS")
           PY
+      - name: Assert prelegal workflow uses Git-compatible blob and scope hashes
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          t=Path(".github/workflows/xray-canonical-current-final.yml").read_text()
+          assert 'return hashlib.sha1(f"blob {len(b)}\\0".encode()+b).hexdigest()' in t
+          assert 'return hashlib.sha1(f"blob {len(b)}\\\\0".encode()+b).hexdigest()' not in t
+          assert 'h=hashlib.sha256(("\\n".join(symbols)+"\\n").encode()).hexdigest()' in t
+          assert 'h=hashlib.sha256(("\\\\n".join(symbols)+"\\\\n").encode()).hexdigest()' not in t
+          print("PRELEGAL_WORKFLOW_HASH_BINDING=PASS")
+          PY
+
       - name: Run deterministic alpha semantics regression
         run: |
           python nasdaq-xray/test_alpha_semantics.py
