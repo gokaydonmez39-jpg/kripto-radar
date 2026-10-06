@@ -1,0 +1,150 @@
+name: XRAY 5.2 Weekly WA-WB Shadow
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/xray-52-weekly-shadow.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: xray-52-weekly-shadow
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install runtime
+        run: python -m pip install --disable-pip-version-check -r nasdaq-xray/requirements-runtime.txt
+      - name: Scan 5.2 independent weekly geometry
+        env:
+          PYTHONPATH: nasdaq-xray
+        run: |
+          python - <<'PY'
+          import json, math
+          from pathlib import Path
+          from statistics import median
+          import pandas as pd
+          import stage1_shadow as st
+          import alpha_semantics as alpha
+
+          root=Path("nasdaq-xray")
+          s=json.loads((root/"canonical_current_stage1.json").read_text())
+          asof=s["asof_et"]
+          scope=sorted(s.get("weekly_pass") or [])
+          week_last=st.build_week_last(asof)
+
+          def weekly_bars(x):
+              z=x.copy()
+              z["wk"]=z["date"].dt.to_period("W-FRI").apply(lambda p:p.start_time.date().isoformat())
+              rows=[]
+              for k,g in z.groupby("wk"):
+                  expected=week_last.get(k)
+                  if not expected or expected>asof: continue
+                  if g.date.dt.date.max().isoformat()!=expected: continue
+                  rows.append({
+                      "date":pd.Timestamp(expected),
+                      "open":float(g.open.iloc[0]),"high":float(g.high.max()),
+                      "low":float(g.low.min()),"close":float(g.close.iloc[-1]),
+                      "volume":float(g.volume.sum())
+                  })
+              return pd.DataFrame(rows).sort_values("date").reset_index(drop=True)
+
+          def tr_series(w):
+              return pd.concat([(w.high-w.low).abs(),(w.high-w.close.shift(1)).abs(),
+                                (w.low-w.close.shift(1)).abs()],axis=1).max(axis=1)
+
+          def active_hl(w,t):
+              hs,ls=alpha.strict_swings(w.iloc[:t+1].reset_index(drop=True))
+              known_l=[i for i in ls if i+2<=t]
+              known_h=[i for i in hs if i+2<=t]
+              if len(known_l)<2:return None
+              hl=known_l[-1]
+              if float(w.low.iloc[hl])<=float(w.low.iloc[known_l[-2]]):return None
+              prev_h=[i for i in known_h if i<hl]
+              if not prev_h:return None
+              sh=prev_h[-1]
+              return sh,hl
+
+          def wa(w):
+              t=len(w)-1
+              if t<20:return None
+              ah=active_hl(w,t)
+              if not ah:return None
+              sh,hl=ah
+              weeks_since_confirm=t-(sh+2)
+              if not (2<=weeks_since_confirm<=6):return None
+              if t<=hl+2:return None
+              if float(w.close.iloc[t])<=float(w.high.iloc[t-1]):return None
+              atr=alpha.wilder_atr(w,14)
+              if pd.isna(atr.iloc[sh]) or pd.isna(atr.iloc[t-1]):return None
+              Apeak=float(atr.iloc[sh]); Apre=float(atr.iloc[t-1])
+              if Apeak<=0 or Apre<=0:return None
+              lo_start=sh+1
+              if lo_start>=t:return None
+              pullmin=float(w.low.iloc[lo_start:t].min())
+              depth=(float(w.high.iloc[sh])-pullmin)/Apeak
+              prox=abs(float(w.low.iloc[t-1])-float(w.low.iloc[hl]))/Apre
+              if not (0.5<=depth<=2.5 and prox<=0.5):return None
+              return {"family":"WA","trigger_week":w.date.iloc[t].date().isoformat(),
+                      "sh_week":w.date.iloc[sh].date().isoformat(),"hl_week":w.date.iloc[hl].date().isoformat(),
+                      "weeks_since_sh_confirm":weeks_since_confirm,"depth_weekly_atr":depth,
+                      "hl_proximity_weekly_atr":prox,"P":float(w.high.iloc[t-1]),
+                      "anchor":float(w.low.iloc[hl])}
+
+          def wb(w):
+              t=len(w)-1
+              if t<35:return None
+              atr=alpha.wilder_atr(w,14)
+              if pd.isna(atr.iloc[t-1]):return None
+              A=float(atr.iloc[t-1])
+              trs=tr_series(w); passing=[]
+              for n in (4,6,8,12):
+                  if t<n+13:continue
+                  base=w.iloc[t-n:t]
+                  width=(float(base.high.max())-float(base.low.min()))/A
+                  last3=float(trs.iloc[t-3:t].mean())
+                  prev10=float(trs.iloc[t-13:t-3].mean())
+                  if width<=3.0 and prev10>0 and last3<=0.8*prev10:
+                      passing.append((n,float(base.high.max()),float(base.low.min()),width))
+              if not passing:return None
+              n,P,anchor,width=max(passing,key=lambda z:z[0])
+              vals=[float(v) for v in w.volume.iloc[t-20:t] if math.isfinite(float(v)) and float(v)>=0]
+              rv=(float(w.volume.iloc[t])/median(vals)) if len(vals)==20 and median(vals)>0 else None
+              if not (float(w.close.iloc[t])>P and rv is not None and rv>=1.5):return None
+              return {"family":"WB","trigger_week":w.date.iloc[t].date().isoformat(),
+                      "window_weeks":n,"base_width_weekly_atr":width,"P":P,"anchor":anchor,"weekly_rvol20":rv}
+
+          rows={}; wa_syms=[];wb_syms=[];unknown=[]
+          for sym in scope:
+              try:
+                  x,src=st.load_history(sym,asof)
+                  if x is None or x.empty:
+                      rows[sym]={"status":"UNKNOWN_HISTORY","reason":src};unknown.append(sym);continue
+                  x=x.reset_index(drop=True)
+                  split_events=((s.get("results") or {}).get(sym) or {}).get("split_events") or []
+                  if split_events:x=alpha.apply_split_events(x,split_events).reset_index(drop=True)
+                  w=weekly_bars(x)
+                  a=wa(w);b=wb(w)
+                  if a:wa_syms.append(sym)
+                  if b:wb_syms.append(sym)
+                  rows[sym]={"status":"EVALUATED","history_source":src,"weeks":len(w),"WA":a,"WB":b}
+              except Exception as e:
+                  rows[sym]={"status":"UNKNOWN_EXCEPTION","reason":f"{type(e).__name__}:{str(e)[:180]}"};unknown.append(sym)
+
+          print("XRAY_52_WEEKLY_SHADOW="+json.dumps({
+              "asof_et":asof,"weekly_pass_scope_count":len(scope),
+              "wa_geometry_symbols":sorted(wa_syms),"wb_geometry_symbols":sorted(wb_syms),
+              "geometry_union":sorted(set(wa_syms+wb_syms)),"unknown":sorted(unknown),
+              "details":{s:rows[s] for s in sorted(set(wa_syms+wb_syms))}
+          },sort_keys=True))
+          PY
