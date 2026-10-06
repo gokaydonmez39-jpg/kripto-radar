@@ -235,7 +235,12 @@ def validate_existing_sec(path:Path,asof:str)->bool:
           and j.get("authority")=="SEC_EDGAR_SIC_6770_EXACT_ASOF"
           and j.get("applicability")=="EXACT_ASOF_ONLY_NO_FORWARD_CARRY"
           and isinstance(proofs,dict)
-          and all(isinstance(v,dict) and int(v.get("sic",-1))==6770 for v in proofs.values())
+          and all(
+            isinstance(v,dict)
+            and int(v.get("sic",-1))==6770
+            and v.get("same_asof_revalidated_without_sec_network") is not True
+            for v in proofs.values()
+          )
         )
     except Exception:
         return False
@@ -305,6 +310,7 @@ def main():
     identity_path.write_text(json.dumps(identity,ensure_ascii=False,sort_keys=False,indent=2)+"\n",encoding="utf-8")
 
     proofs={}
+    unresolved_sec_spac=[]
     for sym,old in sorted(blank_seed.items()):
         if sym not in names:
             continue
@@ -318,10 +324,10 @@ def main():
             row["same_asof_revalidated_without_sec_network"]=False
             proofs[sym]=row
             continue
-        fallback=prior_blank_fallback(sym,old,asof,names,industries)
-        if fallback is None:
-            raise RuntimeError("SEC_SPAC_REVALIDATION_FAILED:"+sym)
-        proofs[sym]=fallback
+        # Exact-ASOF SEC proof was not re-established. Do not forward-carry
+        # prior SIC 6770 exclusion. The symbol returns to the master queue and
+        # remains subject to downstream fail-closed legal/market gates.
+        unresolved_sec_spac.append(sym)
     if proofs:
         sec={
           "schema":"XRAY_MASTER_SEC_SPAC_PROOF_V1",
@@ -346,6 +352,7 @@ def main():
       "operating_override_count":len(operating),
       "sec_path":sec_path.name if proofs else None,
       "sec_spac_count":len(proofs),
+      "sec_spac_unresolved_reentered_queue":sorted(unresolved_sec_spac),
       "forward_carry":False,
       "sec_network_error":sec_network_error,
       "same_asof_nasdaq_screener_fallback_used":bool(sec_network_error),

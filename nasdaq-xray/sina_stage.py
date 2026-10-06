@@ -112,6 +112,7 @@ def load_sec_spac_proof(asof):
           or not str(row.get("source_url") or "").startswith("https://www.sec.gov/")
           or not re.fullmatch(r"20[0-9]{2}-[0-9]{2}-[0-9]{2}",str(row.get("evidence_date") or ""))
           or str(row.get("evidence_date"))>asof
+          or row.get("same_asof_revalidated_without_sec_network") is True
         ):
             raise RuntimeError("SEC_SPAC_PROOF_ROW_INVALID:"+sym)
         out[sym]=row
@@ -328,25 +329,9 @@ def build_discovery(official,force_all=False,sec_spac_proof=None,operating_overr
             }
             continue
         industry=str(r.get("industry") or "").strip()
-        if industry.lower()=="blank checks" and sym not in operating_overrides:
-            screener_excluded[sym]={
-              "reason":"SPAC_BLANK_CHECK",
-              "security_name":official.get(sym) or str(r.get("name") or "").strip(),
-              "industry":industry,
-              "source":"NASDAQ_OFFICIAL_WEB_SCREENER",
-            }
-            continue
-        if not industry and SPAC_SUSPECT.search(official.get(sym) or ""):
-            proof=sec_blank_check_proof(sym)
-            if proof:
-                screener_excluded[sym]={
-                  "reason":"SPAC_BLANK_CHECK",
-                  "security_name":official.get(sym) or str(r.get("name") or "").strip(),
-                  "industry":"SEC_SIC_6770_BLANK_CHECKS",
-                  "source":"SEC_SUBMISSIONS_SIC_6770",
-                  "proof":proof,
-                }
-                continue
+        # Nasdaq screener blank-check classification is diagnostic only.
+        # Exclusion authority is the exact-ASOF SEC proof artifact above.
+        # Suspect names without exact-ASOF proof remain queued fail-closed.
         px=num(r.get("lastsale"))
         mc=num(r.get("marketCap"))
         vol=num(r.get("volume"))
@@ -400,17 +385,7 @@ def build_discovery(official,force_all=False,sec_spac_proof=None,operating_overr
         # Official-directory identity exists but the web screener omitted it.
         # For a SPAC-suspect name, SEC SIC 6770 is exclusion-only proof.
         # If SEC is unavailable/ambiguous, fail closed by keeping it queued.
-        if SPAC_SUSPECT.search(official.get(sym) or ""):
-            proof=sec_blank_check_proof(sym)
-            if proof:
-                screener_excluded[sym]={
-                  "reason":"SPAC_BLANK_CHECK",
-                  "security_name":official.get(sym) or "",
-                  "industry":"SEC_SIC_6770_BLANK_CHECKS",
-                  "source":"SEC_SUBMISSIONS_SIC_6770",
-                  "proof":proof,
-                }
-                continue
+        # Suspect names without exact-ASOF proof remain queued fail-closed.
         # Otherwise force it into downstream PRICE/DV30/HISTORY; MC remains
         # UNKNOWN unless a later authoritative resolver proves it.
         prefilter[sym]={
