@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import csv
+import html
 import io
 import json
 import os
@@ -182,10 +183,50 @@ def latest_filing_date(sub:dict,asof:str):
     dates=[str(x) for x in (recent.get("filingDate") or []) if str(x)<=asof and re.fullmatch(r"20\d{2}-\d{2}-\d{2}",str(x))]
     return max(dates) if dates else None
 
-def sec_current_row(sym:str,asof:str,cik:int|None,want_blank:bool):
+def sec_entity_landing_row(sym:str,asof:str,cik:int|None,want_blank:bool,prior_evidence_date:str|None):
     if cik is None:
         return None
-    sub=load_json_url(f"{SEC_SUBMISSIONS}/CIK{cik:010d}.json")
+    evidence=str(prior_evidence_date or "")
+    if not re.fullmatch(r"20\d{2}-\d{2}-\d{2}",evidence) or evidence>asof:
+        return None
+    url=f"https://www.sec.gov/edgar/browse/?CIK={int(cik)}&owner=exclude"
+    raw=request_bytes(url,SEC_UA,35).decode("utf-8","ignore")
+    text=html.unescape(re.sub(r"<[^>]+>"," ",raw))
+    text=re.sub(r"\s+"," ",text)
+    upper=text.upper()
+    if f"{int(cik):010d}" not in text and str(int(cik)) not in text:
+        return None
+    if re.search(rf"(?<![A-Z0-9]){re.escape(str(sym).upper())}(?![A-Z0-9])",upper) is None:
+        return None
+    m=re.search(r"SIC\s*:\s*(?:\([^)]*\)\s*)?(\d{4})\s*[-–]?\s*([^<]{0,80})",text,re.I)
+    if m:
+        sic=int(m.group(1))
+        desc=m.group(2).strip()
+    else:
+        sic=6770 if re.search(r"6770\s*[-–]\s*Blank Checks",text,re.I) else -1
+        desc="Blank Checks" if sic==6770 else ""
+    is_blank=(sic==6770 or desc.lower().startswith("blank checks"))
+    if bool(want_blank)!=bool(is_blank):
+        return None
+    return {
+      "cik":f"{int(cik):010d}",
+      "sic":sic,
+      "classification":"Blank Checks" if want_blank else desc,
+      "source_url":url,
+      "evidence_date":evidence,
+      "same_asof_revalidated_without_sec_network":False,
+      "same_asof_sec_entity_landing_revalidated":True,
+      "revalidation_transport":"SEC_EDGAR_ENTITY_LANDING",
+      "revalidation_asof_et":asof,
+    }
+
+def sec_current_row(sym:str,asof:str,cik:int|None,want_blank:bool,prior_evidence_date:str|None=None):
+    if cik is None:
+        return None
+    try:
+        sub=load_json_url(f"{SEC_SUBMISSIONS}/CIK{cik:010d}.json")
+    except Exception:
+        return sec_entity_landing_row(sym,asof,cik,want_blank,prior_evidence_date)
     tickers=[str(x).strip().upper() for x in (sub.get("tickers") or [])]
     if sym not in tickers:
         return None
@@ -274,7 +315,7 @@ def main():
             continue
         cik=cik_from_prior_row(old)
         try:
-            row=sec_current_row(sym,asof,cik,False)
+            row=sec_current_row(sym,asof,cik,False,str((old or {}).get("evidence_date") or ""))
         except Exception as e:
             row=None
             sec_network_error=f"{type(e).__name__}:{str(e)[:200]}"
@@ -316,7 +357,7 @@ def main():
             continue
         cik=cik_from_prior_row(old)
         try:
-            row=sec_current_row(sym,asof,cik,True)
+            row=sec_current_row(sym,asof,cik,True,str((old or {}).get("evidence_date") or ""))
         except Exception as e:
             row=None
             sec_network_error=sec_network_error or f"{type(e).__name__}:{str(e)[:200]}"

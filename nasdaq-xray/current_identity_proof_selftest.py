@@ -27,6 +27,23 @@ def main():
     stale=dict(fjdi_old); stale["evidence_date"]="2026-01-01"
     assert m.prior_blank_fallback("FJDI",stale,"2026-10-06",fjdi_names,{"FJDI":""}) is None
     assert m.prior_blank_fallback("XYZ",fjdi_old,"2026-10-06",{"XYZ":"Ordinary Operating Company"},{"XYZ":""}) is None
+    original=m.request_bytes
+    try:
+        fake=b"""<html><body>
+        <h1>Churchill Capital Corp XIII XIII, XIIIU, XIIIW on Nasdaq</h1>
+        <div>CIK: (Central Index Key) 0002114229</div>
+        <div>SIC: (Standard Industrial Classification) 6770 - Blank Checks</div>
+        </body></html>"""
+        m.request_bytes=lambda url,user_agent,timeout=45: fake
+        row=m.sec_entity_landing_row("XIII","2026-10-06",2114229,True,"2026-09-16")
+        assert row and row["sic"]==6770 and row["classification"]=="Blank Checks"
+        assert row["same_asof_sec_entity_landing_revalidated"] is True
+        assert row["evidence_date"]=="2026-09-16"
+        assert m.sec_entity_landing_row("WRONG","2026-10-06",2114229,True,"2026-09-16") is None
+        assert m.sec_entity_landing_row("XIII","2026-10-06",2114229,False,"2026-09-16") is None
+        assert m.sec_entity_landing_row("XIII","2026-10-06",2114229,True,"2026-10-07") is None
+    finally:
+        m.request_bytes=original
     print("XRAY_CURRENT_IDENTITY_PROOF_SELFTEST=PASS")
 
 if __name__=="__main__":
