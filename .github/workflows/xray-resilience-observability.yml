@@ -23,6 +23,7 @@ on:
       - "nasdaq-xray/deterministic_replay_guard.py"
       - "nasdaq-xray/canonical_pointer_transition_guard.py"
       - "nasdaq-xray/guardian_anomaly.py"
+      - "nasdaq-xray/guardian_anomaly_selftest.py"
       - "nasdaq-xray/free_core_migration_contract.json"
       - "nasdaq-xray/gem_integration_registry.json"
       - "nasdaq-xray/gem_registry_selftest.py"
@@ -75,6 +76,7 @@ jobs:
             nasdaq-xray/deterministic_replay_guard.py \
           nasdaq-xray/canonical_pointer_transition_guard.py \
             nasdaq-xray/guardian_anomaly.py \
+            nasdaq-xray/guardian_anomaly_selftest.py \
             nasdaq-xray/gem_registry_selftest.py \
             nasdaq-xray/provider_automation_governance_selftest.py \
             nasdaq-xray/scheduler_failover_selftest.py
@@ -126,6 +128,9 @@ jobs:
 
       - name: Canonical pointer transition guard
         run: python nasdaq-xray/canonical_pointer_transition_guard.py
+
+      - name: Guardian identity-partition self-test
+        run: python nasdaq-xray/guardian_anomaly_selftest.py
 
       - name: Guardian anomaly layer
         run: python nasdaq-xray/guardian_anomaly.py
