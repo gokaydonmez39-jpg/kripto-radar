@@ -193,14 +193,16 @@ def lifecycle_state_persists(state):
     return str(state or "") in LIFECYCLE_PERSIST_STATES
 
 def detailed_legal_required_for_technical_state(state):
-    """Detailed SEC review is required only for technically live candidate states.
+    """Detailed SEC review is a promotion gate for an actual PRE_G9 candidate.
 
-    A terminal technical FAIL needs no legal waiver to remain FAIL. Technical
-    UNKNOWN likewise remains UNKNOWN on its own evidence. This function can
-    never create PASS; PRE_G9/WATCH states still require exact legal PASS.
+    WATCH/FAIL/UNKNOWN are already non-pass technical states and cannot reach
+    R92 or delivery. Requiring SEC review for those rows would let an unrelated
+    provider outage convert a deterministic technical non-pass into UNKNOWN and
+    falsely block a valid NO_CONFIRMED_SETUP conclusion. If a WATCH later
+    resolves to PRE_G9_TECH_PASS, the same-run detailed legal guard becomes
+    mandatory before it can remain PRE_G9. This never creates PASS.
     """
-    s=str(state or "")
-    return s=="PRE_G9_TECH_PASS" or s.startswith("WATCH_")
+    return str(state or "")=="PRE_G9_TECH_PASS"
 
 def reconcile_final_result_scope(results,fresh_current_keys,registry):
     """Keep only current fresh finalists or still-live lifecycle carries.
@@ -752,6 +754,16 @@ def main():
     )
 
     passes=[k for k,v in results.items() if v.get("pre_g9_tech_pass")]
+    detailed_legal_required_keys=sorted(
+        k for k,v in results.items()
+        if detailed_legal_required_for_technical_state(v.get("result"))
+        or detailed_legal_required_for_technical_state(v.get("technical_prelegal_result"))
+    )
+    detailed_legal_deferred_nonpass_keys=sorted(
+        k for k,v in results.items()
+        if k not in set(detailed_legal_required_keys)
+        and str(v.get("candidate_legal_review_status") or "")!="PASS"
+    )
     watches=[k for k,v in results.items() if str(v.get("result","")).startswith("WATCH_")]
     regime_revalidation_unknown=sorted(k for k,v in results.items() if v.get("result")=="WATCH_REGIME_UNKNOWN")
     fails=[k for k,v in results.items() if str(v.get("result","")).startswith("FAIL_")]
@@ -816,11 +828,17 @@ def main():
       "candidate_legal_guard_blob_sha":blob_sha(CANDIDATE_LEGAL_GUARD) if CANDIDATE_LEGAL_GUARD.exists() else None,
       "candidate_legal_guard_exact_binding":bool(candidate_legal_guard is not None and candidate_legal_guard_error is None),
       "candidate_legal_guard_binding_error":candidate_legal_guard_error,
-      "detailed_legal_review_exact":bool(candidate_legal_guard is not None and candidate_legal_guard_error is None) and all(
-          ((candidate_legal_records or {}).get(str(k).split("|",1)[0]) or {}).get("status")=="PASS"
-          for k,v in results.items()
-          if detailed_legal_required_for_technical_state(v.get("result"))
-          or detailed_legal_required_for_technical_state(v.get("technical_prelegal_result"))
+      "detailed_legal_required_candidate_keys":detailed_legal_required_keys,
+      "detailed_legal_deferred_nonpass_candidate_keys":detailed_legal_deferred_nonpass_keys,
+      "detailed_legal_review_exact":(
+          not detailed_legal_required_keys
+          or (
+            bool(candidate_legal_guard is not None and candidate_legal_guard_error is None)
+            and all(
+              ((candidate_legal_records or {}).get(str(k).split("|",1)[0]) or {}).get("status")=="PASS"
+              for k in detailed_legal_required_keys
+            )
+          )
       ),
       "adr_ratio_bridge_path":relpath(ADR_RATIO_BRIDGE) if ADR_RATIO_BRIDGE.exists() else None,
       "adr_ratio_bridge_blob_sha":blob_sha(ADR_RATIO_BRIDGE) if ADR_RATIO_BRIDGE.exists() else None,
