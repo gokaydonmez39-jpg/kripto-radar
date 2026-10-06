@@ -1,0 +1,156 @@
+name: XRAY Sub10 Technical Shadow Audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/xray-sub10-technical-shadow-audit.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: xray-sub10-technical-shadow-audit
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install zero-dollar runtime
+        run: python -m pip install --disable-pip-version-check -r nasdaq-xray/requirements-runtime.txt
+      - name: Run A B D technical shadow on price-gate-excluded DV20 pass names
+        env:
+          PYTHONPATH: nasdaq-xray
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import stage1_shadow as s1
+          import deep_pre_r1_shadow as deep
+          import final_tech_shadow as ft
+
+          ASOF="2026-10-05"
+          SYMBOLS=["AGNC","AUR","BULL","CCC","ERIC","FRMI","GRAB","KEEL","ONDS","OPEN","PLUG","PSKY","QS","RXRX","SBET","SOUN"]
+          root=Path("nasdaq-xray")
+          regime=json.loads((root/"canonical_current_regime.json").read_text())
+          regime_name=str(regime.get("regime") or "UNKNOWN")
+          week_last=s1.build_week_last(ASOF)
+
+          qs,qdf,qerr,qsrc=deep.get_hist("QQQ",ASOF)
+          if qdf is None:
+              raise RuntimeError("QQQ_HISTORY_UNKNOWN:"+str(qerr))
+          qqq=qdf.reset_index(drop=True)
+
+          out={}
+          for sym in SYMBOLS:
+              _,st=s1.process(sym,ASOF,week_last)
+              row={"stage1":st}
+              recent_dates=set(st.get("recent_weekly_pass_dates") or [])
+              if st.get("status")=="UNKNOWN":
+                  row["shadow_status"]="UNKNOWN_STAGE1"
+                  out[sym]=row
+                  continue
+              hs,x,err,src=deep.get_hist(sym,ASOF)
+              if x is None:
+                  row["shadow_status"]="UNKNOWN_HISTORY"
+                  row["history_error"]=err
+                  out[sym]=row
+                  continue
+              split_events=st.get("split_events") or []
+              if split_events:
+                  x=deep.apply_split_events(x,split_events)
+              x=x.reset_index(drop=True)
+              rs20,rs60,rf=deep._regime_finalist_metrics(x,qqq,regime_name)
+              A,B,D=deep.evaluate_recent_families(x,qqq,recent_dates)
+
+              def bind(g,flag):
+                  if not isinstance(g,dict): return
+                  td=str(g.get("trigger_date") or "")
+                  if flag and td and td not in recent_dates:
+                      g[flag]=False;g["reason"]="WEEKLY_AT_TRIGGER_FAIL";g["weekly_pass_at_trigger"]=False
+                  elif flag and td:
+                      g["weekly_pass_at_trigger"]=True
+              bind(A,"pool"); bind(B,"breakout_confirmed"); bind(D,"dk3_pre_r1")
+              if isinstance(B,dict) and B.get("pool") and not B.get("breakout_confirmed") and ASOF not in recent_dates:
+                  B["pool"]=False;B["reason"]="CURRENT_WEEKLY_FAIL_FOR_ARMED"
+
+              fams=[]
+              if isinstance(A,dict) and A.get("pool"): fams.append(("A",A))
+              if isinstance(B,dict) and B.get("breakout_confirmed"): fams.append(("B",B))
+              if isinstance(D,dict) and D.get("dk3_pre_r1"): fams.append(("D",D))
+              finals=[]
+              for fam,g in fams:
+                  frozen,ferr=ft._frozen_geometry(sym,fam,g,x)
+                  if ferr:
+                      finals.append({"family":fam,"geometry":g,"final_error":ferr})
+                      continue
+                  res=ft.eval_one(sym,fam,g,x,"CLEAN_DISCOVERY",frozen=frozen,recorded_before=False,
+                                  regime_finalist_status=rf)
+                  finals.append({"family":fam,"geometry":g,"final":res})
+              row.update({
+                  "shadow_status":"EVALUATED",
+                  "history_source":src,
+                  "regime":regime_name,
+                  "regime_finalist_status":rf,
+                  "rs20":rs20,"rs60":rs60,
+                  "recent_weekly_pass_dates":sorted(recent_dates),
+                  "A":A,"B":B,"D":D,
+                  "confirmed_geometry_families":[f for f,_ in fams],
+                  "finals":finals,
+              })
+              out[sym]=row
+
+          pre=[]
+          geom=[]
+          for sym,row in out.items():
+              if row.get("confirmed_geometry_families"):
+                  geom.append(sym)
+              for f in row.get("finals") or []:
+                  res=f.get("final") or {}
+                  if res.get("pre_g9_tech_pass") is True:
+                      pre.append(sym+"|"+f["family"])
+          summary={
+              "schema":"XRAY_SUB10_TECHNICAL_SHADOW_AUDIT_V1",
+              "asof_et":ASOF,
+              "execution":"NONE","real_money":"NO-GO",
+              "canonical_policy_changed":False,
+              "source_price_shadow_run_id":37450885988,
+              "symbol_count":len(SYMBOLS),
+              "regime":regime_name,
+              "geometry_candidate_symbols":sorted(geom),
+              "technical_pre_g9_upper_bound":sorted(pre),
+              "note":"Event/legal/canonical-MC not re-proven here; CLEAN_DISCOVERY is an upper-bound diagnostic assumption, not candidate authority.",
+              "results":out,
+          }
+          print("XRAY_SUB10_TECH_SHADOW="+json.dumps({
+              "asof_et":ASOF,
+              "symbol_count":len(SYMBOLS),
+              "regime":regime_name,
+              "geometry_candidate_symbols":summary["geometry_candidate_symbols"],
+              "technical_pre_g9_upper_bound":summary["technical_pre_g9_upper_bound"],
+              "statuses":{s:(r.get("shadow_status")) for s,r in out.items()},
+          },sort_keys=True))
+          for sym,row in sorted(out.items()):
+              if row.get("confirmed_geometry_families") or row.get("shadow_status")!="EVALUATED":
+                  print("XRAY_SUB10_DETAIL="+json.dumps({
+                      "symbol":sym,
+                      "shadow_status":row.get("shadow_status"),
+                      "stage1_status":(row.get("stage1") or {}).get("status"),
+                      "recent_weekly_pass_dates":row.get("recent_weekly_pass_dates"),
+                      "confirmed_geometry_families":row.get("confirmed_geometry_families"),
+                      "finals":[{"family":f.get("family"),"result":(f.get("final") or {}).get("result"),
+                                 "pre_g9":(f.get("final") or {}).get("pre_g9_tech_pass"),
+                                 "risk_percent":((f.get("final") or {}).get("geometry") or {}).get("risk_percent"),
+                                 "rr_basic":((f.get("final") or {}).get("rr") or {}).get("basic"),
+                                 "rr_severe":((f.get("final") or {}).get("rr") or {}).get("severe"),
+                                 "target_overlap":(f.get("final") or {}).get("target_overlap")}
+                                for f in row.get("finals") or []],
+                  },sort_keys=True))
+          PY
