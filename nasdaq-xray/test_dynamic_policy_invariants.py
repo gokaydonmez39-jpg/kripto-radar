@@ -237,13 +237,22 @@ def main():
     finally:
         history_mod.HISTORY_BRIDGE=old_bridge
 
+    # Replay guard must be bound to the current C4.17 DV30 artifact and must
+    # inspect the durable pointer's nested ASOF. A stale pointer can never be
+    # hidden by a missing top-level asof_et field.
+    replay_src=(ROOT/"deterministic_replay_guard.py").read_text()
+    assert 'PRICE_FILE="canonical_current_price_dv30.json"' in replay_src,replay_src
+    assert 'canonical_current_price_dv20.json' not in replay_src,replay_src
+    assert 'if fn==POINTER_FILE:' in replay_src and 's.get("asof_et")' in replay_src,replay_src
+    assert '"status":"PASS" if all_present and asof_consistent and policy_ok else "FAIL_CLOSED"' in replay_src,replay_src
+
     print({"status":"PASS","invariants":[
         "EXACT30_REQUIRED_FOR_PASS","INCOMPLETE_NEVER_PASS","BLOCKED_TERMINAL_OVERRIDE_FAIL_ONLY",
         "OVERLAY_EXACT30_REQUIRED","SETUP_B_PIVOT_EXCLUDES_CURRENT_BAR",
         "MC_SEMANTIC_REBIND_REQUIRES_HASH_SET_COUNT",
         "CANDIDATE_LOCAL_RESEARCH_INDEPENDENT_GLOBAL_COVERAGE_FAIL_CLOSED",
         "OFFICIAL_LISTING_HISTORY_FAIL_ONLY","CUSIP_CONTINUITY_REQUIRES_CROSS_SOURCE_OVERLAP",
-        "LEGACY_LINEAGE_BRIDGE_CANNOT_BYPASS_COMPOSITE"
+        "LEGACY_LINEAGE_BRIDGE_CANNOT_BYPASS_COMPOSITE","REPLAY_GUARD_DV30_AND_NESTED_POINTER_ASOF_FAIL_CLOSED"
     ]})
 
 if __name__=="__main__":
