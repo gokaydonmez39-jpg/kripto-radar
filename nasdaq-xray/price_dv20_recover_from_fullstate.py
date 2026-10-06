@@ -88,6 +88,19 @@ def resolver_bridge_input_binding(obj,asof,queue_hash):
         return False,None,"INPUT_BINDING_ERROR:"+type(exc).__name__
 
 
+def monotonic_legacy_pass_reusable(prior_thresholds)->bool:
+    """A PASS under the old stricter >10 price floor stays PASS under >=5
+    when the DV20 rule and gate order are unchanged. This is monotonic reuse,
+    not a new PASS and not a threshold relaxation beyond the current policy.
+    """
+    if not isinstance(prior_thresholds,dict): return False
+    return (
+      prior_thresholds.get("price")==">10"
+      and prior_thresholds.get("dv20")==">=50000000 exact20 median"
+      and HARD_PRICE==5.0 and HARD_DV20==50_000_000.0
+    )
+
+
 def num(x):
     try:
         v=float(x)
@@ -431,6 +444,7 @@ def main():
     assert s["task_id"]==TASK_ID and isinstance(asof,str) and len(asof)==10
     queue=s["queue"];old=s["results"];assert len(queue)==len(old) and len(queue)>3000
     baseline_source="FULL_STATE"
+    prior_thresholds={}
     if FORCE_POLICY_REPLAY:
         if not OUT.exists():
             raise RuntimeError("PRICE_POLICY_REPLAY_PRIOR_PRICE_MISSING")
@@ -445,24 +459,28 @@ def main():
             and set((prior.get("results") or {}).keys())==set(queue)
         ):
             raise RuntimeError("PRICE_POLICY_REPLAY_PRIOR_PRICE_BINDING_INVALID")
+        prior_thresholds=prior.get("thresholds") or {}
         old=prior["results"]
         baseline_source="PRIOR_PRICE_ARTIFACT"
     results={};redo=[];policy_redo=set()
     for sym in queue:
         r=old[sym];st=r.get("status");info=r.get("info")
         if st in {"PASS","PASS_PRICE_DV20"}:
-            if not (
+            monotonic_reuse=bool(FORCE_POLICY_REPLAY and monotonic_legacy_pass_reusable(prior_thresholds))
+            exact_numeric_pass=(
               isinstance(info,dict)
               and info.get("known_session_count")==20
               and (info.get("missing_sessions") or [])==[]
               and info.get("no_synthetic_bar") is True
               and num(info.get("dv20")) is not None
               and num(info.get("dv20"))>=HARD_DV20
-            ):
+            )
+            if not (monotonic_reuse or exact_numeric_pass):
                 redo.append(sym)
                 continue
             results[sym]={"status":"PASS_PRICE_DV20","info":info,
-                          "provenance":"PRIOR_PRICE_REUSED_PASS" if FORCE_POLICY_REPLAY else "FULLSTATE_EXACT20_PASS"}
+                          "provenance":("PRIOR_STRICTER_PRICE_PASS_MONOTONIC_REUSE" if monotonic_reuse
+                                        else ("PRIOR_PRICE_REUSED_PASS" if FORCE_POLICY_REPLAY else "FULLSTATE_EXACT20_PASS"))}
         elif st=="FAIL_PRICE":
             px=num((info or {}).get("price")) if isinstance(info,dict) else None
             if FORCE_POLICY_REPLAY and (px is None or px>=HARD_PRICE):
@@ -547,7 +565,8 @@ def main():
       "expected20":exp20,"gate_order":["PRICE","DV20"],"thresholds":{"price":">=5","dv20":">=50000000 exact20 median"},
       "reused_terminal_count":len(queue)-len(redo),"reevaluated_count":len(redo),
       "policy_replay":FORCE_POLICY_REPLAY,"policy_replay_baseline_source":baseline_source,
-      "policy_replay_input_count":len(policy_redo),
+      "policy_replay_input_count":len(policy_redo),"monotonic_legacy_pass_reuse_count":obj["monotonic_legacy_pass_reuse_count"],
+      "monotonic_legacy_pass_reuse_count":sum(1 for x in results.values() if x.get("provenance")=="PRIOR_STRICTER_PRICE_PASS_MONOTONIC_REUSE"),
       "policy_replay_symbols":sorted(policy_redo),
       "exception_bridge_meta":exception_bridge_meta,
       "counts":dict(sorted(counts.items())),"unknown_count":len(unknown),"unknown_symbols":unknown,
