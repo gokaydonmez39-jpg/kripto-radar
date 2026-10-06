@@ -269,6 +269,7 @@ jobs:
         if: steps.rollover.outputs.build == 'true' || steps.rollover.outputs.policy_replay == 'true' || steps.rollover.outputs.coverage_repair == 'true' || steps.rollover.outputs.bridge_refresh == 'true'
         env:
           XRAY_PRICE_FORCE_POLICY_REPLAY: ${{ steps.rollover.outputs.policy_replay == 'true' && '1' || '0' }}
+          XRAY_PRICE_USE_CURRENT_BASELINE: ${{ (steps.rollover.outputs.bridge_refresh == 'true' || steps.rollover.outputs.coverage_repair == 'true') && '1' || '0' }}
         run: python nasdaq-xray/price_dv20_recover_from_fullstate.py
       - name: Build resolver bridge request
         if: steps.rollover.outputs.build == 'true' || steps.rollover.outputs.policy_replay == 'true' || steps.rollover.outputs.coverage_repair == 'true' || steps.rollover.outputs.resolver_refresh == 'true' || steps.rollover.outputs.bridge_refresh == 'true'
