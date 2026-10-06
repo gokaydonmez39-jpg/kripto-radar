@@ -69,6 +69,17 @@ jobs:
             nasdaq-xray/recover_pre_mc_snapshot.py \
             nasdaq-xray/test_alpha_semantics.py \
             nasdaq-xray/test_deep_repair_regressions.py
+      - name: Assert discovery price floor cannot exceed canonical floor
+        run: |
+          python - <<'PY'
+          import sys
+          sys.path.insert(0,"nasdaq-xray")
+          import sina_stage as s
+          assert s.HARD_PRICE==5.0,s.HARD_PRICE
+          assert s.DISCOVERY_PRICE_FLOOR<=s.HARD_PRICE,(s.DISCOVERY_PRICE_FLOOR,s.HARD_PRICE)
+          print("DISCOVERY_PRICE_FLOOR_BOUND=PASS")
+          PY
+
       - name: Assert pointer-bound prior settlement core fallback
         run: |
           python - <<'PY'
