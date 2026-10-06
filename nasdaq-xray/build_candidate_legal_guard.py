@@ -20,7 +20,9 @@ import os
 import re
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
+import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -39,6 +41,7 @@ TASK_ID="6a825366222081918997094d76e6ae46"
 USER_AGENT=os.getenv("XRAY_SEC_USER_AGENT","NASDAQ-SWING-XRAY research bot; xray-dataplane-bot@users.noreply.github.com")
 SEC_MIN_INTERVAL_SECONDS=float(os.getenv("XRAY_SEC_MIN_INTERVAL_SECONDS","0.22"))
 _SEC_LAST_REQUEST_AT=0.0
+_PRIMARY_DOC_CACHE={}
 PERIODIC={"10-K","10-Q","20-F","40-F"}
 ANNUAL={"10-K","20-F","40-F"}
 OFFERING_PREFIX=("S-3","F-3","424B")
@@ -98,7 +101,10 @@ def _fetch(url:str,limit:int=15_000_000,retries:int=3)->bytes:
             req=urllib.request.Request(url,headers={
                 "User-Agent":USER_AGENT,
                 "Accept-Encoding":"identity",
-                "Accept":"application/json,text/html,*/*",
+                "Accept":"application/json,application/atom+xml,text/html,*/*",
+                "Accept-Language":"en-US,en;q=0.9",
+                "Referer":"https://www.sec.gov/",
+                "Connection":"close",
             })
             with urllib.request.urlopen(req,timeout=20) as r:
                 _SEC_LAST_REQUEST_AT=time.monotonic()
@@ -267,6 +273,85 @@ def _ticker_cik_map(scope:list[str]|None=None,allow_network:bool=True)->tuple[di
     return out,sources,errors
 
 
+def _xml_local(tag:str)->str:
+    return str(tag).rsplit("}",1)[-1]
+
+
+def _atom_company_filings(cik10:str,asof:str)->tuple[dict,list[dict],str]:
+    """Official SEC www.sec.gov Atom fallback when data.sec.gov submissions is unavailable.
+
+    This remains primary-source SEC evidence. It does not create PASS from a
+    secondary provider and preserves UNKNOWN on any parse/network ambiguity.
+    """
+    params={
+      "action":"getcompany",
+      "CIK":str(int(cik10)),
+      "owner":"exclude",
+      "count":"100",
+      "output":"atom",
+    }
+    url="https://www.sec.gov/cgi-bin/browse-edgar?"+urllib.parse.urlencode(params)
+    root=ET.fromstring(_fetch(url,limit=8_000_000))
+    feed_meta={}
+    filings=[]
+    for el in root.iter():
+        key=_xml_local(el.tag)
+        txt=(el.text or "").strip()
+        if key in {"company-name","cik","sic","fiscal-year-end"} and txt and key not in feed_meta:
+            feed_meta[key]=txt
+    for entry in [x for x in root.iter() if _xml_local(x.tag)=="entry"]:
+        vals={}
+        alt_href=""
+        for el in entry.iter():
+            key=_xml_local(el.tag)
+            txt=(el.text or "").strip()
+            if txt and key not in vals:
+                vals[key]=txt
+            if key=="link" and (el.attrib.get("rel") in (None,"alternate")):
+                href=str(el.attrib.get("href") or "").strip()
+                if href: alt_href=href
+        form=(vals.get("filing-type") or vals.get("form-type") or vals.get("category") or "").upper().strip()
+        filing_date=(vals.get("filing-date") or vals.get("filingDate") or "")[:10]
+        acc=(vals.get("filing-accession-number") or vals.get("accession-number") or vals.get("accessionNumber") or "").strip()
+        if not (form and filing_date and acc):
+            title=str(vals.get("title") or "")
+            m=re.match(r"\s*([^\s]+)\s+-",title)
+            if not form and m: form=m.group(1).upper()
+        if not (form and filing_date and acc):
+            continue
+        if filing_date>asof:
+            continue
+        href=(vals.get("filing-href") or alt_href or "").strip()
+        filings.append({
+          "accessionNumber":acc,
+          "filingDate":filing_date,
+          "reportDate":(vals.get("period") or vals.get("report-date") or "")[:10],
+          "form":form,
+          "items":vals.get("items") or "",
+          "primaryDocument":"",
+          "primaryDocDescription":"",
+          "filingHref":href,
+        })
+    if not filings:
+        raise RuntimeError("SEC_ATOM_NO_FILINGS")
+    sub={
+      "name":feed_meta.get("company-name"),
+      "sic":feed_meta.get("sic"),
+      "fiscalYearEnd":feed_meta.get("fiscal-year-end"),
+    }
+    return sub,filings,url
+
+
+def _sec_submissions_or_atom(cik10:str,asof:str)->tuple[dict,list[dict],str,str|None]:
+    company_url=f"https://data.sec.gov/submissions/CIK{cik10}.json"
+    try:
+        sub=_fetch_json(company_url)
+        return sub,_recent_filings(sub),"DATA_SEC_SUBMISSIONS_JSON",None
+    except Exception as primary_exc:
+        sub,filings,atom_url=_atom_company_filings(cik10,asof)
+        return sub,filings,"SEC_WWW_ATOM_FALLBACK",f"{type(primary_exc).__name__}:{str(primary_exc)[:160]}"
+
+
 def _recent_filings(sub:dict)->list[dict]:
     r=((sub.get("filings") or {}).get("recent") or {})
     keys=("accessionNumber","filingDate","reportDate","form","items","primaryDocument","primaryDocDescription")
@@ -282,11 +367,53 @@ def _recent_filings(sub:dict)->list[dict]:
     return out
 
 
+def _normalize_sec_doc_href(href:str)->str|None:
+    href=str(href or "").strip()
+    if not href:return None
+    full=urllib.parse.urljoin("https://www.sec.gov/",href)
+    p=urllib.parse.urlparse(full)
+    q=urllib.parse.parse_qs(p.query)
+    if "doc" in q and q["doc"]:
+        full=urllib.parse.urljoin("https://www.sec.gov/",q["doc"][0])
+    return full if full.startswith("https://www.sec.gov/") else None
+
+
+def _primary_doc_from_index(index_url:str,form:str)->str|None:
+    key=(str(index_url),str(form).upper())
+    if key in _PRIMARY_DOC_CACHE:return _PRIMARY_DOC_CACHE[key]
+    raw=_fetch(str(index_url),limit=5_000_000).decode("utf-8","replace")
+    rows=re.findall(r"(?is)<tr[^>]*>(.*?)</tr>",raw)
+    candidates=[]
+    for row_html in rows:
+        text_row=re.sub(r"(?s)<[^>]+>"," ",row_html)
+        text_row=html.unescape(re.sub(r"\s+"," ",text_row)).strip()
+        hrefs=re.findall(r'''(?is)href=["']([^"']+)["']''',row_html)
+        for href in hrefs:
+            u=_normalize_sec_doc_href(href)
+            if not u or "/Archives/edgar/data/" not in u:continue
+            low=u.lower()
+            if low.endswith(("-index.htm","-index.html")) or "/ixviewer/" in low:continue
+            if not re.search(r"\.(?:htm|html|txt)(?:$|\?)",low):continue
+            score=2 if re.search(rf"(?i)(?:^|\s){re.escape(str(form))}(?:\s|$)",text_row) else 0
+            if "complete submission text file" in text_row.lower():score-=1
+            candidates.append((score,u))
+    if not candidates:
+        _PRIMARY_DOC_CACHE[key]=None
+        return None
+    candidates.sort(key=lambda x:(-x[0],x[1]))
+    _PRIMARY_DOC_CACHE[key]=candidates[0][1]
+    return candidates[0][1]
+
+
 def _doc_url(cik10:str,row:dict)->str|None:
     acc=str(row.get("accessionNumber") or "")
     doc=str(row.get("primaryDocument") or "")
-    if not acc or not doc:return None
-    return f"https://www.sec.gov/Archives/edgar/data/{int(cik10)}/{acc.replace('-','')}/{doc}"
+    if acc and doc:
+        return f"https://www.sec.gov/Archives/edgar/data/{int(cik10)}/{acc.replace('-','')}/{doc}"
+    href=str(row.get("filingHref") or "")
+    if href:
+        return _primary_doc_from_index(href,str(row.get("form") or ""))
+    return None
 
 
 def _item_set(items)->set[str]:
@@ -311,8 +438,8 @@ def _phrase_flags(text:str,phrases:dict)->list[str]:
 
 def review_symbol(symbol:str,cik10:str,asof:str)->dict:
     company_url=f"https://data.sec.gov/submissions/CIK{cik10}.json"
-    sub=_fetch_json(company_url)
-    filings=[x for x in _recent_filings(sub) if str(x.get("filingDate"))<=asof]
+    sub,filings,sec_listing_source,submissions_error=_sec_submissions_or_atom(cik10,asof)
+    filings=[x for x in filings if str(x.get("filingDate"))<=asof]
     periodic=[x for x in filings if str(x.get("form")).upper() in PERIODIC]
     if not periodic:
         return {"status":"UNKNOWN","reason":"NO_PERIODIC_FILING_BEFORE_ASOF",
@@ -401,6 +528,8 @@ def review_symbol(symbol:str,cik10:str,asof:str)->dict:
       "risk_flags":risks,
       "document_failures":document_failures,
       "sec_submissions_url":company_url,
+      "sec_listing_source":sec_listing_source,
+      "sec_submissions_primary_error":submissions_error,
     }
 
 
