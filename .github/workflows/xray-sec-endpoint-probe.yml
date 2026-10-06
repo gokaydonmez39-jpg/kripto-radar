@@ -10,13 +10,18 @@ permissions:
 
 jobs:
   probe:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-15]
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 5
     steps:
       - name: Probe official SEC surfaces
         shell: bash
         run: |
           set -u
+          echo "SEC_PROBE_RUNNER=${{ matrix.os }}"
           ua='NASDAQ-SWING-XRAY research bot; xray-dataplane-bot@users.noreply.github.com'
           urls=(
             'https://data.sec.gov/submissions/CIK0001703057.json'
@@ -32,5 +37,5 @@ jobs:
             code=$(curl -L -A "$ua" -H 'Accept-Encoding: identity' -H 'Accept-Language: en-US,en;q=0.9' -H 'Referer: https://www.sec.gov/' --connect-timeout 8 --max-time 20 -sS -o /tmp/sec_probe_body -w '%{http_code}' "$u" || true)
             bytes=$(wc -c </tmp/sec_probe_body 2>/dev/null || echo 0)
             ctype=$(file -b --mime-type /tmp/sec_probe_body 2>/dev/null || echo unknown)
-            echo "SEC_PROBE code=$code bytes=$bytes type=$ctype url=$u"
+            echo "SEC_PROBE runner=${{ matrix.os }} code=$code bytes=$bytes type=$ctype url=$u"
           done
