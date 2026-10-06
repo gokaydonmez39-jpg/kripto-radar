@@ -577,11 +577,17 @@ def global_asof_sentinel_nonterminal(redo,asof,exp30):
         sst,sinfo=classify(sby,asof,exp30,"SINA_US_DAILY") if sby else ("UNKNOWN",{"reason":"SINA_UNAVAILABLE"})
         nby,nm=nasdaq(sym,asof)
         nst,ninfo=classify(nby,asof,exp30,"NASDAQ_OFFICIAL_HISTORICAL_API") if nby else ("UNKNOWN",{"reason":"NASDAQ_UNAVAILABLE"})
+        s_has_asof=bool(sby and asof in sby)
+        n_has_asof=bool(nby and asof in nby)
         proof[sym]={
-          "sina_status":sst,"sina_result":sinfo,"sina_meta":sm,
-          "nasdaq_status":nst,"nasdaq_result":ninfo,"nasdaq_meta":nm,
+          "sina_status":sst,"sina_result":sinfo,"sina_meta":sm,"sina_has_exact_asof":s_has_asof,
+          "nasdaq_status":nst,"nasdaq_result":ninfo,"nasdaq_meta":nm,"nasdaq_has_exact_asof":n_has_asof,
         }
-        if sst!="UNKNOWN" or nst!="UNKNOWN":
+        # The fast-fail guard is only for a global publication lag. Seeing an
+        # exact-ASOF bar on either zero-dollar source proves publication has
+        # begun even when exact30 remains incomplete/UNKNOWN. Fall back to the
+        # normal per-symbol fail-closed path; never manufacture PASS/FAIL here.
+        if s_has_asof or n_has_asof or sst!="UNKNOWN" or nst!="UNKNOWN":
             return False,{"status":"TERMINAL_SENTINEL_OBSERVED","symbol":sym,"proof":proof}
     return True,{
       "status":"GLOBAL_SENTINELS_NONTERMINAL",

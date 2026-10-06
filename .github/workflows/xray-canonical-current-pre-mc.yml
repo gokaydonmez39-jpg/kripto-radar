@@ -176,6 +176,9 @@ jobs:
                   and (
                       mf.get("identity_ruleset")!="V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER"
                       or mf.get("identity_authority")!="NASDAQTRADER_EXPLICIT_TYPE_FILTER_V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER"
+                      or mf.get("identity_partition_policy")!="MASTER_SPAC_UNKNOWN_PARTITION_V1"
+                      or mcp.get("identity_partition_policy_exact") is not True
+                      or mcp.get("identity_unknown_partition_exact") is not True
                       or mcp.get("sec_spac_proof_binding") is not True
                       or mcp.get("asof_identity_proof_binding") is not True
                       or msec.get("blob_sha")!=(proof_blob if proof_count else None)
