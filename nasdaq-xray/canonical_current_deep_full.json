@@ -40,6 +40,7 @@
     "IOVA",
     "LITE",
     "MRNA",
+    "MXL",
     "PI",
     "QLYS",
     "RGEN",
@@ -47,19 +48,17 @@
     "TRMD",
     "VICR"
   ],
-  "d_dk3_pre_r1_count": 11,
+  "d_dk3_pre_r1_count": 12,
   "d_geometry_rs": [
     "ABCL",
     "FIVN",
-    "GTLB",
     "IBRX",
     "IOVA",
     "LITE",
     "MRNA",
     "MU",
-    "NEOG",
+    "MXL",
     "PI",
-    "QCOM",
     "QLYS",
     "RGEN",
     "SWKS",
@@ -67,7 +66,7 @@
     "TRMD",
     "VICR"
   ],
-  "d_geometry_rs_count": 17,
+  "d_geometry_rs_count": 15,
   "event_state_fresh": true,
   "execution": "NONE",
   "history_fingerprint_by_symbol": {
@@ -102,6 +101,14 @@
       "rows": 320,
       "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
       "sha256": "ccc316b46fc03d609e558437c35128b68340909ac9fc3363330e48fbe8f02a63"
+    },
+    "AMLX": {
+      "first_date": "2025-06-27",
+      "last_date": "2026-10-05",
+      "lookback": 320,
+      "rows": 320,
+      "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
+      "sha256": "f570cd96b4096da7b4a7b6f8837308b6d3d3a9385dc182566e98da8dbb5d359c"
     },
     "APA": {
       "first_date": "2025-06-27",
@@ -190,14 +197,6 @@
       "rows": 320,
       "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
       "sha256": "bc849968d9e351deadcbdf058152ef99426ffc4b72235ac326225299c4023902"
-    },
-    "BWIN": {
-      "first_date": "2025-06-27",
-      "last_date": "2026-10-05",
-      "lookback": 320,
-      "rows": 320,
-      "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-      "sha256": "a3149a0cd0faa7e91baf0d3f1962819862fc8c453d34824cbd3f26aa9296a0be"
     },
     "CAI": {
       "first_date": "2025-06-27",
@@ -367,6 +366,14 @@
       "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
       "sha256": "01653ef31ae11a2293e90de2c539ca5a837ca8e0ba371a69f062e9b9d7d6d04d"
     },
+    "FRSH": {
+      "first_date": "2025-06-27",
+      "last_date": "2026-10-05",
+      "lookback": 320,
+      "rows": 320,
+      "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
+      "sha256": "951c01bae691d09b8ab6ff73834ca5bb4f7dde0859ddb2e825ccc5a8d77d0110"
+    },
     "FSLY": {
       "first_date": "2025-06-27",
       "last_date": "2026-10-05",
@@ -535,6 +542,14 @@
       "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
       "sha256": "0dd7d6d65e3cdd97d0ba79e05fb6b2603755f71c921d766c5e3d8a440b91243e"
     },
+    "MMSI": {
+      "first_date": "2025-06-27",
+      "last_date": "2026-10-05",
+      "lookback": 320,
+      "rows": 320,
+      "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
+      "sha256": "14e58b43d7935f335d33c2eb2e7740c75d4d6d2f8858d3bb0ea675f32b7f4938"
+    },
     "MRNA": {
       "first_date": "2025-06-27",
       "last_date": "2026-10-05",
@@ -591,6 +606,14 @@
       "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
       "sha256": "ba00ce7fba97d8aca1878a1ace2fc96e4559d359db7a15bf84a8785ccd0ea72e"
     },
+    "MXL": {
+      "first_date": "2025-06-27",
+      "last_date": "2026-10-05",
+      "lookback": 320,
+      "rows": 320,
+      "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
+      "sha256": "71df02880862f5988acfb751788410f1ee7c40a5b3c4e4606f3f8a0c184d9fdf"
+    },
     "NBIS": {
       "first_date": "2025-06-27",
       "last_date": "2026-10-05",
@@ -607,14 +630,6 @@
       "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
       "sha256": "3869d626b23ea9f0a33d2f82538413a80658eeb32a01c5078ceb74f8ea99b651"
     },
-    "NEOG": {
-      "first_date": "2025-06-27",
-      "last_date": "2026-10-05",
-      "lookback": 320,
-      "rows": 320,
-      "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-      "sha256": "9c2bac962ba0b3a5c0d298f3cd2f745eb3d943b1c949d7a0043a0c6152095684"
-    },
     "NESR": {
       "first_date": "2025-06-27",
       "last_date": "2026-10-05",
@@ -622,22 +637,6 @@
       "rows": 320,
       "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
       "sha256": "fbe74f0e12ffee03a8eb207ce9de9b2e861b835d10bd7f25bcc55df3d0e05f40"
-    },
-    "NICE": {
-      "first_date": "2025-06-27",
-      "last_date": "2026-10-05",
-      "lookback": 320,
-      "rows": 320,
-      "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-      "sha256": "39af575613c94cd38a8aa1c9a6249547a09e249b2e13b968c1747c5e22c706b6"
-    },
-    "NSIT": {
-      "first_date": "2025-06-27",
-      "last_date": "2026-10-05",
-      "lookback": 320,
-      "rows": 320,
-      "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-      "sha256": "b7d56f1ffab9c89c388dcef320be796e61fc2ab207f6fb39d6c7f559b68b20cc"
     },
     "NTAP": {
       "first_date": "2025-06-27",
@@ -694,6 +693,14 @@
       "rows": 320,
       "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
       "sha256": "b9112456bc9feb1f8f831b2ada3e995a38596acdf4dc1e698b4503c371c0246c"
+    },
+    "ONC": {
+      "first_date": "2025-06-27",
+      "last_date": "2026-10-05",
+      "lookback": 320,
+      "rows": 320,
+      "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
+      "sha256": "c92ebf517787cda0ac3018a8debedaa6424f7c914069bea4eea9b8358c2e48ad"
     },
     "PANW": {
       "first_date": "2025-06-27",
@@ -814,14 +821,6 @@
       "rows": 320,
       "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
       "sha256": "8d11b4ef8ee024d87ff095557f0baffa1510707edf93887d4b61e1df4ad507f8"
-    },
-    "SDGR": {
-      "first_date": "2025-06-27",
-      "last_date": "2026-10-05",
-      "lookback": 320,
-      "rows": 320,
-      "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-      "sha256": "df3a953ec20326545b89961bbf7c6c47fc0976c1d5ea6c2e2be153e08c2ebed7"
     },
     "SEIC": {
       "first_date": "2025-06-27",
@@ -975,6 +974,14 @@
       "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
       "sha256": "5aab87ad62dcad65ed5987c206844f85cc1867340f0e03ad9596de2d3d2795c5"
     },
+    "WAY": {
+      "first_date": "2025-06-27",
+      "last_date": "2026-10-05",
+      "lookback": 320,
+      "rows": 320,
+      "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
+      "sha256": "5d54058e3563f5efc3dddae54b7f18b90e2f1afd70f1e7b27bb14cd4a829c551"
+    },
     "WBD": {
       "first_date": "2025-06-27",
       "last_date": "2026-10-05",
@@ -990,14 +997,6 @@
       "rows": 320,
       "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
       "sha256": "86d85564d75267901e8c3745f5d2d85eaeadf2299b99169c3cd3175ec93bb036"
-    },
-    "WGS": {
-      "first_date": "2025-06-27",
-      "last_date": "2026-10-05",
-      "lookback": 320,
-      "rows": 320,
-      "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-      "sha256": "12bb3e42a1fc32b8ee9b8835fa280b3e4b2d98328eda2ae1642a820858fec007"
     },
     "WIX": {
       "first_date": "2025-06-27",
@@ -1046,6 +1045,7 @@
     "ABCL": "SINA_US_DAILY",
     "AEHR": "SINA_US_DAILY",
     "AMD": "SINA_US_DAILY",
+    "AMLX": "SINA_US_DAILY",
     "APA": "SINA_US_DAILY",
     "APPF": "SINA_US_DAILY",
     "ARGX": "SINA_US_DAILY",
@@ -1057,7 +1057,6 @@
     "AXTI": "SINA_US_DAILY",
     "BIIB": "SINA_US_DAILY",
     "BRKR": "SINA_US_DAILY",
-    "BWIN": "SINA_US_DAILY",
     "CAI": "SINA_US_DAILY",
     "CDNA": "SINA_US_DAILY",
     "CHEF": "SINA_US_DAILY",
@@ -1079,6 +1078,7 @@
     "FIVN": "SINA_US_DAILY",
     "FORM": "SINA_US_DAILY",
     "FROG": "SINA_US_DAILY",
+    "FRSH": "SINA_US_DAILY",
     "FSLY": "SINA_US_DAILY",
     "FTNT": "SINA_US_DAILY",
     "GH": "SINA_US_DAILY",
@@ -1100,6 +1100,7 @@
     "MEDP": "SINA_US_DAILY",
     "META": "SINA_US_DAILY",
     "MKTX": "SINA_US_DAILY",
+    "MMSI": "SINA_US_DAILY",
     "MRNA": "SINA_US_DAILY",
     "MRVL": "SINA_US_DAILY",
     "MRX": "SINA_US_DAILY",
@@ -1107,12 +1108,10 @@
     "MSTR": "SINA_US_DAILY",
     "MTCH": "SINA_US_DAILY",
     "MU": "SINA_US_DAILY",
+    "MXL": "SINA_US_DAILY",
     "NBIS": "SINA_US_DAILY",
     "NDSN": "SINA_US_DAILY",
-    "NEOG": "SINA_US_DAILY",
     "NESR": "SINA_US_DAILY",
-    "NICE": "SINA_US_DAILY",
-    "NSIT": "SINA_US_DAILY",
     "NTAP": "SINA_US_DAILY",
     "NTNX": "SINA_US_DAILY",
     "NTRA": "SINA_US_DAILY",
@@ -1120,6 +1119,7 @@
     "NVDA": "SINA_US_DAILY",
     "OKTA": "SINA_US_DAILY",
     "OLLI": "SINA_US_DAILY",
+    "ONC": "SINA_US_DAILY",
     "PANW": "SINA_US_DAILY",
     "PCTY": "SINA_US_DAILY",
     "PFG": "SINA_US_DAILY",
@@ -1136,7 +1136,6 @@
     "ROKU": "SINA_US_DAILY",
     "SAIC": "SINA_US_DAILY",
     "SAIL": "SINA_US_DAILY",
-    "SDGR": "SINA_US_DAILY",
     "SEIC": "SINA_US_DAILY",
     "SIMO": "SINA_US_DAILY",
     "SLAB": "SINA_US_DAILY",
@@ -1156,9 +1155,9 @@
     "VICR": "SINA_US_DAILY",
     "VRNS": "SINA_US_DAILY",
     "VTRS": "SINA_US_DAILY",
+    "WAY": "SINA_US_DAILY",
     "WBD": "SINA_US_DAILY",
     "WDAY": "SINA_US_DAILY",
-    "WGS": "SINA_US_DAILY",
     "WIX": "SINA_US_DAILY",
     "XMTR": "SINA_US_DAILY",
     "XP": "SINA_US_DAILY",
@@ -1167,110 +1166,9 @@
   },
   "input_weekly_pass_count": 103,
   "input_weekly_trigger_scope_count": 121,
-  "lifecycle_revalidation": {
-    "ABCL": {
-      "event_status": "CLEAN_DISCOVERY",
-      "regime_finalist_pass": true,
-      "regime_finalist_status": "PASS",
-      "rs20": 0.1462280782741352,
-      "rs60": 0.9442272896992701,
-      "status": "PASS"
-    },
-    "IBRX": {
-      "event_status": "CLEAN_DISCOVERY",
-      "regime_finalist_pass": true,
-      "regime_finalist_status": "PASS",
-      "rs20": 0.2213891238370067,
-      "rs60": 0.2115246806448683,
-      "status": "PASS"
-    },
-    "IOVA": {
-      "event_status": "CLEAN_DISCOVERY",
-      "regime_finalist_pass": true,
-      "regime_finalist_status": "PASS",
-      "rs20": 0.5305080579232913,
-      "rs60": 2.209392270547711,
-      "status": "PASS"
-    },
-    "LITE": {
-      "event_status": "CLEAN_DISCOVERY",
-      "regime_finalist_pass": true,
-      "regime_finalist_status": "PASS",
-      "rs20": 0.17776281193771482,
-      "rs60": 0.3059252594070041,
-      "status": "PASS"
-    },
-    "MRNA": {
-      "event_status": "CLEAN_DISCOVERY",
-      "regime_finalist_pass": true,
-      "regime_finalist_status": "PASS",
-      "rs20": 0.32739727493530846,
-      "rs60": 1.8557612927992126,
-      "status": "PASS"
-    },
-    "PI": {
-      "event_status": "CLEAN_DISCOVERY",
-      "regime_finalist_pass": true,
-      "regime_finalist_status": "PASS",
-      "rs20": 0.020282148996124905,
-      "rs60": 0.23359130858581478,
-      "status": "PASS"
-    },
-    "QLYS": {
-      "event_status": "CLEAN_DISCOVERY",
-      "regime_finalist_pass": true,
-      "regime_finalist_status": "PASS",
-      "rs20": 0.10047048525470359,
-      "rs60": 0.24839001408731276,
-      "status": "PASS"
-    },
-    "RGEN": {
-      "event_status": "CLEAN_DISCOVERY",
-      "regime_finalist_pass": true,
-      "regime_finalist_status": "PASS",
-      "rs20": 0.07498710737458159,
-      "rs60": 0.2604633733662325,
-      "status": "PASS"
-    },
-    "SWKS": {
-      "event_status": "CLEAN_DISCOVERY",
-      "regime_finalist_pass": true,
-      "regime_finalist_status": "PASS",
-      "rs20": 0.07778639210643878,
-      "rs60": 0.33329835182081813,
-      "status": "PASS"
-    },
-    "TRMD": {
-      "event_status": "CLEAN_DISCOVERY",
-      "regime_finalist_pass": true,
-      "regime_finalist_status": "PASS",
-      "rs20": 0.10939289968889354,
-      "rs60": 0.33595679156332947,
-      "status": "PASS"
-    },
-    "VICR": {
-      "event_status": "CLEAN_DISCOVERY",
-      "regime_finalist_pass": true,
-      "regime_finalist_status": "PASS",
-      "rs20": 0.5410228549269815,
-      "rs60": 0.07776868410382987,
-      "status": "PASS"
-    }
-  },
-  "lifecycle_revalidation_scope": [
-    "ABCL",
-    "IBRX",
-    "IOVA",
-    "LITE",
-    "MRNA",
-    "PI",
-    "QLYS",
-    "RGEN",
-    "SWKS",
-    "TRMD",
-    "VICR"
-  ],
-  "lifecycle_revalidation_scope_count": 11,
+  "lifecycle_revalidation": {},
+  "lifecycle_revalidation_scope": [],
+  "lifecycle_revalidation_scope_count": 0,
   "mode": "FULL_SHADOW",
   "qqq_corporate_action_status": "PASS_NO_LOCAL_SPLIT_DISCONTINUITY",
   "qqq_history_fingerprint": {
@@ -1282,7 +1180,14 @@
     "sha256": "ee147cbf5b7e492fb3e88f3863970ae9c19d173b0c1ecd73bbcfdef6f5cb5cac"
   },
   "qqq_split_events": [],
-  "r92_ineligible": [],
+  "r92_ineligible": [
+    "AMLX",
+    "FRSH",
+    "MMSI",
+    "MXL",
+    "ONC",
+    "WAY"
+  ],
   "real_money": "NO-GO",
   "regime": "MIXED",
   "remaining_gates": [
@@ -1348,24 +1253,24 @@
         "pool": false
       },
       "D": {
-        "A": 0.7894368090810264,
+        "A": 0.7848205139525177,
         "P": 12.97,
         "anchor": 11.78,
-        "close": 14.82,
-        "d": 1.5074037418970436,
+        "close": 13.91,
+        "d": 1.5162702539551576,
         "dd120": -0.35344827586206895,
         "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
-        "dd252": -0.01200000000000001,
+        "dd252": -0.07359307359307365,
         "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
         "dk3_pre_r1": true,
-        "ema50": 10.555283662358576,
+        "ema50": 10.838860466483252,
         "hl_date": "2026-09-24",
         "pool": true,
-        "rs20": 0.25390579571606064,
-        "rs60": 0.8445416469515306,
-        "rvol20": 2.103127356488583,
-        "trigger_age_sessions": 4,
-        "trigger_date": "2026-09-29",
+        "rs20": 0.1703629252300456,
+        "rs60": 0.8783892606748942,
+        "rvol20": 1.7691004956424305,
+        "trigger_age_sessions": 2,
+        "trigger_date": "2026-10-01",
         "weekly_pass_at_trigger": true
       },
       "corporate_action_status": "PASS_NO_SPLIT_EVENTS_CROSSCHECKED",
@@ -1463,6 +1368,58 @@
       "rs60": 0.08643413792330046,
       "split_events": [],
       "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "AMLX": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 33
+      },
+      "B": {
+        "A": 1.6082694355490912,
+        "P": 30.14,
+        "anchor": 27.55,
+        "b": 1.6104266752515437,
+        "breakout_confirmed": false,
+        "close": 27.78,
+        "pool": false,
+        "reason": "CURRENT_WEEKLY_FAIL_FOR_ARMED",
+        "rvol20": 0.6916830927563702,
+        "trigger_date": null,
+        "window": 5
+      },
+      "D": {
+        "A": 1.6352118897492418,
+        "P": 24.0848,
+        "anchor": 21.28,
+        "close": 28.08,
+        "d": 1.7152517160513758,
+        "dd120": -0.3061002178649237,
+        "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
+        "dd252": -0.3174526008750608,
+        "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
+        "dk3_pre_r1": false,
+        "ema50": 28.821006785715866,
+        "hl_date": "2026-08-17",
+        "pool": true,
+        "rs20": -0.22182788146300658,
+        "rs60": 0.5057275764551934,
+        "rvol20": 0.9658449808859,
+        "trigger_age_sessions": 2,
+        "trigger_date": null
+      },
+      "corporate_action_status": "PASS_NO_SPLIT_EVENTS_CROSSCHECKED",
+      "event_status": "UNKNOWN",
+      "mechanical_scale_breaks": [],
+      "mixed_rs_pass": false,
+      "r92_eligible": false,
+      "regime_finalist_pass": false,
+      "regime_finalist_status": "FAIL",
+      "rs20": -0.22545631382720055,
+      "rs60": 0.4998628334040549,
+      "split_events": [],
+      "state_cap": "WATCH",
       "status": "EVALUATED"
     },
     "APA": {
@@ -1940,57 +1897,6 @@
       "regime_finalist_status": "PASS",
       "rs20": 0.03786556715199918,
       "rs60": 0.020117777840602313,
-      "split_events": [],
-      "state_cap": "NORMAL",
-      "status": "EVALUATED"
-    },
-    "BWIN": {
-      "A": {
-        "pool": false,
-        "reason": "SH_AGE",
-        "sessions_since_confirm": 12
-      },
-      "B": {
-        "A": 0.5869849796530399,
-        "P": 32.705,
-        "anchor": 31.7,
-        "b": 1.7121392111158331,
-        "breakout_confirmed": false,
-        "close": 31.9,
-        "pool": true,
-        "rvol20": 0.3360119138572969,
-        "trigger_date": null,
-        "window": 15
-      },
-      "D": {
-        "A": 0.5869849796530399,
-        "P": 32.705,
-        "anchor": 31.7,
-        "close": 31.9,
-        "d": 1.7121392111158331,
-        "dd120": -0.34677723332076904,
-        "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
-        "dd252": -0.02461397339856286,
-        "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
-        "dk3_pre_r1": false,
-        "ema50": 30.123220064181147,
-        "hl_date": "2026-09-24",
-        "pool": true,
-        "rs20": -0.017841799671934888,
-        "rs60": 0.15491903409799734,
-        "rvol20": 0.3360119138572969,
-        "trigger_age_sessions": 0,
-        "trigger_date": null
-      },
-      "corporate_action_status": "PASS_NO_LOCAL_SPLIT_DISCONTINUITY",
-      "event_status": "CLEAN_DISCOVERY",
-      "mechanical_scale_breaks": [],
-      "mixed_rs_pass": false,
-      "r92_eligible": true,
-      "regime_finalist_pass": false,
-      "regime_finalist_status": "FAIL",
-      "rs20": -0.017841799671934888,
-      "rs60": 0.15491903409799734,
       "split_events": [],
       "state_cap": "NORMAL",
       "status": "EVALUATED"
@@ -2924,6 +2830,48 @@
       "state_cap": "NORMAL",
       "status": "EVALUATED"
     },
+    "FRSH": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 40
+      },
+      "B": {
+        "pool": false
+      },
+      "D": {
+        "A": 0.48854169233242234,
+        "P": 12.2,
+        "anchor": 10.872,
+        "close": 13.22,
+        "d": 2.7182941002635608,
+        "dd120": -0.17041198501872667,
+        "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
+        "dd252": -0.05503931379556826,
+        "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
+        "dk3_pre_r1": false,
+        "ema50": 12.2589507802542,
+        "hl_date": "2026-08-06",
+        "pool": false,
+        "rs20": -0.0126500530934327,
+        "rs60": 0.22427344505498437,
+        "rvol20": 0.8234571852221365,
+        "trigger_age_sessions": 0,
+        "trigger_date": null
+      },
+      "corporate_action_status": "PASS_NO_LOCAL_SPLIT_DISCONTINUITY",
+      "event_status": "UNKNOWN",
+      "mechanical_scale_breaks": [],
+      "mixed_rs_pass": false,
+      "r92_eligible": false,
+      "regime_finalist_pass": false,
+      "regime_finalist_status": "FAIL",
+      "rs20": -0.0126500530934327,
+      "rs60": 0.22427344505498437,
+      "split_events": [],
+      "state_cap": "WATCH",
+      "status": "EVALUATED"
+    },
     "FSLY": {
       "A": {
         "pool": false,
@@ -3171,25 +3119,24 @@
         "pool": false
       },
       "D": {
-        "A": 2.063892228006696,
+        "A": 2.098665552324348,
         "P": 35.05,
         "anchor": 33.8901,
-        "close": 46.21,
-        "d": 0.5619963989690635,
+        "close": 51.5,
+        "d": 0.5526845374268278,
         "dd120": -0.23557265463154786,
         "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
-        "dd252": -0.16813681368136812,
+        "dd252": -0.07290729072907287,
         "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
-        "dk3_pre_r1": true,
-        "ema50": 42.92255893108608,
+        "dk3_pre_r1": false,
+        "ema50": 44.04877263326942,
         "hl_date": "2026-08-06",
         "pool": true,
-        "rs20": 0.0017589270809874602,
-        "rs60": 0.39409505137379086,
-        "rvol20": 1.2464728740635393,
-        "trigger_age_sessions": 5,
-        "trigger_date": "2026-09-28",
-        "weekly_pass_at_trigger": true
+        "rs20": -0.017382719336195285,
+        "rs60": 0.5240560818965438,
+        "rvol20": 0.8155751490516729,
+        "trigger_age_sessions": 0,
+        "trigger_date": null
       },
       "corporate_action_status": "PASS_NO_SPLIT_EVENTS_CROSSCHECKED",
       "event_status": "CLEAN_DISCOVERY",
@@ -3551,24 +3498,24 @@
         "pool": false
       },
       "D": {
-        "A": 0.5711154171078687,
+        "A": 0.8381786016001639,
         "P": 8.91,
         "anchor": 8.04,
-        "close": 14.45,
-        "d": 1.5233348180402575,
+        "close": 14.82,
+        "d": 1.0379649377102769,
         "dd120": -0.2572992700729927,
         "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
-        "dd252": -0.05555555555555569,
+        "dd252": -0.03137254901960784,
         "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
         "dk3_pre_r1": true,
-        "ema50": 8.235132564758558,
+        "ema50": 8.493362660258223,
         "hl_date": "2026-09-10",
         "pool": true,
-        "rs20": 0.7179257316121026,
-        "rs60": 2.3780713494922114,
-        "rvol20": 6.308313904125064,
-        "trigger_age_sessions": 4,
-        "trigger_date": "2026-09-29",
+        "rs20": 0.7121173384677144,
+        "rs60": 2.267170364693966,
+        "rvol20": 2.3447978225134274,
+        "trigger_age_sessions": 3,
+        "trigger_date": "2026-09-30",
         "weekly_pass_at_trigger": true
       },
       "corporate_action_status": "PASS_NO_SPLIT_EVENTS_CROSSCHECKED",
@@ -3853,6 +3800,48 @@
       "rs60": 0.3822459018213644,
       "split_events": [],
       "state_cap": "NORMAL",
+      "status": "EVALUATED"
+    },
+    "MMSI": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 43
+      },
+      "B": {
+        "pool": false
+      },
+      "D": {
+        "A": 1.8325736609116963,
+        "P": 87.828,
+        "anchor": 83.59,
+        "close": 87.14,
+        "d": 2.312594626014441,
+        "dd120": -0.1497250810658396,
+        "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
+        "dd252": -0.08029915080180938,
+        "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
+        "dk3_pre_r1": false,
+        "ema50": 85.10095558275972,
+        "hl_date": "2026-08-05",
+        "pool": false,
+        "rs20": -0.07534951543431434,
+        "rs60": 0.13839142896572065,
+        "rvol20": 1.2700005721909737,
+        "trigger_age_sessions": 0,
+        "trigger_date": null
+      },
+      "corporate_action_status": "PASS_NO_LOCAL_SPLIT_DISCONTINUITY",
+      "event_status": "UNKNOWN",
+      "mechanical_scale_breaks": [],
+      "mixed_rs_pass": false,
+      "r92_eligible": false,
+      "regime_finalist_pass": false,
+      "regime_finalist_status": "FAIL",
+      "rs20": -0.07534951543431434,
+      "rs60": 0.13839142896572065,
+      "split_events": [],
+      "state_cap": "WATCH",
       "status": "EVALUATED"
     },
     "MRNA": {
@@ -4168,6 +4157,49 @@
       "state_cap": "NORMAL",
       "status": "EVALUATED"
     },
+    "MXL": {
+      "A": {
+        "pool": false,
+        "reason": "NO_REVERSAL",
+        "sessions_since_confirm": 8
+      },
+      "B": {
+        "pool": false
+      },
+      "D": {
+        "A": 6.419160539746543,
+        "P": 88.98,
+        "anchor": 79.69,
+        "close": 105.93,
+        "d": 1.4472297339313493,
+        "dd120": -0.5528391783175819,
+        "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
+        "dd252": -0.17435697583788,
+        "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
+        "dk3_pre_r1": true,
+        "ema50": 77.87355168722279,
+        "hl_date": "2026-09-24",
+        "pool": true,
+        "rs20": 0.7059799206647395,
+        "rs60": 0.06694474584264043,
+        "rvol20": 1.7532709370442416,
+        "trigger_age_sessions": 1,
+        "trigger_date": "2026-10-02",
+        "weekly_pass_at_trigger": true
+      },
+      "corporate_action_status": "PASS_NO_SPLIT_EVENTS_CROSSCHECKED",
+      "event_status": "CLEAN_DISCOVERY",
+      "mechanical_scale_breaks": [],
+      "mixed_rs_pass": true,
+      "r92_eligible": false,
+      "regime_finalist_pass": true,
+      "regime_finalist_status": "PASS",
+      "rs20": 0.5985816875259304,
+      "rs60": 0.10852947362048027,
+      "split_events": [],
+      "state_cap": "WATCH",
+      "status": "EVALUATED"
+    },
     "NBIS": {
       "A": {
         "pool": false,
@@ -4252,49 +4284,6 @@
       "state_cap": "NORMAL",
       "status": "EVALUATED"
     },
-    "NEOG": {
-      "A": {
-        "pool": false,
-        "reason": "SH_AGE",
-        "sessions_since_confirm": 17
-      },
-      "B": {
-        "pool": false
-      },
-      "D": {
-        "A": 0.4902708861749979,
-        "P": 12.36,
-        "anchor": 11.58,
-        "close": 13.72,
-        "d": 1.5909572075254437,
-        "dd120": -0.20793036750483562,
-        "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
-        "dd252": -0.037868162692847096,
-        "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
-        "dk3_pre_r1": true,
-        "ema50": 11.83565848616983,
-        "hl_date": "2026-09-10",
-        "pool": true,
-        "rs20": 0.14456084100636102,
-        "rs60": 0.4212242597973235,
-        "rvol20": 2.6298755647858414,
-        "trigger_age_sessions": 5,
-        "trigger_date": "2026-09-28",
-        "weekly_pass_at_trigger": true
-      },
-      "corporate_action_status": "PASS_NO_SPLIT_EVENTS_CROSSCHECKED",
-      "event_status": "BLOCK_CONFIRMED_8SESSION",
-      "mechanical_scale_breaks": [],
-      "mixed_rs_pass": true,
-      "r92_eligible": true,
-      "regime_finalist_pass": true,
-      "regime_finalist_status": "PASS",
-      "rs20": 0.045588041645250765,
-      "rs60": 0.2975047438747518,
-      "split_events": [],
-      "state_cap": "NORMAL",
-      "status": "EVALUATED"
-    },
     "NESR": {
       "A": {
         "pool": false,
@@ -4333,90 +4322,6 @@
       "regime_finalist_status": "FAIL",
       "rs20": -0.3411755178771556,
       "rs60": -0.19277689710090062,
-      "split_events": [],
-      "state_cap": "NORMAL",
-      "status": "EVALUATED"
-    },
-    "NICE": {
-      "A": {
-        "pool": false,
-        "reason": "NO_REVERSAL",
-        "sessions_since_confirm": 6
-      },
-      "B": {
-        "pool": false
-      },
-      "D": {
-        "A": 5.233655801369507,
-        "P": 128.51,
-        "anchor": 105.66,
-        "close": 115.83,
-        "d": 4.365973015271804,
-        "dd120": -0.3348532117430605,
-        "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
-        "dd252": -0.1791143676600968,
-        "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
-        "dk3_pre_r1": false,
-        "ema50": 105.68930733778872,
-        "hl_date": "2026-09-29",
-        "pool": true,
-        "rs20": 0.04384653123437077,
-        "rs60": 0.11418786040213402,
-        "rvol20": 0.6323068293967015,
-        "trigger_age_sessions": 0,
-        "trigger_date": null
-      },
-      "corporate_action_status": "PASS_NO_LOCAL_SPLIT_DISCONTINUITY",
-      "event_status": "CLEAN_DISCOVERY",
-      "mechanical_scale_breaks": [],
-      "mixed_rs_pass": true,
-      "r92_eligible": true,
-      "regime_finalist_pass": true,
-      "regime_finalist_status": "PASS",
-      "rs20": 0.04384653123437077,
-      "rs60": 0.11418786040213402,
-      "split_events": [],
-      "state_cap": "NORMAL",
-      "status": "EVALUATED"
-    },
-    "NSIT": {
-      "A": {
-        "pool": false,
-        "reason": "NO_REVERSAL",
-        "sessions_since_confirm": 4
-      },
-      "B": {
-        "pool": false
-      },
-      "D": {
-        "A": 5.779431045138261,
-        "P": 163.37,
-        "anchor": 153.62,
-        "close": 159.39,
-        "d": 1.6870172727818662,
-        "dd120": -0.11370091896407686,
-        "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
-        "dd252": -0.05406696605287953,
-        "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
-        "dk3_pre_r1": false,
-        "ema50": 148.82475560651355,
-        "hl_date": "2026-09-30",
-        "pool": false,
-        "rs20": -0.058636829319912986,
-        "rs60": 0.27636454647479036,
-        "rvol20": 1.1363667917827016,
-        "trigger_age_sessions": 0,
-        "trigger_date": null
-      },
-      "corporate_action_status": "PASS_NO_LOCAL_SPLIT_DISCONTINUITY",
-      "event_status": "CLEAN_DISCOVERY",
-      "mechanical_scale_breaks": [],
-      "mixed_rs_pass": false,
-      "r92_eligible": true,
-      "regime_finalist_pass": false,
-      "regime_finalist_status": "FAIL",
-      "rs20": -0.058636829319912986,
-      "rs60": 0.27636454647479036,
       "split_events": [],
       "state_cap": "NORMAL",
       "status": "EVALUATED"
@@ -4751,6 +4656,48 @@
       "state_cap": "NORMAL",
       "status": "EVALUATED"
     },
+    "ONC": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 13
+      },
+      "B": {
+        "pool": false
+      },
+      "D": {
+        "A": 9.457123840839904,
+        "P": 356.0,
+        "anchor": 342.88,
+        "close": 361.65,
+        "d": 1.387313967841072,
+        "dd120": -0.1963750887701856,
+        "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
+        "dd252": -0.061185815897409346,
+        "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
+        "dk3_pre_r1": false,
+        "ema50": 349.82723959570836,
+        "hl_date": "2026-09-16",
+        "pool": false,
+        "rs20": -0.04024981716487308,
+        "rs60": 0.1616090225943383,
+        "rvol20": 1.0749980122990708,
+        "trigger_age_sessions": 0,
+        "trigger_date": null
+      },
+      "corporate_action_status": "PASS_NO_LOCAL_SPLIT_DISCONTINUITY",
+      "event_status": "UNKNOWN",
+      "mechanical_scale_breaks": [],
+      "mixed_rs_pass": false,
+      "r92_eligible": false,
+      "regime_finalist_pass": false,
+      "regime_finalist_status": "FAIL",
+      "rs20": -0.04024981716487308,
+      "rs60": 0.1616090225943383,
+      "split_events": [],
+      "state_cap": "WATCH",
+      "status": "EVALUATED"
+    },
     "PANW": {
       "A": {
         "pool": false,
@@ -5033,25 +4980,24 @@
         "pool": false
       },
       "D": {
-        "A": 8.65823247298942,
+        "A": 8.348582532563924,
         "P": 183.49,
         "anchor": 175.97,
-        "close": 187.48,
-        "d": 0.8685375477569716,
+        "close": 180.79,
+        "d": 0.9007517109243396,
         "dd120": -0.411959206437734,
         "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
-        "dd252": -0.27870113881194225,
+        "dd252": -0.3044398276392737,
         "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
-        "dk3_pre_r1": true,
-        "ema50": 178.49246444349234,
+        "dk3_pre_r1": false,
+        "ema50": 179.3334192935321,
         "hl_date": "2026-09-18",
         "pool": true,
-        "rs20": 0.11068668181570285,
-        "rs60": 0.029155966453004334,
-        "rvol20": 1.3967559781303478,
-        "trigger_age_sessions": 5,
-        "trigger_date": "2026-09-28",
-        "weekly_pass_at_trigger": true
+        "rs20": 0.018648653960807948,
+        "rs60": -0.08303696351228962,
+        "rvol20": 1.030205841084948,
+        "trigger_age_sessions": 0,
+        "trigger_date": null
       },
       "corporate_action_status": "PASS_NO_LOCAL_SPLIT_DISCONTINUITY",
       "event_status": "CLEAN_DISCOVERY",
@@ -5413,57 +5359,6 @@
       "state_cap": "NORMAL",
       "status": "EVALUATED"
     },
-    "SDGR": {
-      "A": {
-        "A": 1.8068191481215596,
-        "P": 31.14,
-        "anchor": 27.69,
-        "d": 1.9094329410814332,
-        "depth": 2.1611460140100807,
-        "hl_date": "2026-09-25",
-        "pool": false,
-        "prelow_near_hl": false,
-        "sessions_since_confirm": 7,
-        "sh_date": "2026-09-22",
-        "trigger_date": "2026-10-05",
-        "weekly_pass_at_trigger": true
-      },
-      "B": {
-        "pool": false
-      },
-      "D": {
-        "A": 1.8068191481215596,
-        "P": 31.5948,
-        "anchor": 27.69,
-        "close": 32.6,
-        "d": 2.1611460140100807,
-        "dd120": -0.13916043703277747,
-        "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
-        "dd252": -0.01480809912360237,
-        "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
-        "dk3_pre_r1": false,
-        "ema50": 23.218148512931332,
-        "hl_date": "2026-09-25",
-        "pool": false,
-        "rs20": 0.5427861057402494,
-        "rs60": 0.8967219680156873,
-        "rvol20": 1.9614465464353532,
-        "trigger_age_sessions": 0,
-        "trigger_date": null
-      },
-      "corporate_action_status": "PASS_NO_LOCAL_SPLIT_DISCONTINUITY",
-      "event_status": "CLEAN_DISCOVERY",
-      "mechanical_scale_breaks": [],
-      "mixed_rs_pass": true,
-      "r92_eligible": true,
-      "regime_finalist_pass": true,
-      "regime_finalist_status": "PASS",
-      "rs20": 0.5427861057402494,
-      "rs60": 0.8967219680156873,
-      "split_events": [],
-      "state_cap": "NORMAL",
-      "status": "EVALUATED"
-    },
     "SEIC": {
       "A": {
         "pool": false,
@@ -5778,24 +5673,24 @@
         "pool": false
       },
       "D": {
-        "A": 3.099137524840672,
+        "A": 2.9909553147860906,
         "P": 74.0,
         "anchor": 69.465,
-        "close": 76.81,
-        "d": 1.463310344781535,
+        "close": 78.61,
+        "d": 1.5162379650343705,
         "dd120": -0.2398049044844872,
         "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
-        "dd252": -0.16082158855020212,
+        "dd252": -0.1411559051677046,
         "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
         "dk3_pre_r1": true,
-        "ema50": 73.00126850506119,
+        "ema50": 73.3602021071326,
         "hl_date": "2026-08-27",
         "pool": true,
-        "rs20": 0.041162835245649454,
-        "rs60": 0.13561168197784146,
-        "rvol20": 2.0419204577790078,
-        "trigger_age_sessions": 5,
-        "trigger_date": "2026-09-28",
+        "rs20": 0.015473026422057945,
+        "rs60": 0.06854695878381634,
+        "rvol20": 2.436834370846213,
+        "trigger_age_sessions": 3,
+        "trigger_date": "2026-09-30",
         "weekly_pass_at_trigger": true
       },
       "corporate_action_status": "PASS_NO_LOCAL_SPLIT_DISCONTINUITY",
@@ -5998,24 +5893,24 @@
         "pool": false
       },
       "D": {
-        "A": 1.3670159424592554,
+        "A": 1.4601229157793312,
         "P": 32.54,
         "anchor": 29.925,
-        "close": 35.42,
-        "d": 1.9129257522012695,
+        "close": 40.0,
+        "d": 1.7909451127299505,
         "dd120": -0.25265271006595924,
         "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
-        "dd252": -0.08546346501420077,
+        "dd252": 0.0,
         "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
         "dk3_pre_r1": true,
-        "ema50": 32.8334982683015,
+        "ema50": 33.643531042256214,
         "hl_date": "2026-08-26",
         "pool": true,
-        "rs20": 0.05620427862959554,
-        "rs60": 0.23715514270473426,
-        "rvol20": 1.2421527680842581,
-        "trigger_age_sessions": 5,
-        "trigger_date": "2026-09-28",
+        "rs20": 0.12045581492087676,
+        "rs60": 0.3755006200954121,
+        "rvol20": 1.2242404267910854,
+        "trigger_age_sessions": 1,
+        "trigger_date": "2026-10-02",
         "weekly_pass_at_trigger": true
       },
       "corporate_action_status": "PASS_NO_LOCAL_SPLIT_DISCONTINUITY",
@@ -6291,6 +6186,48 @@
       "state_cap": "NORMAL",
       "status": "EVALUATED"
     },
+    "WAY": {
+      "A": {
+        "pool": false,
+        "reason": "SH_AGE",
+        "sessions_since_confirm": 12
+      },
+      "B": {
+        "pool": false
+      },
+      "D": {
+        "A": 1.1023000974689625,
+        "P": 27.28,
+        "anchor": 24.325,
+        "close": 26.48,
+        "d": 2.68075817718342,
+        "dd120": -0.35192811681018354,
+        "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
+        "dd252": -0.3437422552664189,
+        "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
+        "dk3_pre_r1": false,
+        "ema50": 24.555691147644172,
+        "hl_date": "2026-09-25",
+        "pool": true,
+        "rs20": 0.004226557598523195,
+        "rs60": 0.1326492376942081,
+        "rvol20": 2.041288777370286,
+        "trigger_age_sessions": 0,
+        "trigger_date": null
+      },
+      "corporate_action_status": "PASS_NO_LOCAL_SPLIT_DISCONTINUITY",
+      "event_status": "UNKNOWN",
+      "mechanical_scale_breaks": [],
+      "mixed_rs_pass": true,
+      "r92_eligible": false,
+      "regime_finalist_pass": true,
+      "regime_finalist_status": "PASS",
+      "rs20": 0.004226557598523195,
+      "rs60": 0.1326492376942081,
+      "split_events": [],
+      "state_cap": "WATCH",
+      "status": "EVALUATED"
+    },
     "WBD": {
       "A": {
         "pool": false,
@@ -6382,55 +6319,6 @@
       "regime_finalist_status": "FAIL",
       "rs20": -0.08241262495120272,
       "rs60": 0.3047222209797116,
-      "split_events": [],
-      "state_cap": "NORMAL",
-      "status": "EVALUATED"
-    },
-    "WGS": {
-      "A": {
-        "pool": false,
-        "reason": "SH_AGE",
-        "sessions_since_confirm": 52
-      },
-      "B": {
-        "pool": false
-      },
-      "D": {
-        "A": 6.240452914458072,
-        "P": 67.44,
-        "anchor": 62.605,
-        "close": 70.96,
-        "d": 0.7747835079082361,
-        "dd120": -0.5057997995131033,
-        "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
-        "dd252": -0.5847135249019724,
-        "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
-        "dk3_pre_r1": false,
-        "ema50": 81.24976397121247,
-        "hl_date": "2026-08-03",
-        "pool": true,
-        "rs20": -0.2178931407523581,
-        "rs60": 0.03679810818073337,
-        "rvol20": 1.1869695655392005,
-        "trigger_age_sessions": 2,
-        "trigger_date": null
-      },
-      "corporate_action_status": "PASS_NO_SPLIT_EVENTS_CROSSCHECKED",
-      "event_status": "CLEAN_DISCOVERY",
-      "mechanical_scale_breaks": [
-        {
-          "date": "2026-05-05",
-          "nearest_common_factor": 2.0,
-          "ratio": 1.968414952187772,
-          "relative_error": 0.015792523906113964
-        }
-      ],
-      "mixed_rs_pass": false,
-      "r92_eligible": true,
-      "regime_finalist_pass": false,
-      "regime_finalist_status": "FAIL",
-      "rs20": -0.15671601407432567,
-      "rs60": 0.11478702123788032,
       "split_events": [],
       "state_cap": "NORMAL",
       "status": "EVALUATED"
@@ -6674,19 +6562,20 @@
     }
   },
   "schema": "XRAY_DEEP_PRE_R1_SHADOW_V1",
-  "source_event_blob_sha": "d9d4e0f5edc3deb5d8c4392ace7875093f4709aa",
+  "source_event_blob_sha": "a10d3cd0a880aed3f2018dd75fc273e278ac4378",
   "source_event_path": "nasdaq-xray/canonical_current_event_state.json",
-  "source_mc_policy_hash": "26a95745a50b65e85f6ece24b6501af0994764a84ddd886edb70d1fcd770849c",
+  "source_mc_policy_hash": "68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4",
   "source_mc_policy_version": "C4.17",
-  "source_regime_blob_sha": "ebc773abc9e5c04b56614fb103489aa42996e215",
+  "source_regime_blob_sha": "6002d478f0d79f3768e53c6ea1440ba1874ca974",
   "source_regime_path": "nasdaq-xray/canonical_current_regime.json",
-  "source_stage1_blob_sha": "6307211f25ed6a40ff21c0e94cc50f8febd888e4",
+  "source_stage1_blob_sha": "68fc603da32dd5c86fe216b5e0aa4fa609c2d09b",
   "source_stage1_path": "nasdaq-xray/canonical_current_stage1.json",
   "state_caps": {
     "AAPL": "NORMAL",
     "ABCL": "NORMAL",
     "AEHR": "NORMAL",
     "AMD": "NORMAL",
+    "AMLX": "WATCH",
     "APA": "NORMAL",
     "APPF": "NORMAL",
     "ARGX": "NORMAL",
@@ -6698,7 +6587,6 @@
     "AXTI": "NORMAL",
     "BIIB": "NORMAL",
     "BRKR": "NORMAL",
-    "BWIN": "NORMAL",
     "CAI": "NORMAL",
     "CDNA": "NORMAL",
     "CHEF": "NORMAL",
@@ -6720,6 +6608,7 @@
     "FIVN": "NORMAL",
     "FORM": "NORMAL",
     "FROG": "NORMAL",
+    "FRSH": "WATCH",
     "FSLY": "NORMAL",
     "FTNT": "NORMAL",
     "GH": "NORMAL",
@@ -6741,6 +6630,7 @@
     "MEDP": "NORMAL",
     "META": "NORMAL",
     "MKTX": "NORMAL",
+    "MMSI": "WATCH",
     "MRNA": "NORMAL",
     "MRVL": "NORMAL",
     "MRX": "NORMAL",
@@ -6748,12 +6638,10 @@
     "MSTR": "NORMAL",
     "MTCH": "NORMAL",
     "MU": "NORMAL",
+    "MXL": "WATCH",
     "NBIS": "NORMAL",
     "NDSN": "NORMAL",
-    "NEOG": "NORMAL",
     "NESR": "NORMAL",
-    "NICE": "NORMAL",
-    "NSIT": "NORMAL",
     "NTAP": "NORMAL",
     "NTNX": "NORMAL",
     "NTRA": "NORMAL",
@@ -6761,6 +6649,7 @@
     "NVDA": "NORMAL",
     "OKTA": "NORMAL",
     "OLLI": "NORMAL",
+    "ONC": "WATCH",
     "PANW": "NORMAL",
     "PCTY": "NORMAL",
     "PFG": "NORMAL",
@@ -6776,7 +6665,6 @@
     "ROKU": "NORMAL",
     "SAIC": "NORMAL",
     "SAIL": "NORMAL",
-    "SDGR": "NORMAL",
     "SEIC": "NORMAL",
     "SIMO": "NORMAL",
     "SLAB": "NORMAL",
@@ -6796,9 +6684,9 @@
     "VICR": "NORMAL",
     "VRNS": "NORMAL",
     "VTRS": "NORMAL",
+    "WAY": "WATCH",
     "WBD": "NORMAL",
     "WDAY": "NORMAL",
-    "WGS": "NORMAL",
     "WIX": "NORMAL",
     "XMTR": "NORMAL",
     "XP": "NORMAL",
@@ -6814,6 +6702,7 @@
     "ABCL",
     "AEHR",
     "AMD",
+    "AMLX",
     "APA",
     "APPF",
     "ARGX",
@@ -6825,7 +6714,6 @@
     "AXTI",
     "BIIB",
     "BRKR",
-    "BWIN",
     "CAI",
     "CDNA",
     "CHEF",
@@ -6847,6 +6735,7 @@
     "FIVN",
     "FORM",
     "FROG",
+    "FRSH",
     "FSLY",
     "FTNT",
     "GH",
@@ -6868,6 +6757,7 @@
     "MEDP",
     "META",
     "MKTX",
+    "MMSI",
     "MRNA",
     "MRVL",
     "MRX",
@@ -6875,12 +6765,10 @@
     "MSTR",
     "MTCH",
     "MU",
+    "MXL",
     "NBIS",
     "NDSN",
-    "NEOG",
     "NESR",
-    "NICE",
-    "NSIT",
     "NTAP",
     "NTNX",
     "NTRA",
@@ -6888,6 +6776,7 @@
     "NVDA",
     "OKTA",
     "OLLI",
+    "ONC",
     "PANW",
     "PCTY",
     "PFG",
@@ -6903,7 +6792,6 @@
     "ROKU",
     "SAIC",
     "SAIL",
-    "SDGR",
     "SEIC",
     "SIMO",
     "SLAB",
@@ -6923,9 +6811,9 @@
     "VICR",
     "VRNS",
     "VTRS",
+    "WAY",
     "WBD",
     "WDAY",
-    "WGS",
     "WIX",
     "XMTR",
     "XP",
