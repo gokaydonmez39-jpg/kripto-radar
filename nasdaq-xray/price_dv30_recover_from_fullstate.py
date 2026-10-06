@@ -144,7 +144,7 @@ def price_snapshot_integrity(px,frozen_asof):
           and sum(int(v) for v in counts.values())==source_count
           and int(px.get("unknown_count",-1))==len(unknown)==len(set(unknown))
           and int(px.get("blocked_count",counts.get("BLOCK_CURRENT_RUN",0)))==len(blocked)==len(set(blocked))
-          and int(px.get("pass_count",-1))==len(passes)==len(set(passes)) and len(passes)>0
+          and int(px.get("pass_count",-1))==len(passes)==len(set(passes))
           and set(unknown).issubset(results)
           and set(blocked).issubset(results)
           and set(passes).issubset(results)

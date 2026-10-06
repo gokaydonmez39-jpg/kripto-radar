@@ -1054,6 +1054,21 @@ def test_final_workflow_auto_rebinds_event_provenance_and_persists_successor():
     assert 'files+=("${{ steps.event_rebind.outputs.path }}")' in wf
     assert "nasdaq-xray/build_event_provenance_rebind.py" in wf
 
+
+def test_price_snapshot_integrity_accepts_fail_closed_zero_pass_partial():
+    px={
+      "asof_et":"2026-10-06","execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
+      "source_master_count":3,
+      "counts":{"UNKNOWN":3},
+      "results":{"AAA":{"decision":"UNKNOWN"},"BBB":{"decision":"UNKNOWN"},"CCC":{"decision":"UNKNOWN"}},
+      "unknown_symbols":["AAA","BBB","CCC"],"unknown_count":3,
+      "blocked_symbols":[],"blocked_count":0,
+      "pass_symbols":[],"pass_count":0,
+    }
+    assert price_recover_mod.price_snapshot_integrity(px,"2026-10-06") is True
+    bad=dict(px); bad["counts"]={"UNKNOWN":2}
+    assert price_recover_mod.price_snapshot_integrity(bad,"2026-10-06") is False
+
 def main():
     test_r1_no_future_mutation_and_confirmation(); test_r1_pivot_boundary_is_not_overhead_but_entry_overlap_is(); test_resistance_role_change_state_machine()
     test_final_history_normalizer_preserves_ohlcv()
