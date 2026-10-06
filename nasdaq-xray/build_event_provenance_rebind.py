@@ -68,25 +68,44 @@ def validate_bridge_scope(bridge: dict, req: dict) -> None:
     assert bridge.get("geometry_scope_hash")==req.get("geometry_scope_hash")
     sr=bridge.get("semantic_rebind") or {}
     opr=bridge.get("official_primary_refresh") or {}
-    if opr:
-        assert opr.get("schema")=="XRAY_EVENT_OFFICIAL_PRIMARY_REFRESH_V1"
-        assert opr.get("lifecycle_scope_hash")==req.get("lifecycle_scope_hash")
-        assert opr.get("weekly_scope_hash")==req.get("weekly_scope_hash")
-        assert opr.get("geometry_scope_hash")==req.get("geometry_scope_hash")
-        assert opr.get("no_alpha_threshold_change") is True
-        assert opr.get("official_primary_only") is True
-        assert opr.get("unknown_never_pass") is True
-        resolved=set(opr.get("resolved_symbols") or [])
+    direct_primary_refresh=(sr.get("rule")=="OPTIONAL_DISCOVERY_DIRECT_OFFICIAL_PRIMARY_RESOLUTION_V1")
+    if opr or direct_primary_refresh:
+        if opr:
+            assert opr.get("schema")=="XRAY_EVENT_OFFICIAL_PRIMARY_REFRESH_V1"
+            assert opr.get("lifecycle_scope_hash")==req.get("lifecycle_scope_hash")
+            assert opr.get("weekly_scope_hash")==req.get("weekly_scope_hash")
+            assert opr.get("geometry_scope_hash")==req.get("geometry_scope_hash")
+            assert opr.get("no_alpha_threshold_change") is True
+            assert opr.get("official_primary_only") is True
+            assert opr.get("unknown_never_pass") is True
+            resolved=set(opr.get("resolved_symbols") or [])
+        else:
+            assert sr.get("lifecycle_scope_hash")==req.get("lifecycle_scope_hash")
+            assert sr.get("weekly_scope_hash")==req.get("weekly_scope_hash")
+            assert sr.get("geometry_scope_hash")==req.get("geometry_scope_hash")
+            assert sr.get("no_alpha_threshold_change") is True
+            assert sr.get("no_event_horizon_change") is True
+            assert sr.get("decisions_changed_only_with_primary_evidence") is True
+            resolved=set(bridge.get("provider_unavailable_but_officially_resolved_symbols") or [])
+            assert int(sr.get("official_resolved_count",-1))==len(resolved)
         geometry=set(req.get("geometry_scope") or [])
         assert resolved and resolved<=geometry
         assert resolved==set(bridge.get("provider_unavailable_but_officially_resolved_symbols") or [])
         clearance=bridge.get("official_horizon_clearance") or {}
         status=bridge.get("event_status_by_symbol") or {}
+        horizon=set(req.get("future_horizon_sessions") or [])
+        horizon_end=max(horizon or {""})
         for sym in resolved:
             rec=clearance.get(sym) or {}
-            assert status.get(sym) in {"CLEAN_DISCOVERY","BLOCK_CONFIRMED_8SESSION"}
+            st=status.get(sym)
+            assert st in {"CLEAN_DISCOVERY","BLOCK_CONFIRMED_8SESSION"}
             assert rec.get("authority") in {"ISSUER_IR_PRIMARY","SEC_PRIMARY"}
             assert rec.get("official_source_url")
+            dt=str(rec.get("next_event_date") or rec.get("event_date") or "")[:10]
+            if st=="CLEAN_DISCOVERY":
+                assert dt and dt>horizon_end
+            else:
+                assert dt in horizon
     else:
         assert sr.get("lifecycle_scope_hash")==req.get("lifecycle_scope_hash")
         assert sr.get("weekly_scope_hash")==req.get("weekly_scope_hash")
@@ -129,8 +148,13 @@ def select_active_event(rows):
         if not sp or not ss:
             continue
         pred=by_path.get(sp)
-        if pred is None or pred["blob"]!=ss:
-            continue
+        if pred is not None:
+            if pred["blob"]!=ss:
+                continue
+        else:
+            pred_file=REPO/sp
+            if not pred_file.exists() or blob_sha(pred_file)!=ss:
+                continue
         valid.append(r)
     superseded={
         r["obj"].get("supersedes_event_bridge_path")
