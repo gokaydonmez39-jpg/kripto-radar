@@ -765,6 +765,20 @@ def test_workflow_race_and_pre_mc_freeze_contracts():
     assert core("2026-10-02","2026-10-05","2026-10-05",False)=={"build":False,"recover":True}
     assert core("2026-10-02","2026-10-05","2026-10-02",False)=={"build":True,"recover":False}
 
+def test_detailed_legal_gate_is_only_for_actual_pre_g9_promotion():
+    # Detailed filing review is a candidate-promotion guard, not a prerequisite
+    # for classifying a deterministic technical non-pass. A provider outage
+    # must never turn WATCH/FAIL into UNKNOWN, while PRE_G9 still requires PASS.
+    assert ft.detailed_legal_required_for_technical_state("PRE_G9_TECH_PASS")
+    for state in (
+        "WATCH_CHASE_RETEST_REQUIRED","WATCH_RECONFIRMATION_REQUIRED",
+        "WATCH_RETEST_REQUIRED","WATCH_EXTENSION_RESET_REQUIRED",
+        "WATCH_REGIME_REVALIDATION_REQUIRED","WATCH_REGIME_UNKNOWN",
+        "FAIL_R1_ENTRY_OVERLAP","FAIL_RR","UNKNOWN",None
+    ):
+        assert not ft.detailed_legal_required_for_technical_state(state),state
+
+
 def test_terminal_lifecycle_state_contract_covers_final_persistence():
     # Terminal may accept extra diagnostic states, but it must never reject a
     # lifecycle state that Final is explicitly allowed to persist.
@@ -785,6 +799,7 @@ def main():
     test_cross_session_lifecycle_scope_persists_active_only()
     test_candidate_legal_guard_lifecycle_fallback_matches_final()
     test_future_lifecycle_evidence_rejected()
+    test_detailed_legal_gate_is_only_for_actual_pre_g9_promotion()
     test_terminal_lifecycle_state_contract_covers_final_persistence()
     test_resolver_metadata_only_resume_identity()
     test_resolver_bridge_bound_to_exact_pre_run_price_and_scope()
