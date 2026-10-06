@@ -63,7 +63,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-10-06T16:16:02.170877+00:00",
+  "generated_at_utc": "2026-10-06T16:30:18.387638+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -651,8 +651,23 @@
         "WBD"
       ],
       "active_state_rule": "EXPLICIT_EMPTY_RESUMPTION_FIELDS_ONLY",
-      "item_count": 50,
+      "item_count": 51,
       "items": [
+        {
+          "HaltDate": "10/06/2026",
+          "HaltTime": "12:25:27.136",
+          "IssueName": "Future Vision II Acq Cp Units",
+          "IssueSymbol": "FVNNU",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "10/06/2026",
+          "ResumptionQuoteTime": "12:25:27",
+          "ResumptionTradeTime": "",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/06/2026                    </td><td valign=\"top\">12:25:27.136</td><td valign=\"top\">FVNNU</td><td valign=\"top\">Future Vision II Acq Cp Units</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/06/2026                    </td><td valign=\"top\">12:25:27                      </td><td valign=\"top\"></td></tr></table>",
+          "pubDate": "Tue, 06 Oct 2026 04:00:00 GMT",
+          "title": "FVNNU"
+        },
         {
           "HaltDate": "10/06/2026",
           "HaltTime": "12:06:30.466",
