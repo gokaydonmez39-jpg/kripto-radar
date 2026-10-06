@@ -40,8 +40,6 @@ ROOT=Path(__file__).resolve().parent
 STATE=Path(os.getenv("XRAY_SINA_STATE", str(ROOT/"sina_state.json")))
 CAND=Path(os.getenv("XRAY_SINA_CAND", str(ROOT/"sina_candidates.json")))
 RESOLUTION_OVERLAY=Path(os.getenv("XRAY_HISTORY_RESOLUTION_OVERLAY", str(ROOT/"history_resolution_overlay.json")))
-SEC_SPAC_PROOF=ROOT/"master_sec_spac_proof_20261005.json"
-ASOF_IDENTITY_PROOF=ROOT/"master_asof_identity_proof_20261005.json"
 FULL_IDENTITY=os.getenv("XRAY_FULL_IDENTITY","0")=="1"
 IDENTITY_ONLY=os.getenv("XRAY_IDENTITY_ONLY","0")=="1"
 
@@ -78,10 +76,17 @@ def git_blob_sha(path):
     b=path.read_bytes()
     return hashlib.sha1(f"blob {len(b)}\0".encode()+b).hexdigest()
 
+def sec_spac_proof_path(asof):
+    return ROOT/f"master_sec_spac_proof_{str(asof).replace('-','')}.json"
+
+def asof_identity_proof_path(asof):
+    return ROOT/f"master_asof_identity_proof_{str(asof).replace('-','')}.json"
+
 def load_sec_spac_proof(asof):
-    if not SEC_SPAC_PROOF.exists():
+    proof_path=sec_spac_proof_path(asof)
+    if not proof_path.exists():
         return {},None
-    j=json.loads(SEC_SPAC_PROOF.read_text(encoding="utf-8"))
+    j=json.loads(proof_path.read_text(encoding="utf-8"))
     if str(j.get("asof_et") or "")!=asof:
         return {},None
     if not (
@@ -110,13 +115,14 @@ def load_sec_spac_proof(asof):
         ):
             raise RuntimeError("SEC_SPAC_PROOF_ROW_INVALID:"+sym)
         out[sym]=row
-    return out,git_blob_sha(SEC_SPAC_PROOF)
+    return out,git_blob_sha(proof_path)
 
 
 def load_asof_identity_proof(asof):
-    if not ASOF_IDENTITY_PROOF.exists():
+    proof_path=asof_identity_proof_path(asof)
+    if not proof_path.exists():
         return {},None
-    j=json.loads(ASOF_IDENTITY_PROOF.read_text(encoding="utf-8"))
+    j=json.loads(proof_path.read_text(encoding="utf-8"))
     if str(j.get("asof_et") or "")!=asof:
         return {},None
     if not (
@@ -150,7 +156,7 @@ def load_asof_identity_proof(asof):
             raise RuntimeError("ASOF_IDENTITY_OPERATING_INVALID:"+sym)
         if not str(row.get("source_url") or "").startswith("https://www.sec.gov/"):
             raise RuntimeError("ASOF_IDENTITY_OPERATING_SOURCE_INVALID:"+sym)
-    return j,git_blob_sha(ASOF_IDENTITY_PROOF)
+    return j,git_blob_sha(proof_path)
 
 def apply_asof_identity_proof(names,excluded,proof):
     names=dict(names);excluded=dict(excluded)
@@ -689,6 +695,8 @@ def canonical_frozen_identity(asof):
 
 def main():
     asof,expected30=completed_sessions()
+    sec_proof_path=sec_spac_proof_path(asof)
+    identity_proof_path=asof_identity_proof_path(asof)
     sec_spac_proof,sec_spac_blob=load_sec_spac_proof(asof)
     asof_identity_proof,asof_identity_blob=load_asof_identity_proof(asof)
     operating_overrides=asof_identity_proof.get("operating_overrides") or {}
@@ -723,9 +731,9 @@ def main():
         else:
             queue,discovery,meta,screener_excluded=build_discovery(names,FULL_IDENTITY,sec_spac_proof,operating_overrides)
             meta.update({
-              "sec_spac_proof_path":("nasdaq-xray/"+SEC_SPAC_PROOF.name) if sec_spac_blob else None,
+              "sec_spac_proof_path":("nasdaq-xray/"+sec_proof_path.name) if sec_spac_blob else None,
               "sec_spac_proof_blob_sha":sec_spac_blob,
-              "asof_identity_proof_path":("nasdaq-xray/"+ASOF_IDENTITY_PROOF.name) if asof_identity_blob else None,
+              "asof_identity_proof_path":("nasdaq-xray/"+identity_proof_path.name) if asof_identity_blob else None,
               "asof_identity_proof_blob_sha":asof_identity_blob,
               "asof_identity_proof_counts":{k:len(asof_identity_proof.get(k) or {}) for k in ("restore_to_asof","remove_from_asof","operating_overrides")},
             })
