@@ -1,7 +1,7 @@
 {
   "schema": "XRAY_HISTORY_EVIDENCE_BRIDGE_V1",
   "status": "READY",
-  "authority": "C4_17_EXACT_RALLIES_CROSS_SOURCE_HISTORY_RECOVERY",
+  "authority": "FOREGROUND_OPERATOR_C417_DV30_MC_BINDING_REPAIR",
   "task_id": "6a825366222081918997094d76e6ae46",
   "asof_et": "2026-10-05",
   "execution": "NONE",
@@ -13,12 +13,12 @@
     "daily": 260,
     "weekly_completed": 52
   },
-  "source_mc_path": "nasdaq-xray/canonical_mc_bridge_20261005_c417_r2.json",
-  "source_mc_blob_sha": "d405670a4f05809d05f69ee2ab804fd99eb5b1de",
+  "source_mc_path": "nasdaq-xray/canonical_mc_bridge_20261005_c417_dv30_v1.json",
+  "source_mc_blob_sha": "38905137f3b6cf6a6c025aac7f993c1934aa48ca",
   "source_mc_policy_version": "C4.17",
-  "source_mc_policy_hash": "26a95745a50b65e85f6ece24b6501af0994764a84ddd886edb70d1fcd770849c",
-  "source_price_path": "nasdaq-xray/canonical_current_price_dv20.json",
-  "source_price_blob_sha": "6d8cfe63d3168a1817d90b85a3ae3b1a997867ef",
+  "source_mc_policy_hash": "68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4",
+  "source_price_path": "nasdaq-xray/canonical_current_price_dv30.json",
+  "source_price_blob_sha": "644915f58bf1957194b3410348e91ad90f5cd14d",
   "scope_symbols": [
     "DBX"
   ],
@@ -4234,5 +4234,16 @@
         }
       ]
     }
+  },
+  "source_rebind": {
+    "reason": "MC_AND_LIQUIDITY_AUTHORITY_MIGRATED_TO_CURRENT_DV30_CHAIN",
+    "entry_payload_unchanged": true,
+    "scope_unchanged": true,
+    "thresholds_unchanged": true,
+    "no_synthetic_bars": true,
+    "old_source_mc_path": "nasdaq-xray/canonical_mc_bridge_20261005_c417_r2.json",
+    "old_source_mc_blob_sha": "d405670a4f05809d05f69ee2ab804fd99eb5b1de",
+    "old_source_price_path": "nasdaq-xray/canonical_current_price_dv20.json",
+    "new_scope_symbol_mc_status": "MC_PASS_PRIMARY"
   }
 }
