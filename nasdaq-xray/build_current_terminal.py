@@ -486,6 +486,9 @@ def main():
     assert ft.get("source_compiled_policy_hash")==POLICY_HASH and ft.get("source_compiled_policy_version")=="C4.17"
     final_set=set(ft["results"])
     assert ft["input_confirmed_family_candidates"]==len(final_set)
+    fresh_final=set(ft.get("fresh_current_candidate_keys") or [])
+    assert int(ft.get("fresh_current_candidate_count",-1))==len(fresh_final)
+    assert fresh_final==current_confirmed,(sorted(fresh_final),sorted(current_confirmed))
     assert current_confirmed<=final_set,(sorted(current_confirmed),sorted(final_set))
     # A prior prospectively recorded setup may remain in the final engine during
     # its frozen retest/reconfirmation window even after it drops out of today's
