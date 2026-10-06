@@ -1,7 +1,7 @@
 {
   "schema": "XRAY_FINAL_GATE_OVERLAY_V2",
   "generated_on": "2026-10-06",
-  "generated_at_utc": "2026-10-06T23:11:18.619599+00:00",
+  "generated_at_utc": "2026-10-06T23:48:04.816964+00:00",
   "asof_et": "2026-10-06",
   "execution": "NONE",
   "real_money": "NO-GO",
@@ -9,7 +9,7 @@
   "binding_protocol": "FAIL_CLOSED_BLOCKED_CACHE_DRIFT_V1",
   "source_terminal": {
     "path": "nasdaq-xray/canonical_current_terminal.json",
-    "blob_sha": "48a7a9452dad30967d08829692b6e875cb4882cd",
+    "blob_sha": "dd449c0d6ff183d009950a44a027e360347208a2",
     "claimed_full_end_to_end_research_pass": false,
     "full_end_to_end_research_pass": false,
     "current_research_chain_exact": true,
@@ -18,8 +18,8 @@
   },
   "source_pointer": {
     "path": "nasdaq-xray/chatgpt_canonical_state_v2.json",
-    "blob_sha": "a01c1165f31de233d647e724b23657b711b0a648",
-    "revision": 41,
+    "blob_sha": "5c073df5d674c77e5e4439b41b81393b96148c06",
+    "revision": 42,
     "status": "TERMINAL_PARTIAL_UNKNOWN",
     "asof_et": "2026-10-06",
     "epoch_relation_to_terminal": "EXACT_SAME_ASOF",
@@ -53,7 +53,7 @@
     "current_adapter": "LONGBRIDGE_HOSTED_MCP_V2",
     "persisted_gate_status": "ACCOUNT_BOOTSTRAP_READY_CREDENTIALS_REQUIRED",
     "same_run_live_witness_attested": false,
-    "live_probe_workflow_run_id": "37544981377",
+    "live_probe_workflow_run_id": "37548268957",
     "gate_path": "nasdaq-xray/account_gate_contract.json",
     "gate_blob_sha": "3bc1d79497970cdfa805d7aa836c7231ea905e6b",
     "current_adapter_contract_blob_sha": "2b224268b29ae9a09c8bd3e9ebec86907e8c3dd2",

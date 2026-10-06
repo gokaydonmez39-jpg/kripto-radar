@@ -4,25 +4,71 @@
   "asof_et": "2026-10-06",
   "authority": "C4_17_DETERMINISTIC_TECHNICAL_FAIL_CLOSED",
   "candidate_legal_guard_binding_error": null,
-  "candidate_legal_guard_blob_sha": "68b289886b4c17a49438fa71c2ee9372734839e0",
+  "candidate_legal_guard_blob_sha": "2eb7ad3d0756a332d65796bce28f8ffa68402dd6",
   "candidate_legal_guard_exact_binding": true,
   "candidate_legal_guard_path": "nasdaq-xray/canonical_candidate_legal_guard.json",
-  "corporate_action_verification": {},
+  "corporate_action_verification": {
+    "ABCL": {
+      "candidate_scoped_external_lookup": true,
+      "split_events": [],
+      "status": "PASS_NO_SPLIT_EVENTS_CROSSCHECKED"
+    },
+    "VICR": {
+      "candidate_scoped_external_lookup": false,
+      "split_events": [],
+      "status": "PASS_NO_LOCAL_SPLIT_DISCONTINUITY"
+    }
+  },
   "corporate_semantics_unresolved_finalists": [],
-  "detailed_legal_deferred_nonpass_candidate_keys": [],
+  "detailed_legal_deferred_nonpass_candidate_keys": [
+    "ABCL|D",
+    "MXL|D",
+    "PI|D",
+    "TRMD|D",
+    "VICR|D"
+  ],
   "detailed_legal_required_candidate_keys": [],
   "detailed_legal_review_exact": true,
   "embedded_semantic_selftest": "PASS",
   "execution": "NONE",
-  "fail": [],
-  "fail_count": 0,
+  "fail": [
+    "ABCL|D",
+    "VICR|D"
+  ],
+  "fail_count": 2,
   "family_c_confirmed_input_count": 0,
-  "fresh_current_candidate_count": 0,
-  "fresh_current_candidate_keys": [],
-  "history_fingerprint_by_symbol": {},
+  "fresh_current_candidate_count": 5,
+  "fresh_current_candidate_keys": [
+    "ABCL|D",
+    "MXL|D",
+    "PI|D",
+    "TRMD|D",
+    "VICR|D"
+  ],
+  "history_fingerprint_by_symbol": {
+    "ABCL": {
+      "first_date": "2025-06-30",
+      "last_date": "2026-10-06",
+      "lookback": 320,
+      "rows": 320,
+      "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
+      "sha256": "13884801b2565db25e0c8fdd96ca6f2f9de30f7b8d594c6200bc4035c14ed463"
+    },
+    "VICR": {
+      "first_date": "2025-06-30",
+      "last_date": "2026-10-06",
+      "lookback": 320,
+      "rows": 320,
+      "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
+      "sha256": "a151258839517e10f0255ff0bf5dba9f9e6bd352e498a41994dfbf0e4e3c2620"
+    }
+  },
   "history_fingerprint_semantics": "RAW_OR_OFFICIAL_COMPOSITE_ASOF_TAIL320_V1",
-  "history_source_by_symbol": {},
-  "input_confirmed_family_candidates": 0,
+  "history_source_by_symbol": {
+    "ABCL": "SINA_US_DAILY",
+    "VICR": "SINA_US_DAILY"
+  },
+  "input_confirmed_family_candidates": 5,
   "lifecycle_frozen_semantics_binding": {
     "alpha_semantics.py": "b44bab22f70b8032d63ecff513309f20f94ccd10",
     "final_tech_shadow.py": "ef6d53c22545e3299478cf0313aa4faf55ea301d"
@@ -37,11 +83,17 @@
     "unknown_never_pass": true
   },
   "lifecycle_semantics_exact": true,
-  "policy_semantics_exact": true,
+  "policy_semantics_exact": false,
   "pre_g9_tech_pass": [],
   "pre_g9_tech_pass_count": 0,
   "pruned_final_result_keys": [],
-  "r92_ineligible": [],
+  "r92_ineligible": [
+    "ABCL",
+    "MXL",
+    "PI",
+    "TRMD",
+    "VICR"
+  ],
   "real_money": "NO-GO",
   "regime_filtered_out": [],
   "regime_revalidation_unknown": [],
@@ -52,9 +104,448 @@
     "G9",
     "DELIVERY_PROOF"
   ],
-  "results": {},
+  "results": {
+    "ABCL|D": {
+      "authority": "C4_17_DETERMINISTIC_TECHNICAL",
+      "candidate_legal_hard_flags": [],
+      "candidate_legal_latest_periodic": null,
+      "candidate_legal_review_reason": null,
+      "candidate_legal_review_status": null,
+      "candidate_legal_risk_flags": [],
+      "current_retest": true,
+      "discovered_after_trigger": true,
+      "event_status": "CLEAN_DISCOVERY",
+      "extension_veto": false,
+      "family": "D",
+      "family_geometry_pass": true,
+      "frozen_geometry": {
+        "A": 0.7848205139525177,
+        "P": 12.97,
+        "S0": 11.623035897209496,
+        "T1": 12.97,
+        "anchor": 11.78,
+        "anchor_available_date": "2026-09-28",
+        "anchor_available_idx": 1453,
+        "chase_limit": 13.36241025697626,
+        "entry_high": 13.16620512848813,
+        "entry_low": 12.97,
+        "entry_model": 13.16620512848813,
+        "family": "D",
+        "setup_id": "ab8fc404bb8a41ae43fbb51a",
+        "source_geometry": {
+          "A": 0.7848205139525177,
+          "P": 12.97,
+          "anchor": 11.78,
+          "close": 13.91,
+          "d": 1.5162702539551576,
+          "dd120": -0.35344827586206895,
+          "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
+          "dd252": -0.07359307359307365,
+          "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
+          "dk3_pre_r1": true,
+          "ema50": 10.838860466483252,
+          "hl_date": "2026-09-24",
+          "pool": true,
+          "rs20": 0.1703629252300456,
+          "rs60": 0.8783892606748942,
+          "rvol20": 1.7691004956424305,
+          "trigger_age_sessions": 3,
+          "trigger_date": "2026-10-01",
+          "weekly_pass_at_trigger": true
+        },
+        "symbol": "ABCL",
+        "synthetic_target": false,
+        "target_overlap": true,
+        "target_source": "STRUCTURAL_ACTIVE_R1_LOWER_BOUND",
+        "target_zone": {
+          "active": true,
+          "active_from_idx": 1451,
+          "breakout_unconfirmed_role_change": "2026-09-28",
+          "kind": "STRUCTURAL_CLUSTER",
+          "lower": 12.97,
+          "occurrence_dates": [
+            "2026-09-17",
+            "2026-09-22"
+          ],
+          "points": [
+            {
+              "confirmed_idx": 1451,
+              "date": "2026-09-22",
+              "kind": "DAILY_SWING_HIGH",
+              "occurrence_idx": 1449,
+              "price": 12.97
+            },
+            {
+              "confirmed_idx": 1448,
+              "date": "2026-09-17",
+              "kind": "DAILY_SWING_HIGH",
+              "occurrence_idx": 1446,
+              "price": 13.18
+            }
+          ],
+          "upper": 13.18
+        },
+        "trigger_date": "2026-10-01"
+      },
+      "geometry": {
+        "move3_atr": -0.9683742798369059,
+        "pivot_extension": 0.013878180416345476,
+        "reset_between_tminus3_and_t": false,
+        "risk_atr": 1.9662702539551575,
+        "risk_percent": 0.1172068349398287,
+        "x": 1.5162702539551576
+      },
+      "historical_discovery_age_gt3": false,
+      "invalidation": {
+        "breached": false,
+        "first_breach_date": null
+      },
+      "levels": {
+        "A": 0.7848205139525177,
+        "P": 12.97,
+        "S0": 11.623035897209496,
+        "T1": 12.97,
+        "anchor": 11.78,
+        "chase_limit": 13.36241025697626,
+        "close": 13.15,
+        "entry_high": 13.16620512848813,
+        "entry_low": 12.97,
+        "entry_model": 13.16620512848813
+      },
+      "lifecycle": "RETEST_ENTRY_BAND",
+      "lifecycle_age_sessions": 3,
+      "observation_mode": "CURRENT_DISCOVERY",
+      "pre_g9_tech_pass": false,
+      "price_discovery_cap": false,
+      "r92_backfill_allowed": false,
+      "r92_eligible": false,
+      "r92_observation_rule": "REGISTER_NOW_OBSERVE_FUTURE_ONLY_NO_BACKFILL",
+      "regime_finalist_status": "PASS",
+      "research_tier_cap": null,
+      "result": "FAIL_RISK_GEOMETRY",
+      "risk_pass": false,
+      "rr": {
+        "basic": -0.20773031397093408,
+        "basic_pass": false,
+        "basic_threshold": 2.0,
+        "severe": -0.30410292578326525,
+        "severe_pass": false,
+        "severe_threshold": 1.5
+      },
+      "setup_id": "ab8fc404bb8a41ae43fbb51a",
+      "state_cap": "WATCH",
+      "target": {
+        "source": "STRUCTURAL_ACTIVE_R1_LOWER_BOUND",
+        "synthetic": false,
+        "zone": {
+          "active": true,
+          "active_from_idx": 1451,
+          "breakout_unconfirmed_role_change": "2026-09-28",
+          "kind": "STRUCTURAL_CLUSTER",
+          "lower": 12.97,
+          "occurrence_dates": [
+            "2026-09-17",
+            "2026-09-22"
+          ],
+          "points": [
+            {
+              "confirmed_idx": 1451,
+              "date": "2026-09-22",
+              "kind": "DAILY_SWING_HIGH",
+              "occurrence_idx": 1449,
+              "price": 12.97
+            },
+            {
+              "confirmed_idx": 1448,
+              "date": "2026-09-17",
+              "kind": "DAILY_SWING_HIGH",
+              "occurrence_idx": 1446,
+              "price": 13.18
+            }
+          ],
+          "upper": 13.18
+        }
+      },
+      "target_overlap": true,
+      "technical_hard_pass": false,
+      "trigger_date": "2026-10-01"
+    },
+    "MXL|D": {
+      "r92_eligible": false,
+      "reason": "HISTORY:ASOF_MISSING:2026-10-05",
+      "result": "UNKNOWN",
+      "state_cap": "WATCH"
+    },
+    "PI|D": {
+      "r92_eligible": false,
+      "reason": "HISTORY:HISTORY_FINGERPRINT_MISMATCH",
+      "result": "UNKNOWN",
+      "state_cap": "WATCH"
+    },
+    "TRMD|D": {
+      "r92_eligible": false,
+      "reason": "HISTORY:ASOF_MISSING:2026-10-05",
+      "result": "UNKNOWN",
+      "state_cap": "WATCH"
+    },
+    "VICR|D": {
+      "authority": "C4_17_DETERMINISTIC_TECHNICAL",
+      "candidate_legal_hard_flags": [],
+      "candidate_legal_latest_periodic": null,
+      "candidate_legal_review_reason": null,
+      "candidate_legal_review_status": null,
+      "candidate_legal_risk_flags": [],
+      "current_retest": false,
+      "discovered_after_trigger": true,
+      "event_status": "CLEAN_DISCOVERY",
+      "extension_veto": true,
+      "family": "D",
+      "family_geometry_pass": true,
+      "frozen_geometry": {
+        "A": 18.77624223276982,
+        "P": 202.18,
+        "S0": 173.00475155344603,
+        "T1": 204.1212,
+        "anchor": 176.76,
+        "anchor_available_date": "2026-09-17",
+        "anchor_available_idx": 5274,
+        "chase_limit": 211.56812111638493,
+        "entry_high": 206.87406055819247,
+        "entry_low": 202.18,
+        "entry_model": 206.87406055819247,
+        "family": "D",
+        "setup_id": "d5cf9f397dc20813a93a59bd",
+        "source_geometry": {
+          "A": 18.77624223276982,
+          "P": 202.18,
+          "anchor": 176.76,
+          "close": 308.9,
+          "d": 1.3538385202356928,
+          "dd120": -0.5366001369213755,
+          "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
+          "dd252": -0.192734875212335,
+          "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
+          "dk3_pre_r1": true,
+          "ema50": 237.8140188121323,
+          "hl_date": "2026-09-15",
+          "pool": true,
+          "rs20": 0.6544527335546584,
+          "rs60": 0.07436772265274882,
+          "rvol20": 1.4167784749169092,
+          "trigger_age_sessions": 2,
+          "trigger_date": "2026-10-02",
+          "weekly_pass_at_trigger": true
+        },
+        "symbol": "VICR",
+        "synthetic_target": false,
+        "target_overlap": true,
+        "target_source": "STRUCTURAL_ACTIVE_R1_LOWER_BOUND",
+        "target_zone": {
+          "active": true,
+          "active_from_idx": 5265,
+          "breakout_unconfirmed_role_change": "2026-09-17",
+          "kind": "STRUCTURAL_CLUSTER",
+          "lower": 204.1212,
+          "occurrence_dates": [
+            "2026-03-06",
+            "2026-04-16",
+            "2026-08-27",
+            "2026-08-28",
+            "2026-08-31",
+            "2026-09-01",
+            "2026-09-03"
+          ],
+          "points": [
+            {
+              "confirmed_idx": 5265,
+              "date": "2026-09-03",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 5265,
+              "price": 204.1212,
+              "window": 5
+            },
+            {
+              "confirmed_idx": 5262,
+              "date": "2026-08-27",
+              "kind": "DAILY_SWING_HIGH",
+              "occurrence_idx": 5260,
+              "price": 206.79
+            },
+            {
+              "confirmed_idx": 5261,
+              "date": "2026-08-28",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 5261,
+              "price": 206.79,
+              "window": 5
+            },
+            {
+              "confirmed_idx": 5262,
+              "date": "2026-08-31",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 5262,
+              "price": 206.79,
+              "window": 5
+            },
+            {
+              "confirmed_idx": 5263,
+              "date": "2026-09-01",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 5263,
+              "price": 206.79,
+              "window": 5
+            },
+            {
+              "confirmed_idx": 5168,
+              "date": "2026-04-16",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 5168,
+              "price": 208.0,
+              "window": 5
+            },
+            {
+              "confirmed_idx": 5150,
+              "date": "2026-03-06",
+              "kind": "WEEKLY_SWING_HIGH",
+              "occurrence_idx": 1066,
+              "price": 209.53
+            }
+          ],
+          "upper": 209.53
+        },
+        "trigger_date": "2026-10-02"
+      },
+      "geometry": {
+        "move3_atr": -0.49530677569598247,
+        "pivot_extension": 0.4803145711742012,
+        "reset_between_tminus3_and_t": false,
+        "risk_atr": 1.8038385202356932,
+        "risk_percent": 0.16371945769014962,
+        "x": 1.3538385202356928
+      },
+      "historical_discovery_age_gt3": false,
+      "invalidation": {
+        "breached": false,
+        "first_breach_date": null
+      },
+      "levels": {
+        "A": 18.77624223276982,
+        "P": 202.18,
+        "S0": 173.00475155344603,
+        "T1": 204.1212,
+        "anchor": 176.76,
+        "chase_limit": 211.56812111638493,
+        "close": 299.29,
+        "entry_high": 206.87406055819247,
+        "entry_low": 202.18,
+        "entry_model": 206.87406055819247
+      },
+      "lifecycle": "CHASE_NO_VALID_FILL",
+      "lifecycle_age_sessions": 2,
+      "observation_mode": "CURRENT_DISCOVERY",
+      "pre_g9_tech_pass": false,
+      "price_discovery_cap": false,
+      "r92_backfill_allowed": false,
+      "r92_eligible": false,
+      "r92_observation_rule": "REGISTER_NOW_OBSERVE_FUTURE_ONLY_NO_BACKFILL",
+      "regime_finalist_status": "PASS",
+      "research_tier_cap": null,
+      "result": "FAIL_RISK_GEOMETRY",
+      "risk_pass": false,
+      "rr": {
+        "basic": -0.17297503135207057,
+        "basic_pass": false,
+        "basic_threshold": 2.0,
+        "severe": -0.2806681219984565,
+        "severe_pass": false,
+        "severe_threshold": 1.5
+      },
+      "setup_id": "d5cf9f397dc20813a93a59bd",
+      "state_cap": "WATCH",
+      "target": {
+        "source": "STRUCTURAL_ACTIVE_R1_LOWER_BOUND",
+        "synthetic": false,
+        "zone": {
+          "active": true,
+          "active_from_idx": 5265,
+          "breakout_unconfirmed_role_change": "2026-09-17",
+          "kind": "STRUCTURAL_CLUSTER",
+          "lower": 204.1212,
+          "occurrence_dates": [
+            "2026-03-06",
+            "2026-04-16",
+            "2026-08-27",
+            "2026-08-28",
+            "2026-08-31",
+            "2026-09-01",
+            "2026-09-03"
+          ],
+          "points": [
+            {
+              "confirmed_idx": 5265,
+              "date": "2026-09-03",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 5265,
+              "price": 204.1212,
+              "window": 5
+            },
+            {
+              "confirmed_idx": 5262,
+              "date": "2026-08-27",
+              "kind": "DAILY_SWING_HIGH",
+              "occurrence_idx": 5260,
+              "price": 206.79
+            },
+            {
+              "confirmed_idx": 5261,
+              "date": "2026-08-28",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 5261,
+              "price": 206.79,
+              "window": 5
+            },
+            {
+              "confirmed_idx": 5262,
+              "date": "2026-08-31",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 5262,
+              "price": 206.79,
+              "window": 5
+            },
+            {
+              "confirmed_idx": 5263,
+              "date": "2026-09-01",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 5263,
+              "price": 206.79,
+              "window": 5
+            },
+            {
+              "confirmed_idx": 5168,
+              "date": "2026-04-16",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 5168,
+              "price": 208.0,
+              "window": 5
+            },
+            {
+              "confirmed_idx": 5150,
+              "date": "2026-03-06",
+              "kind": "WEEKLY_SWING_HIGH",
+              "occurrence_idx": 1066,
+              "price": 209.53
+            }
+          ],
+          "upper": 209.53
+        }
+      },
+      "target_overlap": true,
+      "technical_hard_pass": false,
+      "trigger_date": "2026-10-02"
+    }
+  },
   "schema": "XRAY_FINAL_TECH_SHADOW_V1",
-  "semantic_audit_status": "PASS_IMPLEMENTATION_CONFORMANCE",
+  "semantic_audit_status": "BLOCKED_CROSS_PHASE_HISTORY_BINDING",
   "semantic_impl_blobs": {
     "alpha_semantics.py": "b44bab22f70b8032d63ecff513309f20f94ccd10",
     "deep_pre_r1_shadow.py": "63e1efc4727ada1bed11d48c2d961a601de43b60",
@@ -63,7 +554,9 @@
     "regime_breadth_shadow.py": "4b07f805066c7c0b2a1510ef74d1e761690ee3a3",
     "stage1_shadow.py": "fef268803fda82f1860c508f062a0e7a0c74d206"
   },
-  "semantic_known_gaps": [],
+  "semantic_known_gaps": [
+    "CROSS_PHASE_HISTORY_BINDING_UNPROVEN_FOR_FINALISTS"
+  ],
   "semantic_repairs": [
     "ACTIVE_STRUCTURAL_R1_TRIGGER_MINUS1",
     "FROZEN_RETEST_5_SESSION_REGISTRY",
@@ -79,14 +572,20 @@
   ],
   "source_compiled_policy_hash": "68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4",
   "source_compiled_policy_version": "C4.17",
-  "source_deep_blob_sha": "0a56c9413dacd05d10a7e597f00b2e8a83f39101",
+  "source_deep_blob_sha": "efb67cce80c43bb145097d878d4c86bf624ceeb2",
   "source_deep_path": "nasdaq-xray/canonical_current_deep_full.json",
-  "source_family_c_blob_sha": "38d9c108139a6628dfabb70e514e561945af278c",
+  "source_family_c_blob_sha": "4df6e20eb0e2a326a6fa924b83c15fb8d87d3f1e",
   "source_family_c_path": "nasdaq-xray/canonical_current_family_c.json",
-  "source_legal_blob_sha": "d3dd0b1696ff54ac708f6561ce3c5a78dc56117f",
+  "source_legal_blob_sha": "5fe046ddaf5cbab2416d20fd314a4741bc563f9f",
   "source_legal_path": "nasdaq-xray/canonical_current_legal.json",
-  "source_workflow_sha": "1e51c6fcbc01437e06aa206fd55c077c8264a88b",
-  "state_caps": {},
+  "source_workflow_sha": "5e8824e8a48516576dbd278ebc7adc6a000828b2",
+  "state_caps": {
+    "ABCL": "WATCH",
+    "MXL": "WATCH",
+    "PI": "WATCH",
+    "TRMD": "WATCH",
+    "VICR": "WATCH"
+  },
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_never_pass": true,
   "watch": [],
