@@ -652,21 +652,15 @@ def eval_one(sym,asof):
     if ss=="PASS_HISTORY":
         return _history_pass(sym,asof,ss,si,{"sina":sm})
 
-    # Fast exact-ASOF recovery before the slower official Nasdaq historical
-    # endpoint. This changes no authority or threshold: any single source may
-    # establish PASS only by independently satisfying the same >=260 daily /
-    # >=52 completed-week hard gates with an exact ASOF bar. Terminal FAIL still
-    # requires two-source agreement below the gate.
-    yb,ym=yahoo(sym,asof);ys,yi=classify(yb,asof,"YAHOO_CHART_FREE")
-    if ys=="PASS_HISTORY":
-        return _history_pass(sym,asof,ys,yi,{"sina":sm,"yahoo":ym})
-    comp=continuity_composite_pass(sym,asof,sb,si,yb,yi)
-    if comp:
-        return _history_pass(sym,asof,"PASS_HISTORY",comp,{"sina":sm,"yahoo":ym,"official_identity_registry":True})
-
     nb,nm=nasdaq(sym,asof);ns,ni=classify(nb,asof,"NASDAQ_OFFICIAL_HISTORICAL_API")
     if ns=="PASS_HISTORY":
-        return _history_pass(sym,asof,ns,ni,{"sina":sm,"yahoo":ym,"nasdaq":nm})
+        return _history_pass(sym,asof,ns,ni,{"sina":sm,"nasdaq":nm})
+    yb,ym=yahoo(sym,asof);ys,yi=classify(yb,asof,"YAHOO_CHART_FREE")
+    if ys=="PASS_HISTORY":
+        return _history_pass(sym,asof,ys,yi,{"sina":sm,"nasdaq":nm,"yahoo":ym})
+    comp=continuity_composite_pass(sym,asof,sb,si,yb,yi)
+    if comp:
+        return _history_pass(sym,asof,"PASS_HISTORY",comp,{"sina":sm,"nasdaq":nm,"yahoo":ym,"official_identity_registry":True})
     eb,em=eastmoney(sym,asof);es,ei=classify(eb,asof,"EASTMONEY_US_DAILY_NASDAQ_105")
     if es=="PASS_HISTORY":
         return _history_pass(sym,asof,es,ei,{"sina":sm,"nasdaq":nm,"yahoo":ym,"eastmoney":em})
