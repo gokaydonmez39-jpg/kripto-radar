@@ -106,22 +106,23 @@ with tempfile.TemporaryDirectory() as td:
     batch=json.load(open(p/".delivery_work/batch.json"))
     assert len(batch["candidates"])==2
     assert {x["symbol"] for x in batch["candidates"]}=={"AAA","BBB"}
+    body_text="\n".join(x.read_text() for x in (p/".delivery_work").glob("*.md"))
+    assert "G9_BLOCKED_FREE_AUTOMATION_PATH" in body_text
+    assert "ACCOUNT_BLOCKED_SCOPE_NOT_GRANTED_OR_ACCOUNT_UNSUPPORTED" in body_text
+    for x in batch["candidates"]:
+        # production paths are repository-root relative; in selftest resolve basename safely.
+        matches=list((p/".delivery_work").glob("*"+x["symbol"]+"*"))
+        if not matches:
+            matches=list((p/".delivery_work").glob("*.md"))
+        assert matches
+
     # Stale current DV30->MC chain must suppress stale pointer R92 delivery.
     write_current_chain(p,exact=False)
     if (p/".delivery_work").exists(): shutil.rmtree(p/".delivery_work")
     cp_stale=run_case(p,True)
     assert "XRAY_DELIVERY_NOOP=CURRENT_DV30_MC_CHAIN_INCOMPLETE" in cp_stale.stdout
     write_current_chain(p,exact=True)
-    body_text="\n".join(p.read_text() for p in (p/".delivery_work").glob("*.md"))
-    assert "G9_BLOCKED_FREE_AUTOMATION_PATH" in body_text
-    assert "ACCOUNT_BLOCKED_SCOPE_NOT_GRANTED_OR_ACCOUNT_UNSUPPORTED" in body_text
-    for x in batch["candidates"]:
-        body=(p.parent/x["body_file"]) if not str(x["body_file"]).startswith(".") else p/x["body_file"]
-        # production paths are repository-root relative; in selftest resolve basename safely.
-        matches=list((p/".delivery_work").glob("*"+x["symbol"]+"*"))
-        if not matches:
-            matches=list((p/".delivery_work").glob("*.md"))
-        assert matches
+
     # Negative halt-veto test: a registered candidate on the current official
     # active-halt set must never be delivered.
     halted=candidate("DELIVERY|RESEARCH_AL_ADAYI|2099-01-02|HALT|B|halt001","HALT","B")
