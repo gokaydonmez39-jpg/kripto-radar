@@ -85,7 +85,7 @@ jobs:
                 "settlement_symbols":["AAPL","NVDA","MSFT"]
               }
               bridge.write_text(json.dumps(obj,sort_keys=True)+"\n")
-              b=bridge.read_bytes(); sha=hashlib.sha1(f"blob {len(b)}\\0".encode()+b).hexdigest()
+              b=bridge.read_bytes(); sha=hashlib.sha1(f"blob {len(b)}\0".encode()+b).hexdigest()
               pointer=root/"pointer.json"
               pointer.write_text(json.dumps({
                 "schema":"XRAY_GITHUB_DURABLE_STATE_V3","authority":"GITHUB_CURRENT_POINTER",
