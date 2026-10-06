@@ -41,7 +41,19 @@ def main():
         assert obj.get("real_money")=="NO-GO", f"{name}:REAL_MONEY_NOT_NO_GO"
 
     ps=p.get("state_json") or {}
-    assert t.get("asof_et")==ps.get("asof_et"), "TERMINAL_POINTER_ASOF_MISMATCH"
+    terminal_asof=str(t.get("asof_et") or "")
+    pointer_asof=str(ps.get("asof_et") or "")
+    assert terminal_asof and pointer_asof, "TERMINAL_POINTER_ASOF_MISSING"
+    # Final artifacts are built atomically before the durable pointer is advanced.
+    # A pointer may therefore lag the just-built terminal inside this workflow.
+    # It must never be ahead of the terminal, and it never creates PASS authority.
+    assert pointer_asof<=terminal_asof, (
+        f"TERMINAL_POINTER_FUTURE_DRIFT pointer={pointer_asof} terminal={terminal_asof}"
+    )
+    pointer_epoch_relation=(
+        "EXACT_SAME_ASOF" if pointer_asof==terminal_asof
+        else "LAGGING_DURABLE_POINTER_PENDING_ATOMIC_FINAL_COMMIT"
+    )
 
     full=bool(t.get("full_end_to_end_research_pass"))
     g9_pass=gr.get("g9_pass") is True
@@ -132,6 +144,9 @@ def main():
             "blob_sha":blob_sha("pointer"),
             "revision":p.get("revision"),
             "status":ps.get("status"),
+            "asof_et":pointer_asof,
+            "epoch_relation_to_terminal":pointer_epoch_relation,
+            "alpha_authority":False,
             "legacy_account_status":ps.get("account_status"),
         },
         "strict_g9":{
@@ -171,6 +186,9 @@ def main():
         },
         "binding_integrity":{
             "fail_closed_safe":binding_safe,
+            "pointer_not_a_pass_authority":True,
+            "pointer_epoch_relation":pointer_epoch_relation,
+            "pointer_future_drift_blocked":True,
             "pass_requires_exact_current_bindings":True,
             "g9_pass_binding_exact":(not g9_pass) or (g9_sha_exact and g9_count_exact),
             "account_pass_binding_exact":(not account_pass) or account_exact,
