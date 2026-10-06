@@ -11,6 +11,7 @@ OUT=Path(os.getenv("XRAY_PRICE_DV20_RECOVER_OUT",str(ROOT/"canonical_price_dv20_
 TASK_ID="6a825366222081918997094d76e6ae46"
 WORKERS=int(os.getenv("XRAY_PHASE_WORKERS","12"))
 DEFER_TO_BRIDGE=os.getenv("XRAY_DYNAMIC_AUTHENTICATED_PRICE_BRIDGE","0")=="1"
+FORCE_POLICY_REPLAY=os.getenv("XRAY_PRICE_FORCE_POLICY_REPLAY","0")=="1"
 HARD_PRICE=5.0
 HARD_DV20=50_000_000.0
 RESOLVER_REQUEST=Path(os.getenv("XRAY_CURRENT_RESOLVER_REQUEST",str(ROOT/"canonical_current_resolver_request.json")))
@@ -429,7 +430,7 @@ def main():
     asof=s.get("asof_et")
     assert s["task_id"]==TASK_ID and isinstance(asof,str) and len(asof)==10
     queue=s["queue"];old=s["results"];assert len(queue)==len(old) and len(queue)>3000
-    results={};redo=[]
+    results={};redo=[];policy_redo=set()
     for sym in queue:
         r=old[sym];st=r.get("status");info=r.get("info")
         if st=="PASS":
@@ -445,6 +446,8 @@ def main():
                 continue
             results[sym]={"status":"PASS_PRICE_DV20","info":info,"provenance":"FULLSTATE_EXACT20_PASS"}
         elif st=="FAIL_PRICE":
+            if FORCE_POLICY_REPLAY:
+                redo.append(sym);policy_redo.add(sym);continue
             results[sym]={"status":"FAIL_PRICE","info":info,"provenance":"FULLSTATE_TERMINAL_FAIL"}
         elif st=="FAIL_DV20":
             results[sym]={"status":"FAIL_DV20","info":info,"provenance":"FULLSTATE_TERMINAL_FAIL"}
@@ -453,11 +456,19 @@ def main():
     exp20=expected20(asof)
     if DEFER_TO_BRIDGE:
         for sym in redo:
+            if sym in policy_redo: continue
             results[sym]={
               "status":"UNKNOWN",
               "info":{"reason":"AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"},
               "provenance":"DYNAMIC_BRIDGE_DEFERRED",
             }
+        if policy_redo:
+            with ThreadPoolExecutor(max_workers=WORKERS) as ex:
+                futs={ex.submit(eval_one,sym,exp20,asof):sym for sym in sorted(policy_redo)}
+                for fut in as_completed(futs):
+                    sym,st,info,meta=fut.result()
+                    results[sym]={"status":st,"info":info,"provider_meta":meta,
+                                  "provenance":"PRICE_POLICY_REPLAY_ZERO_DOLLAR_CHAIN"}
     else:
         with ThreadPoolExecutor(max_workers=WORKERS) as ex:
             futs={ex.submit(eval_one,sym,exp20,asof):sym for sym in redo}
@@ -514,6 +525,8 @@ def main():
       "source_master_queue_hash":s["queue_hash"],"source_master_count":len(queue),
       "expected20":exp20,"gate_order":["PRICE","DV20"],"thresholds":{"price":">=5","dv20":">=50000000 exact20 median"},
       "reused_terminal_count":len(queue)-len(redo),"reevaluated_count":len(redo),
+      "policy_replay":FORCE_POLICY_REPLAY,"policy_replay_input_count":len(policy_redo),
+      "policy_replay_symbols":sorted(policy_redo),
       "exception_bridge_meta":exception_bridge_meta,
       "counts":dict(sorted(counts.items())),"unknown_count":len(unknown),"unknown_symbols":unknown,
       "blocked_count":len(blocked),"blocked_symbols":blocked,
@@ -526,5 +539,5 @@ def main():
       "results":dict(sorted(results.items()))
     }
     OUT.write_text(json.dumps(obj,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
-    print(json.dumps({"reused":obj["reused_terminal_count"],"reevaluated":obj["reevaluated_count"],"counts":obj["counts"],"unknown_count":obj["unknown_count"],"blocked_count":obj["blocked_count"],"block_recovery_input":obj["block_recovery_input_count"],"block_recovery_resolved":obj["block_recovery_resolved_count"],"pass_count":obj["pass_count"],"pass_hash":obj["pass_hash"]},sort_keys=True))
+    print(json.dumps({"reused":obj["reused_terminal_count"],"reevaluated":obj["reevaluated_count"],"policy_replay":FORCE_POLICY_REPLAY,"policy_replay_input_count":len(policy_redo),"counts":obj["counts"],"unknown_count":obj["unknown_count"],"blocked_count":obj["blocked_count"],"block_recovery_input":obj["block_recovery_input_count"],"block_recovery_resolved":obj["block_recovery_resolved_count"],"pass_count":obj["pass_count"],"pass_hash":obj["pass_hash"]},sort_keys=True))
 if __name__=="__main__":main()

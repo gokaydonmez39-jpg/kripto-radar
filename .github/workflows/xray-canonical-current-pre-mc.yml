@@ -112,6 +112,9 @@ jobs:
           # while the production pointer is still on the prior ASOF waiting for
           # resolver/MC/Post-MC. Pointer lag must never force a same-ASOF rebuild.
           price_ok=False
+          price_integrity_ok=False
+          price_semantics_ok=False
+          policy_replay=False
           price_asof=""
           try:
               px=json.load(open("nasdaq-xray/canonical_current_price_dv20.json"))
@@ -123,15 +126,24 @@ jobs:
           active_completed_epoch=bool(same_completed_epoch or current_epoch_artifact_exists)
           frozen_asof=(pointer_asof if same_completed_epoch else latest_completed if current_epoch_artifact_exists else "")
           try:
-              price_ok=(
+              price_integrity_ok=(
                   bool(frozen_asof) and px.get("asof_et")==frozen_asof
                   and px.get("execution")=="NONE" and px.get("real_money")=="NO-GO"
                   and int(px.get("unknown_count",-1))==0
                   and int(px.get("pass_count",0))>0
               )
+              price_semantics_ok=(
+                  (px.get("thresholds") or {}).get("price")==">=5"
+                  and (px.get("thresholds") or {}).get("dv20")==">=50000000 exact20 median"
+                  and px.get("gate_order")==["PRICE","DV20"]
+              )
+              price_ok=bool(price_integrity_ok and price_semantics_ok)
           except Exception:
+              price_integrity_ok=False
+              price_semantics_ok=False
               price_ok=False
-          recover=bool(active_completed_epoch and not price_ok)
+          policy_replay=bool(active_completed_epoch and price_integrity_ok and not price_semantics_ok)
+          recover=bool(active_completed_epoch and not price_integrity_ok)
           blocked_count=0
           block_recovery_attempted=False
           try:
@@ -178,6 +190,7 @@ jobs:
           with open(os.environ["GITHUB_OUTPUT"],"a") as out:
               out.write(f"build={'true' if build else 'false'}\n")
               out.write(f"recover={'true' if recover else 'false'}\n")
+              out.write(f"policy_replay={'true' if policy_replay else 'false'}\n")
               out.write(f"coverage_repair={'true' if coverage_repair else 'false'}\n")
               out.write(f"resolver_refresh={'true' if resolver_refresh else 'false'}\n")
               out.write(f"bridge_refresh={'true' if bridge_refresh else 'false'}\n")
@@ -187,6 +200,9 @@ jobs:
           print({
               "build":build,
               "recover":recover,
+              "policy_replay":policy_replay,
+              "price_integrity_ok":price_integrity_ok,
+              "price_semantics_ok":price_semantics_ok,
               "coverage_repair":coverage_repair,
               "resolver_refresh":resolver_refresh,
               "bridge_refresh":bridge_refresh,
@@ -202,6 +218,7 @@ jobs:
               "terminal_asof":terminal_asof,
               "phase":phase,
               "reason":(
+                  "REPLAY_COMPLETED_EPOCH_UNDER_CURRENT_PRICE_POLICY" if policy_replay else
                   "RECOVER_FROZEN_COMPLETED_EPOCH" if recover else
                   "REPAIR_BLOCKED_PRICE_DV20_COVERAGE" if coverage_repair else
                   "REFRESH_BLOCKED_RESOLVER_REQUEST" if resolver_refresh else
@@ -218,7 +235,7 @@ jobs:
         run: python nasdaq-xray/recover_pre_mc_snapshot.py
 
       - name: Frozen completed epoch healthy no-op
-        if: steps.rollover.outputs.build != 'true' && steps.rollover.outputs.recover != 'true' && steps.rollover.outputs.coverage_repair != 'true' && steps.rollover.outputs.resolver_refresh != 'true' && steps.rollover.outputs.bridge_refresh != 'true'
+        if: steps.rollover.outputs.build != 'true' && steps.rollover.outputs.recover != 'true' && steps.rollover.outputs.policy_replay != 'true' && steps.rollover.outputs.coverage_repair != 'true' && steps.rollover.outputs.resolver_refresh != 'true' && steps.rollover.outputs.bridge_refresh != 'true'
         run: echo "XRAY_PRE_MC=HEALTHY_NOOP_COMPLETED_EPOCH pointer_asof=${{ steps.rollover.outputs.pointer_asof }} latest_completed=${{ steps.rollover.outputs.latest_completed }}"
       - name: Build identity-only full universe
         if: steps.rollover.outputs.build == 'true'
@@ -256,13 +273,15 @@ jobs:
         if: steps.rollover.outputs.build == 'true'
         run: python nasdaq-xray/build_current_master_manifest.py
       - name: Build policy-ordered PRICE-DV20
-        if: steps.rollover.outputs.build == 'true' || steps.rollover.outputs.coverage_repair == 'true' || steps.rollover.outputs.bridge_refresh == 'true'
+        if: steps.rollover.outputs.build == 'true' || steps.rollover.outputs.policy_replay == 'true' || steps.rollover.outputs.coverage_repair == 'true' || steps.rollover.outputs.bridge_refresh == 'true'
+        env:
+          XRAY_PRICE_FORCE_POLICY_REPLAY: ${{ steps.rollover.outputs.policy_replay == 'true' && '1' || '0' }}
         run: python nasdaq-xray/price_dv20_recover_from_fullstate.py
       - name: Build resolver bridge request
-        if: steps.rollover.outputs.build == 'true' || steps.rollover.outputs.coverage_repair == 'true' || steps.rollover.outputs.resolver_refresh == 'true' || steps.rollover.outputs.bridge_refresh == 'true'
+        if: steps.rollover.outputs.build == 'true' || steps.rollover.outputs.policy_replay == 'true' || steps.rollover.outputs.coverage_repair == 'true' || steps.rollover.outputs.resolver_refresh == 'true' || steps.rollover.outputs.bridge_refresh == 'true'
         run: python nasdaq-xray/build_current_resolver_request.py
       - name: Structural gate
-        if: steps.rollover.outputs.build == 'true' || steps.rollover.outputs.coverage_repair == 'true' || steps.rollover.outputs.resolver_refresh == 'true' || steps.rollover.outputs.bridge_refresh == 'true'
+        if: steps.rollover.outputs.build == 'true' || steps.rollover.outputs.policy_replay == 'true' || steps.rollover.outputs.coverage_repair == 'true' || steps.rollover.outputs.resolver_refresh == 'true' || steps.rollover.outputs.bridge_refresh == 'true'
         run: |
           python - <<'PY'
           import json
@@ -319,7 +338,7 @@ jobs:
           print({"asof":m["asof_et"],"master_status":m["status"],"master_unknown":m["unknown_count"],"price_dv20_unknown":p["unknown_count"],"price_dv20_blocked":p.get("blocked_count",(p.get("counts") or {}).get("BLOCK_CURRENT_RUN",0)),"price_dv20_pass":p["pass_count"],"resolver_request_status":q["status"],"settlement_required":q["settlement_required"]})
           PY
       - name: Commit current pre-MC artifacts
-        if: steps.rollover.outputs.build == 'true' || steps.rollover.outputs.coverage_repair == 'true' || steps.rollover.outputs.resolver_refresh == 'true' || steps.rollover.outputs.bridge_refresh == 'true'
+        if: steps.rollover.outputs.build == 'true' || steps.rollover.outputs.policy_replay == 'true' || steps.rollover.outputs.coverage_repair == 'true' || steps.rollover.outputs.resolver_refresh == 'true' || steps.rollover.outputs.bridge_refresh == 'true'
         shell: bash
         run: |
           set -euo pipefail

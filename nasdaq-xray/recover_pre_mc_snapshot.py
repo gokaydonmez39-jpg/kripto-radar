@@ -22,6 +22,9 @@ STATIC=[
  "nasdaq-xray/canonical_current_resolver_chunk_manifest.json",
 ]
 CHUNK_RE=re.compile(r"^nasdaq-xray/canonical_current_resolver_chunk_[0-9]{4}\.json$")
+CURRENT_POLICY_HASH="bbb6ea5aa3126fbcdeda2246bc52d1ad04885d27e8e52fb07797e0114dedce55"
+CURRENT_POLICY_BLOB="299199aa10b6eb6fdf35071f233ac12bd814dc32"
+CURRENT_PRICE_RULE=">=5"
 
 def run(*args,check=True,text=True):
     return subprocess.run(args,cwd=REPO,check=check,text=text,capture_output=True)
@@ -46,11 +49,17 @@ def find_good(asof:str)->str:
         p=show_json(sha,PRICE)
         if not p:
             continue
+        q=show_json(sha,"nasdaq-xray/canonical_current_resolver_request.json")
         if (
             p.get("asof_et")==asof
             and p.get("execution")=="NONE" and p.get("real_money")=="NO-GO"
+            and (p.get("thresholds") or {}).get("price")==CURRENT_PRICE_RULE
             and int(p.get("unknown_count",-1))==0
             and int(p.get("pass_count",0))>0
+            and isinstance(q,dict)
+            and q.get("compiled_policy_hash")==CURRENT_POLICY_HASH
+            and q.get("compiled_policy_blob_sha")==CURRENT_POLICY_BLOB
+            and q.get("compiled_policy_version")=="C4.17"
         ):
             return sha
     raise RuntimeError("NO_VALID_SAME_ASOF_PRICE_SNAPSHOT")
@@ -81,9 +90,13 @@ def validate(asof:str):
     manifest=json.load(open(ROOT/"canonical_current_resolver_chunk_manifest.json"))
     assert price["asof_et"]==master["asof_et"]==req["asof_et"]==asof
     assert price["execution"]=="NONE" and price["real_money"]=="NO-GO"
+    assert (price.get("thresholds") or {}).get("price")==CURRENT_PRICE_RULE
     assert int(price["unknown_count"])==0 and int(price["pass_count"])>0
     assert price["source_master_queue_hash"]==master["queue_hash"]
     assert req["queue_hash"]==master["queue_hash"]
+    assert req.get("compiled_policy_hash")==CURRENT_POLICY_HASH
+    assert req.get("compiled_policy_blob_sha")==CURRENT_POLICY_BLOB
+    assert req.get("compiled_policy_version")=="C4.17"
     assert int(price["source_master_count"])==int(master["queue_total"])
     assert req["source_price_blob_sha"]==blob(ROOT/"canonical_current_price_dv20.json")
     assert manifest["request_blob_sha"]==blob(ROOT/"canonical_current_resolver_request.json")
