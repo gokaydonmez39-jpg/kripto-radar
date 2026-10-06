@@ -584,6 +584,11 @@ def canonical_frozen_identity(asof):
         st=json.loads(sp.read_text(encoding="utf-8"))
         mf=json.loads(mp.read_text(encoding="utf-8"))
         q=list(st.get("queue") or [])
+        sec_proof,sec_blob=load_sec_spac_proof(asof)
+        sec_count=len(sec_proof)
+        dm=st.get("discovery_meta") or {}
+        mf_sec=mf.get("sec_spac_proof") or {}
+        mf_cp=mf.get("completion_proof") or {}
         if (
           st.get("schema")!="XRAY_NASDAQ_SCREENER_SINA_V2"
           or st.get("identity_ruleset")!=IDENTITY_RULESET
@@ -596,6 +601,11 @@ def canonical_frozen_identity(asof):
           or len(q)!=len(set(q))
           or st.get("queue_hash")!=sha_lines(q)
           or mf.get("queue_hash")!=st.get("queue_hash")
+          or mf_cp.get("sec_spac_proof_binding") is not True
+          or dm.get("sec_spac_proof_blob_sha")!=sec_blob
+          or int(dm.get("sec_spac_proof_count",-1))!=sec_count
+          or mf_sec.get("blob_sha")!=sec_blob
+          or int(mf_sec.get("count",-1))!=sec_count
         ):
             return None
         return {
@@ -618,15 +628,17 @@ def canonical_frozen_identity(asof):
 
 def main():
     asof,expected30=completed_sessions()
+    sec_spac_proof,sec_spac_blob=load_sec_spac_proof(asof)
+    sec_identity_token="SEC_SPAC_PROOF:"+str(sec_spac_blob or "NONE")
     frozen=canonical_frozen_identity(asof)
     if frozen is not None:
         names=dict(frozen["security_names"])
         excluded={}
         footer=str(frozen.get("official_footer") or "CANONICAL_FROZEN_IDENTITY")
-        identity_token="CANONICAL_FROZEN:"+str(frozen.get("source_state_hash") or frozen["queue_hash"])
+        identity_token="CANONICAL_FROZEN:"+str(frozen.get("source_state_hash") or frozen["queue_hash"])+"|"+sec_identity_token
     else:
         names,excluded,footer=official_nasdaq()
-        identity_token=footer
+        identity_token=footer+"|"+sec_identity_token
     state=load(STATE)
     epoch_key=IDENTITY_RULESET+"|"+("FULL_IDENTITY" if FULL_IDENTITY else "DISCOVERY_PREFILTER")+"|"+identity_token+"|"+asof
 
@@ -644,7 +656,6 @@ def main():
             })
             ex_serial=[]
         else:
-            sec_spac_proof,sec_spac_blob=load_sec_spac_proof(asof)
             queue,discovery,meta,screener_excluded=build_discovery(names,FULL_IDENTITY,sec_spac_proof)
             meta.update({
               "sec_spac_proof_path":("nasdaq-xray/"+SEC_SPAC_PROOF.name) if sec_spac_blob else None,

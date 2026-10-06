@@ -251,6 +251,11 @@ def main():
     assert '"SPAC_BLANK_CHECK"' in master_src and 'identity_ruleset_v5' in master_src,master_src
     assert 'REPLAY_COMPLETED_EPOCH_UNDER_CURRENT_IDENTITY_POLICY_V5' in pre_mc_src,pre_mc_src
     assert 'mf.get("identity_ruleset")!="V5_SEC_SPAC_PROOF_AT_MASTER"' in pre_mc_src,pre_mc_src
+    assert 'sec_identity_token="SEC_SPAC_PROOF:"' in sina_src,sina_src
+    assert 'mf_cp.get("sec_spac_proof_binding") is not True' in sina_src,sina_src
+    assert 'dm.get("sec_spac_proof_blob_sha")!=sec_blob' in sina_src,sina_src
+    assert 'mcp.get("sec_spac_proof_binding") is not True' in pre_mc_src,pre_mc_src
+    assert 'msec.get("blob_sha")!=(proof_blob if proof_count else None)' in pre_mc_src,pre_mc_src
 
     # Replay guard must be bound to the current C4.17 DV30 artifact and must
     # inspect the durable pointer's nested ASOF. A stale pointer can never be

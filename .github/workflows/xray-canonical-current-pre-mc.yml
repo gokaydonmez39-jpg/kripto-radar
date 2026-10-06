@@ -81,7 +81,7 @@ jobs:
         run: |
           set -euo pipefail
           python - <<'PY'
-          import json, os, sys
+          import hashlib, json, os, pathlib, sys
           from datetime import datetime, timezone, timedelta
           import pandas_market_calendars as mcal
           sys.path.insert(0,"nasdaq-xray")
@@ -144,11 +144,21 @@ jobs:
           policy_replay=bool(active_completed_epoch and price_integrity_ok and not price_semantics_ok)
           try:
               mf=json.load(open("nasdaq-xray/canonical_current_master_manifest.json"))
+              proof_path=pathlib.Path("nasdaq-xray/master_sec_spac_proof_20261005.json")
+              proof=json.load(open(proof_path))
+              proof_bytes=proof_path.read_bytes()
+              proof_blob=hashlib.sha1(b"blob "+str(len(proof_bytes)).encode()+b"\0"+proof_bytes).hexdigest()
+              proof_count=len(proof.get("proofs") or {}) if proof.get("asof_et")==latest_completed else 0
+              msec=mf.get("sec_spac_proof") or {}
+              mcp=mf.get("completion_proof") or {}
               identity_replay=bool(
                   active_completed_epoch
                   and (
                       mf.get("identity_ruleset")!="V5_SEC_SPAC_PROOF_AT_MASTER"
                       or mf.get("identity_authority")!="NASDAQTRADER_EXPLICIT_TYPE_FILTER_V5_SEC_SPAC_PROOF_AT_MASTER"
+                      or mcp.get("sec_spac_proof_binding") is not True
+                      or msec.get("blob_sha")!=(proof_blob if proof_count else None)
+                      or int(msec.get("count",-1))!=proof_count
                   )
               )
           except Exception:
