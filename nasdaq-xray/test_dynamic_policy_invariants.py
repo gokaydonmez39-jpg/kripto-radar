@@ -154,14 +154,13 @@ def main():
     assert candidate_local_research_ready({"AAA"},{"status":"PASS"},{**ft_ok,"lifecycle_semantics_exact":False},True) is False
     assert candidate_local_research_ready({"AAA"},{"status":"PASS"},{**ft_ok,"candidate_legal_guard_exact_binding":False},True) is False
 
-    # PRICE BLOCK_CURRENT_RUN is an explicit fail-closed nonpass classification,
-    # never PASS and never an unresolved/UNKNOWN condition. It must remain
-    # reported but must not poison global completeness as an unknown blocker.
+    # PRICE BLOCK_CURRENT_RUN has not proven PASS or a policy-authorized
+    # terminal FAIL. UNKNOWN!=PASS and full-E2E/no-signal claims require
+    # complete hard-gate coverage, so unresolved blocks must stop FULL_E2E.
     terminal_src=(ROOT/"build_current_terminal.py").read_text()
     blocker_body=terminal_src.split("blockers={",1)[1].split("full=all",1)[0]
-    assert '"price_blocked_current_run"' not in blocker_body,blocker_body
-    assert '"classified_nonpass":{"price_blocked_current_run":price_blocked_count}' in terminal_src
-    assert '"price_blocked_is_fail_closed_nonpass_not_unknown":True' in terminal_src
+    assert '"price_blocked_current_run":price_blocked_count' in blocker_body,blocker_body
+    assert '"price_blocked_requires_terminal_resolution":True' in terminal_src
     assert candidate_local_research_ready({"AAA"},{"status":"PASS"},{**ft_ok,"results":{"AAA":{"candidate_legal_review_status":"UNKNOWN"}}},True) is False
 
     # HISTORY evidence regression: official listing-date evidence can only
