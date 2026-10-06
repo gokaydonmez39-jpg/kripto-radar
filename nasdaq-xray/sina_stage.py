@@ -406,7 +406,7 @@ def main():
     names,excluded,footer=official_nasdaq()
     asof,expected20=completed_sessions()
     state=load(STATE)
-    epoch_key=IDENTITY_RULESET+"|"+footer+"|"+asof
+    epoch_key=IDENTITY_RULESET+"|"+("FULL_IDENTITY" if FULL_IDENTITY else "DISCOVERY_PREFILTER")+"|"+footer+"|"+asof
 
     if state.get("schema")!="XRAY_NASDAQ_SCREENER_SINA_V2" or state.get("epoch_key")!=epoch_key:
         queue,discovery,meta=build_discovery(names,FULL_IDENTITY)
