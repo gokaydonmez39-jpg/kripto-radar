@@ -26,6 +26,33 @@ def blob_sha(p):
 def hash_lines(xs):
     return hashlib.sha256("\n".join(xs).encode()).hexdigest()
 
+def valid_sec_spac_proof_binding(dm,asof):
+    try:
+        n=int(dm.get("sec_spac_proof_count",0) or 0)
+        path=str(dm.get("sec_spac_proof_path") or "")
+        sha=str(dm.get("sec_spac_proof_blob_sha") or "")
+        if n==0:
+            return not path and not sha
+        if not path or not sha:
+            return False
+        p=ROOT.parent/path
+        if not p.exists() or blob_sha(p)!=sha:
+            return False
+        j=json.loads(p.read_text())
+        proofs=j.get("proofs") or {}
+        return bool(
+          j.get("schema")=="XRAY_MASTER_SEC_SPAC_PROOF_V1"
+          and j.get("execution")=="NONE" and j.get("real_money")=="NO-GO"
+          and j.get("unknown_never_pass") is True
+          and j.get("authority")=="SEC_EDGAR_SIC_6770_EXACT_ASOF"
+          and j.get("applicability")=="EXACT_ASOF_ONLY_NO_FORWARD_CARRY"
+          and j.get("asof_et")==asof
+          and isinstance(proofs,dict) and len(proofs)==n
+          and all(isinstance(x,dict) and int(x.get("sic",-1))==6770 for x in proofs.values())
+        )
+    except Exception:
+        return False
+
 def main():
     s=json.loads(INPUT.read_text())
     assert s["schema"]=="XRAY_NASDAQ_SCREENER_SINA_V2" and s["task_id"]==TASK
@@ -47,6 +74,7 @@ def main():
       "identity_authority_v5":s.get("identity_authority")=="NASDAQTRADER_EXPLICIT_TYPE_FILTER_V5_SEC_SPAC_PROOF_AT_MASTER",
       "identity_ruleset_v5":s.get("identity_ruleset")=="V5_SEC_SPAC_PROOF_AT_MASTER",
       "exclusion_reasons_policy_exact":set(exc).issubset(ALLOWED_EXCLUSION_REASONS),
+      "sec_spac_proof_binding":valid_sec_spac_proof_binding(dm,s.get("asof_et")),
     }
     complete=all(proof.values())
     identity_pass=sorted(q) if complete else []
@@ -70,6 +98,7 @@ def main():
       "explicit_excluded_count":s.get("explicit_excluded_count"),
       "explicit_excluded_hash":s.get("explicit_excluded_hash"),
       "explicit_excluded_reason_counts":exc,
+      "sec_spac_proof":{"path":dm.get("sec_spac_proof_path"),"blob_sha":dm.get("sec_spac_proof_blob_sha"),"count":int(dm.get("sec_spac_proof_count",0) or 0),"symbol_hash":dm.get("sec_spac_proof_hash")},
       "history_price_state_diagnostic_only":{
         "source_status":s.get("status"),
         "source_unknown_count":s.get("unknown_count"),

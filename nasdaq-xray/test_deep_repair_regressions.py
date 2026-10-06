@@ -760,7 +760,7 @@ def test_workflow_race_and_pre_mc_freeze_contracts():
     assert "identity_replay=bool(" in guard
     assert 'mf.get("identity_ruleset")!="V5_SEC_SPAC_PROOF_AT_MASTER"' in guard
     assert "build=bool(not active_completed_epoch or bootstrap_rebuild or identity_replay)" in guard
-    assert "REPLAY_COMPLETED_EPOCH_UNDER_CURRENT_IDENTITY_POLICY" in guard
+    assert "REPLAY_COMPLETED_EPOCH_UNDER_CURRENT_IDENTITY_POLICY_V5" in guard
     assert "REBUILD_DEFERRED_DV30_BOOTSTRAP" in guard
     assert 'out.write(f"recovery_asof={frozen_asof}\\n")' in guard
     assert "terminal_result" not in guard and "FULL_E2E_RESEARCH_PASS" not in guard

@@ -249,7 +249,7 @@ def main():
     assert "SEC_SUBMISSIONS_SIC_6770" in sina_src,sina_src
     assert 'NASDAQTRADER_EXPLICIT_TYPE_FILTER_V5_SEC_SPAC_PROOF_AT_MASTER' in sina_src,sina_src
     assert '"SPAC_BLANK_CHECK"' in master_src and 'identity_ruleset_v5' in master_src,master_src
-    assert 'REPLAY_COMPLETED_EPOCH_UNDER_CURRENT_IDENTITY_POLICY' in pre_mc_src,pre_mc_src
+    assert 'REPLAY_COMPLETED_EPOCH_UNDER_CURRENT_IDENTITY_POLICY_V5' in pre_mc_src,pre_mc_src
     assert 'mf.get("identity_ruleset")!="V5_SEC_SPAC_PROOF_AT_MASTER"' in pre_mc_src,pre_mc_src
 
     # Replay guard must be bound to the current C4.17 DV30 artifact and must

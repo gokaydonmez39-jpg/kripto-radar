@@ -40,6 +40,7 @@ ROOT=Path(__file__).resolve().parent
 STATE=Path(os.getenv("XRAY_SINA_STATE", str(ROOT/"sina_state.json")))
 CAND=Path(os.getenv("XRAY_SINA_CAND", str(ROOT/"sina_candidates.json")))
 RESOLUTION_OVERLAY=Path(os.getenv("XRAY_HISTORY_RESOLUTION_OVERLAY", str(ROOT/"history_resolution_overlay.json")))
+SEC_SPAC_PROOF=ROOT/"master_sec_spac_proof_20261005.json"
 FULL_IDENTITY=os.getenv("XRAY_FULL_IDENTITY","0")=="1"
 IDENTITY_ONLY=os.getenv("XRAY_IDENTITY_ONLY","0")=="1"
 
@@ -71,6 +72,44 @@ TYPE_PATTERNS=[
 
 def sha_lines(items):
     return hashlib.sha256("\n".join(items).encode("utf-8")).hexdigest()
+
+def git_blob_sha(path):
+    b=path.read_bytes()
+    return hashlib.sha1(f"blob {len(b)}\0".encode()+b).hexdigest()
+
+def load_sec_spac_proof(asof):
+    if not SEC_SPAC_PROOF.exists():
+        return {},None
+    j=json.loads(SEC_SPAC_PROOF.read_text(encoding="utf-8"))
+    if str(j.get("asof_et") or "")!=asof:
+        return {},None
+    if not (
+      j.get("schema")=="XRAY_MASTER_SEC_SPAC_PROOF_V1"
+      and j.get("execution")=="NONE" and j.get("real_money")=="NO-GO"
+      and j.get("unknown_never_pass") is True
+      and j.get("authority")=="SEC_EDGAR_SIC_6770_EXACT_ASOF"
+      and j.get("applicability")=="EXACT_ASOF_ONLY_NO_FORWARD_CARRY"
+    ):
+        raise RuntimeError("SEC_SPAC_PROOF_HEADER_INVALID")
+    proofs=j.get("proofs") or {}
+    if not isinstance(proofs,dict):
+        raise RuntimeError("SEC_SPAC_PROOF_BODY_INVALID")
+    out={}
+    for sym,row in proofs.items():
+        sym=str(sym or "").strip().upper()
+        if not sym or not isinstance(row,dict):
+            raise RuntimeError("SEC_SPAC_PROOF_ROW_INVALID")
+        if (
+          int(row.get("sic",-1))!=6770
+          or str(row.get("classification") or "")!="Blank Checks"
+          or not re.fullmatch(r"0[0-9]{9}",str(row.get("cik") or ""))
+          or not str(row.get("source_url") or "").startswith("https://www.sec.gov/")
+          or not re.fullmatch(r"20[0-9]{2}-[0-9]{2}-[0-9]{2}",str(row.get("evidence_date") or ""))
+          or str(row.get("evidence_date"))>asof
+        ):
+            raise RuntimeError("SEC_SPAC_PROOF_ROW_INVALID:"+sym)
+        out[sym]=row
+    return out,git_blob_sha(SEC_SPAC_PROOF)
 
 def request_json(url,params=None,headers=None,timeout=45):
     if params:
@@ -203,17 +242,29 @@ def num(x):
     except Exception:
         return None
 
-def build_discovery(official,force_all=False):
+def build_discovery(official,force_all=False,sec_spac_proof=None):
     rows=screener_rows()
     off=set(official)
     prefilter={}
     screener_excluded={}
+    sec_spac_proof=sec_spac_proof or {}
     missing=set(off)
     exact_hard_mc_price_count=0
     for r in rows:
         sym=str(r.get("symbol") or "").strip().upper()
         if sym not in off:continue
         missing.discard(sym)
+        if sym in sec_spac_proof:
+            pr=sec_spac_proof[sym]
+            screener_excluded[sym]={
+              "reason":"SPAC_BLANK_CHECK",
+              "security_name":official.get(sym) or str(r.get("name") or "").strip(),
+              "industry":"Blank Checks",
+              "source":"SEC_EDGAR_SIC_6770_EXACT_ASOF",
+              "cik":pr.get("cik"),
+              "source_url":pr.get("source_url"),
+            }
+            continue
         industry=str(r.get("industry") or "").strip()
         if industry.lower()=="blank checks":
             screener_excluded[sym]={
@@ -273,6 +324,17 @@ def build_discovery(official,force_all=False):
               "country":r.get("country"),
             }
     for sym in sorted(missing):
+        if sym in sec_spac_proof:
+            pr=sec_spac_proof[sym]
+            screener_excluded[sym]={
+              "reason":"SPAC_BLANK_CHECK",
+              "security_name":official.get(sym),
+              "industry":"Blank Checks",
+              "source":"SEC_EDGAR_SIC_6770_EXACT_ASOF",
+              "cik":pr.get("cik"),
+              "source_url":pr.get("source_url"),
+            }
+            continue
         # Official-directory identity exists but the web screener omitted it.
         # For a SPAC-suspect name, SEC SIC 6770 is exclusion-only proof.
         # If SEC is unavailable/ambiguous, fail closed by keeping it queued.
@@ -298,6 +360,7 @@ def build_discovery(official,force_all=False):
           "country":None,
           "discovery_reason":"OFFICIAL_SCREENER_MISSING_FORCE_QUEUE",
         }
+    applied_sec=sorted(set(screener_excluded)&set(sec_spac_proof))
     queue=sorted(prefilter)
     return queue,prefilter,{
       "rows_returned":len(rows),
@@ -312,6 +375,8 @@ def build_discovery(official,force_all=False):
       "full_identity":bool(force_all),
       "screener_spac_excluded_count":len(screener_excluded),
       "screener_spac_excluded_hash":sha_lines(sorted(screener_excluded)),
+      "sec_spac_proof_count":len(applied_sec),
+      "sec_spac_proof_hash":sha_lines(applied_sec),
     },screener_excluded
 
 def completed_sessions():
@@ -579,7 +644,12 @@ def main():
             })
             ex_serial=[]
         else:
-            queue,discovery,meta,screener_excluded=build_discovery(names,FULL_IDENTITY)
+            sec_spac_proof,sec_spac_blob=load_sec_spac_proof(asof)
+            queue,discovery,meta,screener_excluded=build_discovery(names,FULL_IDENTITY,sec_spac_proof)
+            meta.update({
+              "sec_spac_proof_path":("nasdaq-xray/"+SEC_SPAC_PROOF.name) if sec_spac_blob else None,
+              "sec_spac_proof_blob_sha":sec_spac_blob,
+            })
             excluded.update(screener_excluded)
             ex_serial=[s+"|"+excluded[s]["reason"] for s in sorted(excluded)]
         state={
