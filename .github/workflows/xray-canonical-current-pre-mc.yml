@@ -126,12 +126,7 @@ jobs:
           active_completed_epoch=bool(same_completed_epoch or current_epoch_artifact_exists)
           frozen_asof=(pointer_asof if same_completed_epoch else latest_completed if current_epoch_artifact_exists else "")
           try:
-              price_integrity_ok=(
-                  bool(frozen_asof) and px.get("asof_et")==frozen_asof
-                  and px.get("execution")=="NONE" and px.get("real_money")=="NO-GO"
-                  and int(px.get("unknown_count",-1))==0
-                  and int(px.get("pass_count",0))>0
-              )
+              price_integrity_ok=price_snapshot_integrity(px,frozen_asof)
               price_semantics_ok=(
                   (px.get("thresholds") or {}).get("price")==">=5"
                   and (px.get("thresholds") or {}).get("dv20")==">=50000000 exact20 median"
@@ -156,30 +151,26 @@ jobs:
               active_completed_epoch and price_ok and blocked_count>0 and not block_recovery_attempted
           )
           resolver_refresh=False
-          if active_completed_epoch and price_ok and blocked_count>0 and block_recovery_attempted:
+          if active_completed_epoch and price_ok and block_recovery_attempted:
               try:
                   rq=json.load(open("nasdaq-xray/canonical_current_resolver_request.json"))
-                  resolver_refresh=set(rq.get("price_blocked_symbols") or [])!=set(px.get("blocked_symbols") or [])
+                  resolver_refresh=(
+                    set(rq.get("price_unknown_symbols") or [])!=set(px.get("unknown_symbols") or [])
+                    or set(rq.get("price_blocked_symbols") or [])!=set(px.get("blocked_symbols") or [])
+                  )
               except Exception:
                   resolver_refresh=True
           bridge_refresh=False
-          if active_completed_epoch and price_ok and blocked_count>0:
+          if active_completed_epoch and price_ok:
               try:
-                  import glob
-                  blocked=set(px.get("blocked_symbols") or [])
-                  qh=px.get("source_master_queue_hash")
+                  import glob,hashlib,pathlib
+                  pp=pathlib.Path("nasdaq-xray/canonical_current_price_dv20.json")
+                  pb=pp.read_bytes()
+                  current_price_blob=hashlib.sha1(b"blob "+str(len(pb)).encode()+b"\\0"+pb).hexdigest()
                   for fp in glob.glob("nasdaq-xray/canonical_resolver_bridge_*.json"):
                       try:
                           b=json.load(open(fp))
-                          if (
-                              b.get("schema")=="XRAY_RESOLVER_EPOCH_RESULT_V1"
-                              and b.get("status")=="COMMITTED"
-                              and b.get("asof_et")==frozen_asof
-                              and b.get("queue_hash")==qh
-                              and b.get("compiled_policy_version")=="C4.17"
-                              and b.get("compiled_policy_hash")=="bbb6ea5aa3126fbcdeda2246bc52d1ad04885d27e8e52fb07797e0114dedce55"
-                              and blocked & set((b.get("terminal_overrides") or {}).keys())
-                          ):
+                          if bridge_refresh_relevant(px,b,frozen_asof,current_price_blob):
                               bridge_refresh=True
                               break
                       except Exception:

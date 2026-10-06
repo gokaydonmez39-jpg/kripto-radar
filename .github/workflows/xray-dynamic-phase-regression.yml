@@ -131,6 +131,45 @@ jobs:
           print("MONOTONIC_LEGACY_PRICE_PASS_REUSE=PASS")
           PY
 
+      - name: Assert incomplete PRICE snapshot routes to resolver, not corruption recovery
+        run: |
+          python - <<'PY'
+          import sys
+          sys.path.insert(0,"nasdaq-xray")
+          import price_dv20_recover_from_fullstate as r
+          px={
+            "asof_et":"2026-10-05","execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
+            "source_master_count":3,"source_master_queue_hash":"Q",
+            "counts":{"PASS_PRICE_DV20":1,"UNKNOWN":1,"BLOCK_CURRENT_RUN":1},
+            "results":{"PASS":{},"U":{},"B":{}},
+            "pass_count":1,"pass_symbols":["PASS"],
+            "unknown_count":1,"unknown_symbols":["U"],
+            "blocked_count":1,"blocked_symbols":["B"],
+          }
+          assert r.price_snapshot_integrity(px,"2026-10-05") is True,px
+          broken=dict(px,counts={"PASS_PRICE_DV20":1,"UNKNOWN":1})
+          assert r.price_snapshot_integrity(broken,"2026-10-05") is False,broken
+          base={
+            "schema":"XRAY_RESOLVER_EPOCH_RESULT_V1","status":"COMMITTED",
+            "task_id":r.TASK_ID,"execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
+            "asof_et":"2026-10-05","queue_hash":"Q","compiled_policy_version":"C4.17",
+            "compiled_policy_hash":"bbb6ea5aa3126fbcdeda2246bc52d1ad04885d27e8e52fb07797e0114dedce55",
+            "source_price_blob_sha":"P","price_resolutions":{},
+            "price_resolution_compact":{"block_current_run":{"U":{"reason":"X"}}},
+          }
+          assert r.bridge_refresh_relevant(px,base,"2026-10-05","P") is True
+          px_after=dict(px,unknown_count=0,unknown_symbols=[],blocked_count=2,blocked_symbols=["U","B"],
+                        counts={"PASS_PRICE_DV20":1,"BLOCK_CURRENT_RUN":2})
+          assert r.bridge_refresh_relevant(px_after,base,"2026-10-05","P") is False
+          terminal=dict(base,price_resolution_compact={},terminal_overrides={"B":{"decision":"FAIL_DV20"}})
+          assert r.bridge_refresh_relevant(px_after,terminal,"2026-10-05","P") is True
+          assert r.bridge_replacement_allowed("UNKNOWN","BLOCK_CURRENT_RUN") is True
+          assert r.bridge_replacement_allowed("BLOCK_CURRENT_RUN","FAIL_DV20") is True
+          assert r.bridge_replacement_allowed("BLOCK_CURRENT_RUN","BLOCK_CURRENT_RUN") is False
+          assert r.bridge_replacement_allowed("PASS_PRICE_DV20","FAIL_DV20") is False
+          print("PRICE_RESOLVER_INCOMPLETE_SNAPSHOT_ROUTING=PASS")
+          PY
+
       - name: Assert no frozen 20260930 ASOF constants
         run: |
           python - <<'PY'

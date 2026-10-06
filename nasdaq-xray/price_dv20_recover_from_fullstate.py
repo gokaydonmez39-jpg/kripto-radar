@@ -108,6 +108,114 @@ def num(x):
     except Exception:
         return None
 
+def price_snapshot_integrity(px,frozen_asof):
+    """Structural integrity is not the same as resolver completeness.
+
+    UNKNOWN/BLOCK_CURRENT_RUN are legitimate fail-closed intermediate states.
+    Treat the snapshot as corrupt only when its safety/binding/count structure
+    is internally inconsistent.
+    """
+    try:
+        counts=px.get("counts") or {}
+        results=px.get("results") or {}
+        unknown=list(px.get("unknown_symbols") or [])
+        blocked=list(px.get("blocked_symbols") or [])
+        passes=list(px.get("pass_symbols") or [])
+        source_count=int(px.get("source_master_count",-1))
+        return bool(
+          frozen_asof and px.get("asof_et")==frozen_asof
+          and px.get("execution")=="NONE" and px.get("real_money")=="NO-GO"
+          and px.get("unknown_never_pass") is True
+          and source_count>0 and len(results)==source_count
+          and sum(int(v) for v in counts.values())==source_count
+          and int(px.get("unknown_count",-1))==len(unknown)==len(set(unknown))
+          and int(px.get("blocked_count",counts.get("BLOCK_CURRENT_RUN",0)))==len(blocked)==len(set(blocked))
+          and int(px.get("pass_count",-1))==len(passes)==len(set(passes)) and len(passes)>0
+          and set(unknown).issubset(results)
+          and set(blocked).issubset(results)
+          and set(passes).issubset(results)
+        )
+    except Exception:
+        return False
+
+
+def _compact_resolution_sets(compact):
+    compact=compact or {}
+    all_resolved=set()
+    terminal=set()
+    block_only=set()
+    for key in ("fail_price_symbols","fail_dv20_symbols","pass_price_dv20_symbols"):
+        vals=compact.get(key) or []
+        if isinstance(vals,list):
+            all_resolved.update(vals); terminal.update(vals)
+    bc=compact.get("block_current_run") or {}
+    if isinstance(bc,dict):
+        all_resolved.update(bc); block_only.update(bc)
+    # Compact V3 shapes are dictionaries.
+    for key in ("fail_price","fail_dv20","pass_price_dv20","fail_no_asof_bar",
+                "fail_dv20_insufficient_sessions","block_post_asof_listing"):
+        vals=compact.get(key) or {}
+        if isinstance(vals,dict):
+            all_resolved.update(vals); terminal.update(vals)
+    bc3=compact.get("block_current_run") or {}
+    if isinstance(bc3,dict):
+        all_resolved.update(bc3); block_only.update(bc3)
+    return all_resolved,terminal,block_only
+
+
+def bridge_refresh_relevant(px,bridge,asof,source_price_blob_sha=None):
+    """Cheap scheduling predicate. Exact proof validation remains in load_exception_bridge."""
+    try:
+        if not (
+          bridge.get("schema")=="XRAY_RESOLVER_EPOCH_RESULT_V1"
+          and bridge.get("status")=="COMMITTED"
+          and bridge.get("task_id")==TASK_ID
+          and bridge.get("execution")=="NONE" and bridge.get("real_money")=="NO-GO"
+          and bridge.get("unknown_never_pass") is True
+          and bridge.get("asof_et")==asof
+          and bridge.get("queue_hash")==px.get("source_master_queue_hash")
+          and bridge.get("compiled_policy_version")=="C4.17"
+          and bridge.get("compiled_policy_hash")=="bbb6ea5aa3126fbcdeda2246bc52d1ad04885d27e8e52fb07797e0114dedce55"
+        ):
+            return False
+        if source_price_blob_sha is not None and bridge.get("source_price_blob_sha")!=source_price_blob_sha:
+            return False
+        unknown=set(px.get("unknown_symbols") or [])
+        blocked=set(px.get("blocked_symbols") or [])
+        expanded=bridge.get("price_resolutions") or {}
+        expanded_all=set(expanded) if isinstance(expanded,dict) else set()
+        expanded_terminal={
+          s for s,x in (expanded.items() if isinstance(expanded,dict) else [])
+          if isinstance(x,dict) and x.get("decision")!="BLOCK_CURRENT_RUN"
+        }
+        compact_all,compact_terminal,_=_compact_resolution_sets(bridge.get("price_resolution_compact"))
+        overrides=set((bridge.get("terminal_overrides") or {}).keys())
+        # UNKNOWN may legitimately become another fail-closed BLOCK; an existing
+        # BLOCK must only wake the workflow for a terminal resolution.
+        return bool(
+          unknown & (expanded_all|compact_all|overrides)
+          or blocked & (expanded_terminal|compact_terminal|overrides)
+        )
+    except Exception:
+        return False
+
+
+def bridge_replacement_allowed(prior_status,decision):
+    if prior_status=="UNKNOWN":
+        return decision in {
+          "FAIL_PRICE","FAIL_DV20","FAIL_PRICE_NO_ASOF_BAR",
+          "FAIL_DV20_INSUFFICIENT_SESSIONS","PASS_PRICE_DV20",
+          "BLOCK_CURRENT_RUN","BLOCK_POST_ASOF_LISTING",
+        }
+    if prior_status=="BLOCK_CURRENT_RUN":
+        return decision in {
+          "FAIL_PRICE","FAIL_DV20","FAIL_PRICE_NO_ASOF_BAR",
+          "FAIL_DV20_INSUFFICIENT_SESSIONS","PASS_PRICE_DV20",
+          "BLOCK_POST_ASOF_LISTING",
+        }
+    return False
+
+
 def apply_terminal_overrides(prs,overrides):
     """Strict operator evidence may only turn an existing fail-closed block into
     a C4.17 terminal FAIL. It can never manufacture PASS or change non-blocked rows.
@@ -516,11 +624,14 @@ def main():
                 results[sym]={"status":st,"info":info,"provider_meta":meta,"provenance":"POLICY_ORDER_REEVALUATION"}
     bridge_price,exception_bridge_meta=load_exception_bridge(asof,s["queue_hash"])
     for sym,br in sorted(bridge_price.items()):
-        if sym not in results or results[sym].get("status")!="UNKNOWN":
+        if sym not in results:
             continue
+        prior_status=results[sym].get("status")
         if not valid_bridge_price_resolution(br,asof):
             continue
         st=br["decision"]
+        if not bridge_replacement_allowed(prior_status,st):
+            continue
         results[sym]={
           "status":st,
           "info":{k:v for k,v in br.items() if k!="decision"},
