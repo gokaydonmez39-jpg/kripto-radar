@@ -2,16 +2,22 @@
   "alpha_authority": false,
   "checks": [
     {
-      "detail": "official identity proof",
+      "detail": {
+        "authority": "NASDAQTRADER_EXPLICIT_TYPE_FILTER_V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER",
+        "authority_full_identity": true,
+        "identity_authority_v6": true,
+        "unknown_count": 0
+      },
       "name": "master_identity",
       "state": "PASS"
     },
     {
       "detail": {
-        "pass_count": 528,
+        "pass_count": 504,
+        "schema": "XRAY_CANONICAL_PRICE_DV30_V1",
         "unknown_count": 0
       },
-      "name": "price_dv20_counts",
+      "name": "price_dv30_counts",
       "state": "PASS"
     },
     {
@@ -28,7 +34,7 @@
       "detail": {
         "registered_candidates": [],
         "veto_intersection": [],
-        "veto_symbol_count": 25
+        "veto_symbol_count": 29
       },
       "name": "candidate_official_safety_guard",
       "state": "PASS"
@@ -57,7 +63,7 @@
     }
   ],
   "execution": "NONE",
-  "generated_at_utc": "2026-10-06T16:16:23.812976+00:00",
+  "generated_at_utc": "2026-10-06T20:44:45.249744+00:00",
   "real_money": "NO-GO",
   "schema": "XRAY_GUARDIAN_STATE_V1",
   "self_healing_may_not_change_alpha": true,

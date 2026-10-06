@@ -29,7 +29,11 @@
       "DRCT",
       "FSEA",
       "GFAIW",
+      "LESL",
+      "NHPBP",
       "NSTS",
+      "PSKY",
+      "QRVO",
       "THRMV",
       "WALD",
       "WALDW"
@@ -46,12 +50,16 @@
       "GFAIW",
       "HCHL",
       "LAWR",
+      "LESL",
       "MAGH",
       "MAMK",
       "MCTA",
+      "NHPBP",
       "NSTS",
       "OST",
       "PC",
+      "PSKY",
+      "QRVO",
       "SLP",
       "SVA",
       "THRMV",
@@ -63,7 +71,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-10-06T20:16:06.831585+00:00",
+  "generated_at_utc": "2026-10-06T20:44:19.092333+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -73,182 +81,11 @@
   "schema": "XRAY_OFFICIAL_SOURCE_GUARD_V1",
   "sources": {
     "security_status": {
-      "historical_event_rows_considered": 50,
+      "historical_event_rows_considered": 69,
       "query_end": "2026-10-06",
-      "query_start": "2026-10-02",
+      "query_start": "2026-10-05",
       "row_count": 50,
       "rows": [
-        {
-          "CompanyName": "Alpha Modus Holdings, Inc. Class A Common Stock",
-          "DowngradeReason": "",
-          "EffectiveDate": "2026-10-02",
-          "IssueEvent": "Financial Status Changes",
-          "NewFinancialStatus": "N-Normal",
-          "OldFinancialStatus": "D-Deficient",
-          "Symbol": "AMOD"
-        },
-        {
-          "CompanyName": "Alpha Modus Holdings, Inc. Warrant",
-          "DowngradeReason": "",
-          "EffectiveDate": "2026-10-02",
-          "IssueEvent": "Financial Status Changes",
-          "NewFinancialStatus": "N-Normal",
-          "OldFinancialStatus": "D-Deficient",
-          "Symbol": "AMODW"
-        },
-        {
-          "CompanyName": "Columbus Acquisition Corp Ordinary Shares",
-          "DowngradeReason": "",
-          "EffectiveDate": "2026-10-02",
-          "IssueEvent": "Issue Suspensions",
-          "NewFinancialStatus": "",
-          "OldFinancialStatus": "",
-          "Symbol": "COLA"
-        },
-        {
-          "CompanyName": "Columbus Acquisition Corp Rights",
-          "DowngradeReason": "",
-          "EffectiveDate": "2026-10-02",
-          "IssueEvent": "Issue Suspensions",
-          "NewFinancialStatus": "",
-          "OldFinancialStatus": "",
-          "Symbol": "COLAR"
-        },
-        {
-          "CompanyName": "Columbus Acquisition Corp Unit",
-          "DowngradeReason": "",
-          "EffectiveDate": "2026-10-02",
-          "IssueEvent": "Issue Suspensions",
-          "NewFinancialStatus": "",
-          "OldFinancialStatus": "",
-          "Symbol": "COLAU"
-        },
-        {
-          "CompanyName": "Cycurion, Inc. Common Stock",
-          "DowngradeReason": "",
-          "EffectiveDate": "2026-10-02",
-          "IssueEvent": "Financial Status Changes",
-          "NewFinancialStatus": "N-Normal",
-          "OldFinancialStatus": "D-Deficient",
-          "Symbol": "CYCU"
-        },
-        {
-          "CompanyName": "E-Home Household Service Holdings Limited Ordinary Shares",
-          "DowngradeReason": "",
-          "EffectiveDate": "2026-10-02",
-          "IssueEvent": "Financial Status Changes",
-          "NewFinancialStatus": "N-Normal",
-          "OldFinancialStatus": "D-Deficient",
-          "Symbol": "EJH"
-        },
-        {
-          "CompanyName": "First Seacoast Bancorp, Inc. Common Stock",
-          "DowngradeReason": "",
-          "EffectiveDate": "2026-10-02",
-          "IssueEvent": "Issue Suspensions",
-          "NewFinancialStatus": "",
-          "OldFinancialStatus": "",
-          "Symbol": "FSEA"
-        },
-        {
-          "CompanyName": "Guardforce AI Co., Limited Warrant",
-          "DowngradeReason": "",
-          "EffectiveDate": "2026-10-02",
-          "IssueEvent": "Issue Suspensions",
-          "NewFinancialStatus": "",
-          "OldFinancialStatus": "",
-          "Symbol": "GFAIW"
-        },
-        {
-          "CompanyName": "Gulf Resources, Inc. (NV) Common Stock",
-          "DowngradeReason": "",
-          "EffectiveDate": "2026-10-02",
-          "IssueEvent": "Financial Status Changes",
-          "NewFinancialStatus": "N-Normal",
-          "OldFinancialStatus": "E-Delinquent",
-          "Symbol": "GURE"
-        },
-        {
-          "CompanyName": "Megan Holdings Limited Class A Ordinary Shares",
-          "DowngradeReason": "",
-          "EffectiveDate": "2026-10-02",
-          "IssueEvent": "Financial Status Changes",
-          "NewFinancialStatus": "N-Normal",
-          "OldFinancialStatus": "D-Deficient",
-          "Symbol": "MGN"
-        },
-        {
-          "CompanyName": "NSTS Bancorp, Inc. Common Stock",
-          "DowngradeReason": "",
-          "EffectiveDate": "2026-10-02",
-          "IssueEvent": "Issue Suspensions",
-          "NewFinancialStatus": "",
-          "OldFinancialStatus": "",
-          "Symbol": "NSTS"
-        },
-        {
-          "CompanyName": "OpenWorld, Inc. Common Stock",
-          "DowngradeReason": "",
-          "EffectiveDate": "2026-10-02",
-          "IssueEvent": "Financial Status Changes",
-          "NewFinancialStatus": "N-Normal",
-          "OldFinancialStatus": "D-Deficient",
-          "Symbol": "OPNW"
-        },
-        {
-          "CompanyName": "Powerus Corporation Common Stock",
-          "DowngradeReason": "",
-          "EffectiveDate": "2026-10-02",
-          "IssueEvent": "Name/Symbol Changes",
-          "NewFinancialStatus": "",
-          "OldFinancialStatus": "",
-          "Symbol": "PUSA"
-        },
-        {
-          "CompanyName": "ReTo Eco-Solutions, Inc. Class A Shares",
-          "DowngradeReason": "",
-          "EffectiveDate": "2026-10-02",
-          "IssueEvent": "Name/Symbol Changes",
-          "NewFinancialStatus": "",
-          "OldFinancialStatus": "",
-          "Symbol": "RETO"
-        },
-        {
-          "CompanyName": "WISeSat.Space Holdings Corp. Ordinary Shares",
-          "DowngradeReason": "",
-          "EffectiveDate": "2026-10-02",
-          "IssueEvent": "Anticipated Security Additions",
-          "NewFinancialStatus": "",
-          "OldFinancialStatus": "",
-          "Symbol": "SAIQ"
-        },
-        {
-          "CompanyName": "WISeSat.Space Holdings Corp. Ordinary Shares",
-          "DowngradeReason": "",
-          "EffectiveDate": "2026-10-02",
-          "IssueEvent": "Security Additions",
-          "NewFinancialStatus": "",
-          "OldFinancialStatus": "",
-          "Symbol": "SAIQ"
-        },
-        {
-          "CompanyName": "Gentherm Inc Common Stock When-Issued",
-          "DowngradeReason": "",
-          "EffectiveDate": "2026-10-02",
-          "IssueEvent": "Issue Suspensions",
-          "NewFinancialStatus": "",
-          "OldFinancialStatus": "",
-          "Symbol": "THRMV"
-        },
-        {
-          "CompanyName": "Zhongchao Inc. Class A Ordinary Shares",
-          "DowngradeReason": "",
-          "EffectiveDate": "2026-10-02",
-          "IssueEvent": "Name/Symbol Changes",
-          "NewFinancialStatus": "",
-          "OldFinancialStatus": "",
-          "Symbol": "ZCMD"
-        },
         {
           "CompanyName": "Clearmind Medicine Inc. Common Shares",
           "DowngradeReason": "",
@@ -527,6 +364,177 @@
           "NewFinancialStatus": "",
           "OldFinancialStatus": "",
           "Symbol": "ZSPC"
+        },
+        {
+          "CompanyName": "Blaize Holdings, Inc. Common Stock",
+          "DowngradeReason": "",
+          "EffectiveDate": "2026-10-06",
+          "IssueEvent": "Financial Status Changes",
+          "NewFinancialStatus": "D-Deficient",
+          "OldFinancialStatus": "N-Normal",
+          "Symbol": "BZAI"
+        },
+        {
+          "CompanyName": "CBAK Energy Technology Limited Ordinary Shares",
+          "DowngradeReason": "",
+          "EffectiveDate": "2026-10-06",
+          "IssueEvent": "Financial Status Changes",
+          "NewFinancialStatus": "N-Normal",
+          "OldFinancialStatus": "D-Deficient",
+          "Symbol": "CBAT"
+        },
+        {
+          "CompanyName": "Qwest Corporation 6.500% Senior Notes due 2051",
+          "DowngradeReason": "",
+          "EffectiveDate": "2026-10-06",
+          "IssueEvent": "Anticipated Security Additions",
+          "NewFinancialStatus": "",
+          "OldFinancialStatus": "",
+          "Symbol": "CTGG"
+        },
+        {
+          "CompanyName": "Qwest Corporation 6.500% Senior Notes due 2051",
+          "DowngradeReason": "",
+          "EffectiveDate": "2026-10-06",
+          "IssueEvent": "Security Additions",
+          "NewFinancialStatus": "",
+          "OldFinancialStatus": "",
+          "Symbol": "CTGG"
+        },
+        {
+          "CompanyName": "Qwest Corporation 6.750% Senior Notes due 2052",
+          "DowngradeReason": "",
+          "EffectiveDate": "2026-10-06",
+          "IssueEvent": "Anticipated Security Additions",
+          "NewFinancialStatus": "",
+          "OldFinancialStatus": "",
+          "Symbol": "CTHH"
+        },
+        {
+          "CompanyName": "Qwest Corporation 6.750% Senior Notes due 2052",
+          "DowngradeReason": "",
+          "EffectiveDate": "2026-10-06",
+          "IssueEvent": "Security Additions",
+          "NewFinancialStatus": "",
+          "OldFinancialStatus": "",
+          "Symbol": "CTHH"
+        },
+        {
+          "CompanyName": "E-Power Inc. Class A Ordinary Shares",
+          "DowngradeReason": "",
+          "EffectiveDate": "2026-10-06",
+          "IssueEvent": "Financial Status Changes",
+          "NewFinancialStatus": "N-Normal",
+          "OldFinancialStatus": "D-Deficient",
+          "Symbol": "EPOW"
+        },
+        {
+          "CompanyName": "iShares Ethereum Trust ETF Shares",
+          "DowngradeReason": "",
+          "EffectiveDate": "2026-10-06",
+          "IssueEvent": "Name/Symbol Changes",
+          "NewFinancialStatus": "",
+          "OldFinancialStatus": "",
+          "Symbol": "ETHA"
+        },
+        {
+          "CompanyName": "Gaxos.ai Inc. Common Stock",
+          "DowngradeReason": "",
+          "EffectiveDate": "2026-10-06",
+          "IssueEvent": "Financial Status Changes",
+          "NewFinancialStatus": "D-Deficient",
+          "OldFinancialStatus": "N-Normal",
+          "Symbol": "GXAI"
+        },
+        {
+          "CompanyName": "iTonic Holdings Ltd Class A Ordinary Shares",
+          "DowngradeReason": "",
+          "EffectiveDate": "2026-10-06",
+          "IssueEvent": "Name/Symbol Changes",
+          "NewFinancialStatus": "",
+          "OldFinancialStatus": "",
+          "Symbol": "ITOC"
+        },
+        {
+          "CompanyName": "Leslie's, Inc. Common Stock",
+          "DowngradeReason": "",
+          "EffectiveDate": "2026-10-06",
+          "IssueEvent": "Issue Suspensions",
+          "NewFinancialStatus": "",
+          "OldFinancialStatus": "",
+          "Symbol": "LESL"
+        },
+        {
+          "CompanyName": "Lumen Technologies, Inc. Common Stock",
+          "DowngradeReason": "",
+          "EffectiveDate": "2026-10-06",
+          "IssueEvent": "Anticipated Security Additions",
+          "NewFinancialStatus": "",
+          "OldFinancialStatus": "",
+          "Symbol": "LUMN"
+        },
+        {
+          "CompanyName": "Lumen Technologies, Inc. Common Stock",
+          "DowngradeReason": "",
+          "EffectiveDate": "2026-10-06",
+          "IssueEvent": "Security Additions",
+          "NewFinancialStatus": "",
+          "OldFinancialStatus": "",
+          "Symbol": "LUMN"
+        },
+        {
+          "CompanyName": "National Healthcare Properties, Inc. 7.125% Series B Cumulative Redeemable Perpetual Preferred Stock",
+          "DowngradeReason": "",
+          "EffectiveDate": "2026-10-06",
+          "IssueEvent": "Issue Suspensions",
+          "NewFinancialStatus": "",
+          "OldFinancialStatus": "",
+          "Symbol": "NHPBP"
+        },
+        {
+          "CompanyName": "NANO-X IMAGING LTD Ordinary Shares",
+          "DowngradeReason": "",
+          "EffectiveDate": "2026-10-06",
+          "IssueEvent": "Financial Status Changes",
+          "NewFinancialStatus": "D-Deficient",
+          "OldFinancialStatus": "N-Normal",
+          "Symbol": "NNOX"
+        },
+        {
+          "CompanyName": "Pine Tree Acquisition Corp. Units",
+          "DowngradeReason": "",
+          "EffectiveDate": "2026-10-06",
+          "IssueEvent": "Anticipated Security Additions",
+          "NewFinancialStatus": "",
+          "OldFinancialStatus": "",
+          "Symbol": "PAXGU"
+        },
+        {
+          "CompanyName": "Pine Tree Acquisition Corp. Units",
+          "DowngradeReason": "",
+          "EffectiveDate": "2026-10-06",
+          "IssueEvent": "Security Additions",
+          "NewFinancialStatus": "",
+          "OldFinancialStatus": "",
+          "Symbol": "PAXGU"
+        },
+        {
+          "CompanyName": "Paramount Skydance Corporation Class B Common Stock",
+          "DowngradeReason": "",
+          "EffectiveDate": "2026-10-06",
+          "IssueEvent": "Issue Suspensions",
+          "NewFinancialStatus": "",
+          "OldFinancialStatus": "",
+          "Symbol": "PSKY"
+        },
+        {
+          "CompanyName": "Qorvo, Inc. Common Stock",
+          "DowngradeReason": "",
+          "EffectiveDate": "2026-10-06",
+          "IssueEvent": "Issue Suspensions",
+          "NewFinancialStatus": "",
+          "OldFinancialStatus": "",
+          "Symbol": "QRVO"
         }
       ],
       "status": "PASS",
@@ -561,9 +569,29 @@
           "latest_suspension": "2026-10-02",
           "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
         },
+        "LESL": {
+          "latest_addition": null,
+          "latest_suspension": "2026-10-06",
+          "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+        },
+        "NHPBP": {
+          "latest_addition": null,
+          "latest_suspension": "2026-10-06",
+          "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+        },
         "NSTS": {
           "latest_addition": null,
           "latest_suspension": "2026-10-02",
+          "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+        },
+        "PSKY": {
+          "latest_addition": null,
+          "latest_suspension": "2026-10-06",
+          "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+        },
+        "QRVO": {
+          "latest_addition": null,
+          "latest_suspension": "2026-10-06",
           "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
         },
         "THRMV": {
@@ -590,13 +618,17 @@
         "DRCT",
         "FSEA",
         "GFAIW",
+        "LESL",
+        "NHPBP",
         "NSTS",
+        "PSKY",
+        "QRVO",
         "THRMV",
         "WALD",
         "WALDW"
       ],
       "symbol_change_mapping_rule": "UNKNOWN_UNLESS_CORROBORATED",
-      "url": "https://www.nasdaqtrader.com/Trader.aspx?id=nasdaq-security-status-updates&from=10/02/2026&to=10/06/2026"
+      "url": "https://www.nasdaqtrader.com/Trader.aspx?id=nasdaq-security-status-updates&from=10/05/2026&to=10/06/2026"
     },
     "system_status_ipo": {
       "item_count": 2,
