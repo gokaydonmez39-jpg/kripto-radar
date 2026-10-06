@@ -2,6 +2,8 @@
 """XRAY deep pre-R1 shadow engine for A/B/D.
 Exact policy geometry where supported by shadow daily data.
 No signal, no R92 registration, no G9 authority.
+New-trigger discovery uses the canonical current/prior-3-session horizon;
+recorded setup retest lifecycle remains a separate up-to-5-session rule.
 EXECUTION=NONE. REAL_MONEY=NO-GO. UNKNOWN!=PASS.
 """
 from __future__ import annotations
