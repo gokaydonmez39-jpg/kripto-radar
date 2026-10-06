@@ -1,0 +1,94 @@
+{
+  "asof_et": "2026-10-05",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "records": {
+    "309d154db1d21bfc2c91913b": {
+      "event_status": "CLEAN_DISCOVERY",
+      "family": "D",
+      "frozen_geometry": {
+        "A": 7.397348078616383,
+        "P": 186.66,
+        "S0": 170.92053038427673,
+        "T1": 192.99,
+        "anchor": 172.4,
+        "anchor_available_date": "2026-09-28",
+        "anchor_available_idx": 2560,
+        "chase_limit": 190.3586740393082,
+        "entry_high": 188.50933701965408,
+        "entry_low": 186.66,
+        "entry_model": 188.50933701965408,
+        "family": "D",
+        "setup_id": "309d154db1d21bfc2c91913b",
+        "source_geometry": {
+          "A": 7.397348078616383,
+          "P": 186.66,
+          "anchor": 172.4,
+          "close": 189.61,
+          "d": 1.927717858947529,
+          "dd120": -0.24229323308270667,
+          "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
+          "dd252": -0.23254547919866753,
+          "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
+          "dk3_pre_r1": true,
+          "ema50": 168.7626591000357,
+          "hl_date": "2026-09-24",
+          "pool": true,
+          "rs20": 0.036709533029966934,
+          "rs60": 0.2670172009159848,
+          "rvol20": 1.330393640498407,
+          "trigger_date": "2026-10-02"
+        },
+        "symbol": "PI",
+        "synthetic_target": false,
+        "target_overlap": false,
+        "target_source": "STRUCTURAL_ACTIVE_R1_LOWER_BOUND",
+        "target_zone": {
+          "active": true,
+          "active_from_idx": 2384,
+          "kind": "UNFILLED_GAP_DOWN",
+          "lower": 192.99,
+          "occurrence_dates": [
+            "2026-01-14"
+          ],
+          "points": [],
+          "upper": 199.0747
+        },
+        "trigger_date": "2026-10-02"
+      },
+      "frozen_semantics_blobs": {
+        "alpha_semantics.py": "0374943c15e6c82d1ddbe2c009e7b95f60193ebd",
+        "final_tech_shadow.py": "d70eb996961fbe3e9d8d410379087d23348d4d1c"
+      },
+      "last_asof": "2026-10-05",
+      "r92_eligible": true,
+      "setup_id": "309d154db1d21bfc2c91913b",
+      "source_geometry": {
+        "A": 7.397348078616383,
+        "P": 186.66,
+        "anchor": 172.4,
+        "close": 189.61,
+        "d": 1.927717858947529,
+        "dd120": -0.24229323308270667,
+        "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
+        "dd252": -0.23254547919866753,
+        "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
+        "dk3_pre_r1": true,
+        "ema50": 168.7626591000357,
+        "hl_date": "2026-09-24",
+        "pool": true,
+        "rs20": 0.036709533029966934,
+        "rs60": 0.2670172009159848,
+        "rvol20": 1.330393640498407,
+        "trigger_date": "2026-10-02"
+      },
+      "state": "WATCH_RETEST_REQUIRED",
+      "state_cap": "NORMAL",
+      "symbol": "PI",
+      "trigger_date": "2026-10-02"
+    }
+  },
+  "schema": "XRAY_CANDIDATE_LIFECYCLE_REGISTRY_V1",
+  "task_id": "6a825366222081918997094d76e6ae46",
+  "unknown_never_pass": true
+}

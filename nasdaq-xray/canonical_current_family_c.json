@@ -1,11 +1,43 @@
 {
-  "asof_et": "2026-10-02",
+  "asof_et": "2026-10-05",
   "authority": "C4_11_POST_EARNINGS_FAIL_CLOSED_POLICY_INHERITED",
   "confirmed": {},
   "confirmed_count": 0,
-  "details": {},
+  "details": {
+    "MU": [
+      {
+        "A_pre_event": 45.083906497690954,
+        "confirmed": false,
+        "event_datetime_et": "2026-09-30T16:30:00-04:00",
+        "gap_atr": -0.2446549302590913,
+        "gap_floor_breach_date": null,
+        "pre_event_close": 1065.11,
+        "reaction_high": 1098.9,
+        "reaction_lows": [
+          1022.9,
+          1072.01,
+          1055.5601
+        ],
+        "reaction_mode": "AMC",
+        "reaction_ok": false,
+        "reaction_rvol20": 1.986809896917105,
+        "reaction_session": "2026-10-01"
+      }
+    ]
+  },
   "event_symbol_count": 1,
   "execution": "NONE",
+  "history_fingerprint_by_symbol": {
+    "MU": {
+      "first_date": "2025-06-27",
+      "last_date": "2026-10-05",
+      "lookback": 320,
+      "rows": 320,
+      "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
+      "sha256": "ba00ce7fba97d8aca1878a1ace2fc96e4559d359db7a15bf84a8785ccd0ea72e"
+    }
+  },
+  "history_fingerprint_semantics": "RAW_OR_OFFICIAL_COMPOSITE_ASOF_TAIL320_V1",
   "history_source_by_symbol": {
     "MU": "SINA_US_DAILY"
   },
@@ -26,19 +58,14 @@
   "schema": "XRAY_FAMILY_C_ENGINE_V1",
   "source_compiled_policy_hash": "26a95745a50b65e85f6ece24b6501af0994764a84ddd886edb70d1fcd770849c",
   "source_compiled_policy_version": "C4.17",
-  "source_event_blob_sha": "cd26b6522f69cccf2b71d8bb3659666f08413917",
+  "source_event_blob_sha": "d9d4e0f5edc3deb5d8c4392ace7875093f4709aa",
   "source_event_path": "nasdaq-xray/canonical_current_event_state.json",
-  "source_stage1_blob_sha": "a19154816768e9ea925453c4b0d8adf6704ee6d9",
+  "source_stage1_blob_sha": "6307211f25ed6a40ff21c0e94cc50f8febd888e4",
   "source_stage1_path": "nasdaq-xray/canonical_current_stage1.json",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown": {
-    "MU": {
-      "reason": "CORPORATE_ACTION_NOT_VERIFIED",
-      "status": null
-    }
-  },
-  "unknown_count": 1,
+  "unknown": {},
+  "unknown_count": 0,
   "unknown_never_pass": true,
-  "weekly_scope_count": 100,
-  "weekly_trigger_scope_count": 100
+  "weekly_scope_count": 103,
+  "weekly_trigger_scope_count": 121
 }

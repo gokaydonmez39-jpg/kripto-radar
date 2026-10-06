@@ -1,0 +1,148 @@
+{
+  "asof_et": "2026-10-05",
+  "authoritative_binding_note": "DEEP_AND_FAMILY_C_AND_POLICY_EXACT;LIFECYCLE_BLOB_IS_NOT_AUTHORITY_BECAUSE_FINAL_MUTATES_IT_IN_RUN",
+  "authority": "SEC_EDGAR_PRIMARY_DETAILED_FINALIST_REVIEW_V1",
+  "candidate_scope": [
+    "ABCL",
+    "IBRX",
+    "IOVA",
+    "LITE",
+    "MRNA",
+    "PI",
+    "QLYS",
+    "RGEN",
+    "SWKS",
+    "TRMD",
+    "VICR",
+    "WBD"
+  ],
+  "candidate_scope_count": 12,
+  "candidate_scope_hash": "51e1d2fd8607982938d0236d1b8c996826dba68822ec0fbc547c3c9223b90acf",
+  "cik_mapping_errors": [],
+  "cik_mapping_sources": {
+    "ABCL": "DURABLE_SEC_COMPANY_TICKERS_SNAPSHOT",
+    "IBRX": "DURABLE_SEC_COMPANY_TICKERS_SNAPSHOT",
+    "IOVA": "DURABLE_SEC_COMPANY_TICKERS_SNAPSHOT",
+    "LITE": "DURABLE_SEC_COMPANY_TICKERS_SNAPSHOT",
+    "MRNA": "DURABLE_SEC_COMPANY_TICKERS_SNAPSHOT",
+    "PI": "DURABLE_SEC_COMPANY_TICKERS_SNAPSHOT",
+    "QLYS": "DURABLE_SEC_COMPANY_TICKERS_SNAPSHOT",
+    "RGEN": "DURABLE_SEC_COMPANY_TICKERS_SNAPSHOT",
+    "SWKS": "DURABLE_SEC_COMPANY_TICKERS_SNAPSHOT",
+    "TRMD": "DURABLE_SEC_COMPANY_TICKERS_SNAPSHOT",
+    "VICR": "DURABLE_SEC_COMPANY_TICKERS_SNAPSHOT",
+    "WBD": "DURABLE_SEC_COMPANY_TICKERS_SNAPSHOT"
+  },
+  "compiled_policy_blob_sha": "10d7af14870dfac0dc4566595d95a06f3faa854d",
+  "compiled_policy_hash": "26a95745a50b65e85f6ece24b6501af0994764a84ddd886edb70d1fcd770849c",
+  "compiled_policy_path": "nasdaq-xray/chatgpt_compiled_policy_v3.json",
+  "compiled_policy_version": "C4.17",
+  "execution": "NONE",
+  "generated_at_utc": "2026-10-06T09:55:11.708991+00:00",
+  "pass_symbols": [],
+  "real_money": "NO-GO",
+  "records": {
+    "ABCL": {
+      "cik": "0001703057",
+      "cik_mapping_source": "DURABLE_SEC_COMPANY_TICKERS_SNAPSHOT",
+      "reason": "SEC_REVIEW_ERROR:RuntimeError:SEC_FETCH_FAILED:HTTPError:HTTP Error 403: Forbidden",
+      "status": "UNKNOWN"
+    },
+    "IBRX": {
+      "cik": "0001326110",
+      "cik_mapping_source": "DURABLE_SEC_COMPANY_TICKERS_SNAPSHOT",
+      "reason": "SEC_REVIEW_ERROR:RuntimeError:SEC_FETCH_FAILED:HTTPError:HTTP Error 403: Forbidden",
+      "status": "UNKNOWN"
+    },
+    "IOVA": {
+      "cik": "0001425205",
+      "cik_mapping_source": "DURABLE_SEC_COMPANY_TICKERS_SNAPSHOT",
+      "reason": "SEC_REVIEW_ERROR:RuntimeError:SEC_FETCH_FAILED:HTTPError:HTTP Error 403: Forbidden",
+      "status": "UNKNOWN"
+    },
+    "LITE": {
+      "cik": "0001633978",
+      "cik_mapping_source": "DURABLE_SEC_COMPANY_TICKERS_SNAPSHOT",
+      "reason": "SEC_REVIEW_ERROR:RuntimeError:SEC_FETCH_FAILED:HTTPError:HTTP Error 403: Forbidden",
+      "status": "UNKNOWN"
+    },
+    "MRNA": {
+      "cik": "0001682852",
+      "cik_mapping_source": "DURABLE_SEC_COMPANY_TICKERS_SNAPSHOT",
+      "reason": "SEC_REVIEW_ERROR:RuntimeError:SEC_FETCH_FAILED:HTTPError:HTTP Error 403: Forbidden",
+      "status": "UNKNOWN"
+    },
+    "PI": {
+      "cik": "0001114995",
+      "cik_mapping_source": "DURABLE_SEC_COMPANY_TICKERS_SNAPSHOT",
+      "reason": "SEC_REVIEW_ERROR:RuntimeError:SEC_FETCH_FAILED:HTTPError:HTTP Error 403: Forbidden",
+      "status": "UNKNOWN"
+    },
+    "QLYS": {
+      "cik": "0001107843",
+      "cik_mapping_source": "DURABLE_SEC_COMPANY_TICKERS_SNAPSHOT",
+      "reason": "SEC_REVIEW_ERROR:RuntimeError:SEC_FETCH_FAILED:HTTPError:HTTP Error 403: Forbidden",
+      "status": "UNKNOWN"
+    },
+    "RGEN": {
+      "cik": "0000730272",
+      "cik_mapping_source": "DURABLE_SEC_COMPANY_TICKERS_SNAPSHOT",
+      "reason": "SEC_REVIEW_ERROR:RuntimeError:SEC_FETCH_FAILED:HTTPError:HTTP Error 403: Forbidden",
+      "status": "UNKNOWN"
+    },
+    "SWKS": {
+      "cik": "0000004127",
+      "cik_mapping_source": "DURABLE_SEC_COMPANY_TICKERS_SNAPSHOT",
+      "reason": "SEC_REVIEW_ERROR:RuntimeError:SEC_FETCH_FAILED:HTTPError:HTTP Error 403: Forbidden",
+      "status": "UNKNOWN"
+    },
+    "TRMD": {
+      "cik": "0001655891",
+      "cik_mapping_source": "DURABLE_SEC_COMPANY_TICKERS_SNAPSHOT",
+      "reason": "SEC_REVIEW_ERROR:RuntimeError:SEC_FETCH_FAILED:HTTPError:HTTP Error 403: Forbidden",
+      "status": "UNKNOWN"
+    },
+    "VICR": {
+      "cik": "0000751978",
+      "cik_mapping_source": "DURABLE_SEC_COMPANY_TICKERS_SNAPSHOT",
+      "reason": "SEC_REVIEW_ERROR:RuntimeError:SEC_FETCH_FAILED:HTTPError:HTTP Error 403: Forbidden",
+      "status": "UNKNOWN"
+    },
+    "WBD": {
+      "cik": "0001437107",
+      "cik_mapping_source": "DURABLE_SEC_COMPANY_TICKERS_SNAPSHOT",
+      "reason": "SEC_REVIEW_ERROR:RuntimeError:SEC_FETCH_FAILED:HTTPError:HTTP Error 403: Forbidden",
+      "status": "UNKNOWN"
+    }
+  },
+  "review_scope": "LATEST_ANNUAL_THROUGH_ASOF_WITH_ALL_LATER_PERIODIC_CURRENT_AND_OFFERING_FILINGS",
+  "schema": "XRAY_CANDIDATE_LEGAL_GUARD_V1",
+  "source_cik_cache_blob_sha": "e2089fba9dfdd3c6b03d79d968f9653fdcf7b340",
+  "source_cik_cache_path": "nasdaq-xray/sec_ticker_cik_cache.json",
+  "source_deep_blob_sha": "e576090c015fd75c2538b6c642f6be59f8190b7b",
+  "source_deep_path": "nasdaq-xray/canonical_current_deep_full.json",
+  "source_family_c_blob_sha": "cc3cff99caa17e346538349a569da61d6ae2d4d6",
+  "source_family_c_path": "nasdaq-xray/canonical_current_family_c.json",
+  "source_lifecycle_binding_role": "DIAGNOSTIC_PRE_FINAL_SCOPE_AUGMENTATION",
+  "source_lifecycle_blob_sha": null,
+  "source_lifecycle_fallback_blob_sha": "d21a106510e3f5d77137fd5951c60a79cec75ce6",
+  "source_lifecycle_fallback_path": "nasdaq-xray/canonical_current_final_tech.json",
+  "source_lifecycle_path": null,
+  "source_lifecycle_scope_source": "PREVIOUS_FINAL_EMBEDDED",
+  "task_id": "6a825366222081918997094d76e6ae46",
+  "unknown_never_pass": true,
+  "unknown_symbols": [
+    "ABCL",
+    "IBRX",
+    "IOVA",
+    "LITE",
+    "MRNA",
+    "PI",
+    "QLYS",
+    "RGEN",
+    "SWKS",
+    "TRMD",
+    "VICR",
+    "WBD"
+  ]
+}
