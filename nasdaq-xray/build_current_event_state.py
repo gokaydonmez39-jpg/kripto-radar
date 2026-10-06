@@ -16,6 +16,50 @@ def blob_sha(p:Path):
     b=p.read_bytes()
     return hashlib.sha1(f"blob {len(b)}\0".encode()+b).hexdigest()
 
+def fail_closed_discovery_coverage(ev,weekly,status,unresolved,future_sessions):
+    """Allow partial provider coverage only when every uncovered symbol is explicit UNKNOWN.
+
+    Symbols independently resolved by issuer/SEC primary evidence may be CLEAN only
+    when their next official event is strictly outside the requested future horizon.
+    """
+    weekly=set(weekly or [])
+    unresolved_keys=set((unresolved or {}).keys())
+    unavailable=set(ev.get("discovery_unavailable_symbols") or [])
+    resolved=set(ev.get("provider_unavailable_but_officially_resolved_symbols") or [])
+    clearance=ev.get("official_horizon_clearance") or {}
+    paginated=ev.get("pagination_complete") is True
+    partial=ev.get("partial_data") is True
+
+    if paginated and not unavailable:
+        return True,"COMPLETE_PROVIDER_DISCOVERY"
+    if not partial or not unavailable:
+        return False,"PARTIAL_DISCOVERY_NOT_EXPLICIT"
+    if not unavailable<=weekly or not unavailable<=unresolved_keys:
+        return False,"UNAVAILABLE_SCOPE_NOT_EXACT_UNKNOWN"
+    for sym in unavailable:
+        rec=(unresolved or {}).get(sym) or {}
+        if status.get(sym)!="UNKNOWN" or rec.get("fail_closed") is not True:
+            return False,"UNAVAILABLE_SYMBOL_NOT_FAIL_CLOSED_UNKNOWN"
+        if rec.get("reason") not in {"BIGDATA_PROVIDER_CREDIT_EXHAUSTED","REQUIRED_DISCOVERY_PROVIDER_UNAVAILABLE"}:
+            return False,"UNAVAILABLE_REASON_NOT_ALLOWED"
+
+    horizon=max(future_sessions or [""])
+    if not resolved<=weekly or resolved&unresolved_keys:
+        return False,"OFFICIAL_RESOLUTION_SCOPE_INVALID"
+    for sym in resolved:
+        rec=clearance.get(sym) or {}
+        if status.get(sym)!="CLEAN_DISCOVERY":
+            return False,"OFFICIAL_RESOLUTION_NOT_CLEAN"
+        if rec.get("authority") not in {"ISSUER_IR_PRIMARY","SEC_PRIMARY"}:
+            return False,"OFFICIAL_RESOLUTION_AUTHORITY_INVALID"
+        if not rec.get("official_source_url"):
+            return False,"OFFICIAL_RESOLUTION_SOURCE_MISSING"
+        nxt=str(rec.get("next_event_date") or "")
+        if not horizon or not nxt or nxt<=horizon:
+            return False,"OFFICIAL_NEXT_EVENT_NOT_OUTSIDE_HORIZON"
+    return True,"PARTIAL_PROVIDER_FAIL_CLOSED_WITH_PRIMARY_CLEARANCE"
+
+
 def main():
     req=json.loads(REQ.read_text())
     asof=req["asof_et"]
@@ -55,6 +99,10 @@ def main():
     geometry=set(req.get("geometry_scope") or [])
     affected=sorted(geometry&set(unk))
     assert affected==sorted(ev.get("affected_geometry_event_unknown") or [])
+    coverage_ok,coverage_mode=fail_closed_discovery_coverage(
+        ev,weekly,status,unresolved,req.get("future_horizon_sessions") or []
+    )
+    assert coverage_ok,coverage_mode
     out={
       "schema":"XRAY_CANONICAL_EVENT_STATE_V1","task_id":TASK,"asof_et":asof,
       "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
@@ -72,6 +120,12 @@ def main():
       "family_c_events":ev.get("family_c_events") or {},
       "discovery_hits":ev.get("discovery_hits") or [],
       "pagination_complete":ev.get("pagination_complete") is True,
+      "partial_data":ev.get("partial_data") is True,
+      "coverage_complete":ev.get("coverage_complete") is True,
+      "discovery_coverage_mode":coverage_mode,
+      "discovery_unavailable_symbols":sorted(ev.get("discovery_unavailable_symbols") or []),
+      "provider_unavailable_but_officially_resolved_symbols":sorted(ev.get("provider_unavailable_but_officially_resolved_symbols") or []),
+      "official_horizon_clearance":ev.get("official_horizon_clearance") or {},
       "source_policy":ev.get("source_policy"),
       "source_request_path":"nasdaq-xray/canonical_current_event_request.json",
       "source_request_blob_sha":blob_sha(REQ),
@@ -79,7 +133,6 @@ def main():
       "source_bridge_blob_sha":blob_sha(bridge),
       "authority":"CANONICAL_EVENT_TASKSTATE_BRIDGE_NORMALIZED"
     }
-    assert out["pagination_complete"] is True
     OUT.write_text(json.dumps(out,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
     print(json.dumps({"asof":asof,"weekly":len(weekly),"clean":len(clean),"blocked":len(block),"unresolved":len(unk),"affected_geometry_unknown":len(affected)},sort_keys=True))
 

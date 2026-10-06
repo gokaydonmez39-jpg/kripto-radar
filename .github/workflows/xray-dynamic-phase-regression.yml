@@ -19,6 +19,7 @@ on:
       - "nasdaq-xray/build_candidate_legal_guard.py"
       - "nasdaq-xray/sec_ticker_cik_cache.json"
       - "nasdaq-xray/build_current_event_request.py"
+      - "nasdaq-xray/build_current_event_state.py"
       - "nasdaq-xray/build_current_terminal.py"
       - "nasdaq-xray/recover_pre_mc_snapshot.py"
       - "nasdaq-xray/test_alpha_semantics.py"
@@ -65,6 +66,7 @@ jobs:
             nasdaq-xray/final_tech_shadow.py \
             nasdaq-xray/build_candidate_legal_guard.py \
             nasdaq-xray/build_current_event_request.py \
+            nasdaq-xray/build_current_event_state.py \
             nasdaq-xray/build_current_terminal.py \
             nasdaq-xray/recover_pre_mc_snapshot.py \
             nasdaq-xray/test_alpha_semantics.py \
@@ -314,6 +316,38 @@ jobs:
           assert 'req.get("compiled_policy_hash")==POLICY_HASH' in state
           assert old_blob not in state and old_hash not in state
           print("EVENT_PIPELINE_CURRENT_DV30_POLICY_BINDING=PASS")
+          PY
+
+      - name: Assert partial event discovery remains per-symbol fail-closed
+        run: |
+          python - <<'PY'
+          import sys
+          sys.path.insert(0,"nasdaq-xray")
+          import build_current_event_state as e
+          weekly=["A","B","MXL"]
+          status={"A":"CLEAN_DISCOVERY","B":"UNKNOWN","MXL":"CLEAN_DISCOVERY"}
+          unresolved={"B":{"reason":"BIGDATA_PROVIDER_CREDIT_EXHAUSTED","fail_closed":True}}
+          bridge={
+            "pagination_complete":False,"partial_data":True,
+            "discovery_unavailable_symbols":["B"],
+            "provider_unavailable_but_officially_resolved_symbols":["MXL"],
+            "official_horizon_clearance":{
+              "MXL":{"authority":"ISSUER_IR_PRIMARY","official_source_url":"https://example.invalid/mxl",
+                     "next_event_date":"2026-10-22"}
+            },
+          }
+          ok,mode=e.fail_closed_discovery_coverage(
+              bridge,weekly,status,unresolved,
+              ["2026-10-06","2026-10-15"])
+          assert ok and mode=="PARTIAL_PROVIDER_FAIL_CLOSED_WITH_PRIMARY_CLEARANCE",(ok,mode)
+          bad=dict(bridge,discovery_unavailable_symbols=["A","B"])
+          ok,_=e.fail_closed_discovery_coverage(bad,weekly,status,unresolved,["2026-10-15"])
+          assert not ok
+          bad2=dict(bridge,official_horizon_clearance={
+              "MXL":{"authority":"ISSUER_IR_PRIMARY","official_source_url":"x","next_event_date":"2026-10-15"}})
+          ok,_=e.fail_closed_discovery_coverage(bad2,weekly,status,unresolved,["2026-10-15"])
+          assert not ok
+          print("EVENT_PARTIAL_DISCOVERY_FAIL_CLOSED=PASS")
           PY
 
       - name: Assert MC fallback WATCH remains in technical radar scope
