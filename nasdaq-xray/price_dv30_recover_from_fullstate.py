@@ -56,12 +56,25 @@ def resolver_bridge_input_binding(obj,asof,queue_hash):
         q_symbols=list(q.get("symbols") or [])
         b_symbols=list(obj.get("symbols") or [])
         q_unknown=list(q.get("price_unknown_symbols") or [])
-        b_unknown=list(obj.get("price_unknown_symbols") or obj.get("symbols") or [])
+        # Empty UNKNOWN is meaningful for a blocked-only resolver epoch. Do not
+        # collapse [] into the whole symbol scope via Python's `or` fallback.
+        b_unknown=(
+          list(obj.get("price_unknown_symbols") or [])
+          if "price_unknown_symbols" in obj
+          else list(obj.get("symbols") or [])
+        )
+        q_blocked=list(q.get("price_blocked_symbols") or [])
+        b_blocked=(
+          list(obj.get("price_blocked_symbols") or [])
+          if "price_blocked_symbols" in obj
+          else []
+        )
         if (
           q.get("symbol_hash")!=obj.get("symbol_hash")
           or int(q.get("symbol_count",-1))!=int(obj.get("symbol_count",-2))
           or q_symbols!=b_symbols
           or q_unknown!=b_unknown
+          or q_blocked!=b_blocked
         ):
             return False,None,"CURRENT_REQUEST_SCOPE_MISMATCH"
         rq_blob=git_blob_sha(RESOLVER_REQUEST)
