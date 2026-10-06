@@ -241,8 +241,8 @@
   ],
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_EVENT_STATE_V1",
-  "source_bridge_blob_sha": "8f8d49990bb8276e9b48225cf4320e789871acc9",
-  "source_bridge_path": "nasdaq-xray/canonical_event_bridge_20261005_c417_dv30_v1.json",
+  "source_bridge_blob_sha": "2148fd3e62b88ef3427bb023a9572235b9a9a4e4",
+  "source_bridge_path": "nasdaq-xray/canonical_event_bridge_20261005_c417_dv30_v3.json",
   "source_policy": {
     "clean_rule": "RETAINED_SCOPE_PRIOR_COMPLETE_DISCOVERY_OR_EXPLICIT_ISSUER_PRIMARY_NEXT_EVENT_OUTSIDE_HORIZON",
     "discovery": "BIGDATA_CORPORATE_CALENDAR_EARNINGS_CALL_ENTITY_TARGETED",
@@ -251,7 +251,7 @@
     "provider_unavailable_rule": "EXPLICIT_UNKNOWN_FAIL_CLOSED;NEVER_CLEAN_BY_ABSENCE",
     "unknown_never_pass": true
   },
-  "source_request_blob_sha": "3694be1f5e39c848469d6706ae79ebf35791884b",
+  "source_request_blob_sha": "d4574d947e2d96efa432549bb78deffaca1d888e",
   "source_request_path": "nasdaq-xray/canonical_current_event_request.json",
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_never_pass": true,

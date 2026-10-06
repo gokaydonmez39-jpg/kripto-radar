@@ -1,0 +1,108 @@
+{
+  "alpha_authority": false,
+  "calibration_pass": false,
+  "comparable_current_policy_session_count": 1,
+  "current_finalist_diagnostics": {
+    "asof_et": "2026-10-05",
+    "candidate_count": 13,
+    "family_counts": {
+      "B": 1,
+      "D": 12
+    },
+    "kill_reason_counts": {
+      "FAIL_R1_ENTRY_OVERLAP": 1,
+      "FAIL_RISK_GEOMETRY": 12
+    },
+    "pre_g9_count": 0,
+    "risk_fail_count": 12,
+    "risk_percent_max": 0.1857006665398489,
+    "risk_percent_median": 0.1172068349398287,
+    "risk_percent_min": 0.012865079042536745,
+    "rr_basic_fail_count": 13,
+    "rr_basic_max": 0.7690469261217284,
+    "rr_severe_fail_count": 13,
+    "rr_severe_max": 0.5754224440510413,
+    "target_overlap_count": 7
+  },
+  "current_policy_version": "C4.17",
+  "execution": "NONE",
+  "generated_at_utc": "2026-10-06T19:21:49.123418+00:00",
+  "interpretation": {
+    "empirical_calibration": "NOT_PROVEN",
+    "functional_reachability": "DECLARED_POSITIVE_TEST_EXISTS",
+    "zero_signal_claim": "CURRENT_SCOPE_ONLY_UNTIL_FULL_COVERAGE_AND_CALIBRATION_EVIDENCE_COMPLETE"
+  },
+  "mixed_policy_history_present": true,
+  "no_threshold_change": true,
+  "observed_snapshot_count": 4,
+  "observed_terminal_snapshots": [
+    {
+      "asof_et": "2026-09-29",
+      "comparable_to_current_c417": false,
+      "compiled_policy_version": null,
+      "dv30_semantics_observed": false,
+      "final_confirmed_candidates": 0,
+      "final_path": "nasdaq-xray/canonical_final_tech_20260929.json",
+      "full_end_to_end_research_pass": null,
+      "pre_g9_tech_pass": 0,
+      "terminal_path": "nasdaq-xray/canonical_terminal_20260929.json",
+      "terminal_result": "NO_CONFIRMED_SETUP",
+      "terminal_status": null
+    },
+    {
+      "asof_et": "2026-09-30",
+      "comparable_to_current_c417": false,
+      "compiled_policy_version": null,
+      "dv30_semantics_observed": false,
+      "final_confirmed_candidates": 1,
+      "final_path": "nasdaq-xray/canonical_final_tech_20260930.json",
+      "full_end_to_end_research_pass": true,
+      "pre_g9_tech_pass": 0,
+      "terminal_path": "nasdaq-xray/canonical_terminal_20260930.json",
+      "terminal_result": "NO_CONFIRMED_SETUP",
+      "terminal_status": null
+    },
+    {
+      "asof_et": "2026-10-01",
+      "comparable_to_current_c417": false,
+      "compiled_policy_version": "C4.14",
+      "dv30_semantics_observed": false,
+      "final_confirmed_candidates": 0,
+      "final_path": "nasdaq-xray/canonical_final_tech_20261001.json",
+      "full_end_to_end_research_pass": true,
+      "pre_g9_tech_pass": 0,
+      "terminal_path": "nasdaq-xray/canonical_terminal_20261001.json",
+      "terminal_result": "NO_CONFIRMED_SETUP",
+      "terminal_status": "FULL_E2E_RESEARCH_PASS"
+    },
+    {
+      "asof_et": "2026-10-05",
+      "comparable_to_current_c417": true,
+      "compiled_policy_version": "C4.17",
+      "dv30_semantics_observed": true,
+      "final_confirmed_candidates": 13,
+      "final_path": "nasdaq-xray/canonical_current_final_tech.json",
+      "full_end_to_end_research_pass": false,
+      "pre_g9_tech_pass": 0,
+      "terminal_path": "nasdaq-xray/canonical_current_terminal.json",
+      "terminal_result": "PARTIAL_UNKNOWN",
+      "terminal_status": "PARTIAL"
+    }
+  ],
+  "positive_reachability_test_declared": true,
+  "real_money": "NO-GO",
+  "reason": "Fewer than 60 point-in-time C4.17+DV30 terminal snapshots exist; mixed-policy zero-signal history is diagnostic only and cannot prove calibration.",
+  "schema": "XRAY_ALPHA_CALIBRATION_AUDIT_V1",
+  "status": "INSUFFICIENT_POINT_IN_TIME_CURRENT_POLICY_SAMPLE",
+  "target_comparable_sessions": 60,
+  "unknown_never_pass": true,
+  "zero_pre_g9_comparable_dates": [
+    "2026-10-05"
+  ],
+  "zero_pre_g9_snapshot_dates": [
+    "2026-09-29",
+    "2026-09-30",
+    "2026-10-01",
+    "2026-10-05"
+  ]
+}
