@@ -764,7 +764,7 @@ def test_workflow_race_and_pre_mc_freeze_contracts():
     assert "python nasdaq-xray/recover_pre_mc_snapshot.py" in recovery
     recsrc=(ROOT/"recover_pre_mc_snapshot.py").read_text()
     assert "NO_VALID_SAME_ASOF_PRICE_SNAPSHOT" in recsrc
-    assert \'CURRENT_PRICE_RULE=">=5"\' in recsrc
+    assert 'CURRENT_PRICE_RULE=">=5"' in recsrc
     assert "CURRENT_POLICY_HASH" in recsrc and "CURRENT_POLICY_BLOB" in recsrc
     assert "canonical_current_resolver_chunk_manifest.json" in recsrc
     assert "canonical_current_resolver_chunk_[0-9][0-9][0-9][0-9].json" in recsrc
