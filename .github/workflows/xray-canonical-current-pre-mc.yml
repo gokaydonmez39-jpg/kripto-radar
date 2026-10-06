@@ -153,12 +153,17 @@ jobs:
           policy_replay=bool(active_completed_epoch and price_integrity_ok and not price_semantics_ok)
           try:
               mf=json.load(open("nasdaq-xray/canonical_current_master_manifest.json"))
-              proof_path=pathlib.Path("nasdaq-xray/master_sec_spac_proof_20261005.json")
-              proof=json.load(open(proof_path))
-              proof_bytes=proof_path.read_bytes()
-              proof_blob=hashlib.sha1(b"blob "+str(len(proof_bytes)).encode()+b"\0"+proof_bytes).hexdigest()
-              proof_count=len(proof.get("proofs") or {}) if proof.get("asof_et")==latest_completed else 0
-              asof_path=pathlib.Path("nasdaq-xray/master_asof_identity_proof_20261005.json")
+              stamp=latest_completed.replace("-","")
+              proof_path=pathlib.Path(f"nasdaq-xray/master_sec_spac_proof_{stamp}.json")
+              proof_blob=None
+              proof_count=0
+              if proof_path.exists():
+                  proof=json.load(open(proof_path))
+                  if proof.get("asof_et")==latest_completed:
+                      proof_bytes=proof_path.read_bytes()
+                      proof_blob=hashlib.sha1(b"blob "+str(len(proof_bytes)).encode()+b"\0"+proof_bytes).hexdigest()
+                      proof_count=len(proof.get("proofs") or {})
+              asof_path=pathlib.Path(f"nasdaq-xray/master_asof_identity_proof_{stamp}.json")
               asof_proof=json.load(open(asof_path))
               asof_bytes=asof_path.read_bytes()
               asof_blob=hashlib.sha1(b"blob "+str(len(asof_bytes)).encode()+b"\0"+asof_bytes).hexdigest()
