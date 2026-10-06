@@ -255,22 +255,28 @@ def main():
     assert p["source_master_queue_hash"]==s["queue_hash"]
     assert int(p["source_master_count"])==len(s["queue"])
     assert m.get("phase")=="MASTER_IDENTITY"
-    assert m.get("status")=="HISTORY_COMPLETE" and int(m.get("unknown_count",-1))==0
+    master_unknown_count=int(m.get("unknown_count",-1))
+    assert m.get("status") in {"HISTORY_COMPLETE","PARTIAL_UNKNOWN"}
+    assert (m.get("status")=="HISTORY_COMPLETE")== (master_unknown_count==0)
     assert m.get("queue_hash")==s["queue_hash"] and int(m.get("queue_total",-1))==len(s["queue"])
-    master_symbols=[]
+    assert int(m.get("pass_count",-1))==len(s["queue"])
+    assert int(m.get("raw_identity_total",-1))==len(s["queue"])+master_unknown_count
+    master_symbols=sorted(m.get("unknown_symbols") or [])
+    assert len(master_symbols)==master_unknown_count and not (set(master_symbols)&set(s["queue"]))
+    master_detail=m.get("unknown_detail") or {}
+    assert set(master_detail)==set(master_symbols)
     price_symbols=sorted(p.get("unknown_symbols") or [])
     assert len(price_symbols)==int(p.get("unknown_count",len(price_symbols)))
     blocked_symbols=sorted(p.get("blocked_symbols") or [])
     if "blocked_count" in p:
         assert len(blocked_symbols)==int(p.get("blocked_count",len(blocked_symbols)))
-    master_detail={}
     price_detail={}
     for sym in sorted(set(price_symbols)|set(blocked_symbols)):
         price_detail[sym]={
           "security_name":(s.get("security_names") or {}).get(sym),
           "price_result":(p.get("results") or {}).get(sym),
         }
-    union=sorted(set(master_symbols)|set(price_symbols)|set(blocked_symbols))
+    union=sorted(set(price_symbols)|set(blocked_symbols))
     pointer_asof=str(ps.get("asof_et") or "")
     settlement_required=bool(pointer_asof and asof>pointer_asof)
     settlement_core_symbol,settlement_core_source_path,settlement_core_source_blob_sha=prior_core_symbol(pointer_asof)

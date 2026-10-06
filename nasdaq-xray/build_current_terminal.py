@@ -258,8 +258,14 @@ def main():
     assert "NON-G9" in pp["settlement"]["g9_separation"]
     assert p["task_id"]==m["task_id"]==TASK
     asof=p["asof_et"]
-    assert m["asof_et"]==asof and m["status"]=="HISTORY_COMPLETE"
-    assert m["unknown_count"]==0 and m["pending_retry"]==0
+    assert m["asof_et"]==asof and m["status"] in {"HISTORY_COMPLETE","PARTIAL_UNKNOWN"}
+    master_unknown_count=int(m.get("unknown_count",-1))
+    assert (m["status"]=="HISTORY_COMPLETE")== (master_unknown_count==0)
+    assert m["pending_retry"]==0
+    assert int(m.get("pass_count",-1))==int(m["queue_total"])
+    assert int(m.get("raw_identity_total",-1))==int(m["queue_total"])+master_unknown_count
+    assert len(set(m.get("unknown_symbols") or []))==master_unknown_count
+    assert not (set(m.get("unknown_symbols") or []) & set(m.get("pass_symbols") or []))
     assert p["execution"]=="NONE" and p["real_money"]=="NO-GO" and p["unknown_count"]==0
     price_blocked_count=int(p.get("blocked_count",(p.get("counts") or {}).get("BLOCK_CURRENT_RUN",0)) or 0)
     if "blocked_symbols" in p:
@@ -664,7 +670,7 @@ def main():
       "blockers":blockers,
       "classified_nonpass":{"price_blocked_current_run":price_blocked_count},
       "counts":{
-        "master_total":m["queue_total"],"price_dv30_pass":p["pass_count"],
+        "master_total":m.get("raw_identity_total",m["queue_total"]),"master_pass":m["queue_total"],"price_dv30_pass":p["pass_count"],
         "price_dv30_blocked_current_run":price_blocked_count,
         "mc_primary_pass":len(primary),"mc_primary_fail":len(mcfail),"mc_fallback_watch":len(watch),"mc_fallback_fail":len(fallback_fail),"mc_unknown":len(mcunk),
         "history_input":h["input_count"],"history_pass":len(hpass),"history_fail":len(hfail),
@@ -717,7 +723,7 @@ def main():
         **gate_reporting["evidence"],
       },
       "checks":{
-        "policy_order_exact":True,"master_complete":True,"price_exact_master":True,
+        "policy_order_exact":True,"master_partition_exact":True,"master_complete":master_unknown_count==0,"price_exact_master_pass_partition":True,
         "price_blocked_coverage_explicit":True,"price_blocked_requires_terminal_resolution":True,"mc_exact_price_pass_set":True,
         "mc_input_blob_exact":mc_binding["blob_exact"],
         "mc_input_semantic_rebind":mc_binding["semantic_rebind"],

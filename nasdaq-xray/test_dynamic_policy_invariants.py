@@ -237,32 +237,33 @@ def main():
     finally:
         history_mod.HISTORY_BRIDGE=old_bridge
 
-    # Canonical universe is operating common equity: same-run Nasdaq
-    # Blank Checks/SPAC metadata must be excluded before PRICE/DV30 so a shell
-    # cannot become a coverage blocker merely because LEGAL is downstream.
+    # Canonical universe is operating common equity. Exact-ASOF SEC SIC 6770
+    # may exclude a proven blank-check issuer. A same-ASOF Nasdaq SPAC/Blank
+    # Checks suspect without exact SEC proof is UNKNOWN_IDENTITY and must never
+    # enter PRICE/DV30/MC. Explicit operating overrides remain identity PASS.
     sina_src=(ROOT/"sina_stage.py").read_text()
     master_src=(ROOT/"build_current_master_manifest.py").read_text()
+    resolver_src=(ROOT/"build_current_resolver_request.py").read_text()
+    terminal_src=(ROOT/"build_current_terminal.py").read_text()
     pre_mc_src=(ROOT.parent/".github/workflows/xray-canonical-current-pre-mc.yml").read_text()
     assert 'IDENTITY_RULESET="V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER"' in sina_src,sina_src
-    assert 'industry.lower()=="blank checks"' in sina_src and '"reason":"SPAC_BLANK_CHECK"' in sina_src,sina_src
-    assert "sec_blank_check_proof" in sina_src and 'sic=="6770"' in sina_src,sina_src
-    assert "SEC_SUBMISSIONS_SIC_6770" in sina_src,sina_src
-    assert 'NASDAQTRADER_EXPLICIT_TYPE_FILTER_V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER' in sina_src,sina_src
-    assert '"SPAC_BLANK_CHECK"' in master_src and 'identity_ruleset_v6' in master_src,master_src
+    assert 'IDENTITY_PARTITION_POLICY="MASTER_SPAC_UNKNOWN_PARTITION_V1"' in sina_src,sina_src
+    assert '"reason":"SPAC_BLANK_CHECK"' in sina_src and '"source":"SEC_EDGAR_SIC_6770_EXACT_ASOF"' in sina_src,sina_src
+    assert '"reason":"SEC_SPAC_EXACT_ASOF_UNAVAILABLE"' in sina_src,sina_src
+    assert 'identity_unknown_symbols' in sina_src and 'unknown_never_pass' in sina_src,sina_src
+    assert 'sym not in operating_overrides' in sina_src and 'sym not in sec_spac_proof' in sina_src,sina_src
+    assert 'identity_unknown_partition_exact' in master_src and '"UNKNOWN_IDENTITY"' in master_src,master_src
+    assert '"PARTIAL_UNKNOWN"' in master_src and '"raw_identity_total"' in master_src,master_src
+    assert 'union=sorted(set(price_symbols)|set(blocked_symbols))' in resolver_src,resolver_src
+    assert 'not (set(master_symbols)&set(s["queue"]))' in resolver_src,resolver_src
+    assert 'm["status"] in {"HISTORY_COMPLETE","PARTIAL_UNKNOWN"}' in terminal_src,terminal_src
+    assert '"master_unknown":int(m["unknown_count"])' in terminal_src,terminal_src
+    assert 'master_complete":master_unknown_count==0' in terminal_src,terminal_src
     assert 'REPLAY_COMPLETED_EPOCH_UNDER_CURRENT_IDENTITY_POLICY_V6' in pre_mc_src,pre_mc_src
-    assert 'mf.get("identity_ruleset")!="V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER"' in pre_mc_src,pre_mc_src
-    assert 'sec_identity_token="SEC_SPAC_PROOF:"' in sina_src,sina_src
-    assert 'mf_cp.get("sec_spac_proof_binding") is not True' in sina_src,sina_src
-    assert 'dm.get("sec_spac_proof_blob_sha")!=sec_blob' in sina_src,sina_src
-    assert 'mcp.get("sec_spac_proof_binding") is not True' in pre_mc_src,pre_mc_src
-    assert 'msec.get("blob_sha")!=(proof_blob if proof_count else None)' in pre_mc_src,pre_mc_src
-    assert 'ASOF_IDENTITY_PROOF=ROOT/"master_asof_identity_proof_20261005.json"' in sina_src,sina_src
+    assert 'sec_spac_proof_path(asof)' in sina_src and 'asof_identity_proof_path(asof)' in sina_src,sina_src
+    assert 'ASOF_IDENTITY_PROOF=ROOT/"master_asof_identity_proof_20261005.json"' not in sina_src,sina_src
     assert '"POST_ASOF_LISTING"' in master_src,master_src
-    assert 'asof_identity_proof_binding' in master_src,master_src
-    assert 'apply_asof_identity_proof(names,excluded,asof_identity_proof)' in sina_src,sina_src
-    assert 'sym not in operating_overrides' in sina_src,sina_src
-    assert 'mcp.get("asof_identity_proof_binding") is not True' in pre_mc_src,pre_mc_src
-    assert 'masof.get("blob_sha")!=(asof_blob if asof_counts else None)' in pre_mc_src,pre_mc_src
+    assert 'asof_identity_proof_binding' in master_src and 'sec_spac_proof_binding' in master_src,master_src
 
     # Replay guard must be bound to the current C4.17 DV30 artifact and must
     # inspect the durable pointer's nested ASOF. A stale pointer can never be
@@ -279,7 +280,7 @@ def main():
         "MC_SEMANTIC_REBIND_REQUIRES_HASH_SET_COUNT",
         "CANDIDATE_LOCAL_RESEARCH_INDEPENDENT_GLOBAL_COVERAGE_FAIL_CLOSED",
         "OFFICIAL_LISTING_HISTORY_FAIL_ONLY","CUSIP_CONTINUITY_REQUIRES_CROSS_SOURCE_OVERLAP",
-        "LEGACY_LINEAGE_BRIDGE_CANNOT_BYPASS_COMPOSITE","REPLAY_GUARD_DV30_AND_NESTED_POINTER_ASOF_FAIL_CLOSED","SPAC_EXCLUDED_AT_MASTER_BEFORE_PRICE","SEC_SIC_6770_PROOF_FOR_SCREENER_MISSING_SPAC","EXACT_ASOF_IDENTITY_ROLLBACK_AND_OPERATING_OVERRIDE"
+        "LEGACY_LINEAGE_BRIDGE_CANNOT_BYPASS_COMPOSITE","REPLAY_GUARD_DV30_AND_NESTED_POINTER_ASOF_FAIL_CLOSED","SPAC_EXACT_SEC_EXCLUSION_OR_MASTER_UNKNOWN","SEC_SIC_6770_EXACT_ASOF_ONLY_EXCLUSION","MASTER_UNKNOWN_NEVER_ENTERS_PRICE","EXACT_ASOF_IDENTITY_ROLLBACK_AND_OPERATING_OVERRIDE"
     ]})
 
 if __name__=="__main__":

@@ -87,6 +87,10 @@ def main():
     disc=s.get("discovery") or {}
     dm=s.get("discovery_meta") or {}
     exc=s.get("explicit_excluded_reason_counts") or {}
+    identity_unknown=sorted(set(s.get("identity_unknown_symbols") or []))
+    identity_unknown_detail=s.get("identity_unknown_detail") or {}
+    raw_identity_total=int(s.get("raw_identity_total",-1))
+    partition_policy=str(s.get("identity_partition_policy") or "")
     proof={
       "queue_unique":len(set(q))==len(q),
       "queue_total_exact":int(s.get("queue_total",-1))==len(q),
@@ -101,23 +105,41 @@ def main():
       "exclusion_reasons_policy_exact":set(exc).issubset(ALLOWED_EXCLUSION_REASONS),
       "sec_spac_proof_binding":valid_sec_spac_proof_binding(dm,s.get("asof_et")),
       "asof_identity_proof_binding":valid_asof_identity_proof_binding(dm,s.get("asof_et")),
+      "identity_partition_policy_exact":partition_policy=="MASTER_SPAC_UNKNOWN_PARTITION_V1" and dm.get("identity_partition_policy")==partition_policy,
+      "identity_unknown_partition_exact":(
+        len(identity_unknown)==len(set(identity_unknown))
+        and set(identity_unknown_detail)==set(identity_unknown)
+        and not (set(identity_unknown)&set(q))
+        and int(dm.get("identity_unknown_count",-1))==len(identity_unknown)
+        and dm.get("identity_unknown_hash")==hash_lines(identity_unknown)
+        and raw_identity_total==len(q)+len(identity_unknown)
+        and int(dm.get("raw_identity_total",-1))==raw_identity_total
+        and all((identity_unknown_detail.get(sym) or {}).get("unknown_never_pass") is True for sym in identity_unknown)
+      ),
     }
     complete=all(proof.values())
     identity_pass=sorted(q) if complete else []
+    effective_unknown=identity_unknown if complete else sorted(set(q)|set(identity_unknown))
     obj={
       "schema":"XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1",
       "task_id":TASK,"asof_et":s["asof_et"],
       "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
       "phase":"MASTER_IDENTITY",
-      # Compatibility label retained for downstream contracts; semantics are identity-complete.
-      "status":"HISTORY_COMPLETE" if complete else "PARTIAL",
-      "status_semantics":"IDENTITY_COMPLETE_COMPATIBILITY_LABEL" if complete else "IDENTITY_PARTIAL",
+      # queue_total is the exact identity-PASS partition consumed by PRICE.
+      # raw_identity_total also includes fail-closed identity UNKNOWN symbols.
+      "status":("HISTORY_COMPLETE" if complete and not effective_unknown else "PARTIAL_UNKNOWN" if complete else "PARTIAL"),
+      "status_semantics":("IDENTITY_COMPLETE" if complete and not effective_unknown else "IDENTITY_PARTITION_EXACT_WITH_UNKNOWN" if complete else "IDENTITY_PARTIAL"),
       "queue_total":len(q),"queue_hash":s["queue_hash"],"queue_unique":len(set(q)),
-      "unknown_count":0 if complete else len(q),
+      "raw_identity_total":raw_identity_total if complete else len(q)+len(effective_unknown),
+      "unknown_count":len(effective_unknown),
+      "unknown_symbols":effective_unknown,
+      "unknown_detail":identity_unknown_detail if complete else {sym:(identity_unknown_detail.get(sym) or {"reason":"IDENTITY_PARTITION_INVALID","unknown_never_pass":True}) for sym in effective_unknown},
       "pending_retry":0,
       "pass_count":len(identity_pass),
+      "pass_symbols":identity_pass,
       "pass_hash":hash_lines(identity_pass),
-      "counts":{"PASS_IDENTITY":len(identity_pass),"UNKNOWN_IDENTITY":0 if complete else len(q)},
+      "counts":{"PASS_IDENTITY":len(identity_pass),"UNKNOWN_IDENTITY":len(effective_unknown)},
+      "identity_partition_policy":partition_policy,
       "official_footer":s.get("official_footer"),
       "identity_authority":s.get("identity_authority"),
       "identity_ruleset":s.get("identity_ruleset"),

@@ -28,6 +28,7 @@ import pandas_market_calendars as mcal
 TASK_ID="6a825366222081918997094d76e6ae46"
 BUILD="2026-10-02.1"
 IDENTITY_RULESET="V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER"
+IDENTITY_PARTITION_POLICY="MASTER_SPAC_UNKNOWN_PARTITION_V1"
 NASDAQ_DIR="https://www.nasdaqtrader.com/dynamic/SymDir/nasdaqlisted.txt"
 NASDAQ_SCREENER="https://api.nasdaq.com/api/screener/stocks"
 SEC_TICKERS="https://www.sec.gov/files/company_tickers.json"
@@ -688,29 +689,63 @@ def main():
         names,excluded=apply_asof_identity_proof(names,excluded,asof_identity_proof)
         identity_token=footer+"|"+sec_identity_token+"|"+asof_identity_token
     state=load(STATE)
-    epoch_key=IDENTITY_RULESET+"|"+("FULL_IDENTITY" if FULL_IDENTITY else "DISCOVERY_PREFILTER")+"|"+identity_token+"|"+asof
+    epoch_key=IDENTITY_RULESET+"|"+IDENTITY_PARTITION_POLICY+"|"+("FULL_IDENTITY" if FULL_IDENTITY else "DISCOVERY_PREFILTER")+"|"+identity_token+"|"+asof
 
     if state.get("schema")!="XRAY_NASDAQ_SCREENER_SINA_V2" or state.get("epoch_key")!=epoch_key:
         if frozen is not None:
             queue=list(frozen["queue"])
             discovery=dict(frozen["discovery"])
             meta=dict(frozen["discovery_meta"])
+            identity_unknown_symbols=[]
+            identity_unknown_detail={}
             meta.update({
               "authority":"CANONICAL_FROZEN_FULL_IDENTITY_SAME_ASOF",
               "full_identity":True,
               "frozen_identity_path":frozen["source_state_path"],
               "frozen_manifest_path":frozen["source_manifest_path"],
               "frozen_queue_hash":frozen["queue_hash"],
+              "identity_partition_policy":IDENTITY_PARTITION_POLICY,
+              "identity_unknown_count":0,
+              "identity_unknown_hash":sha_lines([]),
+              "raw_identity_total":len(queue),
             })
             ex_serial=[]
         else:
             queue,discovery,meta,screener_excluded=build_discovery(names,FULL_IDENTITY,sec_spac_proof,operating_overrides)
+            # Exact SEC SIC 6770 is exclusion authority. Same-ASOF Nasdaq
+            # Blank-Checks/SPAC evidence without exact SEC proof is neither PASS
+            # nor FAIL: keep it as a MASTER identity UNKNOWN and never send it
+            # into PRICE/DV30/MC. Explicit operating overrides are exempt.
+            identity_unknown_detail={}
+            for sym in list(queue):
+                disc=discovery.get(sym) or {}
+                industry=str(disc.get("industry") or "").strip()
+                security_name=str(names.get(sym) or "").strip()
+                suspect=(industry.lower()=="blank checks" or bool(SPAC_SUSPECT.search(security_name)))
+                if suspect and sym not in operating_overrides and sym not in sec_spac_proof:
+                    identity_unknown_detail[sym]={
+                      "reason":"SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+                      "source":"NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+                      "security_name":security_name,
+                      "same_asof_nasdaq_industry":industry,
+                      "exact_sec_spac_proof":False,
+                      "unknown_never_pass":True,
+                    }
+            identity_unknown_symbols=sorted(identity_unknown_detail)
+            unknown_set=set(identity_unknown_symbols)
+            if unknown_set:
+                queue=[sym for sym in queue if sym not in unknown_set]
+                discovery={sym:row for sym,row in discovery.items() if sym not in unknown_set}
             meta.update({
               "sec_spac_proof_path":("nasdaq-xray/"+sec_proof_path.name) if sec_spac_blob else None,
               "sec_spac_proof_blob_sha":sec_spac_blob,
               "asof_identity_proof_path":("nasdaq-xray/"+identity_proof_path.name) if asof_identity_blob else None,
               "asof_identity_proof_blob_sha":asof_identity_blob,
               "asof_identity_proof_counts":{k:len(asof_identity_proof.get(k) or {}) for k in ("restore_to_asof","remove_from_asof","operating_overrides")},
+              "identity_partition_policy":IDENTITY_PARTITION_POLICY,
+              "identity_unknown_count":len(identity_unknown_symbols),
+              "identity_unknown_hash":sha_lines(identity_unknown_symbols),
+              "raw_identity_total":len(queue)+len(identity_unknown_symbols),
             })
             excluded.update(screener_excluded)
             ex_serial=[s+"|"+excluded[s]["reason"] for s in sorted(excluded)]
@@ -727,8 +762,12 @@ def main():
           "official_footer":footer,
           "identity_authority":(frozen.get("identity_authority") if frozen is not None else "NASDAQTRADER_EXPLICIT_TYPE_FILTER_V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER"),
           "identity_ruleset":IDENTITY_RULESET,
+          "identity_partition_policy":IDENTITY_PARTITION_POLICY,
           "discovery_source":("CANONICAL_FROZEN_FULL_IDENTITY_SAME_ASOF" if frozen is not None else ("NASDAQTRADER_FULL_IDENTITY_PLUS_NASDAQ_SCREENER_METADATA_ONLY" if FULL_IDENTITY else "NASDAQ_OFFICIAL_WEB_SCREENER_PREFILTER_ONLY")),
           "history_source":"SINA_US_DAILY_ACCELERATOR_NOT_G9",
+          "identity_unknown_symbols":identity_unknown_symbols,
+          "identity_unknown_detail":identity_unknown_detail,
+          "raw_identity_total":len(queue)+len(identity_unknown_symbols),
           "queue":queue,
           "queue_hash":sha_lines(queue),
           "queue_total":len(queue),
