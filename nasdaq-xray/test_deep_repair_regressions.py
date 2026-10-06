@@ -753,9 +753,12 @@ def test_workflow_race_and_pre_mc_freeze_contracts():
     assert "current_epoch_artifact_exists=bool(price_asof and price_asof==latest_completed)" in guard
     assert "active_completed_epoch=bool(same_completed_epoch or current_epoch_artifact_exists)" in guard
     assert "policy_replay=bool(active_completed_epoch and price_integrity_ok and not price_semantics_ok)" in guard
-    assert "recover=bool(active_completed_epoch and not price_integrity_ok)" in guard
+    assert "bootstrap_rebuild=bool(" in guard
+    assert "deferred_bootstrap_artifact(px,latest_completed)" in guard
+    assert "recover=bool(active_completed_epoch and not price_integrity_ok and not bootstrap_rebuild)" in guard
     assert "XRAY_PRICE_FORCE_POLICY_REPLAY" in pre
-    assert "build=not active_completed_epoch" in guard
+    assert "build=bool(not active_completed_epoch or bootstrap_rebuild)" in guard
+    assert "REBUILD_DEFERRED_DV30_BOOTSTRAP" in guard
     assert 'out.write(f"recovery_asof={frozen_asof}\\n")' in guard
     assert "terminal_result" not in guard and "FULL_E2E_RESEARCH_PASS" not in guard
     recovery=pre.split("- name: Recover corrupted frozen pre-MC snapshot",1)[1].split("- name: Frozen completed epoch healthy no-op",1)[0]
@@ -765,6 +768,7 @@ def test_workflow_race_and_pre_mc_freeze_contracts():
     recsrc=(ROOT/"recover_pre_mc_snapshot.py").read_text()
     assert "NO_VALID_SAME_ASOF_PRICE_SNAPSHOT" in recsrc
     assert 'CURRENT_PRICE_RULE=">=5"' in recsrc
+    assert 'CURRENT_DV30_RULE=">=50000000 exact30 median"' in recsrc
     assert "CURRENT_POLICY_HASH" in recsrc and "CURRENT_POLICY_BLOB" in recsrc
     assert "canonical_current_resolver_chunk_manifest.json" in recsrc
     assert "canonical_current_resolver_chunk_[0-9][0-9][0-9][0-9].json" in recsrc
