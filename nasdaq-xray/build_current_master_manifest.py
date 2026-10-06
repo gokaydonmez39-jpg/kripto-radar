@@ -9,7 +9,7 @@ OUT=Path(os.getenv("XRAY_MASTER_MANIFEST",str(ROOT/"canonical_current_master_man
 TASK="6a825366222081918997094d76e6ae46"
 ALLOWED_EXCLUSION_REASONS={
   "TEST_ISSUE","ETF","NEXTSHARES","WARRANT","RIGHT","UNIT",
-  "PREFERRED","DEBT","ETN","FUND","WHEN_ISSUED","SPAC_BLANK_CHECK"
+  "PREFERRED","DEBT","ETN","FUND","WHEN_ISSUED","SPAC_BLANK_CHECK","POST_ASOF_LISTING"
 }
 FULL_IDENTITY_AUTHORITIES={
   "FULL_IDENTITY_NO_PREFILTER",
@@ -53,6 +53,31 @@ def valid_sec_spac_proof_binding(dm,asof):
     except Exception:
         return False
 
+
+def valid_asof_identity_proof_binding(dm,asof):
+    try:
+        path=str(dm.get("asof_identity_proof_path") or "")
+        sha=str(dm.get("asof_identity_proof_blob_sha") or "")
+        counts=dm.get("asof_identity_proof_counts") or {}
+        if not path or not sha:
+            return False
+        p=ROOT.parent/path
+        if not p.exists() or blob_sha(p)!=sha:
+            return False
+        j=json.loads(p.read_text())
+        expected={k:len(j.get(k) or {}) for k in ("restore_to_asof","remove_from_asof","operating_overrides")}
+        return bool(
+          j.get("schema")=="XRAY_MASTER_ASOF_IDENTITY_PROOF_V1"
+          and j.get("execution")=="NONE" and j.get("real_money")=="NO-GO"
+          and j.get("unknown_never_pass") is True
+          and j.get("authority")=="NASDAQTRADER_SEC_EXACT_ASOF_IDENTITY_RECONCILIATION"
+          and j.get("applicability")=="EXACT_ASOF_ONLY_NO_FORWARD_CARRY"
+          and j.get("asof_et")==asof
+          and counts==expected
+        )
+    except Exception:
+        return False
+
 def main():
     s=json.loads(INPUT.read_text())
     assert s["schema"]=="XRAY_NASDAQ_SCREENER_SINA_V2" and s["task_id"]==TASK
@@ -71,10 +96,11 @@ def main():
       "full_identity":bool(dm.get("full_identity")),
       "authority_full_identity":valid_full_identity_authority(dm),
       "official_footer_present":bool(s.get("official_footer")),
-      "identity_authority_v5":s.get("identity_authority")=="NASDAQTRADER_EXPLICIT_TYPE_FILTER_V5_SEC_SPAC_PROOF_AT_MASTER",
-      "identity_ruleset_v5":s.get("identity_ruleset")=="V5_SEC_SPAC_PROOF_AT_MASTER",
+      "identity_authority_v6":s.get("identity_authority")=="NASDAQTRADER_EXPLICIT_TYPE_FILTER_V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER",
+      "identity_ruleset_v6":s.get("identity_ruleset")=="V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER",
       "exclusion_reasons_policy_exact":set(exc).issubset(ALLOWED_EXCLUSION_REASONS),
       "sec_spac_proof_binding":valid_sec_spac_proof_binding(dm,s.get("asof_et")),
+      "asof_identity_proof_binding":valid_asof_identity_proof_binding(dm,s.get("asof_et")),
     }
     complete=all(proof.values())
     identity_pass=sorted(q) if complete else []
@@ -99,6 +125,7 @@ def main():
       "explicit_excluded_hash":s.get("explicit_excluded_hash"),
       "explicit_excluded_reason_counts":exc,
       "sec_spac_proof":{"path":dm.get("sec_spac_proof_path"),"blob_sha":dm.get("sec_spac_proof_blob_sha"),"count":int(dm.get("sec_spac_proof_count",0) or 0),"symbol_hash":dm.get("sec_spac_proof_hash")},
+      "asof_identity_proof":{"path":dm.get("asof_identity_proof_path"),"blob_sha":dm.get("asof_identity_proof_blob_sha"),"counts":dm.get("asof_identity_proof_counts") or {}},
       "history_price_state_diagnostic_only":{
         "source_status":s.get("status"),
         "source_unknown_count":s.get("unknown_count"),
