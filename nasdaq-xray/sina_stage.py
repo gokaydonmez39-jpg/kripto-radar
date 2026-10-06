@@ -27,7 +27,7 @@ import pandas_market_calendars as mcal
 
 TASK_ID="6a825366222081918997094d76e6ae46"
 BUILD="2026-10-02.1"
-IDENTITY_RULESET="V3_SPAC_DEFERRED_TO_LEGAL"
+IDENTITY_RULESET="V4_SPAC_EXCLUDED_AT_MASTER"
 NASDAQ_DIR="https://www.nasdaqtrader.com/dynamic/SymDir/nasdaqlisted.txt"
 NASDAQ_SCREENER="https://api.nasdaq.com/api/screener/stocks"
 ROOT=Path(__file__).resolve().parent
@@ -145,12 +145,22 @@ def build_discovery(official,force_all=False):
     rows=screener_rows()
     off=set(official)
     prefilter={}
+    screener_excluded={}
     missing=set(off)
     exact_hard_mc_price_count=0
     for r in rows:
         sym=str(r.get("symbol") or "").strip().upper()
         if sym not in off:continue
         missing.discard(sym)
+        industry=str(r.get("industry") or "").strip()
+        if industry.lower()=="blank checks":
+            screener_excluded[sym]={
+              "reason":"SPAC_BLANK_CHECK",
+              "security_name":official.get(sym) or str(r.get("name") or "").strip(),
+              "industry":industry,
+              "source":"NASDAQ_OFFICIAL_WEB_SCREENER",
+            }
+            continue
         px=num(r.get("lastsale"))
         mc=num(r.get("marketCap"))
         vol=num(r.get("volume"))
@@ -214,7 +224,9 @@ def build_discovery(official,force_all=False):
       "discovery_mc_floor":DISCOVERY_MC_FLOOR,
       "authority":"FULL_IDENTITY_NO_PREFILTER" if force_all else "DISCOVERY_PREFILTER_ONLY_NOT_CANONICAL_MC",
       "full_identity":bool(force_all),
-    }
+      "screener_spac_excluded_count":len(screener_excluded),
+      "screener_spac_excluded_hash":sha_lines(sorted(screener_excluded)),
+    },screener_excluded
 
 def completed_sessions():
     cal=mcal.get_calendar("NASDAQ")
@@ -423,6 +435,8 @@ def canonical_frozen_identity(asof):
         q=list(st.get("queue") or [])
         if (
           st.get("schema")!="XRAY_NASDAQ_SCREENER_SINA_V2"
+          or st.get("identity_ruleset")!=IDENTITY_RULESET
+          or mf.get("identity_ruleset")!=IDENTITY_RULESET
           or str(st.get("asof_et") or "")!=asof
           or str(mf.get("asof_et") or "")!=asof
           or int(mf.get("unknown_count",-1))!=0
@@ -479,7 +493,8 @@ def main():
             })
             ex_serial=[]
         else:
-            queue,discovery,meta=build_discovery(names,FULL_IDENTITY)
+            queue,discovery,meta,screener_excluded=build_discovery(names,FULL_IDENTITY)
+            excluded.update(screener_excluded)
             ex_serial=[s+"|"+excluded[s]["reason"] for s in sorted(excluded)]
         state={
           "schema":"XRAY_NASDAQ_SCREENER_SINA_V2",
@@ -492,7 +507,7 @@ def main():
           "asof_et":asof,
           "expected30":expected30,
           "official_footer":footer,
-          "identity_authority":(frozen.get("identity_authority") if frozen is not None else "NASDAQTRADER_EXPLICIT_TYPE_FILTER_V3_SPAC_DEFERRED_TO_LEGAL"),
+          "identity_authority":(frozen.get("identity_authority") if frozen is not None else "NASDAQTRADER_EXPLICIT_TYPE_FILTER_V4_SPAC_EXCLUDED_AT_MASTER"),
           "identity_ruleset":IDENTITY_RULESET,
           "discovery_source":("CANONICAL_FROZEN_FULL_IDENTITY_SAME_ASOF" if frozen is not None else ("NASDAQTRADER_FULL_IDENTITY_PLUS_NASDAQ_SCREENER_METADATA_ONLY" if FULL_IDENTITY else "NASDAQ_OFFICIAL_WEB_SCREENER_PREFILTER_ONLY")),
           "history_source":"SINA_US_DAILY_ACCELERATOR_NOT_G9",
