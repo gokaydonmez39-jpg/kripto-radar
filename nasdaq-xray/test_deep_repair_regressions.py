@@ -1106,6 +1106,18 @@ def test_rallies_exact30_v2_preserves_upper_bound_fail_semantics():
     except ValueError:
         pass
 
+
+def test_pre_mc_settlement_bridge_forces_resolver_refresh_contract():
+    wf=(REPO/".github/workflows/xray-canonical-current-pre-mc.yml").read_text()
+    assert 'rq.get("settlement_required") is True' in wf
+    assert 'rq.get("settlement_already_proven") is not True' in wf
+    assert 'br.get("settlement_status")=="PASS"' in wf
+    assert 'AMBIGUOUS_CURRENT_POLICY_RESOLVER_BRIDGE_EXACT_PRICE' in wf
+    assert 'AMBIGUOUS_CURRENT_POLICY_RESOLVER_BRIDGE_EXACT_REQUEST' in wf
+    assert 'resolver_refresh=True' in wf
+    noop=wf[wf.index("- name: Frozen completed epoch healthy no-op"):wf.index("- name: Recover corrupted frozen pre-MC snapshot") if wf.index("- name: Recover corrupted frozen pre-MC snapshot")>wf.index("- name: Frozen completed epoch healthy no-op") else len(wf)]
+    assert "steps.rollover.outputs.resolver_refresh != 'true'" in wf
+
 def main():
     test_r1_no_future_mutation_and_confirmation(); test_r1_pivot_boundary_is_not_overhead_but_entry_overlap_is(); test_resistance_role_change_state_machine()
     test_final_history_normalizer_preserves_ohlcv()
@@ -1132,6 +1144,7 @@ def main():
     test_resolver_metadata_only_resume_identity()
     test_resolver_bridge_bound_to_exact_pre_run_price_and_scope()
     test_rallies_exact30_v2_preserves_upper_bound_fail_semantics()
+    test_pre_mc_settlement_bridge_forces_resolver_refresh_contract()
     test_family_c_event_request_covers_boundary_amc_source_session(); test_candidate_legal_guard_phrase_severity()
     test_workflow_race_and_pre_mc_freeze_contracts()
     print({"status":"PASS","tests":["R1_NO_FUTURE_MUTATION","R1_PLUS2_CONFIRMATION_NO_LEAK","R1_PIVOT_BOUNDARY_NOT_OVERHEAD",
