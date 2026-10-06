@@ -2,7 +2,7 @@ name: XRAY Research Candidate Delivery
 
 on:
   workflow_run:
-    workflows: ["XRAY Canonical Current Final Factory"]
+    workflows: ["XRAY Canonical Current Final Factory", "NASDAQ SWING XRAY Autonomous Data Plane"]
     types: [completed]
     branches: [main]
   push:
