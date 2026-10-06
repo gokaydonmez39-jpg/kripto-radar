@@ -13,6 +13,7 @@ WORKERS=int(os.getenv("XRAY_PHASE_WORKERS","12"))
 DEFER_TO_BRIDGE=os.getenv("XRAY_DYNAMIC_AUTHENTICATED_PRICE_BRIDGE","0")=="1"
 FORCE_POLICY_REPLAY=os.getenv("XRAY_PRICE_FORCE_POLICY_REPLAY","0")=="1"
 USE_CURRENT_BASELINE=os.getenv("XRAY_PRICE_USE_CURRENT_BASELINE","0")=="1"
+FORCE_LOCAL_REEVALUATION=os.getenv("XRAY_PRICE_FORCE_LOCAL_REEVALUATION","0")=="1"
 HARD_PRICE=5.0
 HARD_DV30=50_000_000.0
 RESOLVER_REQUEST=Path(os.getenv("XRAY_CURRENT_RESOLVER_REQUEST",str(ROOT/"canonical_current_resolver_request.json")))
@@ -597,11 +598,52 @@ def global_asof_sentinel_nonterminal(redo,asof,exp30):
     }
 
 
-def should_defer_redo_to_bridge(baseline_source,defer_enabled=None):
-    """Authenticated bridge is incremental; a fresh full-universe epoch must compute locally first."""
+def should_defer_redo_to_bridge(baseline_source,defer_enabled=None,force_local=None):
+    """Authenticated bridge is incremental; publication replay may force local zero-dollar refresh."""
     if defer_enabled is None:
         defer_enabled=DEFER_TO_BRIDGE
-    return bool(defer_enabled and baseline_source!="FULL_STATE")
+    if force_local is None:
+        force_local=FORCE_LOCAL_REEVALUATION
+    return bool(defer_enabled and baseline_source!="FULL_STATE" and not force_local)
+
+
+def publication_lag_artifact(px,asof):
+    """Recognize only the fail-closed all-UNKNOWN snapshot caused by ASOF publication lag."""
+    try:
+        results=px.get("results") or {}
+        n=int(px.get("source_master_count",-1))
+        return bool(
+          px.get("schema")=="XRAY_CANONICAL_PRICE_DV30_V1"
+          and px.get("asof_et")==asof
+          and px.get("execution")=="NONE" and px.get("real_money")=="NO-GO"
+          and px.get("unknown_never_pass") is True
+          and (px.get("thresholds") or {}).get("price")==">=5"
+          and (px.get("thresholds") or {}).get("dv30")==">=50000000 exact30 median"
+          and px.get("gate_order")==["PRICE","DV30"]
+          and n>0 and len(results)==n
+          and int(px.get("pass_count",-1))==0
+          and int(px.get("blocked_count",(px.get("counts") or {}).get("BLOCK_CURRENT_RUN",0)) or 0)==0
+          and int(px.get("unknown_count",-1))==n
+          and (px.get("counts") or {})=={"UNKNOWN":n}
+          and px.get("global_asof_sentinel_fast_fail") is True
+          and (px.get("global_asof_sentinel") or {}).get("status")=="GLOBAL_SENTINELS_NONTERMINAL"
+          and all(
+            (row or {}).get("status")=="UNKNOWN"
+            and (row or {}).get("provenance")=="GLOBAL_ASOF_SENTINEL_FAIL_CLOSED"
+            and ((row or {}).get("info") or {}).get("reason")=="GLOBAL_ASOF_SENTINEL_NONTERMINAL_FAIL_CLOSED"
+            for row in results.values()
+          )
+        )
+    except Exception:
+        return False
+
+
+def publication_recheck(asof,exp30):
+    """Cheap AAPL/MSFT/NVDA publication probe; it never writes a symbol decision."""
+    if not isinstance(exp30,list) or len(exp30)!=30:
+        return False,{"status":"INVALID_EXPECTED30","no_pass_or_fail_created":True}
+    still_lag,meta=global_asof_sentinel_nonterminal(["AAPL","MSFT","NVDA"],asof,exp30)
+    return bool(not still_lag and (meta or {}).get("status")=="TERMINAL_SENTINEL_OBSERVED"),meta
 
 
 def deferred_bootstrap_artifact(px,asof):
@@ -818,6 +860,7 @@ def main():
       "policy_replay":FORCE_POLICY_REPLAY,"current_baseline_reuse":USE_CURRENT_BASELINE,
       "policy_replay_baseline_source":baseline_source,
       "bridge_defer_enabled":DEFER_TO_BRIDGE,
+      "force_local_reevaluation":FORCE_LOCAL_REEVALUATION,
       "redo_deferred_to_bridge":defer_redo,
       "policy_replay_input_count":len(policy_redo),
       "global_asof_sentinel_fast_fail":sentinel_fast_fail,
