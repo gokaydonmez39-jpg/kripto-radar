@@ -80,9 +80,11 @@ jobs:
         run: |
           set -euo pipefail
           python - <<'PY'
-          import json, os
+          import json, os, sys
           from datetime import datetime, timezone, timedelta
           import pandas_market_calendars as mcal
+          sys.path.insert(0,"nasdaq-xray")
+          from price_dv20_recover_from_fullstate import price_snapshot_integrity, bridge_refresh_relevant
 
           ptr=json.load(open("nasdaq-xray/chatgpt_canonical_state_v2.json"))
           ps=ptr.get("state_json") or {}
