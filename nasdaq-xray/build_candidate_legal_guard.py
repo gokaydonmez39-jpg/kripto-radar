@@ -23,7 +23,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parent
@@ -42,6 +42,7 @@ USER_AGENT=os.getenv("XRAY_SEC_USER_AGENT","NASDAQ-SWING-XRAY research bot; xray
 SEC_MIN_INTERVAL_SECONDS=float(os.getenv("XRAY_SEC_MIN_INTERVAL_SECONDS","0.22"))
 _SEC_LAST_REQUEST_AT=0.0
 _PRIMARY_DOC_CACHE={}
+_SEC_MASTER_INDEX_CACHE={}
 PERIODIC={"10-K","10-Q","20-F","40-F"}
 ANNUAL={"10-K","20-F","40-F"}
 OFFERING_PREFIX=("S-3","F-3","424B")
@@ -342,14 +343,146 @@ def _atom_company_filings(cik10:str,asof:str)->tuple[dict,list[dict],str]:
     return sub,filings,url
 
 
+
+def _archive_quarters(asof:str,lookback_days:int=550)->list[tuple[int,int]]:
+    end=datetime.fromisoformat(asof).date()
+    start=end-timedelta(days=lookback_days)
+    y=start.year
+    q=(start.month-1)//3+1
+    end_q=(end.month-1)//3+1
+    out=[]
+    while y<end.year or (y==end.year and q<=end_q):
+        out.append((y,q))
+        q+=1
+        if q>4:
+            y+=1
+            q=1
+    return out
+
+
+def _sec_master_index(year:int,qtr:int)->tuple[list[dict],str]:
+    key=(int(year),int(qtr))
+    if key in _SEC_MASTER_INDEX_CACHE:
+        return _SEC_MASTER_INDEX_CACHE[key]
+    url=f"https://www.sec.gov/Archives/edgar/full-index/{year}/QTR{qtr}/master.idx"
+    raw=_fetch(url,limit=60_000_000).decode("utf-8","replace")
+    rows=[]
+    for line in raw.splitlines():
+        p=line.split("|",4)
+        if len(p)!=5 or not p[0].strip().isdigit():
+            continue
+        try:
+            cik=str(int(p[0].strip())).zfill(10)
+        except Exception:
+            continue
+        form=p[2].strip().upper()
+        filing_date=p[3].strip()
+        filename=p[4].strip()
+        if not form or not filing_date or not filename:
+            continue
+        rows.append({
+          "cik":cik,
+          "issuer_name":p[1].strip(),
+          "form":form,
+          "filingDate":filing_date,
+          "filename":filename,
+        })
+    _SEC_MASTER_INDEX_CACHE[key]=(rows,url)
+    return rows,url
+
+
+def _sec_archives_inventory(cik10:str,asof:str)->tuple[dict,list[dict],str]:
+    filings=[]
+    index_urls=[]
+    issuer_name=None
+    for year,qtr in _archive_quarters(asof):
+        rows,url=_sec_master_index(year,qtr)
+        index_urls.append(url)
+        for x in rows:
+            if x.get("cik")!=cik10:
+                continue
+            if str(x.get("filingDate") or "")>asof:
+                continue
+            form=str(x.get("form") or "").upper()
+            if not (form in REVIEW_FORMS or form in PERIODIC or form.startswith(OFFERING_PREFIX)):
+                continue
+            filename=str(x.get("filename") or "")
+            base=Path(filename).name
+            if not base.lower().endswith(".txt"):
+                continue
+            acc=base[:-4]
+            if not re.fullmatch(r"\d{10}-\d{2}-\d{6}",acc):
+                continue
+            compact=acc.replace("-","")
+            issuer_name=issuer_name or x.get("issuer_name")
+            filings.append({
+              "accessionNumber":acc,
+              "filingDate":str(x["filingDate"]),
+              "reportDate":"",
+              "form":form,
+              "items":"",
+              "primaryDocument":"",
+              "primaryDocDescription":"",
+              "filingHref":f"https://www.sec.gov/Archives/edgar/data/{int(cik10)}/{compact}/{acc}-index.html",
+              "submissionTextHref":"https://www.sec.gov/Archives/"+filename.lstrip("/"),
+              "inventorySource":"SEC_ARCHIVES_FULL_INDEX",
+            })
+    # An accession must be unique across EDGAR master indexes. Duplicate
+    # inventory is an integrity fault, never a reason to deduplicate into PASS.
+    accs=[str(x["accessionNumber"]) for x in filings]
+    if len(accs)!=len(set(accs)):
+        raise RuntimeError("SEC_ARCHIVES_DUPLICATE_ACCESSION")
+    if not filings:
+        raise RuntimeError("SEC_ARCHIVES_NO_FILINGS")
+    filings.sort(key=lambda x:(str(x["filingDate"]),str(x["accessionNumber"])),reverse=True)
+    sub={"name":issuer_name,"sic":None,"fiscalYearEnd":None}
+    return sub,filings,"SEC_ARCHIVES_FULL_INDEX_FALLBACK_V1"
+
+
+def _hydrate_archive_index_row(row:dict)->dict:
+    if row.get("inventorySource")!="SEC_ARCHIVES_FULL_INDEX":
+        return row
+    if row.get("_archiveHydrated") is True:
+        return row
+    index_url=str(row.get("filingHref") or "")
+    if not index_url:
+        raise RuntimeError("SEC_ARCHIVE_INDEX_URL_MISSING")
+    raw=_fetch(index_url,limit=7_000_000)
+    source=raw.decode("utf-8","replace")
+    clean=_clean_html(raw)
+
+    # Filing index pages expose "Period of Report" and 8-K item numbers.
+    pm=re.search(r"\bperiod of report\s+(\d{4}-\d{2}-\d{2})\b",clean,re.I)
+    if pm:
+        row["reportDate"]=pm.group(1)
+    items=sorted(set(re.findall(r"\bitem\s+(\d+\.\d+)\b",clean,re.I)))
+    row["items"]=",".join(items)
+
+    # Reuse the same SEC filing-index primary-document resolver already used by
+    # Atom. This retains a single document-selection semantic.
+    primary=_primary_doc_from_index(index_url,str(row.get("form") or ""))
+    if not primary:
+        raise RuntimeError("SEC_ARCHIVE_PRIMARY_DOCUMENT_NOT_FOUND")
+    row["primaryDocument"]=primary.rsplit("/",1)[-1]
+    row["_primaryDocumentUrl"]=primary
+    row["_archiveHydrated"]=True
+    return row
+
+
 def _sec_submissions_or_atom(cik10:str,asof:str)->tuple[dict,list[dict],str,str|None]:
     company_url=f"https://data.sec.gov/submissions/CIK{cik10}.json"
     try:
         sub=_fetch_json(company_url)
         return sub,_recent_filings(sub),"DATA_SEC_SUBMISSIONS_JSON",None
     except Exception as primary_exc:
+        primary_error=f"{type(primary_exc).__name__}:{str(primary_exc)[:160]}"
+    try:
         sub,filings,atom_url=_atom_company_filings(cik10,asof)
-        return sub,filings,"SEC_WWW_ATOM_FALLBACK",f"{type(primary_exc).__name__}:{str(primary_exc)[:160]}"
+        return sub,filings,"SEC_WWW_ATOM_FALLBACK",primary_error
+    except Exception as atom_exc:
+        atom_error=f"{type(atom_exc).__name__}:{str(atom_exc)[:160]}"
+    sub,filings,source=_sec_archives_inventory(cik10,asof)
+    return sub,filings,source,primary_error+" | ATOM:"+atom_error
 
 
 def _recent_filings(sub:dict)->list[dict]:
@@ -406,6 +539,8 @@ def _primary_doc_from_index(index_url:str,form:str)->str|None:
 
 
 def _doc_url(cik10:str,row:dict)->str|None:
+    if row.get("_primaryDocumentUrl"):
+        return str(row["_primaryDocumentUrl"])
     acc=str(row.get("accessionNumber") or "")
     doc=str(row.get("primaryDocument") or "")
     if acc and doc:
@@ -466,7 +601,26 @@ def review_symbol(symbol:str,cik10:str,asof:str)->dict:
     hard=[];risks=[];docs=[];document_failures=[]
     for row in scoped:
         form=str(row.get("form") or "").upper()
+        if row.get("inventorySource")=="SEC_ARCHIVES_FULL_INDEX":
+            try:
+                _hydrate_archive_index_row(row)
+            except Exception as exc:
+                document_failures.append({
+                    "filing_date":row.get("filingDate"),"form":form,
+                    "accession_number":row.get("accessionNumber"),
+                    "reason":f"SEC_ARCHIVE_INDEX:{type(exc).__name__}:{str(exc)[:120]}"
+                })
+                continue
         items=_item_set(row.get("items"))
+        # For 8-K the hard/risk item set is itself part of C4.17 evidence. If
+        # the archive index does not expose an item number, do not silently PASS.
+        if row.get("inventorySource")=="SEC_ARCHIVES_FULL_INDEX" and form=="8-K" and not items:
+            document_failures.append({
+                "filing_date":row.get("filingDate"),"form":form,
+                "accession_number":row.get("accessionNumber"),
+                "reason":"SEC_ARCHIVE_8K_ITEM_SET_UNPROVEN"
+            })
+            continue
         for it,label in HARD_ITEMS.items():
             if it in items: hard.append(f"{label}:{row['filingDate']}:{form}")
         for it,label in RISK_ITEMS.items():
@@ -530,6 +684,7 @@ def review_symbol(symbol:str,cik10:str,asof:str)->dict:
       "sec_submissions_url":company_url,
       "sec_listing_source":sec_listing_source,
       "sec_submissions_primary_error":submissions_error,
+      "sec_archives_full_index_fallback":bool(sec_listing_source=="SEC_ARCHIVES_FULL_INDEX_FALLBACK_V1"),
     }
 
 
