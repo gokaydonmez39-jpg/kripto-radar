@@ -76,6 +76,8 @@ def can_preserve_existing_request(new_obj):
             and int(cm.get("symbol_count",-1))==int(old.get("symbol_count",-2))
             and cm.get("coverage_complete") is True
             and int(cm.get("chunk_count",-1))==len(cm.get("chunks") or [])
+            and (cm.get("compact_authority") or {}).get("schema")=="XRAY_RESOLVER_COMPACT_INPUT_AUTHORITY_V1"
+            and (cm.get("compact_authority") or {})==compact_input_authority(old,rb)
         ):
             return False
         rebuilt=[]
@@ -180,6 +182,45 @@ def prior_core_symbol(pointer_asof):
     except Exception:
         return None,None,None
 
+def compact_input_authority(request_obj,request_blob):
+    exp=list(request_obj.get("expected30") or [])
+    assert len(exp)==30 and len(set(exp))==30
+    obj={
+      "schema":"XRAY_RESOLVER_COMPACT_INPUT_AUTHORITY_V1",
+      "task_id":TASK,"asof_et":request_obj["asof_et"],
+      "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
+      "request_path":"nasdaq-xray/canonical_current_resolver_request.json",
+      "request_blob_sha":request_blob,
+      "source_price_path":request_obj["source_price_path"],
+      "source_price_blob_sha":request_obj["source_price_blob_sha"],
+      "source_price_pass_count":int(request_obj["source_price_pass_count"]),
+      "source_price_pass_hash":request_obj["source_price_pass_hash"],
+      "source_price_counts":request_obj["source_price_counts"],
+      "price_gate_order":request_obj["price_gate_order"],
+      "price_thresholds":request_obj["price_thresholds"],
+      "expected30":exp,
+      "master_unknown_count":int(request_obj["master_unknown_count"]),
+      "master_unknown_hash":request_obj["master_unknown_hash"],
+      "price_unknown_count":int(request_obj["price_unknown_count"]),
+      "price_unknown_hash":request_obj["price_unknown_hash"],
+      "price_blocked_count":int(request_obj["price_blocked_count"]),
+      "price_blocked_hash":request_obj["price_blocked_hash"],
+      "resolver_symbol_count":int(request_obj["symbol_count"]),
+      "resolver_symbol_hash":request_obj["symbol_hash"],
+      "source_master_path":request_obj["source_master_path"],
+      "source_master_blob_sha":request_obj["source_master_blob_sha"],
+      "compiled_policy_blob_sha":request_obj["compiled_policy_blob_sha"],
+      "compiled_policy_hash":request_obj["compiled_policy_hash"],
+      "compiled_policy_version":request_obj["compiled_policy_version"],
+      "settlement_required":bool(request_obj["settlement_required"]),
+      "settlement_symbols":list(request_obj.get("settlement_symbols") or []),
+      "global_asof_sentinel_fast_fail":bool(request_obj.get("source_price_global_asof_sentinel_fast_fail")),
+    }
+    assert obj["source_price_pass_count"]>=0
+    assert obj["master_unknown_count"]>=0 and obj["price_unknown_count"]>=0 and obj["price_blocked_count"]>=0
+    assert obj["resolver_symbol_count"]==obj["price_unknown_count"]+obj["price_blocked_count"]
+    return obj
+
 def write_chunk_manifest(request_obj):
     # A large exact resolver scope is materialized into small content-addressed
     # chunks so provider-reader invocations can resume durably without parsing
@@ -228,6 +269,7 @@ def write_chunk_manifest(request_obj):
       "queue_hash":request_obj["queue_hash"],
       "symbol_hash":request_obj["symbol_hash"],
       "symbol_count":len(symbols),
+      "compact_authority":compact_input_authority(request_obj,request_blob),
       "chunk_size":CHUNK_SIZE,"chunk_count":total,
       "chunks":chunk_rows,
       "coverage_complete":sum(x["symbol_count"] for x in chunk_rows)==len(symbols),
@@ -333,10 +375,16 @@ def main():
       "settlement_core_source_blob_sha":settlement_core_source_blob_sha,
       "official_footer":s.get("official_footer"),
       "expected30":p.get("expected30") or s.get("expected30") or [],
-      "master_unknown_count":len(master_symbols),"master_unknown_symbols":master_symbols,
+      "source_price_pass_count":int(p.get("pass_count",0) or 0),
+      "source_price_pass_hash":p.get("pass_hash"),
+      "source_price_counts":p.get("counts") or {},
+      "source_price_global_asof_sentinel_fast_fail":p.get("global_asof_sentinel_fast_fail") is True,
+      "price_gate_order":p.get("gate_order") or [],
+      "price_thresholds":p.get("thresholds") or {},
+      "master_unknown_count":len(master_symbols),"master_unknown_hash":hash_lines(master_symbols),"master_unknown_symbols":master_symbols,
       "master_unknown_detail":master_detail,
-      "price_unknown_count":len(price_symbols),"price_unknown_symbols":price_symbols,
-      "price_blocked_count":len(blocked_symbols),"price_blocked_symbols":blocked_symbols,
+      "price_unknown_count":len(price_symbols),"price_unknown_hash":hash_lines(price_symbols),"price_unknown_symbols":price_symbols,
+      "price_blocked_count":len(blocked_symbols),"price_blocked_hash":hash_lines(blocked_symbols),"price_blocked_symbols":blocked_symbols,
       "price_unknown_detail":price_detail,
       "symbols":union,"symbol_count":len(union),"symbol_hash":hash_lines(union),
       "source_state_path":"nasdaq-xray/canonical_current_full_state.json",
