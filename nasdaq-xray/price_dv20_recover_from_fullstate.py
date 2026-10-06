@@ -430,10 +430,27 @@ def main():
     asof=s.get("asof_et")
     assert s["task_id"]==TASK_ID and isinstance(asof,str) and len(asof)==10
     queue=s["queue"];old=s["results"];assert len(queue)==len(old) and len(queue)>3000
+    baseline_source="FULL_STATE"
+    if FORCE_POLICY_REPLAY:
+        if not OUT.exists():
+            raise RuntimeError("PRICE_POLICY_REPLAY_PRIOR_PRICE_MISSING")
+        prior=json.loads(OUT.read_text())
+        if not (
+            prior.get("schema")=="XRAY_CANONICAL_PRICE_DV20_V1"
+            and prior.get("task_id")==TASK_ID
+            and prior.get("asof_et")==asof
+            and prior.get("execution")=="NONE" and prior.get("real_money")=="NO-GO"
+            and prior.get("source_master_queue_hash")==s.get("queue_hash")
+            and int(prior.get("source_master_count",-1))==len(queue)
+            and set((prior.get("results") or {}).keys())==set(queue)
+        ):
+            raise RuntimeError("PRICE_POLICY_REPLAY_PRIOR_PRICE_BINDING_INVALID")
+        old=prior["results"]
+        baseline_source="PRIOR_PRICE_ARTIFACT"
     results={};redo=[];policy_redo=set()
     for sym in queue:
         r=old[sym];st=r.get("status");info=r.get("info")
-        if st=="PASS":
+        if st in {"PASS","PASS_PRICE_DV20"}:
             if not (
               isinstance(info,dict)
               and info.get("known_session_count")==20
@@ -444,13 +461,17 @@ def main():
             ):
                 redo.append(sym)
                 continue
-            results[sym]={"status":"PASS_PRICE_DV20","info":info,"provenance":"FULLSTATE_EXACT20_PASS"}
+            results[sym]={"status":"PASS_PRICE_DV20","info":info,
+                          "provenance":"PRIOR_PRICE_REUSED_PASS" if FORCE_POLICY_REPLAY else "FULLSTATE_EXACT20_PASS"}
         elif st=="FAIL_PRICE":
-            if FORCE_POLICY_REPLAY:
+            px=num((info or {}).get("price")) if isinstance(info,dict) else None
+            if FORCE_POLICY_REPLAY and (px is None or px>=HARD_PRICE):
                 redo.append(sym);policy_redo.add(sym);continue
-            results[sym]={"status":"FAIL_PRICE","info":info,"provenance":"FULLSTATE_TERMINAL_FAIL"}
-        elif st=="FAIL_DV20":
-            results[sym]={"status":"FAIL_DV20","info":info,"provenance":"FULLSTATE_TERMINAL_FAIL"}
+            results[sym]={"status":"FAIL_PRICE","info":info,
+                          "provenance":"PRIOR_PRICE_REUSED_BELOW_NEW_FLOOR" if FORCE_POLICY_REPLAY else "FULLSTATE_TERMINAL_FAIL"}
+        elif st in {"FAIL_DV20","FAIL_PRICE_NO_ASOF_BAR","FAIL_DV20_INSUFFICIENT_SESSIONS","BLOCK_CURRENT_RUN","BLOCK_POST_ASOF_LISTING"}:
+            results[sym]={"status":st,"info":info,
+                          "provenance":"PRIOR_PRICE_REUSED_POLICY_COMPATIBLE" if FORCE_POLICY_REPLAY else "FULLSTATE_TERMINAL_FAIL"}
         else:
             redo.append(sym)
     exp20=expected20(asof)
@@ -525,7 +546,8 @@ def main():
       "source_master_queue_hash":s["queue_hash"],"source_master_count":len(queue),
       "expected20":exp20,"gate_order":["PRICE","DV20"],"thresholds":{"price":">=5","dv20":">=50000000 exact20 median"},
       "reused_terminal_count":len(queue)-len(redo),"reevaluated_count":len(redo),
-      "policy_replay":FORCE_POLICY_REPLAY,"policy_replay_input_count":len(policy_redo),
+      "policy_replay":FORCE_POLICY_REPLAY,"policy_replay_baseline_source":baseline_source,
+      "policy_replay_input_count":len(policy_redo),
       "policy_replay_symbols":sorted(policy_redo),
       "exception_bridge_meta":exception_bridge_meta,
       "counts":dict(sorted(counts.items())),"unknown_count":len(unknown),"unknown_symbols":unknown,

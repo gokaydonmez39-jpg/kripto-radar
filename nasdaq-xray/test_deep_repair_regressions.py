@@ -752,7 +752,9 @@ def test_workflow_race_and_pre_mc_freeze_contracts():
     assert "same_completed_epoch=bool(pointer_asof and latest_completed==pointer_asof)" in guard
     assert "current_epoch_artifact_exists=bool(price_asof and price_asof==latest_completed)" in guard
     assert "active_completed_epoch=bool(same_completed_epoch or current_epoch_artifact_exists)" in guard
-    assert "recover=bool(active_completed_epoch and not price_ok)" in guard
+    assert "policy_replay=bool(active_completed_epoch and price_integrity_ok and not price_semantics_ok)" in guard
+    assert "recover=bool(active_completed_epoch and not price_integrity_ok)" in guard
+    assert "XRAY_PRICE_FORCE_POLICY_REPLAY" in pre
     assert "build=not active_completed_epoch" in guard
     assert 'out.write(f"recovery_asof={frozen_asof}\\n")' in guard
     assert "terminal_result" not in guard and "FULL_E2E_RESEARCH_PASS" not in guard
@@ -762,6 +764,8 @@ def test_workflow_race_and_pre_mc_freeze_contracts():
     assert "python nasdaq-xray/recover_pre_mc_snapshot.py" in recovery
     recsrc=(ROOT/"recover_pre_mc_snapshot.py").read_text()
     assert "NO_VALID_SAME_ASOF_PRICE_SNAPSHOT" in recsrc
+    assert \'CURRENT_PRICE_RULE=">=5"\' in recsrc
+    assert "CURRENT_POLICY_HASH" in recsrc and "CURRENT_POLICY_BLOB" in recsrc
     assert "canonical_current_resolver_chunk_manifest.json" in recsrc
     assert "canonical_current_resolver_chunk_[0-9][0-9][0-9][0-9].json" in recsrc
     assert 'assert rebuilt==req["symbols"]' in recsrc
@@ -775,16 +779,21 @@ def test_workflow_race_and_pre_mc_freeze_contracts():
     assert 'assert int(price["source_master_count"])==int(master["queue_total"])' in recsrc
     assert '"resolver_chunks":len(declared)' in recsrc
     assert '"resolver_chunks":len(chunks)' not in recsrc
-    def core(pointer_asof,latest_completed,price_asof,price_ok):
+    def core(pointer_asof,latest_completed,price_asof,integrity_ok,semantics_ok):
         same=bool(pointer_asof and latest_completed==pointer_asof)
         current=bool(price_asof and price_asof==latest_completed)
         active=bool(same or current)
-        return {"build":not active,"recover":bool(active and not price_ok)}
-    assert core("2026-10-02","2026-10-02","2026-10-02",True)=={"build":False,"recover":False}
-    assert core("2026-10-02","2026-10-02","2026-10-02",False)=={"build":False,"recover":True}
-    assert core("2026-10-02","2026-10-05","2026-10-05",True)=={"build":False,"recover":False}
-    assert core("2026-10-02","2026-10-05","2026-10-05",False)=={"build":False,"recover":True}
-    assert core("2026-10-02","2026-10-05","2026-10-02",False)=={"build":True,"recover":False}
+        return {
+          "build":not active,
+          "recover":bool(active and not integrity_ok),
+          "policy_replay":bool(active and integrity_ok and not semantics_ok),
+        }
+    assert core("2026-10-02","2026-10-02","2026-10-02",True,True)=={"build":False,"recover":False,"policy_replay":False}
+    assert core("2026-10-02","2026-10-02","2026-10-02",True,False)=={"build":False,"recover":False,"policy_replay":True}
+    assert core("2026-10-02","2026-10-02","2026-10-02",False,False)=={"build":False,"recover":True,"policy_replay":False}
+    assert core("2026-10-02","2026-10-05","2026-10-05",True,True)=={"build":False,"recover":False,"policy_replay":False}
+    assert core("2026-10-02","2026-10-05","2026-10-05",True,False)=={"build":False,"recover":False,"policy_replay":True}
+    assert core("2026-10-02","2026-10-05","2026-10-02",False,False)=={"build":True,"recover":False,"policy_replay":False}
 
 def test_detailed_legal_gate_is_only_for_actual_pre_g9_promotion():
     # Detailed filing review is a candidate-promotion guard, not a prerequisite
