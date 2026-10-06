@@ -639,7 +639,8 @@ jobs:
           a=t["asof_et"]
           assert e["asof_et"]==c["asof_et"]==d["asof_et"]==f["asof_et"]==a
           assert d["event_state_fresh"] is True
-          assert d["unknown_history_count"]==0,d["unknown_history"]
+          deep_unknown=int(d.get("unknown_history_count",0) or 0)
+          assert deep_unknown==len(d.get("unknown_history") or {}),(deep_unknown,len(d.get("unknown_history") or {}))
           assert set(e["event_status_by_symbol"])==set(d["results"])
           assert t["execution"]=="NONE" and t["real_money"]=="NO-GO"
           assert t.get("final_gate_reporting_zero_alpha") is True
@@ -688,10 +689,14 @@ jobs:
               assert t["blockers"].get("candidate_halt_guard_unknown")==0
           print("XRAY_TERMINAL_HALT_SAFETY=PASS raw=%d veto=%d safe=%d"%(len(raw),len(veto),len(safe)))
           if t["full_end_to_end_research_pass"]:
+              assert deep_unknown==0,d.get("unknown_history")
               assert all(v==0 for v in t["blockers"].values()),t["blockers"]
               assert t["status"]=="FULL_E2E_RESEARCH_PASS"
           else:
               assert t["status"]=="PARTIAL"
+              assert t["terminal_result"]=="PARTIAL_UNKNOWN"
+              assert int(t["blockers"].get("deep_history_unknown",0) or 0)==deep_unknown,(
+                  t["blockers"].get("deep_history_unknown"),deep_unknown)
           print({"asof":a,"terminal_status":t["status"],"terminal_result":t["terminal_result"],"pre_g9":t["counts"]["pre_g9_tech_pass"],"blockers":t["blockers"]})
           PY
 

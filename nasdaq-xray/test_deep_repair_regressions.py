@@ -1174,6 +1174,15 @@ def test_terminal_deep_history_unknown_is_fail_closed_partial_not_crash():
     assert 'full=all(v==0 for v in blockers.values())' in src
     assert 'terminal_result=("NO_CONFIRMED_SETUP" if not pre else "PRE_G9_SETUP_EXISTS") if full else "PARTIAL_UNKNOWN"' in src
 
+
+def test_final_structural_gate_accepts_deep_history_unknown_only_as_exact_partial_blocker():
+    wf=(REPO/".github/workflows/xray-canonical-current-final.yml").read_text()
+    assert 'assert d["unknown_history_count"]==0' not in wf
+    assert 'deep_unknown=int(d.get("unknown_history_count",0) or 0)' in wf
+    assert 'assert deep_unknown==0,d.get("unknown_history")' in wf
+    assert 'assert t["terminal_result"]=="PARTIAL_UNKNOWN"' in wf
+    assert 'int(t["blockers"].get("deep_history_unknown",0) or 0)==deep_unknown' in wf
+
 def main():
     test_r1_no_future_mutation_and_confirmation(); test_r1_pivot_boundary_is_not_overhead_but_entry_overlap_is(); test_resistance_role_change_state_machine()
     test_final_history_normalizer_preserves_ohlcv()
@@ -1190,6 +1199,7 @@ def main():
     test_final_workflow_auto_rebinds_event_provenance_and_persists_successor()
     test_resolver_bridge_authority_prefers_exact_current_lineage()
     test_post_mc_exact_source_rebind_workflow_contract()
+    test_final_structural_gate_accepts_deep_history_unknown_only_as_exact_partial_blocker()
     test_terminal_deep_history_unknown_is_fail_closed_partial_not_crash()
     test_frozen_identity_reuse_preserves_unknown_partition_and_rejects_unproven_spac_contract()
     test_candidate_local_legal_unknown_does_not_globally_suppress()
