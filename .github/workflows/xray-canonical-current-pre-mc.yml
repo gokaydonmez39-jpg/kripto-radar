@@ -84,7 +84,7 @@ jobs:
           from datetime import datetime, timezone, timedelta
           import pandas_market_calendars as mcal
           sys.path.insert(0,"nasdaq-xray")
-          from price_dv30_recover_from_fullstate import price_snapshot_integrity, bridge_refresh_relevant
+          from price_dv30_recover_from_fullstate import price_snapshot_integrity, bridge_refresh_relevant, deferred_bootstrap_artifact
 
           ptr=json.load(open("nasdaq-xray/chatgpt_canonical_state_v2.json"))
           ps=ptr.get("state_json") or {}
@@ -140,7 +140,12 @@ jobs:
               price_semantics_ok=False
               price_ok=False
           policy_replay=bool(active_completed_epoch and price_integrity_ok and not price_semantics_ok)
-          recover=bool(active_completed_epoch and not price_integrity_ok)
+          bootstrap_rebuild=bool(
+              current_epoch_artifact_exists
+              and price_semantics_ok
+              and deferred_bootstrap_artifact(px,latest_completed)
+          )
+          recover=bool(active_completed_epoch and not price_integrity_ok and not bootstrap_rebuild)
           blocked_count=0
           block_recovery_attempted=False
           try:
@@ -179,9 +184,10 @@ jobs:
                           pass
               except Exception:
                   bridge_refresh=False
-          build=not active_completed_epoch
+          build=bool(not active_completed_epoch or bootstrap_rebuild)
           with open(os.environ["GITHUB_OUTPUT"],"a") as out:
               out.write(f"build={'true' if build else 'false'}\n")
+              out.write(f"bootstrap_rebuild={'true' if bootstrap_rebuild else 'false'}\n")
               out.write(f"recover={'true' if recover else 'false'}\n")
               out.write(f"policy_replay={'true' if policy_replay else 'false'}\n")
               out.write(f"coverage_repair={'true' if coverage_repair else 'false'}\n")
@@ -193,6 +199,7 @@ jobs:
           print({
               "build":build,
               "recover":recover,
+              "bootstrap_rebuild":bootstrap_rebuild,
               "policy_replay":policy_replay,
               "price_integrity_ok":price_integrity_ok,
               "price_semantics_ok":price_semantics_ok,
@@ -211,6 +218,7 @@ jobs:
               "terminal_asof":terminal_asof,
               "phase":phase,
               "reason":(
+                  "REBUILD_DEFERRED_DV30_BOOTSTRAP" if bootstrap_rebuild else
                   "REPLAY_COMPLETED_EPOCH_UNDER_CURRENT_PRICE_POLICY" if policy_replay else
                   "RECOVER_FROZEN_COMPLETED_EPOCH" if recover else
                   "REPAIR_BLOCKED_PRICE_DV30_COVERAGE" if coverage_repair else

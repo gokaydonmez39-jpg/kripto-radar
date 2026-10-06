@@ -167,6 +167,25 @@ jobs:
           assert r.bridge_replacement_allowed("BLOCK_CURRENT_RUN","FAIL_DV30") is True
           assert r.bridge_replacement_allowed("BLOCK_CURRENT_RUN","BLOCK_CURRENT_RUN") is False
           assert r.bridge_replacement_allowed("PASS_PRICE_DV30","FAIL_DV30") is False
+          assert r.should_defer_redo_to_bridge("FULL_STATE",True) is False
+          assert r.should_defer_redo_to_bridge("CURRENT_PRICE_ARTIFACT",True) is True
+          assert r.should_defer_redo_to_bridge("PRIOR_PRICE_ARTIFACT",True) is True
+          deferred={
+            "schema":"XRAY_CANONICAL_PRICE_DV30_V1","asof_et":"2026-10-05",
+            "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
+            "source_master_count":3001,
+            "thresholds":{"price":">=5","dv30":">=50000000 exact30 median"},
+            "gate_order":["PRICE","DV30"],
+            "counts":{"UNKNOWN":3001},"pass_count":0,"blocked_count":0,"unknown_count":3001,
+            "results":{f"S{i}":{"status":"UNKNOWN","provenance":"DYNAMIC_BRIDGE_DEFERRED"} for i in range(3001)},
+          }
+          assert r.deferred_bootstrap_artifact(deferred,"2026-10-05") is True
+          deferred["results"]["S0"]["provenance"]="FULLSTATE_ZERO_DOLLAR_EXACT30"
+          assert r.deferred_bootstrap_artifact(deferred,"2026-10-05") is False
+          from pathlib import Path
+          wf=Path(".github/workflows/xray-canonical-current-pre-mc.yml").read_text()
+          assert "deferred_bootstrap_artifact(px,latest_completed)" in wf
+          assert "REBUILD_DEFERRED_DV30_BOOTSTRAP" in wf
           print("PRICE_RESOLVER_INCOMPLETE_SNAPSHOT_ROUTING=PASS")
           PY
 

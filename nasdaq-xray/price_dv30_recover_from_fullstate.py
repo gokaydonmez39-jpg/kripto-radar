@@ -547,6 +547,37 @@ def valid_bridge_price_resolution(x,asof):
         return bool(x.get("first_trade_date")) and str(x.get("first_trade_date"))>asof and bool(x.get("source"))
     return False
 
+def should_defer_redo_to_bridge(baseline_source,defer_enabled=None):
+    """Authenticated bridge is incremental; a fresh full-universe epoch must compute locally first."""
+    if defer_enabled is None:
+        defer_enabled=DEFER_TO_BRIDGE
+    return bool(defer_enabled and baseline_source!="FULL_STATE")
+
+
+def deferred_bootstrap_artifact(px,asof):
+    """Detect the poisoned bootstrap artifact produced by deferring the entire fresh universe."""
+    try:
+        results=px.get("results") or {}
+        n=int(px.get("source_master_count",-1))
+        return bool(
+          px.get("schema")=="XRAY_CANONICAL_PRICE_DV30_V1"
+          and px.get("asof_et")==asof
+          and px.get("execution")=="NONE" and px.get("real_money")=="NO-GO"
+          and px.get("unknown_never_pass") is True
+          and (px.get("thresholds") or {}).get("price")==">=5"
+          and (px.get("thresholds") or {}).get("dv30")==">=50000000 exact30 median"
+          and px.get("gate_order")==["PRICE","DV30"]
+          and n>3000 and len(results)==n
+          and int(px.get("pass_count",-1))==0
+          and int(px.get("blocked_count",(px.get("counts") or {}).get("BLOCK_CURRENT_RUN",0)) or 0)==0
+          and int(px.get("unknown_count",-1))==n
+          and (px.get("counts") or {})=={"UNKNOWN":n}
+          and all((r or {}).get("provenance")=="DYNAMIC_BRIDGE_DEFERRED" for r in results.values())
+        )
+    except Exception:
+        return False
+
+
 def current_price_baseline_valid(prior,s,asof,queue):
     """Validate exact same-policy PRICE state before incremental resolver refresh."""
     try:
@@ -639,7 +670,8 @@ def main():
         else:
             redo.append(sym)
     exp30=expected30(asof)
-    if DEFER_TO_BRIDGE:
+    defer_redo=should_defer_redo_to_bridge(baseline_source)
+    if defer_redo:
         for sym in redo:
             if sym in policy_redo: continue
             results[sym]={
@@ -659,7 +691,10 @@ def main():
             futs={ex.submit(eval_one,sym,exp30,asof):sym for sym in redo}
             for fut in as_completed(futs):
                 sym,st,info,meta=fut.result()
-                results[sym]={"status":st,"info":info,"provider_meta":meta,"provenance":"POLICY_ORDER_REEVALUATION"}
+                results[sym]={
+                  "status":st,"info":info,"provider_meta":meta,
+                  "provenance":"FULLSTATE_ZERO_DOLLAR_EXACT30" if baseline_source=="FULL_STATE" else "POLICY_ORDER_REEVALUATION",
+                }
     bridge_price,exception_bridge_meta=load_exception_bridge(asof,s["queue_hash"])
     for sym,br in sorted(bridge_price.items()):
         if sym not in results:
@@ -715,6 +750,8 @@ def main():
       "reused_terminal_count":len(queue)-len(redo),"reevaluated_count":len(redo),
       "policy_replay":FORCE_POLICY_REPLAY,"current_baseline_reuse":USE_CURRENT_BASELINE,
       "policy_replay_baseline_source":baseline_source,
+      "bridge_defer_enabled":DEFER_TO_BRIDGE,
+      "redo_deferred_to_bridge":defer_redo,
       "policy_replay_input_count":len(policy_redo),
       "monotonic_legacy_pass_reuse_count":sum(1 for x in results.values() if x.get("provenance")=="PRIOR_STRICTER_PRICE_PASS_MONOTONIC_REUSE"),
       "policy_replay_symbols":sorted(policy_redo),
