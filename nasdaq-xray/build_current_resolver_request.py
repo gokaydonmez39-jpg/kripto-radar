@@ -7,7 +7,7 @@ ROOT=Path(__file__).resolve().parent
 STATE=Path(os.getenv("XRAY_RESOLVER_STATE",str(ROOT/"canonical_current_full_state.json")))
 UNKNOWNS=Path(os.getenv("XRAY_RESOLVER_UNKNOWNS",str(ROOT/"canonical_current_unknowns.json")))
 OVERLAY=Path(os.getenv("XRAY_RESOLVER_OVERLAY",str(ROOT/"canonical_current_resolution_overlay.json")))
-PRICE=Path(os.getenv("XRAY_RESOLVER_PRICE",str(ROOT/"canonical_current_price_dv20.json")))
+PRICE=Path(os.getenv("XRAY_RESOLVER_PRICE",str(ROOT/"canonical_current_price_dv30.json")))
 MASTER=Path(os.getenv("XRAY_MASTER_MANIFEST",str(ROOT/"canonical_current_master_manifest.json")))
 POINTER=Path(os.getenv("XRAY_RESOLVER_POINTER",str(ROOT/"chatgpt_canonical_state_v2.json")))
 OUT=Path(os.getenv("XRAY_RESOLVER_REQUEST_OUT",str(ROOT/"canonical_current_resolver_request.json")))
@@ -266,9 +266,9 @@ def main():
               and br.get("execution")=="NONE" and br.get("real_money")=="NO-GO"
               and br.get("asof_et")==asof
               and br.get("queue_hash")==s["queue_hash"]
-              and br.get("compiled_policy_hash")=="bbb6ea5aa3126fbcdeda2246bc52d1ad04885d27e8e52fb07797e0114dedce55"
+              and br.get("compiled_policy_hash")=="68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4"
               and br.get("compiled_policy_version")=="C4.17"
-              and br.get("compiled_policy_blob_sha")=="299199aa10b6eb6fdf35071f233ac12bd814dc32"
+              and br.get("compiled_policy_blob_sha")=="16c50cc8f887a5234a4be23862d7c8d0e564b0ac"
               and br.get("settlement_status")=="PASS"
             ):
                 current_policy_bridges.append((bridge,br))
@@ -291,8 +291,8 @@ def main():
       "settlement_bridge_blob_sha":settlement_bridge_blob_sha,
       "settlement_bridge_path":settlement_bridge_path,
       "compiled_policy_path":"nasdaq-xray/chatgpt_compiled_policy_v3.json",
-      "compiled_policy_blob_sha":"299199aa10b6eb6fdf35071f233ac12bd814dc32",
-      "compiled_policy_hash":"bbb6ea5aa3126fbcdeda2246bc52d1ad04885d27e8e52fb07797e0114dedce55",
+      "compiled_policy_blob_sha":"16c50cc8f887a5234a4be23862d7c8d0e564b0ac",
+      "compiled_policy_hash":"68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4",
       "compiled_policy_version":"C4.17",
       "settlement_policy":"ALPACA_HISTORICAL_SIP_DAILY_AFTER_15M__AAPL_NVDA_PLUS_ONE_PRIOR_CURRENT_CORE__RALLIES_LONGBRIDGE_QUOTE_OHLC_0_01_CROSSCHECK__SIP_VOLUME_AUTHORITY__FAIL_CLOSED__DELAYED_SIP_NEVER_G9",
       "settlement_symbols":["AAPL","NVDA",settlement_core_symbol] if settlement_required else [],
@@ -300,7 +300,7 @@ def main():
       "settlement_core_source_path":settlement_core_source_path,
       "settlement_core_source_blob_sha":settlement_core_source_blob_sha,
       "official_footer":s.get("official_footer"),
-      "expected20":p.get("expected20") or s.get("expected20") or [],
+      "expected30":p.get("expected30") or s.get("expected30") or [],
       "master_unknown_count":len(master_symbols),"master_unknown_symbols":master_symbols,
       "master_unknown_detail":master_detail,
       "price_unknown_count":len(price_symbols),"price_unknown_symbols":price_symbols,
@@ -313,7 +313,7 @@ def main():
       "source_unknowns_blob_sha":blob_sha(UNKNOWNS),
       "source_overlay_path":"nasdaq-xray/canonical_current_resolution_overlay.json",
       "source_overlay_blob_sha":blob_sha(OVERLAY),
-      "source_price_path":"nasdaq-xray/canonical_current_price_dv20.json",
+      "source_price_path":"nasdaq-xray/canonical_current_price_dv30.json",
       "source_price_blob_sha":blob_sha(PRICE),
       "source_master_path":"nasdaq-xray/canonical_current_master_manifest.json",
       "source_master_blob_sha":blob_sha(MASTER),

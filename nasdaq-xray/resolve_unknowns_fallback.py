@@ -12,7 +12,7 @@ MANIFEST=Path(os.getenv("XRAY_UNKNOWN_MANIFEST", str(ROOT/"canonical_full_hard_g
 OUT=Path(os.getenv("XRAY_RESOLUTION_OUT", str(ROOT/"history_resolution_overlay.json")))
 TASK_ID="6a825366222081918997094d76e6ae46"
 HARD_PRICE=5.0
-HARD_DV20=50_000_000.0
+HARD_DV30=50_000_000.0
 HARD_HISTORY=260
 UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/126 Safari/537.36"
 NY=ZoneInfo("America/New_York")
@@ -39,13 +39,13 @@ def num(x):
         return v if math.isfinite(v) else None
     except Exception:return None
 
-def expected20(asof):
+def expected30(asof):
     cal=mcal.get_calendar("NASDAQ")
     start=(datetime.fromisoformat(asof).date()-timedelta(days=60)).isoformat()
     sched=cal.schedule(start_date=start,end_date=asof)
     ds=[x.date().isoformat() for x in sched.index if x.date().isoformat()<=asof]
-    if len(ds)<20: raise RuntimeError("CALENDAR_LT20")
-    return ds[-20:]
+    if len(ds)<30: raise RuntimeError("CALENDAR_LT30")
+    return ds[-30:]
 
 def nasdaq_hist(sym,asof):
     end=datetime.fromisoformat(asof).date()
@@ -107,7 +107,7 @@ def yahoo_hist(sym,asof):
     meta=r.get("meta") or {}
     return by,{"usable":len(by),"firstTradeDate":meta.get("firstTradeDate"),"exchangeName":meta.get("exchangeName")}
 
-def classify(by,asof,exp20,source):
+def classify(by,asof,exp30,source):
     bars=len(by)
     if asof not in by:
         return None,{"reason":"ASOF_MISSING","bars":bars,"source":source}
@@ -116,48 +116,48 @@ def classify(by,asof,exp20,source):
         return "FAIL_PRICE",{"price":price,"bars":bars,"source":source,"proof":"EXACT_ASOF_DAILY_CLOSE"}
     if bars<HARD_HISTORY:
         return "POTENTIAL_FAIL_HISTORY",{"price":price,"bars":bars,"source":source}
-    vals=[by[d][0]*by[d][1] for d in exp20 if d in by]
-    miss=[d for d in exp20 if d not in by]
+    vals=[by[d][0]*by[d][1] for d in exp30 if d in by]
+    miss=[d for d in exp30 if d not in by]
     if not miss:
-        s=sorted(vals); dv=(s[9]+s[10])/2.0
-        if dv<HARD_DV20:
-            return "FAIL_DV20",{"price":price,"dv20":dv,"bars":bars,"source":source,"proof":"EXACT20_MEDIAN"}
+        s=sorted(vals); dv=(s[14]+s[15])/2.0
+        if dv<HARD_DV30:
+            return "FAIL_DV30",{"price":price,"dv30":dv,"bars":bars,"source":source,"proof":"EXACT30_MEDIAN"}
         return "PASS_HARD_GATES",{
-            "price":price,"bars":bars,"dv20_lower_bound":dv,"dv20_upper_bound":dv,
-            "known_session_count":20,"missing_sessions":[],"no_synthetic_bar":True,
-            "source":source,"proof":"EXACT20_MEDIAN",
+            "price":price,"bars":bars,"dv30_lower_bound":dv,"dv30_upper_bound":dv,
+            "known_session_count":30,"missing_sessions":[],"no_synthetic_bar":True,
+            "source":source,"proof":"EXACT30_MEDIAN",
         }
     m=len(miss)
     low=sorted(vals+[0.0]*m)
     lower=(low[9]+low[10])/2.0
     high=sorted(vals+[float("inf")]*m)
     upper=(high[9]+high[10])/2.0
-    if upper<HARD_DV20:
-        return "FAIL_DV20",{
-            "price":price,"dv20":upper,"bars":bars,"source":source,
-            "proof":"DV20_UPPER_BOUND_LT_GATE","missing_sessions":miss,
+    if upper<HARD_DV30:
+        return "FAIL_DV30",{
+            "price":price,"dv30":upper,"bars":bars,"source":source,
+            "proof":"DV30_UPPER_BOUND_LT_GATE","missing_sessions":miss,
             "known_session_count":len(vals),"no_synthetic_bar":True,
         }
     return None,{
-        "price":price,"bars":bars,"source":source,"reason":"EXACT20_INCOMPLETE_NEVER_PASS",
+        "price":price,"bars":bars,"source":source,"reason":"EXACT30_INCOMPLETE_NEVER_PASS",
         "missing_sessions":miss,"known_session_count":len(vals),
-        "dv20_lower_bound":lower,"dv20_upper_bound":None if math.isinf(upper) else upper,
+        "dv30_lower_bound":lower,"dv30_upper_bound":None if math.isinf(upper) else upper,
     }
 
 
-def resolve_symbol(sym,old,asof,exp20):
+def resolve_symbol(sym,old,asof,exp30):
     nd={}; yd={}
     nmeta={}; ymeta={}
     try: nd,nmeta=nasdaq_hist(sym,asof)
     except Exception as e: nmeta={"error":f"{type(e).__name__}:{str(e)[:160]}"}
     try: yd,ymeta=yahoo_hist(sym,asof)
     except Exception as e: ymeta={"error":f"{type(e).__name__}:{str(e)[:160]}"}
-    ndc,ndi=classify(nd,asof,exp20,"NASDAQ_OFFICIAL_HISTORICAL_API") if nd else (None,{"reason":"NO_NASDAQ_DATA"})
-    ydc,ydi=classify(yd,asof,exp20,"YAHOO_CHART_FREE_FALLBACK") if yd else (None,{"reason":"NO_YAHOO_DATA"})
+    ndc,ndi=classify(nd,asof,exp30,"NASDAQ_OFFICIAL_HISTORICAL_API") if nd else (None,{"reason":"NO_NASDAQ_DATA"})
+    ydc,ydi=classify(yd,asof,exp30,"YAHOO_CHART_FREE_FALLBACK") if yd else (None,{"reason":"NO_YAHOO_DATA"})
     decision=None; info=None
-    if ndc in {"FAIL_PRICE","FAIL_DV20","PASS_HARD_GATES"}:
+    if ndc in {"FAIL_PRICE","FAIL_DV30","PASS_HARD_GATES"}:
         decision,info=ndc,ndi
-    elif ydc in {"FAIL_PRICE","FAIL_DV20"}:
+    elif ydc in {"FAIL_PRICE","FAIL_DV30"}:
         decision,info=ydc,ydi
     elif ndc=="POTENTIAL_FAIL_HISTORY" and ydc=="POTENTIAL_FAIL_HISTORY":
         if abs(int(ndi["bars"])-int(ydi["bars"]))<=5:
@@ -171,12 +171,12 @@ def resolve_symbol(sym,old,asof,exp20):
             out.update({"bars":info["bars"],"source":info["source"],"proof":info["proof"]})
         elif decision=="FAIL_PRICE":
             out.update({"price":info["price"],"bars":info["bars"],"source":info["source"],"proof":info["proof"]})
-        elif decision=="FAIL_DV20":
-            out.update({"price":info["price"],"dv20":info["dv20"],"bars":info["bars"],"source":info["source"],"proof":info["proof"]})
+        elif decision=="FAIL_DV30":
+            out.update({"price":info["price"],"dv30":info["dv30"],"bars":info["bars"],"source":info["source"],"proof":info["proof"]})
         elif decision=="PASS_HARD_GATES":
             out.update({
                 "price":info["price"],"bars":info["bars"],
-                "dv20_lower_bound":info["dv20_lower_bound"],"dv20_upper_bound":info["dv20_upper_bound"],
+                "dv30_lower_bound":info["dv30_lower_bound"],"dv30_upper_bound":info["dv30_upper_bound"],
                 "known_session_count":info["known_session_count"],"missing_sessions":info["missing_sessions"],
                 "no_synthetic_bar":True,"source":info["source"],"proof":info["proof"],
             })
@@ -201,7 +201,7 @@ def load_exception_bridge(asof,queue_hash):
         if obj.get("asof_et")!=asof or obj.get("queue_hash")!=queue_hash:
             raise ValueError("BINDING")
         if (
-          obj.get("compiled_policy_hash")!="987982f0d17fc0f01a28fe22540fc3e09d4e2f28e3aa1b40c0113e3112b44c16"
+          obj.get("compiled_policy_hash")!="68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4"
           or obj.get("compiled_policy_version")!="C4.11"
           or obj.get("compiled_policy_blob_sha")!="738402b627abaca89a5b9fdfea51ff6c468d752b"
         ):
@@ -229,7 +229,7 @@ def valid_bridge_history_resolution(x):
 
 def main():
     m=json.loads(MANIFEST.read_text())
-    asof=m["asof_et"]; exp20=expected20(asof)
+    asof=m["asof_et"]; exp30=expected30(asof)
     existing_resolutions={}
     if OUT.exists():
         try:
@@ -249,7 +249,7 @@ def main():
     items=sorted(m["unknowns"].items())
     if items:
         with ThreadPoolExecutor(max_workers=min(RESOLVE_WORKERS,len(items))) as ex:
-            futs={ex.submit(resolve_symbol,sym,old,asof,exp20):sym for sym,old in items}
+            futs={ex.submit(resolve_symbol,sym,old,asof,exp30):sym for sym,old in items}
             for fut in as_completed(futs):
                 sym,out,unres=fut.result()
                 if out is not None: resolutions[sym]=out
@@ -278,7 +278,7 @@ def main():
         "max_age_hours":24,
         "resolver":"NASDAQ_OFFICIAL_HISTORICAL_PRIMARY_YAHOO_FAIL_ONLY_FALLBACK_MERGE_V2",
         "exception_bridge_meta":exception_bridge_meta,
-        "expected20":exp20,
+        "expected30":exp30,
         "manifest_unknown_count":len(m.get("unknowns",{})),
         "current_resolution_count":len(resolutions),
         "current_unresolved_count":len(unresolved),

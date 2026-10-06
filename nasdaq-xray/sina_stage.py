@@ -47,7 +47,7 @@ MAX_ATTEMPTS=int(os.getenv("XRAY_SINA_MAX_ATTEMPTS","4"))
 DISCOVERY_PRICE_FLOOR=5.0
 DISCOVERY_MC_FLOOR=1_800_000_000.0
 HARD_PRICE=5.0
-HARD_DV20=50_000_000.0
+HARD_DV30=50_000_000.0
 HARD_HISTORY=260
 
 UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/126 Safari/537.36"
@@ -191,7 +191,7 @@ def build_discovery(official,force_all=False):
             }
     for sym in sorted(missing):
         # Official-directory identity exists but the web screener omitted it.
-        # Force it into downstream PRICE/DV20/HISTORY; MC remains UNKNOWN
+        # Force it into downstream PRICE/DV30/HISTORY; MC remains UNKNOWN
         # unless a later authoritative resolver proves it.
         prefilter[sym]={
           "screener_price":None,
@@ -231,7 +231,7 @@ def completed_sessions():
         raise RuntimeError("CALENDAR_TOO_SHORT")
     return sessions[-1],sessions[-20:]
 
-def parse_hist(sym,asof,expected20):
+def parse_hist(sym,asof,expected30):
     try:
         df=ak.stock_us_daily(symbol=sym,adjust="")
         if df is None or df.empty:
@@ -268,8 +268,8 @@ def parse_hist(sym,asof,expected20):
               "reason":"SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
             }
 
-        missing=[d for d in expected20 if d not in by]
-        known_dv=[by[d][0]*by[d][1] for d in expected20 if d in by]
+        missing=[d for d in expected30 if d not in by]
+        known_dv=[by[d][0]*by[d][1] for d in expected30 if d in by]
         if missing:
             # Median interval proof with unknown session dollar-volume constrained
             # only to nonnegative values. No synthetic bar is inserted.
@@ -279,26 +279,26 @@ def parse_hist(sym,asof,expected20):
             high=sorted(known_dv+[float("inf")]*m)
             upper=(high[9]+high[10])/2.0
             info={
-              "price":price,"bars":bars,"reason":"EXACT20_MISSING",
+              "price":price,"bars":bars,"reason":"EXACT30_MISSING",
               "dates":missing,"known_session_count":len(known_dv),
-              "dv20_lower_bound":lower,
-              "dv20_upper_bound":None if math.isinf(upper) else upper,
+              "dv30_lower_bound":lower,
+              "dv30_upper_bound":None if math.isinf(upper) else upper,
               "no_synthetic_bar":True,
             }
-            if upper < HARD_DV20:
-                info["proof"]="DV20_UPPER_BOUND_LT_GATE"
-                return "FAIL_DV20",info
-            info["reason"]="EXACT20_INCOMPLETE_NEVER_PASS"
+            if upper < HARD_DV30:
+                info["proof"]="DV30_UPPER_BOUND_LT_GATE"
+                return "FAIL_DV30",info
+            info["reason"]="EXACT30_INCOMPLETE_NEVER_PASS"
             return "UNKNOWN_STATIC",info
 
         dvs=sorted(known_dv)
-        dv20=(dvs[9]+dvs[10])/2.0
+        dv30=(dvs[14]+dvs[15])/2.0
         info={
-          "price":price,"dv20":dv20,"bars":bars,
-          "known_session_count":20,"missing_sessions":[],
-          "no_synthetic_bar":True,"proof":"EXACT20_MEDIAN"
+          "price":price,"dv30":dv30,"bars":bars,
+          "known_session_count":30,"missing_sessions":[],
+          "no_synthetic_bar":True,"proof":"EXACT30_MEDIAN"
         }
-        if dv20<HARD_DV20:return "FAIL_DV20",info
+        if dv30<HARD_DV30:return "FAIL_DV30",info
         return "PASS",info
     except Exception as e:
         return "UNKNOWN_RETRY",f"{type(e).__name__}:{str(e)[:200]}"
@@ -329,7 +329,7 @@ def load_resolution_overlay(asof):
     except Exception as e:
         return {},{"status":"INVALID","reason":f"{type(e).__name__}:{str(e)[:160]}"}
 
-def resolution_result(sym,ov,expected20):
+def resolution_result(sym,ov,expected30):
     if not isinstance(ov,dict):
         return "UNKNOWN_STATIC",{"reason":"RESOLUTION_OVERLAY_INVALID","symbol":sym}
     d=ov.get("decision")
@@ -338,11 +338,11 @@ def resolution_result(sym,ov,expected20):
         if not isinstance(bars,int) or bars>=HARD_HISTORY:
             return "UNKNOWN_STATIC",{"reason":"RESOLUTION_FAIL_HISTORY_INVALID","symbol":sym}
         return "FAIL_HISTORY",{"bars":bars,"resolution_source":ov.get("source"),"reason":"DAILY_LT260"}
-    if d=="FAIL_DV20":
-        px=num(ov.get("price")); dv=num(ov.get("dv20")); bars=ov.get("bars")
-        if px is None or dv is None or not isinstance(bars,int) or dv>=HARD_DV20:
-            return "UNKNOWN_STATIC",{"reason":"RESOLUTION_FAIL_DV20_INVALID","symbol":sym}
-        return "FAIL_DV20",{"price":px,"dv20":dv,"bars":bars,"resolution_source":ov.get("source"),"proof":ov.get("proof")}
+    if d=="FAIL_DV30":
+        px=num(ov.get("price")); dv=num(ov.get("dv30")); bars=ov.get("bars")
+        if px is None or dv is None or not isinstance(bars,int) or dv>=HARD_DV30:
+            return "UNKNOWN_STATIC",{"reason":"RESOLUTION_FAIL_DV30_INVALID","symbol":sym}
+        return "FAIL_DV30",{"price":px,"dv30":dv,"bars":bars,"resolution_source":ov.get("source"),"proof":ov.get("proof")}
     if d=="FAIL_PRICE":
         px=num(ov.get("price")); bars=ov.get("bars")
         if px is None or px>=HARD_PRICE:
@@ -359,11 +359,11 @@ def resolution_result(sym,ov,expected20):
         return "BLOCK_CURRENT_RUN",{"reason":ov.get("reason"),"trade_status":"Halted","last_bar":ov.get("last_bar"),"resolution_source":ov.get("source")}
     if d=="PASS_HARD_GATES":
         px=num(ov.get("price")); bars=ov.get("bars")
-        lo=num(ov.get("dv20_lower_bound")); hi=num(ov.get("dv20_upper_bound"))
+        lo=num(ov.get("dv30_lower_bound")); hi=num(ov.get("dv30_upper_bound"))
         missing=ov.get("missing_sessions") or []; known=ov.get("known_session_count")
         if (
           px is None or px<HARD_PRICE or not isinstance(bars,int) or bars<HARD_HISTORY
-          or lo is None or hi is None or lo<HARD_DV20 or hi<lo
+          or lo is None or hi is None or lo<HARD_DV30 or hi<lo
           or ov.get("no_synthetic_bar") is not True
           or not isinstance(known,int) or known!=20 or missing!=[]
           or lo!=hi
@@ -371,8 +371,8 @@ def resolution_result(sym,ov,expected20):
             return "UNKNOWN_STATIC",{"reason":"RESOLUTION_PASS_BOUND_INVALID","symbol":sym}
         return "PASS",{
           "price":px,"bars":bars,
-          "dv20_gate_pass_by_bound":True,
-          "dv20_lower_bound":lo,"dv20_upper_bound":hi,
+          "dv30_gate_pass_by_bound":True,
+          "dv30_lower_bound":lo,"dv30_upper_bound":hi,
           "known_session_count":known,"missing_sessions":missing,
           "no_synthetic_bar":True,
           "resolution_source":ov.get("source"),
@@ -452,7 +452,7 @@ def canonical_frozen_identity(asof):
         return None
 
 def main():
-    asof,expected20=completed_sessions()
+    asof,expected30=completed_sessions()
     frozen=canonical_frozen_identity(asof)
     if frozen is not None:
         names=dict(frozen["security_names"])
@@ -490,7 +490,7 @@ def main():
           "unknown_never_pass":True,
           "epoch_key":epoch_key,
           "asof_et":asof,
-          "expected20":expected20,
+          "expected30":expected30,
           "official_footer":footer,
           "identity_authority":(frozen.get("identity_authority") if frozen is not None else "NASDAQTRADER_EXPLICIT_TYPE_FILTER_V3_SPAC_DEFERRED_TO_LEGAL"),
           "identity_ruleset":IDENTITY_RULESET,
@@ -517,7 +517,7 @@ def main():
           sym:{
             "status":"UNKNOWN_STATIC",
             "info":{
-              "reason":"MARKET_GATES_DEFERRED_TO_PRICE_DV20_HISTORY",
+              "reason":"MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
               "source":"MASTER_IDENTITY_ONLY_MODE",
             },
             "attempts":0,
@@ -533,7 +533,7 @@ def main():
         state["pending_retry"]=0
         state["unknown_count"]=len(queue)
         state["status"]="IDENTITY_READY_MARKET_GATES_DEFERRED"
-        state["history_source"]="DEFERRED_TO_PRICE_DV20_HISTORY_PHASE"
+        state["history_source"]="DEFERRED_TO_PRICE_DV30_HISTORY_PHASE"
         state["updated_at_utc"]=now
         state["state_hash"]=hashlib.sha256(
           json.dumps(state,sort_keys=True,separators=(",",":")).encode("utf-8")
@@ -573,7 +573,7 @@ def main():
 
     done=[]
     with ThreadPoolExecutor(max_workers=WORKERS) as ex:
-        futs={ex.submit(parse_hist,s,asof,expected20):s for s in work}
+        futs={ex.submit(parse_hist,s,asof,expected30):s for s in work}
         for fut in as_completed(futs):
             sym=futs[fut]
             status,info=fut.result()
@@ -595,7 +595,7 @@ def main():
     for sym,ov in sorted(resolution_overlay.items()):
         if sym not in queue:
             continue
-        status,info=resolution_result(sym,ov,expected20)
+        status,info=resolution_result(sym,ov,expected30)
         prev=results.get(sym) or {}
         results[sym]={
           "status":status,
