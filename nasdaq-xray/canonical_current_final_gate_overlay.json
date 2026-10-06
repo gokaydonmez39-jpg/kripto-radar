@@ -1,7 +1,7 @@
 {
   "schema": "XRAY_FINAL_GATE_OVERLAY_V2",
-  "generated_on": "2026-10-05",
-  "generated_at_utc": "2026-10-06T02:58:51.175227+00:00",
+  "generated_on": "2026-10-06",
+  "generated_at_utc": "2026-10-06T09:03:22.808751+00:00",
   "asof_et": "2026-10-02",
   "execution": "NONE",
   "real_money": "NO-GO",
@@ -18,6 +18,9 @@
     "blob_sha": "547460a83f4392d35daeecb253bbe606034d7d25",
     "revision": 39,
     "status": "TERMINAL_FULL_E2E_NO_CONFIRMED_SETUP",
+    "asof_et": "2026-10-02",
+    "epoch_relation_to_terminal": "EXACT_SAME_ASOF",
+    "alpha_authority": false,
     "legacy_account_status": "UNKNOWN"
   },
   "strict_g9": {
@@ -57,6 +60,9 @@
   },
   "binding_integrity": {
     "fail_closed_safe": true,
+    "pointer_not_a_pass_authority": true,
+    "pointer_epoch_relation": "EXACT_SAME_ASOF",
+    "pointer_future_drift_blocked": true,
     "pass_requires_exact_current_bindings": true,
     "g9_pass_binding_exact": true,
     "account_pass_binding_exact": true,
@@ -88,7 +94,7 @@
     "interpretation": "Persisted pointer state never creates PASS; current runtime gates control final-gate reporting."
   },
   "weekend_guard": {
-    "current_calendar_date": "2026-10-05",
+    "current_calendar_date": "2026-10-06",
     "last_completed_us_rth_asof": "2026-10-02",
     "asof_advanced_on_weekend": false
   },
