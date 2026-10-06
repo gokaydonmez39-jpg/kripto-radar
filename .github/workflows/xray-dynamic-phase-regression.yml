@@ -99,6 +99,39 @@ jobs:
           python nasdaq-xray/test_alpha_semantics.py
           python nasdaq-xray/test_deep_repair_regressions.py
 
+      - name: Assert frozen technical failures outrank transient watch states
+        run: |
+          python - <<'PY'
+          import sys
+          sys.path.insert(0,"nasdaq-xray")
+          import pandas as pd
+          import final_tech_shadow as ft
+          dates=pd.bdate_range("2025-01-02",periods=300)
+          d=pd.DataFrame({"date":dates,"open":[100.0]*300,"high":[103.0]*300,
+                          "low":[99.0]*300,"close":[102.0]*300,"volume":[1_000_000.0]*300})
+          ti=len(d)-2
+          d.loc[d.index[-1],["open","high","low","close"]]=[109.0,112.0,108.0,110.0]
+          td=d.date.iloc[ti].date().isoformat()
+          base={"setup_id":"TEST","symbol":"TEST","family":"D","trigger_date":td,
+                "A":10.0,"P":100.0,"anchor":97.0,"entry_low":100.0,"entry_high":102.5,
+                "entry_model":102.5,"chase_limit":105.0,"S0":95.0,"T1":110.0,
+                "anchor_available_idx":ti-1,
+                "anchor_available_date":d.date.iloc[ti-1].date().isoformat(),
+                "target_source":"TEST_STRUCTURAL","target_zone":None,"target_overlap":False,
+                "synthetic_target":False,
+                "source_geometry":{"trigger_date":td,"P":100.0,"anchor":97.0}}
+          rr=ft.eval_one("TEST","D",base["source_geometry"],d,"CLEAN_DISCOVERY",
+                         frozen=base,recorded_before=True)
+          assert rr["lifecycle"]=="CHASE_NO_VALID_FILL",rr
+          assert rr["risk_pass"] is True and rr["target_overlap"] is False and rr["rr_pass"] is False,rr
+          assert rr["result"]=="FAIL_RR",rr
+          overlap=dict(base,setup_id="TEST-R1",T1=101.0,target_overlap=True)
+          r1=ft.eval_one("TEST","D",overlap["source_geometry"],d,"CLEAN_DISCOVERY",
+                         frozen=overlap,recorded_before=True)
+          assert r1["result"]=="FAIL_R1_ENTRY_OVERLAP",r1
+          print("FROZEN_TERMINAL_FAIL_PRECEDENCE=PASS")
+          PY
+
       - name: Assert Family-C event ATR and trigger ATR separation
         run: |
           python - <<'PY'
