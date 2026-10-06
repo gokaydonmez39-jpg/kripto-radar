@@ -184,11 +184,11 @@ def rvol20(df):
     return v/median(prev)
 
 def family_b(df,eligible_trigger_dates=None):
-    # New triggers are discovered in the current/prior five completed sessions,
-    # matching the inclusive C4.17 retest window. Weekly-at-trigger eligibility
-    # participates in trigger selection so an earlier weekly-fail breakout cannot
-    # mask a later weekly-pass breakout.
-    recent=find_recent_b_trigger(df,5,eligible_trigger_dates)
+    # New triggers are discovered only in the current/prior three completed sessions.
+    # The five-session retest window applies only after durable discovery/registration.
+    # Weekly-at-trigger eligibility participates in trigger selection so an earlier
+    # weekly-fail breakout cannot mask a later weekly-pass breakout.
+    recent=find_recent_b_trigger(df,3,eligible_trigger_dates)
     if recent:
         return {"pool":True,**recent}
     # No recent trigger: current completed bar may still define an ARMED base.
@@ -217,13 +217,14 @@ def active_hl_and_sh(df):
     return {"hl":hl,"prior_hs":prior_h,"later_hs":later_h,"hs":hs,"ls":ls}
 
 def family_d(df,qqq,eligible_trigger_dates=None):
-    # Evaluate the earliest valid reclaim in today/prior five completed sessions.
+    # Evaluate the earliest valid reclaim in today/prior three completed sessions.
+    # The five-session retest lifecycle is reserved for already-recorded setups.
     # Every structural/RS/ATR input is sliced at the candidate trigger, preventing
     # current-day look-ahead from manufacturing or replacing a historical trigger.
     allowed=None if eligible_trigger_dates is None else set(str(x) for x in eligible_trigger_dates)
     last_idx=len(df)-1
     diagnostic=None
-    for t in range(max(0,last_idx-5),last_idx+1):
+    for t in range(max(0,last_idx-3),last_idx+1):
         td=df.date.iloc[t].date().isoformat()
         if allowed is not None and td not in allowed:continue
         x=df.iloc[:t+1].reset_index(drop=True)
