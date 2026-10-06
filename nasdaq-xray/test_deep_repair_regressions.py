@@ -1183,6 +1183,21 @@ def test_final_structural_gate_accepts_deep_history_unknown_only_as_exact_partia
     assert 'assert t["terminal_result"]=="PARTIAL_UNKNOWN"' in wf
     assert 'int(t["blockers"].get("deep_history_unknown",0) or 0)==deep_unknown' in wf
 
+
+def test_final_deep_history_cache_persistence_contract():
+    post=(REPO/".github/workflows/xray-canonical-current-post-mc.yml").read_text()
+    final=(REPO/".github/workflows/xray-canonical-current-final.yml").read_text()
+    assert "Persist exact trigger-scope history snapshots" in post
+    assert "XRAY_CANONICAL_DEEP_HISTORY_CACHE_MANIFEST_V1" in post
+    assert 'expected=dict(d.get("history_fingerprint_by_symbol") or {})' in post
+    assert 'assert set(expected)==set(trigger)' in post
+    assert 'files+=("${cache_files[@]}")' in post
+    assert "Validate exact committed deep history cache" in final
+    assert 'XRAY_DEEP_CACHE_REQUIRED: "1"' in final
+    assert 'assert set(m.get("entries") or {})==set(expected)' in final
+    assert 'assert history_fingerprint(x,d["asof_et"])==exp,sym' in final
+    assert '"nasdaq-xray/canonical_deep_history_cache_manifest.json"' in final
+
 def main():
     test_r1_no_future_mutation_and_confirmation(); test_r1_pivot_boundary_is_not_overhead_but_entry_overlap_is(); test_resistance_role_change_state_machine()
     test_final_history_normalizer_preserves_ohlcv()
@@ -1199,6 +1214,7 @@ def main():
     test_final_workflow_auto_rebinds_event_provenance_and_persists_successor()
     test_resolver_bridge_authority_prefers_exact_current_lineage()
     test_post_mc_exact_source_rebind_workflow_contract()
+    test_final_deep_history_cache_persistence_contract()
     test_final_structural_gate_accepts_deep_history_unknown_only_as_exact_partial_blocker()
     test_terminal_deep_history_unknown_is_fail_closed_partial_not_crash()
     test_frozen_identity_reuse_preserves_unknown_partition_and_rejects_unproven_spac_contract()

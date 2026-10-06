@@ -13,6 +13,7 @@ on:
       - "nasdaq-xray/canonical_current_deep_geometry.json"
       - "nasdaq-xray/canonical_current_event_request.json"
       - "nasdaq-xray/canonical_benchmark_cache/**"
+      - "nasdaq-xray/canonical_deep_history_cache_manifest.json"
       - "nasdaq-xray/build_current_event_state.py"
       - "nasdaq-xray/build_event_provenance_rebind.py"
       - "nasdaq-xray/scheduler_kick_final.json"
@@ -455,6 +456,63 @@ jobs:
             python nasdaq-xray/select_account_live_probe.py
           fi
 
+      - name: Validate exact committed deep history cache
+        if: steps.event.outputs.ready == 'true' && steps.account_vault.outputs.restart_required != 'true'
+        env:
+          XRAY_DEEP_HISTORY_CACHE_DIR: ${{ github.workspace }}/nasdaq-xray/canonical_benchmark_cache
+          XRAY_DEEP_CACHE_REQUIRED: "1"
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib,json,os,pathlib,sys
+          root=pathlib.Path("nasdaq-xray")
+          d=json.load(open(root/"canonical_current_deep_geometry.json"))
+          m=json.load(open(root/"canonical_deep_history_cache_manifest.json"))
+          def bsha(path):
+              b=path.read_bytes()
+              return hashlib.sha1(f"blob {len(b)}\0".encode()+b).hexdigest()
+          assert m.get("schema")=="XRAY_CANONICAL_DEEP_HISTORY_CACHE_MANIFEST_V1",m
+          assert m.get("execution")=="NONE" and m.get("real_money")=="NO-GO" and m.get("unknown_never_pass") is True,m
+          assert m.get("alpha_authority") is False and m.get("no_threshold_change") is True and m.get("no_synthetic_bars") is True,m
+          assert m.get("asof_et")==d.get("asof_et"),(m.get("asof_et"),d.get("asof_et"))
+          assert m.get("source_deep_geometry_blob_sha")==bsha(root/"canonical_current_deep_geometry.json")
+          expected=dict(d.get("history_fingerprint_by_symbol") or {})
+          trigger=sorted(set(d.get("weekly_trigger_scope") or []))
+          assert set(expected)==set(trigger)
+          assert int(m.get("symbol_count",-1))==len(expected)
+          assert set(m.get("symbols") or [])==set(expected)
+          assert set(m.get("entries") or {})==set(expected)
+          h=hashlib.sha256(("\n".join(sorted(expected))+"\n").encode()).hexdigest()
+          assert m.get("symbol_hash")==h
+          for sym,rec in sorted((m.get("entries") or {}).items()):
+              p=pathlib.Path(rec["path"])
+              assert p.exists(),("CACHE_FILE_MISSING",sym,rec["path"])
+              assert rec.get("blob_sha")==bsha(p),("CACHE_BLOB_MISMATCH",sym)
+              assert rec.get("fingerprint")==expected[sym],("CACHE_MANIFEST_FP_MISMATCH",sym)
+          for sym,rec in sorted((m.get("support_entries") or {}).items()):
+              p=pathlib.Path(rec["path"])
+              assert p.exists(),("SUPPORT_CACHE_FILE_MISSING",sym,rec["path"])
+              assert rec.get("blob_sha")==bsha(p),("SUPPORT_CACHE_BLOB_MISMATCH",sym)
+          q=m.get("qqq") or {}
+          qp=pathlib.Path(q.get("path") or "")
+          assert qp.exists() and q.get("blob_sha")==bsha(qp)
+          assert q.get("fingerprint")==d.get("qqq_history_fingerprint")
+
+          sys.path.insert(0,str(root))
+          import deep_pre_r1_shadow as dp
+          from alpha_semantics import history_fingerprint
+          verified=0
+          for sym,exp in sorted(expected.items()):
+              x,err=dp.load_history(sym,d["asof_et"])
+              assert x is not None,(sym,err)
+              assert history_fingerprint(x,d["asof_et"])==exp,sym
+              verified+=1
+          qdf,qerr=dp.load_history("QQQ",d["asof_et"])
+          assert qdf is not None,qerr
+          assert history_fingerprint(qdf,d["asof_et"])==d.get("qqq_history_fingerprint")
+          print({"XRAY_FINAL_DEEP_HISTORY_CACHE":"PASS","asof":d["asof_et"],"verified":verified,"qqq":True})
+          PY
+
       - name: Normalize event bridge
         if: steps.event.outputs.ready == 'true' && steps.account_vault.outputs.restart_required != 'true'
         env:
@@ -484,6 +542,7 @@ jobs:
           XRAY_DEEP_HISTORY_BINDING_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_current_deep_geometry.json
           XRAY_DEEP_HISTORY_BINDING_REQUIRED: "1"
           XRAY_DEEP_HISTORY_CACHE_DIR: ${{ github.workspace }}/nasdaq-xray/canonical_benchmark_cache
+          XRAY_DEEP_CACHE_REQUIRED: "1"
           XRAY_DEEP_WORKERS: "8"
         run: python nasdaq-xray/deep_pre_r1_shadow.py
 

@@ -604,30 +604,114 @@ jobs:
           XRAY_DEEP_CACHE_REQUIRED: "1"
           XRAY_DEEP_WORKERS: "8"
         run: python nasdaq-xray/deep_pre_r1_shadow.py
-      - name: Persist exact QQQ benchmark snapshot
+      - name: Persist exact trigger-scope history snapshots
         if: steps.mc.outputs.ready == 'true'
         env:
-          XRAY_QQQ_SOURCE_CACHE_DIR: ${{ runner.temp }}/xray-history-cache
+          XRAY_SOURCE_HISTORY_CACHE_DIR: ${{ runner.temp }}/xray-history-cache
         run: |
+          set -euo pipefail
           python - <<'PY'
           import hashlib,json,os,pathlib,shutil,sys
           import pandas as pd
-          sys.path.insert(0,"nasdaq-xray")
+
+          root=pathlib.Path("nasdaq-xray")
+          srcdir=pathlib.Path(os.environ["XRAY_SOURCE_HISTORY_CACHE_DIR"])
+          d=json.load(open(root/"canonical_current_deep_geometry.json"))
+          asof=str(d["asof_et"])
+          expected=dict(d.get("history_fingerprint_by_symbol") or {})
+          trigger=sorted(set(d.get("weekly_trigger_scope") or []))
+          assert set(expected)==set(trigger),(len(expected),len(trigger),sorted(set(trigger)-set(expected))[:10])
+          assert int(d.get("unknown_history_count",-1))==0,d.get("unknown_history")
+          assert len(expected)>0
+
+          dstdir=root/"canonical_benchmark_cache"
+          dstdir.mkdir(parents=True,exist_ok=True)
+          def hpath(base,sym):
+              return base/(hashlib.sha256(sym.encode()).hexdigest()+".csv.gz")
+          def git_blob_sha(path):
+              b=path.read_bytes()
+              return hashlib.sha1(f"blob {len(b)}\0".encode()+b).hexdigest()
+
+          # Import only after binding Deep to the destination cache. The module
+          # will then reconstruct ticker-continuity composites from these exact
+          # immutable transport snapshots.
+          os.environ["XRAY_DEEP_HISTORY_CACHE_DIR"]=str(dstdir)
+          os.environ["XRAY_DEEP_CACHE_REQUIRED"]="1"
+          sys.path.insert(0,str(root))
+          import deep_pre_r1_shadow as dp
           from alpha_semantics import history_fingerprint
-          h=hashlib.sha256(b"QQQ").hexdigest()
-          src=pathlib.Path(os.environ["XRAY_QQQ_SOURCE_CACHE_DIR"])/(h+".csv.gz")
-          dst=pathlib.Path("nasdaq-xray/canonical_benchmark_cache")/(h+".csv.gz")
-          if not src.exists():
-              raise RuntimeError("QQQ_CANONICAL_CACHE_SOURCE_MISSING")
-          dst.parent.mkdir(parents=True,exist_ok=True)
-          shutil.copy2(src,dst)
-          d=json.load(open("nasdaq-xray/canonical_current_deep_geometry.json"))
-          q=pd.read_csv(dst,compression="gzip")
-          fp=history_fingerprint(q,d["asof_et"])
-          if fp!=d.get("qqq_history_fingerprint"):
-              raise RuntimeError("QQQ_CANONICAL_CACHE_FINGERPRINT_MISMATCH")
-          print({"XRAY_QQQ_CANONICAL_SNAPSHOT":"PASS","path":str(dst),"fingerprint":fp})
+
+          copied={}
+          support={}
+          for sym in sorted(expected):
+              src=hpath(srcdir,sym)
+              if not src.exists():
+                  raise RuntimeError("POST_MC_TRIGGER_CACHE_SOURCE_MISSING:"+sym)
+              dst=hpath(dstdir,sym)
+              shutil.copy2(src,dst)
+              copied[sym]={"path":str(dst).replace("\\","/"),"blob_sha":git_blob_sha(dst),"fingerprint":expected[sym]}
+              rec=(dp.OFFICIAL_RECORDS or {}).get(sym) or {}
+              if rec.get("mode")=="OFFICIAL_TICKER_CONTINUITY_COMPOSITE_HISTORY" and rec.get("cusip_unchanged") is True:
+                  pred=str(rec.get("predecessor_symbol") or "")
+                  if not pred:
+                      raise RuntimeError("POST_MC_CONTINUITY_PREDECESSOR_MISSING:"+sym)
+                  psrc=hpath(srcdir,pred)
+                  if not psrc.exists():
+                      raise RuntimeError("POST_MC_CONTINUITY_CACHE_SOURCE_MISSING:"+sym+":"+pred)
+                  pdst=hpath(dstdir,pred)
+                  shutil.copy2(psrc,pdst)
+                  support[pred]={"path":str(pdst).replace("\\","/"),"blob_sha":git_blob_sha(pdst),"role":"TICKER_CONTINUITY_PREDECESSOR"}
+
+          qsrc=hpath(srcdir,"QQQ")
+          if not qsrc.exists():
+              raise RuntimeError("POST_MC_QQQ_CACHE_SOURCE_MISSING")
+          qdst=hpath(dstdir,"QQQ")
+          shutil.copy2(qsrc,qdst)
+
+          verified={}
+          for sym,exp in sorted(expected.items()):
+              x,err=dp.load_history(sym,asof)
+              if x is None:
+                  raise RuntimeError("POST_MC_CANONICAL_CACHE_LOAD_FAIL:"+sym+":"+str(err))
+              fp=history_fingerprint(x,asof)
+              if fp!=exp:
+                  raise RuntimeError("POST_MC_CANONICAL_CACHE_FINGERPRINT_MISMATCH:"+sym)
+              verified[sym]=fp
+
+          q,qe=dp.load_history("QQQ",asof)
+          if q is None:
+              raise RuntimeError("POST_MC_QQQ_CANONICAL_CACHE_LOAD_FAIL:"+str(qe))
+          qfp=history_fingerprint(q,asof)
+          if qfp!=d.get("qqq_history_fingerprint"):
+              raise RuntimeError("POST_MC_QQQ_CANONICAL_CACHE_FINGERPRINT_MISMATCH")
+
+          symbol_hash=hashlib.sha256(("\n".join(sorted(expected))+"\n").encode()).hexdigest()
+          deep_path=root/"canonical_current_deep_geometry.json"
+          manifest={
+            "schema":"XRAY_CANONICAL_DEEP_HISTORY_CACHE_MANIFEST_V1",
+            "task_id":d.get("task_id"),
+            "asof_et":asof,
+            "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
+            "authority":"POST_MC_EXACT_FINGERPRINT_CACHE_TRANSPORT_ONLY",
+            "source_deep_geometry_path":"nasdaq-xray/canonical_current_deep_geometry.json",
+            "source_deep_geometry_blob_sha":git_blob_sha(deep_path),
+            "symbol_count":len(expected),"symbol_hash":symbol_hash,
+            "symbols":sorted(expected),
+            "entries":copied,
+            "support_entries":support,
+            "qqq":{"path":str(qdst).replace("\\","/"),"blob_sha":git_blob_sha(qdst),"fingerprint":qfp},
+            "fingerprint_semantics":d.get("history_fingerprint_semantics"),
+            "alpha_authority":False,
+            "no_threshold_change":True,
+            "no_synthetic_bars":True,
+          }
+          mp=root/"canonical_deep_history_cache_manifest.json"
+          mp.write_text(json.dumps(manifest,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
+          assert set(verified)==set(expected)
+          print({"XRAY_POST_MC_DEEP_HISTORY_CACHE":"PASS","asof":asof,
+                 "symbols":len(expected),"support":len(support),"qqq":True})
           PY
+
       - name: Build dynamic event request
         if: steps.mc.outputs.ready == 'true'
         env:
@@ -760,12 +844,23 @@ jobs:
             nasdaq-xray/canonical_current_stage1.json
             nasdaq-xray/canonical_current_regime.json
             nasdaq-xray/canonical_current_deep_geometry.json
-            nasdaq-xray/canonical_benchmark_cache/e9c5d7403d908b95343d66b100aef3bf7d4c0a33fec8b152e0b02e4c68a22b61.csv.gz
+            nasdaq-xray/canonical_deep_history_cache_manifest.json
             nasdaq-xray/canonical_current_event_request.json
           )
           if [[ "${{ steps.mc_rebind.outputs.created }}" == "true" && -n "${{ steps.mc_rebind.outputs.path }}" ]]; then
             files+=("${{ steps.mc_rebind.outputs.path }}")
           fi
+          mapfile -t cache_files < <(python - <<'PY'
+          import json
+          m=json.load(open("nasdaq-xray/canonical_deep_history_cache_manifest.json"))
+          paths=[(m.get("qqq") or {}).get("path")]
+          paths += [v.get("path") for v in (m.get("entries") or {}).values()]
+          paths += [v.get("path") for v in (m.get("support_entries") or {}).values()]
+          for p in sorted(set(x for x in paths if x)):
+              print(p)
+          PY
+          )
+          files+=("${cache_files[@]}")
           tmpdir="$(mktemp -d)"
           trap 'rm -rf "$tmpdir"' EXIT
           for p in "${files[@]}"; do
