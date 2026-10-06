@@ -3,7 +3,7 @@ from __future__ import annotations
 import json, os, hashlib
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-from price_dv30_phase import eval_one, expected30
+from price_dv30_phase import eval_one, expected30, sina, nasdaq, classify
 
 ROOT=Path(__file__).resolve().parent
 INPUT=Path(os.getenv("XRAY_FULLSTATE_INPUT",str(ROOT/"canonical_full_hard_gate_20260930_state.json")))
@@ -560,6 +560,37 @@ def valid_bridge_price_resolution(x,asof):
         return bool(x.get("first_trade_date")) and str(x.get("first_trade_date"))>asof and bool(x.get("source"))
     return False
 
+def global_asof_sentinel_nonterminal(redo,asof,exp30):
+    """Fail-closed performance guard for a fresh full-universe ASOF publication lag.
+
+    It may only reduce provider work; it never creates PASS/FAIL. If AAPL/MSFT/NVDA
+    are all nonterminal on BOTH Sina and Nasdaq official, the full redo set stays
+    UNKNOWN until a later scheduled run or authenticated resolver evidence.
+    """
+    anchors=("AAPL","MSFT","NVDA")
+    rset=set(redo)
+    if not all(x in rset for x in anchors):
+        return False,{"status":"NOT_APPLICABLE","reason":"SENTINELS_NOT_ALL_IN_REDO"}
+    proof={}
+    for sym in anchors:
+        sby,sm=sina(sym,asof)
+        sst,sinfo=classify(sby,asof,exp30,"SINA_US_DAILY") if sby else ("UNKNOWN",{"reason":"SINA_UNAVAILABLE"})
+        nby,nm=nasdaq(sym,asof)
+        nst,ninfo=classify(nby,asof,exp30,"NASDAQ_OFFICIAL_HISTORICAL_API") if nby else ("UNKNOWN",{"reason":"NASDAQ_UNAVAILABLE"})
+        proof[sym]={
+          "sina_status":sst,"sina_result":sinfo,"sina_meta":sm,
+          "nasdaq_status":nst,"nasdaq_result":ninfo,"nasdaq_meta":nm,
+        }
+        if sst!="UNKNOWN" or nst!="UNKNOWN":
+            return False,{"status":"TERMINAL_SENTINEL_OBSERVED","symbol":sym,"proof":proof}
+    return True,{
+      "status":"GLOBAL_SENTINELS_NONTERMINAL",
+      "reason":"AAPL_MSFT_NVDA_SINA_AND_NASDAQ_OFFICIAL_ALL_UNKNOWN",
+      "no_pass_or_fail_created":True,
+      "proof":proof,
+    }
+
+
 def should_defer_redo_to_bridge(baseline_source,defer_enabled=None):
     """Authenticated bridge is incremental; a fresh full-universe epoch must compute locally first."""
     if defer_enabled is None:
@@ -684,6 +715,8 @@ def main():
             redo.append(sym)
     exp30=expected30(asof)
     defer_redo=should_defer_redo_to_bridge(baseline_source)
+    sentinel_fast_fail=False
+    sentinel_meta={"status":"NOT_EVALUATED"}
     if defer_redo:
         for sym in redo:
             if sym in policy_redo: continue
@@ -700,14 +733,29 @@ def main():
                     results[sym]={"status":st,"info":info,"provider_meta":meta,
                                   "provenance":"PRICE_POLICY_REPLAY_ZERO_DOLLAR_CHAIN"}
     else:
-        with ThreadPoolExecutor(max_workers=WORKERS) as ex:
-            futs={ex.submit(eval_one,sym,exp30,asof):sym for sym in redo}
-            for fut in as_completed(futs):
-                sym,st,info,meta=fut.result()
+        if baseline_source=="FULL_STATE" and len(redo)>3000:
+            sentinel_fast_fail,sentinel_meta=global_asof_sentinel_nonterminal(redo,asof,exp30)
+        if sentinel_fast_fail:
+            for sym in redo:
                 results[sym]={
-                  "status":st,"info":info,"provider_meta":meta,
-                  "provenance":"FULLSTATE_ZERO_DOLLAR_EXACT30" if baseline_source=="FULL_STATE" else "POLICY_ORDER_REEVALUATION",
+                  "status":"UNKNOWN",
+                  "info":{
+                    "reason":"GLOBAL_ASOF_SENTINEL_NONTERMINAL_FAIL_CLOSED",
+                    "sentinel_status":sentinel_meta.get("status"),
+                    "no_synthetic_bar":True,
+                  },
+                  "provider_meta":{"global_asof_sentinel":sentinel_meta},
+                  "provenance":"GLOBAL_ASOF_SENTINEL_FAIL_CLOSED",
                 }
+        else:
+            with ThreadPoolExecutor(max_workers=WORKERS) as ex:
+                futs={ex.submit(eval_one,sym,exp30,asof):sym for sym in redo}
+                for fut in as_completed(futs):
+                    sym,st,info,meta=fut.result()
+                    results[sym]={
+                      "status":st,"info":info,"provider_meta":meta,
+                      "provenance":"FULLSTATE_ZERO_DOLLAR_EXACT30" if baseline_source=="FULL_STATE" else "POLICY_ORDER_REEVALUATION",
+                    }
     bridge_price,exception_bridge_meta=load_exception_bridge(asof,s["queue_hash"])
     for sym,br in sorted(bridge_price.items()):
         if sym not in results:
@@ -766,6 +814,8 @@ def main():
       "bridge_defer_enabled":DEFER_TO_BRIDGE,
       "redo_deferred_to_bridge":defer_redo,
       "policy_replay_input_count":len(policy_redo),
+      "global_asof_sentinel_fast_fail":sentinel_fast_fail,
+      "global_asof_sentinel":sentinel_meta,
       "monotonic_legacy_pass_reuse_count":sum(1 for x in results.values() if x.get("provenance")=="PRIOR_STRICTER_PRICE_PASS_MONOTONIC_REUSE"),
       "policy_replay_symbols":sorted(policy_redo),
       "exception_bridge_meta":exception_bridge_meta,

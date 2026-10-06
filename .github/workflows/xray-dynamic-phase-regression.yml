@@ -134,6 +134,37 @@ jobs:
           print("MONOTONIC_LEGACY_PRICE_PASS_REUSE=PASS")
           PY
 
+      - name: Assert global ASOF sentinel is fail-closed and performance-only
+        run: |
+          python - <<'PY'
+          import sys
+          sys.path.insert(0,"nasdaq-xray")
+          import price_dv30_recover_from_fullstate as r
+          exp=["2026-09-01"]*29+["2026-10-06"]
+          redo=["AAPL","MSFT","NVDA"]+[f"S{i}" for i in range(3001)]
+          old_sina,old_nasdaq=r.sina,r.nasdaq
+          try:
+              r.sina=lambda sym,asof: ({"2026-10-05":(100.0,1_000_000.0)},{"fixture":"missing_asof"})
+              r.nasdaq=lambda sym,asof: ({"2026-10-05":(100.0,1_000_000.0)},{"fixture":"missing_asof"})
+              fast,meta=r.global_asof_sentinel_nonterminal(redo,"2026-10-06",exp)
+              assert fast is True,(fast,meta)
+              assert meta["status"]=="GLOBAL_SENTINELS_NONTERMINAL",meta
+              assert meta["no_pass_or_fail_created"] is True,meta
+              def terminal_sina(sym,asof):
+                  if sym=="AAPL":
+                      return {"2026-10-06":(150.0,2_000_000.0)},{"fixture":"terminal"}
+                  return {"2026-10-05":(100.0,1_000_000.0)},{"fixture":"missing"}
+              r.sina=terminal_sina
+              fast,meta=r.global_asof_sentinel_nonterminal(redo,"2026-10-06",exp)
+              assert fast is False,(fast,meta)
+              assert meta["status"]=="TERMINAL_SENTINEL_OBSERVED",meta
+              fast,meta=r.global_asof_sentinel_nonterminal(["AAPL","MSFT"],"2026-10-06",exp)
+              assert fast is False and meta["status"]=="NOT_APPLICABLE",(fast,meta)
+          finally:
+              r.sina,r.nasdaq=old_sina,old_nasdaq
+          print("GLOBAL_ASOF_SENTINEL_FAIL_CLOSED=PASS")
+          PY
+
       - name: Assert incomplete PRICE snapshot routes to resolver, not corruption recovery
         run: |
           python - <<'PY'
