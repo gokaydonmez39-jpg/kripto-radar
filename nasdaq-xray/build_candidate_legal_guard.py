@@ -165,33 +165,28 @@ def load_lifecycle_state(asof:str|None=None)->tuple[dict|None,str]:
 
 
 def candidate_scope(deep:dict,fc:dict|None,lifecycle:dict|None)->list[str]:
-    """Exact finalist-local legal scope.
+    """Exact finalist-local legal scope, matching Final/Terminal current-confirmed semantics.
 
-    Fresh A/B/D/C geometry is reviewed only when the current Deep regime gate
-    says that symbol is finalist-eligible. Raw geometry rejected by MIXED RS or
-    an UNKNOWN regime must not create an unrelated legal UNKNOWN and globally
-    poison FULL_E2E. Prospectively recorded lifecycle symbols remain in scope
-    because Final may carry them through retest/reconfirmation revalidation.
+    Fresh A/B/D names come only from Deep's event+RS confirmed aggregate sets.
+    Raw per-symbol geometry can remain true after an event veto and must not
+    create unrelated SEC UNKNOWNs. Prospectively recorded lifecycle symbols
+    remain in scope because Final may carry them through revalidation.
     """
     syms=set()
+    for field in ("a_geometry_rs_event_pass","b_breakout_rs_event_pass","d_dk3_pre_r1"):
+        syms.update(str(x) for x in (deep.get(field) or []) if str(x))
+
     rows=deep.get("results") or {}
-    for sym,row in rows.items():
-        if not isinstance(row,dict) or row.get("regime_finalist_pass") is not True:
-            continue
-        if ((row.get("A") or {}).get("pool")
-            or (row.get("B") or {}).get("breakout_confirmed")
-            or (row.get("D") or {}).get("dk3_pre_r1")):
-            syms.add(str(sym))
     for sym,g in ((fc or {}).get("confirmed") or {}).items():
         if (isinstance(g,dict) and g.get("confirmed")
-            and ((rows.get(sym) or {}).get("regime_finalist_pass") is True)):
+            and ((rows.get(sym) or {}).get("regime_finalist_pass") is True):
             syms.add(str(sym))
+
     for rec in ((lifecycle or {}).get("records") or {}).values():
         if (isinstance(rec,dict) and rec.get("symbol")
             and str(rec.get("state") or "") in LIFECYCLE_ACTIVE_STATES):
             syms.add(str(rec["symbol"]))
     return sorted(syms)
-
 
 def _load_cik_cache()->tuple[dict[str,str],dict[str,str]]:
     """Load durable SEC ticker->CIK evidence; malformed cache fails closed."""
@@ -490,7 +485,9 @@ def main():
     print(json.dumps({"candidate_scope_count":len(scope),
                       "pass_count":len(out["pass_symbols"]),
                       "unknown_count":len(out["unknown_symbols"]),
-                      "unknown_symbols":out["unknown_symbols"]},sort_keys=True))
+                      "unknown_symbols":out["unknown_symbols"],
+                      "unknown_reasons":{sym:(records.get(sym) or {}).get("reason") for sym in out["unknown_symbols"]},
+                      "cik_mapping_errors":cik_mapping_errors},sort_keys=True))
 
 
 if __name__=="__main__":
