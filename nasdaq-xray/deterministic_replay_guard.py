@@ -57,20 +57,34 @@ def cand_keys(pointer):
 
 def main():
     prev=load(OUT) if OUT.exists() else {}
-    rows=[];asofs=set()
+    rows=[];research_asofs=set();pointer_asof=None
     for fn in FILES:
         p=ROOT/fn
         if not p.exists():
             rows.append({"path":fn,"status":"MISSING"});continue
         j=load(p);a=artifact_asof(fn,j)
-        if a:asofs.add(a)
+        if a:
+            if fn==POINTER_FILE:pointer_asof=a
+            else:research_asofs.add(a)
         rows.append({"path":fn,"status":"PRESENT","sha256":digest(p),"schema":j.get("schema"),"asof_et":a})
     ptr=load(ROOT/POINTER_FILE);keys=cand_keys(ptr)
     old=prev.get("candidate_delivery_keys") or []
     policy=load(ROOT/POLICY_FILE)
     policy_ok=policy_binding_ok(policy)
     all_present=all(x["status"]=="PRESENT" for x in rows)
-    asof_consistent=len(asofs)<=1
+    asof_consistent=len(research_asofs)<=1
+    target_asof=next(iter(research_asofs),None) if len(research_asofs)==1 else None
+    if pointer_asof is None:
+        pointer_relation="UNKNOWN_POINTER_ASOF"
+    elif target_asof is None:
+        pointer_relation="UNKNOWN_RESEARCH_ASOF"
+    elif pointer_asof==target_asof:
+        pointer_relation="EXACT_CURRENT"
+    elif pointer_asof<target_asof:
+        pointer_relation="LAGGING_DURABLE_POINTER_PENDING_ATOMIC_COMMIT"
+    else:
+        pointer_relation="FUTURE_POINTER_DRIFT"
+    pointer_safe=pointer_relation in {"EXACT_CURRENT","LAGGING_DURABLE_POINTER_PENDING_ATOMIC_COMMIT"}
     out={
       "schema":"XRAY_DETERMINISTIC_REPLAY_GUARD_V2",
       "execution":"NONE","real_money":"NO-GO","alpha_authority":False,
@@ -82,15 +96,23 @@ def main():
         "dv30_exact30_bound":policy_ok,
         "legacy_dv20_forbidden":True,
       },
-      "artifacts":rows,"asof_values":sorted(asofs),
+      "artifacts":rows,"asof_values":sorted(research_asofs),
       "asof_consistent":asof_consistent,
+      "pointer_binding":{
+        "pointer_path":POINTER_FILE,
+        "pointer_asof":pointer_asof,
+        "research_asof":target_asof,
+        "epoch_relation":pointer_relation,
+        "pointer_not_alpha_authority":True,
+        "future_pointer_forbidden":True,
+      },
       "candidate_delivery_keys":keys,
       "semantic_diff":{"added":sorted(set(keys)-set(old)),"removed":sorted(set(old)-set(keys)),"unchanged":sorted(set(old)&set(keys))},
       "replay_rule":"ONLY_FROZEN_ASOF_EVIDENCE_MAY_BE_USED; LATER_VINTAGES_NEVER_BACKFILL_PRIOR_DECISION",
-      "status":"PASS" if all_present and asof_consistent and policy_ok else "FAIL_CLOSED",
+      "status":"PASS" if all_present and asof_consistent and policy_ok and pointer_safe else "FAIL_CLOSED",
       "generated_at_utc":now()
     }
     OUT.write_text(json.dumps(out,sort_keys=True,indent=2)+"\n")
-    print(json.dumps({"status":out["status"],"asofs":out["asof_values"],"candidates":len(keys),"policy_binding_ok":policy_ok},sort_keys=True))
+    print(json.dumps({"status":out["status"],"asofs":out["asof_values"],"pointer_relation":pointer_relation,"candidates":len(keys),"policy_binding_ok":policy_ok},sort_keys=True))
 
 if __name__=="__main__": main()
