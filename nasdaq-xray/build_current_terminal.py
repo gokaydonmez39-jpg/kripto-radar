@@ -504,9 +504,12 @@ def main():
     assert dp["regime"]==rg["regime"]
 
     current_confirmed=set()
-    current_confirmed|={f"{s}|A" for s in dp.get("a_geometry_rs_event_pass",[])}
-    current_confirmed|={f"{s}|B" for s in dp.get("b_breakout_rs_event_pass",[])}
-    current_confirmed|={f"{s}|D" for s in dp.get("d_dk3_pre_r1",[])}
+    # C4.17 fresh Final scope includes both event-clean rows and event-capped
+    # WATCH rows. UNKNOWN/in-horizon event status may cap a technically valid
+    # setup at WATCH but must not erase it before Final evaluates risk/R1/RR.
+    current_confirmed|={f"{s}|A" for s in set(dp.get("a_geometry_rs_event_pass",[]))|set(dp.get("a_geometry_rs_event_watch",[]))}
+    current_confirmed|={f"{s}|B" for s in set(dp.get("b_breakout_rs_event_pass",[]))|set(dp.get("b_breakout_rs_event_watch",[]))}
+    current_confirmed|={f"{s}|D" for s in set(dp.get("d_dk3_pre_r1",[]))|set(dp.get("d_dk3_event_watch",[]))}
     c_regime_confirmed={
         s for s in (fc.get("confirmed") or {})
         if ((dp.get("results") or {}).get(s) or {}).get("regime_finalist_pass") is True
