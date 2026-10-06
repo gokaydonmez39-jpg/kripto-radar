@@ -5,8 +5,8 @@ import importlib.util, pathlib, sys
 ROOT=pathlib.Path(__file__).resolve().parent
 sys.path.insert(0,str(ROOT))
 
-from price_dv20_phase import classify as price_classify
-from price_dv20_recover_from_fullstate import apply_terminal_overrides
+from price_dv30_phase import classify as price_classify
+from price_dv30_recover_from_fullstate import apply_terminal_overrides
 from resolve_unknowns_fallback import classify as resolver_classify
 from deep_pre_r1_shadow import family_b
 from build_current_terminal import mc_semantic_input_match, candidate_local_research_ready
@@ -24,18 +24,18 @@ def bars(dates, price=100.0, volume=1_000_000.0):
     return {d:(price,volume) for d in dates}
 
 def main():
-    exp=[f"2026-09-{d:02d}" for d in range(1,21)]
+    exp=[f"2026-09-{d:02d}" for d in range(1,31)]
     # The functions only need a stable ordered set of expected dates for this invariant test.
     exact=bars(exp)
     incomplete=bars(exp[:-1])
-    low=bars(exp,price=20.0,volume=1_000_000.0)  # $20m/session => terminal DV20 fail
+    low=bars(exp,price=20.0,volume=1_000_000.0)  # $20m/session => terminal DV30 fail
 
     st,info=price_classify(exact,exp[-1],exp,"TEST")
-    assert st=="PASS_PRICE_DV20",(st,info)
-    assert info["known_session_count"]==20 and info["missing_sessions"]==[]
+    assert st=="PASS_PRICE_DV30",(st,info)
+    assert info["known_session_count"]==30 and info["missing_sessions"]==[]
     at_floor=bars(exp,price=5.0,volume=20_000_000.0)
     st,info=price_classify(at_floor,exp[-1],exp,"TEST")
-    assert st=="PASS_PRICE_DV20",(st,info)
+    assert st=="PASS_PRICE_DV30",(st,info)
     below_floor=bars(exp,price=4.99,volume=20_000_000.0)
     st,info=price_classify(below_floor,exp[-1],exp,"TEST")
     assert st=="FAIL_PRICE",(st,info)
@@ -47,27 +47,27 @@ def main():
     # Missing a middle expected session while ASOF exists must never PASS.
     mid=bars([d for d in exp if d!=exp[9]])
     st,info=price_classify(mid,exp[-1],exp,"TEST")
-    assert st!="PASS_PRICE_DV20",(st,info)
-    assert st in {"UNKNOWN","FAIL_DV20"}
+    assert st!="PASS_PRICE_DV30",(st,info)
+    assert st in {"UNKNOWN","FAIL_DV30"}
 
     st,info=price_classify(low,exp[-1],exp,"TEST")
-    assert st=="FAIL_DV20",(st,info)
+    assert st=="FAIL_DV30",(st,info)
 
     # Operator resolver evidence may terminally resolve only an existing block,
     # never manufacture PASS or rewrite a non-blocked row.
     base={"NEW":{
-      "decision":"BLOCK_CURRENT_RUN","reason":"INSUFFICIENT_20_USABLE_DV20_SESSIONS_CONFIRMED",
+      "decision":"BLOCK_CURRENT_RUN","reason":"INSUFFICIENT_30_USABLE_DV30_SESSIONS_CONFIRMED",
       "source":"RALLIES_CANDLESTICK_SCANNER_EXACT20_PRIMARY","proof":"FAIL_CLOSED_CURRENT_RUN_NONPASS"
     }}
     ov={"NEW":{
-      "decision":"FAIL_DV20_INSUFFICIENT_SESSIONS","price":20.0,
+      "decision":"FAIL_DV30_INSUFFICIENT_SESSIONS","price":20.0,
       "known_session_count":3,"missing_sessions":exp[:-3],
       "no_synthetic_bar":True,"proof":"ALPACA_RALLIES_EXACT_MISSING_SET_MATCH"
     }}
     resolved=apply_terminal_overrides({k:dict(v) for k,v in base.items()},ov)
-    assert resolved["NEW"]["decision"]=="FAIL_DV20_INSUFFICIENT_SESSIONS",resolved
+    assert resolved["NEW"]["decision"]=="FAIL_DV30_INSUFFICIENT_SESSIONS",resolved
     try:
-        apply_terminal_overrides({"NEW":dict(base["NEW"])},{"NEW":{"decision":"PASS_PRICE_DV20"}})
+        apply_terminal_overrides({"NEW":dict(base["NEW"])},{"NEW":{"decision":"PASS_PRICE_DV30"}})
         raise AssertionError("terminal override manufactured PASS")
     except ValueError:
         pass
@@ -82,7 +82,7 @@ def main():
     rich_mid={**history_prefix,**mid}
     st,info=resolver_classify(rich_exact,exp[-1],exp,"TEST")
     assert st=="PASS_HARD_GATES",(st,info)
-    assert info["known_session_count"]==20 and info["missing_sessions"]==[]
+    assert info["known_session_count"]==30 and info["missing_sessions"]==[]
 
     st,info=resolver_classify(rich_mid,exp[-1],exp,"TEST")
     assert st!="PASS_HARD_GATES",(st,info)
@@ -90,8 +90,8 @@ def main():
     sina=load_sina()
     bad_overlay={
       "decision":"PASS_HARD_GATES","price":100.0,"bars":300,
-      "dv20_lower_bound":100_000_000.0,"dv20_upper_bound":100_000_000.0,
-      "known_session_count":19,"missing_sessions":[exp[9]],
+      "dv30_lower_bound":100_000_000.0,"dv30_upper_bound":100_000_000.0,
+      "known_session_count":29,"missing_sessions":[exp[9]],
       "no_synthetic_bar":True,"source":"TEST","proof":"BOUND"
     }
     st,info=sina.resolution_result("ZZZZ",bad_overlay,exp)
@@ -99,13 +99,13 @@ def main():
 
     good_overlay={
       "decision":"PASS_HARD_GATES","price":100.0,"bars":300,
-      "dv20_lower_bound":100_000_000.0,"dv20_upper_bound":100_000_000.0,
-      "known_session_count":20,"missing_sessions":[],
+      "dv30_lower_bound":100_000_000.0,"dv30_upper_bound":100_000_000.0,
+      "known_session_count":30,"missing_sessions":[],
       "no_synthetic_bar":True,"source":"TEST","proof":"EXACT20_MEDIAN"
     }
     st,info=sina.resolution_result("ZZZZ",good_overlay,exp)
     assert st=="PASS",(st,info)
-    assert info["known_session_count"]==20 and info["missing_sessions"]==[]
+    assert info["known_session_count"]==30 and info["missing_sessions"]==[]
 
     # Setup-B regression: breakout pivot MUST come from the completed base and
     # exclude the current breakout bar. Including the current bar makes the

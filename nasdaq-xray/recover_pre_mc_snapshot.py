@@ -10,7 +10,7 @@ import glob, hashlib, json, os, pathlib, re, subprocess, time
 
 ROOT=pathlib.Path(__file__).resolve().parent
 REPO=ROOT.parent
-PRICE="nasdaq-xray/canonical_current_price_dv20.json"
+PRICE="nasdaq-xray/canonical_current_price_dv30.json"
 STATIC=[
  "nasdaq-xray/canonical_current_full_state.json",
  "nasdaq-xray/canonical_current_full_candidates.json",
@@ -22,8 +22,8 @@ STATIC=[
  "nasdaq-xray/canonical_current_resolver_chunk_manifest.json",
 ]
 CHUNK_RE=re.compile(r"^nasdaq-xray/canonical_current_resolver_chunk_[0-9]{4}\.json$")
-CURRENT_POLICY_HASH="bbb6ea5aa3126fbcdeda2246bc52d1ad04885d27e8e52fb07797e0114dedce55"
-CURRENT_POLICY_BLOB="299199aa10b6eb6fdf35071f233ac12bd814dc32"
+CURRENT_POLICY_HASH="68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4"
+CURRENT_POLICY_BLOB="16c50cc8f887a5234a4be23862d7c8d0e564b0ac"
 CURRENT_PRICE_RULE=">=5"
 
 def run(*args,check=True,text=True):
@@ -98,7 +98,7 @@ def validate(asof:str):
     assert req.get("compiled_policy_blob_sha")==CURRENT_POLICY_BLOB
     assert req.get("compiled_policy_version")=="C4.17"
     assert int(price["source_master_count"])==int(master["queue_total"])
-    assert req["source_price_blob_sha"]==blob(ROOT/"canonical_current_price_dv20.json")
+    assert req["source_price_blob_sha"]==blob(ROOT/"canonical_current_price_dv30.json")
     assert manifest["request_blob_sha"]==blob(ROOT/"canonical_current_resolver_request.json")
     assert manifest["queue_hash"]==req["queue_hash"]
     assert manifest["symbol_hash"]==req["symbol_hash"]

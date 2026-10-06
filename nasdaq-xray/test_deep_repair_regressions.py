@@ -7,7 +7,7 @@ import alpha_semantics as alpha
 import final_tech_shadow as ft
 import build_candidate_legal_guard as legal_guard_mod
 import build_current_resolver_request as resolver_req_mod
-import price_dv20_recover_from_fullstate as price_recover_mod
+import price_dv30_recover_from_fullstate as price_recover_mod
 import build_current_terminal as terminal_mod
 import build_current_event_request as event_req_mod
 import regime_breadth_shadow as rb
@@ -321,7 +321,7 @@ def test_mc_bridge_immutable_supersession():
     common={
       "schema":"XRAY_MC_EPOCH_RESULT_V1","status":"COMMITTED","task_id":terminal_mod.TASK,
       "execution":"NONE","real_money":"NO-GO","asof_et":"2026-10-05",
-      "input_path":"nasdaq-xray/canonical_current_price_dv20.json","input_blob_sha":"PB",
+      "input_path":"nasdaq-xray/canonical_current_price_dv30.json","input_blob_sha":"PB",
       "input_pass_hash":"H","input_count":1,"policy_hash":terminal_mod.POLICY_HASH,"policy_version":"C4.17",
       "results":{"AAA":{"status":"MC_PASS_PRIMARY"}},
     }
@@ -495,7 +495,7 @@ def test_resolver_metadata_only_resume_identity():
     assert resolver_req_mod.resolver_resume_semantic_view(base)==resolver_req_mod.resolver_resume_semantic_view(meta)
     assert resolver_req_mod.resolver_resume_semantic_view(base)!=resolver_req_mod.resolver_resume_semantic_view({**meta,"source_price_blob_sha":"PRICE2"})
     assert resolver_req_mod.resolver_resume_semantic_view(base)!=resolver_req_mod.resolver_resume_semantic_view({**meta,"symbol_hash":"S2"})
-    changed={**meta,"price_unknown_detail":{"AAA":{"price_result":{"status":"PASS_PRICE_DV20"}},"BBB":{"price_result":{"status":"UNKNOWN"}}}}
+    changed={**meta,"price_unknown_detail":{"AAA":{"price_result":{"status":"PASS_PRICE_DV30"}},"BBB":{"price_result":{"status":"UNKNOWN"}}}}
     assert resolver_req_mod.resolver_resume_semantic_view(base)!=resolver_req_mod.resolver_resume_semantic_view(changed)
 
 def test_resolver_bridge_bound_to_exact_pre_run_price_and_scope():
@@ -504,13 +504,13 @@ def test_resolver_bridge_bound_to_exact_pre_run_price_and_scope():
         with tempfile.TemporaryDirectory() as td:
             td=Path(td)
             out=td/"price.json"; req=td/"request.json"; manifest=td/"manifest.json"
-            out.write_text(json.dumps({"schema":"XRAY_CANONICAL_PRICE_DV20_V1","asof_et":"2026-10-05","results":{}})+"\n")
+            out.write_text(json.dumps({"schema":"XRAY_CANONICAL_PRICE_DV30_V1","asof_et":"2026-10-05","results":{}})+"\n")
             pb=price_recover_mod.git_blob_sha(out)
             q={
               "schema":"XRAY_RESOLVER_EPOCH_REQUEST_V1","status":"READY","task_id":price_recover_mod.TASK_ID,
               "asof_et":"2026-10-05","execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
-              "queue_hash":"Q","compiled_policy_blob_sha":"299199aa10b6eb6fdf35071f233ac12bd814dc32",
-              "compiled_policy_hash":"bbb6ea5aa3126fbcdeda2246bc52d1ad04885d27e8e52fb07797e0114dedce55",
+              "queue_hash":"Q","compiled_policy_blob_sha":"16c50cc8f887a5234a4be23862d7c8d0e564b0ac",
+              "compiled_policy_hash":"68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4",
               "compiled_policy_version":"C4.17","source_price_blob_sha":pb,
               "symbols":["AAA","BBB"],"symbol_count":2,"symbol_hash":"S",
               "price_unknown_symbols":["AAA","BBB"],
@@ -611,7 +611,7 @@ def test_workflow_race_and_pre_mc_freeze_contracts():
     stale=final_wf[final_wf.index('changed="$(git diff'):]
     for p in critical: assert p in stale,("FINAL_STALE_GUARD_MISSING",p)
     for p in test_only: assert p not in stale,("FINAL_TEST_ONLY_SHOULD_NOT_STALE_PRODUCTION",p)
-    for p in ("nasdaq-xray/canonical_current_master_manifest.json","nasdaq-xray/canonical_current_price_dv20.json"):
+    for p in ("nasdaq-xray/canonical_current_master_manifest.json","nasdaq-xray/canonical_current_price_dv30.json"):
         assert p in stale,("FINAL_UPSTREAM_STALE_GUARD_MISSING",p)
     assert "nasdaq-xray/canonical_candidate_lifecycle_registry.json" in final_wf
     assert "python nasdaq-xray/test_alpha_semantics.py" in final_wf
@@ -622,7 +622,7 @@ def test_workflow_race_and_pre_mc_freeze_contracts():
     post=(REPO/".github/workflows/xray-canonical-current-post-mc.yml").read_text()
     assert "Fail closed on ambiguous MC binding" in post
     post_stale=post[post.index('changed="$(git diff'):]
-    for p in ("nasdaq-xray/canonical_current_master_manifest.json","nasdaq-xray/canonical_current_price_dv20.json"):
+    for p in ("nasdaq-xray/canonical_current_master_manifest.json","nasdaq-xray/canonical_current_price_dv30.json"):
         assert p in post_stale,("POST_MC_UPSTREAM_STALE_GUARD_MISSING",p)
     assert "steps.mc.outputs.binding_fault == 'true'" in post
     assert "XRAY_POST_MC_BINDING=FAIL_CLOSED_DUPLICATE" in post
@@ -775,7 +775,7 @@ def test_workflow_race_and_pre_mc_freeze_contracts():
     assert 'assert existing_rel==declared_paths' in recsrc
     assert 'assert blob(cp)==row["blob_sha"]' in recsrc
     assert "\'nasdaq-xray/canonical_current_resolver_chunk_*.json\'" in pre
-    assert 'assert req["source_price_blob_sha"]==blob(ROOT/"canonical_current_price_dv20.json")' in recsrc
+    assert 'assert req["source_price_blob_sha"]==blob(ROOT/"canonical_current_price_dv30.json")' in recsrc
     assert 'assert int(price["source_master_count"])==int(master["queue_total"])' in recsrc
     assert '"resolver_chunks":len(declared)' in recsrc
     assert '"resolver_chunks":len(chunks)' not in recsrc

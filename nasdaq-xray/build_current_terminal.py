@@ -7,14 +7,14 @@ from pathlib import Path
 
 ROOT=Path(__file__).resolve().parent
 TASK="6a825366222081918997094d76e6ae46"
-POLICY_HASH="bbb6ea5aa3126fbcdeda2246bc52d1ad04885d27e8e52fb07797e0114dedce55"
+POLICY_HASH="68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4"
 OUT=Path(os.getenv("XRAY_TERMINAL_OUT",str(ROOT/"canonical_current_terminal.json")))
 FILES={
  "pointer":ROOT/"chatgpt_canonical_state_v2.json",
  "policy":ROOT/"chatgpt_compiled_policy_v3.json",
  "full_state":ROOT/"canonical_current_full_state.json",
  "master":ROOT/"canonical_current_master_manifest.json",
- "price":ROOT/"canonical_current_price_dv20.json",
+ "price":ROOT/"canonical_current_price_dv30.json",
  "history":ROOT/"canonical_current_history.json",
  "legal":ROOT/"canonical_current_legal.json",
  "stage1_input":ROOT/"canonical_current_stage1_input.json",
@@ -218,7 +218,7 @@ def find_mc(price,price_blob):
               j.get("schema")=="XRAY_MC_EPOCH_RESULT_V1" and j.get("status")=="COMMITTED"
               and j.get("task_id")==TASK and j.get("execution")=="NONE" and j.get("real_money")=="NO-GO"
               and j.get("asof_et")==price["asof_et"]
-              and j.get("input_path")=="nasdaq-xray/canonical_current_price_dv20.json"
+              and j.get("input_path")=="nasdaq-xray/canonical_current_price_dv30.json"
               and semantic_exact
               and j.get("policy_hash")==POLICY_HASH
               and j.get("policy_version")=="C4.17"
@@ -253,7 +253,7 @@ def main():
     gate_reporting=load_gate_reporting()
     assert pol["schema"]=="XRAY_GITHUB_COMPILED_POLICY_V3" and pol["policy_hash"]==POLICY_HASH
     pp=json.loads(pol["payload_json"])
-    assert pp["version"]=="C4.17" and pp["hard_gates"]["order"]==["identity/type","PRICE","DV20","MC","HISTORY","LEGAL/SHELL","Stage1","deep/events"]
+    assert pp["version"]=="C4.17" and pp["hard_gates"]["order"]==["identity/type","PRICE","DV30","MC","HISTORY","LEGAL/SHELL","Stage1","deep/events"]
     assert pp["settlement"]["primary"]=="ALPACA_HISTORICAL_SIP_DAILY_AFTER_15M"
     assert "NON-G9" in pp["settlement"]["g9_separation"]
     assert p["task_id"]==m["task_id"]==TASK
@@ -648,8 +648,8 @@ def main():
       "blockers":blockers,
       "classified_nonpass":{"price_blocked_current_run":price_blocked_count},
       "counts":{
-        "master_total":m["queue_total"],"price_dv20_pass":p["pass_count"],
-        "price_dv20_blocked_current_run":price_blocked_count,
+        "master_total":m["queue_total"],"price_dv30_pass":p["pass_count"],
+        "price_dv30_blocked_current_run":price_blocked_count,
         "mc_primary_pass":len(primary),"mc_primary_fail":len(mcfail),"mc_fallback_watch":len(watch),"mc_fallback_fail":len(fallback_fail),"mc_unknown":len(mcunk),
         "history_input":h["input_count"],"history_pass":len(hpass),"history_fail":len(hfail),
         "legal_pass":len(lpass),"legal_blocked":len(lblock),
