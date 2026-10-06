@@ -34,13 +34,15 @@ def fail_closed_discovery_coverage(ev,weekly,status,unresolved,future_sessions):
         return True,"COMPLETE_PROVIDER_DISCOVERY"
     if not partial or not unavailable:
         return False,"PARTIAL_DISCOVERY_NOT_EXPLICIT"
-    if not unavailable<=weekly or not resolved<=weekly:
+    if not unavailable<=weekly or not resolved<=weekly or not unresolved_keys<=weekly:
         return False,"DISCOVERY_SCOPE_OUTSIDE_WEEKLY"
-    if unavailable&resolved or resolved&unresolved_keys:
+    if resolved&unresolved_keys:
         return False,"OFFICIAL_RESOLUTION_SCOPE_INVALID"
-    if unavailable!=unresolved_keys:
-        return False,"UNAVAILABLE_SCOPE_NOT_EXACT_UNRESOLVED"
-    for sym in unavailable:
+    unresolved_only=(unavailable==unresolved_keys and not (unavailable&resolved))
+    inclusive=(unavailable==(unresolved_keys|resolved))
+    if not (unresolved_only or inclusive):
+        return False,"UNAVAILABLE_PARTITION_INVALID"
+    for sym in unresolved_keys:
         rec=(unresolved or {}).get(sym) or {}
         if status.get(sym)!="UNKNOWN" or rec.get("fail_closed") is not True:
             return False,"UNAVAILABLE_SYMBOL_NOT_FAIL_CLOSED_UNKNOWN"
