@@ -31,7 +31,9 @@ permissions:
 
 concurrency:
   group: nasdaq-xray-autonomous-dataplane
-  cancel-in-progress: true
+  # Full-universe scans are long-running and resumable. New repair/schedule
+  # triggers queue behind the active writer instead of repeatedly discarding it.
+  cancel-in-progress: false
 
 jobs:
   dataplane:
