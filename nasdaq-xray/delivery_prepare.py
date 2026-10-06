@@ -7,6 +7,7 @@ same successful pointer CAS. G9/account are reported, not required, for research
 EXECUTION always remains NONE and REAL_MONEY NO-GO.
 """
 from __future__ import annotations
+import hashlib
 import json
 import re
 from datetime import datetime, timezone
@@ -17,6 +18,52 @@ POINTER = ROOT / "chatgpt_canonical_state_v2.json"
 WORK = ROOT / ".delivery_work"
 BATCH = WORK / "batch.json"
 OFFICIAL_GUARD = ROOT / "canonical_official_source_guard.json"
+CURRENT_PRICE = ROOT / "canonical_current_price_dv30.json"
+CURRENT_HISTORY = ROOT / "canonical_current_history.json"
+CURRENT_POLICY_HASH = "68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4"
+
+def git_blob_sha(p:Path):
+    b=p.read_bytes()
+    return hashlib.sha1(f"blob {len(b)}\0".encode()+b).hexdigest()
+
+def repo_path(rel):
+    q=Path(str(rel or ""))
+    if not str(q):
+        return q
+    if q.is_absolute():
+        return q
+    if str(q).startswith("nasdaq-xray/"):
+        return ROOT.parent/q
+    return ROOT/q
+
+def current_chain_state():
+    try:
+        px=json.loads(CURRENT_PRICE.read_text())
+        h=json.loads(CURRENT_HISTORY.read_text())
+        mc_path=repo_path(h.get("source_mc_artifact"))
+        mc=json.loads(mc_path.read_text()) if mc_path.exists() else {}
+        exact=bool(
+            px.get("schema")=="XRAY_CANONICAL_PRICE_DV30_V1"
+            and int(px.get("unknown_count",-1))==0
+            and h.get("asof_et")==px.get("asof_et")
+            and h.get("source_mc_policy_hash")==CURRENT_POLICY_HASH
+            and h.get("source_mc_policy_version")=="C4.17"
+            and h.get("source_mc_blob_sha")==git_blob_sha(mc_path)
+            and mc.get("schema")=="XRAY_MC_EPOCH_RESULT_V1"
+            and mc.get("status")=="COMMITTED"
+            and mc.get("asof_et")==px.get("asof_et")
+            and mc.get("policy_hash")==CURRENT_POLICY_HASH
+            and mc.get("policy_version")=="C4.17"
+            and mc.get("input_path")=="nasdaq-xray/canonical_current_price_dv30.json"
+            and mc.get("input_pass_hash")==px.get("pass_hash")
+            and int(mc.get("input_count",-1))==int(px.get("pass_count",-2))
+            and int((mc.get("counts") or {}).get("MC_UNKNOWN",-1))==0
+            and set((mc.get("results") or {}).keys())==set(px.get("pass_symbols") or [])
+        )
+        return exact,px
+    except Exception:
+        return False,{}
+
 
 if not POINTER.exists():
     print("XRAY_DELIVERY_NOOP=NO_POINTER")
@@ -37,6 +84,14 @@ if not isinstance(s, dict):
     raise RuntimeError("DELIVERY_STATE_JSON_INVALID")
 if s.get("task_id") != "6a825366222081918997094d76e6ae46":
     raise RuntimeError("DELIVERY_CANONICAL_TASK_MISMATCH")
+
+chain_exact,current_price=current_chain_state()
+if not chain_exact:
+    print("XRAY_DELIVERY_NOOP=CURRENT_DV30_MC_CHAIN_INCOMPLETE")
+    raise SystemExit(0)
+if str(s.get("asof_et") or "")!=str(current_price.get("asof_et") or ""):
+    print("XRAY_DELIVERY_NOOP=POINTER_ASOF_NOT_CURRENT")
+    raise SystemExit(0)
 
 delivery_keys = set(s.get("delivery_keys") or [])
 r92 = s.get("r92") or []

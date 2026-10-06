@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import json, shutil, subprocess, sys, tempfile
+import hashlib, json, shutil, subprocess, sys, tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -26,6 +26,7 @@ def pointer(r92,keys):
         "execution":"NONE","real_money":"NO-GO",
         "state_json":{
             "task_id":"6a825366222081918997094d76e6ae46",
+            "asof_et":"2099-01-02",
             "r92":r92,"delivery_keys":keys,
         }
     }
@@ -46,6 +47,35 @@ def write_guard(p,active=None,status="PASS",suspended=None,security_status=None)
         "candidate_safety":{"veto_symbols":veto},
     }
     (p/"canonical_official_source_guard.json").write_text(json.dumps(g))
+
+def bsha(p):
+    b=p.read_bytes()
+    return hashlib.sha1(f"blob {len(b)}\0".encode()+b).hexdigest()
+
+def write_current_chain(p,exact=True):
+    price={
+      "schema":"XRAY_CANONICAL_PRICE_DV30_V1","asof_et":"2099-01-02",
+      "unknown_count":0,"pass_count":2,"pass_hash":"PASSHASH","pass_symbols":["AAA","BBB"],
+    }
+    mc={
+      "schema":"XRAY_MC_EPOCH_RESULT_V1","status":"COMMITTED","asof_et":"2099-01-02",
+      "policy_hash":"68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4",
+      "policy_version":"C4.17","input_path":"nasdaq-xray/canonical_current_price_dv30.json",
+      "input_pass_hash":"PASSHASH","input_count":2,
+      "counts":{"MC_UNKNOWN":0,"TOTAL":2},"results":{"AAA":{},"BBB":{}},
+    }
+    mp=p/"canonical_mc_bridge_test.json"; mp.write_text(json.dumps(mc))
+    history={
+      "asof_et":"2099-01-02","source_mc_artifact":"canonical_mc_bridge_test.json",
+      "source_mc_blob_sha":bsha(mp),
+      "source_mc_policy_hash":(
+        "68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4"
+        if exact else "STALE_POLICY"
+      ),
+      "source_mc_policy_version":"C4.17",
+    }
+    (p/"canonical_current_price_dv30.json").write_text(json.dumps(price))
+    (p/"canonical_current_history.json").write_text(json.dumps(history))
 
 def run_case(p,expect_ok):
     cp=subprocess.run([sys.executable,str(p/"delivery_prepare.py")],cwd=p,text=True,capture_output=True)
@@ -69,12 +99,19 @@ with tempfile.TemporaryDirectory() as td:
     ptr=pointer([a,b,unregistered],[a["delivery_key"],b["delivery_key"]])
     (p/"chatgpt_canonical_state_v2.json").write_text(json.dumps(ptr))
     write_guard(p)
+    write_current_chain(p)
     cp=run_case(p,True)
     assert "XRAY_DELIVERY_READY=PASS" in cp.stdout
     assert "XRAY_DELIVERY_COUNT=2" in cp.stdout
     batch=json.load(open(p/".delivery_work/batch.json"))
     assert len(batch["candidates"])==2
     assert {x["symbol"] for x in batch["candidates"]}=={"AAA","BBB"}
+    # Stale current DV30->MC chain must suppress stale pointer R92 delivery.
+    write_current_chain(p,exact=False)
+    if (p/".delivery_work").exists(): shutil.rmtree(p/".delivery_work")
+    cp_stale=run_case(p,True)
+    assert "XRAY_DELIVERY_NOOP=CURRENT_DV30_MC_CHAIN_INCOMPLETE" in cp_stale.stdout
+    write_current_chain(p,exact=True)
     body_text="\n".join(p.read_text() for p in (p/".delivery_work").glob("*.md"))
     assert "G9_BLOCKED_FREE_AUTOMATION_PATH" in body_text
     assert "ACCOUNT_BLOCKED_SCOPE_NOT_GRANTED_OR_ACCOUNT_UNSUPPORTED" in body_text

@@ -393,6 +393,29 @@ jobs:
           print("BLOCKED_ONLY_RESOLVER_SCOPE_BINDING=PASS")
           PY
 
+      - name: Assert stale terminal cannot create current delivery authority
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          o=Path("nasdaq-xray/build_final_gate_overlay_v2.py").read_text()
+          d=Path("nasdaq-xray/delivery_prepare.py").read_text()
+          for x in [
+            "current_research_chain",
+            "stale_terminal_full_claim_suppressed",
+            "CURRENT_DV30_MC_CHAIN_INCOMPLETE",
+            "terminal_claimed_full",
+          ]:
+              assert x in o,x
+          for x in [
+            "current_chain_state",
+            "CURRENT_DV30_MC_CHAIN_INCOMPLETE",
+            "POINTER_ASOF_NOT_CURRENT",
+            "canonical_current_price_dv30.json",
+          ]:
+              assert x in d,x
+          print("STALE_TERMINAL_DELIVERY_AUTHORITY_GUARD=PASS")
+          PY
+
       - name: Assert identity type guard
         run: |
           python - <<'PY'

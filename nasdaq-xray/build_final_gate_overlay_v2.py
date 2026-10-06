@@ -30,6 +30,60 @@ def blob_sha(k):
     b=path(k).read_bytes()
     return hashlib.sha1(f"blob {len(b)}\0".encode()+b).hexdigest()
 
+def file_blob_sha(p:Path):
+    b=p.read_bytes()
+    return hashlib.sha1(f"blob {len(b)}\0".encode()+b).hexdigest()
+
+def repo_path(rel):
+    p=Path(str(rel or ""))
+    if not str(p):
+        return p
+    if p.is_absolute():
+        return p
+    if str(p).startswith("nasdaq-xray/"):
+        return ROOT.parent/p
+    return ROOT/p
+
+def current_research_chain():
+    """Return exact binding state for current DV30 -> MC -> HISTORY authority."""
+    try:
+        pp=ROOT/"canonical_current_price_dv30.json"
+        hp=ROOT/"canonical_current_history.json"
+        p=json.loads(pp.read_text())
+        h=json.loads(hp.read_text())
+        mc_path=repo_path(h.get("source_mc_artifact"))
+        mc=json.loads(mc_path.read_text()) if mc_path.exists() else {}
+        exact=bool(
+            p.get("schema")=="XRAY_CANONICAL_PRICE_DV30_V1"
+            and int(p.get("unknown_count",-1))==0
+            and h.get("asof_et")==p.get("asof_et")
+            and h.get("source_mc_policy_hash")=="68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4"
+            and h.get("source_mc_policy_version")=="C4.17"
+            and h.get("source_mc_blob_sha")==file_blob_sha(mc_path)
+            and mc.get("schema")=="XRAY_MC_EPOCH_RESULT_V1"
+            and mc.get("status")=="COMMITTED"
+            and mc.get("asof_et")==p.get("asof_et")
+            and mc.get("policy_hash")=="68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4"
+            and mc.get("policy_version")=="C4.17"
+            and mc.get("input_path")=="nasdaq-xray/canonical_current_price_dv30.json"
+            and mc.get("input_pass_hash")==p.get("pass_hash")
+            and int(mc.get("input_count",-1))==int(p.get("pass_count",-2))
+            and int((mc.get("counts") or {}).get("MC_UNKNOWN",-1))==0
+            and set((mc.get("results") or {}).keys())==set(p.get("pass_symbols") or [])
+        )
+        return {
+            "exact":exact,
+            "price_asof_et":p.get("asof_et"),
+            "price_pass_hash":p.get("pass_hash"),
+            "price_pass_count":p.get("pass_count"),
+            "history_source_mc_artifact":h.get("source_mc_artifact"),
+            "history_source_mc_policy_hash":h.get("source_mc_policy_hash"),
+            "mc_unknown_count":(mc.get("counts") or {}).get("MC_UNKNOWN"),
+        }
+    except Exception as e:
+        return {"exact":False,"error":type(e).__name__}
+
+
 def main():
     t,p,gr,ga,gs,greg,ag,aa=[load(k) for k in FILES]
 
@@ -55,7 +109,9 @@ def main():
         else "LAGGING_DURABLE_POINTER_PENDING_ATOMIC_FINAL_COMMIT"
     )
 
-    full=bool(t.get("full_end_to_end_research_pass"))
+    terminal_claimed_full=bool(t.get("full_end_to_end_research_pass"))
+    current_chain=current_research_chain()
+    full=bool(terminal_claimed_full and current_chain.get("exact") is True)
     g9_pass=gr.get("g9_pass") is True
     persisted_account_status=str(ag.get("current_status") or "UNKNOWN")
     terminal_account_status=str(t.get("account_status") or persisted_account_status)
@@ -136,7 +192,9 @@ def main():
         "source_terminal":{
             "path":"nasdaq-xray/"+FILES["terminal"],
             "blob_sha":blob_sha("terminal"),
+            "claimed_full_end_to_end_research_pass":terminal_claimed_full,
             "full_end_to_end_research_pass":full,
+            "current_research_chain_exact":current_chain.get("exact") is True,
             "terminal_result":t.get("terminal_result"),
         },
         "source_pointer":{
@@ -193,12 +251,19 @@ def main():
             "g9_pass_binding_exact":(not g9_pass) or (g9_sha_exact and g9_count_exact),
             "account_pass_binding_exact":(not account_pass) or account_exact,
             "blocked_negative_evidence_may_advance_without_creating_pass":True,
+            "current_research_chain_exact":current_chain.get("exact") is True,
+            "stale_terminal_full_claim_suppressed":bool(terminal_claimed_full and not current_chain.get("exact")),
         },
+        "current_research_chain":current_chain,
         "research_delivery":{
             "independent_of_g9_account":True,
             "pre_g9_tech_pass":pre_g9,
-            "current_asof_has_deliverable_candidate":pre_g9>0,
-            "reason":"PRE_G9_TECH_PASS_POSITIVE" if pre_g9>0 else "PRE_G9_TECH_PASS_ZERO",
+            "current_asof_has_deliverable_candidate":bool(current_chain.get("exact") is True and pre_g9>0),
+            "reason":(
+                "CURRENT_DV30_MC_CHAIN_INCOMPLETE" if current_chain.get("exact") is not True
+                else "PRE_G9_TECH_PASS_POSITIVE" if pre_g9>0
+                else "PRE_G9_TECH_PASS_ZERO"
+            ),
         },
         "true_full_go":{
             "status":"PASS" if all(checks.values()) else "BLOCKED",
@@ -224,6 +289,8 @@ def main():
         "schema":out["schema"],
         "asof_et":asof,
         "full_e2e":full,
+        "terminal_claimed_full_e2e":terminal_claimed_full,
+        "current_research_chain_exact":current_chain.get("exact") is True,
         "g9_pass":g9_pass,
         "account_pass":account_pass,
         "true_full_go":out["true_full_go"]["status"],
