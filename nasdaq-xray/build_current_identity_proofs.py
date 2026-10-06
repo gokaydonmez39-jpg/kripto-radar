@@ -122,18 +122,29 @@ def prior_operating_fallback(sym,old,asof,names,industries):
 def prior_blank_fallback(sym,old,asof,names,industries):
     if sym not in names:
         return None
+    current_name=str(names.get(sym) or "").strip()
     industry=str(industries.get(sym) or "").strip()
-    if industry.lower()!="blank checks":
-        return None
     if int((old or {}).get("sic",-1))!=6770:
         return None
     source=str((old or {}).get("source_url") or "")
     evidence=str((old or {}).get("evidence_date") or "")
     if not source.startswith("https://www.sec.gov/") or not re.fullmatch(r"20\d{2}-\d{2}-\d{2}",evidence) or evidence>asof:
         return None
+    try:
+        age=(datetime.fromisoformat(asof)-datetime.fromisoformat(evidence)).days
+    except Exception:
+        return None
+    if age<0 or age>120:
+        return None
+    name_spac=bool(re.search(r"\bacquisition\b|\bspac\b|\bblank[ -]?check\b",current_name,re.I))
+    industry_spac=(industry.lower()=="blank checks")
+    if not (industry_spac or name_spac):
+        return None
     out=dict(old)
+    out["same_asof_nasdaq_security_name"]=current_name
     out["same_asof_nasdaq_screener_industry"]=industry
     out["same_asof_revalidated_without_sec_network"]=True
+    out["revalidation_semantics"]="PRIOR_SEC_SIC6770_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS"
     return out
 
 def load_json_url(url:str):
