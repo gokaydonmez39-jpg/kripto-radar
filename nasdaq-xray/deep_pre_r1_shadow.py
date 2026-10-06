@@ -535,15 +535,31 @@ def main():
 
     a_geom=[s for s,r in outres.items() if r.get("A",{}).get("pool")]
     b_break=[s for s,r in outres.items() if r.get("B",{}).get("breakout_confirmed")]
-    b_armed=[s for s,r in outres.items() if r.get("B",{}).get("pool") and not r.get("B",{}).get("breakout_confirmed")]
+    b_armed_geom=[s for s,r in outres.items() if r.get("B",{}).get("pool") and not r.get("B",{}).get("breakout_confirmed")]
     d_geom=[s for s,r in outres.items() if r.get("D",{}).get("dk3_pre_r1")]
+    event_watch_statuses={"UNKNOWN","BLOCK_CONFIRMED_8SESSION"}
     if GEOMETRY_ONLY:
-        a=a_geom;b=b_break;d=d_geom
+        a=a_geom;b=b_break;b_armed=b_armed_geom;d=d_geom
+        a_watch=[];b_watch=[];b_armed_watch=[];d_watch=[]
     else:
-        a=[s for s in a_geom if outres[s].get("regime_finalist_pass") is True and outres[s].get("event_status")=="CLEAN_DISCOVERY"]
-        b=[s for s in b_break if outres[s].get("regime_finalist_pass") is True and outres[s].get("event_status")=="CLEAN_DISCOVERY"]
-        b_armed=[s for s in b_armed if outres[s].get("regime_finalist_pass") is True and outres[s].get("event_status")=="CLEAN_DISCOVERY"]
-        d=[s for s in d_geom if outres[s].get("regime_finalist_pass") is True and outres[s].get("event_status")=="CLEAN_DISCOVERY"]
+        def regime_ok(s):
+            return outres[s].get("regime_finalist_pass") is True
+        def event_clean(s):
+            return outres[s].get("event_status")=="CLEAN_DISCOVERY"
+        def event_watch(s):
+            return outres[s].get("event_status") in event_watch_statuses
+        a=[s for s in a_geom if regime_ok(s) and event_clean(s)]
+        b=[s for s in b_break if regime_ok(s) and event_clean(s)]
+        b_armed=[s for s in b_armed_geom if regime_ok(s) and event_clean(s)]
+        d=[s for s in d_geom if regime_ok(s) and event_clean(s)]
+        # C4.17: unresolved next event => max WATCH; an official event inside
+        # the 8-session horizon also blocks ORANGE/GREEN rather than erasing
+        # otherwise valid technical geometry. Preserve these rows explicitly so
+        # Final can evaluate deterministic risk/RR and cap them at WATCH.
+        a_watch=[s for s in a_geom if regime_ok(s) and event_watch(s)]
+        b_watch=[s for s in b_break if regime_ok(s) and event_watch(s)]
+        b_armed_watch=[s for s in b_armed_geom if regime_ok(s) and event_watch(s)]
+        d_watch=[s for s in d_geom if regime_ok(s) and event_watch(s)]
     out={
       "schema":"XRAY_DEEP_GEOMETRY_V1" if GEOMETRY_ONLY else "XRAY_DEEP_PRE_R1_SHADOW_V1",
       "task_id":TASK_ID,"asof_et":asof,"execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
@@ -554,12 +570,16 @@ def main():
       "weekly_trigger_scope":syms,
       "a_geometry_count":len(a_geom),"a_geometry":sorted(a_geom),
       "b_breakout_count":len(b_break),"b_breakout":sorted(b_break),
-      "b_armed_count":len(b_armed),"b_armed":sorted(b_armed),
+      "b_armed_count":len(b_armed_geom),"b_armed":sorted(b_armed_geom),
       "d_geometry_rs_count":len(d_geom),"d_geometry_rs":sorted(d_geom),
       "a_geometry_rs_event_pass_count":len(a),"a_geometry_rs_event_pass":sorted(a),
       "b_breakout_rs_event_pass_count":len(b),"b_breakout_rs_event_pass":sorted(b),
       "b_armed_rs_event_pass_count":len(b_armed),"b_armed_rs_event_pass":sorted(b_armed),
       "d_dk3_pre_r1_count":len(d),"d_dk3_pre_r1":sorted(d),
+      "a_geometry_rs_event_watch_count":len(a_watch),"a_geometry_rs_event_watch":sorted(a_watch),
+      "b_breakout_rs_event_watch_count":len(b_watch),"b_breakout_rs_event_watch":sorted(b_watch),
+      "b_armed_rs_event_watch_count":len(b_armed_watch),"b_armed_rs_event_watch":sorted(b_armed_watch),
+      "d_dk3_event_watch_count":len(d_watch),"d_dk3_event_watch":sorted(d_watch),
       "lifecycle_revalidation_scope":lifecycle_scope,
       "lifecycle_revalidation_scope_count":len(lifecycle_scope),
       "lifecycle_revalidation":dict(sorted(lifecycle_revalidation.items())),
