@@ -27,9 +27,15 @@ import pandas_market_calendars as mcal
 
 TASK_ID="6a825366222081918997094d76e6ae46"
 BUILD="2026-10-02.1"
-IDENTITY_RULESET="V4_SPAC_EXCLUDED_AT_MASTER"
+IDENTITY_RULESET="V5_SEC_SPAC_PROOF_AT_MASTER"
 NASDAQ_DIR="https://www.nasdaqtrader.com/dynamic/SymDir/nasdaqlisted.txt"
 NASDAQ_SCREENER="https://api.nasdaq.com/api/screener/stocks"
+SEC_TICKERS="https://www.sec.gov/files/company_tickers.json"
+SEC_SUBMISSIONS="https://data.sec.gov/submissions"
+SEC_UA=os.getenv("XRAY_SEC_USER_AGENT","NASDAQ-SWING-XRAY research bot; xray-dataplane-bot@users.noreply.github.com")
+SPAC_SUSPECT=re.compile(r"\bacquisition\b|\bspac\b|\bblank[ -]?check\b",re.I)
+_SEC_TICKER_CACHE=None
+_SEC_SPAC_CACHE={}
 ROOT=Path(__file__).resolve().parent
 STATE=Path(os.getenv("XRAY_SINA_STATE", str(ROOT/"sina_state.json")))
 CAND=Path(os.getenv("XRAY_SINA_CAND", str(ROOT/"sina_candidates.json")))
@@ -109,6 +115,62 @@ def official_nasdaq():
         raise RuntimeError("NASDAQ_DIRECTORY_INVALID")
     return included,excluded,footer
 
+def sec_blank_check_proof(symbol):
+    """Official SEC exclusion-only proof for a suspect blank-check/SPAC name.
+
+    Only SIC 6770 / Blank Checks for the exact ticker can exclude a symbol.
+    Any SEC/network/schema ambiguity returns None and therefore remains queued.
+    """
+    global _SEC_TICKER_CACHE
+    sym=str(symbol or "").strip().upper()
+    if sym in _SEC_SPAC_CACHE:
+        return _SEC_SPAC_CACHE[sym]
+    try:
+        if _SEC_TICKER_CACHE is None:
+            raw=request_json(
+              SEC_TICKERS,
+              headers={"User-Agent":SEC_UA,"Accept":"application/json"},
+              timeout=30,
+            )
+            idx={}
+            for row in (raw or {}).values():
+                if not isinstance(row,dict):
+                    continue
+                ticker=str(row.get("ticker") or "").strip().upper()
+                cik=row.get("cik_str")
+                if ticker and cik is not None:
+                    idx[ticker]=int(cik)
+            _SEC_TICKER_CACHE=idx
+        cik=(_SEC_TICKER_CACHE or {}).get(sym)
+        if cik is None:
+            _SEC_SPAC_CACHE[sym]=None
+            return None
+        sub=request_json(
+          f"{SEC_SUBMISSIONS}/CIK{int(cik):010d}.json",
+          headers={"User-Agent":SEC_UA,"Accept":"application/json"},
+          timeout=30,
+        )
+        sic=str(sub.get("sic") or "").strip()
+        sic_desc=str(sub.get("sicDescription") or "").strip()
+        tickers=[str(x).strip().upper() for x in (sub.get("tickers") or [])]
+        exchanges=[str(x) for x in (sub.get("exchanges") or [])]
+        if sym in tickers and (sic=="6770" or sic_desc.lower()=="blank checks"):
+            proof={
+              "authority":"SEC_SUBMISSIONS",
+              "cik":f"{int(cik):010d}",
+              "sic":sic,
+              "sic_description":sic_desc,
+              "tickers":tickers,
+              "exchanges":exchanges,
+              "source":f"{SEC_SUBMISSIONS}/CIK{int(cik):010d}.json",
+            }
+            _SEC_SPAC_CACHE[sym]=proof
+            return proof
+    except Exception:
+        pass
+    _SEC_SPAC_CACHE[sym]=None
+    return None
+
 def screener_rows():
     obj=request_json(
       NASDAQ_SCREENER,
@@ -161,6 +223,17 @@ def build_discovery(official,force_all=False):
               "source":"NASDAQ_OFFICIAL_WEB_SCREENER",
             }
             continue
+        if not industry and SPAC_SUSPECT.search(official.get(sym) or ""):
+            proof=sec_blank_check_proof(sym)
+            if proof:
+                screener_excluded[sym]={
+                  "reason":"SPAC_BLANK_CHECK",
+                  "security_name":official.get(sym) or str(r.get("name") or "").strip(),
+                  "industry":"SEC_SIC_6770_BLANK_CHECKS",
+                  "source":"SEC_SUBMISSIONS_SIC_6770",
+                  "proof":proof,
+                }
+                continue
         px=num(r.get("lastsale"))
         mc=num(r.get("marketCap"))
         vol=num(r.get("volume"))
@@ -201,8 +274,21 @@ def build_discovery(official,force_all=False):
             }
     for sym in sorted(missing):
         # Official-directory identity exists but the web screener omitted it.
-        # Force it into downstream PRICE/DV30/HISTORY; MC remains UNKNOWN
-        # unless a later authoritative resolver proves it.
+        # For a SPAC-suspect name, SEC SIC 6770 is exclusion-only proof.
+        # If SEC is unavailable/ambiguous, fail closed by keeping it queued.
+        if SPAC_SUSPECT.search(official.get(sym) or ""):
+            proof=sec_blank_check_proof(sym)
+            if proof:
+                screener_excluded[sym]={
+                  "reason":"SPAC_BLANK_CHECK",
+                  "security_name":official.get(sym) or "",
+                  "industry":"SEC_SIC_6770_BLANK_CHECKS",
+                  "source":"SEC_SUBMISSIONS_SIC_6770",
+                  "proof":proof,
+                }
+                continue
+        # Otherwise force it into downstream PRICE/DV30/HISTORY; MC remains
+        # UNKNOWN unless a later authoritative resolver proves it.
         prefilter[sym]={
           "screener_price":None,
           "screener_market_cap":None,
@@ -507,7 +593,7 @@ def main():
           "asof_et":asof,
           "expected30":expected30,
           "official_footer":footer,
-          "identity_authority":(frozen.get("identity_authority") if frozen is not None else "NASDAQTRADER_EXPLICIT_TYPE_FILTER_V4_SPAC_EXCLUDED_AT_MASTER"),
+          "identity_authority":(frozen.get("identity_authority") if frozen is not None else "NASDAQTRADER_EXPLICIT_TYPE_FILTER_V5_SEC_SPAC_PROOF_AT_MASTER"),
           "identity_ruleset":IDENTITY_RULESET,
           "discovery_source":("CANONICAL_FROZEN_FULL_IDENTITY_SAME_ASOF" if frozen is not None else ("NASDAQTRADER_FULL_IDENTITY_PLUS_NASDAQ_SCREENER_METADATA_ONLY" if FULL_IDENTITY else "NASDAQ_OFFICIAL_WEB_SCREENER_PREFILTER_ONLY")),
           "history_source":"SINA_US_DAILY_ACCELERATOR_NOT_G9",
