@@ -5869,8 +5869,11 @@
     "no_threshold_change": true,
     "unknown_never_pass": true,
     "predecessor_current_post_mc_active": false,
-    "supersession_fields_intentionally_omitted": true,
-    "rationale": "PREDECESSOR_FAILS_CURRENT_V6_SETTLEMENT_QUEUE_BINDING;CURRENT_EXACT_BRIDGE_IS_UNAMBIGUOUS"
+    "supersession_fields_intentionally_omitted": false,
+    "rationale": "RETIRE_DUPLICATE_EXACT_V2_AUTHORITY_WITH_IMMUTABLE_BLOB_BOUND_SUPERSESSION;NO_MC_CLASSIFICATION_OR_THRESHOLD_CHANGE",
+    "duplicate_exact_authority_repair": true,
+    "supersedes_exact_predecessor_path": "nasdaq-xray/canonical_mc_bridge_20261005_c417_dv30_v2.json",
+    "supersedes_exact_predecessor_blob_sha": "20b96944679b5fed40fb8967c0cd027006c6ea81"
   },
   "resolution_evidence": {
     "primary_provider_current_status": "UNAVAILABLE_ZERO_DOLLAR_PROVIDER_BUDGET",
@@ -5902,5 +5905,7 @@
     "pass_manufactured": false,
     "standalone_exact_current_authority": true,
     "old_predecessor_not_current_post_mc_valid": true
-  }
+  },
+  "supersedes_mc_bridge_path": "nasdaq-xray/canonical_mc_bridge_20261005_c417_dv30_v2.json",
+  "supersedes_mc_bridge_blob_sha": "20b96944679b5fed40fb8967c0cd027006c6ea81"
 }
