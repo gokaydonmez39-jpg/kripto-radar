@@ -455,7 +455,7 @@ def _hydrate_archive_index_row(row:dict)->dict:
     pm=re.search(r"\bperiod of report\s+(\d{4}-\d{2}-\d{2})\b",clean,re.I)
     if pm:
         row["reportDate"]=pm.group(1)
-    items=sorted(set(re.findall(r"\bitem\s+(\d+\.\d+)\b",clean,re.I)))
+    items=sorted(set(re.findall(r"\bitems?\s+(\d+\.\d+)\b",clean,re.I)))
     row["items"]=",".join(items)
 
     # Reuse the same SEC filing-index primary-document resolver already used by
