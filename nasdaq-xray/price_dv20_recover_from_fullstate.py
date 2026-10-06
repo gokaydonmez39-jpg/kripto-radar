@@ -12,6 +12,7 @@ TASK_ID="6a825366222081918997094d76e6ae46"
 WORKERS=int(os.getenv("XRAY_PHASE_WORKERS","12"))
 DEFER_TO_BRIDGE=os.getenv("XRAY_DYNAMIC_AUTHENTICATED_PRICE_BRIDGE","0")=="1"
 FORCE_POLICY_REPLAY=os.getenv("XRAY_PRICE_FORCE_POLICY_REPLAY","0")=="1"
+USE_CURRENT_BASELINE=os.getenv("XRAY_PRICE_USE_CURRENT_BASELINE","0")=="1"
 HARD_PRICE=5.0
 HARD_DV20=50_000_000.0
 RESOLVER_REQUEST=Path(os.getenv("XRAY_CURRENT_RESOLVER_REQUEST",str(ROOT/"canonical_current_resolver_request.json")))
@@ -546,6 +547,27 @@ def valid_bridge_price_resolution(x,asof):
         return bool(x.get("first_trade_date")) and str(x.get("first_trade_date"))>asof and bool(x.get("source"))
     return False
 
+def current_price_baseline_valid(prior,s,asof,queue):
+    """Validate exact same-policy PRICE state before incremental resolver refresh."""
+    try:
+        return bool(
+          prior.get("schema")=="XRAY_CANONICAL_PRICE_DV20_V1"
+          and prior.get("task_id")==TASK_ID
+          and prior.get("asof_et")==asof
+          and prior.get("execution")=="NONE" and prior.get("real_money")=="NO-GO"
+          and prior.get("unknown_never_pass") is True
+          and prior.get("source_master_queue_hash")==s.get("queue_hash")
+          and int(prior.get("source_master_count",-1))==len(queue)
+          and set((prior.get("results") or {}).keys())==set(queue)
+          and (prior.get("thresholds") or {}).get("price")==">=5"
+          and (prior.get("thresholds") or {}).get("dv20")==">=50000000 exact20 median"
+          and prior.get("gate_order")==["PRICE","DV20"]
+          and price_snapshot_integrity(prior,asof)
+        )
+    except Exception:
+        return False
+
+
 def main():
     s=json.loads(INPUT.read_text())
     asof=s.get("asof_et")
@@ -553,11 +575,11 @@ def main():
     queue=s["queue"];old=s["results"];assert len(queue)==len(old) and len(queue)>3000
     baseline_source="FULL_STATE"
     prior_thresholds={}
-    if FORCE_POLICY_REPLAY:
+    if FORCE_POLICY_REPLAY or USE_CURRENT_BASELINE:
         if not OUT.exists():
-            raise RuntimeError("PRICE_POLICY_REPLAY_PRIOR_PRICE_MISSING")
+            raise RuntimeError("PRICE_PRIOR_ARTIFACT_MISSING")
         prior=json.loads(OUT.read_text())
-        if not (
+        common_binding=(
             prior.get("schema")=="XRAY_CANONICAL_PRICE_DV20_V1"
             and prior.get("task_id")==TASK_ID
             and prior.get("asof_et")==asof
@@ -565,14 +587,30 @@ def main():
             and prior.get("source_master_queue_hash")==s.get("queue_hash")
             and int(prior.get("source_master_count",-1))==len(queue)
             and set((prior.get("results") or {}).keys())==set(queue)
-        ):
-            raise RuntimeError("PRICE_POLICY_REPLAY_PRIOR_PRICE_BINDING_INVALID")
+        )
+        if not common_binding:
+            raise RuntimeError("PRICE_PRIOR_ARTIFACT_BINDING_INVALID")
+        if USE_CURRENT_BASELINE and not current_price_baseline_valid(prior,s,asof,queue):
+            raise RuntimeError("PRICE_CURRENT_BASELINE_INVALID")
         prior_thresholds=prior.get("thresholds") or {}
         old=prior["results"]
-        baseline_source="PRIOR_PRICE_ARTIFACT"
+        baseline_source="CURRENT_PRICE_ARTIFACT" if USE_CURRENT_BASELINE else "PRIOR_PRICE_ARTIFACT"
     results={};redo=[];policy_redo=set()
     for sym in queue:
         r=old[sym];st=r.get("status");info=r.get("info")
+        if USE_CURRENT_BASELINE:
+            if st=="UNKNOWN":
+                redo.append(sym)
+                continue
+            if st not in {
+              "PASS_PRICE_DV20","FAIL_PRICE","FAIL_DV20","FAIL_PRICE_NO_ASOF_BAR",
+              "FAIL_DV20_INSUFFICIENT_SESSIONS","BLOCK_CURRENT_RUN","BLOCK_POST_ASOF_LISTING",
+            }:
+                raise RuntimeError("PRICE_CURRENT_BASELINE_STATUS_INVALID:"+str(sym)+":"+str(st))
+            kept=dict(r)
+            kept["provenance"]="CURRENT_PRICE_SAME_POLICY_REUSE"
+            results[sym]=kept
+            continue
         if st in {"PASS","PASS_PRICE_DV20"}:
             monotonic_reuse=bool(FORCE_POLICY_REPLAY and monotonic_legacy_pass_reusable(prior_thresholds))
             exact_numeric_pass=(
@@ -675,7 +713,8 @@ def main():
       "source_master_queue_hash":s["queue_hash"],"source_master_count":len(queue),
       "expected20":exp20,"gate_order":["PRICE","DV20"],"thresholds":{"price":">=5","dv20":">=50000000 exact20 median"},
       "reused_terminal_count":len(queue)-len(redo),"reevaluated_count":len(redo),
-      "policy_replay":FORCE_POLICY_REPLAY,"policy_replay_baseline_source":baseline_source,
+      "policy_replay":FORCE_POLICY_REPLAY,"current_baseline_reuse":USE_CURRENT_BASELINE,
+      "policy_replay_baseline_source":baseline_source,
       "policy_replay_input_count":len(policy_redo),
       "monotonic_legacy_pass_reuse_count":sum(1 for x in results.values() if x.get("provenance")=="PRIOR_STRICTER_PRICE_PASS_MONOTONIC_REUSE"),
       "policy_replay_symbols":sorted(policy_redo),
