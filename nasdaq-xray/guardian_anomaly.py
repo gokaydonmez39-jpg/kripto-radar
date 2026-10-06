@@ -9,6 +9,40 @@ def now():return datetime.now(timezone.utc).isoformat()
 def load(fn):
     try:return json.loads((ROOT/fn).read_text())
     except Exception:return {}
+def master_identity_partition_integrity(master):
+    mp=master.get("completion_proof",{}) or {}
+    try:
+        passes=list(master.get("pass_symbols") or [])
+        unknowns=list(master.get("unknown_symbols") or [])
+        pset=set(passes); uset=set(unknowns)
+        pc=int(master.get("pass_count",-1)); uc=int(master.get("unknown_count",-1))
+        qt=int(master.get("queue_total",-1)); raw=int(master.get("raw_identity_total",-1))
+    except Exception:
+        return False
+    status_ok=(
+        (uc==0 and master.get("status")=="HISTORY_COMPLETE")
+        or (uc>0 and master.get("status")=="PARTIAL_UNKNOWN")
+    )
+    return bool(
+        master.get("schema")=="XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1"
+        and master.get("unknown_never_pass") is True
+        and status_ok
+        and pc==qt==len(passes)==len(pset)
+        and uc==len(unknowns)==len(uset)
+        and not (pset & uset)
+        and raw==pc+uc
+        and mp.get("identity_authority_v6") is True
+        and mp.get("authority_full_identity") is True
+        and mp.get("full_identity") is True
+        and mp.get("queue_hash_exact") is True
+        and mp.get("queue_total_exact") is True
+        and mp.get("queue_unique") is True
+        and mp.get("asof_identity_proof_binding") is True
+        and mp.get("sec_spac_proof_binding") is True
+        and mp.get("identity_partition_policy_exact") is True
+        and mp.get("identity_unknown_partition_exact") is True
+    )
+
 def main():
     master=load("canonical_current_master_manifest.json")
     price=load("canonical_current_price_dv30.json")
@@ -22,24 +56,18 @@ def main():
     pointer=load("chatgpt_canonical_state_v2.json")
     checks=[]; add=lambda name,state,detail: checks.append({"name":name,"state":state,"detail":detail})
     mp=master.get("completion_proof",{})
-    master_identity_ok=bool(
-        master.get("schema")=="XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1"
-        and master.get("status")=="HISTORY_COMPLETE"
-        and int(master.get("unknown_count",-1))==0
-        and mp.get("identity_authority_v6") is True
-        and mp.get("authority_full_identity") is True
-        and mp.get("full_identity") is True
-        and mp.get("queue_hash_exact") is True
-        and mp.get("queue_total_exact") is True
-        and mp.get("queue_unique") is True
-        and mp.get("asof_identity_proof_binding") is True
-        and mp.get("sec_spac_proof_binding") is True
-    )
+    master_identity_ok=master_identity_partition_integrity(master)
+    master_unknown=master.get("unknown_count")
     add("master_identity","PASS" if master_identity_ok else "FAIL",{
       "authority":master.get("identity_authority"),
       "identity_authority_v6":mp.get("identity_authority_v6"),
       "authority_full_identity":mp.get("authority_full_identity"),
-      "unknown_count":master.get("unknown_count")
+      "partition_integrity":master_identity_ok,
+      "coverage_complete":master_unknown==0,
+      "coverage_status":"COMPLETE" if master_unknown==0 else "PARTIAL_UNKNOWN",
+      "pass_count":master.get("pass_count"),
+      "unknown_count":master_unknown,
+      "raw_identity_total":master.get("raw_identity_total")
     })
     pc=price.get("pass_count"); uc=price.get("unknown_count")
     add("price_dv30_counts","PASS" if price.get("schema")=="XRAY_CANONICAL_PRICE_DV30_V1" and isinstance(pc,int) and isinstance(uc,int) and pc>=0 and uc>=0 else "UNKNOWN",{"pass_count":pc,"unknown_count":uc,"schema":price.get("schema")})
