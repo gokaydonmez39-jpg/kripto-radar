@@ -6,6 +6,7 @@ import io
 import json
 import os
 import re
+import urllib.parse
 import urllib.request
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
@@ -14,6 +15,7 @@ import pandas_market_calendars as mcal
 
 ROOT=Path(__file__).resolve().parent
 NASDAQ_DIR="https://www.nasdaqtrader.com/dynamic/SymDir/nasdaqlisted.txt"
+NASDAQ_SCREENER="https://api.nasdaq.com/api/screener/stocks"
 SEC_TICKERS="https://www.sec.gov/files/company_tickers.json"
 SEC_SUBMISSIONS="https://data.sec.gov/submissions"
 SEC_UA=os.getenv("XRAY_SEC_USER_AGENT","NASDAQ-SWING-XRAY research bot; xray-dataplane-bot@users.noreply.github.com")
@@ -70,6 +72,66 @@ def official_directory():
     if not names:
         raise RuntimeError("NASDAQ_DIRECTORY_EMPTY")
     return names,footer
+
+def official_screener_industries():
+    params=urllib.parse.urlencode({
+      "tableonly":"true","limit":"25","offset":"0","exchange":"NASDAQ","download":"true"
+    })
+    req=urllib.request.Request(
+      NASDAQ_SCREENER+"?"+params,
+      headers={
+        "User-Agent":UA,
+        "Accept":"application/json,text/plain,*/*",
+        "Origin":"https://www.nasdaq.com",
+        "Referer":"https://www.nasdaq.com/market-activity/stocks/screener",
+      },
+    )
+    with urllib.request.urlopen(req,timeout=60) as r:
+        obj=json.loads(r.read().decode("utf-8"))
+    data=obj.get("data") or {}
+    rows=data.get("rows") or ((data.get("table") or {}).get("rows") or [])
+    if len(rows)<1000:
+        raise RuntimeError("NASDAQ_SCREENER_TOO_FEW_ROWS")
+    out={}
+    for row in rows:
+        sym=str(row.get("symbol") or "").strip().upper()
+        if sym:
+            out[sym]=str(row.get("industry") or "").strip()
+    return out
+
+def prior_operating_fallback(sym,old,asof,names,industries):
+    if sym not in names:
+        return None
+    industry=str(industries.get(sym) or "").strip()
+    if not industry or industry.lower()=="blank checks":
+        return None
+    source=str((old or {}).get("source_url") or "")
+    evidence=str((old or {}).get("evidence_date") or "")
+    if not source.startswith("https://www.sec.gov/") or not re.fullmatch(r"20\d{2}-\d{2}-\d{2}",evidence) or evidence>asof:
+        return None
+    out=dict(old)
+    out["security_name"]=names[sym]
+    out["reason"]="SAME_ASOF_NASDAQ_DIRECTORY_SCREENER_PLUS_PRIOR_SEC_OPERATING_EVIDENCE"
+    out["same_asof_nasdaq_screener_industry"]=industry
+    out["same_asof_revalidated_without_sec_network"]=True
+    return out
+
+def prior_blank_fallback(sym,old,asof,names,industries):
+    if sym not in names:
+        return None
+    industry=str(industries.get(sym) or "").strip()
+    if industry.lower()!="blank checks":
+        return None
+    if int((old or {}).get("sic",-1))!=6770:
+        return None
+    source=str((old or {}).get("source_url") or "")
+    evidence=str((old or {}).get("evidence_date") or "")
+    if not source.startswith("https://www.sec.gov/") or not re.fullmatch(r"20\d{2}-\d{2}-\d{2}",evidence) or evidence>asof:
+        return None
+    out=dict(old)
+    out["same_asof_nasdaq_screener_industry"]=industry
+    out["same_asof_revalidated_without_sec_network"]=True
+    return out
 
 def load_json_url(url:str):
     return json.loads(request_bytes(url,SEC_UA,35).decode("utf-8"))
@@ -185,22 +247,33 @@ def main():
     if prior_sec:
         blank_seed=dict(prior_sec[2].get("proofs") or {})
 
+    industries=official_screener_industries()
+    sec_network_error=None
     operating={}
     for sym,old in sorted(operating_seed.items()):
         if sym not in names:
             continue
         cik=cik_from_prior_row(old)
-        row=sec_current_row(sym,asof,cik,False)
-        if row is None:
+        try:
+            row=sec_current_row(sym,asof,cik,False)
+        except Exception as e:
+            row=None
+            sec_network_error=f"{type(e).__name__}:{str(e)[:200]}"
+        if row is not None:
+            operating[sym]={
+              "security_name":names[sym],
+              "evidence_date":row["evidence_date"],
+              "reason":"SAME_RUN_SEC_CURRENT_NON_BLANK_CHECK_REVALIDATION",
+              "source_url":row["source_url"],
+              "cik":row["cik"],
+              "sic":row["sic"],
+              "same_asof_revalidated_without_sec_network":False,
+            }
+            continue
+        fallback=prior_operating_fallback(sym,old,asof,names,industries)
+        if fallback is None:
             raise RuntimeError("OPERATING_OVERRIDE_REVALIDATION_FAILED:"+sym)
-        operating[sym]={
-          "security_name":names[sym],
-          "evidence_date":row["evidence_date"],
-          "reason":"SAME_RUN_SEC_CURRENT_NON_BLANK_CHECK_REVALIDATION",
-          "source_url":row["source_url"],
-          "cik":row["cik"],
-          "sic":row["sic"],
-        }
+        operating[sym]=fallback
 
     identity={
       "schema":"XRAY_MASTER_ASOF_IDENTITY_PROOF_V1",
@@ -222,10 +295,19 @@ def main():
         if sym not in names:
             continue
         cik=cik_from_prior_row(old)
-        row=sec_current_row(sym,asof,cik,True)
-        if row is None:
+        try:
+            row=sec_current_row(sym,asof,cik,True)
+        except Exception as e:
+            row=None
+            sec_network_error=sec_network_error or f"{type(e).__name__}:{str(e)[:200]}"
+        if row is not None:
+            row["same_asof_revalidated_without_sec_network"]=False
+            proofs[sym]=row
+            continue
+        fallback=prior_blank_fallback(sym,old,asof,names,industries)
+        if fallback is None:
             raise RuntimeError("SEC_SPAC_REVALIDATION_FAILED:"+sym)
-        proofs[sym]=row
+        proofs[sym]=fallback
     if proofs:
         sec={
           "schema":"XRAY_MASTER_SEC_SPAC_PROOF_V1",
@@ -251,6 +333,8 @@ def main():
       "sec_path":sec_path.name if proofs else None,
       "sec_spac_count":len(proofs),
       "forward_carry":False,
+      "sec_network_error":sec_network_error,
+      "same_asof_nasdaq_screener_fallback_used":bool(sec_network_error),
     },sort_keys=True))
 
 if __name__=="__main__":
