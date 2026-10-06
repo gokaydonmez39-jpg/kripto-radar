@@ -179,21 +179,44 @@ def load_valid_mc_rows(price: dict, pass_symbols: list[str], pass_hash: str, mas
 
 
 def select_active_mc(rows):
+    """Mirror Post-MC authority selection.
+
+    A successor is eligible when its direct predecessor exists in the same
+    structurally/current-semantics row set with the exact recorded blob. An
+    older intermediate row whose own predecessor is no longer current-valid is
+    not itself active; it must not invalidate a newer exact successor that
+    names that intermediate row directly.
+    """
     by_path = {r["path"]: r for r in rows}
-    superseded = set()
+    valid = []
     for r in rows:
         j = r["obj"]
         sp = j.get("supersedes_mc_bridge_path")
         ss = j.get("supersedes_mc_bridge_blob_sha")
         if not sp and not ss:
+            valid.append(r)
             continue
-        assert sp and ss, ("MALFORMED_MC_SUPERSESSION", r["path"])
+        if not sp or not ss:
+            continue
         pred = by_path.get(sp)
-        assert pred is not None, ("MC_SUPERSESSION_PREDECESSOR_NOT_VALID", r["path"], sp)
-        assert pred["blob"] == ss, ("MC_SUPERSESSION_PREDECESSOR_BLOB_MISMATCH", r["path"], sp)
-        superseded.add(sp)
-    active = [r for r in rows if r["path"] not in superseded]
-    assert len(active) == 1, ("AMBIGUOUS_ACTIVE_MC_AUTHORITY", [r["path"] for r in active])
+        if pred is None:
+            continue
+        if pred["blob"] != ss:
+            continue
+        valid.append(r)
+
+    superseded = {
+        r["obj"].get("supersedes_mc_bridge_path")
+        for r in valid
+        if r["obj"].get("supersedes_mc_bridge_path")
+        and r["obj"].get("supersedes_mc_bridge_blob_sha")
+    }
+    active = [r for r in valid if r["path"] not in superseded]
+    assert len(active) == 1, (
+        "AMBIGUOUS_ACTIVE_MC_AUTHORITY",
+        [r["path"] for r in active],
+        [r["path"] for r in valid],
+    )
     return active[0]
 
 

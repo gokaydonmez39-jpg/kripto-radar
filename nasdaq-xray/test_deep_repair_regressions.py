@@ -885,6 +885,32 @@ def test_history_bridge_semantic_rebind_requires_exact_mc_partitions():
 
 
 
+def test_mc_supersession_selector_allows_newer_direct_successor_over_obsolete_ancestor():
+    def row(name,blob,sup=None,supblob=None):
+        obj={}
+        if sup is not None:
+            obj["supersedes_mc_bridge_path"]=sup
+            obj["supersedes_mc_bridge_blob_sha"]=supblob
+        return {"path":name,"blob":blob,"obj":obj}
+    # v1 is intentionally absent from current-valid rows. v2 directly names
+    # obsolete v1 and therefore is not valid/active. v3 directly names v2 by
+    # exact blob and is the unique current active successor.
+    v2=row("v2.json","B2","v1.json","B1")
+    v3=row("v3.json","B3","v2.json","B2")
+    got=mc_rebind_mod.select_active_mc([v2,v3])
+    assert got["path"]=="v3.json",got
+
+    # Malformed duplicate active authorities must still fail closed.
+    failed=False
+    try:
+        mc_rebind_mod.select_active_mc([
+          row("a.json","A"),
+          row("b.json","B"),
+        ])
+    except AssertionError as e:
+        failed="AMBIGUOUS_ACTIVE_MC_AUTHORITY" in str(e)
+    assert failed
+
 def test_mc_provenance_rebind_preserves_all_outcomes_and_watch_caps():
     pred={
       "counts":{"MC_PASS_PRIMARY":1,"MC_FAIL_PRIMARY":1,"MC_PASS_FALLBACK_WATCH":1,
@@ -987,6 +1013,7 @@ def main():
     test_lifecycle_expiry_and_frozen_stability(); test_lifecycle_regime_revalidation_persists_without_pass(); test_lifecycle_persistence_roundtrip()
     test_mc_bridge_immutable_supersession()
     test_history_bridge_semantic_rebind_requires_exact_mc_partitions()
+    test_mc_supersession_selector_allows_newer_direct_successor_over_obsolete_ancestor()
     test_mc_provenance_rebind_preserves_all_outcomes_and_watch_caps()
     test_resolver_bridge_authority_prefers_exact_current_lineage()
     test_post_mc_exact_source_rebind_workflow_contract()
@@ -1003,7 +1030,7 @@ def main():
     test_workflow_race_and_pre_mc_freeze_contracts()
     print({"status":"PASS","tests":["R1_NO_FUTURE_MUTATION","R1_PLUS2_CONFIRMATION_NO_LEAK","R1_PIVOT_BOUNDARY_NOT_OVERHEAD",
       "RESISTANCE_ROLE_CHANGE_STATE_MACHINE","FINAL_HISTORY_OHLCV_BINDING","REGIME_INTERVAL_BOUNDS_AND_FINALIST_GATE","CORPORATE_ACTION_NONE_VS_SCALE_BREAK_FAIL_CLOSED","D_RECLAIM_AFTER_HL_AVAILABILITY","FAMILY_A_TRIGGER_TIME_RECONSTRUCTION","FAMILY_A_AGE5_UNRECORDED_NOT_REDISCOVERED","FAMILY_A_FINAL_GEOMETRY_REVALIDATION","RETEST_WINDOW_EXPIRES_AFTER_5","MODEL_HORIZON_EXPIRES_AFTER_8",
-      "FROZEN_LEVELS_NEXT_ASOF_STABLE","LIFECYCLE_REGIME_REVALIDATION_PERSISTS","LIFECYCLE_PERSISTENCE_ROUNDTRIP","MC_BRIDGE_IMMUTABLE_SUPERSESSION","HISTORY_BRIDGE_SEMANTIC_REBIND_EXACT_MC_PARTITIONS","MC_PROVENANCE_REBIND_PRESERVES_OUTCOMES","RESOLVER_BRIDGE_EXACT_CURRENT_LINEAGE","POST_MC_EXACT_SOURCE_REBIND_WORKFLOW_CONTRACT",
+      "FROZEN_LEVELS_NEXT_ASOF_STABLE","LIFECYCLE_REGIME_REVALIDATION_PERSISTS","LIFECYCLE_PERSISTENCE_ROUNDTRIP","MC_BRIDGE_IMMUTABLE_SUPERSESSION","HISTORY_BRIDGE_SEMANTIC_REBIND_EXACT_MC_PARTITIONS","MC_SUPERSESSION_DIRECT_SUCCESSOR_OVER_OBSOLETE_ANCESTOR","MC_PROVENANCE_REBIND_PRESERVES_OUTCOMES","RESOLVER_BRIDGE_EXACT_CURRENT_LINEAGE","POST_MC_EXACT_SOURCE_REBIND_WORKFLOW_CONTRACT",
       "FINAL_ALPHA_STALE_SOURCE_GUARD","PARTIAL_COVERAGE_DOES_NOT_GLOBAL_ABORT",
       "DETAILED_FINALIST_LEGAL_FAIL_CLOSED","CANDIDATE_LOCAL_LEGAL_UNKNOWN_ISOLATION","FINAL_VERIFIED_MARKET_GAP_NOT_DOUBLE_BLOCKED","DETAILED_LEGAL_GUARD_EXACT_SOURCE_BINDING","DETAILED_LEGAL_GUARD_POLICY_BINDING","DETAILED_LEGAL_GUARD_NONCIRCULAR_LIFECYCLE","CROSS_SESSION_LIFECYCLE_ACTIVE_ONLY","FAMILY_C_EVENT_REQUEST_BOUNDARY_AMC","FUTURE_LIFECYCLE_EVIDENCE_REJECTED","DETAILED_LEGAL_GUARD_LIFECYCLE_FALLBACK_PARITY","DETAILED_LEGAL_GUARD_BOILERPLATE_SEVERITY","DETAILED_LEGAL_GUARD_ANNUAL_PLUS_QUARTERLY_SCOPE","DETAILED_LEGAL_GUARD_EMPTY_SCOPE_NO_NETWORK","TERMINAL_DETAILED_LEGAL_FULL_E2E_BLOCKER","DETAILED_LEGAL_GUARD_NO_SELF_TRIGGER",
       "POST_MC_PARTIAL_COVERAGE_GATE","TERMINAL_LIFECYCLE_STATE_CONTRACT","PRE_MC_COMPLETED_ASOF_FREEZE_TRUTH_TABLE"]})
