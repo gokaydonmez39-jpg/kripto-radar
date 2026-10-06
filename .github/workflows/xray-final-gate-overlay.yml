@@ -72,7 +72,11 @@ jobs:
           aa=json.load(open("nasdaq-xray/account_provider_adapter_contract.json"))
           assert o["schema"]=="XRAY_FINAL_GATE_OVERLAY_V2"
           assert o["execution"]=="NONE" and o["real_money"]=="NO-GO"
-          assert o["asof_et"]==t["asof_et"]==(p.get("state_json") or {}).get("asof_et")
+          pointer_asof=(p.get("state_json") or {}).get("asof_et")
+          assert o["asof_et"]==t["asof_et"]
+          assert pointer_asof and pointer_asof<=t["asof_et"],(pointer_asof,t["asof_et"])
+          assert o["binding_integrity"]["pointer_future_drift_blocked"] is True
+          assert o["binding_integrity"]["pointer_not_a_pass_authority"] is True
           assert o["source_terminal"]["blob_sha"]==blob("nasdaq-xray/canonical_current_terminal.json")
           assert o["source_pointer"]["blob_sha"]==blob("nasdaq-xray/chatgpt_canonical_state_v2.json")
           assert o["strict_g9"]["runtime_blob_sha"]==blob("nasdaq-xray/strict_g9_runtime_state.json")
