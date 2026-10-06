@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/chatgpt_canonical_state_v2.json"
+      - "nasdaq-xray/canonical_current_terminal.json"
       - "nasdaq-xray/deterministic_replay_guard.py"
       - ".github/workflows/xray-replay-v2-refresh.yml"
   workflow_dispatch:
