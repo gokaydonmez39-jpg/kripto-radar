@@ -218,7 +218,7 @@
   "lifecycle_scope_count": 0,
   "lifecycle_scope_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "market_close_semantics": "ASOF_COMPLETED_RTH;EVENT_AFTER_ASOF_CLOSE_BEFORE_NEXT_RTH_COUNTS_INSIDE_HORIZON",
-  "official_confirmation": "ISSUER_IR_OR_SEC_PRIMARY;DISCOVERY_ONLY_NEVER_BLOCKS_OR_CLEARS_BY_ITSELF",
+  "official_confirmation": "ISSUER_IR_OR_SEC_PRIMARY;DISCOVERY_OPTIONAL_NEVER_BLOCKS_OR_CLEARS_BY_ITSELF;GEOMETRY_SCOPE_MUST_ATTEMPT_DIRECT_OFFICIAL_PRIMARY_WHEN_DISCOVERY_UNAVAILABLE",
   "past_family_c_sessions": [
     "2026-09-21",
     "2026-09-22",
@@ -244,7 +244,17 @@
       "XNCM",
       "XNGM"
     ],
-    "provider": "BIGDATA_CORPORATE_CALENDAR"
+    "geometry_direct_official_fallback_required": true,
+    "paid_topup_forbidden": true,
+    "preferred_providers": [
+      "PUBLIC_WEB",
+      "BIGDATA_IF_ZERO_DOLLAR_CALLABLE",
+      "QUARTR_IF_ZERO_DOLLAR_CALLABLE"
+    ],
+    "provider": "PROVIDER_NEUTRAL_ZERO_DOLLAR_DISCOVERY",
+    "provider_failure_never_clears_or_blocks": true,
+    "required": false,
+    "role": "OPTIONAL_ACCELERATOR_ONLY"
   },
   "schema": "XRAY_EVENT_EPOCH_REQUEST_V1",
   "source_deep_geometry_blob_sha": "9482a1abad41af6ccc72686484ba9cbb94a1f5d8",
