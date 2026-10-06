@@ -61,9 +61,12 @@ def main():
     # Repeated local invocations are resumable and bounded; same epoch does zero new work once complete.
     max_loops=5
     for i in range(max_loops):
-        run("sina_stage.py")
+        run("sina_stage.py",{"XRAY_FULL_IDENTITY":"1"})
         ss=readj("sina_state.json")
-        print("XRAY_HISTORY_STATUS="+str(ss.get("status"))+" CURSOR="+str(ss.get("cursor"))+"/"+str(ss.get("queue_total")),flush=True)
+        dm=ss.get("discovery_meta") or {}
+        if dm.get("full_identity") is not True or dm.get("authority")!="FULL_IDENTITY_NO_PREFILTER":
+            raise RuntimeError("FULL_UNIVERSE_IDENTITY_NOT_PROVEN")
+        print("XRAY_HISTORY_STATUS="+str(ss.get("status"))+" CURSOR="+str(ss.get("cursor"))+"/"+str(ss.get("queue_total"))+" FULL_IDENTITY=1",flush=True)
         if ss.get("status")=="HISTORY_COMPLETE":
             break
     ss=readj("sina_state.json")
@@ -74,6 +77,7 @@ def main():
           "updated_at_utc":datetime.now(timezone.utc).isoformat(),
           "status":"PARTIAL_HISTORY","asof_et":ss.get("asof_et"),
           "cursor":ss.get("cursor"),"queue_total":ss.get("queue_total"),
+          "full_universe_identity":True,"queue_hash":ss.get("queue_hash"),
           "g9_status":"BLOCKED","account_gate":"UNKNOWN_NOT_CONFIGURED"
         }
         STATE.write_text(json.dumps(out,indent=2,sort_keys=True)+"\n")
@@ -136,7 +140,7 @@ def main():
       "status":status,"asof_et":ss.get("asof_et"),
       "fingerprint":fingerprint,
       "candidate_hash":cand_hash,"engine_hash":engine_hash,
-      "history":{"status":ss.get("status"),"queue_total":ss.get("queue_total"),"counts":ss.get("counts")},
+      "history":{"status":ss.get("status"),"queue_total":ss.get("queue_total"),"queue_hash":ss.get("queue_hash"),"full_universe_identity":True,"counts":ss.get("counts")},
       "mc":{"current_core_count":core.get("current_core_count"),"unresolved_count":mc.get("unresolved_count"),"definitive_fail_count":mc.get("definitive_fail_count")},
       "stage1":{"weekly_pass_count":st1.get("weekly_pass_count"),"unknown_count":st1.get("unknown_count")},
       "regime":{"regime":rg.get("regime"),"breadth_missing_count":rg.get("breadth_missing_count"),"breadth_above_sma50_pct":rg.get("breadth_above_sma50_pct"),"nh20":rg.get("nh20"),"nl20":rg.get("nl20")},
