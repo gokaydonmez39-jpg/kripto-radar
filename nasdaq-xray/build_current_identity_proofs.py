@@ -102,18 +102,21 @@ def official_screener_industries():
 def prior_operating_fallback(sym,old,asof,names,industries):
     if sym not in names:
         return None
+    current_name=str(names.get(sym) or "").strip()
+    prior_name=str((old or {}).get("security_name") or "").strip()
     industry=str(industries.get(sym) or "").strip()
-    if not industry or industry.lower()=="blank checks":
-        return None
     source=str((old or {}).get("source_url") or "")
     evidence=str((old or {}).get("evidence_date") or "")
+    if not current_name or current_name!=prior_name:
+        return None
     if not source.startswith("https://www.sec.gov/") or not re.fullmatch(r"20\d{2}-\d{2}-\d{2}",evidence) or evidence>asof:
         return None
     out=dict(old)
-    out["security_name"]=names[sym]
-    out["reason"]="SAME_ASOF_NASDAQ_DIRECTORY_SCREENER_PLUS_PRIOR_SEC_OPERATING_EVIDENCE"
+    out["security_name"]=current_name
+    out["reason"]="SAME_ASOF_NASDAQ_DIRECTORY_EXACT_NAME_PLUS_PRIOR_SEC_OPERATING_EVIDENCE"
     out["same_asof_nasdaq_screener_industry"]=industry
     out["same_asof_revalidated_without_sec_network"]=True
+    out["revalidation_semantics"]="FAIL_CLOSED_PREVENT_FALSE_SPAC_EXCLUSION_ONLY;NO_ALPHA_PASS"
     return out
 
 def prior_blank_fallback(sym,old,asof,names,industries):
