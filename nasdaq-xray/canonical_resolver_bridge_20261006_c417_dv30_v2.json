@@ -1,9 +1,8 @@
 {
   "schema": "XRAY_RESOLVER_EPOCH_RESULT_V1",
   "status": "COMMITTED",
-  "authority": "FOREGROUND_OPERATOR_C417_DV30_RESIDUAL_SETTLEMENT_V2",
+  "authority": "FOREGROUND_OPERATOR_C417_DV30_V2_SETTLEMENT_ONLY_CURRENT_SCOPE",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "source_result_task_id": "6abe7ffd2a9c8191ace5e8a0acbea6c2",
   "asof_et": "2026-10-06",
   "execution": "NONE",
   "real_money": "NO-GO",
@@ -20,8 +19,6 @@
   "source_request_blob_sha": "abf4699c3c318cfd5e40b1162eb25c98a9723e4e",
   "source_manifest_path": "nasdaq-xray/canonical_current_resolver_chunk_manifest.json",
   "source_manifest_blob_sha": "e230d7265187f384544f0f016837320c6b98cee6",
-  "predecessor_bridge_path": "nasdaq-xray/canonical_resolver_bridge_20261006_c417_dv30_v1.json",
-  "predecessor_bridge_blob_sha": "953641610cede30787dc70a1da7d90816fea80e9",
   "symbols": [
     "ACCV",
     "ADRX",
@@ -121,292 +118,11 @@
     "XIII",
     "YQ"
   ],
-  "result_encoding": "RALLIES_SCANNER_EXACT30_V2",
+  "result_encoding": "EXPANDED_V1",
   "price_resolutions": {},
-  "price_resolution_compact": {
-    "fail_price": {},
-    "fail_dv30": {},
-    "pass_price_dv30": {},
-    "block_current_run": {
-      "ACCV": {
-        "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
-        "observed_usable_sessions": 5,
-        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
-        "no_synthetic_bar": true
-      },
-      "ADRX": {
-        "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
-        "observed_usable_sessions": 8,
-        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
-        "no_synthetic_bar": true
-      },
-      "AFJK": {
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "observed_usable_sessions": 28,
-        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
-        "no_synthetic_bar": true
-      },
-      "BLFS": {
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "observed_usable_sessions": 29,
-        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
-        "no_synthetic_bar": true
-      },
-      "BLIV": {
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "observed_usable_sessions": 16,
-        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
-        "no_synthetic_bar": true
-      },
-      "CCCT": {
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "observed_usable_sessions": 16,
-        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
-        "no_synthetic_bar": true
-      },
-      "CHWM": {
-        "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
-        "observed_usable_sessions": 4,
-        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
-        "no_synthetic_bar": true
-      },
-      "EFTY": {
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "observed_usable_sessions": 0,
-        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
-        "no_synthetic_bar": true
-      },
-      "ETRA": {
-        "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
-        "observed_usable_sessions": 13,
-        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
-        "no_synthetic_bar": true
-      },
-      "FORTY": {
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "observed_usable_sessions": 12,
-        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
-        "no_synthetic_bar": true
-      },
-      "GCGR": {
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "observed_usable_sessions": 13,
-        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
-        "no_synthetic_bar": true
-      },
-      "GRAL": {
-        "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
-        "observed_usable_sessions": 29,
-        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
-        "no_synthetic_bar": true
-      },
-      "HCHL": {
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "observed_usable_sessions": 0,
-        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
-        "no_synthetic_bar": true
-      },
-      "HCIC": {
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "observed_usable_sessions": 14,
-        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
-        "no_synthetic_bar": true
-      },
-      "HFBL": {
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "observed_usable_sessions": 24,
-        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
-        "no_synthetic_bar": true
-      },
-      "HVMC": {
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "observed_usable_sessions": 14,
-        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
-        "no_synthetic_bar": true
-      },
-      "ILAG": {
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "observed_usable_sessions": 23,
-        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
-        "no_synthetic_bar": true
-      },
-      "INTJ": {
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "observed_usable_sessions": 28,
-        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
-        "no_synthetic_bar": true
-      },
-      "KELYB": {
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "observed_usable_sessions": 17,
-        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
-        "no_synthetic_bar": true
-      },
-      "LAWR": {
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "observed_usable_sessions": 0,
-        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
-        "no_synthetic_bar": true
-      },
-      "MAGH": {
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "observed_usable_sessions": 0,
-        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
-        "no_synthetic_bar": true
-      },
-      "MAMK": {
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "observed_usable_sessions": 0,
-        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
-        "no_synthetic_bar": true
-      },
-      "MAYS": {
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "observed_usable_sessions": 14,
-        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
-        "no_synthetic_bar": true
-      },
-      "MCTA": {
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "observed_usable_sessions": 0,
-        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
-        "no_synthetic_bar": true
-      },
-      "MDRR": {
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "observed_usable_sessions": 20,
-        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
-        "no_synthetic_bar": true
-      },
-      "MNSBP": {
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "observed_usable_sessions": 22,
-        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
-        "no_synthetic_bar": true
-      },
-      "NCEW": {
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "observed_usable_sessions": 15,
-        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
-        "no_synthetic_bar": true
-      },
-      "OIG": {
-        "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
-        "observed_usable_sessions": 13,
-        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
-        "no_synthetic_bar": true
-      },
-      "OST": {
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "observed_usable_sessions": 0,
-        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
-        "no_synthetic_bar": true
-      },
-      "PBHC": {
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "observed_usable_sessions": 27,
-        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
-        "no_synthetic_bar": true
-      },
-      "PC": {
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "observed_usable_sessions": 0,
-        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
-        "no_synthetic_bar": true
-      },
-      "RACD": {
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "observed_usable_sessions": 24,
-        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
-        "no_synthetic_bar": true
-      },
-      "RZAI": {
-        "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
-        "observed_usable_sessions": 5,
-        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
-        "no_synthetic_bar": true
-      },
-      "SCPQ": {
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "observed_usable_sessions": 9,
-        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
-        "no_synthetic_bar": true
-      },
-      "SENEB": {
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "observed_usable_sessions": 10,
-        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
-        "no_synthetic_bar": true
-      },
-      "SHOT": {
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "observed_usable_sessions": 17,
-        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
-        "no_synthetic_bar": true
-      },
-      "SLP": {
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "observed_usable_sessions": 29,
-        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
-        "no_synthetic_bar": true
-      },
-      "SVA": {
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "observed_usable_sessions": 0,
-        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
-        "no_synthetic_bar": true
-      },
-      "TULP": {
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "observed_usable_sessions": 18,
-        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
-        "no_synthetic_bar": true
-      },
-      "UCFI": {
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "observed_usable_sessions": 0,
-        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
-        "no_synthetic_bar": true
-      },
-      "VHCP": {
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "observed_usable_sessions": 11,
-        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
-        "no_synthetic_bar": true
-      },
-      "WBD": {
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "observed_usable_sessions": 29,
-        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
-        "no_synthetic_bar": true
-      },
-      "WQEY": {
-        "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
-        "observed_usable_sessions": 2,
-        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
-        "no_synthetic_bar": true
-      },
-      "XIII": {
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "observed_usable_sessions": 12,
-        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
-        "no_synthetic_bar": true
-      },
-      "YQ": {
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "observed_usable_sessions": 29,
-        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
-        "no_synthetic_bar": true
-      }
-    },
-    "unresolved_symbols": []
-  },
-  "classification_coverage_complete": true,
-  "coverage_complete": true,
-  "partial_data": false,
   "settlement_required": true,
   "settlement_status": "PASS",
-  "settlement_method": "RALLIES_LONGBRIDGE_DUAL_SOURCE_SETTLEMENT_V1",
+  "settlement_method": "RALLIES_LONGBRIDGE_DUAL_SOURCE_OHLC_SETTLEMENT_V2",
   "settlement_symbols": [
     "AAPL",
     "NVDA",
@@ -419,21 +135,17 @@
         "high": 334.38,
         "low": 330.62,
         "close": 333.63,
-        "volume": 30424295.83799,
-        "timestamp_utc": "2026-10-06T20:00:00Z"
+        "volume": 30425626.211898
       },
       "longbridge": {
         "open": 332.28,
         "high": 334.38,
         "low": 330.62,
         "close": 333.63,
-        "volume": 30424210,
-        "timestamp_utc": "2026-10-06T20:00:01Z",
-        "trade_status": "Normal"
+        "volume": 29516497
       },
-      "ohlc_0_01_exact": true,
-      "volume_rel_diff": 0.000002821363243965713,
-      "volume_within_5pct": true
+      "ohlc_exact_within_0_01": true,
+      "volume_authority": "RALLIES_EXACT30_ONLY_NOT_CROSS_PROVIDER"
     },
     "NVDA": {
       "rallies": {
@@ -441,21 +153,17 @@
         "high": 243.37,
         "low": 238.93,
         "close": 239.24,
-        "volume": 100850020.074781,
-        "timestamp_utc": "2026-10-06T20:00:00Z"
+        "volume": 100858112.630617
       },
       "longbridge": {
         "open": 242.1,
         "high": 243.37,
         "low": 238.93,
         "close": 239.24,
-        "volume": 100847390,
-        "timestamp_utc": "2026-10-06T20:00:00Z",
-        "trade_status": "Normal"
+        "volume": 100259856
       },
-      "ohlc_0_01_exact": true,
-      "volume_rel_diff": 0.00002607907047564686,
-      "volume_within_5pct": true
+      "ohlc_exact_within_0_01": true,
+      "volume_authority": "RALLIES_EXACT30_ONLY_NOT_CROSS_PROVIDER"
     },
     "MSFT": {
       "rallies": {
@@ -463,44 +171,42 @@
         "high": 535.69,
         "low": 528.78,
         "close": 529.3,
-        "volume": 21090463.29355,
-        "timestamp_utc": "2026-10-06T20:00:00Z"
+        "volume": 21091511.467133
       },
       "longbridge": {
         "open": 531.68,
         "high": 535.69,
         "low": 528.78,
         "close": 529.3,
-        "volume": 21090342,
-        "timestamp_utc": "2026-10-06T20:00:01Z",
-        "trade_status": "Normal"
+        "volume": 20918028
       },
-      "ohlc_0_01_exact": true,
-      "volume_rel_diff": 0.000005751108845327705,
-      "volume_within_5pct": true
+      "ohlc_exact_within_0_01": true,
+      "volume_authority": "RALLIES_EXACT30_ONLY_NOT_CROSS_PROVIDER"
     }
   },
-  "settlement_primary_attempt": {
-    "provider": "ALPACA_HISTORICAL_DELAYED_SIP",
-    "pass": false,
-    "result": "INTERNAL_TOOL_FAILURE",
-    "attempts": 3
+  "resolution_evidence": {
+    "current_blocked_scope_preserved": true,
+    "blocked_count": 45,
+    "blocked_symbols_hash": "507f63c1e9486f4664f5757bfa6f132001247f23907e86be468a9e396dd02254",
+    "no_block_to_pass_conversion": true,
+    "no_price_resolution_applied": true,
+    "prior_primary_rallies_bridge_path": "nasdaq-xray/canonical_resolver_bridge_20261006_c417_dv30_v1.json",
+    "prior_primary_rallies_bridge_blob_sha": "953641610cede30787dc70a1da7d90816fea80e9"
   },
-  "connector_failover_activated": true,
-  "g9_eligible": false,
+  "supersedes_resolver_bridge_path": "nasdaq-xray/canonical_resolver_bridge_20261006_c417_dv30_v1.json",
+  "supersedes_resolver_bridge_blob_sha": "953641610cede30787dc70a1da7d90816fea80e9",
   "audit": {
-    "current_request_exact": true,
-    "current_manifest_exact": true,
     "current_price_blob_exact": true,
-    "current_residual_scope_exact": true,
-    "residual_subset_of_predecessor_block": true,
-    "current_price_pass_set_unchanged": true,
-    "new_pass_count": 0,
+    "current_request_blob_exact": true,
+    "current_manifest_blob_exact": true,
+    "current_scope_exact": true,
+    "settlement_symbols_exact": true,
+    "settlement_ohlc_cross_provider_exact": true,
+    "settlement_volume_not_used_as_cross_provider_dv30_proof": true,
     "pass_manufactured": false,
     "threshold_changed": false,
     "alpha_policy_changed": false,
     "unknown_never_pass": true,
-    "settlement_pass": true,
-    "settlement_non_g9": true
+    "blocked_scope_preserved": true
   }
 }
