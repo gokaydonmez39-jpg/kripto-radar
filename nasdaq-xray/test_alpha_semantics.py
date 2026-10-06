@@ -13,7 +13,7 @@ from alpha_semantics import (
     family_a_pretrigger_low,trend_pullback_stage1_at
 )
 import final_tech_shadow as final_mod
-from final_tech_shadow import eval_one,_is_depositary_security_name,lifecycle_state_persists
+from final_tech_shadow import eval_one,_is_depositary_security_name,lifecycle_state_persists,_fresh_deep_family_confirmed
 from deep_pre_r1_shadow import evaluate_recent_families
 import stage1_shadow as stage1_mod
 import history_phase as history_mod
@@ -529,6 +529,19 @@ def main():
     reach=eval_one("REACH","B",rg,rf,"CLEAN_DISCOVERY",frozen=frozen,recorded_before=True)
     assert reach["result"]=="PRE_G9_TECH_PASS" and reach["pre_g9_tech_pass"] is True,reach
 
+    # Fresh Final scope must use Deep's event+RS confirmed aggregate sets,
+    # never a raw per-symbol geometry flag that can remain true after an event veto.
+    deep_scope={
+      "a_geometry_rs_event_pass":["AOK"],
+      "b_breakout_rs_event_pass":["BOK"],
+      "d_dk3_pre_r1":["DOK"],
+    }
+    assert _fresh_deep_family_confirmed(deep_scope,"AOK","A") is True
+    assert _fresh_deep_family_confirmed(deep_scope,"BLOCKED_RAW","A") is False
+    assert _fresh_deep_family_confirmed(deep_scope,"BOK","B") is True
+    assert _fresh_deep_family_confirmed(deep_scope,"DOK","D") is True
+    assert _fresh_deep_family_confirmed(deep_scope,"DOK","C") is False
+
     # Missing inherited Stage1 corporate-action metadata is not itself evidence
     # of a corporate action. Family C must independently validate price-scale
     # integrity and remain fail-closed only on explicit non-PASS evidence.
@@ -547,7 +560,7 @@ def main():
       "R1_STRUCTURAL_TRIGGER_MINUS1","R1_ENTRY_OVERLAP","EXTENSION_RESET","EXTENSION_TIGHT_BASE_RESET","RETEST_BAR","FAMILY_A_TRIGGER_MINUS1_LOW","SETUP_ID_STABLE",
       "B_RECENT_TRIGGER_PERSISTENCE","DEEP_RECENT_TRIGGER_INDEPENDENT_OF_CURRENT_STAGE1","A_STAGE1_ASOF_TRIGGER","MECHANICAL_SCALE_BREAK_GUARD","BREADTH_CLOSE_ONLY_SCALE_GUARD","SPLIT_ONLY_RECONCILIATION","SPLIT_RAW_CROSSCHECK","UNDECLARED_SCALE_MOVE_MARKET_GAP","HISTORICAL_DISCOVERY_RESEARCH_ELIGIBLE_NO_R92_BACKFILL","CHASE_FROZEN_RETEST_RECOVERY","ANCHOR_AVAILABLE_S0_CHRONOLOGY",
       "ADR_RATIO_FAIL_CLOSED_CLASSIFICATION","FINALIST_FRACTIONAL_SPLIT_VERIFICATION","SYNTHETIC_PRICE_DISCOVERY_ORANGE_CAP","PROSPECTIVE_LIFECYCLE_PERSISTENCE","FROZEN_LIFECYCLE_EVENT_SCOPE","ANCIENT_SCALE_BREAK_OUTSIDE_TECH_HORIZON","TRIGGER_TIME_WEEKLY_SCOPE","BREADTH_NH20_NL20_PRIOR20_STRICT",
-      "HISTORY_PASS_EXACT_ASOF_CACHE_BINDING","FAMILY_C_REACTION_HIGH_PIVOT","FAMILY_C_PERSISTENT_GAP_FLOOR","FAMILY_C_MISSING_INHERITED_CA_NOT_AUTO_UNKNOWN","FAMILY_C_EXPLICIT_CA_UNKNOWN_FAIL_CLOSED","FULL_R1_TO_PRE_G9_REACHABILITY","SPLIT_RECONCILIATION_ACTIVE_HORIZON_ONLY"
+      "HISTORY_PASS_EXACT_ASOF_CACHE_BINDING","FAMILY_C_REACTION_HIGH_PIVOT","FAMILY_C_PERSISTENT_GAP_FLOOR","FAMILY_C_MISSING_INHERITED_CA_NOT_AUTO_UNKNOWN","FAMILY_C_EXPLICIT_CA_UNKNOWN_FAIL_CLOSED","FULL_R1_TO_PRE_G9_REACHABILITY","FRESH_FINAL_SCOPE_EXACT_DEEP_EVENT_PASS_SET","SPLIT_RECONCILIATION_ACTIVE_HORIZON_ONLY"
     ]})
 
 if __name__=="__main__":
