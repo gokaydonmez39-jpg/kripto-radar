@@ -28,7 +28,7 @@ import pandas_market_calendars as mcal
 TASK_ID="6a825366222081918997094d76e6ae46"
 BUILD="2026-10-02.1"
 IDENTITY_RULESET="V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER"
-IDENTITY_PARTITION_POLICY="MASTER_SPAC_UNKNOWN_PARTITION_V1"
+IDENTITY_PARTITION_POLICY="MASTER_SPAC_UNKNOWN_PARTITION_V2_FROZEN_GUARD"
 NASDAQ_DIR="https://www.nasdaqtrader.com/dynamic/SymDir/nasdaqlisted.txt"
 NASDAQ_SCREENER="https://api.nasdaq.com/api/screener/stocks"
 SEC_TICKERS="https://www.sec.gov/files/company_tickers.json"
@@ -633,6 +633,11 @@ def canonical_frozen_identity(asof):
           st.get("schema")!="XRAY_NASDAQ_SCREENER_SINA_V2"
           or st.get("identity_ruleset")!=IDENTITY_RULESET
           or mf.get("identity_ruleset")!=IDENTITY_RULESET
+          or st.get("identity_partition_policy")!=IDENTITY_PARTITION_POLICY
+          or mf.get("identity_partition_policy")!=IDENTITY_PARTITION_POLICY
+          or dm.get("identity_partition_policy")!=IDENTITY_PARTITION_POLICY
+          or mf_cp.get("identity_partition_policy_exact") is not True
+          or mf_cp.get("identity_unknown_partition_exact") is not True
           or str(st.get("asof_et") or "")!=asof
           or str(mf.get("asof_et") or "")!=asof
           or int(mf.get("unknown_count",-1))!=0

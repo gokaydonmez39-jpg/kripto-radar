@@ -105,7 +105,7 @@ def main():
       "exclusion_reasons_policy_exact":set(exc).issubset(ALLOWED_EXCLUSION_REASONS),
       "sec_spac_proof_binding":valid_sec_spac_proof_binding(dm,s.get("asof_et")),
       "asof_identity_proof_binding":valid_asof_identity_proof_binding(dm,s.get("asof_et")),
-      "identity_partition_policy_exact":partition_policy=="MASTER_SPAC_UNKNOWN_PARTITION_V1" and dm.get("identity_partition_policy")==partition_policy,
+      "identity_partition_policy_exact":partition_policy=="MASTER_SPAC_UNKNOWN_PARTITION_V2_FROZEN_GUARD" and dm.get("identity_partition_policy")==partition_policy,
       "identity_unknown_partition_exact":(
         len(identity_unknown)==len(set(identity_unknown))
         and set(identity_unknown_detail)==set(identity_unknown)
