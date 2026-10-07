@@ -137,16 +137,55 @@ jobs:
       - name: Deterministic replay guard
         run: python nasdaq-xray/deterministic_replay_guard.py
 
+      - name: Detect source-sensitive live-main supersession
+        id: supersession
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main
+          latest="$(git rev-parse origin/main)"
+          current="$(git rev-parse HEAD)"
+          echo "current=$current" >> "$GITHUB_OUTPUT"
+          echo "latest=$latest" >> "$GITHUB_OUTPUT"
+          if [[ "$latest" == "$current" ]]; then
+            echo "superseded=false" >> "$GITHUB_OUTPUT"
+            echo "XRAY_RESILIENCE_SUPERSESSION=NO"
+            exit 0
+          fi
+          changed="$(git diff --name-only "$current" "$latest" -- \
+            nasdaq-xray/chatgpt_canonical_state_v2.json \
+            nasdaq-xray/canonical_current_terminal.json \
+            nasdaq-xray/canonical_current_event_request.json \
+            nasdaq-xray/canonical_current_event_state.json \
+            nasdaq-xray/chatgpt_compiled_policy_v3.json || true)"
+          if [[ -n "$changed" ]]; then
+            echo "superseded=true" >> "$GITHUB_OUTPUT"
+            {
+              echo "changed<<EOF"
+              echo "$changed"
+              echo "EOF"
+            } >> "$GITHUB_OUTPUT"
+            echo "XRAY_RESILIENCE_SUPERSESSION=HEALTHY_NOOP"
+            printf '%s\n' "$changed"
+          else
+            echo "superseded=false" >> "$GITHUB_OUTPUT"
+            echo "XRAY_RESILIENCE_SUPERSESSION=NON_SOURCE_DRIFT"
+          fi
+
       - name: Canonical pointer transition guard
+        if: steps.supersession.outputs.superseded != 'true'
         run: python nasdaq-xray/canonical_pointer_transition_guard.py
 
       - name: Guardian identity-partition self-test
+        if: steps.supersession.outputs.superseded != 'true'
         run: python nasdaq-xray/guardian_anomaly_selftest.py
 
       - name: Guardian anomaly layer
+        if: steps.supersession.outputs.superseded != 'true'
         run: python nasdaq-xray/guardian_anomaly.py
 
       - name: Structural fail-closed audit
+        if: steps.supersession.outputs.superseded != 'true'
         run: |
           python - <<'PY'
           import json, pathlib
@@ -220,6 +259,7 @@ jobs:
           PY
 
       - name: Commit resilience artifacts
+        if: steps.supersession.outputs.superseded != 'true'
         shell: bash
         run: |
           set -euo pipefail
