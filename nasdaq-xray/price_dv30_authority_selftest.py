@@ -8,6 +8,8 @@ from price_dv30_recover_from_fullstate import (
     apply_c417_rallies_primary_partition,
     apply_c417_rallies_primary_pass_veto,
     c417_rallies_primary_pass_conflicts,
+    c417_rallies_primary_path,
+    git_blob_sha,
     load_c417_rallies_primary,
 )
 
@@ -56,6 +58,20 @@ def main():
       "PASS_PRICE_DV30":len(pp),
       "BLOCK_CURRENT_RUN":len(bc),
     }
+    if asof=="2026-10-07":
+        selected=c417_rallies_primary_path(asof)
+        expected=ROOT/"evidence"/"rallies_dv30_20261007_classification_v2.json"
+        assert selected==expected,(selected,expected)
+        assert meta.get("path")==str(expected),meta
+        assert meta.get("blob_sha")==git_blob_sha(expected),meta
+        assert int(primary.get("symbol_count",-1))==3185,primary.get("symbol_count")
+        assert (primary.get("counts") or {})=={
+          "FAIL_PRICE":1304,
+          "FAIL_DV30":1246,
+          "PASS_PRICE_DV30":510,
+          "BLOCK_CURRENT_RUN":125,
+        },primary.get("counts")
+        assert set(master_queue)==universe,"CURRENT_MASTER_NOT_EXACTLY_COVERED_BY_RALLIES_V2"
 
     current=set(master_queue)
     covered=sorted(current & universe)
