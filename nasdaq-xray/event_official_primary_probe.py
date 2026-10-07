@@ -53,6 +53,10 @@ DATE_PATTERNS = [
     re.compile(r"(20\d{2})[-/](\d{1,2})[-/](\d{1,2})"),
     re.compile(r"(?<!\d)(\d{1,2})[/-](\d{1,2})[/-](20\d{2})(?!\d)"),
 ]
+MONTH_DAY_NO_YEAR_RE = re.compile(
+    MONTH_RE + r"\.?s+(\d{1,2})(?:st|nd|rd|th)?(?!\d)(?!\s*[,]?\s*20\d{2})",
+    re.I,
+)
 EARNINGS_RE = re.compile(
     r"earnings|financial\s+results|quarterly\s+results|results\s+conference\s+call|"
     r"report(?:ing)?\s+(?:date|.*?results)|announce.*?results",
@@ -60,7 +64,7 @@ EARNINGS_RE = re.compile(
 )
 SCHEDULE_RE = re.compile(
     r"will\s+(?:release|report|announce|host)|to\s+(?:release|report|announce|host)|"
-    r"reporting\s+date|results\s+on",
+    r"reporting\s+date|results\s+on|earnings\s+call\s+on",
     re.I,
 )
 RSS_HINT_RE = re.compile(r"rss|atom|feed", re.I)
@@ -141,6 +145,17 @@ def date_spans_in_text(text: str) -> list[tuple[int, str]]:
 def dates_in_text(text: str) -> list[str]:
     return sorted({d for _, d in date_spans_in_text(text)})
 
+def split_sentences_preserving_month_abbrev(text: str) -> list[str]:
+    """Split prose without treating Jan./Feb./.../Dec. as sentence boundaries."""
+    pat = re.compile(r"\b(Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)\.", re.I)
+    marker = "__XRAY_MONTH_DOT__"
+    masked = pat.sub(lambda m: m.group(1) + marker, text or "")
+    return [
+        s.replace(marker, ".")
+        for s in re.split(r"(?<=[.!?])\s+|[\r\n]+", masked)
+        if s
+    ]
+
 def announced_event_date(title: str, body: str, asof: str) -> tuple[str | None, str | None]:
     """Extract an explicit future event date, avoiding article publication dates.
 
@@ -153,7 +168,7 @@ def announced_event_date(title: str, body: str, asof: str) -> tuple[str | None, 
         if future:
             return min(future), "TITLE_EXPLICIT_FUTURE_DATE"
     clean = normalize_text(body)
-    sentences = re.split(r"(?<=[.!?])\s+|[\r\n]+", clean)
+    sentences = split_sentences_preserving_month_abbrev(clean)
     hits = []
     for s in sentences:
         if not EARNINGS_RE.search(s):
@@ -178,6 +193,45 @@ def announced_event_date(title: str, body: str, asof: str) -> tuple[str | None, 
     if hits:
         hits.sort(key=lambda x: x[0])
         return hits[0][0], "SCHEDULE_SENTENCE_EXPLICIT_FUTURE_DATE"
+
+    # Some issuer-primary releases state an explicit month/day in scheduling
+    # language while omitting the year (for example "earnings call on Nov. 3").
+    # Resolve the year only when the SAME issuer document contains a recent
+    # full calendar date at/before ASOF. This completes an explicit date from
+    # document context; it does not estimate an earnings date. Old archive pages,
+    # missing schedule language, or ambiguous/missing recent context stay UNKNOWN.
+    asof_date = date.fromisoformat(asof)
+    recent_context_dates = []
+    for _, d in date_spans_in_text(clean):
+        try:
+            ctx = date.fromisoformat(d)
+        except Exception:
+            continue
+        age_days = (asof_date - ctx).days
+        if 0 <= age_days <= 14:
+            recent_context_dates.append(ctx)
+    if recent_context_dates:
+        context_date = max(recent_context_dates)
+        for s in sentences:
+            if not EARNINGS_RE.search(s):
+                continue
+            schedule_matches = list(SCHEDULE_RE.finditer(s))
+            if not schedule_matches:
+                continue
+            for sm in schedule_matches:
+                tail = s[sm.end():]
+                for m in MONTH_DAY_NO_YEAR_RE.finditer(tail):
+                    try:
+                        mon = MONTHS[m.group(1).lower().rstrip(".")[:3]]
+                        day = int(m.group(2))
+                        candidate = date(context_date.year, mon, day)
+                        if candidate < context_date:
+                            candidate = date(context_date.year + 1, mon, day)
+                    except Exception:
+                        continue
+                    distance = (candidate - context_date).days
+                    if candidate > asof_date and 0 < distance <= 180:
+                        return candidate.isoformat(), "SCHEDULE_SENTENCE_EXPLICIT_MONTH_DAY_CONTEXT_YEAR"
     return None, None
 
 def discover_feed_links(base_url: str, page: str) -> list[str]:
@@ -670,6 +724,25 @@ def selftest() -> None:
         asof,
     )
     assert d4 == "2026-10-27" and basis4 == "SCHEDULE_SENTENCE_EXPLICIT_FUTURE_DATE", (d4, basis4)
+    d5, basis5 = announced_event_date(
+        "Release Details",
+        "IRVINE, Calif., Oct. 05, 2026 (GLOBE NEWSWIRE) -- Skyworks announced the transaction. "
+        "Skyworks will provide financial guidance on its fiscal fourth-quarter earnings call on Nov. 3.",
+        asof,
+    )
+    assert d5 == "2026-11-03" and basis5 == "SCHEDULE_SENTENCE_EXPLICIT_MONTH_DAY_CONTEXT_YEAR", (d5, basis5)
+    d6, basis6 = announced_event_date(
+        "Archived Release",
+        "IRVINE, Calif., Oct. 05, 2022 -- Company will provide financial guidance on its earnings call on Nov. 3.",
+        asof,
+    )
+    assert d6 is None and basis6 is None, (d6, basis6)
+    d7, basis7 = announced_event_date(
+        "Release Details",
+        "Company will report financial results on Nov. 3, 2026.",
+        asof,
+    )
+    assert d7 == "2026-11-03" and basis7 == "SCHEDULE_SENTENCE_EXPLICIT_FUTURE_DATE", (d7, basis7)
     prior_seed = seed_candidates(
         "TEST",
         {"symbols": {"TEST": {"base_url": "https://ir.example.com", "issuer_tokens": ["Example"]}}},
