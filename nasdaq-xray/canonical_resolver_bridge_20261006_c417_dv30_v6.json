@@ -1,0 +1,187 @@
+{
+  "schema": "XRAY_RESOLVER_EPOCH_RESULT_V1",
+  "status": "COMMITTED",
+  "authority": "CANONICAL_RESOLVER_C417_DV30_V6_EXACT_CURRENT_BLOCK_ONLY_REBIND",
+  "bridge_role": "CURRENT_RESIDUAL_REQUEST_AUTHORITY",
+  "task_id": "6a825366222081918997094d76e6ae46",
+  "asof_et": "2026-10-06",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "queue_hash": "7cb79b7ac033651438d2b7fc0c6245ccdcde335a1fcac9ad2cb87f3a6d3998e8",
+  "queue_total": 3157,
+  "compiled_policy_path": "nasdaq-xray/chatgpt_compiled_policy_v3.json",
+  "compiled_policy_blob_sha": "16c50cc8f887a5234a4be23862d7c8d0e564b0ac",
+  "compiled_policy_hash": "68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4",
+  "compiled_policy_version": "C4.17",
+  "source_price_path": "nasdaq-xray/canonical_current_price_dv30.json",
+  "source_price_blob_sha": "3bbabbf0b0819dc4e2bc8a90140a5071201ef5b7",
+  "source_request_path": "nasdaq-xray/canonical_current_resolver_request.json",
+  "source_request_blob_sha": "9ead047cb5d5bdb4843d36cb1223ffedef64117f",
+  "source_manifest_path": "nasdaq-xray/canonical_current_resolver_chunk_manifest.json",
+  "source_manifest_blob_sha": "b3a88740d182b08cf60b712ceb4c4a9b876e9c09",
+  "predecessor_bridge_path": "nasdaq-xray/canonical_resolver_bridge_20261006_c417_dv30_v5.json",
+  "predecessor_bridge_blob_sha": "98eeabc9eb7f56e9cf93e6f22e18eaa1d1796cd7",
+  "supersedes_resolver_bridge_path": "nasdaq-xray/canonical_resolver_bridge_20261006_c417_dv30_v5.json",
+  "supersedes_resolver_bridge_blob_sha": "98eeabc9eb7f56e9cf93e6f22e18eaa1d1796cd7",
+  "symbol_count": 10,
+  "symbol_hash": "676adcd630236e4e1af041525686fc0e75725f21d501b21a5f67f9fdd61363bd",
+  "symbols": [
+    "ACCV",
+    "ADRX",
+    "CHWM",
+    "ETRA",
+    "GRAL",
+    "OIG",
+    "RZAI",
+    "SVA",
+    "WQEY",
+    "XIII"
+  ],
+  "price_unknown_count": 10,
+  "price_unknown_symbols": [
+    "ACCV",
+    "ADRX",
+    "CHWM",
+    "ETRA",
+    "GRAL",
+    "OIG",
+    "RZAI",
+    "SVA",
+    "WQEY",
+    "XIII"
+  ],
+  "price_blocked_count": 0,
+  "price_blocked_symbols": [],
+  "result_encoding": "RALLIES_SCANNER_EXACT30_V3_CURRENT_BLOCK_ONLY",
+  "price_resolutions": {},
+  "price_resolution_compact": {
+    "fail_price_symbols": [],
+    "fail_dv30_symbols": [],
+    "pass_price_dv30_symbols": [],
+    "block_current_run": {
+      "ACCV": {
+        "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
+        "observed_usable_sessions": 5,
+        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
+        "no_synthetic_bar": true
+      },
+      "ADRX": {
+        "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
+        "observed_usable_sessions": 8,
+        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
+        "no_synthetic_bar": true
+      },
+      "CHWM": {
+        "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
+        "observed_usable_sessions": 4,
+        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
+        "no_synthetic_bar": true
+      },
+      "ETRA": {
+        "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
+        "observed_usable_sessions": 13,
+        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
+        "no_synthetic_bar": true
+      },
+      "GRAL": {
+        "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
+        "observed_usable_sessions": 29,
+        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
+        "no_synthetic_bar": true
+      },
+      "OIG": {
+        "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
+        "observed_usable_sessions": 13,
+        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
+        "no_synthetic_bar": true
+      },
+      "RZAI": {
+        "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
+        "observed_usable_sessions": 5,
+        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
+        "no_synthetic_bar": true
+      },
+      "SVA": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
+        "observed_usable_sessions": 0,
+        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
+        "no_synthetic_bar": true
+      },
+      "WQEY": {
+        "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
+        "observed_usable_sessions": 2,
+        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
+        "no_synthetic_bar": true
+      },
+      "XIII": {
+        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
+        "observed_usable_sessions": 12,
+        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
+        "no_synthetic_bar": true
+      }
+    },
+    "unresolved_symbols": []
+  },
+  "classification_coverage_complete": true,
+  "coverage_complete": true,
+  "partial_data": false,
+  "settlement_required": false,
+  "settlement_status": "PASS",
+  "settlement_method": "NOT_REQUIRED_NO_NEW_PASS_BLOCK_ONLY_CURRENT_RESIDUAL",
+  "settlement_witness_path": "nasdaq-xray/canonical_resolver_bridge_20261006_c417_dv30_v3.json",
+  "settlement_witness_blob_sha": "33ee115d1ae4185aa61ce14e61cd52fd4a2840dc",
+  "settlement_symbols": [],
+  "resolution_evidence": {
+    "classification_path": "nasdaq-xray/evidence/rallies_dv30_20261006_classification.json",
+    "classification_blob_sha": "0aa9defc5398a486fe0783b63d9316a2dcf9d905",
+    "source": "RALLIES_OHCV_ALL_TICKERS_FOR_DATE",
+    "expected30": [
+      "2026-08-25",
+      "2026-08-26",
+      "2026-08-27",
+      "2026-08-28",
+      "2026-08-31",
+      "2026-09-01",
+      "2026-09-02",
+      "2026-09-03",
+      "2026-09-04",
+      "2026-09-08",
+      "2026-09-09",
+      "2026-09-10",
+      "2026-09-11",
+      "2026-09-14",
+      "2026-09-15",
+      "2026-09-16",
+      "2026-09-17",
+      "2026-09-18",
+      "2026-09-21",
+      "2026-09-22",
+      "2026-09-23",
+      "2026-09-24",
+      "2026-09-25",
+      "2026-09-28",
+      "2026-09-29",
+      "2026-09-30",
+      "2026-10-01",
+      "2026-10-02",
+      "2026-10-05",
+      "2026-10-06"
+    ],
+    "current_scope_counts": {
+      "FAIL_PRICE": 0,
+      "FAIL_DV30": 0,
+      "PASS_PRICE_DV30": 0,
+      "BLOCK_CURRENT_RUN": 10
+    },
+    "no_synthetic_bar": true,
+    "no_forward_fill": true,
+    "exact_current_request_binding": true,
+    "exact_current_price_binding": true,
+    "exact_current_manifest_binding": true,
+    "no_new_pass": true,
+    "current_request_scope_exact": true,
+    "predecessor_full_classification_path": "nasdaq-xray/canonical_resolver_bridge_20261006_c417_dv30_v1.json",
+    "predecessor_full_classification_blob_sha": "953641610cede30787dc70a1da7d90816fea80e9"
+  }
+}
