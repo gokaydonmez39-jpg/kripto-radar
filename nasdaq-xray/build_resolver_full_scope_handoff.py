@@ -133,22 +133,93 @@ def select_one_active(rows: list[dict], wanted_role: str, *, queue_hash: str | N
     return active[0]
 
 
-def validate_settlement_witness(path: Path, expected_blob: str, master: dict, asof: str) -> dict:
-    assert path.exists(), ("SETTLEMENT_WITNESS_MISSING", str(path))
-    assert blob_sha(path) == expected_blob, ("SETTLEMENT_WITNESS_BLOB_MISMATCH", str(path))
-    j = load(path)
-    assert j.get("schema") == "XRAY_RESOLVER_EPOCH_RESULT_V1"
-    assert j.get("status") == "COMMITTED"
-    assert j.get("task_id") == TASK
-    assert j.get("execution") == "NONE" and j.get("real_money") == "NO-GO"
-    assert j.get("unknown_never_pass") is True
-    assert j.get("asof_et") == asof
-    assert j.get("queue_hash") == master.get("queue_hash")
-    assert int(j.get("queue_total", -1)) == int(master.get("queue_total", -2))
-    assert j.get("compiled_policy_hash") == POLICY_HASH
-    assert j.get("compiled_policy_version") == POLICY_VERSION
-    assert j.get("settlement_status") == "PASS"
-    return j
+def settlement_witness_relation(j: dict, master: dict) -> str | None:
+    """Return the only two settlement reuse relations allowed for a current queue.
+
+    EXACT_QUEUE preserves the original rule. SAFE_SUBSET_REBIND is narrower:
+    the witness must be a full-scope authority from the same ASOF/policy, its
+    declared symbol partition must be internally exact, the current master queue
+    must be a strict/equal subset of that settled queue, and every symbol used by
+    the settlement proof must still exist in the current queue.
+    """
+    if (
+        j.get("queue_hash") == master.get("queue_hash")
+        and int(j.get("queue_total", -1)) == int(master.get("queue_total", -2))
+    ):
+        return "EXACT_QUEUE"
+
+    if role(j) != FULL_ROLE:
+        return None
+    source_symbols = list(j.get("symbols") or [])
+    current_symbols = list(master.get("pass_symbols") or [])
+    if not source_symbols or not current_symbols:
+        return None
+    if len(source_symbols) != len(set(source_symbols)):
+        return None
+    if len(source_symbols) != int(j.get("queue_total", -1)):
+        return None
+    if j.get("symbol_hash") != hash_lines(source_symbols):
+        return None
+    source_set = set(source_symbols)
+    current_set = set(current_symbols)
+    settlement_symbols = list(j.get("settlement_symbols") or [])
+    if not settlement_symbols or len(set(settlement_symbols)) != len(settlement_symbols):
+        return None
+    if not current_set.issubset(source_set):
+        return None
+    if not set(settlement_symbols).issubset(current_set):
+        return None
+    return "SAFE_SUBSET_REBIND"
+
+
+def validate_settlement_witness(
+    path: Path,
+    expected_blob: str,
+    master: dict,
+    asof: str,
+) -> tuple[dict, str, str, str]:
+    """Resolve an immutable settlement witness chain without manufacturing PASS.
+
+    A residual authority may point at an older residual authority, which in turn
+    points at the actual full-scope settlement witness. Follow that immutable
+    chain only while every blob/path binding is exact. Reuse is allowed only for
+    an exact current queue or SAFE_SUBSET_REBIND as defined above.
+    """
+    seen = set()
+    for _depth in range(8):
+        rel = relpath(path)
+        assert rel not in seen, ("SETTLEMENT_WITNESS_CYCLE", rel)
+        seen.add(rel)
+        assert path.exists(), ("SETTLEMENT_WITNESS_MISSING", str(path))
+        actual_blob = blob_sha(path)
+        assert actual_blob == expected_blob, ("SETTLEMENT_WITNESS_BLOB_MISMATCH", str(path))
+        j = load(path)
+        assert j.get("schema") == "XRAY_RESOLVER_EPOCH_RESULT_V1"
+        assert j.get("status") == "COMMITTED"
+        assert j.get("task_id") == TASK
+        assert j.get("execution") == "NONE" and j.get("real_money") == "NO-GO"
+        assert j.get("unknown_never_pass") is True
+        assert j.get("asof_et") == asof
+        assert j.get("compiled_policy_hash") == POLICY_HASH
+        assert j.get("compiled_policy_version") == POLICY_VERSION
+        assert j.get("settlement_status") == "PASS"
+
+        relation = settlement_witness_relation(j, master)
+        if relation is not None:
+            return j, rel, actual_blob, relation
+
+        next_rel = str(j.get("settlement_witness_path") or "")
+        next_blob = str(j.get("settlement_witness_blob_sha") or "")
+        assert next_rel and next_blob, (
+            "SETTLEMENT_WITNESS_NOT_REUSABLE_AND_CHAIN_ENDED",
+            rel,
+            j.get("queue_hash"),
+            master.get("queue_hash"),
+        )
+        path = REPO / next_rel
+        expected_blob = next_blob
+
+    raise AssertionError(("SETTLEMENT_WITNESS_CHAIN_DEPTH_EXCEEDED", sorted(seen)))
 
 
 def compact_from_price(price: dict, queue: list[str]) -> dict:
@@ -307,7 +378,7 @@ def next_path(asof: str) -> tuple[Path, int]:
 
 def build_obj(master: dict, price: dict, request: dict, manifest: dict, compact: dict,
               predecessor: dict, residual: dict, witness_path: str, witness_blob: str,
-              witness: dict, version: int) -> dict:
+              witness: dict, witness_relation: str, version: int) -> dict:
     queue = list(master["pass_symbols"])
     passes = list(price["pass_symbols"])
     counts = {
@@ -356,13 +427,26 @@ def build_obj(master: dict, price: dict, request: dict, manifest: dict, compact:
         "partial_data": False,
         "settlement_required": False,
         "settlement_status": "PASS",
-        "settlement_method": "SAME_ASOF_CURRENT_QUEUE_RESIDUAL_AUTHORITY_PASS_REUSED",
+        "settlement_method": (
+            "SAME_ASOF_CURRENT_QUEUE_RESIDUAL_AUTHORITY_PASS_REUSED"
+            if witness_relation == "EXACT_QUEUE"
+            else "SAME_ASOF_SAFE_SUBSET_SETTLEMENT_PASS_REUSED"
+        ),
         "settlement_symbols": list(witness.get("settlement_symbols") or []),
         "settlement_evidence": {
             "authority_path": residual["path"],
             "authority_blob_sha": residual["blob"],
             "witness_path": witness_path,
             "witness_blob_sha": witness_blob,
+            "witness_relation": witness_relation,
+            "source_queue_hash": witness.get("queue_hash"),
+            "source_queue_total": witness.get("queue_total"),
+            "current_queue_hash": master.get("queue_hash"),
+            "current_queue_total": master.get("queue_total"),
+            "current_queue_subset_of_witness": witness_relation == "SAFE_SUBSET_REBIND",
+            "settlement_symbols_all_in_current_queue": set(witness.get("settlement_symbols") or []).issubset(
+                set(master.get("pass_symbols") or [])
+            ),
             "no_new_settlement_measurement": True,
         },
         "settlement_witness_path": witness_path,
@@ -409,6 +493,7 @@ def build_obj(master: dict, price: dict, request: dict, manifest: dict, compact:
             "no_provider_refetch": True,
             "no_price_or_dv30_remeasurement": True,
             "settlement_reused_from_same_asof_current_queue_pass_authority": True,
+            "settlement_witness_relation": witness_relation,
             "predecessor_full_scope_role_scoped": True,
             "residual_authority_role_scoped": True,
         },
@@ -476,6 +561,26 @@ def selftest() -> None:
     assert set(c["fail_dv30"]) == {"BBB"}
     assert set(c["pass_price_dv30"]) == {"CCC"}
     assert not c["block_current_run"] and not c["unresolved_symbols"]
+    synthetic_master = {
+        "queue_hash": "current-hash",
+        "queue_total": 2,
+        "pass_symbols": ["AAA", "BBB"],
+    }
+    synthetic_witness = {
+        "bridge_role": FULL_ROLE,
+        "authority": "TEST_FULL_SCOPE_MC_HANDOFF",
+        "queue_hash": "older-hash",
+        "queue_total": 3,
+        "symbols": ["AAA", "BBB", "CCC"],
+        "symbol_hash": hash_lines(["AAA", "BBB", "CCC"]),
+        "settlement_symbols": ["AAA", "BBB"],
+    }
+    assert settlement_witness_relation(synthetic_witness, synthetic_master) == "SAFE_SUBSET_REBIND"
+    synthetic_witness["settlement_symbols"] = ["AAA", "CCC"]
+    assert settlement_witness_relation(synthetic_witness, synthetic_master) is None
+    synthetic_witness["queue_hash"] = "current-hash"
+    synthetic_witness["queue_total"] = 2
+    assert settlement_witness_relation(synthetic_witness, synthetic_master) == "EXACT_QUEUE"
     print("XRAY_RESOLVER_FULL_SCOPE_HANDOFF_SELFTEST=PASS")
 
 
@@ -515,16 +620,19 @@ def main() -> None:
     witness_path = str(rj.get("settlement_witness_path") or "")
     witness_blob = str(rj.get("settlement_witness_blob_sha") or "")
     if witness_path and witness_blob:
-        witness = validate_settlement_witness(REPO / witness_path, witness_blob, master, price["asof_et"])
+        witness, witness_path, witness_blob, witness_relation = validate_settlement_witness(
+            REPO / witness_path, witness_blob, master, price["asof_et"]
+        )
     else:
-        witness_path, witness_blob = residual["path"], residual["blob"]
-        witness = validate_settlement_witness(residual["file"], residual["blob"], master, price["asof_et"])
+        witness, witness_path, witness_blob, witness_relation = validate_settlement_witness(
+            residual["file"], residual["blob"], master, price["asof_et"]
+        )
 
     out_path, version = next_path(price["asof_et"])
     assert not out_path.exists(), ("SUCCESSOR_PATH_ALREADY_EXISTS", relpath(out_path))
     obj = build_obj(
         master, price, request, manifest, compact,
-        predecessor, residual, witness_path, witness_blob, witness, version,
+        predecessor, residual, witness_path, witness_blob, witness, witness_relation, version,
     )
     validate_output(obj, master, price, request, compact, predecessor, witness_path, witness_blob)
     out_path.write_text(json.dumps(obj, ensure_ascii=False, sort_keys=True, indent=2) + "\n", encoding="utf-8")
@@ -536,6 +644,9 @@ def main() -> None:
     print("predecessor_blob_sha=" + predecessor["blob"])
     print("residual_authority_path=" + residual["path"])
     print("residual_authority_blob_sha=" + residual["blob"])
+    print("settlement_witness_path=" + witness_path)
+    print("settlement_witness_blob_sha=" + witness_blob)
+    print("settlement_witness_relation=" + witness_relation)
     print("price_blob_sha=" + blob_sha(PRICE))
     print("pass_count=" + str(len(price.get("pass_symbols") or [])))
     print("queue_total=" + str(len(queue)))
