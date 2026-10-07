@@ -1,4 +1,5 @@
 name: XRAY Event Official Primary Promote
+
 on:
   workflow_run:
     workflows: ["XRAY Canonical Current Post-MC Factory"]
@@ -8,161 +9,214 @@ on:
     paths:
       - ".github/workflows/xray-event-official-primary-promote.yml"
       - "nasdaq-xray/event_fail_closed_base_builder.py"
-      - "nasdaq-xray/build_current_event_state.py"
       - "nasdaq-xray/event_official_primary_probe.py"
       - "nasdaq-xray/event_official_primary_successor_builder.py"
       - "nasdaq-xray/event_official_primary_successor_selftest.py"
+      - "nasdaq-xray/build_current_event_state.py"
       - "nasdaq-xray/event_ir_seed_registry.json"
       - "nasdaq-xray/canonical_current_event_request.json"
       - "nasdaq-xray/canonical_current_event_state.json"
   workflow_dispatch:
+
 permissions:
   contents: write
+
 concurrency:
   group: xray-event-official-primary-promote
   cancel-in-progress: false
+
 jobs:
   promote:
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
         with:
           ref: main
           fetch-depth: 0
+
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
-      - name: Bootstrap, probe, exact-bind, and publish current Event authority
-        shell: bash
+      - name: Compile and deterministic Event authority selftests
         run: |
-          set -euo pipefail
           python -m py_compile \
             nasdaq-xray/event_fail_closed_base_builder.py \
-            nasdaq-xray/build_current_event_state.py \
             nasdaq-xray/event_official_primary_probe.py \
             nasdaq-xray/event_official_primary_successor_builder.py \
-            nasdaq-xray/event_official_primary_successor_selftest.py
+            nasdaq-xray/event_official_primary_successor_selftest.py \
+            nasdaq-xray/build_current_event_state.py
           python nasdaq-xray/event_fail_closed_base_builder.py --selftest
           python nasdaq-xray/event_official_primary_probe.py --selftest
           python nasdaq-xray/event_official_primary_successor_selftest.py
 
-          base_result="$(python nasdaq-xray/event_fail_closed_base_builder.py)"
-          echo "$base_result"
-          base_status="$(python -c 'import json,sys; print(json.load(sys.stdin).get("status",""))' <<<"$base_result")"
-          base_path="$(python -c 'import json,sys; print(json.load(sys.stdin).get("path",""))' <<<"$base_result")"
-          case "$base_status" in
-            BASE_CANDIDATE_WRITTEN_LOCAL_ONLY|EXACT_CURRENT_EVENT_BRIDGE_EXISTS) ;;
-            *) echo "XRAY_EVENT_PROMOTE_BASE_INVALID=$base_status" >&2; exit 1 ;;
-          esac
-          [[ -n "$base_path" && -f "$base_path" ]]
-          base_tmp=""
-          if [[ "$base_status" == "BASE_CANDIDATE_WRITTEN_LOCAL_ONLY" ]]; then
-            base_tmp="$RUNNER_TEMP/event-base.json"
-            cp "$base_path" "$base_tmp"
-          fi
-
-          XRAY_EVENT_BRIDGE="$base_path" python nasdaq-xray/build_current_event_state.py
-          python nasdaq-xray/event_official_primary_probe.py
-          successor_result="$(python nasdaq-xray/event_official_primary_successor_builder.py)"
-          echo "$successor_result"
-          successor_status="$(python -c 'import json,sys; print(json.load(sys.stdin).get("status",""))' <<<"$successor_result")"
-          successor_path=""
-          successor_tmp=""
-          case "$successor_status" in
-            SUCCESSOR_CANDIDATE_WRITTEN_LOCAL_ONLY)
-              successor_path="$(python -c 'import json,sys; print(json.load(sys.stdin).get("path",""))' <<<"$successor_result")"
-              [[ -n "$successor_path" && -f "$successor_path" ]]
-              successor_tmp="$RUNNER_TEMP/event-successor.json"
-              cp "$successor_path" "$successor_tmp"
-              final_bridge="$successor_path"
-              ;;
-            NOOP_NO_PROMOTABLE_UNKNOWN)
-              final_bridge="$base_path"
+      - name: Bootstrap exact-current fail-closed Event authority
+        id: bootstrap
+        shell: bash
+        run: |
+          set -euo pipefail
+          result="$(python nasdaq-xray/event_fail_closed_base_builder.py)"
+          echo "$result"
+          status="$(python -c 'import json,sys; print(json.load(sys.stdin).get("status",""))' <<<"$result")"
+          case "$status" in
+            BASE_CANDIDATE_WRITTEN_LOCAL_ONLY|EXACT_CURRENT_EVENT_BRIDGE_EXISTS)
+              path="$(python -c 'import json,sys; print(json.load(sys.stdin).get("path",""))' <<<"$result")"
+              [[ -n "$path" && -f "$path" ]]
+              XRAY_EVENT_BRIDGE="$path" python nasdaq-xray/build_current_event_state.py
+              echo "status=$status" >> "$GITHUB_OUTPUT"
+              echo "path=$path" >> "$GITHUB_OUTPUT"
+              echo "BOOTSTRAP_PATH=$path" >> "$GITHUB_ENV"
               ;;
             *)
-              echo "XRAY_EVENT_PROMOTE_SUCCESSOR_INVALID=$successor_status" >&2
+              echo "XRAY_EVENT_BASE=UNEXPECTED_STATUS status=$status" >&2
               exit 1
               ;;
           esac
 
-          XRAY_EVENT_BRIDGE="$final_bridge" python nasdaq-xray/build_current_event_state.py
-          state_tmp="$RUNNER_TEMP/canonical_current_event_state.json"
-          cp nasdaq-xray/canonical_current_event_state.json "$state_tmp"
+      - name: Run issuer-primary probe and build immutable successor
+        id: successor
+        shell: bash
+        run: |
+          set -euo pipefail
+          python nasdaq-xray/event_official_primary_probe.py
 
           python - <<'PY'
-          import json, pathlib, subprocess
-          root=pathlib.Path("nasdaq-xray")
-          q=json.load(open(root/"canonical_current_event_request.json",encoding="utf-8"))
-          s=json.load(open(root/"canonical_current_event_state.json",encoding="utf-8"))
-          assert s["asof_et"]==q["asof_et"]
-          assert s["weekly_scope_hash"]==q["weekly_scope_hash"]
-          assert s["geometry_scope_hash"]==q["geometry_scope_hash"]
-          assert s["unknown_never_pass"] is True
-          assert s["source_request_blob_sha"]==subprocess.check_output(["git","hash-object",str(root/"canonical_current_event_request.json")],text=True).strip()
-          print("XRAY_EVENT_PROMOTE_STATE_BINDING=PASS")
+          import json
+          p="nasdaq-xray/event_official_primary_probe_state.json"
+          j=json.load(open(p,encoding="utf-8"))
+          assert j["schema"]=="XRAY_EVENT_OFFICIAL_PRIMARY_PROBE_V1"
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          assert j["unknown_never_pass"] is True
+          assert j["classification_applied"] is False
+          for sym,r in j["results"].items():
+              assert r["classification_applied"] is False
+              if r["status"]!="UNKNOWN_OFFICIAL_PRIMARY_UNRESOLVED":
+                  matches=[m for x in r["issuer_probes"] for m in x.get("matches",[])]
+                  assert matches
+                  assert all(m["authority"]=="ISSUER_IR_PRIMARY" for m in matches)
+          print("EVENT_OFFICIAL_PRIMARY_PROBE_VALIDATION=PASS")
+          print(json.dumps({"counts":j["counts"],"scope_count":j["scope_count"]},sort_keys=True))
           PY
 
+          result="$(python nasdaq-xray/event_official_primary_successor_builder.py)"
+          echo "$result"
+          status="$(python -c 'import json,sys; print(json.load(sys.stdin).get("status",""))' <<<"$result")"
+          if [[ "$status" == "SUCCESSOR_CANDIDATE_WRITTEN_LOCAL_ONLY" ]]; then
+            path="$(python -c 'import json,sys; print(json.load(sys.stdin)["path"])' <<<"$result")"
+            [[ -f "$path" ]]
+            XRAY_EVENT_BRIDGE="$path" python nasdaq-xray/build_current_event_state.py
+            echo "status=$status" >> "$GITHUB_OUTPUT"
+            echo "path=$path" >> "$GITHUB_OUTPUT"
+            echo "FINAL_EVENT_PATH=$path" >> "$GITHUB_ENV"
+          elif [[ "$status" == "NOOP_NO_PROMOTABLE_UNKNOWN" ]]; then
+            echo "status=$status" >> "$GITHUB_OUTPUT"
+            echo "path=$BOOTSTRAP_PATH" >> "$GITHUB_OUTPUT"
+            echo "FINAL_EVENT_PATH=$BOOTSTRAP_PATH" >> "$GITHUB_ENV"
+          else
+            echo "XRAY_EVENT_PROMOTE=INVALID_SUCCESSOR_STATUS status=$status" >&2
+            exit 1
+          fi
+
+          python - <<'PY'
+          import hashlib,json,pathlib
+          root=pathlib.Path("nasdaq-xray")
+          req=json.load(open(root/"canonical_current_event_request.json"))
+          state=json.load(open(root/"canonical_current_event_state.json"))
+          def bsha(p):
+              b=p.read_bytes()
+              return hashlib.sha1(f"blob {len(b)}\0".encode()+b).hexdigest()
+          assert state["asof_et"]==req["asof_et"]
+          assert state["source_request_blob_sha"]==bsha(root/"canonical_current_event_request.json")
+          bridge=pathlib.Path(state["source_bridge_path"])
+          assert bridge.exists()
+          assert state["source_bridge_blob_sha"]==bsha(bridge)
+          assert state["weekly_scope_hash"]==req["weekly_scope_hash"]
+          assert state["geometry_scope_hash"]==req["geometry_scope_hash"]
+          print(json.dumps({
+              "EVENT_CURRENT_STATE_BINDING":"PASS",
+              "asof":state["asof_et"],
+              "bridge":state["source_bridge_path"],
+              "clean":state["clean_discovery_count"],
+              "blocked":state["confirmed_block_count"],
+              "unresolved":state["unresolved_count"],
+              "affected_geometry_unknown":state["affected_geometry_event_unknown_count"],
+          },sort_keys=True))
+          PY
+
+      - name: Commit exact-current Event authority and normalized state atomically
+        shell: bash
+        run: |
+          set -euo pipefail
           git config user.name "xray-event-bot"
           git config user.email "xray-event-bot@users.noreply.github.com"
-          baseline="$(git rev-parse HEAD)"
 
-          restore_generated() {
-            local path="$1" tmp="$2"
-            [[ -n "$path" && -n "$tmp" ]] || return 0
-            if git ls-files --error-unmatch "$path" >/dev/null 2>&1; then
-              current="$(git hash-object "$path")"
-              generated="$(git hash-object "$tmp")"
-              [[ "$current" == "$generated" ]] || { echo "XRAY_EVENT_PROMOTE=IMMUTABLE_PATH_CONFLICT path=$path" >&2; exit 1; }
-            else
-              rm -f "$path"
-              mkdir -p "$(dirname "$path")"
-              cp "$tmp" "$path"
+          base_head="$(git rev-parse HEAD)"
+          mkdir -p "$RUNNER_TEMP/event-generated"
+
+          cp nasdaq-xray/canonical_current_event_state.json "$RUNNER_TEMP/event-generated/canonical_current_event_state.json"
+          git ls-files --others --exclude-standard 'nasdaq-xray/canonical_event_bridge_*_c417_dv30_v*.json' > "$RUNNER_TEMP/event-generated/new-bridges.txt" || true
+          while IFS= read -r p; do
+            [[ -n "$p" ]] || continue
+            cp "$p" "$RUNNER_TEMP/event-generated/$(basename "$p")"
+          done < "$RUNNER_TEMP/event-generated/new-bridges.txt"
+
+          git fetch origin main
+          latest="$(git rev-parse origin/main)"
+          if [[ "$latest" != "$base_head" ]]; then
+            changed="$(git diff --name-only "$base_head" "$latest" -- \
+              nasdaq-xray/canonical_current_event_request.json \
+              nasdaq-xray/canonical_current_stage1.json \
+              nasdaq-xray/canonical_current_regime.json \
+              nasdaq-xray/canonical_current_deep_geometry.json \
+              nasdaq-xray/event_fail_closed_base_builder.py \
+              nasdaq-xray/event_official_primary_probe.py \
+              nasdaq-xray/event_official_primary_successor_builder.py \
+              nasdaq-xray/build_current_event_state.py \
+              nasdaq-xray/event_ir_seed_registry.json \
+              .github/workflows/xray-event-official-primary-promote.yml || true)"
+            if [[ -n "$changed" ]]; then
+              echo "XRAY_EVENT_PROMOTE=STALE_SOURCE_ABORT"
+              printf '%s\n' "$changed"
+              exit 0
             fi
-          }
+          fi
 
-          for attempt in 1 2 3; do
-            git fetch origin main --quiet
-            latest="$(git rev-parse origin/main)"
-            if [[ "$latest" != "$baseline" ]]; then
-              changed="$(git diff --name-only "$baseline" "$latest" -- \
-                nasdaq-xray/canonical_current_event_request.json \
-                nasdaq-xray/canonical_current_event_state.json \
-                'nasdaq-xray/canonical_event_bridge_*.json' \
-                nasdaq-xray/event_fail_closed_base_builder.py \
-                nasdaq-xray/build_current_event_state.py \
-                nasdaq-xray/event_official_primary_probe.py \
-                nasdaq-xray/event_official_primary_successor_builder.py \
-                nasdaq-xray/event_ir_seed_registry.json \
-                .github/workflows/xray-event-official-primary-promote.yml || true)"
-              if [[ -n "$changed" ]]; then
-                echo "XRAY_EVENT_PROMOTE=STALE_SOURCE_ABORT"
-                printf '%s\n' "$changed"
-                exit 0
+          git reset --hard origin/main
+          git clean -fd
+
+          while IFS= read -r p; do
+            [[ -n "$p" ]] || continue
+            base="$(basename "$p")"
+            if git ls-files --error-unmatch "$p" >/dev/null 2>&1; then
+              current="$(git hash-object "$p")"
+              generated="$(git hash-object "$RUNNER_TEMP/event-generated/$base")"
+              if [[ "$current" != "$generated" ]]; then
+                echo "XRAY_EVENT_PROMOTE=IMMUTABLE_PATH_CONFLICT path=$p" >&2
+                exit 1
               fi
+            else
+              cp "$RUNNER_TEMP/event-generated/$base" "$p"
             fi
-            baseline="$latest"
-            git reset --hard "$latest" >/dev/null
-            restore_generated "$base_path" "$base_tmp"
-            restore_generated "$successor_path" "$successor_tmp"
-            cp "$state_tmp" nasdaq-xray/canonical_current_event_state.json
+          done < "$RUNNER_TEMP/event-generated/new-bridges.txt"
 
-            files=(nasdaq-xray/canonical_current_event_state.json)
-            [[ -n "$base_tmp" ]] && files+=("$base_path")
-            [[ -n "$successor_tmp" ]] && files+=("$successor_path")
-            git add "${files[@]}"
-            if git diff --cached --quiet; then
-              echo "XRAY_EVENT_PROMOTE=ALREADY_EXACT bridge=$final_bridge"
-              exit 0
-            fi
-            git commit -m "feat(xray): publish exact current Event authority" >/dev/null
-            if git push origin HEAD:main; then
-              echo "XRAY_EVENT_PROMOTE=PASS bridge=$final_bridge"
-              exit 0
-            fi
-            echo "XRAY_EVENT_PROMOTE=PUSH_RACE attempt=$attempt"
-          done
-          echo "XRAY_EVENT_PROMOTE=PUSH_RACE_EXHAUSTED" >&2
-          exit 1
+          cp "$RUNNER_TEMP/event-generated/canonical_current_event_state.json" nasdaq-xray/canonical_current_event_state.json
+
+          git add nasdaq-xray/canonical_current_event_state.json
+          while IFS= read -r p; do
+            [[ -n "$p" ]] || continue
+            git add "$p"
+          done < "$RUNNER_TEMP/event-generated/new-bridges.txt"
+
+          if git diff --cached --quiet; then
+            echo "XRAY_EVENT_PROMOTE=NO_CHANGE"
+            exit 0
+          fi
+
+          git commit -m "feat(xray): bind exact-current Event authority"
+          if ! git push origin HEAD:main; then
+            echo "XRAY_EVENT_PROMOTE=STALE_PUSH_RETRY_REQUIRED" >&2
+            exit 1
+          fi
+          echo "XRAY_EVENT_PROMOTE=PASS"
