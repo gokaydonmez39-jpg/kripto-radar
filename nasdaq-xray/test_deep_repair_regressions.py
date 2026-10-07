@@ -602,8 +602,9 @@ def test_candidate_legal_guard_phrase_severity():
 
 def test_workflow_race_and_pre_mc_freeze_contracts():
     final_wf=(REPO/".github/workflows/xray-canonical-current-final.yml").read_text()
-    assert "group: xray-canonical-current-final-c417" in final_wf
-    assert "cancel-in-progress: ${{ github.event_name == 'push' }}" in final_wf
+    assert "group: xray-canonical-current-final-c417-v2" in final_wf
+    assert "cancel-in-progress: false" in final_wf
+    assert "XRAY_FACTORY_COMMIT=STALE_SOURCE_ABORT" in final_wf
     assert "python nasdaq-xray/semantic_cache_diff.py" in final_wf
     hard_guard=final_wf.split('changed="$(git diff --name-only',1)[1].split('cache_changed="$(git diff --name-only',1)[0]
     assert "nasdaq-xray/canonical_benchmark_cache/**" not in hard_guard
