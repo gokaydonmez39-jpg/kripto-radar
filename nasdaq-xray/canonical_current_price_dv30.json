@@ -27,8 +27,8 @@
   },
   "current_baseline_reuse": true,
   "exception_bridge_meta": {
-    "input_binding_role": "SEMANTIC_REBIND_EXACT_PRICE_PARTITION_AND_SCOPE",
-    "path": "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261006_c417_dv30_v10.json",
+    "input_binding_role": "EXACT_CURRENT_REQUEST_MANIFEST",
+    "path": "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261006_c417_dv30_v11.json",
     "result_encoding": "RALLIES_SCANNER_EXACT30_V2",
     "source_result_task_id": null,
     "status": "PASS",
@@ -596,7 +596,7 @@
   "policy_replay_symbols": [],
   "real_money": "NO-GO",
   "redo_deferred_to_bridge": true,
-  "reevaluated_count": 11,
+  "reevaluated_count": 0,
   "results": {
     "AACG": {
       "info": {
@@ -1054,7 +1054,7 @@
         "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "BLOCK_CURRENT_RUN"
     },
     "ACDC": {
@@ -1648,7 +1648,7 @@
         "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "BLOCK_CURRENT_RUN"
     },
     "ADSE": {
@@ -9930,7 +9930,7 @@
         "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "BLOCK_CURRENT_RUN"
     },
     "CHYM": {
@@ -15419,7 +15419,7 @@
         "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "BLOCK_CURRENT_RUN"
     },
     "ETS": {
@@ -19407,7 +19407,7 @@
         "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "BLOCK_CURRENT_RUN"
     },
     "GRAN": {
@@ -32441,7 +32441,7 @@
         "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "BLOCK_CURRENT_RUN"
     },
     "OIO": {
@@ -38716,7 +38716,7 @@
         "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "BLOCK_CURRENT_RUN"
     },
     "RZLT": {
@@ -42327,7 +42327,8 @@
             "error": "SyntaxError:invalid syntax (<string>, line 1)"
           },
           "yahoo": {
-            "error": "HTTPError:HTTP Error 404: Not Found"
+            "exchangeName": "NMS",
+            "usable": 1
           }
         },
         "provider_result": {
@@ -42339,7 +42340,44 @@
             "reason": "SINA_UNAVAILABLE"
           },
           "yahoo_result": {
-            "reason": "YAHOO_UNAVAILABLE"
+            "dv30_lower_bound": 0.0,
+            "dv30_upper_bound": null,
+            "known_session_count": 1,
+            "missing_sessions": [
+              "2026-08-25",
+              "2026-08-26",
+              "2026-08-27",
+              "2026-08-28",
+              "2026-08-31",
+              "2026-09-01",
+              "2026-09-02",
+              "2026-09-03",
+              "2026-09-04",
+              "2026-09-08",
+              "2026-09-09",
+              "2026-09-10",
+              "2026-09-11",
+              "2026-09-14",
+              "2026-09-15",
+              "2026-09-16",
+              "2026-09-17",
+              "2026-09-18",
+              "2026-09-21",
+              "2026-09-22",
+              "2026-09-23",
+              "2026-09-24",
+              "2026-09-25",
+              "2026-09-28",
+              "2026-09-29",
+              "2026-09-30",
+              "2026-10-01",
+              "2026-10-02",
+              "2026-10-05"
+            ],
+            "no_synthetic_bar": true,
+            "price": 6.46999979019165,
+            "reason": "EXACT30_INCOMPLETE_NEVER_PASS",
+            "source": "YAHOO_CHART_FREE_FAIL_ONLY"
           }
         },
         "status": "UNRESOLVED"
@@ -42352,7 +42390,7 @@
         "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "BLOCK_CURRENT_RUN"
     },
     "SVC": {
@@ -47082,7 +47120,7 @@
         "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "BLOCK_CURRENT_RUN"
     },
     "WBTN": {
@@ -47757,7 +47795,7 @@
         "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "BLOCK_CURRENT_RUN"
     },
     "WRAP": {
@@ -48393,7 +48431,7 @@
         "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "BLOCK_CURRENT_RUN"
     },
     "XLAB": {
@@ -49397,7 +49435,7 @@
       "status": "FAIL_DV30"
     }
   },
-  "reused_terminal_count": 3150,
+  "reused_terminal_count": 3161,
   "schema": "XRAY_CANONICAL_PRICE_DV30_V1",
   "source_master_count": 3161,
   "source_master_queue_hash": "f583de3888d099300a0d4b0baf67d557ab98007aa33fb93142a9172213ea6867",

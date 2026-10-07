@@ -1068,7 +1068,7 @@
           "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
           "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
         },
-        "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+        "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
         "status": "BLOCK_CURRENT_RUN"
       },
       "security_name": "Accelevation Holdings Corp. - Class A ordinary shares"
@@ -1171,7 +1171,7 @@
           "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
           "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
         },
-        "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+        "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
         "status": "BLOCK_CURRENT_RUN"
       },
       "security_name": "ADARx Pharmaceuticals, Inc. - Common stock"
@@ -1282,7 +1282,7 @@
           "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
           "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
         },
-        "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+        "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
         "status": "BLOCK_CURRENT_RUN"
       },
       "security_name": "Chilwa Minerals Limited - American Depository Shares"
@@ -1375,7 +1375,7 @@
           "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
           "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
         },
-        "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+        "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
         "status": "BLOCK_CURRENT_RUN"
       },
       "security_name": "Electra Therapeutics, Inc. - Common stock"
@@ -1432,7 +1432,7 @@
           "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
           "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
         },
-        "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+        "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
         "status": "BLOCK_CURRENT_RUN"
       },
       "security_name": "GRAIL, Inc. - Common Stock"
@@ -1525,7 +1525,7 @@
           "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
           "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
         },
-        "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+        "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
         "status": "BLOCK_CURRENT_RUN"
       },
       "security_name": "Orion180 Insurance Group Inc. - Class A Common Stock"
@@ -1601,7 +1601,7 @@
           "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
           "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
         },
-        "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+        "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
         "status": "BLOCK_CURRENT_RUN"
       },
       "security_name": "Roze AI Inc. - Common Shares"
@@ -1618,7 +1618,8 @@
               "error": "SyntaxError:invalid syntax (<string>, line 1)"
             },
             "yahoo": {
-              "error": "HTTPError:HTTP Error 404: Not Found"
+              "exchangeName": "NMS",
+              "usable": 1
             }
           },
           "provider_result": {
@@ -1630,7 +1631,44 @@
               "reason": "SINA_UNAVAILABLE"
             },
             "yahoo_result": {
-              "reason": "YAHOO_UNAVAILABLE"
+              "dv30_lower_bound": 0.0,
+              "dv30_upper_bound": null,
+              "known_session_count": 1,
+              "missing_sessions": [
+                "2026-08-25",
+                "2026-08-26",
+                "2026-08-27",
+                "2026-08-28",
+                "2026-08-31",
+                "2026-09-01",
+                "2026-09-02",
+                "2026-09-03",
+                "2026-09-04",
+                "2026-09-08",
+                "2026-09-09",
+                "2026-09-10",
+                "2026-09-11",
+                "2026-09-14",
+                "2026-09-15",
+                "2026-09-16",
+                "2026-09-17",
+                "2026-09-18",
+                "2026-09-21",
+                "2026-09-22",
+                "2026-09-23",
+                "2026-09-24",
+                "2026-09-25",
+                "2026-09-28",
+                "2026-09-29",
+                "2026-09-30",
+                "2026-10-01",
+                "2026-10-02",
+                "2026-10-05"
+              ],
+              "no_synthetic_bar": true,
+              "price": 6.46999979019165,
+              "reason": "EXACT30_INCOMPLETE_NEVER_PASS",
+              "source": "YAHOO_CHART_FREE_FAIL_ONLY"
             }
           },
           "status": "UNRESOLVED"
@@ -1643,7 +1681,7 @@
           "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
           "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
         },
-        "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+        "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
         "status": "BLOCK_CURRENT_RUN"
       },
       "security_name": "Sinovac Biotech, Ltd. - Ordinary Shares (Antigua/Barbudo)"
@@ -1693,7 +1731,7 @@
           "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
           "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
         },
-        "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+        "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
         "status": "BLOCK_CURRENT_RUN"
       },
       "security_name": "Warner Bros. Discovery, Inc. - Series A Common Stock"
@@ -1808,7 +1846,7 @@
           "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
           "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
         },
-        "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+        "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
         "status": "BLOCK_CURRENT_RUN"
       },
       "security_name": "WISeQey Corp - Ordinary Shares"
@@ -1878,7 +1916,7 @@
           "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
           "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
         },
-        "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+        "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
         "status": "BLOCK_CURRENT_RUN"
       },
       "security_name": "Churchill Capital Corp XIII - Class A Ordinary Shares"
@@ -1891,22 +1929,22 @@
   "real_money": "NO-GO",
   "resolver_policy": "ALPACA_SIP_PREFERRED__RALLIES_LONGBRIDGE_DUAL_SOURCE_CONNECTOR_FAILOVER__NEVER_G9__FAIL_CLOSED__SAME_ASOF_QUEUE_BINDING",
   "schema": "XRAY_RESOLVER_EPOCH_REQUEST_V1",
-  "settlement_already_proven": false,
-  "settlement_bridge_blob_sha": null,
-  "settlement_bridge_path": null,
+  "settlement_already_proven": true,
+  "settlement_bridge_blob_sha": "5725c2d22f0147c09e37dea13539c6e467196f61",
+  "settlement_bridge_path": "nasdaq-xray/canonical_resolver_bridge_20261006_c417_dv30_v11.json",
   "settlement_core_source_blob_sha": "a160a25d511f40ad8119f0f242ad5fa94fadf851",
   "settlement_core_source_path": "nasdaq-xray/canonical_current_terminal.json",
   "settlement_core_symbol": "MSFT",
   "settlement_policy": "ALPACA_HISTORICAL_SIP_DAILY_AFTER_15M__AAPL_NVDA_PLUS_ONE_PRIOR_CURRENT_CORE__RALLIES_LONGBRIDGE_QUOTE_OHLC_0_01_CROSSCHECK__SIP_VOLUME_AUTHORITY__FAIL_CLOSED__DELAYED_SIP_NEVER_G9",
   "settlement_required": false,
   "settlement_symbols": [],
-  "source_master_blob_sha": "113a88f0fa2e292cca1670e91d1863419df56921",
+  "source_master_blob_sha": "c17e915caea72c8d26537a65b9e9332cffbddc98",
   "source_master_path": "nasdaq-xray/canonical_current_master_manifest.json",
-  "source_overlay_blob_sha": "88c2f364eced2935e3ff049506dad07d6c9bf6f8",
+  "source_overlay_blob_sha": "7bd5d2b81a152487779538f3a18695193f1caf83",
   "source_overlay_path": "nasdaq-xray/canonical_current_resolution_overlay.json",
   "source_pointer_blob_sha": "5c073df5d674c77e5e4439b41b81393b96148c06",
   "source_pointer_path": "nasdaq-xray/chatgpt_canonical_state_v2.json",
-  "source_price_blob_sha": "ed9501a867c7ade84e2be2354d55c2465a401167",
+  "source_price_blob_sha": "14417921b78475d4be6ac631666170ae02ee13c9",
   "source_price_counts": {
     "BLOCK_CURRENT_RUN": 11,
     "FAIL_DV30": 1343,
@@ -1917,9 +1955,9 @@
   "source_price_pass_count": 508,
   "source_price_pass_hash": "63d66ef437b893c96ae7775e62d1a2c4d54a18695da2e7b0e8dd89022538882d",
   "source_price_path": "nasdaq-xray/canonical_current_price_dv30.json",
-  "source_state_blob_sha": "241e6a6d6e2be4d49784baf81750ca391416dec2",
+  "source_state_blob_sha": "f5f5ed554c0e18faa38e8999366d92999a659711",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
-  "source_unknowns_blob_sha": "6aa0d9c97c6bd52628ad631c3caf37f1433a36af",
+  "source_unknowns_blob_sha": "332022590cc2cdc037cf1818c5c1ddd15cf8ad58",
   "source_unknowns_path": "nasdaq-xray/canonical_current_unknowns.json",
   "status": "READY",
   "symbol_count": 11,
