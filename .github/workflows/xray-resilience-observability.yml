@@ -11,6 +11,7 @@ on:
       - "nasdaq-xray/resilience_runtime.py"
       - "nasdaq-xray/resilience_selftest.py"
       - "nasdaq-xray/sec_official_witness.py"
+      - "nasdaq-xray/sec_official_witness_selftest.py"
       - "nasdaq-xray/external_health_probe.py"
       - "nasdaq-xray/macro_context_probe.py"
       - "nasdaq-xray/candidate_enrichment.py"
@@ -65,6 +66,7 @@ jobs:
           python -m py_compile \
             nasdaq-xray/resilience_runtime.py \
             nasdaq-xray/sec_official_witness.py \
+            nasdaq-xray/sec_official_witness_selftest.py \
             nasdaq-xray/external_health_probe.py \
             nasdaq-xray/macro_context_probe.py \
             nasdaq-xray/candidate_enrichment.py \
@@ -88,6 +90,9 @@ jobs:
 
       - name: Single-flight + circuit-breaker self-test
         run: python nasdaq-xray/resilience_selftest.py
+
+      - name: SEC official-witness bounded transport self-test
+        run: python nasdaq-xray/sec_official_witness_selftest.py
 
       - name: 36-of-36 gem integration registry self-test
         run: python nasdaq-xray/gem_registry_selftest.py
