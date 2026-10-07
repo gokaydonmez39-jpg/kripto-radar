@@ -15,9 +15,13 @@
   },
   "current_baseline_reuse": true,
   "exception_bridge_meta": {
+    "input_binding_role": "SEMANTIC_REBIND_EXACT_PRICE_PARTITION_AND_SCOPE",
     "path": "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261006_c417_dv30_v9.json",
-    "reason": "ValueError:RALLIES_V2_BLOCK_CURRENT",
-    "status": "INVALID"
+    "result_encoding": "RALLIES_SCANNER_EXACT30_V2",
+    "source_result_task_id": null,
+    "status": "PASS",
+    "symbol_hash": "b757e7c3f8600f5d6d806a971d9bde99ced93e4563a9600f6921ee0e90259725",
+    "terminal_override_count": 0
   },
   "execution": "NONE",
   "expected30": [
