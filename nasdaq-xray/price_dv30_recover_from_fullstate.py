@@ -244,67 +244,32 @@ def load_c417_rallies_primary(asof,queue=None):
 
 
 def c417_rallies_primary_pass_conflicts(px,queue=None):
-    """Return current DV30 PASS symbols not authorized by C4.17 Rallies primary.
+    """Expose Rallies-vs-current PASS differences as diagnostics only.
 
-    Existing terminal FAIL rows are not conflicts: C4.17 explicitly permits
-    stronger fail-only evidence to terminalize a Rallies fail-closed BLOCK.
+    C4.17 defines the PRICE/DV30 measurement and fail-evidence agreement rules,
+    but it does not designate Rallies as the exclusive DV30 PASS authority.
+    A provider disagreement therefore remains observable without vetoing an
+    independently complete exact30 PASS.
     """
     primary,meta=load_c417_rallies_primary(px.get("asof_et"),queue)
     if primary is None:
         return [],meta
     primary_pass=set((primary.get("pass_price_dv30") or {}).keys())
     current_pass=set(px.get("pass_symbols") or [])
+    meta=dict(meta)
+    meta["authority_role"]="DIAGNOSTIC_CROSS_SOURCE_CLASSIFICATION_NOT_PASS_VETO"
     return sorted(current_pass-primary_pass),meta
 
 
 def apply_c417_rallies_primary_pass_veto(results,primary):
-    """Fail closed any PASS that the C4.17 Rallies primary did not PASS.
+    """Compatibility no-op: C4.17 contains no Rallies-exclusive PASS veto.
 
-    This never upgrades a symbol. Rallies BLOCK becomes BLOCK_CURRENT_RUN;
-    any other primary non-PASS becomes UNKNOWN so no unsupported PASS survives.
+    Keep the callable so older self-tests/imports fail safely at the API layer,
+    but never downgrade an exact30 PASS merely because the Rallies snapshot has
+    incomplete coverage. Thresholds, exact30 requirements, and UNKNOWN != PASS
+    remain unchanged.
     """
-    if not isinstance(primary,dict):
-        return []
-    primary_pass=set((primary.get("pass_price_dv30") or {}).keys())
-    primary_block=primary.get("block_current_run") or {}
-    primary_fail_price=primary.get("fail_price") or {}
-    primary_fail_dv30=primary.get("fail_dv30") or {}
-    changed=[]
-    for sym,row in sorted(results.items()):
-        if row.get("status")!="PASS_PRICE_DV30" or sym in primary_pass:
-            continue
-        if sym in primary_block:
-            val=primary_block[sym] if isinstance(primary_block[sym],dict) else {}
-            results[sym]={
-              "status":"BLOCK_CURRENT_RUN",
-              "info":{
-                "reason":val.get("reason") or "RALLIES_PRIMARY_NONPASS",
-                "observed_usable_sessions":val.get("observed_usable_sessions"),
-                "missing_sessions":list(val.get("missing_sessions") or []),
-                "zero_volume_sessions":list(val.get("zero_volume_sessions") or []),
-                "source":"RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
-                "proof":"FAIL_CLOSED_CURRENT_RUN_NONPASS",
-                "no_synthetic_bar":True,
-              },
-              "provenance":"C417_RALLIES_PRIMARY_PASS_VETO",
-            }
-        else:
-            primary_state=(
-              "FAIL_PRICE" if sym in primary_fail_price else
-              "FAIL_DV30" if sym in primary_fail_dv30 else
-              "MISSING_FROM_PRIMARY_PARTITION"
-            )
-            results[sym]={
-              "status":"UNKNOWN",
-              "info":{
-                "reason":"C417_PRIMARY_DID_NOT_AUTHORIZE_PASS",
-                "primary_state":primary_state,
-                "no_synthetic_bar":True,
-              },
-              "provenance":"C417_RALLIES_PRIMARY_PASS_VETO",
-            }
-        changed.append(sym)
-    return changed
+    return []
 
 
 def _compact_resolution_sets(compact):
@@ -807,12 +772,13 @@ def valid_bridge_price_resolution(x,asof):
                 ("RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9","EXACT30_MEDIAN_GE_GATE"),
               }
             )
-        # C4.17 historical Alpaca SIP is settlement/fail-evidence authority,
-        # not DV30 PASS authority. Longbridge PASS fallback is not implemented
-        # in this loader yet; fail closed until an explicit tested wire contract exists.
-        if x.get("source") not in {
-          "RALLIES_CANDLESTICK_SCANNER_EXACT30_PRIMARY",
-          "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
+        # C4.17 is provider-neutral for a complete exact30 PRICE/DV30 PASS.
+        # Accept only explicitly wired exact30 evidence sources/proofs; this does
+        # not relax the >=5 / >=50M / 30-session / no-synthetic requirements.
+        if source_proof not in {
+          ("RALLIES_CANDLESTICK_SCANNER_EXACT30_PRIMARY","RALLIES_EXACT30_MEDIAN_GE_GATE"),
+          ("RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9","EXACT30_MEDIAN_GE_GATE"),
+          ("ALPACA_HISTORICAL_SIP_DAILY_BATCH_NON_G9","EXACT30_MEDIAN_GE_GATE"),
         }:
             return False
         dv=num(x.get("dv30"))
@@ -820,7 +786,6 @@ def valid_bridge_price_resolution(x,asof):
           px is not None and px>=HARD_PRICE and dv is not None and dv>=HARD_DV30
           and known==30 and (x.get("missing_sessions") or [])==[]
           and x.get("no_synthetic_bar") is True
-          and bool(x.get("proof"))
         )
     if d=="BLOCK_CURRENT_RUN":
         if x.get("source") in {
@@ -1200,11 +1165,8 @@ def main():
         baseline_source="CURRENT_PRICE_ARTIFACT" if USE_CURRENT_BASELINE else "PRIOR_PRICE_ARTIFACT"
     results={};redo=[];policy_redo=set()
     rallies_primary,rallies_primary_meta=load_c417_rallies_primary(asof,queue)
-    rallies_primary_pass=set((rallies_primary or {}).get("pass_price_dv30",{}).keys())
     for sym in queue:
         r=old[sym];st=r.get("status");info=r.get("info")
-        if st in {"PASS","PASS_PRICE_DV30"} and rallies_primary is not None and sym not in rallies_primary_pass:
-            redo.append(sym);policy_redo.add(sym);continue
         if USE_CURRENT_BASELINE:
             if st=="UNKNOWN":
                 redo.append(sym)
