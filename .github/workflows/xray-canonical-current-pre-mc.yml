@@ -122,7 +122,7 @@ jobs:
         run: |
           cd nasdaq-xray
           python current_identity_proof_selftest.py
-      - name: PRICE C4.17 provider-neutral exact30 authority self-test
+      - name: PRICE C4.17 Rallies-primary exact30 authority self-test
         run: |
           cd nasdaq-xray
           python price_dv30_authority_selftest.py
