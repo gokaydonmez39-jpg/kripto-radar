@@ -1,7 +1,7 @@
 {
   "schema": "XRAY_FINAL_GATE_OVERLAY_V2",
   "generated_on": "2026-10-07",
-  "generated_at_utc": "2026-10-07T14:57:01.415902+00:00",
+  "generated_at_utc": "2026-10-07T15:03:46.852366+00:00",
   "asof_et": "2026-10-06",
   "execution": "NONE",
   "real_money": "NO-GO",
@@ -18,8 +18,8 @@
   },
   "source_pointer": {
     "path": "nasdaq-xray/chatgpt_canonical_state_v2.json",
-    "blob_sha": "c4ea95247d34cfb644db3dd1abc2934d6ec68149",
-    "revision": 44,
+    "blob_sha": "52183235a908af7238a58eede9644de686df8278",
+    "revision": 45,
     "status": "TERMINAL_PARTIAL_UNKNOWN",
     "asof_et": "2026-10-06",
     "epoch_relation_to_terminal": "EXACT_SAME_ASOF",
@@ -36,15 +36,15 @@
     "runtime_path": "nasdaq-xray/strict_g9_runtime_state.json",
     "runtime_blob_sha": "fb077b1177153df149e63502818d190875c0b119",
     "current_saturation_blob_sha": "2e47a4fd7d620cdda0106bfc60333c6ebf75eb07",
-    "current_registry_blob_sha": "3270ee56c94beca87bb834e14d9fb1355316db5a",
+    "current_registry_blob_sha": "c41b9529fd99f06e88d227710a2a587538abf5d3",
     "authority_bound_saturation_blob_sha": "2e47a4fd7d620cdda0106bfc60333c6ebf75eb07",
     "authority_bound_registry_blob_sha": "3270ee56c94beca87bb834e14d9fb1355316db5a",
     "current_saturation_count": 71,
     "current_registry_count": 71,
     "authority_saturation_count": 71,
     "authority_registry_count": 71,
-    "negative_cache_binding_exact": true,
-    "negative_cache_ahead_while_blocked": false
+    "negative_cache_binding_exact": false,
+    "negative_cache_ahead_while_blocked": true
   },
   "account": {
     "status": "ACCOUNT_BOOTSTRAP_READY_CREDENTIALS_REQUIRED",
