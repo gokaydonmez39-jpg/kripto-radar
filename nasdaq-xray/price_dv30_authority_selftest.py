@@ -101,6 +101,53 @@ def main():
     assert materialized[block_sym]["status"]=="BLOCK_CURRENT_RUN",materialized[block_sym]
     assert materialized[uncovered_sym]["status"]=="UNKNOWN",materialized[uncovered_sym]
 
+    # A validated same-ASOF fail-only terminal resolution must survive a later
+    # primary replay that still has only BLOCK_CURRENT_RUN for the symbol.
+    terminal_sym="BBCI" if "BBCI" in bc else block_sym
+    terminal_block=bc[terminal_sym]
+    terminal_missing=list(terminal_block.get("missing_sessions") or [])
+    terminal_known=int(terminal_block.get("observed_usable_sessions") or (30-len(terminal_missing)))
+    assert 0 <= terminal_known < 30 and len(terminal_missing)==30-terminal_known,(terminal_sym,terminal_block)
+    terminal_results={
+      terminal_sym:{
+        "status":"FAIL_DV30_INSUFFICIENT_SESSIONS",
+        "info":{
+          "price":11.0,
+          "known_session_count":terminal_known,
+          "missing_sessions":terminal_missing,
+          "proof":"ALPACA_RALLIES_EXACT_MISSING_SET_MATCH",
+          "source":"ALPACA_SIP_RALLIES_MASSIVE_C4_17_NON_G9",
+          "no_synthetic_bar":True,
+        },
+        "provenance":"AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      }
+    }
+    terminal_before=json.loads(json.dumps(terminal_results[terminal_sym]))
+    terminal_changed=apply_c417_rallies_primary_partition(
+        terminal_results,primary,[terminal_sym]
+    )
+    assert terminal_changed==[],terminal_changed
+    assert terminal_results[terminal_sym]==terminal_before,terminal_results[terminal_sym]
+
+    invalid_terminal={
+      terminal_sym:{
+        "status":"FAIL_DV30_INSUFFICIENT_SESSIONS",
+        "info":{
+          "price":11.0,
+          "known_session_count":terminal_known,
+          "missing_sessions":terminal_missing,
+          "proof":"INVALID_TEST_PROOF",
+          "source":"TEST",
+          "no_synthetic_bar":True,
+        },
+      }
+    }
+    invalid_changed=apply_c417_rallies_primary_partition(
+        invalid_terminal,primary,[terminal_sym]
+    )
+    assert invalid_changed==[terminal_sym],invalid_changed
+    assert invalid_terminal[terminal_sym]["status"]=="BLOCK_CURRENT_RUN",invalid_terminal[terminal_sym]
+
     synthetic_price={"asof_et":asof,"pass_symbols":[pass_sym,block_sym]}
     conflicts,conflict_meta=c417_rallies_primary_pass_conflicts(
         synthetic_price,[pass_sym,block_sym]
