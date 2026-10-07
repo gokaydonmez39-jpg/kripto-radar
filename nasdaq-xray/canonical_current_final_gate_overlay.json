@@ -1,7 +1,7 @@
 {
   "schema": "XRAY_FINAL_GATE_OVERLAY_V2",
   "generated_on": "2026-10-07",
-  "generated_at_utc": "2026-10-07T22:08:41.267250+00:00",
+  "generated_at_utc": "2026-10-07T22:12:28.258414+00:00",
   "asof_et": "2026-10-07",
   "execution": "NONE",
   "real_money": "NO-GO",
@@ -12,14 +12,14 @@
     "blob_sha": "1b633852377f348394d4ab7f9100e3ddab076eba",
     "claimed_full_end_to_end_research_pass": false,
     "full_end_to_end_research_pass": false,
-    "current_research_chain_exact": true,
+    "current_research_chain_exact": false,
     "current_research_coverage_complete": false,
     "terminal_result": "PARTIAL_UNKNOWN"
   },
   "source_pointer": {
     "path": "nasdaq-xray/chatgpt_canonical_state_v2.json",
-    "blob_sha": "4023747565970a822d5b6f6fd5149b71540afb8c",
-    "revision": 50,
+    "blob_sha": "769967eb2bada29ef52ec9c94ee991a066074038",
+    "revision": 51,
     "status": "TERMINAL_PARTIAL_UNKNOWN",
     "asof_et": "2026-10-07",
     "epoch_relation_to_terminal": "EXACT_SAME_ASOF",
@@ -70,13 +70,13 @@
     "g9_pass_binding_exact": true,
     "account_pass_binding_exact": true,
     "blocked_negative_evidence_may_advance_without_creating_pass": true,
-    "current_research_chain_exact": true,
+    "current_research_chain_exact": false,
     "current_research_coverage_complete": false,
     "stale_terminal_full_claim_suppressed": false
   },
   "current_research_chain": {
-    "exact": true,
-    "price_blob_sha": "18673f0761bf043da6f908582bb65a28c24ef186",
+    "exact": false,
+    "price_blob_sha": "ef3b4bf643022031b0ed3bda6a6538aadd67dc57",
     "mc_input_blob_sha": "18673f0761bf043da6f908582bb65a28c24ef186",
     "coverage_complete": false,
     "price_asof_et": "2026-10-07",
@@ -90,7 +90,7 @@
     "independent_of_g9_account": true,
     "pre_g9_tech_pass": 0,
     "current_asof_has_deliverable_candidate": false,
-    "reason": "PRE_G9_TECH_PASS_ZERO"
+    "reason": "CURRENT_DV30_MC_CHAIN_INCOMPLETE"
   },
   "true_full_go": {
     "status": "BLOCKED",
