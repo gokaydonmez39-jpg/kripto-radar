@@ -132,6 +132,7 @@ jobs:
 
       - name: Find exact-bound committed event bridge
         id: event
+        if: steps.event_rebind.outputs.ready != 'false'
         shell: bash
         run: |
           python - <<'PY' > /tmp/event_out
@@ -293,11 +294,11 @@ jobs:
           cat /tmp/event_out
 
       - name: Healthy no-op while current upstream epoch is incomplete
-        if: steps.event.outputs.ready != 'true' && steps.event.outputs.upstream_epoch_drift == 'true'
-        run: echo "XRAY_FINAL_UPSTREAM_EPOCH=WAITING_NOOP"
+        if: steps.event_rebind.outputs.ready == 'false' || (steps.event.outputs.ready != 'true' && steps.event.outputs.upstream_epoch_drift == 'true')
+        run: echo "XRAY_FINAL_UPSTREAM_EPOCH=WAITING_NOOP event_rebind_reason=${{ steps.event_rebind.outputs.pending_reason }}"
 
       - name: Fail closed when exact event binding is unavailable
-        if: steps.event.outputs.ready != 'true' && steps.event.outputs.upstream_epoch_drift != 'true'
+        if: steps.event_rebind.outputs.ready != 'false' && steps.event.outputs.ready != 'true' && steps.event.outputs.upstream_epoch_drift != 'true'
         shell: bash
         run: |
           echo "XRAY_FINAL_EVENT_BINDING=FAIL_CLOSED" >&2
