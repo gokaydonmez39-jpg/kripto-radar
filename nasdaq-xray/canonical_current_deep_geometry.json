@@ -252,14 +252,6 @@
       "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
       "sha256": "acb0cefa031d7864eb0ddf75e134836960f6e04a9e482cd6e976e2da67694e3e"
     },
-    "COHU": {
-      "first_date": "2025-06-30",
-      "last_date": "2026-10-06",
-      "lookback": 320,
-      "rows": 320,
-      "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-      "sha256": "f8f02363c0bf8a2414586193be9b0f702607a497c7f75e98198162e23a872736"
-    },
     "COIN": {
       "first_date": "2025-06-30",
       "last_date": "2026-10-06",
@@ -1049,7 +1041,6 @@
     "CHEF": "SINA_US_DAILY",
     "CLMT": "SINA_US_DAILY",
     "CLSK": "SINA_US_DAILY",
-    "COHU": "SINA_US_DAILY",
     "COIN": "SINA_US_DAILY",
     "COKE": "SINA_US_DAILY",
     "CORT": "SINA_US_DAILY",
@@ -1148,8 +1139,8 @@
     "ZBRA": "SINA_US_DAILY",
     "ZS": "SINA_US_DAILY"
   },
-  "input_weekly_pass_count": 97,
-  "input_weekly_trigger_scope_count": 115,
+  "input_weekly_pass_count": 96,
+  "input_weekly_trigger_scope_count": 114,
   "lifecycle_revalidation": {},
   "lifecycle_revalidation_scope": [],
   "lifecycle_revalidation_scope_count": 0,
@@ -1183,7 +1174,6 @@
     "CHEF",
     "CLMT",
     "CLSK",
-    "COHU",
     "COIN",
     "COKE",
     "CORT",
@@ -2074,48 +2064,6 @@
       "regime_finalist_status": "DEFERRED",
       "rs20": -0.13784594873030442,
       "rs60": -0.06838702836484434,
-      "split_events": [],
-      "state_cap": "WATCH",
-      "status": "EVALUATED"
-    },
-    "COHU": {
-      "A": {
-        "pool": false,
-        "reason": "SH_AGE",
-        "sessions_since_confirm": 15
-      },
-      "B": {
-        "pool": false
-      },
-      "D": {
-        "A": 3.61281506426403,
-        "P": 58.705,
-        "anchor": 48.14,
-        "close": 73.1,
-        "d": 2.924312430077902,
-        "dd120": -0.4677310242186442,
-        "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
-        "dd252": -0.034601162176439604,
-        "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
-        "dk3_pre_r1": false,
-        "ema50": 58.49496303576277,
-        "hl_date": "2026-09-15",
-        "pool": true,
-        "rs20": 0.3000905431639629,
-        "rs60": 0.2968905457624995,
-        "rvol20": 1.0652317817304628,
-        "trigger_age_sessions": 0,
-        "trigger_date": null
-      },
-      "corporate_action_status": "PASS_NO_SPLIT_EVENTS_CROSSCHECKED",
-      "event_status": "DEFERRED",
-      "mechanical_scale_breaks": [],
-      "mixed_rs_pass": true,
-      "r92_eligible": false,
-      "regime_finalist_pass": null,
-      "regime_finalist_status": "DEFERRED",
-      "rs20": 0.3000905431639629,
-      "rs60": 0.2968905457624995,
       "split_events": [],
       "state_cap": "WATCH",
       "status": "EVALUATED"
@@ -6535,7 +6483,7 @@
   "source_mc_policy_version": "C4.17",
   "source_regime_blob_sha": null,
   "source_regime_path": null,
-  "source_stage1_blob_sha": "e80941898d39eaab30f2542720af05f994ab9ae7",
+  "source_stage1_blob_sha": "46a8dafa2989cda94f65cb6374f2abbc95bbbd4b",
   "source_stage1_path": "nasdaq-xray/canonical_current_stage1.json",
   "state_caps": {
     "AAPL": "WATCH",
@@ -6556,7 +6504,6 @@
     "CHEF": "WATCH",
     "CLMT": "WATCH",
     "CLSK": "WATCH",
-    "COHU": "WATCH",
     "COIN": "WATCH",
     "COKE": "WATCH",
     "CORT": "WATCH",
@@ -6677,7 +6624,6 @@
     "CHEF",
     "CLMT",
     "CLSK",
-    "COHU",
     "COIN",
     "COKE",
     "CORT",

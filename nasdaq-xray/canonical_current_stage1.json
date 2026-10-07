@@ -10,7 +10,6 @@
     "BRKR",
     "CHEF",
     "CLMT",
-    "COHU",
     "COIN",
     "COKE",
     "CORT",
@@ -75,7 +74,7 @@
     "ZBRA",
     "ZS"
   ],
-  "a_trend_pool_count": 74,
+  "a_trend_pool_count": 73,
   "asof_et": "2026-10-06",
   "b_tight_base_pool": [
     "AMD",
@@ -110,7 +109,6 @@
     "AXTI",
     "BRKR",
     "CAI",
-    "COHU",
     "COIN",
     "COKE",
     "CVLT",
@@ -166,7 +164,7 @@
     "XP",
     "ZS"
   ],
-  "d_drawdown_pool_count": 63,
+  "d_drawdown_pool_count": 62,
   "execution": "NONE",
   "input_current_core_count": 453,
   "notes": [
@@ -648,7 +646,6 @@
     "CHEF",
     "CLMT",
     "CLSK",
-    "COHU",
     "COIN",
     "COKE",
     "CORT",
@@ -746,7 +743,7 @@
     "ZBRA",
     "ZS"
   ],
-  "recent_weekly_scope_count": 115,
+  "recent_weekly_scope_count": 114,
   "results": {
     "AAL": {
       "corporate_action_status": "PASS_NO_LOCAL_SPLIT_DISCONTINUITY",
@@ -8345,17 +8342,8 @@
       }
     },
     "COHU": {
-      "a_trend_pool": true,
-      "b_recent_trigger": null,
-      "b_tight_base_pool": [],
-      "corporate_action_status": "PASS_NO_SPLIT_EVENTS_CROSSCHECKED",
-      "d_drawdown_pool": true,
-      "dd120": -0.4677310242186442,
-      "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
-      "dd252": -0.034601162176439604,
-      "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
+      "corporate_action_status": "UNKNOWN:RuntimeError:HTTP_502",
       "history_source": "SINA_US_DAILY",
-      "last_close": 73.1,
       "mechanical_scale_breaks": [],
       "mechanical_split_suspects": [
         {
@@ -8367,77 +8355,9 @@
         }
       ],
       "r92_eligible": false,
-      "raw_weekly": {
-        "close": 73.48,
-        "ema10": 59.57983767614264,
-        "ema10_m1": 56.490912715285454,
-        "ema10_m2": 54.155559985348894,
-        "ema10_m3": 53.35679553764865,
-        "pass": true,
-        "sma30": 50.5495,
-        "weeks": 129
-      },
-      "recent_weekly_context": {
-        "2026-10-01": {
-          "close": 67.0,
-          "ema10": 56.490912715285454,
-          "ema10_m1": 54.155559985348894,
-          "ema10_m2": 53.35679553764865,
-          "ema10_m3": 52.52941676823724,
-          "pass": true,
-          "sma30": 49.02216666666667,
-          "weeks": 128
-        },
-        "2026-10-02": {
-          "close": 73.48,
-          "ema10": 59.57983767614264,
-          "ema10_m1": 56.490912715285454,
-          "ema10_m2": 54.155559985348894,
-          "ema10_m3": 53.35679553764865,
-          "pass": true,
-          "sma30": 50.5495,
-          "weeks": 129
-        },
-        "2026-10-05": {
-          "close": 73.48,
-          "ema10": 59.57983767614264,
-          "ema10_m1": 56.490912715285454,
-          "ema10_m2": 54.155559985348894,
-          "ema10_m3": 53.35679553764865,
-          "pass": true,
-          "sma30": 50.5495,
-          "weeks": 129
-        },
-        "2026-10-06": {
-          "close": 73.48,
-          "ema10": 59.57983767614264,
-          "ema10_m1": 56.490912715285454,
-          "ema10_m2": 54.155559985348894,
-          "ema10_m3": 53.35679553764865,
-          "pass": true,
-          "sma30": 50.5495,
-          "weeks": 129
-        }
-      },
-      "recent_weekly_pass_dates": [
-        "2026-10-01",
-        "2026-10-02",
-        "2026-10-05",
-        "2026-10-06"
-      ],
-      "split_events": [],
+      "reason": "CORPORATE_ACTION_SOURCE_UNKNOWN",
       "state_cap": "WATCH",
-      "status": "WEEKLY_PASS",
-      "weekly": {
-        "close": 73.48,
-        "ema10": 59.57983767614264,
-        "ema10_m1": 56.490912715285454,
-        "ema10_m2": 54.155559985348894,
-        "ema10_m3": 53.35679553764865,
-        "pass": true,
-        "sma30": 50.5495,
-        "weeks": 129
-      }
+      "status": "UNKNOWN"
     },
     "COIN": {
       "a_trend_pool": true,
@@ -36565,7 +36485,7 @@
   },
   "schema": "XRAY_STAGE1_SHADOW_V1",
   "source_authority": "SHADOW_TECHNICAL_ACCELERATOR_ONLY",
-  "source_input_blob_sha": "0ed3a47efe5db061cf5f858b9022f78c43f1173d",
+  "source_input_blob_sha": "b5e2af8e054ddc9d31e5c70e6376726f95129685",
   "source_input_path": "nasdaq-xray/canonical_current_stage1_input.json",
   "source_legal_pass_hash": "0ac8e5ea8147277cdb719f6b7cbcc29869a46320065bdbd697cc8f82cd8a0f4d",
   "source_mc_policy_hash": "68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4",
@@ -37026,8 +36946,10 @@
     "ZS": "WATCH"
   },
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown": [],
-  "unknown_count": 0,
+  "unknown": [
+    "COHU"
+  ],
+  "unknown_count": 1,
   "unknown_never_pass": true,
   "weekly_pass": [
     "AAPL",
@@ -37045,7 +36967,6 @@
     "CDNA",
     "CHEF",
     "CLMT",
-    "COHU",
     "COIN",
     "COKE",
     "CORT",
@@ -37128,5 +37049,5 @@
     "ZBRA",
     "ZS"
   ],
-  "weekly_pass_count": 97
+  "weekly_pass_count": 96
 }
