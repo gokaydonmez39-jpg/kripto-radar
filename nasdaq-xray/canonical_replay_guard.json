@@ -68,21 +68,21 @@
       "asof_et": "2026-10-06",
       "path": "canonical_current_final_tech.json",
       "schema": "XRAY_FINAL_TECH_SHADOW_V1",
-      "sha256": "27c1872fe201e3f6714070e5019c7e5b9d7ecdde5e1a6bc69735c060aed6785c",
+      "sha256": "1475a517308e22e7e5111f8cdfb7665d179c24248bf8fabdae4021ddea1dbf91",
       "status": "PRESENT"
     },
     {
       "asof_et": "2026-10-06",
       "path": "canonical_current_terminal.json",
       "schema": "XRAY_CANONICAL_CURRENT_TERMINAL_V1",
-      "sha256": "4e81575988a02a939f01b9868c1b2bc93c7a32eee38c06c5d08300a4c4cf3436",
+      "sha256": "2205214a272e156b71ab0523cbd951a63b725817b39008c9641826d923109334",
       "status": "PRESENT"
     },
     {
       "asof_et": "2026-10-06",
       "path": "chatgpt_canonical_state_v2.json",
       "schema": "XRAY_GITHUB_DURABLE_STATE_V3",
-      "sha256": "0b6f3af02b91e3154162bc13ecd03bb7bead2d575aaa630c7279533d11215d7d",
+      "sha256": "fd7a0afc67b330ccdede504ad35be6d560ef9ff370ba0abe8f7663fee9a3fce2",
       "status": "PRESENT"
     }
   ],
@@ -92,7 +92,7 @@
   ],
   "candidate_delivery_keys": [],
   "execution": "NONE",
-  "generated_at_utc": "2026-10-07T14:52:45.278888+00:00",
+  "generated_at_utc": "2026-10-07T14:57:02.137235+00:00",
   "policy_binding": {
     "dv30_exact30_bound": true,
     "legacy_dv20_forbidden": true,
