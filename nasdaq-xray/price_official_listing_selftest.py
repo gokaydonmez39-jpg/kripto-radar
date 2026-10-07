@@ -14,7 +14,7 @@ from price_dv30_recover_from_fullstate import (
 ROOT=Path(__file__).resolve().parent
 REGISTRY=ROOT/"price_official_listing_registry.json"
 ASOF="2026-10-06"
-EXPECTED_SYMBOLS={"ACCV","ADRX","CHWM","ETRA","OIG","RZAI","WQEY","XIII"}
+EXPECTED_SYMBOLS={"ACCV","ADRX","CHWM","ETRA","OIG","RZAI","TBCV","WQEY","XIII"}
 
 
 def main():
