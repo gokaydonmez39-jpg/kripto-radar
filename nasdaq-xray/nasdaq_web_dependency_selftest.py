@@ -50,7 +50,7 @@ def test_nasdaq_historical_helper_is_nonterminal_disabled():
 
 
 def test_eval_sina_pass_unchanged_and_yahoo_remains_fail_only():
-    exp30=[f"2026-09-{i:02d}" for i in range(1,31)]
+    exp30=[f"2026-09-{i:02d}" for i in range(2,31)]+["2026-10-06"]
     original_sina,original_yahoo=p.sina,p.yahoo
     try:
         p.sina=lambda sym,asof:(fake_complete_bars(exp30),{"usable":30})
