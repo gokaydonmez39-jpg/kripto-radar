@@ -3360,9 +3360,13 @@
   },
   "current_baseline_reuse": true,
   "exception_bridge_meta": {
-    "paths": [],
-    "rejected": [],
-    "status": "ABSENT_CURRENT_POLICY"
+    "input_binding_role": "EXACT_CURRENT_REQUEST_MANIFEST",
+    "path": "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v2.json",
+    "result_encoding": "ALPACA_SIP_COMPACT_V2",
+    "source_result_task_id": null,
+    "status": "PASS",
+    "symbol_hash": "3ef3c4b61e141c1e683b86c1cfff1a3d4be1d9e224c1768ec8b355c98bb5b1a3",
+    "terminal_override_count": 0
   },
   "execution": "NONE",
   "expected30": [
@@ -3408,7 +3412,7 @@
   "global_asof_sentinel_fast_fail": false,
   "monotonic_legacy_pass_reuse_count": 0,
   "official_halt_guard_meta": {
-    "content_sha256": "d35f372e0fe6618eb36a1c5a44746a9327f3fedfe495ec0d7872d1cc164b75d4",
+    "content_sha256": "3c237614afc507b184b6a119733d8cdd0f7191bf568e5a447c259cc4850486d3",
     "path": "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_official_source_guard.json",
     "source_status": "PASS",
     "status": "PASS"
@@ -3957,13 +3961,13 @@
     "ZM",
     "ZS"
   ],
-  "policy_replay": true,
+  "policy_replay": false,
   "policy_replay_baseline_source": "CURRENT_PRICE_ARTIFACT",
   "policy_replay_input_count": 0,
   "policy_replay_symbols": [],
   "real_money": "NO-GO",
   "redo_deferred_to_bridge": true,
-  "reevaluated_count": 12,
+  "reevaluated_count": 0,
   "results": {
     "AACG": {
       "info": {
@@ -30695,7 +30699,7 @@
     },
     "OPNW": {
       "info": {
-        "dv30": 232625.80519914627,
+        "dv30": 233125.75519442558,
         "price": 6.059999942779541,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
@@ -44110,7 +44114,7 @@
       "status": "FAIL_DV30"
     }
   },
-  "reused_terminal_count": 3173,
+  "reused_terminal_count": 3185,
   "schema": "XRAY_CANONICAL_PRICE_DV30_V1",
   "source_master_count": 3185,
   "source_master_queue_hash": "306d6bb21e1ffef5f099f988ce995d0f98b349c051f34b4eed42613280444bdf",
