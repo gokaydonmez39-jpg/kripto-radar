@@ -1308,7 +1308,10 @@ def test_overlay_separates_exact_binding_from_mc_coverage_unknown():
     assert 'MC_UNKNOWN",-1))==0' not in chain
     assert '"coverage_complete":mc_unknown_count==0' in chain
     assert '"current_research_coverage_complete":current_chain.get("coverage_complete") is True' in src
-    assert 'full=bool(terminal_claimed_full and current_chain.get("exact") is True)' in src
+    assert 'full=bool(terminal_claimed_full and current_chain.get("exact") is True and live_binding["exact"])' in src
+    assert 'def terminal_live_artifact_bindings(t):' in src
+    assert '"terminal_live_artifact_bindings":live_binding' in src
+    assert '"CURRENT_CANONICAL_BLOBS_FAIL_CLOSED"' in src
 
 def main():
     test_r1_no_future_mutation_and_confirmation(); test_r1_pivot_boundary_is_not_overhead_but_entry_overlap_is(); test_resistance_role_change_state_machine()
