@@ -237,23 +237,25 @@ def main():
     finally:
         history_mod.HISTORY_BRIDGE=old_bridge
 
-    # Canonical universe is operating common equity. Exact-ASOF SEC SIC 6770
-    # may exclude a proven blank-check issuer. A same-ASOF Nasdaq SPAC/Blank
-    # Checks suspect without exact SEC proof is UNKNOWN_IDENTITY and must never
-    # enter PRICE/DV30/MC. Explicit operating overrides remain identity PASS.
+    # Canonical universe is operating common equity. C4.17 accepts official,
+    # issuer, or SEC shell proof. Exact same-ASOF Nasdaq screener industry
+    # "Blank Checks" is deterministic official exclusion evidence. A name-only
+    # SPAC suspicion without official/issuer/SEC classification remains
+    # UNKNOWN_IDENTITY and must never enter PRICE/DV30/MC.
     sina_src=(ROOT/"sina_stage.py").read_text()
     master_src=(ROOT/"build_current_master_manifest.py").read_text()
     resolver_src=(ROOT/"build_current_resolver_request.py").read_text()
     terminal_src=(ROOT/"build_current_terminal.py").read_text()
     pre_mc_src=(ROOT.parent/".github/workflows/xray-canonical-current-pre-mc.yml").read_text()
     assert 'IDENTITY_RULESET="V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER"' in sina_src,sina_src
-    assert 'IDENTITY_PARTITION_POLICY="MASTER_SPAC_UNKNOWN_PARTITION_V2_FROZEN_GUARD"' in sina_src,sina_src
-    assert '"reason":"SPAC_BLANK_CHECK"' in sina_src and '"source":"SEC_EDGAR_SIC_6770_EXACT_ASOF"' in sina_src,sina_src
-    assert '"reason":"SEC_SPAC_EXACT_ASOF_UNAVAILABLE"' in sina_src,sina_src
+    assert 'IDENTITY_PARTITION_POLICY="MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V3_FROZEN_GUARD"' in sina_src,sina_src
+    assert '"reason":"SPAC_BLANK_CHECK"' in sina_src and '"authority":"NASDAQ_SAME_ASOF_SCREENER_INDUSTRY"' in sina_src,sina_src
+    assert '"reason":"SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED"' in sina_src,sina_src
+    assert '"official_blank_checks_excluded_count"' in sina_src and '"official_blank_checks_excluded_hash"' in sina_src,sina_src
     assert 'identity_unknown_symbols' in sina_src and 'unknown_never_pass' in sina_src,sina_src
     assert 'st.get("identity_partition_policy")!=IDENTITY_PARTITION_POLICY' in sina_src,sina_src
     assert 'mf_cp.get("identity_unknown_partition_exact") is not True' in sina_src,sina_src
-    assert 'sym not in operating_overrides' in sina_src and 'sym not in sec_spac_proof' in sina_src,sina_src
+    assert 'if sym in operating_overrides:' in sina_src and 'bool(SPAC_SUSPECT.search(security_name)) and sym not in sec_spac_proof' in sina_src,sina_src
     assert 'identity_unknown_partition_exact' in master_src and '"UNKNOWN_IDENTITY"' in master_src,master_src
     assert '"PARTIAL_UNKNOWN"' in master_src and '"raw_identity_total"' in master_src,master_src
     assert 'union=sorted(set(price_symbols)|set(blocked_symbols))' in resolver_src,resolver_src
