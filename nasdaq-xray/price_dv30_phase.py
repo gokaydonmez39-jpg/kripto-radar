@@ -85,22 +85,17 @@ def sina(sym,asof):
     except Exception as e:return {},{"error":f"{type(e).__name__}:{str(e)[:160]}"}
 
 def nasdaq(sym,asof):
-    try:
-        end=datetime.fromisoformat(asof).date();start=end-timedelta(days=90)
-        obj=req_json(f"https://api.nasdaq.com/api/quote/{urllib.parse.quote(sym)}/historical",
-            {"assetclass":"stocks","fromdate":start.strftime("%m/%d/%Y"),"todate":end.strftime("%m/%d/%Y"),"limit":"500"})
-        rows=(((obj.get("data") or {}).get("tradesTable") or {}).get("rows") or [])
-        by={}
-        for r in rows:
-            ds=str(r.get("date") or "").strip();day=None
-            for fmt in ("%m/%d/%Y","%m/%d/%y"):
-                try:day=datetime.strptime(ds,fmt).date().isoformat();break
-                except Exception:pass
-            if not day:continue
-            c=num(r.get("close") or r.get("close/last"));v=num(r.get("volume"))
-            if c is not None and c>0 and v is not None and v>=0:by[day]=(c,v)
-        return by,{"rows":len(rows),"usable":len(by)}
-    except Exception as e:return {},{"error":f"{type(e).__name__}:{str(e)[:160]}"}
+    """Disabled legacy Nasdaq web historical helper.
+
+    Canonical automation must not call api.nasdaq.com.  This compatibility
+    function is intentionally nonterminal so callers fail closed and continue
+    only to permitted fail-only/bridge sources.
+    """
+    return {},{
+      "disabled":True,
+      "reason":"NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT",
+      "no_pass_or_fail_created":True,
+    }
 
 def yahoo(sym,asof):
     try:
@@ -123,7 +118,7 @@ def yahoo(sym,asof):
 def eval_one(sym,exp30,asof):
     by,meta=sina(sym,asof);st,info=classify(by,asof,exp30,"SINA_US_DAILY") if by else ("UNKNOWN",{"reason":"SINA_UNAVAILABLE"})
     if st!="UNKNOWN":return sym,st,info,{"sina":meta}
-    nby,nm=nasdaq(sym,asof);nst,ninfo=classify(nby,asof,exp30,"NASDAQ_OFFICIAL_HISTORICAL_API") if nby else ("UNKNOWN",{"reason":"NASDAQ_UNAVAILABLE"})
+    nby,nm=nasdaq(sym,asof);nst,ninfo=("UNKNOWN",{"reason":"NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"})
     if nst!="UNKNOWN":return sym,nst,ninfo,{"sina":meta,"nasdaq":nm}
     yby,ym=yahoo(sym,asof);yst,yinfo=classify(yby,asof,exp30,"YAHOO_CHART_FREE_FAIL_ONLY") if yby else ("UNKNOWN",{"reason":"YAHOO_UNAVAILABLE"})
     if yst in {"FAIL_PRICE","FAIL_DV30"}:
