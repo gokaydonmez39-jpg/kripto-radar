@@ -42,6 +42,7 @@ FOOTER_RE=re.compile(r"^File Creation Time:\s*(\d{2})(\d{2})(\d{4})")
 _SEC_TICKER_CACHE=None
 _SEC_SPAC_CACHE={}
 ROOT=Path(__file__).resolve().parent
+MANUAL_IDENTITY_SEED=ROOT/"master_sec_identity_manual_seed_registry.json"
 STATE=Path(os.getenv("XRAY_SINA_STATE", str(ROOT/"sina_state.json")))
 CAND=Path(os.getenv("XRAY_SINA_CAND", str(ROOT/"sina_candidates.json")))
 RESOLUTION_OVERLAY=Path(os.getenv("XRAY_HISTORY_RESOLUTION_OVERLAY", str(ROOT/"history_resolution_overlay.json")))
@@ -120,8 +121,21 @@ def load_sec_spac_proof(asof):
         ):
             raise RuntimeError("SEC_SPAC_PROOF_ROW_INVALID:"+sym)
         if row.get("same_asof_revalidated_without_sec_network") is True:
-            if row.get("revalidation_semantics")!="PRIOR_SEC_SIC6770_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS":
+            semantics=str(row.get("revalidation_semantics") or "")
+            allowed={
+              "PRIOR_SEC_SIC6770_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
+              "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
+            }
+            if semantics not in allowed:
                 raise RuntimeError("SEC_SPAC_PROOF_FALLBACK_SEMANTICS_INVALID:"+sym)
+            if semantics.startswith("MANUAL_OFFICIAL_SEC_"):
+                expected_path="nasdaq-xray/master_sec_identity_manual_seed_registry.json"
+                if (
+                  not MANUAL_IDENTITY_SEED.exists()
+                  or row.get("manual_seed_registry_path")!=expected_path
+                  or row.get("manual_seed_registry_blob_sha")!=git_blob_sha(MANUAL_IDENTITY_SEED)
+                ):
+                    raise RuntimeError("SEC_SPAC_PROOF_MANUAL_SEED_PROVENANCE_INVALID:"+sym)
             try:
                 age=(datetime.fromisoformat(asof)-datetime.fromisoformat(str(row.get("evidence_date")))).days
             except Exception:
