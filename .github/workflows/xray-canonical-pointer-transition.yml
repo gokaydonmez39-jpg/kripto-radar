@@ -36,15 +36,57 @@ jobs:
         run: |
           python -m py_compile nasdaq-xray/build_canonical_pointer_transition.py nasdaq-xray/canonical_pointer_transition_guard.py nasdaq-xray/deterministic_replay_guard.py
           python nasdaq-xray/build_canonical_pointer_transition.py --selftest
+      - name: Preflight exact-live terminal immutable evidence
+        id: terminal_preflight
+        run: |
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import json,pathlib,subprocess,sys
+          root=pathlib.Path("nasdaq-xray")
+          repo=pathlib.Path(".")
+          t=json.load(open(root/"canonical_current_terminal.json"))
+          keys=("master","price","history","legal","stage1_input","stage1","regime","deep_geometry","event_request","events","family_c","deep","final","policy","full_state","mc")
+          def bsha(p): return subprocess.check_output(["git","hash-object",str(p)],text=True).strip()
+          drift=[]
+          for key in keys:
+              m=(t.get("evidence") or {}).get(key) or {}
+              rel=m.get("path"); exp=m.get("blob_sha")
+              if not rel or not exp:
+                  drift.append({"key":key,"reason":"MISSING_BINDING"}); continue
+              p=repo/rel
+              if not p.exists():
+                  drift.append({"key":key,"reason":"PATH_MISSING","path":rel}); continue
+              act=bsha(p)
+              if act!=exp: drift.append({"key":key,"reason":"BLOB_DRIFT","path":rel,"expected":exp,"actual":act})
+          sw_rel=str(t.get("settlement_witness_path") or ""); sw_exp=str(t.get("settlement_witness_blob_sha") or "")
+          if not sw_rel or not sw_exp:
+              drift.append({"key":"settlement_witness","reason":"MISSING_BINDING"})
+          else:
+              sw=repo/sw_rel
+              if not sw.exists(): drift.append({"key":"settlement_witness","reason":"PATH_MISSING","path":sw_rel})
+              else:
+                  sw_act=bsha(sw)
+                  if sw_act!=sw_exp: drift.append({"key":"settlement_witness","reason":"BLOB_DRIFT","path":sw_rel,"expected":sw_exp,"actual":sw_act})
+          ready=not drift
+          print("ready="+("true" if ready else "false"))
+          print("reason="+("EXACT_LIVE_TERMINAL_EVIDENCE" if ready else "UPSTREAM_TERMINAL_EVIDENCE_DRIFT"))
+          print("drift_count="+str(len(drift)))
+          print("XRAY_POINTER_TERMINAL_PREFLIGHT="+json.dumps({"ready":ready,"drift":drift[:12]},sort_keys=True),file=sys.stderr)
+          PY
+      - name: Healthy no-op while terminal immutable evidence is stale
+        if: steps.terminal_preflight.outputs.ready != 'true'
+        run: echo "XRAY_POINTER_TRANSITION=BLOCKED_UPSTREAM_PENDING reason=${{ steps.terminal_preflight.outputs.reason }} drift_count=${{ steps.terminal_preflight.outputs.drift_count }}"
       - name: Build next canonical pointer revision
         id: build
+        if: steps.terminal_preflight.outputs.ready == 'true'
         run: |
           set -euo pipefail
           python nasdaq-xray/build_canonical_pointer_transition.py | tee /tmp/pointer_transition
           cat /tmp/pointer_transition
       - name: Verify pointer transition and immutable evidence
+        if: steps.terminal_preflight.outputs.ready == 'true'
         run: python nasdaq-xray/canonical_pointer_transition_guard.py
       - name: Build and verify Replay V2
+        if: steps.terminal_preflight.outputs.ready == 'true'
         run: |
           python nasdaq-xray/deterministic_replay_guard.py
           python - <<'PY'
@@ -60,6 +102,7 @@ jobs:
           print("XRAY_POINTER_REPLAY_ACCEPTANCE=PASS revision=%s asof=%s"%(p["revision"],t["asof_et"]))
           PY
       - name: Commit pointer snapshot and Replay V2 with stale-source protection
+        if: steps.terminal_preflight.outputs.ready == 'true'
         shell: bash
         run: |
           set -euo pipefail
