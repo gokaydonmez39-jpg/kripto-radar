@@ -139,6 +139,7 @@ jobs:
           name: nasdaq-xray-autonomous-state
           path: |
             nasdaq-xray/sina_state.json
+            nasdaq-xray/sina_candidates.json
             nasdaq-xray/mc_zero_key_state.json
             nasdaq-xray/production_core_state.json
             nasdaq-xray/stage1_shadow.json
