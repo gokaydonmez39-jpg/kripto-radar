@@ -690,6 +690,8 @@ jobs:
           XRAY_FINAL_HISTORY_CACHE_DIR: ${{ github.workspace }}/nasdaq-xray/canonical_benchmark_cache
           XRAY_FINAL_CACHE_REQUIRED: "1"
           XRAY_FINAL_WORKERS: "6"
+          XRAY_SPLIT_HTTP_TIMEOUT_SECONDS: "4"
+          XRAY_SPLIT_HTTP_RETRIES: "1"
         run: python nasdaq-xray/final_tech_shadow.py
 
       - name: Refresh official Nasdaq safety guard for atomic terminal binding
