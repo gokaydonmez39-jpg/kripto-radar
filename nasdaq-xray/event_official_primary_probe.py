@@ -386,6 +386,44 @@ def seed_candidates(sym: str, seed_obj: dict, event_state: dict, submissions: di
         uniq[(host(row["url"]), row["source"])] = row
     return list(uniq.values())
 
+def _document_priority(url: str, known_urls: set[str]) -> tuple:
+    """Rank bounded issuer documents for coverage only; never classify from URL metadata."""
+    s = urllib.parse.unquote(str(url)).lower()
+    financial = 1 if re.search(r"(earnings|financial[-_/ ]results|quarter|fiscal)", s) else 0
+    date_values = []
+    for m in re.finditer(r"(?<!\\d)(20\\d{2})[-_/]?(0[1-9]|1[0-2])[-_/]?([0-3]\\d)(?!\\d)", s):
+        try:
+            date_values.append(int("".join(m.groups())))
+        except Exception:
+            pass
+    detail_values = []
+    for m in re.finditer(r"/(?:detail|news-release-details?)/(\\d{3,})(?:/|$)", s):
+        try:
+            detail_values.append(int(m.group(1)))
+        except Exception:
+            pass
+    return (
+        1 if url in known_urls else 0,
+        financial,
+        max(date_values, default=0),
+        max(detail_values, default=0),
+        s,
+    )
+
+def ranked_discrete_document_urls(urls, known_urls=None) -> list[str]:
+    """Deterministically prioritize recent/relevant documents inside the fixed fetch budget.
+
+    URL metadata affects discovery order only.  A URL can never create Event evidence:
+    every selected document still requires live fetch, same-host/identity validation,
+    and an explicit future earnings/results date in issuer-controlled document text.
+    """
+    known = set(known_urls or [])
+    return sorted(
+        set(str(u) for u in urls if str(u)),
+        key=lambda u: _document_priority(u, known),
+        reverse=True,
+    )
+
 def probe_issuer(sym: str, base: dict, asof: str, horizon: set[str]) -> dict:
     url = base["url"]
     rec = {
@@ -486,7 +524,14 @@ def probe_issuer(sym: str, base: dict, asof: str, horizon: set[str]) -> dict:
         rec["section_attempts"].append(section_attempt)
         time.sleep(0.05)
 
-    for document_url in sorted(discrete)[:24]:
+    ranked_discrete = ranked_discrete_document_urls(
+        discrete,
+        base.get("known_document_urls") or [],
+    )
+    rec["document_candidate_count"] = len(ranked_discrete)
+    rec["document_attempt_limit"] = 24
+    rec["document_truncated"] = len(ranked_discrete) > 24
+    for document_url in ranked_discrete[:24]:
         match, attempt = _discrete_event_match(
             authority_url,
             document_url,
@@ -630,6 +675,28 @@ def selftest() -> None:
     assert links["discrete"] == [
         "https://ir.example.com/news-releases/news-release-details/company-to-report-financial-results-on-november-5-2026"
     ], links
+    # Regression: a bounded document budget must not deterministically starve
+    # newer issuer earnings documents behind lexicographically older detail IDs.
+    old_docs = [
+        f"https://ir.example.com/news-events/press-releases/detail/{1270+i}/generic-release"
+        for i in range(30)
+    ]
+    latest_earnings = (
+        "https://ir.example.com/news-events/press-releases/detail/1300/"
+        "company-to-report-fiscal-third-quarter-2026-financial-results"
+    )
+    dated_event = (
+        "https://ir.example.com/news-events/ir-calendar/detail/"
+        "20261103-company-third-quarter-financial-results"
+    )
+    ranked = ranked_discrete_document_urls(old_docs + [latest_earnings, dated_event])
+    assert latest_earnings in ranked[:24], ranked[:24]
+    assert dated_event in ranked[:24], ranked[:24]
+    ranked_known = ranked_discrete_document_urls(
+        old_docs + [latest_earnings, dated_event],
+        [old_docs[0]],
+    )
+    assert ranked_known[0] == old_docs[0], ranked_known[:3]
     assert classify_unresolved_reason([], None, "HTTPError:HTTP Error 403: Forbidden") == "SEC_TRANSPORT_403"
     assert classify_unresolved_reason([], None, None) == "NO_BASE"
     assert classify_unresolved_reason([{"identity_validated": False, "failure": "BASE_FETCH_HTTPError:x"}]) == "BASE_FETCH_FAIL"
