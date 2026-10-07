@@ -5,7 +5,7 @@ EXECUTION=NONE. REAL_MONEY=NO-GO. UNKNOWN!=PASS.
 Does not mutate ChatGPT canonical Durable State and never places orders.
 """
 from __future__ import annotations
-import hashlib, json, os, subprocess, sys
+import hashlib, json, os, re, subprocess, sys
 from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
 from pathlib import Path
@@ -190,6 +190,20 @@ def exact_asof_v4_identity_proofs_ok(ss):
             return False
         sets=[set(v) for v in groups.values()]
         if any(sets[a]&sets[b] for a in range(len(sets)) for b in range(a+1,len(sets))):
+            return False
+
+        # V4 exact-ASOF blank-check exclusions are independently reproducible
+        # from the immutable membership snapshot after removing exact SEC SIC
+        # 6770 exclusions and explicit operating-company overrides.
+        blank_expected=sorted(
+            sym for sym,industry in industries.items()
+            if str(industry or "").strip().lower()=="blank checks"
+            and sym not in proofs
+            and sym not in groups["operating_overrides"]
+        )
+        if int(dm.get("official_blank_checks_excluded_count",-1))!=len(blank_expected):
+            return False
+        if dm.get("official_blank_checks_excluded_hash")!=hash_lines(blank_expected):
             return False
         return True
     except Exception:
