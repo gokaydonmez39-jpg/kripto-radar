@@ -12,12 +12,59 @@ def load(root: Path, name: str):
     return json.loads((root/name).read_text())
 
 
+def test_immutable_membership_authority(root: Path):
+    asof="2026-10-06"
+    name="master_nasdaq_directory_snapshot_20261006.json"
+    snap={
+        "schema":"XRAY_NASDAQ_DIRECTORY_SNAPSHOT_V1","asof_et":asof,
+        "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
+        "membership_only":True,"identity_decisions_reused":False,
+        "source_queue_classification_ignored":True,
+        "source_directory_date":asof,
+        "source_directory_footer":"File Creation Time: 10062026 16:00",
+        "membership_count":2,"industry_count":0,
+        "security_names":{"AAA":"AAA Corp","SPAC":"Example Capital Corp 2 - Class A Ordinary Shares"},
+        "industries":{},
+    }
+    p=root/name
+    p.write_text(json.dumps(snap,sort_keys=True)+"\n")
+    queue=["AAA"]; unknown=["SPAC"]
+    ss={
+        "asof_et":asof,"queue":queue,"queue_total":1,
+        "queue_hash":o.hash_lines(queue),"raw_identity_total":2,
+        "identity_partition_policy":"MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V3_FROZEN_GUARD",
+        "identity_unknown_symbols":unknown,
+        "identity_unknown_detail":{"SPAC":{"reason":"SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED","unknown_never_pass":True}},
+        "discovery_meta":{
+            "authority":"IMMUTABLE_EXACT_ASOF_MEMBERSHIP_SNAPSHOT_NO_MARKET_DECISIONS",
+            "full_identity":True,
+            "identity_partition_policy":"MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V3_FROZEN_GUARD",
+            "identity_decisions_reused_from_snapshot":False,
+            "membership_snapshot_path":"nasdaq-xray/"+name,
+            "membership_snapshot_blob_sha":o.git_blob_sha(p),
+            "identity_unknown_count":1,
+            "identity_unknown_hash":o.hash_lines(unknown),
+            "raw_identity_total":2,"discovery_queue_total":2,
+            "official_blank_checks_excluded_count":0,
+            "official_blank_checks_excluded_hash":o.hash_lines([]),
+        },
+    }
+    assert o.immutable_membership_partition_ok(ss) is True
+    bad=json.loads(json.dumps(ss))
+    bad["discovery_meta"]["identity_decisions_reused_from_snapshot"]=True
+    assert o.immutable_membership_partition_ok(bad) is False
+    bad=json.loads(json.dumps(ss))
+    bad["discovery_meta"]["membership_snapshot_blob_sha"]="0"*40
+    assert o.immutable_membership_partition_ok(bad) is False
+
+
 def main():
     original_root=o.ROOT
     with tempfile.TemporaryDirectory() as td:
         root=Path(td)
         o.ROOT=root
         try:
+            test_immutable_membership_authority(root)
             # Seed deliberately stale prior-ASOF files; invalidation must replace all of them.
             (root/"mc_zero_key_state.json").write_text(
                 json.dumps({"schema":"XRAY_MC_ZERO_KEY_V2","asof_et":"2026-09-30",
