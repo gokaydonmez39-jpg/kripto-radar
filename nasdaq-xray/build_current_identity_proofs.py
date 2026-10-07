@@ -23,7 +23,7 @@ SEC_SUBMISSIONS="https://data.sec.gov/submissions"
 SEC_UA=os.getenv("XRAY_SEC_USER_AGENT","NASDAQ-SWING-XRAY research bot; xray-dataplane-bot@users.noreply.github.com")
 UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/126 Safari/537.36"
 TASK="6a825366222081918997094d76e6ae46"
-IDENTITY_DISCOVERY_VERSION="SEC_CURRENT_SUSPECT_DISCOVERY_V3"
+IDENTITY_DISCOVERY_VERSION="SEC_CURRENT_SUSPECT_DISCOVERY_V4"
 SPAC_SUSPECT_RE=re.compile(r"\bacquisition\b|\bspac\b|\bblank[ -]?check\b|\bcapital\s+corp(?:oration)?\.?\s+(?:[IVXLCDM]+|\d+)\s*-\s*class\s+a\s+ordinary\s+shares?\b",re.I)
 DIRECTORY_SNAPSHOT_SCHEMA="XRAY_NASDAQ_DIRECTORY_SNAPSHOT_V1"
 STAMP_RE=re.compile(r"^(master_(?:asof_identity|sec_spac)_proof_)(\d{8})\.json$")
@@ -501,6 +501,11 @@ def main():
             raise RuntimeError("OPERATING_OVERRIDE_REVALIDATION_FAILED:"+sym)
         operating[sym]=fallback
 
+    # V4 coverage repair: an exact-ASOF proof artifact can be structurally valid
+    # while covering only a subset of current SPAC suspects.  V4 deliberately
+    # re-enters current suspects through SEC discovery instead of treating the
+    # mere existence of a valid proof file as complete coverage. UNKNOWN remains
+    # UNKNOWN on transport/evidence failure; this can never create alpha PASS.
     # Discover CURRENT same-ASOF SPAC suspects, not only prior-day proof seeds.
     # This closes the seed=0 deadlock while remaining fail-closed: only SEC
     # submissions with the same ticker and a filing date <= ASOF can classify.
