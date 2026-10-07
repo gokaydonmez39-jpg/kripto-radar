@@ -184,11 +184,46 @@ jobs:
           s=p.get("state_json") or {}
           if isinstance(s,str): s=json.loads(s)
           t=root/"canonical_current_terminal.json"
-          current_terminal=subprocess.check_output(["git","hash-object",str(t)],text=True).strip()
+          terminal=json.load(open(t))
+          def blob(path):
+              return subprocess.check_output(["git","hash-object",str(path)],text=True).strip()
+          current_terminal=blob(t)
           recorded=str(((s.get("deep_final_evidence") or {}).get("terminal_blob_sha") or ""))
-          ready=bool(recorded and recorded==current_terminal)
+          stale=[]
+          if not recorded or recorded!=current_terminal:
+              stale.append("terminal")
+          # A pointer whose terminal blob still matches can nevertheless be stale
+          # when a mutable canonical-current upstream file (for example Event)
+          # has advanced after that terminal was built. Mirror the strict guard's
+          # immutable evidence set here, but classify expected source advancement
+          # as upstream-pending instead of throwing a raw assertion.
+          immutable_keys={"master","price","history","legal","stage1_input","stage1",
+              "regime","deep_geometry","event_request","events","family_c","deep","final",
+              "policy","full_state"}
+          for key in sorted(immutable_keys):
+              meta=(terminal.get("evidence") or {}).get(key) or {}
+              rel=str(meta.get("path") or "")
+              expected=str(meta.get("blob_sha") or "")
+              fp=root.parent/rel if rel else None
+              if not rel or not expected or fp is None or not fp.exists() or blob(fp)!=expected:
+                  stale.append(key)
+          mc=(terminal.get("evidence") or {}).get("mc") or {}
+          mc_rel=str(mc.get("path") or "")
+          mc_expected=str(mc.get("blob_sha") or "")
+          mc_fp=root.parent/mc_rel if mc_rel else None
+          if not mc_rel or not mc_expected or mc_fp is None or not mc_fp.exists() or blob(mc_fp)!=mc_expected:
+              stale.append("mc")
+          # Cheap discriminating tests: event-only drift and terminal-only drift
+          # are both pending; an exact synthetic set is ready.
+          def readiness(recorded_sha,current_sha,drift):
+              return bool(recorded_sha and recorded_sha==current_sha and not drift)
+          assert readiness("a","a",[]) is True
+          assert readiness("a","a",["events"]) is False
+          assert readiness("a","b",[]) is False
+          ready=readiness(recorded,current_terminal,stale)
           print("ready="+("true" if ready else "false"))
-          print("reason="+("POINTER_EXACT_CURRENT" if ready else "POINTER_TERMINAL_STALE_UPSTREAM_PENDING"))
+          print("reason="+("POINTER_EXACT_CURRENT" if ready else "POINTER_OR_EVIDENCE_STALE_UPSTREAM_PENDING"))
+          print("stale_keys="+(",".join(stale) if stale else ""))
           print("recorded_terminal="+recorded)
           print("current_terminal="+current_terminal)
           PY
