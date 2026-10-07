@@ -150,6 +150,7 @@ jobs:
               price_snapshot_integrity, bridge_refresh_relevant, deferred_bootstrap_artifact,
               publication_lag_artifact, publication_recheck,
               load_official_listing_registry, official_recent_listing_terminal,
+              load_c417_rallies_primary,
           )
 
           ptr=json.load(open("nasdaq-xray/chatgpt_canonical_state_v2.json"))
@@ -213,6 +214,46 @@ jobs:
               publication_replay,publication_probe=publication_recheck(
                   latest_completed,list(px.get("expected30") or [])
               )
+          rallies_primary_refresh=False
+          rallies_primary_refresh_mismatch_count=0
+          rallies_primary_status="NOT_APPLICABLE"
+          if active_completed_epoch and price_ok:
+              try:
+                  primary,primary_meta=load_c417_rallies_primary(latest_completed)
+                  rallies_primary_status=str((primary_meta or {}).get("status") or "UNKNOWN")
+                  if primary is not None:
+                      current_results=px.get("results") or {}
+                      primary_groups={
+                        "FAIL_PRICE":set((primary.get("fail_price") or {}).keys()),
+                        "FAIL_DV30":set((primary.get("fail_dv30") or {}).keys()),
+                        "PASS_PRICE_DV30":set((primary.get("pass_price_dv30") or {}).keys()),
+                        "BLOCK_CURRENT_RUN":set((primary.get("block_current_run") or {}).keys()),
+                      }
+                      covered=set(current_results) & set().union(*primary_groups.values())
+                      block_allowed={
+                        "BLOCK_CURRENT_RUN","FAIL_PRICE","FAIL_DV30","FAIL_PRICE_NO_ASOF_BAR",
+                        "FAIL_DV30_INSUFFICIENT_SESSIONS","BLOCK_POST_ASOF_LISTING",
+                      }
+                      mismatches=[]
+                      for sym in sorted(covered):
+                          got=(current_results.get(sym) or {}).get("status")
+                          if sym in primary_groups["PASS_PRICE_DV30"]:
+                              bad=(got!="PASS_PRICE_DV30")
+                          elif sym in primary_groups["FAIL_PRICE"]:
+                              bad=(got!="FAIL_PRICE")
+                          elif sym in primary_groups["FAIL_DV30"]:
+                              bad=(got!="FAIL_DV30")
+                          else:
+                              bad=(got not in block_allowed)
+                          if bad:
+                              mismatches.append(sym)
+                      rallies_primary_refresh_mismatch_count=len(mismatches)
+                      rallies_primary_refresh=bool(mismatches)
+              except Exception as e:
+                  rallies_primary_status="ERROR:"+type(e).__name__+":"+str(e)[:120]
+                  rallies_primary_refresh=False
+          policy_replay=bool(policy_replay or rallies_primary_refresh)
+
           try:
               mf=json.load(open("nasdaq-xray/canonical_current_master_manifest.json"))
               stamp=latest_completed.replace("-","")
@@ -411,6 +452,9 @@ jobs:
               out.write(f"bootstrap_rebuild={'true' if bootstrap_rebuild else 'false'}\n")
               out.write(f"recover={'true' if recover else 'false'}\n")
               out.write(f"policy_replay={'true' if policy_replay else 'false'}\n")
+              out.write(f"rallies_primary_refresh={'true' if rallies_primary_refresh else 'false'}\n")
+              out.write(f"rallies_primary_refresh_mismatch_count={rallies_primary_refresh_mismatch_count}\n")
+              out.write(f"rallies_primary_status={rallies_primary_status}\n")
               out.write(f"publication_replay={'true' if publication_replay else 'false'}\n")
               out.write(f"identity_replay={'true' if identity_replay else 'false'}\n")
               out.write(f"coverage_repair={'true' if coverage_repair else 'false'}\n")
@@ -427,6 +471,9 @@ jobs:
               "recover":recover,
               "bootstrap_rebuild":bootstrap_rebuild,
               "policy_replay":policy_replay,
+              "rallies_primary_refresh":rallies_primary_refresh,
+              "rallies_primary_refresh_mismatch_count":rallies_primary_refresh_mismatch_count,
+              "rallies_primary_status":rallies_primary_status,
               "publication_replay":publication_replay,
               "publication_probe":publication_probe,
               "identity_replay":identity_replay,
@@ -456,6 +503,7 @@ jobs:
               "reason":(
                   "REPLAY_COMPLETED_EPOCH_UNDER_CURRENT_IDENTITY_POLICY_V6" if identity_replay else
                   "REBUILD_DEFERRED_DV30_BOOTSTRAP" if bootstrap_rebuild else
+                  "REPLAY_C417_RALLIES_PRIMARY_MATERIALIZATION" if rallies_primary_refresh else
                   "REPLAY_COMPLETED_EPOCH_UNDER_CURRENT_PRICE_POLICY" if policy_replay else
                   "REPLAY_PRICE_AFTER_ASOF_PUBLICATION" if publication_replay else
                   "RECOVER_FROZEN_COMPLETED_EPOCH" if recover else
