@@ -25,6 +25,7 @@ on:
       - "nasdaq-xray/build_current_master_manifest.py"
       - "nasdaq-xray/price_dv30_phase.py"
       - "nasdaq-xray/price_dv30_recover_from_fullstate.py"
+      - "nasdaq-xray/price_dv30_authority_selftest.py"
       - "nasdaq-xray/price_official_listing_registry.json"
       - "nasdaq-xray/price_official_listing_selftest.py"
       - "nasdaq-xray/price_official_halt_selftest.py"
@@ -108,6 +109,7 @@ jobs:
             nasdaq-xray/build_current_master_manifest.py \
             nasdaq-xray/price_dv30_phase.py \
             nasdaq-xray/price_dv30_recover_from_fullstate.py \
+            nasdaq-xray/price_dv30_authority_selftest.py \
             nasdaq-xray/price_official_listing_selftest.py \
             nasdaq-xray/price_official_halt_selftest.py \
             nasdaq-xray/official_source_guard.py \
@@ -120,6 +122,10 @@ jobs:
         run: |
           cd nasdaq-xray
           python current_identity_proof_selftest.py
+      - name: PRICE C4.17 provider-neutral exact30 authority self-test
+        run: |
+          cd nasdaq-xray
+          python price_dv30_authority_selftest.py
       - name: PRICE official full-session halt self-test
         run: |
           cd nasdaq-xray
