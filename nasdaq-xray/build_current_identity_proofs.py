@@ -23,7 +23,8 @@ SEC_SUBMISSIONS="https://data.sec.gov/submissions"
 SEC_UA=os.getenv("XRAY_SEC_USER_AGENT","NASDAQ-SWING-XRAY research bot; xray-dataplane-bot@users.noreply.github.com")
 UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/126 Safari/537.36"
 TASK="6a825366222081918997094d76e6ae46"
-IDENTITY_DISCOVERY_VERSION="SEC_CURRENT_SUSPECT_DISCOVERY_V2"
+IDENTITY_DISCOVERY_VERSION="SEC_CURRENT_SUSPECT_DISCOVERY_V3"
+SPAC_SUSPECT_RE=re.compile(r"\bacquisition\b|\bspac\b|\bblank[ -]?check\b|\bcapital\s+corp(?:oration)?\.?\s+(?:[IVXLCDM]+|\d+)\s*-\s*class\s+a\s+ordinary\s+shares?\b",re.I)
 DIRECTORY_SNAPSHOT_SCHEMA="XRAY_NASDAQ_DIRECTORY_SNAPSHOT_V1"
 STAMP_RE=re.compile(r"^(master_(?:asof_identity|sec_spac)_proof_)(\d{8})\.json$")
 FOOTER_RE=re.compile(r"^File Creation Time:\s*(\d{2})(\d{2})(\d{4})")
@@ -140,7 +141,7 @@ def prior_blank_fallback(sym,old,asof,names,industries):
         return None
     if age<0 or age>120:
         return None
-    name_spac=bool(re.search(r"\bacquisition\b|\bspac\b|\bblank[ -]?check\b",current_name,re.I))
+    name_spac=bool(SPAC_SUSPECT_RE.search(current_name))
     industry_spac=(industry.lower()=="blank checks")
     if not (industry_spac or name_spac):
         return None
@@ -326,7 +327,7 @@ def valid_sec_spac_proof_row(v:dict,asof:str)->bool:
         return False
     current_name=str(v.get("same_asof_nasdaq_security_name") or "")
     industry=str(v.get("same_asof_nasdaq_screener_industry") or "")
-    same_asof_spac=bool(re.search(r"\bacquisition\b|\bspac\b|\bblank[ -]?check\b",current_name,re.I))
+    same_asof_spac=bool(SPAC_SUSPECT_RE.search(current_name))
     same_asof_blank=(industry.strip().lower()=="blank checks")
     return bool(same_asof_spac or same_asof_blank)
 
@@ -513,7 +514,7 @@ def main():
     current_suspects=sorted(
       sym for sym,name in names.items()
       if str(industries.get(sym) or "").strip().lower()!="blank checks"
-      and bool(re.search(r"\bacquisition\b|\bspac\b|\bblank[ -]?check\b",str(name or ""),re.I))
+      and bool(SPAC_SUSPECT_RE.search(str(name or "")))
     )
     for sym in current_suspects:
         if sym in operating:
