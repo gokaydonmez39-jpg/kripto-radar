@@ -4,7 +4,8 @@
 No execution. No account access. No signal delivery. Pure calculations only.
 """
 from __future__ import annotations
-import hashlib, math, time, json, os
+import hashlib, math, time, json
+import os  # required by bounded split-transport env controls
 from typing import Any
 from datetime import timedelta
 import pandas as pd
