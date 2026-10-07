@@ -15,6 +15,7 @@ FULL_IDENTITY_AUTHORITIES={
   "FULL_IDENTITY_NO_PREFILTER",
   "CANONICAL_FROZEN_FULL_IDENTITY_SAME_ASOF",
   "IMMUTABLE_EXACT_ASOF_MEMBERSHIP_SNAPSHOT_NO_MARKET_DECISIONS",
+  "NASDAQTRADER_FULL_IDENTITY_NO_NASDAQ_WEB_MARKET_METADATA",
 }
 
 def valid_full_identity_authority(dm):
@@ -149,6 +150,22 @@ def valid_asof_identity_proof_binding(dm,asof):
         return False
 
 def selftest_manual_seed_contract():
+    # Producer/consumer contract: canonical FULL_IDENTITY without Nasdaq web
+    # market metadata is an identity-only authority. Market gates remain
+    # deferred and UNKNOWN != PASS is unchanged.
+    assert valid_full_identity_authority({
+      "full_identity":True,
+      "authority":"NASDAQTRADER_FULL_IDENTITY_NO_NASDAQ_WEB_MARKET_METADATA",
+    }) is True
+    assert valid_full_identity_authority({
+      "full_identity":False,
+      "authority":"NASDAQTRADER_FULL_IDENTITY_NO_NASDAQ_WEB_MARKET_METADATA",
+    }) is False
+    assert valid_full_identity_authority({
+      "full_identity":True,
+      "authority":"UNRECOGNIZED_TEST_AUTHORITY",
+    }) is False
+
     reg=json.loads(MANUAL_IDENTITY_SEED.read_text())
     records=reg.get("records") or {}
     blank=[(sym,row) for sym,row in sorted(records.items()) if (row or {}).get("is_blank_check") is True]
