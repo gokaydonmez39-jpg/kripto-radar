@@ -162,61 +162,67 @@ jobs:
             cp "$p" "$RUNNER_TEMP/event-generated/$(basename "$p")"
           done < "$RUNNER_TEMP/event-generated/new-bridges.txt"
 
-          git fetch origin main
-          latest="$(git rev-parse origin/main)"
-          if [[ "$latest" != "$base_head" ]]; then
-            changed="$(git diff --name-only "$base_head" "$latest" -- \
-              nasdaq-xray/canonical_current_event_request.json \
-              nasdaq-xray/canonical_current_stage1.json \
-              nasdaq-xray/canonical_current_regime.json \
-              nasdaq-xray/canonical_current_deep_geometry.json \
-              nasdaq-xray/event_fail_closed_base_builder.py \
-              nasdaq-xray/event_official_primary_probe.py \
-              nasdaq-xray/event_official_primary_successor_builder.py \
-              nasdaq-xray/build_current_event_state.py \
-              nasdaq-xray/event_ir_seed_registry.json \
-              .github/workflows/xray-event-official-primary-promote.yml || true)"
-            if [[ -n "$changed" ]]; then
-              echo "XRAY_EVENT_PROMOTE=STALE_SOURCE_ABORT"
-              printf '%s\n' "$changed"
+          for attempt in 1 2 3 4 5; do
+            git rebase --abort >/dev/null 2>&1 || true
+            git fetch origin main
+            latest="$(git rev-parse origin/main)"
+            if [[ "$latest" != "$base_head" ]]; then
+              changed="$(git diff --name-only "$base_head" "$latest" -- \
+                nasdaq-xray/canonical_current_event_request.json \
+                nasdaq-xray/canonical_current_stage1.json \
+                nasdaq-xray/canonical_current_regime.json \
+                nasdaq-xray/canonical_current_deep_geometry.json \
+                nasdaq-xray/event_fail_closed_base_builder.py \
+                nasdaq-xray/event_official_primary_probe.py \
+                nasdaq-xray/event_official_primary_successor_builder.py \
+                nasdaq-xray/build_current_event_state.py \
+                nasdaq-xray/event_ir_seed_registry.json \
+                .github/workflows/xray-event-official-primary-promote.yml || true)"
+              if [[ -n "$changed" ]]; then
+                echo "XRAY_EVENT_PROMOTE=STALE_SOURCE_ABORT"
+                printf '%s\n' "$changed"
+                exit 0
+              fi
+            fi
+
+            git reset --hard origin/main
+            git clean -fd
+
+            while IFS= read -r p; do
+              [[ -n "$p" ]] || continue
+              base="$(basename "$p")"
+              if git ls-files --error-unmatch "$p" >/dev/null 2>&1; then
+                current="$(git hash-object "$p")"
+                generated="$(git hash-object "$RUNNER_TEMP/event-generated/$base")"
+                if [[ "$current" != "$generated" ]]; then
+                  echo "XRAY_EVENT_PROMOTE=IMMUTABLE_PATH_CONFLICT path=$p" >&2
+                  exit 1
+                fi
+              else
+                cp "$RUNNER_TEMP/event-generated/$base" "$p"
+              fi
+            done < "$RUNNER_TEMP/event-generated/new-bridges.txt"
+
+            cp "$RUNNER_TEMP/event-generated/canonical_current_event_state.json" nasdaq-xray/canonical_current_event_state.json
+
+            git add nasdaq-xray/canonical_current_event_state.json
+            while IFS= read -r p; do
+              [[ -n "$p" ]] || continue
+              git add "$p"
+            done < "$RUNNER_TEMP/event-generated/new-bridges.txt"
+
+            if git diff --cached --quiet; then
+              echo "XRAY_EVENT_PROMOTE=NO_CHANGE"
               exit 0
             fi
-          fi
 
-          git reset --hard origin/main
-          git clean -fd
-
-          while IFS= read -r p; do
-            [[ -n "$p" ]] || continue
-            base="$(basename "$p")"
-            if git ls-files --error-unmatch "$p" >/dev/null 2>&1; then
-              current="$(git hash-object "$p")"
-              generated="$(git hash-object "$RUNNER_TEMP/event-generated/$base")"
-              if [[ "$current" != "$generated" ]]; then
-                echo "XRAY_EVENT_PROMOTE=IMMUTABLE_PATH_CONFLICT path=$p" >&2
-                exit 1
-              fi
-            else
-              cp "$RUNNER_TEMP/event-generated/$base" "$p"
+            git commit -m "feat(xray): bind exact-current Event authority"
+            if git push origin HEAD:main; then
+              echo "XRAY_EVENT_PROMOTE=PASS attempt=$attempt"
+              exit 0
             fi
-          done < "$RUNNER_TEMP/event-generated/new-bridges.txt"
-
-          cp "$RUNNER_TEMP/event-generated/canonical_current_event_state.json" nasdaq-xray/canonical_current_event_state.json
-
-          git add nasdaq-xray/canonical_current_event_state.json
-          while IFS= read -r p; do
-            [[ -n "$p" ]] || continue
-            git add "$p"
-          done < "$RUNNER_TEMP/event-generated/new-bridges.txt"
-
-          if git diff --cached --quiet; then
-            echo "XRAY_EVENT_PROMOTE=NO_CHANGE"
-            exit 0
-          fi
-
-          git commit -m "feat(xray): bind exact-current Event authority"
-          if ! git push origin HEAD:main; then
-            echo "XRAY_EVENT_PROMOTE=STALE_PUSH_RETRY_REQUIRED" >&2
-            exit 1
-          fi
-          echo "XRAY_EVENT_PROMOTE=PASS"
+            echo "XRAY_EVENT_PROMOTE=PUSH_RACE attempt=$attempt"
+            sleep $((attempt*2))
+          done
+          echo "XRAY_EVENT_PROMOTE=FAIL_AFTER_RETRIES" >&2
+          exit 1
