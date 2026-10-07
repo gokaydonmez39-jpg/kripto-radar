@@ -152,11 +152,20 @@ def announced_event_date(title: str, body: str, asof: str) -> tuple[str | None, 
     sentences = re.split(r"(?<=[.!?])\s+|[\r\n]+", clean)
     hits = []
     for s in sentences:
-        if not (EARNINGS_RE.search(s) and SCHEDULE_RE.search(s)):
+        if not EARNINGS_RE.search(s):
             continue
-        for d in dates_in_text(s):
-            if d > asof:
-                hits.append((d, s[:500]))
+        schedule_matches = list(SCHEDULE_RE.finditer(s))
+        if not schedule_matches:
+            continue
+        # A press-release publication dateline can precede the actual scheduling
+        # clause in the same flattened HTML sentence, e.g.
+        # "NEW YORK, Oct. 07, 2026 ... will release ... October 27, 2026".
+        # Only dates at/after scheduling language are eligible event dates.
+        for sm in schedule_matches:
+            tail = s[sm.start():]
+            for d in dates_in_text(tail):
+                if d > asof:
+                    hits.append((d, s[:500]))
     if hits:
         hits.sort(key=lambda x: x[0])
         return hits[0][0], "SCHEDULE_SENTENCE_EXPLICIT_FUTURE_DATE"
@@ -494,6 +503,14 @@ def selftest() -> None:
         asof,
     )
     assert d3 is None, d3
+    d4, basis4 = announced_event_date(
+        "Release Details",
+        "NEW YORK, Oct. 07, 2026 (GLOBE NEWSWIRE) -- ExlService Holdings, Inc. "
+        "will release financial results for the third quarter ended September 30, 2026, "
+        "on Tuesday, October 27, 2026, after the market closes.",
+        asof,
+    )
+    assert d4 == "2026-10-27" and basis4 == "SCHEDULE_SENTENCE_EXPLICIT_FUTURE_DATE", (d4, basis4)
     # Regression: full issuer landing pages are never classified directly.
     # The extractor remains valid for discrete feed/news text, but probe_issuer
     # must mark the base page as discovery-only.
