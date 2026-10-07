@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 from price_dv30_recover_from_fullstate import (
+    apply_c417_rallies_primary_partition,
     apply_c417_rallies_primary_pass_veto,
     c417_rallies_primary_pass_conflicts,
     load_c417_rallies_primary,
@@ -50,6 +51,24 @@ def main():
     gral_block=(primary.get("block_current_run") or {})["GRAL"]
     assert gral_block.get("observed_usable_sessions")==29,gral_block
     assert gral_block.get("missing_sessions")==["2026-09-23"],gral_block
+
+    # Production must materialize only names covered by the frozen primary.
+    # New identity survivors outside that frozen scope remain fail-closed and
+    # must never be manufactured into PASS.
+    materialized={
+      "AAPL":{"status":"UNKNOWN","info":{"reason":"TEST"}},
+      "GRAL":{"status":"UNKNOWN","info":{"reason":"TEST"}},
+      "ALIS":{"status":"UNKNOWN","info":{"reason":"TEST"}},
+    }
+    changed=apply_c417_rallies_primary_partition(materialized,primary,["AAPL","GRAL","ALIS"])
+    assert "AAPL" in changed and "GRAL" in changed,changed
+    assert "ALIS" not in changed,changed
+    assert materialized["AAPL"]["status"]=="PASS_PRICE_DV30",materialized["AAPL"]
+    assert materialized["AAPL"]["info"]["known_session_count"]==30,materialized["AAPL"]
+    assert materialized["AAPL"]["info"]["dv30"]>=50_000_000,materialized["AAPL"]
+    assert materialized["GRAL"]["status"]=="BLOCK_CURRENT_RUN",materialized["GRAL"]
+    assert materialized["GRAL"]["info"]["missing_sessions"]==["2026-09-23"],materialized["GRAL"]
+    assert materialized["ALIS"]["status"]=="UNKNOWN",materialized["ALIS"]
 
     synthetic_price={"asof_et":ASOF,"pass_symbols":["AAPL","GRAL"]}
     conflicts,conflict_meta=c417_rallies_primary_pass_conflicts(synthetic_price,queue)
