@@ -157,11 +157,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          python nasdaq-xray/build_mc_provenance_rebind.py --selftest
           python nasdaq-xray/build_mc_provenance_rebind.py | tee /tmp/mc_rebind_out
           cat /tmp/mc_rebind_out >> "$GITHUB_OUTPUT"
       - name: Find exact-bound committed MC bridge
         id: mc
-        if: steps.freeze.outputs.frozen != 'true'
+        if: steps.freeze.outputs.frozen != 'true' && steps.mc_rebind.outputs.ready != 'false'
         shell: bash
         run: |
           set -e
@@ -178,9 +179,14 @@ jobs:
           if isinstance(ps,str): ps=json.loads(ps)
           if not isinstance(ps,dict): print("ready=false"); raise SystemExit
           if p.get("schema")!="XRAY_CANONICAL_PRICE_DV30_V1" or m.get("schema")!="XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1":
-              print("ready=false"); raise SystemExit
+              print("ready=false"); print("binding_fault=false"); print("pending_reason=PRICE_OR_MASTER_SCHEMA_MISMATCH"); raise SystemExit
           if p.get("asof_et")!=m.get("asof_et") or p.get("source_master_queue_hash")!=m.get("queue_hash") or p.get("source_master_count")!=m.get("queue_total"):
-              print("ready=false"); raise SystemExit
+              print("ready=false"); print("binding_fault=false"); print("pending_reason=PRICE_MASTER_BINDING_DRIFT"); raise SystemExit
+          price_unknown=int(p.get("unknown_count",len(p.get("unknown_symbols") or [])))
+          if price_unknown!=len(p.get("unknown_symbols") or []):
+              print("ready=false"); print("binding_fault=true"); print("pending_reason=PRICE_UNKNOWN_COUNT_MISMATCH"); raise SystemExit
+          if price_unknown:
+              print("ready=false"); print("binding_fault=false"); print("pending_reason=PRICE_DV30_UNKNOWN"); print("price_unknown_count="+str(price_unknown)); raise SystemExit
           b=price_path.read_bytes()
           price_blob=hashlib.sha1(f"blob {len(b)}\0".encode()+b).hexdigest()
           expected_asof=p["asof_et"]; expected_hash=p["pass_hash"]; expected_count=p["pass_count"]
@@ -362,7 +368,7 @@ jobs:
 
       - name: Healthy no-op while resolver or MC commit is pending
         if: steps.freeze.outputs.frozen != 'true' && steps.mc.outputs.ready != 'true' && steps.mc.outputs.binding_fault != 'true'
-        run: echo "XRAY_POST_MC=BLOCKED_UPSTREAM_PENDING reason=${{ steps.mc.outputs.pending_reason }}"
+        run: echo "XRAY_POST_MC=BLOCKED_UPSTREAM_PENDING mc_reason=${{ steps.mc.outputs.pending_reason }} rebind_reason=${{ steps.mc_rebind.outputs.pending_reason }}"
 
       - name: Reuse exact same-ASOF HISTORY and LEGAL
         id: reuse_hl
