@@ -95,11 +95,15 @@ def main():
         if missing.exists():
             missing.unlink()
         assert m.exact_proofs_complete(Path("/tmp/identity.json"),missing,"2026-10-06") is False
+        seed_rel=str(m.MANUAL_IDENTITY_SEED.relative_to(m.ROOT.parent)).replace("\\","/")
+        seed_blob=m.file_blob_sha(m.MANUAL_IDENTITY_SEED) if m.MANUAL_IDENTITY_SEED.exists() else None
         with tempfile.NamedTemporaryFile(mode="w+",suffix=".json") as tmp:
             json.dump({
               "asof_et":"2026-10-06",
               "discovery_version":m.IDENTITY_DISCOVERY_VERSION,
               "discovery_coverage":{
+                "manual_seed_registry_path":seed_rel,
+                "manual_seed_registry_blob_sha":seed_blob,
                 "coverage_complete":True,
                 "unresolved_current_suspect_count":0,
                 "unresolved_current_suspects":[],
@@ -111,6 +115,8 @@ def main():
               "asof_et":"2026-10-06",
               "discovery_version":m.IDENTITY_DISCOVERY_VERSION,
               "discovery_coverage":{
+                "manual_seed_registry_path":seed_rel,
+                "manual_seed_registry_blob_sha":seed_blob,
                 "coverage_complete":False,
                 "unresolved_current_suspect_count":1,
                 "unresolved_current_suspects":["TLAC"],
@@ -120,6 +126,50 @@ def main():
     finally:
         m.validate_existing_identity=original_vi
         m.validate_existing_sec=original_vs
+
+    # Manual SEC seeds are discovery evidence only and must remain bounded,
+    # recent, official, and exact-ASOF Nasdaq-name revalidated.
+    with tempfile.TemporaryDirectory() as td:
+        old_seed=m.MANUAL_IDENTITY_SEED
+        try:
+            seed=Path(td)/"master_sec_identity_manual_seed_registry.json"
+            seed.write_text(json.dumps({
+              "schema":"XRAY_MASTER_SEC_IDENTITY_MANUAL_SEED_REGISTRY_V1",
+              "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
+              "authority":"OFFICIAL_SEC_EVIDENCE_DISCOVERY_SEED_ONLY",
+              "records":{
+                "TLAC":{"cik":"0002128462","sic":6770,"classification":"Blank Checks",
+                        "is_blank_check":True,"evidence_date":"2026-09-01",
+                        "source_url":"https://www.sec.gov/Archives/edgar/data/2128462/example-index.htm"},
+                "ALIS":{"cik":"0002026767","sic":7374,"classification":"Services-Computer Processing & Data Preparation",
+                        "is_blank_check":False,"evidence_date":"2026-09-04",
+                        "source_url":"https://www.sec.gov/Archives/edgar/data/2026767/example-index.htm"},
+                "OLD":{"cik":"0002000000","sic":6770,"classification":"Blank Checks",
+                        "is_blank_check":True,"evidence_date":"2026-01-01",
+                        "source_url":"https://www.sec.gov/Archives/edgar/data/2000000/example-index.htm"},
+              },
+            }))
+            m.MANUAL_IDENTITY_SEED=seed
+            rows,meta=m.manual_identity_seed_registry(
+                "2026-10-06",
+                {"TLAC":"Three Lions Acquisition Corp.",
+                 "ALIS":"Calisa Acquisition Corp - Ordinary shares",
+                 "OLD":"Old Acquisition Corp."},
+            )
+            assert set(rows)=={"TLAC","ALIS"}
+            assert rows["TLAC"]["is_blank_check"] is True and rows["TLAC"]["sic"]==6770
+            assert rows["ALIS"]["is_blank_check"] is False and rows["ALIS"]["sic"]==7374
+            assert meta["record_count"]==2 and meta["blob_sha"]==m.file_blob_sha(seed)
+            proof=dict(rows["TLAC"])
+            proof.update({
+              "same_asof_revalidated_without_sec_network":True,
+              "revalidation_semantics":"MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
+              "same_asof_nasdaq_directory_footer":"File Creation Time: 1006202618:01|||||||",
+              "same_asof_nasdaq_screener_industry":"",
+            })
+            assert m.valid_sec_spac_proof_row(proof,"2026-10-06")
+        finally:
+            m.MANUAL_IDENTITY_SEED=old_seed
 
     # Immutable membership-only directory snapshots outrank contaminated
     # current/support-plane state, but only when ASOF/footer/count are exact.
