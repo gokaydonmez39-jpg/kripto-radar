@@ -1,6 +1,9 @@
 name: XRAY Event Official Primary Zero-Dollar Probe
 
 on:
+  workflow_run:
+    workflows: ["XRAY Canonical Current Post-MC Factory"]
+    types: [completed]
   push:
     branches: [main]
     paths:
@@ -21,6 +24,7 @@ concurrency:
 
 jobs:
   probe:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
