@@ -35,6 +35,9 @@ on:
       - "nasdaq-xray/scheduler_failover_selftest.py"
       - "nasdaq-xray/scheduler_failover_contract.json"
       - ".github/workflows/xray-resilience-observability.yml"
+  workflow_run:
+    workflows: ["XRAY Canonical Pointer Transition"]
+    types: [completed]
   schedule:
     - cron: "47 * * * 1-5"
     - cron: "47 */3 * * 0,6"
@@ -49,6 +52,7 @@ concurrency:
 
 jobs:
   resilience:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
