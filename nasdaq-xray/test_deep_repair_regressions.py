@@ -1133,7 +1133,10 @@ def test_rallies_exact30_v2_preserves_upper_bound_fail_semantics():
 
 def test_pre_mc_settlement_bridge_forces_resolver_refresh_contract():
     wf=(REPO/".github/workflows/xray-canonical-current-pre-mc.yml").read_text()
-    assert 'rq.get("settlement_required") is True' in wf
+    # Same-ASOF block-only residual requests may legitimately have
+    # settlement_required=false. A newly committed PASS witness must still
+    # refresh stale settlement_already_proven=false provenance.
+    assert 'settlement_required=false (same-ASOF,' in wf
     assert 'rq.get("settlement_already_proven") is not True' in wf
     assert 'br.get("settlement_status")=="PASS"' in wf
     assert 'AMBIGUOUS_CURRENT_POLICY_RESOLVER_BRIDGE_EXACT_PRICE' in wf
