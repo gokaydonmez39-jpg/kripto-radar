@@ -1,0 +1,88 @@
+{
+  "schema": "XRAY_EVENT_IR_DISCOVERY_SEED_REGISTRY_V1",
+  "authority": "DISCOVERY_ONLY_NEVER_EVENT_DECISION_AUTHORITY",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "policy": "Seeds only locate issuer-controlled IR surfaces. Every seed must be fetched live and issuer-identity validated before any evidence can be emitted. No-event/empty-page never implies CLEAR.",
+  "symbols": {
+    "LITE": {
+      "base_url": "https://investor.lumentum.com",
+      "issuer_tokens": [
+        "Lumentum"
+      ]
+    },
+    "MANH": {
+      "base_url": "https://ir.manh.com",
+      "issuer_tokens": [
+        "Manhattan Associates"
+      ]
+    },
+    "META": {
+      "base_url": "https://investor.atmeta.com",
+      "issuer_tokens": [
+        "Meta"
+      ]
+    },
+    "MRVL": {
+      "base_url": "https://investor.marvell.com",
+      "issuer_tokens": [
+        "Marvell"
+      ]
+    },
+    "DUOL": {
+      "base_url": "https://investors.duolingo.com",
+      "issuer_tokens": [
+        "Duolingo"
+      ]
+    },
+    "OKTA": {
+      "base_url": "https://investor.okta.com",
+      "issuer_tokens": [
+        "Okta"
+      ]
+    },
+    "PLTR": {
+      "base_url": "https://investors.palantir.com",
+      "issuer_tokens": [
+        "Palantir"
+      ]
+    },
+    "QCOM": {
+      "base_url": "https://investor.qualcomm.com",
+      "issuer_tokens": [
+        "Qualcomm"
+      ]
+    },
+    "QLYS": {
+      "base_url": "https://investor.qualys.com",
+      "issuer_tokens": [
+        "Qualys"
+      ]
+    },
+    "PANW": {
+      "base_url": "https://investors.paloaltonetworks.com",
+      "issuer_tokens": [
+        "Palo Alto"
+      ]
+    },
+    "WIX": {
+      "base_url": "https://investors.wix.com",
+      "issuer_tokens": [
+        "Wix"
+      ]
+    },
+    "XP": {
+      "base_url": "https://investors.xpinc.com",
+      "issuer_tokens": [
+        "XP Inc"
+      ]
+    },
+    "DOCU": {
+      "base_url": "https://investor.docusign.com",
+      "issuer_tokens": [
+        "Docusign"
+      ]
+    }
+  }
+}
