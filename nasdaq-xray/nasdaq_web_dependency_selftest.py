@@ -49,15 +49,19 @@ def test_nasdaq_historical_helper_is_nonterminal_disabled():
     assert meta["no_pass_or_fail_created"] is True,meta
 
 
-def test_eval_sina_pass_unchanged_and_yahoo_remains_fail_only():
+def test_eval_sina_pass_is_nonterminal_and_yahoo_remains_fail_only():
     exp30=[f"2026-09-{i:02d}" for i in range(2,31)]+["2026-10-06"]
     original_sina,original_yahoo=p.sina,p.yahoo
     try:
+        # C4.17 DV30 PASS authority is Rallies primary / Longbridge fallback.
+        # A mathematically passing Sina sample is therefore diagnostic only.
         p.sina=lambda sym,asof:(fake_complete_bars(exp30),{"usable":30})
-        p.yahoo=lambda sym,asof:(_ for _ in ()).throw(AssertionError("YAHOO_SHOULD_NOT_BE_CALLED"))
+        p.yahoo=lambda sym,asof:(fake_complete_bars(exp30),{"usable":30,"exchangeName":"NMS"})
         _,st,info,prov=p.eval_one("AAA",exp30,"2026-10-06")
-        assert st=="PASS_PRICE_DV30",(st,info,prov)
-        assert info["source"]=="SINA_US_DAILY",info
+        assert st=="UNKNOWN",(st,info,prov)
+        assert info["reason"]=="C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",info
+        assert info["sina_result"]["reason"]=="SINA_NONAUTHORITATIVE_FOR_C417_DV30_PASS",info
+        assert info["yahoo_result"]["proof"]=="EXACT30_MEDIAN_GE_GATE",info
 
         p.sina=lambda sym,asof:({},{"error":"SINA_TEST_UNAVAILABLE"})
         p.yahoo=lambda sym,asof:(fake_complete_bars(exp30),{"usable":30,"exchangeName":"NMS"})
@@ -103,7 +107,7 @@ def test_current_canonical_pass_has_no_nasdaq_web_dependency():
 if __name__=="__main__":
     test_full_identity_builder_never_calls_web_screener()
     test_nasdaq_historical_helper_is_nonterminal_disabled()
-    test_eval_sina_pass_unchanged_and_yahoo_remains_fail_only()
+    test_eval_sina_pass_is_nonterminal_and_yahoo_remains_fail_only()
     test_global_sentinel_disabled_not_a_decision()
     test_current_canonical_pass_has_no_nasdaq_web_dependency()
     print("NASDAQ_WEB_DEPENDENCY_SELFTEST=PASS")
