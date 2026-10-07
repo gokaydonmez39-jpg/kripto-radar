@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
-from price_dv30_recover_from_fullstate import official_full_session_halt_terminal
+from copy import deepcopy
+from price_dv30_recover_from_fullstate import (
+    official_full_session_halt_terminal,
+    apply_official_full_session_halt_fail_only,
+)
 
 
 def guard(items, status="PASS"):
@@ -73,6 +77,30 @@ def main():
         "TEST","2026-10-06"
     )
     assert other is None,other
+
+    # Persisted UNKNOWN/BLOCK states must be terminalized from official
+    # full-session halt proof; existing PASS/FAIL decisions are immutable.
+    g=guard([
+        row("BLFS","10/05/2026","19:50:00.000","10/07/2026","00:00:01"),
+        row("SLP","10/05/2026","19:50:00.000","10/07/2026","00:00:01"),
+        row("SVA","02/22/2019","16:02:01"),
+    ])
+    sample={
+        "BLFS":{"status":"UNKNOWN","info":{"reason":"OLD_UNRESOLVED"}},
+        "SLP":{"status":"BLOCK_CURRENT_RUN","info":{"reason":"OLD_BLOCK"}},
+        "SVA":{"status":"UNKNOWN","info":{"reason":"OLD_UNRESOLVED"}},
+        "PASS":{"status":"PASS_PRICE_DV30","info":{"sentinel":"KEEP_PASS"}},
+        "FAIL":{"status":"FAIL_DV30","info":{"sentinel":"KEEP_FAIL"}},
+    }
+    pass_before=deepcopy(sample["PASS"])
+    fail_before=deepcopy(sample["FAIL"])
+    changed=apply_official_full_session_halt_fail_only(sample,g,"2026-10-06")
+    assert set(changed)=={"BLFS","SLP","SVA"},changed
+    for sym in ("BLFS","SLP","SVA"):
+        assert sample[sym]["status"]=="FAIL_PRICE_NO_ASOF_BAR",(sym,sample[sym])
+        assert sample[sym]["info"]["decision_direction"]=="FAIL_ONLY_NEVER_PASS",(sym,sample[sym])
+    assert sample["PASS"]==pass_before,sample["PASS"]
+    assert sample["FAIL"]==fail_before,sample["FAIL"]
 
     print("XRAY_PRICE_OFFICIAL_HALT_SELFTEST=PASS")
 
