@@ -1,7 +1,7 @@
 {
   "asof_et": "2026-10-07",
   "asof_identity_proof": {
-    "blob_sha": "acc118b083ab6b88b7408932ad886e28a3919886",
+    "blob_sha": "0391f2c3174844014e4f101b93b96a81dbb5fe69",
     "counts": {
       "operating_overrides": 4,
       "remove_from_asof": 0,
@@ -29,18 +29,18 @@
   },
   "counts": {
     "PASS_IDENTITY": 3185,
-    "UNKNOWN_IDENTITY": 195
+    "UNKNOWN_IDENTITY": 187
   },
   "execution": "NONE",
-  "explicit_excluded_count": 2249,
-  "explicit_excluded_hash": "2800d2ce59876eb0ec5f615f5e0247614534b06e0a481a8702d7b8be3b89c057",
+  "explicit_excluded_count": 2257,
+  "explicit_excluded_hash": "23b99f9f6eb34f058a5203bd746f611182735a8dd9d15e7de00e22bd6f2e65a8",
   "explicit_excluded_reason_counts": {
     "DEBT": 59,
     "ETF": 1293,
     "FUND": 32,
     "PREFERRED": 102,
     "RIGHT": 104,
-    "SPAC_BLANK_CHECK": 16,
+    "SPAC_BLANK_CHECK": 24,
     "TEST_ISSUE": 8,
     "UNIT": 260,
     "WARRANT": 372,
@@ -3252,22 +3252,22 @@
   "queue_hash": "306d6bb21e1ffef5f099f988ce995d0f98b349c051f34b4eed42613280444bdf",
   "queue_total": 3185,
   "queue_unique": 3185,
-  "raw_identity_total": 3380,
+  "raw_identity_total": 3372,
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1",
   "sec_spac_proof": {
-    "blob_sha": "3795f6c9b68f1d95f2eeb3b8aa72b9521c7f125f",
-    "count": 16,
+    "blob_sha": "9e9b507917e72fc8453a6b46b53d42135efbcc01",
+    "count": 24,
     "path": "nasdaq-xray/master_sec_spac_proof_20261007.json",
-    "symbol_hash": "ddbfe2f4ebdd582c72783d2f89ec881b36bdc733dfd2dee3019fe03cbd8f7609"
+    "symbol_hash": "ac854d74e0edcbe9e002b9748bb36f0d10af95b885ee279aa69c785a5942c545"
   },
-  "source_state_blob_sha": "f1d26b11c109b48febe7586e6ac07d5ec1c2c7f3",
-  "source_state_hash": "b2971de64ec29c09da407f7f8993cf0ab2dd54c24f84b8b636e7130c459fed5b",
+  "source_state_blob_sha": "09d28c9982feb062ab5e1bdf90159a385452ebfe",
+  "source_state_hash": "e58d3505fe09d01c913ecbc9e0640ae854f2276180dfd2f38aff9262f409a367",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
   "status": "PARTIAL_UNKNOWN",
   "status_semantics": "IDENTITY_PARTITION_EXACT_WITH_UNKNOWN",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 195,
+  "unknown_count": 187,
   "unknown_detail": {
     "AACI": {
       "exact_sec_spac_proof": false,
@@ -3287,15 +3287,6 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "AACP": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Apogee Acquisition Corp - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "ACAA": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
@@ -3305,30 +3296,12 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "ACGC": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "ACP Holdings Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "ADAC": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "American Drive Acquisition Company - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "AESP": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Aeon Acquisition I Corp. - Class A Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -3350,39 +3323,12 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "AMAN": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Amanat Acquisition Corp - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "APAC": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "StoneBridge Acquisition II Corporation - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "APMC": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "AmperCap Acquisition Company - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "ARCL": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "ARC Group Acquisition I Corp - Class A Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -3410,24 +3356,6 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Archimedes Tech SPAC Partners II Co. - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "ATLQ": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "JAB Acquisition Corp I - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "AXIN": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Axiom Intelligence Acquisition Corp 1 - Class A Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -5029,22 +4957,14 @@
   "unknown_symbols": [
     "AACI",
     "AACO",
-    "AACP",
     "ACAA",
-    "ACGC",
     "ADAC",
-    "AESP",
     "ALPX",
     "AMAC",
-    "AMAN",
     "APAC",
-    "APMC",
-    "ARCL",
     "ARTC",
     "ASPC",
     "ATII",
-    "ATLQ",
-    "AXIN",
     "BACC",
     "BCCQ",
     "BEAG",
