@@ -30,7 +30,7 @@ import pandas_market_calendars as mcal
 TASK_ID="6a825366222081918997094d76e6ae46"
 BUILD="2026-10-02.1"
 IDENTITY_RULESET="V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER"
-IDENTITY_PARTITION_POLICY="MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V3_FROZEN_GUARD"
+IDENTITY_PARTITION_POLICY="MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V4_EXACT_ASOF_SNAPSHOT_GUARD"
 DIRECTORY_SNAPSHOT_SCHEMA="XRAY_NASDAQ_DIRECTORY_SNAPSHOT_V1"
 NASDAQ_DIR="https://www.nasdaqtrader.com/dynamic/SymDir/nasdaqlisted.txt"
 NASDAQ_SCREENER="https://api.nasdaq.com/api/screener/stocks"
@@ -540,6 +540,23 @@ def build_full_identity_from_directory(official,sec_spac_proof=None,operating_ov
       "sec_spac_proof_count":len(applied_sec),
       "sec_spac_proof_hash":sha_lines(applied_sec),
     },excluded
+
+def official_blank_checks_exclusion_authorized(industry,full_identity,membership_snapshot):
+    """Allow Nasdaq Blank Checks exclusion only from safe identity evidence.
+
+    Legacy non-full discovery may use its same-run Nasdaq screener metadata.
+    Canonical FULL_IDENTITY may use only a validated immutable exact-ASOF
+    membership snapshot carrying preserved industry metadata. Live/current web
+    screener metadata remains non-authoritative in canonical mode.
+    """
+    if str(industry or "").strip().lower()!="blank checks":
+        return False
+    if not full_identity:
+        return True
+    if not isinstance(membership_snapshot,dict):
+        return False
+    return bool(membership_snapshot.get("path") and membership_snapshot.get("blob_sha"))
+
 
 def build_discovery_from_snapshot(official,industries,sec_spac_proof=None,operating_overrides=None):
     """Identity-only replay from exact-ASOF immutable membership metadata.
@@ -1065,17 +1082,32 @@ def main():
                 security_name=str(names.get(sym) or "").strip()
                 if sym in operating_overrides:
                     continue
-                # Canonical FULL_IDENTITY never uses Nasdaq web screener
-                # metadata as decision authority. Legacy non-full discovery may
-                # retain this historical branch only outside canonical mode.
-                if (not FULL_IDENTITY) and industry.lower()=="blank checks":
+                # Canonical FULL_IDENTITY never uses live/current Nasdaq web
+                # screener metadata as decision authority. It may use only the
+                # validated immutable exact-ASOF membership snapshot preserved
+                # for this research epoch.
+                if official_blank_checks_exclusion_authorized(
+                    industry,FULL_IDENTITY,membership_snapshot
+                ):
                     screener_excluded[sym]={
                       "reason":"SPAC_BLANK_CHECK",
                       "proof":{
-                        "authority":"NASDAQ_SAME_ASOF_SCREENER_INDUSTRY",
+                        "authority":(
+                          "NASDAQ_EXACT_ASOF_FROZEN_SCREENER_INDUSTRY"
+                          if FULL_IDENTITY else
+                          "NASDAQ_SAME_ASOF_SCREENER_INDUSTRY"
+                        ),
                         "industry":industry,
                         "security_name":security_name,
                         "asof_et":asof,
+                        "snapshot_path":(
+                          (membership_snapshot or {}).get("path")
+                          if FULL_IDENTITY else None
+                        ),
+                        "snapshot_blob_sha":(
+                          (membership_snapshot or {}).get("blob_sha")
+                          if FULL_IDENTITY else None
+                        ),
                         "unknown_never_pass":True,
                       },
                     }
