@@ -185,6 +185,128 @@ def price_snapshot_integrity(px,frozen_asof):
         return False
 
 
+def load_c417_rallies_primary(asof,queue=None):
+    """Load the frozen C4.17 Rallies exact30 primary classification for ASOF.
+
+    The classification may cover a superset of the current identity queue
+    because identity exclusions can be tightened later in the same frozen
+    epoch. Current queue coverage must nevertheless be complete.
+    """
+    path=ROOT/"evidence"/f"rallies_dv30_{str(asof).replace('-','')}_classification.json"
+    try:
+        obj=json.loads(path.read_text())
+        if not (
+          obj.get("schema")=="XRAY_RALLIES_DV30_CLASSIFICATION_V1"
+          and obj.get("asof_et")==asof
+          and obj.get("execution")=="NONE" and obj.get("real_money")=="NO-GO"
+          and obj.get("unknown_never_pass") is True
+          and obj.get("authority")=="C4.17_RALLIES_EXACT30_PRIMARY"
+          and list(obj.get("expected30") or [])==expected30(asof)
+          and (obj.get("thresholds") or {}).get("price")==">=5"
+          and (obj.get("thresholds") or {}).get("dv30")=="median exactly30 Close*Volume >=50000000"
+          and (obj.get("audit") or {}).get("coverage_exact") is True
+          and (obj.get("audit") or {}).get("no_synthetic_bar") is True
+          and (obj.get("audit") or {}).get("no_forward_fill") is True
+          and (obj.get("audit") or {}).get("unknown_never_pass") is True
+          and (obj.get("audit") or {}).get("threshold_changed") is False
+          and (obj.get("audit") or {}).get("alpha_policy_changed") is False
+        ):
+            raise ValueError("RALLIES_PRIMARY_SCHEMA_OR_POLICY")
+        groups=[
+          set((obj.get("fail_price") or {}).keys()),
+          set((obj.get("fail_dv30") or {}).keys()),
+          set((obj.get("pass_price_dv30") or {}).keys()),
+          set((obj.get("block_current_run") or {}).keys()),
+        ]
+        if any(groups[i]&groups[j] for i in range(len(groups)) for j in range(i+1,len(groups))):
+            raise ValueError("RALLIES_PRIMARY_PARTITION_OVERLAP")
+        union=set().union(*groups)
+        if len(union)!=int(obj.get("symbol_count",-1)):
+            raise ValueError("RALLIES_PRIMARY_SYMBOL_COUNT")
+        counts=obj.get("counts") or {}
+        expected_counts={
+          "FAIL_PRICE":len(groups[0]),
+          "FAIL_DV30":len(groups[1]),
+          "PASS_PRICE_DV30":len(groups[2]),
+          "BLOCK_CURRENT_RUN":len(groups[3]),
+        }
+        if counts!=expected_counts:
+            raise ValueError("RALLIES_PRIMARY_COUNTS")
+        if queue is not None and not set(queue).issubset(union):
+            raise ValueError("RALLIES_PRIMARY_CURRENT_QUEUE_COVERAGE")
+        return obj,{
+          "status":"PASS","path":str(path),"symbol_count":len(union),
+          "current_queue_count":len(queue) if queue is not None else None,
+          "current_queue_covered":True if queue is not None else None,
+        }
+    except Exception as e:
+        return None,{"status":"UNKNOWN","path":str(path),"reason":type(e).__name__+":"+str(e)[:160]}
+
+
+def c417_rallies_primary_pass_conflicts(px,queue=None):
+    """Return current DV30 PASS symbols not authorized by C4.17 Rallies primary.
+
+    Existing terminal FAIL rows are not conflicts: C4.17 explicitly permits
+    stronger fail-only evidence to terminalize a Rallies fail-closed BLOCK.
+    """
+    primary,meta=load_c417_rallies_primary(px.get("asof_et"),queue)
+    if primary is None:
+        return [],meta
+    primary_pass=set((primary.get("pass_price_dv30") or {}).keys())
+    current_pass=set(px.get("pass_symbols") or [])
+    return sorted(current_pass-primary_pass),meta
+
+
+def apply_c417_rallies_primary_pass_veto(results,primary):
+    """Fail closed any PASS that the C4.17 Rallies primary did not PASS.
+
+    This never upgrades a symbol. Rallies BLOCK becomes BLOCK_CURRENT_RUN;
+    any other primary non-PASS becomes UNKNOWN so no unsupported PASS survives.
+    """
+    if not isinstance(primary,dict):
+        return []
+    primary_pass=set((primary.get("pass_price_dv30") or {}).keys())
+    primary_block=primary.get("block_current_run") or {}
+    primary_fail_price=primary.get("fail_price") or {}
+    primary_fail_dv30=primary.get("fail_dv30") or {}
+    changed=[]
+    for sym,row in sorted(results.items()):
+        if row.get("status")!="PASS_PRICE_DV30" or sym in primary_pass:
+            continue
+        if sym in primary_block:
+            val=primary_block[sym] if isinstance(primary_block[sym],dict) else {}
+            results[sym]={
+              "status":"BLOCK_CURRENT_RUN",
+              "info":{
+                "reason":val.get("reason") or "RALLIES_PRIMARY_NONPASS",
+                "observed_usable_sessions":val.get("observed_usable_sessions"),
+                "missing_sessions":list(val.get("missing_sessions") or []),
+                "zero_volume_sessions":list(val.get("zero_volume_sessions") or []),
+                "source":"RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
+                "proof":"FAIL_CLOSED_CURRENT_RUN_NONPASS",
+                "no_synthetic_bar":True,
+              },
+              "provenance":"C417_RALLIES_PRIMARY_PASS_VETO",
+            }
+        else:
+            primary_state=(
+              "FAIL_PRICE" if sym in primary_fail_price else
+              "FAIL_DV30" if sym in primary_fail_dv30 else
+              "MISSING_FROM_PRIMARY_PARTITION"
+            )
+            results[sym]={
+              "status":"UNKNOWN",
+              "info":{
+                "reason":"C417_PRIMARY_DID_NOT_AUTHORIZE_PASS",
+                "primary_state":primary_state,
+                "no_synthetic_bar":True,
+              },
+              "provenance":"C417_RALLIES_PRIMARY_PASS_VETO",
+            }
+        changed.append(sym)
+    return changed
+
+
 def _compact_resolution_sets(compact):
     compact=compact or {}
     all_resolved=set()
@@ -675,8 +797,8 @@ def valid_bridge_price_resolution(x,asof):
         )
     if d=="PASS_PRICE_DV30":
         known=x.get("known_session_count")
+        source_proof=(x.get("source"),x.get("proof"))
         if x.get("compact_terminal_proof") is True:
-            source_proof=(x.get("source"),x.get("proof"))
             return (
               known==30 and (x.get("missing_sessions") or [])==[]
               and x.get("no_synthetic_bar") is True
@@ -685,12 +807,20 @@ def valid_bridge_price_resolution(x,asof):
                 ("RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9","EXACT30_MEDIAN_GE_GATE"),
               }
             )
+        # C4.17 historical Alpaca SIP is settlement/fail-evidence authority,
+        # not DV30 PASS authority. Longbridge PASS fallback is not implemented
+        # in this loader yet; fail closed until an explicit tested wire contract exists.
+        if x.get("source") not in {
+          "RALLIES_CANDLESTICK_SCANNER_EXACT30_PRIMARY",
+          "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
+        }:
+            return False
         dv=num(x.get("dv30"))
         return (
           px is not None and px>=HARD_PRICE and dv is not None and dv>=HARD_DV30
           and known==30 and (x.get("missing_sessions") or [])==[]
           and x.get("no_synthetic_bar") is True
-          and bool(x.get("source")) and bool(x.get("proof"))
+          and bool(x.get("proof"))
         )
     if d=="BLOCK_CURRENT_RUN":
         if x.get("source") in {
@@ -1069,8 +1199,12 @@ def main():
         old=prior["results"]
         baseline_source="CURRENT_PRICE_ARTIFACT" if USE_CURRENT_BASELINE else "PRIOR_PRICE_ARTIFACT"
     results={};redo=[];policy_redo=set()
+    rallies_primary,rallies_primary_meta=load_c417_rallies_primary(asof,queue)
+    rallies_primary_pass=set((rallies_primary or {}).get("pass_price_dv30",{}).keys())
     for sym in queue:
         r=old[sym];st=r.get("status");info=r.get("info")
+        if st in {"PASS","PASS_PRICE_DV30"} and rallies_primary is not None and sym not in rallies_primary_pass:
+            redo.append(sym);policy_redo.add(sym);continue
         if USE_CURRENT_BASELINE:
             if st=="UNKNOWN":
                 redo.append(sym)
@@ -1170,6 +1304,10 @@ def main():
           "provenance":"AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
         }
 
+    rallies_primary_pass_vetoed=apply_c417_rallies_primary_pass_veto(
+        results,rallies_primary
+    )
+
     # Official Nasdaq full-session halts are terminal fail-only evidence for
     # the ASOF price gate. They resolve provider-coverage ambiguity without
     # manufacturing a bar or changing the PRICE/DV30 thresholds.
@@ -1235,6 +1373,9 @@ def main():
       "monotonic_legacy_pass_reuse_count":sum(1 for x in results.values() if x.get("provenance")=="PRIOR_STRICTER_PRICE_PASS_MONOTONIC_REUSE"),
       "policy_replay_symbols":sorted(policy_redo),
       "exception_bridge_meta":exception_bridge_meta,
+      "c417_rallies_primary_meta":rallies_primary_meta,
+      "c417_rallies_primary_pass_veto_count":len(rallies_primary_pass_vetoed),
+      "c417_rallies_primary_pass_veto_symbols":sorted(rallies_primary_pass_vetoed),
       "counts":dict(sorted(counts.items())),"unknown_count":len(unknown),"unknown_symbols":unknown,
       "blocked_count":len(blocked),"blocked_symbols":blocked,
       "block_recovery_attempted":True,
@@ -1257,5 +1398,5 @@ def main():
         byte_stable_preserved=True
     else:
         OUT.write_text(json.dumps(obj,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
-    print(json.dumps({"reused":obj["reused_terminal_count"],"reevaluated":obj["reevaluated_count"],"policy_replay":FORCE_POLICY_REPLAY,"policy_replay_input_count":len(policy_redo),"counts":obj["counts"],"unknown_count":obj["unknown_count"],"blocked_count":obj["blocked_count"],"block_recovery_input":obj["block_recovery_input_count"],"block_recovery_resolved":obj["block_recovery_resolved_count"],"official_halt_terminalized":obj.get("official_halt_terminalized_count",0),"official_listing_terminalized":obj.get("official_listing_terminalized_count",0),"pass_count":obj["pass_count"],"pass_hash":obj["pass_hash"],"byte_stable_preserved":byte_stable_preserved},sort_keys=True))
+    print(json.dumps({"reused":obj["reused_terminal_count"],"reevaluated":obj["reevaluated_count"],"policy_replay":FORCE_POLICY_REPLAY,"policy_replay_input_count":len(policy_redo),"counts":obj["counts"],"unknown_count":obj["unknown_count"],"blocked_count":obj["blocked_count"],"block_recovery_input":obj["block_recovery_input_count"],"block_recovery_resolved":obj["block_recovery_resolved_count"],"official_halt_terminalized":obj.get("official_halt_terminalized_count",0),"official_listing_terminalized":obj.get("official_listing_terminalized_count",0),"c417_rallies_primary_pass_veto_count":obj.get("c417_rallies_primary_pass_veto_count",0),"pass_count":obj["pass_count"],"pass_hash":obj["pass_hash"],"byte_stable_preserved":byte_stable_preserved},sort_keys=True))
 if __name__=="__main__":main()
