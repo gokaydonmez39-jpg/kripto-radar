@@ -63,11 +63,85 @@ jobs:
           })
           PY
 
+      - name: Diagnose exact C4.17 signal funnel and non-alpha gates
+        shell: bash
+        run: |
+          python - <<'PY'
+          import hashlib, json, os, pathlib
+          from collections import Counter
+          root=pathlib.Path('nasdaq-xray')
+          def load(rel):
+              raw=(root/rel).read_bytes()
+              return json.loads(raw),hashlib.sha1(f'blob {len(raw)}\0'.encode()+raw).hexdigest()
+          final,fh=load('canonical_current_final_tech.json')
+          terminal,th=load('canonical_current_terminal.json')
+          price,ph=load('canonical_current_price_dv30.json')
+          master,mh=load('canonical_current_master_manifest.json')
+          deep,dh=load('canonical_current_deep_full.json')
+          pointer,ptrh=load('chatgpt_canonical_state_v2.json')
+          ev=terminal.get('evidence') or {}
+          for key,sha in [('final',fh),('price',ph),('master',mh),('deep',dh)]:
+              assert (ev.get(key) or {}).get('blob_sha')==sha,('EXACT_TERMINAL_BINDING_DRIFT',key)
+          assert final.get('source_deep_blob_sha')==dh,'FINAL_DEEP_BINDING_DRIFT'
+          mc_rel=(ev.get('mc') or {}).get('path')
+          assert isinstance(mc_rel,str) and mc_rel.startswith('nasdaq-xray/canonical_mc_bridge_')
+          mc,mch=load(mc_rel.removeprefix('nasdaq-xray/'))
+          assert mch==ev['mc']['blob_sha'] and mc['input_blob_sha']==ph,'MC_PRICE_BINDING_DRIFT'
+          assert all(x.get('asof_et')==terminal['asof_et'] for x in (final,price,master,deep,mc))
+          assert all(x.get('execution')=='NONE' and x.get('real_money')=='NO-GO' for x in (final,price,master,deep,mc,terminal))
+          rows=list((final.get('results') or {}).values())
+          assert len(rows)==final['fresh_current_candidate_count']
+          assert final['pre_g9_tech_pass_count']==sum(r.get('pre_g9_tech_pass') is True for r in rows)
+          assert terminal['counts']['pre_g9_tech_pass']==final['pre_g9_tech_pass_count']
+          assert len(price['pass_symbols'])==price['pass_count']
+          assert int(mc['counts']['TOTAL'])==int(price['pass_count'])
+          risk_fail=sum(float(r['geometry']['risk_percent'])>0.08 for r in rows)
+          rr_pass=sum(bool(r['rr']['basic_pass'] and r['rr']['severe_pass']) for r in rows)
+          for r in rows:
+              if float(r['geometry']['risk_percent'])>0.08:
+                  assert not r.get('pre_g9_tech_pass') and not r.get('technical_hard_pass'),'RISK_FAIL_PROMOTED'
+          report={
+            'schema':'XRAY_C417_CURRENT_FUNNEL_DIAGNOSTIC_V1',
+            'alpha_authority':False, 'execution':'NONE', 'real_money':'NO-GO',
+            'asof_et':terminal['asof_et'], 'terminal_result':terminal['terminal_result'],
+            'full_end_to_end_research_pass':terminal['full_end_to_end_research_pass'],
+            'counts':{
+              'master_total':master['raw_identity_total'],'master_pass':master['pass_count'],
+              'master_unknown':master['unknown_count'],'price_pass':price['pass_count'],
+              'price_blocked':price['blocked_count'],'price_unknown':price['unknown_count'],
+              'mc_primary_pass':mc['counts']['MC_PASS_PRIMARY'],
+              'mc_fallback_watch':mc['counts']['MC_PASS_FALLBACK_WATCH'],
+              'mc_unknown':mc['counts']['MC_UNKNOWN'],
+              'family_A_geometry':deep['a_geometry_count'],
+              'family_B_armed':deep['b_armed_count'],
+              'family_B_breakout':deep['b_breakout_count'],
+              'family_D_confirmed':deep['d_dk3_pre_r1_count'],
+              'final':len(rows),'pre_g9_pass':final['pre_g9_tech_pass_count'],
+              'risk_gt8':risk_fail,'rr_both_pass':rr_pass,
+              'mc_watch_cap':sum(r.get('state_cap')=='WATCH' for r in rows),
+              'r92_eligible':sum(r.get('r92_eligible') is True for r in rows),
+              'entry_ready':sum(r.get('lifecycle') in ('ENTRY_BAND','RETEST_ENTRY_BAND') for r in rows),
+              'event_clean':sum(r.get('event_status')=='CLEAN_DISCOVERY' for r in rows)},
+            'lifecycle_counts':dict(sorted(Counter(r.get('lifecycle') for r in rows).items())),
+            'pointer_revision':pointer['revision'],
+            'pointer_exact_terminal':((pointer.get('state_json') or {}).get('deep_final_evidence') or {}).get('terminal_blob_sha')==th,
+            'blobs':{'terminal':th,'final':fh,'price':ph,'mc':mch,'master':mh,'deep':dh,'pointer':ptrh},
+            'go_authority':False,
+          }
+          out=pathlib.Path(os.environ['RUNNER_TEMP'])/'signal_funnel_root_cause.json'
+          out.write_text(json.dumps(report,sort_keys=True,indent=2)+'\n')
+          assert json.loads(out.read_text())==report,'ARTIFACT_ROUNDTRIP_FAIL'
+          print('XRAY_SIGNAL_FUNNEL_EXACT_AUDIT=PASS',json.dumps(report['counts'],sort_keys=True))
+          print('XRAY_POINTER_EXACT_TERMINAL='+str(report['pointer_exact_terminal']))
+          PY
+
       - name: Upload independent audit evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: xray-final-risk-rr-independent-audit
-          path: ${{ runner.temp }}/final_risk_rr_independent_audit.json
+          path: |
+            ${{ runner.temp }}/final_risk_rr_independent_audit.json
+            ${{ runner.temp }}/signal_funnel_root_cause.json
           if-no-files-found: warn
           retention-days: 14
