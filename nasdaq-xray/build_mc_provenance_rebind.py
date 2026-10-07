@@ -132,6 +132,23 @@ def current_settlement_witness(request: dict, master: dict, price: dict,
 
 
 
+class UpstreamPending(RuntimeError):
+    """Expected fail-closed wait state; never evidence for PASS."""
+
+
+def require_single_handoff(rows: list[dict], exact_rows: list[dict] | None = None) -> dict:
+    selected = exact_rows if exact_rows else rows
+    if not selected:
+        raise UpstreamPending("FULL_SCOPE_RESOLVER_HANDOFF_PENDING")
+    if len(selected) != 1:
+        raise AssertionError((
+            "AMBIGUOUS_FULL_SCOPE_RESOLVER_HANDOFF",
+            [r.get("path") for r in selected],
+            [r.get("path") for r in rows],
+        ))
+    return selected[0]
+
+
 def full_scope_price_pending_reason(price: dict) -> str | None:
     """Return a fail-closed pending reason while current PRICE/DV30 is unresolved."""
     unknown = int(price.get("unknown_count", len(price.get("unknown_symbols") or [])))
@@ -151,6 +168,20 @@ def selftest() -> None:
         assert str(e) == "PRICE_UNKNOWN_COUNT_MISMATCH"
     else:
         raise AssertionError("MISMATCH_MUST_FAIL_CLOSED")
+    try:
+        require_single_handoff([])
+    except UpstreamPending as e:
+        assert str(e) == "FULL_SCOPE_RESOLVER_HANDOFF_PENDING"
+    else:
+        raise AssertionError("EMPTY_HANDOFF_MUST_WAIT_FAIL_CLOSED")
+    one = {"path": "one"}
+    assert require_single_handoff([one]) is one
+    try:
+        require_single_handoff([{"path": "a"}, {"path": "b"}])
+    except AssertionError as e:
+        assert e.args and e.args[0][0] == "AMBIGUOUS_FULL_SCOPE_RESOLVER_HANDOFF"
+    else:
+        raise AssertionError("AMBIGUOUS_HANDOFF_MUST_FAIL")
     print("MC_PROVENANCE_REBIND_PENDING_SELFTEST=PASS")
 
 
@@ -242,7 +273,8 @@ def current_full_scope_resolver_handoff(master: dict, price: dict, request: dict
         except Exception:
             continue
 
-    assert rows, "MISSING_FULL_SCOPE_RESOLVER_HANDOFF"
+    if not rows:
+        raise UpstreamPending("FULL_SCOPE_RESOLVER_HANDOFF_PENDING")
 
     by_path = {r["path"]: r for r in rows}
     valid = []
@@ -266,13 +298,8 @@ def current_full_scope_resolver_handoff(master: dict, price: dict, request: dict
 
     active = [r for r in valid if r["path"] not in superseded]
     exact_active = [r for r in active if r["exact"]]
-    selected = exact_active if exact_active else active
-    assert len(selected) == 1, (
-        "AMBIGUOUS_FULL_SCOPE_RESOLVER_HANDOFF",
-        [r["path"] for r in selected],
-        [r["path"] for r in active],
-    )
-    return selected[0]["path"], selected[0]["blob"]
+    chosen = require_single_handoff(active, exact_active)
+    return chosen["path"], chosen["blob"]
 
 
 def mc_provenance_exact(mc: dict, current_price_blob: str,
@@ -484,7 +511,14 @@ def main() -> None:
         print("unknown_symbols=" + ",".join(sorted(price.get("unknown_symbols") or [])))
         print("reason=UPSTREAM_PRICE_DV30_UNKNOWN_FAIL_CLOSED")
         return
-    handoff_path, handoff_blob = current_full_scope_resolver_handoff(master, price, request)
+    try:
+        handoff_path, handoff_blob = current_full_scope_resolver_handoff(master, price, request)
+    except UpstreamPending as e:
+        print("ready=false")
+        print("created=false")
+        print("pending_reason=" + str(e))
+        print("reason=UPSTREAM_RESOLVER_HANDOFF_PENDING_FAIL_CLOSED")
+        return
     settlement_path, settlement_blob = current_settlement_witness(
         request, master, price, handoff_path, handoff_blob
     )
