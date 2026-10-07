@@ -9,16 +9,16 @@
         "coverage_status": "PARTIAL_UNKNOWN",
         "identity_authority_v6": true,
         "partition_integrity": true,
-        "pass_count": 3159,
-        "raw_identity_total": 3245,
-        "unknown_count": 86
+        "pass_count": 3185,
+        "raw_identity_total": 3380,
+        "unknown_count": 195
       },
       "name": "master_identity",
       "state": "PASS"
     },
     {
       "detail": {
-        "pass_count": 508,
+        "pass_count": 510,
         "schema": "XRAY_CANONICAL_PRICE_DV30_V1",
         "unknown_count": 0
       },
@@ -68,7 +68,7 @@
     }
   ],
   "execution": "NONE",
-  "generated_at_utc": "2026-10-07T18:50:24.766599+00:00",
+  "generated_at_utc": "2026-10-07T21:50:13.201296+00:00",
   "real_money": "NO-GO",
   "schema": "XRAY_GUARDIAN_STATE_V1",
   "self_healing_may_not_change_alpha": true,

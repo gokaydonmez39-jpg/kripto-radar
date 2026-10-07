@@ -85,7 +85,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-10-07T21:49:17.774774+00:00",
+  "generated_at_utc": "2026-10-07T21:49:50.616076+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -97,180 +97,9 @@
     "security_status": {
       "historical_event_rows_considered": 94,
       "query_end": "2026-10-07",
-      "query_start": "2026-10-06",
-      "row_count": 44,
+      "query_start": "2026-10-07",
+      "row_count": 25,
       "rows": [
-        {
-          "CompanyName": "Blaize Holdings, Inc. Common Stock",
-          "DowngradeReason": "",
-          "EffectiveDate": "2026-10-06",
-          "IssueEvent": "Financial Status Changes",
-          "NewFinancialStatus": "D-Deficient",
-          "OldFinancialStatus": "N-Normal",
-          "Symbol": "BZAI"
-        },
-        {
-          "CompanyName": "CBAK Energy Technology Limited Ordinary Shares",
-          "DowngradeReason": "",
-          "EffectiveDate": "2026-10-06",
-          "IssueEvent": "Financial Status Changes",
-          "NewFinancialStatus": "N-Normal",
-          "OldFinancialStatus": "D-Deficient",
-          "Symbol": "CBAT"
-        },
-        {
-          "CompanyName": "Qwest Corporation 6.500% Senior Notes due 2051",
-          "DowngradeReason": "",
-          "EffectiveDate": "2026-10-06",
-          "IssueEvent": "Anticipated Security Additions",
-          "NewFinancialStatus": "",
-          "OldFinancialStatus": "",
-          "Symbol": "CTGG"
-        },
-        {
-          "CompanyName": "Qwest Corporation 6.500% Senior Notes due 2051",
-          "DowngradeReason": "",
-          "EffectiveDate": "2026-10-06",
-          "IssueEvent": "Security Additions",
-          "NewFinancialStatus": "",
-          "OldFinancialStatus": "",
-          "Symbol": "CTGG"
-        },
-        {
-          "CompanyName": "Qwest Corporation 6.750% Senior Notes due 2052",
-          "DowngradeReason": "",
-          "EffectiveDate": "2026-10-06",
-          "IssueEvent": "Anticipated Security Additions",
-          "NewFinancialStatus": "",
-          "OldFinancialStatus": "",
-          "Symbol": "CTHH"
-        },
-        {
-          "CompanyName": "Qwest Corporation 6.750% Senior Notes due 2052",
-          "DowngradeReason": "",
-          "EffectiveDate": "2026-10-06",
-          "IssueEvent": "Security Additions",
-          "NewFinancialStatus": "",
-          "OldFinancialStatus": "",
-          "Symbol": "CTHH"
-        },
-        {
-          "CompanyName": "E-Power Inc. Class A Ordinary Shares",
-          "DowngradeReason": "",
-          "EffectiveDate": "2026-10-06",
-          "IssueEvent": "Financial Status Changes",
-          "NewFinancialStatus": "N-Normal",
-          "OldFinancialStatus": "D-Deficient",
-          "Symbol": "EPOW"
-        },
-        {
-          "CompanyName": "iShares Ethereum Trust ETF Shares",
-          "DowngradeReason": "",
-          "EffectiveDate": "2026-10-06",
-          "IssueEvent": "Name/Symbol Changes",
-          "NewFinancialStatus": "",
-          "OldFinancialStatus": "",
-          "Symbol": "ETHA"
-        },
-        {
-          "CompanyName": "Gaxos.ai Inc. Common Stock",
-          "DowngradeReason": "",
-          "EffectiveDate": "2026-10-06",
-          "IssueEvent": "Financial Status Changes",
-          "NewFinancialStatus": "D-Deficient",
-          "OldFinancialStatus": "N-Normal",
-          "Symbol": "GXAI"
-        },
-        {
-          "CompanyName": "iTonic Holdings Ltd Class A Ordinary Shares",
-          "DowngradeReason": "",
-          "EffectiveDate": "2026-10-06",
-          "IssueEvent": "Name/Symbol Changes",
-          "NewFinancialStatus": "",
-          "OldFinancialStatus": "",
-          "Symbol": "ITOC"
-        },
-        {
-          "CompanyName": "Leslie's, Inc. Common Stock",
-          "DowngradeReason": "",
-          "EffectiveDate": "2026-10-06",
-          "IssueEvent": "Issue Suspensions",
-          "NewFinancialStatus": "",
-          "OldFinancialStatus": "",
-          "Symbol": "LESL"
-        },
-        {
-          "CompanyName": "Lumen Technologies, Inc. Common Stock",
-          "DowngradeReason": "",
-          "EffectiveDate": "2026-10-06",
-          "IssueEvent": "Anticipated Security Additions",
-          "NewFinancialStatus": "",
-          "OldFinancialStatus": "",
-          "Symbol": "LUMN"
-        },
-        {
-          "CompanyName": "Lumen Technologies, Inc. Common Stock",
-          "DowngradeReason": "",
-          "EffectiveDate": "2026-10-06",
-          "IssueEvent": "Security Additions",
-          "NewFinancialStatus": "",
-          "OldFinancialStatus": "",
-          "Symbol": "LUMN"
-        },
-        {
-          "CompanyName": "National Healthcare Properties, Inc. 7.125% Series B Cumulative Redeemable Perpetual Preferred Stock",
-          "DowngradeReason": "",
-          "EffectiveDate": "2026-10-06",
-          "IssueEvent": "Issue Suspensions",
-          "NewFinancialStatus": "",
-          "OldFinancialStatus": "",
-          "Symbol": "NHPBP"
-        },
-        {
-          "CompanyName": "NANO-X IMAGING LTD Ordinary Shares",
-          "DowngradeReason": "",
-          "EffectiveDate": "2026-10-06",
-          "IssueEvent": "Financial Status Changes",
-          "NewFinancialStatus": "D-Deficient",
-          "OldFinancialStatus": "N-Normal",
-          "Symbol": "NNOX"
-        },
-        {
-          "CompanyName": "Pine Tree Acquisition Corp. Units",
-          "DowngradeReason": "",
-          "EffectiveDate": "2026-10-06",
-          "IssueEvent": "Anticipated Security Additions",
-          "NewFinancialStatus": "",
-          "OldFinancialStatus": "",
-          "Symbol": "PAXGU"
-        },
-        {
-          "CompanyName": "Pine Tree Acquisition Corp. Units",
-          "DowngradeReason": "",
-          "EffectiveDate": "2026-10-06",
-          "IssueEvent": "Security Additions",
-          "NewFinancialStatus": "",
-          "OldFinancialStatus": "",
-          "Symbol": "PAXGU"
-        },
-        {
-          "CompanyName": "Paramount Skydance Corporation Class B Common Stock",
-          "DowngradeReason": "",
-          "EffectiveDate": "2026-10-06",
-          "IssueEvent": "Issue Suspensions",
-          "NewFinancialStatus": "",
-          "OldFinancialStatus": "",
-          "Symbol": "PSKY"
-        },
-        {
-          "CompanyName": "Qorvo, Inc. Common Stock",
-          "DowngradeReason": "",
-          "EffectiveDate": "2026-10-06",
-          "IssueEvent": "Issue Suspensions",
-          "NewFinancialStatus": "",
-          "OldFinancialStatus": "",
-          "Symbol": "QRVO"
-        },
         {
           "CompanyName": "ATA Creativity Global American Depositary Shares",
           "DowngradeReason": "",
@@ -648,7 +477,7 @@
         "WBD"
       ],
       "symbol_change_mapping_rule": "UNKNOWN_UNLESS_CORROBORATED",
-      "url": "https://www.nasdaqtrader.com/Trader.aspx?id=nasdaq-security-status-updates&from=10/06/2026&to=10/07/2026"
+      "url": "https://www.nasdaqtrader.com/Trader.aspx?id=nasdaq-security-status-updates&from=10/07/2026&to=10/07/2026"
     },
     "system_status_ipo": {
       "item_count": 0,

@@ -1,51 +1,44 @@
 {
   "absence_never_clean": true,
   "alpha_authority": false,
-  "asof_et": "2026-10-06",
+  "asof_et": "2026-10-07",
   "authority": "SEC_PRIMARY_WITNESS_OPTIONAL",
   "execution": "NONE",
-  "generated_at_utc": "2026-10-07T18:50:04.027720+00:00",
+  "generated_at_utc": "2026-10-07T21:49:52.583330+00:00",
   "geometry_scope": [
     "ABCL",
-    "AMD",
-    "CRWD",
-    "DOCU",
+    "ARM",
     "DUOL",
-    "EXLS",
-    "FIVN",
     "FSLY",
-    "FTNT",
     "IBRX",
     "IOVA",
-    "LITE",
     "MANH",
     "META",
     "MRNA",
     "MRVL",
     "MU",
     "MXL",
-    "OKTA",
     "OLLI",
-    "PANW",
     "PI",
     "PLTR",
     "QCOM",
     "QLYS",
     "RGEN",
-    "SAIL",
     "SIMO",
+    "SMCI",
     "SWKS",
-    "TGTX",
+    "TEM",
     "TRMD",
+    "TWST",
+    "TXG",
     "ULTA",
     "VICR",
     "VRNS",
     "WIX",
-    "XP",
-    "ZS"
+    "XP"
   ],
-  "geometry_scope_count": 37,
-  "geometry_scope_hash": "6e75b8c1518326a07f6e391e4d211cfbc8132438812305c1516bf3161fdaeb21",
+  "geometry_scope_count": 30,
+  "geometry_scope_hash": "85c7da425f7f3eaf92044540e80bfc0f837536e84a50fb7808a3aa5f3392473f",
   "real_money": "NO-GO",
   "results": {
     "ABCL": {
@@ -59,29 +52,7 @@
         "status": "BLOCKED_BOUNDED_PROBE"
       }
     },
-    "AMD": {
-      "filings": [],
-      "identity_status": "UNKNOWN",
-      "reason": "SEC_TRANSPORT_BLOCKED_BOUNDED_PROBE",
-      "transport": {
-        "efts_probe_error": "HTTPError:HTTP_403",
-        "efts_probe_symbol": "ABCL",
-        "map_error": "HTTPError:HTTP_403",
-        "status": "BLOCKED_BOUNDED_PROBE"
-      }
-    },
-    "CRWD": {
-      "filings": [],
-      "identity_status": "UNKNOWN",
-      "reason": "SEC_TRANSPORT_BLOCKED_BOUNDED_PROBE",
-      "transport": {
-        "efts_probe_error": "HTTPError:HTTP_403",
-        "efts_probe_symbol": "ABCL",
-        "map_error": "HTTPError:HTTP_403",
-        "status": "BLOCKED_BOUNDED_PROBE"
-      }
-    },
-    "DOCU": {
+    "ARM": {
       "filings": [],
       "identity_status": "UNKNOWN",
       "reason": "SEC_TRANSPORT_BLOCKED_BOUNDED_PROBE",
@@ -103,40 +74,7 @@
         "status": "BLOCKED_BOUNDED_PROBE"
       }
     },
-    "EXLS": {
-      "filings": [],
-      "identity_status": "UNKNOWN",
-      "reason": "SEC_TRANSPORT_BLOCKED_BOUNDED_PROBE",
-      "transport": {
-        "efts_probe_error": "HTTPError:HTTP_403",
-        "efts_probe_symbol": "ABCL",
-        "map_error": "HTTPError:HTTP_403",
-        "status": "BLOCKED_BOUNDED_PROBE"
-      }
-    },
-    "FIVN": {
-      "filings": [],
-      "identity_status": "UNKNOWN",
-      "reason": "SEC_TRANSPORT_BLOCKED_BOUNDED_PROBE",
-      "transport": {
-        "efts_probe_error": "HTTPError:HTTP_403",
-        "efts_probe_symbol": "ABCL",
-        "map_error": "HTTPError:HTTP_403",
-        "status": "BLOCKED_BOUNDED_PROBE"
-      }
-    },
     "FSLY": {
-      "filings": [],
-      "identity_status": "UNKNOWN",
-      "reason": "SEC_TRANSPORT_BLOCKED_BOUNDED_PROBE",
-      "transport": {
-        "efts_probe_error": "HTTPError:HTTP_403",
-        "efts_probe_symbol": "ABCL",
-        "map_error": "HTTPError:HTTP_403",
-        "status": "BLOCKED_BOUNDED_PROBE"
-      }
-    },
-    "FTNT": {
       "filings": [],
       "identity_status": "UNKNOWN",
       "reason": "SEC_TRANSPORT_BLOCKED_BOUNDED_PROBE",
@@ -159,17 +97,6 @@
       }
     },
     "IOVA": {
-      "filings": [],
-      "identity_status": "UNKNOWN",
-      "reason": "SEC_TRANSPORT_BLOCKED_BOUNDED_PROBE",
-      "transport": {
-        "efts_probe_error": "HTTPError:HTTP_403",
-        "efts_probe_symbol": "ABCL",
-        "map_error": "HTTPError:HTTP_403",
-        "status": "BLOCKED_BOUNDED_PROBE"
-      }
-    },
-    "LITE": {
       "filings": [],
       "identity_status": "UNKNOWN",
       "reason": "SEC_TRANSPORT_BLOCKED_BOUNDED_PROBE",
@@ -246,29 +173,7 @@
         "status": "BLOCKED_BOUNDED_PROBE"
       }
     },
-    "OKTA": {
-      "filings": [],
-      "identity_status": "UNKNOWN",
-      "reason": "SEC_TRANSPORT_BLOCKED_BOUNDED_PROBE",
-      "transport": {
-        "efts_probe_error": "HTTPError:HTTP_403",
-        "efts_probe_symbol": "ABCL",
-        "map_error": "HTTPError:HTTP_403",
-        "status": "BLOCKED_BOUNDED_PROBE"
-      }
-    },
     "OLLI": {
-      "filings": [],
-      "identity_status": "UNKNOWN",
-      "reason": "SEC_TRANSPORT_BLOCKED_BOUNDED_PROBE",
-      "transport": {
-        "efts_probe_error": "HTTPError:HTTP_403",
-        "efts_probe_symbol": "ABCL",
-        "map_error": "HTTPError:HTTP_403",
-        "status": "BLOCKED_BOUNDED_PROBE"
-      }
-    },
-    "PANW": {
       "filings": [],
       "identity_status": "UNKNOWN",
       "reason": "SEC_TRANSPORT_BLOCKED_BOUNDED_PROBE",
@@ -334,7 +239,7 @@
         "status": "BLOCKED_BOUNDED_PROBE"
       }
     },
-    "SAIL": {
+    "SIMO": {
       "filings": [],
       "identity_status": "UNKNOWN",
       "reason": "SEC_TRANSPORT_BLOCKED_BOUNDED_PROBE",
@@ -345,7 +250,7 @@
         "status": "BLOCKED_BOUNDED_PROBE"
       }
     },
-    "SIMO": {
+    "SMCI": {
       "filings": [],
       "identity_status": "UNKNOWN",
       "reason": "SEC_TRANSPORT_BLOCKED_BOUNDED_PROBE",
@@ -367,7 +272,7 @@
         "status": "BLOCKED_BOUNDED_PROBE"
       }
     },
-    "TGTX": {
+    "TEM": {
       "filings": [],
       "identity_status": "UNKNOWN",
       "reason": "SEC_TRANSPORT_BLOCKED_BOUNDED_PROBE",
@@ -379,6 +284,28 @@
       }
     },
     "TRMD": {
+      "filings": [],
+      "identity_status": "UNKNOWN",
+      "reason": "SEC_TRANSPORT_BLOCKED_BOUNDED_PROBE",
+      "transport": {
+        "efts_probe_error": "HTTPError:HTTP_403",
+        "efts_probe_symbol": "ABCL",
+        "map_error": "HTTPError:HTTP_403",
+        "status": "BLOCKED_BOUNDED_PROBE"
+      }
+    },
+    "TWST": {
+      "filings": [],
+      "identity_status": "UNKNOWN",
+      "reason": "SEC_TRANSPORT_BLOCKED_BOUNDED_PROBE",
+      "transport": {
+        "efts_probe_error": "HTTPError:HTTP_403",
+        "efts_probe_symbol": "ABCL",
+        "map_error": "HTTPError:HTTP_403",
+        "status": "BLOCKED_BOUNDED_PROBE"
+      }
+    },
+    "TXG": {
       "filings": [],
       "identity_status": "UNKNOWN",
       "reason": "SEC_TRANSPORT_BLOCKED_BOUNDED_PROBE",
@@ -443,17 +370,6 @@
         "map_error": "HTTPError:HTTP_403",
         "status": "BLOCKED_BOUNDED_PROBE"
       }
-    },
-    "ZS": {
-      "filings": [],
-      "identity_status": "UNKNOWN",
-      "reason": "SEC_TRANSPORT_BLOCKED_BOUNDED_PROBE",
-      "transport": {
-        "efts_probe_error": "HTTPError:HTTP_403",
-        "efts_probe_symbol": "ABCL",
-        "map_error": "HTTPError:HTTP_403",
-        "status": "BLOCKED_BOUNDED_PROBE"
-      }
     }
   },
   "schema": "XRAY_SEC_OFFICIAL_WITNESS_V1",
@@ -466,6 +382,6 @@
   },
   "status": "READY_WITH_UNKNOWNS",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 37,
-  "weekly_scope_hash": "8002f91dc4b5a4acf0368d7a5eb34055cbd184a9de6732e8aed429d8b9966ad8"
+  "unknown_count": 30,
+  "weekly_scope_hash": "723135234eab1edde100b32081d90a75143ce42cd22424af0cc2ac02c09e5f2c"
 }
