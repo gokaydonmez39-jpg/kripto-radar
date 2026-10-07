@@ -311,6 +311,42 @@ jobs:
           print("PRICE_RESOLVER_INCOMPLETE_SNAPSHOT_ROUTING=PASS")
           PY
 
+      - name: Assert resolver authority uniqueness is scoped by role
+        run: |
+          python - <<'PY'
+          import sys,tempfile
+          from pathlib import Path
+          sys.path.insert(0,"nasdaq-xray")
+          import build_current_resolver_request as r
+          td=Path(tempfile.mkdtemp())
+          residual=(td/"residual.json",{
+            "authority":"CANONICAL_RESOLVER_RESIDUAL",
+            "source_price_path":"nasdaq-xray/canonical_current_price_dv30.json",
+            "source_price_blob_sha":"old-price",
+            "source_request_path":"nasdaq-xray/canonical_current_resolver_request.json",
+            "source_request_blob_sha":"old-request",
+          })
+          handoff=(td/"handoff.json",{
+            "authority":"C417_DV30_FULL_SCOPE_MC_HANDOFF_V4",
+            "bridge_role":"FULL_SCOPE_MC_HANDOFF_PROVENANCE",
+            "source_price_path":"nasdaq-xray/canonical_current_price_dv30.json",
+            "source_price_blob_sha":"current-price",
+          })
+          got=r.select_current_policy_resolver_bridge([residual,handoff],"current-price","current-request")
+          assert got is residual,got
+          assert r._resolver_role(residual[1])=="CURRENT_RESIDUAL_REQUEST_AUTHORITY"
+          assert r._resolver_role(handoff[1])=="FULL_SCOPE_MC_HANDOFF_AUTHORITY"
+          try:
+              r.select_current_policy_resolver_bridge(
+                [residual,(td/"residual2.json",dict(residual[1],authority="OTHER_RESIDUAL"))],
+                "no-exact-price","no-exact-request")
+          except AssertionError as e:
+              assert "AMBIGUOUS_CURRENT_POLICY_RESIDUAL_BRIDGE" in str(e),e
+          else:
+              raise AssertionError("same-role duplicate must fail closed")
+          print("RESOLVER_ROLE_SCOPED_AUTHORITY=PASS")
+          PY
+
       - name: Assert no frozen 20260930 ASOF constants
         run: |
           python - <<'PY'
