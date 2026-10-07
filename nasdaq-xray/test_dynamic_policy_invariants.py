@@ -249,6 +249,11 @@ def main():
     pre_mc_src=(ROOT.parent/".github/workflows/xray-canonical-current-pre-mc.yml").read_text()
     assert 'IDENTITY_RULESET="V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER"' in sina_src,sina_src
     assert 'IDENTITY_PARTITION_POLICY="MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V3_FROZEN_GUARD"' in sina_src,sina_src
+    identity_proof_src=(ROOT/"build_current_identity_proofs.py").read_text()
+    assert 'IDENTITY_DISCOVERY_VERSION="SEC_CURRENT_SUSPECT_DISCOVERY_V2"' in identity_proof_src,identity_proof_src
+    assert 'def sec_ticker_cik_map()' in identity_proof_src and 'def sec_current_classification(' in identity_proof_src,identity_proof_src
+    assert 'SAME_RUN_SEC_CURRENT_NON_BLANK_CHECK_DISCOVERY' in identity_proof_src,identity_proof_src
+    assert 'asof_discovery_version!="SEC_CURRENT_SUSPECT_DISCOVERY_V2"' in pre_mc_src,pre_mc_src
     assert '"reason":"SPAC_BLANK_CHECK"' in sina_src and '"authority":"NASDAQ_SAME_ASOF_SCREENER_INDUSTRY"' in sina_src,sina_src
     assert '"reason":"SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED"' in sina_src,sina_src
     assert '"official_blank_checks_excluded_count"' in sina_src and '"official_blank_checks_excluded_hash"' in sina_src,sina_src
