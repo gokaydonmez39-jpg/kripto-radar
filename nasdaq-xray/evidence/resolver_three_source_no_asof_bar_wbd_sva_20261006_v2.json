@@ -1,0 +1,134 @@
+{
+  "schema": "XRAY_THREE_SOURCE_NO_ASOF_BAR_EVIDENCE_V2",
+  "task_id": "6a825366222081918997094d76e6ae46",
+  "asof_et": "2026-10-06",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "decision_direction": "FAIL_ONLY_NEVER_PASS",
+  "no_synthetic_bar": true,
+  "no_forward_fill": true,
+  "no_new_pass": true,
+  "policy_version": "C4.17",
+  "symbols": [
+    "SVA",
+    "WBD"
+  ],
+  "revalidation": {
+    "observed_on": "2026-10-07",
+    "predecessor_evidence_path": "nasdaq-xray/evidence/resolver_three_source_no_asof_bar_wbd_sva_20261006_v1.json",
+    "predecessor_evidence_blob_sha": "2a05148d1a32c96eac57370a7007b8105e4b599c",
+    "providers": {
+      "ALPACA_SIP": {
+        "tool": "Alpaca.get_stock_bars",
+        "request": {
+          "symbols": [
+            "SVA",
+            "WBD"
+          ],
+          "timeframe": "1Day",
+          "start": "2026-10-06T00:00:00-04:00",
+          "end": "2026-10-07T00:00:00-04:00",
+          "feed": "sip",
+          "sort": "asc",
+          "limit": 20,
+          "asof": "2026-10-06",
+          "tz": "America/New_York"
+        },
+        "result": {
+          "records": 0,
+          "per_symbol": {
+            "SVA": 0,
+            "WBD": 0
+          },
+          "bars": {
+            "SVA": [],
+            "WBD": []
+          }
+        }
+      },
+      "RALLIES": {
+        "tool": "Rallies.get_price_from_date_range",
+        "request": {
+          "start_date": "2026-10-06",
+          "end_date": "2026-10-06",
+          "interval": "day"
+        },
+        "per_symbol": {
+          "SVA": {
+            "error": "No price data found for ticker: SVA"
+          },
+          "WBD": {
+            "error": "No price data found for ticker: WBD"
+          }
+        }
+      },
+      "MASSIVE": {
+        "tool": "Massive.call_api",
+        "endpoint": "/v2/aggs/ticker/{ticker}/range/1/day/2026-10-06/2026-10-06",
+        "params": {
+          "adjusted": "true",
+          "sort": "asc",
+          "limit": 20
+        },
+        "per_symbol": {
+          "SVA": {
+            "records": 0,
+            "status": "EMPTY"
+          },
+          "WBD": {
+            "records": 0,
+            "status": "EMPTY"
+          }
+        }
+      }
+    }
+  },
+  "official_nasdaq_support": {
+    "source_guard_path": "nasdaq-xray/canonical_official_source_guard.json",
+    "source_guard_blob_sha": "2ab4fa4e0315dbc621b37e6032b9e0ad07e5595d",
+    "trade_halts_status": "PASS",
+    "SVA": {
+      "HaltDate": "02/22/2019",
+      "HaltTime": "16:02:01",
+      "IssueSymbol": "SVA",
+      "Market": "NASDAQ",
+      "ReasonCode": "T12",
+      "ResumptionDate": "",
+      "ResumptionTradeTime": ""
+    },
+    "WBD": {
+      "HaltDate": "10/05/2026",
+      "HaltTime": "19:50:00.000",
+      "IssueSymbol": "WBD",
+      "Market": "NASDAQ",
+      "ReasonCode": "D",
+      "ResumptionDate": "10/07/2026",
+      "ResumptionTradeTime": "00:00:01"
+    }
+  },
+  "classification": {
+    "SVA": {
+      "decision": "FAIL_PRICE_NO_ASOF_BAR",
+      "proof": "THREE_SOURCE_NO_ASOF_BAR",
+      "sources": [
+        "ALPACA_SIP",
+        "MASSIVE",
+        "RALLIES"
+      ]
+    },
+    "WBD": {
+      "decision": "FAIL_PRICE_NO_ASOF_BAR",
+      "proof": "THREE_SOURCE_NO_ASOF_BAR",
+      "sources": [
+        "ALPACA_SIP",
+        "MASSIVE",
+        "RALLIES"
+      ]
+    }
+  },
+  "notes": [
+    "All three independent market-data checks were re-run for the exact 2026-10-06 ASOF and returned no daily bar for both symbols.",
+    "Nasdaq halt evidence is support evidence; the terminal decision remains fail-only and cannot manufacture a PASS."
+  ]
+}
