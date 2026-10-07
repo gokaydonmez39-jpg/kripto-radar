@@ -52,6 +52,7 @@ DATE_PATTERNS = [
     re.compile(MONTH_RE + r"\.?\s+(\d{1,2})(?:st|nd|rd|th)?[,]?\s+(20\d{2})", re.I),
     re.compile(r"(20\d{2})[-/](\d{1,2})[-/](\d{1,2})"),
     re.compile(r"(?<!\d)(\d{1,2})[/-](\d{1,2})[/-](20\d{2})(?!\d)"),
+    re.compile(r"(?<!\d)(\d{1,2})(?:st|nd|rd|th)?\s+" + MONTH_RE + r"\.?[,]?\s+(20\d{2})(?!\d)", re.I),
 ]
 MONTH_DAY_NO_YEAR_RE = re.compile(
     MONTH_RE + r"\.?\s+(\d{1,2})(?:st|nd|rd|th)?(?!\d)(?!\s*[,]?\s*20\d{2})",
@@ -134,8 +135,11 @@ def date_spans_in_text(text: str) -> list[tuple[int, str]]:
                     d = date(int(m.group(3)), mon, int(m.group(2)))
                 elif pat_i == 1:
                     d = date(int(m.group(1)), int(m.group(2)), int(m.group(3)))
-                else:
+                elif pat_i == 2:
                     d = date(int(m.group(3)), int(m.group(1)), int(m.group(2)))
+                else:
+                    mon = MONTHS[m.group(2).lower().rstrip(".")[:3]]
+                    d = date(int(m.group(3)), mon, int(m.group(1)))
                 out[(m.start(), d.isoformat())] = None
             except Exception:
                 continue
@@ -257,8 +261,8 @@ def announced_event_date(title: str, body: str, asof: str) -> tuple[str | None, 
     return None, None
 
 KNOWN_CALENDAR_NON_EVENT_RE = re.compile(
-    r"(?:fiscal|financial)?\\s*(?:year|quarter|period)\\s+(?:ended|ending|end)|"
-    r"record\\s+date|payable|dividend|ex[- ]dividend|quarter\\s+ended",
+    r"(?:fiscal|financial)?\s*(?:year|quarter|period)\s+(?:ended|ending|end)|"
+    r"record\s+date|payable|dividend|ex[- ]dividend|quarter\s+ended",
     re.I,
 )
 
