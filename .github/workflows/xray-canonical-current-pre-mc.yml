@@ -514,9 +514,66 @@ jobs:
       - name: Build current master manifest
         if: steps.rollover.outputs.build == 'true'
         run: python nasdaq-xray/build_current_master_manifest.py
+      - name: Gate downstream PRICE/resolver work on exact identity manifest
+        id: identity_gate
+        if: steps.rollover.outputs.build == 'true' || steps.rollover.outputs.policy_replay == 'true' || steps.rollover.outputs.coverage_repair == 'true' || steps.rollover.outputs.resolver_refresh == 'true' || steps.rollover.outputs.bridge_refresh == 'true' || steps.rollover.outputs.publication_replay == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,os
+
+          def ready(m):
+              try:
+                  unknown=int(m.get("unknown_count",-1))
+                  queue_total=int(m.get("queue_total",-1))
+                  pass_count=int(m.get("pass_count",-1))
+                  raw_total=int(m.get("raw_identity_total",-1))
+                  status=m.get("status")
+                  passes=list(m.get("pass_symbols") or [])
+                  unknowns=list(m.get("unknown_symbols") or [])
+                  return bool(
+                      m.get("phase")=="MASTER_IDENTITY"
+                      and status in {"HISTORY_COMPLETE","PARTIAL_UNKNOWN"}
+                      and ((status=="HISTORY_COMPLETE") == (unknown==0))
+                      and queue_total>0
+                      and pass_count==queue_total
+                      and raw_total==queue_total+unknown
+                      and len(passes)==len(set(passes))==queue_total
+                      and len(unknowns)==len(set(unknowns))==unknown
+                      and not (set(passes)&set(unknowns))
+                  )
+              except Exception:
+                  return False
+
+          good={
+            "phase":"MASTER_IDENTITY","status":"PARTIAL_UNKNOWN",
+            "queue_total":2,"pass_count":2,"raw_identity_total":3,
+            "unknown_count":1,"pass_symbols":["AAA","BBB"],"unknown_symbols":["CCC"],
+          }
+          bad=dict(good); bad["status"]="PARTIAL"; bad["pass_count"]=0
+          assert ready(good) is True
+          assert ready(bad) is False
+
+          m=json.load(open("nasdaq-xray/canonical_current_master_manifest.json"))
+          ok=ready(m)
+          with open(os.environ["GITHUB_OUTPUT"],"a") as out:
+              out.write(f"ready={'true' if ok else 'false'}\n")
+              out.write(f"status={m.get('status')}\n")
+              out.write(f"queue_total={m.get('queue_total')}\n")
+              out.write(f"unknown_count={m.get('unknown_count')}\n")
+          print({
+            "XRAY_IDENTITY_TO_PRICE_GATE":"READY" if ok else "PENDING_FAIL_CLOSED",
+            "status":m.get("status"),
+            "status_semantics":m.get("status_semantics"),
+            "queue_total":m.get("queue_total"),
+            "identity_pass":m.get("pass_count"),
+            "identity_unknown":m.get("unknown_count"),
+          })
+          PY
       - name: Select exact same-policy PRICE baseline after identity replay
         id: price_baseline
-        if: steps.rollover.outputs.build == 'true' || steps.rollover.outputs.policy_replay == 'true' || steps.rollover.outputs.coverage_repair == 'true' || steps.rollover.outputs.bridge_refresh == 'true' || steps.rollover.outputs.publication_replay == 'true'
+        if: steps.identity_gate.outputs.ready == 'true' && (steps.rollover.outputs.build == 'true' || steps.rollover.outputs.policy_replay == 'true' || steps.rollover.outputs.coverage_repair == 'true' || steps.rollover.outputs.bridge_refresh == 'true' || steps.rollover.outputs.publication_replay == 'true')
         shell: bash
         run: |
           set -euo pipefail
@@ -551,7 +608,7 @@ jobs:
           })
           PY
       - name: Refresh official Nasdaq halt guard before PRICE
-        if: steps.rollover.outputs.build == 'true' || steps.rollover.outputs.policy_replay == 'true' || steps.rollover.outputs.coverage_repair == 'true' || steps.rollover.outputs.bridge_refresh == 'true' || steps.rollover.outputs.publication_replay == 'true'
+        if: steps.identity_gate.outputs.ready == 'true' && (steps.rollover.outputs.build == 'true' || steps.rollover.outputs.policy_replay == 'true' || steps.rollover.outputs.coverage_repair == 'true' || steps.rollover.outputs.bridge_refresh == 'true' || steps.rollover.outputs.publication_replay == 'true')
         run: |
           python nasdaq-xray/official_source_guard.py
           python - <<'PY'
@@ -563,14 +620,14 @@ jobs:
           print({"XRAY_PRICE_OFFICIAL_HALT_GUARD":"PASS","items":th.get("item_count")})
           PY
       - name: Build policy-ordered PRICE-DV30
-        if: steps.rollover.outputs.build == 'true' || steps.rollover.outputs.policy_replay == 'true' || steps.rollover.outputs.coverage_repair == 'true' || steps.rollover.outputs.bridge_refresh == 'true' || steps.rollover.outputs.publication_replay == 'true'
+        if: steps.identity_gate.outputs.ready == 'true' && (steps.rollover.outputs.build == 'true' || steps.rollover.outputs.policy_replay == 'true' || steps.rollover.outputs.coverage_repair == 'true' || steps.rollover.outputs.bridge_refresh == 'true' || steps.rollover.outputs.publication_replay == 'true')
         env:
           XRAY_PRICE_FORCE_POLICY_REPLAY: ${{ steps.rollover.outputs.policy_replay == 'true' && '1' || '0' }}
           XRAY_PRICE_USE_CURRENT_BASELINE: ${{ steps.price_baseline.outputs.reuse == 'true' && '1' || '0' }}
           XRAY_PRICE_FORCE_LOCAL_REEVALUATION: ${{ steps.rollover.outputs.publication_replay == 'true' && '1' || '0' }}
         run: python nasdaq-xray/price_dv30_recover_from_fullstate.py
       - name: Validate official recent-listing fail-only replay
-        if: steps.rollover.outputs.official_listing_fail_only_replay == 'true'
+        if: steps.identity_gate.outputs.ready == 'true' && (steps.rollover.outputs.official_listing_fail_only_replay == 'true')
         env:
           XRAY_OFFICIAL_LISTING_FAIL_ONLY_SYMBOLS: ${{ steps.rollover.outputs.official_listing_fail_only_symbols_csv }}
         run: |
@@ -604,10 +661,10 @@ jobs:
           })
           PY
       - name: Build resolver bridge request
-        if: steps.rollover.outputs.build == 'true' || steps.rollover.outputs.policy_replay == 'true' || steps.rollover.outputs.coverage_repair == 'true' || steps.rollover.outputs.resolver_refresh == 'true' || steps.rollover.outputs.bridge_refresh == 'true' || steps.rollover.outputs.publication_replay == 'true'
+        if: steps.identity_gate.outputs.ready == 'true' && (steps.rollover.outputs.build == 'true' || steps.rollover.outputs.policy_replay == 'true' || steps.rollover.outputs.coverage_repair == 'true' || steps.rollover.outputs.resolver_refresh == 'true' || steps.rollover.outputs.bridge_refresh == 'true' || steps.rollover.outputs.publication_replay == 'true')
         run: python nasdaq-xray/build_current_resolver_request.py
       - name: Structural gate
-        if: steps.rollover.outputs.build == 'true' || steps.rollover.outputs.policy_replay == 'true' || steps.rollover.outputs.coverage_repair == 'true' || steps.rollover.outputs.resolver_refresh == 'true' || steps.rollover.outputs.bridge_refresh == 'true' || steps.rollover.outputs.publication_replay == 'true'
+        if: steps.identity_gate.outputs.ready == 'true' && (steps.rollover.outputs.build == 'true' || steps.rollover.outputs.policy_replay == 'true' || steps.rollover.outputs.coverage_repair == 'true' || steps.rollover.outputs.resolver_refresh == 'true' || steps.rollover.outputs.bridge_refresh == 'true' || steps.rollover.outputs.publication_replay == 'true')
         run: |
           python - <<'PY'
           import json
@@ -672,6 +729,7 @@ jobs:
           PY
       - name: Build exact current full-scope resolver handoff
         id: full_scope
+        if: steps.identity_gate.outputs.ready == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -712,7 +770,7 @@ jobs:
           done < /tmp/xray_full_scope_out
 
       - name: Commit current pre-MC artifacts
-        if: steps.rollover.outputs.build == 'true' || steps.rollover.outputs.policy_replay == 'true' || steps.rollover.outputs.coverage_repair == 'true' || steps.rollover.outputs.resolver_refresh == 'true' || steps.rollover.outputs.bridge_refresh == 'true' || steps.rollover.outputs.publication_replay == 'true' || steps.full_scope.outputs.created == 'true'
+        if: steps.identity_gate.outputs.ready == 'true' && (steps.rollover.outputs.build == 'true' || steps.rollover.outputs.policy_replay == 'true' || steps.rollover.outputs.coverage_repair == 'true' || steps.rollover.outputs.resolver_refresh == 'true' || steps.rollover.outputs.bridge_refresh == 'true' || steps.rollover.outputs.publication_replay == 'true' || steps.full_scope.outputs.created == 'true')
         shell: bash
         run: |
           set -euo pipefail
