@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import hashlib,json,os,re
+import hashlib,json,os,re,sys
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parent
@@ -26,6 +26,37 @@ def blob_sha(p):
 
 def hash_lines(xs):
     return hashlib.sha256("\n".join(xs).encode()).hexdigest()
+
+MANUAL_IDENTITY_SEED=ROOT/"master_sec_identity_manual_seed_registry.json"
+PRIOR_SPAC_REVALIDATION="PRIOR_SEC_SIC6770_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS"
+MANUAL_SPAC_REVALIDATION="MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS"
+
+def manual_blank_seed_binding_exact(sym,row):
+    """Bind producer-emitted manual SEC blank-check evidence to the committed registry."""
+    try:
+        rel=str(MANUAL_IDENTITY_SEED.relative_to(ROOT.parent)).replace("\\","/")
+        if row.get("manual_seed_registry_path")!=rel:
+            return False
+        if row.get("manual_seed_registry_blob_sha")!=blob_sha(MANUAL_IDENTITY_SEED):
+            return False
+        reg=json.loads(MANUAL_IDENTITY_SEED.read_text())
+        if not (
+          reg.get("schema")=="XRAY_MASTER_SEC_IDENTITY_MANUAL_SEED_REGISTRY_V1"
+          and reg.get("execution")=="NONE" and reg.get("real_money")=="NO-GO"
+          and reg.get("unknown_never_pass") is True
+          and reg.get("authority")=="OFFICIAL_SEC_EVIDENCE_DISCOVERY_SEED_ONLY"
+        ):
+            return False
+        seed=(reg.get("records") or {}).get(sym) or {}
+        return bool(
+          seed.get("is_blank_check") is True
+          and int(seed.get("sic",-1))==6770
+          and str(seed.get("cik") or "")==str(row.get("cik") or "")
+          and seed.get("source_url")==row.get("source_url")
+          and seed.get("evidence_date")==row.get("evidence_date")
+        )
+    except Exception:
+        return False
 
 FOOTER_RE=re.compile(r"^File Creation Time:\s*(\d{2})(\d{2})(\d{4})")
 SPAC_SUSPECT_RE=re.compile(r"\bacquisition\b|\bspac\b|\bblank[ -]?check\b|\bcapital\s+corp(?:oration)?\.?\s+(?:[IVXLCDM]+|\d+)\s*-\s*class\s+a\s+ordinary\s+shares?\b",re.I)
@@ -60,11 +91,14 @@ def valid_sec_spac_proof_binding(dm,asof):
           and isinstance(proofs,dict) and len(proofs)==n
         ):
             return False
-        for row in proofs.values():
+        for sym,row in proofs.items():
             if not isinstance(row,dict) or int(row.get("sic",-1))!=6770:
                 return False
             if row.get("same_asof_revalidated_without_sec_network") is True:
-                if row.get("revalidation_semantics")!="PRIOR_SEC_SIC6770_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS":
+                semantics=row.get("revalidation_semantics")
+                if semantics not in {PRIOR_SPAC_REVALIDATION,MANUAL_SPAC_REVALIDATION}:
+                    return False
+                if semantics==MANUAL_SPAC_REVALIDATION and not manual_blank_seed_binding_exact(sym,row):
                     return False
                 source=str(row.get("source_url") or "")
                 evidence=str(row.get("evidence_date") or "")
@@ -113,6 +147,25 @@ def valid_asof_identity_proof_binding(dm,asof):
         )
     except Exception:
         return False
+
+def selftest_manual_seed_contract():
+    reg=json.loads(MANUAL_IDENTITY_SEED.read_text())
+    records=reg.get("records") or {}
+    blank=[(sym,row) for sym,row in sorted(records.items()) if (row or {}).get("is_blank_check") is True]
+    assert blank, "MANUAL_BLANK_SEED_FIXTURE_MISSING"
+    sym,seed=blank[0]
+    row={
+      "cik":seed["cik"],"sic":seed["sic"],"source_url":seed["source_url"],
+      "evidence_date":seed["evidence_date"],
+      "manual_seed_registry_path":str(MANUAL_IDENTITY_SEED.relative_to(ROOT.parent)).replace("\\","/"),
+      "manual_seed_registry_blob_sha":blob_sha(MANUAL_IDENTITY_SEED),
+    }
+    assert manual_blank_seed_binding_exact(sym,row) is True
+    broken=dict(row); broken["source_url"]="https://www.sec.gov/invalid"
+    assert manual_blank_seed_binding_exact(sym,broken) is False
+    broken2=dict(row); broken2["manual_seed_registry_blob_sha"]="0"*40
+    assert manual_blank_seed_binding_exact(sym,broken2) is False
+    print("XRAY_MASTER_MANUAL_SEC_SEED_CONTRACT_SELFTEST=PASS")
 
 def main():
     s=json.loads(INPUT.read_text())
@@ -205,4 +258,7 @@ def main():
     },sort_keys=True))
 
 if __name__=="__main__":
-    main()
+    if "--selftest" in sys.argv:
+        selftest_manual_seed_contract()
+    else:
+        main()
