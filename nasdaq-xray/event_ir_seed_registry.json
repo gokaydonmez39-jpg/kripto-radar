@@ -6,6 +6,55 @@
   "unknown_never_pass": true,
   "policy": "Seeds only locate issuer-controlled IR surfaces. Every seed must be fetched live and issuer-identity validated before any evidence can be emitted. No-event/empty-page never implies CLEAR.",
   "symbols": {
+    "CRWD": {
+      "base_url": "https://ir.crowdstrike.com",
+      "issuer_tokens": [
+        "CrowdStrike"
+      ]
+    },
+    "DOCU": {
+      "base_url": "https://investor.docusign.com",
+      "issuer_tokens": [
+        "Docusign"
+      ]
+    },
+    "DUOL": {
+      "base_url": "https://investors.duolingo.com",
+      "issuer_tokens": [
+        "Duolingo"
+      ]
+    },
+    "EXLS": {
+      "base_url": "https://ir.exlservice.com",
+      "issuer_tokens": [
+        "ExlService",
+        "EXL"
+      ]
+    },
+    "FIVN": {
+      "base_url": "https://investors.five9.com",
+      "issuer_tokens": [
+        "Five9"
+      ]
+    },
+    "FSLY": {
+      "base_url": "https://investors.fastly.com",
+      "issuer_tokens": [
+        "Fastly"
+      ]
+    },
+    "IBRX": {
+      "base_url": "https://ir.immunitybio.com",
+      "issuer_tokens": [
+        "ImmunityBio"
+      ]
+    },
+    "IOVA": {
+      "base_url": "https://ir.iovance.com",
+      "issuer_tokens": [
+        "Iovance"
+      ]
+    },
     "LITE": {
       "base_url": "https://investor.lumentum.com",
       "issuer_tokens": [
@@ -24,22 +73,41 @@
         "Meta"
       ]
     },
+    "MRNA": {
+      "base_url": "https://investors.modernatx.com",
+      "issuer_tokens": [
+        "Moderna"
+      ]
+    },
     "MRVL": {
       "base_url": "https://investor.marvell.com",
       "issuer_tokens": [
         "Marvell"
       ]
     },
-    "DUOL": {
-      "base_url": "https://investors.duolingo.com",
+    "MU": {
+      "base_url": "https://investors.micron.com",
       "issuer_tokens": [
-        "Duolingo"
+        "Micron"
       ]
     },
     "OKTA": {
       "base_url": "https://investor.okta.com",
       "issuer_tokens": [
         "Okta"
+      ]
+    },
+    "OLLI": {
+      "base_url": "https://investors.ollies.com",
+      "issuer_tokens": [
+        "Ollie's",
+        "Ollie"
+      ]
+    },
+    "PANW": {
+      "base_url": "https://investors.paloaltonetworks.com",
+      "issuer_tokens": [
+        "Palo Alto"
       ]
     },
     "PLTR": {
@@ -60,10 +128,40 @@
         "Qualys"
       ]
     },
-    "PANW": {
-      "base_url": "https://investors.paloaltonetworks.com",
+    "RGEN": {
+      "base_url": "https://investors.repligen.com",
       "issuer_tokens": [
-        "Palo Alto"
+        "Repligen"
+      ]
+    },
+    "SAIL": {
+      "base_url": "https://investor.sailpoint.com",
+      "issuer_tokens": [
+        "SailPoint"
+      ]
+    },
+    "SIMO": {
+      "base_url": "https://ir.siliconmotion.com",
+      "issuer_tokens": [
+        "Silicon Motion"
+      ]
+    },
+    "SWKS": {
+      "base_url": "https://investors.skyworksinc.com",
+      "issuer_tokens": [
+        "Skyworks"
+      ]
+    },
+    "TGTX": {
+      "base_url": "https://ir.tgtherapeutics.com",
+      "issuer_tokens": [
+        "TG Therapeutics"
+      ]
+    },
+    "VRNS": {
+      "base_url": "https://ir.varonis.com",
+      "issuer_tokens": [
+        "Varonis"
       ]
     },
     "WIX": {
@@ -78,10 +176,10 @@
         "XP Inc"
       ]
     },
-    "DOCU": {
-      "base_url": "https://investor.docusign.com",
+    "ZS": {
+      "base_url": "https://ir.zscaler.com",
       "issuer_tokens": [
-        "Docusign"
+        "Zscaler"
       ]
     }
   }
