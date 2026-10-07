@@ -10,6 +10,10 @@ name: XRAY Canonical Current Post-MC Factory
 # CURRENT_HEAD_RECOVERY_TRIGGER_2026_10_06_V6_EXACT_ASOF_FINAL_REPLAY
 
 on:
+  workflow_run:
+    workflows: ["XRAY Canonical Current Pre-MC Factory"]
+    types: [completed]
+    branches: [main]
   push:
     branches: [main]
     paths:
@@ -43,6 +47,7 @@ concurrency:
 
 jobs:
   post-mc:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 50
     steps:
