@@ -711,6 +711,145 @@ def apply_terminal_overrides(prs,overrides):
         prs[sym]=rec
     return prs
 
+def validate_persistent_terminal_fail_override(obj,sym,asof,queue_hash):
+    """Validate same-ASOF immutable dual-source fail-only evidence independently of PRICE blob rewrites."""
+    try:
+        if not (
+          isinstance(obj,dict)
+          and obj.get("schema")=="XRAY_RESOLVER_EPOCH_RESULT_V1"
+          and obj.get("status")=="COMMITTED"
+          and obj.get("task_id")==TASK_ID
+          and obj.get("execution")=="NONE" and obj.get("real_money")=="NO-GO"
+          and obj.get("unknown_never_pass") is True
+          and obj.get("asof_et")==asof
+          and obj.get("queue_hash")==queue_hash
+          and obj.get("compiled_policy_version")=="C4.17"
+          and obj.get("compiled_policy_hash")=="68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4"
+          and obj.get("compiled_policy_blob_sha")=="16c50cc8f887a5234a4be23862d7c8d0e564b0ac"
+        ):
+            return None
+        audit=obj.get("audit") or {}
+        if not (
+          audit.get("terminal_override_only_block_to_fail") is True
+          and audit.get("no_pass_created_by_override") is True
+          and audit.get("no_threshold_change") is True
+          and audit.get("pass_manufactured") is False
+          and audit.get("unknown_never_pass") is True
+          and audit.get("execution_none") is True
+          and audit.get("real_money_no_go") is True
+        ):
+            return None
+        x=(obj.get("terminal_overrides") or {}).get(sym)
+        ev=(obj.get("terminal_override_evidence") or {}).get(sym)
+        if not isinstance(x,dict) or not isinstance(ev,dict):
+            return None
+        if not (
+          x.get("decision")=="FAIL_DV30_INSUFFICIENT_SESSIONS"
+          and x.get("proof")=="ALPACA_RALLIES_EXACT_MISSING_SET_MATCH"
+          and x.get("no_synthetic_bar") is True
+        ):
+            return None
+        exp=expected30(asof)
+        n=x.get("known_session_count")
+        miss=list(x.get("missing_sessions") or [])
+        px=num(x.get("price"))
+        if not (
+          px is not None and px>=HARD_PRICE
+          and isinstance(n,int) and 0<=n<30
+          and len(miss)==30-n and len(miss)==len(set(miss))
+          and miss==[d for d in exp if d in set(miss)]
+        ):
+            return None
+        alp=ev.get("alpaca") or {}
+        ral=ev.get("rallies") or {}
+        if not (
+          ev.get("policy_rule")=="C4.17 hard_gate_evidence.dv30_insufficient_sessions"
+          and ev.get("missing_set_equal") is True
+          and ev.get("asof_close_observed_ge_5") is True
+          and ev.get("massive_required") is False
+          and ev.get("no_synthetic_bar") is True
+          and ev.get("unknown_never_pass") is True
+          and ev.get("g9_authority") is False
+          and alp.get("source")=="ALPACA_HISTORICAL_SIP_DAILY_BATCH_NON_G9"
+          and alp.get("expected_session_count")==30
+          and alp.get("observed_session_count")==n
+          and alp.get("observed_asof_date")==asof
+          and list(alp.get("missing_sessions") or [])==miss
+          and ral.get("source")=="RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
+          and ral.get("observed_session_count")==n
+          and list(ral.get("missing_sessions") or [])==miss
+        ):
+            return None
+        alp_px=num(alp.get("observed_asof_close"))
+        ral_px=num(ral.get("observed_asof_close"))
+        if alp_px is None or ral_px is None or abs(alp_px-px)>1e-9 or abs(ral_px-px)>1e-9:
+            return None
+        rec=dict(x)
+        rec["source"]="ALPACA_SIP_RALLIES_EXACT_MISSING_SET_C4_17_NON_G9"
+        if not valid_bridge_price_resolution(rec,None):
+            return None
+        return rec
+    except Exception:
+        return None
+
+
+def load_persistent_terminal_fail_overrides(asof,queue_hash):
+    """Recover immutable same-epoch terminal FAIL evidence even after non-semantic PRICE artifact rewrites."""
+    paths=sorted(ROOT.glob(f"canonical_resolver_bridge_{asof.replace('-','')}*.json"))
+    accepted={}
+    sources={}
+    conflicts=set()
+    for path in paths:
+        try:
+            obj=json.loads(path.read_text())
+        except Exception:
+            continue
+        ovs=obj.get("terminal_overrides") or {}
+        if not isinstance(ovs,dict) or not ovs:
+            continue
+        for sym in sorted(ovs):
+            rec=validate_persistent_terminal_fail_override(obj,sym,asof,queue_hash)
+            if rec is None:
+                continue
+            prior=accepted.get(sym)
+            if prior is not None and prior!=rec:
+                conflicts.add(sym)
+                continue
+            accepted[sym]=rec
+            sources.setdefault(sym,[]).append({
+              "path":str(path),
+              "blob_sha":git_blob_sha(path),
+            })
+    for sym in conflicts:
+        accepted.pop(sym,None)
+        sources.pop(sym,None)
+    return accepted,{
+      "status":"PASS" if not conflicts else "AMBIGUOUS_FAIL_CLOSED",
+      "accepted_count":len(accepted),
+      "accepted_symbols":sorted(accepted),
+      "conflict_symbols":sorted(conflicts),
+      "sources":sources,
+    }
+
+
+def apply_persistent_terminal_fail_overrides(results,overrides):
+    """Apply only validated fail-only overrides to rows that remain BLOCK_CURRENT_RUN."""
+    changed=[]
+    for sym,rec in sorted((overrides or {}).items()):
+        row=results.get(sym)
+        if not isinstance(row,dict) or row.get("status")!="BLOCK_CURRENT_RUN":
+            continue
+        if not valid_bridge_price_resolution(rec,None):
+            continue
+        results[sym]={
+          "status":rec["decision"],
+          "info":{k:v for k,v in rec.items() if k!="decision"},
+          "provenance":"PERSISTENT_C417_DUAL_SOURCE_TERMINAL_FAIL",
+        }
+        changed.append(sym)
+    return changed
+
+
 # Immutable bridge successor version numbers do not imply new wire encodings.
 # Keep block-only/current-scope successors on RALLIES_SCANNER_EXACT30_V2 unless
 # this loader and its regression tests explicitly add another encoding contract.
@@ -1623,6 +1762,13 @@ def main():
           "provenance":"AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
         }
 
+    persistent_terminal_fail_overrides,persistent_terminal_fail_meta=load_persistent_terminal_fail_overrides(
+        asof,s["queue_hash"]
+    )
+    persistent_terminal_fail_applied=apply_persistent_terminal_fail_overrides(
+        results,persistent_terminal_fail_overrides
+    )
+
     rallies_primary_pass_vetoed=apply_c417_rallies_primary_pass_veto(
         results,rallies_primary
     )
@@ -1696,6 +1842,9 @@ def main():
       "monotonic_legacy_pass_reuse_count":sum(1 for x in results.values() if x.get("provenance")=="PRIOR_STRICTER_PRICE_PASS_MONOTONIC_REUSE"),
       "policy_replay_symbols":sorted(policy_redo),
       "exception_bridge_meta":exception_bridge_meta,
+      "persistent_terminal_fail_meta":persistent_terminal_fail_meta,
+      "persistent_terminal_fail_applied_count":len(persistent_terminal_fail_applied),
+      "persistent_terminal_fail_applied_symbols":sorted(persistent_terminal_fail_applied),
       "c417_rallies_primary_meta":rallies_primary_meta,
       "c417_rallies_primary_materialized_count":len(rallies_primary_materialized),
       "c417_rallies_primary_materialized_symbols":sorted(rallies_primary_materialized),
