@@ -1,0 +1,32 @@
+name: XRAY Post-MC History Legal Reuse Guard Selftest
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/post_mc_history_legal_reuse_guard.py"
+      - "nasdaq-xray/post_mc_history_legal_reuse_guard_selftest.py"
+      - ".github/workflows/xray-post-mc-history-legal-reuse-selftest.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: xray-post-mc-history-legal-reuse-selftest
+  cancel-in-progress: true
+
+jobs:
+  selftest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile
+        run: python -m py_compile nasdaq-xray/post_mc_history_legal_reuse_guard.py nasdaq-xray/post_mc_history_legal_reuse_guard_selftest.py
+      - name: Deterministic regression selftest
+        working-directory: nasdaq-xray
+        run: python post_mc_history_legal_reuse_guard_selftest.py
