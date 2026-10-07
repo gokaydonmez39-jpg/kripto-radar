@@ -85,7 +85,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-10-07T14:03:26.478839+00:00",
+  "generated_at_utc": "2026-10-07T14:23:53.753853+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -679,8 +679,38 @@
         "UCFIW"
       ],
       "active_state_rule": "EXPLICIT_EMPTY_RESUMPTION_FIELDS_ONLY",
-      "item_count": 29,
+      "item_count": 31,
       "items": [
+        {
+          "HaltDate": "10/07/2026",
+          "HaltTime": "10:18:46.680",
+          "IssueName": "SKK Hldgs Ltd Ord A",
+          "IssueSymbol": "SKK",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "10/07/2026",
+          "ResumptionQuoteTime": "10:18:46",
+          "ResumptionTradeTime": "",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/07/2026                    </td><td valign=\"top\">10:18:46.680</td><td valign=\"top\">SKK</td><td valign=\"top\">SKK Hldgs Ltd Ord A</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/07/2026                    </td><td valign=\"top\">10:18:46                      </td><td valign=\"top\"></td></tr></table>",
+          "pubDate": "Wed, 07 Oct 2026 04:00:00 GMT",
+          "title": "SKK"
+        },
+        {
+          "HaltDate": "10/07/2026",
+          "HaltTime": "10:11:25.583",
+          "IssueName": "Calisa Acquisition Corp U",
+          "IssueSymbol": "ALISU",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "10/07/2026",
+          "ResumptionQuoteTime": "10:11:25",
+          "ResumptionTradeTime": "10:16:25",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/07/2026                    </td><td valign=\"top\">10:11:25.583</td><td valign=\"top\">ALISU</td><td valign=\"top\">Calisa Acquisition Corp U</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/07/2026                    </td><td valign=\"top\">10:11:25                      </td><td valign=\"top\">10:16:25                      </td></tr></table>",
+          "pubDate": "Wed, 07 Oct 2026 04:00:00 GMT",
+          "title": "ALISU"
+        },
         {
           "HaltDate": "10/07/2026",
           "HaltTime": "09:51:40.320",
