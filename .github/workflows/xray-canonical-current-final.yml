@@ -901,7 +901,7 @@ jobs:
           import json,re,sys
           generated=json.load(open(sys.argv[1]))
           live=json.load(open(sys.argv[2]))
-          pat=re.compile(r"_v(\\d+)\\.json$")
+          pat=re.compile(r"_v(\d+)\.json$")
           def key(obj):
               asof=str(obj.get("asof_et") or "")
               path=str(obj.get("source_bridge_path") or "")
@@ -909,6 +909,8 @@ jobs:
               if not asof or m is None:
                   raise SystemExit("INVALID_EVENT_STATE_VERSION_BINDING")
               return asof,int(m.group(1)),str(obj.get("source_bridge_blob_sha") or "")
+          assert key({"asof_et":"2026-10-07","source_bridge_path":"nasdaq-xray/canonical_event_bridge_20261007_c417_dv30_v3.json","source_bridge_blob_sha":"abc"})==("2026-10-07",3,"abc")
+          assert pat.search("nasdaq-xray/canonical_event_bridge_20261007_c417_dv30.json") is None
           # Cheap deterministic discriminating tests: newer live must block;
           # newer generated may repair a stale current state; same revision
           # with a different immutable blob is an invariant failure.
