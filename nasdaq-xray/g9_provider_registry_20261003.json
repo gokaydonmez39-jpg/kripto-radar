@@ -666,15 +666,15 @@
     },
     {
       "provider": "Foreks / ForInvest Web SDK",
-      "status": "REOPENED_FORINVEST_HOSTED_MCP_TURKEY_FIT_D_STRONG_A_B_C_PRIMARY_SOURCE_REPLY_PENDING",
+      "status": "RECHECKED_20261007_FORINVEST_MCP_LIVE_BUT_US_NBBO_LINEAGE_SCHEMA_AND_PERMANENT_ZERO_NONDIPLAY_UNPROVEN",
       "failed_gates": [
         "A_CONSOLIDATED_US_SIP_NBBO_LINEAGE",
         "B_EXACT_US_QUOTE_TRADE_EVENT_SCHEMA",
         "C_FREE_REALTIME_US_ENTITLEMENT_AND_NONDISPLAY_RIGHT"
       ],
-      "evidence_file": "nasdaq-xray/g9_provider_delta_forinvest_mcp_20261004.json",
-      "evidence_blob_sha": "33170dc1f3c0ae489e43f27f722fc144e91c8095",
-      "last_checked_on": "2026-10-04",
+      "evidence_file": "nasdaq-xray/g9_provider_delta_reopen_20261007.json",
+      "evidence_blob_sha": "2cf89cb17189cbdfc4dca85185cce8a8e23db65e",
+      "last_checked_on": "2026-10-07",
       "reopen_condition": "Primary-source ForInvest confirmation proves free-account real-time U.S. consolidated NBBO bid+ask+last with independent event timestamps and lawful automated/non-display permanent-$0 entitlement.",
       "negative_cache_only": false,
       "may_never_create_pass": false,
@@ -863,16 +863,16 @@
     },
     {
       "provider": "Clear Street Trading API / read-only MCP",
-      "status": "HIGHEST_POTENTIAL_NATIONAL_NBBO_B_D_STRONG_CURRENT_FREE_MCP_PRODUCT_C_STRONGLY_SUPPORTED_ZERO_BALANCE_AND_TURKEY_ELIGIBILITY_UNPROVEN",
+      "status": "RECHECKED_20261007_STUDIO_ORG_LEGAL_ENTITY_ENTITLEMENT; TURKEY_RETAIL_UNCONDITIONAL_ZERO_DOLLAR_NBBO_UNPROVEN",
       "failed_gates": [
         "B_SAME_RUN_RTH_LIVE_FRESHNESS_WITNESS",
         "C_ZERO_BALANCE_UNFUNDED_NO_ACTIVITY_ACCOUNT_MAINTENANCE_CONFIRMATION",
         "C_EXACT_RETAIL_NBBO_AGREEMENT_NO_SEPARATE_ENDUSER_EXCHANGE_VENDOR_FEE_CONFIRMATION",
         "D_TURKEY_RETAIL_ELIGIBILITY"
       ],
-      "evidence_file": "nasdaq-xray/g9_provider_delta_clearstreet_20261003.json",
-      "evidence_blob_sha": "156ce0596e00531958c317524709f2c968b278a6",
-      "last_checked_on": "2026-10-04",
+      "evidence_file": "nasdaq-xray/g9_provider_delta_reopen_20261007.json",
+      "evidence_blob_sha": "2cf89cb17189cbdfc4dca85185cce8a8e23db65e",
+      "last_checked_on": "2026-10-07",
       "reopen_condition": "Confirm Turkey retail eligibility and approved zero-balance/unfunded permanent-$0 real-time National-NBBO read-only MCP/snapshot entitlement with no activity/account-maintenance or separate exchange/vendor/API fee; then same-run US-RTH probe.",
       "negative_cache_only": false,
       "may_never_create_pass": false,
@@ -939,17 +939,18 @@
     },
     {
       "provider": "Alpaca ChatGPT market-data plugin / connected MCP surface",
-      "status": "HIGH_POTENTIAL_CHATGPT_LIVE_MARKET_DATA_SURFACE_HISTORICAL_SIP_A_B_CONFIRMED_LIVE_SIP_ENTITLEMENT_AND_STRICT_C_UNPROVEN",
+      "status": "RECHECKED_20261007_HISTORICAL_SIP_NON_G9_PASS; LIVE_SIP_QUOTE_TRADE_RUNTIME_NOT_PROVEN; STRICT_C_UNPROVEN",
       "failed_gates": [
         "B_SAME_RUN_RTH_RECENT_SIP_FRESHNESS",
         "C_LIVE_SIP_PERMANENT_ZERO_EXACT_PLUGIN_ENTITLEMENT",
         "C_NO_SUBSCRIPTION_OR_PLATFORM_PLAN_CONDITION"
       ],
-      "evidence_file": "nasdaq-xray/g9_provider_delta_alpaca_chatgpt_plugin_20261003.json",
-      "last_checked_on": "2026-10-03",
+      "evidence_file": "nasdaq-xray/g9_provider_delta_reopen_20261007.json",
+      "last_checked_on": "2026-10-07",
       "reopen_condition": "Primary-source Alpaca/OpenAI proof of live SIP feed and strict permanent-$0/no-subscription entitlement, then same-run scheduled RTH recent SIP quote/trade witness.",
       "negative_cache_only": false,
-      "may_never_create_pass": false
+      "may_never_create_pass": false,
+      "evidence_blob_sha": "2cf89cb17189cbdfc4dca85185cce8a8e23db65e"
     },
     {
       "provider": "Unusual Whales API / MCP",
@@ -999,16 +1000,14 @@
   "unknown_never_pass": true,
   "no_policy_weakening": true,
   "count_invariant": "provider_count == len(unique(providers[].provider)) == source_saturation.reviewed_paths",
-  "updated_on": "2026-10-04",
+  "updated_on": "2026-10-07",
   "latest_entitlement_refresh": {
-    "date": "2026-10-04",
-    "result": "PUBLIC_AND_WEBULL_JURISDICTION_CLOSED; FREEDOM_REALTIME_FEE_CLOSED; FORINVEST_PRIMARY_SOURCE_REPLY_PENDING; NO_G9_PASS",
+    "date": "2026-10-07",
+    "result": "FORINVEST_A_B_C_UNPROVEN; CLEAR_STREET_RETAIL_ZERO_DOLLAR_TURKEY_UNPROVEN; ALPACA_HISTORICAL_SIP_NON_G9_ONLY_AND_LIVE_SIP_RUNTIME_NOT_PROVEN; NO_G9_PASS",
     "evidence": [
-      "nasdaq-xray/g9_provider_delta_public_mcp_20261004.json",
-      "nasdaq-xray/g9_provider_delta_webull_cloud_mcp_20261004.json",
-      "nasdaq-xray/g9_provider_delta_freedom_tradernet_mcp_20261004.json",
-      "nasdaq-xray/g9_provider_delta_forinvest_mcp_20261004.json"
-    ]
+      "nasdaq-xray/g9_provider_delta_reopen_20261007.json"
+    ],
+    "evidence_blob_sha": "2cf89cb17189cbdfc4dca85185cce8a8e23db65e"
   },
   "latest_runtime_connector_audit": {
     "path": "nasdaq-xray/g9_runtime_connector_audit_20261003.json",
