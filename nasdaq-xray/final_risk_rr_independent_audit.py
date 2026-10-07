@@ -10,6 +10,8 @@ SHADOW AUDIT ONLY. EXECUTION=NONE. REAL_MONEY=NO-GO. UNKNOWN!=PASS.
 from __future__ import annotations
 
 import argparse
+import csv
+import gzip
 import hashlib
 import json
 import math
@@ -17,6 +19,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 DEFAULT_FINAL = ROOT / "canonical_current_final_tech.json"
+DEFAULT_HISTORY_MANIFEST = ROOT / "canonical_deep_history_cache_manifest.json"
 THRESH = {
     "A": {"basic": 1.5, "severe": 1.1},
     "B": {"basic": 2.0, "severe": 1.5},
@@ -47,15 +50,331 @@ def rr(entry_model: float, s0: float, t1: float, atr: float, cost_mult: float) -
 
 
 def family_geometry_pass(family: str, x: float, frozen: dict) -> bool:
+    return family_geometry_pass_independent(family, x, frozen)
+
+
+def independent_history_rows(symbol: str, final_obj: dict, manifest: dict) -> tuple[list[dict], list[str], dict]:
+    """Load exact committed OHLCV without importing production alpha code."""
+    mismatches: list[str] = []
+    entries = {}
+    entries.update(manifest.get("entries") or {})
+    entries.update(manifest.get("support_entries") or {})
+    rec = entries.get(symbol)
+    diag = {"symbol": symbol, "cache_path": None, "cache_blob_sha": None, "fingerprint_match": False}
+    if not isinstance(rec, dict):
+        return [], ["history_manifest_symbol_missing"], diag
+    rel = str(rec.get("path") or "")
+    p = (ROOT.parent / rel).resolve()
+    diag["cache_path"] = rel
+    if not p.exists():
+        return [], ["history_cache_file_missing"], diag
+    actual_blob = git_blob_sha(p)
+    diag["cache_blob_sha"] = actual_blob
+    if actual_blob != rec.get("blob_sha"):
+        mismatches.append("history_cache_blob_mismatch")
+
+    rows: list[dict] = []
+    try:
+        with gzip.open(p, "rt", encoding="utf-8-sig", newline="") as fh:
+            rdr = csv.DictReader(fh)
+            names = {str(x).lower(): x for x in (rdr.fieldnames or [])}
+            needed = ("date", "open", "high", "low", "close", "volume")
+            if any(x not in names for x in needed):
+                return [], mismatches + ["history_cache_columns_missing"], diag
+            for raw in rdr:
+                d = str(raw.get(names["date"]) or "")[:10]
+                if not d or d > str(final_obj.get("asof_et") or ""):
+                    continue
+                try:
+                    row = {"date": d}
+                    for c in needed[1:]:
+                        row[c] = float(raw.get(names[c]))
+                except Exception:
+                    return [], mismatches + ["history_cache_non_numeric_row"], diag
+                if not all(math.isfinite(float(row[c])) for c in needed[1:]):
+                    return [], mismatches + ["history_cache_nonfinite_row"], diag
+                rows.append(row)
+    except Exception as exc:
+        return [], mismatches + ["history_cache_read_error:" + type(exc).__name__], diag
+    rows.sort(key=lambda x: x["date"])
+    if len({x["date"] for x in rows}) != len(rows):
+        mismatches.append("history_cache_duplicate_dates")
+    if not rows or rows[-1]["date"] != final_obj.get("asof_et"):
+        mismatches.append("history_cache_asof_mismatch")
+
+    # Recompute the committed fingerprint contract independently.
+    fp_rows = [
+        [r["date"], *[format(float(r[c]), ".12g") for c in ("open", "high", "low", "close", "volume")]]
+        for r in rows[-320:]
+    ]
+    raw = json.dumps(fp_rows, separators=(",", ":"), ensure_ascii=True).encode()
+    fp = {
+        "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
+        "sha256": hashlib.sha256(raw).hexdigest(),
+        "rows": len(fp_rows),
+        "first_date": fp_rows[0][0] if fp_rows else None,
+        "last_date": fp_rows[-1][0] if fp_rows else None,
+        "lookback": 320,
+    }
+    expected_fp = (final_obj.get("history_fingerprint_by_symbol") or {}).get(symbol)
+    manifest_fp = rec.get("fingerprint")
+    diag["fingerprint_match"] = bool(fp == expected_fp == manifest_fp)
+    if not diag["fingerprint_match"]:
+        mismatches.append("history_fingerprint_binding_mismatch")
+    return rows, mismatches, diag
+
+
+def independent_wilder_atr(rows: list[dict], n: int = 14) -> list[float | None]:
+    """Wilder ATR: first TR undefined, first n valid TRs seed by SMA."""
+    out: list[float | None] = [None] * len(rows)
+    if len(rows) <= n:
+        return out
+    tr: list[float | None] = [None]
+    for i in range(1, len(rows)):
+        h, l, pc = float(rows[i]["high"]), float(rows[i]["low"]), float(rows[i-1]["close"])
+        tr.append(max(abs(h-l), abs(h-pc), abs(l-pc)))
+    valid = [x for x in tr if x is not None]
+    if len(valid) < n:
+        return out
+    seed_index = n
+    seed = sum(float(x) for x in tr[1:n+1]) / n
+    out[seed_index] = seed
+    prev = seed
+    for i in range(seed_index + 1, len(rows)):
+        x = tr[i]
+        if x is None:
+            continue
+        prev = ((n - 1) * prev + float(x)) / n
+        out[i] = prev
+    return out
+
+
+def independent_retest_bar(row: dict, P: float, entry_high: float) -> bool:
+    return float(row["low"]) <= entry_high and float(row["close"]) > P and float(row["close"]) <= entry_high
+
+
+def independent_tight_base_exists(rows: list[dict], t: int) -> bool:
+    """Only the base/compression geometry needed by the extension reset rule."""
+    if t < 26 or t >= len(rows):
+        return False
+    atr = independent_wilder_atr(rows, 14)
+    A = atr[t-1]
+    if A is None or not math.isfinite(float(A)) or float(A) <= 0:
+        return False
+    tr = [None]
+    for i in range(1, len(rows)):
+        h, l, pc = float(rows[i]["high"]), float(rows[i]["low"]), float(rows[i-1]["close"])
+        tr.append(max(abs(h-l), abs(h-pc), abs(l-pc)))
+    for n in (5, 10, 15, 20):
+        if t < n + 20:
+            continue
+        base = rows[t-n:t]
+        bh = max(float(x["high"]) for x in base)
+        bl = min(float(x["low"]) for x in base)
+        width = (bh - bl) / float(A)
+        last5 = [float(x) for x in tr[t-5:t] if x is not None]
+        prev20 = [float(x) for x in tr[t-25:t-5] if x is not None]
+        if len(last5) == 5 and len(prev20) == 20:
+            m5 = sum(last5) / 5.0
+            m20 = sum(prev20) / 20.0
+            if 0.30 <= width <= 2.05 and m20 > 0 and m5 <= 0.8 * m20:
+                return True
+    return False
+
+
+def independent_history_semantics(row: dict, vals: dict, final_obj: dict, manifest: dict) -> tuple[list[str], dict]:
+    """Recompute level construction, trigger-1 ATR, lifecycle, extension and result precedence."""
+    symbol = str(row.get("symbol") or "")
+    if not symbol:
+        # Current Final result key is injected by audit_row below.
+        symbol = str(row.get("_audit_symbol") or "")
+    rows, mismatches, diag = independent_history_rows(symbol, final_obj, manifest)
+    diag.update({
+        "trigger_index": None, "atr_trigger_minus_1": None, "lifecycle_recomputed": None,
+        "extension_veto_recomputed": None, "result_recomputed": None,
+    })
+    if not rows:
+        return mismatches, diag
+
+    frozen = row.get("frozen_geometry") or {}
+    # Frozen construction invariants are direct C4.17 geometry contracts.
+    expected_entry = vals["P"] + 0.25 * vals["A"]
+    expected_chase = vals["P"] + 0.50 * vals["A"]
+    expected_s0 = vals["anchor"] - 0.20 * vals["A"]
+    if not close(vals["entry_low"], vals["P"]):
+        mismatches.append("entry_low_not_P")
+    if not close(vals["entry_high"], expected_entry):
+        mismatches.append("entry_high_not_P_plus_0p25A")
+    if not close(vals["entry_model"], expected_entry):
+        mismatches.append("entry_model_not_P_plus_0p25A")
+    if not close(vals["chase_limit"], expected_chase):
+        mismatches.append("chase_limit_not_P_plus_0p50A")
+    if not close(vals["S0"], expected_s0):
+        mismatches.append("S0_not_anchor_minus_0p20A")
+
+    trigger_date = str(frozen.get("trigger_date") or row.get("trigger_date") or "")
+    dates = [x["date"] for x in rows]
+    if trigger_date not in dates:
+        mismatches.append("trigger_date_not_in_history")
+        return mismatches, diag
+    ti = dates.index(trigger_date)
+    diag["trigger_index"] = ti
+    if ti <= 0:
+        mismatches.append("trigger_minus_1_unavailable")
+    else:
+        atr = independent_wilder_atr(rows, 14)
+        A1 = atr[ti-1] if ti-1 < len(atr) else None
+        diag["atr_trigger_minus_1"] = A1
+        if A1 is None or not close(vals["A"], A1, 1e-10):
+            mismatches.append(f"ATR14_trigger_minus_1:calc={A1!r}:stored={vals['A']!r}")
+
+    # Anchor availability and S0 breach are independently derived from committed history.
+    ai = frozen.get("anchor_available_idx")
+    if not isinstance(ai, int) or ai < 0 or ai >= len(rows) or ai > ti:
+        mismatches.append("anchor_available_idx_invalid")
+        breached = bool((row.get("invalidation") or {}).get("breached"))
+        breach_date = (row.get("invalidation") or {}).get("first_breach_date")
+    else:
+        breaches = [x for x in rows[ai+1:] if float(x["low"]) <= vals["S0"]]
+        breached = bool(breaches)
+        breach_date = breaches[0]["date"] if breaches else None
+        stored_inv = row.get("invalidation") or {}
+        if bool(stored_inv.get("breached")) != breached:
+            mismatches.append("S0_breach_flag")
+        if stored_inv.get("first_breach_date") != breach_date:
+            mismatches.append("S0_first_breach_date")
+
+    asof = str(final_obj.get("asof_et") or "")
+    if asof not in dates:
+        mismatches.append("asof_not_in_history")
+        return mismatches, diag
+    age = dates.index(asof) - ti
+    close_now = float(rows[-1]["close"])
+    current_retest = bool(age > 0 and age <= 5 and independent_retest_bar(rows[-1], vals["P"], vals["entry_high"]))
+    if bool(row.get("current_retest")) != current_retest:
+        mismatches.append("current_retest")
+    if breached:
+        lifecycle = "INVALIDATED_S0"
+    elif age > 8:
+        lifecycle = "EXPIRED_HORIZON"
+    elif close_now < vals["P"]:
+        lifecycle = "RECONFIRMATION_REQUIRED"
+    elif close_now <= vals["entry_high"]:
+        if age == 0:
+            lifecycle = "ENTRY_BAND"
+        elif current_retest:
+            lifecycle = "RETEST_ENTRY_BAND"
+        elif age <= 5:
+            lifecycle = "RETEST_REQUIRED"
+        else:
+            lifecycle = "EXPIRED_RETEST_WINDOW"
+    elif close_now < vals["chase_limit"]:
+        lifecycle = "RETEST_REQUIRED" if age <= 5 else "EXPIRED_RETEST_WINDOW"
+    else:
+        lifecycle = "CHASE_NO_VALID_FILL"
+    diag["lifecycle_recomputed"] = lifecycle
+    if str(row.get("lifecycle") or "") != lifecycle:
+        mismatches.append(f"lifecycle:calc={lifecycle}:stored={row.get('lifecycle')!r}")
+
+    pivot_extension = close_now / vals["P"] - 1.0 if vals["P"] > 0 else float("inf")
+    move3 = None
+    reset = False
+    if len(rows) >= 4:
+        move3 = (close_now - float(rows[-4]["close"])) / vals["A"]
+        for i in range(max(0, len(rows)-3), len(rows)-1):
+            if independent_retest_bar(rows[i], vals["P"], vals["entry_high"]):
+                reset = True
+                break
+        if not reset:
+            for candidate_t in (len(rows)-2, len(rows)-1):
+                if candidate_t >= 0 and independent_tight_base_exists(rows, candidate_t):
+                    reset = True
+                    break
+    extension_veto = bool(pivot_extension >= 0.08 or (move3 is not None and move3 > 2.0 and not reset))
+    diag["extension_veto_recomputed"] = extension_veto
+    geom = row.get("geometry") or {}
+    if not close(pivot_extension, geom.get("pivot_extension")):
+        mismatches.append("pivot_extension")
+    stored_move3 = geom.get("move3_atr")
+    if move3 is None:
+        if stored_move3 is not None:
+            mismatches.append("move3_atr")
+    elif not close(move3, stored_move3):
+        mismatches.append("move3_atr")
+    if bool(geom.get("reset_between_tminus3_and_t")) != reset:
+        mismatches.append("extension_reset")
+    if bool(row.get("extension_veto")) != extension_veto:
+        mismatches.append("extension_veto")
+
+    # Independent result precedence using recomputed technical booleans and stored nontechnical status.
+    family = str(row.get("family") or "")
+    x = (vals["P"] - vals["anchor"]) / vals["A"]
+    family_geometry_pass = family_geometry_pass_independent(family, x, frozen)
+    risk_atr = (vals["entry_model"] - vals["S0"]) / vals["A"]
+    risk_pct = (vals["entry_model"] - vals["S0"]) / vals["entry_model"] if vals["entry_model"] > 0 else float("inf")
+    risk_pass = bool(family_geometry_pass and 0.75 <= risk_atr <= 2.50 and risk_pct <= 0.08)
+    basic = rr(vals["entry_model"], vals["S0"], vals["T1"], vals["A"], 0.10)
+    severe = rr(vals["entry_model"], vals["S0"], vals["T1"], vals["A"], 0.25)
+    rr_pass = bool(basic >= THRESH[family]["basic"] and severe >= THRESH[family]["severe"])
+    target_overlap = bool(frozen.get("target_overlap") or vals["T1"] <= vals["entry_high"])
+    event_pass = row.get("event_status") == "CLEAN_DISCOVERY"
+    regime_status = str(row.get("regime_finalist_status") or "")
+    regime_pass = regime_status == "PASS"
+    entry_ready = lifecycle in {"ENTRY_BAND", "RETEST_ENTRY_BAND"}
+    hard_pass = bool(risk_pass and rr_pass and not target_overlap and not extension_veto and entry_ready and event_pass and regime_pass and not breached)
+    mc_cap_blocks = bool(row.get("state_cap") == "WATCH" or row.get("r92_eligible") is False)
+    if hard_pass and mc_cap_blocks:
+        expected_result = "WATCH_MC_FALLBACK_CAP"
+    elif hard_pass:
+        expected_result = "PRE_G9_TECH_PASS"
+    elif lifecycle == "INVALIDATED_S0":
+        expected_result = "FAIL_INVALIDATED_S0"
+    elif lifecycle in {"EXPIRED_RETEST_WINDOW", "EXPIRED_HORIZON"}:
+        expected_result = "FAIL_EXPIRED"
+    elif not risk_pass:
+        expected_result = "FAIL_RISK_GEOMETRY"
+    elif target_overlap:
+        expected_result = "FAIL_R1_ENTRY_OVERLAP"
+    elif not rr_pass:
+        expected_result = "FAIL_RR"
+    elif not event_pass:
+        expected_result = "WATCH_EVENT_UNKNOWN_OR_BLOCKED"
+    elif regime_status == "UNKNOWN":
+        expected_result = "WATCH_REGIME_UNKNOWN"
+    elif not regime_pass:
+        expected_result = "WATCH_REGIME_REVALIDATION_REQUIRED"
+    elif lifecycle == "CHASE_NO_VALID_FILL" and age <= 5:
+        expected_result = "WATCH_CHASE_RETEST_REQUIRED"
+    elif extension_veto and age <= 5:
+        expected_result = "WATCH_EXTENSION_RESET_REQUIRED"
+    elif lifecycle == "CHASE_NO_VALID_FILL":
+        expected_result = "FAIL_CHASE"
+    elif extension_veto:
+        expected_result = "FAIL_EXTENSION"
+    elif lifecycle == "RETEST_REQUIRED":
+        expected_result = "WATCH_RETEST_REQUIRED"
+    elif lifecycle == "RECONFIRMATION_REQUIRED":
+        expected_result = "WATCH_RECONFIRMATION_REQUIRED"
+    else:
+        expected_result = "FAIL_OTHER"
+    diag["result_recomputed"] = expected_result
+    if str(row.get("result") or "") != expected_result:
+        mismatches.append(f"result_precedence:calc={expected_result}:stored={row.get('result')!r}")
+    if bool(row.get("technical_hard_pass")) != hard_pass:
+        mismatches.append("technical_hard_pass")
+    if bool(row.get("pre_g9_tech_pass")) != bool(hard_pass and not mc_cap_blocks):
+        mismatches.append("pre_g9_tech_pass")
+    return mismatches, diag
+
+
+def family_geometry_pass_independent(family: str, x: float, frozen: dict) -> bool:
     if family == "A":
         src = frozen.get("source_geometry") or frozen.get("geometry") or {}
-        depth = src.get("depth")
-        prelow = src.get("prelow_near_hl")
         try:
-            depth = float(depth)
+            depth = float(src.get("depth"))
         except Exception:
             return False
-        return 0.30 <= x <= 1.07 and 2.15 <= depth <= 4.00 and prelow is True
+        return 0.30 <= x <= 1.07 and 2.15 <= depth <= 4.00 and src.get("prelow_near_hl") is True
     return 0.30 <= x <= 2.05
 
 
@@ -169,14 +488,14 @@ def structural_zone_audit(row: dict, vals: dict) -> tuple[list[str], dict]:
     return mismatches, diag
 
 
-def audit_row(key: str, row: dict) -> dict:
+def audit_row(key: str, row: dict, final_obj: dict, history_manifest: dict) -> dict:
     family = str(row.get("family") or "")
     if family not in THRESH:
         return {"key": key, "status": "MISMATCH", "mismatches": ["UNKNOWN_FAMILY"]}
 
     frozen = row.get("frozen_geometry") or {}
     levels = row.get("levels") or {}
-    needed = ("A", "P", "anchor", "entry_low", "entry_model", "entry_high", "S0", "T1")
+    needed = ("A", "P", "anchor", "entry_low", "entry_model", "entry_high", "chase_limit", "S0", "T1")
     vals = {}
     missing = []
     for name in needed:
@@ -250,6 +569,12 @@ def audit_row(key: str, row: dict) -> dict:
 
     zone_mismatches, zone_diag = structural_zone_audit(row, vals)
     mismatches.extend(zone_mismatches)
+    audit_row_obj = dict(row)
+    audit_row_obj["_audit_symbol"] = key.split("|", 1)[0]
+    history_mismatches, history_diag = independent_history_semantics(
+        audit_row_obj, vals, final_obj, history_manifest
+    )
+    mismatches.extend(history_mismatches)
     blockers_sorted = list(row.get("diagnostic_blockers") or [])
 
     return {
@@ -264,6 +589,7 @@ def audit_row(key: str, row: dict) -> dict:
             "entry_low": vals["entry_low"],
             "entry_high": vals["entry_high"],
             "entry_model": vals["entry_model"],
+            "chase_limit": vals["chase_limit"],
             "anchor": vals["anchor"],
             "S0": vals["S0"],
             "ATR": A,
@@ -282,6 +608,7 @@ def audit_row(key: str, row: dict) -> dict:
             "exact_blockers": blockers_sorted,
         },
         "r1_zone_audit": zone_diag,
+        "history_semantics_audit": history_diag,
         "recomputed": {
             "x": x,
             "risk_atr": risk_atr,
@@ -300,17 +627,27 @@ def audit_row(key: str, row: dict) -> dict:
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--final", default=str(DEFAULT_FINAL))
+    ap.add_argument("--history-manifest", default=str(DEFAULT_HISTORY_MANIFEST))
     ap.add_argument("--out")
     args = ap.parse_args()
 
     final_path = Path(args.final)
     obj = json.loads(final_path.read_text())
+    history_manifest_path = Path(args.history_manifest)
+    history_manifest = json.loads(history_manifest_path.read_text())
     assert obj.get("schema") == "XRAY_FINAL_TECH_SHADOW_V1"
     assert obj.get("execution") == "NONE"
     assert obj.get("real_money") == "NO-GO"
     assert obj.get("unknown_never_pass") is True
+    assert history_manifest.get("schema") == "XRAY_DEEP_HISTORY_CACHE_MANIFEST_V1"
+    assert history_manifest.get("asof_et") == obj.get("asof_et")
+    assert history_manifest.get("execution") == "NONE" and history_manifest.get("real_money") == "NO-GO"
+    assert history_manifest.get("unknown_never_pass") is True
 
-    rows = [audit_row(k, v or {}) for k, v in sorted((obj.get("results") or {}).items())]
+    rows = [
+        audit_row(k, v or {}, obj, history_manifest)
+        for k, v in sorted((obj.get("results") or {}).items())
+    ]
     bad = [r for r in rows if r["status"] != "PASS"]
     independently_risk_failed = [
         r["key"] for r in rows
@@ -331,12 +668,21 @@ def main() -> None:
         "decision_authority": False,
         "source_final_path": str(final_path).replace("\\", "/"),
         "source_final_blob_sha": git_blob_sha(final_path),
+        "source_history_manifest_path": str(history_manifest_path).replace("\\", "/"),
+        "source_history_manifest_blob_sha": git_blob_sha(history_manifest_path),
         "row_count": len(rows),
         "mismatch_count": len(bad),
         "independently_risk_failed_count": len(independently_risk_failed),
         "independently_risk_failed": independently_risk_failed,
         "independently_rr_failed_count": len(independently_rr_failed),
         "independently_rr_failed": independently_rr_failed,
+        "history_semantics_mismatch_count": sum(
+            1 for r in rows
+            if any(
+                x.startswith(("entry_", "chase_", "S0_", "ATR14_", "history_", "lifecycle", "current_retest", "S0_breach", "S0_first", "pivot_extension", "move3_atr", "extension_", "result_precedence", "technical_hard_pass", "pre_g9_tech_pass"))
+                for x in (r.get("mismatches") or [])
+            )
+        ),
         "legacy_gt120_r1_point_row_count": sum(
             1 for r in rows
             if int(((r.get("r1_zone_audit") or {}).get("legacy_gt120_confirmed_idx_points") or 0)) > 0
@@ -356,6 +702,8 @@ def main() -> None:
         "independently_risk_failed_count": len(independently_risk_failed),
         "independently_rr_failed_count": len(independently_rr_failed),
         "source_final_blob_sha": out["source_final_blob_sha"],
+        "source_history_manifest_blob_sha": out["source_history_manifest_blob_sha"],
+        "history_semantics_mismatch_count": out["history_semantics_mismatch_count"],
     }, sort_keys=True))
     if bad:
         raise SystemExit(1)
