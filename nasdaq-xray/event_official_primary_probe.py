@@ -284,18 +284,11 @@ def probe_issuer(sym: str, base: dict, asof: str, horizon: set[str]) -> dict:
             rec["failure"] = "ISSUER_IDENTITY_TOKEN_NOT_FOUND"
             return rec
         rec["validated_authority_url"] = authority_url
-        base_event_date, base_basis = announced_event_date("", text, asof)
-        if base_event_date:
-            rec["matches"].append({
-                "event_date": base_event_date,
-                "horizon_result": "INSIDE_EXACT_8_SESSION_HORIZON" if base_event_date in horizon else
-                                  ("OUTSIDE_EXACT_8_SESSION_HORIZON" if base_event_date > max(horizon) else "NON_DECISION_DATE"),
-                "authority": "ISSUER_IR_PRIMARY",
-                "source_url": authority_url,
-                "feed_url": None,
-                "title": "",
-                "extraction_basis": "BASE_PAGE_" + str(base_basis),
-            })
+        # Issuer landing pages are discovery/identity surfaces only. Flattened
+        # HTML can concatenate card publication dates with unrelated earnings
+        # text and create false event dates. Decision evidence must come from a
+        # discrete issuer-controlled feed item or specific event/news document.
+        rec["base_page_event_policy"] = "DISCOVERY_ONLY_NO_EVENT_DATE_DECISION"
         feeds = discover_feed_links(authority_url, text)
     except Exception as e:
         rec["failure"] = f"BASE_FETCH_{type(e).__name__}:{str(e)[:160]}"
@@ -358,12 +351,9 @@ def selftest() -> None:
         asof,
     )
     assert d3 is None, d3
-    d4, basis4 = announced_event_date(
-        "",
-        "<html><body>The company will release its third quarter 2026 financial results on November 5, 2026.</body></html>",
-        asof,
-    )
-    assert d4 == "2026-11-05" and basis4 == "SCHEDULE_SENTENCE_EXPLICIT_FUTURE_DATE", (d4, basis4)
+    # Regression: full issuer landing pages are never classified directly.
+    # The extractor remains valid for discrete feed/news text, but probe_issuer
+    # must mark the base page as discovery-only.
     rss = b"""<?xml version="1.0"?><rss><channel><item><title>Company to report financial results on November 5, 2026</title><link>https://ir.example.com/release</link><description>Company will release financial results on November 5, 2026.</description></item></channel></rss>"""
     items = feed_items(rss)
     assert len(items) == 1 and "November 5, 2026" in items[0]["title"]
