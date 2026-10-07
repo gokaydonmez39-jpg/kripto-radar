@@ -1,7 +1,7 @@
 {
   "schema": "XRAY_FINAL_GATE_OVERLAY_V2",
   "generated_on": "2026-10-07",
-  "generated_at_utc": "2026-10-07T21:27:25.013339+00:00",
+  "generated_at_utc": "2026-10-07T21:35:34.789480+00:00",
   "asof_et": "2026-10-06",
   "execution": "NONE",
   "real_money": "NO-GO",
@@ -12,7 +12,7 @@
     "blob_sha": "e22dea60d3a4b8203bcf34e9eec1f1f732a30ca9",
     "claimed_full_end_to_end_research_pass": false,
     "full_end_to_end_research_pass": false,
-    "current_research_chain_exact": false,
+    "current_research_chain_exact": true,
     "current_research_coverage_complete": false,
     "terminal_result": "PARTIAL_UNKNOWN"
   },
@@ -70,27 +70,27 @@
     "g9_pass_binding_exact": true,
     "account_pass_binding_exact": true,
     "blocked_negative_evidence_may_advance_without_creating_pass": true,
-    "current_research_chain_exact": false,
+    "current_research_chain_exact": true,
     "current_research_coverage_complete": false,
     "stale_terminal_full_claim_suppressed": false
   },
   "current_research_chain": {
-    "exact": false,
+    "exact": true,
     "price_blob_sha": "18673f0761bf043da6f908582bb65a28c24ef186",
-    "mc_input_blob_sha": "475e93cd1f7f6d18a586532209f93d762095cc1a",
+    "mc_input_blob_sha": "18673f0761bf043da6f908582bb65a28c24ef186",
     "coverage_complete": false,
     "price_asof_et": "2026-10-07",
     "price_pass_hash": "f6772e07d952c9c172a3370076537cbfc89128886e1a0e31d1142b2ebecf0438",
     "price_pass_count": 510,
-    "history_source_mc_artifact": "nasdaq-xray/canonical_mc_bridge_20261006_c417_dv30_v7.json",
+    "history_source_mc_artifact": "nasdaq-xray/canonical_mc_bridge_20261007_c417_dv30_v2.json",
     "history_source_mc_policy_hash": "68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4",
-    "mc_unknown_count": 34
+    "mc_unknown_count": 29
   },
   "research_delivery": {
     "independent_of_g9_account": true,
     "pre_g9_tech_pass": 0,
     "current_asof_has_deliverable_candidate": false,
-    "reason": "CURRENT_DV30_MC_CHAIN_INCOMPLETE"
+    "reason": "PRE_G9_TECH_PASS_ZERO"
   },
   "true_full_go": {
     "status": "BLOCKED",
