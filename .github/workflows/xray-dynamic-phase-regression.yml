@@ -533,6 +533,10 @@ jobs:
           print("EVENT_PIPELINE_CURRENT_DV30_POLICY_BINDING=PASS")
           PY
 
+      - name: Assert issuer-primary Event probe regex and blob semantics
+        run: |
+          python nasdaq-xray/event_official_primary_probe.py --selftest
+
       - name: Assert partial event discovery remains per-symbol fail-closed
         run: |
           python - <<'PY'
