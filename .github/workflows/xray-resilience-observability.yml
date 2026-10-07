@@ -172,20 +172,45 @@ jobs:
             echo "XRAY_RESILIENCE_SUPERSESSION=NON_SOURCE_DRIFT"
           fi
 
-      - name: Canonical pointer transition guard
+      - name: Pointer exact-current preflight
+        id: pointer_preflight
         if: steps.supersession.outputs.superseded != 'true'
+        shell: bash
+        run: |
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import json,pathlib,subprocess
+          root=pathlib.Path("nasdaq-xray")
+          p=json.load(open(root/"chatgpt_canonical_state_v2.json"))
+          s=p.get("state_json") or {}
+          if isinstance(s,str): s=json.loads(s)
+          t=root/"canonical_current_terminal.json"
+          current_terminal=subprocess.check_output(["git","hash-object",str(t)],text=True).strip()
+          recorded=str(((s.get("deep_final_evidence") or {}).get("terminal_blob_sha") or ""))
+          ready=bool(recorded and recorded==current_terminal)
+          print("ready="+("true" if ready else "false"))
+          print("reason="+("POINTER_EXACT_CURRENT" if ready else "POINTER_TERMINAL_STALE_UPSTREAM_PENDING"))
+          print("recorded_terminal="+recorded)
+          print("current_terminal="+current_terminal)
+          PY
+
+      - name: Healthy no-op while canonical pointer is stale
+        if: steps.supersession.outputs.superseded != 'true' && steps.pointer_preflight.outputs.ready != 'true'
+        run: echo "XRAY_RESILIENCE=BLOCKED_UPSTREAM_PENDING reason=${{ steps.pointer_preflight.outputs.reason }}"
+
+      - name: Canonical pointer transition guard
+        if: steps.supersession.outputs.superseded != 'true' && steps.pointer_preflight.outputs.ready == 'true'
         run: python nasdaq-xray/canonical_pointer_transition_guard.py
 
       - name: Guardian identity-partition self-test
-        if: steps.supersession.outputs.superseded != 'true'
+        if: steps.supersession.outputs.superseded != 'true' && steps.pointer_preflight.outputs.ready == 'true'
         run: python nasdaq-xray/guardian_anomaly_selftest.py
 
       - name: Guardian anomaly layer
-        if: steps.supersession.outputs.superseded != 'true'
+        if: steps.supersession.outputs.superseded != 'true' && steps.pointer_preflight.outputs.ready == 'true'
         run: python nasdaq-xray/guardian_anomaly.py
 
       - name: Structural fail-closed audit
-        if: steps.supersession.outputs.superseded != 'true'
+        if: steps.supersession.outputs.superseded != 'true' && steps.pointer_preflight.outputs.ready == 'true'
         run: |
           python - <<'PY'
           import json, pathlib
@@ -259,7 +284,7 @@ jobs:
           PY
 
       - name: Commit resilience artifacts
-        if: steps.supersession.outputs.superseded != 'true'
+        if: steps.supersession.outputs.superseded != 'true' && steps.pointer_preflight.outputs.ready == 'true'
         shell: bash
         run: |
           set -euo pipefail
