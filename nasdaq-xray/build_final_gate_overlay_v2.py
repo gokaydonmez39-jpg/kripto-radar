@@ -89,6 +89,38 @@ def current_research_chain():
         return {"exact":False,"error":type(e).__name__}
 
 
+
+def terminal_live_artifact_bindings(t):
+    """The last terminal cannot inherit a PASS after current sources advance."""
+    e=t.get("evidence") or {}
+    names={"master":"canonical_current_master_manifest.json",
+           "full_state":"canonical_current_full_state.json",
+           "price":"canonical_current_price_dv30.json",
+           "history":"canonical_current_history.json",
+           "final":"canonical_current_final_tech.json"}
+    mismatch=[]
+    for key,filename in names.items():
+        row=e.get(key) or {}
+        if row.get("path")!="nasdaq-xray/"+filename or not row.get("blob_sha"):
+            mismatch.append({"key":key,"reason":"INVALID_BINDING"})
+            continue
+        try:
+            if file_blob_sha(ROOT/filename)!=row["blob_sha"]:
+                mismatch.append({"key":key,"reason":"LIVE_BLOB_DRIFT"})
+        except Exception as exc:
+            mismatch.append({"key":key,"reason":"READ_FAILED","error":type(exc).__name__})
+    mc=e.get("mc") or {}; mp=str(mc.get("path") or "")
+    if not(mp.startswith("nasdaq-xray/canonical_mc_bridge_") and mp.endswith(".json") and mc.get("blob_sha")):
+        mismatch.append({"key":"mc","reason":"INVALID_BINDING"})
+    else:
+        try:
+            if file_blob_sha(repo_path(mp))!=mc["blob_sha"]:
+                mismatch.append({"key":"mc","reason":"IMMUTABLE_BLOB_DRIFT"})
+        except Exception as exc:
+            mismatch.append({"key":"mc","reason":"READ_FAILED","error":type(exc).__name__})
+    return {"exact":not mismatch,"mismatch_count":len(mismatch),"mismatches":mismatch,
+            "authority":"CURRENT_CANONICAL_BLOBS_FAIL_CLOSED"}
+
 def main():
     t,p,gr,ga,gs,greg,ag,aa=[load(k) for k in FILES]
 
@@ -116,7 +148,8 @@ def main():
 
     terminal_claimed_full=bool(t.get("full_end_to_end_research_pass"))
     current_chain=current_research_chain()
-    full=bool(terminal_claimed_full and current_chain.get("exact") is True)
+    live_binding=terminal_live_artifact_bindings(t)
+    full=bool(terminal_claimed_full and current_chain.get("exact") is True and live_binding["exact"])
     g9_pass=gr.get("g9_pass") is True
     persisted_account_status=str(ag.get("current_status") or "UNKNOWN")
     terminal_account_status=str(t.get("account_status") or persisted_account_status)
@@ -259,15 +292,17 @@ def main():
             "blocked_negative_evidence_may_advance_without_creating_pass":True,
             "current_research_chain_exact":current_chain.get("exact") is True,
             "current_research_coverage_complete":current_chain.get("coverage_complete") is True,
-            "stale_terminal_full_claim_suppressed":bool(terminal_claimed_full and not current_chain.get("exact")),
+            "stale_terminal_full_claim_suppressed":bool(terminal_claimed_full and (not current_chain.get("exact") or not live_binding["exact"])),
         },
+        "terminal_live_artifact_bindings":live_binding,
         "current_research_chain":current_chain,
         "research_delivery":{
             "independent_of_g9_account":True,
             "pre_g9_tech_pass":pre_g9,
-            "current_asof_has_deliverable_candidate":bool(current_chain.get("exact") is True and pre_g9>0),
+            "current_asof_has_deliverable_candidate":bool(current_chain.get("exact") is True and live_binding["exact"] and pre_g9>0),
             "reason":(
-                "CURRENT_DV30_MC_CHAIN_INCOMPLETE" if current_chain.get("exact") is not True
+                "TERMINAL_LIVE_BLOB_DRIFT" if not live_binding["exact"]
+                else "CURRENT_DV30_MC_CHAIN_INCOMPLETE" if current_chain.get("exact") is not True
                 else "PRE_G9_TECH_PASS_POSITIVE" if pre_g9>0
                 else "PRE_G9_TECH_PASS_ZERO"
             ),
