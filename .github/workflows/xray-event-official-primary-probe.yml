@@ -7,6 +7,8 @@ on:
   push:
     branches: [main]
     paths:
+      - "nasdaq-xray/event_fail_closed_base_builder.py"
+      - "nasdaq-xray/build_current_event_state.py"
       - "nasdaq-xray/event_official_primary_probe.py"
       - "nasdaq-xray/event_official_primary_successor_builder.py"
       - "nasdaq-xray/event_official_primary_successor_selftest.py"
@@ -26,9 +28,12 @@ jobs:
   probe:
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
 
       - uses: actions/setup-python@v5
         with:
@@ -36,9 +41,54 @@ jobs:
 
       - name: Compile and deterministic selftest
         run: |
-          python -m py_compile nasdaq-xray/event_official_primary_probe.py nasdaq-xray/event_official_primary_successor_builder.py nasdaq-xray/event_official_primary_successor_selftest.py
+          python -m py_compile \
+            nasdaq-xray/event_fail_closed_base_builder.py \
+            nasdaq-xray/build_current_event_state.py \
+            nasdaq-xray/event_official_primary_probe.py \
+            nasdaq-xray/event_official_primary_successor_builder.py \
+            nasdaq-xray/event_official_primary_successor_selftest.py
+          python nasdaq-xray/event_fail_closed_base_builder.py --selftest
           python nasdaq-xray/event_official_primary_probe.py --selftest
           python nasdaq-xray/event_official_primary_successor_selftest.py
+
+      - name: Bootstrap exact-ASOF fail-closed Event base locally
+        id: base
+        shell: bash
+        run: |
+          set -euo pipefail
+          result="$(python nasdaq-xray/event_fail_closed_base_builder.py)"
+          echo "$result"
+          status="$(python -c 'import json,sys; print(json.load(sys.stdin).get("status",""))' <<<"$result")"
+          path="$(python -c 'import json,sys; print(json.load(sys.stdin).get("path",""))' <<<"$result")"
+          case "$status" in
+            BASE_CANDIDATE_WRITTEN_LOCAL_ONLY|EXACT_CURRENT_EVENT_BRIDGE_EXISTS)
+              ;;
+            *)
+              echo "XRAY_EVENT_PROBE_BASE_INVALID=$status" >&2
+              exit 1
+              ;;
+          esac
+          [[ -n "$path" && -f "$path" ]]
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          echo "path=$path" >> "$GITHUB_OUTPUT"
+
+      - name: Normalize exact-current Event state locally
+        shell: bash
+        run: |
+          set -euo pipefail
+          XRAY_EVENT_BRIDGE="${{ steps.base.outputs.path }}" \
+            python nasdaq-xray/build_current_event_state.py
+          python - <<'PY'
+          import json
+          q=json.load(open("nasdaq-xray/canonical_current_event_request.json",encoding="utf-8"))
+          s=json.load(open("nasdaq-xray/canonical_current_event_state.json",encoding="utf-8"))
+          assert s["asof_et"]==q["asof_et"]
+          assert s["source_request_blob_sha"]
+          assert s["weekly_scope_hash"]==q["weekly_scope_hash"]
+          assert s["geometry_scope_hash"]==q["geometry_scope_hash"]
+          assert s["unknown_never_pass"] is True
+          print("EVENT_LOCAL_BASE_STATE_BINDING=PASS")
+          PY
 
       - name: Run zero-dollar issuer-primary live probe
         run: python nasdaq-xray/event_official_primary_probe.py
@@ -60,7 +110,11 @@ jobs:
                   assert matches
                   assert all(m["authority"]=="ISSUER_IR_PRIMARY" for m in matches)
           print("EVENT_OFFICIAL_PRIMARY_PROBE_VALIDATION=PASS")
-          print(json.dumps({"counts":j["counts"],"scope_count":j["scope_count"]},sort_keys=True))
+          print(json.dumps({
+              "counts":j["counts"],
+              "unresolved_reason_counts":j.get("unresolved_reason_counts") or {},
+              "scope_count":j["scope_count"],
+          },sort_keys=True))
           for sym,r in sorted(j["results"].items()):
               if r["status"]!="UNKNOWN_OFFICIAL_PRIMARY_UNRESOLVED":
                   print("CANDIDATE",sym,r["status"],r["selected_event_date"])
