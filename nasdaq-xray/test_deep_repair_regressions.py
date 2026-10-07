@@ -266,6 +266,22 @@ def test_family_a_final_geometry_revalidation():
     good=dict(base,source_geometry=good_g)
     rg=eval_one("TEST","A",good_g,d,"CLEAN_DISCOVERY",frozen=good,recorded_before=True)
     assert rg.get("family_geometry_pass") is True,rg
+    assert rg.get("result")=="PRE_G9_TECH_PASS" and rg.get("diagnostic_blockers")==[],rg
+    assert rg.get("diagnostic_only_no_decision_effect") is True,rg
+
+    risk_pct_frozen=dict(good,setup_id="A-RISK-PCT",S0=90.0)
+    risk_pct_row=eval_one("TEST","A",good_g,d,"CLEAN_DISCOVERY",frozen=risk_pct_frozen,recorded_before=True)
+    assert risk_pct_row.get("result")=="FAIL_RISK_GEOMETRY",risk_pct_row
+    assert "RISK_PERCENT_GT_8PCT" in risk_pct_row.get("diagnostic_blockers",[]),risk_pct_row
+    assert "RISK_ATR_OUT_OF_RANGE" not in risk_pct_row.get("diagnostic_blockers",[]),risk_pct_row
+
+    event_watch=eval_one("TEST","A",good_g,d,"UNKNOWN",frozen=good,recorded_before=True)
+    assert event_watch.get("result")=="WATCH_EVENT_UNKNOWN_OR_BLOCKED",event_watch
+    assert "EVENT_UNKNOWN" in event_watch.get("diagnostic_blockers",[]),event_watch
+
+    mc_watch=eval_one("TEST","A",good_g,d,"CLEAN_DISCOVERY",state_cap="WATCH",frozen=good,recorded_before=True)
+    assert mc_watch.get("result")=="WATCH_MC_FALLBACK_CAP",mc_watch
+    assert "MC_STATE_CAP_WATCH" in mc_watch.get("diagnostic_blockers",[]),mc_watch
 
     bad_g={"trigger_date":td,"P":100.0,"anchor":97.0,"depth":4.5,"prelow_near_hl":True}
     bad=dict(base,setup_id="A-BAD-DEPTH",source_geometry=bad_g)
