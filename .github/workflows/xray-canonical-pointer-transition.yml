@@ -20,7 +20,8 @@ permissions:
 
 concurrency:
   group: xray-canonical-pointer-transition
-  cancel-in-progress: true
+  # Do not preempt an in-flight immutable terminal/audit readback on duplicate triggers.
+  cancel-in-progress: false
 
 jobs:
   advance:

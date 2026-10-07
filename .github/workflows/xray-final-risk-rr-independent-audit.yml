@@ -17,7 +17,8 @@ permissions:
 
 concurrency:
   group: xray-final-risk-rr-independent-audit
-  cancel-in-progress: true
+  # Do not preempt an in-flight immutable terminal/audit readback on duplicate triggers.
+  cancel-in-progress: false
 
 jobs:
   audit:
