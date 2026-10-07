@@ -57,6 +57,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: xray-c417-watch-radar
-          path: /tmp/xray_research_watch_radar.json
+          path: ${{ runner.temp }}/xray_research_watch_radar.json
           retention-days: 14
-          if-no-files-found: warn
+          if-no-files-found: error
