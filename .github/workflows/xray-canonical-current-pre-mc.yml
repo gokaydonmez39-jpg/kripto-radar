@@ -26,6 +26,8 @@ on:
       - "nasdaq-xray/price_dv30_phase.py"
       - "nasdaq-xray/price_dv30_recover_from_fullstate.py"
       - "nasdaq-xray/price_dv30_authority_selftest.py"
+      - "nasdaq-xray/evidence/rallies_dv30_*_classification.json"
+      - "nasdaq-xray/evidence/rallies_dv30_*_rollforward_*.json"
       - "nasdaq-xray/price_official_listing_registry.json"
       - "nasdaq-xray/price_official_listing_selftest.py"
       - "nasdaq-xray/price_official_halt_selftest.py"
