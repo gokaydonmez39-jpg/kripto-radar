@@ -6,6 +6,7 @@ on:
     paths:
       - "nasdaq-xray/event_official_primary_probe.py"
       - "nasdaq-xray/event_ir_seed_registry.json"
+      - "nasdaq-xray/canonical_current_event_request.json"
       - ".github/workflows/xray-event-official-primary-probe.yml"
   workflow_dispatch:
 
