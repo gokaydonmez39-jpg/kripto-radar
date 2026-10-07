@@ -111,6 +111,27 @@ def main():
         legacy_only=m.sec_ticker_cik_map()
         assert legacy_only["TLAC"]==2128462 and "TLACU" not in legacy_only
         assert m.SEC_CIK_DISCOVERY_DIAGNOSTICS["status"]=="SECONDARY_UNAVAILABLE_LEGACY_FALLBACK_ONLY"
+        def exchange_only_load(url):
+            if url==m.SEC_TICKERS:
+                raise RuntimeError("MOCK_PRIMARY_403")
+            return fake_load(url)
+        m.load_json_url=exchange_only_load
+        via_exchange=m.sec_ticker_cik_map()
+        assert via_exchange["TLAC"]==2128462 and via_exchange["TLACU"]==2128462
+        assert "CONFLICT" not in via_exchange and "NONNAS" not in via_exchange
+        assert m.SEC_CIK_DISCOVERY_DIAGNOSTICS["status"]=="PASS_EXCHANGE_ONLY_CIK_ROUTING"
+        def blocked_both_load(url):
+            if url in (m.SEC_TICKERS,m.SEC_TICKERS_EXCHANGE):
+                raise RuntimeError("MOCK_OFFICIAL_SEC_403")
+            return fake_load(url)
+        m.load_json_url=blocked_both_load
+        try:
+            m.sec_ticker_cik_map()
+            raise AssertionError("both unavailable should fail closed")
+        except RuntimeError as e:
+            assert str(e)=="SEC_CIK_ROUTING_UNAVAILABLE_PRIMARY_AND_SECONDARY"
+        assert m.SEC_CIK_DISCOVERY_DIAGNOSTICS["status"]=="BOTH_SEC_TICKER_LISTS_UNAVAILABLE"
+        m.load_json_url=fake_load
         m.load_json_url=fake_load
         blank_row=m.sec_current_classification("TLAC","2026-10-06",cmap["TLAC"])
         assert blank_row and blank_row["is_blank_check"] is True and blank_row["sic"]==6770

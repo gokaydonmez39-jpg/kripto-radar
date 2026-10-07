@@ -26,7 +26,7 @@ SEC_SUBMISSIONS="https://data.sec.gov/submissions"
 SEC_UA=os.getenv("XRAY_SEC_USER_AGENT","NASDAQ-SWING-XRAY research bot; xray-dataplane-bot@users.noreply.github.com")
 UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/126 Safari/537.36"
 TASK="6a825366222081918997094d76e6ae46"
-IDENTITY_DISCOVERY_VERSION="SEC_CURRENT_SUSPECT_DISCOVERY_V6"
+IDENTITY_DISCOVERY_VERSION="SEC_CURRENT_SUSPECT_DISCOVERY_V7"
 SPAC_SUSPECT_RE=re.compile(r"\bacquisition\b|\bspac\b|\bblank[ -]?check\b|\bcapital\s+corp(?:oration)?\.?\s+(?:[IVXLCDM]+|\d+)\s*-\s*class\s+a\s+ordinary\s+shares?\b",re.I)
 
 def current_spac_suspects(names:dict,industries:dict)->list[str]:
@@ -233,37 +233,44 @@ def _nasdaq_exchange_cik_map(raw):
 
 
 def sec_ticker_cik_map():
-    """Resolve candidate CIK routes from both free SEC lists, fail closed.
+    """Try both independent official SEC CIK-route endpoints, fail closed.
 
-    The map cannot classify a SPAC or make alpha PASS: every candidate must
-    still pass the same-ticker SEC submissions SIC and filing-date checks.
+    The mappings authorize only CIK discovery. Same-ticker submissions,
+    SIC and filed-on-or-before-ASOF remain mandatory for classification.
+    If sources disagree, never choose a CIK or promote a security.
     """
     global SEC_CIK_DISCOVERY_DIAGNOSTICS
-    raw=load_json_url(SEC_TICKERS)
-    if not isinstance(raw,dict):
-        raise ValueError("SEC_PRIMARY_TICKERS_SCHEMA_INVALID")
     out={}; ambiguous=set()
-    for row in raw.values():
-        if not isinstance(row,dict):continue
-        sym=str(row.get("ticker") or "").strip().upper()
-        try:cik=int(row.get("cik_str"))
-        except (ValueError,TypeError):continue
-        if sym and cik>0:
-            if sym in out and out[sym]!=cik:
-                ambiguous.add(sym)
-            else:
-                out[sym]=cik
-    for sym in ambiguous:
-        out.pop(sym,None)
     diag={
       "source":"SEC_TICKERS_PLUS_NASDAQ_EXCHANGE_CIK_ROUTING_ONLY",
-      "legacy_valid_count":len(out),"exchange_added_count":0,
-      "conflict_count":len(ambiguous),"classification_authority":False,
+      "legacy_valid_count":0,"exchange_added_count":0,
+      "conflict_count":0,"classification_authority":False,
       "exact_asof_proof_required":True,
-      "status":"LEGACY_ONLY",
     }
+    primary_ok=False; secondary_ok=False
+    try:
+        raw=load_json_url(SEC_TICKERS)
+        if not isinstance(raw,dict):
+            raise ValueError("SEC_PRIMARY_TICKERS_SCHEMA_INVALID")
+        primary_ok=True
+        for row in raw.values():
+            if not isinstance(row,dict):continue
+            sym=str(row.get("ticker") or "").strip().upper()
+            try:cik=int(row.get("cik_str"))
+            except (TypeError,ValueError):continue
+            if sym and cik>0:
+                if sym in out and out[sym]!=cik:
+                    ambiguous.add(sym)
+                else:
+                    out[sym]=cik
+        for sym in ambiguous:
+            out.pop(sym,None)
+        diag["legacy_valid_count"]=len(out)
+    except Exception as exc:
+        diag["primary_error"]=type(exc).__name__
     try:
         extra,extra_conflicts=_nasdaq_exchange_cik_map(load_json_url(SEC_TICKERS_EXCHANGE))
+        secondary_ok=True
         conflicts=ambiguous|extra_conflicts
         for sym,cik in extra.items():
             if sym in out and out[sym]!=cik:
@@ -276,12 +283,21 @@ def sec_ticker_cik_map():
                 diag["exchange_added_count"]+=1
         diag["exchange_valid_count"]=len(extra)
         diag["conflict_count"]=len(conflicts)
-        diag["status"]="PASS_DUAL_SEC_CIK_DISCOVERY"
     except Exception as exc:
-        diag["status"]="SECONDARY_UNAVAILABLE_LEGACY_FALLBACK_ONLY"
         diag["secondary_error"]=type(exc).__name__
+        diag["conflict_count"]=len(ambiguous)
+    if primary_ok and secondary_ok:
+        diag["status"]="PASS_DUAL_SEC_CIK_DISCOVERY"
+    elif secondary_ok:
+        diag["status"]="PASS_EXCHANGE_ONLY_CIK_ROUTING"
+    elif primary_ok:
+        diag["status"]="SECONDARY_UNAVAILABLE_LEGACY_FALLBACK_ONLY"
+    else:
+        diag["status"]="BOTH_SEC_TICKER_LISTS_UNAVAILABLE"
     diag["total_resolved_cik_routes"]=len(out)
     SEC_CIK_DISCOVERY_DIAGNOSTICS=diag
+    if not primary_ok and not secondary_ok:
+        raise RuntimeError("SEC_CIK_ROUTING_UNAVAILABLE_PRIMARY_AND_SECONDARY")
     return out
 
 def sec_current_classification(sym:str,asof:str,cik:int|None):
