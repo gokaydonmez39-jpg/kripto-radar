@@ -2,7 +2,7 @@
   "account_status": "ACCOUNT_BOOTSTRAP_READY_CREDENTIALS_REQUIRED",
   "asof_et": "2026-10-07",
   "blockers": {
-    "affected_event_unknown": 27,
+    "affected_event_unknown": 22,
     "alpha_semantic_conformance_unknown": 0,
     "alpha_source_binding_unknown": 0,
     "breadth_missing": 0,
@@ -37,9 +37,9 @@
       "UCFI",
       "UCFIW"
     ],
-    "age_seconds": 1.885,
-    "generated_at_utc": "2026-10-07T21:54:23.227219+00:00",
-    "guard_blob_sha": "9b95960012a1c21932e71313bf702cecdf16a224",
+    "age_seconds": 1.71,
+    "generated_at_utc": "2026-10-07T22:08:39.393338+00:00",
+    "guard_blob_sha": "69723ce1ae5b94166503a4aaa6d236166d721d5b",
     "guard_path": "nasdaq-xray/canonical_official_source_guard.json",
     "max_age_seconds": 900,
     "security_status_suspension_symbols": [
@@ -169,9 +169,9 @@
     "deep_B_armed_non_r92": 5,
     "deep_B_breakout_confirmed": 0,
     "deep_C_confirmed": 0,
-    "deep_D_confirmed": 1,
+    "deep_D_confirmed": 5,
     "event_confirmed_blocks": 0,
-    "event_unresolved": 97,
+    "event_unresolved": 92,
     "final_confirmed_candidates": 17,
     "final_fail": 17,
     "final_watch": 0,
@@ -206,7 +206,7 @@
     },
     "account_live_probe": {
       "balance_parseable": false,
-      "blob_sha": "de88001d676c9bff0525b6b87648ff32c561cd7b",
+      "blob_sha": "a996a36a2c232c0976b9ed5e4fcfd9c60ddea9af",
       "network_attempted": false,
       "path": "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/account_effective_probe_state.json",
       "positions_parseable": false,
@@ -217,10 +217,10 @@
       "secret_values_persisted": false,
       "status": "BLOCKED_MISSING_CREDENTIALS",
       "workflow_run_attempt": "1",
-      "workflow_run_id": "37692341710"
+      "workflow_run_id": "37694046324"
     },
     "deep": {
-      "blob_sha": "60ec384f63b64ef3887326bcf364d9a9e7f78200",
+      "blob_sha": "28f274fafc6230ac2a7130c3f44169f0cb1842ef",
       "path": "nasdaq-xray/canonical_current_deep_full.json"
     },
     "deep_geometry": {
@@ -232,15 +232,15 @@
       "path": "nasdaq-xray/canonical_current_event_request.json"
     },
     "events": {
-      "blob_sha": "71f58b8d31c88c57548f11d660a9a8925632d8d5",
+      "blob_sha": "47369bca970bdf8fff597affcb344c212ff226ba",
       "path": "nasdaq-xray/canonical_current_event_state.json"
     },
     "family_c": {
-      "blob_sha": "789556d286d776ea8eea50655deeb1966ef28db5",
+      "blob_sha": "8bed683452e41d82ce6cf2130775784e8ce0602d",
       "path": "nasdaq-xray/canonical_current_family_c.json"
     },
     "final": {
-      "blob_sha": "91b04b7fe0e07fe69813a9fe879e317f3ae089e5",
+      "blob_sha": "0593ca80b0a80b1023f5537a1e20da4a9c30175c",
       "path": "nasdaq-xray/canonical_current_final_tech.json"
     },
     "full_state": {
@@ -277,11 +277,11 @@
       "semantic_rebind": false
     },
     "official_halt_guard": {
-      "blob_sha": "9b95960012a1c21932e71313bf702cecdf16a224",
+      "blob_sha": "69723ce1ae5b94166503a4aaa6d236166d721d5b",
       "path": "nasdaq-xray/canonical_official_source_guard.json"
     },
     "pointer": {
-      "blob_sha": "325fdd61d1c4494621f00da50647158440650117",
+      "blob_sha": "4023747565970a822d5b6f6fd5149b71540afb8c",
       "path": "nasdaq-xray/chatgpt_canonical_state_v2.json"
     },
     "policy": {
@@ -309,7 +309,7 @@
   "final_gate_reporting_zero_alpha": true,
   "full_end_to_end_research_pass": false,
   "g9_global_status": "G9_BLOCKED_FREE_AUTOMATION_PATH",
-  "generated_at_utc": "2026-10-07T21:54:25.113597+00:00",
+  "generated_at_utc": "2026-10-07T22:08:41.104991+00:00",
   "pointer_asof_before_candidate": "2026-10-07",
   "r92_account_g9_applicable": false,
   "r92_candidates": [],
@@ -317,8 +317,6 @@
   "schema": "XRAY_CANONICAL_CURRENT_TERMINAL_V1",
   "sets": {
     "affected_event_unknown": [
-      "ABCL",
-      "ARM",
       "DUOL",
       "FSLY",
       "IBRX",
@@ -327,9 +325,7 @@
       "MRNA",
       "MRVL",
       "MU",
-      "MXL",
       "OLLI",
-      "PI",
       "PLTR",
       "QLYS",
       "RGEN",
@@ -340,7 +336,6 @@
       "TWST",
       "TXG",
       "ULTA",
-      "VICR",
       "VRNS",
       "WIX",
       "XP"

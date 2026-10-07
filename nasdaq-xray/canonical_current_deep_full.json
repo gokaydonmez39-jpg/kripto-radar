@@ -39,28 +39,28 @@
   "b_breakout_rs_event_watch": [],
   "b_breakout_rs_event_watch_count": 0,
   "d_dk3_event_watch": [
-    "ABCL",
     "IBRX",
     "IOVA",
     "MRNA",
     "MRVL",
     "MU",
-    "MXL",
-    "PI",
     "QLYS",
     "SMCI",
     "TEM",
     "TRMD",
     "TWST",
     "TXG",
-    "VICR",
     "XP"
   ],
-  "d_dk3_event_watch_count": 16,
+  "d_dk3_event_watch_count": 12,
   "d_dk3_pre_r1": [
-    "SWKS"
+    "ABCL",
+    "MXL",
+    "PI",
+    "SWKS",
+    "VICR"
   ],
-  "d_dk3_pre_r1_count": 1,
+  "d_dk3_pre_r1_count": 5,
   "d_geometry_rs": [
     "ABCL",
     "IBRX",
@@ -1194,7 +1194,7 @@
         "weekly_pass_at_trigger": true
       },
       "corporate_action_status": "PASS_NO_SPLIT_EVENTS_CROSSCHECKED",
-      "event_status": "UNKNOWN",
+      "event_status": "CLEAN_DISCOVERY",
       "mechanical_scale_breaks": [],
       "mixed_rs_pass": true,
       "r92_eligible": false,
@@ -1371,7 +1371,7 @@
         "trigger_date": null
       },
       "corporate_action_status": "PASS_NO_LOCAL_SPLIT_DISCONTINUITY",
-      "event_status": "UNKNOWN",
+      "event_status": "CLEAN_DISCOVERY",
       "mechanical_scale_breaks": [],
       "mixed_rs_pass": false,
       "r92_eligible": false,
@@ -3569,7 +3569,7 @@
         "weekly_pass_at_trigger": true
       },
       "corporate_action_status": "PASS_NO_SPLIT_EVENTS_CROSSCHECKED",
-      "event_status": "UNKNOWN",
+      "event_status": "CLEAN_DISCOVERY",
       "mechanical_scale_breaks": [],
       "mixed_rs_pass": true,
       "r92_eligible": false,
@@ -4167,7 +4167,7 @@
         "weekly_pass_at_trigger": true
       },
       "corporate_action_status": "PASS_NO_SPLIT_EVENTS_CROSSCHECKED",
-      "event_status": "UNKNOWN",
+      "event_status": "CLEAN_DISCOVERY",
       "mechanical_scale_breaks": [],
       "mixed_rs_pass": true,
       "r92_eligible": false,
@@ -5061,7 +5061,7 @@
         "weekly_pass_at_trigger": true
       },
       "corporate_action_status": "PASS_NO_LOCAL_SPLIT_DISCONTINUITY",
-      "event_status": "UNKNOWN",
+      "event_status": "CLEAN_DISCOVERY",
       "mechanical_scale_breaks": [],
       "mixed_rs_pass": true,
       "r92_eligible": false,
@@ -5479,7 +5479,7 @@
     }
   },
   "schema": "XRAY_DEEP_PRE_R1_SHADOW_V1",
-  "source_event_blob_sha": "71f58b8d31c88c57548f11d660a9a8925632d8d5",
+  "source_event_blob_sha": "47369bca970bdf8fff597affcb344c212ff226ba",
   "source_event_path": "nasdaq-xray/canonical_current_event_state.json",
   "source_mc_policy_hash": "68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4",
   "source_mc_policy_version": "C4.17",
