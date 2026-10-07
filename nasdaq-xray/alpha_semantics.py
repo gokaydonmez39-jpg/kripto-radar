@@ -217,6 +217,7 @@ def _cluster_points(points:list[dict[str,Any]],A:float)->list[dict[str,Any]]:
     return zones
 
 _SPLIT_CACHE:dict[str,tuple[str,list[dict[str,Any]]]]={}
+_YAHOO_CHART_HOSTS=("query1.finance.yahoo.com","query2.finance.yahoo.com")
 
 def mechanical_split_suspects(df:pd.DataFrame,lookback:int=260)->list[dict[str,Any]]:
     """Discovery-only split suspect detector, bounded to the active technical horizon."""
@@ -252,32 +253,33 @@ def fetch_yahoo_split_events(symbol:str,start_date:str,end_date:str,retries:int=
     timeout_seconds=max(1.0,float(os.getenv("XRAY_SPLIT_HTTP_TIMEOUT_SECONDS","12")))
     p1=int(pd.Timestamp(start_date,tz="UTC").timestamp())
     p2=int((pd.Timestamp(end_date,tz="UTC")+pd.Timedelta(days=2)).timestamp())
-    url=f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}"
     params={"period1":p1,"period2":p2,"interval":"1d","events":"splits","includeAdjustedClose":"false"}
     last=None
     for attempt in range(retry_budget):
-        try:
-            resp=crequests.get(url,params=params,impersonate="chrome",timeout=timeout_seconds)
-            if int(resp.status_code)!=200:
-                raise RuntimeError(f"HTTP_{resp.status_code}")
-            data=resp.json();result=(data.get("chart") or {}).get("result") or []
-            if not result:raise RuntimeError("NO_CHART_RESULT")
-            events=((result[0].get("events") or {}).get("splits") or {})
-            out=[]
-            for _,e in events.items():
-                num=float(e.get("numerator"));den=float(e.get("denominator"))
-                ts=e.get("date")
-                if not (math.isfinite(num) and math.isfinite(den) and num>0 and den>0 and ts is not None):
-                    raise RuntimeError("INVALID_SPLIT_EVENT")
-                day=pd.Timestamp(int(ts),unit="s",tz="UTC").date().isoformat()
-                if start_date<=day<=end_date:
-                    out.append({"date":day,"numerator":num,"denominator":den,
-                                "ratio":num/den,"splitRatio":e.get("splitRatio")})
-            out=sorted(out,key=lambda z:z["date"])
-            ans=("PASS",out);_SPLIT_CACHE[key]=ans;return ans
-        except Exception as exc:
-            last=exc
-            if attempt+1<retry_budget:time.sleep(0.6*(attempt+1))
+        for host_name in _YAHOO_CHART_HOSTS:
+            url=f"https://{host_name}/v8/finance/chart/{symbol}"
+            try:
+                resp=crequests.get(url,params=params,impersonate="chrome",timeout=timeout_seconds)
+                if int(resp.status_code)!=200:
+                    raise RuntimeError(f"{host_name}:HTTP_{resp.status_code}")
+                data=resp.json();result=(data.get("chart") or {}).get("result") or []
+                if not result:raise RuntimeError(f"{host_name}:NO_CHART_RESULT")
+                events=((result[0].get("events") or {}).get("splits") or {})
+                out=[]
+                for _,e in events.items():
+                    num=float(e.get("numerator"));den=float(e.get("denominator"))
+                    ts=e.get("date")
+                    if not (math.isfinite(num) and math.isfinite(den) and num>0 and den>0 and ts is not None):
+                        raise RuntimeError(f"{host_name}:INVALID_SPLIT_EVENT")
+                    day=pd.Timestamp(int(ts),unit="s",tz="UTC").date().isoformat()
+                    if start_date<=day<=end_date:
+                        out.append({"date":day,"numerator":num,"denominator":den,
+                                    "ratio":num/den,"splitRatio":e.get("splitRatio")})
+                out=sorted(out,key=lambda z:z["date"])
+                ans=("PASS",out);_SPLIT_CACHE[key]=ans;return ans
+            except Exception as exc:
+                last=exc
+        if attempt+1<retry_budget:time.sleep(0.6*(attempt+1))
     ans=(f"UNKNOWN:{type(last).__name__}:{str(last)[:100]}",[])
     _SPLIT_CACHE[key]=ans;return ans
 
