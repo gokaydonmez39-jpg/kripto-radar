@@ -3308,8 +3308,39 @@
   "c417_rallies_primary_meta": {
     "blob_sha": "fae3a9e86f0659907a51b5a560046de2efa260e8",
     "block_count": 125,
-    "current_queue_count": null,
-    "current_queue_covered": null,
+    "current_queue_count": 3185,
+    "current_queue_covered": true,
+    "effective_symbol_count": 3185,
+    "newscope_partition_meta": {
+      "block_count": 0,
+      "fail_dv30_count": 0,
+      "fail_price_count": 0,
+      "pass_count": 0,
+      "scope_count": 0,
+      "status": "PASS"
+    },
+    "newscope_raw_meta": {
+      "batch_count": 3,
+      "batch_refs": [
+        {
+          "blob_sha": "00d8451c82429c4c58f8180f5483c7bc10c23711",
+          "path": "nasdaq-xray/evidence/rallies_dv30_20261007_newscope_batch_01.json",
+          "symbol_count": 10
+        },
+        {
+          "blob_sha": "2bf00ee1dd2f9ab1299f08cc9c7bb877c0d8b6a9",
+          "path": "nasdaq-xray/evidence/rallies_dv30_20261007_newscope_batch_02.json",
+          "symbol_count": 10
+        },
+        {
+          "blob_sha": "35ffaa15368ae2f1f6bffbb1823b88bc0feeddc3",
+          "path": "nasdaq-xray/evidence/rallies_dv30_20261007_newscope_batch_03.json",
+          "symbol_count": 10
+        }
+      ],
+      "status": "PASS",
+      "symbol_count": 30
+    },
     "pass_count": 510,
     "path": "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/evidence/rallies_dv30_20261007_classification_v2.json",
     "status": "PASS",
@@ -3377,7 +3408,7 @@
   "global_asof_sentinel_fast_fail": false,
   "monotonic_legacy_pass_reuse_count": 0,
   "official_halt_guard_meta": {
-    "content_sha256": "190b1e431e30f61e75fc6e69f314324a143b722cf82e1e3f3389d7db37107426",
+    "content_sha256": "d35f372e0fe6618eb36a1c5a44746a9327f3fedfe495ec0d7872d1cc164b75d4",
     "path": "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_official_source_guard.json",
     "source_status": "PASS",
     "status": "PASS"
