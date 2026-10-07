@@ -245,14 +245,18 @@ def fetch_yahoo_split_events(symbol:str,start_date:str,end_date:str,retries:int=
         from curl_cffi import requests as crequests
     except Exception:
         return "UNKNOWN_TRANSPORT_MISSING",[]
+    # Production factories may bound transport latency more tightly than the
+    # library default. Any timeout/error remains UNKNOWN; this can never create PASS.
+    retry_budget=max(1,int(os.getenv("XRAY_SPLIT_HTTP_RETRIES",str(retries))))
+    timeout_seconds=max(1.0,float(os.getenv("XRAY_SPLIT_HTTP_TIMEOUT_SECONDS","12")))
     p1=int(pd.Timestamp(start_date,tz="UTC").timestamp())
     p2=int((pd.Timestamp(end_date,tz="UTC")+pd.Timedelta(days=2)).timestamp())
     url=f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}"
     params={"period1":p1,"period2":p2,"interval":"1d","events":"splits","includeAdjustedClose":"false"}
     last=None
-    for attempt in range(retries):
+    for attempt in range(retry_budget):
         try:
-            resp=crequests.get(url,params=params,impersonate="chrome",timeout=12)
+            resp=crequests.get(url,params=params,impersonate="chrome",timeout=timeout_seconds)
             if int(resp.status_code)!=200:
                 raise RuntimeError(f"HTTP_{resp.status_code}")
             data=resp.json();result=(data.get("chart") or {}).get("result") or []
@@ -272,7 +276,7 @@ def fetch_yahoo_split_events(symbol:str,start_date:str,end_date:str,retries:int=
             ans=("PASS",out);_SPLIT_CACHE[key]=ans;return ans
         except Exception as exc:
             last=exc
-            if attempt+1<retries:time.sleep(0.6*(attempt+1))
+            if attempt+1<retry_budget:time.sleep(0.6*(attempt+1))
     ans=(f"UNKNOWN:{type(last).__name__}:{str(last)[:100]}",[])
     _SPLIT_CACHE[key]=ans;return ans
 
