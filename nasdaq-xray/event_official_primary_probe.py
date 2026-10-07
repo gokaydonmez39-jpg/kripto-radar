@@ -192,7 +192,7 @@ def discover_ir_document_links(base_url: str, page: str) -> dict[str, list[str]]
     sections = set()
     discrete = set()
     for m in re.finditer(
-        r"<a\\b[^>]*href=[\"']([^\"']+)[\"'][^>]*>(.*?)</a>",
+        r"<a\b[^>]*href=[\"']([^\"']+)[\"'][^>]*>(.*?)</a>",
         page or "",
         re.I | re.S,
     ):
@@ -210,8 +210,8 @@ def discover_ir_document_links(base_url: str, page: str) -> dict[str, list[str]]
 
 def _page_title(page: str) -> str:
     for pat in (
-        r"<h1\\b[^>]*>(.*?)</h1>",
-        r"<title\\b[^>]*>(.*?)</title>",
+        r"<h1\b[^>]*>(.*?)</h1>",
+        r"<title\b[^>]*>(.*?)</title>",
     ):
         m = re.search(pat, page or "", re.I | re.S)
         if m:
