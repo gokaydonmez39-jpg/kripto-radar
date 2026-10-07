@@ -24,6 +24,7 @@ ROOT=Path(__file__).resolve().parent
 PRICE=ROOT/"canonical_current_price_dv30.json"
 CURRENT=ROOT/"nasdaq_screener_pit_current.json"
 ARCHIVE_DIR=ROOT/"evidence"/"nasdaq_screener_pit"
+RAW_ARCHIVE_DIR=ROOT/"evidence"/"nasdaq_screener_raw"
 URL="https://api.nasdaq.com/api/screener/stocks"
 UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/126 Safari/537.36"
 NY=ZoneInfo("America/New_York")
@@ -190,35 +191,97 @@ def canonical_bytes(obj):
     return (json.dumps(obj,ensure_ascii=False,sort_keys=True,indent=2)+"\n").encode("utf-8")
 
 
-def write_outputs(state):
-    CURRENT.write_bytes(canonical_bytes(state))
-    if state.get("same_session_post_close") is not True:
-        return None
-    ARCHIVE_DIR.mkdir(parents=True,exist_ok=True)
-    stamp=datetime.fromisoformat(str(state["retrieved_at_utc"])).astimezone(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-    p=ARCHIVE_DIR/f"nasdaq_screener_pit_{state['asof_et'].replace('-','')}_{stamp}.json"
-    payload=canonical_bytes(state)
-    if p.exists():
-        if p.read_bytes()!=payload:
-            raise RuntimeError("PIT_ARCHIVE_IMMUTABILITY_VIOLATION")
+def build_raw_capture(rows,now_utc=None,source_url=URL):
+    """Preserve post-close public Nasdaq MC observations independent of frozen research ASOF.
+
+    This is evidence capture only. A raw archive can never classify MC. It becomes
+    eligible for a later shadow rebind only when its capture date equals the later
+    canonical ASOF and last-sale independently matches that ASOF completed RTH close.
+    """
+    now_utc=now_utc or datetime.now(timezone.utc)
+    if now_utc.tzinfo is None:
+        raise RuntimeError("CAPTURE_TIME_MUST_BE_TZ_AWARE")
+    now_utc=now_utc.astimezone(timezone.utc)
+    now_et=now_utc.astimezone(NY)
+    post_close_clock=now_et.timetz().replace(tzinfo=None)>=POST_CLOSE_FLOOR
+    records={}
+    for row in rows:
+        sym=str((row or {}).get("symbol") or "").strip().upper()
+        if not sym:
+            continue
+        records[sym]={
+            "nasdaq_lastsale":parse_num((row or {}).get("lastsale")),
+            "nasdaq_market_cap_usd":parse_num((row or {}).get("marketCap")),
+            "name":(row or {}).get("name"),
+        }
+    return {
+        "schema":"XRAY_NASDAQ_SCREENER_RAW_CAPTURE_V1",
+        "execution":"NONE",
+        "real_money":"NO-GO",
+        "unknown_never_pass":True,
+        "alpha_authority":False,
+        "production_mc_authority_changed":False,
+        "source":"NASDAQ_PUBLIC_SCREENER",
+        "source_url":source_url,
+        "retrieved_at_utc":now_utc.isoformat(),
+        "retrieved_at_et":now_et.isoformat(),
+        "capture_date_et":now_et.date().isoformat(),
+        "post_close_clock":post_close_clock,
+        "record_count":len(records),
+        "records":records,
+        "decision_semantics":"RAW_EVIDENCE_ONLY_NO_MC_CLASSIFICATION",
+        "later_rebind_requirements":[
+            "CAPTURE_DATE_EQUALS_CANONICAL_ASOF",
+            "CANONICAL_COMPLETED_RTH_CLOSE_MATCH",
+            "PIT_POLICY_SUCCESSOR_SHADOW_ONLY_UNLESS_SEPARATELY_ACTIVATED",
+        ],
+    }
+
+
+def _write_immutable(path,payload,error_code):
+    if path.exists():
+        if path.read_bytes()!=payload:
+            raise RuntimeError(error_code)
     else:
-        p.write_bytes(payload)
-    return p
+        path.write_bytes(payload)
+
+
+def write_outputs(state,raw_state):
+    CURRENT.write_bytes(canonical_bytes(state))
+    pit_archive=None
+    if state.get("same_session_post_close") is True:
+        ARCHIVE_DIR.mkdir(parents=True,exist_ok=True)
+        stamp=datetime.fromisoformat(str(state["retrieved_at_utc"])).astimezone(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+        pit_archive=ARCHIVE_DIR/f"nasdaq_screener_pit_{state['asof_et'].replace('-','')}_{stamp}.json"
+        _write_immutable(pit_archive,canonical_bytes(state),"PIT_ARCHIVE_IMMUTABILITY_VIOLATION")
+
+    raw_archive=None
+    if raw_state.get("post_close_clock") is True:
+        RAW_ARCHIVE_DIR.mkdir(parents=True,exist_ok=True)
+        stamp=datetime.fromisoformat(str(raw_state["retrieved_at_utc"])).astimezone(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+        raw_archive=RAW_ARCHIVE_DIR/f"nasdaq_screener_raw_{raw_state['capture_date_et'].replace('-','')}_{stamp}.json"
+        _write_immutable(raw_archive,canonical_bytes(raw_state),"RAW_PIT_ARCHIVE_IMMUTABILITY_VIOLATION")
+    return pit_archive,raw_archive
 
 
 def main():
     price=json.loads(PRICE.read_text(encoding="utf-8"))
     rows,source_url=fetch_rows()
-    state=build_state(rows,price,source_url=source_url)
-    archive=write_outputs(state)
+    now_utc=datetime.now(timezone.utc)
+    state=build_state(rows,price,now_utc=now_utc,source_url=source_url)
+    raw_state=build_raw_capture(rows,now_utc=now_utc,source_url=source_url)
+    pit_archive,raw_archive=write_outputs(state,raw_state)
     print(json.dumps({
         "status":"PASS",
         "asof_et":state["asof_et"],
+        "capture_date_et":raw_state["capture_date_et"],
         "same_session_post_close":state["same_session_post_close"],
+        "raw_post_close_clock":raw_state["post_close_clock"],
         "scope_count":state["scope_count"],
         "eligible_count":state["eligible_count"],
         "unknown_count":state["unknown_count"],
-        "archive":str(archive) if archive else None,
+        "pit_archive":str(pit_archive) if pit_archive else None,
+        "raw_archive":str(raw_archive) if raw_archive else None,
     },sort_keys=True))
 
 
