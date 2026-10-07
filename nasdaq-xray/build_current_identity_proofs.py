@@ -386,8 +386,8 @@ def main():
         sec_network_error=sec_network_error or f"{type(e).__name__}:{str(e)[:200]}"
     current_suspects=sorted(
       sym for sym,name in names.items()
-      if str(industries.get(sym) or "").strip().lower()=="blank checks"
-      or bool(re.search(r"\bacquisition\b|\bspac\b|\bblank[ -]?check\b",str(name or ""),re.I))
+      if str(industries.get(sym) or "").strip().lower()!="blank checks"
+      and bool(re.search(r"\bacquisition\b|\bspac\b|\bblank[ -]?check\b",str(name or ""),re.I))
     )
     for sym in current_suspects:
         if sym in operating:
