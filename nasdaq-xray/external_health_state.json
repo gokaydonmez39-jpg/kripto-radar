@@ -1,7 +1,7 @@
 {
   "alpha_authority": false,
   "execution": "NONE",
-  "generated_at_utc": "2026-10-07T14:58:41.169434+00:00",
+  "generated_at_utc": "2026-10-07T15:45:39.210818+00:00",
   "real_money": "NO-GO",
   "schema": "XRAY_EXTERNAL_HEALTH_V1",
   "sources": {
@@ -15,9 +15,9 @@
       "status": "DEGRADED"
     },
     "github_status": {
-      "description": "All Systems Operational",
-      "indicator": "none",
-      "status": "PASS"
+      "description": "Partially Degraded Service",
+      "indicator": "minor",
+      "status": "DEGRADED"
     }
   },
   "status": "DEGRADED"
