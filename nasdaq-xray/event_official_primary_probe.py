@@ -360,6 +360,10 @@ def seed_candidates(sym: str, seed_obj: dict, event_state: dict, submissions: di
             "url": f"{p.scheme}://{p.netloc}",
             "issuer_tokens": list(rec.get("issuer_tokens") or [sym]),
             "source": "PRIOR_CANONICAL_ISSUER_PRIMARY_HOST",
+            # Re-fetch the exact prior primary evidence document.  This is only
+            # a discovery candidate: _discrete_event_match independently
+            # validates issuer identity and extracts an explicit future date.
+            "known_document_urls": [u],
         })
     if submissions:
         for k in ("investorWebsite", "website"):
@@ -453,7 +457,8 @@ def probe_issuer(sym: str, base: dict, asof: str, horizon: set[str]) -> dict:
     # issuer document.  Neither landing nor section HTML can directly classify
     # an Event.  Every discrete page is fetched independently and identity-
     # validated before an explicit future date can become candidate evidence.
-    discrete = set(ir_links.get("discrete") or [])
+    discrete = set(base.get("known_document_urls") or [])
+    discrete.update(ir_links.get("discrete") or [])
     for section_url in (ir_links.get("sections") or [])[:8]:
         section_attempt = {"url": section_url}
         try:
@@ -523,6 +528,15 @@ def selftest() -> None:
         asof,
     )
     assert d4 == "2026-10-27" and basis4 == "SCHEDULE_SENTENCE_EXPLICIT_FUTURE_DATE", (d4, basis4)
+    prior_seed = seed_candidates(
+        "TEST",
+        {"symbols": {"TEST": {"base_url": "https://ir.example.com", "issuer_tokens": ["Example"]}}},
+        {"official_horizon_clearance": {"TEST": {"official_source_url": "https://ir.example.com/news/earnings.html"}}},
+        None,
+    )
+    prior_rows = [r for r in prior_seed if r.get("source") == "PRIOR_CANONICAL_ISSUER_PRIMARY_HOST"]
+    assert len(prior_rows) == 1
+    assert prior_rows[0].get("known_document_urls") == ["https://ir.example.com/news/earnings.html"]
     # Regression: full issuer landing pages are never classified directly.
     # The extractor remains valid for discrete feed/news text, but probe_issuer
     # must mark the base page as discovery-only.
