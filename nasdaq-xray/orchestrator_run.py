@@ -38,6 +38,82 @@ def sha_file(path):
 def hash_lines(items):
     return hashlib.sha256("\n".join(items).encode()).hexdigest()
 
+
+def canonical_frozen_identity_partition_ok(ss):
+    """Exact same-ASOF frozen canonical identity: no missing snapshot dependency.
+
+    Canonical full-state and manifest are immutable readback authorities in
+    this branch, NOT alpha authority. Verify the entire PASS/UNKNOWN partition
+    against both files, plus exact SEC and identity-proof Git blobs.
+    """
+    try:
+        dm=ss.get("discovery_meta") or {}
+        if dm.get("authority")!="CANONICAL_FROZEN_FULL_IDENTITY_SAME_ASOF":
+            return False
+        if dm.get("frozen_identity_path")!="nasdaq-xray/canonical_current_full_state.json":
+            return False
+        if dm.get("frozen_manifest_path")!="nasdaq-xray/canonical_current_master_manifest.json":
+            return False
+        sp=ROOT/"canonical_current_full_state.json"
+        mp=ROOT/"canonical_current_master_manifest.json"
+        if not sp.is_file() or not mp.is_file():
+            return False
+        state=json.loads(sp.read_text(encoding="utf-8"))
+        manifest=json.loads(mp.read_text(encoding="utf-8"))
+        asof=str(ss.get("asof_et") or "")
+        q=list(ss.get("queue") or [])
+        unknown=sorted(set(ss.get("identity_unknown_symbols") or []))
+        if not (
+            state.get("schema")=="XRAY_NASDAQ_SCREENER_SINA_V2"
+            and manifest.get("schema")=="XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1"
+            and state.get("asof_et")==asof==manifest.get("asof_et")
+            and state.get("identity_partition_policy")==ss.get("identity_partition_policy")
+            and manifest.get("identity_partition_policy")==ss.get("identity_partition_policy")
+            and state.get("execution")=="NONE" and state.get("real_money")=="NO-GO"
+            and manifest.get("execution")=="NONE" and manifest.get("real_money")=="NO-GO"
+            and state.get("unknown_never_pass") is True
+            and manifest.get("unknown_never_pass") is True
+            and manifest.get("source_state_blob_sha")==git_blob_sha(sp)
+            and list(state.get("queue") or [])==q
+            and state.get("queue_hash")==ss.get("queue_hash")==manifest.get("queue_hash")
+            and list(manifest.get("pass_symbols") or [])==q
+            and int(manifest.get("pass_count",-1))==len(q)
+            and sorted(state.get("identity_unknown_symbols") or [])==unknown
+            and sorted(manifest.get("unknown_symbols") or [])==unknown
+            and int(manifest.get("unknown_count",-1))==len(unknown)
+            and int(state.get("raw_identity_total",-1))==int(ss.get("raw_identity_total",-2))==int(manifest.get("raw_identity_total",-3))
+            and dm.get("frozen_queue_hash")==ss.get("queue_hash")
+            and (state.get("security_names") or {})==(ss.get("security_names") or {})
+            and (state.get("identity_unknown_detail") or {})==(ss.get("identity_unknown_detail") or {})
+            and (state.get("discovery") or {})==(ss.get("discovery") or {})
+        ):
+            return False
+        stamp=asof.replace("-","")
+        names=(
+            ("sec_spac_proof",f"master_sec_spac_proof_{stamp}.json","sec_spac_proof_blob_sha"),
+            ("asof_identity_proof",f"master_asof_identity_proof_{stamp}.json","asof_identity_proof_blob_sha"),
+        )
+        for key,filename,dm_sha in names:
+            p=ROOT/filename
+            row=manifest.get(key) or {}
+            if not p.is_file() or row.get("path")!="nasdaq-xray/"+filename:
+                return False
+            if row.get("blob_sha")!=git_blob_sha(p) or dm.get(dm_sha)!=row.get("blob_sha"):
+                return False
+            proof=json.loads(p.read_text(encoding="utf-8"))
+            if (proof.get("asof_et")!=asof
+                or proof.get("execution")!="NONE" or proof.get("real_money")!="NO-GO"
+                or proof.get("unknown_never_pass") is not True):
+                return False
+        cp=manifest.get("completion_proof") or {}
+        if cp.get("identity_partition_policy_exact") is not True:
+            return False
+        if cp.get("identity_unknown_partition_exact") is not True:
+            return False
+        return True
+    except Exception:
+        return False
+
 def frozen_identity_partition_ok(ss):
     """Validate frozen PASS+UNKNOWN identity partitions without promoting UNKNOWN.
 
@@ -75,7 +151,16 @@ def frozen_identity_partition_ok(ss):
                 and int(dm.get("discovery_queue_total",-1))==raw+blank_count
             )
             if policy=="MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V4_EXACT_ASOF_SNAPSHOT_GUARD":
-                discovery_total_ok=bool(discovery_total_ok and exact_asof_v4_identity_proofs_ok(ss))
+                # Frozen canonical reuse has exact full-state, manifest and
+                # SEC/ASOF proof bindings. It does not require a separate
+                # membership-snapshot path, which may never have been created.
+                # A non-frozen V4 membership replay still requires the snapshot.
+                if dm.get("authority")=="CANONICAL_FROZEN_FULL_IDENTITY_SAME_ASOF":
+                    discovery_total_ok=bool(
+                        discovery_total_ok and canonical_frozen_identity_partition_ok(ss))
+                else:
+                    discovery_total_ok=bool(
+                        discovery_total_ok and exact_asof_v4_identity_proofs_ok(ss))
         else:
             return False
         return bool(

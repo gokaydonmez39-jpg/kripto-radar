@@ -105,6 +105,70 @@ def test_direct_no_web_authority():
     assert o.direct_no_web_identity_ok(bad) is False
 
 
+
+def test_frozen_canonical_without_snapshot(root: Path):
+    """One positive exact canonical partition and hostile drift mutations."""
+    import copy
+    asof="2026-10-07"
+    q=["OPER"]
+    unknown=["SPAC"]
+    policy="MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V4_EXACT_ASOF_SNAPSHOT_GUARD"
+    dm={
+      "authority":"CANONICAL_FROZEN_FULL_IDENTITY_SAME_ASOF",
+      "full_identity":True,"identity_partition_policy":policy,
+      "raw_identity_total":2,"discovery_queue_total":2,
+      "identity_unknown_count":1,"identity_unknown_hash":o.hash_lines(unknown),
+      "official_blank_checks_excluded_count":0,
+      "official_blank_checks_excluded_hash":o.hash_lines([]),
+      "frozen_identity_path":"nasdaq-xray/canonical_current_full_state.json",
+      "frozen_manifest_path":"nasdaq-xray/canonical_current_master_manifest.json",
+      "frozen_queue_hash":o.hash_lines(q),
+    }
+    detail={"SPAC":{"reason":"SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED","unknown_never_pass":True}}
+    source={
+      "schema":"XRAY_NASDAQ_SCREENER_SINA_V2","asof_et":asof,
+      "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
+      "identity_partition_policy":policy,"queue":q,"queue_hash":o.hash_lines(q),
+      "queue_total":1,"raw_identity_total":2,"identity_unknown_symbols":unknown,
+      "identity_unknown_detail":detail,"security_names":{"OPER":"Operating Common"},
+      "discovery":{"OPER":{"industry":"Technology"}},"discovery_meta":dm,
+    }
+    manifest={
+      "schema":"XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1","asof_et":asof,
+      "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
+      "identity_partition_policy":policy,"source_state_blob_sha":None,
+      "queue_hash":o.hash_lines(q),"pass_symbols":q,"pass_count":1,
+      "unknown_symbols":unknown,"unknown_count":1,"raw_identity_total":2,
+      "completion_proof":{"identity_partition_policy_exact":True,
+                          "identity_unknown_partition_exact":True},
+    }
+    for key,prefix in [("sec_spac_proof","master_sec_spac_proof_"),
+                       ("asof_identity_proof","master_asof_identity_proof_")]:
+        name=prefix+"20261007.json"
+        (root/name).write_text(json.dumps({"asof_et":asof,"execution":"NONE",
+                                            "real_money":"NO-GO","unknown_never_pass":True}))
+        sha=o.git_blob_sha(root/name)
+        manifest[key]={"path":"nasdaq-xray/"+name,"blob_sha":sha}
+        dm[key+"_blob_sha"]=sha
+    (root/"canonical_current_full_state.json").write_text(json.dumps(source))
+    manifest["source_state_blob_sha"]=o.git_blob_sha(root/"canonical_current_full_state.json")
+    (root/"canonical_current_master_manifest.json").write_text(json.dumps(manifest))
+    ss=dict(source)
+    ss["discovery_meta"]=dict(dm)
+    assert o.frozen_identity_partition_ok(ss), "EXACT_FROZEN_CANONICAL_SHOULD_PASS"
+    bad=copy.deepcopy(ss)
+    bad["identity_unknown_detail"]["SPAC"]["unknown_never_pass"]=False
+    assert not o.frozen_identity_partition_ok(bad),"UNKNOWN_MUST_NOT_PROMOTE"
+    bad=copy.deepcopy(ss)
+    bad["discovery_meta"]["sec_spac_proof_blob_sha"]="0"*40
+    assert not o.frozen_identity_partition_ok(bad),"SEC_PROOF_DRIFT_MUST_BLOCK"
+    bad=copy.deepcopy(ss)
+    bad["queue"]=["OPER","SPAC"]
+    assert not o.frozen_identity_partition_ok(bad),"UNPROVEN_SPAC_CANNOT_ENTER_QUEUE"
+    manifest["source_state_blob_sha"]="0"*40
+    (root/"canonical_current_master_manifest.json").write_text(json.dumps(manifest))
+    assert not o.frozen_identity_partition_ok(ss),"FULL_STATE_BLOB_DRIFT_MUST_BLOCK"
+
 def main():
     original_root=o.ROOT
     with tempfile.TemporaryDirectory() as td:
@@ -113,6 +177,7 @@ def main():
         try:
             test_immutable_membership_authority(root)
             test_direct_no_web_authority()
+            test_frozen_canonical_without_snapshot(root)
             # Seed deliberately stale prior-ASOF files; invalidation must replace all of them.
             (root/"mc_zero_key_state.json").write_text(
                 json.dumps({"schema":"XRAY_MC_ZERO_KEY_V2","asof_et":"2026-09-30",
