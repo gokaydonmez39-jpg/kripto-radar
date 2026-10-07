@@ -567,6 +567,7 @@ def validate_mc_semantics(mc: dict, price: dict, pass_symbols: list[str], pass_h
 def load_valid_mc_rows(price: dict, pass_symbols: list[str], pass_hash: str, master: dict):
     stamp = price["asof_et"].replace("-", "")
     rows = []
+    rejected = []
     for p in sorted(ROOT.glob(f"canonical_mc_bridge_{stamp}_c417_dv30_v*.json")):
         try:
             j = json.loads(p.read_text())
@@ -604,9 +605,17 @@ def load_valid_mc_rows(price: dict, pass_symbols: list[str], pass_hash: str, mas
                 "current_reusable_handoff_blob": hs,
                 "current_reusable_handoff_relation": relation,
             })
-        except Exception:
+        except Exception as e:
+            rejected.append({
+                "path": relpath(p),
+                "error_type": type(e).__name__,
+                "error": repr(e)[:1200],
+            })
             continue
-    assert rows, "NO_VALID_MC_AUTHORITY_FOR_PROVENANCE_REBIND"
+    assert rows, (
+        "NO_VALID_MC_AUTHORITY_FOR_PROVENANCE_REBIND",
+        rejected,
+    )
     return rows
 
 
