@@ -18,6 +18,8 @@ def test_immutable_membership_authority(root: Path):
     snap={
         "schema":"XRAY_NASDAQ_DIRECTORY_SNAPSHOT_V1","asof_et":asof,
         "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
+        "authority":"IMMUTABLE_EXACT_ASOF_NASDAQ_DIRECTORY_MEMBERSHIP_SNAPSHOT",
+        "applicability":"EXACT_ASOF_MEMBERSHIP_ONLY_NO_FORWARD_CARRY",
         "membership_only":True,"identity_decisions_reused":False,
         "source_queue_classification_ignored":True,
         "source_directory_date":asof,
@@ -56,6 +58,51 @@ def test_immutable_membership_authority(root: Path):
     bad=json.loads(json.dumps(ss))
     bad["discovery_meta"]["membership_snapshot_blob_sha"]="0"*40
     assert o.immutable_membership_partition_ok(bad) is False
+    bad=json.loads(json.dumps(ss))
+    bad_snap=json.loads(p.read_text())
+    bad_snap["authority"]="WRONG_AUTHORITY"
+    p.write_text(json.dumps(bad_snap,sort_keys=True)+"\n")
+    bad["discovery_meta"]["membership_snapshot_blob_sha"]=o.git_blob_sha(p)
+    assert o.immutable_membership_partition_ok(bad) is False
+
+
+def test_direct_no_web_authority():
+    asof="2026-10-06"
+    queue=["AAA"]; unknown=["SPAC"]
+    ss={
+        "asof_et":asof,
+        "official_footer":"File Creation Time: 1006202617:01|||||||",
+        "queue":queue,"queue_total":1,"queue_hash":o.hash_lines(queue),
+        "raw_identity_total":2,
+        "identity_partition_policy":"MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V3_FROZEN_GUARD",
+        "identity_unknown_symbols":unknown,
+        "identity_unknown_detail":{"SPAC":{
+            "reason":"SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
+            "unknown_never_pass":True,
+        }},
+        "discovery_meta":{
+            "authority":"NASDAQTRADER_FULL_IDENTITY_NO_NASDAQ_WEB_MARKET_METADATA",
+            "full_identity":True,
+            "nasdaq_web_screener_used":False,
+            "identity_partition_policy":"MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V3_FROZEN_GUARD",
+            "identity_unknown_count":1,
+            "identity_unknown_hash":o.hash_lines(unknown),
+            "raw_identity_total":2,
+            "discovery_queue_total":2,
+            "official_blank_checks_excluded_count":0,
+            "official_blank_checks_excluded_hash":o.hash_lines([]),
+        },
+    }
+    assert o.direct_no_web_identity_ok(ss) is True
+    bad=json.loads(json.dumps(ss))
+    bad["official_footer"]="File Creation Time: 1005202617:01|||||||"
+    assert o.direct_no_web_identity_ok(bad) is False
+    bad=json.loads(json.dumps(ss))
+    bad["discovery_meta"]["nasdaq_web_screener_used"]=True
+    assert o.direct_no_web_identity_ok(bad) is False
+    bad=json.loads(json.dumps(ss))
+    bad["queue_hash"]="0"*64
+    assert o.direct_no_web_identity_ok(bad) is False
 
 
 def main():
@@ -65,6 +112,7 @@ def main():
         o.ROOT=root
         try:
             test_immutable_membership_authority(root)
+            test_direct_no_web_authority()
             # Seed deliberately stale prior-ASOF files; invalidation must replace all of them.
             (root/"mc_zero_key_state.json").write_text(
                 json.dumps({"schema":"XRAY_MC_ZERO_KEY_V2","asof_et":"2026-09-30",
