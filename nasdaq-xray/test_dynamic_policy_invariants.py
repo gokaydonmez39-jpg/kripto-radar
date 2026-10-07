@@ -124,12 +124,17 @@ def main():
     assert valid_bridge_price_resolution({
       "decision":"PASS_PRICE_DV30","price":100.0,"dv30":100_000_000.0,
       "known_session_count":30,"missing_sessions":[],"no_synthetic_bar":True,
-      "source":"TEST","proof":"EXACT30_MEDIAN_GE_GATE"
+      "source":"RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9","proof":"EXACT30_MEDIAN_GE_GATE"
     },"2026-10-05") is True
     assert valid_bridge_price_resolution({
       "decision":"PASS_PRICE_DV30","price":100.0,"dv30":100_000_000.0,
+      "known_session_count":30,"missing_sessions":[],"no_synthetic_bar":True,
+      "source":"ALPACA_HISTORICAL_SIP_DAILY_BATCH_NON_G9","proof":"EXACT30_MEDIAN_GE_GATE"
+    },"2026-10-05") is False
+    assert valid_bridge_price_resolution({
+      "decision":"PASS_PRICE_DV30","price":100.0,"dv30":100_000_000.0,
       "known_session_count":20,"missing_sessions":[],"no_synthetic_bar":True,
-      "source":"TEST","proof":"EXACT30_MEDIAN_GE_GATE"
+      "source":"RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9","proof":"EXACT30_MEDIAN_GE_GATE"
     },"2026-10-05") is False
     assert valid_bridge_price_resolution({
       "decision":"FAIL_DV30_INSUFFICIENT_SESSIONS","price":20.0,
