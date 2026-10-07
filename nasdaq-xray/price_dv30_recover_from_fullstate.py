@@ -841,6 +841,42 @@ def current_price_baseline_valid(prior,s,asof,queue):
         return False
 
 
+def price_decision_semantic_view(obj):
+    """Decision/evidence view used only to suppress metadata-only PRICE rewrites.
+
+    Preserve bytes only when ASOF/queue/policy partitions and every symbol's
+    status + evidence-bearing info are identical. Transient provenance/retry
+    diagnostics are intentionally excluded. Any real gate/evidence/status
+    change produces a new canonical artifact.
+    """
+    results=obj.get("results") or {}
+    return {
+      "schema":obj.get("schema"),
+      "task_id":obj.get("task_id"),
+      "asof_et":obj.get("asof_et"),
+      "execution":obj.get("execution"),
+      "real_money":obj.get("real_money"),
+      "unknown_never_pass":obj.get("unknown_never_pass"),
+      "source_master_queue_hash":obj.get("source_master_queue_hash"),
+      "source_master_count":obj.get("source_master_count"),
+      "expected30":list(obj.get("expected30") or []),
+      "gate_order":list(obj.get("gate_order") or []),
+      "thresholds":obj.get("thresholds") or {},
+      "counts":obj.get("counts") or {},
+      "unknown_count":obj.get("unknown_count"),
+      "unknown_symbols":list(obj.get("unknown_symbols") or []),
+      "blocked_count":obj.get("blocked_count"),
+      "blocked_symbols":list(obj.get("blocked_symbols") or []),
+      "pass_count":obj.get("pass_count"),
+      "pass_symbols":list(obj.get("pass_symbols") or []),
+      "pass_hash":obj.get("pass_hash"),
+      "results":{
+        s:{"status":(r or {}).get("status"),"info":(r or {}).get("info")}
+        for s,r in sorted(results.items())
+      },
+    }
+
+
 def main():
     s=json.loads(INPUT.read_text())
     asof=s.get("asof_et")
@@ -1028,6 +1064,11 @@ def main():
       "pass_hash":hashlib.sha256("\n".join(passes).encode()).hexdigest(),
       "results":dict(sorted(results.items()))
     }
-    OUT.write_text(json.dumps(obj,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
-    print(json.dumps({"reused":obj["reused_terminal_count"],"reevaluated":obj["reevaluated_count"],"policy_replay":FORCE_POLICY_REPLAY,"policy_replay_input_count":len(policy_redo),"counts":obj["counts"],"unknown_count":obj["unknown_count"],"blocked_count":obj["blocked_count"],"block_recovery_input":obj["block_recovery_input_count"],"block_recovery_resolved":obj["block_recovery_resolved_count"],"pass_count":obj["pass_count"],"pass_hash":obj["pass_hash"]},sort_keys=True))
+    byte_stable_preserved=False
+    if baseline_source=="CURRENT_PRICE_ARTIFACT" and price_decision_semantic_view(prior)==price_decision_semantic_view(obj):
+        obj=prior
+        byte_stable_preserved=True
+    else:
+        OUT.write_text(json.dumps(obj,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
+    print(json.dumps({"reused":obj["reused_terminal_count"],"reevaluated":obj["reevaluated_count"],"policy_replay":FORCE_POLICY_REPLAY,"policy_replay_input_count":len(policy_redo),"counts":obj["counts"],"unknown_count":obj["unknown_count"],"blocked_count":obj["blocked_count"],"block_recovery_input":obj["block_recovery_input_count"],"block_recovery_resolved":obj["block_recovery_resolved_count"],"pass_count":obj["pass_count"],"pass_hash":obj["pass_hash"],"byte_stable_preserved":byte_stable_preserved},sort_keys=True))
 if __name__=="__main__":main()
