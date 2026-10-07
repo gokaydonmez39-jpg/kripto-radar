@@ -20,6 +20,7 @@ HARD_DV30=50_000_000.0
 RESOLVER_REQUEST=Path(os.getenv("XRAY_CURRENT_RESOLVER_REQUEST",str(ROOT/"canonical_current_resolver_request.json")))
 RESOLVER_CHUNK_MANIFEST=Path(os.getenv("XRAY_CURRENT_RESOLVER_CHUNK_MANIFEST",str(ROOT/"canonical_current_resolver_chunk_manifest.json")))
 OFFICIAL_GUARD=Path(os.getenv("XRAY_OFFICIAL_SOURCE_GUARD",str(ROOT/"canonical_official_source_guard.json")))
+OFFICIAL_LISTING_REGISTRY=Path(os.getenv("XRAY_OFFICIAL_LISTING_REGISTRY",str(ROOT/"price_official_listing_registry.json")))
 
 
 def git_blob_sha(path:Path)->str:
@@ -921,6 +922,72 @@ def official_full_session_halt_terminal(guard,sym,asof):
         return None
 
 
+def load_official_listing_registry():
+    try:
+        obj=json.loads(OFFICIAL_LISTING_REGISTRY.read_text())
+        if not (
+          obj.get("schema")=="XRAY_PRICE_OFFICIAL_LISTING_REGISTRY_V1"
+          and obj.get("authority")=="OFFICIAL_LISTING_DATE_FAIL_ONLY"
+          and obj.get("execution")=="NONE" and obj.get("real_money")=="NO-GO"
+          and obj.get("unknown_never_pass") is True
+          and isinstance(obj.get("records"),dict)
+        ):
+            return None,{"status":"INVALID","reason":"REGISTRY_SCHEMA_OR_SAFETY_INVALID"}
+        return obj,{
+          "status":"PASS",
+          "path":str(OFFICIAL_LISTING_REGISTRY),
+          "content_sha256":hashlib.sha256(OFFICIAL_LISTING_REGISTRY.read_bytes()).hexdigest(),
+          "record_count":len(obj.get("records") or {}),
+        }
+    except Exception as e:
+        return None,{"status":"UNKNOWN","reason":type(e).__name__+":"+str(e)[:160]}
+
+
+def official_recent_listing_terminal(registry,sym,asof,exp30):
+    """Fail-only proof that exact-30 DV30 cannot exist for a newly listed security.
+
+    This function can never create PASS. It requires an official first-trade date
+    strictly after the first session in the exact 30-session window and no later
+    than ASOF. That proves fewer than 30 completed trading sessions can exist.
+    """
+    try:
+        if not isinstance(registry,dict):
+            return None
+        rec=(registry.get("records") or {}).get(str(sym).upper())
+        if not isinstance(rec,dict):
+            return None
+        authority=str(rec.get("authority") or "")
+        if authority not in {
+          "ISSUER_IR_PRIMARY","SEC_PRIMARY","NASDAQ_PRIMARY_PUBLISHER",
+          "NASDAQ_TRADER_PRIMARY",
+        }:
+            return None
+        source_url=str(rec.get("source_url") or "")
+        first=str(rec.get("first_trade_date") or "")[:10]
+        if not source_url or len(first)!=10 or not exp30:
+            return None
+        if first>str(asof) or first<=str(exp30[0]):
+            return None
+        possible_sessions=sum(1 for d in exp30 if d>=first)
+        if possible_sessions>=30:
+            return None
+        return {
+          "reason":"OFFICIAL_RECENT_LISTING_LT_30_COMPLETED_SESSIONS",
+          "proof":"OFFICIAL_FIRST_TRADE_DATE_AFTER_EXACT30_WINDOW_START",
+          "source":authority,
+          "source_url":source_url,
+          "evidence_kind":str(rec.get("evidence_kind") or ""),
+          "first_trade_date":first,
+          "asof_et":str(asof),
+          "exact30_window_start":str(exp30[0]),
+          "max_possible_completed_sessions_in_exact30_window":possible_sessions,
+          "no_synthetic_bar":True,
+          "decision_direction":"FAIL_ONLY_NEVER_PASS",
+        }
+    except Exception:
+        return None
+
+
 def load_official_halt_guard():
     try:
         guard=json.loads(OFFICIAL_GUARD.read_text())
@@ -1082,6 +1149,25 @@ def main():
             }
             official_halt_terminalized.append(sym)
 
+    # Official first-trade/listing dates can terminalize recent listings when
+    # the exact 30-session DV30 history cannot mathematically exist by ASOF.
+    # This is fail-only and never manufactures a bar, price, volume, or PASS.
+    official_listing_registry,official_listing_registry_meta=load_official_listing_registry()
+    official_listing_terminalized=[]
+    if official_listing_registry is not None:
+        for sym,row in sorted(results.items()):
+            if row.get("status")!="BLOCK_CURRENT_RUN":
+                continue
+            ev=official_recent_listing_terminal(official_listing_registry,sym,asof,exp30)
+            if not ev:
+                continue
+            results[sym]={
+              "status":"FAIL_DV30_INSUFFICIENT_SESSIONS",
+              "info":ev,
+              "provenance":"OFFICIAL_RECENT_LISTING_FAIL_ONLY",
+            }
+            official_listing_terminalized.append(sym)
+
     # Resolver BLOCK_CURRENT_RUN is fail-closed, but it must not silently
     # disappear from completeness. Re-evaluate non-halt blocks through the
     # remaining zero-dollar local chain (Sina -> Yahoo fail-only). Nasdaq web
@@ -1140,6 +1226,9 @@ def main():
       "official_halt_guard_meta":official_halt_guard_meta,
       "official_halt_terminalized_count":len(official_halt_terminalized),
       "official_halt_terminalized_symbols":sorted(official_halt_terminalized),
+      "official_listing_registry_meta":official_listing_registry_meta,
+      "official_listing_terminalized_count":len(official_listing_terminalized),
+      "official_listing_terminalized_symbols":sorted(official_listing_terminalized),
       "pass_count":len(passes),"pass_symbols":passes,
       "pass_hash":hashlib.sha256("\n".join(passes).encode()).hexdigest(),
       "results":dict(sorted(results.items()))
@@ -1150,5 +1239,5 @@ def main():
         byte_stable_preserved=True
     else:
         OUT.write_text(json.dumps(obj,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
-    print(json.dumps({"reused":obj["reused_terminal_count"],"reevaluated":obj["reevaluated_count"],"policy_replay":FORCE_POLICY_REPLAY,"policy_replay_input_count":len(policy_redo),"counts":obj["counts"],"unknown_count":obj["unknown_count"],"blocked_count":obj["blocked_count"],"block_recovery_input":obj["block_recovery_input_count"],"block_recovery_resolved":obj["block_recovery_resolved_count"],"official_halt_terminalized":obj.get("official_halt_terminalized_count",0),"pass_count":obj["pass_count"],"pass_hash":obj["pass_hash"],"byte_stable_preserved":byte_stable_preserved},sort_keys=True))
+    print(json.dumps({"reused":obj["reused_terminal_count"],"reevaluated":obj["reevaluated_count"],"policy_replay":FORCE_POLICY_REPLAY,"policy_replay_input_count":len(policy_redo),"counts":obj["counts"],"unknown_count":obj["unknown_count"],"blocked_count":obj["blocked_count"],"block_recovery_input":obj["block_recovery_input_count"],"block_recovery_resolved":obj["block_recovery_resolved_count"],"official_halt_terminalized":obj.get("official_halt_terminalized_count",0),"official_listing_terminalized":obj.get("official_listing_terminalized_count",0),"pass_count":obj["pass_count"],"pass_hash":obj["pass_hash"],"byte_stable_preserved":byte_stable_preserved},sort_keys=True))
 if __name__=="__main__":main()
