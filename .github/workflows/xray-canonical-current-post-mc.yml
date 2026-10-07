@@ -714,6 +714,8 @@ jobs:
           XRAY_STAGE1_HISTORY_CACHE_DIR: ${{ runner.temp }}/xray-history-cache
           XRAY_STAGE1_CACHE_REQUIRED: "1"
           XRAY_STAGE1_WORKERS: "8"
+          XRAY_SPLIT_HTTP_TIMEOUT_SECONDS: "4"
+          XRAY_SPLIT_HTTP_RETRIES: "1"
         run: python nasdaq-xray/stage1_shadow.py
       - name: Run regime breadth
         if: steps.mc.outputs.ready == 'true'
@@ -733,6 +735,8 @@ jobs:
           XRAY_DEEP_HISTORY_CACHE_DIR: ${{ runner.temp }}/xray-history-cache
           XRAY_DEEP_CACHE_REQUIRED: "1"
           XRAY_DEEP_WORKERS: "8"
+          XRAY_SPLIT_HTTP_TIMEOUT_SECONDS: "4"
+          XRAY_SPLIT_HTTP_RETRIES: "1"
         run: python nasdaq-xray/deep_pre_r1_shadow.py
       - name: Persist exact trigger-scope history snapshots
         if: steps.mc.outputs.ready == 'true'
