@@ -37,9 +37,9 @@
       "UCFI",
       "UCFIW"
     ],
-    "age_seconds": 2.832,
-    "generated_at_utc": "2026-10-07T22:39:04.699901+00:00",
-    "guard_blob_sha": "3f5b8b089ab9bceb0ea5e708216715a7edb6805f",
+    "age_seconds": 2.697,
+    "generated_at_utc": "2026-10-07T22:43:02.064796+00:00",
+    "guard_blob_sha": "755749a49fc31d21ad7c97fce1a149959afd9975",
     "guard_path": "nasdaq-xray/canonical_official_source_guard.json",
     "max_age_seconds": 900,
     "security_status_suspension_symbols": [
@@ -206,7 +206,7 @@
     },
     "account_live_probe": {
       "balance_parseable": false,
-      "blob_sha": "2cb4c16806397a4e761f60e9cde9172bae22f8b9",
+      "blob_sha": "d749349ce4725d60450ca855c727cf2eb7078278",
       "network_attempted": false,
       "path": "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/account_effective_probe_state.json",
       "positions_parseable": false,
@@ -217,7 +217,7 @@
       "secret_values_persisted": false,
       "status": "BLOCKED_MISSING_CREDENTIALS",
       "workflow_run_attempt": "1",
-      "workflow_run_id": "37697389588"
+      "workflow_run_id": "37697666102"
     },
     "deep": {
       "blob_sha": "12f5f08a49768dc52f8ee334e66a2bfa906a3bcd",
@@ -240,7 +240,7 @@
       "path": "nasdaq-xray/canonical_current_family_c.json"
     },
     "final": {
-      "blob_sha": "c5841f1ee0675340b427750ffa0f622bf96d3747",
+      "blob_sha": "318f1ae3657044061a1225187270e1b8538529c0",
       "path": "nasdaq-xray/canonical_current_final_tech.json"
     },
     "full_state": {
@@ -277,11 +277,11 @@
       "semantic_rebind": false
     },
     "official_halt_guard": {
-      "blob_sha": "3f5b8b089ab9bceb0ea5e708216715a7edb6805f",
+      "blob_sha": "755749a49fc31d21ad7c97fce1a149959afd9975",
       "path": "nasdaq-xray/canonical_official_source_guard.json"
     },
     "pointer": {
-      "blob_sha": "769967eb2bada29ef52ec9c94ee991a066074038",
+      "blob_sha": "780d05bbcef06e2cf3e6e087878df844a86ca88d",
       "path": "nasdaq-xray/chatgpt_canonical_state_v2.json"
     },
     "policy": {
@@ -309,7 +309,7 @@
   "final_gate_reporting_zero_alpha": true,
   "full_end_to_end_research_pass": false,
   "g9_global_status": "G9_BLOCKED_FREE_AUTOMATION_PATH",
-  "generated_at_utc": "2026-10-07T22:39:07.532661+00:00",
+  "generated_at_utc": "2026-10-07T22:43:04.763627+00:00",
   "pointer_asof_before_candidate": "2026-10-07",
   "r92_account_g9_applicable": false,
   "r92_candidates": [],
