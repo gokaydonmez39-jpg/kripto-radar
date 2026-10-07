@@ -59,8 +59,8 @@ EARNINGS_RE = re.compile(
     re.I,
 )
 SCHEDULE_RE = re.compile(
-    r"will\s+(?:release|report|announce|host)|to\s+(?:release|report|announce)|"
-    r"reporting\s+date|results\s+on|conference\s+call.*?on",
+    r"will\s+(?:release|report|announce|host)|to\s+(?:release|report|announce|host)|"
+    r"reporting\s+date|results\s+on",
     re.I,
 )
 RSS_HINT_RE = re.compile(r"rss|atom|feed", re.I)
@@ -120,8 +120,8 @@ def valid_http_url(url: str) -> bool:
     except Exception:
         return False
 
-def dates_in_text(text: str) -> list[str]:
-    out = set()
+def date_spans_in_text(text: str) -> list[tuple[int, str]]:
+    out = {}
     for pat_i, pat in enumerate(DATE_PATTERNS):
         for m in pat.finditer(text or ""):
             try:
@@ -132,10 +132,14 @@ def dates_in_text(text: str) -> list[str]:
                     d = date(int(m.group(1)), int(m.group(2)), int(m.group(3)))
                 else:
                     d = date(int(m.group(3)), int(m.group(1)), int(m.group(2)))
-                out.add(d.isoformat())
+                out[(m.start(), d.isoformat())] = None
             except Exception:
                 continue
     return sorted(out)
+
+
+def dates_in_text(text: str) -> list[str]:
+    return sorted({d for _, d in date_spans_in_text(text)})
 
 def announced_event_date(title: str, body: str, asof: str) -> tuple[str | None, str | None]:
     """Extract an explicit future event date, avoiding article publication dates.
@@ -162,10 +166,15 @@ def announced_event_date(title: str, body: str, asof: str) -> tuple[str | None, 
         # "NEW YORK, Oct. 07, 2026 ... will release ... October 27, 2026".
         # Only dates at/after scheduling language are eligible event dates.
         for sm in schedule_matches:
-            tail = s[sm.start():]
-            for d in dates_in_text(tail):
+            tail = s[sm.end():]
+            # Preserve textual order: take the first future date after the
+            # scheduling clause, not the numerically earliest date anywhere
+            # later in flattened HTML. Historical fiscal-period dates are
+            # skipped; publication datelines before the verb are unreachable.
+            for _, d in date_spans_in_text(tail):
                 if d > asof:
                     hits.append((d, s[:500]))
+                    break
     if hits:
         hits.sort(key=lambda x: x[0])
         return hits[0][0], "SCHEDULE_SENTENCE_EXPLICIT_FUTURE_DATE"
@@ -505,9 +514,12 @@ def selftest() -> None:
     assert d3 is None, d3
     d4, basis4 = announced_event_date(
         "Release Details",
+        "EXL schedules third quarter 2026 financial results conference call October 07, 2026 "
         "NEW YORK, Oct. 07, 2026 (GLOBE NEWSWIRE) -- ExlService Holdings, Inc. "
         "will release financial results for the third quarter ended September 30, 2026, "
-        "on Tuesday, October 27, 2026, after the market closes.",
+        "on Tuesday, October 27, 2026, after the market closes. "
+        "The company will host a conference call at 10:00 a.m. EDT the following day, "
+        "Wednesday, October 28, 2026.",
         asof,
     )
     assert d4 == "2026-10-27" and basis4 == "SCHEDULE_SENTENCE_EXPLICIT_FUTURE_DATE", (d4, basis4)
