@@ -1,0 +1,69 @@
+name: XRAY Final Risk RR Independent Audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/final_risk_rr_independent_audit.py"
+      - "nasdaq-xray/canonical_current_final_tech.json"
+      - ".github/workflows/xray-final-risk-rr-independent-audit.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: xray-final-risk-rr-independent-audit
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Compile independent audit
+        run: python -m py_compile nasdaq-xray/final_risk_rr_independent_audit.py
+
+      - name: Recompute frozen Final risk R1 RR
+        run: |
+          python nasdaq-xray/final_risk_rr_independent_audit.py \
+            --final nasdaq-xray/canonical_current_final_tech.json \
+            --out "$RUNNER_TEMP/final_risk_rr_independent_audit.json"
+
+      - name: Validate audit safety and exact scope
+        run: |
+          python - <<'PY'
+          import json, os, pathlib
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"final_risk_rr_independent_audit.json"
+          j=json.load(open(p))
+          assert j["schema"]=="XRAY_FINAL_RISK_RR_INDEPENDENT_AUDIT_V1"
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          assert j["unknown_never_pass"] is True
+          assert j["alpha_authority"] is False and j["decision_authority"] is False
+          assert j["row_count"]==len(j["rows"])
+          assert j["mismatch_count"]==0
+          print({
+            "XRAY_FINAL_RISK_RR_INDEPENDENT_AUDIT":"PASS",
+            "rows":j["row_count"],
+            "risk_failed":j["independently_risk_failed_count"],
+            "rr_failed":j["independently_rr_failed_count"],
+            "source_final_blob_sha":j["source_final_blob_sha"],
+          })
+          PY
+
+      - name: Upload independent audit evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-final-risk-rr-independent-audit
+          path: ${{ runner.temp }}/final_risk_rr_independent_audit.json
+          if-no-files-found: warn
+          retention-days: 14
