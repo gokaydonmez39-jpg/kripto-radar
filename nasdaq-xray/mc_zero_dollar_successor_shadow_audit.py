@@ -40,6 +40,67 @@ def git_blob(path: Path) -> str:
     ).strip()
 
 
+def select_active_mc_row(rows: list[dict]) -> dict:
+    """Return the single unsuperseded exact-current MC authority row."""
+    by_rel = {str(r["rel"]): r for r in rows}
+    superseded = set()
+    for row in rows:
+        obj = row["obj"]
+        sp = obj.get("supersedes_mc_bridge_path")
+        ss = obj.get("supersedes_mc_bridge_blob_sha")
+        if bool(sp) != bool(ss):
+            raise AssertionError("MC_SUPERSESSION_PAIR_INCOMPLETE")
+        if sp:
+            prev = by_rel.get(str(sp))
+            if prev is None or str(prev["blob"]) != str(ss):
+                raise AssertionError("MC_SUPERSESSION_PREDECESSOR_MISMATCH")
+            superseded.add(str(sp))
+    active = [r for r in rows if str(r["rel"]) not in superseded]
+    if len(active) != 1:
+        raise AssertionError(f"MC_ACTIVE_HEAD_COUNT:{len(active)}")
+    return active[0]
+
+
+def select_current_mc(price: dict) -> tuple[Path, str, str, dict]:
+    asof = str(price.get("asof_et") or "")
+    assert asof
+    price_blob = git_blob(PRICE)
+    pass_hash = str(price.get("pass_hash") or "")
+    pass_count = int(price.get("pass_count", -1))
+    rows = []
+    pattern = f"canonical_mc_bridge_{asof.replace('-', '')}_*.json"
+    for mc_path in sorted(ROOT.glob(pattern)):
+        try:
+            obj = readj(mc_path)
+        except Exception:
+            continue
+        exact = (
+            obj.get("schema") == "XRAY_MC_EPOCH_RESULT_V1"
+            and obj.get("status") == "COMMITTED"
+            and obj.get("asof_et") == asof
+            and obj.get("policy_version") == POLICY_VERSION
+            and obj.get("task_id") == TASK_ID
+            and obj.get("execution") == "NONE"
+            and obj.get("real_money") == "NO-GO"
+            and obj.get("unknown_never_pass") is True
+            and obj.get("input_blob_sha") == price_blob
+            and obj.get("input_pass_hash") == pass_hash
+            and int(obj.get("input_count", -1)) == pass_count
+            and int((obj.get("counts") or {}).get("TOTAL", -1)) == pass_count
+        )
+        if exact:
+            rows.append({
+                "path": mc_path,
+                "rel": "nasdaq-xray/" + mc_path.name,
+                "blob": git_blob(mc_path),
+                "obj": obj,
+            })
+    if not rows:
+        raise AssertionError("NO_EXACT_CURRENT_MC_AUTHORITY")
+    row = select_active_mc_row(rows)
+    return row["path"], row["rel"], row["blob"], row["obj"]
+
+
 def finite(v):
     try:
         x = float(v)
@@ -149,29 +210,35 @@ def selftest() -> None:
     assert band(1_999_999_999) == "LT_2B"
     assert band(2_050_000_000) == "BORDERLINE_2P0_TO_2P1B"
     assert band(2_100_000_000) == "GE_2P1B"
+    r1={"rel":"nasdaq-xray/mc_v1.json","blob":"aaa","obj":{}}
+    r2={"rel":"nasdaq-xray/mc_v2.json","blob":"bbb","obj":{
+        "supersedes_mc_bridge_path":"nasdaq-xray/mc_v1.json",
+        "supersedes_mc_bridge_blob_sha":"aaa",
+    }}
+    assert select_active_mc_row([r1,r2])["rel"]=="nasdaq-xray/mc_v2.json"
+    try:
+        select_active_mc_row([r1,{"rel":"nasdaq-xray/mc_other.json","blob":"ccc","obj":{}}])
+    except AssertionError as e:
+        assert str(e)=="MC_ACTIVE_HEAD_COUNT:2"
+    else:
+        raise AssertionError("MC_AMBIGUOUS_HEAD_SELFTEST_DID_NOT_FAIL")
     print("MC_ZERO_DOLLAR_SUCCESSOR_SHADOW_AUDIT_SELFTEST=PASS")
 
 
 def main() -> None:
-    terminal = readj(TERMINAL)
+    terminal = readj(TERMINAL) if TERMINAL.exists() else {}
     price = readj(PRICE)
     pit = readj(NASDAQ_PIT)
     sec = readj(SEC_PROBE)
 
-    assert terminal.get("asof_et") == price.get("asof_et")
-    evidence = (terminal.get("evidence") or {}).get("mc") or {}
-    mc_rel = str(evidence.get("path") or "")
-    mc_sha = str(evidence.get("blob_sha") or "")
-    assert mc_rel.startswith("nasdaq-xray/canonical_mc_bridge_")
-    mc_path = REPO / mc_rel
-    assert mc_path.exists() and git_blob(mc_path) == mc_sha
-    mc = readj(mc_path)
-    assert mc.get("policy_version") == POLICY_VERSION
-    assert mc.get("task_id") == TASK_ID
-    assert mc.get("execution") == "NONE" and mc.get("real_money") == "NO-GO"
-    assert mc.get("unknown_never_pass") is True
-    assert mc.get("input_blob_sha") == git_blob(PRICE)
     assert int(price.get("unknown_count", -1)) == 0
+    mc_path, mc_rel, mc_sha, mc = select_current_mc(price)
+    evidence = (terminal.get("evidence") or {}).get("mc") or {}
+    terminal_binding_current = (
+        terminal.get("asof_et") == price.get("asof_et")
+        and evidence.get("path") == mc_rel
+        and evidence.get("blob_sha") == mc_sha
+    )
 
     unknown = list(mc.get("unknown_symbols") or [])
     assert len(unknown) == int((mc.get("counts") or {}).get("MC_UNKNOWN", -1))
@@ -223,7 +290,7 @@ def main() -> None:
     out = {
         "schema": "XRAY_MC_ZERO_DOLLAR_SUCCESSOR_SHADOW_AUDIT_V1",
         "task_id": TASK_ID,
-        "asof_et": terminal["asof_et"],
+        "asof_et": price["asof_et"],
         "execution": "NONE",
         "real_money": "NO-GO",
         "unknown_never_pass": True,
@@ -233,7 +300,9 @@ def main() -> None:
         "production_classification_applied": False,
         "production_changes": production_changes,
         "source_terminal_path": "nasdaq-xray/canonical_current_terminal.json",
-        "source_terminal_blob_sha": git_blob(TERMINAL),
+        "source_terminal_blob_sha": git_blob(TERMINAL) if TERMINAL.exists() else None,
+        "source_terminal_asof_et": terminal.get("asof_et"),
+        "terminal_binding_current": terminal_binding_current,
         "source_price_path": "nasdaq-xray/canonical_current_price_dv30.json",
         "source_price_blob_sha": git_blob(PRICE),
         "source_mc_path": mc_rel,
