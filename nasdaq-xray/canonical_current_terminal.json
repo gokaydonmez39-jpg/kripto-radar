@@ -5,7 +5,7 @@
     "affected_event_unknown": 24,
     "alpha_semantic_conformance_unknown": 0,
     "alpha_source_binding_unknown": 0,
-    "breadth_missing": 0,
+    "breadth_missing": 1,
     "candidate_halt_guard_unknown": 0,
     "deep_history_unknown": 0,
     "detailed_legal_review_unknown": 0,
@@ -19,8 +19,8 @@
     "mc_unknown": 34,
     "price_blocked_current_run": 1,
     "price_unknown": 0,
-    "regime_unknown": 0,
-    "stage1_unknown": 0
+    "regime_unknown": 1,
+    "stage1_unknown": 1
   },
   "candidate_delivery_safety": {
     "active_halt_symbols": [
@@ -37,9 +37,9 @@
       "UCFI",
       "UCFIW"
     ],
-    "age_seconds": 1.566,
-    "generated_at_utc": "2026-10-07T17:28:07.993825+00:00",
-    "guard_blob_sha": "d38e41d5b7f1cd1146e95dcb637471bd8b8486c5",
+    "age_seconds": 1.966,
+    "generated_at_utc": "2026-10-07T18:26:42.998237+00:00",
+    "guard_blob_sha": "f50868fad317dc602ab1a923a0eaff6479b9e688",
     "guard_path": "nasdaq-xray/canonical_official_source_guard.json",
     "max_age_seconds": 900,
     "security_status_suspension_symbols": [
@@ -128,7 +128,7 @@
     "current_weekly_subset_of_trigger_scope": true,
     "deep_exact_trigger_weekly_scope": true,
     "deep_exact_weekly_scope": true,
-    "exact_blob_provenance_chain": false,
+    "exact_blob_provenance_chain": true,
     "fallback_watch_preserved_through_history": true,
     "final_exact_confirmed_family_set": true,
     "final_extra_rows_exact_lifecycle_backed": true,
@@ -137,19 +137,19 @@
     "history_mc_blob_exact": true,
     "history_mc_semantic_rebind": false,
     "legal_exact_history_pass": true,
-    "legal_master_blob_exact": false,
-    "legal_master_semantic_rebind": true,
+    "legal_master_blob_exact": true,
+    "legal_master_semantic_rebind": false,
     "lifecycle_frozen_semantics_exact": true,
     "master_complete": false,
     "master_partition_exact": true,
     "mc_exact_price_pass_set": true,
-    "mc_input_blob_exact": false,
-    "mc_input_semantic_rebind": true,
+    "mc_input_blob_exact": true,
+    "mc_input_semantic_rebind": false,
     "policy_order_exact": true,
     "price_blocked_coverage_explicit": true,
     "price_blocked_requires_terminal_resolution": true,
     "price_exact_master_pass_partition": true,
-    "regime_no_missing": true,
+    "regime_no_missing": false,
     "semantic_provenance_chain_exact": true,
     "sequential_settlement_bound": true,
     "stage1_exact_legal_pass": true,
@@ -164,16 +164,16 @@
   "compiled_policy_version": "C4.17",
   "counts": {
     "deep_A_confirmed": 0,
-    "deep_B_armed_event_clean": 2,
-    "deep_B_armed_event_watch": 10,
-    "deep_B_armed_non_r92": 12,
+    "deep_B_armed_event_clean": 0,
+    "deep_B_armed_event_watch": 0,
+    "deep_B_armed_non_r92": 0,
     "deep_B_breakout_confirmed": 0,
     "deep_C_confirmed": 0,
-    "deep_D_confirmed": 7,
+    "deep_D_confirmed": 0,
     "event_confirmed_blocks": 0,
-    "event_unresolved": 102,
-    "final_confirmed_candidates": 14,
-    "final_fail": 14,
+    "event_unresolved": 101,
+    "final_confirmed_candidates": 0,
+    "final_fail": 0,
     "final_watch": 0,
     "halt_vetoed_candidates": 0,
     "history_fail": 12,
@@ -193,7 +193,7 @@
     "pre_g9_tech_pass_before_halt_guard": 0,
     "price_dv30_blocked_current_run": 1,
     "price_dv30_pass": 508,
-    "weekly_pass": 97
+    "weekly_pass": 96
   },
   "evidence": {
     "account_gate": {
@@ -206,7 +206,7 @@
     },
     "account_live_probe": {
       "balance_parseable": false,
-      "blob_sha": "3c96481ea903e2688090a6e513373f1908b92480",
+      "blob_sha": "3ad0c32760bdc280f726fb11db1bd8b9e4a370f1",
       "network_attempted": false,
       "path": "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/account_effective_probe_state.json",
       "positions_parseable": false,
@@ -217,30 +217,30 @@
       "secret_values_persisted": false,
       "status": "BLOCKED_MISSING_CREDENTIALS",
       "workflow_run_attempt": "1",
-      "workflow_run_id": "37658540696"
+      "workflow_run_id": "37666320378"
     },
     "deep": {
-      "blob_sha": "e8360d3c4420ad14fbcabc01f899cad1314707f9",
+      "blob_sha": "3e1ee7261f19fd3497680980c35386de528122ef",
       "path": "nasdaq-xray/canonical_current_deep_full.json"
     },
     "deep_geometry": {
-      "blob_sha": "7b6c454df9fc2d73fdc590212512eb6911b90ad5",
+      "blob_sha": "e223dc7c3c02d3a396ccde7364afa48f11e5c936",
       "path": "nasdaq-xray/canonical_current_deep_geometry.json"
     },
     "event_request": {
-      "blob_sha": "4fabfbba02e61fc7e5938b93efbb23a4b290f18d",
+      "blob_sha": "f0c051595007eaf32c59696225195460700f0838",
       "path": "nasdaq-xray/canonical_current_event_request.json"
     },
     "events": {
-      "blob_sha": "495c67acddc567ff97f1d09e460d18622ebba615",
+      "blob_sha": "e90ddef63ed0d125a8832d60464d63846f30a72c",
       "path": "nasdaq-xray/canonical_current_event_state.json"
     },
     "family_c": {
-      "blob_sha": "343ba744c5c3b2e0beadc75e7c80b8d12d5c6473",
+      "blob_sha": "2ed284b991a35165bf87b481cca66aa406e3ca13",
       "path": "nasdaq-xray/canonical_current_family_c.json"
     },
     "final": {
-      "blob_sha": "f397d0fab50d14eea71a15eb81d54f38d206458a",
+      "blob_sha": "25e8429707a8898cb4713fff80ae5f62e6ac33d3",
       "path": "nasdaq-xray/canonical_current_final_tech.json"
     },
     "full_state": {
@@ -254,11 +254,11 @@
       "runtime_status": "BLOCKED_ENTITLEMENT_AUTHORITY_UNPROVEN"
     },
     "history": {
-      "blob_sha": "bc79c46051745f991485b49aaa50c4ff72665b9c",
+      "blob_sha": "523f0a07fb215ce96a98757b59890d53e27def28",
       "path": "nasdaq-xray/canonical_current_history.json"
     },
     "legal": {
-      "blob_sha": "3a1f8514f570bbb5d2b5fa5ed18988106ee6d95e",
+      "blob_sha": "9df1c7b4f81fbde51065d0ce15a06a96ab435c90",
       "path": "nasdaq-xray/canonical_current_legal.json"
     },
     "master": {
@@ -266,18 +266,18 @@
       "path": "nasdaq-xray/canonical_current_master_manifest.json"
     },
     "mc": {
-      "blob_sha": "e366b0dd69ada0615213d6aefc133f21d8e8b7c1",
+      "blob_sha": "dc236ac65761b6eca173e60e9edebb58a9607d3a",
       "current_price_blob_sha": "475e93cd1f7f6d18a586532209f93d762095cc1a",
-      "input_blob_exact": false,
+      "input_blob_exact": true,
       "pass_count_exact": true,
       "pass_hash_exact": true,
       "pass_set_exact": true,
-      "path": "nasdaq-xray/canonical_mc_bridge_20261006_c417_dv30_v4.json",
-      "recorded_input_blob_sha": "b1fc18fe82484b85014258d8eb091844a0d6bced",
-      "semantic_rebind": true
+      "path": "nasdaq-xray/canonical_mc_bridge_20261006_c417_dv30_v7.json",
+      "recorded_input_blob_sha": "475e93cd1f7f6d18a586532209f93d762095cc1a",
+      "semantic_rebind": false
     },
     "official_halt_guard": {
-      "blob_sha": "d38e41d5b7f1cd1146e95dcb637471bd8b8486c5",
+      "blob_sha": "f50868fad317dc602ab1a923a0eaff6479b9e688",
       "path": "nasdaq-xray/canonical_official_source_guard.json"
     },
     "pointer": {
@@ -293,15 +293,15 @@
       "path": "nasdaq-xray/canonical_current_price_dv30.json"
     },
     "regime": {
-      "blob_sha": "cbe8022209fc043b8c5cd3a423c90a7013b50c3a",
+      "blob_sha": "12e19b72af75bf6401060cb9f5a7dead42a85a9b",
       "path": "nasdaq-xray/canonical_current_regime.json"
     },
     "stage1": {
-      "blob_sha": "e80941898d39eaab30f2542720af05f994ab9ae7",
+      "blob_sha": "46a8dafa2989cda94f65cb6374f2abbc95bbbd4b",
       "path": "nasdaq-xray/canonical_current_stage1.json"
     },
     "stage1_input": {
-      "blob_sha": "0ed3a47efe5db061cf5f858b9022f78c43f1173d",
+      "blob_sha": "b5e2af8e054ddc9d31e5c70e6376726f95129685",
       "path": "nasdaq-xray/canonical_current_stage1_input.json"
     }
   },
@@ -309,7 +309,7 @@
   "final_gate_reporting_zero_alpha": true,
   "full_end_to_end_research_pass": false,
   "g9_global_status": "G9_BLOCKED_FREE_AUTOMATION_PATH",
-  "generated_at_utc": "2026-10-07T17:28:09.561584+00:00",
+  "generated_at_utc": "2026-10-07T18:26:44.965848+00:00",
   "pointer_asof_before_candidate": "2026-10-06",
   "r92_account_g9_applicable": false,
   "r92_candidates": [],
@@ -342,87 +342,15 @@
       "XP",
       "ZS"
     ],
-    "b_armed_event_clean": [
-      "AMD",
-      "FTNT"
-    ],
-    "b_armed_event_watch": [
-      "CRWD",
-      "FSLY",
-      "META",
-      "OKTA",
-      "OLLI",
-      "PANW",
-      "PLTR",
-      "SAIL",
-      "VRNS",
-      "ZS"
-    ],
-    "b_armed_non_r92": [
-      "AMD",
-      "CRWD",
-      "FSLY",
-      "FTNT",
-      "META",
-      "OKTA",
-      "OLLI",
-      "PANW",
-      "PLTR",
-      "SAIL",
-      "VRNS",
-      "ZS"
-    ],
+    "b_armed_event_clean": [],
+    "b_armed_event_watch": [],
+    "b_armed_non_r92": [],
     "candidate_research_tier_caps": {},
-    "confirmed_family_candidates": [
-      "ABCL|D",
-      "FIVN|D",
-      "IBRX|D",
-      "IOVA|D",
-      "LITE|D",
-      "MRNA|D",
-      "MRVL|D",
-      "MXL|D",
-      "PI|D",
-      "QLYS|D",
-      "SWKS|D",
-      "TRMD|D",
-      "VICR|D",
-      "XP|D"
-    ],
-    "current_confirmed_family_candidates": [
-      "ABCL|D",
-      "FIVN|D",
-      "IBRX|D",
-      "IOVA|D",
-      "LITE|D",
-      "MRNA|D",
-      "MRVL|D",
-      "MXL|D",
-      "PI|D",
-      "QLYS|D",
-      "SWKS|D",
-      "TRMD|D",
-      "VICR|D",
-      "XP|D"
-    ],
+    "confirmed_family_candidates": [],
+    "current_confirmed_family_candidates": [],
     "family_c_regime_finalist_pass": [],
     "family_c_unknown": [],
-    "final_fail": [
-      "ABCL|D",
-      "FIVN|D",
-      "IBRX|D",
-      "IOVA|D",
-      "LITE|D",
-      "MRNA|D",
-      "MRVL|D",
-      "MXL|D",
-      "PI|D",
-      "QLYS|D",
-      "SWKS|D",
-      "TRMD|D",
-      "VICR|D",
-      "XP|D"
-    ],
+    "final_fail": [],
     "final_unknown": [],
     "final_watch": [],
     "halt_vetoed_candidates": [],
@@ -1847,7 +1775,6 @@
       "CDNA",
       "CHEF",
       "CLMT",
-      "COHU",
       "COIN",
       "COKE",
       "CORT",
@@ -1931,8 +1858,8 @@
       "ZS"
     ]
   },
-  "settlement_witness_blob_sha": "4241915f7f604858e202901786478959ffffb371",
-  "settlement_witness_path": "nasdaq-xray/canonical_resolver_bridge_20261006_c417_dv30_v15.json",
+  "settlement_witness_blob_sha": "0d4f760aa6340d1635d9f3dde22092a0af128086",
+  "settlement_witness_path": "nasdaq-xray/canonical_resolver_bridge_20261006_c417_dv30_v22.json",
   "settlement_witness_required": false,
   "settlement_witness_status": "PASS",
   "status": "PARTIAL",
