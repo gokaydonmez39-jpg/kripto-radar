@@ -347,6 +347,20 @@ def apply_c417_rallies_primary_partition(results,primary,queue):
               "source":source,"proof":"FAIL_CLOSED_CURRENT_RUN_NONPASS",
               "no_synthetic_bar":True,
             },"provenance":"C417_RALLIES_PRIMARY_PARTITION"}
+        # C4.17 fail-only terminal evidence is stronger than a primary
+        # coverage BLOCK.  Preserve an already-validated same-ASOF terminal
+        # FAIL across identity/primary replay; never use this precedence over
+        # a primary PASS/FAIL and never manufacture PASS.
+        prior=results.get(sym) or {}
+        prior_status=prior.get("status")
+        if (
+          row.get("status")=="BLOCK_CURRENT_RUN"
+          and prior_status in {"FAIL_PRICE_NO_ASOF_BAR","FAIL_DV30_INSUFFICIENT_SESSIONS"}
+        ):
+            prior_info=prior.get("info") or {}
+            candidate={"decision":prior_status,**prior_info}
+            if valid_bridge_price_resolution(candidate,None):
+                continue
         if results.get(sym)!=row:
             changed.append(sym)
         results[sym]=row
