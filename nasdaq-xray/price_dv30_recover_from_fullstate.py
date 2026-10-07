@@ -234,6 +234,32 @@ def load_c417_rallies_primary(asof,queue=None):
             raise ValueError("RALLIES_PRIMARY_COUNTS")
         if queue is not None and not set(queue).issubset(union):
             raise ValueError("RALLIES_PRIMARY_CURRENT_QUEUE_COVERAGE")
+        source_batches=obj.get("source_batches")
+        if source_batches is not None:
+            if not isinstance(source_batches,list) or not source_batches:
+                raise ValueError("RALLIES_PRIMARY_SOURCE_BATCH_REFS")
+            for ref in source_batches:
+                if not isinstance(ref,dict) or not immutable_repo_blob_binding(ref.get("path"),ref.get("blob_sha")):
+                    raise ValueError("RALLIES_PRIMARY_SOURCE_BATCH_BLOB_MISMATCH")
+        predecessor_batches=obj.get("predecessor_batch_refs")
+        if predecessor_batches is not None:
+            if not isinstance(predecessor_batches,list) or not predecessor_batches:
+                raise ValueError("RALLIES_PRIMARY_PREDECESSOR_BATCH_REFS")
+            for ref in predecessor_batches:
+                if not isinstance(ref,dict) or not immutable_repo_blob_binding(ref.get("path"),ref.get("blob_sha")):
+                    raise ValueError("RALLIES_PRIMARY_PREDECESSOR_BATCH_BLOB_MISMATCH")
+        roll_path=obj.get("source_rollforward_path")
+        roll_blob=obj.get("source_rollforward_blob_sha")
+        if bool(roll_path)!=bool(roll_blob):
+            raise ValueError("RALLIES_PRIMARY_ROLLFORWARD_BINDING_PAIR")
+        if roll_path and not immutable_repo_blob_binding(roll_path,roll_blob):
+            raise ValueError("RALLIES_PRIMARY_ROLLFORWARD_BLOB_MISMATCH")
+        pred_path=obj.get("predecessor_classification_path")
+        pred_blob=obj.get("predecessor_classification_blob_sha")
+        if bool(pred_path)!=bool(pred_blob):
+            raise ValueError("RALLIES_PRIMARY_PREDECESSOR_BINDING_PAIR")
+        if pred_path and not immutable_repo_blob_binding(pred_path,pred_blob):
+            raise ValueError("RALLIES_PRIMARY_PREDECESSOR_BLOB_MISMATCH")
         return obj,{
           "status":"PASS","path":str(path),"symbol_count":len(union),
           "current_queue_count":len(queue) if queue is not None else None,
@@ -308,6 +334,19 @@ def apply_c417_rallies_primary_partition(results,primary,queue):
             changed.append(sym)
         results[sym]=row
     return changed
+
+
+def immutable_repo_blob_binding(rel_path,expected_blob):
+    """Verify an immutable repo-relative evidence path against its Git blob SHA."""
+    try:
+        if not rel_path or not expected_blob:
+            return False
+        repo=ROOT.parent.resolve()
+        p=(repo/str(rel_path)).resolve()
+        p.relative_to(repo)
+        return p.is_file() and git_blob_sha(p)==str(expected_blob)
+    except Exception:
+        return False
 
 
 def c417_rallies_primary_pass_conflicts(px,queue=None):
