@@ -414,8 +414,8 @@ def frozen_exact_asof_directory(asof,root=ROOT):
             dm=full.get("discovery_meta") or {}
             if (
               full.get("identity_ruleset")!="V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER"
-              or full.get("identity_partition_policy")!="MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V3_FROZEN_GUARD"
-              or dm.get("identity_partition_policy")!="MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V3_FROZEN_GUARD"
+              or full.get("identity_partition_policy")!="MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V4_EXACT_ASOF_SNAPSHOT_GUARD"
+              or dm.get("identity_partition_policy")!="MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V4_EXACT_ASOF_SNAPSHOT_GUARD"
               or int(full.get("queue_total",-1))!=len(q)
               or len(q)!=len(set(q))
               or full.get("queue_hash")!=qhash
