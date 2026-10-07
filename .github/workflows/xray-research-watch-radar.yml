@@ -1,0 +1,62 @@
+name: XRAY C4.17 Research WATCH Radar
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 15,20,23 * * 1-5"
+  push:
+    branches: [main]
+    paths:
+      - nasdaq-xray/research_watch_radar.py
+      - .github/workflows/xray-research-watch-radar.yml
+      - nasdaq-xray/canonical_current_final_tech.json
+  workflow_run:
+    workflows: ["XRAY Canonical Current Final Factory"]
+    types: [completed]
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: xray-c417-watch-radar
+  cancel-in-progress: false
+jobs:
+  research-watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify fail-closed WATCH-only invariants
+        run: |
+          python -m py_compile nasdaq-xray/research_watch_radar.py
+          python nasdaq-xray/research_watch_radar.py --selftest
+      - name: Recalculate SHA-bound research watch and rejects
+        run: |
+          python nasdaq-xray/research_watch_radar.py --out "$RUNNER_TEMP/xray_research_watch_radar.json"
+          python - <<'PY'
+          import json,os,pathlib
+          j=json.load(open(pathlib.Path(os.environ["RUNNER_TEMP"])/"xray_research_watch_radar.json"))
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          assert j["alpha_authority"] is False and j["decision_authority"] is False
+          assert j["buy_candidates"]==[] and j["orders"]==[] and j["go"] is False
+          assert j["live_watch_count"]==(j["observed_b_watch_count"] if j["source_exact"] else 0)
+          if not j["source_exact"]:
+              assert j["research_watch"]==[] and j["status"]=="STALE_SNAPSHOT_WATCH_BLOCKED"
+          summary=pathlib.Path(os.environ["GITHUB_STEP_SUMMARY"])
+          with summary.open("a") as f:
+              f.write("# C4.17 Research WATCH — NOT AL\n\n")
+              f.write("ASOF: "+str(j["asof_et"])+"\n\n")
+              f.write("Status: **"+j["status"]+"**\n\n")
+              f.write("Live WATCH: "+str(j["live_watch_count"])+" / Pre-G9 AL: "+str(j["pre_g9_al_count"])+"\n\n")
+              f.write("Stale SHA bindings: "+", ".join(j["binding_discrepancies"])+"\n\n")
+              f.write("No order execution; REAL_MONEY=NO-GO.\n")
+          PY
+      - name: Preserve inspectable WATCH JSON artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-c417-watch-radar
+          path: /tmp/xray_research_watch_radar.json
+          retention-days: 14
+          if-no-files-found: warn
