@@ -1,0 +1,32 @@
+name: XRAY History Transport Cache Guard Selftest
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/history_transport_cache_guard.py"
+      - "nasdaq-xray/history_transport_cache_guard_selftest.py"
+      - ".github/workflows/xray-history-transport-cache-guard-selftest.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: xray-history-transport-cache-guard-selftest
+  cancel-in-progress: true
+
+jobs:
+  selftest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile
+        run: python -m py_compile nasdaq-xray/history_transport_cache_guard.py nasdaq-xray/history_transport_cache_guard_selftest.py
+      - name: Deterministic regression selftest
+        working-directory: nasdaq-xray
+        run: python history_transport_cache_guard_selftest.py
