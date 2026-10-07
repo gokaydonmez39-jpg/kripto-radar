@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/event_official_primary_probe.py"
+      - "nasdaq-xray/event_official_primary_successor_builder.py"
+      - "nasdaq-xray/event_official_primary_successor_selftest.py"
       - "nasdaq-xray/event_ir_seed_registry.json"
       - "nasdaq-xray/canonical_current_event_request.json"
       - ".github/workflows/xray-event-official-primary-probe.yml"
@@ -30,8 +32,9 @@ jobs:
 
       - name: Compile and deterministic selftest
         run: |
-          python -m py_compile nasdaq-xray/event_official_primary_probe.py
+          python -m py_compile nasdaq-xray/event_official_primary_probe.py nasdaq-xray/event_official_primary_successor_builder.py nasdaq-xray/event_official_primary_successor_selftest.py
           python nasdaq-xray/event_official_primary_probe.py --selftest
+          python nasdaq-xray/event_official_primary_successor_selftest.py
 
       - name: Run zero-dollar issuer-primary live probe
         run: python nasdaq-xray/event_official_primary_probe.py
@@ -58,6 +61,9 @@ jobs:
               if r["status"]!="UNKNOWN_OFFICIAL_PRIMARY_UNRESOLVED":
                   print("CANDIDATE",sym,r["status"],r["selected_event_date"])
           PY
+
+      - name: Dry-run exact-bound official-primary successor builder
+        run: python nasdaq-xray/event_official_primary_successor_builder.py --dry-run
 
       - name: Upload non-canonical probe evidence
         uses: actions/upload-artifact@v4
