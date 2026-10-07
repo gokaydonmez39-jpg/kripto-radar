@@ -62,6 +62,7 @@ on:
 
 permissions:
   contents: write
+  actions: write
 
 concurrency:
   # Never cancel an in-flight exact Final merely because a newer trigger exists.
@@ -864,6 +865,7 @@ jobs:
           PY
 
       - name: Commit current final artifacts
+        id: commit_final
         if: steps.event.outputs.ready == 'true' && steps.account_vault.outputs.restart_required != 'true'
         shell: bash
         run: |
@@ -988,6 +990,8 @@ jobs:
             git commit -m "chore(xray): current epoch final factory"
             if git push origin HEAD:main; then
               echo "XRAY_FACTORY_COMMIT=PASS"
+              echo "pushed=true" >> "$GITHUB_OUTPUT"
+              echo "terminal_blob_sha=$(git rev-parse HEAD:nasdaq-xray/canonical_current_terminal.json)" >> "$GITHUB_OUTPUT"
               exit 0
             fi
             echo "XRAY_FACTORY_PUSH_RACE attempt=$attempt"
@@ -995,6 +999,46 @@ jobs:
           done
           echo "XRAY_FACTORY_COMMIT=FAIL" >&2
           exit 1
+
+
+      - name: Dispatch exact downstream verification without workflow_run depth
+        if: steps.commit_final.outputs.pushed == 'true'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXPECTED_TERMINAL_BLOB: ${{ steps.commit_final.outputs.terminal_blob_sha }}
+        run: |
+          set -euo pipefail
+          git fetch origin main --quiet
+          live_terminal="$(git rev-parse origin/main:nasdaq-xray/canonical_current_terminal.json)"
+          if [[ "$live_terminal" != "$EXPECTED_TERMINAL_BLOB" ]]; then
+            echo "XRAY_DOWNSTREAM_DISPATCH=STALE_TERMINAL_SKIP"
+            echo "expected=$EXPECTED_TERMINAL_BLOB live=$live_terminal"
+            exit 0
+          fi
+          live_final="$(git rev-parse origin/main:nasdaq-xray/canonical_current_final_tech.json)"
+          live_price="$(git rev-parse origin/main:nasdaq-xray/canonical_current_price_dv30.json)"
+          live_mc="$(git show origin/main:nasdaq-xray/canonical_current_terminal.json | python -c 'import json,sys; print(json.load(sys.stdin)["evidence"]["mc"]["path"])')"
+          git show "origin/main:$live_mc" > /tmp/xray_exact_dispatch_mc.json
+          git show origin/main:nasdaq-xray/canonical_current_terminal.json > /tmp/xray_exact_dispatch_terminal.json
+          python - "$live_final" "$live_price" "$live_mc" <<'PY'
+          import json,sys
+          t=json.load(open('/tmp/xray_exact_dispatch_terminal.json'))
+          mc=json.load(open('/tmp/xray_exact_dispatch_mc.json'))
+          ef,ep,mp=sys.argv[1:]
+          assert t.get('execution')=='NONE' and t.get('real_money')=='NO-GO'
+          assert t.get('unknown_never_pass') is True
+          assert t['evidence']['final']['blob_sha']==ef
+          assert t['evidence']['price']['blob_sha']==ep
+          assert t['evidence']['mc']['path']==mp
+          assert mc['input_blob_sha']==ep
+          assert t['full_end_to_end_research_pass'] in (True,False)
+          print('XRAY_DOWNSTREAM_DISPATCH_EXACT_TERMINAL=PASS')
+          PY
+          gh workflow run xray-canonical-pointer-transition.yml --ref main
+          gh workflow run xray-final-risk-rr-independent-audit.yml --ref main
+          echo "XRAY_DOWNSTREAM_DISPATCH=POINTER_AND_INDEPENDENT_AUDIT_REQUESTED"
+
 
 # C4.22 epoch-restore validation trigger
 
