@@ -110,24 +110,47 @@ def settlement_witness_relation(j: dict, master: dict) -> str | None:
 
 
 def validate_settlement_witness(path: Path, expected_blob: str, master: dict, asof: str) -> dict:
-    assert path.exists()
-    assert blob_sha(path) == expected_blob
-    j = json.loads(path.read_text())
-    assert j.get("schema") == "XRAY_RESOLVER_EPOCH_RESULT_V1"
-    assert j.get("status") == "COMMITTED"
-    assert j.get("task_id") == TASK
-    assert j.get("execution") == "NONE" and j.get("real_money") == "NO-GO"
-    assert j.get("asof_et") == asof
-    relation = settlement_witness_relation(j, master)
-    assert relation is not None, (
-        "SETTLEMENT_WITNESS_QUEUE_NOT_REUSABLE",
-        j.get("queue_hash"),
-        master.get("queue_hash"),
-    )
-    assert j.get("compiled_policy_hash") == POLICY_HASH
-    assert j.get("compiled_policy_version") == POLICY_VERSION
-    assert j.get("settlement_status") == "PASS"
-    return j
+    """Resolve an exact immutable settlement chain to a reusable witness.
+
+    Residual resolver authorities may carry PASS only by pointing at an older
+    exact witness. Follow those path/blob links fail-closed until the current
+    queue is either exact or a proven safe subset of a full-scope authority.
+    """
+    seen = set()
+    for _depth in range(8):
+        rel = relpath(path)
+        assert rel not in seen, ("SETTLEMENT_WITNESS_CYCLE", rel)
+        seen.add(rel)
+        assert path.exists(), ("SETTLEMENT_WITNESS_MISSING", str(path))
+        actual_blob = blob_sha(path)
+        assert actual_blob == expected_blob, ("SETTLEMENT_WITNESS_BLOB_MISMATCH", rel)
+        j = json.loads(path.read_text())
+        assert j.get("schema") == "XRAY_RESOLVER_EPOCH_RESULT_V1"
+        assert j.get("status") == "COMMITTED"
+        assert j.get("task_id") == TASK
+        assert j.get("execution") == "NONE" and j.get("real_money") == "NO-GO"
+        assert j.get("unknown_never_pass") is True
+        assert j.get("asof_et") == asof
+        assert j.get("compiled_policy_hash") == POLICY_HASH
+        assert j.get("compiled_policy_version") == POLICY_VERSION
+        assert j.get("settlement_status") == "PASS"
+
+        relation = settlement_witness_relation(j, master)
+        if relation is not None:
+            return j
+
+        next_rel = str(j.get("settlement_witness_path") or "")
+        next_blob = str(j.get("settlement_witness_blob_sha") or "")
+        assert next_rel and next_blob, (
+            "SETTLEMENT_WITNESS_NOT_REUSABLE_AND_CHAIN_ENDED",
+            rel,
+            j.get("queue_hash"),
+            master.get("queue_hash"),
+        )
+        path = REPO / next_rel
+        expected_blob = next_blob
+
+    raise AssertionError(("SETTLEMENT_WITNESS_CHAIN_DEPTH_EXCEEDED", sorted(seen)))
 
 
 def current_settlement_witness(request: dict, master: dict, price: dict,
@@ -220,6 +243,64 @@ def selftest() -> None:
     synthetic_witness["queue_hash"] = "current-hash"
     synthetic_witness["queue_total"] = 2
     assert settlement_witness_relation(synthetic_witness, synthetic_master) == "EXACT_QUEUE"
+
+    # Regression: an exact immutable residual -> full-scope witness chain must
+    # resolve to the reusable full-scope authority rather than failing on the
+    # non-reusable residual node.
+    full_path = ROOT / ".mc_rebind_settlement_selftest_full.json"
+    residual_path = ROOT / ".mc_rebind_settlement_selftest_residual.json"
+    for p in (full_path, residual_path):
+        p.unlink(missing_ok=True)
+    try:
+        full_obj = {
+            "schema": "XRAY_RESOLVER_EPOCH_RESULT_V1",
+            "status": "COMMITTED",
+            "task_id": TASK,
+            "execution": "NONE",
+            "real_money": "NO-GO",
+            "unknown_never_pass": True,
+            "asof_et": "2099-01-01",
+            "compiled_policy_hash": POLICY_HASH,
+            "compiled_policy_version": POLICY_VERSION,
+            "settlement_status": "PASS",
+            "bridge_role": "FULL_SCOPE_MC_HANDOFF_PROVENANCE",
+            "queue_hash": "older-hash",
+            "queue_total": 3,
+            "symbols": ["AAA", "BBB", "CCC"],
+            "symbol_hash": hash_lines(["AAA", "BBB", "CCC"]),
+            "settlement_symbols": ["AAA", "BBB"],
+        }
+        full_path.write_text(json.dumps(full_obj, sort_keys=True) + "\n")
+        full_blob = blob_sha(full_path)
+        residual_obj = {
+            "schema": "XRAY_RESOLVER_EPOCH_RESULT_V1",
+            "status": "COMMITTED",
+            "task_id": TASK,
+            "execution": "NONE",
+            "real_money": "NO-GO",
+            "unknown_never_pass": True,
+            "asof_et": "2099-01-01",
+            "compiled_policy_hash": POLICY_HASH,
+            "compiled_policy_version": POLICY_VERSION,
+            "settlement_status": "PASS",
+            "bridge_role": "CURRENT_RESIDUAL_REQUEST_AUTHORITY",
+            "queue_hash": "older-residual-hash",
+            "queue_total": 3,
+            "settlement_witness_path": relpath(full_path),
+            "settlement_witness_blob_sha": full_blob,
+        }
+        residual_path.write_text(json.dumps(residual_obj, sort_keys=True) + "\n")
+        resolved = validate_settlement_witness(
+            residual_path,
+            blob_sha(residual_path),
+            synthetic_master,
+            "2099-01-01",
+        )
+        assert resolved.get("bridge_role") == "FULL_SCOPE_MC_HANDOFF_PROVENANCE"
+    finally:
+        for p in (residual_path, full_path):
+            p.unlink(missing_ok=True)
+
     assert full_scope_price_pending_reason({"unknown_count": 0, "unknown_symbols": []}) is None
     assert full_scope_price_pending_reason({"unknown_count": 1, "unknown_symbols": ["GRAL"]}) == "PRICE_DV30_UNKNOWN"
     try:
