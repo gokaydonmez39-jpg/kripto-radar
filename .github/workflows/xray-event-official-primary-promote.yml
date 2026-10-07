@@ -1,5 +1,8 @@
 name: XRAY Event Official Primary Promote
 on:
+  workflow_run:
+    workflows: ["XRAY Canonical Current Post-MC Factory"]
+    types: [completed]
   push:
     paths:
       - ".github/workflows/xray-event-official-primary-promote.yml"
@@ -17,6 +20,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   promote:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
