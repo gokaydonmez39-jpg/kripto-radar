@@ -1,30 +1,30 @@
 {
   "account_gate": "UNKNOWN_NOT_CONFIGURED",
-  "asof_et": "2026-10-06",
-  "cursor": 3159,
+  "asof_et": "2026-10-07",
+  "cursor": 3185,
   "downstream_invalidation": {
     "deep_pre_r1_shadow.json": {
-      "asof_et": "2026-10-06",
+      "asof_et": "2026-10-07",
       "schema": "XRAY_DEEP_PRE_R1_SHADOW_V1",
       "status": "WAITING_UPSTREAM_HISTORY"
     },
     "mc_zero_key_state.json": {
-      "asof_et": "2026-10-06",
+      "asof_et": "2026-10-07",
       "schema": "XRAY_MC_ZERO_KEY_V3",
       "status": "WAITING_UPSTREAM_HISTORY"
     },
     "production_core_state.json": {
-      "asof_et": "2026-10-06",
+      "asof_et": "2026-10-07",
       "schema": "XRAY_EXTERNAL_ZERO_KEY_CORE_V1",
       "status": "WAITING_UPSTREAM_HISTORY"
     },
     "regime_breadth_shadow.json": {
-      "asof_et": "2026-10-06",
+      "asof_et": "2026-10-07",
       "schema": "XRAY_REGIME_BREADTH_SHADOW_V1",
       "status": "WAITING_UPSTREAM_HISTORY"
     },
     "stage1_shadow.json": {
-      "asof_et": "2026-10-06",
+      "asof_et": "2026-10-07",
       "schema": "XRAY_STAGE1_SHADOW_V1",
       "status": "WAITING_UPSTREAM_HISTORY"
     }
@@ -32,11 +32,11 @@
   "execution": "NONE",
   "full_universe_identity": true,
   "g9_status": "BLOCKED",
-  "queue_hash": "3466de0d183dd8a6281ee2946572c79e70eacf6715ddd8eea6580ca6b003842b",
-  "queue_total": 3159,
+  "queue_hash": "306d6bb21e1ffef5f099f988ce995d0f98b349c051f34b4eed42613280444bdf",
+  "queue_total": 3185,
   "real_money": "NO-GO",
   "schema": "XRAY_ORCHESTRATOR_V1",
   "status": "PARTIAL_HISTORY",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "updated_at_utc": "2026-10-07T19:17:25.673442+00:00"
+  "updated_at_utc": "2026-10-07T23:57:18.477262+00:00"
 }
