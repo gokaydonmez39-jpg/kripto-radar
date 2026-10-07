@@ -74,6 +74,26 @@ def latest_shares(cik,asof):
     end,filed,val,form=eligible[-1]
     return {"shares":val,"end":end,"filed":filed,"form":form}
 
+def nasdaq_snapshot_binding(state,asof):
+    """Return whether Nasdaq screener MC is explicitly same-ASOF bound.
+
+    Identity snapshots and state update timestamps do not prove market-data
+    vintage.  Only an explicit screener/market-data ASOF field may authorize
+    threshold use. Missing binding is diagnostic-only and never PASS/FAIL.
+    """
+    meta=(state.get("discovery_meta") or {}) if isinstance(state,dict) else {}
+    candidates=[
+        meta.get("screener_market_data_asof_et"),
+        meta.get("market_data_asof_et"),
+        state.get("screener_market_data_asof_et") if isinstance(state,dict) else None,
+    ]
+    explicit=[str(x)[:10] for x in candidates if x]
+    if not explicit:
+        return False,{"status":"UNBOUND","reason":"NASDAQ_SCREENER_MARKET_DATA_ASOF_MISSING"}
+    if any(x!=asof for x in explicit):
+        return False,{"status":"ASOF_MISMATCH","observed_asof":sorted(set(explicit)),"required_asof":asof}
+    return True,{"status":"EXACT_ASOF","observed_asof":asof}
+
 def load_overlay(asof):
     meta={"status":"ABSENT"}
     if not OVERLAY.exists():
@@ -110,6 +130,8 @@ def main():
 
     direct_pass={}; unresolved={}; definitive_fail={}
     fallback_watch_symbols=[]
+    nasdaq_current_diagnostic={}
+    nasdaq_bound,nasdaq_binding=nasdaq_snapshot_binding(ss,asof)
     for sym,info in sorted(cands.items()):
         ov=overlay.get(sym)
         if ov:
@@ -170,15 +192,30 @@ def main():
         if nmc is None:
             unresolved[sym]={"reason":"NASDAQ_MC_MISSING"}
             continue
+        if not nasdaq_bound:
+            nasdaq_current_diagnostic[sym]={
+              "nasdaq_market_cap":nmc,
+              "mode":"NASDAQ_CURRENT_ONLY_DIAGNOSTIC_UNBOUND_ASOF",
+              "alpha_authority":False,
+              "binding":nasdaq_binding,
+            }
+            unresolved[sym]={
+              "reason":"NASDAQ_MC_ASOF_UNBOUND_DIAGNOSTIC_ONLY",
+              "nasdaq_market_cap_diagnostic":nmc,
+              "required_resolution":"EXACT_ASOF_PRIMARY_OR_POLICY_ADMISSIBLE_FALLBACK"
+            }
+            continue
         if nmc>=2_600_000_000:
             direct_pass[sym]={
               "nasdaq_market_cap":nmc,
-              "mode":"NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B"
+              "mode":"NASDAQ_EXACT_ASOF_CONSERVATIVE_GE_2_6B_SHADOW_ONLY",
+              "alpha_authority":False,
             }
         elif nmc<2_000_000_000:
             definitive_fail[sym]={
               "nasdaq_market_cap":nmc,
-              "mode":"NASDAQ_OFFICIAL_LT_2B"
+              "mode":"NASDAQ_EXACT_ASOF_LT_2B_SHADOW_ONLY",
+              "alpha_authority":False,
             }
         else:
             unresolved[sym]={
@@ -188,18 +225,23 @@ def main():
             }
 
     out={
-      "schema":"XRAY_MC_ZERO_KEY_V2","task_id":TASK_ID,"asof_et":asof,
+      "schema":"XRAY_MC_ZERO_KEY_V3","task_id":TASK_ID,"asof_et":asof,
       "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
+      "alpha_authority":False,
+      "pit_safe_shadow":True,
       "direct_nasdaq_conservative_pass_count":len(direct_pass),
       "definitive_fail_count":len(definitive_fail),
       "unresolved_count":len(unresolved),
       "direct_nasdaq_conservative_pass":direct_pass,
       "definitive_fail":definitive_fail,
       "unresolved":unresolved,
+      "nasdaq_snapshot_binding":nasdaq_binding,
+      "nasdaq_current_diagnostic_count":len(nasdaq_current_diagnostic),
+      "nasdaq_current_diagnostic":nasdaq_current_diagnostic,
       "current_core_zero_key":sorted(direct_pass),
       "fallback_watch_symbols":sorted(fallback_watch_symbols),
       "overlay_meta":overlay_meta,
-      "policy_note":"Primary Bigdata exact XNAS COMPANY/PUBLIC finite USD market cap overrides discovery MC. Rallies XNAS + Longbridge NASD fallback requires both >=2.10B and <=10% relative difference and is capped WATCH/R92-ineligible. Freshness failure is fail-closed. Nasdaq official screener >=2.6B remains conservative PASS when no fresh overlay resolution exists; 2.0-2.6B remains UNKNOWN."
+      "policy_note":"NON-CANONICAL SHADOW ONLY. C4.17 primary remains Bigdata exact Nasdaq-family listing. Rallies+Longbridge fallback remains WATCH/R92-ineligible. Nasdaq screener market cap may influence no ASOF decision unless an explicit market-data ASOF binding equals the research ASOF; otherwise it is CURRENT_ONLY_DIAGNOSTIC to prevent lookahead/PIT leakage."
     }
     OUT.write_text(json.dumps(out,ensure_ascii=False,sort_keys=True,indent=2)+"\n",encoding="utf-8")
     print(json.dumps({k:out[k] for k in ["direct_nasdaq_conservative_pass_count","definitive_fail_count","unresolved_count"]},sort_keys=True))
