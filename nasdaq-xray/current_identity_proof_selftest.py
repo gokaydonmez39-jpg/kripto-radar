@@ -77,6 +77,25 @@ def main():
         assert m.sec_current_classification("WRONG","2026-10-06",cmap["OPER"]) is None
     finally:
         m.load_json_url=original_load
+
+    # Missing exact-ASOF SEC SPAC proof must never be treated as a complete proof set.
+    from pathlib import Path
+    import tempfile
+    original_vi=m.validate_existing_identity
+    original_vs=m.validate_existing_sec
+    try:
+        m.validate_existing_identity=lambda path,asof: True
+        m.validate_existing_sec=lambda path,asof: True
+        missing=Path("/tmp/xray_missing_sec_spac_proof.json")
+        if missing.exists():
+            missing.unlink()
+        assert m.exact_proofs_complete(Path("/tmp/identity.json"),missing,"2026-10-06") is False
+        with tempfile.NamedTemporaryFile() as tmp:
+            assert m.exact_proofs_complete(Path("/tmp/identity.json"),Path(tmp.name),"2026-10-06") is True
+    finally:
+        m.validate_existing_identity=original_vi
+        m.validate_existing_sec=original_vs
+
     print("XRAY_CURRENT_IDENTITY_PROOF_SELFTEST=PASS")
 
 if __name__=="__main__":
