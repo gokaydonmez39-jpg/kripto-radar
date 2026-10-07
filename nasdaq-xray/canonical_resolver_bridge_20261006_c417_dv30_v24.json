@@ -1,0 +1,3654 @@
+{
+  "schema": "XRAY_RESOLVER_EPOCH_RESULT_V1",
+  "status": "COMMITTED",
+  "authority": "CANONICAL_RESOLVER_C417_DV30_V24_RALLIES_PRIMARY_CURRENT_QUEUE_REBIND",
+  "bridge_role": "CURRENT_RESIDUAL_REQUEST_AUTHORITY",
+  "task_id": "6a825366222081918997094d76e6ae46",
+  "asof_et": "2026-10-06",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "queue_hash": "87d544d3914dcfb16bb58715a27be5671539bf44780c393fad32ed65953459f9",
+  "queue_total": 3160,
+  "compiled_policy_path": "nasdaq-xray/chatgpt_compiled_policy_v3.json",
+  "compiled_policy_blob_sha": "16c50cc8f887a5234a4be23862d7c8d0e564b0ac",
+  "compiled_policy_hash": "68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4",
+  "compiled_policy_version": "C4.17",
+  "source_price_path": "nasdaq-xray/canonical_current_price_dv30.json",
+  "source_price_blob_sha": "a0d37b54d5b9dbc8205836533b26a4a866600ffe",
+  "source_request_path": "nasdaq-xray/canonical_current_resolver_request.json",
+  "source_request_blob_sha": "d8875f732980fc8509b0f1680fff16ba2a099c19",
+  "source_manifest_path": "nasdaq-xray/canonical_current_resolver_chunk_manifest.json",
+  "source_manifest_blob_sha": "df688f2bb2a14a0338b56b36ccb50ee6604a6cff",
+  "predecessor_bridge_path": "nasdaq-xray/canonical_resolver_bridge_20261006_c417_dv30_v22.json",
+  "predecessor_bridge_blob_sha": "0d4f760aa6340d1635d9f3dde22092a0af128086",
+  "supersedes_resolver_bridge_path": "nasdaq-xray/canonical_resolver_bridge_20261006_c417_dv30_v22.json",
+  "supersedes_resolver_bridge_blob_sha": "0d4f760aa6340d1635d9f3dde22092a0af128086",
+  "symbol_count": 509,
+  "symbol_hash": "fc30e75b8a113aad7db2bf1016623228367db237ae71d23c14c1929e84d5fe78",
+  "symbols": [
+    "AAL",
+    "AAOI",
+    "AAON",
+    "AAPL",
+    "ABCL",
+    "ABNB",
+    "ABVX",
+    "ACGL",
+    "ACMR",
+    "ADBE",
+    "ADI",
+    "ADP",
+    "ADSK",
+    "AEHR",
+    "AEIS",
+    "AEP",
+    "AFRM",
+    "AGNC",
+    "AKAM",
+    "ALAB",
+    "ALGM",
+    "ALGN",
+    "ALHC",
+    "ALKS",
+    "ALM",
+    "ALNY",
+    "AMAT",
+    "AMBA",
+    "AMD",
+    "AMGN",
+    "AMKR",
+    "AMZN",
+    "APA",
+    "APLD",
+    "APP",
+    "APPF",
+    "ARGX",
+    "ARM",
+    "ARQT",
+    "ARWR",
+    "ASML",
+    "ASND",
+    "ASO",
+    "ASST",
+    "ASTS",
+    "ATRC",
+    "AUGO",
+    "AUR",
+    "AVAV",
+    "AVGO",
+    "AVT",
+    "AXON",
+    "AXSM",
+    "AXTI",
+    "BBIO",
+    "BIDU",
+    "BIIB",
+    "BKNG",
+    "BKR",
+    "BLLN",
+    "BMRN",
+    "BNTX",
+    "BPOP",
+    "BRKR",
+    "BRZE",
+    "BSP",
+    "BSY",
+    "BTDR",
+    "BTSG",
+    "BULL",
+    "BWIN",
+    "BZ",
+    "CACC",
+    "CAI",
+    "CAKE",
+    "CALM",
+    "CART",
+    "CASY",
+    "CBRS",
+    "CBSH",
+    "CCC",
+    "CCEP",
+    "CDNA",
+    "CDNS",
+    "CDW",
+    "CELC",
+    "CELH",
+    "CENX",
+    "CG",
+    "CGNX",
+    "CGON",
+    "CHDN",
+    "CHEF",
+    "CHKP",
+    "CHRD",
+    "CHRW",
+    "CHTR",
+    "CHYM",
+    "CIFR",
+    "CINF",
+    "CLMT",
+    "CLSK",
+    "CMCSA",
+    "CME",
+    "COCO",
+    "COGT",
+    "COHU",
+    "COIN",
+    "COKE",
+    "COLB",
+    "COO",
+    "CORT",
+    "CORZ",
+    "COST",
+    "CPB",
+    "CPRT",
+    "CRDO",
+    "CROX",
+    "CRSP",
+    "CRUS",
+    "CRWD",
+    "CRWV",
+    "CSCO",
+    "CSGP",
+    "CSX",
+    "CTAS",
+    "CTSH",
+    "CVCO",
+    "CVLT",
+    "CYTK",
+    "CZR",
+    "DASH",
+    "DAVE",
+    "DBX",
+    "DDOG",
+    "DFTX",
+    "DKNG",
+    "DLTR",
+    "DNTH",
+    "DOCU",
+    "DOX",
+    "DPZ",
+    "DUOL",
+    "DXCM",
+    "DYN",
+    "EBAY",
+    "ECHO",
+    "ELVN",
+    "ENPH",
+    "ENSG",
+    "ENTG",
+    "EQIX",
+    "ERAS",
+    "ERIC",
+    "ESLT",
+    "EVRG",
+    "EWBC",
+    "EWTX",
+    "EXC",
+    "EXE",
+    "EXEL",
+    "EXLS",
+    "EXPE",
+    "FANG",
+    "FAST",
+    "FCEL",
+    "FCFS",
+    "FCNCA",
+    "FER",
+    "FFIV",
+    "FIGR",
+    "FISV",
+    "FIVE",
+    "FIVN",
+    "FLEX",
+    "FLNC",
+    "FLY",
+    "FORM",
+    "FOX",
+    "FOXA",
+    "FROG",
+    "FRPT",
+    "FRSH",
+    "FRVO",
+    "FSLR",
+    "FSLY",
+    "FTAI",
+    "FTNT",
+    "FUTU",
+    "FWONK",
+    "GEHC",
+    "GEN",
+    "GFS",
+    "GH",
+    "GILD",
+    "GLBE",
+    "GLNG",
+    "GLPI",
+    "GLXY",
+    "GMAB",
+    "GOOG",
+    "GOOGL",
+    "GRAL",
+    "GTLB",
+    "GTX",
+    "HALO",
+    "HAS",
+    "HBAN",
+    "HLNE",
+    "HON",
+    "HONA",
+    "HOOD",
+    "HQY",
+    "HSIC",
+    "HST",
+    "HTFL",
+    "HTHT",
+    "HUT",
+    "HWC",
+    "IBKR",
+    "IBRX",
+    "ICLR",
+    "IDCC",
+    "IDXX",
+    "IESC",
+    "ILMN",
+    "INCY",
+    "INDV",
+    "INIO",
+    "INOD",
+    "INSM",
+    "INTC",
+    "INTU",
+    "IONS",
+    "IOVA",
+    "IREN",
+    "IRTC",
+    "ISRG",
+    "JAZZ",
+    "JBHT",
+    "JD",
+    "JKHY",
+    "KDP",
+    "KLAC",
+    "KLIC",
+    "KMB",
+    "KRYS",
+    "KSPI",
+    "KTOS",
+    "KYMR",
+    "LAMR",
+    "LECO",
+    "LFST",
+    "LFUS",
+    "LGND",
+    "LIN",
+    "LITE",
+    "LKQ",
+    "LNT",
+    "LNTH",
+    "LOGI",
+    "LPLA",
+    "LQDA",
+    "LRCX",
+    "LSCC",
+    "LSTR",
+    "LULU",
+    "LUMN",
+    "LUNR",
+    "LYFT",
+    "MANH",
+    "MAR",
+    "MARA",
+    "MAT",
+    "MCHP",
+    "MDB",
+    "MDGL",
+    "MDLN",
+    "MDLZ",
+    "MEDP",
+    "MELI",
+    "META",
+    "MIDD",
+    "MIRM",
+    "MKSI",
+    "MKTX",
+    "MMED",
+    "MMSI",
+    "MNDY",
+    "MNST",
+    "MORN",
+    "MPWR",
+    "MRCY",
+    "MRNA",
+    "MRVL",
+    "MRX",
+    "MSFT",
+    "MSTR",
+    "MTCH",
+    "MTSI",
+    "MU",
+    "MXL",
+    "MYRG",
+    "NAVN",
+    "NBIS",
+    "NBIX",
+    "NDAQ",
+    "NDSN",
+    "NESR",
+    "NFLX",
+    "NKTR",
+    "NTAP",
+    "NTES",
+    "NTNX",
+    "NTRA",
+    "NTRS",
+    "NTSK",
+    "NVAX",
+    "NVDA",
+    "NVMI",
+    "NVTS",
+    "NWSA",
+    "NXPI",
+    "NXST",
+    "NXT",
+    "ODFL",
+    "OKTA",
+    "OLED",
+    "OLLI",
+    "ON",
+    "ONB",
+    "ONC",
+    "ONDS",
+    "ORKA",
+    "ORLY",
+    "OUST",
+    "OZK",
+    "PANW",
+    "PAYX",
+    "PCAR",
+    "PCTY",
+    "PCVX",
+    "PDD",
+    "PEGA",
+    "PENG",
+    "PEP",
+    "PFG",
+    "PI",
+    "PLTR",
+    "PLXS",
+    "PODD",
+    "POET",
+    "POOL",
+    "POWL",
+    "PRAX",
+    "PTC",
+    "PTCT",
+    "PTEN",
+    "PTGX",
+    "PURR",
+    "PYPL",
+    "QBTS",
+    "QCOM",
+    "QLYS",
+    "QNT",
+    "QUBT",
+    "QURE",
+    "RARE",
+    "REG",
+    "REGN",
+    "RELY",
+    "RGEN",
+    "RGLD",
+    "RGTI",
+    "RIOT",
+    "RIVN",
+    "RKLB",
+    "RLAY",
+    "RMBS",
+    "ROAD",
+    "ROIV",
+    "ROKU",
+    "ROP",
+    "ROST",
+    "RPRX",
+    "RRR",
+    "RUN",
+    "RVMD",
+    "RYAAY",
+    "RYTM",
+    "SAIA",
+    "SAIC",
+    "SAIL",
+    "SANM",
+    "SBAC",
+    "SBET",
+    "SBLK",
+    "SBUX",
+    "SEDG",
+    "SEIC",
+    "SFM",
+    "SHAZ",
+    "SHOP",
+    "SIMO",
+    "SIRI",
+    "SITM",
+    "SKHY",
+    "SLAB",
+    "SLS",
+    "SMCI",
+    "SMMT",
+    "SMTC",
+    "SNEX",
+    "SNPS",
+    "SNY",
+    "SOFI",
+    "SOLS",
+    "SOUN",
+    "SPCX",
+    "SRRK",
+    "SSNC",
+    "SSRM",
+    "STLD",
+    "STRL",
+    "STX",
+    "SWKS",
+    "SYM",
+    "SYNA",
+    "SYRE",
+    "TARS",
+    "TCOM",
+    "TEAM",
+    "TECH",
+    "TEM",
+    "TENB",
+    "TER",
+    "TGTX",
+    "TIGO",
+    "TLN",
+    "TMDX",
+    "TMUS",
+    "TNGX",
+    "TPG",
+    "TRI",
+    "TRMB",
+    "TRMD",
+    "TROW",
+    "TSCO",
+    "TSEM",
+    "TSLA",
+    "TTAN",
+    "TTD",
+    "TTEK",
+    "TTMI",
+    "TTWO",
+    "TVTX",
+    "TW",
+    "TWST",
+    "TXG",
+    "TXN",
+    "TXRH",
+    "UAL",
+    "UCTT",
+    "ULTA",
+    "UMBF",
+    "UPST",
+    "URBN",
+    "USAR",
+    "UTHR",
+    "VCTR",
+    "VCYT",
+    "VERA",
+    "VIAV",
+    "VICR",
+    "VKTX",
+    "VLY",
+    "VNOM",
+    "VOD",
+    "VRNS",
+    "VRSK",
+    "VRSN",
+    "VRTX",
+    "VSAT",
+    "VSEC",
+    "VSNT",
+    "VTRS",
+    "WAY",
+    "WDAY",
+    "WDC",
+    "WFRD",
+    "WGS",
+    "WING",
+    "WIX",
+    "WMT",
+    "WTFC",
+    "WTW",
+    "WULF",
+    "WWD",
+    "WYNN",
+    "XE",
+    "XEL",
+    "XENE",
+    "XMTR",
+    "XP",
+    "Z",
+    "ZBRA",
+    "ZION",
+    "ZM",
+    "ZS"
+  ],
+  "price_unknown_count": 509,
+  "price_unknown_symbols": [
+    "AAL",
+    "AAOI",
+    "AAON",
+    "AAPL",
+    "ABCL",
+    "ABNB",
+    "ABVX",
+    "ACGL",
+    "ACMR",
+    "ADBE",
+    "ADI",
+    "ADP",
+    "ADSK",
+    "AEHR",
+    "AEIS",
+    "AEP",
+    "AFRM",
+    "AGNC",
+    "AKAM",
+    "ALAB",
+    "ALGM",
+    "ALGN",
+    "ALHC",
+    "ALKS",
+    "ALM",
+    "ALNY",
+    "AMAT",
+    "AMBA",
+    "AMD",
+    "AMGN",
+    "AMKR",
+    "AMZN",
+    "APA",
+    "APLD",
+    "APP",
+    "APPF",
+    "ARGX",
+    "ARM",
+    "ARQT",
+    "ARWR",
+    "ASML",
+    "ASND",
+    "ASO",
+    "ASST",
+    "ASTS",
+    "ATRC",
+    "AUGO",
+    "AUR",
+    "AVAV",
+    "AVGO",
+    "AVT",
+    "AXON",
+    "AXSM",
+    "AXTI",
+    "BBIO",
+    "BIDU",
+    "BIIB",
+    "BKNG",
+    "BKR",
+    "BLLN",
+    "BMRN",
+    "BNTX",
+    "BPOP",
+    "BRKR",
+    "BRZE",
+    "BSP",
+    "BSY",
+    "BTDR",
+    "BTSG",
+    "BULL",
+    "BWIN",
+    "BZ",
+    "CACC",
+    "CAI",
+    "CAKE",
+    "CALM",
+    "CART",
+    "CASY",
+    "CBRS",
+    "CBSH",
+    "CCC",
+    "CCEP",
+    "CDNA",
+    "CDNS",
+    "CDW",
+    "CELC",
+    "CELH",
+    "CENX",
+    "CG",
+    "CGNX",
+    "CGON",
+    "CHDN",
+    "CHEF",
+    "CHKP",
+    "CHRD",
+    "CHRW",
+    "CHTR",
+    "CHYM",
+    "CIFR",
+    "CINF",
+    "CLMT",
+    "CLSK",
+    "CMCSA",
+    "CME",
+    "COCO",
+    "COGT",
+    "COHU",
+    "COIN",
+    "COKE",
+    "COLB",
+    "COO",
+    "CORT",
+    "CORZ",
+    "COST",
+    "CPB",
+    "CPRT",
+    "CRDO",
+    "CROX",
+    "CRSP",
+    "CRUS",
+    "CRWD",
+    "CRWV",
+    "CSCO",
+    "CSGP",
+    "CSX",
+    "CTAS",
+    "CTSH",
+    "CVCO",
+    "CVLT",
+    "CYTK",
+    "CZR",
+    "DASH",
+    "DAVE",
+    "DBX",
+    "DDOG",
+    "DFTX",
+    "DKNG",
+    "DLTR",
+    "DNTH",
+    "DOCU",
+    "DOX",
+    "DPZ",
+    "DUOL",
+    "DXCM",
+    "DYN",
+    "EBAY",
+    "ECHO",
+    "ELVN",
+    "ENPH",
+    "ENSG",
+    "ENTG",
+    "EQIX",
+    "ERAS",
+    "ERIC",
+    "ESLT",
+    "EVRG",
+    "EWBC",
+    "EWTX",
+    "EXC",
+    "EXE",
+    "EXEL",
+    "EXLS",
+    "EXPE",
+    "FANG",
+    "FAST",
+    "FCEL",
+    "FCFS",
+    "FCNCA",
+    "FER",
+    "FFIV",
+    "FIGR",
+    "FISV",
+    "FIVE",
+    "FIVN",
+    "FLEX",
+    "FLNC",
+    "FLY",
+    "FORM",
+    "FOX",
+    "FOXA",
+    "FROG",
+    "FRPT",
+    "FRSH",
+    "FRVO",
+    "FSLR",
+    "FSLY",
+    "FTAI",
+    "FTNT",
+    "FUTU",
+    "FWONK",
+    "GEHC",
+    "GEN",
+    "GFS",
+    "GH",
+    "GILD",
+    "GLBE",
+    "GLNG",
+    "GLPI",
+    "GLXY",
+    "GMAB",
+    "GOOG",
+    "GOOGL",
+    "GRAL",
+    "GTLB",
+    "GTX",
+    "HALO",
+    "HAS",
+    "HBAN",
+    "HLNE",
+    "HON",
+    "HONA",
+    "HOOD",
+    "HQY",
+    "HSIC",
+    "HST",
+    "HTFL",
+    "HTHT",
+    "HUT",
+    "HWC",
+    "IBKR",
+    "IBRX",
+    "ICLR",
+    "IDCC",
+    "IDXX",
+    "IESC",
+    "ILMN",
+    "INCY",
+    "INDV",
+    "INIO",
+    "INOD",
+    "INSM",
+    "INTC",
+    "INTU",
+    "IONS",
+    "IOVA",
+    "IREN",
+    "IRTC",
+    "ISRG",
+    "JAZZ",
+    "JBHT",
+    "JD",
+    "JKHY",
+    "KDP",
+    "KLAC",
+    "KLIC",
+    "KMB",
+    "KRYS",
+    "KSPI",
+    "KTOS",
+    "KYMR",
+    "LAMR",
+    "LECO",
+    "LFST",
+    "LFUS",
+    "LGND",
+    "LIN",
+    "LITE",
+    "LKQ",
+    "LNT",
+    "LNTH",
+    "LOGI",
+    "LPLA",
+    "LQDA",
+    "LRCX",
+    "LSCC",
+    "LSTR",
+    "LULU",
+    "LUMN",
+    "LUNR",
+    "LYFT",
+    "MANH",
+    "MAR",
+    "MARA",
+    "MAT",
+    "MCHP",
+    "MDB",
+    "MDGL",
+    "MDLN",
+    "MDLZ",
+    "MEDP",
+    "MELI",
+    "META",
+    "MIDD",
+    "MIRM",
+    "MKSI",
+    "MKTX",
+    "MMED",
+    "MMSI",
+    "MNDY",
+    "MNST",
+    "MORN",
+    "MPWR",
+    "MRCY",
+    "MRNA",
+    "MRVL",
+    "MRX",
+    "MSFT",
+    "MSTR",
+    "MTCH",
+    "MTSI",
+    "MU",
+    "MXL",
+    "MYRG",
+    "NAVN",
+    "NBIS",
+    "NBIX",
+    "NDAQ",
+    "NDSN",
+    "NESR",
+    "NFLX",
+    "NKTR",
+    "NTAP",
+    "NTES",
+    "NTNX",
+    "NTRA",
+    "NTRS",
+    "NTSK",
+    "NVAX",
+    "NVDA",
+    "NVMI",
+    "NVTS",
+    "NWSA",
+    "NXPI",
+    "NXST",
+    "NXT",
+    "ODFL",
+    "OKTA",
+    "OLED",
+    "OLLI",
+    "ON",
+    "ONB",
+    "ONC",
+    "ONDS",
+    "ORKA",
+    "ORLY",
+    "OUST",
+    "OZK",
+    "PANW",
+    "PAYX",
+    "PCAR",
+    "PCTY",
+    "PCVX",
+    "PDD",
+    "PEGA",
+    "PENG",
+    "PEP",
+    "PFG",
+    "PI",
+    "PLTR",
+    "PLXS",
+    "PODD",
+    "POET",
+    "POOL",
+    "POWL",
+    "PRAX",
+    "PTC",
+    "PTCT",
+    "PTEN",
+    "PTGX",
+    "PURR",
+    "PYPL",
+    "QBTS",
+    "QCOM",
+    "QLYS",
+    "QNT",
+    "QUBT",
+    "QURE",
+    "RARE",
+    "REG",
+    "REGN",
+    "RELY",
+    "RGEN",
+    "RGLD",
+    "RGTI",
+    "RIOT",
+    "RIVN",
+    "RKLB",
+    "RLAY",
+    "RMBS",
+    "ROAD",
+    "ROIV",
+    "ROKU",
+    "ROP",
+    "ROST",
+    "RPRX",
+    "RRR",
+    "RUN",
+    "RVMD",
+    "RYAAY",
+    "RYTM",
+    "SAIA",
+    "SAIC",
+    "SAIL",
+    "SANM",
+    "SBAC",
+    "SBET",
+    "SBLK",
+    "SBUX",
+    "SEDG",
+    "SEIC",
+    "SFM",
+    "SHAZ",
+    "SHOP",
+    "SIMO",
+    "SIRI",
+    "SITM",
+    "SKHY",
+    "SLAB",
+    "SLS",
+    "SMCI",
+    "SMMT",
+    "SMTC",
+    "SNEX",
+    "SNPS",
+    "SNY",
+    "SOFI",
+    "SOLS",
+    "SOUN",
+    "SPCX",
+    "SRRK",
+    "SSNC",
+    "SSRM",
+    "STLD",
+    "STRL",
+    "STX",
+    "SWKS",
+    "SYM",
+    "SYNA",
+    "SYRE",
+    "TARS",
+    "TCOM",
+    "TEAM",
+    "TECH",
+    "TEM",
+    "TENB",
+    "TER",
+    "TGTX",
+    "TIGO",
+    "TLN",
+    "TMDX",
+    "TMUS",
+    "TNGX",
+    "TPG",
+    "TRI",
+    "TRMB",
+    "TRMD",
+    "TROW",
+    "TSCO",
+    "TSEM",
+    "TSLA",
+    "TTAN",
+    "TTD",
+    "TTEK",
+    "TTMI",
+    "TTWO",
+    "TVTX",
+    "TW",
+    "TWST",
+    "TXG",
+    "TXN",
+    "TXRH",
+    "UAL",
+    "UCTT",
+    "ULTA",
+    "UMBF",
+    "UPST",
+    "URBN",
+    "USAR",
+    "UTHR",
+    "VCTR",
+    "VCYT",
+    "VERA",
+    "VIAV",
+    "VICR",
+    "VKTX",
+    "VLY",
+    "VNOM",
+    "VOD",
+    "VRNS",
+    "VRSK",
+    "VRSN",
+    "VRTX",
+    "VSAT",
+    "VSEC",
+    "VSNT",
+    "VTRS",
+    "WAY",
+    "WDAY",
+    "WDC",
+    "WFRD",
+    "WGS",
+    "WING",
+    "WIX",
+    "WMT",
+    "WTFC",
+    "WTW",
+    "WULF",
+    "WWD",
+    "WYNN",
+    "XE",
+    "XEL",
+    "XENE",
+    "XMTR",
+    "XP",
+    "Z",
+    "ZBRA",
+    "ZION",
+    "ZM",
+    "ZS"
+  ],
+  "price_blocked_count": 0,
+  "price_blocked_symbols": [],
+  "result_encoding": "RALLIES_SCANNER_EXACT30_V2",
+  "price_resolutions": {},
+  "price_resolution_compact": {
+    "fail_price": {},
+    "fail_dv30": {},
+    "pass_price_dv30": {
+      "AAL": {
+        "price": 13,
+        "dv30": 866060247.0321631,
+        "known_session_count": 30
+      },
+      "AAOI": {
+        "price": 130.16,
+        "dv30": 697712880.7341653,
+        "known_session_count": 30
+      },
+      "AAON": {
+        "price": 88.07,
+        "dv30": 83379415.69669497,
+        "known_session_count": 30
+      },
+      "AAPL": {
+        "price": 333.63,
+        "dv30": 11976578385.240398,
+        "known_session_count": 30
+      },
+      "ABCL": {
+        "price": 13.15,
+        "dv30": 53624287.43930922,
+        "known_session_count": 30
+      },
+      "ABNB": {
+        "price": 160.39,
+        "dv30": 714886444.9215622,
+        "known_session_count": 30
+      },
+      "ABVX": {
+        "price": 88.22,
+        "dv30": 120573632.48300609,
+        "known_session_count": 30
+      },
+      "ACGL": {
+        "price": 94.82,
+        "dv30": 372706123.47204065,
+        "known_session_count": 30
+      },
+      "ACMR": {
+        "price": 75.35,
+        "dv30": 64673387.986658536,
+        "known_session_count": 30
+      },
+      "ADBE": {
+        "price": 238.12,
+        "dv30": 1135414293.4510903,
+        "known_session_count": 30
+      },
+      "ADI": {
+        "price": 420.55,
+        "dv30": 1124736723.8656478,
+        "known_session_count": 30
+      },
+      "ADP": {
+        "price": 262.36,
+        "dv30": 519426186.8094733,
+        "known_session_count": 30
+      },
+      "ADSK": {
+        "price": 231.28,
+        "dv30": 449589761.94800234,
+        "known_session_count": 30
+      },
+      "AEHR": {
+        "price": 92.14,
+        "dv30": 219540655.3807361,
+        "known_session_count": 30
+      },
+      "AEIS": {
+        "price": 302.77,
+        "dv30": 133186296.91487905,
+        "known_session_count": 30
+      },
+      "AEP": {
+        "price": 121.67,
+        "dv30": 412132381.5407648,
+        "known_session_count": 30
+      },
+      "AFRM": {
+        "price": 74.88,
+        "dv30": 284764962.33078164,
+        "known_session_count": 30
+      },
+      "AGNC": {
+        "price": 8.7,
+        "dv30": 293953582.04525816,
+        "known_session_count": 30
+      },
+      "AKAM": {
+        "price": 108.62,
+        "dv30": 392564596.510988,
+        "known_session_count": 30
+      },
+      "ALAB": {
+        "price": 389.8,
+        "dv30": 1141136082.5773425,
+        "known_session_count": 30
+      },
+      "ALGM": {
+        "price": 38.76,
+        "dv30": 87074689.05967581,
+        "known_session_count": 30
+      },
+      "ALGN": {
+        "price": 141.45,
+        "dv30": 129044745.25771047,
+        "known_session_count": 30
+      },
+      "ALHC": {
+        "price": 8.37,
+        "dv30": 74976670.2242535,
+        "known_session_count": 30
+      },
+      "ALKS": {
+        "price": 41.65,
+        "dv30": 89226815.82794733,
+        "known_session_count": 30
+      },
+      "ALM": {
+        "price": 13.04,
+        "dv30": 86349270.20247883,
+        "known_session_count": 30
+      },
+      "ALNY": {
+        "price": 223.94,
+        "dv30": 335571565.6803198,
+        "known_session_count": 30
+      },
+      "AMAT": {
+        "price": 530.27,
+        "dv30": 2787759941.781222,
+        "known_session_count": 30
+      },
+      "AMBA": {
+        "price": 67.94,
+        "dv30": 90428168.3182703,
+        "known_session_count": 30
+      },
+      "AMD": {
+        "price": 649.42,
+        "dv30": 10144008018.164936,
+        "known_session_count": 30
+      },
+      "AMGN": {
+        "price": 402.6,
+        "dv30": 1029459006.7206016,
+        "known_session_count": 30
+      },
+      "AMKR": {
+        "price": 53.39,
+        "dv30": 191501291.35130817,
+        "known_session_count": 30
+      },
+      "AMZN": {
+        "price": 256.29,
+        "dv30": 8331741581.537794,
+        "known_session_count": 30
+      },
+      "APA": {
+        "price": 44.1,
+        "dv30": 224426569.15623543,
+        "known_session_count": 30
+      },
+      "APLD": {
+        "price": 25.34,
+        "dv30": 380773496.20274603,
+        "known_session_count": 30
+      },
+      "APP": {
+        "price": 278.78,
+        "dv30": 1275355478.002527,
+        "known_session_count": 30
+      },
+      "APPF": {
+        "price": 203.31,
+        "dv30": 64880417.96360792,
+        "known_session_count": 30
+      },
+      "ARGX": {
+        "price": 930.52,
+        "dv30": 238435495.01870018,
+        "known_session_count": 30
+      },
+      "ARM": {
+        "price": 302.56,
+        "dv30": 1086358463.0475986,
+        "known_session_count": 30
+      },
+      "ARQT": {
+        "price": 23.92,
+        "dv30": 54873491.65194599,
+        "known_session_count": 30
+      },
+      "ARWR": {
+        "price": 61.54,
+        "dv30": 112367709.36392434,
+        "known_session_count": 30
+      },
+      "ASML": {
+        "price": 1834.1,
+        "dv30": 2200818183.0754824,
+        "known_session_count": 30
+      },
+      "ASND": {
+        "price": 226.05,
+        "dv30": 174222061.82988513,
+        "known_session_count": 30
+      },
+      "ASO": {
+        "price": 52.31,
+        "dv30": 78734772.83633193,
+        "known_session_count": 30
+      },
+      "ASST": {
+        "price": 29.75,
+        "dv30": 245510298.15448532,
+        "known_session_count": 30
+      },
+      "ASTS": {
+        "price": 63.12,
+        "dv30": 526784877.3645129,
+        "known_session_count": 30
+      },
+      "ATRC": {
+        "price": 53.68,
+        "dv30": 62102010.85679452,
+        "known_session_count": 30
+      },
+      "AUGO": {
+        "price": 86.67,
+        "dv30": 78294472.66883436,
+        "known_session_count": 30
+      },
+      "AUR": {
+        "price": 5.75,
+        "dv30": 170956901.30364984,
+        "known_session_count": 30
+      },
+      "AVAV": {
+        "price": 143.54,
+        "dv30": 209485904.43293345,
+        "known_session_count": 30
+      },
+      "AVGO": {
+        "price": 375.81,
+        "dv30": 8215300534.805077,
+        "known_session_count": 30
+      },
+      "AVT": {
+        "price": 106.37,
+        "dv30": 120708858.20794772,
+        "known_session_count": 30
+      },
+      "AXON": {
+        "price": 418.62,
+        "dv30": 402207789.2288102,
+        "known_session_count": 30
+      },
+      "AXSM": {
+        "price": 174.34,
+        "dv30": 130394400.17874396,
+        "known_session_count": 30
+      },
+      "AXTI": {
+        "price": 84.06,
+        "dv30": 521029657.40194297,
+        "known_session_count": 30
+      },
+      "BBIO": {
+        "price": 66.96,
+        "dv30": 166786481.06399006,
+        "known_session_count": 30
+      },
+      "BIDU": {
+        "price": 87.05,
+        "dv30": 203947931.54948395,
+        "known_session_count": 30
+      },
+      "BIIB": {
+        "price": 222.89,
+        "dv30": 192530837.74636388,
+        "known_session_count": 30
+      },
+      "BKNG": {
+        "price": 157.63,
+        "dv30": 1222622974.3563657,
+        "known_session_count": 30
+      },
+      "BKR": {
+        "price": 57.13,
+        "dv30": 407667245.3858763,
+        "known_session_count": 30
+      },
+      "BLLN": {
+        "price": 99.94,
+        "dv30": 53753778.00223782,
+        "known_session_count": 30
+      },
+      "BMRN": {
+        "price": 56.22,
+        "dv30": 120992877.88657503,
+        "known_session_count": 30
+      },
+      "BNTX": {
+        "price": 95.73,
+        "dv30": 84606621.1094414,
+        "known_session_count": 30
+      },
+      "BPOP": {
+        "price": 158.29,
+        "dv30": 87263026.55830497,
+        "known_session_count": 30
+      },
+      "BRKR": {
+        "price": 60.5,
+        "dv30": 139682176.84893167,
+        "known_session_count": 30
+      },
+      "BRZE": {
+        "price": 26.34,
+        "dv30": 59913224.699040264,
+        "known_session_count": 30
+      },
+      "BSP": {
+        "price": 33.07,
+        "dv30": 73755115.69512385,
+        "known_session_count": 30
+      },
+      "BSY": {
+        "price": 35.97,
+        "dv30": 77366977.67234096,
+        "known_session_count": 30
+      },
+      "BTDR": {
+        "price": 10.91,
+        "dv30": 110129556.5142923,
+        "known_session_count": 30
+      },
+      "BTSG": {
+        "price": 63.75,
+        "dv30": 132859877.05577768,
+        "known_session_count": 30
+      },
+      "BULL": {
+        "price": 7.28,
+        "dv30": 101026089.88544883,
+        "known_session_count": 30
+      },
+      "BWIN": {
+        "price": 31.83,
+        "dv30": 51930507.30776766,
+        "known_session_count": 30
+      },
+      "BZ": {
+        "price": 15.11,
+        "dv30": 104624648.5653271,
+        "known_session_count": 30
+      },
+      "CACC": {
+        "price": 536.58,
+        "dv30": 65089748.502428845,
+        "known_session_count": 30
+      },
+      "CAI": {
+        "price": 27.455,
+        "dv30": 125000187.43989371,
+        "known_session_count": 30
+      },
+      "CAKE": {
+        "price": 108.23,
+        "dv30": 145654092.4936098,
+        "known_session_count": 30
+      },
+      "CALM": {
+        "price": 63.4,
+        "dv30": 67576255.53714448,
+        "known_session_count": 30
+      },
+      "CART": {
+        "price": 45.47,
+        "dv30": 149024127.28664234,
+        "known_session_count": 30
+      },
+      "CASY": {
+        "price": 620.8,
+        "dv30": 377398084.0933665,
+        "known_session_count": 30
+      },
+      "CBRS": {
+        "price": 177.1,
+        "dv30": 1150431994.2985535,
+        "known_session_count": 30
+      },
+      "CBSH": {
+        "price": 54.78,
+        "dv30": 53323582.77964243,
+        "known_session_count": 30
+      },
+      "CCC": {
+        "price": 6.65,
+        "dv30": 61563053.92287208,
+        "known_session_count": 30
+      },
+      "CCEP": {
+        "price": 101.71,
+        "dv30": 151398995.4490252,
+        "known_session_count": 30
+      },
+      "CDNA": {
+        "price": 63.79,
+        "dv30": 68204389.50385585,
+        "known_session_count": 30
+      },
+      "CDNS": {
+        "price": 359.55,
+        "dv30": 738151780.7169244,
+        "known_session_count": 30
+      },
+      "CDW": {
+        "price": 135.67,
+        "dv30": 216397030.20939553,
+        "known_session_count": 30
+      },
+      "CELC": {
+        "price": 71.25,
+        "dv30": 72492961.12059012,
+        "known_session_count": 30
+      },
+      "CELH": {
+        "price": 27.29,
+        "dv30": 198216881.80365998,
+        "known_session_count": 30
+      },
+      "CENX": {
+        "price": 37.18,
+        "dv30": 65588086.343862474,
+        "known_session_count": 30
+      },
+      "CG": {
+        "price": 38.88,
+        "dv30": 139551638.27305204,
+        "known_session_count": 30
+      },
+      "CGNX": {
+        "price": 66.35,
+        "dv30": 93582939.71147865,
+        "known_session_count": 30
+      },
+      "CGON": {
+        "price": 63.64,
+        "dv30": 61098851.24957383,
+        "known_session_count": 30
+      },
+      "CHDN": {
+        "price": 78.21,
+        "dv30": 87214014.75898694,
+        "known_session_count": 30
+      },
+      "CHEF": {
+        "price": 111.21,
+        "dv30": 69534711.87727931,
+        "known_session_count": 30
+      },
+      "CHKP": {
+        "price": 131.98,
+        "dv30": 123094563.41423711,
+        "known_session_count": 30
+      },
+      "CHRD": {
+        "price": 137.53,
+        "dv30": 88387533.22746167,
+        "known_session_count": 30
+      },
+      "CHRW": {
+        "price": 135.05,
+        "dv30": 204416722.12547404,
+        "known_session_count": 30
+      },
+      "CHTR": {
+        "price": 108.64,
+        "dv30": 331595147.81151783,
+        "known_session_count": 30
+      },
+      "CHYM": {
+        "price": 27.65,
+        "dv30": 181191847.65630496,
+        "known_session_count": 30
+      },
+      "CIFR": {
+        "price": 15.5,
+        "dv30": 512845082.5558879,
+        "known_session_count": 30
+      },
+      "CINF": {
+        "price": 163.08,
+        "dv30": 88706904.57103415,
+        "known_session_count": 30
+      },
+      "CLMT": {
+        "price": 56.21,
+        "dv30": 73428198.70165029,
+        "known_session_count": 30
+      },
+      "CLSK": {
+        "price": 12.29,
+        "dv30": 233795088.38712662,
+        "known_session_count": 30
+      },
+      "CMCSA": {
+        "price": 21.56,
+        "dv30": 617170621.6550198,
+        "known_session_count": 30
+      },
+      "CME": {
+        "price": 270.18,
+        "dv30": 460713845.33877265,
+        "known_session_count": 30
+      },
+      "COCO": {
+        "price": 54.48,
+        "dv30": 60948082.18435123,
+        "known_session_count": 30
+      },
+      "COGT": {
+        "price": 30.38,
+        "dv30": 59012591.26904464,
+        "known_session_count": 30
+      },
+      "COHU": {
+        "price": 73.1,
+        "dv30": 54121720.27977898,
+        "known_session_count": 30
+      },
+      "COIN": {
+        "price": 185.74,
+        "dv30": 1481964651.2200298,
+        "known_session_count": 30
+      },
+      "COKE": {
+        "price": 194.61,
+        "dv30": 89548850.95809908,
+        "known_session_count": 30
+      },
+      "COLB": {
+        "price": 28.89,
+        "dv30": 76609621.51314826,
+        "known_session_count": 30
+      },
+      "COO": {
+        "price": 56.43,
+        "dv30": 229238562.59485784,
+        "known_session_count": 30
+      },
+      "CORT": {
+        "price": 119.57,
+        "dv30": 105499801.60092965,
+        "known_session_count": 30
+      },
+      "CORZ": {
+        "price": 16.68,
+        "dv30": 185324005.86593664,
+        "known_session_count": 30
+      },
+      "COST": {
+        "price": 935.68,
+        "dv30": 1944695695.872206,
+        "known_session_count": 30
+      },
+      "CPB": {
+        "price": 19,
+        "dv30": 153918529.67267185,
+        "known_session_count": 30
+      },
+      "CPRT": {
+        "price": 26.82,
+        "dv30": 249582385.06873268,
+        "known_session_count": 30
+      },
+      "CRDO": {
+        "price": 220.83,
+        "dv30": 1546815670.6364403,
+        "known_session_count": 30
+      },
+      "CROX": {
+        "price": 120.22,
+        "dv30": 121969593.4282027,
+        "known_session_count": 30
+      },
+      "CRSP": {
+        "price": 54,
+        "dv30": 77598303.16653107,
+        "known_session_count": 30
+      },
+      "CRUS": {
+        "price": 118.87,
+        "dv30": 91563989.98404607,
+        "known_session_count": 30
+      },
+      "CRWD": {
+        "price": 278.86,
+        "dv30": 2328712690.604518,
+        "known_session_count": 30
+      },
+      "CRWV": {
+        "price": 91.72,
+        "dv30": 1902689217.420773,
+        "known_session_count": 30
+      },
+      "CSCO": {
+        "price": 117.94,
+        "dv30": 1640135473.4475484,
+        "known_session_count": 30
+      },
+      "CSGP": {
+        "price": 27.63,
+        "dv30": 160770921.94987386,
+        "known_session_count": 30
+      },
+      "CSX": {
+        "price": 47.5,
+        "dv30": 448825081.3986403,
+        "known_session_count": 30
+      },
+      "CTAS": {
+        "price": 195.96,
+        "dv30": 353902422.5607525,
+        "known_session_count": 30
+      },
+      "CTSH": {
+        "price": 57.22,
+        "dv30": 348767719.21916384,
+        "known_session_count": 30
+      },
+      "CVCO": {
+        "price": 572.8,
+        "dv30": 52712773.28279011,
+        "known_session_count": 30
+      },
+      "CVLT": {
+        "price": 154.98,
+        "dv30": 71290036.34893231,
+        "known_session_count": 30
+      },
+      "CYTK": {
+        "price": 61.35,
+        "dv30": 130984759.35567325,
+        "known_session_count": 30
+      },
+      "CZR": {
+        "price": 29.65,
+        "dv30": 94982133.64207387,
+        "known_session_count": 30
+      },
+      "DASH": {
+        "price": 193.62,
+        "dv30": 786229369.6678238,
+        "known_session_count": 30
+      },
+      "DAVE": {
+        "price": 343.14,
+        "dv30": 107305079.42938443,
+        "known_session_count": 30
+      },
+      "DBX": {
+        "price": 33.73,
+        "dv30": 141570000.46042818,
+        "known_session_count": 30
+      },
+      "DDOG": {
+        "price": 278.24,
+        "dv30": 766573464.596652,
+        "known_session_count": 30
+      },
+      "DFTX": {
+        "price": 35.62,
+        "dv30": 74533014.86630532,
+        "known_session_count": 30
+      },
+      "DKNG": {
+        "price": 19.75,
+        "dv30": 277086354.502215,
+        "known_session_count": 30
+      },
+      "DLTR": {
+        "price": 116.19,
+        "dv30": 322383843.6567763,
+        "known_session_count": 30
+      },
+      "DNTH": {
+        "price": 85.4,
+        "dv30": 67403000.86533675,
+        "known_session_count": 30
+      },
+      "DOCU": {
+        "price": 68.22,
+        "dv30": 215888784.89598495,
+        "known_session_count": 30
+      },
+      "DOX": {
+        "price": 58.49,
+        "dv30": 55504441.81999265,
+        "known_session_count": 30
+      },
+      "DPZ": {
+        "price": 302.87,
+        "dv30": 232749892.42776757,
+        "known_session_count": 30
+      },
+      "DUOL": {
+        "price": 148.13,
+        "dv30": 149803239.79685426,
+        "known_session_count": 30
+      },
+      "DXCM": {
+        "price": 83.39,
+        "dv30": 271803030.10749775,
+        "known_session_count": 30
+      },
+      "DYN": {
+        "price": 15.4,
+        "dv30": 52103225.74350752,
+        "known_session_count": 30
+      },
+      "EBAY": {
+        "price": 107.06,
+        "dv30": 393967844.93058,
+        "known_session_count": 30
+      },
+      "ECHO": {
+        "price": 100.01,
+        "dv30": 251317978.98800498,
+        "known_session_count": 30
+      },
+      "ELVN": {
+        "price": 42.39,
+        "dv30": 55471845.54493229,
+        "known_session_count": 30
+      },
+      "ENPH": {
+        "price": 33.91,
+        "dv30": 159636561.21603316,
+        "known_session_count": 30
+      },
+      "ENSG": {
+        "price": 172.06,
+        "dv30": 58691931.94924272,
+        "known_session_count": 30
+      },
+      "ENTG": {
+        "price": 166.89,
+        "dv30": 261389497.05818117,
+        "known_session_count": 30
+      },
+      "EQIX": {
+        "price": 1047.36,
+        "dv30": 503546603.55528057,
+        "known_session_count": 30
+      },
+      "ERAS": {
+        "price": 14.3,
+        "dv30": 71772259.05441575,
+        "known_session_count": 30
+      },
+      "ERIC": {
+        "price": 9.43,
+        "dv30": 66809066.44827999,
+        "known_session_count": 30
+      },
+      "ESLT": {
+        "price": 691.1,
+        "dv30": 51831310.488888204,
+        "known_session_count": 30
+      },
+      "EVRG": {
+        "price": 80.35,
+        "dv30": 179105465.28574592,
+        "known_session_count": 30
+      },
+      "EWBC": {
+        "price": 127.12,
+        "dv30": 91630182.56855002,
+        "known_session_count": 30
+      },
+      "EWTX": {
+        "price": 40.02,
+        "dv30": 56560528.7328606,
+        "known_session_count": 30
+      },
+      "EXC": {
+        "price": 41.68,
+        "dv30": 311117204.2960781,
+        "known_session_count": 30
+      },
+      "EXE": {
+        "price": 88.23,
+        "dv30": 243632402.80597195,
+        "known_session_count": 30
+      },
+      "EXEL": {
+        "price": 58.33,
+        "dv30": 113754574.85892986,
+        "known_session_count": 30
+      },
+      "EXLS": {
+        "price": 35.41,
+        "dv30": 68240114.75813118,
+        "known_session_count": 30
+      },
+      "EXPE": {
+        "price": 260.07,
+        "dv30": 498224787.64553297,
+        "known_session_count": 30
+      },
+      "FANG": {
+        "price": 184.98,
+        "dv30": 403829157.1435278,
+        "known_session_count": 30
+      },
+      "FAST": {
+        "price": 50.81,
+        "dv30": 319926263.3139069,
+        "known_session_count": 30
+      },
+      "FCEL": {
+        "price": 20.65,
+        "dv30": 89448053.92335957,
+        "known_session_count": 30
+      },
+      "FCFS": {
+        "price": 213,
+        "dv30": 81527464.97831182,
+        "known_session_count": 30
+      },
+      "FCNCA": {
+        "price": 2088.13,
+        "dv30": 133471828.0155888,
+        "known_session_count": 30
+      },
+      "FER": {
+        "price": 51.46,
+        "dv30": 87887264.86182292,
+        "known_session_count": 30
+      },
+      "FFIV": {
+        "price": 469.79,
+        "dv30": 207059070.52161694,
+        "known_session_count": 30
+      },
+      "FIGR": {
+        "price": 27.35,
+        "dv30": 142187083.37324733,
+        "known_session_count": 30
+      },
+      "FISV": {
+        "price": 45.48,
+        "dv30": 293688277.8253647,
+        "known_session_count": 30
+      },
+      "FIVE": {
+        "price": 209.92,
+        "dv30": 269100878.1015057,
+        "known_session_count": 30
+      },
+      "FIVN": {
+        "price": 33.29,
+        "dv30": 63919548.523196496,
+        "known_session_count": 30
+      },
+      "FLEX": {
+        "price": 121.38,
+        "dv30": 323752439.0757727,
+        "known_session_count": 30
+      },
+      "FLNC": {
+        "price": 8.03,
+        "dv30": 55283225.18472162,
+        "known_session_count": 30
+      },
+      "FLY": {
+        "price": 22.83,
+        "dv30": 61515779.802796155,
+        "known_session_count": 30
+      },
+      "FORM": {
+        "price": 141.3,
+        "dv30": 130173583.80488242,
+        "known_session_count": 30
+      },
+      "FOX": {
+        "price": 55.58,
+        "dv30": 57970713.279162005,
+        "known_session_count": 30
+      },
+      "FOXA": {
+        "price": 62.08,
+        "dv30": 301343377.07034504,
+        "known_session_count": 30
+      },
+      "FROG": {
+        "price": 98.51,
+        "dv30": 165520651.65909368,
+        "known_session_count": 30
+      },
+      "FRPT": {
+        "price": 62.77,
+        "dv30": 68411244.92121388,
+        "known_session_count": 30
+      },
+      "FRSH": {
+        "price": 13.76,
+        "dv30": 52831084.62216887,
+        "known_session_count": 30
+      },
+      "FRVO": {
+        "price": 14.33,
+        "dv30": 94970505.42337745,
+        "known_session_count": 30
+      },
+      "FSLR": {
+        "price": 179.8,
+        "dv30": 390644508.85340714,
+        "known_session_count": 30
+      },
+      "FSLY": {
+        "price": 25.51,
+        "dv30": 114551514.7697813,
+        "known_session_count": 30
+      },
+      "FTAI": {
+        "price": 179.44,
+        "dv30": 227687918.4092474,
+        "known_session_count": 30
+      },
+      "FTNT": {
+        "price": 191.27,
+        "dv30": 587295370.1709063,
+        "known_session_count": 30
+      },
+      "FUTU": {
+        "price": 113.21,
+        "dv30": 103695899.51151669,
+        "known_session_count": 30
+      },
+      "FWONK": {
+        "price": 95.54,
+        "dv30": 192578762.42851233,
+        "known_session_count": 30
+      },
+      "GEHC": {
+        "price": 64.77,
+        "dv30": 213237797.53568667,
+        "known_session_count": 30
+      },
+      "GEN": {
+        "price": 22.8,
+        "dv30": 204146018.52893192,
+        "known_session_count": 30
+      },
+      "GFS": {
+        "price": 48.63,
+        "dv30": 173800122.8081382,
+        "known_session_count": 30
+      },
+      "GH": {
+        "price": 170.69,
+        "dv30": 294479155.2116462,
+        "known_session_count": 30
+      },
+      "GILD": {
+        "price": 144.23,
+        "dv30": 769865565.0731858,
+        "known_session_count": 30
+      },
+      "GLBE": {
+        "price": 38.7,
+        "dv30": 56236905.93553339,
+        "known_session_count": 30
+      },
+      "GLNG": {
+        "price": 50.03,
+        "dv30": 60761756.56470707,
+        "known_session_count": 30
+      },
+      "GLPI": {
+        "price": 38.08,
+        "dv30": 141285597.41573954,
+        "known_session_count": 30
+      },
+      "GLXY": {
+        "price": 22.15,
+        "dv30": 111611172.54690948,
+        "known_session_count": 30
+      },
+      "GMAB": {
+        "price": 37.8,
+        "dv30": 84067790.23721474,
+        "known_session_count": 30
+      },
+      "GOOG": {
+        "price": 344.59,
+        "dv30": 5414413207.634142,
+        "known_session_count": 30
+      },
+      "GOOGL": {
+        "price": 347.68,
+        "dv30": 7908467240.838278,
+        "known_session_count": 30
+      },
+      "GTLB": {
+        "price": 51.63,
+        "dv30": 198027250.71806887,
+        "known_session_count": 30
+      },
+      "GTX": {
+        "price": 26.09,
+        "dv30": 65625904.08805837,
+        "known_session_count": 30
+      },
+      "HALO": {
+        "price": 109.72,
+        "dv30": 191103849.75530273,
+        "known_session_count": 30
+      },
+      "HAS": {
+        "price": 91.03,
+        "dv30": 134284203.32948598,
+        "known_session_count": 30
+      },
+      "HBAN": {
+        "price": 15.33,
+        "dv30": 399317576.83949614,
+        "known_session_count": 30
+      },
+      "HLNE": {
+        "price": 86.5,
+        "dv30": 60362855.1042191,
+        "known_session_count": 30
+      },
+      "HON": {
+        "price": 212.87,
+        "dv30": 516536033.2445719,
+        "known_session_count": 30
+      },
+      "HONA": {
+        "price": 157.39,
+        "dv30": 485674491.67487335,
+        "known_session_count": 30
+      },
+      "HOOD": {
+        "price": 112,
+        "dv30": 2187688576.097418,
+        "known_session_count": 30
+      },
+      "HQY": {
+        "price": 91.05,
+        "dv30": 80637125.11027285,
+        "known_session_count": 30
+      },
+      "HSIC": {
+        "price": 84.84,
+        "dv30": 85871048.95772392,
+        "known_session_count": 30
+      },
+      "HST": {
+        "price": 22.48,
+        "dv30": 162591049.25909966,
+        "known_session_count": 30
+      },
+      "HTFL": {
+        "price": 50.69,
+        "dv30": 82831885.63785005,
+        "known_session_count": 30
+      },
+      "HTHT": {
+        "price": 42.05,
+        "dv30": 63042622.5769958,
+        "known_session_count": 30
+      },
+      "HUT": {
+        "price": 92.22,
+        "dv30": 355601941.51878345,
+        "known_session_count": 30
+      },
+      "HWC": {
+        "price": 72.72,
+        "dv30": 62261751.93980612,
+        "known_session_count": 30
+      },
+      "IBKR": {
+        "price": 90.58,
+        "dv30": 346308831.1561185,
+        "known_session_count": 30
+      },
+      "IBRX": {
+        "price": 9.69,
+        "dv30": 77760368.60244586,
+        "known_session_count": 30
+      },
+      "ICLR": {
+        "price": 161.69,
+        "dv30": 149540803.81374747,
+        "known_session_count": 30
+      },
+      "IDCC": {
+        "price": 339.29,
+        "dv30": 61459782.69871333,
+        "known_session_count": 30
+      },
+      "IDXX": {
+        "price": 515.41,
+        "dv30": 232151192.38824865,
+        "known_session_count": 30
+      },
+      "IESC": {
+        "price": 341.845,
+        "dv30": 75971838.55598122,
+        "known_session_count": 30
+      },
+      "ILMN": {
+        "price": 273.54,
+        "dv30": 553069121.0611107,
+        "known_session_count": 30
+      },
+      "INCY": {
+        "price": 112.73,
+        "dv30": 178590732.26250768,
+        "known_session_count": 30
+      },
+      "INDV": {
+        "price": 35.9,
+        "dv30": 63839575.163005725,
+        "known_session_count": 30
+      },
+      "INIO": {
+        "price": 21.35,
+        "dv30": 92390485.34330691,
+        "known_session_count": 30
+      },
+      "INOD": {
+        "price": 66.24,
+        "dv30": 63793917.42553075,
+        "known_session_count": 30
+      },
+      "INSM": {
+        "price": 105.23,
+        "dv30": 249701376.26581633,
+        "known_session_count": 30
+      },
+      "INTC": {
+        "price": 112.5,
+        "dv30": 10290947614.740824,
+        "known_session_count": 30
+      },
+      "INTU": {
+        "price": 289.81,
+        "dv30": 1052135867.178766,
+        "known_session_count": 30
+      },
+      "IONS": {
+        "price": 44,
+        "dv30": 162733200.40762687,
+        "known_session_count": 30
+      },
+      "IOVA": {
+        "price": 12.96,
+        "dv30": 131299875.55600762,
+        "known_session_count": 30
+      },
+      "IREN": {
+        "price": 41.28,
+        "dv30": 1520693282.3304408,
+        "known_session_count": 30
+      },
+      "IRTC": {
+        "price": 107.2,
+        "dv30": 53360906.871846065,
+        "known_session_count": 30
+      },
+      "ISRG": {
+        "price": 404.76,
+        "dv30": 748977877.6263468,
+        "known_session_count": 30
+      },
+      "JAZZ": {
+        "price": 231.39,
+        "dv30": 183403630.55326998,
+        "known_session_count": 30
+      },
+      "JBHT": {
+        "price": 225.93,
+        "dv30": 226809169.31489056,
+        "known_session_count": 30
+      },
+      "JD": {
+        "price": 26.5,
+        "dv30": 162607109.01926324,
+        "known_session_count": 30
+      },
+      "JKHY": {
+        "price": 144.43,
+        "dv30": 131706979.11071336,
+        "known_session_count": 30
+      },
+      "KDP": {
+        "price": 31.13,
+        "dv30": 302094221.2344214,
+        "known_session_count": 30
+      },
+      "KLAC": {
+        "price": 197.46,
+        "dv30": 1649585496.5446517,
+        "known_session_count": 30
+      },
+      "KLIC": {
+        "price": 97.92,
+        "dv30": 54719292.551074944,
+        "known_session_count": 30
+      },
+      "KMB": {
+        "price": 96.77,
+        "dv30": 377938301.4818641,
+        "known_session_count": 30
+      },
+      "KRYS": {
+        "price": 326.81,
+        "dv30": 82095823.7023721,
+        "known_session_count": 30
+      },
+      "KSPI": {
+        "price": 93.16,
+        "dv30": 56437886.60985187,
+        "known_session_count": 30
+      },
+      "KTOS": {
+        "price": 43.71,
+        "dv30": 188281194.12680137,
+        "known_session_count": 30
+      },
+      "KYMR": {
+        "price": 105.98,
+        "dv30": 79175013.6099928,
+        "known_session_count": 30
+      },
+      "LAMR": {
+        "price": 144.74,
+        "dv30": 69816715.10723868,
+        "known_session_count": 30
+      },
+      "LECO": {
+        "price": 275.54,
+        "dv30": 98453054.55364864,
+        "known_session_count": 30
+      },
+      "LFST": {
+        "price": 12.12,
+        "dv30": 50010967.10870623,
+        "known_session_count": 30
+      },
+      "LFUS": {
+        "price": 454.28,
+        "dv30": 76748558.89243713,
+        "known_session_count": 30
+      },
+      "LGND": {
+        "price": 296.94,
+        "dv30": 60606708.13399054,
+        "known_session_count": 30
+      },
+      "LIN": {
+        "price": 489.95,
+        "dv30": 913622602.4524075,
+        "known_session_count": 30
+      },
+      "LITE": {
+        "price": 1133.4,
+        "dv30": 3918543505.6802506,
+        "known_session_count": 30
+      },
+      "LKQ": {
+        "price": 22.39,
+        "dv30": 75604474.16066423,
+        "known_session_count": 30
+      },
+      "LNT": {
+        "price": 65.49,
+        "dv30": 155133491.50747073,
+        "known_session_count": 30
+      },
+      "LNTH": {
+        "price": 99.95,
+        "dv30": 90398035.73790029,
+        "known_session_count": 30
+      },
+      "LOGI": {
+        "price": 102.41,
+        "dv30": 74110737.12166944,
+        "known_session_count": 30
+      },
+      "LPLA": {
+        "price": 332.39,
+        "dv30": 244693418.5861644,
+        "known_session_count": 30
+      },
+      "LQDA": {
+        "price": 25.91,
+        "dv30": 73437718.82407898,
+        "known_session_count": 30
+      },
+      "LRCX": {
+        "price": 333.89,
+        "dv30": 2561807693.467394,
+        "known_session_count": 30
+      },
+      "LSCC": {
+        "price": 134.47,
+        "dv30": 177921551.31397432,
+        "known_session_count": 30
+      },
+      "LSTR": {
+        "price": 169.05,
+        "dv30": 55746087.6651977,
+        "known_session_count": 30
+      },
+      "LULU": {
+        "price": 93.61,
+        "dv30": 478191421.6831604,
+        "known_session_count": 30
+      },
+      "LUMN": {
+        "price": 5.905,
+        "dv30": 74153380.67799103,
+        "known_session_count": 30
+      },
+      "LUNR": {
+        "price": 15.06,
+        "dv30": 102036864.24156335,
+        "known_session_count": 30
+      },
+      "LYFT": {
+        "price": 15.76,
+        "dv30": 145458913.3928377,
+        "known_session_count": 30
+      },
+      "MANH": {
+        "price": 202.84,
+        "dv30": 121814621.7617381,
+        "known_session_count": 30
+      },
+      "MAR": {
+        "price": 361.28,
+        "dv30": 495167025.32923186,
+        "known_session_count": 30
+      },
+      "MARA": {
+        "price": 10.97,
+        "dv30": 472936164.1317675,
+        "known_session_count": 30
+      },
+      "MAT": {
+        "price": 15.93,
+        "dv30": 55859677.90599546,
+        "known_session_count": 30
+      },
+      "MCHP": {
+        "price": 81.26,
+        "dv30": 568557636.9276704,
+        "known_session_count": 30
+      },
+      "MDB": {
+        "price": 360.71,
+        "dv30": 738326720.9450295,
+        "known_session_count": 30
+      },
+      "MDGL": {
+        "price": 496.45,
+        "dv30": 116465067.58633289,
+        "known_session_count": 30
+      },
+      "MDLN": {
+        "price": 35.55,
+        "dv30": 278983079.9932511,
+        "known_session_count": 30
+      },
+      "MDLZ": {
+        "price": 59.62,
+        "dv30": 464511834.6740476,
+        "known_session_count": 30
+      },
+      "MEDP": {
+        "price": 602.9,
+        "dv30": 135605610.26938072,
+        "known_session_count": 30
+      },
+      "MELI": {
+        "price": 1857.99,
+        "dv30": 900943120.8030775,
+        "known_session_count": 30
+      },
+      "META": {
+        "price": 738.88,
+        "dv30": 11826903966.008549,
+        "known_session_count": 30
+      },
+      "MIDD": {
+        "price": 105.92,
+        "dv30": 57087524.174703136,
+        "known_session_count": 30
+      },
+      "MIRM": {
+        "price": 79.25,
+        "dv30": 59977273.697298646,
+        "known_session_count": 30
+      },
+      "MKSI": {
+        "price": 281.41,
+        "dv30": 305118933.55398047,
+        "known_session_count": 30
+      },
+      "MKTX": {
+        "price": 164.03,
+        "dv30": 135926285.4661005,
+        "known_session_count": 30
+      },
+      "MMED": {
+        "price": 19.64,
+        "dv30": 59798122.83887583,
+        "known_session_count": 30
+      },
+      "MMSI": {
+        "price": 84.96,
+        "dv30": 51574125.652384624,
+        "known_session_count": 30
+      },
+      "MNDY": {
+        "price": 84.29,
+        "dv30": 94772410.46619362,
+        "known_session_count": 30
+      },
+      "MNST": {
+        "price": 43.25,
+        "dv30": 402892023.0475905,
+        "known_session_count": 30
+      },
+      "MORN": {
+        "price": 195.69,
+        "dv30": 55138713.35115634,
+        "known_session_count": 30
+      },
+      "MPWR": {
+        "price": 1473.69,
+        "dv30": 737941096.9275634,
+        "known_session_count": 30
+      },
+      "MRCY": {
+        "price": 82.8,
+        "dv30": 51261822.927087635,
+        "known_session_count": 30
+      },
+      "MRNA": {
+        "price": 187.46,
+        "dv30": 2845022599.579622,
+        "known_session_count": 30
+      },
+      "MRVL": {
+        "price": 287.01,
+        "dv30": 4574591243.822101,
+        "known_session_count": 30
+      },
+      "MRX": {
+        "price": 74.24,
+        "dv30": 52367241.865628935,
+        "known_session_count": 30
+      },
+      "MSFT": {
+        "price": 529.3,
+        "dv30": 10211290861.910652,
+        "known_session_count": 30
+      },
+      "MSTR": {
+        "price": 164.55,
+        "dv30": 2941041292.9262834,
+        "known_session_count": 30
+      },
+      "MTCH": {
+        "price": 40.62,
+        "dv30": 127741335.3096139,
+        "known_session_count": 30
+      },
+      "MTSI": {
+        "price": 350.67,
+        "dv30": 314716457.2244693,
+        "known_session_count": 30
+      },
+      "MU": {
+        "price": 1045.56,
+        "dv30": 23295665866.699768,
+        "known_session_count": 30
+      },
+      "MXL": {
+        "price": 109.3,
+        "dv30": 196589431.62061518,
+        "known_session_count": 30
+      },
+      "MYRG": {
+        "price": 324.51,
+        "dv30": 70567178.62064314,
+        "known_session_count": 30
+      },
+      "NAVN": {
+        "price": 21.34,
+        "dv30": 72830418.26341331,
+        "known_session_count": 30
+      },
+      "NBIS": {
+        "price": 249.87,
+        "dv30": 2969088989.1069136,
+        "known_session_count": 30
+      },
+      "NBIX": {
+        "price": 145.51,
+        "dv30": 168214809.65234452,
+        "known_session_count": 30
+      },
+      "NDAQ": {
+        "price": 92.27,
+        "dv30": 296282333.4127412,
+        "known_session_count": 30
+      },
+      "NDSN": {
+        "price": 334.22,
+        "dv30": 107281499.25561234,
+        "known_session_count": 30
+      },
+      "NESR": {
+        "price": 24.51,
+        "dv30": 58848681.18066536,
+        "known_session_count": 30
+      },
+      "NFLX": {
+        "price": 68.69,
+        "dv30": 2392053411.503168,
+        "known_session_count": 30
+      },
+      "NKTR": {
+        "price": 39.91,
+        "dv30": 67941992.5423946,
+        "known_session_count": 30
+      },
+      "NTAP": {
+        "price": 228.45,
+        "dv30": 450688507.77506626,
+        "known_session_count": 30
+      },
+      "NTES": {
+        "price": 119.07,
+        "dv30": 71040645.6845882,
+        "known_session_count": 30
+      },
+      "NTNX": {
+        "price": 73.41,
+        "dv30": 162023178.29619148,
+        "known_session_count": 30
+      },
+      "NTRA": {
+        "price": 400.65,
+        "dv30": 595312890.1744916,
+        "known_session_count": 30
+      },
+      "NTRS": {
+        "price": 169.46,
+        "dv30": 168317262.95308065,
+        "known_session_count": 30
+      },
+      "NTSK": {
+        "price": 19.64,
+        "dv30": 101805720.17854278,
+        "known_session_count": 30
+      },
+      "NVAX": {
+        "price": 11.32,
+        "dv30": 50865874.726224236,
+        "known_session_count": 30
+      },
+      "NVDA": {
+        "price": 239.24,
+        "dv30": 25512820163.673004,
+        "known_session_count": 30
+      },
+      "NVMI": {
+        "price": 394.48,
+        "dv30": 164135457.76006293,
+        "known_session_count": 30
+      },
+      "NVTS": {
+        "price": 11.97,
+        "dv30": 142327464.65560403,
+        "known_session_count": 30
+      },
+      "NWSA": {
+        "price": 28.55,
+        "dv30": 106767547.26176795,
+        "known_session_count": 30
+      },
+      "NXPI": {
+        "price": 244.38,
+        "dv30": 687429053.8844645,
+        "known_session_count": 30
+      },
+      "NXST": {
+        "price": 157.36,
+        "dv30": 56245405.63070889,
+        "known_session_count": 30
+      },
+      "NXT": {
+        "price": 88.09,
+        "dv30": 149057285.13952357,
+        "known_session_count": 30
+      },
+      "ODFL": {
+        "price": 178.02,
+        "dv30": 310978665.6503128,
+        "known_session_count": 30
+      },
+      "OKTA": {
+        "price": 218.67,
+        "dv30": 708283632.6905733,
+        "known_session_count": 30
+      },
+      "OLED": {
+        "price": 79.66,
+        "dv30": 52356564.85869996,
+        "known_session_count": 30
+      },
+      "OLLI": {
+        "price": 87.75,
+        "dv30": 148079751.90634298,
+        "known_session_count": 30
+      },
+      "ON": {
+        "price": 86.31,
+        "dv30": 766000097.0393763,
+        "known_session_count": 30
+      },
+      "ONB": {
+        "price": 24.895,
+        "dv30": 98840741.07029082,
+        "known_session_count": 30
+      },
+      "ONC": {
+        "price": 362.78,
+        "dv30": 125629555.32172874,
+        "known_session_count": 30
+      },
+      "ONDS": {
+        "price": 7.41,
+        "dv30": 460839039.42802644,
+        "known_session_count": 30
+      },
+      "ORKA": {
+        "price": 80.18,
+        "dv30": 75533783.58999284,
+        "known_session_count": 30
+      },
+      "ORLY": {
+        "price": 85.14,
+        "dv30": 429916160.1845529,
+        "known_session_count": 30
+      },
+      "OUST": {
+        "price": 44.91,
+        "dv30": 76078023.84497648,
+        "known_session_count": 30
+      },
+      "OZK": {
+        "price": 44.58,
+        "dv30": 52854287.72142258,
+        "known_session_count": 30
+      },
+      "PANW": {
+        "price": 419.91,
+        "dv30": 2138329146.7920623,
+        "known_session_count": 30
+      },
+      "PAYX": {
+        "price": 101.02,
+        "dv30": 316332661.0767778,
+        "known_session_count": 30
+      },
+      "PCAR": {
+        "price": 109.32,
+        "dv30": 325377607.8075304,
+        "known_session_count": 30
+      },
+      "PCTY": {
+        "price": 146.16,
+        "dv30": 87215513.72923747,
+        "known_session_count": 30
+      },
+      "PCVX": {
+        "price": 66.7,
+        "dv30": 77368229.39552549,
+        "known_session_count": 30
+      },
+      "PDD": {
+        "price": 78.4,
+        "dv30": 502203452.06593466,
+        "known_session_count": 30
+      },
+      "PEGA": {
+        "price": 34.6,
+        "dv30": 69460974.52948678,
+        "known_session_count": 30
+      },
+      "PENG": {
+        "price": 64.21,
+        "dv30": 72100044.05217183,
+        "known_session_count": 30
+      },
+      "PEP": {
+        "price": 125.71,
+        "dv30": 1078074017.2005177,
+        "known_session_count": 30
+      },
+      "PFG": {
+        "price": 109.7,
+        "dv30": 142739690.1572678,
+        "known_session_count": 30
+      },
+      "PI": {
+        "price": 184.16,
+        "dv30": 64176738.33277218,
+        "known_session_count": 30
+      },
+      "PLTR": {
+        "price": 192.07,
+        "dv30": 4188332394.348879,
+        "known_session_count": 30
+      },
+      "PLXS": {
+        "price": 272.63,
+        "dv30": 51995394.82381481,
+        "known_session_count": 30
+      },
+      "PODD": {
+        "price": 134.73,
+        "dv30": 198050116.84783545,
+        "known_session_count": 30
+      },
+      "POET": {
+        "price": 7.71,
+        "dv30": 56702183.59331084,
+        "known_session_count": 30
+      },
+      "POOL": {
+        "price": 158.24,
+        "dv30": 122064175.72276992,
+        "known_session_count": 30
+      },
+      "POWL": {
+        "price": 204.69,
+        "dv30": 89733118.72536284,
+        "known_session_count": 30
+      },
+      "PRAX": {
+        "price": 280.14,
+        "dv30": 124457877.5034269,
+        "known_session_count": 30
+      },
+      "PTC": {
+        "price": 193,
+        "dv30": 215347567.7447409,
+        "known_session_count": 30
+      },
+      "PTCT": {
+        "price": 63.7,
+        "dv30": 67812561.48388368,
+        "known_session_count": 30
+      },
+      "PTEN": {
+        "price": 11.41,
+        "dv30": 97812086.9999626,
+        "known_session_count": 30
+      },
+      "PTGX": {
+        "price": 138.69,
+        "dv30": 85999850.21782257,
+        "known_session_count": 30
+      },
+      "PURR": {
+        "price": 12.5,
+        "dv30": 266550342.66089255,
+        "known_session_count": 30
+      },
+      "PYPL": {
+        "price": 54.61,
+        "dv30": 537234876.9541866,
+        "known_session_count": 30
+      },
+      "QBTS": {
+        "price": 15.79,
+        "dv30": 244531409.14592224,
+        "known_session_count": 30
+      },
+      "QCOM": {
+        "price": 181.03,
+        "dv30": 2044656072.3366952,
+        "known_session_count": 30
+      },
+      "QLYS": {
+        "price": 199.93,
+        "dv30": 122841239.46423844,
+        "known_session_count": 30
+      },
+      "QNT": {
+        "price": 45.59,
+        "dv30": 84012349.42060584,
+        "known_session_count": 30
+      },
+      "QUBT": {
+        "price": 7.86,
+        "dv30": 52963145.48734288,
+        "known_session_count": 30
+      },
+      "QURE": {
+        "price": 23.06,
+        "dv30": 57284606.74725574,
+        "known_session_count": 30
+      },
+      "RARE": {
+        "price": 14.46,
+        "dv30": 66997501.44113203,
+        "known_session_count": 30
+      },
+      "REG": {
+        "price": 71.42,
+        "dv30": 96143911.52070671,
+        "known_session_count": 30
+      },
+      "REGN": {
+        "price": 738.72,
+        "dv30": 481139267.8962693,
+        "known_session_count": 30
+      },
+      "RELY": {
+        "price": 23.2,
+        "dv30": 84365626.2275489,
+        "known_session_count": 30
+      },
+      "RGEN": {
+        "price": 174.86,
+        "dv30": 175472694.43007576,
+        "known_session_count": 30
+      },
+      "RGLD": {
+        "price": 234.35,
+        "dv30": 149673117.30581528,
+        "known_session_count": 30
+      },
+      "RGTI": {
+        "price": 15.17,
+        "dv30": 222071464.22114718,
+        "known_session_count": 30
+      },
+      "RIOT": {
+        "price": 18.93,
+        "dv30": 326713579.54296875,
+        "known_session_count": 30
+      },
+      "RIVN": {
+        "price": 14.51,
+        "dv30": 305508723.6028981,
+        "known_session_count": 30
+      },
+      "RKLB": {
+        "price": 75.06,
+        "dv30": 1326796968.3231337,
+        "known_session_count": 30
+      },
+      "RLAY": {
+        "price": 18.74,
+        "dv30": 55781008.610532016,
+        "known_session_count": 30
+      },
+      "RMBS": {
+        "price": 114.09,
+        "dv30": 179311876.23997802,
+        "known_session_count": 30
+      },
+      "ROAD": {
+        "price": 93.89,
+        "dv30": 56137752.98816091,
+        "known_session_count": 30
+      },
+      "ROIV": {
+        "price": 35.53,
+        "dv30": 241313274.15867257,
+        "known_session_count": 30
+      },
+      "ROKU": {
+        "price": 152.06,
+        "dv30": 300341553.097345,
+        "known_session_count": 30
+      },
+      "ROP": {
+        "price": 362.28,
+        "dv30": 268217051.8306455,
+        "known_session_count": 30
+      },
+      "ROST": {
+        "price": 224.21,
+        "dv30": 481632334.7836691,
+        "known_session_count": 30
+      },
+      "RPRX": {
+        "price": 56.44,
+        "dv30": 162764216.21254605,
+        "known_session_count": 30
+      },
+      "RRR": {
+        "price": 52.05,
+        "dv30": 53943596.726007044,
+        "known_session_count": 30
+      },
+      "RUN": {
+        "price": 7.77,
+        "dv30": 58033596.56237858,
+        "known_session_count": 30
+      },
+      "RVMD": {
+        "price": 199.87,
+        "dv30": 363572818.9166311,
+        "known_session_count": 30
+      },
+      "RYAAY": {
+        "price": 55.865,
+        "dv30": 70243331.36932704,
+        "known_session_count": 30
+      },
+      "RYTM": {
+        "price": 90.77,
+        "dv30": 60905118.83501038,
+        "known_session_count": 30
+      },
+      "SAIA": {
+        "price": 341.65,
+        "dv30": 128881670.42754671,
+        "known_session_count": 30
+      },
+      "SAIC": {
+        "price": 124.59,
+        "dv30": 52711103.99637902,
+        "known_session_count": 30
+      },
+      "SAIL": {
+        "price": 19.91,
+        "dv30": 94358937.50767384,
+        "known_session_count": 30
+      },
+      "SANM": {
+        "price": 228.07,
+        "dv30": 125511196.70337096,
+        "known_session_count": 30
+      },
+      "SBAC": {
+        "price": 169.7,
+        "dv30": 153183878.54750723,
+        "known_session_count": 30
+      },
+      "SBET": {
+        "price": 9.5,
+        "dv30": 65590833.378673196,
+        "known_session_count": 30
+      },
+      "SBLK": {
+        "price": 29.86,
+        "dv30": 56979921.95084606,
+        "known_session_count": 30
+      },
+      "SBUX": {
+        "price": 96.11,
+        "dv30": 649469604.4431131,
+        "known_session_count": 30
+      },
+      "SEDG": {
+        "price": 34.04,
+        "dv30": 87673048.01641893,
+        "known_session_count": 30
+      },
+      "SEIC": {
+        "price": 102.86,
+        "dv30": 72840734.60934347,
+        "known_session_count": 30
+      },
+      "SFM": {
+        "price": 65.17,
+        "dv30": 138109079.0737576,
+        "known_session_count": 30
+      },
+      "SHAZ": {
+        "price": 48.12,
+        "dv30": 73009250.3542054,
+        "known_session_count": 30
+      },
+      "SHOP": {
+        "price": 164.44,
+        "dv30": 1037634796.4000036,
+        "known_session_count": 30
+      },
+      "SIMO": {
+        "price": 284.96,
+        "dv30": 178996549.74023193,
+        "known_session_count": 30
+      },
+      "SIRI": {
+        "price": 26.36,
+        "dv30": 109023872.40343775,
+        "known_session_count": 30
+      },
+      "SITM": {
+        "price": 711.06,
+        "dv30": 227433873.82552826,
+        "known_session_count": 30
+      },
+      "SKHY": {
+        "price": 182.56,
+        "dv30": 2710529589.5313807,
+        "known_session_count": 30
+      },
+      "SLAB": {
+        "price": 222.62,
+        "dv30": 68198558.52413653,
+        "known_session_count": 30
+      },
+      "SLS": {
+        "price": 11.34,
+        "dv30": 67853647.18777306,
+        "known_session_count": 30
+      },
+      "SMCI": {
+        "price": 43.46,
+        "dv30": 1282508814.6964498,
+        "known_session_count": 30
+      },
+      "SMMT": {
+        "price": 17.31,
+        "dv30": 93182734.89860925,
+        "known_session_count": 30
+      },
+      "SMTC": {
+        "price": 197.2,
+        "dv30": 483567686.8325429,
+        "known_session_count": 30
+      },
+      "SNEX": {
+        "price": 66,
+        "dv30": 52909622.522764176,
+        "known_session_count": 30
+      },
+      "SNPS": {
+        "price": 505.17,
+        "dv30": 852239570.411756,
+        "known_session_count": 30
+      },
+      "SNY": {
+        "price": 39.56,
+        "dv30": 103692987.67192085,
+        "known_session_count": 30
+      },
+      "SOFI": {
+        "price": 15.76,
+        "dv30": 722501963.0302672,
+        "known_session_count": 30
+      },
+      "SOLS": {
+        "price": 61.27,
+        "dv30": 134201695.36803593,
+        "known_session_count": 30
+      },
+      "SOUN": {
+        "price": 5.72,
+        "dv30": 116838687.41091546,
+        "known_session_count": 30
+      },
+      "SPCX": {
+        "price": 171.92,
+        "dv30": 11356309578.399109,
+        "known_session_count": 30
+      },
+      "SRRK": {
+        "price": 42.45,
+        "dv30": 78133994.91987076,
+        "known_session_count": 30
+      },
+      "SSNC": {
+        "price": 77.99,
+        "dv30": 111965967.5969888,
+        "known_session_count": 30
+      },
+      "SSRM": {
+        "price": 34.28,
+        "dv30": 76789677.30874795,
+        "known_session_count": 30
+      },
+      "STLD": {
+        "price": 238.17,
+        "dv30": 216499125.3798579,
+        "known_session_count": 30
+      },
+      "STRL": {
+        "price": 563.69,
+        "dv30": 239608088.33251518,
+        "known_session_count": 30
+      },
+      "STX": {
+        "price": 805.63,
+        "dv30": 2933213130.5307436,
+        "known_session_count": 30
+      },
+      "SWKS": {
+        "price": 82.79,
+        "dv30": 440622916.75713587,
+        "known_session_count": 30
+      },
+      "SYM": {
+        "price": 44.15,
+        "dv30": 61683382.78433028,
+        "known_session_count": 30
+      },
+      "SYNA": {
+        "price": 119.39,
+        "dv30": 64319706.871192254,
+        "known_session_count": 30
+      },
+      "SYRE": {
+        "price": 80.11,
+        "dv30": 112987926.97774217,
+        "known_session_count": 30
+      },
+      "TARS": {
+        "price": 74.11,
+        "dv30": 50621931.13428564,
+        "known_session_count": 30
+      },
+      "TCOM": {
+        "price": 38.26,
+        "dv30": 136264344.81761965,
+        "known_session_count": 30
+      },
+      "TEAM": {
+        "price": 193.98,
+        "dv30": 578138252.3608843,
+        "known_session_count": 30
+      },
+      "TECH": {
+        "price": 72.43,
+        "dv30": 197232108.87951618,
+        "known_session_count": 30
+      },
+      "TEM": {
+        "price": 71.98,
+        "dv30": 457795575.35494256,
+        "known_session_count": 30
+      },
+      "TENB": {
+        "price": 39.465,
+        "dv30": 126522534.62154302,
+        "known_session_count": 30
+      },
+      "TER": {
+        "price": 430.32,
+        "dv30": 860507251.4584368,
+        "known_session_count": 30
+      },
+      "TGTX": {
+        "price": 52.19,
+        "dv30": 88600960.42024368,
+        "known_session_count": 30
+      },
+      "TIGO": {
+        "price": 90.46,
+        "dv30": 77189429.76524806,
+        "known_session_count": 30
+      },
+      "TLN": {
+        "price": 373.11,
+        "dv30": 226198405.62303004,
+        "known_session_count": 30
+      },
+      "TMDX": {
+        "price": 80.28,
+        "dv30": 53019110.11916782,
+        "known_session_count": 30
+      },
+      "TMUS": {
+        "price": 165.93,
+        "dv30": 705141015.3339754,
+        "known_session_count": 30
+      },
+      "TNGX": {
+        "price": 21.9,
+        "dv30": 56810238.69857031,
+        "known_session_count": 30
+      },
+      "TPG": {
+        "price": 44.97,
+        "dv30": 116411360.73198387,
+        "known_session_count": 30
+      },
+      "TRI": {
+        "price": 98.09,
+        "dv30": 130814087.93322676,
+        "known_session_count": 30
+      },
+      "TRMB": {
+        "price": 60.95,
+        "dv30": 134054068.9069632,
+        "known_session_count": 30
+      },
+      "TRMD": {
+        "price": 39.05,
+        "dv30": 57540453.16507694,
+        "known_session_count": 30
+      },
+      "TROW": {
+        "price": 103.6,
+        "dv30": 144557356.5431136,
+        "known_session_count": 30
+      },
+      "TSCO": {
+        "price": 32.29,
+        "dv30": 284910932.80318,
+        "known_session_count": 30
+      },
+      "TSEM": {
+        "price": 258.41,
+        "dv30": 331552824.97181845,
+        "known_session_count": 30
+      },
+      "TSLA": {
+        "price": 380.68,
+        "dv30": 12049329850.839994,
+        "known_session_count": 30
+      },
+      "TTAN": {
+        "price": 68.67,
+        "dv30": 134374453.7637231,
+        "known_session_count": 30
+      },
+      "TTD": {
+        "price": 11.92,
+        "dv30": 271714890.21144557,
+        "known_session_count": 30
+      },
+      "TTEK": {
+        "price": 33.38,
+        "dv30": 68926155.0831242,
+        "known_session_count": 30
+      },
+      "TTMI": {
+        "price": 132.71,
+        "dv30": 219265324.16227704,
+        "known_session_count": 30
+      },
+      "TTWO": {
+        "price": 202.53,
+        "dv30": 507546412.844634,
+        "known_session_count": 30
+      },
+      "TVTX": {
+        "price": 55.98,
+        "dv30": 92889558.18224007,
+        "known_session_count": 30
+      },
+      "TW": {
+        "price": 107.54,
+        "dv30": 127590318.86464542,
+        "known_session_count": 30
+      },
+      "TWST": {
+        "price": 166.97,
+        "dv30": 326519362.0976622,
+        "known_session_count": 30
+      },
+      "TXG": {
+        "price": 80.66,
+        "dv30": 228865981.91017044,
+        "known_session_count": 30
+      },
+      "TXN": {
+        "price": 297.23,
+        "dv30": 1390496025.1479788,
+        "known_session_count": 30
+      },
+      "TXRH": {
+        "price": 163.57,
+        "dv30": 183263067.92477828,
+        "known_session_count": 30
+      },
+      "UAL": {
+        "price": 111.87,
+        "dv30": 431415734.55667055,
+        "known_session_count": 30
+      },
+      "UCTT": {
+        "price": 73.24,
+        "dv30": 54251999.64916885,
+        "known_session_count": 30
+      },
+      "ULTA": {
+        "price": 547.29,
+        "dv30": 281878397.39228743,
+        "known_session_count": 30
+      },
+      "UMBF": {
+        "price": 130.08,
+        "dv30": 80232202.96955532,
+        "known_session_count": 30
+      },
+      "UPST": {
+        "price": 23.86,
+        "dv30": 105556595.25092566,
+        "known_session_count": 30
+      },
+      "URBN": {
+        "price": 80.25,
+        "dv30": 81041597.31337449,
+        "known_session_count": 30
+      },
+      "USAR": {
+        "price": 13.74,
+        "dv30": 193915238.76781565,
+        "known_session_count": 30
+      },
+      "UTHR": {
+        "price": 541.62,
+        "dv30": 298145240.65548503,
+        "known_session_count": 30
+      },
+      "VCTR": {
+        "price": 113.85,
+        "dv30": 76223646.0174728,
+        "known_session_count": 30
+      },
+      "VCYT": {
+        "price": 44.65,
+        "dv30": 62012088.74060321,
+        "known_session_count": 30
+      },
+      "VERA": {
+        "price": 29.42,
+        "dv30": 60407672.47088455,
+        "known_session_count": 30
+      },
+      "VIAV": {
+        "price": 48.14,
+        "dv30": 177460037.01635495,
+        "known_session_count": 30
+      },
+      "VICR": {
+        "price": 299.29,
+        "dv30": 152980787.64419997,
+        "known_session_count": 30
+      },
+      "VKTX": {
+        "price": 28.38,
+        "dv30": 76989645.31139052,
+        "known_session_count": 30
+      },
+      "VLY": {
+        "price": 12.67,
+        "dv30": 92247823.51239945,
+        "known_session_count": 30
+      },
+      "VNOM": {
+        "price": 41.59,
+        "dv30": 63561819.233684,
+        "known_session_count": 30
+      },
+      "VOD": {
+        "price": 16.53,
+        "dv30": 52821023.04017117,
+        "known_session_count": 30
+      },
+      "VRNS": {
+        "price": 49.08,
+        "dv30": 74881731.22336358,
+        "known_session_count": 30
+      },
+      "VRSK": {
+        "price": 165.2,
+        "dv30": 191100133.630166,
+        "known_session_count": 30
+      },
+      "VRSN": {
+        "price": 293.1,
+        "dv30": 196279876.35287517,
+        "known_session_count": 30
+      },
+      "VRTX": {
+        "price": 502.31,
+        "dv30": 461621008.58359087,
+        "known_session_count": 30
+      },
+      "VSAT": {
+        "price": 74.38,
+        "dv30": 109701819.49049333,
+        "known_session_count": 30
+      },
+      "VSEC": {
+        "price": 168.48,
+        "dv30": 65529369.50869044,
+        "known_session_count": 30
+      },
+      "VSNT": {
+        "price": 31.47,
+        "dv30": 56741524.83034118,
+        "known_session_count": 30
+      },
+      "VTRS": {
+        "price": 17.54,
+        "dv30": 128594969.81419726,
+        "known_session_count": 30
+      },
+      "WAY": {
+        "price": 26.4,
+        "dv30": 50082078.57111086,
+        "known_session_count": 30
+      },
+      "WDAY": {
+        "price": 186.55,
+        "dv30": 439536508.97137874,
+        "known_session_count": 30
+      },
+      "WDC": {
+        "price": 411.04,
+        "dv30": 2941539387.205662,
+        "known_session_count": 30
+      },
+      "WFRD": {
+        "price": 79.94,
+        "dv30": 74659519.15347475,
+        "known_session_count": 30
+      },
+      "WGS": {
+        "price": 71.52,
+        "dv30": 52435145.69357319,
+        "known_session_count": 30
+      },
+      "WING": {
+        "price": 112.2,
+        "dv30": 128568533.57913092,
+        "known_session_count": 30
+      },
+      "WIX": {
+        "price": 73.91,
+        "dv30": 85432757.06439754,
+        "known_session_count": 30
+      },
+      "WMT": {
+        "price": 107.2,
+        "dv30": 2403085516.6967,
+        "known_session_count": 30
+      },
+      "WTFC": {
+        "price": 144.94,
+        "dv30": 63506225.39657067,
+        "known_session_count": 30
+      },
+      "WTW": {
+        "price": 291.98,
+        "dv30": 147391084.41285276,
+        "known_session_count": 30
+      },
+      "WULF": {
+        "price": 14.97,
+        "dv30": 433120559.5133714,
+        "known_session_count": 30
+      },
+      "WWD": {
+        "price": 332.56,
+        "dv30": 205765725.2262896,
+        "known_session_count": 30
+      },
+      "WYNN": {
+        "price": 76.62,
+        "dv30": 167925595.71276617,
+        "known_session_count": 30
+      },
+      "XE": {
+        "price": 15.45,
+        "dv30": 97475158.75243032,
+        "known_session_count": 30
+      },
+      "XEL": {
+        "price": 72.73,
+        "dv30": 400715130.63885593,
+        "known_session_count": 30
+      },
+      "XENE": {
+        "price": 36.57,
+        "dv30": 55399869.2061383,
+        "known_session_count": 30
+      },
+      "XMTR": {
+        "price": 110.66,
+        "dv30": 63187183.41426277,
+        "known_session_count": 30
+      },
+      "XP": {
+        "price": 29.73,
+        "dv30": 141268945.49805403,
+        "known_session_count": 30
+      },
+      "Z": {
+        "price": 27.7,
+        "dv30": 117227158.043167,
+        "known_session_count": 30
+      },
+      "ZBRA": {
+        "price": 385.78,
+        "dv30": 184566817.32923496,
+        "known_session_count": 30
+      },
+      "ZION": {
+        "price": 62.85,
+        "dv30": 86067605.75172508,
+        "known_session_count": 30
+      },
+      "ZM": {
+        "price": 94.2,
+        "dv30": 247733117.3757017,
+        "known_session_count": 30
+      },
+      "ZS": {
+        "price": 212.25,
+        "dv30": 534927233.2237044,
+        "known_session_count": 30
+      }
+    },
+    "block_current_run": {
+      "GRAL": {
+        "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
+        "observed_usable_sessions": 29,
+        "corroboration": {
+          "authority": "C4.17_RALLIES_EXACT30_PRIMARY",
+          "evidence_path": "nasdaq-xray/evidence/rallies_dv30_20261006_classification.json",
+          "evidence_blob_sha": "0aa9defc5398a486fe0783b63d9316a2dcf9d905",
+          "missing_sessions": [
+            "2026-09-23"
+          ],
+          "zero_volume_sessions": []
+        }
+      }
+    },
+    "unresolved_symbols": []
+  },
+  "classification_coverage_complete": true,
+  "coverage_complete": true,
+  "partial_data": false,
+  "settlement_required": false,
+  "settlement_status": "PASS",
+  "settlement_method": "NOT_REQUIRED_SAME_ASOF_CURRENT_RESIDUAL_AUTHORITY_REBIND",
+  "resolution_evidence": {
+    "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
+    "authority": "C4.17_RALLIES_EXACT30_PRIMARY",
+    "evidence_path": "nasdaq-xray/evidence/rallies_dv30_20261006_classification.json",
+    "evidence_blob_sha": "0aa9defc5398a486fe0783b63d9316a2dcf9d905",
+    "current_request_exact_scope": true,
+    "request_symbol_count": 509,
+    "request_pass_count": 508,
+    "request_block_count": 1,
+    "only_block_symbol": "GRAL",
+    "no_synthetic_bar": true,
+    "no_forward_fill": true,
+    "no_new_pass_beyond_primary": true,
+    "unknown_never_pass": true
+  },
+  "audit": {
+    "current_master_blob_sha": "7465bfd9e558aa6fa2654fa462e72484f1a74679",
+    "current_price_blob_sha": "a0d37b54d5b9dbc8205836533b26a4a866600ffe",
+    "current_request_blob_sha": "d8875f732980fc8509b0f1680fff16ba2a099c19",
+    "current_manifest_blob_sha": "df688f2bb2a14a0338b56b36ccb50ee6604a6cff",
+    "primary_classification_blob_sha": "0aa9defc5398a486fe0783b63d9316a2dcf9d905",
+    "current_request_equals_primary_pass_plus_gral_block": true,
+    "pass_count": 508,
+    "block_count": 1,
+    "unresolved_count": 0,
+    "thresholds_changed": false,
+    "alpha_policy_changed": false,
+    "execution_changed": false,
+    "real_money_changed": false
+  }
+}
