@@ -40,6 +40,35 @@ def current_spac_suspects(names:dict,industries:dict)->list[str]:
       if bool(SPAC_SUSPECT_RE.search(str(name or "")))
     )
 
+def sec_source_binds_cik(source:str,cik:str)->bool:
+    """Require manual SEC evidence URL to bind the exact issuer CIK."""
+    try:
+        target=str(int(str(cik).strip()))
+    except Exception:
+        return False
+    try:
+        u=urllib.parse.urlparse(str(source or ""))
+    except Exception:
+        return False
+    if u.scheme!="https" or u.netloc.lower()!="www.sec.gov":
+        return False
+    q=urllib.parse.parse_qs(u.query)
+    for key,vals in q.items():
+        if str(key).upper()=="CIK":
+            for val in vals:
+                try:
+                    if str(int(str(val).strip()))==target:
+                        return True
+                except Exception:
+                    pass
+    m=re.search(r"/Archives/edgar/data/(\d+)/",u.path,re.I)
+    if m:
+        try:
+            return str(int(m.group(1)))==target
+        except Exception:
+            return False
+    return False
+
 DIRECTORY_SNAPSHOT_SCHEMA="XRAY_NASDAQ_DIRECTORY_SNAPSHOT_V1"
 STAMP_RE=re.compile(r"^(master_(?:asof_identity|sec_spac)_proof_)(\d{8})\.json$")
 FOOTER_RE=re.compile(r"^File Creation Time:\s*(\d{2})(\d{2})(\d{4})")
@@ -265,6 +294,7 @@ def manual_identity_seed_registry(asof:str,names:dict)->tuple[dict,dict]:
         is_blank=row.get("is_blank_check")
         if (
           not source.startswith("https://www.sec.gov/")
+          or not sec_source_binds_cik(source,cik)
           or not re.fullmatch(r"20\d{2}-\d{2}-\d{2}",evidence)
           or evidence>asof
           or not re.fullmatch(r"\d{10}",cik)
