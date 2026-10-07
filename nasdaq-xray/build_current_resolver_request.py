@@ -86,8 +86,11 @@ def select_current_policy_resolver_bridge(rows,current_price_blob,current_reques
     assert len(exact_request)<=1, "AMBIGUOUS_CURRENT_POLICY_RESOLVER_BRIDGE_EXACT_REQUEST"
     if exact_request:
         return exact_request[0]
-    assert len(rows)<=1, "AMBIGUOUS_CURRENT_POLICY_RESIDUAL_BRIDGE"
-    return rows[0] if rows else None
+    # Residual authorities that bind neither the exact current PRICE blob nor
+    # the exact current request blob are stale for this request build. They may
+    # coexist as immutable history and must not become current settlement
+    # authority merely because one happens to be the only stale head.
+    return None
 
 def can_preserve_existing_request(new_obj):
     if not OUT.exists() or not CHUNK_MANIFEST.exists():
