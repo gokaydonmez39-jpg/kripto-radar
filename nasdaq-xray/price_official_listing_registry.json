@@ -4,7 +4,7 @@
   "execution": "NONE",
   "real_money": "NO-GO",
   "unknown_never_pass": true,
-  "policy": "Official first-trade/listing dates may only terminalize BLOCK_CURRENT_RUN to FAIL_DV30_INSUFFICIENT_SESSIONS when fewer than 30 completed NASDAQ sessions can exist by ASOF. Never creates PASS.",
+  "policy": "Official first-trade/listing dates may only terminalize unresolved BLOCK_CURRENT_RUN or UNKNOWN rows to FAIL_DV30_INSUFFICIENT_SESSIONS when fewer than 30 completed NASDAQ sessions can exist by ASOF. Never creates PASS.",
   "records": {
     "ACCV": {
       "first_trade_date": "2026-09-30",
@@ -41,6 +41,12 @@
       "authority": "SEC_PRIMARY",
       "source_url": "https://www.sec.gov/Archives/edgar/data/2075335/000121390026104150/ea0306875-424b4_roze.htm",
       "evidence_kind": "DIRECT_LISTING_FIRST_TRADING_DATE"
+    },
+    "TBCV": {
+      "first_trade_date": "2026-10-05",
+      "authority": "SEC_PRIMARY",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/2140030/000121390026106099/ea0307471-8k_thunder5.htm",
+      "evidence_kind": "SEPARATE_SHARE_TRADING_START_DATE"
     },
     "WQEY": {
       "first_trade_date": "2026-10-05",
