@@ -62,21 +62,31 @@ jobs:
           # upstream-incomplete state and do not synthesize a pointer revision.
           pe=(t.get("evidence") or {}).get("price") or {}
           me=(t.get("evidence") or {}).get("mc") or {}
+          price_rel=str(pe.get("path") or "")
+          price_path=repo/price_rel if price_rel else None
           mc_rel=str(me.get("path") or "")
           mc_path=repo/mc_rel if mc_rel else None
-          if not mc_path or not mc_path.exists():
+          if not price_path or not price_path.exists():
+              drift.append({"key":"mc_price_cross_binding","reason":"PRICE_PATH_MISSING","path":price_rel})
+          elif not mc_path or not mc_path.exists():
               drift.append({"key":"mc_price_cross_binding","reason":"MC_PATH_MISSING","path":mc_rel})
           else:
               try:
+                  price_obj=json.load(open(price_path))
                   mc_obj=json.load(open(mc_path))
+                  price_pass_hash=price_obj.get("pass_hash")
+                  if price_rel!="nasdaq-xray/canonical_current_price_dv30.json":
+                      drift.append({"key":"mc_price_cross_binding","reason":"PRICE_PATH_NOT_CANONICAL","actual":price_rel})
+                  if not price_pass_hash:
+                      drift.append({"key":"mc_price_cross_binding","reason":"PRICE_PASS_HASH_MISSING"})
                   if mc_obj.get("input_path")!="nasdaq-xray/canonical_current_price_dv30.json":
                       drift.append({"key":"mc_price_cross_binding","reason":"MC_INPUT_PATH_NOT_CURRENT_PRICE","actual":mc_obj.get("input_path")})
                   if mc_obj.get("input_blob_sha")!=pe.get("blob_sha"):
                       drift.append({"key":"mc_price_cross_binding","reason":"MC_PRICE_BLOB_NOT_EXACT","mc_input_blob_sha":mc_obj.get("input_blob_sha"),"price_blob_sha":pe.get("blob_sha")})
-                  if mc_obj.get("input_pass_hash")!=pe.get("pass_hash"):
-                      drift.append({"key":"mc_price_cross_binding","reason":"MC_PRICE_PASS_HASH_NOT_EXACT","mc_input_pass_hash":mc_obj.get("input_pass_hash"),"price_pass_hash":pe.get("pass_hash")})
+                  if price_pass_hash and mc_obj.get("input_pass_hash")!=price_pass_hash:
+                      drift.append({"key":"mc_price_cross_binding","reason":"MC_PRICE_PASS_HASH_NOT_EXACT","mc_input_pass_hash":mc_obj.get("input_pass_hash"),"price_pass_hash":price_pass_hash})
               except Exception as e:
-                  drift.append({"key":"mc_price_cross_binding","reason":"MC_PARSE_ERROR","error":type(e).__name__})
+                  drift.append({"key":"mc_price_cross_binding","reason":"MC_OR_PRICE_PARSE_ERROR","error":type(e).__name__})
           sw_rel=str(t.get("settlement_witness_path") or ""); sw_exp=str(t.get("settlement_witness_blob_sha") or "")
           if not sw_rel or not sw_exp:
               drift.append({"key":"settlement_witness","reason":"MISSING_BINDING"})
