@@ -24,6 +24,7 @@ SEC_UA=os.getenv("XRAY_SEC_USER_AGENT","NASDAQ-SWING-XRAY research bot; xray-dat
 UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/126 Safari/537.36"
 TASK="6a825366222081918997094d76e6ae46"
 IDENTITY_DISCOVERY_VERSION="SEC_CURRENT_SUSPECT_DISCOVERY_V2"
+DIRECTORY_SNAPSHOT_SCHEMA="XRAY_NASDAQ_DIRECTORY_SNAPSHOT_V1"
 STAMP_RE=re.compile(r"^(master_(?:asof_identity|sec_spac)_proof_)(\d{8})\.json$")
 FOOTER_RE=re.compile(r"^File Creation Time:\s*(\d{2})(\d{2})(\d{4})")
 
@@ -351,7 +352,7 @@ def frozen_exact_asof_directory(asof,root=ROOT):
             names={str(k).upper():str(v) for k,v in (snap.get("security_names") or {}).items() if str(k).strip() and str(v).strip()}
             industries={str(k).upper():str(v).strip() for k,v in (snap.get("industries") or {}).items() if str(k).strip() and str(v).strip()}
             if (
-              snap.get("schema")=="XRAY_NASDAQ_DIRECTORY_SNAPSHOT_V1"
+              snap.get("schema")==DIRECTORY_SNAPSHOT_SCHEMA
               and snap.get("asof_et")==asof
               and snap.get("source_directory_date")==asof
               and parse_footer_date(footer)==asof
