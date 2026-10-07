@@ -348,12 +348,29 @@ def validate_existing_sec(path:Path,asof:str)->bool:
     except Exception:
         return False
 
+def sec_discovery_coverage_complete(sec_path:Path,asof:str)->bool:
+    """Structural proof validity is not the same as current-suspect coverage."""
+    try:
+        j=json.loads(sec_path.read_text(encoding="utf-8"))
+        cov=j.get("discovery_coverage") or {}
+        unresolved=sorted(set(cov.get("unresolved_current_suspects") or []))
+        return bool(
+          j.get("asof_et")==asof
+          and j.get("discovery_version")==IDENTITY_DISCOVERY_VERSION
+          and cov.get("coverage_complete") is True
+          and int(cov.get("unresolved_current_suspect_count",-1))==0
+          and not unresolved
+        )
+    except Exception:
+        return False
+
 def exact_proofs_complete(identity_path,sec_path,asof):
-    """NOOP is legal only when BOTH exact-ASOF proof artifacts exist and validate."""
+    """NOOP requires valid artifacts AND complete current-suspect discovery coverage."""
     return bool(
         validate_existing_identity(identity_path,asof)
         and sec_path.exists()
         and validate_existing_sec(sec_path,asof)
+        and sec_discovery_coverage_complete(sec_path,asof)
     )
 
 def frozen_exact_asof_directory(asof,root=ROOT):
@@ -605,6 +622,16 @@ def main():
           "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
           "authority":"SEC_EDGAR_SIC_6770_EXACT_ASOF",
           "applicability":"EXACT_ASOF_ONLY_NO_FORWARD_CARRY",
+          "discovery_version":IDENTITY_DISCOVERY_VERSION,
+          "discovery_coverage":{
+            "current_suspect_count":len(current_suspects),
+            "resolved_current_suspect_count":len(current_suspects)-len(unresolved_sec_spac),
+            "unresolved_current_suspect_count":len(unresolved_sec_spac),
+            "unresolved_current_suspects":unresolved_sec_spac,
+            "coverage_complete":len(unresolved_sec_spac)==0,
+            "sec_transport_error":sec_network_error,
+            "fail_closed":True,
+          },
           "proofs":proofs,
         }
         sec_path.write_text(json.dumps(sec,ensure_ascii=False,sort_keys=False,indent=2)+"\n",encoding="utf-8")
@@ -626,6 +653,7 @@ def main():
       "operating_discovered_current_count":sum(1 for v in operating.values() if (v or {}).get("reason")=="SAME_RUN_SEC_CURRENT_NON_BLANK_CHECK_DISCOVERY"),
       "current_suspect_count":len(current_suspects),
       "sec_spac_unresolved_reentered_queue":sorted(set(unresolved_sec_spac)),
+      "sec_discovery_coverage_complete":len(unresolved_sec_spac)==0,
       "sec_discovery_error_count":len(sec_discovery_errors),
       "forward_carry":False,
       "sec_network_error":sec_network_error,
