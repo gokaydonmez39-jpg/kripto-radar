@@ -916,68 +916,18 @@
     "dv30": ">=50000000 exact30 median",
     "price": ">=5"
   },
-  "price_unknown_count": 1,
-  "price_unknown_detail": {
-    "GRAL": {
-      "price_result": {
-        "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "dv30_lower_bound": 100741050.03,
-            "dv30_upper_bound": 118128234.6,
-            "known_session_count": 29,
-            "missing_sessions": [
-              "2026-09-23"
-            ],
-            "no_synthetic_bar": true,
-            "price": 137.28,
-            "reason": "EXACT30_INCOMPLETE_NEVER_PASS",
-            "source": "SINA_US_DAILY"
-          },
-          "yahoo_result": {
-            "dv30": 100742650.83847046,
-            "known_session_count": 30,
-            "missing_sessions": [],
-            "price": 137.27999877929688,
-            "proof": "EXACT30_MEDIAN_GE_GATE",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY"
-          }
-        },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "disabled": true,
-            "no_pass_or_fail_created": true,
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "sina": {
-            "usable": 572
-          },
-          "yahoo": {
-            "exchangeName": "NMS",
-            "usable": 63
-          }
-        },
-        "status": "UNKNOWN"
-      },
-      "security_name": "GRAIL, Inc. - Common Stock"
-    }
-  },
-  "price_unknown_hash": "9735de30c8179b3e2eb328ad4ff160a5b824a7656a85048d3fa8582b2fe66a1c",
-  "price_unknown_symbols": [
-    "GRAL"
-  ],
+  "price_unknown_count": 0,
+  "price_unknown_detail": {},
+  "price_unknown_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "price_unknown_symbols": [],
   "queue_hash": "3466de0d183dd8a6281ee2946572c79e70eacf6715ddd8eea6580ca6b003842b",
   "queue_total": 3159,
   "real_money": "NO-GO",
   "resolver_policy": "ALPACA_SIP_PREFERRED__RALLIES_LONGBRIDGE_DUAL_SOURCE_CONNECTOR_FAILOVER__NEVER_G9__FAIL_CLOSED__SAME_ASOF_QUEUE_BINDING",
   "schema": "XRAY_RESOLVER_EPOCH_REQUEST_V1",
-  "settlement_already_proven": false,
-  "settlement_bridge_blob_sha": null,
-  "settlement_bridge_path": null,
+  "settlement_already_proven": true,
+  "settlement_bridge_blob_sha": "ff12ec2e7656f04c68f981e6d2a6ec86c3789764",
+  "settlement_bridge_path": "nasdaq-xray/canonical_resolver_bridge_20261006_c417_dv30_v20.json",
   "settlement_core_source_blob_sha": "45b711956e0771c12d590fdb8a261032d73a2ab5",
   "settlement_core_source_path": "nasdaq-xray/canonical_current_terminal.json",
   "settlement_core_symbol": "MSFT",
@@ -990,29 +940,26 @@
   "source_overlay_path": "nasdaq-xray/canonical_current_resolution_overlay.json",
   "source_pointer_blob_sha": "d66a28fe1b284107f979f8cf662fa3493dce8a10",
   "source_pointer_path": "nasdaq-xray/chatgpt_canonical_state_v2.json",
-  "source_price_blob_sha": "87e9585f517b70d5f372d9c15b654537fd55a250",
+  "source_price_blob_sha": "9755ace51d1c175bb3996c68a9d4966c7e3059f1",
   "source_price_counts": {
     "FAIL_DV30": 1340,
     "FAIL_DV30_INSUFFICIENT_SESSIONS": 7,
     "FAIL_PRICE": 1299,
     "FAIL_PRICE_NO_ASOF_BAR": 4,
-    "PASS_PRICE_DV30": 508,
-    "UNKNOWN": 1
+    "PASS_PRICE_DV30": 509
   },
   "source_price_global_asof_sentinel_fast_fail": false,
-  "source_price_pass_count": 508,
-  "source_price_pass_hash": "63d66ef437b893c96ae7775e62d1a2c4d54a18695da2e7b0e8dd89022538882d",
+  "source_price_pass_count": 509,
+  "source_price_pass_hash": "fc30e75b8a113aad7db2bf1016623228367db237ae71d23c14c1929e84d5fe78",
   "source_price_path": "nasdaq-xray/canonical_current_price_dv30.json",
   "source_state_blob_sha": "f2a17f4b5a912182256d15e3dfe74253fd406454",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
   "source_unknowns_blob_sha": "69471afdfb01e6e972a426f9bbe824eaecca6879",
   "source_unknowns_path": "nasdaq-xray/canonical_current_unknowns.json",
-  "status": "READY",
-  "symbol_count": 1,
-  "symbol_hash": "9735de30c8179b3e2eb328ad4ff160a5b824a7656a85048d3fa8582b2fe66a1c",
-  "symbols": [
-    "GRAL"
-  ],
+  "status": "IDLE",
+  "symbol_count": 0,
+  "symbol_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "symbols": [],
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_never_pass": true
 }
