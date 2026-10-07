@@ -14,6 +14,14 @@ TASK_ID="6a825366222081918997094d76e6ae46"
 
 mc=json.loads(MC.read_text())
 sc=json.loads(SINA.read_text())
+if mc.get("schema")!="XRAY_MC_ZERO_KEY_V3":
+    raise RuntimeError("MC_STATE_SCHEMA_MISMATCH")
+if mc.get("status")!="READY":
+    raise RuntimeError("MC_STATE_NOT_READY")
+if mc.get("execution")!="NONE" or mc.get("real_money")!="NO-GO" or mc.get("unknown_never_pass") is not True:
+    raise RuntimeError("MC_STATE_SAFETY_MISMATCH")
+if mc.get("alpha_authority") is not False or mc.get("pit_safe_shadow") is not True:
+    raise RuntimeError("MC_STATE_PIT_AUTHORITY_MISMATCH")
 if mc.get("asof_et")!=sc.get("asof_et"):
     raise RuntimeError("ASOF_MISMATCH_MC_SINA")
 core=sorted(set(mc.get("current_core_zero_key") or []))
@@ -26,6 +34,7 @@ r92_ineligible=list(fallback_watch)
 serial="\n".join(core)
 out={
   "schema":"XRAY_EXTERNAL_ZERO_KEY_CORE_V1",
+  "status":"READY",
   "task_id":TASK_ID,
   "asof_et":mc["asof_et"],
   "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,

@@ -225,7 +225,7 @@ def main():
             }
 
     out={
-      "schema":"XRAY_MC_ZERO_KEY_V3","task_id":TASK_ID,"asof_et":asof,
+      "schema":"XRAY_MC_ZERO_KEY_V3","status":"READY","task_id":TASK_ID,"asof_et":asof,
       "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
       "alpha_authority":False,
       "pit_safe_shadow":True,

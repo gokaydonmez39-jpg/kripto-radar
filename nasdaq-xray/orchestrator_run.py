@@ -90,6 +90,78 @@ def stable_engine_hash():
         h.update(name.encode()); h.update(b"\0"); h.update(p.read_bytes()); h.update(b"\0")
     return h.hexdigest()
 
+def _write_state(name, obj):
+    (ROOT/name).write_text(json.dumps(obj,indent=2,sort_keys=True)+"\n")
+
+
+def invalidate_downstream_for_partial_history(ss):
+    """Replace every downstream shadow artifact with an explicit fail-closed tombstone.
+
+    Partial HISTORY must never leave a prior-ASOF MC/core/technical state looking
+    current. These tombstones are support-plane diagnostics only and cannot
+    authorize alpha.
+    """
+    asof=ss.get("asof_et")
+    ts=datetime.now(timezone.utc).isoformat()
+    upstream_marker={"__UPSTREAM_HISTORY__":{
+        "reason":"WAITING_UPSTREAM_HISTORY",
+        "fail_closed":True,
+        "unknown_never_pass":True,
+    }}
+    empty_hash=hash_lines([])
+    states={
+      "mc_zero_key_state.json":{
+        "schema":"XRAY_MC_ZERO_KEY_V3","status":"WAITING_UPSTREAM_HISTORY",
+        "task_id":TASK_ID,"asof_et":asof,"execution":"NONE","real_money":"NO-GO",
+        "unknown_never_pass":True,"alpha_authority":False,"pit_safe_shadow":True,
+        "direct_nasdaq_conservative_pass_count":0,"definitive_fail_count":0,
+        "unresolved_count":1,"direct_nasdaq_conservative_pass":{},
+        "definitive_fail":{},"unresolved":upstream_marker,
+        "nasdaq_snapshot_binding":{"status":"NOT_EVALUATED_WAITING_UPSTREAM_HISTORY"},
+        "nasdaq_current_diagnostic_count":0,"nasdaq_current_diagnostic":{},
+        "current_core_zero_key":[],"fallback_watch_symbols":[],
+        "overlay_meta":{"status":"NOT_EVALUATED_WAITING_UPSTREAM_HISTORY"},
+        "updated_at_utc":ts,
+        "policy_note":"FAIL_CLOSED_TOMBSTONE; upstream HISTORY incomplete; no MC decision authority."
+      },
+      "production_core_state.json":{
+        "schema":"XRAY_EXTERNAL_ZERO_KEY_CORE_V1","status":"WAITING_UPSTREAM_HISTORY",
+        "task_id":TASK_ID,"asof_et":asof,"execution":"NONE","real_money":"NO-GO",
+        "unknown_never_pass":True,"alpha_authority":False,
+        "authority":"EXTERNAL_SHADOW_DATA_PLANE_NOT_CANONICAL_DURABLE_STATE",
+        "current_core_mc_pass":[],"current_core_count":0,"current_core_hash":empty_hash,
+        "state_caps":{},"fallback_watch_symbols":[],"r92_ineligible":[],
+        "mc_unresolved":upstream_marker,"mc_unresolved_count":1,
+        "mc_definitive_fail":{},"updated_at_utc":ts
+      },
+      "stage1_shadow.json":{
+        "schema":"XRAY_STAGE1_SHADOW_V1","status":"WAITING_UPSTREAM_HISTORY",
+        "task_id":TASK_ID,"asof_et":asof,"execution":"NONE","real_money":"NO-GO",
+        "unknown_never_pass":True,"alpha_authority":False,
+        "weekly_pass_count":0,"unknown_count":1,"results":{},"updated_at_utc":ts
+      },
+      "regime_breadth_shadow.json":{
+        "schema":"XRAY_REGIME_BREADTH_SHADOW_V1","status":"WAITING_UPSTREAM_HISTORY",
+        "task_id":TASK_ID,"asof_et":asof,"execution":"NONE","real_money":"NO-GO",
+        "unknown_never_pass":True,"alpha_authority":False,
+        "regime":"UNKNOWN","breadth_missing_count":1,"results":{},"updated_at_utc":ts
+      },
+      "deep_pre_r1_shadow.json":{
+        "schema":"XRAY_DEEP_PRE_R1_SHADOW_V1","status":"WAITING_UPSTREAM_HISTORY",
+        "task_id":TASK_ID,"asof_et":asof,"execution":"NONE","real_money":"NO-GO",
+        "unknown_never_pass":True,"alpha_authority":False,
+        "authority":"SHADOW_DEEP_PREFILTER_ONLY_NO_SIGNAL",
+        "a_geometry_count":0,"b_breakout_count":0,"b_armed_count":0,
+        "d_geometry_rs_count":0,"unknown_history_count":1,"results":{},
+        "updated_at_utc":ts
+      },
+    }
+    for name,obj in states.items():
+        _write_state(name,obj)
+    return {name:{"schema":obj["schema"],"status":obj["status"],"asof_et":asof}
+            for name,obj in states.items()}
+
+
 def run(script, extra_env=None):
     env=os.environ.copy()
     if extra_env: env.update(extra_env)
@@ -127,6 +199,7 @@ def main():
             break
     ss=readj("sina_state.json")
     if ss.get("status")!="HISTORY_COMPLETE":
+        downstream_invalidation=invalidate_downstream_for_partial_history(ss)
         out={
           "schema":"XRAY_ORCHESTRATOR_V1","task_id":TASK_ID,
           "execution":"NONE","real_money":"NO-GO",
@@ -134,7 +207,8 @@ def main():
           "status":"PARTIAL_HISTORY","asof_et":ss.get("asof_et"),
           "cursor":ss.get("cursor"),"queue_total":ss.get("queue_total"),
           "full_universe_identity":True,"queue_hash":ss.get("queue_hash"),
-          "g9_status":"BLOCKED","account_gate":"UNKNOWN_NOT_CONFIGURED"
+          "g9_status":"BLOCKED","account_gate":"UNKNOWN_NOT_CONFIGURED",
+          "downstream_invalidation":downstream_invalidation
         }
         STATE.write_text(json.dumps(out,indent=2,sort_keys=True)+"\n")
         print("XRAY_ORCHESTRATOR=PARTIAL_HISTORY")
