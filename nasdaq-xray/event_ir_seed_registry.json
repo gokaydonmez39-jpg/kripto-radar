@@ -6,6 +6,19 @@
   "unknown_never_pass": true,
   "policy": "Seeds only locate issuer-controlled IR surfaces. Every seed must be fetched live and issuer-identity validated before any evidence can be emitted. No-event/empty-page never implies CLEAR.",
   "symbols": {
+    "ABCL": {
+      "base_url": "https://investors.abcellera.com",
+      "issuer_tokens": [
+        "AbCellera"
+      ]
+    },
+    "ARM": {
+      "base_url": "https://investors.arm.com",
+      "issuer_tokens": [
+        "Arm Holdings",
+        "Arm"
+      ]
+    },
     "CRWD": {
       "base_url": "https://ir.crowdstrike.com",
       "issuer_tokens": [
@@ -91,6 +104,12 @@
         "Micron"
       ]
     },
+    "MXL": {
+      "base_url": "https://investors.maxlinear.com",
+      "issuer_tokens": [
+        "MaxLinear"
+      ]
+    },
     "OKTA": {
       "base_url": "https://investor.okta.com",
       "issuer_tokens": [
@@ -108,6 +127,12 @@
       "base_url": "https://investors.paloaltonetworks.com",
       "issuer_tokens": [
         "Palo Alto"
+      ]
+    },
+    "PI": {
+      "base_url": "https://investor.impinj.com",
+      "issuer_tokens": [
+        "Impinj"
       ]
     },
     "PLTR": {
@@ -146,16 +171,62 @@
         "Silicon Motion"
       ]
     },
+    "SMCI": {
+      "base_url": "https://ir.supermicro.com",
+      "issuer_tokens": [
+        "Super Micro Computer",
+        "Supermicro"
+      ]
+    },
     "SWKS": {
       "base_url": "https://investors.skyworksinc.com",
       "issuer_tokens": [
         "Skyworks"
       ]
     },
+    "TEM": {
+      "base_url": "https://investors.tempus.com",
+      "issuer_tokens": [
+        "Tempus AI",
+        "Tempus"
+      ]
+    },
     "TGTX": {
       "base_url": "https://ir.tgtherapeutics.com",
       "issuer_tokens": [
         "TG Therapeutics"
+      ]
+    },
+    "TRMD": {
+      "base_url": "https://www.torm.com/investor/why-invest/default.aspx",
+      "issuer_tokens": [
+        "TORM plc",
+        "TORM"
+      ]
+    },
+    "TWST": {
+      "base_url": "https://investors.twistbioscience.com",
+      "issuer_tokens": [
+        "Twist Bioscience"
+      ]
+    },
+    "TXG": {
+      "base_url": "https://investors.10xgenomics.com",
+      "issuer_tokens": [
+        "10x Genomics"
+      ]
+    },
+    "ULTA": {
+      "base_url": "https://www.ulta.com/investor",
+      "issuer_tokens": [
+        "Ulta Beauty"
+      ]
+    },
+    "VICR": {
+      "base_url": "https://vicorcorporation.gcs-web.com",
+      "issuer_tokens": [
+        "Vicor Corporation",
+        "Vicor"
       ]
     },
     "VRNS": {
