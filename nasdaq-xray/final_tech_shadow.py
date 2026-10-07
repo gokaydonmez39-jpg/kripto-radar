@@ -471,6 +471,44 @@ def eval_one(sym,fam,g,df,event_status,state_cap="NORMAL",r92_eligible=True,froz
     mc_cap_blocks=bool(state_cap=="WATCH" or not r92_eligible)
     synthetic_cap=bool(frozen.get("synthetic_target"))
 
+    # Diagnostic-only exhaustive blocker vector.  This never participates in
+    # result selection, hard_pass, R92 eligibility, lifecycle persistence, or
+    # any threshold.  It exists so a single precedence-selected result cannot
+    # hide simultaneous independent reasons that prevent PRE_G9 promotion.
+    diagnostic_blockers=[]
+    if breached:
+        diagnostic_blockers.append("S0_BREACHED")
+    if lifecycle in {"EXPIRED_RETEST_WINDOW","EXPIRED_HORIZON"}:
+        diagnostic_blockers.append("LIFECYCLE_"+lifecycle)
+    elif not entry_ready:
+        diagnostic_blockers.append("LIFECYCLE_"+lifecycle)
+    if not family_geometry_pass:
+        diagnostic_blockers.append("FAMILY_GEOMETRY_OUT_OF_RANGE")
+    if not (0.75<=risk_atr<=2.50):
+        diagnostic_blockers.append("RISK_ATR_OUT_OF_RANGE")
+    if risk_pct>0.08:
+        diagnostic_blockers.append("RISK_PERCENT_GT_8PCT")
+    if target_overlap:
+        diagnostic_blockers.append("R1_ENTRY_BAND_OVERLAP")
+    if basic<th["basic"]:
+        diagnostic_blockers.append("RR_BASIC_BELOW_THRESHOLD")
+    if severe<th["severe"]:
+        diagnostic_blockers.append("RR_SEVERE_BELOW_THRESHOLD")
+    if extension_veto:
+        diagnostic_blockers.append("EXTENSION_VETO")
+    if event_status=="UNKNOWN":
+        diagnostic_blockers.append("EVENT_UNKNOWN")
+    elif event_status!="CLEAN_DISCOVERY":
+        diagnostic_blockers.append("EVENT_NOT_CLEAN:"+str(event_status))
+    if regime_finalist_status=="UNKNOWN":
+        diagnostic_blockers.append("REGIME_UNKNOWN")
+    elif not regime_pass:
+        diagnostic_blockers.append("REGIME_REVALIDATION_FAIL")
+    if state_cap=="WATCH":
+        diagnostic_blockers.append("MC_STATE_CAP_WATCH")
+    if not r92_eligible:
+        diagnostic_blockers.append("R92_INELIGIBLE")
+
     if hard_pass and mc_cap_blocks: result="WATCH_MC_FALLBACK_CAP"
     elif hard_pass: result="PRE_G9_TECH_PASS"
     elif lifecycle=="INVALIDATED_S0": result="FAIL_INVALIDATED_S0"
@@ -519,6 +557,9 @@ def eval_one(sym,fam,g,df,event_status,state_cap="NORMAL",r92_eligible=True,froz
       "price_discovery_cap":synthetic_cap,
       "research_tier_cap":"ORANGE" if synthetic_cap else None,
       "pre_g9_tech_pass":bool(hard_pass and not mc_cap_blocks),
+      "diagnostic_blockers":diagnostic_blockers,
+      "diagnostic_blocker_count":len(diagnostic_blockers),
+      "diagnostic_only_no_decision_effect":True,
       "frozen_geometry":frozen,"authority":"C4_17_DETERMINISTIC_TECHNICAL"
     }
 
