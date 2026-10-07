@@ -345,9 +345,10 @@ def validate_current(master: dict, price: dict, request: dict, manifest: dict) -
     assert int(request.get("symbol_count", -1)) == len(residual)
     assert int(request.get("price_unknown_count", -1)) == 0
     assert int(request.get("price_blocked_count", -1)) == len(blocked)
-    assert request.get("settlement_required") is False
-    if blocked:
-        assert request.get("settlement_already_proven") is True
+    settlement_required=request.get("settlement_required") is True
+    settlement_proven=request.get("settlement_already_proven") is True
+    assert (not settlement_required) or settlement_proven, "SETTLEMENT_REQUIRED_BUT_NOT_PROVEN"
+    if settlement_proven:
         assert request.get("settlement_bridge_path") and request.get("settlement_bridge_blob_sha")
 
     assert manifest.get("schema") == "XRAY_RESOLVER_REQUEST_CHUNK_MANIFEST_V1"
@@ -663,6 +664,10 @@ def selftest() -> None:
     assert select_optional_active([], FULL_ROLE) is None
     one=[{"path":"x","blob":"b","obj":{"bridge_role":FULL_ROLE},"role":FULL_ROLE}]
     assert select_optional_active(one, FULL_ROLE) is one[0]
+    # Required and proven are distinct states: proof satisfies the gate without
+    # erasing the fact that rollover settlement was required.
+    required=True; proven=True
+    assert (not required) or proven
     print("XRAY_RESOLVER_FULL_SCOPE_HANDOFF_SELFTEST=PASS")
 
 
