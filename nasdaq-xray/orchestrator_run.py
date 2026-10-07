@@ -83,6 +83,48 @@ def frozen_identity_partition_ok(ss):
     except Exception:
         return False
 
+def git_blob_sha(path):
+    p=Path(path)
+    b=p.read_bytes()
+    return hashlib.sha1(f"blob {len(b)}\0".encode()+b).hexdigest()
+
+def immutable_membership_partition_ok(ss):
+    try:
+        dm=ss.get("discovery_meta") or {}
+        asof=str(ss.get("asof_et") or "")
+        if dm.get("authority")!="IMMUTABLE_EXACT_ASOF_MEMBERSHIP_SNAPSHOT_NO_MARKET_DECISIONS": return False
+        if dm.get("full_identity") is not True: return False
+        if dm.get("identity_decisions_reused_from_snapshot") is not False: return False
+        rel=str(dm.get("membership_snapshot_path") or "")
+        expected=f"nasdaq-xray/master_nasdaq_directory_snapshot_{asof.replace('-','')}.json"
+        if rel!=expected: return False
+        p=ROOT/Path(rel).name
+        if not p.exists() or git_blob_sha(p)!=str(dm.get("membership_snapshot_blob_sha") or ""): return False
+        snap=json.loads(p.read_text(encoding="utf-8"))
+        names={str(k).strip().upper():str(v).strip() for k,v in (snap.get("security_names") or {}).items() if str(k).strip() and str(v).strip()}
+        industries={str(k).strip().upper():str(v).strip() for k,v in (snap.get("industries") or {}).items() if str(k).strip()}
+        footer=str(snap.get("source_directory_footer") or "")
+        if not footer.startswith("File Creation Time:"): return False
+        digits="".join(ch for ch in footer[len("File Creation Time:"):] if ch.isdigit())
+        if len(digits)<8: return False
+        mm,dd,yyyy=digits[:2],digits[2:4],digits[4:8]
+        if (snap.get("schema")!="XRAY_NASDAQ_DIRECTORY_SNAPSHOT_V1"
+            or snap.get("asof_et")!=asof
+            or snap.get("execution")!="NONE" or snap.get("real_money")!="NO-GO"
+            or snap.get("unknown_never_pass") is not True
+            or snap.get("membership_only") is not True
+            or snap.get("identity_decisions_reused") is not False
+            or snap.get("source_queue_classification_ignored") is not True
+            or snap.get("source_directory_date")!=asof
+            or f"{yyyy}-{mm}-{dd}"!=asof
+            or int(snap.get("membership_count",-1))!=len(names)
+            or int(snap.get("industry_count",-1))!=len(industries)
+            or not set(industries)<=set(names) or not names):
+            return False
+        return frozen_identity_partition_ok(ss)
+    except Exception:
+        return False
+
 def stable_engine_hash():
     h=hashlib.sha256()
     for name in ENGINE_FILES:
@@ -185,7 +227,7 @@ def main():
         ss=readj("sina_state.json")
         dm=ss.get("discovery_meta") or {}
         authority=str(dm.get("authority") or "")
-        allowed={"FULL_IDENTITY_NO_PREFILTER","CANONICAL_FROZEN_FULL_IDENTITY_SAME_ASOF"}
+        allowed={"FULL_IDENTITY_NO_PREFILTER","CANONICAL_FROZEN_FULL_IDENTITY_SAME_ASOF","IMMUTABLE_EXACT_ASOF_MEMBERSHIP_SNAPSHOT_NO_MARKET_DECISIONS"}
         if dm.get("full_identity") is not True or authority not in allowed:
             raise RuntimeError("FULL_UNIVERSE_IDENTITY_NOT_PROVEN")
         if authority=="CANONICAL_FROZEN_FULL_IDENTITY_SAME_ASOF":
@@ -194,6 +236,9 @@ def main():
                 raise RuntimeError("FROZEN_FULL_UNIVERSE_HASH_MISMATCH")
             if not frozen_identity_partition_ok(ss):
                 raise RuntimeError("FROZEN_FULL_UNIVERSE_PARTITION_MISMATCH")
+        elif authority=="IMMUTABLE_EXACT_ASOF_MEMBERSHIP_SNAPSHOT_NO_MARKET_DECISIONS":
+            if not immutable_membership_partition_ok(ss):
+                raise RuntimeError("IMMUTABLE_EXACT_ASOF_MEMBERSHIP_PARTITION_MISMATCH")
         print("XRAY_HISTORY_STATUS="+str(ss.get("status"))+" CURSOR="+str(ss.get("cursor"))+"/"+str(ss.get("queue_total"))+" FULL_IDENTITY=1 AUTHORITY="+authority,flush=True)
         if ss.get("status")=="HISTORY_COMPLETE":
             break
