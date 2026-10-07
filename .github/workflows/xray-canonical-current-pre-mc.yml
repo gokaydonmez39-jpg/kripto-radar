@@ -200,6 +200,7 @@ jobs:
               asof_bytes=asof_path.read_bytes()
               asof_blob=hashlib.sha1(b"blob "+str(len(asof_bytes)).encode()+b"\0"+asof_bytes).hexdigest()
               asof_counts={k:len(asof_proof.get(k) or {}) for k in ("restore_to_asof","remove_from_asof","operating_overrides")} if asof_proof.get("asof_et")==latest_completed else {}
+              asof_discovery_version=str(asof_proof.get("discovery_version") or "")
               msec=mf.get("sec_spac_proof") or {}
               masof=mf.get("asof_identity_proof") or {}
               mcp=mf.get("completion_proof") or {}
@@ -209,6 +210,7 @@ jobs:
                       mf.get("identity_ruleset")!="V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER"
                       or mf.get("identity_authority")!="NASDAQTRADER_EXPLICIT_TYPE_FILTER_V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER"
                       or mf.get("identity_partition_policy")!="MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V3_FROZEN_GUARD"
+                      or asof_discovery_version!="SEC_CURRENT_SUSPECT_DISCOVERY_V2"
                       or mcp.get("identity_partition_policy_exact") is not True
                       or mcp.get("identity_unknown_partition_exact") is not True
                       or mcp.get("sec_spac_proof_binding") is not True
