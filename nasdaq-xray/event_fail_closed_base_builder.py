@@ -17,6 +17,7 @@ from pathlib import Path
 
 from build_event_provenance_rebind import (
     blob_sha,
+    exact_current_binding,
     next_successor_path,
     select_active_event,
     validate_bridge_scope,
@@ -83,11 +84,14 @@ def validate_request(req: dict) -> None:
 
 def exact_current_rows(req: dict) -> list[dict]:
     stamp = str(req["asof_et"]).replace("-", "")
+    request_blob = blob_sha(REQUEST)
     rows = []
     for path in sorted(ROOT.glob(f"canonical_event_bridge_{stamp}_c417*.json")):
         try:
             obj = json.loads(path.read_text(encoding="utf-8"))
             validate_bridge_scope(obj, req)
+            if not exact_current_binding(obj, req, request_blob):
+                continue
             rows.append({
                 "path": relpath(path),
                 "file": path,
@@ -252,6 +256,11 @@ def selftest() -> None:
         assert out["unresolved"]["BBB"]["fail_closed"] is True
         assert out["source_policy"]["discovery"] == "OPTIONAL_PROVIDER_NEUTRAL_DISCOVERY_ACCELERATOR"
         assert out["discovery_proof"]["paid_top_up"] is False
+        request_blob = blob_sha(tmp)
+        assert exact_current_binding(out, req, request_blob) is True
+        stale = deepcopy(out)
+        stale["source_stage1_blob_sha"] = "stale-stage1"
+        assert exact_current_binding(stale, req, request_blob) is False
     finally:
         REQUEST = old
         try:
