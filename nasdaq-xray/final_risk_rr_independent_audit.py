@@ -176,7 +176,7 @@ def audit_row(key: str, row: dict) -> dict:
 
     frozen = row.get("frozen_geometry") or {}
     levels = row.get("levels") or {}
-    needed = ("A", "P", "anchor", "entry_model", "entry_high", "S0", "T1")
+    needed = ("A", "P", "anchor", "entry_low", "entry_model", "entry_high", "S0", "T1")
     vals = {}
     missing = []
     for name in needed:
