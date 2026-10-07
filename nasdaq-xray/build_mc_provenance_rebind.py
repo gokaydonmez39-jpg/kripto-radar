@@ -345,6 +345,11 @@ def selftest() -> None:
     else:
         raise AssertionError("MISMATCH_MUST_FAIL_CLOSED")
     try:
+        raise UpstreamPending("MC_AUTHORITY_MEASUREMENT_REQUIRED")
+    except UpstreamPending as e:
+        assert str(e) == "MC_AUTHORITY_MEASUREMENT_REQUIRED"
+
+    try:
         require_single_handoff([])
     except UpstreamPending as e:
         assert str(e) == "FULL_SCOPE_RESOLVER_HANDOFF_PENDING"
@@ -612,10 +617,8 @@ def load_valid_mc_rows(price: dict, pass_symbols: list[str], pass_hash: str, mas
                 "error": repr(e)[:1200],
             })
             continue
-    assert rows, (
-        "NO_VALID_MC_AUTHORITY_FOR_PROVENANCE_REBIND",
-        rejected,
-    )
+    if not rows:
+        raise UpstreamPending("MC_AUTHORITY_MEASUREMENT_REQUIRED")
     return rows
 
 
@@ -772,7 +775,14 @@ def main() -> None:
         request, master, price, handoff_path, handoff_blob
     )
 
-    rows = load_valid_mc_rows(price, pass_symbols, pass_hash, master)
+    try:
+        rows = load_valid_mc_rows(price, pass_symbols, pass_hash, master)
+    except UpstreamPending as e:
+        print("ready=false")
+        print("created=false")
+        print("pending_reason=" + str(e))
+        print("reason=NO_CURRENT_MC_AUTHORITY_FAIL_CLOSED")
+        return
     active = select_active_mc(rows)
     predecessor = active["obj"]
 
