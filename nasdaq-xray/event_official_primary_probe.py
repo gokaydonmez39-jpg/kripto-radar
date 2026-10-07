@@ -49,32 +49,32 @@ MONTHS = {
 }
 MONTH_RE = r"(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)"
 DATE_PATTERNS = [
-    re.compile(MONTH_RE + r"\\.?\\s+(\\d{1,2})(?:st|nd|rd|th)?[,]?\\s+(20\\d{2})", re.I),
-    re.compile(r"(20\\d{2})[-/](\\d{1,2})[-/](\\d{1,2})"),
-    re.compile(r"(?<!\\d)(\\d{1,2})[/-](\\d{1,2})[/-](20\\d{2})(?!\\d)"),
+    re.compile(MONTH_RE + r"\.?\s+(\d{1,2})(?:st|nd|rd|th)?[,]?\s+(20\d{2})", re.I),
+    re.compile(r"(20\d{2})[-/](\d{1,2})[-/](\d{1,2})"),
+    re.compile(r"(?<!\d)(\d{1,2})[/-](\d{1,2})[/-](20\d{2})(?!\d)"),
 ]
 EARNINGS_RE = re.compile(
-    r"earnings|financial\\s+results|quarterly\\s+results|results\\s+conference\\s+call|"
-    r"report(?:ing)?\\s+(?:date|.*?results)|announce.*?results",
+    r"earnings|financial\s+results|quarterly\s+results|results\s+conference\s+call|"
+    r"report(?:ing)?\s+(?:date|.*?results)|announce.*?results",
     re.I,
 )
 SCHEDULE_RE = re.compile(
-    r"will\\s+(?:release|report|announce|host)|to\\s+(?:release|report|announce)|"
-    r"reporting\\s+date|results\\s+on|conference\\s+call.*?on",
+    r"will\s+(?:release|report|announce|host)|to\s+(?:release|report|announce)|"
+    r"reporting\s+date|results\s+on|conference\s+call.*?on",
     re.I,
 )
 RSS_HINT_RE = re.compile(r"rss|atom|feed", re.I)
 
 def blob_sha(path: Path) -> str:
     b = path.read_bytes()
-    return hashlib.sha1(f"blob {len(b)}\\0".encode() + b).hexdigest()
+    return hashlib.sha1(f"blob {len(b)}\0".encode() + b).hexdigest()
 
 def normalize_text(value: str) -> str:
     value = html.unescape(value or "")
-    value = re.sub(r"<script\\b[^>]*>.*?</script>", " ", value, flags=re.I | re.S)
-    value = re.sub(r"<style\\b[^>]*>.*?</style>", " ", value, flags=re.I | re.S)
+    value = re.sub(r"<script\b[^>]*>.*?</script>", " ", value, flags=re.I | re.S)
+    value = re.sub(r"<style\b[^>]*>.*?</style>", " ", value, flags=re.I | re.S)
     value = re.sub(r"<[^>]+>", " ", value)
-    return re.sub(r"\\s+", " ", value).strip()
+    return re.sub(r"\s+", " ", value).strip()
 
 def fetch(url: str, *, accept: str = "*/*", timeout: int = 16) -> tuple[bytes, dict]:
     req = urllib.request.Request(
@@ -139,7 +139,7 @@ def announced_event_date(title: str, body: str, asof: str) -> tuple[str | None, 
         if future:
             return min(future), "TITLE_EXPLICIT_FUTURE_DATE"
     clean = normalize_text(body)
-    sentences = re.split(r"(?<=[.!?])\\s+|[\\r\\n]+", clean)
+    sentences = re.split(r"(?<=[.!?])\s+|[\r\n]+", clean)
     hits = []
     for s in sentences:
         if not (EARNINGS_RE.search(s) and SCHEDULE_RE.search(s)):
@@ -154,7 +154,7 @@ def announced_event_date(title: str, body: str, asof: str) -> tuple[str | None, 
 
 def discover_feed_links(base_url: str, page: str) -> list[str]:
     links = set()
-    for m in re.finditer(r"<(?:link|a)\\b[^>]*(?:href|src)=[\"']([^\"']+)[\"'][^>]*>", page or "", re.I):
+    for m in re.finditer(r"<(?:link|a)\b[^>]*(?:href|src)=[\"']([^\"']+)[\"'][^>]*>", page or "", re.I):
         raw = html.unescape(m.group(1).strip())
         tag = m.group(0)
         if not (RSS_HINT_RE.search(raw) or RSS_HINT_RE.search(tag)):
