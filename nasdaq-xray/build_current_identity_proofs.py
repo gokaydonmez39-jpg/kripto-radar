@@ -332,6 +332,40 @@ def exact_proofs_complete(identity_path,sec_path,asof):
         and validate_existing_sec(sec_path,asof)
     )
 
+def frozen_exact_asof_directory(asof,root=ROOT):
+    """Rehydrate the already-committed exact-ASOF Nasdaq identity snapshot.
+
+    Used only when the live Nasdaq directory has advanced past the target
+    completed session. This never forward-carries membership from a later day.
+    """
+    full_path=root/"canonical_current_full_state.json"
+    manifest_path=root/"canonical_current_master_manifest.json"
+    if not full_path.exists() or not manifest_path.exists():
+        return None
+    try:
+        full=json.loads(full_path.read_text(encoding="utf-8"))
+        manifest=json.loads(manifest_path.read_text(encoding="utf-8"))
+        if full.get("asof_et")!=asof or manifest.get("asof_et")!=asof:
+            return None
+        footer=str(manifest.get("official_footer") or full.get("official_footer") or "")
+        if parse_footer_date(footer)!=asof:
+            return None
+        names={str(k).upper():str(v) for k,v in (full.get("security_names") or {}).items() if str(k).strip() and str(v).strip()}
+        industries={}
+        for sym,row in (manifest.get("unknown_detail") or {}).items():
+            sym=str(sym).upper()
+            name=str((row or {}).get("security_name") or "").strip()
+            if name:
+                names[sym]=name
+            industry=str((row or {}).get("same_asof_nasdaq_industry") or (row or {}).get("same_asof_nasdaq_screener_industry") or "").strip()
+            if industry:
+                industries[sym]=industry
+        if not names:
+            return None
+        return names,industries,footer
+    except Exception:
+        return None
+
 def main():
     asof=completed_asof()
     identity_path,sec_path=proof_paths(asof)
@@ -339,10 +373,21 @@ def main():
         print(json.dumps({"result":"NOOP_EXACT_PROOFS_ALREADY_VALID","asof_et":asof,"identity_path":identity_path.name,"sec_path":sec_path.name},sort_keys=True))
         return
 
-    names,footer=official_directory()
-    footer_date=parse_footer_date(footer)
-    if footer_date!=asof:
-        raise RuntimeError(f"NASDAQ_DIRECTORY_NOT_EXACT_ASOF:{footer_date}!={asof}")
+    live_names,live_footer=official_directory()
+    live_footer_date=parse_footer_date(live_footer)
+    directory_replay_mode=False
+    if live_footer_date==asof:
+        names=live_names
+        footer=live_footer
+        footer_date=live_footer_date
+        industries=official_screener_industries()
+    else:
+        frozen=frozen_exact_asof_directory(asof)
+        if frozen is None:
+            raise RuntimeError(f"NASDAQ_DIRECTORY_NOT_EXACT_ASOF:{live_footer_date}!={asof}")
+        names,industries,footer=frozen
+        footer_date=asof
+        directory_replay_mode=True
 
     prior_identity=latest_prior("master_asof_identity_proof_",asof)
     prior_sec=latest_prior("master_sec_spac_proof_",asof)
@@ -353,7 +398,6 @@ def main():
     if prior_sec:
         blank_seed=dict(prior_sec[2].get("proofs") or {})
 
-    industries=official_screener_industries()
     sec_network_error=None
     sec_discovery_errors={}
     operating={}
@@ -438,6 +482,8 @@ def main():
       "source_directory_footer":footer,
       "source_directory_date":footer_date,
       "same_asof_directory_is_membership_authority":True,
+      "directory_replay_mode":"FROZEN_EXACT_ASOF_COMMITTED_SNAPSHOT" if directory_replay_mode else "LIVE_EXACT_ASOF_OFFICIAL_DIRECTORY",
+      "live_directory_footer_observed":live_footer if directory_replay_mode else None,
       "restore_to_asof":{},
       "remove_from_asof":{},
       "operating_overrides":operating,
