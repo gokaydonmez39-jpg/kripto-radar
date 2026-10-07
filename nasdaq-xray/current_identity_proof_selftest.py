@@ -148,13 +148,13 @@ def main():
           "asof_et":"2026-10-06",
           "official_footer":"File Creation Time: 1006202618:01|||||||",
           "identity_ruleset":"V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER",
-          "identity_partition_policy":"MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V3_FROZEN_GUARD",
+          "identity_partition_policy":"MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V4_EXACT_ASOF_SNAPSHOT_GUARD",
           "queue":q0,"queue_total":1,"queue_hash":q0hash,
           "raw_identity_total":2,
           "security_names":{"OPER":"Operating Corp. - Common Stock"},
           "identity_unknown_symbols":unknown0,
           "identity_unknown_detail":detail0,
-          "discovery_meta":{"identity_partition_policy":"MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V3_FROZEN_GUARD"}
+          "discovery_meta":{"identity_partition_policy":"MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V4_EXACT_ASOF_SNAPSHOT_GUARD"}
         }))
         (root/"canonical_current_master_manifest.json").write_text(json.dumps({
           "asof_et":"2026-10-06",
@@ -176,10 +176,10 @@ def main():
           "asof_et":"2026-10-06",
           "official_footer":"File Creation Time: 1007202603:02|||||||",
           "identity_ruleset":"V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER",
-          "identity_partition_policy":"MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V3_FROZEN_GUARD",
+          "identity_partition_policy":"MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V4_EXACT_ASOF_SNAPSHOT_GUARD",
           "queue":[],"queue_total":0,"queue_hash":__import__("hashlib").sha256(b"").hexdigest(),
           "raw_identity_total":0,"security_names":{},"identity_unknown_symbols":[],"identity_unknown_detail":{},
-          "discovery_meta":{"identity_partition_policy":"MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V3_FROZEN_GUARD"}
+          "discovery_meta":{"identity_partition_policy":"MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V4_EXACT_ASOF_SNAPSHOT_GUARD"}
         }))
         (root/"canonical_current_master_manifest.json").write_text(json.dumps({
           "asof_et":"2026-10-06","official_footer":"File Creation Time: 1007202603:02|||||||","unknown_detail":{}
@@ -189,11 +189,11 @@ def main():
           "schema":"XRAY_NASDAQ_SCREENER_SINA_V2","asof_et":"2026-10-06",
           "official_footer":"File Creation Time: 1006202618:01|||||||",
           "identity_ruleset":"V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER",
-          "identity_partition_policy":"MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V3_FROZEN_GUARD",
+          "identity_partition_policy":"MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V4_EXACT_ASOF_SNAPSHOT_GUARD",
           "queue":q,"queue_total":1,"queue_hash":qhash,"raw_identity_total":1,
           "security_names":{"OPER":"Operating Corp. - Common Stock"},
           "identity_unknown_symbols":[],"identity_unknown_detail":{},
-          "discovery_meta":{"identity_partition_policy":"MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V3_FROZEN_GUARD"}
+          "discovery_meta":{"identity_partition_policy":"MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V4_EXACT_ASOF_SNAPSHOT_GUARD"}
         }))
         frozen2=m.frozen_exact_asof_directory("2026-10-06",root)
         assert frozen2 is not None and frozen2[0]["OPER"]=="Operating Corp. - Common Stock"
