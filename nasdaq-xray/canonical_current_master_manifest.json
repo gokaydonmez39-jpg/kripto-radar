@@ -28,17 +28,18 @@
   },
   "counts": {
     "PASS_IDENTITY": 3161,
-    "UNKNOWN_IDENTITY": 238
+    "UNKNOWN_IDENTITY": 89
   },
   "execution": "NONE",
-  "explicit_excluded_count": 2237,
-  "explicit_excluded_hash": "8661d47060c8f6f7eefa4d87ecbf9bf9350b6c8220ba77530bcd48631a8ceff3",
+  "explicit_excluded_count": 2386,
+  "explicit_excluded_hash": "349a3eaaaeb64763d300dc829dee272d07afcb171b62fe6a4819b8a75642b17e",
   "explicit_excluded_reason_counts": {
     "DEBT": 59,
     "ETF": 1293,
     "FUND": 32,
     "PREFERRED": 102,
     "RIGHT": 104,
+    "SPAC_BLANK_CHECK": 149,
     "TEST_ISSUE": 8,
     "UNIT": 261,
     "WARRANT": 375,
@@ -53,9 +54,9 @@
     "source_unknown_count": 3161
   },
   "identity_authority": "NASDAQTRADER_EXPLICIT_TYPE_FILTER_V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER",
-  "identity_partition_policy": "MASTER_SPAC_UNKNOWN_PARTITION_V2_FROZEN_GUARD",
+  "identity_partition_policy": "MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V3_FROZEN_GUARD",
   "identity_ruleset": "V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER",
-  "official_footer": "File Creation Time: 1006202617:01|||||||",
+  "official_footer": "File Creation Time: 1006202618:01|||||||",
   "pass_count": 3161,
   "pass_hash": "f583de3888d099300a0d4b0baf67d557ab98007aa33fb93142a9172213ea6867",
   "pass_symbols": [
@@ -3226,7 +3227,7 @@
   "queue_hash": "f583de3888d099300a0d4b0baf67d557ab98007aa33fb93142a9172213ea6867",
   "queue_total": 3161,
   "queue_unique": 3161,
-  "raw_identity_total": 3399,
+  "raw_identity_total": 3250,
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1",
   "sec_spac_proof": {
@@ -3235,2158 +3236,906 @@
     "path": null,
     "symbol_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
   },
-  "source_state_blob_sha": "c2a24366cf46f0589a6be077b4137e42e25b59f6",
-  "source_state_hash": "c748ac8bf8d875fdb70b898b65fb01edbe6bd7963dce1eed3a855742cb3cea3f",
+  "source_state_blob_sha": "0b6d0ea8ae4e3ef0a0a673a085185b5f613720b4",
+  "source_state_hash": "9ea29efa9bc3492008b3926a6f41471d0cf6a5d51f283cf37972666d6338c55e",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
   "status": "PARTIAL_UNKNOWN",
   "status_semantics": "IDENTITY_PARTITION_EXACT_WITH_UNKNOWN",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 238,
+  "unknown_count": 89,
   "unknown_detail": {
-    "AACI": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Armada Acquisition Corp. III - Class A Ordinary Share",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "AACO": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Abony Acquisition Corp. I - Class A Ordinary Share",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "AACP": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Apogee Acquisition Corp - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "ACAA": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Averin Capital Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "ACGC": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "ACP Holdings Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "ADAC": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "American Drive Acquisition Company - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "AEAQ": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Activate Energy Acquisition Corp. - Class A Ordinary Share",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "AESP": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Aeon Acquisition I Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "ALF": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Centurion Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "ALIS": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Calisa Acquisition Corp - Ordinary shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "ALPX": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Alpex Acquisition Corporation - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "AMAC": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "AMR Resources Acquisition Corp - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "AMAN": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Amanat Acquisition Corp - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "APAC": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "StoneBridge Acquisition II Corporation - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "APMC": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "AmperCap Acquisition Company - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "APUR": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Aperture AC - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "APXT": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Apex Treasury Corporation - Class A Ordinary Share",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "ARCI": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Archimedes Tech SPAC Partners III Co. - Ordinary Share",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "ARCL": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "ARC Group Acquisition I Corp - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "ARTC": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Art Technology Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "ASPC": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "A SPAC III Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "ATII": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Archimedes Tech SPAC Partners II Co. - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "ATLQ": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "JAB Acquisition Corp I - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "AXIN": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Axiom Intelligence Acquisition Corp 1 - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "BACC": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Blue Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "BCCQ": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Bleichroeder Acquisition Corp. III - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "BDCI": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "BTC Development Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "BEAG": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Bold Eagle Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "BHAV": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "BHAV Acquisition Corp - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "BID": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Tribeca Strategic Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "BIXI": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Bitcoin Infrastructure Acquisition Corp Ltd. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "BKHA": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "Biotechnology: Biological Products (No Diagnostic Substances)",
       "security_name": "Black Hawk Acquisition Corporation - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "BLRK": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Bluerock Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "BLUW": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Blue Water Acquisition Corp. III - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "BLZR": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Trailblazer Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "BPAC": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Blueport Acquisition Ltd - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "BREZ": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Breeze Acquisition Corp. II - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "BRKH": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Burtech Acquisition Corp II - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "BRTM": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "B&R Technology Merger Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "BSAA": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "BEST SPAC I Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "CAES": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Cantor Equity Partners VII, Inc. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "CAII": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Collective Acquisition Corp. II - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "CAPN": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Cayson Acquisition Corp - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "CAQ": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Cambridge Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "CATL": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Catalyst Acquisition Corp. - Class A Ordinary Share",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "CCAQ": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Collective Acquisition Corp. - Class A ordinary shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "CCII": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Cohen Circle Acquisition Corp. II - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "CCXI": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Churchill Capital Corp XI - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "CEPF": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Cantor Equity Partners IV, Inc. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "CEPO": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Cantor Equity Partners I, Inc. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "CEPS": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Cantor Equity Partners VI, Inc. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "CGCF": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Cartesian Growth Corporation IV - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "CHAR": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Charlton Aria Acquisition Corporation - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "CHEC": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Chenghe Acquisition III Co. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "CHPG": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "ChampionsGate Acquisition Corporation - Class A Ordinary Share",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "CRAC": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Crown Reserve Acquisition Corp. I - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "CRAN": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Crane Harbor Acquisition Corp. II - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "CRAQ": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Cal Redwood Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "CTAA": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "ClearThink 1 Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "CXII": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Churchill Capital Corp XII - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "DAAQ": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Digital Asset Acquisition Corp. - Class A Ordinary shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "DBCA": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "D. Boral Acquisition I Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "DMAA": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Drugs Made In America Acquisition Corp. - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "DMII": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Drugs Made In America Acquisition II Corp. - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "DNMX": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Dynamix Corporation III - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "DRDB": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Roman DBDR Acquisition Corp. II - Ordinary shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "DSAC": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Daedalus Special Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "DTSQ": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "DT Cloud Star Acquisition Corporation - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "DYOR": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Insight Digital Partners II - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "EGHA": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "Finance/Investors Services",
       "security_name": "EGH Acquisition Corp. - Class A ordinary shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "EMIS": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "Biotechnology: Pharmaceutical Preparations",
       "security_name": "Emmis Acquisition Corp. - Class A Ordinary Share",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "EURK": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Eureka Acquisition Corp - Class A Ordinary Share",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "EVOX": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Evolution Global Acquisition Corp - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "EWAV": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "East West Ave Acquisition Corp. - Common Stock",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "FACT": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "FACT II Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "FDMM": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Freedom Metals Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "FERA": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Fifth Era Acquisition Corp I - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "FGII": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "FG Imperii Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "FIGX": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "FIGX Capital Acquisition Corp. - Class A ordinary share",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "FJDI": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "ARC Group Securities Acquisition I - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "FMAC": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Future Money Acquisition Corporation - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "FSHP": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Flag Ship Acquisition Corp. - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "FTHA": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Forefront Tech Holdings Acquisition Corp - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "FVAV": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Fortress Value Acquisition Corp. V - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "FVN": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Future Vision II Acquisition Corporation - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "FWAC": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Futurewave Acquisition Corporation - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "FXAC": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "FortuneX Acquisition Corporation - Ordinary shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "GIW": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "GigCapital8 Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "GIX": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "GigCapital9 Corp. - Class A Ordinary Share",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "GPAC": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "General Purpose Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "GPAT": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "GP-Act III Acquisition Corp. - Class A Ordinary Share",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "GSHR": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Gesher Acquisition Corp. II - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "GSRF": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "GSR IV Acquisition Corp. - Class A ordinary share",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "GSRV": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "GSR V Acquisition Corp. - Class A ordinary shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "GTERA": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Globa Terra Acquisition Corporation - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "GUAC": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Berto Acquisition Corp. II - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "HACQ": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "HCM IV Acquisition Corp. - Class A Ordinary Share",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "HAVA": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Harvard Ave Acquisition Corporation - Class A Ordinary Share",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "HCAC": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Hall Chadwick Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "HCMA": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "Hotels/Resorts",
       "security_name": "HCM III Acquisition Corp. - Class A Ordinary Share",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "HLXC": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Helix Acquisition Corp. III - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "IACO": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Idea Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "IACQ": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Irenic Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "IBAC": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "IB Acquisition Corp. - Common Stock",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "IDAC": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Iron Dome Acquisition I Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "IEAG": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Infinite Eagle Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "IGAC": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Invest Green Acquisition Corporation - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "ILLU": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Illumination Acquisition Corp I - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "INAC": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Indigo Acquisition Corp. - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "IPFX": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Inflection Point Acquisition Corp. VI - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "IPHX": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Inflection Point Acquisition Corp. VIII - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "IPVV": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "InterPrivate Investment Partners V, Inc. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "IPXG": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Inection Point Acquisition Corp. VII  - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "IRHO": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Iron Horse Acquisitions II Corp. - Common Stock",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "ISNR": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Snow Rothschild Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "ITHA": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "ITHAX Acquisition Corp III - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "JATT": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "JATT II Acquisition Corp - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "JONE": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Jones Ventures INTL Acquisition1 Corp - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "JTTT": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "JATT III Acquisition Corp - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "KBON": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Karbon Capital Partners Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "KCHV": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Kochav Defense Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "KEYY": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Keystone Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "KFII": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "K&F Growth Acquisition Corp. II - Class A Ordinary shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "KOYN": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "CSLM Digital Asset Acquisition Corp III - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "KTWO": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "Medical/Dental Instruments",
       "security_name": "K2 Capital Acquisition Corporation - Class A Ordinary Share",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "LAFA": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "LaFayette Acquisition Corp. - Ordinary Share",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "LATA": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Galata Acquisition Corp. II - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "LCCC": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Lakeshore Acquisition III Corp. - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "LFAC": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Leapfrog Acquisition Corporation - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "LKSP": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Lake Superior Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "LPAA": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Launch One Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "LPBB": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Launch Two Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "LPCV": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Launchpad Cadenza Acquisition Corp I - Class A Ordinary Share",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "LTGR": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Long Table Growth Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "LWAC": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "LightWave Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "MACI": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Melar Acquisition Corp. I - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "MBVI": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "M3-Brigade Acquisition VI Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "MCAH": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Mountain Crest Acquisition 6 Corp. - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "MCGA": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "Electric Utilities: Central",
       "security_name": "Yorkville Acquisition Corp. - Class A Ordinary Share",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "MESH": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Meshflow Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "MEVO": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "M Evo Global Acquisition Corp II - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "MIAC": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Meridian3 Industrials Acquisition Corp - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "MKLY": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "McKinley Acquisition Corporation - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "MLAA": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Mountain Lake Acquisition Corp. II - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "MMTX": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Miluna Acquisition Corp - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "MRCO": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Mercator Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "MTAK": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Market Technology Acquisition Corp - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "MUZE": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Muzero Acquisition Corp - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "MYX": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Maywood Acquisition Corp. 2 - Class A Ordinary Share",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "NBRG": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Newbridge Acquisition Limited - Class A Ordinary Share",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "NCO": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Southern Cross Acquisition I Corp. - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "NHIV": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "NewHold Investment Corp IV - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "NMP": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "NMP Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "NPAC": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "New Providence Acquisition Corp. III - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "NSAI": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "NorthStrive Acquisition Corp I. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "NTWO": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Newbury Street II Acquisition Corp - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "OACC": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Oaktree Acquisition Corp. III Life Sciences - Class A Ordinary Share",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "OBA": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Oxley Bridge Acquisition Limited - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "OCLT": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "OceanLight Acquisition Corporation - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "OHAC": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Oceanhawk Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "OIM": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "OneIM Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "ONCH": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "1RT Acquisition Corp. - Class A Ordinary Share",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "OSPR": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Osprey Acquisition Corp. III - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "OTGA": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "OTG Acquisition Corp. I - Class A Ordinary Share",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "OYSE": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Oyster Enterprises II Acquisition Corp - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "PAAC": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "Investment Managers",
       "security_name": "Proem Acquisition Corp I - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "PACH": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Pioneer Acquisition I Corp - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "PALO": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Paloma Acquisition Corp I - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "PCAP": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "ProCap Acquisition Corp - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "PECE": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Peace Acquisition Corp - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "PGAC": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Pantages Capital Acquisition Corporation - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "PLCI": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Pelican Acquisition II Corporation - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "PLMK": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Plum Acquisition Corp. IV - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "PMTR": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Perimeter Acquisition Corp. I - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "POLE": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Andretti Acquisition Corp. II - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "PONO": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Pono Capital Four, Inc. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "PTAC": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Patriot Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "PTOR": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Praetorian Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "QADR": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "QDRO Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "QETA": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Quetta Acquisition Corporation - Common Stock",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "QSEA": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Quartzsea Acquisition Corporation - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "QUMS": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Quantumsphere Acquisition Corp. - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "RACC": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Research Alliance Corporation III - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "RANG": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Range Capital Acquisition Corp. - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "RDAC": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Rising Dragon Acquisition Corp. - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "RDAG": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Republic Digital Acquisition Company - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "RFAI": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "RF Acquisition Corp II - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "RFAM": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "RF Acquisition Corp III - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "RIBB": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Ribbon Acquisition Corp - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "RNAQ": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Rainier Acquisition Corporation - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "RNGT": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Range Capital Acquisition Corp II - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "RREV": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "RRE Ventures Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "RTAC": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Renatus Tactical Acquisition Corp I - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "SAAQ": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Space Asset Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "SCII": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "SC II Acquisition Corp. - Class A ordinary share",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "SDHI": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Siddhi Acquisition Corp - Class A Common stock",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "SIMA": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "Industrial Machinery/Components",
       "security_name": "SIM Acquisition Corp. I - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "SOCA": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Solarius Capital Acquisition Corp. - Class A Ordinary Share",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "SORN": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Soren Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "SPEG": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Silver Pegasus Acquisition Corp - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "SPKL": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "Industrial Machinery/Components",
       "security_name": "Spark I Acquisition Corp. - Class A Ordinary Share",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "SSAC": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "SPACSphere Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "SSEA": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Starry Sea Acquisition Corp - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "SUMA": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "SUMA Acquisition Corporation - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "SVAQ": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Silicon Valley Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "SVIV": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Spring Valley Acquisition Corp. IV - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "SZZL": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Sizzle Acquisition Corp. II - Class A ordinary shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "TACH": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Titan Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "TACO": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Berto Acquisition Corp. - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "TAVI": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Tavia Acquisition Corp. - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "TBCV": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Thunder Bridge Capital Partners V, Ltd. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "TCGX": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "TCGX Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "TDAC": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Translational Development Acquisition Corp. - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "TDWD": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Tailwind 2.0 Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "THEO": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "BOA Acquisition Corp. II - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "TLAC": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Three Lions Acquisition Corp. - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "TLNC": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Talon Capital Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "TMTS": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Spartacus Acquisition Corp. II - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "TRGS": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "TRG Latin America Acquisitions Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "TVA": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Texas Ventures Acquisition III Corp - Class A Ordinary Share",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "TVAI": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Thayer Ventures Acquisition Corporation II - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "TVIV": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Texas Ventures Acquisition IV Corp - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "TWLV": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Twelve Seas Investment Company III - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "UYSC": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "UY Scuti Acquisition Corp. - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "VLOS": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Velos Acquisition I Corp. - Class A Ordinary shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "VNME": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Vendome Acquisition Corporation I - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "WENN": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Wen Acquisition Corp - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "WLCO": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Wilco 63 Corporation - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "WLII": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Willow Lane Acquisition Corp. II - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "WSTN": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "EDP Services",
       "security_name": "Westin Acquisition Corp - Class A Ordinary Share",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "WTG": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Wintergreen Acquisition Corp. - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "XCBE": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "X3 Acquisition Corp. Ltd. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "XRPN": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Armada Acquisition Corp. II - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "XSLL": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Xsolla SPAC 1 - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "XTER": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Karman Line Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
     "YHNA": {
       "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "YHN Acquisition I Limited - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "YICC": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Yorkville International Capital Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "ZKP": {
-      "exact_sec_spac_proof": false,
-      "reason": "SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-      "same_asof_nasdaq_industry": "Blank Checks",
-      "security_name": "Lafayette Digital Acquisition Corp. I - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     }
   },
   "unknown_never_pass": true,
   "unknown_symbols": [
-    "AACI",
     "AACO",
-    "AACP",
-    "ACAA",
-    "ACGC",
     "ADAC",
     "AEAQ",
-    "AESP",
     "ALF",
     "ALIS",
-    "ALPX",
-    "AMAC",
-    "AMAN",
-    "APAC",
-    "APMC",
-    "APUR",
-    "APXT",
     "ARCI",
-    "ARCL",
-    "ARTC",
-    "ASPC",
     "ATII",
-    "ATLQ",
-    "AXIN",
-    "BACC",
-    "BCCQ",
-    "BDCI",
-    "BEAG",
-    "BHAV",
-    "BID",
     "BIXI",
     "BKHA",
     "BLRK",
     "BLUW",
-    "BLZR",
     "BPAC",
-    "BREZ",
-    "BRKH",
-    "BRTM",
-    "BSAA",
-    "CAES",
-    "CAII",
     "CAPN",
     "CAQ",
-    "CATL",
-    "CCAQ",
     "CCII",
-    "CCXI",
-    "CEPF",
-    "CEPO",
-    "CEPS",
-    "CGCF",
     "CHAR",
     "CHEC",
     "CHPG",
     "CRAC",
-    "CRAN",
-    "CRAQ",
-    "CTAA",
-    "CXII",
-    "DAAQ",
-    "DBCA",
     "DMAA",
-    "DMII",
-    "DNMX",
     "DRDB",
-    "DSAC",
     "DTSQ",
-    "DYOR",
     "EGHA",
     "EMIS",
     "EURK",
-    "EVOX",
-    "EWAV",
     "FACT",
-    "FDMM",
     "FERA",
-    "FGII",
-    "FIGX",
     "FJDI",
-    "FMAC",
     "FSHP",
-    "FTHA",
     "FVAV",
     "FVN",
-    "FWAC",
-    "FXAC",
-    "GIW",
-    "GIX",
     "GPAC",
     "GPAT",
     "GSHR",
     "GSRF",
-    "GSRV",
-    "GTERA",
-    "GUAC",
-    "HACQ",
-    "HAVA",
-    "HCAC",
     "HCMA",
     "HLXC",
-    "IACO",
-    "IACQ",
-    "IBAC",
     "IDAC",
-    "IEAG",
-    "IGAC",
-    "ILLU",
     "INAC",
-    "IPFX",
     "IPHX",
-    "IPVV",
-    "IPXG",
-    "IRHO",
-    "ISNR",
     "ITHA",
-    "JATT",
-    "JONE",
-    "JTTT",
-    "KBON",
     "KCHV",
-    "KEYY",
-    "KFII",
     "KOYN",
     "KTWO",
     "LAFA",
-    "LATA",
-    "LCCC",
-    "LFAC",
     "LKSP",
     "LPAA",
     "LPBB",
     "LPCV",
-    "LTGR",
-    "LWAC",
     "MACI",
     "MBVI",
-    "MCAH",
     "MCGA",
     "MESH",
-    "MEVO",
     "MIAC",
-    "MKLY",
-    "MLAA",
-    "MMTX",
-    "MRCO",
     "MTAK",
-    "MUZE",
-    "MYX",
-    "NBRG",
     "NCO",
-    "NHIV",
-    "NMP",
-    "NPAC",
     "NSAI",
     "NTWO",
-    "OACC",
-    "OBA",
-    "OCLT",
     "OHAC",
     "OIM",
     "ONCH",
-    "OSPR",
-    "OTGA",
-    "OYSE",
     "PAAC",
     "PACH",
-    "PALO",
-    "PCAP",
-    "PECE",
     "PGAC",
-    "PLCI",
     "PLMK",
-    "PMTR",
     "POLE",
-    "PONO",
-    "PTAC",
-    "PTOR",
-    "QADR",
-    "QETA",
-    "QSEA",
     "QUMS",
-    "RACC",
-    "RANG",
     "RDAC",
-    "RDAG",
     "RFAI",
     "RFAM",
     "RIBB",
-    "RNAQ",
-    "RNGT",
-    "RREV",
-    "RTAC",
-    "SAAQ",
     "SCII",
-    "SDHI",
     "SIMA",
     "SOCA",
-    "SORN",
     "SPEG",
     "SPKL",
-    "SSAC",
-    "SSEA",
     "SUMA",
-    "SVAQ",
-    "SVIV",
-    "SZZL",
-    "TACH",
-    "TACO",
-    "TAVI",
-    "TBCV",
     "TCGX",
     "TDAC",
-    "TDWD",
-    "THEO",
     "TLAC",
-    "TLNC",
     "TMTS",
-    "TRGS",
     "TVA",
     "TVAI",
     "TVIV",
-    "TWLV",
-    "UYSC",
     "VLOS",
-    "VNME",
     "WENN",
-    "WLCO",
-    "WLII",
     "WSTN",
-    "WTG",
     "XCBE",
-    "XRPN",
-    "XSLL",
-    "XTER",
-    "YHNA",
-    "YICC",
-    "ZKP"
+    "YHNA"
   ]
 }
