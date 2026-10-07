@@ -1,7 +1,7 @@
 {
   "asof_et": "2026-10-06",
   "asof_identity_proof": {
-    "blob_sha": "e059c6e6b02172a2eb7b0085fe129868c391a0bb",
+    "blob_sha": "6f011ba995edf07afcd68e98d05579f54796ebfd",
     "counts": {
       "operating_overrides": 3,
       "remove_from_asof": 0,
@@ -27,12 +27,12 @@
     "security_names_exact": true
   },
   "counts": {
-    "PASS_IDENTITY": 3161,
-    "UNKNOWN_IDENTITY": 89
+    "PASS_IDENTITY": 3157,
+    "UNKNOWN_IDENTITY": 88
   },
   "execution": "NONE",
-  "explicit_excluded_count": 2386,
-  "explicit_excluded_hash": "349a3eaaaeb64763d300dc829dee272d07afcb171b62fe6a4819b8a75642b17e",
+  "explicit_excluded_count": 2381,
+  "explicit_excluded_hash": "d1132c31b973209763a292b99de89a8617473fc32d08cc48e055f5a28d251132",
   "explicit_excluded_reason_counts": {
     "DEBT": 59,
     "ETF": 1293,
@@ -41,24 +41,24 @@
     "RIGHT": 104,
     "SPAC_BLANK_CHECK": 149,
     "TEST_ISSUE": 8,
-    "UNIT": 261,
-    "WARRANT": 375,
+    "UNIT": 260,
+    "WARRANT": 371,
     "WHEN_ISSUED": 3
   },
   "history_price_state_diagnostic_only": {
     "source_counts": {
-      "UNKNOWN_STATIC": 3161
+      "UNKNOWN_STATIC": 3157
     },
     "source_pending_retry": 0,
     "source_status": "IDENTITY_READY_MARKET_GATES_DEFERRED",
-    "source_unknown_count": 3161
+    "source_unknown_count": 3157
   },
   "identity_authority": "NASDAQTRADER_EXPLICIT_TYPE_FILTER_V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER",
   "identity_partition_policy": "MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V3_FROZEN_GUARD",
   "identity_ruleset": "V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER",
-  "official_footer": "File Creation Time: 1006202618:01|||||||",
-  "pass_count": 3161,
-  "pass_hash": "f583de3888d099300a0d4b0baf67d557ab98007aa33fb93142a9172213ea6867",
+  "official_footer": "File Creation Time: 1007202603:02|||||||",
+  "pass_count": 3157,
+  "pass_hash": "7cb79b7ac033651438d2b7fc0c6245ccdcde335a1fcac9ad2cb87f3a6d3998e8",
   "pass_symbols": [
     "AACG",
     "AAL",
@@ -448,7 +448,6 @@
     "BL",
     "BLBD",
     "BLDP",
-    "BLFS",
     "BLIN",
     "BLIV",
     "BLKB",
@@ -1451,7 +1450,6 @@
     "IIIV",
     "IKT",
     "ILAG",
-    "ILLR",
     "ILMN",
     "ILPT",
     "IMA",
@@ -2662,7 +2660,6 @@
     "SLN",
     "SLNG",
     "SLNH",
-    "SLP",
     "SLS",
     "SLSN",
     "SLXN",
@@ -3076,7 +3073,6 @@
     "WAVE",
     "WAY",
     "WB",
-    "WBD",
     "WBTN",
     "WBUY",
     "WCCB",
@@ -3224,10 +3220,10 @@
   ],
   "pending_retry": 0,
   "phase": "MASTER_IDENTITY",
-  "queue_hash": "f583de3888d099300a0d4b0baf67d557ab98007aa33fb93142a9172213ea6867",
-  "queue_total": 3161,
-  "queue_unique": 3161,
-  "raw_identity_total": 3250,
+  "queue_hash": "7cb79b7ac033651438d2b7fc0c6245ccdcde335a1fcac9ad2cb87f3a6d3998e8",
+  "queue_total": 3157,
+  "queue_unique": 3157,
+  "raw_identity_total": 3245,
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1",
   "sec_spac_proof": {
@@ -3236,13 +3232,13 @@
     "path": null,
     "symbol_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
   },
-  "source_state_blob_sha": "e7f17f59b71d2d431dd95a7f4f06ddb1e38fbd8d",
-  "source_state_hash": "f2af3edffde36f802959fd6e6c5f3c666992ce85814c07cbca1d36d58dc469ef",
+  "source_state_blob_sha": "05c40fb79678002f0fac510abf6b903b32179d03",
+  "source_state_hash": "104bb3d3a85c1fae2632e33a5eaa0a7bb8a057650b24a7b4e5fa45ee17593d88",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
   "status": "PARTIAL_UNKNOWN",
   "status_semantics": "IDENTITY_PARTITION_EXACT_WITH_UNKNOWN",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 89,
+  "unknown_count": 88,
   "unknown_detail": {
     "AACO": {
       "exact_sec_spac_proof": false,
@@ -3919,15 +3915,6 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "SPKL": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "Industrial Machinery/Components",
-      "security_name": "Spark I Acquisition Corp. - Class A Ordinary Share",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "SUMA": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
@@ -4123,7 +4110,6 @@
     "SIMA",
     "SOCA",
     "SPEG",
-    "SPKL",
     "SUMA",
     "TCGX",
     "TDAC",
