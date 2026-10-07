@@ -115,12 +115,16 @@ def full_session_halt_candidate(row: dict, sym: str, session_date: str):
 
 def candidate_missing_sessions(price: dict) -> dict[str, list[str]]:
     out = {}
-    for sym in price.get("blocked_symbols") or []:
-        rec = ((price.get("results") or {}).get(sym) or {})
-        if rec.get("status") != "BLOCK_CURRENT_RUN":
+    for sym,rec in sorted((price.get("results") or {}).items()):
+        status=str(rec.get("status") or "")
+        if status not in {"BLOCK_CURRENT_RUN","UNKNOWN"}:
             continue
+        # BLOCK_CURRENT_RUN keeps provider evidence under block_recovery_attempt;
+        # persisted UNKNOWN keeps the same zero-dollar provider result in info.
         attempt = rec.get("block_recovery_attempt") or {}
         pres = attempt.get("provider_result") or {}
+        if not pres and status=="UNKNOWN":
+            pres = rec.get("info") or {}
         sina = pres.get("sina_result") or {}
         n = sina.get("known_session_count")
         missing = sina.get("missing_sessions") or []
@@ -143,6 +147,21 @@ def selftest():
     assert full_session_halt_candidate(intraday, "GRAL", "2026-09-23") is None
     wrong_market = dict(row, Market="NYSE")
     assert full_session_halt_candidate(wrong_market, "GRAL", "2026-09-23") is None
+    sample={
+        "blocked_symbols":[],
+        "results":{
+            "GRAL":{"status":"UNKNOWN","info":{"sina_result":{
+                "known_session_count":29,"missing_sessions":["2026-09-23"]
+            }}},
+            "NEW":{"status":"UNKNOWN","info":{"sina_result":{
+                "known_session_count":5,"missing_sessions":["2026-09-23"]
+            }}},
+            "PASS":{"status":"PASS_PRICE_DV30","info":{"sina_result":{
+                "known_session_count":29,"missing_sessions":["2026-09-23"]
+            }}},
+        },
+    }
+    assert candidate_missing_sessions(sample)=={"GRAL":["2026-09-23"]}
     print("XRAY_PRICE_HISTORICAL_HALT_PROBE_SELFTEST=PASS")
 
 def main():
