@@ -29,6 +29,7 @@ on:
       - "nasdaq-xray/price_official_halt_selftest.py"
       - "nasdaq-xray/official_source_guard.py"
       - "nasdaq-xray/build_current_resolver_request.py"
+      - "nasdaq-xray/build_resolver_full_scope_handoff.py"
       - "nasdaq-xray/recover_pre_mc_snapshot.py"
       - "nasdaq-xray/canonical_resolver_bridge_*.json"
       - "nasdaq-xray/chatgpt_compiled_policy_v3.json"
@@ -110,6 +111,7 @@ jobs:
             nasdaq-xray/price_official_halt_selftest.py \
             nasdaq-xray/official_source_guard.py \
             nasdaq-xray/build_current_resolver_request.py \
+            nasdaq-xray/build_resolver_full_scope_handoff.py \
             nasdaq-xray/recover_pre_mc_snapshot.py
       - name: Install zero-dollar runtime
         run: python -m pip install --disable-pip-version-check -r nasdaq-xray/requirements-runtime.txt
@@ -631,8 +633,49 @@ jobs:
           assert p["pass_count"]==len(p["pass_symbols"])==len(set(p["pass_symbols"]))
           print({"asof":m["asof_et"],"master_status":m["status"],"master_unknown":m["unknown_count"],"price_dv30_unknown":p["unknown_count"],"price_dv30_blocked":p.get("blocked_count",(p.get("counts") or {}).get("BLOCK_CURRENT_RUN",0)),"price_dv30_pass":p["pass_count"],"resolver_request_status":q["status"],"settlement_required":q["settlement_required"]})
           PY
+      - name: Build exact current full-scope resolver handoff
+        id: full_scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          python nasdaq-xray/build_resolver_full_scope_handoff.py --selftest
+          build="$(python - <<'PY'
+          import json
+          p=json.load(open("nasdaq-xray/canonical_current_price_dv30.json"))
+          q=json.load(open("nasdaq-xray/canonical_current_resolver_request.json"))
+          ready=(
+              int(p.get("unknown_count",-1))==0
+              and len(p.get("unknown_symbols") or [])==0
+              and int(p.get("blocked_count",-1))==0
+              and len(p.get("blocked_symbols") or [])==0
+              and q.get("status")=="IDLE"
+              and int(q.get("symbol_count",-1))==0
+              and len(q.get("symbols") or [])==0
+              and int(q.get("price_unknown_count",-1))==0
+              and int(q.get("price_blocked_count",-1))==0
+              and q.get("settlement_required") is False
+          )
+          print("true" if ready else "false")
+          PY
+          )"
+          if [[ "$build" != "true" ]]; then
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "created=false" >> "$GITHUB_OUTPUT"
+            echo "reason=PRICE_OR_RESIDUAL_NOT_TERMINAL" >> "$GITHUB_OUTPUT"
+            echo "XRAY_FULL_SCOPE_HANDOFF=NOT_APPLICABLE"
+            exit 0
+          fi
+          python nasdaq-xray/build_resolver_full_scope_handoff.py | tee /tmp/xray_full_scope_out
+          while IFS= read -r line; do
+            case "$line" in
+              ready=*|created=*|path=*|generated_blob_sha=*|predecessor_path=*|predecessor_blob_sha=*|residual_authority_path=*|residual_authority_blob_sha=*|settlement_witness_path=*|settlement_witness_blob_sha=*|settlement_witness_relation=*|price_blob_sha=*|pass_count=*|queue_total=*|reason=*)
+                echo "$line" >> "$GITHUB_OUTPUT"
+                ;;
+            esac
+          done < /tmp/xray_full_scope_out
+
       - name: Commit current pre-MC artifacts
-        if: steps.rollover.outputs.build == 'true' || steps.rollover.outputs.policy_replay == 'true' || steps.rollover.outputs.coverage_repair == 'true' || steps.rollover.outputs.resolver_refresh == 'true' || steps.rollover.outputs.bridge_refresh == 'true' || steps.rollover.outputs.publication_replay == 'true'
+        if: steps.rollover.outputs.build == 'true' || steps.rollover.outputs.policy_replay == 'true' || steps.rollover.outputs.coverage_repair == 'true' || steps.rollover.outputs.resolver_refresh == 'true' || steps.rollover.outputs.bridge_refresh == 'true' || steps.rollover.outputs.publication_replay == 'true' || steps.full_scope.outputs.created == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -650,6 +693,13 @@ jobs:
           )
           while IFS= read -r p; do files+=("$p"); done < <(find nasdaq-xray -maxdepth 1 -type f -name "canonical_current_resolver_chunk_[0-9][0-9][0-9][0-9].json" | sort)
           while IFS= read -r p; do files+=("$p"); done < <(find nasdaq-xray -maxdepth 1 -type f \( -name "master_asof_identity_proof_*.json" -o -name "master_sec_spac_proof_*.json" \) | sort)
+          new_resolver_bridges=()
+          while IFS= read -r p; do
+            if ! git ls-files --error-unmatch "$p" >/dev/null 2>&1; then
+              files+=("$p")
+              new_resolver_bridges+=("$p")
+            fi
+          done < <(find nasdaq-xray -maxdepth 1 -type f -name "canonical_resolver_bridge_*.json" | sort)
           tmpdir="$(mktemp -d)"
           trap 'rm -rf "$tmpdir"' EXIT
           for p in "${files[@]}"; do
@@ -663,6 +713,16 @@ jobs:
             git fetch origin main
             git reset --hard origin/main
             rm -f nasdaq-xray/canonical_current_resolver_chunk_[0-9][0-9][0-9][0-9].json
+            for p in "${new_resolver_bridges[@]}"; do
+              if git ls-files --error-unmatch "$p" >/dev/null 2>&1; then
+                if [[ -f "$tmpdir/$p" ]] && cmp -s "$tmpdir/$p" "$p"; then
+                  echo "RESOLVER_SUCCESSOR_ALREADY_PRESENT_IDENTICAL path=$p"
+                else
+                  echo "RESOLVER_SUCCESSOR_COLLISION_REFETCH_REBUILD_REQUIRED path=$p" >&2
+                  exit 1
+                fi
+              fi
+            done
             for p in "${files[@]}"; do
               if [ -f "$tmpdir/$p" ]; then
                 mkdir -p "$(dirname "$p")"
