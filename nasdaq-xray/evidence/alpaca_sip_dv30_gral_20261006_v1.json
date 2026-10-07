@@ -1,0 +1,383 @@
+{
+  "schema": "XRAY_ALPACA_SIP_DV30_EVIDENCE_V1",
+  "authority": "NON_G9_HISTORICAL_SIP_PRICE_DV30_EVIDENCE",
+  "task_id": "6a825366222081918997094d76e6ae46",
+  "asof_et": "2026-10-06",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "symbol": "GRAL",
+  "identity": {
+    "symbol": "GRAL",
+    "name": "GRAIL, Inc. Common Stock",
+    "asset_class": "us_equity",
+    "exchange": "NASDAQ",
+    "status": "active"
+  },
+  "request": {
+    "timeframe": "1Day",
+    "feed": "sip",
+    "start": "2026-08-25T00:00:00-04:00",
+    "end": "2026-10-06T23:59:59-04:00",
+    "asof": "2026-10-06",
+    "timezone": "America/New_York"
+  },
+  "expected30": [
+    "2026-08-25",
+    "2026-08-26",
+    "2026-08-27",
+    "2026-08-28",
+    "2026-08-31",
+    "2026-09-01",
+    "2026-09-02",
+    "2026-09-03",
+    "2026-09-04",
+    "2026-09-08",
+    "2026-09-09",
+    "2026-09-10",
+    "2026-09-11",
+    "2026-09-14",
+    "2026-09-15",
+    "2026-09-16",
+    "2026-09-17",
+    "2026-09-18",
+    "2026-09-21",
+    "2026-09-22",
+    "2026-09-23",
+    "2026-09-24",
+    "2026-09-25",
+    "2026-09-28",
+    "2026-09-29",
+    "2026-09-30",
+    "2026-10-01",
+    "2026-10-02",
+    "2026-10-05",
+    "2026-10-06"
+  ],
+  "exact_session_count": 30,
+  "session_calendar_match": true,
+  "bars": [
+    {
+      "date": "2026-08-25",
+      "open": 78.24,
+      "high": 84.49,
+      "low": 76.63,
+      "close": 82.54,
+      "volume": 658781,
+      "trade_count": 14104,
+      "vwap": 82.03517
+    },
+    {
+      "date": "2026-08-26",
+      "open": 80.88,
+      "high": 82.25,
+      "low": 78.335,
+      "close": 79.59,
+      "volume": 396990,
+      "trade_count": 10353,
+      "vwap": 79.729867
+    },
+    {
+      "date": "2026-08-27",
+      "open": 79,
+      "high": 85.49,
+      "low": 78,
+      "close": 82.5,
+      "volume": 743092,
+      "trade_count": 13608,
+      "vwap": 83.391632
+    },
+    {
+      "date": "2026-08-28",
+      "open": 80.18,
+      "high": 82.32,
+      "low": 77.7,
+      "close": 80,
+      "volume": 658619,
+      "trade_count": 12795,
+      "vwap": 79.74477
+    },
+    {
+      "date": "2026-08-31",
+      "open": 79,
+      "high": 80.17,
+      "low": 76.6,
+      "close": 79.37,
+      "volume": 556034,
+      "trade_count": 10590,
+      "vwap": 79.081851
+    },
+    {
+      "date": "2026-09-01",
+      "open": 79,
+      "high": 80.79,
+      "low": 77.735,
+      "close": 79.79,
+      "volume": 467273,
+      "trade_count": 10686,
+      "vwap": 79.775703
+    },
+    {
+      "date": "2026-09-02",
+      "open": 80,
+      "high": 83,
+      "low": 78.98,
+      "close": 80.56,
+      "volume": 449279,
+      "trade_count": 10941,
+      "vwap": 80.851671
+    },
+    {
+      "date": "2026-09-03",
+      "open": 81.33,
+      "high": 82.61,
+      "low": 79.21,
+      "close": 80.62,
+      "volume": 320674,
+      "trade_count": 8460,
+      "vwap": 80.595499
+    },
+    {
+      "date": "2026-09-04",
+      "open": 79.92,
+      "high": 80.51,
+      "low": 78.5,
+      "close": 80.34,
+      "volume": 434914,
+      "trade_count": 10575,
+      "vwap": 79.907351
+    },
+    {
+      "date": "2026-09-08",
+      "open": 80.19,
+      "high": 81.71,
+      "low": 78.8505,
+      "close": 79.1,
+      "volume": 693705,
+      "trade_count": 13640,
+      "vwap": 79.803458
+    },
+    {
+      "date": "2026-09-09",
+      "open": 78.96,
+      "high": 81.175,
+      "low": 76.99,
+      "close": 77.48,
+      "volume": 591114,
+      "trade_count": 15132,
+      "vwap": 78.638344
+    },
+    {
+      "date": "2026-09-10",
+      "open": 75.93,
+      "high": 79,
+      "low": 75.09,
+      "close": 77.56,
+      "volume": 897099,
+      "trade_count": 13153,
+      "vwap": 77.465055
+    },
+    {
+      "date": "2026-09-11",
+      "open": 77.61,
+      "high": 79.19,
+      "low": 76.14,
+      "close": 76.23,
+      "volume": 361074,
+      "trade_count": 10806,
+      "vwap": 76.938927
+    },
+    {
+      "date": "2026-09-14",
+      "open": 74.68,
+      "high": 76.56,
+      "low": 73.46,
+      "close": 75.53,
+      "volume": 1145780,
+      "trade_count": 18956,
+      "vwap": 75.43847
+    },
+    {
+      "date": "2026-09-15",
+      "open": 75.44,
+      "high": 77.93,
+      "low": 74.27,
+      "close": 75.89,
+      "volume": 1514754,
+      "trade_count": 19759,
+      "vwap": 75.736383
+    },
+    {
+      "date": "2026-09-16",
+      "open": 75.95,
+      "high": 78.86,
+      "low": 74.12,
+      "close": 75.11,
+      "volume": 1615230,
+      "trade_count": 22330,
+      "vwap": 76.253211
+    },
+    {
+      "date": "2026-09-17",
+      "open": 75.29,
+      "high": 81.76,
+      "low": 75.29,
+      "close": 79.95,
+      "volume": 1527904,
+      "trade_count": 22143,
+      "vwap": 79.709696
+    },
+    {
+      "date": "2026-09-18",
+      "open": 81.48,
+      "high": 82.85,
+      "low": 78.2,
+      "close": 80.77,
+      "volume": 2996693,
+      "trade_count": 23307,
+      "vwap": 80.757742
+    },
+    {
+      "date": "2026-09-21",
+      "open": 93.74,
+      "high": 111.5,
+      "low": 92,
+      "close": 107.97,
+      "volume": 3528622,
+      "trade_count": 57447,
+      "vwap": 105.266108
+    },
+    {
+      "date": "2026-09-22",
+      "open": 106.75,
+      "high": 112.58,
+      "low": 104,
+      "close": 108.52,
+      "volume": 3260164,
+      "trade_count": 33521,
+      "vwap": 108.649574
+    },
+    {
+      "date": "2026-09-23",
+      "open": 108.52,
+      "high": 108.52,
+      "low": 108.52,
+      "close": 108.52,
+      "volume": 0,
+      "trade_count": 0,
+      "vwap": 0
+    },
+    {
+      "date": "2026-09-24",
+      "open": 105.5,
+      "high": 126.81,
+      "low": 101.98,
+      "close": 125.21,
+      "volume": 3448748,
+      "trade_count": 53783,
+      "vwap": 118.152474
+    },
+    {
+      "date": "2026-09-25",
+      "open": 123.5,
+      "high": 127.67,
+      "low": 118.45,
+      "close": 126.89,
+      "volume": 1292803,
+      "trade_count": 23513,
+      "vwap": 124.495232
+    },
+    {
+      "date": "2026-09-28",
+      "open": 128.9,
+      "high": 134.4199,
+      "low": 126.74,
+      "close": 132.63,
+      "volume": 1111058,
+      "trade_count": 23413,
+      "vwap": 130.867798
+    },
+    {
+      "date": "2026-09-29",
+      "open": 132.75,
+      "high": 140.88,
+      "low": 131.2,
+      "close": 136.57,
+      "volume": 923536,
+      "trade_count": 22664,
+      "vwap": 135.602277
+    },
+    {
+      "date": "2026-09-30",
+      "open": 138.27,
+      "high": 151.4574,
+      "low": 136,
+      "close": 140.12,
+      "volume": 1924857,
+      "trade_count": 35309,
+      "vwap": 144.319306
+    },
+    {
+      "date": "2026-10-01",
+      "open": 138.23,
+      "high": 141.54,
+      "low": 132.04,
+      "close": 132.56,
+      "volume": 1090553,
+      "trade_count": 24517,
+      "vwap": 135.887154
+    },
+    {
+      "date": "2026-10-02",
+      "open": 135.52,
+      "high": 143.5,
+      "low": 134.45,
+      "close": 143.26,
+      "volume": 875777,
+      "trade_count": 20855,
+      "vwap": 140.927126
+    },
+    {
+      "date": "2026-10-05",
+      "open": 143,
+      "high": 156.49,
+      "low": 140.305,
+      "close": 154.08,
+      "volume": 1472913,
+      "trade_count": 28552,
+      "vwap": 150.535912
+    },
+    {
+      "date": "2026-10-06",
+      "open": 159.43,
+      "high": 166.475,
+      "low": 135.8,
+      "close": 137.28,
+      "volume": 2045223,
+      "trade_count": 40701,
+      "vwap": 145.991637
+    }
+  ],
+  "zero_trade_sessions": [
+    "2026-09-23"
+  ],
+  "price_asof_usd": 137.28,
+  "dv30_method": "MEDIAN_EXACTLY_30_COMPLETED_SESSIONS_CLOSE_X_VOLUME",
+  "dv30_median_usd": 100747722.23,
+  "hard_gates": {
+    "price_min_usd": 5,
+    "dv30_min_usd": 50000000
+  },
+  "gate_result": "PASS_PRICE_DV30_EVIDENCE",
+  "corporate_actions": {
+    "query_start": "2026-08-20",
+    "query_end": "2026-10-06",
+    "announcement_count": 0
+  },
+  "no_synthetic_bar": true,
+  "g9_authority": false,
+  "notes": [
+    "Historical SIP evidence only; does not satisfy live G9.",
+    "2026-09-23 is an official market session represented by Alpaca SIP as a zero-volume, zero-trade bar at close 108.52; it is retained rather than synthesized or dropped."
+  ]
+}
