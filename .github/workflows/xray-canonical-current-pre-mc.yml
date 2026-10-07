@@ -150,7 +150,7 @@ jobs:
               price_snapshot_integrity, bridge_refresh_relevant, deferred_bootstrap_artifact,
               publication_lag_artifact, publication_recheck,
               load_official_listing_registry, official_recent_listing_terminal,
-              load_c417_rallies_primary,
+              load_c417_rallies_primary, load_persistent_terminal_fail_overrides,
           )
 
           ptr=json.load(open("nasdaq-xray/chatgpt_canonical_state_v2.json"))
@@ -430,6 +430,8 @@ jobs:
               except Exception:
                   resolver_refresh=True
           bridge_refresh=False
+          persistent_terminal_fail_replay=False
+          persistent_terminal_fail_symbols=[]
           if active_completed_epoch and price_ok:
               try:
                   import glob,hashlib,pathlib
@@ -444,8 +446,18 @@ jobs:
                               break
                       except Exception:
                           pass
+                  persistent,_persistent_meta=load_persistent_terminal_fail_overrides(
+                      latest_completed,str(px.get("source_master_queue_hash") or "")
+                  )
+                  persistent_terminal_fail_symbols=sorted(
+                      set(persistent) & set(px.get("blocked_symbols") or [])
+                  )
+                  persistent_terminal_fail_replay=bool(persistent_terminal_fail_symbols)
+                  bridge_refresh=bool(bridge_refresh or persistent_terminal_fail_replay)
               except Exception:
                   bridge_refresh=False
+                  persistent_terminal_fail_replay=False
+                  persistent_terminal_fail_symbols=[]
           build=bool(not active_completed_epoch or bootstrap_rebuild or identity_replay)
           with open(os.environ["GITHUB_OUTPUT"],"a") as out:
               out.write(f"build={'true' if build else 'false'}\n")
@@ -463,6 +475,8 @@ jobs:
               out.write("official_listing_fail_only_symbols_csv="+",".join(official_listing_fail_only_symbols)+"\n")
               out.write(f"resolver_refresh={'true' if resolver_refresh else 'false'}\n")
               out.write(f"bridge_refresh={'true' if bridge_refresh else 'false'}\n")
+              out.write(f"persistent_terminal_fail_replay={'true' if persistent_terminal_fail_replay else 'false'}\n")
+              out.write("persistent_terminal_fail_symbols_csv="+",".join(persistent_terminal_fail_symbols)+"\n")
               out.write(f"latest_completed={latest_completed}\n")
               out.write(f"pointer_asof={pointer_asof}\n")
               out.write(f"recovery_asof={frozen_asof}\n")
@@ -489,6 +503,8 @@ jobs:
               "official_listing_fail_only_symbols":official_listing_fail_only_symbols,
               "resolver_refresh":resolver_refresh,
               "bridge_refresh":bridge_refresh,
+              "persistent_terminal_fail_replay":persistent_terminal_fail_replay,
+              "persistent_terminal_fail_symbols":persistent_terminal_fail_symbols,
               "price_ok":price_ok,
               "blocked_count":blocked_count,
               "block_recovery_attempted":block_recovery_attempted,
