@@ -39,17 +39,37 @@ def hash_lines(items):
     return hashlib.sha256("\n".join(items).encode()).hexdigest()
 
 def frozen_identity_partition_ok(ss):
-    """Validate PASS+UNKNOWN identity partition without promoting UNKNOWN into the queue."""
+    """Validate frozen PASS+UNKNOWN identity partitions without promoting UNKNOWN.
+
+    V2 used discovery_queue_total as the post-partition raw total.
+    V3 explicitly removes official blank-type rows before the PASS/UNKNOWN
+    partition, so discovery_queue_total is the pre-blank-exclusion total and
+    must equal raw_identity_total + official_blank_checks_excluded_count.
+    """
     try:
         q=list(ss.get("queue") or [])
         dm=ss.get("discovery_meta") or {}
         unknown=sorted(set(ss.get("identity_unknown_symbols") or []))
         detail=ss.get("identity_unknown_detail") or {}
         raw=int(ss.get("raw_identity_total",-1))
+        policy=str(ss.get("identity_partition_policy") or "")
+        dm_policy=str(dm.get("identity_partition_policy") or "")
+        if policy!=dm_policy:
+            return False
+        if policy=="MASTER_SPAC_UNKNOWN_PARTITION_V2_FROZEN_GUARD":
+            discovery_total_ok=(int(dm.get("discovery_queue_total",-1))==raw)
+        elif policy=="MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V3_FROZEN_GUARD":
+            blank_count=int(dm.get("official_blank_checks_excluded_count",-1))
+            blank_hash=str(dm.get("official_blank_checks_excluded_hash") or "")
+            discovery_total_ok=bool(
+                blank_count>=0
+                and bool(blank_hash)
+                and int(dm.get("discovery_queue_total",-1))==raw+blank_count
+            )
+        else:
+            return False
         return bool(
-          ss.get("identity_partition_policy")=="MASTER_SPAC_UNKNOWN_PARTITION_V2_FROZEN_GUARD"
-          and dm.get("identity_partition_policy")=="MASTER_SPAC_UNKNOWN_PARTITION_V2_FROZEN_GUARD"
-          and int(ss.get("queue_total",-1))==len(q)==len(set(q))
+          int(ss.get("queue_total",-1))==len(q)==len(set(q))
           and ss.get("queue_hash")==hash_lines(q)
           and set(detail)==set(unknown)
           and not (set(q)&set(unknown))
@@ -57,7 +77,7 @@ def frozen_identity_partition_ok(ss):
           and dm.get("identity_unknown_hash")==hash_lines(unknown)
           and raw==len(q)+len(unknown)
           and int(dm.get("raw_identity_total",-1))==raw
-          and int(dm.get("discovery_queue_total",-1))==raw
+          and discovery_total_ok
           and all((detail.get(x) or {}).get("unknown_never_pass") is True for x in unknown)
         )
     except Exception:
