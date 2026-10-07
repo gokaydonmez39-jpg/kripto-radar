@@ -358,6 +358,30 @@ def selftest() -> None:
         assert e.args and e.args[0][0] == "AMBIGUOUS_FULL_SCOPE_RESOLVER_HANDOFF"
     else:
         raise AssertionError("AMBIGUOUS_HANDOFF_MUST_FAIL")
+
+    # Regression: immutable but non-authoritative MC revisions still reserve
+    # their vN filenames. Allocation must scan the filesystem, not filtered rows.
+    allocator_price = {"asof_et": "2099-12-31"}
+    allocator_files = [
+        ROOT / "canonical_mc_bridge_20991231_c417_dv30_v1.json",
+        ROOT / "canonical_mc_bridge_20991231_c417_dv30_v3.json",
+    ]
+    for p in allocator_files:
+        p.unlink(missing_ok=True)
+    try:
+        for p in allocator_files:
+            p.write_text("{}\n")
+        next_path, next_version = next_successor_path(
+            allocator_price,
+            [{"file": allocator_files[0]}],
+        )
+        assert next_version == 4, (next_version, next_path)
+        assert next_path.name == "canonical_mc_bridge_20991231_c417_dv30_v4.json"
+        assert not next_path.exists()
+    finally:
+        for p in allocator_files:
+            p.unlink(missing_ok=True)
+
     print("MC_PROVENANCE_REBIND_PENDING_SELFTEST=PASS")
 
 
@@ -628,17 +652,26 @@ def select_active_mc(rows):
     return active[0]
 
 
-def next_successor_path(price: dict, rows) -> tuple[Path, int]:
+def next_successor_path(price: dict, rows=None) -> tuple[Path, int]:
+    """Allocate after every immutable same-ASOF revision, not only valid rows.
+
+    Invalid, stale, superseded, or otherwise non-authoritative immutable files
+    still reserve their revision number forever.  Filtering them out before
+    allocation can collide with an existing path and must never happen.
+    """
     stamp = price["asof_et"].replace("-", "")
-    versions = []
     rx = re.compile(rf"^canonical_mc_bridge_{stamp}_c417_dv30_v(\d+)\.json$")
-    for r in rows:
-        m = rx.match(r["file"].name)
+    versions = []
+    for p in ROOT.glob(f"canonical_mc_bridge_{stamp}_c417_dv30_v*.json"):
+        m = rx.match(p.name)
         if m:
             versions.append(int(m.group(1)))
-    assert versions
+    if not versions:
+        raise AssertionError("NO_EXISTING_MC_REVISION_FOR_SUCCESSOR")
     version = max(versions) + 1
-    return ROOT / f"canonical_mc_bridge_{stamp}_c417_dv30_v{version}.json", version
+    out = ROOT / f"canonical_mc_bridge_{stamp}_c417_dv30_v{version}.json"
+    assert not out.exists(), ("MC_SUCCESSOR_ALLOCATOR_COLLISION", relpath(out))
+    return out, version
 
 
 def build_successor_obj(predecessor: dict, predecessor_path: str, predecessor_blob: str,
