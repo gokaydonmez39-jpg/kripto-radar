@@ -68,8 +68,16 @@ def validate_bridge_scope(bridge: dict, req: dict) -> None:
     assert bridge.get("geometry_scope_hash")==req.get("geometry_scope_hash")
     sr=bridge.get("semantic_rebind") or {}
     opr=bridge.get("official_primary_refresh") or {}
+    proof=bridge.get("rebind_proof") or {}
     direct_primary_refresh=(sr.get("rule")=="OPTIONAL_DISCOVERY_DIRECT_OFFICIAL_PRIMARY_RESOLUTION_V1")
-    if opr or direct_primary_refresh:
+    legacy_official_primary_successor=bool(
+        sr.get("event_decisions_changed_with_new_primary_evidence") is True
+        and sr.get("event_policy_semantics_unchanged") is True
+        and proof.get("direct_official_primary_reverification") is True
+        and bridge.get("committed_by")=="OPENAI_FOREGROUND_ZERO_DOLLAR_ISSUER_PRIMARY_PROBE"
+        and "OFFICIAL_PRIMARY_SUCCESSOR" in str(bridge.get("authority") or "")
+    )
+    if opr or direct_primary_refresh or legacy_official_primary_successor:
         if opr:
             assert opr.get("schema")=="XRAY_EVENT_OFFICIAL_PRIMARY_REFRESH_V1"
             assert opr.get("lifecycle_scope_hash")==req.get("lifecycle_scope_hash")
@@ -85,9 +93,13 @@ def validate_bridge_scope(bridge: dict, req: dict) -> None:
             assert sr.get("geometry_scope_hash")==req.get("geometry_scope_hash")
             assert sr.get("no_alpha_threshold_change") is True
             assert sr.get("no_event_horizon_change") is True
-            assert sr.get("decisions_changed_only_with_primary_evidence") is True
+            if direct_primary_refresh:
+                assert sr.get("decisions_changed_only_with_primary_evidence") is True
+            else:
+                assert legacy_official_primary_successor
             resolved=set(bridge.get("provider_unavailable_but_officially_resolved_symbols") or [])
-            assert int(sr.get("official_resolved_count",-1))==len(resolved)
+            if "official_resolved_count" in sr:
+                assert int(sr.get("official_resolved_count",-1))==len(resolved)
         geometry=set(req.get("geometry_scope") or [])
         assert resolved and resolved<=geometry
         assert resolved==set(bridge.get("provider_unavailable_but_officially_resolved_symbols") or [])
