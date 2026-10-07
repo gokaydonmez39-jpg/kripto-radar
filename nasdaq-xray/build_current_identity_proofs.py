@@ -373,8 +373,21 @@ def valid_sec_spac_proof_row(v:dict,asof:str)->bool:
         return False
     if v.get("same_asof_revalidated_without_sec_network") is not True:
         return True
-    if v.get("revalidation_semantics")!="PRIOR_SEC_SIC6770_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS":
+    semantics=str(v.get("revalidation_semantics") or "")
+    allowed={
+      "PRIOR_SEC_SIC6770_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
+      "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
+    }
+    if semantics not in allowed:
         return False
+    if semantics.startswith("MANUAL_OFFICIAL_SEC_"):
+        expected_path=str(MANUAL_IDENTITY_SEED.relative_to(ROOT.parent)).replace("\\","/")
+        if (
+          v.get("manual_seed_registry_path")!=expected_path
+          or not MANUAL_IDENTITY_SEED.exists()
+          or v.get("manual_seed_registry_blob_sha")!=file_blob_sha(MANUAL_IDENTITY_SEED)
+        ):
+            return False
     source=str(v.get("source_url") or "")
     evidence=str(v.get("evidence_date") or "")
     footer=str(v.get("same_asof_nasdaq_directory_footer") or "")
