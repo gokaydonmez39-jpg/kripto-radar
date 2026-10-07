@@ -3,6 +3,7 @@ from __future__ import annotations
 import json, os, hashlib
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
+from datetime import datetime
 from price_dv30_phase import eval_one, expected30, sina, nasdaq, classify
 
 ROOT=Path(__file__).resolve().parent
@@ -18,6 +19,7 @@ HARD_PRICE=5.0
 HARD_DV30=50_000_000.0
 RESOLVER_REQUEST=Path(os.getenv("XRAY_CURRENT_RESOLVER_REQUEST",str(ROOT/"canonical_current_resolver_request.json")))
 RESOLVER_CHUNK_MANIFEST=Path(os.getenv("XRAY_CURRENT_RESOLVER_CHUNK_MANIFEST",str(ROOT/"canonical_current_resolver_chunk_manifest.json")))
+OFFICIAL_GUARD=Path(os.getenv("XRAY_OFFICIAL_SOURCE_GUARD",str(ROOT/"canonical_official_source_guard.json")))
 
 
 def git_blob_sha(path:Path)->str:
@@ -877,6 +879,83 @@ def price_decision_semantic_view(obj):
     }
 
 
+
+def _parse_nasdaq_et(date_text,time_text):
+    d=str(date_text or "").strip()
+    t=str(time_text or "").strip()
+    if not d:
+        return None
+    if not t:
+        t="00:00:00"
+    for fmt in ("%m/%d/%Y %H:%M:%S.%f","%m/%d/%Y %H:%M:%S","%Y-%m-%d %H:%M:%S.%f","%Y-%m-%d %H:%M:%S"):
+        try:
+            return datetime.strptime(d+" "+t,fmt)
+        except ValueError:
+            pass
+    return None
+
+
+def official_full_session_halt_terminal(guard,sym,asof):
+    """Return fail-only official Nasdaq evidence when the entire ASOF RTH session was halted.
+
+    This function can never create PASS. It only recognizes an existing
+    BLOCK_CURRENT_RUN whose official Nasdaq halt began no later than 09:30 ET
+    on ASOF and whose scheduled resumption is absent or strictly after 16:00 ET.
+    """
+    try:
+        if not isinstance(guard,dict) or guard.get("schema")!="XRAY_OFFICIAL_SOURCE_GUARD_V1":
+            return None
+        th=((guard.get("sources") or {}).get("trade_halts") or {})
+        if th.get("status")!="PASS":
+            return None
+        asof_open=datetime.strptime(str(asof)+" 09:30:00","%Y-%m-%d %H:%M:%S")
+        asof_close=datetime.strptime(str(asof)+" 16:00:00","%Y-%m-%d %H:%M:%S")
+        for row in th.get("items") or []:
+            if str(row.get("IssueSymbol") or "").strip().upper()!=str(sym).upper():
+                continue
+            if str(row.get("Market") or "").strip().upper()!="NASDAQ":
+                continue
+            started=_parse_nasdaq_et(row.get("HaltDate"),row.get("HaltTime"))
+            if started is None or started>asof_open:
+                continue
+            rd=str(row.get("ResumptionDate") or "").strip()
+            rt=str(row.get("ResumptionTradeTime") or "").strip()
+            resumed=_parse_nasdaq_et(rd,rt) if rd else None
+            if resumed is not None and resumed<=asof_close:
+                continue
+            return {
+              "reason":"OFFICIAL_NASDAQ_FULL_SESSION_HALT_NO_ASOF_BAR",
+              "proof":"NASDAQ_TRADER_FULL_SESSION_HALT",
+              "source":"NASDAQ_TRADER_OFFICIAL_HALT_RSS",
+              "source_url":str(th.get("url") or ""),
+              "halt_date":str(row.get("HaltDate") or ""),
+              "halt_time_et":str(row.get("HaltTime") or ""),
+              "reason_code":str(row.get("ReasonCode") or ""),
+              "resumption_date":rd,
+              "resumption_trade_time_et":rt,
+              "market":"NASDAQ",
+              "asof_et":str(asof),
+              "no_synthetic_bar":True,
+              "decision_direction":"FAIL_ONLY_NEVER_PASS",
+            }
+        return None
+    except Exception:
+        return None
+
+
+def load_official_halt_guard():
+    try:
+        guard=json.loads(OFFICIAL_GUARD.read_text())
+        return guard,{
+          "status":"PASS",
+          "path":str(OFFICIAL_GUARD),
+          "content_sha256":hashlib.sha256(OFFICIAL_GUARD.read_bytes()).hexdigest(),
+          "source_status":((guard.get("sources") or {}).get("trade_halts") or {}).get("status"),
+        }
+    except Exception as e:
+        return None,{"status":"UNKNOWN","reason":type(e).__name__+":"+str(e)[:160]}
+
+
 def main():
     s=json.loads(INPUT.read_text())
     asof=s.get("asof_et")
@@ -1006,6 +1085,25 @@ def main():
           "provenance":"AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
         }
 
+    # Official Nasdaq full-session halts are terminal fail-only evidence for
+    # the ASOF price gate. They resolve provider-coverage ambiguity without
+    # manufacturing a bar or changing the PRICE/DV30 thresholds.
+    official_guard,official_halt_guard_meta=load_official_halt_guard()
+    official_halt_terminalized=[]
+    if official_guard is not None:
+        for sym,row in sorted(results.items()):
+            if row.get("status")!="BLOCK_CURRENT_RUN":
+                continue
+            ev=official_full_session_halt_terminal(official_guard,sym,asof)
+            if not ev:
+                continue
+            results[sym]={
+              "status":"FAIL_PRICE_NO_ASOF_BAR",
+              "info":ev,
+              "provenance":"OFFICIAL_NASDAQ_FULL_SESSION_HALT_FAIL_ONLY",
+            }
+            official_halt_terminalized.append(sym)
+
     # Resolver BLOCK_CURRENT_RUN is fail-closed, but it must not silently
     # disappear from completeness. Re-evaluate non-halt blocks through the
     # independent zero-dollar exact30 chain (Sina -> Nasdaq official -> Yahoo
@@ -1060,6 +1158,9 @@ def main():
       "block_recovery_input_count":len(blocked_before),
       "block_recovery_resolved_count":len(recovered_blocks),
       "block_recovery_resolved_symbols":sorted(recovered_blocks),
+      "official_halt_guard_meta":official_halt_guard_meta,
+      "official_halt_terminalized_count":len(official_halt_terminalized),
+      "official_halt_terminalized_symbols":sorted(official_halt_terminalized),
       "pass_count":len(passes),"pass_symbols":passes,
       "pass_hash":hashlib.sha256("\n".join(passes).encode()).hexdigest(),
       "results":dict(sorted(results.items()))
@@ -1070,5 +1171,5 @@ def main():
         byte_stable_preserved=True
     else:
         OUT.write_text(json.dumps(obj,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
-    print(json.dumps({"reused":obj["reused_terminal_count"],"reevaluated":obj["reevaluated_count"],"policy_replay":FORCE_POLICY_REPLAY,"policy_replay_input_count":len(policy_redo),"counts":obj["counts"],"unknown_count":obj["unknown_count"],"blocked_count":obj["blocked_count"],"block_recovery_input":obj["block_recovery_input_count"],"block_recovery_resolved":obj["block_recovery_resolved_count"],"pass_count":obj["pass_count"],"pass_hash":obj["pass_hash"],"byte_stable_preserved":byte_stable_preserved},sort_keys=True))
+    print(json.dumps({"reused":obj["reused_terminal_count"],"reevaluated":obj["reevaluated_count"],"policy_replay":FORCE_POLICY_REPLAY,"policy_replay_input_count":len(policy_redo),"counts":obj["counts"],"unknown_count":obj["unknown_count"],"blocked_count":obj["blocked_count"],"block_recovery_input":obj["block_recovery_input_count"],"block_recovery_resolved":obj["block_recovery_resolved_count"],"official_halt_terminalized":obj.get("official_halt_terminalized_count",0),"pass_count":obj["pass_count"],"pass_hash":obj["pass_hash"],"byte_stable_preserved":byte_stable_preserved},sort_keys=True))
 if __name__=="__main__":main()
