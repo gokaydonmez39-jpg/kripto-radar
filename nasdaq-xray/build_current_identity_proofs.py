@@ -16,6 +16,7 @@ from pathlib import Path
 import pandas_market_calendars as mcal
 
 ROOT=Path(__file__).resolve().parent
+MANUAL_IDENTITY_SEED=ROOT/"master_sec_identity_manual_seed_registry.json"
 NASDAQ_DIR="https://www.nasdaqtrader.com/dynamic/SymDir/nasdaqlisted.txt"
 NASDAQ_SCREENER="https://api.nasdaq.com/api/screener/stocks"
 SEC_TICKERS="https://www.sec.gov/files/company_tickers.json"
@@ -218,6 +219,68 @@ def cik_from_prior_row(row:dict):
             return int(m.group(1))
     return None
 
+def file_blob_sha(path:Path)->str:
+    b=path.read_bytes()
+    return hashlib.sha1(f"blob {len(b)}\0".encode()+b).hexdigest()
+
+def manual_identity_seed_registry(asof:str,names:dict)->tuple[dict,dict]:
+    """Read bounded official-SEC seed evidence; seed data never creates alpha PASS."""
+    if not MANUAL_IDENTITY_SEED.exists():
+        return {},{
+          "path":str(MANUAL_IDENTITY_SEED.relative_to(ROOT.parent)).replace("\\","/"),
+          "blob_sha":None,"record_count":0,
+        }
+    j=json.loads(MANUAL_IDENTITY_SEED.read_text(encoding="utf-8"))
+    assert j.get("schema")=="XRAY_MASTER_SEC_IDENTITY_MANUAL_SEED_REGISTRY_V1"
+    assert j.get("execution")=="NONE" and j.get("real_money")=="NO-GO"
+    assert j.get("unknown_never_pass") is True
+    assert j.get("authority")=="OFFICIAL_SEC_EVIDENCE_DISCOVERY_SEED_ONLY"
+    rows={}
+    for sym,row in sorted((j.get("records") or {}).items()):
+        sym=str(sym).upper().strip()
+        if sym not in names or not isinstance(row,dict):
+            continue
+        current_name=str(names.get(sym) or "").strip()
+        if not current_name or not SPAC_SUSPECT_RE.search(current_name):
+            continue
+        source=str(row.get("source_url") or "")
+        evidence=str(row.get("evidence_date") or "")
+        cik=str(row.get("cik") or "").strip()
+        try:sic=int(row.get("sic"))
+        except Exception:continue
+        is_blank=row.get("is_blank_check")
+        if (
+          not source.startswith("https://www.sec.gov/")
+          or not re.fullmatch(r"20\d{2}-\d{2}-\d{2}",evidence)
+          or evidence>asof
+          or not re.fullmatch(r"\d{10}",cik)
+          or not isinstance(is_blank,bool)
+          or (is_blank and sic!=6770)
+          or ((not is_blank) and sic==6770)
+        ):
+            continue
+        try:
+            age=(datetime.fromisoformat(asof)-datetime.fromisoformat(evidence)).days
+        except Exception:
+            continue
+        if age<0 or age>120:
+            continue
+        out=dict(row)
+        out["cik"]=cik
+        out["sic"]=sic
+        out["is_blank_check"]=is_blank
+        out["same_asof_nasdaq_security_name"]=current_name
+        out["manual_seed_registry_path"]=str(MANUAL_IDENTITY_SEED.relative_to(ROOT.parent)).replace("\\","/")
+        out["manual_seed_registry_blob_sha"]=file_blob_sha(MANUAL_IDENTITY_SEED)
+        out["seed_semantics"]="OFFICIAL_SEC_STATIC_EVIDENCE_PLUS_EXACT_ASOF_NASDAQ_IDENTITY;NO_ALPHA_PASS"
+        rows[sym]=out
+    meta={
+      "path":str(MANUAL_IDENTITY_SEED.relative_to(ROOT.parent)).replace("\\","/"),
+      "blob_sha":file_blob_sha(MANUAL_IDENTITY_SEED),
+      "record_count":len(rows),
+    }
+    return rows,meta
+
 def latest_filing_date(sub:dict,asof:str):
     recent=((sub.get("filings") or {}).get("recent") or {})
     dates=[str(x) for x in (recent.get("filingDate") or []) if str(x)<=asof and re.fullmatch(r"20\d{2}-\d{2}-\d{2}",str(x))]
@@ -354,9 +417,16 @@ def sec_discovery_coverage_complete(sec_path:Path,asof:str)->bool:
         j=json.loads(sec_path.read_text(encoding="utf-8"))
         cov=j.get("discovery_coverage") or {}
         unresolved=sorted(set(cov.get("unresolved_current_suspects") or []))
+        _,seed_meta=manual_identity_seed_registry(asof,{})
+        # With names={} the loader intentionally returns no usable rows, but the
+        # blob/path binding remains exact-current and invalidates stale NOOP state.
+        current_seed_blob=(file_blob_sha(MANUAL_IDENTITY_SEED) if MANUAL_IDENTITY_SEED.exists() else None)
+        current_seed_path=str(MANUAL_IDENTITY_SEED.relative_to(ROOT.parent)).replace("\\","/")
         return bool(
           j.get("asof_et")==asof
           and j.get("discovery_version")==IDENTITY_DISCOVERY_VERSION
+          and cov.get("manual_seed_registry_path")==current_seed_path
+          and cov.get("manual_seed_registry_blob_sha")==current_seed_blob
           and cov.get("coverage_complete") is True
           and int(cov.get("unresolved_current_suspect_count",-1))==0
           and not unresolved
@@ -538,8 +608,42 @@ def main():
       if str(industries.get(sym) or "").strip().lower()!="blank checks"
       and bool(SPAC_SUSPECT_RE.search(str(name or "")))
     )
+    manual_seeds,manual_seed_meta=manual_identity_seed_registry(asof,names)
     for sym in current_suspects:
         if sym in operating:
+            continue
+        manual=manual_seeds.get(sym)
+        if manual is not None:
+            if manual.get("is_blank_check") is True:
+                discovered_blank[sym]={
+                  "cik":manual["cik"],
+                  "sic":manual["sic"],
+                  "classification":str(manual.get("classification") or "Blank Checks"),
+                  "source_url":manual["source_url"],
+                  "evidence_date":manual["evidence_date"],
+                  "same_asof_revalidated_without_sec_network":True,
+                  "revalidation_semantics":"MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
+                  "same_asof_nasdaq_security_name":manual["same_asof_nasdaq_security_name"],
+                  "same_asof_nasdaq_screener_industry":str(industries.get(sym) or ""),
+                  "same_asof_nasdaq_directory_footer":footer,
+                  "manual_seed_registry_path":manual["manual_seed_registry_path"],
+                  "manual_seed_registry_blob_sha":manual["manual_seed_registry_blob_sha"],
+                }
+            else:
+                operating[sym]={
+                  "security_name":names[sym],
+                  "evidence_date":manual["evidence_date"],
+                  "reason":"SAME_ASOF_OFFICIAL_SEC_MANUAL_SEED_NON_BLANK_CHECK",
+                  "source_url":manual["source_url"],
+                  "cik":manual["cik"],
+                  "sic":manual["sic"],
+                  "classification":manual.get("classification"),
+                  "same_asof_revalidated_without_sec_network":True,
+                  "revalidation_semantics":"MANUAL_OFFICIAL_SEC_NONBLANK_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_IDENTITY;NO_ALPHA_PASS",
+                  "manual_seed_registry_path":manual["manual_seed_registry_path"],
+                  "manual_seed_registry_blob_sha":manual["manual_seed_registry_blob_sha"],
+                  "discovery_version":IDENTITY_DISCOVERY_VERSION,
+                }
             continue
         cik=current_cik_map.get(sym)
         if cik is None:
@@ -584,6 +688,7 @@ def main():
       "restore_to_asof":{},
       "remove_from_asof":{},
       "operating_overrides":operating,
+      "manual_seed_registry":manual_seed_meta,
     }
     identity_path.write_text(json.dumps(identity,ensure_ascii=False,sort_keys=False,indent=2)+"\n",encoding="utf-8")
 
@@ -624,6 +729,9 @@ def main():
           "applicability":"EXACT_ASOF_ONLY_NO_FORWARD_CARRY",
           "discovery_version":IDENTITY_DISCOVERY_VERSION,
           "discovery_coverage":{
+            "manual_seed_registry_path":manual_seed_meta["path"],
+            "manual_seed_registry_blob_sha":manual_seed_meta["blob_sha"],
+            "manual_seed_registry_record_count":manual_seed_meta["record_count"],
             "current_suspect_count":len(current_suspects),
             "resolved_current_suspect_count":len(current_suspects)-len(unresolved_sec_spac),
             "unresolved_current_suspect_count":len(unresolved_sec_spac),
@@ -647,6 +755,8 @@ def main():
       "directory_footer":footer,
       "identity_path":identity_path.name,
       "operating_override_count":len(operating),
+      "manual_seed_registry_record_count":manual_seed_meta["record_count"],
+      "manual_seed_registry_blob_sha":manual_seed_meta["blob_sha"],
       "sec_path":sec_path.name if proofs else None,
       "sec_spac_count":len(proofs),
       "sec_spac_discovered_current_count":len(discovered_blank),
