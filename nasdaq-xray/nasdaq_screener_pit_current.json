@@ -10,7 +10,7 @@
   "production_mc_authority_changed": false,
   "real_money": "NO-GO",
   "reason_counts": {
-    "CAPTURE_NOT_SAME_ASOF_POST_CLOSE": 509
+    "CAPTURE_NOT_SAME_ASOF_POST_CLOSE": 508
   },
   "records": {
     "AAL": {
@@ -2635,19 +2635,6 @@
       },
       "nasdaq_lastsale": 347.68,
       "nasdaq_market_cap_usd": 4252126400000.0,
-      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
-      "shadow_eligible": false,
-      "status": "UNKNOWN"
-    },
-    "GRAL": {
-      "canonical_rth_close": 137.28,
-      "close_match": true,
-      "close_match_meta": {
-        "abs_diff": 0.0,
-        "tolerance": 0.02
-      },
-      "nasdaq_lastsale": 137.28,
-      "nasdaq_market_cap_usd": 6131780604.0,
       "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
       "shadow_eligible": false,
       "status": "UNKNOWN"
@@ -6631,14 +6618,14 @@
       "status": "UNKNOWN"
     }
   },
-  "retrieved_at_et": "2026-10-07T11:55:31.891154-04:00",
-  "retrieved_at_utc": "2026-10-07T15:55:31.891154+00:00",
+  "retrieved_at_et": "2026-10-07T15:15:44.711440-04:00",
+  "retrieved_at_utc": "2026-10-07T19:15:44.711440+00:00",
   "same_session_post_close": false,
   "schema": "XRAY_NASDAQ_SCREENER_PIT_SHADOW_V1",
-  "scope_count": 509,
+  "scope_count": 508,
   "scope_kind": "CANONICAL_PRICE_DV30_PASS_ONLY",
   "source": "NASDAQ_PUBLIC_SCREENER",
   "source_url": "https://api.nasdaq.com/api/screener/stocks?tableonly=true&limit=25&offset=0&exchange=NASDAQ&download=true",
-  "unknown_count": 509,
+  "unknown_count": 508,
   "unknown_never_pass": true
 }
