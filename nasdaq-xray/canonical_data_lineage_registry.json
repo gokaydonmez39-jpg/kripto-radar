@@ -3,14 +3,14 @@
   "configured_provider_not_actual_provider": true,
   "execution": "NONE",
   "gate_unknowns_are_preserved": true,
-  "generated_at_utc": "2026-10-06T23:17:12.055648+00:00",
+  "generated_at_utc": "2026-10-07T14:51:51.125296+00:00",
   "incomplete_receipt_count": 0,
   "note": "COMPLETE_LINEAGE_SCHEMA means every tracked field has an explicit provenance/entitlement/license classification; it does not convert blocked G9 or ACCOUNT into PASS.",
   "real_money": "NO-GO",
   "records": [
     {
       "artifact": "canonical_current_master_manifest.json",
-      "artifact_sha256": "d399b64a97658ef70039c84bd44943f77c26af244d5a25a98d660e733a4deed4",
+      "artifact_sha256": "8f6391c57bd0a489f630ebbe13fec080a73b6a545725f2788491560afca9f1d1",
       "authority_class": "T0_EXCHANGE_IDENTITY",
       "endpoint": "NASDAQTRADER_SYMBOL_DIRECTORY",
       "entitlement_class": "OFFICIAL_PUBLIC_CURRENT_DAY_DATA",
@@ -70,7 +70,7 @@
     },
     {
       "artifact": "canonical_current_event_state.json",
-      "artifact_sha256": "730df0a65f25ccc49ad0cf53c5ef9d29ca0e68103ba5c2540690e1bba90b11aa",
+      "artifact_sha256": "7f048e6d5b4c6cca0fe5c62eebff7d9fa12ba25921db722593d297496785d82a",
       "authority_class": "CANONICAL_EVENT_TASKSTATE_BRIDGE_NORMALIZED",
       "endpoint": "SEC_ISSUER_IR_NASDAQ_OFFICIAL_RESOLUTION_CHAIN",
       "entitlement_class": "PUBLIC_OFFICIAL_WITH_FAIR_ACCESS_OR_SOURCE_CADENCE",
