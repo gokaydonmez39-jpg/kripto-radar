@@ -185,14 +185,29 @@ def price_snapshot_integrity(px,frozen_asof):
         return False
 
 
-def load_c417_rallies_primary(asof,queue=None):
-    """Load the frozen C4.17 Rallies exact30 primary classification for ASOF.
+def c417_rallies_primary_path(asof):
+    """Return the highest immutable same-ASOF Rallies classification successor."""
+    stem=f"rallies_dv30_{str(asof).replace('-','')}_classification"
+    base=ROOT/"evidence"/f"{stem}.json"
+    candidates=[(1,base)] if base.is_file() else []
+    for p in (ROOT/"evidence").glob(f"{stem}_v*.json"):
+        try:
+            version=int(p.stem.rsplit("_v",1)[1])
+        except Exception:
+            continue
+        candidates.append((version,p))
+    if not candidates:
+        return base
+    return max(candidates,key=lambda x:x[0])[1]
 
-    The classification may cover a superset of the current identity queue
-    because identity exclusions can be tightened later in the same frozen
-    epoch. Current queue coverage must nevertheless be complete.
+
+def load_c417_rallies_primary(asof,queue=None):
+    """Load the highest immutable C4.17 Rallies exact30 authority for ASOF.
+
+    Same-ASOF successors never overwrite predecessors. Any requested current
+    queue must be fully covered before the authority can materialize PRICE/DV30.
     """
-    path=ROOT/"evidence"/f"rallies_dv30_{str(asof).replace('-','')}_classification.json"
+    path=c417_rallies_primary_path(asof)
     try:
         obj=json.loads(path.read_text())
         if not (
