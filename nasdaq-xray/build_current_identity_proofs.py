@@ -22,6 +22,7 @@ SEC_SUBMISSIONS="https://data.sec.gov/submissions"
 SEC_UA=os.getenv("XRAY_SEC_USER_AGENT","NASDAQ-SWING-XRAY research bot; xray-dataplane-bot@users.noreply.github.com")
 UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/126 Safari/537.36"
 TASK="6a825366222081918997094d76e6ae46"
+IDENTITY_DISCOVERY_VERSION="SEC_CURRENT_SUSPECT_DISCOVERY_V2"
 STAMP_RE=re.compile(r"^(master_(?:asof_identity|sec_spac)_proof_)(\d{8})\.json$")
 FOOTER_RE=re.compile(r"^File Creation Time:\s*(\d{2})(\d{2})(\d{4})")
 
@@ -151,6 +152,42 @@ def prior_blank_fallback(sym,old,asof,names,industries):
 def load_json_url(url:str):
     return json.loads(request_bytes(url,SEC_UA,35).decode("utf-8"))
 
+def sec_ticker_cik_map():
+    """Current SEC ticker->CIK discovery; evidence routing only, never alpha authority."""
+    raw=load_json_url(SEC_TICKERS)
+    rows=raw.values() if isinstance(raw,dict) else raw
+    out={}
+    for row in rows or []:
+        if not isinstance(row,dict):continue
+        sym=str(row.get("ticker") or "").strip().upper()
+        try:cik=int(row.get("cik_str"))
+        except Exception:continue
+        if sym and cik>0:out[sym]=cik
+    return out
+
+def sec_current_classification(sym:str,asof:str,cik:int|None):
+    """One same-run SEC submissions read returning blank/nonblank classification."""
+    if cik is None:return None
+    sub=load_json_url(f"{SEC_SUBMISSIONS}/CIK{int(cik):010d}.json")
+    tickers=[str(x).strip().upper() for x in (sub.get("tickers") or [])]
+    if str(sym).upper() not in tickers:return None
+    try:sic=int(str(sub.get("sic") or "-1").strip())
+    except Exception:sic=-1
+    desc=str(sub.get("sicDescription") or "").strip()
+    evidence=latest_filing_date(sub,asof)
+    if not evidence:return None
+    is_blank=(sic==6770 or desc.lower()=="blank checks")
+    return {
+      "cik":f"{int(cik):010d}",
+      "sic":sic,
+      "classification":"Blank Checks" if is_blank else desc,
+      "source_url":f"https://www.sec.gov/edgar/browse/?CIK={int(cik)}",
+      "evidence_date":evidence,
+      "is_blank_check":bool(is_blank),
+      "same_asof_revalidated_without_sec_network":False,
+      "discovery_version":IDENTITY_DISCOVERY_VERSION,
+    }
+
 def latest_prior(prefix:str,asof:str):
     best=None
     for p in ROOT.glob(prefix+"*.json"):
@@ -259,6 +296,7 @@ def validate_existing_identity(path:Path,asof:str)->bool:
           and j.get("unknown_never_pass") is True
           and j.get("authority")=="NASDAQTRADER_SEC_EXACT_ASOF_IDENTITY_RECONCILIATION"
           and j.get("applicability")=="EXACT_ASOF_ONLY_NO_FORWARD_CARRY"
+          and j.get("discovery_version")==IDENTITY_DISCOVERY_VERSION
           and all(isinstance(j.get(k) or {},dict) for k in ("restore_to_asof","remove_from_asof","operating_overrides"))
         )
     except Exception:
@@ -309,6 +347,7 @@ def main():
 
     industries=official_screener_industries()
     sec_network_error=None
+    sec_discovery_errors={}
     operating={}
     for sym,old in sorted(operating_seed.items()):
         if sym not in names:
@@ -335,12 +374,59 @@ def main():
             raise RuntimeError("OPERATING_OVERRIDE_REVALIDATION_FAILED:"+sym)
         operating[sym]=fallback
 
+    # Discover CURRENT same-ASOF SPAC suspects, not only prior-day proof seeds.
+    # This closes the seed=0 deadlock while remaining fail-closed: only SEC
+    # submissions with the same ticker and a filing date <= ASOF can classify.
+    discovered_blank={}
+    unresolved_current_suspects=[]
+    try:
+        current_cik_map=sec_ticker_cik_map()
+    except Exception as e:
+        current_cik_map={}
+        sec_network_error=sec_network_error or f"{type(e).__name__}:{str(e)[:200]}"
+    current_suspects=sorted(
+      sym for sym,name in names.items()
+      if str(industries.get(sym) or "").strip().lower()=="blank checks"
+      or bool(re.search(r"\bacquisition\b|\bspac\b|\bblank[ -]?check\b",str(name or ""),re.I))
+    )
+    for sym in current_suspects:
+        if sym in operating:
+            continue
+        cik=current_cik_map.get(sym)
+        if cik is None:
+            unresolved_current_suspects.append(sym)
+            continue
+        try:
+            row=sec_current_classification(sym,asof,cik)
+        except Exception as e:
+            row=None
+            sec_discovery_errors[sym]=f"{type(e).__name__}:{str(e)[:160]}"
+            sec_network_error=sec_network_error or sec_discovery_errors[sym]
+        if row is None:
+            unresolved_current_suspects.append(sym)
+            continue
+        if row.get("is_blank_check") is True:
+            discovered_blank[sym]={k:v for k,v in row.items() if k!="is_blank_check"}
+        else:
+            operating[sym]={
+              "security_name":names[sym],
+              "evidence_date":row["evidence_date"],
+              "reason":"SAME_RUN_SEC_CURRENT_NON_BLANK_CHECK_DISCOVERY",
+              "source_url":row["source_url"],
+              "cik":row["cik"],
+              "sic":row["sic"],
+              "classification":row.get("classification"),
+              "same_asof_revalidated_without_sec_network":False,
+              "discovery_version":IDENTITY_DISCOVERY_VERSION,
+            }
+
     identity={
       "schema":"XRAY_MASTER_ASOF_IDENTITY_PROOF_V1",
       "asof_et":asof,
       "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
       "authority":"NASDAQTRADER_SEC_EXACT_ASOF_IDENTITY_RECONCILIATION",
       "applicability":"EXACT_ASOF_ONLY_NO_FORWARD_CARRY",
+      "discovery_version":IDENTITY_DISCOVERY_VERSION,
       "source_directory_footer":footer,
       "source_directory_date":footer_date,
       "same_asof_directory_is_membership_authority":True,
@@ -350,9 +436,11 @@ def main():
     }
     identity_path.write_text(json.dumps(identity,ensure_ascii=False,sort_keys=False,indent=2)+"\n",encoding="utf-8")
 
-    proofs={}
-    unresolved_sec_spac=[]
+    proofs=dict(discovered_blank)
+    unresolved_sec_spac=list(unresolved_current_suspects)
     for sym,old in sorted(blank_seed.items()):
+        if sym in proofs or sym in operating:
+            continue
         if sym not in names:
             continue
         cik=cik_from_prior_row(old)
@@ -393,7 +481,11 @@ def main():
       "operating_override_count":len(operating),
       "sec_path":sec_path.name if proofs else None,
       "sec_spac_count":len(proofs),
-      "sec_spac_unresolved_reentered_queue":sorted(unresolved_sec_spac),
+      "sec_spac_discovered_current_count":len(discovered_blank),
+      "operating_discovered_current_count":sum(1 for v in operating.values() if (v or {}).get("reason")=="SAME_RUN_SEC_CURRENT_NON_BLANK_CHECK_DISCOVERY"),
+      "current_suspect_count":len(current_suspects),
+      "sec_spac_unresolved_reentered_queue":sorted(set(unresolved_sec_spac)),
+      "sec_discovery_error_count":len(sec_discovery_errors),
       "forward_carry":False,
       "sec_network_error":sec_network_error,
       "same_asof_nasdaq_screener_fallback_used":bool(sec_network_error),
