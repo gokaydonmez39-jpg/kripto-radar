@@ -259,11 +259,12 @@ def apply_c417_rallies_primary_partition(results,primary,queue):
     bc=primary.get("block_current_run") or {}
     universe=set(fp)|set(fd)|set(pp)|set(bc)
     current=set(queue or [])
-    if not current or not current.issubset(universe):
-        raise RuntimeError("C417_RALLIES_PRIMARY_CURRENT_QUEUE_COVERAGE")
+    if not current:
+        raise RuntimeError("C417_RALLIES_PRIMARY_CURRENT_QUEUE_EMPTY")
+    covered=current & universe
     source="RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
     changed=[]
-    for sym in sorted(current):
+    for sym in sorted(covered):
         if sym in fp:
             val=fp[sym] if isinstance(fp[sym],dict) else {}
             px=num(val.get("asof_close"))
@@ -1265,7 +1266,12 @@ def main():
         old=prior["results"]
         baseline_source="CURRENT_PRICE_ARTIFACT" if USE_CURRENT_BASELINE else "PRIOR_PRICE_ARTIFACT"
     results={};redo=[];policy_redo=set()
-    rallies_primary,rallies_primary_meta=load_c417_rallies_primary(asof,queue)
+    # Validate the frozen primary as an immutable authority artifact, but do
+    # not require it to cover newly admitted identity survivors that never
+    # belonged to the frozen PRICE resolver scope. Uncovered names stay
+    # fail-closed under the live zero-dollar chain and can never gain PASS via
+    # the primary materializer.
+    rallies_primary,rallies_primary_meta=load_c417_rallies_primary(asof)
     rallies_primary_pass=set((rallies_primary or {}).get("pass_price_dv30",{}).keys())
     for sym in queue:
         r=old[sym];st=r.get("status");info=r.get("info")
@@ -1450,6 +1456,14 @@ def main():
       "c417_rallies_primary_meta":rallies_primary_meta,
       "c417_rallies_primary_materialized_count":len(rallies_primary_materialized),
       "c417_rallies_primary_materialized_symbols":sorted(rallies_primary_materialized),
+      "c417_rallies_primary_current_queue_uncovered_symbols":sorted(
+          set(queue)-(
+              set((rallies_primary or {}).get("fail_price",{}))
+              | set((rallies_primary or {}).get("fail_dv30",{}))
+              | set((rallies_primary or {}).get("pass_price_dv30",{}))
+              | set((rallies_primary or {}).get("block_current_run",{}))
+          )
+      ),
       "c417_rallies_primary_pass_veto_count":len(rallies_primary_pass_vetoed),
       "c417_rallies_primary_pass_veto_symbols":sorted(rallies_primary_pass_vetoed),
       "c417_rallies_primary_post_recovery_veto_count":len(rallies_primary_post_recovery_vetoed),
