@@ -6,6 +6,7 @@ import json
 import os
 import re
 import subprocess
+import sys
 from copy import deepcopy
 from pathlib import Path
 
@@ -131,6 +132,28 @@ def current_settlement_witness(request: dict, master: dict, price: dict,
 
 
 
+def full_scope_price_pending_reason(price: dict) -> str | None:
+    """Return a fail-closed pending reason while current PRICE/DV30 is unresolved."""
+    unknown = int(price.get("unknown_count", len(price.get("unknown_symbols") or [])))
+    if unknown != len(price.get("unknown_symbols") or []):
+        raise AssertionError("PRICE_UNKNOWN_COUNT_MISMATCH")
+    if unknown:
+        return "PRICE_DV30_UNKNOWN"
+    return None
+
+
+def selftest() -> None:
+    assert full_scope_price_pending_reason({"unknown_count": 0, "unknown_symbols": []}) is None
+    assert full_scope_price_pending_reason({"unknown_count": 1, "unknown_symbols": ["GRAL"]}) == "PRICE_DV30_UNKNOWN"
+    try:
+        full_scope_price_pending_reason({"unknown_count": 2, "unknown_symbols": ["GRAL"]})
+    except AssertionError as e:
+        assert str(e) == "PRICE_UNKNOWN_COUNT_MISMATCH"
+    else:
+        raise AssertionError("MISMATCH_MUST_FAIL_CLOSED")
+    print("MC_PROVENANCE_REBIND_PENDING_SELFTEST=PASS")
+
+
 def current_full_scope_resolver_handoff(master: dict, price: dict, request: dict) -> tuple[str, str]:
     """Select one immutable full-scope MC handoff authority.
 
@@ -145,7 +168,8 @@ def current_full_scope_resolver_handoff(master: dict, price: dict, request: dict
     current_request_blob = blob_sha(REQUEST)
     assert request.get("source_price_path") == PRICE_REL
     assert request.get("source_price_blob_sha") == current_price_blob
-    assert int(price.get("unknown_count", -1)) == 0
+    if full_scope_price_pending_reason(price) is not None:
+        raise RuntimeError("PRICE_DV30_UNKNOWN_PENDING")
 
     current_pass = set(price.get("pass_symbols") or [])
     current_blocked = set(price.get("blocked_symbols") or [])
@@ -451,6 +475,15 @@ def main() -> None:
     request = json.loads(REQUEST.read_text())
     pass_symbols, pass_hash = validate_price(price, master)
     current_price_blob = blob_sha(PRICE)
+    pending_reason = full_scope_price_pending_reason(price)
+    if pending_reason is not None:
+        print("ready=false")
+        print("created=false")
+        print("pending_reason=" + pending_reason)
+        print("unknown_count=" + str(int(price.get("unknown_count", 0))))
+        print("unknown_symbols=" + ",".join(sorted(price.get("unknown_symbols") or [])))
+        print("reason=UPSTREAM_PRICE_DV30_UNKNOWN_FAIL_CLOSED")
+        return
     handoff_path, handoff_blob = current_full_scope_resolver_handoff(master, price, request)
     settlement_path, settlement_blob = current_settlement_witness(
         request, master, price, handoff_path, handoff_blob
@@ -509,4 +542,7 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    if "--selftest" in sys.argv:
+        selftest()
+    else:
+        main()
