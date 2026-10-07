@@ -4,9 +4,11 @@ on:
     workflows: ["XRAY Canonical Current Post-MC Factory"]
     types: [completed]
   push:
+    branches: [main]
     paths:
       - ".github/workflows/xray-event-official-primary-promote.yml"
       - "nasdaq-xray/event_fail_closed_base_builder.py"
+      - "nasdaq-xray/build_current_event_state.py"
       - "nasdaq-xray/event_official_primary_probe.py"
       - "nasdaq-xray/event_official_primary_successor_builder.py"
       - "nasdaq-xray/event_official_primary_successor_selftest.py"
@@ -23,6 +25,7 @@ jobs:
   promote:
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
         with:
@@ -31,7 +34,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Bootstrap exact-ASOF Event base, probe, and build immutable successor
+
+      - name: Bootstrap, probe, exact-bind, and publish current Event authority
         shell: bash
         run: |
           set -euo pipefail
@@ -39,7 +43,8 @@ jobs:
             nasdaq-xray/event_fail_closed_base_builder.py \
             nasdaq-xray/build_current_event_state.py \
             nasdaq-xray/event_official_primary_probe.py \
-            nasdaq-xray/event_official_primary_successor_builder.py
+            nasdaq-xray/event_official_primary_successor_builder.py \
+            nasdaq-xray/event_official_primary_successor_selftest.py
           python nasdaq-xray/event_fail_closed_base_builder.py --selftest
           python nasdaq-xray/event_official_primary_probe.py --selftest
           python nasdaq-xray/event_official_primary_successor_selftest.py
@@ -47,82 +52,117 @@ jobs:
           base_result="$(python nasdaq-xray/event_fail_closed_base_builder.py)"
           echo "$base_result"
           base_status="$(python -c 'import json,sys; print(json.load(sys.stdin).get("status",""))' <<<"$base_result")"
-          base_path=""
+          base_path="$(python -c 'import json,sys; print(json.load(sys.stdin).get("path",""))' <<<"$base_result")"
+          case "$base_status" in
+            BASE_CANDIDATE_WRITTEN_LOCAL_ONLY|EXACT_CURRENT_EVENT_BRIDGE_EXISTS) ;;
+            *) echo "XRAY_EVENT_PROMOTE_BASE_INVALID=$base_status" >&2; exit 1 ;;
+          esac
+          [[ -n "$base_path" && -f "$base_path" ]]
+          base_tmp=""
           if [[ "$base_status" == "BASE_CANDIDATE_WRITTEN_LOCAL_ONLY" ]]; then
-            base_path="$(python -c 'import json,sys; print(json.load(sys.stdin)["path"])' <<<"$base_result")"
-            cp "$base_path" "$RUNNER_TEMP/event-base.json"
-            printf '%s\n' "$base_path" > "$RUNNER_TEMP/event-base-path"
-          elif [[ "$base_status" != "EXACT_CURRENT_EVENT_BRIDGE_EXISTS" ]]; then
-            echo "XRAY_EVENT_PROMOTE=BASE_$base_status"
-            exit 0
+            base_tmp="$RUNNER_TEMP/event-base.json"
+            cp "$base_path" "$base_tmp"
           fi
 
-          # Bind canonical_current_event_state to the exact current-ASOF base
-          # before probing; successor exact-binding requires request+state ASOF equality.
-          python nasdaq-xray/build_current_event_state.py
+          XRAY_EVENT_BRIDGE="$base_path" python nasdaq-xray/build_current_event_state.py
           python nasdaq-xray/event_official_primary_probe.py
+          successor_result="$(python nasdaq-xray/event_official_primary_successor_builder.py)"
+          echo "$successor_result"
+          successor_status="$(python -c 'import json,sys; print(json.load(sys.stdin).get("status",""))' <<<"$successor_result")"
+          successor_path=""
+          successor_tmp=""
+          case "$successor_status" in
+            SUCCESSOR_CANDIDATE_WRITTEN_LOCAL_ONLY)
+              successor_path="$(python -c 'import json,sys; print(json.load(sys.stdin).get("path",""))' <<<"$successor_result")"
+              [[ -n "$successor_path" && -f "$successor_path" ]]
+              successor_tmp="$RUNNER_TEMP/event-successor.json"
+              cp "$successor_path" "$successor_tmp"
+              final_bridge="$successor_path"
+              ;;
+            NOOP_NO_PROMOTABLE_UNKNOWN)
+              final_bridge="$base_path"
+              ;;
+            *)
+              echo "XRAY_EVENT_PROMOTE_SUCCESSOR_INVALID=$successor_status" >&2
+              exit 1
+              ;;
+          esac
 
-          result="$(python nasdaq-xray/event_official_primary_successor_builder.py)"
-          echo "$result"
-          status="$(python -c 'import json,sys; print(json.load(sys.stdin).get("status",""))' <<<"$result")"
-          if [[ "$status" != "SUCCESSOR_CANDIDATE_WRITTEN_LOCAL_ONLY" ]]; then
-            echo "XRAY_EVENT_PROMOTE=$status"
-            exit 0
-          fi
-          path="$(python -c 'import json,sys; print(json.load(sys.stdin)["path"])' <<<"$result")"
-          cp "$path" "$RUNNER_TEMP/event-successor.json"
-          printf '%s\n' "$path" > "$RUNNER_TEMP/event-successor-path"
+          XRAY_EVENT_BRIDGE="$final_bridge" python nasdaq-xray/build_current_event_state.py
+          state_tmp="$RUNNER_TEMP/canonical_current_event_state.json"
+          cp nasdaq-xray/canonical_current_event_state.json "$state_tmp"
+
+          python - <<'PY'
+          import json, pathlib, subprocess
+          root=pathlib.Path("nasdaq-xray")
+          q=json.load(open(root/"canonical_current_event_request.json",encoding="utf-8"))
+          s=json.load(open(root/"canonical_current_event_state.json",encoding="utf-8"))
+          assert s["asof_et"]==q["asof_et"]
+          assert s["weekly_scope_hash"]==q["weekly_scope_hash"]
+          assert s["geometry_scope_hash"]==q["geometry_scope_hash"]
+          assert s["unknown_never_pass"] is True
+          assert s["source_request_blob_sha"]==subprocess.check_output(["git","hash-object",str(root/"canonical_current_event_request.json")],text=True).strip()
+          print("XRAY_EVENT_PROMOTE_STATE_BINDING=PASS")
+          PY
 
           git config user.name "xray-event-bot"
           git config user.email "xray-event-bot@users.noreply.github.com"
-          base_head="$(git rev-parse HEAD)"
-          git fetch origin main
-          latest="$(git rev-parse origin/main)"
-          if [[ "$latest" != "$base_head" ]]; then
-            changed="$(git diff --name-only "$base_head" "$latest" -- \
-              nasdaq-xray/canonical_current_event_request.json \
-              nasdaq-xray/canonical_current_event_state.json \
-              'nasdaq-xray/canonical_event_bridge_20261007_c417*.json' \
-              nasdaq-xray/event_fail_closed_base_builder.py \
-              nasdaq-xray/event_official_primary_probe.py \
-              nasdaq-xray/event_official_primary_successor_builder.py \
-              nasdaq-xray/event_ir_seed_registry.json || true)"
-            if [[ -n "$changed" ]]; then
-              echo "XRAY_EVENT_PROMOTE=STALE_SOURCE_ABORT"
-              printf '%s\n' "$changed"
-              exit 0
-            fi
-          fi
+          baseline="$(git rev-parse HEAD)"
 
-          path="$(cat "$RUNNER_TEMP/event-successor-path")"
-          git reset --hard origin/main
-
-          check_immutable() {
-            local target="$1"
-            local generated="$2"
-            if git ls-files --error-unmatch "$target" >/dev/null 2>&1; then
-              current="$(git hash-object "$target")"
-              expected="$(git hash-object "$generated")"
-              [[ "$current" == "$expected" ]] && return 0
-              echo "XRAY_EVENT_PROMOTE=IMMUTABLE_PATH_CONFLICT path=$target" >&2
-              exit 1
+          restore_generated() {
+            local path="$1" tmp="$2"
+            [[ -n "$path" && -n "$tmp" ]] || return 0
+            if git ls-files --error-unmatch "$path" >/dev/null 2>&1; then
+              current="$(git hash-object "$path")"
+              generated="$(git hash-object "$tmp")"
+              [[ "$current" == "$generated" ]] || { echo "XRAY_EVENT_PROMOTE=IMMUTABLE_PATH_CONFLICT path=$path" >&2; exit 1; }
+            else
+              rm -f "$path"
+              mkdir -p "$(dirname "$path")"
+              cp "$tmp" "$path"
             fi
-            rm -f "$target"
-            cp "$generated" "$target"
           }
 
-          if [[ -s "$RUNNER_TEMP/event-base-path" ]]; then
-            base_path="$(cat "$RUNNER_TEMP/event-base-path")"
-            check_immutable "$base_path" "$RUNNER_TEMP/event-base.json"
-            git add "$base_path"
-          fi
-          check_immutable "$path" "$RUNNER_TEMP/event-successor.json"
-          git add "$path"
+          for attempt in 1 2 3; do
+            git fetch origin main --quiet
+            latest="$(git rev-parse origin/main)"
+            if [[ "$latest" != "$baseline" ]]; then
+              changed="$(git diff --name-only "$baseline" "$latest" -- \
+                nasdaq-xray/canonical_current_event_request.json \
+                nasdaq-xray/canonical_current_event_state.json \
+                'nasdaq-xray/canonical_event_bridge_*.json' \
+                nasdaq-xray/event_fail_closed_base_builder.py \
+                nasdaq-xray/build_current_event_state.py \
+                nasdaq-xray/event_official_primary_probe.py \
+                nasdaq-xray/event_official_primary_successor_builder.py \
+                nasdaq-xray/event_ir_seed_registry.json \
+                .github/workflows/xray-event-official-primary-promote.yml || true)"
+              if [[ -n "$changed" ]]; then
+                echo "XRAY_EVENT_PROMOTE=STALE_SOURCE_ABORT"
+                printf '%s\n' "$changed"
+                exit 0
+              fi
+            fi
+            baseline="$latest"
+            git reset --hard "$latest" >/dev/null
+            restore_generated "$base_path" "$base_tmp"
+            restore_generated "$successor_path" "$successor_tmp"
+            cp "$state_tmp" nasdaq-xray/canonical_current_event_state.json
 
-          if git diff --cached --quiet; then
-            echo "XRAY_EVENT_PROMOTE=ALREADY_COMMITTED"
-            exit 0
-          fi
-          git commit -m "feat(xray): promote exact-ASOF issuer-primary Event chain"
-          git push origin HEAD:main
-          echo "XRAY_EVENT_PROMOTE=PASS path=$path"
+            files=(nasdaq-xray/canonical_current_event_state.json)
+            [[ -n "$base_tmp" ]] && files+=("$base_path")
+            [[ -n "$successor_tmp" ]] && files+=("$successor_path")
+            git add "${files[@]}"
+            if git diff --cached --quiet; then
+              echo "XRAY_EVENT_PROMOTE=ALREADY_EXACT bridge=$final_bridge"
+              exit 0
+            fi
+            git commit -m "feat(xray): publish exact current Event authority" >/dev/null
+            if git push origin HEAD:main; then
+              echo "XRAY_EVENT_PROMOTE=PASS bridge=$final_bridge"
+              exit 0
+            fi
+            echo "XRAY_EVENT_PROMOTE=PUSH_RACE attempt=$attempt"
+          done
+          echo "XRAY_EVENT_PROMOTE=PUSH_RACE_EXHAUSTED" >&2
+          exit 1
