@@ -44,6 +44,39 @@ def main():
         assert m.sec_entity_landing_row("XIII","2026-10-06",2114229,True,"2026-10-07") is None
     finally:
         m.request_bytes=original
+
+    # Current same-ASOF SEC discovery must work without any prior-day seed.
+    original_load=m.load_json_url
+    try:
+        def fake_load(url):
+            if url==m.SEC_TICKERS:
+                return {
+                  "0":{"ticker":"TLAC","cik_str":2128462,"title":"Three Lions Acquisition Corp."},
+                  "1":{"ticker":"OPER","cik_str":1234567,"title":"Operating Corp."},
+                }
+            if "CIK0002128462.json" in url:
+                return {
+                  "tickers":["TLAC"],"sic":"6770","sicDescription":"Blank Checks",
+                  "filings":{"recent":{"filingDate":["2026-09-30","2026-10-07"]}},
+                }
+            if "CIK0001234567.json" in url:
+                return {
+                  "tickers":["OPER"],"sic":"3571","sicDescription":"Electronic Computers",
+                  "filings":{"recent":{"filingDate":["2026-09-29"]}},
+                }
+            raise AssertionError("unexpected URL "+url)
+        m.load_json_url=fake_load
+        cmap=m.sec_ticker_cik_map()
+        assert cmap["TLAC"]==2128462 and cmap["OPER"]==1234567
+        blank_row=m.sec_current_classification("TLAC","2026-10-06",cmap["TLAC"])
+        assert blank_row and blank_row["is_blank_check"] is True and blank_row["sic"]==6770
+        assert blank_row["evidence_date"]=="2026-09-30"
+        operating_row=m.sec_current_classification("OPER","2026-10-06",cmap["OPER"])
+        assert operating_row and operating_row["is_blank_check"] is False and operating_row["sic"]==3571
+        assert operating_row["discovery_version"]==m.IDENTITY_DISCOVERY_VERSION
+        assert m.sec_current_classification("WRONG","2026-10-06",cmap["OPER"]) is None
+    finally:
+        m.load_json_url=original_load
     print("XRAY_CURRENT_IDENTITY_PROOF_SELFTEST=PASS")
 
 if __name__=="__main__":
