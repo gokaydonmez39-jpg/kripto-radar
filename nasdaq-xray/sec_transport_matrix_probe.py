@@ -29,6 +29,7 @@ ENDPOINTS={
     "SEC_DAILY_INDEX_QTR4":"https://www.sec.gov/Archives/edgar/daily-index/2026/QTR4/index.json",
     "SEC_DAILY_MASTER_20261006":"https://www.sec.gov/Archives/edgar/daily-index/2026/QTR4/master.20261006.idx",
     "SEC_FULL_INDEX_QTR4":"https://www.sec.gov/Archives/edgar/full-index/2026/QTR4/index.json",
+    "SEC_BULK_SUBMISSIONS_ZIP":"https://www.sec.gov/Archives/edgar/daily-index/bulkdata/submissions.zip",
 }
 
 def fetch(url:str,timeout:int=20)->dict:
@@ -65,9 +66,10 @@ def fetch(url:str,timeout:int=20)->dict:
         }
 
 def selftest()->None:
-    assert len(ENDPOINTS)==7
+    assert len(ENDPOINTS)==8
     assert all(u.startswith("https://") and ".sec.gov/" in u for u in ENDPOINTS.values())
     assert "Archives/edgar/daily-index" in ENDPOINTS["SEC_DAILY_INDEX_QTR4"]
+    assert ENDPOINTS["SEC_BULK_SUBMISSIONS_ZIP"].endswith("/bulkdata/submissions.zip")
     print("SEC_TRANSPORT_MATRIX_SELFTEST=PASS")
 
 def main()->None:
@@ -82,6 +84,7 @@ def main()->None:
         "files": any(results[k].get("reachable") for k in ("SEC_TICKER_MAP_EXCHANGE","SEC_TICKER_MAP")),
         "data": any(results[k].get("reachable") for k in ("SEC_SUBMISSIONS_AAPL","SEC_COMPANYFACTS_AAPL")),
         "archives": any(results[k].get("reachable") for k in ("SEC_DAILY_INDEX_QTR4","SEC_DAILY_MASTER_20261006","SEC_FULL_INDEX_QTR4")),
+        "bulk": results["SEC_BULK_SUBMISSIONS_ZIP"].get("reachable") is True,
     }
     out={
         "schema":"XRAY_SEC_TRANSPORT_MATRIX_PROBE_V1",
