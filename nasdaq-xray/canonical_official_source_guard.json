@@ -85,7 +85,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-10-07T18:40:14.021422+00:00",
+  "generated_at_utc": "2026-10-07T18:50:02.123407+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -679,8 +679,38 @@
         "UCFIW"
       ],
       "active_state_rule": "EXPLICIT_EMPTY_RESUMPTION_FIELDS_ONLY",
-      "item_count": 77,
+      "item_count": 79,
       "items": [
+        {
+          "HaltDate": "10/07/2026",
+          "HaltTime": "14:49:07.543",
+          "IssueName": "China SXT Pharma Class A Ords",
+          "IssueSymbol": "SXTC",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "10/07/2026",
+          "ResumptionQuoteTime": "14:49:07",
+          "ResumptionTradeTime": "",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/07/2026                    </td><td valign=\"top\">14:49:07.543</td><td valign=\"top\">SXTC</td><td valign=\"top\">China SXT Pharma Class A Ords</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/07/2026                    </td><td valign=\"top\">14:49:07                      </td><td valign=\"top\"></td></tr></table>",
+          "pubDate": "Wed, 07 Oct 2026 04:00:00 GMT",
+          "title": "SXTC"
+        },
+        {
+          "HaltDate": "10/07/2026",
+          "HaltTime": "14:44:26.230",
+          "IssueName": "Quetta Acquisition Corporation",
+          "IssueSymbol": "QETAU",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "10/07/2026",
+          "ResumptionQuoteTime": "14:44:26",
+          "ResumptionTradeTime": "",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/07/2026                    </td><td valign=\"top\">14:44:26.230</td><td valign=\"top\">QETAU</td><td valign=\"top\">Quetta Acquisition Corporation</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/07/2026                    </td><td valign=\"top\">14:44:26                      </td><td valign=\"top\"></td></tr></table>",
+          "pubDate": "Wed, 07 Oct 2026 04:00:00 GMT",
+          "title": "QETAU"
+        },
         {
           "HaltDate": "10/07/2026",
           "HaltTime": "14:36:24.570",
@@ -691,8 +721,8 @@
           "ReasonCode": "LUDP",
           "ResumptionDate": "10/07/2026",
           "ResumptionQuoteTime": "14:36:24",
-          "ResumptionTradeTime": "",
-          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/07/2026                    </td><td valign=\"top\">14:36:24.570</td><td valign=\"top\">QETA</td><td valign=\"top\">Quetta Acquisition Corp CS</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/07/2026                    </td><td valign=\"top\">14:36:24                      </td><td valign=\"top\"></td></tr></table>",
+          "ResumptionTradeTime": "14:41:24",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/07/2026                    </td><td valign=\"top\">14:36:24.570</td><td valign=\"top\">QETA</td><td valign=\"top\">Quetta Acquisition Corp CS</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/07/2026                    </td><td valign=\"top\">14:36:24                      </td><td valign=\"top\">14:41:24                      </td></tr></table>",
           "pubDate": "Wed, 07 Oct 2026 04:00:00 GMT",
           "title": "QETA"
         },
