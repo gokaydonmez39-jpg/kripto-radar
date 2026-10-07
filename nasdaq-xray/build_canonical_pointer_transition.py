@@ -218,21 +218,37 @@ def build(old:dict,term:dict,old_blob:str):
     assert state_hash(nrev,snap["state_json"])==snap["state_hash"]
     return np,snap,snap_rel
 
+def pointer_exact_current(old,term,current_terminal_blob):
+    s=old.get("state_json") or {}
+    df=s.get("deep_final_evidence") or {}
+    return bool(
+        str(s.get("asof_et") or "")==str(term.get("asof_et") or "")
+        and df.get("terminal_path")=="nasdaq-xray/canonical_current_terminal.json"
+        and df.get("terminal_blob_sha")==current_terminal_blob
+    )
+
 def selftest():
-    s={"revision":4,"schema":"XRAY_STATE_REGISTER_V1","asof_et":"2026-01-01"}
+    s={"revision":4,"schema":"XRAY_STATE_REGISTER_V1","asof_et":"2026-01-01",
+       "deep_final_evidence":{"terminal_path":"nasdaq-xray/canonical_current_terminal.json","terminal_blob_sha":"NEW"}}
     h=state_hash(4,s)
     assert len(h)==64 and h==state_hash(4,copy.deepcopy(s))
     assert state_hash(5,s)!=h
+    p={"revision":4,"state_hash":h,"state_json":s}
+    t={"asof_et":"2026-01-01"}
+    assert pointer_exact_current(p,t,"NEW") is True
+    assert pointer_exact_current(p,t,"OLD") is False
+    assert pointer_exact_current(p,{"asof_et":"2026-01-02"},"NEW") is False
     print("XRAY_CANONICAL_POINTER_TRANSITION_SELFTEST=PASS")
 
 def main():
     if "--selftest" in sys.argv:
         return selftest()
     old=load(POINTER); term=load(TERMINAL)
-    if str((old.get("state_json") or {}).get("asof_et") or "")==str(term.get("asof_et") or ""):
-        # Already advanced: validate instead of generating a duplicate revision.
+    current_terminal_blob=blob(TERMINAL)
+    if pointer_exact_current(old,term,current_terminal_blob):
+        # Already advanced only when both epoch and immutable terminal content match.
         assert state_hash(int(old["revision"]),old["state_json"])==old["state_hash"]
-        print(json.dumps({"changed":False,"reason":"ALREADY_CURRENT","revision":old["revision"],"asof_et":term["asof_et"]},sort_keys=True))
+        print(json.dumps({"changed":False,"reason":"ALREADY_EXACT_CURRENT","revision":old["revision"],"asof_et":term["asof_et"],"terminal_blob_sha":current_terminal_blob},sort_keys=True))
         return
     old_blob=blob(POINTER)
     np,snap,snap_rel=build(old,term,old_blob)
