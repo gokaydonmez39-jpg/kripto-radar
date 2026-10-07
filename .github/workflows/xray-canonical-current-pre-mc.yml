@@ -137,6 +137,7 @@ jobs:
           from price_dv30_recover_from_fullstate import (
               price_snapshot_integrity, bridge_refresh_relevant, deferred_bootstrap_artifact,
               publication_lag_artifact, publication_recheck,
+              load_official_listing_registry, official_recent_listing_terminal,
           )
 
           ptr=json.load(open("nasdaq-xray/chatgpt_canonical_state_v2.json"))
@@ -266,8 +267,25 @@ jobs:
               block_recovery_attempted=px.get("block_recovery_attempted") is True
           except Exception:
               pass
+          official_listing_fail_only_symbols=[]
+          if active_completed_epoch and price_ok:
+              try:
+                  listing_registry,_listing_meta=load_official_listing_registry()
+                  exact30=list(px.get("expected30") or [])
+                  unresolved_scope=sorted(
+                      set(px.get("unknown_symbols") or []) | set(px.get("blocked_symbols") or [])
+                  )
+                  for sym in unresolved_scope:
+                      if official_recent_listing_terminal(
+                          listing_registry,sym,latest_completed,exact30
+                      ):
+                          official_listing_fail_only_symbols.append(sym)
+              except Exception:
+                  official_listing_fail_only_symbols=[]
+          official_listing_fail_only_replay=bool(official_listing_fail_only_symbols)
           coverage_repair=bool(
-              active_completed_epoch and price_ok and blocked_count>0 and not block_recovery_attempted
+              (active_completed_epoch and price_ok and blocked_count>0 and not block_recovery_attempted)
+              or official_listing_fail_only_replay
           )
           resolver_refresh=False
           if active_completed_epoch and price_ok and block_recovery_attempted:
@@ -359,6 +377,8 @@ jobs:
               out.write(f"publication_replay={'true' if publication_replay else 'false'}\n")
               out.write(f"identity_replay={'true' if identity_replay else 'false'}\n")
               out.write(f"coverage_repair={'true' if coverage_repair else 'false'}\n")
+              out.write(f"official_listing_fail_only_replay={'true' if official_listing_fail_only_replay else 'false'}\n")
+              out.write(f"official_listing_fail_only_count={len(official_listing_fail_only_symbols)}\n")
               out.write(f"resolver_refresh={'true' if resolver_refresh else 'false'}\n")
               out.write(f"bridge_refresh={'true' if bridge_refresh else 'false'}\n")
               out.write(f"latest_completed={latest_completed}\n")
@@ -375,6 +395,8 @@ jobs:
               "price_integrity_ok":price_integrity_ok,
               "price_semantics_ok":price_semantics_ok,
               "coverage_repair":coverage_repair,
+              "official_listing_fail_only_replay":official_listing_fail_only_replay,
+              "official_listing_fail_only_symbols":official_listing_fail_only_symbols,
               "resolver_refresh":resolver_refresh,
               "bridge_refresh":bridge_refresh,
               "price_ok":price_ok,
@@ -394,6 +416,7 @@ jobs:
                   "REPLAY_COMPLETED_EPOCH_UNDER_CURRENT_PRICE_POLICY" if policy_replay else
                   "REPLAY_PRICE_AFTER_ASOF_PUBLICATION" if publication_replay else
                   "RECOVER_FROZEN_COMPLETED_EPOCH" if recover else
+                  "REPLAY_OFFICIAL_RECENT_LISTING_FAIL_ONLY" if official_listing_fail_only_replay else
                   "REPAIR_BLOCKED_PRICE_DV30_COVERAGE" if coverage_repair else
                   "REFRESH_BLOCKED_RESOLVER_REQUEST" if resolver_refresh else
                   "APPLY_TERMINAL_OVERRIDE_BRIDGE" if bridge_refresh else
@@ -505,6 +528,24 @@ jobs:
           XRAY_PRICE_USE_CURRENT_BASELINE: ${{ steps.price_baseline.outputs.reuse == 'true' && '1' || '0' }}
           XRAY_PRICE_FORCE_LOCAL_REEVALUATION: ${{ steps.rollover.outputs.publication_replay == 'true' && '1' || '0' }}
         run: python nasdaq-xray/price_dv30_recover_from_fullstate.py
+      - name: Validate official recent-listing fail-only replay
+        if: steps.rollover.outputs.official_listing_fail_only_replay == 'true'
+        run: |
+          python - <<'PY'
+          import json
+          p=json.load(open("nasdaq-xray/canonical_current_price_dv30.json"))
+          syms=list(p.get("official_listing_terminalized_symbols") or [])
+          assert syms, "OFFICIAL_LISTING_REPLAY_EXPECTED_NONEMPTY"
+          passes=set(p.get("pass_symbols") or [])
+          assert not (passes & set(syms)), (passes & set(syms))
+          for sym in syms:
+              row=(p.get("results") or {}).get(sym) or {}
+              assert row.get("status")=="FAIL_DV30_INSUFFICIENT_SESSIONS",(sym,row)
+              info=row.get("info") or {}
+              assert info.get("decision_direction")=="FAIL_ONLY_NEVER_PASS",(sym,info)
+              assert info.get("no_synthetic_bar") is True,(sym,info)
+          print({"XRAY_OFFICIAL_LISTING_FAIL_ONLY_REPLAY":"PASS","count":len(syms),"symbols":syms})
+          PY
       - name: Build resolver bridge request
         if: steps.rollover.outputs.build == 'true' || steps.rollover.outputs.policy_replay == 'true' || steps.rollover.outputs.coverage_repair == 'true' || steps.rollover.outputs.resolver_refresh == 'true' || steps.rollover.outputs.bridge_refresh == 'true' || steps.rollover.outputs.publication_replay == 'true'
         run: python nasdaq-xray/build_current_resolver_request.py
