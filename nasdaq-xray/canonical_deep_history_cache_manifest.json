@@ -1,1385 +1,1205 @@
 {
   "alpha_authority": false,
-  "asof_et": "2026-10-06",
+  "asof_et": "2026-10-07",
   "authority": "POST_MC_EXACT_FINGERPRINT_CACHE_TRANSPORT_ONLY",
   "entries": {
     "AAPL": {
-      "blob_sha": "9fef9a97fb661383c586fc401c14f3eaf92b6deb",
+      "blob_sha": "411f639e27b3cb24dae9e7ab91785fdacf36eca9",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "2d6115c0fe54965b457db448284e2e48354a3aca7d81ef0f3cd22d84d4eb4bb4"
+        "sha256": "cbca63b339ed698c0adff5ad7e4fdf2f3cef66629dd82e122cbb2931401290be"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/1eb44d625271a4eb75016f276d13783617c012685cb598f20ae93249164c0121.csv.gz"
     },
     "ABCL": {
-      "blob_sha": "e650cddec396190c3eb74c95ca6533bc046f0c29",
+      "blob_sha": "40dd79caa36909c283670e48e600f6c2fc32f652",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "c56411e1e641239e2e28399db25275652c87ae860896df5c61204f0d10d73938"
+        "sha256": "734654a1cdea52b27fc87798e1d58985967fed9b7a80fadb61092318cb7dba4d"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/2436d6abfb84170b27ea612e6f5ee6b5902bd38d7966ad3187eff71475695dd5.csv.gz"
     },
-    "AMD": {
-      "blob_sha": "6afe7c567aac22de35cdf0bc0da8aecc4a2766b8",
+    "AEHR": {
+      "blob_sha": "5ddfb4a7e544ca4b16c21484f5b4232ae56c3aba",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "c66b98fb1db68372dee9d90cc160e26f3bb266ba2d30177c7c5a3c23e9e149ec"
+        "sha256": "c470db686fc9051f8a1f192f8f6a6905cf6fb437ba43ce1ea4ae415b3db73d65"
+      },
+      "path": "nasdaq-xray/canonical_benchmark_cache/a777db89a01378dd33a14ded07faa3dfd2f652c60a87498fb8f25649acb597e4.csv.gz"
+    },
+    "AMD": {
+      "blob_sha": "1f820ab34ca7dc0495d348352dd31e811dc06ad8",
+      "fingerprint": {
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
+        "lookback": 320,
+        "rows": 320,
+        "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
+        "sha256": "dca1a43e62990e11b53501fa34c71eb8895037717f8cce15a9521373ab30008f"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/0fd3e4e71b62f7775696d50033366d824247be4337d7f35f9026c00d920e423f.csv.gz"
     },
     "APA": {
-      "blob_sha": "23012975e7300880b393d4e52b64ca95bbf55832",
+      "blob_sha": "a9a0d06af4f9319b3fe49b985901f2dbe5941193",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "420136074e2400e0e824543ab0078138d157b998f02205b3d693e5dda8aa0bef"
+        "sha256": "099bac930187eca245beaecf8726c73993b9e70ac624d33c205c6519967988c1"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/02302b85f49d8dff8504cd3fdd49f40fefa364062a840868c0ca66d6cf76ecc9.csv.gz"
     },
-    "APPF": {
-      "blob_sha": "1926876b7d7cc38a4c461919508e38781da47cab",
-      "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
-        "lookback": 320,
-        "rows": 320,
-        "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "cc49ef72ddc70821d2d9328d0f7f0b1086c9243b09679da1b4f1ebe718e8acbc"
-      },
-      "path": "nasdaq-xray/canonical_benchmark_cache/aacbd1b6c1a7ff0b183cfcfab894888d952cc1fb6ecb3fc93ba53ceb8bbc1fbb.csv.gz"
-    },
-    "ARGX": {
-      "blob_sha": "1889531e58644f86abfdfed91c8b4043c096ae0e",
-      "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
-        "lookback": 320,
-        "rows": 320,
-        "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "5a47aefab2ca0fd4804e39f8d5ea294ea00ea43b864d8e7a6ae1636219b16517"
-      },
-      "path": "nasdaq-xray/canonical_benchmark_cache/ee730b81f4b88f1519ef5413382ff27acfa858c7b525d87a494a6b026a711f6d.csv.gz"
-    },
     "ARM": {
-      "blob_sha": "5de42eb3bf1103c8a8543a142680dbf6cfc14bfd",
+      "blob_sha": "9327ac115caf25b8ad1c1e042ee3d12877449869",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "1b745bb6d753ed84373a3071a6f519650ded48786affd7fe29bd6d684622cff4"
+        "sha256": "1f967530f7267330a70bb4a4e12ab7b33adf056fd4034960aff8fb2deb456ce6"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/316dddc5a44e6bf789862edca92140b61a6da73425ca91fcd369a30979b9c0a1.csv.gz"
     },
     "ATRC": {
-      "blob_sha": "34d4bf3f61f694b2989aa24020077a6b6228d833",
+      "blob_sha": "2c74d736bd4ca0166fbfd70b66c1b9726ae9f7e6",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "0bbbe52d7226e5bc98acb40dce9c0ddde9c4b38b6d9cfb083047af667789945e"
+        "sha256": "67041091f3e581e636d94415e428e29718bd8a09e221c3d7ea4feeb88c09be00"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/79a46e267b933b47b079d30766da03d14fdef03a81a21994adf4a0e72499597a.csv.gz"
     },
     "AUGO": {
-      "blob_sha": "0ea2da641d4897dc9209c43904751df473e896bb",
+      "blob_sha": "67732e6d1605e929b1fabad6143fc35b521aedc8",
       "fingerprint": {
         "first_date": "2025-07-16",
-        "last_date": "2026-10-06",
+        "last_date": "2026-10-07",
         "lookback": 320,
-        "rows": 309,
+        "rows": 310,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "4a2867f0fabccd0656b8940cc2f73d4a72628ec1ada6235bd60a98cfb65da160"
+        "sha256": "a7505cf4aefed842a4b5014ac6b36db5893a3a0c9ec67c7eb72cbb413716952a"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/098250ebe707a5adf486c31aadaef4d3614b8199f5c263f83e3aa0d85bae6b9f.csv.gz"
     },
     "AVT": {
-      "blob_sha": "eed96a9581653974dd3082ede96b519454980ac4",
+      "blob_sha": "76e6c351e970ed8d9835b95ad3c9327ef9728295",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "cc2715b4d7dd063bd0d1b4c0c56bde7eebd9f58baffa0f7ed5a0f3224d2ad22d"
+        "sha256": "5b7f91da5c07a881399b4ec1006a25455188fd224048a419ef96bb5844e4065b"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/7fd3a6d6bf1e094b01babfe11c4796ffdeee7d89a69df8f6817faa2e84c4489f.csv.gz"
     },
     "AXTI": {
-      "blob_sha": "de65ea45aae5e8bdb664789fb9cb1be58b1ddf13",
+      "blob_sha": "5a462270a35e97b87f1a9a4119c82d16285a176d",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "081e44be8cf2657ec5100eb5cc8ebce06f6efcd565e80ec950a127ee1abdf081"
+        "sha256": "84998e6073e2daa0812a8bf523cdb4b05cf63526b53b7825704acf9b32447606"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/c671fac409ca5f8cf94520865b56385a742b088ca28667fa027e3f95e92dd51b.csv.gz"
     },
     "BIIB": {
-      "blob_sha": "557242d1e59f348997eb3ef1d4f9b6a509ee0238",
+      "blob_sha": "827606eb1bd6274c8e0c803de6281d30bb66e284",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "4e6db48480e916ab0135012375bd8628a1a47b394597b6715f19738622181fb0"
+        "sha256": "5c15a5f1c0ffd42f2fd18558f2debc9905fa0a04bf9c84630ee0584f88fc20dc"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/f62c8b2a470350ac2f2e41934afabcc3180a21aac4d24f94e28d6d369977fefb.csv.gz"
     },
     "BRKR": {
-      "blob_sha": "09328a4383b905d1b5d5dcaed1e5c64e7a30c3fb",
+      "blob_sha": "f4d3729bc800f5a40c2026094755f65929831e6c",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "ba546492e84c09e9efe16b2062ab210039840cd297385f2c810eb0bd17aebeb1"
+        "sha256": "c43ab0dd6f2843428b7efb694d010c54c5d17fe706397b2c9214325a12a58688"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/f5d06fa1369451d4644eb60d1aa43af874d4f4dae62fcaf57c92e73ee935e15a.csv.gz"
     },
     "CAI": {
-      "blob_sha": "c953b0d55e64995ce51ad9cf603a6c9b7c896128",
+      "blob_sha": "b572d3740527608e2fd09805e514fb80d0f31f9a",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "00741d0d7f2345ae045dbb7e6c28f3a64e8220ee5522494f852e9806f551e04b"
+        "sha256": "7c205604b33ab626acd2fa388ff58cc4f3e07f48ee41b9384b780bc92fb9f46f"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/f6a2986e713d30f172d941229ffe410c8350429c4ab73901a55513227ec2726f.csv.gz"
     },
     "CDNA": {
-      "blob_sha": "3687b2ffcda0c423b998a5569d68695a76bfb8f0",
+      "blob_sha": "8e10d323f4ea231897ce65b1a4f568d6f45eb713",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "894181c2443537f65fb00f755977ed0785a621ca227ce8f51676ded9d560bde1"
+        "sha256": "adcdd1c3bbe86affe8590876eb5869fd250cac28dccb90af2b217acbc25b4f12"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/818909824ea4303cd39dfc70b0dd55a3fa28bf6d7c8076b21938c73768be90bc.csv.gz"
     },
     "CHEF": {
-      "blob_sha": "03f5a5abf3731c1b152214f2d89a3d0b92607ba9",
+      "blob_sha": "9fb038da56aee5410dac2265bfe7ce33a5482f72",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "5243709d4d597d6c3c9edd7670361f277db67877a1937d0fddadd16ea9b178c4"
+        "sha256": "0782ae617a6727fe1374f946add5921585f8d6715e26e0acfbba6de422ecb121"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/eeab67e11cc68f834858d00b54e4214ea8a71150c92d228234885cc1e1fef827.csv.gz"
     },
     "CLMT": {
-      "blob_sha": "90cb728ab225b1f274fbcec4f12c8d01670cc773",
+      "blob_sha": "3d3cdd5b911f3180456653b1da60ff9b3c5ea2b4",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "63abe54e420a60794755fd23c9acf94c536c923cab7ec3ac29c398c0b7d2424d"
+        "sha256": "4e8a129a58392e577d37db068f9be01e66942286e85d0ae1f3f96252c021fc78"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/29c943e4ad59e7de02c9fb4c054e0e53f5face02bc7b2609803de0b96458ee72.csv.gz"
     },
-    "CLSK": {
-      "blob_sha": "6d1d97ed40d5190bce0a3cbca1647871c09b978d",
-      "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
-        "lookback": 320,
-        "rows": 320,
-        "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "acb0cefa031d7864eb0ddf75e134836960f6e04a9e482cd6e976e2da67694e3e"
-      },
-      "path": "nasdaq-xray/canonical_benchmark_cache/481088998c01480930a4b35448fb06f8dd7a35a1f81308bebfbe88482cece94a.csv.gz"
-    },
     "COHU": {
-      "blob_sha": "0809996e3f2479d091523ab06f9e0029c6b18ec7",
+      "blob_sha": "4ad2f3c9ce8e01d9e0ae368747934438e87cbed6",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "f8f02363c0bf8a2414586193be9b0f702607a497c7f75e98198162e23a872736"
+        "sha256": "648806162cfad665969e444b8cc5d8539b8f64dbd63c558e19ac283c7052a0e7"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/785a96a20fd48ed4fd987417d0e932e0e0e0720984695fc6401010dcec2f6beb.csv.gz"
     },
     "COIN": {
-      "blob_sha": "4eaf45a71134d724bd52c5c2d8779750daddc3bc",
+      "blob_sha": "18e3c858ad6448cdbbca80d8cbec885f7e8a47ea",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "b58197d8cd4156340fb7c21d27f8339eb30e7cf084e3b0ac68919bcbda3647ce"
+        "sha256": "78703ef1059beb77a4950b568d682cae7e176babe596cac6ceedee0fe1721c74"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/daf49f5a345201057006abe8cc8e808cf2fb38c0316b3f7758459602547d7a13.csv.gz"
     },
     "COKE": {
-      "blob_sha": "09465019657d2c4f3e7056b1ff8d5636ec378a15",
+      "blob_sha": "4a7c3ad57bbd6d3eba172127a3c7d331503ccc15",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "1292e1be00cedd79e0cc58a475b5e699f6ba774711556bc9245d582a17cc3825"
+        "sha256": "aa8af831100234566c21ae548af980fa2eccb063011023862acbac119eba981d"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/bdf259389fd5cac8cd0b4d322d903d2d61bb57bc5d4c959653e273d5f7c45fdd.csv.gz"
     },
     "CORT": {
-      "blob_sha": "0e5ea235d4c66418c66dfaa35b3f8cfb9f514824",
+      "blob_sha": "d3cbc5e229206e8dbe7bec0309a70b2746b5b7d0",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "d65f8892908988c90db7cc9e0ade7c02047dc10f3716da732eb491a2bbc45361"
+        "sha256": "38725ff24dfa97bb2e0c1a49ae281c998027d9cdb2df3b20abecaa2b4552c815"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/9a5ce618c744b70b4d19f78f965077cf5c041af8c5c8f5b30cfdbc45f3639666.csv.gz"
     },
     "CRWD": {
-      "blob_sha": "b6439802d2a2aca76762cd44e0ddef441b9b1627",
+      "blob_sha": "a35c330be6f318ab3558c3b8e98a00485d5e7261",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "ed4309cf29d279b7c718916dc4013d59eb824a9952fe2f43b5a19f388a0684f8"
+        "sha256": "0216bb7cfc1b15be0fd9715e73b671f323df4fb0d267e02f1bac70d4cac9f97d"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/b326211c03c0c3df2fa9c4ae784f429fa64427a6444f5098f994837b3e1584ad.csv.gz"
     },
     "CVLT": {
-      "blob_sha": "3e62f5c4405dc387b2234ab3d30c803d9995e609",
+      "blob_sha": "6a327737e55bf47efad277351d4b06d3b440e6f5",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "cf99e55c3013437d92e3a2fcf241d9e58df95fe120288a9f0629dc0e7d7d5997"
+        "sha256": "7f99be4b38ef5326ce7ba6d2d95aaf8427527dc1fe6c65d64f7c407d238c55dd"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/db30f54394a06b1d4ab7475fc5d12ddd66c8518ca4ae2388e0e8482089c4c69e.csv.gz"
     },
     "DOCU": {
-      "blob_sha": "ae6c7a65cdd6c3a316dd94c806a2b6d69b369571",
+      "blob_sha": "1ca1f9cda92bd3fcff56ded8eff32841744d01fa",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "8d368dd162537d87db932ecedb78a1563f0fef47911578679d2af2ac4dd52cea"
+        "sha256": "b1bca72408ac93ee7f706b411419c487234178b75b9dfeb894d7b91b48171bfb"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/c64dbf793faa44deb5d3c2e02853e7c97f960d7eda29df73a1230e9c86c0497c.csv.gz"
     },
     "DUOL": {
-      "blob_sha": "924cd3c5480bd348ba246f6985fc995fb4388e76",
+      "blob_sha": "28045d192cb00811cbd6cc3b2362d5bbf8e2b864",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "2b2f07b029b8537f9a90e2800a9543b418fbe371af4870f68f34b0ad1788a2a2"
+        "sha256": "c2522220b9f9380b7c2dbcc148a94bf389ca9c613ad86753b330cf02bbf4ce7d"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/5bb0d6b8fb6f0e1c0cacbe0275e52606e82e20662251ed475e6d99320af154fa.csv.gz"
     },
     "DXCM": {
-      "blob_sha": "0830b20b63930a7858992c628dfc39afb0feb921",
+      "blob_sha": "b7120ce34a9c321ce4f978f0af3b9de1717815f1",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "3fce6a6b93fd56375d6d9519e1c8013e1a9d8957d79e334cd99701255332b599"
+        "sha256": "cada45913ee240c889ff923d702cb58a8a5fbcc95b2feb6d55934f2e456621c1"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/2bf5110d4a338fcf8123af69165175651921e546bf7633e3be964de27c69d3ef.csv.gz"
     },
     "ENTG": {
-      "blob_sha": "9643e496dd661120aecaf76c7a415fbd0b551a44",
+      "blob_sha": "04839f029e5c21f9ce0e0f829bc9ec6ff4b0cf35",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "0c118912d88f72ce805445fdc4268a8ae89e73c930b602ed809d60f911e1a8e7"
+        "sha256": "884dfc53600f7d3f6d15f1bade098ca9e430897b6add04b2841afa70d005a0a2"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/3c7d61bf0932f93625c6f14083886359ae8c040eb8cea37967eb9e008a6f39c8.csv.gz"
     },
     "EXEL": {
-      "blob_sha": "dd9f3c99c41ad50709d0361c7cc42da21d5e8fc3",
+      "blob_sha": "cebfca3a3df15a463187410f64dfb53d26781921",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "6646e2c274b76903f7ed4191eb874fc1eb91899b98f944da57a5d23a6510fb8e"
+        "sha256": "4349cca1664beb84c539e0ae57590405acc6c449f25a6e7d1abb592741c272df"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/763d9228eb2a6b2286e29d11513797721c1b96f31f6cfc5149b8b1230728b6b9.csv.gz"
     },
     "EXLS": {
-      "blob_sha": "b5dc5b6becd775f613539fc229e081aa0c77f781",
+      "blob_sha": "2366b82746b6bb58824d6dcbc92586f9e8c885c5",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "6c9f50a6a91ecc00f6174823b83139affe0cc503a172b68e8898ce2830ff87fd"
+        "sha256": "c96884687a541bed39559e1fe236e318cf13f02bd6afcca938b05d258363e800"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/404fd7677ca78c286e29c4156fdcf26468198af98e94bbb7ce9686e674f4c0ec.csv.gz"
     },
     "FFIV": {
-      "blob_sha": "69e3a6faf26b395cfc1a6fbebb3caa62452cf44a",
+      "blob_sha": "bd1a0ea3a78304e5a1f29cd3be9fa59764a2f50d",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "bbbd4ab72019dd27e33cecf961be7e9d4977bb88197b5d36eef4cf7e2ccc2705"
+        "sha256": "e61e87a9b7c3fd13cbf39fbcc276b9570a81061edd459e11f0fbc27e884fbd87"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/3b991eb47727ff323595c0aa2f148b90d55cc130c3bfd04433702afada4e1664.csv.gz"
     },
     "FIVN": {
-      "blob_sha": "312ecf2fbbe2ea6226558ef308d01fd07edb79e6",
+      "blob_sha": "7259dbd765d487c07a2cfe4e9884a3b5fb11f1a4",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "aed81d5d2f7e05fc1ea50a8f4d65536a2c64b8107e035253ba66f01450b2a00d"
+        "sha256": "36c85d0cebe998b94a4d614af8dfd78006ffb00466fc7c1d13268d751eed8ffe"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/053676f7a9b2853333360f69238a7ac120d2284e51ddf0722744650eb7508e7d.csv.gz"
     },
     "FORM": {
-      "blob_sha": "31e192c9641f7ae42423d9d0495bd7523e978f77",
+      "blob_sha": "316ec271ca8765210c18dff72bacb34936404b4a",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "2a91835ba9c7eefd9ef659b5cbacfbdad9a1e6bd21abb2517ecb937477a14526"
+        "sha256": "b4073a61e6123aee445a42dbafb0fa0dad4c6b650e0bd0c1d74055697f60d724"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/12bfcd8d63d7f480393ca68f46578da2b72a117bdda5924eb94ec5c02d54c620.csv.gz"
     },
     "FROG": {
-      "blob_sha": "460c38a7513731e5fa8a6962d3036fc24049ea37",
+      "blob_sha": "066cbe2f4489001cdcb1edb5f8f29d10720475b7",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "801562fc27f69a553cb145abf12a0e6aad8e9c9be83c7f7b2abaeab2131ed66e"
+        "sha256": "37e5db25b2568459808af6d61655be62a7db44b282cd1302ddefe7aa5c1f86bc"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/e94ffcde0415f64f01d1f3f4cd115dda17d9cfdbe8215d7699cadda79344b003.csv.gz"
     },
     "FRSH": {
-      "blob_sha": "4b536101abf393e9c16d3f9592a3caa7ffa907f9",
+      "blob_sha": "04871ecc0f958738fa64e3d5bd78f428ccf9bb91",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "8339ef7cd281f1c751cb12996589ac61f5fc63cc515dddfc2d920fb3b81ecd0a"
+        "sha256": "800a82c2d25f7cf8c955cccc8830d518755a954fc843621a335d2dae0ba26ac4"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/10e90ddbcea5db406057272d0b42bfbde9dd6a1771b21446f424410aa8284eb1.csv.gz"
     },
     "FSLY": {
-      "blob_sha": "b17c6a2b7dce3ef12d7565841a826042cd4af804",
+      "blob_sha": "1d7e53e22a44e68fdc0b2912be9fafe9ec5544e8",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "5bb857dcbd367ef7a7fbf7cf88425779cf39e514fca60ced7c5ec3e4ee9c50c5"
+        "sha256": "2308a93c373ba1ea68483591cba1648b3d87868ec81787757129c83132ba62fd"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/6840819686ab7b3747a284f33849979db4117f2491a692ce224f053632bff892.csv.gz"
     },
     "FTNT": {
-      "blob_sha": "654da9c6376cda541a765ddb807b1d1c02fd7b44",
+      "blob_sha": "f8ca877d2ecf4e9095c3a3c5c6bc526cf88ab2c4",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "e3c94250b15a95e91c4523cb9d6165a6a7c99e7a73396343f52cd08f2404d169"
+        "sha256": "c782d91bb44ba13632c798c593fccab32a65c01b1c13b2b591ab90f413db364c"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/8141bae93b3bdb17bf553311825aeaabeefaad4a25023e240f235732b4a1ec01.csv.gz"
     },
     "GH": {
-      "blob_sha": "93a4e13027c6cffac4f5c00d042fbc1a2832e46c",
+      "blob_sha": "a448c3a4268b06d20175dfa8206e2e423b68408a",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "02a85f119cd4b8a0cc188a37eec753081e767c4fc3ae4fcd8900cb364e815f02"
+        "sha256": "ae0f6424877e12374a280560b1e5ff50ad73310e1ef7be7fde36b376c3a75ee5"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/a7770c6daaa4bdc22db60e2ad2d61f8a94b14b88e42865a93267469abb4cc365.csv.gz"
     },
     "GILD": {
-      "blob_sha": "2e57eac101485cbfe9807703ac4d05e3a5c2a23c",
+      "blob_sha": "22524b905dc2c7b3a80a2216577aa9963c1946e4",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "1040b326416a4c0727b3d8750ce5492f2b6cf0ed73d5604b0f4ceb382a209da3"
+        "sha256": "3979291a4fc77c84165254724fa7e236e272a609e88b3ab0ea5779278ebdccff"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/5f598d120935d1633af17ec3a4015b7195d003ee057182d0b24e4325d17021b6.csv.gz"
     },
     "GMAB": {
-      "blob_sha": "a133866e07fb34b68dccd675be210579557a5f66",
+      "blob_sha": "375d86a48afb2a2100e290d51b20f889d2c0d9a7",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "7c096df3b592e15e44456d5f1d031d57b41f96349a91eb8b21665bf881025a4d"
+        "sha256": "d5fce0d6b594f64455aad9f357e63510c8c19cde86381cc6cf8aa58bf10646d3"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/7a6ad1d1384c95eb62b210cc02de6a74d236d3af495a13e9df172d84212f9fd2.csv.gz"
     },
     "GTLB": {
-      "blob_sha": "bc9d05f1474829b41177e06bd25a977c96638f47",
+      "blob_sha": "5813e6e63d71b17b26567f75fd811bea2dcae83d",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "b4e30c9f1a3b4541fb4593a944ed09b1a9cf36e8a5113c6808419b1d4fd27a77"
+        "sha256": "ec3303bc1f6434383c01fcb4eb3eb46edaaa1d6d97d6d6e157972afad71c6a66"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/6ce8ad96f7079afb20fc4f34567c554222d6c43112b9b7b85d452cd053a5b2c8.csv.gz"
     },
     "HALO": {
-      "blob_sha": "c1efc35d7795f60ccc7d129727749ef4f7322000",
+      "blob_sha": "24ebe5fd22e51f56272e0a18b6e29879559407fc",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "c4bacb31b3f839ed4f5fd77820e8f42f422aca615f67bcb7c3d80696e77fa383"
+        "sha256": "1050418d2de49da0718d9f27c5ce19ea36eec8e4bd15443a3d6888333a36109f"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/0cd19888a166d40d0e9ea5aa7508b8c8bb2a633740560c7790eecc99bf170d7c.csv.gz"
     },
     "HOOD": {
-      "blob_sha": "c3135518007ad29c44d3ddc5e8f09dea5d10248c",
+      "blob_sha": "93b6b16186df4d99bc0de44ad339c06a435cad2a",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "daa6c1d34bc29a64bf8c85d231561a6844db84bc330b55d175b001111b85708a"
+        "sha256": "a08a69002ce3d8933ad380550ff7cb67d76c441b4255a79f6169fbdd51a663c5"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/a0cd4ecb4ff9df6c8dcb3cc9bbff1defb60129170f9b3883735dba26a5970515.csv.gz"
     },
     "HTFL": {
-      "blob_sha": "a18091a41fd0e97caed0036f053d837b1c71e8be",
+      "blob_sha": "6df3535e887615b29a4cf5f209be9dfd332868c0",
       "fingerprint": {
-        "first_date": "2025-08-08",
-        "last_date": "2026-10-06",
+        "first_date": "2025-08-11",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 292,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "92b237292b4f8a196634a0bf69dd888d2fd6aecacc551d785a6d0f69b87b7ec5"
+        "sha256": "8458b336e15fc05fdf3964a35a0135146c6fd6541e9bd987dde482f29f5318b2"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/16c7336e8e56a706a6735fbe15218425412f25843ef05896ce61daf41cdad8af.csv.gz"
     },
-    "HUT": {
-      "blob_sha": "cd6b179df50b55618115e24540beb59179909ec6",
-      "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
-        "lookback": 320,
-        "rows": 320,
-        "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "f9d023ff7c41949ef2f4760dc71e9bceb44a5550fe525c5132734bc738ec1946"
-      },
-      "path": "nasdaq-xray/canonical_benchmark_cache/8e46c8570a874c62c1c1e70c6d7f7acde69b6787a351a61839219b7f48f908a3.csv.gz"
-    },
     "IBRX": {
-      "blob_sha": "789f1e069987bd9d94f0a1e0756c72e51f9b453c",
+      "blob_sha": "576cfbf89a8c44030de5e1feb1428c4e8c6956a7",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "89b7c1539e876be4a387429d9b38deb75469465df20b58bf4267ddc84af56116"
+        "sha256": "1eb87d4c10ed6ee402d75edab77456fe3610ff447a37d79a7ffdd2610ffe172e"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/dd3155642dd016a1c48a71d7addd72ba38babb324746505615daeeab4f167efe.csv.gz"
     },
     "ILMN": {
-      "blob_sha": "e614bf3fbe961e60f162a14bde821b6aa726c07d",
+      "blob_sha": "b7b2c32e42cf7f937770e06a305a72885942da8a",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "f042c646b3efc9a7abb7ae15241af71268c431ac2a5300140565e12b52fbeb61"
+        "sha256": "0fe4299147de78945a2ea5bb4055810611f42022d5751890a7bb8f00673c4ad4"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/370bf453e34653f580068f7f368a88ee21ee2bcd0a5888a00abadbbe3bde32c7.csv.gz"
     },
-    "INCY": {
-      "blob_sha": "c193dd7852a98f3e027ebac52349d7df6729d356",
-      "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
-        "lookback": 320,
-        "rows": 320,
-        "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "9d246bb13139940717be6316c669d741e5d9fff529f4e3c1a525af5ae87f307f"
-      },
-      "path": "nasdaq-xray/canonical_benchmark_cache/3d26d04a526fd8d66eff3568c343bd09cbbd4225a98a639d086e677148150d01.csv.gz"
-    },
     "INTC": {
-      "blob_sha": "22d91f53134478e5f834f9f53257361c33816cac",
+      "blob_sha": "51a9cdf71166d12e9e53b5a57042ee6c9743904b",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "3d4aea759375de738b0b06e53e70e81ca248804591914fdcabc14baf63f51698"
+        "sha256": "45a17734806aad518d0275fb9d5bea37ac041ec69d56aa5103027a4ee36befe4"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/a1d2c920462d08681d31e343e9898d6a450178cfca52b757c9f02bd8377229f5.csv.gz"
     },
     "IOVA": {
-      "blob_sha": "87c4b897830a5129251d8a1431ac9c5dee1acb91",
+      "blob_sha": "7ad73dfe242b58f52a9c9b246f8bce7887d4e0a9",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "db51b62142fbae494bdc02f0c79605cde18f9fc6168af29c62fa96ca9ec3d01b"
+        "sha256": "88d61924d1b475fe295bc9bf536c98ef18ce79dd8442e25f27e56b5bed6905ec"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/5c2bf5e9fc3868fdd309a922b9838f0de8949a4f5da430c3a3c483b02e2f86f3.csv.gz"
     },
     "LITE": {
-      "blob_sha": "9a5eea32bbad4a88f8b8bc17647ba1cbd7ff800e",
+      "blob_sha": "0d4bd06697b8c4decb1f7727253e9c51ca18faed",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "f6eec3168d0d6e11271af7331e51b67441303fc3bd840069308926c4e1e04aed"
+        "sha256": "fbc16540f080279d7c9c93b0f4045edefb16d8276ff67cc016f4c17b08809622"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/264924258db9c3522bdcb6205c98c9a37daf993e3628e00e51d66f75f681badc.csv.gz"
     },
     "MANH": {
-      "blob_sha": "f39b9696037317c237d0ae32e8628b2cc995659b",
+      "blob_sha": "973b925755cdbc80933b8e6a1c3126e60485bc2e",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "bfe21dd18ba3035d20a128cb3f1fbfa73dbcb393ad7002eee89d7e6e89c151f7"
+        "sha256": "18724cc920ea9a1e0e53fa1cf5c53bd70761ce1f16b31de83c16cd19c4f41c60"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/512c9850ff8218c0247cd403ddd73df6e0987244a8f3cee8e6038063dfe4f11e.csv.gz"
     },
-    "MARA": {
-      "blob_sha": "59a3a57e8c3f553ecef5e292fca4d5c0fa4f1d20",
-      "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
-        "lookback": 320,
-        "rows": 320,
-        "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "279eeb21a05e605886d928c4032f25de70ee86e341000e2b18345381aef05c90"
-      },
-      "path": "nasdaq-xray/canonical_benchmark_cache/edafde8d2d88fbb5100a1d3cdf5d139eb473255ba18ab0767468086aec0fc974.csv.gz"
-    },
     "MEDP": {
-      "blob_sha": "52f4fde3cb810d7904e27ca189be562c65c8cfef",
+      "blob_sha": "23ca576b2585cbacd14b1d9a8e946e0ca00986d9",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "5dd630549901872b8cffeb23f659d793e51fc6416c8a6b6347b738fcb4ee84b9"
+        "sha256": "1fda391da2167f530bebf5a57416c1d09fd3e4f404bf2ea62584176d0f83bc87"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/bcb3410ff3315a2501ceb1e00c51037209f805709911d6e6fb19d0e95dac48ed.csv.gz"
     },
     "META": {
-      "blob_sha": "13bc2ba4508e6429958d1157971c09cf5047b92e",
+      "blob_sha": "dfb560713484bfc8607ed00c9655f10e0159d6c5",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "5fff4b848c71205785fff124a4cd0ba5948d097eab5d58c11c4586245dcc45dc"
+        "sha256": "49564e746fd96b7d59e0d0931e3781975e5bf52faa27d3f5300aac060a5b90aa"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/2d1edf729cc53756834657ce399b1568debd59b0ceddce5da39b86750d59fbd0.csv.gz"
     },
     "MKTX": {
-      "blob_sha": "160d58a8241e052f95d855a928173dda3f497ce9",
+      "blob_sha": "41f060d024dd54d7dbd6a465559e0885a3acb28c",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "79540945934ec2fd17146bc2f61e145a3aa8512397821cd18c4ff26e4b008c8d"
+        "sha256": "8bd5c67cd39b477c657260526a08726644c34cc7fb651310d8688e88b1f00438"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/24c90c7849e5433359082767fb5189e68f78b28a539f6bb0ceafde5b94e780ee.csv.gz"
     },
-    "MMSI": {
-      "blob_sha": "f6b8c28e86a33b587b00069deff101a7b16863fc",
-      "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
-        "lookback": 320,
-        "rows": 320,
-        "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "4ad5cffe3d58d5ef4b988e77700ecfd6ec4a521c2c1a1fbee4ae2e2a06ad205e"
-      },
-      "path": "nasdaq-xray/canonical_benchmark_cache/71bffdfedad341da63b155abcdf475e37b04ba8c6c80276dbe9d3c95eea3b2c8.csv.gz"
-    },
     "MRNA": {
-      "blob_sha": "92fe4274f3b7d4e91b8646b725304a973901585b",
+      "blob_sha": "6f08c22fabe4910ab6ee0b01a636482db07cff62",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "aacdfd695b03c732a8e0770a368fa42b79b97747f963a4f9999db074c299278b"
+        "sha256": "eb2559668f2aec18dc591ed8752663799d7225029c26f589553c485e69d1fb42"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/f6ffc25a09c71efe799905c5fb28b4c7c1b0dd070437a69bd307ea9ae89a7035.csv.gz"
     },
     "MRVL": {
-      "blob_sha": "2b2f80ad0b2884d7a76e90258f6be5bd5e02056b",
+      "blob_sha": "44bac4916f8addbf1b6fd84e6fae217cfed9a1e2",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "dfb7862a37c3356530eeb4eacb3de0ce556eebe6c9eb8cd00e14bda2bdabafb5"
+        "sha256": "26e3d44836fef3a621cf8920420c39ba255a75cbbcc15c16601c84ba15951f22"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/b93441048d4e3b8687d4f6eb949f69b660185d4f1da885fb18f90ec5bb6597c2.csv.gz"
     },
     "MRX": {
-      "blob_sha": "0aa8dabc06fe21138441a7e2ff5b83c7e77b019c",
+      "blob_sha": "ea13ae71b662647e77123c906dfb6e4233b3fc47",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "b98087fc7e7dc54eff628f980eb396fd916fa25e6882c196ceade129054149f4"
+        "sha256": "ee337927b12b1939f158454078c199fca9e36d86f8b3b956e58db4c36bf411e3"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/33783eb09b8d67665697ed8862542834dfa546d3e577c2b2398f4c5daaef9b0a.csv.gz"
     },
     "MSFT": {
-      "blob_sha": "21c3843f0796e4e0e86d38a84831e79fdfa8a649",
+      "blob_sha": "79ae0a5b85b793010a20595b22b945ddd61aea2e",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "36cc73a58c3636c898051e39679c63ce62fefa3e54a1a83199e7e3a0f29a36d3"
+        "sha256": "5ceb1b0f3447c23c05e849871cd7bcacba05024c54cfb0ab56ca7735bb0dba0c"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/8638f0279b38c5e1e182bf0abb950cf06ffce000e50cb25e11a84ed49a05caed.csv.gz"
     },
-    "MTCH": {
-      "blob_sha": "ecb68f47d4a0cfe619e29f473afa6453c4c07279",
-      "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
-        "lookback": 320,
-        "rows": 320,
-        "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "7cd41eea0bcebde560c8dde68ae0e1c8193021c07fcffe4c7a6418416804adc6"
-      },
-      "path": "nasdaq-xray/canonical_benchmark_cache/5814a010dea7ea45ccd2d9ff55713bd38f9dea558f2569d5e2f21eaacc7aa3d4.csv.gz"
-    },
     "MU": {
-      "blob_sha": "7a1f5a4494823baad8b81487a1aed8c1cd4cfe19",
+      "blob_sha": "eac2a8c7213b5b11fd5667ef4739b454f7957f38",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "9a767259e7ac3f240357c2c8997b6f5569300bb0b1a502145871a6e6048e5957"
+        "sha256": "203996a964a883f420b6493013ad6886f6a27c5b347c3e49ff4a8361f9c9f1ba"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/a24c631b902b547e715a74cee7e4d2947dac4334b2ee27dbd4dccdd22e9f2ced.csv.gz"
     },
     "MXL": {
-      "blob_sha": "aeae277162b05cf988f3dda8d711a2cc9e280cf8",
+      "blob_sha": "e88f43f8b71170af6d4d5e77877f324eea5ec637",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "96bfaeda2956127f53f160562421506a9f800e4f96d5d39f5bd7584a5b7574bb"
+        "sha256": "7b672890bdca026790acb26cf4862de7d7c8826b5b3ff2e4ef9451d036378600"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/7dbb20f35c8a6db50fc63a50d452a8caa9a94c20bcf192be28b503417fe82758.csv.gz"
     },
     "NBIS": {
-      "blob_sha": "2309efe42041e25c1d88a0f423a2b4aa444e0c14",
+      "blob_sha": "8e103237d0ddc96148f17b49d850d4a5ac7e0fa6",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "346c92ba59b1fdd436a0fd7a276b7b5fc18a1daa69cc75a2a11f5e73dc247cc0"
+        "sha256": "5d11971868516fec2e36bed751f790fe87123cde230f8feb12e6b2a7382925b6"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/ce6352e290fdf6c66f51ab2cc327c6cc49d1fe8a8f5491311bb57d945269bb7b.csv.gz"
     },
     "NDSN": {
-      "blob_sha": "572b7a49b53818fa0810450de6320d424a242abc",
+      "blob_sha": "e72b4365f8016d15beb4189b6fb2694f42509b09",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "dfdf595df65e49765d7d7acd04a31230adde40cfa8ea2ad23c2360f48f831e19"
+        "sha256": "9a0749e30995ed97276c41deb0b6ab5bbea7b73c3782380fbe2d49116129831c"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/3233f741b9c9de5e8828ce53980067c075efb12d0ad1d9785e14ea97a5680bc5.csv.gz"
     },
-    "NESR": {
-      "blob_sha": "7c1f82d037edf7282a5f068359507579df52933f",
+    "NICE": {
+      "blob_sha": "c577ecfffd26d2fefea84141d7d5ddca01482f49",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "4bb3359f1d417cca852ac64d6113c6ad68c7431b742f5aeb533eb94d7afb3544"
+        "sha256": "d39b698b19f69bde5f1e06e541b1ab4c538f6972170592cc4f73a82d5d624051"
       },
-      "path": "nasdaq-xray/canonical_benchmark_cache/586e006b45397afecb6d108e4ff4ba85013ab6560cbe742a1a41006b12128749.csv.gz"
+      "path": "nasdaq-xray/canonical_benchmark_cache/a41aaa41e576dcf9ad1fb9094efc17bc9e9cf59b0c397a7418cc63824258e80e.csv.gz"
     },
     "NTAP": {
-      "blob_sha": "88d759079b1879f85c0572dadde172d50af16ead",
+      "blob_sha": "5aa0450535602d020c624191ee679b5a52dae2ba",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "0931c3a1f414539ff8677d8ce66d126fc0beceb23ee5501ea359279e8932273f"
+        "sha256": "f72363fff15edda875129e4d2f44974694d98702e8b49041c533384bc7213da2"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/d9df5334739ef685fecf1fa75b682de33949051c7bfbca826be94b1fd6b59c12.csv.gz"
     },
     "NTNX": {
-      "blob_sha": "d4d57e76cb178dddeb8a0ef6219322349de7a70f",
+      "blob_sha": "b32bfbcedef76daac86fd166b82d1f386d08200c",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "295e4d805ed8f959322f16ab71dfd6b7e2b7a8244d264541fcfb3a0276c9db68"
+        "sha256": "44d7aaa701e79c1594773f401da7b5ae62fa765b72a39f4d2fdd09fcd882eb1c"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/e5a190a5b1188e01c0804c900a8edc0594d9a95c8d6da6ebb05a9ce550227694.csv.gz"
     },
     "NTRA": {
-      "blob_sha": "ea3f69ca0431529db84bfac8b4cf92403f26fab2",
+      "blob_sha": "b8e7b38011e6fdcef7b83dfa9b310e91afc5cac3",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "77f20a0efe8d928050b509f29fd0d3575633708f0d91ce1ab434d90013b6340a"
+        "sha256": "b0729884dd3ffecd8a230238a33dcfec40cd8035e01460474f7e0a907b3594e8"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/923948b1ed467b4564af06f034a3a5ee65a2fc17970d62995985bb50e9a868c2.csv.gz"
     },
     "NTSK": {
-      "blob_sha": "30e7f943ea8422340a83bc915a166d917a26825b",
+      "blob_sha": "b030cbab53f9a60dc2aeb73a260a6079b5b61a2d",
       "fingerprint": {
         "first_date": "2025-09-18",
-        "last_date": "2026-10-06",
+        "last_date": "2026-10-07",
         "lookback": 320,
-        "rows": 264,
+        "rows": 265,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "e65d0a9ac6caeddf529e5da6b17f883232c00f3828534a28260255c6f29e2f75"
+        "sha256": "a2a98b8b46855db1c06de02e574346e4a52cd3b49d0c4ccad182970a92e8784c"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/0784198cd12683c2d34f2f8f2f50da591e92b5815262a9858dd1bd695ce32667.csv.gz"
     },
     "NVDA": {
-      "blob_sha": "119aa8a6bd5ab6d26f7176d5eb50d8046824e068",
+      "blob_sha": "0e6f67bc50f505f3761fd9df2fb0a503bf57b6ec",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "45d329281e3de1ddb50a408f6f0884b8eaecf91801a1cee6e989276f7873c1ed"
+        "sha256": "195b47af9f9104a623877801772cb870caf2a58460578a2997d328f8bf8b8930"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/426219f2bc19829619cd8e71b51d7b93f6ad4b0634f74d3681a80f34d9162edb.csv.gz"
     },
     "OKTA": {
-      "blob_sha": "5879398fa55dc7a399fb22fb5451af7072566d90",
+      "blob_sha": "7ac67772592bb6eb3c6103930235fa098621ea1d",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "cf22631f0f0d94354ac2d17f028cb503a0c646e9f1886ee86cf582894069b075"
+        "sha256": "d77da70d9b70a220291da771e218de0babc5c74b4e61636d7adc2a19f657d490"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/e14ece3ef1510d35aa0a77f5dc04a4f2e281d056cc64e38f01d52edf09f541e4.csv.gz"
     },
     "OLLI": {
-      "blob_sha": "e47bfdd08e19ee1ddd5177451ae43ac275e3df6d",
+      "blob_sha": "d14a3093e13d82a5fdaeeb3d74cb872b03ce3cce",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "7846c4626a6f92f91afbe9db6a8697e6203713c8702e08019249fdcfd1a09c9f"
+        "sha256": "8509aea3ba4d5ab9cc027fb6217e31a76b86c055247b21e172591dd9485c8af1"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/ee0255b7b15fb9145998d8003b8c06a594053cfaa928fdfdd3497261ef51e3cd.csv.gz"
     },
     "ONC": {
-      "blob_sha": "cc4191c29e4b1e4002c6129517089274d7a8d625",
+      "blob_sha": "c86fb36ff2d16617f4b1db33f6903ab3836a5b48",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "974d872620ff03c14008b82d9a9b9e74e350e244451895b04a1a10105b0ae342"
+        "sha256": "3391e0a59b316642b3b0eaa726ca141b0eaaddb514d47af7d62fcf8675133bf2"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/903d26fe51c6a362bba5538b1991f2b028b7ea3d3818d0cc822f04819291a113.csv.gz"
     },
     "PANW": {
-      "blob_sha": "30953ef9d2101af8cf1277b216b695eea66792a8",
+      "blob_sha": "bda0d46e0e287bd63093303eb39ccbc1b88c0b93",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "dfcdabb8a4086181a1d6f7acf01f6ccc0eb9734becfb9f53b8560dcd7862eec1"
+        "sha256": "61acdaecc65fd64e89a49b1523e290cb675174cd9a017fed66cc8d787a333648"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/f64493939ba13fff31bef52b68b31349d96caf754b74b1ec79141ef0d13c00eb.csv.gz"
     },
     "PCTY": {
-      "blob_sha": "e7d42f8df686d289dee7bc9d23a084f58f167fb7",
+      "blob_sha": "8930a29d85a61180ca61e3fd6e704ff64c5d26c1",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "1343a4d9c5a334448dd677d37247b67e1a7fca675f367d8c0a328f289fc8bb7d"
+        "sha256": "94c3b7a66b287544effab4dcdde8d2d34942205697aa3c3f16b75dba2a1663ab"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/44720086f8e180050f4977c47603717aa8e87656f3695e4e73399feeb07ed1b2.csv.gz"
     },
-    "PFG": {
-      "blob_sha": "1c9e9702799a59e0c541da18d6cb27d3b8228103",
-      "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
-        "lookback": 320,
-        "rows": 320,
-        "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "740ee4fdb728d3538cba7e6ecf8b827c9664bdfc0ea965cf74e6fde10bea4a12"
-      },
-      "path": "nasdaq-xray/canonical_benchmark_cache/f083deeb332ef9928ae16cfe822d4307541dd0e35f036e99aa88b1c1581db6df.csv.gz"
-    },
     "PI": {
-      "blob_sha": "83e5a02c7329596268e15dc3d77ce29c4e2b718e",
+      "blob_sha": "8e18a1d6825cded5173ff533d49324e485ad5b3b",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "5cce4a183824abf1081a70f94d61ee2ce44663d65b9b6ed60126bdaf4e1d8727"
+        "sha256": "a1e239c90e086b343add47b447519ded1c086dd4a32206888eade2679b2d148c"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/7c06efd88710f54f8e1f2291df7ac958b06eb53612e024148d0ed5c867308f35.csv.gz"
     },
     "PLTR": {
-      "blob_sha": "2d94c41b04b831e25e38953e8632fbada9e8cce9",
+      "blob_sha": "a9f54956111e2b0d536da37f7c70ad3692b2cdd1",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "d20604ae38d16127ec8fccbab928c2366beb3430d12ab281584ac8497bc3ba40"
+        "sha256": "11e391f9e28280e3e5caae6d9891933c776ff81ea807514d937536fa67d5f750"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/93f986dfd0612406a529c14c728bf9707fb6f01f1a9109c02e80f245f2240b9e.csv.gz"
     },
-    "PTGX": {
-      "blob_sha": "4a13f0c325266046265ea3440bb314dc0e982174",
-      "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
-        "lookback": 320,
-        "rows": 320,
-        "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "f1516ec7d8819c64db50b81832fd19eff7a33227bebd9dfc340cdc0d5f40c2d0"
-      },
-      "path": "nasdaq-xray/canonical_benchmark_cache/da9e482dd8076cfe5861edf51905ec81c64bf27ab252615c7a0fe11cdd256383.csv.gz"
-    },
     "QCOM": {
-      "blob_sha": "7c6310cd508ab6074949aa59302867d2e461867d",
+      "blob_sha": "597413977db59ca851dbf4501fb79fde9a046af9",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "1d288ea527545e8a579f7f5f260dfaf64105ce5c932d7928c65ba265c1ada6ff"
+        "sha256": "6cbdca5a166fa50f66dac7badcaeee0198b2dc6e717350a46609f0655fcb4932"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/bfceb2656bd0db5fb47b29f779e981a012b3eac9b643f9a5ad68d0679bc6cc1c.csv.gz"
     },
     "QLYS": {
-      "blob_sha": "155a06403fb6ecec263d81747a79933f4b3bb743",
+      "blob_sha": "e6f12f0b42cbe627c3fa633852f64732a030c95f",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "7bd6185a2c57364c064437c3245d2db664d6003cc0dec4e8c17cd204f78b1d3b"
+        "sha256": "8662763e2f2f63a311ab95f553c42c84c07237474fe002136e3e78a9949599d8"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/b9d7d7f3a55dbf740464637bae66ade80b07fbc6878a975ed5236f5911edb626.csv.gz"
     },
-    "REGN": {
-      "blob_sha": "81e571cb4cf29d0da670f2dd5ddb94763f6ef0b7",
-      "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
-        "lookback": 320,
-        "rows": 320,
-        "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "346236908547945bc975cf24c9c40a4c17cba2caa10d86103cd864e8231381c6"
-      },
-      "path": "nasdaq-xray/canonical_benchmark_cache/1a5bdfc9bda06019557617d420e05f8e3226132745ffb731a55cdece1b3208f0.csv.gz"
-    },
     "RGEN": {
-      "blob_sha": "130846b3e5728c82e046ac44794dd0763def84ec",
+      "blob_sha": "8b7abecf8893dee5bbe587787cd93acb97502484",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "c2137e33aaf1f8888209b24342019dcd0d533bd783c4fa641bceb7b92b8d310f"
+        "sha256": "6f3c265a77879e09499e38e0b86419716a5f530269c7bda6fc7232139177daa7"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/a4216af9a43cd497e42705862e55980b656db4bd05a618c3a05af9534c9f0dda.csv.gz"
     },
-    "RGLD": {
-      "blob_sha": "9f508da91186d002c2ff437b8ca35986918b7ff4",
-      "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
-        "lookback": 320,
-        "rows": 320,
-        "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "61be95094e9d717ee2a8a4c77d8ce091d0efe6efe1101d26d67c5dc99e29a741"
-      },
-      "path": "nasdaq-xray/canonical_benchmark_cache/937d7dc3635552d818278bd23b94191e5e4d717526bf9a2859857bffc3482df7.csv.gz"
-    },
-    "RIOT": {
-      "blob_sha": "7bb449429833b1712a6b2480525583453bb26464",
-      "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
-        "lookback": 320,
-        "rows": 320,
-        "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "1133d61e13f58a48fc71aeacec81695e4f95df56e3374c9a1b66ca7cd291533e"
-      },
-      "path": "nasdaq-xray/canonical_benchmark_cache/d1303b4837972d4e4232a9605407aac52a07bc7cebebed411f0c20d6d2b819eb.csv.gz"
-    },
     "ROKU": {
-      "blob_sha": "f7d350f64dce95c157867c3f6fb2ef13f7f826cd",
+      "blob_sha": "6a58b14c85dab6bbeac7672d06c2b20b274ba77c",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "849ae89bd7d2f0f0b5c7a963777999927de2680d8a12b58b618993d1d75cf0d6"
+        "sha256": "67c5234a51be833e40f3cdd0ee4c36e8766b8691bf4dd57415f8f4abd13b369e"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/bf2b5e9e548b914bffaa07854673e4850cce0fb7c48e07a8ab411b8ddde6b5de.csv.gz"
     },
-    "SAIC": {
-      "blob_sha": "6111e2630c3d04a8a0b319a61c9c413e79a5e800",
-      "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
-        "lookback": 320,
-        "rows": 320,
-        "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "038d5b39c1075e700a82be202c764c1dae9292b86602481ed6ff6cb719677f58"
-      },
-      "path": "nasdaq-xray/canonical_benchmark_cache/fa5fc7142616d507a80e7b516a934193a90c6ab9fc4dfe704b0def3d9dd1df40.csv.gz"
-    },
     "SAIL": {
-      "blob_sha": "673da595122fd646c27e3f2d39ed72b3b16268c7",
+      "blob_sha": "f7c6fd5192275eeee2ac622113993761841978ef",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "f6ccc7b6dcffd8364268b5e265cce3c51a732dd16bbbdd559980826706a8c2bf"
+        "sha256": "4e2b6cbe55d4e57fe3dc4f203898ad8d050e453ebf76c352d924ff54e9fc7fd2"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/c00a30cc96ef801029a574b700a1a3f9b7d3ea85212d89461f7e757085360252.csv.gz"
     },
-    "SEIC": {
-      "blob_sha": "af72413df38805a061d8bd0a999d1a232e826cca",
-      "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
-        "lookback": 320,
-        "rows": 320,
-        "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "027f18b601ffd3a5efc39504ad13fe7106491accde4328586f3fa841f3d71961"
-      },
-      "path": "nasdaq-xray/canonical_benchmark_cache/68a49e95d5af6f04aea1ffe969e3e0070ce1cddbc29351a83b7f21001d1cfa0b.csv.gz"
-    },
     "SIMO": {
-      "blob_sha": "f5af8d1ed976f78024e643b821e2e8a558d765a2",
+      "blob_sha": "f9890714e5aa02ed551d6719e0b8e0698f5a9f81",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "157454853c5157ff5fa2f5ebe84357e789d84c1235eb553aca73b4742efb9db3"
+        "sha256": "c3e19024b756f1572a4d2d97faaea56c939de9af59f38727fb38f4c85d2ab4b2"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/2140acaad4e4f77a4810de208b13e2535c44bf2fed7f9906300343587bdaa969.csv.gz"
     },
     "SLAB": {
-      "blob_sha": "0399b18a639169263afd18f5256f2e130bd847d1",
+      "blob_sha": "cc8c9b26443b7ee92d5316ab2b9c3bac03d22e32",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "4fd2230d31c83522222a5aeeea0ed77eb012b0005d9c7ff0cf2dbba0a65c9fcc"
+        "sha256": "9fba6c5facb3d6a998a94cf2b75561e90ecb31afd05621d0885c74084a5e6a34"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/6291bad31085979e95b4b3152d1e62d603d4dcd41a5efa80d274ad58c712fd4f.csv.gz"
     },
     "SMCI": {
-      "blob_sha": "a65d649807554023763263d11ef0325f9eb072d4",
+      "blob_sha": "da11d52eb31e73afd121b637acc09f9d2b93cb37",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "3705f2b8a86d3064d83f4a31cf73c833d2d2349177725ef7b8ee706de780c53a"
+        "sha256": "76ea571e27a7b4b7f31c0709e8e06f4b576e1c8a9d98fc5a022a05ad041d341b"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/7d94cbbbb37e73c7c321a5e59e6e37f89f9444fd9e64338ba7c6ebd86cb84846.csv.gz"
     },
     "SMTC": {
-      "blob_sha": "05531d6ed799748f93fc4788e2f10ddfb4e6163e",
+      "blob_sha": "4d57cd51ace802230622619ca36a8e3a9519b1bd",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "6529befd4e9965af7e27a0befa2345998e115fa72e129a62028e3dcec192130a"
+        "sha256": "05ce23df5653e85f7aeda1d1d4d2b96177b1434ca03754f594f09bb70535d71f"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/e6d3bab150176387363a05192f89afaa1babcac9712a26b713844e85f6cc25dc.csv.gz"
     },
-    "SSRM": {
-      "blob_sha": "39e39b18c89d705905efa190847fb9b53e49db99",
-      "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
-        "lookback": 320,
-        "rows": 320,
-        "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "580aeb1075adcaeeacff280e8a22827f799843d858c779d3a3f924523090c08a"
-      },
-      "path": "nasdaq-xray/canonical_benchmark_cache/a77f336c4343ecd0e504639d042508252e4956f4efdec938d597464d72c38b7d.csv.gz"
-    },
     "SWKS": {
-      "blob_sha": "cc64dd9a7e9b3074e609724ad704723ab771bf9d",
+      "blob_sha": "aded8f5b2ce94c99e8dfc3944b606c77b7b1edfb",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "1354310062393d630e7a1a8db338248e1a9ee6df359099da73d2486ed8ea33ce"
+        "sha256": "4131eba1e75d6bca7ae20102c095ae2c305c32a032354ca60b4bf7b475dce568"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/164aec136bfd0cd8e8296dbf911071c8b3e063a8d23d3eea6ddb2415e6cdb82f.csv.gz"
     },
-    "TARS": {
-      "blob_sha": "ed4d0ef3191c38a613672b9e8a43e438afa899c7",
-      "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
-        "lookback": 320,
-        "rows": 320,
-        "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "0414b61e5c66096a36862cf603b17d24c8cba777c84c88753eec95745d4c27c9"
-      },
-      "path": "nasdaq-xray/canonical_benchmark_cache/ee5cf780e285e32aedd0c60bdf373eefa14166008ec986d5c17cd6f83a03660b.csv.gz"
-    },
     "TEAM": {
-      "blob_sha": "758c673854ae5b82b7c202561cfeb39cbe520c9b",
+      "blob_sha": "e388496b549b67381ff650e8f660a602cf43ad41",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "2c88944be9341e73acb917bade2efa1305db6b9080b84b16e9620108e187495c"
+        "sha256": "99bd6b2af75fa1f6af34930d102486e3517428dd37ee16ce34fc0c2409a77301"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/f404d4ef53431418a111b361b24b6d805798314477493738d95eb6ca347ea17b.csv.gz"
     },
     "TECH": {
-      "blob_sha": "beb2ab468388718c679ee2222b922d05c73f8f65",
+      "blob_sha": "8ee1b8dd5ef50f492ff2450bb2f579f978346803",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "bc75749d9c632612ff59dc2206f614409873b7d2467d8f734070be1d3cd2d5f7"
+        "sha256": "d591c2bdada0a0235ab9187ea4d731b1341c24cb727137263f8236b530bb3382"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/32f6e996f503c5646c0da2bcb7728d1db78085e46cbcd9075d502e9efae9960c.csv.gz"
     },
-    "TGTX": {
-      "blob_sha": "e71d13b493ba1998a654f2ae43eda8bf1bcf044c",
+    "TEM": {
+      "blob_sha": "7016e97f955532ccf9c75c9cb162f07c47400871",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "35f12b59ec5f3bee1864a7ddde2070285bd2a628dd26b9e2f342427e412a606f"
+        "sha256": "dbbf5a7ca98e44ab5b0ee662dcdfae081466eea1108ea9a2720a216e4db2dbd9"
+      },
+      "path": "nasdaq-xray/canonical_benchmark_cache/6f9fb51c2882875e5138297ed59f8d429a11d032c311881b72a35dc8584c0351.csv.gz"
+    },
+    "TGTX": {
+      "blob_sha": "41738c9ed641481a7eae599ba4add1b105907b32",
+      "fingerprint": {
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
+        "lookback": 320,
+        "rows": 320,
+        "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
+        "sha256": "f85de62ac48775f9f88202edda9ed17b512bbb9d7afbc9fcf60758bf5fa7f21f"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/5fd46048085483947a78ae6bea048b0bb4a8582172afaee069f0f165314dd5f6.csv.gz"
     },
     "TRMD": {
-      "blob_sha": "3fee2d2bbef8307d3e7b3e7614dfa7e4edb04f13",
+      "blob_sha": "d345d7a78d8e005098df3d10dfa2fce937d4d57a",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "bb8224495131435fe031b42a1c06991eda29bf1e95c8ce2150959807eeb4fabb"
+        "sha256": "ec157aca00685136961ea27f59b1be61ab036fcd132d27b221c3411d156a64a8"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/d1062deb6ef7c0d31e43aa20189477b27cd050d554aa58be7a0cd6baac1fdbaa.csv.gz"
     },
-    "ULTA": {
-      "blob_sha": "9fb3f971062dc7968b601b87a9b5fedb018b0515",
+    "TWST": {
+      "blob_sha": "91e9523e06e87c8c23786a228564df96d2ff2ac2",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "d4bb6a5757465291a67fb04b0ff03f0a64d2b111c0a1107bfee3476b62e77c37"
+        "sha256": "5aee132d4b0536fc5b1a68608730553eefb430ff9f485e1c39b1c6fc217ca35b"
+      },
+      "path": "nasdaq-xray/canonical_benchmark_cache/bfa00f89fcf040d3ec7d7474f825e07b52475dbe83e3997994fb2d23df150d5b.csv.gz"
+    },
+    "TXG": {
+      "blob_sha": "229c95d0aa66ce5b2c2fa3888c2fe031656635b5",
+      "fingerprint": {
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
+        "lookback": 320,
+        "rows": 320,
+        "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
+        "sha256": "ee698d7f1d89d72a4c9685851b53e5e0a152164aff299e5b6562a721ba91f2f1"
+      },
+      "path": "nasdaq-xray/canonical_benchmark_cache/320ba7404a98e00ed6e1d37cefb3161c98ce947a1a4aad8d43874f1c773a3147.csv.gz"
+    },
+    "ULTA": {
+      "blob_sha": "cbfd77287a5f6a14910dac43c66bf17162aea5c0",
+      "fingerprint": {
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
+        "lookback": 320,
+        "rows": 320,
+        "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
+        "sha256": "57db79574caa6e3825a7e371732d3f6c14cb484b0921b5c450fc1d6b8c3deeba"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/f8851fe93a19bb7ef8119737dca719f312bb49cc29493939300201c1786d6dbd.csv.gz"
     },
     "VICR": {
-      "blob_sha": "93cff5c195c3611b436d234efe524b225b1156ff",
+      "blob_sha": "0fb208922fa24e438080ae51c63c920a851cc38b",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "a151258839517e10f0255ff0bf5dba9f9e6bd352e498a41994dfbf0e4e3c2620"
+        "sha256": "93762aab55d8eaa254cb230e07b0e7ba3576c83b05dfc1fc7ab2383f3b96d039"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/0f0f55b4c3626e37666d52acc5d4554a131a0af96e55e5c5ab2f6ccb3a5421ce.csv.gz"
     },
     "VOD": {
-      "blob_sha": "f685265b73a8f5f2ae34834c3207d8f75aecaaef",
+      "blob_sha": "fc2b54e6908c4852c98acab80ac692bbab2c7b58",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "01497c44ac6a9dd6ab005e4569c7bcbbcfcd8a52655b0045061460caae598477"
+        "sha256": "f85815a6c8d3156dc0bd9190582032dedec147e26164fc8ae33f1c222d931831"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/f6e2773de0a98ad08d19a340be8d7feca461751078f4e1229d47243c5156edd8.csv.gz"
     },
     "VRNS": {
-      "blob_sha": "76ba6e56f4d57c2b1c300f47506a3c9a396f126d",
+      "blob_sha": "a2a15f0553cdb8d27f564ff97c3b231b37b9f8f6",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "03aaeba819dcab7c6951488926260b1cc9cdb41dce3efeb7d379ffd4c94e6310"
+        "sha256": "41ff5e7e9f00d2522d11b8d6aece1896535d27577db77b3f74d74ab8604a293b"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/96728e61ecfaad673486a2efdcdc13f32fe3e20bbf495fa45930ad0a5d0609af.csv.gz"
     },
     "VTRS": {
-      "blob_sha": "ee106ee9ffca6ff308304b585203e7edcf633d15",
+      "blob_sha": "a3f00341b01728d41bc64529cad1d03483a45eb7",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "868750829ad0e30a578fde6f8746372b34e128c32422aa836490c294fc56dab1"
+        "sha256": "be21602a2ea739c2f44c4c362ba130821d01402c41e3546e3eb96401beb8843d"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/35dd4c548e078961f6d608e5d3eb75c9681825e57542d5be5b879727d8889b9e.csv.gz"
     },
-    "WAY": {
-      "blob_sha": "84af07f59843a2979643fc36ffad11f609ba126f",
-      "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
-        "lookback": 320,
-        "rows": 320,
-        "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "84bd750baa575225c7cb6d94948c3289b09f33eba8455a4d006de2ba02af3859"
-      },
-      "path": "nasdaq-xray/canonical_benchmark_cache/f01ee4d3a9647b353c7ef1ded9175f02f2cbaf467ad5a0c75a5b14bafab92861.csv.gz"
-    },
     "WDAY": {
-      "blob_sha": "f27aa44cc073a497b2510cbef12fdcf360f774f9",
+      "blob_sha": "b9f14840ef07137cf97337d538b67e66ff029fa8",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "02f5e3cfc7124ce09a0fb6d5c1eb43a92c40fe232e6dbb6d17b93d56694e07a9"
+        "sha256": "f64eef7a7af92f5bc9a3246fc491eb15ae63e81e967121e001b67a5be0d4c7cd"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/ab337f148b170b7d7bbcb5370a23431ad74eb941e20caaf4ab5365749f58f443.csv.gz"
     },
-    "WGS": {
-      "blob_sha": "0cc7ccad66dcf4ebc382654950011b598e9d19b4",
-      "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
-        "lookback": 320,
-        "rows": 320,
-        "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "a5f966b2772f4dfe3506ae005a06d259b6fa7c738ca10291830a94927d965895"
-      },
-      "path": "nasdaq-xray/canonical_benchmark_cache/e51c46bfc57625dc643319a1dbcc42c65096382478c06a7478ba7420a0152581.csv.gz"
-    },
     "WIX": {
-      "blob_sha": "c450ca53a0542fa38750f275a8213dc696bd2e50",
+      "blob_sha": "bf07eeab88c3e8f979730ba426ee07856c950e9a",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "865edb90c4ee9958e533040f2a4e03bee9cc964db452a2c2a8b99e0ab358efec"
+        "sha256": "084d99619f0bc8bbb6c6697d02b1bceeb56396365f9df8ed36415e573a30fd14"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/a44353438ad838973ce90f475db5bedb2edc6da335954045c96d5ffb17eeaafd.csv.gz"
     },
     "XMTR": {
-      "blob_sha": "71658503fcc97ea236d2e87bb986f80f63de805b",
+      "blob_sha": "1890742ed8931626800a51b55107575054c0d919",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "678f2072e524863f7f8617d7de0eb29b9d0483fac0213410ca894a00cde9e9e2"
+        "sha256": "215d4ad0e23b1c14e79840c2a61e96a7f1f73d66cd233e552810c6bd393937dc"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/db8e6ac55e9676150364149e1765e35dd4d8b3da6d84432f4e01fd78dccd1343.csv.gz"
     },
     "XP": {
-      "blob_sha": "b5a04e0c2fb3579b8a5e0b00381a6f20c2d5a0cf",
+      "blob_sha": "17ef8651ef9b6182f48d9206d534b4a95a4d2904",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "fbdf1a599abdb03d7f663dbdf54695d6aea360429730efa226c8c06cbc18efe1"
+        "sha256": "3f7681efe8b747e040e4be60377ea70aee6aadbf688b28cfc0677663415ae729"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/168aad3e9812dfb60a52848beda88a7a38ad89568d54bfa43347664dbab737bc.csv.gz"
     },
     "ZBRA": {
-      "blob_sha": "c9979fdda2efee84711e9a9367f52f61115d796d",
+      "blob_sha": "4706842917786efb39656603679a707ceea0aee4",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "116913c7fd87c75fadc5933a0b846827d02084237b770a3aed623c31b6b2fdc1"
+        "sha256": "ae4751d4bf75bf0b459a1dc87e42aa5285940a065dd485795b49af8b64dcd67c"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/2a85f837ad90cb5814d29afee78e0defd808d868dca08779cd04bdbfbaec35ad.csv.gz"
     },
     "ZS": {
-      "blob_sha": "effcd11a6982b07b4231a856133ac801a39b5725",
+      "blob_sha": "d3f45c895b1de8e1b21e5bbafdbf46e53acb2c46",
       "fingerprint": {
-        "first_date": "2025-06-30",
-        "last_date": "2026-10-06",
+        "first_date": "2025-07-01",
+        "last_date": "2026-10-07",
         "lookback": 320,
         "rows": 320,
         "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-        "sha256": "a8b52b74ad93620e8de334965e7d7d7127450af343c894d37d44e4e4d3261845"
+        "sha256": "8c3d2d359d7093baa65fb7ad4442c1e1f86cfbf46f83754c28ea6ce54e7a7e4e"
       },
       "path": "nasdaq-xray/canonical_benchmark_cache/7dd589016eebc634490784b44ae8dae4bd91d20ce1b1fe01184dc58d7349caf6.csv.gz"
     }
@@ -1389,31 +1209,30 @@
   "no_synthetic_bars": true,
   "no_threshold_change": true,
   "qqq": {
-    "blob_sha": "b9f13d65a2b25f2f97a808265dd994aabcfd5612",
+    "blob_sha": "e1be23d69d1c7af7f49bc17cacd5fb94689580d4",
     "fingerprint": {
-      "first_date": "2025-06-30",
-      "last_date": "2026-10-06",
+      "first_date": "2025-07-01",
+      "last_date": "2026-10-07",
       "lookback": 320,
       "rows": 320,
       "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-      "sha256": "d2faafdc036351cec5c199f29ac891d770a33045689895aaae870dad463fa711"
+      "sha256": "9dd9d0e49b369772fb9bd0dcc404fbedb642172247e9a9378b17ff6c2985f48a"
     },
     "path": "nasdaq-xray/canonical_benchmark_cache/e9c5d7403d908b95343d66b100aef3bf7d4c0a33fec8b152e0b02e4c68a22b61.csv.gz"
   },
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_DEEP_HISTORY_CACHE_MANIFEST_V1",
-  "source_deep_geometry_blob_sha": "5f734a4354a406e9098ffa534e1cf6cfec60249a",
+  "source_deep_geometry_blob_sha": "1f4298553a91da4bffe86d09d0ca8b7bd34d6856",
   "source_deep_geometry_path": "nasdaq-xray/canonical_current_deep_geometry.json",
   "support_entries": {},
-  "symbol_count": 115,
-  "symbol_hash": "425ac94bedaaba19678865368e57e35358fc76f53545f73a5b80406c65eca769",
+  "symbol_count": 100,
+  "symbol_hash": "1da7f3e0f746b8165dbba5c020ca3b077ae989d033899ab75f10f48f1d0d542c",
   "symbols": [
     "AAPL",
     "ABCL",
+    "AEHR",
     "AMD",
     "APA",
-    "APPF",
-    "ARGX",
     "ARM",
     "ATRC",
     "AUGO",
@@ -1425,7 +1244,6 @@
     "CDNA",
     "CHEF",
     "CLMT",
-    "CLSK",
     "COHU",
     "COIN",
     "COKE",
@@ -1452,29 +1270,24 @@
     "HALO",
     "HOOD",
     "HTFL",
-    "HUT",
     "IBRX",
     "ILMN",
-    "INCY",
     "INTC",
     "IOVA",
     "LITE",
     "MANH",
-    "MARA",
     "MEDP",
     "META",
     "MKTX",
-    "MMSI",
     "MRNA",
     "MRVL",
     "MRX",
     "MSFT",
-    "MTCH",
     "MU",
     "MXL",
     "NBIS",
     "NDSN",
-    "NESR",
+    "NICE",
     "NTAP",
     "NTNX",
     "NTRA",
@@ -1485,39 +1298,31 @@
     "ONC",
     "PANW",
     "PCTY",
-    "PFG",
     "PI",
     "PLTR",
-    "PTGX",
     "QCOM",
     "QLYS",
-    "REGN",
     "RGEN",
-    "RGLD",
-    "RIOT",
     "ROKU",
-    "SAIC",
     "SAIL",
-    "SEIC",
     "SIMO",
     "SLAB",
     "SMCI",
     "SMTC",
-    "SSRM",
     "SWKS",
-    "TARS",
     "TEAM",
     "TECH",
+    "TEM",
     "TGTX",
     "TRMD",
+    "TWST",
+    "TXG",
     "ULTA",
     "VICR",
     "VOD",
     "VRNS",
     "VTRS",
-    "WAY",
     "WDAY",
-    "WGS",
     "WIX",
     "XMTR",
     "XP",
