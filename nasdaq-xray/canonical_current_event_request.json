@@ -6,20 +6,16 @@
   "compiled_policy_version": "C4.17",
   "coverage_unknowns": {
     "breadth": {
-      "count": 1,
-      "symbols": [
-        "COHU"
-      ]
+      "count": 0,
+      "symbols": []
     },
     "deep_history": {
       "count": 0,
       "symbols": []
     },
     "stage1": {
-      "count": 1,
-      "symbols": [
-        "COHU"
-      ]
+      "count": 0,
+      "symbols": []
     }
   },
   "current_weekly_scope": [
@@ -38,6 +34,7 @@
     "CDNA",
     "CHEF",
     "CLMT",
+    "COHU",
     "COIN",
     "COKE",
     "CORT",
@@ -120,8 +117,8 @@
     "ZBRA",
     "ZS"
   ],
-  "current_weekly_scope_count": 96,
-  "current_weekly_scope_hash": "a2a6062ff100c5e49787e722fc8cf53d6cc628f013ae6a9b34c1aa75aea7add0",
+  "current_weekly_scope_count": 97,
+  "current_weekly_scope_hash": "a06b1f119f9cdc113e0a205ef6bdfe739ed50e443e42abdbc1abb8239e67410d",
   "execution": "NONE",
   "family_c_amc_source_lookback_extra_sessions": 1,
   "family_c_breakout_max_sessions": 10,
@@ -260,16 +257,16 @@
     "role": "OPTIONAL_ACCELERATOR_ONLY"
   },
   "schema": "XRAY_EVENT_EPOCH_REQUEST_V1",
-  "source_deep_geometry_blob_sha": "e223dc7c3c02d3a396ccde7364afa48f11e5c936",
+  "source_deep_geometry_blob_sha": "5f734a4354a406e9098ffa534e1cf6cfec60249a",
   "source_deep_geometry_path": "nasdaq-xray/canonical_current_deep_geometry.json",
-  "source_regime_blob_sha": "12e19b72af75bf6401060cb9f5a7dead42a85a9b",
+  "source_regime_blob_sha": "594742646f4e5d2ce370423c584cc04da69e0111",
   "source_regime_path": "nasdaq-xray/canonical_current_regime.json",
-  "source_stage1_blob_sha": "46a8dafa2989cda94f65cb6374f2abbc95bbbd4b",
+  "source_stage1_blob_sha": "866242034503935acd3f70d93a8daa77a34be4b4",
   "source_stage1_path": "nasdaq-xray/canonical_current_stage1.json",
   "status": "READY",
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_never_pass": true,
-  "upstream_coverage_complete": false,
+  "upstream_coverage_complete": true,
   "weekly_scope": [
     "AAPL",
     "ABCL",
@@ -289,6 +286,7 @@
     "CHEF",
     "CLMT",
     "CLSK",
+    "COHU",
     "COIN",
     "COKE",
     "CORT",
@@ -386,6 +384,6 @@
     "ZBRA",
     "ZS"
   ],
-  "weekly_scope_count": 114,
-  "weekly_scope_hash": "ff266661251f7e4f65d5649c10f83f2e222dee1877c3fea2d997f72190746e9b"
+  "weekly_scope_count": 115,
+  "weekly_scope_hash": "8002f91dc4b5a4acf0368d7a5eb34055cbd184a9de6732e8aed429d8b9966ad8"
 }
