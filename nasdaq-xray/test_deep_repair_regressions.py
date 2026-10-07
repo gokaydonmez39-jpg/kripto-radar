@@ -1070,6 +1070,88 @@ def test_event_provenance_rebind_preserves_event_semantics_and_exact_sources():
     assert out["event_status_by_symbol"]==pred["event_status_by_symbol"]
     assert out["unresolved"]==pred["unresolved"]
 
+def test_event_official_primary_successor_lineage_accepts_legacy_and_standard_refresh():
+    req={
+      "asof_et":"2026-10-06",
+      "weekly_scope":["AAA","BBB"],"weekly_scope_count":2,"weekly_scope_hash":"WH",
+      "geometry_scope":["AAA","BBB"],"geometry_scope_count":2,"geometry_scope_hash":"GH",
+      "lifecycle_scope":[],"lifecycle_scope_count":0,"lifecycle_scope_hash":"LH",
+      "past_family_c_sessions":["2026-10-05"],
+      "future_horizon_sessions":["2026-10-07","2026-10-08","2026-10-09","2026-10-12","2026-10-13","2026-10-14","2026-10-15","2026-10-16"],
+      "required_discovery":{"required":False,"role":"OPTIONAL_ACCELERATOR_ONLY"},
+    }
+    common={
+      "schema":"XRAY_EVENT_EPOCH_RESULT_V1","status":"COMMITTED","task_id":event_rebind_mod.TASK,
+      "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,"asof_et":"2026-10-06",
+      "compiled_policy_hash":event_rebind_mod.POLICY_HASH,
+      "compiled_policy_version":event_rebind_mod.POLICY_VERSION,
+      "compiled_policy_blob_sha":event_rebind_mod.POLICY_BLOB,
+      "weekly_scope":["AAA","BBB"],"weekly_scope_count":2,"weekly_scope_hash":"WH",
+      "geometry_scope":["AAA","BBB"],"geometry_scope_count":2,"geometry_scope_hash":"GH",
+      "lifecycle_scope":[],"lifecycle_scope_count":0,"lifecycle_scope_hash":"LH",
+      "past_family_c_sessions":["2026-10-05"],
+      "future_horizon_sessions":list(req["future_horizon_sessions"]),
+      "source_policy":{
+        "discovery":"OPTIONAL_PROVIDER_NEUTRAL_DISCOVERY_ACCELERATOR",
+        "official_confirmation":"ISSUER_IR_OR_SEC_PRIMARY_REQUIRED_TO_CLEAR_OR_BLOCK",
+        "provider_unavailable_rule":"DIRECT_OFFICIAL_PRIMARY_BEFORE_GEOMETRY_UNKNOWN",
+        "unknown_never_pass":True,
+      },
+    }
+    legacy=dict(common)
+    legacy.update({
+      "authority":"CANONICAL_EVENT_BRIDGE_C4_17_DV30_OFFICIAL_PRIMARY_SUCCESSOR_V8",
+      "committed_by":"OPENAI_FOREGROUND_ZERO_DOLLAR_ISSUER_PRIMARY_PROBE",
+      "provider_unavailable_but_officially_resolved_symbols":["AAA"],
+      "event_status_by_symbol":{"AAA":"CLEAN_DISCOVERY","BBB":"UNKNOWN"},
+      "official_horizon_clearance":{"AAA":{
+        "authority":"ISSUER_IR_PRIMARY","official_source_url":"https://ir.example.com/aaa",
+        "next_event_date":"2026-10-20","horizon_result":"OUTSIDE_EXACT_8_SESSION_HORIZON",
+      }},
+      "semantic_rebind":{
+        "weekly_scope_hash":"WH","geometry_scope_hash":"GH","lifecycle_scope_hash":"LH",
+        "no_alpha_threshold_change":True,"no_event_horizon_change":True,
+        "event_policy_semantics_unchanged":True,
+        "event_decisions_changed_with_new_primary_evidence":True,
+      },
+      "rebind_proof":{"direct_official_primary_reverification":True},
+    })
+    standard=dict(common)
+    standard.update({
+      "authority":"CANONICAL_EVENT_BRIDGE_C4_17_DV30_OFFICIAL_PRIMARY_SUCCESSOR_V9",
+      "committed_by":"OPENAI_FOREGROUND_ZERO_DOLLAR_ISSUER_PRIMARY_PROBE",
+      "provider_unavailable_but_officially_resolved_symbols":["AAA","BBB"],
+      "event_status_by_symbol":{"AAA":"CLEAN_DISCOVERY","BBB":"CLEAN_DISCOVERY"},
+      "official_horizon_clearance":{
+        "AAA":{"authority":"ISSUER_IR_PRIMARY","official_source_url":"https://ir.example.com/aaa","next_event_date":"2026-10-20"},
+        "BBB":{"authority":"ISSUER_IR_PRIMARY","official_source_url":"https://ir.example.com/bbb","next_event_date":"2026-10-27"},
+      },
+      "semantic_rebind":{
+        "rule":"OPTIONAL_DISCOVERY_DIRECT_OFFICIAL_PRIMARY_RESOLUTION_V1",
+        "weekly_scope_hash":"WH","geometry_scope_hash":"GH","lifecycle_scope_hash":"LH",
+        "no_alpha_threshold_change":True,"no_event_horizon_change":True,
+        "decisions_changed_only_with_primary_evidence":True,
+        "official_resolved_count":2,
+      },
+      "rebind_proof":{"direct_official_primary_reverification":True},
+    })
+    event_rebind_mod.validate_bridge_scope(legacy,req)
+    event_rebind_mod.validate_bridge_scope(standard,req)
+    rows=[
+      {"path":"nasdaq-xray/v7.json","blob":"S7","obj":dict(common)},
+      {"path":"nasdaq-xray/v8.json","blob":"S8","obj":dict(legacy,**{
+          "supersedes_event_bridge_path":"nasdaq-xray/v7.json",
+          "supersedes_event_bridge_blob_sha":"S7",
+      })},
+      {"path":"nasdaq-xray/v9.json","blob":"S9","obj":dict(standard,**{
+          "supersedes_event_bridge_path":"nasdaq-xray/v8.json",
+          "supersedes_event_bridge_blob_sha":"S8",
+      })},
+    ]
+    active=event_rebind_mod.select_active_event(rows)
+    assert active["path"]=="nasdaq-xray/v9.json",active["path"]
+
+
 def test_final_workflow_auto_rebinds_event_provenance_and_persists_successor():
     wf=(REPO/".github/workflows/xray-canonical-current-final.yml").read_text()
     assert "Rebind exact current event provenance without rediscovery" in wf
@@ -1223,6 +1305,7 @@ def main():
     test_mc_provenance_exact_requires_full_scope_resolver_handoff()
     test_mc_provenance_rebind_preserves_all_outcomes_and_watch_caps()
     test_event_provenance_rebind_preserves_event_semantics_and_exact_sources()
+    test_event_official_primary_successor_lineage_accepts_legacy_and_standard_refresh()
     test_final_workflow_auto_rebinds_event_provenance_and_persists_successor()
     test_resolver_bridge_authority_prefers_exact_current_lineage()
     test_post_mc_exact_source_rebind_workflow_contract()
@@ -1248,7 +1331,7 @@ def main():
     test_workflow_race_and_pre_mc_freeze_contracts()
     print({"status":"PASS","tests":["R1_NO_FUTURE_MUTATION","R1_PLUS2_CONFIRMATION_NO_LEAK","R1_PIVOT_BOUNDARY_NOT_OVERHEAD",
       "RESISTANCE_ROLE_CHANGE_STATE_MACHINE","FINAL_HISTORY_OHLCV_BINDING","REGIME_INTERVAL_BOUNDS_AND_FINALIST_GATE","CORPORATE_ACTION_NONE_VS_SCALE_BREAK_FAIL_CLOSED","D_RECLAIM_AFTER_HL_AVAILABILITY","FAMILY_A_TRIGGER_TIME_RECONSTRUCTION","FAMILY_A_AGE5_UNRECORDED_NOT_REDISCOVERED","FAMILY_A_FINAL_GEOMETRY_REVALIDATION","RETEST_WINDOW_EXPIRES_AFTER_5","MODEL_HORIZON_EXPIRES_AFTER_8",
-      "FROZEN_LEVELS_NEXT_ASOF_STABLE","LIFECYCLE_REGIME_REVALIDATION_PERSISTS","LIFECYCLE_PERSISTENCE_ROUNDTRIP","MC_BRIDGE_IMMUTABLE_SUPERSESSION","HISTORY_BRIDGE_SEMANTIC_REBIND_EXACT_MC_PARTITIONS","MC_SUPERSESSION_DIRECT_SUCCESSOR_OVER_OBSOLETE_ANCESTOR","MC_PROVENANCE_REBIND_PRESERVES_OUTCOMES","EVENT_PROVENANCE_REBIND_PRESERVES_SEMANTICS","FINAL_WORKFLOW_EVENT_REBIND_PERSISTS_SUCCESSOR","RESOLVER_BRIDGE_EXACT_CURRENT_LINEAGE","POST_MC_EXACT_SOURCE_REBIND_WORKFLOW_CONTRACT",
+      "FROZEN_LEVELS_NEXT_ASOF_STABLE","LIFECYCLE_REGIME_REVALIDATION_PERSISTS","LIFECYCLE_PERSISTENCE_ROUNDTRIP","MC_BRIDGE_IMMUTABLE_SUPERSESSION","HISTORY_BRIDGE_SEMANTIC_REBIND_EXACT_MC_PARTITIONS","MC_SUPERSESSION_DIRECT_SUCCESSOR_OVER_OBSOLETE_ANCESTOR","MC_PROVENANCE_REBIND_PRESERVES_OUTCOMES","EVENT_PROVENANCE_REBIND_PRESERVES_SEMANTICS","EVENT_OFFICIAL_PRIMARY_SUCCESSOR_LINEAGE","FINAL_WORKFLOW_EVENT_REBIND_PERSISTS_SUCCESSOR","RESOLVER_BRIDGE_EXACT_CURRENT_LINEAGE","POST_MC_EXACT_SOURCE_REBIND_WORKFLOW_CONTRACT",
       "FINAL_ALPHA_STALE_SOURCE_GUARD","PARTIAL_COVERAGE_DOES_NOT_GLOBAL_ABORT",
       "DETAILED_FINALIST_LEGAL_FAIL_CLOSED","CANDIDATE_LOCAL_LEGAL_UNKNOWN_ISOLATION","FINAL_VERIFIED_MARKET_GAP_NOT_DOUBLE_BLOCKED","DETAILED_LEGAL_GUARD_EXACT_SOURCE_BINDING","DETAILED_LEGAL_GUARD_POLICY_BINDING","DETAILED_LEGAL_GUARD_NONCIRCULAR_LIFECYCLE","CROSS_SESSION_LIFECYCLE_ACTIVE_ONLY","FAMILY_C_EVENT_REQUEST_BOUNDARY_AMC","FUTURE_LIFECYCLE_EVIDENCE_REJECTED","DETAILED_LEGAL_GUARD_LIFECYCLE_FALLBACK_PARITY","DETAILED_LEGAL_GUARD_BOILERPLATE_SEVERITY","DETAILED_LEGAL_GUARD_ANNUAL_PLUS_QUARTERLY_SCOPE","DETAILED_LEGAL_GUARD_EMPTY_SCOPE_NO_NETWORK","TERMINAL_DETAILED_LEGAL_FULL_E2E_BLOCKER","DETAILED_LEGAL_GUARD_NO_SELF_TRIGGER",
       "POST_MC_PARTIAL_COVERAGE_GATE","TERMINAL_LIFECYCLE_STATE_CONTRACT","PRE_MC_COMPLETED_ASOF_FREEZE_TRUTH_TABLE"]})
