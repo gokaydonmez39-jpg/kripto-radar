@@ -3,28 +3,28 @@
   "calibration_pass": false,
   "comparable_current_policy_session_count": 1,
   "current_finalist_diagnostics": {
-    "asof_et": "2026-10-06",
-    "candidate_count": 14,
+    "asof_et": "2026-10-07",
+    "candidate_count": 17,
     "family_counts": {
-      "D": 14
+      "D": 17
     },
     "kill_reason_counts": {
-      "FAIL_RISK_GEOMETRY": 14
+      "FAIL_RISK_GEOMETRY": 17
     },
     "pre_g9_count": 0,
-    "risk_fail_count": 14,
-    "risk_percent_max": 0.18752942107539106,
-    "risk_percent_median": 0.1134835566733473,
-    "risk_percent_min": 0.08150995782316935,
-    "rr_basic_fail_count": 14,
-    "rr_basic_max": 0.7690469261217284,
-    "rr_severe_fail_count": 14,
-    "rr_severe_max": 0.5754224440510413,
-    "target_overlap_count": 7
+    "risk_fail_count": 17,
+    "risk_percent_max": 0.18965110915923933,
+    "risk_percent_median": 0.11679253315886474,
+    "risk_percent_min": 0.08158024047331357,
+    "rr_basic_fail_count": 16,
+    "rr_basic_max": 2.0276760681932657,
+    "rr_severe_fail_count": 16,
+    "rr_severe_max": 1.617697482963245,
+    "target_overlap_count": 6
   },
   "current_policy_version": "C4.17",
   "execution": "NONE",
-  "generated_at_utc": "2026-10-07T19:22:48.677294+00:00",
+  "generated_at_utc": "2026-10-07T21:49:18.849269+00:00",
   "interpretation": {
     "empirical_calibration": "NOT_PROVEN",
     "functional_reachability": "DECLARED_POSITIVE_TEST_EXISTS",
@@ -74,11 +74,11 @@
       "terminal_status": "FULL_E2E_RESEARCH_PASS"
     },
     {
-      "asof_et": "2026-10-06",
+      "asof_et": "2026-10-07",
       "comparable_to_current_c417": true,
       "compiled_policy_version": "C4.17",
       "dv30_semantics_observed": true,
-      "final_confirmed_candidates": 14,
+      "final_confirmed_candidates": 17,
       "final_path": "nasdaq-xray/canonical_current_final_tech.json",
       "full_end_to_end_research_pass": false,
       "pre_g9_tech_pass": 0,
@@ -95,12 +95,12 @@
   "target_comparable_sessions": 60,
   "unknown_never_pass": true,
   "zero_pre_g9_comparable_dates": [
-    "2026-10-06"
+    "2026-10-07"
   ],
   "zero_pre_g9_snapshot_dates": [
     "2026-09-29",
     "2026-09-30",
     "2026-10-01",
-    "2026-10-06"
+    "2026-10-07"
   ]
 }
