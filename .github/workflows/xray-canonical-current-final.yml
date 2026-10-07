@@ -2,6 +2,7 @@
 name: XRAY Canonical Current Final Factory
 
 # manual exact-current replay trigger: 2026-10-07-post-regression-repair
+# exact-current replay after non-preemptive Final regression proof: 2026-10-07-v3
 on:
   workflow_run:
     workflows: ["XRAY Resilience + Official Witnesses", "XRAY Canonical Current Post-MC Factory"]
