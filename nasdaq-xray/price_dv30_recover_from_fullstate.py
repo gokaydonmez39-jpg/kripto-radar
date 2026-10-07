@@ -28,17 +28,42 @@ def git_blob_sha(path:Path)->str:
 def resolver_bridge_input_binding(obj,asof,queue_hash):
     """Bind a resolver bridge to the exact pre-run PRICE state and resolver scope.
 
-    Request/manifest provenance SHAs may differ only when current request
-    semantics are independently identical: same exact source PRICE blob,
-    ASOF/queue/policy, ordered symbol scope and unknown scope, with the current
-    chunk manifest exactly bound to the current request bytes.
+    Exact blob binding remains preferred. A narrowly-scoped semantic rebind is
+    allowed only when the bridge carries an explicit source_price_semantic_binding
+    proving that the decision-bearing PRICE partition is identical despite a
+    non-semantic canonical artifact rewrite. This never permits UNKNOWN->PASS.
     """
     try:
         if not OUT.exists() or not RESOLVER_REQUEST.exists() or not RESOLVER_CHUNK_MANIFEST.exists():
             return False,None,"CURRENT_INPUT_ARTIFACT_MISSING"
         prior_price_blob=git_blob_sha(OUT)
-        if obj.get("source_price_blob_sha")!=prior_price_blob:
-            return False,None,"SOURCE_PRICE_BLOB_MISMATCH"
+        prior_price=json.loads(OUT.read_text())
+        price_blob_exact=(obj.get("source_price_blob_sha")==prior_price_blob)
+        semantic_price_rebind=False
+        if not price_blob_exact:
+            sb=obj.get("source_price_semantic_binding") or {}
+            current_pass=list(prior_price.get("pass_symbols") or [])
+            current_unknown=list(prior_price.get("unknown_symbols") or [])
+            current_blocked=list(prior_price.get("blocked_symbols") or [])
+            semantic_price_rebind=bool(
+              sb.get("schema")=="XRAY_PRICE_PARTITION_SEMANTIC_BINDING_V1"
+              and sb.get("source_price_blob_sha")==obj.get("source_price_blob_sha")
+              and sb.get("asof_et")==prior_price.get("asof_et")==asof
+              and sb.get("queue_hash")==prior_price.get("source_master_queue_hash")==queue_hash
+              and int(sb.get("queue_total",-1))==int(prior_price.get("source_master_count",-2))
+              and list(sb.get("expected30") or [])==list(prior_price.get("expected30") or [])
+              and list(sb.get("gate_order") or [])==list(prior_price.get("gate_order") or [])
+              and (sb.get("thresholds") or {})==(prior_price.get("thresholds") or {})
+              and int(sb.get("pass_count",-1))==int(prior_price.get("pass_count",-2))
+              and sb.get("pass_hash")==prior_price.get("pass_hash")
+              and list(sb.get("pass_symbols") or [])==current_pass
+              and list(sb.get("unknown_symbols") or [])==current_unknown
+              and list(sb.get("blocked_symbols") or [])==current_blocked
+              and sb.get("unknown_never_pass") is True
+              and sb.get("no_new_pass") is True
+            )
+            if not semantic_price_rebind:
+                return False,None,"SOURCE_PRICE_BLOB_MISMATCH"
         q=json.loads(RESOLVER_REQUEST.read_text())
         cm=json.loads(RESOLVER_CHUNK_MANIFEST.read_text())
         if not (
@@ -93,11 +118,14 @@ def resolver_bridge_input_binding(obj,asof,queue_hash):
           and cm.get("coverage_complete") is True
         ):
             return False,None,"CURRENT_MANIFEST_BINDING_MISMATCH"
-        role=(
-          "EXACT_CURRENT_REQUEST_MANIFEST"
-          if obj.get("source_request_blob_sha")==rq_blob and obj.get("source_manifest_blob_sha")==cm_blob
-          else "SEMANTIC_REBIND_EXACT_SOURCE_PRICE_AND_SCOPE"
-        )
+        if semantic_price_rebind:
+            role="SEMANTIC_REBIND_EXACT_PRICE_PARTITION_AND_SCOPE"
+        else:
+            role=(
+              "EXACT_CURRENT_REQUEST_MANIFEST"
+              if obj.get("source_request_blob_sha")==rq_blob and obj.get("source_manifest_blob_sha")==cm_blob
+              else "SEMANTIC_REBIND_EXACT_SOURCE_PRICE_AND_SCOPE"
+            )
         return True,role,None
     except Exception as exc:
         return False,None,"INPUT_BINDING_ERROR:"+type(exc).__name__
