@@ -192,6 +192,35 @@ def current_settlement_witness(request: dict, master: dict, price: dict,
 
 
 
+def validate_settlement_chain_integrity(path: Path, expected_blob: str, asof: str) -> dict:
+    """Validate immutable historical settlement lineage without granting current authority."""
+    seen = set()
+    for _depth in range(8):
+        rel = relpath(path)
+        assert rel not in seen, ("HISTORICAL_SETTLEMENT_WITNESS_CYCLE", rel)
+        seen.add(rel)
+        assert path.exists(), ("HISTORICAL_SETTLEMENT_WITNESS_MISSING", str(path))
+        assert blob_sha(path) == expected_blob, ("HISTORICAL_SETTLEMENT_WITNESS_BLOB_MISMATCH", rel)
+        j = json.loads(path.read_text())
+        assert j.get("schema") == "XRAY_RESOLVER_EPOCH_RESULT_V1"
+        assert j.get("status") == "COMMITTED"
+        assert j.get("task_id") == TASK
+        assert j.get("execution") == "NONE" and j.get("real_money") == "NO-GO"
+        assert j.get("unknown_never_pass") is True
+        assert j.get("asof_et") == asof
+        assert j.get("compiled_policy_hash") == POLICY_HASH
+        assert j.get("compiled_policy_version") == POLICY_VERSION
+        assert j.get("settlement_status") == "PASS"
+        next_rel = str(j.get("settlement_witness_path") or "")
+        next_blob = str(j.get("settlement_witness_blob_sha") or "")
+        assert bool(next_rel) == bool(next_blob), ("HISTORICAL_SETTLEMENT_WITNESS_PARTIAL_LINK", rel)
+        if not next_rel:
+            return j
+        path = REPO / next_rel
+        expected_blob = next_blob
+    raise AssertionError(("HISTORICAL_SETTLEMENT_WITNESS_CHAIN_DEPTH_EXCEEDED", sorted(seen)))
+
+
 class UpstreamPending(RuntimeError):
     """Expected fail-closed wait state; never evidence for PASS."""
 
@@ -297,6 +326,12 @@ def selftest() -> None:
             "2099-01-01",
         )
         assert resolved.get("bridge_role") == "FULL_SCOPE_MC_HANDOFF_PROVENANCE"
+        historical_terminal = validate_settlement_chain_integrity(
+            residual_path,
+            blob_sha(residual_path),
+            "2099-01-01",
+        )
+        assert historical_terminal.get("bridge_role") == "FULL_SCOPE_MC_HANDOFF_PROVENANCE"
     finally:
         for p in (residual_path, full_path):
             p.unlink(missing_ok=True)
@@ -516,8 +551,35 @@ def load_valid_mc_rows(price: dict, pass_symbols: list[str], pass_hash: str, mas
             ws = str(j.get("settlement_witness_blob_sha") or "")
             assert j.get("settlement_witness_status") == "PASS"
             assert wp and ws
-            validate_settlement_witness(REPO / wp, ws, master, price["asof_et"])
-            rows.append({"path": relpath(p), "file": p, "blob": blob_sha(p), "obj": j})
+            # Preserve the MC row only when its recorded historical settlement
+            # lineage is byte-exact and PASS at every hop. Historical lineage
+            # alone never grants current authority.
+            validate_settlement_chain_integrity(REPO / wp, ws, price["asof_et"])
+
+            # Current-reusable settlement authority is independently required
+            # from the MC row's exact recorded full-scope resolver provenance.
+            hp = str(j.get("resolver_handoff_provenance_path") or "")
+            hs = str(j.get("resolver_handoff_provenance_blob_sha") or "")
+            assert hp and hs
+            handoff_path = REPO / hp
+            validate_settlement_chain_integrity(handoff_path, hs, price["asof_et"])
+            handoff = json.loads(handoff_path.read_text())
+            relation = settlement_witness_relation(handoff, master)
+            assert relation in {"EXACT_QUEUE", "SAFE_SUBSET_REBIND"}, (
+                "MC_RECORDED_HANDOFF_NOT_CURRENT_REUSABLE",
+                hp,
+                relation,
+            )
+            rows.append({
+                "path": relpath(p),
+                "file": p,
+                "blob": blob_sha(p),
+                "obj": j,
+                "historical_settlement_chain_valid": True,
+                "current_reusable_handoff_path": hp,
+                "current_reusable_handoff_blob": hs,
+                "current_reusable_handoff_relation": relation,
+            })
         except Exception:
             continue
     assert rows, "NO_VALID_MC_AUTHORITY_FOR_PROVENANCE_REBIND"
@@ -610,6 +672,8 @@ def build_successor_obj(predecessor: dict, predecessor_path: str, predecessor_bl
         "removed_from_mc": [],
         "overlap": predecessor.get("input_count"),
         "settlement_witness_rebound_to_current_resolver_request": True,
+        "predecessor_historical_settlement_chain_validated": True,
+        "predecessor_recorded_handoff_current_reusable": True,
         "resolver_full_scope_handoff_rebound": bool(resolver_handoff_path and resolver_handoff_blob),
         "no_mc_classification_change": True,
         "no_threshold_change": True,
@@ -627,6 +691,8 @@ def build_successor_obj(predecessor: dict, predecessor_path: str, predecessor_bl
         "pass_manufactured": False,
         "no_threshold_weakening": True,
         "provenance_only_rebind_no_remeasurement": True,
+        "predecessor_historical_settlement_chain_validated": True,
+        "predecessor_recorded_handoff_current_reusable": True,
         "fallback_watch_preserved": True,
         "r92_ineligible_preserved": True,
         "resolver_full_scope_handoff_exact": bool(resolver_handoff_path and resolver_handoff_blob),
