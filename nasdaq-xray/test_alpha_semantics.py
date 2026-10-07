@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import pathlib,sys,tempfile
+import pathlib,sys,tempfile,types
 import pandas as pd
 ROOT=pathlib.Path(__file__).resolve().parent
 sys.path.insert(0,str(ROOT))
@@ -478,6 +478,40 @@ def main():
              history_mod.yahoo,history_mod.yahoo_ohlcv,history_mod.continuity_composite_pass,
              history_mod.eastmoney,history_mod.bridge_resolution)=olds
 
+    # Regression: split transport configuration must be readable inside alpha_semantics.
+    # Missing `import os` previously converted every split-suspect symbol to Stage1 UNKNOWN.
+    old_curl=sys.modules.get("curl_cffi")
+    old_retry=alpha_mod.os.environ.get("XRAY_SPLIT_HTTP_RETRIES")
+    old_timeout=alpha_mod.os.environ.get("XRAY_SPLIT_HTTP_TIMEOUT_SECONDS")
+    alpha_mod._SPLIT_CACHE.clear()
+    calls=[]
+    class _Resp:
+        status_code=200
+        def json(self):
+            return {"chart":{"result":[{"events":{"splits":{}}}]}}
+    class _Req:
+        @staticmethod
+        def get(url,params=None,impersonate=None,timeout=None):
+            calls.append({"url":url,"timeout":timeout,"params":params})
+            return _Resp()
+    fake=types.ModuleType("curl_cffi")
+    fake.requests=_Req
+    sys.modules["curl_cffi"]=fake
+    try:
+        alpha_mod.os.environ["XRAY_SPLIT_HTTP_RETRIES"]="1"
+        alpha_mod.os.environ["XRAY_SPLIT_HTTP_TIMEOUT_SECONDS"]="4"
+        st,events=alpha_mod.fetch_yahoo_split_events("OSENVTEST","2026-01-01","2026-10-06")
+        assert st=="PASS" and events==[],(st,events)
+        assert len(calls)==1 and abs(float(calls[0]["timeout"])-4.0)<1e-12,calls
+    finally:
+        alpha_mod._SPLIT_CACHE.clear()
+        if old_curl is None: sys.modules.pop("curl_cffi",None)
+        else: sys.modules["curl_cffi"]=old_curl
+        if old_retry is None: alpha_mod.os.environ.pop("XRAY_SPLIT_HTTP_RETRIES",None)
+        else: alpha_mod.os.environ["XRAY_SPLIT_HTTP_RETRIES"]=old_retry
+        if old_timeout is None: alpha_mod.os.environ.pop("XRAY_SPLIT_HTTP_TIMEOUT_SECONDS",None)
+        else: alpha_mod.os.environ["XRAY_SPLIT_HTTP_TIMEOUT_SECONDS"]=old_timeout
+
     # Family C canonical pivot includes reaction high. A breakout above only the
     # consolidation high must not pass if it remains below reaction high.
     dates=pd.bdate_range("2026-06-01",periods=36)
@@ -571,7 +605,7 @@ def main():
       "R1_STRUCTURAL_TRIGGER_MINUS1","R1_ENTRY_OVERLAP","EXTENSION_RESET","EXTENSION_TIGHT_BASE_RESET","RETEST_BAR","FAMILY_A_TRIGGER_MINUS1_LOW","SETUP_ID_STABLE",
       "B_RECENT_TRIGGER_PERSISTENCE","DEEP_RECENT_TRIGGER_INDEPENDENT_OF_CURRENT_STAGE1","A_STAGE1_ASOF_TRIGGER","MECHANICAL_SCALE_BREAK_GUARD","BREADTH_CLOSE_ONLY_SCALE_GUARD","SPLIT_ONLY_RECONCILIATION","SPLIT_RAW_CROSSCHECK","UNDECLARED_SCALE_MOVE_MARKET_GAP","HISTORICAL_DISCOVERY_RESEARCH_ELIGIBLE_NO_R92_BACKFILL","CHASE_FROZEN_RETEST_RECOVERY","ANCHOR_AVAILABLE_S0_CHRONOLOGY",
       "ADR_RATIO_FAIL_CLOSED_CLASSIFICATION","FINALIST_FRACTIONAL_SPLIT_VERIFICATION","SYNTHETIC_PRICE_DISCOVERY_ORANGE_CAP","PROSPECTIVE_LIFECYCLE_PERSISTENCE","FROZEN_LIFECYCLE_EVENT_SCOPE","ANCIENT_SCALE_BREAK_OUTSIDE_TECH_HORIZON","TRIGGER_TIME_WEEKLY_SCOPE","BREADTH_NH20_NL20_PRIOR20_STRICT",
-      "HISTORY_PASS_EXACT_ASOF_CACHE_BINDING","FAMILY_C_REACTION_HIGH_PIVOT","FAMILY_C_PERSISTENT_GAP_FLOOR","FAMILY_C_MISSING_INHERITED_CA_NOT_AUTO_UNKNOWN","FAMILY_C_EXPLICIT_CA_UNKNOWN_FAIL_CLOSED","FINAL_RESULT_SCOPE_PRUNES_EXPIRED_UNBACKED_LIFECYCLE","FULL_R1_TO_PRE_G9_REACHABILITY","FRESH_FINAL_SCOPE_EXACT_DEEP_EVENT_PASS_SET","SPLIT_RECONCILIATION_ACTIVE_HORIZON_ONLY"
+      "HISTORY_PASS_EXACT_ASOF_CACHE_BINDING","FAMILY_C_REACTION_HIGH_PIVOT","FAMILY_C_PERSISTENT_GAP_FLOOR","FAMILY_C_MISSING_INHERITED_CA_NOT_AUTO_UNKNOWN","FAMILY_C_EXPLICIT_CA_UNKNOWN_FAIL_CLOSED","FINAL_RESULT_SCOPE_PRUNES_EXPIRED_UNBACKED_LIFECYCLE","FULL_R1_TO_PRE_G9_REACHABILITY","FRESH_FINAL_SCOPE_EXACT_DEEP_EVENT_PASS_SET","SPLIT_RECONCILIATION_ACTIVE_HORIZON_ONLY","SPLIT_ENV_CONFIG_IMPORT_REGRESSION"
     ]})
 
 if __name__=="__main__":
