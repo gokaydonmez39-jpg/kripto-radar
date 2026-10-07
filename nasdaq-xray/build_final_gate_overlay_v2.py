@@ -66,13 +66,17 @@ def current_research_chain():
             and mc.get("policy_hash")=="68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4"
             and mc.get("policy_version")=="C4.17"
             and mc.get("input_path")=="nasdaq-xray/canonical_current_price_dv30.json"
+            and mc.get("input_blob_sha")==file_blob_sha(pp)
             and mc.get("input_pass_hash")==p.get("pass_hash")
             and int(mc.get("input_count",-1))==int(p.get("pass_count",-2))
+            and list(mc.get("input_pass_symbols") or [])==list(p.get("pass_symbols") or [])
             and set((mc.get("results") or {}).keys())==set(p.get("pass_symbols") or [])
         )
         mc_unknown_count=int((mc.get("counts") or {}).get("MC_UNKNOWN",-1))
         return {
             "exact":exact,
+            "price_blob_sha":file_blob_sha(pp),
+            "mc_input_blob_sha":mc.get("input_blob_sha"),
             "coverage_complete":mc_unknown_count==0,
             "price_asof_et":p.get("asof_et"),
             "price_pass_hash":p.get("pass_hash"),
