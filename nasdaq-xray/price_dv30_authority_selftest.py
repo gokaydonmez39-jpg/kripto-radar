@@ -7,10 +7,12 @@ from pathlib import Path
 from price_dv30_recover_from_fullstate import (
     apply_c417_rallies_primary_partition,
     apply_c417_rallies_primary_pass_veto,
+    apply_persistent_terminal_fail_overrides,
     c417_rallies_primary_pass_conflicts,
     c417_rallies_primary_path,
     git_blob_sha,
     load_c417_rallies_primary,
+    validate_persistent_terminal_fail_override,
 )
 
 ROOT=Path(__file__).resolve().parent
@@ -72,6 +74,35 @@ def main():
           "BLOCK_CURRENT_RUN":125,
         },primary.get("counts")
         assert set(master_queue)==universe,"CURRENT_MASTER_NOT_EXACTLY_COVERED_BY_RALLIES_V2"
+
+        bridge_path=ROOT/"canonical_resolver_bridge_20261007_c417_dv30_v5.json"
+        bridge=json.loads(bridge_path.read_text())
+        terminal=validate_persistent_terminal_fail_override(
+            bridge,"BBCI",asof,master.get("queue_hash")
+        )
+        assert terminal is not None,bridge_path
+        assert terminal.get("decision")=="FAIL_DV30_INSUFFICIENT_SESSIONS",terminal
+        assert terminal.get("proof")=="ALPACA_RALLIES_EXACT_MISSING_SET_MATCH",terminal
+        assert terminal.get("known_session_count")==1,terminal
+        assert len(terminal.get("missing_sessions") or [])==29,terminal
+
+        applied_rows={"BBCI":{"status":"BLOCK_CURRENT_RUN","info":{"reason":"TEST"}}}
+        applied=apply_persistent_terminal_fail_overrides(applied_rows,{"BBCI":terminal})
+        assert applied==["BBCI"],applied
+        assert applied_rows["BBCI"]["status"]=="FAIL_DV30_INSUFFICIENT_SESSIONS",applied_rows
+
+        protected_rows={"BBCI":{"status":"PASS_PRICE_DV30","info":{"reason":"TEST"}}}
+        protected=apply_persistent_terminal_fail_overrides(protected_rows,{"BBCI":terminal})
+        assert protected==[],protected
+        assert protected_rows["BBCI"]["status"]=="PASS_PRICE_DV30",protected_rows
+
+        bad=json.loads(json.dumps(bridge))
+        bad["terminal_override_evidence"]["BBCI"]["rallies"]["missing_sessions"]=(
+            bad["terminal_override_evidence"]["BBCI"]["rallies"]["missing_sessions"][:-1]
+        )
+        assert validate_persistent_terminal_fail_override(
+            bad,"BBCI",asof,master.get("queue_hash")
+        ) is None
 
     current=set(master_queue)
     covered=sorted(current & universe)
