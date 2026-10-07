@@ -1,6 +1,9 @@
 name: XRAY Final Risk RR Independent Audit
 
 on:
+  workflow_run:
+    workflows: ["XRAY Canonical Current Final Factory"]
+    types: [completed]
   push:
     branches: [main]
     paths:
@@ -18,6 +21,7 @@ concurrency:
 
 jobs:
   audit:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
