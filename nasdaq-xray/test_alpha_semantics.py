@@ -503,6 +503,40 @@ def main():
         st,events=alpha_mod.fetch_yahoo_split_events("OSENVTEST","2026-01-01","2026-10-06")
         assert st=="PASS" and events==[],(st,events)
         assert len(calls)==1 and abs(float(calls[0]["timeout"])-4.0)<1e-12,calls
+
+        # A transient query1 failure must fail over within the same Yahoo chart
+        # provider family before Stage1 is forced to UNKNOWN. query2 may create
+        # PASS only after a real 200 + parseable chart payload; both-host failure
+        # still remains UNKNOWN.
+        alpha_mod._SPLIT_CACHE.clear()
+        calls.clear()
+        class _FailoverReq:
+            @staticmethod
+            def get(url,params=None,impersonate=None,timeout=None):
+                calls.append({"url":url,"timeout":timeout,"params":params})
+                if "query1.finance.yahoo.com" in url:
+                    class _Bad:
+                        status_code=502
+                    return _Bad()
+                return _Resp()
+        fake.requests=_FailoverReq
+        st2,events2=alpha_mod.fetch_yahoo_split_events("HOSTFAILOVER","2026-01-01","2026-10-06")
+        assert st2=="PASS" and events2==[],(st2,events2)
+        assert [("query1.finance.yahoo.com" in x["url"],"query2.finance.yahoo.com" in x["url"]) for x in calls]==[(True,False),(False,True)],calls
+
+        alpha_mod._SPLIT_CACHE.clear()
+        calls.clear()
+        class _BothBadReq:
+            @staticmethod
+            def get(url,params=None,impersonate=None,timeout=None):
+                calls.append({"url":url,"timeout":timeout,"params":params})
+                class _Bad:
+                    status_code=502
+                return _Bad()
+        fake.requests=_BothBadReq
+        st3,events3=alpha_mod.fetch_yahoo_split_events("HOSTBOTHBAD","2026-01-01","2026-10-06")
+        assert st3.startswith("UNKNOWN:") and events3==[],(st3,events3)
+        assert len(calls)==2,calls
     finally:
         alpha_mod._SPLIT_CACHE.clear()
         if old_curl is None: sys.modules.pop("curl_cffi",None)
@@ -605,7 +639,7 @@ def main():
       "R1_STRUCTURAL_TRIGGER_MINUS1","R1_ENTRY_OVERLAP","EXTENSION_RESET","EXTENSION_TIGHT_BASE_RESET","RETEST_BAR","FAMILY_A_TRIGGER_MINUS1_LOW","SETUP_ID_STABLE",
       "B_RECENT_TRIGGER_PERSISTENCE","DEEP_RECENT_TRIGGER_INDEPENDENT_OF_CURRENT_STAGE1","A_STAGE1_ASOF_TRIGGER","MECHANICAL_SCALE_BREAK_GUARD","BREADTH_CLOSE_ONLY_SCALE_GUARD","SPLIT_ONLY_RECONCILIATION","SPLIT_RAW_CROSSCHECK","UNDECLARED_SCALE_MOVE_MARKET_GAP","HISTORICAL_DISCOVERY_RESEARCH_ELIGIBLE_NO_R92_BACKFILL","CHASE_FROZEN_RETEST_RECOVERY","ANCHOR_AVAILABLE_S0_CHRONOLOGY",
       "ADR_RATIO_FAIL_CLOSED_CLASSIFICATION","FINALIST_FRACTIONAL_SPLIT_VERIFICATION","SYNTHETIC_PRICE_DISCOVERY_ORANGE_CAP","PROSPECTIVE_LIFECYCLE_PERSISTENCE","FROZEN_LIFECYCLE_EVENT_SCOPE","ANCIENT_SCALE_BREAK_OUTSIDE_TECH_HORIZON","TRIGGER_TIME_WEEKLY_SCOPE","BREADTH_NH20_NL20_PRIOR20_STRICT",
-      "HISTORY_PASS_EXACT_ASOF_CACHE_BINDING","FAMILY_C_REACTION_HIGH_PIVOT","FAMILY_C_PERSISTENT_GAP_FLOOR","FAMILY_C_MISSING_INHERITED_CA_NOT_AUTO_UNKNOWN","FAMILY_C_EXPLICIT_CA_UNKNOWN_FAIL_CLOSED","FINAL_RESULT_SCOPE_PRUNES_EXPIRED_UNBACKED_LIFECYCLE","FULL_R1_TO_PRE_G9_REACHABILITY","FRESH_FINAL_SCOPE_EXACT_DEEP_EVENT_PASS_SET","SPLIT_RECONCILIATION_ACTIVE_HORIZON_ONLY","SPLIT_ENV_CONFIG_IMPORT_REGRESSION"
+      "HISTORY_PASS_EXACT_ASOF_CACHE_BINDING","FAMILY_C_REACTION_HIGH_PIVOT","FAMILY_C_PERSISTENT_GAP_FLOOR","FAMILY_C_MISSING_INHERITED_CA_NOT_AUTO_UNKNOWN","FAMILY_C_EXPLICIT_CA_UNKNOWN_FAIL_CLOSED","FINAL_RESULT_SCOPE_PRUNES_EXPIRED_UNBACKED_LIFECYCLE","FULL_R1_TO_PRE_G9_REACHABILITY","FRESH_FINAL_SCOPE_EXACT_DEEP_EVENT_PASS_SET","SPLIT_RECONCILIATION_ACTIVE_HORIZON_ONLY","SPLIT_ENV_CONFIG_IMPORT_REGRESSION","SPLIT_YAHOO_DUAL_HOST_FAILOVER"
     ]})
 
 if __name__=="__main__":
