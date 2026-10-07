@@ -1,0 +1,50 @@
+name: XRAY MC Zero-Key PIT Shadow Selftest
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/mc_zero_key.py"
+      - "nasdaq-xray/mc_zero_key_selftest.py"
+      - ".github/workflows/xray-mc-zero-key-shadow-selftest.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: xray-mc-zero-key-pit-shadow-selftest
+  cancel-in-progress: true
+
+jobs:
+  selftest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Compile
+        run: |
+          python -m py_compile nasdaq-xray/mc_zero_key.py
+          python -m py_compile nasdaq-xray/mc_zero_key_selftest.py
+
+      - name: Prove PIT fail-closed semantics
+        working-directory: nasdaq-xray
+        run: python mc_zero_key_selftest.py
+
+      - name: Static safety assertions
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          s=Path("nasdaq-xray/mc_zero_key.py").read_text()
+          assert '"schema":"XRAY_MC_ZERO_KEY_V3"' in s
+          assert '"alpha_authority":False' in s
+          assert "NASDAQ_MC_ASOF_UNBOUND_DIAGNOSTIC_ONLY" in s
+          assert "NASDAQ_CURRENT_ONLY_DIAGNOSTIC_UNBOUND_ASOF" in s
+          assert "NASDAQ_SCREENER_MARKET_DATA_ASOF_MISSING" in s
+          print("MC_ZERO_KEY_STATIC_SAFETY=PASS")
+          PY
