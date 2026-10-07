@@ -4,7 +4,7 @@
   "asof_et": "2026-10-06",
   "authority": "C4_17_DETERMINISTIC_TECHNICAL_FAIL_CLOSED",
   "candidate_legal_guard_binding_error": null,
-  "candidate_legal_guard_blob_sha": "cd5b750caca87271cf9055c2b1b823b514c9951d",
+  "candidate_legal_guard_blob_sha": "197164f7bb42d7b7f962a6d8daf1e330263a01ce",
   "candidate_legal_guard_exact_binding": true,
   "candidate_legal_guard_path": "nasdaq-xray/canonical_candidate_legal_guard.json",
   "corporate_action_verification": {
@@ -142,7 +142,7 @@
       "lookback": 320,
       "rows": 320,
       "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-      "sha256": "13884801b2565db25e0c8fdd96ca6f2f9de30f7b8d594c6200bc4035c14ed463"
+      "sha256": "c56411e1e641239e2e28399db25275652c87ae860896df5c61204f0d10d73938"
     },
     "FIVN": {
       "first_date": "2025-06-30",
@@ -158,7 +158,7 @@
       "lookback": 320,
       "rows": 320,
       "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-      "sha256": "bb328e45667d0b993c015c603f5d43e4ed7e8aba057c383707cb7bc789544743"
+      "sha256": "89b7c1539e876be4a387429d9b38deb75469465df20b58bf4267ddc84af56116"
     },
     "IOVA": {
       "first_date": "2025-06-30",
@@ -166,7 +166,7 @@
       "lookback": 320,
       "rows": 320,
       "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-      "sha256": "403dd68865fdfea4f4b302112255a7b3e0a1e9eba7ee057173f4592e99e4a17c"
+      "sha256": "db51b62142fbae494bdc02f0c79605cde18f9fc6168af29c62fa96ca9ec3d01b"
     },
     "LITE": {
       "first_date": "2025-06-30",
@@ -174,7 +174,7 @@
       "lookback": 320,
       "rows": 320,
       "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-      "sha256": "f6fbb5dd7f75ce5d20ac342753e09d0947ea7dd88736632f5808e728aa8e7a15"
+      "sha256": "f6eec3168d0d6e11271af7331e51b67441303fc3bd840069308926c4e1e04aed"
     },
     "MRNA": {
       "first_date": "2025-06-30",
@@ -182,7 +182,7 @@
       "lookback": 320,
       "rows": 320,
       "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-      "sha256": "d8a63fbe48e8dc4a0188b15ff5debcf29ad92885ccf8f04122f94112b2c79cfe"
+      "sha256": "aacdfd695b03c732a8e0770a368fa42b79b97747f963a4f9999db074c299278b"
     },
     "MRVL": {
       "first_date": "2025-06-30",
@@ -190,7 +190,7 @@
       "lookback": 320,
       "rows": 320,
       "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-      "sha256": "50301bdcd17b9c34e59d21b213abf25b74e33c1cb46797918f81226980397fb3"
+      "sha256": "dfb7862a37c3356530eeb4eacb3de0ce556eebe6c9eb8cd00e14bda2bdabafb5"
     },
     "MXL": {
       "first_date": "2025-06-30",
@@ -198,7 +198,7 @@
       "lookback": 320,
       "rows": 320,
       "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-      "sha256": "ac7a7374b4e83fe28010bf15ff5a22c03c33a83f94a6142a4fd0b2713445e23b"
+      "sha256": "96bfaeda2956127f53f160562421506a9f800e4f96d5d39f5bd7584a5b7574bb"
     },
     "PI": {
       "first_date": "2025-06-30",
@@ -222,7 +222,7 @@
       "lookback": 320,
       "rows": 320,
       "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-      "sha256": "39383acb855c1c4df3d87a89060b249883c419875cb1a1b9757f725021e323ab"
+      "sha256": "1354310062393d630e7a1a8db338248e1a9ee6df359099da73d2486ed8ea33ce"
     },
     "TRMD": {
       "first_date": "2025-06-30",
@@ -230,7 +230,7 @@
       "lookback": 320,
       "rows": 320,
       "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-      "sha256": "aab97072e4fc36c4800e0508a364e8b1e48106b7afc7ee83cd778180240b3eb6"
+      "sha256": "bb8224495131435fe031b42a1c06991eda29bf1e95c8ce2150959807eeb4fabb"
     },
     "VICR": {
       "first_date": "2025-06-30",
@@ -246,7 +246,7 @@
       "lookback": 320,
       "rows": 320,
       "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-      "sha256": "afd29f75fffa7f11653a5427b818bcac504fd87227bbab302930b500e1d6cec3"
+      "sha256": "fbdf1a599abdb03d7f663dbdf54695d6aea360429730efa226c8c06cbc18efe1"
     }
   },
   "history_fingerprint_semantics": "RAW_OR_OFFICIAL_COMPOSITE_ASOF_TAIL320_V1",
@@ -2221,7 +2221,7 @@
           "pool": true,
           "rs20": 0.20405612777651427,
           "rs60": 0.23617507782345104,
-          "rvol20": 3.0093601667442496,
+          "rvol20": 3.015443210898091,
           "trigger_age_sessions": 0,
           "trigger_date": "2026-10-06",
           "weekly_pass_at_trigger": true
@@ -2359,36 +2359,36 @@
       "family": "D",
       "family_geometry_pass": true,
       "frozen_geometry": {
-        "A": 6.419471781216577,
-        "P": 88.9800033569336,
-        "S0": 78.40610808516294,
-        "T1": 94.5500030517578,
-        "anchor": 79.69000244140625,
+        "A": 6.419160539746543,
+        "P": 88.98,
+        "S0": 78.40616789205069,
+        "T1": 94.55,
+        "anchor": 79.69,
         "anchor_available_date": "2026-09-28",
-        "anchor_available_idx": 748,
-        "chase_limit": 92.18973924754188,
-        "entry_high": 90.58487130223774,
-        "entry_low": 88.9800033569336,
-        "entry_model": 90.58487130223774,
+        "anchor_available_idx": 1201,
+        "chase_limit": 92.18958026987328,
+        "entry_high": 90.58479013493664,
+        "entry_low": 88.98,
+        "entry_model": 90.58479013493664,
         "family": "D",
-        "setup_id": "6f0f484cf45bda01eca41a34",
+        "setup_id": "b7fb97b2e49609936915cd3e",
         "source_geometry": {
-          "A": 6.419471781216577,
-          "P": 88.9800033569336,
-          "anchor": 79.69000244140625,
-          "close": 105.93000030517578,
-          "d": 1.4471597091072128,
-          "dd120": -0.5528391740541232,
+          "A": 6.419160539746543,
+          "P": 88.98,
+          "anchor": 79.69,
+          "close": 105.93,
+          "d": 1.4472297339313493,
+          "dd120": -0.5528391783175819,
           "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
-          "dd252": -0.17435699309810382,
+          "dd252": -0.17435697583788,
           "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
           "dk3_pre_r1": true,
-          "ema50": 77.87351665406626,
+          "ema50": 77.87355168722279,
           "hl_date": "2026-09-24",
           "pool": true,
-          "rs20": 0.7059799036861847,
-          "rs60": 0.06694471492835485,
-          "rvol20": 1.7550863160212076,
+          "rs20": 0.7059799206647395,
+          "rs60": 0.06694474584264043,
+          "rvol20": 1.7532709370442416,
           "trigger_age_sessions": 2,
           "trigger_date": "2026-10-02",
           "weekly_pass_at_trigger": true
@@ -2399,9 +2399,9 @@
         "target_source": "STRUCTURAL_ACTIVE_R1_LOWER_BOUND",
         "target_zone": {
           "active": true,
-          "active_from_idx": 749,
+          "active_from_idx": 1202,
           "kind": "STRUCTURAL_CLUSTER",
-          "lower": 94.5500030517578,
+          "lower": 94.55,
           "occurrence_dates": [
             "2026-06-16",
             "2026-06-18",
@@ -2410,46 +2410,46 @@
           ],
           "points": [
             {
-              "confirmed_idx": 704,
+              "confirmed_idx": 1157,
               "date": "2026-07-23",
               "kind": "DAILY_SWING_HIGH",
-              "occurrence_idx": 702,
-              "price": 94.5500030517578
+              "occurrence_idx": 1155,
+              "price": 94.55
             },
             {
-              "confirmed_idx": 679,
+              "confirmed_idx": 1132,
               "date": "2026-06-16",
               "kind": "DAILY_SWING_HIGH",
-              "occurrence_idx": 677,
-              "price": 94.8000030517578
+              "occurrence_idx": 1130,
+              "price": 94.8
             },
             {
-              "confirmed_idx": 679,
+              "confirmed_idx": 1132,
               "date": "2026-06-18",
               "kind": "BASE_HIGH",
-              "occurrence_idx": 679,
-              "price": 94.8000030517578,
+              "occurrence_idx": 1132,
+              "price": 94.8,
               "window": 5
             },
             {
-              "confirmed_idx": 749,
+              "confirmed_idx": 1202,
               "date": "2026-09-25",
               "kind": "DAILY_SWING_HIGH",
-              "occurrence_idx": 747,
-              "price": 96.22000122070312
+              "occurrence_idx": 1200,
+              "price": 96.22
             }
           ],
-          "upper": 96.22000122070312
+          "upper": 96.22
         },
         "trigger_date": "2026-10-02"
       },
       "geometry": {
-        "move3_atr": 2.6762327011771534,
-        "pivot_extension": 0.22836591288171504,
+        "move3_atr": 2.6763624143100704,
+        "pivot_extension": 0.22836592492694985,
         "reset_between_tminus3_and_t": false,
-        "risk_atr": 1.8971597091072128,
-        "risk_percent": 0.13444588530065005,
-        "x": 1.4471597091072128
+        "risk_atr": 1.8972297339313493,
+        "risk_percent": 0.13444444950133977,
+        "x": 1.4472297339313493
       },
       "historical_discovery_age_gt3": false,
       "invalidation": {
@@ -2457,16 +2457,16 @@
         "first_breach_date": null
       },
       "levels": {
-        "A": 6.419471781216577,
-        "P": 88.9800033569336,
-        "S0": 78.40610808516294,
-        "T1": 94.5500030517578,
-        "anchor": 79.69000244140625,
-        "chase_limit": 92.18973924754188,
-        "close": 109.3000030517578,
-        "entry_high": 90.58487130223774,
-        "entry_low": 88.9800033569336,
-        "entry_model": 90.58487130223774
+        "A": 6.419160539746543,
+        "P": 88.98,
+        "S0": 78.40616789205069,
+        "T1": 94.55,
+        "anchor": 79.69,
+        "chase_limit": 92.18958026987328,
+        "close": 109.3,
+        "entry_high": 90.58479013493664,
+        "entry_low": 88.98,
+        "entry_model": 90.58479013493664
       },
       "lifecycle": "CHASE_NO_VALID_FILL",
       "lifecycle_age_sessions": 2,
@@ -2481,23 +2481,23 @@
       "result": "FAIL_RISK_GEOMETRY",
       "risk_pass": false,
       "rr": {
-        "basic": 0.19916107786851384,
+        "basic": 0.19917451062314553,
         "basic_pass": false,
         "basic_threshold": 2.0,
-        "severe": 0.049088338870852156,
+        "severe": 0.04910447432463613,
         "severe_pass": false,
         "severe_threshold": 1.5
       },
-      "setup_id": "6f0f484cf45bda01eca41a34",
+      "setup_id": "b7fb97b2e49609936915cd3e",
       "state_cap": "WATCH",
       "target": {
         "source": "STRUCTURAL_ACTIVE_R1_LOWER_BOUND",
         "synthetic": false,
         "zone": {
           "active": true,
-          "active_from_idx": 749,
+          "active_from_idx": 1202,
           "kind": "STRUCTURAL_CLUSTER",
-          "lower": 94.5500030517578,
+          "lower": 94.55,
           "occurrence_dates": [
             "2026-06-16",
             "2026-06-18",
@@ -2506,36 +2506,36 @@
           ],
           "points": [
             {
-              "confirmed_idx": 704,
+              "confirmed_idx": 1157,
               "date": "2026-07-23",
               "kind": "DAILY_SWING_HIGH",
-              "occurrence_idx": 702,
-              "price": 94.5500030517578
+              "occurrence_idx": 1155,
+              "price": 94.55
             },
             {
-              "confirmed_idx": 679,
+              "confirmed_idx": 1132,
               "date": "2026-06-16",
               "kind": "DAILY_SWING_HIGH",
-              "occurrence_idx": 677,
-              "price": 94.8000030517578
+              "occurrence_idx": 1130,
+              "price": 94.8
             },
             {
-              "confirmed_idx": 679,
+              "confirmed_idx": 1132,
               "date": "2026-06-18",
               "kind": "BASE_HIGH",
-              "occurrence_idx": 679,
-              "price": 94.8000030517578,
+              "occurrence_idx": 1132,
+              "price": 94.8,
               "window": 5
             },
             {
-              "confirmed_idx": 749,
+              "confirmed_idx": 1202,
               "date": "2026-09-25",
               "kind": "DAILY_SWING_HIGH",
-              "occurrence_idx": 747,
-              "price": 96.22000122070312
+              "occurrence_idx": 1200,
+              "price": 96.22
             }
           ],
-          "upper": 96.22000122070312
+          "upper": 96.22
         }
       },
       "target_overlap": false,
@@ -3663,36 +3663,36 @@
       "family": "D",
       "family_geometry_pass": true,
       "frozen_geometry": {
-        "A": 1.4601195273032619,
-        "P": 32.540000915527344,
-        "S0": 29.632975331599894,
-        "T1": 36.77999877929688,
-        "anchor": 29.924999237060547,
+        "A": 1.4601229157793312,
+        "P": 32.54,
+        "S0": 29.632975416844136,
+        "T1": 35.938,
+        "anchor": 29.925,
         "anchor_available_date": "2026-08-28",
-        "anchor_available_idx": 728,
-        "chase_limit": 33.270060679178975,
-        "entry_high": 32.905030797353156,
-        "entry_low": 32.540000915527344,
-        "entry_model": 32.905030797353156,
+        "anchor_available_idx": 1967,
+        "chase_limit": 33.27006145788967,
+        "entry_high": 32.90503072894483,
+        "entry_low": 32.54,
+        "entry_model": 32.90503072894483,
         "family": "D",
-        "setup_id": "e524819de92bb70984ba85c8",
+        "setup_id": "4e10f44fd62bba6cb1c919af",
         "source_geometry": {
-          "A": 1.4601195273032619,
-          "P": 32.540000915527344,
-          "anchor": 29.924999237060547,
+          "A": 1.4601229157793312,
+          "P": 32.54,
+          "anchor": 29.925,
           "close": 40.0,
-          "d": 1.7909504184883556,
-          "dd120": -0.2526527024893772,
+          "d": 1.7909451127299505,
+          "dd120": -0.25265271006595924,
           "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
           "dd252": 0.0,
           "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
           "dk3_pre_r1": true,
-          "ema50": 33.6435307776406,
+          "ema50": 33.643531042256214,
           "hl_date": "2026-08-26",
           "pool": true,
-          "rs20": 0.12045580491689845,
-          "rs60": 0.375500646274906,
-          "rvol20": 1.2244067408001835,
+          "rs20": 0.12045581492087676,
+          "rs60": 0.3755006200954121,
+          "rvol20": 1.2242404267910854,
           "trigger_age_sessions": 2,
           "trigger_date": "2026-10-02",
           "weekly_pass_at_trigger": true
@@ -3703,50 +3703,49 @@
         "target_source": "STRUCTURAL_ACTIVE_R1_LOWER_BOUND",
         "target_zone": {
           "active": true,
-          "active_from_idx": 253,
-          "breakout_unconfirmed_role_change": "2026-09-18",
+          "active_from_idx": 1976,
+          "breakout_unconfirmed_role_change": "2026-09-16",
           "kind": "STRUCTURAL_CLUSTER",
-          "lower": 36.77999877929688,
+          "lower": 35.938,
           "occurrence_dates": [
-            "2024-02-02",
-            "2024-06-07",
-            "2024-09-20"
+            "2023-04-21",
+            "2024-04-05",
+            "2026-09-09"
           ],
           "points": [
             {
-              "confirmed_idx": 253,
-              "date": "2024-09-20",
-              "kind": "WEEKLY_SWING_HIGH",
-              "occurrence_idx": 50,
-              "price": 36.77999877929688
+              "confirmed_idx": 1976,
+              "date": "2026-09-09",
+              "kind": "DAILY_SWING_HIGH",
+              "occurrence_idx": 1974,
+              "price": 35.938
             },
             {
-              "confirmed_idx": 94,
-              "date": "2024-02-02",
+              "confirmed_idx": 1136,
+              "date": "2023-04-21",
               "kind": "WEEKLY_SWING_HIGH",
-              "occurrence_idx": 17,
-              "price": 37.11000061035156
+              "occurrence_idx": 235,
+              "price": 36.03
             },
             {
-              "confirmed_idx": 171,
-              "date": "2024-06-07",
-              "kind": "BASE_HIGH",
-              "occurrence_idx": 171,
-              "price": 37.130001068115234,
-              "window": 5
+              "confirmed_idx": 1376,
+              "date": "2024-04-05",
+              "kind": "WEEKLY_SWING_HIGH",
+              "occurrence_idx": 285,
+              "price": 36.3099
             }
           ],
-          "upper": 37.130001068115234
+          "upper": 36.3099
         },
         "trigger_date": "2026-10-02"
       },
       "geometry": {
-        "move3_atr": 0.17121885936402237,
-        "pivot_extension": 0.20006140560453334,
+        "move3_atr": 0.17121846202007185,
+        "pivot_extension": 0.20006146281499682,
         "reset_between_tminus3_and_t": false,
-        "risk_atr": 2.2409504184883535,
-        "risk_percent": 0.09943936797702259,
-        "x": 1.7909504184883556
+        "risk_atr": 2.240945112729948,
+        "risk_percent": 0.09943936351417652,
+        "x": 1.7909451127299505
       },
       "historical_discovery_age_gt3": false,
       "invalidation": {
@@ -3754,16 +3753,16 @@
         "first_breach_date": null
       },
       "levels": {
-        "A": 1.4601195273032619,
-        "P": 32.540000915527344,
-        "S0": 29.632975331599894,
-        "T1": 36.77999877929688,
-        "anchor": 29.924999237060547,
-        "chase_limit": 33.270060679178975,
-        "close": 39.04999923706055,
-        "entry_high": 32.905030797353156,
-        "entry_low": 32.540000915527344,
-        "entry_model": 32.905030797353156
+        "A": 1.4601229157793312,
+        "P": 32.54,
+        "S0": 29.632975416844136,
+        "T1": 35.938,
+        "anchor": 29.925,
+        "chase_limit": 33.27006145788967,
+        "close": 39.05,
+        "entry_high": 32.90503072894483,
+        "entry_low": 32.54,
+        "entry_model": 32.90503072894483
       },
       "lifecycle": "CHASE_NO_VALID_FILL",
       "lifecycle_age_sessions": 2,
@@ -3778,54 +3777,53 @@
       "result": "FAIL_RISK_GEOMETRY",
       "risk_pass": false,
       "rr": {
-        "basic": 1.0052930093031947,
+        "basic": 0.7690469261217284,
         "basic_pass": false,
         "basic_threshold": 2.0,
-        "severe": 0.7858115116689797,
+        "severe": 0.5754224440510413,
         "severe_pass": false,
         "severe_threshold": 1.5
       },
-      "setup_id": "e524819de92bb70984ba85c8",
+      "setup_id": "4e10f44fd62bba6cb1c919af",
       "state_cap": "WATCH",
       "target": {
         "source": "STRUCTURAL_ACTIVE_R1_LOWER_BOUND",
         "synthetic": false,
         "zone": {
           "active": true,
-          "active_from_idx": 253,
-          "breakout_unconfirmed_role_change": "2026-09-18",
+          "active_from_idx": 1976,
+          "breakout_unconfirmed_role_change": "2026-09-16",
           "kind": "STRUCTURAL_CLUSTER",
-          "lower": 36.77999877929688,
+          "lower": 35.938,
           "occurrence_dates": [
-            "2024-02-02",
-            "2024-06-07",
-            "2024-09-20"
+            "2023-04-21",
+            "2024-04-05",
+            "2026-09-09"
           ],
           "points": [
             {
-              "confirmed_idx": 253,
-              "date": "2024-09-20",
-              "kind": "WEEKLY_SWING_HIGH",
-              "occurrence_idx": 50,
-              "price": 36.77999877929688
+              "confirmed_idx": 1976,
+              "date": "2026-09-09",
+              "kind": "DAILY_SWING_HIGH",
+              "occurrence_idx": 1974,
+              "price": 35.938
             },
             {
-              "confirmed_idx": 94,
-              "date": "2024-02-02",
+              "confirmed_idx": 1136,
+              "date": "2023-04-21",
               "kind": "WEEKLY_SWING_HIGH",
-              "occurrence_idx": 17,
-              "price": 37.11000061035156
+              "occurrence_idx": 235,
+              "price": 36.03
             },
             {
-              "confirmed_idx": 171,
-              "date": "2024-06-07",
-              "kind": "BASE_HIGH",
-              "occurrence_idx": 171,
-              "price": 37.130001068115234,
-              "window": 5
+              "confirmed_idx": 1376,
+              "date": "2024-04-05",
+              "kind": "WEEKLY_SWING_HIGH",
+              "occurrence_idx": 285,
+              "price": 36.3099
             }
           ],
-          "upper": 37.130001068115234
+          "upper": 36.3099
         }
       },
       "target_overlap": false,
@@ -4130,7 +4128,7 @@
           "pool": true,
           "rs20": 0.4063874998868995,
           "rs60": 0.7015642193785339,
-          "rvol20": 3.035036054017346,
+          "rvol20": 3.0355129164360353,
           "trigger_age_sessions": 0,
           "trigger_date": "2026-10-06",
           "weekly_pass_at_trigger": true
@@ -4471,13 +4469,13 @@
   ],
   "source_compiled_policy_hash": "68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4",
   "source_compiled_policy_version": "C4.17",
-  "source_deep_blob_sha": "ca2acd3a98d3332b79dd2c4fca2f45ccade3dc46",
+  "source_deep_blob_sha": "650e7679b753e4975d360d8622bdd2da2beb1a7a",
   "source_deep_path": "nasdaq-xray/canonical_current_deep_full.json",
-  "source_family_c_blob_sha": "1ca678ccadcce6d5909587287bea0a5d205c0ef7",
+  "source_family_c_blob_sha": "78e3cb2a9461ac100c3dc90c0b37f40679d6e6ad",
   "source_family_c_path": "nasdaq-xray/canonical_current_family_c.json",
-  "source_legal_blob_sha": "8a796e5a2df26db85525f69ddb22159dc5e969c4",
+  "source_legal_blob_sha": "dac9e3084b4df4fee193a4e53f56d09009175515",
   "source_legal_path": "nasdaq-xray/canonical_current_legal.json",
-  "source_workflow_sha": "47cde7b4c851cb4462f43de46d2385364475529a",
+  "source_workflow_sha": "024417867460fda03ac63d5a3dacdb2b3124e9a6",
   "state_caps": {
     "ABCL": "WATCH",
     "FIVN": "WATCH",
