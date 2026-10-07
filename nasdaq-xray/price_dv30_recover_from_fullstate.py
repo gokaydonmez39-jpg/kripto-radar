@@ -922,6 +922,26 @@ def official_full_session_halt_terminal(guard,sym,asof):
         return None
 
 
+def apply_official_full_session_halt_fail_only(results,guard,asof):
+    """Terminalize only unresolved full-session halts; never overwrite PASS/FAIL."""
+    changed=[]
+    if not isinstance(guard,dict):
+        return changed
+    for sym,row in sorted(results.items()):
+        if row.get("status") not in {"BLOCK_CURRENT_RUN","UNKNOWN"}:
+            continue
+        ev=official_full_session_halt_terminal(guard,sym,asof)
+        if not ev:
+            continue
+        results[sym]={
+          "status":"FAIL_PRICE_NO_ASOF_BAR",
+          "info":ev,
+          "provenance":"OFFICIAL_NASDAQ_FULL_SESSION_HALT_FAIL_ONLY",
+        }
+        changed.append(sym)
+    return changed
+
+
 def load_official_listing_registry():
     try:
         obj=json.loads(OFFICIAL_LISTING_REGISTRY.read_text())
@@ -1154,20 +1174,9 @@ def main():
     # the ASOF price gate. They resolve provider-coverage ambiguity without
     # manufacturing a bar or changing the PRICE/DV30 thresholds.
     official_guard,official_halt_guard_meta=load_official_halt_guard()
-    official_halt_terminalized=[]
-    if official_guard is not None:
-        for sym,row in sorted(results.items()):
-            if row.get("status")!="BLOCK_CURRENT_RUN":
-                continue
-            ev=official_full_session_halt_terminal(official_guard,sym,asof)
-            if not ev:
-                continue
-            results[sym]={
-              "status":"FAIL_PRICE_NO_ASOF_BAR",
-              "info":ev,
-              "provenance":"OFFICIAL_NASDAQ_FULL_SESSION_HALT_FAIL_ONLY",
-            }
-            official_halt_terminalized.append(sym)
+    official_halt_terminalized=apply_official_full_session_halt_fail_only(
+        results,official_guard,asof
+    )
 
     # Official first-trade/listing dates can terminalize recent listings when
     # the exact 30-session DV30 history cannot mathematically exist by ASOF.
