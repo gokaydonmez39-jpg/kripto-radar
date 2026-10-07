@@ -22,6 +22,7 @@ on:
       - "nasdaq-xray/canonical_mc_bridge_*.json"
       - "nasdaq-xray/build_mc_provenance_rebind.py"
       - "nasdaq-xray/history_phase.py"
+      - "nasdaq-xray/post_mc_history_legal_reuse_guard.py"
       - "nasdaq-xray/history_official_identity_evidence.json"
       - "nasdaq-xray/canonical_history_evidence_bridge_*.json"
       - "nasdaq-xray/legal_phase.py"
@@ -370,76 +371,20 @@ jobs:
         env:
           XRAY_SELECTED_MC: ${{ steps.mc.outputs.path }}
         run: |
-          python - <<'PY' >> "$GITHUB_OUTPUT"
-          import glob,hashlib,json,os,pathlib
-          root=pathlib.Path("nasdaq-xray")
-          def bsha(p):
-              b=p.read_bytes()
-              return hashlib.sha1(f"blob {len(b)}\0".encode()+b).hexdigest()
-          reuse=False;reason="NOT_EVALUATED"
-          try:
-              curp=root/"canonical_current_price_dv30.json"
-              curmc=pathlib.Path(os.environ["XRAY_SELECTED_MC"])
-              hp=root/"canonical_current_history.json"
-              lp=root/"canonical_current_legal.json"
-              p=json.load(open(curp)); mc=json.load(open(curmc)); h=json.load(open(hp)); l=json.load(open(lp))
-              old_matches=[]
-              for fp in glob.glob("nasdaq-xray/canonical_mc_bridge_*.json"):
-                  sp=pathlib.Path(fp)
-                  try:
-                      if bsha(sp)!=h.get("source_mc_blob_sha"): continue
-                      sj=json.load(open(sp))
-                      if (
-                        sj.get("schema")=="XRAY_MC_EPOCH_RESULT_V1"
-                        and sj.get("status")=="COMMITTED"
-                        and sj.get("task_id")==mc.get("task_id")
-                        and sj.get("execution")=="NONE" and sj.get("real_money")=="NO-GO"
-                        and sj.get("asof_et")==mc.get("asof_et")==p.get("asof_et")==h.get("asof_et")==l.get("asof_et")
-                        and sj.get("policy_hash")==mc.get("policy_hash")=="68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4"
-                        and sj.get("policy_version")==mc.get("policy_version")=="C4.17"
-                        and sj.get("input_pass_hash")==mc.get("input_pass_hash")==p.get("pass_hash")
-                        and set(sj.get("primary_pass_symbols") or [])==set(mc.get("primary_pass_symbols") or [])
-                        and set(sj.get("primary_fail_symbols") or [])==set(mc.get("primary_fail_symbols") or [])
-                        and set(sj.get("fallback_watch_symbols") or [])==set(mc.get("fallback_watch_symbols") or [])
-                        and set(sj.get("fallback_fail_symbols") or sj.get("fallback_two_source_fail_symbols") or [])==
-                            set(mc.get("fallback_fail_symbols") or mc.get("fallback_two_source_fail_symbols") or [])
-                        and set(sj.get("unknown_symbols") or [])==set(mc.get("unknown_symbols") or [])
-                      ):
-                          old_matches.append(sp)
-                  except Exception:
-                      pass
-              primary=set(mc.get("primary_pass_symbols") or [])
-              watch=set(mc.get("fallback_watch_symbols") or [])
-              eligible=primary|watch
-              hpass=set(h.get("pass_symbols") or [])
-              hresults=set((h.get("results") or {}).keys())
-              lpass=set(l.get("pass_symbols") or [])
-              lblock=set(l.get("blocked_symbols") or [])
-              lresults=set((l.get("results") or {}).keys())
-              reuse=(
-                len(old_matches)==1
-                and h.get("unknown_count")==0
-                and int(h.get("input_count",-1))==len(eligible)
-                and hresults==eligible
-                and h.get("source_mc_policy_hash")==mc.get("policy_hash")
-                and h.get("source_mc_policy_version")==mc.get("policy_version")
-                and l.get("source_history_blob_sha")==bsha(hp)
-                and l.get("source_history_pass_hash")==h.get("pass_hash")
-                and int((l.get("counts") or {}).get("UNKNOWN_LEGAL",-1))==0
-                and lresults==hpass
-                and lpass|lblock==hpass and not (lpass&lblock)
-              )
-              reason="EXACT_SAME_ASOF_HISTORY_LEGAL_REUSE" if reuse else "REBUILD_HISTORY_LEGAL"
-          except Exception as e:
-              reuse=False;reason="REUSE_CHECK_ERROR_"+type(e).__name__
-          print("reuse="+("true" if reuse else "false"))
-          print("reason="+reason)
-          PY
+          set -euo pipefail
+          python nasdaq-xray/post_mc_history_legal_reuse_guard.py \
+            --repo-root . \
+            --price nasdaq-xray/canonical_current_price_dv30.json \
+            --mc "$XRAY_SELECTED_MC" \
+            --history nasdaq-xray/canonical_current_history.json \
+            --legal nasdaq-xray/canonical_current_legal.json >> "$GITHUB_OUTPUT"
 
       - name: Compile
         run: |
           python -m py_compile \
             nasdaq-xray/history_phase.py \
+            nasdaq-xray/post_mc_history_legal_reuse_guard.py \
+            nasdaq-xray/post_mc_history_legal_reuse_guard_selftest.py \
             nasdaq-xray/legal_phase.py \
             nasdaq-xray/build_stage1_input.py \
             nasdaq-xray/alpha_semantics.py \
@@ -451,9 +396,11 @@ jobs:
       - name: Install zero-dollar runtime
         if: steps.mc.outputs.ready == 'true'
         run: python -m pip install --disable-pip-version-check -r nasdaq-xray/requirements-runtime.txt
-      - name: Verify deterministic alpha semantics
+      - name: Verify deterministic alpha semantics and semantic reuse guard
         if: steps.mc.outputs.ready == 'true'
-        run: python nasdaq-xray/test_alpha_semantics.py
+        run: |
+          python nasdaq-xray/test_alpha_semantics.py
+          python nasdaq-xray/post_mc_history_legal_reuse_guard_selftest.py
       - name: Run HISTORY
         if: steps.mc.outputs.ready == 'true' && steps.reuse_hl.outputs.reuse != 'true'
         timeout-minutes: 12
