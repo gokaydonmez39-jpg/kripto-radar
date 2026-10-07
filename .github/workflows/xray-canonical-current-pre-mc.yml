@@ -23,6 +23,8 @@ on:
       - "nasdaq-xray/build_current_master_manifest.py"
       - "nasdaq-xray/price_dv30_phase.py"
       - "nasdaq-xray/price_dv30_recover_from_fullstate.py"
+      - "nasdaq-xray/price_official_halt_selftest.py"
+      - "nasdaq-xray/official_source_guard.py"
       - "nasdaq-xray/build_current_resolver_request.py"
       - "nasdaq-xray/recover_pre_mc_snapshot.py"
       - "nasdaq-xray/canonical_resolver_bridge_*.json"
@@ -101,6 +103,8 @@ jobs:
             nasdaq-xray/build_current_master_manifest.py \
             nasdaq-xray/price_dv30_phase.py \
             nasdaq-xray/price_dv30_recover_from_fullstate.py \
+            nasdaq-xray/price_official_halt_selftest.py \
+            nasdaq-xray/official_source_guard.py \
             nasdaq-xray/build_current_resolver_request.py \
             nasdaq-xray/recover_pre_mc_snapshot.py
       - name: Install zero-dollar runtime
@@ -109,6 +113,10 @@ jobs:
         run: |
           cd nasdaq-xray
           python current_identity_proof_selftest.py
+      - name: PRICE official full-session halt self-test
+        run: |
+          cd nasdaq-xray
+          python price_official_halt_selftest.py
       - name: Completed-session epoch rollover guard
         id: rollover
         shell: bash
@@ -470,6 +478,18 @@ jobs:
               "queue_count":len(queue),
               "queue_hash":full.get("queue_hash"),
           })
+          PY
+      - name: Refresh official Nasdaq halt guard before PRICE
+        if: steps.rollover.outputs.build == 'true' || steps.rollover.outputs.policy_replay == 'true' || steps.rollover.outputs.coverage_repair == 'true' || steps.rollover.outputs.bridge_refresh == 'true' || steps.rollover.outputs.publication_replay == 'true'
+        run: |
+          python nasdaq-xray/official_source_guard.py
+          python - <<'PY'
+          import json
+          g=json.load(open("nasdaq-xray/canonical_official_source_guard.json"))
+          assert g.get("schema")=="XRAY_OFFICIAL_SOURCE_GUARD_V1",g.get("schema")
+          th=((g.get("sources") or {}).get("trade_halts") or {})
+          assert th.get("status")=="PASS",th
+          print({"XRAY_PRICE_OFFICIAL_HALT_GUARD":"PASS","items":th.get("item_count")})
           PY
       - name: Build policy-ordered PRICE-DV30
         if: steps.rollover.outputs.build == 'true' || steps.rollover.outputs.policy_replay == 'true' || steps.rollover.outputs.coverage_repair == 'true' || steps.rollover.outputs.bridge_refresh == 'true' || steps.rollover.outputs.publication_replay == 'true'
