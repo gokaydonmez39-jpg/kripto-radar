@@ -324,11 +324,19 @@ def validate_existing_sec(path:Path,asof:str)->bool:
     except Exception:
         return False
 
+def exact_proofs_complete(identity_path,sec_path,asof):
+    """NOOP is legal only when BOTH exact-ASOF proof artifacts exist and validate."""
+    return bool(
+        validate_existing_identity(identity_path,asof)
+        and sec_path.exists()
+        and validate_existing_sec(sec_path,asof)
+    )
+
 def main():
     asof=completed_asof()
     identity_path,sec_path=proof_paths(asof)
-    if validate_existing_identity(identity_path,asof) and (not sec_path.exists() or validate_existing_sec(sec_path,asof)):
-        print(json.dumps({"result":"NOOP_EXACT_PROOFS_ALREADY_VALID","asof_et":asof,"identity_path":identity_path.name,"sec_path":sec_path.name if sec_path.exists() else None},sort_keys=True))
+    if exact_proofs_complete(identity_path,sec_path,asof):
+        print(json.dumps({"result":"NOOP_EXACT_PROOFS_ALREADY_VALID","asof_et":asof,"identity_path":identity_path.name,"sec_path":sec_path.name},sort_keys=True))
         return
 
     names,footer=official_directory()
