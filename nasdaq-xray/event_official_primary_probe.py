@@ -256,6 +256,40 @@ def announced_event_date(title: str, body: str, asof: str) -> tuple[str | None, 
                         return candidate.isoformat(), "SCHEDULE_SENTENCE_EXPLICIT_MONTH_DAY_CONTEXT_YEAR"
     return None, None
 
+KNOWN_CALENDAR_NON_EVENT_RE = re.compile(
+    r"(?:fiscal|financial)?\\s*(?:year|quarter|period)\\s+(?:ended|ending|end)|"
+    r"record\\s+date|payable|dividend|ex[- ]dividend|quarter\\s+ended",
+    re.I,
+)
+
+def known_calendar_event_date(body: str, asof: str) -> tuple[str | None, str | None]:
+    """Extract an explicit date from an explicitly pinned issuer IR calendar/document.
+
+    This fallback is intentionally NOT valid for discovered/landing HTML. A date
+    is eligible only when earnings/results context is local to that exact date,
+    and period-end/dividend contexts are rejected. No absence inference is made.
+    """
+    clean = normalize_text(body)
+    hits = []
+    for pos, d in date_spans_in_text(clean):
+        if d <= asof:
+            continue
+        lo = max(0, pos - 140)
+        hi = min(len(clean), pos + 220)
+        window = clean[lo:hi]
+        if not EARNINGS_RE.search(window):
+            continue
+        # Avoid treating fiscal/quarter-end, record, payable or dividend dates
+        # as earnings announcement dates merely because results text is nearby.
+        local = clean[max(0, pos - 80): min(len(clean), pos + 100)]
+        if KNOWN_CALENDAR_NON_EVENT_RE.search(local):
+            continue
+        hits.append((d, window[:360]))
+    if not hits:
+        return None, None
+    hits.sort(key=lambda x: x[0])
+    return hits[0][0], "PINNED_ISSUER_CALENDAR_LOCAL_EARNINGS_DATE"
+
 def discover_feed_links(base_url: str, page: str) -> list[str]:
     links = set()
     for m in re.finditer(r"<(?:link|a)\b[^>]*(?:href|src)=[\"']([^\"']+)[\"'][^>]*>", page or "", re.I):
@@ -318,6 +352,8 @@ def _discrete_event_match(
     tokens: list[str],
     asof: str,
     horizon: set[str],
+    *,
+    known_document: bool = False,
 ) -> tuple[dict | None, dict]:
     attempt = {"url": document_url}
     try:
@@ -350,6 +386,10 @@ def _discrete_event_match(
         if future_dates_seen:
             attempt["future_dates_seen"] = future_dates_seen[:12]
         event_date, basis = announced_event_date(title, page, asof)
+        if not event_date and known_document:
+            event_date, basis = known_calendar_event_date(page, asof)
+            if event_date:
+                attempt["known_document_calendar_fallback"] = True
         if not event_date:
             attempt["result"] = "NO_EXPLICIT_FUTURE_EVENT_DATE"
             return None, attempt
@@ -663,6 +703,7 @@ def probe_issuer(sym: str, base: dict, asof: str, horizon: set[str]) -> dict:
     rec["document_candidate_count"] = len(ranked_discrete)
     rec["document_attempt_limit"] = 24
     rec["document_truncated"] = len(ranked_discrete) > 24
+    known_document_urls = set(base.get("known_document_urls") or [])
     for document_url in ranked_discrete[:24]:
         match, attempt = _discrete_event_match(
             authority_url,
@@ -670,6 +711,7 @@ def probe_issuer(sym: str, base: dict, asof: str, horizon: set[str]) -> dict:
             base.get("issuer_tokens") or [sym],
             asof,
             horizon,
+            known_document=document_url in known_document_urls,
         )
         rec["document_attempts"].append(attempt)
         if match is not None:
@@ -815,6 +857,23 @@ def selftest() -> None:
         asof,
     )
     assert d10 is None and basis10 is None, (d10, basis10)
+    cal1, cal_basis1 = known_calendar_event_date(
+        "<div>Dec 3, 2026</div><h3>Q3 2026 Ulta Beauty Earnings Conference Call</h3>",
+        asof,
+    )
+    assert cal1 == "2026-12-03" and cal_basis1 == "PINNED_ISSUER_CALENDAR_LOCAL_EARNINGS_DATE", (cal1, cal_basis1)
+    cal2, cal_basis2 = known_calendar_event_date(
+        "<div>04 November 2026</div><div>First nine months and third quarter 2026 results</div>",
+        asof,
+    )
+    assert cal2 == "2026-11-04" and cal_basis2 == "PINNED_ISSUER_CALENDAR_LOCAL_EARNINGS_DATE", (cal2, cal_basis2)
+    cal3, cal_basis3 = known_calendar_event_date(
+        "<div>Second quarter results</div><div>Fiscal year ending January 30, 2027</div>",
+        asof,
+    )
+    assert cal3 is None and cal_basis3 is None, (cal3, cal_basis3)
+    # The calendar fallback must never be used unless the exact document was
+    # explicitly pinned in known_document_urls; the call-site boolean enforces it.
     prior_seed = seed_candidates(
         "TEST",
         {"symbols": {"TEST": {"base_url": "https://ir.example.com", "issuer_tokens": ["Example"]}}},
