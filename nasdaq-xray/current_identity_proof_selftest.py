@@ -124,6 +124,36 @@ def main():
         assert m.parse_footer_date(footer)=="2026-10-06"
         assert m.frozen_exact_asof_directory("2026-10-05",root) is None
 
+        # A later-day contaminated canonical current snapshot must be ignored
+        # in favor of an independently exact same-ASOF support snapshot.
+        (root/"canonical_current_full_state.json").write_text(json.dumps({
+          "schema":"XRAY_NASDAQ_SCREENER_SINA_V2",
+          "asof_et":"2026-10-06",
+          "official_footer":"File Creation Time: 1007202603:02|||||||",
+          "identity_ruleset":"V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER",
+          "identity_partition_policy":"MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V3_FROZEN_GUARD",
+          "queue":[],"queue_total":0,"queue_hash":__import__("hashlib").sha256(b"").hexdigest(),
+          "raw_identity_total":0,"security_names":{},"identity_unknown_symbols":[],"identity_unknown_detail":{},
+          "discovery_meta":{"identity_partition_policy":"MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V3_FROZEN_GUARD"}
+        }))
+        (root/"canonical_current_master_manifest.json").write_text(json.dumps({
+          "asof_et":"2026-10-06","official_footer":"File Creation Time: 1007202603:02|||||||","unknown_detail":{}
+        }))
+        q=["OPER"]; qhash=__import__("hashlib").sha256("OPER".encode()).hexdigest()
+        (root/"sina_state.json").write_text(json.dumps({
+          "schema":"XRAY_NASDAQ_SCREENER_SINA_V2","asof_et":"2026-10-06",
+          "official_footer":"File Creation Time: 1006202618:01|||||||",
+          "identity_ruleset":"V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER",
+          "identity_partition_policy":"MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V3_FROZEN_GUARD",
+          "queue":q,"queue_total":1,"queue_hash":qhash,"raw_identity_total":1,
+          "security_names":{"OPER":"Operating Corp. - Common Stock"},
+          "identity_unknown_symbols":[],"identity_unknown_detail":{},
+          "discovery_meta":{"identity_partition_policy":"MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V3_FROZEN_GUARD"}
+        }))
+        frozen2=m.frozen_exact_asof_directory("2026-10-06",root)
+        assert frozen2 is not None and frozen2[0]["OPER"]=="Operating Corp. - Common Stock"
+        assert m.parse_footer_date(frozen2[2])=="2026-10-06"
+
     print("XRAY_CURRENT_IDENTITY_PROOF_SELFTEST=PASS")
 
 if __name__=="__main__":

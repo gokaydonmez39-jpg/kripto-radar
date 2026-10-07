@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import csv
+import hashlib
 import html
 import io
 import json
@@ -333,38 +334,65 @@ def exact_proofs_complete(identity_path,sec_path,asof):
     )
 
 def frozen_exact_asof_directory(asof,root=ROOT):
-    """Rehydrate the already-committed exact-ASOF Nasdaq identity snapshot.
+    """Rehydrate an already-committed exact-ASOF Nasdaq identity snapshot.
 
-    Used only when the live Nasdaq directory has advanced past the target
-    completed session. This never forward-carries membership from a later day.
+    Prefer canonical current artifacts when they are still exact. If a later-day
+    live directory contaminated the current artifact, fall back to the durable
+    support-plane sina_state.json only when its queue/hash/partition/footer are
+    independently exact for the requested ASOF. Never use a later live directory
+    as historical membership authority.
     """
-    full_path=root/"canonical_current_full_state.json"
-    manifest_path=root/"canonical_current_master_manifest.json"
-    if not full_path.exists() or not manifest_path.exists():
-        return None
-    try:
-        full=json.loads(full_path.read_text(encoding="utf-8"))
-        manifest=json.loads(manifest_path.read_text(encoding="utf-8"))
-        if full.get("asof_et")!=asof or manifest.get("asof_et")!=asof:
-            return None
-        footer=str(manifest.get("official_footer") or full.get("official_footer") or "")
-        if parse_footer_date(footer)!=asof:
-            return None
-        names={str(k).upper():str(v) for k,v in (full.get("security_names") or {}).items() if str(k).strip() and str(v).strip()}
-        industries={}
-        for sym,row in (manifest.get("unknown_detail") or {}).items():
-            sym=str(sym).upper()
-            name=str((row or {}).get("security_name") or "").strip()
-            if name:
-                names[sym]=name
-            industry=str((row or {}).get("same_asof_nasdaq_industry") or (row or {}).get("same_asof_nasdaq_screener_industry") or "").strip()
-            if industry:
-                industries[sym]=industry
-        if not names:
-            return None
-        return names,industries,footer
-    except Exception:
-        return None
+    candidates=[
+      (root/"canonical_current_full_state.json",root/"canonical_current_master_manifest.json"),
+      (root/"sina_state.json",None),
+    ]
+    for full_path,manifest_path in candidates:
+        if not full_path.exists():
+            continue
+        try:
+            full=json.loads(full_path.read_text(encoding="utf-8"))
+            manifest=json.loads(manifest_path.read_text(encoding="utf-8")) if manifest_path and manifest_path.exists() else {}
+            if full.get("schema")!="XRAY_NASDAQ_SCREENER_SINA_V2" or full.get("asof_et")!=asof:
+                continue
+            if manifest and manifest.get("asof_et")!=asof:
+                continue
+            footer=str((manifest or {}).get("official_footer") or full.get("official_footer") or "")
+            if parse_footer_date(footer)!=asof:
+                continue
+            q=list(full.get("queue") or [])
+            unknown=sorted(set(full.get("identity_unknown_symbols") or []))
+            detail=(manifest or {}).get("unknown_detail") or full.get("identity_unknown_detail") or {}
+            raw=int(full.get("raw_identity_total",-1))
+            qhash=hashlib.sha256("\n".join(q).encode()).hexdigest()
+            dm=full.get("discovery_meta") or {}
+            if (
+              full.get("identity_ruleset")!="V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER"
+              or full.get("identity_partition_policy")!="MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V3_FROZEN_GUARD"
+              or dm.get("identity_partition_policy")!="MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V3_FROZEN_GUARD"
+              or int(full.get("queue_total",-1))!=len(q)
+              or len(q)!=len(set(q))
+              or full.get("queue_hash")!=qhash
+              or raw!=len(q)+len(unknown)
+              or set(detail)!=set(unknown)
+              or bool(set(q)&set(unknown))
+            ):
+                continue
+            names={str(k).upper():str(v) for k,v in (full.get("security_names") or {}).items() if str(k).strip() and str(v).strip()}
+            industries={}
+            for sym,row in detail.items():
+                sym=str(sym).upper()
+                name=str((row or {}).get("security_name") or "").strip()
+                if name:
+                    names[sym]=name
+                industry=str((row or {}).get("same_asof_nasdaq_industry") or (row or {}).get("same_asof_nasdaq_screener_industry") or "").strip()
+                if industry:
+                    industries[sym]=industry
+            if not names:
+                continue
+            return names,industries,footer
+        except Exception:
+            continue
+    return None
 
 def main():
     asof=completed_asof()

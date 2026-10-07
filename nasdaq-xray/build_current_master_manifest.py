@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import hashlib,json,os
+import hashlib,json,os,re
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parent
@@ -25,6 +25,14 @@ def blob_sha(p):
 
 def hash_lines(xs):
     return hashlib.sha256("\n".join(xs).encode()).hexdigest()
+
+FOOTER_RE=re.compile(r"^File Creation Time:\s*(\d{2})(\d{2})(\d{4})")
+def official_footer_asof_exact(footer,asof):
+    m=FOOTER_RE.match(str(footer or "").strip())
+    if not m:
+        return False
+    mm,dd,yyyy=m.groups()
+    return f"{yyyy}-{mm}-{dd}"==str(asof or "")
 
 def valid_sec_spac_proof_binding(dm,asof):
     try:
@@ -99,7 +107,7 @@ def main():
       "discovery_exact":set(disc)==set(q),
       "full_identity":bool(dm.get("full_identity")),
       "authority_full_identity":valid_full_identity_authority(dm),
-      "official_footer_present":bool(s.get("official_footer")),
+      "official_footer_present":bool(s.get("official_footer")),\n      "official_footer_asof_exact":official_footer_asof_exact(s.get("official_footer"),s.get("asof_et")),
       "identity_authority_v6":s.get("identity_authority")=="NASDAQTRADER_EXPLICIT_TYPE_FILTER_V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER",
       "identity_ruleset_v6":s.get("identity_ruleset")=="V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER",
       "exclusion_reasons_policy_exact":set(exc).issubset(ALLOWED_EXCLUSION_REASONS),

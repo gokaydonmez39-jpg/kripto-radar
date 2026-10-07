@@ -35,6 +35,7 @@ SEC_TICKERS="https://www.sec.gov/files/company_tickers.json"
 SEC_SUBMISSIONS="https://data.sec.gov/submissions"
 SEC_UA=os.getenv("XRAY_SEC_USER_AGENT","NASDAQ-SWING-XRAY research bot; xray-dataplane-bot@users.noreply.github.com")
 SPAC_SUSPECT=re.compile(r"\bacquisition\b|\bspac\b|\bblank[ -]?check\b",re.I)
+FOOTER_RE=re.compile(r"^File Creation Time:\s*(\d{2})(\d{2})(\d{4})")
 _SEC_TICKER_CACHE=None
 _SEC_SPAC_CACHE={}
 ROOT=Path(__file__).resolve().parent
@@ -190,6 +191,13 @@ def request_text(url,timeout=35):
     req=urllib.request.Request(url,headers={"User-Agent":UA})
     with urllib.request.urlopen(req,timeout=timeout) as r:
         return r.read().decode("utf-8")
+
+def official_footer_date(footer):
+    m=FOOTER_RE.match(str(footer or "").strip())
+    if not m:
+        return None
+    mm,dd,yyyy=m.groups()
+    return f"{yyyy}-{mm}-{dd}"
 
 def official_nasdaq():
     text=request_text(NASDAQ_DIR)
@@ -705,6 +713,93 @@ def canonical_frozen_identity(asof):
     except Exception:
         return None
 
+def support_frozen_identity(asof):
+    """Exact-ASOF membership fallback for historical identity-only replay.
+
+    Use durable support-plane sina_state.json only when it proves the same
+    ASOF/footer/queue/UNKNOWN partition. Only metadata-neutral proof rebinds
+    are allowed: no restore/remove delta, no newly proven SEC blank-check
+    exclusion, and every current operating override must already be in the
+    proven PASS queue with the same security name.
+    """
+    if not (FULL_IDENTITY and IDENTITY_ONLY):
+        return None
+    p=ROOT/"sina_state.json"
+    if not p.exists():
+        return None
+    try:
+        st=json.loads(p.read_text(encoding="utf-8"))
+        if (
+          st.get("schema")!="XRAY_NASDAQ_SCREENER_SINA_V2"
+          or st.get("asof_et")!=asof
+          or st.get("identity_ruleset")!=IDENTITY_RULESET
+          or st.get("identity_partition_policy")!=IDENTITY_PARTITION_POLICY
+          or official_footer_date(st.get("official_footer"))!=asof
+        ):
+            return None
+        q=list(st.get("queue") or [])
+        names=dict(st.get("security_names") or {})
+        disc=dict(st.get("discovery") or {})
+        unknown=sorted(set(st.get("identity_unknown_symbols") or []))
+        detail=st.get("identity_unknown_detail") or {}
+        dm=st.get("discovery_meta") or {}
+        raw=int(st.get("raw_identity_total",-1))
+        if not (
+          int(st.get("queue_total",-1))==len(q)==len(set(q))
+          and st.get("queue_hash")==sha_lines(q)
+          and set(names)==set(q)
+          and set(disc)==set(q)
+          and set(detail)==set(unknown)
+          and not (set(q)&set(unknown))
+          and raw==len(q)+len(unknown)
+          and int(dm.get("identity_unknown_count",-1))==len(unknown)
+          and dm.get("identity_unknown_hash")==sha_lines(unknown)
+          and int(dm.get("raw_identity_total",-1))==raw
+          and dm.get("identity_partition_policy")==IDENTITY_PARTITION_POLICY
+          and dm.get("full_identity") is True
+        ):
+            return None
+        sec_proof,sec_blob=load_sec_spac_proof(asof)
+        if sec_proof:
+            return None
+        asof_proof,asof_blob=load_asof_identity_proof(asof)
+        if (asof_proof.get("restore_to_asof") or {}) or (asof_proof.get("remove_from_asof") or {}):
+            return None
+        operating=asof_proof.get("operating_overrides") or {}
+        for sym,row in operating.items():
+            if sym not in names or str((row or {}).get("security_name") or "")!=str(names.get(sym) or ""):
+                return None
+        unproven=[]
+        for sym in q:
+            row=disc.get(sym) or {}
+            industry=str(row.get("industry") or "").strip()
+            security_name=str(names.get(sym) or "").strip()
+            if (industry.lower()=="blank checks" or bool(SPAC_SUSPECT.search(security_name))) and sym not in operating:
+                unproven.append(sym)
+        if unproven:
+            return None
+        return {
+          "queue":q,
+          "queue_hash":st["queue_hash"],
+          "security_names":names,
+          "discovery":disc,
+          "discovery_meta":dm,
+          "identity_unknown_symbols":unknown,
+          "identity_unknown_detail":detail,
+          "raw_identity_total":raw,
+          "official_footer":st.get("official_footer"),
+          "identity_authority":st.get("identity_authority"),
+          "explicit_excluded_count":int(st.get("explicit_excluded_count",0) or 0),
+          "explicit_excluded_hash":st.get("explicit_excluded_hash"),
+          "explicit_excluded_reason_counts":dict(st.get("explicit_excluded_reason_counts") or {}),
+          "source_state_hash":st.get("state_hash"),
+          "source_state_path":"nasdaq-xray/sina_state.json",
+          "source_manifest_path":"nasdaq-xray/sina_state.json",
+          "support_rebind":True,
+        }
+    except Exception:
+        return None
+
 def main():
     asof,expected30=completed_sessions()
     sec_proof_path=sec_spac_proof_path(asof)
@@ -715,13 +810,20 @@ def main():
     sec_identity_token="SEC_SPAC_PROOF:"+str(sec_spac_blob or "NONE")
     asof_identity_token="ASOF_IDENTITY_PROOF:"+str(asof_identity_blob or "NONE")
     frozen=canonical_frozen_identity(asof)
+    if frozen is None:
+        frozen=support_frozen_identity(asof)
     if frozen is not None:
         names=dict(frozen["security_names"])
         excluded={}
         footer=str(frozen.get("official_footer") or "CANONICAL_FROZEN_IDENTITY")
+        if official_footer_date(footer)!=asof:
+            raise RuntimeError("FROZEN_IDENTITY_FOOTER_NOT_EXACT_ASOF")
         identity_token="CANONICAL_FROZEN:"+str(frozen.get("source_state_hash") or frozen["queue_hash"])+"|"+sec_identity_token+"|"+asof_identity_token
     else:
         names,excluded,footer=official_nasdaq()
+        live_footer_date=official_footer_date(footer)
+        if live_footer_date!=asof:
+            raise RuntimeError(f"NASDAQ_DIRECTORY_NOT_EXACT_ASOF:{live_footer_date}!={asof}")
         names,excluded=apply_asof_identity_proof(names,excluded,asof_identity_proof)
         identity_token=footer+"|"+sec_identity_token+"|"+asof_identity_token
     state=load(STATE)
@@ -744,6 +846,14 @@ def main():
               "identity_unknown_count":len(identity_unknown_symbols),
               "identity_unknown_hash":sha_lines(identity_unknown_symbols),
               "raw_identity_total":int(frozen["raw_identity_total"]),
+              "sec_spac_proof_path":("nasdaq-xray/"+sec_proof_path.name) if sec_spac_blob else None,
+              "sec_spac_proof_blob_sha":sec_spac_blob,
+              "sec_spac_proof_count":len(sec_spac_proof),
+              "sec_spac_proof_hash":sha_lines(sorted(sec_spac_proof)),
+              "asof_identity_proof_path":("nasdaq-xray/"+identity_proof_path.name) if asof_identity_blob else None,
+              "asof_identity_proof_blob_sha":asof_identity_blob,
+              "asof_identity_proof_counts":{k:len(asof_identity_proof.get(k) or {}) for k in ("restore_to_asof","remove_from_asof","operating_overrides")},
+              "support_membership_rebind":bool(frozen.get("support_rebind")),
             })
             ex_serial=[]
         else:
