@@ -127,6 +127,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          python nasdaq-xray/build_event_provenance_rebind.py --selftest
           python nasdaq-xray/build_event_provenance_rebind.py | tee /tmp/event_rebind_out
           cat /tmp/event_rebind_out >> "$GITHUB_OUTPUT"
 
