@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import json
 import build_current_identity_proofs as m
 
 def main():
@@ -124,7 +125,6 @@ def main():
     # current/support-plane state, but only when ASOF/footer/count are exact.
     from pathlib import Path
     import tempfile
-    import json
     with tempfile.TemporaryDirectory() as td:
         root=Path(td)
         snap={
