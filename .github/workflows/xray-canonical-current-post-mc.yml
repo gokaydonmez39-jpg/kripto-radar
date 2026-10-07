@@ -420,6 +420,7 @@ jobs:
           cat /tmp/mc_out
 
       - name: Commit newly built immutable resolver and MC authority before alpha
+        id: early_authority
         if: steps.resolver_handoff.outputs.created == 'true' || (steps.mc.outputs.ready == 'true' && steps.mc_rebind.outputs.created == 'true')
         shell: bash
         run: |
@@ -433,7 +434,12 @@ jobs:
           if [[ "${{ steps.mc_rebind.outputs.created }}" == "true" && -n "${{ steps.mc_rebind.outputs.path }}" ]]; then
             files+=("${{ steps.mc_rebind.outputs.path }}")
           fi
-          [[ "${#files[@]}" -gt 0 ]] || { echo "XRAY_EARLY_AUTHORITY_COMMIT=NO_NEW_AUTHORITY"; exit 0; }
+          [[ "${#files[@]}" -gt 0 ]] || {
+            echo "XRAY_EARLY_AUTHORITY_COMMIT=NO_NEW_AUTHORITY"
+            echo "baseline_sha=$GITHUB_SHA" >> "$GITHUB_OUTPUT"
+            echo "stale=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          }
           tmpdir="$(mktemp -d)"
           trap 'rm -rf "$tmpdir"' EXIT
           declare -A expected_blob
@@ -461,6 +467,8 @@ jobs:
               if [[ -n "$changed" ]]; then
                 echo "XRAY_EARLY_AUTHORITY_COMMIT=STALE_SOURCE_ABORT"
                 printf '%s\n' "$changed"
+                echo "baseline_sha=$GITHUB_SHA" >> "$GITHUB_OUTPUT"
+                echo "stale=true" >> "$GITHUB_OUTPUT"
                 exit 0
               fi
             fi
@@ -483,6 +491,8 @@ jobs:
             git add "${files[@]}"
             if git diff --cached --quiet; then
               echo "XRAY_EARLY_AUTHORITY_COMMIT=ALREADY_EXACT"
+              echo "baseline_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+              echo "stale=false" >> "$GITHUB_OUTPUT"
               exit 0
             fi
             git commit -m "chore(xray): commit immutable current resolver MC authority"
@@ -491,6 +501,8 @@ jobs:
               for p in "${files[@]}"; do
                 [[ "$(git hash-object "$p")" == "${expected_blob[$p]}" ]] || exit 1
               done
+              echo "baseline_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+              echo "stale=false" >> "$GITHUB_OUTPUT"
               exit 0
             fi
             echo "XRAY_EARLY_AUTHORITY_COMMIT=PUSH_RACE attempt=$attempt"
@@ -958,8 +970,12 @@ jobs:
           git config user.email "xray-dataplane-bot@users.noreply.github.com"
           git fetch origin main
           latest="$(git rev-parse origin/main)"
-          if [[ "$latest" != "$GITHUB_SHA" ]]; then
-            changed="$(git diff --name-only "$GITHUB_SHA" "$latest" -- \
+          baseline="${{ steps.early_authority.outputs.baseline_sha }}"
+          [[ -n "$baseline" ]] || baseline="$GITHUB_SHA"
+          git cat-file -e "$baseline^{commit}"
+          echo "XRAY_POST_MC_CAS_BASELINE=$baseline latest=$latest"
+          if [[ "$latest" != "$baseline" ]]; then
+            changed="$(git diff --name-only "$baseline" "$latest" -- \
               .github/workflows/xray-canonical-current-post-mc.yml \
               nasdaq-xray/canonical_current_master_manifest.json \
               nasdaq-xray/canonical_current_price_dv30.json \
