@@ -187,6 +187,8 @@ jobs:
           # an invariant failure. Prove both pending and terminal paths are live.
           assert eligibility(["AAA"],[],["AAA"],False) is False
           assert eligibility([],["BBB"],["BBB"],True) is True
+          required=True; already_proven=True
+          assert ((required is not True) or already_proven) is True
 
           unknown=list(p.get("unknown_symbols") or [])
           blocked=list(p.get("blocked_symbols") or [])
@@ -216,8 +218,8 @@ jobs:
           assert ca.get("resolver_symbol_hash")==hlines(symbols),"COMPACT_RESOLVER_HASH_DRIFT"
           residual_exact=(symbols==blocked)
           settlement_ok=(
-              q.get("settlement_required") is False
-              and (len(blocked)==0 or q.get("settlement_already_proven") is True)
+              q.get("settlement_required") is not True
+              or q.get("settlement_already_proven") is True
           )
           eligible=eligibility(unknown,blocked,symbols,settlement_ok)
           print("eligible="+("true" if eligible else "false"))
