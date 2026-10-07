@@ -262,6 +262,9 @@ def _discrete_event_match(
         if not EARNINGS_RE.search(f"{title} {flat}"):
             attempt["result"] = "NO_EARNINGS_CONTEXT"
             return None, attempt
+        future_dates_seen = [d for d in dates_in_text(f"{title} {flat}") if d > asof]
+        if future_dates_seen:
+            attempt["future_dates_seen"] = future_dates_seen[:12]
         event_date, basis = announced_event_date(title, page, asof)
         if not event_date:
             attempt["result"] = "NO_EXPLICIT_FUTURE_EVENT_DATE"
@@ -497,6 +500,66 @@ def probe_issuer(sym: str, base: dict, asof: str, horizon: set[str]) -> dict:
         time.sleep(0.05)
     return rec
 
+UNRESOLVED_REASON_ENUM = {
+    "NO_BASE",
+    "BASE_FETCH_FAIL",
+    "ISSUER_IDENTITY_TOKEN_FAIL",
+    "NO_RSS_FEED",
+    "FEED_FETCH_FAIL",
+    "CROSS_HOST_REDIRECT_REJECTED",
+    "RSS_PARSED_NO_EXPLICIT_EVENT_DATE",
+    "IR_PAGE_HAS_DATE_BUT_CURRENT_PROBE_DOES_NOT_PARSE_HTML",
+    "SEC_TRANSPORT_403",
+    "OTHER",
+}
+
+def classify_unresolved_reason(
+    issuer_probes: list[dict],
+    sec_submissions_error: str | None = None,
+    sec_ticker_map_error: str | None = None,
+) -> str:
+    """Normalize non-authoritative probe failures without changing Event decisions."""
+    sec_errors = " ".join(
+        str(x or "") for x in (sec_submissions_error, sec_ticker_map_error)
+    ).upper()
+    if not issuer_probes:
+        return "SEC_TRANSPORT_403" if "403" in sec_errors else "NO_BASE"
+
+    valid = [p for p in issuer_probes if p.get("identity_validated") is True]
+    if not valid:
+        failures = " ".join(str(p.get("failure") or "") for p in issuer_probes).upper()
+        if "BASE_FETCH_" in failures:
+            return "BASE_FETCH_FAIL"
+        if "ISSUER_IDENTITY_TOKEN_NOT_FOUND" in failures:
+            return "ISSUER_IDENTITY_TOKEN_FAIL"
+        return "OTHER"
+
+    feed_attempts = [a for p in valid for a in (p.get("feed_attempts") or [])]
+    section_attempts = [a for p in valid for a in (p.get("section_attempts") or [])]
+    document_attempts = [a for p in valid for a in (p.get("document_attempts") or [])]
+    all_attempts = feed_attempts + section_attempts + document_attempts
+
+    if any(
+        a.get("result") == "NO_EXPLICIT_FUTURE_EVENT_DATE"
+        and bool(a.get("future_dates_seen"))
+        for a in document_attempts
+    ):
+        return "IR_PAGE_HAS_DATE_BUT_CURRENT_PROBE_DOES_NOT_PARSE_HTML"
+
+    if feed_attempts and any(a.get("result") == "PARSED" for a in feed_attempts):
+        return "RSS_PARSED_NO_EXPLICIT_EVENT_DATE"
+
+    if any(a.get("result") == "CROSS_HOST_REDIRECT_REJECTED" for a in all_attempts):
+        return "CROSS_HOST_REDIRECT_REJECTED"
+
+    if not feed_attempts:
+        return "NO_RSS_FEED"
+
+    if all(a.get("result") != "PARSED" for a in feed_attempts):
+        return "FEED_FETCH_FAIL"
+
+    return "OTHER"
+
 def selftest() -> None:
     asof = "2026-10-06"
     d, basis = announced_event_date(
@@ -567,6 +630,15 @@ def selftest() -> None:
     assert links["discrete"] == [
         "https://ir.example.com/news-releases/news-release-details/company-to-report-financial-results-on-november-5-2026"
     ], links
+    assert classify_unresolved_reason([], None, "HTTPError:HTTP Error 403: Forbidden") == "SEC_TRANSPORT_403"
+    assert classify_unresolved_reason([], None, None) == "NO_BASE"
+    assert classify_unresolved_reason([{"identity_validated": False, "failure": "BASE_FETCH_HTTPError:x"}]) == "BASE_FETCH_FAIL"
+    assert classify_unresolved_reason([{"identity_validated": False, "failure": "ISSUER_IDENTITY_TOKEN_NOT_FOUND"}]) == "ISSUER_IDENTITY_TOKEN_FAIL"
+    assert classify_unresolved_reason([{"identity_validated": True, "feed_attempts": []}]) == "NO_RSS_FEED"
+    assert classify_unresolved_reason([{"identity_validated": True, "feed_attempts": [{"result": "HTTPError:x"}]}]) == "FEED_FETCH_FAIL"
+    assert classify_unresolved_reason([{"identity_validated": True, "feed_attempts": [{"result": "CROSS_HOST_REDIRECT_REJECTED"}]}]) == "CROSS_HOST_REDIRECT_REJECTED"
+    assert classify_unresolved_reason([{"identity_validated": True, "feed_attempts": [{"result": "PARSED", "parsed_items": 3}]}]) == "RSS_PARSED_NO_EXPLICIT_EVENT_DATE"
+    assert classify_unresolved_reason([{"identity_validated": True, "feed_attempts": [], "document_attempts": [{"result": "NO_EXPLICIT_FUTURE_EVENT_DATE", "future_dates_seen": ["2026-10-20"]}]}]) == "IR_PAGE_HAS_DATE_BUT_CURRENT_PROBE_DOES_NOT_PARSE_HTML"
     print("EVENT_OFFICIAL_PRIMARY_PROBE_SELFTEST=PASS")
 
 def main() -> None:
@@ -638,10 +710,16 @@ def main() -> None:
             candidate = "UNKNOWN_OFFICIAL_PRIMARY_UNRESOLVED"
             selected = None
 
+        unresolved_reason = (
+            classify_unresolved_reason(issuer_probes, sec_error, secmap_error)
+            if candidate == "UNKNOWN_OFFICIAL_PRIMARY_UNRESOLVED"
+            else None
+        )
         results[sym] = {
             "status": candidate,
             "selected_event_date": selected,
             "classification_applied": False,
+            "unresolved_reason": unresolved_reason,
             "sec_mapping": srec or None,
             "sec_submissions_error": sec_error,
             "issuer_probe_count": len(issuer_probes),
@@ -649,8 +727,13 @@ def main() -> None:
         }
 
     counts = {}
+    unresolved_reason_counts = {}
     for r in results.values():
         counts[r["status"]] = counts.get(r["status"], 0) + 1
+        reason = r.get("unresolved_reason")
+        if reason:
+            assert reason in UNRESOLVED_REASON_ENUM, reason
+            unresolved_reason_counts[reason] = unresolved_reason_counts.get(reason, 0) + 1
     obj = {
         "schema": "XRAY_EVENT_OFFICIAL_PRIMARY_PROBE_V1",
         "authority": "NON_CANONICAL_DISCOVERY_AND_PRIMARY_EVIDENCE_CANDIDATE_ONLY",
@@ -671,13 +754,14 @@ def main() -> None:
         "scope_count": len(scope),
         "sec_ticker_map_error": secmap_error,
         "counts": counts,
+        "unresolved_reason_counts": dict(sorted(unresolved_reason_counts.items())),
         "results": results,
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         "decision_rule": "ONLY_EXPLICIT_ISSUER_PRIMARY_FUTURE_DATE_MAY_BECOME_SUCCESSOR_EVIDENCE;ABSENCE_OR_FETCH_FAILURE_REMAINS_UNKNOWN",
     }
     out = Path(args.out)
     out.write_text(json.dumps(obj, ensure_ascii=False, sort_keys=True, indent=2) + "\n", encoding="utf-8")
-    print(json.dumps({"scope": len(scope), "counts": counts, "out": str(out)}, sort_keys=True))
+    print(json.dumps({"scope": len(scope), "counts": counts, "unresolved_reason_counts": dict(sorted(unresolved_reason_counts.items())), "out": str(out)}, sort_keys=True))
 
 if __name__ == "__main__":
     main()
