@@ -61,6 +61,27 @@ def main():
         fp=REPO/rel
         assert fp.exists(),(name,rel)
         assert blob(fp)==sha,(name,blob(fp),sha)
+
+    # Exact means internal MC provenance is bound to the same immutable PRICE
+    # blob persisted by the pointer. A synthesized current PRICE SHA in pointer
+    # metadata must never make a stale MC artifact appear exact-current.
+    pe=s.get("price_dv30_evidence") or {}
+    me=s.get("mc_evidence") or {}
+    mc_path=REPO/str(me.get("path") or "")
+    assert mc_path.exists(),("POINTER_MC_PATH_MISSING",me)
+    mc_obj=load(mc_path)
+    assert mc_obj.get("input_path")=="nasdaq-xray/canonical_current_price_dv30.json"
+    assert mc_obj.get("input_blob_sha")==pe.get("blob_sha"),(
+        "POINTER_MC_PRICE_BLOB_NOT_EXACT",
+        mc_obj.get("input_blob_sha"),pe.get("blob_sha"),
+    )
+    assert me.get("input_price_dv30_blob_sha")==mc_obj.get("input_blob_sha"),(
+        "POINTER_MC_EVIDENCE_SYNTHESIZED_OR_STALE",
+        me.get("input_price_dv30_blob_sha"),mc_obj.get("input_blob_sha"),
+    )
+    assert mc_obj.get("input_pass_hash")==pe.get("pass_hash")
+    assert me.get("input_price_dv30_pass_hash")==mc_obj.get("input_pass_hash")
+
     for rel_key,sha_key in (("deep_path","deep_blob_sha"),("final_path","final_blob_sha")):
         rel=df.get(rel_key); sha=df.get(sha_key)
         assert rel and sha,(rel_key,df)
