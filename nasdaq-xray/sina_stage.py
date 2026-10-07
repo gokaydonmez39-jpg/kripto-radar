@@ -114,9 +114,28 @@ def load_sec_spac_proof(asof):
           or not str(row.get("source_url") or "").startswith("https://www.sec.gov/")
           or not re.fullmatch(r"20[0-9]{2}-[0-9]{2}-[0-9]{2}",str(row.get("evidence_date") or ""))
           or str(row.get("evidence_date"))>asof
-          or row.get("same_asof_revalidated_without_sec_network") is True
         ):
             raise RuntimeError("SEC_SPAC_PROOF_ROW_INVALID:"+sym)
+        if row.get("same_asof_revalidated_without_sec_network") is True:
+            if row.get("revalidation_semantics")!="PRIOR_SEC_SIC6770_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS":
+                raise RuntimeError("SEC_SPAC_PROOF_FALLBACK_SEMANTICS_INVALID:"+sym)
+            try:
+                age=(datetime.fromisoformat(asof)-datetime.fromisoformat(str(row.get("evidence_date")))).days
+            except Exception:
+                raise RuntimeError("SEC_SPAC_PROOF_FALLBACK_EVIDENCE_DATE_INVALID:"+sym)
+            if age<0 or age>120:
+                raise RuntimeError("SEC_SPAC_PROOF_FALLBACK_STALE:"+sym)
+            footer=str(row.get("same_asof_nasdaq_directory_footer") or "")
+            fm=re.match(r"^File Creation Time:\s*(\d{2})(\d{2})(\d{4})",footer)
+            if not fm or f"{fm.group(3)}-{fm.group(1)}-{fm.group(2)}"!=asof:
+                raise RuntimeError("SEC_SPAC_PROOF_FALLBACK_DIRECTORY_ASOF_INVALID:"+sym)
+            current_name=str(row.get("same_asof_nasdaq_security_name") or "")
+            industry=str(row.get("same_asof_nasdaq_screener_industry") or "")
+            if not (
+              re.search(r"\bacquisition\b|\bspac\b|\bblank[ -]?check\b",current_name,re.I)
+              or industry.strip().lower()=="blank checks"
+            ):
+                raise RuntimeError("SEC_SPAC_PROOF_FALLBACK_NASDAQ_IDENTITY_INVALID:"+sym)
         out[sym]=row
     return out,git_blob_sha(proof_path)
 
