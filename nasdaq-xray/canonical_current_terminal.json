@@ -3,14 +3,14 @@
   "asof_et": "2026-10-06",
   "blockers": {
     "affected_event_unknown": 29,
-    "alpha_semantic_conformance_unknown": 1,
+    "alpha_semantic_conformance_unknown": 0,
     "alpha_source_binding_unknown": 0,
     "breadth_missing": 0,
     "candidate_halt_guard_unknown": 0,
     "deep_history_unknown": 0,
     "detailed_legal_review_unknown": 0,
     "family_c_history_unknown": 0,
-    "final_unknown": 3,
+    "final_unknown": 0,
     "history_unknown": 0,
     "legal_unknown": 0,
     "lifecycle_regime_unknown": 0,
@@ -35,14 +35,15 @@
       "OST",
       "PC",
       "SLP",
+      "SUGP",
       "SVA",
       "UCFI",
       "UCFIW",
       "WBD"
     ],
-    "age_seconds": 2.448,
-    "generated_at_utc": "2026-10-06T23:48:02.205034+00:00",
-    "guard_blob_sha": "e495a870507b519fbd1f11561396ac214455233e",
+    "age_seconds": 1.337,
+    "generated_at_utc": "2026-10-07T00:00:21.827301+00:00",
+    "guard_blob_sha": "02c27b0476fd3ac1e62e63c7c81c1380094e947e",
     "guard_path": "nasdaq-xray/canonical_official_source_guard.json",
     "max_age_seconds": 900,
     "security_status_suspension_symbols": [
@@ -85,6 +86,7 @@
       "PSKY",
       "QRVO",
       "SLP",
+      "SUGP",
       "SVA",
       "THRMV",
       "UCFI",
@@ -99,11 +101,9 @@
   "candidate_local_research_pass": false,
   "checks": {
     "all_finalists_detailed_legal_review_exact": true,
-    "alpha_semantic_audit_status": "BLOCKED_CROSS_PHASE_HISTORY_BINDING",
-    "alpha_semantic_conformance_exact": false,
-    "alpha_semantic_known_gaps": [
-      "CROSS_PHASE_HISTORY_BINDING_UNPROVEN_FOR_FINALISTS"
-    ],
+    "alpha_semantic_audit_status": "PASS_IMPLEMENTATION_CONFORMANCE",
+    "alpha_semantic_conformance_exact": true,
+    "alpha_semantic_known_gaps": [],
     "alpha_source_binding_exact": true,
     "alpha_source_blobs_exact": true,
     "alpha_workflow_sha_exact": true,
@@ -158,8 +158,8 @@
     "deep_D_confirmed": 5,
     "event_confirmed_blocks": 0,
     "event_unresolved": 107,
-    "final_confirmed_candidates": 5,
-    "final_fail": 2,
+    "final_confirmed_candidates": 14,
+    "final_fail": 14,
     "final_watch": 0,
     "halt_vetoed_candidates": 0,
     "history_fail": 12,
@@ -192,7 +192,7 @@
     },
     "account_live_probe": {
       "balance_parseable": false,
-      "blob_sha": "87aaa76f4f5704ce33c18dc561c35fe08232e1d5",
+      "blob_sha": "ca1357df8a14e9d1f385d47df633c319164cd333",
       "network_attempted": false,
       "path": "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/account_effective_probe_state.json",
       "positions_parseable": false,
@@ -203,10 +203,10 @@
       "secret_values_persisted": false,
       "status": "BLOCKED_MISSING_CREDENTIALS",
       "workflow_run_attempt": "1",
-      "workflow_run_id": "37548268957"
+      "workflow_run_id": "37549027354"
     },
     "deep": {
-      "blob_sha": "efb67cce80c43bb145097d878d4c86bf624ceeb2",
+      "blob_sha": "bee9fbc919fb3be1f563a56897424d524553cc35",
       "path": "nasdaq-xray/canonical_current_deep_full.json"
     },
     "deep_geometry": {
@@ -226,7 +226,7 @@
       "path": "nasdaq-xray/canonical_current_family_c.json"
     },
     "final": {
-      "blob_sha": "90a3d57492dc43bd76e50347442ca414120a6553",
+      "blob_sha": "331495a206a32cc5262cef2b784d706ec55c09b6",
       "path": "nasdaq-xray/canonical_current_final_tech.json"
     },
     "full_state": {
@@ -263,7 +263,7 @@
       "semantic_rebind": false
     },
     "official_halt_guard": {
-      "blob_sha": "e495a870507b519fbd1f11561396ac214455233e",
+      "blob_sha": "02c27b0476fd3ac1e62e63c7c81c1380094e947e",
       "path": "nasdaq-xray/canonical_official_source_guard.json"
     },
     "pointer": {
@@ -295,7 +295,7 @@
   "final_gate_reporting_zero_alpha": true,
   "full_end_to_end_research_pass": false,
   "g9_global_status": "G9_BLOCKED_FREE_AUTOMATION_PATH",
-  "generated_at_utc": "2026-10-06T23:48:04.654457+00:00",
+  "generated_at_utc": "2026-10-07T00:00:23.165765+00:00",
   "pointer_asof_before_candidate": "2026-10-06",
   "r92_account_g9_applicable": false,
   "r92_candidates": [],
@@ -340,29 +340,55 @@
     "candidate_research_tier_caps": {},
     "confirmed_family_candidates": [
       "ABCL|D",
+      "FIVN|D",
+      "IBRX|D",
+      "IOVA|D",
+      "LITE|D",
+      "MRNA|D",
+      "MRVL|D",
       "MXL|D",
       "PI|D",
+      "QLYS|D",
+      "SWKS|D",
       "TRMD|D",
-      "VICR|D"
+      "VICR|D",
+      "XP|D"
     ],
     "current_confirmed_family_candidates": [
       "ABCL|D",
+      "FIVN|D",
+      "IBRX|D",
+      "IOVA|D",
+      "LITE|D",
+      "MRNA|D",
+      "MRVL|D",
       "MXL|D",
       "PI|D",
+      "QLYS|D",
+      "SWKS|D",
       "TRMD|D",
-      "VICR|D"
+      "VICR|D",
+      "XP|D"
     ],
     "family_c_regime_finalist_pass": [],
     "family_c_unknown": [],
     "final_fail": [
       "ABCL|D",
-      "VICR|D"
-    ],
-    "final_unknown": [
+      "FIVN|D",
+      "IBRX|D",
+      "IOVA|D",
+      "LITE|D",
+      "MRNA|D",
+      "MRVL|D",
       "MXL|D",
       "PI|D",
-      "TRMD|D"
+      "QLYS|D",
+      "SWKS|D",
+      "TRMD|D",
+      "VICR|D",
+      "XP|D"
     ],
+    "final_unknown": [],
     "final_watch": [],
     "halt_vetoed_candidates": [],
     "history_fail": [
