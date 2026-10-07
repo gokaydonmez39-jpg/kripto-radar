@@ -408,6 +408,86 @@ jobs:
           cat /tmp/mc_out >> "$GITHUB_OUTPUT"
           cat /tmp/mc_out
 
+      - name: Commit newly built immutable resolver and MC authority before alpha
+        if: steps.mc.outputs.ready == 'true' && (steps.resolver_handoff.outputs.created == 'true' || steps.mc_rebind.outputs.created == 'true')
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "xray-dataplane-bot"
+          git config user.email "xray-dataplane-bot@users.noreply.github.com"
+          files=()
+          if [[ "${{ steps.resolver_handoff.outputs.created }}" == "true" && -n "${{ steps.resolver_handoff.outputs.path }}" ]]; then
+            files+=("${{ steps.resolver_handoff.outputs.path }}")
+          fi
+          if [[ "${{ steps.mc_rebind.outputs.created }}" == "true" && -n "${{ steps.mc_rebind.outputs.path }}" ]]; then
+            files+=("${{ steps.mc_rebind.outputs.path }}")
+          fi
+          [[ "${#files[@]}" -gt 0 ]] || { echo "XRAY_EARLY_AUTHORITY_COMMIT=NO_NEW_AUTHORITY"; exit 0; }
+          tmpdir="$(mktemp -d)"
+          trap 'rm -rf "$tmpdir"' EXIT
+          declare -A expected_blob
+          for p in "${files[@]}"; do
+            [[ -f "$p" ]] || { echo "XRAY_EARLY_AUTHORITY_COMMIT=MISSING_GENERATED_FILE:$p" >&2; exit 1; }
+            mkdir -p "$tmpdir/$(dirname "$p")"
+            cp "$p" "$tmpdir/$p"
+            expected_blob["$p"]="$(git hash-object "$p")"
+          done
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            latest="$(git rev-parse origin/main)"
+            if [[ "$latest" != "$GITHUB_SHA" ]]; then
+              changed="$(git diff --name-only "$GITHUB_SHA" "$latest" -- \
+                .github/workflows/xray-canonical-current-post-mc.yml \
+                nasdaq-xray/canonical_current_master_manifest.json \
+                nasdaq-xray/canonical_current_price_dv30.json \
+                nasdaq-xray/canonical_current_resolver_request.json \
+                nasdaq-xray/canonical_current_resolver_chunk_manifest.json \
+                nasdaq-xray/canonical_resolver_bridge_*.json \
+                nasdaq-xray/build_resolver_full_scope_handoff.py \
+                nasdaq-xray/canonical_mc_bridge_*.json \
+                nasdaq-xray/build_mc_provenance_rebind.py \
+                nasdaq-xray/chatgpt_compiled_policy_v3.json || true)"
+              if [[ -n "$changed" ]]; then
+                echo "XRAY_EARLY_AUTHORITY_COMMIT=STALE_SOURCE_ABORT"
+                printf '%s\n' "$changed"
+                exit 0
+              fi
+            fi
+            git reset --hard origin/main
+            collision=false
+            for p in "${files[@]}"; do
+              if [[ -f "$p" ]]; then
+                actual="$(git hash-object "$p")"
+                if [[ "$actual" != "${expected_blob[$p]}" ]]; then
+                  echo "XRAY_EARLY_AUTHORITY_COMMIT=IMMUTABLE_PATH_COLLISION:$p expected=${expected_blob[$p]} actual=$actual" >&2
+                  collision=true
+                  break
+                fi
+              else
+                mkdir -p "$(dirname "$p")"
+                cp "$tmpdir/$p" "$p"
+              fi
+            done
+            [[ "$collision" == "false" ]] || exit 1
+            git add "${files[@]}"
+            if git diff --cached --quiet; then
+              echo "XRAY_EARLY_AUTHORITY_COMMIT=ALREADY_EXACT"
+              exit 0
+            fi
+            git commit -m "chore(xray): commit immutable current resolver MC authority"
+            if git push origin HEAD:main; then
+              echo "XRAY_EARLY_AUTHORITY_COMMIT=PASS"
+              for p in "${files[@]}"; do
+                [[ "$(git hash-object "$p")" == "${expected_blob[$p]}" ]] || exit 1
+              done
+              exit 0
+            fi
+            echo "XRAY_EARLY_AUTHORITY_COMMIT=PUSH_RACE attempt=$attempt"
+            sleep $((attempt*2))
+          done
+          echo "XRAY_EARLY_AUTHORITY_COMMIT=FAIL" >&2
+          exit 1
+
       - name: Fail closed on ambiguous MC binding
         if: steps.freeze.outputs.frozen != 'true' && steps.mc.outputs.ready != 'true' && steps.mc.outputs.binding_fault == 'true'
         shell: bash
