@@ -310,6 +310,27 @@ jobs:
           },["P"])
           assert v2_pass["P"]["decision"]=="PASS_PRICE_DV30",v2_pass
           assert r.valid_bridge_price_resolution(v2_pass["P"],"2026-10-05") is True,v2_pass
+          stable_a={
+            "schema":"XRAY_CANONICAL_PRICE_DV30_V1","task_id":r.TASK_ID,"asof_et":"2026-10-05",
+            "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
+            "source_master_queue_hash":"Q","source_master_count":1,
+            "expected30":["D"],"gate_order":["PRICE","DV30"],
+            "thresholds":{"price":">=5","dv30":">=50000000 exact30 median"},
+            "counts":{"BLOCK_CURRENT_RUN":1},"unknown_count":0,"unknown_symbols":[],
+            "blocked_count":1,"blocked_symbols":["X"],"pass_count":0,"pass_symbols":[],
+            "pass_hash":r.hashlib.sha256(b"").hexdigest(),
+            "results":{"X":{"status":"BLOCK_CURRENT_RUN","info":{"reason":"R"},"provenance":"A"}},
+            "exception_bridge_meta":{"status":"A"},
+          }
+          stable_b={**stable_a,
+            "results":{"X":{"status":"BLOCK_CURRENT_RUN","info":{"reason":"R"},"provenance":"B",
+                            "block_recovery_attempt":{"status":"UNRESOLVED"}}},
+            "exception_bridge_meta":{"status":"B"}}
+          assert r.price_decision_semantic_view(stable_a)==r.price_decision_semantic_view(stable_b)
+          changed={**stable_b,"results":{"X":{"status":"FAIL_DV30","info":{"reason":"R"},"provenance":"B"}}}
+          assert r.price_decision_semantic_view(stable_a)!=r.price_decision_semantic_view(changed)
+          changed_info={**stable_b,"results":{"X":{"status":"BLOCK_CURRENT_RUN","info":{"reason":"R2"},"provenance":"B"}}}
+          assert r.price_decision_semantic_view(stable_a)!=r.price_decision_semantic_view(changed_info)
           deferred={
             "schema":"XRAY_CANONICAL_PRICE_DV30_V1","asof_et":"2026-10-05",
             "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
