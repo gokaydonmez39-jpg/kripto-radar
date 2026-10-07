@@ -70,6 +70,34 @@ def test_later_date_never_backfills_prior_asof():
     assert state["eligible_count"]==0,state
 
 
+def test_raw_postclose_capture_survives_frozen_research_asof():
+    # Capture clock is 2026-10-07 after close while research PRICE is still 2026-10-06.
+    # Raw evidence must still be preservable, but bound shadow eligibility must remain false.
+    frozen=price_state()
+    frozen["asof_et"]="2026-10-06"
+    now=datetime(2026,10,7,21,30,tzinfo=timezone.utc)
+    bound=m.build_state(rows(),frozen,now_utc=now,source_url=m.URL)
+    raw=m.build_raw_capture(rows(),now_utc=now,source_url=m.URL)
+    assert bound["same_session_post_close"] is False,bound
+    assert bound["eligible_count"]==0,bound
+    assert raw["capture_date_et"]=="2026-10-07",raw
+    assert raw["post_close_clock"] is True,raw
+    assert raw["record_count"]==3,raw
+    assert raw["alpha_authority"] is False
+    assert raw["production_mc_authority_changed"] is False
+    assert raw["decision_semantics"]=="RAW_EVIDENCE_ONLY_NO_MC_CLASSIFICATION"
+
+
+def test_raw_preclose_capture_never_archives_as_postclose():
+    raw=m.build_raw_capture(
+        rows(),
+        now_utc=datetime(2026,10,7,18,0,tzinfo=timezone.utc),
+        source_url=m.URL,
+    )
+    assert raw["post_close_clock"] is False,raw
+    assert raw["capture_date_et"]=="2026-10-07",raw
+
+
 def test_close_match_tolerance():
     ok,meta=m.close_match(100.01,100.00)
     assert ok is True,(ok,meta)
@@ -81,5 +109,7 @@ if __name__=="__main__":
     test_same_session_post_close_is_per_symbol_fail_closed()
     test_preclose_never_binds()
     test_later_date_never_backfills_prior_asof()
+    test_raw_postclose_capture_survives_frozen_research_asof()
+    test_raw_preclose_capture_never_archives_as_postclose()
     test_close_match_tolerance()
     print("NASDAQ_SCREENER_PIT_CAPTURE_SELFTEST=PASS")
