@@ -1,7 +1,7 @@
 {
   "asof_et": "2026-10-06",
   "asof_identity_proof": {
-    "blob_sha": "dfdee5c2317204b6b56e4b40336307f0f3eab96d",
+    "blob_sha": "fb4442e58fbe15894c380a0d632f6cd37598119c",
     "counts": {
       "operating_overrides": 3,
       "remove_from_asof": 0,
@@ -29,22 +29,13 @@
   },
   "counts": {
     "PASS_IDENTITY": 3161,
-    "UNKNOWN_IDENTITY": 89
+    "UNKNOWN_IDENTITY": 85
   },
   "execution": "NONE",
-  "explicit_excluded_count": 2386,
-  "explicit_excluded_hash": "349a3eaaaeb64763d300dc829dee272d07afcb171b62fe6a4819b8a75642b17e",
+  "explicit_excluded_count": 153,
+  "explicit_excluded_hash": "08eb2dbd9e2db4e5a9b29ae7f837062d0bce11a48465e98887b97f01f75e9a51",
   "explicit_excluded_reason_counts": {
-    "DEBT": 59,
-    "ETF": 1293,
-    "FUND": 32,
-    "PREFERRED": 102,
-    "RIGHT": 104,
-    "SPAC_BLANK_CHECK": 149,
-    "TEST_ISSUE": 8,
-    "UNIT": 261,
-    "WARRANT": 375,
-    "WHEN_ISSUED": 3
+    "SPAC_BLANK_CHECK": 153
   },
   "history_price_state_diagnostic_only": {
     "source_counts": {
@@ -57,7 +48,7 @@
   "identity_authority": "NASDAQTRADER_EXPLICIT_TYPE_FILTER_V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER",
   "identity_partition_policy": "MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V3_FROZEN_GUARD",
   "identity_ruleset": "V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER",
-  "official_footer": "File Creation Time: 1006202618:01|||||||",
+  "official_footer": "File Creation Time: 1006202617:01|||||||",
   "pass_count": 3161,
   "pass_hash": "f583de3888d099300a0d4b0baf67d557ab98007aa33fb93142a9172213ea6867",
   "pass_symbols": [
@@ -3228,22 +3219,22 @@
   "queue_hash": "f583de3888d099300a0d4b0baf67d557ab98007aa33fb93142a9172213ea6867",
   "queue_total": 3161,
   "queue_unique": 3161,
-  "raw_identity_total": 3250,
+  "raw_identity_total": 3246,
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1",
   "sec_spac_proof": {
-    "blob_sha": null,
-    "count": 0,
-    "path": null,
-    "symbol_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    "blob_sha": "35324dc627e9462612b87d8d15eeca660582c33c",
+    "count": 4,
+    "path": "nasdaq-xray/master_sec_spac_proof_20261006.json",
+    "symbol_hash": "7e13b17a1c293570515a5db17c09a7d2520ae7ecb719d83ff6de3b3d316c92b8"
   },
-  "source_state_blob_sha": "da5ff90a1cf710b4d40a18098e0b3a25cb823ef1",
-  "source_state_hash": "d9866b6e77a9b4fbf2d27532f4571acbb96084de72bd2bc1c23ed6abb0033197",
+  "source_state_blob_sha": "84225c2c0b50bdaad4f8e55de600c06105720b57",
+  "source_state_hash": "bfc69c82aaca4e047ea3e751155eb59af604ad6fe2cc48358c77f07cf4c8186b",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
   "status": "PARTIAL_UNKNOWN",
   "status_semantics": "IDENTITY_PARTITION_EXACT_WITH_UNKNOWN",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 89,
+  "unknown_count": 85,
   "unknown_detail": {
     "AACO": {
       "exact_sec_spac_proof": false,
@@ -3488,15 +3479,6 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "FJDI": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "ARC Group Securities Acquisition I - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "FSHP": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
@@ -3593,15 +3575,6 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Indigo Acquisition Corp. - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "IPHX": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Inflection Point Acquisition Corp. VIII - Class A Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -3728,15 +3701,6 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Meridian3 Industrials Acquisition Corp - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "MTAK": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Market Technology Acquisition Corp - Class A Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -3956,15 +3920,6 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "TLAC": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Three Lions Acquisition Corp. - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "TMTS": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
@@ -4076,7 +4031,6 @@
     "EURK",
     "FACT",
     "FERA",
-    "FJDI",
     "FSHP",
     "FVAV",
     "FVN",
@@ -4088,7 +4042,6 @@
     "HLXC",
     "IDAC",
     "INAC",
-    "IPHX",
     "ITHA",
     "KCHV",
     "KOYN",
@@ -4103,7 +4056,6 @@
     "MCGA",
     "MESH",
     "MIAC",
-    "MTAK",
     "NCO",
     "NSAI",
     "NTWO",
@@ -4128,7 +4080,6 @@
     "SUMA",
     "TCGX",
     "TDAC",
-    "TLAC",
     "TMTS",
     "TVA",
     "TVAI",

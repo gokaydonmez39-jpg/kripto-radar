@@ -37,7 +37,7 @@
     "2026-10-05",
     "2026-10-06"
   ],
-  "master_unknown_count": 89,
+  "master_unknown_count": 85,
   "master_unknown_detail": {
     "AACO": {
       "exact_sec_spac_proof": false,
@@ -282,15 +282,6 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "FJDI": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "ARC Group Securities Acquisition I - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "FSHP": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
@@ -387,15 +378,6 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Indigo Acquisition Corp. - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "IPHX": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Inflection Point Acquisition Corp. VIII - Class A Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -522,15 +504,6 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Meridian3 Industrials Acquisition Corp - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "MTAK": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Market Technology Acquisition Corp - Class A Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -750,15 +723,6 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "TLAC": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Three Lions Acquisition Corp. - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "TMTS": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
@@ -841,7 +805,7 @@
       "unknown_never_pass": true
     }
   },
-  "master_unknown_hash": "5dc1c2d45397ea8cf6698711aab436c1b359d326994ed410b33505869d1a08ac",
+  "master_unknown_hash": "8cc227a53a042b3ff2e56c317949b70fcab1624e7051a4a99e0c43927d1ab326",
   "master_unknown_symbols": [
     "AACO",
     "ADAC",
@@ -870,7 +834,6 @@
     "EURK",
     "FACT",
     "FERA",
-    "FJDI",
     "FSHP",
     "FVAV",
     "FVN",
@@ -882,7 +845,6 @@
     "HLXC",
     "IDAC",
     "INAC",
-    "IPHX",
     "ITHA",
     "KCHV",
     "KOYN",
@@ -897,7 +859,6 @@
     "MCGA",
     "MESH",
     "MIAC",
-    "MTAK",
     "NCO",
     "NSAI",
     "NTWO",
@@ -922,7 +883,6 @@
     "SUMA",
     "TCGX",
     "TDAC",
-    "TLAC",
     "TMTS",
     "TVA",
     "TVAI",
@@ -933,7 +893,7 @@
     "XCBE",
     "YHNA"
   ],
-  "official_footer": "File Creation Time: 1006202618:01|||||||",
+  "official_footer": "File Creation Time: 1006202617:01|||||||",
   "pointer_asof_et": "2026-10-06",
   "price_blocked_count": 11,
   "price_blocked_hash": "b757e7c3f8600f5d6d806a971d9bde99ced93e4563a9600f6921ee0e90259725",
@@ -1894,17 +1854,17 @@
   "settlement_already_proven": true,
   "settlement_bridge_blob_sha": "ea5aa2b96981cbfa1aec29b16de708d3dff31e5f",
   "settlement_bridge_path": "nasdaq-xray/canonical_resolver_bridge_20261006_c417_dv30_v13.json",
-  "settlement_core_source_blob_sha": "a160a25d511f40ad8119f0f242ad5fa94fadf851",
+  "settlement_core_source_blob_sha": "ec9655cb1c7f49fdc14da5c78db5429f16c8c0f1",
   "settlement_core_source_path": "nasdaq-xray/canonical_current_terminal.json",
   "settlement_core_symbol": "MSFT",
   "settlement_policy": "ALPACA_HISTORICAL_SIP_DAILY_AFTER_15M__AAPL_NVDA_PLUS_ONE_PRIOR_CURRENT_CORE__RALLIES_LONGBRIDGE_QUOTE_OHLC_0_01_CROSSCHECK__SIP_VOLUME_AUTHORITY__FAIL_CLOSED__DELAYED_SIP_NEVER_G9",
   "settlement_required": false,
   "settlement_symbols": [],
-  "source_master_blob_sha": "03663be87c74d44f0361c0a24bb7929ca4d5e19d",
+  "source_master_blob_sha": "6b207c894f3213f903ea870ab3011b1aff6765df",
   "source_master_path": "nasdaq-xray/canonical_current_master_manifest.json",
-  "source_overlay_blob_sha": "a931a7a25e865bbffbc73ee37dfd29982861aecc",
+  "source_overlay_blob_sha": "f42f7e0275547eae4fed59652ff714a789c91f1e",
   "source_overlay_path": "nasdaq-xray/canonical_current_resolution_overlay.json",
-  "source_pointer_blob_sha": "5c073df5d674c77e5e4439b41b81393b96148c06",
+  "source_pointer_blob_sha": "3f18abc886931380ea7d180fd8fbf65fca0a1cce",
   "source_pointer_path": "nasdaq-xray/chatgpt_canonical_state_v2.json",
   "source_price_blob_sha": "bab48eb20acf67f810e9606f7c4500be1eb3b927",
   "source_price_counts": {
@@ -1917,9 +1877,9 @@
   "source_price_pass_count": 508,
   "source_price_pass_hash": "63d66ef437b893c96ae7775e62d1a2c4d54a18695da2e7b0e8dd89022538882d",
   "source_price_path": "nasdaq-xray/canonical_current_price_dv30.json",
-  "source_state_blob_sha": "da5ff90a1cf710b4d40a18098e0b3a25cb823ef1",
+  "source_state_blob_sha": "84225c2c0b50bdaad4f8e55de600c06105720b57",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
-  "source_unknowns_blob_sha": "d4b6d407c4d2add9a02a015dbea62f30979d17ec",
+  "source_unknowns_blob_sha": "2cab3810e40d53f697ae5261b82527c17c64a30a",
   "source_unknowns_path": "nasdaq-xray/canonical_current_unknowns.json",
   "status": "READY",
   "symbol_count": 11,

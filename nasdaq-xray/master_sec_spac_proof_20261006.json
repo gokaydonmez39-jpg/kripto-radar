@@ -1,0 +1,59 @@
+{
+  "schema": "XRAY_MASTER_SEC_SPAC_PROOF_V1",
+  "asof_et": "2026-10-06",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "authority": "SEC_EDGAR_SIC_6770_EXACT_ASOF",
+  "applicability": "EXACT_ASOF_ONLY_NO_FORWARD_CARRY",
+  "proofs": {
+    "FJDI": {
+      "cik": "0002094712",
+      "sic": 6770,
+      "classification": "Blank Checks",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/2094712/000135445726000750/0001354457-26-000750-index.htm",
+      "evidence_date": "2026-08-03",
+      "same_asof_nasdaq_security_name": "ARC Group Securities Acquisition I - Class A Ordinary Shares",
+      "same_asof_nasdaq_screener_industry": "",
+      "same_asof_revalidated_without_sec_network": true,
+      "revalidation_semantics": "PRIOR_SEC_SIC6770_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1006202617:01|||||||"
+    },
+    "IPHX": {
+      "cik": "0002146310",
+      "sic": 6770,
+      "classification": "Blank Checks",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/2146310/000121390026096744/0001213900-26-096744-index.htm",
+      "evidence_date": "2026-08-31",
+      "same_asof_nasdaq_security_name": "Inflection Point Acquisition Corp. VIII - Class A Ordinary Shares",
+      "same_asof_nasdaq_screener_industry": "",
+      "same_asof_revalidated_without_sec_network": true,
+      "revalidation_semantics": "PRIOR_SEC_SIC6770_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1006202617:01|||||||"
+    },
+    "MTAK": {
+      "cik": "0002133136",
+      "sic": 6770,
+      "classification": "Blank Checks",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/2133136/000121390026097207/0001213900-26-097207-index.htm",
+      "evidence_date": "2026-09-03",
+      "same_asof_nasdaq_security_name": "Market Technology Acquisition Corp - Class A Ordinary Shares",
+      "same_asof_nasdaq_screener_industry": "",
+      "same_asof_revalidated_without_sec_network": true,
+      "revalidation_semantics": "PRIOR_SEC_SIC6770_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1006202617:01|||||||"
+    },
+    "TLAC": {
+      "cik": "0002128462",
+      "sic": 6770,
+      "classification": "Blank Checks",
+      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2128462",
+      "evidence_date": "2026-09-01",
+      "same_asof_nasdaq_security_name": "Three Lions Acquisition Corp. - Ordinary Shares",
+      "same_asof_nasdaq_screener_industry": "",
+      "same_asof_revalidated_without_sec_network": true,
+      "revalidation_semantics": "PRIOR_SEC_SIC6770_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1006202617:01|||||||"
+    }
+  }
+}
