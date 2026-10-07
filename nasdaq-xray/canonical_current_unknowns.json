@@ -1,23 +1,23 @@
 {
   "asof_et": "2026-10-06",
   "by_reason": {
-    "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY": 3157
+    "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY": 3161
   },
   "by_status": {
-    "UNKNOWN_STATIC": 3157
+    "UNKNOWN_STATIC": 3161
   },
   "execution": "NONE",
-  "official_footer": "File Creation Time: 1007202603:02|||||||",
+  "official_footer": "File Creation Time: 1006202618:01|||||||",
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_UNKNOWN_MANIFEST_V2",
   "source_counts": {
-    "UNKNOWN_STATIC": 3157
+    "UNKNOWN_STATIC": 3161
   },
-  "source_queue_hash": "7cb79b7ac033651438d2b7fc0c6245ccdcde335a1fcac9ad2cb87f3a6d3998e8",
-  "source_state_hash": "104bb3d3a85c1fae2632e33a5eaa0a7bb8a057650b24a7b4e5fa45ee17593d88",
-  "source_unknown_count": 3157,
+  "source_queue_hash": "f583de3888d099300a0d4b0baf67d557ab98007aa33fb93142a9172213ea6867",
+  "source_state_hash": "01ce7d8d264401aa84a05489ae2248cf143af6f3e61c2751adcb136a4ca51c12",
+  "source_unknown_count": 3161,
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 3157,
+  "unknown_count": 3161,
   "unknowns": {
     "AACG": {
       "attempts": 0,
@@ -7001,6 +7001,24 @@
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
       "security_name": "Ballard Power Systems, Inc. - Common Shares",
+      "status": "UNKNOWN_STATIC"
+    },
+    "BLFS": {
+      "attempts": 0,
+      "discovery": {
+        "country": "United States",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "Biotechnology: Electromedical & Electrotherapeutic Apparatus",
+        "screener_market_cap": 1888287841.0,
+        "screener_price": 38.61,
+        "screener_volume": 4446008.0,
+        "sector": "Health Care"
+      },
+      "info": {
+        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
+        "source": "MASTER_IDENTITY_ONLY_MODE"
+      },
+      "security_name": "BioLife Solutions, Inc. - Common Stock",
       "status": "UNKNOWN_STATIC"
     },
     "BLIN": {
@@ -25037,6 +25055,24 @@
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
       "security_name": "Intelligent Living Application Group Inc. - Ordinary Shares",
+      "status": "UNKNOWN_STATIC"
+    },
+    "ILLR": {
+      "attempts": 0,
+      "discovery": {
+        "country": "United States",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "Investment Managers",
+        "screener_market_cap": 4921271.0,
+        "screener_price": 0.23,
+        "screener_volume": 1082223.0,
+        "sector": "Finance"
+      },
+      "info": {
+        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
+        "source": "MASTER_IDENTITY_ONLY_MODE"
+      },
+      "security_name": "Triller Group Inc. - Common Stock",
       "status": "UNKNOWN_STATIC"
     },
     "ILMN": {
@@ -46819,6 +46855,24 @@
       "security_name": "Soluna Holdings, Inc. - Common Stock",
       "status": "UNKNOWN_STATIC"
     },
+    "SLP": {
+      "attempts": 0,
+      "discovery": {
+        "country": "United States",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "EDP Services",
+        "screener_market_cap": 374159503.0,
+        "screener_price": 18.5,
+        "screener_volume": 625332.0,
+        "sector": "Technology"
+      },
+      "info": {
+        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
+        "source": "MASTER_IDENTITY_ONLY_MODE"
+      },
+      "security_name": "Simulations Plus, Inc. - Common Stock",
+      "status": "UNKNOWN_STATIC"
+    },
     "SLS": {
       "attempts": 0,
       "discovery": {
@@ -54251,6 +54305,24 @@
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
       "security_name": "Weibo Corporation - American Depositary Shares",
+      "status": "UNKNOWN_STATIC"
+    },
+    "WBD": {
+      "attempts": 0,
+      "discovery": {
+        "country": "United States",
+        "discovery_reason": "FULL_IDENTITY_NO_PREFILTER",
+        "industry": "Cable & Other Pay Television Services",
+        "screener_market_cap": 77706267568.0,
+        "screener_price": 30.95,
+        "screener_volume": 435637453.0,
+        "sector": "Telecommunications"
+      },
+      "info": {
+        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
+        "source": "MASTER_IDENTITY_ONLY_MODE"
+      },
+      "security_name": "Warner Bros. Discovery, Inc. - Series A Common Stock",
       "status": "UNKNOWN_STATIC"
     },
     "WBTN": {

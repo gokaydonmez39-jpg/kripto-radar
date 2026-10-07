@@ -37,7 +37,7 @@
     "2026-10-05",
     "2026-10-06"
   ],
-  "master_unknown_count": 88,
+  "master_unknown_count": 89,
   "master_unknown_detail": {
     "AACO": {
       "exact_sec_spac_proof": false,
@@ -714,6 +714,15 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
+    "SPKL": {
+      "exact_sec_spac_proof": false,
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
+      "same_asof_nasdaq_industry": "Industrial Machinery/Components",
+      "security_name": "Spark I Acquisition Corp. - Class A Ordinary Share",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
+      "unknown_never_pass": true
+    },
     "SUMA": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
@@ -832,7 +841,7 @@
       "unknown_never_pass": true
     }
   },
-  "master_unknown_hash": "6452deccd3d65fde166a75a0137405ca6dfd8f8bb64dc4b9efb5ff74394bf065",
+  "master_unknown_hash": "5dc1c2d45397ea8cf6698711aab436c1b359d326994ed410b33505869d1a08ac",
   "master_unknown_symbols": [
     "AACO",
     "ADAC",
@@ -909,6 +918,7 @@
     "SIMA",
     "SOCA",
     "SPEG",
+    "SPKL",
     "SUMA",
     "TCGX",
     "TDAC",
@@ -923,7 +933,7 @@
     "XCBE",
     "YHNA"
   ],
-  "official_footer": "File Creation Time: 1007202603:02|||||||",
+  "official_footer": "File Creation Time: 1006202618:01|||||||",
   "pointer_asof_et": "2026-10-06",
   "price_blocked_count": 0,
   "price_blocked_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -936,7 +946,7 @@
     "dv30": ">=50000000 exact30 median",
     "price": ">=5"
   },
-  "price_unknown_count": 10,
+  "price_unknown_count": 11,
   "price_unknown_detail": {
     "ACCV": {
       "price_result": {
@@ -1576,6 +1586,45 @@
       },
       "security_name": "Sinovac Biotech, Ltd. - Ordinary Shares (Antigua/Barbudo)"
     },
+    "WBD": {
+      "price_result": {
+        "info": {
+          "nasdaq_result": {
+            "reason": "NASDAQ_UNAVAILABLE"
+          },
+          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
+          "sina_result": {
+            "reason": "ASOF_MISSING",
+            "source": "SINA_US_DAILY",
+            "usable_bars": 1125
+          },
+          "yahoo_result": {
+            "dv30": 701840858.5150719,
+            "known_session_count": 30,
+            "missing_sessions": [],
+            "price": 30.950000762939453,
+            "proof": "EXACT30_MEDIAN_GE_GATE",
+            "source": "YAHOO_CHART_FREE_FAIL_ONLY"
+          }
+        },
+        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
+        "provider_meta": {
+          "nasdaq": {
+            "rows": 0,
+            "usable": 0
+          },
+          "sina": {
+            "usable": 1125
+          },
+          "yahoo": {
+            "exchangeName": "NMS",
+            "usable": 63
+          }
+        },
+        "status": "UNKNOWN"
+      },
+      "security_name": "Warner Bros. Discovery, Inc. - Series A Common Stock"
+    },
     "WQEY": {
       "price_result": {
         "info": {
@@ -1740,7 +1789,7 @@
       "security_name": "Churchill Capital Corp XIII - Class A Ordinary Shares"
     }
   },
-  "price_unknown_hash": "676adcd630236e4e1af041525686fc0e75725f21d501b21a5f67f9fdd61363bd",
+  "price_unknown_hash": "b757e7c3f8600f5d6d806a971d9bde99ced93e4563a9600f6921ee0e90259725",
   "price_unknown_symbols": [
     "ACCV",
     "ADRX",
@@ -1750,47 +1799,48 @@
     "OIG",
     "RZAI",
     "SVA",
+    "WBD",
     "WQEY",
     "XIII"
   ],
-  "queue_hash": "7cb79b7ac033651438d2b7fc0c6245ccdcde335a1fcac9ad2cb87f3a6d3998e8",
-  "queue_total": 3157,
+  "queue_hash": "f583de3888d099300a0d4b0baf67d557ab98007aa33fb93142a9172213ea6867",
+  "queue_total": 3161,
   "real_money": "NO-GO",
   "resolver_policy": "ALPACA_SIP_PREFERRED__RALLIES_LONGBRIDGE_DUAL_SOURCE_CONNECTOR_FAILOVER__NEVER_G9__FAIL_CLOSED__SAME_ASOF_QUEUE_BINDING",
   "schema": "XRAY_RESOLVER_EPOCH_REQUEST_V1",
-  "settlement_already_proven": false,
-  "settlement_bridge_blob_sha": null,
-  "settlement_bridge_path": null,
+  "settlement_already_proven": true,
+  "settlement_bridge_blob_sha": "98eeabc9eb7f56e9cf93e6f22e18eaa1d1796cd7",
+  "settlement_bridge_path": "nasdaq-xray/canonical_resolver_bridge_20261006_c417_dv30_v5.json",
   "settlement_core_source_blob_sha": "a160a25d511f40ad8119f0f242ad5fa94fadf851",
   "settlement_core_source_path": "nasdaq-xray/canonical_current_terminal.json",
   "settlement_core_symbol": "MSFT",
   "settlement_policy": "ALPACA_HISTORICAL_SIP_DAILY_AFTER_15M__AAPL_NVDA_PLUS_ONE_PRIOR_CURRENT_CORE__RALLIES_LONGBRIDGE_QUOTE_OHLC_0_01_CROSSCHECK__SIP_VOLUME_AUTHORITY__FAIL_CLOSED__DELAYED_SIP_NEVER_G9",
   "settlement_required": false,
   "settlement_symbols": [],
-  "source_master_blob_sha": "f45bfb2f8f75b298f70342fb64841f2999177288",
+  "source_master_blob_sha": "d8006c204eef811c521802a8f47c05873280488b",
   "source_master_path": "nasdaq-xray/canonical_current_master_manifest.json",
-  "source_overlay_blob_sha": "0b60bd04272e2fc93ada7ca1f681b48408ea541f",
+  "source_overlay_blob_sha": "58d70c5d772c10562aaa56c470de4c85fcc68486",
   "source_overlay_path": "nasdaq-xray/canonical_current_resolution_overlay.json",
   "source_pointer_blob_sha": "5c073df5d674c77e5e4439b41b81393b96148c06",
   "source_pointer_path": "nasdaq-xray/chatgpt_canonical_state_v2.json",
-  "source_price_blob_sha": "3bbabbf0b0819dc4e2bc8a90140a5071201ef5b7",
+  "source_price_blob_sha": "d707c0703cfdd8f5cd7bea2eeba99eef46c3dd58",
   "source_price_counts": {
-    "FAIL_DV30": 1341,
-    "FAIL_PRICE": 1298,
+    "FAIL_DV30": 1343,
+    "FAIL_PRICE": 1299,
     "PASS_PRICE_DV30": 508,
-    "UNKNOWN": 10
+    "UNKNOWN": 11
   },
   "source_price_global_asof_sentinel_fast_fail": false,
   "source_price_pass_count": 508,
   "source_price_pass_hash": "63d66ef437b893c96ae7775e62d1a2c4d54a18695da2e7b0e8dd89022538882d",
   "source_price_path": "nasdaq-xray/canonical_current_price_dv30.json",
-  "source_state_blob_sha": "05c40fb79678002f0fac510abf6b903b32179d03",
+  "source_state_blob_sha": "af80f772c0912d513ab011213fb81a7636aa6e10",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
-  "source_unknowns_blob_sha": "446d0326b776e042c0256c5293a35fba814e39a4",
+  "source_unknowns_blob_sha": "16e5ef61df6506d5b7fd7162f3a662ce10f0548c",
   "source_unknowns_path": "nasdaq-xray/canonical_current_unknowns.json",
   "status": "READY",
-  "symbol_count": 10,
-  "symbol_hash": "676adcd630236e4e1af041525686fc0e75725f21d501b21a5f67f9fdd61363bd",
+  "symbol_count": 11,
+  "symbol_hash": "b757e7c3f8600f5d6d806a971d9bde99ced93e4563a9600f6921ee0e90259725",
   "symbols": [
     "ACCV",
     "ADRX",
@@ -1800,6 +1850,7 @@
     "OIG",
     "RZAI",
     "SVA",
+    "WBD",
     "WQEY",
     "XIII"
   ],
