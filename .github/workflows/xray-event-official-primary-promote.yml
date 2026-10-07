@@ -63,13 +63,16 @@ jobs:
           fi
           path="$(cat "$RUNNER_TEMP/event-successor-path")"
           git reset --hard origin/main
-          if [[ -f "$path" ]]; then
+          # reset --hard does not remove the locally generated untracked successor.
+          # Only a path tracked by origin/main can satisfy ALREADY_COMMITTED.
+          if git ls-files --error-unmatch "$path" >/dev/null 2>&1; then
             current="$(git hash-object "$path")"
             generated="$(git hash-object "$RUNNER_TEMP/event-successor.json")"
             [[ "$current" == "$generated" ]] && { echo "XRAY_EVENT_PROMOTE=ALREADY_COMMITTED"; exit 0; }
             echo "XRAY_EVENT_PROMOTE=IMMUTABLE_PATH_CONFLICT" >&2
             exit 1
           fi
+          rm -f "$path"
           cp "$RUNNER_TEMP/event-successor.json" "$path"
           git add "$path"
           git commit -m "feat(xray): promote issuer-primary Event successor"
