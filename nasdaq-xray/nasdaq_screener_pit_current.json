@@ -1,0 +1,6644 @@
+{
+  "alpha_authority": false,
+  "asof_et": "2026-10-06",
+  "close_match_abs_tolerance_usd": 0.02,
+  "close_match_relative_tolerance": 0.0001,
+  "eligible_count": 0,
+  "eligible_symbols": [],
+  "execution": "NONE",
+  "policy_note": "SHADOW ONLY. A row is eligible only for zero-dollar PIT research when captured after the regular close on the same ASOF and Nasdaq last sale matches the canonical completed RTH close. No row can create C4.17 production MC PASS.",
+  "production_mc_authority_changed": false,
+  "real_money": "NO-GO",
+  "reason_counts": {
+    "CAPTURE_NOT_SAME_ASOF_POST_CLOSE": 509
+  },
+  "records": {
+    "AAL": {
+      "canonical_rth_close": 13.0,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 13.0,
+      "nasdaq_market_cap_usd": 8605609363.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "AAOI": {
+      "canonical_rth_close": 130.16,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 130.16,
+      "nasdaq_market_cap_usd": 11051402576.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "AAON": {
+      "canonical_rth_close": 88.07,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 88.07,
+      "nasdaq_market_cap_usd": 7261691987.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "AAPL": {
+      "canonical_rth_close": 333.63,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.033363000000000004
+      },
+      "nasdaq_lastsale": 333.63,
+      "nasdaq_market_cap_usd": 4869056273400.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "ABCL": {
+      "canonical_rth_close": 13.15,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 13.15,
+      "nasdaq_market_cap_usd": 4259357706.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "ABNB": {
+      "canonical_rth_close": 160.39,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 160.39,
+      "nasdaq_market_cap_usd": 96039235536.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "ABVX": {
+      "canonical_rth_close": 88.22,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 88.22,
+      "nasdaq_market_cap_usd": 7697529971.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "ACGL": {
+      "canonical_rth_close": 94.82,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 94.82,
+      "nasdaq_market_cap_usd": 32355345727.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "ACMR": {
+      "canonical_rth_close": 75.35,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 75.35,
+      "nasdaq_market_cap_usd": 5248066919.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "ADBE": {
+      "canonical_rth_close": 238.12,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.023812000000000003
+      },
+      "nasdaq_lastsale": 238.12,
+      "nasdaq_market_cap_usd": 92676304000.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "ADI": {
+      "canonical_rth_close": 420.55,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.042055
+      },
+      "nasdaq_lastsale": 420.55,
+      "nasdaq_market_cap_usd": 203784006306.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "ADP": {
+      "canonical_rth_close": 262.36,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.026236000000000002
+      },
+      "nasdaq_lastsale": 262.36,
+      "nasdaq_market_cap_usd": 103960556133.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "ADSK": {
+      "canonical_rth_close": 231.28,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.023128000000000003
+      },
+      "nasdaq_lastsale": 231.28,
+      "nasdaq_market_cap_usd": 48337520000.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "AEHR": {
+      "canonical_rth_close": 92.14,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 92.14,
+      "nasdaq_market_cap_usd": 3009250568.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "AEIS": {
+      "canonical_rth_close": 302.77,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.030277
+      },
+      "nasdaq_lastsale": 302.77,
+      "nasdaq_market_cap_usd": 12126072324.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "AEP": {
+      "canonical_rth_close": 121.67,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 121.67,
+      "nasdaq_market_cap_usd": 66236825818.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "AFRM": {
+      "canonical_rth_close": 74.88,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 74.88,
+      "nasdaq_market_cap_usd": 25266103649.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "AGNC": {
+      "canonical_rth_close": 8.7,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 8.7,
+      "nasdaq_market_cap_usd": 10313688589.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "AKAM": {
+      "canonical_rth_close": 108.62,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 108.62,
+      "nasdaq_market_cap_usd": 15610498070.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "ALAB": {
+      "canonical_rth_close": 389.8,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.03898
+      },
+      "nasdaq_lastsale": 389.8,
+      "nasdaq_market_cap_usd": 67624493539.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "ALGM": {
+      "canonical_rth_close": 38.76,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 38.76,
+      "nasdaq_market_cap_usd": 7224943303.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "ALGN": {
+      "canonical_rth_close": 141.45,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 141.45,
+      "nasdaq_market_cap_usd": 10048587065.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "ALHC": {
+      "canonical_rth_close": 8.37,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 8.37,
+      "nasdaq_market_cap_usd": 1736232197.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "ALKS": {
+      "canonical_rth_close": 41.65,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 41.65,
+      "nasdaq_market_cap_usd": 6987340279.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "ALM": {
+      "canonical_rth_close": 13.04,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 13.04,
+      "nasdaq_market_cap_usd": 3761788980.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "ALNY": {
+      "canonical_rth_close": 223.94,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.022394
+      },
+      "nasdaq_lastsale": 223.94,
+      "nasdaq_market_cap_usd": 29965213885.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "AMAT": {
+      "canonical_rth_close": 530.27,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.053027
+      },
+      "nasdaq_lastsale": 530.27,
+      "nasdaq_market_cap_usd": 420820916100.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "AMBA": {
+      "canonical_rth_close": 67.94,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 67.94,
+      "nasdaq_market_cap_usd": 2998937570.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "AMD": {
+      "canonical_rth_close": 649.42,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.064942
+      },
+      "nasdaq_lastsale": 649.42,
+      "nasdaq_market_cap_usd": 1060161941776.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "AMGN": {
+      "canonical_rth_close": 402.6,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.040260000000000004
+      },
+      "nasdaq_lastsale": 402.6,
+      "nasdaq_market_cap_usd": 217658445213.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "AMKR": {
+      "canonical_rth_close": 53.39,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 53.39,
+      "nasdaq_market_cap_usd": 13264877480.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "AMZN": {
+      "canonical_rth_close": 256.29,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.025629000000000002
+      },
+      "nasdaq_lastsale": 256.29,
+      "nasdaq_market_cap_usd": 2764424305368.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "APA": {
+      "canonical_rth_close": 44.1,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 44.1,
+      "nasdaq_market_cap_usd": 15450501591.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "APLD": {
+      "canonical_rth_close": 25.34,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 25.34,
+      "nasdaq_market_cap_usd": 7579051412.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "APP": {
+      "canonical_rth_close": 278.78,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.027878
+      },
+      "nasdaq_lastsale": 278.78,
+      "nasdaq_market_cap_usd": 93294005780.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "APPF": {
+      "canonical_rth_close": 203.31,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.020331000000000002
+      },
+      "nasdaq_lastsale": 203.31,
+      "nasdaq_market_cap_usd": 7200628644.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "ARGX": {
+      "canonical_rth_close": 930.52,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.093052
+      },
+      "nasdaq_lastsale": 930.52,
+      "nasdaq_market_cap_usd": 57750758542.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "ARM": {
+      "canonical_rth_close": 302.56,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.030256
+      },
+      "nasdaq_lastsale": 302.56,
+      "nasdaq_market_cap_usd": 321940557045.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "ARQT": {
+      "canonical_rth_close": 23.92,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 23.92,
+      "nasdaq_market_cap_usd": 3006551707.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "ARWR": {
+      "canonical_rth_close": 61.54,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 61.54,
+      "nasdaq_market_cap_usd": 8692799899.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "ASML": {
+      "canonical_rth_close": 1834.1,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.18341
+      },
+      "nasdaq_lastsale": 1834.1,
+      "nasdaq_market_cap_usd": 706894539377.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "ASND": {
+      "canonical_rth_close": 226.05,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.022605000000000004
+      },
+      "nasdaq_lastsale": 226.05,
+      "nasdaq_market_cap_usd": 14893099901.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "ASO": {
+      "canonical_rth_close": 52.31,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 52.31,
+      "nasdaq_market_cap_usd": 3221191788.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "ASST": {
+      "canonical_rth_close": 29.75,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 29.75,
+      "nasdaq_market_cap_usd": 3002934834.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "ASTS": {
+      "canonical_rth_close": 63.12,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 63.12,
+      "nasdaq_market_cap_usd": 24564252221.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "ATRC": {
+      "canonical_rth_close": 53.68,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 53.68,
+      "nasdaq_market_cap_usd": 2730502662.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "AUGO": {
+      "canonical_rth_close": 86.67,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 86.67,
+      "nasdaq_market_cap_usd": 7262011957.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "AUR": {
+      "canonical_rth_close": 5.75,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 5.75,
+      "nasdaq_market_cap_usd": 11523892791.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "AVAV": {
+      "canonical_rth_close": 143.54,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 143.54,
+      "nasdaq_market_cap_usd": 7294803565.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "AVGO": {
+      "canonical_rth_close": 375.81,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.037581
+      },
+      "nasdaq_lastsale": 375.81,
+      "nasdaq_market_cap_usd": 1793977839566.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "AVT": {
+      "canonical_rth_close": 106.37,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 106.37,
+      "nasdaq_market_cap_usd": 8730102776.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "AXON": {
+      "canonical_rth_close": 418.62,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.041862
+      },
+      "nasdaq_lastsale": 418.62,
+      "nasdaq_market_cap_usd": 34007606667.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "AXSM": {
+      "canonical_rth_close": 174.34,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 174.34,
+      "nasdaq_market_cap_usd": 9132071810.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "AXTI": {
+      "canonical_rth_close": 84.06,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 84.06,
+      "nasdaq_market_cap_usd": 5512084201.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "BBIO": {
+      "canonical_rth_close": 66.96,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 66.96,
+      "nasdaq_market_cap_usd": 13089841259.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "BIDU": {
+      "canonical_rth_close": 87.05,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 87.05,
+      "nasdaq_market_cap_usd": 29618993966.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "BIIB": {
+      "canonical_rth_close": 222.89,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.022289
+      },
+      "nasdaq_lastsale": 222.89,
+      "nasdaq_market_cap_usd": 32932888614.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "BKNG": {
+      "canonical_rth_close": 157.63,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 157.63,
+      "nasdaq_market_cap_usd": 118440108215.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "BKR": {
+      "canonical_rth_close": 57.13,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 57.13,
+      "nasdaq_market_cap_usd": 56711469676.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "BLLN": {
+      "canonical_rth_close": 99.94,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 99.94,
+      "nasdaq_market_cap_usd": 4715872578.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "BMRN": {
+      "canonical_rth_close": 56.22,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 56.22,
+      "nasdaq_market_cap_usd": 10882716731.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "BNTX": {
+      "canonical_rth_close": 95.73,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 95.73,
+      "nasdaq_market_cap_usd": 24047793957.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "BPOP": {
+      "canonical_rth_close": 158.29,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 158.29,
+      "nasdaq_market_cap_usd": 10095498923.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "BRKR": {
+      "canonical_rth_close": 60.5,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 60.5,
+      "nasdaq_market_cap_usd": 9217738618.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "BRZE": {
+      "canonical_rth_close": 26.34,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 26.34,
+      "nasdaq_market_cap_usd": 2991813807.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "BSP": {
+      "canonical_rth_close": 33.07,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 33.07,
+      "nasdaq_market_cap_usd": 22761396451.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "BSY": {
+      "canonical_rth_close": 35.97,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 35.97,
+      "nasdaq_market_cap_usd": 10866281217.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "BTDR": {
+      "canonical_rth_close": 10.91,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 10.91,
+      "nasdaq_market_cap_usd": 2965144293.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "BTSG": {
+      "canonical_rth_close": 63.75,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 63.75,
+      "nasdaq_market_cap_usd": 12613845364.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "BULL": {
+      "canonical_rth_close": 7.28,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 7.28,
+      "nasdaq_market_cap_usd": 3934729963.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "BWIN": {
+      "canonical_rth_close": 31.83,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 31.83,
+      "nasdaq_market_cap_usd": 4440231971.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "BZ": {
+      "canonical_rth_close": 15.11,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 15.11,
+      "nasdaq_market_cap_usd": 6992994172.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "CACC": {
+      "canonical_rth_close": 536.58,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.053658000000000004
+      },
+      "nasdaq_lastsale": 536.58,
+      "nasdaq_market_cap_usd": 5570011616.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "CAI": {
+      "canonical_rth_close": 27.455,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 27.455,
+      "nasdaq_market_cap_usd": 7758650832.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "CAKE": {
+      "canonical_rth_close": 108.23,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 108.23,
+      "nasdaq_market_cap_usd": 5385593418.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "CALM": {
+      "canonical_rth_close": 63.4,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 63.4,
+      "nasdaq_market_cap_usd": 2961452864.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "CART": {
+      "canonical_rth_close": 45.47,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 45.47,
+      "nasdaq_market_cap_usd": 10791549698.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "CASY": {
+      "canonical_rth_close": 620.8,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.062079999999999996
+      },
+      "nasdaq_lastsale": 620.8,
+      "nasdaq_market_cap_usd": 22944871674.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "CBRS": {
+      "canonical_rth_close": 177.1,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 177.1,
+      "nasdaq_market_cap_usd": 42072591661.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "CBSH": {
+      "canonical_rth_close": 54.78,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 54.78,
+      "nasdaq_market_cap_usd": 7857214711.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "CCC": {
+      "canonical_rth_close": 6.65,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 6.65,
+      "nasdaq_market_cap_usd": 3916814782.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "CCEP": {
+      "canonical_rth_close": 101.71,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 101.71,
+      "nasdaq_market_cap_usd": 46174553260.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "CDNA": {
+      "canonical_rth_close": 63.79,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 63.79,
+      "nasdaq_market_cap_usd": 3300126085.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "CDNS": {
+      "canonical_rth_close": 359.55,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.035955
+      },
+      "nasdaq_lastsale": 359.55,
+      "nasdaq_market_cap_usd": 99017553150.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "CDW": {
+      "canonical_rth_close": 135.67,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 135.67,
+      "nasdaq_market_cap_usd": 16961114185.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "CELC": {
+      "canonical_rth_close": 71.25,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 71.25,
+      "nasdaq_market_cap_usd": 3486398445.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "CELH": {
+      "canonical_rth_close": 27.29,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 27.29,
+      "nasdaq_market_cap_usd": 6905326433.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "CENX": {
+      "canonical_rth_close": 37.18,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 37.18,
+      "nasdaq_market_cap_usd": 3680570708.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "CG": {
+      "canonical_rth_close": 38.88,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 38.88,
+      "nasdaq_market_cap_usd": 13854219186.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "CGNX": {
+      "canonical_rth_close": 66.35,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 66.35,
+      "nasdaq_market_cap_usd": 11161651917.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "CGON": {
+      "canonical_rth_close": 63.64,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 63.64,
+      "nasdaq_market_cap_usd": 5641073465.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "CHDN": {
+      "canonical_rth_close": 78.21,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 78.21,
+      "nasdaq_market_cap_usd": 5451256005.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "CHEF": {
+      "canonical_rth_close": 111.21,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 111.21,
+      "nasdaq_market_cap_usd": 4536932390.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "CHKP": {
+      "canonical_rth_close": 131.98,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 131.98,
+      "nasdaq_market_cap_usd": 13475241675.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "CHRD": {
+      "canonical_rth_close": 137.53,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 137.53,
+      "nasdaq_market_cap_usd": 7522598336.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "CHRW": {
+      "canonical_rth_close": 135.05,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 135.05,
+      "nasdaq_market_cap_usd": 15780762393.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "CHTR": {
+      "canonical_rth_close": 108.64,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 108.64,
+      "nasdaq_market_cap_usd": 12447698731.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "CHYM": {
+      "canonical_rth_close": 27.65,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 27.65,
+      "nasdaq_market_cap_usd": 10467878319.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "CIFR": {
+      "canonical_rth_close": 15.5,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 15.5,
+      "nasdaq_market_cap_usd": 6432976191.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "CINF": {
+      "canonical_rth_close": 163.08,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 163.08,
+      "nasdaq_market_cap_usd": 25029199579.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "CLMT": {
+      "canonical_rth_close": 56.21,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 56.21,
+      "nasdaq_market_cap_usd": 4940759733.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "CLSK": {
+      "canonical_rth_close": 12.29,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 12.29,
+      "nasdaq_market_cap_usd": 3156281827.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "CMCSA": {
+      "canonical_rth_close": 21.56,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 21.56,
+      "nasdaq_market_cap_usd": 76508604514.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "CME": {
+      "canonical_rth_close": 270.18,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.027018
+      },
+      "nasdaq_lastsale": 270.18,
+      "nasdaq_market_cap_usd": 97151125277.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "COCO": {
+      "canonical_rth_close": 54.48,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 54.48,
+      "nasdaq_market_cap_usd": 3197659907.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "COGT": {
+      "canonical_rth_close": 30.38,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 30.38,
+      "nasdaq_market_cap_usd": 5271688953.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "COHU": {
+      "canonical_rth_close": 73.1,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 73.1,
+      "nasdaq_market_cap_usd": 3460439452.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "COIN": {
+      "canonical_rth_close": 185.74,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 185.74,
+      "nasdaq_market_cap_usd": 49005070078.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "COKE": {
+      "canonical_rth_close": 194.61,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 194.61,
+      "nasdaq_market_cap_usd": 12954077255.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "COLB": {
+      "canonical_rth_close": 28.89,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 28.89,
+      "nasdaq_market_cap_usd": 8173046523.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "COO": {
+      "canonical_rth_close": 56.43,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 56.43,
+      "nasdaq_market_cap_usd": 10730463240.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "CORT": {
+      "canonical_rth_close": 119.57,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 119.57,
+      "nasdaq_market_cap_usd": 12925325329.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "CORZ": {
+      "canonical_rth_close": 16.68,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 16.68,
+      "nasdaq_market_cap_usd": 5359958556.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "COST": {
+      "canonical_rth_close": 935.68,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.093568
+      },
+      "nasdaq_lastsale": 935.68,
+      "nasdaq_market_cap_usd": 414954247327.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "CPB": {
+      "canonical_rth_close": 19.0,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 19.0,
+      "nasdaq_market_cap_usd": 5666459167.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "CPRT": {
+      "canonical_rth_close": 26.82,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 26.82,
+      "nasdaq_market_cap_usd": 24844182723.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "CRDO": {
+      "canonical_rth_close": 220.83,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.022083000000000002
+      },
+      "nasdaq_lastsale": 220.83,
+      "nasdaq_market_cap_usd": 41505422052.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "CROX": {
+      "canonical_rth_close": 120.22,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 120.22,
+      "nasdaq_market_cap_usd": 5763956917.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "CRSP": {
+      "canonical_rth_close": 54.0,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 54.0,
+      "nasdaq_market_cap_usd": 5221403262.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "CRUS": {
+      "canonical_rth_close": 118.87,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 118.87,
+      "nasdaq_market_cap_usd": 5957474476.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "CRWD": {
+      "canonical_rth_close": 278.86,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.027886
+      },
+      "nasdaq_lastsale": 278.86,
+      "nasdaq_market_cap_usd": 285534470040.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "CRWV": {
+      "canonical_rth_close": 91.72,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 91.72,
+      "nasdaq_market_cap_usd": 50586937135.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "CSCO": {
+      "canonical_rth_close": 117.94,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 117.94,
+      "nasdaq_market_cap_usd": 464988695802.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "CSGP": {
+      "canonical_rth_close": 27.63,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 27.63,
+      "nasdaq_market_cap_usd": 11195609356.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "CSX": {
+      "canonical_rth_close": 47.5,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 47.5,
+      "nasdaq_market_cap_usd": 87992558558.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "CTAS": {
+      "canonical_rth_close": 195.96,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 195.96,
+      "nasdaq_market_cap_usd": 78289305661.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "CTSH": {
+      "canonical_rth_close": 57.22,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 57.22,
+      "nasdaq_market_cap_usd": 25774417639.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "CVCO": {
+      "canonical_rth_close": 572.8,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.05728
+      },
+      "nasdaq_lastsale": 572.8,
+      "nasdaq_market_cap_usd": 4404489466.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "CVLT": {
+      "canonical_rth_close": 154.98,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 154.98,
+      "nasdaq_market_cap_usd": 6423078529.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "CYTK": {
+      "canonical_rth_close": 61.35,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 61.35,
+      "nasdaq_market_cap_usd": 8529086694.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "CZR": {
+      "canonical_rth_close": 29.65,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 29.65,
+      "nasdaq_market_cap_usd": 6040309030.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "DASH": {
+      "canonical_rth_close": 193.62,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 193.62,
+      "nasdaq_market_cap_usd": 83895146562.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "DAVE": {
+      "canonical_rth_close": 343.14,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.034314
+      },
+      "nasdaq_lastsale": 343.14,
+      "nasdaq_market_cap_usd": 4376924672.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "DBX": {
+      "canonical_rth_close": 33.73,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 33.73,
+      "nasdaq_market_cap_usd": 7613174183.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "DDOG": {
+      "canonical_rth_close": 278.24,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.027824
+      },
+      "nasdaq_lastsale": 278.24,
+      "nasdaq_market_cap_usd": 99909034678.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "DFTX": {
+      "canonical_rth_close": 35.62,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 35.62,
+      "nasdaq_market_cap_usd": 4786150759.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "DKNG": {
+      "canonical_rth_close": 19.75,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 19.75,
+      "nasdaq_market_cap_usd": 9804967448.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "DLTR": {
+      "canonical_rth_close": 116.19,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 116.19,
+      "nasdaq_market_cap_usd": 21800764441.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "DNTH": {
+      "canonical_rth_close": 85.4,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 85.4,
+      "nasdaq_market_cap_usd": 4776795881.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "DOCU": {
+      "canonical_rth_close": 68.22,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 68.22,
+      "nasdaq_market_cap_usd": 12750485275.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "DOX": {
+      "canonical_rth_close": 58.49,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 58.49,
+      "nasdaq_market_cap_usd": 6313968536.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "DPZ": {
+      "canonical_rth_close": 302.87,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.030287
+      },
+      "nasdaq_lastsale": 302.87,
+      "nasdaq_market_cap_usd": 10019465079.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "DUOL": {
+      "canonical_rth_close": 148.13,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 148.13,
+      "nasdaq_market_cap_usd": 6930450027.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "DXCM": {
+      "canonical_rth_close": 83.39,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 83.39,
+      "nasdaq_market_cap_usd": 31468114193.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "DYN": {
+      "canonical_rth_close": 15.4,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 15.4,
+      "nasdaq_market_cap_usd": 2875895037.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "EBAY": {
+      "canonical_rth_close": 107.06,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 107.06,
+      "nasdaq_market_cap_usd": 47641700000.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "ECHO": {
+      "canonical_rth_close": 100.01,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 100.01,
+      "nasdaq_market_cap_usd": 29084492558.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "ELVN": {
+      "canonical_rth_close": 42.39,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 42.39,
+      "nasdaq_market_cap_usd": 3105947559.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "ENPH": {
+      "canonical_rth_close": 33.91,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 33.91,
+      "nasdaq_market_cap_usd": 4481025014.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "ENSG": {
+      "canonical_rth_close": 172.06,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 172.06,
+      "nasdaq_market_cap_usd": 10028075594.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "ENTG": {
+      "canonical_rth_close": 166.89,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 166.89,
+      "nasdaq_market_cap_usd": 25500792000.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "EQIX": {
+      "canonical_rth_close": 1047.36,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.104736
+      },
+      "nasdaq_lastsale": 1047.36,
+      "nasdaq_market_cap_usd": 103344777049.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "ERAS": {
+      "canonical_rth_close": 14.3,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 14.3,
+      "nasdaq_market_cap_usd": 5001597101.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "ERIC": {
+      "canonical_rth_close": 9.43,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 9.43,
+      "nasdaq_market_cap_usd": 31791846861.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "ESLT": {
+      "canonical_rth_close": 691.1,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.06911
+      },
+      "nasdaq_lastsale": 691.1,
+      "nasdaq_market_cap_usd": 32142323596.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "EVRG": {
+      "canonical_rth_close": 80.35,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 80.35,
+      "nasdaq_market_cap_usd": 18526072270.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "EWBC": {
+      "canonical_rth_close": 127.12,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 127.12,
+      "nasdaq_market_cap_usd": 17416947135.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "EWTX": {
+      "canonical_rth_close": 40.02,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 40.02,
+      "nasdaq_market_cap_usd": 4346337243.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "EXC": {
+      "canonical_rth_close": 41.68,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 41.68,
+      "nasdaq_market_cap_usd": 43024345345.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "EXE": {
+      "canonical_rth_close": 88.23,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 88.23,
+      "nasdaq_market_cap_usd": 20425579303.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "EXEL": {
+      "canonical_rth_close": 58.33,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 58.33,
+      "nasdaq_market_cap_usd": 14453106094.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "EXLS": {
+      "canonical_rth_close": 35.41,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 35.41,
+      "nasdaq_market_cap_usd": 5368598590.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "EXPE": {
+      "canonical_rth_close": 260.07,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.026007
+      },
+      "nasdaq_lastsale": 260.07,
+      "nasdaq_market_cap_usd": 29776946372.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "FANG": {
+      "canonical_rth_close": 184.98,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 184.98,
+      "nasdaq_market_cap_usd": 51798904818.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "FAST": {
+      "canonical_rth_close": 50.81,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 50.81,
+      "nasdaq_market_cap_usd": 58304351684.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "FCEL": {
+      "canonical_rth_close": 20.65,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 20.65,
+      "nasdaq_market_cap_usd": 1651054147.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "FCFS": {
+      "canonical_rth_close": 213.0,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.0213
+      },
+      "nasdaq_lastsale": 213.0,
+      "nasdaq_market_cap_usd": 9238193400.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "FCNCA": {
+      "canonical_rth_close": 2088.1299,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.00010000000020227162,
+        "tolerance": 0.20881300000000003
+      },
+      "nasdaq_lastsale": 2088.13,
+      "nasdaq_market_cap_usd": 23581502666.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "FER": {
+      "canonical_rth_close": 51.46,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 51.46,
+      "nasdaq_market_cap_usd": 37023295918.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "FFIV": {
+      "canonical_rth_close": 469.79,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.04697900000000001
+      },
+      "nasdaq_lastsale": 469.79,
+      "nasdaq_market_cap_usd": 26602883832.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "FIGR": {
+      "canonical_rth_close": 27.35,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 27.35,
+      "nasdaq_market_cap_usd": 6136734799.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "FISV": {
+      "canonical_rth_close": 45.48,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 45.48,
+      "nasdaq_market_cap_usd": 24184750471.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "FIVE": {
+      "canonical_rth_close": 209.92,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.020992
+      },
+      "nasdaq_lastsale": 209.92,
+      "nasdaq_market_cap_usd": 11556943027.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "FIVN": {
+      "canonical_rth_close": 33.29,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 33.29,
+      "nasdaq_market_cap_usd": 2487546347.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "FLEX": {
+      "canonical_rth_close": 121.38,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 121.38,
+      "nasdaq_market_cap_usd": 44845108571.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "FLNC": {
+      "canonical_rth_close": 8.03,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 8.03,
+      "nasdaq_market_cap_usd": 1482308843.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "FLY": {
+      "canonical_rth_close": 22.83,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 22.83,
+      "nasdaq_market_cap_usd": 3821848045.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "FORM": {
+      "canonical_rth_close": 141.3,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 141.3,
+      "nasdaq_market_cap_usd": 11038458443.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "FOX": {
+      "canonical_rth_close": 55.58,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 55.58,
+      "nasdaq_market_cap_usd": 23436619911.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "FOXA": {
+      "canonical_rth_close": 62.08,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 62.08,
+      "nasdaq_market_cap_usd": 26177498454.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "FROG": {
+      "canonical_rth_close": 98.51,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 98.51,
+      "nasdaq_market_cap_usd": 12146412147.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "FRPT": {
+      "canonical_rth_close": 62.77,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 62.77,
+      "nasdaq_market_cap_usd": 3016605305.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "FRSH": {
+      "canonical_rth_close": 13.76,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 13.76,
+      "nasdaq_market_cap_usd": 3590269823.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "FRVO": {
+      "canonical_rth_close": 14.33,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 14.33,
+      "nasdaq_market_cap_usd": 4223956642.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "FSLR": {
+      "canonical_rth_close": 179.8,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 179.8,
+      "nasdaq_market_cap_usd": 19323067882.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "FSLY": {
+      "canonical_rth_close": 25.51,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 25.51,
+      "nasdaq_market_cap_usd": 4063743000.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "FTAI": {
+      "canonical_rth_close": 179.44,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 179.44,
+      "nasdaq_market_cap_usd": 18429760409.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "FTNT": {
+      "canonical_rth_close": 191.27,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 191.27,
+      "nasdaq_market_cap_usd": 140337410409.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "FUTU": {
+      "canonical_rth_close": 113.21,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 113.21,
+      "nasdaq_market_cap_usd": 15868377053.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "FWONK": {
+      "canonical_rth_close": 95.54,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 95.54,
+      "nasdaq_market_cap_usd": 23952688657.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "GEHC": {
+      "canonical_rth_close": 64.77,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 64.77,
+      "nasdaq_market_cap_usd": 29255718542.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "GEN": {
+      "canonical_rth_close": 22.8,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 22.8,
+      "nasdaq_market_cap_usd": 13647784330.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "GFS": {
+      "canonical_rth_close": 48.63,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 48.63,
+      "nasdaq_market_cap_usd": 27107266664.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "GH": {
+      "canonical_rth_close": 170.69,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 170.69,
+      "nasdaq_market_cap_usd": 22905944257.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "GILD": {
+      "canonical_rth_close": 144.23,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 144.23,
+      "nasdaq_market_cap_usd": 178838732006.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "GLBE": {
+      "canonical_rth_close": 38.7,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 38.7,
+      "nasdaq_market_cap_usd": 6484892746.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "GLNG": {
+      "canonical_rth_close": 50.03,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 50.03,
+      "nasdaq_market_cap_usd": 5082511078.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "GLPI": {
+      "canonical_rth_close": 38.08,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 38.08,
+      "nasdaq_market_cap_usd": 11078235237.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "GLXY": {
+      "canonical_rth_close": 22.15,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 22.15,
+      "nasdaq_market_cap_usd": 8658193344.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "GMAB": {
+      "canonical_rth_close": 37.8,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 37.8,
+      "nasdaq_market_cap_usd": 4856423645.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "GOOG": {
+      "canonical_rth_close": 344.59,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.034459
+      },
+      "nasdaq_lastsale": 344.59,
+      "nasdaq_market_cap_usd": 4214335700000.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "GOOGL": {
+      "canonical_rth_close": 347.68,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.034768
+      },
+      "nasdaq_lastsale": 347.68,
+      "nasdaq_market_cap_usd": 4252126400000.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "GRAL": {
+      "canonical_rth_close": 137.28,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 137.28,
+      "nasdaq_market_cap_usd": 6131780604.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "GTLB": {
+      "canonical_rth_close": 51.63,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 51.63,
+      "nasdaq_market_cap_usd": 8601558000.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "GTX": {
+      "canonical_rth_close": 26.09,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 26.09,
+      "nasdaq_market_cap_usd": 4865613171.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "HALO": {
+      "canonical_rth_close": 109.72,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 109.72,
+      "nasdaq_market_cap_usd": 12453000560.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "HAS": {
+      "canonical_rth_close": 91.03,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 91.03,
+      "nasdaq_market_cap_usd": 12839277831.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "HBAN": {
+      "canonical_rth_close": 15.33,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 15.33,
+      "nasdaq_market_cap_usd": 30972959283.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "HLNE": {
+      "canonical_rth_close": 86.5,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 86.5,
+      "nasdaq_market_cap_usd": 4767070187.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "HON": {
+      "canonical_rth_close": 212.87,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.021287
+      },
+      "nasdaq_lastsale": 212.87,
+      "nasdaq_market_cap_usd": 67467019929.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "HONA": {
+      "canonical_rth_close": 157.39,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 157.39,
+      "nasdaq_market_cap_usd": 49885189388.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "HOOD": {
+      "canonical_rth_close": 112.0,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 112.0,
+      "nasdaq_market_cap_usd": 100697214576.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "HQY": {
+      "canonical_rth_close": 91.05,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 91.05,
+      "nasdaq_market_cap_usd": 7531227701.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "HSIC": {
+      "canonical_rth_close": 84.84,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 84.84,
+      "nasdaq_market_cap_usd": 9455124623.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "HST": {
+      "canonical_rth_close": 22.48,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 22.48,
+      "nasdaq_market_cap_usd": 15401596490.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "HTFL": {
+      "canonical_rth_close": 50.69,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 50.69,
+      "nasdaq_market_cap_usd": 4407679353.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "HTHT": {
+      "canonical_rth_close": 42.05,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 42.05,
+      "nasdaq_market_cap_usd": 12931376589.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "HUT": {
+      "canonical_rth_close": 92.22,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 92.22,
+      "nasdaq_market_cap_usd": 11366988139.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "HWC": {
+      "canonical_rth_close": 72.72,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 72.72,
+      "nasdaq_market_cap_usd": 5833820778.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "IBKR": {
+      "canonical_rth_close": 90.58,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 90.58,
+      "nasdaq_market_cap_usd": 41039820729.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "IBRX": {
+      "canonical_rth_close": 9.69,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 9.69,
+      "nasdaq_market_cap_usd": 10269813485.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "ICLR": {
+      "canonical_rth_close": 161.69,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 161.69,
+      "nasdaq_market_cap_usd": 12380170779.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "IDCC": {
+      "canonical_rth_close": 339.29,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.033929
+      },
+      "nasdaq_lastsale": 339.29,
+      "nasdaq_market_cap_usd": 8755720115.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "IDXX": {
+      "canonical_rth_close": 515.41,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.051541
+      },
+      "nasdaq_lastsale": 515.41,
+      "nasdaq_market_cap_usd": 40604574998.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "IESC": {
+      "canonical_rth_close": 341.845,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.03418450000000001
+      },
+      "nasdaq_lastsale": 341.845,
+      "nasdaq_market_cap_usd": 13622082954.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "ILMN": {
+      "canonical_rth_close": 273.54,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.027354000000000003
+      },
+      "nasdaq_lastsale": 273.54,
+      "nasdaq_market_cap_usd": 41304540000.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "INCY": {
+      "canonical_rth_close": 112.73,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 112.73,
+      "nasdaq_market_cap_usd": 22850116907.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "INDV": {
+      "canonical_rth_close": 35.9,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 35.9,
+      "nasdaq_market_cap_usd": 4237346431.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "INIO": {
+      "canonical_rth_close": 21.35,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 21.35,
+      "nasdaq_market_cap_usd": 16012500000.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "INOD": {
+      "canonical_rth_close": 66.24,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 66.24,
+      "nasdaq_market_cap_usd": 2277506802.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "INSM": {
+      "canonical_rth_close": 105.23,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 105.23,
+      "nasdaq_market_cap_usd": 22980285561.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "INTC": {
+      "canonical_rth_close": 112.5,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 112.5,
+      "nasdaq_market_cap_usd": 594570319988.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "INTU": {
+      "canonical_rth_close": 289.81,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.028981000000000003
+      },
+      "nasdaq_lastsale": 289.81,
+      "nasdaq_market_cap_usd": 77447665160.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "IONS": {
+      "canonical_rth_close": 44.0,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 44.0,
+      "nasdaq_market_cap_usd": 7312110168.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "IOVA": {
+      "canonical_rth_close": 12.96,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 12.96,
+      "nasdaq_market_cap_usd": 5870509759.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "IREN": {
+      "canonical_rth_close": 41.28,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 41.28,
+      "nasdaq_market_cap_usd": 16266740989.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "IRTC": {
+      "canonical_rth_close": 107.2,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 107.2,
+      "nasdaq_market_cap_usd": 3533633922.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "ISRG": {
+      "canonical_rth_close": 404.76,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.040476
+      },
+      "nasdaq_lastsale": 404.76,
+      "nasdaq_market_cap_usd": 142992818661.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "JAZZ": {
+      "canonical_rth_close": 231.39,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.023139
+      },
+      "nasdaq_lastsale": 231.39,
+      "nasdaq_market_cap_usd": 15020583972.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "JBHT": {
+      "canonical_rth_close": 225.93,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.022593000000000002
+      },
+      "nasdaq_lastsale": 225.93,
+      "nasdaq_market_cap_usd": 21218202168.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "JD": {
+      "canonical_rth_close": 26.5,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 26.5,
+      "nasdaq_market_cap_usd": 35616000000.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "JKHY": {
+      "canonical_rth_close": 144.43,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 144.43,
+      "nasdaq_market_cap_usd": 10126276016.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "KDP": {
+      "canonical_rth_close": 31.13,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 31.13,
+      "nasdaq_market_cap_usd": 42362514563.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "KLAC": {
+      "canonical_rth_close": 197.46,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 197.46,
+      "nasdaq_market_cap_usd": 257686581910.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "KLIC": {
+      "canonical_rth_close": 97.92,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 97.92,
+      "nasdaq_market_cap_usd": 5124066941.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "KMB": {
+      "canonical_rth_close": 96.77,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 96.77,
+      "nasdaq_market_cap_usd": 32183673507.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "KRYS": {
+      "canonical_rth_close": 326.81,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.032681
+      },
+      "nasdaq_lastsale": 326.81,
+      "nasdaq_market_cap_usd": 9673195593.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "KSPI": {
+      "canonical_rth_close": 93.16,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 93.16,
+      "nasdaq_market_cap_usd": 17638305599.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "KTOS": {
+      "canonical_rth_close": 43.71,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 43.71,
+      "nasdaq_market_cap_usd": 8205299203.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "KYMR": {
+      "canonical_rth_close": 105.98,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 105.98,
+      "nasdaq_market_cap_usd": 8812302496.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "LAMR": {
+      "canonical_rth_close": 144.74,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 144.74,
+      "nasdaq_market_cap_usd": 14698301262.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "LECO": {
+      "canonical_rth_close": 275.54,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.027554000000000002
+      },
+      "nasdaq_lastsale": 275.54,
+      "nasdaq_market_cap_usd": 15018516284.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "LFST": {
+      "canonical_rth_close": 12.12,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 12.12,
+      "nasdaq_market_cap_usd": 4631708262.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "LFUS": {
+      "canonical_rth_close": 454.28,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.045427999999999996
+      },
+      "nasdaq_lastsale": 454.28,
+      "nasdaq_market_cap_usd": 11538142787.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "LGND": {
+      "canonical_rth_close": 296.94,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.029694
+      },
+      "nasdaq_lastsale": 296.94,
+      "nasdaq_market_cap_usd": 5919679736.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "LIN": {
+      "canonical_rth_close": 489.95,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.048995000000000004
+      },
+      "nasdaq_lastsale": 489.95,
+      "nasdaq_market_cap_usd": 225857230862.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "LITE": {
+      "canonical_rth_close": 1133.4,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.11334000000000001
+      },
+      "nasdaq_lastsale": 1133.4,
+      "nasdaq_market_cap_usd": 101665980000.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "LKQ": {
+      "canonical_rth_close": 22.39,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 22.39,
+      "nasdaq_market_cap_usd": 5664716706.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "LNT": {
+      "canonical_rth_close": 65.49,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 65.49,
+      "nasdaq_market_cap_usd": 16980554938.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "LNTH": {
+      "canonical_rth_close": 99.95,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 99.95,
+      "nasdaq_market_cap_usd": 6523973282.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "LOGI": {
+      "canonical_rth_close": 102.41,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 102.41,
+      "nasdaq_market_cap_usd": 14663917080.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "LPLA": {
+      "canonical_rth_close": 332.39,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.033239
+      },
+      "nasdaq_lastsale": 332.39,
+      "nasdaq_market_cap_usd": 26173149773.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "LQDA": {
+      "canonical_rth_close": 25.91,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 25.91,
+      "nasdaq_market_cap_usd": 2319175366.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "LRCX": {
+      "canonical_rth_close": 333.89,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.033389
+      },
+      "nasdaq_lastsale": 333.89,
+      "nasdaq_market_cap_usd": 417838080228.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "LSCC": {
+      "canonical_rth_close": 134.47,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 134.47,
+      "nasdaq_market_cap_usd": 19098810676.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "LSTR": {
+      "canonical_rth_close": 169.05,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 169.05,
+      "nasdaq_market_cap_usd": 5737037171.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "LULU": {
+      "canonical_rth_close": 93.61,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 93.61,
+      "nasdaq_market_cap_usd": 9884660331.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "LUMN": {
+      "canonical_rth_close": 5.905,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 5.905,
+      "nasdaq_market_cap_usd": 6090685111.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "LUNR": {
+      "canonical_rth_close": 15.06,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 15.06,
+      "nasdaq_market_cap_usd": 3447596464.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "LYFT": {
+      "canonical_rth_close": 15.76,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 15.76,
+      "nasdaq_market_cap_usd": 5965794324.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "MANH": {
+      "canonical_rth_close": 202.84,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.020284
+      },
+      "nasdaq_lastsale": 202.84,
+      "nasdaq_market_cap_usd": 11826580520.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "MAR": {
+      "canonical_rth_close": 361.28,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.036128
+      },
+      "nasdaq_lastsale": 361.28,
+      "nasdaq_market_cap_usd": 94209644529.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "MARA": {
+      "canonical_rth_close": 10.97,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 10.97,
+      "nasdaq_market_cap_usd": 4237703288.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "MAT": {
+      "canonical_rth_close": 15.93,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 15.93,
+      "nasdaq_market_cap_usd": 4551201000.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "MCHP": {
+      "canonical_rth_close": 81.26,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 81.26,
+      "nasdaq_market_cap_usd": 44124886231.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "MDB": {
+      "canonical_rth_close": 360.71,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.036071
+      },
+      "nasdaq_lastsale": 360.71,
+      "nasdaq_market_cap_usd": 29057477762.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "MDGL": {
+      "canonical_rth_close": 496.45,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.049645
+      },
+      "nasdaq_lastsale": 496.45,
+      "nasdaq_market_cap_usd": 11470043353.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "MDLN": {
+      "canonical_rth_close": 35.55,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 35.55,
+      "nasdaq_market_cap_usd": 46737851341.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "MDLZ": {
+      "canonical_rth_close": 59.62,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 59.62,
+      "nasdaq_market_cap_usd": 76093486358.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "MEDP": {
+      "canonical_rth_close": 602.9,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.06029
+      },
+      "nasdaq_lastsale": 602.9,
+      "nasdaq_market_cap_usd": 16827936800.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "MELI": {
+      "canonical_rth_close": 1857.99,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.18579900000000002
+      },
+      "nasdaq_lastsale": 1857.99,
+      "nasdaq_market_cap_usd": 94194151148.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "META": {
+      "canonical_rth_close": 738.88,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.07388800000000001
+      },
+      "nasdaq_lastsale": 738.88,
+      "nasdaq_market_cap_usd": 1882301399528.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "MIDD": {
+      "canonical_rth_close": 105.92,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 105.92,
+      "nasdaq_market_cap_usd": 4789951206.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "MIRM": {
+      "canonical_rth_close": 79.25,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 79.25,
+      "nasdaq_market_cap_usd": 5145877088.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "MKSI": {
+      "canonical_rth_close": 281.41,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.028141000000000003
+      },
+      "nasdaq_lastsale": 281.41,
+      "nasdaq_market_cap_usd": 19028256997.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "MKTX": {
+      "canonical_rth_close": 164.03,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 164.03,
+      "nasdaq_market_cap_usd": 5772689911.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "MMED": {
+      "canonical_rth_close": 19.64,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 19.64,
+      "nasdaq_market_cap_usd": 5525712645.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "MMSI": {
+      "canonical_rth_close": 84.96,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 84.96,
+      "nasdaq_market_cap_usd": 5072997283.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "MNDY": {
+      "canonical_rth_close": 84.29,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 84.29,
+      "nasdaq_market_cap_usd": 3616626310.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "MNST": {
+      "canonical_rth_close": 43.25,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 43.25,
+      "nasdaq_market_cap_usd": 127093610301.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "MORN": {
+      "canonical_rth_close": 195.69,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 195.69,
+      "nasdaq_market_cap_usd": 7341030709.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "MPWR": {
+      "canonical_rth_close": 1473.6899,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 9.999999997489795e-05,
+        "tolerance": 0.147369
+      },
+      "nasdaq_lastsale": 1473.69,
+      "nasdaq_market_cap_usd": 72421547670.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "MRCY": {
+      "canonical_rth_close": 82.8,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 82.8,
+      "nasdaq_market_cap_usd": 5039504921.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "MRNA": {
+      "canonical_rth_close": 187.46,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 187.46,
+      "nasdaq_market_cap_usd": 74840759752.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "MRVL": {
+      "canonical_rth_close": 287.01,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.028701
+      },
+      "nasdaq_lastsale": 287.01,
+      "nasdaq_market_cap_usd": 251679069000.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "MRX": {
+      "canonical_rth_close": 74.24,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 74.24,
+      "nasdaq_market_cap_usd": 5503621819.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "MSFT": {
+      "canonical_rth_close": 529.3,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.05293
+      },
+      "nasdaq_lastsale": 529.3,
+      "nasdaq_market_cap_usd": 3930341228386.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "MSTR": {
+      "canonical_rth_close": 164.55,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 164.55,
+      "nasdaq_market_cap_usd": 69436464761.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "MTCH": {
+      "canonical_rth_close": 40.62,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 40.62,
+      "nasdaq_market_cap_usd": 9324361011.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "MTSI": {
+      "canonical_rth_close": 350.67,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.035067
+      },
+      "nasdaq_lastsale": 350.67,
+      "nasdaq_market_cap_usd": 26780994374.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "MU": {
+      "canonical_rth_close": 1045.5601,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 9.999999997489795e-05,
+        "tolerance": 0.10455600999999999
+      },
+      "nasdaq_lastsale": 1045.56,
+      "nasdaq_market_cap_usd": 1180848302960.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "MXL": {
+      "canonical_rth_close": 109.3,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 109.3,
+      "nasdaq_market_cap_usd": 9912765776.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "MYRG": {
+      "canonical_rth_close": 324.51,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.032451
+      },
+      "nasdaq_lastsale": 324.51,
+      "nasdaq_market_cap_usd": 5052377318.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "NAVN": {
+      "canonical_rth_close": 21.34,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 21.34,
+      "nasdaq_market_cap_usd": 5557159921.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "NBIS": {
+      "canonical_rth_close": 249.87,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.024987000000000002
+      },
+      "nasdaq_lastsale": 249.87,
+      "nasdaq_market_cap_usd": 67928463322.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "NBIX": {
+      "canonical_rth_close": 145.51,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 145.51,
+      "nasdaq_market_cap_usd": 14790972327.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "NDAQ": {
+      "canonical_rth_close": 92.27,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 92.27,
+      "nasdaq_market_cap_usd": 51576842114.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "NDSN": {
+      "canonical_rth_close": 334.22,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.03342200000000001
+      },
+      "nasdaq_lastsale": 334.22,
+      "nasdaq_market_cap_usd": 18615842105.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "NESR": {
+      "canonical_rth_close": 24.51,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 24.51,
+      "nasdaq_market_cap_usd": 2471876491.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "NFLX": {
+      "canonical_rth_close": 68.69,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 68.69,
+      "nasdaq_market_cap_usd": 286021016344.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "NKTR": {
+      "canonical_rth_close": 39.91,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 39.91,
+      "nasdaq_market_cap_usd": 1362646891.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "NTAP": {
+      "canonical_rth_close": 228.45,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.022845
+      },
+      "nasdaq_lastsale": 228.45,
+      "nasdaq_market_cap_usd": 44871921692.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "NTES": {
+      "canonical_rth_close": 119.07,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 119.07,
+      "nasdaq_market_cap_usd": 75981913462.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "NTNX": {
+      "canonical_rth_close": 73.41,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 73.41,
+      "nasdaq_market_cap_usd": 19862556840.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "NTRA": {
+      "canonical_rth_close": 400.65,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.040064999999999996
+      },
+      "nasdaq_lastsale": 400.65,
+      "nasdaq_market_cap_usd": 57751361711.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "NTRS": {
+      "canonical_rth_close": 169.46,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 169.46,
+      "nasdaq_market_cap_usd": 31003664957.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "NTSK": {
+      "canonical_rth_close": 19.64,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 19.64,
+      "nasdaq_market_cap_usd": 8024663371.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "NVAX": {
+      "canonical_rth_close": 11.32,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 11.32,
+      "nasdaq_market_cap_usd": 1867185618.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "NVDA": {
+      "canonical_rth_close": 239.24,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.023924
+      },
+      "nasdaq_lastsale": 239.24,
+      "nasdaq_market_cap_usd": 5765684000000.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "NVMI": {
+      "canonical_rth_close": 394.48,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.039448000000000004
+      },
+      "nasdaq_lastsale": 394.48,
+      "nasdaq_market_cap_usd": 12537746795.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "NVTS": {
+      "canonical_rth_close": 11.97,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 11.97,
+      "nasdaq_market_cap_usd": 3125289051.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "NWSA": {
+      "canonical_rth_close": 28.55,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 28.55,
+      "nasdaq_market_cap_usd": 15429733386.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "NXPI": {
+      "canonical_rth_close": 244.38,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.024438
+      },
+      "nasdaq_lastsale": 244.38,
+      "nasdaq_market_cap_usd": 61623880842.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "NXST": {
+      "canonical_rth_close": 157.36,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 157.36,
+      "nasdaq_market_cap_usd": 4847994245.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "NXT": {
+      "canonical_rth_close": 88.09,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 88.09,
+      "nasdaq_market_cap_usd": 13365853417.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "ODFL": {
+      "canonical_rth_close": 178.02,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 178.02,
+      "nasdaq_market_cap_usd": 36913625848.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "OKTA": {
+      "canonical_rth_close": 218.67,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.021867
+      },
+      "nasdaq_lastsale": 218.67,
+      "nasdaq_market_cap_usd": 38228092326.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "OLED": {
+      "canonical_rth_close": 79.66,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 79.66,
+      "nasdaq_market_cap_usd": 3661718076.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "OLLI": {
+      "canonical_rth_close": 87.75,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 87.75,
+      "nasdaq_market_cap_usd": 5212560863.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "ON": {
+      "canonical_rth_close": 86.31,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 86.31,
+      "nasdaq_market_cap_usd": 33602089488.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "ONB": {
+      "canonical_rth_close": 24.895,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 24.895,
+      "nasdaq_market_cap_usd": 9524080150.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "ONC": {
+      "canonical_rth_close": 362.78,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.036278
+      },
+      "nasdaq_lastsale": 362.78,
+      "nasdaq_market_cap_usd": 41248766938.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "ONDS": {
+      "canonical_rth_close": 7.41,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 7.41,
+      "nasdaq_market_cap_usd": 4314863000.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "ORKA": {
+      "canonical_rth_close": 80.18,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 80.18,
+      "nasdaq_market_cap_usd": 5308693666.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "ORLY": {
+      "canonical_rth_close": 85.14,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 85.14,
+      "nasdaq_market_cap_usd": 68874921831.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "OUST": {
+      "canonical_rth_close": 44.91,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 44.91,
+      "nasdaq_market_cap_usd": 3238564875.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "OZK": {
+      "canonical_rth_close": 44.58,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 44.58,
+      "nasdaq_market_cap_usd": 5043608765.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "PANW": {
+      "canonical_rth_close": 419.91,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.04199100000000001
+      },
+      "nasdaq_lastsale": 419.91,
+      "nasdaq_market_cap_usd": 343486380000.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "PAYX": {
+      "canonical_rth_close": 101.02,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 101.02,
+      "nasdaq_market_cap_usd": 35961147382.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "PCAR": {
+      "canonical_rth_close": 109.32,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 109.32,
+      "nasdaq_market_cap_usd": 57542216662.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "PCTY": {
+      "canonical_rth_close": 146.16,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 146.16,
+      "nasdaq_market_cap_usd": 7754805712.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "PCVX": {
+      "canonical_rth_close": 66.7,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 66.7,
+      "nasdaq_market_cap_usd": 9925312043.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "PDD": {
+      "canonical_rth_close": 78.4,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 78.4,
+      "nasdaq_market_cap_usd": 111594282621.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "PEGA": {
+      "canonical_rth_close": 34.6,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 34.6,
+      "nasdaq_market_cap_usd": 5688411097.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "PENG": {
+      "canonical_rth_close": 64.21,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 64.21,
+      "nasdaq_market_cap_usd": 3290293703.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "PEP": {
+      "canonical_rth_close": 125.71,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 125.71,
+      "nasdaq_market_cap_usd": 171580517756.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "PFG": {
+      "canonical_rth_close": 109.7,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 109.7,
+      "nasdaq_market_cap_usd": 23487279118.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "PI": {
+      "canonical_rth_close": 184.16,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 184.16,
+      "nasdaq_market_cap_usd": 5626900698.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "PLTR": {
+      "canonical_rth_close": 192.07,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 192.07,
+      "nasdaq_market_cap_usd": 461362411904.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "PLXS": {
+      "canonical_rth_close": 272.63,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.027263000000000003
+      },
+      "nasdaq_lastsale": 272.63,
+      "nasdaq_market_cap_usd": 7266161750.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "PODD": {
+      "canonical_rth_close": 134.73,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 134.73,
+      "nasdaq_market_cap_usd": 9344091231.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "POET": {
+      "canonical_rth_close": 7.71,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 7.71,
+      "nasdaq_market_cap_usd": 1334277858.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "POOL": {
+      "canonical_rth_close": 158.24,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 158.24,
+      "nasdaq_market_cap_usd": 5750559805.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "POWL": {
+      "canonical_rth_close": 204.69,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.020469
+      },
+      "nasdaq_lastsale": 204.69,
+      "nasdaq_market_cap_usd": 7457381525.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "PRAX": {
+      "canonical_rth_close": 280.14,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.028014
+      },
+      "nasdaq_lastsale": 280.14,
+      "nasdaq_market_cap_usd": 7821505438.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "PTC": {
+      "canonical_rth_close": 193.0,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 193.0,
+      "nasdaq_market_cap_usd": 20941708373.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "PTCT": {
+      "canonical_rth_close": 63.7,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 63.7,
+      "nasdaq_market_cap_usd": 5316453087.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "PTEN": {
+      "canonical_rth_close": 11.41,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 11.41,
+      "nasdaq_market_cap_usd": 4351601412.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "PTGX": {
+      "canonical_rth_close": 138.69,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 138.69,
+      "nasdaq_market_cap_usd": 8974392047.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "PURR": {
+      "canonical_rth_close": 12.5,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 12.5,
+      "nasdaq_market_cap_usd": 3478391100.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "PYPL": {
+      "canonical_rth_close": 54.61,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 54.61,
+      "nasdaq_market_cap_usd": 46716718329.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "QBTS": {
+      "canonical_rth_close": 15.79,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 15.79,
+      "nasdaq_market_cap_usd": 5994304456.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "QCOM": {
+      "canonical_rth_close": 181.03,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 181.03,
+      "nasdaq_market_cap_usd": 190123846719.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "QLYS": {
+      "canonical_rth_close": 199.93,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 199.93,
+      "nasdaq_market_cap_usd": 6916578550.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "QNT": {
+      "canonical_rth_close": 45.59,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 45.59,
+      "nasdaq_market_cap_usd": 12112244975.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "QUBT": {
+      "canonical_rth_close": 7.86,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 7.86,
+      "nasdaq_market_cap_usd": 1779086327.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "QURE": {
+      "canonical_rth_close": 23.06,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 23.06,
+      "nasdaq_market_cap_usd": 1599589461.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "RARE": {
+      "canonical_rth_close": 14.46,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 14.46,
+      "nasdaq_market_cap_usd": 1425595104.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "REG": {
+      "canonical_rth_close": 71.42,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 71.42,
+      "nasdaq_market_cap_usd": 13078469467.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "REGN": {
+      "canonical_rth_close": 738.72,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.07387200000000001
+      },
+      "nasdaq_lastsale": 738.72,
+      "nasdaq_market_cap_usd": 76054908735.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "RELY": {
+      "canonical_rth_close": 23.2,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 23.2,
+      "nasdaq_market_cap_usd": 4911070053.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "RGEN": {
+      "canonical_rth_close": 174.86,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 174.86,
+      "nasdaq_market_cap_usd": 8554734008.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "RGLD": {
+      "canonical_rth_close": 234.35,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.023435
+      },
+      "nasdaq_lastsale": 234.35,
+      "nasdaq_market_cap_usd": 19855973288.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "RGTI": {
+      "canonical_rth_close": 15.17,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 15.17,
+      "nasdaq_market_cap_usd": 5063271892.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "RIOT": {
+      "canonical_rth_close": 18.93,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 18.93,
+      "nasdaq_market_cap_usd": 7103651640.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "RIVN": {
+      "canonical_rth_close": 14.51,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 14.51,
+      "nasdaq_market_cap_usd": 21008457741.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "RKLB": {
+      "canonical_rth_close": 75.06,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 75.06,
+      "nasdaq_market_cap_usd": 47119646009.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "RLAY": {
+      "canonical_rth_close": 18.74,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 18.74,
+      "nasdaq_market_cap_usd": 4106714165.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "RMBS": {
+      "canonical_rth_close": 114.09,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 114.09,
+      "nasdaq_market_cap_usd": 12374384286.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "ROAD": {
+      "canonical_rth_close": 93.89,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 93.89,
+      "nasdaq_market_cap_usd": 5386896969.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "ROIV": {
+      "canonical_rth_close": 35.53,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 35.53,
+      "nasdaq_market_cap_usd": 25664136723.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "ROKU": {
+      "canonical_rth_close": 152.06,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 152.06,
+      "nasdaq_market_cap_usd": 22568588426.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "ROP": {
+      "canonical_rth_close": 362.28,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.036227999999999996
+      },
+      "nasdaq_lastsale": 362.28,
+      "nasdaq_market_cap_usd": 35829808633.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "ROST": {
+      "canonical_rth_close": 224.21,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.022421000000000003
+      },
+      "nasdaq_lastsale": 224.21,
+      "nasdaq_market_cap_usd": 71624581793.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "RPRX": {
+      "canonical_rth_close": 56.44,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 56.44,
+      "nasdaq_market_cap_usd": 32453067954.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "RRR": {
+      "canonical_rth_close": 52.05,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 52.05,
+      "nasdaq_market_cap_usd": 5466092637.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "RUN": {
+      "canonical_rth_close": 7.77,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 7.77,
+      "nasdaq_market_cap_usd": 1871381050.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "RVMD": {
+      "canonical_rth_close": 199.87,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 199.87,
+      "nasdaq_market_cap_usd": 42839419866.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "RYAAY": {
+      "canonical_rth_close": 55.865,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 55.865,
+      "nasdaq_market_cap_usd": 29398050622.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "RYTM": {
+      "canonical_rth_close": 90.77,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 90.77,
+      "nasdaq_market_cap_usd": 6249703483.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "SAIA": {
+      "canonical_rth_close": 341.65,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.034165
+      },
+      "nasdaq_lastsale": 341.65,
+      "nasdaq_market_cap_usd": 9113394173.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "SAIC": {
+      "canonical_rth_close": 124.59,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 124.59,
+      "nasdaq_market_cap_usd": 5220026345.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "SAIL": {
+      "canonical_rth_close": 19.91,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 19.91,
+      "nasdaq_market_cap_usd": 11366850613.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "SANM": {
+      "canonical_rth_close": 228.07,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.022807
+      },
+      "nasdaq_lastsale": 228.07,
+      "nasdaq_market_cap_usd": 12223948983.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "SBAC": {
+      "canonical_rth_close": 169.7,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 169.7,
+      "nasdaq_market_cap_usd": 18003152267.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "SBET": {
+      "canonical_rth_close": 9.5,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 9.5,
+      "nasdaq_market_cap_usd": 2063624238.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "SBLK": {
+      "canonical_rth_close": 29.86,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 29.86,
+      "nasdaq_market_cap_usd": 3330290279.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "SBUX": {
+      "canonical_rth_close": 96.11,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 96.11,
+      "nasdaq_market_cap_usd": 109565400000.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "SEDG": {
+      "canonical_rth_close": 34.04,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 34.04,
+      "nasdaq_market_cap_usd": 2094336462.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "SEIC": {
+      "canonical_rth_close": 102.86,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 102.86,
+      "nasdaq_market_cap_usd": 12345173061.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "SFM": {
+      "canonical_rth_close": 65.17,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 65.17,
+      "nasdaq_market_cap_usd": 6076947721.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "SHAZ": {
+      "canonical_rth_close": 48.12,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 48.12,
+      "nasdaq_market_cap_usd": 1722864661.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "SHOP": {
+      "canonical_rth_close": 164.44,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 164.44,
+      "nasdaq_market_cap_usd": 213083164951.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "SIMO": {
+      "canonical_rth_close": 284.96,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.028496
+      },
+      "nasdaq_lastsale": 284.96,
+      "nasdaq_market_cap_usd": 9662490646.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "SIRI": {
+      "canonical_rth_close": 26.36,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 26.36,
+      "nasdaq_market_cap_usd": 8885083247.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "SITM": {
+      "canonical_rth_close": 711.06,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.071106
+      },
+      "nasdaq_lastsale": 711.06,
+      "nasdaq_market_cap_usd": 21382310858.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "SKHY": {
+      "canonical_rth_close": 182.56,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 182.56,
+      "nasdaq_market_cap_usd": 1330616856800.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "SLAB": {
+      "canonical_rth_close": 222.62,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.022262
+      },
+      "nasdaq_lastsale": 222.62,
+      "nasdaq_market_cap_usd": 7428108334.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "SLS": {
+      "canonical_rth_close": 11.34,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 11.34,
+      "nasdaq_market_cap_usd": 2290064340.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "SMCI": {
+      "canonical_rth_close": 43.46,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 43.46,
+      "nasdaq_market_cap_usd": 28551715589.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "SMMT": {
+      "canonical_rth_close": 17.31,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 17.31,
+      "nasdaq_market_cap_usd": 13809045611.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "SMTC": {
+      "canonical_rth_close": 197.2,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 197.2,
+      "nasdaq_market_cap_usd": 18403813447.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "SNEX": {
+      "canonical_rth_close": 66.0,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 66.0,
+      "nasdaq_market_cap_usd": 7960704510.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "SNPS": {
+      "canonical_rth_close": 505.17,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.050517000000000006
+      },
+      "nasdaq_lastsale": 505.17,
+      "nasdaq_market_cap_usd": 96809084460.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "SNY": {
+      "canonical_rth_close": 39.56,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 39.56,
+      "nasdaq_market_cap_usd": 96481071836.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "SOFI": {
+      "canonical_rth_close": 15.76,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 15.76,
+      "nasdaq_market_cap_usd": 20355148306.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "SOLS": {
+      "canonical_rth_close": 61.27,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 61.27,
+      "nasdaq_market_cap_usd": 9732578299.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "SOUN": {
+      "canonical_rth_close": 5.72,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 5.72,
+      "nasdaq_market_cap_usd": 2751346787.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "SPCX": {
+      "canonical_rth_close": 171.92,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 171.92,
+      "nasdaq_market_cap_usd": 2333439493770.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "SRRK": {
+      "canonical_rth_close": 42.45,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 42.45,
+      "nasdaq_market_cap_usd": 5169785221.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "SSNC": {
+      "canonical_rth_close": 77.99,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 77.99,
+      "nasdaq_market_cap_usd": 18300743138.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "SSRM": {
+      "canonical_rth_close": 34.28,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 34.28,
+      "nasdaq_market_cap_usd": 6990011215.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "STLD": {
+      "canonical_rth_close": 238.17,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.023817
+      },
+      "nasdaq_lastsale": 238.17,
+      "nasdaq_market_cap_usd": 34136450719.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "STRL": {
+      "canonical_rth_close": 563.69,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.05636900000000001
+      },
+      "nasdaq_lastsale": 563.69,
+      "nasdaq_market_cap_usd": 17242441711.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "STX": {
+      "canonical_rth_close": 805.63,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.08056300000000001
+      },
+      "nasdaq_lastsale": 805.63,
+      "nasdaq_market_cap_usd": 184262526242.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "SWKS": {
+      "canonical_rth_close": 82.79,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 82.79,
+      "nasdaq_market_cap_usd": 12309197910.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "SYM": {
+      "canonical_rth_close": 44.15,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 44.15,
+      "nasdaq_market_cap_usd": 26701995408.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "SYNA": {
+      "canonical_rth_close": 119.39,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 119.39,
+      "nasdaq_market_cap_usd": 4738877188.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "SYRE": {
+      "canonical_rth_close": 80.11,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 80.11,
+      "nasdaq_market_cap_usd": 7063600074.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "TARS": {
+      "canonical_rth_close": 74.11,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 74.11,
+      "nasdaq_market_cap_usd": 3467731998.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "TCOM": {
+      "canonical_rth_close": 38.26,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 38.26,
+      "nasdaq_market_cap_usd": 24092521794.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "TEAM": {
+      "canonical_rth_close": 193.98,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 193.98,
+      "nasdaq_market_cap_usd": 49103867334.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "TECH": {
+      "canonical_rth_close": 72.43,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 72.43,
+      "nasdaq_market_cap_usd": 11358344978.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "TEM": {
+      "canonical_rth_close": 71.98,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 71.98,
+      "nasdaq_market_cap_usd": 13068412037.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "TENB": {
+      "canonical_rth_close": 39.465,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 39.465,
+      "nasdaq_market_cap_usd": 4346674429.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "TER": {
+      "canonical_rth_close": 430.32,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.043032
+      },
+      "nasdaq_lastsale": 430.32,
+      "nasdaq_market_cap_usd": 67276551540.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "TGTX": {
+      "canonical_rth_close": 52.19,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 52.19,
+      "nasdaq_market_cap_usd": 7988673876.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "TIGO": {
+      "canonical_rth_close": 90.46,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 90.46,
+      "nasdaq_market_cap_usd": 15155743391.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "TLN": {
+      "canonical_rth_close": 373.11,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.037311000000000004
+      },
+      "nasdaq_lastsale": 373.11,
+      "nasdaq_market_cap_usd": 17877289175.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "TMDX": {
+      "canonical_rth_close": 80.28,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 80.28,
+      "nasdaq_market_cap_usd": 2783720641.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "TMUS": {
+      "canonical_rth_close": 165.93,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 165.93,
+      "nasdaq_market_cap_usd": 177988400745.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "TNGX": {
+      "canonical_rth_close": 21.9,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 21.9,
+      "nasdaq_market_cap_usd": 3692567037.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "TPG": {
+      "canonical_rth_close": 44.97,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 44.97,
+      "nasdaq_market_cap_usd": 16995006907.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "TRI": {
+      "canonical_rth_close": 98.09,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 98.09,
+      "nasdaq_market_cap_usd": 42492588000.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "TRMB": {
+      "canonical_rth_close": 60.95,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 60.95,
+      "nasdaq_market_cap_usd": 14212311736.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "TRMD": {
+      "canonical_rth_close": 39.05,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 39.05,
+      "nasdaq_market_cap_usd": 4008512842.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "TROW": {
+      "canonical_rth_close": 103.6,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 103.6,
+      "nasdaq_market_cap_usd": 22099522060.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "TSCO": {
+      "canonical_rth_close": 32.29,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 32.29,
+      "nasdaq_market_cap_usd": 16824386024.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "TSEM": {
+      "canonical_rth_close": 258.41,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.025841000000000003
+      },
+      "nasdaq_lastsale": 258.41,
+      "nasdaq_market_cap_usd": 29208340710.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "TSLA": {
+      "canonical_rth_close": 380.68,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.038068000000000005
+      },
+      "nasdaq_lastsale": 380.68,
+      "nasdaq_market_cap_usd": 1503513701948.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "TTAN": {
+      "canonical_rth_close": 68.67,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 68.67,
+      "nasdaq_market_cap_usd": 6624450899.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "TTD": {
+      "canonical_rth_close": 11.92,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 11.92,
+      "nasdaq_market_cap_usd": 5635717640.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "TTEK": {
+      "canonical_rth_close": 33.38,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 33.38,
+      "nasdaq_market_cap_usd": 8546763007.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "TTMI": {
+      "canonical_rth_close": 132.71,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 132.71,
+      "nasdaq_market_cap_usd": 13980847741.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "TTWO": {
+      "canonical_rth_close": 202.53,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.020253
+      },
+      "nasdaq_lastsale": 202.53,
+      "nasdaq_market_cap_usd": 37869149121.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "TVTX": {
+      "canonical_rth_close": 55.98,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 55.98,
+      "nasdaq_market_cap_usd": 5276735370.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "TW": {
+      "canonical_rth_close": 107.54,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 107.54,
+      "nasdaq_market_cap_usd": 25167399295.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "TWST": {
+      "canonical_rth_close": 166.97,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 166.97,
+      "nasdaq_market_cap_usd": 11070307023.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "TXG": {
+      "canonical_rth_close": 80.66,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 80.66,
+      "nasdaq_market_cap_usd": 10509285611.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "TXN": {
+      "canonical_rth_close": 297.23,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.029723000000000003
+      },
+      "nasdaq_lastsale": 297.23,
+      "nasdaq_market_cap_usd": 271444609710.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "TXRH": {
+      "canonical_rth_close": 163.57,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 163.57,
+      "nasdaq_market_cap_usd": 10736886266.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "UAL": {
+      "canonical_rth_close": 111.87,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 111.87,
+      "nasdaq_market_cap_usd": 36311186574.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "UCTT": {
+      "canonical_rth_close": 73.24,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 73.24,
+      "nasdaq_market_cap_usd": 3316089604.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "ULTA": {
+      "canonical_rth_close": 547.29,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.054729
+      },
+      "nasdaq_lastsale": 547.29,
+      "nasdaq_market_cap_usd": 23400736304.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "UMBF": {
+      "canonical_rth_close": 130.08,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 130.08,
+      "nasdaq_market_cap_usd": 9879579902.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "UPST": {
+      "canonical_rth_close": 23.86,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 23.86,
+      "nasdaq_market_cap_usd": 2321889278.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "URBN": {
+      "canonical_rth_close": 80.25,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 80.25,
+      "nasdaq_market_cap_usd": 6874229525.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "USAR": {
+      "canonical_rth_close": 13.74,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 13.74,
+      "nasdaq_market_cap_usd": 5153552031.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "UTHR": {
+      "canonical_rth_close": 541.62,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.054162
+      },
+      "nasdaq_lastsale": 541.62,
+      "nasdaq_market_cap_usd": 23230456601.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "VCTR": {
+      "canonical_rth_close": 113.85,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 113.85,
+      "nasdaq_market_cap_usd": 7002864772.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "VCYT": {
+      "canonical_rth_close": 44.65,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 44.65,
+      "nasdaq_market_cap_usd": 3589446139.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "VERA": {
+      "canonical_rth_close": 29.42,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 29.42,
+      "nasdaq_market_cap_usd": 2120103316.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "VIAV": {
+      "canonical_rth_close": 48.14,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 48.14,
+      "nasdaq_market_cap_usd": 11921395569.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "VICR": {
+      "canonical_rth_close": 299.29,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.029929000000000004
+      },
+      "nasdaq_lastsale": 299.29,
+      "nasdaq_market_cap_usd": 13799283820.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "VKTX": {
+      "canonical_rth_close": 28.38,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 28.38,
+      "nasdaq_market_cap_usd": 3567043915.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "VLY": {
+      "canonical_rth_close": 12.67,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 12.67,
+      "nasdaq_market_cap_usd": 7001508213.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "VNOM": {
+      "canonical_rth_close": 41.59,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 41.59,
+      "nasdaq_market_cap_usd": 14938915600.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "VOD": {
+      "canonical_rth_close": 16.53,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 16.53,
+      "nasdaq_market_cap_usd": 38255314781.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "VRNS": {
+      "canonical_rth_close": 49.08,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 49.08,
+      "nasdaq_market_cap_usd": 5637352604.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "VRSK": {
+      "canonical_rth_close": 165.2,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 165.2,
+      "nasdaq_market_cap_usd": 21501773182.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "VRSN": {
+      "canonical_rth_close": 293.1,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.029310000000000003
+      },
+      "nasdaq_lastsale": 293.1,
+      "nasdaq_market_cap_usd": 26466930000.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "VRTX": {
+      "canonical_rth_close": 502.31,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.050231000000000005
+      },
+      "nasdaq_lastsale": 502.31,
+      "nasdaq_market_cap_usd": 127315956734.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "VSAT": {
+      "canonical_rth_close": 74.38,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 74.38,
+      "nasdaq_market_cap_usd": 10246277148.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "VSEC": {
+      "canonical_rth_close": 168.48,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 168.48,
+      "nasdaq_market_cap_usd": 4728386483.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "VSNT": {
+      "canonical_rth_close": 31.47,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 31.47,
+      "nasdaq_market_cap_usd": 4367793775.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "VTRS": {
+      "canonical_rth_close": 17.54,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 17.54,
+      "nasdaq_market_cap_usd": 20146283755.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "WAY": {
+      "canonical_rth_close": 26.4,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 26.4,
+      "nasdaq_market_cap_usd": 5062158182.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "WDAY": {
+      "canonical_rth_close": 186.55,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 186.55,
+      "nasdaq_market_cap_usd": 44958550000.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "WDC": {
+      "canonical_rth_close": 411.04,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.041104
+      },
+      "nasdaq_lastsale": 411.04,
+      "nasdaq_market_cap_usd": 153551382499.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "WFRD": {
+      "canonical_rth_close": 79.94,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 79.94,
+      "nasdaq_market_cap_usd": 5716677594.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "WGS": {
+      "canonical_rth_close": 71.52,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 71.52,
+      "nasdaq_market_cap_usd": 2132908132.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "WING": {
+      "canonical_rth_close": 112.2,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 112.2,
+      "nasdaq_market_cap_usd": 3056613661.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "WIX": {
+      "canonical_rth_close": 73.91,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 73.91,
+      "nasdaq_market_cap_usd": 3093097358.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "WMT": {
+      "canonical_rth_close": 107.2,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 107.2,
+      "nasdaq_market_cap_usd": 850497597035.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "WTFC": {
+      "canonical_rth_close": 144.94,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 144.94,
+      "nasdaq_market_cap_usd": 9778517257.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "WTW": {
+      "canonical_rth_close": 291.98,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.029198
+      },
+      "nasdaq_lastsale": 291.98,
+      "nasdaq_market_cap_usd": 27116748165.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "WULF": {
+      "canonical_rth_close": 14.97,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 14.97,
+      "nasdaq_market_cap_usd": 7469561095.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "WWD": {
+      "canonical_rth_close": 332.56,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.033256
+      },
+      "nasdaq_lastsale": 332.56,
+      "nasdaq_market_cap_usd": 19636277899.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "WYNN": {
+      "canonical_rth_close": 76.62,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 76.62,
+      "nasdaq_market_cap_usd": 7889859528.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "XE": {
+      "canonical_rth_close": 15.45,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 15.45,
+      "nasdaq_market_cap_usd": 6278356369.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "XEL": {
+      "canonical_rth_close": 72.73,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 72.73,
+      "nasdaq_market_cap_usd": 45429653075.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "XENE": {
+      "canonical_rth_close": 36.57,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 36.57,
+      "nasdaq_market_cap_usd": 3541454598.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "XMTR": {
+      "canonical_rth_close": 110.66,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 110.66,
+      "nasdaq_market_cap_usd": 6343426588.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "XP": {
+      "canonical_rth_close": 29.73,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 29.73,
+      "nasdaq_market_cap_usd": 15409413946.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "Z": {
+      "canonical_rth_close": 27.7,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 27.7,
+      "nasdaq_market_cap_usd": 6229036226.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "ZBRA": {
+      "canonical_rth_close": 385.78,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.038578
+      },
+      "nasdaq_lastsale": 385.78,
+      "nasdaq_market_cap_usd": 18251506415.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "ZION": {
+      "canonical_rth_close": 62.85,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 62.85,
+      "nasdaq_market_cap_usd": 9173168362.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "ZM": {
+      "canonical_rth_close": 94.2,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.02
+      },
+      "nasdaq_lastsale": 94.2,
+      "nasdaq_market_cap_usd": 27486025576.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    },
+    "ZS": {
+      "canonical_rth_close": 212.25,
+      "close_match": true,
+      "close_match_meta": {
+        "abs_diff": 0.0,
+        "tolerance": 0.021225
+      },
+      "nasdaq_lastsale": 212.25,
+      "nasdaq_market_cap_usd": 34608359651.0,
+      "reason": "CAPTURE_NOT_SAME_ASOF_POST_CLOSE",
+      "shadow_eligible": false,
+      "status": "UNKNOWN"
+    }
+  },
+  "retrieved_at_et": "2026-10-07T11:55:31.891154-04:00",
+  "retrieved_at_utc": "2026-10-07T15:55:31.891154+00:00",
+  "same_session_post_close": false,
+  "schema": "XRAY_NASDAQ_SCREENER_PIT_SHADOW_V1",
+  "scope_count": 509,
+  "scope_kind": "CANONICAL_PRICE_DV30_PASS_ONLY",
+  "source": "NASDAQ_PUBLIC_SCREENER",
+  "source_url": "https://api.nasdaq.com/api/screener/stocks?tableonly=true&limit=25&offset=0&exchange=NASDAQ&download=true",
+  "unknown_count": 509,
+  "unknown_never_pass": true
+}
