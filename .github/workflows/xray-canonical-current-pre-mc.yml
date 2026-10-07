@@ -379,6 +379,7 @@ jobs:
               out.write(f"coverage_repair={'true' if coverage_repair else 'false'}\n")
               out.write(f"official_listing_fail_only_replay={'true' if official_listing_fail_only_replay else 'false'}\n")
               out.write(f"official_listing_fail_only_count={len(official_listing_fail_only_symbols)}\n")
+              out.write("official_listing_fail_only_symbols_csv="+",".join(official_listing_fail_only_symbols)+"\n")
               out.write(f"resolver_refresh={'true' if resolver_refresh else 'false'}\n")
               out.write(f"bridge_refresh={'true' if bridge_refresh else 'false'}\n")
               out.write(f"latest_completed={latest_completed}\n")
@@ -530,21 +531,37 @@ jobs:
         run: python nasdaq-xray/price_dv30_recover_from_fullstate.py
       - name: Validate official recent-listing fail-only replay
         if: steps.rollover.outputs.official_listing_fail_only_replay == 'true'
+        env:
+          XRAY_OFFICIAL_LISTING_FAIL_ONLY_SYMBOLS: ${{ steps.rollover.outputs.official_listing_fail_only_symbols_csv }}
         run: |
           python - <<'PY'
-          import json
+          import json,os
           p=json.load(open("nasdaq-xray/canonical_current_price_dv30.json"))
-          syms=list(p.get("official_listing_terminalized_symbols") or [])
-          assert syms, "OFFICIAL_LISTING_REPLAY_EXPECTED_NONEMPTY"
+          expected=[s for s in os.environ.get("XRAY_OFFICIAL_LISTING_FAIL_ONLY_SYMBOLS","").split(",") if s]
+          assert expected, "OFFICIAL_LISTING_REPLAY_EXPECTED_NONEMPTY"
+          local=set(p.get("official_listing_terminalized_symbols") or [])
           passes=set(p.get("pass_symbols") or [])
-          assert not (passes & set(syms)), (passes & set(syms))
-          for sym in syms:
+          assert not (passes & set(expected)), (passes & set(expected))
+          for sym in expected:
               row=(p.get("results") or {}).get(sym) or {}
               assert row.get("status")=="FAIL_DV30_INSUFFICIENT_SESSIONS",(sym,row)
               info=row.get("info") or {}
-              assert info.get("decision_direction")=="FAIL_ONLY_NEVER_PASS",(sym,info)
               assert info.get("no_synthetic_bar") is True,(sym,info)
-          print({"XRAY_OFFICIAL_LISTING_FAIL_ONLY_REPLAY":"PASS","count":len(syms),"symbols":syms})
+              local_fail_only=(
+                  sym in local
+                  and info.get("decision_direction")=="FAIL_ONLY_NEVER_PASS"
+              )
+              resolver_fail_only=(
+                  row.get("provenance")=="AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE"
+                  and info.get("proof")=="ALPACA_RALLIES_EXACT_MISSING_SET_MATCH"
+              )
+              assert local_fail_only or resolver_fail_only,(sym,row)
+          print({
+              "XRAY_OFFICIAL_LISTING_FAIL_ONLY_REPLAY":"PASS",
+              "count":len(expected),
+              "symbols":expected,
+              "locally_terminalized":sorted(local & set(expected)),
+          })
           PY
       - name: Build resolver bridge request
         if: steps.rollover.outputs.build == 'true' || steps.rollover.outputs.policy_replay == 'true' || steps.rollover.outputs.coverage_repair == 'true' || steps.rollover.outputs.resolver_refresh == 'true' || steps.rollover.outputs.bridge_refresh == 'true' || steps.rollover.outputs.publication_replay == 'true'
