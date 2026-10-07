@@ -232,7 +232,7 @@ jobs:
                       or mf.get("identity_ruleset")!="V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER"
                       or mf.get("identity_authority")!="NASDAQTRADER_EXPLICIT_TYPE_FILTER_V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER"
                       or mf.get("identity_partition_policy")!="MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V3_FROZEN_GUARD"
-                      or asof_discovery_version!="SEC_CURRENT_SUSPECT_DISCOVERY_V2"
+                      or asof_discovery_version!="SEC_CURRENT_SUSPECT_DISCOVERY_V3"
                       or mcp.get("identity_partition_policy_exact") is not True
                       or mcp.get("identity_unknown_partition_exact") is not True
                       or mcp.get("sec_spac_proof_binding") is not True
