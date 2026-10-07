@@ -41,8 +41,9 @@ jobs:
           assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
           assert j["unknown_never_pass"] is True
           assert j["classification_applied"] is False
-          assert j["endpoint_count"]==7
-          assert j["reachable_count"]+j["blocked_count"]==7
+          assert j["endpoint_count"]==8
+          assert j["reachable_count"]+j["blocked_count"]==8
+          assert "bulk" in j["families"]
           print("SEC_TRANSPORT_MATRIX_VALIDATION=PASS")
           print(json.dumps({
               "families":j["families"],
