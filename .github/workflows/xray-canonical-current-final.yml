@@ -5,7 +5,7 @@ name: XRAY Canonical Current Final Factory
 # exact-current replay after non-preemptive Final regression proof: 2026-10-07-v3
 on:
   workflow_run:
-    workflows: ["XRAY Resilience + Official Witnesses", "XRAY Canonical Current Post-MC Factory"]
+    workflows: ["XRAY Resilience + Official Witnesses", "XRAY Canonical Current Post-MC Factory", "XRAY Event Official Primary Promote"]
     types: [completed]
   push:
     branches: [main]
