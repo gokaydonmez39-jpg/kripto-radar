@@ -28,13 +28,58 @@ jobs:
         with: {fetch-depth: 1}
       - uses: actions/setup-python@v5
         with: {python-version: "3.12"}
+      - name: Preflight exact MC to PRICE cross-binding
+        id: terminal_preflight
+        shell: bash
+        run: |
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import json,pathlib,subprocess,sys
+          root=pathlib.Path("nasdaq-xray"); repo=pathlib.Path(".")
+          t=json.load(open(root/"canonical_current_terminal.json"))
+          ev=t.get("evidence") or {}
+          pe=ev.get("price") or {}; me=ev.get("mc") or {}
+          drift=[]
+          def bsha(p): return subprocess.check_output(["git","hash-object",str(p)],text=True).strip()
+          for key,meta in (("price",pe),("mc",me)):
+              rel=str(meta.get("path") or ""); exp=str(meta.get("blob_sha") or "")
+              p=repo/rel if rel else None
+              if not rel or not exp:
+                  drift.append({"key":key,"reason":"MISSING_BINDING"})
+              elif not p.exists():
+                  drift.append({"key":key,"reason":"PATH_MISSING","path":rel})
+              elif bsha(p)!=exp:
+                  drift.append({"key":key,"reason":"BLOB_DRIFT","expected":exp,"actual":bsha(p)})
+          mc_rel=str(me.get("path") or ""); mc_path=repo/mc_rel if mc_rel else None
+          if mc_path and mc_path.exists():
+              try:
+                  mc=json.load(open(mc_path))
+                  if mc.get("input_path")!="nasdaq-xray/canonical_current_price_dv30.json":
+                      drift.append({"key":"mc_price_cross_binding","reason":"MC_INPUT_PATH_NOT_CURRENT_PRICE","actual":mc.get("input_path")})
+                  if mc.get("input_blob_sha")!=pe.get("blob_sha"):
+                      drift.append({"key":"mc_price_cross_binding","reason":"MC_PRICE_BLOB_NOT_EXACT","mc_input_blob_sha":mc.get("input_blob_sha"),"price_blob_sha":pe.get("blob_sha")})
+                  if mc.get("input_pass_hash")!=pe.get("pass_hash"):
+                      drift.append({"key":"mc_price_cross_binding","reason":"MC_PRICE_PASS_HASH_NOT_EXACT","mc_input_pass_hash":mc.get("input_pass_hash"),"price_pass_hash":pe.get("pass_hash")})
+              except Exception as e:
+                  drift.append({"key":"mc_price_cross_binding","reason":"MC_PARSE_ERROR","error":type(e).__name__})
+          ready=not drift
+          print("ready="+("true" if ready else "false"))
+          print("reason="+("EXACT_MC_PRICE_CROSS_BINDING" if ready else "UPSTREAM_MC_PRICE_BINDING_PENDING"))
+          print("drift_count="+str(len(drift)))
+          print("XRAY_PARTIAL_POINTER_PREFLIGHT="+json.dumps({"ready":ready,"drift":drift[:8]},sort_keys=True),file=sys.stderr)
+          PY
+      - name: Healthy no-op while MC to PRICE binding is pending
+        if: steps.terminal_preflight.outputs.ready != 'true'
+        run: echo "XRAY_POINTER_PARTIAL=BLOCKED_UPSTREAM_PENDING reason=${{ steps.terminal_preflight.outputs.reason }} drift_count=${{ steps.terminal_preflight.outputs.drift_count }}"
       - name: Build deterministic partial pointer transition
+        if: steps.terminal_preflight.outputs.ready == 'true'
         run: |
           python -m py_compile nasdaq-xray/advance_canonical_pointer_partial.py nasdaq-xray/canonical_pointer_transition_guard.py
           python nasdaq-xray/advance_canonical_pointer_partial.py | tee /tmp/pointer_advance
       - name: Verify transition guard
+        if: steps.terminal_preflight.outputs.ready == 'true'
         run: python nasdaq-xray/canonical_pointer_transition_guard.py
       - name: Commit pointer and immutable snapshot
+        if: steps.terminal_preflight.outputs.ready == 'true'
         shell: bash
         run: |
           set -euo pipefail
