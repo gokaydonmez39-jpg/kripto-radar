@@ -61,11 +61,12 @@ permissions:
   contents: write
 
 concurrency:
-  group: xray-canonical-current-final-c417
-  # A newer source-code/authority push makes an older run non-committable by the
-  # stale-source guard, so cancel it immediately. Redundant schedule/workflow_run
-  # triggers remain non-preemptive so a valid exact-bound writer can finish.
-  cancel-in-progress: ${{ github.event_name == 'push' }}
+  # Never cancel an in-flight exact Final merely because a newer trigger exists.
+  # GitHub retains one pending successor; the commit-stage exact source diff guard
+  # already prevents stale writers. This avoids [skip ci]/non-authoritative pushes
+  # starving a valid long deep/full Final before publication.
+  group: xray-canonical-current-final-c417-v2
+  cancel-in-progress: false
 
 jobs:
   final:
