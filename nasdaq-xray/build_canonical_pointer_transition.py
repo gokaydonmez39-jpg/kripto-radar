@@ -53,7 +53,15 @@ def build(old:dict,term:dict,old_blob:str):
     assert term.get("unknown_never_pass") is True
     assert term.get("task_id")==TASK
     asof=str(term["asof_et"])
-    assert asof>str(state.get("asof_et") or ""),(state.get("asof_et"),asof)
+    prior_asof=str(state.get("asof_et") or "")
+    current_terminal_blob=blob(TERMINAL)
+    prior_terminal_blob=str(((state.get("deep_final_evidence") or {}).get("terminal_blob_sha") or ""))
+    # Epoch may advance normally. Same-ASOF evidence refresh is allowed only
+    # when the immutable terminal content actually changed; backward movement
+    # and duplicate same-content revisions remain forbidden.
+    assert asof>=prior_asof,(prior_asof,asof)
+    if asof==prior_asof:
+        assert prior_terminal_blob and prior_terminal_blob!=current_terminal_blob,(prior_terminal_blob,current_terminal_blob)
 
     # Re-measure every immutable research source before advancing durability.
     master,master_path,master_sha=evidence(term,"master")
@@ -238,6 +246,10 @@ def selftest():
     assert pointer_exact_current(p,t,"NEW") is True
     assert pointer_exact_current(p,t,"OLD") is False
     assert pointer_exact_current(p,{"asof_et":"2026-01-02"},"NEW") is False
+    # Same-ASOF with changed immutable terminal evidence must require a new
+    # revision; exact same terminal remains a no-op.
+    assert s["deep_final_evidence"]["terminal_blob_sha"]=="NEW"
+    assert s["deep_final_evidence"]["terminal_blob_sha"]!="OLD"
     print("XRAY_CANONICAL_POINTER_TRANSITION_SELFTEST=PASS")
 
 def main():
