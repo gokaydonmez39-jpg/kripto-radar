@@ -134,6 +134,57 @@ jobs:
           print("MONOTONIC_LEGACY_PRICE_PASS_REUSE=PASS")
           PY
 
+      - name: Assert identity-only replay preserves exact same-policy PRICE baseline
+        run: |
+          python - <<'PY'
+          import sys
+          from pathlib import Path
+          sys.path.insert(0,"nasdaq-xray")
+          import price_dv30_recover_from_fullstate as r
+
+          asof="2026-10-06"
+          queue=["A","B","C"]
+          full={
+            "asof_et":asof,
+            "queue_hash":"fixture_queue_hash",
+            "queue":queue,
+            "raw_identity_total":99,
+            "unknown_count":96,
+          }
+          prior={
+            "schema":"XRAY_CANONICAL_PRICE_DV30_V1",
+            "task_id":r.TASK_ID,
+            "asof_et":asof,
+            "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
+            "source_master_queue_hash":"fixture_queue_hash",
+            "source_master_count":3,
+            "thresholds":{"price":">=5","dv30":">=50000000 exact30 median"},
+            "gate_order":["PRICE","DV30"],
+            "counts":{"PASS_PRICE_DV30":1,"FAIL_DV30":1,"BLOCK_CURRENT_RUN":1},
+            "unknown_count":0,"unknown_symbols":[],
+            "blocked_count":1,"blocked_symbols":["C"],
+            "pass_count":1,"pass_symbols":["A"],
+            "results":{
+              "A":{"status":"PASS_PRICE_DV30"},
+              "B":{"status":"FAIL_DV30"},
+              "C":{"status":"BLOCK_CURRENT_RUN"},
+            },
+          }
+          assert r.current_price_baseline_valid(prior,full,asof,queue) is True
+          # Identity metadata may change while the PRICE queue remains byte-semantically identical.
+          full2=dict(full,raw_identity_total=120,unknown_count=117)
+          assert r.current_price_baseline_valid(prior,full2,asof,queue) is True
+          # Any PRICE-scope drift must disable reuse and force a fresh fail-closed replay.
+          assert r.current_price_baseline_valid(prior,dict(full2,queue_hash="changed"),asof,queue) is False
+          assert r.current_price_baseline_valid(prior,full2,asof,queue+["D"]) is False
+          stale=dict(prior,thresholds={"price":">10","dv30":">=50000000 exact30 median"})
+          assert r.current_price_baseline_valid(stale,full2,asof,queue) is False
+          wf=Path(".github/workflows/xray-canonical-current-pre-mc.yml").read_text()
+          assert "Select exact same-policy PRICE baseline after identity replay" in wf
+          assert "steps.price_baseline.outputs.reuse == 'true'" in wf
+          print("IDENTITY_REPLAY_EXACT_PRICE_BASELINE_REUSE=PASS")
+          PY
+
       - name: Assert global ASOF sentinel is fail-closed and performance-only
         run: |
           python - <<'PY'
