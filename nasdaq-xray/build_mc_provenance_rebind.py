@@ -77,6 +77,38 @@ def validate_price(price: dict, master: dict) -> tuple[list[str], str]:
     return passes, ph
 
 
+def settlement_witness_relation(j: dict, master: dict) -> str | None:
+    """Allow exact-current queue or a provably safe current subset of a prior full-scope witness."""
+    if (
+        j.get("queue_hash") == master.get("queue_hash")
+        and int(j.get("queue_total", -1)) == int(master.get("queue_total", -2))
+    ):
+        return "EXACT_QUEUE"
+
+    if j.get("bridge_role") != "FULL_SCOPE_MC_HANDOFF_PROVENANCE":
+        return None
+    source_symbols = list(j.get("symbols") or [])
+    current_symbols = list(master.get("pass_symbols") or [])
+    if not source_symbols or not current_symbols:
+        return None
+    if len(source_symbols) != len(set(source_symbols)):
+        return None
+    if len(source_symbols) != int(j.get("queue_total", -1)):
+        return None
+    if j.get("symbol_hash") != hash_lines(source_symbols):
+        return None
+    source_set = set(source_symbols)
+    current_set = set(current_symbols)
+    settlement_symbols = list(j.get("settlement_symbols") or [])
+    if not settlement_symbols or len(set(settlement_symbols)) != len(settlement_symbols):
+        return None
+    if not current_set.issubset(source_set):
+        return None
+    if not set(settlement_symbols).issubset(current_set):
+        return None
+    return "SAFE_SUBSET_REBIND"
+
+
 def validate_settlement_witness(path: Path, expected_blob: str, master: dict, asof: str) -> dict:
     assert path.exists()
     assert blob_sha(path) == expected_blob
@@ -86,7 +118,12 @@ def validate_settlement_witness(path: Path, expected_blob: str, master: dict, as
     assert j.get("task_id") == TASK
     assert j.get("execution") == "NONE" and j.get("real_money") == "NO-GO"
     assert j.get("asof_et") == asof
-    assert j.get("queue_hash") == master.get("queue_hash")
+    relation = settlement_witness_relation(j, master)
+    assert relation is not None, (
+        "SETTLEMENT_WITNESS_QUEUE_NOT_REUSABLE",
+        j.get("queue_hash"),
+        master.get("queue_hash"),
+    )
     assert j.get("compiled_policy_hash") == POLICY_HASH
     assert j.get("compiled_policy_version") == POLICY_VERSION
     assert j.get("settlement_status") == "PASS"
@@ -160,6 +197,29 @@ def full_scope_price_pending_reason(price: dict) -> str | None:
 
 
 def selftest() -> None:
+    synthetic_master = {
+        "queue_hash": "current-hash",
+        "queue_total": 2,
+        "pass_symbols": ["AAA", "BBB"],
+    }
+    synthetic_witness = {
+        "bridge_role": "FULL_SCOPE_MC_HANDOFF_PROVENANCE",
+        "queue_hash": "older-hash",
+        "queue_total": 3,
+        "symbols": ["AAA", "BBB", "CCC"],
+        "symbol_hash": hash_lines(["AAA", "BBB", "CCC"]),
+        "settlement_symbols": ["AAA", "BBB"],
+    }
+    assert settlement_witness_relation(synthetic_witness, synthetic_master) == "SAFE_SUBSET_REBIND"
+    synthetic_witness["settlement_symbols"] = ["AAA", "CCC"]
+    assert settlement_witness_relation(synthetic_witness, synthetic_master) is None
+    synthetic_witness["settlement_symbols"] = ["AAA", "BBB"]
+    synthetic_witness["bridge_role"] = "CURRENT_RESIDUAL_REQUEST_AUTHORITY"
+    assert settlement_witness_relation(synthetic_witness, synthetic_master) is None
+    synthetic_witness["bridge_role"] = "FULL_SCOPE_MC_HANDOFF_PROVENANCE"
+    synthetic_witness["queue_hash"] = "current-hash"
+    synthetic_witness["queue_total"] = 2
+    assert settlement_witness_relation(synthetic_witness, synthetic_master) == "EXACT_QUEUE"
     assert full_scope_price_pending_reason({"unknown_count": 0, "unknown_symbols": []}) is None
     assert full_scope_price_pending_reason({"unknown_count": 1, "unknown_symbols": ["GRAL"]}) == "PRICE_DV30_UNKNOWN"
     try:
