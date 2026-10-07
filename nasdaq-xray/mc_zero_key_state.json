@@ -10,9 +10,6 @@
   "fallback_watch_symbols": [],
   "nasdaq_current_diagnostic": {},
   "nasdaq_current_diagnostic_count": 0,
-  "nasdaq_pit_meta": {
-    "status": "NOT_EVALUATED_WAITING_UPSTREAM_HISTORY"
-  },
   "nasdaq_snapshot_binding": {
     "status": "NOT_EVALUATED_WAITING_UPSTREAM_HISTORY"
   },
@@ -20,7 +17,7 @@
     "status": "NOT_EVALUATED_WAITING_UPSTREAM_HISTORY"
   },
   "pit_safe_shadow": true,
-  "policy_note": "FAIL_CLOSED_TOMBSTONE; upstream support HISTORY is incomplete or not exact-bound; no MC decision authority.",
+  "policy_note": "FAIL_CLOSED_TOMBSTONE; upstream HISTORY incomplete; no MC decision authority.",
   "real_money": "NO-GO",
   "schema": "XRAY_MC_ZERO_KEY_V3",
   "status": "WAITING_UPSTREAM_HISTORY",
@@ -34,5 +31,5 @@
     }
   },
   "unresolved_count": 1,
-  "updated_at_utc": "2026-10-07T19:05:28.267485+00:00"
+  "updated_at_utc": "2026-10-07T19:10:04.626361+00:00"
 }
