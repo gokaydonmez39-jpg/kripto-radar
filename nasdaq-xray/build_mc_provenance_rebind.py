@@ -92,7 +92,14 @@ def validate_settlement_witness(path: Path, expected_blob: str, master: dict, as
     return j
 
 
-def current_settlement_witness(request: dict, master: dict, price: dict) -> tuple[str, str]:
+def current_settlement_witness(request: dict, master: dict, price: dict,
+                               handoff_path: str, handoff_blob: str) -> tuple[str, str]:
+    """Resolve the exact settlement witness without making residual cleanup authoritative.
+
+    Preferred path: the current residual request explicitly carries an already-proven
+    witness. When the residual request correctly says settlement_required=false, reuse
+    only the exact PASS witness embedded in the selected full-scope MC handoff.
+    """
     assert request.get("schema") == "XRAY_RESOLVER_EPOCH_REQUEST_V1"
     assert request.get("task_id") == TASK
     assert request.get("execution") == "NONE" and request.get("real_money") == "NO-GO"
@@ -102,9 +109,22 @@ def current_settlement_witness(request: dict, master: dict, price: dict) -> tupl
     assert request.get("compiled_policy_version") == POLICY_VERSION
     assert request.get("source_price_path") == PRICE_REL
     assert request.get("source_price_blob_sha") == blob_sha(PRICE)
-    assert request.get("settlement_already_proven") is True
-    wp = str(request.get("settlement_bridge_path") or "")
-    ws = str(request.get("settlement_bridge_blob_sha") or "")
+
+    if request.get("settlement_already_proven") is True:
+        wp = str(request.get("settlement_bridge_path") or "")
+        ws = str(request.get("settlement_bridge_blob_sha") or "")
+        assert wp and ws
+        validate_settlement_witness(REPO / wp, ws, master, price["asof_et"])
+        return wp, ws
+
+    assert request.get("settlement_required") is False
+    hp = REPO / handoff_path
+    assert hp.exists() and blob_sha(hp) == handoff_blob
+    h = json.loads(hp.read_text())
+    assert h.get("bridge_role") == "FULL_SCOPE_MC_HANDOFF_PROVENANCE"
+    assert h.get("settlement_status") == "PASS"
+    wp = str(h.get("settlement_witness_path") or "")
+    ws = str(h.get("settlement_witness_blob_sha") or "")
     assert wp and ws
     validate_settlement_witness(REPO / wp, ws, master, price["asof_et"])
     return wp, ws
@@ -112,10 +132,25 @@ def current_settlement_witness(request: dict, master: dict, price: dict) -> tupl
 
 
 def current_full_scope_resolver_handoff(master: dict, price: dict, request: dict) -> tuple[str, str]:
+    """Select one immutable full-scope MC handoff authority.
+
+    Exact current handoff blobs are preferred. A stale handoff metadata blob may be
+    accepted only when the decision-bearing full-scope partition is identical to
+    CURRENT PRICE: exact PASS set/hash/count, current BLOCK subset, zero current
+    UNKNOWN, exact queue/policy, complete disjoint full partition, and a valid
+    settlement witness. Supersession is resolved within this role only.
+    """
     stamp = price["asof_et"].replace("-", "")
     current_price_blob = blob_sha(PRICE)
     current_request_blob = blob_sha(REQUEST)
+    assert request.get("source_price_path") == PRICE_REL
+    assert request.get("source_price_blob_sha") == current_price_blob
+    assert int(price.get("unknown_count", -1)) == 0
+
+    current_pass = set(price.get("pass_symbols") or [])
+    current_blocked = set(price.get("blocked_symbols") or [])
     rows = []
+
     for p in sorted(ROOT.glob(f"canonical_resolver_bridge_{stamp}_c417_dv30_v*.json")):
         try:
             j = json.loads(p.read_text())
@@ -128,27 +163,92 @@ def current_full_scope_resolver_handoff(master: dict, price: dict, request: dict
             assert j.get("asof_et") == price.get("asof_et") == master.get("asof_et")
             assert j.get("bridge_role") == "FULL_SCOPE_MC_HANDOFF_PROVENANCE"
             assert j.get("queue_hash") == master.get("queue_hash")
+            assert int(j.get("queue_total", -1)) == int(master.get("queue_total", -2))
             assert j.get("compiled_policy_hash") == POLICY_HASH
             assert j.get("compiled_policy_version") == POLICY_VERSION
-            assert j.get("coverage_complete") is True and j.get("partial_data") is False
+            assert j.get("coverage_complete") is True
+            assert j.get("classification_coverage_complete") is True
+            assert j.get("partial_data") is False
             assert j.get("settlement_status") == "PASS"
+
+            compact = j.get("price_resolution_compact") or {}
+            groups = [
+                set((compact.get("fail_price") or {}).keys()),
+                set((compact.get("fail_dv30") or {}).keys()),
+                set((compact.get("pass_price_dv30") or {}).keys()),
+                set((compact.get("block_current_run") or {}).keys()),
+                set(compact.get("unresolved_symbols") or []),
+            ]
+            flat = set().union(*groups)
+            assert sum(len(x) for x in groups) == len(flat)
+            assert len(flat) == int(master.get("queue_total", -1))
+            full_pass = groups[2]
+            full_block = groups[3]
+            assert full_pass == current_pass
+            assert current_blocked <= full_block
+
             assert h.get("price_path") == PRICE_REL
-            assert h.get("price_blob_sha") == current_price_blob
             assert int(h.get("pass_count", -1)) == int(price.get("pass_count", -2))
             assert h.get("pass_hash") == price.get("pass_hash")
             assert int(h.get("blocked_count", -1)) == int(price.get("blocked_count", -2))
             assert h.get("no_new_pass_beyond_resolver") is True
             assert h.get("residual_request_path") == REQUEST_REL
-            assert h.get("residual_request_blob_sha") == current_request_blob
+
             wp = str(j.get("settlement_witness_path") or "")
             ws = str(j.get("settlement_witness_blob_sha") or "")
             assert wp and ws
             validate_settlement_witness(REPO / wp, ws, master, price["asof_et"])
-            rows.append((relpath(p), blob_sha(p)))
+
+            exact = (
+                h.get("price_blob_sha") == current_price_blob
+                and h.get("residual_request_blob_sha") == current_request_blob
+            )
+            semantic = bool(
+                current_pass == full_pass
+                and current_blocked <= full_block
+                and int(price.get("unknown_count", -1)) == 0
+            )
+            assert exact or semantic
+            rows.append({
+                "path": relpath(p),
+                "blob": blob_sha(p),
+                "obj": j,
+                "exact": exact,
+            })
         except Exception:
             continue
-    assert len(rows) == 1, ("AMBIGUOUS_OR_MISSING_FULL_SCOPE_RESOLVER_HANDOFF", rows)
-    return rows[0]
+
+    assert rows, "MISSING_FULL_SCOPE_RESOLVER_HANDOFF"
+
+    by_path = {r["path"]: r for r in rows}
+    valid = []
+    superseded = set()
+    for r in rows:
+        j = r["obj"]
+        sp = j.get("supersedes_resolver_bridge_path")
+        ss = j.get("supersedes_resolver_bridge_blob_sha")
+        if bool(sp) != bool(ss):
+            continue
+        if sp:
+            pred = by_path.get(sp)
+            if pred is None:
+                pred_path = REPO / sp
+                if not pred_path.exists() or blob_sha(pred_path) != ss:
+                    continue
+            elif pred["blob"] != ss:
+                continue
+            superseded.add(sp)
+        valid.append(r)
+
+    active = [r for r in valid if r["path"] not in superseded]
+    exact_active = [r for r in active if r["exact"]]
+    selected = exact_active if exact_active else active
+    assert len(selected) == 1, (
+        "AMBIGUOUS_FULL_SCOPE_RESOLVER_HANDOFF",
+        [r["path"] for r in selected],
+        [r["path"] for r in active],
+    )
+    return selected[0]["path"], selected[0]["blob"]
 
 
 def mc_provenance_exact(mc: dict, current_price_blob: str,
@@ -351,8 +451,10 @@ def main() -> None:
     request = json.loads(REQUEST.read_text())
     pass_symbols, pass_hash = validate_price(price, master)
     current_price_blob = blob_sha(PRICE)
-    settlement_path, settlement_blob = current_settlement_witness(request, master, price)
     handoff_path, handoff_blob = current_full_scope_resolver_handoff(master, price, request)
+    settlement_path, settlement_blob = current_settlement_witness(
+        request, master, price, handoff_path, handoff_blob
+    )
 
     rows = load_valid_mc_rows(price, pass_symbols, pass_hash, master)
     active = select_active_mc(rows)
