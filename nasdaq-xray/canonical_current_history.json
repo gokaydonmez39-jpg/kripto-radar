@@ -9604,7 +9604,7 @@
       },
       "provider_meta": {
         "eastmoney": {
-          "error": "ConnectionError:('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))",
+          "error": "ReadTimeout:HTTPSConnectionPool(host='63.push2his.eastmoney.com', port=443): Read timed out. (read timeout=15)",
           "secid": "105.NAVN"
         },
         "nasdaq": {
@@ -15131,8 +15131,8 @@
     }
   },
   "schema": "XRAY_CANONICAL_HISTORY_V1",
-  "source_mc_artifact": "nasdaq-xray/canonical_mc_bridge_20261007_c417_dv30_v2.json",
-  "source_mc_blob_sha": "fb6f45666db4161e0aa1afe7121fe2b8104730fd",
+  "source_mc_artifact": "nasdaq-xray/canonical_mc_bridge_20261007_c417_dv30_v3.json",
+  "source_mc_blob_sha": "9177b85e1aaa392e721bea3d933583b1414e194f",
   "source_mc_policy_hash": "68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4",
   "source_mc_policy_version": "C4.17",
   "state_caps": {
