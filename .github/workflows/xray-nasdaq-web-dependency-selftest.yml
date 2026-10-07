@@ -1,0 +1,44 @@
+name: XRAY Nasdaq Web Dependency Removal Selftest
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/sina_stage.py"
+      - "nasdaq-xray/price_dv30_phase.py"
+      - "nasdaq-xray/price_dv30_recover_from_fullstate.py"
+      - "nasdaq-xray/nasdaq_web_dependency_selftest.py"
+      - ".github/workflows/xray-nasdaq-web-dependency-selftest.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: xray-nasdaq-web-dependency-selftest
+  cancel-in-progress: true
+
+jobs:
+  selftest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install existing zero-dollar runtime
+        run: python -m pip install --disable-pip-version-check -r nasdaq-xray/requirements-runtime.txt
+
+      - name: Compile
+        run: |
+          python -m py_compile nasdaq-xray/sina_stage.py
+          python -m py_compile nasdaq-xray/price_dv30_phase.py
+          python -m py_compile nasdaq-xray/price_dv30_recover_from_fullstate.py
+          python -m py_compile nasdaq-xray/nasdaq_web_dependency_selftest.py
+
+      - name: Prove canonical no-web dependency semantics
+        working-directory: nasdaq-xray
+        run: python nasdaq_web_dependency_selftest.py
