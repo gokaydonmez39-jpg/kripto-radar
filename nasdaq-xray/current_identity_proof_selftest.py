@@ -3,6 +3,17 @@ import json
 import build_current_identity_proofs as m
 
 def main():
+    # A same-ASOF Nasdaq "Blank Checks" industry label must not bypass the
+    # SEC/manual identity proof queue.  It is supporting evidence only.
+    suspects=m.current_spac_suspects(
+        {
+          "TLAC":"Three Lions Acquisition Corp. - Ordinary Shares",
+          "OPER":"Ordinary Operating Company - Common Stock",
+        },
+        {"TLAC":"Blank Checks","OPER":"Technology"},
+    )
+    assert suspects==["TLAC"],suspects
+
     assert m.parse_footer_date("File Creation Time: 1006202614:01|||||||")=="2026-10-06"
     assert m.SPAC_SUSPECT_RE.search("Churchill Capital Corp XIII - Class A Ordinary Shares")
     assert m.SPAC_SUSPECT_RE.search("Example Capital Corporation IV - Class A Ordinary Share")
