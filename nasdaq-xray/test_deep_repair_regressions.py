@@ -1026,7 +1026,8 @@ def test_resolver_bridge_authority_prefers_exact_current_lineage():
 
 def test_post_mc_exact_source_rebind_workflow_contract():
     wf=(Path(__file__).resolve().parent.parent/".github/workflows/xray-canonical-current-post-mc.yml").read_text()
-    assert "MC_AUTHORITY_ARTIFACT_MUTATION_FORBIDDEN_USE_SUCCESSOR" in wf
+    assert "IMMUTABLE_AUTHORITY_ARTIFACT_MUTATION_FORBIDDEN_USE_SUCCESSOR" in wf
+    assert "- name: Enforce immutable resolver and MC authority artifacts" in wf
     assert '"XRAY_REUSED_HISTORY_PROMOTION":"EXACT_CURRENT_MC"' in wf
     assert 'canonical.write_bytes(revalidated.read_bytes())' in wf
     assert wf.count('subprocess.check_output(["git","hash-object",str(p)],text=True).strip()') >= 2
