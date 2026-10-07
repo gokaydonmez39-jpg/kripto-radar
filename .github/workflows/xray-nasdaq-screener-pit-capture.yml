@@ -1,0 +1,114 @@
+name: XRAY Nasdaq Screener PIT Shadow Capture
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/nasdaq_screener_pit_capture.py"
+      - "nasdaq-xray/nasdaq_screener_pit_capture_selftest.py"
+      - ".github/workflows/xray-nasdaq-screener-pit-capture.yml"
+  schedule:
+    - cron: "15 21 * * 1-5"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: xray-nasdaq-screener-pit-shadow
+  cancel-in-progress: true
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Compile and deterministic selftest
+        working-directory: nasdaq-xray
+        run: |
+          python -m py_compile nasdaq_screener_pit_capture.py nasdaq_screener_pit_capture_selftest.py
+          python nasdaq_screener_pit_capture_selftest.py
+
+      - name: Capture official Nasdaq screener shadow
+        run: python nasdaq-xray/nasdaq_screener_pit_capture.py
+
+      - name: Validate fail-closed current snapshot
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path("nasdaq-xray")
+          state=json.loads((root/"nasdaq_screener_pit_current.json").read_text())
+          price=json.loads((root/"canonical_current_price_dv30.json").read_text())
+          assert state["schema"]=="XRAY_NASDAQ_SCREENER_PIT_SHADOW_V1"
+          assert state["execution"]=="NONE"
+          assert state["real_money"]=="NO-GO"
+          assert state["unknown_never_pass"] is True
+          assert state["alpha_authority"] is False
+          assert state["production_mc_authority_changed"] is False
+          assert state["asof_et"]==price["asof_et"]
+          assert state["scope_count"]==len(set(price.get("pass_symbols") or []))
+          assert state["eligible_count"]+state["unknown_count"]==state["scope_count"]
+          records=state.get("records") or {}
+          assert len(records)==state["scope_count"]
+          for sym in state.get("eligible_symbols") or []:
+              rec=records[sym]
+              assert rec["shadow_eligible"] is True
+              assert rec["close_match"] is True
+              assert rec["eligible_asof_et"]==state["asof_et"]
+              assert rec["nasdaq_market_cap_usd"]>0
+          if state["same_session_post_close"] is not True:
+              assert state["eligible_count"]==0
+          print(json.dumps({
+              "status":"NASDAQ_SCREENER_PIT_CAPTURE_VALID",
+              "asof_et":state["asof_et"],
+              "same_session_post_close":state["same_session_post_close"],
+              "scope_count":state["scope_count"],
+              "eligible_count":state["eligible_count"],
+              "unknown_count":state["unknown_count"],
+              "reason_counts":state["reason_counts"],
+          },sort_keys=True))
+          PY
+
+      - name: Persist PIT shadow evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "xray-dataplane-bot"
+          git config user.email "xray-dataplane-bot@users.noreply.github.com"
+          git add nasdaq-xray/nasdaq_screener_pit_current.json
+          if [ -d nasdaq-xray/evidence/nasdaq_screener_pit ]; then
+            git add nasdaq-xray/evidence/nasdaq_screener_pit
+          fi
+          if git diff --cached --quiet; then
+            echo "No screener PIT evidence change."
+            exit 0
+          fi
+          git commit -m "chore(xray): Nasdaq screener PIT shadow checkpoint [skip ci]"
+          for attempt in 1 2 3 4 5; do
+            if git pull --rebase origin main && git push; then
+              exit 0
+            fi
+            sleep $((attempt * 2))
+          done
+          echo "NASDAQ_SCREENER_PIT_PUSH_FAILED" >&2
+          exit 1
+
+      - name: Upload PIT shadow
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-nasdaq-screener-pit-shadow
+          path: |
+            nasdaq-xray/nasdaq_screener_pit_current.json
+            nasdaq-xray/evidence/nasdaq_screener_pit/
+          if-no-files-found: warn
+          retention-days: 14
