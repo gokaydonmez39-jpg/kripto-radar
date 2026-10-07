@@ -10,6 +10,9 @@ on:
       - "nasdaq-xray/canonical_pointer_transition_guard.py"
       - "nasdaq-xray/deterministic_replay_guard.py"
       - ".github/workflows/xray-canonical-pointer-transition.yml"
+  workflow_run:
+    workflows: ["XRAY Canonical Current Final Factory"]
+    types: [completed]
   workflow_dispatch:
 
 permissions:
@@ -21,6 +24,7 @@ concurrency:
 
 jobs:
   advance:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
