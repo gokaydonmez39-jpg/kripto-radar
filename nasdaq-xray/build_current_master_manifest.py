@@ -28,6 +28,7 @@ def hash_lines(xs):
     return hashlib.sha256("\n".join(xs).encode()).hexdigest()
 
 FOOTER_RE=re.compile(r"^File Creation Time:\s*(\d{2})(\d{2})(\d{4})")
+SPAC_SUSPECT_RE=re.compile(r"\bacquisition\b|\bspac\b|\bblank[ -]?check\b|\bcapital\s+corp(?:oration)?\.?\s+(?:[IVXLCDM]+|\d+)\s*-\s*class\s+a\s+ordinary\s+shares?\b",re.I)
 def official_footer_asof_exact(footer,asof):
     m=FOOTER_RE.match(str(footer or "").strip())
     if not m:
@@ -80,7 +81,7 @@ def valid_sec_spac_proof_binding(dm,asof):
                 current_name=str(row.get("same_asof_nasdaq_security_name") or "")
                 industry=str(row.get("same_asof_nasdaq_screener_industry") or "")
                 if not (
-                  re.search(r"\bacquisition\b|\bspac\b|\bblank[ -]?check\b",current_name,re.I)
+                  SPAC_SUSPECT_RE.search(current_name)
                   or industry.strip().lower()=="blank checks"
                 ):
                     return False
