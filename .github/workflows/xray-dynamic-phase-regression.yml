@@ -292,6 +292,24 @@ jobs:
           assert r.should_defer_redo_to_bridge("FULL_STATE",True) is False
           assert r.should_defer_redo_to_bridge("CURRENT_PRICE_ARTIFACT",True) is True
           assert r.should_defer_redo_to_bridge("PRIOR_PRICE_ARTIFACT",True) is True
+          v2_block=r.expand_rallies_scanner_exact30_v2({
+            "fail_price":{},"fail_dv30":{},"pass_price_dv30":{},
+            "block_current_run":{"U":{
+              "reason":"CROSS_SOURCE_CURRENT_ASOF_ALIGNMENT_UNPROVEN",
+              "observed_usable_sessions":29,
+              "corroboration":"TEST","no_synthetic_bar":True,
+            }},
+            "unresolved_symbols":[],
+          },["U"])
+          assert v2_block["U"]["decision"]=="BLOCK_CURRENT_RUN",v2_block
+          assert r.valid_bridge_price_resolution(v2_block["U"],"2026-10-05") is True,v2_block
+          v2_pass=r.expand_rallies_scanner_exact30_v2({
+            "fail_price":{},"fail_dv30":{},
+            "pass_price_dv30":{"P":{"price":10.0,"dv30":60000000.0,"known_session_count":30}},
+            "block_current_run":{},"unresolved_symbols":[],
+          },["P"])
+          assert v2_pass["P"]["decision"]=="PASS_PRICE_DV30",v2_pass
+          assert r.valid_bridge_price_resolution(v2_pass["P"],"2026-10-05") is True,v2_pass
           deferred={
             "schema":"XRAY_CANONICAL_PRICE_DV30_V1","asof_et":"2026-10-05",
             "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
