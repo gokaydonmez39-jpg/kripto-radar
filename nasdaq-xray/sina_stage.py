@@ -675,6 +675,8 @@ def canonical_frozen_identity(asof):
           or mf_cp.get("identity_unknown_partition_exact") is not True
           or str(st.get("asof_et") or "")!=asof
           or str(mf.get("asof_et") or "")!=asof
+          or official_footer_date(st.get("official_footer"))!=asof
+          or official_footer_date(mf.get("official_footer"))!=asof
           or not frozen_partition_exact
           or unproven_spac
           or int(st.get("queue_total",-1))!=len(q)
@@ -722,7 +724,7 @@ def support_frozen_identity(asof):
     exclusion, and every current operating override must already be in the
     proven PASS queue with the same security name.
     """
-    if not (FULL_IDENTITY and IDENTITY_ONLY):
+    if not FULL_IDENTITY:
         return None
     p=ROOT/"sina_state.json"
     if not p.exists():
