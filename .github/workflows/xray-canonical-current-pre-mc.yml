@@ -308,7 +308,7 @@ jobs:
                   active_completed_epoch
                   and (
                       (spac_suspect_unknown and not proof_path.exists())
-                      or proof_discovery_version!="SEC_CURRENT_SUSPECT_DISCOVERY_V5"
+                      or proof_discovery_version!="SEC_CURRENT_SUSPECT_DISCOVERY_V6"
                       or proof_seed_registry_blob!=seed_registry_blob
                       or (
                           spac_suspect_unknown
@@ -318,7 +318,7 @@ jobs:
                       or mf.get("identity_ruleset")!="V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER"
                       or mf.get("identity_authority")!="NASDAQTRADER_EXPLICIT_TYPE_FILTER_V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER"
                       or mf.get("identity_partition_policy")!="MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V4_EXACT_ASOF_SNAPSHOT_GUARD"
-                      or asof_discovery_version!="SEC_CURRENT_SUSPECT_DISCOVERY_V5"
+                      or asof_discovery_version!="SEC_CURRENT_SUSPECT_DISCOVERY_V6"
                       or mcp.get("identity_partition_policy_exact") is not True
                       or mcp.get("identity_unknown_partition_exact") is not True
                       or mcp.get("sec_spac_proof_binding") is not True

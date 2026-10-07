@@ -20,11 +20,13 @@ MANUAL_IDENTITY_SEED=ROOT/"master_sec_identity_manual_seed_registry.json"
 NASDAQ_DIR="https://www.nasdaqtrader.com/dynamic/SymDir/nasdaqlisted.txt"
 NASDAQ_SCREENER="https://api.nasdaq.com/api/screener/stocks"
 SEC_TICKERS="https://www.sec.gov/files/company_tickers.json"
+SEC_TICKERS_EXCHANGE="https://www.sec.gov/files/company_tickers_exchange.json"
+SEC_CIK_DISCOVERY_DIAGNOSTICS={}
 SEC_SUBMISSIONS="https://data.sec.gov/submissions"
 SEC_UA=os.getenv("XRAY_SEC_USER_AGENT","NASDAQ-SWING-XRAY research bot; xray-dataplane-bot@users.noreply.github.com")
 UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/126 Safari/537.36"
 TASK="6a825366222081918997094d76e6ae46"
-IDENTITY_DISCOVERY_VERSION="SEC_CURRENT_SUSPECT_DISCOVERY_V5"
+IDENTITY_DISCOVERY_VERSION="SEC_CURRENT_SUSPECT_DISCOVERY_V6"
 SPAC_SUSPECT_RE=re.compile(r"\bacquisition\b|\bspac\b|\bblank[ -]?check\b|\bcapital\s+corp(?:oration)?\.?\s+(?:[IVXLCDM]+|\d+)\s*-\s*class\s+a\s+ordinary\s+shares?\b",re.I)
 
 def current_spac_suspects(names:dict,industries:dict)->list[str]:
@@ -199,17 +201,87 @@ def prior_blank_fallback(sym,old,asof,names,industries):
 def load_json_url(url:str):
     return json.loads(request_bytes(url,SEC_UA,35).decode("utf-8"))
 
+def _nasdaq_exchange_cik_map(raw):
+    """Secondary SEC routing is discovery-only, not issuer classification."""
+    if not isinstance(raw,dict):
+        raise ValueError("SEC_EXCHANGE_HEADER_INVALID")
+    fields=raw.get("fields")
+    rows=raw.get("data")
+    if not isinstance(fields,list) or not isinstance(rows,list):
+        raise ValueError("SEC_EXCHANGE_SCHEMA_INVALID")
+    if not {"cik","ticker","exchange"}.issubset(set(fields)):
+        raise ValueError("SEC_EXCHANGE_FIELDS_INVALID")
+    pos={k:fields.index(k) for k in ("cik","ticker","exchange")}
+    required=max(pos.values())
+    out={}; conflicts=set()
+    for row in rows:
+        if not isinstance(row,list) or len(row)<=required:
+            continue
+        if str(row[pos["exchange"]] or "").strip().lower()!="nasdaq":
+            continue
+        sym=str(row[pos["ticker"]] or "").strip().upper()
+        try:cik=int(row[pos["cik"]])
+        except (ValueError,TypeError):continue
+        if not sym or cik<=0:continue
+        if sym in out and out[sym]!=cik:
+            conflicts.add(sym)
+        else:
+            out[sym]=cik
+    for sym in conflicts:
+        out.pop(sym,None)
+    return out,conflicts
+
+
 def sec_ticker_cik_map():
-    """Current SEC ticker->CIK discovery; evidence routing only, never alpha authority."""
+    """Resolve candidate CIK routes from both free SEC lists, fail closed.
+
+    The map cannot classify a SPAC or make alpha PASS: every candidate must
+    still pass the same-ticker SEC submissions SIC and filing-date checks.
+    """
+    global SEC_CIK_DISCOVERY_DIAGNOSTICS
     raw=load_json_url(SEC_TICKERS)
-    rows=raw.values() if isinstance(raw,dict) else raw
-    out={}
-    for row in rows or []:
+    if not isinstance(raw,dict):
+        raise ValueError("SEC_PRIMARY_TICKERS_SCHEMA_INVALID")
+    out={}; ambiguous=set()
+    for row in raw.values():
         if not isinstance(row,dict):continue
         sym=str(row.get("ticker") or "").strip().upper()
         try:cik=int(row.get("cik_str"))
-        except Exception:continue
-        if sym and cik>0:out[sym]=cik
+        except (ValueError,TypeError):continue
+        if sym and cik>0:
+            if sym in out and out[sym]!=cik:
+                ambiguous.add(sym)
+            else:
+                out[sym]=cik
+    for sym in ambiguous:
+        out.pop(sym,None)
+    diag={
+      "source":"SEC_TICKERS_PLUS_NASDAQ_EXCHANGE_CIK_ROUTING_ONLY",
+      "legacy_valid_count":len(out),"exchange_added_count":0,
+      "conflict_count":len(ambiguous),"classification_authority":False,
+      "exact_asof_proof_required":True,
+      "status":"LEGACY_ONLY",
+    }
+    try:
+        extra,extra_conflicts=_nasdaq_exchange_cik_map(load_json_url(SEC_TICKERS_EXCHANGE))
+        conflicts=ambiguous|extra_conflicts
+        for sym,cik in extra.items():
+            if sym in out and out[sym]!=cik:
+                conflicts.add(sym)
+        for sym in conflicts:
+            out.pop(sym,None)
+        for sym,cik in extra.items():
+            if sym not in conflicts and sym not in out:
+                out[sym]=cik
+                diag["exchange_added_count"]+=1
+        diag["exchange_valid_count"]=len(extra)
+        diag["conflict_count"]=len(conflicts)
+        diag["status"]="PASS_DUAL_SEC_CIK_DISCOVERY"
+    except Exception as exc:
+        diag["status"]="SECONDARY_UNAVAILABLE_LEGACY_FALLBACK_ONLY"
+        diag["secondary_error"]=type(exc).__name__
+    diag["total_resolved_cik_routes"]=len(out)
+    SEC_CIK_DISCOVERY_DIAGNOSTICS=diag
     return out
 
 def sec_current_classification(sym:str,asof:str,cik:int|None):
@@ -785,6 +857,7 @@ def main():
             "manual_seed_registry_path":manual_seed_meta["path"],
             "manual_seed_registry_blob_sha":manual_seed_meta["blob_sha"],
             "manual_seed_registry_record_count":manual_seed_meta["record_count"],
+            "sec_cik_routing":dict(SEC_CIK_DISCOVERY_DIAGNOSTICS),
             "current_suspect_count":len(current_suspects),
             "resolved_current_suspect_count":len(current_suspects)-len(unresolved_sec_spac),
             "unresolved_current_suspect_count":len(unresolved_sec_spac),

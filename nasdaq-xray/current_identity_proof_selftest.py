@@ -69,6 +69,21 @@ def main():
                 return {
                   "0":{"ticker":"TLAC","cik_str":2128462,"title":"Three Lions Acquisition Corp."},
                   "1":{"ticker":"OPER","cik_str":1234567,"title":"Operating Corp."},
+                  "2":{"ticker":"CONFLICT","cik_str":333,"title":"Conflict Corp."},
+                }
+            if url==m.SEC_TICKERS_EXCHANGE:
+                return {
+                  "fields":["cik","name","ticker","exchange"],
+                  "data":[
+                    [2128462,"Three Lions Acquisition Corp.","TLAC","Nasdaq"],
+                    [1234567,"Operating Corp.","OPER","Nasdaq"],
+                    [2128462,"Three Lions Acquisition Corp.","TLACU","Nasdaq"],
+                    [333,"Conflict Corp.","CONFLICT","Nasdaq"],
+                    [444,"Conflict Other Corp.","CONFLICT","Nasdaq"],
+                    [555,"Different Corp.","DUP","Nasdaq"],
+                    [556,"Another Corp.","DUP","Nasdaq"],
+                    [111,"Non Nasdaq","NONNAS","NYSE"]
+                  ]
                 }
             if "CIK0002128462.json" in url:
                 return {
@@ -84,6 +99,19 @@ def main():
         m.load_json_url=fake_load
         cmap=m.sec_ticker_cik_map()
         assert cmap["TLAC"]==2128462 and cmap["OPER"]==1234567
+        assert cmap["TLACU"]==2128462 and "NONNAS" not in cmap
+        assert "CONFLICT" not in cmap and "DUP" not in cmap
+        assert m.SEC_CIK_DISCOVERY_DIAGNOSTICS["exchange_added_count"]==1
+        assert m.SEC_CIK_DISCOVERY_DIAGNOSTICS["conflict_count"]==2
+        def legacy_only_load(url):
+            if url==m.SEC_TICKERS_EXCHANGE:
+                raise RuntimeError("MOCK_SECONDARY_UNAVAILABLE")
+            return fake_load(url)
+        m.load_json_url=legacy_only_load
+        legacy_only=m.sec_ticker_cik_map()
+        assert legacy_only["TLAC"]==2128462 and "TLACU" not in legacy_only
+        assert m.SEC_CIK_DISCOVERY_DIAGNOSTICS["status"]=="SECONDARY_UNAVAILABLE_LEGACY_FALLBACK_ONLY"
+        m.load_json_url=fake_load
         blank_row=m.sec_current_classification("TLAC","2026-10-06",cmap["TLAC"])
         assert blank_row and blank_row["is_blank_check"] is True and blank_row["sic"]==6770
         assert blank_row["evidence_date"]=="2026-09-30"
