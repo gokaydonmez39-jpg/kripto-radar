@@ -32,6 +32,7 @@ jobs:
             'https://efts.sec.gov/LATEST/search-index?q=ABCL&dateRange=custom&startdt=2026-01-01&enddt=2026-10-05'
             'https://www.sec.gov/files/company_tickers.json'
             'https://www.sec.gov/Archives/edgar/daily-index/bulkdata/submissions.zip'
+            'https://www.sec.gov/Archives/edgar/daily-index/xbrl/companyfacts.zip'
           )
           for u in "${urls[@]}"; do
             code=$(curl -L -A "$ua" -H 'Accept-Encoding: identity' -H 'Accept-Language: en-US,en;q=0.9' -H 'Referer: https://www.sec.gov/' --connect-timeout 8 --max-time 20 -sS -o /tmp/sec_probe_body -w '%{http_code}' "$u" || true)
