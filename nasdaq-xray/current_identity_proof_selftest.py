@@ -101,20 +101,32 @@ def main():
     import json
     with tempfile.TemporaryDirectory() as td:
         root=Path(td)
+        q0=["OPER"]; q0hash=__import__("hashlib").sha256("OPER".encode()).hexdigest()
+        unknown0=["TLAC"]
+        detail0={
+          "TLAC":{
+            "security_name":"Three Lions Acquisition Corp.",
+            "same_asof_nasdaq_industry":"",
+            "unknown_never_pass":True
+          }
+        }
         (root/"canonical_current_full_state.json").write_text(json.dumps({
+          "schema":"XRAY_NASDAQ_SCREENER_SINA_V2",
           "asof_et":"2026-10-06",
           "official_footer":"File Creation Time: 1006202618:01|||||||",
-          "security_names":{"OPER":"Operating Corp. - Common Stock"}
+          "identity_ruleset":"V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER",
+          "identity_partition_policy":"MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V3_FROZEN_GUARD",
+          "queue":q0,"queue_total":1,"queue_hash":q0hash,
+          "raw_identity_total":2,
+          "security_names":{"OPER":"Operating Corp. - Common Stock"},
+          "identity_unknown_symbols":unknown0,
+          "identity_unknown_detail":detail0,
+          "discovery_meta":{"identity_partition_policy":"MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V3_FROZEN_GUARD"}
         }))
         (root/"canonical_current_master_manifest.json").write_text(json.dumps({
           "asof_et":"2026-10-06",
           "official_footer":"File Creation Time: 1006202618:01|||||||",
-          "unknown_detail":{
-            "TLAC":{
-              "security_name":"Three Lions Acquisition Corp.",
-              "same_asof_nasdaq_industry":""
-            }
-          }
+          "unknown_detail":detail0
         }))
         frozen=m.frozen_exact_asof_directory("2026-10-06",root)
         assert frozen is not None
