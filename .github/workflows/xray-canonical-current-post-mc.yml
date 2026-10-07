@@ -420,7 +420,7 @@ jobs:
           cat /tmp/mc_out
 
       - name: Commit newly built immutable resolver and MC authority before alpha
-        if: steps.mc.outputs.ready == 'true' && (steps.resolver_handoff.outputs.created == 'true' || steps.mc_rebind.outputs.created == 'true')
+        if: steps.resolver_handoff.outputs.created == 'true' || (steps.mc.outputs.ready == 'true' && steps.mc_rebind.outputs.created == 'true')
         shell: bash
         run: |
           set -euo pipefail
