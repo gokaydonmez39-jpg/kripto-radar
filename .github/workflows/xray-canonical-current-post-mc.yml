@@ -19,6 +19,8 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/canonical_current_price_dv30.json"
+      - "nasdaq-xray/canonical_resolver_bridge_*.json"
+      - "nasdaq-xray/build_resolver_full_scope_handoff.py"
       - "nasdaq-xray/canonical_mc_bridge_*.json"
       - "nasdaq-xray/build_mc_provenance_rebind.py"
       - "nasdaq-xray/history_phase.py"
@@ -55,7 +57,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with: {fetch-depth: 1}
-      - name: Enforce immutable MC authority artifacts
+      - name: Enforce immutable resolver and MC authority artifacts
         if: github.event_name == 'push'
         shell: bash
         run: |
@@ -68,7 +70,9 @@ jobs:
               raise SystemExit(0)
           subprocess.run(["git","fetch","--no-tags","--depth=1","origin",before],check=True)
           out=subprocess.check_output(
-              ["git","diff","--name-status",before,after,"--","nasdaq-xray/canonical_mc_bridge_*.json"],
+              ["git","diff","--name-status",before,after,"--",
+               "nasdaq-xray/canonical_resolver_bridge_*.json",
+               "nasdaq-xray/canonical_mc_bridge_*.json"],
               text=True,
           )
           for line in out.splitlines():
@@ -76,9 +80,14 @@ jobs:
               if len(parts)<2:
                   continue
               status,path=parts[0],parts[1]
-              if path.startswith("nasdaq-xray/canonical_mc_bridge_") and path.endswith(".json") and not status.startswith("A"):
+              immutable=(
+                  (path.startswith("nasdaq-xray/canonical_resolver_bridge_")
+                   or path.startswith("nasdaq-xray/canonical_mc_bridge_"))
+                  and path.endswith(".json")
+              )
+              if immutable and not status.startswith("A"):
                   raise SystemExit(
-                      "MC_AUTHORITY_ARTIFACT_MUTATION_FORBIDDEN_USE_SUCCESSOR "
+                      "IMMUTABLE_AUTHORITY_ARTIFACT_MUTATION_FORBIDDEN_USE_SUCCESSOR "
                       f"status={status} path={path}"
                   )
           PY
@@ -151,9 +160,60 @@ jobs:
         if: steps.freeze.outputs.frozen == 'true'
         run: echo "XRAY_POST_MC=HEALTHY_NOOP_EXACT_TERMINAL"
 
+      - name: Check full-scope resolver handoff eligibility
+        id: resolver_gate
+        if: steps.freeze.outputs.frozen != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import hashlib,json,pathlib
+          root=pathlib.Path("nasdaq-xray")
+          p=json.load(open(root/"canonical_current_price_dv30.json"))
+          q=json.load(open(root/"canonical_current_resolver_request.json"))
+          cm=json.load(open(root/"canonical_current_resolver_chunk_manifest.json"))
+          def bsha(path):
+              b=path.read_bytes()
+              return hashlib.sha1(f"blob {len(b)}\0".encode()+b).hexdigest()
+          unknown=list(p.get("unknown_symbols") or [])
+          blocked=list(p.get("blocked_symbols") or [])
+          assert int(p.get("unknown_count",len(unknown)))==len(unknown),"PRICE_UNKNOWN_COUNT_MISMATCH"
+          assert int(p.get("blocked_count",len(blocked)))==len(blocked),"PRICE_BLOCKED_COUNT_MISMATCH"
+          symbols=list(q.get("symbols") or [])
+          assert int(q.get("symbol_count",len(symbols)))==len(symbols),"RESOLVER_REQUEST_SYMBOL_COUNT_MISMATCH"
+          assert q.get("source_price_path")=="nasdaq-xray/canonical_current_price_dv30.json"
+          assert q.get("source_price_blob_sha")==bsha(root/"canonical_current_price_dv30.json"),"RESOLVER_REQUEST_PRICE_BINDING_DRIFT"
+          assert cm.get("request_blob_sha")==bsha(root/"canonical_current_resolver_request.json"),"RESOLVER_MANIFEST_REQUEST_BINDING_DRIFT"
+          eligible=(
+              len(unknown)==0
+              and len(blocked)==0
+              and len(symbols)==0
+              and q.get("settlement_required") is False
+          )
+          print("eligible="+("true" if eligible else "false"))
+          print("price_unknown_count="+str(len(unknown)))
+          print("price_blocked_count="+str(len(blocked)))
+          print("residual_symbol_count="+str(len(symbols)))
+          print("reason="+(
+              "CURRENT_COMPLETE_PRICE_READY_FOR_FULL_SCOPE_HANDOFF"
+              if eligible else
+              "UPSTREAM_PRICE_OR_RESIDUAL_SCOPE_NOT_COMPLETE"
+          ))
+          PY
+
+      - name: Build exact current full-scope resolver handoff
+        id: resolver_handoff
+        if: steps.freeze.outputs.frozen != 'true' && steps.resolver_gate.outputs.eligible == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python nasdaq-xray/build_resolver_full_scope_handoff.py --selftest
+          python nasdaq-xray/build_resolver_full_scope_handoff.py | tee /tmp/resolver_handoff_out
+          cat /tmp/resolver_handoff_out >> "$GITHUB_OUTPUT"
+
       - name: Rebind exact current MC provenance without remeasurement
         id: mc_rebind
-        if: steps.freeze.outputs.frozen != 'true'
+        if: steps.freeze.outputs.frozen != 'true' && steps.resolver_gate.outputs.eligible == 'true' && steps.resolver_handoff.outputs.ready == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -162,7 +222,7 @@ jobs:
           cat /tmp/mc_rebind_out >> "$GITHUB_OUTPUT"
       - name: Find exact-bound committed MC bridge
         id: mc
-        if: steps.freeze.outputs.frozen != 'true' && steps.mc_rebind.outputs.ready != 'false'
+        if: steps.freeze.outputs.frozen != 'true' && steps.resolver_gate.outputs.eligible == 'true' && steps.resolver_handoff.outputs.ready == 'true' && steps.mc_rebind.outputs.ready != 'false'
         shell: bash
         run: |
           set -e
@@ -368,7 +428,7 @@ jobs:
 
       - name: Healthy no-op while resolver or MC commit is pending
         if: steps.freeze.outputs.frozen != 'true' && steps.mc.outputs.ready != 'true' && steps.mc.outputs.binding_fault != 'true'
-        run: echo "XRAY_POST_MC=BLOCKED_UPSTREAM_PENDING mc_reason=${{ steps.mc.outputs.pending_reason }} rebind_reason=${{ steps.mc_rebind.outputs.pending_reason }}"
+        run: echo "XRAY_POST_MC=BLOCKED_UPSTREAM_PENDING resolver_gate=${{ steps.resolver_gate.outputs.reason }} resolver_handoff=${{ steps.resolver_handoff.outputs.reason }} mc_reason=${{ steps.mc.outputs.pending_reason }} rebind_reason=${{ steps.mc_rebind.outputs.pending_reason }}"
 
       - name: Reuse exact same-ASOF HISTORY and LEGAL
         id: reuse_hl
@@ -785,6 +845,8 @@ jobs:
               .github/workflows/xray-canonical-current-post-mc.yml \
               nasdaq-xray/canonical_current_master_manifest.json \
               nasdaq-xray/canonical_current_price_dv30.json \
+              nasdaq-xray/canonical_resolver_bridge_*.json \
+              nasdaq-xray/build_resolver_full_scope_handoff.py \
               nasdaq-xray/canonical_mc_bridge_*.json \
               nasdaq-xray/build_mc_provenance_rebind.py \
               nasdaq-xray/history_official_identity_evidence.json \
@@ -814,6 +876,9 @@ jobs:
             nasdaq-xray/canonical_deep_history_cache_manifest.json
             nasdaq-xray/canonical_current_event_request.json
           )
+          if [[ "${{ steps.resolver_handoff.outputs.created }}" == "true" && -n "${{ steps.resolver_handoff.outputs.path }}" ]]; then
+            files+=("${{ steps.resolver_handoff.outputs.path }}")
+          fi
           if [[ "${{ steps.mc_rebind.outputs.created }}" == "true" && -n "${{ steps.mc_rebind.outputs.path }}" ]]; then
             files+=("${{ steps.mc_rebind.outputs.path }}")
           fi
