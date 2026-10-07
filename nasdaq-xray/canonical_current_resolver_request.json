@@ -2136,75 +2136,18 @@
     "dv30": ">=50000000 exact30 median",
     "price": ">=5"
   },
-  "price_unknown_count": 5,
-  "price_unknown_detail": {
-    "BLFS": {
-      "price_result": {
-        "info": {
-          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
-        },
-        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
-        "status": "UNKNOWN"
-      },
-      "security_name": "BioLife Solutions, Inc. - Common Stock"
-    },
-    "SLP": {
-      "price_result": {
-        "info": {
-          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
-        },
-        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
-        "status": "UNKNOWN"
-      },
-      "security_name": "Simulations Plus, Inc. - Common Stock"
-    },
-    "SVA": {
-      "price_result": {
-        "info": {
-          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
-        },
-        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
-        "status": "UNKNOWN"
-      },
-      "security_name": "Sinovac Biotech, Ltd. - Ordinary Shares (Antigua/Barbudo)"
-    },
-    "TBCV": {
-      "price_result": {
-        "info": {
-          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
-        },
-        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
-        "status": "UNKNOWN"
-      },
-      "security_name": "Thunder Bridge Capital Partners V, Ltd. - Class A Ordinary Shares"
-    },
-    "WBD": {
-      "price_result": {
-        "info": {
-          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
-        },
-        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
-        "status": "UNKNOWN"
-      },
-      "security_name": "Warner Bros. Discovery, Inc. - Series A Common Stock"
-    }
-  },
-  "price_unknown_hash": "a527448a1526ca54ddb71f8d2c4d963218347f59339bbdf67c855396c81a3de7",
-  "price_unknown_symbols": [
-    "BLFS",
-    "SLP",
-    "SVA",
-    "TBCV",
-    "WBD"
-  ],
+  "price_unknown_count": 0,
+  "price_unknown_detail": {},
+  "price_unknown_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "price_unknown_symbols": [],
   "queue_hash": "5712dff0e8e244da4e7a7ef4b12efbfda4a2b2d699a91aa651868c4f45c2f929",
   "queue_total": 3186,
   "real_money": "NO-GO",
   "resolver_policy": "ALPACA_SIP_PREFERRED__RALLIES_LONGBRIDGE_DUAL_SOURCE_CONNECTOR_FAILOVER__NEVER_G9__FAIL_CLOSED__SAME_ASOF_QUEUE_BINDING",
   "schema": "XRAY_RESOLVER_EPOCH_REQUEST_V1",
   "settlement_already_proven": true,
-  "settlement_bridge_blob_sha": "28f916a9a596d0c1d171b87b6a351c209811fb67",
-  "settlement_bridge_path": "nasdaq-xray/canonical_resolver_bridge_20261006_c417_dv30_v17.json",
+  "settlement_bridge_blob_sha": "e81ceff01711235cff31aa0f067799d7eb4720e2",
+  "settlement_bridge_path": "nasdaq-xray/canonical_resolver_bridge_20261006_c417_dv30_v18.json",
   "settlement_core_source_blob_sha": "45b711956e0771c12d590fdb8a261032d73a2ab5",
   "settlement_core_source_path": "nasdaq-xray/canonical_current_terminal.json",
   "settlement_core_symbol": "MSFT",
@@ -2217,13 +2160,13 @@
   "source_overlay_path": "nasdaq-xray/canonical_current_resolution_overlay.json",
   "source_pointer_blob_sha": "d66a28fe1b284107f979f8cf662fa3493dce8a10",
   "source_pointer_path": "nasdaq-xray/chatgpt_canonical_state_v2.json",
-  "source_price_blob_sha": "015d65f9545815b12956c52b28a0d9ce2d711a71",
+  "source_price_blob_sha": "08aba34f8ac4c31791f25a78b2914117272ab074",
   "source_price_counts": {
     "FAIL_DV30": 1366,
-    "FAIL_DV30_INSUFFICIENT_SESSIONS": 7,
+    "FAIL_DV30_INSUFFICIENT_SESSIONS": 8,
     "FAIL_PRICE": 1299,
-    "PASS_PRICE_DV30": 509,
-    "UNKNOWN": 5
+    "FAIL_PRICE_NO_ASOF_BAR": 4,
+    "PASS_PRICE_DV30": 509
   },
   "source_price_global_asof_sentinel_fast_fail": false,
   "source_price_pass_count": 509,
@@ -2233,16 +2176,10 @@
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
   "source_unknowns_blob_sha": "0cb975474b25576b6326364b3d50f89b92599c4e",
   "source_unknowns_path": "nasdaq-xray/canonical_current_unknowns.json",
-  "status": "READY",
-  "symbol_count": 5,
-  "symbol_hash": "a527448a1526ca54ddb71f8d2c4d963218347f59339bbdf67c855396c81a3de7",
-  "symbols": [
-    "BLFS",
-    "SLP",
-    "SVA",
-    "TBCV",
-    "WBD"
-  ],
+  "status": "IDLE",
+  "symbol_count": 0,
+  "symbol_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "symbols": [],
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_never_pass": true
 }

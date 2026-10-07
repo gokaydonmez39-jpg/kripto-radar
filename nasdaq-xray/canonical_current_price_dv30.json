@@ -9,19 +9,19 @@
   "bridge_defer_enabled": true,
   "counts": {
     "FAIL_DV30": 1366,
-    "FAIL_DV30_INSUFFICIENT_SESSIONS": 7,
+    "FAIL_DV30_INSUFFICIENT_SESSIONS": 8,
     "FAIL_PRICE": 1299,
-    "PASS_PRICE_DV30": 509,
-    "UNKNOWN": 5
+    "FAIL_PRICE_NO_ASOF_BAR": 4,
+    "PASS_PRICE_DV30": 509
   },
   "current_baseline_reuse": true,
   "exception_bridge_meta": {
     "input_binding_role": "EXACT_CURRENT_REQUEST_MANIFEST",
-    "path": "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261006_c417_dv30_v17.json",
-    "result_encoding": "ALPACA_SIP_COMPACT_V2",
+    "path": "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261006_c417_dv30_v18.json",
+    "result_encoding": "ALPACA_SIP_RALLIES_COMPACT_V3",
     "source_result_task_id": null,
     "status": "PASS",
-    "symbol_hash": "d2dcd327ea173a859521e3b205805d23c8388929a32ec2cce61c6435738a634a",
+    "symbol_hash": "a527448a1526ca54ddb71f8d2c4d963218347f59339bbdf67c855396c81a3de7",
     "terminal_override_count": 0
   },
   "execution": "NONE",
@@ -68,7 +68,7 @@
   "global_asof_sentinel_fast_fail": false,
   "monotonic_legacy_pass_reuse_count": 0,
   "official_halt_guard_meta": {
-    "content_sha256": "1974baa6b05c445e42fd0e5cb7f9a2aa97879c66ed4761149bb35197684655dd",
+    "content_sha256": "1e010fea449a37176bbe32344dc04052a8d407edc5b35a8e6f14274cbd2f6b89",
     "path": "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_official_source_guard.json",
     "source_status": "PASS",
     "status": "PASS"
@@ -81,16 +81,8 @@
     "record_count": 8,
     "status": "PASS"
   },
-  "official_listing_terminalized_count": 7,
-  "official_listing_terminalized_symbols": [
-    "ACCV",
-    "ADRX",
-    "CHWM",
-    "ETRA",
-    "OIG",
-    "RZAI",
-    "WQEY"
-  ],
+  "official_listing_terminalized_count": 0,
+  "official_listing_terminalized_symbols": [],
   "pass_count": 509,
   "pass_hash": "fc30e75b8a113aad7db2bf1016623228367db237ae71d23c14c1929e84d5fe78",
   "pass_symbols": [
@@ -610,7 +602,7 @@
   "policy_replay_symbols": [],
   "real_money": "NO-GO",
   "redo_deferred_to_bridge": true,
-  "reevaluated_count": 13,
+  "reevaluated_count": 5,
   "results": {
     "AACG": {
       "info": {
@@ -975,7 +967,7 @@
         "source": "ISSUER_IR_PRIMARY",
         "source_url": "https://investors.accelevation.com/news-releases/news-release-details/accelevation-announces-pricing-initial-public-offering"
       },
-      "provenance": "OFFICIAL_RECENT_LISTING_FAIL_ONLY",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "FAIL_DV30_INSUFFICIENT_SESSIONS"
     },
     "ACDC": {
@@ -1488,7 +1480,7 @@
         "source": "ISSUER_IR_PRIMARY",
         "source_url": "https://investors.adarx.com/news-releases/news-release-details/adarx-pharmaceuticals-announces-pricing-upsized-4463-million"
       },
-      "provenance": "OFFICIAL_RECENT_LISTING_FAIL_ONLY",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "FAIL_DV30_INSUFFICIENT_SESSIONS"
     },
     "ADSE": {
@@ -6594,10 +6586,17 @@
     },
     "BLFS": {
       "info": {
-        "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
+        "no_synthetic_bar": true,
+        "proof": "THREE_SOURCE_NO_ASOF_BAR",
+        "source": "ALPACA_SIP_RALLIES_MASSIVE_C4_13_NON_G9",
+        "sources": [
+          "ALPACA_SIP",
+          "MASSIVE",
+          "RALLIES"
+        ]
       },
-      "provenance": "DYNAMIC_BRIDGE_DEFERRED",
-      "status": "UNKNOWN"
+      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "status": "FAIL_PRICE_NO_ASOF_BAR"
     },
     "BLIN": {
       "info": {
@@ -9860,7 +9859,7 @@
         "source": "SEC_PRIMARY",
         "source_url": "https://www.sec.gov/Archives/edgar/data/2113605/000121390026106090/ea0307489-424b1_chilwa.htm"
       },
-      "provenance": "OFFICIAL_RECENT_LISTING_FAIL_ONLY",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "FAIL_DV30_INSUFFICIENT_SESSIONS"
     },
     "CHYM": {
@@ -15335,7 +15334,7 @@
         "source": "ISSUER_IR_PRIMARY",
         "source_url": "https://ir.electra-therapeutics.com/news-releases/news-release-details/electra-therapeutics-announces-pricing-upsized-3500-million"
       },
-      "provenance": "OFFICIAL_RECENT_LISTING_FAIL_ONLY",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "FAIL_DV30_INSUFFICIENT_SESSIONS"
     },
     "ETS": {
@@ -19333,7 +19332,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "ALPACA_HISTORICAL_SIP_DAILY_BATCH_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "GRAN": {
@@ -32486,7 +32485,7 @@
         "source": "ISSUER_IR_PRIMARY",
         "source_url": "https://orion180.com/news/orion180-insurance-group-inc-announces-pricing-of-initial-public-offering"
       },
-      "provenance": "OFFICIAL_RECENT_LISTING_FAIL_ONLY",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "FAIL_DV30_INSUFFICIENT_SESSIONS"
     },
     "OIO": {
@@ -38761,7 +38760,7 @@
         "source": "SEC_PRIMARY",
         "source_url": "https://www.sec.gov/Archives/edgar/data/2075335/000121390026104150/ea0306875-424b4_roze.htm"
       },
-      "provenance": "OFFICIAL_RECENT_LISTING_FAIL_ONLY",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "FAIL_DV30_INSUFFICIENT_SESSIONS"
     },
     "RZLT": {
@@ -40739,10 +40738,17 @@
     },
     "SLP": {
       "info": {
-        "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
+        "no_synthetic_bar": true,
+        "proof": "THREE_SOURCE_NO_ASOF_BAR",
+        "source": "ALPACA_SIP_RALLIES_MASSIVE_C4_13_NON_G9",
+        "sources": [
+          "ALPACA_SIP",
+          "MASSIVE",
+          "RALLIES"
+        ]
       },
-      "provenance": "DYNAMIC_BRIDGE_DEFERRED",
-      "status": "UNKNOWN"
+      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "status": "FAIL_PRICE_NO_ASOF_BAR"
     },
     "SLS": {
       "info": {
@@ -42355,10 +42361,17 @@
     },
     "SVA": {
       "info": {
-        "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
+        "no_synthetic_bar": true,
+        "proof": "THREE_SOURCE_NO_ASOF_BAR",
+        "source": "ALPACA_SIP_RALLIES_MASSIVE_C4_13_NON_G9",
+        "sources": [
+          "ALPACA_SIP",
+          "MASSIVE",
+          "RALLIES"
+        ]
       },
-      "provenance": "DYNAMIC_BRIDGE_DEFERRED",
-      "status": "UNKNOWN"
+      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "status": "FAIL_PRICE_NO_ASOF_BAR"
     },
     "SVC": {
       "info": {
@@ -42870,10 +42883,44 @@
     },
     "TBCV": {
       "info": {
-        "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
+        "known_session_count": 2,
+        "missing_sessions": [
+          "2026-08-25",
+          "2026-08-26",
+          "2026-08-27",
+          "2026-08-28",
+          "2026-08-31",
+          "2026-09-01",
+          "2026-09-02",
+          "2026-09-03",
+          "2026-09-04",
+          "2026-09-08",
+          "2026-09-09",
+          "2026-09-10",
+          "2026-09-11",
+          "2026-09-14",
+          "2026-09-15",
+          "2026-09-16",
+          "2026-09-17",
+          "2026-09-18",
+          "2026-09-21",
+          "2026-09-22",
+          "2026-09-23",
+          "2026-09-24",
+          "2026-09-25",
+          "2026-09-28",
+          "2026-09-29",
+          "2026-09-30",
+          "2026-10-01",
+          "2026-10-02"
+        ],
+        "no_synthetic_bar": true,
+        "price": 9.8,
+        "proof": "ALPACA_RALLIES_EXACT_MISSING_SET_MATCH",
+        "source": "ALPACA_SIP_RALLIES_MASSIVE_C4_13_NON_G9"
       },
-      "provenance": "DYNAMIC_BRIDGE_DEFERRED",
-      "status": "UNKNOWN"
+      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "status": "FAIL_DV30_INSUFFICIENT_SESSIONS"
     },
     "TBLA": {
       "info": {
@@ -47138,10 +47185,17 @@
     },
     "WBD": {
       "info": {
-        "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
+        "no_synthetic_bar": true,
+        "proof": "THREE_SOURCE_NO_ASOF_BAR",
+        "source": "ALPACA_SIP_RALLIES_MASSIVE_C4_13_NON_G9",
+        "sources": [
+          "ALPACA_SIP",
+          "MASSIVE",
+          "RALLIES"
+        ]
       },
-      "provenance": "DYNAMIC_BRIDGE_DEFERRED",
-      "status": "UNKNOWN"
+      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "status": "FAIL_PRICE_NO_ASOF_BAR"
     },
     "WBTN": {
       "info": {
@@ -47752,7 +47806,7 @@
         "source": "NASDAQ_TRADER_PRIMARY",
         "source_url": "https://www.nasdaqtrader.com/TraderNews.aspx?id=ECA2026-712"
       },
-      "provenance": "OFFICIAL_RECENT_LISTING_FAIL_ONLY",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "FAIL_DV30_INSUFFICIENT_SESSIONS"
     },
     "WRAP": {
@@ -49350,7 +49404,7 @@
       "status": "FAIL_DV30"
     }
   },
-  "reused_terminal_count": 3173,
+  "reused_terminal_count": 3181,
   "schema": "XRAY_CANONICAL_PRICE_DV30_V1",
   "source_master_count": 3186,
   "source_master_queue_hash": "5712dff0e8e244da4e7a7ef4b12efbfda4a2b2d699a91aa651868c4f45c2f929",
@@ -49359,13 +49413,7 @@
     "dv30": ">=50000000 exact30 median",
     "price": ">=5"
   },
-  "unknown_count": 5,
+  "unknown_count": 0,
   "unknown_never_pass": true,
-  "unknown_symbols": [
-    "BLFS",
-    "SLP",
-    "SVA",
-    "TBCV",
-    "WBD"
-  ]
+  "unknown_symbols": []
 }
