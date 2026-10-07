@@ -45,10 +45,13 @@ permissions:
   contents: write
 
 concurrency:
-  # Only production-relevant source/authority changes trigger this workflow.
-  # A newer exact authority makes the older run non-publishable, so latest wins.
-  group: xray-canonical-current-post-mc-v10
-  cancel-in-progress: true
+  # Never cancel an in-flight exact rebuild merely because a newer trigger exists.
+  # GitHub keeps at most one pending successor in this group; any source drift is
+  # fail-closed again at the commit-stage exact diff guard (STALE_SOURCE_ABORT).
+  # This prevents skipped/non-authoritative workflow_run events from starving the
+  # long HISTORY/Stage1 rebuild by repeatedly cancelling it before publication.
+  group: xray-canonical-current-post-mc-v11
+  cancel-in-progress: false
 
 jobs:
   post-mc:
