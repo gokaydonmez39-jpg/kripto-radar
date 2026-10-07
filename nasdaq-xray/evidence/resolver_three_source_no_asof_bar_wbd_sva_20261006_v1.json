@@ -1,0 +1,132 @@
+{
+  "schema": "XRAY_THREE_SOURCE_NO_ASOF_BAR_EVIDENCE_V1",
+  "task_id": "6a825366222081918997094d76e6ae46",
+  "asof_et": "2026-10-06",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "decision_direction": "FAIL_ONLY_NEVER_PASS",
+  "no_synthetic_bar": true,
+  "no_forward_fill": true,
+  "no_new_pass": true,
+  "policy_version": "C4.17",
+  "symbols": [
+    "SVA",
+    "WBD"
+  ],
+  "provider_observations": {
+    "ALPACA_SIP": {
+      "authority_role": "HISTORICAL_SIP_NO_BAR_WITNESS",
+      "tool": "Alpaca.get_stock_bars",
+      "request": {
+        "timeframe": "1Day",
+        "start": "2026-10-06",
+        "end": "2026-10-07",
+        "feed": "sip",
+        "sort": "asc",
+        "limit": 20,
+        "tz": "America/New_York"
+      },
+      "per_symbol": {
+        "SVA": {
+          "records": 0,
+          "bars": []
+        },
+        "WBD": {
+          "records": 0,
+          "bars": []
+        }
+      }
+    },
+    "RALLIES": {
+      "authority_role": "INDEPENDENT_NO_PRICE_DATA_WITNESS",
+      "tool": "Rallies.get_price_from_date_range",
+      "request": {
+        "start_date": "2026-10-06",
+        "end_date": "2026-10-06",
+        "interval": "day"
+      },
+      "per_symbol": {
+        "SVA": {
+          "error": "No price data found for ticker: SVA"
+        },
+        "WBD": {
+          "error": "No price data found for ticker: WBD"
+        }
+      }
+    },
+    "MASSIVE": {
+      "authority_role": "INDEPENDENT_NO_AGGREGATE_BAR_WITNESS",
+      "tool": "Massive.call_api",
+      "endpoint_template": "/v2/aggs/ticker/{ticker}/range/1/day/2026-10-06/2026-10-06",
+      "endpoint_semantics": "No qualifying trades in the interval yields no aggregate bar.",
+      "per_symbol": {
+        "SVA": {
+          "records": 0,
+          "status": "EMPTY"
+        },
+        "WBD": {
+          "records": 0,
+          "status": "EMPTY"
+        }
+      }
+    }
+  },
+  "official_nasdaq_support": {
+    "source_guard_path": "nasdaq-xray/canonical_official_source_guard.json",
+    "source_guard_blob_sha": "2574d9370c936e53428df5987fd17011e2509e8d",
+    "trade_halts_source_url": "https://www.nasdaqtrader.com/rss.aspx?feed=tradehalts",
+    "SVA": {
+      "HaltDate": "02/22/2019",
+      "HaltTime": "16:02:01",
+      "IssueSymbol": "SVA",
+      "Market": "NASDAQ",
+      "ReasonCode": "T12",
+      "ResumptionDate": "",
+      "ResumptionTradeTime": ""
+    },
+    "WBD": {
+      "HaltDate": "10/05/2026",
+      "HaltTime": "19:50:00.000",
+      "IssueSymbol": "WBD",
+      "Market": "NASDAQ",
+      "ReasonCode": "D",
+      "ResumptionDate": "10/07/2026",
+      "ResumptionTradeTime": "00:00:01"
+    }
+  },
+  "exact_bindings": {
+    "source_price_path": "nasdaq-xray/canonical_current_price_dv30.json",
+    "source_price_blob_sha": "bab48eb20acf67f810e9606f7c4500be1eb3b927",
+    "source_request_path": "nasdaq-xray/canonical_current_resolver_request.json",
+    "source_request_blob_sha": "e5912e045e5a15058a9a3c0c06f9dc150b44fca3",
+    "source_manifest_path": "nasdaq-xray/canonical_current_resolver_chunk_manifest.json",
+    "source_manifest_blob_sha": "4d6f97e9b7e0dbfb9b4f841a404ebe9bedda3a42",
+    "predecessor_bridge_path": "nasdaq-xray/canonical_resolver_bridge_20261006_c417_dv30_v14.json",
+    "predecessor_bridge_blob_sha": "426c2b9945f7ad337631240a2606d4eb18dec59b",
+    "queue_hash": "f583de3888d099300a0d4b0baf67d557ab98007aa33fb93142a9172213ea6867",
+    "symbol_hash": "b757e7c3f8600f5d6d806a971d9bde99ced93e4563a9600f6921ee0e90259725",
+    "current_price_pass_hash": "63d66ef437b893c96ae7775e62d1a2c4d54a18695da2e7b0e8dd89022538882d",
+    "current_price_pass_count": 508
+  },
+  "classification": {
+    "SVA": {
+      "decision": "FAIL_PRICE_NO_ASOF_BAR",
+      "proof": "THREE_SOURCE_NO_ASOF_BAR",
+      "sources": [
+        "ALPACA_SIP",
+        "MASSIVE",
+        "RALLIES"
+      ]
+    },
+    "WBD": {
+      "decision": "FAIL_PRICE_NO_ASOF_BAR",
+      "proof": "THREE_SOURCE_NO_ASOF_BAR",
+      "sources": [
+        "ALPACA_SIP",
+        "MASSIVE",
+        "RALLIES"
+      ]
+    }
+  }
+}
