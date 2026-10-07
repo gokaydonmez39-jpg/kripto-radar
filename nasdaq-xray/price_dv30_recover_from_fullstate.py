@@ -243,6 +243,72 @@ def load_c417_rallies_primary(asof,queue=None):
         return None,{"status":"UNKNOWN","path":str(path),"reason":type(e).__name__+":"+str(e)[:160]}
 
 
+def apply_c417_rallies_primary_partition(results,primary,queue):
+    """Materialize the validated frozen C4.17 Rallies primary partition.
+
+    This is not an upgrade from missing data: load_c417_rallies_primary() has
+    already required exact current-queue coverage, exact30 policy invariants,
+    disjoint classes, and frozen-ASOF provenance. The mapping preserves the
+    published FAIL/PASS/BLOCK partition without weakening any threshold.
+    """
+    if not isinstance(primary,dict):
+        return []
+    fp=primary.get("fail_price") or {}
+    fd=primary.get("fail_dv30") or {}
+    pp=primary.get("pass_price_dv30") or {}
+    bc=primary.get("block_current_run") or {}
+    universe=set(fp)|set(fd)|set(pp)|set(bc)
+    current=set(queue or [])
+    if not current or not current.issubset(universe):
+        raise RuntimeError("C417_RALLIES_PRIMARY_CURRENT_QUEUE_COVERAGE")
+    source="RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
+    changed=[]
+    for sym in sorted(current):
+        if sym in fp:
+            val=fp[sym] if isinstance(fp[sym],dict) else {}
+            px=num(val.get("asof_close"))
+            if px is None or px>=HARD_PRICE:
+                raise RuntimeError("C417_RALLIES_PRIMARY_FAIL_PRICE_INVALID:"+sym)
+            row={"status":"FAIL_PRICE","info":{
+              "price":px,"source":source,"proof":"ASOF_CLOSE_LT_5",
+              "no_synthetic_bar":True,
+            },"provenance":"C417_RALLIES_PRIMARY_PARTITION"}
+        elif sym in fd:
+            val=fd[sym] if isinstance(fd[sym],dict) else {}
+            px=num(val.get("asof_close")); dv=num(val.get("dv30_median"))
+            known=val.get("known_session_count"); missing=list(val.get("missing_sessions") or [])
+            if px is None or px<HARD_PRICE or dv is None or dv>=HARD_DV30 or known!=30 or missing:
+                raise RuntimeError("C417_RALLIES_PRIMARY_FAIL_DV30_INVALID:"+sym)
+            row={"status":"FAIL_DV30","info":{
+              "price":px,"dv30":dv,"known_session_count":30,"missing_sessions":[],
+              "source":source,"proof":"EXACT30_MEDIAN_LT_GATE","no_synthetic_bar":True,
+            },"provenance":"C417_RALLIES_PRIMARY_PARTITION"}
+        elif sym in pp:
+            val=pp[sym] if isinstance(pp[sym],dict) else {}
+            px=num(val.get("asof_close")); dv=num(val.get("dv30_median"))
+            known=val.get("known_session_count"); missing=list(val.get("missing_sessions") or [])
+            if px is None or px<HARD_PRICE or dv is None or dv<HARD_DV30 or known!=30 or missing:
+                raise RuntimeError("C417_RALLIES_PRIMARY_PASS_INVALID:"+sym)
+            row={"status":"PASS_PRICE_DV30","info":{
+              "price":px,"dv30":dv,"known_session_count":30,"missing_sessions":[],
+              "source":source,"proof":"EXACT30_MEDIAN_GE_GATE","no_synthetic_bar":True,
+            },"provenance":"C417_RALLIES_PRIMARY_PARTITION"}
+        else:
+            val=bc[sym] if isinstance(bc[sym],dict) else {}
+            row={"status":"BLOCK_CURRENT_RUN","info":{
+              "reason":val.get("reason") or "RALLIES_PRIMARY_NONPASS",
+              "observed_usable_sessions":val.get("observed_usable_sessions"),
+              "missing_sessions":list(val.get("missing_sessions") or []),
+              "zero_volume_sessions":list(val.get("zero_volume_sessions") or []),
+              "source":source,"proof":"FAIL_CLOSED_CURRENT_RUN_NONPASS",
+              "no_synthetic_bar":True,
+            },"provenance":"C417_RALLIES_PRIMARY_PARTITION"}
+        if results.get(sym)!=row:
+            changed.append(sym)
+        results[sym]=row
+    return changed
+
+
 def c417_rallies_primary_pass_conflicts(px,queue=None):
     """Return current DV30 PASS symbols not authorized by C4.17 Rallies primary.
 
@@ -1288,6 +1354,10 @@ def main():
                       "status":st,"info":info,"provider_meta":meta,
                       "provenance":"FULLSTATE_ZERO_DOLLAR_EXACT30" if baseline_source=="FULL_STATE" else "POLICY_ORDER_REEVALUATION",
                     }
+    rallies_primary_materialized=apply_c417_rallies_primary_partition(
+        results,rallies_primary,queue
+    )
+
     bridge_price,exception_bridge_meta=load_exception_bridge(asof,s["queue_hash"])
     for sym,br in sorted(bridge_price.items()):
         if sym not in results:
@@ -1351,6 +1421,10 @@ def main():
                       "status":"UNRESOLVED","provider_result":info,"provider_meta":meta
                     }
 
+    rallies_primary_post_recovery_vetoed=apply_c417_rallies_primary_pass_veto(
+        results,rallies_primary
+    )
+
     counts={}
     for r in results.values():counts[r["status"]]=counts.get(r["status"],0)+1
     unknown=sorted(s for s,r in results.items() if r["status"]=="UNKNOWN")
@@ -1374,8 +1448,12 @@ def main():
       "policy_replay_symbols":sorted(policy_redo),
       "exception_bridge_meta":exception_bridge_meta,
       "c417_rallies_primary_meta":rallies_primary_meta,
+      "c417_rallies_primary_materialized_count":len(rallies_primary_materialized),
+      "c417_rallies_primary_materialized_symbols":sorted(rallies_primary_materialized),
       "c417_rallies_primary_pass_veto_count":len(rallies_primary_pass_vetoed),
       "c417_rallies_primary_pass_veto_symbols":sorted(rallies_primary_pass_vetoed),
+      "c417_rallies_primary_post_recovery_veto_count":len(rallies_primary_post_recovery_vetoed),
+      "c417_rallies_primary_post_recovery_veto_symbols":sorted(rallies_primary_post_recovery_vetoed),
       "counts":dict(sorted(counts.items())),"unknown_count":len(unknown),"unknown_symbols":unknown,
       "blocked_count":len(blocked),"blocked_symbols":blocked,
       "block_recovery_attempted":True,
