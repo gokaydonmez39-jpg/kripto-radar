@@ -181,12 +181,22 @@ jobs:
               return hashlib.sha1(f"blob {len(b)}\0".encode()+b).hexdigest()
           def hlines(values):
               return hashlib.sha256("\n".join(values).encode()).hexdigest()
+          def eligibility(unknown,blocked,symbols,settlement_ok):
+              return bool(len(unknown)==0 and symbols==blocked and settlement_ok)
+          # Expected upstream UNKNOWN is a valid fail-closed pending state, not
+          # an invariant failure. Prove both pending and terminal paths are live.
+          assert eligibility(["AAA"],[],["AAA"],False) is False
+          assert eligibility([],["BBB"],["BBB"],True) is True
+
           unknown=list(p.get("unknown_symbols") or [])
           blocked=list(p.get("blocked_symbols") or [])
           assert int(p.get("unknown_count",len(unknown)))==len(unknown),"PRICE_UNKNOWN_COUNT_MISMATCH"
           assert int(p.get("blocked_count",len(blocked)))==len(blocked),"PRICE_BLOCKED_COUNT_MISMATCH"
+          assert unknown==sorted(unknown) and len(unknown)==len(set(unknown)),"PRICE_UNKNOWN_SET_INVALID"
           assert blocked==sorted(blocked) and len(blocked)==len(set(blocked)),"PRICE_BLOCKED_SET_INVALID"
           symbols=list(q.get("symbols") or [])
+          expected_scope=sorted(set(unknown)|set(blocked))
+          assert symbols==expected_scope,"RESOLVER_REQUEST_SCOPE_NOT_PRICE_UNKNOWN_UNION_BLOCKED"
           assert int(q.get("symbol_count",len(symbols)))==len(symbols),"RESOLVER_REQUEST_SYMBOL_COUNT_MISMATCH"
           assert q.get("source_price_path")=="nasdaq-xray/canonical_current_price_dv30.json"
           assert q.get("source_price_blob_sha")==bsha(root/"canonical_current_price_dv30.json"),"RESOLVER_REQUEST_PRICE_BINDING_DRIFT"
@@ -196,24 +206,20 @@ jobs:
           assert int(q.get("price_blocked_count",-1))==len(blocked),"RESOLVER_REQUEST_BLOCKED_COUNT_DRIFT"
           assert cm.get("request_blob_sha")==bsha(root/"canonical_current_resolver_request.json"),"RESOLVER_MANIFEST_REQUEST_BINDING_DRIFT"
           assert cm.get("coverage_complete") is True,"RESOLVER_MANIFEST_COVERAGE_INCOMPLETE"
-          assert int(cm.get("symbol_count",-1))==len(blocked),"RESOLVER_MANIFEST_SCOPE_COUNT_DRIFT"
-          assert cm.get("symbol_hash")==hlines(blocked),"RESOLVER_MANIFEST_SCOPE_HASH_DRIFT"
+          assert int(cm.get("symbol_count",-1))==len(symbols),"RESOLVER_MANIFEST_SCOPE_COUNT_DRIFT"
+          assert cm.get("symbol_hash")==hlines(symbols),"RESOLVER_MANIFEST_SCOPE_HASH_DRIFT"
           ca=cm.get("compact_authority") or {}
           assert ca.get("source_price_blob_sha")==bsha(root/"canonical_current_price_dv30.json"),"COMPACT_PRICE_BINDING_DRIFT"
           assert int(ca.get("price_unknown_count",-1))==len(unknown),"COMPACT_UNKNOWN_COUNT_DRIFT"
           assert int(ca.get("price_blocked_count",-1))==len(blocked),"COMPACT_BLOCKED_COUNT_DRIFT"
-          assert int(ca.get("resolver_symbol_count",-1))==len(blocked),"COMPACT_RESIDUAL_COUNT_DRIFT"
-          assert ca.get("resolver_symbol_hash")==hlines(blocked),"COMPACT_RESIDUAL_HASH_DRIFT"
+          assert int(ca.get("resolver_symbol_count",-1))==len(symbols),"COMPACT_RESOLVER_COUNT_DRIFT"
+          assert ca.get("resolver_symbol_hash")==hlines(symbols),"COMPACT_RESOLVER_HASH_DRIFT"
           residual_exact=(symbols==blocked)
           settlement_ok=(
               q.get("settlement_required") is False
               and (len(blocked)==0 or q.get("settlement_already_proven") is True)
           )
-          eligible=(
-              len(unknown)==0
-              and residual_exact
-              and settlement_ok
-          )
+          eligible=eligibility(unknown,blocked,symbols,settlement_ok)
           print("eligible="+("true" if eligible else "false"))
           print("price_unknown_count="+str(len(unknown)))
           print("price_blocked_count="+str(len(blocked)))
