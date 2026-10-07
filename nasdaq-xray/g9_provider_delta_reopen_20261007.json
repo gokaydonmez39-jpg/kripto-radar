@@ -1,0 +1,76 @@
+{
+  "schema": "XRAY_G9_PROVIDER_DELTA_REOPEN_20261007_V1",
+  "generated_on": "2026-10-07",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "no_policy_weakening": true,
+  "purpose": "Fresh primary-source/runtime reopen audit for non-negative-cache strict-G9 near misses. Discovery evidence cannot create G9 PASS.",
+  "strict_g9_gates": {
+    "A": "consolidated UTP Tape-C / National NBBO lineage",
+    "B": "fresh bid+ask+last with independent quote/trade event timestamps",
+    "C": "lawful automated/non-display permanent-$0 entitlement with no fee/balance/activity/funding/per-query/subscription/account-maintenance condition",
+    "D": "scheduler callability"
+  },
+  "providers": {
+    "ForInvest / Foreks MCP": {
+      "decision": "KEEP_UNKNOWN_NONQUALIFYING_STRICT_G9",
+      "checked_on": "2026-10-07",
+      "primary_sources": [
+        "https://mcp.forinvest.com/",
+        "https://mcp.forinvest.com/docs",
+        "https://www.forinvest.com/basic-paket-fxplus",
+        "https://www.forinvest.com/canli-veri"
+      ],
+      "observed": [
+        "Official MCP is live, StreamableHTTP, OAuth 2.0 + PKCE, and advertises real-time/global market data.",
+        "Official public plan pages do not establish permanent-$0 U.S. consolidated National-NBBO entitlement, independent U.S. quote/trade event timestamps, or automated non-display rights."
+      ],
+      "failed_gates": [
+        "A_CONSOLIDATED_US_NBBO_LINEAGE_UNPROVEN",
+        "B_US_QUOTE_TRADE_EVENT_SCHEMA_UNPROVEN",
+        "C_PERMANENT_ZERO_US_NBBO_NONDIPLAY_ENTITLEMENT_UNPROVEN"
+      ],
+      "reopen_condition": "Primary-source ForInvest proof of exact U.S. National-NBBO lineage, independent quote/trade event timestamps, and permanent-$0 automated/non-display entitlement."
+    },
+    "Clear Street Studio / MCP": {
+      "decision": "KEEP_UNKNOWN_NONQUALIFYING_STRICT_G9",
+      "checked_on": "2026-10-07",
+      "primary_sources": [
+        "https://docs.clearstreet.io/studio/docs/rest",
+        "https://docs.clearstreet.io/studio/reference/createentity",
+        "https://docs.clearstreet.io/studio/reference/createaccount"
+      ],
+      "observed": [
+        "Current Studio API requires OAuth entitlement to an organization/legal entity.",
+        "Public primary-source documentation does not prove an unconditional Türkiye-retail zero-balance permanent-$0 National-NBBO entitlement."
+      ],
+      "failed_gates": [
+        "C_UNCONDITIONAL_PERMANENT_ZERO_RETAIL_ENTITLEMENT_UNPROVEN",
+        "D_TURKIYE_RETAIL_ELIGIBILITY_UNPROVEN"
+      ],
+      "reopen_condition": "Primary-source Clear Street proof of Türkiye individual eligibility plus unconditional zero-balance permanent-$0 National-NBBO read-only entitlement."
+    },
+    "Alpaca connected market-data surface": {
+      "decision": "KEEP_BLOCKED_STRICT_G9_HISTORICAL_ONLY_PROVEN",
+      "checked_on": "2026-10-07",
+      "primary_sources": [
+        "https://docs.alpaca.markets/us/docs/market-data-faq",
+        "https://alpaca.markets/support/redistribute-alpaca-api"
+      ],
+      "runtime": {
+        "historical_sip_daily": "PASS_FOR_NON_G9_COMPLETED_SESSION_RESEARCH",
+        "live_sip_latest_quote": "INTERNAL_ERROR",
+        "live_sip_latest_trade": "INTERNAL_ERROR",
+        "raw_data_public_redistribution": "FORBIDDEN_WITHOUT_SEPARATE_PERMISSION"
+      },
+      "failed_gates": [
+        "B_SAME_RUN_RTH_LIVE_SIP_WITNESS_NOT_ESTABLISHED",
+        "C_PERMANENT_ZERO_LIVE_SIP_ENTITLEMENT_UNPROVEN"
+      ],
+      "reopen_condition": "Same-run live SIP quote+trade succeeds and primary-source entitlement proves permanent-$0 automated/non-display use."
+    }
+  },
+  "result": "NO_NEW_STRICT_G9_PASS",
+  "g9_status": "G9_BLOCKED_FREE_AUTOMATION_PATH"
+}
