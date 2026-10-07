@@ -197,6 +197,17 @@ def issuer_identity_ok(page_text: str, tokens: list[str]) -> bool:
     clean = normalize_text(page_text).lower()
     return any(str(t).lower() in clean for t in tokens if t)
 
+def validated_authority_url(final_url: str, page_text: str, tokens: list[str]) -> str | None:
+    """Trust a redirected issuer host only after issuer identity is present there.
+
+    This permits an issuer-controlled IR migration (for example, an IR vanity
+    domain redirecting to its hosted GCS-Web property) without permitting later
+    feed/item redirects to arbitrary hosts.
+    """
+    if not valid_http_url(final_url):
+        return None
+    return final_url if issuer_identity_ok(page_text, tokens) else None
+
 def sec_symbol_map() -> dict[str, dict]:
     obj, _ = fetch_json(SEC_TICKERS)
     fields = obj.get("fields") or []
@@ -265,11 +276,15 @@ def probe_issuer(sym: str, base: dict, asof: str, horizon: set[str]) -> dict:
         body, meta = fetch(url, accept="text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
         text = body.decode("utf-8", "ignore")
         rec["base_fetch"] = meta
-        rec["identity_validated"] = issuer_identity_ok(text, base.get("issuer_tokens") or [sym])
+        authority_url = validated_authority_url(
+            meta["final_url"], text, base.get("issuer_tokens") or [sym]
+        )
+        rec["identity_validated"] = authority_url is not None
         if not rec["identity_validated"]:
             rec["failure"] = "ISSUER_IDENTITY_TOKEN_NOT_FOUND"
             return rec
-        feeds = discover_feed_links(meta["final_url"], text)
+        rec["validated_authority_url"] = authority_url
+        feeds = discover_feed_links(authority_url, text)
     except Exception as e:
         rec["failure"] = f"BASE_FETCH_{type(e).__name__}:{str(e)[:160]}"
         return rec
@@ -279,7 +294,7 @@ def probe_issuer(sym: str, base: dict, asof: str, horizon: set[str]) -> dict:
         try:
             raw, meta = fetch(feed_url, accept="application/rss+xml,application/atom+xml,application/xml,text/xml;q=0.9,*/*;q=0.3")
             attempt.update(meta)
-            if not same_host(url, meta["final_url"]):
+            if not same_host(authority_url, meta["final_url"]):
                 attempt["result"] = "CROSS_HOST_REDIRECT_REJECTED"
                 rec["feed_attempts"].append(attempt)
                 continue
@@ -292,7 +307,7 @@ def probe_issuer(sym: str, base: dict, asof: str, horizon: set[str]) -> dict:
                 if not event_date:
                     continue
                 link = urllib.parse.urljoin(meta["final_url"], item.get("link") or meta["final_url"])
-                if not same_host(url, link):
+                if not same_host(authority_url, link):
                     continue
                 rec["matches"].append({
                     "event_date": event_date,
@@ -334,6 +349,18 @@ def selftest() -> None:
     rss = b"""<?xml version="1.0"?><rss><channel><item><title>Company to report financial results on November 5, 2026</title><link>https://ir.example.com/release</link><description>Company will release financial results on November 5, 2026.</description></item></channel></rss>"""
     items = feed_items(rss)
     assert len(items) == 1 and "November 5, 2026" in items[0]["title"]
+    redirected = validated_authority_url(
+        "https://issuer-host.gcs-web.com/overview/default.aspx",
+        "<html><title>Silicon Motion Technology Investor Relations</title></html>",
+        ["Silicon Motion"],
+    )
+    assert redirected and host(redirected) == "issuer-host.gcs-web.com"
+    assert validated_authority_url(
+        "https://unrelated.example/landing",
+        "<html><title>Generic landing page</title></html>",
+        ["Silicon Motion"],
+    ) is None
+    assert not same_host("https://ir.siliconmotion.com", redirected)
     print("EVENT_OFFICIAL_PRIMARY_PROBE_SELFTEST=PASS")
 
 def main() -> None:
