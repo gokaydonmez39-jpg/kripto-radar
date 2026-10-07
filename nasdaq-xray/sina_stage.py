@@ -29,6 +29,7 @@ TASK_ID="6a825366222081918997094d76e6ae46"
 BUILD="2026-10-02.1"
 IDENTITY_RULESET="V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER"
 IDENTITY_PARTITION_POLICY="MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V3_FROZEN_GUARD"
+DIRECTORY_SNAPSHOT_SCHEMA="XRAY_NASDAQ_DIRECTORY_SNAPSHOT_V1"
 NASDAQ_DIR="https://www.nasdaqtrader.com/dynamic/SymDir/nasdaqlisted.txt"
 NASDAQ_SCREENER="https://api.nasdaq.com/api/screener/stocks"
 SEC_TICKERS="https://www.sec.gov/files/company_tickers.json"
@@ -217,6 +218,47 @@ def official_footer_date(footer):
         return None
     mm,dd,yyyy=m.groups()
     return f"{yyyy}-{mm}-{dd}"
+
+def exact_asof_membership_snapshot(asof):
+    """Load immutable membership-only Nasdaq snapshot for historical replay.
+
+    This source carries no PASS/UNKNOWN decisions. It may rebuild the identity
+    partition under current exact-ASOF proof artifacts without consulting a
+    later live Nasdaq directory.
+    """
+    p=ROOT/f"master_nasdaq_directory_snapshot_{str(asof).replace('-','')}.json"
+    if not p.exists():
+        return None
+    try:
+        j=json.loads(p.read_text(encoding="utf-8"))
+        names={str(k).strip().upper():str(v).strip() for k,v in (j.get("security_names") or {}).items() if str(k).strip() and str(v).strip()}
+        industries={str(k).strip().upper():str(v).strip() for k,v in (j.get("industries") or {}).items() if str(k).strip()}
+        footer=str(j.get("source_directory_footer") or "")
+        if (
+          j.get("schema")!=DIRECTORY_SNAPSHOT_SCHEMA
+          or j.get("asof_et")!=asof
+          or j.get("execution")!="NONE" or j.get("real_money")!="NO-GO"
+          or j.get("unknown_never_pass") is not True
+          or j.get("membership_only") is not True
+          or j.get("identity_decisions_reused") is not False
+          or j.get("source_queue_classification_ignored") is not True
+          or j.get("source_directory_date")!=asof
+          or official_footer_date(footer)!=asof
+          or int(j.get("membership_count",-1))!=len(names)
+          or int(j.get("industry_count",-1))!=len(industries)
+          or not set(industries)<=set(names)
+          or not names
+        ):
+            return None
+        return {
+          "security_names":names,
+          "industries":industries,
+          "official_footer":footer,
+          "path":"nasdaq-xray/"+p.name,
+          "blob_sha":git_blob_sha(p),
+        }
+    except Exception:
+        return None
 
 def official_nasdaq():
     text=request_text(NASDAQ_DIR)
@@ -443,6 +485,57 @@ def build_discovery(official,force_all=False,sec_spac_proof=None,operating_overr
       "sec_spac_proof_count":len(applied_sec),
       "sec_spac_proof_hash":sha_lines(applied_sec),
     },screener_excluded
+
+def build_discovery_from_snapshot(official,industries,sec_spac_proof=None,operating_overrides=None):
+    """Identity-only replay from exact-ASOF immutable membership metadata.
+
+    No live price/MC fields are synthesized. Market gates remain deferred to
+    PRICE/DV30. Exact SEC SPAC proofs may exclude; exact-ASOF Nasdaq industry
+    metadata is preserved for the later blank-check/name fail-closed partition.
+    """
+    sec_spac_proof=sec_spac_proof or {}
+    operating_overrides=operating_overrides or {}
+    prefilter={}
+    excluded={}
+    for sym in sorted(official):
+        if sym in sec_spac_proof and sym not in operating_overrides:
+            pr=sec_spac_proof[sym]
+            excluded[sym]={
+              "reason":"SPAC_BLANK_CHECK",
+              "security_name":official.get(sym),
+              "industry":"Blank Checks",
+              "source":"SEC_EDGAR_SIC_6770_EXACT_ASOF",
+              "cik":pr.get("cik"),
+              "source_url":pr.get("source_url"),
+            }
+            continue
+        prefilter[sym]={
+          "screener_price":None,
+          "screener_market_cap":None,
+          "screener_volume":None,
+          "sector":None,
+          "industry":industries.get(sym),
+          "country":None,
+          "discovery_reason":"IMMUTABLE_EXACT_ASOF_MEMBERSHIP_REPLAY_MARKET_GATES_DEFERRED",
+        }
+    applied_sec=sorted(set(excluded)&set(sec_spac_proof))
+    queue=sorted(prefilter)
+    return queue,prefilter,{
+      "rows_returned":len(official),
+      "official_matched":len(official),
+      "official_missing":0,
+      "official_missing_hash":sha_lines([]),
+      "discovery_queue_total":len(queue),
+      "hard_price_mc_snapshot_count":0,
+      "discovery_price_floor":DISCOVERY_PRICE_FLOOR,
+      "discovery_mc_floor":DISCOVERY_MC_FLOOR,
+      "authority":"IMMUTABLE_EXACT_ASOF_MEMBERSHIP_SNAPSHOT_NO_MARKET_DECISIONS",
+      "full_identity":True,
+      "screener_spac_excluded_count":len(excluded),
+      "screener_spac_excluded_hash":sha_lines(sorted(excluded)),
+      "sec_spac_proof_count":len(applied_sec),
+      "sec_spac_proof_hash":sha_lines(applied_sec),
+    },excluded
 
 def completed_sessions():
     cal=mcal.get_calendar("NASDAQ")
@@ -833,6 +926,9 @@ def main():
     frozen=canonical_frozen_identity(asof)
     if frozen is None:
         frozen=support_frozen_identity(asof)
+    membership_snapshot=None
+    if frozen is None:
+        membership_snapshot=exact_asof_membership_snapshot(asof)
     if frozen is not None:
         names=dict(frozen["security_names"])
         excluded={}
@@ -840,6 +936,11 @@ def main():
         if official_footer_date(footer)!=asof:
             raise RuntimeError("FROZEN_IDENTITY_FOOTER_NOT_EXACT_ASOF")
         identity_token="CANONICAL_FROZEN:"+str(frozen.get("source_state_hash") or frozen["queue_hash"])+"|"+sec_identity_token+"|"+asof_identity_token
+    elif membership_snapshot is not None:
+        names=dict(membership_snapshot["security_names"])
+        excluded={}
+        footer=str(membership_snapshot["official_footer"])
+        identity_token="IMMUTABLE_EXACT_ASOF_MEMBERSHIP:"+membership_snapshot["blob_sha"]+"|"+sec_identity_token+"|"+asof_identity_token
     else:
         names,excluded,footer=official_nasdaq()
         live_footer_date=official_footer_date(footer)
@@ -878,7 +979,17 @@ def main():
             })
             ex_serial=[]
         else:
-            queue,discovery,meta,screener_excluded=build_discovery(names,FULL_IDENTITY,sec_spac_proof,operating_overrides)
+            if membership_snapshot is not None:
+                queue,discovery,meta,screener_excluded=build_discovery_from_snapshot(
+                    names,membership_snapshot["industries"],sec_spac_proof,operating_overrides
+                )
+                meta.update({
+                  "membership_snapshot_path":membership_snapshot["path"],
+                  "membership_snapshot_blob_sha":membership_snapshot["blob_sha"],
+                  "identity_decisions_reused_from_snapshot":False,
+                })
+            else:
+                queue,discovery,meta,screener_excluded=build_discovery(names,FULL_IDENTITY,sec_spac_proof,operating_overrides)
             # C4.17 accepts official/issuer/SEC proof for SPAC-shell handling.
             # Exact same-ASOF Nasdaq screener industry "Blank Checks" is official
             # exclusion evidence and may deterministically EXCLUDE the shell.
@@ -949,7 +1060,11 @@ def main():
           "identity_authority":(frozen.get("identity_authority") if frozen is not None else "NASDAQTRADER_EXPLICIT_TYPE_FILTER_V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER"),
           "identity_ruleset":IDENTITY_RULESET,
           "identity_partition_policy":IDENTITY_PARTITION_POLICY,
-          "discovery_source":("CANONICAL_FROZEN_FULL_IDENTITY_SAME_ASOF" if frozen is not None else ("NASDAQTRADER_FULL_IDENTITY_PLUS_NASDAQ_SCREENER_METADATA_ONLY" if FULL_IDENTITY else "NASDAQ_OFFICIAL_WEB_SCREENER_PREFILTER_ONLY")),
+          "discovery_source":(
+              "CANONICAL_FROZEN_FULL_IDENTITY_SAME_ASOF" if frozen is not None else
+              "IMMUTABLE_EXACT_ASOF_MEMBERSHIP_SNAPSHOT_REPLAY" if membership_snapshot is not None else
+              ("NASDAQTRADER_FULL_IDENTITY_PLUS_NASDAQ_SCREENER_METADATA_ONLY" if FULL_IDENTITY else "NASDAQ_OFFICIAL_WEB_SCREENER_PREFILTER_ONLY")
+          ),
           "history_source":"SINA_US_DAILY_ACCELERATOR_NOT_G9",
           "identity_unknown_symbols":identity_unknown_symbols,
           "identity_unknown_detail":identity_unknown_detail,
