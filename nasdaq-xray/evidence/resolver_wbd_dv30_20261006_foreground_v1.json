@@ -1,0 +1,318 @@
+{
+  "schema": "XRAY_RESOLVER_FOREGROUND_WBD_DV30_BLOCK_V1",
+  "task_id": "6a825366222081918997094d76e6ae46",
+  "asof_et": "2026-10-06",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "source_request_path": "nasdaq-xray/canonical_current_resolver_request.json",
+  "source_request_blob_sha": "81240f94e450fcc6bafadedfe1399f662f36e26f",
+  "source_price_path": "nasdaq-xray/canonical_current_price_dv30.json",
+  "source_price_blob_sha": "d707c0703cfdd8f5cd7bea2eeba99eef46c3dd58",
+  "symbol": "WBD",
+  "expected30": [
+    "2026-08-25",
+    "2026-08-26",
+    "2026-08-27",
+    "2026-08-28",
+    "2026-08-31",
+    "2026-09-01",
+    "2026-09-02",
+    "2026-09-03",
+    "2026-09-04",
+    "2026-09-08",
+    "2026-09-09",
+    "2026-09-10",
+    "2026-09-11",
+    "2026-09-14",
+    "2026-09-15",
+    "2026-09-16",
+    "2026-09-17",
+    "2026-09-18",
+    "2026-09-21",
+    "2026-09-22",
+    "2026-09-23",
+    "2026-09-24",
+    "2026-09-25",
+    "2026-09-28",
+    "2026-09-29",
+    "2026-09-30",
+    "2026-10-01",
+    "2026-10-02",
+    "2026-10-05",
+    "2026-10-06"
+  ],
+  "rallies": {
+    "source": "RALLIES_GET_PRICE_FROM_DATE_RANGE",
+    "requested_start": "2026-08-20",
+    "requested_end": "2026-10-06",
+    "returned_row_count": 32,
+    "expected_session_rows": [
+      {
+        "date": "2026-08-25",
+        "close": 28.9,
+        "open": 28.83,
+        "high": 28.98,
+        "low": 28.68,
+        "volume": 24404607.096007
+      },
+      {
+        "date": "2026-08-26",
+        "close": 28.75,
+        "open": 28.9,
+        "high": 28.935,
+        "low": 28.72,
+        "volume": 12519115.43761
+      },
+      {
+        "date": "2026-08-27",
+        "close": 28.88,
+        "open": 28.79,
+        "high": 28.99,
+        "low": 28.65,
+        "volume": 13708357.358686
+      },
+      {
+        "date": "2026-08-28",
+        "close": 28.77,
+        "open": 28.95,
+        "high": 28.965,
+        "low": 28.71,
+        "volume": 10004946.0247
+      },
+      {
+        "date": "2026-08-31",
+        "close": 28.53,
+        "open": 28.75,
+        "high": 28.795,
+        "low": 28.4901,
+        "volume": 25384901.639387
+      },
+      {
+        "date": "2026-09-01",
+        "close": 28.32,
+        "open": 28.57,
+        "high": 28.59,
+        "low": 28.3,
+        "volume": 14735734.280466
+      },
+      {
+        "date": "2026-09-02",
+        "close": 28.39,
+        "open": 28.38,
+        "high": 28.77,
+        "low": 28.33,
+        "volume": 21713964.954661
+      },
+      {
+        "date": "2026-09-03",
+        "close": 28.37,
+        "open": 28.405,
+        "high": 28.465,
+        "low": 28.3,
+        "volume": 14302414.126338
+      },
+      {
+        "date": "2026-09-04",
+        "close": 28.25,
+        "open": 28.32,
+        "high": 28.35,
+        "low": 28.21,
+        "volume": 11491978.959538
+      },
+      {
+        "date": "2026-09-08",
+        "close": 28.12,
+        "open": 28.22,
+        "high": 28.345,
+        "low": 28.08,
+        "volume": 14136375.180038
+      },
+      {
+        "date": "2026-09-09",
+        "close": 27.91,
+        "open": 28.06,
+        "high": 28.145,
+        "low": 27.91,
+        "volume": 9911232.724585
+      },
+      {
+        "date": "2026-09-10",
+        "close": 28.2,
+        "open": 28,
+        "high": 28.34,
+        "low": 28,
+        "volume": 32197095.258784
+      },
+      {
+        "date": "2026-09-11",
+        "close": 28.04,
+        "open": 28.24,
+        "high": 28.6,
+        "low": 27.965,
+        "volume": 12965816.951291
+      },
+      {
+        "date": "2026-09-14",
+        "close": 28.1,
+        "open": 27.95,
+        "high": 28.2,
+        "low": 27.93,
+        "volume": 14337741.114899
+      },
+      {
+        "date": "2026-09-15",
+        "close": 28.03,
+        "open": 27.99,
+        "high": 28.1,
+        "low": 27.84,
+        "volume": 16780374.63546
+      },
+      {
+        "date": "2026-09-16",
+        "close": 28.07,
+        "open": 27.985,
+        "high": 28.19,
+        "low": 27.955,
+        "volume": 20208388.14568
+      },
+      {
+        "date": "2026-09-17",
+        "close": 28.24,
+        "open": 28.31,
+        "high": 28.45,
+        "low": 28.09,
+        "volume": 24732507.553902
+      },
+      {
+        "date": "2026-09-18",
+        "close": 27.8,
+        "open": 28.06,
+        "high": 28.13,
+        "low": 27.74,
+        "volume": 44151429.580141
+      },
+      {
+        "date": "2026-09-21",
+        "close": 30.8,
+        "open": 29.76,
+        "high": 30.92,
+        "low": 29.65,
+        "volume": 234091400.22384
+      },
+      {
+        "date": "2026-09-22",
+        "close": 30.83,
+        "open": 30.83,
+        "high": 30.835,
+        "low": 30.77,
+        "volume": 109822213.324692
+      },
+      {
+        "date": "2026-09-23",
+        "close": 30.76,
+        "open": 30.8,
+        "high": 30.82,
+        "low": 30.68,
+        "volume": 111094522.305485
+      },
+      {
+        "date": "2026-09-24",
+        "close": 30.84,
+        "open": 30.785,
+        "high": 30.87,
+        "low": 30.71,
+        "volume": 46110283.212799
+      },
+      {
+        "date": "2026-09-25",
+        "close": 30.86,
+        "open": 30.802,
+        "high": 30.87,
+        "low": 30.8,
+        "volume": 23737557.23173
+      },
+      {
+        "date": "2026-09-28",
+        "close": 30.9,
+        "open": 30.85,
+        "high": 30.9,
+        "low": 30.84,
+        "volume": 43621225.824189
+      },
+      {
+        "date": "2026-09-29",
+        "close": 30.85,
+        "open": 30.85,
+        "high": 30.88,
+        "low": 30.83,
+        "volume": 46827988.375175
+      },
+      {
+        "date": "2026-09-30",
+        "close": 30.95,
+        "open": 30.85,
+        "high": 30.97,
+        "low": 30.79,
+        "volume": 95724992.498602
+      },
+      {
+        "date": "2026-10-01",
+        "close": 30.95,
+        "open": 30.95,
+        "high": 30.96,
+        "low": 30.93,
+        "volume": 44286194.054442
+      },
+      {
+        "date": "2026-10-02",
+        "close": 30.94,
+        "open": 30.95,
+        "high": 30.96,
+        "low": 30.93,
+        "volume": 59655572.639899
+      },
+      {
+        "date": "2026-10-05",
+        "close": 30.95,
+        "open": 30.95,
+        "high": 30.99,
+        "low": 30.94,
+        "volume": 435637442.971486
+      }
+    ],
+    "observed_expected_session_count": 29,
+    "missing_expected_sessions": [
+      "2026-10-06"
+    ],
+    "exact_asof_present": false,
+    "latest_returned_date": "2026-10-05"
+  },
+  "current_price_diagnostics": {
+    "status": "UNKNOWN",
+    "nasdaq_result": {
+      "reason": "NASDAQ_UNAVAILABLE"
+    },
+    "sina_result": {
+      "reason": "ASOF_MISSING",
+      "source": "SINA_US_DAILY",
+      "usable_bars": 1125
+    },
+    "yahoo_result": {
+      "dv30": 701840858.5150719,
+      "known_session_count": 30,
+      "missing_sessions": [],
+      "price": 30.950000762939453,
+      "proof": "EXACT30_MEDIAN_GE_GATE",
+      "source": "YAHOO_CHART_FREE_FAIL_ONLY"
+    }
+  },
+  "decision": {
+    "classification": "BLOCK_CURRENT_RUN",
+    "reason": "CROSS_SOURCE_CURRENT_ASOF_ALIGNMENT_UNPROVEN",
+    "rationale": "Yahoo fail-only has exact30 PASS while Rallies lacks exact 2026-10-06 and Sina reports ASOF_MISSING; no synthetic/forward-fill and no PASS promotion permitted.",
+    "no_new_pass": true,
+    "no_synthetic_bar": true,
+    "no_forward_fill": true
+  }
+}
