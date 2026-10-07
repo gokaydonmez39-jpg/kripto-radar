@@ -265,6 +265,13 @@ KNOWN_CALENDAR_NON_EVENT_RE = re.compile(
     r"record\s+date|payable|dividend|ex[- ]dividend|quarter\s+ended",
     re.I,
 )
+KNOWN_CALENDAR_RESULTS_CONTEXT_RE = re.compile(
+    r"earnings|financial\s+results|quarterly\s+results|"
+    r"(?:first|second|third|fourth)\s+quarter(?:\s+20\d{2})?\s+results|"
+    r"(?:first\s+)?(?:three|six|nine)\s+months(?:\s+and\s+"
+    r"(?:first|second|third|fourth)\s+quarter(?:\s+20\d{2})?)?\s+results",
+    re.I,
+)
 
 def known_calendar_event_date(body: str, asof: str) -> tuple[str | None, str | None]:
     """Extract an explicit date from an explicitly pinned issuer IR calendar/document.
@@ -281,7 +288,7 @@ def known_calendar_event_date(body: str, asof: str) -> tuple[str | None, str | N
         lo = max(0, pos - 140)
         hi = min(len(clean), pos + 220)
         window = clean[lo:hi]
-        if not EARNINGS_RE.search(window):
+        if not (EARNINGS_RE.search(window) or KNOWN_CALENDAR_RESULTS_CONTEXT_RE.search(window)):
             continue
         # Avoid treating fiscal/quarter-end, record, payable or dividend dates
         # as earnings announcement dates merely because results text is nearby.
