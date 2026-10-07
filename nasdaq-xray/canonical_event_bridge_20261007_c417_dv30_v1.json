@@ -6,6 +6,7 @@
     "FSLY",
     "IBRX",
     "IOVA",
+    "MANH",
     "META",
     "MRNA",
     "MRVL",
@@ -14,10 +15,12 @@
     "OLLI",
     "PI",
     "PLTR",
+    "QCOM",
     "QLYS",
     "RGEN",
     "SIMO",
     "SMCI",
+    "SWKS",
     "TEM",
     "TRMD",
     "TWST",
@@ -28,10 +31,11 @@
     "WIX",
     "XP"
   ],
-  "affected_geometry_event_unknown_count": 27,
+  "affected_geometry_event_unknown_count": 30,
   "asof_et": "2026-10-07",
-  "authority": "CANONICAL_EVENT_TASKSTATE_BRIDGE_NORMALIZED",
-  "clean_discovery_count": 3,
+  "authority": "CANONICAL_EVENT_BRIDGE_C4_17_DV30_OPTIONAL_DISCOVERY_FAIL_CLOSED_BASE_V1",
+  "clean_discovery_count": 0,
+  "committed_by": "XRAY_EVENT_FAIL_CLOSED_BASE_BOOTSTRAP",
   "compiled_policy_blob_sha": "16c50cc8f887a5234a4be23862d7c8d0e564b0ac",
   "compiled_policy_hash": "68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4",
   "compiled_policy_path": "nasdaq-xray/chatgpt_compiled_policy_v3.json",
@@ -39,8 +43,17 @@
   "confirmed_block_count": 0,
   "confirmed_blocks": {},
   "coverage_complete": false,
-  "discovery_coverage_mode": "PARTIAL_PROVIDER_FAIL_CLOSED_WITH_DIRECT_PRIMARY_RESOLUTION",
   "discovery_hits": [],
+  "discovery_proof": {
+    "every_uncovered_symbol_explicit_unknown": true,
+    "mode": "OPTIONAL_ACCELERATOR_UNAVAILABLE_DIRECT_OFFICIAL_PRIMARY_PENDING",
+    "paid_top_up": false,
+    "provider": "PROVIDER_NEUTRAL_ZERO_DOLLAR_DISCOVERY",
+    "provider_call_attempted": false,
+    "provider_result": "NOT_REQUIRED_FOR_FAIL_CLOSED_BOOTSTRAP",
+    "required_by_request": false,
+    "stale_prior_asof_event_evidence_reused": false
+  },
   "discovery_unavailable_symbols": [
     "AAPL",
     "ABCL",
@@ -191,7 +204,7 @@
     "INTC": "UNKNOWN",
     "IOVA": "UNKNOWN",
     "LITE": "UNKNOWN",
-    "MANH": "CLEAN_DISCOVERY",
+    "MANH": "UNKNOWN",
     "MEDP": "UNKNOWN",
     "META": "UNKNOWN",
     "MKTX": "UNKNOWN",
@@ -216,7 +229,7 @@
     "PCTY": "UNKNOWN",
     "PI": "UNKNOWN",
     "PLTR": "UNKNOWN",
-    "QCOM": "CLEAN_DISCOVERY",
+    "QCOM": "UNKNOWN",
     "QLYS": "UNKNOWN",
     "RGEN": "UNKNOWN",
     "ROKU": "UNKNOWN",
@@ -225,7 +238,7 @@
     "SLAB": "UNKNOWN",
     "SMCI": "UNKNOWN",
     "SMTC": "UNKNOWN",
-    "SWKS": "CLEAN_DISCOVERY",
+    "SWKS": "UNKNOWN",
     "TEAM": "UNKNOWN",
     "TECH": "UNKNOWN",
     "TEM": "UNKNOWN",
@@ -247,6 +260,16 @@
   },
   "execution": "NONE",
   "family_c_events": {},
+  "future_horizon_sessions": [
+    "2026-10-08",
+    "2026-10-09",
+    "2026-10-12",
+    "2026-10-13",
+    "2026-10-14",
+    "2026-10-15",
+    "2026-10-16",
+    "2026-10-19"
+  ],
   "geometry_scope": [
     "ABCL",
     "ARM",
@@ -281,43 +304,55 @@
   ],
   "geometry_scope_count": 30,
   "geometry_scope_hash": "85c7da425f7f3eaf92044540e80bfc0f837536e84a50fb7808a3aa5f3392473f",
-  "official_horizon_clearance": {
-    "MANH": {
-      "authority": "ISSUER_IR_PRIMARY",
-      "evidence_date": null,
-      "evidence_kind": "EXPLICIT_EARNINGS_OR_FINANCIAL_RESULTS_DATE",
-      "horizon_result": "OUTSIDE_EXACT_8_SESSION_HORIZON",
-      "next_event_date": "2026-10-27",
-      "official_source_url": "https://ir.manh.com/events/event-details/manhattan-associates-q3-2026-earnings-call"
-    },
-    "QCOM": {
-      "authority": "ISSUER_IR_PRIMARY",
-      "evidence_date": null,
-      "evidence_kind": "EXPLICIT_EARNINGS_OR_FINANCIAL_RESULTS_DATE",
-      "horizon_result": "OUTSIDE_EXACT_8_SESSION_HORIZON",
-      "next_event_date": "2026-11-04",
-      "official_source_url": "https://investor.qualcomm.com/news-events/investor-events/events/event-details/2026/Q4-FY26-Earnings-Conference-Call-2026-zipgVlNz63/default.aspx"
-    },
-    "SWKS": {
-      "authority": "ISSUER_IR_PRIMARY",
-      "evidence_date": null,
-      "evidence_kind": "EXPLICIT_EARNINGS_OR_FINANCIAL_RESULTS_DATE",
-      "horizon_result": "OUTSIDE_EXACT_8_SESSION_HORIZON",
-      "next_event_date": "2026-11-03",
-      "official_source_url": "https://investors.skyworksinc.com/news-releases/news-release-details/skyworks-completes-combination-qorvo"
-    }
-  },
+  "lifecycle_scope": [],
+  "lifecycle_scope_count": 0,
+  "lifecycle_scope_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "official_horizon_clearance": {},
   "pagination_complete": false,
   "partial_data": true,
-  "provider_unavailable_but_officially_resolved_symbols": [
-    "MANH",
-    "QCOM",
-    "SWKS"
+  "past_family_c_sessions": [
+    "2026-09-22",
+    "2026-09-23",
+    "2026-09-24",
+    "2026-09-25",
+    "2026-09-28",
+    "2026-09-29",
+    "2026-09-30",
+    "2026-10-01",
+    "2026-10-02",
+    "2026-10-05",
+    "2026-10-06",
+    "2026-10-07"
   ],
+  "provider_unavailable_but_officially_resolved_symbols": [],
   "real_money": "NO-GO",
-  "schema": "XRAY_CANONICAL_EVENT_STATE_V1",
-  "source_bridge_blob_sha": "72980d2ee6d66b8b55f647b7375133570b0a443b",
-  "source_bridge_path": "nasdaq-xray/canonical_event_bridge_20261007_c417_dv30_v2.json",
+  "rebind_proof": {
+    "direct_official_primary_pending": true,
+    "event_semantics_unchanged": true,
+    "exact_current_deep_geometry_binding": true,
+    "exact_current_regime_binding": true,
+    "exact_current_request_binding": true,
+    "exact_current_stage1_binding": true,
+    "no_alpha_threshold_change": true,
+    "optional_discovery_only": true,
+    "prior_asof_event_semantics_reused": false,
+    "unknown_never_pass": true
+  },
+  "schema": "XRAY_EVENT_EPOCH_RESULT_V1",
+  "semantic_rebind": {
+    "affected_geometry_event_unknown_count": 30,
+    "current_request_blob_sha": "a25dfd51eff66ccc5e21d17bb9efd7d6b3db8d83",
+    "geometry_scope_hash": "85c7da425f7f3eaf92044540e80bfc0f837536e84a50fb7808a3aa5f3392473f",
+    "lifecycle_scope_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "no_alpha_threshold_change": true,
+    "no_event_provider_refetch": true,
+    "no_event_semantics_change": true,
+    "rule": "FRESH_CURRENT_ASOF_FAIL_CLOSED_OPTIONAL_DISCOVERY_BOOTSTRAP_V1",
+    "unknown_never_pass": true,
+    "weekly_scope_hash": "723135234eab1edde100b32081d90a75143ce42cd22424af0cc2ac02c09e5f2c"
+  },
+  "source_deep_geometry_blob_sha": "1f4298553a91da4bffe86d09d0ca8b7bd34d6856",
+  "source_deep_geometry_path": "nasdaq-xray/canonical_current_deep_geometry.json",
   "source_policy": {
     "discovery": "OPTIONAL_PROVIDER_NEUTRAL_DISCOVERY_ACCELERATOR",
     "geometry_unknown_rule": "UNRESOLVED_INTERSECT_CURRENT_GEOMETRY_BLOCKS_FULL_E2E",
@@ -325,8 +360,13 @@
     "provider_unavailable_rule": "DIRECT_OFFICIAL_PRIMARY_BEFORE_GEOMETRY_UNKNOWN",
     "unknown_never_pass": true
   },
+  "source_regime_blob_sha": "2839045a3f5f8719025cadea469875d489c2e088",
+  "source_regime_path": "nasdaq-xray/canonical_current_regime.json",
   "source_request_blob_sha": "a25dfd51eff66ccc5e21d17bb9efd7d6b3db8d83",
   "source_request_path": "nasdaq-xray/canonical_current_event_request.json",
+  "source_stage1_blob_sha": "194708e057f4f702f0cc371ae156b23cd5eb307c",
+  "source_stage1_path": "nasdaq-xray/canonical_current_stage1.json",
+  "status": "COMMITTED",
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_never_pass": true,
   "unresolved": {
@@ -706,6 +746,14 @@
       "reason": "OPTIONAL_DISCOVERY_PROVIDER_UNAVAILABLE",
       "role": "CURRENT_WEEKLY_NON_GEOMETRY_SCOPE"
     },
+    "MANH": {
+      "fail_closed": true,
+      "official_confirmation": "PENDING_DIRECT_OFFICIAL_PRIMARY",
+      "provider": "PROVIDER_NEUTRAL_ZERO_DOLLAR_DISCOVERY",
+      "provider_attempted": false,
+      "reason": "OPTIONAL_DISCOVERY_PROVIDER_UNAVAILABLE",
+      "role": "CURRENT_GEOMETRY_SCOPE"
+    },
     "MEDP": {
       "fail_closed": true,
       "official_confirmation": "PENDING_DIRECT_OFFICIAL_PRIMARY",
@@ -898,6 +946,14 @@
       "reason": "OPTIONAL_DISCOVERY_PROVIDER_UNAVAILABLE",
       "role": "CURRENT_GEOMETRY_SCOPE"
     },
+    "QCOM": {
+      "fail_closed": true,
+      "official_confirmation": "PENDING_DIRECT_OFFICIAL_PRIMARY",
+      "provider": "PROVIDER_NEUTRAL_ZERO_DOLLAR_DISCOVERY",
+      "provider_attempted": false,
+      "reason": "OPTIONAL_DISCOVERY_PROVIDER_UNAVAILABLE",
+      "role": "CURRENT_GEOMETRY_SCOPE"
+    },
     "QLYS": {
       "fail_closed": true,
       "official_confirmation": "PENDING_DIRECT_OFFICIAL_PRIMARY",
@@ -961,6 +1017,14 @@
       "provider_attempted": false,
       "reason": "OPTIONAL_DISCOVERY_PROVIDER_UNAVAILABLE",
       "role": "CURRENT_WEEKLY_NON_GEOMETRY_SCOPE"
+    },
+    "SWKS": {
+      "fail_closed": true,
+      "official_confirmation": "PENDING_DIRECT_OFFICIAL_PRIMARY",
+      "provider": "PROVIDER_NEUTRAL_ZERO_DOLLAR_DISCOVERY",
+      "provider_attempted": false,
+      "reason": "OPTIONAL_DISCOVERY_PROVIDER_UNAVAILABLE",
+      "role": "CURRENT_GEOMETRY_SCOPE"
     },
     "TEAM": {
       "fail_closed": true,
@@ -1107,7 +1171,7 @@
       "role": "CURRENT_WEEKLY_NON_GEOMETRY_SCOPE"
     }
   },
-  "unresolved_count": 97,
+  "unresolved_count": 100,
   "weekly_scope": [
     "AAPL",
     "ABCL",
