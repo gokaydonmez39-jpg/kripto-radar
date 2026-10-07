@@ -261,7 +261,9 @@ def load_c417_rallies_primary(asof,queue=None):
         if pred_path and not immutable_repo_blob_binding(pred_path,pred_blob):
             raise ValueError("RALLIES_PRIMARY_PREDECESSOR_BLOB_MISMATCH")
         return obj,{
-          "status":"PASS","path":str(path),"symbol_count":len(union),
+          "status":"PASS","path":str(path),"blob_sha":git_blob_sha(path),
+          "symbol_count":len(union),
+          "pass_count":len(groups[2]),"block_count":len(groups[3]),
           "current_queue_count":len(queue) if queue is not None else None,
           "current_queue_covered":True if queue is not None else None,
         }
