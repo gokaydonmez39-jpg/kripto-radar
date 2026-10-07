@@ -60,22 +60,22 @@
     "FIVN",
     "IBRX",
     "IOVA",
-    "LITE",
     "MRNA",
     "MRVL",
     "QLYS",
     "SWKS",
     "XP"
   ],
-  "d_dk3_event_watch_count": 9,
+  "d_dk3_event_watch_count": 8,
   "d_dk3_pre_r1": [
     "ABCL",
+    "LITE",
     "MXL",
     "PI",
     "TRMD",
     "VICR"
   ],
-  "d_dk3_pre_r1_count": 5,
+  "d_dk3_pre_r1_count": 6,
   "d_geometry_rs": [
     "ABCL",
     "FIVN",
@@ -3565,7 +3565,7 @@
         "weekly_pass_at_trigger": true
       },
       "corporate_action_status": "PASS_NO_LOCAL_SPLIT_DISCONTINUITY",
-      "event_status": "UNKNOWN",
+      "event_status": "CLEAN_DISCOVERY",
       "mechanical_scale_breaks": [],
       "mixed_rs_pass": true,
       "r92_eligible": false,
@@ -3616,7 +3616,7 @@
         "trigger_date": null
       },
       "corporate_action_status": "PASS_NO_LOCAL_SPLIT_DISCONTINUITY",
-      "event_status": "UNKNOWN",
+      "event_status": "CLEAN_DISCOVERY",
       "mechanical_scale_breaks": [],
       "mixed_rs_pass": false,
       "r92_eligible": false,
@@ -4998,7 +4998,7 @@
         "trigger_date": null
       },
       "corporate_action_status": "PASS_NO_LOCAL_SPLIT_DISCONTINUITY",
-      "event_status": "UNKNOWN",
+      "event_status": "CLEAN_DISCOVERY",
       "mechanical_scale_breaks": [],
       "mixed_rs_pass": false,
       "r92_eligible": false,
@@ -6519,7 +6519,7 @@
     }
   },
   "schema": "XRAY_DEEP_PRE_R1_SHADOW_V1",
-  "source_event_blob_sha": "0f5f3a01145dd0629c08771b0de7602be4a06010",
+  "source_event_blob_sha": "e0943171c2fdbcd920cd9dbc505be47fe2115fd4",
   "source_event_path": "nasdaq-xray/canonical_current_event_state.json",
   "source_mc_policy_hash": "68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4",
   "source_mc_policy_version": "C4.17",
