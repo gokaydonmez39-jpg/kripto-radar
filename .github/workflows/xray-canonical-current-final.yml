@@ -715,7 +715,7 @@ jobs:
           final=json.loads(final_path.read_text())
           report=json.loads(report_path.read_text())
           data=final_path.read_bytes()
-          exact_sha=hashlib.sha1(f"blob {len(data)}\\0".encode()+data).hexdigest()
+          exact_sha=hashlib.sha1(f"blob {len(data)}\0".encode()+data).hexdigest()
           assert report.get("schema")=="XRAY_FINAL_RISK_RR_INDEPENDENT_AUDIT_V1"
           assert report.get("execution")=="NONE" and report.get("real_money")=="NO-GO"
           assert report.get("unknown_never_pass") is True
