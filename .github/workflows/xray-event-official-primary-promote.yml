@@ -1,0 +1,71 @@
+name: XRAY Event Official Primary Promote
+on:
+  push:
+    paths:
+      - ".github/workflows/xray-event-official-primary-promote.yml"
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: xray-event-official-primary-promote
+  cancel-in-progress: false
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Probe, exact-bind, build immutable successor
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile nasdaq-xray/event_official_primary_probe.py nasdaq-xray/event_official_primary_successor_builder.py
+          python nasdaq-xray/event_official_primary_probe.py --selftest
+          python nasdaq-xray/event_official_primary_successor_selftest.py
+          python nasdaq-xray/event_official_primary_probe.py
+          result="$(python nasdaq-xray/event_official_primary_successor_builder.py)"
+          echo "$result"
+          status="$(python -c 'import json,sys; print(json.load(sys.stdin).get("status",""))' <<<"$result")"
+          if [[ "$status" != "SUCCESSOR_CANDIDATE_WRITTEN_LOCAL_ONLY" ]]; then
+            echo "XRAY_EVENT_PROMOTE=$status"
+            exit 0
+          fi
+          path="$(python -c 'import json,sys; print(json.load(sys.stdin)["path"])' <<<"$result")"
+          cp "$path" "$RUNNER_TEMP/event-successor.json"
+          printf '%s\n' "$path" > "$RUNNER_TEMP/event-successor-path"
+          python - <<'PY'
+          import json, pathlib, subprocess
+          p=pathlib.Path(open("/tmp/event-successor-path").read().strip()) if pathlib.Path("/tmp/event-successor-path").exists() else None
+          PY
+          git config user.name "xray-event-bot"
+          git config user.email "xray-event-bot@users.noreply.github.com"
+          base_head="$(git rev-parse HEAD)"
+          git fetch origin main
+          latest="$(git rev-parse origin/main)"
+          if [[ "$latest" != "$base_head" ]]; then
+            changed="$(git diff --name-only "$base_head" "$latest" --               nasdaq-xray/canonical_current_event_request.json               nasdaq-xray/canonical_current_event_state.json               nasdaq-xray/canonical_event_bridge_20261006_c417_dv30_v*.json               nasdaq-xray/event_official_primary_probe.py               nasdaq-xray/event_official_primary_successor_builder.py               nasdaq-xray/event_ir_seed_registry.json || true)"
+            if [[ -n "$changed" ]]; then
+              echo "XRAY_EVENT_PROMOTE=STALE_SOURCE_ABORT"
+              printf '%s\n' "$changed"
+              exit 0
+            fi
+          fi
+          path="$(cat "$RUNNER_TEMP/event-successor-path")"
+          git reset --hard origin/main
+          if [[ -f "$path" ]]; then
+            current="$(git hash-object "$path")"
+            generated="$(git hash-object "$RUNNER_TEMP/event-successor.json")"
+            [[ "$current" == "$generated" ]] && { echo "XRAY_EVENT_PROMOTE=ALREADY_COMMITTED"; exit 0; }
+            echo "XRAY_EVENT_PROMOTE=IMMUTABLE_PATH_CONFLICT" >&2
+            exit 1
+          fi
+          cp "$RUNNER_TEMP/event-successor.json" "$path"
+          git add "$path"
+          git commit -m "feat(xray): promote issuer-primary Event successor"
+          git push origin HEAD:main
+          echo "XRAY_EVENT_PROMOTE=PASS path=$path"
