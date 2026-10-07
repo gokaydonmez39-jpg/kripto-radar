@@ -1,7 +1,7 @@
 {
   "schema": "XRAY_FINAL_GATE_OVERLAY_V2",
   "generated_on": "2026-10-06",
-  "generated_at_utc": "2026-10-07T00:18:57.905937+00:00",
+  "generated_at_utc": "2026-10-07T01:04:46.396234+00:00",
   "asof_et": "2026-10-06",
   "execution": "NONE",
   "real_money": "NO-GO",
@@ -12,7 +12,7 @@
     "blob_sha": "46f9c1f5f8aca83607954dd50411ddacb531028d",
     "claimed_full_end_to_end_research_pass": false,
     "full_end_to_end_research_pass": false,
-    "current_research_chain_exact": false,
+    "current_research_chain_exact": true,
     "current_research_coverage_complete": false,
     "terminal_result": "PARTIAL_UNKNOWN"
   },
@@ -70,12 +70,12 @@
     "g9_pass_binding_exact": true,
     "account_pass_binding_exact": true,
     "blocked_negative_evidence_may_advance_without_creating_pass": true,
-    "current_research_chain_exact": false,
+    "current_research_chain_exact": true,
     "current_research_coverage_complete": false,
     "stale_terminal_full_claim_suppressed": false
   },
   "current_research_chain": {
-    "exact": false,
+    "exact": true,
     "coverage_complete": false,
     "price_asof_et": "2026-10-06",
     "price_pass_hash": "63d66ef437b893c96ae7775e62d1a2c4d54a18695da2e7b0e8dd89022538882d",
@@ -88,7 +88,7 @@
     "independent_of_g9_account": true,
     "pre_g9_tech_pass": 0,
     "current_asof_has_deliverable_candidate": false,
-    "reason": "CURRENT_DV30_MC_CHAIN_INCOMPLETE"
+    "reason": "PRE_G9_TECH_PASS_ZERO"
   },
   "true_full_go": {
     "status": "BLOCKED",
