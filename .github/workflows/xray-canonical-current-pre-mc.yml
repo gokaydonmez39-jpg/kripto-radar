@@ -204,10 +204,15 @@ jobs:
               msec=mf.get("sec_spac_proof") or {}
               masof=mf.get("asof_identity_proof") or {}
               mcp=mf.get("completion_proof") or {}
+              spac_suspect_unknown=any(
+                  (row or {}).get("reason")=="SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED"
+                  for row in (mf.get("unknown_detail") or {}).values()
+              )
               identity_replay=bool(
                   active_completed_epoch
                   and (
-                      mf.get("identity_ruleset")!="V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER"
+                      (spac_suspect_unknown and not proof_path.exists())
+                      or mf.get("identity_ruleset")!="V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER"
                       or mf.get("identity_authority")!="NASDAQTRADER_EXPLICIT_TYPE_FILTER_V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER"
                       or mf.get("identity_partition_policy")!="MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V3_FROZEN_GUARD"
                       or asof_discovery_version!="SEC_CURRENT_SUSPECT_DISCOVERY_V2"
