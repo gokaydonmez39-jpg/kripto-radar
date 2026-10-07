@@ -210,12 +210,23 @@ jobs:
               proof_path=pathlib.Path(f"nasdaq-xray/master_sec_spac_proof_{stamp}.json")
               proof_blob=None
               proof_count=0
+              proof_discovery_version=""
+              proof_coverage_complete=False
+              proof_unresolved_count=-1
               if proof_path.exists():
                   proof=json.load(open(proof_path))
                   if proof.get("asof_et")==latest_completed:
                       proof_bytes=proof_path.read_bytes()
                       proof_blob=hashlib.sha1(b"blob "+str(len(proof_bytes)).encode()+b"\0"+proof_bytes).hexdigest()
                       proof_count=len(proof.get("proofs") or {})
+                      proof_discovery_version=str(proof.get("discovery_version") or "")
+                      pcov=proof.get("discovery_coverage") or {}
+                      proof_unresolved_count=int(pcov.get("unresolved_current_suspect_count",-1))
+                      proof_coverage_complete=bool(
+                          pcov.get("coverage_complete") is True
+                          and proof_unresolved_count==0
+                          and not (pcov.get("unresolved_current_suspects") or [])
+                      )
               asof_path=pathlib.Path(f"nasdaq-xray/master_asof_identity_proof_{stamp}.json")
               asof_proof=json.load(open(asof_path))
               asof_bytes=asof_path.read_bytes()
@@ -240,6 +251,12 @@ jobs:
                   active_completed_epoch
                   and (
                       (spac_suspect_unknown and not proof_path.exists())
+                      or proof_discovery_version!="SEC_CURRENT_SUSPECT_DISCOVERY_V4"
+                      or (
+                          spac_suspect_unknown
+                          and os.getenv("GITHUB_EVENT_NAME") in {"schedule","workflow_dispatch"}
+                          and not proof_coverage_complete
+                      )
                       or mf.get("identity_ruleset")!="V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER"
                       or mf.get("identity_authority")!="NASDAQTRADER_EXPLICIT_TYPE_FILTER_V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER"
                       or mf.get("identity_partition_policy")!="MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V4_EXACT_ASOF_SNAPSHOT_GUARD"
@@ -396,6 +413,9 @@ jobs:
               "publication_replay":publication_replay,
               "publication_probe":publication_probe,
               "identity_replay":identity_replay,
+              "sec_discovery_version":proof_discovery_version,
+              "sec_discovery_coverage_complete":proof_coverage_complete,
+              "sec_discovery_unresolved_count":proof_unresolved_count,
               "price_integrity_ok":price_integrity_ok,
               "price_semantics_ok":price_semantics_ok,
               "coverage_repair":coverage_repair,
