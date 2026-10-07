@@ -112,6 +112,8 @@ def immutable_membership_partition_ok(ss):
             or snap.get("asof_et")!=asof
             or snap.get("execution")!="NONE" or snap.get("real_money")!="NO-GO"
             or snap.get("unknown_never_pass") is not True
+            or snap.get("authority")!="IMMUTABLE_EXACT_ASOF_NASDAQ_DIRECTORY_MEMBERSHIP_SNAPSHOT"
+            or snap.get("applicability")!="EXACT_ASOF_MEMBERSHIP_ONLY_NO_FORWARD_CARRY"
             or snap.get("membership_only") is not True
             or snap.get("identity_decisions_reused") is not False
             or snap.get("source_queue_classification_ignored") is not True
@@ -124,6 +126,30 @@ def immutable_membership_partition_ok(ss):
         return frozen_identity_partition_ok(ss)
     except Exception:
         return False
+
+def direct_no_web_identity_ok(ss):
+    """Accept live NasdaqTrader full identity only with exact-ASOF/no-web bindings."""
+    try:
+        dm=ss.get("discovery_meta") or {}
+        asof=str(ss.get("asof_et") or "")
+        footer=str(ss.get("official_footer") or "")
+        if not (
+          dm.get("authority")=="NASDAQTRADER_FULL_IDENTITY_NO_NASDAQ_WEB_MARKET_METADATA"
+          and dm.get("full_identity") is True
+          and dm.get("nasdaq_web_screener_used") is False
+          and footer.startswith("File Creation Time:")
+        ):
+            return False
+        digits="".join(ch for ch in footer[len("File Creation Time:"):] if ch.isdigit())
+        if len(digits)<8:
+            return False
+        mm,dd,yyyy=digits[:2],digits[2:4],digits[4:8]
+        if f"{yyyy}-{mm}-{dd}"!=asof:
+            return False
+        return frozen_identity_partition_ok(ss)
+    except Exception:
+        return False
+
 
 def stable_engine_hash():
     h=hashlib.sha256()
@@ -227,7 +253,7 @@ def main():
         ss=readj("sina_state.json")
         dm=ss.get("discovery_meta") or {}
         authority=str(dm.get("authority") or "")
-        allowed={"FULL_IDENTITY_NO_PREFILTER","CANONICAL_FROZEN_FULL_IDENTITY_SAME_ASOF","IMMUTABLE_EXACT_ASOF_MEMBERSHIP_SNAPSHOT_NO_MARKET_DECISIONS"}
+        allowed={"FULL_IDENTITY_NO_PREFILTER","CANONICAL_FROZEN_FULL_IDENTITY_SAME_ASOF","IMMUTABLE_EXACT_ASOF_MEMBERSHIP_SNAPSHOT_NO_MARKET_DECISIONS","NASDAQTRADER_FULL_IDENTITY_NO_NASDAQ_WEB_MARKET_METADATA"}
         if dm.get("full_identity") is not True or authority not in allowed:
             raise RuntimeError("FULL_UNIVERSE_IDENTITY_NOT_PROVEN")
         if authority=="CANONICAL_FROZEN_FULL_IDENTITY_SAME_ASOF":
@@ -239,6 +265,9 @@ def main():
         elif authority=="IMMUTABLE_EXACT_ASOF_MEMBERSHIP_SNAPSHOT_NO_MARKET_DECISIONS":
             if not immutable_membership_partition_ok(ss):
                 raise RuntimeError("IMMUTABLE_EXACT_ASOF_MEMBERSHIP_PARTITION_MISMATCH")
+        elif authority=="NASDAQTRADER_FULL_IDENTITY_NO_NASDAQ_WEB_MARKET_METADATA":
+            if not direct_no_web_identity_ok(ss):
+                raise RuntimeError("NASDAQTRADER_DIRECT_NO_WEB_IDENTITY_PARTITION_MISMATCH")
         print("XRAY_HISTORY_STATUS="+str(ss.get("status"))+" CURSOR="+str(ss.get("cursor"))+"/"+str(ss.get("queue_total"))+" FULL_IDENTITY=1 AUTHORITY="+authority,flush=True)
         if ss.get("status")=="HISTORY_COMPLETE":
             break
