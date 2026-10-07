@@ -37,7 +37,7 @@ NASDAQ_SCREENER="https://api.nasdaq.com/api/screener/stocks"
 SEC_TICKERS="https://www.sec.gov/files/company_tickers.json"
 SEC_SUBMISSIONS="https://data.sec.gov/submissions"
 SEC_UA=os.getenv("XRAY_SEC_USER_AGENT","NASDAQ-SWING-XRAY research bot; xray-dataplane-bot@users.noreply.github.com")
-SPAC_SUSPECT=re.compile(r"\bacquisition\b|\bspac\b|\bblank[ -]?check\b",re.I)
+SPAC_SUSPECT=re.compile(r"\bacquisition\b|\bspac\b|\bblank[ -]?check\b|\bcapital\s+corp(?:oration)?\.?\s+(?:[IVXLCDM]+|\d+)\s*-\s*class\s+a\s+ordinary\s+shares?\b",re.I)
 FOOTER_RE=re.compile(r"^File Creation Time:\s*(\d{2})(\d{2})(\d{4})")
 _SEC_TICKER_CACHE=None
 _SEC_SPAC_CACHE={}
@@ -135,7 +135,7 @@ def load_sec_spac_proof(asof):
             current_name=str(row.get("same_asof_nasdaq_security_name") or "")
             industry=str(row.get("same_asof_nasdaq_screener_industry") or "")
             if not (
-              re.search(r"\bacquisition\b|\bspac\b|\bblank[ -]?check\b",current_name,re.I)
+              SPAC_SUSPECT.search(current_name)
               or industry.strip().lower()=="blank checks"
             ):
                 raise RuntimeError("SEC_SPAC_PROOF_FALLBACK_NASDAQ_IDENTITY_INVALID:"+sym)
