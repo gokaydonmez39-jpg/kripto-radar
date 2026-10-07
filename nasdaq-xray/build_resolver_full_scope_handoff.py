@@ -38,6 +38,7 @@ MANIFEST = REPO / MANIFEST_REL
 
 FULL_ROLE = "FULL_SCOPE_MC_HANDOFF_PROVENANCE"
 RESIDUAL_ROLE = "CURRENT_RESIDUAL_REQUEST_AUTHORITY"
+SETTLEMENT_ROLE = "SETTLEMENT_ONLY_AUTHORITY"
 
 
 def blob_sha(path: Path) -> str:
@@ -69,6 +70,20 @@ def role(obj: dict) -> str:
     auth = str((obj or {}).get("authority") or "")
     if r == FULL_ROLE or "FULL_SCOPE_MC_HANDOFF" in auth:
         return FULL_ROLE
+    # Settlement-only proof is a distinct authority role. It must never be
+    # counted as a residual PRICE resolver merely because older artifacts used
+    # a generic bridge_role string.
+    if (
+        r == SETTLEMENT_ROLE
+        or "SETTLEMENT_ONLY" in auth
+        or (
+            obj.get("settlement_status") == "PASS"
+            and int(obj.get("price_unknown_count", 0) or 0) == 0
+            and not (obj.get("price_resolution_compact") or {})
+            and not (obj.get("price_resolutions") or {})
+        )
+    ):
+        return SETTLEMENT_ROLE
     return RESIDUAL_ROLE
 
 
@@ -664,6 +679,32 @@ def selftest() -> None:
     assert select_optional_active([], FULL_ROLE) is None
     one=[{"path":"x","blob":"b","obj":{"bridge_role":FULL_ROLE},"role":FULL_ROLE}]
     assert select_optional_active(one, FULL_ROLE) is one[0]
+    # Settlement-only and residual authorities are distinct even if a legacy
+    # settlement artifact used a generic bridge_role.
+    settlement_obj={
+        "authority":"TEST_SETTLEMENT_ONLY_CURRENT_SCOPE",
+        "bridge_role":RESIDUAL_ROLE,
+        "settlement_status":"PASS",
+        "price_unknown_count":0,
+        "price_resolution_compact":{},
+        "price_resolutions":{},
+    }
+    residual_obj={
+        "authority":"TEST_RESIDUAL_PRICE_AUTHORITY",
+        "bridge_role":RESIDUAL_ROLE,
+        "settlement_status":"PASS",
+        "price_unknown_count":0,
+        "price_resolution_compact":{"pass_price_dv30":{"AAA":[10.0,100000000.0]}},
+    }
+    assert role(settlement_obj) == SETTLEMENT_ROLE
+    assert role(residual_obj) == RESIDUAL_ROLE
+    role_rows=[
+        {"path":"settle","blob":"s","obj":settlement_obj,"role":role(settlement_obj)},
+        {"path":"residual","blob":"r","obj":residual_obj,"role":role(residual_obj)},
+    ]
+    assert select_one_active(role_rows, RESIDUAL_ROLE)["path"] == "residual"
+    partial=residual_obj | {"coverage_complete":True,"classification_coverage_complete":True,"partial_data":True}
+    assert partial["partial_data"] is True
     # Required and proven are distinct states: proof satisfies the gate without
     # erasing the fact that rollover settlement was required.
     required=True; proven=True
@@ -699,10 +740,19 @@ def main() -> None:
 
     residual = select_one_active(rows, RESIDUAL_ROLE, queue_hash=master["queue_hash"])
     rj = residual["obj"]
-    assert rj.get("coverage_complete") is True
-    assert rj.get("classification_coverage_complete") is True
-    assert rj.get("partial_data") is False
-    assert rj.get("settlement_status") == "PASS"
+    # A partial residual resolver is expected while symbols remain unresolved.
+    # Treat it as fail-closed pending rather than crashing Post-MC.
+    if not (
+        rj.get("coverage_complete") is True
+        and rj.get("classification_coverage_complete") is True
+        and rj.get("partial_data") is False
+        and rj.get("settlement_status") == "PASS"
+    ):
+        print("ready=false")
+        print("created=false")
+        print("path=" + residual["path"])
+        print("reason=RESIDUAL_AUTHORITY_INCOMPLETE_PENDING")
+        return
 
     witness_path = str(rj.get("settlement_witness_path") or "")
     witness_blob = str(rj.get("settlement_witness_blob_sha") or "")
