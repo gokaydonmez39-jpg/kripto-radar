@@ -15,9 +15,9 @@
     "legal_unknown": 0,
     "lifecycle_regime_unknown": 0,
     "lifecycle_semantic_binding_unknown": 0,
-    "master_unknown": 85,
+    "master_unknown": 86,
     "mc_unknown": 34,
-    "price_blocked_current_run": 9,
+    "price_blocked_current_run": 1,
     "price_unknown": 0,
     "regime_unknown": 0,
     "stage1_unknown": 0
@@ -34,12 +34,13 @@
       "OST",
       "PC",
       "SVA",
+      "TP",
       "UCFI",
       "UCFIW"
     ],
-    "age_seconds": 1.017,
-    "generated_at_utc": "2026-10-07T15:44:59.800542+00:00",
-    "guard_blob_sha": "c156d52111a9e11155381b5ffca21ef4769cce00",
+    "age_seconds": 1.13,
+    "generated_at_utc": "2026-10-07T17:10:06.946494+00:00",
+    "guard_blob_sha": "f69c876a625db9ef14f0b39e86fa3abdf32594ef",
     "guard_path": "nasdaq-xray/canonical_official_source_guard.json",
     "max_age_seconds": 900,
     "security_status_suspension_symbols": [
@@ -101,6 +102,7 @@
       "SPKLW",
       "SVA",
       "THRMV",
+      "TP",
       "UCFI",
       "UCFIW",
       "WALD",
@@ -128,7 +130,7 @@
     "current_weekly_subset_of_trigger_scope": true,
     "deep_exact_trigger_weekly_scope": true,
     "deep_exact_weekly_scope": true,
-    "exact_blob_provenance_chain": true,
+    "exact_blob_provenance_chain": false,
     "fallback_watch_preserved_through_history": true,
     "final_exact_confirmed_family_set": true,
     "final_extra_rows_exact_lifecycle_backed": true,
@@ -137,14 +139,14 @@
     "history_mc_blob_exact": true,
     "history_mc_semantic_rebind": false,
     "legal_exact_history_pass": true,
-    "legal_master_blob_exact": true,
-    "legal_master_semantic_rebind": false,
+    "legal_master_blob_exact": false,
+    "legal_master_semantic_rebind": true,
     "lifecycle_frozen_semantics_exact": true,
     "master_complete": false,
     "master_partition_exact": true,
     "mc_exact_price_pass_set": true,
-    "mc_input_blob_exact": true,
-    "mc_input_semantic_rebind": false,
+    "mc_input_blob_exact": false,
+    "mc_input_semantic_rebind": true,
     "policy_order_exact": true,
     "price_blocked_coverage_explicit": true,
     "price_blocked_requires_terminal_resolution": true,
@@ -158,7 +160,7 @@
     "weekly_exact_event_scope": true
   },
   "classified_nonpass": {
-    "price_blocked_current_run": 9
+    "price_blocked_current_run": 1
   },
   "compiled_policy_hash": "68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4",
   "compiled_policy_version": "C4.17",
@@ -182,8 +184,8 @@
     "legal_blocked": 0,
     "legal_pass": 453,
     "lifecycle_regime_unknown": 0,
-    "master_pass": 3161,
-    "master_total": 3246,
+    "master_pass": 3159,
+    "master_total": 3245,
     "mc_fallback_fail": 9,
     "mc_fallback_watch": 465,
     "mc_primary_fail": 0,
@@ -191,7 +193,7 @@
     "mc_unknown": 34,
     "pre_g9_tech_pass": 0,
     "pre_g9_tech_pass_before_halt_guard": 0,
-    "price_dv30_blocked_current_run": 9,
+    "price_dv30_blocked_current_run": 1,
     "price_dv30_pass": 508,
     "weekly_pass": 97
   },
@@ -206,7 +208,7 @@
     },
     "account_live_probe": {
       "balance_parseable": false,
-      "blob_sha": "bda9db8a928fdfcb8eefa0cc7cdd9307a5183a14",
+      "blob_sha": "0f88d3c76363fdec9f42c722feffd6c514d6d5ed",
       "network_attempted": false,
       "path": "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/account_effective_probe_state.json",
       "positions_parseable": false,
@@ -217,7 +219,7 @@
       "secret_values_persisted": false,
       "status": "BLOCKED_MISSING_CREDENTIALS",
       "workflow_run_attempt": "1",
-      "workflow_run_id": "37645562544"
+      "workflow_run_id": "37656408474"
     },
     "deep": {
       "blob_sha": "932010b367ef04a812f507cbb74b134bc2b464a4",
@@ -240,11 +242,11 @@
       "path": "nasdaq-xray/canonical_current_family_c.json"
     },
     "final": {
-      "blob_sha": "2fb3f6ec168759f29b797a3c7d2990074de485a6",
+      "blob_sha": "652531498d84a2d363bc528597d0ca504ddb9b80",
       "path": "nasdaq-xray/canonical_current_final_tech.json"
     },
     "full_state": {
-      "blob_sha": "84225c2c0b50bdaad4f8e55de600c06105720b57",
+      "blob_sha": "f2a17f4b5a912182256d15e3dfe74253fd406454",
       "path": "nasdaq-xray/canonical_current_full_state.json"
     },
     "g9_runtime": {
@@ -262,26 +264,26 @@
       "path": "nasdaq-xray/canonical_current_legal.json"
     },
     "master": {
-      "blob_sha": "6b207c894f3213f903ea870ab3011b1aff6765df",
+      "blob_sha": "0b12ce81f4e8cb7d8336191993d676ea177d4749",
       "path": "nasdaq-xray/canonical_current_master_manifest.json"
     },
     "mc": {
       "blob_sha": "e366b0dd69ada0615213d6aefc133f21d8e8b7c1",
-      "current_price_blob_sha": "b1fc18fe82484b85014258d8eb091844a0d6bced",
-      "input_blob_exact": true,
+      "current_price_blob_sha": "475e93cd1f7f6d18a586532209f93d762095cc1a",
+      "input_blob_exact": false,
       "pass_count_exact": true,
       "pass_hash_exact": true,
       "pass_set_exact": true,
       "path": "nasdaq-xray/canonical_mc_bridge_20261006_c417_dv30_v4.json",
       "recorded_input_blob_sha": "b1fc18fe82484b85014258d8eb091844a0d6bced",
-      "semantic_rebind": false
+      "semantic_rebind": true
     },
     "official_halt_guard": {
-      "blob_sha": "c156d52111a9e11155381b5ffca21ef4769cce00",
+      "blob_sha": "f69c876a625db9ef14f0b39e86fa3abdf32594ef",
       "path": "nasdaq-xray/canonical_official_source_guard.json"
     },
     "pointer": {
-      "blob_sha": "52183235a908af7238a58eede9644de686df8278",
+      "blob_sha": "d66a28fe1b284107f979f8cf662fa3493dce8a10",
       "path": "nasdaq-xray/chatgpt_canonical_state_v2.json"
     },
     "policy": {
@@ -289,7 +291,7 @@
       "path": "nasdaq-xray/chatgpt_compiled_policy_v3.json"
     },
     "price": {
-      "blob_sha": "b1fc18fe82484b85014258d8eb091844a0d6bced",
+      "blob_sha": "475e93cd1f7f6d18a586532209f93d762095cc1a",
       "path": "nasdaq-xray/canonical_current_price_dv30.json"
     },
     "regime": {
@@ -309,7 +311,7 @@
   "final_gate_reporting_zero_alpha": true,
   "full_end_to_end_research_pass": false,
   "g9_global_status": "G9_BLOCKED_FREE_AUTOMATION_PATH",
-  "generated_at_utc": "2026-10-07T15:45:00.819117+00:00",
+  "generated_at_utc": "2026-10-07T17:10:08.077554+00:00",
   "pointer_asof_before_candidate": "2026-10-06",
   "r92_account_g9_applicable": false,
   "r92_candidates": [],
