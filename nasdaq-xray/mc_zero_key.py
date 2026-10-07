@@ -16,6 +16,7 @@ SINA_STATE=ROOT/"sina_state.json"
 CAND=ROOT/"sina_candidates.json"
 OUT=ROOT/"mc_zero_key_state.json"
 OVERLAY=ROOT/"mc_resolution_overlay.json"
+NASDAQ_PIT=ROOT/"nasdaq_screener_pit_current.json"
 TASK_ID="6a825366222081918997094d76e6ae46"
 SEC_TICKERS="https://www.sec.gov/files/company_tickers_exchange.json"
 SEC_UA="NASDAQ-SWING-XRAY research bot (contact: https://github.com/gokaydonmez39-jpg/kripto-radar)"
@@ -120,6 +121,51 @@ def load_overlay(asof):
     except Exception as e:
         return {},{"status":"INVALID","reason":f"{type(e).__name__}:{str(e)[:120]}"}
 
+def load_nasdaq_pit(asof):
+    meta={"status":"ABSENT"}
+    if not NASDAQ_PIT.exists():
+        return {},meta
+    try:
+        obj=json.loads(NASDAQ_PIT.read_text(encoding="utf-8"))
+        if (
+          obj.get("schema")!="XRAY_NASDAQ_SCREENER_PIT_SHADOW_V1"
+          or obj.get("execution")!="NONE"
+          or obj.get("real_money")!="NO-GO"
+          or obj.get("unknown_never_pass") is not True
+          or obj.get("alpha_authority") is not False
+          or obj.get("production_mc_authority_changed") is not False
+        ):
+            raise ValueError("HEADER")
+        if obj.get("asof_et")!=asof:
+            return {},{"status":"ASOF_MISMATCH","observed_asof":obj.get("asof_et"),"required_asof":asof}
+        if obj.get("same_session_post_close") is not True:
+            return {},{"status":"UNBOUND","reason":"NASDAQ_PIT_NOT_SAME_SESSION_POST_CLOSE"}
+        out={}
+        for sym,row in (obj.get("records") or {}).items():
+            if not isinstance(row,dict):
+                continue
+            if (
+              row.get("status")=="SHADOW_ELIGIBLE"
+              and row.get("shadow_eligible") is True
+              and row.get("close_match") is True
+              and row.get("eligible_asof_et")==asof
+            ):
+                mc=finite(row.get("rebased_market_cap_usd"))
+                if mc is not None:
+                    out[str(sym).upper()]=row
+        if len(out)!=int(obj.get("eligible_count",-1)):
+            raise ValueError("ELIGIBLE_COUNT_MISMATCH")
+        return out,{
+          "status":"PASS",
+          "asof_et":asof,
+          "eligible_count":len(out),
+          "source_path":"nasdaq-xray/nasdaq_screener_pit_current.json",
+          "alpha_authority":False,
+        }
+    except Exception as e:
+        return {},{"status":"INVALID","reason":f"{type(e).__name__}:{str(e)[:120]}"}
+
+
 def main():
     ss=json.loads(SINA_STATE.read_text())
     cc=json.loads(CAND.read_text())
@@ -127,6 +173,7 @@ def main():
     cands=cc.get("candidates") or {}
     disc=ss.get("discovery") or {}
     overlay,overlay_meta=load_overlay(asof)
+    nasdaq_pit,nasdaq_pit_meta=load_nasdaq_pit(asof)
 
     direct_pass={}; unresolved={}; definitive_fail={}
     fallback_watch_symbols=[]
@@ -188,6 +235,34 @@ def main():
             unresolved[sym]={"reason":"MC_OVERLAY_MODE_UNKNOWN"}
             continue
 
+        pit=nasdaq_pit.get(sym)
+        if pit:
+            nmc=finite(pit.get("rebased_market_cap_usd"))
+            if nmc is None:
+                unresolved[sym]={"reason":"NASDAQ_PIT_MC_INVALID"}
+            elif nmc>=2_600_000_000:
+                direct_pass[sym]={
+                  "nasdaq_market_cap":nmc,
+                  "nasdaq_raw_market_cap":finite(pit.get("nasdaq_market_cap_usd")),
+                  "mode":"NASDAQ_PIT_EXACT_ASOF_CONSERVATIVE_GE_2_6B_SHADOW_ONLY",
+                  "alpha_authority":False,
+                  "source_path":"nasdaq-xray/nasdaq_screener_pit_current.json",
+                }
+            elif nmc<2_000_000_000:
+                definitive_fail[sym]={
+                  "nasdaq_market_cap":nmc,
+                  "mode":"NASDAQ_PIT_EXACT_ASOF_LT_2B_SHADOW_ONLY",
+                  "alpha_authority":False,
+                  "source_path":"nasdaq-xray/nasdaq_screener_pit_current.json",
+                }
+            else:
+                unresolved[sym]={
+                  "reason":"NASDAQ_PIT_MC_BORDERLINE_2_0_TO_2_6B",
+                  "nasdaq_market_cap":nmc,
+                  "required_resolution":"CANONICAL_BIGDATA_OR_CONSERVATIVE_RALLIES_LONGBRIDGE"
+                }
+            continue
+
         nmc=finite((disc.get(sym) or {}).get("screener_market_cap"))
         if nmc is None:
             unresolved[sym]={"reason":"NASDAQ_MC_MISSING"}
@@ -236,12 +311,13 @@ def main():
       "definitive_fail":definitive_fail,
       "unresolved":unresolved,
       "nasdaq_snapshot_binding":nasdaq_binding,
+      "nasdaq_pit_meta":nasdaq_pit_meta,
       "nasdaq_current_diagnostic_count":len(nasdaq_current_diagnostic),
       "nasdaq_current_diagnostic":nasdaq_current_diagnostic,
       "current_core_zero_key":sorted(direct_pass),
       "fallback_watch_symbols":sorted(fallback_watch_symbols),
       "overlay_meta":overlay_meta,
-      "policy_note":"NON-CANONICAL SHADOW ONLY. C4.17 primary remains Bigdata exact Nasdaq-family listing. Rallies+Longbridge fallback remains WATCH/R92-ineligible. Nasdaq screener market cap may influence no ASOF decision unless an explicit market-data ASOF binding equals the research ASOF; otherwise it is CURRENT_ONLY_DIAGNOSTIC to prevent lookahead/PIT leakage."
+      "policy_note":"NON-CANONICAL SHADOW ONLY. C4.17 primary remains Bigdata exact Nasdaq-family listing. Rallies+Longbridge fallback remains WATCH/R92-ineligible. Exact same-ASOF post-close Nasdaq PIT rows may classify this non-canonical shadow only when their last sale matches the canonical completed RTH close; all other screener rows remain CURRENT_ONLY_DIAGNOSTIC to prevent lookahead/PIT leakage."
     }
     OUT.write_text(json.dumps(out,ensure_ascii=False,sort_keys=True,indent=2)+"\n",encoding="utf-8")
     print(json.dumps({k:out[k] for k in ["direct_nasdaq_conservative_pass_count","definitive_fail_count","unresolved_count"]},sort_keys=True))
