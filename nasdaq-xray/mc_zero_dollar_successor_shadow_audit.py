@@ -1,0 +1,287 @@
+#!/usr/bin/env python3
+"""Shadow-only zero-dollar MC successor audit for current C4.17 UNKNOWNs.
+
+This tool never changes production MC classifications. It measures whether current
+same-ASOF evidence is sufficient for a future policy successor test and records
+the exact missing evidence when it is not.
+
+EXECUTION=NONE. REAL_MONEY=NO-GO. UNKNOWN!=PASS.
+"""
+from __future__ import annotations
+
+import hashlib
+import json
+import math
+import subprocess
+import sys
+from collections import Counter
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent
+REPO = ROOT.parent
+TERMINAL = ROOT / "canonical_current_terminal.json"
+PRICE = ROOT / "canonical_current_price_dv30.json"
+NASDAQ_PIT = ROOT / "nasdaq_screener_pit_current.json"
+SEC_PROBE = ROOT / "sec_companyfacts_probe.json"
+OUT = ROOT / "mc_zero_dollar_successor_shadow_audit.json"
+POLICY_VERSION = "C4.17"
+TASK_ID = "6a825366222081918997094d76e6ae46"
+PASS_FLOOR = 2_100_000_000.0
+FAIL_CEILING = 2_000_000_000.0
+
+
+def readj(path: Path) -> dict:
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def git_blob(path: Path) -> str:
+    return subprocess.check_output(
+        ["git", "hash-object", str(path)], cwd=REPO, text=True
+    ).strip()
+
+
+def finite(v):
+    try:
+        x = float(v)
+        return x if math.isfinite(x) and x > 0 else None
+    except Exception:
+        return None
+
+
+def band(v):
+    x = finite(v)
+    if x is None:
+        return "MISSING"
+    if x < FAIL_CEILING:
+        return "LT_2B"
+    if x < PASS_FLOOR:
+        return "BORDERLINE_2P0_TO_2P1B"
+    return "GE_2P1B"
+
+
+def sec_transport_status(probe: dict) -> str:
+    rows = []
+    for endpoint in ("aapl_companyfacts", "ticker_map"):
+        for rec in (probe.get(endpoint) or {}).values():
+            if isinstance(rec, dict):
+                rows.append(rec)
+    if rows and all("403" in str(r.get("error") or "") for r in rows):
+        return "BLOCKED_HTTP_403"
+    if any(finite(r.get("status")) == 200 for r in rows):
+        return "AVAILABLE"
+    return "UNPROVEN"
+
+
+def classify_shadow_candidate(mc_rec: dict, nq_rec: dict | None) -> tuple[str, list[str]]:
+    """Return a shadow-only candidate class and exact missing conditions.
+
+    No return value from this function is a production C4.17 classification.
+    """
+    rmc = finite(mc_rec.get("rallies_market_cap_usd"))
+    lmc = finite(mc_rec.get("longbridge_market_cap_usd"))
+    nq = nq_rec or {}
+    nmc = finite(nq.get("nasdaq_market_cap_usd"))
+    pit_ok = (
+        nq.get("shadow_eligible") is True
+        and nq.get("close_match") is True
+        and nq.get("status") == "SHADOW_ELIGIBLE"
+    )
+    missing = []
+    if not pit_ok:
+        missing.append("EXACT_SAME_ASOF_POST_CLOSE_NASDAQ_PIT")
+    if nmc is None:
+        missing.append("NASDAQ_MARKET_CAP_OBSERVATION")
+    if rmc is None:
+        missing.append("RALLIES_MARKET_CAP")
+    if lmc is None:
+        missing.append("LONGBRIDGE_MARKET_CAP")
+
+    if missing:
+        return "INSUFFICIENT_EXACT_PIT_OR_SOURCE_EVIDENCE", missing
+
+    vals = [rmc, lmc, nmc]
+    if all(v < FAIL_CEILING for v in vals):
+        return "SHADOW_FAIL_CANDIDATE_THREE_SOURCE_SUB_2B", [
+            "POLICY_SUCCESSOR_NOT_ACTIVE",
+            "SHARE_CLASS_AND_CORPORATE_ACTION_CROSSCHECK_REQUIRED",
+        ]
+    if all(v >= PASS_FLOOR for v in vals):
+        return "SHADOW_WATCH_CANDIDATE_THREE_SOURCE_GE_2P1B", [
+            "POLICY_SUCCESSOR_NOT_ACTIVE",
+            "PIT_TIMING_REPLAY_TEST_REQUIRED",
+            "SHARE_CLASS_AND_CORPORATE_ACTION_CROSSCHECK_REQUIRED",
+        ]
+    return "SHADOW_UNRESOLVED_BORDERLINE_OR_CONFLICT", [
+        "POLICY_SUCCESSOR_NOT_ACTIVE",
+        "BORDERLINE_OR_SOURCE_CONFLICT_REQUIRES_MORE_EVIDENCE",
+    ]
+
+
+def selftest() -> None:
+    high = {
+        "rallies_market_cap_usd": 3_000_000_000,
+        "longbridge_market_cap_usd": 3_100_000_000,
+    }
+    low = {
+        "rallies_market_cap_usd": 1_800_000_000,
+        "longbridge_market_cap_usd": 1_700_000_000,
+    }
+    high_pit = {
+        "nasdaq_market_cap_usd": 3_050_000_000,
+        "shadow_eligible": True,
+        "close_match": True,
+        "status": "SHADOW_ELIGIBLE",
+    }
+    low_pit = {
+        "nasdaq_market_cap_usd": 1_750_000_000,
+        "shadow_eligible": True,
+        "close_match": True,
+        "status": "SHADOW_ELIGIBLE",
+    }
+    stale_pit = dict(high_pit, shadow_eligible=False, status="UNKNOWN")
+    st, miss = classify_shadow_candidate(high, high_pit)
+    assert st == "SHADOW_WATCH_CANDIDATE_THREE_SOURCE_GE_2P1B", (st, miss)
+    st, miss = classify_shadow_candidate(low, low_pit)
+    assert st == "SHADOW_FAIL_CANDIDATE_THREE_SOURCE_SUB_2B", (st, miss)
+    st, miss = classify_shadow_candidate(high, stale_pit)
+    assert st == "INSUFFICIENT_EXACT_PIT_OR_SOURCE_EVIDENCE", (st, miss)
+    assert "EXACT_SAME_ASOF_POST_CLOSE_NASDAQ_PIT" in miss
+    assert band(1_999_999_999) == "LT_2B"
+    assert band(2_050_000_000) == "BORDERLINE_2P0_TO_2P1B"
+    assert band(2_100_000_000) == "GE_2P1B"
+    print("MC_ZERO_DOLLAR_SUCCESSOR_SHADOW_AUDIT_SELFTEST=PASS")
+
+
+def main() -> None:
+    terminal = readj(TERMINAL)
+    price = readj(PRICE)
+    pit = readj(NASDAQ_PIT)
+    sec = readj(SEC_PROBE)
+
+    assert terminal.get("asof_et") == price.get("asof_et")
+    evidence = (terminal.get("evidence") or {}).get("mc") or {}
+    mc_rel = str(evidence.get("path") or "")
+    mc_sha = str(evidence.get("blob_sha") or "")
+    assert mc_rel.startswith("nasdaq-xray/canonical_mc_bridge_")
+    mc_path = REPO / mc_rel
+    assert mc_path.exists() and git_blob(mc_path) == mc_sha
+    mc = readj(mc_path)
+    assert mc.get("policy_version") == POLICY_VERSION
+    assert mc.get("task_id") == TASK_ID
+    assert mc.get("execution") == "NONE" and mc.get("real_money") == "NO-GO"
+    assert mc.get("unknown_never_pass") is True
+    assert mc.get("input_blob_sha") == git_blob(PRICE)
+    assert int(price.get("unknown_count", -1)) == 0
+
+    unknown = list(mc.get("unknown_symbols") or [])
+    assert len(unknown) == int((mc.get("counts") or {}).get("MC_UNKNOWN", -1))
+    assert set(unknown) <= set((mc.get("results") or {}).keys())
+
+    pit_records = pit.get("records") or {}
+    rows = {}
+    shadow_counts = Counter()
+    mc_reason_counts = Counter()
+    pit_reason_counts = Counter()
+    for sym in sorted(unknown):
+        rec = (mc.get("results") or {}).get(sym) or {}
+        nq = pit_records.get(sym) or {}
+        shadow_class, missing = classify_shadow_candidate(rec, nq)
+        reason = str(rec.get("reason") or "UNSPECIFIED")
+        mc_reason_counts[reason] += 1
+        pit_reason_counts[str(nq.get("reason") or "MISSING")] += 1
+        shadow_counts[shadow_class] += 1
+        rows[sym] = {
+            "production_status_before": rec.get("status"),
+            "production_status_after": rec.get("status"),
+            "production_classification_applied": False,
+            "current_c417_resolution": "NO_CHANGE_MC_UNKNOWN",
+            "mc_reason": reason,
+            "rallies_exchange": rec.get("rallies_exchange"),
+            "rallies_market_cap_usd": finite(rec.get("rallies_market_cap_usd")),
+            "rallies_band": band(rec.get("rallies_market_cap_usd")),
+            "longbridge_exchange": rec.get("longbridge_exchange"),
+            "longbridge_market_cap_usd": finite(rec.get("longbridge_market_cap_usd")),
+            "longbridge_band": band(rec.get("longbridge_market_cap_usd")),
+            "relative_difference": rec.get("relative_difference"),
+            "nasdaq_pit_status": nq.get("status") or "MISSING",
+            "nasdaq_pit_reason": nq.get("reason") or "MISSING",
+            "nasdaq_market_cap_usd": finite(nq.get("nasdaq_market_cap_usd")),
+            "nasdaq_band": band(nq.get("nasdaq_market_cap_usd")),
+            "nasdaq_close_match": nq.get("close_match"),
+            "nasdaq_shadow_eligible": nq.get("shadow_eligible") is True,
+            "shadow_successor_candidate": shadow_class,
+            "missing_or_required_evidence": missing,
+        }
+
+    production_changes = sum(
+        1 for r in rows.values()
+        if r["production_status_before"] != r["production_status_after"]
+    )
+    exact_pit_unknowns = sum(
+        1 for r in rows.values() if r["nasdaq_shadow_eligible"] is True
+    )
+    out = {
+        "schema": "XRAY_MC_ZERO_DOLLAR_SUCCESSOR_SHADOW_AUDIT_V1",
+        "task_id": TASK_ID,
+        "asof_et": terminal["asof_et"],
+        "execution": "NONE",
+        "real_money": "NO-GO",
+        "unknown_never_pass": True,
+        "alpha_authority": False,
+        "production_policy_version": POLICY_VERSION,
+        "production_policy_changed": False,
+        "production_classification_applied": False,
+        "production_changes": production_changes,
+        "source_terminal_path": "nasdaq-xray/canonical_current_terminal.json",
+        "source_terminal_blob_sha": git_blob(TERMINAL),
+        "source_price_path": "nasdaq-xray/canonical_current_price_dv30.json",
+        "source_price_blob_sha": git_blob(PRICE),
+        "source_mc_path": mc_rel,
+        "source_mc_blob_sha": mc_sha,
+        "source_nasdaq_pit_path": "nasdaq-xray/nasdaq_screener_pit_current.json",
+        "source_nasdaq_pit_blob_sha": git_blob(NASDAQ_PIT),
+        "source_sec_probe_path": "nasdaq-xray/sec_companyfacts_probe.json",
+        "source_sec_probe_blob_sha": git_blob(SEC_PROBE),
+        "sec_transport_status": sec_transport_status(sec),
+        "unknown_count": len(unknown),
+        "unknown_symbols": sorted(unknown),
+        "exact_same_asof_post_close_nasdaq_pit_unknown_count": exact_pit_unknowns,
+        "mc_reason_counts": dict(sorted(mc_reason_counts.items())),
+        "nasdaq_pit_reason_counts": dict(sorted(pit_reason_counts.items())),
+        "shadow_candidate_counts": dict(sorted(shadow_counts.items())),
+        "rows": rows,
+        "successor_activation": "FORBIDDEN_SHADOW_ONLY",
+        "required_before_any_future_policy_migration": [
+            "PIT_TIMING_AND_HISTORICAL_ASOF_REPLAY",
+            "SHARE_CLASS_AMBIGUITY",
+            "DUAL_CLASS_COMPANIES",
+            "ADR_AND_FOREIGN_ISSUERS",
+            "SPLIT_REVERSE_SPLIT",
+            "ATM_NEW_ISSUANCE",
+            "BUYBACKS",
+            "STALE_SHARE_COUNT",
+            "SEC_TAG_CONFLICTS",
+            "CORPORATE_ACTION_CONFLICTS",
+            "BORDERLINE_2B_CASES",
+            "OUT_OF_SAMPLE_AND_HISTORICAL_REPLAY",
+        ],
+    }
+    assert production_changes == 0
+    assert set(rows) == set(unknown)
+    assert out["production_policy_changed"] is False
+    OUT.write_text(json.dumps(out, ensure_ascii=False, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+    print(json.dumps({
+        "status": "PASS",
+        "unknown_count": len(unknown),
+        "production_changes": production_changes,
+        "sec_transport_status": out["sec_transport_status"],
+        "exact_pit_unknown_count": exact_pit_unknowns,
+        "shadow_candidate_counts": out["shadow_candidate_counts"],
+    }, sort_keys=True))
+
+
+if __name__ == "__main__":
+    if "--selftest" in sys.argv:
+        selftest()
+    else:
+        main()
