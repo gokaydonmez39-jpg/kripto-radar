@@ -28,7 +28,7 @@ import pandas_market_calendars as mcal
 TASK_ID="6a825366222081918997094d76e6ae46"
 BUILD="2026-10-02.1"
 IDENTITY_RULESET="V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER"
-IDENTITY_PARTITION_POLICY="MASTER_SPAC_UNKNOWN_PARTITION_V2_FROZEN_GUARD"
+IDENTITY_PARTITION_POLICY="MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V3_FROZEN_GUARD"
 NASDAQ_DIR="https://www.nasdaqtrader.com/dynamic/SymDir/nasdaqlisted.txt"
 NASDAQ_SCREENER="https://api.nasdaq.com/api/screener/stocks"
 SEC_TICKERS="https://www.sec.gov/files/company_tickers.json"
@@ -748,30 +748,47 @@ def main():
             ex_serial=[]
         else:
             queue,discovery,meta,screener_excluded=build_discovery(names,FULL_IDENTITY,sec_spac_proof,operating_overrides)
-            # Exact SEC SIC 6770 is exclusion authority. Same-ASOF Nasdaq
-            # Blank-Checks/SPAC evidence without exact SEC proof is neither PASS
-            # nor FAIL: keep it as a MASTER identity UNKNOWN and never send it
-            # into PRICE/DV30/MC. Explicit operating overrides are exempt.
+            # C4.17 accepts official/issuer/SEC proof for SPAC-shell handling.
+            # Exact same-ASOF Nasdaq screener industry "Blank Checks" is official
+            # exclusion evidence and may deterministically EXCLUDE the shell.
+            # A name-only SPAC suspicion remains UNKNOWN unless SEC/issuer proof
+            # exists; this prevents false exclusion of an operating de-SPAC.
             identity_unknown_detail={}
+            official_blank_excluded=[]
             for sym in list(queue):
                 disc=discovery.get(sym) or {}
                 industry=str(disc.get("industry") or "").strip()
                 security_name=str(names.get(sym) or "").strip()
-                suspect=(industry.lower()=="blank checks" or bool(SPAC_SUSPECT.search(security_name)))
-                if suspect and sym not in operating_overrides and sym not in sec_spac_proof:
+                if sym in operating_overrides:
+                    continue
+                if industry.lower()=="blank checks":
+                    screener_excluded[sym]={
+                      "reason":"SPAC_BLANK_CHECK",
+                      "proof":{
+                        "authority":"NASDAQ_SAME_ASOF_SCREENER_INDUSTRY",
+                        "industry":industry,
+                        "security_name":security_name,
+                        "asof_et":asof,
+                        "unknown_never_pass":True,
+                      },
+                    }
+                    official_blank_excluded.append(sym)
+                    continue
+                if bool(SPAC_SUSPECT.search(security_name)) and sym not in sec_spac_proof:
                     identity_unknown_detail[sym]={
-                      "reason":"SEC_SPAC_EXACT_ASOF_UNAVAILABLE",
-                      "source":"NASDAQ_SAME_ASOF_IDENTITY_DIAGNOSTIC_FAIL_CLOSED",
+                      "reason":"SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
+                      "source":"NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
                       "security_name":security_name,
                       "same_asof_nasdaq_industry":industry,
                       "exact_sec_spac_proof":False,
+                      "official_blank_checks_proof":False,
                       "unknown_never_pass":True,
                     }
             identity_unknown_symbols=sorted(identity_unknown_detail)
-            unknown_set=set(identity_unknown_symbols)
-            if unknown_set:
-                queue=[sym for sym in queue if sym not in unknown_set]
-                discovery={sym:row for sym,row in discovery.items() if sym not in unknown_set}
+            remove_set=set(identity_unknown_symbols)|set(official_blank_excluded)
+            if remove_set:
+                queue=[sym for sym in queue if sym not in remove_set]
+                discovery={sym:row for sym,row in discovery.items() if sym not in remove_set}
             meta.update({
               "sec_spac_proof_path":("nasdaq-xray/"+sec_proof_path.name) if sec_spac_blob else None,
               "sec_spac_proof_blob_sha":sec_spac_blob,
@@ -781,6 +798,8 @@ def main():
               "identity_partition_policy":IDENTITY_PARTITION_POLICY,
               "identity_unknown_count":len(identity_unknown_symbols),
               "identity_unknown_hash":sha_lines(identity_unknown_symbols),
+              "official_blank_checks_excluded_count":len(official_blank_excluded),
+              "official_blank_checks_excluded_hash":sha_lines(sorted(official_blank_excluded)),
               "raw_identity_total":len(queue)+len(identity_unknown_symbols),
             })
             excluded.update(screener_excluded)
