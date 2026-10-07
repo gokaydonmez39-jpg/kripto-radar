@@ -6,12 +6,13 @@
   "objective": "PERMANENT_ZERO_COST_PLUS_AUTOMATION_WITH_LOCAL_CACHE; EXTERNAL SAFETY RATE LIMITS ARE ALLOWED WHEN THEY DO NOT CREATE PAID USAGE METERING",
   "current_production": {
     "universe": "NASDAQTRADER",
-    "dv20": "RALLIES",
-    "market_cap_primary": "BIGDATA",
+    "dv30": "C4_17_CANONICAL_PRICE_DV30_MULTI_SOURCE_RESOLVER",
+    "market_cap_primary": "BIGDATA_C4_17_PRIMARY_WITH_WATCH_ONLY_FALLBACKS",
+    "events_primary": "ISSUER_IR_OR_SEC_PRIMARY",
     "settlement_primary": "ALPACA_HISTORICAL_SIP",
     "settlement_failover": "RALLIES_PLUS_LONGBRIDGE",
     "account_primary_candidate": "LONGBRIDGE_HOSTED_MCP_V2",
-    "g9": "BLOCKED"
+    "g9": "BLOCKED_EXTERNAL_NO_VERIFIED_PERMANENT_ZERO_CONSOLIDATED_NBBO"
   },
   "migration_candidates": {
     "market_cap": {
@@ -26,7 +27,15 @@
         "near-$2B boundary tests",
         "failure injection",
         "PIT share-count vintage"
-      ]
+      ],
+      "observed_20261007": {
+        "fallback_watch_count": 465,
+        "unknown_count": 34,
+        "unknown_intersects_weekly_scope": false,
+        "unknown_intersects_geometry_scope": false,
+        "c417_constraint": "SEC_SHARE_COUNT_VERIFIED_WATCH_V1_AND_FALLBACK_A_B_ARE_WATCH_ONLY_R92_FALSE",
+        "zero_dollar_primary_cutover_under_c417": "FORBIDDEN_WITHOUT_VERSIONED_POLICY_SUCCESSOR"
+      }
     },
     "settlement": {
       "candidate": "ZERO_COST_REPLACEMENT",
@@ -42,6 +51,47 @@
       "candidate": "OPENFACTOR_RISK_OVERLAY_V1",
       "status": "SHADOW_DIAGNOSTIC_ONLY",
       "hard_gate": false
+    },
+    "events": {
+      "candidate": "ISSUER_IR_DIRECT_PRIMARY_FANOUT_V1",
+      "status": "ACTIVE_NONCANONICAL_PROBE_VALIDATED",
+      "cutover": false,
+      "canonical_authority_unchanged": true,
+      "observed_20261007": {
+        "geometry_probe_scope": 37,
+        "explicit_outside_horizon_candidates": 7,
+        "official_primary_unresolved": 30,
+        "false_block_regression": "PASS_AFTER_LANDING_PAGE_DECISION_PATH_REMOVED",
+        "decision_surface": "DISCRETE_ISSUER_CONTROLLED_FEED_ITEM_OR_SPECIFIC_EVENT_NEWS_DOCUMENT_ONLY",
+        "landing_page_role": "DISCOVERY_AND_IDENTITY_ONLY"
+      },
+      "required": [
+        "immutable successor builder with exact Event request/blob binding",
+        "discrete document identity validation",
+        "no-event/empty-page never implies CLEAR",
+        "failure injection for redirect/feed/parser/403 cases",
+        "same-ASOF replay equality"
+      ]
+    },
+    "price_history": {
+      "candidate": "ZERO_DOLLAR_MULTI_SOURCE_DV30_REDUNDANCY_V1",
+      "status": "SHADOW_DIAGNOSTIC_ONLY",
+      "cutover": false,
+      "canonical_authority_unchanged": true,
+      "roles": {
+        "RALLIES_CONNECTED_SURFACE": "CURRENT_PRODUCTION_NON_G9_DATA_PATH_SUBJECT_TO_RUNTIME_LINEAGE_CONTROLS",
+        "ALPACA_HISTORICAL_SIP": "COMPLETED_SESSION_CROSSCHECK_OR_FAIL_CLOSED_DIAGNOSTIC_ONLY_UNTIL_SCHEDULER_ACQUISITION_IS_PROVEN",
+        "NASDAQ_OFFICIAL_HISTORICAL": "OFFICIAL_FALLBACK_WHEN_EXACT_ASOF_ROW_IS_AVAILABLE",
+        "YAHOO_CHART": "FAIL_ONLY_DIAGNOSTIC_NEVER_PASS_AUTHORITY",
+        "TIINGO_STARTER": "BOUNDED_SECONDARY_RESEARCH_ONLY_NOT_FULL_UNIVERSE"
+      },
+      "observed_20261007": {
+        "canonical_price_pass": 508,
+        "canonical_price_blocked_current_run": 11,
+        "canonical_price_unknown": 0,
+        "residual_review": "MOST_BLOCKS_ARE_NEW_LISTING_HALT_OR_CORPORATE_ACTION_EDGE_CASES_NOT_BROAD_PROVIDER_OUTAGE",
+        "security_continuity_guard": "DO_NOT_BACKFILL_PRE_TICKER_OR_PRE_SECURITY_CLASS_HISTORY_ACROSS_RATIO_CONVERSIONS_WITHOUT_EXPLICIT_POLICY_SAFE_CORPORATE_ACTION_NORMALIZATION"
+      }
     }
   },
   "forbidden": [
@@ -51,7 +101,7 @@
     "infer provider_actual from configured provider",
     "convert UNKNOWN to PASS"
   ],
-  "updated_on": "2026-10-04",
+  "updated_on": "2026-10-07",
   "support_programs": {
     "NASDAQ_PIT_UNIVERSE_V1": {
       "status": "ACTIVE_SUPPORT_LAYER",
@@ -70,7 +120,7 @@
       "symbol_change_rule": "UNKNOWN_UNLESS_OFFICIAL_OLD_TO_NEW_CONTINUITY_IS_CORROBORATED"
     },
     "SEC_LOCAL_PIT_DATALAKE_V1": {
-      "status": "INFRASTRUCTURE_INTEGRATED_SOURCE_INGEST_REMAINS_FAIR_ACCESS_BOUND",
+      "status": "BLOCKED_ON_GITHUB_HOSTED_RUNNER_TRANSPORT_403_ALTERNATE_TRANSPORT_REQUIRED",
       "runtime": [
         "pit_vintage_store.py",
         "pit_vintage_store_selftest.py",
@@ -88,7 +138,19 @@
         "source",
         "vintage"
       ],
-      "rule": "LATER_RESTATEMENT_OR_CURRENT_FACT_NEVER_BACKFILLS_AN_EARLIER_ASOF"
+      "rule": "LATER_RESTATEMENT_OR_CURRENT_FACT_NEVER_BACKFILLS_AN_EARLIER_ASOF",
+      "observed_20261007": {
+        "github_hosted_ubuntu": "HTTP_403",
+        "github_hosted_macos": "HTTP_403",
+        "tested_surfaces": [
+          "SEC_TICKER_MAP",
+          "SEC_EFTS_OR_EDGAR",
+          "COMPANYFACTS_ZIP",
+          "SUBMISSIONS_ZIP"
+        ],
+        "failure_semantics": "TRANSPORT_FAILURE_ONLY_NEVER_CLEAN_OR_PASS",
+        "parser_replacement_does_not_solve_transport": true
+      }
     },
     "EVIDENCE_REPLAY_GUARDIAN_V2": {
       "status": "ACTIVE",
@@ -115,6 +177,96 @@
         "https://openfactor-data.rallies.ai/factors/openfactor-us1000/latest/factor_covariance.csv",
         "https://openfactor-data.rallies.ai/factors/openfactor-us1000/latest/idiosyncratic_risk.csv"
       ]
+    },
+    "ISSUER_IR_EVENT_PRIMARY_V1": {
+      "status": "ACTIVE_ZERO_DOLLAR_PRIMARY_DISCOVERY_SUPPORT",
+      "runtime": [
+        "event_ir_seed_registry.json",
+        "event_official_primary_probe.py",
+        "xray-event-official-primary-probe.yml"
+      ],
+      "seed_count": 29,
+      "authority_rule": "ONLY_ISSUER_CONTROLLED_DISCRETE_FEED_ITEM_OR_SPECIFIC_EVENT_NEWS_DOCUMENT_MAY_EMIT_EVENT_DATE_CANDIDATE",
+      "landing_page_rule": "DISCOVERY_AND_IDENTITY_ONLY",
+      "absence_rule": "NO_EVENT_OR_EMPTY_PAGE_REMAINS_UNKNOWN",
+      "production_alpha_change": false
     }
-  }
+  },
+  "source_assessments_20261007": {
+    "NASDAQTRADER_SYMBOL_DIRECTORY": {
+      "cost_usd": 0,
+      "authority": "OFFICIAL_EXCHANGE_IDENTITY",
+      "authentication": "NONE_FOR_PUBLIC_DIRECTORY",
+      "cadence": "UPDATED_PERIODICALLY_THROUGHOUT_TRADING_DAY",
+      "production_role": "PRIMARY_UNIVERSE_IDENTITY",
+      "license_note": "SOURCE_SPECIFIC_NASDAQ_TERMS_INTERNAL_NONCOMMERCIAL_RESTRICTIONS_MAY_APPLY"
+    },
+    "RALLIES": {
+      "cost_public_platform_usd": 0,
+      "public_platform_claim": "FULL_ACCESS_FREE_NO_SUBSCRIPTION_OR_USAGE_LIMITS",
+      "public_b2b_api_auth": "API_KEY_REQUIRED",
+      "raw_full_universe_ohlcv_b2b_documented": false,
+      "scheduler_market_data_entitlement": "UNKNOWN",
+      "upstream_lineage": "UNKNOWN",
+      "production_rule": "DO_NOT_INFER_PUBLIC_PLATFORM_UNLIMITED_TERMS_TRANSFER_TO_UNATTENDED_RAW_MARKET_DATA_API"
+    },
+    "ALPACA_BASIC": {
+      "cost_usd": 0,
+      "realtime_equities": "IEX_ONLY",
+      "historical_equities": "SINCE_2016_WITH_LATEST_15_MINUTE_RESTRICTION_ON_BASIC",
+      "historical_api_calls_per_minute": 200,
+      "sip_lineage": "CTA_PLUS_UTP",
+      "g9_qualifies": false,
+      "production_role": "HISTORICAL_OR_DELAYED_NON_G9_SETTLEMENT_AND_SHADOW_CROSSCHECK_ONLY",
+      "paid_upgrade_allowed": false
+    },
+    "TIINGO_STARTER": {
+      "cost_usd": 0,
+      "unique_symbols_per_month": 500,
+      "requests_per_hour": 50,
+      "requests_per_day": 1000,
+      "historical_depth": "30_PLUS_YEARS",
+      "license": "INTERNAL_USE_ONLY",
+      "full_nasdaq_core_qualifies": false
+    },
+    "ALPHA_VANTAGE_FREE": {
+      "cost_usd": 0,
+      "requests_per_day": 25,
+      "realtime_or_15min_us_api": "PREMIUM_ENTITLEMENT",
+      "full_nasdaq_core_qualifies": false
+    },
+    "EODHD_FREE": {
+      "cost_usd": 0,
+      "api_calls_per_day": 20,
+      "data_range": "PAST_YEAR_LIMITED",
+      "usage": "PERSONAL_USE",
+      "full_nasdaq_core_qualifies": false
+    },
+    "SEC_EDGAR": {
+      "cost_usd": 0,
+      "authority": "OFFICIAL_PRIMARY_FILINGS_AND_XBRL",
+      "github_hosted_runner_current_transport": "HTTP_403",
+      "production_role": "PRIMARY_WHEN_RETRIEVABLE; OTHERWISE_UNKNOWN",
+      "alternate_transport_needed": true
+    },
+    "ISSUER_IR": {
+      "cost_usd": 0,
+      "authority": "ISSUER_PRIMARY_EVENTS",
+      "automation": "SOURCE_SPECIFIC_PUBLIC_IR_SURFACES",
+      "production_rule": "POSITIVE_EXPLICIT_EVIDENCE_ONLY; ABSENCE_NEVER_CLEAR"
+    },
+    "YAHOO_CHART": {
+      "cost_usd": 0,
+      "official_api_authority": false,
+      "production_role": "FAIL_ONLY_DIAGNOSTIC",
+      "may_create_pass": false
+    }
+  },
+  "g9_zero_dollar_conclusion_20261007": {
+    "status": "BLOCKED_EXTERNAL",
+    "reason": "NO_VERIFIED_PERMANENT_ZERO_LAWFUL_AUTOMATED_NONDISPLAY_CONSOLIDATED_NATIONAL_NBBO_PLUS_INDEPENDENT_TRADE_EVENT_SOURCE",
+    "alpaca_basic": "IEX_REALTIME_ONLY; HISTORICAL_SIP_NON_G9",
+    "no_gate_weakening": true
+  },
+  "change_note_20261007": "CONTROL_PLANE_REFRESH_ONLY; NO_C4_17_THRESHOLD_PROVIDER_AUTHORITY_G9_ACCOUNT_OR_EXECUTION_CHANGE"
 }
