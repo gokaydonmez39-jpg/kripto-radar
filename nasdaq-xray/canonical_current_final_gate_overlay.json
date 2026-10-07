@@ -1,7 +1,7 @@
 {
   "schema": "XRAY_FINAL_GATE_OVERLAY_V2",
   "generated_on": "2026-10-07",
-  "generated_at_utc": "2026-10-07T23:22:49.178783+00:00",
+  "generated_at_utc": "2026-10-07T23:39:46.435859+00:00",
   "asof_et": "2026-10-07",
   "execution": "NONE",
   "real_money": "NO-GO",
@@ -12,7 +12,7 @@
     "blob_sha": "780cf18fe6957e8e49444aea595cc91623cf27c2",
     "claimed_full_end_to_end_research_pass": false,
     "full_end_to_end_research_pass": false,
-    "current_research_chain_exact": true,
+    "current_research_chain_exact": false,
     "current_research_coverage_complete": false,
     "terminal_result": "PARTIAL_UNKNOWN"
   },
@@ -70,13 +70,32 @@
     "g9_pass_binding_exact": true,
     "account_pass_binding_exact": true,
     "blocked_negative_evidence_may_advance_without_creating_pass": true,
-    "current_research_chain_exact": true,
+    "current_research_chain_exact": false,
     "current_research_coverage_complete": false,
     "stale_terminal_full_claim_suppressed": false
   },
+  "terminal_live_artifact_bindings": {
+    "exact": false,
+    "mismatch_count": 3,
+    "mismatches": [
+      {
+        "key": "master",
+        "reason": "LIVE_BLOB_DRIFT"
+      },
+      {
+        "key": "full_state",
+        "reason": "LIVE_BLOB_DRIFT"
+      },
+      {
+        "key": "price",
+        "reason": "LIVE_BLOB_DRIFT"
+      }
+    ],
+    "authority": "CURRENT_CANONICAL_BLOBS_FAIL_CLOSED"
+  },
   "current_research_chain": {
-    "exact": true,
-    "price_blob_sha": "a37b0451a7c43f3482c1d6587bf08f4a0d0bf838",
+    "exact": false,
+    "price_blob_sha": "5e52c0c5e88dfe8bc61c238a3fd8285ca8879e34",
     "mc_input_blob_sha": "a37b0451a7c43f3482c1d6587bf08f4a0d0bf838",
     "coverage_complete": false,
     "price_asof_et": "2026-10-07",
@@ -90,7 +109,7 @@
     "independent_of_g9_account": true,
     "pre_g9_tech_pass": 0,
     "current_asof_has_deliverable_candidate": false,
-    "reason": "PRE_G9_TECH_PASS_ZERO"
+    "reason": "TERMINAL_LIVE_BLOB_DRIFT"
   },
   "true_full_go": {
     "status": "BLOCKED",
