@@ -26,6 +26,20 @@ UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/126 Safa
 TASK="6a825366222081918997094d76e6ae46"
 IDENTITY_DISCOVERY_VERSION="SEC_CURRENT_SUSPECT_DISCOVERY_V4"
 SPAC_SUSPECT_RE=re.compile(r"\bacquisition\b|\bspac\b|\bblank[ -]?check\b|\bcapital\s+corp(?:oration)?\.?\s+(?:[IVXLCDM]+|\d+)\s*-\s*class\s+a\s+ordinary\s+shares?\b",re.I)
+
+def current_spac_suspects(names:dict,industries:dict)->list[str]:
+    """Return every exact-ASOF Nasdaq name that requires SPAC classification.
+
+    Nasdaq screener industry="Blank Checks" is supporting identity evidence,
+    not a substitute for the SEC/manual SIC-6770 proof consumed by MASTER.
+    Excluding such rows here created a discovery blind spot: the symbol was
+    neither proven/excluded nor left in the SEC discovery queue.
+    """
+    return sorted(
+      sym for sym,name in names.items()
+      if bool(SPAC_SUSPECT_RE.search(str(name or "")))
+    )
+
 DIRECTORY_SNAPSHOT_SCHEMA="XRAY_NASDAQ_DIRECTORY_SNAPSHOT_V1"
 STAMP_RE=re.compile(r"^(master_(?:asof_identity|sec_spac)_proof_)(\d{8})\.json$")
 FOOTER_RE=re.compile(r"^File Creation Time:\s*(\d{2})(\d{2})(\d{4})")
@@ -616,11 +630,7 @@ def main():
     except Exception as e:
         current_cik_map={}
         sec_network_error=sec_network_error or f"{type(e).__name__}:{str(e)[:200]}"
-    current_suspects=sorted(
-      sym for sym,name in names.items()
-      if str(industries.get(sym) or "").strip().lower()!="blank checks"
-      and bool(SPAC_SUSPECT_RE.search(str(name or "")))
-    )
+    current_suspects=current_spac_suspects(names,industries)
     manual_seeds,manual_seed_meta=manual_identity_seed_registry(asof,names)
     for sym in current_suspects:
         if sym in operating:
