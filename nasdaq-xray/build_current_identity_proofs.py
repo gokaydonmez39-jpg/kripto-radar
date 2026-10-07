@@ -304,6 +304,32 @@ def validate_existing_identity(path:Path,asof:str)->bool:
     except Exception:
         return False
 
+def valid_sec_spac_proof_row(v:dict,asof:str)->bool:
+    if not isinstance(v,dict) or int(v.get("sic",-1))!=6770:
+        return False
+    if v.get("same_asof_revalidated_without_sec_network") is not True:
+        return True
+    if v.get("revalidation_semantics")!="PRIOR_SEC_SIC6770_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS":
+        return False
+    source=str(v.get("source_url") or "")
+    evidence=str(v.get("evidence_date") or "")
+    footer=str(v.get("same_asof_nasdaq_directory_footer") or "")
+    if not source.startswith("https://www.sec.gov/"):
+        return False
+    if not re.fullmatch(r"20\d{2}-\d{2}-\d{2}",evidence) or evidence>asof:
+        return False
+    try:
+        age=(datetime.fromisoformat(asof)-datetime.fromisoformat(evidence)).days
+        if age<0 or age>120 or parse_footer_date(footer)!=asof:
+            return False
+    except Exception:
+        return False
+    current_name=str(v.get("same_asof_nasdaq_security_name") or "")
+    industry=str(v.get("same_asof_nasdaq_screener_industry") or "")
+    same_asof_spac=bool(re.search(r"\bacquisition\b|\bspac\b|\bblank[ -]?check\b",current_name,re.I))
+    same_asof_blank=(industry.strip().lower()=="blank checks")
+    return bool(same_asof_spac or same_asof_blank)
+
 def validate_existing_sec(path:Path,asof:str)->bool:
     try:
         j=json.loads(path.read_text(encoding="utf-8"))
@@ -316,12 +342,7 @@ def validate_existing_sec(path:Path,asof:str)->bool:
           and j.get("authority")=="SEC_EDGAR_SIC_6770_EXACT_ASOF"
           and j.get("applicability")=="EXACT_ASOF_ONLY_NO_FORWARD_CARRY"
           and isinstance(proofs,dict)
-          and all(
-            isinstance(v,dict)
-            and int(v.get("sic",-1))==6770
-            and v.get("same_asof_revalidated_without_sec_network") is not True
-            for v in proofs.values()
-          )
+          and all(valid_sec_spac_proof_row(v,asof) for v in proofs.values())
         )
     except Exception:
         return False
@@ -560,10 +581,17 @@ def main():
             row["same_asof_revalidated_without_sec_network"]=False
             proofs[sym]=row
             continue
-        # Exact-ASOF SEC proof was not re-established. Do not forward-carry
-        # prior SIC 6770 exclusion. The symbol returns to the master queue and
-        # remains subject to downstream fail-closed legal/market gates.
+        # SEC transport may be unavailable on shared CI IPs. Reuse only the
+        # prior SEC SIC 6770 evidence (<=120d) when the exact-ASOF Nasdaq
+        # directory still independently identifies the same ticker as a SPAC.
+        # This is exclusion-only evidence; it can never create alpha PASS.
+        fallback=prior_blank_fallback(sym,old,asof,names,industries)
+        if fallback is not None:
+            fallback["same_asof_nasdaq_directory_footer"]=footer
+            proofs[sym]=fallback
+            continue
         unresolved_sec_spac.append(sym)
+    unresolved_sec_spac=sorted(set(unresolved_sec_spac)-set(proofs))
     if proofs:
         sec={
           "schema":"XRAY_MASTER_SEC_SPAC_PROOF_V1",
