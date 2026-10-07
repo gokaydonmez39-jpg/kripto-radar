@@ -1995,12 +1995,11 @@
   ],
   "official_footer": "File Creation Time: 1007202618:01|||||||",
   "pointer_asof_et": "2026-10-07",
-  "price_blocked_count": 37,
-  "price_blocked_hash": "3ef3c4b61e141c1e683b86c1cfff1a3d4be1d9e224c1768ec8b355c98bb5b1a3",
+  "price_blocked_count": 36,
+  "price_blocked_hash": "4c8df03b87757feceb158acc3dc30c0a45e25d0ee10bf22faad5bf65fad0d334",
   "price_blocked_symbols": [
     "ALDF",
     "ATGL",
-    "BBCI",
     "BLIV",
     "CEPV",
     "CGCF",
@@ -2161,118 +2160,6 @@
         "status": "BLOCK_CURRENT_RUN"
       },
       "security_name": "Alpha Technology Group Limited - Class A Ordinary Shares"
-    },
-    "BBCI": {
-      "price_result": {
-        "block_recovery_attempt": {
-          "provider_meta": {
-            "nasdaq": {
-              "disabled": true,
-              "no_pass_or_fail_created": true,
-              "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-            },
-            "sina": {
-              "error": "IndexError:list index out of range"
-            },
-            "yahoo": {
-              "exchangeName": "NGM",
-              "usable": 1
-            }
-          },
-          "provider_result": {
-            "nasdaq_result": {
-              "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-            },
-            "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
-            "sina_result": {
-              "reason": "SINA_UNAVAILABLE"
-            },
-            "yahoo_result": {
-              "dv30_lower_bound": 0.0,
-              "dv30_upper_bound": null,
-              "known_session_count": 1,
-              "missing_sessions": [
-                "2026-08-26",
-                "2026-08-27",
-                "2026-08-28",
-                "2026-08-31",
-                "2026-09-01",
-                "2026-09-02",
-                "2026-09-03",
-                "2026-09-04",
-                "2026-09-08",
-                "2026-09-09",
-                "2026-09-10",
-                "2026-09-11",
-                "2026-09-14",
-                "2026-09-15",
-                "2026-09-16",
-                "2026-09-17",
-                "2026-09-18",
-                "2026-09-21",
-                "2026-09-22",
-                "2026-09-23",
-                "2026-09-24",
-                "2026-09-25",
-                "2026-09-28",
-                "2026-09-29",
-                "2026-09-30",
-                "2026-10-01",
-                "2026-10-02",
-                "2026-10-05",
-                "2026-10-06"
-              ],
-              "no_synthetic_bar": true,
-              "price": 11.0,
-              "reason": "EXACT30_INCOMPLETE_NEVER_PASS",
-              "source": "YAHOO_CHART_FREE_FAIL_ONLY"
-            }
-          },
-          "status": "UNRESOLVED"
-        },
-        "info": {
-          "missing_sessions": [
-            "2026-08-26",
-            "2026-08-27",
-            "2026-08-28",
-            "2026-08-31",
-            "2026-09-01",
-            "2026-09-02",
-            "2026-09-03",
-            "2026-09-04",
-            "2026-09-08",
-            "2026-09-09",
-            "2026-09-10",
-            "2026-09-11",
-            "2026-09-14",
-            "2026-09-15",
-            "2026-09-16",
-            "2026-09-17",
-            "2026-09-18",
-            "2026-09-21",
-            "2026-09-22",
-            "2026-09-23",
-            "2026-09-24",
-            "2026-09-25",
-            "2026-09-28",
-            "2026-09-29",
-            "2026-09-30",
-            "2026-10-01",
-            "2026-10-02",
-            "2026-10-05",
-            "2026-10-06"
-          ],
-          "no_synthetic_bar": true,
-          "observed_usable_sessions": 1,
-          "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-          "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
-          "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
-          "zero_volume_sessions": []
-        },
-        "provenance": "C417_RALLIES_PRIMARY_PARTITION",
-        "status": "BLOCK_CURRENT_RUN"
-      },
-      "security_name": "Bradbury Capital Inc. - Ordinary Shares"
     },
     "BLIV": {
       "price_result": {
@@ -4395,11 +4282,11 @@
   "source_overlay_path": "nasdaq-xray/canonical_current_resolution_overlay.json",
   "source_pointer_blob_sha": "769967eb2bada29ef52ec9c94ee991a066074038",
   "source_pointer_path": "nasdaq-xray/chatgpt_canonical_state_v2.json",
-  "source_price_blob_sha": "e4333b7a8e89b25fae6c6bfb91bea5400209821f",
+  "source_price_blob_sha": "a37b0451a7c43f3482c1d6587bf08f4a0d0bf838",
   "source_price_counts": {
-    "BLOCK_CURRENT_RUN": 37,
+    "BLOCK_CURRENT_RUN": 36,
     "FAIL_DV30": 1316,
-    "FAIL_DV30_INSUFFICIENT_SESSIONS": 8,
+    "FAIL_DV30_INSUFFICIENT_SESSIONS": 9,
     "FAIL_PRICE": 1304,
     "FAIL_PRICE_NO_ASOF_BAR": 10,
     "PASS_PRICE_DV30": 510
@@ -4413,12 +4300,11 @@
   "source_unknowns_blob_sha": "2c45da19ed31799173cebd47257fe7f34ed0925b",
   "source_unknowns_path": "nasdaq-xray/canonical_current_unknowns.json",
   "status": "READY",
-  "symbol_count": 37,
-  "symbol_hash": "3ef3c4b61e141c1e683b86c1cfff1a3d4be1d9e224c1768ec8b355c98bb5b1a3",
+  "symbol_count": 36,
+  "symbol_hash": "4c8df03b87757feceb158acc3dc30c0a45e25d0ee10bf22faad5bf65fad0d334",
   "symbols": [
     "ALDF",
     "ATGL",
-    "BBCI",
     "BLIV",
     "CEPV",
     "CGCF",
