@@ -96,6 +96,34 @@ def main():
         m.validate_existing_identity=original_vi
         m.validate_existing_sec=original_vs
 
+    # Historical replay must use the committed exact-ASOF identity snapshot,
+    # never a later live Nasdaq directory as if it belonged to the target day.
+    import json
+    with tempfile.TemporaryDirectory() as td:
+        root=Path(td)
+        (root/"canonical_current_full_state.json").write_text(json.dumps({
+          "asof_et":"2026-10-06",
+          "official_footer":"File Creation Time: 1006202618:01|||||||",
+          "security_names":{"OPER":"Operating Corp. - Common Stock"}
+        }))
+        (root/"canonical_current_master_manifest.json").write_text(json.dumps({
+          "asof_et":"2026-10-06",
+          "official_footer":"File Creation Time: 1006202618:01|||||||",
+          "unknown_detail":{
+            "TLAC":{
+              "security_name":"Three Lions Acquisition Corp.",
+              "same_asof_nasdaq_industry":""
+            }
+          }
+        }))
+        frozen=m.frozen_exact_asof_directory("2026-10-06",root)
+        assert frozen is not None
+        names,industries,footer=frozen
+        assert names["OPER"]=="Operating Corp. - Common Stock"
+        assert names["TLAC"]=="Three Lions Acquisition Corp."
+        assert m.parse_footer_date(footer)=="2026-10-06"
+        assert m.frozen_exact_asof_directory("2026-10-05",root) is None
+
     print("XRAY_CURRENT_IDENTITY_PROOF_SELFTEST=PASS")
 
 if __name__=="__main__":
