@@ -1,0 +1,59 @@
+name: XRAY SEC Transport Matrix Probe
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/sec_transport_matrix_probe.py"
+      - ".github/workflows/xray-sec-transport-matrix-probe.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: xray-sec-transport-matrix-probe
+  cancel-in-progress: true
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Compile and run bounded SEC transport matrix
+        run: |
+          python -m py_compile nasdaq-xray/sec_transport_matrix_probe.py
+          python nasdaq-xray/sec_transport_matrix_probe.py
+
+      - name: Validate fail-closed diagnostic artifact
+        run: |
+          python - <<'PY'
+          import json
+          p="nasdaq-xray/sec_transport_matrix_probe_state.json"
+          j=json.load(open(p,encoding="utf-8"))
+          assert j["schema"]=="XRAY_SEC_TRANSPORT_MATRIX_PROBE_V1"
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          assert j["unknown_never_pass"] is True
+          assert j["classification_applied"] is False
+          assert j["endpoint_count"]==7
+          assert j["reachable_count"]+j["blocked_count"]==7
+          print("SEC_TRANSPORT_MATRIX_VALIDATION=PASS")
+          print(json.dumps({
+              "families":j["families"],
+              "reachable":j["reachable_endpoints"],
+              "blocked":j["blocked_endpoints"],
+          },sort_keys=True))
+          PY
+
+      - name: Upload transport diagnostic
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-sec-transport-matrix-probe
+          path: nasdaq-xray/sec_transport_matrix_probe_state.json
+          retention-days: 3
