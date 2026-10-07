@@ -1,10 +1,10 @@
 {
   "asof_et": "2026-10-06",
   "block_recovery_attempted": true,
-  "block_recovery_input_count": 11,
+  "block_recovery_input_count": 9,
   "block_recovery_resolved_count": 0,
   "block_recovery_resolved_symbols": [],
-  "blocked_count": 11,
+  "blocked_count": 9,
   "blocked_symbols": [
     "ACCV",
     "ADRX",
@@ -13,49 +13,26 @@
     "GRAL",
     "OIG",
     "RZAI",
-    "SVA",
-    "WBD",
     "WQEY",
     "XIII"
   ],
   "bridge_defer_enabled": true,
   "counts": {
-    "BLOCK_CURRENT_RUN": 11,
+    "BLOCK_CURRENT_RUN": 9,
     "FAIL_DV30": 1343,
     "FAIL_PRICE": 1299,
+    "FAIL_PRICE_NO_ASOF_BAR": 2,
     "PASS_PRICE_DV30": 508
   },
   "current_baseline_reuse": true,
   "exception_bridge_meta": {
-    "paths": [
-      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261006_c417_dv30_v1.json",
-      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261006_c417_dv30_v10.json",
-      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261006_c417_dv30_v11.json",
-      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261006_c417_dv30_v12.json",
-      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261006_c417_dv30_v2.json",
-      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261006_c417_dv30_v3.json",
-      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261006_c417_dv30_v4.json",
-      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261006_c417_dv30_v5.json",
-      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261006_c417_dv30_v6.json",
-      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261006_c417_dv30_v7.json",
-      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261006_c417_dv30_v8.json",
-      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261006_c417_dv30_v9.json"
-    ],
-    "rejected": [
-      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261006_c417_dv30_v1.json:SOURCE_PRICE_BLOB_MISMATCH",
-      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261006_c417_dv30_v10.json:SOURCE_PRICE_BLOB_MISMATCH",
-      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261006_c417_dv30_v11.json:SOURCE_PRICE_BLOB_MISMATCH",
-      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261006_c417_dv30_v12.json:SOURCE_PRICE_BLOB_MISMATCH",
-      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261006_c417_dv30_v2.json:SOURCE_PRICE_BLOB_MISMATCH",
-      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261006_c417_dv30_v3.json:SOURCE_PRICE_BLOB_MISMATCH",
-      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261006_c417_dv30_v4.json:SOURCE_PRICE_BLOB_MISMATCH",
-      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261006_c417_dv30_v5.json:SOURCE_PRICE_BLOB_MISMATCH",
-      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261006_c417_dv30_v6.json:BASE_BINDING",
-      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261006_c417_dv30_v7.json:BASE_BINDING",
-      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261006_c417_dv30_v8.json:SOURCE_PRICE_BLOB_MISMATCH",
-      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261006_c417_dv30_v9.json:SOURCE_PRICE_BLOB_MISMATCH"
-    ],
-    "status": "ABSENT_CURRENT_POLICY"
+    "input_binding_role": "EXACT_CURRENT_REQUEST_MANIFEST",
+    "path": "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261006_c417_dv30_v15.json",
+    "result_encoding": "RALLIES_SCANNER_EXACT30_V2",
+    "source_result_task_id": null,
+    "status": "PASS",
+    "symbol_hash": "b757e7c3f8600f5d6d806a971d9bde99ced93e4563a9600f6921ee0e90259725",
+    "terminal_override_count": 2
   },
   "execution": "NONE",
   "expected30": [
@@ -100,6 +77,14 @@
   },
   "global_asof_sentinel_fast_fail": false,
   "monotonic_legacy_pass_reuse_count": 0,
+  "official_halt_guard_meta": {
+    "content_sha256": "1dedf12a4da2e5148271875a36ddde0f3784b1bbe51f2b09f317073f26caa53f",
+    "path": "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_official_source_guard.json",
+    "source_status": "PASS",
+    "status": "PASS"
+  },
+  "official_halt_terminalized_count": 0,
+  "official_halt_terminalized_symbols": [],
   "pass_count": 508,
   "pass_hash": "63d66ef437b893c96ae7775e62d1a2c4d54a18695da2e7b0e8dd89022538882d",
   "pass_symbols": [
@@ -973,8 +958,9 @@
       "block_recovery_attempt": {
         "provider_meta": {
           "nasdaq": {
-            "rows": 0,
-            "usable": 0
+            "disabled": true,
+            "no_pass_or_fail_created": true,
+            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
           },
           "sina": {
             "usable": 5
@@ -986,7 +972,7 @@
         },
         "provider_result": {
           "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
+            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
           },
           "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
           "sina_result": {
@@ -1577,8 +1563,9 @@
       "block_recovery_attempt": {
         "provider_meta": {
           "nasdaq": {
-            "rows": 0,
-            "usable": 0
+            "disabled": true,
+            "no_pass_or_fail_created": true,
+            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
           },
           "sina": {
             "usable": 8
@@ -1590,7 +1577,7 @@
         },
         "provider_result": {
           "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
+            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
           },
           "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
           "sina_result": {
@@ -9851,8 +9838,9 @@
       "block_recovery_attempt": {
         "provider_meta": {
           "nasdaq": {
-            "rows": 0,
-            "usable": 0
+            "disabled": true,
+            "no_pass_or_fail_created": true,
+            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
           },
           "sina": {
             "usable": 4
@@ -9864,7 +9852,7 @@
         },
         "provider_result": {
           "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
+            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
           },
           "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
           "sina_result": {
@@ -15358,8 +15346,9 @@
       "block_recovery_attempt": {
         "provider_meta": {
           "nasdaq": {
-            "rows": 0,
-            "usable": 0
+            "disabled": true,
+            "no_pass_or_fail_created": true,
+            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
           },
           "sina": {
             "usable": 13
@@ -15371,7 +15360,7 @@
         },
         "provider_result": {
           "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
+            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
           },
           "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
           "sina_result": {
@@ -19382,8 +19371,9 @@
       "block_recovery_attempt": {
         "provider_meta": {
           "nasdaq": {
-            "rows": 0,
-            "usable": 0
+            "disabled": true,
+            "no_pass_or_fail_created": true,
+            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
           },
           "sina": {
             "usable": 572
@@ -19395,7 +19385,7 @@
         },
         "provider_result": {
           "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
+            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
           },
           "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
           "sina_result": {
@@ -32380,8 +32370,9 @@
       "block_recovery_attempt": {
         "provider_meta": {
           "nasdaq": {
-            "rows": 0,
-            "usable": 0
+            "disabled": true,
+            "no_pass_or_fail_created": true,
+            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
           },
           "sina": {
             "usable": 284
@@ -32393,7 +32384,7 @@
         },
         "provider_result": {
           "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
+            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
           },
           "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
           "sina_result": {
@@ -38672,8 +38663,9 @@
       "block_recovery_attempt": {
         "provider_meta": {
           "nasdaq": {
-            "rows": 0,
-            "usable": 0
+            "disabled": true,
+            "no_pass_or_fail_created": true,
+            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
           },
           "sina": {
             "error": "IndexError:list index out of range"
@@ -38685,7 +38677,7 @@
         },
         "provider_result": {
           "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
+            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
           },
           "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
           "sina_result": {
@@ -42339,43 +42331,20 @@
       "status": "FAIL_PRICE"
     },
     "SVA": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "error": "SyntaxError:invalid syntax (<string>, line 1)"
-          },
-          "yahoo": {
-            "error": "HTTPError:HTTP Error 404: Not Found"
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "SINA_UNAVAILABLE"
-          },
-          "yahoo_result": {
-            "reason": "YAHOO_UNAVAILABLE"
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
-        "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
+        "evidence_blob_sha": "2a05148d1a32c96eac57370a7007b8105e4b599c",
+        "evidence_path": "nasdaq-xray/evidence/resolver_three_source_no_asof_bar_wbd_sva_20261006_v1.json",
         "no_synthetic_bar": true,
-        "observed_usable_sessions": 0,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
+        "proof": "THREE_SOURCE_NO_ASOF_BAR",
+        "source": "ALPACA_SIP_RALLIES_MASSIVE_C4_17_NON_G9",
+        "sources": [
+          "ALPACA_SIP",
+          "MASSIVE",
+          "RALLIES"
+        ]
       },
-      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
-      "status": "BLOCK_CURRENT_RUN"
+      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "status": "FAIL_PRICE_NO_ASOF_BAR"
     },
     "SVC": {
       "info": {
@@ -47061,51 +47030,20 @@
       "status": "FAIL_DV30"
     },
     "WBD": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "usable": 1125
-          },
-          "yahoo": {
-            "exchangeName": "NMS",
-            "usable": 63
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 1125
-          },
-          "yahoo_result": {
-            "dv30": 701840858.5150719,
-            "known_session_count": 30,
-            "missing_sessions": [],
-            "price": 30.950000762939453,
-            "proof": "EXACT30_MEDIAN_GE_GATE",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY"
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
-        "corroboration": "XRAY_RESOLVER_FOREGROUND_WBD_DV30_BLOCK_V1:8e0537a0427f7572f9fa82b0e7b2356378bd4056",
+        "evidence_blob_sha": "2a05148d1a32c96eac57370a7007b8105e4b599c",
+        "evidence_path": "nasdaq-xray/evidence/resolver_three_source_no_asof_bar_wbd_sva_20261006_v1.json",
         "no_synthetic_bar": true,
-        "observed_usable_sessions": 29,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
-        "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
+        "proof": "THREE_SOURCE_NO_ASOF_BAR",
+        "source": "ALPACA_SIP_RALLIES_MASSIVE_C4_17_NON_G9",
+        "sources": [
+          "ALPACA_SIP",
+          "MASSIVE",
+          "RALLIES"
+        ]
       },
-      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
-      "status": "BLOCK_CURRENT_RUN"
+      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "status": "FAIL_PRICE_NO_ASOF_BAR"
     },
     "WBTN": {
       "info": {
@@ -47674,20 +47612,21 @@
       "block_recovery_attempt": {
         "provider_meta": {
           "nasdaq": {
-            "rows": 0,
-            "usable": 0
+            "disabled": true,
+            "no_pass_or_fail_created": true,
+            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
           },
           "sina": {
             "usable": 2
           },
           "yahoo": {
-            "exchangeName": "NGM",
+            "exchangeName": "PNK",
             "usable": 2
           }
         },
         "provider_result": {
           "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
+            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
           },
           "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
           "sina_result": {
@@ -48355,8 +48294,9 @@
       "block_recovery_attempt": {
         "provider_meta": {
           "nasdaq": {
-            "rows": 0,
-            "usable": 0
+            "disabled": true,
+            "no_pass_or_fail_created": true,
+            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
           },
           "sina": {
             "usable": 12
@@ -48368,7 +48308,7 @@
         },
         "provider_result": {
           "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
+            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
           },
           "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
           "sina_result": {

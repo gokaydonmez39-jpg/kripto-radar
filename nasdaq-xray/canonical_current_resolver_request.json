@@ -895,8 +895,8 @@
   ],
   "official_footer": "File Creation Time: 1006202617:01|||||||",
   "pointer_asof_et": "2026-10-06",
-  "price_blocked_count": 11,
-  "price_blocked_hash": "b757e7c3f8600f5d6d806a971d9bde99ced93e4563a9600f6921ee0e90259725",
+  "price_blocked_count": 9,
+  "price_blocked_hash": "086370cb91e1a6fee4f73a89fa57d707f1a6e1bf8a71acf8859b635dc8b46701",
   "price_blocked_symbols": [
     "ACCV",
     "ADRX",
@@ -905,8 +905,6 @@
     "GRAL",
     "OIG",
     "RZAI",
-    "SVA",
-    "WBD",
     "WQEY",
     "XIII"
   ],
@@ -925,8 +923,9 @@
         "block_recovery_attempt": {
           "provider_meta": {
             "nasdaq": {
-              "rows": 0,
-              "usable": 0
+              "disabled": true,
+              "no_pass_or_fail_created": true,
+              "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
             },
             "sina": {
               "usable": 5
@@ -938,7 +937,7 @@
           },
           "provider_result": {
             "nasdaq_result": {
-              "reason": "NASDAQ_UNAVAILABLE"
+              "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
             },
             "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
             "sina_result": {
@@ -1038,8 +1037,9 @@
         "block_recovery_attempt": {
           "provider_meta": {
             "nasdaq": {
-              "rows": 0,
-              "usable": 0
+              "disabled": true,
+              "no_pass_or_fail_created": true,
+              "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
             },
             "sina": {
               "usable": 8
@@ -1051,7 +1051,7 @@
           },
           "provider_result": {
             "nasdaq_result": {
-              "reason": "NASDAQ_UNAVAILABLE"
+              "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
             },
             "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
             "sina_result": {
@@ -1141,8 +1141,9 @@
         "block_recovery_attempt": {
           "provider_meta": {
             "nasdaq": {
-              "rows": 0,
-              "usable": 0
+              "disabled": true,
+              "no_pass_or_fail_created": true,
+              "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
             },
             "sina": {
               "usable": 4
@@ -1154,7 +1155,7 @@
           },
           "provider_result": {
             "nasdaq_result": {
-              "reason": "NASDAQ_UNAVAILABLE"
+              "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
             },
             "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
             "sina_result": {
@@ -1252,8 +1253,9 @@
         "block_recovery_attempt": {
           "provider_meta": {
             "nasdaq": {
-              "rows": 0,
-              "usable": 0
+              "disabled": true,
+              "no_pass_or_fail_created": true,
+              "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
             },
             "sina": {
               "usable": 13
@@ -1265,7 +1267,7 @@
           },
           "provider_result": {
             "nasdaq_result": {
-              "reason": "NASDAQ_UNAVAILABLE"
+              "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
             },
             "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
             "sina_result": {
@@ -1345,8 +1347,9 @@
         "block_recovery_attempt": {
           "provider_meta": {
             "nasdaq": {
-              "rows": 0,
-              "usable": 0
+              "disabled": true,
+              "no_pass_or_fail_created": true,
+              "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
             },
             "sina": {
               "usable": 572
@@ -1358,7 +1361,7 @@
           },
           "provider_result": {
             "nasdaq_result": {
-              "reason": "NASDAQ_UNAVAILABLE"
+              "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
             },
             "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
             "sina_result": {
@@ -1402,8 +1405,9 @@
         "block_recovery_attempt": {
           "provider_meta": {
             "nasdaq": {
-              "rows": 0,
-              "usable": 0
+              "disabled": true,
+              "no_pass_or_fail_created": true,
+              "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
             },
             "sina": {
               "usable": 284
@@ -1415,7 +1419,7 @@
           },
           "provider_result": {
             "nasdaq_result": {
-              "reason": "NASDAQ_UNAVAILABLE"
+              "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
             },
             "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
             "sina_result": {
@@ -1495,8 +1499,9 @@
         "block_recovery_attempt": {
           "provider_meta": {
             "nasdaq": {
-              "rows": 0,
-              "usable": 0
+              "disabled": true,
+              "no_pass_or_fail_created": true,
+              "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
             },
             "sina": {
               "error": "IndexError:list index out of range"
@@ -1508,7 +1513,7 @@
           },
           "provider_result": {
             "nasdaq_result": {
-              "reason": "NASDAQ_UNAVAILABLE"
+              "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
             },
             "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
             "sina_result": {
@@ -1566,117 +1571,26 @@
       },
       "security_name": "Roze AI Inc. - Common Shares"
     },
-    "SVA": {
-      "price_result": {
-        "block_recovery_attempt": {
-          "provider_meta": {
-            "nasdaq": {
-              "rows": 0,
-              "usable": 0
-            },
-            "sina": {
-              "error": "SyntaxError:invalid syntax (<string>, line 1)"
-            },
-            "yahoo": {
-              "error": "HTTPError:HTTP Error 404: Not Found"
-            }
-          },
-          "provider_result": {
-            "nasdaq_result": {
-              "reason": "NASDAQ_UNAVAILABLE"
-            },
-            "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-            "sina_result": {
-              "reason": "SINA_UNAVAILABLE"
-            },
-            "yahoo_result": {
-              "reason": "YAHOO_UNAVAILABLE"
-            }
-          },
-          "status": "UNRESOLVED"
-        },
-        "info": {
-          "corroboration": "XRAY_RALLIES_DV30_CLASSIFICATION_V1:0aa9defc5398a486fe0783b63d9316a2dcf9d905",
-          "no_synthetic_bar": true,
-          "observed_usable_sessions": 0,
-          "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-          "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-          "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
-        },
-        "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
-        "status": "BLOCK_CURRENT_RUN"
-      },
-      "security_name": "Sinovac Biotech, Ltd. - Ordinary Shares (Antigua/Barbudo)"
-    },
-    "WBD": {
-      "price_result": {
-        "block_recovery_attempt": {
-          "provider_meta": {
-            "nasdaq": {
-              "rows": 0,
-              "usable": 0
-            },
-            "sina": {
-              "usable": 1125
-            },
-            "yahoo": {
-              "exchangeName": "NMS",
-              "usable": 63
-            }
-          },
-          "provider_result": {
-            "nasdaq_result": {
-              "reason": "NASDAQ_UNAVAILABLE"
-            },
-            "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-            "sina_result": {
-              "reason": "ASOF_MISSING",
-              "source": "SINA_US_DAILY",
-              "usable_bars": 1125
-            },
-            "yahoo_result": {
-              "dv30": 701840858.5150719,
-              "known_session_count": 30,
-              "missing_sessions": [],
-              "price": 30.950000762939453,
-              "proof": "EXACT30_MEDIAN_GE_GATE",
-              "source": "YAHOO_CHART_FREE_FAIL_ONLY"
-            }
-          },
-          "status": "UNRESOLVED"
-        },
-        "info": {
-          "corroboration": "XRAY_RESOLVER_FOREGROUND_WBD_DV30_BLOCK_V1:8e0537a0427f7572f9fa82b0e7b2356378bd4056",
-          "no_synthetic_bar": true,
-          "observed_usable_sessions": 29,
-          "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-          "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
-          "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
-        },
-        "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
-        "status": "BLOCK_CURRENT_RUN"
-      },
-      "security_name": "Warner Bros. Discovery, Inc. - Series A Common Stock"
-    },
     "WQEY": {
       "price_result": {
         "block_recovery_attempt": {
           "provider_meta": {
             "nasdaq": {
-              "rows": 0,
-              "usable": 0
+              "disabled": true,
+              "no_pass_or_fail_created": true,
+              "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
             },
             "sina": {
               "usable": 2
             },
             "yahoo": {
-              "exchangeName": "NGM",
+              "exchangeName": "PNK",
               "usable": 2
             }
           },
           "provider_result": {
             "nasdaq_result": {
-              "reason": "NASDAQ_UNAVAILABLE"
+              "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
             },
             "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
             "sina_result": {
@@ -1778,8 +1692,9 @@
         "block_recovery_attempt": {
           "provider_meta": {
             "nasdaq": {
-              "rows": 0,
-              "usable": 0
+              "disabled": true,
+              "no_pass_or_fail_created": true,
+              "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
             },
             "sina": {
               "usable": 12
@@ -1791,7 +1706,7 @@
           },
           "provider_result": {
             "nasdaq_result": {
-              "reason": "NASDAQ_UNAVAILABLE"
+              "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
             },
             "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
             "sina_result": {
@@ -1852,9 +1767,9 @@
   "resolver_policy": "ALPACA_SIP_PREFERRED__RALLIES_LONGBRIDGE_DUAL_SOURCE_CONNECTOR_FAILOVER__NEVER_G9__FAIL_CLOSED__SAME_ASOF_QUEUE_BINDING",
   "schema": "XRAY_RESOLVER_EPOCH_REQUEST_V1",
   "settlement_already_proven": true,
-  "settlement_bridge_blob_sha": "ea5aa2b96981cbfa1aec29b16de708d3dff31e5f",
-  "settlement_bridge_path": "nasdaq-xray/canonical_resolver_bridge_20261006_c417_dv30_v13.json",
-  "settlement_core_source_blob_sha": "ec9655cb1c7f49fdc14da5c78db5429f16c8c0f1",
+  "settlement_bridge_blob_sha": "4241915f7f604858e202901786478959ffffb371",
+  "settlement_bridge_path": "nasdaq-xray/canonical_resolver_bridge_20261006_c417_dv30_v15.json",
+  "settlement_core_source_blob_sha": "3b5aae5ff6fe9503a87008d23060e1bac3c3ab48",
   "settlement_core_source_path": "nasdaq-xray/canonical_current_terminal.json",
   "settlement_core_symbol": "MSFT",
   "settlement_policy": "ALPACA_HISTORICAL_SIP_DAILY_AFTER_15M__AAPL_NVDA_PLUS_ONE_PRIOR_CURRENT_CORE__RALLIES_LONGBRIDGE_QUOTE_OHLC_0_01_CROSSCHECK__SIP_VOLUME_AUTHORITY__FAIL_CLOSED__DELAYED_SIP_NEVER_G9",
@@ -1864,13 +1779,14 @@
   "source_master_path": "nasdaq-xray/canonical_current_master_manifest.json",
   "source_overlay_blob_sha": "f42f7e0275547eae4fed59652ff714a789c91f1e",
   "source_overlay_path": "nasdaq-xray/canonical_current_resolution_overlay.json",
-  "source_pointer_blob_sha": "3f18abc886931380ea7d180fd8fbf65fca0a1cce",
+  "source_pointer_blob_sha": "52183235a908af7238a58eede9644de686df8278",
   "source_pointer_path": "nasdaq-xray/chatgpt_canonical_state_v2.json",
-  "source_price_blob_sha": "bab48eb20acf67f810e9606f7c4500be1eb3b927",
+  "source_price_blob_sha": "b1fc18fe82484b85014258d8eb091844a0d6bced",
   "source_price_counts": {
-    "BLOCK_CURRENT_RUN": 11,
+    "BLOCK_CURRENT_RUN": 9,
     "FAIL_DV30": 1343,
     "FAIL_PRICE": 1299,
+    "FAIL_PRICE_NO_ASOF_BAR": 2,
     "PASS_PRICE_DV30": 508
   },
   "source_price_global_asof_sentinel_fast_fail": false,
@@ -1882,8 +1798,8 @@
   "source_unknowns_blob_sha": "2cab3810e40d53f697ae5261b82527c17c64a30a",
   "source_unknowns_path": "nasdaq-xray/canonical_current_unknowns.json",
   "status": "READY",
-  "symbol_count": 11,
-  "symbol_hash": "b757e7c3f8600f5d6d806a971d9bde99ced93e4563a9600f6921ee0e90259725",
+  "symbol_count": 9,
+  "symbol_hash": "086370cb91e1a6fee4f73a89fa57d707f1a6e1bf8a71acf8859b635dc8b46701",
   "symbols": [
     "ACCV",
     "ADRX",
@@ -1892,8 +1808,6 @@
     "GRAL",
     "OIG",
     "RZAI",
-    "SVA",
-    "WBD",
     "WQEY",
     "XIII"
   ],
