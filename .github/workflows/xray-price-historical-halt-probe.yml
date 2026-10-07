@@ -1,0 +1,68 @@
+name: XRAY PRICE Historical Halt Zero-Dollar Probe
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/price_historical_halt_probe.py"
+      - ".github/workflows/xray-price-historical-halt-probe.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: xray-price-historical-halt-probe
+  cancel-in-progress: true
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Compile and deterministic selftest
+        run: |
+          python -m py_compile nasdaq-xray/price_historical_halt_probe.py
+          python nasdaq-xray/price_historical_halt_probe.py --selftest
+
+      - name: Run official Nasdaq historical halt probe
+        run: python nasdaq-xray/price_historical_halt_probe.py
+
+      - name: Validate fail-closed non-canonical evidence
+        run: |
+          python - <<'PY'
+          import json
+          p="nasdaq-xray/price_historical_halt_probe_state.json"
+          j=json.load(open(p,encoding="utf-8"))
+          assert j["schema"]=="XRAY_PRICE_HISTORICAL_HALT_PROBE_V1"
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          assert j["unknown_never_pass"] is True
+          assert j["classification_applied"] is False
+          for sym,r in j["results"].items():
+              assert r["classification_applied"] is False
+              if r["status"]=="FULL_SESSION_HALT_CANDIDATE":
+                  assert r["official_evidence"],sym
+                  for ev in r["official_evidence"]:
+                      assert ev["proof"]=="NASDAQ_TRADER_HISTORICAL_FULL_SESSION_HALT_CANDIDATE"
+                      assert ev["decision_direction"]=="FAIL_ONLY_CANDIDATE_NEVER_PASS"
+                      assert "nasdaqtrader.com" in ev["source_url"].lower()
+          print("XRAY_PRICE_HISTORICAL_HALT_PROBE_VALIDATION=PASS")
+          print(json.dumps({
+              "scope":j["candidate_scope_count"],
+              "candidates":[s for s,r in j["results"].items() if r["status"]=="FULL_SESSION_HALT_CANDIDATE"],
+              "unknown":[s for s,r in j["results"].items() if r["status"]!="FULL_SESSION_HALT_CANDIDATE"],
+          },sort_keys=True))
+          PY
+
+      - name: Upload non-canonical official evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-price-historical-halt-probe
+          path: nasdaq-xray/price_historical_halt_probe_state.json
+          retention-days: 3
