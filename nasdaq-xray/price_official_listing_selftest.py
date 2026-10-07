@@ -6,7 +6,10 @@ from copy import deepcopy
 from pathlib import Path
 
 from price_dv30_phase import expected30
-from price_dv30_recover_from_fullstate import official_recent_listing_terminal
+from price_dv30_recover_from_fullstate import (
+    official_recent_listing_terminal,
+    apply_official_recent_listing_fail_only,
+)
 
 ROOT=Path(__file__).resolve().parent
 REGISTRY=ROOT/"price_official_listing_registry.json"
@@ -69,6 +72,25 @@ def main():
         "evidence_kind":"TEST",
     }
     assert official_recent_listing_terminal(bad,"TEST",ASOF,exp30) is None
+
+    # Persisted UNKNOWN/BLOCK states must be terminalized by official listing proof,
+    # while pre-existing PASS/FAIL decisions remain byte-semantically untouched.
+    sample={
+        "ACCV":{"status":"UNKNOWN","info":{"reason":"OLD_UNRESOLVED"}},
+        "ADRX":{"status":"BLOCK_CURRENT_RUN","info":{"reason":"OLD_BLOCK"}},
+        "CHWM":{"status":"PASS_PRICE_DV30","info":{"sentinel":"KEEP_PASS"}},
+        "ETRA":{"status":"FAIL_DV30","info":{"sentinel":"KEEP_FAIL"}},
+    }
+    pass_before=deepcopy(sample["CHWM"])
+    fail_before=deepcopy(sample["ETRA"])
+    changed=apply_official_recent_listing_fail_only(sample,registry,ASOF,exp30)
+    assert set(changed)=={"ACCV","ADRX"},changed
+    assert sample["ACCV"]["status"]=="FAIL_DV30_INSUFFICIENT_SESSIONS",sample["ACCV"]
+    assert sample["ADRX"]["status"]=="FAIL_DV30_INSUFFICIENT_SESSIONS",sample["ADRX"]
+    assert sample["CHWM"]==pass_before,sample["CHWM"]
+    assert sample["ETRA"]==fail_before,sample["ETRA"]
+    assert sample["ACCV"]["info"]["decision_direction"]=="FAIL_ONLY_NEVER_PASS"
+    assert sample["ADRX"]["info"]["decision_direction"]=="FAIL_ONLY_NEVER_PASS"
 
     print("XRAY_PRICE_OFFICIAL_LISTING_SELFTEST=PASS")
     print(json.dumps({
