@@ -57,9 +57,18 @@ def active_resolver_bridge_rows(rows):
     active=[row for row in valid if _resolver_bridge_rel(row[0]) not in superseded]
     return active
 
+def _resolver_role(obj):
+    """Resolver authorities are role-scoped; MC handoff and residual settlement do not compete."""
+    role=str((obj or {}).get("bridge_role") or "")
+    authority=str((obj or {}).get("authority") or "")
+    if role=="FULL_SCOPE_MC_HANDOFF_PROVENANCE" or "FULL_SCOPE_MC_HANDOFF" in authority:
+        return "FULL_SCOPE_MC_HANDOFF_AUTHORITY"
+    return "CURRENT_RESIDUAL_REQUEST_AUTHORITY"
+
 def select_current_policy_resolver_bridge(rows,current_price_blob,current_request_blob):
-    """Choose one active settlement authority by exact lineage, then semantic fallback."""
+    """Choose one active residual settlement authority; MC handoff is a distinct noncompeting role."""
     rows=active_resolver_bridge_rows(rows)
+    rows=[row for row in rows if _resolver_role(row[1])=="CURRENT_RESIDUAL_REQUEST_AUTHORITY"]
     exact_price=[
       row for row in rows
       if row[1].get("source_price_path")=="nasdaq-xray/canonical_current_price_dv30.json"
@@ -77,7 +86,7 @@ def select_current_policy_resolver_bridge(rows,current_price_blob,current_reques
     assert len(exact_request)<=1, "AMBIGUOUS_CURRENT_POLICY_RESOLVER_BRIDGE_EXACT_REQUEST"
     if exact_request:
         return exact_request[0]
-    assert len(rows)<=1, "AMBIGUOUS_CURRENT_POLICY_RESOLVER_BRIDGE"
+    assert len(rows)<=1, "AMBIGUOUS_CURRENT_POLICY_RESIDUAL_BRIDGE"
     return rows[0] if rows else None
 
 def can_preserve_existing_request(new_obj):
