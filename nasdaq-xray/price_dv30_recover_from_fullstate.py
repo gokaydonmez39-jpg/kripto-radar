@@ -248,6 +248,9 @@ def apply_terminal_overrides(prs,overrides):
         prs[sym]=rec
     return prs
 
+# Immutable bridge successor version numbers do not imply new wire encodings.
+# Keep block-only/current-scope successors on RALLIES_SCANNER_EXACT30_V2 unless
+# this loader and its regression tests explicitly add another encoding contract.
 def expand_rallies_scanner_exact30_v2(compact,req):
     if not isinstance(compact,dict):
         raise ValueError("RALLIES_V2_TYPES")
