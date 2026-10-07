@@ -59,6 +59,116 @@ def family_geometry_pass(family: str, x: float, frozen: dict) -> bool:
     return 0.30 <= x <= 2.05
 
 
+def structural_zone_audit(row: dict, vals: dict) -> tuple[list[str], dict]:
+    """Audit stored R1-zone semantics without importing production alpha code.
+
+    The 120-session sensitivity is diagnostic only: C4.17 does not impose a
+    120-session age cutoff on BASE_HIGH resistance, so it never changes PASS.
+    """
+    frozen = row.get("frozen_geometry") or {}
+    zone = frozen.get("target_zone")
+    source = str(frozen.get("target_source") or "")
+    trigger_date = str(frozen.get("trigger_date") or row.get("trigger_date") or "")
+    mismatches: list[str] = []
+    diag = {
+        "target_source": source,
+        "zone_kind": None,
+        "zone_lower": None,
+        "zone_upper": None,
+        "point_count": 0,
+        "legacy_gt120_confirmed_idx_points": 0,
+        "oldest_occurrence_date": None,
+        "recent120_lower": None,
+        "recent120_upper": None,
+        "recent120_overlap": None,
+        "lower_changed_without_legacy_gt120": False,
+        "diagnostic_only_non_authority": True,
+    }
+    if source.startswith("SYNTHETIC_"):
+        if zone is not None:
+            mismatches.append("synthetic_target_has_structural_zone")
+        return mismatches, diag
+    if source != "STRUCTURAL_ACTIVE_R1_LOWER_BOUND":
+        mismatches.append("unknown_target_source:" + source)
+        return mismatches, diag
+    if not isinstance(zone, dict):
+        mismatches.append("structural_target_zone_missing")
+        return mismatches, diag
+
+    lower = zone.get("lower")
+    upper = zone.get("upper")
+    try:
+        lower = float(lower)
+        upper = float(upper)
+    except Exception:
+        mismatches.append("structural_zone_bounds_non_numeric")
+        return mismatches, diag
+    diag["zone_kind"] = zone.get("kind")
+    diag["zone_lower"] = lower
+    diag["zone_upper"] = upper
+    if not (math.isfinite(lower) and math.isfinite(upper) and lower <= upper):
+        mismatches.append("structural_zone_bounds_invalid")
+    if not close(vals["T1"], lower):
+        mismatches.append(f"r1_lower_not_T1:lower={lower!r}:T1={vals['T1']!r}")
+    if zone.get("active") is not True:
+        mismatches.append("selected_r1_zone_not_active")
+    if not (upper > vals["entry_low"]):
+        mismatches.append("selected_r1_not_eligible_above_entry_low")
+
+    expected_overlap = not (upper < vals["entry_low"] or lower > vals["entry_high"])
+    if bool(row.get("target_overlap")) != expected_overlap:
+        mismatches.append("structural_zone_overlap_formula")
+
+    dates = list(zone.get("occurrence_dates") or [])
+    if dates:
+        diag["oldest_occurrence_date"] = sorted(str(x) for x in dates)[0]
+        if trigger_date and any(str(d) >= trigger_date for d in dates):
+            mismatches.append("r1_occurrence_not_strictly_pretrigger")
+
+    breakout = zone.get("breakout_unconfirmed_role_change")
+    if breakout and trigger_date and str(breakout) >= trigger_date:
+        mismatches.append("r1_breakout_role_change_lookahead")
+    broken = zone.get("broken_at")
+    if broken is not None and zone.get("active") is True:
+        mismatches.append("active_zone_has_broken_at")
+
+    points = list(zone.get("points") or [])
+    diag["point_count"] = len(points)
+    if points:
+        try:
+            prices = [float(p["price"]) for p in points]
+            conf = [int(p["confirmed_idx"]) for p in points]
+            point_dates = [str(p["date"]) for p in points]
+        except Exception:
+            mismatches.append("structural_zone_point_shape")
+            return mismatches, diag
+        if not close(min(prices), lower):
+            mismatches.append("structural_zone_lower_not_min_point")
+        if not close(max(prices), upper):
+            mismatches.append("structural_zone_upper_not_max_point")
+        if int(zone.get("active_from_idx", -1)) != max(conf):
+            mismatches.append("structural_zone_active_from_not_latest_confirmation")
+        if sorted(set(point_dates)) != sorted(set(str(x) for x in dates)):
+            mismatches.append("structural_zone_occurrence_dates_not_point_dates")
+        if trigger_date and any(d >= trigger_date for d in point_dates):
+            mismatches.append("r1_point_date_not_strictly_pretrigger")
+
+        latest = max(conf)
+        legacy = [p for p in points if latest - int(p["confirmed_idx"]) > 120]
+        recent = [p for p in points if latest - int(p["confirmed_idx"]) <= 120]
+        diag["legacy_gt120_confirmed_idx_points"] = len(legacy)
+        if recent:
+            rp = [float(p["price"]) for p in recent]
+            rlo, rhi = min(rp), max(rp)
+            diag["recent120_lower"] = rlo
+            diag["recent120_upper"] = rhi
+            diag["recent120_overlap"] = not (
+                rhi < vals["entry_low"] or rlo > vals["entry_high"]
+            )
+            diag["lower_changed_without_legacy_gt120"] = not close(rlo, lower)
+    return mismatches, diag
+
+
 def audit_row(key: str, row: dict) -> dict:
     family = str(row.get("family") or "")
     if family not in THRESH:
@@ -138,12 +248,40 @@ def audit_row(key: str, row: dict) -> dict:
             f"risk_precedence:expected=FAIL_RISK_GEOMETRY:stored={stored_result}"
         )
 
+    zone_mismatches, zone_diag = structural_zone_audit(row, vals)
+    mismatches.extend(zone_mismatches)
+    blockers_sorted = list(row.get("diagnostic_blockers") or [])
+
     return {
         "key": key,
         "symbol": key.split("|", 1)[0],
         "family": family,
         "status": "PASS" if not mismatches else "MISMATCH",
         "stored_result": stored_result,
+        "decision_inputs": {
+            "trigger_date": row.get("trigger_date"),
+            "P": vals["P"],
+            "entry_low": vals["entry_low"],
+            "entry_high": vals["entry_high"],
+            "entry_model": vals["entry_model"],
+            "anchor": vals["anchor"],
+            "S0": vals["S0"],
+            "ATR": A,
+            "risk_percent": risk_pct,
+            "R1_target_source": (frozen.get("target_source")),
+            "R1_lower": ((frozen.get("target_zone") or {}).get("lower", vals["T1"])),
+            "R1_upper": ((frozen.get("target_zone") or {}).get("upper", vals["T1"])),
+            "target_overlap": target_overlap,
+            "RR_BASIC": basic,
+            "RR_SEVERE": severe,
+            "lifecycle": row.get("lifecycle"),
+            "extension_veto": bool(row.get("extension_veto")),
+            "event_status": row.get("event_status"),
+            "state_cap": row.get("state_cap"),
+            "r92_eligible": row.get("r92_eligible"),
+            "exact_blockers": blockers_sorted,
+        },
+        "r1_zone_audit": zone_diag,
         "recomputed": {
             "x": x,
             "risk_atr": risk_atr,
@@ -199,6 +337,14 @@ def main() -> None:
         "independently_risk_failed": independently_risk_failed,
         "independently_rr_failed_count": len(independently_rr_failed),
         "independently_rr_failed": independently_rr_failed,
+        "legacy_gt120_r1_point_row_count": sum(
+            1 for r in rows
+            if int(((r.get("r1_zone_audit") or {}).get("legacy_gt120_confirmed_idx_points") or 0)) > 0
+        ),
+        "legacy_gt120_changes_lower_row_count": sum(
+            1 for r in rows
+            if (r.get("r1_zone_audit") or {}).get("lower_changed_without_legacy_gt120") is True
+        ),
         "rows": rows,
     }
     if args.out:
