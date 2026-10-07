@@ -673,11 +673,14 @@ def valid_bridge_price_resolution(x,asof):
     if d=="PASS_PRICE_DV30":
         known=x.get("known_session_count")
         if x.get("compact_terminal_proof") is True:
+            source_proof=(x.get("source"),x.get("proof"))
             return (
               known==30 and (x.get("missing_sessions") or [])==[]
               and x.get("no_synthetic_bar") is True
-              and x.get("source")=="RALLIES_CANDLESTICK_SCANNER_EXACT30_PRIMARY"
-              and x.get("proof")=="RALLIES_EXACT30_MEDIAN_GE_GATE"
+              and source_proof in {
+                ("RALLIES_CANDLESTICK_SCANNER_EXACT30_PRIMARY","RALLIES_EXACT30_MEDIAN_GE_GATE"),
+                ("RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9","EXACT30_MEDIAN_GE_GATE"),
+              }
             )
         dv=num(x.get("dv30"))
         return (
@@ -687,13 +690,22 @@ def valid_bridge_price_resolution(x,asof):
           and bool(x.get("source")) and bool(x.get("proof"))
         )
     if d=="BLOCK_CURRENT_RUN":
-        if x.get("source")=="RALLIES_CANDLESTICK_SCANNER_EXACT30_PRIMARY":
-            return x.get("reason") in {
-              "INSUFFICIENT_30_USABLE_DV30_SESSIONS_CONFIRMED",
-              "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
-              "RALLIES_PRIMARY_EXACT30_INCOMPLETE_ZERO_TRADE_PLACEHOLDER_AMBIGUITY",
-              "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-            } and bool(x.get("proof"))
+        if x.get("source") in {
+          "RALLIES_CANDLESTICK_SCANNER_EXACT30_PRIMARY",
+          "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
+        }:
+            return (
+              x.get("reason") in {
+                "INSUFFICIENT_30_USABLE_DV30_SESSIONS_CONFIRMED",
+                "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
+                "RALLIES_PRIMARY_EXACT30_INCOMPLETE_ZERO_TRADE_PLACEHOLDER_AMBIGUITY",
+                "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
+                "CROSS_SOURCE_CURRENT_ASOF_ALIGNMENT_UNPROVEN",
+                "UNKNOWN_INTEGRITY_CONFLICT",
+              }
+              and x.get("proof")=="FAIL_CLOSED_CURRENT_RUN_NONPASS"
+              and x.get("no_synthetic_bar") is True
+            )
         return x.get("trade_status")=="Halted" and bool(x.get("last_bar")) and bool(x.get("source"))
     if d=="BLOCK_POST_ASOF_LISTING":
         return bool(x.get("first_trade_date")) and str(x.get("first_trade_date"))>asof and bool(x.get("source"))
