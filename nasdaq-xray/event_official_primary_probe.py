@@ -250,10 +250,18 @@ def _discrete_event_match(
             accept="text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.5",
         )
         attempt.update(meta)
-        if not same_host(authority_url, meta["final_url"]):
-            attempt["result"] = "CROSS_HOST_REDIRECT_REJECTED"
-            return None, attempt
         page = raw.decode("utf-8", "ignore")
+        if not same_host(authority_url, meta["final_url"]):
+            # document_url reached this function only through an issuer-controlled
+            # discovery surface (same-host IR link or prior canonical issuer-primary
+            # evidence). A cross-host final may therefore be accepted only after the
+            # redirected content independently proves issuer identity.
+            redirected_authority = validated_authority_url(meta["final_url"], page, tokens)
+            if redirected_authority is None:
+                attempt["result"] = "CROSS_HOST_REDIRECT_REJECTED"
+                return None, attempt
+            attempt["cross_host_redirect_identity_validated"] = True
+            attempt["validated_authority_url"] = redirected_authority
         if not issuer_identity_ok(page, tokens):
             attempt["result"] = "ISSUER_IDENTITY_TOKEN_NOT_FOUND"
             return None, attempt
@@ -463,10 +471,24 @@ def probe_issuer(sym: str, base: dict, asof: str, horizon: set[str]) -> dict:
         try:
             raw, meta = fetch(feed_url, accept="application/rss+xml,application/atom+xml,application/xml,text/xml;q=0.9,*/*;q=0.3")
             attempt.update(meta)
-            if not same_host(authority_url, meta["final_url"]):
-                attempt["result"] = "CROSS_HOST_REDIRECT_REJECTED"
-                rec["feed_attempts"].append(attempt)
-                continue
+            feed_text = raw.decode("utf-8", "ignore")
+            feed_authority_url = meta["final_url"]
+            if not same_host(authority_url, feed_authority_url):
+                # Feed URL itself was discovered on the validated issuer IR host.
+                # Accept its hosted-provider redirect only when the returned feed
+                # independently contains the issuer identity; otherwise fail closed.
+                redirected_authority = validated_authority_url(
+                    feed_authority_url,
+                    feed_text,
+                    base.get("issuer_tokens") or [sym],
+                )
+                if redirected_authority is None:
+                    attempt["result"] = "CROSS_HOST_REDIRECT_REJECTED"
+                    rec["feed_attempts"].append(attempt)
+                    continue
+                feed_authority_url = redirected_authority
+                attempt["cross_host_redirect_identity_validated"] = True
+                attempt["validated_authority_url"] = feed_authority_url
             items = feed_items(raw)
             attempt["parsed_items"] = len(items)
             for item in items:
@@ -475,8 +497,8 @@ def probe_issuer(sym: str, base: dict, asof: str, horizon: set[str]) -> dict:
                 event_date, basis = announced_event_date(item.get("title", ""), item.get("body", ""), asof)
                 if not event_date:
                     continue
-                link = urllib.parse.urljoin(meta["final_url"], item.get("link") or meta["final_url"])
-                if not same_host(authority_url, link):
+                link = urllib.parse.urljoin(feed_authority_url, item.get("link") or feed_authority_url)
+                if not (same_host(authority_url, link) or same_host(feed_authority_url, link)):
                     continue
                 rec["matches"].append({
                     "event_date": event_date,
@@ -484,7 +506,7 @@ def probe_issuer(sym: str, base: dict, asof: str, horizon: set[str]) -> dict:
                                       ("OUTSIDE_EXACT_8_SESSION_HORIZON" if event_date > max(horizon) else "NON_DECISION_DATE"),
                     "authority": "ISSUER_IR_PRIMARY",
                     "source_url": link,
-                    "feed_url": meta["final_url"],
+                    "feed_url": feed_authority_url,
                     "title": item.get("title", "")[:500],
                     "extraction_basis": basis,
                 })
@@ -508,14 +530,26 @@ def probe_issuer(sym: str, base: dict, asof: str, horizon: set[str]) -> dict:
                 accept="text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.5",
             )
             section_attempt.update(meta)
-            if not same_host(authority_url, meta["final_url"]):
-                section_attempt["result"] = "CROSS_HOST_REDIRECT_REJECTED"
-            else:
-                page = raw.decode("utf-8", "ignore")
+            page = raw.decode("utf-8", "ignore")
+            section_authority_url = meta["final_url"]
+            if not same_host(authority_url, section_authority_url):
+                redirected_authority = validated_authority_url(
+                    section_authority_url,
+                    page,
+                    base.get("issuer_tokens") or [sym],
+                )
+                if redirected_authority is None:
+                    section_attempt["result"] = "CROSS_HOST_REDIRECT_REJECTED"
+                    section_authority_url = None
+                else:
+                    section_authority_url = redirected_authority
+                    section_attempt["cross_host_redirect_identity_validated"] = True
+                    section_attempt["validated_authority_url"] = section_authority_url
+            if section_authority_url is not None:
                 if not issuer_identity_ok(page, base.get("issuer_tokens") or [sym]):
                     section_attempt["result"] = "ISSUER_IDENTITY_TOKEN_NOT_FOUND"
                 else:
-                    discovered = discover_ir_document_links(authority_url, page)
+                    discovered = discover_ir_document_links(section_authority_url, page)
                     discrete.update(discovered.get("discrete") or [])
                     section_attempt["discrete_discovered"] = len(discovered.get("discrete") or [])
                     section_attempt["result"] = "DISCOVERY_ONLY_PARSED"
@@ -663,6 +697,17 @@ def selftest() -> None:
         ["Silicon Motion"],
     ) is None
     assert not same_host("https://ir.siliconmotion.com", redirected)
+    redirected_feed = validated_authority_url(
+        "https://feeds.gcs-web.com/palantir/rss.xml",
+        "<rss><channel><title>Palantir Investor Relations</title></channel></rss>",
+        ["Palantir"],
+    )
+    assert redirected_feed and host(redirected_feed) == "feeds.gcs-web.com"
+    assert validated_authority_url(
+        "https://feeds.unrelated.example/rss.xml",
+        "<rss><channel><title>Generic market news</title></channel></rss>",
+        ["Palantir"],
+    ) is None
     links = discover_ir_document_links(
         "https://ir.example.com/",
         """
