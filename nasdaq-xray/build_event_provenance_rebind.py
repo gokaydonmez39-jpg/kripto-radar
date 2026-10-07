@@ -144,7 +144,6 @@ def load_valid_rows(req: dict):
             rows.append({"path":relpath(p),"file":p,"blob":blob_sha(p),"obj":j})
         except Exception:
             continue
-    assert rows, "NO_SEMANTICALLY_EQUIVALENT_EVENT_BRIDGE"
     return rows
 
 def select_active_event(rows):
@@ -251,6 +250,13 @@ def main() -> None:
     validate_request(req)
     request_blob=blob_sha(REQUEST)
     rows=load_valid_rows(req)
+    if not rows:
+        print("ready=false")
+        print("created=false")
+        print("pending_reason=EVENT_DISCOVERY_REQUIRED_NO_EQUIVALENT_BRIDGE")
+        print("request_blob_sha="+request_blob)
+        print("reason=UPSTREAM_EVENT_DISCOVERY_PENDING_FAIL_CLOSED")
+        return
     active=select_active_event(rows)
     pred=active["obj"]
     if exact_current_binding(pred,req,request_blob):
