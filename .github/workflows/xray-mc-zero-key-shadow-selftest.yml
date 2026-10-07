@@ -69,6 +69,7 @@ jobs:
           root=Path("nasdaq-xray")
           state=json.loads((root/"mc_zero_key_state.json").read_text())
           cand=json.loads((root/"sina_candidates.json").read_text())
+          support=json.loads((root/"sina_state.json").read_text())
           assert state["schema"]=="XRAY_MC_ZERO_KEY_V3", state.get("schema")
           assert state["execution"]=="NONE"
           assert state["real_money"]=="NO-GO"
@@ -76,22 +77,37 @@ jobs:
           assert state["alpha_authority"] is False
           assert state["pit_safe_shadow"] is True
           assert state["asof_et"]==cand["asof_et"], (state.get("asof_et"),cand.get("asof_et"))
-          assert state["direct_nasdaq_conservative_pass_count"]==len(state.get("direct_nasdaq_conservative_pass") or {})
-          assert state["definitive_fail_count"]==len(state.get("definitive_fail") or {})
-          assert state["unresolved_count"]==len(state.get("unresolved") or {})
-          total=(state["direct_nasdaq_conservative_pass_count"]+
-                 state["definitive_fail_count"]+
-                 state["unresolved_count"])
-          assert total==len(cand.get("candidates") or {}), (total,len(cand.get("candidates") or {}))
-          print(json.dumps({
-            "status":"MC_ZERO_KEY_CURRENT_SHADOW_VALID",
-            "asof_et":state["asof_et"],
-            "input_count":total,
-            "direct_shadow":state["direct_nasdaq_conservative_pass_count"],
-            "definitive_fail_shadow":state["definitive_fail_count"],
-            "unresolved":state["unresolved_count"],
-            "nasdaq_binding":state.get("nasdaq_snapshot_binding"),
-          },sort_keys=True))
+          if support.get("status")!="HISTORY_COMPLETE":
+              assert state["status"]=="WAITING_UPSTREAM_HISTORY",state
+              assert state["direct_nasdaq_conservative_pass_count"]==0,state
+              assert state["definitive_fail_count"]==0,state
+              assert state["unresolved_count"]==1,state
+              rec=(state.get("unresolved") or {}).get("__UPSTREAM_HISTORY__") or {}
+              assert rec.get("fail_closed") is True and rec.get("unknown_never_pass") is True,rec
+              print(json.dumps({
+                "status":"MC_ZERO_KEY_FAIL_CLOSED_UPSTREAM_HISTORY",
+                "asof_et":state["asof_et"],
+                "support_history_status":support.get("status"),
+                "unresolved":state["unresolved_count"],
+              },sort_keys=True))
+          else:
+              assert state["status"]=="READY",state
+              assert state["direct_nasdaq_conservative_pass_count"]==len(state.get("direct_nasdaq_conservative_pass") or {})
+              assert state["definitive_fail_count"]==len(state.get("definitive_fail") or {})
+              assert state["unresolved_count"]==len(state.get("unresolved") or {})
+              total=(state["direct_nasdaq_conservative_pass_count"]+
+                     state["definitive_fail_count"]+
+                     state["unresolved_count"])
+              assert total==len(cand.get("candidates") or {}), (total,len(cand.get("candidates") or {}))
+              print(json.dumps({
+                "status":"MC_ZERO_KEY_CURRENT_SHADOW_VALID",
+                "asof_et":state["asof_et"],
+                "input_count":total,
+                "direct_shadow":state["direct_nasdaq_conservative_pass_count"],
+                "definitive_fail_shadow":state["definitive_fail_count"],
+                "unresolved":state["unresolved_count"],
+                "nasdaq_binding":state.get("nasdaq_snapshot_binding"),
+              },sort_keys=True))
           PY
 
       - name: Persist current shadow artifact
