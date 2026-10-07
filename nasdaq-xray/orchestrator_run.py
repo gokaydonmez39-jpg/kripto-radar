@@ -58,14 +58,24 @@ def frozen_identity_partition_ok(ss):
             return False
         if policy=="MASTER_SPAC_UNKNOWN_PARTITION_V2_FROZEN_GUARD":
             discovery_total_ok=(int(dm.get("discovery_queue_total",-1))==raw)
-        elif policy=="MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V3_FROZEN_GUARD":
+        elif policy in {
+            "MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V3_FROZEN_GUARD",
+            "MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V4_EXACT_ASOF_SNAPSHOT_GUARD",
+        }:
             blank_count=int(dm.get("official_blank_checks_excluded_count",-1))
             blank_hash=str(dm.get("official_blank_checks_excluded_hash") or "")
             discovery_total_ok=bool(
                 blank_count>=0
-                and bool(blank_hash)
+                and blank_hash==hash_lines(sorted(set(dm.get("official_blank_checks_excluded_symbols") or [])))
+                if dm.get("official_blank_checks_excluded_symbols") is not None
+                else bool(blank_hash)
+            )
+            discovery_total_ok=bool(
+                discovery_total_ok
                 and int(dm.get("discovery_queue_total",-1))==raw+blank_count
             )
+            if policy=="MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V4_EXACT_ASOF_SNAPSHOT_GUARD":
+                discovery_total_ok=bool(discovery_total_ok and exact_asof_v4_identity_proofs_ok(ss))
         else:
             return False
         return bool(
@@ -87,6 +97,104 @@ def git_blob_sha(path):
     p=Path(path)
     b=p.read_bytes()
     return hashlib.sha1(f"blob {len(b)}\0".encode()+b).hexdigest()
+
+def _repo_rel_to_root(rel):
+    rel=str(rel or "")
+    if not rel.startswith("nasdaq-xray/") or ".." in Path(rel).parts:
+        return None
+    return ROOT/Path(rel).name
+
+
+def exact_asof_v4_identity_proofs_ok(ss):
+    """Validate V4 exact-ASOF identity witnesses without making market decisions."""
+    try:
+        dm=ss.get("discovery_meta") or {}
+        asof=str(ss.get("asof_et") or "")
+        stamp=asof.replace("-","")
+        if not re.fullmatch(r"20[0-9]{2}-[0-9]{2}-[0-9]{2}",asof):
+            return False
+
+        snap_rel=str(dm.get("membership_snapshot_path") or "")
+        sec_rel=str(dm.get("sec_spac_proof_path") or "")
+        ident_rel=str(dm.get("asof_identity_proof_path") or "")
+        if snap_rel!=f"nasdaq-xray/master_nasdaq_directory_snapshot_{stamp}.json":
+            return False
+        if sec_rel!=f"nasdaq-xray/master_sec_spac_proof_{stamp}.json":
+            return False
+        if ident_rel!=f"nasdaq-xray/master_asof_identity_proof_{stamp}.json":
+            return False
+
+        snap_p=_repo_rel_to_root(snap_rel)
+        sec_p=_repo_rel_to_root(sec_rel)
+        ident_p=_repo_rel_to_root(ident_rel)
+        if not all(p is not None and p.exists() for p in (snap_p,sec_p,ident_p)):
+            return False
+        if git_blob_sha(snap_p)!=str(dm.get("membership_snapshot_blob_sha") or ""):
+            return False
+        if git_blob_sha(sec_p)!=str(dm.get("sec_spac_proof_blob_sha") or ""):
+            return False
+        if git_blob_sha(ident_p)!=str(dm.get("asof_identity_proof_blob_sha") or ""):
+            return False
+
+        snap=json.loads(snap_p.read_text(encoding="utf-8"))
+        sec=json.loads(sec_p.read_text(encoding="utf-8"))
+        ident=json.loads(ident_p.read_text(encoding="utf-8"))
+        if not (
+            snap.get("schema")=="XRAY_NASDAQ_DIRECTORY_SNAPSHOT_V1"
+            and snap.get("asof_et")==asof
+            and snap.get("authority")=="IMMUTABLE_EXACT_ASOF_NASDAQ_DIRECTORY_MEMBERSHIP_SNAPSHOT"
+            and snap.get("applicability")=="EXACT_ASOF_MEMBERSHIP_ONLY_NO_FORWARD_CARRY"
+            and snap.get("execution")=="NONE" and snap.get("real_money")=="NO-GO"
+            and snap.get("unknown_never_pass") is True
+            and snap.get("membership_only") is True
+            and snap.get("identity_decisions_reused") is False
+            and snap.get("source_queue_classification_ignored") is True
+            and snap.get("source_directory_date")==asof
+        ):
+            return False
+        names=snap.get("security_names") or {}
+        industries=snap.get("industries") or {}
+        if int(snap.get("membership_count",-1))!=len(names) or int(snap.get("industry_count",-1))!=len(industries):
+            return False
+        if not set(industries)<=set(names) or not names:
+            return False
+
+        proofs=sec.get("proofs") or {}
+        if not (
+            sec.get("schema")=="XRAY_MASTER_SEC_SPAC_PROOF_V1"
+            and sec.get("asof_et")==asof
+            and sec.get("authority")=="SEC_EDGAR_SIC_6770_EXACT_ASOF"
+            and sec.get("applicability")=="EXACT_ASOF_ONLY_NO_FORWARD_CARRY"
+            and sec.get("execution")=="NONE" and sec.get("real_money")=="NO-GO"
+            and sec.get("unknown_never_pass") is True
+            and int(dm.get("sec_spac_proof_count",-1))==len(proofs)
+            and dm.get("sec_spac_proof_hash")==hash_lines(sorted(proofs))
+        ):
+            return False
+
+        groups={
+            "restore_to_asof":ident.get("restore_to_asof") or {},
+            "remove_from_asof":ident.get("remove_from_asof") or {},
+            "operating_overrides":ident.get("operating_overrides") or {},
+        }
+        if not (
+            ident.get("schema")=="XRAY_MASTER_ASOF_IDENTITY_PROOF_V1"
+            and ident.get("asof_et")==asof
+            and ident.get("authority")=="NASDAQTRADER_SEC_EXACT_ASOF_IDENTITY_RECONCILIATION"
+            and ident.get("applicability")=="EXACT_ASOF_ONLY_NO_FORWARD_CARRY"
+            and ident.get("execution")=="NONE" and ident.get("real_money")=="NO-GO"
+            and ident.get("unknown_never_pass") is True
+            and all(isinstance(v,dict) for v in groups.values())
+            and (dm.get("asof_identity_proof_counts") or {})=={k:len(v) for k,v in groups.items()}
+        ):
+            return False
+        sets=[set(v) for v in groups.values()]
+        if any(sets[a]&sets[b] for a in range(len(sets)) for b in range(a+1,len(sets))):
+            return False
+        return True
+    except Exception:
+        return False
+
 
 def immutable_membership_partition_ok(ss):
     try:
