@@ -988,6 +988,26 @@ def official_recent_listing_terminal(registry,sym,asof,exp30):
         return None
 
 
+def apply_official_recent_listing_fail_only(results,registry,asof,exp30):
+    """Terminalize only unresolved recent listings; never overwrite PASS/FAIL."""
+    changed=[]
+    if not isinstance(registry,dict):
+        return changed
+    for sym,row in sorted(results.items()):
+        if row.get("status") not in {"BLOCK_CURRENT_RUN","UNKNOWN"}:
+            continue
+        ev=official_recent_listing_terminal(registry,sym,asof,exp30)
+        if not ev:
+            continue
+        results[sym]={
+          "status":"FAIL_DV30_INSUFFICIENT_SESSIONS",
+          "info":ev,
+          "provenance":"OFFICIAL_RECENT_LISTING_FAIL_ONLY",
+        }
+        changed.append(sym)
+    return changed
+
+
 def load_official_halt_guard():
     try:
         guard=json.loads(OFFICIAL_GUARD.read_text())
@@ -1153,20 +1173,9 @@ def main():
     # the exact 30-session DV30 history cannot mathematically exist by ASOF.
     # This is fail-only and never manufactures a bar, price, volume, or PASS.
     official_listing_registry,official_listing_registry_meta=load_official_listing_registry()
-    official_listing_terminalized=[]
-    if official_listing_registry is not None:
-        for sym,row in sorted(results.items()):
-            if row.get("status")!="BLOCK_CURRENT_RUN":
-                continue
-            ev=official_recent_listing_terminal(official_listing_registry,sym,asof,exp30)
-            if not ev:
-                continue
-            results[sym]={
-              "status":"FAIL_DV30_INSUFFICIENT_SESSIONS",
-              "info":ev,
-              "provenance":"OFFICIAL_RECENT_LISTING_FAIL_ONLY",
-            }
-            official_listing_terminalized.append(sym)
+    official_listing_terminalized=apply_official_recent_listing_fail_only(
+        results,official_listing_registry,asof,exp30
+    )
 
     # Resolver BLOCK_CURRENT_RUN is fail-closed, but it must not silently
     # disappear from completeness. Re-evaluate non-halt blocks through the
