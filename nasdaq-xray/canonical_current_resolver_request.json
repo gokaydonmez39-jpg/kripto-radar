@@ -37,7 +37,7 @@
     "2026-10-06",
     "2026-10-07"
   ],
-  "master_unknown_count": 187,
+  "master_unknown_count": 185,
   "master_unknown_detail": {
     "AACI": {
       "exact_sec_spac_proof": false,
@@ -84,15 +84,6 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "AMAC": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "AMR Resources Acquisition Corp - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "APAC": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
@@ -126,15 +117,6 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Archimedes Tech SPAC Partners II Co. - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "BACC": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Blue Acquisition Corp. - Class A Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -1723,19 +1705,17 @@
       "unknown_never_pass": true
     }
   },
-  "master_unknown_hash": "b19f18a2d45ad1b8866275ca9930b1295bcd0e9857aa67539c5bb768807bb47d",
+  "master_unknown_hash": "c4231507654060786b208c137489b8b8032caff7ed4a326995b18df072cf883a",
   "master_unknown_symbols": [
     "AACI",
     "AACO",
     "ACAA",
     "ADAC",
     "ALPX",
-    "AMAC",
     "APAC",
     "ARTC",
     "ASPC",
     "ATII",
-    "BACC",
     "BCCQ",
     "BEAG",
     "BHAV",
@@ -4196,9 +4176,9 @@
   "settlement_policy": "ALPACA_HISTORICAL_SIP_DAILY_AFTER_15M__AAPL_NVDA_PLUS_ONE_PRIOR_CURRENT_CORE__RALLIES_LONGBRIDGE_QUOTE_OHLC_0_01_CROSSCHECK__SIP_VOLUME_AUTHORITY__FAIL_CLOSED__DELAYED_SIP_NEVER_G9",
   "settlement_required": false,
   "settlement_symbols": [],
-  "source_master_blob_sha": "b26f0214fd60836cc456913438b1c455b75694b7",
+  "source_master_blob_sha": "0b8f9b6e885434f268e379b52090f773527bdb9a",
   "source_master_path": "nasdaq-xray/canonical_current_master_manifest.json",
-  "source_overlay_blob_sha": "2c2ece8f5e968f1f8db9da09a06c90afc36771c5",
+  "source_overlay_blob_sha": "77713f6ef6796525e0185792a0db635450a6b701",
   "source_overlay_path": "nasdaq-xray/canonical_current_resolution_overlay.json",
   "source_pointer_blob_sha": "780d05bbcef06e2cf3e6e087878df844a86ca88d",
   "source_pointer_path": "nasdaq-xray/chatgpt_canonical_state_v2.json",
@@ -4215,9 +4195,9 @@
   "source_price_pass_count": 510,
   "source_price_pass_hash": "f6772e07d952c9c172a3370076537cbfc89128886e1a0e31d1142b2ebecf0438",
   "source_price_path": "nasdaq-xray/canonical_current_price_dv30.json",
-  "source_state_blob_sha": "09d28c9982feb062ab5e1bdf90159a385452ebfe",
+  "source_state_blob_sha": "afeec18840fc1a849b2f5112a158d72d19cf8ab2",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
-  "source_unknowns_blob_sha": "11f9a284a18e55eb6242897a2f41c99c7373faee",
+  "source_unknowns_blob_sha": "eed4eea86c7b1a94ec7335cc6c9ee8bc399e9fff",
   "source_unknowns_path": "nasdaq-xray/canonical_current_unknowns.json",
   "status": "READY",
   "symbol_count": 36,

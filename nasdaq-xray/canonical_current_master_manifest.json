@@ -1,7 +1,7 @@
 {
   "asof_et": "2026-10-07",
   "asof_identity_proof": {
-    "blob_sha": "0391f2c3174844014e4f101b93b96a81dbb5fe69",
+    "blob_sha": "9650514f293b66eb6edd7ec7bdbad954ad2c1a17",
     "counts": {
       "operating_overrides": 4,
       "remove_from_asof": 0,
@@ -29,18 +29,18 @@
   },
   "counts": {
     "PASS_IDENTITY": 3185,
-    "UNKNOWN_IDENTITY": 187
+    "UNKNOWN_IDENTITY": 185
   },
   "execution": "NONE",
-  "explicit_excluded_count": 2257,
-  "explicit_excluded_hash": "23b99f9f6eb34f058a5203bd746f611182735a8dd9d15e7de00e22bd6f2e65a8",
+  "explicit_excluded_count": 2259,
+  "explicit_excluded_hash": "89d3ef15b538e288f9c9867c6d2e8593b24d7196e6254ee968dd09b3a831b7da",
   "explicit_excluded_reason_counts": {
     "DEBT": 59,
     "ETF": 1293,
     "FUND": 32,
     "PREFERRED": 102,
     "RIGHT": 104,
-    "SPAC_BLANK_CHECK": 24,
+    "SPAC_BLANK_CHECK": 26,
     "TEST_ISSUE": 8,
     "UNIT": 260,
     "WARRANT": 372,
@@ -3252,22 +3252,22 @@
   "queue_hash": "306d6bb21e1ffef5f099f988ce995d0f98b349c051f34b4eed42613280444bdf",
   "queue_total": 3185,
   "queue_unique": 3185,
-  "raw_identity_total": 3372,
+  "raw_identity_total": 3370,
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1",
   "sec_spac_proof": {
-    "blob_sha": "9e9b507917e72fc8453a6b46b53d42135efbcc01",
-    "count": 24,
+    "blob_sha": "60d898ebaaae33d1931b1a6e0560a9d3f2affd4b",
+    "count": 26,
     "path": "nasdaq-xray/master_sec_spac_proof_20261007.json",
-    "symbol_hash": "ac854d74e0edcbe9e002b9748bb36f0d10af95b885ee279aa69c785a5942c545"
+    "symbol_hash": "ae9127efcc34829b9aab127e3053b02a06d1a67a767f3486e26a4fc5fd9f43c1"
   },
-  "source_state_blob_sha": "09d28c9982feb062ab5e1bdf90159a385452ebfe",
-  "source_state_hash": "e58d3505fe09d01c913ecbc9e0640ae854f2276180dfd2f38aff9262f409a367",
+  "source_state_blob_sha": "afeec18840fc1a849b2f5112a158d72d19cf8ab2",
+  "source_state_hash": "a6c2c8dde199731925388b0640bad7f7212a123888574d6242f5909b5062789a",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
   "status": "PARTIAL_UNKNOWN",
   "status_semantics": "IDENTITY_PARTITION_EXACT_WITH_UNKNOWN",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 187,
+  "unknown_count": 185,
   "unknown_detail": {
     "AACI": {
       "exact_sec_spac_proof": false,
@@ -3314,15 +3314,6 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "AMAC": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "AMR Resources Acquisition Corp - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "APAC": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
@@ -3356,15 +3347,6 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Archimedes Tech SPAC Partners II Co. - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "BACC": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Blue Acquisition Corp. - Class A Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -4960,12 +4942,10 @@
     "ACAA",
     "ADAC",
     "ALPX",
-    "AMAC",
     "APAC",
     "ARTC",
     "ASPC",
     "ATII",
-    "BACC",
     "BCCQ",
     "BEAG",
     "BHAV",
