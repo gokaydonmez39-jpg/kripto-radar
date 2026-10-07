@@ -1,0 +1,66 @@
+name: XRAY Event Official Primary Zero-Dollar Probe
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/event_official_primary_probe.py"
+      - "nasdaq-xray/event_ir_seed_registry.json"
+      - ".github/workflows/xray-event-official-primary-probe.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: xray-event-official-primary-probe
+  cancel-in-progress: true
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Compile and deterministic selftest
+        run: |
+          python -m py_compile nasdaq-xray/event_official_primary_probe.py
+          python nasdaq-xray/event_official_primary_probe.py --selftest
+
+      - name: Run zero-dollar issuer-primary live probe
+        run: python nasdaq-xray/event_official_primary_probe.py
+
+      - name: Fail-closed artifact validation and summary
+        run: |
+          python - <<'PY'
+          import json
+          p="nasdaq-xray/event_official_primary_probe_state.json"
+          j=json.load(open(p,encoding="utf-8"))
+          assert j["schema"]=="XRAY_EVENT_OFFICIAL_PRIMARY_PROBE_V1"
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          assert j["unknown_never_pass"] is True
+          assert j["classification_applied"] is False
+          for sym,r in j["results"].items():
+              assert r["classification_applied"] is False
+              if r["status"]!="UNKNOWN_OFFICIAL_PRIMARY_UNRESOLVED":
+                  matches=[m for x in r["issuer_probes"] for m in x.get("matches",[])]
+                  assert matches
+                  assert all(m["authority"]=="ISSUER_IR_PRIMARY" for m in matches)
+          print("EVENT_OFFICIAL_PRIMARY_PROBE_VALIDATION=PASS")
+          print(json.dumps({"counts":j["counts"],"scope_count":j["scope_count"]},sort_keys=True))
+          for sym,r in sorted(j["results"].items()):
+              if r["status"]!="UNKNOWN_OFFICIAL_PRIMARY_UNRESOLVED":
+                  print("CANDIDATE",sym,r["status"],r["selected_event_date"])
+          PY
+
+      - name: Upload non-canonical probe evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-event-official-primary-probe
+          path: nasdaq-xray/event_official_primary_probe_state.json
+          retention-days: 3
