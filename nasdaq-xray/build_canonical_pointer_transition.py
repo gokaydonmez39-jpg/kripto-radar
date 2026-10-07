@@ -37,6 +37,12 @@ def evidence(term,key):
     assert blob(p)==sha,(key,blob(p),sha)
     return load(p),rel,sha
 
+def pointer_transition_kind(prior_asof:str,target_asof:str):
+    assert str(target_asof)>=str(prior_asof),(prior_asof,target_asof)
+    if str(target_asof)==str(prior_asof):
+        return "SAME_ASOF_TERMINAL_EVIDENCE_REFRESH","SAME_ASOF_EXACT_EVIDENCE_REFRESH_PLUS_ONE"
+    return "NORMAL_TERMINAL_ADVANCE","NORMAL_EXACT_PLUS_ONE"
+
 def build(old:dict,term:dict,old_blob:str):
     rev=int(old["revision"]); state=old["state_json"]
     assert old["schema"]=="XRAY_GITHUB_DURABLE_STATE_V3"
@@ -60,7 +66,9 @@ def build(old:dict,term:dict,old_blob:str):
     # when the immutable terminal content actually changed; backward movement
     # and duplicate same-content revisions remain forbidden.
     assert asof>=prior_asof,(prior_asof,asof)
-    if asof==prior_asof:
+    transition_type,transition_prefix=pointer_transition_kind(prior_asof,asof)
+    same_asof_refresh=(asof==prior_asof)
+    if same_asof_refresh:
         assert prior_terminal_blob and prior_terminal_blob!=current_terminal_blob,(prior_terminal_blob,current_terminal_blob)
 
     # Re-measure every immutable research source before advancing durability.
@@ -200,17 +208,19 @@ def build(old:dict,term:dict,old_blob:str):
     nh=state_hash(nrev,ns)
     snap_rel=f"nasdaq-xray/state/REV{nrev}_{nh}.json"
     proof={
-      "transition_type":"NORMAL_TERMINAL_ADVANCE",
+      "transition_type":transition_type,
       "source_revision":rev,"source_state_hash":old["state_hash"],"source_pointer_blob_sha":old_blob,
       "source_terminal_path":"nasdaq-xray/canonical_current_terminal.json","source_terminal_blob_sha":blob(TERMINAL),
       "target_asof_et":asof,"target_terminal_result":term.get("terminal_result"),
-      "full_end_to_end_research_pass":full
+      "full_end_to_end_research_pass":full,
+      "same_asof_refresh":same_asof_refresh,
+      "alpha_or_candidate_promotion_by_pointer":False
     }
     np={
       "schema":"XRAY_GITHUB_DURABLE_STATE_V3","authority":"GITHUB_CURRENT_POINTER",
       "execution":"NONE","real_money":"NO-GO","revision":nrev,"state_hash":nh,
       "prev_state_hash":old["state_hash"],"state_json":ns,"source_proof":proof,
-      "transition_rule":"NORMAL_EXACT_PLUS_ONE;PREV_STATE_HASH_EQUALS_IMMEDIATE_PRIOR_STATE_HASH;TERMINAL_AND_IMMUTABLE_EVIDENCE_BLOBS_EXACT",
+      "transition_rule":transition_prefix+";PREV_STATE_HASH_EQUALS_IMMEDIATE_PRIOR_STATE_HASH;TERMINAL_AND_IMMUTABLE_EVIDENCE_BLOBS_EXACT",
       "immutable_snapshot_path":snap_rel,"storage_protocol":"GITHUB_CONTENTS_CAS_V1",
       "prev_pointer_blob_sha":old_blob,"writer_task_id":TASK,
       "state_hash_rule":"SHA256_UTF8(XRAY_STATE_REGISTER_V1\\n+REVISION+\\n+COMPACT_STATE_JSON_PRESERVE_KEY_ORDER)"
@@ -246,6 +256,10 @@ def selftest():
     assert pointer_exact_current(p,t,"NEW") is True
     assert pointer_exact_current(p,t,"OLD") is False
     assert pointer_exact_current(p,{"asof_et":"2026-01-02"},"NEW") is False
+    assert pointer_transition_kind("2026-01-01","2026-01-01")==(
+        "SAME_ASOF_TERMINAL_EVIDENCE_REFRESH","SAME_ASOF_EXACT_EVIDENCE_REFRESH_PLUS_ONE")
+    assert pointer_transition_kind("2026-01-01","2026-01-02")==(
+        "NORMAL_TERMINAL_ADVANCE","NORMAL_EXACT_PLUS_ONE")
     # Same-ASOF with changed immutable terminal evidence must require a new
     # revision; exact same terminal remains a no-op.
     assert s["deep_final_evidence"]["terminal_blob_sha"]=="NEW"
