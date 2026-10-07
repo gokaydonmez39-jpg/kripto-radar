@@ -4,7 +4,7 @@ import json, os, hashlib
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from datetime import datetime
-from price_dv30_phase import eval_one, expected30, sina, nasdaq, classify
+from price_dv30_phase import eval_one, expected30, sina, classify
 
 ROOT=Path(__file__).resolve().parent
 INPUT=Path(os.getenv("XRAY_FULLSTATE_INPUT",str(ROOT/"canonical_full_hard_gate_20260930_state.json")))
@@ -714,39 +714,17 @@ def valid_bridge_price_resolution(x,asof):
     return False
 
 def global_asof_sentinel_nonterminal(redo,asof,exp30):
-    """Fail-closed performance guard for a fresh full-universe ASOF publication lag.
+    """Disable the legacy dual-source publication fast-fail.
 
-    It may only reduce provider work; it never creates PASS/FAIL. If AAPL/MSFT/NVDA
-    are all nonterminal on BOTH Sina and Nasdaq official, the full redo set stays
-    UNKNOWN until a later scheduled run or authenticated resolver evidence.
+    Nasdaq web historical automation is intentionally disabled. A Sina-only
+    sentinel would be a single-source global freeze, so canonical recovery now
+    falls through to normal per-symbol fail-closed evaluation and authenticated
+    resolver evidence. This helper never creates PASS/FAIL.
     """
-    anchors=("AAPL","MSFT","NVDA")
-    rset=set(redo)
-    if not all(x in rset for x in anchors):
-        return False,{"status":"NOT_APPLICABLE","reason":"SENTINELS_NOT_ALL_IN_REDO"}
-    proof={}
-    for sym in anchors:
-        sby,sm=sina(sym,asof)
-        sst,sinfo=classify(sby,asof,exp30,"SINA_US_DAILY") if sby else ("UNKNOWN",{"reason":"SINA_UNAVAILABLE"})
-        nby,nm=nasdaq(sym,asof)
-        nst,ninfo=classify(nby,asof,exp30,"NASDAQ_OFFICIAL_HISTORICAL_API") if nby else ("UNKNOWN",{"reason":"NASDAQ_UNAVAILABLE"})
-        s_has_asof=bool(sby and asof in sby)
-        n_has_asof=bool(nby and asof in nby)
-        proof[sym]={
-          "sina_status":sst,"sina_result":sinfo,"sina_meta":sm,"sina_has_exact_asof":s_has_asof,
-          "nasdaq_status":nst,"nasdaq_result":ninfo,"nasdaq_meta":nm,"nasdaq_has_exact_asof":n_has_asof,
-        }
-        # The fast-fail guard is only for a global publication lag. Seeing an
-        # exact-ASOF bar on either zero-dollar source proves publication has
-        # begun even when exact30 remains incomplete/UNKNOWN. Fall back to the
-        # normal per-symbol fail-closed path; never manufacture PASS/FAIL here.
-        if s_has_asof or n_has_asof or sst!="UNKNOWN" or nst!="UNKNOWN":
-            return False,{"status":"TERMINAL_SENTINEL_OBSERVED","symbol":sym,"proof":proof}
-    return True,{
-      "status":"GLOBAL_SENTINELS_NONTERMINAL",
-      "reason":"AAPL_MSFT_NVDA_SINA_AND_NASDAQ_OFFICIAL_ALL_UNKNOWN",
+    return False,{
+      "status":"DISABLED_NO_SINGLE_SOURCE_GLOBAL_SENTINEL",
+      "reason":"NASDAQ_WEB_AUTOMATION_DISABLED_NORMAL_FAIL_CLOSED_PATH_REQUIRED",
       "no_pass_or_fail_created":True,
-      "proof":proof,
     }
 
 
@@ -1106,8 +1084,9 @@ def main():
 
     # Resolver BLOCK_CURRENT_RUN is fail-closed, but it must not silently
     # disappear from completeness. Re-evaluate non-halt blocks through the
-    # independent zero-dollar exact30 chain (Sina -> Nasdaq official -> Yahoo
-    # fail-only). Only terminal PASS/FAIL may replace the authenticated block.
+    # remaining zero-dollar local chain (Sina -> Yahoo fail-only). Nasdaq web
+    # automation is disabled; authenticated resolver evidence remains separate.
+    # Only terminal PASS/FAIL may replace the authenticated block.
     blocked_before=sorted(
         sym for sym,x in results.items()
         if x.get("status")=="BLOCK_CURRENT_RUN"
