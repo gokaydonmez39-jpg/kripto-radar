@@ -133,6 +133,20 @@ def select_one_active(rows: list[dict], wanted_role: str, *, queue_hash: str | N
     return active[0]
 
 
+def select_optional_active(rows: list[dict], wanted_role: str, *, queue_hash: str | None = None) -> dict | None:
+    """Return zero-or-one active role; zero is valid only for same-ASOF genesis."""
+    active = active_role(rows, wanted_role)
+    if queue_hash is not None:
+        active = [r for r in active if r["obj"].get("queue_hash") == queue_hash]
+    assert len(active) <= 1, (
+        "AMBIGUOUS_ACTIVE_RESOLVER_ROLE",
+        wanted_role,
+        queue_hash,
+        [r["path"] for r in active],
+    )
+    return active[0] if active else None
+
+
 def settlement_witness_relation(j: dict, master: dict) -> str | None:
     """Return the only two settlement reuse relations allowed for a current queue.
 
@@ -414,7 +428,7 @@ def classification_unchanged(predecessor_obj: dict, compact: dict) -> bool:
 
 
 def build_obj(master: dict, price: dict, request: dict, manifest: dict, compact: dict,
-              predecessor: dict, residual: dict, witness_path: str, witness_blob: str,
+              predecessor: dict | None, residual: dict, witness_path: str, witness_blob: str,
               witness: dict, witness_relation: str, version: int) -> dict:
     queue = list(master["pass_symbols"])
     passes = list(price["pass_symbols"])
@@ -429,7 +443,7 @@ def build_obj(master: dict, price: dict, request: dict, manifest: dict, compact:
         "UNRESOLVED": len(compact["unresolved_symbols"]),
         "TOTAL": len(queue),
     }
-    pred = predecessor["obj"]
+    pred = predecessor["obj"] if predecessor is not None else {}
     out = {
         "schema": "XRAY_RESOLVER_EPOCH_RESULT_V1",
         "status": "COMMITTED",
@@ -507,8 +521,8 @@ def build_obj(master: dict, price: dict, request: dict, manifest: dict, compact:
             "blocked_zero": len(blocked) == 0,
             "blocked_fail_only_residual_exact": set(blocked) == set(residual_symbols),
         },
-        "supersedes_resolver_bridge_path": predecessor["path"],
-        "supersedes_resolver_bridge_blob_sha": predecessor["blob"],
+        "supersedes_resolver_bridge_path": predecessor["path"] if predecessor is not None else None,
+        "supersedes_resolver_bridge_blob_sha": predecessor["blob"] if predecessor is not None else None,
         "current_handoff": {
             "price_path": PRICE_REL,
             "price_blob_sha": blob_sha(PRICE),
@@ -537,13 +551,14 @@ def build_obj(master: dict, price: dict, request: dict, manifest: dict, compact:
             "no_price_or_dv30_remeasurement": True,
             "settlement_reused_from_same_asof_current_queue_pass_authority": True,
             "settlement_witness_relation": witness_relation,
-            "predecessor_full_scope_role_scoped": True,
+            "predecessor_full_scope_role_scoped": predecessor is not None,
+            "full_scope_genesis": predecessor is None,
             "residual_authority_role_scoped": True,
         },
         "handoff_rebind": {
             "rule": "CURRENT_COMPLETE_CANONICAL_PRICE_PARTITION_TO_FULL_SCOPE_MC_HANDOFF_V1",
-            "predecessor_path": predecessor["path"],
-            "predecessor_blob_sha": predecessor["blob"],
+            "predecessor_path": predecessor["path"] if predecessor is not None else None,
+            "predecessor_blob_sha": predecessor["blob"] if predecessor is not None else None,
             "residual_authority_path": residual["path"],
             "residual_authority_blob_sha": residual["blob"],
             "source_master_blob_sha": blob_sha(MASTER),
@@ -552,14 +567,16 @@ def build_obj(master: dict, price: dict, request: dict, manifest: dict, compact:
             "source_manifest_blob_sha": blob_sha(MANIFEST),
             "no_alpha_threshold_change": True,
             "unknown_never_pass": True,
-            "no_classification_change": classification_unchanged(pred, compact),
+            "no_classification_change": (
+                False if predecessor is None else classification_unchanged(pred, compact)
+            ),
         },
     }
     return out
 
 
 def validate_output(obj: dict, master: dict, price: dict, request: dict, compact: dict,
-                    predecessor: dict, witness_path: str, witness_blob: str) -> None:
+                    predecessor: dict | None, witness_path: str, witness_blob: str) -> None:
     assert obj.get("schema") == "XRAY_RESOLVER_EPOCH_RESULT_V1"
     assert obj.get("status") == "COMMITTED"
     assert obj.get("bridge_role") == FULL_ROLE
@@ -579,10 +596,17 @@ def validate_output(obj: dict, master: dict, price: dict, request: dict, compact
     assert obj.get("settlement_status") == "PASS"
     assert obj.get("settlement_witness_path") == witness_path
     assert obj.get("settlement_witness_blob_sha") == witness_blob
-    assert obj.get("supersedes_resolver_bridge_path") == predecessor["path"]
-    assert obj.get("supersedes_resolver_bridge_blob_sha") == predecessor["blob"]
+    if predecessor is None:
+        assert obj.get("supersedes_resolver_bridge_path") is None
+        assert obj.get("supersedes_resolver_bridge_blob_sha") is None
+        assert (obj.get("audit") or {}).get("full_scope_genesis") is True
+    else:
+        assert obj.get("supersedes_resolver_bridge_path") == predecessor["path"]
+        assert obj.get("supersedes_resolver_bridge_blob_sha") == predecessor["blob"]
     rebind = obj.get("handoff_rebind") or {}
-    assert rebind.get("no_classification_change") is classification_unchanged(predecessor["obj"], compact)
+    assert rebind.get("no_classification_change") is (
+        False if predecessor is None else classification_unchanged(predecessor["obj"], compact)
+    )
     h = obj.get("current_handoff") or {}
     assert h.get("price_blob_sha") == blob_sha(PRICE)
     assert h.get("residual_request_blob_sha") == blob_sha(REQUEST)
@@ -636,6 +660,9 @@ def selftest() -> None:
     synthetic_witness["queue_hash"] = "current-hash"
     synthetic_witness["queue_total"] = 2
     assert settlement_witness_relation(synthetic_witness, synthetic_master) == "EXACT_QUEUE"
+    assert select_optional_active([], FULL_ROLE) is None
+    one=[{"path":"x","blob":"b","obj":{"bridge_role":FULL_ROLE},"role":FULL_ROLE}]
+    assert select_optional_active(one, FULL_ROLE) is one[0]
     print("XRAY_RESOLVER_FULL_SCOPE_HANDOFF_SELFTEST=PASS")
 
 
@@ -654,7 +681,7 @@ def main() -> None:
     queue, compact = validate_current(master, price, request, manifest)
 
     rows = resolver_rows(price["asof_et"])
-    predecessor = select_one_active(rows, FULL_ROLE)
+    predecessor = select_optional_active(rows, FULL_ROLE)
     current_full = active_role(rows, FULL_ROLE)
     exact = [r for r in current_full if full_scope_exact(r, master, price, request, compact)]
     if exact:
@@ -695,8 +722,8 @@ def main() -> None:
     print("created=true")
     print("path=" + relpath(out_path))
     print("generated_blob_sha=" + blob_sha(out_path))
-    print("predecessor_path=" + predecessor["path"])
-    print("predecessor_blob_sha=" + predecessor["blob"])
+    print("predecessor_path=" + (predecessor["path"] if predecessor is not None else "GENESIS_NONE"))
+    print("predecessor_blob_sha=" + (predecessor["blob"] if predecessor is not None else "GENESIS_NONE"))
     print("residual_authority_path=" + residual["path"])
     print("residual_authority_blob_sha=" + residual["blob"])
     print("settlement_witness_path=" + witness_path)
