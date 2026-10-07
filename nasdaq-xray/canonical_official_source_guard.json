@@ -13,7 +13,6 @@
       "OST",
       "PC",
       "SVA",
-      "TP",
       "UCFI",
       "UCFIW"
     ],
@@ -78,7 +77,6 @@
       "SPKLW",
       "SVA",
       "THRMV",
-      "TP",
       "UCFI",
       "UCFIW",
       "WALD",
@@ -87,7 +85,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-10-07T17:15:16.476845+00:00",
+  "generated_at_utc": "2026-10-07T17:28:07.993825+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -665,7 +663,7 @@
       "url": "https://www.nasdaqtrader.com/rss.aspx?feed=systemstatus&subject=SELFHELP"
     },
     "trade_halts": {
-      "active_halt_count": 13,
+      "active_halt_count": 12,
       "active_halt_symbols": [
         "BKKT.W",
         "EFTY",
@@ -677,13 +675,57 @@
         "OST",
         "PC",
         "SVA",
-        "TP",
         "UCFI",
         "UCFIW"
       ],
       "active_state_rule": "EXPLICIT_EMPTY_RESUMPTION_FIELDS_ONLY",
-      "item_count": 70,
+      "item_count": 73,
       "items": [
+        {
+          "HaltDate": "10/07/2026",
+          "HaltTime": "13:25:56.780",
+          "IssueName": "China SXT Pharma Class A Ords",
+          "IssueSymbol": "SXTC",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "10/07/2026",
+          "ResumptionQuoteTime": "13:25:56",
+          "ResumptionTradeTime": "",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/07/2026                    </td><td valign=\"top\">13:25:56.780</td><td valign=\"top\">SXTC</td><td valign=\"top\">China SXT Pharma Class A Ords</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/07/2026                    </td><td valign=\"top\">13:25:56                      </td><td valign=\"top\"></td></tr></table>",
+          "pubDate": "Wed, 07 Oct 2026 04:00:00 GMT",
+          "title": "SXTC"
+        },
+        {
+          "HaltDate": "10/07/2026",
+          "HaltTime": "13:24:58.980",
+          "IssueName": "Armada Acquisition Corp. II UT",
+          "IssueSymbol": "XRPNU",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "10/07/2026",
+          "ResumptionQuoteTime": "13:24:58",
+          "ResumptionTradeTime": "",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/07/2026                    </td><td valign=\"top\">13:24:58.980</td><td valign=\"top\">XRPNU</td><td valign=\"top\">Armada Acquisition Corp. II UT</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/07/2026                    </td><td valign=\"top\">13:24:58                      </td><td valign=\"top\"></td></tr></table>",
+          "pubDate": "Wed, 07 Oct 2026 04:00:00 GMT",
+          "title": "XRPNU"
+        },
+        {
+          "HaltDate": "10/07/2026",
+          "HaltTime": "13:18:33.456",
+          "IssueName": "Collective Acquisition Units",
+          "IssueSymbol": "CCAQU",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "10/07/2026",
+          "ResumptionQuoteTime": "13:18:33",
+          "ResumptionTradeTime": "13:23:33",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/07/2026                    </td><td valign=\"top\">13:18:33.456</td><td valign=\"top\">CCAQU</td><td valign=\"top\">Collective Acquisition Units</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/07/2026                    </td><td valign=\"top\">13:18:33                      </td><td valign=\"top\">13:23:33                      </td></tr></table>",
+          "pubDate": "Wed, 07 Oct 2026 04:00:00 GMT",
+          "title": "CCAQU"
+        },
         {
           "HaltDate": "10/07/2026",
           "HaltTime": "13:08:50.880",
@@ -692,10 +734,10 @@
           "Market": "AMEX",
           "PauseThresholdPrice": "",
           "ReasonCode": "M",
-          "ResumptionDate": "",
-          "ResumptionQuoteTime": "",
-          "ResumptionTradeTime": "",
-          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/07/2026                    </td><td valign=\"top\">13:08:50.880</td><td valign=\"top\">TP</td><td valign=\"top\">Ticketplus Ltd. Ordinary Shares</td><td valign=\"top\">AMEX</td><td valign=\"top\">M</td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td></tr></table>",
+          "ResumptionDate": "10/07/2026",
+          "ResumptionQuoteTime": "13:18:50",
+          "ResumptionTradeTime": "13:18:50",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/07/2026                    </td><td valign=\"top\">13:08:50.880</td><td valign=\"top\">TP</td><td valign=\"top\">Ticketplus Ltd. Ordinary Shares</td><td valign=\"top\">AMEX</td><td valign=\"top\">M</td><td valign=\"top\"></td><td valign=\"top\">10/07/2026                    </td><td valign=\"top\">13:18:50                      </td><td valign=\"top\">13:18:50                      </td></tr></table>",
           "pubDate": "Wed, 07 Oct 2026 04:00:00 GMT",
           "title": "TP"
         },
@@ -709,8 +751,8 @@
           "ReasonCode": "LUDP",
           "ResumptionDate": "10/07/2026",
           "ResumptionQuoteTime": "13:08:19",
-          "ResumptionTradeTime": "",
-          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/07/2026                    </td><td valign=\"top\">13:08:19.616</td><td valign=\"top\">BBCI</td><td valign=\"top\">Bradbury Capital Inc. Ord Shs</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/07/2026                    </td><td valign=\"top\">13:08:19                      </td><td valign=\"top\"></td></tr></table>",
+          "ResumptionTradeTime": "13:18:19",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/07/2026                    </td><td valign=\"top\">13:08:19.616</td><td valign=\"top\">BBCI</td><td valign=\"top\">Bradbury Capital Inc. Ord Shs</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/07/2026                    </td><td valign=\"top\">13:08:19                      </td><td valign=\"top\">13:18:19                      </td></tr></table>",
           "pubDate": "Wed, 07 Oct 2026 04:00:00 GMT",
           "title": "BBCI"
         },
