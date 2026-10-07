@@ -161,18 +161,29 @@ def main():
     candidates = candidate_missing_sessions(price)
     results = {}
     date_cache = {}
+    date_diagnostics = {}
     for sym, dates in sorted(candidates.items()):
         evidence = []
         errors = []
         for d in dates:
             if d not in date_cache:
                 try:
-                    date_cache[d] = ("PASS",) + fetch_rows(d)
+                    rows0, meta0 = fetch_rows(d)
+                    date_cache[d] = ("PASS", rows0, meta0)
+                    date_diagnostics[d] = {
+                        "status": "PASS",
+                        "row_count": len(rows0),
+                        "halt_dates": sorted({str(x.get("HaltDate") or "") for x in rows0 if x.get("HaltDate")}),
+                        "issue_symbols": sorted({str(x.get("IssueSymbol") or "").strip().upper() for x in rows0 if x.get("IssueSymbol")})[:200],
+                        "meta": meta0,
+                    }
                 except Exception as e:
-                    date_cache[d] = ("UNKNOWN", None, {
+                    err = {
                         "url": source_url(d),
                         "reason": f"{type(e).__name__}:{str(e)[:180]}",
-                    })
+                    }
+                    date_cache[d] = ("UNKNOWN", None, err)
+                    date_diagnostics[d] = {"status": "UNKNOWN", **err}
             status, rows, meta = date_cache[d]
             if status != "PASS":
                 errors.append({"session_date": d, **meta})
@@ -205,6 +216,7 @@ def main():
         "candidate_scope": sorted(candidates),
         "candidate_scope_count": len(candidates),
         "queried_dates": sorted(date_cache),
+        "date_diagnostics": date_diagnostics,
         "results": results,
         "rule": "ONLY_OFFICIAL_NASDAQ_HISTORICAL_HALT_ROWS_CAN_EXPLAIN_NEAR_COMPLETE_EXACT30_GAPS;NO_EVIDENCE_REMAINS_UNKNOWN",
     }
