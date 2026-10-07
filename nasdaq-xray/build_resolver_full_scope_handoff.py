@@ -408,6 +408,11 @@ def next_path(asof: str) -> tuple[Path, int]:
     return ROOT / f"canonical_resolver_bridge_{stamp}_c417_dv30_v{n}.json", n
 
 
+def classification_unchanged(predecessor_obj: dict, compact: dict) -> bool:
+    """True only when the predecessor full-scope classification is byte-semantic equal."""
+    return (predecessor_obj.get("price_resolution_compact") or {}) == compact
+
+
 def build_obj(master: dict, price: dict, request: dict, manifest: dict, compact: dict,
               predecessor: dict, residual: dict, witness_path: str, witness_blob: str,
               witness: dict, witness_relation: str, version: int) -> dict:
@@ -547,7 +552,7 @@ def build_obj(master: dict, price: dict, request: dict, manifest: dict, compact:
             "source_manifest_blob_sha": blob_sha(MANIFEST),
             "no_alpha_threshold_change": True,
             "unknown_never_pass": True,
-            "no_classification_change": True,
+            "no_classification_change": classification_unchanged(pred, compact),
         },
     }
     return out
@@ -576,6 +581,8 @@ def validate_output(obj: dict, master: dict, price: dict, request: dict, compact
     assert obj.get("settlement_witness_blob_sha") == witness_blob
     assert obj.get("supersedes_resolver_bridge_path") == predecessor["path"]
     assert obj.get("supersedes_resolver_bridge_blob_sha") == predecessor["blob"]
+    rebind = obj.get("handoff_rebind") or {}
+    assert rebind.get("no_classification_change") is classification_unchanged(predecessor["obj"], compact)
     h = obj.get("current_handoff") or {}
     assert h.get("price_blob_sha") == blob_sha(PRICE)
     assert h.get("residual_request_blob_sha") == blob_sha(REQUEST)
@@ -604,6 +611,11 @@ def selftest() -> None:
     assert set(c["pass_price_dv30"]) == {"CCC"}
     assert set(c["block_current_run"]) == {"EEE"}
     assert not c["unresolved_symbols"]
+    assert classification_unchanged({"price_resolution_compact": c}, c) is True
+    changed=dict(c)
+    changed["pass_price_dv30"]=dict(c["pass_price_dv30"])
+    changed["pass_price_dv30"]["FFF"]=[20.0, 100_000_000.0]
+    assert classification_unchanged({"price_resolution_compact": c}, changed) is False
     synthetic_master = {
         "queue_hash": "current-hash",
         "queue_total": 2,
