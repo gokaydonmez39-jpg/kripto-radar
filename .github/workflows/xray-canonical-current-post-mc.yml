@@ -47,7 +47,7 @@ permissions:
 concurrency:
   # Only production-relevant source/authority changes trigger this workflow.
   # A newer exact authority makes the older run non-publishable, so latest wins.
-  group: xray-canonical-current-post-mc-v9
+  group: xray-canonical-current-post-mc-v10
   cancel-in-progress: true
 
 jobs:
