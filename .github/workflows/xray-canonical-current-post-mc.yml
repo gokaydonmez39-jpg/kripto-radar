@@ -51,7 +51,7 @@ concurrency:
   # fail-closed again at the commit-stage exact diff guard (STALE_SOURCE_ABORT).
   # This prevents skipped/non-authoritative workflow_run events from starving the
   # long HISTORY/Stage1 rebuild by repeatedly cancelling it before publication.
-  group: xray-canonical-current-post-mc-v11
+  group: xray-canonical-current-post-mc-v12
   cancel-in-progress: false
 
 jobs:
