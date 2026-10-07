@@ -54,7 +54,7 @@ DATE_PATTERNS = [
     re.compile(r"(?<!\d)(\d{1,2})[/-](\d{1,2})[/-](20\d{2})(?!\d)"),
 ]
 MONTH_DAY_NO_YEAR_RE = re.compile(
-    MONTH_RE + r"\.?s+(\d{1,2})(?:st|nd|rd|th)?(?!\d)(?!\s*[,]?\s*20\d{2})",
+    MONTH_RE + r"\.?\s+(\d{1,2})(?:st|nd|rd|th)?(?!\d)(?!\s*[,]?\s*20\d{2})",
     re.I,
 )
 EARNINGS_RE = re.compile(
