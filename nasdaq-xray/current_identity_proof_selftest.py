@@ -195,6 +195,36 @@ def main():
         assert frozen2 is not None and frozen2[0]["OPER"]=="Operating Corp. - Common Stock"
         assert m.parse_footer_date(frozen2[2])=="2026-10-06"
 
+    # Transport fallback must accept only a recent prior SEC SIC 6770 proof
+    # that is revalidated by the exact-ASOF Nasdaq identity snapshot. This is
+    # exclusion-only evidence and can never create alpha PASS.
+    with tempfile.TemporaryDirectory() as td:
+        sec_path=Path(td)/"master_sec_spac_proof_20261006.json"
+        fallback_row=m.prior_blank_fallback(
+            "TLAC",
+            {"cik":"0002128462","sic":6770,"classification":"Blank Checks",
+             "source_url":"https://www.sec.gov/edgar/browse/?CIK=2128462",
+             "evidence_date":"2026-09-01"},
+            "2026-10-06",
+            {"TLAC":"Three Lions Acquisition Corp."},
+            {"TLAC":""},
+        )
+        assert fallback_row is not None
+        fallback_row["same_asof_nasdaq_directory_footer"]="File Creation Time: 1006202618:01|||||||"
+        sec_path.write_text(json.dumps({
+          "schema":"XRAY_MASTER_SEC_SPAC_PROOF_V1",
+          "asof_et":"2026-10-06",
+          "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
+          "authority":"SEC_EDGAR_SIC_6770_EXACT_ASOF",
+          "applicability":"EXACT_ASOF_ONLY_NO_FORWARD_CARRY",
+          "proofs":{"TLAC":fallback_row},
+        }))
+        assert m.validate_existing_sec(sec_path,"2026-10-06")
+        bad=json.loads(sec_path.read_text())
+        bad["proofs"]["TLAC"]["revalidation_semantics"]="UNSAFE_FORWARD_CARRY"
+        sec_path.write_text(json.dumps(bad))
+        assert not m.validate_existing_sec(sec_path,"2026-10-06")
+
     print("XRAY_CURRENT_IDENTITY_PROOF_SELFTEST=PASS")
 
 if __name__=="__main__":
