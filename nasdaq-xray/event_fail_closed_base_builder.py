@@ -17,6 +17,8 @@ from pathlib import Path
 
 from build_event_provenance_rebind import (
     blob_sha,
+    build_successor_obj,
+    event_semantic_snapshot,
     exact_current_binding,
     next_successor_path,
     select_active_event,
@@ -82,16 +84,14 @@ def validate_request(req: dict) -> None:
         assert fp.exists() and blob_sha(fp) == s, (key, p, s)
 
 
-def exact_current_rows(req: dict) -> list[dict]:
+def scope_equivalent_rows(req: dict) -> list[dict]:
+    """Same-ASOF/same-policy/same-scope bridges, regardless of source blob rebinding."""
     stamp = str(req["asof_et"]).replace("-", "")
-    request_blob = blob_sha(REQUEST)
     rows = []
     for path in sorted(ROOT.glob(f"canonical_event_bridge_{stamp}_c417*.json")):
         try:
             obj = json.loads(path.read_text(encoding="utf-8"))
             validate_bridge_scope(obj, req)
-            if not exact_current_binding(obj, req, request_blob):
-                continue
             rows.append({
                 "path": relpath(path),
                 "file": path,
@@ -101,6 +101,14 @@ def exact_current_rows(req: dict) -> list[dict]:
         except Exception:
             continue
     return rows
+
+
+def exact_current_rows(req: dict) -> list[dict]:
+    request_blob = blob_sha(REQUEST)
+    return [
+        r for r in scope_equivalent_rows(req)
+        if exact_current_binding(r["obj"], req, request_blob)
+    ]
 
 
 def build_base(req: dict, version: int) -> dict:
@@ -261,6 +269,19 @@ def selftest() -> None:
         stale = deepcopy(out)
         stale["source_stage1_blob_sha"] = "stale-stage1"
         assert exact_current_binding(stale, req, request_blob) is False
+        rebound = build_successor_obj(
+            stale,
+            "nasdaq-xray/canonical_event_bridge_20261007_c417_dv30_v1.json",
+            "predecessor-blob",
+            req,
+            request_blob,
+            2,
+        )
+        validate_bridge_scope(rebound, req)
+        assert exact_current_binding(rebound, req, request_blob) is True
+        assert event_semantic_snapshot(rebound) == event_semantic_snapshot(stale)
+        assert rebound["event_status_by_symbol"] == stale["event_status_by_symbol"]
+        assert rebound["unresolved"] == stale["unresolved"]
     finally:
         REQUEST = old
         try:
@@ -281,13 +302,56 @@ def main() -> None:
 
     req = json.loads(REQUEST.read_text(encoding="utf-8"))
     validate_request(req)
-    rows = exact_current_rows(req)
-    if rows:
-        active = select_active_event(rows)
+    request_blob = blob_sha(REQUEST)
+    rows = scope_equivalent_rows(req)
+    exact_rows = [
+        r for r in rows
+        if exact_current_binding(r["obj"], req, request_blob)
+    ]
+    if exact_rows:
+        active = select_active_event(exact_rows)
         print(json.dumps({
             "status": "EXACT_CURRENT_EVENT_BRIDGE_EXISTS",
             "path": active["path"],
             "blob_sha": active["blob"],
+        }, sort_keys=True))
+        return
+
+    # If Event scope/horizon/policy are unchanged but upstream source blobs were
+    # deterministically rebuilt, preserve the already-proven Event decisions
+    # and create an immutable provenance-only successor. Do not reset valid
+    # issuer-primary evidence to UNKNOWN merely because source provenance moved.
+    if rows:
+        active = select_active_event(rows)
+        out_path, version = next_successor_path(req)
+        if out_path.exists():
+            raise RuntimeError("EVENT_BASE_IMMUTABLE_PATH_CONFLICT")
+        obj = build_successor_obj(
+            active["obj"], active["path"], active["blob"],
+            req, request_blob, version,
+        )
+        validate_bridge_scope(obj, req)
+        assert exact_current_binding(obj, req, request_blob)
+        assert event_semantic_snapshot(obj) == event_semantic_snapshot(active["obj"])
+        if args.dry_run:
+            print(json.dumps({
+                "status": "DRY_RUN_BASE_REQUIRED",
+                "path": relpath(out_path),
+                "version": version,
+                "reason": "PROVENANCE_ONLY_EVENT_REBIND_NO_REDISCOVERY",
+            }, sort_keys=True))
+            return
+        out_path.write_text(
+            json.dumps(obj, ensure_ascii=False, sort_keys=True, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        print(json.dumps({
+            "status": "BASE_CANDIDATE_WRITTEN_LOCAL_ONLY",
+            "path": relpath(out_path),
+            "blob_sha": blob_sha(out_path),
+            "weekly_unknown": obj["unresolved_count"],
+            "affected_geometry_unknown": obj["affected_geometry_event_unknown_count"],
+            "reason": "PROVENANCE_ONLY_EVENT_REBIND_NO_REDISCOVERY",
         }, sort_keys=True))
         return
 
