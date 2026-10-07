@@ -67,6 +67,30 @@ jobs:
               assert rec["nasdaq_market_cap_usd"]>0
           if state["same_session_post_close"] is not True:
               assert state["eligible_count"]==0
+          from datetime import datetime,time
+          retrieved_et=datetime.fromisoformat(state["retrieved_at_et"])
+          post_close_clock=retrieved_et.timetz().replace(tzinfo=None)>=time(16,10)
+          raw_matches=[]
+          if post_close_clock:
+              capture_date=retrieved_et.date().isoformat()
+              raw_matches=sorted((root/"evidence"/"nasdaq_screener_raw").glob(
+                  "nasdaq_screener_raw_"+capture_date.replace("-","")+"_*.json"
+              ))
+              assert raw_matches,("RAW_POST_CLOSE_ARCHIVE_MISSING",capture_date)
+              exact=[]
+              for rp in raw_matches:
+                  rj=json.loads(rp.read_text())
+                  if rj.get("retrieved_at_utc")==state.get("retrieved_at_utc"):
+                      exact.append((rp,rj))
+              assert len(exact)==1,("RAW_CAPTURE_EXACT_TIMESTAMP_BINDING",len(exact))
+              rp,rj=exact[0]
+              assert rj["schema"]=="XRAY_NASDAQ_SCREENER_RAW_CAPTURE_V1"
+              assert rj["post_close_clock"] is True
+              assert rj["capture_date_et"]==capture_date
+              assert rj["alpha_authority"] is False
+              assert rj["production_mc_authority_changed"] is False
+              assert rj["decision_semantics"]=="RAW_EVIDENCE_ONLY_NO_MC_CLASSIFICATION"
+              assert int(rj["record_count"])>=1000
           print(json.dumps({
               "status":"NASDAQ_SCREENER_PIT_CAPTURE_VALID",
               "asof_et":state["asof_et"],
@@ -75,6 +99,8 @@ jobs:
               "eligible_count":state["eligible_count"],
               "unknown_count":state["unknown_count"],
               "reason_counts":state["reason_counts"],
+              "raw_post_close_clock":post_close_clock,
+              "raw_exact_archive_count":1 if post_close_clock else 0,
           },sort_keys=True))
           PY
 
@@ -87,6 +113,9 @@ jobs:
           git add nasdaq-xray/nasdaq_screener_pit_current.json
           if [ -d nasdaq-xray/evidence/nasdaq_screener_pit ]; then
             git add nasdaq-xray/evidence/nasdaq_screener_pit
+          fi
+          if [ -d nasdaq-xray/evidence/nasdaq_screener_raw ]; then
+            git add nasdaq-xray/evidence/nasdaq_screener_raw
           fi
           if git diff --cached --quiet; then
             echo "No screener PIT evidence change."
@@ -110,5 +139,6 @@ jobs:
           path: |
             nasdaq-xray/nasdaq_screener_pit_current.json
             nasdaq-xray/evidence/nasdaq_screener_pit/
+            nasdaq-xray/evidence/nasdaq_screener_raw/
           if-no-files-found: warn
           retention-days: 14
