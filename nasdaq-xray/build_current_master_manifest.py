@@ -14,6 +14,7 @@ ALLOWED_EXCLUSION_REASONS={
 FULL_IDENTITY_AUTHORITIES={
   "FULL_IDENTITY_NO_PREFILTER",
   "CANONICAL_FROZEN_FULL_IDENTITY_SAME_ASOF",
+  "IMMUTABLE_EXACT_ASOF_MEMBERSHIP_SNAPSHOT_NO_MARKET_DECISIONS",
 }
 
 def valid_full_identity_authority(dm):
@@ -48,7 +49,7 @@ def valid_sec_spac_proof_binding(dm,asof):
             return False
         j=json.loads(p.read_text())
         proofs=j.get("proofs") or {}
-        return bool(
+        if not (
           j.get("schema")=="XRAY_MASTER_SEC_SPAC_PROOF_V1"
           and j.get("execution")=="NONE" and j.get("real_money")=="NO-GO"
           and j.get("unknown_never_pass") is True
@@ -56,8 +57,34 @@ def valid_sec_spac_proof_binding(dm,asof):
           and j.get("applicability")=="EXACT_ASOF_ONLY_NO_FORWARD_CARRY"
           and j.get("asof_et")==asof
           and isinstance(proofs,dict) and len(proofs)==n
-          and all(isinstance(x,dict) and int(x.get("sic",-1))==6770 for x in proofs.values())
-        )
+        ):
+            return False
+        for row in proofs.values():
+            if not isinstance(row,dict) or int(row.get("sic",-1))!=6770:
+                return False
+            if row.get("same_asof_revalidated_without_sec_network") is True:
+                if row.get("revalidation_semantics")!="PRIOR_SEC_SIC6770_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS":
+                    return False
+                source=str(row.get("source_url") or "")
+                evidence=str(row.get("evidence_date") or "")
+                footer=str(row.get("same_asof_nasdaq_directory_footer") or "")
+                if not source.startswith("https://www.sec.gov/") or not re.fullmatch(r"20\d{2}-\d{2}-\d{2}",evidence) or evidence>asof:
+                    return False
+                try:
+                    from datetime import datetime
+                    age=(datetime.fromisoformat(asof)-datetime.fromisoformat(evidence)).days
+                    if age<0 or age>120 or not official_footer_asof_exact(footer,asof):
+                        return False
+                except Exception:
+                    return False
+                current_name=str(row.get("same_asof_nasdaq_security_name") or "")
+                industry=str(row.get("same_asof_nasdaq_screener_industry") or "")
+                if not (
+                  re.search(r"\bacquisition\b|\bspac\b|\bblank[ -]?check\b",current_name,re.I)
+                  or industry.strip().lower()=="blank checks"
+                ):
+                    return False
+        return True
     except Exception:
         return False
 
