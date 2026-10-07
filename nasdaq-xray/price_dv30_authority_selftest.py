@@ -15,12 +15,36 @@ ASOF="2026-10-06"
 
 def main():
     master=json.loads((ROOT/"canonical_current_master_manifest.json").read_text())
-    queue=list(master.get("pass_symbols") or [])
-    assert queue and len(queue)==int(master.get("pass_count",-1))
+    request=json.loads((ROOT/"canonical_current_resolver_request.json").read_text())
+    master_queue=list(master.get("pass_symbols") or [])
+    assert master_queue and len(master_queue)==int(master.get("pass_count",-1))
+    assert request.get("schema")=="XRAY_RESOLVER_EPOCH_REQUEST_V1"
+    assert request.get("asof_et")==ASOF
+    queue=list(request.get("symbols") or [])
+    assert queue and len(queue)==int(request.get("symbol_count",-1))
+    assert set(queue).issubset(set(master_queue))
+    assert set(queue)==set(request.get("price_unknown_symbols") or [])|set(request.get("price_blocked_symbols") or [])
 
+    # Rallies primary must cover the exact resolver scope that can receive a
+    # PASS/BLOCK decision. Requiring it to cover the entire identity-pass
+    # universe is incorrect because already-terminal PRICE failures never
+    # enter the resolver request and can include new identity survivors.
     primary,meta=load_c417_rallies_primary(ASOF,queue)
     assert primary is not None,meta
     assert meta.get("status")=="PASS",meta
+    assert meta.get("current_queue_count")==len(queue),meta
+    missing_from_primary=set(master_queue)-(
+        set((primary.get("fail_price") or {}).keys())
+        | set((primary.get("fail_dv30") or {}).keys())
+        | set((primary.get("pass_price_dv30") or {}).keys())
+        | set((primary.get("block_current_run") or {}).keys())
+    )
+    assert "ALIS" in missing_from_primary,missing_from_primary
+    assert "ALIS" not in set(queue),queue
+    rejected,rejected_meta=load_c417_rallies_primary(ASOF,queue+["ALIS"])
+    assert rejected is None,rejected
+    assert rejected_meta.get("status")=="UNKNOWN",rejected_meta
+    assert "RALLIES_PRIMARY_CURRENT_QUEUE_COVERAGE" in rejected_meta.get("reason",""),rejected_meta
     assert "AAPL" in (primary.get("pass_price_dv30") or {})
     assert "GRAL" in (primary.get("block_current_run") or {})
     gral_block=(primary.get("block_current_run") or {})["GRAL"]
