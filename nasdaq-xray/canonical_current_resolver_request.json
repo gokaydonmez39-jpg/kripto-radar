@@ -951,101 +951,9 @@
     "ACCV": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "dv30_lower_bound": 0.0,
-            "dv30_upper_bound": null,
-            "known_session_count": 5,
-            "missing_sessions": [
-              "2026-08-25",
-              "2026-08-26",
-              "2026-08-27",
-              "2026-08-28",
-              "2026-08-31",
-              "2026-09-01",
-              "2026-09-02",
-              "2026-09-03",
-              "2026-09-04",
-              "2026-09-08",
-              "2026-09-09",
-              "2026-09-10",
-              "2026-09-11",
-              "2026-09-14",
-              "2026-09-15",
-              "2026-09-16",
-              "2026-09-17",
-              "2026-09-18",
-              "2026-09-21",
-              "2026-09-22",
-              "2026-09-23",
-              "2026-09-24",
-              "2026-09-25",
-              "2026-09-28",
-              "2026-09-29"
-            ],
-            "no_synthetic_bar": true,
-            "price": 16.4,
-            "reason": "EXACT30_INCOMPLETE_NEVER_PASS",
-            "source": "SINA_US_DAILY"
-          },
-          "yahoo_result": {
-            "dv30_lower_bound": 0.0,
-            "dv30_upper_bound": null,
-            "known_session_count": 1,
-            "missing_sessions": [
-              "2026-08-25",
-              "2026-08-26",
-              "2026-08-27",
-              "2026-08-28",
-              "2026-08-31",
-              "2026-09-01",
-              "2026-09-02",
-              "2026-09-03",
-              "2026-09-04",
-              "2026-09-08",
-              "2026-09-09",
-              "2026-09-10",
-              "2026-09-11",
-              "2026-09-14",
-              "2026-09-15",
-              "2026-09-16",
-              "2026-09-17",
-              "2026-09-18",
-              "2026-09-21",
-              "2026-09-22",
-              "2026-09-23",
-              "2026-09-24",
-              "2026-09-25",
-              "2026-09-28",
-              "2026-09-29",
-              "2026-09-30",
-              "2026-10-01",
-              "2026-10-02",
-              "2026-10-05"
-            ],
-            "no_synthetic_bar": true,
-            "price": 16.399999618530273,
-            "reason": "EXACT30_INCOMPLETE_NEVER_PASS",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY"
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "usable": 5
-          },
-          "yahoo": {
-            "exchangeName": "NMS",
-            "usable": 1
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "Accelevation Holdings Corp. - Class A ordinary shares"
@@ -1053,33 +961,9 @@
     "ACFN": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "SINA_UNAVAILABLE"
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "error": "SyntaxError:invalid syntax (<string>, line 1)"
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "Acorn Energy, Inc. - Common Stock"
@@ -1087,33 +971,9 @@
     "ADAM": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "SINA_UNAVAILABLE"
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "error": "SyntaxError:invalid syntax (<string>, line 1)"
-          },
-          "yahoo": {
-            "exchangeName": "NMS",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "Adamas Trust, Inc. - Common Stock"
@@ -1121,63 +981,9 @@
     "ADRX": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "dv30_lower_bound": 0.0,
-            "dv30_upper_bound": null,
-            "known_session_count": 8,
-            "missing_sessions": [
-              "2026-08-25",
-              "2026-08-26",
-              "2026-08-27",
-              "2026-08-28",
-              "2026-08-31",
-              "2026-09-01",
-              "2026-09-02",
-              "2026-09-03",
-              "2026-09-04",
-              "2026-09-08",
-              "2026-09-09",
-              "2026-09-10",
-              "2026-09-11",
-              "2026-09-14",
-              "2026-09-15",
-              "2026-09-16",
-              "2026-09-17",
-              "2026-09-18",
-              "2026-09-21",
-              "2026-09-22",
-              "2026-09-23",
-              "2026-09-24"
-            ],
-            "no_synthetic_bar": true,
-            "price": 18.58,
-            "reason": "EXACT30_INCOMPLETE_NEVER_PASS",
-            "source": "SINA_US_DAILY"
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 7
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "usable": 8
-          },
-          "yahoo": {
-            "exchangeName": "NMS",
-            "usable": 7
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "ADARx Pharmaceuticals, Inc. - Common stock"
@@ -1185,33 +991,9 @@
     "AEC": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "SINA_UNAVAILABLE"
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "error": "SyntaxError:invalid syntax (<string>, line 1)"
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "Anfield Energy Inc. - Common Shares"
@@ -1219,35 +1001,9 @@
     "AFJK": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 484
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "usable": 484
-          },
-          "yahoo": {
-            "exchangeName": "NGM",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "Aimei Health Technology Co., Ltd - Ordinary Share"
@@ -1255,33 +1011,9 @@
     "ALTI": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "SINA_UNAVAILABLE"
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "error": "SyntaxError:invalid syntax (<string>, line 1)"
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "AlTi Global, Inc. - Class A Common Stock"
@@ -1289,33 +1021,9 @@
     "ASTI": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "SINA_UNAVAILABLE"
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "error": "SyntaxError:invalid syntax (<string>, line 1)"
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "Ascent Solar Technologies, Inc - Common Stock"
@@ -1323,35 +1031,9 @@
     "BLFS": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 3143
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "usable": 3143
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "BioLife Solutions, Inc. - Common Stock"
@@ -1359,35 +1041,9 @@
     "BLIV": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 296
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "usable": 296
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "BeLive Holdings - ordinary shares"
@@ -1395,58 +1051,9 @@
     "BRBI": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "dv30_lower_bound": 0.0,
-            "dv30_upper_bound": null,
-            "known_session_count": 13,
-            "missing_sessions": [
-              "2026-08-27",
-              "2026-08-31",
-              "2026-09-03",
-              "2026-09-08",
-              "2026-09-14",
-              "2026-09-15",
-              "2026-09-17",
-              "2026-09-18",
-              "2026-09-21",
-              "2026-09-22",
-              "2026-09-23",
-              "2026-09-24",
-              "2026-09-25",
-              "2026-09-28",
-              "2026-09-29",
-              "2026-09-30",
-              "2026-10-02"
-            ],
-            "no_synthetic_bar": true,
-            "price": 13.69,
-            "reason": "EXACT30_INCOMPLETE_NEVER_PASS",
-            "source": "SINA_US_DAILY"
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "usable": 198
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "BRBI BR Partners S.A. - ADSs"
@@ -1454,35 +1061,9 @@
     "CCCT": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 27
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 46
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "usable": 27
-          },
-          "yahoo": {
-            "exchangeName": "NGM",
-            "usable": 46
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "Columbus Circle Capital Corp III - Class A Ordinary Shares"
@@ -1490,59 +1071,9 @@
     "CEPV": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "dv30_lower_bound": 0.0,
-            "dv30_upper_bound": null,
-            "known_session_count": 12,
-            "missing_sessions": [
-              "2026-08-25",
-              "2026-08-26",
-              "2026-08-28",
-              "2026-08-31",
-              "2026-09-02",
-              "2026-09-03",
-              "2026-09-09",
-              "2026-09-10",
-              "2026-09-11",
-              "2026-09-15",
-              "2026-09-18",
-              "2026-09-21",
-              "2026-09-23",
-              "2026-09-24",
-              "2026-09-25",
-              "2026-09-28",
-              "2026-09-29",
-              "2026-10-02"
-            ],
-            "no_synthetic_bar": true,
-            "price": 10.26,
-            "reason": "EXACT30_INCOMPLETE_NEVER_PASS",
-            "source": "SINA_US_DAILY"
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "usable": 189
-          },
-          "yahoo": {
-            "exchangeName": "NGM",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "Cantor Equity Partners V, Inc. - Class A Ordinary Shares"
@@ -1550,67 +1081,9 @@
     "CHWM": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "dv30_lower_bound": 0.0,
-            "dv30_upper_bound": null,
-            "known_session_count": 4,
-            "missing_sessions": [
-              "2026-08-25",
-              "2026-08-26",
-              "2026-08-27",
-              "2026-08-28",
-              "2026-08-31",
-              "2026-09-01",
-              "2026-09-02",
-              "2026-09-03",
-              "2026-09-04",
-              "2026-09-08",
-              "2026-09-09",
-              "2026-09-10",
-              "2026-09-11",
-              "2026-09-14",
-              "2026-09-15",
-              "2026-09-16",
-              "2026-09-17",
-              "2026-09-18",
-              "2026-09-21",
-              "2026-09-22",
-              "2026-09-23",
-              "2026-09-24",
-              "2026-09-25",
-              "2026-09-28",
-              "2026-09-29",
-              "2026-09-30"
-            ],
-            "no_synthetic_bar": true,
-            "price": 5.25,
-            "reason": "EXACT30_INCOMPLETE_NEVER_PASS",
-            "source": "SINA_US_DAILY"
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 3
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "usable": 4
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 3
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "Chilwa Minerals Limited - American Depository Shares"
@@ -1618,33 +1091,9 @@
     "CNL": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "SINA_UNAVAILABLE"
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "error": "SyntaxError:invalid syntax (<string>, line 1)"
-          },
-          "yahoo": {
-            "exchangeName": "NMS",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "Collective Mining Ltd. - Common Stock"
@@ -1652,33 +1101,9 @@
     "DPU": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "SINA_UNAVAILABLE"
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "error": "SyntaxError:invalid syntax (<string>, line 1)"
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "Top KingWin Ltd - Class A Ordinary Shares"
@@ -1686,35 +1111,9 @@
     "EFTY": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 40
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "usable": 40
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "Etoiles Capital Group Co., Ltd. - Class A Ordinary Shares"
@@ -1722,33 +1121,9 @@
     "ENGN": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "SINA_UNAVAILABLE"
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "error": "SyntaxError:invalid syntax (<string>, line 1)"
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "enGene Therapeutics Inc. - Common Stock"
@@ -1756,58 +1131,9 @@
     "ETRA": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "dv30_lower_bound": 0.0,
-            "dv30_upper_bound": null,
-            "known_session_count": 13,
-            "missing_sessions": [
-              "2026-08-25",
-              "2026-08-26",
-              "2026-08-27",
-              "2026-08-28",
-              "2026-08-31",
-              "2026-09-01",
-              "2026-09-02",
-              "2026-09-03",
-              "2026-09-04",
-              "2026-09-08",
-              "2026-09-09",
-              "2026-09-10",
-              "2026-09-11",
-              "2026-09-14",
-              "2026-09-15",
-              "2026-09-16",
-              "2026-09-17"
-            ],
-            "no_synthetic_bar": true,
-            "price": 9.82,
-            "reason": "EXACT30_INCOMPLETE_NEVER_PASS",
-            "source": "SINA_US_DAILY"
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 12
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "usable": 13
-          },
-          "yahoo": {
-            "exchangeName": "NMS",
-            "usable": 12
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "Electra Therapeutics, Inc. - Common stock"
@@ -1815,35 +1141,9 @@
     "FORTY": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 4375
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "usable": 4375
-          },
-          "yahoo": {
-            "exchangeName": "NMS",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "Formula Systems (1985) Ltd. - American Depositary Shares"
@@ -1851,35 +1151,9 @@
     "GCGR": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 47
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "usable": 47
-          },
-          "yahoo": {
-            "exchangeName": "NGM",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "General Catalyst Global Resilience Merger Corp. - Class A Ordinary Shares"
@@ -1887,42 +1161,9 @@
     "GRAL": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "dv30_lower_bound": 100741050.03,
-            "dv30_upper_bound": 118128234.6,
-            "known_session_count": 29,
-            "missing_sessions": [
-              "2026-09-23"
-            ],
-            "no_synthetic_bar": true,
-            "price": 137.28,
-            "reason": "EXACT30_INCOMPLETE_NEVER_PASS",
-            "source": "SINA_US_DAILY"
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "usable": 572
-          },
-          "yahoo": {
-            "exchangeName": "NMS",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "GRAIL, Inc. - Common Stock"
@@ -1930,58 +1171,9 @@
     "GTEN": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "dv30_lower_bound": 0.0,
-            "dv30_upper_bound": null,
-            "known_session_count": 13,
-            "missing_sessions": [
-              "2026-08-25",
-              "2026-08-27",
-              "2026-08-28",
-              "2026-09-02",
-              "2026-09-03",
-              "2026-09-04",
-              "2026-09-16",
-              "2026-09-17",
-              "2026-09-18",
-              "2026-09-21",
-              "2026-09-23",
-              "2026-09-25",
-              "2026-09-28",
-              "2026-09-29",
-              "2026-09-30",
-              "2026-10-01",
-              "2026-10-05"
-            ],
-            "no_synthetic_bar": true,
-            "price": 10.47,
-            "reason": "EXACT30_INCOMPLETE_NEVER_PASS",
-            "source": "SINA_US_DAILY"
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "usable": 273
-          },
-          "yahoo": {
-            "exchangeName": "NGM",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "Gores Holdings X, Inc. - Class A ordinary shares"
@@ -1989,35 +1181,9 @@
     "HCHL": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 244
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "usable": 244
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "Happy City Holdings Limited - Class A Ordinary shares"
@@ -2025,35 +1191,9 @@
     "HCIC": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 535
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "usable": 535
-          },
-          "yahoo": {
-            "exchangeName": "NGM",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "Hennessy Capital Investment Corp. VIII - Class A Ordinary Shares"
@@ -2061,35 +1201,9 @@
     "HFBL": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 2969
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "usable": 2969
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "Home Federal Bancorp, Inc. of Louisiana - Common Stock"
@@ -2097,33 +1211,9 @@
     "HTCO": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "SINA_UNAVAILABLE"
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "error": "SyntaxError:invalid syntax (<string>, line 1)"
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "High-Trend International Group - Class A Ordinary Shares"
@@ -2131,35 +1221,9 @@
     "HVMC": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 152
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "usable": 152
-          },
-          "yahoo": {
-            "exchangeName": "NGM",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "Highview Merger Corp. - Class A Ordinary Share"
@@ -2167,35 +1231,9 @@
     "ILAG": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 1038
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "usable": 1038
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "Intelligent Living Application Group Inc. - Ordinary Shares"
@@ -2203,35 +1241,9 @@
     "INTJ": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 625
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "usable": 625
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "Intelligent Group Limited - Class A Ordinary Shares"
@@ -2239,33 +1251,9 @@
     "INV": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "SINA_UNAVAILABLE"
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "error": "SyntaxError:invalid syntax (<string>, line 1)"
-          },
-          "yahoo": {
-            "exchangeName": "NGM",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "Innventure, Inc. - Common Stock"
@@ -2273,35 +1261,9 @@
     "KELYB": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 1830
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "usable": 1830
-          },
-          "yahoo": {
-            "exchangeName": "NMS",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "Kelly Services, Inc. - Class B Common Stock"
@@ -2309,35 +1271,9 @@
     "LAWR": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 69
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "usable": 69
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "Robot Consulting Co., Ltd. - ADS"
@@ -2345,35 +1281,9 @@
     "MAGH": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 81
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "usable": 81
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "Magnitude International Ltd - Ordinary Shares"
@@ -2381,33 +1291,9 @@
     "MAKO": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "SINA_UNAVAILABLE"
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "error": "SyntaxError:invalid syntax (<string>, line 1)"
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "Mako Mining Corp - Common Stock"
@@ -2415,35 +1301,9 @@
     "MAMK": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 94
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "usable": 94
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "MaxsMaking Inc. - Class A Ordinary Shares"
@@ -2451,35 +1311,9 @@
     "MAYS": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 2307
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "usable": 2307
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "J. W. Mays, Inc. - Common Stock"
@@ -2487,35 +1321,9 @@
     "MCTA": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 16
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "usable": 16
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "Charming Medical Limited - Class A Ordinary Shares"
@@ -2523,35 +1331,9 @@
     "MDRR": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 1839
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "usable": 1839
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "Medalist Diversified, Inc. - Common Stock"
@@ -2559,35 +1341,9 @@
     "MNSBP": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 1301
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "usable": 1301
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "MainStreet Bancshares, Inc. - Depositary Shares"
@@ -2595,35 +1351,9 @@
     "NCEW": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 409
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "usable": 409
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "New Century Logistics (BVI) Limited - Ordinary Shares"
@@ -2631,60 +1361,9 @@
     "NOEM": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "dv30_lower_bound": 0.0,
-            "dv30_upper_bound": null,
-            "known_session_count": 11,
-            "missing_sessions": [
-              "2026-08-25",
-              "2026-08-26",
-              "2026-08-27",
-              "2026-09-02",
-              "2026-09-03",
-              "2026-09-09",
-              "2026-09-11",
-              "2026-09-14",
-              "2026-09-16",
-              "2026-09-18",
-              "2026-09-21",
-              "2026-09-22",
-              "2026-09-23",
-              "2026-09-24",
-              "2026-09-25",
-              "2026-09-28",
-              "2026-09-29",
-              "2026-09-30",
-              "2026-10-05"
-            ],
-            "no_synthetic_bar": true,
-            "price": 10.63,
-            "reason": "EXACT30_INCOMPLETE_NEVER_PASS",
-            "source": "SINA_US_DAILY"
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "usable": 288
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "CO2 Energy Transition Corp. - Common Stock"
@@ -2692,33 +1371,9 @@
     "NUCL": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "SINA_UNAVAILABLE"
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "error": "SyntaxError:invalid syntax (<string>, line 1)"
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "Eagle Nuclear Energy Corp. - Common stock"
@@ -2726,60 +1381,9 @@
     "NWCL": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "dv30_lower_bound": 0.0,
-            "dv30_upper_bound": null,
-            "known_session_count": 11,
-            "missing_sessions": [
-              "2026-08-25",
-              "2026-08-26",
-              "2026-08-27",
-              "2026-08-28",
-              "2026-08-31",
-              "2026-09-01",
-              "2026-09-02",
-              "2026-09-03",
-              "2026-09-04",
-              "2026-09-08",
-              "2026-09-09",
-              "2026-09-10",
-              "2026-09-11",
-              "2026-09-14",
-              "2026-09-15",
-              "2026-09-16",
-              "2026-09-17",
-              "2026-09-18",
-              "2026-09-21"
-            ],
-            "no_synthetic_bar": true,
-            "price": 8.38,
-            "reason": "EXACT30_INCOMPLETE_NEVER_PASS",
-            "source": "SINA_US_DAILY"
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "usable": 11
-          },
-          "yahoo": {
-            "exchangeName": "NMS",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "newcleo plc - Ordinary Shares"
@@ -2787,58 +1391,9 @@
     "OIG": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "dv30_lower_bound": 0.0,
-            "dv30_upper_bound": null,
-            "known_session_count": 13,
-            "missing_sessions": [
-              "2026-08-25",
-              "2026-08-26",
-              "2026-08-27",
-              "2026-08-28",
-              "2026-08-31",
-              "2026-09-01",
-              "2026-09-02",
-              "2026-09-03",
-              "2026-09-04",
-              "2026-09-08",
-              "2026-09-09",
-              "2026-09-10",
-              "2026-09-11",
-              "2026-09-14",
-              "2026-09-15",
-              "2026-09-16",
-              "2026-09-17"
-            ],
-            "no_synthetic_bar": true,
-            "price": 8.63,
-            "reason": "EXACT30_INCOMPLETE_NEVER_PASS",
-            "source": "SINA_US_DAILY"
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 12
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "usable": 284
-          },
-          "yahoo": {
-            "exchangeName": "NMS",
-            "usable": 12
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "Orion180 Insurance Group Inc. - Class A Common Stock"
@@ -2846,67 +1401,9 @@
     "OPNW": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "dv30_lower_bound": 0.0,
-            "dv30_upper_bound": null,
-            "known_session_count": 4,
-            "missing_sessions": [
-              "2026-08-25",
-              "2026-08-26",
-              "2026-08-27",
-              "2026-08-28",
-              "2026-08-31",
-              "2026-09-01",
-              "2026-09-02",
-              "2026-09-03",
-              "2026-09-04",
-              "2026-09-08",
-              "2026-09-09",
-              "2026-09-10",
-              "2026-09-11",
-              "2026-09-14",
-              "2026-09-15",
-              "2026-09-16",
-              "2026-09-17",
-              "2026-09-18",
-              "2026-09-21",
-              "2026-09-22",
-              "2026-09-23",
-              "2026-09-24",
-              "2026-09-25",
-              "2026-09-28",
-              "2026-09-29",
-              "2026-09-30"
-            ],
-            "no_synthetic_bar": true,
-            "price": 6.2,
-            "reason": "EXACT30_INCOMPLETE_NEVER_PASS",
-            "source": "SINA_US_DAILY"
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "usable": 4
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "OpenWorld, Inc. - Common Stock"
@@ -2914,35 +1411,9 @@
     "OST": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 847
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "usable": 847
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "Ostin Technology Group Co., Ltd. - Class A Ordinary Shares"
@@ -2950,35 +1421,9 @@
     "PBHC": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 3440
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "usable": 3440
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "Pathfinder Bancorp, Inc. - Common Stock"
@@ -2986,33 +1431,9 @@
     "PBM": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "SINA_UNAVAILABLE"
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "error": "SyntaxError:invalid syntax (<string>, line 1)"
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "Psyence Biomedical Ltd. - Common Shares"
@@ -3020,33 +1441,9 @@
     "RJET": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "SINA_UNAVAILABLE"
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "error": "SyntaxError:invalid syntax (<string>, line 1)"
-          },
-          "yahoo": {
-            "exchangeName": "NMS",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "Republic Airways Holdings Inc. - Common Stock"
@@ -3054,64 +1451,9 @@
     "RZAI": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "SINA_UNAVAILABLE"
-          },
-          "yahoo_result": {
-            "dv30_lower_bound": 0.0,
-            "dv30_upper_bound": null,
-            "known_session_count": 5,
-            "missing_sessions": [
-              "2026-08-25",
-              "2026-08-26",
-              "2026-08-27",
-              "2026-08-28",
-              "2026-08-31",
-              "2026-09-01",
-              "2026-09-02",
-              "2026-09-03",
-              "2026-09-04",
-              "2026-09-08",
-              "2026-09-09",
-              "2026-09-10",
-              "2026-09-11",
-              "2026-09-14",
-              "2026-09-15",
-              "2026-09-16",
-              "2026-09-17",
-              "2026-09-18",
-              "2026-09-21",
-              "2026-09-22",
-              "2026-09-23",
-              "2026-09-24",
-              "2026-09-25",
-              "2026-09-28",
-              "2026-09-29"
-            ],
-            "no_synthetic_bar": true,
-            "price": 11.699999809265137,
-            "reason": "EXACT30_INCOMPLETE_NEVER_PASS",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY"
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "error": "IndexError:list index out of range"
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 5
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "Roze AI Inc. - Common Shares"
@@ -3119,68 +1461,9 @@
     "SAIQ": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "dv30_lower_bound": 0.0,
-            "dv30_upper_bound": null,
-            "known_session_count": 3,
-            "missing_sessions": [
-              "2026-08-25",
-              "2026-08-26",
-              "2026-08-27",
-              "2026-08-28",
-              "2026-08-31",
-              "2026-09-01",
-              "2026-09-02",
-              "2026-09-03",
-              "2026-09-04",
-              "2026-09-08",
-              "2026-09-09",
-              "2026-09-10",
-              "2026-09-11",
-              "2026-09-14",
-              "2026-09-15",
-              "2026-09-16",
-              "2026-09-17",
-              "2026-09-18",
-              "2026-09-21",
-              "2026-09-22",
-              "2026-09-23",
-              "2026-09-24",
-              "2026-09-25",
-              "2026-09-28",
-              "2026-09-29",
-              "2026-09-30",
-              "2026-10-01"
-            ],
-            "no_synthetic_bar": true,
-            "price": 5.16,
-            "reason": "EXACT30_INCOMPLETE_NEVER_PASS",
-            "source": "SINA_US_DAILY"
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "usable": 3
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "WISeSat.Space Holdings Corp. - Ordinary Shares"
@@ -3188,33 +1471,9 @@
     "SDA": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "SINA_UNAVAILABLE"
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "error": "SyntaxError:invalid syntax (<string>, line 1)"
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "SunCar Technology Group Inc. - Ordinary Shares"
@@ -3222,35 +1481,9 @@
     "SENEB": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 3022
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "usable": 3022
-          },
-          "yahoo": {
-            "exchangeName": "NMS",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "Seneca Foods Corp. - Class B Common Stock"
@@ -3258,33 +1491,9 @@
     "SLBT": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "SINA_UNAVAILABLE"
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "error": "SyntaxError:invalid syntax (<string>, line 1)"
-          },
-          "yahoo": {
-            "exchangeName": "NGM",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "SL Science Holding Limited - Ordinary Shares"
@@ -3292,33 +1501,9 @@
     "SLE": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "SINA_UNAVAILABLE"
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "error": "SyntaxError:invalid syntax (<string>, line 1)"
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "Super League Enterprise, Inc. - Common Stock"
@@ -3326,35 +1511,9 @@
     "SLP": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 4501
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "usable": 4501
-          },
-          "yahoo": {
-            "exchangeName": "NMS",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "Simulations Plus, Inc. - Common Stock"
@@ -3362,33 +1521,9 @@
     "SUNE": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "SINA_UNAVAILABLE"
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "error": "SyntaxError:invalid syntax (<string>, line 1)"
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "SUNation Energy, Inc. - Common Stock"
@@ -3396,68 +1531,9 @@
     "SVA": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "SINA_UNAVAILABLE"
-          },
-          "yahoo_result": {
-            "dv30_lower_bound": 0.0,
-            "dv30_upper_bound": null,
-            "known_session_count": 1,
-            "missing_sessions": [
-              "2026-08-25",
-              "2026-08-26",
-              "2026-08-27",
-              "2026-08-28",
-              "2026-08-31",
-              "2026-09-01",
-              "2026-09-02",
-              "2026-09-03",
-              "2026-09-04",
-              "2026-09-08",
-              "2026-09-09",
-              "2026-09-10",
-              "2026-09-11",
-              "2026-09-14",
-              "2026-09-15",
-              "2026-09-16",
-              "2026-09-17",
-              "2026-09-18",
-              "2026-09-21",
-              "2026-09-22",
-              "2026-09-23",
-              "2026-09-24",
-              "2026-09-25",
-              "2026-09-28",
-              "2026-09-29",
-              "2026-09-30",
-              "2026-10-01",
-              "2026-10-02",
-              "2026-10-05"
-            ],
-            "no_synthetic_bar": true,
-            "price": 6.46999979019165,
-            "reason": "EXACT30_INCOMPLETE_NEVER_PASS",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY"
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "error": "SyntaxError:invalid syntax (<string>, line 1)"
-          },
-          "yahoo": {
-            "exchangeName": "NMS",
-            "usable": 1
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "Sinovac Biotech, Ltd. - Ordinary Shares (Antigua/Barbudo)"
@@ -3465,35 +1541,9 @@
     "TULP": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 144
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "usable": 144
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "Bloomia Holdings, Inc. - Common Stock"
@@ -3501,35 +1551,9 @@
     "UCFI": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 1
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "usable": 1
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "CN Healthy Food Tech Group Corp. - Common Stock"
@@ -3537,35 +1561,9 @@
     "VHCP": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 89
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "usable": 89
-          },
-          "yahoo": {
-            "exchangeName": "NGM",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "Vine Hill Capital Investment Corp. II - Class A Ordinary Shares"
@@ -3573,33 +1571,9 @@
     "VMET": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "SINA_UNAVAILABLE"
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "error": "SyntaxError:invalid syntax (<string>, line 1)"
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "Versamet Royalties Corporation - Common Stock"
@@ -3607,35 +1581,9 @@
     "WBD": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 1125
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "usable": 1125
-          },
-          "yahoo": {
-            "exchangeName": "NMS",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "Warner Bros. Discovery, Inc. - Series A Common Stock"
@@ -3643,33 +1591,9 @@
     "WEST": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "SINA_UNAVAILABLE"
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "error": "SyntaxError:invalid syntax (<string>, line 1)"
-          },
-          "yahoo": {
-            "exchangeName": "NGM",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "Westrock Coffee Company - Common Stock"
@@ -3677,103 +1601,9 @@
     "WQEY": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "dv30_lower_bound": 0.0,
-            "dv30_upper_bound": null,
-            "known_session_count": 2,
-            "missing_sessions": [
-              "2026-08-25",
-              "2026-08-26",
-              "2026-08-27",
-              "2026-08-28",
-              "2026-08-31",
-              "2026-09-01",
-              "2026-09-02",
-              "2026-09-03",
-              "2026-09-04",
-              "2026-09-08",
-              "2026-09-09",
-              "2026-09-10",
-              "2026-09-11",
-              "2026-09-14",
-              "2026-09-15",
-              "2026-09-16",
-              "2026-09-17",
-              "2026-09-18",
-              "2026-09-21",
-              "2026-09-22",
-              "2026-09-23",
-              "2026-09-24",
-              "2026-09-25",
-              "2026-09-28",
-              "2026-09-29",
-              "2026-09-30",
-              "2026-10-01",
-              "2026-10-02"
-            ],
-            "no_synthetic_bar": true,
-            "price": 10.24,
-            "reason": "EXACT30_INCOMPLETE_NEVER_PASS",
-            "source": "SINA_US_DAILY"
-          },
-          "yahoo_result": {
-            "dv30_lower_bound": 0.0,
-            "dv30_upper_bound": null,
-            "known_session_count": 2,
-            "missing_sessions": [
-              "2026-08-25",
-              "2026-08-26",
-              "2026-08-27",
-              "2026-08-28",
-              "2026-08-31",
-              "2026-09-01",
-              "2026-09-02",
-              "2026-09-03",
-              "2026-09-04",
-              "2026-09-08",
-              "2026-09-09",
-              "2026-09-10",
-              "2026-09-11",
-              "2026-09-14",
-              "2026-09-15",
-              "2026-09-16",
-              "2026-09-17",
-              "2026-09-18",
-              "2026-09-21",
-              "2026-09-22",
-              "2026-09-23",
-              "2026-09-24",
-              "2026-09-25",
-              "2026-09-28",
-              "2026-09-29",
-              "2026-09-30",
-              "2026-10-01",
-              "2026-10-02"
-            ],
-            "no_synthetic_bar": true,
-            "price": 10.239999771118164,
-            "reason": "EXACT30_INCOMPLETE_NEVER_PASS",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY"
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "usable": 2
-          },
-          "yahoo": {
-            "exchangeName": "NGM",
-            "usable": 2
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "WISeQey Corp - Ordinary Shares"
@@ -3781,35 +1611,9 @@
     "XIII": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 12
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 12
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "usable": 12
-          },
-          "yahoo": {
-            "exchangeName": "NGM",
-            "usable": 12
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "Churchill Capital Corp XIII - Class A Ordinary Shares"
@@ -3817,35 +1621,9 @@
     "YQ": {
       "price_result": {
         "info": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_UNAVAILABLE"
-          },
-          "reason": "ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 1455
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
         },
-        "provenance": "FULLSTATE_ZERO_DOLLAR_EXACT30",
-        "provider_meta": {
-          "nasdaq": {
-            "rows": 0,
-            "usable": 0
-          },
-          "sina": {
-            "usable": 1455
-          },
-          "yahoo": {
-            "exchangeName": "NMS",
-            "usable": 62
-          }
-        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
       "security_name": "17 Education & Technology Group Inc. - American Depositary Shares"
@@ -3936,13 +1714,13 @@
   "settlement_policy": "ALPACA_HISTORICAL_SIP_DAILY_AFTER_15M__AAPL_NVDA_PLUS_ONE_PRIOR_CURRENT_CORE__RALLIES_LONGBRIDGE_QUOTE_OHLC_0_01_CROSSCHECK__SIP_VOLUME_AUTHORITY__FAIL_CLOSED__DELAYED_SIP_NEVER_G9",
   "settlement_required": false,
   "settlement_symbols": [],
-  "source_master_blob_sha": "c9899c1a007b983bc45046a6b982c7b3a827de17",
+  "source_master_blob_sha": "9476ed81f2307f2b8353bb529a0c69fc0f1f784b",
   "source_master_path": "nasdaq-xray/canonical_current_master_manifest.json",
-  "source_overlay_blob_sha": "8485549d31ab81a828306d70d5090e842ee160f3",
+  "source_overlay_blob_sha": "acf5f41ad3bb41eb4486814f19b211f49e5c69db",
   "source_overlay_path": "nasdaq-xray/canonical_current_resolution_overlay.json",
   "source_pointer_blob_sha": "5c073df5d674c77e5e4439b41b81393b96148c06",
   "source_pointer_path": "nasdaq-xray/chatgpt_canonical_state_v2.json",
-  "source_price_blob_sha": "d1769ac343e344fc13bb461b95730256172d7e2c",
+  "source_price_blob_sha": "a706dde59c924694e63e3c171d203ad36fe8a028",
   "source_price_counts": {
     "FAIL_DV30": 1304,
     "FAIL_PRICE": 1281,
@@ -3953,9 +1731,9 @@
   "source_price_pass_count": 508,
   "source_price_pass_hash": "63d66ef437b893c96ae7775e62d1a2c4d54a18695da2e7b0e8dd89022538882d",
   "source_price_path": "nasdaq-xray/canonical_current_price_dv30.json",
-  "source_state_blob_sha": "0b6d0ea8ae4e3ef0a0a673a085185b5f613720b4",
+  "source_state_blob_sha": "e7f17f59b71d2d431dd95a7f4f06ddb1e38fbd8d",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
-  "source_unknowns_blob_sha": "fb6d63e1f7063a0ff5245fca75fa8833ee54cc54",
+  "source_unknowns_blob_sha": "17539364b0b040f25e335a3e827cfca582b36cb2",
   "source_unknowns_path": "nasdaq-xray/canonical_current_unknowns.json",
   "status": "READY",
   "symbol_count": 68,
