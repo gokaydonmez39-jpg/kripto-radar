@@ -438,6 +438,7 @@ def seed_candidates(sym: str, seed_obj: dict, event_state: dict, submissions: di
             "url": rec["base_url"],
             "issuer_tokens": list(rec.get("issuer_tokens") or [sym]),
             "source": "DISCOVERY_SEED_REGISTRY",
+            "known_document_urls": list(rec.get("known_document_urls") or []),
         })
     clearance = ((event_state.get("official_horizon_clearance") or {}).get(sym) or {})
     u = str(clearance.get("official_source_url") or "")
@@ -508,6 +509,14 @@ def ranked_discrete_document_urls(urls, known_urls=None) -> list[str]:
         reverse=True,
     )
 
+def same_host_known_documents(base_url: str, urls) -> list[str]:
+    """Bounded explicit discovery fallback; never authority by itself."""
+    return sorted({
+        str(u) for u in (urls or [])
+        if valid_http_url(str(u)) and same_host(base_url, str(u))
+    })
+
+
 def probe_issuer(sym: str, base: dict, asof: str, horizon: set[str]) -> dict:
     url = base["url"]
     rec = {
@@ -540,7 +549,20 @@ def probe_issuer(sym: str, base: dict, asof: str, horizon: set[str]) -> dict:
         ir_links = discover_ir_document_links(authority_url, text)
     except Exception as e:
         rec["failure"] = f"BASE_FETCH_{type(e).__name__}:{str(e)[:160]}"
-        return rec
+        # A base landing-page transport failure must not prevent a bounded,
+        # explicitly configured SAME-HOST issuer document from being fetched.
+        # The document remains non-authoritative until _discrete_event_match()
+        # independently validates issuer identity and an explicit earnings date.
+        known_fallback = same_host_known_documents(
+            url, base.get("known_document_urls") or []
+        )
+        if not known_fallback:
+            return rec
+        rec["known_document_fallback_after_base_failure"] = True
+        rec["known_document_fallback_count"] = len(known_fallback)
+        authority_url = url
+        feeds = []
+        ir_links = {"sections": [], "discrete": known_fallback}
 
     for feed_url in feeds[:12]:
         attempt = {"url": feed_url}
@@ -843,6 +865,14 @@ def selftest() -> None:
     assert links["discrete"] == [
         "https://ir.example.com/news-releases/news-release-details/company-to-report-financial-results-on-november-5-2026"
     ], links
+    assert same_host_known_documents(
+        "https://investors.example.com/",
+        [
+            "https://investors.example.com/events/calendar",
+            "https://evil.example.net/company/results",
+            "not-a-url",
+        ],
+    ) == ["https://investors.example.com/events/calendar"]
     # Regression: a bounded document budget must not deterministically starve
     # newer issuer earnings documents behind lexicographically older detail IDs.
     old_docs = [
