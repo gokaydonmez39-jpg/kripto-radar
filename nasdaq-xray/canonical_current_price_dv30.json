@@ -3360,6 +3360,7 @@
   "exception_bridge_meta": {
     "paths": [
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v1.json",
+      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v10.json",
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v2.json",
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v3.json",
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v4.json",
@@ -3371,14 +3372,15 @@
     ],
     "rejected": [
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v1.json:SOURCE_PRICE_BLOB_MISMATCH",
+      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v10.json:CURRENT_REQUEST_SCOPE_MISMATCH",
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v2.json:SOURCE_PRICE_BLOB_MISMATCH",
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v3.json:SOURCE_PRICE_BLOB_MISMATCH",
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v4.json:SOURCE_PRICE_BLOB_MISMATCH",
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v5.json:SOURCE_PRICE_BLOB_MISMATCH",
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v6.json:SOURCE_PRICE_BLOB_MISMATCH",
-      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v7.json:CURRENT_REQUEST_SCOPE_MISMATCH",
-      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v8.json:CURRENT_REQUEST_SCOPE_MISMATCH",
-      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v9.json:CURRENT_REQUEST_SCOPE_MISMATCH"
+      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v7.json:SOURCE_PRICE_BLOB_MISMATCH",
+      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v8.json:SOURCE_PRICE_BLOB_MISMATCH",
+      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v9.json:SOURCE_PRICE_BLOB_MISMATCH"
     ],
     "status": "ABSENT_CURRENT_POLICY"
   },
@@ -3426,7 +3428,7 @@
   "global_asof_sentinel_fast_fail": false,
   "monotonic_legacy_pass_reuse_count": 0,
   "official_halt_guard_meta": {
-    "content_sha256": "6d3d6c0878ea6608c601eacffc524fc09732da3a5c57778a41f7980c7b747a81",
+    "content_sha256": "15c675482e4e0815cabee0826a44cbf02a03e1dd1f16a6957d3ccdf468aff802",
     "path": "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_official_source_guard.json",
     "source_status": "PASS",
     "status": "PASS"
@@ -7535,24 +7537,24 @@
     },
     "AUC": {
       "info": {
-        "dv30": 34382.70092010498,
-        "price": 8.579999923706055,
-        "proof": "EXACT30_MEDIAN_LT_GATE",
-        "source": "YAHOO_CHART_FREE_FAIL_ONLY"
+        "dv30_lower_bound": 34360.421,
+        "dv30_upper_bound": 44758.65,
+        "known_session_count": 26,
+        "missing_sessions": [
+          "2026-08-26",
+          "2026-08-27",
+          "2026-08-28",
+          "2026-09-01"
+        ],
+        "no_synthetic_bar": true,
+        "price": 8.58,
+        "proof": "DV30_UPPER_BOUND_LT_GATE",
+        "source": "SINA_US_DAILY"
       },
       "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
       "provider_meta": {
-        "nasdaq": {
-          "disabled": true,
-          "no_pass_or_fail_created": true,
-          "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-        },
         "sina": {
-          "usable": 86
-        },
-        "yahoo": {
-          "exchangeName": "NCM",
-          "usable": 63
+          "usable": 87
         }
       },
       "status": "FAIL_DV30"
@@ -22487,24 +22489,32 @@
     },
     "IPVV": {
       "info": {
-        "dv30": 8851.000022888184,
-        "price": 9.850000381469727,
-        "proof": "EXACT30_MEDIAN_LT_GATE",
-        "source": "YAHOO_CHART_FREE_FAIL_ONLY"
+        "dv30_lower_bound": 8693.63,
+        "dv30_upper_bound": 1069498.0350000001,
+        "known_session_count": 18,
+        "missing_sessions": [
+          "2026-09-03",
+          "2026-09-08",
+          "2026-09-09",
+          "2026-09-10",
+          "2026-09-11",
+          "2026-09-14",
+          "2026-09-16",
+          "2026-09-18",
+          "2026-09-22",
+          "2026-09-28",
+          "2026-09-29",
+          "2026-10-01"
+        ],
+        "no_synthetic_bar": true,
+        "price": 9.85,
+        "proof": "DV30_UPPER_BOUND_LT_GATE",
+        "source": "SINA_US_DAILY"
       },
       "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
       "provider_meta": {
-        "nasdaq": {
-          "disabled": true,
-          "no_pass_or_fail_created": true,
-          "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-        },
         "sina": {
-          "usable": 33
-        },
-        "yahoo": {
-          "exchangeName": "NGM",
-          "usable": 52
+          "usable": 34
         }
       },
       "status": "FAIL_DV30"
@@ -40606,24 +40616,21 @@
     },
     "UBCP": {
       "info": {
-        "dv30": 64792.00019836426,
-        "price": 14.170000076293945,
-        "proof": "EXACT30_MEDIAN_LT_GATE",
-        "source": "YAHOO_CHART_FREE_FAIL_ONLY"
+        "dv30_lower_bound": 65397.020000000004,
+        "dv30_upper_bound": 77299.76000000001,
+        "known_session_count": 29,
+        "missing_sessions": [
+          "2026-08-28"
+        ],
+        "no_synthetic_bar": true,
+        "price": 14.17,
+        "proof": "DV30_UPPER_BOUND_LT_GATE",
+        "source": "SINA_US_DAILY"
       },
       "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
       "provider_meta": {
-        "nasdaq": {
-          "disabled": true,
-          "no_pass_or_fail_created": true,
-          "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-        },
         "sina": {
-          "usable": 4862
-        },
-        "yahoo": {
-          "exchangeName": "NCM",
-          "usable": 63
+          "usable": 4863
         }
       },
       "status": "FAIL_DV30"
