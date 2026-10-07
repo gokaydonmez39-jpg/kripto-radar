@@ -873,6 +873,7 @@ def selftest() -> None:
         asof,
     )
     assert cal1 == "2026-12-03" and cal_basis1 == "PINNED_ISSUER_CALENDAR_LOCAL_EARNINGS_DATE", (cal1, cal_basis1)
+    assert dates_in_text("04 November 2026") == ["2026-11-04"]
     cal2, cal_basis2 = known_calendar_event_date(
         "<div>04 November 2026</div><div>First nine months and third quarter 2026 results</div>",
         asof,
