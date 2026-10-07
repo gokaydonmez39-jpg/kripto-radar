@@ -117,14 +117,22 @@ def yahoo(sym,asof):
 
 def eval_one(sym,exp30,asof):
     by,meta=sina(sym,asof);st,info=classify(by,asof,exp30,"SINA_US_DAILY") if by else ("UNKNOWN",{"reason":"SINA_UNAVAILABLE"})
-    if st!="UNKNOWN":return sym,st,info,{"sina":meta}
+    # C4.17 DV30 authority is Rallies exact30 primary with Longbridge fallback.
+    # Sina remains useful for conservative terminal FAIL evidence/diagnostics,
+    # but it must never manufacture a DV30 PASS.
+    if st in {"FAIL_PRICE","FAIL_DV30"}:
+        return sym,st,info,{"sina":meta}
+    if st=="PASS_PRICE_DV30":
+        info=dict(info)
+        info["reason"]="SINA_NONAUTHORITATIVE_FOR_C417_DV30_PASS"
+        info["decision_direction"]="NONPASS_DIAGNOSTIC_ONLY"
     nby,nm=nasdaq(sym,asof);nst,ninfo=("UNKNOWN",{"reason":"NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"})
     if nst!="UNKNOWN":return sym,nst,ninfo,{"sina":meta,"nasdaq":nm}
     yby,ym=yahoo(sym,asof);yst,yinfo=classify(yby,asof,exp30,"YAHOO_CHART_FREE_FAIL_ONLY") if yby else ("UNKNOWN",{"reason":"YAHOO_UNAVAILABLE"})
     if yst in {"FAIL_PRICE","FAIL_DV30"}:
         return sym,yst,yinfo,{"sina":meta,"nasdaq":nm,"yahoo":ym}
     return sym,"UNKNOWN",{
-        "reason":"ALL_ZERO_DOLLAR_PHASE_SOURCES_NONTERMINAL",
+        "reason":"C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
         "sina_result":info,"nasdaq_result":ninfo,"yahoo_result":yinfo
     },{"sina":meta,"nasdaq":nm,"yahoo":ym}
 
