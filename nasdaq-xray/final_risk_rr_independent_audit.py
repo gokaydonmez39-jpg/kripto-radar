@@ -639,7 +639,7 @@ def main() -> None:
     assert obj.get("execution") == "NONE"
     assert obj.get("real_money") == "NO-GO"
     assert obj.get("unknown_never_pass") is True
-    assert history_manifest.get("schema") == "XRAY_DEEP_HISTORY_CACHE_MANIFEST_V1"
+    assert history_manifest.get("schema") == "XRAY_CANONICAL_DEEP_HISTORY_CACHE_MANIFEST_V1"
     assert history_manifest.get("asof_et") == obj.get("asof_et")
     assert history_manifest.get("execution") == "NONE" and history_manifest.get("real_money") == "NO-GO"
     assert history_manifest.get("unknown_never_pass") is True
