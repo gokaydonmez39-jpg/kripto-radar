@@ -194,6 +194,28 @@ def announced_event_date(title: str, body: str, asof: str) -> tuple[str | None, 
         hits.sort(key=lambda x: x[0])
         return hits[0][0], "SCHEDULE_SENTENCE_EXPLICIT_FUTURE_DATE"
 
+    # HTML templates can flatten a discrete issuer release so aggressively that
+    # the visible scheduling clause is split away from sentence punctuation.
+    # As a bounded fallback, accept only the first future FULL date after a
+    # scheduling verb when (a) earnings/results context remains in the same
+    # short clause and (b) no sentence boundary occurs before that date.
+    # This never uses URL dates, calendar ordering, or unrelated future dates.
+    for sm in SCHEDULE_RE.finditer(clean):
+        tail = clean[sm.end(): sm.end() + 260]
+        for pos, d in date_spans_in_text(tail):
+            if d <= asof:
+                continue
+            before_date = tail[:pos]
+            if len(before_date) > 180:
+                break
+            # Do not cross into a later sentence/event.
+            if re.search(r"[!?]|\.(?:\s|$)", before_date):
+                break
+            context = clean[max(0, sm.start() - 120): sm.end()] + before_date
+            if not EARNINGS_RE.search(context):
+                break
+            return d, "SCHEDULE_CLAUSE_EXPLICIT_FUTURE_DATE"
+
     # Some issuer-primary releases state an explicit month/day in scheduling
     # language while omitting the year (for example "earnings call on Nov. 3").
     # Resolve the year only when the SAME issuer document contains a recent
@@ -743,6 +765,34 @@ def selftest() -> None:
         asof,
     )
     assert d7 == "2026-11-03" and basis7 == "SCHEDULE_SENTENCE_EXPLICIT_FUTURE_DATE", (d7, basis7)
+    # Regression: discrete issuer HTML may flatten the release into one stream
+    # where normal sentence splitting misses the visible AMD-style clause.
+    d8, basis8 = announced_event_date(
+        "Release Details",
+        "AMD announced today that it will report fiscal third quarter 2026 financial results "
+        "on Tuesday, Nov. 3, 2026 after the market close Investor Relations Navigation",
+        asof,
+    )
+    assert d8 == "2026-11-03" and basis8 in {
+        "SCHEDULE_SENTENCE_EXPLICIT_FUTURE_DATE",
+        "SCHEDULE_CLAUSE_EXPLICIT_FUTURE_DATE",
+    }, (d8, basis8)
+    # A later unrelated event date must not leak backward across a sentence.
+    d9, basis9 = announced_event_date(
+        "Release Details",
+        "Company will report financial results when available. "
+        "The company will participate in a technology conference on Dec. 1, 2026.",
+        asof,
+    )
+    assert d9 is None and basis9 is None, (d9, basis9)
+    # Hosting a non-earnings event with a future date is not Event-clearance evidence.
+    d10, basis10 = announced_event_date(
+        "Release Details",
+        "Company will host a technology conference on Dec. 1, 2026. "
+        "Prior financial results remain available in the archive.",
+        asof,
+    )
+    assert d10 is None and basis10 is None, (d10, basis10)
     prior_seed = seed_candidates(
         "TEST",
         {"symbols": {"TEST": {"base_url": "https://ir.example.com", "issuer_tokens": ["Example"]}}},
