@@ -308,8 +308,10 @@ def validate_current(master: dict, price: dict, request: dict, manifest: dict) -
     assert hash_lines(passes) == price.get("pass_hash")
     assert int(price.get("unknown_count", -1)) == 0
     assert list(price.get("unknown_symbols") or []) == []
-    assert int(price.get("blocked_count", -1)) == 0
-    assert list(price.get("blocked_symbols") or []) == []
+
+    blocked = list(price.get("blocked_symbols") or [])
+    assert blocked == sorted(blocked)
+    assert len(blocked) == len(set(blocked)) == int(price.get("blocked_count", -1))
 
     assert request.get("schema") == "XRAY_RESOLVER_EPOCH_REQUEST_V1"
     assert request.get("task_id") == TASK
@@ -323,11 +325,16 @@ def validate_current(master: dict, price: dict, request: dict, manifest: dict) -
     assert request.get("source_price_blob_sha") == blob_sha(PRICE)
     assert int(request.get("source_price_pass_count", -1)) == len(passes)
     assert request.get("source_price_pass_hash") == price.get("pass_hash")
-    assert int(request.get("symbol_count", -1)) == 0
-    assert list(request.get("symbols") or []) == []
+
+    residual = list(request.get("symbols") or [])
+    assert residual == blocked, ("RESIDUAL_SCOPE_MUST_EQUAL_CURRENT_PRICE_BLOCKED", residual, blocked)
+    assert int(request.get("symbol_count", -1)) == len(residual)
     assert int(request.get("price_unknown_count", -1)) == 0
-    assert int(request.get("price_blocked_count", -1)) == 0
+    assert int(request.get("price_blocked_count", -1)) == len(blocked)
     assert request.get("settlement_required") is False
+    if blocked:
+        assert request.get("settlement_already_proven") is True
+        assert request.get("settlement_bridge_path") and request.get("settlement_bridge_blob_sha")
 
     assert manifest.get("schema") == "XRAY_RESOLVER_REQUEST_CHUNK_MANIFEST_V1"
     assert manifest.get("task_id") == TASK
@@ -336,9 +343,31 @@ def validate_current(master: dict, price: dict, request: dict, manifest: dict) -
     assert manifest.get("asof_et") == price.get("asof_et")
     assert manifest.get("queue_hash") == master.get("queue_hash")
     assert manifest.get("request_blob_sha") == blob_sha(REQUEST)
-    assert int(manifest.get("symbol_count", -1)) == 0
-    assert int(manifest.get("chunk_count", -1)) == 0
-    assert list(manifest.get("chunks") or []) == []
+    assert manifest.get("coverage_complete") is True
+    assert int(manifest.get("symbol_count", -1)) == len(blocked)
+    assert manifest.get("symbol_hash") == hash_lines(blocked)
+
+    chunks = list(manifest.get("chunks") or [])
+    assert int(manifest.get("chunk_count", -1)) == len(chunks)
+    flat = []
+    for idx, ch in enumerate(chunks, 1):
+        cp = REPO / str(ch.get("path") or "")
+        assert cp.exists(), ("RESOLVER_CHUNK_MISSING", str(cp))
+        assert blob_sha(cp) == ch.get("blob_sha"), ("RESOLVER_CHUNK_BLOB_MISMATCH", str(cp))
+        cj = json.loads(cp.read_text())
+        assert cj.get("schema") == "XRAY_RESOLVER_REQUEST_CHUNK_V1"
+        assert cj.get("task_id") == TASK
+        assert cj.get("execution") == "NONE" and cj.get("real_money") == "NO-GO"
+        assert cj.get("asof_et") == price.get("asof_et")
+        assert cj.get("request_blob_sha") == blob_sha(REQUEST)
+        assert cj.get("queue_hash") == master.get("queue_hash")
+        assert int(cj.get("chunk_index", -1)) == int(ch.get("chunk_index", idx))
+        syms = list(cj.get("symbols") or [])
+        assert int(cj.get("symbol_count", -1)) == len(syms) == int(ch.get("symbol_count", -2))
+        assert cj.get("symbol_hash") == hash_lines(syms)
+        assert ch.get("chunk_symbol_hash") == hash_lines(syms)
+        flat.extend(syms)
+    assert flat == blocked, ("RESOLVER_CHUNK_SCOPE_MISMATCH", flat, blocked)
 
     compact = compact_from_price(price, queue)
     assert set(compact["pass_price_dv30"]) == set(passes)
@@ -359,7 +388,10 @@ def full_scope_exact(row: dict, master: dict, price: dict, request: dict, compac
         and h.get("residual_request_blob_sha") == blob_sha(REQUEST)
         and h.get("pass_hash") == price.get("pass_hash")
         and int(h.get("pass_count", -1)) == int(price.get("pass_count", -2))
-        and int(h.get("blocked_count", -1)) == 0
+        and int(h.get("blocked_count", -1)) == int(price.get("blocked_count", -2))
+        and int(h.get("residual_scope_count", -1)) == int(request.get("symbol_count", -2))
+        and h.get("blocked_subset_of_full_scope_block") is True
+        and h.get("no_new_pass_beyond_resolver") is True
         and (j.get("price_resolution_compact") or {}) == compact
     )
 
@@ -381,6 +413,9 @@ def build_obj(master: dict, price: dict, request: dict, manifest: dict, compact:
               witness: dict, witness_relation: str, version: int) -> dict:
     queue = list(master["pass_symbols"])
     passes = list(price["pass_symbols"])
+    blocked = list(price.get("blocked_symbols") or [])
+    residual_symbols = list(request.get("symbols") or [])
+    assert residual_symbols == blocked
     counts = {
         "FAIL_PRICE": len(compact["fail_price"]),
         "FAIL_DV30": len(compact["fail_dv30"]),
@@ -417,8 +452,8 @@ def build_obj(master: dict, price: dict, request: dict, manifest: dict, compact:
         "symbol_hash": hash_lines(queue),
         "price_unknown_count": 0,
         "price_unknown_symbols": [],
-        "price_blocked_count": 0,
-        "price_blocked_symbols": [],
+        "price_blocked_count": len(blocked),
+        "price_blocked_symbols": blocked,
         "result_encoding": "CANONICAL_PRICE_DV30_FULL_SCOPE_MIRROR_V1",
         "price_resolutions": {},
         "price_resolution_compact": compact,
@@ -464,7 +499,8 @@ def build_obj(master: dict, price: dict, request: dict, manifest: dict, compact:
             "queue_hash_exact": True,
             "pass_set_exact_current_price": True,
             "unknown_zero": True,
-            "blocked_zero": True,
+            "blocked_zero": len(blocked) == 0,
+            "blocked_fail_only_residual_exact": set(blocked) == set(residual_symbols),
         },
         "supersedes_resolver_bridge_path": predecessor["path"],
         "supersedes_resolver_bridge_blob_sha": predecessor["blob"],
@@ -473,12 +509,12 @@ def build_obj(master: dict, price: dict, request: dict, manifest: dict, compact:
             "price_blob_sha": blob_sha(PRICE),
             "pass_count": len(passes),
             "pass_hash": price["pass_hash"],
-            "blocked_count": 0,
-            "blocked_subset_of_full_scope_block": True,
+            "blocked_count": len(blocked),
+            "blocked_subset_of_full_scope_block": set(blocked).issubset(set(compact["block_current_run"])),
             "no_new_pass_beyond_resolver": True,
             "residual_request_path": REQUEST_REL,
             "residual_request_blob_sha": blob_sha(REQUEST),
-            "residual_scope_count": 0,
+            "residual_scope_count": len(residual_symbols),
         },
         "audit": {
             "full_scope_partition_exact_current_master": True,
@@ -486,7 +522,9 @@ def build_obj(master: dict, price: dict, request: dict, manifest: dict, compact:
             "exact_current_request_binding": True,
             "exact_current_manifest_binding": True,
             "current_price_unknown_zero": True,
-            "current_price_blocked_zero": True,
+            "current_price_blocked_zero": len(blocked) == 0,
+            "current_price_blocked_fail_only_residual_exact": set(blocked) == set(residual_symbols),
+            "current_price_blocked_count": len(blocked),
             "current_price_results_cover_queue": True,
             "pass_manufactured": False,
             "no_threshold_weakening": True,
@@ -528,7 +566,8 @@ def validate_output(obj: dict, master: dict, price: dict, request: dict, compact
     assert obj.get("price_resolution_compact") == compact
     assert set(compact["pass_price_dv30"]) == set(price.get("pass_symbols") or [])
     assert not compact["unresolved_symbols"]
-    assert not compact["block_current_run"]
+    blocked = list(price.get("blocked_symbols") or [])
+    assert set(compact["block_current_run"]) == set(blocked)
     assert obj.get("coverage_complete") is True
     assert obj.get("classification_coverage_complete") is True
     assert obj.get("partial_data") is False
@@ -542,25 +581,29 @@ def validate_output(obj: dict, master: dict, price: dict, request: dict, compact
     assert h.get("residual_request_blob_sha") == blob_sha(REQUEST)
     assert h.get("pass_hash") == price.get("pass_hash")
     assert int(h.get("pass_count", -1)) == int(price.get("pass_count", -2))
-    assert int(h.get("blocked_count", -1)) == 0
-    assert int(h.get("residual_scope_count", -1)) == 0
+    assert int(h.get("blocked_count", -1)) == int(price.get("blocked_count", -2))
+    assert int(h.get("residual_scope_count", -1)) == int(request.get("symbol_count", -2))
+    assert h.get("blocked_subset_of_full_scope_block") is True
+    assert h.get("no_new_pass_beyond_resolver") is True
 
 
 def selftest() -> None:
-    q = ["AAA", "BBB", "CCC", "DDD"]
+    q = ["AAA", "BBB", "CCC", "DDD", "EEE"]
     price = {
         "results": {
             "AAA": {"status": "FAIL_PRICE", "info": {"price": 3.0}},
             "BBB": {"status": "FAIL_DV30", "info": {"price": 8.0, "dv30": 10.0, "known_session_count": 30}},
             "CCC": {"status": "PASS_PRICE_DV30", "info": {"price": 12.0, "dv30": 100.0, "known_session_count": 30}},
             "DDD": {"status": "FAIL_PRICE_NO_ASOF_BAR", "info": {"proof": "NO_BAR", "no_synthetic_bar": True}},
+            "EEE": {"status": "BLOCK_CURRENT_RUN", "info": {"reason": "FAIL_CLOSED_TEST_BLOCK", "proof": "TEST", "source": "TEST"}},
         }
     }
     c = compact_from_price(price, q)
     assert set(c["fail_price"]) == {"AAA", "DDD"}
     assert set(c["fail_dv30"]) == {"BBB"}
     assert set(c["pass_price_dv30"]) == {"CCC"}
-    assert not c["block_current_run"] and not c["unresolved_symbols"]
+    assert set(c["block_current_run"]) == {"EEE"}
+    assert not c["unresolved_symbols"]
     synthetic_master = {
         "queue_hash": "current-hash",
         "queue_total": 2,
