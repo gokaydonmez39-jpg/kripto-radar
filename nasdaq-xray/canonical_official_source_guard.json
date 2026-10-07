@@ -5,7 +5,6 @@
     "active_halt_symbols": [
       "BKKT.W",
       "EFTY",
-      "FEDU",
       "FMS",
       "HCHL",
       "LAWR",
@@ -57,7 +56,6 @@
       "COLAU",
       "DRCT",
       "EFTY",
-      "FEDU",
       "FMS",
       "FSEA",
       "GFAIW",
@@ -89,7 +87,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-10-07T14:52:23.184022+00:00",
+  "generated_at_utc": "2026-10-07T14:56:43.560015+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -667,11 +665,10 @@
       "url": "https://www.nasdaqtrader.com/rss.aspx?feed=systemstatus&subject=SELFHELP"
     },
     "trade_halts": {
-      "active_halt_count": 14,
+      "active_halt_count": 13,
       "active_halt_symbols": [
         "BKKT.W",
         "EFTY",
-        "FEDU",
         "FMS",
         "HCHL",
         "LAWR",
@@ -685,8 +682,38 @@
         "UCFIW"
       ],
       "active_state_rule": "EXPLICIT_EMPTY_RESUMPTION_FIELDS_ONLY",
-      "item_count": 44,
+      "item_count": 46,
       "items": [
+        {
+          "HaltDate": "10/07/2026",
+          "HaltTime": "10:54:56.130",
+          "IssueName": "Nexus Advanced Tech Inc Ord Sh",
+          "IssueSymbol": "NXAT",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "10/07/2026",
+          "ResumptionQuoteTime": "10:54:56",
+          "ResumptionTradeTime": "",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/07/2026                    </td><td valign=\"top\">10:54:56.130</td><td valign=\"top\">NXAT</td><td valign=\"top\">Nexus Advanced Tech Inc Ord Sh</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/07/2026                    </td><td valign=\"top\">10:54:56                      </td><td valign=\"top\"></td></tr></table>",
+          "pubDate": "Wed, 07 Oct 2026 04:00:00 GMT",
+          "title": "NXAT"
+        },
+        {
+          "HaltDate": "10/07/2026",
+          "HaltTime": "10:52:39.090",
+          "IssueName": "DarkIris Inc. CL A OS",
+          "IssueSymbol": "DKI",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "10/07/2026",
+          "ResumptionQuoteTime": "10:52:39",
+          "ResumptionTradeTime": "",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/07/2026                    </td><td valign=\"top\">10:52:39.090</td><td valign=\"top\">DKI</td><td valign=\"top\">DarkIris Inc. CL A OS</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/07/2026                    </td><td valign=\"top\">10:52:39                      </td><td valign=\"top\"></td></tr></table>",
+          "pubDate": "Wed, 07 Oct 2026 04:00:00 GMT",
+          "title": "DKI"
+        },
         {
           "HaltDate": "10/07/2026",
           "HaltTime": "10:50:23.393",
@@ -697,8 +724,8 @@
           "ReasonCode": "LUDP",
           "ResumptionDate": "10/07/2026",
           "ResumptionQuoteTime": "10:50:23",
-          "ResumptionTradeTime": "",
-          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/07/2026                    </td><td valign=\"top\">10:50:23.393</td><td valign=\"top\">SBFM</td><td valign=\"top\">Sunshine Biopharma Inc. Cm</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/07/2026                    </td><td valign=\"top\">10:50:23                      </td><td valign=\"top\"></td></tr></table>",
+          "ResumptionTradeTime": "10:55:23",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/07/2026                    </td><td valign=\"top\">10:50:23.393</td><td valign=\"top\">SBFM</td><td valign=\"top\">Sunshine Biopharma Inc. Cm</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/07/2026                    </td><td valign=\"top\">10:50:23                      </td><td valign=\"top\">10:55:23                      </td></tr></table>",
           "pubDate": "Wed, 07 Oct 2026 04:00:00 GMT",
           "title": "SBFM"
         },
@@ -710,10 +737,10 @@
           "Market": "NYSE",
           "PauseThresholdPrice": "",
           "ReasonCode": "M",
-          "ResumptionDate": "",
-          "ResumptionQuoteTime": "",
-          "ResumptionTradeTime": "",
-          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/07/2026                    </td><td valign=\"top\">10:49:04.893</td><td valign=\"top\">FEDU</td><td valign=\"top\">Four Seasons Education (Cayman) Inc. American Depositary Shares, each ADS representing 10 ordinary shares</td><td valign=\"top\">NYSE</td><td valign=\"top\">M</td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td></tr></table>",
+          "ResumptionDate": "10/07/2026",
+          "ResumptionQuoteTime": "10:54:08",
+          "ResumptionTradeTime": "10:54:08",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/07/2026                    </td><td valign=\"top\">10:49:04.893</td><td valign=\"top\">FEDU</td><td valign=\"top\">Four Seasons Education (Cayman) Inc. American Depositary Shares, each ADS representing 10 ordinary shares</td><td valign=\"top\">NYSE</td><td valign=\"top\">M</td><td valign=\"top\"></td><td valign=\"top\">10/07/2026                    </td><td valign=\"top\">10:54:08                      </td><td valign=\"top\">10:54:08                      </td></tr></table>",
           "pubDate": "Wed, 07 Oct 2026 04:00:00 GMT",
           "title": "FEDU"
         },

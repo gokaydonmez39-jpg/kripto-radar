@@ -26,6 +26,7 @@
     "active_halt_symbols": [
       "BKKT.W",
       "EFTY",
+      "FMS",
       "HCHL",
       "LAWR",
       "MAGH",
@@ -37,9 +38,9 @@
       "UCFI",
       "UCFIW"
     ],
-    "age_seconds": 1.658,
-    "generated_at_utc": "2026-10-07T14:23:53.753853+00:00",
-    "guard_blob_sha": "5fe35d9d3343b4ba53c537898903d7e2bdbafee8",
+    "age_seconds": 0.728,
+    "generated_at_utc": "2026-10-07T14:56:43.560015+00:00",
+    "guard_blob_sha": "5d87c1d49bd86535063d0f5bd8cce2343c5d1b36",
     "guard_path": "nasdaq-xray/canonical_official_source_guard.json",
     "max_age_seconds": 900,
     "security_status_suspension_symbols": [
@@ -79,6 +80,7 @@
       "COLAU",
       "DRCT",
       "EFTY",
+      "FMS",
       "FSEA",
       "GFAIW",
       "HCHL",
@@ -206,7 +208,7 @@
     },
     "account_live_probe": {
       "balance_parseable": false,
-      "blob_sha": "6b6e449d148c152fb9c20467e8a3c818cb26d406",
+      "blob_sha": "59c14c0b963ce1e905ac8c4b4a8f3eca534b7347",
       "network_attempted": false,
       "path": "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/account_effective_probe_state.json",
       "positions_parseable": false,
@@ -217,7 +219,7 @@
       "secret_values_persisted": false,
       "status": "BLOCKED_MISSING_CREDENTIALS",
       "workflow_run_attempt": "1",
-      "workflow_run_id": "37634292853"
+      "workflow_run_id": "37639879346"
     },
     "deep": {
       "blob_sha": "d10b81d72e642308bc16612860315e225c6b44c4",
@@ -240,7 +242,7 @@
       "path": "nasdaq-xray/canonical_current_family_c.json"
     },
     "final": {
-      "blob_sha": "dcfec62a5294e0cd3afff968ab4906ece5375ae4",
+      "blob_sha": "12e5b193b27fdcf028858c0dd8e8c670c872058c",
       "path": "nasdaq-xray/canonical_current_final_tech.json"
     },
     "full_state": {
@@ -277,7 +279,7 @@
       "semantic_rebind": false
     },
     "official_halt_guard": {
-      "blob_sha": "5fe35d9d3343b4ba53c537898903d7e2bdbafee8",
+      "blob_sha": "5d87c1d49bd86535063d0f5bd8cce2343c5d1b36",
       "path": "nasdaq-xray/canonical_official_source_guard.json"
     },
     "pointer": {
@@ -309,7 +311,7 @@
   "final_gate_reporting_zero_alpha": true,
   "full_end_to_end_research_pass": false,
   "g9_global_status": "G9_BLOCKED_FREE_AUTOMATION_PATH",
-  "generated_at_utc": "2026-10-07T14:23:55.413321+00:00",
+  "generated_at_utc": "2026-10-07T14:56:44.289515+00:00",
   "pointer_asof_before_candidate": "2026-10-06",
   "r92_account_g9_applicable": false,
   "r92_candidates": [],
