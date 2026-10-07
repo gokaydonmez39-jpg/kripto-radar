@@ -6,11 +6,14 @@ on:
     paths:
       - "nasdaq-xray/mc_zero_key.py"
       - "nasdaq-xray/mc_zero_key_selftest.py"
+      - "nasdaq-xray/sina_state.json"
+      - "nasdaq-xray/sina_candidates.json"
+      - "nasdaq-xray/mc_resolution_overlay.json"
       - ".github/workflows/xray-mc-zero-key-shadow-selftest.yml"
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: xray-mc-zero-key-pit-shadow-selftest
@@ -19,9 +22,11 @@ concurrency:
 jobs:
   selftest:
     runs-on: ubuntu-latest
-    timeout-minutes: 4
+    timeout-minutes: 6
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
 
       - uses: actions/setup-python@v5
         with:
@@ -48,3 +53,68 @@ jobs:
           assert "NASDAQ_SCREENER_MARKET_DATA_ASOF_MISSING" in s
           print("MC_ZERO_KEY_STATIC_SAFETY=PASS")
           PY
+
+      - name: Build current zero-key PIT shadow
+        run: python nasdaq-xray/mc_zero_key.py
+
+      - name: Validate exact current-ASOF shadow binding
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path("nasdaq-xray")
+          state=json.loads((root/"mc_zero_key_state.json").read_text())
+          cand=json.loads((root/"sina_candidates.json").read_text())
+          assert state["schema"]=="XRAY_MC_ZERO_KEY_V3", state.get("schema")
+          assert state["execution"]=="NONE"
+          assert state["real_money"]=="NO-GO"
+          assert state["unknown_never_pass"] is True
+          assert state["alpha_authority"] is False
+          assert state["pit_safe_shadow"] is True
+          assert state["asof_et"]==cand["asof_et"], (state.get("asof_et"),cand.get("asof_et"))
+          assert state["direct_nasdaq_conservative_pass_count"]==len(state.get("direct_nasdaq_conservative_pass") or {})
+          assert state["definitive_fail_count"]==len(state.get("definitive_fail") or {})
+          assert state["unresolved_count"]==len(state.get("unresolved") or {})
+          total=(state["direct_nasdaq_conservative_pass_count"]+
+                 state["definitive_fail_count"]+
+                 state["unresolved_count"])
+          assert total==len(cand.get("candidates") or {}), (total,len(cand.get("candidates") or {}))
+          print(json.dumps({
+            "status":"MC_ZERO_KEY_CURRENT_SHADOW_VALID",
+            "asof_et":state["asof_et"],
+            "input_count":total,
+            "direct_shadow":state["direct_nasdaq_conservative_pass_count"],
+            "definitive_fail_shadow":state["definitive_fail_count"],
+            "unresolved":state["unresolved_count"],
+            "nasdaq_binding":state.get("nasdaq_snapshot_binding"),
+          },sort_keys=True))
+          PY
+
+      - name: Persist current shadow artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "xray-dataplane-bot"
+          git config user.email "xray-dataplane-bot@users.noreply.github.com"
+          git add nasdaq-xray/mc_zero_key_state.json
+          if git diff --cached --quiet; then
+            echo "No MC zero-key shadow state change."
+            exit 0
+          fi
+          git commit -m "chore(xray): refresh current zero-key MC PIT shadow [skip ci]"
+          for attempt in 1 2 3 4 5; do
+            if git pull --rebase origin main && git push; then
+              exit 0
+            fi
+            sleep $((attempt * 2))
+          done
+          echo "MC_ZERO_KEY_SHADOW_PUSH_FAILED" >&2
+          exit 1
+
+      - name: Upload current shadow evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-mc-zero-key-current-shadow
+          path: nasdaq-xray/mc_zero_key_state.json
+          retention-days: 14
