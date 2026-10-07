@@ -94,8 +94,28 @@ def main():
         if missing.exists():
             missing.unlink()
         assert m.exact_proofs_complete(Path("/tmp/identity.json"),missing,"2026-10-06") is False
-        with tempfile.NamedTemporaryFile() as tmp:
+        with tempfile.NamedTemporaryFile(mode="w+",suffix=".json") as tmp:
+            json.dump({
+              "asof_et":"2026-10-06",
+              "discovery_version":m.IDENTITY_DISCOVERY_VERSION,
+              "discovery_coverage":{
+                "coverage_complete":True,
+                "unresolved_current_suspect_count":0,
+                "unresolved_current_suspects":[],
+              },
+            },tmp); tmp.flush()
             assert m.exact_proofs_complete(Path("/tmp/identity.json"),Path(tmp.name),"2026-10-06") is True
+        with tempfile.NamedTemporaryFile(mode="w+",suffix=".json") as tmp:
+            json.dump({
+              "asof_et":"2026-10-06",
+              "discovery_version":m.IDENTITY_DISCOVERY_VERSION,
+              "discovery_coverage":{
+                "coverage_complete":False,
+                "unresolved_current_suspect_count":1,
+                "unresolved_current_suspects":["TLAC"],
+              },
+            },tmp); tmp.flush()
+            assert m.exact_proofs_complete(Path("/tmp/identity.json"),Path(tmp.name),"2026-10-06") is False
     finally:
         m.validate_existing_identity=original_vi
         m.validate_existing_sec=original_vs
