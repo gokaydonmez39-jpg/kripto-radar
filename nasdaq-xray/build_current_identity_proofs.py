@@ -336,12 +336,36 @@ def exact_proofs_complete(identity_path,sec_path,asof):
 def frozen_exact_asof_directory(asof,root=ROOT):
     """Rehydrate an already-committed exact-ASOF Nasdaq identity snapshot.
 
-    Prefer canonical current artifacts when they are still exact. If a later-day
-    live directory contaminated the current artifact, fall back to the durable
-    support-plane sina_state.json only when its queue/hash/partition/footer are
-    independently exact for the requested ASOF. Never use a later live directory
-    as historical membership authority.
+    Prefer an immutable membership-only snapshot when present. It is sourced
+    from an exact historical Nasdaq directory and carries no PASS/UNKNOWN
+    classification decisions. Then fall back to canonical/support-plane state
+    only when those artifacts are independently exact for the requested ASOF.
+    Never use a later live directory as historical membership authority.
     """
+    stamp=asof.replace("-","")
+    snapshot_path=root/f"master_nasdaq_directory_snapshot_{stamp}.json"
+    if snapshot_path.exists():
+        try:
+            snap=json.loads(snapshot_path.read_text(encoding="utf-8"))
+            footer=str(snap.get("source_directory_footer") or "")
+            names={str(k).upper():str(v) for k,v in (snap.get("security_names") or {}).items() if str(k).strip() and str(v).strip()}
+            industries={str(k).upper():str(v).strip() for k,v in (snap.get("industries") or {}).items() if str(k).strip() and str(v).strip()}
+            if (
+              snap.get("schema")=="XRAY_NASDAQ_DIRECTORY_SNAPSHOT_V1"
+              and snap.get("asof_et")==asof
+              and snap.get("source_directory_date")==asof
+              and parse_footer_date(footer)==asof
+              and snap.get("membership_only") is True
+              and snap.get("identity_decisions_reused") is False
+              and snap.get("source_queue_classification_ignored") is True
+              and int(snap.get("membership_count",-1))==len(names)
+              and len(names)>0
+              and set(industries)<=set(names)
+            ):
+                return names,industries,footer
+        except Exception:
+            pass
+
     candidates=[
       (root/"canonical_current_full_state.json",root/"canonical_current_master_manifest.json"),
       (root/"sina_state.json",None),

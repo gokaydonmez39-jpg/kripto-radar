@@ -96,9 +96,38 @@ def main():
         m.validate_existing_identity=original_vi
         m.validate_existing_sec=original_vs
 
+    # Immutable membership-only directory snapshots outrank contaminated
+    # current/support-plane state, but only when ASOF/footer/count are exact.
+    from pathlib import Path
+    import tempfile
+    import json
+    with tempfile.TemporaryDirectory() as td:
+        root=Path(td)
+        snap={
+          "schema":"XRAY_NASDAQ_DIRECTORY_SNAPSHOT_V1",
+          "asof_et":"2026-10-06",
+          "source_directory_footer":"File Creation Time: 1006202618:01|||||||",
+          "source_directory_date":"2026-10-06",
+          "membership_only":True,
+          "identity_decisions_reused":False,
+          "source_queue_classification_ignored":True,
+          "membership_count":2,
+          "security_names":{"OPER":"Operating Corp. - Common Stock","TLAC":"Three Lions Acquisition Corp."},
+          "industries":{"OPER":"Technology","TLAC":"Blank Checks"},
+        }
+        (root/"master_nasdaq_directory_snapshot_20261006.json").write_text(json.dumps(snap))
+        frozen=m.frozen_exact_asof_directory("2026-10-06",root)
+        assert frozen is not None
+        names2,industries2,footer2=frozen
+        assert names2["OPER"]=="Operating Corp. - Common Stock"
+        assert industries2["TLAC"]=="Blank Checks"
+        assert m.parse_footer_date(footer2)=="2026-10-06"
+        bad=dict(snap); bad["source_directory_footer"]="File Creation Time: 1007202603:02|||||||"
+        (root/"master_nasdaq_directory_snapshot_20261006.json").write_text(json.dumps(bad))
+        assert m.frozen_exact_asof_directory("2026-10-06",root) is None
+
     # Historical replay must use the committed exact-ASOF identity snapshot,
     # never a later live Nasdaq directory as if it belonged to the target day.
-    import json
     with tempfile.TemporaryDirectory() as td:
         root=Path(td)
         q0=["OPER"]; q0hash=__import__("hashlib").sha256("OPER".encode()).hexdigest()
