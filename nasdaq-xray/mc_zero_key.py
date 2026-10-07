@@ -166,9 +166,51 @@ def load_nasdaq_pit(asof):
         return {},{"status":"INVALID","reason":f"{type(e).__name__}:{str(e)[:120]}"}
 
 
+def upstream_history_gate(ss,cc):
+    if ss.get("status")!="HISTORY_COMPLETE":
+        return False,"WAITING_UPSTREAM_HISTORY"
+    if ss.get("asof_et")!=cc.get("asof_et"):
+        return False,"UPSTREAM_ASOF_MISMATCH"
+    if cc.get("schema")!="XRAY_SINA_CANDIDATES_V2":
+        return False,"CANDIDATE_SCHEMA_MISMATCH"
+    if cc.get("task_id")!=TASK_ID or cc.get("execution")!="NONE" or cc.get("real_money")!="NO-GO":
+        return False,"CANDIDATE_SAFETY_OR_TASK_MISMATCH"
+    cands=cc.get("candidates") or {}
+    if int(cc.get("candidate_count",-1))!=len(cands):
+        return False,"CANDIDATE_COUNT_MISMATCH"
+    return True,"READY"
+
+
+def waiting_upstream_state(ss,cc,reason):
+    asof=ss.get("asof_et") or cc.get("asof_et")
+    return {
+      "schema":"XRAY_MC_ZERO_KEY_V3","status":"WAITING_UPSTREAM_HISTORY",
+      "task_id":TASK_ID,"asof_et":asof,"execution":"NONE","real_money":"NO-GO",
+      "unknown_never_pass":True,"alpha_authority":False,"pit_safe_shadow":True,
+      "direct_nasdaq_conservative_pass_count":0,"definitive_fail_count":0,
+      "unresolved_count":1,"direct_nasdaq_conservative_pass":{},
+      "definitive_fail":{},"unresolved":{"__UPSTREAM_HISTORY__":{
+          "reason":reason,"fail_closed":True,"unknown_never_pass":True,
+      }},
+      "nasdaq_snapshot_binding":{"status":"NOT_EVALUATED_WAITING_UPSTREAM_HISTORY"},
+      "nasdaq_pit_meta":{"status":"NOT_EVALUATED_WAITING_UPSTREAM_HISTORY"},
+      "nasdaq_current_diagnostic_count":0,"nasdaq_current_diagnostic":{},
+      "current_core_zero_key":[],"fallback_watch_symbols":[],
+      "overlay_meta":{"status":"NOT_EVALUATED_WAITING_UPSTREAM_HISTORY"},
+      "updated_at_utc":datetime.now(timezone.utc).isoformat(),
+      "policy_note":"FAIL_CLOSED_TOMBSTONE; upstream support HISTORY is incomplete or not exact-bound; no MC decision authority."
+    }
+
+
 def main():
     ss=json.loads(SINA_STATE.read_text())
     cc=json.loads(CAND.read_text())
+    ready,reason=upstream_history_gate(ss,cc)
+    if not ready:
+        out=waiting_upstream_state(ss,cc,reason)
+        OUT.write_text(json.dumps(out,ensure_ascii=False,sort_keys=True,indent=2)+"\n",encoding="utf-8")
+        print(json.dumps({"status":out["status"],"reason":reason,"unresolved_count":1},sort_keys=True))
+        return
     asof=cc["asof_et"]
     cands=cc.get("candidates") or {}
     disc=ss.get("discovery") or {}
