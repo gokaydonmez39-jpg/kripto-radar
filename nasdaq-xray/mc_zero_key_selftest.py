@@ -8,6 +8,45 @@ from pathlib import Path
 import mc_zero_key as m
 
 
+def test_partial_support_history_never_builds_ready_mc_shadow():
+    cc={
+        "schema":"XRAY_SINA_CANDIDATES_V2",
+        "task_id":m.TASK_ID,
+        "execution":"NONE",
+        "real_money":"NO-GO",
+        "asof_et":"2026-10-06",
+        "candidate_count":1,
+        "candidates":{"AAA":{}},
+    }
+    ready,reason=m.upstream_history_gate(
+        {"status":"HISTORY_PARTIAL","asof_et":"2026-10-06"},cc
+    )
+    assert ready is False and reason=="WAITING_UPSTREAM_HISTORY",(ready,reason)
+    tomb=m.waiting_upstream_state(
+        {"status":"HISTORY_PARTIAL","asof_et":"2026-10-06"},cc,reason
+    )
+    assert tomb["status"]=="WAITING_UPSTREAM_HISTORY",tomb
+    assert tomb["alpha_authority"] is False and tomb["unknown_never_pass"] is True,tomb
+    assert tomb["unresolved_count"]==1,tomb
+    assert tomb["direct_nasdaq_conservative_pass_count"]==0,tomb
+
+
+def test_complete_exact_bound_support_history_can_reach_shadow_evaluation():
+    cc={
+        "schema":"XRAY_SINA_CANDIDATES_V2",
+        "task_id":m.TASK_ID,
+        "execution":"NONE",
+        "real_money":"NO-GO",
+        "asof_et":"2026-10-06",
+        "candidate_count":1,
+        "candidates":{"AAA":{}},
+    }
+    ready,reason=m.upstream_history_gate(
+        {"status":"HISTORY_COMPLETE","asof_et":"2026-10-06"},cc
+    )
+    assert ready is True and reason=="READY",(ready,reason)
+
+
 def test_unbound_snapshot_never_authorizes_asof_decision():
     ok,meta=m.nasdaq_snapshot_binding(
         {
@@ -108,6 +147,8 @@ def test_exact_asof_pit_loader_accepts_only_explicit_shadow_rows():
 
 
 if __name__=="__main__":
+    test_partial_support_history_never_builds_ready_mc_shadow()
+    test_complete_exact_bound_support_history_can_reach_shadow_evaluation()
     test_unbound_snapshot_never_authorizes_asof_decision()
     test_explicit_mismatch_fails_closed()
     test_explicit_same_asof_is_shadow_eligible()
