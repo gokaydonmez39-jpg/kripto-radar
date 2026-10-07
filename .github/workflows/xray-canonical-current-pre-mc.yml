@@ -23,6 +23,8 @@ on:
       - "nasdaq-xray/build_current_master_manifest.py"
       - "nasdaq-xray/price_dv30_phase.py"
       - "nasdaq-xray/price_dv30_recover_from_fullstate.py"
+      - "nasdaq-xray/price_official_listing_registry.json"
+      - "nasdaq-xray/price_official_listing_selftest.py"
       - "nasdaq-xray/price_official_halt_selftest.py"
       - "nasdaq-xray/official_source_guard.py"
       - "nasdaq-xray/build_current_resolver_request.py"
@@ -103,6 +105,7 @@ jobs:
             nasdaq-xray/build_current_master_manifest.py \
             nasdaq-xray/price_dv30_phase.py \
             nasdaq-xray/price_dv30_recover_from_fullstate.py \
+            nasdaq-xray/price_official_listing_selftest.py \
             nasdaq-xray/price_official_halt_selftest.py \
             nasdaq-xray/official_source_guard.py \
             nasdaq-xray/build_current_resolver_request.py \
@@ -117,6 +120,10 @@ jobs:
         run: |
           cd nasdaq-xray
           python price_official_halt_selftest.py
+      - name: PRICE official recent-listing exact30 self-test
+        run: |
+          cd nasdaq-xray
+          python price_official_listing_selftest.py
       - name: Completed-session epoch rollover guard
         id: rollover
         shell: bash
