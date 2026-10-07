@@ -1,2444 +1,1504 @@
 {
-  "asof_et": "2026-09-30",
-  "current_core_zero_key": [
-    "AAL",
-    "AAOI",
-    "AAON",
-    "AAPL",
-    "ABCL",
-    "ABNB",
-    "ABVX",
-    "ACGL",
-    "ACMR",
-    "ADBE",
-    "ADI",
-    "ADP",
-    "ADSK",
-    "AEHR",
-    "AEIS",
-    "AEP",
-    "AFRM",
-    "AKAM",
-    "ALAB",
-    "ALGM",
-    "ALGN",
-    "ALKS",
-    "ALM",
-    "ALNY",
-    "AMAT",
-    "AMBA",
-    "AMD",
-    "AMGN",
-    "AMKR",
-    "AMZN",
-    "APA",
-    "APLD",
-    "APP",
-    "APPF",
-    "ARGX",
-    "ARM",
-    "ARQT",
-    "ARWR",
-    "ASML",
-    "ASND",
-    "ASO",
-    "ASST",
-    "ASTS",
-    "ATRC",
-    "AUGO",
-    "AVAV",
-    "AVGO",
-    "AVT",
-    "AXGN",
-    "AXON",
-    "AXSM",
-    "AXTI",
-    "BBIO",
-    "BIDU",
-    "BIIB",
-    "BKNG",
-    "BKR",
-    "BMRN",
-    "BNTX",
-    "BPOP",
-    "BRKR",
-    "BRZE",
-    "BSP",
-    "BSY",
-    "BTDR",
-    "BTSG",
-    "BWIN",
-    "BZ",
-    "CACC",
-    "CAI",
-    "CAKE",
-    "CALM",
-    "CART",
-    "CASY",
-    "CBSH",
-    "CCEP",
-    "CDNA",
-    "CDNS",
-    "CDW",
-    "CELC",
-    "CELH",
-    "CENX",
-    "CG",
-    "CGNX",
-    "CGON",
-    "CHDN",
-    "CHEF",
-    "CHKP",
-    "CHRD",
-    "CHRW",
-    "CHTR",
-    "CHYM",
-    "CIFR",
-    "CINF",
-    "CLMT",
-    "CLSK",
-    "CMCSA",
-    "CME",
-    "COCO",
-    "COGT",
-    "COHU",
-    "COIN",
-    "COKE",
-    "COLB",
-    "COO",
-    "CORT",
-    "CORZ",
-    "COST",
-    "CPB",
-    "CPRT",
-    "CRDO",
-    "CROX",
-    "CRSP",
-    "CRUS",
-    "CRWD",
-    "CRWV",
-    "CSCO",
-    "CSGP",
-    "CSX",
-    "CTAS",
-    "CTSH",
-    "CVCO",
-    "CVLT",
-    "CYTK",
-    "CZR",
-    "DASH",
-    "DAVE",
-    "DBX",
-    "DDOG",
-    "DKNG",
-    "DLTR",
-    "DNTH",
-    "DOCU",
-    "DOX",
-    "DPZ",
-    "DUOL",
-    "DXCM",
-    "DYN",
-    "EBAY",
-    "ECHO",
-    "ELVN",
-    "ENPH",
-    "ENSG",
-    "ENTG",
-    "EQIX",
-    "ERAS",
-    "ESLT",
-    "EVRG",
-    "EWBC",
-    "EWTX",
-    "EXC",
-    "EXE",
-    "EXEL",
-    "EXLS",
-    "EXPE",
-    "FANG",
-    "FAST",
-    "FCFS",
-    "FCNCA",
-    "FER",
-    "FFIV",
-    "FIGR",
-    "FISV",
-    "FIVE",
-    "FIVN",
-    "FLEX",
-    "FLY",
-    "FORM",
-    "FOX",
-    "FOXA",
-    "FROG",
-    "FRPT",
-    "FRSH",
-    "FSLR",
-    "FSLY",
-    "FTAI",
-    "FTNT",
-    "FUTU",
-    "FWONK",
-    "GEHC",
-    "GEN",
-    "GFS",
-    "GH",
-    "GILD",
-    "GLBE",
-    "GLNG",
-    "GLPI",
-    "GLXY",
-    "GMAB",
-    "GOOG",
-    "GOOGL",
-    "GRAL",
-    "GTLB",
-    "GTX",
-    "HALO",
-    "HAS",
-    "HBAN",
-    "HLNE",
-    "HON",
-    "HOOD",
-    "HQY",
-    "HSIC",
-    "HST",
-    "HTFL",
-    "HTHT",
-    "HUT",
-    "HWC",
-    "IBKR",
-    "ICLR",
-    "IDCC",
-    "IDXX",
-    "IESC",
-    "ILMN",
-    "INCY",
-    "INDV",
-    "INOD",
-    "INSM",
-    "INTC",
-    "INTU",
-    "IONS",
-    "IOVA",
-    "IREN",
-    "IRTC",
-    "ISRG",
-    "JAZZ",
-    "JBHT",
-    "JD",
-    "JKHY",
-    "KDP",
-    "KLAC",
-    "KLIC",
-    "KMB",
-    "KRYS",
-    "KTOS",
-    "KYMR",
-    "LAMR",
-    "LECO",
-    "LFST",
-    "LFUS",
-    "LGND",
-    "LIN",
-    "LITE",
-    "LKQ",
-    "LNT",
-    "LNTH",
-    "LOGI",
-    "LPLA",
-    "LQDA",
-    "LRCX",
-    "LSCC",
-    "LSTR",
-    "LULU",
-    "LUNR",
-    "LYFT",
-    "MANH",
-    "MAR",
-    "MARA",
-    "MAT",
-    "MCHP",
-    "MDB",
-    "MDGL",
-    "MDLZ",
-    "MEDP",
-    "MELI",
-    "META",
-    "MIDD",
-    "MIRM",
-    "MKSI",
-    "MKTX",
-    "MMSI",
-    "MNDY",
-    "MNST",
-    "MORN",
-    "MPWR",
-    "MRCY",
-    "MRNA",
-    "MRVL",
-    "MRX",
-    "MSFT",
-    "MSTR",
-    "MTCH",
-    "MTSI",
-    "MU",
-    "MXL",
-    "MYRG",
-    "NBIS",
-    "NBIX",
-    "NDAQ",
-    "NDSN",
-    "NESR",
-    "NFLX",
-    "NICE",
-    "NTAP",
-    "NTES",
-    "NTNX",
-    "NTRA",
-    "NTRS",
-    "NTSK",
-    "NVDA",
-    "NVMI",
-    "NVTS",
-    "NWSA",
-    "NXPI",
-    "NXST",
-    "NXT",
-    "ODFL",
-    "OKTA",
-    "OLED",
-    "OLLI",
-    "ON",
-    "ONB",
-    "ONC",
-    "ORKA",
-    "ORLY",
-    "OUST",
-    "OZK",
-    "PANW",
-    "PAYX",
-    "PCAR",
-    "PCTY",
-    "PCVX",
-    "PDD",
-    "PEGA",
-    "PENG",
-    "PEP",
-    "PFG",
-    "PI",
-    "PLTR",
-    "PLXS",
-    "PODD",
-    "POOL",
-    "POWL",
-    "PRAX",
-    "PSKY",
-    "PTC",
-    "PTCT",
-    "PTEN",
-    "PTGX",
-    "PYPL",
-    "QBTS",
-    "QCOM",
-    "QLYS",
-    "QRVO",
-    "REG",
-    "REGN",
-    "RELY",
-    "RGEN",
-    "RGLD",
-    "RGTI",
-    "RIOT",
-    "RIVN",
-    "RKLB",
-    "RLAY",
-    "RMBS",
-    "ROAD",
-    "ROIV",
-    "ROKU",
-    "ROP",
-    "ROST",
-    "RPRX",
-    "RRR",
-    "RVMD",
-    "RYAAY",
-    "RYTM",
-    "SAIA",
-    "SAIL",
-    "SANM",
-    "SBAC",
-    "SBLK",
-    "SBUX",
-    "SDGR",
-    "SEIC",
-    "SFM",
-    "SHOP",
-    "SIMO",
-    "SIRI",
-    "SITM",
-    "SLAB",
-    "SLS",
-    "SMCI",
-    "SMMT",
-    "SMTC",
-    "SNEX",
-    "SNPS",
-    "SNY",
-    "SOFI",
-    "SRRK",
-    "SSNC",
-    "SSRM",
-    "STLD",
-    "STRL",
-    "STX",
-    "SWKS",
-    "SYM",
-    "SYNA",
-    "SYRE",
-    "TARS",
-    "TCBI",
-    "TCOM",
-    "TEAM",
-    "TECH",
-    "TEM",
-    "TENB",
-    "TER",
-    "TGTX",
-    "TIGO",
-    "TLN",
-    "TMDX",
-    "TMUS",
-    "TNGX",
-    "TPG",
-    "TRI",
-    "TRMB",
-    "TRMD",
-    "TROW",
-    "TSCO",
-    "TSEM",
-    "TSLA",
-    "TTAN",
-    "TTD",
-    "TTEK",
-    "TTMI",
-    "TTWO",
-    "TVTX",
-    "TW",
-    "TWST",
-    "TXG",
-    "TXN",
-    "TXRH",
-    "UAL",
-    "UCTT",
-    "ULTA",
-    "UMBF",
-    "UPST",
-    "URBN",
-    "USAR",
-    "UTHR",
-    "VCTR",
-    "VCYT",
-    "VERA",
-    "VIAV",
-    "VICR",
-    "VKTX",
-    "VLY",
-    "VNOM",
-    "VOD",
-    "VRNS",
-    "VRSK",
-    "VRSN",
-    "VRTX",
-    "VSAT",
-    "VSEC",
-    "VTRS",
-    "WBD",
-    "WDAY",
-    "WDC",
-    "WFRD",
-    "WGS",
-    "WING",
-    "WIX",
-    "WMG",
-    "WMT",
-    "WSC",
-    "WTFC",
-    "WTW",
-    "WULF",
-    "WWD",
-    "WYNN",
-    "XEL",
-    "XENE",
-    "XMTR",
-    "XP",
-    "Z",
-    "ZBRA",
-    "ZION",
-    "ZM",
-    "ZS"
-  ],
-  "definitive_fail": {
-    "BAND": {
-      "bigdata_entity_id": "3798B9",
-      "market_cap": 1953695579.0,
-      "mode": "BIGDATA_PRIMARY_EXACT_XNAS_LT_2B"
-    },
-    "GPCR": {
-      "bigdata_entity_id": "0H4S2P",
-      "market_cap": 1800109646.0,
-      "mode": "BIGDATA_PRIMARY_EXACT_XNAS_LT_2B"
-    },
-    "NKTR": {
-      "bigdata_entity_id": "649CBD",
-      "market_cap": 1736912720.0,
-      "mode": "BIGDATA_PRIMARY_EXACT_XNAS_LT_2B"
-    },
-    "SEDG": {
-      "mode": "NASDAQ_OFFICIAL_LT_2B",
-      "nasdaq_market_cap": 1960825589.0
-    }
-  },
-  "definitive_fail_count": 4,
-  "direct_nasdaq_conservative_pass": {
-    "AAL": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 8850538245.0
-    },
-    "AAOI": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 8427798246.0
-    },
-    "AAON": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 6823863164.0
-    },
-    "AAPL": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 4860153823600.0
-    },
-    "ABCL": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 4725781668.0
-    },
-    "ABNB": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 96194919813.0
-    },
-    "ABVX": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 8525080856.0
-    },
-    "ACGL": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 31515922077.0
-    },
-    "ACMR": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 5636012940.0
-    },
-    "ADBE": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 93384648000.0
-    },
-    "ADI": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 192231965620.0
-    },
-    "ADP": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 102256674477.0
-    },
-    "ADSK": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 43681000000.0
-    },
-    "AEHR": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 3253543973.0
-    },
-    "AEIS": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 11287015564.0
-    },
-    "AEP": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 64587301841.0
-    },
-    "AFRM": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 23359673553.0
-    },
-    "AKAM": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 15284261367.0
-    },
-    "ALAB": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 61755492471.0
-    },
-    "ALGM": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 6775714372.0
-    },
-    "ALGN": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 10325642488.0
-    },
-    "ALKS": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 6797767781.0
-    },
-    "ALM": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 3796406670.0
-    },
-    "ALNY": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 33016061775.0
-    },
-    "AMAT": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 405829860401.0
-    },
-    "AMBA": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 3068238894.0
-    },
-    "AMD": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 998682931694.0
-    },
-    "AMGN": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 227881796428.0
-    },
-    "AMKR": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 13013940483.0
-    },
-    "AMZN": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 2687410026464.0
-    },
-    "APA": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 14553601725.0
-    },
-    "APLD": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 7288929870.0
-    },
-    "APP": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 97192689930.0
-    },
-    "APPF": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 7101815236.0
-    },
-    "ARGX": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 59512723932.0
-    },
-    "ARM": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 308214244294.0
-    },
-    "ARQT": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 3322038529.0
-    },
-    "ARWR": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 9245104865.0
-    },
-    "ASML": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 698249621151.0
-    },
-    "ASND": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 15010373592.0
-    },
-    "ASO": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 2961328868.0
-    },
-    "ASST": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 2852847907.0
-    },
-    "ASTS": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 22906398697.0
-    },
-    "ATRC": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 2858685723.0
-    },
-    "AUGO": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 6592536066.0
-    },
-    "AVAV": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 7227720238.0
-    },
-    "AVGO": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 1676451072289.0
-    },
-    "AVT": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 8203194251.0
-    },
-    "AXGN": {
-      "bigdata_entity_id": "514067",
-      "market_cap": 2253682080.0,
-      "mode": "BIGDATA_PRIMARY_EXACT_XNAS"
-    },
-    "AXON": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 34324432586.0
-    },
-    "AXSM": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 9658499031.0
-    },
-    "AXTI": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 5076022341.0
-    },
-    "BBIO": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 12863075789.0
-    },
-    "BIDU": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 29557748487.0
-    },
-    "BIIB": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 33374673068.0
-    },
-    "BKNG": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 122407397255.0
-    },
-    "BKR": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 54497806498.0
-    },
-    "BMRN": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 11614425540.0
-    },
-    "BNTX": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 24693389178.0
-    },
-    "BPOP": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 9914367980.0
-    },
-    "BRKR": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 9865265711.0
-    },
-    "BRZE": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 2850969118.0
-    },
-    "BSP": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 22933466276.0
-    },
-    "BSY": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 9651867804.0
-    },
-    "BTDR": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 2850995750.0
-    },
-    "BTSG": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 11228795677.0
-    },
-    "BWIN": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 4434652038.0
-    },
-    "BZ": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 6849524404.0
-    },
-    "CACC": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 5512087980.0
-    },
-    "CAI": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 8655890547.0
-    },
-    "CAKE": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 5236809122.0
-    },
-    "CALM": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 3193095814.0
-    },
-    "CART": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 10233816208.0
-    },
-    "CASY": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 22488783213.0
-    },
-    "CBSH": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 7851477424.0
-    },
-    "CCEP": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 46174553260.0
-    },
-    "CDNA": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 3362724495.0
-    },
-    "CDNS": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 90930637705.0
-    },
-    "CDW": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 16022233316.0
-    },
-    "CELC": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 3891065324.0
-    },
-    "CELH": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 6920508535.0
-    },
-    "CENX": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 3561778754.0
-    },
-    "CG": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 14132158769.0
-    },
-    "CGNX": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 10202776017.0
-    },
-    "CGON": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 6283716184.0
-    },
-    "CHDN": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 5274914390.0
-    },
-    "CHEF": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 4576096630.0
-    },
-    "CHKP": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 13104616374.0
-    },
-    "CHRD": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 7333343699.0
-    },
-    "CHRW": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 17289312134.0
-    },
-    "CHTR": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 12706643863.0
-    },
-    "CHYM": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 10085507357.0
-    },
-    "CIFR": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 6567861176.0
-    },
-    "CINF": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 24459796032.0
-    },
-    "CLMT": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 4604109497.0
-    },
-    "CLSK": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 3307803900.0
-    },
-    "CMCSA": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 77218331828.0
-    },
-    "CME": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 94202575321.0
-    },
-    "COCO": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 3360536306.0
-    },
-    "COGT": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 5556269924.0
-    },
-    "COHU": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 3225640825.0
-    },
-    "COIN": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 49181840816.0
-    },
-    "COKE": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 12598623925.0
-    },
-    "COLB": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 8091004865.0
-    },
-    "COO": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 10749478770.0
-    },
-    "CORT": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 12456178286.0
-    },
-    "CORZ": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 5135020247.0
-    },
-    "COST": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 403716494433.0
-    },
-    "CPB": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 5913993962.0
-    },
-    "CPRT": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 25270294731.0
-    },
-    "CRDO": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 36611154107.0
-    },
-    "CROX": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 5624436748.0
-    },
-    "CRSP": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 5349037564.0
-    },
-    "CRUS": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 6012603793.0
-    },
-    "CRWD": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 271086749420.0
-    },
-    "CRWV": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 48049868766.0
-    },
-    "CSCO": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 424340625141.0
-    },
-    "CSGP": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 11102413911.0
-    },
-    "CSX": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 86158608390.0
-    },
-    "CTAS": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 77929740571.0
-    },
-    "CTSH": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 25873515365.0
-    },
-    "CVCO": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 4308064365.0
-    },
-    "CVLT": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 6213369035.0
-    },
-    "CYTK": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 9163033480.0
-    },
-    "CZR": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 6040309030.0
-    },
-    "DASH": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 79531836336.0
-    },
-    "DAVE": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 4101023056.0
-    },
-    "DBX": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 7640259297.0
-    },
-    "DDOG": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 98332695322.0
-    },
-    "DKNG": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 9432626912.0
-    },
-    "DLTR": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 21393606692.0
-    },
-    "DNTH": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 4925021983.0
-    },
-    "DOCU": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 12550499652.0
-    },
-    "DOX": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 6172554640.0
-    },
-    "DPZ": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 9911618623.0
-    },
-    "DUOL": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 6662364706.0
-    },
-    "DXCM": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 32562460412.0
-    },
-    "DYN": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 3008485003.0
-    },
-    "EBAY": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 47192250000.0
-    },
-    "ECHO": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 26001844612.0
-    },
-    "ELVN": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 3358731684.0
-    },
-    "ENPH": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 4359451938.0
-    },
-    "ENSG": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 10024578648.0
-    },
-    "ENTG": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 23540368000.0
-    },
-    "EQIX": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 99814304124.0
-    },
-    "ERAS": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 5127511433.0
-    },
-    "ESLT": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 31719557395.0
-    },
-    "EVRG": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 18085688972.0
-    },
-    "EWBC": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 16979879314.0
-    },
-    "EWTX": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 4409327637.0
-    },
-    "EXC": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 41703060267.0
-    },
-    "EXE": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 19467153617.0
-    },
-    "EXEL": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 14472928630.0
-    },
-    "EXLS": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 5212437716.0
-    },
-    "EXPE": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 30153637854.0
-    },
-    "FANG": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 51471276325.0
-    },
-    "FAST": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 56835554791.0
-    },
-    "FCFS": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 9161425314.0
-    },
-    "FCNCA": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 23266085824.0
-    },
-    "FER": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 38922664383.0
-    },
-    "FFIV": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 25209288883.0
-    },
-    "FIGR": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 6473301607.0
-    },
-    "FISV": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 24025220455.0
-    },
-    "FIVE": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 12088214465.0
-    },
-    "FIVN": {
-      "bigdata_entity_id": "192727",
-      "market_cap": 2603941232.0,
-      "mode": "BIGDATA_PRIMARY_EXACT_XNAS"
-    },
-    "FLEX": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 40630633550.0
-    },
-    "FLY": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 3875417532.0
-    },
-    "FORM": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 11664205450.0
-    },
-    "FOX": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 23740224919.0
-    },
-    "FOXA": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 26417852418.0
-    },
-    "FROG": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 11965159219.0
-    },
-    "FRPT": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 2766222739.0
-    },
-    "FRSH": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 3337176674.0
-    },
-    "FSLR": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 18824408066.0
-    },
-    "FSLY": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 4089231000.0
-    },
-    "FTAI": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 17155165410.0
-    },
-    "FTNT": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 131158652610.0
-    },
-    "FUTU": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 15495531165.0
-    },
-    "FWONK": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 23165464014.0
-    },
-    "GEHC": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 29526730293.0
-    },
-    "GEN": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 13180886445.0
-    },
-    "GFS": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 26711499456.0
-    },
-    "GH": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 23935228881.0
-    },
-    "GILD": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 184815315853.0
-    },
-    "GLBE": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 6657488082.0
-    },
-    "GLNG": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 4827522015.0
-    },
-    "GLPI": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 11046234033.0
-    },
-    "GLXY": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 8888817907.0
-    },
-    "GMAB": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 4583410411.0
-    },
-    "GOOG": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 4167250200000.0
-    },
-    "GOOGL": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 4208098400000.0
-    },
-    "GRAL": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 6258632708.0
-    },
-    "GTLB": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 7871850000.0
-    },
-    "GTX": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 4854423566.0
-    },
-    "HALO": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 12530179200.0
-    },
-    "HAS": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 12366778867.0
-    },
-    "HBAN": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 30831530245.0
-    },
-    "HLNE": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 4786910017.0
-    },
-    "HON": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 66855325709.0
-    },
-    "HOOD": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 101146755713.0
-    },
-    "HQY": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 7316995084.0
-    },
-    "HSIC": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 9358166132.0
-    },
-    "HST": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 15339935294.0
-    },
-    "HTFL": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 4325942943.0
-    },
-    "HTHT": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 13162019453.0
-    },
-    "HUT": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 10612640195.0
-    },
-    "HWC": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 5779269098.0
-    },
-    "IBKR": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 38701937367.0
-    },
-    "ICLR": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 13015679577.0
-    },
-    "IDCC": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 8414564702.0
-    },
-    "IDXX": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 41138710964.0
-    },
-    "IESC": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 12794624449.0
-    },
-    "ILMN": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 41325680000.0
-    },
-    "INCY": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 24597371477.0
-    },
-    "INDV": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 4231444834.0
-    },
-    "INOD": {
-      "bigdata_entity_id": "CAC258",
-      "market_cap": 2147416342.0,
-      "mode": "BIGDATA_PRIMARY_EXACT_XNAS"
-    },
-    "INSM": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 24926064752.0
-    },
-    "INTC": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 635423907308.0
-    },
-    "INTU": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 73679637560.0
-    },
-    "IONS": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 7420129977.0
-    },
-    "IOVA": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 6713036622.0
-    },
-    "IREN": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 16109117530.0
-    },
-    "IRTC": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 3746574921.0
-    },
-    "ISRG": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 143653448592.0
-    },
-    "JAZZ": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 15029022867.0
-    },
-    "JBHT": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 21041642083.0
-    },
-    "JD": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 35750400000.0
-    },
-    "JKHY": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 10042929970.0
-    },
-    "KDP": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 41287461993.0
-    },
-    "KLAC": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 254384915486.0
-    },
-    "KLIC": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 4932019089.0
-    },
-    "KMB": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 32403175672.0
-    },
-    "KRYS": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 9843388900.0
-    },
-    "KTOS": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 8013823450.0
-    },
-    "KYMR": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 9295407586.0
-    },
-    "LAMR": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 14634324961.0
-    },
-    "LECO": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 14421133187.0
-    },
-    "LFST": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 4597314388.0
-    },
-    "LFUS": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 10762465054.0
-    },
-    "LGND": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 6227286183.0
-    },
-    "LIN": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 218804234368.0
-    },
-    "LITE": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 87122022000.0
-    },
-    "LKQ": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 5776037623.0
-    },
-    "LNT": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 16412721447.0
-    },
-    "LNTH": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 6496558887.0
-    },
-    "LOGI": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 14460589649.0
-    },
-    "LPLA": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 24079392282.0
-    },
-    "LQDA": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 2708539042.0
-    },
-    "LRCX": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 411105417161.0
-    },
-    "LSCC": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 17841842769.0
-    },
-    "LSTR": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 5723292717.0
-    },
-    "LULU": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 10157093016.0
-    },
-    "LUNR": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 3259878728.0
-    },
-    "LYFT": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 5681889137.0
-    },
-    "MANH": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 11585197936.0
-    },
-    "MAR": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 92746745653.0
-    },
-    "MARA": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 4376771035.0
-    },
-    "MAT": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 3616962000.0
-    },
-    "MCHP": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 42229785899.0
-    },
-    "MDB": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 28082746036.0
-    },
-    "MDGL": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 11643555339.0
-    },
-    "MDLZ": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 73796131856.0
-    },
-    "MEDP": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 17421896818.0
-    },
-    "MELI": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 87630943161.0
-    },
-    "META": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 1847400564246.0
-    },
-    "MIDD": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 4684130909.0
-    },
-    "MIRM": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 5550404712.0
-    },
-    "MKSI": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 17942995191.0
-    },
-    "MKTX": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 5768818693.0
-    },
-    "MMSI": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 5148829517.0
-    },
-    "MNDY": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 3366478826.0
-    },
-    "MNST": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 122303723948.0
-    },
-    "MORN": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 7129079033.0
-    },
-    "MPWR": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 66206432460.0
-    },
-    "MRCY": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 5051677638.0
-    },
-    "MRNA": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 76880855145.0
-    },
-    "MRVL": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 231685749000.0
-    },
-    "MRX": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 5171506709.0
-    },
-    "MSFT": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 3808562282334.0
-    },
-    "MSTR": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 64373886189.0
-    },
-    "MTCH": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 9216472048.0
-    },
-    "MTSI": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 21751968567.0
-    },
-    "MU": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 1202927939062.0
-    },
-    "MXL": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 8190502079.0
-    },
-    "MYRG": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 4553382855.0
-    },
-    "NBIS": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 64125208822.0
-    },
-    "NBIX": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 14417919833.0
-    },
-    "NDAQ": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 51431507998.0
-    },
-    "NDSN": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 18261037143.0
-    },
-    "NESR": {
-      "bigdata_entity_id": "270823",
-      "market_cap": 2568579585.0,
-      "mode": "BIGDATA_PRIMARY_EXACT_XNAS"
-    },
-    "NFLX": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 289726922656.0
-    },
-    "NICE": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 6609836347.0
-    },
-    "NTAP": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 41263704570.0
-    },
-    "NTES": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 77315601202.0
-    },
-    "NTNX": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 19050846303.0
-    },
-    "NTRA": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 59576226903.0
-    },
-    "NTRS": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 30985369392.0
-    },
-    "NTSK": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 7125770325.0
-    },
-    "NVDA": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 5503958000000.0
-    },
-    "NVMI": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 12242800814.0
-    },
-    "NVTS": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 3031295396.0
-    },
-    "NWSA": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 15483777986.0
-    },
-    "NXPI": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 59896556250.0
-    },
-    "NXST": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 4977697193.0
-    },
-    "NXT": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 11824281494.0
-    },
-    "ODFL": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 36046875168.0
-    },
-    "OKTA": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 36556804254.0
-    },
-    "OLED": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 3541284968.0
-    },
-    "OLLI": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 5087815817.0
-    },
-    "ON": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 29926921781.0
-    },
-    "ONB": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 9426524800.0
-    },
-    "ONC": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 41608064869.0
-    },
-    "ORKA": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 5514605830.0
-    },
-    "ORLY": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 69093341245.0
-    },
-    "OUST": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 2909011513.0
-    },
-    "OZK": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 5199736627.0
-    },
-    "PANW": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 324999580000.0
-    },
-    "PAYX": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 35064076591.0
-    },
-    "PCAR": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 57800135489.0
-    },
-    "PCTY": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 7564331215.0
-    },
-    "PCVX": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 8467020318.0
-    },
-    "PDD": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 110939520248.0
-    },
-    "PEGA": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 5471396570.0
-    },
-    "PENG": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 2802463208.0
-    },
-    "PEP": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 172959058230.0
-    },
-    "PFG": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 23971155606.0
-    },
-    "PI": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 5478100707.0
-    },
-    "PLTR": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 449304103434.0
-    },
-    "PLXS": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 6954865234.0
-    },
-    "PODD": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 9048642344.0
-    },
-    "POOL": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 5882476717.0
-    },
-    "POWL": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 6720715081.0
-    },
-    "PRAX": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 8131138105.0
-    },
-    "PSKY": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 11589699897.0
-    },
-    "PTC": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 15223428418.0
-    },
-    "PTCT": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 5406590754.0
-    },
-    "PTEN": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 4164722824.0
-    },
-    "PTGX": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 9116750274.0
-    },
-    "PYPL": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 44937359711.0
-    },
-    "QBTS": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 6290413226.0
-    },
-    "QCOM": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 193285050821.0
-    },
-    "QLYS": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 6476184187.0
-    },
-    "QRVO": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 10099612546.0
-    },
-    "REG": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 13162704918.0
-    },
-    "REGN": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 78067678751.0
-    },
-    "RELY": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 4517337712.0
-    },
-    "RGEN": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 9404532303.0
-    },
-    "RGLD": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 19995774252.0
-    },
-    "RGTI": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 5253520078.0
-    },
-    "RIOT": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 7561467540.0
-    },
-    "RIVN": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 21631037812.0
-    },
-    "RKLB": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 43742298614.0
-    },
-    "RLAY": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 3955506440.0
-    },
-    "RMBS": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 11579360736.0
-    },
-    "ROAD": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 5165431187.0
-    },
-    "ROIV": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 26415352659.0
-    },
-    "ROKU": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 22601240599.0
-    },
-    "ROP": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 34556954384.0
-    },
-    "ROST": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 74560355874.0
-    },
-    "RPRX": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 33557070265.0
-    },
-    "RRR": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 5202502003.0
-    },
-    "RVMD": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 43994693159.0
-    },
-    "RYAAY": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 28948120733.0
-    },
-    "RYTM": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 6555750988.0
-    },
-    "SAIA": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 8902397691.0
-    },
-    "SAIL": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 11623760848.0
-    },
-    "SANM": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 11518607778.0
-    },
-    "SBAC": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 16986828173.0
-    },
-    "SBLK": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 3274525204.0
-    },
-    "SBUX": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 107114400000.0
-    },
-    "SDGR": {
-      "bigdata_entity_id": "6BBCBA",
-      "market_cap": 2320078480.0,
-      "mode": "BIGDATA_PRIMARY_EXACT_XNAS"
-    },
-    "SEIC": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 12321169224.0
-    },
-    "SFM": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 6186979919.0
-    },
-    "SHOP": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 192168775008.0
-    },
-    "SIMO": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 9494305800.0
-    },
-    "SIRI": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 8723291139.0
-    },
-    "SITM": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 19607217603.0
-    },
-    "SLAB": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 7393406902.0
-    },
-    "SLS": {
-      "bigdata_entity_id": "9FBBDC",
-      "market_cap": 2290066230.0,
-      "mode": "BIGDATA_PRIMARY_EXACT_XNAS"
-    },
-    "SMCI": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 26981568321.0
-    },
-    "SMMT": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 13489945770.0
-    },
-    "SMTC": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 16644625397.0
-    },
-    "SNEX": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 7796665750.0
-    },
-    "SNPS": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 83350442811.0
-    },
-    "SNY": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 100553958336.0
-    },
-    "SOFI": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 20303485493.0
-    },
-    "SRRK": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 5884664826.0
-    },
-    "SSNC": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 18084860542.0
-    },
-    "SSRM": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 6794258276.0
-    },
-    "STLD": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 31762937582.0
-    },
-    "STRL": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 15042821382.0
-    },
-    "STX": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 210956268329.0
-    },
-    "SWKS": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 12862413405.0
-    },
-    "SYM": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 25444007856.0
-    },
-    "SYNA": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 4024612216.0
-    },
-    "SYRE": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 7850110031.0
-    },
-    "TARS": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 3678294594.0
-    },
-    "TCBI": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 4043985804.0
-    },
-    "TCOM": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 24621474180.0
-    },
-    "TEAM": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 45385258141.0
-    },
-    "TECH": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 11364617708.0
-    },
-    "TEM": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 14869449095.0
-    },
-    "TENB": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 4007993981.0
-    },
-    "TER": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 62678570083.0
-    },
-    "TGTX": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 8538191776.0
-    },
-    "TIGO": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 14599507839.0
-    },
-    "TLN": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 14982309647.0
-    },
-    "TMDX": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 2893640850.0
-    },
-    "TMUS": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 174931286648.0
-    },
-    "TNGX": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 4206828657.0
-    },
-    "TPG": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 16677555144.0
-    },
-    "TRI": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 42163356000.0
-    },
-    "TRMB": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 13316901119.0
-    },
-    "TRMD": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 3905862065.0
-    },
-    "TROW": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 22195514193.0
-    },
-    "TSCO": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 16303345887.0
-    },
-    "TSEM": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 25706640330.0
-    },
-    "TSLA": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 1401338910865.0
-    },
-    "TTAN": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 6346623338.0
-    },
-    "TTD": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 5753916416.0
-    },
-    "TTEK": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 8436663903.0
-    },
-    "TTMI": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 12941054454.0
-    },
-    "TTWO": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 38798441923.0
-    },
-    "TVTX": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 5550092508.0
-    },
-    "TW": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 23599409940.0
-    },
-    "TWST": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 12812038864.0
-    },
-    "TXG": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 11773109940.0
-    },
-    "TXN": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 255791544372.0
-    },
-    "TXRH": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 10262302371.0
-    },
-    "UAL": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 36012569503.0
-    },
-    "UCTT": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 3670155971.0
-    },
-    "ULTA": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 23352847936.0
-    },
-    "UMBF": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 9874263400.0
-    },
-    "UPST": {
-      "bigdata_entity_id": "FD2466",
-      "market_cap": 2200409684.0,
-      "mode": "BIGDATA_PRIMARY_EXACT_XNAS"
-    },
-    "URBN": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 6542724625.0
-    },
-    "USAR": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 5281078063.0
-    },
-    "UTHR": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 23242037088.0
-    },
-    "VCTR": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 6802958663.0
-    },
-    "VCYT": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 3701189255.0
-    },
-    "VERA": {
-      "bigdata_entity_id": "9XF5GZ",
-      "market_cap": 2317869841.0,
-      "mode": "BIGDATA_PRIMARY_EXACT_XNAS"
-    },
-    "VIAV": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 10343752790.0
-    },
-    "VICR": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 13322079144.0
-    },
-    "VKTX": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 4097450023.0
-    },
-    "VLY": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 6973877952.0
-    },
-    "VNOM": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 14328284282.0
-    },
-    "VOD": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 37375882257.0
-    },
-    "VRNS": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 5450130013.0
-    },
-    "VRSK": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 21846686614.0
-    },
-    "VRSN": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 25465503000.0
-    },
-    "VRTX": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 132511905676.0
-    },
-    "VSAT": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 9695253908.0
-    },
-    "VSEC": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 4622300888.0
-    },
-    "VTRS": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 20353030110.0
-    },
-    "WBD": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 77706267568.0
-    },
-    "WDAY": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 45900860000.0
-    },
-    "WDC": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 163851437410.0
-    },
-    "WFRD": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 5626572343.0
-    },
-    "WGS": {
-      "longbridge_market_cap": 2156169714.3,
-      "market_cap_conservative_max": 2260250382.0,
-      "mode": "RALLIES_XNAS_LONGBRIDGE_NASD_FALLBACK",
-      "r92_eligible": false,
-      "rallies_market_cap": 2260250382.0,
-      "relative_diff": 0.04604829116670837,
-      "state_cap": "WATCH"
-    },
-    "WING": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 2870547072.0
-    },
-    "WIX": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 3018605228.0
-    },
-    "WMG": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 14443060722.0
-    },
-    "WMT": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 824474909365.0
-    },
-    "WSC": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 3112860658.0
-    },
-    "WTFC": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 9568023440.0
-    },
-    "WTW": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 26768478402.0
-    },
-    "WULF": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 7384736420.0
-    },
-    "WWD": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 19401865994.0
-    },
-    "WYNN": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 8179216162.0
-    },
-    "XEL": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 44024225887.0
-    },
-    "XENE": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 3601495666.0
-    },
-    "XMTR": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 5895729483.0
-    },
-    "XP": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 10881959159.0
-    },
-    "Z": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 6100857502.0
-    },
-    "ZBRA": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 17661542485.0
-    },
-    "ZION": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 9143977691.0
-    },
-    "ZM": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 26485207447.0
-    },
-    "ZS": {
-      "mode": "NASDAQ_OFFICIAL_CONSERVATIVE_GE_2_6B",
-      "nasdaq_market_cap": 32516367875.0
-    }
-  },
-  "direct_nasdaq_conservative_pass_count": 477,
+  "alpha_authority": false,
+  "asof_et": "2026-10-06",
+  "current_core_zero_key": [],
+  "definitive_fail": {},
+  "definitive_fail_count": 0,
+  "direct_nasdaq_conservative_pass": {},
+  "direct_nasdaq_conservative_pass_count": 0,
   "execution": "NONE",
-  "fallback_watch_symbols": [
-    "WGS"
-  ],
-  "overlay_meta": {
-    "age_hours": 6.762638059722223,
-    "generated_at_utc": "2026-10-01T12:45:08.005840+00:00",
-    "status": "PASS"
+  "fallback_watch_symbols": [],
+  "nasdaq_current_diagnostic": {},
+  "nasdaq_current_diagnostic_count": 0,
+  "nasdaq_snapshot_binding": {
+    "reason": "NASDAQ_SCREENER_MARKET_DATA_ASOF_MISSING",
+    "status": "UNBOUND"
   },
-  "policy_note": "Primary Bigdata exact XNAS COMPANY/PUBLIC finite USD market cap overrides discovery MC. Rallies XNAS + Longbridge NASD fallback requires both >=2.10B and <=10% relative difference and is capped WATCH/R92-ineligible. Freshness failure is fail-closed. Nasdaq official screener >=2.6B remains conservative PASS when no fresh overlay resolution exists; 2.0-2.6B remains UNKNOWN.",
+  "overlay_meta": {
+    "reason": "ValueError:ASOF_MISMATCH",
+    "status": "INVALID"
+  },
+  "pit_safe_shadow": true,
+  "policy_note": "NON-CANONICAL SHADOW ONLY. C4.17 primary remains Bigdata exact Nasdaq-family listing. Rallies+Longbridge fallback remains WATCH/R92-ineligible. Nasdaq screener market cap may influence no ASOF decision unless an explicit market-data ASOF binding equals the research ASOF; otherwise it is CURRENT_ONLY_DIAGNOSTIC to prevent lookahead/PIT leakage.",
   "real_money": "NO-GO",
-  "schema": "XRAY_MC_ZERO_KEY_V2",
+  "schema": "XRAY_MC_ZERO_KEY_V3",
+  "status": "READY",
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_never_pass": true,
-  "unresolved": {},
-  "unresolved_count": 0
+  "unresolved": {
+    "AAL": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "AAOI": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "AAON": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "AAPL": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "ABCL": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "ABNB": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "ABVX": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "ACGL": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "ACMR": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "ADBE": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "ADI": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "ADP": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "ADSK": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "AEHR": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "AEIS": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "AEP": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "AFRM": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "AGNC": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "AKAM": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "ALAB": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "ALGM": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "ALGN": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "ALHC": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "ALKS": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "ALM": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "ALNY": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "AMAT": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "AMBA": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "AMD": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "AMGN": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "AMKR": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "AMZN": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "APA": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "APLD": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "APP": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "APPF": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "ARGX": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "ARM": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "ARQT": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "ARWR": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "ASML": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "ASND": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "ASO": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "ASST": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "ASTS": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "ATRC": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "AUGO": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "AUR": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "AVAV": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "AVGO": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "AVT": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "AXON": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "AXSM": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "AXTI": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "BBIO": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "BIDU": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "BIIB": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "BKNG": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "BKR": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "BMRN": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "BNTX": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "BPOP": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "BRKR": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "BRZE": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "BSP": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "BSY": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "BTDR": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "BTSG": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "BULL": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "BWIN": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "BZ": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "CACC": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "CAI": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "CAKE": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "CALM": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "CART": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "CASY": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "CBSH": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "CCC": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "CCEP": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "CDNA": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "CDNS": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "CDW": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "CELC": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "CELH": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "CENX": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "CG": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "CGNX": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "CGON": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "CHDN": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "CHEF": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "CHKP": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "CHRD": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "CHRW": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "CHTR": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "CHYM": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "CIFR": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "CINF": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "CLMT": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "CLSK": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "CMCSA": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "CME": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "COCO": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "COGT": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "COHU": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "COIN": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "COKE": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "COLB": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "COO": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "CORT": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "CORZ": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "COST": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "CPB": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "CPRT": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "CRDO": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "CROX": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "CRSP": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "CRUS": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "CRWD": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "CRWV": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "CSCO": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "CSGP": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "CSX": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "CTAS": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "CTSH": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "CVCO": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "CVLT": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "CYTK": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "CZR": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "DASH": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "DAVE": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "DBX": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "DDOG": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "DKNG": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "DLTR": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "DNTH": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "DOCU": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "DOX": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "DPZ": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "DUOL": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "DXCM": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "DYN": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "EBAY": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "ECHO": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "ELVN": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "ENPH": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "ENSG": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "ENTG": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "EQIX": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "ERAS": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "ERIC": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "ESLT": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "EVRG": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "EWBC": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "EWTX": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "EXC": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "EXE": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "EXEL": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "EXLS": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "EXPE": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "FANG": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "FAST": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "FCEL": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "FCFS": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "FCNCA": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "FER": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "FFIV": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "FIGR": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "FISV": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "FIVE": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "FIVN": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "FLEX": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "FLNC": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "FLY": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "FORM": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "FOX": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "FOXA": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "FROG": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "FRPT": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "FRSH": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "FSLR": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "FSLY": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "FTAI": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "FTNT": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "FUTU": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "FWONK": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "GEHC": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "GEN": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "GFS": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "GH": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "GILD": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "GLBE": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "GLNG": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "GLPI": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "GLXY": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "GMAB": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "GOOG": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "GOOGL": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "GTLB": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "GTX": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "HALO": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "HAS": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "HBAN": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "HLNE": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "HON": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "HOOD": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "HQY": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "HSIC": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "HST": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "HTFL": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "HTHT": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "HUT": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "HWC": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "IBKR": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "IBRX": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "ICLR": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "IDCC": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "IDXX": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "IESC": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "ILMN": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "INCY": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "INDV": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "INOD": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "INSM": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "INTC": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "INTU": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "IONS": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "IOVA": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "IREN": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "IRTC": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "ISRG": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "JAZZ": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "JBHT": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "JD": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "JKHY": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "KDP": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "KLAC": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "KLIC": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "KMB": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "KRYS": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "KSPI": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "KTOS": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "KYMR": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "LAMR": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "LECO": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "LFST": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "LFUS": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "LGND": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "LIN": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "LITE": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "LKQ": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "LNT": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "LNTH": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "LOGI": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "LPLA": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "LQDA": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "LRCX": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "LSCC": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "LSTR": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "LULU": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "LUMN": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "LUNR": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "LYFT": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "MANH": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "MAR": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "MARA": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "MAT": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "MCHP": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "MDB": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "MDGL": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "MDLZ": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "MEDP": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "MELI": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "META": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "MIDD": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "MIRM": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "MKSI": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "MKTX": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "MMSI": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "MNDY": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "MNST": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "MORN": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "MPWR": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "MRCY": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "MRNA": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "MRVL": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "MRX": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "MSFT": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "MSTR": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "MTCH": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "MTSI": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "MU": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "MXL": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "MYRG": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "NBIS": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "NBIX": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "NDAQ": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "NDSN": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "NESR": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "NFLX": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "NKTR": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "NTAP": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "NTES": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "NTNX": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "NTRA": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "NTRS": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "NTSK": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "NVAX": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "NVDA": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "NVMI": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "NVTS": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "NWSA": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "NXPI": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "NXST": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "NXT": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "ODFL": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "OKTA": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "OLED": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "OLLI": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "ON": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "ONB": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "ONC": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "ONDS": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "ORKA": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "ORLY": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "OUST": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "OZK": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "PANW": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "PAYX": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "PCAR": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "PCTY": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "PCVX": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "PDD": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "PEGA": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "PENG": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "PEP": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "PFG": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "PI": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "PLTR": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "PLXS": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "PODD": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "POET": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "POOL": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "POWL": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "PRAX": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "PTC": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "PTCT": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "PTEN": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "PTGX": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "PYPL": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "QBTS": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "QCOM": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "QLYS": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "QUBT": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "QURE": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "RARE": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "REG": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "REGN": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "RELY": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "RGEN": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "RGLD": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "RGTI": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "RIOT": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "RIVN": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "RKLB": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "RLAY": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "RMBS": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "ROAD": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "ROIV": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "ROKU": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "ROP": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "ROST": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "RPRX": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "RRR": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "RUN": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "RVMD": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "RYAAY": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "RYTM": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "SAIA": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "SAIC": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "SAIL": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "SANM": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "SBAC": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "SBET": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "SBLK": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "SBUX": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "SEDG": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "SEIC": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "SFM": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "SHOP": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "SIMO": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "SIRI": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "SITM": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "SLAB": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "SLS": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "SMCI": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "SMMT": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "SMTC": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "SNEX": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "SNPS": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "SNY": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "SOFI": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "SOUN": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "SRRK": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "SSNC": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "SSRM": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "STLD": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "STRL": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "STX": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "SWKS": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "SYM": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "SYNA": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "SYRE": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "TARS": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "TCOM": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "TEAM": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "TECH": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "TEM": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "TENB": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "TER": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "TGTX": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "TIGO": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "TLN": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "TMDX": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "TMUS": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "TNGX": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "TPG": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "TRI": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "TRMB": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "TRMD": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "TROW": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "TSCO": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "TSEM": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "TSLA": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "TTAN": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "TTD": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "TTEK": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "TTMI": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "TTWO": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "TVTX": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "TW": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "TWST": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "TXG": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "TXN": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "TXRH": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "UAL": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "UCTT": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "ULTA": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "UMBF": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "UPST": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "URBN": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "USAR": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "UTHR": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "VCTR": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "VCYT": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "VERA": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "VIAV": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "VICR": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "VKTX": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "VLY": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "VNOM": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "VOD": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "VRNS": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "VRSK": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "VRSN": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "VRTX": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "VSAT": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "VSEC": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "VTRS": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "WAY": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "WDAY": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "WDC": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "WFRD": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "WGS": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "WING": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "WIX": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "WMT": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "WTFC": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "WTW": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "WULF": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "WWD": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "WYNN": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "XEL": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "XENE": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "XMTR": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "XP": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "Z": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "ZBRA": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "ZION": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "ZM": {
+      "reason": "NASDAQ_MC_MISSING"
+    },
+    "ZS": {
+      "reason": "NASDAQ_MC_MISSING"
+    }
+  },
+  "unresolved_count": 491
 }
