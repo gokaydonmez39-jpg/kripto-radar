@@ -64,6 +64,16 @@ SCHEDULE_RE = re.compile(
     re.I,
 )
 RSS_HINT_RE = re.compile(r"rss|atom|feed", re.I)
+IR_SECTION_RE = re.compile(
+    r"news(?:-|\s)?releases?|press(?:-|\s)?releases?|events?(?:-|\s)?presentations?|"
+    r"quarterly(?:-|\s)?results?|financial(?:-|\s)?results?",
+    re.I,
+)
+DISCRETE_PATH_RE = re.compile(
+    r"news-release-details|news-details|press-releases?/detail|press-release-details|"
+    r"events?/event-details|event-details|/detail/",
+    re.I,
+)
 
 def blob_sha(path: Path) -> str:
     b = path.read_bytes()
@@ -173,6 +183,94 @@ def discover_feed_links(base_url: str, page: str) -> list[str]:
         links.add(root + p)
     return sorted(links)
 
+def discover_ir_document_links(base_url: str, page: str) -> dict[str, list[str]]:
+    """Discover issuer-controlled section and discrete document URLs.
+
+    Landing/section pages are discovery-only.  Only discrete documents may later
+    emit Event evidence after an independent live fetch and issuer-identity check.
+    """
+    sections = set()
+    discrete = set()
+    for m in re.finditer(
+        r"<a\\b[^>]*href=[\"']([^\"']+)[\"'][^>]*>(.*?)</a>",
+        page or "",
+        re.I | re.S,
+    ):
+        raw = html.unescape(m.group(1).strip())
+        label = normalize_text(m.group(2))
+        u = urllib.parse.urljoin(base_url, raw)
+        if not (valid_http_url(u) and same_host(base_url, u)):
+            continue
+        surface = f"{label} {urllib.parse.urlparse(u).path}".strip()
+        if DISCRETE_PATH_RE.search(surface) or EARNINGS_RE.search(surface):
+            discrete.add(u)
+        elif IR_SECTION_RE.search(surface):
+            sections.add(u)
+    return {"sections": sorted(sections), "discrete": sorted(discrete)}
+
+def _page_title(page: str) -> str:
+    for pat in (
+        r"<h1\\b[^>]*>(.*?)</h1>",
+        r"<title\\b[^>]*>(.*?)</title>",
+    ):
+        m = re.search(pat, page or "", re.I | re.S)
+        if m:
+            return normalize_text(m.group(1))
+    return ""
+
+def _discrete_event_match(
+    authority_url: str,
+    document_url: str,
+    tokens: list[str],
+    asof: str,
+    horizon: set[str],
+) -> tuple[dict | None, dict]:
+    attempt = {"url": document_url}
+    try:
+        raw, meta = fetch(
+            document_url,
+            accept="text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.5",
+        )
+        attempt.update(meta)
+        if not same_host(authority_url, meta["final_url"]):
+            attempt["result"] = "CROSS_HOST_REDIRECT_REJECTED"
+            return None, attempt
+        page = raw.decode("utf-8", "ignore")
+        if not issuer_identity_ok(page, tokens):
+            attempt["result"] = "ISSUER_IDENTITY_TOKEN_NOT_FOUND"
+            return None, attempt
+        title = _page_title(page)
+        flat = normalize_text(page)
+        if not EARNINGS_RE.search(f"{title} {flat}"):
+            attempt["result"] = "NO_EARNINGS_CONTEXT"
+            return None, attempt
+        event_date, basis = announced_event_date(title, page, asof)
+        if not event_date:
+            attempt["result"] = "NO_EXPLICIT_FUTURE_EVENT_DATE"
+            return None, attempt
+        result = (
+            "INSIDE_EXACT_8_SESSION_HORIZON"
+            if event_date in horizon
+            else (
+                "OUTSIDE_EXACT_8_SESSION_HORIZON"
+                if event_date > max(horizon)
+                else "NON_DECISION_DATE"
+            )
+        )
+        attempt["result"] = "MATCH"
+        return {
+            "event_date": event_date,
+            "horizon_result": result,
+            "authority": "ISSUER_IR_PRIMARY",
+            "source_url": meta["final_url"],
+            "document_kind": "DISCRETE_ISSUER_IR_DOCUMENT",
+            "title": title[:500],
+            "extraction_basis": basis,
+        }, attempt
+    except Exception as e:
+        attempt["result"] = f"{type(e).__name__}:{str(e)[:140]}"
+        return None, attempt
+
 def feed_items(raw: bytes) -> list[dict]:
     root = ET.fromstring(raw)
     items = []
@@ -270,6 +368,8 @@ def probe_issuer(sym: str, base: dict, asof: str, horizon: set[str]) -> dict:
         "discovery_source": base["source"],
         "identity_validated": False,
         "feed_attempts": [],
+        "section_attempts": [],
+        "document_attempts": [],
         "matches": [],
     }
     try:
@@ -290,6 +390,7 @@ def probe_issuer(sym: str, base: dict, asof: str, horizon: set[str]) -> dict:
         # discrete issuer-controlled feed item or specific event/news document.
         rec["base_page_event_policy"] = "DISCOVERY_ONLY_NO_EVENT_DATE_DECISION"
         feeds = discover_feed_links(authority_url, text)
+        ir_links = discover_ir_document_links(authority_url, text)
     except Exception as e:
         rec["failure"] = f"BASE_FETCH_{type(e).__name__}:{str(e)[:160]}"
         return rec
@@ -328,6 +429,48 @@ def probe_issuer(sym: str, base: dict, asof: str, horizon: set[str]) -> dict:
         except Exception as e:
             attempt["result"] = f"{type(e).__name__}:{str(e)[:140]}"
         rec["feed_attempts"].append(attempt)
+        time.sleep(0.05)
+
+    # Two-hop issuer-IR fan-out: landing -> section (discovery only) -> discrete
+    # issuer document.  Neither landing nor section HTML can directly classify
+    # an Event.  Every discrete page is fetched independently and identity-
+    # validated before an explicit future date can become candidate evidence.
+    discrete = set(ir_links.get("discrete") or [])
+    for section_url in (ir_links.get("sections") or [])[:8]:
+        section_attempt = {"url": section_url}
+        try:
+            raw, meta = fetch(
+                section_url,
+                accept="text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.5",
+            )
+            section_attempt.update(meta)
+            if not same_host(authority_url, meta["final_url"]):
+                section_attempt["result"] = "CROSS_HOST_REDIRECT_REJECTED"
+            else:
+                page = raw.decode("utf-8", "ignore")
+                if not issuer_identity_ok(page, base.get("issuer_tokens") or [sym]):
+                    section_attempt["result"] = "ISSUER_IDENTITY_TOKEN_NOT_FOUND"
+                else:
+                    discovered = discover_ir_document_links(authority_url, page)
+                    discrete.update(discovered.get("discrete") or [])
+                    section_attempt["discrete_discovered"] = len(discovered.get("discrete") or [])
+                    section_attempt["result"] = "DISCOVERY_ONLY_PARSED"
+        except Exception as e:
+            section_attempt["result"] = f"{type(e).__name__}:{str(e)[:140]}"
+        rec["section_attempts"].append(section_attempt)
+        time.sleep(0.05)
+
+    for document_url in sorted(discrete)[:24]:
+        match, attempt = _discrete_event_match(
+            authority_url,
+            document_url,
+            base.get("issuer_tokens") or [sym],
+            asof,
+            horizon,
+        )
+        rec["document_attempts"].append(attempt)
+        if match is not None:
+            rec["matches"].append(match)
         time.sleep(0.05)
     return rec
 
@@ -369,6 +512,18 @@ def selftest() -> None:
         ["Silicon Motion"],
     ) is None
     assert not same_host("https://ir.siliconmotion.com", redirected)
+    links = discover_ir_document_links(
+        "https://ir.example.com/",
+        """
+        <a href="/news-releases/">All News Releases</a>
+        <a href="/news-releases/news-release-details/company-to-report-financial-results-on-november-5-2026">Company to report financial results on November 5, 2026</a>
+        <a href="https://other.example.com/news-release-details/fake">Company to report financial results</a>
+        """,
+    )
+    assert links["sections"] == ["https://ir.example.com/news-releases/"], links
+    assert links["discrete"] == [
+        "https://ir.example.com/news-releases/news-release-details/company-to-report-financial-results-on-november-5-2026"
+    ], links
     print("EVENT_OFFICIAL_PRIMARY_PROBE_SELFTEST=PASS")
 
 def main() -> None:
