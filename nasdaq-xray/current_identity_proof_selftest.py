@@ -129,7 +129,7 @@ def main():
 
     # Manual SEC seeds are discovery evidence only and must remain bounded,
     # recent, official, and exact-ASOF Nasdaq-name revalidated.
-    with tempfile.TemporaryDirectory() as td:
+    with tempfile.TemporaryDirectory(dir=m.ROOT) as td:
         old_seed=m.MANUAL_IDENTITY_SEED
         try:
             seed=Path(td)/"master_sec_identity_manual_seed_registry.json"
