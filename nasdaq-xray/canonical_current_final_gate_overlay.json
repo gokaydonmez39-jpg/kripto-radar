@@ -1,7 +1,7 @@
 {
   "schema": "XRAY_FINAL_GATE_OVERLAY_V2",
   "generated_on": "2026-10-07",
-  "generated_at_utc": "2026-10-07T22:31:35.748483+00:00",
+  "generated_at_utc": "2026-10-07T22:39:07.657925+00:00",
   "asof_et": "2026-10-07",
   "execution": "NONE",
   "real_money": "NO-GO",
@@ -9,10 +9,10 @@
   "binding_protocol": "FAIL_CLOSED_BLOCKED_CACHE_DRIFT_V1",
   "source_terminal": {
     "path": "nasdaq-xray/canonical_current_terminal.json",
-    "blob_sha": "1b633852377f348394d4ab7f9100e3ddab076eba",
+    "blob_sha": "b11fa569f2367df0669e3b65d3aa2037b5891d58",
     "claimed_full_end_to_end_research_pass": false,
     "full_end_to_end_research_pass": false,
-    "current_research_chain_exact": false,
+    "current_research_chain_exact": true,
     "current_research_coverage_complete": false,
     "terminal_result": "PARTIAL_UNKNOWN"
   },
@@ -53,7 +53,7 @@
     "current_adapter": "LONGBRIDGE_HOSTED_MCP_V2",
     "persisted_gate_status": "ACCOUNT_BOOTSTRAP_READY_CREDENTIALS_REQUIRED",
     "same_run_live_witness_attested": false,
-    "live_probe_workflow_run_id": "37694046324",
+    "live_probe_workflow_run_id": "37697389588",
     "gate_path": "nasdaq-xray/account_gate_contract.json",
     "gate_blob_sha": "3bc1d79497970cdfa805d7aa836c7231ea905e6b",
     "current_adapter_contract_blob_sha": "2b224268b29ae9a09c8bd3e9ebec86907e8c3dd2",
@@ -70,19 +70,19 @@
     "g9_pass_binding_exact": true,
     "account_pass_binding_exact": true,
     "blocked_negative_evidence_may_advance_without_creating_pass": true,
-    "current_research_chain_exact": false,
+    "current_research_chain_exact": true,
     "current_research_coverage_complete": false,
     "stale_terminal_full_claim_suppressed": false
   },
   "current_research_chain": {
-    "exact": false,
+    "exact": true,
     "price_blob_sha": "a37b0451a7c43f3482c1d6587bf08f4a0d0bf838",
-    "mc_input_blob_sha": "e4333b7a8e89b25fae6c6bfb91bea5400209821f",
+    "mc_input_blob_sha": "a37b0451a7c43f3482c1d6587bf08f4a0d0bf838",
     "coverage_complete": false,
     "price_asof_et": "2026-10-07",
     "price_pass_hash": "f6772e07d952c9c172a3370076537cbfc89128886e1a0e31d1142b2ebecf0438",
     "price_pass_count": 510,
-    "history_source_mc_artifact": "nasdaq-xray/canonical_mc_bridge_20261007_c417_dv30_v3.json",
+    "history_source_mc_artifact": "nasdaq-xray/canonical_mc_bridge_20261007_c417_dv30_v4.json",
     "history_source_mc_policy_hash": "68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4",
     "mc_unknown_count": 29
   },
@@ -90,7 +90,7 @@
     "independent_of_g9_account": true,
     "pre_g9_tech_pass": 0,
     "current_asof_has_deliverable_candidate": false,
-    "reason": "CURRENT_DV30_MC_CHAIN_INCOMPLETE"
+    "reason": "PRE_G9_TECH_PASS_ZERO"
   },
   "true_full_go": {
     "status": "BLOCKED",
