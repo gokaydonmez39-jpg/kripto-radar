@@ -17,6 +17,7 @@ on:
 
 permissions:
   contents: write
+  actions: write
 
 concurrency:
   group: xray-canonical-pointer-transition
@@ -151,6 +152,26 @@ jobs:
             git fetch origin main
             changed="$(git diff --name-only "$GITHUB_SHA" origin/main --               nasdaq-xray/canonical_current_master_manifest.json               nasdaq-xray/canonical_current_price_dv30.json               nasdaq-xray/canonical_mc_bridge_*.json               nasdaq-xray/canonical_current_history.json               nasdaq-xray/canonical_current_legal.json               nasdaq-xray/canonical_current_stage1_input.json               nasdaq-xray/canonical_current_stage1.json               nasdaq-xray/canonical_current_regime.json               nasdaq-xray/canonical_current_deep_geometry.json               nasdaq-xray/canonical_current_event_request.json               nasdaq-xray/canonical_current_event_state.json               nasdaq-xray/canonical_current_deep_full.json               nasdaq-xray/canonical_current_final_tech.json               nasdaq-xray/canonical_current_terminal.json               nasdaq-xray/chatgpt_canonical_state_v2.json || true)"
             if [[ -n "$changed" ]]; then
+              if [[ "$changed" == "nasdaq-xray/chatgpt_canonical_state_v2.json" ]]; then
+                git show origin/main:nasdaq-xray/chatgpt_canonical_state_v2.json >/tmp/xray_concurrent_pointer.json
+                git show origin/main:nasdaq-xray/canonical_current_terminal.json >/tmp/xray_concurrent_terminal.json
+                terminal_sha="$(git rev-parse origin/main:nasdaq-xray/canonical_current_terminal.json)"
+                if python - "$terminal_sha" <<'PY'
+          import json,sys
+          p=json.load(open('/tmp/xray_concurrent_pointer.json'))
+          t=json.load(open('/tmp/xray_concurrent_terminal.json'))
+          assert p['execution']=='NONE' and p['real_money']=='NO-GO'
+          assert t['execution']=='NONE' and t['real_money']=='NO-GO'
+          assert p['state_json']['asof_et']==t['asof_et']
+          assert p['state_json']['deep_final_evidence']['terminal_blob_sha']==sys.argv[1]
+          assert p['state_json']['deep_final_evidence']['terminal_result']==t['terminal_result']
+          print('XRAY_POINTER_ALREADY_BOUND_CONCURRENT_NOOP')
+          PY
+                then
+                  echo "XRAY_POINTER_TRANSITION=ALREADY_BOUND_LIVE_NOOP"
+                  exit 0
+                fi
+              fi
               echo "XRAY_POINTER_TRANSITION=STALE_SOURCE_ABORT"
               printf '%s\n' "$changed"
               exit 1
@@ -165,3 +186,45 @@ jobs:
           done
           echo "XRAY_POINTER_TRANSITION=FAIL_PUSH_RACE_EXHAUSTED" >&2
           exit 1
+
+      - name: Reconcile final gate overlay against exact committed pointer
+        if: steps.terminal_preflight.outputs.ready == 'true'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git fetch origin main --quiet
+          live_terminal="$(git rev-parse origin/main:nasdaq-xray/canonical_current_terminal.json)"
+          live_pointer="$(git rev-parse origin/main:nasdaq-xray/chatgpt_canonical_state_v2.json)"
+          git show origin/main:nasdaq-xray/chatgpt_canonical_state_v2.json >/tmp/xray_overlay_pointer.json
+          git show origin/main:nasdaq-xray/canonical_current_terminal.json >/tmp/xray_overlay_terminal.json
+          if ! python - "$live_pointer" "$live_terminal" <<'PY'
+          import json,sys
+          p=json.load(open('/tmp/xray_overlay_pointer.json'))
+          t=json.load(open('/tmp/xray_overlay_terminal.json'))
+          assert p['execution']=='NONE' and p['real_money']=='NO-GO'
+          assert t['execution']=='NONE' and t['real_money']=='NO-GO'
+          assert p['state_json']['asof_et']==t['asof_et']
+          assert p['state_json']['deep_final_evidence']['terminal_blob_sha']==sys.argv[2]
+          assert p['state_json']['deep_final_evidence']['terminal_result']==t['terminal_result']
+          print('XRAY_OVERLAY_POINTER_TERMINAL_FENCE=PASS')
+          PY
+          then
+            echo "XRAY_OVERLAY_DISPATCH=EXACT_POINTER_NOT_READY_FAIL_CLOSED"
+            exit 0
+          fi
+          git show origin/main:nasdaq-xray/canonical_current_final_gate_overlay.json >/tmp/xray_overlay_existing.json
+          if python - "$live_pointer" "$live_terminal" <<'PY'
+          import json,sys
+          o=json.load(open('/tmp/xray_overlay_existing.json'))
+          assert o['source_pointer']['blob_sha']==sys.argv[1]
+          assert o['source_terminal']['blob_sha']==sys.argv[2]
+          print('XRAY_OVERLAY_ALREADY_EXACT_NOOP')
+          PY
+          then
+            exit 0
+          fi
+          gh workflow run xray-final-gate-overlay-v2.yml --ref main
+          echo "XRAY_OVERLAY_DISPATCH=REQUESTED_EXACT_CURRENT_READBACK"
+
