@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import json, os, hashlib
+import json, os, hashlib, statistics
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from datetime import datetime
@@ -353,6 +353,179 @@ def apply_c417_rallies_primary_partition(results,primary,queue):
     return changed
 
 
+def load_c417_rallies_newscope_batches(asof):
+    """Load immutable raw Rallies date-range batches for symbols outside frozen primary scope."""
+    stamp=str(asof).replace("-","")
+    paths=sorted((ROOT/"evidence").glob(f"rallies_dv30_{stamp}_newscope_batch_*.json"))
+    if not paths:
+        return {},{"status":"NOT_APPLICABLE","batch_count":0,"symbol_count":0,"batch_refs":[]}
+    exp=expected30(asof)
+    combined={}
+    refs=[]
+    for path in paths:
+        obj=json.loads(path.read_text())
+        audit=obj.get("audit") or {}
+        symbols=list(obj.get("symbols") or [])
+        rows_by_symbol=obj.get("rows_by_symbol") or {}
+        if not (
+          obj.get("schema")=="XRAY_RALLIES_NEW_SCOPE_EXACT30_BATCH_V1"
+          and obj.get("asof_et")==asof
+          and obj.get("execution")=="NONE" and obj.get("real_money")=="NO-GO"
+          and obj.get("unknown_never_pass") is True
+          and obj.get("source")=="RALLIES_GET_PRICE_FROM_DATE_RANGE_DAY"
+          and list(obj.get("expected30") or [])==exp
+          and int(obj.get("symbol_count",-1))==len(symbols)==len(set(symbols))
+          and set(rows_by_symbol)==set(symbols)
+          and audit.get("raw_provider_rows_only") is True
+          and audit.get("no_synthetic_bar") is True
+          and audit.get("no_forward_fill") is True
+          and audit.get("no_decision_authority") is True
+        ):
+            raise RuntimeError("RALLIES_NEW_SCOPE_BATCH_SCHEMA_OR_POLICY:"+path.name)
+        for sym in symbols:
+            if sym in combined:
+                raise RuntimeError("RALLIES_NEW_SCOPE_DUPLICATE_SYMBOL:"+sym)
+            rows=rows_by_symbol.get(sym)
+            if not isinstance(rows,list):
+                raise RuntimeError("RALLIES_NEW_SCOPE_ROWS_INVALID:"+sym)
+            dates=[]
+            for row in rows:
+                if not isinstance(row,dict) or not isinstance(row.get("date"),str):
+                    raise RuntimeError("RALLIES_NEW_SCOPE_ROW_INVALID:"+sym)
+                dates.append(row["date"])
+            if len(dates)!=len(set(dates)):
+                raise RuntimeError("RALLIES_NEW_SCOPE_DUPLICATE_DATE:"+sym)
+            combined[sym]=rows
+        refs.append({
+          "path":path.relative_to(ROOT.parent).as_posix(),
+          "blob_sha":git_blob_sha(path),
+          "symbol_count":len(symbols),
+        })
+    return combined,{
+      "status":"PASS","batch_count":len(paths),"symbol_count":len(combined),
+      "batch_refs":refs,
+    }
+
+
+def build_c417_rallies_newscope_partition(raw_rows,asof,queue,primary):
+    """Classify raw new-scope Rallies rows with unchanged C4.17 PRICE/DV30 rules."""
+    exp=expected30(asof)
+    fp={}; fd={}; pp={}; bc={}
+    primary_universe=(
+      set((primary or {}).get("fail_price") or {})
+      | set((primary or {}).get("fail_dv30") or {})
+      | set((primary or {}).get("pass_price_dv30") or {})
+      | set((primary or {}).get("block_current_run") or {})
+    )
+    scope=sorted((set(queue or [])-primary_universe) & set(raw_rows or {}))
+    for sym in scope:
+        rows=raw_rows[sym]
+        usable={}
+        asof_close=None
+        zero_volume=[]
+        for row in rows:
+            d=row.get("date")
+            if d not in exp:
+                continue
+            px=num(row.get("close")); vol=num(row.get("volume"))
+            if d==asof and px is not None and px>0:
+                asof_close=px
+            if px is None or px<=0 or vol is None or vol<0:
+                continue
+            usable[d]=(px,vol)
+            if vol==0:
+                zero_volume.append(d)
+        missing=[d for d in exp if d not in usable]
+        if asof_close is None:
+            bc[sym]={
+              "reason":"NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
+              "observed_usable_sessions":len(usable),
+              "missing_sessions":missing,
+              "zero_volume_sessions":zero_volume,
+            }
+            continue
+        if asof_close < HARD_PRICE:
+            fp[sym]={"asof_close":asof_close}
+            continue
+        if missing:
+            bc[sym]={
+              "reason":"RALLIES_NEW_SCOPE_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
+              "observed_usable_sessions":len(usable),
+              "missing_sessions":missing,
+              "zero_volume_sessions":zero_volume,
+            }
+            continue
+        dv30=statistics.median(usable[d][0]*usable[d][1] for d in exp)
+        row={
+          "asof_close":asof_close,"dv30_median":dv30,
+          "known_session_count":30,"missing_sessions":[],
+        }
+        (pp if dv30>=HARD_DV30 else fd)[sym]=row
+    return {
+      "fail_price":fp,"fail_dv30":fd,"pass_price_dv30":pp,"block_current_run":bc,
+    },{
+      "status":"PASS","scope_count":len(scope),
+      "fail_price_count":len(fp),"fail_dv30_count":len(fd),
+      "pass_count":len(pp),"block_count":len(bc),
+    }
+
+
+def merge_c417_rallies_primary_newscope(primary,supplement):
+    """Return an in-memory effective primary; immutable source artifacts remain untouched."""
+    if not isinstance(primary,dict):
+        return primary
+    out=dict(primary)
+    group_names=("fail_price","fail_dv30","pass_price_dv30","block_current_run")
+    existing=set()
+    for name in group_names:
+        existing |= set((primary.get(name) or {}).keys())
+    supplement_symbols=set()
+    for name in group_names:
+        supplement_symbols |= set((supplement.get(name) or {}).keys())
+    if existing & supplement_symbols:
+        raise RuntimeError("RALLIES_NEW_SCOPE_OVERLAPS_FROZEN_PRIMARY")
+    for name in group_names:
+        merged=dict(primary.get(name) or {})
+        merged.update(supplement.get(name) or {})
+        out[name]=merged
+    out["symbol_count"]=sum(len(out[name]) for name in group_names)
+    out["counts"]={
+      "FAIL_PRICE":len(out["fail_price"]),
+      "FAIL_DV30":len(out["fail_dv30"]),
+      "PASS_PRICE_DV30":len(out["pass_price_dv30"]),
+      "BLOCK_CURRENT_RUN":len(out["block_current_run"]),
+    }
+    out["effective_primary_in_memory"]=True
+    out["newscope_symbol_count"]=len(supplement_symbols)
+    return out
+
+
+def load_c417_rallies_effective_primary(asof,queue):
+    """Load frozen primary plus validated raw new-scope batches without rewriting authority artifacts."""
+    primary,meta=load_c417_rallies_primary(asof)
+    if primary is None:
+        return None,meta
+    raw,raw_meta=load_c417_rallies_newscope_batches(asof)
+    supplement,supp_meta=build_c417_rallies_newscope_partition(raw,asof,queue,primary)
+    effective=merge_c417_rallies_primary_newscope(primary,supplement)
+    groups=[
+      set((effective.get("fail_price") or {}).keys()),
+      set((effective.get("fail_dv30") or {}).keys()),
+      set((effective.get("pass_price_dv30") or {}).keys()),
+      set((effective.get("block_current_run") or {}).keys()),
+    ]
+    universe=set().union(*groups)
+    meta=dict(meta)
+    meta.update({
+      "effective_symbol_count":len(universe),
+      "current_queue_count":len(queue or []),
+      "current_queue_covered":set(queue or []).issubset(universe),
+      "newscope_raw_meta":raw_meta,
+      "newscope_partition_meta":supp_meta,
+    })
+    return effective,meta
+
+
 def immutable_repo_blob_binding(rel_path,expected_blob):
     """Verify an immutable repo-relative evidence path against its Git blob SHA."""
     try:
@@ -372,7 +545,7 @@ def c417_rallies_primary_pass_conflicts(px,queue=None):
     Existing terminal FAIL rows are not conflicts: C4.17 explicitly permits
     stronger fail-only evidence to terminalize a Rallies fail-closed BLOCK.
     """
-    primary,meta=load_c417_rallies_primary(px.get("asof_et"),queue)
+    primary,meta=load_c417_rallies_effective_primary(px.get("asof_et"),queue or [])
     if primary is None:
         return [],meta
     primary_pass=set((primary.get("pass_price_dv30") or {}).keys())
@@ -1327,7 +1500,7 @@ def main():
     # belonged to the frozen PRICE resolver scope. Uncovered names stay
     # fail-closed under the live zero-dollar chain and can never gain PASS via
     # the primary materializer.
-    rallies_primary,rallies_primary_meta=load_c417_rallies_primary(asof)
+    rallies_primary,rallies_primary_meta=load_c417_rallies_effective_primary(asof,queue)
     rallies_primary_pass=set((rallies_primary or {}).get("pass_price_dv30",{}).keys())
     for sym in queue:
         r=old[sym];st=r.get("status");info=r.get("info")
