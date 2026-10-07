@@ -1,0 +1,58 @@
+{
+  "schema": "XRAY_PRICE_OFFICIAL_LISTING_REGISTRY_V1",
+  "authority": "OFFICIAL_LISTING_DATE_FAIL_ONLY",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "policy": "Official first-trade/listing dates may only terminalize BLOCK_CURRENT_RUN to FAIL_DV30_INSUFFICIENT_SESSIONS when fewer than 30 completed NASDAQ sessions can exist by ASOF. Never creates PASS.",
+  "records": {
+    "ACCV": {
+      "first_trade_date": "2026-09-30",
+      "authority": "ISSUER_IR_PRIMARY",
+      "source_url": "https://investors.accelevation.com/news-releases/news-release-details/accelevation-announces-pricing-initial-public-offering",
+      "evidence_kind": "IPO_FIRST_TRADING_DATE"
+    },
+    "ADRX": {
+      "first_trade_date": "2026-09-25",
+      "authority": "ISSUER_IR_PRIMARY",
+      "source_url": "https://investors.adarx.com/news-releases/news-release-details/adarx-pharmaceuticals-announces-pricing-upsized-4463-million",
+      "evidence_kind": "IPO_FIRST_TRADING_DATE"
+    },
+    "CHWM": {
+      "first_trade_date": "2026-10-01",
+      "authority": "SEC_PRIMARY",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/2113605/000121390026106090/ea0307489-424b1_chilwa.htm",
+      "evidence_kind": "NASDAQ_LISTING_DATE"
+    },
+    "ETRA": {
+      "first_trade_date": "2026-09-18",
+      "authority": "ISSUER_IR_PRIMARY",
+      "source_url": "https://ir.electra-therapeutics.com/news-releases/news-release-details/electra-therapeutics-announces-pricing-upsized-3500-million",
+      "evidence_kind": "IPO_FIRST_TRADING_DATE"
+    },
+    "OIG": {
+      "first_trade_date": "2026-09-18",
+      "authority": "NASDAQ_PRIMARY_PUBLISHER",
+      "source_url": "https://www.nasdaq.com/press-release/orion180-insurance-group-inc-announces-pricing-initial-public-offering-2026-09-17",
+      "evidence_kind": "IPO_FIRST_TRADING_DATE"
+    },
+    "RZAI": {
+      "first_trade_date": "2026-09-29",
+      "authority": "SEC_PRIMARY",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/2075335/000121390026104150/ea0306875-424b4_roze.htm",
+      "evidence_kind": "DIRECT_LISTING_FIRST_TRADING_DATE"
+    },
+    "WQEY": {
+      "first_trade_date": "2026-10-05",
+      "authority": "NASDAQ_TRADER_PRIMARY",
+      "source_url": "https://www.nasdaqtrader.com/TraderNews.aspx?id=ECA2026-712",
+      "evidence_kind": "CORPORATE_ACTION_EFFECTIVE_FIRST_TRADING_DATE"
+    },
+    "XIII": {
+      "first_trade_date": "2026-09-18",
+      "authority": "SEC_PRIMARY",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/2114229/000121390026100578/ea0305743-8k_churchill13.htm",
+      "evidence_kind": "SEPARATE_SHARE_TRADING_START_DATE"
+    }
+  }
+}
