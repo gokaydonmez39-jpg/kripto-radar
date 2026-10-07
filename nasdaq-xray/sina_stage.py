@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """NASDAQ SWING X-RAY external hard-gate accelerator V2.
 Identity: fresh NasdaqTrader directory.
-Discovery prefilter: official Nasdaq web screener (wide conservative floor only).
+Canonical FULL_IDENTITY mode does not call Nasdaq web screener endpoints and
+defers all market gates to PRICE/DV30. Legacy non-full discovery mode may retain
+the old screener helper but is not used by the canonical pre-MC workflow.
 History accelerator: Sina US daily history.
 EXECUTION=NONE. REAL_MONEY=NO-GO. UNKNOWN!=PASS.
 No external source here is G9 authority or a substitute for canonical MC authority.
@@ -485,6 +487,59 @@ def build_discovery(official,force_all=False,sec_spac_proof=None,operating_overr
       "sec_spac_proof_count":len(applied_sec),
       "sec_spac_proof_hash":sha_lines(applied_sec),
     },screener_excluded
+
+def build_full_identity_from_directory(official,sec_spac_proof=None,operating_overrides=None):
+    """Build canonical full-identity scope without Nasdaq web market metadata.
+
+    The official NasdaqTrader directory supplies membership/name only. Price,
+    volume, market-cap, sector and industry are deliberately absent here.
+    Exact SEC SPAC proof may exclude; otherwise name-suspect shells remain
+    fail-closed UNKNOWN in the later identity partition.
+    """
+    sec_spac_proof=sec_spac_proof or {}
+    operating_overrides=operating_overrides or {}
+    prefilter={}
+    excluded={}
+    for sym in sorted(official):
+        if sym in sec_spac_proof and sym not in operating_overrides:
+            pr=sec_spac_proof[sym]
+            excluded[sym]={
+              "reason":"SPAC_BLANK_CHECK",
+              "security_name":official.get(sym),
+              "industry":None,
+              "source":"SEC_EDGAR_SIC_6770_EXACT_ASOF",
+              "cik":pr.get("cik"),
+              "source_url":pr.get("source_url"),
+            }
+            continue
+        prefilter[sym]={
+          "screener_price":None,
+          "screener_market_cap":None,
+          "screener_volume":None,
+          "sector":None,
+          "industry":None,
+          "country":None,
+          "discovery_reason":"NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
+        }
+    applied_sec=sorted(set(excluded)&set(sec_spac_proof))
+    queue=sorted(prefilter)
+    return queue,prefilter,{
+      "rows_returned":len(official),
+      "official_matched":len(official),
+      "official_missing":0,
+      "official_missing_hash":sha_lines([]),
+      "discovery_queue_total":len(queue),
+      "hard_price_mc_snapshot_count":0,
+      "discovery_price_floor":DISCOVERY_PRICE_FLOOR,
+      "discovery_mc_floor":DISCOVERY_MC_FLOOR,
+      "authority":"NASDAQTRADER_FULL_IDENTITY_NO_NASDAQ_WEB_MARKET_METADATA",
+      "full_identity":True,
+      "nasdaq_web_screener_used":False,
+      "screener_spac_excluded_count":0,
+      "screener_spac_excluded_hash":sha_lines([]),
+      "sec_spac_proof_count":len(applied_sec),
+      "sec_spac_proof_hash":sha_lines(applied_sec),
+    },excluded
 
 def build_discovery_from_snapshot(official,industries,sec_spac_proof=None,operating_overrides=None):
     """Identity-only replay from exact-ASOF immutable membership metadata.
@@ -989,7 +1044,14 @@ def main():
                   "identity_decisions_reused_from_snapshot":False,
                 })
             else:
-                queue,discovery,meta,screener_excluded=build_discovery(names,FULL_IDENTITY,sec_spac_proof,operating_overrides)
+                if FULL_IDENTITY:
+                    queue,discovery,meta,screener_excluded=build_full_identity_from_directory(
+                        names,sec_spac_proof,operating_overrides
+                    )
+                else:
+                    queue,discovery,meta,screener_excluded=build_discovery(
+                        names,False,sec_spac_proof,operating_overrides
+                    )
             # C4.17 accepts official/issuer/SEC proof for SPAC-shell handling.
             # Exact same-ASOF Nasdaq screener industry "Blank Checks" is official
             # exclusion evidence and may deterministically EXCLUDE the shell.
@@ -1003,7 +1065,10 @@ def main():
                 security_name=str(names.get(sym) or "").strip()
                 if sym in operating_overrides:
                     continue
-                if industry.lower()=="blank checks":
+                # Canonical FULL_IDENTITY never uses Nasdaq web screener
+                # metadata as decision authority. Legacy non-full discovery may
+                # retain this historical branch only outside canonical mode.
+                if (not FULL_IDENTITY) and industry.lower()=="blank checks":
                     screener_excluded[sym]={
                       "reason":"SPAC_BLANK_CHECK",
                       "proof":{
@@ -1063,7 +1128,7 @@ def main():
           "discovery_source":(
               "CANONICAL_FROZEN_FULL_IDENTITY_SAME_ASOF" if frozen is not None else
               "IMMUTABLE_EXACT_ASOF_MEMBERSHIP_SNAPSHOT_REPLAY" if membership_snapshot is not None else
-              ("NASDAQTRADER_FULL_IDENTITY_PLUS_NASDAQ_SCREENER_METADATA_ONLY" if FULL_IDENTITY else "NASDAQ_OFFICIAL_WEB_SCREENER_PREFILTER_ONLY")
+              ("NASDAQTRADER_FULL_IDENTITY_NO_NASDAQ_WEB_MARKET_METADATA" if FULL_IDENTITY else "NASDAQ_OFFICIAL_WEB_SCREENER_PREFILTER_ONLY")
           ),
           "history_source":"SINA_US_DAILY_ACCELERATOR_NOT_G9",
           "identity_unknown_symbols":identity_unknown_symbols,
