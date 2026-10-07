@@ -3,6 +3,10 @@ import build_current_identity_proofs as m
 
 def main():
     assert m.parse_footer_date("File Creation Time: 1006202614:01|||||||")=="2026-10-06"
+    assert m.SPAC_SUSPECT_RE.search("Churchill Capital Corp XIII - Class A Ordinary Shares")
+    assert m.SPAC_SUSPECT_RE.search("Example Capital Corporation IV - Class A Ordinary Share")
+    assert not m.SPAC_SUSPECT_RE.search("Capital One Financial Corporation - Common Stock")
+    assert not m.SPAC_SUSPECT_RE.search("Privately Held Capital Corp - Common Stock")
     a,s=m.proof_paths("2026-10-06")
     assert a.name=="master_asof_identity_proof_20261006.json"
     assert s.name=="master_sec_spac_proof_20261006.json"
