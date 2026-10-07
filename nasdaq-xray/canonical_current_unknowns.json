@@ -1,23 +1,23 @@
 {
   "asof_et": "2026-10-06",
   "by_reason": {
-    "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY": 3159
+    "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY": 3160
   },
   "by_status": {
-    "UNKNOWN_STATIC": 3159
+    "UNKNOWN_STATIC": 3160
   },
   "execution": "NONE",
   "official_footer": "File Creation Time: 1006202617:01|||||||",
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_UNKNOWN_MANIFEST_V2",
   "source_counts": {
-    "UNKNOWN_STATIC": 3159
+    "UNKNOWN_STATIC": 3160
   },
-  "source_queue_hash": "3466de0d183dd8a6281ee2946572c79e70eacf6715ddd8eea6580ca6b003842b",
-  "source_state_hash": "9f6ad572259d9af3580a5f57c97beeabf99af1a69723d9329117a95af094f6fb",
-  "source_unknown_count": 3159,
+  "source_queue_hash": "87d544d3914dcfb16bb58715a27be5671539bf44780c393fad32ed65953459f9",
+  "source_state_hash": "f7eb42dd78c2cbc27f8e626cfc314b2b8fe1406f9734c3c14b26d786c9b76100",
+  "source_unknown_count": 3160,
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 3159,
+  "unknown_count": 3160,
   "unknowns": {
     "AACG": {
       "attempts": 0,
@@ -2393,6 +2393,24 @@
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
       "security_name": "Alignment Healthcare, Inc. - Common Stock",
+      "status": "UNKNOWN_STATIC"
+    },
+    "ALIS": {
+      "attempts": 0,
+      "discovery": {
+        "country": null,
+        "discovery_reason": "IMMUTABLE_EXACT_ASOF_MEMBERSHIP_REPLAY_MARKET_GATES_DEFERRED",
+        "industry": null,
+        "screener_market_cap": null,
+        "screener_price": null,
+        "screener_volume": null,
+        "sector": null
+      },
+      "info": {
+        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
+        "source": "MASTER_IDENTITY_ONLY_MODE"
+      },
+      "security_name": "Calisa Acquisition Corp - Ordinary shares",
       "status": "UNKNOWN_STATIC"
     },
     "ALKS": {

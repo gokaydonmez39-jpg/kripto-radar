@@ -41,6 +41,25 @@
       "same_asof_nasdaq_screener_industry": "Blank Checks",
       "same_asof_revalidated_without_sec_network": true,
       "revalidation_semantics": "FAIL_CLOSED_PREVENT_FALSE_SPAC_EXCLUSION_ONLY;NO_ALPHA_PASS"
+    },
+    "ALIS": {
+      "security_name": "Calisa Acquisition Corp - Ordinary shares",
+      "evidence_date": "2026-09-04",
+      "reason": "SAME_ASOF_OFFICIAL_SEC_MANUAL_SEED_NON_BLANK_CHECK",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/2026767/000149315226041476/0001493152-26-041476-index.htm",
+      "cik": "0002026767",
+      "sic": 7374,
+      "classification": "Services-Computer Processing & Data Preparation",
+      "same_asof_revalidated_without_sec_network": true,
+      "revalidation_semantics": "MANUAL_OFFICIAL_SEC_NONBLANK_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_IDENTITY;NO_ALPHA_PASS",
+      "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
+      "manual_seed_registry_blob_sha": "14891872852b73fde3ce349d397ed7cc88ae5196",
+      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V4"
     }
+  },
+  "manual_seed_registry": {
+    "path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
+    "blob_sha": "14891872852b73fde3ce349d397ed7cc88ae5196",
+    "record_count": 12
   }
 }

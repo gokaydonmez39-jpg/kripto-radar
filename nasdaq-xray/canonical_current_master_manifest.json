@@ -1,9 +1,9 @@
 {
   "asof_et": "2026-10-06",
   "asof_identity_proof": {
-    "blob_sha": "58a144ca1542d513111fa3413fa30e52ddfd15b6",
+    "blob_sha": "f049de691b417516fd5cc6998c016a0e19ee75fb",
     "counts": {
-      "operating_overrides": 3,
+      "operating_overrides": 4,
       "remove_from_asof": 0,
       "restore_to_asof": 0
     },
@@ -28,29 +28,29 @@
     "security_names_exact": true
   },
   "counts": {
-    "PASS_IDENTITY": 3159,
-    "UNKNOWN_IDENTITY": 86
+    "PASS_IDENTITY": 3160,
+    "UNKNOWN_IDENTITY": 74
   },
   "execution": "NONE",
-  "explicit_excluded_count": 154,
-  "explicit_excluded_hash": "1cf35ec459bdf16f45b712b67797225ed6bbe544d5328800d7142c973aad4246",
+  "explicit_excluded_count": 165,
+  "explicit_excluded_hash": "3f5520bbe5055372a7beb537f6aced70c9bb32a2f2d1062e476e8c210de4acac",
   "explicit_excluded_reason_counts": {
-    "SPAC_BLANK_CHECK": 154
+    "SPAC_BLANK_CHECK": 165
   },
   "history_price_state_diagnostic_only": {
     "source_counts": {
-      "UNKNOWN_STATIC": 3159
+      "UNKNOWN_STATIC": 3160
     },
     "source_pending_retry": 0,
     "source_status": "IDENTITY_READY_MARKET_GATES_DEFERRED",
-    "source_unknown_count": 3159
+    "source_unknown_count": 3160
   },
   "identity_authority": "NASDAQTRADER_EXPLICIT_TYPE_FILTER_V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER",
   "identity_partition_policy": "MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V4_EXACT_ASOF_SNAPSHOT_GUARD",
   "identity_ruleset": "V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER",
   "official_footer": "File Creation Time: 1006202617:01|||||||",
-  "pass_count": 3159,
-  "pass_hash": "3466de0d183dd8a6281ee2946572c79e70eacf6715ddd8eea6580ca6b003842b",
+  "pass_count": 3160,
+  "pass_hash": "87d544d3914dcfb16bb58715a27be5671539bf44780c393fad32ed65953459f9",
   "pass_symbols": [
     "AACG",
     "AAL",
@@ -184,6 +184,7 @@
     "ALGS",
     "ALGT",
     "ALHC",
+    "ALIS",
     "ALKS",
     "ALKT",
     "ALLO",
@@ -3214,25 +3215,25 @@
   ],
   "pending_retry": 0,
   "phase": "MASTER_IDENTITY",
-  "queue_hash": "3466de0d183dd8a6281ee2946572c79e70eacf6715ddd8eea6580ca6b003842b",
-  "queue_total": 3159,
-  "queue_unique": 3159,
-  "raw_identity_total": 3245,
+  "queue_hash": "87d544d3914dcfb16bb58715a27be5671539bf44780c393fad32ed65953459f9",
+  "queue_total": 3160,
+  "queue_unique": 3160,
+  "raw_identity_total": 3234,
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1",
   "sec_spac_proof": {
-    "blob_sha": "997d9e45039da33a58f0fa15dfed04959de1dd32",
-    "count": 5,
+    "blob_sha": "cb992e504e3e4b53c847fc70edd66299bb660c91",
+    "count": 16,
     "path": "nasdaq-xray/master_sec_spac_proof_20261006.json",
-    "symbol_hash": "73ad0914e035511e5411902bec459c85cafff716022e954d0ca856756a594462"
+    "symbol_hash": "ddbfe2f4ebdd582c72783d2f89ec881b36bdc733dfd2dee3019fe03cbd8f7609"
   },
-  "source_state_blob_sha": "817ac521176eabaa9767a3efb70b3b76791af985",
-  "source_state_hash": "9f6ad572259d9af3580a5f57c97beeabf99af1a69723d9329117a95af094f6fb",
+  "source_state_blob_sha": "af50d7e0ec9116f5fa8d8d9ff62f325e1ea329fa",
+  "source_state_hash": "f7eb42dd78c2cbc27f8e626cfc314b2b8fe1406f9734c3c14b26d786c9b76100",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
   "status": "PARTIAL_UNKNOWN",
   "status_semantics": "IDENTITY_PARTITION_EXACT_WITH_UNKNOWN",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 86,
+  "unknown_count": 74,
   "unknown_detail": {
     "AACO": {
       "exact_sec_spac_proof": false,
@@ -3249,42 +3250,6 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "American Drive Acquisition Company - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "AEAQ": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Activate Energy Acquisition Corp. - Class A Ordinary Share",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "ALF": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Centurion Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "ALIS": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Calisa Acquisition Corp - Ordinary shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "ARCI": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Archimedes Tech SPAC Partners III Co. - Ordinary Share",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -3312,15 +3277,6 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "Biotechnology: Biological Products (No Diagnostic Substances)",
       "security_name": "Black Hawk Acquisition Corporation - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "BLRK": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Bluerock Acquisition Corp. - Class A Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -3387,15 +3343,6 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "CHEC": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Chenghe Acquisition III Co. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "CHPG": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
@@ -3414,15 +3361,6 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "DMAA": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Drugs Made In America Acquisition Corp. - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "DRDB": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
@@ -3438,24 +3376,6 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "DT Cloud Star Acquisition Corporation - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "EGHA": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "Finance/Investors Services",
-      "security_name": "EGH Acquisition Corp. - Class A ordinary shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "EMIS": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "Biotechnology: Pharmaceutical Preparations",
-      "security_name": "Emmis Acquisition Corp. - Class A Ordinary Share",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -3522,15 +3442,6 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "GPAT": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "GP-Act III Acquisition Corp. - Class A Ordinary Share",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "GSHR": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
@@ -3567,30 +3478,12 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "IDAC": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Iron Dome Acquisition I Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "INAC": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Indigo Acquisition Corp. - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "ITHA": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "ITHAX Acquisition Corp III - Class A Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -4013,14 +3906,9 @@
   "unknown_symbols": [
     "AACO",
     "ADAC",
-    "AEAQ",
-    "ALF",
-    "ALIS",
-    "ARCI",
     "ATII",
     "BIXI",
     "BKHA",
-    "BLRK",
     "BLUW",
     "BPAC",
     "CAPN",
@@ -4028,14 +3916,10 @@
     "CCCT",
     "CCII",
     "CHAR",
-    "CHEC",
     "CHPG",
     "CRAC",
-    "DMAA",
     "DRDB",
     "DTSQ",
-    "EGHA",
-    "EMIS",
     "EURK",
     "FACT",
     "FERA",
@@ -4043,14 +3927,11 @@
     "FVAV",
     "FVN",
     "GPAC",
-    "GPAT",
     "GSHR",
     "GSRF",
     "HCMA",
     "HLXC",
-    "IDAC",
     "INAC",
-    "ITHA",
     "KCHV",
     "KOYN",
     "KTWO",
