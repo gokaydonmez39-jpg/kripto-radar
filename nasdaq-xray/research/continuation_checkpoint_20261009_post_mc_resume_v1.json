@@ -1,0 +1,93 @@
+{
+  "schema": "XRAY_CONTINUATION_CHECKPOINT_20261009_POST_MC_RESUME_V1",
+  "purpose": "Resume ENGINEERING and source evidence in next chat; re-read LIVE main before action. No status, PASS or readiness authorization from this snapshot.",
+  "repo": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "observed_head_before_checkpoint_commit": "8650e0c337a86901438c140b3ef6fdb259d5c98d",
+  "asof_et_reference": "2026-10-08",
+  "hard_invariants": {
+    "policy": "C4.17",
+    "control": "C4.27",
+    "mode": "RESEARCH_ONLY_MANUAL_DECISION",
+    "execution": "NONE",
+    "real_money": "NO-GO",
+    "unknown_never_pass": true,
+    "alpha_thresholds_may_not_be_relaxed": true,
+    "never_claim_alpha_on_shadow_data": true,
+    "no_broker_orders": true,
+    "no_account_requirement_for_manual_research": true,
+    "g9_not_mandatory_for_manual_research": true
+  },
+  "known_pipeline": {
+    "master_identity_pass": 3183,
+    "master_spac_unknown": 72,
+    "price_dv30_pass": 514,
+    "price_dv30_blocked": 45,
+    "exact_current_primary_mc": "NOT_PROVEN",
+    "current_full_e2e_terminal": "NOT_PROVEN",
+    "last_known_terminal_asof": "2026-10-07",
+    "current_genuine_delivery_receipt": "UNVERIFIED",
+    "source_master_price_blob_bindings": "RECHECK LIVE; source same-universe queue hashes do not guarantee blob SHA equality"
+  },
+  "completed_changes": [
+    {
+      "file": "nasdaq-xray/manual_decision_report.py",
+      "note": "historical immutable event SHA re-read; no current promotion"
+    },
+    {
+      "file": ".github/workflows/xray-manual-decision-research-shadow.yml",
+      "note": "current source SHA exact release fence"
+    },
+    {
+      "file": "nasdaq-xray/e2e_production_readiness.py",
+      "note": "read-only automatic E2E blocker and MC+terminal SHA regression guards"
+    },
+    {
+      "file": "nasdaq-xray/massive_mc_shadow_probe.py",
+      "note": "exact current PRICE-PASS sample, no MC/HISTORY circularity"
+    },
+    {
+      "file": "nasdaq-xray/massive_mc_resume_shadow.py",
+      "note": "encrypted resume checkpoints, authenticated source SHA and ASOF, 13s request spacing, small batches, negative selftests, strict ZERO-ALPHA"
+    },
+    {
+      "file": ".github/workflows/xray-massive-mc-resume-shadow.yml",
+      "note": "scheduled every 20 minutes, encrypted artifacts, safe operational metadata, license checks"
+    },
+    {
+      "file": ".github/workflows/xray-massive-mc-shadow.yml",
+      "note": "legacy hourly+push probing disabled to avoid overlapping free-tier quota; manual diagnostics remain"
+    }
+  ],
+  "live_evidence": {
+    "new_resume_workflow_success_run": 37856867948,
+    "new_resume_workflow_latest_real_status": "BLOCKED_NONDISPLAY_LICENSE_UNVERIFIED",
+    "non_display_license_evidence": "UNVERIFIED",
+    "api_key_for_runner": "NOT_ATTESTED; recent environment was empty, re-check current run",
+    "checkpoint_test_status": "PASS_TWO_RUN_RESUME_NO_DUPLICATES_NO_LIVE_REQUESTS",
+    "test_is_real_provider_coverage": false,
+    "intermediate_failed_runs": [
+      37856809299,
+      37856824329
+    ],
+    "massive_shadow_not_primary": true,
+    "repo_public": true,
+    "raw_vendor_records_public_upload_forbidden": true,
+    "github_actions_ciphertext_retention_days": 14,
+    "policy_compiled_primary": "BIGDATA_EXACT_NASDAQ_FAMILY; FALLBACK_ONLY_WATCH_R92_FALSE",
+    "market_data_provider_rights": "MUST_VERIFY_AUTOMATED_NONDISPLAY_ANALYTICS_AND_ENCRYPTED_REPLAY_PER_VENDOR_LICENSE_BEFORE_ANY_LIVE_COLLECTION"
+  },
+  "next_steps_strict_priority": [
+    "1. Read LIVE main branch SHA and newest workflow job logs/artifacts; compare to checkpoint (checkpoint is never authority).",
+    "2. Determine Massive vendor contract/entitlement for non-display strategy evaluation, automation, and encrypted storage. Never set license OK or fabricate evidence; absence -> BLOCKED.",
+    "3. Check GitHub Actions repository secrets/variables presence via permitted evidence without exposing values. API key addition must be done through user-controlled GitHub UI if no safe secret-write connector exists.",
+    "4. Test the encrypted collector as configured: rate and budget, checkpoint migration, complete/incomplete semantics, terminal and scope provenance, same-ASOF resumed runs, limits after failed runs, no plaintext leakage, no 14-day stale archival claims; fix with CAS commits and Actions reruns.",
+    "5. If licensed live MC observations become available, validate issuer, primary exchange, PIT date, corporate actions, 2B threshold, 514 PRICE scope, independent conflict tests; DO NOT promote vendor shadow to C4.17 MC_PASS_PRIMARY without explicitly versioned compliant primary provider policy.",
+    "6. Repair master/resolver exact byte-level binding with legitimate source re-run (no SHA rewrite), and address 45 unproven PRICE bars and 72 SEC 403 unknown SPAC identities without turning UNKNOWN into PASS.",
+    "7. Rerun 260 daily/52 weekly HISTORY, LEGAL, regime/weekly, family A/B/C/D, risk <=8%, R/R, official earnings/events, terminal with exact current SHA binding and proof outputs; 0 eligible is allowed.",
+    "8. Verify real qualified candidate registration, idempotence/expiry/delivery, and actual notification receipt. Mock test != user device delivery. No broker/real money.",
+    "9. Write permanent evidence-bearing updated checkpoint with commits, run IDs, artifacts and honest statuses; avoid endless reports without repairs."
+  ],
+  "status": "RESEARCH_PRODUCTION_NO_GO",
+  "completion_definition": "Actual current epoch source-verified technical pipeline and manual user delivery chain evidenced separately, not merely green CI."
+}
