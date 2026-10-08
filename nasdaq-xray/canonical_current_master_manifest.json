@@ -1,7 +1,7 @@
 {
   "asof_et": "2026-10-07",
   "asof_identity_proof": {
-    "blob_sha": "706aaf60a673539abbe807445f9da7c11729c26f",
+    "blob_sha": "7fa44c47f36cd27a9b1829bb8bffebc7f915fa72",
     "counts": {
       "operating_overrides": 3,
       "remove_from_asof": 0,
@@ -29,13 +29,13 @@
   },
   "counts": {
     "PASS_IDENTITY": 3184,
-    "UNKNOWN_IDENTITY": 99
+    "UNKNOWN_IDENTITY": 95
   },
   "execution": "NONE",
-  "explicit_excluded_count": 113,
-  "explicit_excluded_hash": "910a0f686d93b0f70a089787a9f7046bca4d791372f841a8f4489d7cee538d98",
+  "explicit_excluded_count": 117,
+  "explicit_excluded_hash": "31334c91e23bf0ed19531d725131823ab055ea5316190d70fdfea19751f17eef",
   "explicit_excluded_reason_counts": {
-    "SPAC_BLANK_CHECK": 113
+    "SPAC_BLANK_CHECK": 117
   },
   "history_price_state_diagnostic_only": {
     "source_counts": {
@@ -3242,22 +3242,22 @@
   "queue_hash": "2554c936f42217cf8a9628e89d04993945218725234fe894f7c80856834725d6",
   "queue_total": 3184,
   "queue_unique": 3184,
-  "raw_identity_total": 3283,
+  "raw_identity_total": 3279,
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1",
   "sec_spac_proof": {
-    "blob_sha": "9921e1b379e3766750fb2ae28b6937e2ed2286a0",
-    "count": 113,
+    "blob_sha": "e61c3a7dec0f10cfc3f5f69718a970522e578c12",
+    "count": 117,
     "path": "nasdaq-xray/master_sec_spac_proof_20261007.json",
-    "symbol_hash": "4333ee8a5d222b045eed1394c30423192819509f5125a1532ddb8448c9f61bd8"
+    "symbol_hash": "a2e9f19b6e033a641f6c72414371b807434a70bd191a1223a4a02ab791186afc"
   },
-  "source_state_blob_sha": "be96884babcd534710165d20d14f642bd74a1c6a",
-  "source_state_hash": "798ce4676905088c5d0901a17abdbb798771d8a2015ba7fc3060b2c1c8f8d723",
+  "source_state_blob_sha": "35d71f92e6f019d55049999c1d32d3366d85f156",
+  "source_state_hash": "440c7f48200b245cc27eec63ed981e5751799aad4563bdc1b1f63df9e23c865c",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
   "status": "PARTIAL_UNKNOWN",
   "status_semantics": "IDENTITY_PARTITION_EXACT_WITH_UNKNOWN",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 99,
+  "unknown_count": 95,
   "unknown_detail": {
     "ALIS": {
       "exact_sec_spac_proof": false,
@@ -3304,30 +3304,12 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "DAAQ": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Digital Asset Acquisition Corp. - Class A Ordinary shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "DMII": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Drugs Made In America Acquisition II Corp. - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "EURK": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Eureka Acquisition Corp - Class A Ordinary Share",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -3547,15 +3529,6 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "KOYN": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "CSLM Digital Asset Acquisition Corp III - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "LAFA": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
@@ -3589,15 +3562,6 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Launch One Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "LPBB": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Launch Two Acquisition Corp. - Class A Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -4158,9 +4122,7 @@
     "BPAC",
     "BSAA",
     "CRAN",
-    "DAAQ",
     "DMII",
-    "EURK",
     "FACT",
     "FGII",
     "FIGX",
@@ -4185,12 +4147,10 @@
     "ISNR",
     "JTTT",
     "KCHV",
-    "KOYN",
     "LAFA",
     "LFAC",
     "LKSP",
     "LPAA",
-    "LPBB",
     "LPCV",
     "LWAC",
     "MACI",
