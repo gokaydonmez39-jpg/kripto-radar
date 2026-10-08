@@ -10,6 +10,7 @@
       "MAGH",
       "MAMK",
       "MCTA",
+      "MI",
       "OST",
       "PC",
       "SVA",
@@ -67,6 +68,7 @@
       "MAGH",
       "MAMK",
       "MCTA",
+      "MI",
       "NHPBP",
       "NSTS",
       "OST",
@@ -89,7 +91,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-10-08T14:49:29.053467+00:00",
+  "generated_at_utc": "2026-10-08T14:53:42.463606+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -652,7 +654,7 @@
       "url": "https://www.nasdaqtrader.com/rss.aspx?feed=systemstatus&subject=SELFHELP"
     },
     "trade_halts": {
-      "active_halt_count": 12,
+      "active_halt_count": 13,
       "active_halt_symbols": [
         "BKKT.W",
         "EFTY",
@@ -661,6 +663,7 @@
         "MAGH",
         "MAMK",
         "MCTA",
+        "MI",
         "OST",
         "PC",
         "SVA",
@@ -668,8 +671,53 @@
         "UCFIW"
       ],
       "active_state_rule": "EXPLICIT_EMPTY_RESUMPTION_FIELDS_ONLY",
-      "item_count": 38,
+      "item_count": 41,
       "items": [
+        {
+          "HaltDate": "10/08/2026",
+          "HaltTime": "10:51:30.980",
+          "IssueName": "Inno Holdings Inc.",
+          "IssueSymbol": "INHD",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "10/08/2026",
+          "ResumptionQuoteTime": "10:51:30",
+          "ResumptionTradeTime": "",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/08/2026                    </td><td valign=\"top\">10:51:30.980</td><td valign=\"top\">INHD</td><td valign=\"top\">Inno Holdings Inc.</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/08/2026                    </td><td valign=\"top\">10:51:30                      </td><td valign=\"top\"></td></tr></table>",
+          "pubDate": "Thu, 08 Oct 2026 04:00:00 GMT",
+          "title": "INHD"
+        },
+        {
+          "HaltDate": "10/08/2026",
+          "HaltTime": "10:50:12.126",
+          "IssueName": "Roze AI Inc. CS",
+          "IssueSymbol": "RZAI",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "10/08/2026",
+          "ResumptionQuoteTime": "10:50:12",
+          "ResumptionTradeTime": "",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/08/2026                    </td><td valign=\"top\">10:50:12.126</td><td valign=\"top\">RZAI</td><td valign=\"top\">Roze AI Inc. CS</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/08/2026                    </td><td valign=\"top\">10:50:12                      </td><td valign=\"top\"></td></tr></table>",
+          "pubDate": "Thu, 08 Oct 2026 04:00:00 GMT",
+          "title": "RZAI"
+        },
+        {
+          "HaltDate": "10/08/2026",
+          "HaltTime": "10:49:57.604",
+          "IssueName": "NFT Limited",
+          "IssueSymbol": "MI",
+          "Market": "AMEX",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "T1",
+          "ResumptionDate": "",
+          "ResumptionQuoteTime": "",
+          "ResumptionTradeTime": "",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/08/2026                    </td><td valign=\"top\">10:49:57.604</td><td valign=\"top\">MI</td><td valign=\"top\">NFT Limited</td><td valign=\"top\">AMEX</td><td valign=\"top\">T1</td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td></tr></table>",
+          "pubDate": "Thu, 08 Oct 2026 04:00:00 GMT",
+          "title": "MI"
+        },
         {
           "HaltDate": "10/08/2026",
           "HaltTime": "10:43:50.183",

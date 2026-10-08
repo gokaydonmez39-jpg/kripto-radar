@@ -31,15 +31,16 @@
       "MAGH",
       "MAMK",
       "MCTA",
+      "MI",
       "OST",
       "PC",
       "SVA",
       "UCFI",
       "UCFIW"
     ],
-    "age_seconds": 2.841,
-    "generated_at_utc": "2026-10-08T14:49:29.053467+00:00",
-    "guard_blob_sha": "761ba0a5c6a252b842db4e8a5a1daec42cfc9c2d",
+    "age_seconds": 1.672,
+    "generated_at_utc": "2026-10-08T14:53:42.463606+00:00",
+    "guard_blob_sha": "f0072dc7f47c84993dea083c94301475085e1edd",
     "guard_path": "nasdaq-xray/canonical_official_source_guard.json",
     "max_age_seconds": 900,
     "security_status_suspension_symbols": [
@@ -91,6 +92,7 @@
       "MAGH",
       "MAMK",
       "MCTA",
+      "MI",
       "NHPBP",
       "NSTS",
       "OST",
@@ -210,7 +212,7 @@
     },
     "account_live_probe": {
       "balance_parseable": false,
-      "blob_sha": "1bb113be5de25165110cdcbb82e2d9d6d86568fc",
+      "blob_sha": "ec3be57c2a437e3990411de005602550144a9594",
       "network_attempted": false,
       "path": "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/account_effective_probe_state.json",
       "positions_parseable": false,
@@ -221,7 +223,7 @@
       "secret_values_persisted": false,
       "status": "BLOCKED_MISSING_CREDENTIALS",
       "workflow_run_attempt": "1",
-      "workflow_run_id": "37794801482"
+      "workflow_run_id": "37795309747"
     },
     "deep": {
       "blob_sha": "cd57711b59a421d2f362dd569f1a597cf9bc3d38",
@@ -244,7 +246,7 @@
       "path": "nasdaq-xray/canonical_current_family_c.json"
     },
     "final": {
-      "blob_sha": "4e008dbd3f79250e57c86e7aa5a4a8820e3bf333",
+      "blob_sha": "f5b3aec2fc03aff6059a6b692457b07cc8712f1c",
       "path": "nasdaq-xray/canonical_current_final_tech.json"
     },
     "full_state": {
@@ -281,7 +283,7 @@
       "semantic_rebind": false
     },
     "official_halt_guard": {
-      "blob_sha": "761ba0a5c6a252b842db4e8a5a1daec42cfc9c2d",
+      "blob_sha": "f0072dc7f47c84993dea083c94301475085e1edd",
       "path": "nasdaq-xray/canonical_official_source_guard.json"
     },
     "pointer": {
@@ -313,7 +315,7 @@
   "final_gate_reporting_zero_alpha": true,
   "full_end_to_end_research_pass": false,
   "g9_global_status": "G9_BLOCKED_FREE_AUTOMATION_PATH",
-  "generated_at_utc": "2026-10-08T14:49:31.896124+00:00",
+  "generated_at_utc": "2026-10-08T14:53:44.136720+00:00",
   "pointer_asof_before_candidate": "2026-10-07",
   "r92_account_g9_applicable": false,
   "r92_candidates": [],
