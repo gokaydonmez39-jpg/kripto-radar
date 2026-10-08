@@ -1,0 +1,62 @@
+name: XRAY Preopen Source and Alternative MC Readiness (Fail-Closed)
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/research_preopen_source_audit.py"
+      - ".github/workflows/xray-preopen-source-audit.yml"
+  workflow_run:
+    workflows:
+      - "XRAY Canonical Current Pre-MC Factory"
+      - "XRAY Canonical Current Post-MC Factory"
+      - "XRAY Canonical Current Final Factory"
+    types: [completed]
+    branches: [main]
+  schedule:
+    - cron: "25 12 * * 1-5"
+permissions:
+  contents: read
+concurrency:
+  group: xray-preopen-source-audit-v1
+  cancel-in-progress: true
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile and test true positive/negative proof boundaries
+        run: |
+          python -m py_compile nasdaq-xray/research_preopen_source_audit.py nasdaq-xray/e2e_production_readiness.py
+          python nasdaq-xray/research_preopen_source_audit.py --selftest
+          python nasdaq-xray/e2e_production_readiness.py --selftest
+      - name: Verify exact current Git source blobs and blocked classifications
+        run: |
+          python nasdaq-xray/research_preopen_source_audit.py --output "$RUNNER_TEMP/xray_preopen_source_readiness.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          obj=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_preopen_source_readiness.json").read_text())
+          assert obj["schema"]=="XRAY_PREOPEN_SOURCE_AUDIT_V1"
+          assert obj["execution"]=="NONE" and obj["real_money"]=="NO-GO"
+          assert obj["research_go"] is False
+          assert obj["actual_device_notification_receipt_proven"] is False
+          assert obj["shadow_massive_not_primary"] is True
+          assert obj["non_display_license_proven_by_this_audit"] is False
+          assert obj["bigdata_free_credit_availability_proven_by_this_audit"] is False
+          print("XRAY_PREOPEN_SOURCE_GUARDS=PASS_NO_ALPHA_NO_REAL_MONEY_NO_LICENSE_INFERENCE")
+          PY
+      - name: Upload public operational counts only
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-preopen-source-readiness-v1
+          path: ${{ runner.temp }}/xray_preopen_source_readiness.json
+          retention-days: 14
+          if-no-files-found: error
