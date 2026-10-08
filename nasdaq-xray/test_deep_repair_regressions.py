@@ -510,9 +510,11 @@ def test_resolver_metadata_only_resume_identity():
       "source_pointer_blob_sha":"PTR1","official_footer":"FOOTER1",
     }
     meta={**base,"source_state_blob_sha":"STATE2","source_unknowns_blob_sha":"UNK2",
-          "source_overlay_blob_sha":"OV2","source_master_blob_sha":"M2",
+          "source_overlay_blob_sha":"OV2","source_master_blob_sha":"M1",
           "source_pointer_blob_sha":"PTR2","official_footer":"FOOTER2"}
+    # Only truly non-decision metadata may preserve an existing resolver request.
     assert resolver_req_mod.resolver_resume_semantic_view(base)==resolver_req_mod.resolver_resume_semantic_view(meta)
+    assert resolver_req_mod.resolver_resume_semantic_view(base)!=resolver_req_mod.resolver_resume_semantic_view({**meta,"source_master_blob_sha":"M2"}), "MASTER_EXACT_SHA_DRIFT_NOT_REJECTED"
     assert resolver_req_mod.resolver_resume_semantic_view(base)!=resolver_req_mod.resolver_resume_semantic_view({**meta,"source_price_blob_sha":"PRICE2"})
     assert resolver_req_mod.resolver_resume_semantic_view(base)!=resolver_req_mod.resolver_resume_semantic_view({**meta,"symbol_hash":"S2"})
     changed={**meta,"price_unknown_detail":{"AAA":{"price_result":{"status":"PASS_PRICE_DV30"}},"BBB":{"price_result":{"status":"UNKNOWN"}}}}
