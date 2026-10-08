@@ -401,6 +401,14 @@ jobs:
                     set(rq.get("price_unknown_symbols") or [])!=set(px.get("unknown_symbols") or [])
                     or set(rq.get("price_blocked_symbols") or [])!=set(px.get("blocked_symbols") or [])
                   )
+                  # The exact master Git blob is mandatory E2E provenance.
+                  # An unchanged PRICE scope does NOT justify a stale resolver
+                  # request bound to a prior master manifest revision.
+                  mp=pathlib.Path("nasdaq-xray/canonical_current_master_manifest.json")
+                  mb=mp.read_bytes()
+                  master_sha=hashlib.sha1(b"blob "+str(len(mb)).encode()+b"\0"+mb).hexdigest()
+                  if rq.get("source_master_blob_sha")!=master_sha:
+                      resolver_refresh=True
                   # A newly committed same-policy resolver witness is a
                   # decision-bearing current-provenance input even when the symbol
                   # scope is unchanged and settlement_required=false (same-ASOF,
