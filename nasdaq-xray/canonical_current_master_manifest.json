@@ -1,7 +1,7 @@
 {
   "asof_et": "2026-10-07",
   "asof_identity_proof": {
-    "blob_sha": "f8721dd151563244162054f8f0f8ae71cf7831c4",
+    "blob_sha": "8bb29f375517a9a3cdfec04e0b3b2073683f2563",
     "counts": {
       "operating_overrides": 4,
       "remove_from_asof": 0,
@@ -29,18 +29,18 @@
   },
   "counts": {
     "PASS_IDENTITY": 3185,
-    "UNKNOWN_IDENTITY": 183
+    "UNKNOWN_IDENTITY": 182
   },
   "execution": "NONE",
-  "explicit_excluded_count": 2261,
-  "explicit_excluded_hash": "b8a2e87c68de461e876c1e5e556ebaf056984501eb24f9b8a4c3887098a3173f",
+  "explicit_excluded_count": 2262,
+  "explicit_excluded_hash": "f851b826d8d2564d412403e74e072a394b34d615430b461810d23b549e687c05",
   "explicit_excluded_reason_counts": {
     "DEBT": 59,
     "ETF": 1293,
     "FUND": 32,
     "PREFERRED": 102,
     "RIGHT": 104,
-    "SPAC_BLANK_CHECK": 28,
+    "SPAC_BLANK_CHECK": 29,
     "TEST_ISSUE": 8,
     "UNIT": 260,
     "WARRANT": 372,
@@ -3252,22 +3252,22 @@
   "queue_hash": "306d6bb21e1ffef5f099f988ce995d0f98b349c051f34b4eed42613280444bdf",
   "queue_total": 3185,
   "queue_unique": 3185,
-  "raw_identity_total": 3368,
+  "raw_identity_total": 3367,
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1",
   "sec_spac_proof": {
-    "blob_sha": "2525e9f85269f3a53b577b2a7cbf6b1a084bee07",
-    "count": 28,
+    "blob_sha": "ddcd7ffbc02307162ac392b563d32980bd578c83",
+    "count": 29,
     "path": "nasdaq-xray/master_sec_spac_proof_20261007.json",
-    "symbol_hash": "3138db824e32194c4edff1826374965efd13d48d7cd7102d00bf9c5044f370f3"
+    "symbol_hash": "5c8ab45ad4cdffe3e8c809af095fabdb5bfdc217a60cb467ac8d5cef503b5a21"
   },
-  "source_state_blob_sha": "eafd07811cf898c32445b87a6559ba647a79a1df",
-  "source_state_hash": "3fa59a6019862cdeeaaeffb50cf6887a360691d20b18868af6a617253fa85906",
+  "source_state_blob_sha": "31c5c4dfdaced9cdbfca53c2d1c2df5c03d8f77a",
+  "source_state_hash": "3911e4b6aa2e10db82785cd97ae7c8f1cabf9f8022ff3644b6806b9cb8f4e8cd",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
   "status": "PARTIAL_UNKNOWN",
   "status_semantics": "IDENTITY_PARTITION_EXACT_WITH_UNKNOWN",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 183,
+  "unknown_count": 182,
   "unknown_detail": {
     "AACI": {
       "exact_sec_spac_proof": false,
@@ -3284,15 +3284,6 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Averin Capital Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "ADAC": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "American Drive Acquisition Company - Class A Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -4921,7 +4912,6 @@
   "unknown_symbols": [
     "AACI",
     "ACAA",
-    "ADAC",
     "ALPX",
     "APAC",
     "ARTC",
