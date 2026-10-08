@@ -1,0 +1,111 @@
+{
+  "schema": "XRAY_CONTINUATION_PREOPEN_20261009_V3",
+  "note": "Status-only immutable operational checkpoint, not market-data license or research signal.",
+  "repository": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "starting_head": "4a5af35dc9c3e2b58c872fdc3e90b8af5145f226",
+  "head_at_checkpoint_preparation": "e00f95e5f12b7eb71a256e015ba6d5a924ef993e",
+  "date_trt": "2026-10-09",
+  "next_nasdaq_regular_session": "2026-10-09 09:30 ET / 16:30 TRT",
+  "latest_completed_market_asof": "2026-10-08",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "mode": "RESEARCH_ONLY_MANUAL_DECISION",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "no_fabrication": true,
+  "completed_verified": {
+    "source_integrity_pass": true,
+    "source_chain_sha_guard_pass": true,
+    "preopen_audit_test_run": 37859895470,
+    "preopen_audit_test_result": "SUCCESS_SOURCE_INTEGRITY_ONLY_NO_RESEARCH_GO",
+    "audit_artifact_name": "xray-preopen-source-readiness-v1",
+    "audit_artifact_retention_days": 14,
+    "preopen_daily_cron_utc": "25 12 * * 1-5",
+    "technical_terminal_asof": "2026-10-07",
+    "master_identity_pass": 3183,
+    "master_identity_unknown": 72,
+    "price_pass": 514,
+    "price_blocked": 45,
+    "price_unknown": 0,
+    "candidate_local_source_preconditions": "BLOCKED_NO_CURRENT_PRIMARY_MC",
+    "full_universe_discovery": "INCOMPLETE",
+    "real_candidate_count_proven": 0,
+    "real_candidate_count_interpretation": "0 ATTESTED, NOT 0 POSSIBLE",
+    "actual_device_delivery_receipt_proven": false
+  },
+  "provider_tests": {
+    "massive_human_display_single_symbol": "SUCCESS_AAPL_20261008_CIK_EXCHANGE_MARKET_CAP_RETURNED",
+    "massive_automated_nondisplay_license": "UNVERIFIED_NOT_ATTESTED",
+    "massive_public_repo_raw_data_write": "FORBIDDEN",
+    "massive_c417_primary_promoted": false,
+    "bigdata_account": "CREDITS_EXHAUSTED_ZERO_BALANCE",
+    "financial_datasets_account": "CREDITS_EXHAUSTED_ZERO_BALANCE",
+    "rallies_human_single_symbol": "SUCCESS_AAPL_REFERENCE_OBTAINED",
+    "longbridge_human_single_symbol": "SUCCESS_AAPL_US_STATIC_NASD_CURRENCY_USD",
+    "source_independence": "UNPROVEN_RALLIES_AND_MASSIVE_SAME_MARKET_CAP_AAPL_IS_NOT_INDEPENDENT_SOURCE_PROOF",
+    "primary_source_alternative_ready": false
+  },
+  "remediation_commits": [
+    {
+      "sha": "cf54263b89f9292514868c49a007194fc9a05b4d",
+      "path": "nasdaq-xray/research_preopen_source_audit.py",
+      "effect": "separate global full-universe coverage from candidate-local source preconditions; fail closed"
+    },
+    {
+      "sha": "f3f0a34dc4df8a4afcdfd862da91cd532bbad7f8",
+      "path": ".github/workflows/xray-preopen-source-audit.yml",
+      "effect": "workflow_dispatch, source-factory event and weekday preopen schedule with 14-day aggregate evidence"
+    },
+    {
+      "sha": "efb2218de0628d46fbdcc52cb7706ba9fd45ade6",
+      "path": "nasdaq-xray/research_preopen_source_audit.py",
+      "effect": "independent PRICE complete results partition + resolver price hash and extra negatives"
+    },
+    {
+      "sha": "e00f95e5f12b7eb71a256e015ba6d5a924ef993e",
+      "path": "nasdaq-xray/research_preopen_source_audit.py",
+      "effect": "type-safe set union in partition guard"
+    }
+  ],
+  "audit_runs": [
+    {
+      "run": 37859786998,
+      "result": "SUCCESS",
+      "source_proven": true,
+      "primary_mc_proven": false
+    },
+    {
+      "run": 37859879168,
+      "result": "CANCELLED_SUPERSEDED_BY_NEW_COMMIT",
+      "source_proven": null
+    },
+    {
+      "run": 37859895470,
+      "result": "SUCCESS",
+      "source_proven": true,
+      "primary_mc_proven": false
+    }
+  ],
+  "closed": {
+    "master_resolver_sha_mismatch": true,
+    "preopen_provenance_guard_tests": true,
+    "massive_encrypted_resume_selftests": true,
+    "massive_secret_scope_selftests": true
+  },
+  "open": {
+    "massive_written_automated_non_display_entitlement": true,
+    "github_runtime_api_key_and_written_license_evidence": true,
+    "primary_bigdata_current_mc_or_new_explicitly_approved_versioned_primary": true,
+    "price_45_exact30_verified_session_data": true,
+    "sec_spac_72_official_proof": true,
+    "history_weekly_regime_setup_legal_events_risk_rr_final_current_terminal": true,
+    "verified_real_manual_buy_candidate": true,
+    "real_device_push_receipt": true
+  },
+  "nonnegotiable": "NO LICENSE => NO LIVE UNATTENDED MASSIVE NONDISPLAY MC; NO PAID CREDIT TOPUP; SHADOW != PRIMARY; NO SYNTHETIC BARS; UNKNOWN != PASS; ACTIONS SUCCESS != DELIVERED.",
+  "action_operator_outside_tools": "Written provider contract scope for automated non-display investment research AND encrypted 14-day storage; user-managed Actions API key and evidence SHA. Do not set license var true without actual entitlement.",
+  "next_work": "Live reread first. Check operational preopen run 37859895470 and newest HEAD. Restore PRIMARY market cap with permitted same-ASOF source; resolve official SEC 72 and price 45 without thresholds changes; only after exact provenance and terminal proof can actual candidate and device notification be claimed.",
+  "final_status": "RESEARCH_PRODUCTION_NO_GO"
+}
