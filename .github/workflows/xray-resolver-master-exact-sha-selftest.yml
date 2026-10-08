@@ -1,0 +1,52 @@
+name: XRAY Resolver Exact Master SHA Regression
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/build_current_resolver_request.py"
+      - ".github/workflows/xray-resolver-master-exact-sha-selftest.yml"
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Confirm master source SHA is decision-bearing for resume
+        run: |
+          python -m py_compile nasdaq-xray/build_current_resolver_request.py
+          python nasdaq-xray/build_current_resolver_request.py --selftest
+      - name: Read-only live source binding witness
+        run: |
+          python - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          root=Path("nasdaq-xray")
+          b=(root/"canonical_current_master_manifest.json").read_bytes()
+          sha=hashlib.sha1(b"blob "+str(len(b)).encode()+b"\\0"+b).hexdigest()
+          request=json.loads((root/"canonical_current_resolver_request.json").read_text())
+          match=request.get("source_master_blob_sha")==sha
+          result={"schema":"XRAY_RESOLVER_MASTER_SHA_WITNESS_V1",
+              "asof_et":request.get("asof_et"),"actual_master_git_blob_sha":sha,
+              "resolver_bound_master_git_blob_sha":request.get("source_master_blob_sha"),
+              "exact_match":match,"alpha_authority":False,"execution":"NONE",
+              "real_money":"NO-GO","unknown_never_pass":True}
+          out=Path("/tmp/xray-resolver-master-sha-witness.json")
+          out.write_text(json.dumps(result,sort_keys=True,indent=2)+"\\n")
+          print("XRAY_RESOLVER_MASTER_SHA="+("MATCH" if match else "DRIFT_BLOCKED"))
+          assert not match or result["exact_match"] is True
+          PY
+      - name: Save operational witness only
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-resolver-master-exact-sha-witness-v1
+          path: /tmp/xray-resolver-master-sha-witness.json
+          retention-days: 14
+          if-no-files-found: error
