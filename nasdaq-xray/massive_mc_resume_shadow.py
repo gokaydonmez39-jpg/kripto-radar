@@ -418,7 +418,7 @@ def selftest():
             assert salvaged["request_count_cumulative"]==1
             args.limit=1
         # The licence and key gates stop before touching the remote provider.
-        Path(args.restore).unlink()
+        Path(args.restore).unlink(missing_ok=True)
         with patch.dict(os.environ,{"XRAY_MASSIVE_NONDISPLAY_LICENSE_OK":"false",
                                     "XRAY_MASSIVE_LICENSE_EVIDENCE_SHA256":""}), \
              patch(__name__+".current_scope",return_value=scope), \
