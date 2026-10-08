@@ -79,7 +79,7 @@ def fresh_checkpoint(scope):
         "scope_hash":scope["scope_hash"],
         "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
         "alpha_authority":False,"policy_unchanged":"C4.17",
-        "records":{},"request_count_cumulative":0,
+        "records":{},"retry_counts":{},"request_count_cumulative":0,
         "created_by":"GITHUB_ACTIONS_ENCRYPTED_CHECKPOINT"}
 
 def exact_checkpoint(cp,scope):
@@ -92,6 +92,10 @@ def exact_checkpoint(cp,scope):
         or cp.get("alpha_authority") is not False
         or cp.get("policy_unchanged")!="C4.17"
         or not isinstance(cp.get("records"),dict)
+        or not isinstance(cp.get("retry_counts"),dict)
+        or not set(cp["retry_counts"]).issubset(cp.get("records",{}))
+        or any(type(n) is not int or n<1 or n>3
+               for n in cp.get("retry_counts",{}).values())
         or len(cp["records"])>len(scope["symbols"])
         or not set(cp["records"]).issubset(scope["symbols"])
         or type(cp.get("request_count_cumulative")) is not int
@@ -194,6 +198,14 @@ def nondisplay_license_attested(environ):
     digest=str(environ.get("XRAY_MASSIVE_LICENSE_EVIDENCE_SHA256",""))
     return raw=="true" and bool(re.fullmatch(r"[a-f0-9]{64}",digest))
 
+def retryable_unknown(rec):
+    """Retry temporary errors, never upgrade stale or unsupported evidence."""
+    if not isinstance(rec,dict) or rec.get("state")!="UNKNOWN":
+        return False
+    reason=str(rec.get("reason") or "")
+    return (reason.startswith("TRANSPORT_") or reason.startswith("HTTP_5")
+            or reason=="PROVIDER_RESPONSE_NOT_OK")
+
 def run(args):
     scope=current_scope()
     out=Path(args.telemetry)
@@ -219,7 +231,9 @@ def run(args):
     restore_path=Path(args.restore)
     cipher=restore_path.read_bytes() if restore_path.is_file() else b""
     cp,restored=restore(cipher,fernet,scope)
-    todo=[s for s in scope["symbols"] if s not in cp["records"]]
+    todo=[s for s in scope["symbols"] if (s not in cp["records"]
+          or (retryable_unknown(cp["records"].get(s))
+              and cp["retry_counts"].get(s,0)<3))]
     count=0
     interrupted_reason=None
     for i,symbol in enumerate(todo[:args.limit]):
@@ -231,6 +245,8 @@ def run(args):
             interrupted_reason="VENDOR_QUOTA_OR_AUTHORIZATION"
             break
         cp["records"][symbol]=clean_record(symbol,scope["asof_et"],raw)
+        if retryable_unknown(cp["records"][symbol]):
+            cp["retry_counts"][symbol]=cp["retry_counts"].get(symbol,0)+1
         count+=1
     cp["request_count_cumulative"]+=count
     encrypted=seal(cp,fernet,scope)
@@ -314,6 +330,10 @@ def selftest():
     assert "AAPL" not in public and "4000000000" not in public
     assert "SHADOW_OBSERVED_ABOVE_2B" not in public
     assert health(scope,cp)["pending_count"]==1
+    assert retryable_unknown({"state":"UNKNOWN","reason":"HTTP_500"})
+    assert retryable_unknown({"state":"UNKNOWN","reason":"TRANSPORT_URLError"})
+    assert not retryable_unknown({"state":"UNKNOWN","reason":"SPAC_SUSPECT_OFFICIAL_SEC_PROOF_REQUIRED"})
+    assert not retryable_unknown(good)
     print("XRAY_MASSIVE_RESUME_SELFTEST=PASS_ENCRYPT_REPLAY_C4.17_NO_ALPHA")
 
 if __name__=="__main__":
