@@ -1,0 +1,112 @@
+{
+  "schema": "XRAY_MULTIPROVIDER_INTEGRATION_ASOF_20261008_AUDIT_V1",
+  "generated_trt_date": "2026-10-08",
+  "parent_main_head": "122c1702467ff20540b9d6f5c135217609b9f849",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "source": {
+    "router": {
+      "path": "nasdaq-xray/xray_multi_provider_research.py",
+      "blob_sha": "595f84a93efc184fffd54e818e4d8a2e87d4cd24"
+    },
+    "mirror": {
+      "path": "nasdaq-xray/sec_mirror_cik_shadow.py",
+      "blob_sha": "6e41c11116cb4586f8f872b7dcca639309747fc2"
+    },
+    "workflow": {
+      "path": ".github/workflows/xray-multi-provider-research-shadow.yml",
+      "blob_sha": "89a67220cf767117009ecc4c36c905e3c2d25239"
+    }
+  },
+  "tested": {
+    "mirror": {
+      "run_id": 37833811500,
+      "conclusion": "success",
+      "canonical_asof": "2026-10-07",
+      "ciK_discovered_count": 69,
+      "ciK_unknown_scope_count": 69,
+      "verified_historical_upstream_commit": "892f3c50d4709bf3266ee60bd517632bef6c1d09",
+      "role": "IDENTITY_DISCOVERY_ONLY"
+    },
+    "router_initial": {
+      "run_id": 37833573299,
+      "conclusion": "success",
+      "master_reference_observed": 0,
+      "mc_reference_observed": 0,
+      "event_reference_observed": 0
+    },
+    "router_mirror_connected": {
+      "run_id": 37833922151,
+      "conclusion": "success",
+      "master_reference_observed": 3,
+      "master_attempted": 3,
+      "mc_reference_observed": 0,
+      "event_reference_observed": 0
+    },
+    "router_rotation": {
+      "run_id": 37834035975,
+      "conclusion": "success",
+      "tests": "compile + failclosed unit selftest + 3-lane sample + nonauthority check + artifact upload",
+      "artifact_id": 11575070838,
+      "artifact_role": "OPERATIONAL_ONLY_NO_MARKET_DATA"
+    }
+  },
+  "automatic_routes": {
+    "MASTER": [
+      "SEC_TICKER_DIRECTORY",
+      "SEC_MIRROR_PIT",
+      "BQ_STOCK_PROFILE"
+    ],
+    "MC": [
+      "MASSIVE_TICKER_PIT",
+      "BQ_MC_SCREENER"
+    ],
+    "EVENT": [
+      "SEC_SUBMISSIONS",
+      "BQ_SEC_FILINGS"
+    ]
+  },
+  "budgets_per_workflow_run": {
+    "SEC": 5,
+    "MIRROR": 1,
+    "MASSIVE": 3,
+    "BQ": 7
+  },
+  "schedule": "GitHub Actions weekdays 21:07 UTC; after each run budgets reset; daily GLOBAL quotas are NOT guaranteed across manual/multiple runs",
+  "blocked_keys_in_runner": [
+    "XRAY_MASSIVE_API_KEY",
+    "XRAY_BQ_API_KEY"
+  ],
+  "sources_not_connected": "Nasdaq CQT strict G9, Pyth, Moomoo, IBKR/Tradier/Schwab/Webull quote paths not promoted; no lawful permanent zero G9 entitlement and no sanctioned scheduler adapter",
+  "read_only_account_probe": "Longbridge connected MCP account_balance + stock_positions both returned 403308 scope denied in this session; not ACCOUNT_PASS",
+  "preserved_terminal": {
+    "blob_sha": "ea9c41cd1e5971e78d85bf3f620d7f8c4e01034f",
+    "asof_et": "2026-10-07",
+    "terminal_result": "PARTIAL_UNKNOWN",
+    "master_unknown": 69,
+    "mc_unknown": 29,
+    "event_affected_unknown": 18,
+    "finalists": 17,
+    "final_risk_fail": 17,
+    "pre_g9_pass": 0
+  },
+  "preserved_overlay": {
+    "blob_sha": "8c80f6e327dd6c1457a2374fc8c3398ffc411769",
+    "strict_g9_pass": false,
+    "account_pass": false,
+    "true_full_go": "BLOCKED"
+  },
+  "not_implemented": [
+    "Cross-workflow persistent global daily quota reservations",
+    "Authorized vendor subscription/token provisioning",
+    "Automatic canonical MASTER/MC/EVENT PASS from newly observed references",
+    "Strict live consolidated National NBBO licensing and actual G9 adapter",
+    "Broker read-only scope authorization and same-run ACCOUNT proof",
+    "Independent technical risk/RR revalidation of 17 failed finalists",
+    "60 comparable C4.17 session calibration observations"
+  ],
+  "result": "GITHUB_SHADOW_ROUTER_AND_EXACT_ASOF_69_CIK_REPAIR_PROVEN; PRODUCTION_FULL_GO_NOT_REACHED"
+}
