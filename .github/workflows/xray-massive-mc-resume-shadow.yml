@@ -20,11 +20,6 @@ jobs:
   collect:
     runs-on: ubuntu-latest
     timeout-minutes: 12
-    env:
-      XRAY_MASSIVE_API_KEY: ${{ secrets.XRAY_MASSIVE_API_KEY }}
-      XRAY_MASSIVE_NONDISPLAY_LICENSE_OK: ${{ vars.XRAY_MASSIVE_NONDISPLAY_LICENSE_OK }}
-      XRAY_MASSIVE_LICENSE_EVIDENCE_SHA256: ${{ secrets.XRAY_MASSIVE_LICENSE_EVIDENCE_SHA256 }}
-      GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -52,6 +47,10 @@ jobs:
       - name: Restore latest completed-run encrypted checkpoint (failures included, strictly authenticated)
         env:
           XRAY_WORKFLOW_FILE: "xray-massive-mc-resume-shadow.yml"
+          XRAY_MASSIVE_API_KEY: ${{ secrets.XRAY_MASSIVE_API_KEY }}
+          XRAY_MASSIVE_NONDISPLAY_LICENSE_OK: ${{ vars.XRAY_MASSIVE_NONDISPLAY_LICENSE_OK }}
+          XRAY_MASSIVE_LICENSE_EVIDENCE_SHA256: ${{ secrets.XRAY_MASSIVE_LICENSE_EVIDENCE_SHA256 }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           if [[ "$XRAY_MASSIVE_NONDISPLAY_LICENSE_OK" != "true" || ${#XRAY_MASSIVE_LICENSE_EVIDENCE_SHA256} -ne 64 ]]; then
             echo "XRAY_RESUME_RESTORE=SKIP_LICENSE_SCOPE_UNVERIFIED"
@@ -94,6 +93,10 @@ jobs:
           done
           echo "XRAY_RESUME_RESTORE_CIPHERTEXT_FOUND=$found"
       - name: Collect exact-current Massive reference MC observations under 5/min free quota
+        env:
+          XRAY_MASSIVE_API_KEY: ${{ secrets.XRAY_MASSIVE_API_KEY }}
+          XRAY_MASSIVE_NONDISPLAY_LICENSE_OK: ${{ vars.XRAY_MASSIVE_NONDISPLAY_LICENSE_OK }}
+          XRAY_MASSIVE_LICENSE_EVIDENCE_SHA256: ${{ secrets.XRAY_MASSIVE_LICENSE_EVIDENCE_SHA256 }}
         run: |
           python nasdaq-xray/massive_mc_resume_shadow.py \
             --limit 25 \
