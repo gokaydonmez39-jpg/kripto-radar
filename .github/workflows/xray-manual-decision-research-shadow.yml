@@ -12,6 +12,7 @@ on:
     paths:
       - "nasdaq-xray/manual_decision_report.py"
       - "nasdaq-xray/manual_signal_lifecycle_shadow.py"
+      - "nasdaq-xray/manual_followup_registry.py"
       - "nasdaq-xray/manual_decision_policy_v1.json"
       - ".github/workflows/xray-manual-decision-research-shadow.yml"
 permissions:
@@ -39,6 +40,8 @@ jobs:
         run: |
           python -m py_compile nasdaq-xray/manual_signal_lifecycle_shadow.py
           python nasdaq-xray/manual_signal_lifecycle_shadow.py --selftest
+          python -m py_compile nasdaq-xray/manual_followup_registry.py
+          python nasdaq-xray/manual_followup_registry.py --selftest
           python nasdaq-xray/manual_signal_lifecycle_shadow.py --out "$RUNNER_TEMP/xray_followup_shadow.json"
           python - <<'PY'
           import json,os
