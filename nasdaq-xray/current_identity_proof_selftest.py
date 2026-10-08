@@ -131,6 +131,29 @@ def main():
         except RuntimeError as e:
             assert str(e)=="SEC_CIK_ROUTING_UNAVAILABLE_PRIMARY_AND_SECONDARY"
         assert m.SEC_CIK_DISCOVERY_DIAGNOSTICS["status"]=="BOTH_SEC_TICKER_LISTS_UNAVAILABLE"
+        # Independent mirror fallback routes only CIKs when both official
+        # index endpoints return 403. No SIC, SPAC or AL is inferred.
+        original_mirror=m.pinned_github_sec_cik_mirror
+        try:
+            m.pinned_github_sec_cik_mirror=lambda asof,subjects: (
+                {"TLAC":2128462},
+                {"mirror_commit":"a"*40,"mirror_source_sha256":"b"*64,
+                 "mirror_exact_asof":asof,"mirror_discovered":1,
+                 "mirror_scope":len(set(subjects)),"mirror_authority":"CIK_ROUTING_ONLY_OFFICIAL_SEC_SIC_REQUIRED"},
+            )
+            routed=m.sec_ticker_cik_map("2026-10-07",["TLAC","OPER"])
+            assert routed=={"TLAC":2128462}
+            assert m.SEC_CIK_DISCOVERY_DIAGNOSTICS["status"]=="PASS_PINNED_MIRROR_CIK_ONLY_SEC_SIC_REQUIRED"
+            assert m.SEC_CIK_DISCOVERY_DIAGNOSTICS["classification_authority"] is False
+            m.pinned_github_sec_cik_mirror=lambda *_: (_ for _ in ()).throw(ValueError("MIRROR_HASH_BAD"))
+            try:
+                m.sec_ticker_cik_map("2026-10-07",["TLAC"])
+                raise AssertionError("MIRROR_CORRUPTION_ACCEPTED")
+            except RuntimeError as e:
+                assert str(e)=="SEC_CIK_ROUTING_UNAVAILABLE_PRIMARY_AND_SECONDARY"
+            assert "MIRROR_HASH_BAD" in m.SEC_CIK_DISCOVERY_DIAGNOSTICS.get("mirror_error","")
+        finally:
+            m.pinned_github_sec_cik_mirror=original_mirror
         m.load_json_url=fake_load
         m.load_json_url=fake_load
         blank_row=m.sec_current_classification("TLAC","2026-10-06",cmap["TLAC"])
@@ -142,6 +165,45 @@ def main():
         assert m.sec_current_classification("WRONG","2026-10-06",cmap["OPER"]) is None
     finally:
         m.load_json_url=original_load
+
+    # Verify the source snapshot itself: exact date, SHA256 and contradictory CIK
+    # rows. Mock transport has no access to real GitHub or SEC.
+    from unittest.mock import patch
+    import hashlib
+    from sec_mirror_cik_shadow import classify
+    body=b'{"ticker":"TLAC","cik":2128462,"exchange":"Nasdaq"}\n'
+    manifest={"snapshot_date":"2026-10-07",
+              "last_success":{"sec_company_tickers_exchange":"2026-10-07"},
+              "files":[{"name":"sec_company_tickers_exchange.jsonl",
+                        "bytes":len(body),"sha256":hashlib.sha256(body).hexdigest()}]}
+    upstream="https://raw.githubusercontent.com/TylerJForstrom/Stock-Data/"+"a"*40+"/data/symbols/current/"
+    def mock_mirror_url(url,user_agent,timeout=30):
+        if url.endswith("/git/ref/heads/main"):
+            return json.dumps({"object":{"sha":"a"*40}}).encode()
+        if url==upstream+"manifest.json":
+            return json.dumps(manifest).encode()
+        if url==upstream+"sec_company_tickers_exchange.jsonl":
+            return body
+        raise RuntimeError("UNEXPECTED_MIRROR_URL")
+    with patch.object(m,"request_bytes",side_effect=mock_mirror_url):
+        cik,diag=m.pinned_github_sec_cik_mirror("2026-10-07",["TLAC","NONE"])
+        assert cik=={"TLAC":2128462} and diag["mirror_discovered"]==1
+        assert diag["mirror_authority"]=="CIK_ROUTING_ONLY_OFFICIAL_SEC_SIC_REQUIRED"
+        bad=dict(manifest,snapshot_date="2026-10-06")
+        def bad_date(url,ua,timeout=30):
+            if url==upstream+"manifest.json":return json.dumps(bad).encode()
+            return mock_mirror_url(url,ua,timeout)
+        with patch.object(m,"request_bytes",side_effect=bad_date):
+            try:m.pinned_github_sec_cik_mirror("2026-10-07",["TLAC"])
+            except ValueError:pass
+            else:raise AssertionError("STALE_MIRROR_BYPASSED_DATE_GATE")
+        def bad_hash(url,ua,timeout=30):
+            if url==upstream+"sec_company_tickers_exchange.jsonl":return body+b"BAD"
+            return mock_mirror_url(url,ua,timeout)
+        with patch.object(m,"request_bytes",side_effect=bad_hash):
+            try:m.pinned_github_sec_cik_mirror("2026-10-07",["TLAC"])
+            except ValueError:pass
+            else:raise AssertionError("CORRUPT_MIRROR_BYPASSED_DIGEST_GATE")
 
     # Missing exact-ASOF SEC SPAC proof must never be treated as a complete proof set.
     from pathlib import Path

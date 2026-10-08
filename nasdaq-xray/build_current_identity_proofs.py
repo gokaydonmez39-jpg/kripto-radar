@@ -26,7 +26,7 @@ SEC_SUBMISSIONS="https://data.sec.gov/submissions"
 SEC_UA=os.getenv("XRAY_SEC_USER_AGENT","NASDAQ-SWING-XRAY research bot; xray-dataplane-bot@users.noreply.github.com")
 UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/126 Safari/537.36"
 TASK="6a825366222081918997094d76e6ae46"
-IDENTITY_DISCOVERY_VERSION="SEC_CURRENT_SUSPECT_DISCOVERY_V7"
+IDENTITY_DISCOVERY_VERSION="SEC_CURRENT_SUSPECT_DISCOVERY_V8"
 SPAC_SUSPECT_RE=re.compile(r"\bacquisition\b|\bspac\b|\bblank[ -]?check\b|\bcapital\s+corp(?:oration)?\.?\s+(?:[IVXLCDM]+|\d+)\s*-\s*class\s+a\s+ordinary\s+shares?\b",re.I)
 
 def current_spac_suspects(names:dict,industries:dict)->list[str]:
@@ -232,7 +232,39 @@ def _nasdaq_exchange_cik_map(raw):
     return out,conflicts
 
 
-def sec_ticker_cik_map():
+def pinned_github_sec_cik_mirror(asof,symbols):
+    """Exact-ASOF SHA256 reference-list routing ONLY: SEC submissions remain mandatory.
+
+    GitHub mirror never determines issuer SIC/operating classification. The
+    immutable GitHub commit plus manifest and file digest must all verify;
+    failure never creates a PASS, override, or legacy carry-forward.
+    """
+    import sec_mirror_cik_shadow as mirror
+    if not asof or not symbols:
+        raise ValueError("MIRROR_SCOPE_AND_ASOF_REQUIRED")
+    base="https://api.github.com/repos/TylerJForstrom/Stock-Data/git/ref/heads/main"
+    ref=json.loads(request_bytes(base,SEC_UA,30).decode("utf-8"))
+    sha=str((ref.get("object") or {}).get("sha") or "")
+    if not re.fullmatch(r"[0-9a-f]{40}",sha):
+        raise ValueError("MIRROR_REF_NOT_PINNED")
+    prefix="https://raw.githubusercontent.com/TylerJForstrom/Stock-Data/"+sha+"/data/symbols/current/"
+    meta=json.loads(request_bytes(prefix+"manifest.json",SEC_UA,30).decode("utf-8"))
+    payload=request_bytes(prefix+"sec_company_tickers_exchange.jsonl",SEC_UA,50)
+    if len(payload)>3_000_000:
+        raise ValueError("MIRROR_DATA_OVERSIZED")
+    shadow=mirror.classify(asof,list(symbols),meta,payload)
+    # Sole use of mirror: look up CIK to attempt actual official SEC SIC read.
+    # Conflict or partial coverage remains UNKNOWN.
+    return {sym:int(cik) for sym,cik in shadow["ciK_discovery_only"].items()},{
+        "mirror_commit":sha,
+        "mirror_source_sha256":shadow["source_sha256"],
+        "mirror_exact_asof":asof,
+        "mirror_discovered":shadow["ciK_discovered_count"],
+        "mirror_scope":len(set(symbols)),
+        "mirror_authority":"CIK_ROUTING_ONLY_OFFICIAL_SEC_SIC_REQUIRED",
+    }
+
+def sec_ticker_cik_map(asof=None,subjects=None):
     """Try both independent official SEC CIK-route endpoints, fail closed.
 
     The mappings authorize only CIK discovery. Same-ticker submissions,
@@ -294,9 +326,20 @@ def sec_ticker_cik_map():
         diag["status"]="SECONDARY_UNAVAILABLE_LEGACY_FALLBACK_ONLY"
     else:
         diag["status"]="BOTH_SEC_TICKER_LISTS_UNAVAILABLE"
+    # On dual SEC index transport failure, consult only an independently
+    # SHA256-proven and commit-pinned reference snapshot. It supplies CIK
+    # routing to official SEC submissions, NEVER SIC or a classification.
+    if not primary_ok and not secondary_ok and asof and subjects:
+        try:
+            mirror_routes,mirror_diag=pinned_github_sec_cik_mirror(asof,subjects)
+            out.update(mirror_routes)
+            diag.update(mirror_diag)
+            diag["status"]="PASS_PINNED_MIRROR_CIK_ONLY_SEC_SIC_REQUIRED"
+        except Exception as exc:
+            diag["mirror_error"]=type(exc).__name__+":"+str(exc)[:120]
     diag["total_resolved_cik_routes"]=len(out)
     SEC_CIK_DISCOVERY_DIAGNOSTICS=diag
-    if not primary_ok and not secondary_ok:
+    if not primary_ok and not secondary_ok and not out:
         raise RuntimeError("SEC_CIK_ROUTING_UNAVAILABLE_PRIMARY_AND_SECONDARY")
     return out
 
@@ -744,7 +787,9 @@ def main():
     discovered_blank={}
     unresolved_current_suspects=[]
     try:
-        current_cik_map=sec_ticker_cik_map()
+        # Exact-ASOF suspect scope; the mirror is never a whole-market
+        # membership source or a path that can generate classification PASS.
+        current_cik_map=sec_ticker_cik_map(asof,current_spac_suspects(names,industries))
     except Exception as e:
         current_cik_map={}
         sec_network_error=sec_network_error or f"{type(e).__name__}:{str(e)[:200]}"
