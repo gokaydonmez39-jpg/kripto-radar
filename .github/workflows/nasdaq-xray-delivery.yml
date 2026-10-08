@@ -190,6 +190,20 @@ jobs:
           done
           exit 1
 
-      - name: Delivery noop is healthy
+      - name: Classify no-delivery without false success
         if: steps.scheduler.outputs.ready != 'true' || steps.prep.outputs.ready != 'true'
-        run: echo "XRAY_DELIVERY_HEALTH=PASS_NO_DELIVERABLE_CANDIDATE_OR_SCHEDULER_BLOCKED"
+        env:
+          SCHED_READY: ${{ steps.scheduler.outputs.ready }}
+          PREP_REASON: ${{ steps.prep.outputs.reason }}
+        shell: bash
+        run: |
+          if [ "$SCHED_READY" != "true" ]; then
+            echo "::error::XRAY_DELIVERY_BLOCKED_SCHEDULER; no user receipt attested"
+            exit 1
+          fi
+          if [ "$PREP_REASON" = "NO_REGISTERED_RESEARCH_CANDIDATE" ]; then
+            echo "XRAY_DELIVERY_HEALTH=NO_REGISTERED_CANDIDATE (no notification attempted)"
+            exit 0
+          fi
+          echo "::error::XRAY_DELIVERY_BLOCKED_PREP reason=$PREP_REASON; no user receipt attested"
+          exit 1
