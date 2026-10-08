@@ -7,6 +7,7 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/manual_decision_report.py"
+      - "nasdaq-xray/manual_signal_lifecycle_shadow.py"
       - "nasdaq-xray/manual_decision_policy_v1.json"
       - ".github/workflows/xray-manual-decision-research-shadow.yml"
 permissions:
@@ -29,6 +30,22 @@ jobs:
         run: |
           python -m py_compile nasdaq-xray/manual_decision_report.py
           python nasdaq-xray/manual_decision_report.py --selftest
+      - name: Verify candidate follow-up state machine without live order or user-delivery claims
+        run: |
+          python -m py_compile nasdaq-xray/manual_signal_lifecycle_shadow.py
+          python nasdaq-xray/manual_signal_lifecycle_shadow.py --selftest
+          python nasdaq-xray/manual_signal_lifecycle_shadow.py --out "$RUNNER_TEMP/xray_followup_shadow.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])/"xray_followup_shadow.json"
+          r=json.loads(p.read_text())
+          assert r["status"]=="SHADOW_NOT_CONNECTED_TO_CANONICAL_DELIVERY"
+          assert r["candidate_count"]==0 and r["orders"]==[]
+          assert r["execution"]=="NONE" and r["real_money"]=="NO-GO"
+          assert r["user_notification_delivered"] is False
+          print("XRAY_MANUAL_FOLLOWUP_NO_DELIVERY_CLAIM=PASS")
+          PY
       - name: Build exact-source manual-decision research report
         run: |
           python nasdaq-xray/manual_decision_report.py --out "$RUNNER_TEMP/xray_manual_private.json"
