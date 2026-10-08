@@ -37,6 +37,14 @@ jobs:
           python -m py_compile nasdaq-xray/massive_mc_resume_shadow.py
           python nasdaq-xray/massive_mc_resume_shadow.py --selftest
           python nasdaq-xray/massive_mc_shadow_probe.py --selftest
+      - name: Independent synthetic signal and delivery safety regressions (NO notification sent)
+        run: |
+          python nasdaq-xray/manual_decision_report.py --selftest
+          python nasdaq-xray/manual_signal_lifecycle_shadow.py --selftest
+          python nasdaq-xray/manual_followup_registry.py --selftest
+          python nasdaq-xray/delivery_prepare_selftest.py
+          python nasdaq-xray/delivery_scheduler_guard_selftest.py
+          echo "XRAY_SYNTHETIC_SIGNAL_DELIVERY_REGRESSION=PASS_NO_LIVE_ISSUE_NO_PUSH"
       - name: Restore most recent encrypted checkpoint (authorized GH Actions artifact only)
         env:
           XRAY_WORKFLOW_FILE: "xray-massive-mc-resume-shadow.yml"
