@@ -1,0 +1,141 @@
+{
+  "schema": "XRAY_EXACT_CONTINUATION_VERIFIED_20261008_V3",
+  "repo": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "live_head_at_capture": "c3d7679673d9c2d17ceff28b61d7a68973b9cbad",
+  "asof_et": "2026-10-07",
+  "guardrails": {
+    "policy": "C4.17",
+    "control": "C4.27",
+    "execution": "NONE",
+    "real_money": "NO-GO",
+    "unknown_never_pass": true,
+    "no_alpha_threshold_relaxation": true
+  },
+  "canonical_terminal": {
+    "path": "nasdaq-xray/canonical_current_terminal.json",
+    "blob_sha": "6cf21ef7f2b5ea3aacc6bbb7e93f0342b1dad62d",
+    "generated_at_utc": "2026-10-08T12:04:47.838495+00:00",
+    "terminal_result": "PARTIAL_UNKNOWN",
+    "full_end_to_end_research_pass": false,
+    "counts": {
+      "raw_master": 3342,
+      "master_pass": 3184,
+      "master_unknown": 158,
+      "price_pass": 510,
+      "mc_primary": 0,
+      "mc_fallback_watch": 472,
+      "mc_unknown": 29,
+      "history_pass": 460,
+      "legal_pass": 460,
+      "weekly_pass": 100,
+      "event_affected_unknown": 20,
+      "final_candidates": 17,
+      "final_fail": 17,
+      "pre_g9_tech_pass": 0
+    },
+    "mc_witness": {
+      "blob_sha": "91de33a2c1ac8e32b63fbef53d1431bfbf3646ed",
+      "current_price_blob_sha": "91c8948eced805cbdf6006017a0c3f07943823da",
+      "input_blob_exact": true,
+      "pass_count_exact": true,
+      "pass_hash_exact": true,
+      "pass_set_exact": true,
+      "path": "nasdaq-xray/canonical_mc_bridge_20261007_c417_dv30_v19.json",
+      "recorded_input_blob_sha": "91c8948eced805cbdf6006017a0c3f07943823da",
+      "semantic_rebind": false
+    }
+  },
+  "canonical_overlay": {
+    "path": "nasdaq-xray/canonical_current_final_gate_overlay.json",
+    "blob_sha": "2343e12f4b6c4cdb1024d77be739789852bb2713",
+    "terminal_bindings_exact": true,
+    "terminal_mismatches": 0,
+    "true_full_go": "BLOCKED",
+    "strict_g9_pass": false,
+    "account_pass": false
+  },
+  "watch": {
+    "deep_blob_sha": "0cbffda35788f6195c1fb787407da1929748fd2d",
+    "symbols": [
+      "DUOL",
+      "FSLY",
+      "META",
+      "OLLI",
+      "PLTR"
+    ],
+    "mode": "RESEARCH_WATCH_ONLY_NOT_AL",
+    "artifact_run_id": 37774030785,
+    "artifact_id": 11549445668,
+    "workflow_summary_visible": true,
+    "watch_ci_result": "success"
+  },
+  "verified_workflows": [
+    {
+      "name": "XRAY Canonical Current Final Factory",
+      "id": 37773395957,
+      "conclusion": "success",
+      "committed_terminal_sha": "6cf21ef7f2b5ea3aacc6bbb7e93f0342b1dad62d"
+    },
+    {
+      "name": "XRAY Live Truth Attestation",
+      "id": 37774379570,
+      "event": "workflow_run",
+      "conclusion": "success",
+      "selftests": "PASS_4",
+      "blob_integrity": "PASS",
+      "blocked_checks": [
+        "ACCOUNT",
+        "G9",
+        "TERMINAL_RESEARCH_PASS"
+      ],
+      "terminal_drift": [],
+      "artifact_id": 11548817242
+    },
+    {
+      "name": "XRAY C4.17 Research WATCH Radar",
+      "id": 37774030785,
+      "conclusion": "success",
+      "artifact_id": 11549445668
+    },
+    {
+      "name": "XRAY Final Risk RR Independent Audit",
+      "id": 37773215053,
+      "conclusion": "success",
+      "rows": 17,
+      "independent_risk_fail": 17,
+      "independent_rr_fail": 16,
+      "mismatches": 0
+    },
+    {
+      "name": "XRAY Research Candidate Delivery",
+      "id": 37773215184,
+      "conclusion": "success",
+      "delivery": "NO_REGISTERED_RESEARCH_CANDIDATE"
+    }
+  ],
+  "changes_this_session": [
+    "3b6e5b2d860a6a206da32fbed0ba203bc0c0ce16",
+    "81b6d92297bef3ca79d2243a5e049606c615da4f",
+    "2489c3a4a0b5b00c252233e9b2be14635652d44b"
+  ],
+  "verification": "CANONICAL_READBACK_AND_WORKFLOW_RUN_COMPLETION_CONFIRMED",
+  "unresolved_pre_go": [
+    "158 MASTER SEC SPAC SIC 6770 unknown",
+    "29 MC unknown, MC primary pass zero",
+    "20 affected geometry EVENT unknown",
+    "all 17 FINAL risk fail; AL zero",
+    "strict legal consolidated NBBO G9 unentitled",
+    "Longbridge same-run ACCOUNT bearer or vault missing; connector scope denied"
+  ],
+  "external_reference_note": "SEC EDGAR bulk archive exists publicly per official documentation; access from GitHub Runner NOT VERIFIED, do not promote",
+  "next_steps": [
+    "Fresh live GitHub main readback first",
+    "Verify new workflow runs and pending Final queue do not supersede sources",
+    "Do not assert G9 or ACCOUNT without lawful read-only auth",
+    "Never turn source drift into AL",
+    "Evaluate only C4.17-compliant structural setups without threshold relaxation",
+    "Keep immutable witnesses and expected SHA CAS",
+    "Verify exact real delivery when a real R92 candidate exists"
+  ]
+}
