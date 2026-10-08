@@ -38,7 +38,7 @@ jobs:
           positions=[w.index("      - name: "+n) for n in names]
           assert positions==sorted(positions),positions
           for section_title,next_title in [
-            (names[1],names[2]),(names[4],names[5])
+            (names[2],names[3]),(names[5],names[6])
           ]:
               start=w.index("      - name: "+section_title)
               end=w.index("      - name: "+next_title)
