@@ -55,12 +55,48 @@ def selftest():
     bad=json.loads(json.dumps(fixture));bad["geometry"]["risk_percent"]=.99
     try:rowcheck(bad);raise AssertionError("BAD_PRODUCTION_VALUE_ACCEPTED")
     except ValueError:pass
-    print("XRAY_ENTRY_BAND_COUNTERFACTUAL_SELFTEST=PASS cases=7")
+    # Source-integrity negative controls may NEVER yield an "exact" terminal.
+    with __import__("tempfile").TemporaryDirectory() as td:
+        global ROOT
+        old_root=ROOT
+        ROOT=pathlib.Path(td)
+        try:
+            (ROOT/"test.json").write_text('{"ok":true}')
+            sha=gitsha(ROOT/"test.json")
+            assert terminal_stable_source_drift({"evidence":{"final":{
+                "path":"nasdaq-xray/test.json","blob_sha":sha}}})==[]
+            assert terminal_stable_source_drift({"evidence":{"final":{
+                "path":"nasdaq-xray/test.json","blob_sha":"deadbeef"}}})==["final:BLOB_DRIFT"]
+        finally:
+            ROOT=old_root
+    print("XRAY_ENTRY_BAND_COUNTERFACTUAL_SELFTEST=PASS cases=9")
+def terminal_stable_source_drift(t):
+    drift=[]
+    evidence=t.get("evidence") or {}
+    if not isinstance(evidence,dict) or not evidence:
+        return ["MISSING_TERMINAL_EVIDENCE"]
+    for key,ref in evidence.items():
+        if key=="pointer":
+            # Pointer intentionally advances after terminal publication.
+            continue
+        if not isinstance(ref,dict):
+            drift.append(key+":INVALID_EVIDENCE")
+            continue
+        p=str(ref.get("path") or "")
+        b=str(ref.get("blob_sha") or "")
+        if not p.startswith("nasdaq-xray/") or p.count("/")!=1 or ".." in p:
+            drift.append(key+":INVALID_PATH")
+            continue
+        file=ROOT/p.removeprefix("nasdaq-xray/")
+        if not file.is_file() or not b or gitsha(file)!=b:
+            drift.append(key+":BLOB_DRIFT")
+    return sorted(drift)
 def run(out):
     j=json.loads(F.read_text());t=json.loads(T.read_text())
     assert j.get("source_compiled_policy_version")=="C4.17","POLICY_VERSION_DRIFT"
     sha=gitsha(F);bound=(t.get("evidence") or {}).get("final") or {}
-    exact=(bound.get("path")=="nasdaq-xray/canonical_current_final_tech.json"
+    full_source_drift=terminal_stable_source_drift(t)
+    exact=(not full_source_drift and bound.get("path")=="nasdaq-xray/canonical_current_final_tech.json"
             and bound.get("blob_sha")==sha and t.get("asof_et")==j.get("asof_et"))
     results={}
     for key,v in sorted((j.get("results") or {}).items()):
@@ -69,7 +105,7 @@ def run(out):
     status="SOURCE_EXACT_RESEARCH_DIAGNOSTIC" if exact else "STALE_TERMINAL_RESEARCH_DIAGNOSTIC_ONLY"
     obj={"schema":"XRAY_C417_ENTRY_BAND_COUNTERFACTUAL_V1","asof_et":j.get("asof_et"),
         "final_blob_sha":sha,"terminal_blob_sha":gitsha(T),
-        "terminal_final_binding_exact":exact,"status":status,
+        "terminal_final_binding_exact":exact,"terminal_core_drift_keys":full_source_drift,"status":status,
         "source_rows":len(results),"D_rows_evaluated":len(d),
         "lower_band_risk_pass":sum(x["risk_low_pass"] for x in d),
         "lower_band_risk_and_rr_pass":sum(x["risk_low_pass"] and x["rr_low_both_pass"] and not x["overlap"] for x in d),
