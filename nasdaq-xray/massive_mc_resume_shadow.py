@@ -12,6 +12,7 @@ from copy import deepcopy
 import datetime as dt
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import sys
@@ -106,9 +107,14 @@ def exact_checkpoint(cp,scope):
                 "SHADOW_OBSERVED_BELOW_2B")):
             return False
         if rec.get("state")!="UNKNOWN":
-            if (not isinstance(rec.get("market_cap_usd"),(float,int))
-                or rec.get("market_cap_usd")<=0
-                or not str(rec.get("cik","")).isdigit()
+            mc=rec.get("market_cap_usd")
+            if (type(mc) not in (float,int)
+                or not math.isfinite(mc) or mc<=0
+                or (mc>=MC_FLOOR)!=(rec["state"]=="SHADOW_OBSERVED_ABOVE_2B")
+                or not isinstance(rec.get("cik"),str)
+                or len(rec["cik"])!=10 or not rec["cik"].isdigit()
+                or rec.get("primary_exchange") not in ("XNAS","XNGS","XNMS","XNCM")
+                or rec.get("type")!="CS"
                 or rec.get("ticker")!=symbol):
                 return False
     return True
@@ -262,6 +268,19 @@ def selftest():
     cp["records"]["AAPL"]=good
     cp["request_count_cumulative"]=1
     assert exact_checkpoint(cp,scope)
+    for mutation in (
+        {"market_cap_usd":True},
+        {"market_cap_usd":float("nan")},
+        {"market_cap_usd":100},
+        {"state":"SHADOW_OBSERVED_BELOW_2B"},
+        {"primary_exchange":"XNYS"},
+        {"cik":"123"},
+        {"alpha_authority":True},
+        {"r92_eligible":True},
+    ):
+        corrupted=deepcopy(cp)
+        corrupted["records"]["AAPL"].update(mutation)
+        assert not exact_checkpoint(corrupted,scope),mutation
     final=restore(seal(cp,a,scope),a,scope)[0]
     assert final["records"]["AAPL"]["market_cap_usd"]==4_000_000_000
     public=json.dumps(health(scope,cp,"SHADOW_PARTIAL_NO_ALPHA",1,True))
