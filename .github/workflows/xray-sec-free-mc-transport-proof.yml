@@ -1,0 +1,50 @@
+name: XRAY SEC Free MC Transport and PIT Proof
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/sec_official_free_mc_transport_probe.py"
+      - ".github/workflows/xray-sec-free-mc-transport-proof.yml"
+permissions:
+  contents: read
+concurrency:
+  group: xray-sec-free-mc-transport-proof
+  cancel-in-progress: true
+jobs:
+  official-sec:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile and test future filing, identity, stale, and tamper guards
+        run: |
+          python -m py_compile nasdaq-xray/sec_official_free_mc_transport_probe.py
+          python nasdaq-xray/sec_official_free_mc_transport_probe.py --selftest
+      - name: Probe two official SEC endpoints once without paid credits
+        run: |
+          python nasdaq-xray/sec_official_free_mc_transport_probe.py \
+            --asof 2026-10-08 \
+            --output "$RUNNER_TEMP/xray_sec_free_mc_transport.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])/"xray_sec_free_mc_transport.json"
+          obj=json.loads(p.read_text())
+          assert obj["execution"]=="NONE" and obj["real_money"]=="NO-GO"
+          assert obj["api_spend_usd"]==0 and obj["production_mc_primary_pass"] is False
+          assert obj["alpha_authority"] is False and obj["unknown_never_pass"] is True
+          print("SEC_FREE_MC_GUARDS=PASS_NO_PAID_CREDITS_NO_FAKE_PRIMARY")
+          PY
+      - name: Upload operational-only result without issuer values
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-sec-free-mc-transport-operational-v1
+          path: ${{ runner.temp }}/xray_sec_free_mc_transport.json
+          retention-days: 14
+          if-no-files-found: error
