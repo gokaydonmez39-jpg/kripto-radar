@@ -98,8 +98,11 @@ jobs:
           echo "$out"
           if echo "$out" | grep -q "XRAY_DELIVERY_READY=PASS"; then
             echo "ready=true" >> "$GITHUB_OUTPUT"
+            echo "reason=READY" >> "$GITHUB_OUTPUT"
           else
             echo "ready=false" >> "$GITHUB_OUTPUT"
+            reason=$(printf '%s\n' "$out" | sed -n 's/^XRAY_DELIVERY_NOOP=//p' | head -n1)
+            echo "reason=${reason:-UNCLASSIFIED_PREP_BLOCK}" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Create or recover deduplicated research candidate issues
