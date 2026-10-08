@@ -1,0 +1,164 @@
+{
+  "schema": "XRAY_MANUAL_SIGNAL_CRITICAL_READINESS_SUCCESSOR_V4",
+  "date_trt": "2026-10-09",
+  "asof_session": "2026-10-08",
+  "snapshot_live_main_head": "3d1001ac9bbb2f39e0eb464f4085a2ef7600f2d1",
+  "mode": "RESEARCH_ONLY_MANUAL_DECISION",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "release_status": "MANUAL_SIGNAL_PRODUCTION_BLOCKED",
+  "canonical": {
+    "terminal_asof": "2026-10-07",
+    "terminal_blob_sha": "ea9c41cd1e5971e78d85bf3f620d7f8c4e01034f",
+    "price_asof": "2026-10-08",
+    "price_blob_sha": "42ed4a1c1a104aff94f73793194b25746d3bea59",
+    "price_pass": 514,
+    "price_unknown": 0,
+    "price_block": 45,
+    "master_asof": "2026-10-08",
+    "master_blob_sha": "0508f9ae561c471e49ad57f8166852915f948968",
+    "price_pass_hash": "6e6f8bbabb4c1aaba4db18671a470151843afdc88f7d843190acaf444d7ffb17",
+    "terminal_upgraded_new_asof": false
+  },
+  "accomplishments": [
+    {
+      "commit": "a42482cdddc07b074f554f1a12e918e23b5f6410",
+      "kind": "code",
+      "scope": "Safe missing primary control regression handling without cross-ASOF pass"
+    },
+    {
+      "commit": "c48cd5b53310a93f3a380551d128a13a01e69179",
+      "kind": "evidence",
+      "scope": "Rallies exact daily sessions shard 1"
+    },
+    {
+      "commit": "c35a9fbfac2a9a218b32cc4db0b7d06e6231c078",
+      "kind": "evidence",
+      "scope": "Rallies sessions shard 2"
+    },
+    {
+      "commit": "7e6581acb2313e49d8362f6ca168d67805afd1f4",
+      "kind": "evidence",
+      "scope": "Rallies sessions shard 3 with Oct8 close"
+    },
+    {
+      "commit": "1be9083592dadfa0771951e233544acc302b4bc6",
+      "kind": "evidence",
+      "scope": "30-date partition 3183 = 1306 fail price + 1239 fail DV30 + 514 pass + 124 blocked"
+    },
+    {
+      "commit": "3d1001ac9bbb2f39e0eb464f4085a2ef7600f2d1",
+      "kind": "code",
+      "scope": "Clock expiry and verified official control without new bar; forged/stale witness rejection"
+    }
+  ],
+  "actions": [
+    {
+      "run_id": 37843121999,
+      "name": "Pre-MC Factory",
+      "result": "SUCCESS_FULL_PRICE",
+      "detail": "8-Oct canonical PRICE/DV30 514 PASS, 0 UNKNOWN, 45 BLOCK"
+    },
+    {
+      "run_id": 37843236475,
+      "name": "Post-MC Factory",
+      "result": "SUCCESS_WAITING_NOOP",
+      "detail": "No committed new MC bridge"
+    },
+    {
+      "run_id": 37843270300,
+      "name": "Final Factory",
+      "result": "SUCCESS_WAITING_NOOP",
+      "detail": "No new terminal"
+    },
+    {
+      "run_id": 37843810763,
+      "name": "Manual Decision Research",
+      "result": "success",
+      "detail": "Clock and followup independent tests; shadow manual report"
+    }
+  ],
+  "provider": {
+    "bigdata_exact_xnas_mc": "BLOCKED_EXHAUSTED_CREDITS",
+    "paid_topup": false,
+    "current_compiled_primary": "BIGDATA",
+    "rallies_bulk": "PRICE_DV30_AUTHORITY_ONLY",
+    "massive_ticker_mc": "DIAGNOSTIC_NOT_FILING_DATE_SAFE_MC_PRIMARY",
+    "rallies_massive_mc_close_match": "SUSPECTED_COMMON_UPSTREAM_NOT_INDEPENDENT_MC_WITNESSES",
+    "sec_file_date_constrained_evidence": "REQUIRES_NEW_TESTED_COMPILED_POLICY_MIGRATION"
+  },
+  "followup": {
+    "clock_expiry_without_bar_tested": true,
+    "official_control_witness_tested": true,
+    "live_registration_count": 0,
+    "delivery_ledger_count": 0,
+    "phone_receipt_verified": false,
+    "live_bar_followup_verified": false
+  },
+  "automations": {
+    "reader_immediate_run_requested": true,
+    "committer_immediate_run_requested": true,
+    "canonical_immediate_run_requested": true,
+    "five_existing_tasks_kept": true,
+    "run_requests_do_not_prove_delivery": true
+  },
+  "eight_production_criteria": [
+    {
+      "id": 1,
+      "title": "Current ASOF full canonical chain",
+      "status": "PARTIAL",
+      "reason": "8 Oct Pre-MC PRICE ready; MC Post-MC Final Terminal still old"
+    },
+    {
+      "id": 2,
+      "title": "Unknown never pass safety",
+      "status": "PASS_TESTED",
+      "reason": "Exact SHA, dated session and witness rejection"
+    },
+    {
+      "id": 3,
+      "title": "Candidate research technical gates",
+      "status": "PASS_UNIT_ONLY",
+      "reason": "No 8 Oct MC-primary or qualified real AL"
+    },
+    {
+      "id": 4,
+      "title": "Actual phone or email delivered",
+      "status": "BLOCKED",
+      "reason": "No phone/device receipt"
+    },
+    {
+      "id": 5,
+      "title": "Persistent candidate followup",
+      "status": "BLOCKED",
+      "reason": "Registry empty; no live licensed bars"
+    },
+    {
+      "id": 6,
+      "title": "Stop target expiry halt event live alerts",
+      "status": "PARTIAL_TEST_ONLY",
+      "reason": "Clock + official event tests PASS, no real delivery"
+    },
+    {
+      "id": 7,
+      "title": "Daily task quota retry and health alert",
+      "status": "PARTIAL",
+      "reason": "Five enabled, no daily digest user receipt"
+    },
+    {
+      "id": 8,
+      "title": "No broker account or orders",
+      "status": "PASS_MANUAL_SCOPE",
+      "reason": "EXECUTION NONE; REAL_MONEY NO-GO"
+    }
+  ],
+  "release_blockers": [
+    "MC_PRIMARY_BIGDATA_CREDITS_EXHAUSTED",
+    "CURRENT_ASOF_MC_EVENT_FINAL_TERMINAL_NOT_FULLY_BOUND",
+    "NO_USER_NOTIFICATION_RECEIPT",
+    "NO_PERSISTENT_LIVE_FOLLOWUP_BAR_FEED",
+    "NO_DAILY_DIGEST_DELIVERY_ATTESTATION"
+  ],
+  "policy": "NO_WATCH_TO_PRIMARY_PROMOTION;NO_SYNTHETIC_BAR;NO_FAKE_AL;NO_DEVICE_RECEIPT_CLAIM"
+}
