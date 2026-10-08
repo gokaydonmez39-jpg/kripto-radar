@@ -14,7 +14,7 @@ import pathlib
 
 INPUT_SCHEMA = "XRAY_MASSIVE_MC_SHADOW_V1"
 OUTPUT_SCHEMA = "XRAY_MASSIVE_MC_PUBLIC_TELEMETRY_V1"
-ALLOWED_STATUS = {"BLOCKED_NO_RUNTIME_KEY", "SHADOW_PROBED_NON_ALPHA"}
+ALLOWED_STATUS = {"BLOCKED_NO_RUNTIME_KEY", "BLOCKED_NONDISPLAY_LICENSE_UNVERIFIED", "SHADOW_PROBED_NON_ALPHA"}
 
 
 def sanitize(obj: dict) -> dict:
@@ -43,6 +43,11 @@ def sanitize(obj: dict) -> dict:
         for v in records.values()
     ):
         raise ValueError("MISSING_KEY_STATE_INCONSISTENT")
+    if obj["status"] == "BLOCKED_NONDISPLAY_LICENSE_UNVERIFIED" and any(
+        not isinstance(v, dict) or v.get("reason") != "LICENSE_SCOPE_UNVERIFIED" or v.get("state") != "UNKNOWN"
+        for v in records.values()
+    ):
+        raise ValueError("LICENSE_SCOPE_STATE_INCONSISTENT")
     # Deliberately do not copy ticker, CIK, market cap, price, state counts,
     # classification outcomes, symbol lists, per-ticker errors, or raw data.
     return {
@@ -80,6 +85,13 @@ def selftest() -> None:
     blocked = dict(raw, status="BLOCKED_NO_RUNTIME_KEY",
                    records={"SECRET_TICKER": {"state": "UNKNOWN", "reason": "NO_RUNTIME_KEY"}})
     assert sanitize(blocked)["status"] == "BLOCKED_NO_RUNTIME_KEY"
+    no_license = dict(raw, status="BLOCKED_NONDISPLAY_LICENSE_UNVERIFIED",
+                      records={"SECRET_TICKER": {"state":"UNKNOWN","reason":"LICENSE_SCOPE_UNVERIFIED"}})
+    assert sanitize(no_license)["status"] == "BLOCKED_NONDISPLAY_LICENSE_UNVERIFIED"
+    forged = dict(no_license,records={"SECRET_TICKER":{"state":"SHADOW_OBSERVED_ABOVE_2B"}})
+    try:sanitize(forged)
+    except ValueError:pass
+    else:raise AssertionError("LICENSE_SHADOW_PROMOTION_ACCEPTED")
     for change in (
         {"schema": "WRONG"}, {"requested_count": 6}, {"requested_count": True},
         {"records": {}}, {"candidate_created": True}, {"r92_created": True},
