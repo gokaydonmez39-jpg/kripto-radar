@@ -69,12 +69,27 @@ jobs:
           ids=$(gh run list --workflow "$XRAY_WORKFLOW_FILE" --branch main --status completed --limit 80 --json databaseId --jq '.[].databaseId')
           found=0
           for id in $ids; do
-            if gh run download "$id" -n xray-massive-mc-checkpoint-encrypted-v1 -D "$RUNNER_TEMP/xray_mc_restore" >/dev/null 2>&1; then
-              file="$RUNNER_TEMP/xray_mc_restore/xray_mc_checkpoint_current.enc"
+            # Each completed run gets an isolated directory; no accidental
+            # overwrite or selection of a previous attempt's ciphertext.
+            candidate_dir="$RUNNER_TEMP/xray_mc_restore/$id"
+            if gh run download "$id" -n xray-massive-mc-checkpoint-encrypted-v1 -D "$candidate_dir" >/dev/null 2>&1; then
+              file="$candidate_dir/xray_mc_checkpoint_current.enc"
               [[ -s "$file" ]] || { echo "XRAY_RESUME_CHECKPOINT_MISSING_AFTER_DOWNLOAD" >&2; exit 1; }
-              cp "$file" "$RUNNER_TEMP/xray_mc_checkpoint_previous.enc"
-              found=1
-              break
+              # Authenticated previous-epoch data cannot supersede a matching
+              # older checkpoint. Broken/malformed ciphertext stops the job.
+              if python nasdaq-xray/massive_mc_resume_shadow.py --check-restore-candidate "$file"; then
+                cp "$file" "$RUNNER_TEMP/xray_mc_checkpoint_previous.enc"
+                found=1
+                break
+              else
+                code=$?
+                if [[ "$code" -eq 2 ]]; then
+                  echo "XRAY_RESUME_SKIP_AUTHENTICATED_STALE_EPOCH"
+                  continue
+                fi
+                echo "XRAY_RESUME_REJECT_UNAUTHENTICATED_CHECKPOINT" >&2
+                exit 1
+              fi
             fi
           done
           echo "XRAY_RESUME_RESTORE_CIPHERTEXT_FOUND=$found"
