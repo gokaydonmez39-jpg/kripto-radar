@@ -738,7 +738,7 @@ UNRESOLVED_REASON_ENUM = {
     "FEED_FETCH_FAIL",
     "CROSS_HOST_REDIRECT_REJECTED",
     "RSS_PARSED_NO_EXPLICIT_EVENT_DATE",
-    "IR_PAGE_HAS_DATE_BUT_CURRENT_PROBE_DOES_NOT_PARSE_HTML",
+    "IR_DOCUMENT_DATES_WITHOUT_EXPLICIT_EARNINGS_SCHEDULE",
     "SEC_TRANSPORT_403",
     "OTHER",
 }
@@ -774,7 +774,7 @@ def classify_unresolved_reason(
         and bool(a.get("future_dates_seen"))
         for a in document_attempts
     ):
-        return "IR_PAGE_HAS_DATE_BUT_CURRENT_PROBE_DOES_NOT_PARSE_HTML"
+        return "IR_DOCUMENT_DATES_WITHOUT_EXPLICIT_EARNINGS_SCHEDULE"
 
     if feed_attempts and any(a.get("result") == "PARSED" for a in feed_attempts):
         return "RSS_PARSED_NO_EXPLICIT_EVENT_DATE"
@@ -974,7 +974,18 @@ def selftest() -> None:
     assert classify_unresolved_reason([{"identity_validated": True, "feed_attempts": [{"result": "HTTPError:x"}]}]) == "FEED_FETCH_FAIL"
     assert classify_unresolved_reason([{"identity_validated": True, "feed_attempts": [{"result": "CROSS_HOST_REDIRECT_REJECTED"}]}]) == "CROSS_HOST_REDIRECT_REJECTED"
     assert classify_unresolved_reason([{"identity_validated": True, "feed_attempts": [{"result": "PARSED", "parsed_items": 3}]}]) == "RSS_PARSED_NO_EXPLICIT_EVENT_DATE"
-    assert classify_unresolved_reason([{"identity_validated": True, "feed_attempts": [], "document_attempts": [{"result": "NO_EXPLICIT_FUTURE_EVENT_DATE", "future_dates_seen": ["2026-10-20"]}]}]) == "IR_PAGE_HAS_DATE_BUT_CURRENT_PROBE_DOES_NOT_PARSE_HTML"
+    assert classify_unresolved_reason([{"identity_validated": True, "feed_attempts": [], "document_attempts": [{"result": "NO_EXPLICIT_FUTURE_EVENT_DATE", "future_dates_seen": ["2026-10-20"]}]}]) == "IR_DOCUMENT_DATES_WITHOUT_EXPLICIT_EARNINGS_SCHEDULE"
+    # Dividend dates and forward references in issuer documents are NOT
+    # explicit earnings/event schedules; UNKNOWN must remain UNKNOWN.
+    assert classify_unresolved_reason([{
+        "identity_validated": True,
+        "feed_attempts": [{"result": "PARSED", "parsed_items": 3}],
+        "document_attempts": [{
+            "result": "NO_EXPLICIT_FUTURE_EVENT_DATE",
+            "future_dates_seen": ["2026-10-09", "2026-10-29"],
+            "url": "https://investor.example.com/dividend",
+        }],
+    }]) == "IR_DOCUMENT_DATES_WITHOUT_EXPLICIT_EARNINGS_SCHEDULE"
     print("EVENT_OFFICIAL_PRIMARY_PROBE_SELFTEST=PASS")
 
 def main() -> None:
