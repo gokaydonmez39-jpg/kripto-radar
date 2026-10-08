@@ -4,7 +4,7 @@
   "asof_et": "2026-10-07",
   "authority": "C4_17_DETERMINISTIC_TECHNICAL_FAIL_CLOSED",
   "candidate_legal_guard_binding_error": null,
-  "candidate_legal_guard_blob_sha": "25bb16b4bb847f83191335961339fbb203d6eeeb",
+  "candidate_legal_guard_blob_sha": "5917ba237b780c6f59abbbc95e914beffe53fc44",
   "candidate_legal_guard_exact_binding": true,
   "candidate_legal_guard_path": "nasdaq-xray/canonical_candidate_legal_guard.json",
   "corporate_action_verification": {
@@ -206,7 +206,7 @@
       "lookback": 320,
       "rows": 320,
       "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-      "sha256": "203996a964a883f420b6493013ad6886f6a27c5b347c3e49ff4a8361f9c9f1ba"
+      "sha256": "7357cdbc82212dda8dec6ad93fd6eebd573b4a73a074490425817d08da97e527"
     },
     "MXL": {
       "first_date": "2025-07-01",
@@ -246,7 +246,7 @@
       "lookback": 320,
       "rows": 320,
       "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-      "sha256": "4131eba1e75d6bca7ae20102c095ae2c305c32a032354ca60b4bf7b475dce568"
+      "sha256": "bda0354f10a6236eaf0df64dc30831dd57e19f9a14259901ccc70917bd4e5176"
     },
     "TEM": {
       "first_date": "2025-07-01",
@@ -254,7 +254,7 @@
       "lookback": 320,
       "rows": 320,
       "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-      "sha256": "dbbf5a7ca98e44ab5b0ee662dcdfae081466eea1108ea9a2720a216e4db2dbd9"
+      "sha256": "1dc5cca9047492baacfbbf7872ad399bb157c8801ff00a3677d7976b9932f367"
     },
     "TRMD": {
       "first_date": "2025-07-01",
@@ -294,7 +294,7 @@
       "lookback": 320,
       "rows": 320,
       "schema": "XRAY_ALPHA_HISTORY_FINGERPRINT_V1",
-      "sha256": "3f7681efe8b747e040e4be60377ea70aee6aadbf688b28cfc0677663415ae729"
+      "sha256": "794ffe241a6eb70b029d0a73ed6e230fd44791bb300961ceff3f0b2ad5ae390c"
     }
   },
   "history_fingerprint_semantics": "RAW_OR_OFFICIAL_COMPOSITE_ASOF_TAIL320_V1",
@@ -1925,36 +1925,36 @@
       "family": "D",
       "family_geometry_pass": true,
       "frozen_geometry": {
-        "A": 43.43822734474601,
-        "P": 928.97998046875,
-        "S0": 835.9323496482383,
-        "T1": 1011.77001953125,
-        "anchor": 844.6199951171875,
+        "A": 43.4384593159244,
+        "P": 928.98,
+        "S0": 835.9323081368151,
+        "T1": 1011.77,
+        "anchor": 844.62,
         "anchor_available_date": "2026-08-13",
-        "anchor_available_idx": 716,
-        "chase_limit": 950.699094141123,
-        "entry_high": 939.8395373049365,
-        "entry_low": 928.97998046875,
-        "entry_model": 939.8395373049365,
+        "anchor_available_idx": 3880,
+        "chase_limit": 950.6992296579622,
+        "entry_high": 939.8396148289811,
+        "entry_low": 928.98,
+        "entry_model": 939.8396148289811,
         "family": "D",
-        "setup_id": "b054c4bdff288b995e3afd45",
+        "setup_id": "8439f7b6bb59fae5a317a86b",
         "source_geometry": {
-          "A": 43.43822734474601,
-          "P": 928.97998046875,
-          "anchor": 844.6199951171875,
+          "A": 43.4384593159244,
+          "P": 928.98,
+          "anchor": 844.62,
           "close": 1088.0,
-          "d": 1.9420678629917918,
-          "dd120": -0.3910478556320163,
+          "d": 1.9420578291337767,
+          "dd120": -0.3910478764092524,
           "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
           "dd252": -0.13306772908366538,
           "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
           "dk3_pre_r1": true,
-          "ema50": 991.1674225054808,
+          "ema50": 991.1673432075627,
           "hl_date": "2026-08-11",
           "pool": true,
-          "rs20": 0.0007359059781355537,
-          "rs60": 0.05112254805825511,
-          "rvol20": 1.3635251405723983,
+          "rs20": 0.0007359249956426783,
+          "rs60": 0.051122542837698015,
+          "rvol20": 1.3828416424126242,
           "trigger_age_sessions": 0,
           "trigger_date": "2026-10-07",
           "weekly_pass_at_trigger": true
@@ -1965,10 +1965,10 @@
         "target_source": "STRUCTURAL_ACTIVE_R1_LOWER_BOUND",
         "target_zone": {
           "active": true,
-          "active_from_idx": 732,
+          "active_from_idx": 3896,
           "breakout_unconfirmed_role_change": "2026-09-09",
           "kind": "STRUCTURAL_CLUSTER",
-          "lower": 1011.77001953125,
+          "lower": 1011.77,
           "occurrence_dates": [
             "2026-07-23",
             "2026-07-24",
@@ -1976,40 +1976,40 @@
           ],
           "points": [
             {
-              "confirmed_idx": 703,
+              "confirmed_idx": 3867,
               "date": "2026-07-23",
               "kind": "DAILY_SWING_HIGH",
-              "occurrence_idx": 701,
-              "price": 1011.77001953125
+              "occurrence_idx": 3865,
+              "price": 1011.77
             },
             {
-              "confirmed_idx": 702,
+              "confirmed_idx": 3866,
               "date": "2026-07-24",
               "kind": "BASE_HIGH",
-              "occurrence_idx": 702,
-              "price": 1011.77001953125,
+              "occurrence_idx": 3866,
+              "price": 1011.77,
               "window": 5
             },
             {
-              "confirmed_idx": 732,
+              "confirmed_idx": 3896,
               "date": "2026-09-04",
               "kind": "BASE_HIGH",
-              "occurrence_idx": 732,
-              "price": 1017.77001953125,
+              "occurrence_idx": 3896,
+              "price": 1017.77,
               "window": 5
             }
           ],
-          "upper": 1017.77001953125
+          "upper": 1017.77
         },
         "trigger_date": "2026-10-07"
       },
       "geometry": {
-        "move3_atr": 0.3018075587550005,
-        "pivot_extension": 0.17117701444008593,
+        "move3_atr": 0.30180628425727374,
+        "pivot_extension": 0.1711769898167883,
         "reset_between_tminus3_and_t": false,
-        "risk_atr": 2.392067862991791,
-        "risk_percent": 0.11055843421384481,
-        "x": 1.9420678629917918
+        "risk_atr": 2.392057829133777,
+        "risk_percent": 0.11055855174935737,
+        "x": 1.9420578291337767
       },
       "historical_discovery_age_gt3": false,
       "invalidation": {
@@ -2017,16 +2017,16 @@
         "first_breach_date": null
       },
       "levels": {
-        "A": 43.43822734474601,
-        "P": 928.97998046875,
-        "S0": 835.9323496482383,
-        "T1": 1011.77001953125,
-        "anchor": 844.6199951171875,
-        "chase_limit": 950.699094141123,
+        "A": 43.4384593159244,
+        "P": 928.98,
+        "S0": 835.9323081368151,
+        "T1": 1011.77,
+        "anchor": 844.62,
+        "chase_limit": 950.6992296579622,
         "close": 1088.0,
-        "entry_high": 939.8395373049365,
-        "entry_low": 928.97998046875,
-        "entry_model": 939.8395373049365
+        "entry_high": 939.8396148289811,
+        "entry_low": 928.98,
+        "entry_model": 939.8396148289811
       },
       "lifecycle": "CHASE_NO_VALID_FILL",
       "lifecycle_age_sessions": 0,
@@ -2041,24 +2041,24 @@
       "result": "FAIL_RISK_GEOMETRY",
       "risk_pass": false,
       "rr": {
-        "basic": 0.561685070280178,
+        "basic": 0.5616829709957704,
         "basic_pass": false,
         "basic_threshold": 2.0,
-        "severe": 0.39968834569454287,
+        "severe": 0.3996859021338886,
         "severe_pass": false,
         "severe_threshold": 1.5
       },
-      "setup_id": "b054c4bdff288b995e3afd45",
+      "setup_id": "8439f7b6bb59fae5a317a86b",
       "state_cap": "WATCH",
       "target": {
         "source": "STRUCTURAL_ACTIVE_R1_LOWER_BOUND",
         "synthetic": false,
         "zone": {
           "active": true,
-          "active_from_idx": 732,
+          "active_from_idx": 3896,
           "breakout_unconfirmed_role_change": "2026-09-09",
           "kind": "STRUCTURAL_CLUSTER",
-          "lower": 1011.77001953125,
+          "lower": 1011.77,
           "occurrence_dates": [
             "2026-07-23",
             "2026-07-24",
@@ -2066,30 +2066,30 @@
           ],
           "points": [
             {
-              "confirmed_idx": 703,
+              "confirmed_idx": 3867,
               "date": "2026-07-23",
               "kind": "DAILY_SWING_HIGH",
-              "occurrence_idx": 701,
-              "price": 1011.77001953125
+              "occurrence_idx": 3865,
+              "price": 1011.77
             },
             {
-              "confirmed_idx": 702,
+              "confirmed_idx": 3866,
               "date": "2026-07-24",
               "kind": "BASE_HIGH",
-              "occurrence_idx": 702,
-              "price": 1011.77001953125,
+              "occurrence_idx": 3866,
+              "price": 1011.77,
               "window": 5
             },
             {
-              "confirmed_idx": 732,
+              "confirmed_idx": 3896,
               "date": "2026-09-04",
               "kind": "BASE_HIGH",
-              "occurrence_idx": 732,
-              "price": 1017.77001953125,
+              "occurrence_idx": 3896,
+              "price": 1017.77,
               "window": 5
             }
           ],
-          "upper": 1017.77001953125
+          "upper": 1017.77
         }
       },
       "target_overlap": false,
@@ -2952,36 +2952,36 @@
       "family": "D",
       "family_geometry_pass": true,
       "frozen_geometry": {
-        "A": 4.460914344489223,
-        "P": 68.11000061035156,
-        "S0": 63.57781835180528,
-        "T1": 67.38999938964844,
-        "anchor": 64.47000122070312,
+        "A": 4.460277640293154,
+        "P": 68.105,
+        "S0": 63.577944471941365,
+        "T1": 67.39,
+        "anchor": 64.47,
         "anchor_available_date": "2026-09-01",
-        "anchor_available_idx": 729,
-        "chase_limit": 70.34045778259618,
-        "entry_high": 69.22522919647386,
-        "entry_low": 68.11000061035156,
-        "entry_model": 69.22522919647386,
+        "anchor_available_idx": 5263,
+        "chase_limit": 70.33513882014658,
+        "entry_high": 69.2200694100733,
+        "entry_low": 68.105,
+        "entry_model": 69.2200694100733,
         "family": "D",
-        "setup_id": "6c394bc7d22fe38d51268d14",
+        "setup_id": "580b4e9af36bd3a9d2258c0a",
         "source_geometry": {
-          "A": 4.460914344489223,
-          "P": 68.11000061035156,
-          "anchor": 64.47000122070312,
-          "close": 85.02999877929688,
-          "d": 0.815976077672305,
-          "dd120": -0.3217453479624065,
+          "A": 4.460277640293154,
+          "P": 68.105,
+          "anchor": 64.47,
+          "close": 85.03,
+          "d": 0.8149716885698381,
+          "dd120": -0.3217453847998082,
           "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
-          "dd252": -0.08372849156187334,
+          "dd252": -0.08372746091321215,
           "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
           "dk3_pre_r1": true,
-          "ema50": 77.35187780991909,
+          "ema50": 77.35187462210408,
           "hl_date": "2026-08-28",
           "pool": true,
-          "rs20": 0.13860459710935524,
-          "rs60": 0.36858396018797723,
-          "rvol20": 1.730279646157961,
+          "rs20": 0.13860461345532982,
+          "rs60": 0.36858399725252866,
+          "rvol20": 1.730239117219037,
           "trigger_age_sessions": 3,
           "trigger_date": "2026-10-02",
           "weekly_pass_at_trigger": true
@@ -2992,11 +2992,24 @@
         "target_source": "STRUCTURAL_ACTIVE_R1_LOWER_BOUND",
         "target_zone": {
           "active": true,
-          "active_from_idx": 728,
+          "active_from_idx": 5262,
           "breakout_unconfirmed_role_change": "2026-09-02",
           "kind": "STRUCTURAL_CLUSTER",
-          "lower": 67.38999938964844,
+          "lower": 67.39,
           "occurrence_dates": [
+            "2016-05-27",
+            "2016-06-01",
+            "2016-06-02",
+            "2016-06-03",
+            "2016-06-06",
+            "2016-07-18",
+            "2016-07-19",
+            "2016-07-29",
+            "2016-08-01",
+            "2016-08-02",
+            "2016-08-10",
+            "2016-08-11",
+            "2016-08-12",
             "2025-02-13",
             "2025-02-18",
             "2025-02-19",
@@ -3016,143 +3029,247 @@
           ],
           "points": [
             {
-              "confirmed_idx": 398,
+              "confirmed_idx": 4932,
               "date": "2025-05-07",
               "kind": "BASE_HIGH",
-              "occurrence_idx": 398,
-              "price": 67.38999938964844,
+              "occurrence_idx": 4932,
+              "price": 67.39,
               "window": 5
             },
             {
-              "confirmed_idx": 343,
+              "confirmed_idx": 2684,
+              "date": "2016-05-27",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 2684,
+              "price": 67.46,
+              "window": 5
+            },
+            {
+              "confirmed_idx": 4877,
               "date": "2025-02-18",
               "kind": "BASE_HIGH",
-              "occurrence_idx": 343,
-              "price": 67.58999633789062,
+              "occurrence_idx": 4877,
+              "price": 67.59,
               "window": 5
             },
             {
-              "confirmed_idx": 577,
+              "confirmed_idx": 2686,
+              "date": "2016-06-01",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 2686,
+              "price": 67.64,
+              "window": 5
+            },
+            {
+              "confirmed_idx": 2687,
+              "date": "2016-06-02",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 2687,
+              "price": 67.64,
+              "window": 5
+            },
+            {
+              "confirmed_idx": 2735,
+              "date": "2016-08-10",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 2735,
+              "price": 67.64,
+              "window": 5
+            },
+            {
+              "confirmed_idx": 2736,
+              "date": "2016-08-11",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 2736,
+              "price": 67.64,
+              "window": 5
+            },
+            {
+              "confirmed_idx": 5111,
               "date": "2026-01-09",
               "kind": "WEEKLY_SWING_HIGH",
-              "occurrence_idx": 118,
-              "price": 67.66999816894531
+              "occurrence_idx": 1058,
+              "price": 67.67
             },
             {
-              "confirmed_idx": 341,
+              "confirmed_idx": 4875,
               "date": "2025-02-13",
               "kind": "BASE_HIGH",
-              "occurrence_idx": 341,
-              "price": 67.83999633789062,
+              "occurrence_idx": 4875,
+              "price": 67.84,
               "window": 5
             },
             {
-              "confirmed_idx": 344,
+              "confirmed_idx": 2737,
+              "date": "2016-08-12",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 2737,
+              "price": 67.85,
+              "window": 5
+            },
+            {
+              "confirmed_idx": 4878,
               "date": "2025-02-19",
               "kind": "BASE_HIGH",
-              "occurrence_idx": 344,
-              "price": 67.9800033569336,
+              "occurrence_idx": 4878,
+              "price": 67.98,
               "window": 5
             },
             {
-              "confirmed_idx": 345,
-              "date": "2025-02-20",
-              "kind": "BASE_HIGH",
-              "occurrence_idx": 345,
-              "price": 68.11000061035156,
-              "window": 5
-            },
-            {
-              "confirmed_idx": 346,
-              "date": "2025-02-21",
-              "kind": "BASE_HIGH",
-              "occurrence_idx": 346,
-              "price": 68.11000061035156,
-              "window": 10
-            },
-            {
-              "confirmed_idx": 728,
+              "confirmed_idx": 5262,
               "date": "2026-08-27",
               "kind": "DAILY_SWING_HIGH",
-              "occurrence_idx": 726,
-              "price": 68.11000061035156
+              "occurrence_idx": 5260,
+              "price": 68.105
             },
             {
-              "confirmed_idx": 347,
+              "confirmed_idx": 4879,
+              "date": "2025-02-20",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 4879,
+              "price": 68.11,
+              "window": 5
+            },
+            {
+              "confirmed_idx": 4880,
+              "date": "2025-02-21",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 4880,
+              "price": 68.11,
+              "window": 10
+            },
+            {
+              "confirmed_idx": 4881,
               "date": "2025-02-24",
               "kind": "BASE_HIGH",
-              "occurrence_idx": 347,
-              "price": 68.1500015258789,
+              "occurrence_idx": 4881,
+              "price": 68.15,
               "window": 10
             },
             {
-              "confirmed_idx": 348,
+              "confirmed_idx": 4882,
               "date": "2025-02-25",
               "kind": "BASE_HIGH",
-              "occurrence_idx": 348,
-              "price": 68.1500015258789,
+              "occurrence_idx": 4882,
+              "price": 68.15,
               "window": 10
             },
             {
-              "confirmed_idx": 349,
+              "confirmed_idx": 4883,
               "date": "2025-02-26",
               "kind": "BASE_HIGH",
-              "occurrence_idx": 349,
-              "price": 68.1500015258789,
+              "occurrence_idx": 4883,
+              "price": 68.15,
               "window": 10
             },
             {
-              "confirmed_idx": 350,
+              "confirmed_idx": 4884,
               "date": "2025-02-27",
               "kind": "BASE_HIGH",
-              "occurrence_idx": 350,
-              "price": 68.1500015258789,
+              "occurrence_idx": 4884,
+              "price": 68.15,
               "window": 10
             },
             {
-              "confirmed_idx": 351,
+              "confirmed_idx": 4885,
               "date": "2025-02-28",
               "kind": "BASE_HIGH",
-              "occurrence_idx": 351,
-              "price": 68.1500015258789,
+              "occurrence_idx": 4885,
+              "price": 68.15,
               "window": 15
             },
             {
-              "confirmed_idx": 352,
+              "confirmed_idx": 4886,
               "date": "2025-03-03",
               "kind": "BASE_HIGH",
-              "occurrence_idx": 352,
-              "price": 68.1500015258789,
+              "occurrence_idx": 4886,
+              "price": 68.15,
               "window": 15
             },
             {
-              "confirmed_idx": 353,
+              "confirmed_idx": 4887,
               "date": "2025-03-04",
               "kind": "BASE_HIGH",
-              "occurrence_idx": 353,
-              "price": 68.1500015258789,
+              "occurrence_idx": 4887,
+              "price": 68.15,
               "window": 15
             },
             {
-              "confirmed_idx": 355,
+              "confirmed_idx": 4889,
               "date": "2025-03-06",
               "kind": "BASE_HIGH",
-              "occurrence_idx": 355,
-              "price": 68.1500015258789,
+              "occurrence_idx": 4889,
+              "price": 68.15,
               "window": 15
+            },
+            {
+              "confirmed_idx": 2727,
+              "date": "2016-07-29",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 2727,
+              "price": 68.19,
+              "window": 5
+            },
+            {
+              "confirmed_idx": 2728,
+              "date": "2016-08-01",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 2728,
+              "price": 68.19,
+              "window": 5
+            },
+            {
+              "confirmed_idx": 2729,
+              "date": "2016-08-02",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 2729,
+              "price": 68.19,
+              "window": 5
+            },
+            {
+              "confirmed_idx": 2688,
+              "date": "2016-06-03",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 2688,
+              "price": 68.5,
+              "window": 5
+            },
+            {
+              "confirmed_idx": 2689,
+              "date": "2016-06-06",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 2689,
+              "price": 68.5,
+              "window": 10
+            },
+            {
+              "confirmed_idx": 2718,
+              "date": "2016-07-18",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 2718,
+              "price": 68.95,
+              "window": 5
+            },
+            {
+              "confirmed_idx": 2719,
+              "date": "2016-07-19",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 2719,
+              "price": 68.95,
+              "window": 5
             }
           ],
-          "upper": 68.1500015258789
+          "upper": 68.95
         },
         "trigger_date": "2026-10-02"
       },
       "geometry": {
-        "move3_atr": -0.35867052145882317,
-        "pivot_extension": 0.22493025337744355,
+        "move3_atr": -0.3587220637446313,
+        "pivot_extension": 0.22502018941340585,
         "reset_between_tminus3_and_t": false,
-        "risk_atr": 1.2659760776723044,
-        "risk_percent": 0.08158024047331357,
-        "x": 0.815976077672305
+        "risk_atr": 1.264971688569839,
+        "risk_percent": 0.08150995782316935,
+        "x": 0.8149716885698381
       },
       "historical_discovery_age_gt3": false,
       "invalidation": {
@@ -3160,16 +3277,16 @@
         "first_breach_date": null
       },
       "levels": {
-        "A": 4.460914344489223,
-        "P": 68.11000061035156,
-        "S0": 63.57781835180528,
-        "T1": 67.38999938964844,
-        "anchor": 64.47000122070312,
-        "chase_limit": 70.34045778259618,
-        "close": 83.43000030517578,
-        "entry_high": 69.22522919647386,
-        "entry_low": 68.11000061035156,
-        "entry_model": 69.22522919647386
+        "A": 4.460277640293154,
+        "P": 68.105,
+        "S0": 63.577944471941365,
+        "T1": 67.39,
+        "anchor": 64.47,
+        "chase_limit": 70.33513882014658,
+        "close": 83.43,
+        "entry_high": 69.2200694100733,
+        "entry_low": 68.105,
+        "entry_model": 69.2200694100733
       },
       "lifecycle": "CHASE_NO_VALID_FILL",
       "lifecycle_age_sessions": 3,
@@ -3184,25 +3301,38 @@
       "result": "FAIL_RISK_GEOMETRY",
       "risk_pass": false,
       "rr": {
-        "basic": -0.41706148656685266,
+        "basic": -0.4165977588493081,
         "basic_pass": false,
         "basic_threshold": 2.0,
-        "severe": -0.5160897555457008,
+        "severe": -0.5157612034975503,
         "severe_pass": false,
         "severe_threshold": 1.5
       },
-      "setup_id": "6c394bc7d22fe38d51268d14",
+      "setup_id": "580b4e9af36bd3a9d2258c0a",
       "state_cap": "WATCH",
       "target": {
         "source": "STRUCTURAL_ACTIVE_R1_LOWER_BOUND",
         "synthetic": false,
         "zone": {
           "active": true,
-          "active_from_idx": 728,
+          "active_from_idx": 5262,
           "breakout_unconfirmed_role_change": "2026-09-02",
           "kind": "STRUCTURAL_CLUSTER",
-          "lower": 67.38999938964844,
+          "lower": 67.39,
           "occurrence_dates": [
+            "2016-05-27",
+            "2016-06-01",
+            "2016-06-02",
+            "2016-06-03",
+            "2016-06-06",
+            "2016-07-18",
+            "2016-07-19",
+            "2016-07-29",
+            "2016-08-01",
+            "2016-08-02",
+            "2016-08-10",
+            "2016-08-11",
+            "2016-08-12",
             "2025-02-13",
             "2025-02-18",
             "2025-02-19",
@@ -3222,133 +3352,237 @@
           ],
           "points": [
             {
-              "confirmed_idx": 398,
+              "confirmed_idx": 4932,
               "date": "2025-05-07",
               "kind": "BASE_HIGH",
-              "occurrence_idx": 398,
-              "price": 67.38999938964844,
+              "occurrence_idx": 4932,
+              "price": 67.39,
               "window": 5
             },
             {
-              "confirmed_idx": 343,
+              "confirmed_idx": 2684,
+              "date": "2016-05-27",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 2684,
+              "price": 67.46,
+              "window": 5
+            },
+            {
+              "confirmed_idx": 4877,
               "date": "2025-02-18",
               "kind": "BASE_HIGH",
-              "occurrence_idx": 343,
-              "price": 67.58999633789062,
+              "occurrence_idx": 4877,
+              "price": 67.59,
               "window": 5
             },
             {
-              "confirmed_idx": 577,
+              "confirmed_idx": 2686,
+              "date": "2016-06-01",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 2686,
+              "price": 67.64,
+              "window": 5
+            },
+            {
+              "confirmed_idx": 2687,
+              "date": "2016-06-02",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 2687,
+              "price": 67.64,
+              "window": 5
+            },
+            {
+              "confirmed_idx": 2735,
+              "date": "2016-08-10",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 2735,
+              "price": 67.64,
+              "window": 5
+            },
+            {
+              "confirmed_idx": 2736,
+              "date": "2016-08-11",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 2736,
+              "price": 67.64,
+              "window": 5
+            },
+            {
+              "confirmed_idx": 5111,
               "date": "2026-01-09",
               "kind": "WEEKLY_SWING_HIGH",
-              "occurrence_idx": 118,
-              "price": 67.66999816894531
+              "occurrence_idx": 1058,
+              "price": 67.67
             },
             {
-              "confirmed_idx": 341,
+              "confirmed_idx": 4875,
               "date": "2025-02-13",
               "kind": "BASE_HIGH",
-              "occurrence_idx": 341,
-              "price": 67.83999633789062,
+              "occurrence_idx": 4875,
+              "price": 67.84,
               "window": 5
             },
             {
-              "confirmed_idx": 344,
+              "confirmed_idx": 2737,
+              "date": "2016-08-12",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 2737,
+              "price": 67.85,
+              "window": 5
+            },
+            {
+              "confirmed_idx": 4878,
               "date": "2025-02-19",
               "kind": "BASE_HIGH",
-              "occurrence_idx": 344,
-              "price": 67.9800033569336,
+              "occurrence_idx": 4878,
+              "price": 67.98,
               "window": 5
             },
             {
-              "confirmed_idx": 345,
-              "date": "2025-02-20",
-              "kind": "BASE_HIGH",
-              "occurrence_idx": 345,
-              "price": 68.11000061035156,
-              "window": 5
-            },
-            {
-              "confirmed_idx": 346,
-              "date": "2025-02-21",
-              "kind": "BASE_HIGH",
-              "occurrence_idx": 346,
-              "price": 68.11000061035156,
-              "window": 10
-            },
-            {
-              "confirmed_idx": 728,
+              "confirmed_idx": 5262,
               "date": "2026-08-27",
               "kind": "DAILY_SWING_HIGH",
-              "occurrence_idx": 726,
-              "price": 68.11000061035156
+              "occurrence_idx": 5260,
+              "price": 68.105
             },
             {
-              "confirmed_idx": 347,
+              "confirmed_idx": 4879,
+              "date": "2025-02-20",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 4879,
+              "price": 68.11,
+              "window": 5
+            },
+            {
+              "confirmed_idx": 4880,
+              "date": "2025-02-21",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 4880,
+              "price": 68.11,
+              "window": 10
+            },
+            {
+              "confirmed_idx": 4881,
               "date": "2025-02-24",
               "kind": "BASE_HIGH",
-              "occurrence_idx": 347,
-              "price": 68.1500015258789,
+              "occurrence_idx": 4881,
+              "price": 68.15,
               "window": 10
             },
             {
-              "confirmed_idx": 348,
+              "confirmed_idx": 4882,
               "date": "2025-02-25",
               "kind": "BASE_HIGH",
-              "occurrence_idx": 348,
-              "price": 68.1500015258789,
+              "occurrence_idx": 4882,
+              "price": 68.15,
               "window": 10
             },
             {
-              "confirmed_idx": 349,
+              "confirmed_idx": 4883,
               "date": "2025-02-26",
               "kind": "BASE_HIGH",
-              "occurrence_idx": 349,
-              "price": 68.1500015258789,
+              "occurrence_idx": 4883,
+              "price": 68.15,
               "window": 10
             },
             {
-              "confirmed_idx": 350,
+              "confirmed_idx": 4884,
               "date": "2025-02-27",
               "kind": "BASE_HIGH",
-              "occurrence_idx": 350,
-              "price": 68.1500015258789,
+              "occurrence_idx": 4884,
+              "price": 68.15,
               "window": 10
             },
             {
-              "confirmed_idx": 351,
+              "confirmed_idx": 4885,
               "date": "2025-02-28",
               "kind": "BASE_HIGH",
-              "occurrence_idx": 351,
-              "price": 68.1500015258789,
+              "occurrence_idx": 4885,
+              "price": 68.15,
               "window": 15
             },
             {
-              "confirmed_idx": 352,
+              "confirmed_idx": 4886,
               "date": "2025-03-03",
               "kind": "BASE_HIGH",
-              "occurrence_idx": 352,
-              "price": 68.1500015258789,
+              "occurrence_idx": 4886,
+              "price": 68.15,
               "window": 15
             },
             {
-              "confirmed_idx": 353,
+              "confirmed_idx": 4887,
               "date": "2025-03-04",
               "kind": "BASE_HIGH",
-              "occurrence_idx": 353,
-              "price": 68.1500015258789,
+              "occurrence_idx": 4887,
+              "price": 68.15,
               "window": 15
             },
             {
-              "confirmed_idx": 355,
+              "confirmed_idx": 4889,
               "date": "2025-03-06",
               "kind": "BASE_HIGH",
-              "occurrence_idx": 355,
-              "price": 68.1500015258789,
+              "occurrence_idx": 4889,
+              "price": 68.15,
               "window": 15
+            },
+            {
+              "confirmed_idx": 2727,
+              "date": "2016-07-29",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 2727,
+              "price": 68.19,
+              "window": 5
+            },
+            {
+              "confirmed_idx": 2728,
+              "date": "2016-08-01",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 2728,
+              "price": 68.19,
+              "window": 5
+            },
+            {
+              "confirmed_idx": 2729,
+              "date": "2016-08-02",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 2729,
+              "price": 68.19,
+              "window": 5
+            },
+            {
+              "confirmed_idx": 2688,
+              "date": "2016-06-03",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 2688,
+              "price": 68.5,
+              "window": 5
+            },
+            {
+              "confirmed_idx": 2689,
+              "date": "2016-06-06",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 2689,
+              "price": 68.5,
+              "window": 10
+            },
+            {
+              "confirmed_idx": 2718,
+              "date": "2016-07-18",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 2718,
+              "price": 68.95,
+              "window": 5
+            },
+            {
+              "confirmed_idx": 2719,
+              "date": "2016-07-19",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 2719,
+              "price": 68.95,
+              "window": 5
             }
           ],
-          "upper": 68.1500015258789
+          "upper": 68.95
         }
       },
       "target_overlap": true,
@@ -3381,36 +3615,36 @@
       "family": "D",
       "family_geometry_pass": true,
       "frozen_geometry": {
-        "A": 5.206961709507112,
-        "P": 57.02999877929688,
-        "S0": 48.308606132219666,
-        "T1": 64.80999755859375,
-        "anchor": 49.34999847412109,
+        "A": 5.2069367687012065,
+        "P": 57.03,
+        "S0": 48.30861264625976,
+        "T1": 64.81,
+        "anchor": 49.35,
         "anchor_available_date": "2026-08-20",
         "anchor_available_idx": 546,
-        "chase_limit": 59.63347963405044,
-        "entry_high": 58.33173920667366,
-        "entry_low": 57.02999877929688,
-        "entry_model": 58.33173920667366,
+        "chase_limit": 59.63346838435061,
+        "entry_high": 58.331734192175304,
+        "entry_low": 57.03,
+        "entry_model": 58.331734192175304,
         "family": "D",
-        "setup_id": "ab764b46e430dc0243878524",
+        "setup_id": "03ad9ac915ae67915a82e9f0",
         "source_geometry": {
-          "A": 5.206961709507112,
-          "P": 57.02999877929688,
-          "anchor": 49.34999847412109,
-          "close": 71.9800033569336,
-          "d": 1.4749484888957978,
-          "dd120": -0.3254870086641932,
+          "A": 5.2069367687012065,
+          "P": 57.03,
+          "anchor": 49.35,
+          "close": 71.98,
+          "d": 1.474955495170275,
+          "dd120": -0.3254870129870131,
           "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
-          "dd252": -0.31000763451397095,
+          "dd252": -0.3100076687116563,
           "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
           "dk3_pre_r1": true,
-          "ema50": 67.54305964096042,
+          "ema50": 67.54305929670878,
           "hl_date": "2026-08-18",
           "pool": true,
-          "rs20": 0.05874485586379308,
-          "rs60": 0.20578299755252094,
-          "rvol20": 2.6340838978468977,
+          "rs20": 0.05874482156422478,
+          "rs60": 0.20578294789760254,
+          "rvol20": 2.6321266666703744,
           "trigger_age_sessions": 1,
           "trigger_date": "2026-10-06",
           "weekly_pass_at_trigger": true
@@ -3424,7 +3658,7 @@
           "active_from_idx": 562,
           "breakout_unconfirmed_role_change": "2026-09-15",
           "kind": "STRUCTURAL_CLUSTER",
-          "lower": 64.80999755859375,
+          "lower": 64.81,
           "occurrence_dates": [
             "2025-12-30",
             "2025-12-31",
@@ -3438,7 +3672,7 @@
               "date": "2025-12-31",
               "kind": "BASE_HIGH",
               "occurrence_idx": 387,
-              "price": 64.80999755859375,
+              "price": 64.81,
               "window": 5
             },
             {
@@ -3446,7 +3680,7 @@
               "date": "2026-09-14",
               "kind": "BASE_HIGH",
               "occurrence_idx": 562,
-              "price": 65.79000091552734,
+              "price": 65.79,
               "window": 5
             },
             {
@@ -3454,7 +3688,7 @@
               "date": "2026-09-10",
               "kind": "BASE_HIGH",
               "occurrence_idx": 560,
-              "price": 66.30000305175781,
+              "price": 66.3,
               "window": 5
             },
             {
@@ -3462,7 +3696,7 @@
               "date": "2026-09-11",
               "kind": "BASE_HIGH",
               "occurrence_idx": 561,
-              "price": 66.30000305175781,
+              "price": 66.3,
               "window": 5
             },
             {
@@ -3470,21 +3704,21 @@
               "date": "2025-12-30",
               "kind": "BASE_HIGH",
               "occurrence_idx": 386,
-              "price": 66.31999969482422,
+              "price": 66.32,
               "window": 5
             }
           ],
-          "upper": 66.31999969482422
+          "upper": 66.32
         },
         "trigger_date": "2026-10-06"
       },
       "geometry": {
-        "move3_atr": -1.206077388245541,
-        "pivot_extension": 0.23356128318311753,
+        "move3_atr": -1.2060833996965272,
+        "pivot_extension": 0.2335612835349814,
         "reset_between_tminus3_and_t": false,
-        "risk_atr": 1.9249484888957975,
-        "risk_percent": 0.1718298341652611,
-        "x": 1.4749484888957978
+        "risk_atr": 1.9249554951702752,
+        "risk_percent": 0.17182965129913896,
+        "x": 1.474955495170275
       },
       "historical_discovery_age_gt3": false,
       "invalidation": {
@@ -3492,16 +3726,16 @@
         "first_breach_date": null
       },
       "levels": {
-        "A": 5.206961709507112,
-        "P": 57.02999877929688,
-        "S0": 48.308606132219666,
-        "T1": 64.80999755859375,
-        "anchor": 49.34999847412109,
-        "chase_limit": 59.63347963405044,
-        "close": 70.3499984741211,
-        "entry_high": 58.33173920667366,
-        "entry_low": 57.02999877929688,
-        "entry_model": 58.33173920667366
+        "A": 5.2069367687012065,
+        "P": 57.03,
+        "S0": 48.30861264625976,
+        "T1": 64.81,
+        "anchor": 49.35,
+        "chase_limit": 59.63346838435061,
+        "close": 70.35,
+        "entry_high": 58.331734192175304,
+        "entry_low": 57.03,
+        "entry_model": 58.331734192175304
       },
       "lifecycle": "CHASE_NO_VALID_FILL",
       "lifecycle_age_sessions": 1,
@@ -3516,14 +3750,14 @@
       "result": "FAIL_RISK_GEOMETRY",
       "risk_pass": false,
       "rr": {
-        "basic": 0.49137814821971165,
+        "basic": 0.49138000641434587,
         "basic_pass": false,
         "basic_threshold": 2.0,
-        "severe": 0.30687383956545156,
+        "severe": 0.3068760009530473,
         "severe_pass": false,
         "severe_threshold": 1.5
       },
-      "setup_id": "ab764b46e430dc0243878524",
+      "setup_id": "03ad9ac915ae67915a82e9f0",
       "state_cap": "WATCH",
       "target": {
         "source": "STRUCTURAL_ACTIVE_R1_LOWER_BOUND",
@@ -3533,7 +3767,7 @@
           "active_from_idx": 562,
           "breakout_unconfirmed_role_change": "2026-09-15",
           "kind": "STRUCTURAL_CLUSTER",
-          "lower": 64.80999755859375,
+          "lower": 64.81,
           "occurrence_dates": [
             "2025-12-30",
             "2025-12-31",
@@ -3547,7 +3781,7 @@
               "date": "2025-12-31",
               "kind": "BASE_HIGH",
               "occurrence_idx": 387,
-              "price": 64.80999755859375,
+              "price": 64.81,
               "window": 5
             },
             {
@@ -3555,7 +3789,7 @@
               "date": "2026-09-14",
               "kind": "BASE_HIGH",
               "occurrence_idx": 562,
-              "price": 65.79000091552734,
+              "price": 65.79,
               "window": 5
             },
             {
@@ -3563,7 +3797,7 @@
               "date": "2026-09-10",
               "kind": "BASE_HIGH",
               "occurrence_idx": 560,
-              "price": 66.30000305175781,
+              "price": 66.3,
               "window": 5
             },
             {
@@ -3571,7 +3805,7 @@
               "date": "2026-09-11",
               "kind": "BASE_HIGH",
               "occurrence_idx": 561,
-              "price": 66.30000305175781,
+              "price": 66.3,
               "window": 5
             },
             {
@@ -3579,11 +3813,11 @@
               "date": "2025-12-30",
               "kind": "BASE_HIGH",
               "occurrence_idx": 386,
-              "price": 66.31999969482422,
+              "price": 66.32,
               "window": 5
             }
           ],
-          "upper": 66.31999969482422
+          "upper": 66.32
         }
       },
       "target_overlap": false,
@@ -4521,36 +4755,36 @@
       "family": "D",
       "family_geometry_pass": true,
       "frozen_geometry": {
-        "A": 1.288375071367094,
-        "P": 21.56999969482422,
-        "S0": 19.522325672372087,
-        "T1": 21.56999969482422,
-        "anchor": 19.780000686645508,
+        "A": 1.2883733951729606,
+        "P": 21.57,
+        "S0": 19.522325320965408,
+        "T1": 21.57,
+        "anchor": 19.78,
         "anchor_available_date": "2026-09-30",
-        "anchor_available_idx": 749,
-        "chase_limit": 22.214187230507765,
-        "entry_high": 21.892093462665994,
-        "entry_low": 21.56999969482422,
-        "entry_model": 21.892093462665994,
+        "anchor_available_idx": 1708,
+        "chase_limit": 22.21418669758648,
+        "entry_high": 21.89209334879324,
+        "entry_low": 21.57,
+        "entry_model": 21.89209334879324,
         "family": "D",
-        "setup_id": "e448ec1b89b88f5f200a9ad5",
+        "setup_id": "8339992708c2d7770bd2150b",
         "source_geometry": {
-          "A": 1.288375071367094,
-          "P": 21.56999969482422,
-          "anchor": 19.780000686645508,
-          "close": 29.729999542236328,
-          "d": 1.3893461989134452,
-          "dd120": -0.292613684340858,
+          "A": 1.2883733951729606,
+          "P": 21.57,
+          "anchor": 19.78,
+          "close": 29.73,
+          "d": 1.3893487762992005,
+          "dd120": -0.29261363636363646,
           "dd120_definition": "MAX_DRAWDOWN_CLOSE_120",
-          "dd252": -0.0011758726064104996,
+          "dd252": -0.0011758777087182981,
           "dd252_definition": "CURRENT_CLOSE_VS_MAX_HIGH_252",
           "dk3_pre_r1": true,
-          "ema50": 19.69433395991113,
+          "ema50": 19.69433396428909,
           "hl_date": "2026-09-28",
           "pool": true,
-          "rs20": 0.40638749433511645,
-          "rs60": 0.7015641059456093,
-          "rvol20": 3.034629077389945,
+          "rs20": 0.4063874998868995,
+          "rs60": 0.7015642193785339,
+          "rvol20": 3.0355129164360353,
           "trigger_age_sessions": 1,
           "trigger_date": "2026-10-06",
           "weekly_pass_at_trigger": true
@@ -4561,57 +4795,137 @@
         "target_source": "STRUCTURAL_ACTIVE_R1_LOWER_BOUND",
         "target_zone": {
           "active": true,
-          "active_from_idx": 746,
+          "active_from_idx": 1705,
           "breakout_unconfirmed_role_change": "2026-10-05",
           "kind": "STRUCTURAL_CLUSTER",
-          "lower": 21.56999969482422,
+          "lower": 21.57,
           "occurrence_dates": [
+            "2020-04-06",
+            "2022-05-20",
+            "2022-05-23",
+            "2022-05-24",
+            "2022-05-25",
+            "2022-08-22",
+            "2022-10-07",
+            "2022-10-10",
+            "2023-10-19",
             "2026-04-17",
             "2026-04-22",
             "2026-09-23"
           ],
           "points": [
             {
-              "confirmed_idx": 746,
+              "confirmed_idx": 1705,
               "date": "2026-09-23",
               "kind": "DAILY_SWING_HIGH",
-              "occurrence_idx": 744,
-              "price": 21.56999969482422
+              "occurrence_idx": 1703,
+              "price": 21.57
             },
             {
-              "confirmed_idx": 637,
+              "confirmed_idx": 615,
+              "date": "2022-05-20",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 615,
+              "price": 21.68,
+              "window": 5
+            },
+            {
+              "confirmed_idx": 678,
+              "date": "2022-08-22",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 678,
+              "price": 21.72,
+              "window": 5
+            },
+            {
+              "confirmed_idx": 970,
+              "date": "2023-10-19",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 970,
+              "price": 21.77,
+              "window": 5
+            },
+            {
+              "confirmed_idx": 1596,
               "date": "2026-04-17",
               "kind": "DAILY_SWING_HIGH",
-              "occurrence_idx": 635,
-              "price": 21.78499984741211
+              "occurrence_idx": 1594,
+              "price": 21.785
             },
             {
-              "confirmed_idx": 645,
+              "confirmed_idx": 1604,
               "date": "2026-04-17",
               "kind": "WEEKLY_SWING_HIGH",
-              "occurrence_idx": 132,
-              "price": 21.78499984741211
+              "occurrence_idx": 331,
+              "price": 21.785
             },
             {
-              "confirmed_idx": 638,
+              "confirmed_idx": 1597,
               "date": "2026-04-22",
               "kind": "BASE_HIGH",
-              "occurrence_idx": 638,
-              "price": 21.78499984741211,
+              "occurrence_idx": 1597,
+              "price": 21.785,
+              "window": 5
+            },
+            {
+              "confirmed_idx": 79,
+              "date": "2020-04-06",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 79,
+              "price": 21.81,
+              "window": 5
+            },
+            {
+              "confirmed_idx": 721,
+              "date": "2022-10-07",
+              "kind": "WEEKLY_SWING_HIGH",
+              "occurrence_idx": 147,
+              "price": 21.89
+            },
+            {
+              "confirmed_idx": 712,
+              "date": "2022-10-10",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 712,
+              "price": 21.89,
+              "window": 5
+            },
+            {
+              "confirmed_idx": 616,
+              "date": "2022-05-23",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 616,
+              "price": 21.99,
+              "window": 5
+            },
+            {
+              "confirmed_idx": 617,
+              "date": "2022-05-24",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 617,
+              "price": 21.99,
+              "window": 5
+            },
+            {
+              "confirmed_idx": 618,
+              "date": "2022-05-25",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 618,
+              "price": 21.99,
               "window": 5
             }
           ],
-          "upper": 21.78499984741211
+          "upper": 21.99
         },
         "trigger_date": "2026-10-06"
       },
       "geometry": {
-        "move3_atr": 6.232657604997649,
-        "pivot_extension": 0.3690311128623387,
+        "move3_atr": 6.232665180828262,
+        "pivot_extension": 0.36903106165971256,
         "reset_between_tminus3_and_t": false,
-        "risk_atr": 1.8393461989134476,
-        "risk_percent": 0.108247655453108,
-        "x": 1.3893461989134452
+        "risk_atr": 1.8393487762992005,
+        "risk_percent": 0.10824766686637852,
+        "x": 1.3893487762992005
       },
       "historical_discovery_age_gt3": false,
       "invalidation": {
@@ -4619,16 +4933,16 @@
         "first_breach_date": null
       },
       "levels": {
-        "A": 1.288375071367094,
-        "P": 21.56999969482422,
-        "S0": 19.522325672372087,
-        "T1": 21.56999969482422,
-        "anchor": 19.780000686645508,
-        "chase_limit": 22.214187230507765,
-        "close": 29.530000686645508,
-        "entry_high": 21.892093462665994,
-        "entry_low": 21.56999969482422,
-        "entry_model": 21.892093462665994
+        "A": 1.2883733951729606,
+        "P": 21.57,
+        "S0": 19.522325320965408,
+        "T1": 21.57,
+        "anchor": 19.78,
+        "chase_limit": 22.21418669758648,
+        "close": 29.53,
+        "entry_high": 21.89209334879324,
+        "entry_low": 21.57,
+        "entry_model": 21.89209334879324
       },
       "lifecycle": "CHASE_NO_VALID_FILL",
       "lifecycle_age_sessions": 1,
@@ -4643,61 +4957,141 @@
       "result": "FAIL_RISK_GEOMETRY",
       "risk_pass": false,
       "rr": {
-        "basic": -0.22065895444322176,
+        "basic": -0.22065867556829252,
         "basic_pass": false,
         "basic_threshold": 2.0,
-        "severe": -0.32060239751959485,
+        "severe": -0.320602044294772,
         "severe_pass": false,
         "severe_threshold": 1.5
       },
-      "setup_id": "e448ec1b89b88f5f200a9ad5",
+      "setup_id": "8339992708c2d7770bd2150b",
       "state_cap": "WATCH",
       "target": {
         "source": "STRUCTURAL_ACTIVE_R1_LOWER_BOUND",
         "synthetic": false,
         "zone": {
           "active": true,
-          "active_from_idx": 746,
+          "active_from_idx": 1705,
           "breakout_unconfirmed_role_change": "2026-10-05",
           "kind": "STRUCTURAL_CLUSTER",
-          "lower": 21.56999969482422,
+          "lower": 21.57,
           "occurrence_dates": [
+            "2020-04-06",
+            "2022-05-20",
+            "2022-05-23",
+            "2022-05-24",
+            "2022-05-25",
+            "2022-08-22",
+            "2022-10-07",
+            "2022-10-10",
+            "2023-10-19",
             "2026-04-17",
             "2026-04-22",
             "2026-09-23"
           ],
           "points": [
             {
-              "confirmed_idx": 746,
+              "confirmed_idx": 1705,
               "date": "2026-09-23",
               "kind": "DAILY_SWING_HIGH",
-              "occurrence_idx": 744,
-              "price": 21.56999969482422
+              "occurrence_idx": 1703,
+              "price": 21.57
             },
             {
-              "confirmed_idx": 637,
+              "confirmed_idx": 615,
+              "date": "2022-05-20",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 615,
+              "price": 21.68,
+              "window": 5
+            },
+            {
+              "confirmed_idx": 678,
+              "date": "2022-08-22",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 678,
+              "price": 21.72,
+              "window": 5
+            },
+            {
+              "confirmed_idx": 970,
+              "date": "2023-10-19",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 970,
+              "price": 21.77,
+              "window": 5
+            },
+            {
+              "confirmed_idx": 1596,
               "date": "2026-04-17",
               "kind": "DAILY_SWING_HIGH",
-              "occurrence_idx": 635,
-              "price": 21.78499984741211
+              "occurrence_idx": 1594,
+              "price": 21.785
             },
             {
-              "confirmed_idx": 645,
+              "confirmed_idx": 1604,
               "date": "2026-04-17",
               "kind": "WEEKLY_SWING_HIGH",
-              "occurrence_idx": 132,
-              "price": 21.78499984741211
+              "occurrence_idx": 331,
+              "price": 21.785
             },
             {
-              "confirmed_idx": 638,
+              "confirmed_idx": 1597,
               "date": "2026-04-22",
               "kind": "BASE_HIGH",
-              "occurrence_idx": 638,
-              "price": 21.78499984741211,
+              "occurrence_idx": 1597,
+              "price": 21.785,
+              "window": 5
+            },
+            {
+              "confirmed_idx": 79,
+              "date": "2020-04-06",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 79,
+              "price": 21.81,
+              "window": 5
+            },
+            {
+              "confirmed_idx": 721,
+              "date": "2022-10-07",
+              "kind": "WEEKLY_SWING_HIGH",
+              "occurrence_idx": 147,
+              "price": 21.89
+            },
+            {
+              "confirmed_idx": 712,
+              "date": "2022-10-10",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 712,
+              "price": 21.89,
+              "window": 5
+            },
+            {
+              "confirmed_idx": 616,
+              "date": "2022-05-23",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 616,
+              "price": 21.99,
+              "window": 5
+            },
+            {
+              "confirmed_idx": 617,
+              "date": "2022-05-24",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 617,
+              "price": 21.99,
+              "window": 5
+            },
+            {
+              "confirmed_idx": 618,
+              "date": "2022-05-25",
+              "kind": "BASE_HIGH",
+              "occurrence_idx": 618,
+              "price": 21.99,
               "window": 5
             }
           ],
-          "upper": 21.78499984741211
+          "upper": 21.99
         }
       },
       "target_overlap": true,
@@ -4731,13 +5125,13 @@
   ],
   "source_compiled_policy_hash": "68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4",
   "source_compiled_policy_version": "C4.17",
-  "source_deep_blob_sha": "76ec2006fd0449aaa836f71085fb23e06d0e17b7",
+  "source_deep_blob_sha": "06e232499ac8c50c52bc794839f36294e2b18ef4",
   "source_deep_path": "nasdaq-xray/canonical_current_deep_full.json",
-  "source_family_c_blob_sha": "92abb3af4cb84600b8003c99f7f95ccb9d080927",
+  "source_family_c_blob_sha": "7e40d9ee5951ce24ba4aa7878b1682ebf9e430c8",
   "source_family_c_path": "nasdaq-xray/canonical_current_family_c.json",
-  "source_legal_blob_sha": "2c7522ae0aee8b5c9ea01b6155350dc458c6596b",
+  "source_legal_blob_sha": "8f1535b4728ef7d62d26488580db4783e2c5733e",
   "source_legal_path": "nasdaq-xray/canonical_current_legal.json",
-  "source_workflow_sha": "b3e6be3647e4af16efc02cb1e27d65ec767fc4b4",
+  "source_workflow_sha": "9ca7ee91f8d21f3471097e6778ec6b53cebb4460",
   "state_caps": {
     "ABCL": "WATCH",
     "IBRX": "WATCH",
