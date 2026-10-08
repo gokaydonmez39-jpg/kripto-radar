@@ -1,5 +1,9 @@
 name: XRAY Massive MC Free-Tier Shadow
 on:
+  push:
+    paths:
+      - 'nasdaq-xray/massive_mc_shadow_probe.py'
+      - '.github/workflows/xray-massive-mc-shadow.yml'
   workflow_dispatch:
     inputs:
       offset:
