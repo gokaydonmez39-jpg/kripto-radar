@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/alpaca_delayed_sip_research_shadow.py"
+      - "nasdaq-xray/evidence/alpaca_connected_historical_sip_20261007_v1.json"
       - ".github/workflows/xray-alpaca-delayed-sip-research.yml"
   schedule:
     - cron: "55 13,17 * * 1-5"
@@ -29,6 +30,32 @@ jobs:
         run: |
           python -m py_compile nasdaq-xray/alpaca_delayed_sip_research_shadow.py
           python nasdaq-xray/alpaca_delayed_sip_research_shadow.py --selftest
+      - name: Validate historical SIP connector research-only proof without prices
+        run: |
+          python - <<'PY'
+          import datetime as dt,json,pathlib
+          p=pathlib.Path("nasdaq-xray/evidence/alpaca_connected_historical_sip_20261007_v1.json")
+          d=json.loads(p.read_text())
+          assert d["schema"]=="XRAY_CONNECTED_HISTORICAL_SIP_RESEARCH_ATTESTATION_V1"
+          assert d["source"]=="CONNECTED_ALPACA_TOOL_AD_HOC_ONLY" and d["market_data_feed"]=="sip"
+          assert d["market_data_mode"]=="HISTORICAL_OVER_15_MINUTES"
+          assert d["execution"]=="NONE" and d["real_money"]=="NO-GO"
+          assert d["unknown_never_pass"] is True
+          for k in ("alpha_authority","strict_g9_pass","account_pass","scheduler_callable_verified","production_classification_changed","prices_or_vendor_quote_bodies_persisted"):
+              assert d[k] is False,k
+          assert set(d["symbols"])=={"AAPL","PLTR","MSTR"}
+          assert d["request_window_utc"]==["2026-10-07T19:57:00Z","2026-10-07T19:58:00Z"]
+          first,last=[dt.datetime.fromisoformat(x.replace("Z","+00:00")) for x in d["request_window_utc"]]
+          for symbol,row in d["symbols"].items():
+              assert set(row)=={"quote_timestamp_utc","trade_timestamp_utc","quote_tape","trade_tape","quote_count","trade_count","quote_valid"}
+              assert row["quote_tape"]==row["trade_tape"]=="C"
+              assert row["quote_count"]==row["trade_count"]==1 and row["quote_valid"] is True
+              q=dt.datetime.fromisoformat(row["quote_timestamp_utc"].replace("Z","+00:00"))
+              t=dt.datetime.fromisoformat(row["trade_timestamp_utc"].replace("Z","+00:00"))
+              assert first<=q<=last and first<=t<=last and q!=t
+          assert not any(k in p.read_text().lower() for k in ('"bid_price"','"ask_price"','"trade_price"','"last_price"','"volume"'))
+          print("XRAY_HISTORICAL_SIP_CONNECTOR_METADATA_FAIL_CLOSED=PASS symbols=3")
+          PY
       - name: Bounded delayed-SIP health readback
         run: |
           python nasdaq-xray/alpaca_delayed_sip_research_shadow.py --out "$RUNNER_TEMP/alpaca_delayed_sip_health.json"
