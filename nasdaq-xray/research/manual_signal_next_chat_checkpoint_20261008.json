@@ -1,0 +1,109 @@
+{
+  "schema": "XRAY_MANUAL_SIGNAL_NEXT_CHAT_EXACT_CONTINUATION_V2",
+  "date_trt": "2026-10-08",
+  "source_head_before_checkpoint": "2c44d0efea4699705bce96e8625f6f1fefa21607",
+  "repo": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "authority_priority": [
+    "Fresh LIVE main HEAD + exact file/blob SHA readback",
+    "Workflow job logs and artifact SHA",
+    "Immutable research/checkpoint files",
+    "Conversation memory"
+  ],
+  "safety": {
+    "policy": "C4.17",
+    "control": "C4.27",
+    "manual_mode": "RESEARCH_ONLY_MANUAL_DECISION",
+    "execution": "NONE",
+    "real_money": "NO-GO",
+    "unknown_never_pass": true,
+    "no_account_required": true,
+    "g9_optional_only": true,
+    "no_broker_calls_or_orders": true,
+    "no_threshold_relaxation": true
+  },
+  "work_today": [
+    {
+      "item": "Fixed direct NasdaqTrader exact ASOF without requiring unrelated historical snapshot",
+      "commit": "18e33fe662929b1a70d35bb16d8abe2b6135aceb",
+      "test": {
+        "run_id": 37836940013,
+        "conclusion": "success"
+      }
+    },
+    {
+      "item": "Corrected dynamic policy invariant V8/V9 drift with verified V9 producer and PreMC",
+      "commit": "f12cdc608e5b91fb2c02b297084b298b7e3783ac",
+      "test": {
+        "run_id": 37838228879,
+        "conclusion": "success"
+      }
+    },
+    {
+      "item": "Added independent manual signal follow-up shadow (entry/stop/target/halts/events/stale/two-sided bar ambiguity)",
+      "commit": "39071ea3c0cd572003a2037c857c2a32eeca3504",
+      "blob": "1226eea9b31e7b729ec2e130ec3d80f4dfc6a11e",
+      "test": {
+        "run_id": 37838397998,
+        "step": "Verify candidate follow-up state machine",
+        "conclusion": "success"
+      }
+    },
+    {
+      "item": "Connected follow-up selftest to existing manual research workflow, no user delivery",
+      "commit": "36f3af1f15f9337ae694f2b254c3d34c9dc8ef1e",
+      "test": {
+        "run_id": 37838397998,
+        "overall": "failure",
+        "reason": "UNBOUND_SOURCE:official_halt_guard due concurrent mutable guard/old terminal (correct fail-closed)"
+      }
+    }
+  ],
+  "live_context_at_write": {
+    "root_workflow": {
+      "id": 37837845500,
+      "status": "in_progress",
+      "conclusion": null
+    },
+    "terminal_asof": "2026-10-07",
+    "terminal_blob": "ea9c41cd1e5971e78d85bf3f620d7f8c4e01034f",
+    "manual_policy_blob": "9d66b263136aa1908c1f124468b992f666e14dc7",
+    "manual_shadow_delivery_enabled": false,
+    "manual_lifecycle_blob": "1226eea9b31e7b729ec2e130ec3d80f4dfc6a11e",
+    "candidate_registry_blob": "024d7add5d898e52537192531ed860bf3942be73",
+    "records": 0,
+    "delivery_ledger_blob": "cb14dfc2233ff074fdaa030aee564863db401b29",
+    "deliveries": 0,
+    "master_unknown": 69,
+    "mc_unknown": 29,
+    "event_affected_unknown": 18,
+    "technical_finalists": 17,
+    "pre_g9_tech_pass": 0
+  },
+  "critical_remaining": [
+    "Complete latest LIVE root and final chain, reconcile fresh exact-asof official guard source SHA",
+    "Verify full-C4.17 current-epoch technical finalists independently (17/17 risk FAIL, 16/17 RR FAIL on prior ASOF)",
+    "Legal compliant authorized sources for MC (0 primary PASS, 472 fallback WATCH) and 29 MC unknown; no WATCH->PASS on guess",
+    "Close 18 affected event unknown and 69 SPAC lifecycle classifications with asof issuer evidence",
+    "Bind manual signal mode to candidate lifecycle and persistent idempotent followup state, source timestamp/freshness and post-signal transition receipts",
+    "User-visible AL alert delivery: webhook/app or platform permission, explicit real end-to-end send receipt and failure retry, duplicate suppression; GitHub Issues alone not ChatGPT push receipt",
+    "Root schedule watchdog health and 5 existing ChatGPT automations do not presume cron execution implies run",
+    "60-session C4.17 comparable calibration evidence target; no synthetic performance claims"
+  ],
+  "scope_guards": [
+    "Never create sixth active XRAY automation",
+    "No direct real-money/execution/broker/API secret public writes",
+    "Do not change old TRUE_FULL_GO policy G9+ACCOUNT; separate manual readiness gate",
+    "Do not claim new manual mode is delivering alerts until actual receipt confirmed",
+    "Log any failed tests and unknowns; no production START without acceptance gates"
+  ],
+  "first_actions_next_chat": [
+    "Refetch current main and exact blob SHA, no remembered HEAD as authority",
+    "Observe new root run and Final Factory completion and failure logs; repair source binding not bypass",
+    "Review manual_workflow run 37838397998: followup selftest PASS, manual report UNBOUND_SOURCE",
+    "Verify no false candidates, no user-delivery success claim",
+    "Build persistent follow-up transition ledger and test every alert event + real provider dataset",
+    "Connect approved delivery to manual candidate report and human receipt proof",
+    "When actual data, actual notification, lifecycle and idempotency pass, issue MANUAL_RESEARCH_START; otherwise precise NO-GO"
+  ]
+}
