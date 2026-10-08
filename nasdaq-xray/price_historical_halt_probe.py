@@ -37,7 +37,9 @@ def parse_et_time(value: str):
     s = str(value or "").strip()
     if not s:
         return None
-    s = re.sub(r"\.(\d+)$", "", s)
+    # Official RSS can pad spaces *before* fractional seconds:
+    # "06:55:00                      .000".
+    s = re.sub(r"\s*\.\s*\d+\s*$", "", s).strip()
     for fmt in ("%H:%M:%S", "%H:%M"):
         try:
             return datetime.strptime(s, fmt).time()
@@ -73,9 +75,12 @@ def fetch_rows(session_date: str) -> tuple[list[dict], dict]:
 def full_session_halt_candidate(row: dict, sym: str, session_date: str):
     if str(row.get("IssueSymbol") or "").strip().upper() != sym.upper():
         return None
-    market = str(row.get("Market") or "").strip().upper()
-    if market != "NASDAQ":
+    # Real Nasdaq RSS uses Mkt=Q/G/S (listing category), rather
+    # than the display label Market=NASDAQ. Never accept unrelated venues.
+    raw_market = str(row.get("Mkt") or row.get("Market") or "").strip().upper()
+    if raw_market not in {"Q", "G", "S", "NASDAQ"}:
         return None
+    market = "NASDAQ"
     hd = str(row.get("HaltDate") or "").strip()
     # Nasdaq feed uses MM/DD/YYYY.
     try:
@@ -105,6 +110,7 @@ def full_session_halt_candidate(row: dict, sym: str, session_date: str):
         "symbol": sym.upper(),
         "session_date": session_date,
         "market": market,
+        "official_market_code": raw_market,
         "halt_date": hd,
         "halt_time_et": str(row.get("HaltTime") or ""),
         "reason_code": str(row.get("ReasonCode") or ""),
@@ -154,6 +160,23 @@ def selftest():
     assert full_session_halt_candidate(dict(row, ResumptionDate="09/23/2026", ResumptionTradeTime="16:00:01"), "GRAL", "2026-09-23") is not None
     wrong_market = dict(row, Market="NYSE")
     assert full_session_halt_candidate(wrong_market, "GRAL", "2026-09-23") is None
+    # Independent regression against actual same-ASOF RSS fields observed
+    # in run 37751153797; no guessed OHLC or fictitious bar.
+    observed = {
+        "IssueSymbol": "GRAL", "IssueName": "GRAIL Common Stock",
+        "Mkt": "Q", "HaltDate": "09/23/2026",
+        "HaltTime": "06:55:00                      .000",
+        "ReasonCode": "T3", "ResumptionDate": "09/24/2026",
+        "ResumptionTradeTime": "07:05:00",
+    }
+    actual = full_session_halt_candidate(observed, "GRAL", "2026-09-23")
+    assert actual and actual["market"] == "NASDAQ", actual
+    assert actual["official_market_code"] == "Q", actual
+    assert actual["resumption_date"] == "09/24/2026", actual
+    assert actual["halt_time_et"] == observed["HaltTime"], actual
+    for wrong_code in ("N", "C", "NYSE", "", "X"):
+        assert full_session_halt_candidate(dict(observed, Mkt=wrong_code), "GRAL", "2026-09-23") is None
+    assert full_session_halt_candidate(dict(observed, ResumptionDate="09/23/2026", ResumptionTradeTime="15:59:59"), "GRAL", "2026-09-23") is None
     sample={
         "blocked_symbols":[],
         "results":{
