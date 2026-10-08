@@ -1,0 +1,69 @@
+name: XRAY SEC Quarterly PIT SIC Discovery Shadow
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'nasdaq-xray/sec_bulk_q3_discovery_shadow.py'
+      - '.github/workflows/xray-sec-bulk-q3-shadow.yml'
+permissions:
+  contents: read
+jobs:
+  diagnostic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compile and test research-only safeguards
+        run: |
+          python -m py_compile nasdaq-xray/sec_bulk_q3_discovery_shadow.py
+          python nasdaq-xray/sec_bulk_q3_discovery_shadow.py --selftest
+      - name: Attempt single official SEC bulk download; never bypass 403
+        shell: bash
+        env:
+          SEC_URL: https://www.sec.gov/files/dera/data/financial-statement-data-sets/2026q3.zip
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/sec-xray"
+          export SHADOW_DIR="$RUNNER_TEMP/sec-xray"
+          if curl --retry 0 --connect-timeout 15 --max-time 120 --fail --location --silent --show-error \
+              --user-agent 'NASDAQ-SWING-XRAY academic research xray-dataplane-bot@users.noreply.github.com' \
+              "$SEC_URL" --output "$SHADOW_DIR/2026q3.zip"; then
+            echo 'XRAY_SEC_TRANSPORT=DOWNLOADED_OFFICIAL_BULK_RESEARCH_ONLY'
+            python nasdaq-xray/sec_bulk_q3_discovery_shadow.py \
+              --zip "$SHADOW_DIR/2026q3.zip" \
+              --out "$SHADOW_DIR/sec_sic_discovery_shadow.json"
+          else
+            echo 'XRAY_SEC_TRANSPORT=BLOCKED_OR_UNAVAILABLE_NO_BYPASS'
+            python - <<'PY'
+          import json,os,pathlib
+          path=pathlib.Path(os.environ['SHADOW_DIR'])/'sec_sic_discovery_shadow.json'
+          path.write_text(json.dumps({'schema':'XRAY_SEC_BULK_SIC_DISCOVERY_SHADOW_V1',
+              'status':'BLOCKED_OFFICIAL_DOWNLOAD',
+              'alpha_authority':False,'master_pass':False,
+              'strict_g9_pass':False,'account_pass':False,
+              'execution':'NONE','real_money':'NO-GO'},sort_keys=True,indent=2)+'\n')
+          PY
+          fi
+      - name: Verify all outcomes are strictly non-alpha
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,os,pathlib
+          j=json.loads((pathlib.Path(os.environ['RUNNER_TEMP'])/'sec-xray/sec_sic_discovery_shadow.json').read_text())
+          assert j['schema']=='XRAY_SEC_BULK_SIC_DISCOVERY_SHADOW_V1'
+          assert j['alpha_authority'] is False and j['master_pass'] is False
+          assert j['strict_g9_pass'] is False and j['account_pass'] is False
+          assert j['execution']=='NONE' and j['real_money']=='NO-GO'
+          print('XRAY_SEC_PIT_ZERO_ALPHA_GUARD=PASS status='+j['status'])
+          PY
+      - name: Upload sanitized research artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-sec-q3-pit-research-only
+          path: ${{ runner.temp }}/sec-xray/sec_sic_discovery_shadow.json
+          retention-days: 14
+          if-no-files-found: error
