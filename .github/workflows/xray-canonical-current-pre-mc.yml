@@ -36,6 +36,7 @@ on:
       - "nasdaq-xray/price_official_halt_selftest.py"
       - "nasdaq-xray/official_source_guard.py"
       - "nasdaq-xray/build_current_resolver_request.py"
+      - "nasdaq-xray/sip_settlement_witness_guard.py"
       - "nasdaq-xray/build_resolver_full_scope_handoff.py"
       - "nasdaq-xray/recover_pre_mc_snapshot.py"
       - "nasdaq-xray/canonical_resolver_bridge_*.json"
@@ -121,6 +122,11 @@ jobs:
             nasdaq-xray/build_current_resolver_request.py \
             nasdaq-xray/build_resolver_full_scope_handoff.py \
             nasdaq-xray/recover_pre_mc_snapshot.py
+      - name: Verify historical SIP settlement source evidence and mutation guards
+        run: |
+          python -m py_compile nasdaq-xray/sip_settlement_witness_guard.py
+          python nasdaq-xray/sip_settlement_witness_guard.py --selftest
+          python nasdaq-xray/sip_settlement_witness_guard.py --check-current
       - name: Install zero-dollar runtime
         run: python -m pip install --disable-pip-version-check -r nasdaq-xray/requirements-runtime.txt
       - name: Identity proof regression self-test
