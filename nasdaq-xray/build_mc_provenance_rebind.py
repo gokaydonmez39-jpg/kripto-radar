@@ -109,6 +109,20 @@ def settlement_witness_relation(j: dict, master: dict) -> str | None:
     return "SAFE_SUBSET_REBIND"
 
 
+def settlement_chain_bound(asof: str) -> int:
+    """Allow only physically witnessed immutable same-ASOF resolver links.
+
+    The old hard-coded 8-hop cap rejected later valid provenance successors.
+    Each visited hop still requires exact Git blob SHA, committed status,
+    frozen policy, ASOF, cycle exclusion, and the expected role.
+    """
+    stamp = asof.replace("-", "")
+    count = sum(1 for _ in ROOT.glob(f"canonical_resolver_bridge_{stamp}_c417_dv30_v*.json"))
+    if count > 255:
+        raise AssertionError("SETTLEMENT_CHAIN_IMMUTABLE_COUNT_EXCEEDS_255")
+    return max(8, count + 1)
+
+
 def validate_settlement_witness(path: Path, expected_blob: str, master: dict, asof: str) -> dict:
     """Resolve an exact immutable settlement chain to a reusable witness.
 
@@ -117,7 +131,7 @@ def validate_settlement_witness(path: Path, expected_blob: str, master: dict, as
     queue is either exact or a proven safe subset of a full-scope authority.
     """
     seen = set()
-    for _depth in range(8):
+    for _depth in range(settlement_chain_bound(asof)):
         rel = relpath(path)
         assert rel not in seen, ("SETTLEMENT_WITNESS_CYCLE", rel)
         seen.add(rel)
@@ -195,7 +209,7 @@ def current_settlement_witness(request: dict, master: dict, price: dict,
 def validate_settlement_chain_integrity(path: Path, expected_blob: str, asof: str) -> dict:
     """Validate immutable historical settlement lineage without granting current authority."""
     seen = set()
-    for _depth in range(8):
+    for _depth in range(settlement_chain_bound(asof)):
         rel = relpath(path)
         assert rel not in seen, ("HISTORICAL_SETTLEMENT_WITNESS_CYCLE", rel)
         seen.add(rel)
@@ -335,6 +349,51 @@ def selftest() -> None:
     finally:
         for p in (residual_path, full_path):
             p.unlink(missing_ok=True)
+
+    # Long immutable chain: 12 exact SHA-bound hops must pass.
+    # A corrupt witness SHA must still fail before promotion.
+    chain_asof = "2099-01-02"
+    chain_files = [
+        ROOT / f"canonical_resolver_bridge_20990102_c417_dv30_v{i}.json"
+        for i in range(1, 13)
+    ]
+    for p in chain_files:
+        p.unlink(missing_ok=True)
+    try:
+        prior_path = ""
+        prior_blob = ""
+        for i, p in enumerate(chain_files):
+            obj = {
+                "schema":"XRAY_RESOLVER_EPOCH_RESULT_V1",
+                "status":"COMMITTED","task_id":TASK,
+                "execution":"NONE","real_money":"NO-GO",
+                "unknown_never_pass":True,"asof_et":chain_asof,
+                "compiled_policy_hash":POLICY_HASH,
+                "compiled_policy_version":POLICY_VERSION,
+                "settlement_status":"PASS",
+            }
+            if prior_path:
+                obj["settlement_witness_path"] = prior_path
+                obj["settlement_witness_blob_sha"] = prior_blob
+            p.write_text(json.dumps(obj, sort_keys=True) + "\n")
+            prior_path = relpath(p)
+            prior_blob = blob_sha(p)
+        assert settlement_chain_bound(chain_asof) >= len(chain_files)
+        assert validate_settlement_chain_integrity(
+            chain_files[-1], blob_sha(chain_files[-1]), chain_asof
+        )["settlement_status"] == "PASS"
+        try:
+            validate_settlement_chain_integrity(
+                chain_files[-1], "0" * 40, chain_asof
+            )
+        except AssertionError as exc:
+            assert "HISTORICAL_SETTLEMENT_WITNESS_BLOB_MISMATCH" in str(exc)
+        else:
+            raise AssertionError("BAD_SHA_MUST_FAIL_CLOSED")
+    finally:
+        for p in chain_files:
+            p.unlink(missing_ok=True)
+    print("XRAY_MC_12_HOP_SHA_CHAIN_REGRESSION=PASS")
 
     assert full_scope_price_pending_reason({"unknown_count": 0, "unknown_symbols": []}) is None
     assert full_scope_price_pending_reason({"unknown_count": 1, "unknown_symbols": ["GRAL"]}) == "PRICE_DV30_UNKNOWN"
