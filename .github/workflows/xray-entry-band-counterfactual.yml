@@ -1,0 +1,54 @@
+name: XRAY C4.17 Entry Band Counterfactual Research
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["XRAY Canonical Current Final Factory"]
+    types: [completed]
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/entry_band_counterfactual_research.py"
+      - ".github/workflows/xray-entry-band-counterfactual.yml"
+permissions:
+  contents: read
+concurrency:
+  group: xray-entry-band-counterfactual
+  cancel-in-progress: false
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile and validate seven independent safety properties
+        run: |
+          python -m py_compile nasdaq-xray/entry_band_counterfactual_research.py
+          python nasdaq-xray/entry_band_counterfactual_research.py --selftest
+      - name: Recompute without modifying price, stop, target, alpha or G9
+        run: |
+          python nasdaq-xray/entry_band_counterfactual_research.py --out "$RUNNER_TEMP/xray_entry_band_counterfactual.json"
+      - name: Verify source evidence and immutable NO GO output
+        run: |
+          python - <<'PY'
+          import json,os,pathlib
+          j=json.loads((pathlib.Path(os.environ["RUNNER_TEMP"])/"xray_entry_band_counterfactual.json").read_text())
+          assert j["alpha_authority"] is False and j["g9_pass"] is False and j["account_pass"] is False
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO" and not j["orders"] and not j["buy_candidates"]
+          assert j["lower_band_risk_and_rr_pass"]<=j["lower_band_risk_pass"]<=j["D_rows_evaluated"]
+          assert j["source_rows"]>=j["D_rows_evaluated"]
+          if not j["terminal_final_binding_exact"]:
+              assert j["status"]=="STALE_TERMINAL_RESEARCH_DIAGNOSTIC_ONLY"
+          print("XRAY_COUNTERFACTUAL_ARTIFACT_GUARD=PASS")
+          PY
+      - name: Upload inspectable non-alpha counterfactual only
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-c417-entry-band-counterfactual
+          path: ${{ runner.temp }}/xray_entry_band_counterfactual.json
+          if-no-files-found: error
+          retention-days: 14
