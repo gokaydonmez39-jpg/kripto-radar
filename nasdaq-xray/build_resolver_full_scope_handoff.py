@@ -522,14 +522,29 @@ def exact_queue_metadata_rebind(predecessor: dict | None, master: dict,
     if not re.fullmatch(r"[0-9a-f]{40}", sha):
         return False
     try:
+        # Actions normally checks out depth=1; older immutable blob objects
+        # are not necessarily present. Unshallow only when the exact prior
+        # request blob is absent, never infer its contents from current JSON.
+        have = subprocess.run(
+            ["git", "cat-file", "-e", sha + "^{blob}"], cwd=REPO,
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+            timeout=10,
+        )
+        if have.returncode != 0 and (REPO / ".git" / "shallow").exists():
+            subprocess.run(
+                ["git", "fetch", "--quiet", "--no-tags", "--unshallow", "origin", "main"],
+                cwd=REPO, stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL, timeout=90, check=True,
+            )
         raw = subprocess.check_output(
-            ["git", "cat-file", "blob", sha], cwd=REPO, stderr=subprocess.DEVNULL
+            ["git", "cat-file", "blob", sha], cwd=REPO, stderr=subprocess.DEVNULL,
+            timeout=10,
         )
         actual = hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest()
         if actual != sha:
             return False
         previous = json.loads(raw)
-    except (ValueError, OSError, subprocess.CalledProcessError):
+    except (ValueError, OSError, subprocess.SubprocessError):
         return False
     return request_diagnostic_only_changed(previous, request)
 
