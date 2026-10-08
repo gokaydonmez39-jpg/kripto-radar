@@ -1,7 +1,7 @@
 {
   "asof_et": "2026-10-07",
   "asof_identity_proof": {
-    "blob_sha": "46972ac0b6f2baf39399df42a5bdc0deb00b608d",
+    "blob_sha": "e7c0fb8204912cb354395e90f72888aa74ebf434",
     "counts": {
       "operating_overrides": 4,
       "remove_from_asof": 0,
@@ -29,18 +29,18 @@
   },
   "counts": {
     "PASS_IDENTITY": 3185,
-    "UNKNOWN_IDENTITY": 178
+    "UNKNOWN_IDENTITY": 176
   },
   "execution": "NONE",
-  "explicit_excluded_count": 2266,
-  "explicit_excluded_hash": "c8b27b51ba6d187e3a4bfc8b9bbe1f21d26ebbf6c6ddd0f310ab9648363ec594",
+  "explicit_excluded_count": 2268,
+  "explicit_excluded_hash": "bf9176a169b5e0f4bee19170d94a7f8849d6ebea8c12a540c0ed7a1fc9f22bf2",
   "explicit_excluded_reason_counts": {
     "DEBT": 59,
     "ETF": 1293,
     "FUND": 32,
     "PREFERRED": 102,
     "RIGHT": 104,
-    "SPAC_BLANK_CHECK": 33,
+    "SPAC_BLANK_CHECK": 35,
     "TEST_ISSUE": 8,
     "UNIT": 260,
     "WARRANT": 372,
@@ -3252,22 +3252,22 @@
   "queue_hash": "306d6bb21e1ffef5f099f988ce995d0f98b349c051f34b4eed42613280444bdf",
   "queue_total": 3185,
   "queue_unique": 3185,
-  "raw_identity_total": 3363,
+  "raw_identity_total": 3361,
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1",
   "sec_spac_proof": {
-    "blob_sha": "39bc178a9554ac29e5f39c7c9e6c74c045076f53",
-    "count": 33,
+    "blob_sha": "78d5571f246486c074dfe902bcedfd8c22e4fa20",
+    "count": 35,
     "path": "nasdaq-xray/master_sec_spac_proof_20261007.json",
-    "symbol_hash": "a7e55c323ea7ba3f44224ee5f583b543454e51d4fe293a038e04185b62a9966f"
+    "symbol_hash": "70777eee663bee62fa61cda41cf9610ad126787aa811c20309835021c1ee251d"
   },
-  "source_state_blob_sha": "cf38f00dbdaf552cffffcd1a467b360c34d32b4f",
-  "source_state_hash": "d5853c7453dde3749189b0153c1fd146f221828614e1f95c20cf231462666390",
+  "source_state_blob_sha": "ff5ea940213b6b34ac254b2c9a17a5fcf00c74d9",
+  "source_state_hash": "c1ba67fa3eddd0cb642a57f132c9507da26664edeeb9ebfd453c502d23cc5926",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
   "status": "PARTIAL_UNKNOWN",
   "status_semantics": "IDENTITY_PARTITION_EXACT_WITH_UNKNOWN",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 178,
+  "unknown_count": 176,
   "unknown_detail": {
     "AACI": {
       "exact_sec_spac_proof": false,
@@ -3329,15 +3329,6 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Bleichroeder Acquisition Corp. III - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "BEAG": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Bold Eagle Acquisition Corp. - Class A Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -4493,15 +4484,6 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "RFAM": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "RF Acquisition Corp III - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "RIBB": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
@@ -4881,7 +4863,6 @@
     "ARTC",
     "ASPC",
     "BCCQ",
-    "BEAG",
     "BHAV",
     "BID",
     "BIXI",
@@ -5010,7 +4991,6 @@
     "RDAC",
     "RDAG",
     "RFAI",
-    "RFAM",
     "RIBB",
     "RNAQ",
     "RNGT",
