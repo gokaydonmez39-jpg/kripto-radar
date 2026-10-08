@@ -1,7 +1,7 @@
 {
   "asof_et": "2026-10-07",
   "asof_identity_proof": {
-    "blob_sha": "8bb29f375517a9a3cdfec04e0b3b2073683f2563",
+    "blob_sha": "cadc284fc36e578c0381989b410452ace455d689",
     "counts": {
       "operating_overrides": 4,
       "remove_from_asof": 0,
@@ -29,18 +29,18 @@
   },
   "counts": {
     "PASS_IDENTITY": 3185,
-    "UNKNOWN_IDENTITY": 182
+    "UNKNOWN_IDENTITY": 179
   },
   "execution": "NONE",
-  "explicit_excluded_count": 2262,
-  "explicit_excluded_hash": "f851b826d8d2564d412403e74e072a394b34d615430b461810d23b549e687c05",
+  "explicit_excluded_count": 2265,
+  "explicit_excluded_hash": "c590fd4350b861bdf420da1b812777eab5ef6de85d0096637433543726120044",
   "explicit_excluded_reason_counts": {
     "DEBT": 59,
     "ETF": 1293,
     "FUND": 32,
     "PREFERRED": 102,
     "RIGHT": 104,
-    "SPAC_BLANK_CHECK": 29,
+    "SPAC_BLANK_CHECK": 32,
     "TEST_ISSUE": 8,
     "UNIT": 260,
     "WARRANT": 372,
@@ -3252,22 +3252,22 @@
   "queue_hash": "306d6bb21e1ffef5f099f988ce995d0f98b349c051f34b4eed42613280444bdf",
   "queue_total": 3185,
   "queue_unique": 3185,
-  "raw_identity_total": 3367,
+  "raw_identity_total": 3364,
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1",
   "sec_spac_proof": {
-    "blob_sha": "ddcd7ffbc02307162ac392b563d32980bd578c83",
-    "count": 29,
+    "blob_sha": "a5b70e8bc103f863bd2f5208c7fb9e2a1e9d47a9",
+    "count": 32,
     "path": "nasdaq-xray/master_sec_spac_proof_20261007.json",
-    "symbol_hash": "5c8ab45ad4cdffe3e8c809af095fabdb5bfdc217a60cb467ac8d5cef503b5a21"
+    "symbol_hash": "88731eba108b29e009e28eb669a92721aa47dbfc65fa03dba4c570414aea40c7"
   },
-  "source_state_blob_sha": "31c5c4dfdaced9cdbfca53c2d1c2df5c03d8f77a",
-  "source_state_hash": "3911e4b6aa2e10db82785cd97ae7c8f1cabf9f8022ff3644b6806b9cb8f4e8cd",
+  "source_state_blob_sha": "0ecd9f19770812326a47f8413cf5b79b85cdf2fa",
+  "source_state_hash": "64e79febd9df56a65f19aa1542fc98b6d0fa9367b0fc1bb886e2c3eab7102a25",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
   "status": "PARTIAL_UNKNOWN",
   "status_semantics": "IDENTITY_PARTITION_EXACT_WITH_UNKNOWN",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 182,
+  "unknown_count": 179,
   "unknown_detail": {
     "AACI": {
       "exact_sec_spac_proof": false,
@@ -3701,15 +3701,6 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "FSHP": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Flag Ship Acquisition Corp. - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "FTHA": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
@@ -4022,15 +4013,6 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Galata Acquisition Corp. II - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "LCCC": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Lakeshore Acquisition III Corp. - Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -4664,15 +4646,6 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "SVAQ": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Silicon Valley Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "SVIV": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
@@ -4958,7 +4931,6 @@
     "FGII",
     "FIGX",
     "FMAC",
-    "FSHP",
     "FTHA",
     "FVAV",
     "FVN",
@@ -4994,7 +4966,6 @@
     "KTWO",
     "LAFA",
     "LATA",
-    "LCCC",
     "LFAC",
     "LKSP",
     "LPAA",
@@ -5065,7 +5036,6 @@
     "SSAC",
     "SSEA",
     "SUMA",
-    "SVAQ",
     "SVIV",
     "SZZL",
     "TACH",
