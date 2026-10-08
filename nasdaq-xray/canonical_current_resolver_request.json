@@ -37,7 +37,7 @@
     "2026-10-06",
     "2026-10-07"
   ],
-  "master_unknown_count": 95,
+  "master_unknown_count": 93,
   "master_unknown_detail": {
     "ALIS": {
       "exact_sec_spac_proof": false,
@@ -54,15 +54,6 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Black Hawk Acquisition Corporation - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "BPAC": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Blueport Acquisition Ltd - Class A Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -534,15 +525,6 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "PAAC": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Proem Acquisition Corp I - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "PACH": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
@@ -895,11 +877,10 @@
       "unknown_never_pass": true
     }
   },
-  "master_unknown_hash": "371bed6bdc3077b7a59efe70483df1e4f74c0b4f6ecdeb9db4c70c1b0f5c709b",
+  "master_unknown_hash": "90303db0f8c5cadaefd288c6f1439013704f7da7bf04ceb30cf6502688ae0f7a",
   "master_unknown_symbols": [
     "ALIS",
     "BKHA",
-    "BPAC",
     "BSAA",
     "CRAN",
     "DMII",
@@ -952,7 +933,6 @@
     "OIM",
     "OTGA",
     "OYSE",
-    "PAAC",
     "PACH",
     "PALO",
     "PCAP",
@@ -1024,9 +1004,9 @@
   "settlement_policy": "ALPACA_HISTORICAL_SIP_DAILY_AFTER_15M__AAPL_NVDA_PLUS_ONE_PRIOR_CURRENT_CORE__RALLIES_LONGBRIDGE_QUOTE_OHLC_0_01_CROSSCHECK__SIP_VOLUME_AUTHORITY__FAIL_CLOSED__DELAYED_SIP_NEVER_G9",
   "settlement_required": false,
   "settlement_symbols": [],
-  "source_master_blob_sha": "4220886701c926eca5be38dfd5afb9e2c1ac656f",
+  "source_master_blob_sha": "67048e47e02108dfaa2f273d7673c8d2cacc9818",
   "source_master_path": "nasdaq-xray/canonical_current_master_manifest.json",
-  "source_overlay_blob_sha": "20002f67cedbf3c62704a20b5b8a316a0fa5912a",
+  "source_overlay_blob_sha": "7baddb7cde4bc140936fbbfafa9a4337a401f152",
   "source_overlay_path": "nasdaq-xray/canonical_current_resolution_overlay.json",
   "source_pointer_blob_sha": "6224a7a5b660adedb797f32b4941436edf081329",
   "source_pointer_path": "nasdaq-xray/chatgpt_canonical_state_v2.json",
@@ -1042,9 +1022,9 @@
   "source_price_pass_count": 510,
   "source_price_pass_hash": "f6772e07d952c9c172a3370076537cbfc89128886e1a0e31d1142b2ebecf0438",
   "source_price_path": "nasdaq-xray/canonical_current_price_dv30.json",
-  "source_state_blob_sha": "35d71f92e6f019d55049999c1d32d3366d85f156",
+  "source_state_blob_sha": "6a4bf992c6441d4575363a2b7cc872c9c349b2c5",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
-  "source_unknowns_blob_sha": "0a80b14906ff93b4b744feb275876e6018b03b92",
+  "source_unknowns_blob_sha": "05f2c7c58ded04e43ef8fc5b3bbe06472ddf3990",
   "source_unknowns_path": "nasdaq-xray/canonical_current_unknowns.json",
   "status": "IDLE",
   "symbol_count": 0,
