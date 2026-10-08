@@ -1,7 +1,7 @@
 {
   "asof_et": "2026-10-07",
   "asof_identity_proof": {
-    "blob_sha": "78b433bee9e604176458f5543f5a1368e3c501bc",
+    "blob_sha": "cf0312a1df27537ddc897295aeb54260b0a52a99",
     "counts": {
       "operating_overrides": 3,
       "remove_from_asof": 0,
@@ -29,13 +29,13 @@
   },
   "counts": {
     "PASS_IDENTITY": 3184,
-    "UNKNOWN_IDENTITY": 165
+    "UNKNOWN_IDENTITY": 161
   },
   "execution": "NONE",
-  "explicit_excluded_count": 47,
-  "explicit_excluded_hash": "13a2a938ffd6098b732f507406fb541d79693e692a2fb064b0bba1f4323d9a2b",
+  "explicit_excluded_count": 51,
+  "explicit_excluded_hash": "58ab991cf67012bdd03c99bec83e5f65e87dbeecf3cdb6f8ac7ebd2c8edbf2d9",
   "explicit_excluded_reason_counts": {
-    "SPAC_BLANK_CHECK": 47
+    "SPAC_BLANK_CHECK": 51
   },
   "history_price_state_diagnostic_only": {
     "source_counts": {
@@ -3242,47 +3242,29 @@
   "queue_hash": "2554c936f42217cf8a9628e89d04993945218725234fe894f7c80856834725d6",
   "queue_total": 3184,
   "queue_unique": 3184,
-  "raw_identity_total": 3349,
+  "raw_identity_total": 3345,
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1",
   "sec_spac_proof": {
-    "blob_sha": "f42627179e962438254afe526d4a5bcfe6cbde92",
-    "count": 47,
+    "blob_sha": "0ae1d9bc1eaa2e6c06c3e10a4a09992363ec8fb6",
+    "count": 51,
     "path": "nasdaq-xray/master_sec_spac_proof_20261007.json",
-    "symbol_hash": "8ae5b9b5ae6733d6ae7abb230f8318e17d0d5e07f038daec6cf35ff6f1274ff9"
+    "symbol_hash": "77b813800f3c87fb06e4c4371b9c333758bd887b6207606dce10d69db9abce1f"
   },
-  "source_state_blob_sha": "64b8c9e6c3fc1827900d5db17f5845405d177e4d",
-  "source_state_hash": "c89af1c270b48351b20967a156d3372bc00241ceaf6ec85429f479bb73424eb1",
+  "source_state_blob_sha": "bc7f0cd84ecdf54cdd9732ed12455eb7a62e72cd",
+  "source_state_hash": "d006b60b431aee8340f1e9842a31bb4e9a7abb0f543e704ea3c37658f9e0a0bd",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
   "status": "PARTIAL_UNKNOWN",
   "status_semantics": "IDENTITY_PARTITION_EXACT_WITH_UNKNOWN",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 165,
+  "unknown_count": 161,
   "unknown_detail": {
-    "AACI": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Armada Acquisition Corp. III - Class A Ordinary Share",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "ALIS": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Calisa Acquisition Corp - Ordinary shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "ASPC": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "A SPAC III Acquisition Corp. - Class A Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -3448,15 +3430,6 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "CTAA": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "ClearThink 1 Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "CXII": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
@@ -3544,15 +3517,6 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "FACT II Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "FDMM": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Freedom Metals Acquisition Corp. - Class A Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -4747,9 +4711,7 @@
   },
   "unknown_never_pass": true,
   "unknown_symbols": [
-    "AACI",
     "ALIS",
-    "ASPC",
     "BCCQ",
     "BHAV",
     "BID",
@@ -4768,7 +4730,6 @@
     "CRAC",
     "CRAN",
     "CRAQ",
-    "CTAA",
     "CXII",
     "DAAQ",
     "DBCA",
@@ -4779,7 +4740,6 @@
     "EVOX",
     "EWAV",
     "FACT",
-    "FDMM",
     "FERA",
     "FGII",
     "FIGX",
