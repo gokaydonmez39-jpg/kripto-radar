@@ -27,6 +27,8 @@ jobs:
           python -m py_compile nasdaq-xray/sec_official_free_mc_transport_probe.py
           python nasdaq-xray/sec_official_free_mc_transport_probe.py --selftest
       - name: Probe two official SEC endpoints once without paid credits
+        env:
+          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT }}
         run: |
           python nasdaq-xray/sec_official_free_mc_transport_probe.py \
             --asof 2026-10-08 \
@@ -41,7 +43,19 @@ jobs:
           assert obj["alpha_authority"] is False and obj["unknown_never_pass"] is True
           print("SEC_FREE_MC_GUARDS=PASS_NO_PAID_CREDITS_NO_FAKE_PRIMARY")
           PY
+      - name: Enforce real official SEC reachability, fail closed
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          j=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_sec_free_mc_transport.json").read_text())
+          if j["sec_transport"] != "HTTP_200_BOTH":
+              print("XRAY_SEC_LIVE_TRANSPORT=BLOCKED:"+str(j["reason"]))
+              raise SystemExit(2)
+          print("XRAY_SEC_LIVE_TRANSPORT=PASS_OFFICIAL_ENDPOINTS_ONLY_NOT_MC_AUTHORITY")
+          PY
       - name: Upload operational-only result without issuer values
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: xray-sec-free-mc-transport-operational-v1
