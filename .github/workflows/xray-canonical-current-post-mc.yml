@@ -606,6 +606,7 @@ jobs:
           XRAY_ASOF="${{ steps.mc.outputs.asof }}" XRAY_HISTORY_WORKERS="8" \
           python nasdaq-xray/history_phase.py
       - name: Revalidate reused HISTORY and hydrate same-run technical cache
+        id: history_revalidate
         if: steps.mc.outputs.ready == 'true' && steps.reuse_hl.outputs.reuse == 'true'
         timeout-minutes: 12
         shell: bash
@@ -630,7 +631,9 @@ jobs:
           old=json.load(open(canonical))
           new=json.load(open(revalidated))
           assert old.get("asof_et")==new.get("asof_et"),(old.get("asof_et"),new.get("asof_et"))
-          assert int(new.get("unknown_count",-1))==0,new.get("unknown_symbols")
+          # Exact-ASOF missing provider bars are UNKNOWN, not a candidate PASS.
+          unknown=sorted(set(new.get("unknown_symbols") or []))
+          assert int(new.get("unknown_count",-1))==len(unknown),"UNKNOWN_COUNT_DRIFT"
           assert old.get("input_count")==new.get("input_count"),(old.get("input_count"),new.get("input_count"))
           assert old.get("pass_hash")==new.get("pass_hash"),(old.get("pass_hash"),new.get("pass_hash"))
           assert set(old.get("pass_symbols") or [])==set(new.get("pass_symbols") or [])
@@ -639,9 +642,30 @@ jobs:
           assert old_status==new_status
           assert (new.get("source_mc_artifact") or new.get("source_mc_path"))==expected_mc_rel
           assert new.get("source_mc_blob_sha")==blob_sha(current_mc)
+          if unknown:
+              diag={"schema":"XRAY_HISTORY_REVALIDATION_PENDING_V1",
+                    "asof_et":new["asof_et"],
+                    "status":"PENDING_PROVIDER_EXACT_ASOF",
+                    "execution":"NONE","real_money":"NO-GO",
+                    "unknown_never_pass":True,"alpha_authority":False,
+                    "old_history_unchanged":True,
+                    "source_mc_blob_sha":new.get("source_mc_blob_sha"),
+                    "unknown_count":len(unknown),"unknown_symbols":unknown}
+              path=pathlib.Path(os.environ["RUNNER_TEMP"])/"xray-history-revalidation-pending.json"
+              path.write_text(json.dumps(diag,sort_keys=True,indent=2)+"\n")
+              with open(os.environ["GITHUB_OUTPUT"],"a") as f:
+                  f.write("ready=false\n")
+              with open(os.environ["GITHUB_STEP_SUMMARY"],"a") as f:
+                  f.write("### HISTORY revalidation PENDING — no promotion\n\n")
+                  f.write("Unresolved exact-ASOF: "+", ".join(unknown)+"\n\n")
+                  f.write("Downstream technical rebuild skipped; no invented bars.\n")
+              print("XRAY_HISTORY_REVALIDATION=PENDING_PROVIDER_EXACT_ASOF",unknown)
+              raise SystemExit(0)
           canonical.write_bytes(revalidated.read_bytes())
           promoted=json.load(open(canonical))
           assert promoted.get("source_mc_blob_sha")==blob_sha(current_mc)
+          with open(os.environ["GITHUB_OUTPUT"],"a") as f:
+              f.write("ready=true\n")
           print({"XRAY_REUSED_HISTORY_REVALIDATION":"PASS",
                  "XRAY_REUSED_HISTORY_PROMOTION":"EXACT_CURRENT_MC",
                  "history_blob_sha":blob_sha(canonical),
@@ -649,8 +673,16 @@ jobs:
                  "pass_count":promoted.get("pass_count")})
           PY
 
+      - name: Preserve HISTORY provider-lag evidence
+        if: steps.history_revalidate.outputs.ready == 'false'
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-history-revalidation-pending
+          path: ${{ runner.temp }}/xray-history-revalidation-pending.json
+          if-no-files-found: error
+          retention-days: 7
       - name: Hydrate technical benchmark and ticker-continuity cache
-        if: steps.mc.outputs.ready == 'true'
+        if: steps.mc.outputs.ready == 'true' && steps.history_revalidate.outputs.ready != 'false'
         shell: bash
         env:
           XRAY_HISTORY_CACHE_DIR: ${{ runner.temp }}/xray-history-cache
@@ -713,7 +745,7 @@ jobs:
           PY
 
       - name: Run LEGAL
-        if: steps.mc.outputs.ready == 'true'
+        if: steps.mc.outputs.ready == 'true' && steps.history_revalidate.outputs.ready != 'false'
         shell: bash
         run: |
           XRAY_LEGAL_HISTORY="$GITHUB_WORKSPACE/nasdaq-xray/canonical_current_history.json" \
@@ -722,7 +754,7 @@ jobs:
           XRAY_LEGAL_OUT="$GITHUB_WORKSPACE/nasdaq-xray/canonical_current_legal.json" \
           XRAY_ASOF="${{ steps.mc.outputs.asof }}" python nasdaq-xray/legal_phase.py
       - name: Build exact Stage1 input
-        if: steps.mc.outputs.ready == 'true'
+        if: steps.mc.outputs.ready == 'true' && steps.history_revalidate.outputs.ready != 'false'
         shell: bash
         run: |
           XRAY_POST_MC="$GITHUB_WORKSPACE/${{ steps.mc.outputs.path }}" \
@@ -731,7 +763,7 @@ jobs:
           XRAY_STAGE1_INPUT_OUT="$GITHUB_WORKSPACE/nasdaq-xray/canonical_current_stage1_input.json" \
           python nasdaq-xray/build_stage1_input.py
       - name: Run Stage1
-        if: steps.mc.outputs.ready == 'true'
+        if: steps.mc.outputs.ready == 'true' && steps.history_revalidate.outputs.ready != 'false'
         env:
           XRAY_MC_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_current_stage1_input.json
           XRAY_STAGE1_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_current_stage1.json
@@ -742,7 +774,7 @@ jobs:
           XRAY_SPLIT_HTTP_RETRIES: "1"
         run: python nasdaq-xray/stage1_shadow.py
       - name: Run regime breadth
-        if: steps.mc.outputs.ready == 'true'
+        if: steps.mc.outputs.ready == 'true' && steps.history_revalidate.outputs.ready != 'false'
         env:
           XRAY_MC_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_current_stage1_input.json
           XRAY_REGIME_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_current_regime.json
@@ -751,7 +783,7 @@ jobs:
           XRAY_BREADTH_WORKERS: "8"
         run: python nasdaq-xray/regime_breadth_shadow.py
       - name: Run deep geometry only
-        if: steps.mc.outputs.ready == 'true'
+        if: steps.mc.outputs.ready == 'true' && steps.history_revalidate.outputs.ready != 'false'
         env:
           XRAY_STAGE1_STATE: ${{ github.workspace }}/nasdaq-xray/canonical_current_stage1.json
           XRAY_DEEP_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_current_deep_geometry.json
@@ -763,7 +795,7 @@ jobs:
           XRAY_SPLIT_HTTP_RETRIES: "1"
         run: python nasdaq-xray/deep_pre_r1_shadow.py
       - name: Persist exact trigger-scope history snapshots
-        if: steps.mc.outputs.ready == 'true'
+        if: steps.mc.outputs.ready == 'true' && steps.history_revalidate.outputs.ready != 'false'
         env:
           XRAY_SOURCE_HISTORY_CACHE_DIR: ${{ runner.temp }}/xray-history-cache
         run: |
@@ -871,7 +903,7 @@ jobs:
           PY
 
       - name: Build dynamic event request
-        if: steps.mc.outputs.ready == 'true'
+        if: steps.mc.outputs.ready == 'true' && steps.history_revalidate.outputs.ready != 'false'
         env:
           XRAY_EVENT_STAGE1: ${{ github.workspace }}/nasdaq-xray/canonical_current_stage1.json
           XRAY_EVENT_REGIME: ${{ github.workspace }}/nasdaq-xray/canonical_current_regime.json
@@ -879,7 +911,7 @@ jobs:
           XRAY_EVENT_REQUEST_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_current_event_request.json
         run: python nasdaq-xray/build_current_event_request.py
       - name: Structural post-MC gate
-        if: steps.mc.outputs.ready == 'true'
+        if: steps.mc.outputs.ready == 'true' && steps.history_revalidate.outputs.ready != 'false'
         run: |
           python - <<'PY'
           import json,os
@@ -963,7 +995,7 @@ jobs:
                  "upstream_coverage_complete":e.get("upstream_coverage_complete")})
           PY
       - name: Commit current post-MC artifacts
-        if: steps.mc.outputs.ready == 'true'
+        if: steps.mc.outputs.ready == 'true' && steps.history_revalidate.outputs.ready != 'false'
         shell: bash
         run: |
           set -euo pipefail
