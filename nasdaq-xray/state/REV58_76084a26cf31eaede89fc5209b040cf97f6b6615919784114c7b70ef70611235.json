@@ -1,6 +1,5 @@
 {
-  "schema": "XRAY_GITHUB_DURABLE_STATE_V3",
-  "authority": "GITHUB_CURRENT_POINTER",
+  "schema": "XRAY_GITHUB_STATE_SNAPSHOT_V3",
   "execution": "NONE",
   "real_money": "NO-GO",
   "revision": 58,
@@ -464,10 +463,6 @@
     "same_asof_refresh": true,
     "alpha_or_candidate_promotion_by_pointer": false
   },
-  "transition_rule": "SAME_ASOF_EXACT_EVIDENCE_REFRESH_PLUS_ONE;PREV_STATE_HASH_EQUALS_IMMEDIATE_PRIOR_STATE_HASH;TERMINAL_AND_IMMUTABLE_EVIDENCE_BLOBS_EXACT",
-  "immutable_snapshot_path": "nasdaq-xray/state/REV58_76084a26cf31eaede89fc5209b040cf97f6b6615919784114c7b70ef70611235.json",
-  "storage_protocol": "GITHUB_CONTENTS_CAS_V1",
-  "prev_pointer_blob_sha": "b5ceb4fc71a3e40a706b5753d4d3893d6bd47870",
-  "writer_task_id": "6a825366222081918997094d76e6ae46",
-  "state_hash_rule": "SHA256_UTF8(XRAY_STATE_REGISTER_V1\\n+REVISION+\\n+COMPACT_STATE_JSON_PRESERVE_KEY_ORDER)"
+  "state_hash_rule": "SHA256_UTF8(XRAY_STATE_REGISTER_V1\\n+REVISION+\\n+COMPACT_STATE_JSON_PRESERVE_KEY_ORDER)",
+  "recovery_snapshot": false
 }
