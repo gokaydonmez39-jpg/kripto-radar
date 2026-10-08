@@ -4521,8 +4521,10 @@
       },
       "provider_meta": {
         "eastmoney": {
-          "error": "ConnectionError:('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))",
-          "secid": "105.FRVO"
+          "attempts": 1,
+          "market": "NASDAQ_105",
+          "secid": "105.FRVO",
+          "usable": 102
         },
         "nasdaq": {
           "rows": 0,
