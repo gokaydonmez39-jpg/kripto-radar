@@ -1,7 +1,7 @@
 {
   "asof_et": "2026-10-07",
   "asof_identity_proof": {
-    "blob_sha": "40715288d6a5f482583ca804279cce65b122c87f",
+    "blob_sha": "6d5d3fb7cc1d349409446e627bc9913eae3327ff",
     "counts": {
       "operating_overrides": 3,
       "remove_from_asof": 0,
@@ -29,13 +29,13 @@
   },
   "counts": {
     "PASS_IDENTITY": 3184,
-    "UNKNOWN_IDENTITY": 93
+    "UNKNOWN_IDENTITY": 90
   },
   "execution": "NONE",
-  "explicit_excluded_count": 119,
-  "explicit_excluded_hash": "f907d66bf3030d41108df3e3c03facfc749b4d2bf595c73ef1983c4841e5b6ab",
+  "explicit_excluded_count": 122,
+  "explicit_excluded_hash": "aa138370df462cf9b5f01c0e058eb9a2a9bfab9d263343800f34f88a041086ae",
   "explicit_excluded_reason_counts": {
-    "SPAC_BLANK_CHECK": 119
+    "SPAC_BLANK_CHECK": 122
   },
   "history_price_state_diagnostic_only": {
     "source_counts": {
@@ -3242,22 +3242,22 @@
   "queue_hash": "2554c936f42217cf8a9628e89d04993945218725234fe894f7c80856834725d6",
   "queue_total": 3184,
   "queue_unique": 3184,
-  "raw_identity_total": 3277,
+  "raw_identity_total": 3274,
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1",
   "sec_spac_proof": {
-    "blob_sha": "372bd88e02cd7c3933297677baca2692444b7e75",
-    "count": 119,
+    "blob_sha": "262241034e94fe2c2c483e420b7e38965a15e733",
+    "count": 122,
     "path": "nasdaq-xray/master_sec_spac_proof_20261007.json",
-    "symbol_hash": "021c5e7e91ce46a0ed0b11e64d5bfc8a6f8893d6bbfec742ae0c74df0d87550a"
+    "symbol_hash": "a8473a5baae97d74f07eda2c0d112f073f2ea27b3d032c73de6c5d850ae37e49"
   },
-  "source_state_blob_sha": "6a4bf992c6441d4575363a2b7cc872c9c349b2c5",
-  "source_state_hash": "519cf4f8f599a43941c01e9f6e7880f5c4f6d95374605044ca92673f951d8c60",
+  "source_state_blob_sha": "84714701fb52871535b753f60fe5ded86e185776",
+  "source_state_hash": "dad9482227bf3043768ee9cdd641e56d65d0cc2f4a14e12d4bf9a0145635c6f5",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
   "status": "PARTIAL_UNKNOWN",
   "status_semantics": "IDENTITY_PARTITION_EXACT_WITH_UNKNOWN",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 93,
+  "unknown_count": 90,
   "unknown_detail": {
     "ALIS": {
       "exact_sec_spac_proof": false,
@@ -3547,15 +3547,6 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "LPAA": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Launch One Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "LPCV": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
@@ -3781,15 +3772,6 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "PLCI": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Pelican Acquisition II Corporation - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "PLMK": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
@@ -3841,15 +3823,6 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Range Capital Acquisition Corp. - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "RDAG": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Republic Digital Acquisition Company - Class A Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -4131,7 +4104,6 @@
     "LAFA",
     "LFAC",
     "LKSP",
-    "LPAA",
     "LPCV",
     "LWAC",
     "MACI",
@@ -4157,14 +4129,12 @@
     "PALO",
     "PCAP",
     "PECE",
-    "PLCI",
     "PLMK",
     "PMTR",
     "POLE",
     "PTOR",
     "QADR",
     "RANG",
-    "RDAG",
     "RIBB",
     "RNAQ",
     "RNGT",
