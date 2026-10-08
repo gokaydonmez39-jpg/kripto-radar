@@ -52,6 +52,8 @@ jobs:
           print("XRAY_MANUAL_FOLLOWUP_NO_DELIVERY_CLAIM=PASS")
           PY
       - name: Build exact-source manual-decision research report
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           python nasdaq-xray/manual_decision_report.py --out "$RUNNER_TEMP/xray_manual_private.json"
       - name: Enforce source bindings and sanitized public status
