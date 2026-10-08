@@ -1,0 +1,118 @@
+{
+  "schema": "XRAY_E2E_REMEDIATION_CHECKPOINT_20261009_V1",
+  "checkpoint_head_before_creation": "35fdc14438259c1bbdbee7656fb3bfc83eb62d7d",
+  "repo": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "audit_asof_et": "2026-10-08",
+  "verdict": "MANUAL_SIGNAL_PRODUCTION_BLOCKED",
+  "safety": {
+    "policy": "C4.17",
+    "control": "C4.27",
+    "execution": "NONE",
+    "real_money": "NO-GO",
+    "unknown_never_pass": true,
+    "alpha_threshold_change": false,
+    "broker_trade_calls": 0,
+    "broker_account_calls": 0,
+    "paid_provider_upgrades": 0
+  },
+  "completed_actions": [
+    {
+      "scope": "historical event evidence repo SHA fetch; no same-epoch promotion",
+      "commit": "89f6971e9d4fe595092fd64005a9d49cfb83c669",
+      "test_run": 37852605124,
+      "result": "SUCCESS"
+    },
+    {
+      "scope": "all live source SHA fence manual research",
+      "commit": "50eb1682c8f31d57a60c8ba1870de01ccbbdd4fd",
+      "test_run": 37852680672,
+      "result": "SUCCESS; PUBLIC_SOURCE_INTEGRITY_BLOCKED"
+    },
+    {
+      "scope": "read-only end-to-end current source audit with positive+7 negative MC tests",
+      "commit": "2af3ea461bb3dbecbf95efb5760df17b61efd892",
+      "ci_commit": "313cbab45635fe376ca575e8bac4b8eeb2d768b7",
+      "test_run": 37852937389,
+      "result": "SUCCESS_PROBE; RELEASE_BLOCKED"
+    },
+    {
+      "scope": "terminal MC, final, price, history and events SHA release fence; extra 5 negative tests",
+      "commit": "934667436f0117433b1d3dcf1a19513c0fd5576f",
+      "test_run": 37853197960,
+      "result": "SUCCESS_TESTS; READINESS_BLOCKED"
+    },
+    {
+      "scope": "Massive shadow MC scope rebased from stale MC/HISTORY unknowns to exact 2026-10-08 PRICE PASS set without alpha authority",
+      "commit": "27534b0bceb187828ea433384feada671c458846",
+      "test_run": 37853348366,
+      "result": "SUCCESS_SELFTEST; LIVE_BLOCKED_NO_RUNTIME_KEY"
+    }
+  ],
+  "source_observations": {
+    "master_qualified": 3183,
+    "master_unknown_spac": 72,
+    "master_sec_proof_transport": "HTTP_403_FAIL_CLOSED",
+    "price_pass": 514,
+    "price_blocked": 45,
+    "price_unknown": 0,
+    "price_block_cause": "RALLIES_CURRENT_CLOSE_MISSING_UNVERIFIED",
+    "direct_Rallies_spot_probes": {
+      "sample_count": 5,
+      "provider_date": "2026-10-08",
+      "provider_return": "NO_PRICE_DATA",
+      "changed_pass_count": 0
+    },
+    "full_scope_settlement": "PASS_2026_10_08",
+    "mc_primary": "MISSING_2026_10_08",
+    "bigdata_primary": "CREDITS_EXHAUSTED",
+    "financial_datasets_snapshot": "BALANCE_ZERO",
+    "massive_reference": "POINT_IN_TIME_PER_TICKER_PILOT_SUCCESS",
+    "massive_github_runner": "BLOCKED_NO_RUNTIME_KEY",
+    "massive_plan_public_limit": "FREE_BASIC_5_REQUESTS_PER_MINUTE",
+    "last_current_history": "2026-10-07",
+    "last_current_terminal": "2026-10-07",
+    "historical_pre_g9_technical_pass": 0,
+    "research_delivery": {
+      "ledger_entries": 0,
+      "real_registered_candidate": false,
+      "phone_receipt": false
+    },
+    "compilation_audit": "PASS_ZERO_ALPHA"
+  },
+  "blocking_steps_in_priority": [
+    {
+      "rank": 1,
+      "id": "MC_PRIMARY_CURRENT_ASOF",
+      "requirement": "Legitimate entitled permanent-zero automation available inside GitHub Actions or formally versioned admissible primary replacement; exact issuer/MIC/currency and ASOF, source set 514; cannot reuse WATCH as PASS."
+    },
+    {
+      "rank": 2,
+      "id": "PRICE_BLOCKED_45",
+      "requirement": "Obtain completed 30-session authorized bars and strictly classify each; 5 independent Rallies spot probes missing 8 Oct; keep BLOCK absent proof."
+    },
+    {
+      "rank": 3,
+      "id": "MASTER_SPAC_72",
+      "requirement": "Issuer/SEC official source classification with exact ASOF; GitHub SEC transport currently 403; name regex not authorization."
+    },
+    {
+      "rank": 4,
+      "id": "E2E_CURRENT_MC_HISTORY_STAGE1_FINAL",
+      "requirement": "After MC, run same-ASOF 8 Oct history 260 daily, 52 weekly, regime, legal, event, risk, RR; exact SHA and set partitions; suppress stale 7 Oct terminal."
+    },
+    {
+      "rank": 5,
+      "id": "MANUAL_RESEARCH_REGISTER_DELIVER",
+      "requirement": "Current source exact candidate only; registered lifecycle and eligible signal, safe issue creation, independently verified user-device receipt; no fake phone-delivery PASS."
+    },
+    {
+      "rank": 6,
+      "id": "UNIVERSE_ADR_CONTRACT",
+      "requirement": "Resolve early ADR-excluded reference scope against compiled C4.17 eligible ADR; require formally versioned policy decision, never silently rewrite epoch."
+    }
+  ],
+  "next_safe_continuation": "Re-read live main first; verify source provider automation capabilities and permitted permanent-$0 MC authority; no trading or account integration; remediate only with exact epoch source and regression tests.",
+  "checkpoint_does_not_prove_completion": true,
+  "alpha_authority": false
+}
