@@ -50,7 +50,7 @@ def inspect(master,price,req,terminal,readiness,master_sha,price_sha):
             and len(set(unknown))==len(unknown)==int(price.get("unknown_count",-1))
             and set(price.get("results") or {})==set(identity_pass)
             and len(price.get("results") or {})==len(identity_pass)
-            and set(price_pass|blocked|unknown).issubset(set(identity_pass))),
+            and (set(price_pass)|set(blocked)|set(unknown)).issubset(set(identity_pass))),
         "resolver_master_git_sha_exact":req.get("source_master_blob_sha")==master_sha,
         "resolver_price_git_sha_exact":req.get("source_price_blob_sha")==price_sha
             and req.get("source_price_pass_hash")==price.get("pass_hash")
