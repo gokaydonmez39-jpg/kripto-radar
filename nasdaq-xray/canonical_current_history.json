@@ -2115,8 +2115,10 @@
       },
       "provider_meta": {
         "eastmoney": {
-          "error": "ConnectionError:('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))",
-          "secid": "105.BLLN"
+          "attempts": 1,
+          "market": "NASDAQ_105",
+          "secid": "105.BLLN",
+          "usable": 230
         },
         "nasdaq": {
           "rows": 0,
@@ -6804,10 +6806,8 @@
       },
       "provider_meta": {
         "eastmoney": {
-          "attempts": 1,
-          "market": "NASDAQ_105",
-          "secid": "105.NAVN",
-          "usable": 235
+          "error": "ConnectionError:('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))",
+          "secid": "105.NAVN"
         },
         "nasdaq": {
           "rows": 0,
@@ -10543,8 +10543,8 @@
     }
   },
   "schema": "XRAY_CANONICAL_HISTORY_V1",
-  "source_mc_artifact": "nasdaq-xray/canonical_mc_bridge_20261007_c417_dv30_v13.json",
-  "source_mc_blob_sha": "4fc343a5ce8e2bd0e04314ea997e0895abfdaf46",
+  "source_mc_artifact": "nasdaq-xray/canonical_mc_bridge_20261007_c417_dv30_v19.json",
+  "source_mc_blob_sha": "91de33a2c1ac8e32b63fbef53d1431bfbf3646ed",
   "source_mc_policy_hash": "68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4",
   "source_mc_policy_version": "C4.17",
   "state_caps": {
