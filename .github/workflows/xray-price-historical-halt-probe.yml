@@ -5,6 +5,9 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/price_historical_halt_probe.py"
+      - "nasdaq-xray/historical_halt_fail_only.py"
+      - "nasdaq-xray/evidence/nasdaq_gral_20260923_full_session_halt_v1.json"
+      - "nasdaq-xray/price_dv30_recover_from_fullstate.py"
       - ".github/workflows/xray-price-historical-halt-probe.yml"
   workflow_dispatch:
 
@@ -30,6 +33,8 @@ jobs:
         run: |
           python -m py_compile nasdaq-xray/price_historical_halt_probe.py
           python nasdaq-xray/price_historical_halt_probe.py --selftest
+          python -m py_compile nasdaq-xray/historical_halt_fail_only.py nasdaq-xray/price_dv30_recover_from_fullstate.py
+          python nasdaq-xray/historical_halt_fail_only.py --selftest
 
       - name: Run official Nasdaq historical halt probe
         run: python nasdaq-xray/price_historical_halt_probe.py

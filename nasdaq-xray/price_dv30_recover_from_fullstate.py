@@ -5,6 +5,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from datetime import datetime
 from price_dv30_phase import eval_one, expected30, sina, classify
+from historical_halt_fail_only import apply_to_results as apply_historical_halt_fail_only
 
 ROOT=Path(__file__).resolve().parent
 INPUT=Path(os.getenv("XRAY_FULLSTATE_INPUT",str(ROOT/"canonical_full_hard_gate_20260930_state.json")))
@@ -1781,6 +1782,12 @@ def main():
         results,official_guard,asof
     )
 
+    # Exact-ASOF, official RSS full-session halt + independent missing-date
+    # corroboration. BLOCK -> terminal FAIL only; cannot create a PASS.
+    historical_halt_terminalized=apply_historical_halt_fail_only(
+        results,asof,exp30
+    )
+
     # Official first-trade/listing dates can terminalize recent listings when
     # the exact 30-session DV30 history cannot mathematically exist by ASOF.
     # This is fail-only and never manufactures a bar, price, volume, or PASS.
@@ -1867,6 +1874,8 @@ def main():
       "block_recovery_resolved_count":len(recovered_blocks),
       "block_recovery_resolved_symbols":sorted(recovered_blocks),
       "official_halt_guard_meta":official_halt_guard_meta,
+      "historical_halt_terminalized_count":len(historical_halt_terminalized),
+      "historical_halt_terminalized_symbols":sorted(historical_halt_terminalized),
       "official_halt_terminalized_count":len(official_halt_terminalized),
       "official_halt_terminalized_symbols":sorted(official_halt_terminalized),
       "official_listing_registry_meta":official_listing_registry_meta,
