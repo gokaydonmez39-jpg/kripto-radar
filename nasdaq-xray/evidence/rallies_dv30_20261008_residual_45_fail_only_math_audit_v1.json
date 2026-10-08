@@ -1,0 +1,954 @@
+{
+  "schema": "XRAY_C417_DV30_RESIDUAL_FAIL_ONLY_MATH_AUDIT_V1",
+  "asof_et": "2026-10-08",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "scope": "FAIL_ONLY_DIAGNOSTIC_NOT_CANONICAL_SOURCE_NOT_SETTLEMENT",
+  "source_master": {
+    "path": "nasdaq-xray/canonical_current_master_manifest.json",
+    "blob_sha": "0508f9ae561c471e49ad57f8166852915f948968"
+  },
+  "source_classification": {
+    "path": "nasdaq-xray/evidence/rallies_dv30_20261008_classification.json",
+    "blob_sha": "f8c9a8122b7f58e540b37f7455db51a2c2647106"
+  },
+  "source_resolver_request": {
+    "path": "nasdaq-xray/canonical_current_resolver_request.json",
+    "blob_sha": "692f65bb200b7ea76441f054dc53b03023710cd6"
+  },
+  "source_shards": [
+    {
+      "path": "nasdaq-xray/evidence/rallies_dv30_20261008_statshard_01.json",
+      "blob_sha": "5b042bfaf5f4f6ebd6b8354a2eb5db075fa9555c"
+    },
+    {
+      "path": "nasdaq-xray/evidence/rallies_dv30_20261008_statshard_02.json",
+      "blob_sha": "5bb8f0be8cfcce966eab145d16728888cf92fe2b"
+    },
+    {
+      "path": "nasdaq-xray/evidence/rallies_dv30_20261008_statshard_03.json",
+      "blob_sha": "8325c42d445025859c55cb682223d0ebfe457c59"
+    }
+  ],
+  "expected30": [
+    "2026-08-27",
+    "2026-08-28",
+    "2026-08-31",
+    "2026-09-01",
+    "2026-09-02",
+    "2026-09-03",
+    "2026-09-04",
+    "2026-09-08",
+    "2026-09-09",
+    "2026-09-10",
+    "2026-09-11",
+    "2026-09-14",
+    "2026-09-15",
+    "2026-09-16",
+    "2026-09-17",
+    "2026-09-18",
+    "2026-09-21",
+    "2026-09-22",
+    "2026-09-23",
+    "2026-09-24",
+    "2026-09-25",
+    "2026-09-28",
+    "2026-09-29",
+    "2026-09-30",
+    "2026-10-01",
+    "2026-10-02",
+    "2026-10-05",
+    "2026-10-06",
+    "2026-10-07",
+    "2026-10-08"
+  ],
+  "blocked_count": 45,
+  "upper_bound_strict_fail_only_count": 29,
+  "insufficient_to_prove_failure_count": 16,
+  "missing_asof_close_count": 44,
+  "mathematical_rule": "Let missing exact30 dollar-volume values be +infinity to maximize median. If sorted30 indices14,15 average < $50M, the true median must remain below $50M for any nonnegative missing values.",
+  "conditions": "Upper bound is a conservative rejection diagnostic. It does not independently prove current session close >=$5, nor permit canonical FAIL promotion, nor settle 45 residuals, nor create PASS.",
+  "results": {
+    "ALDF": {
+      "present_completed_sessions": 15,
+      "missing_completed_sessions": [
+        "2026-09-03",
+        "2026-09-04",
+        "2026-09-08",
+        "2026-09-09",
+        "2026-09-10",
+        "2026-09-14",
+        "2026-09-15",
+        "2026-09-16",
+        "2026-09-18",
+        "2026-09-25",
+        "2026-09-28",
+        "2026-10-02",
+        "2026-10-05",
+        "2026-10-07",
+        "2026-10-08"
+      ],
+      "upper_dv30_bound_if_missing_rows_unconstrained": null,
+      "strict_below_50m_regardless_missing_rows": false,
+      "last_completed_session_observed": false,
+      "status": "FAIL_ONLY_DIAGNOSTIC_NO_PRICE_GATE_PASS_NEVER_MC_ELIGIBLE"
+    },
+    "ALOV": {
+      "present_completed_sessions": 21,
+      "missing_completed_sessions": [
+        "2026-09-04",
+        "2026-09-09",
+        "2026-09-10",
+        "2026-09-11",
+        "2026-09-15",
+        "2026-09-21",
+        "2026-09-23",
+        "2026-09-28",
+        "2026-10-08"
+      ],
+      "upper_dv30_bound_if_missing_rows_unconstrained": 391878.31300049997,
+      "strict_below_50m_regardless_missing_rows": true,
+      "last_completed_session_observed": false,
+      "status": "FAIL_ONLY_DIAGNOSTIC_NO_PRICE_GATE_PASS_NEVER_MC_ELIGIBLE"
+    },
+    "APUR": {
+      "present_completed_sessions": 19,
+      "missing_completed_sessions": [
+        "2026-09-01",
+        "2026-09-02",
+        "2026-09-09",
+        "2026-09-10",
+        "2026-09-22",
+        "2026-09-24",
+        "2026-09-25",
+        "2026-09-28",
+        "2026-09-29",
+        "2026-10-06",
+        "2026-10-08"
+      ],
+      "upper_dv30_bound_if_missing_rows_unconstrained": 1831569.73,
+      "strict_below_50m_regardless_missing_rows": true,
+      "last_completed_session_observed": false,
+      "status": "FAIL_ONLY_DIAGNOSTIC_NO_PRICE_GATE_PASS_NEVER_MC_ELIGIBLE"
+    },
+    "BDCI": {
+      "present_completed_sessions": 22,
+      "missing_completed_sessions": [
+        "2026-09-11",
+        "2026-09-14",
+        "2026-09-17",
+        "2026-09-18",
+        "2026-09-25",
+        "2026-09-29",
+        "2026-09-30",
+        "2026-10-08"
+      ],
+      "upper_dv30_bound_if_missing_rows_unconstrained": 54080.511724715005,
+      "strict_below_50m_regardless_missing_rows": true,
+      "last_completed_session_observed": false,
+      "status": "FAIL_ONLY_DIAGNOSTIC_NO_PRICE_GATE_PASS_NEVER_MC_ELIGIBLE"
+    },
+    "BLIV": {
+      "present_completed_sessions": 15,
+      "missing_completed_sessions": [
+        "2026-08-27",
+        "2026-08-31",
+        "2026-09-02",
+        "2026-09-03",
+        "2026-09-15",
+        "2026-09-16",
+        "2026-09-17",
+        "2026-09-18",
+        "2026-09-22",
+        "2026-09-24",
+        "2026-09-25",
+        "2026-09-28",
+        "2026-10-06",
+        "2026-10-07",
+        "2026-10-08"
+      ],
+      "upper_dv30_bound_if_missing_rows_unconstrained": null,
+      "strict_below_50m_regardless_missing_rows": false,
+      "last_completed_session_observed": false,
+      "status": "FAIL_ONLY_DIAGNOSTIC_NO_PRICE_GATE_PASS_NEVER_MC_ELIGIBLE"
+    },
+    "BYFC": {
+      "present_completed_sessions": 28,
+      "missing_completed_sessions": [
+        "2026-09-25",
+        "2026-10-08"
+      ],
+      "upper_dv30_bound_if_missing_rows_unconstrained": 20978.324759155003,
+      "strict_below_50m_regardless_missing_rows": true,
+      "last_completed_session_observed": false,
+      "status": "FAIL_ONLY_DIAGNOSTIC_NO_PRICE_GATE_PASS_NEVER_MC_ELIGIBLE"
+    },
+    "CEPS": {
+      "present_completed_sessions": 13,
+      "missing_completed_sessions": [
+        "2026-09-02",
+        "2026-09-03",
+        "2026-09-04",
+        "2026-09-08",
+        "2026-09-10",
+        "2026-09-11",
+        "2026-09-14",
+        "2026-09-15",
+        "2026-09-16",
+        "2026-09-17",
+        "2026-09-22",
+        "2026-09-23",
+        "2026-09-25",
+        "2026-09-28",
+        "2026-09-29",
+        "2026-09-30",
+        "2026-10-08"
+      ],
+      "upper_dv30_bound_if_missing_rows_unconstrained": null,
+      "strict_below_50m_regardless_missing_rows": false,
+      "last_completed_session_observed": false,
+      "status": "FAIL_ONLY_DIAGNOSTIC_NO_PRICE_GATE_PASS_NEVER_MC_ELIGIBLE"
+    },
+    "CGCF": {
+      "present_completed_sessions": 21,
+      "missing_completed_sessions": [
+        "2026-08-28",
+        "2026-09-09",
+        "2026-09-11",
+        "2026-09-21",
+        "2026-09-25",
+        "2026-10-02",
+        "2026-10-06",
+        "2026-10-07",
+        "2026-10-08"
+      ],
+      "upper_dv30_bound_if_missing_rows_unconstrained": 172189.55,
+      "strict_below_50m_regardless_missing_rows": true,
+      "last_completed_session_observed": false,
+      "status": "FAIL_ONLY_DIAGNOSTIC_NO_PRICE_GATE_PASS_NEVER_MC_ELIGIBLE"
+    },
+    "ELWT": {
+      "present_completed_sessions": 27,
+      "missing_completed_sessions": [
+        "2026-09-03",
+        "2026-10-02",
+        "2026-10-08"
+      ],
+      "upper_dv30_bound_if_missing_rows_unconstrained": 58843.8275,
+      "strict_below_50m_regardless_missing_rows": true,
+      "last_completed_session_observed": false,
+      "status": "FAIL_ONLY_DIAGNOSTIC_NO_PRICE_GATE_PASS_NEVER_MC_ELIGIBLE"
+    },
+    "FORTY": {
+      "present_completed_sessions": 10,
+      "missing_completed_sessions": [
+        "2026-08-28",
+        "2026-08-31",
+        "2026-09-01",
+        "2026-09-02",
+        "2026-09-04",
+        "2026-09-08",
+        "2026-09-09",
+        "2026-09-10",
+        "2026-09-17",
+        "2026-09-18",
+        "2026-09-21",
+        "2026-09-23",
+        "2026-09-24",
+        "2026-09-28",
+        "2026-09-29",
+        "2026-09-30",
+        "2026-10-02",
+        "2026-10-06",
+        "2026-10-07",
+        "2026-10-08"
+      ],
+      "upper_dv30_bound_if_missing_rows_unconstrained": null,
+      "strict_below_50m_regardless_missing_rows": false,
+      "last_completed_session_observed": false,
+      "status": "FAIL_ONLY_DIAGNOSTIC_NO_PRICE_GATE_PASS_NEVER_MC_ELIGIBLE"
+    },
+    "FOXX": {
+      "present_completed_sessions": 28,
+      "missing_completed_sessions": [
+        "2026-09-24",
+        "2026-10-08"
+      ],
+      "upper_dv30_bound_if_missing_rows_unconstrained": 16815.797965,
+      "strict_below_50m_regardless_missing_rows": true,
+      "last_completed_session_observed": false,
+      "status": "FAIL_ONLY_DIAGNOSTIC_NO_PRICE_GATE_PASS_NEVER_MC_ELIGIBLE"
+    },
+    "GCGR": {
+      "present_completed_sessions": 12,
+      "missing_completed_sessions": [
+        "2026-08-28",
+        "2026-08-31",
+        "2026-09-01",
+        "2026-09-10",
+        "2026-09-11",
+        "2026-09-15",
+        "2026-09-16",
+        "2026-09-17",
+        "2026-09-18",
+        "2026-09-21",
+        "2026-09-23",
+        "2026-09-24",
+        "2026-09-28",
+        "2026-09-29",
+        "2026-09-30",
+        "2026-10-06",
+        "2026-10-07",
+        "2026-10-08"
+      ],
+      "upper_dv30_bound_if_missing_rows_unconstrained": null,
+      "strict_below_50m_regardless_missing_rows": false,
+      "last_completed_session_observed": false,
+      "status": "FAIL_ONLY_DIAGNOSTIC_NO_PRICE_GATE_PASS_NEVER_MC_ELIGIBLE"
+    },
+    "GHXI": {
+      "present_completed_sessions": 22,
+      "missing_completed_sessions": [
+        "2026-08-27",
+        "2026-08-28",
+        "2026-09-15",
+        "2026-09-16",
+        "2026-09-17",
+        "2026-09-29",
+        "2026-09-30",
+        "2026-10-08"
+      ],
+      "upper_dv30_bound_if_missing_rows_unconstrained": 323267.065,
+      "strict_below_50m_regardless_missing_rows": true,
+      "last_completed_session_observed": false,
+      "status": "FAIL_ONLY_DIAGNOSTIC_NO_PRICE_GATE_PASS_NEVER_MC_ELIGIBLE"
+    },
+    "GIX": {
+      "present_completed_sessions": 14,
+      "missing_completed_sessions": [
+        "2026-08-28",
+        "2026-09-01",
+        "2026-09-02",
+        "2026-09-14",
+        "2026-09-15",
+        "2026-09-16",
+        "2026-09-17",
+        "2026-09-21",
+        "2026-09-22",
+        "2026-09-23",
+        "2026-09-24",
+        "2026-09-28",
+        "2026-10-05",
+        "2026-10-06",
+        "2026-10-07",
+        "2026-10-08"
+      ],
+      "upper_dv30_bound_if_missing_rows_unconstrained": null,
+      "strict_below_50m_regardless_missing_rows": false,
+      "last_completed_session_observed": false,
+      "status": "FAIL_ONLY_DIAGNOSTIC_NO_PRICE_GATE_PASS_NEVER_MC_ELIGIBLE"
+    },
+    "GRAL": {
+      "present_completed_sessions": 29,
+      "missing_completed_sessions": [
+        "2026-09-23"
+      ],
+      "upper_dv30_bound_if_missing_rows_unconstrained": 123835005.72905657,
+      "strict_below_50m_regardless_missing_rows": false,
+      "last_completed_session_observed": true,
+      "status": "FAIL_ONLY_DIAGNOSTIC_NO_PRICE_GATE_PASS_NEVER_MC_ELIGIBLE"
+    },
+    "GYRO": {
+      "present_completed_sessions": 24,
+      "missing_completed_sessions": [
+        "2026-09-10",
+        "2026-09-11",
+        "2026-09-16",
+        "2026-09-17",
+        "2026-10-07",
+        "2026-10-08"
+      ],
+      "upper_dv30_bound_if_missing_rows_unconstrained": 13820.290451885001,
+      "strict_below_50m_regardless_missing_rows": true,
+      "last_completed_session_observed": false,
+      "status": "FAIL_ONLY_DIAGNOSTIC_NO_PRICE_GATE_PASS_NEVER_MC_ELIGIBLE"
+    },
+    "HDL": {
+      "present_completed_sessions": 18,
+      "missing_completed_sessions": [
+        "2026-08-28",
+        "2026-08-31",
+        "2026-09-04",
+        "2026-09-11",
+        "2026-09-14",
+        "2026-09-15",
+        "2026-09-22",
+        "2026-09-24",
+        "2026-09-25",
+        "2026-09-29",
+        "2026-10-07",
+        "2026-10-08"
+      ],
+      "upper_dv30_bound_if_missing_rows_unconstrained": 18751.626506624998,
+      "strict_below_50m_regardless_missing_rows": true,
+      "last_completed_session_observed": false,
+      "status": "FAIL_ONLY_DIAGNOSTIC_NO_PRICE_GATE_PASS_NEVER_MC_ELIGIBLE"
+    },
+    "HFBL": {
+      "present_completed_sessions": 23,
+      "missing_completed_sessions": [
+        "2026-09-01",
+        "2026-09-03",
+        "2026-09-10",
+        "2026-10-01",
+        "2026-10-06",
+        "2026-10-07",
+        "2026-10-08"
+      ],
+      "upper_dv30_bound_if_missing_rows_unconstrained": 27103.85331,
+      "strict_below_50m_regardless_missing_rows": true,
+      "last_completed_session_observed": false,
+      "status": "FAIL_ONLY_DIAGNOSTIC_NO_PRICE_GATE_PASS_NEVER_MC_ELIGIBLE"
+    },
+    "HVMC": {
+      "present_completed_sessions": 13,
+      "missing_completed_sessions": [
+        "2026-09-01",
+        "2026-09-02",
+        "2026-09-03",
+        "2026-09-08",
+        "2026-09-11",
+        "2026-09-15",
+        "2026-09-21",
+        "2026-09-22",
+        "2026-09-23",
+        "2026-09-25",
+        "2026-09-28",
+        "2026-09-30",
+        "2026-10-01",
+        "2026-10-02",
+        "2026-10-06",
+        "2026-10-07",
+        "2026-10-08"
+      ],
+      "upper_dv30_bound_if_missing_rows_unconstrained": null,
+      "strict_below_50m_regardless_missing_rows": false,
+      "last_completed_session_observed": false,
+      "status": "FAIL_ONLY_DIAGNOSTIC_NO_PRICE_GATE_PASS_NEVER_MC_ELIGIBLE"
+    },
+    "IPVV": {
+      "present_completed_sessions": 17,
+      "missing_completed_sessions": [
+        "2026-09-03",
+        "2026-09-08",
+        "2026-09-09",
+        "2026-09-10",
+        "2026-09-11",
+        "2026-09-14",
+        "2026-09-16",
+        "2026-09-18",
+        "2026-09-22",
+        "2026-09-28",
+        "2026-09-29",
+        "2026-10-01",
+        "2026-10-08"
+      ],
+      "upper_dv30_bound_if_missing_rows_unconstrained": 1323308.1,
+      "strict_below_50m_regardless_missing_rows": true,
+      "last_completed_session_observed": false,
+      "status": "FAIL_ONLY_DIAGNOSTIC_NO_PRICE_GATE_PASS_NEVER_MC_ELIGIBLE"
+    },
+    "IRHO": {
+      "present_completed_sessions": 21,
+      "missing_completed_sessions": [
+        "2026-08-28",
+        "2026-09-11",
+        "2026-09-15",
+        "2026-09-24",
+        "2026-09-25",
+        "2026-09-29",
+        "2026-10-06",
+        "2026-10-07",
+        "2026-10-08"
+      ],
+      "upper_dv30_bound_if_missing_rows_unconstrained": 407921.98750000005,
+      "strict_below_50m_regardless_missing_rows": true,
+      "last_completed_session_observed": false,
+      "status": "FAIL_ONLY_DIAGNOSTIC_NO_PRICE_GATE_PASS_NEVER_MC_ELIGIBLE"
+    },
+    "JL": {
+      "present_completed_sessions": 28,
+      "missing_completed_sessions": [
+        "2026-09-30",
+        "2026-10-08"
+      ],
+      "upper_dv30_bound_if_missing_rows_unconstrained": 26527.3245,
+      "strict_below_50m_regardless_missing_rows": true,
+      "last_completed_session_observed": false,
+      "status": "FAIL_ONLY_DIAGNOSTIC_NO_PRICE_GATE_PASS_NEVER_MC_ELIGIBLE"
+    },
+    "LTGR": {
+      "present_completed_sessions": 12,
+      "missing_completed_sessions": [
+        "2026-08-27",
+        "2026-09-02",
+        "2026-09-03",
+        "2026-09-08",
+        "2026-09-09",
+        "2026-09-11",
+        "2026-09-16",
+        "2026-09-18",
+        "2026-09-21",
+        "2026-09-22",
+        "2026-09-23",
+        "2026-09-28",
+        "2026-09-29",
+        "2026-09-30",
+        "2026-10-01",
+        "2026-10-06",
+        "2026-10-07",
+        "2026-10-08"
+      ],
+      "upper_dv30_bound_if_missing_rows_unconstrained": null,
+      "strict_below_50m_regardless_missing_rows": false,
+      "last_completed_session_observed": false,
+      "status": "FAIL_ONLY_DIAGNOSTIC_NO_PRICE_GATE_PASS_NEVER_MC_ELIGIBLE"
+    },
+    "MFI": {
+      "present_completed_sessions": 28,
+      "missing_completed_sessions": [
+        "2026-10-07",
+        "2026-10-08"
+      ],
+      "upper_dv30_bound_if_missing_rows_unconstrained": 70886.30140741171,
+      "strict_below_50m_regardless_missing_rows": true,
+      "last_completed_session_observed": false,
+      "status": "FAIL_ONLY_DIAGNOSTIC_NO_PRICE_GATE_PASS_NEVER_MC_ELIGIBLE"
+    },
+    "MGRT": {
+      "present_completed_sessions": 28,
+      "missing_completed_sessions": [
+        "2026-09-14",
+        "2026-10-08"
+      ],
+      "upper_dv30_bound_if_missing_rows_unconstrained": 621927.626088,
+      "strict_below_50m_regardless_missing_rows": true,
+      "last_completed_session_observed": false,
+      "status": "FAIL_ONLY_DIAGNOSTIC_NO_PRICE_GATE_PASS_NEVER_MC_ELIGIBLE"
+    },
+    "MGYR": {
+      "present_completed_sessions": 28,
+      "missing_completed_sessions": [
+        "2026-09-21",
+        "2026-10-08"
+      ],
+      "upper_dv30_bound_if_missing_rows_unconstrained": 48473.52054038,
+      "strict_below_50m_regardless_missing_rows": true,
+      "last_completed_session_observed": false,
+      "status": "FAIL_ONLY_DIAGNOSTIC_NO_PRICE_GATE_PASS_NEVER_MC_ELIGIBLE"
+    },
+    "MOLN": {
+      "present_completed_sessions": 20,
+      "missing_completed_sessions": [
+        "2026-08-31",
+        "2026-09-08",
+        "2026-09-09",
+        "2026-09-11",
+        "2026-09-17",
+        "2026-09-24",
+        "2026-09-25",
+        "2026-10-01",
+        "2026-10-02",
+        "2026-10-08"
+      ],
+      "upper_dv30_bound_if_missing_rows_unconstrained": 10727.555211359999,
+      "strict_below_50m_regardless_missing_rows": true,
+      "last_completed_session_observed": false,
+      "status": "FAIL_ONLY_DIAGNOSTIC_NO_PRICE_GATE_PASS_NEVER_MC_ELIGIBLE"
+    },
+    "NHIV": {
+      "present_completed_sessions": 10,
+      "missing_completed_sessions": [
+        "2026-08-27",
+        "2026-08-28",
+        "2026-08-31",
+        "2026-09-01",
+        "2026-09-02",
+        "2026-09-04",
+        "2026-09-08",
+        "2026-09-09",
+        "2026-09-11",
+        "2026-09-15",
+        "2026-09-16",
+        "2026-09-17",
+        "2026-09-24",
+        "2026-09-28",
+        "2026-09-30",
+        "2026-10-02",
+        "2026-10-05",
+        "2026-10-06",
+        "2026-10-07",
+        "2026-10-08"
+      ],
+      "upper_dv30_bound_if_missing_rows_unconstrained": null,
+      "strict_below_50m_regardless_missing_rows": false,
+      "last_completed_session_observed": false,
+      "status": "FAIL_ONLY_DIAGNOSTIC_NO_PRICE_GATE_PASS_NEVER_MC_ELIGIBLE"
+    },
+    "NIPG": {
+      "present_completed_sessions": 28,
+      "missing_completed_sessions": [
+        "2026-10-07",
+        "2026-10-08"
+      ],
+      "upper_dv30_bound_if_missing_rows_unconstrained": 179887.02779199998,
+      "strict_below_50m_regardless_missing_rows": true,
+      "last_completed_session_observed": false,
+      "status": "FAIL_ONLY_DIAGNOSTIC_NO_PRICE_GATE_PASS_NEVER_MC_ELIGIBLE"
+    },
+    "NOEM": {
+      "present_completed_sessions": 12,
+      "missing_completed_sessions": [
+        "2026-08-27",
+        "2026-09-02",
+        "2026-09-03",
+        "2026-09-09",
+        "2026-09-11",
+        "2026-09-14",
+        "2026-09-16",
+        "2026-09-18",
+        "2026-09-21",
+        "2026-09-22",
+        "2026-09-23",
+        "2026-09-24",
+        "2026-09-25",
+        "2026-09-28",
+        "2026-09-29",
+        "2026-09-30",
+        "2026-10-05",
+        "2026-10-08"
+      ],
+      "upper_dv30_bound_if_missing_rows_unconstrained": null,
+      "strict_below_50m_regardless_missing_rows": false,
+      "last_completed_session_observed": false,
+      "status": "FAIL_ONLY_DIAGNOSTIC_NO_PRICE_GATE_PASS_NEVER_MC_ELIGIBLE"
+    },
+    "ORIQ": {
+      "present_completed_sessions": 16,
+      "missing_completed_sessions": [
+        "2026-08-31",
+        "2026-09-02",
+        "2026-09-03",
+        "2026-09-04",
+        "2026-09-08",
+        "2026-09-16",
+        "2026-09-18",
+        "2026-09-21",
+        "2026-09-24",
+        "2026-09-25",
+        "2026-09-29",
+        "2026-09-30",
+        "2026-10-05",
+        "2026-10-08"
+      ],
+      "upper_dv30_bound_if_missing_rows_unconstrained": 1305215.31,
+      "strict_below_50m_regardless_missing_rows": true,
+      "last_completed_session_observed": false,
+      "status": "FAIL_ONLY_DIAGNOSTIC_NO_PRICE_GATE_PASS_NEVER_MC_ELIGIBLE"
+    },
+    "PFX": {
+      "present_completed_sessions": 27,
+      "missing_completed_sessions": [
+        "2026-09-24",
+        "2026-10-07",
+        "2026-10-08"
+      ],
+      "upper_dv30_bound_if_missing_rows_unconstrained": 156365.10551562003,
+      "strict_below_50m_regardless_missing_rows": true,
+      "last_completed_session_observed": false,
+      "status": "FAIL_ONLY_DIAGNOSTIC_NO_PRICE_GATE_PASS_NEVER_MC_ELIGIBLE"
+    },
+    "PHOE": {
+      "present_completed_sessions": 28,
+      "missing_completed_sessions": [
+        "2026-09-30",
+        "2026-10-08"
+      ],
+      "upper_dv30_bound_if_missing_rows_unconstrained": 91369.46797037641,
+      "strict_below_50m_regardless_missing_rows": true,
+      "last_completed_session_observed": false,
+      "status": "FAIL_ONLY_DIAGNOSTIC_NO_PRICE_GATE_PASS_NEVER_MC_ELIGIBLE"
+    },
+    "PONO": {
+      "present_completed_sessions": 10,
+      "missing_completed_sessions": [
+        "2026-09-01",
+        "2026-09-02",
+        "2026-09-03",
+        "2026-09-10",
+        "2026-09-15",
+        "2026-09-16",
+        "2026-09-17",
+        "2026-09-18",
+        "2026-09-21",
+        "2026-09-22",
+        "2026-09-23",
+        "2026-09-24",
+        "2026-09-25",
+        "2026-09-28",
+        "2026-09-29",
+        "2026-09-30",
+        "2026-10-01",
+        "2026-10-06",
+        "2026-10-07",
+        "2026-10-08"
+      ],
+      "upper_dv30_bound_if_missing_rows_unconstrained": null,
+      "strict_below_50m_regardless_missing_rows": false,
+      "last_completed_session_observed": false,
+      "status": "FAIL_ONLY_DIAGNOSTIC_NO_PRICE_GATE_PASS_NEVER_MC_ELIGIBLE"
+    },
+    "RACD": {
+      "present_completed_sessions": 22,
+      "missing_completed_sessions": [
+        "2026-09-01",
+        "2026-09-02",
+        "2026-09-11",
+        "2026-09-18",
+        "2026-09-30",
+        "2026-10-06",
+        "2026-10-07",
+        "2026-10-08"
+      ],
+      "upper_dv30_bound_if_missing_rows_unconstrained": 53297.375,
+      "strict_below_50m_regardless_missing_rows": true,
+      "last_completed_session_observed": false,
+      "status": "FAIL_ONLY_DIAGNOSTIC_NO_PRICE_GATE_PASS_NEVER_MC_ELIGIBLE"
+    },
+    "ROMA": {
+      "present_completed_sessions": 25,
+      "missing_completed_sessions": [
+        "2026-08-28",
+        "2026-09-16",
+        "2026-09-21",
+        "2026-10-07",
+        "2026-10-08"
+      ],
+      "upper_dv30_bound_if_missing_rows_unconstrained": 25563.453069299998,
+      "strict_below_50m_regardless_missing_rows": true,
+      "last_completed_session_observed": false,
+      "status": "FAIL_ONLY_DIAGNOSTIC_NO_PRICE_GATE_PASS_NEVER_MC_ELIGIBLE"
+    },
+    "SCPQ": {
+      "present_completed_sessions": 7,
+      "missing_completed_sessions": [
+        "2026-08-31",
+        "2026-09-01",
+        "2026-09-02",
+        "2026-09-03",
+        "2026-09-04",
+        "2026-09-08",
+        "2026-09-09",
+        "2026-09-10",
+        "2026-09-11",
+        "2026-09-14",
+        "2026-09-15",
+        "2026-09-16",
+        "2026-09-17",
+        "2026-09-18",
+        "2026-09-24",
+        "2026-09-25",
+        "2026-09-28",
+        "2026-09-29",
+        "2026-10-01",
+        "2026-10-02",
+        "2026-10-06",
+        "2026-10-07",
+        "2026-10-08"
+      ],
+      "upper_dv30_bound_if_missing_rows_unconstrained": null,
+      "strict_below_50m_regardless_missing_rows": false,
+      "last_completed_session_observed": false,
+      "status": "FAIL_ONLY_DIAGNOSTIC_NO_PRICE_GATE_PASS_NEVER_MC_ELIGIBLE"
+    },
+    "SENEB": {
+      "present_completed_sessions": 9,
+      "missing_completed_sessions": [
+        "2026-08-27",
+        "2026-08-28",
+        "2026-08-31",
+        "2026-09-01",
+        "2026-09-04",
+        "2026-09-09",
+        "2026-09-11",
+        "2026-09-14",
+        "2026-09-15",
+        "2026-09-16",
+        "2026-09-17",
+        "2026-09-18",
+        "2026-09-21",
+        "2026-09-22",
+        "2026-09-24",
+        "2026-09-25",
+        "2026-09-28",
+        "2026-09-30",
+        "2026-10-02",
+        "2026-10-06",
+        "2026-10-08"
+      ],
+      "upper_dv30_bound_if_missing_rows_unconstrained": null,
+      "strict_below_50m_regardless_missing_rows": false,
+      "last_completed_session_observed": false,
+      "status": "FAIL_ONLY_DIAGNOSTIC_NO_PRICE_GATE_PASS_NEVER_MC_ELIGIBLE"
+    },
+    "SHOT": {
+      "present_completed_sessions": 15,
+      "missing_completed_sessions": [
+        "2026-09-03",
+        "2026-09-04",
+        "2026-09-08",
+        "2026-09-09",
+        "2026-09-11",
+        "2026-09-23",
+        "2026-09-25",
+        "2026-09-28",
+        "2026-09-29",
+        "2026-10-01",
+        "2026-10-02",
+        "2026-10-05",
+        "2026-10-06",
+        "2026-10-07",
+        "2026-10-08"
+      ],
+      "upper_dv30_bound_if_missing_rows_unconstrained": null,
+      "strict_below_50m_regardless_missing_rows": false,
+      "last_completed_session_observed": false,
+      "status": "FAIL_ONLY_DIAGNOSTIC_NO_PRICE_GATE_PASS_NEVER_MC_ELIGIBLE"
+    },
+    "SSBI": {
+      "present_completed_sessions": 25,
+      "missing_completed_sessions": [
+        "2026-08-27",
+        "2026-08-28",
+        "2026-09-01",
+        "2026-09-29",
+        "2026-10-08"
+      ],
+      "upper_dv30_bound_if_missing_rows_unconstrained": 42793.02136159,
+      "strict_below_50m_regardless_missing_rows": true,
+      "last_completed_session_observed": false,
+      "status": "FAIL_ONLY_DIAGNOSTIC_NO_PRICE_GATE_PASS_NEVER_MC_ELIGIBLE"
+    },
+    "SVCC": {
+      "present_completed_sessions": 16,
+      "missing_completed_sessions": [
+        "2026-08-28",
+        "2026-09-09",
+        "2026-09-15",
+        "2026-09-16",
+        "2026-09-21",
+        "2026-09-23",
+        "2026-09-28",
+        "2026-09-29",
+        "2026-09-30",
+        "2026-10-01",
+        "2026-10-02",
+        "2026-10-05",
+        "2026-10-07",
+        "2026-10-08"
+      ],
+      "upper_dv30_bound_if_missing_rows_unconstrained": 1879532.705,
+      "strict_below_50m_regardless_missing_rows": true,
+      "last_completed_session_observed": false,
+      "status": "FAIL_ONLY_DIAGNOSTIC_NO_PRICE_GATE_PASS_NEVER_MC_ELIGIBLE"
+    },
+    "TWLV": {
+      "present_completed_sessions": 17,
+      "missing_completed_sessions": [
+        "2026-08-27",
+        "2026-09-01",
+        "2026-09-02",
+        "2026-09-03",
+        "2026-09-04",
+        "2026-09-09",
+        "2026-09-14",
+        "2026-09-16",
+        "2026-09-17",
+        "2026-09-18",
+        "2026-10-01",
+        "2026-10-05",
+        "2026-10-08"
+      ],
+      "upper_dv30_bound_if_missing_rows_unconstrained": 1256635.0986000001,
+      "strict_below_50m_regardless_missing_rows": true,
+      "last_completed_session_observed": false,
+      "status": "FAIL_ONLY_DIAGNOSTIC_NO_PRICE_GATE_PASS_NEVER_MC_ELIGIBLE"
+    },
+    "VHCP": {
+      "present_completed_sessions": 11,
+      "missing_completed_sessions": [
+        "2026-08-27",
+        "2026-09-02",
+        "2026-09-04",
+        "2026-09-09",
+        "2026-09-10",
+        "2026-09-15",
+        "2026-09-16",
+        "2026-09-18",
+        "2026-09-21",
+        "2026-09-24",
+        "2026-09-25",
+        "2026-09-28",
+        "2026-09-29",
+        "2026-10-01",
+        "2026-10-02",
+        "2026-10-05",
+        "2026-10-06",
+        "2026-10-07",
+        "2026-10-08"
+      ],
+      "upper_dv30_bound_if_missing_rows_unconstrained": null,
+      "strict_below_50m_regardless_missing_rows": false,
+      "last_completed_session_observed": false,
+      "status": "FAIL_ONLY_DIAGNOSTIC_NO_PRICE_GATE_PASS_NEVER_MC_ELIGIBLE"
+    },
+    "WLCO": {
+      "present_completed_sessions": 20,
+      "missing_completed_sessions": [
+        "2026-08-28",
+        "2026-09-01",
+        "2026-09-03",
+        "2026-09-09",
+        "2026-09-11",
+        "2026-09-18",
+        "2026-09-23",
+        "2026-09-28",
+        "2026-10-02",
+        "2026-10-08"
+      ],
+      "upper_dv30_bound_if_missing_rows_unconstrained": 354579.49,
+      "strict_below_50m_regardless_missing_rows": true,
+      "last_completed_session_observed": false,
+      "status": "FAIL_ONLY_DIAGNOSTIC_NO_PRICE_GATE_PASS_NEVER_MC_ELIGIBLE"
+    },
+    "YHGJ": {
+      "present_completed_sessions": 21,
+      "missing_completed_sessions": [
+        "2026-08-27",
+        "2026-09-02",
+        "2026-09-03",
+        "2026-09-11",
+        "2026-09-15",
+        "2026-09-17",
+        "2026-09-21",
+        "2026-09-28",
+        "2026-10-08"
+      ],
+      "upper_dv30_bound_if_missing_rows_unconstrained": 15608.381300000001,
+      "strict_below_50m_regardless_missing_rows": true,
+      "last_completed_session_observed": false,
+      "status": "FAIL_ONLY_DIAGNOSTIC_NO_PRICE_GATE_PASS_NEVER_MC_ELIGIBLE"
+    }
+  }
+}
