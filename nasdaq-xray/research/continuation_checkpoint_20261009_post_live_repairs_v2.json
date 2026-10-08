@@ -84,14 +84,21 @@
       "file": "nasdaq-xray/massive_mc_resume_shadow.py",
       "change": "deterministic 13-second cooldown positive and complete-with-zero-requests negative test",
       "workflow_run": 37858800256,
-      "test": "IN_PROGRESS_LAST_READBACK"
+      "test": "SUCCESS_SYNTHETIC_ONLY"
     },
     {
       "commit": "f06f9345ac4d1ac035dd72e243f1401f104504f4",
       "file": ".github/workflows/xray-massive-mc-resume-shadow.yml",
       "change": "scope provider key and attestation env to authorized restore and collect steps",
       "workflow_run": 37858849379,
-      "test": "PENDING_LAST_READBACK"
+      "test": "SUCCESS_LICENSE_BLOCKED"
+    },
+    {
+      "commit": "79ffd7ea4c3a897df28a75b2f59ade305f6bb92e",
+      "file": ".github/workflows/xray-massive-mc-resume-shadow.yml",
+      "change": "correct misleading AES-GCM step label; Fernet authenticates via HMAC",
+      "workflow_run": null,
+      "test": "PENDING_LAST_READBACK_COSMETIC"
     }
   ],
   "factory_evidence": {
@@ -121,7 +128,7 @@
   ],
   "required_external_action": "Obtain explicit Massive vendor written entitlement for unattended non-display investment strategy analytics and 14-day encrypted storage, then operator add repository API key and license-evidence SHA256 through GitHub Actions secrets; set non-display license flag true ONLY when permitted, not on inference.",
   "next_actions": [
-    "Re-read live main, last Actions runs and all new commits, particularly 37858800256, 37858849379, 37858876938.",
+    "Re-read live main and future Actions after the checkpoint; most recent crypto-label-only commit 79ffd7ea is unverified by a completed workflow at this snapshot.",
     "Verify 13-second rate-fence deterministic selftest and secret-scoped workflow actual Action logs.",
     "Verify exact master/PRICE/resolver Git SHA in next E2E snapshot; do not overwrite immutable artifacts.",
     "Evaluate legitimate Bigdata C4.17 primary current-MC source vs separately versioned approved alternative; no shadow promotion.",
@@ -130,5 +137,8 @@
     "Prove notification delivery on an actual eligible candidate independently from synthetic and accepted transport.",
     "Continue on live current, append new evidence and new checkpoint; never infer success from a workflow green check."
   ],
-  "status": "RESEARCH_PRODUCTION_NO_GO"
+  "status": "RESEARCH_PRODUCTION_NO_GO",
+  "last_confirmed_actions_run": 37858849379,
+  "last_confirmed_actions_result": "SUCCESS_LICENSE_BLOCKED_NO_REAL_VENDOR_OBSERVATIONS",
+  "readback_head_before_final_checkpoint_update": "79ffd7ea4c3a897df28a75b2f59ade305f6bb92e"
 }
