@@ -1,0 +1,121 @@
+{
+  "schema": "XRAY_G9_X_SOCIAL_DISCOVERY_RESEARCH_ONLY_V1",
+  "date_trt": "2026-10-08",
+  "readback_parent_head": "80ab57b317f32004dc162f7d19f58e40b4749f23",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "unknown_never_pass": true,
+  "strict_g9_pass": false,
+  "authority": false,
+  "never_used_by_alpha": true,
+  "untrusted_x_content_not_entitlement_proof": true,
+  "x_search_limit": "Public X search endpoint and timeline returned 403/DisabledError; only indexed public previews could be searched. No complete firehose/account access; no claim of exhaustive coverage.",
+  "existing_registry": {
+    "path": "nasdaq-xray/g9_provider_registry_20261003.json",
+    "blob_sha": "c41b9529fd99f06e88d227710a2a587538abf5d3",
+    "count": 71
+  },
+  "leads": [
+    {
+      "name": "Pyth Nasdaq Basic Marketplace",
+      "origin": "X-indexed public PythNetwork repost leads; cross-checked with issuer and distributor originals",
+      "source_urls": [
+        "https://www.pyth.network/blog/pyth-external-distributor-of-nasdaq-basic",
+        "https://www.pyth.network/marketplace/nasdaq",
+        "https://www.nasdaq.com/products/data/equities/nasdaq-basic"
+      ],
+      "verified": "Distributor authorization announced 2026-09-22; Nasdaq Basic is Nasdaq venue BBO rather than national SIP NBBO; Nasdaq written client permission required and marketplace page marked Coming Soon",
+      "g9_status": "BLOCKED_NON_CONSOLIDATED_PLUS_AUTHORIZATION_AND_COST_UNPROVEN",
+      "reopen": "Authorized consolidated NBBO product with permanently zero-cost automated rights and same-run RTH bid/ask/trade witness"
+    },
+    {
+      "name": "Nasdaq Consolidated Quotes and Trades (CQT), direct official NCDS API",
+      "origin": "Public official Nasdaq data API documentation corroborated during X-led provider scout",
+      "source_urls": [
+        "https://www.nasdaq.com/products/data/data-link/api",
+        "https://github.com/Nasdaq/NasdaqCloudDataService-REST-API/blob/main/restapi/lastquote.md",
+        "https://github.com/Nasdaq/NasdaqCloudDataService-REST-API/blob/main/restapi/lasttrade.md",
+        "https://data.nasdaq.com/databases/NB/documentation"
+      ],
+      "verified": "CQT is an official consolidated real-time or 15-minute delayed source; lastquote and lasttrade routes exist and use Bearer authorization. Official market data datasets are licensed/fee gated; credentials and permanent-zero rights absent; lastquote has a quote-level timestamp, not necessarily separate independent bid/ask times",
+      "g9_status": "BLOCKED_LAWFUL_ENTITLEMENT_AND_COST_AND_RUNTIME_WITNESS_UNPROVEN",
+      "reopen": "Official provider grant of appropriate CQT automated non-display rights with zero recurring or request fees, separately timed bid/ask/trade, and authorized scheduler adapter"
+    },
+    {
+      "name": "Lumora Stock Data Hub",
+      "origin": "Indexed X marketing snippet and echoed OKX Wallet feed",
+      "source_urls": [
+        "https://x.com/lumora_agent",
+        "https://www.aicoin.com/en/news-flash/3024896"
+      ],
+      "verified": "Unverified marketing claim for free real-time one-minute US equity bars through OKX agent marketplace; no independent consolidated SIP NBBO provenance or automated unattended usage rights",
+      "g9_status": "DISCOVERY_ONLY_UNVERIFIED_NON_NBBO"
+    },
+    {
+      "name": "Tradier API",
+      "origin": "Re-screened from existing 71-provider negative registry",
+      "source_urls": [
+        "https://docs.tradier.com/docs/market-data",
+        "https://support.tradier.com/kb/guide/en/permitted-and-blocked-countries-CLzSa0D1rf/Steps/4997916"
+      ],
+      "verified": "Official consolidated live feed for account holders; Turkey residency on disallowed-country list",
+      "g9_status": "BLOCKED_TURKEY_RESIDENCY"
+    },
+    {
+      "name": "Fennel API NBBO",
+      "origin": "Re-screened from existing 71-provider negative registry",
+      "source_urls": [
+        "https://api.fennel.com/docs",
+        "https://fennel.com/products/api",
+        "https://help.fennel.com/article/149-creating-an-account"
+      ],
+      "verified": "Official NBBO endpoint exists but Core Brokerage API $4.99/month and requires US identity/address/SSN",
+      "g9_status": "BLOCKED_COST_AND_JURISDICTION"
+    },
+    {
+      "name": "tastytrade DXLink",
+      "origin": "Re-screened from existing 71-provider negative registry",
+      "source_urls": [
+        "https://developer.tastytrade.com/docs/concepts/market-data/",
+        "https://support.tastytrade.com/support/s/solutions/articles/43000435355"
+      ],
+      "verified": "Funded customers receive streaming/REST real-time feeds; Turkey is restricted",
+      "g9_status": "BLOCKED_FUNDED_ACCOUNT_AND_TURKEY"
+    },
+    {
+      "name": "IBKR snapshot data",
+      "origin": "Re-screened from existing 71-provider negative registry",
+      "source_urls": [
+        "https://brokerage.ibkr.com/en/pricing/market-data-pricing.php",
+        "https://www.interactivebrokers.com/docs/web-api/v1/endpoints/market-data/regulatory-snapshot"
+      ],
+      "verified": "Provider advertises 100 free NBBO snapshots monthly to accounts but API regulatory snapshot documentation charges $0.01 each; subscription and recurring automation rights unclear; no zero-cost pass",
+      "g9_status": "BLOCKED_UNRESOLVED_API_FEE_AND_RUNTIME_AUTHORIZATION"
+    }
+  ],
+  "adjacent_mc_observation": {
+    "source": "Connected Massive market/reference app in this ChatGPT session",
+    "date": "2026-10-07",
+    "symbols_sampled": [
+      "ASTS",
+      "MSTR",
+      "QNT"
+    ],
+    "result": "Read-only ticker overview endpoint returned market_cap values for all 3; private tool result not persisted as vendor dataset",
+    "github_scheduler_result": "Massive MC Free-Tier Shadow workflow 37827977217 finished success but telemetry BLOCKED_NO_RUNTIME_KEY, so no persisted MC PASS",
+    "status": "DIAGNOSTIC_NOT_MC_AUTHORITY",
+    "source_url": "https://github.com/gokaydonmez39-jpg/kripto-radar/actions/runs/37827977217"
+  },
+  "required_true_g9_claims": [
+    "national consolidated NBBO with real timestamps",
+    "separate fresh bid and ask and trade witness within C4.17 limits",
+    "legal automated/non-display non-redistribution authorization",
+    "permanent no-fee applicability under the agreed policy",
+    "sanctioned unattended scheduled runtime adapter",
+    "same-run RTH witness"
+  ],
+  "result": "NEW_TECHNICAL_LEADS_RECORDED_NO_PROVIDER_QUALIFIES_STRICT_G9",
+  "no_existing_files_modified": true
+}
