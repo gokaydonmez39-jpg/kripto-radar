@@ -491,7 +491,37 @@ def request_diagnostic_only_changed(prior: dict, current: dict) -> bool:
     new_core = {k: v for k, v in current.items()
                 if k not in REQUEST_DIAGNOSTIC_ONLY_FIELDS}
     if old_core != new_core:
-        return False
+        # Same-ASOF pointer and terminal SHA revisions are not new PRICE, MC,
+        # settlement or operating-issuer authority. Require BOTH current blobs
+        # to exist and bind exactly; never suppress real gate/source drift.
+        volatile = {"source_pointer_blob_sha", "settlement_core_source_blob_sha"}
+        old_frozen = {k: v for k, v in old_core.items() if k not in volatile}
+        new_frozen = {k: v for k, v in new_core.items() if k not in volatile}
+        if old_frozen != new_frozen:
+            return False
+        if not (
+            prior.get("status") == current.get("status") == "IDLE"
+            and prior.get("asof_et") == current.get("asof_et")
+            and prior.get("pointer_asof_et") == current.get("pointer_asof_et") == current.get("asof_et")
+            and prior.get("settlement_required") is False
+            and current.get("settlement_required") is False
+            and prior.get("settlement_already_proven") is False
+            and current.get("settlement_already_proven") is False
+            and current.get("source_pointer_path") == "nasdaq-xray/chatgpt_canonical_state_v2.json"
+            and current.get("settlement_core_source_path") == "nasdaq-xray/canonical_current_terminal.json"
+        ):
+            return False
+        for key in volatile:
+            if not all(re.fullmatch(r"[0-9a-f]{40}", str(record.get(key) or "")) for record in (prior, current)):
+                return False
+        try:
+            if (
+                current["source_pointer_blob_sha"] != blob_sha(ROOT / "chatgpt_canonical_state_v2.json")
+                or current["settlement_core_source_blob_sha"] != blob_sha(ROOT / "canonical_current_terminal.json")
+            ):
+                return False
+        except (OSError, subprocess.SubprocessError):
+            return False
     return bool(
         current.get("status") == "IDLE"
         and current.get("symbols") == []
@@ -821,6 +851,33 @@ def selftest() -> None:
     assert not request_diagnostic_only_changed(prior_diag, {**new_diag, "symbols":["AAA"]})
     assert not request_diagnostic_only_changed(prior_diag, {**new_diag, "settlement_required":True})
     assert not request_diagnostic_only_changed(prior_diag, {**new_diag, "queue_hash":"changed"})
+    # Positive: frozen operating queue/PRICE and epoch unchanged, while both
+    # same-ASOF diagnostic snapshots advanced after the previous FULL witness.
+    prior_epoch = {**prior_diag, "asof_et":"2026-10-07",
+        "pointer_asof_et":"2026-10-07",
+        "source_pointer_path":"nasdaq-xray/chatgpt_canonical_state_v2.json",
+        "settlement_core_source_path":"nasdaq-xray/canonical_current_terminal.json",
+        "source_pointer_blob_sha":"a"*40,
+        "settlement_core_source_blob_sha":"b"*40}
+    new_epoch = {**prior_epoch, "master_unknown_count":159,
+        "source_pointer_blob_sha":blob_sha(ROOT / "chatgpt_canonical_state_v2.json"),
+        "settlement_core_source_blob_sha":blob_sha(ROOT / "canonical_current_terminal.json")}
+    assert request_diagnostic_only_changed(prior_epoch, new_epoch)
+    # Negative controls: stale/forged pointer, terminal, rollover, PRICE,
+    # settlement, operating queue, or unknown price are never rebindable.
+    for bad in (
+        {**new_epoch, "source_pointer_blob_sha":"c"*40},
+        {**new_epoch, "settlement_core_source_blob_sha":"d"*40},
+        {**new_epoch, "pointer_asof_et":"2026-10-06"},
+        {**new_epoch, "asof_et":"2026-10-08"},
+        {**new_epoch, "settlement_required":True},
+        {**new_epoch, "settlement_already_proven":True},
+        {**new_epoch, "source_price_blob_sha":"e"*40},
+        {**new_epoch, "queue_hash":"different"},
+        {**new_epoch, "price_unknown_count":1},
+        {**new_epoch, "source_pointer_path":"nasdaq-xray/other.json"},
+    ):
+        assert not request_diagnostic_only_changed(prior_epoch, bad)
     assert select_optional_active([], FULL_ROLE) is None
     one=[{"path":"x","blob":"b","obj":{"bridge_role":FULL_ROLE},"role":FULL_ROLE}]
     assert select_optional_active(one, FULL_ROLE) is one[0]
