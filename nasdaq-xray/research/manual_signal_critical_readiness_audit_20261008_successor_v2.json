@@ -1,0 +1,77 @@
+{
+  "schema": "XRAY_MANUAL_SIGNAL_CRITICAL_READINESS_SUCCESSOR_V2",
+  "audit_asof_trt": "2026-10-08",
+  "source_main_head": "18b7e369b51bcf7566d6aa88431f765f7fa123b2",
+  "manual_mode": "RESEARCH_ONLY_MANUAL_DECISION",
+  "release_gate": "BLOCKED",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "new_master": {
+    "asof_et": "2026-10-08",
+    "blob_sha": "0508f9ae561c471e49ad57f8166852915f948968",
+    "pass_identity": 3183,
+    "unknown_identity": 72
+  },
+  "prior_terminal": {
+    "asof_et": "2026-10-07",
+    "blob_sha": "ea9c41cd1e5971e78d85bf3f620d7f8c4e01034f",
+    "bound_master_sha": "bae58decaf54e4209bc76db84143f3a543d43923",
+    "technical_finalists": 17,
+    "pre_g9_tech_pass": 0,
+    "mc_primary_pass": 0,
+    "mc_fallback_watch": 472
+  },
+  "source_epoch_status": "MISMATCH_FAIL_CLOSED",
+  "manual_report": {
+    "latest_run_id": 37839848334,
+    "conclusion": "failure",
+    "failed_stage": "UNBOUND_SOURCE:master",
+    "independent_unit_tests": "PASS",
+    "source_fault_artifact_uploaded": true
+  },
+  "delivery": {
+    "verified_workflow_run_id": 37839626633,
+    "workflow_status": "SUCCESS",
+    "actual_phone_receipt": "UNVERIFIED",
+    "real_candidate_issue_receipt": "NOT_TESTED_NO_CANDIDATES",
+    "ledger_records": 0
+  },
+  "lifecycle": {
+    "shadow_unit_tests": "PASS",
+    "expiry_clock_regression": "PASS",
+    "live_wiring": "BLOCKED",
+    "candidate_records": 0,
+    "live_followup_notification": "UNVERIFIED"
+  },
+  "automations": {
+    "active_expected": 5,
+    "active_observed": 5,
+    "canonical_manual_mode_bound": false,
+    "phone_delivery_receipt": false
+  },
+  "outstanding": [
+    "FULL_CURRENT_ASOF_CANONICAL_CHAIN",
+    "PROVEN_PRIMARY_MC_OR_INDEPENDENT_APPROVED_AUTHORITY",
+    "RISK_RR_PASS_WITH_REAL_DATA",
+    "MANUAL_SIGNAL_RELEASE_BINDING",
+    "LIVE_PHONE_NOTIFICATION_RECEIPT",
+    "CANONICAL_FOLLOWUP_PERSISTENCE",
+    "ALL_FOLLOWUP_STATE_E2E",
+    "SCHEDULE_AND_PROVIDER_FAILOVER_PROOF"
+  ],
+  "nonclaims": {
+    "universe_wide_no_setup_asserted": false,
+    "notification_delivered": false,
+    "production_ready": false,
+    "synthetic_live_signal_generated": false
+  },
+  "patch_commit_shas": [
+    "474a6fda91f03bddbf60e16ff1cc8f6d6038a096",
+    "0227d8ab1ca27ad809009b84e9d75d3818c813da",
+    "86a2153095884bd2dd82453dbedd190e2dd99fd7",
+    "1808af82fb268ee6c0a9bce1d733d2fb48d07313",
+    "989249d15ad646a26fa5a5fd70c39ef1e4d8bcbe",
+    "18b7e369b51bcf7566d6aa88431f765f7fa123b2"
+  ]
+}
