@@ -1,0 +1,86 @@
+{
+  "schema": "XRAY_CONTINUATION_CHECKPOINT_20261009_FOUR_STAGE_SOURCE_HARDSTOP_V5",
+  "repository": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "prior_checkpoint": "nasdaq-xray/research/continuation_checkpoint_20261009_zero_cost_provider_probe_v4.json",
+  "parent_head_at_preparation": "cb996e5ef48df131bbb68b6e6759be6eb1294766",
+  "work_asof_et": "2026-10-08",
+  "today_trt": "2026-10-09",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "mode": "RESEARCH_ONLY_MANUAL_DECISION",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "free_only": true,
+  "stages": [
+    {
+      "number": 1,
+      "name": "Free successor MC contract and provider-source rights",
+      "commit": "8a10e7621833f9947f17937f4fc161f67ce89d97",
+      "test": "PASS_NEGATIVE_CASES",
+      "real_primary_source": "BLOCKED",
+      "reason": "Bigdata credits exhausted, Massive non-display entitlement unavailable, official SEC API Github runner HTTP403; C4.17 unchanged"
+    },
+    {
+      "number": 2,
+      "name": "SEC PIT/corporate action / history source hygiene",
+      "commits": [
+        "453981bdab72dbb375f7081603ded429eea25094",
+        "ce9bbdb44f124dd7606d77b09bf870c1485e975f"
+      ],
+      "failed_initial_runs": [
+        37860990776,
+        37860990757
+      ],
+      "passing_run": 37861025451,
+      "test": "PASS_WEEKEND_DUPLICATE_MALFORMED_HARD_FAIL",
+      "limitation": "Weekday filtering is necessary but NOT complete official-market-holiday/260-session calendar proof"
+    },
+    {
+      "number": 3,
+      "name": "Current history/weekly/regime/setup/event/risk terminal",
+      "test": "PASS_SYNTHETIC_TERMINAL_GUARDS",
+      "real_current_terminal": "INCOMPLETE",
+      "reason": "Primary MC source missing; terminal still earlier ASOF"
+    },
+    {
+      "number": 4,
+      "name": "Delivery dedup/expiry/official-halt stop",
+      "test": "PASS_SYNTHETIC_ONLY",
+      "actual_phone_receipt": "UNVERIFIED",
+      "reason": "No current eligible delivery candidate and no device acknowledgement"
+    }
+  ],
+  "four_stage_workflow": ".github/workflows/xray-zero-cost-four-stage-verification.yml",
+  "four_stage_workflow_initial_commit": "2693e158d52c0d04b24770471613a92cd74e4f22",
+  "four_stage_workflow_regression_commit": "cb996e5ef48df131bbb68b6e6759be6eb1294766",
+  "first_passing_workflow_run": 37860928247,
+  "final_passing_workflow_run": 37861038825,
+  "final_passing_workflow_head": "cb996e5ef48df131bbb68b6e6759be6eb1294766",
+  "real_source_integrity_readiness": "SOURCE_INTEGRITY_PASS",
+  "real_current_mc_count": 0,
+  "master_unknown": 72,
+  "price_blocked": 45,
+  "price_pass": 514,
+  "real_manual_research_signals_confirmed": 0,
+  "real_manual_research_signals_confirmed_meaning": "ZERO_ATTESTED_NOT_A_CLAIM_THAT_NO_ELIGIBLE_SETUP_EXISTS",
+  "real_device_notification_delivery_confirmed": false,
+  "actions_artifact_name": "xray-four-stage-zero-cost-readiness-v1",
+  "actions_artifact_expiry_utc": "2026-10-22T23:43:59Z",
+  "live_provider_blockers": [
+    "BIGDATA_NO_CREDITS",
+    "MASSIVE_NO_WRITTEN_AUTOMATED_NONDISPLAY_GRANT",
+    "SEC_API_GITHUB_HTTP_403",
+    "INDEPENDENT_FREE_MC_WITH_AUTO_LICENSE_NOT_PROVEN"
+  ],
+  "required_before_go": [
+    "Source market cap identity CIK/listing exact PIT and lawful automatic use, same date+price Git SHA",
+    "Price/RTH and 260 completed + 52 weeks with official session calendar and split continuity",
+    "Exact ASOF source chain history->weekly->regime->family setup->legal->event->risk/RR->final",
+    "Only true candidate register dedup and actual device delivery receipt"
+  ],
+  "production_release": false,
+  "status": "NO-GO",
+  "no_trading_permission_granted": true
+}
