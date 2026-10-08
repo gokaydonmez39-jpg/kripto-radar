@@ -1,0 +1,104 @@
+name: XRAY Massive MC Encrypted Resume Shadow
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/massive_mc_resume_shadow.py"
+      - ".github/workflows/xray-massive-mc-resume-shadow.yml"
+  schedule:
+    - cron: "07,27,47 * * * *"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: xray-massive-mc-encrypted-resume-shadow
+  cancel-in-progress: false
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      XRAY_MASSIVE_API_KEY: ${{ secrets.XRAY_MASSIVE_API_KEY }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install AES-GCM-backed authenticated encryption dependency
+        run: |
+          python -m pip install "cryptography>=44,<47"
+      - name: Compile / fail-closed encryption + replay + market status selftests
+        run: |
+          python -m py_compile nasdaq-xray/massive_mc_resume_shadow.py
+          python nasdaq-xray/massive_mc_resume_shadow.py --selftest
+          python nasdaq-xray/massive_mc_shadow_probe.py --selftest
+      - name: Restore most recent encrypted checkpoint (authorized GH Actions artifact only)
+        env:
+          XRAY_WORKFLOW_FILE: "xray-massive-mc-resume-shadow.yml"
+        run: |
+          if [[ -z "$XRAY_MASSIVE_API_KEY" ]]; then
+            echo "XRAY_RESUME_RESTORE=SKIP_MISSING_SECRET"
+            exit 0
+          fi
+          mkdir -p "$RUNNER_TEMP/xray_mc_restore"
+          # Only completed successful SAME WORKFLOW runs. Invalid ciphertext fails
+          # in Python, never becomes a fresh success within the same ASOF.
+          set -o pipefail
+          ids=$(gh run list --workflow "$XRAY_WORKFLOW_FILE" --branch main --status success --limit 80 --json databaseId --jq '.[].databaseId')
+          found=0
+          for id in $ids; do
+            if gh run download "$id" -n xray-massive-mc-checkpoint-encrypted-v1 -D "$RUNNER_TEMP/xray_mc_restore" >/dev/null 2>&1; then
+              file="$RUNNER_TEMP/xray_mc_restore/xray_mc_checkpoint_current.enc"
+              [[ -s "$file" ]] || { echo "XRAY_RESUME_CHECKPOINT_MISSING_AFTER_DOWNLOAD" >&2; exit 1; }
+              cp "$file" "$RUNNER_TEMP/xray_mc_checkpoint_previous.enc"
+              found=1
+              break
+            fi
+          done
+          echo "XRAY_RESUME_RESTORE_CIPHERTEXT_FOUND=$found"
+      - name: Collect exact-current Massive reference MC observations under 5/min free quota
+        run: |
+          python nasdaq-xray/massive_mc_resume_shadow.py \
+            --limit 25 \
+            --restore "$RUNNER_TEMP/xray_mc_checkpoint_previous.enc" \
+            --checkpoint "$RUNNER_TEMP/xray_mc_checkpoint_current.enc" \
+            --telemetry "$RUNNER_TEMP/xray_mc_resume_health.json"
+      - name: Verify public health contains NO vendor values, AL, orders or receipts
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])/"xray_mc_resume_health.json"
+          v=json.loads(p.read_text())
+          assert v["schema"]=="XRAY_MASSIVE_MC_RESUME_HEALTH_V1"
+          assert v["execution"]=="NONE" and v["real_money"]=="NO-GO"
+          assert v["alpha_authority"] is False
+          assert v["mc_primary_pass_created"] is False
+          assert v["research_signal_created"] is False
+          assert v["r92_created"] is False
+          assert v["vendor_data_in_public_artifact"] is False
+          assert v["processed_count"]+v["pending_count"]==v["total_price_pass"]
+          assert v["last_run_requests"]<=25
+          print("XRAY_MASSIVE_PUBLIC_ONLY_TELEMETRY=PASS")
+          PY
+      - name: Store ciphertext only (never plaintext vendor data)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-massive-mc-checkpoint-encrypted-v1
+          path: ${{ runner.temp }}/xray_mc_checkpoint_current.enc
+          retention-days: 14
+          if-no-files-found: ignore
+      - name: Store safe operational-only status
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-massive-mc-resume-operational-v1
+          path: ${{ runner.temp }}/xray_mc_resume_health.json
+          retention-days: 14
+          if-no-files-found: error
