@@ -251,6 +251,15 @@ def main():
         "scope": len(candidates),
         "full_session_halt_candidates": sorted(k for k,v in results.items() if v["status"]=="FULL_SESSION_HALT_CANDIDATE"),
         "unknown": sorted(k for k,v in results.items() if v["status"]!="FULL_SESSION_HALT_CANDIDATE"),
+        "date_probe_diagnostics": {
+            d: {"status": x.get("status"), "row_count": x.get("row_count"),
+                "reason": x.get("reason"), "http_status": x.get("http_status"),
+                "error_type": str(x.get("reason") or "").split(":")[0]}
+            for d,x in date_diagnostics.items()
+        },
+        "matching_symbol_halt_row_counts": {
+            sym: len(r.get("official_evidence") or []) for sym,r in results.items()
+        },
     }, sort_keys=True))
 
 if __name__ == "__main__":
