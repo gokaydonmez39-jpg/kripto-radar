@@ -13,6 +13,7 @@ import json
 import math
 import os
 import pathlib
+import re
 import sys
 import urllib.error
 import urllib.parse
@@ -33,6 +34,26 @@ def as_number(value):
         return None
     return n if math.isfinite(n) and n > 0 else None
 
+def provider_spac_suspect(row):
+    """Conservative vendor-side veto; SEC-origin primary classification stays mandatory.
+
+    Provider SIC alone cannot prove operating-company status. In particular,
+    non-6770 SIC is not evidence of a completed SPAC business combination.
+    """
+    if not isinstance(row, dict):
+        return None
+    sic=str(row.get("sic_code") or "").strip()
+    if sic=="6770":
+        return "PROVIDER_SIC_6770_BLANK_CHECK"
+    description=" ".join(str(row.get(k) or "") for k in
+                         ("name","description","sic_description")).casefold()
+    if re.search(r"\\bblank[-\\s]+check\\b|\\bspecial[-\\s]+purpose[-\\s]+acquisition\\b", description):
+        return "PROVIDER_TEXT_BLANK_CHECK"
+    name=str(row.get("name") or "").casefold()
+    if re.search(r"\\bacquisition\\s+(?:corp(?:oration)?\\.?|co\\.?|company|ltd\\.?|limited)\\b", name):
+        return "PROVIDER_NAME_ACQUISITION_SUSPECT"
+    return None
+
 def classify(symbol, row):
     """Diagnostic classification only. No MC primary PASS is possible."""
     if not isinstance(row, dict) or row.get("ticker") != symbol:
@@ -46,6 +67,11 @@ def classify(symbol, row):
     cik = str(row.get("cik", "")).strip()
     if not cik.isdigit() or int(cik) <= 0:
         return {"state": "UNKNOWN", "reason": "CIK_UNPROVEN"}
+    spac_reason = provider_spac_suspect(row)
+    if spac_reason:
+        return {"state": "UNKNOWN", "reason": "SPAC_SUSPECT_OFFICIAL_SEC_PROOF_REQUIRED",
+                "shadow_subreason": spac_reason, "alpha_authority": False,
+                "r92_eligible": False}
     mc = as_number(row.get("market_cap"))
     if mc is None:
         return {"state": "UNKNOWN", "reason": "MARKET_CAP_UNAVAILABLE"}
@@ -90,6 +116,22 @@ def selftest():
         bad = dict(fixture, **{key: value})
         assert classify("TEST", bad)["state"] == "UNKNOWN"
     assert classify("TEST", dict(fixture, market_cap=1_900_000_000))["state"] == "SHADOW_OBSERVED_BELOW_2B"
+    # ALIS-style provider conflict: company is described as a blank check
+    # despite a non-6770 provider SIC. This MUST NEVER become an MC pass.
+    alis=dict(fixture, name="Calisa Acquisition Corp",
+              description="A blank check company", sic_code=7374,
+              market_cap=2_500_000_000)
+    assert provider_spac_suspect(alis) == "PROVIDER_TEXT_BLANK_CHECK"
+    assert classify("TEST", alis)["state"] == "UNKNOWN"
+    bccq=dict(fixture, name="Bleichroeder Acquisition Corp III",
+              description="Blank check company", sic_code=6770)
+    assert provider_spac_suspect(bccq) == "PROVIDER_SIC_6770_BLANK_CHECK"
+    assert classify("TEST", bccq)["state"] == "UNKNOWN"
+    nonblank=dict(fixture, name="Operating Analytics Inc",
+                  description="Commercial software business", sic_code=7372)
+    assert classify("TEST", nonblank)["state"] == "SHADOW_OBSERVED_ABOVE_2B"
+    suspicious_name=dict(fixture, name="Example Acquisition Corp")
+    assert classify("TEST", suspicious_name)["state"] == "UNKNOWN"
     assert MAX_REQUESTS_PER_INVOCATION == 5
     print("XRAY_MASSIVE_MC_SHADOW_SELFTEST=PASS (ZERO_ALPHA)")
 
