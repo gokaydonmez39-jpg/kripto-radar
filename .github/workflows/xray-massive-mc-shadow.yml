@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
     inputs:
       offset:
-        description: "Zero-based MC UNKNOWN slice start index (auto = rotating hourly bucket)"
+        description: "Zero-based current PRICE/DV30 PASS slice index (auto = daily advancing hourly bucket; max five calls)"
         type: string
         required: false
         default: "auto"
