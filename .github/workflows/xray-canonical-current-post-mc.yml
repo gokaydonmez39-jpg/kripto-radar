@@ -229,12 +229,20 @@ jobs:
           print("price_blocked_count="+str(len(blocked)))
           print("residual_symbol_count="+str(len(symbols)))
           print("residual_exact="+("true" if residual_exact else "false"))
-          print("reason="+(
-              ("CURRENT_FAIL_ONLY_RESIDUAL_READY_FOR_FULL_SCOPE_HANDOFF" if blocked else
-               "CURRENT_COMPLETE_PRICE_READY_FOR_FULL_SCOPE_HANDOFF")
-              if eligible else
-              "UPSTREAM_PRICE_OR_RESIDUAL_SCOPE_NOT_COMPLETE"
-          ))
+          def operational_reason(unknown, blocked, symbols, settlement_ok):
+              if unknown:
+                  return "CURRENT_PRICE_UNKNOWN_NEVER_PASS"
+              if symbols!=blocked:
+                  return "RESIDUAL_SCOPE_MISMATCH_FAIL_CLOSED"
+              if not settlement_ok:
+                  return "SETTLEMENT_REQUIRED_NOT_PROVEN_FAIL_CLOSED"
+              return ("CURRENT_FAIL_ONLY_RESIDUAL_READY_FOR_FULL_SCOPE_HANDOFF" if blocked
+                      else "CURRENT_COMPLETE_PRICE_READY_FOR_FULL_SCOPE_HANDOFF")
+          assert operational_reason([],["T"],["T"],False)=="SETTLEMENT_REQUIRED_NOT_PROVEN_FAIL_CLOSED"
+          assert operational_reason(["T"],["T"],["T"],True)=="CURRENT_PRICE_UNKNOWN_NEVER_PASS"
+          assert operational_reason([],["T"],[],True)=="RESIDUAL_SCOPE_MISMATCH_FAIL_CLOSED"
+          assert operational_reason([],["T"],["T"],True)=="CURRENT_FAIL_ONLY_RESIDUAL_READY_FOR_FULL_SCOPE_HANDOFF"
+          print("reason="+operational_reason(unknown,blocked,symbols,settlement_ok))
           PY
 
       - name: Build exact current full-scope resolver handoff
