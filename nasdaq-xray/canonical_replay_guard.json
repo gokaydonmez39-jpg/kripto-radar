@@ -12,77 +12,77 @@
       "asof_et": "2026-10-07",
       "path": "canonical_current_master_manifest.json",
       "schema": "XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1",
-      "sha256": "ef0965422d2246a6955996109f5ecdba85dd5442f1180469e7fb26fd049c9b95",
+      "sha256": "ccd63a44c413d5508394db02b549110e48467bbc8460ad869445dde454e0e339",
       "status": "PRESENT"
     },
     {
       "asof_et": "2026-10-07",
       "path": "canonical_current_price_dv30.json",
       "schema": "XRAY_CANONICAL_PRICE_DV30_V1",
-      "sha256": "f7d33620197dededee79268623395a9dacb76c55edcbc097f2f614021c589013",
+      "sha256": "decd59bc5801dd3696bcc1911cabb00b216f7402aebc6e0dd6d5695cf8e65ef8",
       "status": "PRESENT"
     },
     {
       "asof_et": "2026-10-07",
       "path": "canonical_current_history.json",
       "schema": "XRAY_CANONICAL_HISTORY_V1",
-      "sha256": "7b7d23ee48819902cc85fb8b75ec803567ac280912d78fe7c536da218f99f0bb",
+      "sha256": "eb8ec0887eee57d16ead026dd0e2b41327d7aa8d352c2cb4fde6cd1b9b178dbf",
       "status": "PRESENT"
     },
     {
       "asof_et": "2026-10-07",
       "path": "canonical_current_legal.json",
       "schema": "XRAY_CANONICAL_LEGAL_V1",
-      "sha256": "59257ce4246cbba0e794c5f7550e033330dd32b367560a294fba15075d5ba8dd",
+      "sha256": "4a607f7b860a0c6e1e1cecd7abeced2120277db3fbd8e90673ac99ef7a506e7c",
       "status": "PRESENT"
     },
     {
       "asof_et": "2026-10-07",
       "path": "canonical_current_stage1.json",
       "schema": "XRAY_STAGE1_SHADOW_V1",
-      "sha256": "abed76e7df242e9bdb9f1e811258ac372e6d22ec34d63786fce60c77b97be00f",
+      "sha256": "63fcfcf2f9b423ccbd5367e9c57558ce5ff2091baa361f4f649bc2772561e31e",
       "status": "PRESENT"
     },
     {
       "asof_et": "2026-10-07",
       "path": "canonical_current_regime.json",
       "schema": "XRAY_REGIME_BREADTH_SHADOW_V1",
-      "sha256": "47e4380add4dae20ede37253f054a4b47b17be855bd5d1de6ea574f61d5468f4",
+      "sha256": "ba2062d2abf4dca17a1fb4f24f464848dd5685460c0dc47ea8937fb037c98971",
       "status": "PRESENT"
     },
     {
       "asof_et": "2026-10-07",
       "path": "canonical_current_deep_geometry.json",
       "schema": "XRAY_DEEP_GEOMETRY_V1",
-      "sha256": "aced83436a5fcdcf84cb0d153f0c0a09b709f33319fb75e62d3f2c6ac26bc19c",
+      "sha256": "d080c2b97a573280645cb4b054aec72971ad702d74321f8b01e6bc752c657e2a",
       "status": "PRESENT"
     },
     {
       "asof_et": "2026-10-07",
       "path": "canonical_current_event_state.json",
       "schema": "XRAY_CANONICAL_EVENT_STATE_V1",
-      "sha256": "3137a81c7f03b98cba0d5bde5db807b8a5a023ff68b7b12be0f59578909bfc9c",
+      "sha256": "3a468f31f1499a7e4394a8af7e339d880c3d45e2ef5355c5b253f220a4a50d13",
       "status": "PRESENT"
     },
     {
       "asof_et": "2026-10-07",
       "path": "canonical_current_final_tech.json",
       "schema": "XRAY_FINAL_TECH_SHADOW_V1",
-      "sha256": "226b6bcd2f5db9a33f1a86794860514d40bcb1c0799ed7309743fb02e6940e7f",
+      "sha256": "8414c3fb966446f2122591d6d504d40d9c67bcc5607daa0f6572f73ef04d531e",
       "status": "PRESENT"
     },
     {
       "asof_et": "2026-10-07",
       "path": "canonical_current_terminal.json",
       "schema": "XRAY_CANONICAL_CURRENT_TERMINAL_V1",
-      "sha256": "ee66a68ed0285f555e72af72ca4987131467e1c820c712ff2afb6e08bd9fca5c",
+      "sha256": "18b9191713f67622cbd02516b6eb4f866da544ae412e2c8c3f9efa9eb5c6c5f2",
       "status": "PRESENT"
     },
     {
       "asof_et": "2026-10-07",
       "path": "chatgpt_canonical_state_v2.json",
       "schema": "XRAY_GITHUB_DURABLE_STATE_V3",
-      "sha256": "131e0796d08403fdfe4855729db58d461d9896e83803c90d8bbbfac0b15d9b0e",
+      "sha256": "50fe308c4a43c19723e9953f7e6dd2aea7bbaefc0b895ac2b2219f11976ca066",
       "status": "PRESENT"
     }
   ],
@@ -92,7 +92,7 @@
   ],
   "candidate_delivery_keys": [],
   "execution": "NONE",
-  "generated_at_utc": "2026-10-08T02:54:10.492972+00:00",
+  "generated_at_utc": "2026-10-08T04:31:48.965485+00:00",
   "policy_binding": {
     "dv30_exact30_bound": true,
     "legacy_dv20_forbidden": true,
