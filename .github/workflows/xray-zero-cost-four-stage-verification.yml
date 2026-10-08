@@ -7,6 +7,7 @@ on:
       - "nasdaq-xray/mc_free_successor_contract.py"
       - "nasdaq-xray/sec_official_free_mc_transport_probe.py"
       - "nasdaq-xray/history_transport_cache_guard.py"
+      - "nasdaq-xray/history_transport_cache_guard_selftest.py"
       - "nasdaq-xray/manual_decision_report.py"
       - "nasdaq-xray/delivery_prepare.py"
       - "nasdaq-xray/delivery_prepare_selftest.py"
@@ -36,7 +37,7 @@ jobs:
           python nasdaq-xray/mc_free_successor_contract.py --selftest
           python nasdaq-xray/sec_official_free_mc_transport_probe.py --selftest
           echo "XRAY_STAGE1_CONTRACT=PASS_PRODUCTION_PRIMARY_NOT_AUTHORIZED"
-      - name: Stage 2 - history calendar, official/price and corporate evidence negative guards
+      - name: Stage 2 - history weekday/duplicate guard and official-price provenance regressions
         working-directory: nasdaq-xray
         run: |
           python history_transport_cache_guard_selftest.py
