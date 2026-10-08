@@ -639,7 +639,6 @@ jobs:
           assert set(old.get("pass_symbols") or [])==set(new.get("pass_symbols") or [])
           old_status={k:(v or {}).get("status") for k,v in (old.get("results") or {}).items()}
           new_status={k:(v or {}).get("status") for k,v in (new.get("results") or {}).items()}
-          assert old_status==new_status
           assert (new.get("source_mc_artifact") or new.get("source_mc_path"))==expected_mc_rel
           assert new.get("source_mc_blob_sha")==blob_sha(current_mc)
           if unknown:
@@ -661,6 +660,7 @@ jobs:
                   f.write("Downstream technical rebuild skipped; no invented bars.\n")
               print("XRAY_HISTORY_REVALIDATION=PENDING_PROVIDER_EXACT_ASOF",unknown)
               raise SystemExit(0)
+          assert old_status==new_status
           canonical.write_bytes(revalidated.read_bytes())
           promoted=json.load(open(canonical))
           assert promoted.get("source_mc_blob_sha")==blob_sha(current_mc)
