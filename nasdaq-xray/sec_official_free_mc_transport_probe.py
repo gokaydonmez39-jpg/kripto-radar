@@ -140,7 +140,19 @@ def selftest():
     bad=json.loads(json.dumps(fak))
     bad["facts"]["dei"]["EntityCommonStockSharesOutstanding"]["units"]["shares"][0]["val"]=True
     assert select_shares(bad,subs,asof)["status"]=="UNKNOWN"
+    assert not valid_operator_contact("NASDAQ-XRAY bot <bot@users.noreply.github.com>")
+    assert not valid_operator_contact("")
+    assert not valid_operator_contact("bot@example.com")
+    assert valid_operator_contact("NASDAQ-XRAY operator (operator@sample.org)")
     print("SEC_FREE_MC_PIT_SELFTEST=PASS_ACCEPTANCE_FUTURE_CIK_LIST_BOOL_NO_PRIMARY")
+
+def valid_operator_contact(ua:str) -> bool:
+    """SEC requires a real contact; GitHub noreply cannot identify an operator."""
+    if not isinstance(ua,str) or len(ua)>220:
+        return False
+    if any(x in ua.lower() for x in ("noreply", "no-reply", "example.com", "localhost")):
+        return False
+    return bool(re.search(r"[^@\\s]+@[^@\\s]+\\.[^@\\s]+",ua))
 
 def run(asof:str) -> dict:
     base={"schema":"XRAY_SEC_FREE_MC_TRANSPORT_V1","asof_et":asof,
@@ -150,10 +162,9 @@ def run(asof:str) -> dict:
           "production_mc_primary_pass":False,
           "probe_symbol":"AAPL","sec_transport":"UNTESTED",
           "issuer_shares_vintage":"UNKNOWN","reason":"NOT_RUN"}
-    ua=os.environ.get("XRAY_SEC_USER_AGENT",
-        "NASDAQ-XRAY-Research/1.0 (xray-dataplane-bot@users.noreply.github.com)")
-    if not re.search(r"[^@\s]+@[^@\s]+\.[^@\s]+",ua):
-        return dict(base,sec_transport="BLOCKED",reason="SEC_DECLARED_UA_CONTACT_MISSING")
+    ua=os.environ.get("XRAY_SEC_USER_AGENT","")
+    if not valid_operator_contact(ua):
+        return dict(base,sec_transport="BLOCKED",reason="SEC_OPERATOR_CONTACT_REQUIRED")
     try:
         facts=get_json(FACTS_URL,ua)
         subs=get_json(SUB_URL,ua)
