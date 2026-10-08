@@ -19,7 +19,7 @@ SCHEMA = "XRAY_PRICE_HISTORICAL_HALT_FAIL_ONLY_WITNESS_V1"
 
 
 def _time(value):
-    clean = re.sub(r"\\s*\\.\\s*\\d+\\s*$", "", str(value or "")).strip()
+    clean = re.sub(r"[ ]*[.][0-9]+[ ]*$", "", str(value or "")).strip()
     for fmt in ("%H:%M:%S", "%H:%M"):
         try:
             return dt.datetime.strptime(clean, fmt).time()
