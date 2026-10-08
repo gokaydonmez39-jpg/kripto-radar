@@ -4,6 +4,7 @@ on:
     paths:
       - 'nasdaq-xray/massive_mc_shadow_probe.py'
       - '.github/workflows/xray-massive-mc-shadow.yml'
+      - 'nasdaq-xray/massive_mc_public_telemetry.py'
   workflow_dispatch:
     inputs:
       offset:
@@ -36,17 +37,24 @@ jobs:
         run: |
           python -m py_compile nasdaq-xray/massive_mc_shadow_probe.py
           python nasdaq-xray/massive_mc_shadow_probe.py --selftest
+          python -m py_compile nasdaq-xray/massive_mc_public_telemetry.py
+          python nasdaq-xray/massive_mc_public_telemetry.py --selftest
       - name: Research-only Massive reference probe (maximum five calls)
         run: |
           python nasdaq-xray/massive_mc_shadow_probe.py \
             --offset "$XRAY_MASSIVE_OFFSET" \
             --limit 5 \
-            --out "$RUNNER_TEMP/xray_massive_mc_shadow.json"
-      - name: Attach research-only evidence; never commit to MC authority
-        if: always()
+            --out "$RUNNER_TEMP/xray_massive_mc_shadow.json" > "$RUNNER_TEMP/xray_massive_private_stdout.log"
+          echo "MC_SHADOW_PROBE_COMPLETED_PRIVATE_EPHEMERAL"
+      - name: Sanitize public telemetry (no vendor market data)
+        run: |
+          python nasdaq-xray/massive_mc_public_telemetry.py \
+            --input "$RUNNER_TEMP/xray_massive_mc_shadow.json" \
+            --out "$RUNNER_TEMP/xray_massive_mc_telemetry.json"
+      - name: Publish operational telemetry only
         uses: actions/upload-artifact@v4
         with:
-          name: xray-massive-mc-shadow
-          path: ${{ runner.temp }}/xray_massive_mc_shadow.json
-          if-no-files-found: warn
+          name: xray-massive-mc-operational-telemetry
+          path: ${{ runner.temp }}/xray_massive_mc_telemetry.json
+          if-no-files-found: error
           retention-days: 14
