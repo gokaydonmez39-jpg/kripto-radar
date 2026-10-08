@@ -89,17 +89,18 @@ def full_session_halt_candidate(row: dict, sym: str, session_date: str):
         return None
     rd = str(row.get("ResumptionDate") or "").strip()
     rt = parse_et_time(row.get("ResumptionTradeTime"))
-    if rd:
-        try:
-            resume_date = datetime.strptime(rd, "%m/%d/%Y").date().isoformat()
-        except Exception:
-            return None
-        if resume_date < session_date:
-            return None
-        if resume_date == session_date and rt is not None and rt <= time(16, 0):
-            return None
-        if resume_date == session_date and rt is None:
-            return None
+    # Historical absence of a published resume date/time cannot independently
+    # establish a *full* RTH halt. Keep the hypothesis UNKNOWN, not FAIL.
+    if not rd or rt is None:
+        return None
+    try:
+        resume_date = datetime.strptime(rd, "%m/%d/%Y").date().isoformat()
+    except Exception:
+        return None
+    if resume_date < session_date:
+        return None
+    if resume_date == session_date and rt <= time(16, 0):
+        return None
     return {
         "symbol": sym.upper(),
         "session_date": session_date,
@@ -145,6 +146,12 @@ def selftest():
     assert ev and ev["proof"] == "NASDAQ_TRADER_HISTORICAL_FULL_SESSION_HALT_CANDIDATE", ev
     intraday = dict(row, HaltTime="12:00:00.000", ResumptionDate="09/23/2026", ResumptionTradeTime="13:00:00")
     assert full_session_halt_candidate(intraday, "GRAL", "2026-09-23") is None
+    # A halt without an independently published resumption is not proven
+    # to span the full regular session; avoid a false terminal FAIL.
+    assert full_session_halt_candidate(dict(row, ResumptionDate=""), "GRAL", "2026-09-23") is None
+    assert full_session_halt_candidate(dict(row, ResumptionTradeTime=""), "GRAL", "2026-09-23") is None
+    assert full_session_halt_candidate(dict(row, ResumptionDate="09/23/2026", ResumptionTradeTime="16:00:00"), "GRAL", "2026-09-23") is None
+    assert full_session_halt_candidate(dict(row, ResumptionDate="09/23/2026", ResumptionTradeTime="16:00:01"), "GRAL", "2026-09-23") is not None
     wrong_market = dict(row, Market="NYSE")
     assert full_session_halt_candidate(wrong_market, "GRAL", "2026-09-23") is None
     sample={
