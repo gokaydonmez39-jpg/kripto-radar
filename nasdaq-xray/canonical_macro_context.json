@@ -2,7 +2,7 @@
   "alpha_authority": false,
   "authority": "US_TREASURY_ZERO_KEY_FALLBACK",
   "execution": "NONE",
-  "generated_at_utc": "2026-10-08T16:31:57.493548+00:00",
+  "generated_at_utc": "2026-10-08T20:07:56.289320+00:00",
   "real_money": "NO-GO",
   "reason": "FRED_API_KEY_MISSING_OR_UNAVAILABLE",
   "schema": "XRAY_MACRO_CONTEXT_V1",
@@ -13,10 +13,10 @@
   ],
   "status": "READY",
   "treasury_zero_key": {
-    "date": "2026-10-07T00:00:00",
-    "dgs10": 5.28,
-    "dgs2": 4.77,
+    "date": "2026-10-08T00:00:00",
+    "dgs10": 5.22,
+    "dgs2": 4.75,
     "source": "US_TREASURY_DAILY_PAR_YIELD_CURVE_XML",
-    "spread_2s10s_pct_points": 0.51
+    "spread_2s10s_pct_points": 0.47
   }
 }
