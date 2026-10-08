@@ -2,117 +2,117 @@
   "asof_et": "2026-10-07",
   "block_recovery_attempted": true,
   "block_recovery_input_count": 106,
-  "block_recovery_resolved_count": 61,
+  "block_recovery_resolved_count": 105,
   "block_recovery_resolved_symbols": [
     "AFJK",
     "AIIR",
+    "ALDF",
     "ALIS",
     "ALOV",
     "APLM",
     "APUR",
     "APXT",
+    "ATGL",
     "AUBN",
     "AUC",
     "BCPC",
     "BDCI",
+    "BLIV",
+    "BRBI",
     "BRID",
     "BRTM",
     "BYFC",
     "CAES",
     "CCEC",
     "CDZIP",
+    "CEPS",
+    "CEPV",
+    "CGCF",
     "CLST",
+    "CPBI",
     "CPHC",
     "DGICB",
+    "DNMX",
+    "DYOR",
+    "ELTK",
     "ELWT",
     "FGC",
+    "FORTY",
     "GBLI",
+    "GCGR",
     "GDEV",
     "GHXI",
     "GIBO",
     "GIW",
+    "GIX",
+    "GTEN",
+    "GYRO",
     "HCIC",
+    "HDL",
+    "HFBL",
+    "HVMC",
     "IPVV",
+    "IRHO",
+    "JONE",
+    "KBON",
     "KELYB",
     "KFFB",
     "KRAQ",
     "KRSA",
     "LBTYB",
     "LFWD",
+    "LTGR",
+    "MAYS",
     "MBBC",
+    "MDRR",
+    "MFI",
     "MGRT",
     "MGYR",
     "MNSBP",
+    "NCEW",
+    "NHIV",
     "NICM",
+    "NIPG",
+    "NOEM",
+    "NWCL",
     "OPNW",
     "ORIQ",
     "PBHC",
     "PFAI",
+    "PFX",
     "PHOE",
+    "PONO",
     "PRHI",
     "PSQL",
     "RACC",
-    "RML",
-    "SFWL",
-    "SSBI",
-    "STRR",
-    "TCBS",
-    "TLIH",
-    "TLNC",
-    "TVGN",
-    "TWLV",
-    "UBCP",
-    "WCCB",
-    "WFCF",
-    "WLCO"
-  ],
-  "blocked_count": 45,
-  "blocked_symbols": [
-    "ALDF",
-    "ATGL",
-    "BLIV",
-    "BRBI",
-    "CEPS",
-    "CEPV",
-    "CGCF",
-    "CPBI",
-    "DNMX",
-    "DYOR",
-    "ELTK",
-    "FORTY",
-    "GCGR",
-    "GIX",
-    "GRAL",
-    "GTEN",
-    "GYRO",
-    "HDL",
-    "HFBL",
-    "HVMC",
-    "IRHO",
-    "JONE",
-    "KBON",
-    "LTGR",
-    "MAYS",
-    "MDRR",
-    "MFI",
-    "NCEW",
-    "NHIV",
-    "NIPG",
-    "NOEM",
-    "NWCL",
-    "PFX",
-    "PONO",
     "RACD",
+    "RML",
     "ROMA",
     "SCPQ",
     "SENEB",
+    "SFWL",
     "SHOT",
+    "SSBI",
+    "STRR",
     "SVCC",
+    "TCBS",
+    "TLIH",
+    "TLNC",
     "TRGS",
     "TULP",
+    "TVGN",
+    "TWLV",
+    "UBCP",
     "VHCP",
+    "WCCB",
+    "WFCF",
+    "WLCO",
     "WORX",
     "YICC"
+  ],
+  "blocked_count": 1,
+  "blocked_symbols": [
+    "GRAL"
   ],
   "bridge_defer_enabled": true,
   "c417_rallies_primary_current_queue_uncovered_symbols": [],
@@ -3349,10 +3349,10 @@
   "c417_rallies_primary_post_recovery_veto_count": 0,
   "c417_rallies_primary_post_recovery_veto_symbols": [],
   "counts": {
-    "BLOCK_CURRENT_RUN": 45,
-    "FAIL_DV30": 1307,
+    "BLOCK_CURRENT_RUN": 1,
+    "FAIL_DV30": 1347,
     "FAIL_DV30_INSUFFICIENT_SESSIONS": 9,
-    "FAIL_PRICE": 1304,
+    "FAIL_PRICE": 1308,
     "FAIL_PRICE_NO_ASOF_BAR": 10,
     "PASS_PRICE_DV30": 510
   },
@@ -3363,6 +3363,7 @@
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v10.json",
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v11.json",
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v12.json",
+      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v13.json",
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v2.json",
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v3.json",
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v4.json",
@@ -3376,7 +3377,8 @@
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v1.json:SOURCE_PRICE_BLOB_MISMATCH",
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v10.json:SOURCE_PRICE_BLOB_MISMATCH",
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v11.json:SOURCE_PRICE_BLOB_MISMATCH",
-      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v12.json:CURRENT_REQUEST_SCOPE_MISMATCH",
+      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v12.json:SOURCE_PRICE_BLOB_MISMATCH",
+      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v13.json:CURRENT_REQUEST_SCOPE_MISMATCH",
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v2.json:SOURCE_PRICE_BLOB_MISMATCH",
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v3.json:SOURCE_PRICE_BLOB_MISMATCH",
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v4.json:SOURCE_PRICE_BLOB_MISMATCH",
@@ -3432,7 +3434,7 @@
   "global_asof_sentinel_fast_fail": false,
   "monotonic_legacy_pass_reuse_count": 0,
   "official_halt_guard_meta": {
-    "content_sha256": "13e048fd7eb4fcc351b1e7c7de75899c0ab0cdbe2947f2300e7224aa0cc18ed0",
+    "content_sha256": "44dffba23d55eaae3e54cb45dc837000272ed0ccb1d34c50a5275a21e9e2acb3",
     "path": "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_official_source_guard.json",
     "source_status": "PASS",
     "status": "PASS"
@@ -5496,65 +5498,28 @@
       "status": "FAIL_DV30"
     },
     "ALDF": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "disabled": true,
-            "no_pass_or_fail_created": true,
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "sina": {
-            "usable": 324
-          },
-          "yahoo": {
-            "exchangeName": "NGM",
-            "usable": 62
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 324
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
-        "missing_sessions": [
-          "2026-09-03",
-          "2026-09-04",
-          "2026-09-08",
-          "2026-09-09",
-          "2026-09-10",
-          "2026-09-14",
-          "2026-09-15",
-          "2026-09-16",
-          "2026-09-18",
-          "2026-09-25",
-          "2026-09-28",
-          "2026-10-02",
-          "2026-10-05",
-          "2026-10-07"
-        ],
-        "no_synthetic_bar": true,
-        "observed_usable_sessions": 16,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
-        "zero_volume_sessions": []
+        "dv30": 2155.0000190734863,
+        "price": 10.819999694824219,
+        "proof": "EXACT30_MEDIAN_LT_GATE",
+        "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "C417_RALLIES_PRIMARY_PARTITION",
-      "status": "BLOCK_CURRENT_RUN"
+      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provider_meta": {
+        "nasdaq": {
+          "disabled": true,
+          "no_pass_or_fail_created": true,
+          "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+        },
+        "sina": {
+          "usable": 324
+        },
+        "yahoo": {
+          "exchangeName": "NGM",
+          "usable": 63
+        }
+      },
+      "status": "FAIL_DV30"
     },
     "ALDX": {
       "info": {
@@ -7277,53 +7242,27 @@
       "status": "FAIL_DV30"
     },
     "ATGL": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "disabled": true,
-            "no_pass_or_fail_created": true,
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "sina": {
-            "usable": 681
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 62
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 681
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
-        "missing_sessions": [
-          "2026-09-28",
-          "2026-10-07"
-        ],
-        "no_synthetic_bar": true,
-        "observed_usable_sessions": 28,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
-        "zero_volume_sessions": []
+        "price": 4.800000190734863,
+        "proof": "ASOF_CLOSE_LT_5",
+        "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "C417_RALLIES_PRIMARY_PARTITION",
-      "status": "BLOCK_CURRENT_RUN"
+      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provider_meta": {
+        "nasdaq": {
+          "disabled": true,
+          "no_pass_or_fail_created": true,
+          "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+        },
+        "sina": {
+          "usable": 681
+        },
+        "yahoo": {
+          "exchangeName": "NCM",
+          "usable": 63
+        }
+      },
+      "status": "FAIL_PRICE"
     },
     "ATHE": {
       "info": {
@@ -8901,66 +8840,27 @@
       "status": "FAIL_PRICE"
     },
     "BLIV": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "disabled": true,
-            "no_pass_or_fail_created": true,
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "sina": {
-            "usable": 296
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 62
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 296
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
-        "missing_sessions": [
-          "2026-08-26",
-          "2026-08-27",
-          "2026-08-31",
-          "2026-09-02",
-          "2026-09-03",
-          "2026-09-15",
-          "2026-09-16",
-          "2026-09-17",
-          "2026-09-18",
-          "2026-09-22",
-          "2026-09-24",
-          "2026-09-25",
-          "2026-09-28",
-          "2026-10-06",
-          "2026-10-07"
-        ],
-        "no_synthetic_bar": true,
-        "observed_usable_sessions": 15,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
-        "zero_volume_sessions": []
+        "price": 2.299999952316284,
+        "proof": "ASOF_CLOSE_LT_5",
+        "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "C417_RALLIES_PRIMARY_PARTITION",
-      "status": "BLOCK_CURRENT_RUN"
+      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provider_meta": {
+        "nasdaq": {
+          "disabled": true,
+          "no_pass_or_fail_created": true,
+          "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+        },
+        "sina": {
+          "usable": 296
+        },
+        "yahoo": {
+          "exchangeName": "NCM",
+          "usable": 63
+        }
+      },
+      "status": "FAIL_PRICE"
     },
     "BLKB": {
       "info": {
@@ -9420,90 +9320,28 @@
       "status": "FAIL_PRICE"
     },
     "BRBI": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "disabled": true,
-            "no_pass_or_fail_created": true,
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "sina": {
-            "usable": 199
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 62
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
-          "sina_result": {
-            "dv30_lower_bound": 0.0,
-            "dv30_upper_bound": null,
-            "known_session_count": 13,
-            "missing_sessions": [
-              "2026-08-27",
-              "2026-08-31",
-              "2026-09-03",
-              "2026-09-08",
-              "2026-09-14",
-              "2026-09-15",
-              "2026-09-17",
-              "2026-09-18",
-              "2026-09-21",
-              "2026-09-22",
-              "2026-09-23",
-              "2026-09-24",
-              "2026-09-25",
-              "2026-09-28",
-              "2026-09-29",
-              "2026-09-30",
-              "2026-10-02"
-            ],
-            "no_synthetic_bar": true,
-            "price": 14.0,
-            "reason": "EXACT30_INCOMPLETE_NEVER_PASS",
-            "source": "SINA_US_DAILY"
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
-        "missing_sessions": [
-          "2026-08-27",
-          "2026-08-31",
-          "2026-09-03",
-          "2026-09-08",
-          "2026-09-14",
-          "2026-09-15",
-          "2026-09-17",
-          "2026-09-18",
-          "2026-09-22",
-          "2026-09-23",
-          "2026-09-24",
-          "2026-09-25",
-          "2026-09-28",
-          "2026-09-29",
-          "2026-09-30",
-          "2026-10-02"
-        ],
-        "no_synthetic_bar": true,
-        "observed_usable_sessions": 14,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
-        "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
-        "zero_volume_sessions": []
+        "dv30": 0.0,
+        "price": 14.0,
+        "proof": "EXACT30_MEDIAN_LT_GATE",
+        "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "C417_RALLIES_PRIMARY_PARTITION",
-      "status": "BLOCK_CURRENT_RUN"
+      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provider_meta": {
+        "nasdaq": {
+          "disabled": true,
+          "no_pass_or_fail_created": true,
+          "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+        },
+        "sina": {
+          "usable": 199
+        },
+        "yahoo": {
+          "exchangeName": "NCM",
+          "usable": 63
+        }
+      },
+      "status": "FAIL_DV30"
     },
     "BRCB": {
       "info": {
@@ -11122,156 +10960,52 @@
       "status": "FAIL_DV30"
     },
     "CEPS": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "disabled": true,
-            "no_pass_or_fail_created": true,
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "sina": {
-            "usable": 104
-          },
-          "yahoo": {
-            "exchangeName": "NGM",
-            "usable": 62
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
-          "sina_result": {
-            "dv30_lower_bound": 0.0,
-            "dv30_upper_bound": null,
-            "known_session_count": 13,
-            "missing_sessions": [
-              "2026-08-26",
-              "2026-09-02",
-              "2026-09-03",
-              "2026-09-04",
-              "2026-09-08",
-              "2026-09-10",
-              "2026-09-11",
-              "2026-09-14",
-              "2026-09-15",
-              "2026-09-16",
-              "2026-09-17",
-              "2026-09-22",
-              "2026-09-23",
-              "2026-09-25",
-              "2026-09-28",
-              "2026-09-29",
-              "2026-09-30"
-            ],
-            "no_synthetic_bar": true,
-            "price": 10.275,
-            "reason": "EXACT30_INCOMPLETE_NEVER_PASS",
-            "source": "SINA_US_DAILY"
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
-        "missing_sessions": [
-          "2026-08-26",
-          "2026-09-02",
-          "2026-09-03",
-          "2026-09-04",
-          "2026-09-08",
-          "2026-09-10",
-          "2026-09-11",
-          "2026-09-14",
-          "2026-09-15",
-          "2026-09-16",
-          "2026-09-17",
-          "2026-09-22",
-          "2026-09-23",
-          "2026-09-25",
-          "2026-09-28",
-          "2026-09-29",
-          "2026-09-30"
-        ],
-        "no_synthetic_bar": true,
-        "observed_usable_sessions": 13,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
-        "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
-        "zero_volume_sessions": []
+        "dv30": 0.0,
+        "price": 10.279999732971191,
+        "proof": "EXACT30_MEDIAN_LT_GATE",
+        "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "C417_RALLIES_PRIMARY_PARTITION",
-      "status": "BLOCK_CURRENT_RUN"
+      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provider_meta": {
+        "nasdaq": {
+          "disabled": true,
+          "no_pass_or_fail_created": true,
+          "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+        },
+        "sina": {
+          "usable": 104
+        },
+        "yahoo": {
+          "exchangeName": "NGM",
+          "usable": 63
+        }
+      },
+      "status": "FAIL_DV30"
     },
     "CEPV": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "disabled": true,
-            "no_pass_or_fail_created": true,
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "sina": {
-            "usable": 189
-          },
-          "yahoo": {
-            "exchangeName": "NGM",
-            "usable": 62
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 189
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
-        "missing_sessions": [
-          "2026-08-26",
-          "2026-08-28",
-          "2026-08-31",
-          "2026-09-02",
-          "2026-09-03",
-          "2026-09-09",
-          "2026-09-10",
-          "2026-09-11",
-          "2026-09-15",
-          "2026-09-18",
-          "2026-09-21",
-          "2026-09-23",
-          "2026-09-24",
-          "2026-09-25",
-          "2026-09-28",
-          "2026-09-29",
-          "2026-10-02",
-          "2026-10-07"
-        ],
-        "no_synthetic_bar": true,
-        "observed_usable_sessions": 12,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
-        "zero_volume_sessions": []
+        "dv30": 0.0,
+        "price": 10.260000228881836,
+        "proof": "EXACT30_MEDIAN_LT_GATE",
+        "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "C417_RALLIES_PRIMARY_PARTITION",
-      "status": "BLOCK_CURRENT_RUN"
+      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provider_meta": {
+        "nasdaq": {
+          "disabled": true,
+          "no_pass_or_fail_created": true,
+          "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+        },
+        "sina": {
+          "usable": 189
+        },
+        "yahoo": {
+          "exchangeName": "NGM",
+          "usable": 63
+        }
+      },
+      "status": "FAIL_DV30"
     },
     "CERS": {
       "info": {
@@ -11392,59 +11126,28 @@
       "status": "FAIL_PRICE"
     },
     "CGCF": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "disabled": true,
-            "no_pass_or_fail_created": true,
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "sina": {
-            "usable": 28
-          },
-          "yahoo": {
-            "exchangeName": "NGM",
-            "usable": 36
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 28
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 36
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
-        "missing_sessions": [
-          "2026-08-28",
-          "2026-09-09",
-          "2026-09-11",
-          "2026-09-21",
-          "2026-09-25",
-          "2026-10-02",
-          "2026-10-06",
-          "2026-10-07"
-        ],
-        "no_synthetic_bar": true,
-        "observed_usable_sessions": 22,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
-        "zero_volume_sessions": []
+        "dv30": 7872.0001220703125,
+        "price": 9.8100004196167,
+        "proof": "EXACT30_MEDIAN_LT_GATE",
+        "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "C417_RALLIES_PRIMARY_PARTITION",
-      "status": "BLOCK_CURRENT_RUN"
+      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provider_meta": {
+        "nasdaq": {
+          "disabled": true,
+          "no_pass_or_fail_created": true,
+          "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+        },
+        "sina": {
+          "usable": 28
+        },
+        "yahoo": {
+          "exchangeName": "NGM",
+          "usable": 37
+        }
+      },
+      "status": "FAIL_DV30"
     },
     "CGEM": {
       "info": {
@@ -12727,56 +12430,28 @@
       "status": "PASS_PRICE_DV30"
     },
     "CPBI": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "disabled": true,
-            "no_pass_or_fail_created": true,
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "sina": {
-            "usable": 689
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 62
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 689
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
-        "missing_sessions": [
-          "2026-08-26",
-          "2026-09-01",
-          "2026-09-04",
-          "2026-09-09",
-          "2026-09-28"
-        ],
-        "no_synthetic_bar": true,
-        "observed_usable_sessions": 25,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
-        "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
-        "zero_volume_sessions": []
+        "dv30": 41177.899169921875,
+        "price": 20.0,
+        "proof": "EXACT30_MEDIAN_LT_GATE",
+        "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "C417_RALLIES_PRIMARY_PARTITION",
-      "status": "BLOCK_CURRENT_RUN"
+      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provider_meta": {
+        "nasdaq": {
+          "disabled": true,
+          "no_pass_or_fail_created": true,
+          "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+        },
+        "sina": {
+          "usable": 689
+        },
+        "yahoo": {
+          "exchangeName": "NCM",
+          "usable": 63
+        }
+      },
+      "status": "FAIL_DV30"
     },
     "CPHC": {
       "info": {
@@ -14417,54 +14092,28 @@
       "status": "FAIL_DV30"
     },
     "DNMX": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "disabled": true,
-            "no_pass_or_fail_created": true,
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "sina": {
-            "usable": 190
-          },
-          "yahoo": {
-            "exchangeName": "NGM",
-            "usable": 62
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 190
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
-        "missing_sessions": [
-          "2026-08-31",
-          "2026-09-28",
-          "2026-10-07"
-        ],
-        "no_synthetic_bar": true,
-        "observed_usable_sessions": 27,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
-        "zero_volume_sessions": []
+        "dv30": 100196.49696350098,
+        "price": 10.069999694824219,
+        "proof": "EXACT30_MEDIAN_LT_GATE",
+        "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "C417_RALLIES_PRIMARY_PARTITION",
-      "status": "BLOCK_CURRENT_RUN"
+      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provider_meta": {
+        "nasdaq": {
+          "disabled": true,
+          "no_pass_or_fail_created": true,
+          "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+        },
+        "sina": {
+          "usable": 190
+        },
+        "yahoo": {
+          "exchangeName": "NGM",
+          "usable": 63
+        }
+      },
+      "status": "FAIL_DV30"
     },
     "DNTH": {
       "info": {
@@ -15002,65 +14651,28 @@
       "status": "FAIL_DV30"
     },
     "DYOR": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "disabled": true,
-            "no_pass_or_fail_created": true,
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "sina": {
-            "usable": 153
-          },
-          "yahoo": {
-            "exchangeName": "NGM",
-            "usable": 62
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 153
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
-        "missing_sessions": [
-          "2026-08-27",
-          "2026-08-28",
-          "2026-08-31",
-          "2026-09-01",
-          "2026-09-02",
-          "2026-09-03",
-          "2026-09-08",
-          "2026-09-09",
-          "2026-09-10",
-          "2026-09-15",
-          "2026-09-16",
-          "2026-09-28",
-          "2026-10-05",
-          "2026-10-07"
-        ],
-        "no_synthetic_bar": true,
-        "observed_usable_sessions": 16,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
-        "zero_volume_sessions": []
+        "dv30": 3042.9999351501465,
+        "price": 10.149999618530273,
+        "proof": "EXACT30_MEDIAN_LT_GATE",
+        "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "C417_RALLIES_PRIMARY_PARTITION",
-      "status": "BLOCK_CURRENT_RUN"
+      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provider_meta": {
+        "nasdaq": {
+          "disabled": true,
+          "no_pass_or_fail_created": true,
+          "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+        },
+        "sina": {
+          "usable": 153
+        },
+        "yahoo": {
+          "exchangeName": "NGM",
+          "usable": 63
+        }
+      },
+      "status": "FAIL_DV30"
     },
     "EBAY": {
       "info": {
@@ -15522,55 +15134,28 @@
       "status": "FAIL_PRICE"
     },
     "ELTK": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "disabled": true,
-            "no_pass_or_fail_created": true,
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "sina": {
-            "usable": 4473
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 62
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 4473
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
-        "missing_sessions": [
-          "2026-09-09",
-          "2026-09-25",
-          "2026-09-29",
-          "2026-10-07"
-        ],
-        "no_synthetic_bar": true,
-        "observed_usable_sessions": 26,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
-        "zero_volume_sessions": []
+        "dv30": 20067.999744415283,
+        "price": 8.0,
+        "proof": "EXACT30_MEDIAN_LT_GATE",
+        "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "C417_RALLIES_PRIMARY_PARTITION",
-      "status": "BLOCK_CURRENT_RUN"
+      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provider_meta": {
+        "nasdaq": {
+          "disabled": true,
+          "no_pass_or_fail_created": true,
+          "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+        },
+        "sina": {
+          "usable": 4473
+        },
+        "yahoo": {
+          "exchangeName": "NCM",
+          "usable": 63
+        }
+      },
+      "status": "FAIL_DV30"
     },
     "ELTX": {
       "info": {
@@ -17531,70 +17116,28 @@
       "status": "FAIL_DV30"
     },
     "FORTY": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "disabled": true,
-            "no_pass_or_fail_created": true,
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "sina": {
-            "usable": 4375
-          },
-          "yahoo": {
-            "exchangeName": "NMS",
-            "usable": 62
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 4375
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
-        "missing_sessions": [
-          "2026-08-28",
-          "2026-08-31",
-          "2026-09-01",
-          "2026-09-02",
-          "2026-09-04",
-          "2026-09-08",
-          "2026-09-09",
-          "2026-09-10",
-          "2026-09-17",
-          "2026-09-18",
-          "2026-09-21",
-          "2026-09-23",
-          "2026-09-24",
-          "2026-09-28",
-          "2026-09-29",
-          "2026-09-30",
-          "2026-10-02",
-          "2026-10-06",
-          "2026-10-07"
-        ],
-        "no_synthetic_bar": true,
-        "observed_usable_sessions": 11,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
-        "zero_volume_sessions": []
+        "dv30": 0.0,
+        "price": 118.1500015258789,
+        "proof": "EXACT30_MEDIAN_LT_GATE",
+        "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "C417_RALLIES_PRIMARY_PARTITION",
-      "status": "BLOCK_CURRENT_RUN"
+      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provider_meta": {
+        "nasdaq": {
+          "disabled": true,
+          "no_pass_or_fail_created": true,
+          "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+        },
+        "sina": {
+          "usable": 4375
+        },
+        "yahoo": {
+          "exchangeName": "NMS",
+          "usable": 63
+        }
+      },
+      "status": "FAIL_DV30"
     },
     "FOSL": {
       "info": {
@@ -18412,69 +17955,28 @@
       "status": "FAIL_DV30"
     },
     "GCGR": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "disabled": true,
-            "no_pass_or_fail_created": true,
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "sina": {
-            "usable": 47
-          },
-          "yahoo": {
-            "exchangeName": "NGM",
-            "usable": 62
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 47
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
-        "missing_sessions": [
-          "2026-08-26",
-          "2026-08-28",
-          "2026-08-31",
-          "2026-09-01",
-          "2026-09-10",
-          "2026-09-11",
-          "2026-09-15",
-          "2026-09-16",
-          "2026-09-17",
-          "2026-09-18",
-          "2026-09-21",
-          "2026-09-23",
-          "2026-09-24",
-          "2026-09-28",
-          "2026-09-29",
-          "2026-09-30",
-          "2026-10-06",
-          "2026-10-07"
-        ],
-        "no_synthetic_bar": true,
-        "observed_usable_sessions": 12,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
-        "zero_volume_sessions": []
+        "dv30": 0.0,
+        "price": 10.130000114440918,
+        "proof": "EXACT30_MEDIAN_LT_GATE",
+        "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "C417_RALLIES_PRIMARY_PARTITION",
-      "status": "BLOCK_CURRENT_RUN"
+      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provider_meta": {
+        "nasdaq": {
+          "disabled": true,
+          "no_pass_or_fail_created": true,
+          "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+        },
+        "sina": {
+          "usable": 47
+        },
+        "yahoo": {
+          "exchangeName": "NGM",
+          "usable": 63
+        }
+      },
+      "status": "FAIL_DV30"
     },
     "GCL": {
       "info": {
@@ -18959,66 +18461,28 @@
       "status": "FAIL_DV30"
     },
     "GIX": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "disabled": true,
-            "no_pass_or_fail_created": true,
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "sina": {
-            "usable": 587
-          },
-          "yahoo": {
-            "exchangeName": "NGM",
-            "usable": 62
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 587
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
-        "missing_sessions": [
-          "2026-08-28",
-          "2026-09-01",
-          "2026-09-02",
-          "2026-09-14",
-          "2026-09-15",
-          "2026-09-16",
-          "2026-09-17",
-          "2026-09-21",
-          "2026-09-22",
-          "2026-09-23",
-          "2026-09-24",
-          "2026-09-28",
-          "2026-10-05",
-          "2026-10-06",
-          "2026-10-07"
-        ],
-        "no_synthetic_bar": true,
-        "observed_usable_sessions": 15,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
-        "zero_volume_sessions": []
+        "dv30": 1001.0000228881836,
+        "price": 10.010000228881836,
+        "proof": "EXACT30_MEDIAN_LT_GATE",
+        "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "C417_RALLIES_PRIMARY_PARTITION",
-      "status": "BLOCK_CURRENT_RUN"
+      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provider_meta": {
+        "nasdaq": {
+          "disabled": true,
+          "no_pass_or_fail_created": true,
+          "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+        },
+        "sina": {
+          "usable": 587
+        },
+        "yahoo": {
+          "exchangeName": "NGM",
+          "usable": 63
+        }
+      },
+      "status": "FAIL_DV30"
     },
     "GIXI": {
       "info": {
@@ -19477,7 +18941,7 @@
           },
           "yahoo": {
             "exchangeName": "NMS",
-            "usable": 62
+            "usable": 63
           }
         },
         "provider_result": {
@@ -19498,9 +18962,12 @@
             "source": "SINA_US_DAILY"
           },
           "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
+            "dv30": 118130372.03063965,
+            "known_session_count": 30,
+            "missing_sessions": [],
+            "price": 132.89999389648438,
+            "proof": "EXACT30_MEDIAN_GE_GATE",
+            "source": "YAHOO_CHART_FREE_FAIL_ONLY"
           }
         },
         "status": "UNRESOLVED"
@@ -19786,89 +19253,28 @@
       "status": "FAIL_PRICE"
     },
     "GTEN": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "disabled": true,
-            "no_pass_or_fail_created": true,
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "sina": {
-            "usable": 274
-          },
-          "yahoo": {
-            "exchangeName": "NGM",
-            "usable": 62
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
-          "sina_result": {
-            "dv30_lower_bound": 0.0,
-            "dv30_upper_bound": null,
-            "known_session_count": 14,
-            "missing_sessions": [
-              "2026-08-27",
-              "2026-08-28",
-              "2026-09-02",
-              "2026-09-03",
-              "2026-09-04",
-              "2026-09-16",
-              "2026-09-17",
-              "2026-09-18",
-              "2026-09-21",
-              "2026-09-23",
-              "2026-09-25",
-              "2026-09-28",
-              "2026-09-29",
-              "2026-09-30",
-              "2026-10-01",
-              "2026-10-05"
-            ],
-            "no_synthetic_bar": true,
-            "price": 10.44,
-            "reason": "EXACT30_INCOMPLETE_NEVER_PASS",
-            "source": "SINA_US_DAILY"
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
-        "missing_sessions": [
-          "2026-08-27",
-          "2026-08-28",
-          "2026-09-02",
-          "2026-09-03",
-          "2026-09-04",
-          "2026-09-16",
-          "2026-09-17",
-          "2026-09-18",
-          "2026-09-21",
-          "2026-09-23",
-          "2026-09-25",
-          "2026-09-28",
-          "2026-09-29",
-          "2026-09-30",
-          "2026-10-01",
-          "2026-10-05"
-        ],
-        "no_synthetic_bar": true,
-        "observed_usable_sessions": 14,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
-        "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
-        "zero_volume_sessions": []
+        "dv30": 0.0,
+        "price": 10.4399995803833,
+        "proof": "EXACT30_MEDIAN_LT_GATE",
+        "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "C417_RALLIES_PRIMARY_PARTITION",
-      "status": "BLOCK_CURRENT_RUN"
+      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provider_meta": {
+        "nasdaq": {
+          "disabled": true,
+          "no_pass_or_fail_created": true,
+          "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+        },
+        "sina": {
+          "usable": 274
+        },
+        "yahoo": {
+          "exchangeName": "NGM",
+          "usable": 63
+        }
+      },
+      "status": "FAIL_DV30"
     },
     "GTIM": {
       "info": {
@@ -20003,56 +19409,27 @@
       "status": "FAIL_DV30"
     },
     "GYRO": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "disabled": true,
-            "no_pass_or_fail_created": true,
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "sina": {
-            "usable": 3748
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 62
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 3748
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
-        "missing_sessions": [
-          "2026-09-10",
-          "2026-09-11",
-          "2026-09-16",
-          "2026-09-17",
-          "2026-10-07"
-        ],
-        "no_synthetic_bar": true,
-        "observed_usable_sessions": 25,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
-        "zero_volume_sessions": []
+        "price": 4.699999809265137,
+        "proof": "ASOF_CLOSE_LT_5",
+        "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "C417_RALLIES_PRIMARY_PARTITION",
-      "status": "BLOCK_CURRENT_RUN"
+      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provider_meta": {
+        "nasdaq": {
+          "disabled": true,
+          "no_pass_or_fail_created": true,
+          "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+        },
+        "sina": {
+          "usable": 3748
+        },
+        "yahoo": {
+          "exchangeName": "NCM",
+          "usable": 63
+        }
+      },
+      "status": "FAIL_PRICE"
     },
     "HAFC": {
       "info": {
@@ -20324,62 +19701,28 @@
       "status": "FAIL_PRICE"
     },
     "HDL": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "disabled": true,
-            "no_pass_or_fail_created": true,
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "sina": {
-            "usable": 484
-          },
-          "yahoo": {
-            "exchangeName": "NGM",
-            "usable": 62
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 484
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
-        "missing_sessions": [
-          "2026-08-28",
-          "2026-08-31",
-          "2026-09-04",
-          "2026-09-11",
-          "2026-09-14",
-          "2026-09-15",
-          "2026-09-22",
-          "2026-09-24",
-          "2026-09-25",
-          "2026-09-29",
-          "2026-10-07"
-        ],
-        "no_synthetic_bar": true,
-        "observed_usable_sessions": 19,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
-        "zero_volume_sessions": []
+        "dv30": 5400.0,
+        "price": 11.899999618530273,
+        "proof": "EXACT30_MEDIAN_LT_GATE",
+        "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "C417_RALLIES_PRIMARY_PARTITION",
-      "status": "BLOCK_CURRENT_RUN"
+      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provider_meta": {
+        "nasdaq": {
+          "disabled": true,
+          "no_pass_or_fail_created": true,
+          "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+        },
+        "sina": {
+          "usable": 484
+        },
+        "yahoo": {
+          "exchangeName": "NGM",
+          "usable": 63
+        }
+      },
+      "status": "FAIL_DV30"
     },
     "HDRN": {
       "info": {
@@ -20451,57 +19794,28 @@
       "status": "FAIL_PRICE"
     },
     "HFBL": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "disabled": true,
-            "no_pass_or_fail_created": true,
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "sina": {
-            "usable": 2969
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 62
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 2969
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
-        "missing_sessions": [
-          "2026-09-01",
-          "2026-09-03",
-          "2026-09-10",
-          "2026-10-01",
-          "2026-10-06",
-          "2026-10-07"
-        ],
-        "no_synthetic_bar": true,
-        "observed_usable_sessions": 24,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
-        "zero_volume_sessions": []
+        "dv30": 13539.999771118164,
+        "price": 24.15999984741211,
+        "proof": "EXACT30_MEDIAN_LT_GATE",
+        "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "C417_RALLIES_PRIMARY_PARTITION",
-      "status": "BLOCK_CURRENT_RUN"
+      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provider_meta": {
+        "nasdaq": {
+          "disabled": true,
+          "no_pass_or_fail_created": true,
+          "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+        },
+        "sina": {
+          "usable": 2969
+        },
+        "yahoo": {
+          "exchangeName": "NCM",
+          "usable": 63
+        }
+      },
+      "status": "FAIL_DV30"
     },
     "HFFG": {
       "info": {
@@ -21283,68 +20597,28 @@
       "status": "PASS_PRICE_DV30"
     },
     "HVMC": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "disabled": true,
-            "no_pass_or_fail_created": true,
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "sina": {
-            "usable": 152
-          },
-          "yahoo": {
-            "exchangeName": "NGM",
-            "usable": 62
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 152
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
-        "missing_sessions": [
-          "2026-08-26",
-          "2026-09-01",
-          "2026-09-02",
-          "2026-09-03",
-          "2026-09-08",
-          "2026-09-11",
-          "2026-09-15",
-          "2026-09-21",
-          "2026-09-22",
-          "2026-09-23",
-          "2026-09-25",
-          "2026-09-28",
-          "2026-09-30",
-          "2026-10-01",
-          "2026-10-02",
-          "2026-10-06",
-          "2026-10-07"
-        ],
-        "no_synthetic_bar": true,
-        "observed_usable_sessions": 13,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
-        "zero_volume_sessions": []
+        "dv30": 0.0,
+        "price": 10.289999961853027,
+        "proof": "EXACT30_MEDIAN_LT_GATE",
+        "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "C417_RALLIES_PRIMARY_PARTITION",
-      "status": "BLOCK_CURRENT_RUN"
+      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provider_meta": {
+        "nasdaq": {
+          "disabled": true,
+          "no_pass_or_fail_created": true,
+          "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+        },
+        "sina": {
+          "usable": 152
+        },
+        "yahoo": {
+          "exchangeName": "NGM",
+          "usable": 63
+        }
+      },
+      "status": "FAIL_DV30"
     },
     "HWBK": {
       "info": {
@@ -22817,60 +22091,28 @@
       "status": "PASS_PRICE_DV30"
     },
     "IRHO": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "disabled": true,
-            "no_pass_or_fail_created": true,
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "sina": {
-            "usable": 135
-          },
-          "yahoo": {
-            "exchangeName": "NGM",
-            "usable": 62
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 135
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
-        "missing_sessions": [
-          "2026-08-26",
-          "2026-08-28",
-          "2026-09-11",
-          "2026-09-15",
-          "2026-09-24",
-          "2026-09-25",
-          "2026-09-29",
-          "2026-10-06",
-          "2026-10-07"
-        ],
-        "no_synthetic_bar": true,
-        "observed_usable_sessions": 21,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
-        "zero_volume_sessions": []
+        "dv30": 32192.001342773438,
+        "price": 10.069999694824219,
+        "proof": "EXACT30_MEDIAN_LT_GATE",
+        "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "C417_RALLIES_PRIMARY_PARTITION",
-      "status": "BLOCK_CURRENT_RUN"
+      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provider_meta": {
+        "nasdaq": {
+          "disabled": true,
+          "no_pass_or_fail_created": true,
+          "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+        },
+        "sina": {
+          "usable": 135
+        },
+        "yahoo": {
+          "exchangeName": "NGM",
+          "usable": 63
+        }
+      },
+      "status": "FAIL_DV30"
     },
     "IRIX": {
       "info": {
@@ -23418,59 +22660,39 @@
       "status": "FAIL_DV30"
     },
     "JONE": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "disabled": true,
-            "no_pass_or_fail_created": true,
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "sina": {
-            "error": "SyntaxError:invalid syntax (<string>, line 1)"
-          },
-          "yahoo": {
-            "exchangeName": "NGM",
-            "usable": 23
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
-          "sina_result": {
-            "reason": "SINA_UNAVAILABLE"
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 23
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
+        "dv30_lower_bound": 10807.49979019165,
+        "dv30_upper_bound": 54038.99898529053,
+        "known_session_count": 24,
         "missing_sessions": [
           "2026-08-26",
           "2026-08-27",
           "2026-08-28",
           "2026-08-31",
           "2026-09-01",
-          "2026-09-02",
-          "2026-09-22",
-          "2026-09-23",
-          "2026-10-01",
-          "2026-10-06"
+          "2026-09-02"
         ],
         "no_synthetic_bar": true,
-        "observed_usable_sessions": 20,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
-        "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
-        "zero_volume_sessions": []
+        "price": 9.8100004196167,
+        "proof": "DV30_UPPER_BOUND_LT_GATE",
+        "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "C417_RALLIES_PRIMARY_PARTITION",
-      "status": "BLOCK_CURRENT_RUN"
+      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provider_meta": {
+        "nasdaq": {
+          "disabled": true,
+          "no_pass_or_fail_created": true,
+          "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+        },
+        "sina": {
+          "error": "SyntaxError:invalid syntax (<string>, line 1)"
+        },
+        "yahoo": {
+          "exchangeName": "NGM",
+          "usable": 24
+        }
+      },
+      "status": "FAIL_DV30"
     },
     "JOUT": {
       "info": {
@@ -23687,61 +22909,28 @@
       "status": "FAIL_PRICE"
     },
     "KBON": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "disabled": true,
-            "no_pass_or_fail_created": true,
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "sina": {
-            "usable": 126
-          },
-          "yahoo": {
-            "exchangeName": "NGM",
-            "usable": 62
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 126
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
-        "missing_sessions": [
-          "2026-08-26",
-          "2026-08-31",
-          "2026-09-02",
-          "2026-09-14",
-          "2026-09-16",
-          "2026-09-25",
-          "2026-09-29",
-          "2026-09-30",
-          "2026-10-05",
-          "2026-10-07"
-        ],
-        "no_synthetic_bar": true,
-        "observed_usable_sessions": 20,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
-        "zero_volume_sessions": []
+        "dv30": 42475.250816345215,
+        "price": 10.119999885559082,
+        "proof": "EXACT30_MEDIAN_LT_GATE",
+        "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "C417_RALLIES_PRIMARY_PARTITION",
-      "status": "BLOCK_CURRENT_RUN"
+      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provider_meta": {
+        "nasdaq": {
+          "disabled": true,
+          "no_pass_or_fail_created": true,
+          "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+        },
+        "sina": {
+          "usable": 126
+        },
+        "yahoo": {
+          "exchangeName": "NGM",
+          "usable": 63
+        }
+      },
+      "status": "FAIL_DV30"
     },
     "KBSX": {
       "info": {
@@ -25800,68 +24989,28 @@
       "status": "FAIL_DV30"
     },
     "LTGR": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "disabled": true,
-            "no_pass_or_fail_created": true,
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "sina": {
-            "usable": 28
-          },
-          "yahoo": {
-            "exchangeName": "NGM",
-            "usable": 51
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 28
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 51
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
-        "missing_sessions": [
-          "2026-08-27",
-          "2026-09-02",
-          "2026-09-03",
-          "2026-09-08",
-          "2026-09-09",
-          "2026-09-11",
-          "2026-09-16",
-          "2026-09-18",
-          "2026-09-21",
-          "2026-09-22",
-          "2026-09-23",
-          "2026-09-28",
-          "2026-09-29",
-          "2026-09-30",
-          "2026-10-01",
-          "2026-10-06",
-          "2026-10-07"
-        ],
-        "no_synthetic_bar": true,
-        "observed_usable_sessions": 13,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
-        "zero_volume_sessions": []
+        "dv30": 0.0,
+        "price": 9.960000038146973,
+        "proof": "EXACT30_MEDIAN_LT_GATE",
+        "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "C417_RALLIES_PRIMARY_PARTITION",
-      "status": "BLOCK_CURRENT_RUN"
+      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provider_meta": {
+        "nasdaq": {
+          "disabled": true,
+          "no_pass_or_fail_created": true,
+          "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+        },
+        "sina": {
+          "usable": 28
+        },
+        "yahoo": {
+          "exchangeName": "NGM",
+          "usable": 52
+        }
+      },
+      "status": "FAIL_DV30"
     },
     "LTRN": {
       "info": {
@@ -26292,68 +25441,28 @@
       "status": "FAIL_DV30"
     },
     "MAYS": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "disabled": true,
-            "no_pass_or_fail_created": true,
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "sina": {
-            "usable": 2307
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 62
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 2307
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
-        "missing_sessions": [
-          "2026-09-01",
-          "2026-09-02",
-          "2026-09-03",
-          "2026-09-11",
-          "2026-09-14",
-          "2026-09-15",
-          "2026-09-16",
-          "2026-09-17",
-          "2026-09-22",
-          "2026-09-24",
-          "2026-09-28",
-          "2026-09-29",
-          "2026-10-01",
-          "2026-10-02",
-          "2026-10-05",
-          "2026-10-06",
-          "2026-10-07"
-        ],
-        "no_synthetic_bar": true,
-        "observed_usable_sessions": 13,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
-        "zero_volume_sessions": []
+        "dv30": 0.0,
+        "price": 40.099998474121094,
+        "proof": "EXACT30_MEDIAN_LT_GATE",
+        "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "C417_RALLIES_PRIMARY_PARTITION",
-      "status": "BLOCK_CURRENT_RUN"
+      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provider_meta": {
+        "nasdaq": {
+          "disabled": true,
+          "no_pass_or_fail_created": true,
+          "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+        },
+        "sina": {
+          "usable": 2307
+        },
+        "yahoo": {
+          "exchangeName": "NCM",
+          "usable": 63
+        }
+      },
+      "status": "FAIL_DV30"
     },
     "MAZE": {
       "info": {
@@ -26701,61 +25810,28 @@
       "status": "PASS_PRICE_DV30"
     },
     "MDRR": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "disabled": true,
-            "no_pass_or_fail_created": true,
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "sina": {
-            "usable": 1839
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 62
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 1839
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
-        "missing_sessions": [
-          "2026-08-28",
-          "2026-09-02",
-          "2026-09-11",
-          "2026-09-15",
-          "2026-09-16",
-          "2026-09-21",
-          "2026-09-24",
-          "2026-09-25",
-          "2026-10-06",
-          "2026-10-07"
-        ],
-        "no_synthetic_bar": true,
-        "observed_usable_sessions": 20,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
-        "zero_volume_sessions": []
+        "dv30": 6527.999973297119,
+        "price": 10.079999923706055,
+        "proof": "EXACT30_MEDIAN_LT_GATE",
+        "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "C417_RALLIES_PRIMARY_PARTITION",
-      "status": "BLOCK_CURRENT_RUN"
+      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provider_meta": {
+        "nasdaq": {
+          "disabled": true,
+          "no_pass_or_fail_created": true,
+          "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+        },
+        "sina": {
+          "usable": 1839
+        },
+        "yahoo": {
+          "exchangeName": "NCM",
+          "usable": 63
+        }
+      },
+      "status": "FAIL_DV30"
     },
     "MDWD": {
       "info": {
@@ -26932,52 +26008,28 @@
       "status": "FAIL_DV30"
     },
     "MFI": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "disabled": true,
-            "no_pass_or_fail_created": true,
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "sina": {
-            "usable": 2529
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 62
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 2529
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
-        "missing_sessions": [
-          "2026-10-07"
-        ],
-        "no_synthetic_bar": true,
-        "observed_usable_sessions": 29,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
-        "zero_volume_sessions": []
+        "dv30": 59085.00051498413,
+        "price": 9.300000190734863,
+        "proof": "EXACT30_MEDIAN_LT_GATE",
+        "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "C417_RALLIES_PRIMARY_PARTITION",
-      "status": "BLOCK_CURRENT_RUN"
+      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provider_meta": {
+        "nasdaq": {
+          "disabled": true,
+          "no_pass_or_fail_created": true,
+          "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+        },
+        "sina": {
+          "usable": 2529
+        },
+        "yahoo": {
+          "exchangeName": "NCM",
+          "usable": 63
+        }
+      },
+      "status": "FAIL_DV30"
     },
     "MFIN": {
       "info": {
@@ -28565,67 +27617,28 @@
       "status": "FAIL_PRICE"
     },
     "NCEW": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "disabled": true,
-            "no_pass_or_fail_created": true,
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "sina": {
-            "usable": 409
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 62
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 409
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
-        "missing_sessions": [
-          "2026-08-31",
-          "2026-09-02",
-          "2026-09-04",
-          "2026-09-08",
-          "2026-09-11",
-          "2026-09-15",
-          "2026-09-18",
-          "2026-09-21",
-          "2026-09-22",
-          "2026-09-25",
-          "2026-09-28",
-          "2026-09-30",
-          "2026-10-02",
-          "2026-10-05",
-          "2026-10-06",
-          "2026-10-07"
-        ],
-        "no_synthetic_bar": true,
-        "observed_usable_sessions": 14,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
-        "zero_volume_sessions": []
+        "dv30": 0.0,
+        "price": 16.920000076293945,
+        "proof": "EXACT30_MEDIAN_LT_GATE",
+        "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "C417_RALLIES_PRIMARY_PARTITION",
-      "status": "BLOCK_CURRENT_RUN"
+      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provider_meta": {
+        "nasdaq": {
+          "disabled": true,
+          "no_pass_or_fail_created": true,
+          "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+        },
+        "sina": {
+          "usable": 409
+        },
+        "yahoo": {
+          "exchangeName": "NCM",
+          "usable": 63
+        }
+      },
+      "status": "FAIL_DV30"
     },
     "NCI": {
       "info": {
@@ -28983,70 +27996,28 @@
       "status": "FAIL_DV30"
     },
     "NHIV": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "disabled": true,
-            "no_pass_or_fail_created": true,
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "sina": {
-            "usable": 44
-          },
-          "yahoo": {
-            "exchangeName": "NGM",
-            "usable": 62
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 44
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
-        "missing_sessions": [
-          "2026-08-27",
-          "2026-08-28",
-          "2026-08-31",
-          "2026-09-01",
-          "2026-09-02",
-          "2026-09-04",
-          "2026-09-08",
-          "2026-09-09",
-          "2026-09-11",
-          "2026-09-15",
-          "2026-09-16",
-          "2026-09-17",
-          "2026-09-24",
-          "2026-09-28",
-          "2026-09-30",
-          "2026-10-02",
-          "2026-10-05",
-          "2026-10-06",
-          "2026-10-07"
-        ],
-        "no_synthetic_bar": true,
-        "observed_usable_sessions": 11,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
-        "zero_volume_sessions": []
+        "dv30": 0.0,
+        "price": 10.050000190734863,
+        "proof": "EXACT30_MEDIAN_LT_GATE",
+        "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "C417_RALLIES_PRIMARY_PARTITION",
-      "status": "BLOCK_CURRENT_RUN"
+      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provider_meta": {
+        "nasdaq": {
+          "disabled": true,
+          "no_pass_or_fail_created": true,
+          "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+        },
+        "sina": {
+          "usable": 44
+        },
+        "yahoo": {
+          "exchangeName": "NGM",
+          "usable": 63
+        }
+      },
+      "status": "FAIL_DV30"
     },
     "NHP": {
       "info": {
@@ -29116,52 +28087,28 @@
       "status": "FAIL_PRICE"
     },
     "NIPG": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "disabled": true,
-            "no_pass_or_fail_created": true,
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "sina": {
-            "usable": 551
-          },
-          "yahoo": {
-            "exchangeName": "NGM",
-            "usable": 62
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 551
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
-        "missing_sessions": [
-          "2026-10-07"
-        ],
-        "no_synthetic_bar": true,
-        "observed_usable_sessions": 29,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
-        "zero_volume_sessions": []
+        "dv30": 160582.25026130676,
+        "price": 11.350000381469727,
+        "proof": "EXACT30_MEDIAN_LT_GATE",
+        "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "C417_RALLIES_PRIMARY_PARTITION",
-      "status": "BLOCK_CURRENT_RUN"
+      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provider_meta": {
+        "nasdaq": {
+          "disabled": true,
+          "no_pass_or_fail_created": true,
+          "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+        },
+        "sina": {
+          "usable": 551
+        },
+        "yahoo": {
+          "exchangeName": "NGM",
+          "usable": 63
+        }
+      },
+      "status": "FAIL_DV30"
     },
     "NIU": {
       "info": {
@@ -29388,93 +28335,28 @@
       "status": "FAIL_DV30"
     },
     "NOEM": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "disabled": true,
-            "no_pass_or_fail_created": true,
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "sina": {
-            "usable": 289
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 62
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
-          "sina_result": {
-            "dv30_lower_bound": 0.0,
-            "dv30_upper_bound": null,
-            "known_session_count": 12,
-            "missing_sessions": [
-              "2026-08-26",
-              "2026-08-27",
-              "2026-09-02",
-              "2026-09-03",
-              "2026-09-09",
-              "2026-09-11",
-              "2026-09-14",
-              "2026-09-16",
-              "2026-09-18",
-              "2026-09-21",
-              "2026-09-22",
-              "2026-09-23",
-              "2026-09-24",
-              "2026-09-25",
-              "2026-09-28",
-              "2026-09-29",
-              "2026-09-30",
-              "2026-10-05"
-            ],
-            "no_synthetic_bar": true,
-            "price": 10.63,
-            "reason": "EXACT30_INCOMPLETE_NEVER_PASS",
-            "source": "SINA_US_DAILY"
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
-        "missing_sessions": [
-          "2026-08-26",
-          "2026-08-27",
-          "2026-09-02",
-          "2026-09-03",
-          "2026-09-09",
-          "2026-09-11",
-          "2026-09-14",
-          "2026-09-16",
-          "2026-09-18",
-          "2026-09-21",
-          "2026-09-22",
-          "2026-09-23",
-          "2026-09-24",
-          "2026-09-25",
-          "2026-09-28",
-          "2026-09-29",
-          "2026-09-30",
-          "2026-10-05"
-        ],
-        "no_synthetic_bar": true,
-        "observed_usable_sessions": 12,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
-        "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
-        "zero_volume_sessions": []
+        "dv30": 0.0,
+        "price": 10.630000114440918,
+        "proof": "EXACT30_MEDIAN_LT_GATE",
+        "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "C417_RALLIES_PRIMARY_PARTITION",
-      "status": "BLOCK_CURRENT_RUN"
+      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provider_meta": {
+        "nasdaq": {
+          "disabled": true,
+          "no_pass_or_fail_created": true,
+          "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+        },
+        "sina": {
+          "usable": 289
+        },
+        "yahoo": {
+          "exchangeName": "NCM",
+          "usable": 63
+        }
+      },
+      "status": "FAIL_DV30"
     },
     "NOMA": {
       "info": {
@@ -30026,93 +28908,28 @@
       "status": "FAIL_DV30"
     },
     "NWCL": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "disabled": true,
-            "no_pass_or_fail_created": true,
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "sina": {
-            "usable": 12
-          },
-          "yahoo": {
-            "exchangeName": "NMS",
-            "usable": 62
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
-          "sina_result": {
-            "dv30_lower_bound": 0.0,
-            "dv30_upper_bound": null,
-            "known_session_count": 12,
-            "missing_sessions": [
-              "2026-08-26",
-              "2026-08-27",
-              "2026-08-28",
-              "2026-08-31",
-              "2026-09-01",
-              "2026-09-02",
-              "2026-09-03",
-              "2026-09-04",
-              "2026-09-08",
-              "2026-09-09",
-              "2026-09-10",
-              "2026-09-11",
-              "2026-09-14",
-              "2026-09-15",
-              "2026-09-16",
-              "2026-09-17",
-              "2026-09-18",
-              "2026-09-21"
-            ],
-            "no_synthetic_bar": true,
-            "price": 7.91,
-            "reason": "EXACT30_INCOMPLETE_NEVER_PASS",
-            "source": "SINA_US_DAILY"
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
-        "missing_sessions": [
-          "2026-08-26",
-          "2026-08-27",
-          "2026-08-28",
-          "2026-08-31",
-          "2026-09-01",
-          "2026-09-02",
-          "2026-09-03",
-          "2026-09-04",
-          "2026-09-08",
-          "2026-09-09",
-          "2026-09-10",
-          "2026-09-11",
-          "2026-09-14",
-          "2026-09-15",
-          "2026-09-16",
-          "2026-09-17",
-          "2026-09-18",
-          "2026-09-21"
-        ],
-        "no_synthetic_bar": true,
-        "observed_usable_sessions": 12,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
-        "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
-        "zero_volume_sessions": []
+        "dv30": 1696653.4528255463,
+        "price": 7.909999847412109,
+        "proof": "EXACT30_MEDIAN_LT_GATE",
+        "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "C417_RALLIES_PRIMARY_PARTITION",
-      "status": "BLOCK_CURRENT_RUN"
+      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provider_meta": {
+        "nasdaq": {
+          "disabled": true,
+          "no_pass_or_fail_created": true,
+          "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+        },
+        "sina": {
+          "usable": 12
+        },
+        "yahoo": {
+          "exchangeName": "NMS",
+          "usable": 63
+        }
+      },
+      "status": "FAIL_DV30"
     },
     "NWE": {
       "info": {
@@ -32254,53 +31071,28 @@
       "status": "FAIL_PRICE"
     },
     "PFX": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "disabled": true,
-            "no_pass_or_fail_created": true,
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "sina": {
-            "usable": 1263
-          },
-          "yahoo": {
-            "exchangeName": "NGM",
-            "usable": 62
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 1263
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
-        "missing_sessions": [
-          "2026-09-24",
-          "2026-10-07"
-        ],
-        "no_synthetic_bar": true,
-        "observed_usable_sessions": 28,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
-        "zero_volume_sessions": []
+        "dv30": 143250.24795532227,
+        "price": 45.400001525878906,
+        "proof": "EXACT30_MEDIAN_LT_GATE",
+        "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "C417_RALLIES_PRIMARY_PARTITION",
-      "status": "BLOCK_CURRENT_RUN"
+      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provider_meta": {
+        "nasdaq": {
+          "disabled": true,
+          "no_pass_or_fail_created": true,
+          "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+        },
+        "sina": {
+          "usable": 1263
+        },
+        "yahoo": {
+          "exchangeName": "NGM",
+          "usable": 63
+        }
+      },
+      "status": "FAIL_DV30"
     },
     "PGC": {
       "info": {
@@ -32934,70 +31726,28 @@
       "status": "FAIL_PRICE"
     },
     "PONO": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "disabled": true,
-            "no_pass_or_fail_created": true,
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "sina": {
-            "usable": 294
-          },
-          "yahoo": {
-            "exchangeName": "NGM",
-            "usable": 62
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 294
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
-        "missing_sessions": [
-          "2026-09-01",
-          "2026-09-02",
-          "2026-09-03",
-          "2026-09-10",
-          "2026-09-15",
-          "2026-09-16",
-          "2026-09-17",
-          "2026-09-18",
-          "2026-09-21",
-          "2026-09-22",
-          "2026-09-23",
-          "2026-09-24",
-          "2026-09-25",
-          "2026-09-28",
-          "2026-09-29",
-          "2026-09-30",
-          "2026-10-01",
-          "2026-10-06",
-          "2026-10-07"
-        ],
-        "no_synthetic_bar": true,
-        "observed_usable_sessions": 11,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
-        "zero_volume_sessions": []
+        "dv30": 0.0,
+        "price": 10.039999961853027,
+        "proof": "EXACT30_MEDIAN_LT_GATE",
+        "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "C417_RALLIES_PRIMARY_PARTITION",
-      "status": "BLOCK_CURRENT_RUN"
+      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provider_meta": {
+        "nasdaq": {
+          "disabled": true,
+          "no_pass_or_fail_created": true,
+          "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+        },
+        "sina": {
+          "usable": 294
+        },
+        "yahoo": {
+          "exchangeName": "NGM",
+          "usable": 63
+        }
+      },
+      "status": "FAIL_DV30"
     },
     "PONY": {
       "info": {
@@ -34206,58 +32956,28 @@
       "status": "FAIL_DV30"
     },
     "RACD": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "disabled": true,
-            "no_pass_or_fail_created": true,
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "sina": {
-            "usable": 52
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 61
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 52
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 61
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
-        "missing_sessions": [
-          "2026-09-01",
-          "2026-09-02",
-          "2026-09-11",
-          "2026-09-18",
-          "2026-09-30",
-          "2026-10-06",
-          "2026-10-07"
-        ],
-        "no_synthetic_bar": true,
-        "observed_usable_sessions": 23,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
-        "zero_volume_sessions": []
+        "dv30": 26325.99983215332,
+        "price": 11.699999809265137,
+        "proof": "EXACT30_MEDIAN_LT_GATE",
+        "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "C417_RALLIES_PRIMARY_PARTITION",
-      "status": "BLOCK_CURRENT_RUN"
+      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provider_meta": {
+        "nasdaq": {
+          "disabled": true,
+          "no_pass_or_fail_created": true,
+          "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+        },
+        "sina": {
+          "usable": 52
+        },
+        "yahoo": {
+          "exchangeName": "NCM",
+          "usable": 62
+        }
+      },
+      "status": "FAIL_DV30"
     },
     "RADX": {
       "info": {
@@ -35348,55 +34068,28 @@
       "status": "PASS_PRICE_DV30"
     },
     "ROMA": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "disabled": true,
-            "no_pass_or_fail_created": true,
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "sina": {
-            "usable": 681
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 62
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 681
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
-        "missing_sessions": [
-          "2026-08-28",
-          "2026-09-16",
-          "2026-09-21",
-          "2026-10-07"
-        ],
-        "no_synthetic_bar": true,
-        "observed_usable_sessions": 26,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
-        "zero_volume_sessions": []
+        "dv30": 17401.50022506714,
+        "price": 8.739999771118164,
+        "proof": "EXACT30_MEDIAN_LT_GATE",
+        "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "C417_RALLIES_PRIMARY_PARTITION",
-      "status": "BLOCK_CURRENT_RUN"
+      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provider_meta": {
+        "nasdaq": {
+          "disabled": true,
+          "no_pass_or_fail_created": true,
+          "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+        },
+        "sina": {
+          "usable": 681
+        },
+        "yahoo": {
+          "exchangeName": "NCM",
+          "usable": 63
+        }
+      },
+      "status": "FAIL_DV30"
     },
     "ROOT": {
       "info": {
@@ -36193,73 +34886,28 @@
       "status": "FAIL_PRICE"
     },
     "SCPQ": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "disabled": true,
-            "no_pass_or_fail_created": true,
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "sina": {
-            "usable": 48
-          },
-          "yahoo": {
-            "exchangeName": "NGM",
-            "usable": 62
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 48
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
-        "missing_sessions": [
-          "2026-08-31",
-          "2026-09-01",
-          "2026-09-02",
-          "2026-09-03",
-          "2026-09-04",
-          "2026-09-08",
-          "2026-09-09",
-          "2026-09-10",
-          "2026-09-11",
-          "2026-09-14",
-          "2026-09-15",
-          "2026-09-16",
-          "2026-09-17",
-          "2026-09-18",
-          "2026-09-24",
-          "2026-09-25",
-          "2026-09-28",
-          "2026-09-29",
-          "2026-10-01",
-          "2026-10-02",
-          "2026-10-06",
-          "2026-10-07"
-        ],
-        "no_synthetic_bar": true,
-        "observed_usable_sessions": 8,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
-        "zero_volume_sessions": []
+        "dv30": 0.0,
+        "price": 10.069999694824219,
+        "proof": "EXACT30_MEDIAN_LT_GATE",
+        "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "C417_RALLIES_PRIMARY_PARTITION",
-      "status": "BLOCK_CURRENT_RUN"
+      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provider_meta": {
+        "nasdaq": {
+          "disabled": true,
+          "no_pass_or_fail_created": true,
+          "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+        },
+        "sina": {
+          "usable": 48
+        },
+        "yahoo": {
+          "exchangeName": "NGM",
+          "usable": 63
+        }
+      },
+      "status": "FAIL_DV30"
     },
     "SCSC": {
       "info": {
@@ -36456,97 +35104,28 @@
       "status": "FAIL_DV30"
     },
     "SENEB": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "disabled": true,
-            "no_pass_or_fail_created": true,
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "sina": {
-            "usable": 3023
-          },
-          "yahoo": {
-            "exchangeName": "NMS",
-            "usable": 62
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
-          "sina_result": {
-            "dv30_lower_bound": 0.0,
-            "dv30_upper_bound": null,
-            "known_session_count": 10,
-            "missing_sessions": [
-              "2026-08-27",
-              "2026-08-28",
-              "2026-08-31",
-              "2026-09-01",
-              "2026-09-04",
-              "2026-09-09",
-              "2026-09-11",
-              "2026-09-14",
-              "2026-09-15",
-              "2026-09-16",
-              "2026-09-17",
-              "2026-09-18",
-              "2026-09-21",
-              "2026-09-22",
-              "2026-09-24",
-              "2026-09-25",
-              "2026-09-28",
-              "2026-09-30",
-              "2026-10-02",
-              "2026-10-06"
-            ],
-            "no_synthetic_bar": true,
-            "price": 175.58,
-            "reason": "EXACT30_INCOMPLETE_NEVER_PASS",
-            "source": "SINA_US_DAILY"
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
-        "missing_sessions": [
-          "2026-08-27",
-          "2026-08-28",
-          "2026-08-31",
-          "2026-09-01",
-          "2026-09-04",
-          "2026-09-09",
-          "2026-09-11",
-          "2026-09-14",
-          "2026-09-15",
-          "2026-09-16",
-          "2026-09-17",
-          "2026-09-18",
-          "2026-09-21",
-          "2026-09-22",
-          "2026-09-24",
-          "2026-09-25",
-          "2026-09-28",
-          "2026-09-30",
-          "2026-10-02",
-          "2026-10-06"
-        ],
-        "no_synthetic_bar": true,
-        "observed_usable_sessions": 10,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
-        "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
-        "zero_volume_sessions": []
+        "dv30": 0.0,
+        "price": 175.5800018310547,
+        "proof": "EXACT30_MEDIAN_LT_GATE",
+        "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "C417_RALLIES_PRIMARY_PARTITION",
-      "status": "BLOCK_CURRENT_RUN"
+      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provider_meta": {
+        "nasdaq": {
+          "disabled": true,
+          "no_pass_or_fail_created": true,
+          "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+        },
+        "sina": {
+          "usable": 3023
+        },
+        "yahoo": {
+          "exchangeName": "NMS",
+          "usable": 63
+        }
+      },
+      "status": "FAIL_DV30"
     },
     "SENS": {
       "info": {
@@ -37007,65 +35586,28 @@
       "status": "PASS_PRICE_DV30"
     },
     "SHOT": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "disabled": true,
-            "no_pass_or_fail_created": true,
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "sina": {
-            "usable": 555
-          },
-          "yahoo": {
-            "exchangeName": "NGM",
-            "usable": 57
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 555
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 57
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
-        "missing_sessions": [
-          "2026-09-03",
-          "2026-09-04",
-          "2026-09-08",
-          "2026-09-09",
-          "2026-09-11",
-          "2026-09-23",
-          "2026-09-25",
-          "2026-09-28",
-          "2026-09-29",
-          "2026-10-01",
-          "2026-10-02",
-          "2026-10-05",
-          "2026-10-06",
-          "2026-10-07"
-        ],
-        "no_synthetic_bar": true,
-        "observed_usable_sessions": 16,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
-        "zero_volume_sessions": []
+        "dv30": 5417.50020980835,
+        "price": 9.859999656677246,
+        "proof": "EXACT30_MEDIAN_LT_GATE",
+        "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "C417_RALLIES_PRIMARY_PARTITION",
-      "status": "BLOCK_CURRENT_RUN"
+      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provider_meta": {
+        "nasdaq": {
+          "disabled": true,
+          "no_pass_or_fail_created": true,
+          "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+        },
+        "sina": {
+          "usable": 555
+        },
+        "yahoo": {
+          "exchangeName": "NGM",
+          "usable": 58
+        }
+      },
+      "status": "FAIL_DV30"
     },
     "SHPH": {
       "info": {
@@ -38798,64 +37340,28 @@
       "status": "FAIL_DV30"
     },
     "SVCC": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "disabled": true,
-            "no_pass_or_fail_created": true,
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "sina": {
-            "usable": 223
-          },
-          "yahoo": {
-            "exchangeName": "NGM",
-            "usable": 62
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 223
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
-        "missing_sessions": [
-          "2026-08-28",
-          "2026-09-09",
-          "2026-09-15",
-          "2026-09-16",
-          "2026-09-21",
-          "2026-09-23",
-          "2026-09-28",
-          "2026-09-29",
-          "2026-09-30",
-          "2026-10-01",
-          "2026-10-02",
-          "2026-10-05",
-          "2026-10-07"
-        ],
-        "no_synthetic_bar": true,
-        "observed_usable_sessions": 17,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
-        "zero_volume_sessions": []
+        "dv30": 3750.5000591278076,
+        "price": 10.720000267028809,
+        "proof": "EXACT30_MEDIAN_LT_GATE",
+        "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "C417_RALLIES_PRIMARY_PARTITION",
-      "status": "BLOCK_CURRENT_RUN"
+      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provider_meta": {
+        "nasdaq": {
+          "disabled": true,
+          "no_pass_or_fail_created": true,
+          "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+        },
+        "sina": {
+          "usable": 223
+        },
+        "yahoo": {
+          "exchangeName": "NGM",
+          "usable": 63
+        }
+      },
+      "status": "FAIL_DV30"
     },
     "SVCO": {
       "info": {
@@ -40199,69 +38705,28 @@
       "status": "FAIL_PRICE"
     },
     "TRGS": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "disabled": true,
-            "no_pass_or_fail_created": true,
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "sina": {
-            "usable": 57
-          },
-          "yahoo": {
-            "exchangeName": "NGM",
-            "usable": 62
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 57
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
-        "missing_sessions": [
-          "2026-09-03",
-          "2026-09-04",
-          "2026-09-08",
-          "2026-09-09",
-          "2026-09-10",
-          "2026-09-11",
-          "2026-09-15",
-          "2026-09-17",
-          "2026-09-18",
-          "2026-09-21",
-          "2026-09-23",
-          "2026-09-25",
-          "2026-09-28",
-          "2026-09-29",
-          "2026-09-30",
-          "2026-10-01",
-          "2026-10-06",
-          "2026-10-07"
-        ],
-        "no_synthetic_bar": true,
-        "observed_usable_sessions": 12,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
-        "zero_volume_sessions": []
+        "dv30": 0.0,
+        "price": 9.970000267028809,
+        "proof": "EXACT30_MEDIAN_LT_GATE",
+        "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "C417_RALLIES_PRIMARY_PARTITION",
-      "status": "BLOCK_CURRENT_RUN"
+      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provider_meta": {
+        "nasdaq": {
+          "disabled": true,
+          "no_pass_or_fail_created": true,
+          "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+        },
+        "sina": {
+          "usable": 57
+        },
+        "yahoo": {
+          "exchangeName": "NGM",
+          "usable": 63
+        }
+      },
+      "status": "FAIL_DV30"
     },
     "TRI": {
       "info": {
@@ -40679,64 +39144,27 @@
       "status": "PASS_PRICE_DV30"
     },
     "TULP": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "disabled": true,
-            "no_pass_or_fail_created": true,
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "sina": {
-            "usable": 144
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 62
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 144
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
-        "missing_sessions": [
-          "2026-08-27",
-          "2026-08-28",
-          "2026-08-31",
-          "2026-09-01",
-          "2026-09-10",
-          "2026-09-11",
-          "2026-09-14",
-          "2026-09-15",
-          "2026-09-17",
-          "2026-09-29",
-          "2026-10-02",
-          "2026-10-06",
-          "2026-10-07"
-        ],
-        "no_synthetic_bar": true,
-        "observed_usable_sessions": 17,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
-        "zero_volume_sessions": []
+        "price": 2.7100000381469727,
+        "proof": "ASOF_CLOSE_LT_5",
+        "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "C417_RALLIES_PRIMARY_PARTITION",
-      "status": "BLOCK_CURRENT_RUN"
+      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provider_meta": {
+        "nasdaq": {
+          "disabled": true,
+          "no_pass_or_fail_created": true,
+          "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+        },
+        "sina": {
+          "usable": 144
+        },
+        "yahoo": {
+          "exchangeName": "NCM",
+          "usable": 63
+        }
+      },
+      "status": "FAIL_PRICE"
     },
     "TURB": {
       "info": {
@@ -41901,70 +40329,28 @@
       "status": "FAIL_DV30"
     },
     "VHCP": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "disabled": true,
-            "no_pass_or_fail_created": true,
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "sina": {
-            "usable": 89
-          },
-          "yahoo": {
-            "exchangeName": "NGM",
-            "usable": 62
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 89
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
-        "missing_sessions": [
-          "2026-08-26",
-          "2026-08-27",
-          "2026-09-02",
-          "2026-09-04",
-          "2026-09-09",
-          "2026-09-10",
-          "2026-09-15",
-          "2026-09-16",
-          "2026-09-18",
-          "2026-09-21",
-          "2026-09-24",
-          "2026-09-25",
-          "2026-09-28",
-          "2026-09-29",
-          "2026-10-01",
-          "2026-10-02",
-          "2026-10-05",
-          "2026-10-06",
-          "2026-10-07"
-        ],
-        "no_synthetic_bar": true,
-        "observed_usable_sessions": 11,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
-        "zero_volume_sessions": []
+        "dv30": 0.0,
+        "price": 10.069999694824219,
+        "proof": "EXACT30_MEDIAN_LT_GATE",
+        "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "C417_RALLIES_PRIMARY_PARTITION",
-      "status": "BLOCK_CURRENT_RUN"
+      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provider_meta": {
+        "nasdaq": {
+          "disabled": true,
+          "no_pass_or_fail_created": true,
+          "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+        },
+        "sina": {
+          "usable": 89
+        },
+        "yahoo": {
+          "exchangeName": "NGM",
+          "usable": 63
+        }
+      },
+      "status": "FAIL_DV30"
     },
     "VHUB": {
       "info": {
@@ -43213,93 +41599,37 @@
       "status": "FAIL_PRICE"
     },
     "WORX": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "disabled": true,
-            "no_pass_or_fail_created": true,
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "sina": {
-            "usable": 1735
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 58
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
-          "sina_result": {
-            "dv30_lower_bound": 0.0,
-            "dv30_upper_bound": null,
-            "known_session_count": 1,
-            "missing_sessions": [
-              "2026-08-26",
-              "2026-08-27",
-              "2026-08-28",
-              "2026-08-31",
-              "2026-09-01",
-              "2026-09-02",
-              "2026-09-03",
-              "2026-09-04",
-              "2026-09-08",
-              "2026-09-09",
-              "2026-09-10",
-              "2026-09-11",
-              "2026-09-14",
-              "2026-09-15",
-              "2026-09-16",
-              "2026-09-17",
-              "2026-09-18",
-              "2026-09-21",
-              "2026-09-22",
-              "2026-09-23",
-              "2026-09-24",
-              "2026-09-25",
-              "2026-09-28",
-              "2026-09-29",
-              "2026-09-30",
-              "2026-10-01",
-              "2026-10-02",
-              "2026-10-05",
-              "2026-10-06"
-            ],
-            "no_synthetic_bar": true,
-            "price": 5.75,
-            "reason": "EXACT30_INCOMPLETE_NEVER_PASS",
-            "source": "SINA_US_DAILY"
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 58
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
+        "dv30_lower_bound": 2149.299955368042,
+        "dv30_upper_bound": 2984.999895095825,
+        "known_session_count": 26,
         "missing_sessions": [
-          "2026-08-26",
-          "2026-08-27",
-          "2026-08-28",
-          "2026-08-31",
-          "2026-09-04",
+          "2026-09-08",
           "2026-09-09",
-          "2026-09-25"
+          "2026-09-10",
+          "2026-09-11"
         ],
         "no_synthetic_bar": true,
-        "observed_usable_sessions": 23,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
-        "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
-        "zero_volume_sessions": []
+        "price": 5.75,
+        "proof": "DV30_UPPER_BOUND_LT_GATE",
+        "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "C417_RALLIES_PRIMARY_PARTITION",
-      "status": "BLOCK_CURRENT_RUN"
+      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provider_meta": {
+        "nasdaq": {
+          "disabled": true,
+          "no_pass_or_fail_created": true,
+          "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+        },
+        "sina": {
+          "usable": 1735
+        },
+        "yahoo": {
+          "exchangeName": "NCM",
+          "usable": 59
+        }
+      },
+      "status": "FAIL_DV30"
     },
     "WPRT": {
       "info": {
@@ -44089,61 +42419,28 @@
       "status": "FAIL_PRICE"
     },
     "YICC": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "disabled": true,
-            "no_pass_or_fail_created": true,
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "sina": {
-            "usable": 39
-          },
-          "yahoo": {
-            "exchangeName": "NGM",
-            "usable": 61
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
-          "sina_result": {
-            "reason": "ASOF_MISSING",
-            "source": "SINA_US_DAILY",
-            "usable_bars": 39
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 61
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
-        "missing_sessions": [
-          "2026-08-28",
-          "2026-09-16",
-          "2026-09-21",
-          "2026-09-22",
-          "2026-09-28",
-          "2026-09-30",
-          "2026-10-01",
-          "2026-10-02",
-          "2026-10-06",
-          "2026-10-07"
-        ],
-        "no_synthetic_bar": true,
-        "observed_usable_sessions": 20,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "NO_USABLE_ASOF_MARKET_DATA_CURRENT_RUN",
-        "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
-        "zero_volume_sessions": []
+        "dv30": 37789.999771118164,
+        "price": 9.930000305175781,
+        "proof": "EXACT30_MEDIAN_LT_GATE",
+        "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "C417_RALLIES_PRIMARY_PARTITION",
-      "status": "BLOCK_CURRENT_RUN"
+      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provider_meta": {
+        "nasdaq": {
+          "disabled": true,
+          "no_pass_or_fail_created": true,
+          "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+        },
+        "sina": {
+          "usable": 39
+        },
+        "yahoo": {
+          "exchangeName": "NGM",
+          "usable": 62
+        }
+      },
+      "status": "FAIL_DV30"
     },
     "YJ": {
       "info": {
