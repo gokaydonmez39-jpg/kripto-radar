@@ -1782,11 +1782,6 @@ def main():
         results,official_guard,asof
     )
 
-    # Exact-ASOF, official RSS full-session halt + independent missing-date
-    # corroboration. BLOCK -> terminal FAIL only; cannot create a PASS.
-    historical_halt_terminalized=apply_historical_halt_fail_only(
-        results,asof,exp30
-    )
 
     # Official first-trade/listing dates can terminalize recent listings when
     # the exact 30-session DV30 history cannot mathematically exist by ASOF.
@@ -1825,6 +1820,12 @@ def main():
 
     rallies_primary_post_recovery_vetoed=apply_c417_rallies_primary_pass_veto(
         results,rallies_primary
+    )
+    # After blocked same-run provider attempts, Sina missing-date evidence is
+    # present. Earlier application would fail closed before corroboration.
+    # Exact ASOF, 3-source witnessed BLOCK -> terminal FAIL, never PASS.
+    historical_halt_terminalized=apply_historical_halt_fail_only(
+        results,asof,exp30
     )
 
     counts={}
