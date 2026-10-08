@@ -256,6 +256,34 @@ jobs:
           python nasdaq-xray/build_mc_provenance_rebind.py --selftest
           python nasdaq-xray/build_mc_provenance_rebind.py | tee /tmp/mc_rebind_out
           cat /tmp/mc_rebind_out >> "$GITHUB_OUTPUT"
+      - name: Validate full immutable MC chain head selector
+        if: steps.freeze.outputs.frozen != 'true' && steps.resolver_gate.outputs.eligible == 'true' && steps.resolver_handoff.outputs.ready == 'true' && steps.mc_rebind.outputs.ready != 'false'
+        shell: bash
+        run: |
+          python nasdaq-xray/mc_zero_dollar_successor_shadow_audit.py --selftest
+          python - <<'PY'
+          import sys
+          sys.path.insert(0,"nasdaq-xray")
+          from mc_zero_dollar_successor_shadow_audit import select_active_mc_row
+          root={"rel":"r","blob":"a","obj":{}}
+          middle={"rel":"m","blob":"b","obj":{"supersedes_mc_bridge_path":"r","supersedes_mc_bridge_blob_sha":"a"}}
+          tip={"rel":"t","blob":"c","obj":{"supersedes_mc_bridge_path":"m","supersedes_mc_bridge_blob_sha":"b"}}
+          assert select_active_mc_row([root,middle,tip])["rel"]=="t"
+          try:
+              select_active_mc_row([root,tip])
+          except AssertionError as exc:
+              assert "MC_SUPERSESSION_PREDECESSOR_MISMATCH" in str(exc)
+          else:
+              raise AssertionError("FILTERED_CHAIN_MUST_NOT_PROMOTE")
+          fork={"rel":"fork","blob":"d","obj":{"supersedes_mc_bridge_path":"m","supersedes_mc_bridge_blob_sha":"b"}}
+          try:
+              select_active_mc_row([root,middle,tip,fork])
+          except AssertionError as exc:
+              assert "MC_ACTIVE_HEAD_COUNT:2" in str(exc)
+          else:
+              raise AssertionError("INDEPENDENT_FORK_MUST_FAIL_CLOSED")
+          print("XRAY_MC_GLOBAL_LINEAGE_SELECTION_SELFTEST=PASS")
+          PY
       - name: Find exact-bound committed MC bridge
         id: mc
         if: steps.freeze.outputs.frozen != 'true' && steps.resolver_gate.outputs.eligible == 'true' && steps.resolver_handoff.outputs.ready == 'true' && steps.mc_rebind.outputs.ready != 'false'
@@ -263,7 +291,9 @@ jobs:
         run: |
           set -e
           python - <<'PY' > /tmp/mc_out
-          import glob,hashlib,json,pathlib
+          import glob,hashlib,json,pathlib,sys
+          sys.path.insert(0,"nasdaq-xray")
+          from mc_zero_dollar_successor_shadow_audit import select_active_mc_row
           price_path=pathlib.Path("nasdaq-xray/canonical_current_price_dv30.json")
           master_path=pathlib.Path("nasdaq-xray/canonical_current_master_manifest.json")
           pointer_path=pathlib.Path("nasdaq-xray/chatgpt_canonical_state_v2.json")
@@ -290,9 +320,22 @@ jobs:
           settlement_required=bool(pointer_asof and expected_asof>pointer_asof)
           expected_path="nasdaq-xray/canonical_current_price_dv30.json"
           rows=[]
-          for fp in glob.glob("nasdaq-xray/canonical_mc_bridge_*.json"):
+          # Collect complete same-ASOF immutable lineage before filtering current
+          # PRICE matches; intermediate predecessors may have older price blobs.
+          all_mc=[]
+          for fp in sorted(glob.glob("nasdaq-xray/canonical_mc_bridge_*.json")):
               try:
                   j=json.load(open(fp))
+                  if (j.get("schema")=="XRAY_MC_EPOCH_RESULT_V1"
+                      and j.get("status")=="COMMITTED"
+                      and j.get("asof_et")==expected_asof
+                      and j.get("task_id")=="6a825366222081918997094d76e6ae46"
+                      and j.get("execution")=="NONE"
+                      and j.get("real_money")=="NO-GO"
+                      and j.get("unknown_never_pass") is True):
+                      bb=pathlib.Path(fp).read_bytes()
+                      ss=hashlib.sha1(f"blob {len(bb)}\0".encode()+bb).hexdigest()
+                      all_mc.append({"rel":fp,"obj":j,"blob":ss})
                   expected_set=set(p.get("pass_symbols") or [])
                   primary=set(j.get("primary_pass_symbols") or [])
                   mcfail=set(j.get("primary_fail_symbols") or [])
@@ -368,24 +411,22 @@ jobs:
                       rows.append((fp,j,j.get("input_blob_sha")==price_blob,fsha))
               except Exception:
                   pass
-          # Immutable supersession is valid only when the successor names an
-          # already-valid same-epoch predecessor by exact path + Git blob SHA.
-          valid=[]
-          for row in rows:
-              fp,j,is_exact,fsha=row
-              sp=j.get("supersedes_mc_bridge_path"); ss=j.get("supersedes_mc_bridge_blob_sha")
-              if not sp and not ss:
-                  valid.append(row); continue
-              if not sp or not ss:
-                  continue
-              pred=next((x for x in rows if x[0]==sp and x[3]==ss),None)
-              if pred is None:
-                  continue
-              valid.append(row)
-          superseded={j.get("supersedes_mc_bridge_path") for _,j,_,_ in valid if j.get("supersedes_mc_bridge_path") and j.get("supersedes_mc_bridge_blob_sha")}
-          active=[row for row in valid if row[0] not in superseded]
-          exact=[row[0] for row in active if row[2]]
-          semantic=[row[0] for row in active if not row[2]]
+          # Resolve the globally single immutable head, NOT locally filtered
+          # rows. A legitimate predecessor can have an older same-policy PRICE
+          # blob; filtering it first splits one SHA-verified chain into two
+          # spurious active heads (DUPLICATE_MC_BINDING).
+          # If two independent immutable heads exist, retain fail-closed.
+          try:
+              canonical_head=select_active_mc_row(all_mc)["rel"]
+          except AssertionError as e:
+              print("ready=false")
+              print("binding_fault=true")
+              print("pending_reason=AMBIGUOUS_IMMUTABLE_MC_HEAD")
+              print("mc_chain_guard="+str(e))
+              raise SystemExit
+          eligible=[row for row in rows if row[0]==canonical_head]
+          exact=[row[0] for row in eligible if row[2]]
+          semantic=[row[0] for row in eligible if not row[2]]
           if len(exact)==1:
               fp=exact[0]
           elif len(exact)>1:
