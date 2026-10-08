@@ -84,3 +84,17 @@ jobs:
           assert commit.count('git diff --name-only "$baseline"')>=2
           print("XRAY_POSTMC_LATE_CAS_FENCE_REGRESSION=PASS")
           PY
+      - name: Parse final publication retry script as Bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import subprocess
+          import textwrap
+          w=Path(".github/workflows/xray-canonical-current-post-mc.yml").read_text()
+          chunk=w.split("      - name: Commit current post-MC artifacts",1)[1]
+          code=chunk.split("         run: |",1)[1]
+          result=subprocess.run(["bash","-n"],input=textwrap.dedent(code),text=True,capture_output=True)
+          if result.returncode:
+              raise AssertionError("XRAY_POSTMC_LATE_CAS_BASH_SYNTAX_FAIL:"+result.stderr[:700])
+          print("XRAY_POSTMC_LATE_CAS_BASH_SYNTAX=PASS")
+          PY
