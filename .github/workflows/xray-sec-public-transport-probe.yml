@@ -1,0 +1,45 @@
+name: XRAY SEC Official Access and Bulk Budget Shadow
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/sec_public_transport_probe.py"
+      - ".github/workflows/xray-sec-public-transport-probe.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: xray-sec-official-transport-probe
+  cancel-in-progress: false
+jobs:
+  access:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile and positive/negative fail-closed checks
+        run: |
+          python -m py_compile nasdaq-xray/sec_public_transport_probe.py
+          python nasdaq-xray/sec_public_transport_probe.py --selftest
+      - name: Probe official SEC hosts with at most 3 read-only requests
+        run: python nasdaq-xray/sec_public_transport_probe.py --out /tmp/xray_sec_public_transport.json
+      - name: Validate non-alpha diagnosis
+        run: |
+          python - <<'PY'
+          import json
+          j=json.load(open("/tmp/xray_sec_public_transport.json"))
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          assert j["unknown_never_pass"] is True and j["alpha_authority"] is False
+          assert j["bulk_download_performed"] is False and j["r92_created"] is False
+          assert len(j["results"])==3
+          assert all(not x["body_persisted"] for x in j["results"].values())
+          print("XRAY_SEC_OFFICIAL_TRANSPORT_ARTIFACT=PASS_NON_ALPHA")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: xray-sec-official-transport-shadow
+          path: /tmp/xray_sec_public_transport.json
+          retention-days: 7
