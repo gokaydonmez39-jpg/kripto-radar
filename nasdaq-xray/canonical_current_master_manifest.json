@@ -1,7 +1,7 @@
 {
   "asof_et": "2026-10-07",
   "asof_identity_proof": {
-    "blob_sha": "9f9f2f450a4de0af3797ba62e5736dc9858cc7e2",
+    "blob_sha": "20d6590684cd17e8b2073fc0a609b8a5af6ac1c4",
     "counts": {
       "operating_overrides": 4,
       "remove_from_asof": 0,
@@ -29,13 +29,13 @@
   },
   "counts": {
     "PASS_IDENTITY": 3185,
-    "UNKNOWN_IDENTITY": 166
+    "UNKNOWN_IDENTITY": 164
   },
   "execution": "NONE",
-  "explicit_excluded_count": 45,
-  "explicit_excluded_hash": "f536b31dd0302f985d7a3766b29629083143d0caa40b58c2087e38e71d016991",
+  "explicit_excluded_count": 47,
+  "explicit_excluded_hash": "13a2a938ffd6098b732f507406fb541d79693e692a2fb064b0bba1f4323d9a2b",
   "explicit_excluded_reason_counts": {
-    "SPAC_BLANK_CHECK": 45
+    "SPAC_BLANK_CHECK": 47
   },
   "history_price_state_diagnostic_only": {
     "source_counts": {
@@ -3243,22 +3243,22 @@
   "queue_hash": "306d6bb21e1ffef5f099f988ce995d0f98b349c051f34b4eed42613280444bdf",
   "queue_total": 3185,
   "queue_unique": 3185,
-  "raw_identity_total": 3351,
+  "raw_identity_total": 3349,
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1",
   "sec_spac_proof": {
-    "blob_sha": "2c88096c17406f1260b46826e668c3a00ee4408f",
-    "count": 45,
+    "blob_sha": "6b28e09997ceff7cc2e3587627d70711fce356af",
+    "count": 47,
     "path": "nasdaq-xray/master_sec_spac_proof_20261007.json",
-    "symbol_hash": "b0c3af59c476114cdfa6d86d7d1be76690b9a55758206041a3b08b3ead8b3259"
+    "symbol_hash": "8ae5b9b5ae6733d6ae7abb230f8318e17d0d5e07f038daec6cf35ff6f1274ff9"
   },
-  "source_state_blob_sha": "3d0982e7f9750d2e54877842d6717f8901f60ac1",
-  "source_state_hash": "ae037966cd1ba67428f7726ac164fc2a7e6d3f5979a7d7777d41c8d49f11add0",
+  "source_state_blob_sha": "61dc30a597f5c1c96c1b61a92c7882d434dda853",
+  "source_state_hash": "3584626d29b7f0d398f80405e86a30cd64f2ab3bf24af68ed5c6b48f809e2d46",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
   "status": "PARTIAL_UNKNOWN",
   "status_semantics": "IDENTITY_PARTITION_EXACT_WITH_UNKNOWN",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 166,
+  "unknown_count": 164,
   "unknown_detail": {
     "AACI": {
       "exact_sec_spac_proof": false,
@@ -3374,15 +3374,6 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Collective Acquisition Corp. - Class A ordinary shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "CCCT": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Columbus Circle Capital Corp III - Class A Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -3680,15 +3671,6 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Globa Terra Acquisition Corporation - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "GUAC": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Berto Acquisition Corp. II - Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -4770,7 +4752,6 @@
     "CAII",
     "CAPN",
     "CCAQ",
-    "CCCT",
     "CCII",
     "CCXI",
     "CHAR",
@@ -4804,7 +4785,6 @@
     "GSRF",
     "GSRV",
     "GTERA",
-    "GUAC",
     "HACQ",
     "HAVA",
     "HCAC",
