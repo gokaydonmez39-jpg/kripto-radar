@@ -1,0 +1,79 @@
+{
+  "schema": "XRAY_MASSIVE_MC_RESUMABLE_LAUNCH_CHECKPOINT_20261009_V1",
+  "repo": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "live_head_at_checkpoint_start": "69b8601b93ad82859e99be3e5c2b742e390a3d92",
+  "asof": "2026-10-08",
+  "verdict": "AUTOMATION_REGRESSION_PASS_DATA_COLLECTION_BLOCKED_MISSING_GITHUB_SECRET",
+  "mode": "RESEARCH_ONLY_MANUAL_DECISION",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "alpha_authority": false,
+  "unknown_never_pass": true,
+  "files": [
+    "nasdaq-xray/massive_mc_resume_shadow.py",
+    ".github/workflows/xray-massive-mc-resume-shadow.yml",
+    ".github/workflows/xray-massive-mc-shadow.yml"
+  ],
+  "implemented": [
+    "Authenticated-encrypted Actions checkpoint using HKDF-derived Fernet from GitHub Massive API secret, never public plaintext",
+    "Restart after GitHub runner termination by restoring latest successful encrypted artifact, rolling 14-day retention",
+    "Current ASOF PRICE pass 514 scope only, exact PRICE Git blob SHA and symbol set fingerprint, stale old epoch discarded",
+    "Rate max25 requests per run and minimum 13 seconds spacing, scheduled every 20 minutes",
+    "Old shadow scheduled duplicate disabled to avoid free-tier rate overlap",
+    "Zero-alpha classification and manual-only engine, no Bigdata C4.17 source authority claim",
+    "Negative integrity tests for modified asof, input sha, encrypted wrong key, NaN MC, bool MC, amount/status inconsistency, market venue, CIK, fake R92, fake AL",
+    "Independent synthetic manual candidate lifecycle and delivery regression tests with NO actual issue or push"
+  ],
+  "actions_evidence": [
+    {
+      "run_id": 37854430021,
+      "status": "SUCCESS",
+      "detail": "Encrypted checkpoint and replay tests PASSED; runtime API key missing"
+    },
+    {
+      "run_id": 37854678362,
+      "status": "SUCCESS",
+      "detail": "Synthetic/manual delivery gate regression PASSED; runtime API key missing"
+    },
+    {
+      "run_id": 37854773995,
+      "status": "SUCCESS",
+      "detail": "Negative MC tamper regressions PASSED; runtime API key missing"
+    }
+  ],
+  "current_unproven": {
+    "github_XRAY_MASSIVE_API_KEY": "ABSENT_CONFIRMED_JOB_ENV",
+    "massive_actual_requests_by_new_runner": 0,
+    "encrypted_checkpoints_with_real_market_data": 0,
+    "completed_asof_mc_universe": false,
+    "official_SEC_issuer_evidence": "NOT_BOUND",
+    "corporate_actions_independent_PIT_validation": "NOT_BOUND",
+    "C4_17_provider_migration": "NOT_AUTHORIZED_NO_VERSIONED_MIGRATION",
+    "current_primary_mc": "NOT_PROVEN",
+    "current_History_Weekly_Final": "BLOCKED_UPSTREAM",
+    "actual_candidate": "UNPROVEN",
+    "phone_notification_receipt": "UNPROVEN"
+  },
+  "required_user_action": "Place Massive Basic free API key as GitHub Actions repo secret XRAY_MASSIVE_API_KEY; DO NOT SEND KEY IN CHAT",
+  "post_secret_success_criteria": [
+    "Run Actions encrypted resume workflow with SHADOW_PARTIAL_NO_ALPHA and nonzero processed count (not just SUCCESS)",
+    "Subsequent runs report restored_encrypted_checkpoint=true, increasing processed_count and decreasing pending_count for SAME ASOF and source SHA",
+    "514 exact-PRICE symbol diagnostic full coverage (or explicit UNKNOWN), no mislabel as primary authority",
+    "Prove usable PIT rights, issuer CIK Nasdaq MIC, corporate actions, second source and formal C4.17 successor policy version",
+    "Current same-ASOF MC+HISTORY+LEGAL+weekly+A/B/C/D+event+RR+terminal SHA chain bound",
+    "Eligible technical manual candidate registered, simulated safety tests done, live delivery receipt independently verified"
+  ],
+  "free_plan_commitment": {
+    "vendor": "Massive Stocks Basic",
+    "max_calls_per_minute": 5,
+    "per_run_cap": 25,
+    "interval_seconds": 13,
+    "schedule_cron": "07,27,47 * * * *",
+    "legacy_duplicate_schedule_disabled": true
+  },
+  "checkpoint_retention_days": 14,
+  "not_indefinite_archival": true
+}
