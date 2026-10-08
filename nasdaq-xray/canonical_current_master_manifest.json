@@ -1,7 +1,7 @@
 {
   "asof_et": "2026-10-07",
   "asof_identity_proof": {
-    "blob_sha": "aac53fe34171f8174b43c3bb4befc0df60610357",
+    "blob_sha": "f8050f925b87418eb628abe079fbdb857b736cc8",
     "counts": {
       "operating_overrides": 3,
       "remove_from_asof": 0,
@@ -29,13 +29,13 @@
   },
   "counts": {
     "PASS_IDENTITY": 3184,
-    "UNKNOWN_IDENTITY": 124
+    "UNKNOWN_IDENTITY": 117
   },
   "execution": "NONE",
-  "explicit_excluded_count": 88,
-  "explicit_excluded_hash": "cac6fc6545aaa42bc6e64cbd294c521e55671bb7ace6653c8a1ca440d7e31fd2",
+  "explicit_excluded_count": 95,
+  "explicit_excluded_hash": "ea6a90eaa1261780e6b30317c159bc4c7a33c160d7ce98b3e0fced24acd024c4",
   "explicit_excluded_reason_counts": {
-    "SPAC_BLANK_CHECK": 88
+    "SPAC_BLANK_CHECK": 95
   },
   "history_price_state_diagnostic_only": {
     "source_counts": {
@@ -3242,22 +3242,22 @@
   "queue_hash": "2554c936f42217cf8a9628e89d04993945218725234fe894f7c80856834725d6",
   "queue_total": 3184,
   "queue_unique": 3184,
-  "raw_identity_total": 3308,
+  "raw_identity_total": 3301,
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1",
   "sec_spac_proof": {
-    "blob_sha": "89fcb110f3955ee7a09e114c456abeeedb3302b2",
-    "count": 88,
+    "blob_sha": "753a189e2d0642a8df7b2fb15215d649444b7e02",
+    "count": 95,
     "path": "nasdaq-xray/master_sec_spac_proof_20261007.json",
-    "symbol_hash": "05606b995e1ff7c20f1c13efa3c977dbfb0d876f1f0c17d9f203f810d8c4953e"
+    "symbol_hash": "48b01606d3c021cf75626c838b1d5e1c03681a0349ba53ed6ac28c7a1bb2d20f"
   },
-  "source_state_blob_sha": "1ef1befcc7a0a673cbae2888af1b57e0f290c4ca",
-  "source_state_hash": "73b04b731354c21479cf3ac4b03201a0f1287aa0134cc92940480c8184d6a550",
+  "source_state_blob_sha": "a3d0473e9d2bbfb4a595c82dff7b8fe08621dc49",
+  "source_state_hash": "8000d1a31db483ac94108ff901a75b30b60e0997fee5be2ddb71b0dcd520cb76",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
   "status": "PARTIAL_UNKNOWN",
   "status_semantics": "IDENTITY_PARTITION_EXACT_WITH_UNKNOWN",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 124,
+  "unknown_count": 117,
   "unknown_detail": {
     "ALIS": {
       "exact_sec_spac_proof": false,
@@ -3418,15 +3418,6 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Future Vision II Acquisition Corporation - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "FWAC": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Futurewave Acquisition Corporation - Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -3736,15 +3727,6 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "MIAC": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Meridian3 Industrials Acquisition Corp - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "MKLY": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
@@ -3853,15 +3835,6 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "OCLT": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "OceanLight Acquisition Corporation - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "OHAC": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
@@ -3877,15 +3850,6 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "OneIM Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "OSPR": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Osprey Acquisition Corp. III - Class A Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -4021,15 +3985,6 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "QDRO Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "QUMS": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Quantumsphere Acquisition Corp. - Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -4204,15 +4159,6 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "TAVI": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Tavia Acquisition Corp. - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "TCGX": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
@@ -4273,15 +4219,6 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Thayer Ventures Acquisition Corporation II - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "TVIV": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Texas Ventures Acquisition IV Corp - Class A Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -4396,7 +4333,6 @@
     "FTHA",
     "FVAV",
     "FVN",
-    "FWAC",
     "FXAC",
     "GSHR",
     "GSRF",
@@ -4431,7 +4367,6 @@
     "MCAH",
     "MCGA",
     "MEVO",
-    "MIAC",
     "MKLY",
     "MLAA",
     "MMTX",
@@ -4444,10 +4379,8 @@
     "NPAC",
     "OACC",
     "OBA",
-    "OCLT",
     "OHAC",
     "OIM",
-    "OSPR",
     "OTGA",
     "OYSE",
     "PAAC",
@@ -4463,7 +4396,6 @@
     "PTAC",
     "PTOR",
     "QADR",
-    "QUMS",
     "RANG",
     "RDAG",
     "RFAI",
@@ -4483,7 +4415,6 @@
     "SZZL",
     "TACH",
     "TACO",
-    "TAVI",
     "TCGX",
     "TDAC",
     "TDWD",
@@ -4491,7 +4422,6 @@
     "TMTS",
     "TVA",
     "TVAI",
-    "TVIV",
     "UYSC",
     "VNME",
     "WENN",
