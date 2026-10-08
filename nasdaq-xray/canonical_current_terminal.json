@@ -15,7 +15,7 @@
     "legal_unknown": 0,
     "lifecycle_regime_unknown": 0,
     "lifecycle_semantic_binding_unknown": 0,
-    "master_unknown": 93,
+    "master_unknown": 83,
     "mc_unknown": 29,
     "price_blocked_current_run": 0,
     "price_unknown": 0,
@@ -37,9 +37,9 @@
       "UCFI",
       "UCFIW"
     ],
-    "age_seconds": 2.266,
-    "generated_at_utc": "2026-10-08T16:31:04.681983+00:00",
-    "guard_blob_sha": "c28f26424ab7811694546f6b47b20ab1ffbc487e",
+    "age_seconds": 1.254,
+    "generated_at_utc": "2026-10-08T17:14:43.723315+00:00",
+    "guard_blob_sha": "ff07ed4437464109b0e6a024c2077ba0e9de4b9e",
     "guard_path": "nasdaq-xray/canonical_official_source_guard.json",
     "max_age_seconds": 900,
     "security_status_suspension_symbols": [
@@ -187,7 +187,7 @@
     "legal_pass": 460,
     "lifecycle_regime_unknown": 0,
     "master_pass": 3184,
-    "master_total": 3277,
+    "master_total": 3267,
     "mc_fallback_fail": 9,
     "mc_fallback_watch": 472,
     "mc_primary_fail": 0,
@@ -210,7 +210,7 @@
     },
     "account_live_probe": {
       "balance_parseable": false,
-      "blob_sha": "dd3abea0a5af64eaad118f94a72435c079e7a0e7",
+      "blob_sha": "835d16d39d9618caedf9e96e7b349fc0aadf10af",
       "network_attempted": false,
       "path": "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/account_effective_probe_state.json",
       "positions_parseable": false,
@@ -221,7 +221,7 @@
       "secret_values_persisted": false,
       "status": "BLOCKED_MISSING_CREDENTIALS",
       "workflow_run_attempt": "1",
-      "workflow_run_id": "37808430411"
+      "workflow_run_id": "37813974984"
     },
     "deep": {
       "blob_sha": "cd57711b59a421d2f362dd569f1a597cf9bc3d38",
@@ -244,11 +244,11 @@
       "path": "nasdaq-xray/canonical_current_family_c.json"
     },
     "final": {
-      "blob_sha": "6547f86c71f5be814c990540219c726746d3d500",
+      "blob_sha": "778ed7d6d466cc7e5eb750fb190c1b2c5eebfbe5",
       "path": "nasdaq-xray/canonical_current_final_tech.json"
     },
     "full_state": {
-      "blob_sha": "6a4bf992c6441d4575363a2b7cc872c9c349b2c5",
+      "blob_sha": "980b37a4005b324f2e46a12362dc316a452978b4",
       "path": "nasdaq-xray/canonical_current_full_state.json"
     },
     "g9_runtime": {
@@ -266,26 +266,26 @@
       "path": "nasdaq-xray/canonical_current_legal.json"
     },
     "master": {
-      "blob_sha": "67048e47e02108dfaa2f273d7673c8d2cacc9818",
+      "blob_sha": "3d5927b4ccb21c512f23d00d6101a44c158b7c08",
       "path": "nasdaq-xray/canonical_current_master_manifest.json"
     },
     "mc": {
-      "blob_sha": "d87cb00163f49f6bad3f7fdcd0eeb203ece8a67d",
+      "blob_sha": "8c41d752978eb2fb00db48f4dbbf36dbdf51ae82",
       "current_price_blob_sha": "91c8948eced805cbdf6006017a0c3f07943823da",
       "input_blob_exact": true,
       "pass_count_exact": true,
       "pass_hash_exact": true,
       "pass_set_exact": true,
-      "path": "nasdaq-xray/canonical_mc_bridge_20261007_c417_dv30_v23.json",
+      "path": "nasdaq-xray/canonical_mc_bridge_20261007_c417_dv30_v26.json",
       "recorded_input_blob_sha": "91c8948eced805cbdf6006017a0c3f07943823da",
       "semantic_rebind": false
     },
     "official_halt_guard": {
-      "blob_sha": "c28f26424ab7811694546f6b47b20ab1ffbc487e",
+      "blob_sha": "ff07ed4437464109b0e6a024c2077ba0e9de4b9e",
       "path": "nasdaq-xray/canonical_official_source_guard.json"
     },
     "pointer": {
-      "blob_sha": "6224a7a5b660adedb797f32b4941436edf081329",
+      "blob_sha": "f327f0d8ad9bd5624aca1f59ac2ed5f14ecc94bf",
       "path": "nasdaq-xray/chatgpt_canonical_state_v2.json"
     },
     "policy": {
@@ -313,7 +313,7 @@
   "final_gate_reporting_zero_alpha": true,
   "full_end_to_end_research_pass": false,
   "g9_global_status": "G9_BLOCKED_FREE_AUTOMATION_PATH",
-  "generated_at_utc": "2026-10-08T16:31:06.949107+00:00",
+  "generated_at_utc": "2026-10-08T17:14:44.978800+00:00",
   "pointer_asof_before_candidate": "2026-10-07",
   "r92_account_g9_applicable": false,
   "r92_candidates": [],
@@ -1948,8 +1948,8 @@
       "ZS"
     ]
   },
-  "settlement_witness_blob_sha": "e4445053b49a599e8f1b228e12dd5efb457c2c34",
-  "settlement_witness_path": "nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v31.json",
+  "settlement_witness_blob_sha": "b3c86bc3a274aa08df0b6ef5301733ca916117d9",
+  "settlement_witness_path": "nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v35.json",
   "settlement_witness_required": false,
   "settlement_witness_status": "PASS",
   "status": "PARTIAL",
