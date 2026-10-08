@@ -114,6 +114,37 @@ def canonical_frozen_identity_partition_ok(ss):
     except Exception:
         return False
 
+def direct_no_web_identity_primary_partition_proof(ss):
+    """Exact-ASOF NasdaqTrader directory-only path with no SEC/manual/screener claims.
+
+    A live official directory proves membership, not current operating status or
+    MC/price. All name-suspect SPACs MUST remain identity UNKNOWN. The separate
+    immutable-membership path is intentionally NOT required on this path.
+    Do not reuse a future SEC proof, industry classification, or quote as authority.
+    """
+    dm=ss.get("discovery_meta") or {}
+    if not (
+        dm.get("authority")=="NASDAQTRADER_FULL_IDENTITY_NO_NASDAQ_WEB_MARKET_METADATA"
+        and dm.get("full_identity") is True
+        and dm.get("nasdaq_web_screener_used") is False
+        and dm.get("identity_decisions_reused_from_snapshot") is not True
+        and int(dm.get("official_blank_checks_excluded_count",-1))==0
+        and dm.get("official_blank_checks_excluded_hash")==hash_lines([])
+        and not dm.get("official_blank_checks_excluded_symbols")
+        and int(dm.get("sec_spac_proof_count",-1))==0
+        and dm.get("sec_spac_proof_hash")==hash_lines([])
+        and dm.get("asof_identity_proof_counts")=={
+            "restore_to_asof":0,"remove_from_asof":0,"operating_overrides":0}
+    ):
+        return False
+    for k in ("membership_snapshot_path","membership_snapshot_blob_sha",
+              "sec_spac_proof_path","sec_spac_proof_blob_sha",
+              "asof_identity_proof_path","asof_identity_proof_blob_sha"):
+        if dm.get(k):
+            return False
+    return True
+
+
 def frozen_identity_partition_ok(ss):
     """Validate frozen PASS+UNKNOWN identity partitions without promoting UNKNOWN.
 
@@ -158,6 +189,12 @@ def frozen_identity_partition_ok(ss):
                 if dm.get("authority")=="CANONICAL_FROZEN_FULL_IDENTITY_SAME_ASOF":
                     discovery_total_ok=bool(
                         discovery_total_ok and canonical_frozen_identity_partition_ok(ss))
+                elif dm.get("authority")=="NASDAQTRADER_FULL_IDENTITY_NO_NASDAQ_WEB_MARKET_METADATA":
+                    # Live directory membership has its own exact-ASOF proof.
+                    # Never force this path to possess a different immutable
+                    # snapshot or silently accept nonexistent SEC classifications.
+                    discovery_total_ok=bool(
+                        discovery_total_ok and direct_no_web_identity_primary_partition_proof(ss))
                 else:
                     discovery_total_ok=bool(
                         discovery_total_ok and exact_asof_v4_identity_proofs_ok(ss))
@@ -582,5 +619,62 @@ def main():
                       "weekly":st1.get("weekly_pass_count"),"regime":rg.get("regime"),
                       "coverage_faults":coverage_faults},sort_keys=True))
 
+def direct_no_web_identity_selftest():
+    """Positive and fail-closed negative proof, no network or market simulation."""
+    policy="MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V4_EXACT_ASOF_SNAPSHOT_GUARD"
+    dm={
+      "authority":"NASDAQTRADER_FULL_IDENTITY_NO_NASDAQ_WEB_MARKET_METADATA",
+      "full_identity":True,"nasdaq_web_screener_used":False,
+      "identity_partition_policy":policy,
+      "discovery_queue_total":2,
+      "identity_unknown_count":1,
+      "identity_unknown_hash":hash_lines(["ALIS"]),
+      "raw_identity_total":2,
+      "official_blank_checks_excluded_count":0,
+      "official_blank_checks_excluded_hash":hash_lines([]),
+      "sec_spac_proof_count":0,"sec_spac_proof_hash":hash_lines([]),
+      "asof_identity_proof_counts":{
+        "restore_to_asof":0,"remove_from_asof":0,"operating_overrides":0},
+    }
+    s={
+      "asof_et":"2026-10-08","official_footer":"File Creation Time: 10082026",
+      "identity_partition_policy":policy,
+      "queue":["AAPL"],"queue_total":1,"queue_hash":hash_lines(["AAPL"]),
+      "identity_unknown_symbols":["ALIS"],
+      "identity_unknown_detail":{"ALIS":{"unknown_never_pass":True}},
+      "raw_identity_total":2,"discovery_meta":dm,
+    }
+    assert direct_no_web_identity_ok(s) is True
+    assert frozen_identity_partition_ok(s) is True
+    patches=[
+       ("official_footer","File Creation Time: 10072026"),
+       ("raw_identity_total",3),
+       ("identity_unknown_detail",{"ALIS":{"unknown_never_pass":False}}),
+       ("queue_hash","INVALID"),
+       ("identity_unknown_symbols",[]),
+    ]
+    for key,value in patches:
+        bad=json.loads(json.dumps(s)); bad[key]=value
+        assert not direct_no_web_identity_ok(bad),("unsafe accepted",key)
+    meta_patches=[
+       ("nasdaq_web_screener_used",True),
+       ("official_blank_checks_excluded_count",1),
+       ("sec_spac_proof_count",1),
+       ("sec_spac_proof_path","nasdaq-xray/future_no_proof.json"),
+       ("membership_snapshot_blob_sha","forged"),
+       ("discovery_queue_total",1),
+       ("raw_identity_total",3),
+       ("identity_unknown_hash","BAD"),
+       ("asof_identity_proof_counts",{
+          "restore_to_asof":1,"remove_from_asof":0,"operating_overrides":0}),
+    ]
+    for key,value in meta_patches:
+        bad=json.loads(json.dumps(s)); bad["discovery_meta"][key]=value
+        assert not direct_no_web_identity_ok(bad),("unsafe metadata accepted",key)
+    print("XRAY_NASDAQTRADER_DIRECT_NO_WEB_EXACT_ASOF_SELFTEST=PASS")
+    
 if __name__=="__main__":
-    main()
+    if "--selftest-direct-no-web" in sys.argv:
+        direct_no_web_identity_selftest()
+    else:
+        main()
