@@ -25,6 +25,8 @@ on:
       - "nasdaq-xray/build_current_master_manifest.py"
       - "nasdaq-xray/price_dv30_phase.py"
       - "nasdaq-xray/price_dv30_recover_from_fullstate.py"
+      - "nasdaq-xray/historical_halt_fail_only.py"
+      - "nasdaq-xray/evidence/nasdaq_gral_20260923_full_session_halt_v1.json"
       - "nasdaq-xray/price_dv30_authority_selftest.py"
       - "nasdaq-xray/evidence/rallies_dv30_*_classification.json"
       - "nasdaq-xray/evidence/rallies_dv30_*_rollforward_*.json"
