@@ -221,8 +221,14 @@ def run(args):
     offset=choose_offset(len(scope),limit,args.offset)
     chosen=scope[offset:offset+limit]
     key = os.getenv("XRAY_MASSIVE_API_KEY", "").strip()
+    right=str(os.getenv("XRAY_MASSIVE_NONDISPLAY_LICENSE_OK","")).lower()=="true"
+    evidence=str(os.getenv("XRAY_MASSIVE_LICENSE_EVIDENCE_SHA256",""))
+    licensed_for_this_use=right and bool(re.fullmatch(r"[a-f0-9]{64}",evidence))
     records = {}
-    if not key:
+    if not licensed_for_this_use:
+        status = "BLOCKED_NONDISPLAY_LICENSE_UNVERIFIED"
+        records = {sym: {"state": "UNKNOWN", "reason": "LICENSE_SCOPE_UNVERIFIED"} for sym in chosen}
+    elif not key:
         status = "BLOCKED_NO_RUNTIME_KEY"
         records = {sym: {"state": "UNKNOWN", "reason": "NO_RUNTIME_KEY"} for sym in chosen}
     else:
