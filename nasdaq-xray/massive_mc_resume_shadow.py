@@ -14,6 +14,7 @@ import hashlib
 import json
 import math
 import os
+import re
 from pathlib import Path
 import sys
 import time
@@ -183,12 +184,31 @@ def health(scope, cp=None,status="UNKNOWN",requests=0,restored=False,reason=None
         "current_mc_production_authority":False,
         "note":"Even complete shadow cannot grant C4.17 MC or AL authority."}
 
+def nondisplay_license_attested(environ):
+    """Operator-provided compliance prerequisite, NOT an independent license grant.
+
+    A true flag or digest proves only that the operator supplied a declaration.
+    No legal entitlement, redistribution right or primary MC PASS is inferred.
+    """
+    raw=str(environ.get("XRAY_MASSIVE_NONDISPLAY_LICENSE_OK","")).lower()
+    digest=str(environ.get("XRAY_MASSIVE_LICENSE_EVIDENCE_SHA256",""))
+    return raw=="true" and bool(re.fullmatch(r"[a-f0-9]{64}",digest))
+
 def run(args):
     scope=current_scope()
     out=Path(args.telemetry)
     out.parent.mkdir(parents=True,exist_ok=True)
     if args.limit<1 or args.limit>MAX_PER_RUN:
         raise ValueError("LIMIT_EXCEEDS_FREE_TIER_RUN_CAP")
+    # A free API key alone is NOT permission to use market data as a
+    # non-display investment-strategy input or to archive derived works.
+    # A user-held written entitlement must exist BEFORE live collection.
+    if not nondisplay_license_attested(os.environ):
+        result=health(scope,status="BLOCKED_NONDISPLAY_LICENSE_UNVERIFIED",
+            reason="WRITTEN_NONDISPLAY_AUTOMATED_COLLECTION_RIGHT_NOT_ATTESTED")
+        out.write_text(json.dumps(result,sort_keys=True,indent=2)+"\n")
+        print("XRAY_MASSIVE_RESUME=BLOCKED_NONDISPLAY_LICENSE_UNVERIFIED")
+        return 0
     token=os.getenv("XRAY_MASSIVE_API_KEY","").strip()
     if not token:
         result=health(scope,status="BLOCKED_NO_RUNTIME_KEY",reason="MISSING_GITHUB_ACTIONS_SECRET")
@@ -231,7 +251,14 @@ def run(args):
     return 0
 
 def selftest():
-    from cryptography.fernet import InvalidToken
+    assert nondisplay_license_attested({}) is False
+    assert nondisplay_license_attested({"XRAY_MASSIVE_NONDISPLAY_LICENSE_OK":"true"}) is False
+    assert nondisplay_license_attested({
+        "XRAY_MASSIVE_NONDISPLAY_LICENSE_OK":"true",
+        "XRAY_MASSIVE_LICENSE_EVIDENCE_SHA256":"a"*64}) is True
+    assert nondisplay_license_attested({
+        "XRAY_MASSIVE_NONDISPLAY_LICENSE_OK":"false",
+        "XRAY_MASSIVE_LICENSE_EVIDENCE_SHA256":"a"*64}) is False
     scope={"asof_et":"2026-10-08","symbols":["AAPL","NVDA"],
         "scope_hash":"sh","price_blob_sha":"ph",
         "master_price_content_binding_exact":True}
