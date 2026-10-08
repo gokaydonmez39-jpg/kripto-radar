@@ -1,7 +1,7 @@
 {
   "asof_et": "2026-10-07",
   "asof_identity_proof": {
-    "blob_sha": "cb2c2caabe3f762bdfbbd3cda0d8c11f17858ca3",
+    "blob_sha": "0278e71c4cc38b7434cb6f2f56f0bf38f8bfd496",
     "counts": {
       "operating_overrides": 4,
       "remove_from_asof": 0,
@@ -29,13 +29,13 @@
   },
   "counts": {
     "PASS_IDENTITY": 3185,
-    "UNKNOWN_IDENTITY": 174
+    "UNKNOWN_IDENTITY": 172
   },
   "execution": "NONE",
-  "explicit_excluded_count": 37,
-  "explicit_excluded_hash": "1a14577e08c71c0ada5cc05dc0278f1d751e58bdbb10114e8b75fda3112d9eee",
+  "explicit_excluded_count": 39,
+  "explicit_excluded_hash": "5e5a7ff330af344ccfbd2b11ef0a9001646450bf6629d82e907b21f64b3cf84b",
   "explicit_excluded_reason_counts": {
-    "SPAC_BLANK_CHECK": 37
+    "SPAC_BLANK_CHECK": 39
   },
   "history_price_state_diagnostic_only": {
     "source_counts": {
@@ -3243,22 +3243,22 @@
   "queue_hash": "306d6bb21e1ffef5f099f988ce995d0f98b349c051f34b4eed42613280444bdf",
   "queue_total": 3185,
   "queue_unique": 3185,
-  "raw_identity_total": 3359,
+  "raw_identity_total": 3357,
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1",
   "sec_spac_proof": {
-    "blob_sha": "be8ad47b303496c2219d7843fb0d550993346970",
-    "count": 37,
+    "blob_sha": "20860084b339bb7a2e485b9ed8bc2723140cb3d9",
+    "count": 39,
     "path": "nasdaq-xray/master_sec_spac_proof_20261007.json",
-    "symbol_hash": "76211e54d92d94db93a2b6bf7c26b58188978bf3d33946f75e12d3efed6ed276"
+    "symbol_hash": "76010ebdc818942bc4dd50b4798dd67d268557504e82c63825acfb523e2d1cc1"
   },
-  "source_state_blob_sha": "071badb107a90b681c7e37cae23b97f401966393",
-  "source_state_hash": "2997fb31f549edd8a0303879c00b3c6b899acab038ff5968bff3e0291a013be7",
+  "source_state_blob_sha": "d1f2a3acd20c963feb3c5b312ff12664c91191bd",
+  "source_state_hash": "f70010b67d32e52c5798838057fb000196dca7017f6e734bb509b293e4d801ec",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
   "status": "PARTIAL_UNKNOWN",
   "status_semantics": "IDENTITY_PARTITION_EXACT_WITH_UNKNOWN",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 174,
+  "unknown_count": 172,
   "unknown_detail": {
     "AACI": {
       "exact_sec_spac_proof": false,
@@ -3266,24 +3266,6 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Armada Acquisition Corp. III - Class A Ordinary Share",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "ACAA": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Averin Capital Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "ARTC": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Art Technology Acquisition Corp. - Class A Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -4830,8 +4812,6 @@
   "unknown_never_pass": true,
   "unknown_symbols": [
     "AACI",
-    "ACAA",
-    "ARTC",
     "ASPC",
     "BCCQ",
     "BHAV",
