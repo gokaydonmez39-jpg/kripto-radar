@@ -1,0 +1,76 @@
+{
+  "schema": "XRAY_ZERO_COST_PROVIDER_PROBE_CHECKPOINT_V4",
+  "repo": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "asof_et": "2026-10-08",
+  "verified_local_date_trt": "2026-10-09",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "research_mode": "RESEARCH_ONLY_MANUAL_DECISION",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "user_constraint": "NO_PAID_APIS_NO_SUBSCRIPTIONS_NO_CREDIT_TOPUPS",
+  "initial_head": "99dd5b05722e285a66678c69614e6f9dd0452949",
+  "source_work": [
+    {
+      "type": "CODE_AND_RUN",
+      "commit": "a5b079e6aabc775c4cbc2f2e4b01d3680a9f3743",
+      "scope": "SEC official PIT filing/CIK/acceptance probe; not canonical MC"
+    },
+    {
+      "type": "CODE_AND_RUN",
+      "commit": "0a08791335568d38a54b5514c511ebc3730fde3f",
+      "actions_run": 37860378642,
+      "actions_conclusion": "SUCCESS",
+      "selftest": "PASS",
+      "sec_live_transport": "SEC_HTTP_403",
+      "canonical_primary_mc_proven": false
+    },
+    {
+      "type": "WORKFLOW_FIX",
+      "commit": "11364a5d2caff1a17524b0ce83e21ddc64401547",
+      "actions_run": 37860453157,
+      "actions_conclusion": "SUCCESS_LICENSE_BLOCKED",
+      "scope": "removed ineffective 3x hourly Massive automated schedule; kept push tests and manual dispatch"
+    }
+  ],
+  "free_source_tests": {
+    "SEC_EDGAR": "OFFICIAL_FREE_BUT_RUNNER_RETURNED_HTTP_403_WITH_CURRENT_DECLARED_UA_DO_NOT_CIRCUMVENT",
+    "RALLIES_MCP": "INTERACTIVE_FREE_SCREENER_SUPPORTED_BUT EXCHANGES_PARAM_NOT_ENFORCED_BY_BACKEND_FOR_REQUESTED_XNAS",
+    "RALLIES_EXCHANGE_FILTER_TEST": {
+      "requested": "XNAS",
+      "returned_limit": 1000,
+      "returned_xnas": 334,
+      "returned_xnys": 661,
+      "returned_other": 5,
+      "required_remedy": "independent client-side exchange and identity validation and pagination before any source authority"
+    },
+    "RALLIES_INCLUDE_ONLY_TEST": "AAPL_TSM returned both including XNYS TSM despite XNAS request",
+    "MASSIVE": "CONNECTED_SINGLE_SYMBOL_REFERENCE_ONLY_NO_AUTOMATED_NONDISPLAY_LICENCE",
+    "BIGDATA": "CREDITS_EXHAUSTED",
+    "FINANCIAL_DATASETS": "CREDITS_EXHAUSTED",
+    "ALPACA": "BASIC_DELAYS_SIP_AT_LEAST_15_MINUTES_OFFICIAL_DOCS; NO LIVE_G9",
+    "RAW_PROVIDER_DATA_PUBLISHED": false
+  },
+  "blocked_now": [
+    "CURRENT_PRIMARY_MC_AUTHORITY",
+    "45_PRICE_BLOCKED",
+    "72_SPAC_IDENTITY_UNRESOLVED",
+    "CURRENT_TECH_TERMINAL",
+    "REAL_DEVICE_DELIVERY_UNVERIFIED"
+  ],
+  "non_authorizations": [
+    "User consent does not supersede provider market-data license terms",
+    "HTTP_403 cannot be bypassed with fake identity, IP rotations, or scraped mirrors",
+    "No alpha PASS from interactive, stale, or shadow evidence"
+  ],
+  "next_honest_engineering_actions": [
+    "Only pursue 0-cost provider access that authorizes unattended analytical usage and proves same-ASOF/broad Nasdaq coverage.",
+    "If SEC access permitted using a valid operator-declared contact, rerun bounded SEC transport and independently validate share class and corporate action.",
+    "Use accessible Rallies MCP data for human WATCH discovery only; never trust its exchange filter or turn it into unattended GitHub pipeline without connector/API rights.",
+    "Keep C4.17 immutable; qualify/version a separate successor only after independent MC source and replay tests.",
+    "Do not claim current AL, full-universe completion, or push receipt without end-to-end artifact and device evidence."
+  ],
+  "verdict": "NO_GO_FOR_PRODUCTION_SIGNAL; CHANGED_CODE_AND_TESTED_NO_COST_OPTIONS_WITHOUT_FABRICATION"
+}
