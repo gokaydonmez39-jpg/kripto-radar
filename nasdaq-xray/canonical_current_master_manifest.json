@@ -1,9 +1,9 @@
 {
   "asof_et": "2026-10-07",
   "asof_identity_proof": {
-    "blob_sha": "20d6590684cd17e8b2073fc0a609b8a5af6ac1c4",
+    "blob_sha": "78b433bee9e604176458f5543f5a1368e3c501bc",
     "counts": {
-      "operating_overrides": 4,
+      "operating_overrides": 3,
       "remove_from_asof": 0,
       "restore_to_asof": 0
     },
@@ -28,8 +28,8 @@
     "security_names_exact": true
   },
   "counts": {
-    "PASS_IDENTITY": 3185,
-    "UNKNOWN_IDENTITY": 164
+    "PASS_IDENTITY": 3184,
+    "UNKNOWN_IDENTITY": 165
   },
   "execution": "NONE",
   "explicit_excluded_count": 47,
@@ -39,18 +39,18 @@
   },
   "history_price_state_diagnostic_only": {
     "source_counts": {
-      "UNKNOWN_STATIC": 3185
+      "UNKNOWN_STATIC": 3184
     },
     "source_pending_retry": 0,
     "source_status": "IDENTITY_READY_MARKET_GATES_DEFERRED",
-    "source_unknown_count": 3185
+    "source_unknown_count": 3184
   },
   "identity_authority": "NASDAQTRADER_EXPLICIT_TYPE_FILTER_V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER",
   "identity_partition_policy": "MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V4_EXACT_ASOF_SNAPSHOT_GUARD",
   "identity_ruleset": "V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER",
   "official_footer": "File Creation Time: 1007202621:31|||||||",
-  "pass_count": 3185,
-  "pass_hash": "306d6bb21e1ffef5f099f988ce995d0f98b349c051f34b4eed42613280444bdf",
+  "pass_count": 3184,
+  "pass_hash": "2554c936f42217cf8a9628e89d04993945218725234fe894f7c80856834725d6",
   "pass_symbols": [
     "AACG",
     "AAL",
@@ -184,7 +184,6 @@
     "ALGS",
     "ALGT",
     "ALHC",
-    "ALIS",
     "ALKS",
     "ALKT",
     "ALLO",
@@ -3240,25 +3239,25 @@
   ],
   "pending_retry": 0,
   "phase": "MASTER_IDENTITY",
-  "queue_hash": "306d6bb21e1ffef5f099f988ce995d0f98b349c051f34b4eed42613280444bdf",
-  "queue_total": 3185,
-  "queue_unique": 3185,
+  "queue_hash": "2554c936f42217cf8a9628e89d04993945218725234fe894f7c80856834725d6",
+  "queue_total": 3184,
+  "queue_unique": 3184,
   "raw_identity_total": 3349,
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1",
   "sec_spac_proof": {
-    "blob_sha": "6b28e09997ceff7cc2e3587627d70711fce356af",
+    "blob_sha": "f42627179e962438254afe526d4a5bcfe6cbde92",
     "count": 47,
     "path": "nasdaq-xray/master_sec_spac_proof_20261007.json",
     "symbol_hash": "8ae5b9b5ae6733d6ae7abb230f8318e17d0d5e07f038daec6cf35ff6f1274ff9"
   },
-  "source_state_blob_sha": "61dc30a597f5c1c96c1b61a92c7882d434dda853",
-  "source_state_hash": "3584626d29b7f0d398f80405e86a30cd64f2ab3bf24af68ed5c6b48f809e2d46",
+  "source_state_blob_sha": "64b8c9e6c3fc1827900d5db17f5845405d177e4d",
+  "source_state_hash": "c89af1c270b48351b20967a156d3372bc00241ceaf6ec85429f479bb73424eb1",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
   "status": "PARTIAL_UNKNOWN",
   "status_semantics": "IDENTITY_PARTITION_EXACT_WITH_UNKNOWN",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 164,
+  "unknown_count": 165,
   "unknown_detail": {
     "AACI": {
       "exact_sec_spac_proof": false,
@@ -3266,6 +3265,15 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Armada Acquisition Corp. III - Class A Ordinary Share",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
+      "unknown_never_pass": true
+    },
+    "ALIS": {
+      "exact_sec_spac_proof": false,
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
+      "same_asof_nasdaq_industry": "",
+      "security_name": "Calisa Acquisition Corp - Ordinary shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -4740,6 +4748,7 @@
   "unknown_never_pass": true,
   "unknown_symbols": [
     "AACI",
+    "ALIS",
     "ASPC",
     "BCCQ",
     "BHAV",

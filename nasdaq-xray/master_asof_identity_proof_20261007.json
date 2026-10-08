@@ -6,7 +6,7 @@
   "unknown_never_pass": true,
   "authority": "NASDAQTRADER_SEC_EXACT_ASOF_IDENTITY_RECONCILIATION",
   "applicability": "EXACT_ASOF_ONLY_NO_FORWARD_CARRY",
-  "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V8",
+  "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9",
   "source_directory_footer": "File Creation Time: 1007202621:31|||||||",
   "source_directory_date": "2026-10-07",
   "same_asof_directory_is_membership_authority": true,
@@ -15,21 +15,6 @@
   "restore_to_asof": {},
   "remove_from_asof": {},
   "operating_overrides": {
-    "ALIS": {
-      "security_name": "Calisa Acquisition Corp - Ordinary shares",
-      "evidence_date": "2026-09-04",
-      "reason": "SAME_ASOF_NASDAQ_DIRECTORY_EXACT_NAME_PLUS_PRIOR_SEC_OPERATING_EVIDENCE",
-      "source_url": "https://www.sec.gov/Archives/edgar/data/2026767/000149315226041476/0001493152-26-041476-index.htm",
-      "cik": "0002026767",
-      "sic": 7374,
-      "classification": "Services-Computer Processing & Data Preparation",
-      "same_asof_revalidated_without_sec_network": true,
-      "revalidation_semantics": "FAIL_CLOSED_PREVENT_FALSE_SPAC_EXCLUSION_ONLY;NO_ALPHA_PASS",
-      "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "14891872852b73fde3ce349d397ed7cc88ae5196",
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V4",
-      "same_asof_nasdaq_screener_industry": ""
-    },
     "INV": {
       "security_name": "Innventure, Inc. - Common Stock",
       "evidence_date": "2026-09-21",

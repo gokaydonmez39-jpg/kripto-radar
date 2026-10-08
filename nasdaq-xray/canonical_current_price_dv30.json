@@ -2,12 +2,11 @@
   "asof_et": "2026-10-07",
   "block_recovery_attempted": true,
   "block_recovery_input_count": 106,
-  "block_recovery_resolved_count": 105,
+  "block_recovery_resolved_count": 104,
   "block_recovery_resolved_symbols": [
     "AFJK",
     "AIIR",
     "ALDF",
-    "ALIS",
     "ALOV",
     "APLM",
     "APUR",
@@ -110,8 +109,10 @@
     "WORX",
     "YICC"
   ],
-  "blocked_count": 0,
-  "blocked_symbols": [],
+  "blocked_count": 1,
+  "blocked_symbols": [
+    "BBCI"
+  ],
   "bridge_defer_enabled": true,
   "c417_rallies_primary_current_queue_uncovered_symbols": [],
   "c417_rallies_primary_materialized_count": 3184,
@@ -248,7 +249,6 @@
     "ALGS",
     "ALGT",
     "ALHC",
-    "ALIS",
     "ALKS",
     "ALKT",
     "ALLO",
@@ -446,6 +446,7 @@
     "BAOS",
     "BATRA",
     "BATRK",
+    "BBCI",
     "BBCP",
     "BBGI",
     "BBIO",
@@ -3304,7 +3305,7 @@
   "c417_rallies_primary_meta": {
     "blob_sha": "fae3a9e86f0659907a51b5a560046de2efa260e8",
     "block_count": 125,
-    "current_queue_count": 3185,
+    "current_queue_count": 3184,
     "current_queue_covered": true,
     "effective_symbol_count": 3185,
     "newscope_partition_meta": {
@@ -3347,13 +3348,14 @@
   "c417_rallies_primary_post_recovery_veto_count": 0,
   "c417_rallies_primary_post_recovery_veto_symbols": [],
   "counts": {
-    "FAIL_DV30": 1347,
-    "FAIL_DV30_INSUFFICIENT_SESSIONS": 10,
+    "BLOCK_CURRENT_RUN": 1,
+    "FAIL_DV30": 1346,
+    "FAIL_DV30_INSUFFICIENT_SESSIONS": 9,
     "FAIL_PRICE": 1308,
     "FAIL_PRICE_NO_ASOF_BAR": 10,
     "PASS_PRICE_DV30": 510
   },
-  "current_baseline_reuse": true,
+  "current_baseline_reuse": false,
   "exception_bridge_meta": {
     "paths": [
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v1.json",
@@ -3365,7 +3367,13 @@
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v15.json",
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v16.json",
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v17.json",
+      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v18.json",
+      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v19.json",
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v2.json",
+      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v20.json",
+      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v21.json",
+      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v22.json",
+      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v23.json",
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v3.json",
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v4.json",
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v5.json",
@@ -3375,23 +3383,29 @@
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v9.json"
     ],
     "rejected": [
-      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v1.json:SOURCE_PRICE_BLOB_MISMATCH",
-      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v10.json:SOURCE_PRICE_BLOB_MISMATCH",
-      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v11.json:SOURCE_PRICE_BLOB_MISMATCH",
-      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v12.json:SOURCE_PRICE_BLOB_MISMATCH",
-      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v13.json:SOURCE_PRICE_BLOB_MISMATCH",
-      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v14.json:SOURCE_PRICE_BLOB_MISMATCH",
-      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v15.json:CURRENT_REQUEST_SCOPE_MISMATCH",
-      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v16.json:CURRENT_REQUEST_SCOPE_MISMATCH",
-      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v17.json:CURRENT_REQUEST_SCOPE_MISMATCH",
-      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v2.json:SOURCE_PRICE_BLOB_MISMATCH",
-      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v3.json:SOURCE_PRICE_BLOB_MISMATCH",
-      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v4.json:SOURCE_PRICE_BLOB_MISMATCH",
-      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v5.json:SOURCE_PRICE_BLOB_MISMATCH",
-      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v6.json:SOURCE_PRICE_BLOB_MISMATCH",
-      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v7.json:SOURCE_PRICE_BLOB_MISMATCH",
-      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v8.json:SOURCE_PRICE_BLOB_MISMATCH",
-      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v9.json:SOURCE_PRICE_BLOB_MISMATCH"
+      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v1.json:BASE_BINDING",
+      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v10.json:BASE_BINDING",
+      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v11.json:BASE_BINDING",
+      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v12.json:BASE_BINDING",
+      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v13.json:BASE_BINDING",
+      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v14.json:BASE_BINDING",
+      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v15.json:BASE_BINDING",
+      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v16.json:BASE_BINDING",
+      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v17.json:BASE_BINDING",
+      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v18.json:BASE_BINDING",
+      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v19.json:BASE_BINDING",
+      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v2.json:BASE_BINDING",
+      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v20.json:BASE_BINDING",
+      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v21.json:BASE_BINDING",
+      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v22.json:BASE_BINDING",
+      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v23.json:BASE_BINDING",
+      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v3.json:BASE_BINDING",
+      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v4.json:BASE_BINDING",
+      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v5.json:BASE_BINDING",
+      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v6.json:BASE_BINDING",
+      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v7.json:BASE_BINDING",
+      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v8.json:BASE_BINDING",
+      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v9.json:BASE_BINDING"
     ],
     "status": "ABSENT_CURRENT_POLICY"
   },
@@ -3434,7 +3448,9 @@
     "DV30"
   ],
   "global_asof_sentinel": {
-    "status": "NOT_EVALUATED"
+    "no_pass_or_fail_created": true,
+    "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_NORMAL_FAIL_CLOSED_PATH_REQUIRED",
+    "status": "DISABLED_NO_SINGLE_SOURCE_GLOBAL_SENTINEL"
   },
   "global_asof_sentinel_fast_fail": false,
   "historical_halt_terminalized_count": 1,
@@ -3443,7 +3459,7 @@
   ],
   "monotonic_legacy_pass_reuse_count": 0,
   "official_halt_guard_meta": {
-    "content_sha256": "821a1a817bb75b0323bcc7f2a5196a0104eab957dcbe56ad992fba867383e936",
+    "content_sha256": "8713c92aea50b4dfb35b733cb0d2bd79ee7a72f3e7bd88837f4b43d8c4e2cb1c",
     "path": "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_official_source_guard.json",
     "source_status": "PASS",
     "status": "PASS"
@@ -3995,28 +4011,19 @@
   "persistent_terminal_fail_applied_count": 0,
   "persistent_terminal_fail_applied_symbols": [],
   "persistent_terminal_fail_meta": {
-    "accepted_count": 1,
-    "accepted_symbols": [
-      "BBCI"
-    ],
+    "accepted_count": 0,
+    "accepted_symbols": [],
     "conflict_symbols": [],
-    "sources": {
-      "BBCI": [
-        {
-          "blob_sha": "7bba498a5c0b86253e7ae86927b61cfee4ee429e",
-          "path": "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v5.json"
-        }
-      ]
-    },
+    "sources": {},
     "status": "PASS"
   },
   "policy_replay": false,
-  "policy_replay_baseline_source": "CURRENT_PRICE_ARTIFACT",
+  "policy_replay_baseline_source": "FULL_STATE",
   "policy_replay_input_count": 0,
   "policy_replay_symbols": [],
   "real_money": "NO-GO",
-  "redo_deferred_to_bridge": true,
-  "reevaluated_count": 0,
+  "redo_deferred_to_bridge": false,
+  "reevaluated_count": 3184,
   "results": {
     "AACG": {
       "info": {
@@ -5614,29 +5621,6 @@
       },
       "provenance": "C417_RALLIES_PRIMARY_PARTITION",
       "status": "PASS_PRICE_DV30"
-    },
-    "ALIS": {
-      "info": {
-        "dv30_lower_bound": 63124.509999999995,
-        "dv30_upper_bound": 142251.18,
-        "known_session_count": 27,
-        "missing_sessions": [
-          "2026-08-27",
-          "2026-08-28",
-          "2026-09-24"
-        ],
-        "no_synthetic_bar": true,
-        "price": 11.03,
-        "proof": "DV30_UPPER_BOUND_LT_GATE",
-        "source": "SINA_US_DAILY"
-      },
-      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
-      "provider_meta": {
-        "sina": {
-          "usable": 166
-        }
-      },
-      "status": "FAIL_DV30"
     },
     "ALKS": {
       "info": {
@@ -8058,8 +8042,73 @@
       "status": "FAIL_DV30"
     },
     "BBCI": {
+      "block_recovery_attempt": {
+        "provider_meta": {
+          "nasdaq": {
+            "disabled": true,
+            "no_pass_or_fail_created": true,
+            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+          },
+          "sina": {
+            "error": "IndexError:list index out of range"
+          },
+          "yahoo": {
+            "exchangeName": "NGM",
+            "usable": 1
+          }
+        },
+        "provider_result": {
+          "nasdaq_result": {
+            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+          },
+          "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
+          "sina_result": {
+            "reason": "SINA_UNAVAILABLE"
+          },
+          "yahoo_result": {
+            "dv30_lower_bound": 0.0,
+            "dv30_upper_bound": null,
+            "known_session_count": 1,
+            "missing_sessions": [
+              "2026-08-26",
+              "2026-08-27",
+              "2026-08-28",
+              "2026-08-31",
+              "2026-09-01",
+              "2026-09-02",
+              "2026-09-03",
+              "2026-09-04",
+              "2026-09-08",
+              "2026-09-09",
+              "2026-09-10",
+              "2026-09-11",
+              "2026-09-14",
+              "2026-09-15",
+              "2026-09-16",
+              "2026-09-17",
+              "2026-09-18",
+              "2026-09-21",
+              "2026-09-22",
+              "2026-09-23",
+              "2026-09-24",
+              "2026-09-25",
+              "2026-09-28",
+              "2026-09-29",
+              "2026-09-30",
+              "2026-10-01",
+              "2026-10-02",
+              "2026-10-05",
+              "2026-10-06"
+            ],
+            "no_synthetic_bar": true,
+            "price": 11.0,
+            "reason": "EXACT30_INCOMPLETE_NEVER_PASS",
+            "source": "YAHOO_CHART_FREE_FAIL_ONLY"
+          }
+        },
+        "status": "UNRESOLVED"
+      },
       "info": {
-        "known_session_count": 1,
         "missing_sessions": [
           "2026-08-26",
           "2026-08-27",
@@ -8092,12 +8141,14 @@
           "2026-10-06"
         ],
         "no_synthetic_bar": true,
-        "price": 11,
-        "proof": "ALPACA_RALLIES_EXACT_MISSING_SET_MATCH",
-        "source": "ALPACA_SIP_RALLIES_EXACT_MISSING_SET_C4_17_NON_G9"
+        "observed_usable_sessions": 1,
+        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
+        "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
+        "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
+        "zero_volume_sessions": []
       },
-      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
-      "status": "FAIL_DV30_INSUFFICIENT_SESSIONS"
+      "provenance": "C417_RALLIES_PRIMARY_PARTITION",
+      "status": "BLOCK_CURRENT_RUN"
     },
     "BBCP": {
       "info": {
@@ -42850,10 +42901,10 @@
       "status": "FAIL_DV30"
     }
   },
-  "reused_terminal_count": 3185,
+  "reused_terminal_count": 0,
   "schema": "XRAY_CANONICAL_PRICE_DV30_V1",
-  "source_master_count": 3185,
-  "source_master_queue_hash": "306d6bb21e1ffef5f099f988ce995d0f98b349c051f34b4eed42613280444bdf",
+  "source_master_count": 3184,
+  "source_master_queue_hash": "2554c936f42217cf8a9628e89d04993945218725234fe894f7c80856834725d6",
   "task_id": "6a825366222081918997094d76e6ae46",
   "thresholds": {
     "dv30": ">=50000000 exact30 median",

@@ -6,7 +6,7 @@
   "unknown_never_pass": true,
   "authority": "SEC_EDGAR_SIC_6770_EXACT_ASOF",
   "applicability": "EXACT_ASOF_ONLY_NO_FORWARD_CARRY",
-  "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V8",
+  "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9",
   "discovery_coverage": {
     "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
     "manual_seed_registry_blob_sha": "4e28c87ca5cd8a6d8334643340e52d0543f1d815",
@@ -34,10 +34,11 @@
       "sec_submissions_classification_authority": false
     },
     "current_suspect_count": 212,
-    "resolved_current_suspect_count": 48,
-    "unresolved_current_suspect_count": 164,
+    "resolved_current_suspect_count": 47,
+    "unresolved_current_suspect_count": 165,
     "unresolved_current_suspects": [
       "AACI",
+      "ALIS",
       "ASPC",
       "BCCQ",
       "BHAV",
@@ -202,6 +203,10 @@
       "YHNA",
       "ZKP"
     ],
+    "nonblank_sic_without_completed_merger_proof": [
+      "ALIS"
+    ],
+    "nonblank_sic_is_not_merger_completion": true,
     "coverage_complete": false,
     "sec_transport_error": "HTTPError:HTTP Error 403: Forbidden",
     "fail_closed": true
