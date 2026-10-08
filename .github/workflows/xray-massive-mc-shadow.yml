@@ -20,6 +20,8 @@ jobs:
     timeout-minutes: 5
     env:
       XRAY_MASSIVE_API_KEY: ${{ secrets.XRAY_MASSIVE_API_KEY }}
+      XRAY_MASSIVE_NONDISPLAY_LICENSE_OK: ${{ vars.XRAY_MASSIVE_NONDISPLAY_LICENSE_OK }}
+      XRAY_MASSIVE_LICENSE_EVIDENCE_SHA256: ${{ secrets.XRAY_MASSIVE_LICENSE_EVIDENCE_SHA256 }}
       XRAY_MASSIVE_OFFSET: ${{ github.event.inputs.offset || 'auto' }}
     steps:
       - name: Checkout canonical repository
