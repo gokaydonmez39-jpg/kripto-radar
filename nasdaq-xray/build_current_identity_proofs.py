@@ -351,18 +351,32 @@ def sec_submissions_transport_is_blocked(exc):
     """
     return getattr(exc,"code",None) in (403,429)
 
+def official_sec_sic(sub:dict):
+    """Never infer operating issuer status from absent or contradictory SEC SIC."""
+    code=str(sub.get("sic") or "").strip()
+    if not re.fullmatch(r"\d{3,4}",code):
+        return None
+    sic=int(code)
+    if sic<=0:
+        return None
+    desc=str(sub.get("sicDescription") or "").strip()
+    # A contradictory description is not affirmative SIC-6770 evidence.
+    if desc and (desc.casefold().startswith("blank checks") != (sic==6770)):
+        return None
+    return sic,desc
+
 def sec_current_classification(sym:str,asof:str,cik:int|None):
     """One same-run SEC submissions read returning blank/nonblank classification."""
     if cik is None:return None
     sub=load_json_url(f"{SEC_SUBMISSIONS}/CIK{int(cik):010d}.json")
     tickers=[str(x).strip().upper() for x in (sub.get("tickers") or [])]
     if str(sym).upper() not in tickers:return None
-    try:sic=int(str(sub.get("sic") or "-1").strip())
-    except Exception:sic=-1
-    desc=str(sub.get("sicDescription") or "").strip()
+    official=official_sec_sic(sub)
+    if official is None:return None
+    sic,desc=official
     evidence=latest_filing_date(sub,asof)
     if not evidence:return None
-    is_blank=(sic==6770 or desc.lower()=="blank checks")
+    is_blank=(sic==6770)
     return {
       "cik":f"{int(cik):010d}",
       "sic":sic,
@@ -491,7 +505,9 @@ def sec_entity_landing_row(sym:str,asof:str,cik:int|None,want_blank:bool,prior_e
     else:
         sic=6770 if re.search(r"6770\s*[-–]\s*Blank Checks",text,re.I) else -1
         desc="Blank Checks" if sic==6770 else ""
-    is_blank=(sic==6770 or desc.lower().startswith("blank checks"))
+    if sic<=0 or (desc and (desc.casefold().startswith("blank checks") != (sic==6770))):
+        return None
+    is_blank=(sic==6770)
     if bool(want_blank)!=bool(is_blank):
         return None
     return {
@@ -516,12 +532,11 @@ def sec_current_row(sym:str,asof:str,cik:int|None,want_blank:bool,prior_evidence
     tickers=[str(x).strip().upper() for x in (sub.get("tickers") or [])]
     if sym not in tickers:
         return None
-    try:
-        sic=int(str(sub.get("sic") or "-1").strip())
-    except Exception:
-        sic=-1
-    desc=str(sub.get("sicDescription") or "").strip()
-    is_blank=(sic==6770 or desc.lower()=="blank checks")
+    official=official_sec_sic(sub)
+    if official is None:
+        return None
+    sic,desc=official
+    is_blank=(sic==6770)
     if bool(want_blank)!=bool(is_blank):
         return None
     evidence=latest_filing_date(sub,asof)

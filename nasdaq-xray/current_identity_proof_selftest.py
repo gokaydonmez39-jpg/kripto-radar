@@ -163,6 +163,26 @@ def main():
         assert operating_row and operating_row["is_blank_check"] is False and operating_row["sic"]==3571
         assert operating_row["discovery_version"]==m.IDENTITY_DISCOVERY_VERSION
         assert m.sec_current_classification("WRONG","2026-10-06",cmap["OPER"]) is None
+        assert m.sec_current_row("TLAC","2026-10-06",cmap["TLAC"],True)["sic"]==6770
+        assert m.sec_current_row("TLAC","2026-10-06",cmap["TLAC"],False) is None
+        # A valid CIK/ticker and recent filing cannot compensate for missing SIC.
+        def missing_sic(url):
+            if "CIK0001234567.json" in url:
+                return {"tickers":["OPER"],"sic":None,"sicDescription":"",
+                        "filings":{"recent":{"filingDate":["2026-09-29"]}}}
+            return fake_load(url)
+        m.load_json_url=missing_sic
+        assert m.sec_current_classification("OPER","2026-10-06",cmap["OPER"]) is None
+        assert m.sec_current_row("OPER","2026-10-06",cmap["OPER"],False) is None
+        # A conflicting official description must not turn any issuer PASS.
+        def contradictory_sic(url):
+            if "CIK0001234567.json" in url:
+                return {"tickers":["OPER"],"sic":"3571","sicDescription":"Blank Checks",
+                        "filings":{"recent":{"filingDate":["2026-09-29"]}}}
+            return fake_load(url)
+        m.load_json_url=contradictory_sic
+        assert m.sec_current_classification("OPER","2026-10-06",cmap["OPER"]) is None
+        assert m.sec_current_row("OPER","2026-10-06",cmap["OPER"],False) is None
     finally:
         m.load_json_url=original_load
 
