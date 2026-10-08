@@ -37,7 +37,7 @@
     "2026-10-06",
     "2026-10-07"
   ],
-  "master_unknown_count": 90,
+  "master_unknown_count": 88,
   "master_unknown_detail": {
     "ALIS": {
       "exact_sec_spac_proof": false,
@@ -99,24 +99,6 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "FG Imperii Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "FIGX": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "FIGX Capital Acquisition Corp. - Class A ordinary share",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "FVAV": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Fortress Value Acquisition Corp. V - Class A Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -850,7 +832,7 @@
       "unknown_never_pass": true
     }
   },
-  "master_unknown_hash": "962c816227b0bcf361a7ce7d4a1bffe5aa8697f58fb22fc5b253e5dc4e4236dc",
+  "master_unknown_hash": "328c06bbad43ef1a50d5e3cc11f90943e024ab28889085a953f6ba55a8d0a2e0",
   "master_unknown_symbols": [
     "ALIS",
     "BKHA",
@@ -859,8 +841,6 @@
     "DMII",
     "FACT",
     "FGII",
-    "FIGX",
-    "FVAV",
     "FVN",
     "FXAC",
     "GSHR",
@@ -974,9 +954,9 @@
   "settlement_policy": "ALPACA_HISTORICAL_SIP_DAILY_AFTER_15M__AAPL_NVDA_PLUS_ONE_PRIOR_CURRENT_CORE__RALLIES_LONGBRIDGE_QUOTE_OHLC_0_01_CROSSCHECK__SIP_VOLUME_AUTHORITY__FAIL_CLOSED__DELAYED_SIP_NEVER_G9",
   "settlement_required": false,
   "settlement_symbols": [],
-  "source_master_blob_sha": "4a135b10e98951d63b3597a77de6e10e58611d0b",
+  "source_master_blob_sha": "24a113169a83717cd3277c5c29f677d9b22a4b74",
   "source_master_path": "nasdaq-xray/canonical_current_master_manifest.json",
-  "source_overlay_blob_sha": "498d2a24de2e6cefe7df3372289cedfe7cc88b26",
+  "source_overlay_blob_sha": "e777c17bcbad8dd28bb58ad848ed4a4e9e3fe332",
   "source_overlay_path": "nasdaq-xray/canonical_current_resolution_overlay.json",
   "source_pointer_blob_sha": "f327f0d8ad9bd5624aca1f59ac2ed5f14ecc94bf",
   "source_pointer_path": "nasdaq-xray/chatgpt_canonical_state_v2.json",
@@ -992,9 +972,9 @@
   "source_price_pass_count": 510,
   "source_price_pass_hash": "f6772e07d952c9c172a3370076537cbfc89128886e1a0e31d1142b2ebecf0438",
   "source_price_path": "nasdaq-xray/canonical_current_price_dv30.json",
-  "source_state_blob_sha": "84714701fb52871535b753f60fe5ded86e185776",
+  "source_state_blob_sha": "ae013b15857714ce3920008e6e69996bf7cc36e5",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
-  "source_unknowns_blob_sha": "03b616927ac0fed218be4d3ab31dc82c35341a7c",
+  "source_unknowns_blob_sha": "b68ba2fc21a63cdf3d3f4718583846eac4fb7296",
   "source_unknowns_path": "nasdaq-xray/canonical_current_unknowns.json",
   "status": "IDLE",
   "symbol_count": 0,

@@ -1,7 +1,7 @@
 {
   "asof_et": "2026-10-07",
   "asof_identity_proof": {
-    "blob_sha": "6d5d3fb7cc1d349409446e627bc9913eae3327ff",
+    "blob_sha": "907d9b905a51abb7138300204c1af0bd6da36c2d",
     "counts": {
       "operating_overrides": 3,
       "remove_from_asof": 0,
@@ -29,13 +29,13 @@
   },
   "counts": {
     "PASS_IDENTITY": 3184,
-    "UNKNOWN_IDENTITY": 90
+    "UNKNOWN_IDENTITY": 88
   },
   "execution": "NONE",
-  "explicit_excluded_count": 122,
-  "explicit_excluded_hash": "aa138370df462cf9b5f01c0e058eb9a2a9bfab9d263343800f34f88a041086ae",
+  "explicit_excluded_count": 124,
+  "explicit_excluded_hash": "96a9f7f4df08285c9b6ac2e23c29a1eccd17ef1bf93200bfba141b4308fa8e68",
   "explicit_excluded_reason_counts": {
-    "SPAC_BLANK_CHECK": 122
+    "SPAC_BLANK_CHECK": 124
   },
   "history_price_state_diagnostic_only": {
     "source_counts": {
@@ -3242,22 +3242,22 @@
   "queue_hash": "2554c936f42217cf8a9628e89d04993945218725234fe894f7c80856834725d6",
   "queue_total": 3184,
   "queue_unique": 3184,
-  "raw_identity_total": 3274,
+  "raw_identity_total": 3272,
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1",
   "sec_spac_proof": {
-    "blob_sha": "262241034e94fe2c2c483e420b7e38965a15e733",
-    "count": 122,
+    "blob_sha": "9e5d0c56f996386612b3032562d9dd5e6979a01e",
+    "count": 124,
     "path": "nasdaq-xray/master_sec_spac_proof_20261007.json",
-    "symbol_hash": "a8473a5baae97d74f07eda2c0d112f073f2ea27b3d032c73de6c5d850ae37e49"
+    "symbol_hash": "ab0cc611d53a7998d5a73f186ff759e504fe198adf4d4eead71f96797947e927"
   },
-  "source_state_blob_sha": "84714701fb52871535b753f60fe5ded86e185776",
-  "source_state_hash": "dad9482227bf3043768ee9cdd641e56d65d0cc2f4a14e12d4bf9a0145635c6f5",
+  "source_state_blob_sha": "ae013b15857714ce3920008e6e69996bf7cc36e5",
+  "source_state_hash": "73fe04c4b516aebf7bd6a4d78d1ec5657e02bbec344655971f537eefd6c6efd3",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
   "status": "PARTIAL_UNKNOWN",
   "status_semantics": "IDENTITY_PARTITION_EXACT_WITH_UNKNOWN",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 90,
+  "unknown_count": 88,
   "unknown_detail": {
     "ALIS": {
       "exact_sec_spac_proof": false,
@@ -3319,24 +3319,6 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "FG Imperii Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "FIGX": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "FIGX Capital Acquisition Corp. - Class A ordinary share",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "FVAV": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Fortress Value Acquisition Corp. V - Class A Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -4079,8 +4061,6 @@
     "DMII",
     "FACT",
     "FGII",
-    "FIGX",
-    "FVAV",
     "FVN",
     "FXAC",
     "GSHR",
