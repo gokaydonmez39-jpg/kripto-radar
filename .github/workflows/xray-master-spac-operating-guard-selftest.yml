@@ -30,6 +30,9 @@ jobs:
           s=Path("nasdaq-xray/build_current_identity_proofs.py").read_text()
           ast.parse(s)
           assert "from master_spac_operating_guard import nonblank_requires_completion" in s
+          assert 'IDENTITY_DISCOVERY_VERSION="SEC_CURRENT_SUSPECT_DISCOVERY_V9"' in s
+          w=Path(".github/workflows/xray-canonical-current-pre-mc.yml").read_text()
+          assert w.count('SEC_CURRENT_SUSPECT_DISCOVERY_V9')==2
           for token in [
               "nonblank_requires_completion(True, (old or {}).get('sic'))",
               "nonblank_requires_completion(True, manual.get('sic'))",
