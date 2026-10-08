@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/massive_mc_resume_shadow.py"
+      - "nasdaq-xray/massive_mc_shadow_probe.py"
+      - "nasdaq-xray/massive_mc_public_telemetry.py"
       - ".github/workflows/xray-massive-mc-resume-shadow.yml"
   schedule:
     - cron: "07,27,47 * * * *"
