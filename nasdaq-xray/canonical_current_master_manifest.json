@@ -1,7 +1,7 @@
 {
   "asof_et": "2026-10-07",
   "asof_identity_proof": {
-    "blob_sha": "6986cfaeb0ba24013d2ac7a7c49442e59cf7086b",
+    "blob_sha": "53245e66b04f6233092e15fc87c40306286b0cd4",
     "counts": {
       "operating_overrides": 3,
       "remove_from_asof": 0,
@@ -29,13 +29,13 @@
   },
   "counts": {
     "PASS_IDENTITY": 3184,
-    "UNKNOWN_IDENTITY": 83
+    "UNKNOWN_IDENTITY": 79
   },
   "execution": "NONE",
-  "explicit_excluded_count": 129,
-  "explicit_excluded_hash": "9d87153567903bf2506e504bd675553665d45e08193bcfebd8896fb4220118a7",
+  "explicit_excluded_count": 133,
+  "explicit_excluded_hash": "f50673cbe85c33d2d206c5f9018ee3b2f0aa989a0a060866e10cf008eafd4809",
   "explicit_excluded_reason_counts": {
-    "SPAC_BLANK_CHECK": 129
+    "SPAC_BLANK_CHECK": 133
   },
   "history_price_state_diagnostic_only": {
     "source_counts": {
@@ -3242,22 +3242,22 @@
   "queue_hash": "2554c936f42217cf8a9628e89d04993945218725234fe894f7c80856834725d6",
   "queue_total": 3184,
   "queue_unique": 3184,
-  "raw_identity_total": 3267,
+  "raw_identity_total": 3263,
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1",
   "sec_spac_proof": {
-    "blob_sha": "b1f3c36d4106b6157a22b482268f14a5e67358f8",
-    "count": 129,
+    "blob_sha": "56fd03bb1e85548004e771e242fe19b3c1f99217",
+    "count": 133,
     "path": "nasdaq-xray/master_sec_spac_proof_20261007.json",
-    "symbol_hash": "06babf669c1ee9b4994218c3afb4ae709bfe650688af2f06216c650b7311336d"
+    "symbol_hash": "61481cef0457f25d17307eb76915a0be3f75e8822709ef26a652356280e60a6d"
   },
-  "source_state_blob_sha": "980b37a4005b324f2e46a12362dc316a452978b4",
-  "source_state_hash": "a536ae5856d3b2ca48dc41c5da4b75d1d02f4dcd7d7d0c9948b1d0e8439151da",
+  "source_state_blob_sha": "04b8420a232660244914a27f5031953320826c02",
+  "source_state_hash": "1671421669180cf8f01a80e1eec289db3dbf19eeb016ada9c8843ae43fd33c22",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
   "status": "PARTIAL_UNKNOWN",
   "status_semantics": "IDENTITY_PARTITION_EXACT_WITH_UNKNOWN",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 83,
+  "unknown_count": 79,
   "unknown_detail": {
     "ALIS": {
       "exact_sec_spac_proof": false,
@@ -3268,30 +3268,12 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "BKHA": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Black Hawk Acquisition Corporation - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "BSAA": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "BEST SPAC I Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "CRAN": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Crane Harbor Acquisition Corp. II - Class A Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -3313,30 +3295,12 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "FGII": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "FG Imperii Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "FVN": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Future Vision II Acquisition Corporation - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "FXAC": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "FortuneX Acquisition Corporation - Ordinary shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -4010,14 +3974,10 @@
   "unknown_never_pass": true,
   "unknown_symbols": [
     "ALIS",
-    "BKHA",
     "BSAA",
-    "CRAN",
     "DMII",
     "FACT",
-    "FGII",
     "FVN",
-    "FXAC",
     "GSHR",
     "GSRF",
     "GTERA",
