@@ -31,6 +31,14 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python nasdaq-xray/github_native_root_watchdog.py --out /tmp/xray_native_watchdog.json
+      - name: Compile and selftest exact current chain incident classifier
+        run: |
+          python -m py_compile nasdaq-xray/github_native_chain_health.py
+          python nasdaq-xray/github_native_chain_health.py --selftest
+      - name: Live exact SHA health audit (no remediation authority)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python nasdaq-xray/github_native_chain_health.py --out /tmp/xray_native_chain_health.json
       - name: Show fail-closed diagnostic summary
         if: always()
         run: |
@@ -41,6 +49,8 @@ jobs:
         if: always()
         with:
           name: xray-native-root-watchdog
-          path: /tmp/xray_native_watchdog.json
+          path: |
+            /tmp/xray_native_watchdog.json
+            /tmp/xray_native_chain_health.json
           if-no-files-found: ignore
           retention-days: 7
