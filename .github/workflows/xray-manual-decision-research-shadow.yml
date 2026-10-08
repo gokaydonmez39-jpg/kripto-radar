@@ -89,7 +89,47 @@ jobs:
           print("XRAY_MANUAL_DECISION_PUBLIC_STATUS="+r["status"])
           print("XRAY_MANUAL_DECISION_PUBLIC_COUNT="+str(r["research_signal_count"]))
           PY
+      - name: Record source-integrity fault without disclosing market data
+        if: failure()
+        env:
+          XRAY_RUNNER_TEMP: ${{ runner.temp }}
+        run: |
+          python - <<'PY'
+          import hashlib,json,os
+          from pathlib import Path
+          root=Path("nasdaq-xray")
+          def read(name):
+              try:return json.loads((root/name).read_text())
+              except (OSError,ValueError):return {}
+          def blob(name):
+              try:
+                  b=(root/name).read_bytes()
+                  return hashlib.sha1(b"blob "+str(len(b)).encode()+b"\0"+b).hexdigest()
+              except OSError:return None
+          t=read("canonical_current_terminal.json")
+          m=read("canonical_current_master_manifest.json")
+          expected=(t.get("evidence") or {}).get("master") or {}
+          safe={
+              "schema":"XRAY_MANUAL_SOURCE_INTEGRITY_FAULT_V1",
+              "status":"SOURCE_INTEGRITY_BLOCKED",
+              "execution":"NONE","real_money":"NO-GO",
+              "manual_decision_only":True,"alpha_authority":False,
+              "research_signal_count":0,"delivery_enabled":False,
+              "terminal_asof_et":t.get("asof_et"),
+              "current_master_asof_et":m.get("asof_et"),
+              "terminal_master_blob_sha":expected.get("blob_sha"),
+              "current_master_blob_sha":blob("canonical_current_master_manifest.json"),
+              "source_epoch_exact":t.get("asof_et")==m.get("asof_et"),
+              "source_sha_exact":expected.get("blob_sha")==blob("canonical_current_master_manifest.json"),
+              "public_market_data":False,"ticker_identifiers_published":False,
+              "notification_delivered":False
+          }
+          output=Path(os.environ["XRAY_RUNNER_TEMP"])/"xray_manual_public_telemetry.json"
+          output.write_text(json.dumps(safe,indent=2,sort_keys=True)+"\n")
+          print("XRAY_MANUAL_SOURCE_INTEGRITY=BLOCKED (workflow failure preserved)")
+          PY
       - name: Upload safe operational telemetry only
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: xray-manual-decision-operational-only
