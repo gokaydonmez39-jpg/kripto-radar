@@ -8,8 +8,9 @@ on:
       - "nasdaq-xray/massive_mc_shadow_probe.py"
       - "nasdaq-xray/massive_mc_public_telemetry.py"
       - ".github/workflows/xray-massive-mc-resume-shadow.yml"
-  schedule:
-    - cron: "07,27,47 * * * *"
+  # Deliberately no schedule while the required non-display grant is absent.
+  # Manual diagnostics and source-code-triggered safety tests remain enabled.
+  # No provider HTTP call is authorized by this configuration change.
 permissions:
   contents: read
   actions: read
