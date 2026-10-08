@@ -35,8 +35,14 @@ def read_dates(path: Path, asof: str) -> list[str]:
                 try:
                     d = date.fromisoformat(raw)
                 except Exception:
-                    continue
+                    # A malformed bar cannot be silently discarded when
+                    # deciding whether the completed-session set is valid.
+                    return []
                 if raw <= asof:
+                    if d.weekday() >= 5 or d.isoformat() in out:
+                        # Weekends or duplicated dates are not independent
+                        # completed Nasdaq RTH sessions. Fail the full file.
+                        return []
                     out.add(d.isoformat())
     except Exception:
         return []
