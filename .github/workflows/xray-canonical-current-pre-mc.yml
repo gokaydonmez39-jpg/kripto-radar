@@ -363,9 +363,26 @@ jobs:
               except Exception:
                   official_listing_fail_only_symbols=[]
           official_listing_fail_only_replay=bool(official_listing_fail_only_symbols)
+          # A new exact-ASOF official historical halt witness is a
+          # decision-bearing FAIL, even when a provider retry ran previously.
+          historical_halt_fail_only_symbols=[]
+          if active_completed_epoch and price_ok:
+              try:
+                  from historical_halt_fail_only import load_witness, evaluate
+                  hw=load_witness(latest_completed)
+                  hs=(hw or {}).get("symbol")
+                  if hs in set(px.get("blocked_symbols") or []):
+                      he=evaluate(hw,hs,latest_completed,list(px.get("expected30") or []),
+                                  (px.get("results") or {}).get(hs))
+                      if he and he.get("decision_direction")=="FAIL_ONLY_NEVER_PASS":
+                          historical_halt_fail_only_symbols=[hs]
+              except Exception:
+                  historical_halt_fail_only_symbols=[]
+          historical_halt_fail_only_replay=bool(historical_halt_fail_only_symbols)
           coverage_repair=bool(
               (active_completed_epoch and price_ok and blocked_count>0 and not block_recovery_attempted)
               or official_listing_fail_only_replay
+              or historical_halt_fail_only_replay
           )
           resolver_refresh=False
           if active_completed_epoch and price_ok and block_recovery_attempted:
@@ -473,6 +490,8 @@ jobs:
               out.write(f"identity_replay={'true' if identity_replay else 'false'}\n")
               out.write(f"coverage_repair={'true' if coverage_repair else 'false'}\n")
               out.write(f"official_listing_fail_only_replay={'true' if official_listing_fail_only_replay else 'false'}\n")
+              out.write(f"historical_halt_fail_only_replay={'true' if historical_halt_fail_only_replay else 'false'}\n")
+              out.write("historical_halt_fail_only_symbols_csv="+",".join(historical_halt_fail_only_symbols)+"\n")
               out.write(f"official_listing_fail_only_count={len(official_listing_fail_only_symbols)}\n")
               out.write("official_listing_fail_only_symbols_csv="+",".join(official_listing_fail_only_symbols)+"\n")
               out.write(f"resolver_refresh={'true' if resolver_refresh else 'false'}\n")
@@ -503,6 +522,8 @@ jobs:
               "coverage_repair":coverage_repair,
               "official_listing_fail_only_replay":official_listing_fail_only_replay,
               "official_listing_fail_only_symbols":official_listing_fail_only_symbols,
+              "historical_halt_fail_only_replay":historical_halt_fail_only_replay,
+              "historical_halt_fail_only_symbols":historical_halt_fail_only_symbols,
               "resolver_refresh":resolver_refresh,
               "bridge_refresh":bridge_refresh,
               "persistent_terminal_fail_replay":persistent_terminal_fail_replay,
@@ -526,6 +547,7 @@ jobs:
                   "REPLAY_PRICE_AFTER_ASOF_PUBLICATION" if publication_replay else
                   "RECOVER_FROZEN_COMPLETED_EPOCH" if recover else
                   "REPLAY_OFFICIAL_RECENT_LISTING_FAIL_ONLY" if official_listing_fail_only_replay else
+                  "REPLAY_OFFICIAL_HISTORICAL_HALT_FAIL_ONLY" if historical_halt_fail_only_replay else
                   "REPAIR_BLOCKED_PRICE_DV30_COVERAGE" if coverage_repair else
                   "REFRESH_BLOCKED_RESOLVER_REQUEST" if resolver_refresh else
                   "APPLY_TERMINAL_OVERRIDE_BRIDGE" if bridge_refresh else
@@ -694,6 +716,28 @@ jobs:
           XRAY_PRICE_USE_CURRENT_BASELINE: ${{ steps.price_baseline.outputs.reuse == 'true' && '1' || '0' }}
           XRAY_PRICE_FORCE_LOCAL_REEVALUATION: ${{ steps.rollover.outputs.publication_replay == 'true' && '1' || '0' }}
         run: python nasdaq-xray/price_dv30_recover_from_fullstate.py
+      - name: Validate official historical halt terminal FAIL-only
+        if: steps.identity_gate.outputs.ready == 'true' && steps.rollover.outputs.historical_halt_fail_only_replay == 'true'
+        env:
+          XRAY_HISTORICAL_HALT_SYMBOLS: ${{ steps.rollover.outputs.historical_halt_fail_only_symbols_csv }}
+        run: |
+          python - <<'PY'
+          import json,os
+          p=json.load(open("nasdaq-xray/canonical_current_price_dv30.json"))
+          expected=[x for x in os.environ.get("XRAY_HISTORICAL_HALT_SYMBOLS","").split(",") if x]
+          assert expected, "OFFICIAL_HALT_REPLAY_EXPECTED_NONEMPTY"
+          changed=set(p.get("historical_halt_terminalized_symbols") or [])
+          passes=set(p.get("pass_symbols") or [])
+          assert not (passes & set(expected)), "HISTORICAL_HALT_CANNOT_PROMOTE_PASS"
+          for sym in expected:
+              row=(p.get("results") or {}).get(sym) or {}
+              assert row.get("status")=="FAIL_DV30_INSUFFICIENT_SESSIONS",(sym,row)
+              assert row.get("provenance")=="EXACT_ASOF_NASDAQ_HISTORICAL_HALT_FAIL_ONLY",sym
+              ev=row.get("info") or {}
+              assert ev.get("no_synthetic_bar") is True and ev.get("decision_direction")=="FAIL_ONLY_NEVER_PASS"
+              assert sym in changed
+          print("XRAY_HISTORICAL_HALT_FACTORY_REPLAY=PASS "+",".join(expected))
+          PY
       - name: Validate official recent-listing fail-only replay
         if: steps.identity_gate.outputs.ready == 'true' && (steps.rollover.outputs.official_listing_fail_only_replay == 'true')
         env:
