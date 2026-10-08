@@ -1,7 +1,7 @@
 {
   "asof_et": "2026-10-07",
   "asof_identity_proof": {
-    "blob_sha": "0278e71c4cc38b7434cb6f2f56f0bf38f8bfd496",
+    "blob_sha": "715527fc80ac32e43caf0c855bc0cea6680d3c5b",
     "counts": {
       "operating_overrides": 4,
       "remove_from_asof": 0,
@@ -29,13 +29,13 @@
   },
   "counts": {
     "PASS_IDENTITY": 3185,
-    "UNKNOWN_IDENTITY": 172
+    "UNKNOWN_IDENTITY": 168
   },
   "execution": "NONE",
-  "explicit_excluded_count": 39,
-  "explicit_excluded_hash": "5e5a7ff330af344ccfbd2b11ef0a9001646450bf6629d82e907b21f64b3cf84b",
+  "explicit_excluded_count": 43,
+  "explicit_excluded_hash": "eeb306400347f6fb3d171a9a8be64d89d9f3044b8cf291ce362dea94eb29b8a9",
   "explicit_excluded_reason_counts": {
-    "SPAC_BLANK_CHECK": 39
+    "SPAC_BLANK_CHECK": 43
   },
   "history_price_state_diagnostic_only": {
     "source_counts": {
@@ -3243,22 +3243,22 @@
   "queue_hash": "306d6bb21e1ffef5f099f988ce995d0f98b349c051f34b4eed42613280444bdf",
   "queue_total": 3185,
   "queue_unique": 3185,
-  "raw_identity_total": 3357,
+  "raw_identity_total": 3353,
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1",
   "sec_spac_proof": {
-    "blob_sha": "20860084b339bb7a2e485b9ed8bc2723140cb3d9",
-    "count": 39,
+    "blob_sha": "9851b5803447f91857e55bb8c5dc7c94e2b9ac43",
+    "count": 43,
     "path": "nasdaq-xray/master_sec_spac_proof_20261007.json",
-    "symbol_hash": "76010ebdc818942bc4dd50b4798dd67d268557504e82c63825acfb523e2d1cc1"
+    "symbol_hash": "99f70e2d8963c11c8e9eeaaf0a71887f16e0142752531a750aec7f9212557c87"
   },
-  "source_state_blob_sha": "d1f2a3acd20c963feb3c5b312ff12664c91191bd",
-  "source_state_hash": "f70010b67d32e52c5798838057fb000196dca7017f6e734bb509b293e4d801ec",
+  "source_state_blob_sha": "72152319f00828ee3334cdabeb0d5477e6e8fdcf",
+  "source_state_hash": "6da1431e9dab7a2a2db7d6f66785b36fea95b9a6b6a9a0984df4652d09566f1a",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
   "status": "PARTIAL_UNKNOWN",
   "status_semantics": "IDENTITY_PARTITION_EXACT_WITH_UNKNOWN",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 172,
+  "unknown_count": 168,
   "unknown_detail": {
     "AACI": {
       "exact_sec_spac_proof": false,
@@ -3323,15 +3323,6 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "BLUW": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Blue Water Acquisition Corp. III - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "BLZR": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
@@ -3392,15 +3383,6 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Cayson Acquisition Corp - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "CAQ": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Cambridge Acquisition Corp. - Class A Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -3536,15 +3518,6 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Roman DBDR Acquisition Corp. II - Ordinary shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "DSAC": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Daedalus Special Acquisition Corp. - Class A Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -4376,15 +4349,6 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "QETA": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Quetta Acquisition Corporation - Common Stock",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "QSEA": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
@@ -4818,7 +4782,6 @@
     "BID",
     "BIXI",
     "BKHA",
-    "BLUW",
     "BLZR",
     "BPAC",
     "BREZ",
@@ -4826,7 +4789,6 @@
     "BSAA",
     "CAII",
     "CAPN",
-    "CAQ",
     "CCAQ",
     "CCCT",
     "CCII",
@@ -4842,7 +4804,6 @@
     "DBCA",
     "DMII",
     "DRDB",
-    "DSAC",
     "DTSQ",
     "EURK",
     "EVOX",
@@ -4935,7 +4896,6 @@
     "PTAC",
     "PTOR",
     "QADR",
-    "QETA",
     "QSEA",
     "QUMS",
     "RANG",
