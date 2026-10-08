@@ -80,6 +80,7 @@ def fresh_checkpoint(scope):
         "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
         "alpha_authority":False,"policy_unchanged":"C4.17",
         "records":{},"retry_counts":{},"request_count_cumulative":0,
+        "last_attempt_epoch_s":None,
         "created_by":"GITHUB_ACTIONS_ENCRYPTED_CHECKPOINT"}
 
 def exact_checkpoint(cp,scope):
@@ -99,7 +100,11 @@ def exact_checkpoint(cp,scope):
         or len(cp["records"])>len(scope["symbols"])
         or not set(cp["records"]).issubset(scope["symbols"])
         or type(cp.get("request_count_cumulative")) is not int
-        or cp["request_count_cumulative"]<len(cp["records"])):
+        or cp["request_count_cumulative"]<len(cp["records"])
+        or (cp.get("last_attempt_epoch_s") is not None and
+            (type(cp["last_attempt_epoch_s"]) not in (int,float)
+             or not math.isfinite(cp["last_attempt_epoch_s"])
+             or cp["last_attempt_epoch_s"]<=0))):
         return False
     for symbol,rec in cp["records"].items():
         if (not isinstance(rec,dict)
@@ -284,8 +289,24 @@ def run(args):
     dest=Path(args.checkpoint)
     interrupted_reason=None
     for i,symbol in enumerate(todo[:args.limit]):
-        # Prevent exceeding 5 calls/minute from this job: every 13 seconds.
-        if i>0:time.sleep(MIN_SPACING_SECONDS)
+        # Authenticated inter-run rate fence. A new runner must not burst on
+        # top of the immediately preceding runner's last API call.
+        last=cp.get("last_attempt_epoch_s")
+        if last is None and restored and cp["request_count_cumulative"]>0:
+            # Pre-upgrade V1 checkpoint without an authenticated last-call
+            # timestamp: conservative one-minute cooldown, never assume free headroom.
+            time.sleep(60.0)
+        elif last is not None:
+            elapsed=time.time()-last
+            if elapsed < -1.0:
+                raise ValueError("CHECKPOINT_CLOCK_FUTURE_FAIL_CLOSED")
+            remaining_delay=MIN_SPACING_SECONDS-max(0.0,elapsed)
+            if remaining_delay>0:time.sleep(remaining_delay)
+        # Persist attempt BEFORE contacting the provider. A crash/429 still
+        # advances the durable call budget and prevents unsafe rapid retry.
+        cp["last_attempt_epoch_s"]=time.time()
+        cp["request_count_cumulative"]+=1
+        persist_checkpoint_atomic(cp,fernet,scope,dest)
         raw=probe(symbol,scope["asof_et"],token)
         count+=1  # HTTP 429/401/403/402 still consumes a real attempt.
         reason=str(raw.get("reason") or "")
@@ -295,7 +316,6 @@ def run(args):
         cp["records"][symbol]=clean_record(symbol,scope["asof_et"],raw)
         if retryable_unknown(cp["records"][symbol]):
             cp["retry_counts"][symbol]=cp["retry_counts"].get(symbol,0)+1
-        cp["request_count_cumulative"]+=1
         persist_checkpoint_atomic(cp,fernet,scope,dest)
     persist_checkpoint_atomic(cp,fernet,scope,dest)
     remaining=len(scope["symbols"])-len(cp["records"])
@@ -390,6 +410,9 @@ def selftest():
     assert retryable_unknown({"state":"UNKNOWN","reason":"TRANSPORT_URLError"})
     assert not retryable_unknown({"state":"UNKNOWN","reason":"SPAC_SUSPECT_OFFICIAL_SEC_PROOF_REQUIRED"})
     assert not retryable_unknown(good)
+    assert exact_checkpoint(dict(cp,last_attempt_epoch_s=float("nan")),scope) is False
+    assert exact_checkpoint(dict(cp,last_attempt_epoch_s=0),scope) is False
+    assert exact_checkpoint(dict(cp,last_attempt_epoch_s=42.0),scope)
     # True two-invocation persistence test with NO live Massive requests.
     # A green test without this could mask a broken restore/resume workflow.
     import tempfile
@@ -429,7 +452,8 @@ def selftest():
             run(args)
             assert fetch.call_count==0
             assert json.loads(Path(args.telemetry).read_text())["last_run_requests"]==0
-            assert sleep.call_count==0
+            # No additional HTTP requests occurred in the completed third run.
+            assert fetch.call_count==0
         # Forced failure after the first observation must retain recoverable
         # ciphertext before the entire 25-request batch finishes.
         with patch.dict(os.environ,env),patch(__name__+".current_scope",return_value=scope),\
@@ -445,8 +469,24 @@ def selftest():
             else:raise AssertionError("EXPECTED_INTENTIONAL_FAULT")
             salvaged=restore(Path(args.checkpoint).read_bytes(),a,scope)[0]
             assert set(salvaged["records"])=={"AAPL"}
-            assert salvaged["request_count_cumulative"]==1
+            # Even the interrupted second API attempt is durably counted.
+            assert salvaged["request_count_cumulative"]==2
             args.limit=1
+        # A real HTTP 429 still counts as an attempt and is authenticated
+        # before the request; the next run is rate-fenced even after 429.
+        with patch.dict(os.environ,env),patch(__name__+".current_scope",return_value=scope),\
+             patch(__name__+".probe",return_value={"state":"UNKNOWN","reason":"HTTP_429"}) as throttled:
+            args.limit=1
+            Path(args.restore).unlink(missing_ok=True)
+            Path(args.checkpoint).unlink(missing_ok=True)
+            run(args)
+            assert throttled.call_count==1
+            health_429=json.loads(Path(args.telemetry).read_text())
+            assert health_429["status"]=="BLOCKED_VENDOR_QUOTA_OR_AUTHORIZATION"
+            assert health_429["last_run_requests"]==1
+            c429=restore(Path(args.checkpoint).read_bytes(),a,scope)[0]
+            assert c429["request_count_cumulative"]==1
+            assert c429["last_attempt_epoch_s"]>0
         # The licence and key gates stop before touching the remote provider.
         Path(args.restore).unlink(missing_ok=True)
         with patch.dict(os.environ,{"XRAY_MASSIVE_NONDISPLAY_LICENSE_OK":"false",
