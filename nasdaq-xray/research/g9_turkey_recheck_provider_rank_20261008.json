@@ -1,0 +1,165 @@
+{
+  "schema": "XRAY_PROVIDER_TURKEY_RECHECK_RANK_20261008_V1",
+  "date_trt": "2026-10-08",
+  "parent_head": "e10b96ba1f3fbe8d1f5f6535287c1c8df0f77206",
+  "prior_research_path": "nasdaq-xray/research/g9_x_scout_20261008.json",
+  "prior_research_blob_sha": "aeb37cf97a236e270204d7e4d4f1c9e2bd6d4af5",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "research_only": true,
+  "authority": false,
+  "strict_g9_pass": false,
+  "unknown_never_pass": true,
+  "scope": "X-indexed public provider leads plus binding issuer/vendor documentary cross-check; not exhaustive X timeline/API collection",
+  "ranking": [
+    {
+      "priority": 1,
+      "name": "Nasdaq CQT via NCDS",
+      "lane": "STRICT_G9_TECHNICAL_CANDIDATE",
+      "residency": "Data-license/API onboarding not documented as brokerage account; Turkey eligibility remains unverified, must ask provider",
+      "proof": "Official CQT has real-time consolidated US equities source and quote/trade endpoints, bearer authorization; lastquote has quote-level timestamp (not independently timestamped bid/ask in sample)",
+      "blockers": [
+        "Supplier onboarding credentials",
+        "entitlement for NASDAQ UTP and automated non-display",
+        "permanent $0 cost including any exchange/vendor assessment",
+        "independent bid/ask/trade timestamps <= C4.17 freshness skew",
+        "unattended runtime same-session witness"
+      ],
+      "status": "CONDITIONAL_NOT_PASS",
+      "sources": [
+        "https://www.nasdaq.com/products/data/data-link/api",
+        "https://www.nasdaqtrader.com/content/technicalsupport/specifications/dataproducts/CQT-cloud.pdf",
+        "https://github.com/Nasdaq/NasdaqCloudDataService-REST-API/blob/main/restapi/lastquote.md",
+        "https://github.com/Nasdaq/NasdaqCloudDataService-REST-API/blob/main/restapi/lasttrade.md"
+      ]
+    },
+    {
+      "priority": 2,
+      "name": "Interactive Brokers (IBKR)",
+      "lane": "TURKEY_ELIGIBLE_BROKER_ACCOUNT_AND_POSSIBLE_NBBO",
+      "residency": "Turkey explicitly listed in IBKR's official available countries; individual eligibility still subject to account approval",
+      "proof": "Official market data pricing lists NASDAQ Network C/UTP NBBO route; TWS provides SMART aggregated quote, TWS tick-by-tick BidAsk/Last; Web API smd stream requires resubscription every ~10 min (terminates 15 min)",
+      "blockers": [
+        "An actual user-approved account; never create or fund without consent",
+        "Entitlements for exact NASDAQ NBBO and fee-free automated rights not established",
+        "TWS/retail gateway authentication and unattended scheduler access require proof",
+        "Independent bid/ask/trade timestamps and quote skew tests not run",
+        "ACCOUNT requires read-only same-run authorized account-state read"
+      ],
+      "status": "TURKEY_NOT_BLOCKED_BUT_PERMANENT_ZERO_AND_RUNTIME_UNKNOWN",
+      "sources": [
+        "https://portal.interactivebrokers.com/en/accounts/open-account-country-list.php",
+        "https://www.interactivebrokers.com/en/pricing/market-data-pricing.php",
+        "https://www.interactivebrokers.com/docs/web-api/v1/ws/market-data/market-data-request",
+        "https://www.interactivebrokers.com/docs/tws-api/doc/market-data-live/component-exchanges/introduction"
+      ]
+    },
+    {
+      "priority": 3,
+      "name": "Business Quant free REST + MCP corporate actions",
+      "lane": "NON_G9_FREE_REFERENCE_AND_CORPORATE_ACTION_RESEARCH",
+      "residency": "No Turkey-restricted broker account surfaced in docs; usable only after actual legitimate sign-up",
+      "proof": "Official Free plan $0 and 30 API calls/day, corporate_actions accepts comma-separated ticker filters; SEC-derived corporate actions, market reference, filings; MCP read-only",
+      "blockers": [
+        "Rate limit and authorized automated use need live self-test",
+        "Sample corporate actions docs for AAPL show unrelated tickers, indicating sample may be nonliteral or response data quality must be independently verified",
+        "Earnings announcement calendar UNKNOWN is distinct from corporate actions; 18 event UNKNOWN not automatically resolved",
+        "SEC/issuer filing and effective date must corroborate before any PASS"
+      ],
+      "status": "HIGH_VALUE_NON_G9_RESEARCH_LEAD_NOT_RUNTIME_VALIDATED",
+      "sources": [
+        "https://businessquant.com/docs/api/corporate-actions",
+        "https://businessquant.com/pricing",
+        "https://businessquant.com/docs/api/mcp",
+        "https://businessquant.com/docs/api/overview"
+      ]
+    },
+    {
+      "priority": 4,
+      "name": "ThetaData",
+      "lane": "DELAYED_CONSOLIDATED_RESEARCH_ONLY",
+      "residency": "Brokerage residency block not identified; vendor SaaS subscription terms and use rights require verification",
+      "proof": "Vendor docs distinguish real-time Nasdaq Basic BBO from UTP+CTA delayed 15-minute national NBBO; Theta local terminal required",
+      "blockers": [
+        "Not real-time G9",
+        "Published vendor pricing includes paid tiers; zero cost not proven",
+        "Local desktop terminal not the unattended GitHub runner adapter"
+      ],
+      "status": "RESEARCH_ALTERNATIVE_NON_G9",
+      "sources": [
+        "https://docs.thetadata.us/operations/stock_at_time_quote.html",
+        "https://docs.thetadata.us/operations/stock_snapshot_quote.html",
+        "https://www.thetadata.net/pricing"
+      ]
+    },
+    {
+      "priority": 5,
+      "name": "Pyth Nasdaq Basic marketplace and corporate actions",
+      "lane": "SUPPLEMENTAL_SOURCE_NOT_NATIONAL_NBBO",
+      "residency": "Data marketplace accessible conceptually across jurisdictions; Nasdaq written licensing approval still required",
+      "proof": "2026-09-22 Pyth issuer announcement of Nasdaq Basic publisher access; corporate actions nine types announced 2026-09-24; Pyth Core API switched to subscription plans starting $500/month after 2026-07-31",
+      "blockers": [
+        "Nasdaq Basic only venue BBO, not national NBBO",
+        "Written Nasdaq approval/entitlements",
+        "Marketplace marked Coming Soon in current listing",
+        "Pro/Core price plans invalidate assumed permanently free access",
+        "Corporate actions feed not verified ready/eligible"
+      ],
+      "status": "WATCH_LICENSED_ADJACENT_FEED_NOT_G9",
+      "sources": [
+        "https://www.pyth.network/blog/pyth-external-distributor-of-nasdaq-basic",
+        "https://www.pyth.network/marketplace/nasdaq",
+        "https://www.pyth.network/blog/coming-soon-corporate-action-data-for-us-equities-on-pyth",
+        "https://www.pyth.network/blog/the-pyth-core-upgrade"
+      ]
+    },
+    {
+      "priority": 6,
+      "name": "Tradier Brokerage partner channel",
+      "lane": "PARTNER_ONLY_REOPEN",
+      "residency": "Official Tradier personal account restriction applies to residents of Turkey; genuine residence in separately permitted country can be eligible regardless of Turkish citizenship",
+      "proof": "Official docs state live API requires account OR Tradier Partner/Advisor; partner refresh tokens and market scopes exist",
+      "blockers": [
+        "Turkey resident account prohibited",
+        "Partner legal acceptance and separate data rights never presumed",
+        "No allowed partner sponsorship/runtime credentials; no proxy/VPN/false-residency workaround"
+      ],
+      "status": "CONDITIONAL_PARTNER_ENQUIRY_ONLY",
+      "sources": [
+        "https://support.tradier.com/kb/guide/en/permitted-and-blocked-countries-CLzSa0D1rf/Steps/4997916",
+        "https://docs.tradier.com/docs/endpoints",
+        "https://docs.tradier.com/docs/authentication"
+      ]
+    },
+    {
+      "priority": 7,
+      "name": "Fennel, tastytrade and Charles Schwab Turkey-resident direct accounts",
+      "lane": "RESIDENCY_RECHECK_WATCH",
+      "residency": "Fennel US citizenship or residency conditions; tastytrade restricted Turkey; Schwab country selection alone not evidence of acceptance and 2026-09-28 independent test reports Turkey application route unavailable",
+      "proof": "Provider official FAQs for Fennel and tastytrade, Schwab application country selection, independent 2026 check",
+      "blockers": [
+        "Broker account residency/US citizen eligibility",
+        "Fennel API monthly service fees",
+        "Schwab market data fees and 7-day unattended auth"
+      ],
+      "status": "DIRECT_ACCOUNT_CURRENTLY_NO; REOPEN_ONLY_IF_OFFICIAL_POLICY_CHANGES",
+      "sources": [
+        "https://help.fennel.com/article/150-account-limitations",
+        "https://support.tastytrade.com/support/s/solutions/articles/43000435355",
+        "https://international.schwab.com/open-account-intro",
+        "https://investingintheweb.com/brokers/charles-schwab-europe/"
+      ]
+    }
+  ],
+  "hard_policy": [
+    "No false PASS",
+    "No proxy/VPN/fictional residency or unapproved data redistribution",
+    "Delayed NBBO stays RESEARCH_ONLY; no strict live G9 pass",
+    "No access tokens pasted into chats, no trading scopes",
+    "Keep existing research and immutable artifacts unchanged"
+  ],
+  "research_conclusion": "CANDIDATES_PRIORITIZED_REAL_US_ACCOUNT_ROUTE_IBKR_AND_FREE_NON_G9_REFERENCE_BUSINESSQUANT; STRICT_G9_STILL_BLOCKED",
+  "no_existing_files_modified": true
+}
