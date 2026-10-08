@@ -12,7 +12,7 @@
       "asof_et": "2026-10-07",
       "path": "canonical_current_master_manifest.json",
       "schema": "XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1",
-      "sha256": "5a282f61a7fdd3a318183d3f83faf2bbb7573e45e3fe03434b8a5d43cf3d9774",
+      "sha256": "bc1cf36eea9a395782f26ea83fd3aeb0ceb4988f4048e4a30ae0c76d317f4033",
       "status": "PRESENT"
     },
     {
@@ -68,21 +68,21 @@
       "asof_et": "2026-10-07",
       "path": "canonical_current_final_tech.json",
       "schema": "XRAY_FINAL_TECH_SHADOW_V1",
-      "sha256": "c4557b6a332546ea9832c7760cbdab43fab01aded6058921a2f3c9e39aefec3c",
+      "sha256": "59a1512c8d037bcf8f905834cb034c49ef5d99271b93c30b64b993e30e96d936",
       "status": "PRESENT"
     },
     {
       "asof_et": "2026-10-07",
       "path": "canonical_current_terminal.json",
       "schema": "XRAY_CANONICAL_CURRENT_TERMINAL_V1",
-      "sha256": "0d24a8c255ece0e59e9f0fe46b6b5747b758c8fd8efdeb82b1e4c72492cb865d",
+      "sha256": "86f8d596f0c6f799bd0c6008f05f1340fb71ff381a2ad814359fa1e85047f97b",
       "status": "PRESENT"
     },
     {
       "asof_et": "2026-10-07",
       "path": "chatgpt_canonical_state_v2.json",
       "schema": "XRAY_GITHUB_DURABLE_STATE_V3",
-      "sha256": "46f3f5b910319f0b41c92eb2013fab529ec1d07938fea21d99a12062198bdb76",
+      "sha256": "66aecbf0768d0523d18ec6f9cfb3a59f53d86c2a01d9ea0e27ddc9ce39575c4e",
       "status": "PRESENT"
     }
   ],
@@ -92,7 +92,7 @@
   ],
   "candidate_delivery_keys": [],
   "execution": "NONE",
-  "generated_at_utc": "2026-10-08T14:30:56.649369+00:00",
+  "generated_at_utc": "2026-10-08T14:49:48.770016+00:00",
   "policy_binding": {
     "dv30_exact30_bound": true,
     "legacy_dv20_forbidden": true,
