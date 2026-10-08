@@ -1,0 +1,53 @@
+name: XRAY Alpaca Delayed SIP Research Canary
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/alpaca_delayed_sip_research_shadow.py"
+      - ".github/workflows/xray-alpaca-delayed-sip-research.yml"
+  schedule:
+    - cron: "55 13,17 * * 1-5"
+permissions:
+  contents: read
+concurrency:
+  group: xray-alpaca-delayed-sip-research
+  cancel-in-progress: false
+jobs:
+  canary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      XRAY_ALPACA_API_KEY_ID: ${{ secrets.XRAY_ALPACA_API_KEY_ID }}
+      XRAY_ALPACA_API_SECRET_KEY: ${{ secrets.XRAY_ALPACA_API_SECRET_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run negative source and no-trade selftests
+        run: |
+          python -m py_compile nasdaq-xray/alpaca_delayed_sip_research_shadow.py
+          python nasdaq-xray/alpaca_delayed_sip_research_shadow.py --selftest
+      - name: Bounded delayed-SIP health readback
+        run: |
+          python nasdaq-xray/alpaca_delayed_sip_research_shadow.py --out "$RUNNER_TEMP/alpaca_delayed_sip_health.json"
+      - name: Enforce zero price publication zero GO
+        run: |
+          python - <<'PY'
+          import json,os,pathlib
+          j=json.loads((pathlib.Path(os.environ["RUNNER_TEMP"])/"alpaca_delayed_sip_health.json").read_text())
+          assert j["policy"]=="C4.17" and j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          assert j["strict_g9_pass"] is False and j["account_pass"] is False
+          assert j["alpha_authority"] is False and j["r92_created"] is False and j["orders"]==[]
+          assert j["vendor_quotes_persisted"] is False and 0<=j["valid_count"]<=j["expected_count"]==3
+          assert "quotes" not in j and "prices" not in j
+          print("XRAY_DELAYED_SIP_VENDOR_GUARD=PASS status="+j["status"])
+          PY
+      - name: Upload health only
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-alpaca-delayed-sip-health
+          path: ${{ runner.temp }}/alpaca_delayed_sip_health.json
+          retention-days: 7
+          if-no-files-found: error
