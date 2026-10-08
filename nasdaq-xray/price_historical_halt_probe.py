@@ -191,6 +191,9 @@ def main():
     for sym, dates in sorted(candidates.items()):
         evidence = []
         errors = []
+        # Official RSS field diagnostics are discovery-only. Never promote
+        # classifications from field text without the strict validator.
+        official_symbol_rows = []
         for d in dates:
             if d not in date_cache:
                 try:
@@ -216,6 +219,13 @@ def main():
                 continue
             matches = []
             for row in rows:
+                if any(str(v).strip().upper() == sym for v in row.values()):
+                    official_symbol_rows.append({
+                        key: str(row.get(key) or "")[:85] for key in sorted(row)
+                        if key in {"IssueSymbol","HaltDate","HaltTime","Market",
+                                   "ResumptionDate","ResumptionTradeTime",
+                                   "ReasonCode","IssueName","Mkt","Symbol"}
+                    })
                 ev = full_session_halt_candidate(row, sym, d)
                 if ev:
                     ev["source_url"] = meta["url"]
@@ -227,6 +237,7 @@ def main():
             "classification_applied": False,
             "missing_sessions": dates,
             "official_evidence": evidence,
+            "official_symbol_rows_diagnostic": official_symbol_rows[:3],
             "errors": errors,
         }
 
@@ -259,6 +270,10 @@ def main():
         },
         "matching_symbol_halt_row_counts": {
             sym: len(r.get("official_evidence") or []) for sym,r in results.items()
+        },
+        "official_symbol_rows_diagnostic": {
+            sym: rec.get("official_symbol_rows_diagnostic", [])
+            for sym,rec in results.items()
         },
     }, sort_keys=True))
 
