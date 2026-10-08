@@ -1,0 +1,247 @@
+{
+  "schema": "XRAY_SECOND_WAVE_TURKEY_PROVIDER_RESEARCH_20261008_V1",
+  "date_trt": "2026-10-08",
+  "prewrite_head": "5da1eb06602cdf164b2f9f4a1a931cee8cb11efb",
+  "prior_ranked_research": {
+    "path": "nasdaq-xray/research/g9_turkey_recheck_provider_rank_20261008.json",
+    "blob_sha": "1c0353df63d7260c61b74104cb64f93dac18c534"
+  },
+  "prior_businessquant_research": {
+    "path": "nasdaq-xray/research/businessquant_free_quote_wss_20261008.json",
+    "blob_sha": "5fa4cddf99f9e49719e378423334b5208b034779"
+  },
+  "policy": "C4.17",
+  "control": "C4.27",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "authority": false,
+  "strict_g9_pass": false,
+  "alpha_authority": false,
+  "unknown_never_pass": true,
+  "x_retrieval": "Targeted public indexed X queries were attempted; no fresh X post independently demonstrated a new qualifying SIP/NBBO grant. Fresh actionable results below are grounded in primary vendor manuals, not presumed full X access.",
+  "discovery_lanes": [
+    {
+      "rank": 1,
+      "provider": "Moomoo OpenAPI (REST + WebSocket via OAuth2.1 or API Key)",
+      "lane": "POTENTIAL_FREE_LEGAL_TWO_VENUE_RESEARCH_FEED",
+      "jurisdiction": "Turkey resident API sign-up/quote entitlement NOT VERIFIED. Moomoo ID for quotation is conceptually separate from funded brokerage account; docs say demo/no securities account needed. No claim Turkey accepted.",
+      "positive_evidence": [
+        "Published API hosts https://webapi.moomoo.com and wss://webapi-quote.moomoo.com/ws; supports OAuth 2.1 quote:read only and refresh flow, traditional server-side API Key alternative",
+        "Legacy Moomoo/Futu v10.11 docs claim Nasdaq Basic+TotalView+NYSE ArcaBook US Level 3 quote access free during promotion, ending date not established",
+        "Old v9.3 docs support a quotation-only Moomoo ID distinct from trading/brokerage account; do not assume new API authorization for Turkey"
+      ],
+      "blocking_evidence": [
+        "Not national consolidated Tape C NBBO; only Nasdaq/NYSE Arca venues",
+        "Promotional availability not permanent",
+        "Requires real Turkey jurisdiction sign-up and quote:read entitlement readback",
+        "No actual account/login or runtime independent bid/ask/trade time witness"
+      ],
+      "status": "RESEARCH_PRIORITY_A_NO_STRICT_G9_PASS",
+      "sources": [
+        "https://open.moomoo.com/api/overview/getting-started",
+        "https://open.moomoo.com/api/quote/push/auth",
+        "https://openapi.moomoo.com/moomoo-api-doc/en/qa/quote.html",
+        "https://openapi.moomoo.com/moomoo-api-doc/en/intro/authority.html",
+        "https://open.moomoo.com/"
+      ]
+    },
+    {
+      "rank": 2,
+      "provider": "Business Quant REST + SEC Filing API + Corporate Actions + Securities Universe",
+      "lane": "POTENTIAL_FREE_COVERAGE_AND_EVENT_REPAIR",
+      "jurisdiction": "No Turkish retail brokerage prerequisite visible, but authorized user signup not tested",
+      "positive_evidence": [
+        "Free tier $0, 30 HTTP requests/day, 0.1GB/month",
+        "One securities universe endpoint lists ticker, identifier and type; exchange and official CIK independently verify before canonical use",
+        "Corporate actions endpoint multi-ticker, sourced from SEC or exchange releases",
+        "SEC filing index accepts ticker/CIK, form types, time and accession",
+        "Quote WSS free for two symbols, no bid-ask so not G9"
+      ],
+      "blocking_evidence": [
+        "No API key on existing GH runner; no actual authorized live probe",
+        "Documentation example for AAPL contains other tickers, so never equate marketing example to filtered results",
+        "Earnings-event calendar is separate from corporate actions and filings",
+        "Vendor fields point-in-time and provenance must be cross-checked against SEC or Nasdaq before unknown state resolved"
+      ],
+      "status": "HIGH_RELEVANCE_NON_G9",
+      "sources": [
+        "https://businessquant.com/docs/api/universe",
+        "https://businessquant.com/docs/api/sec-filings",
+        "https://businessquant.com/docs/api/corporate-actions",
+        "https://businessquant.com/docs/api/websocket-quotes",
+        "https://businessquant.com/pricing"
+      ]
+    },
+    {
+      "rank": 3,
+      "provider": "Webull standalone Market Data API",
+      "lane": "DATA_ONLY_EVALUATION_WITHOUT_ASSUME_BROKERAGE_RESIDENCY",
+      "jurisdiction": "Market Data API marketed 'for anyone'; whether Turkey-based customers may subscribe independently still UNKNOWN",
+      "positive_evidence": [
+        "Official HTTP snapshots/depth/ticks and MQTT stream market data product",
+        "Separate trading, broker, account Connect and market data API channels; do not conflate underwriting eligibility",
+        "Service-to-service keys documented"
+      ],
+      "blocking_evidence": [
+        "Active US market data subscription required even for historical and real-time API",
+        "Strict national consolidated SIP/NBBO lineage, bid and ask independent timestamp and Turkey rights undocumented",
+        "No 0-dollar permanent access",
+        "No credentials or same-run witness"
+      ],
+      "status": "REOPEN_IF_PROVIDER_CONFIRMS_TURKEY_DATA_ONLY_FREE_ELIGIBILITY",
+      "sources": [
+        "https://developer.webull.com/apis/docs/",
+        "https://developer.webull.com/apis/docs/market-data-api/overview/",
+        "https://developer.webull.com/apis/docs/market-data-api/getting-started/",
+        "https://developer.webull.com/apis/docs/reference/broker-market-data-api/market-data/"
+      ]
+    },
+    {
+      "rank": 4,
+      "provider": "Nasdaq CQT (NCDS direct consolidated API)",
+      "lane": "STRICT_G9_SOURCE_MATCH",
+      "jurisdiction": "Independent data license rather than US retail brokerage account; acceptance of Turkey recipients must be confirmed in writing",
+      "positive_evidence": [
+        "Official CQT real-time UTP Tape C with quote and trades endpoints; Bearer auth documented",
+        "Nasdaq CQT lastquote outputs bidPrice,bidSize,bidVenue,askPrice,askSize,askVenue,timestamp; lasttrade has trade timestamp"
+      ],
+      "blocking_evidence": [
+        "lastquote carries one quote timestamp, not separately persisted bid and ask last-change times; quote-side reconstruct requires authorized event stream witness",
+        "Licensed SIP usage and any automated/non-display fees unknown",
+        "No verified permanent zero-cost unrestricted API entitlement",
+        "No RTH runtime adapter",
+        "Potential request polling limits and subscription needs"
+      ],
+      "status": "STRICT_G9_CONDITIONAL_EXTERNAL_DEPENDENCY",
+      "sources": [
+        "https://www.nasdaqtrader.com/content/technicalsupport/specifications/dataproducts/CQT-cloud.pdf",
+        "https://github.com/Nasdaq/NasdaqCloudDataService-REST-API/blob/main/restapi/lastquote.md",
+        "https://github.com/Nasdaq/NasdaqCloudDataService-REST-API/blob/main/restapi/lasttrade.md",
+        "https://www.nasdaq.com/products/data/data-link/api"
+      ]
+    },
+    {
+      "rank": 5,
+      "provider": "Interactive Brokers (IBKR)",
+      "lane": "TURKEY_KYC_BROKER_AND_POTENTIAL_ACCOUNT_READ",
+      "jurisdiction": "Turkey is on official IBKR list of eligible countries; actual account approval still individual",
+      "positive_evidence": [
+        "Free Cboe One/IEX US streaming is genuine but NON-CONSOLIDATED",
+        "100 free snapshot quotes monthly for account holders only, not unlimited free API SIP streaming",
+        "Consolidated NBBO subscriptions explicitly priced; TWS API requires entitlement"
+      ],
+      "blocking_evidence": [
+        "No read-only account-scope scheduler-witness",
+        "SIP market data fees or snapshot per-request fees possible",
+        "TWS/Gateway unattended authentication session is unproven"
+      ],
+      "status": "COUNTRY_RESIDENCY_OPEN_STRICT_G9_PERMANENT_ZERO_UNPROVEN",
+      "sources": [
+        "https://portal.interactivebrokers.com/en/accounts/open-account-country-list.php",
+        "https://www.interactivebrokers.com/en/pricing/market-data-pricing.php"
+      ]
+    },
+    {
+      "rank": 6,
+      "provider": "Databento US Equities Mini",
+      "lane": "EXCHANGE_NEUTRAL_DERIVED_QUOTE_RESEARCH",
+      "jurisdiction": "Vendor data product not dependent on opening US securities trading account, Turkey license/signup still untested",
+      "positive_evidence": [
+        "Official derived live BBO blends multiple Reg NMS venues and ATS; published no separate exchange license fees, permitted redistribution/non-display under derivative license",
+        "Dataset EQUS.MINI supports BBO, MBP1, Trades and time-sensitive feed"
+      ],
+      "blocking_evidence": [
+        "Not official SIP/NBBO, synthetic MINI aggregation",
+        "Live requires active STANDARD or higher paid subscription; Standard currently $199/month",
+        "Free promotional credit $125 is not permanent free access"
+      ],
+      "status": "RESEARCH_ONLY_NOT_G9",
+      "sources": [
+        "https://databento.com/blog/databento-us-equities-mini-now-available",
+        "https://databento.com/equities",
+        "https://www.databento.tech/pricing"
+      ]
+    },
+    {
+      "rank": 7,
+      "provider": "Saxo OpenAPI",
+      "lane": "POTENTIAL_API_BUT_TURKEY_DIRECT_ACCOUNT_RESTRICTED",
+      "jurisdiction": "Official Saxo 2026-07-28 serviced-country list excludes Turkey; direct KYC access unavailable on present evidence",
+      "positive_evidence": [
+        "Saxo OpenAPI market quote stream exists and market data can be enabled for eligible clients"
+      ],
+      "blocking_evidence": [
+        "Turkey absent from eligible-servicing list",
+        "API market data off by default; enable user-specific rights and subscription",
+        "Partner/client status and Turkey permitted API-only sale unverified"
+      ],
+      "status": "NO_DIRECT_TURKEY_ACCOUNT_REOPEN_IF_LEGAL_PARTNER_OR_DATA_ONLY_CONFIRMED",
+      "sources": [
+        "https://www.help.saxo/hc/en-us/articles/10611416570269-Which-countries-are-serviced-by-Saxo",
+        "https://developer.saxobank.com/excel/user-guide/enabling-market-data"
+      ]
+    },
+    {
+      "rank": 8,
+      "provider": "TradeStation Global (IBKR introducing platform)",
+      "lane": "CONDITIONAL_TURKEY_INTERMEDIARY",
+      "jurisdiction": "Pages suggest globally routed IBKR application but country restriction page denies some countries; Turkey onboarding NOT proven",
+      "positive_evidence": [
+        "TradeStation Global application explicitly opens IBKR underlying account; can route via IBKR supported country onboarding depending on accepted application"
+      ],
+      "blocking_evidence": [
+        "Some country residents denied by TradeStation Global independent restrictions",
+        "Market data sourced 100% from IBKR, not independent NBBO unlock",
+        "TWS and gateway require daily restart for this platform; not unattended scheduler"
+      ],
+      "status": "SECONDARY_COUNTRY_CHECK_NOT_G9_UNBLOCK",
+      "sources": [
+        "https://www.tradestation-international.com/global/knowledge-hub/account-how-tos/how-to-open-account/",
+        "https://www.tradestation-international.com/global/country-restriction/",
+        "https://www.tradestation-international.com/global/faqs/"
+      ]
+    },
+    {
+      "rank": 9,
+      "provider": "Alpha Vantage",
+      "lane": "FREE_RESEARCH_HISTORICAL_ONLY",
+      "jurisdiction": "Public research API access does not require retail securities account; signup applicability Turkey not separately verified",
+      "positive_evidence": [
+        "Free access 25 requests/day for most datasets; verified open-source/education may apply for enhanced quota",
+        "Nasdaq-licensed real-time and 15min delayed US stock market data exists, including 100-symbol bid ask batch queries"
+      ],
+      "blocking_evidence": [
+        "Official realtime and delayed US stock market data functions premium ONLY; free or open-source unlimited tier does not grant premium data",
+        "Not strict permanent-$0 G9"
+      ],
+      "status": "HISTORICAL_REFERENCE_NO_G9",
+      "sources": [
+        "https://www.alphavantage.co/documentation/",
+        "https://www.alphavantage.co/support/",
+        "https://www.alphavantage.co/realtime_data_policy/"
+      ]
+    }
+  ],
+  "reopened_jurisdiction_policy": {
+    "separate_broker_residency_from_independent_data_api": true,
+    "never_claim_allowed_country_without_vendor_docs": true,
+    "turkey_brokerage_block_not_automatic_data_license_block": true,
+    "never_circumvent_using_vpn_false_residency_or_unlicensed_feed": true
+  },
+  "strict_G9_requirements": [
+    "true Tape C SIP/NBBO across all US venues, not only IEX/Cboe/NYSE Arca/Nasdaq Basic",
+    "distinct per-side quote and last trade freshness witness where policy requires",
+    "<=60 seconds quote and trade age and <=15 seconds timestamp skew in same RTH window",
+    "provider-entitled unattended automated non-display lawful consumption",
+    "permanent $0 user access under C4.17 without time-limited promo, trial or paid subscriptions",
+    "operational authorized scheduler/adapter and exact live source-binding evidence"
+  ],
+  "integrity_guards": [
+    "No modification to existing 71-provider negative cache",
+    "No price/MC/alpha/evidence artifacts modified",
+    "No trading/credential actions",
+    "No fake G9 or ACCOUNT PASS",
+    "Unknown is not PASS"
+  ],
+  "result": "NEW_REAL_TURKEY_PATH_CANDIDATES_EXIST_BUT_STRICT_G9_STILL_BLOCKED"
+}
