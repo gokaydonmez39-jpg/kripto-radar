@@ -49,7 +49,7 @@ jobs:
           python nasdaq-xray/delivery_prepare_selftest.py
           python nasdaq-xray/delivery_scheduler_guard_selftest.py
           echo "XRAY_SYNTHETIC_SIGNAL_DELIVERY_REGRESSION=PASS_NO_LIVE_ISSUE_NO_PUSH"
-      - name: Restore most recent encrypted checkpoint (license-attested GH Actions artifact only)
+      - name: Restore latest completed-run encrypted checkpoint (failures included, strictly authenticated)
         env:
           XRAY_WORKFLOW_FILE: "xray-massive-mc-resume-shadow.yml"
         run: |
@@ -62,10 +62,11 @@ jobs:
             exit 0
           fi
           mkdir -p "$RUNNER_TEMP/xray_mc_restore"
-          # Only completed successful SAME WORKFLOW runs. Invalid ciphertext fails
+          # Only completed SAME WORKFLOW runs, including failed runs with a
+          # salvaged encrypted checkpoint. Fernet + exact-source validators fail
           # in Python, never becomes a fresh success within the same ASOF.
           set -o pipefail
-          ids=$(gh run list --workflow "$XRAY_WORKFLOW_FILE" --branch main --status success --limit 80 --json databaseId --jq '.[].databaseId')
+          ids=$(gh run list --workflow "$XRAY_WORKFLOW_FILE" --branch main --status completed --limit 80 --json databaseId --jq '.[].databaseId')
           found=0
           for id in $ids; do
             if gh run download "$id" -n xray-massive-mc-checkpoint-encrypted-v1 -D "$RUNNER_TEMP/xray_mc_restore" >/dev/null 2>&1; then
