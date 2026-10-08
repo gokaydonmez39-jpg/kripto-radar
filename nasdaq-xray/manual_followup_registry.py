@@ -111,6 +111,9 @@ def proposal(registry: dict, observation: dict, observed_at_utc: str) -> dict:
         rec["pending_notifications"] = existing_pending
         rec["alert_dedup_keys"] = dedup
         updated["records"][delivery_key] = rec
+    # Stable sort prevents retry order changing when a new terminal alert
+    # joins an older unacknowledged entry alert.
+    pending.sort(key=lambda note: (note["delivery_key"], note["alert_dedup_key"]))
     return {"schema": RESULT, "asof_observed_utc": current, "execution": "NONE",
             "real_money": "NO-GO", "unknown_never_pass": True,
             "registry": updated, "pending_alerts": pending,
