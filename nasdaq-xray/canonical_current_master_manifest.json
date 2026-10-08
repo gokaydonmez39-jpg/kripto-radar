@@ -1,7 +1,7 @@
 {
   "asof_et": "2026-10-07",
   "asof_identity_proof": {
-    "blob_sha": "f347e6442e9ae30235693878e0255e0b03b02c0c",
+    "blob_sha": "8ae23de755900fb5e59f80fdf768d44148922a0f",
     "counts": {
       "operating_overrides": 3,
       "remove_from_asof": 0,
@@ -29,13 +29,13 @@
   },
   "counts": {
     "PASS_IDENTITY": 3184,
-    "UNKNOWN_IDENTITY": 152
+    "UNKNOWN_IDENTITY": 146
   },
   "execution": "NONE",
-  "explicit_excluded_count": 60,
-  "explicit_excluded_hash": "483a02f31deca16cbff95d8f8acb07d40d338442d1a5ed7ce29d3f0b0746d48d",
+  "explicit_excluded_count": 66,
+  "explicit_excluded_hash": "5938ece43832bab36544c298750287b9fb320a85b76d33eed47565ae135f4ebd",
   "explicit_excluded_reason_counts": {
-    "SPAC_BLANK_CHECK": 60
+    "SPAC_BLANK_CHECK": 66
   },
   "history_price_state_diagnostic_only": {
     "source_counts": {
@@ -3242,22 +3242,22 @@
   "queue_hash": "2554c936f42217cf8a9628e89d04993945218725234fe894f7c80856834725d6",
   "queue_total": 3184,
   "queue_unique": 3184,
-  "raw_identity_total": 3336,
+  "raw_identity_total": 3330,
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1",
   "sec_spac_proof": {
-    "blob_sha": "ba1f749f41f4bf7486e53dc5ab5c52171ee9985e",
-    "count": 60,
+    "blob_sha": "fc2c531a43815872d2178b692ee87da58451213f",
+    "count": 66,
     "path": "nasdaq-xray/master_sec_spac_proof_20261007.json",
-    "symbol_hash": "6d6200febdb092f17e93df5da695f6751a5e05ba1e1c0bc6e9aec35f89737389"
+    "symbol_hash": "cdfcbf0cdc6911ff64ba10a45d52a2cc57c8b6610a1a47ad439c5a2fc96f12ac"
   },
-  "source_state_blob_sha": "2884f0a4ba59b141003da37057ba747382d1a9dd",
-  "source_state_hash": "61d5a819dd4cfcff5be07cb253f39cb6aae60179770e03c103336921f4b30589",
+  "source_state_blob_sha": "9e5d60972e61e50ec69e5e789fd939e6b5881e57",
+  "source_state_hash": "2bec9561b469f57a6caa801758970f1cea8f3117f51036122bda4dc59ed4b3db",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
   "status": "PARTIAL_UNKNOWN",
   "status_semantics": "IDENTITY_PARTITION_EXACT_WITH_UNKNOWN",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 152,
+  "unknown_count": 146,
   "unknown_detail": {
     "ALIS": {
       "exact_sec_spac_proof": false,
@@ -3349,15 +3349,6 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "CXII": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Churchill Capital Corp XII - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "DAAQ": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
@@ -3385,24 +3376,6 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "DRDB": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Roman DBDR Acquisition Corp. II - Ordinary shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "DTSQ": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "DT Cloud Star Acquisition Corporation - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "EURK": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
@@ -3421,30 +3394,12 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "EWAV": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "East West Ave Acquisition Corp. - Common Stock",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "FACT": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "FACT II Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "FERA": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Fifth Era Acquisition Corp I - Class A Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -3463,15 +3418,6 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "FIGX Capital Acquisition Corp. - Class A ordinary share",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "FMAC": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Future Money Acquisition Corporation - Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -4640,20 +4586,14 @@
     "CHPG",
     "CRAN",
     "CRAQ",
-    "CXII",
     "DAAQ",
     "DBCA",
     "DMII",
-    "DRDB",
-    "DTSQ",
     "EURK",
     "EVOX",
-    "EWAV",
     "FACT",
-    "FERA",
     "FGII",
     "FIGX",
-    "FMAC",
     "FTHA",
     "FVAV",
     "FVN",
