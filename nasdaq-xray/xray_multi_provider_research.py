@@ -16,13 +16,13 @@ import urllib.request
 
 ROOT=pathlib.Path(__file__).resolve().parent
 SCHEMA="XRAY_MULTI_PROVIDER_RESEARCH_SHADOW_V1"
-ROUTES={"MASTER":("SEC_TICKER_DIRECTORY","BQ_STOCK_PROFILE"),
+ROUTES={"MASTER":("SEC_TICKER_DIRECTORY","SEC_MIRROR_PIT","BQ_STOCK_PROFILE"),
         "MC":("MASSIVE_TICKER_PIT","BQ_MC_SCREENER"),
         "EVENT":("SEC_SUBMISSIONS","BQ_SEC_FILINGS")}
-MAX_PER_RUN={"SEC_TICKER_DIRECTORY":1,"SEC_SUBMISSIONS":3,
+MAX_PER_RUN={"SEC_TICKER_DIRECTORY":1,"SEC_MIRROR_PIT":1,"SEC_SUBMISSIONS":3,
              "MASSIVE_TICKER_PIT":3,"BQ_STOCK_PROFILE":3,
              "BQ_MC_SCREENER":3,"BQ_SEC_FILINGS":3}
-GROUP_CAP={"SEC":5,"MASSIVE":3,"BQ":7}
+GROUP_CAP={"SEC":5,"MIRROR":1,"MASSIVE":3,"BQ":7}
 SEC_DIRECTORY="https://www.sec.gov/files/company_tickers_exchange.json"
 UA="NASDAQ-SWING-XRAY/1.0 non-trading research github.com/gokaydonmez39-jpg/kripto-radar"
 SYMBOL=re.compile(r"^[A-Z][A-Z0-9.-]{0,9}$")
@@ -87,6 +87,21 @@ def lookup(provider,sym,asof,keys,cache,http_get):
     if provider=="SEC_TICKER_DIRECTORY":
         if sym not in sec_directory(http_get,cache):raise ValueError("SEC_UNKNOWN_TICKER")
         return "IDENTITY_DISCOVERY_ONLY"
+    if provider=="SEC_MIRROR_PIT":
+        if "mirror" not in cache:
+            from sec_mirror_cik_shadow import discover
+            master=json.loads((ROOT/"canonical_current_master_manifest.json").read_text())
+            if master.get("asof_et")!=asof or master.get("unknown_never_pass") is not True:
+                raise ValueError("MIRROR_ASOF_DRIFT")
+            result=discover(asof,master["unknown_symbols"])
+            if result.get("status")!="EXACT_ASOF_CIK_DISCOVERY_ONLY":
+                raise ValueError("MIRROR_PIT_UNVERIFIED")
+            if result.get("ciK_discovered_count")!=len(result.get("ciK_discovery_only") or {}):
+                raise ValueError("MIRROR_IDENTITY_PARTITION")
+            cache["mirror"]=result["ciK_discovery_only"]
+        if sym not in cache["mirror"]:
+            raise ValueError("MIRROR_CIK_UNRESOLVED")
+        return "IDENTITY_DISCOVERY_ONLY"
     if provider=="BQ_STOCK_PROFILE":
         obj=http_get(bq_url("stocks/profile",keys["BQ"],ticker=sym))
         row=obj.get("data",obj) if isinstance(obj,dict) else None
@@ -132,7 +147,8 @@ def lookup(provider,sym,asof,keys,cache,http_get):
     raise ValueError("UNKNOWN_PROVIDER")
 
 def group(provider):
-    return "BQ" if provider.startswith("BQ_") else "MASSIVE" if provider.startswith("MASSIVE_") else "SEC"
+    return "MIRROR" if provider=="SEC_MIRROR_PIT" else (
+        "BQ" if provider.startswith("BQ_") else "MASSIVE" if provider.startswith("MASSIVE_") else "SEC")
 
 def reason(exc):
     if isinstance(exc,urllib.error.HTTPError):
@@ -147,9 +163,10 @@ def route(lane,sym,asof,keys,counters,cache,http_get=http,runner=lookup):
         g=group(provider)
         if g in ("MASSIVE","BQ") and not keys.get(g):
             attempts.append((provider,"NO_KEY"));continue
-        needed=0 if provider=="SEC_TICKER_DIRECTORY" and "directory" in cache else 1
+        needed=0 if (provider=="SEC_TICKER_DIRECTORY" and "directory" in cache) or (
+            provider=="SEC_MIRROR_PIT" and "mirror" in cache) else 1
         if provider=="SEC_SUBMISSIONS" and "directory" not in cache:needed+=1
-        if counters[provider]>=MAX_PER_RUN[provider] or counters[g]+needed>GROUP_CAP[g]:
+        if (needed>0 and counters[provider]>=MAX_PER_RUN[provider]) or counters[g]+needed>GROUP_CAP[g]:
             attempts.append((provider,"QUOTA_GUARD"));continue
         if cache.get("circuit:"+provider):
             attempts.append((provider,"CIRCUIT_OPEN"));continue
@@ -250,6 +267,15 @@ def selftest():
     m={"fields":["ticker","name","cik","exchange"],
        "data":[["ALIS","Calisa Acquisition",1920406,"Nasdaq"]]}
     assert sec_directory(lambda url:m,{})["ALIS"][0]==1920406
+    c=collections.Counter()
+    mem={"mirror":{"ALIS":"0001920406"}}
+    status,att=route("MASTER","ALIS","2026-10-07",{"BQ":"","MASSIVE":""},
+                     c,mem,runner=lambda p,*args: (
+                         "IDENTITY_DISCOVERY_ONLY" if p=="SEC_MIRROR_PIT" else
+                         (_ for _ in ()).throw(ValueError("sec unavailable"))))
+    assert status=="REFERENCE_OBSERVED_NOT_AUTHORITY"
+    assert att[1]==("SEC_MIRROR_PIT","IDENTITY_DISCOVERY_ONLY")
+    assert c["MIRROR"]==0
     assert finite(None) is None and finite(float("nan")) is None
     assert finite(2000000000)==2000000000
     assert _guard_invalid_url()
