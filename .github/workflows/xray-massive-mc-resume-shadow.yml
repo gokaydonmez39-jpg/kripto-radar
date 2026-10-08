@@ -28,7 +28,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Install AES-GCM-backed authenticated encryption dependency
+      - name: Install Fernet authenticated encryption dependency (AES-CBC + HMAC)
         run: |
           python -m pip install "cryptography>=44,<47"
       - name: Compile / fail-closed encryption + replay + market status selftests
