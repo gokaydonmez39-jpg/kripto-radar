@@ -37,7 +37,7 @@
     "2026-10-06",
     "2026-10-07"
   ],
-  "master_unknown_count": 105,
+  "master_unknown_count": 102,
   "master_unknown_detail": {
     "ALIS": {
       "exact_sec_spac_proof": false,
@@ -624,15 +624,6 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "PGAC": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Pantages Capital Acquisition Corporation - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "PLCI": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
@@ -666,15 +657,6 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Andretti Acquisition Corp. II - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "PTAC": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Patriot Acquisition Corp. - Class A Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -747,15 +729,6 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Range Capital Acquisition Corp II - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "RREV": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "RRE Ventures Acquisition Corp. - Class A Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -985,7 +958,7 @@
       "unknown_never_pass": true
     }
   },
-  "master_unknown_hash": "4d8471182957c0f35d6368ac5c70e24a69a626753edd4605d86fcd38240373ad",
+  "master_unknown_hash": "0ae2ceed61e1e76fc0eff86c8cf5ee77eb7d76e664a24417a41e2240ace7a59f",
   "master_unknown_symbols": [
     "ALIS",
     "BKHA",
@@ -1052,12 +1025,10 @@
     "PALO",
     "PCAP",
     "PECE",
-    "PGAC",
     "PLCI",
     "PLMK",
     "PMTR",
     "POLE",
-    "PTAC",
     "PTOR",
     "QADR",
     "RANG",
@@ -1066,7 +1037,6 @@
     "RIBB",
     "RNAQ",
     "RNGT",
-    "RREV",
     "SDHI",
     "SOCA",
     "SORN",
@@ -1124,9 +1094,9 @@
   "settlement_policy": "ALPACA_HISTORICAL_SIP_DAILY_AFTER_15M__AAPL_NVDA_PLUS_ONE_PRIOR_CURRENT_CORE__RALLIES_LONGBRIDGE_QUOTE_OHLC_0_01_CROSSCHECK__SIP_VOLUME_AUTHORITY__FAIL_CLOSED__DELAYED_SIP_NEVER_G9",
   "settlement_required": false,
   "settlement_symbols": [],
-  "source_master_blob_sha": "2b83a3737e9502c7a63bdee519b1e4a624ac70b5",
+  "source_master_blob_sha": "0ab116cde2e24e361d45d6faa58ee5f6487d295d",
   "source_master_path": "nasdaq-xray/canonical_current_master_manifest.json",
-  "source_overlay_blob_sha": "70058b62dc3ac5c043f42203ee245ec906bb1273",
+  "source_overlay_blob_sha": "ac29ef3fc13ff956cb255fb379e446bb2f650d27",
   "source_overlay_path": "nasdaq-xray/canonical_current_resolution_overlay.json",
   "source_pointer_blob_sha": "6224a7a5b660adedb797f32b4941436edf081329",
   "source_pointer_path": "nasdaq-xray/chatgpt_canonical_state_v2.json",
@@ -1142,9 +1112,9 @@
   "source_price_pass_count": 510,
   "source_price_pass_hash": "f6772e07d952c9c172a3370076537cbfc89128886e1a0e31d1142b2ebecf0438",
   "source_price_path": "nasdaq-xray/canonical_current_price_dv30.json",
-  "source_state_blob_sha": "e4eaa1f8a4c3191b4f1d75ee570d2f7c0184e2b0",
+  "source_state_blob_sha": "c87f5030528d18496abf2d71c0540fffe873dfab",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
-  "source_unknowns_blob_sha": "11be720b2af04c6d605b783a2058150a063518cd",
+  "source_unknowns_blob_sha": "969c761cc975eb7d446c889009c5fb5d5e6c7a86",
   "source_unknowns_path": "nasdaq-xray/canonical_current_unknowns.json",
   "status": "IDLE",
   "symbol_count": 0,

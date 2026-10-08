@@ -1,7 +1,7 @@
 {
   "asof_et": "2026-10-07",
   "asof_identity_proof": {
-    "blob_sha": "c8020d7f1e41bd9fbc035c4f184ac8fc5e122f61",
+    "blob_sha": "bb4a0621bffae6eb8f344c4dcefd16935bc107b3",
     "counts": {
       "operating_overrides": 3,
       "remove_from_asof": 0,
@@ -29,13 +29,13 @@
   },
   "counts": {
     "PASS_IDENTITY": 3184,
-    "UNKNOWN_IDENTITY": 105
+    "UNKNOWN_IDENTITY": 102
   },
   "execution": "NONE",
-  "explicit_excluded_count": 107,
-  "explicit_excluded_hash": "91850c9be66afda62235637a7fc227c4a8a0f876b36daa421374c9270023c25b",
+  "explicit_excluded_count": 110,
+  "explicit_excluded_hash": "73d8c41e2af714329c2ae36ebbbaffd260e750cf7177ed505d6395fa8bbf7562",
   "explicit_excluded_reason_counts": {
-    "SPAC_BLANK_CHECK": 107
+    "SPAC_BLANK_CHECK": 110
   },
   "history_price_state_diagnostic_only": {
     "source_counts": {
@@ -3242,22 +3242,22 @@
   "queue_hash": "2554c936f42217cf8a9628e89d04993945218725234fe894f7c80856834725d6",
   "queue_total": 3184,
   "queue_unique": 3184,
-  "raw_identity_total": 3289,
+  "raw_identity_total": 3286,
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1",
   "sec_spac_proof": {
-    "blob_sha": "c2210ffe1ce75acd606260eeb0bc4cc68575bdf5",
-    "count": 107,
+    "blob_sha": "98ef19a55487f8acf7fadfd101f6d26370bffe31",
+    "count": 110,
     "path": "nasdaq-xray/master_sec_spac_proof_20261007.json",
-    "symbol_hash": "5b30c3a6525f00900d03928cc8e318a0927fc9e1e7f82a1208ce28c952fcb9e6"
+    "symbol_hash": "00adf69f05677a08d790851fb439c1b8f05dcc6ddb1851b5b1612c2e6c1f5c02"
   },
-  "source_state_blob_sha": "e4eaa1f8a4c3191b4f1d75ee570d2f7c0184e2b0",
-  "source_state_hash": "c531eed0076b239748b3403337c581ac753fa53439e00d3b91b3e9d680dba87c",
+  "source_state_blob_sha": "c87f5030528d18496abf2d71c0540fffe873dfab",
+  "source_state_hash": "9fa4e68dce9e924783a8d085421ff2dec80837db9095c8bd5787ffea9cbc691d",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
   "status": "PARTIAL_UNKNOWN",
   "status_semantics": "IDENTITY_PARTITION_EXACT_WITH_UNKNOWN",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 105,
+  "unknown_count": 102,
   "unknown_detail": {
     "ALIS": {
       "exact_sec_spac_proof": false,
@@ -3844,15 +3844,6 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "PGAC": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Pantages Capital Acquisition Corporation - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "PLCI": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
@@ -3886,15 +3877,6 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Andretti Acquisition Corp. II - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "PTAC": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Patriot Acquisition Corp. - Class A Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -3967,15 +3949,6 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Range Capital Acquisition Corp II - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "RREV": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "RRE Ventures Acquisition Corp. - Class A Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -4272,12 +4245,10 @@
     "PALO",
     "PCAP",
     "PECE",
-    "PGAC",
     "PLCI",
     "PLMK",
     "PMTR",
     "POLE",
-    "PTAC",
     "PTOR",
     "QADR",
     "RANG",
@@ -4286,7 +4257,6 @@
     "RIBB",
     "RNAQ",
     "RNGT",
-    "RREV",
     "SDHI",
     "SOCA",
     "SORN",
