@@ -152,7 +152,7 @@ def valid_operator_contact(ua:str) -> bool:
         return False
     if any(x in ua.lower() for x in ("noreply", "no-reply", "example.com", "localhost")):
         return False
-    return bool(re.search(r"[^@\\s]+@[^@\\s]+\\.[^@\\s]+",ua))
+    return bool(re.search(r"[^@\s]+@[^@\s]+\.[^@\s]+",ua))
 
 def run(asof:str) -> dict:
     base={"schema":"XRAY_SEC_FREE_MC_TRANSPORT_V1","asof_et":asof,
