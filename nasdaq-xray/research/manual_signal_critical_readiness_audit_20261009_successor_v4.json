@@ -1,0 +1,84 @@
+{
+  "schema": "XRAY_MANUAL_SIGNAL_CRITICAL_READINESS_SUCCESSOR_V4",
+  "date_trt": "2026-10-09",
+  "source_of_truth": "LIVE_MAIN_AND_ACTIONS_READBACK",
+  "checkpoint_head_before_this_audit": "8faa6633d89278535346e1ed3e002893cf9b5ace",
+  "security": {
+    "execution": "NONE",
+    "real_money": "NO-GO",
+    "research_only": true,
+    "unknown_never_pass": true,
+    "broker_trade_permission": false
+  },
+  "source_bindings": {
+    "nasdaq-xray/canonical_current_master_manifest.json": "0508f9ae561c471e49ad57f8166852915f948968",
+    "nasdaq-xray/canonical_current_price_dv30.json": "42ed4a1c1a104aff94f73793194b25746d3bea59",
+    "nasdaq-xray/evidence/rallies_dv30_20261008_classification.json": "f8c9a8122b7f58e540b37f7455db51a2c2647106",
+    "nasdaq-xray/canonical_current_resolver_request.json": "692f65bb200b7ea76441f054dc53b03023710cd6",
+    "nasdaq-xray/canonical_current_terminal.json": "ea9c41cd1e5971e78d85bf3f620d7f8c4e01034f",
+    "nasdaq-xray/manual_followup_registry.py": "59a902e6d39008f535c122a1c42f2f648bf85aec",
+    ".github/workflows/xray-manual-decision-research-shadow.yml": "8173f23cc8677d65237f4bfb3fce0b18269eb978"
+  },
+  "source_epoch": {
+    "master": "2026-10-08",
+    "price": "2026-10-08",
+    "terminal": "2026-10-07",
+    "master_qualified_identifiers": 3183,
+    "master_unknown_identifiers": 72,
+    "price_pass": 514,
+    "price_fail_price": 1306,
+    "price_fail_dv30": 1239,
+    "price_missing_primary_blocks": 124,
+    "price_current_resolver_unknown": 0,
+    "price_current_resolver_blocked": 45,
+    "price_pass_set_equals_classification": true,
+    "price_resolver_sha_exact": true,
+    "settlement_required": true,
+    "settlement_proven": false,
+    "settlement_symbols": [
+      "AAPL",
+      "NVDA",
+      "MSFT"
+    ]
+  },
+  "provider_verification": {
+    "rallies": "30 completed session dates recorded as 3 sha-bound derived 10-day shards; daily aggregate close-volume classification readback passed",
+    "alpaca": "historical SIP/delayed SIP connected tool returned api_error/internal error",
+    "longbridge": "history candles quota 0/0 error 301607, independent crosscheck unavailable",
+    "massive": "grouped daily API NOT_ENTITLED; no paid plan initiated",
+    "source_redistribution_rights": "NOT_INDEPENDENTLY_VERIFIED"
+  },
+  "remediation_verified": [
+    {
+      "commit": "a42482cdddc07b074f554f1a12e918e23b5f6410",
+      "scope": "absent primary remains blocked without unrelated control regression crash"
+    },
+    {
+      "commit": "ab3e1db1e74ce4c2c63a34161de15de5714b7f03",
+      "scope": "pending followup notifications persisted before delivery receipt"
+    },
+    {
+      "commit": "48345a969e6bb463a46b1c2f11bed6a08fee3b6c",
+      "scope": "stable pending alert idempotent retry order",
+      "test_run": 37848023069,
+      "test_conclusion": "success"
+    },
+    {
+      "commit": "8faa6633d89278535346e1ed3e002893cf9b5ace",
+      "scope": "safe manual research telemetry explicitly exposes stale terminal vs newest master",
+      "test_run": 37848206788,
+      "test_conclusion": "success"
+    }
+  ],
+  "blocked_production_items": [
+    "FULL_20261008_CANONICAL_POST_MC_HISTORY_EVENT_FINAL_TERMINAL_NOT_COMMITTED",
+    "INDEPENDENT_SETTLEMENT_AAPL_NVDA_MSFT_NOT_PROVEN",
+    "MC_PRIMARY_2B_PIT_PROVENANCE_FOR_CANDIDATES_NOT_PROVEN",
+    "REGISTERED_REAL_CANDIDATE_TRACKING_WITH_AUTHORIZED_LIVE_BARS_NOT_PROVEN",
+    "ACTUAL_DEVICE_NOTIFICATION_RECEIPT_NOT_PROVEN",
+    "DAILY_DIGEST_DELIVERY_AND_RECOVERY_RECEIPTS_NOT_PROVEN"
+  ],
+  "release_status": "MANUAL_SIGNAL_PRODUCTION_BLOCKED",
+  "technical_alpha_not_invented": true,
+  "no_alert_delivery_claim": true
+}
