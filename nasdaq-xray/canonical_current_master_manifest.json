@@ -1,7 +1,7 @@
 {
   "asof_et": "2026-10-07",
   "asof_identity_proof": {
-    "blob_sha": "715527fc80ac32e43caf0c855bc0cea6680d3c5b",
+    "blob_sha": "9f9f2f450a4de0af3797ba62e5736dc9858cc7e2",
     "counts": {
       "operating_overrides": 4,
       "remove_from_asof": 0,
@@ -29,13 +29,13 @@
   },
   "counts": {
     "PASS_IDENTITY": 3185,
-    "UNKNOWN_IDENTITY": 168
+    "UNKNOWN_IDENTITY": 166
   },
   "execution": "NONE",
-  "explicit_excluded_count": 43,
-  "explicit_excluded_hash": "eeb306400347f6fb3d171a9a8be64d89d9f3044b8cf291ce362dea94eb29b8a9",
+  "explicit_excluded_count": 45,
+  "explicit_excluded_hash": "f536b31dd0302f985d7a3766b29629083143d0caa40b58c2087e38e71d016991",
   "explicit_excluded_reason_counts": {
-    "SPAC_BLANK_CHECK": 43
+    "SPAC_BLANK_CHECK": 45
   },
   "history_price_state_diagnostic_only": {
     "source_counts": {
@@ -3243,22 +3243,22 @@
   "queue_hash": "306d6bb21e1ffef5f099f988ce995d0f98b349c051f34b4eed42613280444bdf",
   "queue_total": 3185,
   "queue_unique": 3185,
-  "raw_identity_total": 3353,
+  "raw_identity_total": 3351,
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1",
   "sec_spac_proof": {
-    "blob_sha": "9851b5803447f91857e55bb8c5dc7c94e2b9ac43",
-    "count": 43,
+    "blob_sha": "2c88096c17406f1260b46826e668c3a00ee4408f",
+    "count": 45,
     "path": "nasdaq-xray/master_sec_spac_proof_20261007.json",
-    "symbol_hash": "99f70e2d8963c11c8e9eeaaf0a71887f16e0142752531a750aec7f9212557c87"
+    "symbol_hash": "b0c3af59c476114cdfa6d86d7d1be76690b9a55758206041a3b08b3ead8b3259"
   },
-  "source_state_blob_sha": "abf1e9dea6f84c023919e3b79834ee3663c1913f",
-  "source_state_hash": "9b187bd4e818a1b10693c5e8b7253947920656dd51e9a18e38fb20bdc9b45b2b",
+  "source_state_blob_sha": "3d0982e7f9750d2e54877842d6717f8901f60ac1",
+  "source_state_hash": "ae037966cd1ba67428f7726ac164fc2a7e6d3f5979a7d7777d41c8d49f11add0",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
   "status": "PARTIAL_UNKNOWN",
   "status_semantics": "IDENTITY_PARTITION_EXACT_WITH_UNKNOWN",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 168,
+  "unknown_count": 166,
   "unknown_detail": {
     "AACI": {
       "exact_sec_spac_proof": false,
@@ -3323,30 +3323,12 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "BLZR": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Trailblazer Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "BPAC": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Blueport Acquisition Ltd - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "BREZ": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Breeze Acquisition Corp. II - Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -4782,9 +4764,7 @@
     "BID",
     "BIXI",
     "BKHA",
-    "BLZR",
     "BPAC",
-    "BREZ",
     "BRKH",
     "BSAA",
     "CAII",
