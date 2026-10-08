@@ -1895,14 +1895,17 @@
   ],
   "official_footer": "File Creation Time: 1007202618:01|||||||",
   "pointer_asof_et": "2026-10-07",
-  "price_blocked_count": 36,
-  "price_blocked_hash": "4c8df03b87757feceb158acc3dc30c0a45e25d0ee10bf22faad5bf65fad0d334",
+  "price_blocked_count": 46,
+  "price_blocked_hash": "597d439367c457cc2c3fd118f4beb1bbd4160c5e1f8a1a13d6a4c147dd09c179",
   "price_blocked_symbols": [
     "ALDF",
     "ATGL",
     "BLIV",
+    "BRBI",
+    "CEPS",
     "CEPV",
     "CGCF",
+    "CPBI",
     "DNMX",
     "DYOR",
     "ELTK",
@@ -1910,11 +1913,13 @@
     "GCGR",
     "GIX",
     "GRAL",
+    "GTEN",
     "GYRO",
     "HDL",
     "HFBL",
     "HVMC",
     "IRHO",
+    "JONE",
     "KBON",
     "LTGR",
     "MAYS",
@@ -1923,16 +1928,21 @@
     "NCEW",
     "NHIV",
     "NIPG",
+    "NOEM",
+    "NWCL",
+    "OPNW",
     "PFX",
     "PONO",
     "RACD",
     "ROMA",
     "SCPQ",
+    "SENEB",
     "SHOT",
     "SVCC",
     "TRGS",
     "TULP",
     "VHCP",
+    "WORX",
     "YICC"
   ],
   "price_gate_order": [
@@ -2126,6 +2136,185 @@
       },
       "security_name": "BeLive Holdings - ordinary shares"
     },
+    "BRBI": {
+      "price_result": {
+        "block_recovery_attempt": {
+          "provider_meta": {
+            "nasdaq": {
+              "disabled": true,
+              "no_pass_or_fail_created": true,
+              "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+            },
+            "sina": {
+              "usable": 199
+            },
+            "yahoo": {
+              "exchangeName": "NCM",
+              "usable": 62
+            }
+          },
+          "provider_result": {
+            "nasdaq_result": {
+              "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+            },
+            "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
+            "sina_result": {
+              "dv30_lower_bound": 0.0,
+              "dv30_upper_bound": null,
+              "known_session_count": 13,
+              "missing_sessions": [
+                "2026-08-27",
+                "2026-08-31",
+                "2026-09-03",
+                "2026-09-08",
+                "2026-09-14",
+                "2026-09-15",
+                "2026-09-17",
+                "2026-09-18",
+                "2026-09-21",
+                "2026-09-22",
+                "2026-09-23",
+                "2026-09-24",
+                "2026-09-25",
+                "2026-09-28",
+                "2026-09-29",
+                "2026-09-30",
+                "2026-10-02"
+              ],
+              "no_synthetic_bar": true,
+              "price": 14.0,
+              "reason": "EXACT30_INCOMPLETE_NEVER_PASS",
+              "source": "SINA_US_DAILY"
+            },
+            "yahoo_result": {
+              "reason": "ASOF_MISSING",
+              "source": "YAHOO_CHART_FREE_FAIL_ONLY",
+              "usable_bars": 62
+            }
+          },
+          "status": "UNRESOLVED"
+        },
+        "info": {
+          "missing_sessions": [
+            "2026-08-27",
+            "2026-08-31",
+            "2026-09-03",
+            "2026-09-08",
+            "2026-09-14",
+            "2026-09-15",
+            "2026-09-17",
+            "2026-09-18",
+            "2026-09-22",
+            "2026-09-23",
+            "2026-09-24",
+            "2026-09-25",
+            "2026-09-28",
+            "2026-09-29",
+            "2026-09-30",
+            "2026-10-02"
+          ],
+          "no_synthetic_bar": true,
+          "observed_usable_sessions": 14,
+          "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
+          "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
+          "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
+          "zero_volume_sessions": []
+        },
+        "provenance": "C417_RALLIES_PRIMARY_PARTITION",
+        "status": "BLOCK_CURRENT_RUN"
+      },
+      "security_name": "BRBI BR Partners S.A. - ADSs"
+    },
+    "CEPS": {
+      "price_result": {
+        "block_recovery_attempt": {
+          "provider_meta": {
+            "nasdaq": {
+              "disabled": true,
+              "no_pass_or_fail_created": true,
+              "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+            },
+            "sina": {
+              "usable": 104
+            },
+            "yahoo": {
+              "exchangeName": "NGM",
+              "usable": 62
+            }
+          },
+          "provider_result": {
+            "nasdaq_result": {
+              "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+            },
+            "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
+            "sina_result": {
+              "dv30_lower_bound": 0.0,
+              "dv30_upper_bound": null,
+              "known_session_count": 13,
+              "missing_sessions": [
+                "2026-08-26",
+                "2026-09-02",
+                "2026-09-03",
+                "2026-09-04",
+                "2026-09-08",
+                "2026-09-10",
+                "2026-09-11",
+                "2026-09-14",
+                "2026-09-15",
+                "2026-09-16",
+                "2026-09-17",
+                "2026-09-22",
+                "2026-09-23",
+                "2026-09-25",
+                "2026-09-28",
+                "2026-09-29",
+                "2026-09-30"
+              ],
+              "no_synthetic_bar": true,
+              "price": 10.275,
+              "reason": "EXACT30_INCOMPLETE_NEVER_PASS",
+              "source": "SINA_US_DAILY"
+            },
+            "yahoo_result": {
+              "reason": "ASOF_MISSING",
+              "source": "YAHOO_CHART_FREE_FAIL_ONLY",
+              "usable_bars": 62
+            }
+          },
+          "status": "UNRESOLVED"
+        },
+        "info": {
+          "missing_sessions": [
+            "2026-08-26",
+            "2026-09-02",
+            "2026-09-03",
+            "2026-09-04",
+            "2026-09-08",
+            "2026-09-10",
+            "2026-09-11",
+            "2026-09-14",
+            "2026-09-15",
+            "2026-09-16",
+            "2026-09-17",
+            "2026-09-22",
+            "2026-09-23",
+            "2026-09-25",
+            "2026-09-28",
+            "2026-09-29",
+            "2026-09-30"
+          ],
+          "no_synthetic_bar": true,
+          "observed_usable_sessions": 13,
+          "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
+          "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
+          "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
+          "zero_volume_sessions": []
+        },
+        "provenance": "C417_RALLIES_PRIMARY_PARTITION",
+        "status": "BLOCK_CURRENT_RUN"
+      },
+      "security_name": "Cantor Equity Partners VI, Inc. - Class A Ordinary Shares"
+    },
     "CEPV": {
       "price_result": {
         "block_recovery_attempt": {
@@ -2251,6 +2440,61 @@
         "status": "BLOCK_CURRENT_RUN"
       },
       "security_name": "Cartesian Growth Corporation IV - Class A Ordinary Shares"
+    },
+    "CPBI": {
+      "price_result": {
+        "block_recovery_attempt": {
+          "provider_meta": {
+            "nasdaq": {
+              "disabled": true,
+              "no_pass_or_fail_created": true,
+              "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+            },
+            "sina": {
+              "usable": 689
+            },
+            "yahoo": {
+              "exchangeName": "NCM",
+              "usable": 62
+            }
+          },
+          "provider_result": {
+            "nasdaq_result": {
+              "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+            },
+            "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
+            "sina_result": {
+              "reason": "ASOF_MISSING",
+              "source": "SINA_US_DAILY",
+              "usable_bars": 689
+            },
+            "yahoo_result": {
+              "reason": "ASOF_MISSING",
+              "source": "YAHOO_CHART_FREE_FAIL_ONLY",
+              "usable_bars": 62
+            }
+          },
+          "status": "UNRESOLVED"
+        },
+        "info": {
+          "missing_sessions": [
+            "2026-08-26",
+            "2026-09-01",
+            "2026-09-04",
+            "2026-09-09",
+            "2026-09-28"
+          ],
+          "no_synthetic_bar": true,
+          "observed_usable_sessions": 25,
+          "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
+          "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
+          "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
+          "zero_volume_sessions": []
+        },
+        "provenance": "C417_RALLIES_PRIMARY_PARTITION",
+        "status": "BLOCK_CURRENT_RUN"
+      },
+      "security_name": "Central Plains Bancshares, Inc. - Common Stock"
     },
     "DNMX": {
       "price_result": {
@@ -2635,11 +2879,11 @@
               "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
             },
             "sina": {
-              "usable": 572
+              "usable": 573
             },
             "yahoo": {
               "exchangeName": "NMS",
-              "usable": 63
+              "usable": 62
             }
           },
           "provider_result": {
@@ -2648,17 +2892,21 @@
             },
             "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
             "sina_result": {
-              "reason": "ASOF_MISSING",
-              "source": "SINA_US_DAILY",
-              "usable_bars": 572
+              "dv30_lower_bound": 118128234.6,
+              "dv30_upper_bound": 121790969.185,
+              "known_session_count": 29,
+              "missing_sessions": [
+                "2026-09-23"
+              ],
+              "no_synthetic_bar": true,
+              "price": 132.9,
+              "reason": "EXACT30_INCOMPLETE_NEVER_PASS",
+              "source": "SINA_US_DAILY"
             },
             "yahoo_result": {
-              "dv30": 118130372.03063965,
-              "known_session_count": 30,
-              "missing_sessions": [],
-              "price": 132.89999389648438,
-              "proof": "EXACT30_MEDIAN_GE_GATE",
-              "source": "YAHOO_CHART_FREE_FAIL_ONLY"
+              "reason": "ASOF_MISSING",
+              "source": "YAHOO_CHART_FREE_FAIL_ONLY",
+              "usable_bars": 62
             }
           },
           "status": "UNRESOLVED"
@@ -2678,6 +2926,94 @@
         "status": "BLOCK_CURRENT_RUN"
       },
       "security_name": "GRAIL, Inc. - Common Stock"
+    },
+    "GTEN": {
+      "price_result": {
+        "block_recovery_attempt": {
+          "provider_meta": {
+            "nasdaq": {
+              "disabled": true,
+              "no_pass_or_fail_created": true,
+              "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+            },
+            "sina": {
+              "usable": 274
+            },
+            "yahoo": {
+              "exchangeName": "NGM",
+              "usable": 62
+            }
+          },
+          "provider_result": {
+            "nasdaq_result": {
+              "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+            },
+            "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
+            "sina_result": {
+              "dv30_lower_bound": 0.0,
+              "dv30_upper_bound": null,
+              "known_session_count": 14,
+              "missing_sessions": [
+                "2026-08-27",
+                "2026-08-28",
+                "2026-09-02",
+                "2026-09-03",
+                "2026-09-04",
+                "2026-09-16",
+                "2026-09-17",
+                "2026-09-18",
+                "2026-09-21",
+                "2026-09-23",
+                "2026-09-25",
+                "2026-09-28",
+                "2026-09-29",
+                "2026-09-30",
+                "2026-10-01",
+                "2026-10-05"
+              ],
+              "no_synthetic_bar": true,
+              "price": 10.44,
+              "reason": "EXACT30_INCOMPLETE_NEVER_PASS",
+              "source": "SINA_US_DAILY"
+            },
+            "yahoo_result": {
+              "reason": "ASOF_MISSING",
+              "source": "YAHOO_CHART_FREE_FAIL_ONLY",
+              "usable_bars": 62
+            }
+          },
+          "status": "UNRESOLVED"
+        },
+        "info": {
+          "missing_sessions": [
+            "2026-08-27",
+            "2026-08-28",
+            "2026-09-02",
+            "2026-09-03",
+            "2026-09-04",
+            "2026-09-16",
+            "2026-09-17",
+            "2026-09-18",
+            "2026-09-21",
+            "2026-09-23",
+            "2026-09-25",
+            "2026-09-28",
+            "2026-09-29",
+            "2026-09-30",
+            "2026-10-01",
+            "2026-10-05"
+          ],
+          "no_synthetic_bar": true,
+          "observed_usable_sessions": 14,
+          "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
+          "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
+          "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
+          "zero_volume_sessions": []
+        },
+        "provenance": "C417_RALLIES_PRIMARY_PARTITION",
+        "status": "BLOCK_CURRENT_RUN"
+      },
+      "security_name": "Gores Holdings X, Inc. - Class A ordinary shares"
     },
     "GYRO": {
       "price_result": {
@@ -2976,6 +3312,64 @@
         "status": "BLOCK_CURRENT_RUN"
       },
       "security_name": "Iron Horse Acquisitions II Corp. - Common Stock"
+    },
+    "JONE": {
+      "price_result": {
+        "block_recovery_attempt": {
+          "provider_meta": {
+            "nasdaq": {
+              "disabled": true,
+              "no_pass_or_fail_created": true,
+              "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+            },
+            "sina": {
+              "error": "SyntaxError:invalid syntax (<string>, line 1)"
+            },
+            "yahoo": {
+              "exchangeName": "NGM",
+              "usable": 23
+            }
+          },
+          "provider_result": {
+            "nasdaq_result": {
+              "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+            },
+            "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
+            "sina_result": {
+              "reason": "SINA_UNAVAILABLE"
+            },
+            "yahoo_result": {
+              "reason": "ASOF_MISSING",
+              "source": "YAHOO_CHART_FREE_FAIL_ONLY",
+              "usable_bars": 23
+            }
+          },
+          "status": "UNRESOLVED"
+        },
+        "info": {
+          "missing_sessions": [
+            "2026-08-26",
+            "2026-08-27",
+            "2026-08-28",
+            "2026-08-31",
+            "2026-09-01",
+            "2026-09-02",
+            "2026-09-22",
+            "2026-09-23",
+            "2026-10-01",
+            "2026-10-06"
+          ],
+          "no_synthetic_bar": true,
+          "observed_usable_sessions": 20,
+          "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
+          "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
+          "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
+          "zero_volume_sessions": []
+        },
+        "provenance": "C417_RALLIES_PRIMARY_PARTITION",
+        "status": "BLOCK_CURRENT_RUN"
+      },
+      "security_name": "Jones Ventures INTL Acquisition1 Corp - Class A Ordinary Shares"
     },
     "KBON": {
       "price_result": {
@@ -3468,6 +3862,296 @@
       },
       "security_name": "NIP Group Inc. - American Depositary Shares"
     },
+    "NOEM": {
+      "price_result": {
+        "block_recovery_attempt": {
+          "provider_meta": {
+            "nasdaq": {
+              "disabled": true,
+              "no_pass_or_fail_created": true,
+              "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+            },
+            "sina": {
+              "usable": 289
+            },
+            "yahoo": {
+              "exchangeName": "NCM",
+              "usable": 62
+            }
+          },
+          "provider_result": {
+            "nasdaq_result": {
+              "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+            },
+            "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
+            "sina_result": {
+              "dv30_lower_bound": 0.0,
+              "dv30_upper_bound": null,
+              "known_session_count": 12,
+              "missing_sessions": [
+                "2026-08-26",
+                "2026-08-27",
+                "2026-09-02",
+                "2026-09-03",
+                "2026-09-09",
+                "2026-09-11",
+                "2026-09-14",
+                "2026-09-16",
+                "2026-09-18",
+                "2026-09-21",
+                "2026-09-22",
+                "2026-09-23",
+                "2026-09-24",
+                "2026-09-25",
+                "2026-09-28",
+                "2026-09-29",
+                "2026-09-30",
+                "2026-10-05"
+              ],
+              "no_synthetic_bar": true,
+              "price": 10.63,
+              "reason": "EXACT30_INCOMPLETE_NEVER_PASS",
+              "source": "SINA_US_DAILY"
+            },
+            "yahoo_result": {
+              "reason": "ASOF_MISSING",
+              "source": "YAHOO_CHART_FREE_FAIL_ONLY",
+              "usable_bars": 62
+            }
+          },
+          "status": "UNRESOLVED"
+        },
+        "info": {
+          "missing_sessions": [
+            "2026-08-26",
+            "2026-08-27",
+            "2026-09-02",
+            "2026-09-03",
+            "2026-09-09",
+            "2026-09-11",
+            "2026-09-14",
+            "2026-09-16",
+            "2026-09-18",
+            "2026-09-21",
+            "2026-09-22",
+            "2026-09-23",
+            "2026-09-24",
+            "2026-09-25",
+            "2026-09-28",
+            "2026-09-29",
+            "2026-09-30",
+            "2026-10-05"
+          ],
+          "no_synthetic_bar": true,
+          "observed_usable_sessions": 12,
+          "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
+          "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
+          "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
+          "zero_volume_sessions": []
+        },
+        "provenance": "C417_RALLIES_PRIMARY_PARTITION",
+        "status": "BLOCK_CURRENT_RUN"
+      },
+      "security_name": "CO2 Energy Transition Corp. - Common Stock"
+    },
+    "NWCL": {
+      "price_result": {
+        "block_recovery_attempt": {
+          "provider_meta": {
+            "nasdaq": {
+              "disabled": true,
+              "no_pass_or_fail_created": true,
+              "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+            },
+            "sina": {
+              "usable": 12
+            },
+            "yahoo": {
+              "exchangeName": "NMS",
+              "usable": 62
+            }
+          },
+          "provider_result": {
+            "nasdaq_result": {
+              "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+            },
+            "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
+            "sina_result": {
+              "dv30_lower_bound": 0.0,
+              "dv30_upper_bound": null,
+              "known_session_count": 12,
+              "missing_sessions": [
+                "2026-08-26",
+                "2026-08-27",
+                "2026-08-28",
+                "2026-08-31",
+                "2026-09-01",
+                "2026-09-02",
+                "2026-09-03",
+                "2026-09-04",
+                "2026-09-08",
+                "2026-09-09",
+                "2026-09-10",
+                "2026-09-11",
+                "2026-09-14",
+                "2026-09-15",
+                "2026-09-16",
+                "2026-09-17",
+                "2026-09-18",
+                "2026-09-21"
+              ],
+              "no_synthetic_bar": true,
+              "price": 7.91,
+              "reason": "EXACT30_INCOMPLETE_NEVER_PASS",
+              "source": "SINA_US_DAILY"
+            },
+            "yahoo_result": {
+              "reason": "ASOF_MISSING",
+              "source": "YAHOO_CHART_FREE_FAIL_ONLY",
+              "usable_bars": 62
+            }
+          },
+          "status": "UNRESOLVED"
+        },
+        "info": {
+          "missing_sessions": [
+            "2026-08-26",
+            "2026-08-27",
+            "2026-08-28",
+            "2026-08-31",
+            "2026-09-01",
+            "2026-09-02",
+            "2026-09-03",
+            "2026-09-04",
+            "2026-09-08",
+            "2026-09-09",
+            "2026-09-10",
+            "2026-09-11",
+            "2026-09-14",
+            "2026-09-15",
+            "2026-09-16",
+            "2026-09-17",
+            "2026-09-18",
+            "2026-09-21"
+          ],
+          "no_synthetic_bar": true,
+          "observed_usable_sessions": 12,
+          "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
+          "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
+          "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
+          "zero_volume_sessions": []
+        },
+        "provenance": "C417_RALLIES_PRIMARY_PARTITION",
+        "status": "BLOCK_CURRENT_RUN"
+      },
+      "security_name": "newcleo plc - Ordinary Shares"
+    },
+    "OPNW": {
+      "price_result": {
+        "block_recovery_attempt": {
+          "provider_meta": {
+            "nasdaq": {
+              "disabled": true,
+              "no_pass_or_fail_created": true,
+              "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+            },
+            "sina": {
+              "usable": 5
+            },
+            "yahoo": {
+              "exchangeName": "NCM",
+              "usable": 62
+            }
+          },
+          "provider_result": {
+            "nasdaq_result": {
+              "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+            },
+            "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
+            "sina_result": {
+              "dv30_lower_bound": 0.0,
+              "dv30_upper_bound": null,
+              "known_session_count": 5,
+              "missing_sessions": [
+                "2026-08-26",
+                "2026-08-27",
+                "2026-08-28",
+                "2026-08-31",
+                "2026-09-01",
+                "2026-09-02",
+                "2026-09-03",
+                "2026-09-04",
+                "2026-09-08",
+                "2026-09-09",
+                "2026-09-10",
+                "2026-09-11",
+                "2026-09-14",
+                "2026-09-15",
+                "2026-09-16",
+                "2026-09-17",
+                "2026-09-18",
+                "2026-09-21",
+                "2026-09-22",
+                "2026-09-23",
+                "2026-09-24",
+                "2026-09-25",
+                "2026-09-28",
+                "2026-09-29",
+                "2026-09-30"
+              ],
+              "no_synthetic_bar": true,
+              "price": 6.06,
+              "reason": "EXACT30_INCOMPLETE_NEVER_PASS",
+              "source": "SINA_US_DAILY"
+            },
+            "yahoo_result": {
+              "reason": "ASOF_MISSING",
+              "source": "YAHOO_CHART_FREE_FAIL_ONLY",
+              "usable_bars": 62
+            }
+          },
+          "status": "UNRESOLVED"
+        },
+        "info": {
+          "missing_sessions": [
+            "2026-08-26",
+            "2026-08-27",
+            "2026-08-28",
+            "2026-08-31",
+            "2026-09-01",
+            "2026-09-02",
+            "2026-09-03",
+            "2026-09-04",
+            "2026-09-08",
+            "2026-09-09",
+            "2026-09-10",
+            "2026-09-11",
+            "2026-09-14",
+            "2026-09-15",
+            "2026-09-16",
+            "2026-09-17",
+            "2026-09-18",
+            "2026-09-21",
+            "2026-09-22",
+            "2026-09-23",
+            "2026-09-24",
+            "2026-09-25",
+            "2026-09-28",
+            "2026-09-29",
+            "2026-09-30"
+          ],
+          "no_synthetic_bar": true,
+          "observed_usable_sessions": 5,
+          "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
+          "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
+          "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
+          "zero_volume_sessions": []
+        },
+        "provenance": "C417_RALLIES_PRIMARY_PARTITION",
+        "status": "BLOCK_CURRENT_RUN"
+      },
+      "security_name": "OpenWorld, Inc. - Common Stock"
+    },
     "PFX": {
       "price_result": {
         "block_recovery_attempt": {
@@ -3771,6 +4455,102 @@
         "status": "BLOCK_CURRENT_RUN"
       },
       "security_name": "Social Commerce Partners Corporation - Class A Ordinary Shares"
+    },
+    "SENEB": {
+      "price_result": {
+        "block_recovery_attempt": {
+          "provider_meta": {
+            "nasdaq": {
+              "disabled": true,
+              "no_pass_or_fail_created": true,
+              "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+            },
+            "sina": {
+              "usable": 3023
+            },
+            "yahoo": {
+              "exchangeName": "NMS",
+              "usable": 62
+            }
+          },
+          "provider_result": {
+            "nasdaq_result": {
+              "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+            },
+            "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
+            "sina_result": {
+              "dv30_lower_bound": 0.0,
+              "dv30_upper_bound": null,
+              "known_session_count": 10,
+              "missing_sessions": [
+                "2026-08-27",
+                "2026-08-28",
+                "2026-08-31",
+                "2026-09-01",
+                "2026-09-04",
+                "2026-09-09",
+                "2026-09-11",
+                "2026-09-14",
+                "2026-09-15",
+                "2026-09-16",
+                "2026-09-17",
+                "2026-09-18",
+                "2026-09-21",
+                "2026-09-22",
+                "2026-09-24",
+                "2026-09-25",
+                "2026-09-28",
+                "2026-09-30",
+                "2026-10-02",
+                "2026-10-06"
+              ],
+              "no_synthetic_bar": true,
+              "price": 175.58,
+              "reason": "EXACT30_INCOMPLETE_NEVER_PASS",
+              "source": "SINA_US_DAILY"
+            },
+            "yahoo_result": {
+              "reason": "ASOF_MISSING",
+              "source": "YAHOO_CHART_FREE_FAIL_ONLY",
+              "usable_bars": 62
+            }
+          },
+          "status": "UNRESOLVED"
+        },
+        "info": {
+          "missing_sessions": [
+            "2026-08-27",
+            "2026-08-28",
+            "2026-08-31",
+            "2026-09-01",
+            "2026-09-04",
+            "2026-09-09",
+            "2026-09-11",
+            "2026-09-14",
+            "2026-09-15",
+            "2026-09-16",
+            "2026-09-17",
+            "2026-09-18",
+            "2026-09-21",
+            "2026-09-22",
+            "2026-09-24",
+            "2026-09-25",
+            "2026-09-28",
+            "2026-09-30",
+            "2026-10-02",
+            "2026-10-06"
+          ],
+          "no_synthetic_bar": true,
+          "observed_usable_sessions": 10,
+          "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
+          "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
+          "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
+          "zero_volume_sessions": []
+        },
+        "provenance": "C417_RALLIES_PRIMARY_PARTITION",
+        "status": "BLOCK_CURRENT_RUN"
+      },
+      "security_name": "Seneca Foods Corp. - Class B Common Stock"
     },
     "SHOT": {
       "price_result": {
@@ -4099,6 +4879,98 @@
       },
       "security_name": "Vine Hill Capital Investment Corp. II - Class A Ordinary Shares"
     },
+    "WORX": {
+      "price_result": {
+        "block_recovery_attempt": {
+          "provider_meta": {
+            "nasdaq": {
+              "disabled": true,
+              "no_pass_or_fail_created": true,
+              "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+            },
+            "sina": {
+              "usable": 1735
+            },
+            "yahoo": {
+              "exchangeName": "NCM",
+              "usable": 58
+            }
+          },
+          "provider_result": {
+            "nasdaq_result": {
+              "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+            },
+            "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
+            "sina_result": {
+              "dv30_lower_bound": 0.0,
+              "dv30_upper_bound": null,
+              "known_session_count": 1,
+              "missing_sessions": [
+                "2026-08-26",
+                "2026-08-27",
+                "2026-08-28",
+                "2026-08-31",
+                "2026-09-01",
+                "2026-09-02",
+                "2026-09-03",
+                "2026-09-04",
+                "2026-09-08",
+                "2026-09-09",
+                "2026-09-10",
+                "2026-09-11",
+                "2026-09-14",
+                "2026-09-15",
+                "2026-09-16",
+                "2026-09-17",
+                "2026-09-18",
+                "2026-09-21",
+                "2026-09-22",
+                "2026-09-23",
+                "2026-09-24",
+                "2026-09-25",
+                "2026-09-28",
+                "2026-09-29",
+                "2026-09-30",
+                "2026-10-01",
+                "2026-10-02",
+                "2026-10-05",
+                "2026-10-06"
+              ],
+              "no_synthetic_bar": true,
+              "price": 5.75,
+              "reason": "EXACT30_INCOMPLETE_NEVER_PASS",
+              "source": "SINA_US_DAILY"
+            },
+            "yahoo_result": {
+              "reason": "ASOF_MISSING",
+              "source": "YAHOO_CHART_FREE_FAIL_ONLY",
+              "usable_bars": 58
+            }
+          },
+          "status": "UNRESOLVED"
+        },
+        "info": {
+          "missing_sessions": [
+            "2026-08-26",
+            "2026-08-27",
+            "2026-08-28",
+            "2026-08-31",
+            "2026-09-04",
+            "2026-09-09",
+            "2026-09-25"
+          ],
+          "no_synthetic_bar": true,
+          "observed_usable_sessions": 23,
+          "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
+          "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
+          "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
+          "zero_volume_sessions": []
+        },
+        "provenance": "C417_RALLIES_PRIMARY_PARTITION",
+        "status": "BLOCK_CURRENT_RUN"
+      },
+      "security_name": "SCWorx Corp. - Common Stock"
+    },
     "YICC": {
       "price_result": {
         "block_recovery_attempt": {
@@ -4170,22 +5042,22 @@
   "settlement_already_proven": false,
   "settlement_bridge_blob_sha": null,
   "settlement_bridge_path": null,
-  "settlement_core_source_blob_sha": "780cf18fe6957e8e49444aea595cc91623cf27c2",
+  "settlement_core_source_blob_sha": "3f3c3cf3b072ba6b201a2ad4e915f2e21b723854",
   "settlement_core_source_path": "nasdaq-xray/canonical_current_terminal.json",
   "settlement_core_symbol": "MSFT",
   "settlement_policy": "ALPACA_HISTORICAL_SIP_DAILY_AFTER_15M__AAPL_NVDA_PLUS_ONE_PRIOR_CURRENT_CORE__RALLIES_LONGBRIDGE_QUOTE_OHLC_0_01_CROSSCHECK__SIP_VOLUME_AUTHORITY__FAIL_CLOSED__DELAYED_SIP_NEVER_G9",
   "settlement_required": false,
   "settlement_symbols": [],
-  "source_master_blob_sha": "f909bd3a2a07afcd3fe528c4c91e2e360ca97449",
+  "source_master_blob_sha": "e7dd84b3c5803e1c1343e4e195f2d5fded83b1b9",
   "source_master_path": "nasdaq-xray/canonical_current_master_manifest.json",
-  "source_overlay_blob_sha": "1a5cd5e5aaf0d74f9c7feb572fde2197bc49f1c8",
+  "source_overlay_blob_sha": "7ddc2cf731d4e4d640bee11877041f5c20a6854c",
   "source_overlay_path": "nasdaq-xray/canonical_current_resolution_overlay.json",
-  "source_pointer_blob_sha": "a5517332bd8e243a05d2fa1d7f74b65e13ac74d9",
+  "source_pointer_blob_sha": "c1de7c3820dc1e3ed6870d7ee08c39cc16393b0d",
   "source_pointer_path": "nasdaq-xray/chatgpt_canonical_state_v2.json",
-  "source_price_blob_sha": "5e52c0c5e88dfe8bc61c238a3fd8285ca8879e34",
+  "source_price_blob_sha": "9ef7b9ffa6cfc5d9d1ad5921fc9abc3524ec44e5",
   "source_price_counts": {
-    "BLOCK_CURRENT_RUN": 36,
-    "FAIL_DV30": 1316,
+    "BLOCK_CURRENT_RUN": 46,
+    "FAIL_DV30": 1306,
     "FAIL_DV30_INSUFFICIENT_SESSIONS": 9,
     "FAIL_PRICE": 1304,
     "FAIL_PRICE_NO_ASOF_BAR": 10,
@@ -4195,19 +5067,22 @@
   "source_price_pass_count": 510,
   "source_price_pass_hash": "f6772e07d952c9c172a3370076537cbfc89128886e1a0e31d1142b2ebecf0438",
   "source_price_path": "nasdaq-xray/canonical_current_price_dv30.json",
-  "source_state_blob_sha": "18c72a01ad9b4e5569e81843fb7b959317ef06e3",
+  "source_state_blob_sha": "447ff5927f6f8ab1ac2368eaf41bc17f51c4da30",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
-  "source_unknowns_blob_sha": "118e3680c81f022af9b50de92fb1adff14cc6a9b",
+  "source_unknowns_blob_sha": "7c7b5aaeae1006a480cbc1255640170dcdfe22b5",
   "source_unknowns_path": "nasdaq-xray/canonical_current_unknowns.json",
   "status": "READY",
-  "symbol_count": 36,
-  "symbol_hash": "4c8df03b87757feceb158acc3dc30c0a45e25d0ee10bf22faad5bf65fad0d334",
+  "symbol_count": 46,
+  "symbol_hash": "597d439367c457cc2c3fd118f4beb1bbd4160c5e1f8a1a13d6a4c147dd09c179",
   "symbols": [
     "ALDF",
     "ATGL",
     "BLIV",
+    "BRBI",
+    "CEPS",
     "CEPV",
     "CGCF",
+    "CPBI",
     "DNMX",
     "DYOR",
     "ELTK",
@@ -4215,11 +5090,13 @@
     "GCGR",
     "GIX",
     "GRAL",
+    "GTEN",
     "GYRO",
     "HDL",
     "HFBL",
     "HVMC",
     "IRHO",
+    "JONE",
     "KBON",
     "LTGR",
     "MAYS",
@@ -4228,16 +5105,21 @@
     "NCEW",
     "NHIV",
     "NIPG",
+    "NOEM",
+    "NWCL",
+    "OPNW",
     "PFX",
     "PONO",
     "RACD",
     "ROMA",
     "SCPQ",
+    "SENEB",
     "SHOT",
     "SVCC",
     "TRGS",
     "TULP",
     "VHCP",
+    "WORX",
     "YICC"
   ],
   "task_id": "6a825366222081918997094d76e6ae46",

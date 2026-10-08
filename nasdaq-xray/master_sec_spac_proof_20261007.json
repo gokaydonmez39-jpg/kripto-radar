@@ -6,7 +6,7 @@
   "unknown_never_pass": true,
   "authority": "SEC_EDGAR_SIC_6770_EXACT_ASOF",
   "applicability": "EXACT_ASOF_ONLY_NO_FORWARD_CARRY",
-  "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V7",
+  "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V8",
   "discovery_coverage": {
     "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
     "manual_seed_registry_blob_sha": "95dec59aa5177f76bdfcd05671b62668a33f7fb2",
@@ -20,8 +20,14 @@
       "exact_asof_proof_required": true,
       "primary_error": "HTTPError",
       "secondary_error": "HTTPError",
-      "status": "BOTH_SEC_TICKER_LISTS_UNAVAILABLE",
-      "total_resolved_cik_routes": 0
+      "status": "PASS_PINNED_MIRROR_CIK_ONLY_SEC_SIC_REQUIRED",
+      "mirror_commit": "892f3c50d4709bf3266ee60bd517632bef6c1d09",
+      "mirror_source_sha256": "8123ef63f8c99810fcf07eb11fcf273e61642c0ad80eb478f54bb11a91c56e9d",
+      "mirror_exact_asof": "2026-10-07",
+      "mirror_discovered": 632,
+      "mirror_scope": 635,
+      "mirror_authority": "CIK_ROUTING_ONLY_OFFICIAL_SEC_SIC_REQUIRED",
+      "total_resolved_cik_routes": 632
     },
     "current_suspect_count": 635,
     "resolved_current_suspect_count": 27,
