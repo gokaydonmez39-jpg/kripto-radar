@@ -133,8 +133,10 @@ jobs:
           assert safe["research_freshness_class"]!="MATCHING_MASTER_EPOCH_NOT_FULL_RELEASE" or safe["terminal_epoch_matches_latest_master"]
           (d/"xray_manual_public_telemetry.json").write_text(json.dumps(safe,indent=2)+"\n")
           print("XRAY_MANUAL_DECISION_REPORT_SAFETY=PASS")
-          print("XRAY_MANUAL_DECISION_PUBLIC_STATUS="+r["status"])
-          print("XRAY_MANUAL_DECISION_PUBLIC_COUNT="+str(r["research_signal_count"]))
+          print("XRAY_MANUAL_DECISION_HISTORICAL_TERMINAL_STATUS="+r["status"])
+          print("XRAY_MANUAL_DECISION_PUBLIC_STATUS="+safe["status"])
+          print("XRAY_MANUAL_DECISION_PUBLIC_COUNT="+str(safe["research_signal_count"]))
+          print("XRAY_MANUAL_DECISION_CURRENT_MASTER_BOUND="+str(safe["terminal_epoch_matches_latest_master"]))
           PY
       - name: Record source-integrity fault without disclosing market data
         if: failure()
