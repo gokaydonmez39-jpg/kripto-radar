@@ -929,6 +929,15 @@ def support_frozen_identity(asof):
         return None
     try:
         st=json.loads(p.read_text(encoding="utf-8"))
+        # A same-run mutable SINA cursor is NOT an immutable canonical frozen
+        # membership snapshot. For the direct NasdaqTrader source, re-read the
+        # official exact-ASOF directory while preserving the cursor epoch.
+        # Otherwise the second batch is spuriously labelled frozen and fails
+        # the immutable canonical-path proof (or could misstate authority).
+        if (st.get("discovery_meta") or {}).get("authority")==(
+            "NASDAQTRADER_FULL_IDENTITY_NO_NASDAQ_WEB_MARKET_METADATA"
+        ):
+            return None
         if (
           st.get("schema")!="XRAY_NASDAQ_SCREENER_SINA_V2"
           or st.get("asof_et")!=asof
@@ -1361,5 +1370,48 @@ def main():
       "discovery_meta":state["discovery_meta"],
     },sort_keys=True))
 
+def selftest_mutable_direct_cursor_not_immutable():
+    """SINA own direct-source cursor must not become a fake frozen authority."""
+    import tempfile
+    global ROOT,FULL_IDENTITY
+    old_root,old_mode=ROOT,FULL_IDENTITY
+    with tempfile.TemporaryDirectory() as tmp:
+        try:
+            ROOT=Path(tmp)
+            FULL_IDENTITY=True
+            sym=["AAPL"]; unknown=[]
+            st={
+              "schema":"XRAY_NASDAQ_SCREENER_SINA_V2",
+              "asof_et":"2026-10-08",
+              "identity_ruleset":IDENTITY_RULESET,
+              "identity_partition_policy":IDENTITY_PARTITION_POLICY,
+              "official_footer":"File Creation Time: 10082026",
+              "queue":sym,"queue_hash":sha_lines(sym),"queue_total":1,
+              "security_names":{"AAPL":"Apple Inc"},
+              "discovery":{"AAPL":{"industry":None}},
+              "identity_unknown_symbols":unknown,
+              "identity_unknown_detail":{},
+              "raw_identity_total":1,
+              "discovery_meta":{
+                "authority":"NASDAQTRADER_FULL_IDENTITY_NO_NASDAQ_WEB_MARKET_METADATA",
+                "identity_unknown_count":0,
+                "identity_unknown_hash":sha_lines([]),
+                "raw_identity_total":1,
+                "identity_partition_policy":IDENTITY_PARTITION_POLICY,
+                "full_identity":True,
+              },
+            }
+            (ROOT/"sina_state.json").write_text(json.dumps(st),encoding="utf-8")
+            assert support_frozen_identity("2026-10-08") is None
+            # Verify old mutable cursor is preserved for ordinary same-epoch
+            # resume; never authorize its use as canonical frozen provenance.
+            assert st["discovery_meta"]["authority"].startswith("NASDAQTRADER_")
+            print("XRAY_SINA_MUTABLE_DIRECT_CURSOR_REENTRY_SELFTEST=PASS")
+        finally:
+            ROOT,FULL_IDENTITY=old_root,old_mode
+
 if __name__=="__main__":
-    main()
+    if "--selftest-direct-state-reentry" in __import__("sys").argv:
+        selftest_mutable_direct_cursor_not_immutable()
+    else:
+        main()
