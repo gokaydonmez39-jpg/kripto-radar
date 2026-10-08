@@ -107,9 +107,32 @@ jobs:
           safe["terminal_epoch_matches_latest_master"]=(
               r["asof_et"]==current_master["asof_et"]
               and terminal_master_binding==master_sha)
+          # Release requires every influential LIVE source SHA to equal
+          # its exact private terminal binding. Frozen blobs are archival.
+          source_files={"final":"canonical_current_final_tech.json",
+              "master":"canonical_current_master_manifest.json",
+              "price":"canonical_current_price_dv30.json",
+              "history":"canonical_current_history.json",
+              "events":"canonical_current_event_state.json",
+              "policy":"chatgpt_compiled_policy_v3.json"}
+          def current_git_sha(filename):
+              bb=(root/filename).read_bytes()
+              return hashlib.sha1(b"blob "+str(len(bb)).encode()+b"\0"+bb).hexdigest()
+          def same_run_release(master_exact, all_blobs_exact, frozen):
+              return master_exact and all_blobs_exact and not frozen
+          assert same_run_release(True,True,[]) is True
+          assert same_run_release(True,False,[]) is False
+          assert same_run_release(True,True,["events"]) is False
+          assert same_run_release(False,True,[]) is False
+          safe["terminal_all_sources_live_exact"]=all(
+              current_git_sha(name)==r["source_blob_shas"][key]
+              for key,name in source_files.items())
+          safe["terminal_release_epoch_and_blobs_exact"]=same_run_release(
+              safe["terminal_epoch_matches_latest_master"],
+              safe["terminal_all_sources_live_exact"],r["frozen_terminal_sources"])
           safe["research_freshness_class"]=(
               "MATCHING_MASTER_EPOCH_NOT_FULL_RELEASE"
-              if safe["terminal_epoch_matches_latest_master"]
+              if safe["terminal_release_epoch_and_blobs_exact"]
               else "HISTORICAL_TERMINAL_ONLY_CURRENT_EPOCH_UNVERIFIED")
           # A historical terminal may be read for diagnostics, but it
           # CANNOT conclude NO_QUALIFIED for the newer master epoch.
@@ -122,21 +145,22 @@ jobs:
           assert fail_closed_public_epoch_status("NO_QUALIFIED_TECHNICAL_RESEARCH_SIGNAL",0,True)==("NO_QUALIFIED_TECHNICAL_RESEARCH_SIGNAL",0)
           safe["historical_terminal_status"]=r["status"]
           safe["status"],safe["research_signal_count"]=fail_closed_public_epoch_status(
-              r["status"],r["research_signal_count"],safe["terminal_epoch_matches_latest_master"])
+              r["status"],r["research_signal_count"],safe["terminal_release_epoch_and_blobs_exact"])
           safe["source_integrity_blocked_reason"]=(
-              None if safe["terminal_epoch_matches_latest_master"]
-              else "CURRENT_MASTER_TERMINAL_ASOF_OR_BLOB_SHA_MISMATCH")
+              None if safe["terminal_release_epoch_and_blobs_exact"]
+              else "CURRENT_TERMINAL_ANY_SOURCE_EPOCH_OR_BLOB_SHA_MISMATCH")
           safe["manual_signal_production_ready"]=False
           safe["phone_notification_receipt"]="UNVERIFIED"
           safe["followup_delivery_status"]="NOT_CONNECTED"
           assert not safe["manual_signal_production_ready"]
-          assert safe["research_freshness_class"]!="MATCHING_MASTER_EPOCH_NOT_FULL_RELEASE" or safe["terminal_epoch_matches_latest_master"]
+          assert safe["research_freshness_class"]!="MATCHING_MASTER_EPOCH_NOT_FULL_RELEASE" or safe["terminal_release_epoch_and_blobs_exact"]
           (d/"xray_manual_public_telemetry.json").write_text(json.dumps(safe,indent=2)+"\n")
           print("XRAY_MANUAL_DECISION_REPORT_SAFETY=PASS")
           print("XRAY_MANUAL_DECISION_HISTORICAL_TERMINAL_STATUS="+r["status"])
           print("XRAY_MANUAL_DECISION_PUBLIC_STATUS="+safe["status"])
           print("XRAY_MANUAL_DECISION_PUBLIC_COUNT="+str(safe["research_signal_count"]))
           print("XRAY_MANUAL_DECISION_CURRENT_MASTER_BOUND="+str(safe["terminal_epoch_matches_latest_master"]))
+          print("XRAY_MANUAL_DECISION_ALL_SOURCES_LIVE_EXACT="+str(safe["terminal_all_sources_live_exact"]))
           PY
       - name: Record source-integrity fault without disclosing market data
         if: failure()
