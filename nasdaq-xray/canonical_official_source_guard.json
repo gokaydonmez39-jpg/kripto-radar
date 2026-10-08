@@ -89,7 +89,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-10-08T12:13:19.263627+00:00",
+  "generated_at_utc": "2026-10-08T13:03:20.423066+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -99,10 +99,10 @@
   "schema": "XRAY_OFFICIAL_SOURCE_GUARD_V1",
   "sources": {
     "security_status": {
-      "historical_event_rows_considered": 107,
+      "historical_event_rows_considered": 110,
       "query_end": "2026-10-08",
       "query_start": "2026-10-07",
-      "row_count": 38,
+      "row_count": 41,
       "rows": [
         {
           "CompanyName": "ATA Creativity Global American Depositary Shares",
@@ -393,6 +393,15 @@
           "Symbol": "SCAT"
         },
         {
+          "CompanyName": "Southern Cross Acquisition II Corp. Ordinary Shares",
+          "DowngradeReason": "",
+          "EffectiveDate": "2026-10-08",
+          "IssueEvent": "Security Additions",
+          "NewFinancialStatus": "",
+          "OldFinancialStatus": "",
+          "Symbol": "SCAT"
+        },
+        {
           "CompanyName": "Southern Cross Acquisition II Corp. Rights",
           "DowngradeReason": "",
           "EffectiveDate": "2026-10-08",
@@ -402,10 +411,28 @@
           "Symbol": "SCATR"
         },
         {
+          "CompanyName": "Southern Cross Acquisition II Corp. Rights",
+          "DowngradeReason": "",
+          "EffectiveDate": "2026-10-08",
+          "IssueEvent": "Security Additions",
+          "NewFinancialStatus": "",
+          "OldFinancialStatus": "",
+          "Symbol": "SCATR"
+        },
+        {
           "CompanyName": "Southern Cross Acquisition II Corp. Warrants",
           "DowngradeReason": "",
           "EffectiveDate": "2026-10-08",
           "IssueEvent": "Anticipated Security Additions",
+          "NewFinancialStatus": "",
+          "OldFinancialStatus": "",
+          "Symbol": "SCATW"
+        },
+        {
+          "CompanyName": "Southern Cross Acquisition II Corp. Warrants",
+          "DowngradeReason": "",
+          "EffectiveDate": "2026-10-08",
+          "IssueEvent": "Security Additions",
           "NewFinancialStatus": "",
           "OldFinancialStatus": "",
           "Symbol": "SCATW"
@@ -888,21 +915,21 @@
           "Symbol": "SCATW"
         },
         {
-          "BX Action": "Add",
-          "Company Name": "Texas Capital Bancshares, Inc.",
-          "Effective Date": "10/8/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "F",
-          "Symbol": "TCBI"
-        },
-        {
           "BX Action": "Delete",
           "Company Name": "Texas Capital Bancshares, Inc.",
           "Effective Date": "10/8/2026",
           "NASDAQ Action": "Delete",
           "PSX Action": "Delete",
           "Primary Listing Market": "Q",
+          "Symbol": "TCBI"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "Texas Capital Bancshares, Inc.",
+          "Effective Date": "10/8/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "F",
           "Symbol": "TCBI"
         },
         {

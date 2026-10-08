@@ -2,7 +2,7 @@
   "account_status": "ACCOUNT_BOOTSTRAP_READY_CREDENTIALS_REQUIRED",
   "asof_et": "2026-10-07",
   "blockers": {
-    "affected_event_unknown": 20,
+    "affected_event_unknown": 18,
     "alpha_semantic_conformance_unknown": 0,
     "alpha_source_binding_unknown": 0,
     "breadth_missing": 0,
@@ -15,7 +15,7 @@
     "legal_unknown": 0,
     "lifecycle_regime_unknown": 0,
     "lifecycle_semantic_binding_unknown": 0,
-    "master_unknown": 158,
+    "master_unknown": 156,
     "mc_unknown": 29,
     "price_blocked_current_run": 0,
     "price_unknown": 0,
@@ -37,9 +37,9 @@
       "UCFI",
       "UCFIW"
     ],
-    "age_seconds": 1.053,
-    "generated_at_utc": "2026-10-08T12:13:19.263627+00:00",
-    "guard_blob_sha": "4b2a1d530eec847900bc173765075f6873ad0a4b",
+    "age_seconds": 1.157,
+    "generated_at_utc": "2026-10-08T13:03:20.423066+00:00",
+    "guard_blob_sha": "79db7ca7e42d647ae7e61f2522604b3a0e44189b",
     "guard_path": "nasdaq-xray/canonical_official_source_guard.json",
     "max_age_seconds": 900,
     "security_status_suspension_symbols": [
@@ -132,7 +132,7 @@
     "current_weekly_subset_of_trigger_scope": true,
     "deep_exact_trigger_weekly_scope": true,
     "deep_exact_weekly_scope": true,
-    "exact_blob_provenance_chain": true,
+    "exact_blob_provenance_chain": false,
     "fallback_watch_preserved_through_history": true,
     "final_exact_confirmed_family_set": true,
     "final_extra_rows_exact_lifecycle_backed": true,
@@ -141,8 +141,8 @@
     "history_mc_blob_exact": true,
     "history_mc_semantic_rebind": false,
     "legal_exact_history_pass": true,
-    "legal_master_blob_exact": true,
-    "legal_master_semantic_rebind": false,
+    "legal_master_blob_exact": false,
+    "legal_master_semantic_rebind": true,
     "lifecycle_frozen_semantics_exact": true,
     "master_complete": false,
     "master_partition_exact": true,
@@ -168,14 +168,14 @@
   "compiled_policy_version": "C4.17",
   "counts": {
     "deep_A_confirmed": 0,
-    "deep_B_armed_event_clean": 0,
-    "deep_B_armed_event_watch": 5,
+    "deep_B_armed_event_clean": 1,
+    "deep_B_armed_event_watch": 4,
     "deep_B_armed_non_r92": 5,
     "deep_B_breakout_confirmed": 0,
     "deep_C_confirmed": 0,
     "deep_D_confirmed": 6,
     "event_confirmed_blocks": 0,
-    "event_unresolved": 90,
+    "event_unresolved": 88,
     "final_confirmed_candidates": 17,
     "final_fail": 17,
     "final_watch": 0,
@@ -187,7 +187,7 @@
     "legal_pass": 460,
     "lifecycle_regime_unknown": 0,
     "master_pass": 3184,
-    "master_total": 3342,
+    "master_total": 3340,
     "mc_fallback_fail": 9,
     "mc_fallback_watch": 472,
     "mc_primary_fail": 0,
@@ -210,7 +210,7 @@
     },
     "account_live_probe": {
       "balance_parseable": false,
-      "blob_sha": "397506402ae12be6cfa1dcc754cc8b2de35d734d",
+      "blob_sha": "2b0f710855ed79d0fcee56bcb811673b0af4a9b5",
       "network_attempted": false,
       "path": "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/account_effective_probe_state.json",
       "positions_parseable": false,
@@ -221,10 +221,10 @@
       "secret_values_persisted": false,
       "status": "BLOCKED_MISSING_CREDENTIALS",
       "workflow_run_attempt": "1",
-      "workflow_run_id": "37773684281"
+      "workflow_run_id": "37779828605"
     },
     "deep": {
-      "blob_sha": "0cbffda35788f6195c1fb787407da1929748fd2d",
+      "blob_sha": "cd57711b59a421d2f362dd569f1a597cf9bc3d38",
       "path": "nasdaq-xray/canonical_current_deep_full.json"
     },
     "deep_geometry": {
@@ -236,19 +236,19 @@
       "path": "nasdaq-xray/canonical_current_event_request.json"
     },
     "events": {
-      "blob_sha": "5048ac21da3683f95cf840daa908c745804c45f1",
+      "blob_sha": "6ccc24a9e683c3ab72d6835559e7c9bfbccf2a10",
       "path": "nasdaq-xray/canonical_current_event_state.json"
     },
     "family_c": {
-      "blob_sha": "73af44e2b20318f38eeddfcc1c93968081e58211",
+      "blob_sha": "d05e911f210c1d98f09c22dd6a632323591f0f9b",
       "path": "nasdaq-xray/canonical_current_family_c.json"
     },
     "final": {
-      "blob_sha": "7abeafe185856a7a7a9f90127e7ad1c9811f4f9f",
+      "blob_sha": "e75435b62bf12cc5cd681c2ada0fe0a792511964",
       "path": "nasdaq-xray/canonical_current_final_tech.json"
     },
     "full_state": {
-      "blob_sha": "60002bfb77a527227347a2e21173dbbbb77e02ba",
+      "blob_sha": "162fc94f382642b61d731da63683c62c9b33d140",
       "path": "nasdaq-xray/canonical_current_full_state.json"
     },
     "g9_runtime": {
@@ -266,7 +266,7 @@
       "path": "nasdaq-xray/canonical_current_legal.json"
     },
     "master": {
-      "blob_sha": "39d5cc179704dd59c34072bfa181f87290971ead",
+      "blob_sha": "dfe6a5f5576d83eb61f16b4db3e92aa9d0578673",
       "path": "nasdaq-xray/canonical_current_master_manifest.json"
     },
     "mc": {
@@ -281,11 +281,11 @@
       "semantic_rebind": false
     },
     "official_halt_guard": {
-      "blob_sha": "4b2a1d530eec847900bc173765075f6873ad0a4b",
+      "blob_sha": "79db7ca7e42d647ae7e61f2522604b3a0e44189b",
       "path": "nasdaq-xray/canonical_official_source_guard.json"
     },
     "pointer": {
-      "blob_sha": "a064693f91741eb32e78274bcb419c0bca1f8b20",
+      "blob_sha": "b6f148375c36ce12cf7f31a7a8dbf2085a74b825",
       "path": "nasdaq-xray/chatgpt_canonical_state_v2.json"
     },
     "policy": {
@@ -313,7 +313,7 @@
   "final_gate_reporting_zero_alpha": true,
   "full_end_to_end_research_pass": false,
   "g9_global_status": "G9_BLOCKED_FREE_AUTOMATION_PATH",
-  "generated_at_utc": "2026-10-08T12:13:20.318028+00:00",
+  "generated_at_utc": "2026-10-08T13:03:21.581963+00:00",
   "pointer_asof_before_candidate": "2026-10-07",
   "r92_account_g9_applicable": false,
   "r92_candidates": [],
@@ -321,7 +321,6 @@
   "schema": "XRAY_CANONICAL_CURRENT_TERMINAL_V1",
   "sets": {
     "affected_event_unknown": [
-      "DUOL",
       "FSLY",
       "IBRX",
       "IOVA",
@@ -333,7 +332,6 @@
       "PLTR",
       "QLYS",
       "RGEN",
-      "SIMO",
       "SMCI",
       "TEM",
       "TWST",
@@ -342,9 +340,10 @@
       "WIX",
       "XP"
     ],
-    "b_armed_event_clean": [],
+    "b_armed_event_clean": [
+      "DUOL"
+    ],
     "b_armed_event_watch": [
-      "DUOL",
       "FSLY",
       "META",
       "OLLI",

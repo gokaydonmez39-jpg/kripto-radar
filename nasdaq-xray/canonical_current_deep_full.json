@@ -22,16 +22,17 @@
     "WIX"
   ],
   "b_armed_count": 12,
-  "b_armed_rs_event_pass": [],
-  "b_armed_rs_event_pass_count": 0,
+  "b_armed_rs_event_pass": [
+    "DUOL"
+  ],
+  "b_armed_rs_event_pass_count": 1,
   "b_armed_rs_event_watch": [
-    "DUOL",
     "FSLY",
     "META",
     "OLLI",
     "PLTR"
   ],
-  "b_armed_rs_event_watch_count": 5,
+  "b_armed_rs_event_watch_count": 4,
   "b_breakout": [],
   "b_breakout_count": 0,
   "b_breakout_rs_event_pass": [],
@@ -2151,7 +2152,7 @@
         "trigger_date": null
       },
       "corporate_action_status": "PASS_NO_SPLIT_EVENTS_CROSSCHECKED",
-      "event_status": "UNKNOWN",
+      "event_status": "CLEAN_DISCOVERY",
       "mechanical_scale_breaks": [],
       "mixed_rs_pass": true,
       "r92_eligible": false,
@@ -4498,7 +4499,7 @@
         "trigger_date": null
       },
       "corporate_action_status": "PASS_NO_SPLIT_EVENTS_CROSSCHECKED",
-      "event_status": "UNKNOWN",
+      "event_status": "CLEAN_DISCOVERY",
       "mechanical_scale_breaks": [],
       "mixed_rs_pass": false,
       "r92_eligible": false,
@@ -5487,7 +5488,7 @@
     }
   },
   "schema": "XRAY_DEEP_PRE_R1_SHADOW_V1",
-  "source_event_blob_sha": "5048ac21da3683f95cf840daa908c745804c45f1",
+  "source_event_blob_sha": "6ccc24a9e683c3ab72d6835559e7c9bfbccf2a10",
   "source_event_path": "nasdaq-xray/canonical_current_event_state.json",
   "source_mc_policy_hash": "68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4",
   "source_mc_policy_version": "C4.17",
