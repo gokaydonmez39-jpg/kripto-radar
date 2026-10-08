@@ -1,0 +1,23 @@
+name: XRAY Post-MC Live Source Fence Selftest
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/post_mc_live_source_guard.py"
+      - ".github/workflows/xray-postmc-live-source-guard-selftest.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile and independent positive/negative source-SHA regression
+        run: |
+          python -m py_compile nasdaq-xray/post_mc_live_source_guard.py
+          python nasdaq-xray/post_mc_live_source_guard.py --selftest

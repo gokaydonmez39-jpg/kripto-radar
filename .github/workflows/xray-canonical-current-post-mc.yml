@@ -27,6 +27,7 @@ on:
       - "nasdaq-xray/build_mc_provenance_rebind.py"
       - "nasdaq-xray/history_phase.py"
       - "nasdaq-xray/post_mc_history_legal_reuse_guard.py"
+      - "nasdaq-xray/post_mc_live_source_guard.py"
       - "nasdaq-xray/history_official_identity_evidence.json"
       - "nasdaq-xray/canonical_history_evidence_bridge_*.json"
       - "nasdaq-xray/legal_phase.py"
@@ -762,6 +763,13 @@ jobs:
           XRAY_POST_LEGAL="$GITHUB_WORKSPACE/nasdaq-xray/canonical_current_legal.json" \
           XRAY_STAGE1_INPUT_OUT="$GITHUB_WORKSPACE/nasdaq-xray/canonical_current_stage1_input.json" \
           python nasdaq-xray/build_stage1_input.py
+      - name: Early exact-live Pre-MC SHA fence (FAIL CLOSED on staleness)
+        if: steps.mc.outputs.ready == 'true' && steps.history_revalidate.outputs.ready != 'false'
+        env:
+          XRAY_MC_AUTHORITY_PATH: ${{ steps.mc.outputs.path }}
+        run: |
+          python nasdaq-xray/post_mc_live_source_guard.py --selftest
+          python nasdaq-xray/post_mc_live_source_guard.py --check
       - name: Run Stage1
         if: steps.mc.outputs.ready == 'true' && steps.history_revalidate.outputs.ready != 'false'
         env:
