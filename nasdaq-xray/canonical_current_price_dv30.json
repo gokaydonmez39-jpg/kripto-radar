@@ -1,7 +1,7 @@
 {
   "asof_et": "2026-10-07",
   "block_recovery_attempted": true,
-  "block_recovery_input_count": 106,
+  "block_recovery_input_count": 105,
   "block_recovery_resolved_count": 104,
   "block_recovery_resolved_symbols": [
     "AFJK",
@@ -109,10 +109,8 @@
     "WORX",
     "YICC"
   ],
-  "blocked_count": 1,
-  "blocked_symbols": [
-    "BBCI"
-  ],
+  "blocked_count": 0,
+  "blocked_symbols": [],
   "bridge_defer_enabled": true,
   "c417_rallies_primary_current_queue_uncovered_symbols": [],
   "c417_rallies_primary_materialized_count": 3184,
@@ -3348,14 +3346,13 @@
   "c417_rallies_primary_post_recovery_veto_count": 0,
   "c417_rallies_primary_post_recovery_veto_symbols": [],
   "counts": {
-    "BLOCK_CURRENT_RUN": 1,
     "FAIL_DV30": 1346,
-    "FAIL_DV30_INSUFFICIENT_SESSIONS": 9,
+    "FAIL_DV30_INSUFFICIENT_SESSIONS": 10,
     "FAIL_PRICE": 1308,
     "FAIL_PRICE_NO_ASOF_BAR": 10,
     "PASS_PRICE_DV30": 510
   },
-  "current_baseline_reuse": false,
+  "current_baseline_reuse": true,
   "exception_bridge_meta": {
     "paths": [
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v1.json",
@@ -3448,9 +3445,7 @@
     "DV30"
   ],
   "global_asof_sentinel": {
-    "no_pass_or_fail_created": true,
-    "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_NORMAL_FAIL_CLOSED_PATH_REQUIRED",
-    "status": "DISABLED_NO_SINGLE_SOURCE_GLOBAL_SENTINEL"
+    "status": "NOT_EVALUATED"
   },
   "global_asof_sentinel_fast_fail": false,
   "historical_halt_terminalized_count": 1,
@@ -3459,7 +3454,7 @@
   ],
   "monotonic_legacy_pass_reuse_count": 0,
   "official_halt_guard_meta": {
-    "content_sha256": "8713c92aea50b4dfb35b733cb0d2bd79ee7a72f3e7bd88837f4b43d8c4e2cb1c",
+    "content_sha256": "109b0bfe1712c2f327b36f7ec71fe780bbcf62c01ca9f6df42be926dd9ec9326",
     "path": "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_official_source_guard.json",
     "source_status": "PASS",
     "status": "PASS"
@@ -3478,15 +3473,16 @@
     "UCFI"
   ],
   "official_listing_registry_meta": {
-    "content_sha256": "2a23ffec0befef4e10600756a7283c54cd6b5a70baea59b2d384bec6ce5e464b",
+    "content_sha256": "391a04f0ca56706c24c36f719a11f3fc15fcafab4d1a12123a4ec1a52fe266ea",
     "path": "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/price_official_listing_registry.json",
-    "record_count": 9,
+    "record_count": 10,
     "status": "PASS"
   },
-  "official_listing_terminalized_count": 8,
+  "official_listing_terminalized_count": 9,
   "official_listing_terminalized_symbols": [
     "ACCV",
     "ADRX",
+    "BBCI",
     "CHWM",
     "ETRA",
     "OIG",
@@ -4018,12 +4014,12 @@
     "status": "PASS"
   },
   "policy_replay": false,
-  "policy_replay_baseline_source": "FULL_STATE",
+  "policy_replay_baseline_source": "CURRENT_PRICE_ARTIFACT",
   "policy_replay_input_count": 0,
   "policy_replay_symbols": [],
   "real_money": "NO-GO",
-  "redo_deferred_to_bridge": false,
-  "reevaluated_count": 3184,
+  "redo_deferred_to_bridge": true,
+  "reevaluated_count": 0,
   "results": {
     "AACG": {
       "info": {
@@ -8042,113 +8038,21 @@
       "status": "FAIL_DV30"
     },
     "BBCI": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "disabled": true,
-            "no_pass_or_fail_created": true,
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "sina": {
-            "error": "IndexError:list index out of range"
-          },
-          "yahoo": {
-            "exchangeName": "NGM",
-            "usable": 1
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
-          "sina_result": {
-            "reason": "SINA_UNAVAILABLE"
-          },
-          "yahoo_result": {
-            "dv30_lower_bound": 0.0,
-            "dv30_upper_bound": null,
-            "known_session_count": 1,
-            "missing_sessions": [
-              "2026-08-26",
-              "2026-08-27",
-              "2026-08-28",
-              "2026-08-31",
-              "2026-09-01",
-              "2026-09-02",
-              "2026-09-03",
-              "2026-09-04",
-              "2026-09-08",
-              "2026-09-09",
-              "2026-09-10",
-              "2026-09-11",
-              "2026-09-14",
-              "2026-09-15",
-              "2026-09-16",
-              "2026-09-17",
-              "2026-09-18",
-              "2026-09-21",
-              "2026-09-22",
-              "2026-09-23",
-              "2026-09-24",
-              "2026-09-25",
-              "2026-09-28",
-              "2026-09-29",
-              "2026-09-30",
-              "2026-10-01",
-              "2026-10-02",
-              "2026-10-05",
-              "2026-10-06"
-            ],
-            "no_synthetic_bar": true,
-            "price": 11.0,
-            "reason": "EXACT30_INCOMPLETE_NEVER_PASS",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY"
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
-        "missing_sessions": [
-          "2026-08-26",
-          "2026-08-27",
-          "2026-08-28",
-          "2026-08-31",
-          "2026-09-01",
-          "2026-09-02",
-          "2026-09-03",
-          "2026-09-04",
-          "2026-09-08",
-          "2026-09-09",
-          "2026-09-10",
-          "2026-09-11",
-          "2026-09-14",
-          "2026-09-15",
-          "2026-09-16",
-          "2026-09-17",
-          "2026-09-18",
-          "2026-09-21",
-          "2026-09-22",
-          "2026-09-23",
-          "2026-09-24",
-          "2026-09-25",
-          "2026-09-28",
-          "2026-09-29",
-          "2026-09-30",
-          "2026-10-01",
-          "2026-10-02",
-          "2026-10-05",
-          "2026-10-06"
-        ],
+        "asof_et": "2026-10-07",
+        "decision_direction": "FAIL_ONLY_NEVER_PASS",
+        "evidence_kind": "NASDAQ_FIRST_TRADE_AFTER_OTC_BUSINESS_COMBINATION",
+        "exact30_window_start": "2026-08-26",
+        "first_trade_date": "2026-10-07",
+        "max_possible_completed_sessions_in_exact30_window": 1,
         "no_synthetic_bar": true,
-        "observed_usable_sessions": 1,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
-        "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
-        "zero_volume_sessions": []
+        "proof": "OFFICIAL_FIRST_TRADE_DATE_AFTER_EXACT30_WINDOW_START",
+        "reason": "OFFICIAL_RECENT_LISTING_LT_30_COMPLETED_SESSIONS",
+        "source": "NASDAQ_TRADER_PRIMARY",
+        "source_url": "https://www.nasdaqtrader.com/TraderNews.aspx?id=ECA2026-717"
       },
-      "provenance": "C417_RALLIES_PRIMARY_PARTITION",
-      "status": "BLOCK_CURRENT_RUN"
+      "provenance": "OFFICIAL_RECENT_LISTING_FAIL_ONLY",
+      "status": "FAIL_DV30_INSUFFICIENT_SESSIONS"
     },
     "BBCP": {
       "info": {
@@ -42901,7 +42805,7 @@
       "status": "FAIL_DV30"
     }
   },
-  "reused_terminal_count": 0,
+  "reused_terminal_count": 3184,
   "schema": "XRAY_CANONICAL_PRICE_DV30_V1",
   "source_master_count": 3184,
   "source_master_queue_hash": "2554c936f42217cf8a9628e89d04993945218725234fe894f7c80856834725d6",
