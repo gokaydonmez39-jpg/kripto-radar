@@ -1,0 +1,77 @@
+name: XRAY Multi-Provider Fail-Closed Research Shadow
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "07 21 * * 1-5"
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/xray_multi_provider_research.py"
+      - ".github/workflows/xray-multi-provider-research-shadow.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: xray-multi-provider-research-shadow-v1
+  cancel-in-progress: false
+
+jobs:
+  provider-shadow:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      XRAY_MASSIVE_API_KEY: ${{ secrets.XRAY_MASSIVE_API_KEY }}
+      XRAY_BQ_API_KEY: ${{ secrets.XRAY_BQ_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile and negative/positive fail-closed regression
+        run: |
+          python -m py_compile nasdaq-xray/xray_multi_provider_research.py
+          python nasdaq-xray/xray_multi_provider_research.py --selftest
+      - name: Probe all three lanes with shared per-run budgets (non-authoritative)
+        run: |
+          python nasdaq-xray/xray_multi_provider_research.py \
+            --limit 3 \
+            --out "$RUNNER_TEMP/xray_multi_provider_shadow.json"
+      - name: Independently validate public operational telemetry only
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          f=Path(os.environ["RUNNER_TEMP"])/"xray_multi_provider_shadow.json"
+          x=json.loads(f.read_text())
+          assert x["schema"]=="XRAY_MULTI_PROVIDER_RESEARCH_SHADOW_V1"
+          assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
+          assert x["policy"]=="C4.17" and x["control"]=="C4.27"
+          assert x["unknown_never_pass"] is True
+          assert x["research_only"] is True and x["alpha_authority"] is False
+          for flag in ["mc_pass_created","g9_pass","account_pass","canonical_status_changed","raw_market_data_persisted"]:
+              assert x[flag] is False,flag
+          assert set(x["lanes"])=={"MASTER","MC","EVENT"}
+          assert set(x["source_blobs"])=={"MASTER","MC","HISTORY","EVENT","TERMINAL"}
+          assert all(0<=r["sample_attempted"]<=3 for r in x["lanes"].values())
+          assert all(v<=3 for k,v in x["invocation_counts"].items() if k=="MASSIVE")
+          payload=f.read_text()
+          for key in ["XRAY_MASSIVE_API_KEY","XRAY_BQ_API_KEY"]:
+              secret=os.getenv(key,"")
+              if secret:
+                  assert secret not in payload,"SECRET_LEAK:"+key
+          print("XRAY_MULTIPROVIDER_PRODUCTION_NONAUTHORITY=PASS")
+          print("XRAY_MULTI_PROVIDER_SCOPE_COUNTS="+str({
+              k:v["scope_count"] for k,v in x["lanes"].items()}))
+          print("XRAY_MULTI_PROVIDER_STATE="+str({
+              k:v["status_counts"] for k,v in x["lanes"].items()}))
+          PY
+      - name: Upload sanitized research-only operational telemetry
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-multi-provider-operational-only
+          path: ${{ runner.temp }}/xray_multi_provider_shadow.json
+          retention-days: 14
+          if-no-files-found: error
