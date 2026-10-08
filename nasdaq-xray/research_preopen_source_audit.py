@@ -44,11 +44,17 @@ def inspect(master,price,req,terminal,readiness,master_sha,price_sha):
             set(price_pass).issubset(set(identity_pass))
             and len(set(price_pass))==len(price_pass)==int(price.get("pass_count",-1))
             and not(set(price_pass)&set(blocked))
+            and not(set(price_pass)&set(unknown))
             and not(set(blocked)&set(unknown))
             and len(set(blocked))==len(blocked)==int(price.get("blocked_count",-1))
-            and len(set(unknown))==len(unknown)==int(price.get("unknown_count",-1))),
+            and len(set(unknown))==len(unknown)==int(price.get("unknown_count",-1))
+            and set(price.get("results") or {})==set(identity_pass)
+            and len(price.get("results") or {})==len(identity_pass)
+            and set(price_pass|blocked|unknown).issubset(set(identity_pass))),
         "resolver_master_git_sha_exact":req.get("source_master_blob_sha")==master_sha,
-        "resolver_price_git_sha_exact":req.get("source_price_blob_sha")==price_sha,
+        "resolver_price_git_sha_exact":req.get("source_price_blob_sha")==price_sha
+            and req.get("source_price_pass_hash")==price.get("pass_hash")
+            and int(req.get("source_price_pass_count",-1))==len(price_pass),
         "same_asof_epoch":(
             bool(master.get("asof_et"))
             and master.get("asof_et")==price.get("asof_et")==req.get("asof_et")),
@@ -111,8 +117,10 @@ def selftest():
     m=d(asof_et="2026-10-08",pass_symbols=["A","B"],unknown_symbols=["S"],
         pass_count=2,unknown_count=1)
     p=d(asof_et="2026-10-08",pass_symbols=["A"],blocked_symbols=["B"],
-        unknown_symbols=[],pass_count=1,blocked_count=1,unknown_count=0)
+        unknown_symbols=[],pass_count=1,blocked_count=1,unknown_count=0,
+        pass_hash="HP",results={"A":{"status":"PASS_PRICE_DV30"},"B":{"status":"BLOCK_CURRENT_RUN"}})
     q=d(asof_et="2026-10-08",source_master_blob_sha="M",source_price_blob_sha="P",
+        source_price_pass_hash="HP",source_price_pass_count=1,
         price_blocked_symbols=["B"],price_blocked_count=1,
         price_unknown_detail={"B":{"price_result":{
             "info":{"reason":"ASOF_MISSING"},
@@ -132,6 +140,7 @@ def selftest():
         (m,p,"DIFFERENT","P"),
         (m,p,"M","DIFFERENT"),
         (m,{**p,"blocked_count":0},"M","P"),
+        (m,{**p,"results":{"A":{"status":"PASS_PRICE_DV30"}}},"M","P"),
         ({**m,"unknown_symbols":["A"]},p,"M","P"),
         (m,p,"M","P"),
     ):
