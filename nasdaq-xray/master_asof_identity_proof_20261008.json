@@ -1,0 +1,51 @@
+{
+  "schema": "XRAY_MASTER_ASOF_IDENTITY_PROOF_V1",
+  "asof_et": "2026-10-08",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "authority": "NASDAQTRADER_SEC_EXACT_ASOF_IDENTITY_RECONCILIATION",
+  "applicability": "EXACT_ASOF_ONLY_NO_FORWARD_CARRY",
+  "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9",
+  "source_directory_footer": "File Creation Time: 1008202615:41|||||||",
+  "source_directory_date": "2026-10-08",
+  "same_asof_directory_is_membership_authority": true,
+  "directory_replay_mode": "LIVE_EXACT_ASOF_OFFICIAL_DIRECTORY",
+  "live_directory_footer_observed": null,
+  "restore_to_asof": {},
+  "remove_from_asof": {},
+  "operating_overrides": {
+    "INV": {
+      "security_name": "Innventure, Inc. - Common Stock",
+      "evidence_date": "2026-09-21",
+      "reason": "SAME_ASOF_NASDAQ_DIRECTORY_EXACT_NAME_PLUS_PRIOR_SEC_OPERATING_EVIDENCE",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/2001557/000200155726000175/a991innventureprboardcfoch.htm",
+      "same_asof_nasdaq_screener_industry": "Blank Checks",
+      "same_asof_revalidated_without_sec_network": true,
+      "revalidation_semantics": "FAIL_CLOSED_PREVENT_FALSE_SPAC_EXCLUSION_ONLY;NO_ALPHA_PASS"
+    },
+    "MLEC": {
+      "security_name": "Moolec Science SA - Ordinary Shares",
+      "evidence_date": "2026-09-02",
+      "reason": "SAME_ASOF_NASDAQ_DIRECTORY_EXACT_NAME_PLUS_PRIOR_SEC_OPERATING_EVIDENCE",
+      "source_url": "https://www.sec.gov/edgar/browse/index.html?cik=1937737",
+      "same_asof_nasdaq_screener_industry": "Blank Checks",
+      "same_asof_revalidated_without_sec_network": true,
+      "revalidation_semantics": "FAIL_CLOSED_PREVENT_FALSE_SPAC_EXCLUSION_ONLY;NO_ALPHA_PASS"
+    },
+    "PRE": {
+      "security_name": "Prenetics Global Limited - Class A Ordinary Share",
+      "evidence_date": "2026-09-08",
+      "reason": "SAME_ASOF_NASDAQ_DIRECTORY_EXACT_NAME_PLUS_PRIOR_SEC_OPERATING_EVIDENCE",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1876431/000162828026060821/preneticsglobalf-1a2resale.htm",
+      "same_asof_nasdaq_screener_industry": "Blank Checks",
+      "same_asof_revalidated_without_sec_network": true,
+      "revalidation_semantics": "FAIL_CLOSED_PREVENT_FALSE_SPAC_EXCLUSION_ONLY;NO_ALPHA_PASS"
+    }
+  },
+  "manual_seed_registry": {
+    "path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
+    "blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9",
+    "record_count": 137
+  }
+}

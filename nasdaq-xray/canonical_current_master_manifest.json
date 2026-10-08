@@ -1,13 +1,13 @@
 {
-  "asof_et": "2026-10-07",
+  "asof_et": "2026-10-08",
   "asof_identity_proof": {
-    "blob_sha": "a91c492652aa063877ebd30723d0b5fdecd9a68e",
+    "blob_sha": "5eeee6fe1095eb209a89f9dd39e28a8044f6a014",
     "counts": {
       "operating_overrides": 3,
       "remove_from_asof": 0,
       "restore_to_asof": 0
     },
-    "path": "nasdaq-xray/master_asof_identity_proof_20261007.json"
+    "path": "nasdaq-xray/master_asof_identity_proof_20261008.json"
   },
   "completion_proof": {
     "asof_identity_proof_binding": true,
@@ -28,29 +28,38 @@
     "security_names_exact": true
   },
   "counts": {
-    "PASS_IDENTITY": 3184,
-    "UNKNOWN_IDENTITY": 69
+    "PASS_IDENTITY": 3183,
+    "UNKNOWN_IDENTITY": 72
   },
   "execution": "NONE",
-  "explicit_excluded_count": 143,
-  "explicit_excluded_hash": "1a4e86261722511a91d8f040222a434cf335715dfa267f6372065650c612b58b",
+  "explicit_excluded_count": 2375,
+  "explicit_excluded_hash": "6ba83fd3f8baf9400c47269cdc1528fe7cc6fcaed6c387dcbb17be85bd1f6b63",
   "explicit_excluded_reason_counts": {
-    "SPAC_BLANK_CHECK": 143
+    "DEBT": 59,
+    "ETF": 1293,
+    "FUND": 32,
+    "PREFERRED": 101,
+    "RIGHT": 105,
+    "SPAC_BLANK_CHECK": 141,
+    "TEST_ISSUE": 8,
+    "UNIT": 260,
+    "WARRANT": 373,
+    "WHEN_ISSUED": 3
   },
   "history_price_state_diagnostic_only": {
     "source_counts": {
-      "UNKNOWN_STATIC": 3184
+      "UNKNOWN_STATIC": 3183
     },
     "source_pending_retry": 0,
     "source_status": "IDENTITY_READY_MARKET_GATES_DEFERRED",
-    "source_unknown_count": 3184
+    "source_unknown_count": 3183
   },
   "identity_authority": "NASDAQTRADER_EXPLICIT_TYPE_FILTER_V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER",
   "identity_partition_policy": "MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V4_EXACT_ASOF_SNAPSHOT_GUARD",
   "identity_ruleset": "V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER",
-  "official_footer": "File Creation Time: 1007202621:31|||||||",
-  "pass_count": 3184,
-  "pass_hash": "2554c936f42217cf8a9628e89d04993945218725234fe894f7c80856834725d6",
+  "official_footer": "File Creation Time: 1008202615:41|||||||",
+  "pass_count": 3183,
+  "pass_hash": "b8d6f3af2ca0eb804eb13ba180df104446ec20cc453c8d28246762b1aaf8ad4d",
   "pass_symbols": [
     "AACG",
     "AAL",
@@ -2816,7 +2825,6 @@
     "TBCV",
     "TBLA",
     "TC",
-    "TCBI",
     "TCBK",
     "TCBS",
     "TCMD",
@@ -3239,25 +3247,25 @@
   ],
   "pending_retry": 0,
   "phase": "MASTER_IDENTITY",
-  "queue_hash": "2554c936f42217cf8a9628e89d04993945218725234fe894f7c80856834725d6",
-  "queue_total": 3184,
-  "queue_unique": 3184,
-  "raw_identity_total": 3253,
+  "queue_hash": "b8d6f3af2ca0eb804eb13ba180df104446ec20cc453c8d28246762b1aaf8ad4d",
+  "queue_total": 3183,
+  "queue_unique": 3183,
+  "raw_identity_total": 3255,
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1",
   "sec_spac_proof": {
-    "blob_sha": "caaf4a008fcd2f01f20865c7ea4e4f1a9fa69396",
-    "count": 143,
-    "path": "nasdaq-xray/master_sec_spac_proof_20261007.json",
-    "symbol_hash": "63b837328f1b535ffd9a3d969deadb9d8daa02d50ccb2f3e0070eba47d4a148c"
+    "blob_sha": "80382412617977656d89753745ff2df6e49d4775",
+    "count": 141,
+    "path": "nasdaq-xray/master_sec_spac_proof_20261008.json",
+    "symbol_hash": "5d811038e77e99f2f92910eaa4ea5ab32bed56d6fbf192818ca4b4aad1b2b9ec"
   },
-  "source_state_blob_sha": "9ada7c9d3c3223c402ddfe9f104082f297838e5e",
-  "source_state_hash": "d58a625ae44db6636d8e2a1b334d55d7217bf1415782c31e3802de784a3ef36d",
+  "source_state_blob_sha": "00d73b0d6893d5ad2ef8208bc8d2f51cc069f616",
+  "source_state_hash": "96a74ce1b8a3ffadbbe4b2d5d8b6c4a1513b6f72c7e4cd475098f4bac4851782",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
   "status": "PARTIAL_UNKNOWN",
   "status_semantics": "IDENTITY_PARTITION_EXACT_WITH_UNKNOWN",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 69,
+  "unknown_count": 72,
   "unknown_detail": {
     "ALIS": {
       "exact_sec_spac_proof": false,
@@ -3265,6 +3273,24 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Calisa Acquisition Corp - Ordinary shares",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
+      "unknown_never_pass": true
+    },
+    "ATLQ": {
+      "exact_sec_spac_proof": false,
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
+      "same_asof_nasdaq_industry": "",
+      "security_name": "JAB Acquisition Corp I - Class A Ordinary Shares",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
+      "unknown_never_pass": true
+    },
+    "AXIN": {
+      "exact_sec_spac_proof": false,
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
+      "same_asof_nasdaq_industry": "",
+      "security_name": "Axiom Intelligence Acquisition Corp 1 - Class A Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -3709,6 +3735,15 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
+    "SCAT": {
+      "exact_sec_spac_proof": false,
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
+      "same_asof_nasdaq_industry": "",
+      "security_name": "Southern Cross Acquisition II Corp. - Ordinary Shares",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
+      "unknown_never_pass": true
+    },
     "SDHI": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
@@ -3884,6 +3919,8 @@
   "unknown_never_pass": true,
   "unknown_symbols": [
     "ALIS",
+    "ATLQ",
+    "AXIN",
     "BSAA",
     "DMII",
     "FACT",
@@ -3933,6 +3970,7 @@
     "QADR",
     "RNAQ",
     "RNGT",
+    "SCAT",
     "SDHI",
     "SOCA",
     "SORN",
