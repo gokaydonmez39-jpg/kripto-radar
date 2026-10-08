@@ -79,8 +79,11 @@ def build(root):
     final_rows=final.get("results") or {}
     risk_rejections=[]
     for key,row in sorted(final_rows.items()):
-        risk=float((row.get("geometry") or {}).get("risk_percent") or 0)
-        if not math.isfinite(risk) or risk<0:
+        risk_value=(row.get("geometry") or {}).get("risk_percent")
+        if isinstance(risk_value,bool) or not isinstance(risk_value,(int,float)):
+            raise AssertionError("MISSING_OR_INVALID_FINAL_RISK:"+key)
+        risk=float(risk_value)
+        if not math.isfinite(risk) or risk<=0:
             raise AssertionError("INVALID_FINAL_RISK:"+key)
         if risk>0.08 and (row.get("pre_g9_tech_pass") is True or row.get("technical_hard_pass") is True):
             raise AssertionError("C4_17_RISK_FAIL_MUST_NEVER_PROMOTE:"+key)
@@ -159,7 +162,19 @@ def selftest():
             raise AssertionError("UNSAFE_CANDIDATE_ACCEPTED")
         except AssertionError as e:
             assert "C4_17_RISK_FAIL_MUST_NEVER_PROMOTE" in str(e)
-    print("XRAY_WATCH_RESEARCH_FAIL_CLOSED_SELFTEST=PASS")
+        for invalid in (None,0.0,-0.01,float("nan"),float("inf"),True,"0.02"):
+            unsafe=copy.deepcopy(payload["final"])
+            if invalid is None:
+                del unsafe["results"]["TEST|D"]["geometry"]["risk_percent"]
+            else:
+                unsafe["results"]["TEST|D"]["geometry"]["risk_percent"]=invalid
+            (root/FILES["final"]).write_text(json.dumps(unsafe)+"\n")
+            try:
+                build(root)
+                raise AssertionError("INVALID_RISK_ACCEPTED")
+            except AssertionError as e:
+                assert "FINAL_RISK" in str(e),str(e)
+    print("XRAY_WATCH_RESEARCH_FAIL_CLOSED_SELFTEST=PASS invalid_risk_cases=7")
 
 
 if __name__=="__main__":
