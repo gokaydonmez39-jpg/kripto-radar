@@ -1,7 +1,7 @@
 {
   "asof_et": "2026-10-07",
   "asof_identity_proof": {
-    "blob_sha": "49d77910713a5ad8423ff7d0204d07fe3e67fbe9",
+    "blob_sha": "be788301530cb4e25503d7c43870b7bd98f9a6ce",
     "counts": {
       "operating_overrides": 3,
       "remove_from_asof": 0,
@@ -29,13 +29,13 @@
   },
   "counts": {
     "PASS_IDENTITY": 3184,
-    "UNKNOWN_IDENTITY": 132
+    "UNKNOWN_IDENTITY": 130
   },
   "execution": "NONE",
-  "explicit_excluded_count": 80,
-  "explicit_excluded_hash": "1bb0985ac73a1572b41f08c0138d4439763c2c1f5f519629a07a6c2e68da9edd",
+  "explicit_excluded_count": 82,
+  "explicit_excluded_hash": "1673b76f1f3b3e304f19f5b98303a9f33f8eae848f66175faf8bb4339fb4860e",
   "explicit_excluded_reason_counts": {
-    "SPAC_BLANK_CHECK": 80
+    "SPAC_BLANK_CHECK": 82
   },
   "history_price_state_diagnostic_only": {
     "source_counts": {
@@ -3242,22 +3242,22 @@
   "queue_hash": "2554c936f42217cf8a9628e89d04993945218725234fe894f7c80856834725d6",
   "queue_total": 3184,
   "queue_unique": 3184,
-  "raw_identity_total": 3316,
+  "raw_identity_total": 3314,
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1",
   "sec_spac_proof": {
-    "blob_sha": "fd199d4bc4d098b6d0d0e9081c86ca22d85c8fc3",
-    "count": 80,
+    "blob_sha": "30e1be4971f706f10bef287e6454769d6ffd986b",
+    "count": 82,
     "path": "nasdaq-xray/master_sec_spac_proof_20261007.json",
-    "symbol_hash": "7bb26ac17394b9ec94795558c791a01354157bf0b9ba05dadf8808567a1a0acc"
+    "symbol_hash": "165c3395d93deb79f6d6d9c3a51aedc2dea5e13b541ae8c971929b55844fb0a3"
   },
-  "source_state_blob_sha": "f76c892566c182d5284c4f46995e56546de0b602",
-  "source_state_hash": "f4c87d624c4184c78e751304ee68b28c8ea34f8ae68eb4fc5d31e15f7d4fee73",
+  "source_state_blob_sha": "e2337fe0d61b230ee0bae9d067a290fa1b17d2bb",
+  "source_state_hash": "ed9dfa5e15e372de95499dd0b454c83adee852610082c3886efdde226e04d15e",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
   "status": "PARTIAL_UNKNOWN",
   "status_semantics": "IDENTITY_PARTITION_EXACT_WITH_UNKNOWN",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 132,
+  "unknown_count": 130,
   "unknown_detail": {
     "ALIS": {
       "exact_sec_spac_proof": false,
@@ -3265,15 +3265,6 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Calisa Acquisition Corp - Ordinary shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "BID": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Tribeca Strategic Acquisition Corp. - Class A Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -3598,15 +3589,6 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Snow Rothschild Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "JATT": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "JATT II Acquisition Corp - Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -4451,7 +4433,6 @@
   "unknown_never_pass": true,
   "unknown_symbols": [
     "ALIS",
-    "BID",
     "BKHA",
     "BPAC",
     "BSAA",
@@ -4488,7 +4469,6 @@
     "IPFX",
     "IPXG",
     "ISNR",
-    "JATT",
     "JTTT",
     "KCHV",
     "KEYY",
