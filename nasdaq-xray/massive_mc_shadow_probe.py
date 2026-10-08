@@ -105,6 +105,12 @@ def probe(symbol, asof, api_key):
         return {"state": "UNKNOWN", "reason": "PROVIDER_RESPONSE_NOT_OK"}
     return classify(symbol, doc.get("results"))
 
+def license_scope_attested(env: dict) -> bool:
+    """Operator declaration only; does not independently establish grant."""
+    return (str(env.get("XRAY_MASSIVE_NONDISPLAY_LICENSE_OK","")).lower()=="true"
+        and bool(re.fullmatch(r"[a-f0-9]{64}",
+                              str(env.get("XRAY_MASSIVE_LICENSE_EVIDENCE_SHA256","")))))
+
 def selftest():
     fixture = {"ticker": "TEST", "market": "stocks", "active": True,
                "type": "CS", "primary_exchange": "XNAS",
@@ -133,6 +139,10 @@ def selftest():
     assert classify("TEST", nonblank)["state"] == "SHADOW_OBSERVED_ABOVE_2B"
     suspicious_name=dict(fixture, name="Example Acquisition Corp")
     assert classify("TEST", suspicious_name)["state"] == "UNKNOWN"
+    assert license_scope_attested({}) is False
+    assert license_scope_attested({"XRAY_MASSIVE_NONDISPLAY_LICENSE_OK":"true"}) is False
+    assert license_scope_attested({"XRAY_MASSIVE_NONDISPLAY_LICENSE_OK":"true","XRAY_MASSIVE_LICENSE_EVIDENCE_SHA256":"a"*64}) is True
+    assert license_scope_attested({"XRAY_MASSIVE_NONDISPLAY_LICENSE_OK":"true","XRAY_MASSIVE_LICENSE_EVIDENCE_SHA256":"fake"}) is False
     assert MAX_REQUESTS_PER_INVOCATION == 5
     from copy import deepcopy
     master={"asof_et":"2026-10-08","execution":"NONE","real_money":"NO-GO",
@@ -221,9 +231,7 @@ def run(args):
     offset=choose_offset(len(scope),limit,args.offset)
     chosen=scope[offset:offset+limit]
     key = os.getenv("XRAY_MASSIVE_API_KEY", "").strip()
-    right=str(os.getenv("XRAY_MASSIVE_NONDISPLAY_LICENSE_OK","")).lower()=="true"
-    evidence=str(os.getenv("XRAY_MASSIVE_LICENSE_EVIDENCE_SHA256",""))
-    licensed_for_this_use=right and bool(re.fullmatch(r"[a-f0-9]{64}",evidence))
+    licensed_for_this_use=license_scope_attested(os.environ)
     records = {}
     if not licensed_for_this_use:
         status = "BLOCKED_NONDISPLAY_LICENSE_UNVERIFIED"
