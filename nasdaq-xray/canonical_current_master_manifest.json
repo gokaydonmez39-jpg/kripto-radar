@@ -1,7 +1,7 @@
 {
   "asof_et": "2026-10-07",
   "asof_identity_proof": {
-    "blob_sha": "6c7e61f06b178c89adee64025c5279b7281364f2",
+    "blob_sha": "f347e6442e9ae30235693878e0255e0b03b02c0c",
     "counts": {
       "operating_overrides": 3,
       "remove_from_asof": 0,
@@ -29,13 +29,13 @@
   },
   "counts": {
     "PASS_IDENTITY": 3184,
-    "UNKNOWN_IDENTITY": 156
+    "UNKNOWN_IDENTITY": 152
   },
   "execution": "NONE",
-  "explicit_excluded_count": 56,
-  "explicit_excluded_hash": "8428ac95e4f89ad27570a7ee0b84a2ec49733cf7633d67f9ff68d02933786f8d",
+  "explicit_excluded_count": 60,
+  "explicit_excluded_hash": "483a02f31deca16cbff95d8f8acb07d40d338442d1a5ed7ce29d3f0b0746d48d",
   "explicit_excluded_reason_counts": {
-    "SPAC_BLANK_CHECK": 56
+    "SPAC_BLANK_CHECK": 60
   },
   "history_price_state_diagnostic_only": {
     "source_counts": {
@@ -3242,22 +3242,22 @@
   "queue_hash": "2554c936f42217cf8a9628e89d04993945218725234fe894f7c80856834725d6",
   "queue_total": 3184,
   "queue_unique": 3184,
-  "raw_identity_total": 3340,
+  "raw_identity_total": 3336,
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1",
   "sec_spac_proof": {
-    "blob_sha": "129faddb5de863f930778c31ccee30026e3a72d4",
-    "count": 56,
+    "blob_sha": "ba1f749f41f4bf7486e53dc5ab5c52171ee9985e",
+    "count": 60,
     "path": "nasdaq-xray/master_sec_spac_proof_20261007.json",
-    "symbol_hash": "d3515ee8067f0386c8037bf2bf59a6f0d993e0f8334afd29ea05c2212934d06f"
+    "symbol_hash": "6d6200febdb092f17e93df5da695f6751a5e05ba1e1c0bc6e9aec35f89737389"
   },
-  "source_state_blob_sha": "162fc94f382642b61d731da63683c62c9b33d140",
-  "source_state_hash": "125f6beefd172226122213741e3165b396389125e8a4188d34831149d1da2e52",
+  "source_state_blob_sha": "2884f0a4ba59b141003da37057ba747382d1a9dd",
+  "source_state_hash": "61d5a819dd4cfcff5be07cb253f39cb6aae60179770e03c103336921f4b30589",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
   "status": "PARTIAL_UNKNOWN",
   "status_semantics": "IDENTITY_PARTITION_EXACT_WITH_UNKNOWN",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 156,
+  "unknown_count": 152,
   "unknown_detail": {
     "ALIS": {
       "exact_sec_spac_proof": false,
@@ -3304,33 +3304,6 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "CAII": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Collective Acquisition Corp. II - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "CAPN": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Cayson Acquisition Corp - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "CCAQ": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Collective Acquisition Corp. - Class A ordinary shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "CCII": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
@@ -3346,15 +3319,6 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Churchill Capital Corp XI - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "CHAR": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Charlton Aria Acquisition Corporation - Class A Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -4671,12 +4635,8 @@
     "BKHA",
     "BPAC",
     "BSAA",
-    "CAII",
-    "CAPN",
-    "CCAQ",
     "CCII",
     "CCXI",
-    "CHAR",
     "CHPG",
     "CRAN",
     "CRAQ",
