@@ -44,9 +44,16 @@ def git_blob_sha(data:bytes):
     return hashlib.sha1(b"blob "+str(len(data)).encode()+b"\0"+data).hexdigest()
 
 def may_use_frozen_blob(key:str,current:dict,terminal_asof:str):
-    """Permit exact historical evidence only during a later ASOF roll."""
+    """Allow immutable, SHA-verified terminal evidence only for safe historic context.
+
+    A same-ASOF mutable event surface is never promoted to current signal
+    authority: caller must fetch the *exact terminal-bound* immutable Git
+    blob, and the public release guard compares ALL live source SHAs.
+    """
     if key=="official_halt_guard":
         return current.get("schema")=="XRAY_OFFICIAL_SOURCE_GUARD_V1"
+    if key=="events":
+        return current.get("asof_et")==terminal_asof
     if key not in ("master","price"):
         return False
     try:
@@ -309,6 +316,9 @@ def selftest():
     assert may_use_frozen_blob("master",{"asof_et":"2026-10-07"},"2026-10-07") is False
     assert may_use_frozen_blob("master",{"asof_et":"2026-10-06"},"2026-10-07") is False
     assert may_use_frozen_blob("events",{"asof_et":"2026-10-08"},"2026-10-07") is False
+    assert may_use_frozen_blob("events",{"asof_et":"2026-10-07"},"2026-10-07") is True
+    assert may_use_frozen_blob("events",{"asof_et":"2026-10-06"},"2026-10-07") is False
+    assert may_use_frozen_blob("history",{"asof_et":"2026-10-07"},"2026-10-07") is False
     assert may_use_frozen_blob("master",{"asof_et":"2026-10-25"},"2026-10-07") is False
     print("XRAY_MANUAL_DECISION_NEGATIVE_POSITIVE_SELFTEST=PASS")
 
