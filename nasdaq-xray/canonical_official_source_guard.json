@@ -4,6 +4,9 @@
   "candidate_safety": {
     "active_halt_symbols": [
       "BKKT.W",
+      "DAAQ",
+      "DAAQU",
+      "DAAQW",
       "EFTY",
       "HCHL",
       "LAWR",
@@ -55,6 +58,9 @@
       "COLA",
       "COLAR",
       "COLAU",
+      "DAAQ",
+      "DAAQU",
+      "DAAQW",
       "DRCT",
       "EFTY",
       "FSEA",
@@ -89,7 +95,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-10-08T13:03:20.423066+00:00",
+  "generated_at_utc": "2026-10-08T13:25:17.602645+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -652,9 +658,12 @@
       "url": "https://www.nasdaqtrader.com/rss.aspx?feed=systemstatus&subject=SELFHELP"
     },
     "trade_halts": {
-      "active_halt_count": 12,
+      "active_halt_count": 15,
       "active_halt_symbols": [
         "BKKT.W",
+        "DAAQ",
+        "DAAQU",
+        "DAAQW",
         "EFTY",
         "HCHL",
         "LAWR",
@@ -668,8 +677,53 @@
         "UCFIW"
       ],
       "active_state_rule": "EXPLICIT_EMPTY_RESUMPTION_FIELDS_ONLY",
-      "item_count": 14,
+      "item_count": 17,
       "items": [
+        {
+          "HaltDate": "10/08/2026",
+          "HaltTime": "09:10:00.000",
+          "IssueName": "Digital Asset Acquisition Corp",
+          "IssueSymbol": "DAAQ",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "T1",
+          "ResumptionDate": "",
+          "ResumptionQuoteTime": "",
+          "ResumptionTradeTime": "",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/08/2026                    </td><td valign=\"top\">09:10:00.000</td><td valign=\"top\">DAAQ</td><td valign=\"top\">Digital Asset Acquisition Corp</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">T1</td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td></tr></table>",
+          "pubDate": "Thu, 08 Oct 2026 04:00:00 GMT",
+          "title": "DAAQ"
+        },
+        {
+          "HaltDate": "10/08/2026",
+          "HaltTime": "09:10:00.000",
+          "IssueName": "Digital Asset Acquisition Corp",
+          "IssueSymbol": "DAAQW",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "T1",
+          "ResumptionDate": "",
+          "ResumptionQuoteTime": "",
+          "ResumptionTradeTime": "",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/08/2026                    </td><td valign=\"top\">09:10:00.000</td><td valign=\"top\">DAAQW</td><td valign=\"top\">Digital Asset Acquisition Corp</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">T1</td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td></tr></table>",
+          "pubDate": "Thu, 08 Oct 2026 04:00:00 GMT",
+          "title": "DAAQW"
+        },
+        {
+          "HaltDate": "10/08/2026",
+          "HaltTime": "09:10:00.000",
+          "IssueName": "Digital Asset Acq Corp Units",
+          "IssueSymbol": "DAAQU",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "T1",
+          "ResumptionDate": "",
+          "ResumptionQuoteTime": "",
+          "ResumptionTradeTime": "",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/08/2026                    </td><td valign=\"top\">09:10:00.000</td><td valign=\"top\">DAAQU</td><td valign=\"top\">Digital Asset Acq Corp Units</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">T1</td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td></tr></table>",
+          "pubDate": "Thu, 08 Oct 2026 04:00:00 GMT",
+          "title": "DAAQU"
+        },
         {
           "HaltDate": "10/08/2026",
           "HaltTime": "07:40:00.000",
