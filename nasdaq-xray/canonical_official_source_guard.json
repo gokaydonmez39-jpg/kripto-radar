@@ -5,7 +5,6 @@
     "active_halt_symbols": [
       "BKKT.W",
       "EFTY",
-      "GLE",
       "HCHL",
       "LAWR",
       "MAGH",
@@ -60,7 +59,6 @@
       "EFTY",
       "FSEA",
       "GFAIW",
-      "GLE",
       "HCHL",
       "ILLR",
       "ILLRW",
@@ -91,7 +89,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-10-08T06:49:42.402442+00:00",
+  "generated_at_utc": "2026-10-08T11:54:35.837661+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -627,11 +625,10 @@
       "url": "https://www.nasdaqtrader.com/rss.aspx?feed=systemstatus&subject=SELFHELP"
     },
     "trade_halts": {
-      "active_halt_count": 13,
+      "active_halt_count": 12,
       "active_halt_symbols": [
         "BKKT.W",
         "EFTY",
-        "GLE",
         "HCHL",
         "LAWR",
         "MAGH",
@@ -644,8 +641,23 @@
         "UCFIW"
       ],
       "active_state_rule": "EXPLICIT_EMPTY_RESUMPTION_FIELDS_ONLY",
-      "item_count": 13,
+      "item_count": 14,
       "items": [
+        {
+          "HaltDate": "10/08/2026",
+          "HaltTime": "07:40:00.000",
+          "IssueName": "Pacira BioSciences, Inc.",
+          "IssueSymbol": "PCRX",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "T3",
+          "ResumptionDate": "10/08/2026",
+          "ResumptionQuoteTime": "08:00:00",
+          "ResumptionTradeTime": "08:05:00",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/08/2026                    </td><td valign=\"top\">07:40:00.000</td><td valign=\"top\">PCRX</td><td valign=\"top\">Pacira BioSciences, Inc.</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">T3</td><td valign=\"top\"></td><td valign=\"top\">10/08/2026                    </td><td valign=\"top\">08:00:00                      </td><td valign=\"top\">08:05:00                      </td></tr></table>",
+          "pubDate": "Thu, 08 Oct 2026 04:00:00 GMT",
+          "title": "PCRX"
+        },
         {
           "HaltDate": "10/07/2026",
           "HaltTime": "19:50:00.000",
@@ -653,11 +665,11 @@
           "IssueSymbol": "GLE",
           "Market": "NASDAQ",
           "PauseThresholdPrice": "",
-          "ReasonCode": "T1",
-          "ResumptionDate": "",
-          "ResumptionQuoteTime": "",
-          "ResumptionTradeTime": "",
-          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/07/2026                    </td><td valign=\"top\">19:50:00.000</td><td valign=\"top\">GLE</td><td valign=\"top\">Global Eng Gr Hd CL A Ord Shs</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">T1</td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td></tr></table>",
+          "ReasonCode": "T3",
+          "ResumptionDate": "10/08/2026",
+          "ResumptionQuoteTime": "08:55:00",
+          "ResumptionTradeTime": "09:00:00",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/07/2026                    </td><td valign=\"top\">19:50:00.000</td><td valign=\"top\">GLE</td><td valign=\"top\">Global Eng Gr Hd CL A Ord Shs</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">T3</td><td valign=\"top\"></td><td valign=\"top\">10/08/2026                    </td><td valign=\"top\">08:55:00                      </td><td valign=\"top\">09:00:00                      </td></tr></table>",
           "pubDate": "Wed, 07 Oct 2026 04:00:00 GMT",
           "title": "GLE"
         },
@@ -846,196 +858,88 @@
       "url": "https://www.nasdaqtrader.com/rss.aspx?feed=tradehalts"
     },
     "trading_system_adds_deletes": {
-      "row_count": 21,
+      "row_count": 9,
       "rows": [
         {
           "BX Action": "Add",
-          "Company Name": "First Trust Exchange-Traded Fund",
-          "Effective Date": "10/7/2026",
+          "Company Name": "Southern Cross Acquisition II Corp.",
+          "Effective Date": "10/8/2026",
           "NASDAQ Action": "Add",
           "PSX Action": "Add",
-          "Primary Listing Market": "P",
-          "Symbol": "ACYB"
+          "Primary Listing Market": "G",
+          "Symbol": "SCAT"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "Southern Cross Acquisition II Corp.",
+          "Effective Date": "10/8/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "G",
+          "Symbol": "SCATR"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "Southern Cross Acquisition II Corp.",
+          "Effective Date": "10/8/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "G",
+          "Symbol": "SCATW"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "Texas Capital Bancshares, Inc.",
+          "Effective Date": "10/8/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "F",
+          "Symbol": "TCBI"
         },
         {
           "BX Action": "Delete",
-          "Company Name": "Arbe Robotics Ltd.",
-          "Effective Date": "10/7/2026",
-          "NASDAQ Action": "Delete",
-          "PSX Action": "Delete",
-          "Primary Listing Market": "S",
-          "Symbol": "ARBEW"
-        },
-        {
-          "BX Action": "Delete",
-          "Company Name": "Neighborhood Intelligence, Inc.",
-          "Effective Date": "10/7/2026",
+          "Company Name": "Texas Capital Bancshares, Inc.",
+          "Effective Date": "10/8/2026",
           "NASDAQ Action": "Delete",
           "PSX Action": "Delete",
           "Primary Listing Market": "Q",
-          "Symbol": "BBBYW"
+          "Symbol": "TCBI"
         },
         {
           "BX Action": "Add",
-          "Company Name": "Bradbury Capital Inc.",
-          "Effective Date": "10/7/2026",
+          "Company Name": "Texas Capital Bancshares, Inc.",
+          "Effective Date": "10/8/2026",
           "NASDAQ Action": "Add",
           "PSX Action": "Add",
-          "Primary Listing Market": "G",
-          "Symbol": "BBCI"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "Bradbury Capital Inc.",
-          "Effective Date": "10/7/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "S",
-          "Symbol": "BBCIW"
+          "Primary Listing Market": "F",
+          "Symbol": "TCBI-B"
         },
         {
           "BX Action": "Delete",
-          "Company Name": "BioLife Solutions, Inc.",
-          "Effective Date": "10/7/2026",
-          "NASDAQ Action": "Delete",
-          "PSX Action": "Delete",
-          "Primary Listing Market": "S",
-          "Symbol": "BLFS"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "Amplify ETF Trust",
-          "Effective Date": "10/7/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "P",
-          "Symbol": "CPU"
-        },
-        {
-          "BX Action": "Delete",
-          "Company Name": "Triller Group Inc.",
-          "Effective Date": "10/7/2026",
-          "NASDAQ Action": "Delete",
-          "PSX Action": "Delete",
-          "Primary Listing Market": "S",
-          "Symbol": "ILLR"
-        },
-        {
-          "BX Action": "Delete",
-          "Company Name": "Triller Group Inc.",
-          "Effective Date": "10/7/2026",
-          "NASDAQ Action": "Delete",
-          "PSX Action": "Delete",
-          "Primary Listing Market": "S",
-          "Symbol": "ILLRW"
-        },
-        {
-          "BX Action": "Delete",
-          "Company Name": "Nuveen Municipal Credit Opportunities Fund",
-          "Effective Date": "10/7/2026",
-          "NASDAQ Action": "Delete",
-          "PSX Action": "Delete",
-          "Primary Listing Market": "N",
-          "Symbol": "NMCO^"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "Harris Oakmark ETF Trust",
-          "Effective Date": "10/7/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "P",
-          "Symbol": "OAKL"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "Russell Investments Exchange Traded Funds",
-          "Effective Date": "10/7/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "P",
-          "Symbol": "RINK"
-        },
-        {
-          "BX Action": "Delete",
-          "Company Name": "Simulations Plus, Inc.",
-          "Effective Date": "10/7/2026",
+          "Company Name": "Texas Capital Bancshares, Inc.",
+          "Effective Date": "10/8/2026",
           "NASDAQ Action": "Delete",
           "PSX Action": "Delete",
           "Primary Listing Market": "Q",
-          "Symbol": "SLP"
+          "Symbol": "TCBIO"
         },
         {
           "BX Action": "Add",
-          "Company Name": "NEOS ETF Trust",
-          "Effective Date": "10/7/2026",
+          "Company Name": "WisdomTree Trust",
+          "Effective Date": "10/8/2026",
           "NASDAQ Action": "Add",
           "PSX Action": "Add",
-          "Primary Listing Market": "Z",
-          "Symbol": "SLVI"
+          "Primary Listing Market": "F",
+          "Symbol": "WSLS"
         },
         {
           "BX Action": "Add",
-          "Company Name": "The RBB Fund Trust",
-          "Effective Date": "10/7/2026",
+          "Company Name": "WisdomTree Trust",
+          "Effective Date": "10/8/2026",
           "NASDAQ Action": "Add",
           "PSX Action": "Add",
-          "Primary Listing Market": "P",
-          "Symbol": "SMTJ"
-        },
-        {
-          "BX Action": "Delete",
-          "Company Name": "Spark I Acquisition Corp.",
-          "Effective Date": "10/7/2026",
-          "NASDAQ Action": "Delete",
-          "PSX Action": "Delete",
-          "Primary Listing Market": "G",
-          "Symbol": "SPKL"
-        },
-        {
-          "BX Action": "Delete",
-          "Company Name": "Spark I Acquisition Corp.",
-          "Effective Date": "10/7/2026",
-          "NASDAQ Action": "Delete",
-          "PSX Action": "Delete",
-          "Primary Listing Market": "G",
-          "Symbol": "SPKLU"
-        },
-        {
-          "BX Action": "Delete",
-          "Company Name": "Spark I Acquisition Corp.",
-          "Effective Date": "10/7/2026",
-          "NASDAQ Action": "Delete",
-          "PSX Action": "Delete",
-          "Primary Listing Market": "G",
-          "Symbol": "SPKLW"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "Direxion Shares ETF Trust",
-          "Effective Date": "10/7/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "P",
-          "Symbol": "SPXP"
-        },
-        {
-          "BX Action": "Delete",
-          "Company Name": "Warner Bros. Discovery, Inc.",
-          "Effective Date": "10/7/2026",
-          "NASDAQ Action": "Delete",
-          "PSX Action": "Delete",
-          "Primary Listing Market": "Q",
-          "Symbol": "WBD"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "SCWorx Corp.",
-          "Effective Date": "10/7/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "S",
-          "Symbol": "WORX"
+          "Primary Listing Market": "F",
+          "Symbol": "WTAL"
         }
       ],
       "status": "PASS",
