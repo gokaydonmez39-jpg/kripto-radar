@@ -166,6 +166,14 @@ def clean_record(symbol,asof,raw):
         "source":"MASSIVE_REFERENCE_TICKER_OVERVIEW_PIT",
         "asof_et":asof,"alpha_authority":False,"r92_eligible":False}
 
+def shadow_coverage_complete(scope, cp):
+    """Only classify shadow coverage complete when EVERY symbol has valid PIT data."""
+    rows=(cp or {}).get("records") or {}
+    return (len(rows)==len(scope["symbols"])
+            and all(rec.get("state") in (
+                "SHADOW_OBSERVED_ABOVE_2B","SHADOW_OBSERVED_BELOW_2B")
+                for rec in rows.values()))
+
 def health(scope, cp=None,status="UNKNOWN",requests=0,restored=False,reason=None):
     records=(cp or {}).get("records") or {}
     n=len(records)
@@ -184,7 +192,8 @@ def health(scope, cp=None,status="UNKNOWN",requests=0,restored=False,reason=None
         "total_price_pass":len(scope["symbols"]),
         "processed_count":n,"pending_count":pending,
         "last_run_requests":requests,"restored_encrypted_checkpoint":restored,
-        "resume_complete_shadow_only":pending==0,
+        "resume_complete_shadow_only":shadow_coverage_complete(scope,cp),
+        "all_symbols_attempted_but_unverified":pending==0 and not shadow_coverage_complete(scope,cp),
         "current_mc_production_authority":False,
         "note":"Even complete shadow cannot grant C4.17 MC or AL authority."}
 
@@ -254,7 +263,8 @@ def run(args):
     dest.parent.mkdir(parents=True,exist_ok=True)
     dest.write_bytes(encrypted)
     remaining=len(scope["symbols"])-len(cp["records"])
-    status=("SHADOW_COMPLETE_NO_ALPHA" if remaining==0 else
+    status=("SHADOW_COMPLETE_NO_ALPHA" if shadow_coverage_complete(scope,cp) else
+            "SHADOW_ALL_ATTEMPTED_UNRESOLVED_NO_ALPHA" if remaining==0 else
             "SHADOW_PARTIAL_NO_ALPHA")
     if interrupted_reason:status="BLOCKED_VENDOR_QUOTA_OR_AUTHORIZATION"
     result=health(scope,cp,status,count,restored,interrupted_reason)
@@ -330,6 +340,11 @@ def selftest():
     assert "AAPL" not in public and "4000000000" not in public
     assert "SHADOW_OBSERVED_ABOVE_2B" not in public
     assert health(scope,cp)["pending_count"]==1
+    bad_rows=deepcopy(cp)
+    bad_rows["records"]["NVDA"]=clean_record("NVDA",scope["asof_et"],{"state":"UNKNOWN","reason":"MARKET_CAP_UNAVAILABLE"})
+    assert not shadow_coverage_complete(scope,bad_rows)
+    assert health(scope,bad_rows)["all_symbols_attempted_but_unverified"] is True
+    assert health(scope,bad_rows)["resume_complete_shadow_only"] is False
     assert retryable_unknown({"state":"UNKNOWN","reason":"HTTP_500"})
     assert retryable_unknown({"state":"UNKNOWN","reason":"TRANSPORT_URLError"})
     assert not retryable_unknown({"state":"UNKNOWN","reason":"SPAC_SUSPECT_OFFICIAL_SEC_PROOF_REQUIRED"})
