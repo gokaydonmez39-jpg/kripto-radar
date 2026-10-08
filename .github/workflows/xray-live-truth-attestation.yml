@@ -1,0 +1,193 @@
+name: XRAY Live Truth Attestation
+# Read-only, fail-closed. A successful CI run is NOT trading or TRUE_FULL_GO.
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/xray-live-truth-attestation.yml"
+      - "nasdaq-xray/chatgpt_compiled_policy_v3.json"
+      - "nasdaq-xray/canonical_current_master_manifest.json"
+      - "nasdaq-xray/canonical_current_full_state.json"
+      - "nasdaq-xray/canonical_current_price_dv30.json"
+      - "nasdaq-xray/canonical_mc_bridge_*.json"
+      - "nasdaq-xray/canonical_resolver_bridge_*.json"
+      - "nasdaq-xray/canonical_current_history.json"
+      - "nasdaq-xray/canonical_current_final_tech.json"
+      - "nasdaq-xray/canonical_current_terminal.json"
+      - "nasdaq-xray/canonical_current_final_gate_overlay.json"
+      - "nasdaq-xray/strict_g9_runtime_state.json"
+      - "nasdaq-xray/account_gate_contract.json"
+permissions:
+  contents: read
+concurrency:
+  group: xray-live-truth-attestation
+  cancel-in-progress: true
+jobs:
+  attest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Positive and negative fail-closed state tests
+        shell: bash
+        run: |
+          python - <<'PY'
+          def decide(**facts):
+              missing=sorted(k for k,v in facts.items() if v is not True)
+              return "BLOCKED" if missing else "EVIDENCE_COHERENT_NOT_GO_AUTHORITY",missing
+          assert decide(price=True, mc=True, g9=False)==("BLOCKED",["g9"])
+          assert decide(price=False, mc=True, g9=True)==("BLOCKED",["price"])
+          assert decide(price=True, mc=False, g9=False)==("BLOCKED",["g9","mc"])
+          assert decide(price=True, mc=True, g9=True)==("EVIDENCE_COHERENT_NOT_GO_AUTHORITY",[])
+          print("XRAY_TRUTH_NEGATIVE_AND_POSITIVE_SELFTEST=PASS cases=4")
+          PY
+      - name: Independently read all current blobs and compute truth report
+        shell: bash
+        run: |
+          python - <<'PY'
+          import glob,hashlib,json,os,pathlib,subprocess,sys
+          from datetime import datetime,timezone
+          root=pathlib.Path("nasdaq-xray")
+          def blob(data):
+              return hashlib.sha1(b"blob "+str(len(data)).encode()+b"\0"+data).hexdigest()
+          def read(name):
+              p=root/name
+              if not p.exists(): return {},None
+              b=p.read_bytes()
+              try: j=json.loads(b)
+              except ValueError: return {},blob(b)
+              return (j if isinstance(j,dict) else {}),blob(b)
+          def gh_sha(path):
+              try:return subprocess.check_output(["git","rev-parse","HEAD:"+path],text=True,stderr=subprocess.DEVNULL).strip()
+              except (OSError,subprocess.CalledProcessError):return None
+          names={
+              "policy":"chatgpt_compiled_policy_v3.json",
+              "master":"canonical_current_master_manifest.json",
+              "full_state":"canonical_current_full_state.json",
+              "price":"canonical_current_price_dv30.json",
+              "history":"canonical_current_history.json",
+              "final":"canonical_current_final_tech.json",
+              "terminal":"canonical_current_terminal.json",
+              "overlay":"canonical_current_final_gate_overlay.json",
+              "g9":"strict_g9_runtime_state.json",
+              "account":"account_gate_contract.json",
+          }
+          objs={};sha={};git_sha_matches={}
+          for k,name in names.items():
+              objs[k],sha[k]=read(name)
+              git_sha_matches[k]=bool(sha[k] and sha[k]==gh_sha("nasdaq-xray/"+name))
+          p=objs["price"];m=objs["master"];h=objs["history"]
+          t=objs["terminal"];o=objs["overlay"];g=objs["g9"];a=objs["account"]
+          asof=p.get("asof_et")
+          pp=list(p.get("pass_symbols") or [])
+          mp=list(m.get("pass_symbols") or [])
+          mu=list(m.get("unknown_symbols") or [])
+          candidates=[]
+          for path_mc in sorted(glob.glob("nasdaq-xray/canonical_mc_bridge_*.json")):
+              j,s=read(pathlib.Path(path_mc).name)
+              if (j.get("schema")=="XRAY_MC_EPOCH_RESULT_V1"
+                  and j.get("status")=="COMMITTED"
+                  and j.get("asof_et")==asof
+                  and j.get("input_blob_sha")==sha["price"]
+                  and j.get("policy_version")=="C4.17"
+                  and j.get("policy_hash")=="68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4"):
+                  candidates.append((path_mc,j,s))
+          superseded=set((j.get("supersedes_mc_bridge_path") or "") for _,j,_ in candidates
+                         if j.get("supersedes_mc_bridge_blob_sha"))
+          active=[(path_mc,j,s) for path_mc,j,s in candidates if path_mc not in superseded]
+          mc_path,mc,mc_sha=(active[0] if len(active)==1 else (None,{},None))
+          sets=[set(mc.get(k) or []) for k in (
+              "primary_pass_symbols","primary_fail_symbols","fallback_watch_symbols",
+              "fallback_fail_symbols","unknown_symbols")]
+          counts=mc.get("counts") or {}
+          union=set().union(*sets)
+          disjoint=all(not (sets[i]&sets[j]) for i in range(5) for j in range(i+1,5))
+          mc_partition=(len(active)==1 and disjoint
+              and union==set(pp)==set(mc.get("input_pass_symbols") or [])
+              and set((mc.get("results") or {}).keys())==set(pp)
+              and int(counts.get("TOTAL",-1))==len(pp)
+              and int(counts.get("MC_PASS_PRIMARY",-1))==len(sets[0])
+              and int(counts.get("MC_FAIL_PRIMARY",-1))==len(sets[1])
+              and int(counts.get("MC_PASS_FALLBACK_WATCH",-1))==len(sets[2])
+              and int(counts.get("MC_FAIL_FALLBACK_TWO_SOURCE",-1))==len(sets[3])
+              and int(counts.get("MC_UNKNOWN",-1))==len(sets[4]))
+          rp=str(mc.get("resolver_handoff_provenance_path") or "")
+          _,rs=read(rp.split("/")[-1]) if rp.startswith("nasdaq-xray/canonical_resolver_bridge_") else ({},None)
+          resolver_exact=bool(rs and rs==mc.get("resolver_handoff_provenance_blob_sha"))
+          ev=t.get("evidence") or {}
+          drift=[k for k in ("master","full_state","price","history","final")
+                 if (ev.get(k) or {}).get("blob_sha")!=sha.get(k)]
+          if (ev.get("mc") or {}).get("blob_sha")!=mc_sha or (mc_path and (ev.get("mc") or {}).get("path")!=mc_path):
+              drift.append("mc")
+          if t.get("asof_et")!=asof:drift.append("asof")
+          facts={
+              "POLICY":bool(objs["policy"].get("policy_hash")=="68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4"
+                  and objs["policy"].get("execution")=="NONE" and objs["policy"].get("real_money")=="NO-GO"),
+              "GITHUB_BLOBS":all(git_sha_matches.values()) and bool(mc_path and mc_sha==gh_sha(mc_path)),
+              "MASTER":bool(asof and m.get("asof_et")==asof
+                  and m.get("source_state_blob_sha")==sha["full_state"]
+                  and int(m.get("pass_count",-1))==len(mp)
+                  and int(m.get("unknown_count",-1))==len(mu)
+                  and len(mp)==len(set(mp)) and set(mp).isdisjoint(mu)),
+              "PRICE":bool(asof and p.get("source_master_queue_hash")==m.get("queue_hash")
+                  and int(p.get("source_master_count",-1))==len(mp)
+                  and int(p.get("pass_count",-1))==len(pp)
+                  and int(p.get("unknown_count",-1))==len(p.get("unknown_symbols") or [])
+                  and int(p.get("blocked_count",-1))==len(p.get("blocked_symbols") or [])
+                  and set(pp).issubset(mp)),
+              "MC_PARTITION":mc_partition,
+              "MC_RESOLVER_WITNESS":resolver_exact,
+              "HISTORY_ACTIVE_MC":bool(mc_sha and h.get("source_mc_blob_sha")==mc_sha),
+              "TERMINAL_EXACT":bool(ev) and not drift,
+              "TERMINAL_RESEARCH_PASS":t.get("full_end_to_end_research_pass") is True,
+              "OVERLAY":bool((o.get("terminal_live_artifact_bindings") or {}).get("exact") is True
+                  and (o.get("source_terminal") or {}).get("blob_sha")==sha["terminal"]),
+              "G9":g.get("g9_pass") is True,
+              "ACCOUNT":bool((o.get("account") or {}).get("account_pass") is True
+                  and a.get("current_status")=="ACCOUNT_PASS"),
+          }
+          blocked=sorted(k for k,v in facts.items() if v is not True)
+          report={
+              "schema":"XRAY_INDEPENDENT_LIVE_TRUTH_ATTESTATION_V1",
+              "generated_at_utc":datetime.now(timezone.utc).isoformat(),
+              "checkout_head":subprocess.check_output(["git","rev-parse","HEAD"],text=True).strip(),
+              "asof_et":asof,"execution":"NONE","real_money":"NO-GO",
+              "unknown_never_pass":True,"read_only":True,"alpha_authority":False,
+              "status":"BLOCKED" if blocked else "EVIDENCE_COHERENT_NOT_GO_AUTHORITY",
+              "checks":facts,"blocked_checks":blocked,
+              "diagnostics":{
+                  "master_pass":len(mp),"master_unknown":len(mu),
+                  "price_pass":len(pp),"mc_primary_pass":len(sets[0]),
+                  "mc_fallback_watch":len(sets[2]),"mc_unknown":len(sets[4]),
+                  "mc_active_path":mc_path,"mc_active_count":len(active),
+                  "history_mc_source_path":h.get("source_mc_artifact"),
+                  "terminal_drift_sources":drift,
+                  "terminal_generated_at_utc":t.get("generated_at_utc"),
+                  "terminal_pre_g9_tech_pass":(t.get("counts") or {}).get("pre_g9_tech_pass"),
+                  "g9_runtime_status":g.get("status"),"account_gate_status":a.get("current_status"),
+              },
+              "this_workflow_never_authorizes_true_full_go":True
+          }
+          out=pathlib.Path(os.environ["RUNNER_TEMP"])/"xray_live_truth_attestation.json"
+          out.write_text(json.dumps(report,sort_keys=True,indent=2)+"\n")
+          print("XRAY_TRUTH_STATUS="+report["status"])
+          print("XRAY_TRUTH_BLOCKED="+",".join(blocked))
+          print("XRAY_TRUTH_MC_ACTIVE="+str(mc_path))
+          print("XRAY_TRUTH_TERMINAL_DRIFT="+",".join(drift))
+          print("XRAY_TRUTH_JSON="+str(out))
+          if (o.get("true_full_go") or {}).get("status")=="GO" and blocked:
+              print("::error::XRAY_UNSAFE_TRUE_GO_CLAIM",file=sys.stderr)
+              raise SystemExit(2)
+          PY
+      - name: Persist read-only truth evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-live-truth-attestation
+          path: ${{ runner.temp }}/xray_live_truth_attestation.json
+          retention-days: 14
+          if-no-files-found: warn
