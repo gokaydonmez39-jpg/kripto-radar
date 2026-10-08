@@ -123,6 +123,14 @@ def restore(ciphertext:bytes,fernet,scope):
         cp=json.loads(raw)
     except Exception as exc:
         raise ValueError("CHECKPOINT_DECRYPT_OR_PARSE_FAILED") from exc
+    if (cp.get("asof_et")!=scope["asof_et"]
+        or cp.get("price_blob_sha")!=scope["price_blob_sha"]
+        or cp.get("scope_hash")!=scope["scope_hash"]):
+        # Authenticated, genuine prior epoch; discard ALL old observations.
+        # No stale-price or stale-MC carryover even when symbol sets coincide.
+        if cp.get("schema")!=SCHEMA:
+            raise ValueError("CHECKPOINT_SCHEMA_CHANGED")
+        return fresh_checkpoint(scope),False
     if not exact_checkpoint(cp,scope):
         raise ValueError("CHECKPOINT_SOURCE_OR_SEMANTICS_DRIFT")
     return cp,True
@@ -232,9 +240,9 @@ def selftest():
     except ValueError:pass
     else:raise AssertionError("KEY_ROTATION_NOT_BLOCKED")
     badscope=dict(scope,asof_et="2026-10-09")
-    try:restore(raw,a,badscope)
-    except ValueError:pass
-    else:raise AssertionError("ASOF_REPLAY_NOT_BLOCKED")
+    restart, reused=restore(raw,a,badscope)
+    assert reused is False and restart["records"]=={}
+    assert restart["asof_et"]=="2026-10-09"
     for fn in (
         lambda d:d.update(alpha_authority=True),
         lambda d:d.update(price_blob_sha="rebound"),
