@@ -1,6 +1,10 @@
 name: XRAY Manual Decision Research Only
 on:
   workflow_dispatch:
+  workflow_run:
+    workflows: ["XRAY Canonical Current Final Factory"]
+    types: [completed]
+    branches: [main]
   schedule:
     - cron: "17 21 * * 1-5"
   push:
@@ -17,6 +21,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   manual-research:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
