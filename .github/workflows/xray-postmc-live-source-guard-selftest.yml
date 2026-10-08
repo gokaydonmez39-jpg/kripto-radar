@@ -92,7 +92,7 @@ jobs:
           import textwrap
           w=Path(".github/workflows/xray-canonical-current-post-mc.yml").read_text()
           chunk=w.split("      - name: Commit current post-MC artifacts",1)[1]
-          code=chunk.split("         run: |",1)[1]
+          code=chunk.split("        run: |",1)[1]
           result=subprocess.run(["bash","-n"],input=textwrap.dedent(code),text=True,capture_output=True)
           if result.returncode:
               raise AssertionError("XRAY_POSTMC_LATE_CAS_BASH_SYNTAX_FAIL:"+result.stderr[:700])
