@@ -20,6 +20,8 @@ jobs:
     timeout-minutes: 12
     env:
       XRAY_MASSIVE_API_KEY: ${{ secrets.XRAY_MASSIVE_API_KEY }}
+      XRAY_MASSIVE_NONDISPLAY_LICENSE_OK: ${{ vars.XRAY_MASSIVE_NONDISPLAY_LICENSE_OK }}
+      XRAY_MASSIVE_LICENSE_EVIDENCE_SHA256: ${{ secrets.XRAY_MASSIVE_LICENSE_EVIDENCE_SHA256 }}
       GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v4
@@ -45,10 +47,14 @@ jobs:
           python nasdaq-xray/delivery_prepare_selftest.py
           python nasdaq-xray/delivery_scheduler_guard_selftest.py
           echo "XRAY_SYNTHETIC_SIGNAL_DELIVERY_REGRESSION=PASS_NO_LIVE_ISSUE_NO_PUSH"
-      - name: Restore most recent encrypted checkpoint (authorized GH Actions artifact only)
+      - name: Restore most recent encrypted checkpoint (license-attested GH Actions artifact only)
         env:
           XRAY_WORKFLOW_FILE: "xray-massive-mc-resume-shadow.yml"
         run: |
+          if [[ "$XRAY_MASSIVE_NONDISPLAY_LICENSE_OK" != "true" || ${#XRAY_MASSIVE_LICENSE_EVIDENCE_SHA256} -ne 64 ]]; then
+            echo "XRAY_RESUME_RESTORE=SKIP_LICENSE_SCOPE_UNVERIFIED"
+            exit 0
+          fi
           if [[ -z "$XRAY_MASSIVE_API_KEY" ]]; then
             echo "XRAY_RESUME_RESTORE=SKIP_MISSING_SECRET"
             exit 0
