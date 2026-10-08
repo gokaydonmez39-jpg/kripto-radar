@@ -12,7 +12,8 @@ import re
 from pathlib import Path
 
 SCHEMA="XRAY_MANUAL_RESEARCH_FOLLOWUP_SHADOW_V1"
-STATES={"MONITORING","ENTRY_ZONE_TOUCHED","TARGET_LEVEL_TOUCHED",
+STATES={"MONITORING","ENTRY_ZONE_APPROACHING","ENTRY_ZONE_LEFT_ABOVE",
+        "ENTRY_ZONE_TOUCHED","TARGET_LEVEL_TOUCHED",
         "STOP_LEVEL_TOUCHED","INVALIDATED","EXPIRED",
         "AMBIGUOUS_INTRABAR_ORDER","OFFICIAL_HALT","SOURCE_STALE","EVENT_VETO"}
 CLOSED={"STOP_LEVEL_TOUCHED","TARGET_LEVEL_TOUCHED","INVALIDATED","EXPIRED","OFFICIAL_HALT","EVENT_VETO"}
@@ -93,6 +94,10 @@ def event(c,bar,prev=None,*,observed_at_utc,halt=False,material_event=False,
         previous_ts=iso(prev.get("last_bar_end_utc"))
         if ts<previous_ts:
             raise ValueError("OUT_OF_ORDER_BAR")
+        if ts==previous_ts and prev.get("source_sha")!=bar["source_hash"]:
+            # A completed candle has been revised: do not generate contradictory
+            # follow-up alerts until its provenance is independently reconciled.
+            raise ValueError("COMPLETED_BAR_REVISION_UNVERIFIED")
     if halt is True:status="OFFICIAL_HALT"
     elif material_event is True:status="EVENT_VETO"
     elif invalidated is True:status="INVALIDATED"
@@ -110,6 +115,13 @@ def event(c,bar,prev=None,*,observed_at_utc,halt=False,material_event=False,
             # Target can be hit even if user never entered; it is NOT P/L.
             status="TARGET_LEVEL_TOUCHED"
         elif entry_hit:status="ENTRY_ZONE_TOUCHED"
+        elif low>finite(c["entry_high"])*1.02 and prev.get("status") in (
+                "ENTRY_ZONE_APPROACHING","ENTRY_ZONE_TOUCHED"):
+            # Entire completed bar moved strictly above the entry band +2%;
+            # never claim that the user's trade was entered/exited.
+            status="ENTRY_ZONE_LEFT_ABOVE"
+        elif finite(c["entry_high"])<low<=finite(c["entry_high"])*1.01:
+            status="ENTRY_ZONE_APPROACHING"
         else:status="MONITORING"
     prev_status=prev.get("status")
     fresh=prev_status!=status
@@ -146,6 +158,17 @@ def selftest():
     row=event(c,b,**kwargs)
     assert row["status"]=="ENTRY_ZONE_TOUCHED" and row["alert"]
     assert event(c,b,row,**kwargs)["alert"] is False
+    near_bar={**b,"low":102.4,"high":104.0}
+    near=event(c,near_bar,**kwargs)
+    assert near["status"]=="ENTRY_ZONE_APPROACHING" and near["alert"]
+    away_bar={**b,"low":105.0,"high":107.0,
+              "bar_end_utc":"2026-10-08T19:15:00Z"}
+    away=event(c,away_bar,near,observed_at_utc="2026-10-08T19:20:00Z")
+    assert away["status"]=="ENTRY_ZONE_LEFT_ABOVE" and away["alert"]
+    assert event(c,away_bar,away,observed_at_utc="2026-10-08T19:20:00Z")["alert"] is False
+    try: event(c,{**b,"source_hash":"d"*40},row,**kwargs)
+    except ValueError as exc: assert str(exc)=="COMPLETED_BAR_REVISION_UNVERIFIED"
+    else:raise AssertionError("COMPLETED_BAR_REVISION_ADMITTED")
     q={**b,"low":94,"high":121}
     assert event(c,q,**kwargs)["status"]=="AMBIGUOUS_INTRABAR_ORDER"
     assert event(c,{**b,"low":94,"high":101},**kwargs)["status"]=="STOP_LEVEL_TOUCHED"
