@@ -30,7 +30,7 @@ jobs:
           from pathlib import Path
           root=Path("nasdaq-xray")
           b=(root/"canonical_current_master_manifest.json").read_bytes()
-          sha=hashlib.sha1(b"blob "+str(len(b)).encode()+b"\\0"+b).hexdigest()
+          sha=hashlib.sha1(b"blob "+str(len(b)).encode()+b"\0"+b).hexdigest()
           request=json.loads((root/"canonical_current_resolver_request.json").read_text())
           match=request.get("source_master_blob_sha")==sha
           result={"schema":"XRAY_RESOLVER_MASTER_SHA_WITNESS_V1",
@@ -39,7 +39,7 @@ jobs:
               "exact_match":match,"alpha_authority":False,"execution":"NONE",
               "real_money":"NO-GO","unknown_never_pass":True}
           out=Path("/tmp/xray-resolver-master-sha-witness.json")
-          out.write_text(json.dumps(result,sort_keys=True,indent=2)+"\\n")
+          out.write_text(json.dumps(result,sort_keys=True,indent=2)+"\n")
           print("XRAY_RESOLVER_MASTER_SHA="+("MATCH" if match else "DRIFT_BLOCKED"))
           assert not match or result["exact_match"] is True
           PY
