@@ -419,6 +419,24 @@ jobs:
           # blob; filtering it first splits one SHA-verified chain into two
           # spurious active heads (DUPLICATE_MC_BINDING).
           # If two independent immutable heads exist, retain fail-closed.
+          # Diagnostic-only immutable lineage audit: file names and SHA
+          # relations, never market data or private account state.
+          all_idx={row["rel"]:row for row in all_mc}
+          superseded_edges=set()
+          invalid_links=[]
+          for link in all_mc:
+              parent=link["obj"].get("supersedes_mc_bridge_path")
+              witness=link["obj"].get("supersedes_mc_bridge_blob_sha")
+              if parent or witness:
+                  pred=all_idx.get(parent)
+                  if pred is None or pred["blob"]!=witness:
+                      invalid_links.append({"child":link["rel"],"parent":parent,
+                                            "reason":"MISSING_OR_SHA_MISMATCH"})
+                  else:
+                      superseded_edges.add(parent)
+          heads=sorted(row["rel"] for row in all_mc if row["rel"] not in superseded_edges)
+          print("XRAY_MC_GLOBAL_HEAD_DIAGNOSTIC="+json.dumps({
+              "scanned":len(all_mc),"heads":heads,"invalid_links":invalid_links},sort_keys=True))
           try:
               canonical_head=select_active_mc_row(all_mc)["rel"]
           except AssertionError as e:
