@@ -13,8 +13,8 @@ from price_dv30_recover_from_fullstate import (
 
 ROOT=Path(__file__).resolve().parent
 REGISTRY=ROOT/"price_official_listing_registry.json"
-ASOF="2026-10-06"
-EXPECTED_SYMBOLS={"ACCV","ADRX","CHWM","ETRA","OIG","RZAI","TBCV","WQEY","XIII"}
+ASOF="2026-10-07"
+EXPECTED_SYMBOLS={"ACCV","ADRX","BBCI","CHWM","ETRA","OIG","RZAI","TBCV","WQEY","XIII"}
 
 
 def main():
@@ -56,7 +56,7 @@ def main():
     # Future listing evidence cannot classify the current ASOF.
     future=deepcopy(registry)
     future["records"]["TEST"]={
-        "first_trade_date":"2026-10-07",
+        "first_trade_date":"2026-10-08",
         "authority":"SEC_PRIMARY",
         "source_url":"https://www.sec.gov/example",
         "evidence_kind":"TEST",
@@ -78,19 +78,24 @@ def main():
     sample={
         "ACCV":{"status":"UNKNOWN","info":{"reason":"OLD_UNRESOLVED"}},
         "ADRX":{"status":"BLOCK_CURRENT_RUN","info":{"reason":"OLD_BLOCK"}},
+        "BBCI":{"status":"BLOCK_CURRENT_RUN","info":{"reason":"OFFICIAL_FIRST_TRADING_DATE_BLOCK"}},
         "CHWM":{"status":"PASS_PRICE_DV30","info":{"sentinel":"KEEP_PASS"}},
         "ETRA":{"status":"FAIL_DV30","info":{"sentinel":"KEEP_FAIL"}},
     }
     pass_before=deepcopy(sample["CHWM"])
     fail_before=deepcopy(sample["ETRA"])
     changed=apply_official_recent_listing_fail_only(sample,registry,ASOF,exp30)
-    assert set(changed)=={"ACCV","ADRX"},changed
+    assert set(changed)=={"ACCV","ADRX","BBCI"},changed
     assert sample["ACCV"]["status"]=="FAIL_DV30_INSUFFICIENT_SESSIONS",sample["ACCV"]
     assert sample["ADRX"]["status"]=="FAIL_DV30_INSUFFICIENT_SESSIONS",sample["ADRX"]
+    assert sample["BBCI"]["status"]=="FAIL_DV30_INSUFFICIENT_SESSIONS",sample["BBCI"]
+    assert sample["BBCI"]["info"]["max_possible_completed_sessions_in_exact30_window"]==1
     assert sample["CHWM"]==pass_before,sample["CHWM"]
     assert sample["ETRA"]==fail_before,sample["ETRA"]
     assert sample["ACCV"]["info"]["decision_direction"]=="FAIL_ONLY_NEVER_PASS"
     assert sample["ADRX"]["info"]["decision_direction"]=="FAIL_ONLY_NEVER_PASS"
+    assert sample["BBCI"]["info"]["source_url"]=="https://www.nasdaqtrader.com/TraderNews.aspx?id=ECA2026-717"
+    assert official_recent_listing_terminal(registry,"BBCI","2026-10-06",expected30("2026-10-06")) is None
 
     print("XRAY_PRICE_OFFICIAL_LISTING_SELFTEST=PASS")
     print(json.dumps({
