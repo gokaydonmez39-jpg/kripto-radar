@@ -96,8 +96,10 @@ def event(c,bar,prev=None,*,observed_at_utc,halt=False,material_event=False,
     if halt is True:status="OFFICIAL_HALT"
     elif material_event is True:status="EVENT_VETO"
     elif invalidated is True:status="INVALIDATED"
+    # Expiry follows the observation clock, even when no fresh market bar arrives.
+    # An expired research setup cannot remain indefinitely SOURCE_STALE.
+    elif iso(observed_at_utc)>=expires:status="EXPIRED"
     elif age>max_age_minutes*60:status="SOURCE_STALE"
-    elif ts>expires:status="EXPIRED"
     else:
         stop_hit=low<=finite(c["stop"])
         target_hit=high>=finite(c["target"])
@@ -152,6 +154,9 @@ def selftest():
     assert event(c,b,**kwargs,material_event=True)["status"]=="EVENT_VETO"
     assert event(c,b,**kwargs,invalidated=True)["status"]=="INVALIDATED"
     assert event(c,b,observed_at_utc="2026-10-08T19:40:00Z")["status"]=="SOURCE_STALE"
+    expired=event(c,b,observed_at_utc="2026-10-16T20:00:00Z")
+    assert expired["status"]=="EXPIRED" and expired["alert"] is True
+    assert event(c,b,expired,observed_at_utc="2026-10-17T20:00:00Z")["alert"] is False
     for bad in [
         {**c,"research_authority_verified":False},
         {**c,"stop":102.1},
