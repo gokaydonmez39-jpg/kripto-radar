@@ -37,7 +37,7 @@
     "2026-10-06",
     "2026-10-07"
   ],
-  "master_unknown_count": 141,
+  "master_unknown_count": 139,
   "master_unknown_detail": {
     "ALIS": {
       "exact_sec_spac_proof": false,
@@ -84,30 +84,12 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "CCII": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Cohen Circle Acquisition Corp. II - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "CCXI": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Churchill Capital Corp XI - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "CHPG": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "ChampionsGate Acquisition Corporation - Class A Ordinary Share",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -1309,16 +1291,14 @@
       "unknown_never_pass": true
     }
   },
-  "master_unknown_hash": "8fbc9119520421830c66361392c6f9621e55aa387122eece63f7f24e163d6423",
+  "master_unknown_hash": "eaf962a8d924f38a7ac8a3d49401f5661e4e3ebe8fef44d0e5ed09552d89ab44",
   "master_unknown_symbols": [
     "ALIS",
     "BID",
     "BKHA",
     "BPAC",
     "BSAA",
-    "CCII",
     "CCXI",
-    "CHPG",
     "CRAN",
     "CRAQ",
     "DAAQ",
@@ -1478,17 +1458,17 @@
   "settlement_already_proven": false,
   "settlement_bridge_blob_sha": null,
   "settlement_bridge_path": null,
-  "settlement_core_source_blob_sha": "6b3c58180243b324e49326d2da04fe70c9e855e3",
+  "settlement_core_source_blob_sha": "44900dd36ba7f1ab361c8a90167d70e70fdd078e",
   "settlement_core_source_path": "nasdaq-xray/canonical_current_terminal.json",
   "settlement_core_symbol": "MSFT",
   "settlement_policy": "ALPACA_HISTORICAL_SIP_DAILY_AFTER_15M__AAPL_NVDA_PLUS_ONE_PRIOR_CURRENT_CORE__RALLIES_LONGBRIDGE_QUOTE_OHLC_0_01_CROSSCHECK__SIP_VOLUME_AUTHORITY__FAIL_CLOSED__DELAYED_SIP_NEVER_G9",
   "settlement_required": false,
   "settlement_symbols": [],
-  "source_master_blob_sha": "7db6915a6a09e44090fcba25f5edec9d332c58cd",
+  "source_master_blob_sha": "55fe761573745b5631e22948e5204765a9b9c695",
   "source_master_path": "nasdaq-xray/canonical_current_master_manifest.json",
-  "source_overlay_blob_sha": "b954df7dc52962b887f2ba85bd89c8973c722d00",
+  "source_overlay_blob_sha": "bd1c2996f033292a8b30b40e786ecbfd42ca9447",
   "source_overlay_path": "nasdaq-xray/canonical_current_resolution_overlay.json",
-  "source_pointer_blob_sha": "f8db5f26c2ae8aa6a5813ef9cb515049cb1f6aef",
+  "source_pointer_blob_sha": "0118c71ec5ffa98f3e28395a2c01350c03591a34",
   "source_pointer_path": "nasdaq-xray/chatgpt_canonical_state_v2.json",
   "source_price_blob_sha": "91c8948eced805cbdf6006017a0c3f07943823da",
   "source_price_counts": {
@@ -1502,9 +1482,9 @@
   "source_price_pass_count": 510,
   "source_price_pass_hash": "f6772e07d952c9c172a3370076537cbfc89128886e1a0e31d1142b2ebecf0438",
   "source_price_path": "nasdaq-xray/canonical_current_price_dv30.json",
-  "source_state_blob_sha": "8d1764cf472e3380adaf06e3bbdf453e3868b72e",
+  "source_state_blob_sha": "bff7839f238ef53255c85ca560a8b6decb2ced41",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
-  "source_unknowns_blob_sha": "de43b66dc870acadca40dd74f15ee8be0ec247e7",
+  "source_unknowns_blob_sha": "4239cfa31f169f957754d215efcbb543a576d0ff",
   "source_unknowns_path": "nasdaq-xray/canonical_current_unknowns.json",
   "status": "IDLE",
   "symbol_count": 0,

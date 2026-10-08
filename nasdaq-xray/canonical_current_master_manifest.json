@@ -1,7 +1,7 @@
 {
   "asof_et": "2026-10-07",
   "asof_identity_proof": {
-    "blob_sha": "a9441d60e7452d350a47f4febdc1d3bed40b3a5e",
+    "blob_sha": "ab61a8a2639ff74ff8b53e5a1f4c62590890cb18",
     "counts": {
       "operating_overrides": 3,
       "remove_from_asof": 0,
@@ -29,13 +29,13 @@
   },
   "counts": {
     "PASS_IDENTITY": 3184,
-    "UNKNOWN_IDENTITY": 141
+    "UNKNOWN_IDENTITY": 139
   },
   "execution": "NONE",
-  "explicit_excluded_count": 71,
-  "explicit_excluded_hash": "b98ae30be12fc5e3228c8160c4e86dc61f4434018ca01ce7f8f7f4d5ff0003a0",
+  "explicit_excluded_count": 73,
+  "explicit_excluded_hash": "03b884f321e4681d27b97d26dece8e0ecc4874d8852db0a00b5451def6cbf0c5",
   "explicit_excluded_reason_counts": {
-    "SPAC_BLANK_CHECK": 71
+    "SPAC_BLANK_CHECK": 73
   },
   "history_price_state_diagnostic_only": {
     "source_counts": {
@@ -3242,22 +3242,22 @@
   "queue_hash": "2554c936f42217cf8a9628e89d04993945218725234fe894f7c80856834725d6",
   "queue_total": 3184,
   "queue_unique": 3184,
-  "raw_identity_total": 3325,
+  "raw_identity_total": 3323,
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1",
   "sec_spac_proof": {
-    "blob_sha": "578891b5586574e53451f0574357b6adee7ee596",
-    "count": 71,
+    "blob_sha": "bc68e7641793faf3176869bc058b8bc0e0e66c03",
+    "count": 73,
     "path": "nasdaq-xray/master_sec_spac_proof_20261007.json",
-    "symbol_hash": "641c7ad31dcc90105a326f7b8b71f2e13eeecc93ab2c9c38f398cc4eb1166615"
+    "symbol_hash": "8e30ac8ade295b915d0672d4337b726188dba5ca650ca2499818f7684048f5c5"
   },
-  "source_state_blob_sha": "8d1764cf472e3380adaf06e3bbdf453e3868b72e",
-  "source_state_hash": "cc5f95b08c39ac5615773f5ac21bfa125ea9ae0de9765f531d43c03add593557",
+  "source_state_blob_sha": "bff7839f238ef53255c85ca560a8b6decb2ced41",
+  "source_state_hash": "fe4ea32392761aebb314d918a1d8c950f0e00c7bb55216e431ec2e71f726bf0c",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
   "status": "PARTIAL_UNKNOWN",
   "status_semantics": "IDENTITY_PARTITION_EXACT_WITH_UNKNOWN",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 141,
+  "unknown_count": 139,
   "unknown_detail": {
     "ALIS": {
       "exact_sec_spac_proof": false,
@@ -3304,30 +3304,12 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "CCII": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Cohen Circle Acquisition Corp. II - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "CCXI": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Churchill Capital Corp XI - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "CHPG": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "ChampionsGate Acquisition Corporation - Class A Ordinary Share",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -4536,9 +4518,7 @@
     "BKHA",
     "BPAC",
     "BSAA",
-    "CCII",
     "CCXI",
-    "CHPG",
     "CRAN",
     "CRAQ",
     "DAAQ",
