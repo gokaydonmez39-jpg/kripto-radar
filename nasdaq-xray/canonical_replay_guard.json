@@ -12,7 +12,7 @@
       "asof_et": "2026-10-07",
       "path": "canonical_current_master_manifest.json",
       "schema": "XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1",
-      "sha256": "cd729392f062a4ef5ac14f14f534fc47297416667e2b6c92f456d489d7260b0f",
+      "sha256": "3e6ba1099154c7442c0144c538b3b0bfc9265d4ffd097ab82bc909c955bfd0cf",
       "status": "PRESENT"
     },
     {
@@ -61,28 +61,28 @@
       "asof_et": "2026-10-07",
       "path": "canonical_current_event_state.json",
       "schema": "XRAY_CANONICAL_EVENT_STATE_V1",
-      "sha256": "147b54055a7f0c44d9804873f98b123141b8041f2701755064e6d83e9c9178f9",
+      "sha256": "09e8ef089a72d3f9f493af96847b21b9ccfc114cc595cb93aad2743b4023baeb",
       "status": "PRESENT"
     },
     {
       "asof_et": "2026-10-07",
       "path": "canonical_current_final_tech.json",
       "schema": "XRAY_FINAL_TECH_SHADOW_V1",
-      "sha256": "b9c7cfdf9299d87bb19502caad861b6cca18e1ee5c6650300c392b0f1f2d164b",
+      "sha256": "baa6aca3a11efc4b6e1c4c91959d18876b60371330d0373dfb50cd85c829d03e",
       "status": "PRESENT"
     },
     {
       "asof_et": "2026-10-07",
       "path": "canonical_current_terminal.json",
       "schema": "XRAY_CANONICAL_CURRENT_TERMINAL_V1",
-      "sha256": "4dfbb0c9a4acf25b3dfbbaf9ebe80fb042fe68ee333f04a6069cac474fcf3034",
+      "sha256": "1ef0cfc8f0a9723e8be2a9bc012df523682db0fe11869f803de272ed0456a48c",
       "status": "PRESENT"
     },
     {
       "asof_et": "2026-10-07",
       "path": "chatgpt_canonical_state_v2.json",
       "schema": "XRAY_GITHUB_DURABLE_STATE_V3",
-      "sha256": "ae2127c2b52ce762f809225852e951e8deb8d3a37abff56349e6c9eed05fe53b",
+      "sha256": "01583c48d851216bac0878abbd2f24186a324fe02a2dab430a099c37bee843dc",
       "status": "PRESENT"
     }
   ],
@@ -92,7 +92,7 @@
   ],
   "candidate_delivery_keys": [],
   "execution": "NONE",
-  "generated_at_utc": "2026-10-08T12:13:35.383786+00:00",
+  "generated_at_utc": "2026-10-08T13:03:40.404000+00:00",
   "policy_binding": {
     "dv30_exact30_bound": true,
     "legacy_dv20_forbidden": true,
