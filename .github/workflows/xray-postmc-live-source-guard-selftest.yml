@@ -21,8 +21,16 @@ jobs:
         run: |
           python -m py_compile nasdaq-xray/post_mc_live_source_guard.py
           python nasdaq-xray/post_mc_live_source_guard.py --selftest
-      - name: Validate real GitHub main SHA comparisons without alpha
-        env:
-          XRAY_MC_AUTHORITY_PATH: nasdaq-xray/canonical_mc_bridge_20261007_c417_dv30_v13.json
+      - name: Validate live active MC supersession and exact source SHA
         run: |
+          set -euo pipefail
+          export XRAY_ASOF_ET=2026-10-07
+          export XRAY_MC_AUTHORITY_PATH="$(python nasdaq-xray/post_mc_live_source_guard.py --discover-active)"
           python nasdaq-xray/post_mc_live_source_guard.py --check
+          export XRAY_MC_AUTHORITY_PATH=nasdaq-xray/canonical_mc_bridge_20261007_c417_dv30_v13.json
+          if python nasdaq-xray/post_mc_live_source_guard.py --check; then
+            echo "SUPERSEDED_MC_ACCEPTED" >&2
+            exit 1
+          else
+            echo "XRAY_POSTMC_SUPERSEDED_MC_NEGATIVE_TEST=PASS"
+          fi
