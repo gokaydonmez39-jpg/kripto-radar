@@ -29,7 +29,7 @@ jobs:
           python nasdaq-xray/github_native_root_watchdog.py --selftest
       - name: Double-read and dispatch existing root only if stale
         env:
-          GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python nasdaq-xray/github_native_root_watchdog.py --out /tmp/xray_native_watchdog.json
       - name: Show fail-closed diagnostic summary
         if: always()
