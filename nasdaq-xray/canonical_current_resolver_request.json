@@ -37,7 +37,7 @@
     "2026-10-06",
     "2026-10-07"
   ],
-  "master_unknown_count": 130,
+  "master_unknown_count": 124,
   "master_unknown_detail": {
     "ALIS": {
       "exact_sec_spac_proof": false,
@@ -234,15 +234,6 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "GSR IV Acquisition Corp. - Class A ordinary share",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "GSRV": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "GSR V Acquisition Corp. - Class A ordinary shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -624,24 +615,6 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "NSAI": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "NorthStrive Acquisition Corp I. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "NTWO": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Newbury Street II Acquisition Corp - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "OACC": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
@@ -828,15 +801,6 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "QDRO Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "QSEA": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Quartzsea Acquisition Corporation - Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -1110,15 +1074,6 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "VLOS": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Velos Acquisition I Corp. - Class A Ordinary shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "VNME": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
@@ -1191,15 +1146,6 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "XTER": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Karman Line Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "ZKP": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
@@ -1210,7 +1156,7 @@
       "unknown_never_pass": true
     }
   },
-  "master_unknown_hash": "dce37d6917445a5a7322242773dfc17a1a8c40b6955b29a1bf4d2525f48c509d",
+  "master_unknown_hash": "7bc6be815b669bf92afc32aaa3b2c7621e112d1d1e543495d60bd354337b22ef",
   "master_unknown_symbols": [
     "ALIS",
     "BKHA",
@@ -1234,7 +1180,6 @@
     "FXAC",
     "GSHR",
     "GSRF",
-    "GSRV",
     "GTERA",
     "HACQ",
     "HAVA",
@@ -1277,8 +1222,6 @@
     "NCO",
     "NMP",
     "NPAC",
-    "NSAI",
-    "NTWO",
     "OACC",
     "OBA",
     "OCLT",
@@ -1300,7 +1243,6 @@
     "PTAC",
     "PTOR",
     "QADR",
-    "QSEA",
     "QUMS",
     "RANG",
     "RDAG",
@@ -1331,7 +1273,6 @@
     "TVAI",
     "TVIV",
     "UYSC",
-    "VLOS",
     "VNME",
     "WENN",
     "WLII",
@@ -1340,7 +1281,6 @@
     "XCBE",
     "XRPN",
     "XSLL",
-    "XTER",
     "ZKP"
   ],
   "official_footer": "File Creation Time: 1007202621:31|||||||",
@@ -1368,17 +1308,17 @@
   "settlement_already_proven": false,
   "settlement_bridge_blob_sha": null,
   "settlement_bridge_path": null,
-  "settlement_core_source_blob_sha": "44900dd36ba7f1ab361c8a90167d70e70fdd078e",
+  "settlement_core_source_blob_sha": "197e0a853aae9325725be6a068404ad552ac0697",
   "settlement_core_source_path": "nasdaq-xray/canonical_current_terminal.json",
   "settlement_core_symbol": "MSFT",
   "settlement_policy": "ALPACA_HISTORICAL_SIP_DAILY_AFTER_15M__AAPL_NVDA_PLUS_ONE_PRIOR_CURRENT_CORE__RALLIES_LONGBRIDGE_QUOTE_OHLC_0_01_CROSSCHECK__SIP_VOLUME_AUTHORITY__FAIL_CLOSED__DELAYED_SIP_NEVER_G9",
   "settlement_required": false,
   "settlement_symbols": [],
-  "source_master_blob_sha": "4f48d14e08974b8db1c37f6baa0f0321a6daa016",
+  "source_master_blob_sha": "e2270d8b4a618d923d73ec9d5b3acb66a162d663",
   "source_master_path": "nasdaq-xray/canonical_current_master_manifest.json",
-  "source_overlay_blob_sha": "81d8b91bf2241e3d0484e397dbf75dea5f519b22",
+  "source_overlay_blob_sha": "71c30e0adf9d5257586ee24ccca9cb43b8c0a032",
   "source_overlay_path": "nasdaq-xray/canonical_current_resolution_overlay.json",
-  "source_pointer_blob_sha": "0118c71ec5ffa98f3e28395a2c01350c03591a34",
+  "source_pointer_blob_sha": "815a78dbba6f083ad665cf364dfd33e0ddf9d1e8",
   "source_pointer_path": "nasdaq-xray/chatgpt_canonical_state_v2.json",
   "source_price_blob_sha": "91c8948eced805cbdf6006017a0c3f07943823da",
   "source_price_counts": {
@@ -1392,9 +1332,9 @@
   "source_price_pass_count": 510,
   "source_price_pass_hash": "f6772e07d952c9c172a3370076537cbfc89128886e1a0e31d1142b2ebecf0438",
   "source_price_path": "nasdaq-xray/canonical_current_price_dv30.json",
-  "source_state_blob_sha": "e2337fe0d61b230ee0bae9d067a290fa1b17d2bb",
+  "source_state_blob_sha": "1ef1befcc7a0a673cbae2888af1b57e0f290c4ca",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
-  "source_unknowns_blob_sha": "9d68164c24301aba764a1bbb421c9343c0874a73",
+  "source_unknowns_blob_sha": "080955241683a5267cbc54422e0491139003a174",
   "source_unknowns_path": "nasdaq-xray/canonical_current_unknowns.json",
   "status": "IDLE",
   "symbol_count": 0,
