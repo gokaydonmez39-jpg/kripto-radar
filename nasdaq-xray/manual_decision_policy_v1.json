@@ -1,0 +1,80 @@
+{
+  "schema": "XRAY_MANUAL_DECISION_RESEARCH_MODE_V1",
+  "parent_policy_version": "C4.17",
+  "parent_policy_sha256": "68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4",
+  "mode": "RESEARCH_ONLY_MANUAL_DECISION",
+  "status": "PARALLEL_SHADOW_UNTIL_VERIFIED",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "broker_access_required": false,
+  "broker_trade_access_allowed": false,
+  "broker_account_read_required": false,
+  "broker_balance_or_positions_required": false,
+  "source_exact_required": true,
+  "unknown_never_pass": true,
+  "output_types": [
+    "QUALIFIED_TECHNICAL_RESEARCH_SIGNAL",
+    "WATCH_DIAGNOSTIC_ONLY",
+    "NO_QUALIFIED_TECHNICAL_RESEARCH_SIGNAL",
+    "SOURCE_INTEGRITY_BLOCKED"
+  ],
+  "g9": {
+    "mandatory_for_research_signal": false,
+    "role": "OPTIONAL_ENHANCED_LIVE_NBBO_FRESHNESS_ATTESTATION",
+    "never_claim_realtime_without_licensed_current_witness": true,
+    "never_label_g9_pass_unless_existing_gate_pass": true
+  },
+  "account": {
+    "mandatory_for_research_signal": false,
+    "all_calls_disabled_in_this_mode": true,
+    "never_claim_account_pass_without_existing_gate_pass": true
+  },
+  "hard_gates": {
+    "price_min_usd": 5,
+    "dv30_min_usd": 50000000,
+    "mc_min_usd": 2000000000,
+    "history_min_daily_bars": 260,
+    "weekly": "UNCHANGED_C417",
+    "regime": "UNCHANGED_C417",
+    "setups": "UNCHANGED_C417",
+    "risk_max_percent": 8,
+    "rr_basic_by_family": {
+      "A": 1.5,
+      "B": 2,
+      "C": 2,
+      "D": 2
+    },
+    "rr_severe_by_family": {
+      "A": 1.1,
+      "B": 1.5,
+      "C": 1.5,
+      "D": 1.5
+    },
+    "event": "PRIMARY_VERIFIED_NO_EARNINGS_OR_MATERIAL_EVENT_WITHIN_HORIZON",
+    "halt_suspension": "VETO",
+    "legal": "CANDIDATE_LOCAL_PRIMARY_VERIFIED",
+    "lifecycle": "UNCHANGED_C417",
+    "mc_fallback_watch_cannot_promote": true
+  },
+  "delivery": {
+    "enabled_in_this_shadow": false,
+    "payload_type": "RESEARCH_SIGNAL_NOT_TRADE_ADVICE",
+    "max_symbols": 3,
+    "requires_exact_asof_and_source_blob_bindings": true,
+    "quotes_must_disclose_asof_and_data_delay": true,
+    "forbidden": [
+      "BUY_OR_SELL_ORDER",
+      "AUTOMATED_EXECUTION",
+      "LIVE_PRICE_PROMISE_WHEN_DELAYED",
+      "GREEN_OR_FULL_GO_LABEL",
+      "TRADE_PREVIEW",
+      "CANCEL_OR_REPLACE_ORDER"
+    ]
+  },
+  "parent_pipeline_unchanged": true,
+  "canonical_full_go_unchanged": true,
+  "alpha_thresholds_unchanged": true,
+  "shadow_requires_same_run_tests": true,
+  "replaces": "NONE",
+  "user_intent": "NASDAQ screening and evidence-based signals for the user to evaluate and trade manually through their chosen brokerage, with no account integration and no order execution."
+}
