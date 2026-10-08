@@ -55,6 +55,27 @@ def mc_exact(mc,price,price_sha):
         return False
     return seen==symbols
 
+def terminal_chain_exact(terminal, asof, source_shas, mc_name, mc_sha):
+    """Full terminal is current ONLY with every upstream Git blob bound."""
+    ev=terminal.get("evidence") or {}
+    checks=terminal.get("checks") or {}
+    names=("master","price","history","events","final")
+    if not (
+        terminal.get("asof_et")==asof
+        and terminal.get("compiled_policy_hash")==POLICY
+        and terminal.get("full_end_to_end_research_pass") is True
+        and checks.get("exact_blob_provenance_chain") is True
+        and checks.get("semantic_provenance_chain_exact") is True
+        and isinstance(mc_name,str)
+        and mc_name.startswith("canonical_mc_bridge_")
+        and (ev.get("mc") or {}).get("path")=="nasdaq-xray/"+mc_name
+        and (ev.get("mc") or {}).get("blob_sha")==mc_sha
+        and all((ev.get(k) or {}).get("blob_sha")==source_shas.get(k)
+                and source_shas.get(k) is not None for k in names)
+    ):
+        return False
+    return True
+
 def snapshot():
     master=read("canonical_current_master_manifest.json")
     price=read("canonical_current_price_dv30.json")
@@ -101,7 +122,15 @@ def snapshot():
         and terminal.get("full_end_to_end_research_pass") is True
         and terminal.get("compiled_policy_hash")==POLICY)
     fail("CURRENT_TERMINAL_FROZEN_OR_INCOMPLETE",exact_terminal)
-    fail("TERMINAL_CURRENT_MC_CHAIN_NOT_PROVEN",len(mcs)==1 and exact_terminal)
+    source_shas={key:sha(name) for key,name in {
+        "master":"canonical_current_master_manifest.json",
+        "price":"canonical_current_price_dv30.json",
+        "history":"canonical_current_history.json",
+        "events":"canonical_current_event_state.json",
+        "final":"canonical_current_final_tech.json"}.items()}
+    current_chain=(len(mcs)==1 and terminal_chain_exact(
+        terminal,asof,source_shas,mcs[0],sha(mcs[0])))
+    fail("TERMINAL_CURRENT_MC_CHAIN_NOT_PROVEN",current_chain)
     # Delivery is independent: a zero-signal scenario may be a legitimate
     # completed run, but a device receipt must never be inferred from a ledger.
     fail("NOTIFICATION_DEVICE_RECEIPT_NOT_PROVEN",False)
@@ -111,7 +140,7 @@ def snapshot():
         "execution":"NONE","real_money":"NO-GO","alpha_authority":False,
         "blockers":sorted(set(blocks)),
         "ready_for_current_research_signal":False,
-        "full_e2e_research_attested":len(mcs)==1 and exact_terminal
+        "full_e2e_research_attested":current_chain
             and not any(k in blocks for k in (
                 "PRICE_PARTITION_NOT_EXACT_CURRENT","POLICY_SAFETY_NOT_ALL_ATTESTED",
                 "SETTLEMENT_UNVERIFIED_OR_PRICE_SHA_DRIFT",
@@ -152,7 +181,26 @@ def selftest():
        lambda x:x.update(policy_hash="INVALID")):
         bad=deepcopy(mc);change(bad)
         assert not mc_exact(bad,price,"P"),bad
+    base_shas={k:k+"_SHA" for k in ("master","price","history","events","final")}
+    t={"asof_et":"2026-10-08","compiled_policy_hash":POLICY,
+       "full_end_to_end_research_pass":True,
+       "checks":{"exact_blob_provenance_chain":True,
+                 "semantic_provenance_chain_exact":True},
+       "evidence":{**{k:{"blob_sha":v} for k,v in base_shas.items()},
+                   "mc":{"path":"nasdaq-xray/canonical_mc_bridge_20261008_c417_dv30_v1.json",
+                         "blob_sha":"MC_SHA"}}}
+    good="canonical_mc_bridge_20261008_c417_dv30_v1.json"
+    assert terminal_chain_exact(t,"2026-10-08",base_shas,good,"MC_SHA")
+    for changed in (
+        lambda x:x["evidence"]["mc"].update(blob_sha="BAD"),
+        lambda x:x["evidence"]["events"].update(blob_sha="STALE"),
+        lambda x:x["checks"].update(exact_blob_provenance_chain=False),
+        lambda x:x.update(full_end_to_end_research_pass=False),
+        lambda x:x.update(asof_et="2026-10-07")):
+        bad=deepcopy(t);changed(bad)
+        assert not terminal_chain_exact(bad,"2026-10-08",base_shas,good,"MC_SHA")
     print("XRAY_E2E_READINESS_MC_SELFTEST=PASS_POSITIVE_7_NEGATIVES")
+    print("XRAY_E2E_TERMINAL_SHA_BINDING_SELFTEST=PASS_POSITIVE_5_NEGATIVES")
 
 if __name__=="__main__":
     p=argparse.ArgumentParser()
