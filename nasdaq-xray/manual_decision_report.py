@@ -2,9 +2,14 @@
 """Evidence-bound manual-decision NASDAQ research; never trades, never forces G9/ACCOUNT."""
 from __future__ import annotations
 import argparse
+import base64
+import datetime as dt
 import hashlib
 import json
 import math
+import os
+import re
+import urllib.request
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parent
@@ -34,6 +39,46 @@ THRESH={"A":(1.5,1.1),"B":(2.,1.5),"C":(2.,1.5),"D":(2.,1.5)}
 def blob(path):
     b=path.read_bytes()
     return hashlib.sha1(b"blob "+str(len(b)).encode()+b"\0"+b).hexdigest()
+
+def git_blob_sha(data:bytes):
+    return hashlib.sha1(b"blob "+str(len(data)).encode()+b"\0"+data).hexdigest()
+
+def may_use_frozen_blob(key:str,current:dict,terminal_asof:str):
+    """Permit exact historical evidence only during a later ASOF roll."""
+    if key=="official_halt_guard":
+        return current.get("schema")=="XRAY_OFFICIAL_SOURCE_GUARD_V1"
+    if key not in ("master","price"):
+        return False
+    try:
+        old=dt.date.fromisoformat(terminal_asof)
+        new=dt.date.fromisoformat(str(current.get("asof_et") or ""))
+        return 0<(new-old).days<=7
+    except (ValueError,TypeError):
+        return False
+
+def read_exact_terminal_blob(expected_sha:str):
+    """Git blob download is evidence ONLY after exact byte-level SHA check."""
+    if not isinstance(expected_sha,str) or not re.fullmatch(r"[a-f0-9]{40}",expected_sha):
+        raise ValueError("FROZEN_SOURCE_SHA_INVALID")
+    token=os.environ.get("GITHUB_TOKEN","")
+    repo=os.environ.get("GITHUB_REPOSITORY","")
+    if not token or repo!="gokaydonmez39-jpg/kripto-radar":
+        raise ValueError("FROZEN_SOURCE_AUTH_MISSING")
+    url="https://api.github.com/repos/"+repo+"/git/blobs/"+expected_sha
+    req=urllib.request.Request(url,headers={
+        "Authorization":"Bearer "+token,"Accept":"application/vnd.github+json",
+        "User-Agent":"NASDAQ-XRAY-manual-source-bound","X-GitHub-Api-Version":"2022-11-28"})
+    try:
+        with urllib.request.urlopen(req,timeout=20) as response:
+            result=json.load(response)
+        if result.get("encoding")!="base64":
+            raise ValueError("FROZEN_BLOB_ENCODING_INVALID")
+        data=base64.b64decode(result["content"],validate=False)
+    except (OSError,KeyError,TypeError,ValueError) as exc:
+        raise ValueError("FROZEN_SOURCE_FETCH_FAILED") from exc
+    if git_blob_sha(data)!=expected_sha:
+        raise ValueError("FROZEN_SOURCE_CONTENT_SHA_MISMATCH")
+    return data
 
 def finite(x):
     if isinstance(x,bool):return None
@@ -112,13 +157,31 @@ def validate_and_generate(root:Path=ROOT):
     ev=t.get("evidence") or {}
     objs={}
     hashes={"terminal":blob(root/"canonical_current_terminal.json"),"manual_policy":blob(policy_path)}
+    restored=[]
+    live_guard={}
     for key,filename in EVIDENCE.items():
         path=root/filename
-        sha=blob(path)
         bound=ev.get(key) or {}
-        if bound.get("path")!="nasdaq-xray/"+filename or bound.get("blob_sha")!=sha:
+        if bound.get("path")!="nasdaq-xray/"+filename:
+            raise ValueError("UNBOUND_SOURCE_PATH:"+key)
+        current_bytes=path.read_bytes()
+        sha=git_blob_sha(current_bytes)
+        if sha!=bound.get("blob_sha"):
+            try: current_obj=json.loads(current_bytes)
+            except (ValueError,UnicodeDecodeError):
+                raise ValueError("UNBOUND_SOURCE:"+key)
+            if not may_use_frozen_blob(key,current_obj,str(t.get("asof_et") or "")):
+                raise ValueError("UNBOUND_SOURCE:"+key)
+            if key=="official_halt_guard": live_guard=current_obj
+            source_bytes=read_exact_terminal_blob(str(bound.get("blob_sha")))
+            sha=git_blob_sha(source_bytes)
+            restored.append(key)
+        else:
+            source_bytes=current_bytes
+            if key=="official_halt_guard":live_guard=json.loads(current_bytes)
+        obj=json.loads(source_bytes)
+        if sha!=bound.get("blob_sha"):
             raise ValueError("UNBOUND_SOURCE:"+key)
-        obj=json.loads(path.read_text())
         if key!="policy" and obj.get("asof_et")!=t.get("asof_et"):
             if key!="official_halt_guard":
                 raise ValueError("ASOF_DRIFT:"+key)
@@ -183,8 +246,21 @@ def validate_and_generate(root:Path=ROOT):
                 "never_execute":True})
         else:
             for reason in reasons:reason_counts[reason]=reason_counts.get(reason,0)+1
-    if candidates and t.get("candidate_local_research_pass") is not True:
-        raise ValueError("TERMINAL_LOCAL_RESEARCH_NOT_PASS")
+    if candidates:
+        try:
+            stamp=dt.datetime.fromisoformat(str(live_guard.get("generated_at_utc")).replace("Z","+00:00"))
+            age=(dt.datetime.now(dt.timezone.utc)-stamp.astimezone(dt.timezone.utc)).total_seconds()
+        except (ValueError,TypeError,AttributeError):
+            age=float("inf")
+        if live_guard.get("status")!="PASS" or not (-60<=age<=900):
+            raise ValueError("LIVE_OFFICIAL_GUARD_UNVERIFIED_OR_STALE")
+        if not all((live_guard.get("sources") or {}).get(k,{}).get("status")=="PASS" for k in ("trade_halts","security_status")):
+            raise ValueError("LIVE_OFFICIAL_SOURCE_UNVERIFIED")
+        live_veto=set((live_guard.get("candidate_safety") or {}).get("veto_symbols") or [])
+        if any(x["symbol"] in live_veto for x in candidates):
+            raise ValueError("LIVE_OFFICIAL_CANDIDATE_VETO")
+        if t.get("candidate_local_research_pass") is not True:
+            raise ValueError("TERMINAL_LOCAL_RESEARCH_NOT_PASS")
     status="QUALIFIED_RESEARCH_SIGNAL_AVAILABLE" if candidates else "NO_QUALIFIED_TECHNICAL_RESEARCH_SIGNAL"
     return {"schema":"XRAY_MANUAL_DECISION_REPORT_V1","asof_et":t["asof_et"],
         "status":status,"execution":"NONE","real_money":"NO-GO",
@@ -198,6 +274,8 @@ def validate_and_generate(root:Path=ROOT):
         "research_signals":candidates[:p.get("delivery",{}).get("max_symbols",3)],
         "rejection_reason_counts":reason_counts,
         "source_blob_shas":hashes,
+        "frozen_terminal_sources":sorted(restored),
+        "asof_rollover_guarded":bool(restored),
         "delivery_enabled":False,
         "notice":"Research evidence for user manual review; prices may be delayed, not a live market order; no broker calls."}
 
@@ -226,6 +304,12 @@ def selftest():
     assert run(template,event="UNKNOWN") is False
     assert run(template,halt=True) is False
     assert run({**template,"lifecycle":"RECONFIRMATION_REQUIRED"}) is False
+    assert may_use_frozen_blob("master",{"asof_et":"2026-10-08"},"2026-10-07") is True
+    assert may_use_frozen_blob("price",{"asof_et":"2026-10-08"},"2026-10-07") is True
+    assert may_use_frozen_blob("master",{"asof_et":"2026-10-07"},"2026-10-07") is False
+    assert may_use_frozen_blob("master",{"asof_et":"2026-10-06"},"2026-10-07") is False
+    assert may_use_frozen_blob("events",{"asof_et":"2026-10-08"},"2026-10-07") is False
+    assert may_use_frozen_blob("master",{"asof_et":"2026-10-25"},"2026-10-07") is False
     print("XRAY_MANUAL_DECISION_NEGATIVE_POSITIVE_SELFTEST=PASS")
 
 def main():
