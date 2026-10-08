@@ -323,7 +323,10 @@ jobs:
           # Collect complete same-ASOF immutable lineage before filtering current
           # PRICE matches; intermediate predecessors may have older price blobs.
           all_mc=[]
-          for fp in sorted(glob.glob("nasdaq-xray/canonical_mc_bridge_*.json")):
+          # Scope the immutable MC graph to the exact frozen ASOF+policy family.
+          # Other filename epochs must never create a second current MC head.
+          epoch=expected_asof.replace("-","")
+          for fp in sorted(glob.glob(f"nasdaq-xray/canonical_mc_bridge_{epoch}_c417_dv30_v*.json")):
               try:
                   j=json.load(open(fp))
                   if (j.get("schema")=="XRAY_MC_EPOCH_RESULT_V1"
