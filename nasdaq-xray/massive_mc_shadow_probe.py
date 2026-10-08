@@ -41,7 +41,7 @@ def classify(symbol, row):
         return {"state": "UNKNOWN", "reason": "ACTIVE_US_STOCK_UNPROVEN"}
     if row.get("primary_exchange") not in ALLOWED_EXCHANGE:
         return {"state": "UNKNOWN", "reason": "NASDAQ_EXCHANGE_UNPROVEN"}
-    if row.get("type") != "CS" or row.get("currency_name", "").lower() != "usd":
+    if row.get("type") != "CS" or str(row.get("currency_name") or "").lower() != "usd":
         return {"state": "UNKNOWN", "reason": "COMMON_STOCK_USD_UNPROVEN"}
     cik = str(row.get("cik", "")).strip()
     if not cik.isdigit() or int(cik) <= 0:
@@ -86,7 +86,7 @@ def selftest():
     assert classify("WRONG", fixture)["state"] == "UNKNOWN"
     for key, value in [("primary_exchange", "XNYS"), ("type", "ETF"),
                        ("market_cap", 0), ("market_cap", float("nan")),
-                       ("active", False), ("cik", None)]:
+                       ("active", False), ("currency_name", None), ("cik", None)]:
         bad = dict(fixture, **{key: value})
         assert classify("TEST", bad)["state"] == "UNKNOWN"
     assert classify("TEST", dict(fixture, market_cap=1_900_000_000))["state"] == "SHADOW_OBSERVED_BELOW_2B"
