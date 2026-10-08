@@ -60,6 +60,20 @@ def proposal(registry: dict, observation: dict, observed_at_utc: str) -> dict:
         if previous:
             if previous.get("delivery_key") != delivery_key or previous.get("status") not in STATES:
                 raise ValueError("PREVIOUS_FOLLOWUP_INVALID")
+        # Dedup means delivery-confirmed, not merely classified. Keep every
+        # unacknowledged alert pending across retries and workflow restarts.
+        existing_pending = rec.get("pending_notifications") or {}
+        if not isinstance(existing_pending, dict):
+            raise ValueError("PENDING_NOTIFICATION_LEDGER_INVALID")
+        for pending_key, pending_note in sorted(existing_pending.items()):
+            if (not isinstance(pending_key, str) or len(pending_key) != 64
+                    or not isinstance(pending_note, dict)
+                    or pending_note.get("delivery_key") != delivery_key
+                    or pending_note.get("alert_dedup_key") != pending_key
+                    or pending_note.get("notification_status") != "PENDING_NOT_DELIVERED"
+                    or pending_note.get("orders") != []):
+                raise ValueError("PENDING_NOTIFICATION_RECORD_INVALID")
+            pending.append(copy.deepcopy(pending_note))
         evidence = observation.get(delivery_key, {})
         if not isinstance(evidence, dict):
             raise ValueError("OBSERVATION_INVALID")
@@ -88,11 +102,13 @@ def proposal(registry: dict, observation: dict, observed_at_utc: str) -> dict:
                 raise ValueError("MISSING_ALERT_DEDUP_HASH")
             if key not in dedup:
                 dedup.append(key)
-                pending.append({"delivery_key": delivery_key, "symbol": candidate["symbol"],
-                                "status": result["status"], "alert_dedup_key": key,
-                                "notification_status": "PENDING_NOT_DELIVERED",
-                                "orders": []})
+                note={"delivery_key": delivery_key, "symbol": candidate["symbol"],
+                      "status": result["status"], "alert_dedup_key": key,
+                      "notification_status": "PENDING_NOT_DELIVERED", "orders": []}
+                existing_pending[key] = note
+                pending.append(copy.deepcopy(note))
         rec["followup"] = result
+        rec["pending_notifications"] = existing_pending
         rec["alert_dedup_keys"] = dedup
         updated["records"][delivery_key] = rec
     return {"schema": RESULT, "asof_observed_utc": current, "execution": "NONE",
@@ -120,12 +136,18 @@ def tests() -> None:
     assert fresh["pending_alerts"][0]["notification_status"] == "PENDING_NOT_DELIVERED"
     repeated = proposal(fresh["registry"], {c["delivery_key"]: {"bar": b}},
                         "2026-10-08T19:10:00Z")
-    assert repeated["pending_alerts"] == []
+    assert len(repeated["pending_alerts"]) == 1
+    assert repeated["pending_alerts"][0] == fresh["pending_alerts"][0]
+    # No delivery receipt exists: the alert MUST NOT disappear just because
+    # the same bar was classified twice. A downstream publisher uses the
+    # stable alert_dedup_key for idempotent delivery attempts.
     after = proposal(repeated["registry"], {}, "2026-10-16T20:00:00Z")
-    assert len(after["pending_alerts"]) == 1
-    assert after["pending_alerts"][0]["status"] == "EXPIRED"
+    assert len(after["pending_alerts"]) == 2
+    assert set(x["status"] for x in after["pending_alerts"]) == {
+        "ENTRY_ZONE_TOUCHED", "EXPIRED"}
     repeated_expiry = proposal(after["registry"], {}, "2026-10-17T20:00:00Z")
-    assert repeated_expiry["pending_alerts"] == []
+    assert len(repeated_expiry["pending_alerts"]) == 2
+    assert repeated_expiry["pending_alerts"] == after["pending_alerts"]
     for bad in (
         {"missing_registered_key": {"bar": b}},
         {c["delivery_key"]: {"bar": {**b, "source_authorized": False}}},
