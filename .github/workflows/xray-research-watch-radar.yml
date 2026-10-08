@@ -50,7 +50,16 @@ jobs:
               f.write("Status: **"+j["status"]+"**\n\n")
               f.write("Live WATCH: "+str(j["live_watch_count"])+" / Pre-G9 AL: "+str(j["pre_g9_al_count"])+"\n\n")
               f.write("Stale SHA bindings: "+", ".join(j["binding_discrepancies"])+"\n\n")
-              f.write("No order execution; REAL_MONEY=NO-GO.\n")
+              f.write("No order execution; REAL_MONEY=NO-GO.\\n")
+              f.write("\\n## Source-bound WATCH symbols (research only)\\n\\n")
+              f.write("| Symbol | Setup | Classification |\\n|---|---|---|\\n")
+              for item in j["research_watch"]:
+                  assert item["al"] is False and item["setup"]=="B_ARMED"
+                  sym=item["symbol"]
+                  assert isinstance(sym,str) and sym and sym.isalnum(),"WATCH_SYMBOL_INVALID"
+                  f.write(f"| {sym} | B_ARMED | WATCH_ONLY — NOT AL |\\n")
+              if not j["source_exact"]:
+                  f.write("\\nSnapshot invalid: no live WATCH records promoted.\\n")
           PY
       - name: Preserve inspectable WATCH JSON artifact
         if: always()
