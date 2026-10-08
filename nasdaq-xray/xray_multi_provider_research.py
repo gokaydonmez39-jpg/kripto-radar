@@ -219,6 +219,14 @@ def inputs():
     sha["MC"]=blob(full)
     return asof,scopes,sha
 
+def rotate_sample(symbols,limit,day_ordinal=None):
+    """Deterministic daily coverage; never continuously repeat the first 3 symbols."""
+    ordered=sorted(symbols)
+    if not ordered:return []
+    n=dt.datetime.now(dt.timezone.utc).date().toordinal() if day_ordinal is None else day_ordinal
+    start=(n*limit)%len(ordered)
+    return [ordered[(start+i)%len(ordered)] for i in range(min(limit,len(ordered)))]
+
 def produce(limit=3,http_get=http,runner=lookup):
     if not isinstance(limit,int) or not 1<=limit<=3:raise ValueError("MAX_3_PER_LANE")
     asof,scopes,sha=inputs()
@@ -230,7 +238,7 @@ def produce(limit=3,http_get=http,runner=lookup):
     for lane,symbols in scopes.items():
         statuses=collections.Counter()
         attempts=collections.Counter()
-        for sym in sorted(symbols)[:limit]:
+        for sym in rotate_sample(symbols,limit):
             status,logs=route(lane,sym,asof,keys,counters,cache,http_get,runner)
             statuses[status]+=1
             for provider,code in logs:attempts[provider+":"+code]+=1
@@ -278,6 +286,10 @@ def selftest():
     assert c["MIRROR"]==0
     assert finite(None) is None and finite(float("nan")) is None
     assert finite(2000000000)==2000000000
+    assert rotate_sample(["A","B","C","D","E","F"],2,0)==["A","B"]
+    assert rotate_sample(["A","B","C","D","E","F"],2,1)==["C","D"]
+    assert rotate_sample(["A","B","C","D","E","F"],2,2)==["E","F"]
+    assert rotate_sample([],2,0)==[]
     assert _guard_invalid_url()
     print("XRAY_MULTI_PROVIDER_FAIL_CLOSED_SELFTEST=PASS")
 
