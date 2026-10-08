@@ -433,7 +433,8 @@ def selftest():
             "market_cap_usd":4_000_000_000}
         with patch.dict(os.environ,env),patch(__name__+".current_scope",return_value=scope),\
              patch(__name__+".probe",side_effect=lambda sym,day,key:fixture(sym)) as fetch, \
-             patch(__name__+".time.sleep") as sleep:
+             patch(__name__+".time.sleep") as sleep, \
+             patch(__name__+".time.time",return_value=1000.0):
             run(args)
             assert fetch.call_count==1
             stage1=restore(Path(args.checkpoint).read_bytes(),a,scope)[0]
@@ -446,14 +447,17 @@ def selftest():
             stage2=restore(Path(args.checkpoint).read_bytes(),a,scope)[0]
             assert fetch.call_count==1 and len(stage2["records"])==2
             assert stage2["request_count_cumulative"]==2
+            # 13-second cooling interval MUST fire across runner boundaries.
+            assert sleep.call_count==1 and abs(sleep.call_args.args[0]-13.0)<0.001
             assert json.loads(Path(args.telemetry).read_text())["pending_count"]==0
             Path(args.restore).write_bytes(Path(args.checkpoint).read_bytes())
+            sleep.reset_mock()
             fetch.reset_mock()
             run(args)
             assert fetch.call_count==0
             assert json.loads(Path(args.telemetry).read_text())["last_run_requests"]==0
-            # No additional HTTP requests occurred in the completed third run.
-            assert fetch.call_count==0
+            # No cooldown when the checkpoint already covers the full scope.
+            assert sleep.call_count==0
         # Forced failure after the first observation must retain recoverable
         # ciphertext before the entire 25-request batch finishes.
         with patch.dict(os.environ,env),patch(__name__+".current_scope",return_value=scope),\
