@@ -47,10 +47,10 @@ def provider_spac_suspect(row):
         return "PROVIDER_SIC_6770_BLANK_CHECK"
     description=" ".join(str(row.get(k) or "") for k in
                          ("name","description","sic_description")).casefold()
-    if re.search(r"\\bblank[-\\s]+check\\b|\\bspecial[-\\s]+purpose[-\\s]+acquisition\\b", description):
+    if re.search(r"\bblank[-\s]+check\b|\bspecial[-\s]+purpose[-\s]+acquisition\b", description):
         return "PROVIDER_TEXT_BLANK_CHECK"
     name=str(row.get("name") or "").casefold()
-    if re.search(r"\\bacquisition\\s+(?:corp(?:oration)?\\.?|co\\.?|company|ltd\\.?|limited)\\b", name):
+    if re.search(r"\bacquisition\s+(?:corp(?:oration)?\.?|co\.?|company|ltd\.?|limited)\b", name):
         return "PROVIDER_NAME_ACQUISITION_SUSPECT"
     return None
 
