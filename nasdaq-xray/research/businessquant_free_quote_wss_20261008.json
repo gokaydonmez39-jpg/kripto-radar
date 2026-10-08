@@ -1,0 +1,44 @@
+{
+  "schema": "XRAY_FREE_RESEARCH_QUOTE_WS_DISCOVERY_V1",
+  "date_trt": "2026-10-08",
+  "parent_head": "968c7816f51a0611179a63358846e32efb540ad7",
+  "earlier_ranked_research_blob_sha": "1c0353df63d7260c61b74104cb64f93dac18c534",
+  "provider": "Business Quant",
+  "source_urls": [
+    "https://businessquant.com/docs/api/websocket-quotes",
+    "https://businessquant.com/docs/api/quotes",
+    "https://businessquant.com/docs/api/quotes-intraday",
+    "https://businessquant.com/pricing"
+  ],
+  "verified_docs_claims": {
+    "free_plan_cost_usd": 0,
+    "free_plan_max_simultaneous_websocket_tickers": 2,
+    "websocket_messages": "ticker, timestamp, open, high, low, close, volume, change_pct, change, marketHours",
+    "rest_api_calls_per_day": 30,
+    "rest_multiticker_ohlcv_supported": true,
+    "auth": "Individual authorized API key required; no key connected to GitHub production",
+    "ws_excluded_fields": [
+      "national best bid",
+      "national best ask",
+      "bid venue",
+      "ask venue",
+      "independent side timestamps"
+    ],
+    "sample_timestamp_granularity": "minute in vendor sample despite marketing every-trade claim; verify actual stream freshness and source independently",
+    "official_terms_tension": "REST example uses api_key in query string; MCP docs prefer bearer OAuth/header; never send API key to chat or logs"
+  },
+  "use_cases": [
+    "research-only live-price trend monitoring for up to 2 finalists",
+    "research-only free low-frequency OHLCV cross-check after independent vendor-provenance audit",
+    "read-only SEC/reference and corporate actions checks with independent issuer confirmation"
+  ],
+  "strict_g9_pass": false,
+  "authority": false,
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "runtime_proof": "NOT_RUN_NO_AUTHORIZED_KEY",
+  "data_rights_proof": "NOT_ATTESTED",
+  "g9_result": "NONQUALIFYING_NO_NBBO",
+  "no_policy_or_existing_file_modified": true
+}
