@@ -19,6 +19,7 @@ on:
       - "nasdaq-xray/master_asof_identity_proof_*.json"
       - "nasdaq-xray/master_nasdaq_directory_snapshot_*.json"
       - "nasdaq-xray/build_current_identity_proofs.py"
+      - "nasdaq-xray/master_spac_operating_guard.py"
       - "nasdaq-xray/current_identity_proof_selftest.py"
       - "nasdaq-xray/resolve_unknowns_fallback.py"
       - "nasdaq-xray/extract_unknown_manifest.py"

@@ -14,6 +14,7 @@ from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
 import pandas_market_calendars as mcal
+from master_spac_operating_guard import nonblank_requires_completion
 
 ROOT=Path(__file__).resolve().parent
 MANUAL_IDENTITY_SEED=ROOT/"master_sec_identity_manual_seed_registry.json"
@@ -774,8 +775,15 @@ def main():
     sec_network_error=None
     sec_discovery_errors={}
     operating={}
+    current_suspect_set=set(current_spac_suspects(names,industries))
+    nonblank_pending_completion=set()
     for sym,old in sorted(operating_seed.items()):
         if sym not in names:
+            continue
+        # SEC SIC may be changed to target sector before the SPAC closes.
+        # Same-ASOF issuer-name suspicion + nonblank SIC != consummation.
+        if sym in current_suspect_set and nonblank_requires_completion(True, (old or {}).get('sic')):
+            nonblank_pending_completion.add(sym)
             continue
         cik=cik_from_prior_row(old)
         try:
@@ -842,6 +850,10 @@ def main():
                   "manual_seed_registry_blob_sha":manual["manual_seed_registry_blob_sha"],
                 }
             else:
+                if nonblank_requires_completion(True, manual.get('sic')):
+                    unresolved_current_suspects.append(sym)
+                    nonblank_pending_completion.add(sym)
+                    continue
                 operating[sym]={
                   "security_name":names[sym],
                   "evidence_date":manual["evidence_date"],
@@ -882,6 +894,10 @@ def main():
         if row.get("is_blank_check") is True:
             discovered_blank[sym]={k:v for k,v in row.items() if k!="is_blank_check"}
         else:
+            if nonblank_requires_completion(True, row.get('sic')):
+                unresolved_current_suspects.append(sym)
+                nonblank_pending_completion.add(sym)
+                continue
             operating[sym]={
               "security_name":names[sym],
               "evidence_date":row["evidence_date"],
@@ -963,6 +979,8 @@ def main():
             "resolved_current_suspect_count":len(current_suspects)-len(unresolved_sec_spac),
             "unresolved_current_suspect_count":len(unresolved_sec_spac),
             "unresolved_current_suspects":unresolved_sec_spac,
+            "nonblank_sic_without_completed_merger_proof":sorted(nonblank_pending_completion),
+            "nonblank_sic_is_not_merger_completion":True,
             "coverage_complete":len(unresolved_sec_spac)==0,
             "sec_transport_error":sec_network_error,
             "fail_closed":True,
