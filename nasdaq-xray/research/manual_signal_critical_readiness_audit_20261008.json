@@ -1,0 +1,138 @@
+{
+  "schema": "XRAY_MANUAL_DECISION_PRODUCTION_READINESS_AUDIT_20261008_V1",
+  "asof_trt": "2026-10-08",
+  "read_head": "974170c27ce5db3f78bbf00be5ff447b0e92c3aa",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "authority": false,
+  "manual_signals_go_live": false,
+  "source_pins": {
+    "manual_policy_blob": "9d66b263136aa1908c1f124468b992f666e14dc7",
+    "terminal_blob": "ea9c41cd1e5971e78d85bf3f620d7f8c4e01034f",
+    "mc_bridge_blob": "7eedf06479502b59257788e268df92816f9a3163",
+    "delivery_ledger_blob": "cb14dfc2233ff074fdaa030aee564863db401b29",
+    "candidate_lifecycle_blob": "024d7add5d898e52537192531ed860bf3942be73",
+    "root_orchestrator_blob": "87588cf235f3d415307415f11f23869c3fcfcc34"
+  },
+  "automations": {
+    "five_expected_enabled_tasks_readback": true,
+    "canonical_manual_mode_wiring_verified": false,
+    "user_push_delivery_verified": false,
+    "observed_canonical_prompt_manual_decision_markers": false,
+    "notifications_user_visible_e2e": "UNVERIFIED"
+  },
+  "critical_findings": [
+    {
+      "priority": 0,
+      "key": "MANUAL_SIGNAL_DELIVERY_DISABLED",
+      "observed": "manual_decision_policy_v1.json.delivery.enabled_in_this_shadow=false; manual workflow uploads operations-only artifact",
+      "recovery": "Integrate eligible SHA-bound manual-decision research signal delivery with explicit idempotency and separate user notification receipt test"
+    },
+    {
+      "priority": 0,
+      "key": "NO_USER_NOTIFICATION_RECEIPT",
+      "observed": "delivery_ledger.deliveries={} and no xray-signal Issues observed; old delivery run 37821851971 passed without delivery steps because FINAL_RECOVERY_ACTIVE",
+      "recovery": "Positive controlled end-to-end test; verify user push/email delivery and retry after transient failure; never assert configured equals delivered"
+    },
+    {
+      "priority": 0,
+      "key": "NO_POST_SIGNAL_LIFECYCLE_TEST",
+      "observed": "canonical_candidate_lifecycle_registry.records={} and pointer active_signals/R92/R93 empty; no verified continuous follow-up delivery",
+      "recovery": "Evidence-driven event stream for ENTRY_TOUCH, STOP_TOUCH, TARGET_TOUCH, EXPIRED, EVENT_VETO, HALT, INVALIDATED, PRICE_STALE with same-bar ambiguity and idempotent revision, then test actual notifications"
+    },
+    {
+      "priority": 0,
+      "key": "MANUAL_MC_PRIMARY_ONLY_DEADLOCK",
+      "observed": "MC_PASS_PRIMARY=0, MC_PASS_FALLBACK_WATCH=472; manual report requires MC_PASS_PRIMARY and r92_eligible",
+      "recovery": "Legally authorized independent MC primary provider or explicit separately audited manual-research dual-source authority; never automatically promote WATCH"
+    },
+    {
+      "priority": 0,
+      "key": "CANDIDATE_TECHNICAL_RISK",
+      "observed": "17/17 finalists risk failed, 16/17 RR failed; independent audit 37822328647 mismatch_count=0",
+      "recovery": "No change to alpha/risk thresholds. Research valid new setups and correct asof source bindings"
+    },
+    {
+      "priority": 1,
+      "key": "MASTER_MC_EVENT_UNKNOWNS",
+      "observed": "MASTER UNKNOWN=69, MC UNKNOWN=29, affected EVENT UNKNOWN=18, fail closed",
+      "recovery": "SEC exact asof SPAC/deSPAC classification, authorized MC feeds, issuer calendar exact dates"
+    },
+    {
+      "priority": 0,
+      "key": "ROOT_DATAPLANE_SCHEDULE_OR_IDENTITY_GUARD",
+      "observed": "Root 37836468977 failed NASDAQTRADER_DIRECT_NO_WEB_IDENTITY_PARTITION_MISMATCH. New source guard regression workflow 37836940013 passed; root 37836898161 not yet proven complete",
+      "recovery": "Require real root SUCCESS and full chained terminal successor with exact-ASOF quote/history event consistency, then recheck staleness/cron recovery"
+    },
+    {
+      "priority": 1,
+      "key": "OLD_TRUE_FULL_GO_NOT_APPLICABLE_TO_MANUAL_MODE",
+      "observed": "Legacy strict G9 and account requirements not manual research signal gates; old overlay remains BLOCKED by design",
+      "recovery": "Separate manual signal production readiness authority, do not replace old gate or claim it passed"
+    }
+  ],
+  "runtime_evidence": {
+    "manual_report_workflow": {
+      "run_id": 37835288755,
+      "conclusion": "success",
+      "status": "NO_QUALIFIED_TECHNICAL_RESEARCH_SIGNAL",
+      "signal_count": 0,
+      "public_delivery": false
+    },
+    "direct_directory_unit_regression": {
+      "run_id": 37836940013,
+      "conclusion": "success"
+    },
+    "root_failure": {
+      "run_id": 37836468977,
+      "conclusion": "failure",
+      "reason": "NASDAQTRADER_DIRECT_NO_WEB_IDENTITY_PARTITION_MISMATCH"
+    },
+    "root_successor": {
+      "run_id": 37836898161,
+      "status": "in_progress",
+      "conclusion": null
+    },
+    "old_delivery": {
+      "run_id": 37821851971,
+      "conclusion": "success",
+      "scheduler": "FINAL_RECOVERY_ACTIVE",
+      "actual_issue_steps": "skipped"
+    },
+    "risk_audit": {
+      "run_id": 37822328647,
+      "conclusion": "success",
+      "failed_risk": 17,
+      "failed_rr": 16,
+      "semantic_mismatches": 0
+    }
+  },
+  "current_asof": "2026-10-07",
+  "counts": {
+    "master_unknown": 69,
+    "mc_unknown": 29,
+    "event_affected_unknown": 18,
+    "finalists": 17,
+    "pre_g9_tech_pass": 0,
+    "mc_primary_pass": 0,
+    "mc_fallback_watch": 472,
+    "delivered_keys": 0,
+    "tracked_records": 0
+  },
+  "release_gate": {
+    "ready": false,
+    "not_before": [
+      "FULL_CURRENT_ASOF_ROOT_AND_FINAL_CHAIN_PASS",
+      "MANUAL_MC_GATE_REAL_DATA_ELIGIBLE",
+      "NONZERO_CONFIRMED_TECHNICAL_SIGNAL_OR_SYNTHETIC_FOLLOWUP_E2E_TEST",
+      "MANUAL_RESEARCH_DELIVERY_REAL_USER_RECEIPT",
+      "PERSISTENT_SIGNAL_FOLLOWUP_STATE_AND_TRANSITION_TEST",
+      "SCHEDULE_HEALTH_LEASE_RECOVERY_VERIFIED"
+    ],
+    "no_auto_order": true,
+    "no_broker_data": true,
+    "no_g9_required": true
+  },
+  "message": "Safety gate: no full production readiness claim. Research-only audit evidence."
+}
