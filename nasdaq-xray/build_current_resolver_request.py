@@ -23,12 +23,24 @@ RESOLVER_RESUME_METADATA_ONLY_FIELDS={
     "source_state_blob_sha",
     "source_unknowns_blob_sha",
     "source_overlay_blob_sha",
-    "source_master_blob_sha",
+    # Source MASTER is a mandatory exact E2E provenance fence, not metadata.
+    # Preserving a stale request across an upstream master blob change
+    # creates SETTLEMENT_UNVERIFIED_OR_PRICE_SHA_DRIFT downstream.
     "source_pointer_blob_sha",
 }
 
 def resolver_resume_semantic_view(obj):
     return {k:v for k,v in obj.items() if k not in RESOLVER_RESUME_METADATA_ONLY_FIELDS}
+
+def selftest_master_exact_sha_fence():
+    old={"asof_et":"2026-10-08","source_master_blob_sha":"master_original",
+         "source_state_blob_sha":"state_original","queue_hash":"q"}
+    new_master=dict(old,source_master_blob_sha="master_changed")
+    metadata_only=dict(old,source_state_blob_sha="state_changed")
+    assert resolver_resume_semantic_view(old)!=resolver_resume_semantic_view(new_master), "MASTER_BLOB_SHA_DRIFT_WAS_PRESERVED"
+    assert resolver_resume_semantic_view(old)==resolver_resume_semantic_view(metadata_only), "NONDECISION_METADATA_INCORRECTLY_INVALIDATED"
+    print("XRAY_RESOLVER_MASTER_EXACT_SHA_FENCE_SELFTEST=PASS")
+
 
 def _resolver_bridge_rel(path):
     try:
@@ -451,4 +463,8 @@ def main():
     print(json.dumps({"asof":asof,"pointer_asof":pointer_asof,"status":obj["status"],"settlement_required":settlement_required,"settlement_already_proven":settlement_already_proven,"master_unknown":len(master_symbols),"price_unknown":len(price_symbols),"price_blocked":len(blocked_symbols),"union":len(union),"symbol_hash":obj["symbol_hash"],"resolver_chunks":chunks["chunk_count"],"metadata_only_request_preserved":preserved},sort_keys=True))
 
 if __name__=="__main__":
-    main()
+    import sys
+    if "--selftest" in sys.argv:
+        selftest_master_exact_sha_fence()
+    else:
+        main()
