@@ -1,0 +1,131 @@
+{
+  "schema": "XRAY_FINAL_MISSION_LIVE_CHECKPOINT_V2",
+  "asof_et": "2026-10-07",
+  "observed_main_head": "e333b7d6efe2a2911fd798b5dbd254e9d1d1e37d",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "audit_roles": [
+    "READ_ONLY_ATTESTATION",
+    "NO_ALPHA_PROMOTION",
+    "NO_BROKER_EXECUTION"
+  ],
+  "security": {
+    "policy": "C4.17",
+    "control": "C4.27",
+    "true_full_go": "BLOCKED",
+    "r92_delivery_not_proven": true
+  },
+  "repairs_done": [
+    {
+      "kind": "POST_MC_PUBLICATION",
+      "commit": "cd0fcab48cdaee927b1da4aee348174b2f4e6840",
+      "workflow_run_id": 37769020510,
+      "log": "POST_MC_EXACT_SOURCE_CHAIN=PASS;XRAY_FACTORY_COMMIT=PASS",
+      "history_pass": 460,
+      "stage1_unknown": 0,
+      "breadth_missing": 0,
+      "deep_history_unknown": 0,
+      "weekly_pass": 100,
+      "geometry_scope": 30
+    },
+    {
+      "kind": "EVENT_IMMUTABLE_REBIND",
+      "commit": "11dd69267017e829cebb695eab99f690a13af715",
+      "bridge_path": "nasdaq-xray/canonical_event_bridge_20261007_c417_dv30_v14.json",
+      "event_state_path": "nasdaq-xray/canonical_current_event_state.json"
+    },
+    {
+      "kind": "INDEPENDENT_TRUTH_ATTESTATION",
+      "commit": "11d615028c279252577232523336c53fe88f5ba5",
+      "workflow_run_id": 37772005957,
+      "ci_conclusion": "success",
+      "positive_and_negative_selftests": 4,
+      "artifact_id": 11548132776,
+      "artifact_schema": "XRAY_INDEPENDENT_LIVE_TRUTH_ATTESTATION_V1",
+      "confirmed_checks": [
+        "GITHUB_BLOBS",
+        "HISTORY_ACTIVE_MC",
+        "MASTER",
+        "MC_PARTITION",
+        "MC_RESOLVER_WITNESS",
+        "POLICY",
+        "PRICE"
+      ],
+      "blocked_checks": [
+        "ACCOUNT",
+        "G9",
+        "OVERLAY",
+        "TERMINAL_EXACT",
+        "TERMINAL_RESEARCH_PASS"
+      ]
+    }
+  ],
+  "verification_notes": {
+    "mc_active_path": "nasdaq-xray/canonical_mc_bridge_20261007_c417_dv30_v19.json",
+    "mc_primary_pass": 0,
+    "mc_fallback_watch": 472,
+    "mc_unknown": 29,
+    "master_pass": 3184,
+    "master_unknown": 158,
+    "master_unknown_reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
+    "master_official_sec_network_blocker": {
+      "http_code": 403,
+      "issuer_count_pending": 158,
+      "source_artifact": "nasdaq-xray/master_sec_spac_proof_20261007.json",
+      "alternate_to_validate": "https://www.sec.gov/Archives/edgar/daily-index/bulkdata/submissions.zip",
+      "alternate_status": "RESEARCH_ONLY_NOT_TESTED_FROM_GITHUB_RUNNER"
+    },
+    "final_factory_37771825659": {
+      "computed": 17,
+      "risk_fail": 17,
+      "pre_g9_pass": 0,
+      "built_terminal": true,
+      "committed_terminal": false,
+      "commit_marker": "XRAY_FACTORY_COMMIT=STALE_SOURCE_ABORT",
+      "changed_path": "nasdaq-xray/canonical_current_event_state.json"
+    },
+    "current_successor": {
+      "id": 37772118634,
+      "last_observed_status": "in_progress",
+      "last_observed_step": "Run deep full",
+      "must_revalidate_after_completion": true
+    },
+    "post_mc_second_run": {
+      "id": 37769107361,
+      "last_observed_status": "in_progress",
+      "must_not_assume_complete": true
+    },
+    "account": {
+      "connector_runtime_error_code": 403308,
+      "required_scopes": [
+        "account.read"
+      ],
+      "hosted_workflow_reason": "MCP_V2_BEARER_OR_VAULT_NOT_CONFIGURED",
+      "require_user_authorized_read_only_reconnection": true
+    },
+    "g9": {
+      "status": "BLOCKED_ENTITLEMENT_AUTHORITY_UNPROVEN",
+      "strict_consolidated_nbbo_requires_legal_entitlement": true,
+      "do_not_substitute_delayed_or_iex": true
+    }
+  },
+  "hard_prohibitions": [
+    "No alpha threshold relaxing",
+    "No WATCH-to-R92 conversion",
+    "No false PASS or GO",
+    "No immutable bridge overwrites",
+    "No paid service or credential purchases",
+    "No live orders"
+  ],
+  "next_verified_operations": [
+    "Read run 37772118634 Final commit marker; success status alone is not proof",
+    "Read active main canonical_current_terminal.json blob and current overlay after any final commit",
+    "Repeat independent source drift truth attestation against new terminal",
+    "Resolve master SIC identity using lawful official SEC primary records without guessing",
+    "Resolve MC primary point-in-time authority",
+    "Resolve 20 geometry earnings unknown with official primary evidence",
+    "Resolve strict G9 and ACCOUNT only after lawful user/provider permissions",
+    "Independently prove candidate risk/RR and real R92 delivery"
+  ]
+}
