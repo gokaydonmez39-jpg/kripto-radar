@@ -438,6 +438,37 @@ def next_path(asof: str) -> tuple[Path, int]:
     return ROOT / f"canonical_resolver_bridge_{stamp}_c417_dv30_v{n}.json", n
 
 
+def empty_residual_safe_subset(master: dict, price: dict, request: dict,
+                               predecessor: dict | None, relation: str) -> bool:
+    """No provider measurement: reuse only an immutable current-subset FULL witness.
+
+    This is forbidden for any unresolved/blocked price, newly added symbol,
+    absent settlement witness, required rollover settlement or changed epoch.
+    """
+    if predecessor is None or predecessor.get("role") != FULL_ROLE:
+        return False
+    old = list((predecessor.get("obj") or {}).get("symbols") or [])
+    settled = list((predecessor.get("obj") or {}).get("settlement_symbols") or [])
+    current = list(master.get("pass_symbols") or [])
+    return bool(
+        relation == "SAFE_SUBSET_REBIND"
+        and request.get("symbols") == []
+        and request.get("symbol_count") == 0
+        and request.get("settlement_required") is False
+        and request.get("settlement_already_proven") is False
+        and price.get("unknown_count") == 0
+        and price.get("blocked_count") == 0
+        and price.get("unknown_symbols") == []
+        and price.get("blocked_symbols") == []
+        and old and current and settled
+        and len(old) == len(set(old))
+        and len(current) == len(set(current))
+        and len(settled) == len(set(settled))
+        and set(current).issubset(set(old))
+        and set(settled).issubset(set(current))
+    )
+
+
 def classification_unchanged(predecessor_obj: dict, compact: dict) -> bool:
     """True only when the predecessor full-scope classification is byte-semantic equal."""
     return (predecessor_obj.get("price_resolution_compact") or {}) == compact
@@ -445,7 +476,8 @@ def classification_unchanged(predecessor_obj: dict, compact: dict) -> bool:
 
 def build_obj(master: dict, price: dict, request: dict, manifest: dict, compact: dict,
               predecessor: dict | None, residual: dict, witness_path: str, witness_blob: str,
-              witness: dict, witness_relation: str, version: int) -> dict:
+              witness: dict, witness_relation: str, version: int,
+              empty_subset: bool = False) -> dict:
     queue = list(master["pass_symbols"])
     passes = list(price["pass_symbols"])
     blocked = list(price.get("blocked_symbols") or [])
@@ -506,6 +538,8 @@ def build_obj(master: dict, price: dict, request: dict, manifest: dict, compact:
         "settlement_evidence": {
             "authority_path": residual["path"],
             "authority_blob_sha": residual["blob"],
+            "authority_role": FULL_ROLE if empty_subset else RESIDUAL_ROLE,
+            "empty_residual_safe_subset_source": empty_subset,
             "witness_path": witness_path,
             "witness_blob_sha": witness_blob,
             "witness_relation": witness_relation,
@@ -565,18 +599,22 @@ def build_obj(master: dict, price: dict, request: dict, manifest: dict, compact:
             "no_threshold_weakening": True,
             "no_provider_refetch": True,
             "no_price_or_dv30_remeasurement": True,
-            "settlement_reused_from_same_asof_current_queue_pass_authority": True,
+            "settlement_reused_from_same_asof_current_queue_pass_authority": witness_relation == "EXACT_QUEUE",
+            "settlement_reused_from_same_asof_safe_subset_pass_authority": witness_relation == "SAFE_SUBSET_REBIND",
+            "empty_residual_safe_subset_source": empty_subset,
             "settlement_witness_relation": witness_relation,
             "predecessor_full_scope_role_scoped": predecessor is not None,
             "full_scope_genesis": predecessor is None,
-            "residual_authority_role_scoped": True,
+            "residual_authority_role_scoped": not empty_subset,
         },
         "handoff_rebind": {
             "rule": "CURRENT_COMPLETE_CANONICAL_PRICE_PARTITION_TO_FULL_SCOPE_MC_HANDOFF_V1",
             "predecessor_path": predecessor["path"] if predecessor is not None else None,
             "predecessor_blob_sha": predecessor["blob"] if predecessor is not None else None,
-            "residual_authority_path": residual["path"],
-            "residual_authority_blob_sha": residual["blob"],
+            "residual_authority_path": None if empty_subset else residual["path"],
+            "residual_authority_blob_sha": None if empty_subset else residual["blob"],
+            "safe_subset_full_scope_source_path": residual["path"] if empty_subset else None,
+            "safe_subset_full_scope_source_blob_sha": residual["blob"] if empty_subset else None,
             "source_master_blob_sha": blob_sha(MASTER),
             "source_price_blob_sha": blob_sha(PRICE),
             "source_request_blob_sha": blob_sha(REQUEST),
@@ -612,6 +650,19 @@ def validate_output(obj: dict, master: dict, price: dict, request: dict, compact
     assert obj.get("settlement_status") == "PASS"
     assert obj.get("settlement_witness_path") == witness_path
     assert obj.get("settlement_witness_blob_sha") == witness_blob
+    empty_subset = (obj.get("audit") or {}).get("empty_residual_safe_subset_source") is True
+    if empty_subset:
+        assert predecessor is not None
+        assert request.get("symbols") == [] and request.get("symbol_count") == 0
+        assert not blocked and price.get("unknown_count") == 0
+        assert request.get("settlement_required") is False
+        assert (obj.get("settlement_evidence") or {}).get("authority_role") == FULL_ROLE
+        assert (obj.get("settlement_evidence") or {}).get("witness_relation") == "SAFE_SUBSET_REBIND"
+        assert (obj.get("handoff_rebind") or {}).get("residual_authority_path") is None
+        assert (obj.get("audit") or {}).get("residual_authority_role_scoped") is False
+    else:
+        assert (obj.get("settlement_evidence") or {}).get("authority_role") == RESIDUAL_ROLE
+        assert (obj.get("audit") or {}).get("residual_authority_role_scoped") is True
     if predecessor is None:
         assert obj.get("supersedes_resolver_bridge_path") is None
         assert obj.get("supersedes_resolver_bridge_blob_sha") is None
@@ -703,6 +754,31 @@ def selftest() -> None:
         {"path":"residual","blob":"r","obj":residual_obj,"role":role(residual_obj)},
     ]
     assert select_one_active(role_rows, RESIDUAL_ROLE)["path"] == "residual"
+    oldfull={"path":"old","blob":"exact","role":FULL_ROLE,
+             "obj":{"symbols":["AAA","BBB","CCC"],"settlement_symbols":["AAA"]}}
+    tiny_master={"pass_symbols":["AAA","BBB"]}
+    clean_price={"unknown_count":0,"blocked_count":0,
+                 "unknown_symbols":[],"blocked_symbols":[]}
+    empty_request={"symbols":[],"symbol_count":0,"settlement_required":False,
+                   "settlement_already_proven":False}
+    assert empty_residual_safe_subset(tiny_master,clean_price,empty_request,oldfull,"SAFE_SUBSET_REBIND")
+    assert not empty_residual_safe_subset(tiny_master,clean_price,empty_request,oldfull,"EXACT_QUEUE")
+    assert not empty_residual_safe_subset(tiny_master,clean_price,empty_request,None,"SAFE_SUBSET_REBIND")
+    assert not empty_residual_safe_subset(tiny_master,clean_price,
+        {**empty_request,"symbols":["BBCI"],"symbol_count":1},oldfull,"SAFE_SUBSET_REBIND")
+    assert not empty_residual_safe_subset(tiny_master,
+        {**clean_price,"blocked_count":1},empty_request,oldfull,"SAFE_SUBSET_REBIND")
+    assert not empty_residual_safe_subset(tiny_master,
+        {**clean_price,"unknown_count":1},empty_request,oldfull,"SAFE_SUBSET_REBIND")
+    assert not empty_residual_safe_subset(tiny_master,clean_price,
+        {**empty_request,"settlement_required":True},oldfull,"SAFE_SUBSET_REBIND")
+    assert not empty_residual_safe_subset({"pass_symbols":["AAA","NEW"]},clean_price,
+        empty_request,oldfull,"SAFE_SUBSET_REBIND")
+    assert not empty_residual_safe_subset(tiny_master,clean_price,empty_request,
+        {**oldfull,"role":RESIDUAL_ROLE},"SAFE_SUBSET_REBIND")
+    assert not empty_residual_safe_subset(tiny_master,clean_price,empty_request,
+        {**oldfull,"obj":{"symbols":["AAA","BBB","CCC"],"settlement_symbols":["REMOVED"]}},
+        "SAFE_SUBSET_REBIND")
     # New canonical queue not yet sealed: must remain PENDING and never use
     # the old queue witness. Ambiguous same-queue role remains fatal.
     residual_old = role_rows[1] | {"obj": residual_obj | {"queue_hash": "old-queue"}}
@@ -757,6 +833,19 @@ def main() -> None:
     # Zero matching roles is a legitimate fail-closed PENDING state; multiple
     # roles remain an invariant failure in select_optional_active().
     residual = select_optional_active(rows, RESIDUAL_ROLE, queue_hash=master["queue_hash"])
+    empty_subset = False
+    if residual is None and predecessor is not None and empty_residual_safe_subset(
+        master, price, request, predecessor, "SAFE_SUBSET_REBIND"
+    ):
+        # This proof must bind the exact immutable FULL predecessor blob and
+        # its complete same-ASOF settlement chain. No new issuer data is made.
+        w, wp, wb, relation = validate_settlement_witness(
+            predecessor["file"], predecessor["blob"], master, price["asof_et"]
+        )
+        if empty_residual_safe_subset(master, price, request, predecessor, relation):
+            residual = predecessor
+            empty_subset = True
+            witness, witness_path, witness_blob, witness_relation = w, wp, wb, relation
     if residual is None:
         print("ready=false")
         print("created=false")
@@ -766,7 +855,7 @@ def main() -> None:
     rj = residual["obj"]
     # A partial residual resolver is expected while symbols remain unresolved.
     # Treat it as fail-closed pending rather than crashing Post-MC.
-    if not (
+    if not empty_subset and not (
         rj.get("coverage_complete") is True
         and rj.get("classification_coverage_complete") is True
         and rj.get("partial_data") is False
@@ -778,22 +867,24 @@ def main() -> None:
         print("reason=RESIDUAL_AUTHORITY_INCOMPLETE_PENDING")
         return
 
-    witness_path = str(rj.get("settlement_witness_path") or "")
-    witness_blob = str(rj.get("settlement_witness_blob_sha") or "")
-    if witness_path and witness_blob:
-        witness, witness_path, witness_blob, witness_relation = validate_settlement_witness(
-            REPO / witness_path, witness_blob, master, price["asof_et"]
-        )
-    else:
-        witness, witness_path, witness_blob, witness_relation = validate_settlement_witness(
-            residual["file"], residual["blob"], master, price["asof_et"]
-        )
+    if not empty_subset:
+        witness_path = str(rj.get("settlement_witness_path") or "")
+        witness_blob = str(rj.get("settlement_witness_blob_sha") or "")
+        if witness_path and witness_blob:
+            witness, witness_path, witness_blob, witness_relation = validate_settlement_witness(
+                REPO / witness_path, witness_blob, master, price["asof_et"]
+            )
+        else:
+            witness, witness_path, witness_blob, witness_relation = validate_settlement_witness(
+                residual["file"], residual["blob"], master, price["asof_et"]
+            )
 
     out_path, version = next_path(price["asof_et"])
     assert not out_path.exists(), ("SUCCESSOR_PATH_ALREADY_EXISTS", relpath(out_path))
     obj = build_obj(
         master, price, request, manifest, compact,
         predecessor, residual, witness_path, witness_blob, witness, witness_relation, version,
+        empty_subset=empty_subset,
     )
     validate_output(obj, master, price, request, compact, predecessor, witness_path, witness_blob)
     out_path.write_text(json.dumps(obj, ensure_ascii=False, sort_keys=True, indent=2) + "\n", encoding="utf-8")
@@ -803,15 +894,16 @@ def main() -> None:
     print("generated_blob_sha=" + blob_sha(out_path))
     print("predecessor_path=" + (predecessor["path"] if predecessor is not None else "GENESIS_NONE"))
     print("predecessor_blob_sha=" + (predecessor["blob"] if predecessor is not None else "GENESIS_NONE"))
-    print("residual_authority_path=" + residual["path"])
-    print("residual_authority_blob_sha=" + residual["blob"])
+    print("residual_authority_path=" + ("" if empty_subset else residual["path"]))
+    print("residual_authority_blob_sha=" + ("" if empty_subset else residual["blob"]))
     print("settlement_witness_path=" + witness_path)
     print("settlement_witness_blob_sha=" + witness_blob)
     print("settlement_witness_relation=" + witness_relation)
     print("price_blob_sha=" + blob_sha(PRICE))
     print("pass_count=" + str(len(price.get("pass_symbols") or [])))
     print("queue_total=" + str(len(queue)))
-    print("reason=CURRENT_COMPLETE_PRICE_PARTITION_FULL_SCOPE_HANDOFF_SUCCESSOR")
+    print("reason="+("CURRENT_EMPTY_RESIDUAL_SAFE_SUBSET_FULL_SCOPE_SUCCESSOR"
+                     if empty_subset else "CURRENT_COMPLETE_PRICE_PARTITION_FULL_SCOPE_HANDOFF_SUCCESSOR"))
 
 
 if __name__ == "__main__":
