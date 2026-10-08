@@ -469,6 +469,71 @@ def empty_residual_safe_subset(master: dict, price: dict, request: dict,
     )
 
 
+# These fields describe excluded/UNKNOWN issuers and provenance bookkeeping.
+# They never define the already-frozen, PASS-eligible operating queue or
+# any PRICE/settlement gate. Every other request field must remain byte-semantic
+# equal before an exact-queue predecessor may be reused.
+REQUEST_DIAGNOSTIC_ONLY_FIELDS = frozenset({
+    "master_unknown_count", "master_unknown_detail", "master_unknown_hash",
+    "master_unknown_symbols", "source_master_blob_sha",
+    "source_overlay_blob_sha", "source_state_blob_sha",
+    "source_unknowns_blob_sha",
+})
+
+
+def request_diagnostic_only_changed(prior: dict, current: dict) -> bool:
+    if not isinstance(prior, dict) or not isinstance(current, dict):
+        return False
+    if prior == current:
+        return False
+    old_core = {k: v for k, v in prior.items()
+                if k not in REQUEST_DIAGNOSTIC_ONLY_FIELDS}
+    new_core = {k: v for k, v in current.items()
+                if k not in REQUEST_DIAGNOSTIC_ONLY_FIELDS}
+    if old_core != new_core:
+        return False
+    return bool(
+        current.get("status") == "IDLE"
+        and current.get("symbols") == []
+        and current.get("symbol_count") == 0
+        and current.get("price_unknown_count") == 0
+        and current.get("price_blocked_count") == 0
+        and current.get("settlement_required") is False
+        and current.get("settlement_already_proven") is False
+    )
+
+
+def exact_queue_metadata_rebind(predecessor: dict | None, master: dict,
+                                price: dict, request: dict, compact: dict) -> bool:
+    """Permit ONLY diagnostic UNKNOWN shrink, never a changed authority gate."""
+    if predecessor is None or predecessor.get("role") != FULL_ROLE:
+        return False
+    old = predecessor.get("obj") or {}
+    if settlement_witness_relation(old, master) != "EXACT_QUEUE":
+        return False
+    if old.get("source_price_blob_sha") != blob_sha(PRICE):
+        return False
+    if not classification_unchanged(old, compact):
+        return False
+    if (price.get("unknown_count") != 0 or price.get("blocked_count") != 0 or
+        price.get("unknown_symbols") != [] or price.get("blocked_symbols") != []):
+        return False
+    sha = str(old.get("source_request_blob_sha") or "")
+    if not re.fullmatch(r"[0-9a-f]{40}", sha):
+        return False
+    try:
+        raw = subprocess.check_output(
+            ["git", "cat-file", "blob", sha], cwd=REPO, stderr=subprocess.DEVNULL
+        )
+        actual = hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest()
+        if actual != sha:
+            return False
+        previous = json.loads(raw)
+    except (ValueError, OSError, subprocess.CalledProcessError):
+        return False
+    return request_diagnostic_only_changed(previous, request)
+
+
 def classification_unchanged(predecessor_obj: dict, compact: dict) -> bool:
     """True only when the predecessor full-scope classification is byte-semantic equal."""
     return (predecessor_obj.get("price_resolution_compact") or {}) == compact
@@ -602,6 +667,7 @@ def build_obj(master: dict, price: dict, request: dict, manifest: dict, compact:
             "settlement_reused_from_same_asof_current_queue_pass_authority": witness_relation == "EXACT_QUEUE",
             "settlement_reused_from_same_asof_safe_subset_pass_authority": witness_relation == "SAFE_SUBSET_REBIND",
             "empty_residual_safe_subset_source": empty_subset,
+            "exact_queue_unknown_metadata_only_rebind": bool(empty_subset and witness_relation == "EXACT_QUEUE"),
             "settlement_witness_relation": witness_relation,
             "predecessor_full_scope_role_scoped": predecessor is not None,
             "full_scope_genesis": predecessor is None,
@@ -657,7 +723,7 @@ def validate_output(obj: dict, master: dict, price: dict, request: dict, compact
         assert not blocked and price.get("unknown_count") == 0
         assert request.get("settlement_required") is False
         assert (obj.get("settlement_evidence") or {}).get("authority_role") == FULL_ROLE
-        assert (obj.get("settlement_evidence") or {}).get("witness_relation") == "SAFE_SUBSET_REBIND"
+        assert (obj.get("settlement_evidence") or {}).get("witness_relation") in {"SAFE_SUBSET_REBIND", "EXACT_QUEUE"}
         assert (obj.get("handoff_rebind") or {}).get("residual_authority_path") is None
         assert (obj.get("audit") or {}).get("residual_authority_role_scoped") is False
     else:
@@ -727,6 +793,19 @@ def selftest() -> None:
     synthetic_witness["queue_hash"] = "current-hash"
     synthetic_witness["queue_total"] = 2
     assert settlement_witness_relation(synthetic_witness, synthetic_master) == "EXACT_QUEUE"
+    prior_diag = {"status":"IDLE", "symbols":[], "symbol_count":0,
+                  "price_unknown_count":0, "price_blocked_count":0,
+                  "settlement_required":False, "settlement_already_proven":False,
+                  "queue_hash":"sealed", "source_price_blob_sha":"fixed",
+                  "master_unknown_count":160, "master_unknown_symbols":["SPACX"]}
+    new_diag = {**prior_diag, "master_unknown_count":159,
+                "master_unknown_symbols":[]}
+    assert request_diagnostic_only_changed(prior_diag, new_diag)
+    assert not request_diagnostic_only_changed(prior_diag, prior_diag)
+    assert not request_diagnostic_only_changed(prior_diag, {**new_diag, "source_price_blob_sha":"changed"})
+    assert not request_diagnostic_only_changed(prior_diag, {**new_diag, "symbols":["AAA"]})
+    assert not request_diagnostic_only_changed(prior_diag, {**new_diag, "settlement_required":True})
+    assert not request_diagnostic_only_changed(prior_diag, {**new_diag, "queue_hash":"changed"})
     assert select_optional_active([], FULL_ROLE) is None
     one=[{"path":"x","blob":"b","obj":{"bridge_role":FULL_ROLE},"role":FULL_ROLE}]
     assert select_optional_active(one, FULL_ROLE) is one[0]
@@ -834,15 +913,20 @@ def main() -> None:
     # roles remain an invariant failure in select_optional_active().
     residual = select_optional_active(rows, RESIDUAL_ROLE, queue_hash=master["queue_hash"])
     empty_subset = False
-    if residual is None and predecessor is not None and empty_residual_safe_subset(
+    safe_subset = predecessor is not None and empty_residual_safe_subset(
         master, price, request, predecessor, "SAFE_SUBSET_REBIND"
-    ):
+    )
+    safe_same_queue_metadata = residual is None and exact_queue_metadata_rebind(
+        predecessor, master, price, request, compact
+    )
+    if residual is None and (safe_subset or safe_same_queue_metadata):
         # This proof must bind the exact immutable FULL predecessor blob and
         # its complete same-ASOF settlement chain. No new issuer data is made.
         w, wp, wb, relation = validate_settlement_witness(
             predecessor["file"], predecessor["blob"], master, price["asof_et"]
         )
-        if empty_residual_safe_subset(master, price, request, predecessor, relation):
+        if (empty_residual_safe_subset(master, price, request, predecessor, relation)
+            or (safe_same_queue_metadata and relation == "EXACT_QUEUE")):
             residual = predecessor
             empty_subset = True
             witness, witness_path, witness_blob, witness_relation = w, wp, wb, relation
