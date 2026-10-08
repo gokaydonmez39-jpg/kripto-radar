@@ -558,6 +558,11 @@ jobs:
         if: steps.freeze.outputs.frozen != 'true' && steps.mc.outputs.ready != 'true' && steps.mc.outputs.binding_fault != 'true'
         run: echo "XRAY_POST_MC=BLOCKED_UPSTREAM_PENDING resolver_gate=${{ steps.resolver_gate.outputs.reason }} resolver_handoff=${{ steps.resolver_handoff.outputs.reason }} mc_reason=${{ steps.mc.outputs.pending_reason }} rebind_reason=${{ steps.mc_rebind.outputs.pending_reason }}"
 
+      - name: Fail closed immediately on stale early authority
+        if: steps.early_authority.outputs.stale == 'true'
+        run: |
+          echo "XRAY_POSTMC_EARLY_AUTHORITY_STALE_FAIL_CLOSED" >&2
+          exit 1
       - name: Before-history exact-live Pre-MC active authority guard
         if: steps.mc.outputs.ready == 'true' && steps.early_authority.outputs.stale != 'true'
         env:

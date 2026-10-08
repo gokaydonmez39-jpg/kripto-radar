@@ -28,6 +28,7 @@ jobs:
           w=Path(".github/workflows/xray-canonical-current-post-mc.yml").read_text()
           names=[
             "Commit newly built immutable resolver and MC authority before alpha",
+            "Fail closed immediately on stale early authority",
             "Before-history exact-live Pre-MC active authority guard",
             "Reuse exact same-ASOF HISTORY and LEGAL",
             "Revalidate reused HISTORY and hydrate same-run technical cache",
@@ -44,6 +45,10 @@ jobs:
               chunk=w[start:end]
               assert "XRAY_MC_AUTHORITY_PATH: ${{ steps.mc.outputs.path }}" in chunk
               assert "post_mc_live_source_guard.py --check" in chunk
+          stale=w[w.index("      - name: Fail closed immediately on stale early authority"):w.index("      - name: Before-history exact-live Pre-MC active authority guard")]
+          assert "steps.early_authority.outputs.stale == 'true'" in stale
+          assert "XRAY_POSTMC_EARLY_AUTHORITY_STALE_FAIL_CLOSED" in stale
+          assert "exit 1" in stale
           assert "steps.early_authority.outputs.stale != 'true'" in w
           print("XRAY_POSTMC_DUAL_FENCE_ORDER_SELFTEST=PASS")
           PY
