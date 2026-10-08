@@ -334,7 +334,57 @@ def selftest():
     assert retryable_unknown({"state":"UNKNOWN","reason":"TRANSPORT_URLError"})
     assert not retryable_unknown({"state":"UNKNOWN","reason":"SPAC_SUSPECT_OFFICIAL_SEC_PROOF_REQUIRED"})
     assert not retryable_unknown(good)
+    # True two-invocation persistence test with NO live Massive requests.
+    # A green test without this could mask a broken restore/resume workflow.
+    import tempfile
+    from types import SimpleNamespace
+    from unittest.mock import patch
+    with tempfile.TemporaryDirectory() as td:
+        path=Path(td)
+        args=SimpleNamespace(
+            limit=1,restore=str(path/"previous.enc"),
+            checkpoint=str(path/"checkpoint.enc"),
+            telemetry=str(path/"health.json"))
+        env={"XRAY_MASSIVE_NONDISPLAY_LICENSE_OK":"true",
+             "XRAY_MASSIVE_LICENSE_EVIDENCE_SHA256":"a"*64,
+             "XRAY_MASSIVE_API_KEY":"unit-test-fixed-fake-secret-32characters-long"}
+        fixture=lambda symbol: {
+            "state":"SHADOW_OBSERVED_ABOVE_2B","ticker":symbol,
+            "cik":"0000320193","primary_exchange":"XNAS","type":"CS",
+            "market_cap_usd":4_000_000_000}
+        with patch.dict(os.environ,env),patch(__name__+".current_scope",return_value=scope),\
+             patch(__name__+".probe",side_effect=lambda sym,day,key:fixture(sym)) as fetch, \
+             patch(__name__+".time.sleep") as sleep:
+            run(args)
+            assert fetch.call_count==1
+            stage1=restore(Path(args.checkpoint).read_bytes(),a,scope)[0]
+            assert set(stage1["records"])=={"AAPL"}
+            assert stage1["request_count_cumulative"]==1
+            # Simulate new runner by feeding downloaded ciphertext.
+            Path(args.restore).write_bytes(Path(args.checkpoint).read_bytes())
+            fetch.reset_mock()
+            run(args)
+            stage2=restore(Path(args.checkpoint).read_bytes(),a,scope)[0]
+            assert fetch.call_count==1 and len(stage2["records"])==2
+            assert stage2["request_count_cumulative"]==2
+            assert json.loads(Path(args.telemetry).read_text())["pending_count"]==0
+            Path(args.restore).write_bytes(Path(args.checkpoint).read_bytes())
+            fetch.reset_mock()
+            run(args)
+            assert fetch.call_count==0
+            assert json.loads(Path(args.telemetry).read_text())["last_run_requests"]==0
+            assert sleep.call_count==0
+        # The licence and key gates stop before touching the remote provider.
+        Path(args.restore).unlink()
+        with patch.dict(os.environ,{"XRAY_MASSIVE_NONDISPLAY_LICENSE_OK":"false",
+                                    "XRAY_MASSIVE_LICENSE_EVIDENCE_SHA256":""}), \
+             patch(__name__+".current_scope",return_value=scope), \
+             patch(__name__+".probe") as blocked_probe:
+            run(args)
+            blocked_probe.assert_not_called()
+            assert json.loads(Path(args.telemetry).read_text())["status"]=="BLOCKED_NONDISPLAY_LICENSE_UNVERIFIED"
     print("XRAY_MASSIVE_RESUME_SELFTEST=PASS_ENCRYPT_REPLAY_C4.17_NO_ALPHA")
+    print("XRAY_MASSIVE_RESUME_INTEGRATION=PASS_TWO_RUN_RESUME_NO_DUPLICATES_NO_LIVE_REQUESTS")
 
 if __name__=="__main__":
     p=argparse.ArgumentParser()
