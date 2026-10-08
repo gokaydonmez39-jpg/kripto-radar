@@ -21,3 +21,8 @@ jobs:
         run: |
           python -m py_compile nasdaq-xray/post_mc_live_source_guard.py
           python nasdaq-xray/post_mc_live_source_guard.py --selftest
+      - name: Validate real GitHub main SHA comparisons without alpha
+        env:
+          XRAY_MC_AUTHORITY_PATH: nasdaq-xray/canonical_mc_bridge_20261007_c417_dv30_v13.json
+        run: |
+          python nasdaq-xray/post_mc_live_source_guard.py --check
