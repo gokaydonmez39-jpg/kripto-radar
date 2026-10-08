@@ -81,15 +81,57 @@ jobs:
           deep,dh=load('canonical_current_deep_full.json')
           pointer,ptrh=load('chatgpt_canonical_state_v2.json')
           ev=terminal.get('evidence') or {}
+          # The independent frozen risk re-calculation above is authoritative
+          # for numerical consistency only. A refreshed upstream MASTER/PRICE
+          # before new Terminal publication is an expected PENDING state.
+          # Never call stale data 'CURRENT' or compute GO from this report.
+          assert terminal.get('execution')=='NONE' and terminal.get('real_money')=='NO-GO'
+          assert terminal.get('unknown_never_pass') is True
+          assert all(x.get('execution')=='NONE' and x.get('real_money')=='NO-GO'
+                     for x in (final,price,master,deep))
+          mismatches=[]
           for key,sha in [('final',fh),('price',ph),('master',mh),('deep',dh)]:
-              assert (ev.get(key) or {}).get('blob_sha')==sha,('EXACT_TERMINAL_BINDING_DRIFT',key)
-          assert final.get('source_deep_blob_sha')==dh,'FINAL_DEEP_BINDING_DRIFT'
+              bound=(ev.get(key) or {}).get('blob_sha')
+              if bound!=sha:
+                  mismatches.append({'source':key,'reason':'LIVE_BLOB_DRIFT',
+                                     'terminal_sha':bound,'current_sha':sha})
+          if final.get('source_deep_blob_sha')!=dh:
+              mismatches.append({'source':'final_deep','reason':'FINAL_DEEP_BINDING_DRIFT'})
           mc_rel=(ev.get('mc') or {}).get('path')
           assert isinstance(mc_rel,str) and mc_rel.startswith('nasdaq-xray/canonical_mc_bridge_')
           mc,mch=load(mc_rel.removeprefix('nasdaq-xray/'))
-          assert mch==ev['mc']['blob_sha'] and mc['input_blob_sha']==ph,'MC_PRICE_BINDING_DRIFT'
-          assert all(x.get('asof_et')==terminal['asof_et'] for x in (final,price,master,deep,mc))
-          assert all(x.get('execution')=='NONE' and x.get('real_money')=='NO-GO' for x in (final,price,master,deep,mc,terminal))
+          # Immutable MC must NEVER drift even when mutable PRICE changes.
+          assert mch==ev['mc']['blob_sha'],'IMMUTABLE_MC_BLOB_DRIFT'
+          assert mc.get('execution')=='NONE' and mc.get('real_money')=='NO-GO'
+          if mc.get('input_blob_sha')!=ph:
+              mismatches.append({'source':'mc_price','reason':'MC_PRICE_BINDING_DRIFT'})
+          if not all(x.get('asof_et')==terminal['asof_et']
+                     for x in (final,price,master,deep,mc)):
+              mismatches.append({'source':'asof','reason':'SOURCE_ASOF_DRIFT'})
+          if mismatches:
+              report={
+                'schema':'XRAY_C417_CURRENT_FUNNEL_DIAGNOSTIC_V1',
+                'status':'STALE_SOURCE_BLOCKED','source_exact':False,
+                'execution':'NONE','real_money':'NO-GO','alpha_authority':False,
+                'go_authority':False,'current_go_allowed':False,
+                'terminal_result':terminal.get('terminal_result'),
+                'asof_et':terminal.get('asof_et'),
+                'binding_mismatches':mismatches,
+                'current_funnel_counts':None,
+                'pointer_revision':pointer.get('revision'),
+                'pointer_exact_terminal':((pointer.get('state_json') or {})
+                    .get('deep_final_evidence') or {}).get('terminal_blob_sha')==th,
+                'blobs':{'terminal':th,'final':fh,'price':ph,
+                         'mc':mch,'master':mh,'deep':dh,'pointer':ptrh},
+                'explanation':'Stale canonical Terminal is not a current signal. Independently audited frozen Final does not imply GO.',
+              }
+              out=pathlib.Path(os.environ['RUNNER_TEMP'])/'signal_funnel_root_cause.json'
+              out.write_text(json.dumps(report,sort_keys=True,indent=2)+'\n')
+              assert json.loads(out.read_text())==report
+              print('XRAY_SIGNAL_FUNNEL_STALE_SOURCE_BLOCKED=PASS',json.dumps(mismatches,sort_keys=True))
+              raise SystemExit(0)
+          assert all(x.get('asof_et')==terminal['asof_et']
+                     for x in (final,price,master,deep,mc))
           rows=list((final.get('results') or {}).values())
           assert len(rows)==final['fresh_current_candidate_count']
           assert final['pre_g9_tech_pass_count']==sum(r.get('pre_g9_tech_pass') is True for r in rows)
@@ -127,7 +169,8 @@ jobs:
             'pointer_revision':pointer['revision'],
             'pointer_exact_terminal':((pointer.get('state_json') or {}).get('deep_final_evidence') or {}).get('terminal_blob_sha')==th,
             'blobs':{'terminal':th,'final':fh,'price':ph,'mc':mch,'master':mh,'deep':dh,'pointer':ptrh},
-            'go_authority':False,
+            'go_authority':False, 'current_go_allowed':False,
+            'status':'CURRENT_SNAPSHOT_DIAGNOSTIC', 'source_exact':True,
           }
           out=pathlib.Path(os.environ['RUNNER_TEMP'])/'signal_funnel_root_cause.json'
           out.write_text(json.dumps(report,sort_keys=True,indent=2)+'\n')
