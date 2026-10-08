@@ -12,6 +12,7 @@ on:
       - "nasdaq-xray/delivery_prepare.py"
       - "nasdaq-xray/delivery_scheduler_guard.py"
       - "nasdaq-xray/delivery_scheduler_guard_selftest.py"
+      - "nasdaq-xray/delivery_ledger_merge.py"
       - "nasdaq-xray/delivery_prepare_selftest.py"
       - "nasdaq-xray/official_source_guard.py"
       - "nasdaq-xray/resilience_runtime.py"
@@ -50,7 +51,9 @@ jobs:
             nasdaq-xray/delivery_prepare.py \
             nasdaq-xray/delivery_prepare_selftest.py \
             nasdaq-xray/delivery_scheduler_guard.py \
-            nasdaq-xray/delivery_scheduler_guard_selftest.py
+            nasdaq-xray/delivery_scheduler_guard_selftest.py \
+            nasdaq-xray/delivery_ledger_merge.py
+          python nasdaq-xray/delivery_ledger_merge.py --selftest
 
       - name: Refresh official Nasdaq halt + Security Status guard
         run: |
@@ -192,7 +195,12 @@ jobs:
           for attempt in 1 2 3 4 5; do
             git fetch origin main
             git reset --hard origin/main
-            cp /tmp/delivery_ledger.json nasdaq-xray/delivery_ledger.json
+            # Always merge with the freshly fetched main ledger. Never replace
+            # another delivery run's newer issue receipt or notification state.
+            python nasdaq-xray/delivery_ledger_merge.py \
+              --current nasdaq-xray/delivery_ledger.json \
+              --incoming /tmp/delivery_ledger.json \
+              --out nasdaq-xray/delivery_ledger.json
             git add nasdaq-xray/delivery_ledger.json
             if git diff --cached --quiet; then exit 0; fi
             git commit -m "chore(xray): reconcile delivery ledger [skip ci]"
