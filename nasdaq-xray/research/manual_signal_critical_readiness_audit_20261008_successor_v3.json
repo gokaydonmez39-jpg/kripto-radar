@@ -1,0 +1,146 @@
+{
+  "schema": "XRAY_MANUAL_SIGNAL_CRITICAL_READINESS_SUCCESSOR_V3",
+  "date_trt": "2026-10-08",
+  "snapshot_live_main_head": "8cb4ec0773b62bced9e822b39d8396f5a7ab9fcf",
+  "manual_mode": "RESEARCH_ONLY_MANUAL_DECISION",
+  "release_status": "MANUAL_SIGNAL_PRODUCTION_BLOCKED",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "no_broker_trading": true,
+  "asof": {
+    "terminal": "2026-10-07",
+    "terminal_blob": "ea9c41cd1e5971e78d85bf3f620d7f8c4e01034f",
+    "latest_master": "2026-10-08",
+    "latest_master_blob": "0508f9ae561c471e49ad57f8166852915f948968",
+    "master_unknown_current": 72,
+    "terminal_mc_primary_pass": 0,
+    "terminal_mc_fallback_watch": 472,
+    "terminal_technical_al": 0
+  },
+  "implemented_changes": [
+    {
+      "commit": "334769c011b266fc7a61a0a79c9d43338db5250f",
+      "scope": "Exact prior-ASOF terminal git blob recovery, forbids changed same-ASOF sources"
+    },
+    {
+      "commit": "f0d7e2195336500defa63272f10f8c516fece16c",
+      "scope": "Scoped GitHub read token for SHA-pinned historical evidence"
+    },
+    {
+      "commit": "e6a25089b8fd00c63e02fdc336be6d1ea4b1f0cf",
+      "scope": "Entry-band approach/leave-above monitoring and bar-revision fail closed"
+    },
+    {
+      "commit": "d6df490993bd37c12365b58b7531c3822f636bf2",
+      "scope": "Ledger merge with concurrency and conflicting receipt regression"
+    },
+    {
+      "commit": "8cb4ec0773b62bced9e822b39d8396f5a7ab9fcf",
+      "scope": "GitHub Actions ledger merge on latest main instead of blind overwrite"
+    }
+  ],
+  "actions_verified": [
+    {
+      "run": 37840868465,
+      "workflow": "XRAY Manual Decision Research Only",
+      "conclusion": "success",
+      "checks": "manual report exact-source and negative/positive unit tests"
+    },
+    {
+      "run": 37841033067,
+      "workflow": "XRAY Manual Decision Research Only",
+      "conclusion": "success",
+      "checks": "entry proximity and completed-bar provenance regression + zero real signal"
+    },
+    {
+      "run": 37841356774,
+      "workflow": "XRAY Research Candidate Delivery",
+      "conclusion": "success",
+      "checks": "delivery ledger merge selftest and safe no-candidate branch"
+    }
+  ],
+  "manual_result": {
+    "status": "NO_QUALIFIED_TECHNICAL_RESEARCH_SIGNAL",
+    "count": 0,
+    "asof": "2026-10-07",
+    "universe_wide_complete_coverage_claim": false
+  },
+  "automations": {
+    "enabled": 5,
+    "expected": 5,
+    "canonical_prompt_manual_mode_bound": true,
+    "canonical_task_id": "6a825366222081918997094d76e6ae46",
+    "canonical_immediate_run_requested": true,
+    "canonical_immediate_run_completion_verified": false,
+    "device_delivery_verified": false,
+    "scheduled_time_unchanged": true
+  },
+  "provider_readback": {
+    "massive_ticker_details_ABCL_asof_20261007": "DATA_RETURNED_NOT_PROVEN_CANONICAL_MC_PRIMARY",
+    "financial_datasets_company_facts_ABCL": "BLOCKED_ZERO_API_CREDITS",
+    "alpaca_market_clock": "TOOL_INTERNAL_ERROR",
+    "no_paid_topup": true,
+    "watch_promoted_to_pass": false
+  },
+  "eight_production_criteria": [
+    {
+      "id": 1,
+      "title": "Current completed NASDAQ source chain",
+      "status": "BLOCKED",
+      "reason": "2026-10-08 master exists while current canonical terminal remains 2026-10-07; dated historical manual report is now SHA-correct"
+    },
+    {
+      "id": 2,
+      "title": "Incomplete data never creates false research AL",
+      "status": "PASS_TESTED",
+      "reason": "SHA and ASOF reconciliation, WATCH not primary, terminal evidence, fail closed"
+    },
+    {
+      "id": 3,
+      "title": "Technical candidate positive and negative tests",
+      "status": "PASS_UNIT_ONLY",
+      "reason": "Manual unit positive/negative and real 0 signal; new date production candidate not observed"
+    },
+    {
+      "id": 4,
+      "title": "Phone/email notification delivered",
+      "status": "BLOCKED",
+      "reason": "No real user/device receipt, no false simulated AL; GitHub issue notification depends on subscription preferences"
+    },
+    {
+      "id": 5,
+      "title": "Live candidate lifecycle tracked",
+      "status": "BLOCKED",
+      "reason": "Shadow transitions tested, registry empty, no live bar feed/write-back"
+    },
+    {
+      "id": 6,
+      "title": "Stop/target/expiry/halt/event/invalidity notifications",
+      "status": "BLOCKED",
+      "reason": "Classification test only, actual channel delivery and durable state not yet verified"
+    },
+    {
+      "id": 7,
+      "title": "Daily schedules, health, quota, retry",
+      "status": "PARTIAL",
+      "reason": "Five tasks enabled, canonical manual mode bound, ledger race-safe, workflow tests passed; real daily report and provider retry user receipt unverified"
+    },
+    {
+      "id": 8,
+      "title": "No live money/broker execution authority in manual path",
+      "status": "PASS_SCOPE_MANUAL",
+      "reason": "Manually scoped workflow and policy execution NONE, balance/positions not required; legacy G9/account strict paths separate"
+    }
+  ],
+  "cannot_release_until": [
+    "CURRENT_ASOF_ROOT_MC_HISTORY_EVENT_FINAL_TERMINAL_SEQUENTIAL_SHA_PASS",
+    "PROVEN_MC_PRIMARY_OR_INDEPENDENT_APPROVED_AUTHORITY_NO_WATCH_PROMOTION",
+    "REAL_PROVEN_RISK_RR_QUALIFIED_CANDIDATE_IF_ONE_EMERGES",
+    "ACTUAL_USER_NOTIFICATION_RECEIPT_NOT_JUST_GITHUB_SUCCESS",
+    "REGISTERED_CANDIDATE_PERSISTENT_FOLLOWUP_WITH_LICENSED_BARS",
+    "ACTUAL_LIFECYCLE_ALERT_DELIVERY_AND_DEDUP",
+    "DAILY_DIGEST_RUN_RETRY_AND_USER_RECEIPT_TEST"
+  ],
+  "verification": "Research and unit-test improvements do not authorize manually claimed production readiness. No broker orders, no fabricated AL, no paid provider calls initiated."
+}
