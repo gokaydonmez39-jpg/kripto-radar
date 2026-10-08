@@ -227,6 +227,31 @@ def retryable_unknown(rec):
     return (reason.startswith("TRANSPORT_") or reason.startswith("HTTP_5")
             or reason=="PROVIDER_RESPONSE_NOT_OK")
 
+def checkpoint_candidate_state(ciphertext, fernet, scope):
+    """Read-only authenticated restore selector: matching, stale or rejected."""
+    _, matched = restore(ciphertext, fernet, scope)
+    return "MATCH" if matched else "STALE"
+
+def check_restore_candidate(path):
+    if not nondisplay_license_attested(os.environ):
+        print("XRAY_RESUME_CANDIDATE=BLOCKED_LICENSE")
+        return 3
+    token = os.getenv("XRAY_MASSIVE_API_KEY", "").strip()
+    if not token:
+        print("XRAY_RESUME_CANDIDATE=BLOCKED_KEY")
+        return 3
+    try:
+        data = Path(path).read_bytes()
+        if not data:
+            raise ValueError("EMPTY_CHECKPOINT")
+        state = checkpoint_candidate_state(data, make_fernet(token), current_scope())
+    except Exception:
+        # No plaintext, vendor market data or secrets in logs.
+        print("XRAY_RESUME_CANDIDATE=CORRUPT_OR_UNAUTHENTICATED")
+        return 3
+    print("XRAY_RESUME_CANDIDATE="+state)
+    return 0 if state=="MATCH" else 2
+
 def run(args):
     scope=current_scope()
     out=Path(args.telemetry)
@@ -262,6 +287,7 @@ def run(args):
         # Prevent exceeding 5 calls/minute from this job: every 13 seconds.
         if i>0:time.sleep(MIN_SPACING_SECONDS)
         raw=probe(symbol,scope["asof_et"],token)
+        count+=1  # HTTP 429/401/403/402 still consumes a real attempt.
         reason=str(raw.get("reason") or "")
         if reason in ("HTTP_429","HTTP_401","HTTP_403","HTTP_402"):
             interrupted_reason="VENDOR_QUOTA_OR_AUTHORIZATION"
@@ -270,7 +296,6 @@ def run(args):
         if retryable_unknown(cp["records"][symbol]):
             cp["retry_counts"][symbol]=cp["retry_counts"].get(symbol,0)+1
         cp["request_count_cumulative"]+=1
-        count+=1
         persist_checkpoint_atomic(cp,fernet,scope,dest)
     persist_checkpoint_atomic(cp,fernet,scope,dest)
     remaining=len(scope["symbols"])-len(cp["records"])
@@ -306,6 +331,11 @@ def selftest():
     raw=seal(cp,a,scope)
     rr,ok=restore(raw,a,scope)
     assert ok and rr==cp
+    assert checkpoint_candidate_state(raw,a,scope)=="MATCH"
+    assert checkpoint_candidate_state(raw,a,dict(scope,asof_et="2026-10-09"))=="STALE"
+    try:checkpoint_candidate_state(raw[:-8]+b"tampered",a,scope)
+    except ValueError:pass
+    else:raise AssertionError("TAMPERED_CANDIDATE_ACCEPTED")
     try:restore(raw,b,scope)
     except ValueError:pass
     else:raise AssertionError("KEY_ROTATION_NOT_BLOCKED")
@@ -432,10 +462,12 @@ def selftest():
 if __name__=="__main__":
     p=argparse.ArgumentParser()
     p.add_argument("--selftest",action="store_true")
+    p.add_argument("--check-restore-candidate",metavar="ENCRYPTED_PATH")
     p.add_argument("--limit",type=int,default=25)
     p.add_argument("--restore",default="/tmp/xray_mc_checkpoint_previous.enc")
     p.add_argument("--checkpoint",default="/tmp/xray_mc_checkpoint_current.enc")
     p.add_argument("--telemetry",default="/tmp/xray_mc_resume_health.json")
     args=p.parse_args()
     if args.selftest:selftest()
+    elif args.check_restore_candidate:sys.exit(check_restore_candidate(args.check_restore_candidate))
     else:sys.exit(run(args))
