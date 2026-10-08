@@ -1,0 +1,134 @@
+{
+  "schema": "XRAY_CONTINUATION_CHECKPOINT_20261009_POST_LIVE_REPAIRS_V2",
+  "purpose": "Live code-and-Actions-backed continuation, not a GO, trading signal, vendor entitlement, or license authorization.",
+  "repo": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "readback_head_before_writing_checkpoint": "f06f9345ac4d1ac035dd72e243f1401f104504f4",
+  "asof_et": "2026-10-08",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "mode": "RESEARCH_ONLY_MANUAL_DECISION",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "shadow_never_primary": true,
+  "alpha_threshold_relaxation": false,
+  "findings": {
+    "master_identity_pass": 3183,
+    "master_identity_unknown": 72,
+    "price_dv30_pass": 514,
+    "price_blocked": 45,
+    "current_master_git_blob_sha": "92c37207d8dd766ab3fe8f1300e3014c6c5ab629",
+    "current_price_git_blob_sha": "42ed4a1c1a104aff94f73793194b25746d3bea59",
+    "current_resolver_git_blob_sha": "422b682bcb103bb958ea0850d204c6475a32c037",
+    "resolver_master_sha_exact": true,
+    "resolver_price_sha_exact": true,
+    "last_terminal_asof_et": "2026-10-07",
+    "current_primary_mc_authority_count": 0,
+    "end_to_end_production": "BLOCKED",
+    "delivery_to_actual_device": "UNVERIFIED",
+    "massive_current_live_provider_coverage": "NO_LIVE_LICENSED_RUN",
+    "massive_non_display_entitlement": "UNVERIFIED_DISALLOWED_UNLESS_SEPARATE_WRITTEN_GRANT",
+    "massive_job_secrets_recent_observation": "EMPTY_AT_ACTIONS_RUNTIME_NOT_A_REPO_SECRETS_API_ATTESTATION"
+  },
+  "repairs": [
+    {
+      "commit": "fd39431bb3b62b43a6da3a892da064f72e70d4ef",
+      "file": "nasdaq-xray/massive_mc_resume_shadow.py",
+      "change": "authenticated checkpoint candidate matching vs stale; real quota/auth attempts count",
+      "workflow_run": 37858243832,
+      "test": "SUCCESS_SYNTHETIC_ONLY"
+    },
+    {
+      "commit": "113f760c759678b02e9f089437c2d021ec19852c",
+      "file": ".github/workflows/xray-massive-mc-resume-shadow.yml",
+      "change": "scan isolated prior artifacts for authenticated same-ASOF checkpoint; stop corrupt",
+      "workflow_run": 37858258041,
+      "test": "SUCCESS_LICENSE_BLOCKED"
+    },
+    {
+      "commit": "ee49d49e5c0574d0b924697b5da9941484a05c32",
+      "file": "nasdaq-xray/build_current_resolver_request.py",
+      "change": "master Git blob SHA is decision-bearing; no metadata-only preservation"
+    },
+    {
+      "commit": "21a5f99c1351ba07eeacf922f4f3fe4fcd648962",
+      "file": "nasdaq-xray/test_deep_repair_regressions.py",
+      "change": "regression test requires master SHA rebind",
+      "workflow_run": 37858493468,
+      "test": "SUCCESS"
+    },
+    {
+      "commit": "041b380da4c69eadd6119c9578a22f1d7ea1e882",
+      "file": ".github/workflows/xray-resolver-master-exact-sha-selftest.yml",
+      "change": "operational read-only SHA witness (first reported drift)",
+      "workflow_run": 37858449005,
+      "test": "SUCCESS_INITIAL_DRIFT_BLOCKED"
+    },
+    {
+      "commit": "cca75817a58393c8c507ed808550ba7596899827",
+      "file": ".github/workflows/xray-canonical-current-pre-mc.yml",
+      "change": "force resolver refresh when current master SHA differs even on frozen same-ASOF PRICE partition",
+      "workflow_run": 37858561918,
+      "test": "SUCCESS_REBUILT_NEW_RESOLVER"
+    },
+    {
+      "commit": "ee5d9040af012bed5c43480a39f2e0b46bfe6ed3",
+      "file": "nasdaq-xray/massive_mc_resume_shadow.py",
+      "change": "durable inter-run last-attempt rate fence, pre-HTTP authenticated count and 429 test",
+      "workflow_run": 37858766225,
+      "test": "SUCCESS_SYNTHETIC_ONLY"
+    },
+    {
+      "commit": "7b6404faeceacf18cd1daf99bf6d2b3d49213080",
+      "file": "nasdaq-xray/massive_mc_resume_shadow.py",
+      "change": "deterministic 13-second cooldown positive and complete-with-zero-requests negative test",
+      "workflow_run": 37858800256,
+      "test": "IN_PROGRESS_LAST_READBACK"
+    },
+    {
+      "commit": "f06f9345ac4d1ac035dd72e243f1401f104504f4",
+      "file": ".github/workflows/xray-massive-mc-resume-shadow.yml",
+      "change": "scope provider key and attestation env to authorized restore and collect steps",
+      "workflow_run": 37858849379,
+      "test": "PENDING_LAST_READBACK"
+    }
+  ],
+  "factory_evidence": {
+    "pre_mc_run": 37858561918,
+    "pre_mc_status": "SUCCESS_REAL_RESOLVER_REGENERATION",
+    "post_mc_run": 37858602257,
+    "post_mc_status": "SUCCESS_HANDOFF_CREATED_BUT_HISTORY_STAGES_SKIPPED_MC_MISSING",
+    "readiness_run": 37858654374,
+    "readiness_blockers": [
+      "CURRENT_MC_AUTHORITY_MISSING",
+      "CURRENT_TERMINAL_FROZEN_OR_INCOMPLETE",
+      "IDENTITY_PARTITION_INCOMPLETE",
+      "NOTIFICATION_DEVICE_RECEIPT_NOT_PROVEN",
+      "PRICE_BLOCKED_30_SESSION_BARS",
+      "TERMINAL_CURRENT_MC_CHAIN_NOT_PROVEN"
+    ],
+    "latest_current_main_checkpoint_source_ref_authority": "LIVE_MAIN_ALWAYS_OVERRIDES_THIS_SNAPSHOT"
+  },
+  "known_non_authorizations": [
+    "Bigdata PRIMARY current PIT MC proof not established, shadow Massive never primary.",
+    "Massive free API has no verified non-display automated strategy analytics/encrypted storage entitlement.",
+    "GitHub managed connector cannot inspect repository secret values or install secrets; recent runner env was empty.",
+    "45 PRICE blocked and 72 official identity unknown remain unchanged.",
+    "8 Oct HISTORY->weekly->regime->A/B/C/D->events->risk->final terminal not proven.",
+    "Senthetic notification tests are not an actual device receipt.",
+    "14-day artifact upload configuration is not proof of 14-day durable retrieval after every run."
+  ],
+  "required_external_action": "Obtain explicit Massive vendor written entitlement for unattended non-display investment strategy analytics and 14-day encrypted storage, then operator add repository API key and license-evidence SHA256 through GitHub Actions secrets; set non-display license flag true ONLY when permitted, not on inference.",
+  "next_actions": [
+    "Re-read live main, last Actions runs and all new commits, particularly 37858800256, 37858849379, 37858876938.",
+    "Verify 13-second rate-fence deterministic selftest and secret-scoped workflow actual Action logs.",
+    "Verify exact master/PRICE/resolver Git SHA in next E2E snapshot; do not overwrite immutable artifacts.",
+    "Evaluate legitimate Bigdata C4.17 primary current-MC source vs separately versioned approved alternative; no shadow promotion.",
+    "Repair 45 PRICE blocked and 72 SEC/SPAC unknown only with source-backed evidence; assess candidate-local technical eligibility independently.",
+    "Once PRIMARY MC proven run daily/weekly/history/regime/setups/event/risk/final exact same-ASOF chain.",
+    "Prove notification delivery on an actual eligible candidate independently from synthetic and accepted transport.",
+    "Continue on live current, append new evidence and new checkpoint; never infer success from a workflow green check."
+  ],
+  "status": "RESEARCH_PRODUCTION_NO_GO"
+}
