@@ -2,6 +2,13 @@ name: XRAY Live Truth Attestation
 # Read-only, fail-closed. A successful CI run is NOT trading or TRUE_FULL_GO.
 on:
   workflow_dispatch:
+  # Factory pushes with GITHUB_TOKEN may not trigger another push workflow.
+  # workflow_run plus scheduled checks provide independent replayable evidence.
+  workflow_run:
+    workflows: ["XRAY Canonical Current Final Factory"]
+    types: [completed]
+  schedule:
+    - cron: "13 * * * 1-5"
   push:
     branches: [main]
     paths:
