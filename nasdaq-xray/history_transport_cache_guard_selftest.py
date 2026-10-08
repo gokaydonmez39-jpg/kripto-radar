@@ -26,8 +26,14 @@ def write_cache(root: Path, sym: str, dates: list[str]) -> None:
 
 
 def daily_ending(end: str, n: int) -> list[str]:
+    # Weekend observations cannot be counted as completed RTH sessions.
     d = date.fromisoformat(end)
-    return [(d - timedelta(days=k)).isoformat() for k in range(n-1, -1, -1)]
+    out=[]
+    while len(out)<n:
+        if d.weekday()<5:
+            out.append(d.isoformat())
+        d-=timedelta(days=1)
+    return list(reversed(out))
 
 
 def fixtures():
@@ -125,7 +131,23 @@ def test_current_cache_lt260_fails():
         assert detail["missing"]["A"]=="CURRENT_LT260:259",detail
 
 
+def test_weekend_duplicate_and_invalid_bars_fail():
+    h,l,i = fixtures()
+    h["pass_symbols"]=["A"]
+    l["pass_symbols"]=["A"]
+    with tempfile.TemporaryDirectory() as td:
+        root=Path(td)
+        good=daily_ending(ASOF,300)
+        write_cache(root,"QQQ",daily_ending(ASOF,320))
+        # Even with >=260 plausible observations, tampering must fail closed.
+        for injected in ("2026-10-04",good[-1],"NOT_A_DATE"):
+            write_cache(root,"A",good+[injected])
+            ok,detail=g.evaluate(root,h,l,{"records":{}},require_qqq=True)
+            assert not ok and detail["missing"]["A"]=="CACHE_MISSING_OR_INVALID",detail
+
+
 if __name__=="__main__":
+    test_weekend_duplicate_and_invalid_bars_fail()
     test_complete_exact_asof_cache_passes()
     test_stale_qqq_fails()
     test_missing_continuity_predecessor_fails()
