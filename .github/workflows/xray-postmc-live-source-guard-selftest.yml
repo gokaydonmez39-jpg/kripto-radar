@@ -21,6 +21,32 @@ jobs:
         run: |
           python -m py_compile nasdaq-xray/post_mc_live_source_guard.py
           python nasdaq-xray/post_mc_live_source_guard.py --selftest
+      - name: Verify early and before-Stage1 fences are both wired to exact MC
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          w=Path(".github/workflows/xray-canonical-current-post-mc.yml").read_text()
+          names=[
+            "Commit newly built immutable resolver and MC authority before alpha",
+            "Before-history exact-live Pre-MC active authority guard",
+            "Reuse exact same-ASOF HISTORY and LEGAL",
+            "Revalidate reused HISTORY and hydrate same-run technical cache",
+            "Early exact-live Pre-MC SHA fence (FAIL CLOSED on staleness)",
+            "Run Stage1",
+          ]
+          positions=[w.index("      - name: "+n) for n in names]
+          assert positions==sorted(positions),positions
+          for section_title,next_title in [
+            (names[1],names[2]),(names[4],names[5])
+          ]:
+              start=w.index("      - name: "+section_title)
+              end=w.index("      - name: "+next_title)
+              chunk=w[start:end]
+              assert "XRAY_MC_AUTHORITY_PATH: ${{ steps.mc.outputs.path }}" in chunk
+              assert "post_mc_live_source_guard.py --check" in chunk
+          assert "steps.early_authority.outputs.stale != 'true'" in w
+          print("XRAY_POSTMC_DUAL_FENCE_ORDER_SELFTEST=PASS")
+          PY
       - name: Validate live active MC supersession and exact source SHA
         run: |
           set -euo pipefail
