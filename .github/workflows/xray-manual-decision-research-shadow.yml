@@ -1,0 +1,76 @@
+name: XRAY Manual Decision Research Only
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 21 * * 1-5"
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/manual_decision_report.py"
+      - "nasdaq-xray/manual_decision_policy_v1.json"
+      - ".github/workflows/xray-manual-decision-research-shadow.yml"
+permissions:
+  contents: read
+concurrency:
+  group: xray-manual-decision-research-v1
+  cancel-in-progress: false
+jobs:
+  manual-research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile and regression tests (manual only, no account or orders)
+        run: |
+          python -m py_compile nasdaq-xray/manual_decision_report.py
+          python nasdaq-xray/manual_decision_report.py --selftest
+      - name: Build exact-source manual-decision research report
+        run: |
+          python nasdaq-xray/manual_decision_report.py --out "$RUNNER_TEMP/xray_manual_private.json"
+      - name: Enforce source bindings and sanitized public status
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          d=Path(os.environ["RUNNER_TEMP"])
+          r=json.loads((d/"xray_manual_private.json").read_text())
+          p=json.loads(Path("nasdaq-xray/manual_decision_policy_v1.json").read_text())
+          assert r["schema"]=="XRAY_MANUAL_DECISION_REPORT_V1"
+          assert r["manual_decision_only"] is True
+          assert r["execution"]=="NONE" and r["real_money"]=="NO-GO"
+          assert r["g9_required"] is False
+          assert r["broker_or_account_required"] is False
+          assert r["full_go_claimed"] is False and r["order_count"]==0
+          assert r["delivery_enabled"] is False and p["delivery"]["enabled_in_this_shadow"] is False
+          assert r["alpha_authority"] is False and r["unknown_never_pass"] is True
+          assert len(r["research_signals"])<=3
+          assert r["research_signal_count"]==0 or r["status"]=="QUALIFIED_RESEARCH_SIGNAL_AVAILABLE"
+          assert r["research_signal_count"]>0 or r["status"]=="NO_QUALIFIED_TECHNICAL_RESEARCH_SIGNAL"
+          assert set(r["source_blob_shas"])=={
+              "terminal","manual_policy","final","master","price","history",
+              "events","policy","official_halt_guard","mc"}
+          # No vendor-derived market data or actionable levels published in public artifacts.
+          safe={k:r[k] for k in ("schema","asof_et","status","execution",
+              "real_money","manual_decision_only","alpha_authority","g9_required",
+              "broker_or_account_required","order_count","research_signal_count",
+              "full_finalist_count","pre_g9_technical_pass_count",
+              "rejection_reason_counts","source_blob_shas","delivery_enabled")}
+          safe["public_market_data"]=False
+          safe["ticker_identifiers_published"]=False
+          (d/"xray_manual_public_telemetry.json").write_text(json.dumps(safe,indent=2)+"\n")
+          print("XRAY_MANUAL_DECISION_REPORT_SAFETY=PASS")
+          print("XRAY_MANUAL_DECISION_PUBLIC_STATUS="+r["status"])
+          print("XRAY_MANUAL_DECISION_PUBLIC_COUNT="+str(r["research_signal_count"]))
+          PY
+      - name: Upload safe operational telemetry only
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-manual-decision-operational-only
+          path: ${{ runner.temp }}/xray_manual_public_telemetry.json
+          retention-days: 14
+          if-no-files-found: error
