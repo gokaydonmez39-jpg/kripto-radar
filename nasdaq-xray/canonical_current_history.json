@@ -2115,10 +2115,8 @@
       },
       "provider_meta": {
         "eastmoney": {
-          "attempts": 1,
-          "market": "NASDAQ_105",
-          "secid": "105.BLLN",
-          "usable": 230
+          "error": "ConnectionError:('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))",
+          "secid": "105.BLLN"
         },
         "nasdaq": {
           "rows": 0,
@@ -2130,9 +2128,9 @@
         },
         "yahoo": {
           "exchangeName": "NMS",
-          "technical_cache_exact_asof_written": false,
-          "technical_cache_source": null,
-          "usable": 229
+          "technical_cache_exact_asof_written": true,
+          "technical_cache_source": "YAHOO_CHART_FREE_OHLCV",
+          "usable": 230
         }
       },
       "status": "FAIL_HISTORY"
@@ -2468,9 +2466,9 @@
         },
         "yahoo": {
           "exchangeName": "NMS",
-          "technical_cache_exact_asof_written": false,
-          "technical_cache_source": null,
-          "usable": 100
+          "technical_cache_exact_asof_written": true,
+          "technical_cache_source": "YAHOO_CHART_FREE_OHLCV",
+          "usable": 101
         }
       },
       "status": "FAIL_HISTORY"
@@ -3599,28 +3597,16 @@
       "info": {
         "asof_present": true,
         "completed_week_count": 157,
-        "cusip_unchanged": true,
         "daily_bars": 755,
-        "effective_date": "2026-01-15",
-        "note": "SEC states the issuer changed name from Mind Medicine (MindMed) Inc. to Definium Therapeutics, Inc.; CUSIP for the common shares remained unchanged; the same common shares traded as MNMD before 2026-01-15 and DFTX thereafter.",
-        "official_sources": [
-          "https://www.sec.gov/Archives/edgar/data/1813814/000119312526009854/mnmd-20260109.htm",
-          "https://www.sec.gov/Archives/edgar/data/1813814/000119312526076742/dftx-20251231.htm"
-        ],
-        "overlap_compared": 182,
-        "overlap_p95_relative_close_diff": 4.762958895972749e-08,
-        "overlap_sessions": 182,
-        "predecessor_symbol": "MNMD",
-        "proof": "UNCHANGED_CUSIP_PLUS_CROSS_SOURCE_OVERLAP",
-        "source": "OFFICIAL_TICKER_CONTINUITY_COMPOSITE_HISTORY",
-        "source_registry": "nasdaq-xray/history_official_identity_evidence.json"
+        "first_date": "2023-10-04",
+        "last_date": "2026-10-07",
+        "source": "YAHOO_CHART_FREE"
       },
       "provider_meta": {
         "nasdaq": {
           "rows": 0,
           "usable": 0
         },
-        "official_identity_registry": true,
         "sina": {
           "attempts": 1,
           "usable": 183
@@ -3630,9 +3616,9 @@
         },
         "yahoo": {
           "exchangeName": "NMS",
-          "technical_cache_exact_asof_written": false,
-          "technical_cache_source": null,
-          "usable": 754
+          "technical_cache_exact_asof_written": true,
+          "technical_cache_source": "YAHOO_CHART_FREE_OHLCV",
+          "usable": 755
         }
       },
       "status": "PASS_HISTORY"
@@ -4548,9 +4534,9 @@
         },
         "yahoo": {
           "exchangeName": "NMS",
-          "technical_cache_exact_asof_written": false,
-          "technical_cache_source": null,
-          "usable": 101
+          "technical_cache_exact_asof_written": true,
+          "technical_cache_source": "YAHOO_CHART_FREE_OHLCV",
+          "usable": 102
         }
       },
       "status": "FAIL_HISTORY"
@@ -6533,9 +6519,9 @@
         },
         "yahoo": {
           "exchangeName": "NMS",
-          "technical_cache_exact_asof_written": false,
-          "technical_cache_source": null,
-          "usable": 148
+          "technical_cache_exact_asof_written": true,
+          "technical_cache_source": "YAHOO_CHART_FREE_OHLCV",
+          "usable": 149
         }
       },
       "status": "FAIL_HISTORY"
@@ -6831,9 +6817,9 @@
         },
         "yahoo": {
           "exchangeName": "NMS",
-          "technical_cache_exact_asof_written": false,
-          "technical_cache_source": null,
-          "usable": 234
+          "technical_cache_exact_asof_written": true,
+          "technical_cache_source": "YAHOO_CHART_FREE_OHLCV",
+          "usable": 235
         }
       },
       "status": "FAIL_HISTORY"
@@ -7889,9 +7875,9 @@
         },
         "yahoo": {
           "exchangeName": "NCM",
-          "technical_cache_exact_asof_written": false,
-          "technical_cache_source": null,
-          "usable": 211
+          "technical_cache_exact_asof_written": true,
+          "technical_cache_source": "YAHOO_CHART_FREE_OHLCV",
+          "usable": 212
         }
       },
       "status": "FAIL_HISTORY"
@@ -10555,8 +10541,8 @@
     }
   },
   "schema": "XRAY_CANONICAL_HISTORY_V1",
-  "source_mc_artifact": "nasdaq-xray/canonical_mc_bridge_20261007_c417_dv30_v10.json",
-  "source_mc_blob_sha": "dd3411231aa59468dcf662fc3470185ea868781e",
+  "source_mc_artifact": "nasdaq-xray/canonical_mc_bridge_20261007_c417_dv30_v11.json",
+  "source_mc_blob_sha": "900087a8de85d2462852158d3ce7b0425eb1b86f",
   "source_mc_policy_hash": "68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4",
   "source_mc_policy_version": "C4.17",
   "state_caps": {
