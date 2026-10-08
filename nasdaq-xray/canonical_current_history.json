@@ -2115,8 +2115,10 @@
       },
       "provider_meta": {
         "eastmoney": {
-          "error": "ConnectionError:('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))",
-          "secid": "105.BLLN"
+          "attempts": 1,
+          "market": "NASDAQ_105",
+          "secid": "105.BLLN",
+          "usable": 230
         },
         "nasdaq": {
           "rows": 0,
@@ -10553,8 +10555,8 @@
     }
   },
   "schema": "XRAY_CANONICAL_HISTORY_V1",
-  "source_mc_artifact": "nasdaq-xray/canonical_mc_bridge_20261007_c417_dv30_v9.json",
-  "source_mc_blob_sha": "bf604cd3684ecadc42285aa54c88ae0b62c6c0af",
+  "source_mc_artifact": "nasdaq-xray/canonical_mc_bridge_20261007_c417_dv30_v10.json",
+  "source_mc_blob_sha": "dd3411231aa59468dcf662fc3470185ea868781e",
   "source_mc_policy_hash": "68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4",
   "source_mc_policy_version": "C4.17",
   "state_caps": {
