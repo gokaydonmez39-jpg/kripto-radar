@@ -7,6 +7,9 @@ on:
       - "nasdaq-xray/sec_transport_matrix_probe.py"
       - ".github/workflows/xray-sec-transport-matrix-probe.yml"
   workflow_dispatch:
+  # Official SEC transport may change without a repository commit; bounded check only.
+  schedule:
+    - cron: "23 12 * * 1-5"
 
 permissions:
   contents: read
@@ -57,4 +60,4 @@ jobs:
         with:
           name: xray-sec-transport-matrix-probe
           path: nasdaq-xray/sec_transport_matrix_probe_state.json
-          retention-days: 3
+          retention-days: 7
