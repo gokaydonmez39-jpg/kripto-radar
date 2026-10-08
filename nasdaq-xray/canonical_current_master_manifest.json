@@ -1,7 +1,7 @@
 {
   "asof_et": "2026-10-07",
   "asof_identity_proof": {
-    "blob_sha": "ffe558f5906266a66820e91a53792d556cb1d6a4",
+    "blob_sha": "e1cb01ac22ea3d0ca1888c9458d6f21e09874eb5",
     "counts": {
       "operating_overrides": 3,
       "remove_from_asof": 0,
@@ -29,13 +29,13 @@
   },
   "counts": {
     "PASS_IDENTITY": 3184,
-    "UNKNOWN_IDENTITY": 113
+    "UNKNOWN_IDENTITY": 111
   },
   "execution": "NONE",
-  "explicit_excluded_count": 99,
-  "explicit_excluded_hash": "40a8344504da1c2576ef2bd2b907a0e3b3551118b5fe0e28523606551631ef9d",
+  "explicit_excluded_count": 101,
+  "explicit_excluded_hash": "f92a5d066a6b6fc23fc178d45ea3d1c0d984c3a653b345fd8b836489d2d97184",
   "explicit_excluded_reason_counts": {
-    "SPAC_BLANK_CHECK": 99
+    "SPAC_BLANK_CHECK": 101
   },
   "history_price_state_diagnostic_only": {
     "source_counts": {
@@ -3242,22 +3242,22 @@
   "queue_hash": "2554c936f42217cf8a9628e89d04993945218725234fe894f7c80856834725d6",
   "queue_total": 3184,
   "queue_unique": 3184,
-  "raw_identity_total": 3297,
+  "raw_identity_total": 3295,
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1",
   "sec_spac_proof": {
-    "blob_sha": "019dc430ea4fb589e4a2810498b4a062c2723039",
-    "count": 99,
+    "blob_sha": "906c72ad1d1cf6ee799255bef80cd46da90f651c",
+    "count": 101,
     "path": "nasdaq-xray/master_sec_spac_proof_20261007.json",
-    "symbol_hash": "d23b0d64100018c1516df66ca4106c651060df009954cecafbe8ebddab50c6ef"
+    "symbol_hash": "a18533a93bab5bf20445206fe008dd153ab30dd0af22e20bb3ec3d306d7d39d7"
   },
-  "source_state_blob_sha": "40809d812d5eb3be137ba928accebbcd782fe98b",
-  "source_state_hash": "172f385dd405245cf13504e43e1498f0637c9db07c2d993ce9393baa99d9b2b4",
+  "source_state_blob_sha": "a94ce6f109148c5ca22fadbf90ae8852d6c55361",
+  "source_state_hash": "d19d7495613fc12671b2630e656170f848acf585a67648a5732a56eb9e23c777",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
   "status": "PARTIAL_UNKNOWN",
   "status_semantics": "IDENTITY_PARTITION_EXACT_WITH_UNKNOWN",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 113,
+  "unknown_count": 111,
   "unknown_detail": {
     "ALIS": {
       "exact_sec_spac_proof": false,
@@ -4105,15 +4105,6 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "TACH": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Titan Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "TACO": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
@@ -4219,15 +4210,6 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Willow Lane Acquisition Corp. II - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "WSTN": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Westin Acquisition Corp - Class A Ordinary Share",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -4373,7 +4355,6 @@
     "SUMA",
     "SVIV",
     "SZZL",
-    "TACH",
     "TACO",
     "TCGX",
     "TDAC",
@@ -4386,7 +4367,6 @@
     "VNME",
     "WENN",
     "WLII",
-    "WSTN",
     "WTG",
     "XCBE",
     "XRPN",

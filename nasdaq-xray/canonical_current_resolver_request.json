@@ -37,7 +37,7 @@
     "2026-10-06",
     "2026-10-07"
   ],
-  "master_unknown_count": 113,
+  "master_unknown_count": 111,
   "master_unknown_detail": {
     "ALIS": {
       "exact_sec_spac_proof": false,
@@ -885,15 +885,6 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "TACH": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Titan Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "TACO": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
@@ -1002,15 +993,6 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "WSTN": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Westin Acquisition Corp - Class A Ordinary Share",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "WTG": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
@@ -1057,7 +1039,7 @@
       "unknown_never_pass": true
     }
   },
-  "master_unknown_hash": "b7422da6c0141a15c6190ec6e4a2c7682c93bf5cf0c720907d1c034ef1456120",
+  "master_unknown_hash": "32675e7a85f10179b0be664a12f5bcf2ef3fb8e4818fac26e3589a903b5a745b",
   "master_unknown_symbols": [
     "ALIS",
     "BKHA",
@@ -1153,7 +1135,6 @@
     "SUMA",
     "SVIV",
     "SZZL",
-    "TACH",
     "TACO",
     "TCGX",
     "TDAC",
@@ -1166,7 +1147,6 @@
     "VNME",
     "WENN",
     "WLII",
-    "WSTN",
     "WTG",
     "XCBE",
     "XRPN",
@@ -1204,9 +1184,9 @@
   "settlement_policy": "ALPACA_HISTORICAL_SIP_DAILY_AFTER_15M__AAPL_NVDA_PLUS_ONE_PRIOR_CURRENT_CORE__RALLIES_LONGBRIDGE_QUOTE_OHLC_0_01_CROSSCHECK__SIP_VOLUME_AUTHORITY__FAIL_CLOSED__DELAYED_SIP_NEVER_G9",
   "settlement_required": false,
   "settlement_symbols": [],
-  "source_master_blob_sha": "47a4d3ffb7516c59dfbc93c6c24ce1a4d3b6c3e7",
+  "source_master_blob_sha": "f77e7d06440673d065e58b7b9cab80414ad9ccff",
   "source_master_path": "nasdaq-xray/canonical_current_master_manifest.json",
-  "source_overlay_blob_sha": "a77e57c935d8a6161daef635e11c6827a1231e11",
+  "source_overlay_blob_sha": "7101af7c09332906a0196e9f5941bdcdec444384",
   "source_overlay_path": "nasdaq-xray/canonical_current_resolution_overlay.json",
   "source_pointer_blob_sha": "815a78dbba6f083ad665cf364dfd33e0ddf9d1e8",
   "source_pointer_path": "nasdaq-xray/chatgpt_canonical_state_v2.json",
@@ -1222,9 +1202,9 @@
   "source_price_pass_count": 510,
   "source_price_pass_hash": "f6772e07d952c9c172a3370076537cbfc89128886e1a0e31d1142b2ebecf0438",
   "source_price_path": "nasdaq-xray/canonical_current_price_dv30.json",
-  "source_state_blob_sha": "40809d812d5eb3be137ba928accebbcd782fe98b",
+  "source_state_blob_sha": "a94ce6f109148c5ca22fadbf90ae8852d6c55361",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
-  "source_unknowns_blob_sha": "49fe56e82d8798ddd24cf0ee46f7a256f31036f8",
+  "source_unknowns_blob_sha": "141451ae413d46af73d0f18fd5f247c2fad1a0d8",
   "source_unknowns_path": "nasdaq-xray/canonical_current_unknowns.json",
   "status": "IDLE",
   "symbol_count": 0,
