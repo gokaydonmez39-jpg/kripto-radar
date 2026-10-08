@@ -1313,6 +1313,31 @@ def test_overlay_separates_exact_binding_from_mc_coverage_unknown():
     assert '"terminal_live_artifact_bindings":live_binding' in src
     assert '"CURRENT_CANONICAL_BLOBS_FAIL_CLOSED"' in src
 
+
+def test_post_mc_history_provider_lag_is_explicit_non_promoting_pending():
+    """Provider lag must skip alpha and preserve prior exact-ASOF HISTORY."""
+    wf=(REPO/".github/workflows/xray-canonical-current-post-mc.yml").read_text()
+    assert "id: history_revalidate" in wf
+    assert "XRAY_HISTORY_REVALIDATION_PENDING_V1" in wf
+    assert '"status":"PENDING_PROVIDER_EXACT_ASOF"' in wf
+    assert '"old_history_unchanged":True' in wf
+    assert 'f.write("ready=false\\n")' in wf
+    assert 'f.write("ready=true\\n")' in wf
+    start=wf.index("      - name: Revalidate reused HISTORY")
+    end=wf.index("      - name: Preserve HISTORY provider-lag evidence",start)
+    block=wf[start:end]
+    assert block.index('assert old.get("input_count")') < block.index("          if unknown:")
+    assert block.index('assert new.get("source_mc_blob_sha")') < block.index("          if unknown:")
+    assert block.index("          if unknown:") < block.index('assert old.get("pass_hash")')
+    assert block.index("          if unknown:") < block.index("          assert old_status==new_status")
+    assert block.index("          assert old_status==new_status") < block.index("          canonical.write_bytes")
+    assert "name: xray-history-revalidation-pending" in wf
+    assert "if-no-files-found: error" in wf
+    downstream=wf[wf.index("      - name: Hydrate technical benchmark and ticker-continuity cache"):]
+    guarded="if: steps.mc.outputs.ready == 'true' && steps.history_revalidate.outputs.ready != 'false'"
+    assert downstream.count(guarded)>=10
+    assert "      - name: Commit current post-MC artifacts\n        "+guarded in downstream
+
 def main():
     test_r1_no_future_mutation_and_confirmation(); test_r1_pivot_boundary_is_not_overhead_but_entry_overlap_is(); test_resistance_role_change_state_machine()
     test_final_history_normalizer_preserves_ohlcv()
@@ -1332,6 +1357,7 @@ def main():
     test_post_mc_exact_source_rebind_workflow_contract()
     test_final_deep_history_cache_persistence_contract()
     test_overlay_separates_exact_binding_from_mc_coverage_unknown()
+    test_post_mc_history_provider_lag_is_explicit_non_promoting_pending()
     test_final_structural_gate_accepts_deep_history_unknown_only_as_exact_partial_blocker()
     test_terminal_deep_history_unknown_is_fail_closed_partial_not_crash()
     test_frozen_identity_reuse_preserves_unknown_partition_and_rejects_unproven_spac_contract()
