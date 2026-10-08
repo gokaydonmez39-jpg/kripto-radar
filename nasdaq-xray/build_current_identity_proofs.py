@@ -343,6 +343,14 @@ def sec_ticker_cik_map(asof=None,subjects=None):
         raise RuntimeError("SEC_CIK_ROUTING_UNAVAILABLE_PRIMARY_AND_SECONDARY")
     return out
 
+def sec_submissions_transport_is_blocked(exc):
+    """Only explicit access-policy HTTP failures stop a same-run SEC fan-out.
+
+    A single 403/429 means the remaining CIK issuers stay UNKNOWN this run.
+    Other transient errors are symbol-local; no synthetic classifications.
+    """
+    return getattr(exc,"code",None) in (403,429)
+
 def sec_current_classification(sym:str,asof:str,cik:int|None):
     """One same-run SEC submissions read returning blank/nonblank classification."""
     if cik is None:return None
@@ -795,6 +803,9 @@ def main():
         sec_network_error=sec_network_error or f"{type(e).__name__}:{str(e)[:200]}"
     current_suspects=current_spac_suspects(names,industries)
     manual_seeds,manual_seed_meta=manual_identity_seed_registry(asof,names)
+    sec_submissions_blocked_code=None
+    sec_submissions_blocked_at=None
+    sec_submissions_skipped=0
     for sym in current_suspects:
         if sym in operating:
             continue
@@ -831,6 +842,12 @@ def main():
                   "discovery_version":IDENTITY_DISCOVERY_VERSION,
                 }
             continue
+        if sec_submissions_blocked_code is not None:
+            # One SEC HTTP 403/429 must not trigger hundreds of duplicate
+            # requests or cross-symbol guessed SIC conclusions.
+            unresolved_current_suspects.append(sym)
+            sec_submissions_skipped+=1
+            continue
         cik=current_cik_map.get(sym)
         if cik is None:
             unresolved_current_suspects.append(sym)
@@ -838,6 +855,9 @@ def main():
         try:
             row=sec_current_classification(sym,asof,cik)
         except Exception as e:
+            if sec_submissions_transport_is_blocked(e):
+                sec_submissions_blocked_code=int(e.code)
+                sec_submissions_blocked_at=sym
             row=None
             sec_discovery_errors[sym]=f"{type(e).__name__}:{str(e)[:160]}"
             sec_network_error=sec_network_error or sec_discovery_errors[sym]
@@ -858,6 +878,11 @@ def main():
               "same_asof_revalidated_without_sec_network":False,
               "discovery_version":IDENTITY_DISCOVERY_VERSION,
             }
+
+    SEC_CIK_DISCOVERY_DIAGNOSTICS["sec_submissions_blocked_http_code"]=sec_submissions_blocked_code
+    SEC_CIK_DISCOVERY_DIAGNOSTICS["sec_submissions_blocked_at"]=sec_submissions_blocked_at
+    SEC_CIK_DISCOVERY_DIAGNOSTICS["sec_submissions_skip_count"]=sec_submissions_skipped
+    SEC_CIK_DISCOVERY_DIAGNOSTICS["sec_submissions_classification_authority"]=False
 
     identity={
       "schema":"XRAY_MASTER_ASOF_IDENTITY_PROOF_V1",

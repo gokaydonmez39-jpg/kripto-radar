@@ -205,6 +205,17 @@ def main():
             except ValueError:pass
             else:raise AssertionError("CORRUPT_MIRROR_BYPASSED_DIGEST_GATE")
 
+    # SEC 403/429 is a same-run transport circuit breaker; other errors
+    # remain local. Classification remains exact SEC-SIC only.
+    import urllib.error
+    assert m.sec_submissions_transport_is_blocked(
+        urllib.error.HTTPError("https://data.sec.gov/",403,"Denied",{},None))
+    assert m.sec_submissions_transport_is_blocked(
+        urllib.error.HTTPError("https://data.sec.gov/",429,"Slow",{},None))
+    assert not m.sec_submissions_transport_is_blocked(
+        urllib.error.HTTPError("https://data.sec.gov/",500,"Server",{},None))
+    assert not m.sec_submissions_transport_is_blocked(
+        RuntimeError("SYMBOL_LOCAL_UNAVAILABLE"))
     # Missing exact-ASOF SEC SPAC proof must never be treated as a complete proof set.
     from pathlib import Path
     import tempfile
