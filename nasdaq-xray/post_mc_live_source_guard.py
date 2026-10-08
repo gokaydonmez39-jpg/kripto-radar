@@ -120,7 +120,13 @@ def verify_live() -> None:
     # remote branch or date). Any fetch failure blocks evaluation.
     fetch_main()
     asof = mc.split("canonical_mc_bridge_", 1)[1][:8]
-    active = live_mc_active_path(asof[:4] + "-" + asof[4:6] + "-" + asof[6:])
+    epoch = asof[:4] + "-" + asof[4:6] + "-" + asof[6:]
+    committed_state = json.loads((REPO_ROOT / CORE[0]).read_text(encoding="utf-8"))
+    if (committed_state.get("asof_et") != epoch or
+            committed_state.get("execution") != "NONE" or
+            committed_state.get("real_money") != "NO-GO"):
+        raise ValueError("MC_FULLSTATE_EXACT_ASOF_OR_SAFETY_MISMATCH")
+    active = live_mc_active_path(epoch)
     if mc != active:
         raise RuntimeError("MC_BRIDGE_SUPERSEDED_LIVE expected=" + active + " selected=" + mc)
     actual = {}
@@ -211,7 +217,10 @@ def main() -> None:
         try:
             if args.discover_active:
                 fetch_main()
-                print(live_mc_active_path(os.getenv("XRAY_ASOF_ET", "2026-10-07")))
+                asof = os.environ.get("XRAY_ASOF_ET")
+                if not asof:
+                    raise ValueError("DYNAMIC_EXACT_ASOF_REQUIRED")
+                print(live_mc_active_path(asof))
             else:
                 verify_live()
         except (ValueError, FileNotFoundError, subprocess.SubprocessError,
