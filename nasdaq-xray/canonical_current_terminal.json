@@ -15,7 +15,7 @@
     "legal_unknown": 0,
     "lifecycle_regime_unknown": 0,
     "lifecycle_semantic_binding_unknown": 0,
-    "master_unknown": 141,
+    "master_unknown": 130,
     "mc_unknown": 29,
     "price_blocked_current_run": 0,
     "price_unknown": 0,
@@ -25,9 +25,6 @@
   "candidate_delivery_safety": {
     "active_halt_symbols": [
       "BKKT.W",
-      "DAAQ",
-      "DAAQU",
-      "DAAQW",
       "EFTY",
       "HCHL",
       "LAWR",
@@ -40,9 +37,9 @@
       "UCFI",
       "UCFIW"
     ],
-    "age_seconds": 0.976,
-    "generated_at_utc": "2026-10-08T13:25:17.602645+00:00",
-    "guard_blob_sha": "0a5c6c1069b7fa51a7d5e7ea3242b6e0ac863e49",
+    "age_seconds": 1.75,
+    "generated_at_utc": "2026-10-08T14:21:39.108345+00:00",
+    "guard_blob_sha": "78870cd9d48890e020348ba6cf146c78393a1145",
     "guard_path": "nasdaq-xray/canonical_official_source_guard.json",
     "max_age_seconds": 900,
     "security_status_suspension_symbols": [
@@ -82,9 +79,6 @@
       "COLA",
       "COLAR",
       "COLAU",
-      "DAAQ",
-      "DAAQU",
-      "DAAQW",
       "DRCT",
       "EFTY",
       "FSEA",
@@ -193,7 +187,7 @@
     "legal_pass": 460,
     "lifecycle_regime_unknown": 0,
     "master_pass": 3184,
-    "master_total": 3325,
+    "master_total": 3314,
     "mc_fallback_fail": 9,
     "mc_fallback_watch": 472,
     "mc_primary_fail": 0,
@@ -216,7 +210,7 @@
     },
     "account_live_probe": {
       "balance_parseable": false,
-      "blob_sha": "4f7e6ee7853ba595e3897af215843a519b2e4f10",
+      "blob_sha": "991293432bc1cae6e31b8b4997e5728bf46269cc",
       "network_attempted": false,
       "path": "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/account_effective_probe_state.json",
       "positions_parseable": false,
@@ -227,7 +221,7 @@
       "secret_values_persisted": false,
       "status": "BLOCKED_MISSING_CREDENTIALS",
       "workflow_run_attempt": "1",
-      "workflow_run_id": "37783068188"
+      "workflow_run_id": "37790965922"
     },
     "deep": {
       "blob_sha": "cd57711b59a421d2f362dd569f1a597cf9bc3d38",
@@ -250,11 +244,11 @@
       "path": "nasdaq-xray/canonical_current_family_c.json"
     },
     "final": {
-      "blob_sha": "dfc4a411fcad8c884b6f3a7ca724f92d6279baf9",
+      "blob_sha": "ffa8cefdea1ed9a3ebaec8ad5f06ec525c93d3ad",
       "path": "nasdaq-xray/canonical_current_final_tech.json"
     },
     "full_state": {
-      "blob_sha": "8d1764cf472e3380adaf06e3bbdf453e3868b72e",
+      "blob_sha": "e2337fe0d61b230ee0bae9d067a290fa1b17d2bb",
       "path": "nasdaq-xray/canonical_current_full_state.json"
     },
     "g9_runtime": {
@@ -272,7 +266,7 @@
       "path": "nasdaq-xray/canonical_current_legal.json"
     },
     "master": {
-      "blob_sha": "7db6915a6a09e44090fcba25f5edec9d332c58cd",
+      "blob_sha": "4f48d14e08974b8db1c37f6baa0f0321a6daa016",
       "path": "nasdaq-xray/canonical_current_master_manifest.json"
     },
     "mc": {
@@ -287,11 +281,11 @@
       "semantic_rebind": false
     },
     "official_halt_guard": {
-      "blob_sha": "0a5c6c1069b7fa51a7d5e7ea3242b6e0ac863e49",
+      "blob_sha": "78870cd9d48890e020348ba6cf146c78393a1145",
       "path": "nasdaq-xray/canonical_official_source_guard.json"
     },
     "pointer": {
-      "blob_sha": "f8db5f26c2ae8aa6a5813ef9cb515049cb1f6aef",
+      "blob_sha": "0118c71ec5ffa98f3e28395a2c01350c03591a34",
       "path": "nasdaq-xray/chatgpt_canonical_state_v2.json"
     },
     "policy": {
@@ -319,7 +313,7 @@
   "final_gate_reporting_zero_alpha": true,
   "full_end_to_end_research_pass": false,
   "g9_global_status": "G9_BLOCKED_FREE_AUTOMATION_PATH",
-  "generated_at_utc": "2026-10-08T13:25:18.579707+00:00",
+  "generated_at_utc": "2026-10-08T14:21:40.859694+00:00",
   "pointer_asof_before_candidate": "2026-10-07",
   "r92_account_g9_applicable": false,
   "r92_candidates": [],
