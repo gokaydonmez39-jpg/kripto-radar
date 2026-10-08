@@ -89,6 +89,33 @@ jobs:
               "rejection_reason_counts","source_blob_shas","delivery_enabled")}
           safe["public_market_data"]=False
           safe["ticker_identifiers_published"]=False
+          # A successful old-session report NEVER states that the current
+          # trading-day pipeline or user notification is production-ready.
+          import hashlib
+          root=Path("nasdaq-xray")
+          master_path=root/"canonical_current_master_manifest.json"
+          current_master=json.loads(master_path.read_text())
+          bb=master_path.read_bytes()
+          master_sha=hashlib.sha1(b"blob "+str(len(bb)).encode()+b"\0"+bb).hexdigest()
+          assert current_master.get("execution")=="NONE"
+          assert current_master.get("real_money")=="NO-GO"
+          assert isinstance(current_master.get("asof_et"),str)
+          terminal_master_binding=r["source_blob_shas"]["master"]
+          safe["latest_master_asof_et"]=current_master["asof_et"]
+          safe["latest_master_blob_sha"]=master_sha
+          safe["latest_terminal_master_bound_sha"]=terminal_master_binding
+          safe["terminal_epoch_matches_latest_master"]=(
+              r["asof_et"]==current_master["asof_et"]
+              and terminal_master_binding==master_sha)
+          safe["research_freshness_class"]=(
+              "MATCHING_MASTER_EPOCH_NOT_FULL_RELEASE"
+              if safe["terminal_epoch_matches_latest_master"]
+              else "HISTORICAL_TERMINAL_ONLY_CURRENT_EPOCH_UNVERIFIED")
+          safe["manual_signal_production_ready"]=False
+          safe["phone_notification_receipt"]="UNVERIFIED"
+          safe["followup_delivery_status"]="NOT_CONNECTED"
+          assert not safe["manual_signal_production_ready"]
+          assert safe["research_freshness_class"]!="MATCHING_MASTER_EPOCH_NOT_FULL_RELEASE" or safe["terminal_epoch_matches_latest_master"]
           (d/"xray_manual_public_telemetry.json").write_text(json.dumps(safe,indent=2)+"\n")
           print("XRAY_MANUAL_DECISION_REPORT_SAFETY=PASS")
           print("XRAY_MANUAL_DECISION_PUBLIC_STATUS="+r["status"])
