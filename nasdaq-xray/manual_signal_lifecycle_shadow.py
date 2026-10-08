@@ -77,6 +77,59 @@ def validate_bar(b,c,begin,asof_now):
     if delay < -30:raise ValueError("FUTURE_PRICE_DATA")
     return ts,low,high,delay
 
+def control_event(c,prev=None,*,observed_at_utc,official_control=None):
+    """Clock/official-control transitions WITHOUT market bars or execution.
+    This is a state classifier, NOT a live provider or notification receipt.
+    Expiry is a clock fact; halt/event/invalidity demand a fresh verified witness.
+    """
+    _,expires=validate_candidate(c)
+    observed=iso(observed_at_utc)
+    prev=prev or {}
+    if prev:
+        if prev.get("delivery_key")!=c["delivery_key"] or prev.get("status") not in STATES:
+            raise ValueError("PREVIOUS_CONTROL_STATE_UNVERIFIED")
+        if prev["status"] in CLOSED:
+            return {"status":prev["status"],"transition":"TERMINAL_STATE_LOCKED",
+                    "alert":False,"research_only":True,"orders":[],"user_notification_delivered":False}
+    verdict=None
+    if official_control is not None:
+        w=official_control
+        if not isinstance(w,dict) or w.get("symbol")!=c["symbol"] or w.get("source_verified") is not True:
+            raise ValueError("CONTROL_WITNESS_UNVERIFIED")
+        verdict=w.get("status")
+        permitted={"OFFICIAL_HALT":"OFFICIAL_TRADE_HALT",
+                   "EVENT_VETO":"VERIFIED_EVENT_PRIMARY",
+                   "INVALIDATED":"VERIFIED_INVALIDATION"}
+        if verdict not in permitted or w.get("authority")!=permitted[verdict]:
+            raise ValueError("CONTROL_WITNESS_AUTHORITY_INVALID")
+        if not isinstance(w.get("source_sha"),str) or not re.fullmatch(r"[a-f0-9]{40,64}",w["source_sha"]):
+            raise ValueError("CONTROL_WITNESS_SHA_INVALID")
+        seen=iso(w.get("observed_at_utc"))
+        if seen>observed+dt.timedelta(seconds=30) or (observed-seen).total_seconds()>900:
+            raise ValueError("CONTROL_WITNESS_STALE_OR_FUTURE")
+    # A freshly proven official veto wins over a scheduled expiry.
+    if verdict:
+        status=verdict
+    elif observed>=expires:
+        status="EXPIRED"
+    else:
+        return {"status":prev.get("status","MONITORING"),
+                "transition":"NO_BAR_NO_NEW_CONTROL","alert":False,
+                "research_only":True,"execution":"NONE","real_money":"NO-GO",
+                "orders":[],"user_notification_delivered":False}
+    fresh=prev.get("status")!=status
+    source=str((official_control or {}).get("source_sha") or "CLOCK_EXPIRES_AT:"+expires.isoformat())
+    alert_key=hashlib.sha256("|".join([c["delivery_key"],status,source]).encode()).hexdigest()
+    return {"schema":SCHEMA,"symbol":c["symbol"],"delivery_key":c["delivery_key"],
+            "status":status,"transition":status if fresh else "UNCHANGED",
+            "alert":fresh,"alert_dedup_key":alert_key,
+            "last_bar_end_utc":prev.get("last_bar_end_utc"),
+            "asof_observed_utc":observed.isoformat(),
+            "source_sha":source,"reason":"VERIFIED_CONTROL_OR_CLOCK_NO_BAR",
+            "mode":SIDE_ONLY,"research_only":True,"execution":"NONE",
+            "real_money":"NO-GO","orders":[],
+            "user_notification_delivered":False}
+
 def event(c,bar,prev=None,*,observed_at_utc,halt=False,material_event=False,
           invalidated=False,max_age_minutes=35):
     """Produce a user-review event. STOP/TARGET are touches, never actual order fills."""
@@ -91,10 +144,10 @@ def event(c,bar,prev=None,*,observed_at_utc,halt=False,material_event=False,
         if prev.get("status") in CLOSED:
             return {"status":prev["status"],"transition":"TERMINAL_STATE_LOCKED",
                     "alert":False,"research_only":True,"orders":[]}
-        previous_ts=iso(prev.get("last_bar_end_utc"))
-        if ts<previous_ts:
+        previous_ts=iso(prev["last_bar_end_utc"]) if prev.get("last_bar_end_utc") else None
+        if previous_ts is not None and ts<previous_ts:
             raise ValueError("OUT_OF_ORDER_BAR")
-        if ts==previous_ts and prev.get("source_sha")!=bar["source_hash"]:
+        if previous_ts is not None and ts==previous_ts and prev.get("source_sha")!=bar["source_hash"]:
             # A completed candle has been revised: do not generate contradictory
             # follow-up alerts until its provenance is independently reconciled.
             raise ValueError("COMPLETED_BAR_REVISION_UNVERIFIED")
@@ -198,6 +251,29 @@ def selftest():
         try:event(c,invalid,**kwargs)
         except ValueError:pass
         else:raise AssertionError("UNSAFE_BAR_ADMITTED")
+    no_bar_expired=control_event(c,observed_at_utc="2026-10-16T20:00:00Z")
+    assert no_bar_expired["status"]=="EXPIRED" and no_bar_expired["alert"] is True
+    assert no_bar_expired["orders"]==[] and no_bar_expired["user_notification_delivered"] is False
+    assert control_event(c,no_bar_expired,observed_at_utc="2026-10-17T20:00:00Z")["alert"] is False
+    no_bar_wait=control_event(c,observed_at_utc="2026-10-08T19:20:00Z")
+    assert no_bar_wait["status"]=="MONITORING" and no_bar_wait["alert"] is False
+    verified_control={"status":"OFFICIAL_HALT","symbol":"TEST",
+       "authority":"OFFICIAL_TRADE_HALT","source_verified":True,
+       "source_sha":"f"*40,"observed_at_utc":"2026-10-08T19:19:00Z"}
+    control_halt=control_event(c,observed_at_utc="2026-10-08T19:20:00Z",
+                               official_control=verified_control)
+    assert control_halt["status"]=="OFFICIAL_HALT" and control_halt["alert"] is True
+    assert control_event(c,control_halt,observed_at_utc="2026-10-08T20:00:00Z")["alert"] is False
+    for invalid_control in [
+      {**verified_control,"source_verified":False},
+      {**verified_control,"authority":"UNOFFICIAL_FEED"},
+      {**verified_control,"observed_at_utc":"2026-10-08T18:00:00Z"},
+      {**verified_control,"source_sha":"forged"},
+      {**verified_control,"symbol":"OTHER"}]:
+        try:control_event(c,observed_at_utc="2026-10-08T19:20:00Z",
+                          official_control=invalid_control)
+        except ValueError:pass
+        else:raise AssertionError("UNVERIFIED_CONTROL_ADMITTED")
     stopped=event(c,{**b,"low":94,"high":101},**kwargs)
     assert event(c,b,stopped,**kwargs)["transition"]=="TERMINAL_STATE_LOCKED"
     print("XRAY_MANUAL_FOLLOWUP_SHADOW_SELFTEST=PASS NO_ORDERS_NO_PUSH_CLAIM")
