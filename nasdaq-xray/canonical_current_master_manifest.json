@@ -1,7 +1,7 @@
 {
   "asof_et": "2026-10-07",
   "asof_identity_proof": {
-    "blob_sha": "53245e66b04f6233092e15fc87c40306286b0cd4",
+    "blob_sha": "3304cc44def891f1f190287891b73c7076e72a9b",
     "counts": {
       "operating_overrides": 3,
       "remove_from_asof": 0,
@@ -29,13 +29,13 @@
   },
   "counts": {
     "PASS_IDENTITY": 3184,
-    "UNKNOWN_IDENTITY": 79
+    "UNKNOWN_IDENTITY": 73
   },
   "execution": "NONE",
-  "explicit_excluded_count": 133,
-  "explicit_excluded_hash": "f50673cbe85c33d2d206c5f9018ee3b2f0aa989a0a060866e10cf008eafd4809",
+  "explicit_excluded_count": 139,
+  "explicit_excluded_hash": "4adf8990d4567043fde5da01f41135a5aef6f1cdf6a9b5f87bbae63093987012",
   "explicit_excluded_reason_counts": {
-    "SPAC_BLANK_CHECK": 133
+    "SPAC_BLANK_CHECK": 139
   },
   "history_price_state_diagnostic_only": {
     "source_counts": {
@@ -3242,22 +3242,22 @@
   "queue_hash": "2554c936f42217cf8a9628e89d04993945218725234fe894f7c80856834725d6",
   "queue_total": 3184,
   "queue_unique": 3184,
-  "raw_identity_total": 3263,
+  "raw_identity_total": 3257,
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1",
   "sec_spac_proof": {
-    "blob_sha": "56fd03bb1e85548004e771e242fe19b3c1f99217",
-    "count": 133,
+    "blob_sha": "9c9352723e02bd7b2b17f0a807e397c42162b61f",
+    "count": 139,
     "path": "nasdaq-xray/master_sec_spac_proof_20261007.json",
-    "symbol_hash": "61481cef0457f25d17307eb76915a0be3f75e8822709ef26a652356280e60a6d"
+    "symbol_hash": "37106c09b297a10ff6bc9cda1d077e4baa72f074bf0566033e0ca8f6b59eb4dd"
   },
-  "source_state_blob_sha": "04b8420a232660244914a27f5031953320826c02",
-  "source_state_hash": "1671421669180cf8f01a80e1eec289db3dbf19eeb016ada9c8843ae43fd33c22",
+  "source_state_blob_sha": "f9674b1d8f2a08382da729754ffe8887c110732b",
+  "source_state_hash": "a1221e2624b49f4db1ef224c57007b06a1fbc3b0dfc7098ce9c44549bff779a1",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
   "status": "PARTIAL_UNKNOWN",
   "status_semantics": "IDENTITY_PARTITION_EXACT_WITH_UNKNOWN",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 79,
+  "unknown_count": 73,
   "unknown_detail": {
     "ALIS": {
       "exact_sec_spac_proof": false,
@@ -3610,15 +3610,6 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "NPAC": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "New Providence Acquisition Corp. III - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "OACC": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
@@ -3655,24 +3646,6 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "OYSE": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Oyster Enterprises II Acquisition Corp - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "PACH": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Pioneer Acquisition I Corp - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "PALO": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
@@ -3700,30 +3673,12 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "PLMK": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Plum Acquisition Corp. IV - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "PMTR": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Perimeter Acquisition Corp. I - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "POLE": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Andretti Acquisition Corp. II - Class A Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -3742,15 +3697,6 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "QDRO Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "RANG": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Range Capital Acquisition Corp. - Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -4012,22 +3958,16 @@
     "NBRG",
     "NCO",
     "NMP",
-    "NPAC",
     "OACC",
     "OBA",
     "OIM",
     "OTGA",
-    "OYSE",
-    "PACH",
     "PALO",
     "PCAP",
     "PECE",
-    "PLMK",
     "PMTR",
-    "POLE",
     "PTOR",
     "QADR",
-    "RANG",
     "RIBB",
     "RNAQ",
     "RNGT",

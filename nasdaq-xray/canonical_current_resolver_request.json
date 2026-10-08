@@ -37,7 +37,7 @@
     "2026-10-06",
     "2026-10-07"
   ],
-  "master_unknown_count": 79,
+  "master_unknown_count": 73,
   "master_unknown_detail": {
     "ALIS": {
       "exact_sec_spac_proof": false,
@@ -390,15 +390,6 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "NPAC": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "New Providence Acquisition Corp. III - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "OACC": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
@@ -435,24 +426,6 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "OYSE": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Oyster Enterprises II Acquisition Corp - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "PACH": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Pioneer Acquisition I Corp - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "PALO": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
@@ -480,30 +453,12 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "PLMK": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Plum Acquisition Corp. IV - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "PMTR": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Perimeter Acquisition Corp. I - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "POLE": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Andretti Acquisition Corp. II - Class A Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -522,15 +477,6 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "QDRO Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "RANG": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Range Capital Acquisition Corp. - Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -751,7 +697,7 @@
       "unknown_never_pass": true
     }
   },
-  "master_unknown_hash": "ab8ccd7efffc6e9924eb43a256af272f2cde06ef9e494786d26bc63e3f1240b4",
+  "master_unknown_hash": "bdbc06e4218449d7ce992057243a3b9680d8a9ad3895ddf0a1d999a52fbabb9d",
   "master_unknown_symbols": [
     "ALIS",
     "BSAA",
@@ -792,22 +738,16 @@
     "NBRG",
     "NCO",
     "NMP",
-    "NPAC",
     "OACC",
     "OBA",
     "OIM",
     "OTGA",
-    "OYSE",
-    "PACH",
     "PALO",
     "PCAP",
     "PECE",
-    "PLMK",
     "PMTR",
-    "POLE",
     "PTOR",
     "QADR",
-    "RANG",
     "RIBB",
     "RNAQ",
     "RNGT",
@@ -864,9 +804,9 @@
   "settlement_policy": "ALPACA_HISTORICAL_SIP_DAILY_AFTER_15M__AAPL_NVDA_PLUS_ONE_PRIOR_CURRENT_CORE__RALLIES_LONGBRIDGE_QUOTE_OHLC_0_01_CROSSCHECK__SIP_VOLUME_AUTHORITY__FAIL_CLOSED__DELAYED_SIP_NEVER_G9",
   "settlement_required": false,
   "settlement_symbols": [],
-  "source_master_blob_sha": "1c74877eaa3321a1ddc63efb0c337164657f2343",
+  "source_master_blob_sha": "02c88a5aa5204064949938070124fcf0c90db9a8",
   "source_master_path": "nasdaq-xray/canonical_current_master_manifest.json",
-  "source_overlay_blob_sha": "e4d8b9e1993232a47db01dfcc05a9c5d7e5af420",
+  "source_overlay_blob_sha": "7606aa3d05d01a4f93a9263ce4400c94037534e7",
   "source_overlay_path": "nasdaq-xray/canonical_current_resolution_overlay.json",
   "source_pointer_blob_sha": "90cffae15bbf51f3f87a4eaafad01cb889f002bc",
   "source_pointer_path": "nasdaq-xray/chatgpt_canonical_state_v2.json",
@@ -882,9 +822,9 @@
   "source_price_pass_count": 510,
   "source_price_pass_hash": "f6772e07d952c9c172a3370076537cbfc89128886e1a0e31d1142b2ebecf0438",
   "source_price_path": "nasdaq-xray/canonical_current_price_dv30.json",
-  "source_state_blob_sha": "04b8420a232660244914a27f5031953320826c02",
+  "source_state_blob_sha": "f9674b1d8f2a08382da729754ffe8887c110732b",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
-  "source_unknowns_blob_sha": "23d4a72c48f36538c01e0a5b0c7be040da085ab9",
+  "source_unknowns_blob_sha": "c440c8cf2e782126808313f7f4308452fcc32a27",
   "source_unknowns_path": "nasdaq-xray/canonical_current_unknowns.json",
   "status": "IDLE",
   "symbol_count": 0,
