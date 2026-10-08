@@ -152,6 +152,18 @@ def seal(cp,fernet,scope):
     raw=json.dumps(cp,sort_keys=True,separators=(",",":")).encode("utf-8")
     return fernet.encrypt(raw)
 
+def persist_checkpoint_atomic(cp,fernet,scope,path):
+    """Write authenticated bytes durably after EACH accepted response.
+
+    On a later unexpected runner failure, upload-artifact if:always can still
+    preserve the most recent *valid* encrypted checkpoint.
+    """
+    target=Path(path)
+    target.parent.mkdir(parents=True,exist_ok=True)
+    scratch=target.with_name(target.name+".pending")
+    scratch.write_bytes(seal(cp,fernet,scope))
+    os.replace(scratch,target)
+
 def clean_record(symbol,asof,raw):
     state=raw.get("state")
     if state not in ("SHADOW_OBSERVED_ABOVE_2B","SHADOW_OBSERVED_BELOW_2B"):
@@ -244,6 +256,7 @@ def run(args):
           or (retryable_unknown(cp["records"].get(s))
               and cp["retry_counts"].get(s,0)<3))]
     count=0
+    dest=Path(args.checkpoint)
     interrupted_reason=None
     for i,symbol in enumerate(todo[:args.limit]):
         # Prevent exceeding 5 calls/minute from this job: every 13 seconds.
@@ -256,12 +269,10 @@ def run(args):
         cp["records"][symbol]=clean_record(symbol,scope["asof_et"],raw)
         if retryable_unknown(cp["records"][symbol]):
             cp["retry_counts"][symbol]=cp["retry_counts"].get(symbol,0)+1
+        cp["request_count_cumulative"]+=1
         count+=1
-    cp["request_count_cumulative"]+=count
-    encrypted=seal(cp,fernet,scope)
-    dest=Path(args.checkpoint)
-    dest.parent.mkdir(parents=True,exist_ok=True)
-    dest.write_bytes(encrypted)
+        persist_checkpoint_atomic(cp,fernet,scope,dest)
+    persist_checkpoint_atomic(cp,fernet,scope,dest)
     remaining=len(scope["symbols"])-len(cp["records"])
     status=("SHADOW_COMPLETE_NO_ALPHA" if shadow_coverage_complete(scope,cp) else
             "SHADOW_ALL_ATTEMPTED_UNRESOLVED_NO_ALPHA" if remaining==0 else
@@ -389,6 +400,23 @@ def selftest():
             assert fetch.call_count==0
             assert json.loads(Path(args.telemetry).read_text())["last_run_requests"]==0
             assert sleep.call_count==0
+        # Forced failure after the first observation must retain recoverable
+        # ciphertext before the entire 25-request batch finishes.
+        with patch.dict(os.environ,env),patch(__name__+".current_scope",return_value=scope),\
+             patch(__name__+".probe",side_effect=[
+                 fixture("AAPL"),RuntimeError("SIMULATED_PROVIDER_PROCESS_CRASH")]),\
+             patch(__name__+".time.sleep"):
+            args.limit=2
+            Path(args.restore).unlink(missing_ok=True)
+            Path(args.checkpoint).unlink(missing_ok=True)
+            try:run(args)
+            except RuntimeError as exc:
+                assert "SIMULATED_PROVIDER_PROCESS_CRASH" in str(exc)
+            else:raise AssertionError("EXPECTED_INTENTIONAL_FAULT")
+            salvaged=restore(Path(args.checkpoint).read_bytes(),a,scope)[0]
+            assert set(salvaged["records"])=={"AAPL"}
+            assert salvaged["request_count_cumulative"]==1
+            args.limit=1
         # The licence and key gates stop before touching the remote provider.
         Path(args.restore).unlink()
         with patch.dict(os.environ,{"XRAY_MASSIVE_NONDISPLAY_LICENSE_OK":"false",
