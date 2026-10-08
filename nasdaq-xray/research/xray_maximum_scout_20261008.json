@@ -1,0 +1,482 @@
+{
+  "schema": "XRAY_MAXIMUM_PROVIDER_AND_COVERAGE_SCOUT_RESEARCH_ONLY_V1",
+  "date_trt": "2026-10-08",
+  "parent_head": "0c1c93a571b98a2a3d0a35dfceab1a09349ccd9d",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "authority": false,
+  "strict_g9_pass": false,
+  "account_pass": false,
+  "alpha_authority": false,
+  "readback_authority": {
+    "master_path": "nasdaq-xray/canonical_current_master_manifest.json",
+    "master_blob_sha": "bae58decaf54e4209bc76db84143f3a543d43923",
+    "terminal_path": "nasdaq-xray/canonical_current_terminal.json",
+    "terminal_blob_sha": "ea9c41cd1e5971e78d85bf3f620d7f8c4e01034f",
+    "overlay_path": "nasdaq-xray/canonical_current_final_gate_overlay.json",
+    "overlay_blob_sha": "8c80f6e327dd6c1457a2374fc8c3398ffc411769"
+  },
+  "previous_research": {
+    "path": "nasdaq-xray/research/g9_turkey_second_wave_20261008.json",
+    "blob_sha": "9ec5721b4b7db1ffc7100b25c2d53d9cb7e7d24b"
+  },
+  "discovery_69_master_unknown": {
+    "source": "Connected Longbridge official static_info at research runtime",
+    "input_asof": "2026-10-07 canonical master UNKNOWN",
+    "requested_count": 69,
+    "matched_exact_count": 69,
+    "named_acquisition_or_spac_count": 69,
+    "method": "Longbridge static_info returns issuer name; regex acquisition|SPAC, insensitive; exact set against master unknown; indicative only, not proof of current SPAC status",
+    "issuer_name_witness": [
+      {
+        "symbol": "ALIS",
+        "name_en": "Calisa Acquisition"
+      },
+      {
+        "symbol": "BSAA",
+        "name_en": "BEST SPAC I Acquisition"
+      },
+      {
+        "symbol": "DMII",
+        "name_en": "Drugs Made In America Acquisition II"
+      },
+      {
+        "symbol": "FACT",
+        "name_en": "Fact II Acquisition"
+      },
+      {
+        "symbol": "FVN",
+        "name_en": "Future Vision II Acquisition"
+      },
+      {
+        "symbol": "GSHR",
+        "name_en": "Gesher Acquisition II"
+      },
+      {
+        "symbol": "GSRF",
+        "name_en": "GSR IV Acquisition"
+      },
+      {
+        "symbol": "GTERA",
+        "name_en": "Globa Terra Acquisition"
+      },
+      {
+        "symbol": "HACQ",
+        "name_en": "HCM IV Acquisition"
+      },
+      {
+        "symbol": "HAVA",
+        "name_en": "Harvard Ave Acquisition"
+      },
+      {
+        "symbol": "HCAC",
+        "name_en": "Hall Chadwick Acquisition"
+      },
+      {
+        "symbol": "IACO",
+        "name_en": "Idea Acquisition"
+      },
+      {
+        "symbol": "IACQ",
+        "name_en": "Irenic Acquisition"
+      },
+      {
+        "symbol": "IBAC",
+        "name_en": "IB Acquisition"
+      },
+      {
+        "symbol": "IEAG",
+        "name_en": "Infinite Eagle Acquisition"
+      },
+      {
+        "symbol": "ILLU",
+        "name_en": "Illumination Acquisition I"
+      },
+      {
+        "symbol": "INAC",
+        "name_en": "Indigo Acquisition"
+      },
+      {
+        "symbol": "IPFX",
+        "name_en": "Inflection Point Acquisition VI"
+      },
+      {
+        "symbol": "IPXG",
+        "name_en": "Inflection Point Acquisition VII"
+      },
+      {
+        "symbol": "ISNR",
+        "name_en": "Snow Rothschild Acquisition"
+      },
+      {
+        "symbol": "JTTT",
+        "name_en": "JATT III Acquisition"
+      },
+      {
+        "symbol": "KCHV",
+        "name_en": "Kochav Defense Acquisition"
+      },
+      {
+        "symbol": "LAFA",
+        "name_en": "LaFayette Acquisition"
+      },
+      {
+        "symbol": "LFAC",
+        "name_en": "Leapfrog Acquisition"
+      },
+      {
+        "symbol": "LKSP",
+        "name_en": "Lake Superior Acquisition"
+      },
+      {
+        "symbol": "MACI",
+        "name_en": "Melar Acquisition Corp I"
+      },
+      {
+        "symbol": "MBVI",
+        "name_en": "M3-Brigade Acquisition VI"
+      },
+      {
+        "symbol": "MCAH",
+        "name_en": "Mountain Crest Acquisition 6"
+      },
+      {
+        "symbol": "MCGA",
+        "name_en": "Yorkville Acquisition"
+      },
+      {
+        "symbol": "MEVO",
+        "name_en": "M Evo Global Acquisition Corp II"
+      },
+      {
+        "symbol": "MLAA",
+        "name_en": "Mountain Lake Acquisition II"
+      },
+      {
+        "symbol": "MMTX",
+        "name_en": "Miluna Acquisition"
+      },
+      {
+        "symbol": "MRCO",
+        "name_en": "Mercator Acquisition"
+      },
+      {
+        "symbol": "MUZE",
+        "name_en": "Muzero Acquisition"
+      },
+      {
+        "symbol": "MYX",
+        "name_en": "Maywood Acquisition 2"
+      },
+      {
+        "symbol": "NBRG",
+        "name_en": "Newbridge Acquisition"
+      },
+      {
+        "symbol": "NCO",
+        "name_en": "Southern Cross Acquisition I"
+      },
+      {
+        "symbol": "NMP",
+        "name_en": "NMP Acquisition"
+      },
+      {
+        "symbol": "OACC",
+        "name_en": "Oaktree Acquisition Corp III Life Sciences"
+      },
+      {
+        "symbol": "OBA",
+        "name_en": "Oxley Bridge Acquisition - CL"
+      },
+      {
+        "symbol": "OIM",
+        "name_en": "OneIM Acquisition"
+      },
+      {
+        "symbol": "OTGA",
+        "name_en": "OTG Acquisition I"
+      },
+      {
+        "symbol": "PALO",
+        "name_en": "Paloma Acquisition I"
+      },
+      {
+        "symbol": "PCAP",
+        "name_en": "ProCap Acquisition"
+      },
+      {
+        "symbol": "PECE",
+        "name_en": "Peace Acquisition"
+      },
+      {
+        "symbol": "PMTR",
+        "name_en": "Perimeter Acquisition Corp I"
+      },
+      {
+        "symbol": "PTOR",
+        "name_en": "Praetorian Acquisition"
+      },
+      {
+        "symbol": "QADR",
+        "name_en": "QDRO Acquisition"
+      },
+      {
+        "symbol": "RNAQ",
+        "name_en": "Rainier Acquisition"
+      },
+      {
+        "symbol": "RNGT",
+        "name_en": "Range Capital Acquisition II"
+      },
+      {
+        "symbol": "SDHI",
+        "name_en": "Siddhi Acquisition"
+      },
+      {
+        "symbol": "SOCA",
+        "name_en": "Solarius Capital Acquisition"
+      },
+      {
+        "symbol": "SORN",
+        "name_en": "Soren Acquisition"
+      },
+      {
+        "symbol": "SSEA",
+        "name_en": "Starry Sea Acquisition"
+      },
+      {
+        "symbol": "SUMA",
+        "name_en": "SUMA Acquisition"
+      },
+      {
+        "symbol": "TACO",
+        "name_en": "Berto Acquisition"
+      },
+      {
+        "symbol": "TDAC",
+        "name_en": "Translational Development Acquisition"
+      },
+      {
+        "symbol": "TDWD",
+        "name_en": "Tailwind 2.0 Acquisition"
+      },
+      {
+        "symbol": "THEO",
+        "name_en": "BOA Acquisition II"
+      },
+      {
+        "symbol": "TMTS",
+        "name_en": "Spartacus Acquisition II"
+      },
+      {
+        "symbol": "TVAI",
+        "name_en": "Thayer Ventures Acquisition II"
+      },
+      {
+        "symbol": "UYSC",
+        "name_en": "UY Scuti Acquisition"
+      },
+      {
+        "symbol": "VNME",
+        "name_en": "Vendome Acquisition I"
+      },
+      {
+        "symbol": "WENN",
+        "name_en": "Wen Acquisition"
+      },
+      {
+        "symbol": "WLII",
+        "name_en": "Willow Lane Acquisition II"
+      },
+      {
+        "symbol": "WTG",
+        "name_en": "Wintergreen Acquisition"
+      },
+      {
+        "symbol": "XCBE",
+        "name_en": "X3 Acquisition"
+      },
+      {
+        "symbol": "XRPN",
+        "name_en": "Armada Acquisition II"
+      },
+      {
+        "symbol": "ZKP",
+        "name_en": "Lafayette Digital Acquisition I"
+      }
+    ],
+    "sec_documented_subset": [
+      {
+        "symbol": "ALIS",
+        "asof_guard": "2026-10-07; 2026-10-08 vote scheduled, post-close status must be rechecked",
+        "evidence": "https://www.sec.gov/Archives/edgar/data/2026767/000149315226042390/form424b3.htm",
+        "observation": "SPAC issuer ALIS with Oct 8 proposed merger vote; NOT proof of merger closing as of Oct 7"
+      },
+      {
+        "symbol": "BSAA",
+        "asof_guard": "2026-10-07; check Aug 25 delisting notification outcome",
+        "evidence": "https://www.sec.gov/Archives/edgar/data/2051587/000121390026048272/ea0287466-10q_bestspac1.htm",
+        "observation": "2026 SEC quarterly filing identifies blank check issuer"
+      },
+      {
+        "symbol": "TACO",
+        "asof_guard": "2026-10-07",
+        "evidence": "https://www.sec.gov/Archives/edgar/data/2033122/000182912626005372/bertoacquisition_10q.htm",
+        "observation": "SEC registrant Berto Acquisition Corp ticker TACO, blank-check SPAC history; do NOT conflate with Berto Acquisition II"
+      },
+      {
+        "symbol": "MCAH",
+        "asof_guard": "2026-10-07",
+        "evidence": "https://www.sec.gov/Archives/edgar/data/2109876/000182912626008900/mountaincrest6_10q.htm",
+        "observation": "2026 Q2 issuer reports blank-check formation with no identified acquisition target"
+      },
+      {
+        "symbol": "PCAP",
+        "asof_guard": "2026-10-07",
+        "evidence": "https://www.sec.gov/Archives/edgar/data/2056634/000121390026087230/ea0300684-10q_procap.htm",
+        "observation": "2026 Q2 issuer records blank-check status and no target selected"
+      },
+      {
+        "symbol": "NBRG",
+        "asof_guard": "2026-10-07",
+        "evidence": "https://www.sec.gov/Archives/edgar/data/1918414/000121390026086733/ea0300911-10q_newbridge.htm",
+        "observation": "2026 Q2 issuer records blank-check status"
+      },
+      {
+        "symbol": "IBAC",
+        "asof_guard": "2026-10-07; proposed combination not established completed",
+        "evidence": "https://www.sec.gov/Archives/edgar/data/1998781/000149315226023743/form10-q.htm",
+        "observation": "2026 10-Q states blank-check; a separate 2026 business combination agreement exists"
+      }
+    ],
+    "sec_documented_subset_count": 7,
+    "current_spac_origin_unproven_remaining": 62,
+    "classification_may_NOT_auto_promote": true,
+    "required_terminal_rebind": "For each symbol, establish CIK/ticker/CIK class, current asof 2026-10-07 SPAC or deSPAC lifecycle using SEC issuer filings + exchange action; issue immutable verified successor, preserve UNKNOWN until authority PASS."
+  },
+  "market_cap_free_provider_probes": {
+    "provider": "Connected Massive reference app",
+    "asof": "2026-10-07",
+    "documented_endpoint": "/v3/reference/tickers/{ticker}?date=2026-10-07",
+    "successful_symbols": [
+      "ASST",
+      "ASTS",
+      "BSP",
+      "BULL",
+      "BWIN"
+    ],
+    "observations": "Five real point-in-time MC responses above $2 billion available; additional lookups hit RATE_LIMIT. No second authoritative confirmation; diagnostic only.",
+    "second_source": "Financial Datasets connected get_company_facts",
+    "second_source_result": "Unauthorized or $0 credits on five attempts; NO evidence of free alternative for these 5",
+    "github_runtime_blocker": "Massive MC Free-Tier Shadow workflow 37827977217 blocked because XRAY_MASSIVE_API_KEY absent in runner",
+    "never_writes_vendor_raw_mc_values_to_public_repo": true,
+    "mc_authority_pass": false
+  },
+  "g9_regulatory_discovery": {
+    "name": "CT Plan / DataCT unified consolidated tape",
+    "official_urls": [
+      "https://consolidatedtape.com/policies/policies-docs.html",
+      "https://consolidatedtape.com/fees/fees-docs.html",
+      "https://consolidatedtape.com/policies/data-usage"
+    ],
+    "effective_only": "2027-04-01 planned; NOT valid 2026-10-08 entitlement",
+    "key_rule": "Section 4.10 allows named nonprofessional personal standing automated instructions under individually bound Redistributor Controlled Service and sole-user outputs; not a public/free feed; AI-Service provider must be properly licensed or approved Service Facilitator",
+    "fee_basis": "Nonprofessional Tape C starting at USD 0.90/person/month under 2027 schedule; professional/non-display Tape C usage remains potentially high (USD 2025 for last sale and USD 2025 for bid/ask per approved application category); additional distributor/license/access obligations; not guaranteed user zero cost",
+    "new_g9_pass": false,
+    "reopen_condition": "Authorized Redistributor makes personal-entitlement CT Tape C real-time programmatic automation available to Turkey-resident user, absorbs all applicable vendor/user fees and permits this exact unattended research-only application, followed by verified separate bid/ask/trade timestamp same-RTH witness"
+  },
+  "ranked_resolution_paths": [
+    {
+      "rank": 1,
+      "provider": "Nasdaq CQT or authorized CT/UTP SIP Redistributor",
+      "solves": [
+        "G9 only IF provider grants qualified license and runtime"
+      ],
+      "current": "BLOCKED_COST_ENTITLEMENT_ADAPTER",
+      "turkey": "Direct data license separate from broker residency but vendor confirmation required"
+    },
+    {
+      "rank": 2,
+      "provider": "Longbridge static_info + SEC/issuer filing verification",
+      "solves": [
+        "69 MASTER_UNKNOWN SPAC origin investigation"
+      ],
+      "current": "69/69 ISSUER_NAME_DIAGNOSTIC; 7 issuer SEC specimen filings; no successor classifications yet",
+      "turkey": "Live connected market/reference service used read-only"
+    },
+    {
+      "rank": 3,
+      "provider": "BusinessQuant free REST+MCP SEC & corporate action",
+      "solves": [
+        "69 master/18 affected event UNKNOWN only conditionally; research reference"
+      ],
+      "current": "NO_LIVE_API_KEY_OR_PROOF; 30 daily requests and data transfer quota, sample response anomalies; do not elevate statuses",
+      "turkey": "No funded US broker account declared; individual signup not yet proven"
+    },
+    {
+      "rank": 4,
+      "provider": "Massive ticker overview + authorized GH API key",
+      "solves": [
+        "29 MC UNKNOWN investigation, third-source independent tie-break; not direct forced PASS"
+      ],
+      "current": "Five read-only MC samples proved endpoint, further RATE_LIMIT; GH runner has no key, source authority/lawfulness and C4.17 MC gap unresolved",
+      "turkey": "No demonstrated residency block at research connector"
+    },
+    {
+      "rank": 5,
+      "provider": "Longbridge OAuth account scope",
+      "solves": [
+        "ACCOUNT same-run read-only balance+positions"
+      ],
+      "current": "Connected MCP account calls previously returned 403308 no account scope; requires user-approved account OAuth and secure GitHub runner token refresh",
+      "turkey": "Need eligible actual user account; never ask for secrets in chat"
+    },
+    {
+      "rank": 6,
+      "provider": "Interactive Brokers eligible Turkey residency",
+      "solves": [
+        "ACCOUNT if real user account+approved scheduler access; possible paid SIP with verified license"
+      ],
+      "current": "TURKEY_ALLOWLIST_ON_OFFICIAL_SITE; no user account/OAuth and zero-cost Tape C entitlement",
+      "turkey": "Turkey shown eligible, case-by-case application still required"
+    },
+    {
+      "rank": 7,
+      "provider": "Moomoo new OpenAPI",
+      "solves": [
+        "Partial-venue quote and events research, not national NBBO"
+      ],
+      "current": "NATIVE_US_LEVEL3_PROMO_NOT_FOREVER_FREE; 2026 REST/WSS docs, Turkey user entitlement unverified; v9.3 docs require trading account for OpenD",
+      "turkey": "NOT_VERIFIED"
+    },
+    {
+      "rank": 8,
+      "provider": "Tradier partner, Fennel, tastytrade, Schwab, Webull data only",
+      "solves": [
+        "Data-license negotiations only; direct Turkey resident brokerage blocked or fees"
+      ],
+      "current": "NO_ZERO_COST_TURKEY_RETAIL_G9_PATH",
+      "turkey": "Do not use VPN, fake residency, credential sharing"
+    }
+  ],
+  "other_alpha_blockers": {
+    "current_terminal": "PARTIAL_UNKNOWN",
+    "current_pre_g9_al": 0,
+    "finalists": 17,
+    "final_fail_risk_geometry": 17,
+    "independent_calibration_session_count": 1,
+    "calibration_target_sessions": 60,
+    "required": "Do not relax risk/RR. Independently validate genuine 17 geometries and accumulate 60 C4.17-comparable point-in-time sessions."
+  },
+  "method_limits": [
+    "X was searched through indexed public posts; no complete X firehose access",
+    "New CT Plan 2027 and fee interpretation is not legal opinion, provider and license review needed",
+    "Seven SEC specimens prove blank-check origin only, not all 69 asof-2026-10-07 state",
+    "No access tokens, account identifiers, vendor raw values published",
+    "No false GO, no real-money execution, no edit of main terminal/authority/threshold/automations"
+  ],
+  "result": "ROOT_CAUSE_69_SPAC_PATTERN_DISCOVERED_NO_PRODUCTION_GATE_UNBLOCKED"
+}
