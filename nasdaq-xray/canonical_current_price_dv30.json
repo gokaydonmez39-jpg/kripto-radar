@@ -110,10 +110,8 @@
     "WORX",
     "YICC"
   ],
-  "blocked_count": 1,
-  "blocked_symbols": [
-    "GRAL"
-  ],
+  "blocked_count": 0,
+  "blocked_symbols": [],
   "bridge_defer_enabled": true,
   "c417_rallies_primary_current_queue_uncovered_symbols": [],
   "c417_rallies_primary_materialized_count": 3184,
@@ -3349,9 +3347,8 @@
   "c417_rallies_primary_post_recovery_veto_count": 0,
   "c417_rallies_primary_post_recovery_veto_symbols": [],
   "counts": {
-    "BLOCK_CURRENT_RUN": 1,
     "FAIL_DV30": 1347,
-    "FAIL_DV30_INSUFFICIENT_SESSIONS": 9,
+    "FAIL_DV30_INSUFFICIENT_SESSIONS": 10,
     "FAIL_PRICE": 1308,
     "FAIL_PRICE_NO_ASOF_BAR": 10,
     "PASS_PRICE_DV30": 510
@@ -3365,6 +3362,9 @@
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v12.json",
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v13.json",
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v14.json",
+      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v15.json",
+      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v16.json",
+      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v17.json",
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v2.json",
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v3.json",
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v4.json",
@@ -3380,7 +3380,10 @@
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v11.json:SOURCE_PRICE_BLOB_MISMATCH",
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v12.json:SOURCE_PRICE_BLOB_MISMATCH",
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v13.json:SOURCE_PRICE_BLOB_MISMATCH",
-      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v14.json:CURRENT_REQUEST_SCOPE_MISMATCH",
+      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v14.json:SOURCE_PRICE_BLOB_MISMATCH",
+      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v15.json:CURRENT_REQUEST_SCOPE_MISMATCH",
+      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v16.json:CURRENT_REQUEST_SCOPE_MISMATCH",
+      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v17.json:CURRENT_REQUEST_SCOPE_MISMATCH",
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v2.json:SOURCE_PRICE_BLOB_MISMATCH",
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v3.json:SOURCE_PRICE_BLOB_MISMATCH",
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v4.json:SOURCE_PRICE_BLOB_MISMATCH",
@@ -3434,9 +3437,13 @@
     "status": "NOT_EVALUATED"
   },
   "global_asof_sentinel_fast_fail": false,
+  "historical_halt_terminalized_count": 1,
+  "historical_halt_terminalized_symbols": [
+    "GRAL"
+  ],
   "monotonic_legacy_pass_reuse_count": 0,
   "official_halt_guard_meta": {
-    "content_sha256": "0a8873d3a9970071679789ad3d542c4f4c7823dc3161599daa607310d35af04c",
+    "content_sha256": "821a1a817bb75b0323bcc7f2a5196a0104eab957dcbe56ad992fba867383e936",
     "path": "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_official_source_guard.json",
     "source_status": "PASS",
     "status": "PASS"
@@ -18931,62 +18938,25 @@
       "status": "FAIL_PRICE"
     },
     "GRAL": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "disabled": true,
-            "no_pass_or_fail_created": true,
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "sina": {
-            "usable": 573
-          },
-          "yahoo": {
-            "exchangeName": "NMS",
-            "usable": 63
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
-          "sina_result": {
-            "dv30_lower_bound": 118128234.6,
-            "dv30_upper_bound": 121790969.185,
-            "known_session_count": 29,
-            "missing_sessions": [
-              "2026-09-23"
-            ],
-            "no_synthetic_bar": true,
-            "price": 132.9,
-            "reason": "EXACT30_INCOMPLETE_NEVER_PASS",
-            "source": "SINA_US_DAILY"
-          },
-          "yahoo_result": {
-            "dv30": 118130372.03063965,
-            "known_session_count": 30,
-            "missing_sessions": [],
-            "price": 132.89999389648438,
-            "proof": "EXACT30_MEDIAN_GE_GATE",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY"
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
+        "decision_direction": "FAIL_ONLY_NEVER_PASS",
+        "expected_session_count": 30,
         "missing_sessions": [
           "2026-09-23"
         ],
         "no_synthetic_bar": true,
         "observed_usable_sessions": 29,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
-        "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
-        "zero_volume_sessions": []
+        "official_halt_session": "2026-09-23",
+        "proof": "NASDAQ_RSS_NEXT_DAY_RESUME_PLUS_RALLIES_SINA_EXACT_MISSING_DATE",
+        "reason": "OFFICIAL_HISTORICAL_FULL_SESSION_HALT_30_USABLE_SESSIONS_IMPOSSIBLE",
+        "resumption_date": "2026-09-24",
+        "source": "NASDAQ_TRADER_HISTORICAL_RSS_NON_G9",
+        "source_url": "https://www.nasdaqtrader.com/rss.aspx?feed=tradehalts&haltdate=09232026",
+        "unknown_never_pass": true,
+        "witness_path": "nasdaq-xray/evidence/nasdaq_gral_20260923_full_session_halt_v1.json"
       },
-      "provenance": "C417_RALLIES_PRIMARY_PARTITION",
-      "status": "BLOCK_CURRENT_RUN"
+      "provenance": "EXACT_ASOF_NASDAQ_HISTORICAL_HALT_FAIL_ONLY",
+      "status": "FAIL_DV30_INSUFFICIENT_SESSIONS"
     },
     "GRAN": {
       "info": {
@@ -19622,7 +19592,7 @@
     "HCIC": {
       "info": {
         "dv30": 0.0,
-        "price": 10.009900093078613,
+        "price": 10.010000228881836,
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
@@ -41627,7 +41597,7 @@
           "usable": 1735
         },
         "yahoo": {
-          "exchangeName": "OQB",
+          "exchangeName": "NCM",
           "usable": 59
         }
       },

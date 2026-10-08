@@ -1805,11 +1805,9 @@
   ],
   "official_footer": "File Creation Time: 1007202621:31|||||||",
   "pointer_asof_et": "2026-10-07",
-  "price_blocked_count": 1,
-  "price_blocked_hash": "9735de30c8179b3e2eb328ad4ff160a5b824a7656a85048d3fa8582b2fe66a1c",
-  "price_blocked_symbols": [
-    "GRAL"
-  ],
+  "price_blocked_count": 0,
+  "price_blocked_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "price_blocked_symbols": [],
   "price_gate_order": [
     "PRICE",
     "DV30"
@@ -1819,69 +1817,7 @@
     "price": ">=5"
   },
   "price_unknown_count": 0,
-  "price_unknown_detail": {
-    "GRAL": {
-      "price_result": {
-        "block_recovery_attempt": {
-          "provider_meta": {
-            "nasdaq": {
-              "disabled": true,
-              "no_pass_or_fail_created": true,
-              "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-            },
-            "sina": {
-              "usable": 573
-            },
-            "yahoo": {
-              "exchangeName": "NMS",
-              "usable": 63
-            }
-          },
-          "provider_result": {
-            "nasdaq_result": {
-              "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-            },
-            "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
-            "sina_result": {
-              "dv30_lower_bound": 118128234.6,
-              "dv30_upper_bound": 121790969.185,
-              "known_session_count": 29,
-              "missing_sessions": [
-                "2026-09-23"
-              ],
-              "no_synthetic_bar": true,
-              "price": 132.9,
-              "reason": "EXACT30_INCOMPLETE_NEVER_PASS",
-              "source": "SINA_US_DAILY"
-            },
-            "yahoo_result": {
-              "dv30": 118130372.03063965,
-              "known_session_count": 30,
-              "missing_sessions": [],
-              "price": 132.89999389648438,
-              "proof": "EXACT30_MEDIAN_GE_GATE",
-              "source": "YAHOO_CHART_FREE_FAIL_ONLY"
-            }
-          },
-          "status": "UNRESOLVED"
-        },
-        "info": {
-          "missing_sessions": [
-            "2026-09-23"
-          ],
-          "no_synthetic_bar": true,
-          "observed_usable_sessions": 29,
-          "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-          "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
-          "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
-          "zero_volume_sessions": []
-        },
-        "provenance": "C417_RALLIES_PRIMARY_PARTITION",
-        "status": "BLOCK_CURRENT_RUN"
-      },
-      "security_name": "GRAIL, Inc. - Common Stock"
-    }
-  },
+  "price_unknown_detail": {},
   "price_unknown_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "price_unknown_symbols": [],
   "queue_hash": "306d6bb21e1ffef5f099f988ce995d0f98b349c051f34b4eed42613280444bdf",
@@ -1904,11 +1840,10 @@
   "source_overlay_path": "nasdaq-xray/canonical_current_resolution_overlay.json",
   "source_pointer_blob_sha": "f3a345b651a35ac7442a7b490bdac8244af6a706",
   "source_pointer_path": "nasdaq-xray/chatgpt_canonical_state_v2.json",
-  "source_price_blob_sha": "92cb44f25b945f769c966f6f6e93db1ff95d483d",
+  "source_price_blob_sha": "b7873f3d81debef2b0203131332dfb22c46441be",
   "source_price_counts": {
-    "BLOCK_CURRENT_RUN": 1,
     "FAIL_DV30": 1347,
-    "FAIL_DV30_INSUFFICIENT_SESSIONS": 9,
+    "FAIL_DV30_INSUFFICIENT_SESSIONS": 10,
     "FAIL_PRICE": 1308,
     "FAIL_PRICE_NO_ASOF_BAR": 10,
     "PASS_PRICE_DV30": 510
@@ -1921,12 +1856,10 @@
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
   "source_unknowns_blob_sha": "02aa6991faad2ad3daeb0ad4f87e8db77942f740",
   "source_unknowns_path": "nasdaq-xray/canonical_current_unknowns.json",
-  "status": "READY",
-  "symbol_count": 1,
-  "symbol_hash": "9735de30c8179b3e2eb328ad4ff160a5b824a7656a85048d3fa8582b2fe66a1c",
-  "symbols": [
-    "GRAL"
-  ],
+  "status": "IDLE",
+  "symbol_count": 0,
+  "symbol_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "symbols": [],
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_never_pass": true
 }
