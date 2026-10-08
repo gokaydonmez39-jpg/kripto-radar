@@ -111,6 +111,21 @@ jobs:
               "MATCHING_MASTER_EPOCH_NOT_FULL_RELEASE"
               if safe["terminal_epoch_matches_latest_master"]
               else "HISTORICAL_TERMINAL_ONLY_CURRENT_EPOCH_UNVERIFIED")
+          # A historical terminal may be read for diagnostics, but it
+          # CANNOT conclude NO_QUALIFIED for the newer master epoch.
+          def fail_closed_public_epoch_status(historical_status, historical_count, exact):
+              if exact:
+                  return historical_status,historical_count
+              return "SOURCE_INTEGRITY_BLOCKED",0
+          assert fail_closed_public_epoch_status("NO_QUALIFIED_TECHNICAL_RESEARCH_SIGNAL",0,False)==("SOURCE_INTEGRITY_BLOCKED",0)
+          assert fail_closed_public_epoch_status("QUALIFIED_RESEARCH_SIGNAL_AVAILABLE",3,False)==("SOURCE_INTEGRITY_BLOCKED",0)
+          assert fail_closed_public_epoch_status("NO_QUALIFIED_TECHNICAL_RESEARCH_SIGNAL",0,True)==("NO_QUALIFIED_TECHNICAL_RESEARCH_SIGNAL",0)
+          safe["historical_terminal_status"]=r["status"]
+          safe["status"],safe["research_signal_count"]=fail_closed_public_epoch_status(
+              r["status"],r["research_signal_count"],safe["terminal_epoch_matches_latest_master"])
+          safe["source_integrity_blocked_reason"]=(
+              None if safe["terminal_epoch_matches_latest_master"]
+              else "CURRENT_MASTER_TERMINAL_ASOF_OR_BLOB_SHA_MISMATCH")
           safe["manual_signal_production_ready"]=False
           safe["phone_notification_receipt"]="UNVERIFIED"
           safe["followup_delivery_status"]="NOT_CONNECTED"
