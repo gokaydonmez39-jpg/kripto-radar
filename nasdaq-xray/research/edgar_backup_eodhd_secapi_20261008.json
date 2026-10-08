@@ -1,0 +1,102 @@
+{
+  "schema": "XRAY_SECREG_EDGAR_ALTERNATIVE_SOURCES_RESEARCH_ONLY_V1",
+  "date_trt": "2026-10-08",
+  "head_before": "023f82c75348fbdb44864d9974834c377e5a3fc3",
+  "extends": {
+    "path": "nasdaq-xray/research/xray_maximum_scout_20261008.json",
+    "blob_sha": "d1ede1f7fbd7302b425911bd98ec653c53b64d9f"
+  },
+  "policy": "C4.17",
+  "control": "C4.27",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "authority": false,
+  "alpha_authority": false,
+  "g9_pass": false,
+  "account_pass": false,
+  "provider_order": [
+    {
+      "priority": 1,
+      "name": "SEC EDGAR official data.sec.gov, filings archive",
+      "role": "Primary authoritative issuer and event evidence",
+      "signup_key": "none for public API",
+      "runtime_result": "Public filings independently findable; GitHub SEC automated 403 previously observed, not revalidated solved",
+      "next_gate": "compliant User-Agent / rate limit / IP access; issuer CIK+shareclass, asof SEC 8-K, 10-Q, 424B, DEFM14A and current merger effective state; do not bypass blocks using unauthorized methods",
+      "source_urls": [
+        "https://www.sec.gov/search-filings/edgar-application-programming-interfaces",
+        "https://www.sec.gov/about/developer-resources"
+      ]
+    },
+    {
+      "priority": 2,
+      "name": "Business Quant SEC filings + corporate actions + issuer universe",
+      "role": "Free read-only complement to 69 SPAC origin, merger/rename checks, and 18 event UNKNOWN",
+      "free_constraints": "Published $0 individual plan: 30 API calls/day and 0.1GB monthly; sampled external free MCP limited; not verified with authorized token from runner",
+      "runtime_result": "Not yet connected or tested with authenticated account",
+      "quality_guards": [
+        "Verify issuer SEC CIK and filing date and accessions with primary SEC",
+        "Corporate actions vendor sample response is not a real symbol-fidelity test",
+        "API availability and allowable machine use require vendor token and current agreement",
+        "Free 30/day cannot cover 3184 tickers each day without batching and selective delta updates"
+      ],
+      "source_urls": [
+        "https://businessquant.com/pricing",
+        "https://businessquant.com/docs/api/sec-filings",
+        "https://businessquant.com/docs/api/corporate-actions",
+        "https://businessquant.com/docs/api/mcp"
+      ]
+    },
+    {
+      "priority": 3,
+      "name": "EODHD SEC filings API including 8-K events",
+      "role": "Fallback structured issuer event/filings parser",
+      "free_constraints": "EODHD public free limit may be 20 daily calls but endpoint entitlement not confirmed for SEC filings; account key required",
+      "runtime_result": "No live authorized API test",
+      "status": "TRIAL_OR_QUOTA_CONDITIONAL_NOT_SUSTAINED_GUARANTEE",
+      "source_urls": [
+        "https://eodhd.com/financial-apis/sec-filings-api",
+        "https://eodhd.com/pricing",
+        "https://github.com/EodHistoricalData/EODHD-openapi"
+      ]
+    },
+    {
+      "priority": 4,
+      "name": "EODHD US stock symbol change history",
+      "role": "Track de-SPAC ticker transitions and point-in-time symbol mapping",
+      "free_constraints": "Official primary product says All World Extended and All-In-One plans; EODHD separate fundamentals landing explicitly says paid subscription for symbol-change-history. Do not include in free baseline.",
+      "runtime_result": "No subscribed account or live key",
+      "status": "PAID_ONLY_ON_CURRENT_PUBLIC_DOCS",
+      "source_urls": [
+        "https://eodhd.com/financial-apis/us-stock-symbol-rename-history-api",
+        "https://eodhd.com/lp/fundamental-data-api"
+      ]
+    },
+    {
+      "priority": 5,
+      "name": "sec-api.io filings query",
+      "role": "Short-term limited onboarding alternative when official SEC client blocked",
+      "free_constraints": "~100 queries total free trial, not daily sustainable quota; account required; subsequent paid monthly service",
+      "runtime_result": "Not authorized or probed",
+      "status": "TRIAL_ONLY_NOT_PERMANENT_FREE",
+      "source_urls": [
+        "https://sec-api.io/pricing",
+        "https://sec-api.io/"
+      ]
+    }
+  ],
+  "new_corrections": [
+    "EODHD symbol-change-history is paid despite EODHD account advertising some free calls",
+    "BusinessQuant free plan request count and transfer cap do not establish unrestricted request use or confirmed endpoint for the user's account",
+    "Successful source discovery may not convert master unknown statuses without asof-date issuer proof and immutable successor semantics",
+    "No vendor private value, token, quote or user account info persisted"
+  ],
+  "never_modify": [
+    "canonical_current_terminal.json",
+    "canonical_current_final_gate_overlay.json",
+    "canonical_current_master_manifest.json",
+    "g9_entitlement_authority.json",
+    "canonical_mc_bridge_20261007_c417_dv30_v28.json"
+  ],
+  "result": "BACKUP_EDGAR_PATHS_DOCUMENTED_NO_GATE_PROMOTION"
+}
