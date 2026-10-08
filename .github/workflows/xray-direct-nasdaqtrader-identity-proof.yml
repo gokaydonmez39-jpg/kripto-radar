@@ -1,0 +1,35 @@
+name: XRAY Direct NasdaqTrader Exact-ASOF Identity Proof
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'nasdaq-xray/orchestrator_run.py'
+      - '.github/workflows/xray-direct-nasdaqtrader-identity-proof.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  exact-asof-partition:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compile and strict positive/negative identity partition selftest
+        run: |
+          python -m py_compile nasdaq-xray/orchestrator_run.py
+          python nasdaq-xray/orchestrator_run.py --selftest-direct-no-web
+      - name: Validate no unsafe alpha or provider controls introduced
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          s=Path("nasdaq-xray/orchestrator_run.py").read_text()
+          assert "if not direct_no_web_identity_ok(ss):" in s
+          assert "NASDAQTRADER_DIRECT_NO_WEB_IDENTITY_PARTITION_MISMATCH" in s
+          assert "direct_no_web_identity_primary_partition_proof(ss)" in s
+          assert 'if "--selftest-direct-no-web" in sys.argv:' in s
+          assert "EXECUTION=NONE. REAL_MONEY=NO-GO. UNKNOWN!=PASS." in s
+          print("XRAY_DIRECT_NO_WEB_FAIL_CLOSED_AUTHORITY_BOUND=PASS")
+          PY
