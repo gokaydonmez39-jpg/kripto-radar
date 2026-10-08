@@ -1,0 +1,48 @@
+name: XRAY Massive MC Free-Tier Shadow
+on:
+  workflow_dispatch:
+    inputs:
+      offset:
+        description: "Zero-based MC UNKNOWN slice start index (auto = rotating hourly bucket)"
+        type: string
+        required: false
+        default: "auto"
+  schedule:
+    - cron: "23 * * * *"
+permissions:
+  contents: read
+concurrency:
+  group: xray-massive-mc-shadow
+  cancel-in-progress: false
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      XRAY_MASSIVE_API_KEY: ${{ secrets.XRAY_MASSIVE_API_KEY }}
+      XRAY_MASSIVE_OFFSET: ${{ github.event.inputs.offset || 'auto' }}
+    steps:
+      - name: Checkout canonical repository
+        uses: actions/checkout@v4
+      - name: Prepare Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Independent fail-closed contract self-test
+        run: |
+          python -m py_compile nasdaq-xray/massive_mc_shadow_probe.py
+          python nasdaq-xray/massive_mc_shadow_probe.py --selftest
+      - name: Research-only Massive reference probe (maximum five calls)
+        run: |
+          python nasdaq-xray/massive_mc_shadow_probe.py \
+            --offset "$XRAY_MASSIVE_OFFSET" \
+            --limit 5 \
+            --out "$RUNNER_TEMP/xray_massive_mc_shadow.json"
+      - name: Attach research-only evidence; never commit to MC authority
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-massive-mc-shadow
+          path: ${{ runner.temp }}/xray_massive_mc_shadow.json
+          if-no-files-found: warn
+          retention-days: 14
