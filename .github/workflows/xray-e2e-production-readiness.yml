@@ -1,0 +1,63 @@
+name: XRAY E2E Production Readiness (Fail-Closed)
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/e2e_production_readiness.py"
+      - ".github/workflows/xray-e2e-production-readiness.yml"
+  workflow_run:
+    workflows:
+      - "XRAY Canonical Current Post-MC Factory"
+      - "XRAY Canonical Current Final Factory"
+    types: [completed]
+    branches: [main]
+  schedule:
+    - cron: "13 * * * 1-5"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: xray-e2e-readiness-failclosed-v1
+  cancel-in-progress: true
+
+jobs:
+  evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile and regression-test exact C4.17 binding rules
+        run: |
+          python -m py_compile nasdaq-xray/e2e_production_readiness.py
+          python nasdaq-xray/e2e_production_readiness.py --selftest
+      - name: Assess REAL source epochs and safety gates
+        run: |
+          python nasdaq-xray/e2e_production_readiness.py --output "$RUNNER_TEMP/xray_e2e_readiness.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          o=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_e2e_readiness.json").read_text())
+          assert o["schema"]=="XRAY_E2E_PRODUCTION_READINESS_AUDIT_V1"
+          assert o["execution"]=="NONE" and o["real_money"]=="NO-GO"
+          assert o["alpha_authority"] is False
+          assert o["ready_for_current_research_signal"] is False
+          assert "NOTIFICATION_DEVICE_RECEIPT_NOT_PROVEN" in o["blockers"]
+          assert o["no_trading_or_device_receipt_claim"] is True
+          print("XRAY_READINESS_REPORT_CHECK=PASS_FAIL_CLOSED")
+          print("XRAY_READINESS_REPORT_RELEASE=NOT_GRANTED")
+          PY
+      - name: Upload operational-only blocker witness (never a trading signal)
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-e2e-readiness-failclosed-v1
+          path: ${{ runner.temp }}/xray_e2e_readiness.json
+          retention-days: 14
+          if-no-files-found: error
