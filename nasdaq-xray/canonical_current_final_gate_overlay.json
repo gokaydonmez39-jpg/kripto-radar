@@ -1,7 +1,7 @@
 {
   "schema": "XRAY_FINAL_GATE_OVERLAY_V2",
   "generated_on": "2026-10-08",
-  "generated_at_utc": "2026-10-08T13:03:56.132743+00:00",
+  "generated_at_utc": "2026-10-08T13:17:11.005678+00:00",
   "asof_et": "2026-10-07",
   "execution": "NONE",
   "real_money": "NO-GO",
@@ -75,9 +75,18 @@
     "stale_terminal_full_claim_suppressed": false
   },
   "terminal_live_artifact_bindings": {
-    "exact": true,
-    "mismatch_count": 0,
-    "mismatches": [],
+    "exact": false,
+    "mismatch_count": 2,
+    "mismatches": [
+      {
+        "key": "master",
+        "reason": "LIVE_BLOB_DRIFT"
+      },
+      {
+        "key": "full_state",
+        "reason": "LIVE_BLOB_DRIFT"
+      }
+    ],
     "authority": "CURRENT_CANONICAL_BLOBS_FAIL_CLOSED"
   },
   "current_research_chain": {
@@ -96,7 +105,7 @@
     "independent_of_g9_account": true,
     "pre_g9_tech_pass": 0,
     "current_asof_has_deliverable_candidate": false,
-    "reason": "PRE_G9_TECH_PASS_ZERO"
+    "reason": "TERMINAL_LIVE_BLOB_DRIFT"
   },
   "true_full_go": {
     "status": "BLOCKED",
