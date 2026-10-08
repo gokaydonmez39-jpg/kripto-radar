@@ -73,13 +73,27 @@ def main():
           "PASS_PRICE_DV30":510,
           "BLOCK_CURRENT_RUN":125,
         },primary.get("counts")
-        assert set(master_queue)==universe,"CURRENT_MASTER_NOT_EXACTLY_COVERED_BY_RALLIES_V2"
+        # Exact-ASOF primary witness is immutable. A subsequent official
+        # identity revision may demote a symbol from MASTER PASS to UNKNOWN
+        # without rewriting historic Rallies rows. No current MASTER symbol
+        # may lack a primary row; primary-only rows have zero alpha authority.
+        assert set(master_queue).issubset(universe), "CURRENT_MASTER_SYMBOL_UNCOVERED_BY_RALLIES_V2"
+        assert not (set(master_queue)-universe)
+        primary_only=sorted(universe-set(master_queue))
 
         bridge_path=ROOT/"canonical_resolver_bridge_20261007_c417_dv30_v5.json"
         bridge=json.loads(bridge_path.read_text())
+        # Immutable predecessor bridge is scoped to its original queue.
+        # Test its genuine historical authority without rebinding it into a
+        # revised current master. A cross-queue acceptance is forbidden.
+        historical_queue_hash=bridge.get("queue_hash")
         terminal=validate_persistent_terminal_fail_override(
-            bridge,"BBCI",asof,master.get("queue_hash")
+            bridge,"BBCI",asof,historical_queue_hash
         )
+        if historical_queue_hash!=master.get("queue_hash"):
+            assert validate_persistent_terminal_fail_override(
+                bridge,"BBCI",asof,master.get("queue_hash")
+            ) is None, "STALE_BRIDGE_CURRENT_QUEUE_REBIND_FORBIDDEN"
         assert terminal is not None,bridge_path
         assert terminal.get("decision")=="FAIL_DV30_INSUFFICIENT_SESSIONS",terminal
         assert terminal.get("proof")=="ALPACA_RALLIES_EXACT_MISSING_SET_MATCH",terminal
@@ -101,7 +115,7 @@ def main():
             bad["terminal_override_evidence"]["BBCI"]["rallies"]["missing_sessions"][:-1]
         )
         assert validate_persistent_terminal_fail_override(
-            bad,"BBCI",asof,master.get("queue_hash")
+            bad,"BBCI",asof,historical_queue_hash
         ) is None
 
     current=set(master_queue)
@@ -205,6 +219,7 @@ def main():
       "asof_et":asof,
       "primary_symbol_count":len(universe),
       "current_queue_count":len(master_queue),
+      "historical_primary_only_count_nonalpha":len(universe-set(master_queue)),
       "covered_current_queue_count":len(covered),
       "uncovered_current_queue_count":len(uncovered),
       "pass_count":len(pp),
