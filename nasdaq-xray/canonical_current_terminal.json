@@ -37,9 +37,9 @@
       "UCFI",
       "UCFIW"
     ],
-    "age_seconds": 1.254,
-    "generated_at_utc": "2026-10-08T17:14:43.723315+00:00",
-    "guard_blob_sha": "ff07ed4437464109b0e6a024c2077ba0e9de4b9e",
+    "age_seconds": 2.439,
+    "generated_at_utc": "2026-10-08T17:23:21.673530+00:00",
+    "guard_blob_sha": "ee2ce81f9e11e2440af1376ee5fea1cf6c3a362d",
     "guard_path": "nasdaq-xray/canonical_official_source_guard.json",
     "max_age_seconds": 900,
     "security_status_suspension_symbols": [
@@ -210,7 +210,7 @@
     },
     "account_live_probe": {
       "balance_parseable": false,
-      "blob_sha": "835d16d39d9618caedf9e96e7b349fc0aadf10af",
+      "blob_sha": "946337e834667b20c7ed00ae62c89bd8cbf607f2",
       "network_attempted": false,
       "path": "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/account_effective_probe_state.json",
       "positions_parseable": false,
@@ -221,7 +221,7 @@
       "secret_values_persisted": false,
       "status": "BLOCKED_MISSING_CREDENTIALS",
       "workflow_run_attempt": "1",
-      "workflow_run_id": "37813974984"
+      "workflow_run_id": "37814121861"
     },
     "deep": {
       "blob_sha": "cd57711b59a421d2f362dd569f1a597cf9bc3d38",
@@ -244,7 +244,7 @@
       "path": "nasdaq-xray/canonical_current_family_c.json"
     },
     "final": {
-      "blob_sha": "778ed7d6d466cc7e5eb750fb190c1b2c5eebfbe5",
+      "blob_sha": "cc8da904c0241063b3724d20228ef56843808ed7",
       "path": "nasdaq-xray/canonical_current_final_tech.json"
     },
     "full_state": {
@@ -281,7 +281,7 @@
       "semantic_rebind": false
     },
     "official_halt_guard": {
-      "blob_sha": "ff07ed4437464109b0e6a024c2077ba0e9de4b9e",
+      "blob_sha": "ee2ce81f9e11e2440af1376ee5fea1cf6c3a362d",
       "path": "nasdaq-xray/canonical_official_source_guard.json"
     },
     "pointer": {
@@ -313,7 +313,7 @@
   "final_gate_reporting_zero_alpha": true,
   "full_end_to_end_research_pass": false,
   "g9_global_status": "G9_BLOCKED_FREE_AUTOMATION_PATH",
-  "generated_at_utc": "2026-10-08T17:14:44.978800+00:00",
+  "generated_at_utc": "2026-10-08T17:23:24.114652+00:00",
   "pointer_asof_before_candidate": "2026-10-07",
   "r92_account_g9_applicable": false,
   "r92_candidates": [],

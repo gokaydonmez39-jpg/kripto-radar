@@ -89,7 +89,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-10-08T17:14:43.723315+00:00",
+  "generated_at_utc": "2026-10-08T17:23:21.673530+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -668,8 +668,23 @@
         "UCFIW"
       ],
       "active_state_rule": "EXPLICIT_EMPTY_RESUMPTION_FIELDS_ONLY",
-      "item_count": 60,
+      "item_count": 61,
       "items": [
+        {
+          "HaltDate": "10/08/2026",
+          "HaltTime": "13:17:16.343",
+          "IssueName": "Basel Medical Group Ltd Ord Sh",
+          "IssueSymbol": "BMGL",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "10/08/2026",
+          "ResumptionQuoteTime": "13:17:16",
+          "ResumptionTradeTime": "13:22:16",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/08/2026                    </td><td valign=\"top\">13:17:16.343</td><td valign=\"top\">BMGL</td><td valign=\"top\">Basel Medical Group Ltd Ord Sh</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/08/2026                    </td><td valign=\"top\">13:17:16                      </td><td valign=\"top\">13:22:16                      </td></tr></table>",
+          "pubDate": "Thu, 08 Oct 2026 04:00:00 GMT",
+          "title": "BMGL"
+        },
         {
           "HaltDate": "10/08/2026",
           "HaltTime": "13:07:53.436",
@@ -680,8 +695,8 @@
           "ReasonCode": "LUDP",
           "ResumptionDate": "10/08/2026",
           "ResumptionQuoteTime": "13:07:53",
-          "ResumptionTradeTime": "",
-          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/08/2026                    </td><td valign=\"top\">13:07:53.436</td><td valign=\"top\">NFEGP</td><td valign=\"top\">New Frtrs Enrgy Sr A Md Cv Pfd</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/08/2026                    </td><td valign=\"top\">13:07:53                      </td><td valign=\"top\"></td></tr></table>",
+          "ResumptionTradeTime": "13:21:42",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/08/2026                    </td><td valign=\"top\">13:07:53.436</td><td valign=\"top\">NFEGP</td><td valign=\"top\">New Frtrs Enrgy Sr A Md Cv Pfd</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/08/2026                    </td><td valign=\"top\">13:07:53                      </td><td valign=\"top\">13:21:42                      </td></tr></table>",
           "pubDate": "Thu, 08 Oct 2026 04:00:00 GMT",
           "title": "NFEGP"
         },
