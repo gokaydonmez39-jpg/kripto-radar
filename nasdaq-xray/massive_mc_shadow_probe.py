@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Zero-alpha Massive MC reference shadow. Never promotes MC, R92, or a signal.
 
-Only selected MC-UNKNOWN symbols are fetched. A known capped free plan exists
+Only selected exact-current PRICE/DV30 PASS symbols are sampled without requiring MC/HISTORY.
+A known capped free plan exists
 (5 calls/minute); this program never exceeds five requests in one invocation.
 No key, scope, rate, identity or data failure is ever converted into PASS.
 """
@@ -133,31 +134,92 @@ def selftest():
     suspicious_name=dict(fixture, name="Example Acquisition Corp")
     assert classify("TEST", suspicious_name)["state"] == "UNKNOWN"
     assert MAX_REQUESTS_PER_INVOCATION == 5
-    print("XRAY_MASSIVE_MC_SHADOW_SELFTEST=PASS (ZERO_ALPHA)")
+    from copy import deepcopy
+    master={"asof_et":"2026-10-08","execution":"NONE","real_money":"NO-GO",
+        "unknown_never_pass":True,"queue_hash":"Q","queue_total":2,
+        "pass_symbols":["TEST","TWO"]}
+    price={"asof_et":"2026-10-08","execution":"NONE","real_money":"NO-GO",
+        "unknown_never_pass":True,"source_master_queue_hash":"Q",
+        "source_master_count":2,"pass_symbols":["TEST"],"pass_count":1,
+        "blocked_symbols":["TWO"],"results":{"TEST":{"status":"PASS_PRICE_DV30"},
+        "TWO":{"status":"BLOCK_CURRENT_RUN"}}}
+    assert select_current_price_scope(master,price)==("2026-10-08",["TEST"])
+    for fn in (
+        lambda m,p:p.update(asof_et="2026-10-07"),
+        lambda m,p:p.update(pass_symbols=["TWO"]),
+        lambda m,p:p.update(pass_count=2),
+        lambda m,p:p.update(source_master_queue_hash="WRONG"),
+        lambda m,p:p["results"]["TEST"].update(status="MC_UNKNOWN"),
+        lambda m,p:m.update(queue_total=3)):
+        mm,pp=deepcopy(master),deepcopy(price)
+        fn(mm,pp)
+        try:select_current_price_scope(mm,pp)
+        except RuntimeError:pass
+        else:raise AssertionError("INVALID_SOURCE_ACCEPTED")
+    clock=dt.datetime(2026,10,8,22,tzinfo=dt.timezone.utc)
+    assert choose_offset(514,5,"auto",clock)==(
+        (clock.date().toordinal()*24+clock.hour)%103)*5
+    assert choose_offset(514,5,"5")==5
+    for invalid in ("-1","514","bad"):
+        try:choose_offset(514,5,invalid)
+        except RuntimeError:pass
+        else:raise AssertionError("INVALID_OFFSET_ACCEPTED")
+    print("XRAY_MASSIVE_MC_SHADOW_SELFTEST=PASS_PRICE_SCOPE_6_NEGATIVES_NO_ALPHA")
+
+def select_current_price_scope(master: dict, price: dict) -> tuple[str, list[str]]:
+    """Exact PRICE PASS sample; no MC/HISTORY dependency and no alpha effect."""
+    asof = str(price.get("asof_et") or "")
+    try:
+        if dt.date.fromisoformat(asof).isoformat()!=asof:
+            raise ValueError("date mismatch")
+    except ValueError as exc:
+        raise RuntimeError("PRICE_ASOF_INVALID") from exc
+    master_symbols=set(master.get("pass_symbols") or [])
+    scope=list(price.get("pass_symbols") or [])
+    if not (
+        master.get("asof_et")==asof
+        and master.get("execution")=="NONE" and master.get("real_money")=="NO-GO"
+        and price.get("execution")=="NONE" and price.get("real_money")=="NO-GO"
+        and master.get("unknown_never_pass") is True
+        and price.get("unknown_never_pass") is True
+        and master.get("queue_hash")==price.get("source_master_queue_hash")
+        and master.get("queue_total")==price.get("source_master_count")
+        and master_symbols==set(price.get("results") or {})
+        and len(master_symbols)==int(master.get("queue_total") or -1)
+        and len(scope)>0 and len(scope)==len(set(scope))
+        and len(scope)==int(price.get("pass_count") or -1)
+        and set(scope).issubset(master_symbols)
+        and set(scope).isdisjoint(price.get("blocked_symbols") or [])
+        and all((price.get("results") or {}).get(x,{}).get("status")=="PASS_PRICE_DV30"
+                for x in scope)
+    ):
+        raise RuntimeError("CURRENT_PRICE_PASS_AUTHORITY_INVALID_FAIL_CLOSED")
+    if any(not re.fullmatch(r"[A-Z]{1,7}",x) for x in scope):
+        raise RuntimeError("INVALID_SYMBOL_IN_PRICE_PASS")
+    return asof,sorted(scope)
+
+def choose_offset(n:int,limit:int,offset:str,now=None) -> int:
+    if limit<1 or limit>MAX_REQUESTS_PER_INVOCATION:
+        raise RuntimeError("HARD_FREE_PLAN_LIMIT_EXCEEDED")
+    if n<=0:raise RuntimeError("EMPTY_RESEARCH_SCOPE")
+    buckets=(n+limit-1)//limit
+    if offset=="auto":
+        now=now or dt.datetime.now(dt.timezone.utc)
+        pos=((now.date().toordinal()*24+now.hour)%buckets)*limit
+    else:
+        try:pos=int(offset)
+        except (ValueError,TypeError) as exc:
+            raise RuntimeError("INVALID_SHADOW_OFFSET") from exc
+    if pos<0 or pos>=n:raise RuntimeError("INVALID_SHADOW_OFFSET")
+    return pos
 
 def run(args):
-    history = json.loads((ROOT / "canonical_current_history.json").read_text())
-    source = str(history.get("source_mc_artifact") or "")
-    if not source.startswith("nasdaq-xray/canonical_mc_bridge_") or not source.endswith(".json"):
-        raise RuntimeError("CURRENT_MC_AUTHORITY_PATH_UNSAFE")
-    mc = json.loads((ROOT.parent / source).read_text())
-    asof = str(mc.get("asof_et") or "")
-    if asof != str(history.get("asof_et")) or not dt.date.fromisoformat(asof):
-        raise RuntimeError("MC_HISTORY_ASOF_MISMATCH")
-    unknown = sorted(set(mc.get("unknown_symbols") or []))
-    if len(unknown) != int((mc.get("counts") or {}).get("MC_UNKNOWN", -1)):
-        raise RuntimeError("MC_UNKNOWN_PARTITION_MISMATCH")
-    if any(not x.isalpha() or x != x.upper() or len(x) > 7 for x in unknown):
-        raise RuntimeError("INVALID_SYMBOL_IN_MC_UNKNOWN")
-    limit = args.limit
-    if limit < 1 or limit > MAX_REQUESTS_PER_INVOCATION:
-        raise RuntimeError("HARD_FREE_PLAN_LIMIT_EXCEEDED")
-    buckets = max(1, (len(unknown) + limit - 1) // limit)
-    offset = int(args.offset) if args.offset != "auto" else (
-        dt.datetime.now(dt.timezone.utc).hour % buckets) * limit
-    if offset < 0 or offset >= max(1, len(unknown)):
-        raise RuntimeError("INVALID_SHADOW_OFFSET")
-    chosen = unknown[offset:offset + limit]
+    master=json.loads((ROOT/"canonical_current_master_manifest.json").read_text())
+    price=json.loads((ROOT/"canonical_current_price_dv30.json").read_text())
+    asof,scope=select_current_price_scope(master,price)
+    limit=args.limit
+    offset=choose_offset(len(scope),limit,args.offset)
+    chosen=scope[offset:offset+limit]
     key = os.getenv("XRAY_MASSIVE_API_KEY", "").strip()
     records = {}
     if not key:
@@ -174,7 +236,10 @@ def run(args):
         "authority": "NON_ALPHA_SHADOW_ONLY", "unknown_never_pass": True,
         "policy_unchanged": "C4.17", "mc_primary_pass_created": False,
         "candidate_created": False, "r92_created": False,
-        "source_mc_artifact": source, "source_mc_unknown_count": len(unknown),
+        "source_price_artifact": "nasdaq-xray/canonical_current_price_dv30.json",
+        "source_price_pass_count": len(scope),
+        "source_epoch_exact": True,
+        "mc_history_not_required_for_price_sample": True,
         "free_plan_5_calls_per_minute": True, "requested_count": len(chosen),
         "status": status, "offset": offset, "records": records
     }
