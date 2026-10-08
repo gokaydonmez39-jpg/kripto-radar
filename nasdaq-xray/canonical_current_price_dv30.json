@@ -2,7 +2,7 @@
   "asof_et": "2026-10-07",
   "block_recovery_attempted": true,
   "block_recovery_input_count": 106,
-  "block_recovery_resolved_count": 60,
+  "block_recovery_resolved_count": 61,
   "block_recovery_resolved_symbols": [
     "AFJK",
     "AIIR",
@@ -44,6 +44,7 @@
     "MGYR",
     "MNSBP",
     "NICM",
+    "OPNW",
     "ORIQ",
     "PBHC",
     "PFAI",
@@ -65,7 +66,7 @@
     "WFCF",
     "WLCO"
   ],
-  "blocked_count": 46,
+  "blocked_count": 45,
   "blocked_symbols": [
     "ALDF",
     "ATGL",
@@ -99,7 +100,6 @@
     "NIPG",
     "NOEM",
     "NWCL",
-    "OPNW",
     "PFX",
     "PONO",
     "RACD",
@@ -3349,8 +3349,8 @@
   "c417_rallies_primary_post_recovery_veto_count": 0,
   "c417_rallies_primary_post_recovery_veto_symbols": [],
   "counts": {
-    "BLOCK_CURRENT_RUN": 46,
-    "FAIL_DV30": 1306,
+    "BLOCK_CURRENT_RUN": 45,
+    "FAIL_DV30": 1307,
     "FAIL_DV30_INSUFFICIENT_SESSIONS": 9,
     "FAIL_PRICE": 1304,
     "FAIL_PRICE_NO_ASOF_BAR": 10,
@@ -3362,6 +3362,7 @@
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v1.json",
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v10.json",
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v11.json",
+      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v12.json",
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v2.json",
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v3.json",
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v4.json",
@@ -3374,7 +3375,8 @@
     "rejected": [
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v1.json:SOURCE_PRICE_BLOB_MISMATCH",
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v10.json:SOURCE_PRICE_BLOB_MISMATCH",
-      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v11.json:CURRENT_REQUEST_SCOPE_MISMATCH",
+      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v11.json:SOURCE_PRICE_BLOB_MISMATCH",
+      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v12.json:CURRENT_REQUEST_SCOPE_MISMATCH",
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v2.json:SOURCE_PRICE_BLOB_MISMATCH",
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v3.json:SOURCE_PRICE_BLOB_MISMATCH",
       "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261007_c417_dv30_v4.json:SOURCE_PRICE_BLOB_MISMATCH",
@@ -3430,7 +3432,7 @@
   "global_asof_sentinel_fast_fail": false,
   "monotonic_legacy_pass_reuse_count": 0,
   "official_halt_guard_meta": {
-    "content_sha256": "71ea5a6162c09d4fb28230f52cc13c685f77fdac4c27eddd43db7359e51e2730",
+    "content_sha256": "13e048fd7eb4fcc351b1e7c7de75899c0ab0cdbe2947f2300e7224aa0cc18ed0",
     "path": "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_official_source_guard.json",
     "source_status": "PASS",
     "status": "PASS"
@@ -31029,107 +31031,28 @@
       "status": "FAIL_PRICE"
     },
     "OPNW": {
-      "block_recovery_attempt": {
-        "provider_meta": {
-          "nasdaq": {
-            "disabled": true,
-            "no_pass_or_fail_created": true,
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "sina": {
-            "usable": 5
-          },
-          "yahoo": {
-            "exchangeName": "NCM",
-            "usable": 62
-          }
-        },
-        "provider_result": {
-          "nasdaq_result": {
-            "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
-          },
-          "reason": "C417_DV30_PRIMARY_OR_FALLBACK_AUTHORITY_REQUIRED",
-          "sina_result": {
-            "dv30_lower_bound": 0.0,
-            "dv30_upper_bound": null,
-            "known_session_count": 5,
-            "missing_sessions": [
-              "2026-08-26",
-              "2026-08-27",
-              "2026-08-28",
-              "2026-08-31",
-              "2026-09-01",
-              "2026-09-02",
-              "2026-09-03",
-              "2026-09-04",
-              "2026-09-08",
-              "2026-09-09",
-              "2026-09-10",
-              "2026-09-11",
-              "2026-09-14",
-              "2026-09-15",
-              "2026-09-16",
-              "2026-09-17",
-              "2026-09-18",
-              "2026-09-21",
-              "2026-09-22",
-              "2026-09-23",
-              "2026-09-24",
-              "2026-09-25",
-              "2026-09-28",
-              "2026-09-29",
-              "2026-09-30"
-            ],
-            "no_synthetic_bar": true,
-            "price": 6.06,
-            "reason": "EXACT30_INCOMPLETE_NEVER_PASS",
-            "source": "SINA_US_DAILY"
-          },
-          "yahoo_result": {
-            "reason": "ASOF_MISSING",
-            "source": "YAHOO_CHART_FREE_FAIL_ONLY",
-            "usable_bars": 62
-          }
-        },
-        "status": "UNRESOLVED"
-      },
       "info": {
-        "missing_sessions": [
-          "2026-08-26",
-          "2026-08-27",
-          "2026-08-28",
-          "2026-08-31",
-          "2026-09-01",
-          "2026-09-02",
-          "2026-09-03",
-          "2026-09-04",
-          "2026-09-08",
-          "2026-09-09",
-          "2026-09-10",
-          "2026-09-11",
-          "2026-09-14",
-          "2026-09-15",
-          "2026-09-16",
-          "2026-09-17",
-          "2026-09-18",
-          "2026-09-21",
-          "2026-09-22",
-          "2026-09-23",
-          "2026-09-24",
-          "2026-09-25",
-          "2026-09-28",
-          "2026-09-29",
-          "2026-09-30"
-        ],
-        "no_synthetic_bar": true,
-        "observed_usable_sessions": 5,
-        "proof": "FAIL_CLOSED_CURRENT_RUN_NONPASS",
-        "reason": "RALLIES_PRIMARY_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
-        "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
-        "zero_volume_sessions": []
+        "dv30": 235625.50517082214,
+        "price": 6.059999942779541,
+        "proof": "EXACT30_MEDIAN_LT_GATE",
+        "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "C417_RALLIES_PRIMARY_PARTITION",
-      "status": "BLOCK_CURRENT_RUN"
+      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provider_meta": {
+        "nasdaq": {
+          "disabled": true,
+          "no_pass_or_fail_created": true,
+          "reason": "NASDAQ_WEB_AUTOMATION_DISABLED_TOS_AND_PIT"
+        },
+        "sina": {
+          "usable": 5
+        },
+        "yahoo": {
+          "exchangeName": "NCM",
+          "usable": 63
+        }
+      },
+      "status": "FAIL_DV30"
     },
     "OPRA": {
       "info": {

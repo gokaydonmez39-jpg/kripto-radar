@@ -1,7 +1,7 @@
 {
   "asof_et": "2026-10-07",
   "asof_identity_proof": {
-    "blob_sha": "b1a4c697d25d7261d45f23f49b95a0348a21fa07",
+    "blob_sha": "3184842afbe8174935d99a4977b4a1795afc1555",
     "counts": {
       "operating_overrides": 4,
       "remove_from_asof": 0,
@@ -29,18 +29,18 @@
   },
   "counts": {
     "PASS_IDENTITY": 3185,
-    "UNKNOWN_IDENTITY": 185
+    "UNKNOWN_IDENTITY": 183
   },
   "execution": "NONE",
-  "explicit_excluded_count": 2259,
-  "explicit_excluded_hash": "89d3ef15b538e288f9c9867c6d2e8593b24d7196e6254ee968dd09b3a831b7da",
+  "explicit_excluded_count": 2261,
+  "explicit_excluded_hash": "b8a2e87c68de461e876c1e5e556ebaf056984501eb24f9b8a4c3887098a3173f",
   "explicit_excluded_reason_counts": {
     "DEBT": 59,
     "ETF": 1293,
     "FUND": 32,
     "PREFERRED": 102,
     "RIGHT": 104,
-    "SPAC_BLANK_CHECK": 26,
+    "SPAC_BLANK_CHECK": 28,
     "TEST_ISSUE": 8,
     "UNIT": 260,
     "WARRANT": 372,
@@ -3252,22 +3252,22 @@
   "queue_hash": "306d6bb21e1ffef5f099f988ce995d0f98b349c051f34b4eed42613280444bdf",
   "queue_total": 3185,
   "queue_unique": 3185,
-  "raw_identity_total": 3370,
+  "raw_identity_total": 3368,
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1",
   "sec_spac_proof": {
-    "blob_sha": "3469c0f1f2b255bb5f492960791e0ce2f8fe317d",
-    "count": 26,
+    "blob_sha": "90c537e78b6047becc586c7f0f602bfb323e4659",
+    "count": 28,
     "path": "nasdaq-xray/master_sec_spac_proof_20261007.json",
-    "symbol_hash": "ae9127efcc34829b9aab127e3053b02a06d1a67a767f3486e26a4fc5fd9f43c1"
+    "symbol_hash": "3138db824e32194c4edff1826374965efd13d48d7cd7102d00bf9c5044f370f3"
   },
-  "source_state_blob_sha": "447ff5927f6f8ab1ac2368eaf41bc17f51c4da30",
-  "source_state_hash": "e27115d6ff702b4ca8509e68cdc9e65d7f8e87e86dfd60b5ae758208b143d0c6",
+  "source_state_blob_sha": "1f3ca798516496fd1906d2add5c591a397190d2b",
+  "source_state_hash": "0ebdcaa5dfd7a9599dc0f9cffcc820d6d2ab521bd51ff03650f2aeee4311940f",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
   "status": "PARTIAL_UNKNOWN",
   "status_semantics": "IDENTITY_PARTITION_EXACT_WITH_UNKNOWN",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 185,
+  "unknown_count": 183,
   "unknown_detail": {
     "AACI": {
       "exact_sec_spac_proof": false,
@@ -3275,15 +3275,6 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Armada Acquisition Corp. III - Class A Ordinary Share",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "AACO": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Abony Acquisition Corp. I - Class A Ordinary Share",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -3482,15 +3473,6 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Cambridge Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "CATL": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Catalyst Acquisition Corp. - Class A Ordinary Share",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -4938,7 +4920,6 @@
   "unknown_never_pass": true,
   "unknown_symbols": [
     "AACI",
-    "AACO",
     "ACAA",
     "ADAC",
     "ALPX",
@@ -4961,7 +4942,6 @@
     "CAII",
     "CAPN",
     "CAQ",
-    "CATL",
     "CCAQ",
     "CCCT",
     "CCII",
