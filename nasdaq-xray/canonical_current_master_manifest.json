@@ -1,7 +1,7 @@
 {
   "asof_et": "2026-10-07",
   "asof_identity_proof": {
-    "blob_sha": "cf0312a1df27537ddc897295aeb54260b0a52a99",
+    "blob_sha": "360ebfb72c16ca2200011b71b604022455d3f3a8",
     "counts": {
       "operating_overrides": 3,
       "remove_from_asof": 0,
@@ -29,13 +29,13 @@
   },
   "counts": {
     "PASS_IDENTITY": 3184,
-    "UNKNOWN_IDENTITY": 161
+    "UNKNOWN_IDENTITY": 160
   },
   "execution": "NONE",
-  "explicit_excluded_count": 51,
-  "explicit_excluded_hash": "58ab991cf67012bdd03c99bec83e5f65e87dbeecf3cdb6f8ac7ebd2c8edbf2d9",
+  "explicit_excluded_count": 52,
+  "explicit_excluded_hash": "4bf7a8f29af4dd0e6589e976af5c95753010074da8609579e98142d225525af5",
   "explicit_excluded_reason_counts": {
-    "SPAC_BLANK_CHECK": 51
+    "SPAC_BLANK_CHECK": 52
   },
   "history_price_state_diagnostic_only": {
     "source_counts": {
@@ -3242,22 +3242,22 @@
   "queue_hash": "2554c936f42217cf8a9628e89d04993945218725234fe894f7c80856834725d6",
   "queue_total": 3184,
   "queue_unique": 3184,
-  "raw_identity_total": 3345,
+  "raw_identity_total": 3344,
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1",
   "sec_spac_proof": {
-    "blob_sha": "0ae1d9bc1eaa2e6c06c3e10a4a09992363ec8fb6",
-    "count": 51,
+    "blob_sha": "cda3698ff210a31498a4cffb04b615730469a16a",
+    "count": 52,
     "path": "nasdaq-xray/master_sec_spac_proof_20261007.json",
-    "symbol_hash": "77b813800f3c87fb06e4c4371b9c333758bd887b6207606dce10d69db9abce1f"
+    "symbol_hash": "211e953d08cea61fbefe3da8d9f3edc44294b04b351b571c9bf3e600085b26c0"
   },
-  "source_state_blob_sha": "bc7f0cd84ecdf54cdd9732ed12455eb7a62e72cd",
-  "source_state_hash": "d006b60b431aee8340f1e9842a31bb4e9a7abb0f543e704ea3c37658f9e0a0bd",
+  "source_state_blob_sha": "a81f97f74ffae902fa203da6b5051c40b868b67f",
+  "source_state_hash": "a15407b03151ccdd865d8abdbfbb93fe9fc94f0866db16e30899458906877ca2",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
   "status": "PARTIAL_UNKNOWN",
   "status_semantics": "IDENTITY_PARTITION_EXACT_WITH_UNKNOWN",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 161,
+  "unknown_count": 160,
   "unknown_detail": {
     "ALIS": {
       "exact_sec_spac_proof": false,
@@ -3274,15 +3274,6 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Bleichroeder Acquisition Corp. III - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "BHAV": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "BHAV Acquisition Corp - Class A Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -4713,7 +4704,6 @@
   "unknown_symbols": [
     "ALIS",
     "BCCQ",
-    "BHAV",
     "BID",
     "BIXI",
     "BKHA",
