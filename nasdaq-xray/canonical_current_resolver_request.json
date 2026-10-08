@@ -37,7 +37,7 @@
     "2026-10-06",
     "2026-10-07"
   ],
-  "master_unknown_count": 146,
+  "master_unknown_count": 141,
   "master_unknown_detail": {
     "ALIS": {
       "exact_sec_spac_proof": false,
@@ -777,15 +777,6 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "ONCH": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "1RT Acquisition Corp. - Class A Ordinary Share",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "OSPR": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
@@ -957,15 +948,6 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "RDAC": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Rising Dragon Acquisition Corp. - Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "RDAG": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
@@ -1029,39 +1011,12 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "SAAQ": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Space Asset Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "SCII": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "SC II Acquisition Corp. - Class A ordinary share",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "SDHI": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Siddhi Acquisition Corp - Class A Common stock",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "SIMA": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "SIM Acquisition Corp. I - Class A Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -1354,7 +1309,7 @@
       "unknown_never_pass": true
     }
   },
-  "master_unknown_hash": "68dac0d7dac9565f3cd61779ed8142c0f225916b87cdd1e420a3aa44d0c49382",
+  "master_unknown_hash": "8fbc9119520421830c66361392c6f9621e55aa387122eece63f7f24e163d6423",
   "master_unknown_symbols": [
     "ALIS",
     "BID",
@@ -1438,7 +1393,6 @@
     "OCLT",
     "OHAC",
     "OIM",
-    "ONCH",
     "OSPR",
     "OTGA",
     "OYSE",
@@ -1458,7 +1412,6 @@
     "QSEA",
     "QUMS",
     "RANG",
-    "RDAC",
     "RDAG",
     "RFAI",
     "RIBB",
@@ -1466,10 +1419,7 @@
     "RNGT",
     "RREV",
     "RTAC",
-    "SAAQ",
-    "SCII",
     "SDHI",
-    "SIMA",
     "SOCA",
     "SORN",
     "SPEG",
@@ -1534,9 +1484,9 @@
   "settlement_policy": "ALPACA_HISTORICAL_SIP_DAILY_AFTER_15M__AAPL_NVDA_PLUS_ONE_PRIOR_CURRENT_CORE__RALLIES_LONGBRIDGE_QUOTE_OHLC_0_01_CROSSCHECK__SIP_VOLUME_AUTHORITY__FAIL_CLOSED__DELAYED_SIP_NEVER_G9",
   "settlement_required": false,
   "settlement_symbols": [],
-  "source_master_blob_sha": "bf5f197a3fad47e24ac2d1b793608e1f2c4f2005",
+  "source_master_blob_sha": "7db6915a6a09e44090fcba25f5edec9d332c58cd",
   "source_master_path": "nasdaq-xray/canonical_current_master_manifest.json",
-  "source_overlay_blob_sha": "35bc714ddf22a0cf2e103fab7d30a0569acb3b70",
+  "source_overlay_blob_sha": "b954df7dc52962b887f2ba85bd89c8973c722d00",
   "source_overlay_path": "nasdaq-xray/canonical_current_resolution_overlay.json",
   "source_pointer_blob_sha": "f8db5f26c2ae8aa6a5813ef9cb515049cb1f6aef",
   "source_pointer_path": "nasdaq-xray/chatgpt_canonical_state_v2.json",
@@ -1552,9 +1502,9 @@
   "source_price_pass_count": 510,
   "source_price_pass_hash": "f6772e07d952c9c172a3370076537cbfc89128886e1a0e31d1142b2ebecf0438",
   "source_price_path": "nasdaq-xray/canonical_current_price_dv30.json",
-  "source_state_blob_sha": "9e5d60972e61e50ec69e5e789fd939e6b5881e57",
+  "source_state_blob_sha": "8d1764cf472e3380adaf06e3bbdf453e3868b72e",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
-  "source_unknowns_blob_sha": "ffaf7b663146b76680cab9123f4b732d8d81f60f",
+  "source_unknowns_blob_sha": "de43b66dc870acadca40dd74f15ee8be0ec247e7",
   "source_unknowns_path": "nasdaq-xray/canonical_current_unknowns.json",
   "status": "IDLE",
   "symbol_count": 0,
