@@ -1,0 +1,24 @@
+name: XRAY Resolver Missing-Role Pending Regression
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/build_resolver_full_scope_handoff.py"
+      - ".github/workflows/xray-resolver-role-pending-selftest.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  pending-selftest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify pending, exact-match and fail-closed duplicate role
+        run: |
+          python -m py_compile nasdaq-xray/build_resolver_full_scope_handoff.py
+          python nasdaq-xray/build_resolver_full_scope_handoff.py --selftest
+          echo XRAY_RESOLVER_MISSING_ROLE_PENDING_REGRESSION=PASS

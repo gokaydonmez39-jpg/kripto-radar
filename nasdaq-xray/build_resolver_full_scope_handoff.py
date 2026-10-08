@@ -703,6 +703,20 @@ def selftest() -> None:
         {"path":"residual","blob":"r","obj":residual_obj,"role":role(residual_obj)},
     ]
     assert select_one_active(role_rows, RESIDUAL_ROLE)["path"] == "residual"
+    # New canonical queue not yet sealed: must remain PENDING and never use
+    # the old queue witness. Ambiguous same-queue role remains fatal.
+    residual_old = role_rows[1] | {"obj": residual_obj | {"queue_hash": "old-queue"}}
+    assert select_optional_active([residual_old], RESIDUAL_ROLE, queue_hash="new-queue") is None
+    assert select_optional_active([residual_old], RESIDUAL_ROLE, queue_hash="old-queue") is residual_old
+    try:
+        select_optional_active(
+            [residual_old, {"path": "duplicate", "blob": "z", "role": RESIDUAL_ROLE,
+                            "obj": residual_obj | {"queue_hash": "old-queue"}}],
+            RESIDUAL_ROLE, queue_hash="old-queue")
+    except AssertionError as exc:
+        assert "AMBIGUOUS_ACTIVE_RESOLVER_ROLE" in str(exc)
+    else:
+        raise AssertionError("DUPLICATE_RESIDUAL_MUST_FAIL_CLOSED")
     partial=residual_obj | {"coverage_complete":True,"classification_coverage_complete":True,"partial_data":True}
     assert partial["partial_data"] is True
     # Required and proven are distinct states: proof satisfies the gate without
@@ -738,7 +752,17 @@ def main() -> None:
         print("reason=EXACT_CURRENT_FULL_SCOPE_HANDOFF_ALREADY_EXISTS")
         return
 
-    residual = select_one_active(rows, RESIDUAL_ROLE, queue_hash=master["queue_hash"])
+    # A newer exact-ASOF MASTER queue can precede its independently sealed
+    # residual authority. No older-queue witness may be promoted or rebound.
+    # Zero matching roles is a legitimate fail-closed PENDING state; multiple
+    # roles remain an invariant failure in select_optional_active().
+    residual = select_optional_active(rows, RESIDUAL_ROLE, queue_hash=master["queue_hash"])
+    if residual is None:
+        print("ready=false")
+        print("created=false")
+        print("path=")
+        print("reason=EXACT_CURRENT_QUEUE_RESIDUAL_AUTHORITY_PENDING")
+        return
     rj = residual["obj"]
     # A partial residual resolver is expected while symbols remain unresolved.
     # Treat it as fail-closed pending rather than crashing Post-MC.
