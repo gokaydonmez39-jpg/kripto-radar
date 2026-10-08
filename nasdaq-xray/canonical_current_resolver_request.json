@@ -37,7 +37,7 @@
     "2026-10-06",
     "2026-10-07"
   ],
-  "master_unknown_count": 176,
+  "master_unknown_count": 174,
   "master_unknown_detail": {
     "AACI": {
       "exact_sec_spac_proof": false,
@@ -54,24 +54,6 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Averin Capital Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "ALPX": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Alpex Acquisition Corporation - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "APAC": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "StoneBridge Acquisition II Corporation - Class A Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -1624,12 +1606,10 @@
       "unknown_never_pass": true
     }
   },
-  "master_unknown_hash": "5d771cf75bf6f7a81e5bd72fe6c913331af4354d14d6505cfd20730e9af40f31",
+  "master_unknown_hash": "d9f33c8d941be1fe0b7e9e9dc7f697a652b9d9fefd245c8f0f4a929dd0a6f431",
   "master_unknown_symbols": [
     "AACI",
     "ACAA",
-    "ALPX",
-    "APAC",
     "ARTC",
     "ASPC",
     "BCCQ",
@@ -1834,9 +1814,9 @@
   "settlement_policy": "ALPACA_HISTORICAL_SIP_DAILY_AFTER_15M__AAPL_NVDA_PLUS_ONE_PRIOR_CURRENT_CORE__RALLIES_LONGBRIDGE_QUOTE_OHLC_0_01_CROSSCHECK__SIP_VOLUME_AUTHORITY__FAIL_CLOSED__DELAYED_SIP_NEVER_G9",
   "settlement_required": false,
   "settlement_symbols": [],
-  "source_master_blob_sha": "c8c77a4e41b4d03900c2ce3fef2413490ab67065",
+  "source_master_blob_sha": "1dcdfe71f239fb0cb76155bed588f1d65d03bdd9",
   "source_master_path": "nasdaq-xray/canonical_current_master_manifest.json",
-  "source_overlay_blob_sha": "b2f8fb31d5bb30b1fc7aaab8a77b9533217c3ad8",
+  "source_overlay_blob_sha": "62da7010df2cdd6a7bc7722208784c72c08d1a50",
   "source_overlay_path": "nasdaq-xray/canonical_current_resolution_overlay.json",
   "source_pointer_blob_sha": "f3a345b651a35ac7442a7b490bdac8244af6a706",
   "source_pointer_path": "nasdaq-xray/chatgpt_canonical_state_v2.json",
@@ -1852,9 +1832,9 @@
   "source_price_pass_count": 510,
   "source_price_pass_hash": "f6772e07d952c9c172a3370076537cbfc89128886e1a0e31d1142b2ebecf0438",
   "source_price_path": "nasdaq-xray/canonical_current_price_dv30.json",
-  "source_state_blob_sha": "ff5ea940213b6b34ac254b2c9a17a5fcf00c74d9",
+  "source_state_blob_sha": "071badb107a90b681c7e37cae23b97f401966393",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
-  "source_unknowns_blob_sha": "02aa6991faad2ad3daeb0ad4f87e8db77942f740",
+  "source_unknowns_blob_sha": "b1eaa3c73e896eefd4640ee72ea5cf76baee09a4",
   "source_unknowns_path": "nasdaq-xray/canonical_current_unknowns.json",
   "status": "IDLE",
   "symbol_count": 0,
