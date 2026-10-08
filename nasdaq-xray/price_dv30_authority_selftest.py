@@ -35,7 +35,40 @@ def main():
     assert master_queue and len(master_queue)==int(master.get("pass_count",-1))
 
     primary,meta=load_c417_rallies_primary(asof)
-    assert primary is not None,meta
+    if primary is None:
+        # Live provider evidence is an INPUT, not a fixture. Do not make the
+        # entire factory crash when an expected same-ASOF primary is absent.
+        # Invalid or corrupt *present* sources still fail this test.
+        current_path=c417_rallies_primary_path(asof)
+        if current_path.is_file():
+            raise AssertionError("MALFORMED_CURRENT_PRIMARY_MUST_FAIL_CLOSED:"+str(meta))
+        assert meta.get("status")=="UNKNOWN",meta
+        assert "FileNotFoundError" in str(meta.get("reason")),meta
+        from price_dv30_recover_from_fullstate import load_c417_rallies_effective_primary
+        effective,emeta=load_c417_rallies_effective_primary(asof,master_queue)
+        assert effective is None and emeta.get("status")!="PASS",(emeta,effective)
+        # The last immutable completed-session fixture still verifies actual
+        # partition semantics without upgrading that old date to this date.
+        prior,prior_meta=load_c417_rallies_primary("2026-10-07")
+        assert prior is not None and prior_meta.get("status")=="PASS",prior_meta
+        assert prior.get("asof_et")!=asof,"CROSS_ASOF_PRIMARY_PROMOTION_FORBIDDEN"
+        prior_pass=sorted((prior.get("pass_price_dv30") or {}).keys())
+        assert prior_pass,"PRIOR_PRIMARY_REGRESSION_FIXTURE_MISSING"
+        materialized={prior_pass[0]:{"status":"UNKNOWN","info":{"reason":"TEST"}}}
+        changed=apply_c417_rallies_primary_partition(materialized,prior,[prior_pass[0]])
+        assert changed==[prior_pass[0]],changed
+        assert materialized[prior_pass[0]]["status"]=="PASS_PRICE_DV30"
+        print(json.dumps({
+          "C417_DV30_CONTROL_SELFTEST":"PASS",
+          "C417_DV30_CURRENT_AUTHORITY":"BLOCKED_MISSING_REAL_ASOF_PRIMARY",
+          "asof_et":asof,
+          "current_primary_path":str(current_path),
+          "current_pass_authority_granted":False,
+          "prior_session_fixture_only":prior["asof_et"],
+          "no_cross_asof_rebind":True,
+          "unknown_never_pass":True
+        },sort_keys=True))
+        return
     assert meta.get("status")=="PASS",meta
     assert primary.get("asof_et")==asof,primary.get("asof_et")
     assert primary.get("authority")=="C4.17_RALLIES_EXACT30_PRIMARY"
