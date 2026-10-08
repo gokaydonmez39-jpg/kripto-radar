@@ -1,10 +1,7 @@
 name: XRAY Massive MC Free-Tier Shadow
+# Deprecated hourly live sampling to prevent free-plan quota collision with
+# the encrypted resumable Massive MC shadow. Manual diagnostics remain possible.
 on:
-  push:
-    paths:
-      - 'nasdaq-xray/massive_mc_shadow_probe.py'
-      - '.github/workflows/xray-massive-mc-shadow.yml'
-      - 'nasdaq-xray/massive_mc_public_telemetry.py'
   workflow_dispatch:
     inputs:
       offset:
@@ -12,8 +9,6 @@ on:
         type: string
         required: false
         default: "auto"
-  schedule:
-    - cron: "23 * * * *"
 permissions:
   contents: read
 concurrency:
