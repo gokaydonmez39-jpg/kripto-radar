@@ -1,0 +1,46 @@
+name: XRAY GitHub-Native Root Watchdog
+on:
+  schedule:
+    - cron: "*/15 * * * 1-5"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/github_native_root_watchdog.py"
+      - ".github/workflows/xray-github-native-root-watchdog.yml"
+permissions:
+  contents: read
+  actions: write
+concurrency:
+  group: xray-native-root-watchdog-v1
+  cancel-in-progress: false
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile and regress failure classes
+        run: |
+          python -m py_compile nasdaq-xray/github_native_root_watchdog.py
+          python nasdaq-xray/github_native_root_watchdog.py --selftest
+      - name: Double-read and dispatch existing root only if stale
+        env:
+          GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}
+        run: python nasdaq-xray/github_native_root_watchdog.py --out /tmp/xray_native_watchdog.json
+      - name: Show fail-closed diagnostic summary
+        if: always()
+        run: |
+          if test -f /tmp/xray_native_watchdog.json; then
+            python -c 'import json; d=json.load(open("/tmp/xray_native_watchdog.json")); assert d["execution"]=="NONE" and d["real_money"]=="NO-GO" and not d["recovery_proven"]; print("XRAY_NATIVE_ROOT_WATCHDOG_AUDIT="+d["action"]+" "+d["first_snapshot"]["decision"])'
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: xray-native-root-watchdog
+          path: /tmp/xray_native_watchdog.json
+          if-no-files-found: ignore
+          retention-days: 7
