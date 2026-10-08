@@ -37,7 +37,7 @@
     "2026-10-06",
     "2026-10-07"
   ],
-  "master_unknown_count": 115,
+  "master_unknown_count": 113,
   "master_unknown_detail": {
     "ALIS": {
       "exact_sec_spac_proof": false,
@@ -813,15 +813,6 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "RTAC": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Renatus Tactical Acquisition Corp I - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "SDHI": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
@@ -846,15 +837,6 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Soren Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "SPEG": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Silver Pegasus Acquisition Corp - Class A Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -1075,7 +1057,7 @@
       "unknown_never_pass": true
     }
   },
-  "master_unknown_hash": "9e9f5d31579bf4e46a9e9c748da66a9cae7a0059a66b8508154c827995b8056d",
+  "master_unknown_hash": "b7422da6c0141a15c6190ec6e4a2c7682c93bf5cf0c720907d1c034ef1456120",
   "master_unknown_symbols": [
     "ALIS",
     "BKHA",
@@ -1163,11 +1145,9 @@
     "RNAQ",
     "RNGT",
     "RREV",
-    "RTAC",
     "SDHI",
     "SOCA",
     "SORN",
-    "SPEG",
     "SSAC",
     "SSEA",
     "SUMA",
@@ -1224,9 +1204,9 @@
   "settlement_policy": "ALPACA_HISTORICAL_SIP_DAILY_AFTER_15M__AAPL_NVDA_PLUS_ONE_PRIOR_CURRENT_CORE__RALLIES_LONGBRIDGE_QUOTE_OHLC_0_01_CROSSCHECK__SIP_VOLUME_AUTHORITY__FAIL_CLOSED__DELAYED_SIP_NEVER_G9",
   "settlement_required": false,
   "settlement_symbols": [],
-  "source_master_blob_sha": "d8d229fd0d86893dcbe84fef68a4e8d14faee9a7",
+  "source_master_blob_sha": "47a4d3ffb7516c59dfbc93c6c24ce1a4d3b6c3e7",
   "source_master_path": "nasdaq-xray/canonical_current_master_manifest.json",
-  "source_overlay_blob_sha": "643196a6d530ecfc2f68a0e3ca3e56402987410f",
+  "source_overlay_blob_sha": "a77e57c935d8a6161daef635e11c6827a1231e11",
   "source_overlay_path": "nasdaq-xray/canonical_current_resolution_overlay.json",
   "source_pointer_blob_sha": "815a78dbba6f083ad665cf364dfd33e0ddf9d1e8",
   "source_pointer_path": "nasdaq-xray/chatgpt_canonical_state_v2.json",
@@ -1242,9 +1222,9 @@
   "source_price_pass_count": 510,
   "source_price_pass_hash": "f6772e07d952c9c172a3370076537cbfc89128886e1a0e31d1142b2ebecf0438",
   "source_price_path": "nasdaq-xray/canonical_current_price_dv30.json",
-  "source_state_blob_sha": "31253f4cb51e000e8cbc5d3ab4a1c53ee37e92fc",
+  "source_state_blob_sha": "40809d812d5eb3be137ba928accebbcd782fe98b",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
-  "source_unknowns_blob_sha": "1c632ee37782a3b36597ea9297d77f8412a6eaeb",
+  "source_unknowns_blob_sha": "49fe56e82d8798ddd24cf0ee46f7a256f31036f8",
   "source_unknowns_path": "nasdaq-xray/canonical_current_unknowns.json",
   "status": "IDLE",
   "symbol_count": 0,

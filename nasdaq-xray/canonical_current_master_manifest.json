@@ -1,7 +1,7 @@
 {
   "asof_et": "2026-10-07",
   "asof_identity_proof": {
-    "blob_sha": "72fbeea3fa520031bb9ddf7c8947254f84fa0928",
+    "blob_sha": "ffe558f5906266a66820e91a53792d556cb1d6a4",
     "counts": {
       "operating_overrides": 3,
       "remove_from_asof": 0,
@@ -29,13 +29,13 @@
   },
   "counts": {
     "PASS_IDENTITY": 3184,
-    "UNKNOWN_IDENTITY": 115
+    "UNKNOWN_IDENTITY": 113
   },
   "execution": "NONE",
-  "explicit_excluded_count": 97,
-  "explicit_excluded_hash": "cb0e6ee5fbdc69b084cbbefce7a4d02999b152d6826a8632ce697bc80c4ad383",
+  "explicit_excluded_count": 99,
+  "explicit_excluded_hash": "40a8344504da1c2576ef2bd2b907a0e3b3551118b5fe0e28523606551631ef9d",
   "explicit_excluded_reason_counts": {
-    "SPAC_BLANK_CHECK": 97
+    "SPAC_BLANK_CHECK": 99
   },
   "history_price_state_diagnostic_only": {
     "source_counts": {
@@ -3242,22 +3242,22 @@
   "queue_hash": "2554c936f42217cf8a9628e89d04993945218725234fe894f7c80856834725d6",
   "queue_total": 3184,
   "queue_unique": 3184,
-  "raw_identity_total": 3299,
+  "raw_identity_total": 3297,
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1",
   "sec_spac_proof": {
-    "blob_sha": "385ae6e7d3c865fc76be77e660a83898bc91eeb4",
-    "count": 97,
+    "blob_sha": "019dc430ea4fb589e4a2810498b4a062c2723039",
+    "count": 99,
     "path": "nasdaq-xray/master_sec_spac_proof_20261007.json",
-    "symbol_hash": "67c0e8e33836eae794b807973d64633606272f585f631efe7fc2a57bb9ef7e53"
+    "symbol_hash": "d23b0d64100018c1516df66ca4106c651060df009954cecafbe8ebddab50c6ef"
   },
-  "source_state_blob_sha": "31253f4cb51e000e8cbc5d3ab4a1c53ee37e92fc",
-  "source_state_hash": "dcfdec4c59d0bd90b8555450635e1eb6e1cd5aef5f7b56c9193b9274720a4c9c",
+  "source_state_blob_sha": "40809d812d5eb3be137ba928accebbcd782fe98b",
+  "source_state_hash": "172f385dd405245cf13504e43e1498f0637c9db07c2d993ce9393baa99d9b2b4",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
   "status": "PARTIAL_UNKNOWN",
   "status_semantics": "IDENTITY_PARTITION_EXACT_WITH_UNKNOWN",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 115,
+  "unknown_count": 113,
   "unknown_detail": {
     "ALIS": {
       "exact_sec_spac_proof": false,
@@ -4033,15 +4033,6 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "RTAC": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Renatus Tactical Acquisition Corp I - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "SDHI": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
@@ -4066,15 +4057,6 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Soren Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "SPEG": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Silver Pegasus Acquisition Corp - Class A Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -4383,11 +4365,9 @@
     "RNAQ",
     "RNGT",
     "RREV",
-    "RTAC",
     "SDHI",
     "SOCA",
     "SORN",
-    "SPEG",
     "SSAC",
     "SSEA",
     "SUMA",
