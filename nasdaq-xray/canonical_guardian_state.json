@@ -9,9 +9,9 @@
         "coverage_status": "PARTIAL_UNKNOWN",
         "identity_authority_v6": true,
         "partition_integrity": true,
-        "pass_count": 3185,
-        "raw_identity_total": 3361,
-        "unknown_count": 176
+        "pass_count": 3184,
+        "raw_identity_total": 3325,
+        "unknown_count": 141
       },
       "name": "master_identity",
       "state": "PASS"
@@ -39,7 +39,7 @@
       "detail": {
         "registered_candidates": [],
         "veto_intersection": [],
-        "veto_symbol_count": 39
+        "veto_symbol_count": 38
       },
       "name": "candidate_official_safety_guard",
       "state": "PASS"
@@ -68,7 +68,7 @@
     }
   ],
   "execution": "NONE",
-  "generated_at_utc": "2026-10-08T06:50:05.954849+00:00",
+  "generated_at_utc": "2026-10-08T14:02:10.981056+00:00",
   "real_money": "NO-GO",
   "schema": "XRAY_GUARDIAN_STATE_V1",
   "self_healing_may_not_change_alpha": true,
