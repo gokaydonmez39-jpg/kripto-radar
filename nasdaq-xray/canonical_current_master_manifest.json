@@ -1,7 +1,7 @@
 {
   "asof_et": "2026-10-07",
   "asof_identity_proof": {
-    "blob_sha": "f6fade086a87505890800d40e9131bd875953d76",
+    "blob_sha": "bb16b691a87f077fad37becc3bde3eeabf17ff78",
     "counts": {
       "operating_overrides": 3,
       "remove_from_asof": 0,
@@ -29,13 +29,13 @@
   },
   "counts": {
     "PASS_IDENTITY": 3184,
-    "UNKNOWN_IDENTITY": 109
+    "UNKNOWN_IDENTITY": 106
   },
   "execution": "NONE",
-  "explicit_excluded_count": 103,
-  "explicit_excluded_hash": "49c154993f1f3366668a8b678c5222969050a93333a6993d990c1de74f6b29ec",
+  "explicit_excluded_count": 106,
+  "explicit_excluded_hash": "da5a73509e7b980e79bd6e1b5705b590445a4ec6f7a484c45f4aa4d0b7f0c460",
   "explicit_excluded_reason_counts": {
-    "SPAC_BLANK_CHECK": 103
+    "SPAC_BLANK_CHECK": 106
   },
   "history_price_state_diagnostic_only": {
     "source_counts": {
@@ -3242,22 +3242,22 @@
   "queue_hash": "2554c936f42217cf8a9628e89d04993945218725234fe894f7c80856834725d6",
   "queue_total": 3184,
   "queue_unique": 3184,
-  "raw_identity_total": 3293,
+  "raw_identity_total": 3290,
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1",
   "sec_spac_proof": {
-    "blob_sha": "4614604e8b310ddc187945d0b91e045811bdfaca",
-    "count": 103,
+    "blob_sha": "781f394f436393d3ac20686d6e188ae28b60fd94",
+    "count": 106,
     "path": "nasdaq-xray/master_sec_spac_proof_20261007.json",
-    "symbol_hash": "29c45f553e08b3cffccf6f56c24b5b1c174f9540a9139534c1078158872e6105"
+    "symbol_hash": "984abaa2bb2b965ccacbd1dcd40011af88903fab00c56a7d66ee27c4023ae981"
   },
-  "source_state_blob_sha": "aced315cbd4ce5e60db2886bf1c91f4b5f362ff3",
-  "source_state_hash": "183b68a3954d3f8719c72d15f9508bdb538edb1750b2810f34774eb6bbd41178",
+  "source_state_blob_sha": "a1a4c629b57291344ada6a24a1731bdeb39f1b82",
+  "source_state_hash": "ef637598a8af5111bcc37e95564803fc4ce22795cc6ada77e5daafa9e3b91eae",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
   "status": "PARTIAL_UNKNOWN",
   "status_semantics": "IDENTITY_PARTITION_EXACT_WITH_UNKNOWN",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 109,
+  "unknown_count": 106,
   "unknown_detail": {
     "ALIS": {
       "exact_sec_spac_proof": false,
@@ -3292,15 +3292,6 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "BEST SPAC I Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "CCXI": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Churchill Capital Corp XI - Class A Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -3565,15 +3556,6 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "KEYY": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Keystone Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "KOYN": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
@@ -3688,15 +3670,6 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "M Evo Global Acquisition Corp II - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "MKLY": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "McKinley Acquisition Corporation - Class A Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -4247,7 +4220,6 @@
     "BKHA",
     "BPAC",
     "BSAA",
-    "CCXI",
     "CRAN",
     "DAAQ",
     "DBCA",
@@ -4277,7 +4249,6 @@
     "ISNR",
     "JTTT",
     "KCHV",
-    "KEYY",
     "KOYN",
     "LAFA",
     "LFAC",
@@ -4291,7 +4262,6 @@
     "MCAH",
     "MCGA",
     "MEVO",
-    "MKLY",
     "MLAA",
     "MMTX",
     "MRCO",
