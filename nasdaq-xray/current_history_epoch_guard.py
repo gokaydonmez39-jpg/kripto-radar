@@ -32,7 +32,7 @@ def blob(path:str)->str:
     return subprocess.check_output(
         ["git","hash-object",str(REPO/path)],cwd=REPO,text=True).strip()
 
-def decide(price:dict,history:dict,root:dict,master:dict)->dict:
+def decide(price:dict,history:dict,root:dict,master:dict,price_blob_sha:str|None=None)->dict:
     ps=price.get("pass_symbols")
     assert isinstance(ps,list) and ps==sorted(set(ps)) and len(ps)>0
     assert hash_lines(ps)==price.get("pass_hash")
@@ -51,24 +51,43 @@ def decide(price:dict,history:dict,root:dict,master:dict)->dict:
     current_asof=h_asof==asof
     exact_hist_count=(history.get("input_count")==len(ps))
     exact_hist_scope=hs==ps
-    history_authoritative=current_asof and exact_hist_count and exact_hist_scope
-    # C4.17 may retain only survivors in history's pass_symbols; never infer
-    # full input scope from the output subset. Require explicit input-set
-    # witnesses if they exist; missing witness is NOT a PASS.
-    bound_price_sha=history.get("source_price_blob_sha")
-    status="HISTORY_CURRENT_SCOPE_NOT_PROVEN"
+    # HISTORY output contains only survivors. Its pass set is NOT its input set.
+    # Positive scope witness requires an explicit entire input set and pinned
+    # input PRICE blob, followed by complete PASS/FAIL/UNKNOWN result partition.
+    source_inputs=history.get("input_symbols")
+    input_set_exact=(isinstance(source_inputs,list)
+         and source_inputs==ps and len(source_inputs)==history.get("input_count"))
+    bound_price_sha=(isinstance(price_blob_sha,str)
+         and len(price_blob_sha)==40
+         and history.get("source_price_blob_sha")==price_blob_sha)
+    results=history.get("results")
+    completed=(isinstance(results,dict) and set(results)==set(ps)
+         and all(isinstance(v,dict) and v.get("status") in
+                 {"PASS_HISTORY","FAIL_HISTORY","UNKNOWN_HISTORY"} for v in results.values())
+         and sum(v.get("status")=="PASS_HISTORY" for v in results.values())==len(hs)
+         and {k for k,v in results.items() if v.get("status")=="PASS_HISTORY"}==set(hs))
+    actual_unknown=sum(v.get("status")=="UNKNOWN_HISTORY" for v in results.values()) if isinstance(results,dict) else -1
+    history_authoritative=(current_asof and exact_hist_count and input_set_exact
+         and bound_price_sha and completed and actual_unknown==0
+         and history.get("unknown_count")==0
+         and history.get("history_260_52_proof_exact") is True)
+    status="HISTORY_CURRENT_SCOPE_PROVEN" if history_authoritative else "HISTORY_CURRENT_SCOPE_NOT_PROVEN"
     if not current_asof:
         status="HISTORY_STALE_ASOF"
-    elif not exact_hist_count:
+    elif not exact_hist_count or not input_set_exact:
         status="HISTORY_CURRENT_INPUT_SET_UNVERIFIED"
-    elif not exact_hist_scope:
-        status="HISTORY_CURRENT_PASS_SET_NOT_ALL_INPUTS__MUST_VERIFY_INPUT_WITNESS"
+    elif not bound_price_sha:
+        status="HISTORY_CURRENT_SOURCE_PRICE_BLOB_UNVERIFIED"
+    elif not history_authoritative:
+        status="HISTORY_CURRENT_260_52_OR_RESULT_PROOF_UNVERIFIED"
     return {
       "schema":SCHEMA,"status":status,"asof_et":asof,
       "source_price_pass_count":len(ps),
       "history_asof_et":h_asof,
       "history_input_count":history.get("input_count"),
-      "current_history_authority_proven":False,
+      "current_history_authority_proven":history_authoritative,
+      "history_input_set_equals_price_pass":input_set_exact,
+      "history_source_price_blob_exact":bound_price_sha,
       "history_output_pass_equals_price_pass":exact_hist_scope,
       "history_input_count_equals_current_price":exact_hist_count,
       "historical_root_unknown_count":root.get("unknown_count"),
@@ -107,8 +126,18 @@ def selftest():
     assert decide(p,h,r,m)["status"]=="HISTORY_CURRENT_INPUT_SET_UNVERIFIED"
     h["input_count"]=2
     h["pass_symbols"]=["AAA"]
-    assert decide(p,h,r,m)["status"].startswith("HISTORY_CURRENT_PASS_SET_NOT_ALL_INPUTS")
-    print("XRAY_HISTORY_EPOCH_SCOPE_SELFTEST=PASS_3_POSITIVE_5_NEGATIVE")
+    assert decide(p,h,r,m)["status"]=="HISTORY_CURRENT_INPUT_SET_UNVERIFIED"
+    # Positive scope proof is attainable only with explicit exact source,
+    # complete per-symbol outcome partition and verified 260/52 witness.
+    h.update(input_symbols=["AAA","BBB"],source_price_blob_sha="a"*40,
+             unknown_count=0,history_260_52_proof_exact=True,
+             results={"AAA":{"status":"PASS_HISTORY"},"BBB":{"status":"FAIL_HISTORY"}})
+    good=decide(p,h,r,m,price_blob_sha="a"*40)
+    assert good["status"]=="HISTORY_CURRENT_SCOPE_PROVEN"
+    assert good["current_history_authority_proven"] is True
+    h["history_260_52_proof_exact"]=False
+    assert decide(p,h,r,m,price_blob_sha="a"*40)["status"]=="HISTORY_CURRENT_260_52_OR_RESULT_PROOF_UNVERIFIED"
+    print("XRAY_HISTORY_EPOCH_SCOPE_SELFTEST=PASS_STALE_5_NEGATIVE_1_ATTAINABLE_POSITIVE")
 
 def main():
     parser=argparse.ArgumentParser()
@@ -117,7 +146,7 @@ def main():
     args=parser.parse_args()
     if args.selftest:selftest();return
     data={key:parse(path) for key,path in PATHS.items()}
-    out=decide(**data)
+    out=decide(**data,price_blob_sha=blob(PATHS["price"]))
     out["canonical_price_blob_sha"]=blob(PATHS["price"])
     out["history_blob_sha"]=blob(PATHS["history"])
     if args.out:args.out.write_text(json.dumps(out,indent=2,sort_keys=True)+"\n",encoding="utf-8")
