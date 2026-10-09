@@ -1,0 +1,126 @@
+{
+  "schema": "XRAY_20261009_C418_MULTI_SOURCE_VALIDATOR_CONTINUATION_V29",
+  "authority": "FRESH_GITHUB_MAIN_AND_ACTIONS_READBACK_SUPERSEDES_CHECKPOINT",
+  "repo": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "observed_source_head": "f7ac47d4701781439442e630af72edf59cc1fdb0",
+  "asof_observation_date": "2026-10-09",
+  "prior_checkpoint": "nasdaq-xray/research/continuation_checkpoint_20261009_mc_exact_sha_c418_v28.json",
+  "policy_current": "C4.17",
+  "policy_candidate": "C4.18-SOURCE-SUCCESSOR-PROPOSAL",
+  "control": "C4.27",
+  "mode": "RESEARCH_ONLY_MANUAL_DECISION",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "alpha_hard_gates_unchanged": true,
+  "unknown_never_pass": true,
+  "implementation": {
+    "source_guard": "nasdaq-xray/c418_multi_source_guard.py",
+    "source_profile": "nasdaq-xray/c418_multi_source_profile_v1.json",
+    "workflow": ".github/workflows/xray-c418-multi-source-contract.yml",
+    "original_guard_commit": "0bba072756bbb87bc0efe60cde711d48470dd486",
+    "profile_commit": "707d51422000da92ebc2a608c3a161289201f7ca",
+    "workflow_commit": "54c707b6e0d86fccb84e22c2f64b7530f492303c",
+    "source_kind_hardening_commit": "f7ac47d4701781439442e630af72edf59cc1fdb0",
+    "validations": [
+      "EXACT_TICKER_CIK_SHARE_CLASS_AND_ASOF",
+      "EXACT_PRICE_GIT_BLOB_SHA",
+      "SEC_NASDAQ_PIT_IDENTITY_AND_CORPORATE_ACTION_EVIDENCE",
+      "LICENSE_SCOPE_PER_PROVIDER_SEPARATE_PRIVATE_GRANTS",
+      "SOURCE_KIND_ROLE_ALLOWLIST",
+      "UPSTREAM_MC_INDEPENDENCE_NO_SHARED_ROOT",
+      "TWO_MC_SOURCES_DIAGNOSTIC_SPREAD",
+      "LICENSED_PRICE_REQUIRED",
+      "HISTORY_260_DATES_52_WEEKS_ADJUSTED",
+      "NO_RAW_VENDOR_DATA_GITHUB",
+      "NO_PRIMARY_NO_R92_NO_EXECUTION"
+    ],
+    "guard_is_evidence_only": true,
+    "diagnostic_mc_rel_spread_unapproved_for_live_alpha": 0.1,
+    "live_provider_feed_readiness": "DATA_BLOCKED_NO_PRIVATE_LIVE_EVIDENCE",
+    "explicit_statement": "Unit tests use synthetic metadata only, not price-bar datasets, no real AL and no licensed feed integration."
+  },
+  "tests": {
+    "first_success": {
+      "run": 37970266343,
+      "conclusion": "SUCCESS",
+      "case": "ADVISORY_POSITIVE_12_NEGATIVE"
+    },
+    "hardened_success": {
+      "run": 37970419400,
+      "conclusion": "SUCCESS",
+      "case": "ADVISORY_POSITIVE_14_NEGATIVE"
+    },
+    "artifact": {
+      "id": 11635835730,
+      "name": "xray-c418-multi-source-code-preflight",
+      "contains": "SAFE_HEALTH_STATUS_ONLY"
+    },
+    "actual_live_licensed_data_attested": false,
+    "test_success_is_not_production_data_pass": true
+  },
+  "current_canonical_state": {
+    "root_asof": "2026-10-08",
+    "root_history_status": "PARTIAL_HISTORY",
+    "history_unknown_count": 231,
+    "terminal_asof": "2026-10-07",
+    "terminal_status": "PARTIAL",
+    "primary_mc_pass_count": 0,
+    "r92_candidate_count": 0,
+    "delivery_ledger_count": 0,
+    "source_exact_calibration_sessions": 0,
+    "target_calibration_sessions": 60,
+    "c418_proposal_activation": "PROPOSED_NOT_ACTIVATED"
+  },
+  "license_policy_context": {
+    "SEC_EDGAR": "NO_KEY_REQUIRED_BUT_SEC_FAIR_ACCESS_USER_AGENT_AND_RATE_LIMIT_APPLY",
+    "SEC_official_docs": "https://www.sec.gov/search-filings/edgar-application-programming-interfaces",
+    "Massive": "PERSONAL_TERMS_EXPLICITLY_RESTRICT_UNLICENSED_NONDISPLAY_DERIVED_WORKS",
+    "Massive_terms": "https://massive.com/legal/market-data-terms-of-service",
+    "upstream_license_for_Github_runner_proven": false,
+    "user_policy_design_authorization": true,
+    "user_authorization_substitutes_for_vendor_license": false
+  },
+  "blockers": [
+    {
+      "priority": "P0",
+      "id": "PROVIDER_ENTITLEMENT",
+      "requirement": "Source-grant documents verifying unattended non-display derived rights for every required provider; no personal-use API interpreted as license."
+    },
+    {
+      "priority": "P0",
+      "id": "SAME_ASOF_CURRENT_PRIMARY",
+      "requirement": "Real same-ASOF price, MC and issuer/share-class data and independent licensed MC crosscheck; policy change C4.18 separately explicitly activated."
+    },
+    {
+      "priority": "P0",
+      "id": "COMPLETE_CANONICAL_HISTORY",
+      "requirement": "Resolve 231 root unknown with licensed 260 official completed sessions, 52 weekly and corporate-action continuity."
+    },
+    {
+      "priority": "P0",
+      "id": "TERMINAL_END_TO_END",
+      "requirement": "Readback all source SHA and same ASOF MC->HISTORY->WEEKLY->REGIME->EARNINGS->LEGAL->RISK/RR->FINAL."
+    },
+    {
+      "priority": "P1",
+      "id": "REAL_DELIVERY",
+      "requirement": "Real verified R92 candidate then ledger, expiry, dedup, GitHub issue and device confirmation."
+    },
+    {
+      "priority": "P2",
+      "id": "FORWARD_60_SESSIONS",
+      "requirement": "60 complete independent PIT source exact sessions, 2-8 seans performance and costs."
+    }
+  ],
+  "security": {
+    "execution": "NONE",
+    "real_money": "NO-GO",
+    "phone_receipt_verified": false,
+    "raw_vendor_market_data_committed": false,
+    "secrets_committed": false,
+    "new_automations_created": false,
+    "paid_service_enabled": false
+  },
+  "status": "SOURCE_VALIDATOR_TESTED_PRODUCTION_NO_GO"
+}
