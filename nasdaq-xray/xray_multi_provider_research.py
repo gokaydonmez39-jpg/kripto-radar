@@ -287,6 +287,7 @@ def produce(limit=3,http_get=http,runner=lookup,inputs_fn=inputs):
             "mc_pass_created":False,"g9_pass":False,"account_pass":False,
             "canonical_status_changed":False,"raw_market_data_persisted":False,
             "provider_keys_present":{k:bool(v) for k,v in keys.items()},
+            "source_epoch_exact":True,
             "source_blobs":sha,"lanes":lanes,"invocation_counts":dict(counters),
             "result":"MULTI_PROVIDER_FAIL_CLOSED_SHADOW_ONLY_NO_C4_17_PROMOTION"}
 
@@ -366,7 +367,7 @@ def main():
     out.unlink(missing_ok=True)
     result=produce(args.limit)
     out.write_text(json.dumps(result,sort_keys=True,indent=2)+"\n")
-    print("XRAY_MULTI_PROVIDER_RESEARCH=COMPLETED_SHADOW_ONLY")
+    print("XRAY_MULTI_PROVIDER_RESEARCH="+("BLOCKED_SOURCE_EPOCH_ZERO_CALLS" if result.get("source_epoch_exact") is False else "COMPLETED_SHADOW_ONLY_NONAUTHORITATIVE"))
     for lane,v in result["lanes"].items():
         print("XRAY_"+lane+"_OBSERVATIONS="+str(v["status_counts"].get("REFERENCE_OBSERVED_NOT_AUTHORITY",0)))
 
