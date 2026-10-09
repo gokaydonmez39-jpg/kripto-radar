@@ -36,6 +36,7 @@ REPO=ROOT.parent
 SCHEMA="XRAY_TWELVE_260_HISTORY_ENCRYPTED_SHADOW_V1"
 REPORT="XRAY_TWELVE_260_HISTORY_HEALTH_V1"
 MAX_CALLS=32
+MAX_RETRIES_PER_SYMBOL=3
 MIN_SPACING_SECONDS=9.0
 DAY_BUDGET=800
 WINDOW_SECONDS=86400.0
@@ -67,7 +68,7 @@ def fresh(s,rate_times=None,last_call=None):
     return {"schema":SCHEMA,"asof":s["asof"],"master_sha":s["master_sha"],
             "price_sha":s["price_sha"],"scope_hash":s["scope_hash"],
             "dates_hash":s["dates_hash"],"targets":s["targets"],
-            "dates":s["dates"],"adjust_mode":"none","bars":{},
+            "dates":s["dates"],"adjust_mode":"none","bars":{},"errors":{},
             "rate_times":list(rate_times or []),"last_call_ts":last_call,
             "requests_total":0,"source_authority":False,
             "execution":"NONE","real_money":"NO-GO"}
@@ -93,6 +94,15 @@ def exact(cp,s):
     if type(cp.get("requests_total")) is not int or cp["requests_total"]<0:return False
     bars=cp.get("bars")
     if not isinstance(bars,dict) or not set(bars).issubset(s["targets"]):return False
+    failures=cp.get("errors",{})
+    if not isinstance(failures,dict) or not set(failures).issubset(s["targets"]):return False
+    if any(not isinstance(e,dict) or set(e)!={"count","reason"}
+           or type(e["count"]) is not int
+           or not 1<=e["count"]<=MAX_RETRIES_PER_SYMBOL
+           or not isinstance(e["reason"],str)
+           or not e["reason"].startswith("BLOCKED_")
+           or len(e["reason"])>90 for e in failures.values()):return False
+    if set(bars)&set(failures):return False
     if cp["requests_total"]<len(bars):return False
     required=set(s["dates"])
     for sym,rows in bars.items():
@@ -139,10 +149,15 @@ def load(path,s,c):
         # authenticated rolling quota ledger, preventing epoch-change bursts.
         return fresh(s,cp["rate_times"],cp.get("last_call_ts")),False
     if not exact(cp,s):raise ValueError("CHECKPOINT_CONTENT_INVALID")
+    cp.setdefault("errors",{})
     return cp,True
 
 def parse_response(data,symbol,s):
     if not isinstance(data,dict) or data.get("status")!="ok":
+        # Provider JSON HTTP-200 error code 404 denotes a missing ticker;
+        # all other codes are a global issue until individually diagnosed.
+        if isinstance(data,dict) and data.get("code")==404:
+            raise ProviderDenied("VENDOR_SYMBOL_UNAVAILABLE")
         raise ProviderDenied("NO_VALID_VENDOR_EOD_RESPONSE")
     meta=data.get("meta") or {}
     if (not isinstance(meta,dict) or meta.get("symbol")!=symbol
@@ -226,6 +241,8 @@ def safe_error(e):
         return "BLOCKED_VENDOR_HTTP"
     if isinstance(e,(urllib.error.URLError,TimeoutError)):return "BLOCKED_VENDOR_TRANSPORT"
     if isinstance(e,ProviderDenied):
+        if str(e)=="VENDOR_SYMBOL_UNAVAILABLE":
+            return "BLOCKED_VENDOR_SYMBOL_UNAVAILABLE"
         if str(e)=="LATEST_COMPLETED_SESSION_NOT_YET_PUBLISHED":
             return "BLOCKED_VENDOR_EOD_LATEST_SESSION_ABSENT_RETRY_REQUIRED"
         return "BLOCKED_PROVIDER_RESPONSE_NOT_ENTITLED_OR_INVALID"
@@ -239,6 +256,9 @@ def health(cp,s,status,requests):
             "source_scope_hash":s["scope_hash"],"target_count":len(s["targets"]),
             "queried_symbols":n,"complete_260_symbols":complete,
             "remaining_symbols_to_query":len(s["targets"])-n,
+            "individual_symbol_retry_or_quarantine_count":len(cp.get("errors") or {}),
+            "individual_symbol_quarantined_after_3_count":sum(
+                x["count"]>=MAX_RETRIES_PER_SYMBOL for x in (cp.get("errors") or {}).values()),
             "required_daily_sessions":260,"required_completed_weeks":52,
             "vendor_requests_this_run":requests,
             "rolling_24h_local_checkpoint_requests":len(cp["rate_times"]),
@@ -273,7 +293,14 @@ def run(args,env=None,transport=fetch,now=time.time,sleep=time.sleep):
     c=crypt(key)
     cp,_=load(args.restore,s,c)
     calls=0;status="PARTIAL_PRIVATE_TRANSPORT_ONLY"
-    for sym in [z for z in s["targets"] if z not in cp["bars"]][:args.limit]:
+    errors=cp.setdefault("errors",{})
+    # New symbols have priority over retries: one broken ticker cannot starve
+    # the other 514. Quarantine at three attempts without claiming PASS.
+    new=[z for z in s["targets"] if z not in cp["bars"] and z not in errors]
+    retries=[z for z in s["targets"] if z in errors
+             and z not in cp["bars"]
+             and errors[z]["count"]<MAX_RETRIES_PER_SYMBOL]
+    for sym in (new+retries)[:args.limit]:
         current=now()
         if cp["last_call_ts"] is not None:
             elapsed=current-cp["last_call_ts"]
@@ -294,8 +321,24 @@ def run(args,env=None,transport=fetch,now=time.time,sleep=time.sleep):
         try:
             rows=parse_response(transport(sym,s,key),sym,s)
         except Exception as e:
-            status=safe_error(e)
-            break
+            error_status=safe_error(e)
+            # Authentication, plan limits, 429, network failure and unknown
+            # provider JSON errors may affect EVERY symbol: stop immediately.
+            if error_status in (
+                "BLOCKED_RATE_LIMIT",
+                "BLOCKED_PROVIDER_AUTH_OR_ENTITLEMENT",
+                "BLOCKED_VENDOR_HTTP",
+                "BLOCKED_VENDOR_TRANSPORT",
+                "BLOCKED_PROVIDER_RESPONSE_NOT_ENTITLED_OR_INVALID"):
+                status=error_status
+                break
+            old_count=(errors.get(sym) or {}).get("count",0)
+            errors[sym]={"count":min(MAX_RETRIES_PER_SYMBOL,old_count+1),
+                         "reason":error_status}
+            save(args.checkpoint,cp,s,c)
+            status="PARTIAL_PER_SYMBOL_RETRY_QUARANTINE_NO_ALPHA"
+            continue
+        errors.pop(sym,None)
         cp["bars"][sym]=rows
         save(args.checkpoint,cp,s,c)
     if not Path(args.checkpoint).exists():save(args.checkpoint,cp,s,c)
@@ -303,6 +346,8 @@ def run(args,env=None,transport=fetch,now=time.time,sleep=time.sleep):
         status=("COMPLETE_260_PRIVATE_TRANSPORT_ONLY" if
                 all(len(v)==260 for v in cp["bars"].values()) else
                 "ALL_SYMBOLS_FETCHED_WITH_UNVERIFIED_IPO_OR_HISTORY_GAPS")
+    elif errors and status=="PARTIAL_PRIVATE_TRANSPORT_ONLY":
+        status="PARTIAL_PER_SYMBOL_RETRY_QUARANTINE_NO_ALPHA"
     out=health(cp,s,status,calls)
     report_path.write_text(json.dumps(out,sort_keys=True)+"\n")
     print("XRAY_TWELVE_HISTORY="+status)
@@ -491,7 +536,19 @@ def selftest():
             assert mixed["queried_symbols"]==1,"OTHER_SYMBOL_NOT_PERSISTED"
             assert visited==smaller["targets"]
             assert mixed["canonical_HISTORY_pass"] is False
-    print("XRAY_TWELVE_260_RESUME_SELFTEST=PASS_NEXT_TRADING_DAY_ET_PUBLICATION_EMBARGO_MISSING_LATEST_RETRY_STALE_QUOTA_ENCRYPTION_NO_ALPHA")
+            assert mixed["individual_symbol_retry_or_quarantine_count"]==1
+            # Retry the bad symbol only AFTER all new names were inspected,
+            # without refetching or overwriting the other completed symbol.
+            a5=SimpleNamespace(report=Path(tmp)/"fixed.json",
+                               checkpoint=Path(tmp)/"fixed.enc",
+                               restore=a4.checkpoint,limit=2)
+            recovery=run(a5,env=fake_env,transport=vendor_fake,
+                         now=lambda:valid_epoch+9,sleep=lambda _:None)
+            assert recovery["vendor_requests_this_run"]==1
+            assert recovery["queried_symbols"]==len(smaller["targets"])
+            assert recovery["individual_symbol_retry_or_quarantine_count"]==0
+            assert recovery["complete_260_symbols"]==len(smaller["targets"])
+    print("XRAY_TWELVE_260_RESUME_SELFTEST=PASS_PUBLICATION_ET_AND_ONE_BAD_SYMBOL_NONSTARVATION_RETRY_RECOVERY_QUOTA_ENCRYPTION_NO_ALPHA")
 
 def main():
     p=argparse.ArgumentParser()
