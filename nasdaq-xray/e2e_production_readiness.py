@@ -76,6 +76,30 @@ def terminal_chain_exact(terminal, asof, source_shas, mc_name, mc_sha):
         return False
     return True
 
+def scope_readiness(blockers,chain_exact):
+    """Distinguish global universe completion from exact candidate-local lineage.
+
+    This function never vets a particular setup or acknowledges an iPhone
+    notification; neither can be inferred from symbol counts or workflow PASS.
+    """
+    local_hard={
+        "POLICY_SAFETY_NOT_ALL_ATTESTED",
+        "PRICE_PARTITION_NOT_EXACT_CURRENT",
+        "SETTLEMENT_UNVERIFIED_OR_PRICE_SHA_DRIFT",
+        "CURRENT_MC_AUTHORITY_MISSING",
+        "CURRENT_TERMINAL_FROZEN_OR_INCOMPLETE",
+        "TERMINAL_CURRENT_MC_CHAIN_NOT_PROVEN",
+    }
+    global_only={"IDENTITY_PARTITION_INCOMPLETE","PRICE_BLOCKED_30_SESSION_BARS"}
+    blocks=set(blockers)
+    local=bool(chain_exact) and blocks.isdisjoint(local_hard)
+    return {
+        "candidate_local_source_chain_attested":local,
+        "full_universe_source_coverage_attested":local and blocks.isdisjoint(global_only),
+        "candidate_local_al_setup_attested":False,
+        "actual_device_delivery_receipt_attested":False,
+    }
+
 def snapshot():
     master=read("canonical_current_master_manifest.json")
     price=read("canonical_current_price_dv30.json")
@@ -134,6 +158,7 @@ def snapshot():
     # Delivery is independent: a zero-signal scenario may be a legitimate
     # completed run, but a device receipt must never be inferred from a ledger.
     fail("NOTIFICATION_DEVICE_RECEIPT_NOT_PROVEN",False)
+    scopes=scope_readiness(blocks,current_chain)
     return {
         "schema":"XRAY_E2E_PRODUCTION_READINESS_AUDIT_V1",
         "asof_et":asof,"research_mode":"RESEARCH_ONLY_MANUAL_DECISION",
@@ -146,6 +171,7 @@ def snapshot():
                 "SETTLEMENT_UNVERIFIED_OR_PRICE_SHA_DRIFT",
                 "IDENTITY_PARTITION_INCOMPLETE","PRICE_BLOCKED_30_SESSION_BARS")),
         "current_mc_authority_count":len(mcs),
+        **scopes,
         "price_pass_count":price.get("pass_count"),"price_blocked_count":price.get("blocked_count"),
         "master_unknown_count":master.get("unknown_count"),
         "terminal_asof_et":terminal.get("asof_et"),
@@ -199,6 +225,19 @@ def selftest():
         lambda x:x.update(asof_et="2026-10-07")):
         bad=deepcopy(t);changed(bad)
         assert not terminal_chain_exact(bad,"2026-10-08",base_shas,good,"MC_SHA")
+    global_only=("IDENTITY_PARTITION_INCOMPLETE","PRICE_BLOCKED_30_SESSION_BARS")
+    x=scope_readiness(global_only,True)
+    assert x["candidate_local_source_chain_attested"] is True
+    assert x["full_universe_source_coverage_attested"] is False
+    assert x["candidate_local_al_setup_attested"] is False
+    assert x["actual_device_delivery_receipt_attested"] is False
+    assert scope_readiness([],True)["full_universe_source_coverage_attested"] is True
+    assert scope_readiness([],False)["candidate_local_source_chain_attested"] is False
+    for blocker in ("CURRENT_MC_AUTHORITY_MISSING","TERMINAL_CURRENT_MC_CHAIN_NOT_PROVEN",
+                    "SETTLEMENT_UNVERIFIED_OR_PRICE_SHA_DRIFT",
+                    "POLICY_SAFETY_NOT_ALL_ATTESTED"):
+        assert scope_readiness([blocker],True)["candidate_local_source_chain_attested"] is False
+    print("XRAY_E2E_SCOPE_BOUNDARY_SELFTEST=PASS_INDEPENDENT_GLOBAL_AND_LOCAL_NO_AL")
     print("XRAY_E2E_READINESS_MC_SELFTEST=PASS_POSITIVE_7_NEGATIVES")
     print("XRAY_E2E_TERMINAL_SHA_BINDING_SELFTEST=PASS_POSITIVE_5_NEGATIVES")
 
