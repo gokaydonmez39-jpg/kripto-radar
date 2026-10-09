@@ -9,6 +9,7 @@ import akshare as ak
 import pandas as pd
 import pandas_market_calendars as mcal
 import requests
+from history_transport_cache_guard import exact_recent_sessions
 
 ROOT=Path(__file__).resolve().parent
 OFFICIAL_IDENTITY_EVIDENCE=ROOT/"history_official_identity_evidence.json"
@@ -365,7 +366,18 @@ def classify(by,asof,source):
         return "UNKNOWN",dict(base,reason="ASOF_MISSING_OR_EMPTY")
     daily=len(by);weekly=week_count(by,asof)
     info=dict(base,completed_week_count=weekly)
-    if daily>=HARD_DAILY and weekly>=HARD_WEEKLY:return "PASS_HISTORY",info
+    # Counts alone are not coverage: an old bar may hide a missing recent
+    # exchange session while both the 260-day and 52-week counts appear valid.
+    # Reuse the calendar-backed deterministic guard, cached per ASOF.
+    exact_latest_260=exact_recent_sessions(dates,asof) if daily>=HARD_DAILY else False
+    info["latest_260_official_sessions_complete"]=exact_latest_260
+    if daily>=HARD_DAILY and weekly>=HARD_WEEKLY and exact_latest_260:
+        return "PASS_HISTORY",info
+    info["reason"]=(
+        "RECENT_260_OFFICIAL_SESSIONS_INCOMPLETE"
+        if daily>=HARD_DAILY and weekly>=HARD_WEEKLY
+        else "260_DAILY_OR_52_COMPLETED_WEEKS_NOT_PROVEN"
+    )
     return "POTENTIAL_FAIL_HISTORY",info
 
 def load_official_identity_evidence():
@@ -450,7 +462,8 @@ def continuity_composite_pass(sym,asof,sb,si,yb,yi):
     merged=dict(yb)
     merged.update(sb)
     daily=len(merged); weekly=week_count(merged,asof)
-    if daily<HARD_DAILY or weekly<HARD_WEEKLY or asof not in merged:
+    if (daily<HARD_DAILY or weekly<HARD_WEEKLY or asof not in merged
+            or not exact_recent_sessions(set(merged),asof)):
         return None
     return {
       "source":"OFFICIAL_TICKER_CONTINUITY_COMPOSITE_HISTORY",
