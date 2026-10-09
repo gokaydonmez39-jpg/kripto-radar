@@ -1,0 +1,140 @@
+{
+  "schema": "XRAY_20261009_ROOT_RECOVERY_AND_DELIVERY_SAFETY_V16",
+  "authority": "HISTORICAL_CHECKPOINT_ONLY_LIVE_MAIN_AND_ACTIONS_SUPERSEDE",
+  "source_main_head_at_observation": "d90dbafadab346f62718d5837bfea925b1c28872",
+  "branch": "main",
+  "repository": "gokaydonmez39-jpg/kripto-radar",
+  "asof_reported_utc": "2026-10-09T10:43:29Z",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "mode": "RESEARCH_ONLY_MANUAL_DECISION",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "no_real_money_or_orders": true,
+  "preceding_checkpoint": "nasdaq-xray/research/continuation_checkpoint_20261009_mc_source_set_lineage_v15.json",
+  "engineering_repairs": [
+    {
+      "commit": "9c185027a3c8e344a62e94ba8cdbfceeba980daa",
+      "path": "nasdaq-xray/delivery_scheduler_guard.py",
+      "effect": "Bound GitHub zombie root/final active run suppression by configured grace; orphan without later completed SUCCESS still BLOCKS, later completed SUCCESS clears old zombie"
+    },
+    {
+      "commit": "4d029760d7b18572580d753cc9f25e1d6703940e",
+      "path": "nasdaq-xray/delivery_scheduler_guard_selftest.py",
+      "effect": "Added regression cases; initial fixture falsely included a newer success"
+    },
+    {
+      "commit": "48febb4bdd78de5282f75a326a56137b93dca00a",
+      "path": "nasdaq-xray/delivery_scheduler_guard_selftest.py",
+      "effect": "Fixed logically inconsistent unrecovered-orphan fixture; runtime guard unchanged",
+      "tested_action": 37918435027,
+      "result": "SUCCESS_SCHEDULER_SELFTEST_PASS"
+    },
+    {
+      "commit": "ea0d516fe6b0b28ca349f5cabfe4951ea5b60cc9",
+      "path": "nasdaq-xray/delivery_prepare.py",
+      "effect": "Reject nonfinite/bool numerical delivery levels; independent long stop-entry-chase-R1 geometry and <=8 percent stop risk; exact C4.17 setup RR floors preserved"
+    },
+    {
+      "commit": "a8fa1bf96718f6d9c34b6900160b4544a7ff489b",
+      "path": "nasdaq-xray/delivery_prepare_selftest.py",
+      "effect": "Positive A-family RR 1.5/1.1, seven negative numeric/geometric tests",
+      "tested_action": 37918704356,
+      "result": "SUCCESS_SELFTEST_PASS"
+    },
+    {
+      "commit": "a55c579818654e97117485f956d8a883b4e776e3",
+      "path": "nasdaq-xray/delivery_prepare.py",
+      "effect": "Malformed/unregistered R92 can no longer be silently converted into NO_REGISTERED"
+    },
+    {
+      "commit": "a9faf8fb57c63e9d18a71fa54f74e5f84a7102c4",
+      "path": "nasdaq-xray/delivery_prepare_selftest.py",
+      "effect": "Negative R92 registration errors and positive genuinely empty candidate list",
+      "tested_action": 37919028418,
+      "result": "SELFTEST_PASS_BUT_RUN_FAILURE_ROOT_SUCCESS_STALE"
+    }
+  ],
+  "control_plane_recovery": {
+    "latest_pre_recovery_successful_root_run": 37911106490,
+    "last_root_success_utc": "2026-10-09T09:24:51Z",
+    "observed_eligible_root_age_seconds": 4631,
+    "main_two_read_equal": true,
+    "root_actions_snapshots_equal": true,
+    "active_root_within_grace": false,
+    "scheduler_kick_sequence_from": 16,
+    "scheduler_kick_sequence_to": 17,
+    "kick_commit": "83bd0430351f71b1b0f81acfc979358bda4893bc",
+    "kick_utc": "2026-10-09T10:42:01.701Z",
+    "confirmed_root_run": 37919206465,
+    "root_run_conclusion": "SUCCESS",
+    "data_plane_root_asof": "2026-10-08",
+    "data_plane_root_status": "PARTIAL_HISTORY",
+    "new_root_history_unknown_count": 231,
+    "pending_retry_count": 0,
+    "root_commit": "d90dbafadab346f62718d5837bfea925b1c28872",
+    "pre_mc_run": 37919259353,
+    "pre_mc_conclusion": "SUCCESS",
+    "post_mc_run": 37919326310,
+    "post_mc_conclusion": "FAILURE_EXPECTED_NO_CURRENT_PRIMARY_MC",
+    "post_mc_source_readiness_selftest": "PASS_POSITIVE_NEGATIVE_NO_PRIMARY",
+    "post_mc_reason": "CURRENT_MC_BRIDGE_ABSENT",
+    "post_mc_release_reason": "BLOCKED_CURRENT_MC_AUTHORITY_REQUIRED",
+    "post_mc_source_artifact_name": "xray-post-mc-source-readiness",
+    "post_mc_source_artifact_id": 11610078740
+  },
+  "evidence_state": {
+    "canonical_terminal_asof_et": "2026-10-07",
+    "canonical_terminal_result": "PARTIAL_UNKNOWN",
+    "r92_candidates_count": 0,
+    "candidate_lifecycle_registry_count": 0,
+    "delivery_ledger_deliveries_count": 0,
+    "current_master_asof": "2026-10-08",
+    "current_master_identity_unknown_count": 72,
+    "price_dv30_pass_count": 514,
+    "price_blocked_count": 45,
+    "primary_mc_asof_20261008": "NOT_PROVEN",
+    "authenticated_history_runner_credentials": "MISSING_IN_SOURCE_SPECIFIC_ALPACA_GITHUB_JOB",
+    "raw_provider_redistribution_or_automated_usage_rights": "NOT_PROVEN"
+  },
+  "automations": {
+    "existing_health_task_id": "6abd0465d15c8191aac5888abb784f27",
+    "operation": "UPDATED_EXISTING_HOURLY_HEALTH_PROMPT",
+    "patch": "SOURCE_AUTHORITY_AND_DELIVERY_HEALTH_V15",
+    "update_result": "SUCCESS",
+    "preserved_existing_schedule": true,
+    "no_new_sixth_task": true,
+    "canonical_user_notification_authority": "6a825366222081918997094d76e6ae46",
+    "actual_user_device_notification_receipt": "NOT_PROVEN"
+  },
+  "outstanding_blockers": [
+    "C4.17 Bigdata PRIMARY same-ASOF MC missing: no 20261008 immutable approved measured bridge",
+    "Sina root HISTORY remains 231 UNKNOWN with 0 retryable, source-specific alternative needed",
+    "Alpaca unattended GitHub data credential pair absent in source-specific runner test, do not share secrets in chat",
+    "SEC share-count or Massive market-cap shadow lacks independently verified automated data rights and same-ASOF share class/split/PIT legal verification; never auto promote",
+    "Terminal still 2026-10-07 and no 2026-10-08 local final R92",
+    "No candidate registration and no phone device receipt"
+  ],
+  "no_false_claims": [
+    "GITHUB_ACTIONS_SUCCESS_NOT_DATA_PASS",
+    "PRE_MC_SUCCESS_NOT_POST_MC_SUCCESS",
+    "GITHUB_ISSUE_RECEIPT_NOT_DEVICE_RECEIPT",
+    "UNKNOWN_NOT_PASS",
+    "CANONICAL_20261008_TERMINAL_NOT_RELEASED"
+  ],
+  "license_context": [
+    {
+      "authority": "Alpaca official",
+      "url": "https://docs.alpaca.markets/us/docs/market-data-faq",
+      "observation": "Historical SIP may be queried when end is >=15 minutes old on Basic; authentication still required; not a runner credential grant"
+    },
+    {
+      "authority": "Massive official",
+      "url": "https://massive.com/legal/market-data-terms-of-service",
+      "observation": "Personal market data may restrict non-display/derived-investment-strategy uses without separate license"
+    }
+  ],
+  "go_no_go": "RESEARCH_PRODUCTION_NO_GO",
+  "next_engineering_sequence": "Prove lawful same-ASOF PRIMARY MC and versioned source if changed -> verify data-only credential and 260/52 weeks -> Post-MC/Final ASOF epoch -> independently valid candidate local R92 -> exact delivery receipt and lifecycle."
+}
