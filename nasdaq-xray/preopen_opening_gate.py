@@ -62,6 +62,7 @@ def evaluate(now,root,readiness,sources,terminal):
     age=(now-updated).total_seconds() if updated is not None else None
     need(age is not None and -60<=age<=4500,
          "ROOT_DATA_PLANE_STALE_OVER_75_MIN")
+    need(now < SESSION_OPEN_UTC,"PREOPEN_WINDOW_CLOSED")
     need(readiness.get("current_mc_authority_count")==1,
          "CURRENT_C417_PRIMARY_MC_MISSING")
     need(readiness.get("candidate_local_source_chain_attested") is True,
@@ -109,6 +110,8 @@ def selftest():
     terminal={"asof_et":SESSION_ASOF,"execution":"NONE","real_money":"NO-GO"}
     assert evaluate(now,root,rd,src,terminal)["status"]=="SOURCE_RESEARCH_CANDIDATE_PREPARED_NOT_DEVICE_DELIVERED"
     assert evaluate(now,root,rd,src,terminal)["user_phone_delivery_receipt_verified"] is False
+    assert evaluate(SESSION_OPEN_UTC,root,rd,src,terminal)["status"]=="BLOCKED_NO_GO"
+    assert "PREOPEN_WINDOW_CLOSED" in evaluate(SESSION_OPEN_UTC,root,rd,src,terminal)["blockers"]
     from copy import deepcopy
     for obj,k,v,reason in (
         ("root","status","PARTIAL_HISTORY","ROOT_HISTORY_PARTIAL"),
