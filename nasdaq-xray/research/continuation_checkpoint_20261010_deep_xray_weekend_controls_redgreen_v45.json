@@ -1,0 +1,200 @@
+{
+  "schema": "XRAY_C417_CONTINUATION_DEEP_XRAY_WEEKEND_CONTROLS_20261010_V45",
+  "repo": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "captured_head": "5db8fd05ebd658809946a923265edf640b959cd0",
+  "predecessor": "nasdaq-xray/research/continuation_checkpoint_20261010_legality_weekend_ci_live_v44.json",
+  "predecessor_blob_sha": "e4962e6d70e7eddcf63a2b668025af8bda07f708",
+  "authority": "LIVE_MAIN_AUTOMATIONS_ACTIONS_AND_BLOBS_SUPERSEDE_STATIC_CHECKPOINT",
+  "safety": {
+    "policy": "C4.17",
+    "control": "C4.27",
+    "execution": "NONE",
+    "real_money": "NO-GO",
+    "c418": "PROPOSED_INACTIVE",
+    "unknown_never_pass": true,
+    "no_alpha_threshold_relaxation": true,
+    "no_broker_or_order": true
+  },
+  "calendar": {
+    "last_completed_nasdaq_session": "2026-10-09",
+    "weekend_et": [
+      "2026-10-10",
+      "2026-10-11"
+    ],
+    "next_nasdaq_open": "2026-10-12T09:30:00-04:00",
+    "next_nasdaq_close": "2026-10-12T16:00:00-04:00",
+    "trt_open": "2026-10-12 16:30",
+    "trt_close": "2026-10-12 23:00",
+    "rth_close_plus_safety_buffer_trt": "2026-10-12 23:30",
+    "no_weekend_bars": true
+  },
+  "automation": {
+    "enabled_xray_count": 5,
+    "exact_roles": [
+      {
+        "role": "Reader",
+        "id": "6abeb37721ec81918e78b0ac65eb64a0",
+        "minute_et": 43,
+        "user_notification": false
+      },
+      {
+        "role": "Committer",
+        "id": "6abeb39630a88191a672574b45bdcd1b",
+        "minute_et": 46,
+        "user_notification": false
+      },
+      {
+        "role": "Health",
+        "id": "6abd0465d15c8191aac5888abb784f27",
+        "minute_et": 49,
+        "user_notification": false
+      },
+      {
+        "role": "Finisher",
+        "id": "6abeb68907a88191a364437de1fb2275",
+        "minute_et": 52,
+        "user_notification": false
+      },
+      {
+        "role": "Canonical",
+        "id": "6a825366222081918997094d76e6ae46",
+        "minute_et": 57,
+        "user_notification": true,
+        "email": true
+      }
+    ],
+    "do_not_create_sixth": true,
+    "actual_phone_receipt": false
+  },
+  "repaired_and_proven": [
+    {
+      "name": "Retire expired 09-Oct Preopen automatic trigger fanout, keep read-only manual replay",
+      "red_run": 38003888674,
+      "red": "EXPIRED_9OCT_WATCH_STILL_AUTOMATIC:workflow_run",
+      "test_commit": "4dedbfe036600ea986a07cac27a451ba25582830",
+      "fix_commits": [
+        "be56d49fc55d481b7875ce46fe2a43a9b1ccdd08",
+        "7af539a5689fbbcbd78ba54d786b275a716d4445"
+      ],
+      "green_run": 38003944424,
+      "green_conclusion": "success",
+      "test": "XRAY_09OCT_EXPIRED_WATCH=PASS_MANUAL_ONLY_NO_DUPLICATE_ACTIONS_LIVE_ROOT_WATCHDOG_INTACT",
+      "effect": "Retired historic schedule/workflow_run/push, preserved independent live root watchdog and release alerts"
+    },
+    {
+      "name": "E2E price diagnostics exact zero-PASS partition and separate UNKNOWN from BLOCKED",
+      "red_run": 38004146933,
+      "red": "UNKNOWN_CURRENT_MERGED_INTO_BLOCKED_COUNT",
+      "test_commits": [
+        "8d9962269ba4670d3b03bec05411bd7e60bf1a08",
+        "2f25d92988c42ddea7973d88349ae985aee4958a"
+      ],
+      "fix_commit": "5db8fd05ebd658809946a923265edf640b959cd0",
+      "green_invariant_run": 38004334644,
+      "green_conclusion": "success",
+      "green_marker": "XRAY_E2E_PRICE_GAP_SELFTEST=PASS_UNKNOWN_SEPARATE_BLOCKED_ZERO_ALPHA",
+      "e2e_run": 38004334630,
+      "e2e_conclusion": "failure_expected_true_no_go",
+      "e2e_failure_step": "Release gate - fail workflow when actual current research is NO-GO",
+      "effect": "PRICE_UNKNOWN_CURRENT surfaced, 0 actual blocked correctly; zero PASS no longer falsely means corrupt partition; source data itself still not validated"
+    }
+  ],
+  "recent_e2e": {
+    "master": {
+      "asof": "2026-10-09",
+      "pass": 3184,
+      "unknown": 12,
+      "blob_sha": "f354dc726ff9d26fa4b85291f6c7201110b93e65"
+    },
+    "price": {
+      "asof": "2026-10-09",
+      "pass": 0,
+      "unknown": 553,
+      "blocked": 0,
+      "counts": {
+        "FAIL_DV30": 1311,
+        "FAIL_DV30_INSUFFICIENT_SESSIONS": 7,
+        "FAIL_PRICE": 1304,
+        "FAIL_PRICE_NO_ASOF_BAR": 9,
+        "UNKNOWN": 553
+      },
+      "blob_sha": "b74444f88c57e2bd497495e62c14969184fd9878"
+    },
+    "terminal": {
+      "asof": "2026-10-07",
+      "primary_mc_pass": 0,
+      "real_registered_r92": 0,
+      "blob_sha": "ea9c41cd1e5971e78d85bf3f620d7f8c4e01034f"
+    },
+    "manual_research_go": false,
+    "full_e2e_go": false,
+    "real_money_go": false,
+    "delivery_run": 38003672985,
+    "delivery_result": "SUCCESS_NO_REGISTERED_R92_NO_DEVICE_RECEIPT",
+    "last_postmc_failure_run": 38003532145,
+    "last_postmc_failure_reason": "CURRENT_MC_BRIDGE_ABSENT",
+    "e2e_release_blockers": [
+      "CURRENT_MC_AUTHORITY_MISSING",
+      "CURRENT_TERMINAL_FROZEN_OR_INCOMPLETE",
+      "IDENTITY_PARTITION_INCOMPLETE",
+      "NOTIFICATION_DEVICE_RECEIPT_NOT_PROVEN",
+      "PRICE_UNKNOWN_CURRENT",
+      "SETTLEMENT_UNVERIFIED_OR_PRICE_SHA_DRIFT",
+      "SOURCE_EPOCH_NOT_LATEST_COMPLETED_SESSION",
+      "TERMINAL_CURRENT_MC_CHAIN_NOT_PROVEN"
+    ]
+  },
+  "open_prioritized": [
+    {
+      "n": 1,
+      "blocker": "Authorized private automated non-display price/volume 30-day source with vendor usage rights and raw RTH volume",
+      "status": "BLOCKED",
+      "next": "Verify lawful source and volume semantics; no raw public vendor bar persistence without permission."
+    },
+    {
+      "n": 2,
+      "blocker": "Real 9-Oct exact30 C4.17 PRICE/DV30 partition",
+      "status": "BLOCKED_553_UNKNOWN_PASS0",
+      "next": "Use validated official completed 30 sessions and independent volume proof; new actual PASS only from evidence."
+    },
+    {
+      "n": 3,
+      "blocker": "Exact current USD issuer PRIMARY MC",
+      "status": "BLOCKED_ZERO",
+      "next": "Confirm lawful zero-cost source; bind whole real current PRICE-PASS exact symbol set."
+    },
+    {
+      "n": 4,
+      "blocker": "Genuine licensed 260 completed daily bars and 52 weekly bars",
+      "status": "BLOCKED_ZERO_CURRENT_CERTIFIED",
+      "next": "Private legal encrypted retention and true bars, never synthetic or stale 7-Oct."
+    },
+    {
+      "n": 5,
+      "blocker": "12 identity UNKNOWN and complete same-ASOF MC/History/Legal/Event/Risk/Final terminal",
+      "status": "BLOCKED_TERMINAL_OCT7",
+      "next": "Fail-closed identity, exact SHA/sets and independent risk <=8% and RR; no global zero-setup claims before full coverage."
+    },
+    {
+      "n": 6,
+      "blocker": "Real registered research R92 candidates",
+      "status": "BLOCKED_ZERO",
+      "next": "Only if actual C4.17 positive setup; candidate-local sources + official halt veto."
+    },
+    {
+      "n": 7,
+      "blocker": "Device notification receipt, dedup/lifecycle and actual future forward sessions",
+      "status": "NOT_ATTESTED",
+      "next": "True registered R92 and independent end-user receipt; 60 future sessions cannot be fast-forwarded."
+    }
+  ],
+  "independent_extra_gates": {
+    "strict_G9": "BLOCKED_NOT_NEEDED_FOR_RESEARCH_MANUAL",
+    "broker_ACCOUNT": "BLOCKED_NOT_NEEDED_FOR_RESEARCH_MANUAL",
+    "execution": "NONE"
+  },
+  "monday_release_protocol": "At Monday 09:30 EDT/16:30 TRT use Friday 9-Oct completed ASOF until Monday 16:30 EDT+finality buffer (23:30 TRT), never publish Monday bar early; reset source epoch only on verified completion; no GO on Saturday synthetic or workflow success",
+  "no_receipt_claim": true,
+  "synthetic_tests_are_not_production": true
+}
