@@ -21,11 +21,11 @@ SCHEMA = "XRAY_POST_MC_SOURCE_READINESS_WITNESS_V1"
 MC_PREFIX = "nasdaq-xray/canonical_mc_bridge_"
 HEX40 = re.compile(r"^[0-9a-f]{40}$")
 ASOF = re.compile(r"^20[0-9]{2}-[0-9]{2}-[0-9]{2}$")
-VERSION = re.compile(r"^v[1-9][0-9]*\\.json$")
+VERSION = re.compile(r"^v[1-9][0-9]*\.json$")
 
 
 def git_blob_sha(data: bytes) -> str:
-    return hashlib.sha1(b"blob " + str(len(data)).encode() + b"\\0" + data).hexdigest()
+    return hashlib.sha1(b"blob " + str(len(data)).encode() + b"\0" + data).hexdigest()
 
 
 def private_credential_classification(env: dict) -> dict:
@@ -223,13 +223,13 @@ def main() -> None:
         objects[key] = obj
         blobs["nasdaq-xray/" + name] = git_blob_sha(b)
     filenames = [
-        str(p.relative_to(REPO)).replace("\\\\", "/")
+        str(p.relative_to(REPO)).replace("\\", "/")
         for p in ROOT.glob("canonical_mc_bridge_*.json")
     ]
     report = summarize(objects, blobs, filenames, os.environ)
     dest = Path(args.out)
     dest.parent.mkdir(parents=True, exist_ok=True)
-    dest.write_text(json.dumps(report, indent=2, sort_keys=True) + "\\n")
+    dest.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n")
     print("XRAY_POST_MC_SOURCE_READINESS=" + report["source_status"])
     print("XRAY_POST_MC_CREDENTIAL_CLASS=" + report["credentials"]["alpaca_history"])
     print("XRAY_POST_MC_MEASURED_PRIMARY_PROVEN=false")
