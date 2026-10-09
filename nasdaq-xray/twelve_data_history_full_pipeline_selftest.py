@@ -19,6 +19,12 @@ def main():
     price=json.loads((Path(__file__).resolve().parent/"canonical_current_price_dv30.json").read_text())
     assert len(s["symbols"])==price["pass_count"]
     assert len(s["dates"])==260 and len(s["weeks"])==52
+    if not s["symbols"]:
+        assert s["targets"]==[] and price["pass_count"]==0
+        assert health(fresh(s),s,"BLOCKED_NO_CURRENT_PRICE_PASS_SCOPE",0)["target_count"]==0
+        assert health(fresh(s),s,"BLOCKED_NO_CURRENT_PRICE_PASS_SCOPE",0)["R92_AL"] is False
+        print("XRAY_TWELVE_CURRENT_SCOPE_260_52_ENCRYPTED_FULL_SELFTEST=PASS_ZERO_PRICE_PASS_SCOPE_BLOCKED_NO_PHANTOM_QQQ_NO_ALPHA")
+        return
     assert len(s["targets"])==len(set(s["symbols"])|{"QQQ"})
     with TemporaryDirectory(prefix="xray-twelve-current-scope-") as name:
         temp=Path(name)
