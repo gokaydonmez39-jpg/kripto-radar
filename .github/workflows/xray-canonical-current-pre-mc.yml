@@ -1006,10 +1006,10 @@ jobs:
       # Do not assume workflow_run reaches Post-MC after a delegated root
       # workflow_dispatch. Explicit bounded relay keeps [skip ci] checkpoint
       # commits and GitHub chain-depth suppression from swallowing the handoff.
+      # A frozen healthy no-op produces no new source. Never wake a doomed
+      # Post-MC retry for the unchanged MC-source gap; the independent Post-MC
+      # cron and its material-change push triggers remain available.
       - name: Atomically wake Post-MC from exact current Pre-MC sources
-        # A frozen healthy no-op produces no new source. Never wake a doomed
-        # Post-MC retry for the unchanged MC-source gap; the independent Post-MC
-        # cron and its material-change push triggers remain available.
         if: success() && steps.precommit.outputs.changed == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
