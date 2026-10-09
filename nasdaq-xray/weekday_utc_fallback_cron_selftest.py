@@ -13,6 +13,8 @@ import re
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
+# VALIDATION_REVISION=NY_ET_ALL_THREE_FALLBACK_CRONS_REPAIRED_20261010
+
 ROOT = Path(__file__).resolve().parent.parent
 NY = ZoneInfo("America/New_York")
 FILES = {
