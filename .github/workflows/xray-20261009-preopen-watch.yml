@@ -1,0 +1,80 @@
+name: XRAY 09-Oct Free Preopen 15-Minute Watch
+on:
+  workflow_dispatch:
+  schedule:
+    # 2026-10-09 only (extra year is time-gated below), 00:00-13:15 UTC.
+    # Schedule arrival can be delayed by GitHub; no guaranteed wall-clock SLA.
+    - cron: "*/15 0-13 9 10 *"
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/xray-20261009-preopen-watch.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: xray-20261009-preopen-watch
+  cancel-in-progress: true
+jobs:
+  verify-sources:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: End automatically at the real 9 Oct 2026 Nasdaq opening
+        id: session_window
+        run: |
+          python - <<'PY'
+          import datetime,os
+          now=datetime.datetime.now(datetime.timezone.utc)
+          start=datetime.datetime(2026,10,9,0,0,tzinfo=datetime.timezone.utc)
+          end=datetime.datetime(2026,10,9,13,30,tzinfo=datetime.timezone.utc)
+          active=start<=now<end
+          with open(os.environ["GITHUB_OUTPUT"],"a") as f:
+              f.write("active="+("true" if active else "false")+"\n")
+          print("XRAY_PREOPEN_WINDOW="+("ACTIVE" if active else "CLOSED_NOT_RUNNING"))
+          PY
+      - name: Run exact current source/provenance guard - no vendor market calls
+        if: steps.session_window.outputs.active == 'true'
+        run: |
+          python nasdaq-xray/research_preopen_source_audit.py --selftest
+          python nasdaq-xray/research_preopen_source_audit.py --output "$RUNNER_TEMP/xray_preopen_watch.json"
+      - name: Capture real terminal and SEC Actions workflow statuses, no delivery claims
+        if: steps.session_window.outputs.active == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh run list -R "${{ github.repository }}" --workflow xray-sec-full-price-pass-vintage-shadow.yml --limit 1 --json databaseId,status,conclusion,headSha,createdAt > "$RUNNER_TEMP/xray_sec_full_run.json"
+          gh run list -R "${{ github.repository }}" --workflow xray-sec-identity-unknown-72-shadow.yml --limit 1 --json databaseId,status,conclusion,headSha,createdAt > "$RUNNER_TEMP/xray_sec_identity_run.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          root=Path(os.environ["RUNNER_TEMP"])
+          j=json.loads((root/"xray_preopen_watch.json").read_text())
+          for name,filename in (("sec_full_vintages","xray_sec_full_run.json"),("sec_identity_unknown_72","xray_sec_identity_run.json")):
+              rows=json.loads((root/filename).read_text())
+              first=rows[0] if rows else {}
+              j[name]={"run_id":first.get("databaseId"),"status":first.get("status"),
+                  "conclusion":first.get("conclusion"),"head_sha":first.get("headSha")}
+          j["full_nasdaq_primary_mc_proven"]=False
+          j["real_device_delivery_receipt_proven"]=False
+          j["production_research_go"]=False
+          j["workflow_green_not_alpha"]=True
+          (root/"xray_preopen_watch.json").write_text(json.dumps(j,sort_keys=True,indent=2)+"\n")
+          print("XRAY_PREOPEN_WATCH=CHECKED_REAL_GITHUB_SOURCES_NO_FALSE_GO")
+          print("XRAY_PREOPEN_SOURCE_INTEGRITY="+str(j["source_integrity_pass"]))
+          print("XRAY_PREOPEN_SEC_FULL_RUN="+str(j["sec_full_vintages"]["run_id"]))
+          PY
+      - name: Preserve 14-day operational readback (metadata, no raw market data)
+        if: steps.session_window.outputs.active == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-20261009-preopen-watch-operational
+          path: ${{ runner.temp }}/xray_preopen_watch.json
+          retention-days: 14
+          if-no-files-found: error
