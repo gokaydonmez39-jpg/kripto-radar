@@ -1,0 +1,105 @@
+{
+  "schema": "XRAY_20261009_V31_CURRENT_MC_REQUEST_REBIND_EXACT_SET_PROOF",
+  "repo": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "precedence": "LIVE_MAIN_AND_ACTIONS_SUPERSEDE_CHECKPOINT",
+  "source_head": "78e9353b0f55a981c4a0b7d17b26ff97a11dbabf",
+  "asof_observation": "2026-10-09",
+  "prior": "nasdaq-xray/research/continuation_checkpoint_20261009_c418_live_validation_v30.json",
+  "policy_active": "C4.17",
+  "control": "C4.27",
+  "successor": "C4.18_PROPOSED_NOT_ACTIVATED",
+  "mode": "RESEARCH_ONLY_MANUAL_DECISION",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "completed_repairs": [
+    {
+      "root": "PASSSIVE_MC_REQUEST_STALE_2026_10_06_509_SYMBOLS_WHILE_2026_10_08_PRICE_HAS_514",
+      "action": "Updated existing disabled automation task 6abeb34daee88191a7d67e86a5732b9c to 2026-10-08 READY with exact 514 symbols, 45 blocked, PRICE blob SHA, policy and v3 resolver handoff",
+      "automation_readback": "automations.update SUCCESS and following peek SUCCESS",
+      "task_enabled_after": false,
+      "source_price_sha": "42ed4a1c1a104aff94f73793194b25746d3bea59",
+      "source_pass_hash": "6e6f8bbabb4c1aaba4db18671a470151843afdc88f7d843190acaf444d7ffb17",
+      "pass_count": 514,
+      "blocked_count": 45,
+      "primary_mc_pass_created": 0
+    },
+    {
+      "root": "TWO_ROLE_EQUAL_HANDOFF_CANDIDATES_V2_AND_V3",
+      "action": "Added exact SHA-linked immutable v2->v3 supersession selection, reject forks, hash drift and cycles",
+      "script": "nasdaq-xray/mc_request_freshness_rebind.py",
+      "code_commit": "38a6bfce127b3d8237fad13fa95b3766315effdb",
+      "first_run": 37973162787,
+      "first_failure": "CURRENT_EXACT_MC_HANDOFF_AUTHORITY_COUNT:2",
+      "passing_run": 37973270549
+    },
+    {
+      "root": "CLAIMED_RESOLVER_PASS_AND_BLOCKED_BOOL_NOT_INDEPENDENT_MEMBERSHIP_PROOF",
+      "action": "Independently rebuild full 3183-symbol resolver PASS FAIL_PRICE FAIL_DV30 BLOCK and UNKNOWN disjoint partition, require PRICE 514 pass exact equality, BLOCK 45 subset, full source count/hash and proof counts",
+      "code_commit": "19f22539d3aac31a0005f9806a3a29cf0cf15119",
+      "passing_run": 37974050036,
+      "negative_unit_count": 14
+    },
+    {
+      "root": "WORKFLOW_SHA256_VALIDATION_ESCAPE_BUG",
+      "action": "Corrected \\n delimiter in Python test and re-ran GitHub Actions, confirmed exact PRICE pass symbols hash",
+      "failed_run": 37974092945,
+      "fix_commit": "78e9353b0f55a981c4a0b7d17b26ff97a11dbabf",
+      "passing_run": 37974185661,
+      "actual_test_result": "SUCCESS"
+    }
+  ],
+  "latest_runner_evidence": {
+    "run": 37974185661,
+    "conclusion": "SUCCESS",
+    "marker": "XRAY_MC_REQUEST_REBIND=EVIDENCE_READY_ASOF_2026-10-08",
+    "exact_checkout": true,
+    "actual_market_cap_measured": false
+  },
+  "current_git": {
+    "PRICE": {
+      "asof": "2026-10-08",
+      "blob": "42ed4a1c1a104aff94f73793194b25746d3bea59",
+      "pass": 514,
+      "blocked": 45,
+      "unknown": 0
+    },
+    "Resolver_v3": {
+      "path": "nasdaq-xray/canonical_resolver_bridge_20261008_c417_dv30_v3.json",
+      "blob": "c5399b7e1efb2c0f88e96e33a3d60c83ecbf0822",
+      "settlement": "PASS",
+      "source_exact": true
+    },
+    "root": {
+      "asof": "2026-10-08",
+      "queue": 3183,
+      "status": "PARTIAL_HISTORY",
+      "unknown": 231
+    },
+    "terminal": {
+      "asof": "2026-10-07",
+      "status": "PARTIAL",
+      "primary_mc_pass": 0,
+      "r92": 0
+    },
+    "delivery_ledger_entries": 0,
+    "calibration_source_exact_completed": 0
+  },
+  "limits": [
+    "Existing MC passive Result is still partial/stale until existing Reader updates it. No unattended Reader invocation immediately triggered.",
+    "Licensed Bigdata credit exhaustion and alternative source non-display/derived entitlements remain unverified; no actual current PRIMARY MC generated.",
+    "Canonical HISTORY 231 UNKNOWN and same-ASOF final terminal remain blocked.",
+    "Real candidate registration, issue/phone delivery and 60-session forward calibration unproven."
+  ],
+  "security": {
+    "no_provider_raw_market_bars_uploaded": true,
+    "no_secret_committed": true,
+    "no_paid_provider_topup": true,
+    "no_new_active_automation": true,
+    "existing_five_active_unchanged": true,
+    "alpha_thresholds_unchanged": true,
+    "no_real_trade": true
+  },
+  "production_go": false
+}
