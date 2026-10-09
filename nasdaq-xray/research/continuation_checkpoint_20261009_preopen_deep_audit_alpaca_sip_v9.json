@@ -1,0 +1,199 @@
+{
+  "schema": "XRAY_20261009_PREOPEN_DEEP_AUDIT_ALPACA_SIP_V9",
+  "repository": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "checkpoint_prewrite_head": "213927c909860aa8cf28be4dad2e3dfb4c2a02e1",
+  "verified_at_utc": "2026-10-09T06:49:47Z",
+  "asof_et": "2026-10-08",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "mode": "RESEARCH_ONLY_MANUAL_DECISION",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "free_only": true,
+  "preopen_trt": "2026-10-09 16:30",
+  "initial_state": {
+    "live_head": "061d698afa763c5974330e98fe1673659ab99803",
+    "price_pass": 514,
+    "price_blocked": 45,
+    "identity_unknown": 72,
+    "current_mc_primary_proven": 0,
+    "root_history_unknown": 231,
+    "terminal_asof_et": "2026-10-07",
+    "device_receipt": false
+  },
+  "repairs": [
+    {
+      "commit": "f50537bb4d91979a94db0cd8ea032d0f1fea93ec",
+      "purpose": "manual research G9/account no longer conflated with legacy full GO incidents",
+      "verified_run": 37894488512,
+      "result": "SUCCESS"
+    },
+    {
+      "commit": "442ad1d3798e1d196ed9bc031e4b557b6acb94ce",
+      "purpose": "separate full-universe coverage and candidate-local exact source readiness, never signal PASS automatically",
+      "verified_run": 37894523898,
+      "result": "SUCCESS"
+    },
+    {
+      "commit": "5cb525a3d053ae1bbe6f058e2155f92e942fc308",
+      "purpose": "delayed SIP 30-session source gate, raw adjusted basis and 20-minute holdback, shadow only"
+    },
+    {
+      "commit": "3b437bed17dec54cb274e5feb0eef7643be76501",
+      "purpose": "GitHub SIP selftest+operational evidence for 14 days",
+      "verified_run": 37894895989,
+      "result": "SUCCESS_GUARDS_ONLY_BLOCKED_NO_PRIVATE_KEYS"
+    },
+    {
+      "commit": "4e491a51f79d4c47b635e5391b8656e11512be25",
+      "purpose": "root HISTORY 231 UNKNOWN aggregate-source classification"
+    },
+    {
+      "commit": "b2111f486e6576a8612990e833c5f46937c69d5a",
+      "purpose": "root 260-session UNKNOWN triage Actions"
+    },
+    {
+      "commit": "a6d425fdab261846557aeaa31740f3b66b993e63",
+      "purpose": "add literal source parser reasons; initial selftest caught URL-vs-exception classifier issue",
+      "test_run": 37895146002,
+      "result": "FAILURE_CAUGHT"
+    },
+    {
+      "commit": "4978feb10e59f7bf39faf8d446c7245663afdc46",
+      "purpose": "reject URLs as exception identifiers; parse actual Sina provider diagnostics",
+      "verified_run": 37895189552,
+      "result": "SUCCESS"
+    },
+    {
+      "commit": "88c2675f45cbb18cd620c2d208c9166cb5cabb24",
+      "purpose": "3 public ticker samples per root unknown reason, no vendor raw prices",
+      "verified_run": 37895272813,
+      "result": "SUCCESS"
+    },
+    {
+      "commit": "e7774806bdeb30465d7bd56b2d638ba23bfa5af6",
+      "purpose": "ranked bounded Alpaca historical SIP read-only diagnostic for root missing history"
+    },
+    {
+      "commit": "a037cd2e1b21eaafb3cfefa58dd467ab1663c4b2",
+      "purpose": "integrate root unknown SIP shadow tests and credentials-gated measurement",
+      "verified_run": 37895503161,
+      "result": "SUCCESS_SAFETY_ONLY_PRIVATE_CREDENTIALS_MISSING"
+    },
+    {
+      "commit": "213927c909860aa8cf28be4dad2e3dfb4c2a02e1",
+      "purpose": "refuse success when actual Alpaca SIP transport blocked",
+      "verified_run": 37895576135,
+      "result": "FAILURE_EXPECTED_FAIL_CLOSED_MISSING_PRIVATE_KEYS"
+    }
+  ],
+  "live_data_probe": {
+    "source": "Connected Alpaca read-only plugin; historical SIP on free tier",
+    "provider_docs": "https://docs.alpaca.markets/us/docs/about-market-data-api",
+    "historical_sip_15min_old_entitlement": "DOCUMENTED_BY_PROVIDER_AND_SAMPLE_ACCEPTED_IN_CONNECTED_APP",
+    "exact_asof": "2026-10-08",
+    "long_history": [
+      "AAPL 278 daily SIP bars 2025-09-02 to 2026-10-08",
+      "MSFT 278 daily SIP bars same dates"
+    ],
+    "root_unknown_sample_15_count": 15,
+    "root_sample_results": [
+      {
+        "ticker": "FGC",
+        "sina": "UNKNOWN_RETRY_EXHAUSTED_IndexError",
+        "sip_30": "30/30",
+        "sip_daily": 278,
+        "sip_zero_volume": 0
+      },
+      {
+        "ticker": "ACFN",
+        "sina": "UNKNOWN_RETRY_EXHAUSTED_SyntaxError",
+        "sip_30": "30/30",
+        "sip_daily": 278,
+        "sip_zero_volume": 0
+      },
+      {
+        "ticker": "ADAM",
+        "sina": "UNKNOWN_RETRY_EXHAUSTED_SyntaxError",
+        "sip_30": "30/30",
+        "sip_daily": 278,
+        "sip_zero_volume": 0
+      },
+      {
+        "ticker": "AEC",
+        "sina": "UNKNOWN_RETRY_EXHAUSTED_SyntaxError",
+        "sip_30": "30/30",
+        "sip_daily": 266,
+        "sip_zero_volume": 0
+      },
+      {
+        "ticker": "AGCC",
+        "sina": "UNKNOWN_STATIC_LT260",
+        "sip_30": "30/30",
+        "sip_daily": 242,
+        "sip_zero_volume": 0
+      },
+      {
+        "ticker": "ALDF",
+        "sina": "ASOF_MISSING",
+        "sip_30": "29/30",
+        "sip_last_date": "2026-10-07",
+        "sip_zero_volume_sample": 14
+      },
+      {
+        "ticker": "ALOV",
+        "sina": "ASOF_MISSING",
+        "sip_30": "29/30",
+        "sip_last_date": "2026-10-07",
+        "sip_zero_volume_sample": 8
+      },
+      {
+        "ticker": "APUR",
+        "sina": "ASOF_MISSING",
+        "sip_30": "29/30",
+        "sip_last_date": "2026-10-07",
+        "sip_zero_volume_sample": 10
+      },
+      {
+        "ticker": "GRAL",
+        "sina": "EXACT30_INCOMPLETE",
+        "sip_30": "30/30",
+        "sip_daily": 278,
+        "sip_zero_volume": 1
+      }
+    ],
+    "interpretation": "Samples are research-only source availability, not full official calendar, trade, C4.17 price/MC or AL proof. Public repo stores no vendor bars."
+  },
+  "root_history_verified_counts": {
+    "total_unknown": 231,
+    "static_260_daily_insufficient": 144,
+    "static_asof_close_missing": 53,
+    "static_exact30_incomplete": 6,
+    "retry_syntax_error": 24,
+    "retry_index_error": 4,
+    "real_triage_actions_run": 37895189552
+  },
+  "status_gates": {
+    "alpaca_automated_github_data": "BLOCKED_XRAY_ALPACA_DATA_KEY_ID_AND_XRAY_ALPACA_DATA_SECRET_KEY_NOT_CONFIGURED",
+    "github_alpaca_run": 37895576135,
+    "github_alpaca_run_result": "FAILURE_EXPECTED_REAL_TRANSPORT_NOT_COMPLETE",
+    "sec_share_vintage_only": "346/514 SHADOW PRIOR_CHECKPOINT_NOT_PRIMARY",
+    "primary_current_mc": "MISSING",
+    "canonical_current_terminal": "2026-10-07 PARTIAL_UNKNOWN",
+    "actual_manual_al": "NOT_ATTESTED",
+    "actual_phone_push_receipt": "NOT_ATTESTED",
+    "research_production": "NO_GO"
+  },
+  "required_operator_action": "A freely obtained Alpaca Market Data API key/secret pair placed ONLY in Actions Repository secrets named XRAY_ALPACA_DATA_KEY_ID and XRAY_ALPACA_DATA_SECRET_KEY; never in Variables, commit, chat, or public artifacts. Even with credentials, independent issuer share-class, corporate actions, licensing and explicit policy version review must precede PRIMARY MC.",
+  "next_actions": [
+    "Re-read live HEAD/last Actions; do not infer anything from v9 alone.",
+    "After private keys present, trigger xray-alpaca-free-sip-shadow-proof.yml; require genuine SIP data and exact sample source SHA.",
+    "Iterate root UNKNOWN subsets with strict 260/52-week calendar/split tests; fill no synthetic bars.",
+    "Reconcile C4.17 PRIMARY MC via independently authorized same-ASOF market-cap source; shadow != PRIMARY.",
+    "Only then produce current terminal / candidate-local R/R and test real device delivery; no trades."
+  ],
+  "safety": "Unknown never PASS; not even 260 observed bars = production history PASS without split, calendar, corporate actions and source SHA; no paid API or account/trades or G9 required for manual mode.",
+  "release": "RESEARCH_PRODUCTION_NO_GO"
+}
