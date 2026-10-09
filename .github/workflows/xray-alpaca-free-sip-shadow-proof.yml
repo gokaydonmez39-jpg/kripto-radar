@@ -62,6 +62,21 @@ jobs:
           assert j["candidate_created"] is False and j["vendor_raw_bars_persisted"] is False
           print("XRAY_ALPACA_ROOT_RESCUE_GUARDS=PASS_NO_PRIMARY_NO_CANONICAL_WRITE")
           PY
+      - name: Enforce actual delayed SIP HTTP measurement before success
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          root=Path(os.environ["RUNNER_TEMP"])
+          a=json.loads((root/"xray_alpaca_free_sip_shadow.json").read_text())
+          b=json.loads((root/"xray_alpaca_root_unknown_rescue.json").read_text())
+          allowed_a=a["status"]=="SHADOW_MEASUREMENT_COMPLETED_NO_PRIMARY_AUTHORITY"
+          allowed_b=b["status"]=="SHADOW_HISTORICAL_SOURCE_DIAGNOSTIC_COMPLETE"
+          if not (allowed_a and allowed_b):
+              print("XRAY_ALPACA_LIVE_TRANSPORT=BLOCKED_SOURCE_OR_PRIVATE_CREDENTIALS_UNAVAILABLE")
+              raise SystemExit(2)
+          print("XRAY_ALPACA_LIVE_TRANSPORT=MEASURED_SHADOW_ONLY_NOT_PRODUCTION")
+          PY
       - name: Archive counts-only operational evidence for 14 days
         if: always()
         uses: actions/upload-artifact@v4
