@@ -1,0 +1,136 @@
+{
+  "schema": "XRAY_C417_CANONICAL_CONTINUATION_20261010_R92_GATES_REPAIR_V38",
+  "repository": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "date_trt": "2026-10-10",
+  "authority": "LIVE_GITHUB_MAIN_AND_GITHUB_ACTIONS_LOGS_SUPERSEDE_THIS_CHECKPOINT",
+  "predecessor": "nasdaq-xray/research/continuation_checkpoint_20261010_twelve_eod_license_pit_v37.json",
+  "predecessor_blob_sha": "901979f725192d900e2ea2ce92e3895b29a23a5b",
+  "opening_live_head": "18f72886810bb24d3651777607a7590fa33a97f3",
+  "latest_verified_code_head": "f75e3f3e8a7122e20bc30b6fb4c517e423964a0d",
+  "policy": {
+    "effective": "C4.17",
+    "control": "C4.27",
+    "c418": "PROPOSED_NOT_ACTIVE",
+    "mode": "RESEARCH_ONLY_MANUAL_DECISION",
+    "execution": "NONE",
+    "real_money": "NO-GO",
+    "broker_account_g9_required": false,
+    "unknown_not_pass": true,
+    "min_rr_basic_severe": {
+      "A": [
+        1.5,
+        1.1
+      ],
+      "B": [
+        2,
+        1.5
+      ],
+      "C": [
+        2,
+        1.5
+      ],
+      "D": [
+        2,
+        1.5
+      ]
+    },
+    "max_entry_to_stop_risk_pct": 8,
+    "thresholds_relaxed": false
+  },
+  "findings_and_repairs": [
+    {
+      "severity": "HIGH",
+      "root_cause": "R92 registration and delivery guards trusted self-declared rr_basic and rr_severe policy floors without proving zero-cost maximum geometry or severe<=basic; E2E registration also omitted 8% stop bound.",
+      "evidence": "Existing synthetic R92 had entry 21 stop 18 R1 27 (zero-cost theoretical RR 2.0) yet reported RR basic 2.5. Delivery sample had entry-high 101 stop96 R1 111 (max2.0) yet self-reported RR 2.2.",
+      "red_test_commit": "d6b46db88e51ac0b0b6cb36dce0a0de6ae091961",
+      "red_e2e_run": 37994472045,
+      "red_e2e_stage": "Compile and regression-test exact C4.17 binding rules",
+      "red_e2e_result": "FAILURE_EXPECTED_ASSERT_FAKE_RR_ACCEPTED",
+      "red_delivery_run": 37994472031,
+      "red_delivery_stage": "Synthetic registered-R92 delivery self-test",
+      "red_delivery_result": "FAILURE_EXPECTED_UNEXPECTED_READY_PASS_FOR_IMPOSSIBLE_RR",
+      "fix_commit": "41ff35b35c52fccaa890a9e6f893e92638db42d9",
+      "changed_files": [
+        "nasdaq-xray/e2e_production_readiness.py",
+        "nasdaq-xray/delivery_prepare.py"
+      ],
+      "guards": "RR basic<=zero-cost (R1-entry_high)/(entry_high-stop), RR severe<=same bound, RR severe<=RR basic (nonnegative costs), entry-high-to-stop risk<=8%; these necessary bounds DO NOT prove actual ATR transaction costs.",
+      "green_delivery_run": 37994561406,
+      "green_delivery_result": "SUCCESS_SELFTEST_DELIVERY_NO_REAL_R92",
+      "green_e2e_run": 37994561434,
+      "green_e2e_result": "SELFTEST_SUCCESS_RELEASE_GATE_EXPECTED_FAIL",
+      "green_dynamic_policy_invariants": 37994561431,
+      "green_dynamic_policy_result": "SUCCESS",
+      "green_four_stage_contract": 37994561421,
+      "green_four_stage_result": "SUCCESS"
+    },
+    {
+      "severity": "HIGH",
+      "root_cause": "Existing delivery_preparation compared its pointer asof only with committed PRICE asof; on weekends this equality could permit obsolete same-asof candidate issue delivery after newer Nasdaq sessions. Scheduler guards runner success, not specific source session.",
+      "fix_commit": "f75e3f3e8a7122e20bc30b6fb4c517e423964a0d",
+      "changed_files": [
+        ".github/workflows/nasdaq-xray-delivery.yml"
+      ],
+      "repair": "When R92 exists, run source_epoch_freshness_guard using official NASDAQ calendar and 30-minute postclose buffer; require PRICE,MASTER,TERMINAL latest completed same-ASOF before scheduler or candidate alert stages.",
+      "workflow_run": 37994711578,
+      "workflow_result": "SUCCESS_NO_REGISTERED_R92",
+      "branch_test_limitation": "Because there is no real registered R92, new conditional epoch step was correctly skipped; official calendar guard has its own tested late/preclose/weekend fixture. Real delivery branch not validated, no device receipt.",
+      "source_guard_sha": "7873b6e8d977305939013b61bb80970f08aa0662"
+    }
+  ],
+  "last_market_data_gate": {
+    "official_last_completed_nasdaq_session": "2026-10-09",
+    "master_asof": "2026-10-08",
+    "price_asof": "2026-10-08",
+    "terminal_asof": "2026-10-07",
+    "master_identity_pass": 3183,
+    "master_identity_unknown": 72,
+    "master_explicit_excluded_count": 2375,
+    "master_raw_identity_total": 3255,
+    "warning": "Do not mix raw identity 3255 and scored NASDAQ 3401 snapshots into a single false partition. Scope counts belong to their source epoches.",
+    "price_pass": 514,
+    "price_blocked": 45,
+    "source_license_grants_independently_proven": false,
+    "massive_20261009_connected": "NOT_ENTITLED",
+    "massive_runner": "BLOCKED_AUTH_OR_NONDISPLAY_AND_PRIVATE_CACHE_RIGHTS",
+    "twelve_basic_real_key_in_actions": false,
+    "twelve_probe_call_count": 0,
+    "twelve_history": "BLOCKED_NO_KEY",
+    "twelve_eod_vendor_claim": "Historical and EOD Basic covers 100% US volume, after 12AM ET next trading day. Vendor assertion not independently corroborated and caching rights tier-specific.",
+    "twelve_official_reference": "https://support.twelvedata.com/en/articles/9935903-us-equities-market-data",
+    "twelve_license": "https://twelvedata.com/terms",
+    "twelve_terms_date": "2026-01-01",
+    "twelve_legal_caveats": "Internal non-display and nonreconstructible derived works licensed by tier; terms explicitly prohibit storing/caching beyond published documentation timeframes and may incorporate upstream agreements; written scope confirmation pending.",
+    "twelve_basic_rate": "8 credits/min and 800/day",
+    "current_514_260_private_market_history_verified": false,
+    "same_asof_primary_mc_count": 0,
+    "r92_registration_verified": 0,
+    "phone_receipt_verified": false,
+    "empirical_comparable_outcomes": "0/60",
+    "production": "NO_GO"
+  },
+  "current_release_blockers": [
+    "CURRENT_MC_AUTHORITY_MISSING",
+    "CURRENT_TERMINAL_FROZEN_OR_INCOMPLETE",
+    "IDENTITY_PARTITION_INCOMPLETE",
+    "NOTIFICATION_DEVICE_RECEIPT_NOT_PROVEN",
+    "PRICE_BLOCKED_30_SESSION_BARS",
+    "SOURCE_EPOCH_NOT_LATEST_COMPLETED_SESSION",
+    "TERMINAL_CURRENT_MC_CHAIN_NOT_PROVEN"
+  ],
+  "external_actions_required": [
+    "Account owner obtains written/publicly documented applicable $0 data usage rights for unattended GitHub runner and 260-day encrypted private OHLCV storage/retention and personal derived alerts, plus actual source API key. Never share secret values in public repo or chat.",
+    "Explicitly verify Twelve Data Basic permitted raw retention lifetime and exact U.S. EOD consolidated OHLCV response on real sample; live GitHub XRAY_TWELVE_DATA_API_KEY currently absent by CI observation.",
+    "Secure 514 cohort 260 completed Nasdaq sessions with actual vendor proof and separate split/PIT continuity, before independent same-ASOF class-specific PRIMARY MC.",
+    "Rebuild freshest MC -> HISTORY -> weekly -> regime -> earnings -> legal -> frozen Risk/RR -> final; real R92 registration -> dedup/expiry -> GitHub issue -> phone receipt, keeping EXECUTION=NONE."
+  ],
+  "preservation": {
+    "all_previous_checkpoints_kept": true,
+    "raw_licensed_bars_to_public_repo": false,
+    "secret_values_disclosed": false,
+    "new_automations_created": 0,
+    "git_main_updated_only_with_cas": true
+  },
+  "completion_claim": false
+}
