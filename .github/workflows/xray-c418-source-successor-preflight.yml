@@ -1,0 +1,54 @@
+name: XRAY C4.18 Licensed Source Successor Preflight (No Production)
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/source_successor_c418_proposal.json"
+      - "nasdaq-xray/source_successor_c418_preflight.py"
+      - ".github/workflows/xray-c418-source-successor-preflight.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: xray-c418-licensed-source-proposal-preflight
+  cancel-in-progress: true
+jobs:
+  proposal-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compile contract and verify protected C4.17 state
+        run: |
+          python -m py_compile nasdaq-xray/source_successor_c418_preflight.py
+          python nasdaq-xray/source_successor_c418_preflight.py --selftest
+          python nasdaq-xray/source_successor_c418_preflight.py --out "$RUNNER_TEMP/xray_c418_proposal_health.json"
+      - name: Verify no activation, no vendor data, no real money
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])/"xray_c418_proposal_health.json"
+          j=json.loads(p.read_text())
+          assert j["schema"]=="XRAY_C418_SOURCE_POLICY_PREFLIGHT_V1"
+          assert j["status"]=="PROPOSED_FAIL_CLOSED" and j["errors"]==[]
+          assert j["production_active"] is False and j["policy_can_activate"] is False
+          assert j["can_register_R92"] is False and j["can_create_PRIMARY"] is False
+          assert j["licensed_market_data_exported"] is False
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          assert j["unknown_never_pass"] is True
+          print("XRAY_C418_SUCCESSOR=VALIDATED_PROPOSAL_NOT_PRODUCTION_GO")
+          PY
+      - name: Upload evidence-only preflight status
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-c418-source-proposal-preflight
+          path: ${{ runner.temp }}/xray_c418_proposal_health.json
+          retention-days: 14
+          if-no-files-found: error
