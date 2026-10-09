@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/twelve_data_history_resume.py"
+      - "nasdaq-xray/twelve_data_history_full_pipeline_selftest.py"
       - "nasdaq-xray/twelve_data_history_probe.py"
       - "nasdaq-xray/qualified_history_ingress_shadow.py"
       - "nasdaq-xray/current_history_source_request.py"
@@ -44,6 +45,7 @@ jobs:
         run: |
           python -m py_compile nasdaq-xray/twelve_data_history_resume.py
           python nasdaq-xray/twelve_data_history_resume.py --selftest
+          python nasdaq-xray/twelve_data_history_full_pipeline_selftest.py
           python nasdaq-xray/qualified_history_ingress_shadow.py --selftest
       - name: Restore previous authenticated private checkpoint only if operator holds actual source rights
         shell: bash
