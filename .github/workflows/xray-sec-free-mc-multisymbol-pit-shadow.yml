@@ -18,8 +18,15 @@ jobs:
     timeout-minutes: 7
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: main
+      - name: Verify SEC evidence source exact triggering commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$(git rev-parse HEAD)" != "$GITHUB_SHA" ]]; then
+            echo "XRAY_SEC_PIT_CHECKOUT_SHA_DRIFT:FAIL_CLOSED" >&2
+            exit 1
+          fi
+          echo "XRAY_SEC_PIT_SOURCE_SHA_EXACT=PASS"
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
