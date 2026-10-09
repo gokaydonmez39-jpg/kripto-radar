@@ -6,6 +6,8 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 import pandas_market_calendars as mcal
+from functools import lru_cache
+from history_transport_cache_guard import exact_recent_sessions
 
 ROOT=Path(__file__).resolve().parent
 MANIFEST=Path(os.getenv("XRAY_UNKNOWN_MANIFEST", str(ROOT/"canonical_full_hard_gate_20260930_unknowns.json")))
@@ -72,7 +74,7 @@ def nasdaq_hist(sym,asof):
         if not day:continue
         close=num(r.get("close") or r.get("close/last"))
         vol=num(r.get("volume"))
-        if close is not None and close>0 and vol is not None and vol>=0:
+        if day<=asof and close is not None and close>0 and vol is not None and vol>=0:
             by[day]=(close,vol)
     return by,{"rows":len(rows),"usable":len(by)}
 
@@ -107,6 +109,23 @@ def yahoo_hist(sym,asof):
     meta=r.get("meta") or {}
     return by,{"usable":len(by),"firstTradeDate":meta.get("firstTradeDate"),"exchangeName":meta.get("exchangeName")}
 
+@lru_cache(maxsize=16)
+def _completed_weekly_close_days(asof):
+    asof_date=datetime.fromisoformat(asof).date()
+    start=(asof_date-timedelta(days=800)).isoformat()
+    end=(asof_date+timedelta(days=7)).isoformat()
+    schedule=mcal.get_calendar("NASDAQ").schedule(start_date=start,end_date=end)
+    week_last={}
+    for idx in schedule.index:
+        d=idx.date()
+        iso=d.isocalendar()
+        week_last[(iso.year,iso.week)]=d.isoformat()
+    return frozenset(d for d in week_last.values() if d<=asof)
+
+def week_count(by,asof):
+    """Observed official completed weekly closes, not arbitrary calendar weeks."""
+    return len(set(by).intersection(_completed_weekly_close_days(asof)))
+
 def classify(by,asof,exp30,source):
     bars=len(by)
     if asof not in by:
@@ -115,7 +134,16 @@ def classify(by,asof,exp30,source):
     if price<HARD_PRICE:
         return "FAIL_PRICE",{"price":price,"bars":bars,"source":source,"proof":"EXACT_ASOF_DAILY_CLOSE"}
     if bars<HARD_HISTORY:
-        return "POTENTIAL_FAIL_HISTORY",{"price":price,"bars":bars,"source":source}
+        return "POTENTIAL_FAIL_HISTORY",{"price":price,"bars":bars,"source":source,
+                                         "reason":"FEWER_THAN_260_OBSERVED_BARS_NOT_IPO_PROOF"}
+    if not exact_recent_sessions(set(by),asof):
+        return "POTENTIAL_FAIL_HISTORY",{"price":price,"bars":bars,"source":source,
+                                         "reason":"LATEST_260_OFFICIAL_SESSIONS_INCOMPLETE"}
+    completed_weeks=week_count(by,asof)
+    if completed_weeks<52:
+        return "POTENTIAL_FAIL_HISTORY",{"price":price,"bars":bars,"source":source,
+                                         "reason":"FEWER_THAN_52_COMPLETED_WEEKLY_CLOSES",
+                                         "completed_weeks":completed_weeks}
     vals=[by[d][0]*by[d][1] for d in exp30 if d in by]
     miss=[d for d in exp30 if d not in by]
     if not miss:
@@ -159,12 +187,9 @@ def resolve_symbol(sym,old,asof,exp30):
         decision,info=ndc,ndi
     elif ydc in {"FAIL_PRICE","FAIL_DV30"}:
         decision,info=ydc,ydi
-    elif ndc=="POTENTIAL_FAIL_HISTORY" and ydc=="POTENTIAL_FAIL_HISTORY":
-        if abs(int(ndi["bars"])-int(ydi["bars"]))<=5:
-            decision="FAIL_HISTORY"
-            info={"bars":min(int(ndi["bars"]),int(ydi["bars"])),
-                  "source":"NASDAQ_OFFICIAL_HISTORICAL_API+YAHOO_CHART_FREE_FALLBACK",
-                  "proof":"TWO_PROVIDER_LT260_AGREEMENT"}
+    # Two incomplete providers (even matching counts) do not prove a genuine
+    # post-IPO history shortfall. Shared truncation must remain UNKNOWN until
+    # a verified independent official listing-date upper bound is available.
     if decision:
         out={"decision":decision}
         if decision=="FAIL_HISTORY":
