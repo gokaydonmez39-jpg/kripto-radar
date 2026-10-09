@@ -46,7 +46,7 @@ jobs:
               code="|".join(v for v in vals if v) or "REASON_NOT_RECORDED"
               reasons[code]+=1
               symbols[sym]=code
-          sha=hashlib.sha1(b"blob "+str(len(raw)).encode()+b"\\0"+raw).hexdigest()
+          sha=hashlib.sha1(b"blob "+str(len(raw)).encode()+b"\0"+raw).hexdigest()
           out={"schema":"XRAY_PRICE_45_DIAGNOSTICS_V1","asof_et":x["asof_et"],
                "price_blob_sha":sha,"price_pass_count":len(passed),
                "blocked_count":len(blocked),"blocked_reason_counts":dict(sorted(reasons.items())),
@@ -54,7 +54,7 @@ jobs:
                "execution":"NONE","real_money":"NO-GO","alpha_authority":False,
                "no_bars_or_synthetic_values_written":True,"source_recovery_proven":False}
           dest=Path(os.environ["RUNNER_TEMP"])/"xray_price45_diagnostics.json"
-          dest.write_text(json.dumps(out,sort_keys=True,indent=2)+"\\n")
+          dest.write_text(json.dumps(out,sort_keys=True,indent=2)+"\n")
           print("XRAY_PRICE45_COUNTS="+json.dumps(out["blocked_reason_counts"],sort_keys=True))
           print("XRAY_PRICE45_SYMBOLS="+json.dumps(sorted(blocked)))
           print("XRAY_PRICE45_PRIMARY_NO_FALSE_PASS")
