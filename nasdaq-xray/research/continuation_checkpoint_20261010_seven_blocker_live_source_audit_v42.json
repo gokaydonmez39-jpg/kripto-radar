@@ -1,0 +1,155 @@
+{
+  "schema": "XRAY_C417_CANONICAL_CONTINUATION_20261010_SEVEN_BLOCKER_LIVE_RALLIES_SOURCE_AUDIT_V42",
+  "repository": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "observed_main_head": "3546cac9c817bf2252560616670af11fd17d6365",
+  "authority": "LIVE_MAIN_AND_GITHUB_RUN_LOGS_OVERRIDE_STATIC_CHECKPOINT",
+  "predecessor": "nasdaq-xray/research/continuation_checkpoint_20261010_twelve_three_strike_source_guard_v41.json",
+  "date_trt": "2026-10-10",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "c418": "PROPOSED_ONLY",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_not_pass": true,
+  "risk_thresholds_relaxed": false,
+  "method": "Live GitHub code/blob/status and runner log reads plus user-connected Rallies query; real vendor data never committed.",
+  "root_repair": {
+    "issue": "Full 9Oct SEC SPAC proof count confused with applied Nasdaq subset: entire identity queue was marked UNKNOWN",
+    "red_run": 37997502772,
+    "red_marker": "BUG_SEC_PROOF_FILE_COUNT_CONFUSED_WITH_APPLIED_NASDAQ_SUBSET",
+    "fix_commit": "72e74675dc39317c8d1103884d4ac5d544aff0c3",
+    "green_run": 37997572587,
+    "green_result": "SUCCESS persistent 9Oct MASTER and PRICE, but not PRICE PASS",
+    "subsequent_identity_refresh_run": 37998083341
+  },
+  "source_blobs": {
+    "master": "9f2c539165f412d8675b4db131e9f527c55b6a07",
+    "price": "b74444f88c57e2bd497495e62c14969184fd9878",
+    "resolver": "a8ad89163417d2d498d69036ed68a10af67354e9",
+    "terminal": "ea9c41cd1e5971e78d85bf3f620d7f8c4e01034f",
+    "history": "28e182225c45c3adf4243e40eb7df7ebdb783884"
+  },
+  "verified_seven": [
+    {
+      "id": 1,
+      "name": "LIVE_MARKET_DATA_TRANSPORT_AND_LICENSE",
+      "status": "PARTIAL_SOURCE_OBSERVED_NO_LICENSED_PRODUCTION_INGEST",
+      "proof": "Rallies connector 9-Oct grouped 12521 US records and AAPL daily 39 dates fetched in this chat, but Github runner cannot use this connector as an authorized source and vendor internal retention, re-use, alert rights are not proven. Twelve Basic private cache and API key rights not attested; no supplier secret readback.",
+      "current_data_access_found": true,
+      "can_create_alpha": false
+    },
+    {
+      "id": 2,
+      "name": "FULL_REAL_260_DAY_AND_52_WEEK_HISTORY",
+      "status": "BLOCKED",
+      "proof": "No same-ASOF current 3184 cohort actual 260-day and 52 completed week valid licensed data. 7Oct canonical HISTORY 460/472 is stale and all 472 r92_ineligible. Single AAPL 39 sessions and five all-US Rallies date spot samples do not establish 260×all stocks.",
+      "actual_authorized_full_scope": 0
+    },
+    {
+      "id": 3,
+      "name": "EXACT_SAME_ASOF_PRIMARY_MARKET_CAP",
+      "status": "BLOCKED",
+      "proof": "Terminal primary MC PASS 0, Post-MC 37998210764 failed actual current MC authority gate; Twelve Basic /market_cap not entitled Ultra only. One vendor overview market cap not full-class PIT authority.",
+      "primary_mc_pass": 0
+    },
+    {
+      "id": 4,
+      "name": "UNIVERSE_IDENTITY_AND_PRICE_DV30",
+      "status": "PARTIAL_IDENTITY_PASS_PRICE_NO_PASS",
+      "proof": "9Oct MASTER 3184 identity PASS, 12 suspect-SPAC UNKNOWN with exact SPAC proof binding all true. PRICE 0 PASS, 553 UNKNOWN, 0 current BLOCK. Actual price classification counts 1311 fail DV30, 7 insufficient sessions, 1304 fail price, 9 no ASOF bar, 553 unknown. Old 8Oct 514 PRICE pass +45 blocked superseded.",
+      "master_pass": 3184,
+      "master_unknown": 12,
+      "price_pass": 0,
+      "price_unknown": 553,
+      "price_blocked": 0
+    },
+    {
+      "id": 5,
+      "name": "SAME_ASOF_CURRENT_SOURCE_AND_TERMINAL_CHAIN",
+      "status": "PARTIAL_MASTER_PRICE_CURRENT_TERMINAL_STALE",
+      "proof": "Completed Nasdaq session on Saturday 10Oct is Fri 9Oct. MASTER and PRICE exact 9Oct, R92 terminal exact 7Oct, MC/HISTORY chain for 9Oct absent.",
+      "latest_completed_session": "2026-10-09",
+      "master_asof": "2026-10-09",
+      "price_asof": "2026-10-09",
+      "terminal_asof": "2026-10-07"
+    },
+    {
+      "id": 6,
+      "name": "FULL_REAL_FINAL_R92_AL",
+      "status": "BLOCKED",
+      "proof": "No C4.17-certified current PRICE pass, no MC PRIMARY, no current complete HISTORY, no final registered R92. Delivery 37998094506 NO_REGISTERED_R92.",
+      "real_registered_r92_count": 0
+    },
+    {
+      "id": 7,
+      "name": "ACTUAL_PHONE_RECEIPT_AND_60_SESSION_FORWARD_AUDIT",
+      "status": "BLOCKED",
+      "proof": "Delivery run 37998094506 `XRAY_DELIVERY_NO_ALPHA_OR_DEVICE_RECEIPT=TRUE` and `XRAY_DELIVERY_NOOP=NO_REGISTERED_RESEARCH_CANDIDATE`; no verified 60 future completed sessions of research candidate outcomes. No broker execution required for research.",
+      "receipt_attested": false,
+      "forward60_proven": false
+    }
+  ],
+  "current_rallies_ephemeral_evidence": {
+    "date": "2026-10-09",
+    "total_us_records": 12521,
+    "current_master_symbols_with_valid_daily_rows": 3139,
+    "master_pass_denominator": 3184,
+    "noninteger_reported_share_volumes": 2925,
+    "check_dates": [
+      {
+        "date": "2026-08-28",
+        "master_covered": 3102
+      },
+      {
+        "date": "2026-09-30",
+        "master_covered": 3133
+      },
+      {
+        "date": "2026-10-07",
+        "master_covered": 3136
+      },
+      {
+        "date": "2026-10-08",
+        "master_covered": 3126
+      },
+      {
+        "date": "2026-10-09",
+        "master_covered": 3139
+      }
+    ],
+    "price_adjustment_unknown": true,
+    "consolidated_share_volume_unknown": true,
+    "raw_volume_fractional_majority": true,
+    "source_data_not_saved_or_authoritative": true,
+    "current_rallies_classification_20261009_exists": false,
+    "prior_20261008_exists": true
+  },
+  "twelve_zero_scope_regression": {
+    "red_commit": "744a53d320ac631cbc2641274e736752f22989fb",
+    "red_run": 37998480293,
+    "fix_commits": [
+      "3ff2015a09ea2ce4b97a425853adb9834b1c0f73",
+      "52c930c0991cf862a4b4b09c8874550d0ac84e2e",
+      "3546cac9c817bf2252560616670af11fd17d6365"
+    ],
+    "green_run": 37998735876,
+    "green_conclusion": "SUCCESS",
+    "live_marker": "XRAY_TWELVE_PRIVATE_INTAKE=BLOCKED_NO_CURRENT_PRICE_PASS_SCOPE",
+    "live_scope": "0/0",
+    "real_api_requests": 0,
+    "synthetic_green": "PASS_ZERO_PRICE_PASS_SCOPE_BLOCKED_NO_PHANTOM_QQQ_NO_ALPHA"
+  },
+  "production": {
+    "go": false,
+    "decision": "NO_GO",
+    "reason": "AVAILABLE_SOURCE_ROWS_NOT_EQUAL_CURRENT_LICENSED_C417_PRICE_PRIMARY_MC_HISTORY_R92_PHONE_CHAIN",
+    "no_orders": true
+  },
+  "next_critical_path": [
+    "Secure provider's automated non-display data processing and caching authority (especially fractional-adjusted volume provenance), wire private source into Github-native ingest without raw public bars.",
+    "Produce independently validated real exact30 9Oct C4.17 Rallies primary OHLCV classification covering current Nasdaq scope without alpha threshold relaxations.",
+    "Prove independent C4.17 current asof PRIMARY MC and true 260 session/52 week historical validity.",
+    "Re-run exact same session E2E until real R92 and phone delivery receipt; no scheduled or time-pressure GO."
+  ]
+}
