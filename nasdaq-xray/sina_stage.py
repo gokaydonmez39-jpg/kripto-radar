@@ -499,8 +499,14 @@ def build_discovery(official,force_all=False,sec_spac_proof=None,operating_overr
       "full_identity":bool(force_all),
       "screener_spac_excluded_count":len(screener_excluded),
       "screener_spac_excluded_hash":sha_lines(sorted(screener_excluded)),
-      "sec_spac_proof_count":len(applied_sec),
-      "sec_spac_proof_hash":sha_lines(applied_sec),
+      # Full issuer-proof file is cryptographically bound in MASTER. The
+      # intersected Nasdaq listed subset is separately exposed as diagnostic
+      # evidence: confusing these counts previously made every current
+      # Nasdaq identity become UNKNOWN despite successful official fetch.
+      "sec_spac_proof_count":len(sec_spac_proof),
+      "sec_spac_proof_hash":sha_lines(sorted(sec_spac_proof)),
+      "sec_spac_proof_applied_count":len(applied_sec),
+      "sec_spac_proof_applied_hash":sha_lines(applied_sec),
     },screener_excluded
 
 def build_full_identity_from_directory(official,sec_spac_proof=None,operating_overrides=None):
@@ -552,8 +558,14 @@ def build_full_identity_from_directory(official,sec_spac_proof=None,operating_ov
       "nasdaq_web_screener_used":False,
       "screener_spac_excluded_count":0,
       "screener_spac_excluded_hash":sha_lines([]),
-      "sec_spac_proof_count":len(applied_sec),
-      "sec_spac_proof_hash":sha_lines(applied_sec),
+      # Full issuer-proof file is cryptographically bound in MASTER. The
+      # intersected Nasdaq listed subset is separately exposed as diagnostic
+      # evidence: confusing these counts previously made every current
+      # Nasdaq identity become UNKNOWN despite successful official fetch.
+      "sec_spac_proof_count":len(sec_spac_proof),
+      "sec_spac_proof_hash":sha_lines(sorted(sec_spac_proof)),
+      "sec_spac_proof_applied_count":len(applied_sec),
+      "sec_spac_proof_applied_hash":sha_lines(applied_sec),
     },excluded
 
 def official_blank_checks_exclusion_authorized(industry,full_identity,membership_snapshot):
@@ -620,8 +632,14 @@ def build_discovery_from_snapshot(official,industries,sec_spac_proof=None,operat
       "full_identity":True,
       "screener_spac_excluded_count":len(excluded),
       "screener_spac_excluded_hash":sha_lines(sorted(excluded)),
-      "sec_spac_proof_count":len(applied_sec),
-      "sec_spac_proof_hash":sha_lines(applied_sec),
+      # Full issuer-proof file is cryptographically bound in MASTER. The
+      # intersected Nasdaq listed subset is separately exposed as diagnostic
+      # evidence: confusing these counts previously made every current
+      # Nasdaq identity become UNKNOWN despite successful official fetch.
+      "sec_spac_proof_count":len(sec_spac_proof),
+      "sec_spac_proof_hash":sha_lines(sorted(sec_spac_proof)),
+      "sec_spac_proof_applied_count":len(applied_sec),
+      "sec_spac_proof_applied_hash":sha_lines(applied_sec),
     },excluded
 
 def completed_sessions():
