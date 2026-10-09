@@ -140,6 +140,12 @@ def selftest():
     bad=json.loads(json.dumps(fak))
     bad["facts"]["dei"]["EntityCommonStockSharesOutstanding"]["units"]["shares"][0]["val"]=True
     assert select_shares(bad,subs,asof)["status"]=="UNKNOWN"
+    alt_facts=json.loads(json.dumps(fak))
+    alt_sub=json.loads(json.dumps(subs))
+    alt_facts["cik"]=1234567
+    alt_sub["cik"]=1234567
+    assert select_shares(alt_facts,alt_sub,asof,expected_cik="0001234567")["status"]=="SHADOW_SHARES_VINTAGE_ONLY"
+    assert select_shares(alt_facts,alt_sub,asof,expected_cik=CIK)["status"]=="UNKNOWN"
     assert not valid_operator_contact("NASDAQ-XRAY bot <bot@users.noreply.github.com>")
     assert not valid_operator_contact("")
     assert not valid_operator_contact("bot@example.com")
