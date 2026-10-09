@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/massive_grouped_history_resume.py"
+      - "nasdaq-xray/qualified_history_ingress_shadow.py"
       - ".github/workflows/xray-massive-grouped-history-resume.yml"
   schedule:
     - cron: "17 */3 * * *"
@@ -73,6 +74,35 @@ jobs:
             --restore "$RUNNER_TEMP/grouped_prior.enc" \
             --checkpoint "$RUNNER_TEMP/xray_grouped_history_checkpoint.enc" \
             --report "$RUNNER_TEMP/xray_grouped_history_health.json"
+      - name: Feed only complete encrypted HISTORY into existing private 260 and 52 official-day validator
+        shell: bash
+        run: |
+          set -euo pipefail
+          raw="$RUNNER_TEMP/xray_private_grouped_history_raw"
+          trap 'rm -rf "$raw"' EXIT
+          state=$(python -c 'import json,sys;print(json.load(open(sys.argv[1]))["collected_days"])' "$RUNNER_TEMP/xray_grouped_history_health.json")
+          if [[ "$state" != "260" || ! -s "$RUNNER_TEMP/xray_grouped_history_checkpoint.enc" ]]; then
+            echo "XRAY_GROUPED_PRIVATE_260_52_VALIDATOR=BLOCKED_INCOMPLETE_OR_NO_AUTH"
+            exit 0
+          fi
+          python nasdaq-xray/massive_grouped_history_resume.py \
+            --export-checkpoint "$RUNNER_TEMP/xray_grouped_history_checkpoint.enc" \
+            --export-dir "$raw"
+          python nasdaq-xray/qualified_history_ingress_shadow.py \
+            --private-cache-dir "$raw" \
+            --out "$RUNNER_TEMP/xray_grouped_private_260_52_validation.json"
+          python - <<'PY'
+          import os,json
+          from pathlib import Path
+          v=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_grouped_private_260_52_validation.json").read_text())
+          assert v["schema"]=="XRAY_PRIVATE_HISTORY_514_TRANSPORT_INTAKE_SHADOW_V1"
+          assert v["expected_daily_count"]==260 and v["expected_completed_week_closes"]==52
+          assert v["source_vendor_rights_independently_verified"] is False
+          assert v["current_history_authority_proven"] is False
+          assert v["canonical_history_pass_created"]==0 and v["can_register_R92"] is False
+          print("XRAY_GROUPED_PRIVATE_260_52_VALIDATOR="+v["status"])
+          print("XRAY_GROUPED_PRIVATE_TRANSPORT_COUNTS="+json.dumps(v["counts"],sort_keys=True))
+          PY
       - name: Verify public health contains no AL or vendor prices
         run: |
           python - <<'PY'
@@ -104,6 +134,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: xray-grouped-history-health-v1
-          path: ${{ runner.temp }}/xray_grouped_history_health.json
+          path: |
+            ${{ runner.temp }}/xray_grouped_history_health.json
+            ${{ runner.temp }}/xray_grouped_private_260_52_validation.json
           if-no-files-found: ignore
           retention-days: 14
