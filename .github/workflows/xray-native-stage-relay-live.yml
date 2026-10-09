@@ -1,0 +1,41 @@
+name: XRAY Native Stage Relay Live (Root to Pre-MC)
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/xray-native-stage-relay-live.yml"
+      - "nasdaq-xray/github_native_stage_relay.py"
+permissions:
+  contents: read
+  actions: write
+concurrency:
+  group: xray-native-relay-live-v1
+  cancel-in-progress: false
+jobs:
+  source-bound:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Regress source epoch and active-run gates
+        run: |
+          python -m py_compile nasdaq-xray/github_native_stage_relay.py
+          python nasdaq-xray/github_native_stage_relay.py --selftest
+      - name: Dispatch PRE-MC directly from current exact source snapshot
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python nasdaq-xray/github_native_stage_relay.py --out "$RUNNER_TEMP/xray_stage_relay_live.json"
+      - name: Preserve dispatch request vs terminal distinction
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-stage-relay-operational-v1
+          path: ${{ runner.temp }}/xray_stage_relay_live.json
+          retention-days: 7
+          if-no-files-found: warn
