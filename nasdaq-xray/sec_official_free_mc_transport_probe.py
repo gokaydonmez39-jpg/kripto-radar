@@ -15,6 +15,7 @@ import re
 import urllib.error
 import urllib.request
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 DEFAULT_ASOF="2026-10-08"
 CIK="0000320193"  # Apple: transport canary, not a real trading candidate
@@ -67,6 +68,11 @@ def accession_acceptance_index(sub: dict) -> dict:
 
 def select_shares(facts:dict,sub:dict,asof:str,expected_cik:str=CIK) -> dict:
     cutoff=dt.date.fromisoformat(asof)
+    # PIT authority is bounded at the completed regular Nasdaq session close,
+    # NOT midnight UTC: otherwise late SEC filings cause lookahead leakage.
+    session_close_utc=dt.datetime.combine(
+        cutoff,dt.time(16,0),tzinfo=ZoneInfo("America/New_York")
+    ).astimezone(dt.timezone.utc)
     if str(facts.get("cik") or "").lstrip("0")!=expected_cik.lstrip("0"):
         return {"status":"UNKNOWN","reason":"SEC_COMPANYFACTS_CIK_MISMATCH"}
     if str(sub.get("cik") or "").lstrip("0")!=expected_cik.lstrip("0"):
@@ -92,8 +98,11 @@ def select_shares(facts:dict,sub:dict,asof:str,expected_cik:str=CIK) -> dict:
             shares=row["val"]
             if isinstance(shares,bool) or not isinstance(shares,int) or shares<=0:
                 continue
+            if accepted.tzinfo is None:
+                continue  # No assumption about missing SEC timezone.
             age=(cutoff-end).days
-            if not (0<=age<=MAX_AGE_DAYS and end<=filed<=cutoff and accepted.date()<=cutoff):
+            if not (0<=age<=MAX_AGE_DAYS and end<=filed<=cutoff
+                    and accepted.astimezone(dt.timezone.utc)<=session_close_utc):
                 continue
         except (KeyError,ValueError,TypeError):continue
         valid.append((accepted, end, acc, shares, age))
@@ -131,6 +140,17 @@ def selftest():
     bad=json.loads(json.dumps(subs))
     bad["filings"]["recent"]["acceptanceDateTime"][0]="2026-10-09T12:00:00Z"
     assert select_shares(fak,bad,asof)["status"]=="UNKNOWN"
+    # Same calendar date, but filing AFTER the 16:00 New York RTH close:
+    # a date-only comparison would incorrectly admit lookahead data.
+    same_close=json.loads(json.dumps(fak))
+    same_close["facts"]["dei"]["EntityCommonStockSharesOutstanding"]["units"]["shares"][0]["end"]="2026-10-08"
+    same_close["facts"]["dei"]["EntityCommonStockSharesOutstanding"]["units"]["shares"][0]["filed"]="2026-10-08"
+    sub_close=json.loads(json.dumps(subs))
+    sub_close["filings"]["recent"]["filingDate"][0]="2026-10-08"
+    sub_close["filings"]["recent"]["acceptanceDateTime"][0]="2026-10-08T20:01:00Z"
+    assert select_shares(same_close,sub_close,asof)["status"]=="UNKNOWN"
+    sub_close["filings"]["recent"]["acceptanceDateTime"][0]="2026-10-08T19:59:00Z"
+    assert select_shares(same_close,sub_close,asof)["status"]=="SHADOW_SHARES_VINTAGE_ONLY"
     bad=json.loads(json.dumps(fak))
     bad["cik"]=1234
     assert select_shares(bad,subs,asof)["reason"]=="SEC_COMPANYFACTS_CIK_MISMATCH"
