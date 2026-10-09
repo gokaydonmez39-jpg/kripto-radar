@@ -256,6 +256,47 @@ def run(args,request=fetch,sleeper=time.sleep,now=time.time):
     print("XRAY_GROUPED_HISTORY_PROGRESS="+str(result["collected_days"])+"/260")
     return result
 
+def export_completed_private_csv(cp,s,directory):
+    """One-run-only unadjusted transport; NEVER upload or promote bars.
+
+    Existing qualified_history_ingress_shadow independently checks the exact
+    completed session and 52 week dates in these private files. Missing a
+    ticker-day produces a short cache, never a synthetic filled session.
+    """
+    import csv
+    import gzip
+    from history_transport_cache_guard import cache_path
+    dest=Path(directory).resolve()
+    if dest.is_relative_to(REPO.resolve()):raise ValueError("PRIVATE_VENDOR_EXPORT_INSIDE_PUBLIC_REPO")
+    if not exact(cp,s) or len(cp["dates"])!=260:
+        raise ValueError("PRIVATE_VENDOR_HISTORY_NOT_ALL_DAYS_FETCHED")
+    dest.mkdir(parents=True,exist_ok=True,mode=0o700)
+    outcount=0
+    for symbol in s["targets"]:
+        lines=[(d,cp["dates"][d][symbol]) for d in s["dates"] if symbol in cp["dates"][d]]
+        if not lines:continue
+        target=cache_path(dest,symbol)
+        with gzip.open(target,"wt",encoding="utf-8",newline="") as fh:
+            writer=csv.writer(fh)
+            writer.writerow(("date","open","high","low","close","volume"))
+            for d,bar in lines:writer.writerow([d,*bar])
+        target.chmod(0o600)
+        outcount+=1
+    return {"symbol_csv_private":outcount,
+            "expected_symbols_plus_benchmark":len(s["targets"]),
+            "all_session_dates_retained":len(cp["dates"]),
+            "raw_unadjusted_needs_corporate_action_validation":True,
+            "source_authority":False}
+
+def export_from_checkpoint(path,directory):
+    if not allowed(os.environ):raise ValueError("SOURCE_OR_PRIVATE_CACHE_RIGHTS_NOT_CONFIRMED")
+    s=scope()
+    cp,restored=load(path,cipher(os.environ["XRAY_MASSIVE_API_KEY"]),s)
+    if not restored:raise ValueError("WRONG_EPOCH_EXPORT")
+    r=export_completed_private_csv(cp,s,directory)
+    print("XRAY_GROUPED_PRIVATE_TRANSPORT_EXPORT=STRUCTURE_ONLY")
+    print("XRAY_GROUPED_PRIVATE_SYMBOL_FILES="+str(r["symbol_csv_private"]))
+
 def check_restore(path):
     if not allowed(os.environ):return 3
     s=scope()
@@ -339,6 +380,10 @@ def selftest():
         assert match and d in rolled["dates"] and rolled["dates"][d]==scoped
         assert exact(rolled,newer)
         assert rolled["alpha_authority"] is False
+        # A partial checkpoint must never be materialized as full history.
+        try:export_completed_private_csv(rolled,newer,root/"private")
+        except ValueError:pass
+        else:raise AssertionError("PARTIAL_HISTORY_EXPORT_ACCEPTED")
         tampered=path.read_bytes()[:-1]+b"Z"
         path.write_bytes(tampered)
         try:load(path,crypto,ss)
@@ -362,10 +407,16 @@ def main():
     p.add_argument("--restore",type=Path)
     p.add_argument("--limit",type=int,default=10)
     p.add_argument("--check-restore",type=Path)
+    p.add_argument("--export-checkpoint",type=Path)
+    p.add_argument("--export-dir",type=Path)
     p.add_argument("--selftest",action="store_true")
     args=p.parse_args()
     if args.selftest:selftest();return
     if args.check_restore:raise SystemExit(check_restore(args.check_restore))
+    if args.export_checkpoint:
+        if not args.export_dir:p.error("--export-dir required")
+        export_from_checkpoint(args.export_checkpoint,args.export_dir)
+        return
     if not args.report or not args.checkpoint:p.error("private paths required")
     for path in (args.report,args.checkpoint,args.restore):
         if path and path.resolve().is_relative_to(REPO.resolve()):p.error("public repo storage forbidden")
