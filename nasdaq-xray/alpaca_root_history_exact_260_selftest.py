@@ -27,7 +27,12 @@ def main():
     assert passed == {"SHADOW_LATEST_260_OFFICIAL_DATES_52_ISO_WEEKS_NOT_PRIMARY":1},passed
     blocked=rescue.study(["UNIT"],ASOF,expected30,{"UNIT":hole},NOW)
     assert blocked == {"UNKNOWN_LATEST_260_OFFICIAL_SESSIONS_INCOMPLETE":1},blocked
-    print("XRAY_ALPACA_SHADOW_EXACT260_REGRESSION=PASS_POSITIVE_MISSING_OFFICIAL_DAY")
+    wrong30=[official[-31],*official[-29:]]
+    assert len(wrong30)==30 and wrong30[-1]==ASOF
+    status,reason,_=sip.evaluate_daily(rows(wrong30),wrong30,ASOF,NOW)
+    assert status=="UNKNOWN" and reason=="OFFICIAL_30_SESSION_LIST_UNVERIFIED",(
+        "FABRICATED_30_SESSION_CALENDAR_ACCEPTED",status,reason)
+    print("XRAY_ALPACA_SHADOW_EXACT260_AND_30_CALENDAR_REGRESSION=PASS")
 
 if __name__=="__main__":
     main()
