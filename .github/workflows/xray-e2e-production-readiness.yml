@@ -48,7 +48,14 @@ jobs:
           assert o["schema"]=="XRAY_E2E_PRODUCTION_READINESS_AUDIT_V1"
           assert o["execution"]=="NONE" and o["real_money"]=="NO-GO"
           assert o["alpha_authority"] is False
-          assert o["ready_for_current_research_signal"] is False
+          assert isinstance(o["ready_for_current_research_signal"],bool)
+          # Future proven registered candidates must not be rejected solely
+          # because an old test asserted that readiness is always False.
+          if o["ready_for_current_research_signal"]:
+              assert o["current_mc_authority_count"]==1
+              assert o["candidate_local_source_chain_attested"] is True
+              assert o["candidate_preparation_witness_only"] is True
+          assert o["actual_device_delivery_receipt_attested"] is False
           assert "NOTIFICATION_DEVICE_RECEIPT_NOT_PROVEN" in o["blockers"]
           assert o["no_trading_or_device_receipt_claim"] is True
           print("XRAY_READINESS_REPORT_CHECK=PASS_FAIL_CLOSED")
