@@ -128,30 +128,18 @@ def official_directory():
     return names,footer
 
 def official_screener_industries():
-    params=urllib.parse.urlencode({
-      "tableonly":"true","limit":"25","offset":"0","exchange":"NASDAQ","download":"true"
-    })
-    req=urllib.request.Request(
-      NASDAQ_SCREENER+"?"+params,
-      headers={
-        "User-Agent":UA,
-        "Accept":"application/json,text/plain,*/*",
-        "Origin":"https://www.nasdaq.com",
-        "Referer":"https://www.nasdaq.com/market-activity/stocks/screener",
-      },
-    )
-    with urllib.request.urlopen(req,timeout=60) as r:
-        obj=json.loads(r.read().decode("utf-8"))
-    data=obj.get("data") or {}
-    rows=data.get("rows") or ((data.get("table") or {}).get("rows") or [])
-    if len(rows)<1000:
-        raise RuntimeError("NASDAQ_SCREENER_TOO_FEW_ROWS")
-    out={}
-    for row in rows:
-        sym=str(row.get("symbol") or "").strip().upper()
-        if sym:
-            out[sym]=str(row.get("industry") or "").strip()
-    return out
+    """Fail closed on Nasdaq.com website screener's unlicensed data collection.
+
+    NasdaqTrader official exchange directory names and same-ASOF SEC EDGAR
+    issuer filings remain separate authoritative identity evidence.  A
+    working Nasdaq website endpoint never grants automated content
+    extraction / machine analytics / retention permissions.  Return no
+    industry observations rather than fetching or inventing Blank Checks.
+    Re-enable only through a separate explicit rights-proof, policy-versioned
+    source adapter, not by changing this compatibility entrypoint.
+    """
+    return {}
+
 
 def prior_operating_fallback(sym,old,asof,names,industries):
     if sym not in names:
@@ -1035,7 +1023,8 @@ def main():
       "sec_discovery_error_count":len(sec_discovery_errors),
       "forward_carry":False,
       "sec_network_error":sec_network_error,
-      "same_asof_nasdaq_screener_fallback_used":bool(sec_network_error),
+      "same_asof_nasdaq_screener_fallback_used":False,
+      "nasdaq_web_screener_automation_blocked_unlicensed":True,
     },sort_keys=True))
 
 if __name__=="__main__":
