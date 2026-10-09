@@ -149,7 +149,7 @@ def load(path,crypto,s):
     try:cp=json.loads(crypto.decrypt(token))
     except Exception as e:raise ValueError("CIPHERTEXT_NOT_AUTHENTIC") from e
     if not isinstance(cp,dict) or cp.get("schema")!=SCHEMA:raise ValueError("CHECKPOINT_SCHEMA_INVALID")
-    if cp.get("asof")!=s["asof"] or cp.get("price_sha")!=s["price_sha"] or cp.get("scope_hash")!=s["scope_hash"]:
+    if any(cp.get(k)!=s[k] for k in ("asof","price_sha","master_sha","scope_hash","dates_hash")):
         # Authentic same-date PRICE revisions are STALE, not corrupt.
         # Never merge two same-ASOF identities or price-blobs.
         if cp.get("asof")==s["asof"] or cp.get("asof")>s["asof"]:
@@ -220,6 +220,16 @@ def telemetry(cp,s,status,request_count):
             "primary_MC_pass":False,"canonical_HISTORY_pass":False,"R92_AL":False,
             "raw_bars_public":False,"execution":"NONE","real_money":"NO-GO"}
 
+def safe_vendor_block_reason(error):
+    # Return ONLY stable codes; vendor exception text may contain credentials.
+    if isinstance(error,urllib.error.HTTPError):
+        if error.code==429:return "BLOCKED_HTTP_429_FREE_TIER_RATE_LIMIT"
+        if error.code in (401,402,403):return "BLOCKED_HTTP_VENDOR_AUTH_OR_PLAN"
+        return "BLOCKED_HTTP_OTHER"
+    if isinstance(error,(urllib.error.URLError,TimeoutError)):
+        return "BLOCKED_VENDOR_TRANSPORT"
+    return "BLOCKED_GROUPED_RESPONSE_OR_SCOPE_DATE_PROOF"
+
 def run(args,request=fetch,sleeper=time.sleep,now=time.time):
     s=scope()
     out=Path(args.report)
@@ -244,8 +254,8 @@ def run(args,request=fetch,sleeper=time.sleep,now=time.time):
         try:
             payload=request(day,os.environ["XRAY_MASSIVE_API_KEY"])
             scoped=read_day(payload,day,s["targets"])
-        except Exception:
-            status="BLOCKED_VENDOR_OR_SCOPE_DATE_PROOF"
+        except Exception as error:
+            status=safe_vendor_block_reason(error)
             break
         cp["dates"][day]=scoped
         save(cp,crypto,s,args.checkpoint)
@@ -326,6 +336,12 @@ def selftest():
          "XRAY_MASSIVE_LICENSE_EVIDENCE_SHA256":"f"*64}
     assert allowed(env)
     assert not allowed({**env,"XRAY_MASSIVE_LICENSE_EVIDENCE_SHA256":"NOT_A_DIGEST"})
+    assert safe_vendor_block_reason(urllib.error.HTTPError(
+        "https://example.invalid/?token=NEVER_PRINT",429,"secret",None,None)
+        )=="BLOCKED_HTTP_429_FREE_TIER_RATE_LIMIT"
+    assert safe_vendor_block_reason(urllib.error.HTTPError(
+        "https://example.invalid/?token=NEVER_PRINT",403,"secret",None,None)
+        )=="BLOCKED_HTTP_VENDOR_AUTH_OR_PLAN"
     cp=fresh(ss);assert exact(cp,ss)
     d=ss["dates"][-1]
     t=int(datetime.fromisoformat(d+"T20:00:00+00:00").timestamp()*1000)
