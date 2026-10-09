@@ -482,6 +482,25 @@ def run(script, extra_env=None):
     if cp.returncode!=0:
         raise RuntimeError(f"{script}:EXIT_{cp.returncode}")
 
+def history_retry_plan(ss):
+    """Distinguish retryable unfinished work from completed but UNKNOWN scope.
+
+    Once all symbols are attempted, repeated execution with zero retryable
+    observations cannot create HISTORY_COMPLETE and burns runner time.
+    """
+    total=int(ss.get("queue_total",0) or 0)
+    cursor=int(ss.get("cursor",0) or 0)
+    pending=int(ss.get("pending_retry",0) or 0)
+    if total<=0 or cursor<0 or cursor>total or pending<0:
+        raise ValueError("INVALID_HISTORY_PROGRESS_COUNTERS")
+    if ss.get("status")=="HISTORY_COMPLETE":
+        return False,"COMPLETE"
+    if cursor<total:
+        return True,"NEW_HISTORY_SCOPE_REMAINS"
+    if pending>0:
+        return True,"RETRYABLE_HISTORY_UNKNOWN_REMAINS"
+    return False,"NO_RETRYABLE_HISTORY_WORK_REMAINS"
+
 def main():
     now_et=datetime.now(timezone.utc).astimezone(ZoneInfo("America/New_York"))
     # Keep an all-UTC schedule without accidentally treating UTC Saturday as ET Friday loss.
@@ -513,10 +532,15 @@ def main():
             if not direct_no_web_identity_ok(ss):
                 raise RuntimeError("NASDAQTRADER_DIRECT_NO_WEB_IDENTITY_PARTITION_MISMATCH")
         print("XRAY_HISTORY_STATUS="+str(ss.get("status"))+" CURSOR="+str(ss.get("cursor"))+"/"+str(ss.get("queue_total"))+" FULL_IDENTITY=1 AUTHORITY="+authority,flush=True)
-        if ss.get("status")=="HISTORY_COMPLETE":
+        retry_allowed,retry_reason=history_retry_plan(ss)
+        if not retry_allowed:
+            print("XRAY_HISTORY_RETRY_STOP="+retry_reason+
+                  " unknown="+str(ss.get("unknown_count"))+
+                  " pending_retry="+str(ss.get("pending_retry")),flush=True)
             break
     ss=readj("sina_state.json")
     if ss.get("status")!="HISTORY_COMPLETE":
+        retry_allowed,retry_reason=history_retry_plan(ss)
         downstream_invalidation=invalidate_downstream_for_partial_history(ss)
         out={
           "schema":"XRAY_ORCHESTRATOR_V1","task_id":TASK_ID,
@@ -524,6 +548,10 @@ def main():
           "updated_at_utc":datetime.now(timezone.utc).isoformat(),
           "status":"PARTIAL_HISTORY","asof_et":ss.get("asof_et"),
           "cursor":ss.get("cursor"),"queue_total":ss.get("queue_total"),
+          "unknown_count":ss.get("unknown_count"),
+          "pending_retry":ss.get("pending_retry"),
+          "history_retryable":retry_allowed,
+          "history_retry_reason":retry_reason,
           "full_universe_identity":True,"queue_hash":ss.get("queue_hash"),
           "g9_status":"BLOCKED","account_gate":"UNKNOWN_NOT_CONFIGURED",
           "downstream_invalidation":downstream_invalidation
