@@ -236,6 +236,7 @@ def run(args,request=fetch,sleeper=time.sleep,now=time.time):
         cp["last_request_ts"]=now()
         cp["request_count"]+=1
         save(cp,crypto,s,args.checkpoint)
+        requests+=1  # Include failed HTTP requests in the free-tier attempt budget.
         try:
             payload=request(day,os.environ["XRAY_MASSIVE_API_KEY"])
             scoped=read_day(payload,day,s["targets"])
@@ -244,7 +245,6 @@ def run(args,request=fetch,sleeper=time.sleep,now=time.time):
             break
         cp["dates"][day]=scoped
         save(cp,crypto,s,args.checkpoint)
-        requests+=1
     if not Path(args.checkpoint).is_file():save(cp,crypto,s,args.checkpoint)
     if len(cp["dates"])==260:
         status=("COMPLETE_PRIVATE_TRANSPORT_ONLY" if
@@ -323,8 +323,22 @@ def selftest():
         other,restored=load(path,crypto,ss)
         assert restored and other["dates"][d]==scoped
         wrong=deepcopy(ss);wrong["price_sha"]="0"*40
-        stale,match=load(path,crypto,wrong)
-        assert not match if False else True
+        try:
+            load(path,crypto,wrong)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError("SAME_ASOF_BLOB_DRIFT_ACCEPTED")
+        newer=deepcopy(ss)
+        newer["asof"]="2026-10-09"
+        newer["dates"],newer["weeks"]=expected_dates("2026-10-09")
+        newer["dates_hash"]=sha256_lines(newer["dates"])
+        newer["price_sha"]="0"*40
+        newer["master_sha"]="1"*40
+        rolled,match=load(path,crypto,newer)
+        assert match and d in rolled["dates"] and rolled["dates"][d]==scoped
+        assert exact(rolled,newer)
+        assert rolled["alpha_authority"] is False
         tampered=path.read_bytes()[:-1]+b"Z"
         path.write_bytes(tampered)
         try:load(path,crypto,ss)
