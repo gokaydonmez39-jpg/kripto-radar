@@ -1,0 +1,112 @@
+{
+  "schema": "XRAY_C417_CONTINUATION_20261010_DYNAMIC_SCOPE_FIX_V36",
+  "audit_date_trt": "2026-10-10",
+  "authority": "LIVE_GITHUB_MAIN_ACTIONS_AND_PROVIDER_WRITTEN_LICENSE_SUPERSEDE_THIS_RECORD",
+  "repository": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "predecessor": "nasdaq-xray/research/zero_cost_sources_canonical_handoff.json",
+  "predecessor_blob_sha": "cb851595fc810848899014622fbc5833cd6f9dd0",
+  "initial_live_head": "6296a132f7db7bf2b4b47f9ec39ae79c63783960",
+  "post_repair_head": "7cde5ef656a9abb5fd56c5f9a36b890bb640cd26",
+  "policy": {
+    "effective": "C4.17",
+    "control": "C4.27",
+    "candidate": "C4.18_NOT_ACTIVE",
+    "mode": "RESEARCH_ONLY_MANUAL_DECISION",
+    "execution": "NONE",
+    "real_money": "NO-GO",
+    "g9_required": false,
+    "broker_required": false,
+    "unknown_not_pass": true,
+    "alpha_thresholds_changed": false,
+    "rr_basic_severe": {
+      "A": [
+        1.5,
+        1.1
+      ],
+      "B": [
+        2,
+        1.5
+      ],
+      "C": [
+        2,
+        1.5
+      ],
+      "D": [
+        2,
+        1.5
+      ]
+    },
+    "risk_max_percent": 8
+  },
+  "findings": {
+    "reproduced_structural_drift": "Two HISTORY synthetic selftests pinned PRICE cohort size to exactly 514; future ASOF PRICE filters can change pass_count, causing a false CI failure before vendor intake.",
+    "repair": "Removed hard-coded 514 from runner preflight tests; introduced smaller/larger in-memory synthetic scope with scope_hash, cohort mismatch negative, no added AL authority.",
+    "modified_files": [
+      "nasdaq-xray/massive_grouped_history_resume.py",
+      "nasdaq-xray/grouped_history_full_pipeline_selftest.py"
+    ],
+    "old_blob_sha": [
+      "cc72ac0f7eed811a03207ac3e6585e291a3ad238",
+      "832e6ea0b7ae574bf63f245d097cdde83d1bb17b"
+    ],
+    "new_blob_sha": [
+      "cfc86d98a90af159363ee22ab136d9acab4cd66a",
+      "4e79d263ba98295c6871f651097abbb56c8a4438"
+    ],
+    "repair_commit": "7cde5ef656a9abb5fd56c5f9a36b890bb640cd26",
+    "github_commit_and_file_readback": true,
+    "actions_run": 37993249752,
+    "actions_result": "SUCCESS_CODE_SYNTHETIC_AND_FAIL_CLOSED_SOURCE",
+    "actions_job_id": 114032596854,
+    "real_vendor_history_days_collected": 0,
+    "synthetic_positive_dynamic_scope_and_negative_source_mismatch_pass": true,
+    "synthetic_full_scope_260_52_pass": true,
+    "actual_vendor_market_authority_verified": false,
+    "runner_grouped_status": "BLOCKED_AUTH_OR_NONDISPLAY_AND_PRIVATE_CACHE_RIGHTS",
+    "runner_restore_status": "BLOCKED_RIGHTS_OR_KEY",
+    "runner_current_price_terminal_freshness": false,
+    "provider_license_independent_grant": "NOT_PROVEN",
+    "actual_github_secret_names_readback": "UNAVAILABLE_IN_CONNECTED_GITHUB_READ_CAPABILITY; DO_NOT_INFER WHICH_INPUT_MISSING",
+    "massive_connected_plugin_grouped_20261009": "NOT_ENTITLED; separate account does not prove GitHub runner entitlement",
+    "massive_public_free_tier": "Stocks Basic $0, 5 calls/minute, 2 years EOD; this is an access feature, NOT independent license to use in investment strategy",
+    "massive_terms": "https://massive.com/legal/market-data-terms-of-service",
+    "massive_terms_caveat": "Section 5(d) non-display and derived investment strategy needs explicit license; no independent written grant found",
+    "twelve_data_terms": "https://twelvedata.com/terms",
+    "twelve_data_caveat": "Basic internal non-display advertised, but 260-day private caching entitlement/timeframes and full-marketwide US volume remain unproven",
+    "latest_official_completed_session": "2026-10-09",
+    "canonical_master_price_asof": "2026-10-08",
+    "canonical_terminal_asof": "2026-10-07",
+    "canonical_primary_mc_verified": 0,
+    "canonical_r92_verified": 0,
+    "real_phone_receipt_verified": false,
+    "latest_e2e_run": 37992934946,
+    "latest_e2e_result": "FAIL_CLOSED_NO_GO",
+    "e2e_blockers": [
+      "CURRENT_MC_AUTHORITY_MISSING",
+      "CURRENT_TERMINAL_FROZEN_OR_INCOMPLETE",
+      "IDENTITY_PARTITION_INCOMPLETE",
+      "NOTIFICATION_DEVICE_RECEIPT_NOT_PROVEN",
+      "PRICE_BLOCKED_30_SESSION_BARS",
+      "SOURCE_EPOCH_NOT_LATEST_COMPLETED_SESSION",
+      "TERMINAL_CURRENT_MC_CHAIN_NOT_PROVEN"
+    ],
+    "price_dv30_pass": 514,
+    "master_unknown": 72,
+    "price_blocked": 45,
+    "production": "NO_GO",
+    "open_research_not_matched": "0/60 comparable completed forward calibration sessions",
+    "device_delivery": "NOT_PROVEN"
+  },
+  "next_actions": [
+    "Obtain source-specific $0 written grant for unattended internal non-display strategy research, private cache retention and nonreconstructible alerts before enabling data collector. Do not self-certify flags.",
+    "Owner checks GitHub Actions secret/var configurations without exposing values: XRAY_MASSIVE_API_KEY, XRAY_MASSIVE_LICENSE_EVIDENCE_SHA256, XRAY_MASSIVE_NONDISPLAY_LICENSE_OK, XRAY_MASSIVE_PRIVATE_CACHE_RIGHTS_OK. Connector cannot read these names.",
+    "Only after legal and access authorization, run bounded grouped unadjusted EOD collector until exact 260 Nasdaq completed sessions and 52 complete weeks validated for dynamic PRICE pass cohort with split, symbol continuity and benchmark; no fake fill.",
+    "Promote exact same-ASOF issuer/class/corporate-action validated independent PRIMARY MC; repair 72 UNKNOWN identities and 45 blocked price histories only with source evidence.",
+    "Rebuild current MC->HISTORY->Weekly->Regime->Earnings->Legal->Risk/RR->Final, then prove real R92 registration, dedup, expiry, artifact delivery and user phone receipt separately. Maintain NO_GO until met."
+  ],
+  "no_new_automations_created": true,
+  "raw_vendor_data_written_publicly": false,
+  "provider_key_disclosed": false,
+  "immutable_prior_checkpoints_preserved": true
+}
