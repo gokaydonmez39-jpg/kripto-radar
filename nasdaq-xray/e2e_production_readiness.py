@@ -119,6 +119,11 @@ def scope_readiness(blockers,chain_exact):
     }
 
 TASK_ID="6a825366222081918997094d76e6ae46"
+# Exact family-specific C4.17 source-of-truth values, matching the compiled
+# policy, manual_decision_policy_v1.json and final_tech_shadow.py.
+REGISTERED_RR_MIN_BY_FAMILY={
+    "A":(1.5,1.1), "B":(2.0,1.5), "C":(2.0,1.5), "D":(2.0,1.5),
+}
 REQUIRED_REGISTERED_FIELDS=(
     "delivery_key","symbol","setup","asof_et","entry_low","entry_high",
     "chase_limit","stop","r1","rr_basic","rr_severe","dv30",
@@ -179,10 +184,15 @@ def registered_research_candidate_exact(terminal,pointer,asof,terminal_sha):
         if any(isinstance(row.get(n),bool) or not isinstance(row.get(n),(int,float))
                or not math.isfinite(row[n]) for n in nums):
             return False
+        # C4.17 has family-specific RR. Do not impose B/C/D on family A.
+        family=str(row.get("setup") or "").upper()
+        rr_min=REGISTERED_RR_MIN_BY_FAMILY.get(family)
+        if rr_min is None:
+            return False
         if not (0 < row["stop"] < row["entry_low"] <= row["entry_high"]
                 <= row["chase_limit"] < row["r1"]
                 and row["dv30"]>=50_000_000
-                and row["rr_basic"]>=2.0 and row["rr_severe"]>=1.5):
+                and row["rr_basic"]>=rr_min[0] and row["rr_severe"]>=rr_min[1]):
             return False
         key=str(row.get("symbol") or "").upper()+"|"+str(row.get("setup") or "").upper()
         dkey=row.get("delivery_key")
@@ -391,6 +401,28 @@ def selftest():
              "terminal_blob_sha":"TERMINAL-SHA"},
            "delivery_keys":["exact-key"],"r92":[reg_row]}}
     assert registered_research_candidate_exact(reg_t,ptr,"2026-10-08","TERMINAL-SHA")
+    # A setup obeying original C4.17 (1.5 / 1.1) must pass this *preparation*
+    # check without bypassing terminal MC, legal, risk or real delivery gates.
+    at,ap=deepcopy(reg_t),deepcopy(ptr)
+    at["r92_candidates"]=["AAA|A"]
+    at["sets"]["pre_g9_tech_pass"]=["AAA|A"]
+    ap["state_json"]["r92"][0]["setup"]="A"
+    ap["state_json"]["r92"][0]["rr_basic"]=1.6
+    ap["state_json"]["r92"][0]["rr_severe"]=1.2
+    assert registered_research_candidate_exact(at,ap,"2026-10-08","TERMINAL-SHA"),"A_FAMILY_FALSE_REJECTED"
+    for field,bad_rr in (("rr_basic",1.49),("rr_severe",1.09)):
+        ta,pa=deepcopy(at),deepcopy(ap)
+        pa["state_json"]["r92"][0][field]=bad_rr
+        assert not registered_research_candidate_exact(ta,pa,"2026-10-08","TERMINAL-SHA"),("A_BELOW_POLICY",field)
+    bt,bp=deepcopy(reg_t),deepcopy(ptr)
+    bp["state_json"]["r92"][0]["rr_basic"]=1.6
+    bp["state_json"]["r92"][0]["rr_severe"]=1.2
+    assert not registered_research_candidate_exact(bt,bp,"2026-10-08","TERMINAL-SHA"),"B_WRONGLY_RELAXED"
+    qt,qp=deepcopy(at),deepcopy(ap)
+    qt["r92_candidates"]=["AAA|Q"]
+    qt["sets"]["pre_g9_tech_pass"]=["AAA|Q"]
+    qp["state_json"]["r92"][0]["setup"]="Q"
+    assert not registered_research_candidate_exact(qt,qp,"2026-10-08","TERMINAL-SHA"),"UNKNOWN_FAMILY_ACCEPTED"
     for edit in (
         lambda t,p:p["state_json"]["deep_final_evidence"].update(terminal_blob_sha="DRIFT"),
         lambda t,p:p["state_json"]["delivery_keys"].clear(),
@@ -411,7 +443,7 @@ def selftest():
         tbad,pbad=deepcopy(reg_t),deepcopy(ptr)
         edit(tbad,pbad)
         assert not registered_research_candidate_exact(tbad,pbad,"2026-10-08","TERMINAL-SHA")
-    print("XRAY_E2E_REGISTERED_RESEARCH_PREP_SELFTEST=PASS_POSITIVE_15_NEGATIVES_NO_DEVICE_CLAIM")
+    print("XRAY_E2E_REGISTERED_RESEARCH_PREP_SELFTEST=PASS_BCD_AND_A_C417_RR_POSITIVE_19_NEGATIVES_NO_DEVICE_CLAIM")
     print("XRAY_E2E_SCOPE_BOUNDARY_SELFTEST=PASS_INDEPENDENT_GLOBAL_AND_LOCAL_NO_AL")
     print("XRAY_E2E_READINESS_MC_SELFTEST=PASS_POSITIVE_7_NEGATIVES")
     print("XRAY_E2E_TERMINAL_SHA_BINDING_SELFTEST=PASS_POSITIVE_5_NEGATIVES")
