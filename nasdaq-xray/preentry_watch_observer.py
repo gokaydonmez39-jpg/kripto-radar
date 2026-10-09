@@ -105,6 +105,33 @@ def classify(row,source_ready):
     return "TECH_FAIL","CHASE_EXCEEDED_DO_NOT_CHASE"
 
 
+def b_armed_observation(symbol, record):
+    """Prospective tight-base B: pivot proximity only, breakout unconfirmed."""
+    if not isinstance(record,dict):
+        raise ValueError("B_ARMED_RECORD_MISSING")
+    b=record.get("B") or {}
+    if b.get("pool") is not True or b.get("breakout_confirmed") is not False:
+        raise ValueError("B_ARMED_BASE_CONTRACT_NOT_EXACT")
+    if not all(finite(b.get(k)) for k in ("A","P","close","window")):
+        raise ValueError("B_ARMED_NONFINITE_GEOMETRY")
+    atr,pivot,close=float(b["A"]),float(b["P"]),float(b["close"])
+    if not (atr>0 and pivot>0 and close>0 and
+            type(b["window"]) is int and 5<=b["window"]<=20):
+        raise ValueError("B_ARMED_INVALID_BASIS")
+    distance=(pivot-close)/atr
+    zone=("NEAR_B_PIVOT_HALF_ATR" if 0<=distance<=0.5
+          else "B_PIVOT_NOT_NEAR" if distance>0.5
+          else "B_ALREADY_ABOVE_PIVOT_BREAKOUT_UNCONFIRMED")
+    return {
+        "symbol":symbol,"setup":"B_ARMED","proximity":zone,
+        "pivot_distance_atr":round(distance,4),
+        "event_status":record.get("event_status") or "UNKNOWN",
+        "source_cap":record.get("state_cap") or "UNKNOWN",
+        "reason":"UNCONFIRMED_BREAKOUT_AND_EVENT_REQUIRES_INDEPENDENT_CHECK",
+        "al":False,"order":False
+    }
+
+
 def build(root):
     radar=existing.build(root)
     terminal,_=existing.read(root,"canonical_current_terminal.json")
@@ -112,6 +139,7 @@ def build(root):
     master,_=existing.read(root,"canonical_current_master_manifest.json")
     price,_=existing.read(root,"canonical_current_price_dv30.json")
     root_state,_=existing.read(root,"orchestrator_state.json")
+    deep,_=existing.read(root,"canonical_current_deep_full.json")
     asof=terminal.get("asof_et")
     source_ready=bool(
         radar["source_exact"] and asof
@@ -134,6 +162,13 @@ def build(root):
         observed.append({**d,"classification":klass,"reason":reason,
                          "live_research_observation":source_ready})
     usable=[r for r in observed if r["classification"].startswith("WATCH_") and source_ready]
+    # Observe B before breakout rather than waiting for the Final trigger.
+    # Deep-full stage is bound by existing.research_watch_radar.build().
+    armed=[]
+    for symbol in sorted(set(deep.get("b_armed_rs_event_watch") or [])):
+        row=(deep.get("results") or {}).get(symbol)
+        armed.append(b_armed_observation(symbol,row))
+    live_armed=armed if source_ready else []
     return {
         "schema":SCHEMA,"asof_et":asof,
         "source_asof":{"terminal":asof,"master":master.get("asof_et"),
@@ -150,7 +185,11 @@ def build(root):
         "observed_final_count":len(observed),
         "historical_frozen_reason_counts":dict(sorted(historical.items())),
         "preentry_watch":usable,
-        "prospective_watch_count":len(usable),
+        "prospective_watch_count":len(usable)+len(live_armed),
+        "prospective_final_watch_count":len(usable),
+        "prebreakout_b_armed_watch":live_armed,
+        "observed_b_armed_count":len(armed),
+        "historical_b_armed_not_live":armed if not source_ready else [],
         "historical_diagnostic_only":observed if not source_ready else [],
         "alpha_authority":False,"delivery_authority":False,
         "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
@@ -199,6 +238,15 @@ def selftest():
         try:diagnose_final("TEST|D",changed)
         except ValueError:pass
         else:raise AssertionError("INVALID_LEVEL_ACCEPTED:"+key)
+    b={"B":{"A":2.0,"P":100,"close":99.4,
+           "window":5,"pool":True,"breakout_confirmed":False},
+       "event_status":"UNKNOWN","state_cap":"WATCH"}
+    assert b_armed_observation("TEST",b)["proximity"]=="NEAR_B_PIVOT_HALF_ATR"
+    for name,val in [("A",0),("P",float("nan")),("window",True)]:
+        bad=deepcopy(b);bad["B"][name]=val
+        try:b_armed_observation("TEST",bad)
+        except ValueError:pass
+        else:raise AssertionError("B_ARMED_INVALID_ACCEPTED:"+name)
     changed=deepcopy(base);changed["geometry"]["risk_percent"]=0.01
     try:diagnose_final("TEST|D",changed)
     except ValueError:pass
