@@ -7,6 +7,7 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/xray_multi_provider_research.py"
+      - "nasdaq-xray/bq_history_onecall_shadow.py"
       - ".github/workflows/xray-multi-provider-research-shadow.yml"
 
 permissions:
@@ -26,10 +27,29 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.sha }}
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Bound and inspect optional official Business Quant EOD response (one sample, never alpha)
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python -m py_compile nasdaq-xray/bq_history_onecall_shadow.py
+          python nasdaq-xray/bq_history_onecall_shadow.py --selftest
+          python nasdaq-xray/bq_history_onecall_shadow.py --out "$RUNNER_TEMP/xray_bq_history_onecall_shadow.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          x=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_bq_history_onecall_shadow.json").read_text())
+          assert x["schema"]=="XRAY_BQ_ONECALL_EOD_RESEARCH_SHADOW_V1"
+          assert x["symbol_count_requested"]<=1 and x["api_call_count"]<=1
+          assert x["bar_rows_validated"]<=12
+          for k in ("production_history_authority","primary_mc_authority","can_register_R92",
+                    "raw_prices_or_volumes_persisted","api_key_or_request_url_reported"):
+              assert x[k] is False,k
+          assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
+          print("XRAY_BQ_OFFICIAL_EOD_PROBE_FAIL_CLOSED=PASS_NONAUTHORITY")
+          PY
       - name: Compile and negative/positive fail-closed regression
         run: |
           python -m py_compile nasdaq-xray/xray_multi_provider_research.py
@@ -72,6 +92,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: xray-multi-provider-operational-only
-          path: ${{ runner.temp }}/xray_multi_provider_shadow.json
+          path: |
+            ${{ runner.temp }}/xray_multi_provider_shadow.json
+            ${{ runner.temp }}/xray_bq_history_onecall_shadow.json
           retention-days: 14
           if-no-files-found: error
