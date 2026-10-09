@@ -91,7 +91,7 @@
     "production_history_authority": false,
     "verified_r92_al": 0,
     "phone_notification_confirmed": false,
-    "latest_commit_at_time_of_handoff": "dbc69a54c9ad9721a1ea14d05867d948a272440b",
+    "latest_commit_at_time_of_handoff": "4900b29085d896beb8b40a6915b3dd0565302673",
     "new_automations_created": 0,
     "alpha_thresholds_changed": false
   },
@@ -216,5 +216,24 @@
     "risk_relaxation_20pct_only": "Still zero technical valid among 17 older 2026-10-07 setups when all other gates held",
     "no_overfitted_alpha_change": true,
     "release_rule": "DO_NOT_MINT_AL_TO_MEET_DEADLINE; NO_FALSE_PASS; no broker/account/G9 requirements"
+  },
+  "last_multisource_repair": {
+    "base_issue": "Before this turn, research-only xray_multi_provider_research.py failed hard when MASTER/MC/HISTORY/TERMINAL epochs differed, though that state is a normal current processing blocker.",
+    "correct_result": "BLOCKED_SOURCE_EPOCH_NO_CALLS_NO_ALPHA",
+    "on_stale_any_fetch": false,
+    "regression_existing_API_key_missing": "XRAY_BQ_API_KEY empty, 0 real vendor calls",
+    "status_message": "BLOCKED_SOURCE_EPOCH_ZERO_CALLS; distinguish CI SUCCESS from production PASS",
+    "source": "nasdaq-xray/xray_multi_provider_research.py",
+    "workflow": ".github/workflows/xray-multi-provider-research-shadow.yml",
+    "tested_ci_run": 37984893350,
+    "conclusion": "SUCCESS",
+    "test_source_sha": "4900b29085d896beb8b40a6915b3dd0565302673",
+    "preserve_zero_r92": true,
+    "no_threshold_change": true
+  },
+  "actionable_unblocked_next": {
+    "independent_user_action_needed": "Only the owner can register provider account, consent to provider terms, and insert a legitimately permitted free API key in GitHub Settings > Secrets and variables > Actions; exact current test key name XRAY_BQ_API_KEY. Never paste a key to ChatGPT. BQ free key establishes tiny research sample only and does not grant bulk production rights.",
+    "source_legal_proof_required": "Written/public tier permission for unpaid automated internal non-display research, private cache lifetime, derived signal delivery, and full venue-complete historical data.",
+    "application_state": "Code and simulated CI tests complete; no qualified vendor 514x260 or MC source; stop before AL and device delivery."
   }
 }
