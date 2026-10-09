@@ -11,6 +11,7 @@ on:
       - "nasdaq-xray/scheduler_kick_dataplane.json"
       - "nasdaq-xray/scheduler_failover_contract.json"
       - "nasdaq-xray/scheduler_failover_selftest.py"
+      - "nasdaq-xray/root_weekend_quota_guard.py"
       - "nasdaq-xray/sina_stage.py"
       - "nasdaq-xray/mc_zero_key.py"
       - "nasdaq-xray/mc_resolution_overlay.json"
@@ -61,6 +62,9 @@ jobs:
 
       - name: Scheduler failover self-test
         run: python nasdaq-xray/scheduler_failover_selftest.py
+
+      - name: U.S. ET weekend provider quota guard regression
+        run: python nasdaq-xray/root_weekend_quota_guard.py --selftest
 
       - name: Root-to-preMC relay negative and positive self-tests
         run: |
