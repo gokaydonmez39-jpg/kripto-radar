@@ -147,7 +147,7 @@ def selftest():
     # No HTTP calls when the secret is absent or invalid.
     from unittest.mock import patch
     with patch.dict(os.environ,{"XRAY_SEC_USER_AGENT":""}),patch(__name__+".get_json",side_effect=AssertionError("NETWORK_REQUEST_WHEN_SECRET_MISSING")):
-        assert run("2026-10-08")["reason"]=="SEC_OPERATOR_CONTACT_SECRET_MISSING"
+        assert run("2026-10-08")["reason"]=="SEC_OPERATOR_CONTACT_CONFIG_MISSING"
     with patch.dict(os.environ,{"XRAY_SEC_USER_AGENT":"bot@users.noreply.github.com"}),patch(__name__+".get_json",side_effect=AssertionError("NETWORK_REQUEST_WHEN_CONTACT_INVALID")):
         assert run("2026-10-08")["reason"]=="SEC_OPERATOR_CONTACT_FORMAT_INVALID"
     print("SEC_FREE_MC_PIT_SELFTEST=PASS_ACCEPTANCE_FUTURE_CIK_LIST_BOOL_CONTACT_DIAG_NO_PRIMARY")
@@ -171,7 +171,7 @@ def run(asof:str) -> dict:
     ua=os.environ.get("XRAY_SEC_USER_AGENT","")
     if not ua.strip():
         # GitHub Actions secret was not injected; report only presence, never value.
-        return dict(base,sec_transport="BLOCKED",reason="SEC_OPERATOR_CONTACT_SECRET_MISSING")
+        return dict(base,sec_transport="BLOCKED",reason="SEC_OPERATOR_CONTACT_CONFIG_MISSING")
     if not valid_operator_contact(ua):
         return dict(base,sec_transport="BLOCKED",reason="SEC_OPERATOR_CONTACT_FORMAT_INVALID")
     try:
