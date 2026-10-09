@@ -1,0 +1,64 @@
+name: XRAY C4.18 Multi-Source Rights & PIT Contract (No Production)
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/c418_multi_source_guard.py"
+      - "nasdaq-xray/c418_multi_source_profile_v1.json"
+      - "nasdaq-xray/source_successor_c418_proposal.json"
+      - ".github/workflows/xray-c418-multi-source-contract.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: xray-c418-multi-source-validation
+  cancel-in-progress: true
+jobs:
+  evidence-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify C4.18 frozen proposal contract and exact provider roles
+        run: |
+          python -m py_compile nasdaq-xray/c418_multi_source_guard.py
+          python nasdaq-xray/source_successor_c418_preflight.py --selftest
+          python nasdaq-xray/c418_multi_source_guard.py --selftest
+      - name: Confirm missing real provider rights cannot become PRIMARY or R92
+        shell: bash
+        run: |
+          set -euo pipefail
+          set +e
+          python nasdaq-xray/c418_multi_source_guard.py --out "${RUNNER_TEMP}/xray_c418_multi_source_health.json"
+          status=$?
+          set -e
+          if [[ "$status" -ne 2 ]]; then
+            echo "XRAY_C418_MISSING_RIGHTS_FAIL_OPEN_STATUS=$status" >&2
+            exit 1
+          fi
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          j=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_c418_multi_source_health.json").read_text())
+          assert j["schema"]=="XRAY_C418_MULTI_SOURCE_GUARD_REPORT_V1"
+          assert j["status"]=="DATA_BLOCKED"
+          assert "NO_PRIVATE_LIVE_EVIDENCE" in j["reason_codes"]
+          assert j["production_authority"] is False
+          assert j["can_create_PRIMARY"] is False and j["can_register_R92"] is False
+          assert j["vendor_raw_data_exported"] is False
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          print("XRAY_C418_MULTI_SOURCE_LIVE_READINESS=DATA_BLOCKED_CORRECT_NO_LICENSE")
+          PY
+      - name: Upload safe code-only source health
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-c418-multi-source-code-preflight
+          path: ${{ runner.temp }}/xray_c418_multi_source_health.json
+          retention-days: 14
+          if-no-files-found: error
