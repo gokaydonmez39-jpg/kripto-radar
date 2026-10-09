@@ -7,6 +7,7 @@ on:
       - "nasdaq-xray/free_history_source_preflight.py"
       - "nasdaq-xray/qualified_history_ingress_shadow.py"
       - "nasdaq-xray/massive_splits_asof_shadow.py"
+      - "nasdaq-xray/twelve_data_history_probe.py"
       - "nasdaq-xray/history_transport_cache_guard.py"
       - "nasdaq-xray/canonical_current_price_dv30.json"
       - "nasdaq-xray/canonical_current_master_manifest.json"
@@ -18,6 +19,8 @@ jobs:
   source-request:
     runs-on: ubuntu-latest
     timeout-minutes: 6
+    env:
+      XRAY_TWELVE_DATA_API_KEY: ${{ secrets.XRAY_TWELVE_DATA_API_KEY }}
     steps:
       - uses: actions/checkout@v4
       - name: Exact triggering source commit
@@ -89,6 +92,23 @@ jobs:
           python nasdaq-xray/massive_splits_asof_shadow.py --selftest
           echo "XRAY_CORPORATE_SPLIT_DATA_RESEARCH_ONLY=PASS_NO_REAL_SOURCE_AUTHORITY"
 
+      - name: One-credit Twelve Data real-history probe if free key is configured
+        run: |
+          python -m py_compile nasdaq-xray/twelve_data_history_probe.py
+          python nasdaq-xray/twelve_data_history_probe.py --selftest
+          python nasdaq-xray/twelve_data_history_probe.py --output "$RUNNER_TEMP/xray_twelve_data_history_sample.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          x=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_twelve_data_history_sample.json").read_text())
+          assert x["schema"]=="XRAY_TWELVE_EOD_SINGLE_SAMPLE_V1"
+          assert x["api_calls"]<=1 and x["bars_valid"]<=320
+          assert x["history_authority"] is False and x["mc_authority"] is False
+          assert x["can_register_R92"] is False and x["vendor_data_persisted"] is False
+          assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
+          print("XRAY_TWELVE_REAL_HISTORY_AUTHORITY=BLOCKED_UNTIL_FULL_LICENSE_AND_SOURCE")
+          PY
+
       - name: Assemble current real Git scope (not market data)
         run: |
           python nasdaq-xray/current_history_source_request.py --out "${RUNNER_TEMP}/xray_current_history_source_request.json"
@@ -117,5 +137,6 @@ jobs:
             ${{ runner.temp }}/xray_current_history_source_request.json
             ${{ runner.temp }}/xray_twelve_data_free_scope_preflight.json
             ${{ runner.temp }}/xray_private_history_intake_shadow.json
+            ${{ runner.temp }}/xray_twelve_data_history_sample.json
           if-no-files-found: error
           retention-days: 14
