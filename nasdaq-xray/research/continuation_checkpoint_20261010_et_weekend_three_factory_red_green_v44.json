@@ -1,0 +1,28 @@
+{
+  "schema": "XRAY_NY_WEEKEND_THREE_FACTORY_CRON_AUDIT_V44",
+  "date_trt": "2026-10-10",
+  "parent": "nasdaq-xray/research/continuation_checkpoint_20261010_weekend_scheduler_delivery_redgreen_v43.json",
+  "red_ci": 38003435017,
+  "green_ci": 38003650777,
+  "commits": [
+    "9e09750b63f1de8f3db347351d331550188b00ea",
+    "242fffa33202fa9a2cdcf4bb692a2de8a75b82dc",
+    "0d8e16fcdf7f7212d63850cb60f41bca1919252f",
+    "6731af27b5a3bd9e05974031bd8e65f7c7f9f2b1"
+  ],
+  "tested_years": [
+    2026,
+    2027
+  ],
+  "verified": "GH Actions pre-MC SUCCESS; both NY cron fallback and no-op relay selftests PASS",
+  "cron": "05-23 UTC weekdays plus 00-03 UTC Tue-Sat; one US late-hour omitted from backups, root remains hourly with NY clock guard",
+  "enabled_chatgpt_tasks": 5,
+  "canonical_notifications_enabled": true,
+  "device_receipt_verified": false,
+  "source_status": "Oct9 MASTER 3184 PASS 12 UNKNOWN; PRICE 0 PASS 553 UNKNOWN; PRIMARY MC 0; terminal Oct7 stale",
+  "production": "NO-GO",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "no_market_data_or_alpha_change": true
+}
