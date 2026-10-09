@@ -1,0 +1,116 @@
+{
+  "schema": "XRAY_20261009_V35_ZERO_COST_HISTORY_EVIDENCE_FAIL_CLOSED_HANDOFF",
+  "authority": "LIVE_GITHUB_MAIN_ACTIONS_AND_WRITTEN_SOURCE_LICENSE_GRANTS_SUPERSEDE_THIS_CHECKPOINT",
+  "repo": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "observed_pre_checkpoint_head": "2d15bcf81b574f594f62a333b8d12d1edfc00d0a",
+  "predecessor": "nasdaq-xray/research/continuation_checkpoint_20261009_zero_cost_new_chat_handoff_v34.json",
+  "policy": {
+    "effective": "C4.17",
+    "control": "C4.27",
+    "candidate_alternative": "C4.18_PROPOSED_NOT_ACTIVATED",
+    "mode": "RESEARCH_ONLY_MANUAL_DECISION",
+    "execution": "NONE",
+    "real_money": "NO-GO",
+    "unknown_never_pass": true,
+    "cost_usd_max": 0,
+    "broker_account_balance_positions_orders": false,
+    "alpha_dv30_mc_history_stop_rr_unchanged": true
+  },
+  "live_20261009_production": {
+    "price_asof": "2026-10-08",
+    "price_dv30_pass": 514,
+    "price_blocked": 45,
+    "mc_request_symbols": 514,
+    "mc_request_ready": true,
+    "primary_mc_pass": 0,
+    "history_514_source_authority": false,
+    "history_514_260_52_true_proof_complete": false,
+    "canonical_history_asof": "2026-10-07",
+    "canonical_terminal_asof": "2026-10-07",
+    "terminal_partial": true,
+    "verified_r92_al": 0,
+    "iphone_receipt_proven": false,
+    "calibration_comparable_sessions": "0/60",
+    "legacy_root_history_unknown": 231,
+    "legacy_unknown_applies_to_current_514": false
+  },
+  "repair_1_scope_false_positive": {
+    "path": "nasdaq-xray/current_history_epoch_guard.py",
+    "original_blind_spot": "Self-reported history_260_52_proof_exact plus matching status partition could mint HISTORY_CURRENT_SCOPE_PROVEN without licensed vendor bars or source rights",
+    "red_commit": "0a45be1ffeed9073a1bad5547e1054c64ae8be66",
+    "red_workflow_run": 37978203680,
+    "red_result": "FAILURE_EXPECTED_ASSERT_UNLICENSED_HISTORY_FALSE_POSITIVE",
+    "fix_commit": "7a4484ea6ab7f7b36c7a0f9668490593beb6ee9e",
+    "fix_blob_sha": "ed6a1c58a2f9fe33234cc8e6369ab2b6003e42e7",
+    "green_workflow_run": 37978404960,
+    "green_result": "SUCCESS_SELFTEST_AND_REPO_READBACK",
+    "actual_repo_status": "HISTORY_STALE_ASOF",
+    "scope_claim_can_be_structural_only": true,
+    "source_authority_unconditionally_not_minted_by_scope_reader": true,
+    "caveat": "Independent source-license/OHLCV verifier is still not implemented; this scope-only guard cannot establish vendor authorization."
+  },
+  "repair_2_cache_invalid_ohlcv": {
+    "path": "nasdaq-xray/history_transport_cache_guard.py",
+    "selftest_path": "nasdaq-xray/history_transport_cache_guard_selftest.py",
+    "original_blind_spot": "Only dates were parsed; an invalid price or zero-volume row could still pass EXACT_ASOF_TRANSPORT_CACHE_COMPLETE",
+    "red_commit": "76e934e2689af94ba9bb118377d58c06c293784a",
+    "red_run": 37978542312,
+    "red_result": "FAILURE_EXPECTED_VOLUME_ZERO_WAS_ACCEPTED",
+    "fix_commit": "2d15bcf81b574f594f62a333b8d12d1edfc00d0a",
+    "fix_blob_sha": "21555d13fdd14cd212f426db69058b6521bde927",
+    "green_run": 37978626447,
+    "green_result": "SUCCESS_DATE_OHLCV_REGRESSIONS",
+    "secondary_contract_run": 37978626569,
+    "secondary_contract_result": "SUCCESS",
+    "checks": "OHLC prices positive finite, volume positive finite, high>=max(open,close,low) and low<=min(open,close); missing columns rejected",
+    "caveat": "Only private transport-cache numeric and calendar integrity; no external OHLCV provenance, license, adjustments or PRIMARY MC."
+  },
+  "other_live_actions": {
+    "history_request_run": 37976825270,
+    "history_request": "SUCCESS_CALENDAR_260_52_PRICE_SCOPE_ONLY_NO_VENDOR_OHLCV",
+    "sec_cik_mirror_run": 37976930517,
+    "sec_shadow": "71 CIK discovered among 72 unknowns, CIK discovery only, not source MC",
+    "alpaca_canary_run": 37977595014,
+    "alpaca_status": "BLOCKED_MISSING_ALPACA_KEYS",
+    "resilience_run": 37977328082,
+    "resilience_status": "SUCCESS_WORKFLOW_BUT_BLOCKED_UPSTREAM_PENDING_POINTER_OR_EVIDENCE_STALE"
+  },
+  "zero_cost_provider_authority": {
+    "massive": {
+      "terms": "https://www.massive.com/legal/market-data-terms-of-service",
+      "finding": "Section 5 non-display and derived-strategy prohibited without specific license; Basic zero-cost does not prove unattended rights",
+      "runner_grant_proven": false
+    },
+    "tiingo": {
+      "terms": "https://app.tiingo.com/tos/",
+      "finding": "Section 1.6(a) starter/trial prohibit persistent storage of data and derived works; incompatible with durable X-RAY evidence",
+      "runner_grant_proven": false
+    },
+    "sec": {
+      "terms": "https://www.sec.gov/about/developer-resources",
+      "finding": "SEC EDGAR public filings can support CIK/filings with rate and bot limits; not an OHLCV license or market cap substitute",
+      "market_history_primary": false
+    },
+    "alpaca": {
+      "documentation": "https://alpaca.markets/learn/fetch-historical-data",
+      "finding": "Free IEX feed is not full SIP market-volume coverage; delayed historical SIP access described but licensed unattended non-display rights and repo secrets are not verified",
+      "runner_grant_proven": false
+    },
+    "paid_fallback_permitted": false
+  },
+  "existing_active_automations_count": 5,
+  "new_tasks_created": 0,
+  "raw_vendor_data_committed": false,
+  "api_secrets_committed": false,
+  "next_blockers_in_order": [
+    "Verify a permanently zero-dollar written licensed unattended non-display/derived-output/retention OHLCV source; do not fetch and persist market bars until grant confirmed",
+    "Build checked 514 symbol batched provider intake with private authorized cache and resumable checkpoint after grant; classify IPO/rename/session/corporate actions",
+    "Verify licensed same-ASOF class-specific PRIMARY MC with independent origin cross-check; do not promote shadow",
+    "Re-run canonical same-ASOF MC->HISTORY->WEEKLY->REGIME->EARNINGS->LEGAL->RISK/RR->FINAL; verify blobs, Actions and actual eligible sets",
+    "Real R92 only: registration->dedup->expiry->GitHub receipt->ChatGPT and device receipts; maintain 0/60 calibration until matched sessions"
+  ],
+  "production": "NO_GO",
+  "research_progress": "TWO_REPRODUCED_TEST_RED_GREEN_SAFETY_REPAIRS",
+  "completion_claim": false
+}
