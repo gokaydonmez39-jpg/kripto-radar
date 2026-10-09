@@ -508,5 +508,62 @@
     "latest_official_completed_session_after_30min_buffer": "2026-10-09",
     "hidden_account_entitlement_in_GitHub": false,
     "production": "NO_GO"
+  },
+  "latest_20261010_live_go_validation": {
+    "asof_local": "2026-10-10",
+    "authority": "Live main + Actions logs + directly connected Massive 2026-10-09 API response",
+    "go": "NO_GO",
+    "source_first": "PERMISSION_AND_ACCOUNT_ENTITLEMENT",
+    "massive_connected_20261009_grouped_unadjusted": "NOT_ENTITLED",
+    "date_checked": "2026-10-09",
+    "account_notes": "Connected plugin entitlement NOT_ENTITLED does not establish entitlement of a different GitHub owner account; GitHub currently has no proven API key and non-display/private-cache grant.",
+    "massive_vendor_response_guard_code_commit": "f0f0ae895a7db6182aca65cbcc95afaad0c64038",
+    "massive_vendor_response_guard_ci": 37992219863,
+    "massive_vendor_response_guard_ci_result": "SUCCESS_UNIT_AND_FULL_SYNTHETIC_INTEGRATION_TEST_ONLY",
+    "massive_vendor_access": "BLOCKED_AUTH_OR_NONDISPLAY_AND_PRIVATE_CACHE_RIGHTS",
+    "actual_grouped_history_collected_days": 0,
+    "current_completed_nasdaq_session": "2026-10-09",
+    "latest_price_master_asof": "2026-10-08",
+    "latest_terminal_asof": "2026-10-07",
+    "latest_e2e_clock_gate_code_commit": "597cf2c9bff0d1544ff2b895bf8027c991eab207",
+    "latest_e2e_clock_gate_ci_commit": "24cf1f173eee83908dbdaf0df2e559f70af1ec55",
+    "latest_e2e_clock_gate_ci": 37992431528,
+    "latest_e2e_clock_gate_ci_result": "EXPECTED_FAILURE_AT_RELEASE_GATE_WITH_SELFTEST_AND_WITNESS_PASS",
+    "source_session_lags": {
+      "MASTER": 1,
+      "PRICE": 1,
+      "TERMINAL": 2
+    },
+    "current_e2e_blockers": [
+      "CURRENT_MC_AUTHORITY_MISSING",
+      "CURRENT_TERMINAL_FROZEN_OR_INCOMPLETE",
+      "IDENTITY_PARTITION_INCOMPLETE",
+      "NOTIFICATION_DEVICE_RECEIPT_NOT_PROVEN",
+      "PRICE_BLOCKED_30_SESSION_BARS",
+      "SOURCE_EPOCH_NOT_LATEST_COMPLETED_SESSION",
+      "TERMINAL_CURRENT_MC_CHAIN_NOT_PROVEN"
+    ],
+    "newly_closed_engineering_risks": [
+      "Provider account NOT_ENTITLED HTTP200 warning/error recognized and blocked without leaking contents",
+      "A current session is required for future candidate-local or full GO; old same-ASOF terminal cannot produce GO",
+      "Additional MASTER/PRICE exact queue hash bound in grouped history source",
+      "514-scope x 260 day/52 week encrypted per-ticker CSV end-to-end synthetic regression proven"
+    ],
+    "gated_secret_names": [
+      "XRAY_MASSIVE_API_KEY",
+      "XRAY_MASSIVE_LICENSE_EVIDENCE_SHA256"
+    ],
+    "gated_variables": [
+      "XRAY_MASSIVE_NONDISPLAY_LICENSE_OK",
+      "XRAY_MASSIVE_PRIVATE_CACHE_RIGHTS_OK"
+    ],
+    "source_legal_condition": "Market Data Terms of Service section 5(d) non-display / derivative investment strategy requires license; do not manufacture consent via boolean flag",
+    "legal_official": "https://www.massive.com/legal/market-data-terms-of-service",
+    "allowed_actions_pending_legal": "offline tests, pinned source inspection, licensed access evaluation, no secret publication",
+    "actual_260x514_or_MC_production_verified": false,
+    "risk_RR_thresholds_relaxed": false,
+    "execution": "NONE",
+    "real_money": "NO-GO",
+    "completion_claim": false
   }
 }
