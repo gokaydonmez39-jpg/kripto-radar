@@ -1,0 +1,56 @@
+name: XRAY SEC Current SIC Shadow for 72 Unknown Identities
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/sec_identity_unknown_72_shadow.py"
+      - ".github/workflows/xray-sec-identity-unknown-72-shadow.yml"
+permissions:
+  contents: read
+concurrency:
+  group: xray-sec-current-72-unknown-shadow
+  cancel-in-progress: true
+jobs:
+  official-sec-shadow:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile and selftest SIC 6770 vs non-merged SPC guards
+        run: |
+          python -m py_compile nasdaq-xray/sec_identity_unknown_72_shadow.py
+          python nasdaq-xray/sec_identity_unknown_72_shadow.py --selftest
+      - name: Research-only official SEC current issuer SIC scope
+        env:
+          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
+        run: |
+          python nasdaq-xray/sec_identity_unknown_72_shadow.py --output "$RUNNER_TEMP/xray_sec_unknown_72_shadow.json"
+      - name: Assert exactly same frozen master unknown scope, no new PASS
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          a=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_sec_unknown_72_shadow.json").read_text())
+          assert a["schema"]=="XRAY_SEC_CURRENT_IDENTITY_UNKNOWN_SHADOW_V1"
+          assert a["requested_count"]==72 and len(a["statuses"])==72
+          assert a["master_modified"] is False and a["master_identity_pass_change"]==0
+          assert a["execution"]=="NONE" and a["real_money"]=="NO-GO"
+          assert a["sec_nonblank_is_not_merged_operating_proof"] is True
+          assert a["official_sic_is_current_not_historical_pit"] is True
+          assert a["c417_primary_mc_count"]==0 and a["research_candidate_count"]==0
+          print("XRAY_SEC_72_SHADOW_SOURCE=PASS_METADATA_ONLY_NO_MASTER_PROMOTION")
+          PY
+      - name: Upload SEC classification metadata only, 14 days
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-sec-72-current-sic-operational-shadow-v1
+          path: ${{ runner.temp }}/xray_sec_unknown_72_shadow.json
+          retention-days: 14
+          if-no-files-found: warn
