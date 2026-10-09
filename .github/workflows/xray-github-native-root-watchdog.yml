@@ -6,7 +6,6 @@ on:
   # Independent upstream completions must also wake the fail-closed watchdog.
   workflow_run:
     workflows:
-      - "XRAY 09-Oct Free Preopen 15-Minute Watch"
       - "XRAY Live Truth Attestation"
       - "XRAY E2E Production Readiness (Fail-Closed)"
     types: [completed]
