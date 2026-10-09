@@ -1,0 +1,65 @@
+name: XRAY SEC Full Scope Transient-Only Retry
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/sec_full_transient_retry.py"
+      - ".github/workflows/xray-sec-full-transient-retry.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: xray-sec-fullscope-verified-transient-retry
+  cancel-in-progress: true
+jobs:
+  retry-only-verified-temporary-errors:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify original source and negative safety cases
+        run: |
+          python -m py_compile nasdaq-xray/sec_full_transient_retry.py
+          python nasdaq-xray/sec_full_transient_retry.py --selftest
+      - name: Retrieve completed 514-symbol SEC witness from immutable run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh run download 37863746633 -R "${{ github.repository }}" \
+            -n xray-sec-full-price-pass-vintage-shadow-v1 -D "$RUNNER_TEMP/xray_sec_full_origin"
+          test -s "$RUNNER_TEMP/xray_sec_full_origin/xray_sec_full_price_pass_vintage_operational.json"
+      - name: Retry only exact-source SEC timeouts without handling SEC 404 as transient
+        env:
+          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
+        run: |
+          python nasdaq-xray/sec_full_transient_retry.py \
+            --origin "$RUNNER_TEMP/xray_sec_full_origin/xray_sec_full_price_pass_vintage_operational.json" \
+            --output "$RUNNER_TEMP/xray_sec_transient_retry.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          x=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_sec_transient_retry.json").read_text())
+          assert x["schema"]=="XRAY_SEC_TRANSIENT_RECOVERY_SHADOW_V1"
+          assert x["origin_source_scope_count"]==514
+          assert x["eligible_retry_count"]==5
+          assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
+          assert x["c417_primary_mc_count"]==0 and x["production_authority"] is False
+          assert "OZK" not in x["eligible_retry_symbols"]
+          assert x["raw_share_counts_stored"] is False
+          assert set(x["outcomes"]).issubset(set(x["eligible_retry_symbols"]))
+          print("XRAY_SEC_TRANSIENT_RETRY_GUARD=PASS_PIT_SHADOW_ONLY")
+          PY
+      - name: Save read-only operational counts and SHA evidence only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-sec-transient-retry-only-operational-v1
+          path: ${{ runner.temp }}/xray_sec_transient_retry.json
+          retention-days: 14
+          if-no-files-found: warn
