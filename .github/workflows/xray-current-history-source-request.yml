@@ -1,0 +1,60 @@
+name: XRAY Current PRICE 514 History Source Request (Research Only)
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/current_history_source_request.py"
+      - "nasdaq-xray/canonical_current_price_dv30.json"
+      - "nasdaq-xray/canonical_current_master_manifest.json"
+      - ".github/workflows/xray-current-history-source-request.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-request:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - name: Exact triggering source commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          echo "XRAY_HISTORY_REQUEST_HEAD_EXACT=PASS"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install fixed Nasdaq exchange calendar
+        run: python -m pip install --disable-pip-version-check "pandas_market_calendars==5.4.0"
+      - name: Adversarial positive and negative tests
+        run: |
+          python -m py_compile nasdaq-xray/current_history_source_request.py
+          python nasdaq-xray/current_history_source_request.py --selftest
+      - name: Assemble current real Git scope (not market data)
+        run: |
+          python nasdaq-xray/current_history_source_request.py --out "${RUNNER_TEMP}/xray_current_history_source_request.json"
+          python - <<'PY'
+          import hashlib,json,os
+          from pathlib import Path
+          doc=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_current_history_source_request.json").read_text())
+          assert doc["schema"]=="XRAY_C417_CURRENT_HISTORY_SOURCE_REQUEST_V1"
+          assert doc["status"]=="RESEARCH_HISTORY_REQUEST_READY_NO_MARKET_HISTORY_MEASURED"
+          assert doc["source_price_pass_count"]==len(doc["symbol_scope"])
+          assert hashlib.sha256(chr(10).join(doc["symbol_scope"]).encode()).hexdigest()==doc["source_price_pass_hash"]
+          assert len(doc["required_daily_official_sessions"])==260
+          assert len(doc["required_completed_week_closes"])==52
+          assert doc["source_entitlement_proven"] is False
+          assert doc["current_history_authority_proven"] is False
+          assert doc["canonical_history_pass_created"]==0
+          assert doc["can_register_R92"] is False
+          assert doc["execution"]=="NONE" and doc["real_money"]=="NO-GO"
+          print("XRAY_HISTORY_CURRENT_514_REQUEST_SAFETY=PASS")
+          PY
+      - name: Persist only public tickers and official calendar schedule
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-current-history-source-request-no-vendor-bars
+          path: ${{ runner.temp }}/xray_current_history_source_request.json
+          if-no-files-found: error
+          retention-days: 14
