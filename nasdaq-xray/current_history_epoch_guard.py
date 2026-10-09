@@ -132,6 +132,9 @@ def selftest():
     h.update(input_symbols=["AAA","BBB"],source_price_blob_sha="a"*40,
              unknown_count=0,history_260_52_proof_exact=True,
              results={"AAA":{"status":"PASS_HISTORY"},"BBB":{"status":"FAIL_HISTORY"}})
+    # RED regression: claimed 260/52 flags without a lawful source grant
+    # cannot make a current HISTORY result authoritative.
+    assert decide(p,h,r,m,price_blob_sha="a"*40)["current_history_authority_proven"] is False, "UNLICENSED_HISTORY_FALSE_POSITIVE"
     good=decide(p,h,r,m,price_blob_sha="a"*40)
     assert good["status"]=="HISTORY_CURRENT_SCOPE_PROVEN"
     assert good["current_history_authority_proven"] is True
