@@ -5,6 +5,11 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/alpha_calibration_audit.py"
+      - "nasdaq-xray/canonical_alpha_calibration_audit.json"
+      - "nasdaq-xray/canonical_current_terminal.json"
+      - "nasdaq-xray/canonical_current_final_tech.json"
+      - "nasdaq-xray/canonical_terminal_20*.json"
+      - "nasdaq-xray/canonical_final_tech_20*.json"
       - ".github/workflows/xray-alpha-calibration-source-exact-audit.yml"
 permissions:
   contents: read
@@ -26,9 +31,25 @@ jobs:
         run: |
           python -m py_compile nasdaq-xray/alpha_calibration_audit.py
           python nasdaq-xray/alpha_calibration_audit.py --selftest
-      - name: Recompute historical final bottlenecks without rewriting canonical state
+      - name: Recompute historical final bottlenecks and independently attest committed artifact
         run: |
+          cp nasdaq-xray/canonical_alpha_calibration_audit.json "$RUNNER_TEMP/xray_alpha_committed.json"
           python nasdaq-xray/alpha_calibration_audit.py
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          old=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_alpha_committed.json").read_text())
+          new=json.loads(Path("nasdaq-xray/canonical_alpha_calibration_audit.json").read_text())
+          for item in (old,new):
+              item.pop("generated_at_utc",None)
+          if old != new:
+              print("XRAY_ALPHA_CALIBRATION_STORED_SNAPSHOT=FAIL_STALE_OR_MANUALLY_MISMATCHED")
+              raise SystemExit(1)
+          assert not any(x["comparable_to_current_c417"] and
+                         x.get("full_end_to_end_research_pass") is not True
+                         for x in new["observed_terminal_snapshots"])
+          print("XRAY_ALPHA_CALIBRATION_STORED_SNAPSHOT=PASS_EXACT_RECOMPUTED")
+          PY
           python - <<'PY'
           import json,pathlib
           root=pathlib.Path("nasdaq-xray")
