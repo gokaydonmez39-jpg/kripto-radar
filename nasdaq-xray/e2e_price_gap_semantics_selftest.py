@@ -12,6 +12,19 @@ def selftest():
     assert ("PRICE_BLOCKED_30_SESSION_BARS" in blocks)==(blocked!=0), (
         "PRICE_BLOCKED_REPORTED_WHEN_REAL_BLOCKED_COUNT_ZERO")
     assert o["price_blocked_count"]==blocked
+    # A valid empty PASS set is not a broken count. Zero != missing key.
+    m=read("canonical_current_master_manifest.json")
+    same_partition=(
+        p.get("asof_et")==m.get("asof_et")
+        and p.get("source_master_queue_hash")==m.get("queue_hash")
+        and p.get("source_master_count")==m.get("queue_total")
+        and set(p.get("results") or {})==set(m.get("pass_symbols") or [])
+        and int(p.get("pass_count",-1))==len(p.get("pass_symbols") or [])
+    )
+    if same_partition and p.get("pass_count")==0:
+        assert "PRICE_PARTITION_NOT_EXACT_CURRENT" not in blocks, (
+            "VALID_ZERO_PASS_PARTITION_MISLABELLED_INVALID")
+
     assert not o["ready_for_current_research_signal"] or (
         o["candidate_local_source_chain_attested"] is True)
     assert scope_readiness(["PRICE_UNKNOWN_CURRENT"],True)["full_universe_source_coverage_attested"] is False
