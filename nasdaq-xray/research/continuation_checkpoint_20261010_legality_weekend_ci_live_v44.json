@@ -1,0 +1,121 @@
+{
+  "schema": "XRAY_CANONICAL_CONTINUATION_20261010_LEGAL_WEB_ZERO_COST_WEEKEND_CI_V44",
+  "repo": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "live_head_at_capture": "ec5a1aa2dc1c85f257d32d33fa0639184d23f6e9",
+  "predecessor": {
+    "path": "nasdaq-xray/research/continuation_checkpoint_20261010_weekend_automation_monday_operational_v43.json",
+    "git_blob": "88b98f54c96abf516007bf9d85eaeff91b042ef7"
+  },
+  "source_rule": "LATEST_LIVE_MAIN_AND_COMPLETED_WORKFLOW_ARTIFACTS_SUPERSEDE_CHECKPOINT",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "alpha_thresholds_relaxed": false,
+  "code_repairs_proven": [
+    {
+      "name": "Unattended US_ET weekend official trading quota guard",
+      "red_commit": "53d0fb45bf9c7d1106d713a73ebe38b698fdaf03",
+      "red_run": 38000289044,
+      "red_reason": "WEEKEND_COMPUTE_GATE_NOT_WIRED",
+      "green_commit": "39f5658553937323042c2affc795f5cd1a1ba060",
+      "green_run": 38000329077,
+      "green_conclusion": "SUCCESS",
+      "full_root_data_plane": "COMPLETED_SUCCESS_BUT_ROOT_MARKET_DATA_STATUS_PARTIAL_HISTORY_NO_PASS",
+      "weekend_actual_cron_run_proof": "UNOBSERVED_UNTIL_US_ET_SATURDAY_SCHEDULE;SELFTEST_PASS_ONLY"
+    },
+    {
+      "name": "Monday Oct12 US stocks regular trading + Fri/weekend exact latest completed date",
+      "test_commit": "4801f584dd365b5d10df70e5d5d5969a8970a71e",
+      "wire_commit": "855189d0e26197f5c1979c7046b955e2c0c0c6f1",
+      "green_run": 38000548174,
+      "green_conclusion": "SUCCESS",
+      "source_rule": "Mon 12Oct 9:30-16:00 EDT, history completed after 16:30 EDT safety buffer"
+    },
+    {
+      "name": "Block Nasdaq website screener automated industry collection absent express written license",
+      "test_commit": "061e8f7fd745da9a0dcb9b70d950353566d6d3da",
+      "red_commit": "d4ba111cc9699d0d643241fd56d24216bcd90423",
+      "red_run": 38001051777,
+      "red_reason": "UNLICENSED_NASDAQ_SCREENER_NETWORK_CALL",
+      "green_commit": "ec5a1aa2dc1c85f257d32d33fa0639184d23f6e9",
+      "green_run": 38001119361,
+      "green_conclusion": "SUCCESS",
+      "name_sec_only_fail_closed": true,
+      "unlicensed_web_request_calls": "DISABLED_ZERO",
+      "past_9oct_screener_metadata_reuse": "NONAUTHORITY;DO_NOT_PROMOTE_TO_ALPHA",
+      "legal_source": "https://www.nasdaq.com/legal"
+    }
+  ],
+  "latest_7_blockers_reverified": {
+    "legal_genuine_market_source_full_scope": "BLOCKED_RIGHTS",
+    "current_full_260_daily_52_week_history": "BLOCKED_0_GENUINE_AUTHORIZED_FULL_COHORT",
+    "primary_exact_asof_market_cap": "BLOCKED_0",
+    "identity": {
+      "asof": "2026-10-09",
+      "pass": 3184,
+      "unknown": 12
+    },
+    "price": {
+      "asof": "2026-10-09",
+      "pass": 0,
+      "unknown": 553,
+      "fail_dv30": 1311,
+      "fail_price": 1304,
+      "fail_30_insufficient": 7,
+      "fail_asof_missing": 9
+    },
+    "terminal_pointer": {
+      "terminal_asof": "2026-10-07",
+      "pointer_asof": "2026-10-07",
+      "registered_R92": 0
+    },
+    "phone_receipt": "NOT_ATTESTED",
+    "sixty_forward_sessions": "NOT_ATTESTED",
+    "G9": "BLOCKED_NOT_REQUIRED_FOR_RESEARCH_MANUAL",
+    "ACCOUNT": "BOOTSTRAP_CREDENTIALS_REQUIRED_NOT_REQUIRED_FOR_RESEARCH_MANUAL"
+  },
+  "current_post_mc": {
+    "latest_failing_run": 38001161116,
+    "observed_failure": "Enforce actual current MC authority before Post-MC SUCCESS",
+    "interpretation": "CORRECT_FAIL_CLOSED_NOT_CI_GREEN"
+  },
+  "automation": {
+    "five_existing_enabled_roles": [
+      "Canonical",
+      "Reader",
+      "Committer",
+      "Health",
+      "Finisher"
+    ],
+    "no_new_task_created": true,
+    "canonical_user_notification_setting": true,
+    "canonical_email_setting": true,
+    "others_notifications": false,
+    "actual_device_receipt": false,
+    "rate_limits": "NO_MULTIPLE_DUPLICATE_ALERT_TASKS"
+  },
+  "monday_operation": {
+    "asof_fri": "2026-10-09",
+    "ny_saturday": "2026-10-10",
+    "ny_sunday": "2026-10-11",
+    "monday_stock_open_et": "2026-10-12T09:30:00-04:00",
+    "monday_stock_close_et": "2026-10-12T16:00:00-04:00",
+    "tr_open": "2026-10-12 16:30",
+    "tr_close": "2026-10-12 23:00",
+    "tr_completed_after_safety_buffer": "2026-10-12 23:30",
+    "do_not_infer_monday_asof_pre_close": true,
+    "do_not_infer_data_vendor_publication_at_market_close": true,
+    "acceptance": "No GO unless real lawful same-ASOF price/MC/history plus E2E and actual candidate/receipt pass independent checks."
+  },
+  "outcomes": {
+    "manual_research_go": false,
+    "full_e2e_go": false,
+    "real_money_go": false,
+    "provider_proof_incomplete": true,
+    "do_not_loosen_thresholds": true
+  },
+  "next_priority": "Find vendor automated/no-display rights and source provenance; independently source C4.17 exact30 RTH consolidated and unadjusted share volume, MC and 260/52 bars. Verify 9Oct prices cannot be 0 PASS by false source omission; no AL until evidence. Keep Source UNKNOWN and R92=0 if blocked."
+}
