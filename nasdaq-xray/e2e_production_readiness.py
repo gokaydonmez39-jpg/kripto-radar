@@ -61,10 +61,18 @@ def terminal_chain_exact(terminal, asof, source_shas, mc_name, mc_sha):
     ev=terminal.get("evidence") or {}
     checks=terminal.get("checks") or {}
     names=("master","price","history","events","final")
+    # Two distinct, equally strict provenance modes:
+    # FULL_E2E requires complete universe; candidate-local may remain valid
+    # with unrelated global UNKNOWN, but only after its exact C4.17, legal,
+    # lifecycle, safety and AL semantics checks all PASS independently.
+    local_seal=(terminal.get("candidate_local_research_pass") is True
+                and (terminal.get("candidate_delivery_safety") or {}).get("status")=="PASS"
+                and all(checks.get(k) is True for k in REQUIRED_LOCAL_CHECKS))
+    full_or_local=terminal.get("full_end_to_end_research_pass") is True or local_seal
     if not (
         terminal.get("asof_et")==asof
         and terminal.get("compiled_policy_hash")==POLICY
-        and terminal.get("full_end_to_end_research_pass") is True
+        and full_or_local
         and checks.get("exact_blob_provenance_chain") is True
         and checks.get("semantic_provenance_chain_exact") is True
         and isinstance(mc_name,str)
@@ -248,6 +256,7 @@ def snapshot():
         "candidate_preparation_witness_only":prepared,
         "actual_device_delivery_receipt_attested":False,
         "full_e2e_research_attested":current_chain
+            and terminal.get("full_end_to_end_research_pass") is True
             and not any(k in blocks for k in (
                 "PRICE_PARTITION_NOT_EXACT_CURRENT","POLICY_SAFETY_NOT_ALL_ATTESTED",
                 "SETTLEMENT_UNVERIFIED_OR_PRICE_SHA_DRIFT",
@@ -307,6 +316,28 @@ def selftest():
         lambda x:x.update(asof_et="2026-10-07")):
         bad=deepcopy(t);changed(bad)
         assert not terminal_chain_exact(bad,"2026-10-08",base_shas,good,"MC_SHA")
+    # A fully attested candidate-local chain must not be vetoed by
+    # unrelated master/PRICE UNKNOWN, while every local legal or C4.17 defect
+    # and every source blob mismatch still blocks the candidate.
+    cand=deepcopy(t)
+    cand["full_end_to_end_research_pass"]=False
+    cand["candidate_local_research_pass"]=True
+    cand["candidate_delivery_safety"]={"status":"PASS"}
+    cand["checks"].update({key:True for key in REQUIRED_LOCAL_CHECKS})
+    assert terminal_chain_exact(cand,"2026-10-08",base_shas,good,"MC_SHA")
+    for edit in (
+       lambda x:x.update(candidate_local_research_pass=False),
+       lambda x:x["candidate_delivery_safety"].update(status="UNKNOWN"),
+       lambda x:x["checks"].update(mc_exact_price_pass_set=False),
+       lambda x:x["checks"].update(candidate_legal_guard_exact_binding=False),
+       lambda x:x["checks"].update(semantic_provenance_chain_exact=False),
+       lambda x:x["evidence"]["mc"].update(blob_sha="STALE"),
+       lambda x:x["evidence"]["price"].update(blob_sha="STALE"),
+    ):
+       bad=deepcopy(cand)
+       edit(bad)
+       assert not terminal_chain_exact(bad,"2026-10-08",base_shas,good,"MC_SHA")
+    print("XRAY_E2E_CANDIDATE_LOCAL_CHAIN_SELFTEST=PASS_POSITIVE_7_NEGATIVES_NO_GLOBAL_BYPASS")
     global_only=("IDENTITY_PARTITION_INCOMPLETE","PRICE_BLOCKED_30_SESSION_BARS")
     x=scope_readiness(global_only,True)
     assert x["candidate_local_source_chain_attested"] is True
