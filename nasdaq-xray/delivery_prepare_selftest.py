@@ -162,6 +162,24 @@ with tempfile.TemporaryDirectory() as td:
     batch=json.load(open(p/".delivery_work/batch.json"))
     assert {x["symbol"] for x in batch["candidates"]}=={"AAA","BBB"}
 
+    # Negative: malformed/unregistered R92 must never silently become
+    # NO_REGISTERED_CANDIDATE. Only a genuinely empty R92 is a clean no-op.
+    malformed=dict(a); malformed["schema"]="WRONG_R92_SCHEMA"
+    (p/"chatgpt_canonical_state_v2.json").write_text(json.dumps(
+        pointer(p,[malformed],[malformed["delivery_key"]])))
+    cp=run_case(p,False)
+    assert "DELIVERY_R92_REGISTRATION_SCHEMA_INVALID" in (cp.stdout+cp.stderr)
+    (p/"chatgpt_canonical_state_v2.json").write_text(json.dumps(
+        pointer(p,[a],[])))
+    cp=run_case(p,False)
+    assert "DELIVERY_R92_UNREGISTERED_KEY" in (cp.stdout+cp.stderr)
+    (p/"chatgpt_canonical_state_v2.json").write_text(json.dumps(
+        pointer(p,[],[])))
+    cp=run_case(p,True)
+    assert "XRAY_DELIVERY_NOOP=NO_REGISTERED_RESEARCH_CANDIDATE" in cp.stdout
+    (p/"chatgpt_canonical_state_v2.json").write_text(json.dumps(
+        pointer(p,[a,b],[a["delivery_key"],b["delivery_key"]])))
+
     # Positive: C4.17 A-family has its OWN RR floors (1.5 / 1.1);
     # a delivery-safety repair must never invent stricter alpha thresholds.
     a_family=dict(a); a_family["setup"]="A"
