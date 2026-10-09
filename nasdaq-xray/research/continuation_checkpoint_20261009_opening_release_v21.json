@@ -1,0 +1,70 @@
+{
+  "schema": "XRAY_20261009_OPENING_RELEASE_FAIL_CLOSED_V21",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "mode": "RESEARCH_ONLY_MANUAL_DECISION",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "authority": "HISTORICAL_CHECKPOINT_ONLY_LIVE_GITHUB_MAIN_ACTIONS_OVERRIDE",
+  "head_before_checkpoint": "1034830381d1797eda6e870a441bf94974612c2a",
+  "last_observed_market_time_et": "2026-10-09T09:21:48.437052-04:00",
+  "opening_release": "BLOCKED_NO_GO",
+  "root": {
+    "asof_et": "2026-10-08",
+    "status": "PARTIAL_HISTORY",
+    "unknown": 231,
+    "retried_transient_provider_errors": 28,
+    "new_verified_pass": 0,
+    "pending_retry": 0
+  },
+  "mc": {
+    "primary": "BIGDATA_EXACT_COMPANY_LISTING_USD_MARKET_CAP",
+    "provider_credits_exhausted": true,
+    "current_primary_authority": false,
+    "postmc_run": 37932999497,
+    "postmc_result": "FAILURE_CURRENT_MC_AUTHORITY_REQUIRED"
+  },
+  "terminal": {
+    "asof_et": "2026-10-07",
+    "status": "PARTIAL_UNKNOWN",
+    "registered_research_al": 0,
+    "delivery_ledger": 0,
+    "iphone_receipt_proven": false
+  },
+  "repair_witness": {
+    "sina_transport_rescue_selftest": 37933275560,
+    "sina_root_231_state_run": 37932931658,
+    "read_only_session_monitor_run": 37936027687,
+    "monitor_commit": "2a0e133dbf29bb8048416db20474c947c0a70427",
+    "monitor_schedule": "*/15 0-20 9 10 *",
+    "monitor_expires_utc": "2026-10-09T20:15:00Z",
+    "monitor_actual_gate": "BLOCKED_NO_GO"
+  },
+  "alpaca_connected_alternative": {
+    "corrected_evidence": "nasdaq-xray/research/alpaca_sip_231_root_unknown_shadow_20261009_v2.json",
+    "root_unknown_total": 231,
+    "measured_symbols": 14,
+    "raw_260_and_latest30_evidence_only": 11,
+    "unmeasured_due_tool_internal_errors": 217,
+    "promoted_to_c417_history_pass": 0,
+    "github_runner_secret_proven": false,
+    "market_data_rights_proven": false,
+    "primary_mc_authority": false
+  },
+  "automations": {
+    "five_preexisting_enabled": true,
+    "attempted_one_time_opening_audit": "REJECTED_ACTIVE_TASK_LIMIT_5",
+    "preexisting_schedules_unchanged": true
+  },
+  "remaining_requirements": [
+    "Current Bigdata MC legal + credits credentialed exact source, or explicitly approved and separately versioned legal policy successor; no unauthorized PRIMARY shadow",
+    "Real verified official 260/52 history for requested scope and updated current ASOF terminal",
+    "Weekly, Regime, Earnings, Legal, Risk/RR, Final source-binding full pass before creating true R92 research candidate",
+    "Separate registered candidate, expiry, dedup, GitHub delivery, device receipt proof"
+  ],
+  "no_false_go": true,
+  "no_synthetic_bars": true,
+  "no_paper_90pct_win_claim": true,
+  "no_trade_or_order": true
+}
