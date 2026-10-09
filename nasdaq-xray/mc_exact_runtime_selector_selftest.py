@@ -13,7 +13,8 @@ def main():
         "asof_et":"2026-10-08",
         "input_path":"nasdaq-xray/canonical_current_price_dv30.json",
         "input_blob_sha":"a"*40,"input_pass_hash":"scope-hash",
-        "input_count":1,"policy_hash":terminal.POLICY_HASH,
+        "input_count":1,"results":{"TST":{"status":"MC_UNKNOWN"}},
+        "policy_hash":terminal.POLICY_HASH,
         "policy_version":"C4.17"}
     with tempfile.TemporaryDirectory() as directory:
         old_root=terminal.ROOT
