@@ -24,6 +24,14 @@ REPORT="XRAY_C418_MULTI_SOURCE_GUARD_REPORT_V1"
 SHA256=re.compile(r"^[a-f0-9]{64}$")
 SHA1=re.compile(r"^[a-f0-9]{40}$")
 PROVIDERS={"Bigdata","Massive","SEC_EDGAR","NASDAQ","Alpaca","Yahoo_AKShare_Eastmoney"}
+ALLOWED_SOURCE_KINDS={
+    "Bigdata":{"MC"},
+    "Massive":{"MC","PRICE","HISTORY"},
+    "Alpaca":{"PRICE","HISTORY"},
+    "SEC_EDGAR":set(),
+    "NASDAQ":set(),
+    "Yahoo_AKShare_Eastmoney":{"PRICE","HISTORY"},
+}
 # Diagnostic limit, NOT a production/calibrated C4.18 threshold.
 DIAGNOSTIC_MC_MAX_REL_DIFF=0.10
 RIGHTS=("unattended_runner","non_display","derived_signals",
@@ -129,7 +137,7 @@ def validate(evidence, grants, policy, profile):
             or (provider,kind) in seen):
             reasons.append("UNKNOWN_DUPLICATE_OR_UNSUPPORTED_SOURCE");continue
         seen.add((provider,kind))
-        if provider in ("SEC_EDGAR","NASDAQ") or (provider=="Bigdata" and kind!="MC"):
+        if kind not in ALLOWED_SOURCE_KINDS[provider]:
             reasons.append("SOURCE_ROLE_INCORRECT");continue
         if (row.get("asof_et")!=asof or row.get("ticker")!=ticker
             or row.get("issuer_cik")!=cik or row.get("share_class")!=share_class
@@ -251,6 +259,10 @@ def selftest(policy,profile):
         "SOURCE_LICENSE_SCOPE_UNVERIFIED"),
        ("SHARES",lambda a,g:a["identity"].update(corporate_actions_class_exact=False),
         "PIT_IDENTITY_CLASS_ACTIONS_UNPROVEN"),
+       ("ROLE_ALPACA_MC",lambda a,g:a["observations"][1].update(provider="Alpaca"),
+        "SOURCE_ROLE_INCORRECT"),
+       ("ROLE_NASDAQ_PRICE",lambda a,g:a["observations"][2].update(provider="NASDAQ"),
+        "SOURCE_ROLE_INCORRECT"),
     ]
     for name,mutate,reason in failures:
         z=copy.deepcopy(e);g=copy.deepcopy(grant);mutate(z,g)
@@ -262,7 +274,7 @@ def selftest(policy,profile):
     tampered=copy.deepcopy(profile)
     tampered["sources"]["Massive"]["role"]="PRIMARY"
     assert "PROFILE_ROLES_TAMPERED" in validate(e,grant,policy,tampered)["reason_codes"]
-    print("XRAY_C418_MULTI_SOURCE_SELFTEST=PASS_ADVISORY_POSITIVE_12_NEGATIVE_NO_PRIMARY_NO_R92")
+    print("XRAY_C418_MULTI_SOURCE_SELFTEST=PASS_ADVISORY_POSITIVE_14_NEGATIVE_NO_PRIMARY_NO_R92")
 
 def main():
     ap=argparse.ArgumentParser()
