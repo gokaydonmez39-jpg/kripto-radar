@@ -10,6 +10,7 @@ on:
     paths:
       - "nasdaq-xray/chatgpt_canonical_state_v2.json"
       - "nasdaq-xray/delivery_prepare.py"
+      - "nasdaq-xray/source_epoch_freshness_guard.py"
       - "nasdaq-xray/delivery_scheduler_guard.py"
       - "nasdaq-xray/delivery_candidate_preflight.py"
       - "nasdaq-xray/delivery_scheduler_guard_selftest.py"
@@ -95,9 +96,37 @@ jobs:
             exit 1
           fi
 
+      # On weekends or during old-source recovery, a same-ASOF pointer can
+      # still be stale relative to the latest completed Nasdaq session.
+      # No candidate, no provider key, and no R92 authority are invented here.
+      - name: Reject stale latest completed Nasdaq source before R92 delivery
+        id: source_epoch
+        if: steps.presence.outputs.registered == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check "pandas_market_calendars==5.4.0"
+          python nasdaq-xray/source_epoch_freshness_guard.py --selftest
+          python nasdaq-xray/source_epoch_freshness_guard.py --out "$RUNNER_TEMP/xray_delivery_source_epoch.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          report=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_delivery_source_epoch.json").read_text())
+          assert report["schema"]=="XRAY_OFFICIAL_NASDAQ_COMPLETE_SESSION_FRESHNESS_V1"
+          assert report["execution"]=="NONE" and report["real_money"]=="NO-GO"
+          assert report["AL_or_execution_authorized"] is False
+          ok=(report["freshness_ready"] is True
+              and report["price_asof"]==report["master_asof"]==report["terminal_asof"]
+              ==report["latest_completed_nasdaq_session"])
+          with open(os.environ["GITHUB_OUTPUT"],"a",encoding="utf-8") as out:
+              out.write("ready="+str(ok).lower()+"\n")
+          print("XRAY_DELIVERY_COMPLETED_SESSION_SOURCE="+("PASS" if ok else "BLOCKED_STALE_ASOF"))
+          print("XRAY_DELIVERY_SESSION_LAGS="+json.dumps(report["session_lag"],sort_keys=True))
+          PY
+
       - name: Verify scheduler and final recovery readiness
         id: scheduler
-        if: steps.presence.outputs.registered == 'true'
+        if: steps.source_epoch.outputs.ready == 'true'
         env:
           GITHUB_TOKEN: ${{ github.token }}
         shell: bash
@@ -232,6 +261,7 @@ jobs:
       - name: Classify no-delivery without false success
         if: steps.presence.outputs.registered == 'false' || steps.scheduler.outputs.ready != 'true' || steps.prep.outputs.ready != 'true'
         env:
+          EPOCH_READY: ${{ steps.source_epoch.outputs.ready }}
           SCHED_READY: ${{ steps.scheduler.outputs.ready }}
           PREP_REASON: ${{ steps.prep.outputs.reason }}
         shell: bash
@@ -240,6 +270,10 @@ jobs:
             echo "XRAY_DELIVERY_HEALTH=NO_REGISTERED_CANDIDATE (no scheduler authority or device notification claimed)"
             echo "XRAY_DELIVERY_NOOP=NO_REGISTERED_RESEARCH_CANDIDATE"
             exit 0
+          fi
+          if [ "$EPOCH_READY" != "true" ]; then
+            echo "::error::XRAY_DELIVERY_BLOCKED_SOURCE_EPOCH_NOT_LATEST_COMPLETED_SESSION; no user receipt attested"
+            exit 1
           fi
           if [ "$SCHED_READY" != "true" ]; then
             echo "::error::XRAY_DELIVERY_BLOCKED_SCHEDULER; no user receipt attested"
