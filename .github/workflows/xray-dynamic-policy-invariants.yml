@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/test_dynamic_policy_invariants.py"
+      - "nasdaq-xray/e2e_production_readiness.py"
+      - "nasdaq-xray/e2e_price_gap_semantics_selftest.py"
       - "nasdaq-xray/test_alpha_semantics.py"
       - "nasdaq-xray/test_deep_repair_regressions.py"
       - ".github/workflows/xray-canonical-current-pre-mc.yml"
@@ -76,6 +78,8 @@ jobs:
             nasdaq-xray/deep_pre_r1_shadow.py \
             nasdaq-xray/history_phase.py \
             nasdaq-xray/test_dynamic_policy_invariants.py
+      - name: Distinguish actual PRICE UNKNOWN from BLOCKED rows without false GO
+        run: python nasdaq-xray/e2e_price_gap_semantics_selftest.py
       - name: Verify delivery persistence safety regression
         run: python nasdaq-xray/delivery_prepare_selftest.py
       - name: Require immutable exact PRICE blob at MC terminal selector
