@@ -1,0 +1,54 @@
+name: XRAY SEC Free MC Multi-Symbol PIT Shadow Probe
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/sec_free_mc_multisymbol_pit_audit.py"
+      - "nasdaq-xray/sec_official_free_mc_transport_probe.py"
+      - ".github/workflows/xray-sec-free-mc-multisymbol-pit-shadow.yml"
+permissions:
+  contents: read
+concurrency:
+  group: xray-sec-multisymbol-pit-shadow
+  cancel-in-progress: false
+jobs:
+  official-sec-vintages:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Prove SEC current exchange map, CIK and negative source guards
+        run: |
+          python -m py_compile nasdaq-xray/sec_official_free_mc_transport_probe.py nasdaq-xray/sec_free_mc_multisymbol_pit_audit.py
+          python nasdaq-xray/sec_official_free_mc_transport_probe.py --selftest
+          python nasdaq-xray/sec_free_mc_multisymbol_pit_audit.py --selftest
+      - name: Sample official SEC share vintages, never classify PRIMARY MC
+        env:
+          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
+        run: |
+          python nasdaq-xray/sec_free_mc_multisymbol_pit_audit.py --output "$RUNNER_TEMP/xray_sec_multisymbol_pit_shadow.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          j=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_sec_multisymbol_pit_shadow.json").read_text())
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          assert j["c417_primary_mc_count"]==0 and j["production_alpha_authority"] is False
+          assert j["market_cap_calculated"] is False and j["price_binding_attested"] is False
+          assert j["corporate_action_binding_attested"] is False
+          assert j["sample_count"]==len(j["statuses"])
+          print("XRAY_SEC_MULTI_SOURCE_AUDIT=PASS_NO_FALSE_MC")
+          PY
+      - name: Persist operational results only, 14 days
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-sec-multi-pit-shadow-operational-v1
+          path: ${{ runner.temp }}/xray_sec_multisymbol_pit_shadow.json
+          retention-days: 14
+          if-no-files-found: warn
