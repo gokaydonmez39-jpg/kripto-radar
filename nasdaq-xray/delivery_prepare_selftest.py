@@ -18,7 +18,7 @@ def candidate(key,sym,setup,dv30):
       "schema":"XRAY_RESEARCH_CANDIDATE_R92_V1","delivery_key":key,
       "asof_et":"2099-01-02","symbol":sym,"setup":setup,
       "entry_low":100.0,"entry_high":101.0,"chase_limit":102.0,"stop":96.0,
-      "r1":111.0,"rr_basic":2.2,"rr_severe":1.7,"regime":"MIXED",
+      "r1":116.0,"rr_basic":2.2,"rr_severe":1.7,"regime":"MIXED",
       "event_status":"CLEAN_TEST","mc_class":"MC_PASS_PRIMARY","mc_source":"BIGDATA_TEST",
       "dv30":dv30,"liquidity":"DV30_POLICY_PASS","pass_reason":"SELFTEST_ONLY",
       "g9_status":"G9_BLOCKED_FREE_AUTOMATION_PATH",
@@ -230,6 +230,9 @@ with tempfile.TemporaryDirectory() as td:
         ("stop",90.0,"DELIVERY_R92_RISK_PERCENT_EXCEEDS_8"),
         ("rr_basic",1.99,"DELIVERY_R92_RR_POLICY_FLOOR_FAILED"),
         ("rr_severe",1.49,"DELIVERY_R92_RR_POLICY_FLOOR_FAILED"),
+        ("rr_basic",3.1,"DELIVERY_R92_RR_GEOMETRY_UPPER_BOUND"),
+        ("rr_severe",3.1,"DELIVERY_R92_RR_GEOMETRY_UPPER_BOUND"),
+        ("rr_severe",2.3,"DELIVERY_R92_RR_SEVERE_EXCEEDS_BASIC"),
     ]:
         bad=dict(a); bad[field]=value
         (p/"chatgpt_canonical_state_v2.json").write_text(json.dumps(

@@ -409,7 +409,7 @@ def selftest():
         "asof_et":"2026-10-08","mc_class":"MC_PASS_PRIMARY",
         "execution":"NONE","real_money":"NO-GO",
         "entry_low":20.0,"entry_high":21.0,"chase_limit":22.0,
-        "stop":18.0,"r1":27.0,"rr_basic":2.5,"rr_severe":1.7,
+        "stop":19.5,"r1":26.5,"rr_basic":2.5,"rr_severe":1.7,
         "dv30":100_000_000.0})
     ptr={"schema":"XRAY_GITHUB_DURABLE_STATE_V3",
          "authority":"GITHUB_CURRENT_POINTER","execution":"NONE",
@@ -459,6 +459,14 @@ def selftest():
         lambda t,p:p["state_json"]["r92"][0].update(dv30=49_999_999),
         lambda t,p:p["state_json"]["r92"][0].update(entry_low=float("nan")),
         lambda t,p:p["state_json"]["r92"][0].update(stop=21),
+        # These were accepted before this regression: reported RR could be
+        # mathematically impossible even with zero trading costs, or severe
+        # cost scenario could claim a better RR than the basic scenario.
+        lambda t,p:p["state_json"]["r92"][0].update(rr_basic=5.0),
+        lambda t,p:p["state_json"]["r92"][0].update(rr_severe=5.0),
+        lambda t,p:p["state_json"]["r92"][0].update(rr_severe=2.7),
+        # Stop risk >8% is independent of reported winning probability.
+        lambda t,p:p["state_json"]["r92"][0].update(stop=18.0),
     ):
         tbad,pbad=deepcopy(reg_t),deepcopy(ptr)
         edit(tbad,pbad)
