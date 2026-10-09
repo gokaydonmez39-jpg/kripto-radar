@@ -192,6 +192,8 @@ def run():
             result["recent_filing_metadata_diagnostics"][sym]=classify_recent_mismatch(facts,sub,asof)
             if before["status"]=="SHADOW_SHARES_VINTAGE_ONLY":
                 statuses[sym]="SHADOW_RECENT_SOURCE_NOW_PRESENT"
+            elif before.get("reason")=="SEC_SHARES_STALE_OR_FUTURE_OBSERVATION":
+                statuses[sym]="UNKNOWN_PIT_SHARES_TOO_OLD_OR_POST_ASOF_NO_ARCHIVE_FIX"
             elif before.get("reason")!="SEC_FACT_ACCESSION_NOT_VERIFIED_IN_RECENT_SUBMISSIONS":
                 statuses[sym]="UNKNOWN_OTHER_OFFICIAL_REASON"
             else:
