@@ -13,6 +13,15 @@ from pathlib import Path
 
 ROOT=Path(__file__).resolve().parent
 SCHEMA="XRAY_HISTORY_UNKNOWN_SOURCE_TRIAGE_V1"
+# Additive diagnostics retain V1 schema for legacy consumers.
+PARSER_EXCEPTION_CODES=frozenset({
+    "SyntaxError", "IndexError", "KeyError", "ValueError",
+    "JSONDecodeError", "UnicodeDecodeError", "TypeError",
+})
+NETWORK_EXCEPTION_CODES=frozenset({
+    "HTTPError", "TimeoutError", "ConnectionError", "ReadTimeout", "SSLError",
+    "RemoteDisconnected", "ConnectionReset",
+})
 ALLOWED_REASON_CODES={
     "SINA_HISTORY_EMPTY","SINA_HISTORY_TOO_SHORT","SINA_HISTORY_INSUFFICIENT",
     "SINA_NO_ASOF_BAR","SINA_MISSING_SESSIONS","INCOMPLETE_RTH_SESSIONS",
@@ -29,8 +38,10 @@ def reason_code(info):
         raw=info
     else:raw=""
     if raw in ALLOWED_REASON_CODES:return raw
-    if re.match(r"^(?:HTTPError|TimeoutError|ConnectionError|ReadTimeout|JSONDecodeError|ValueError|KeyError|SSLError):",raw):
-        return "NETWORK_OR_PROVIDER_EXCEPTION"
+    if isinstance(info,str) and ":" in raw:
+        error_type=raw.split(":",1)[0]
+        if error_type in PARSER_EXCEPTION_CODES | NETWORK_EXCEPTION_CODES:
+            return "PROVIDER_EXCEPTION_"+error_type
     if isinstance(info,str) and ":" in raw:
         error_type=raw.split(":",1)[0]
         if (re.fullmatch(r"[A-Za-z][A-Za-z0-9_]{0,55}",error_type)
@@ -43,7 +54,14 @@ def reason_code(info):
 
 def recovery_class(code):
     """Stable incident grouping; advisory ONLY, never source recovery PASS."""
-    if code.startswith("NETWORK_OR_PROVIDER_EXCEPTION") or code.startswith("PROVIDER_EXCEPTION_"):
+    if code.startswith("PROVIDER_EXCEPTION_"):
+        subtype=code.removeprefix("PROVIDER_EXCEPTION_")
+        if subtype in PARSER_EXCEPTION_CODES:
+            return "PROVIDER_PARSER_OR_SCHEMA_ERROR"
+        if subtype in NETWORK_EXCEPTION_CODES:
+            return "PROVIDER_TRANSPORT_OR_QUOTA_UNVERIFIED"
+        return "PROVIDER_OTHER_EXCEPTION_NEEDS_INSPECTION"
+    if code.startswith("NETWORK_OR_PROVIDER_EXCEPTION"):
         return "PROVIDER_TRANSPORT_OR_QUOTA_UNVERIFIED"
     if code=="EXACT30_INCOMPLETE_NEVER_PASS":
         return "LATEST_30_COMPLETED_SESSIONS_MISSING"
@@ -88,8 +106,24 @@ def audit(state):
     recovery=Counter(recovery_class(reason_code(row.get("info"))) for row in unknown.values())
     if sum(recovery.values())!=len(unknown):
         raise ValueError("RECOVERY_CLASS_PARTITION_INCOMPLETE")
-    # Public ticker IDs only, at most three per reason. No prices, bars,
-    # provider URLs, exceptions or raw metadata are serialized.
+    # Public ticker IDs and diagnostic categories only; no prices, volume,
+    # bar sequences, credentials, provider error bodies, or raw metadata.
+    # Source-local incidents must NOT be promoted to verified IPO/52W causes.
+    per_symbol={}
+    for symbol,row in sorted(unknown.items()):
+        rc=reason_code(row.get("info"))
+        per_symbol[symbol]={
+            "status":str(row.get("status")),
+            "provider_reason_code":rc,
+            "operational_class":recovery_class(rc),
+            "confirmed_ipo":None,
+            "daily_260_official_sessions_verified":None,
+            "weekly_52_completed_weeks_verified":None,
+            "independent_authorized_history_check_required":True,
+        }
+    if len(per_symbol)!=len(unknown) or set(per_symbol)!=set(unknown):
+        raise ValueError("PER_SYMBOL_PARTITION_MISMATCH")
+    # Retain the legacy three-per-reason ticker samples.
     samples={}
     for symbol,row in sorted(unknown.items()):
         code=str(row.get("status"))+" | "+reason_code(row.get("info"))
@@ -111,6 +145,9 @@ def audit(state):
         "status_counts":dict(sorted(counts.items())),
         "unknown_reason_counts":dict(sorted(reasons.items())),
         "advisory_recovery_class_counts":dict(sorted(recovery.items())),
+        "public_per_symbol_source_diagnostics":per_symbol,
+        "per_symbol_diagnostics_count":len(per_symbol),
+        "per_symbol_causes_are_independently_verified":False,
         "recovery_execution_authorized":False,
         "public_sample_tickers_by_reason":dict(sorted(samples.items())),
         "public_market_bars_persisted":False,
@@ -137,6 +174,13 @@ def selftest():
         "PROVIDER_TRANSPORT_OR_QUOTA_UNVERIFIED":1,
         "SOURCE_NO_HISTORY_RETURNED":1}
     assert ok["recovery_execution_authorized"] is False
+    assert ok["per_symbol_diagnostics_count"]==2
+    assert set(ok["public_per_symbol_source_diagnostics"])=={"B","C"}
+    assert all(x["confirmed_ipo"] is None and x["daily_260_official_sessions_verified"] is None
+               and x["weekly_52_completed_weeks_verified"] is None and
+               x["independent_authorized_history_check_required"] is True
+               for x in ok["public_per_symbol_source_diagnostics"].values())
+    assert ok["per_symbol_causes_are_independently_verified"] is False
     for reason,expected in [
         ("EXACT30_INCOMPLETE_NEVER_PASS","LATEST_30_COMPLETED_SESSIONS_MISSING"),
         ("ASOF_MISSING_REQUIRES_RESOLUTION","SAME_ASOF_SESSION_MISSING"),
@@ -147,6 +191,15 @@ def selftest():
     assert reason_code({"reason":"ASOF_MISSING_REQUIRES_RESOLUTION"})=="ASOF_MISSING_REQUIRES_RESOLUTION"
     assert reason_code({"reason":"EXACT30_INCOMPLETE_NEVER_PASS"})=="EXACT30_INCOMPLETE_NEVER_PASS"
     assert reason_code("RuntimeError:provider unavailable")=="PROVIDER_EXCEPTION_RuntimeError"
+    assert reason_code("SyntaxError:bad json")=="PROVIDER_EXCEPTION_SyntaxError"
+    assert reason_code("IndexError:list index out of range")=="PROVIDER_EXCEPTION_IndexError"
+    assert reason_code("KeyError:field")=="PROVIDER_EXCEPTION_KeyError"
+    assert reason_code("TimeoutError:request")=="PROVIDER_EXCEPTION_TimeoutError"
+    assert reason_code("JSONDecodeError:invalid")=="PROVIDER_EXCEPTION_JSONDecodeError"
+    assert recovery_class(reason_code("SyntaxError:bad json"))=="PROVIDER_PARSER_OR_SCHEMA_ERROR"
+    assert recovery_class(reason_code("IndexError:out of range"))=="PROVIDER_PARSER_OR_SCHEMA_ERROR"
+    assert recovery_class(reason_code("TimeoutError:request"))=="PROVIDER_TRANSPORT_OR_QUOTA_UNVERIFIED"
+    assert recovery_class(reason_code("RuntimeError:provider"))=="PROVIDER_OTHER_EXCEPTION_NEEDS_INSPECTION"
     assert reason_code("https://private-provider/data?api_key=secret")=="UNCLASSIFIED_PROVIDER_DIAGNOSTIC"
     from copy import deepcopy
     for outer,key,val in (
