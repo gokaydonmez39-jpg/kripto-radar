@@ -77,16 +77,24 @@ jobs:
       - name: Static compile gate
         run: python -m py_compile nasdaq-xray/orchestrator_run.py nasdaq-xray/orchestrator_partial_invalidation_selftest.py nasdaq-xray/sina_stage.py nasdaq-xray/mc_zero_key.py nasdaq-xray/production_core_build.py nasdaq-xray/alpha_semantics.py nasdaq-xray/test_alpha_semantics.py nasdaq-xray/stage1_shadow.py nasdaq-xray/regime_breadth_shadow.py nasdaq-xray/deep_pre_r1_shadow.py
 
+      - name: Determine U.S. ET weekend unattended-market quota gate
+        id: session
+        run: python nasdaq-xray/root_weekend_quota_guard.py --emit
+
       - name: Install zero-dollar research runtime
+        if: steps.session.outputs.allow_compute == 'true'
         run: python -m pip install --disable-pip-version-check -r nasdaq-xray/requirements-runtime.txt
 
       - name: Verify deterministic alpha semantics
+        if: steps.session.outputs.allow_compute == 'true'
         run: python nasdaq-xray/test_alpha_semantics.py
 
       - name: Run autonomous XRAY data plane
+        if: steps.session.outputs.allow_compute == 'true'
         run: python nasdaq-xray/orchestrator_run.py
 
       - name: Commit durable XRAY checkpoints
+        if: steps.session.outputs.allow_compute == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -148,7 +156,7 @@ jobs:
           echo "XRAY_DURABLE_COMMIT=PASS"
 
       - name: Atomically wake pre-MC after root checkpoint, never claim terminal success
-        if: success()
+        if: success() && steps.session.outputs.allow_compute == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
