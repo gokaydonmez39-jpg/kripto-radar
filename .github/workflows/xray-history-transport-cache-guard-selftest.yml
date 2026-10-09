@@ -19,12 +19,14 @@ concurrency:
 jobs:
   selftest:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Install pinned official Nasdaq session calendar
+        run: python -m pip install --disable-pip-version-check "pandas_market_calendars==5.4.0"
       - name: Compile
         run: python -m py_compile nasdaq-xray/history_transport_cache_guard.py nasdaq-xray/history_transport_cache_guard_selftest.py
       - name: Deterministic regression selftest
