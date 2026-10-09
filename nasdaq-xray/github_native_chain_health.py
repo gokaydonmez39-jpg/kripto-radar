@@ -80,10 +80,14 @@ def classify(now, blobs, files, main_stable):
         issues.append("OFFICIAL_GUARD_STALE_OVER_900S")
     if int(events.get("affected_geometry_event_unknown_count",-1))>0:
         issues.append("EVENT_GEOMETRY_UNRESOLVED")
+    # C4.17 manual research is independent of broker/account and G9 NBBO.
+    # Preserve external execution readiness separately; do not conflate it
+    # with root/candidate research outages or silently grant a trading GO.
+    legacy_full_go_blockers=[]
     if g9.get("status")!="PROVEN_FROM_PRIMARY_SOURCE":
-        issues.append("EXTERNAL_G9_ENTITLEMENT_UNPROVEN")
+        legacy_full_go_blockers.append("EXTERNAL_G9_ENTITLEMENT_UNPROVEN")
     if account.get("current_status")!="ACCOUNT_PASS":
-        issues.append("EXTERNAL_ACCOUNT_READ_SCOPE_UNPROVEN")
+        legacy_full_go_blockers.append("EXTERNAL_ACCOUNT_READ_SCOPE_UNPROVEN")
     if terminal.get("full_end_to_end_research_pass") is not True:
         issues.append("TERMINAL_E2E_NOT_PROVEN")
     # Overlay is a reporting surface only; never converts non-pass to PASS.
@@ -103,6 +107,10 @@ def classify(now, blobs, files, main_stable):
         "geometry_event_unknown_count":events.get("affected_geometry_event_unknown_count"),
         "g9_status":g9.get("status"),
         "account_status":account.get("current_status"),
+        "manual_research_mode":"RESEARCH_ONLY_MANUAL_DECISION",
+        "g9_and_account_required_for_manual_research":False,
+        "legacy_full_go_blockers":legacy_full_go_blockers,
+        "legacy_full_go_ready":not legacy_full_go_blockers and not issues,
         "terminal_result":terminal.get("terminal_result"),
         "root_data_plane_status":root_status,
         "root_history_unknown_count":orchestrator.get("unknown_count"),
@@ -145,7 +153,13 @@ def selftest():
     assert v["status"]=="OPEN_INCIDENTS_FAIL_CLOSED"
     assert v["terminal_drift_keys"]==[]
     assert v["price_resolver_exact_current"] is True
-    assert "EXTERNAL_G9_ENTITLEMENT_UNPROVEN" in v["issues"]
+    assert "EXTERNAL_G9_ENTITLEMENT_UNPROVEN" not in v["issues"]
+    assert "EXTERNAL_ACCOUNT_READ_SCOPE_UNPROVEN" not in v["issues"]
+    assert set(v["legacy_full_go_blockers"])=={
+        "EXTERNAL_G9_ENTITLEMENT_UNPROVEN",
+        "EXTERNAL_ACCOUNT_READ_SCOPE_UNPROVEN"}
+    assert v["legacy_full_go_ready"] is False
+    assert v["g9_and_account_required_for_manual_research"] is False
     assert "ROOT_HISTORY_NO_RETRYABLE_WORK" in v["issues"]
     assert v["root_history_unknown_count"]==231 and v["root_history_retryable"] is False
     retryable=dict(objects,orchestrator={"status":"PARTIAL_HISTORY",
