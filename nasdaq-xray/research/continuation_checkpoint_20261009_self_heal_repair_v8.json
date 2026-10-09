@@ -1,0 +1,135 @@
+{
+  "schema": "XRAY_20261009_SELF_HEAL_REPAIR_CONTINUATION_V8",
+  "repo": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "utc_observation_window": "2026-10-09T06:25:31Z to 2026-10-09T06:31:34Z",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "mode": "RESEARCH_ONLY_MANUAL_DECISION",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "no_paid_api": true,
+  "initial_main": "8d08050dcb9c34e881a8188762ee5904b2ca6fa4",
+  "repairs": [
+    {
+      "commit": "ad46c16d00ddb567c6361f237cd90b7219338852",
+      "path": "nasdaq-xray/github_native_root_watchdog.py",
+      "reason": "expired in_progress root could permanently suppress restart",
+      "effect": "3300 sec active run grace fence with regression"
+    },
+    {
+      "commit": "91dcef94c174e5877e8ba430a490e7c64efa6047",
+      "path": ".github/workflows/xray-github-native-root-watchdog.yml",
+      "reason": "only best-effort GitHub schedule wakes watchdog",
+      "effect": "watchdog wakes on completed independent 15m preopen / live truth / E2E checks"
+    },
+    {
+      "commit": "c7d52aace9df535c8a6bb76cb7a65722ab65d8ee",
+      "path": "nasdaq-xray/github_native_chain_health.py",
+      "reason": "moving main changed between tree and per-file reads, failing SHA witness during root dispatch",
+      "effect": "immutable commit ref for all reads, bounded 3 double-head snapshots; fail closed if no stable read"
+    },
+    {
+      "commit": "c7794911a71bb98c89a50e270c62234b88e93a6d",
+      "path": ".github/workflows/xray-github-native-root-watchdog.yml",
+      "reason": "chain-health code edits not triggering selftest",
+      "effect": "explicit path triggers watchdog regression"
+    },
+    {
+      "commit": "a30b7bea09e08ad424b862da3aeebfdbe528933e",
+      "path": "nasdaq-xray/orchestrator_run.py",
+      "reason": "16 repeated identical HISTORY passes after cursor finished with zero retryable unknowns",
+      "effect": "stop bounded loop once no retryable work while retaining 231 UNKNOWN and invalidating downstream"
+    },
+    {
+      "commit": "aa67a9f0e6f8f07821a8f114591e0d276a67571e",
+      "path": "nasdaq-xray/orchestrator_partial_invalidation_selftest.py",
+      "reason": "no progress/no retry distinguishing tests absent",
+      "effect": "positive 4 negative 3 history retry decision test"
+    },
+    {
+      "commit": "98726b8aa12d00563cc09472f5e3dc71ae69bfc1",
+      "path": "nasdaq-xray/github_native_chain_health.py",
+      "reason": "root workflow SUCCESS hid persistent PARTIAL_HISTORY state",
+      "effect": "new explicit ROOT_HISTORY_PARTIAL and ROOT_HISTORY_NO_RETRYABLE_WORK incidents"
+    }
+  ],
+  "actions_evidence": {
+    "root_recovery_watchdog_initial": {
+      "run_id": 37893451788,
+      "conclusion": "FAILURE_CHAIN_SHA_RACE",
+      "actual_root_dispatch": "ACCEPTED"
+    },
+    "root_dispatched": {
+      "run_id": 37893470422,
+      "conclusion": "SUCCESS_PROCESS_COMPLETED",
+      "actual_data_plane_result": "PARTIAL_HISTORY",
+      "candidate_signal_proven": false
+    },
+    "watchdog_second": {
+      "run_id": 37893474880,
+      "conclusion": "SUCCESS",
+      "active_root_suppressed": true
+    },
+    "sha_race_bounded_retry": {
+      "run_id": 37893584757,
+      "conclusion": "SUCCESS",
+      "positive_negative_tests": "PASS"
+    },
+    "independent_workflow_run_trigger_examples": [
+      37893845557,
+      37893862293
+    ],
+    "history_exhaustion_first": {
+      "run_id": 37893704289,
+      "conclusion": "SUCCESS",
+      "history_result": "PARTIAL_HISTORY",
+      "unknown_count": 231,
+      "pending_retry": 0
+    },
+    "history_exhaustion_regression": {
+      "run_id": 37893728440,
+      "conclusion": "SUCCESS",
+      "positive_negative_tests": "PASS_4_POSITIVE_3_NEGATIVE"
+    },
+    "latest_watchdog": {
+      "run_id": 37893955307,
+      "conclusion": "SUCCESS",
+      "first_output": "FRESH_ROOT_SUCCESS_BUT_CHAIN_OPEN",
+      "root_history_incidents_proven": true
+    },
+    "latest_e2e": {
+      "run_id": 37893918879,
+      "conclusion": "SUCCESS_FAIL_CLOSED_REPORT",
+      "status": "BLOCKED"
+    }
+  },
+  "latest_source_truth": {
+    "canonical_epoch": "2026-10-08",
+    "terminal_epoch": "2026-10-07",
+    "primary_mc_current_count": 0,
+    "primary_mc_status": "CURRENT_MC_AUTHORITY_MISSING",
+    "identity_unknown": 72,
+    "price_blocked": 45,
+    "price_pass": 514,
+    "root_history_unknown": 231,
+    "root_history_retryable": false,
+    "r92_current_confirmed": 0,
+    "delivery_ledger_empty": true,
+    "actual_device_receipt": false,
+    "g9_account": "NOT_REQUIRED_FOR_MANUAL_RESEARCH_BUT_LEGACY_FULL_GO_BLOCKED"
+  },
+  "blockers_remaining": [
+    "PRIMARY current point-in-time lawful zero-dollar MC proof missing",
+    "231 HISTORY unknown results in root auxiliary path; no current retryable provider observations",
+    "terminal source SHA mismatch (master/price/fullstate/events/official/current MC)",
+    "72 NASDAQ operating identity unknown; 45 PRICE/DV30 blocked",
+    "current 2026-10-08 HISTORY->weekly->event->risk->terminal incomplete",
+    "actual eligible registered manual candidate and end-user push receipt unproven",
+    "official guard freshness and event geometry unresolved"
+  ],
+  "safety": "No automatic C4.17 threshold relaxation, vendor license upgrade, shadow MC promotion, risk bypass, broker action or money",
+  "release_status": "NO-GO",
+  "reference_authority": "Always reread live GitHub main, code and Actions: this file is historical witness only."
+}
