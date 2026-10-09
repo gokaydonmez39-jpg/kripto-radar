@@ -38,7 +38,12 @@ def main():
         assert telemetry(cp,ss,"TEST_ONLY",0)["full_260_symbol_date_transport"] is True
         checkpoint=tmp/"checkpoint.encrypted"
         save(cp,crypt,ss,checkpoint)
-        assert b"QQQ" not in checkpoint.read_bytes()
+        ciphertext=checkpoint.read_bytes()
+        assert ciphertext.startswith(b"gAAAA") and not ciphertext.startswith(b"{")
+        # Random ciphertext can incidentally contain 3-byte tokens such as
+        # QQQ. Check that a full *plaintext bar* is absent; decryption and
+        # authenticated tampering are verified by the separate selftest.
+        assert b'"QQQ":[10.0,11.0,9.0,10.0,125.125]' not in ciphertext
         decrypted,restored=load(checkpoint,crypt,ss)
         assert restored and exact(decrypted,ss)
         outputdir=tmp/"private-raw"
