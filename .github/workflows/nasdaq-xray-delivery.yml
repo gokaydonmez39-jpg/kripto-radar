@@ -11,6 +11,7 @@ on:
       - "nasdaq-xray/chatgpt_canonical_state_v2.json"
       - "nasdaq-xray/delivery_prepare.py"
       - "nasdaq-xray/delivery_scheduler_guard.py"
+      - "nasdaq-xray/delivery_candidate_preflight.py"
       - "nasdaq-xray/delivery_scheduler_guard_selftest.py"
       - "nasdaq-xray/delivery_ledger_merge.py"
       - "nasdaq-xray/delivery_prepare_selftest.py"
@@ -49,6 +50,7 @@ jobs:
             nasdaq-xray/resilience_runtime.py \
             nasdaq-xray/official_source_guard.py \
             nasdaq-xray/delivery_prepare.py \
+            nasdaq-xray/delivery_candidate_preflight.py \
             nasdaq-xray/delivery_prepare_selftest.py \
             nasdaq-xray/delivery_scheduler_guard.py \
             nasdaq-xray/delivery_scheduler_guard_selftest.py \
@@ -75,9 +77,27 @@ jobs:
         run: |
           python nasdaq-xray/delivery_prepare_selftest.py
           python nasdaq-xray/delivery_scheduler_guard_selftest.py
+          python nasdaq-xray/delivery_candidate_preflight.py --selftest
+
+      - name: Classify registered R92 presence without claiming source readiness
+        id: presence
+        shell: bash
+        run: |
+          set -euo pipefail
+          out=$(python nasdaq-xray/delivery_candidate_preflight.py)
+          echo "$out"
+          if echo "$out" | grep -q '^XRAY_DELIVERY_R92_PRESENT=true$'; then
+            echo "registered=true" >> "$GITHUB_OUTPUT"
+          elif echo "$out" | grep -q '^XRAY_DELIVERY_CANDIDATE_PREFLIGHT=NO_REGISTERED_R92$'; then
+            echo "registered=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "::error::XRAY_DELIVERY_PREFLIGHT_UNCLASSIFIED"
+            exit 1
+          fi
 
       - name: Verify scheduler and final recovery readiness
         id: scheduler
+        if: steps.presence.outputs.registered == 'true'
         env:
           GITHUB_TOKEN: ${{ github.token }}
         shell: bash
@@ -210,12 +230,17 @@ jobs:
           exit 1
 
       - name: Classify no-delivery without false success
-        if: steps.scheduler.outputs.ready != 'true' || steps.prep.outputs.ready != 'true'
+        if: steps.presence.outputs.registered == 'false' || steps.scheduler.outputs.ready != 'true' || steps.prep.outputs.ready != 'true'
         env:
           SCHED_READY: ${{ steps.scheduler.outputs.ready }}
           PREP_REASON: ${{ steps.prep.outputs.reason }}
         shell: bash
         run: |
+          if [ "${{ steps.presence.outputs.registered }}" = "false" ]; then
+            echo "XRAY_DELIVERY_HEALTH=NO_REGISTERED_CANDIDATE (no scheduler authority or device notification claimed)"
+            echo "XRAY_DELIVERY_NOOP=NO_REGISTERED_RESEARCH_CANDIDATE"
+            exit 0
+          fi
           if [ "$SCHED_READY" != "true" ]; then
             echo "::error::XRAY_DELIVERY_BLOCKED_SCHEDULER; no user receipt attested"
             exit 1
