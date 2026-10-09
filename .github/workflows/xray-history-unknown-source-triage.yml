@@ -1,0 +1,46 @@
+name: XRAY Root History UNKNOWN Source Triage
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/history_unknown_source_triage.py"
+      - ".github/workflows/xray-history-unknown-source-triage.yml"
+permissions:
+  contents: read
+jobs:
+  read-only-triage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Fail-closed classifications and malformed artifact tests
+        run: |
+          python -m py_compile nasdaq-xray/history_unknown_source_triage.py
+          python nasdaq-xray/history_unknown_source_triage.py --selftest
+      - name: Report real repository HISTORY unknown reason counts
+        run: |
+          python nasdaq-xray/history_unknown_source_triage.py --output "$RUNNER_TEMP/xray_history_unknown_triage.json"
+          python - <<'PY'
+          import os,json
+          from pathlib import Path
+          v=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_history_unknown_triage.json").read_text())
+          assert v["execution"]=="NONE" and v["real_money"]=="NO-GO"
+          assert v["alpha_authority"] is False and v["candidate_created"] is False
+          assert v["public_market_bars_persisted"] is False
+          assert sum(v["status_counts"].values())==v["classifications"]
+          print("XRAY_HISTORY_TRIAGE_SECURITY=PASS_NO_FAKE_ALPHA_OR_BARS")
+          PY
+      - name: Save counts-only triage for 7 days
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-history-unknown-counts-v1
+          path: ${{ runner.temp }}/xray_history_unknown_triage.json
+          retention-days: 7
+          if-no-files-found: warn
