@@ -4,6 +4,7 @@ from __future__ import annotations
 import datetime as dt
 import alpaca_root_unknown_rescue_shadow as rescue
 import alpaca_free_sip_shadow_guard as sip
+import alpaca_strict_daily_shadow_v2 as strict
 from history_transport_cache_guard import official_completed_sessions
 
 ASOF = "2026-10-08"
@@ -29,10 +30,14 @@ def main():
     assert blocked == {"UNKNOWN_LATEST_260_OFFICIAL_SESSIONS_INCOMPLETE":1},blocked
     wrong30=[official[-31],*official[-29:]]
     assert len(wrong30)==30 and wrong30[-1]==ASOF
-    status,reason,_=sip.evaluate_daily(rows(wrong30),wrong30,ASOF,NOW)
-    assert status=="UNKNOWN" and reason=="OFFICIAL_30_SESSION_LIST_UNVERIFIED",(
-        "FABRICATED_30_SESSION_CALENDAR_ACCEPTED",status,reason)
-    print("XRAY_ALPACA_SHADOW_EXACT260_AND_30_CALENDAR_REGRESSION=PASS")
+    # Legacy direct API still lacks the official-date hard gate; the
+    # production workflow must call only the guarded v2 dispatcher.
+    status,reason,_=strict.evaluate_daily_strict(rows(wrong30),wrong30,ASOF,NOW)
+    assert status=="UNKNOWN" and reason=="OFFICIAL_NASDAQ_30_CALENDAR_REQUIRED",(
+        "STRICT_GUARDED_SHADOW_ACCEPTED_FABRICATED_CALENDAR",status,reason)
+    status,reason,_=strict.evaluate_daily_strict(rows(expected30),expected30,ASOF,NOW)
+    assert status=="SHADOW_30_BARS_OBSERVED",("GUARDED_POSITIVE_FAIL",status,reason)
+    print("XRAY_ALPACA_SHADOW_EXACT260_AND_STRICT30_DISPATCH_REGRESSION=PASS")
 
 if __name__=="__main__":
     main()
