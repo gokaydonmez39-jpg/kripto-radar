@@ -17,6 +17,7 @@ from collections import Counter
 from pathlib import Path
 
 import alpaca_free_sip_shadow_guard as sip
+from history_transport_cache_guard import exact_recent_sessions
 
 ROOT=Path(__file__).resolve().parent
 SCHEMA="XRAY_ROOT_UNKNOWN_SIP_RESCUE_SHADOW_V1"
@@ -70,8 +71,14 @@ def study(symbols,asof,expected30,bar_map,now):
             continue
         if len(uniq)!=len(obs):
             counts["UNKNOWN_DUPLICATE_HISTORY_SESSION"]+=1
+        elif len(positive)>=260 and len(weeks)>=52 and exact_recent_sessions(
+                {d.isoformat() for d in positive},asof):
+            # Exact exchange session DATES are proven here, but the OHLCV
+            # adjustment basis, source redistribution rights and C4.17
+            # PRIMARY MC remain unverified. Never generate canonical PASS.
+            counts["SHADOW_LATEST_260_OFFICIAL_DATES_52_ISO_WEEKS_NOT_PRIMARY"]+=1
         elif len(positive)>=260 and len(weeks)>=52:
-            counts["SHADOW_260_BARS_52_WEEKS_OBSERVED_NOT_PRIMARY"]+=1
+            counts["UNKNOWN_LATEST_260_OFFICIAL_SESSIONS_INCOMPLETE"]+=1
         else:
             counts["UNKNOWN_LT260_OR_52_WEEKS"]+=1
     return dict(sorted(counts.items()))
