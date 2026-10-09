@@ -1,0 +1,203 @@
+{
+  "schema": "XRAY_C417_WEEKEND_MON_12OCT_E2E_TASK_SCHEDULER_NOTIFICATION_AUDIT_V43",
+  "repository": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "observed_main_head": "0203a6dda68a18b1bca9ee0e98059623c48d778a",
+  "authority": "LIVE_GITHUB_SOURCE_SHAS_ACTIONS_JOB_STEPS_AND_AUTOMATIONS_PEEK_OVERRIDE_THIS_STATIC_WITNESS",
+  "checked_date_trt": "2026-10-10",
+  "compiled_policy": "C4.17",
+  "compiled_policy_blob_sha": "16c50cc8f887a5234a4be23862d7c8d0e564b0ac",
+  "control": "C4.27",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "c418": "PROPOSED_ONLY",
+  "alpha_or_liquidity_relaxation": false,
+  "market_clock": {
+    "official_last_completed_nasdaq_session": "2026-10-09",
+    "next_regular_session": "2026-10-12",
+    "next_open_et": "09:30 America/New_York",
+    "next_open_trt": "16:30 Europe/Istanbul",
+    "weekend_dates_et": [
+      "2026-10-10",
+      "2026-10-11"
+    ],
+    "verified_by": "connected Alpaca 2026-10-09..13 exchange calendar and local ET root weekend guard selftest",
+    "rth_g9_not_attestable_over_weekend": true,
+    "no_nonexistent_bar": true
+  },
+  "five_active_tasks_exact": [
+    {
+      "id": "6abeb37721ec81918e78b0ac65eb64a0",
+      "role": "Reader",
+      "minute_et": 43,
+      "notifications": false,
+      "email": false,
+      "enabled": true
+    },
+    {
+      "id": "6abeb39630a88191a672574b45bdcd1b",
+      "role": "Committer",
+      "minute_et": 46,
+      "notifications": false,
+      "email": false,
+      "enabled": true
+    },
+    {
+      "id": "6abd0465d15c8191aac5888abb784f27",
+      "role": "Health/Failover",
+      "minute_et": 49,
+      "notifications": false,
+      "email": false,
+      "enabled": true
+    },
+    {
+      "id": "6abeb68907a88191a364437de1fb2275",
+      "role": "Bridge Finisher",
+      "minute_et": 52,
+      "notifications": false,
+      "email": false,
+      "enabled": true
+    },
+    {
+      "id": "6a825366222081918997094d76e6ae46",
+      "role": "Canonical Research Radar/sole user notification",
+      "minute_et": 57,
+      "notifications": true,
+      "email": true,
+      "enabled": true
+    }
+  ],
+  "task_limit_rule": "DO_NOT_CREATE_SIXTH_TASK_OR_REPEAT_UNCHANGED_NOTIFICATIONS",
+  "notification_truth": "ChatGPT notification/email configured for Canonical; platform device receipt not witnessed; delivery_ledger empty, real R92=0. A successful no-op delivery job is not a push notification.",
+  "root_latest_success_at_check": 38000329077,
+  "current_sources": {
+    "master": {
+      "path": "nasdaq-xray/canonical_current_master_manifest.json",
+      "sha": "f354dc726ff9d26fa4b85291f6c7201110b93e65",
+      "asof": "2026-10-09",
+      "pass": 3184,
+      "unknown": 12
+    },
+    "price": {
+      "path": "nasdaq-xray/canonical_current_price_dv30.json",
+      "sha": "b74444f88c57e2bd497495e62c14969184fd9878",
+      "asof": "2026-10-09",
+      "pass": 0,
+      "unknown": 553,
+      "counts": {
+        "FAIL_DV30": 1311,
+        "FAIL_DV30_INSUFFICIENT_SESSIONS": 7,
+        "FAIL_PRICE": 1304,
+        "FAIL_PRICE_NO_ASOF_BAR": 9,
+        "UNKNOWN": 553
+      }
+    },
+    "resolver": {
+      "asof": "2026-10-09",
+      "source_blob": "56b6731b0666d3bca53cbd8ae014ad7790a9cac0",
+      "symbol_count": 553,
+      "settlement_required": true
+    },
+    "terminal": {
+      "sha": "ea9c41cd1e5971e78d85bf3f620d7f8c4e01034f",
+      "asof": "2026-10-07",
+      "result": "PARTIAL_UNKNOWN",
+      "mc_primary_pass": 0,
+      "real_r92": 0
+    },
+    "history": {
+      "asof": "2026-10-07",
+      "certified_fresh_9oct_260x52_count": 0
+    }
+  },
+  "source_observations": {
+    "rallies_9oct_all_us_row_count_observed": 12586,
+    "apple_20250902_to_20261009_daily_rows": 279,
+    "qqq_same_range_daily_rows": 279,
+    "apple_fractional_volume_rows": 160,
+    "qqq_fractional_volume_rows": 160,
+    "no_c417_primary_9oct_rallies_classification": true,
+    "no_verified_raw_consolidated_RTH_volume": true,
+    "automated_non_display_storage_redistribution_rights": "UNVERIFIED",
+    "licensed_automated_github_runner": false,
+    "twelve": "REAL_0/0_DUE_ZERO_CURRENT_PRICE_PASS_SCOPE; NOT_CURRENT_515_REAL_HISTORY",
+    "twelve_green_run": 37998735876
+  },
+  "verified_production_runs": {
+    "current_premc_latest_success_with_noop": 38002941369,
+    "previous_root": 38000329077,
+    "postmc_blocked_failure": 38001161116,
+    "final_factory_noop_success": 38001526115,
+    "delivery_no_candidate_success": 38001546853,
+    "alert_device_receipt_verified": false
+  },
+  "proven_safety_repair": {
+    "problem": "Every frozen Pre-MC no-op triggered duplicate Post-MC despite unchanged MC; endless expected fail retries consumed quota",
+    "red_run": 38002745121,
+    "red_marker": "MISSING_COMMIT_OUTPUT_ID",
+    "remediation_commits": [
+      "29fca92f8d624b989cf1f6858e4be4a49d89ceb5",
+      "bbbe6638e19a1856afdaacf0d8720f53b91ebedb",
+      "0203a6dda68a18b1bca9ee0e98059623c48d778a"
+    ],
+    "final_green_run": 38002941369,
+    "proof": "Pre-MC HEALTHY_NOOP => postMC relay SKIPPED, source commit SKIPPED, test PASS; independent postMC 50-minute cron/push remains",
+    "no_alpha_change": true
+  },
+  "seven_blocks": [
+    {
+      "id": 1,
+      "name": "Authorized ingestion and rights",
+      "state": "PARTIAL_BULK_ROWS_ACCESSIBLE_NO_AUTOMATED_LICENSE_OR_RAW_VOLUME_PROOF"
+    },
+    {
+      "id": 2,
+      "name": "Genuine 260 daily/52 weekly",
+      "state": "BLOCKED_9OCT_SCOPE_0_CERTIFIED"
+    },
+    {
+      "id": 3,
+      "name": "C4.17 current exact issuer PRIMARY MC",
+      "state": "BLOCKED_0_PRIMARY"
+    },
+    {
+      "id": 4,
+      "name": "Full NASDAQ scope",
+      "state": "PARTIAL_3184_MASTER_PASS_12_UNKNOWN_0_PRICE_PASS_553_UNKNOWN"
+    },
+    {
+      "id": 5,
+      "name": "Exact same-ASOF E2E terminal",
+      "state": "BLOCKED_MASTER_PRICE_9OCT_TERMINAL_7OCT"
+    },
+    {
+      "id": 6,
+      "name": "Final true R92 AL",
+      "state": "BLOCKED_NO_CURRENT_PRIMARY_PRICE_MC_HISTORY_EVENTS_AND_RR"
+    },
+    {
+      "id": 7,
+      "name": "Phone and forward 60-session evidence",
+      "state": "BLOCKED_NO_REAL_CANDIDATE_DELIVERY_OR_60_REAL_FUTURE_SESSIONS"
+    }
+  ],
+  "additional_gates": {
+    "g9_strict": "BLOCKED_ZERO_CURRENT_G9_ATTESTED",
+    "account": "BLOCKED_FRESH_READONLY_AUTH_MISSING",
+    "manual_research_go_requires_account_or_g9": false,
+    "real_money": "NO-GO_AND_NO_BROKER_ORDER"
+  },
+  "ordered_next_actions": [
+    "P0 preserve weekend NY calendar guard, zero phantom RTH data, no duplicated task",
+    "P1 legally verify Rallies/alternative automated non-display/private retention and whether reported fractional volume is adjusted or authentic consolidated RTH shares",
+    "P2 produce exact current 30 session 9Oct raw-dated volume authenticated classification for FULL 3184 scope, no false PASS",
+    "P3 source exact 260 daily/52 weekly PRICE survivors and independent issuer PIT exact PRIMARY MC, both real",
+    "P4 rerun same-ASOF MASTER->PRICE->RESOLVER->MC->HISTORY->LEGAL->STAGE1->REGIME->DEEP->EVENT->RR->FINAL with immutable SHA binding",
+    "P5 register evidence-backed R92 (only if actual setup meets C4.17), validate candidate halt/suspension, dedup ledger, and true device receipt",
+    "P6 validate recurrence Monday NY preopen, 16:30 TRT opening and Friday ASOF rollover, then actual 60 future completed session forward test without lookahead"
+  ],
+  "production_decision": "NO-GO",
+  "no_false_success": true,
+  "checkpoint_diagnostic_not_authoritative": true
+}
