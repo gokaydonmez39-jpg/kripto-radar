@@ -22,6 +22,7 @@ on:
       - "nasdaq-xray/resolve_unknowns_fallback.py"
       - "nasdaq-xray/extract_unknown_manifest.py"
       - "nasdaq-xray/build_current_master_manifest.py"
+      - "nasdaq-xray/pre_mc_sec_scope_selftest.py"
       - "nasdaq-xray/price_dv30_phase.py"
       - "nasdaq-xray/price_dv30_recover_from_fullstate.py"
       - "nasdaq-xray/historical_halt_fail_only.py"
@@ -149,6 +150,8 @@ jobs:
         run: |
           cd nasdaq-xray
           python price_official_listing_selftest.py
+      - name: Exact SEC proof full-artifact versus listed-subset scope negative regression
+        run: python nasdaq-xray/pre_mc_sec_scope_selftest.py
       - name: Verify current-directory PIT eligibility regressions
         run: python nasdaq-xray/pre_mc_identity_replay_session_guard.py --selftest
       - name: Completed-session epoch rollover guard
