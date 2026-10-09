@@ -85,6 +85,49 @@ def assert_same_asof(price,handoff,price_sha,handoff_sha,policy_sha,settlement=N
        "unknown_never_pass":True,
     }
 
+
+def select_active_handoff(candidates):
+    """Exactly one unsuperseded full-scope authority with SHA-pinned ancestry.
+
+    A valid supersession link must point to another candidate with the
+    exact immutable path AND Git blob, not just a matching ASOF or version.
+    Fail closed on forks, dangling links, cross-source drift or cycles.
+    """
+    if not candidates:
+        raise ValueError("CURRENT_EXACT_MC_HANDOFF_AUTHORITY_COUNT:0")
+    index={p:(o,sha) for p,o,sha in candidates}
+    if len(index)!=len(candidates):
+        raise ValueError("DUPLICATE_MC_HANDOFF_PATH")
+    predecessors=set()
+    for path,o,sha in candidates:
+        prev=o.get("supersedes_resolver_bridge_path")
+        oldsha=o.get("supersedes_resolver_bridge_blob_sha")
+        if prev is None and oldsha is None:
+            continue
+        if not isinstance(prev,str) or prev not in index or not isinstance(oldsha,str):
+            raise ValueError("DANGLING_MC_HANDOFF_SUPERSESSION")
+        p,actual_sha=index[prev]
+        if oldsha!=actual_sha:
+            raise ValueError("MC_HANDOFF_SUPERSESSION_BLOB_MISMATCH")
+        if path==prev or p.get("asof_et")!=o.get("asof_et"):
+            raise ValueError("MC_HANDOFF_SUPERSESSION_ASOF_OR_CYCLE")
+        predecessors.add(prev)
+    heads=[x for x in candidates if x[0] not in predecessors]
+    if len(heads)!=1:
+        raise ValueError("CURRENT_ACTIVE_MC_HANDOFF_HEAD_COUNT:"+str(len(heads)))
+    # Every old candidate must be reachable from the single head.
+    seen=set()
+    path,_,_=heads[0]
+    while path:
+        if path in seen:
+            raise ValueError("MC_HANDOFF_SUPERSESSION_CYCLE")
+        seen.add(path)
+        obj,_=index[path]
+        path=obj.get("supersedes_resolver_bridge_path")
+    if seen!=set(index):
+        raise ValueError("MC_HANDOFF_FORK_NOT_CHAIN")
+    return heads[0]
+
 def build():
     price,price_sha=load_exact(CURRENT_PRICE)
     pol,pol_sha=load_exact("nasdaq-xray/chatgpt_compiled_policy_v3.json")
@@ -99,9 +142,7 @@ def build():
         o,sha=load_exact(rel)
         if o.get("bridge_role")=="FULL_SCOPE_MC_HANDOFF_PROVENANCE" and o.get("source_price_blob_sha")==price_sha:
             handoffs.append((rel,o,sha))
-    if len(handoffs)!=1:
-        raise ValueError("CURRENT_EXACT_MC_HANDOFF_AUTHORITY_COUNT:"+str(len(handoffs)))
-    rel,hand,handsha=handoffs[0]
+    rel,hand,handsha=select_active_handoff(handoffs)
     witnesspath=hand.get("settlement_witness_path")
     if not isinstance(witnesspath,str) or not witnesspath.startswith("nasdaq-xray/"):
         raise ValueError("SETTLEMENT_WITNESS_PATH_INVALID")
@@ -148,7 +189,24 @@ def selftest():
         try:assert_same_asof(p,h,"a"*40,"b"*40,POLICY_SHA)
         except AssertionError:continue
         raise AssertionError("INVALID_MC_REQUEST_ACCEPTED:"+label)
-    print("XRAY_MC_REQUEST_REBIND_SELFTEST=PASS_POSITIVE_9_NEGATIVE_NO_MC_PASS")
+    base={"asof_et":"2026-10-08"}
+    v2=("nasdaq-xray/test_v2.json",base,"1"*40)
+    v3=("nasdaq-xray/test_v3.json",{
+       "asof_et":"2026-10-08",
+       "supersedes_resolver_bridge_path":v2[0],
+       "supersedes_resolver_bridge_blob_sha":v2[2],
+    },"2"*40)
+    assert select_active_handoff([v2,v3])==v3
+    broken=(v3[0],dict(v3[1],supersedes_resolver_bridge_blob_sha="3"*40),v3[2])
+    for label,case in (
+        ("DUPLICATE_HEAD",[v2,("nasdaq-xray/test_v4.json",base,"4"*40)]),
+        ("MISMATCH_SHA",[v2,broken]),
+        ("CYCLE",[v2,(v3[0],dict(v3[1],supersedes_resolver_bridge_path=v3[0]),v3[2])]),
+    ):
+        try:select_active_handoff(case)
+        except ValueError:continue
+        raise AssertionError("SUPERSESSION_BAD_CASE_ACCEPTED:"+label)
+    print("XRAY_MC_REQUEST_REBIND_SELFTEST=PASS_1_BASELINE_9_NEGATIVE_SUPERSESSION_POSITIVE_3_NEGATIVE")
 
 def main():
     ap=argparse.ArgumentParser()
