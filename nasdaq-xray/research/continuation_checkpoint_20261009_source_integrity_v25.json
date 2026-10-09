@@ -1,0 +1,111 @@
+{
+  "schema": "XRAY_20261009_SOURCE_INTEGRITY_CONTINUATION_V25",
+  "supersedes": "nasdaq-xray/research/continuation_checkpoint_20261009_new_chat_live_repair_v24.json",
+  "authority": "LIVE_GITHUB_MAIN_AND_ACTIONS_SUPERSEDE_RECORD",
+  "observed_head": "28289345e6322055f317577d9f387be5248c3083",
+  "repository": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "mode": "RESEARCH_ONLY_MANUAL_DECISION",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "production_release": "BLOCKED_NO_GO",
+  "repairs_proven": [
+    {
+      "module": "nasdaq-xray/test_dynamic_policy_invariants.py",
+      "commit": "ef7f45a584ba03ce9b7e2f93afeb8ebf6c793964",
+      "run": 37957358278,
+      "result": "SUCCESS_TEST_FIXTURE_EXCHANGE_CALENDAR"
+    },
+    {
+      "module": "nasdaq-xray/alpaca_root_unknown_rescue_shadow.py",
+      "commit": "902e5784c6cbc1ccc8d0030c709095cfda441e2c",
+      "run": 37959479402,
+      "result": "HISTORY_EXACT_260_NEGATIVE_TEST_STEP_PASS_OVERALL_FAIL_NO_PRIVATE_SOURCE_KEYS"
+    }
+  ],
+  "open_failures": [
+    {
+      "priority": "P0",
+      "id": "C417_PRIMARY_MC_AUTHORITY",
+      "root_cause": "Connected Bigdata PAYG balance=0 outOfCredits=true; same-ASOF exact Bigdata MC bridge absent; Massive connected tool is research-only and does not attest Github runner license or credential.",
+      "unresolved": true,
+      "required": "Valid unchanged C4.17 exact Bigdata same-ASOF licensed primary acquisition, or separately reviewed and authorized versioned source successor; neither may be silently inferred."
+    },
+    {
+      "priority": "P0",
+      "id": "HISTORY_ROOT_231",
+      "root_cause": "Sina 144 short,53 ASOF missing,6 latest30 missing,24 SyntaxError,4 IndexError. Data source diagnostics are not proof of issuer IPO or complete 260/52 history.",
+      "unresolved": true,
+      "required": "Authorized independent calendar-contiguous daily OHLCV, corporate actions, ticker/CUSIP continuity and 52 weekly evidence for each; no raw vendor bars published."
+    },
+    {
+      "priority": "P0",
+      "id": "ALPACA_30_OFFICIAL_CALENDAR_UNVERIFIED",
+      "root_cause": "evaluate_daily accepts arbitrary sorted 30 supplied dates as official; GitHub Actions 37959741933 negative test demonstrates wrong SHADOW_30_BARS_OBSERVED.",
+      "unresolved": true,
+      "required": "Guard expected30 == last30 NASDAQ official_completed_sessions(asof), verify tests pass; source modification attempt was blocked by safety control, no production fix claimed."
+    },
+    {
+      "priority": "P0",
+      "id": "CURRENT_TERMINAL_ASOF_DRIFT",
+      "root_cause": "Root ASOF 2026-10-08 PARTIAL; terminal ASOF 2026-10-07 PARTIAL; MC PRIMARY PASS=0.",
+      "unresolved": true,
+      "required": "Fresh same-ASOF C4.17 MC->HISTORY->WEEKLY->REGIME->EARNINGS->LEGAL->RISK/RR->FINAL with exact Git SHA and provenance."
+    },
+    {
+      "priority": "P1",
+      "id": "DEVICE_DELIVERY_NOT_PROVEN",
+      "root_cause": "Real registered R92=0; GitHub delivery ledger=0; workflow success only NO_REGISTERED_R92.",
+      "unresolved": true,
+      "required": "Real candidate durable registration, dedup, expiration, issue and ledger, app notification device receipt readback, all distinct."
+    },
+    {
+      "priority": "P2",
+      "id": "FORWARD_CALIBRATION_ZERO_OF_60",
+      "root_cause": "0 current policy source-exact comparable sessions out of target 60.",
+      "unresolved": true,
+      "required": "Real 2-8 completed session forward horizon, trading cost, R/R and non-overfit walk-forward tests."
+    }
+  ],
+  "operational_connected_sip_research": {
+    "asof_et": "2026-10-08",
+    "role": "SHADOW_ONLY_NOT_PRODUCTION_AUTHORITY",
+    "root_unknown_total": 231,
+    "parser_and_missing_asof_sampled_distinct": 81,
+    "source_interactive_only": true,
+    "observed_ge260_with_asof_count_within_81": 48,
+    "other_short_history_sampled": 25,
+    "other_ge260_with_asof_count_within_25": 10,
+    "further_batches": "TOOL_ERRORS_NOT_MEASURED",
+    "real_c417_history_pass_created": 0,
+    "primary_mc_promoted": false,
+    "raw_vendor_market_data_persisted": false,
+    "license_for_automated_github_replay": "NOT_ATTESTED"
+  },
+  "reference_evidence": {
+    "history_diagnostics_actions": 37951638945,
+    "root_260_negative_then_fixed": [
+      37959395032,
+      37959479402
+    ],
+    "wrong_30_calendar_negative": 37959741933,
+    "post_mc_latest_failure": 37959161131,
+    "public_mini_license_reference": "https://www.massive.com/legal/market-data-terms-of-service",
+    "live_assessed_bigdata": {
+      "payg_balance": 0,
+      "outOfCredits": true
+    }
+  },
+  "unchanged_guards": {
+    "alpha_thresholds_unmodified": true,
+    "market_prices_not_fabricated": true,
+    "no_keys_published": true,
+    "no_new_automation_created": true,
+    "no_money_spent": true,
+    "no_new_r92_created": true
+  },
+  "completion_claim": false
+}
