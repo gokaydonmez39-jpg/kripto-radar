@@ -416,5 +416,65 @@
     "Separate full 514 current class-specific same-ASOF primary MC provenance including history, share-class FIGI and SEC/IR corporate actions; no elevation of Rallies/Massive duplicated market source to independent confirmation.",
     "Rebuild source-exact current MC > HISTORY > weekly > regime > earnings/legal > risk/RR > final; preserve frozen C4.17 A 1.5/1.1 and B/C/D 2.0/1.5 and <=8% entry-stop risk; calibration evidence required before threshold revisions.",
     "Confirm real R92 research candidate, dedup/expiry, GitHub delivery record and actual device delivery separately; EXECUTION NONE, REAL_MONEY NO-GO."
-  ]
+  ],
+  "latest_finalization_audit_20261009": {
+    "anchor_asof": "2026-10-09",
+    "exact_live_evidence": {
+      "source_master_price_lineage_commit": "a32531dbee1680a3653f57ef43965a66fec73bf4",
+      "full_514x260_52_synthetic_test": "nasdaq-xray/grouped_history_full_pipeline_selftest.py",
+      "full_synthetic_test_first_failure_workflow": 37990698384,
+      "first_failure_root_cause": "Brittle 3-byte QQQ substring assertion on random ciphertext, not provider/algorithm bug",
+      "fixed_test_commit": "7739f22c6c9f7f340c0e165134b37b33f881f4a2",
+      "full_514x260_52_synthetic_ci_success": 37990808961,
+      "full_synthetic_ci_result": "PASS_SYNTHETIC_ONLY_2_NEGATIVES_0_HISTORY_MC_AL_AUTHORITY",
+      "calendar_guard": "nasdaq-xray/source_epoch_freshness_guard.py",
+      "calendar_guard_commit": "76cabfd35e7751c8286be4d27758a38d9767d0f9",
+      "calendar_guard_ci_success": 37991047390,
+      "official_latest_completed_nasdaq_session": "2026-10-09",
+      "source_session_lag": {
+        "MASTER": 1,
+        "PRICE": 1,
+        "TERMINAL": 2
+      },
+      "real_massive_history_days_collected": 0,
+      "live_runner_status": "BLOCKED_AUTH_OR_NONDISPLAY_AND_PRIVATE_CACHE_RIGHTS",
+      "actual_production_go": false
+    },
+    "market_data_adjustment": {
+      "observed_date": "2026-10-08",
+      "massive_grouped_adjusted_false_rows": 12592,
+      "rallies_bulk_rows": 12592,
+      "exact_OHLCV_VWAP_timestamp_matches": 12591,
+      "differing_ticker": "DXJ",
+      "massive_split_execution_date": "2026-10-09",
+      "massive_split_factor": "1:3",
+      "interpretation": "As-of 2026-10-08 adjusted historical bars can include next-session split factors. Use only unadjusted as-traded transport then PIT-approved corporate-action adjustment before technical alpha. Do not treat adjusted Rallies/Massive as independent providers.",
+      "official_docs": "https://massive.com/docs/rest/stocks/aggregates/daily-market-summary"
+    },
+    "source_license_validation": {
+      "massive_free_plan": "Free 5/minute 2yr EOD; grouped one-request daily market OHLCV",
+      "massive_display_only_general_terms": "https://www.massive.com/legal/market-data-terms-of-service",
+      "massive_specific_non_display_derivative_rights": "Not granted by free tier without licensed exception; written grant required; do not set rights flags merely to make CI green",
+      "twelve_data_free": "Internal non-display listed at Basic with 8/min, 800/day, but retention still tier-defined",
+      "twelve_data_default_us_volume_scope": "Approximately 5% total US activity according to vendor. NOT a consolidated marketwide DV30 substitute.",
+      "twelve_data_default_volume_source": "https://support.twelvedata.com/en/articles/9935903-us-equities-market-data",
+      "twelve_data_derived_rights": "https://twelvedata.com/terms",
+      "twelve_data_input_ready": "NO_API_KEY_ON_GITHUB",
+      "massive_input_ready": "NO_PROVEN_KEY_PLUS_LICENSE_AND_PRIVATE_CACHE_GRANT",
+      "user_action_required": "Account owner to provision legal $0 provider credentials and obtain permitted internal non-display automated research, 260-day private caching and irreconstructible alert rights; never submit secrets in chat.",
+      "source_independence_rule": "Massive daily grouped and Rallies bulk same-origin family (12592/12592 exact adjusted feed); DO NOT double count."
+    },
+    "engineering_progress": {
+      "code_tests_synthetic": true,
+      "unknown_never_pass": true,
+      "c417_thresholds_relaxed": false,
+      "master_source_hash_enforced": true,
+      "exact_real_514x260": true,
+      "exact_nonconsolidated_Twelve_DV30_denied": true,
+      "pipeline_go": false,
+      "source_license_verified": false,
+      "legacy_canonical_upstream_modified": false,
+      "device_delivery_receipt_verified": false
+    }
+  }
 }
