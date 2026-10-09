@@ -8,6 +8,7 @@ on:
     paths:
       - nasdaq-xray/research_watch_radar.py
       - nasdaq-xray/preentry_watch_observer.py
+      - nasdaq-xray/forward_watch_metrics.py
       - .github/workflows/xray-research-watch-radar.yml
       - nasdaq-xray/canonical_current_final_tech.json
   workflow_run:
@@ -34,6 +35,8 @@ jobs:
           python nasdaq-xray/research_watch_radar.py --selftest
           python -m py_compile nasdaq-xray/preentry_watch_observer.py
           python nasdaq-xray/preentry_watch_observer.py --selftest
+          python -m py_compile nasdaq-xray/forward_watch_metrics.py
+          python nasdaq-xray/forward_watch_metrics.py --selftest
       - name: Recalculate SHA-bound research watch and rejects
         run: |
           python nasdaq-xray/research_watch_radar.py --out "$RUNNER_TEMP/xray_research_watch_radar.json"
@@ -90,6 +93,18 @@ jobs:
               f.write("No AL, no broker, no device-delivery assertion.\\n")
           print("XRAY_PREENTRY_WATCH_CONTRACT=PASS_SEPARATE_NO_BUY")
           PY
+      - name: Verify 2-8 session outcomes are pending without real future evidence
+        run: |
+          python nasdaq-xray/forward_watch_metrics.py --out "$RUNNER_TEMP/xray_forward_watch_metrics.json"
+          python - <<'PY'
+          import json,os,pathlib
+          j=json.loads((pathlib.Path(os.environ["RUNNER_TEMP"])/"xray_forward_watch_metrics.json").read_text())
+          assert j["schema"]=="XRAY_FORWARD_WATCH_PAPER_METRICS_V1"
+          assert j["status"]=="FORWARD_EVIDENCE_NOT_CONFIGURED"
+          assert j["measured"] is False and j["horizons"]=={}
+          assert j["alpha_authority"] is False and j["buy_candidates"]==j["orders"]==[]
+          print("XRAY_FORWARD_PROSPECTIVE_TRACKER=CONTRACT_PASS_OUTCOMES_PENDING_NOT_FAKE")
+          PY
       - name: Preserve inspectable WATCH JSON artifact
         if: always()
         uses: actions/upload-artifact@v4
@@ -98,5 +113,6 @@ jobs:
           path: |
             ${{ runner.temp }}/xray_research_watch_radar.json
             ${{ runner.temp }}/xray_preentry_watch.json
+            ${{ runner.temp }}/xray_forward_watch_metrics.json
           retention-days: 14
           if-no-files-found: error
