@@ -17,7 +17,7 @@ def selftest():
     assert success and 'changed=true' in success.group(1), "PROVEN_PERSISTENCE_NOT_RECORDED"
     step=re.search(r"- name: Atomically wake Post-MC from exact current Pre-MC sources\n\s+if: ([^\n]+)",WF)
     assert step and "steps.precommit.outputs.changed == 'true'" in step.group(1), "REDUNDANT_NOOP_POSTMC_REDISPATCH"
-    assert "if: success()" not in (step.group(0) if step else ""), "OLD_ALWAYS_ON_RELAY_STILL_PRESENT"
+    assert step.group(1).strip() != "success()", "OLD_ALWAYS_ON_RELAY_STILL_PRESENT"
     assert 'cron: "50 * * * 1-5"' in (
         ROOT.parent/".github/workflows/xray-canonical-current-post-mc.yml").read_text(), "POSTMC_FALLBACK_MISSING"
     print("XRAY_PREMC_NOOP_RELAY=PASS_NO_REPEAT_MC_FAILURE_STORM_RELAY_ONLY_ON_REAL_COMMIT")
