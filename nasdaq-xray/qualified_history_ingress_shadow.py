@@ -108,7 +108,8 @@ def evaluate(price: dict, price_sha: str, cache_dir: Path, *,
             summary["invalid_or_unreadable"] += 1
             missing.append(sym)
             continue
-        if not exact_recent_sessions(dates, asof):
+        if (not exact_recent_sessions(dates, asof)
+            or not set(completed_weeks).issubset(set(dates))):
             summary["stale_or_session_gap"] += 1
             missing.append(sym)
             continue
