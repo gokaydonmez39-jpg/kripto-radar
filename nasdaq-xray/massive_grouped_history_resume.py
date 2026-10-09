@@ -225,6 +225,84 @@ def check_restore(path):
     except Exception:return 3
     return 0 if reused else 2
 
+
+def selftest():
+    """No network; prove positive path, tampering, EOD lookahead and caps."""
+    from tempfile import TemporaryDirectory
+    from copy import deepcopy
+    from cryptography.fernet import InvalidToken
+    ss=scope()  # Source is actual current PRICE+MASTER SHA-bound state.
+    assert len(ss["symbols"])==514 and len(ss["dates"])==260 and len(ss["weeks"])==52
+    assert not allowed({})
+    assert not allowed({"XRAY_MASSIVE_API_KEY":"a"*32,
+                        "XRAY_MASSIVE_NONDISPLAY_LICENSE_OK":"true",
+                        "XRAY_MASSIVE_LICENSE_EVIDENCE_SHA256":"f"*64})
+    env={"XRAY_MASSIVE_API_KEY":"a"*32,
+         "XRAY_MASSIVE_NONDISPLAY_LICENSE_OK":"true",
+         "XRAY_MASSIVE_PRIVATE_CACHE_RIGHTS_OK":"true",
+         "XRAY_MASSIVE_LICENSE_EVIDENCE_SHA256":"f"*64}
+    assert allowed(env)
+    assert not allowed({**env,"XRAY_MASSIVE_LICENSE_EVIDENCE_SHA256":"NOT_A_DIGEST"})
+    cp=fresh(ss);assert exact(cp,ss)
+    d=ss["dates"][-1]
+    t=int(datetime.fromisoformat(d+"T20:00:00+00:00").timestamp()*1000)
+    symbols=["QQQ",ss["symbols"][0],ss["symbols"][1]]
+    bars={"status":"OK","adjusted":True,"resultsCount":3,
+          "results":[{"T":z,"o":10,"h":11,"l":9,"c":10,"v":123.125,"t":t}
+                     for z in symbols]}
+    scoped=read_day(bars,d,ss["targets"])
+    assert len(scoped)==3 and "QQQ" in scoped
+    for tag in ("not_adjusted","missing_qqq","bad_price",
+                "bad_asof","duplicate","bad_count"):
+        bad=deepcopy(bars)
+        if tag=="not_adjusted":bad["adjusted"]=False
+        if tag=="missing_qqq":
+            bad["results"]=[r for r in bad["results"] if r["T"]!="QQQ"]
+            bad["resultsCount"]=len(bad["results"])
+        if tag=="bad_price":bad["results"][0]["h"]=1
+        if tag=="bad_asof":bad["results"][0]["t"]+=86400000
+        if tag=="duplicate":
+            bad["results"].append(deepcopy(bad["results"][0]))
+            bad["resultsCount"]+=1
+        if tag=="bad_count":bad["resultsCount"]=999
+        try:read_day(bad,d,ss["targets"])
+        except (ValueError,TypeError):continue
+        raise AssertionError("BAD_GROUPED_VENDOR_ACCEPTED_"+tag)
+    # A malformed irrelevant out-of-scope US ticker cannot poison an otherwise
+    # valid 514-symbol batch, but a malformed in-scope bar MUST fail.
+    ignore=deepcopy(bars)
+    ignore["results"].append({"T":"NOT-IN-PASS-SCOPE","o":0})
+    ignore["resultsCount"]+=1
+    assert len(read_day(ignore,d,ss["targets"]))==3
+    with TemporaryDirectory(prefix="xray-encrypted-history-") as tmp:
+        root=Path(tmp)
+        crypto=cipher("A"*32)
+        path=root/"priv.enc"
+        cp["request_count"]=1
+        cp["dates"][d]=scoped
+        save(cp,crypto,ss,path)
+        assert b"QQQ" not in path.read_bytes()
+        other,restored=load(path,crypto,ss)
+        assert restored and other["dates"][d]==scoped
+        wrong=deepcopy(ss);wrong["price_sha"]="0"*40
+        stale,match=load(path,crypto,wrong)
+        assert not match and stale["dates"]=={}
+        tampered=path.read_bytes()[:-1]+b"Z"
+        path.write_bytes(tampered)
+        try:load(path,crypto,ss)
+        except ValueError:pass
+        else:raise AssertionError("TAMPERED_CIPHERTEXT_RESTORED")
+        cp["dates"][d]["QQQ"][0]=-1
+        assert not exact(cp,ss)
+        try:save(cp,crypto,ss,path)
+        except ValueError:pass
+        else:raise AssertionError("INVALID_PRIVATE_BAR_SEALED")
+    no=telemetry(fresh(ss),ss,"BLOCKED",0)
+    assert no["remaining_days"]==260 and no["canonical_HISTORY_pass"] is False
+    assert no["primary_MC_pass"] is False and no["R92_AL"] is False
+    print("XRAY_MASSIVE_GROUPED_260_RESUME_SELFTEST=PASS_514_SCOPE_260_DAYS_52_WEEKS_6_VENDOR_NEGATIVES_ENCRYPTION_TAMPER_STALE_AND_NO_ALPHA")
+
+
 def main():
     p=argparse.ArgumentParser()
     p.add_argument("--report",type=Path)
