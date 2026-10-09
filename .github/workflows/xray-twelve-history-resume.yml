@@ -24,15 +24,15 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
-      XRAY_TWELVE_DATA_API_KEY: \${{ secrets.XRAY_TWELVE_DATA_API_KEY }}
-      XRAY_TWELVE_NONDISPLAY_LICENSE_OK: \${{ vars.XRAY_TWELVE_NONDISPLAY_LICENSE_OK }}
-      XRAY_TWELVE_PRIVATE_CACHE_RIGHTS_OK: \${{ vars.XRAY_TWELVE_PRIVATE_CACHE_RIGHTS_OK }}
-      XRAY_TWELVE_LICENSE_EVIDENCE_SHA256: \${{ secrets.XRAY_TWELVE_LICENSE_EVIDENCE_SHA256 }}
-      GH_TOKEN: \${{ github.token }}
+      XRAY_TWELVE_DATA_API_KEY: ${{ secrets.XRAY_TWELVE_DATA_API_KEY }}
+      XRAY_TWELVE_NONDISPLAY_LICENSE_OK: ${{ vars.XRAY_TWELVE_NONDISPLAY_LICENSE_OK }}
+      XRAY_TWELVE_PRIVATE_CACHE_RIGHTS_OK: ${{ vars.XRAY_TWELVE_PRIVATE_CACHE_RIGHTS_OK }}
+      XRAY_TWELVE_LICENSE_EVIDENCE_SHA256: ${{ secrets.XRAY_TWELVE_LICENSE_EVIDENCE_SHA256 }}
+      GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: \${{ github.sha }}
+          ref: ${{ github.sha }}
       - name: Verify immutable triggering source commit
         run: test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
       - uses: actions/setup-python@v5
@@ -49,7 +49,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [[ -z "$XRAY_TWELVE_DATA_API_KEY" || "$XRAY_TWELVE_NONDISPLAY_LICENSE_OK" != "true" || "$XRAY_TWELVE_PRIVATE_CACHE_RIGHTS_OK" != "true" || \${#XRAY_TWELVE_LICENSE_EVIDENCE_SHA256} -ne 64 ]]; then
+          if [[ -z "$XRAY_TWELVE_DATA_API_KEY" || "$XRAY_TWELVE_NONDISPLAY_LICENSE_OK" != "true" || "$XRAY_TWELVE_PRIVATE_CACHE_RIGHTS_OK" != "true" || ${#XRAY_TWELVE_LICENSE_EVIDENCE_SHA256} -ne 64 ]]; then
             echo "XRAY_TWELVE_RESUME_RESTORE=BLOCKED_SOURCE_LICENSE_OR_KEY"
             exit 0
           fi
@@ -126,7 +126,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: xray-twelve-private-ciphertext-v1
-          path: \${{ runner.temp }}/twelve_history_checkpoint.enc
+          path: ${{ runner.temp }}/twelve_history_checkpoint.enc
           retention-days: 14
           if-no-files-found: ignore
       - name: Store only sanitized operational telemetry
@@ -135,7 +135,7 @@ jobs:
         with:
           name: xray-twelve-operational-health-v1
           path: |
-            \${{ runner.temp }}/twelve_history_health.json
-            \${{ runner.temp }}/twelve_private_260_52_intake.json
+            ${{ runner.temp }}/twelve_history_health.json
+            ${{ runner.temp }}/twelve_private_260_52_intake.json
           retention-days: 14
           if-no-files-found: ignore
