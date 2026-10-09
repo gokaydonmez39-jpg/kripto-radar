@@ -77,6 +77,15 @@ jobs:
           assert set(x["source_blobs"])=={"MASTER","MC","HISTORY","EVENT","TERMINAL"}
           assert all(0<=r["sample_attempted"]<=3 for r in x["lanes"].values())
           assert all(v<=3 for k,v in x["invocation_counts"].items() if k=="MASSIVE")
+          if x.get("source_epoch_exact") is False:
+              assert x["result"]=="BLOCKED_SOURCE_EPOCH_NO_CALLS_NO_ALPHA"
+              assert not x["invocation_counts"]
+              assert all(v["sample_attempted"]==0 and v["scope_unverified"] is True
+                         for v in x["lanes"].values())
+              print("XRAY_MULTIPROVIDER_SAME_ASOF=BLOCKED_ZERO_CALLS_NO_FALSE_PASS")
+          else:
+              assert x.get("source_epoch_exact") is True
+              print("XRAY_MULTIPROVIDER_SAME_ASOF=EXACT_SHADOW_ONLY")
           payload=f.read_text()
           for key in ["XRAY_MASSIVE_API_KEY","XRAY_BQ_API_KEY"]:
               secret=os.getenv(key,"")
