@@ -1,0 +1,109 @@
+name: XRAY Massive Grouped 260 Session Encrypted History
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/massive_grouped_history_resume.py"
+      - ".github/workflows/xray-massive-grouped-history-resume.yml"
+  schedule:
+    - cron: "17 */3 * * *"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: xray-grouped-history-resume
+  cancel-in-progress: false
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      XRAY_MASSIVE_API_KEY: ${{ secrets.XRAY_MASSIVE_API_KEY }}
+      XRAY_MASSIVE_NONDISPLAY_LICENSE_OK: ${{ vars.XRAY_MASSIVE_NONDISPLAY_LICENSE_OK }}
+      XRAY_MASSIVE_PRIVATE_CACHE_RIGHTS_OK: ${{ vars.XRAY_MASSIVE_PRIVATE_CACHE_RIGHTS_OK }}
+      XRAY_MASSIVE_LICENSE_EVIDENCE_SHA256: ${{ secrets.XRAY_MASSIVE_LICENSE_EVIDENCE_SHA256 }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - name: Verify exact triggering source
+        run: test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install exchange calendar and encryption
+        run: python -m pip install "pandas_market_calendars==5.4.0" "cryptography>=44,<47"
+      - name: Fail-closed 260-session encryption and source tests
+        run: |
+          python -m py_compile nasdaq-xray/massive_grouped_history_resume.py
+          python nasdaq-xray/massive_grouped_history_resume.py --selftest
+      - name: Restore authenticated previous private history
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -z "$XRAY_MASSIVE_API_KEY" || "$XRAY_MASSIVE_NONDISPLAY_LICENSE_OK" != "true" || "$XRAY_MASSIVE_PRIVATE_CACHE_RIGHTS_OK" != "true" || ${#XRAY_MASSIVE_LICENSE_EVIDENCE_SHA256} -ne 64 ]]; then
+            echo "XRAY_GROUPED_RESTORE=BLOCKED_RIGHTS_OR_KEY"
+            exit 0
+          fi
+          ids=$(gh run list --workflow xray-massive-grouped-history-resume.yml --status completed --branch main --limit 80 --json databaseId --jq '.[].databaseId')
+          for id in $ids; do
+            dest="$RUNNER_TEMP/grouped_download/$id"
+            if gh run download "$id" -n xray-grouped-encrypted-checkpoint-v1 -D "$dest" >/dev/null 2>&1; then
+              source="$dest/xray_grouped_history_checkpoint.enc"
+              test -s "$source" || exit 1
+              if python nasdaq-xray/massive_grouped_history_resume.py --check-restore "$source"; then
+                cp "$source" "$RUNNER_TEMP/grouped_prior.enc"
+                echo "XRAY_GROUPED_RESTORE=AUTHENTIC"
+                exit 0
+              else
+                code=$?
+                if [[ "$code" -eq 2 ]]; then continue; fi
+                echo "XRAY_GROUPED_RESTORE=CORRUPT_BLOCKED"
+                exit 1
+              fi
+            fi
+          done
+          echo "XRAY_GROUPED_RESTORE=NEW_CHECKPOINT"
+      - name: Limited grouped daily historical API and atomic private checkpoint
+        run: |
+          python nasdaq-xray/massive_grouped_history_resume.py \
+            --limit 10 \
+            --restore "$RUNNER_TEMP/grouped_prior.enc" \
+            --checkpoint "$RUNNER_TEMP/xray_grouped_history_checkpoint.enc" \
+            --report "$RUNNER_TEMP/xray_grouped_history_health.json"
+      - name: Verify public health contains no AL or vendor prices
+        run: |
+          python - <<'PY'
+          import json,os,subprocess
+          from pathlib import Path
+          x=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_grouped_history_health.json").read_text())
+          assert x["schema"]=="XRAY_MASSIVE_GROUPED_HISTORY_HEALTH_V1"
+          assert x["source_price_blob_sha"]==subprocess.check_output(
+              ["git","hash-object","nasdaq-xray/canonical_current_price_dv30.json"],text=True).strip()
+          assert x["required_days"]==260
+          assert x["collected_days"]+x["remaining_days"]==260
+          assert x["requests_this_run"]<=10
+          for k in ("primary_MC_pass","canonical_HISTORY_pass","R92_AL","raw_bars_public"):
+              assert x[k] is False,k
+          assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
+          print("XRAY_GROUPED_260_HISTORY="+x["status"])
+          print("XRAY_GROUPED_260_DAYS="+str(x["collected_days"]))
+          PY
+      - name: Persist only encrypted private vendor checkpoint
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-grouped-encrypted-checkpoint-v1
+          path: ${{ runner.temp }}/xray_grouped_history_checkpoint.enc
+          if-no-files-found: ignore
+          retention-days: 14
+      - name: Persist sanitized operational evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-grouped-history-health-v1
+          path: ${{ runner.temp }}/xray_grouped_history_health.json
+          if-no-files-found: ignore
+          retention-days: 14
