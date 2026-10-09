@@ -1,0 +1,79 @@
+{
+  "schema": "XRAY_20261009_STRICT_SOURCE_SET_LINEAGE_CONTINUATION_V15",
+  "repo": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "authority": "CHECKPOINT_ONLY_LIVE_READBACK_SUPERSEDES",
+  "source_head_at_observation": "d94bb474786e88a70831389981ae5555158a522c",
+  "observed_action_utc": "2026-10-09T10:14:07Z",
+  "mode": "RESEARCH_ONLY_MANUAL_DECISION",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "preceding_checkpoint": "nasdaq-xray/research/continuation_checkpoint_20261009_postmc_source_and_sip_integrity_v14.json",
+  "latest_critical_repair": {
+    "commit": "d94bb474786e88a70831389981ae5555158a522c",
+    "file": "nasdaq-xray/post_mc_source_readiness.py",
+    "effect": "no count-equality substitution: verify PRICE PASS exact ordered unique symbol set and SHA256, resolver exact pass hash and blocked/unknown symbol lists, Master inclusion and queue binding, without PRIMARY promotion",
+    "new_negative_mutations": 7
+  },
+  "live_test": {
+    "run_id": 37916318884,
+    "conclusion": "FAILURE_INTENTIONAL_MC_SOURCE_BLOCKED",
+    "diagnostic_selftest": "PASS_POSITIVE_NEGATIVE_NO_PRIMARY",
+    "observed_source_status": "CURRENT_MC_BRIDGE_ABSENT",
+    "mc_release": "BLOCKED_CURRENT_MC_AUTHORITY_REQUIRED",
+    "artifact_name": "xray-post-mc-source-readiness",
+    "artifact_id": 11608649454,
+    "artifact_status": "UPLOAD_SUCCESS",
+    "same_asof_current_mc_validated": false
+  },
+  "alpaca_live_test": {
+    "run_id": 37915819827,
+    "strict_history_tests": "PASS",
+    "root_rescue_tests": "PASS",
+    "actual_sip_measurement": "BLOCKED",
+    "provider_error": "ALPACA_PRIVATE_API_CREDENTIALS_REQUIRED",
+    "root_source_error": "PRIVATE_ALPACA_CREDENTIALS_REQUIRED",
+    "counts_only_artifact": "xray-alpaca-free-sip-shadow-counts-v1"
+  },
+  "external_authority": {
+    "alpaca_history_credential_pair": "INCOMPLETE_IN_GITHUB_RUNNER",
+    "alpaca_historical_sip_free_supported": "OFFICIAL_ALPACA_DOCS_OLDER_THAN_15_MIN",
+    "alpaca_unattended_license": "NOT_INDEPENDENTLY_ATTESTED",
+    "bigdata_primary_marketcap_same_asof": "NOT_MEASURED",
+    "massive_shadow_license": "NOT_INDEPENDENTLY_ATTESTED",
+    "sec_shares_may_not_autopromote_to_primary": true
+  },
+  "real_work_state": {
+    "root_asof": "2026-10-08",
+    "root_partial_history_unknown": 231,
+    "master_identity_unknown": 72,
+    "price_pass": 514,
+    "price_blocked": 45,
+    "mc_bridge_20261008_count": 0,
+    "terminal_asof": "2026-10-07",
+    "terminal_result": "PARTIAL_UNKNOWN",
+    "real_r92_candidates": 0,
+    "ledger_deliveries": 0,
+    "device_receipt": false
+  },
+  "unresolved": [
+    "acquire legal same-ASOF C4.17 primary MC measurements with file/provenance",
+    "complete unattended data-only Alpaca private key pair via GitHub Actions Secrets not chat",
+    "rebuild 260 completed sessions and 52 weekly PIT/corporate-action validated history",
+    "run current weekly/regime/earnings/legal/R1_RR/final and enforce exact candidate-local proof",
+    "register and send a REAL candidate only with device receipt proof"
+  ],
+  "security_kept": [
+    "EXECUTION=NONE",
+    "REAL_MONEY=NO-GO",
+    "UNKNOWN!=PASS",
+    "No bogus current terminal",
+    "No fallback shadow primary",
+    "No synthetic phone delivery",
+    "No alpha threshold relaxation"
+  ],
+  "release": "RESEARCH_PRODUCTION_NO_GO"
+}
