@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Rights-gated, one-call Massive grouped EOD sample; no canonical promotion."""
+"""Rights-gated, one-call UNADJUSTED grouped EOD sample; no canonical promotion."""
 import argparse,json,math,os,urllib.request
 from datetime import datetime,timezone
 from pathlib import Path
 ROOT=Path(__file__).resolve().parent
 def inspect(obj,asof,symbols):
-    if obj.get("status")!="OK" or not isinstance(obj.get("results"),list):raise ValueError("INVALID_STATUS")
+    if (obj.get("status")!="OK" or obj.get("adjusted") is not False
+        or not isinstance(obj.get("results"),list)):raise ValueError("INVALID_UNADJUSTED_STATUS")
     present=set();valid=set()
     for r in obj["results"]:
         s=r.get("T")
@@ -37,7 +38,7 @@ def probe(price,key,licensed,proof,transport=None):
     out["calls"]=1
     try:
         if transport is None:
-            u="https://api.massive.com/v2/aggs/grouped/locale/us/market/stocks/"+asof+"?adjusted=true&include_otc=false"
+            u="https://api.massive.com/v2/aggs/grouped/locale/us/market/stocks/"+asof+"?adjusted=false&include_otc=false"
             req=urllib.request.Request(u,headers={"Authorization":"Bearer "+key})
             with urllib.request.urlopen(req,timeout=22) as f: obj=json.loads(f.read(7000000))
         else:obj=transport()
@@ -48,17 +49,19 @@ def probe(price,key,licensed,proof,transport=None):
 def selftest():
     asof="2026-10-08";ms=1791489600000
     p={"asof_et":asof,"pass_symbols":["AAPL","FSLY"],"pass_count":2,"execution":"NONE","real_money":"NO-GO"}
-    a={"status":"OK","results":[{"T":x,"o":20,"h":21,"l":19,"c":20,"v":12.5,"t":ms} for x in ("AAPL","FSLY")]}
+    a={"status":"OK","adjusted":False,"results":[{"T":x,"o":20,"h":21,"l":19,"c":20,"v":12.5,"t":ms} for x in ("AAPL","FSLY")]}
     assert probe(p,"","","")["calls"]==0
     ok=probe(p,"example","true","a"*64,lambda:a)
     assert ok["scope_complete"] and not ok["R92_AL"] and not ok["source_independent_of_RALLIES"]
     from copy import deepcopy
+    future_split=deepcopy(a);future_split["adjusted"]=True
+    assert probe(p,"example","true","a"*64,lambda:future_split)["status"]=="BLOCKED_VENDOR_RESPONSE"
     for k,v in (("h",10),("l",22),("v",-1),("t",ms+86400000)):
         bad=deepcopy(a);bad["results"][0][k]=v
         assert probe(p,"example","true","a"*64,lambda bad=bad:bad)["status"]=="BLOCKED_VENDOR_RESPONSE"
     no=deepcopy(a);no["results"].pop()
     assert probe(p,"example","true","a"*64,lambda:no)["status"]=="BLOCKED_SCOPE_NOT_COMPLETE"
-    print("XRAY_MASSIVE_GROUPED_BASIC_SELFTEST=PASS_5_NEGATIVES_NO_ALPHA")
+    print("XRAY_MASSIVE_GROUPED_BASIC_SELFTEST=PASS_UNADJUSTED_SPLIT_LOOKAHEAD_NEGATIVE_5_OTHER_NEGATIVES_NO_ALPHA")
 if __name__=="__main__":
     ap=argparse.ArgumentParser();ap.add_argument("--selftest",action="store_true");ap.add_argument("--out",type=Path)
     args=ap.parse_args()
