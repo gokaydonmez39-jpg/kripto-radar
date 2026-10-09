@@ -42,12 +42,12 @@ assert ok and why=="PASS",(ok,why)
 root_new_orphan=run(status="queued",conclusion=None,
                     created="2026-10-05T19:00:00Z",updated="2026-10-05T19:00:00Z")
 ok,why=evaluate_readiness(NOW,CONTRACT,root_kick,final_kick,
-                          root+[root_new_orphan],final)
+                          [root_new_orphan],final)
 assert not ok and why=="ROOT_ORPHAN_UNRECOVERED",(ok,why)
 final_new_orphan=run(status="in_progress",conclusion=None,
                      created="2026-10-05T19:00:00Z",updated="2026-10-05T19:00:00Z")
 ok,why=evaluate_readiness(NOW,CONTRACT,root_kick,final_kick,
-                          root,final+[final_new_orphan])
+                          root,[final_new_orphan])
 assert not ok and why=="FINAL_ORPHAN_UNRECOVERED",(ok,why)
 bad_status=run(status="unexpected",conclusion=None)
 ok,why=evaluate_readiness(NOW,CONTRACT,root_kick,final_kick,
