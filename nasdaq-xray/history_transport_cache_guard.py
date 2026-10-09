@@ -6,6 +6,7 @@ import csv
 import gzip
 import hashlib
 import json
+import math
 from datetime import date, timedelta
 from functools import lru_cache
 from pathlib import Path
@@ -43,7 +44,8 @@ def read_dates(path: Path, asof: str) -> list[str]:
                 return []
             names = {str(x).lower(): x for x in rows.fieldnames}
             dcol = names.get("date")
-            if not dcol:
+            price_cols={field:names.get(field) for field in ("open","high","low","close","volume")}
+            if not dcol or any(col is None for col in price_cols.values()):
                 return []
             for row in rows:
                 raw = str(row.get(dcol) or "")[:10]
@@ -54,6 +56,19 @@ def read_dates(path: Path, asof: str) -> list[str]:
                     # deciding whether the completed-session set is valid.
                     return []
                 if raw <= asof:
+                    # A complete date index with malformed prices or nontrading
+                    # volume is not a valid transport OHLCV cache. This is only
+                    # a numeric safety check, never a vendor-license attestation.
+                    try:
+                        vals={field:float(str(row.get(col,"")).strip())
+                              for field,col in price_cols.items()}
+                    except (ValueError,TypeError):
+                        return []
+                    if (not all(math.isfinite(v) for v in vals.values())
+                        or any(vals[k]<=0 for k in ("open","high","low","close","volume"))
+                        or vals["low"]>min(vals["open"],vals["close"])
+                        or vals["high"]<max(vals["open"],vals["close"],vals["low"])):
+                        return []
                     if d.weekday() >= 5 or d.isoformat() in out:
                         # Weekends or duplicated dates are not independent
                         # completed Nasdaq RTH sessions. Fail the full file.
