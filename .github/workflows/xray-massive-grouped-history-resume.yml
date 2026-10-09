@@ -121,6 +121,23 @@ jobs:
           print("XRAY_GROUPED_260_HISTORY="+x["status"])
           print("XRAY_GROUPED_260_DAYS="+str(x["collected_days"]))
           PY
+      - name: Re-evaluate existing C4.17 production readiness, never convert transport PASS to AL
+        run: |
+          python nasdaq-xray/e2e_production_readiness.py \
+            --output "$RUNNER_TEMP/xray_grouped_chain_readiness.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          x=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_grouped_chain_readiness.json").read_text())
+          assert x["schema"]=="XRAY_E2E_PRODUCTION_READINESS_AUDIT_V1"
+          assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
+          assert x["actual_device_delivery_receipt_attested"] is False
+          assert x["no_trading_or_device_receipt_claim"] is True
+          if not x["full_e2e_research_attested"]:
+              assert len(x["blockers"])>0
+          print("XRAY_GROUPED_CURRENT_E2E="+("BLOCKED" if x["blockers"] else "REQUIRES_INDEPENDENT_AL_CHECK"))
+          print("XRAY_GROUPED_CURRENT_E2E_BLOCKERS="+json.dumps(x["blockers"],sort_keys=True))
+          PY
       - name: Persist only encrypted private vendor checkpoint
         if: always()
         uses: actions/upload-artifact@v4
@@ -137,5 +154,6 @@ jobs:
           path: |
             ${{ runner.temp }}/xray_grouped_history_health.json
             ${{ runner.temp }}/xray_grouped_private_260_52_validation.json
+            ${{ runner.temp }}/xray_grouped_chain_readiness.json
           if-no-files-found: ignore
           retention-days: 14
