@@ -86,3 +86,35 @@ Indexed X profile/marketing posts establish existence and leads, **not** origina
 5. When authorized sources exist, put raw vendor data in rights-compliant private ephemeral cache, enforce immutable date/issuer/volume/corporate-action audits; only then consider canonical HISTORY/MC guard activation. Repeat canonical terminal and R92 only on independently PASS inputs.
 
 EXECUTION=NONE; REAL_MONEY=NO-GO; UNKNOWN!=PASS; NO_G9_REQUIRED; no signal, order, balance, portfolio or user credential retrieved; no newly scheduled automations; C4.17 thresholds unchanged.
+
+---
+# Additional zero-dollar source audit and FINRA provenance correction — 2026-10-09
+
+## Eulerpool / new first-priority full-history + MC research candidate
+
+Official plan https://eulerpool.com/financial-data-api/pricing and usage https://eulerpool.com/developers/rate-limits: free $0 **100,000 requests per month** (currently published plan), no card, personal/non-commercial use, free batch advertised up to 10 tickers, historical EOD and delayed quotes. History endpoints https://eulerpool.com/financial-data-api/historical-data and https://eulerpool.com/financial-data-api/stock-market-data; historical shares and MC listings https://eulerpool.com/financial-data-api/sdks/python. Terms https://eulerpool.com/financial-data-api/licensing expressly distinguish paid caching/derived-result redistribution from personal-free research. Some contemporaneous blog copy advertises **10,000** while current pricing says **100,000**; endpoint examples vary between /v1 and /api/1. Authoritative current pricing used for hypothetical quota math, but actual key entitlements/endpoints MUST be probed and retained data license independently confirmed.
+
+For exact 514-symbol current PRICE scope, one single-symbol history query per ticker implies 514 calls. Full universe 3401 implies 3401 requests. A stress model of 22 trading days with 1 call per ticker per day implies 3401*22=**74,822 requests/month** of the published 100k; this is only an arithmetic scenario, not confirmation of full 260/52 OHLCV, refresh rights, MC availability or data quality. No key used. Production NO-GO until actual data and rights verified.
+
+## Business Quant / multi-symbol EOD
+
+Official historical OHLCV API https://businessquant.com/docs/api/quotes supports ticker comma lists, completed EOD, pagination. Free plan https://businessquant.com/pricing: **30 API calls/day**, **0.1GB/month** data. Terms https://businessquant.com/terms-of-use authorize API internal research but forbid public raw-data sharing and unlicensed systematic copying/substantial bulk extraction. A 514-symbol same-day backfill would require >=ceil(514/30)=**18 symbols/call** assuming one page per batch; maximum valid symbol batch and 260-bar pagination not proven. Public repo storing raw prices not licensed. No free key currently tested.
+
+## HF Data Library, upstream IEX and OHLC.io
+
+HF https://github.com/elkassabgi/hfdatalibrary / https://hfdatalibrary.com/pages/api: 1391 US equities/ETFs reported, free authenticated daily and weekly CSV/Parquet downloads and rate limits, third-party HIST provenance. Post March 2022 **IEX venue ONLY** source (roughly 2–3% of consolidated US volume). IEX upstream https://www.iex.io/legal/hist-data-terms clarifies data cannot stand for other exchanges or investment decision price. Its CC BY compilation license does not upgrade IEX-only volumes to full SIP/Nasdaq consolidated DV30. It remains a *crosscheck*, NOT C4.17 primary. Official IEX T+1 free historical https://www.iex.io/products/market-data-connectivity.
+OHLC.io https://ohlc.io/data/historical-stock-prices advertises full-market bulk features but the **free entitlement is five fixed sample names only** (AAPL, NVDA, JNJ, PEP, MSFT); wider market is paid. Exclude from 514 full coverage.
+
+Reference repo https://github.com/raychennn/US-Stock-download offers Parquet, atomic/resumable 12k ticker design using Yahoo, valid as software architecture only; open-source license does not license market data. X/GitHub posts are leads, never equivalent to data-use grants.
+
+## Rallies nine-ticker fractional-volume finding REVISED: 2026-02-23 matches FINRA SIP rollout
+
+Connected Rallies provider returned 278 daily OHLCV points from 2025-09-02 through 2026-10-08 for AAPL, AAL, AAOI, ABVX, CORT, FSLY, GH, ZS, QQQ, with no duplicate dates or arithmetic-positive-price errors. In every one of these nine histories, latest whole-number volume session was **Friday 2026-02-20** and first fractional-volume date **Monday 2026-02-23** (159 of 278 trading sessions in sample fractional). Official FINRA announcement https://www.finra.org/filing-reporting/technical-notices/update-fractional-shares-reporting-20250328 sets **February 23, 2026** as first fractional-share trade reporting and SIP dissemination for NMS names. Cboe official market share archive displays real decimals in consolidated volume: https://www.cboe.com/us/equities/market_share/market/all/2026-07-20/.
+
+IMPORTANT CORRECTION: Fractional daily volume is **NOT** itself evidence of tampering or contamination. Its boundary is exactly consistent with regulatory fractional-trade tape adoption. Do not enforce integer-only volume or round raw share counts; 6-place precision can be legitimate. HOWEVER: matching transition timing still does not independently identify Rallies upstream data source, prove full consolidated SIP coverage, venue scope, corporate action corrections, license to store/cache or eligibility for C4.17 DV30/HISTORY. Existing history_transport_cache_guard.py correctly permits finite positive fractional volume while remaining non-authoritative.
+
+## Verified applied preflight code and Actions
+
+Extended existing nasdaq-xray/free_history_source_preflight.py (main commit **23d752f26e391489f01d81c628d3e844dd8583af**) with exact-PRICE-blob-bound Eulerpool 100k/mo stress case, Business Quant free 30/day minimum batching and HF IEX-only failclosed classification. **GitHub Actions run 37981391849 SUCCESS**, job 113992517719 SUCCESS (selftest/code, no provider calls). Twelve previous quota preflight preserved. New data sources not yet independently authenticated or production-authorized; no raw data or secrets on public GitHub, no new automations, no live AL, no change C4.17 C4.27, EXECUTION=NONE, REAL_MONEY=NO-GO, UNKNOWN!=PASS.
+
+Updated engineering ranking: Eulerpool #1 for real free-key HISTORY/MC validation; Rallies #2 given actual live 514/514 single-day availability and FINRA-compatible fractional volume; Twelve Data #3, Business Quant #4, HF/IEX crosscheck only, OHLC.io excluded.
