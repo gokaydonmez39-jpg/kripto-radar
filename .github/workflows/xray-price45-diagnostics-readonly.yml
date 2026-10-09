@@ -1,0 +1,68 @@
+name: XRAY Exact Current PRICE-45 Readonly Diagnostics
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/xray-price45-diagnostics-readonly.yml"
+permissions:
+  contents: read
+jobs:
+  diagnosis:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify exact PRICE blocked set and report only reason codes
+        run: |
+          python - <<'PY'
+          import collections,hashlib,json,os
+          from pathlib import Path
+          p=Path("nasdaq-xray/canonical_current_price_dv30.json")
+          raw=p.read_bytes()
+          x=json.loads(raw)
+          assert x["asof_et"]=="2026-10-08"
+          blocked=x.get("blocked_symbols") or []
+          passed=x.get("pass_symbols") or []
+          assert len(blocked)==len(set(blocked))==x["blocked_count"]==45
+          assert len(passed)==len(set(passed))==x["pass_count"]==514
+          assert not (set(blocked)&set(passed))
+          reasons=collections.Counter()
+          symbols={}
+          for sym in blocked:
+              row=(x.get("results") or {}).get(sym) or {}
+              info=row.get("info") or {}
+              recovery=info.get("block_recovery_attempt") or row.get("block_recovery_attempt") or {}
+              provider=recovery.get("provider_result") or {}
+              vals=[str(info.get("reason") or ""),
+                    str(row.get("reason") or ""),
+                    str(provider.get("reason") or ""),
+                    str(row.get("status") or "")]
+              code="|".join(v for v in vals if v) or "REASON_NOT_RECORDED"
+              reasons[code]+=1
+              symbols[sym]=code
+          sha=hashlib.sha1(b"blob "+str(len(raw)).encode()+b"\\0"+raw).hexdigest()
+          out={"schema":"XRAY_PRICE_45_DIAGNOSTICS_V1","asof_et":x["asof_et"],
+               "price_blob_sha":sha,"price_pass_count":len(passed),
+               "blocked_count":len(blocked),"blocked_reason_counts":dict(sorted(reasons.items())),
+               "blocked_reason_by_symbol":dict(sorted(symbols.items())),
+               "execution":"NONE","real_money":"NO-GO","alpha_authority":False,
+               "no_bars_or_synthetic_values_written":True,"source_recovery_proven":False}
+          dest=Path(os.environ["RUNNER_TEMP"])/"xray_price45_diagnostics.json"
+          dest.write_text(json.dumps(out,sort_keys=True,indent=2)+"\\n")
+          print("XRAY_PRICE45_COUNTS="+json.dumps(out["blocked_reason_counts"],sort_keys=True))
+          print("XRAY_PRICE45_SYMBOLS="+json.dumps(sorted(blocked)))
+          print("XRAY_PRICE45_PRIMARY_NO_FALSE_PASS")
+          PY
+      - name: Preserve source failure metadata only
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-price45-diagnostics-operational
+          path: ${{ runner.temp }}/xray_price45_diagnostics.json
+          retention-days: 14
+          if-no-files-found: error
