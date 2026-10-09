@@ -426,14 +426,13 @@ def selftest():
             assert deny["vendor_requests_this_run"]==0 and not stub_calls
             # Test rights-granted Friday ASOF against Saturday timestamp:
             # latest session drift AND next-trading-day publication embargo.
-            stale_clock=100000.0
+            stale_clock=ts(2026,10,10,12,0)
             stale=run(a1,env=fake_env,transport=vendor_fake,
                       now=lambda:stale_clock,sleep=lambda _:None)
             assert stale["vendor_requests_this_run"]==0, "STALE_ASOF_VENDOR_CALL_ACCEPTED"
             assert stale["status"]=="BLOCKED_STALE_SCOPE_REQUIRES_CURRENT_ASOF"
             # This fixture is after 2026-10-08 EOD publication (Friday
             # 2026-10-09 00:15 ET) but BEFORE 2026-10-09 market close.
-            from datetime import datetime,timezone
             valid_epoch=datetime(2026,10,9,5,15,tzinfo=timezone.utc).timestamp()
             one=run(a1,env=fake_env,transport=vendor_fake,
                     now=lambda:valid_epoch,sleep=lambda _:None)
