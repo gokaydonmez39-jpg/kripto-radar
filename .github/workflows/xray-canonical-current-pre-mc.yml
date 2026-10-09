@@ -41,6 +41,7 @@ on:
       - "nasdaq-xray/recover_pre_mc_snapshot.py"
       - "nasdaq-xray/pre_mc_identity_replay_session_guard.py"
       - "nasdaq-xray/pre_mc_noop_relay_selftest.py"
+      - "nasdaq-xray/weekday_utc_fallback_cron_selftest.py"
       - "nasdaq-xray/github_native_stage_relay.py"
       - "nasdaq-xray/canonical_resolver_bridge_*.json"
       - "nasdaq-xray/chatgpt_compiled_policy_v3.json"
@@ -156,6 +157,8 @@ jobs:
         run: python nasdaq-xray/nasdaq_screener_automation_policy_selftest.py
       - name: Exact SEC proof full-artifact versus listed-subset scope negative regression
         run: python nasdaq-xray/pre_mc_sec_scope_selftest.py
+      - name: Verify timezone-safe fallbacks for Pre-MC Post-MC and Final
+        run: python nasdaq-xray/weekday_utc_fallback_cron_selftest.py
       - name: Prevent frozen Pre-MC no-op from repeated Post-MC MC-release failures
         run: python nasdaq-xray/pre_mc_noop_relay_selftest.py
       - name: Verify current-directory PIT eligibility regressions
