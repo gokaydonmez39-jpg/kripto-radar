@@ -34,6 +34,20 @@ MAX_CIPHER_BYTES=70_000_000
 def gitblob(path):
     return subprocess.check_output(["git","hash-object",str(path)],cwd=REPO,text=True).strip()
 
+def master_price_lineage_exact(price,master):
+    """Exact canonical per-ASOF MASTER queue provenance, not mere subset."""
+    return (isinstance(price,dict) and isinstance(master,dict)
+            and price.get("asof_et")==master.get("asof_et")
+            and master.get("unknown_never_pass") is True
+            and price.get("source_master_queue_hash")==master.get("queue_hash")
+            and master.get("queue_hash")==master.get("pass_hash")
+            and price.get("source_master_count")==master.get("pass_count")
+            and master.get("pass_count")==len(master.get("pass_symbols") or [])
+            and master.get("pass_symbols")==sorted(set(master.get("pass_symbols") or []))
+            and master.get("queue_total")==master.get("queue_unique")
+            and master.get("queue_total")==master.get("pass_count")
+            and master.get("execution")=="NONE" and master.get("real_money")=="NO-GO")
+
 def scope():
     price=json.loads((ROOT/"canonical_current_price_dv30.json").read_text())
     master=json.loads((ROOT/"canonical_current_master_manifest.json").read_text())
@@ -43,6 +57,7 @@ def scope():
         or price.get("unknown_never_pass") is not True
         or master.get("asof_et")!=asof or master.get("execution")!="NONE"
         or master.get("real_money")!="NO-GO"
+        or not master_price_lineage_exact(price,master)
         or not isinstance(symbols,list) or symbols!=sorted(set(symbols))
         or len(symbols)!=price.get("pass_count")
         or sha256_lines(symbols)!=price.get("pass_hash")
@@ -326,6 +341,18 @@ def selftest():
     from cryptography.fernet import InvalidToken
     ss=scope()  # Source is actual current PRICE+MASTER SHA-bound state.
     assert len(ss["symbols"])==514 and len(ss["dates"])==260 and len(ss["weeks"])==52
+    liveprice=json.loads((ROOT/"canonical_current_price_dv30.json").read_text())
+    livemaster=json.loads((ROOT/"canonical_current_master_manifest.json").read_text())
+    assert master_price_lineage_exact(liveprice,livemaster)
+    for kind in ("queue_hash","source_count","asof","unknown","unexpected_symbol"):
+        pm=deepcopy(liveprice)
+        mm=deepcopy(livemaster)
+        if kind=="queue_hash":pm["source_master_queue_hash"]="0"*64
+        if kind=="source_count":pm["source_master_count"]+=1
+        if kind=="asof":mm["asof_et"]="2026-10-07"
+        if kind=="unknown":mm["unknown_never_pass"]=False
+        if kind=="unexpected_symbol":mm["pass_symbols"]=mm["pass_symbols"]+["ZZZZ"]
+        assert master_price_lineage_exact(pm,mm) is False,"MASTER_PRICE_DRIFT_ACCEPTED_"+kind
     assert not allowed({})
     assert not allowed({"XRAY_MASSIVE_API_KEY":"a"*32,
                         "XRAY_MASSIVE_NONDISPLAY_LICENSE_OK":"true",
