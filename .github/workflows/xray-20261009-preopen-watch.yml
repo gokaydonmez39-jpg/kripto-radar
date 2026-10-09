@@ -1,25 +1,9 @@
 name: XRAY 09-Oct Free Preopen 15-Minute Watch
+# Immutable historical observer: 9-Oct-2026 20:15 UTC end; auto-trigger retired.
+# Manual read-only reproduction remains possible. Main live root and R92
+# delivery workflows remain separately scheduled. No order or candidate claim.
 on:
   workflow_dispatch:
-  # Trigger on real factory completion even if GitHub cron scheduling is late.
-  workflow_run:
-    workflows:
-      - "XRAY Canonical Current Pre-MC Factory"
-      - "NASDAQ SWING XRAY Autonomous Data Plane"
-      - "XRAY E2E Production Readiness (Fail-Closed)"
-    types: [completed]
-    branches: [main]
-  schedule:
-    # 2026-10-09 only (extra year is time-gated below), 00:00-20:15 UTC;
-    # cover open through closing bell, not preopen only. Read-only fail-closed.
-    # Schedule arrival can be delayed by GitHub; no guaranteed wall-clock SLA.
-    - cron: "*/15 0-20 9 10 *"
-  push:
-    branches: [main]
-    paths:
-      - ".github/workflows/xray-20261009-preopen-watch.yml"
-      - "nasdaq-xray/preopen_opening_gate.py"
-      - "nasdaq-xray/research_preopen_source_audit.py"
 permissions:
   contents: read
   actions: read
