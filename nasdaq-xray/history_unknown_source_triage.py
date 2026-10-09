@@ -18,6 +18,9 @@ ALLOWED_REASON_CODES={
     "SINA_NO_ASOF_BAR","SINA_MISSING_SESSIONS","INCOMPLETE_RTH_SESSIONS",
     "SINA_HISTORY_INVALID","SINA_UNVERIFIED_SPLIT","SINA_LOW_QUALITY",
     "RESOLUTION_OVERLAY_INVALID","RESOLUTION_DECISION_UNKNOWN",
+    "ASOF_MISSING_REQUIRES_RESOLUTION",
+    "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION",
+    "EXACT30_INCOMPLETE_NEVER_PASS",
 }
 def reason_code(info):
     if isinstance(info,dict):
@@ -28,6 +31,10 @@ def reason_code(info):
     if raw in ALLOWED_REASON_CODES:return raw
     if re.match(r"^(?:HTTPError|TimeoutError|ConnectionError|ReadTimeout|JSONDecodeError|ValueError|KeyError|SSLError):",raw):
         return "NETWORK_OR_PROVIDER_EXCEPTION"
+    if isinstance(info,str) and ":" in raw:
+        error_type=raw.split(":",1)[0]
+        if re.fullmatch(r"[A-Za-z][A-Za-z0-9_]{0,55}",error_type):
+            return "PROVIDER_EXCEPTION_"+error_type
     if not raw:
         return "NO_REASON_GIVEN"
     return "UNCLASSIFIED_PROVIDER_DIAGNOSTIC"
@@ -92,6 +99,10 @@ def selftest():
     assert ok["unknown_count"]==2
     assert ok["unknown_reason_counts"]["UNKNOWN_STATIC | SINA_HISTORY_EMPTY"]==1
     assert ok["unknown_reason_counts"]["UNKNOWN_RETRY_EXHAUSTED | NETWORK_OR_PROVIDER_EXCEPTION"]==1
+    assert reason_code({"reason":"ASOF_MISSING_REQUIRES_RESOLUTION"})=="ASOF_MISSING_REQUIRES_RESOLUTION"
+    assert reason_code({"reason":"EXACT30_INCOMPLETE_NEVER_PASS"})=="EXACT30_INCOMPLETE_NEVER_PASS"
+    assert reason_code("RuntimeError:provider unavailable")=="PROVIDER_EXCEPTION_RuntimeError"
+    assert reason_code("https://private-provider/data?api_key=secret")=="UNCLASSIFIED_PROVIDER_DIAGNOSTIC"
     from copy import deepcopy
     for outer,key,val in (
         ("top","queue_total",2),("top","cursor",4),
