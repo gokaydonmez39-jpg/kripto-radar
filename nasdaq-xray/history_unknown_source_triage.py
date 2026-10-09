@@ -68,6 +68,13 @@ def audit(state):
     if len(unknown)!=int(state.get("unknown_count",-1)):
         raise ValueError("UNKNOWN_COUNT_MISMATCH")
     reasons=Counter((str(row.get("status"))+" | "+reason_code(row.get("info"))) for row in unknown.values())
+    # Public ticker IDs only, at most three per reason. No prices, bars,
+    # provider URLs, exceptions or raw metadata are serialized.
+    samples={}
+    for symbol,row in sorted(unknown.items()):
+        code=str(row.get("status"))+" | "+reason_code(row.get("info"))
+        if len(samples.setdefault(code,[]))<3:
+            samples[code].append(symbol)
     retry_count=int(state.get("pending_retry",0) or 0)
     if retry_count<0:
         raise ValueError("NEGATIVE_RETRY_COUNT")
@@ -83,6 +90,7 @@ def audit(state):
         "unknown_count":len(unknown),"pending_retry":retry_count,
         "status_counts":dict(sorted(counts.items())),
         "unknown_reason_counts":dict(sorted(reasons.items())),
+        "public_sample_tickers_by_reason":dict(sorted(samples.items())),
         "public_market_bars_persisted":False,
         "fully_verified_260_session_candidate_count":None,
     }
@@ -100,6 +108,7 @@ def selftest():
     ok=audit(base)
     assert ok["unknown_count"]==2
     assert ok["unknown_reason_counts"]["UNKNOWN_STATIC | SINA_HISTORY_EMPTY"]==1
+    assert ok["public_sample_tickers_by_reason"]["UNKNOWN_STATIC | SINA_HISTORY_EMPTY"]==["B"]
     assert ok["unknown_reason_counts"]["UNKNOWN_RETRY_EXHAUSTED | NETWORK_OR_PROVIDER_EXCEPTION"]==1
     assert reason_code({"reason":"ASOF_MISSING_REQUIRES_RESOLUTION"})=="ASOF_MISSING_REQUIRES_RESOLUTION"
     assert reason_code({"reason":"EXACT30_INCOMPLETE_NEVER_PASS"})=="EXACT30_INCOMPLETE_NEVER_PASS"
@@ -135,5 +144,6 @@ def main():
     print("XRAY_HISTORY_UNKNOWN_TRIAGE_STATUS="+data["status"])
     print("XRAY_HISTORY_UNKNOWN_TRIAGE_COUNTS="+json.dumps(data["status_counts"],sort_keys=True))
     print("XRAY_HISTORY_UNKNOWN_TRIAGE_REASONS="+json.dumps(data["unknown_reason_counts"],sort_keys=True))
+    print("XRAY_HISTORY_UNKNOWN_TRIAGE_TICKER_SAMPLES="+json.dumps(data["public_sample_tickers_by_reason"],sort_keys=True))
 if __name__=="__main__":
     main()
