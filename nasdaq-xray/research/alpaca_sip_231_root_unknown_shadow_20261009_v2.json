@@ -1,0 +1,134 @@
+{
+  "schema": "XRAY_ALPACA_CONNECTED_ROOT_HISTORY_SHADOW_CORRECTED_V2",
+  "asof_et": "2026-10-08",
+  "supersedes_non_authoritative_diagnostic": "nasdaq-xray/research/alpaca_sip_231_root_unknown_shadow_20261009_v1.json",
+  "why_superseded": "Earlier 13 oversized/concurrent connector requests failed internally and were miscounted as 231 PROVIDER_ERROR; this correction distinguishes query-tool failures from actual provider bar responses, with no count/PASS inference for 217 unmeasured symbols.",
+  "root_source_git_blob_sha": "5bb5cce43f921b9404994d8518d59ad86d3e34d5",
+  "scope_total_unknown": 231,
+  "measured_distinct_symbols": 14,
+  "not_measured": 217,
+  "individually_verified_latest30_and_ge260_by_connected_sip": 11,
+  "source": "ALPACA_CONNECTED_INTERACTIVE_SIP_NOT_GITHUB_RUNNER",
+  "measurement_type": "DELAYED_SIP_HISTORY_EXISTENCE_RESEARCH_SHADOW",
+  "observations": [
+    {
+      "symbol": "ACFN",
+      "observed_daily_bars": 305,
+      "official_last30_dates_covered": 30,
+      "has_260_raw_daily_bar_observations": true,
+      "full_c417_history_proven": false
+    },
+    {
+      "symbol": "ADAM",
+      "observed_daily_bars": 321,
+      "official_last30_dates_covered": 30,
+      "has_260_raw_daily_bar_observations": true,
+      "full_c417_history_proven": false
+    },
+    {
+      "symbol": "AEC",
+      "observed_daily_bars": 266,
+      "official_last30_dates_covered": 30,
+      "has_260_raw_daily_bar_observations": true,
+      "full_c417_history_proven": false
+    },
+    {
+      "symbol": "ALTI",
+      "observed_daily_bars": 321,
+      "official_last30_dates_covered": 30,
+      "has_260_raw_daily_bar_observations": true,
+      "full_c417_history_proven": false
+    },
+    {
+      "symbol": "ASTI",
+      "observed_daily_bars": 321,
+      "official_last30_dates_covered": 30,
+      "has_260_raw_daily_bar_observations": true,
+      "full_c417_history_proven": false
+    },
+    {
+      "symbol": "BBCI",
+      "observed_daily_bars": 2,
+      "official_last30_dates_covered": 2,
+      "has_260_raw_daily_bar_observations": false,
+      "full_c417_history_proven": false
+    },
+    {
+      "symbol": "CNL",
+      "observed_daily_bars": 321,
+      "official_last30_dates_covered": 30,
+      "has_260_raw_daily_bar_observations": true,
+      "full_c417_history_proven": false
+    },
+    {
+      "symbol": "DPU",
+      "observed_daily_bars": 321,
+      "official_last30_dates_covered": 30,
+      "has_260_raw_daily_bar_observations": true,
+      "full_c417_history_proven": false
+    },
+    {
+      "symbol": "ENGN",
+      "observed_daily_bars": 321,
+      "official_last30_dates_covered": 30,
+      "has_260_raw_daily_bar_observations": true,
+      "full_c417_history_proven": false
+    },
+    {
+      "symbol": "FGC",
+      "observed_daily_bars": 321,
+      "official_last30_dates_covered": 30,
+      "has_260_raw_daily_bar_observations": true,
+      "full_c417_history_proven": false
+    },
+    {
+      "symbol": "HTCO",
+      "observed_daily_bars": 321,
+      "official_last30_dates_covered": 30,
+      "has_260_raw_daily_bar_observations": true,
+      "full_c417_history_proven": false
+    },
+    {
+      "symbol": "INV",
+      "observed_daily_bars": 321,
+      "official_last30_dates_covered": 30,
+      "has_260_raw_daily_bar_observations": true,
+      "full_c417_history_proven": false
+    },
+    {
+      "symbol": "JONE",
+      "observed_daily_bars": 25,
+      "official_last30_dates_covered": 25,
+      "has_260_raw_daily_bar_observations": false,
+      "full_c417_history_proven": false
+    },
+    {
+      "symbol": "MAKO",
+      "observed_daily_bars": 134,
+      "official_last30_dates_covered": 30,
+      "has_260_raw_daily_bar_observations": false,
+      "full_c417_history_proven": false
+    }
+  ],
+  "runner_credentials_proven": false,
+  "bigdata_primary_mc_unavailable": true,
+  "source_license_for_public_bar_redissemination_verified": false,
+  "raw_bar_prices_or_volume_persisted": false,
+  "zero_dollar": true,
+  "policy": "C4.17_UNCHANGED",
+  "control": "C4.27",
+  "unknown_never_pass": true,
+  "shadow_history_promotion": false,
+  "primary_mc_promotion": false,
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "r92_generated": false,
+  "device_delivery_claim": false,
+  "status": "SAMPLE_MEASURED_ONLY_217_UNMEASURED_MISSING_PRIMARY_MC",
+  "constraints": [
+    "SIP history observations are not full 260 official contiguous sessions and split adjusted provenance",
+    "Automatic Github runner credentials and license rights not proven",
+    "C4.17 PRIMARY market cap explicitly requires Bigdata exact identity/USD measurement, and its account is currently out of credits",
+    "No source repair or real AL inferred from sampling"
+  ]
+}
