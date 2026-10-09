@@ -41,7 +41,7 @@ jobs:
           assert j["input_pass_symbols"]==sorted(set(j["input_pass_symbols"]))
           assert len(j["input_pass_symbols"])==j["input_pass_count"]
           import hashlib
-          assert hashlib.sha256("\\n".join(j["input_pass_symbols"]).encode()).hexdigest()==j["input_pass_hash"]
+          assert hashlib.sha256("\n".join(j["input_pass_symbols"]).encode()).hexdigest()==j["input_pass_hash"]
           assert j["input_unknown_count"]==0
           assert j["input_blocked_count"]>=0
           assert j["resolver_role"]=="FULL_SCOPE_MC_HANDOFF_AUTHORITY"
