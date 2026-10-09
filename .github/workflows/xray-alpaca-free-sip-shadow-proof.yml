@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/alpaca_free_sip_shadow_guard.py"
+      - "nasdaq-xray/alpaca_root_unknown_rescue_shadow.py"
       - ".github/workflows/xray-alpaca-free-sip-shadow-proof.yml"
 permissions:
   contents: read
@@ -25,8 +26,9 @@ jobs:
           python-version: "3.12"
       - name: Strict free historical source negative and positive gates
         run: |
-          python -m py_compile nasdaq-xray/alpaca_free_sip_shadow_guard.py
+          python -m py_compile nasdaq-xray/alpaca_free_sip_shadow_guard.py nasdaq-xray/alpaca_root_unknown_rescue_shadow.py
           python nasdaq-xray/alpaca_free_sip_shadow_guard.py --selftest
+          python nasdaq-xray/alpaca_root_unknown_rescue_shadow.py --selftest
       - name: Bounded free historical SIP query only when PRIVATE keys available
         env:
           XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID }}
@@ -44,11 +46,29 @@ jobs:
           assert j["candidate_created"] is False and j["device_receipt_proven"] is False
           print("XRAY_ALPACA_SHADOW_SECURITY_CONTRACT=PASS_NO_PRIMARY_NO_TRADES_NO_RAW_BARS")
           PY
+      - name: Bounded root UNKNOWN historical source rescue shadow
+        env:
+          XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID }}
+          XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY }}
+        run: |
+          python nasdaq-xray/alpaca_root_unknown_rescue_shadow.py --limit 12 --output "$RUNNER_TEMP/xray_alpaca_root_unknown_rescue.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          j=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_alpaca_root_unknown_rescue.json").read_text())
+          assert j["schema"]=="XRAY_ROOT_UNKNOWN_SIP_RESCUE_SHADOW_V1"
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          assert j["primary_mc_authority"] is False and j["canonical_history_modified"] is False
+          assert j["candidate_created"] is False and j["vendor_raw_bars_persisted"] is False
+          print("XRAY_ALPACA_ROOT_RESCUE_GUARDS=PASS_NO_PRIMARY_NO_CANONICAL_WRITE")
+          PY
       - name: Archive counts-only operational evidence for 14 days
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: xray-alpaca-free-sip-shadow-counts-v1
-          path: ${{ runner.temp }}/xray_alpaca_free_sip_shadow.json
+          path: |
+            ${{ runner.temp }}/xray_alpaca_free_sip_shadow.json
+            ${{ runner.temp }}/xray_alpaca_root_unknown_rescue.json
           retention-days: 14
           if-no-files-found: warn
