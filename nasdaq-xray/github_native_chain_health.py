@@ -197,8 +197,13 @@ def selftest():
     }
     # Supply authentic tree paths, not arbitrary aliases.
     for x in ("master","price","full_state"):
-        blobs[base+"canonical_current_"+("master_manifest" if x=="master" else "price_dv30" if x=="price" else "full_state")+".json"]=x
-        terminal["evidence"][x]["path"]=base+"canonical_current_"+("master_manifest" if x=="master" else "price_dv30" if x=="price" else "full_state")+".json"
+        source_path=base+"canonical_current_"+("master_manifest" if x=="master" else "price_dv30" if x=="price" else "full_state")+".json"
+        test_blob=("p"*40) if x=="price" else x
+        blobs[source_path]=test_blob
+        terminal["evidence"][x]["path"]=source_path
+        terminal["evidence"][x]["blob_sha"]=test_blob
+        if x=="price":
+            objects["resolver"]["source_price_blob_sha"]=test_blob
     v=classify(now,blobs,objects,True)
     assert v["status"]=="OPEN_INCIDENTS_FAIL_CLOSED"
     assert v["terminal_drift_keys"]==[]
