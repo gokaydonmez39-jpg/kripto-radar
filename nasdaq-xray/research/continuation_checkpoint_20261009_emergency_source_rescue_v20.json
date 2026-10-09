@@ -1,0 +1,104 @@
+{
+  "schema": "XRAY_20261009_EMERGENCY_HISTORY_RETRY_AND_FREE_SIP_WITNESS_V20",
+  "authority": "HISTORICAL_RESEARCH_CHECKPOINT_ONLY_LIVE_MAIN_AND_ACTIONS_OVERRIDE",
+  "repo": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "observed_main_head_before_checkpoint": "ff57c00b4bea9b6d7e5cf4165ec2eac41a769399",
+  "date_et": "2026-10-09",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "research_mode": "RESEARCH_ONLY_MANUAL_DECISION",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "alpha_authority": false,
+  "production_ready": false,
+  "intervention": {
+    "source": "nasdaq-xray/sina_transport_rescue.py",
+    "integration": "nasdaq-xray/sina_stage.py",
+    "commits": [
+      "5349f13aba04f7de49a230ef11265b9f4c1b1f97",
+      "33c268a0f4d35a239fdbd61c9d19a25a8db231cd",
+      "c4a0c7bb453fd230f83e9d8d2a56c0bdd079834d"
+    ],
+    "rules": "ONE real source re-probe only after >=1800 sec for transient exception; 32 max, no static history len or gate bypass",
+    "root_initial_reprobe_run": 37932684756,
+    "root_readback_run": 37932931658,
+    "last_readback": {
+      "asof_et": "2026-10-08",
+      "status": "HISTORY_PARTIAL",
+      "unknown_count": 231,
+      "unknown_retry_exhausted": 28,
+      "unknown_static": 203,
+      "transport_rescue_round1_total": 28,
+      "last_run_transport_rescue_attempts": 0,
+      "pending_retry": 0,
+      "source_coverage_new_pass": 0
+    },
+    "independent_selftest_run": 37933275560,
+    "independent_selftest_result": "SUCCESS_FAIL_CLOSED",
+    "root_result": "REAL_RETRIAL_ATTEMPTED_28_NO_NEW_PASS"
+  },
+  "alternate_source_observation": {
+    "source": "Alpaca connected plugin historical official consolidated SIP",
+    "requested_feed": "sip",
+    "window_start": "2025-07-01",
+    "window_end": "2026-10-08",
+    "timeframe": "1Day",
+    "measured_symbols": [
+      {
+        "symbol": "ACFN",
+        "bars": 305,
+        "first": "2025-07-24",
+        "last": "2026-10-08"
+      },
+      {
+        "symbol": "ACCV",
+        "bars": 7,
+        "first": "2026-09-30",
+        "last": "2026-10-08"
+      }
+    ],
+    "source_role": "CONNECTOR_INTERACTIVE_SAMPLE_ONLY_NOT_GITHUB_RUNNER",
+    "status": "HISTORY_ALTERNATIVE_EXISTS_BUT_UNATTENDED_RUNNER_CREDENTIAL_UNVERIFIED",
+    "needed_runner_secrets": [
+      "XRAY_ALPACA_DATA_KEY_ID",
+      "XRAY_ALPACA_DATA_SECRET_KEY"
+    ],
+    "existing_fail_closed_workflow": ".github/workflows/xray-alpaca-free-sip-shadow-proof.yml",
+    "limitations": [
+      "No GitHub credential handoff from hosted Alpaca connector",
+      "SIP history for personal research not same as license to redistribute vendor bars",
+      "Need official calendar all 260/52 sessions and corporate-action checks",
+      "May verify history but cannot cure MC C4.17 PRIMARY"
+    ]
+  },
+  "mc_authority": {
+    "last_postmc_run": 37932999497,
+    "result": "FAILURE",
+    "reason": "CURRENT_MC_BRIDGE_ABSENT / MC_AUTHORITY_MEASUREMENT_REQUIRED",
+    "bigdata_last_observed_zero_credit": true,
+    "massive_free_rate_per_minute": 5,
+    "current_C417_primary_ready": false,
+    "shadow_mc_watches_cannot_be_promoted": true
+  },
+  "notification": {
+    "r92_registered": 0,
+    "ledger_rows": 0,
+    "iphone_delivered_evidence": false
+  },
+  "new_steps": [
+    "User/operator provision private Alpaca data-only credentials as Actions secrets if authorized",
+    "Separately establish legally permitted current C4.17 PRIMARY MC; no shadow MC promotion",
+    "Only after exact current source chain rebuild HISTORY -> weekly -> regime -> event/legal -> risk/RR -> Final",
+    "When genuine R92 exists verify registration/expiry/dedup/GitHub ledger/user receipt independently"
+  ],
+  "never_claim": [
+    "100pct release success",
+    "current AL created",
+    "synthetic history passed",
+    "phone notification delivered",
+    "historical Bigdata zero credits magically resolved"
+  ],
+  "clock_observed_et": "2026-10-09T08:59:06.613352-04:00"
+}
