@@ -1376,6 +1376,14 @@ def main():
       "cursor":end,
       "processed_new":len(new),
       "processed_retry":len(retry),
+      "processed_transport_rescue":len(transport_rescue),
+      "transport_rescue_result_counts":result_counts({
+          sym:results[sym] for sym in transport_rescue
+      }),
+      "transport_rescue_round1_total":sum(
+          (r or {}).get("transport_rescue_round")==1
+          for r in results.values()
+      ),
       "pending_retry":state["pending_retry"],
       "counts":state["counts"],
       "candidate_count":len(candidates),
