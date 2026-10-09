@@ -1,0 +1,108 @@
+{
+  "schema": "XRAY_20261009_LIVE_REPAIR_CHECKPOINT_V24",
+  "authority": "LIVE_MAIN_AND_NEW_ACTIONS_OVERRIDE_THIS_CHECKPOINT",
+  "repo": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "observed_source_head": "3194ac179d973a136bc8a601467d60513c23ae79",
+  "observed_utc_date": "2026-10-09",
+  "source_of_truth": "direct_GitHub_main_readback_plus_connected_provider_tools",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "mode": "RESEARCH_ONLY_MANUAL_DECISION",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "changes": {
+    "history_source_triage": {
+      "path": "nasdaq-xray/history_unknown_source_triage.py",
+      "original_blob_sha": "e777b54e57a647238ceeb1b858e9925c32316264",
+      "first_patch_commit": "e8acbeee236993f08e66cf7e8e85cca548d07738",
+      "failed_run": 37951488890,
+      "failure_cause": "Legacy selftest expected collapsed NETWORK_OR_PROVIDER_EXCEPTION while new code preserves TimeoutError subtype",
+      "corrective_commit": "3194ac179d973a136bc8a601467d60513c23ae79",
+      "current_blob_sha": "a8e0e44c225cfb7547dc3cea93395f831bed1f6d",
+      "passing_actions_run": 37951638945,
+      "passing_artifact_id": 11626342213,
+      "artifact_zip_sha256": "3af122476faaf4b017cccf24b8323aa77b3c0e90c6804b36dc6f3a64a0e6f090",
+      "uncompressed_json_sha256": "87b8f84092cb7fee0c6dcdb94de4385b1e36972e7da86f202ed4e5afa1f482a8",
+      "artifact_uncompressed_bytes": 91852,
+      "history_asof": "2026-10-08",
+      "unknown_count": 231,
+      "per_symbol_diagnostics_count": 231,
+      "reason_classes": {
+        "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION": 144,
+        "ASOF_MISSING_REQUIRES_RESOLUTION": 53,
+        "EXACT30_INCOMPLETE_NEVER_PASS": 6,
+        "PROVIDER_EXCEPTION_SyntaxError": 24,
+        "PROVIDER_EXCEPTION_IndexError": 4
+      },
+      "operational_classes": {
+        "HISTORICAL_260_OR_52W_COVERAGE_MISSING": 144,
+        "SAME_ASOF_SESSION_MISSING": 53,
+        "LATEST_30_COMPLETED_SESSIONS_MISSING": 6,
+        "PROVIDER_PARSER_OR_SCHEMA_ERROR": 28
+      },
+      "all_260_daily_52weekly_or_ipo_real_verification": "NOT_PERFORMED",
+      "source_resolution_pass_created": 0,
+      "alpha_candidate_created": 0,
+      "test_result": "PASS_ON_GITHUB_ACTIONS_WITH_REAL_ROOT_SINA_STATE",
+      "production_effect": "ADVISORY_ROOT_CAUSE_CLASSIFICATION_ONLY_NO_REAL_MARKET_HISTORY_PROMOTION"
+    }
+  },
+  "upstream_primary_mc": {
+    "observed": "2026-10-09",
+    "bigdata_help_connected": {
+      "payg_balance": 0,
+      "out_of_credits": true
+    },
+    "asof_et": "2026-10-08",
+    "current_c417_exact_primary_mc_pass": 0,
+    "current_c417_dv30_mc_bridge_file_count": 0,
+    "massive_connected_api_shadow_sample": "AAPL_AND_ACFN_DATE_2026-10-08_REFERENCE_ROWS_AVAILABLE",
+    "massive_plan_reference": "https://massive.com/stocks",
+    "massive_license_primary_entitlement": "UNPROVEN_FOR_AUTOMATED_RUNNER_AND_PUBLIC_DATA_REDISSEMINATION",
+    "massive_credential_on_github": "NOT_ATTESTED",
+    "no_shadow_promotion": true,
+    "production_mc_status": "BLOCKED_MC_AUTHORITY_MEASUREMENT_REQUIRED"
+  },
+  "current_unresolved": {
+    "root_asof": "2026-10-08",
+    "root_history_status": "PARTIAL_HISTORY",
+    "root_unknown": 231,
+    "identity_unknown": 72,
+    "price_dv30_pass": 514,
+    "price_dv30_blocked": 45,
+    "terminal_asof": "2026-10-07",
+    "terminal_full_e2e": false,
+    "registered_r92": 0,
+    "delivery_ledger_entries": 0,
+    "phone_receipt_verified": false,
+    "calibration_source_exact_completed_sessions": 0,
+    "no_signals_explanation": "NO_CONFIRMED_CURRENT_AL_CANNOT_BE_INFERRED_FROM_DATA_BLOCK",
+    "delivery_previous_success_run": 37945448887,
+    "delivery_no_registered_candidate": "NOOP_NOT_DEVICE_SUCCESS"
+  },
+  "automations": {
+    "enabled_xray_count": 5,
+    "titles": [
+      "XRAY Health + G9 Multi-Watch",
+      "XRAY Full Nasdaq Autonomous Radar",
+      "XRAY Epoch Multi-Reader",
+      "XRAY Epoch Multi-Committer",
+      "XRAY Bridge Finisher 2"
+    ],
+    "duplicated_tasks_created": 0
+  },
+  "next_dependencies": [
+    "Obtain legally entitled, same-ASOF, exact C4.17 Bigdata primary market cap with paid service forbidden unless user authorizes; otherwise write policy successor proposal with separate explicit authorization, NEVER silently activate",
+    "Source-by-source licensed historical bar validation for 231 unknown and separate genuine IPO/listing continuity/260 daily/52 weekly verification, do not retry 28 parser errors as HTTP transport failures",
+    "Only after legitimate primary and history source proof: current same-ASOF MC->HISTORY->WEEKLY->REGIME->EARNINGS->LEGAL->RISK_RR->FINAL and SHA readback",
+    "Exact registered real R92 candidate->dedup->expiry->Github issue->ledger->separate user device receipt",
+    "Forward 2-8 completed-session test, costs and walk forward after sufficient actual clean samples"
+  ],
+  "status": "INCOMPLETE_PRODUCTION_NO_GO",
+  "no_money_spent": true,
+  "no_raw_licensed_market_bars_committed": true,
+  "no_secrets_committed": true,
+  "no_threshold_changes": true
+}
