@@ -18,6 +18,7 @@ from github_native_root_watchdog import github, head_sha, timestamp, UTC
 ROOT="nasdaq-xray/"
 FILES={
     "terminal":"canonical_current_terminal.json",
+    "orchestrator":"orchestrator_state.json",
     "master":"canonical_current_master_manifest.json",
     "official":"canonical_official_source_guard.json",
     "overlay":"canonical_current_final_gate_overlay.json",
@@ -34,6 +35,7 @@ def classify(now, blobs, files, main_stable):
         return {"status":"UNVERIFIED_MAIN_CHANGED",
                 "issues":["ATOMIC_SNAPSHOT_NOT_PROVEN"],"alpha_authority":False}
     terminal=files["terminal"]
+    orchestrator=files["orchestrator"]
     master=files["master"]
     official=files["official"]
     overlay=files["overlay"]
@@ -56,6 +58,17 @@ def classify(now, blobs, files, main_stable):
     master_count=int(master.get("unknown_count",-1))
     if master_count != 0:
         issues.append("MASTER_IDENTITY_EVIDENCE_INCOMPLETE")
+    # Root Actions SUCCESS attests process completion, NOT data-plane
+    # completion. Surface persistent upstream history outages explicitly.
+    root_status=orchestrator.get("status")
+    if root_status=="PARTIAL_HISTORY":
+        issues.append("ROOT_HISTORY_PARTIAL")
+        if (orchestrator.get("history_retryable") is False and
+            int(orchestrator.get("pending_retry",-1))==0):
+            issues.append("ROOT_HISTORY_NO_RETRYABLE_WORK")
+    elif root_status not in ("DATA_PLANE_PARTIAL_UNKNOWN",
+                             "DATA_PLANE_PASS_CANONICAL_DOWNSTREAM_DEFERRED"):
+        issues.append("ROOT_DATA_PLANE_STATUS_UNVERIFIED")
     price_path=ROOT+"canonical_current_price_dv30.json"
     resolver_price_exact=(resolver.get("source_price_blob_sha")==blobs.get(price_path)
                           and resolver.get("price_blocked_count")==0
@@ -91,6 +104,9 @@ def classify(now, blobs, files, main_stable):
         "g9_status":g9.get("status"),
         "account_status":account.get("current_status"),
         "terminal_result":terminal.get("terminal_result"),
+        "root_data_plane_status":root_status,
+        "root_history_unknown_count":orchestrator.get("unknown_count"),
+        "root_history_retryable":orchestrator.get("history_retryable"),
         "overlay_bound_to_current_terminal":overlay_current,
         "automatic_repair_authority":"SAFE_ROOT_RESTART_ONLY",
         "requires_source_specific_proof_for_master_mc_event":True,
@@ -109,7 +125,10 @@ def selftest():
               "full_end_to_end_research_pass":False,"terminal_result":"PARTIAL_UNKNOWN",
               "evidence":{x:{"path":base+x+".json","blob_sha":x} for x in ("master","price","full_state")}}
     objects={
-        "terminal":terminal,"master":{"unknown_count":165,"pass_count":3184,"unknown_never_pass":True},
+        "terminal":terminal,
+        "orchestrator":{"status":"PARTIAL_HISTORY","unknown_count":231,
+                        "pending_retry":0,"history_retryable":False},
+        "master":{"unknown_count":165,"pass_count":3184,"unknown_never_pass":True},
         "official":{"generated_at_utc":"2026-10-08T06:49:42Z"},
         "overlay":{"source_terminal":{"blob_sha":"terminalSHA"}},
         "resolver":{"source_price_blob_sha":"price","price_blocked_count":0,
@@ -127,6 +146,13 @@ def selftest():
     assert v["terminal_drift_keys"]==[]
     assert v["price_resolver_exact_current"] is True
     assert "EXTERNAL_G9_ENTITLEMENT_UNPROVEN" in v["issues"]
+    assert "ROOT_HISTORY_NO_RETRYABLE_WORK" in v["issues"]
+    assert v["root_history_unknown_count"]==231 and v["root_history_retryable"] is False
+    retryable=dict(objects,orchestrator={"status":"PARTIAL_HISTORY",
+                                         "pending_retry":3,"history_retryable":True})
+    assert "ROOT_HISTORY_NO_RETRYABLE_WORK" not in classify(now,blobs,retryable,True)["issues"]
+    unknown=dict(objects,orchestrator={"status":"UNVERIFIED","pending_retry":0})
+    assert "ROOT_DATA_PLANE_STATUS_UNVERIFIED" in classify(now,blobs,unknown,True)["issues"]
     stale=dict(blobs)
     stale[terminal["evidence"]["price"]["path"]]="DIFFERENT_SHA"
     v=classify(now,stale,objects,True)
