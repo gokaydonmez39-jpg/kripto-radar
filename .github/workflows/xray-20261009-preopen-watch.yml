@@ -14,6 +14,8 @@ on:
     branches: [main]
     paths:
       - ".github/workflows/xray-20261009-preopen-watch.yml"
+      - "nasdaq-xray/preopen_opening_gate.py"
+      - "nasdaq-xray/research_preopen_source_audit.py"
 permissions:
   contents: read
   actions: read
@@ -47,8 +49,11 @@ jobs:
       - name: Run exact current source/provenance guard - no vendor market calls
         if: steps.session_window.outputs.active == 'true'
         run: |
+          python -m py_compile nasdaq-xray/preopen_opening_gate.py nasdaq-xray/research_preopen_source_audit.py nasdaq-xray/e2e_production_readiness.py
           python nasdaq-xray/research_preopen_source_audit.py --selftest
+          python nasdaq-xray/preopen_opening_gate.py --selftest
           python nasdaq-xray/research_preopen_source_audit.py --output "$RUNNER_TEMP/xray_preopen_watch.json"
+          python nasdaq-xray/preopen_opening_gate.py --output "$RUNNER_TEMP/xray_opening_release_gate.json"
       - name: Capture real terminal and SEC Actions workflow statuses, no delivery claims
         if: steps.session_window.outputs.active == 'true'
         env:
@@ -70,8 +75,18 @@ jobs:
           j["real_device_delivery_receipt_proven"]=False
           j["production_research_go"]=False
           j["workflow_green_not_alpha"]=True
+          gate=json.loads((root/"xray_opening_release_gate.json").read_text())
+          j["opening_gate_status"]=gate["status"]
+          j["opening_gate_blockers"]=gate["blockers"]
+          j["opening_gate_asof"]=gate["asof_et"]
+          j["opening_gate_research_candidate_prepared"]=gate["registered_research_candidate_prepared"]
+          j["real_device_delivery_receipt_proven"]=False
+          j["production_research_go"]=False
+          j["verified_at_git_commit"]=os.popen("git rev-parse HEAD").read().strip()
           (root/"xray_preopen_watch.json").write_text(json.dumps(j,sort_keys=True,indent=2)+"\n")
           print("XRAY_PREOPEN_WATCH=CHECKED_REAL_GITHUB_SOURCES_NO_FALSE_GO")
+          print("XRAY_PREOPEN_OPENING_GATE="+str(gate["status"]))
+          print("XRAY_PREOPEN_OPENING_BLOCKERS="+json.dumps(gate["blockers"]))
           print("XRAY_PREOPEN_SOURCE_INTEGRITY="+str(j["source_integrity_pass"]))
           print("XRAY_PREOPEN_SEC_FULL_RUN="+str(j["sec_full_vintages"]["run_id"]))
           PY
@@ -80,6 +95,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: xray-20261009-preopen-watch-operational
-          path: ${{ runner.temp }}/xray_preopen_watch.json
+          path: |
+            ${{ runner.temp }}/xray_preopen_watch.json
+            ${{ runner.temp }}/xray_opening_release_gate.json
           retention-days: 14
           if-no-files-found: error
