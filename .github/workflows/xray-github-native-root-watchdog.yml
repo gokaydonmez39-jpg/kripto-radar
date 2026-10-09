@@ -16,6 +16,7 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/github_native_root_watchdog.py"
+      - "nasdaq-xray/github_native_chain_health.py"
       - ".github/workflows/xray-github-native-root-watchdog.yml"
 permissions:
   contents: read
