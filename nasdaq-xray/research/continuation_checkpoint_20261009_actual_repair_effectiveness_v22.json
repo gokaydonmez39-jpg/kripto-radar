@@ -1,0 +1,164 @@
+{
+  "schema": "XRAY_20261009_POST_OPEN_ACTUAL_REPAIR_EFFECTIVENESS_V22",
+  "repo": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "verified_source_head_before_report": "72b045b466a292e15ed4356cd95b43f6a821de1b",
+  "audit_date": "2026-10-09",
+  "audit_market_clock_et": "2026-10-09T10:18:35-04:00",
+  "nasdaq_open": true,
+  "policy": "C4.17",
+  "control": "C4.27",
+  "mode": "RESEARCH_ONLY_MANUAL_DECISION",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "production_release": "BLOCKED_NO_GO",
+  "audit_scope": "LIVE_MAIN_SOURCE_SHA_AND_REAL_ACTIONS_OUTCOME_NOT_PROMPT_MEMORY",
+  "facts": {
+    "master": {
+      "asof_et": "2026-10-08",
+      "identity_pass": 3183,
+      "identity_unknown": 72,
+      "blob": "92c37207d8dd766ab3fe8f1300e3014c6c5ab629"
+    },
+    "price_dv30": {
+      "asof_et": "2026-10-08",
+      "pass": 514,
+      "current_blocked": 45,
+      "blob": "42ed4a1c1a104aff94f73793194b25746d3bea59"
+    },
+    "sina_root": {
+      "asof_et": "2026-10-08",
+      "status": "PARTIAL_HISTORY",
+      "unknown_total": 231,
+      "unknown_transient_exhausted": 28,
+      "unknown_static": 203,
+      "transient_real_retries_executed_once": 28,
+      "verified_new_pass": 0,
+      "subsequent_rescue_attempts": 0,
+      "pending_retry": 0,
+      "history_retryable": false,
+      "latest_root_run": 37942149385
+    },
+    "mc": {
+      "current_bigdata_exact_usd_primary_pass": 0,
+      "current_mc_bridge_present": false,
+      "latest_postmc_run": 37942309970,
+      "latest_postmc_run_conclusion": "FAILURE",
+      "reason": "CURRENT_MC_BRIDGE_ABSENT/MC_AUTHORITY_MEASUREMENT_REQUIRED",
+      "no_shadow_promotion": true
+    },
+    "terminal": {
+      "asof_et": "2026-10-07",
+      "status": "PARTIAL",
+      "full_e2e": false,
+      "registered_r92": 0,
+      "source_sha": "ea9c41cd1e5971e78d85bf3f620d7f8c4e01034f",
+      "last_final_workflow_run": 37942034748,
+      "last_final_workflow_status": "SUCCESS_WAITING_NOOP"
+    },
+    "legacy_final": {
+      "asof_et": "2026-10-07",
+      "finalists": 17,
+      "risk_fail": 17,
+      "rr_fail": 16,
+      "counterfactual_low_entry_risk_pass": 1,
+      "counterfactual_low_entry_combined_pass": 0,
+      "cannot_generalize_to_current_date": true
+    },
+    "research_watch": {
+      "latest_workflow_run": 37940069885,
+      "conclusion": "SUCCESS_TEST_AND_FAIL_CLOSED",
+      "technical_records_reclassified_data_blocked": 17,
+      "current_valid_watch": 0,
+      "source_exact": false,
+      "old_b_armed_observations": 4
+    },
+    "forward_performance": {
+      "module_test": "PASS_POSITIVE_14_NEGATIVE_SHA_CLOCK",
+      "real_future_results": "FORWARD_EVIDENCE_NOT_CONFIGURED",
+      "realized_pnl": false,
+      "proven_win_rate": null
+    },
+    "delivery": {
+      "latest_run": 37940069956,
+      "job_success": true,
+      "reason": "NO_REGISTERED_RESEARCH_CANDIDATE",
+      "ledger_count": 0,
+      "phone_receipt_proven": false,
+      "dedup_expiry_test_witness_not_live": true
+    },
+    "calibration": {
+      "previous_committed_comparable_count": 1,
+      "real_recomputed_full_exact_c417_sessions": 0,
+      "target": 60,
+      "observed_historical_epochs": 4,
+      "fix_commits": [
+        "438e905d02f76861a24b909045fe23e02b7fdf09",
+        "6bfc50882f4d9fde56c2dc1e1555637eb4b4ff46",
+        "338bc5b2eac76503440dd0a860559bd748e96e97",
+        "72b045b466a292e15ed4356cd95b43f6a821de1b"
+      ],
+      "actual_validation_run": 37942833153,
+      "actual_validation": "SUCCESS_EXACT_RECOMPUTE",
+      "production_alpha_unlocked": false
+    },
+    "monitor": {
+      "last_regular_session_run": 37940096774,
+      "success": true,
+      "phase": "REGULAR_SESSION",
+      "release": "BLOCKED_NO_GO",
+      "scheduled_cron": "*/15 0-20 9 10 *",
+      "actual_15_min_delivery_SLA_proven": false
+    },
+    "auto_recovery": {
+      "root_watchdog_run": 37940130103,
+      "healthy_test": true,
+      "recovery_action": "NONE_FRESH_ROOT_SUCCESS",
+      "remaining_incidents": [
+        "CURRENT_MC_AUTHORITY_ARTIFACT_ABSENT",
+        "ROOT_HISTORY_PARTIAL",
+        "ROOT_HISTORY_NO_RETRYABLE_WORK",
+        "TERMINAL_LIVE_BLOB_DRIFT"
+      ]
+    },
+    "end_to_end": {
+      "run": 37940069898,
+      "workflow_result": "FAILURE_CORRECT_FAIL_CLOSED",
+      "readiness": "BLOCKED",
+      "release": "NO_GO",
+      "source_universe_complete": false
+    },
+    "alpaca_sip_shadow": {
+      "observed_14_symbols": true,
+      "unmeasured_217": true,
+      "history_bar_exists_for_11_in_sample": true,
+      "production_ingest_or_license_authority_proven": false,
+      "source": "nasdaq-xray/research/alpaca_sip_231_root_unknown_shadow_20261009_v2.json"
+    },
+    "history_transport_hardening": {
+      "standalone_unit_test_witness": "PASS",
+      "actual_postmc_script_call_to_history_transport_cache_guard": false,
+      "policy_scope_reconciliation_required_before_promoting_it_to_hard_gate": true
+    }
+  },
+  "judgment": {
+    "software_unit_and_negative_control_effect": "DEMONSTRATED",
+    "production_fail_closed_monitor_effect": "DEMONSTRATED",
+    "licensed_primary_mc_provision": "NOT_COMPLETED",
+    "production_history_source_recapture": "NO_NEW_PASS",
+    "full_current_alpha_signal_effect": "NOT_ACHIEVED",
+    "device_notification_end_to_end_effect": "NOT_TESTED_NO_REAL_CANDIDATE",
+    "blanket_100_percent_claim": false,
+    "safety_sanctioned_execution_disabled": true
+  },
+  "highest_priority": [
+    "P0: Reestablish authorized Bigdata exact current C4.17 primary market-cap data (account currently reported out of credits); or separately approve versioned licensed successor, NEVER silently relabel shadow.",
+    "P0: Source-specific real official 260 daily and 52 weekly history for unresolved 231, label genuine <260/IPO/inactive rather than retrying exhausted transient endlessly.",
+    "P0: Materialize current-Asof exact MC => HISTORY => weekly => regime => earnings/legal => risk/RR => final provenance, then rerun E2E and pointer guards; NEVER recycle partial 2026-10-07 terminal.",
+    "P1: Resolve 72 identity-unknown and 45 price/DV30 blocked local scope with independent evidence.",
+    "P1: Once real R92 registered prove dedup/expiry/GitHub delivery and actual user-device receipt independently.",
+    "P2: Add trusted source to 2-8-session prospective paper outcome measurements and accumulate 60 comparable complete sessions; do not claim 90pct success from 4 partial epochs.",
+    "P2: Keep terminal-calendar guard diagnostic until C4.17 accepts strict contiguous latest 260 official RTH sessions, to avoid inadvertent hardening beyond policy."
+  ]
+}
