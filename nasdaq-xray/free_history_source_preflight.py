@@ -67,6 +67,16 @@ def make(price: dict, source_blob_sha: str, universe_count: int = FULL_UNIVERSE_
         "universe_min_calendar_days_at_published_daily_limit":
             math.ceil(universe_count * SERIES_COST_PER_SYMBOL / BASIC_DAILY),
         "universe_full_daily_refresh_fits_one_key": universe_count <= BASIC_DAILY,
+        # Official /market_cap docs: 5 credits/request, Ultra (individual)
+        # or Enterprise (business) ONLY. Free Basic historical OHLCV quota
+        # does NOT solve the independent C4.17 same-ASOF PRIMARY MC gate.
+        "twelve_market_cap_endpoint_credits_per_request": 5,
+        "twelve_market_cap_minimum_individual_tier": "Ultra",
+        "twelve_market_cap_basic_available": False,
+        "twelve_market_cap_can_supply_primary_mc": False,
+        "twelve_market_cap_official_documentation": TWELVE_DOCS,
+        "source_eod_publication_rule": "AFTER_00_00_ET_NEXT_NASDAQ_TRADING_DAY",
+        "source_eod_publication_independent_bar_observation": False,
         "scope_actual_endpoint_entitlement_verified": False,
         "historical_320_bars_retrieved": False,
         "actual_260_daily_52_week_source_proven": False,
@@ -142,6 +152,10 @@ def selftest() -> None:
     assert v["universe_min_calendar_days_at_published_daily_limit"] == 5
     assert v["universe_full_daily_refresh_fits_one_key"] is False
     assert v["history_authoritative"] is False and v["can_register_R92"] is False
+    assert v["twelve_market_cap_basic_available"] is False
+    assert v["twelve_market_cap_can_supply_primary_mc"] is False
+    assert v["twelve_market_cap_minimum_individual_tier"]=="Ultra"
+    assert v["source_eod_publication_rule"]=="AFTER_00_00_ET_NEXT_NASDAQ_TRADING_DAY"
     other = v["other_free_source_quota_research"]
     e = other["Eulerpool Free"]
     assert e["stress_22_session_full_universe_requests"] == 3401 * 22
@@ -199,6 +213,7 @@ def main() -> None:
     print("XRAY_BUSINESSQUANT_FREE_MIN_BATCH_SIZE=" + str(alt["Business Quant Free"]["minimum_symbols_per_request_to_cover_scope_in_one_day"]))
     print("XRAY_HF_IEX_ONLY_NOT_CONSOLIDATED=PASS_NONAUTHORITY")
     print("XRAY_TWELVE_LICENSE_AND_BARS=" + ("UNVERIFIED" if not out["history_authoritative"] else "ERROR"))
+    print("XRAY_TWELVE_BASIC_PRIMARY_MC=NOT_AVAILABLE_ULTRA_ONLY")
 
 
 if __name__ == "__main__":
