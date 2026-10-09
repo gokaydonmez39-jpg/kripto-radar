@@ -1,0 +1,89 @@
+{
+  "schema": "XRAY_20261009_V33_CURRENT_514_HISTORY_SOURCE_REQUEST",
+  "authority": "GITHUB_LIVE_MAIN_ACTIONS_AND_PROVIDER_GRANTS_SUPERSEDE_THIS_CHECKPOINT",
+  "repo": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "observed_head": "72021a1a9b994877be2b895ee35154539deef0e4",
+  "observed_date": "2026-10-09",
+  "predecessor": "nasdaq-xray/research/continuation_checkpoint_20261009_core_source_exit_v32.json",
+  "immutable_policy": {
+    "policy": "C4.17",
+    "control": "C4.27",
+    "mode": "RESEARCH_ONLY_MANUAL_DECISION",
+    "execution": "NONE",
+    "real_money": "NO-GO",
+    "unknown_never_pass": true,
+    "alpha_thresholds_unchanged": true
+  },
+  "key_correction": {
+    "legacy_root_unknown": 231,
+    "applies_to": "OLD ROOT SCAN not current PRICE survivors",
+    "current_price_asof": "2026-10-08",
+    "current_price_survivors": 514,
+    "current_canonical_history_asof": "2026-10-07",
+    "current_price_514_true_history_measurement": "UNKNOWN_NOT_COMPLETED",
+    "provider_license_authorized_for_unattended_derived_output": false
+  },
+  "actual_changes": [
+    {
+      "kind": "PYTHON_SOURCE",
+      "file": "nasdaq-xray/current_history_source_request.py",
+      "commit": "3f88487dbd20a7efd03d09f7077124f348ee2227",
+      "behavior": "Build same-ASOF PRICE Git-blob-scoped current HISTORY request and official 260 daily + last 52 completed ISO week close target dates, no OHLCV",
+      "data_source": "Only checked-out Git canonical PRICE and official exchange calendar; no market price fetching",
+      "positive_negative_selftests": "PASS_1_POSITIVE_8_NEGATIVE"
+    },
+    {
+      "kind": "GITHUB_ACTIONS",
+      "file": ".github/workflows/xray-current-history-source-request.yml",
+      "commit": "72021a1a9b994877be2b895ee35154539deef0e4",
+      "run": 37976825270,
+      "result": "SUCCESS",
+      "artifact_id": 11639456760,
+      "artifact_name": "xray-current-history-source-request-no-vendor-bars",
+      "checks": [
+        "GITHUB_SHA_exact",
+        "calendar_targets_daily_260_weekly_52",
+        "price_scope_hash_recomputed",
+        "NO_ALPHA_NO_PRIMARY_NO_REAL_MONEY"
+      ]
+    }
+  ],
+  "source_rights_findings": {
+    "Bigdata_credit_balance": 0,
+    "Bigdata_outOfCredits": true,
+    "Massive_Basic": "$0 five calls per minute and two-year EOD history for individual use",
+    "Massive_non_display_derived_strategy": "No explicit license under standard individual market data terms",
+    "Massive_official_terms": "https://www.massive.com/legal/market-data-terms-of-service",
+    "Tiingo_Starter": "$0, temporary in-memory data/derived works only, persistent storage prohibited",
+    "Tiingo_official_terms": "https://app.tiingo.com/tos/",
+    "Tiingo_Power": "Advertised $30/month personal internal use; vendor entitlement for intended runner use must still be checked",
+    "Tiingo_official_pricing": "https://www.tiingo.com/pricing",
+    "SEC_EDGAR": "Company filings and XBRL only, NOT current stock closing price or authoritative share-class-adjusted market cap",
+    "FMP_Basic": "250 calls/day free, no verified distribution/automated derivative entitlement for X-RAY"
+  },
+  "production_readback": {
+    "mc_primary_pass": 0,
+    "current_terminal_asof": "2026-10-07",
+    "root_unknown_legacy": 231,
+    "true_history_current_514_complete": false,
+    "current_verified_r92": 0,
+    "watch_workflow_run": 37976420872,
+    "watch_workflow_report": "STALE_SNAPSHOT_WATCH_BLOCKED, live_watch_count=0",
+    "calibration_complete_source_exact_sessions": 0,
+    "actual_device_delivery_proven": false
+  },
+  "acceptance_pending": [
+    "Valid provider-granted unattended research/non-display/derived output rights and up-to-date same-ASOF exact issuer/his-class MC authority (C4.17 or explicit C4.18 activation)",
+    "Authorized source fetch, compare actual 260 Nasdaq session bars and 52 completed weeks for all current PRICE survivors, corporate action alignment, honest partition",
+    "Same ASOF current MC->HISTORY->WEEKLY->REGIME->EARNINGS->LEGAL->RISK/RR->FINAL with source SHA readback",
+    "Only real registered R92 candidate can test true dedup, expiry, GitHub receipt and separate device receipt",
+    "60 comparable forward sessions for meaningful performance claims"
+  ],
+  "no_paid_service_started": true,
+  "no_vendor_raw_prices_written": true,
+  "no_secret_committed": true,
+  "no_new_task_created": true,
+  "production": "NO_GO",
+  "completion_claim": false
+}
