@@ -7,8 +7,8 @@ on:
       - "nasdaq-xray/nasdaq_screener_pit_capture.py"
       - "nasdaq-xray/nasdaq_screener_pit_capture_selftest.py"
       - ".github/workflows/xray-nasdaq-screener-pit-capture.yml"
-  schedule:
-    - cron: "15 21 * * 1-5"
+  # Unattended capture disabled: Nasdaq website terms restrict automatic
+  # data extraction for analytics without prior written authorization.
   workflow_dispatch:
 
 permissions:
@@ -37,6 +37,16 @@ jobs:
           python -m py_compile nasdaq_screener_pit_capture.py nasdaq_screener_pit_capture_selftest.py
           python nasdaq_screener_pit_capture_selftest.py
 
+      - name: Demand documented Nasdaq screener automation rights before HTTP
+        env:
+          XRAY_NASDAQ_SCREENER_LICENSE_OK: ${{ vars.XRAY_NASDAQ_SCREENER_AUTOMATED_LICENSE_OK }}
+          XRAY_NASDAQ_SCREENER_LICENSE_EVIDENCE: ${{ secrets.XRAY_NASDAQ_SCREENER_LICENSE_EVIDENCE_SHA256 }}
+        run: |
+          if [[ "$XRAY_NASDAQ_SCREENER_LICENSE_OK" != "true" ||
+                ! "$XRAY_NASDAQ_SCREENER_LICENSE_EVIDENCE" =~ ^[0-9a-fA-F]{64}$ ]]; then
+            echo "XRAY_NASDAQ_CAPTURE=BLOCKED_NO_WRITTEN_AUTOMATION_LICENSE" >&2
+            exit 2
+          fi
       - name: Capture official Nasdaq screener shadow
         run: python nasdaq-xray/nasdaq_screener_pit_capture.py
 
