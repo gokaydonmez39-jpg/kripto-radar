@@ -1,0 +1,114 @@
+{
+  "schema": "XRAY_20261009_MC_AUTHORITY_AND_NATIVE_CHAIN_HEALTH_REPAIR_V13",
+  "authority": "HISTORICAL_CHECKPOINT_ONLY_LIVE_GITHUB_SUPERSEDES",
+  "repo": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "observed_source_main_head": "f34feee5477d55a2a26b170cc8caf18475c0411e",
+  "verified_at_utc_from_actions_log": "2026-10-09T09:46:37Z",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "mode": "RESEARCH_ONLY_MANUAL_DECISION",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "alpha_thresholds_unchanged": true,
+  "broker_account_or_order_access": false,
+  "observed": {
+    "root_asof_et": "2026-10-08",
+    "root_status": "PARTIAL_HISTORY",
+    "root_history_unknown": 231,
+    "root_pending_retry": 0,
+    "master_asof_et": "2026-10-08",
+    "master_unknown_identity": 72,
+    "price_asof_et": "2026-10-08",
+    "price_pass": 514,
+    "price_blocked": 45,
+    "price_git_blob_sha": "42ed4a1c1a104aff94f73793194b25746d3bea59",
+    "resolver_source_price_blob_sha": "42ed4a1c1a104aff94f73793194b25746d3bea59",
+    "current_mc_bridge_20261008_count": 0,
+    "current_mc_primary_authority": "NOT_PROVEN",
+    "terminal_asof_et": "2026-10-07",
+    "terminal_result": "PARTIAL_UNKNOWN",
+    "terminal_20261007_real_r92_count": 0,
+    "candidate_lifecycle_records": 0,
+    "delivery_ledger_deliveries": 0,
+    "real_device_receipt_proven": false
+  },
+  "root_cause": {
+    "exact_postmc_run": 37912271118,
+    "exact_step": "Enforce actual current MC authority before Post-MC SUCCESS",
+    "markers": [
+      "MC_AUTHORITY_MEASUREMENT_REQUIRED",
+      "NO_CURRENT_MC_AUTHORITY_FAIL_CLOSED",
+      "XRAY_POST_MC_RELEASE=BLOCKED_CURRENT_MC_AUTHORITY_REQUIRED"
+    ],
+    "conclusion": "NO_SAME_ASOF_C417_PRIMARY_MC_AUTHORITY",
+    "resolver_handoff_already_exists": true,
+    "permission_is_not_market_data_license": true
+  },
+  "repairs": [
+    {
+      "commit": "dcd8f8c9e8c78225b2ade8f069f92e0b9cb9df53",
+      "path": "nasdaq-xray/github_native_chain_health.py",
+      "change": "ASOF-scoped absent immutable current MC artifact and stale terminal classified separately; no MC promotion",
+      "github_action_run": 37913120764,
+      "conclusion": "SUCCESS"
+    },
+    {
+      "commit": "9fc837eb097d8b9a6cfa143d83378cd07b72ce02",
+      "path": "nasdaq-xray/github_native_chain_health.py",
+      "change": "separate SHA-exact PRICE resolver link from symbol-local 45 BLOCKED",
+      "github_action_run": 37913324800,
+      "conclusion": "FAILURE_FIXTURE_TOO_SHORT_SYNTHETIC_GIT_SHA"
+    },
+    {
+      "commit": "f34feee5477d55a2a26b170cc8caf18475c0411e",
+      "path": "nasdaq-xray/github_native_chain_health.py",
+      "change": "correct 40-character SHA regression fixture without relaxing runtime SHA guard",
+      "github_action_run": 37913411813,
+      "conclusion": "SUCCESS"
+    }
+  ],
+  "live_health_after_repairs": {
+    "run": 37913411813,
+    "status": "OPEN_INCIDENTS_FAIL_CLOSED",
+    "issues": [
+      "CURRENT_MC_AUTHORITY_ARTIFACT_ABSENT",
+      "CURRENT_TERMINAL_ASOF_LAG",
+      "EVENT_GEOMETRY_UNRESOLVED",
+      "MASTER_IDENTITY_EVIDENCE_INCOMPLETE",
+      "OFFICIAL_GUARD_STALE_OVER_900S",
+      "PRICE_SYMBOL_LOCAL_BLOCKED_PRESENT",
+      "ROOT_HISTORY_NO_RETRYABLE_WORK",
+      "ROOT_HISTORY_PARTIAL",
+      "TERMINAL_E2E_NOT_PROVEN",
+      "TERMINAL_LIVE_BLOB_DRIFT"
+    ],
+    "price_resolver_false_positive_removed": true
+  },
+  "next_external_requirements": [
+    "Document legal entitlement to unattended same-ASOF C4.17 PRIMARY MC or independently review versioned successor with tests; NEVER promote SEC/connected provider SHADOW by default",
+    "If eligible, configure Alpaca data-only keys in GitHub Actions encrypted secrets, never chat; prove unattended rights and historical SIP daily bar completeness",
+    "Create legitimate 2026-10-08 current MC bridge from measured source with all immutable lineage and C4.17 checks"
+  ],
+  "next_engineering_steps": [
+    "On real same-ASOF MC authority re-run Post-MC triggered by immutable MC bridge push path, then HISTORY, weekly, event, legal, risk/RR and final",
+    "Protect candidate-local proven signals from unrelated unknown symbols while requiring exact per-symbol source and policy",
+    "Verify real registered nonexpired candidate and delivery receipt; no synthetic phone-delivery PASS",
+    "Persist source identity entitlement and session PIT proofs with blob SHAs"
+  ],
+  "required_checks_before_go": [
+    "exact CURRENT MC source and entitlement",
+    "same-ASOF full candidate local data",
+    "260 sessions 52 weeks",
+    "weekly,regime,earnings,legal,risk/RR",
+    "candidate and device delivery proof"
+  ],
+  "release": "RESEARCH_PRODUCTION_NO_GO",
+  "no_claims": [
+    "no new primary MC data",
+    "no 2026-10-08 current terminal",
+    "no real candidate",
+    "no phone delivery"
+  ]
+}
