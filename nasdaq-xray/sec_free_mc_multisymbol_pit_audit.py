@@ -8,6 +8,7 @@ Never publishes vendor market data. Current Nasdaq master limits candidate scope
 from __future__ import annotations
 import argparse
 import collections
+import hashlib
 import json
 import os
 import time
@@ -44,6 +45,9 @@ def map_ciks(source:dict)->dict:
     for ticker in duplicates:
         route.pop(ticker,None)
     return route
+
+def git_blob_sha(data:bytes)->str:
+    return hashlib.sha1(b"blob "+str(len(data)).encode()+b"\0"+data).hexdigest()
 
 def load_scope(offset:int=0,limit:int=0)->tuple[str,list[str]]:
     master=json.loads((ROOT/"canonical_current_master_manifest.json").read_text())
@@ -98,6 +102,9 @@ def selftest():
 def run(offset:int=0,limit:int=0)->dict:
     asof,syms=load_scope(offset,limit)
     result={"schema":"XRAY_SEC_MULTISYMBOL_PIT_SHADOW_V1",
+            "master_git_blob_sha":git_blob_sha((ROOT/"canonical_current_master_manifest.json").read_bytes()),
+            "price_git_blob_sha":git_blob_sha((ROOT/"canonical_current_price_dv30.json").read_bytes()),
+            "sample_scope_sha256":hashlib.sha256(("\n".join(syms)+"\n").encode()).hexdigest(),
             "asof_et":asof,"source":"SEC_EDGAR_OFFICIAL",
             "ticker_map_timestamp":"CURRENT_ONLY_NOT_HISTORICAL_PIT",
             "sample_count":len(syms),"batch_offset":offset,"batch_limit":limit,
@@ -139,13 +146,21 @@ def run(offset:int=0,limit:int=0)->dict:
             status[sym]="UNKNOWN_SEC_TRANSPORT"
             # SEC transport failures never authorize a share-count PASS.
             reason_codes[sym]=str(exc)
+            if str(exc) in ("SEC_HTTP_403","SEC_HTTP_429"):
+                # Do not hammer SEC when blocked; no retry or bypass.
+                for unattempted in syms[i+1:]:
+                    status[unattempted]="UNKNOWN_NOT_ATTEMPTED_UPSTREAM_SEC_BLOCK"
+                    reason_codes[unattempted]="SEC_FAIR_ACCESS_STOP"
+                result["transport"]="BLOCKED_FAIR_ACCESS_STOP"
+                break
         if i+1<len(syms):
             time.sleep(0.55)
     result["statuses"]=dict(sorted(status.items()))
     result["reason_codes"]=dict(sorted(reason_codes.items()))
     result["status_counts"]=dict(sorted(collections.Counter(status.values()).items()))
     result["reason_counts"]=dict(sorted(collections.Counter(reason_codes.values()).items()))
-    result["transport"]="SEC_OFFICIAL_MULTI_REQUESTS_COMPLETE_WITH_UNKNOWN_ALLOWED"
+    if result["transport"]!="BLOCKED_FAIR_ACCESS_STOP":
+        result["transport"]="SEC_OFFICIAL_MULTI_REQUESTS_COMPLETE_WITH_UNKNOWN_ALLOWED"
     return result
 
 def main():
