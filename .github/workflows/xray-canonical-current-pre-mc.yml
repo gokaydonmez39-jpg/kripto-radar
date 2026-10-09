@@ -51,8 +51,11 @@ permissions:
   actions: write
 
 concurrency:
+  # New root dispatch/push during a long identity/price refresh must NOT
+  # terminate its in-flight exact-ASOF rebuild. At most one successor queues;
+  # commit-stage source SHA checks remain fail-closed.
   group: xray-canonical-current-pre-mc
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   pre-mc:
