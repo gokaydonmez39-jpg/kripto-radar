@@ -9,6 +9,7 @@ on:
       - "nasdaq-xray/twelve_data_history_probe.py"
       - "nasdaq-xray/qualified_history_ingress_shadow.py"
       - "nasdaq-xray/current_history_source_request.py"
+      - "nasdaq-xray/source_epoch_freshness_guard.py"
       - "nasdaq-xray/canonical_current_price_dv30.json"
       - "nasdaq-xray/canonical_current_master_manifest.json"
       - ".github/workflows/xray-twelve-history-resume.yml"
@@ -41,6 +42,8 @@ jobs:
           python-version: "3.12"
       - name: Install pinned exchange calendar and private encryption
         run: python -m pip install --disable-pip-version-check "pandas_market_calendars==5.4.0" "cryptography>=44,<47"
+      - name: Verify official Nasdaq Monday trading holiday and completed-session ET boundary
+        run: python nasdaq-xray/source_epoch_freshness_guard.py --selftest
       - name: Fail-closed synthetic Twelve 260-source and private intake tests
         run: |
           python -m py_compile nasdaq-xray/twelve_data_history_resume.py
