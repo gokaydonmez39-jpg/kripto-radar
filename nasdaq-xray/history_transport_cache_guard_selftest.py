@@ -185,8 +185,34 @@ def test_predecessor_composite_recent_gap_hidden_by_old_days_fails():
         assert not ok and detail["missing"]["ECHO"]=="COMPOSITE_RECENT_260_OR_52_WEEK_GAP",detail
 
 
+def test_zero_or_corrupt_ohlcv_fails():
+    # Safety regression: official dates alone cannot certify actual OHLCV.
+    h,l,_=fixtures()
+    h["pass_symbols"]=["A"];l["pass_symbols"]=["A"]
+    with tempfile.TemporaryDirectory() as td:
+        root=Path(td)
+        write_cache(root,"A",daily_ending(ASOF,300))
+        write_cache(root,"QQQ",daily_ending(ASOF,320))
+        p=g.cache_path(root,"A")
+        with gzip.open(p,"rt",encoding="utf-8",newline="") as fh:
+            reader=csv.DictReader(fh)
+            names=list(reader.fieldnames)
+            base=list(reader)
+        for field,bad in (("volume","0"),("close","nan"),("high","1"),
+                          ("low","1000000"),("open","-5"),("volume","infinity")):
+            rows=copy.deepcopy(base)
+            rows[-1][field]=bad
+            with gzip.open(p,"wt",encoding="utf-8",newline="") as fh:
+                writer=csv.DictWriter(fh,fieldnames=names)
+                writer.writeheader()
+                writer.writerows(rows)
+            ok,detail=g.evaluate(root,h,l,{"records":{}},require_qqq=True)
+            assert not ok and detail["missing"]["A"]=="CACHE_MISSING_OR_INVALID", (field,bad,detail)
+
+
 if __name__=="__main__":
     test_weekend_duplicate_and_invalid_bars_fail()
+    test_zero_or_corrupt_ohlcv_fails()
     test_complete_exact_asof_cache_passes()
     test_stale_qqq_fails()
     test_missing_continuity_predecessor_fails()
