@@ -1,0 +1,102 @@
+{
+  "schema": "XRAY_20261009_E2E_TRUTH_AND_CANDIDATE_LOCAL_V11",
+  "repo": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "observed_utc": "2026-10-09T07:43:52Z",
+  "authority": "HISTORICAL_CHECKPOINT_ONLY_LIVE_MAIN_AND_ACTIONS_SUPERSEDE",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "mode": "RESEARCH_ONLY_MANUAL_DECISION",
+  "initial_live_main": "63c3174ffd4b494fc0f9109fb2d8bbb848214a12",
+  "engineering_repairs": [
+    {
+      "commit": "264e28a94c1e924fb0764c4978749c581972bbe8",
+      "file": ".github/workflows/xray-e2e-production-readiness.yml",
+      "effect": "save independent source audit artifact then actual blocked release results in visible failed workflow",
+      "tested_run": 37899983638,
+      "test_result": "FAILURE_EXPECTED_ON_REAL_NO_GO"
+    },
+    {
+      "commit": "bb014a141115580c75f74557f7262fe0bd14e979",
+      "file": "nasdaq-xray/e2e_production_readiness.py",
+      "effect": "replace unconditional readiness false with exact registered R92 candidate, pointer, MC and terminal source binding",
+      "tested_run": 37900298838,
+      "test_result": "SELFTEST_PASS_POSITIVE_10_NEGATIVE"
+    },
+    {
+      "commit": "829a1eff3a1b889898d7dd3b62260b1b2f1b599d",
+      "file": "nasdaq-xray/e2e_production_readiness.py",
+      "effect": "numeric candidate registration geometry, RR_BASIC>=2.0, RR_SEVERE>=1.5, DV30>=50M, NaN/boolean rejects",
+      "tested_run": 37900414835,
+      "test_result": "SELFTEST_PASS_POSITIVE_15_NEGATIVE"
+    },
+    {
+      "commit": "545ecd19506f1e7aac7a8c5be1dc01d5c95517fa",
+      "file": ".github/workflows/xray-e2e-production-readiness.yml",
+      "effect": "readiness test no longer asserts false forever; only exact MC and candidate-local lineage allow future readiness",
+      "tested_run": 37900414835,
+      "test_result": "TESTS_SUCCESS_RELEASE_NO_GO_EXPECTED"
+    },
+    {
+      "commit": "02098c1642cc2665c7c0d8060d2eec593bcddb83",
+      "file": "nasdaq-xray/e2e_production_readiness.py",
+      "effect": "allow locally proven candidate source chain despite unrelated global coverage unknown if local legal MC policy delivery safety and source SHAs exact",
+      "tested_run": 37900585929,
+      "test_result": "SELFTEST_PASS_POSITIVE_7_NEGATIVE"
+    },
+    {
+      "commit": "5ebb418d2968a2921cbd91dc91d9ceceaade2818",
+      "file": "nasdaq-xray/e2e_production_readiness.py",
+      "effect": "same strict local/full seal on terminal readiness top-level and blob-specific provenance validation",
+      "tested_run": 37900684767,
+      "test_result": "SELFTEST_PASS_RELEASE_NO_GO_EXPECTED"
+    }
+  ],
+  "latest_e2e": {
+    "run_id": 37900684767,
+    "conclusion": "FAILURE_INTENTIONAL_RELEASE_GATE_ON_REAL_BLOCKERS",
+    "safety_selftest": "PASS",
+    "artifact_uploaded_before_failed_gate": true
+  },
+  "alpaca_live_runner_secret_check": {
+    "run_id": 37895576135,
+    "run_attempt": 2,
+    "result": "FAILURE",
+    "reason": "ALPACA_PRIVATE_API_CREDENTIALS_REQUIRED",
+    "keys": [
+      "XRAY_ALPACA_DATA_KEY_ID",
+      "XRAY_ALPACA_DATA_SECRET_KEY"
+    ],
+    "never_request_secrets_in_chat": true
+  },
+  "real_chain_state": {
+    "asof_latest_root": "2026-10-08",
+    "root": "PARTIAL_HISTORY",
+    "unknown_history_count": 231,
+    "shadow_260_daily_complete_45_of_231": true,
+    "price_pass_count": 514,
+    "price_blocked_count": 45,
+    "master_identity_unknown_count": 72,
+    "canonical_terminal_asof": "2026-10-07",
+    "canonical_terminal": "PARTIAL_UNKNOWN",
+    "last_r92_count": 0,
+    "delivery_ledger_entries": 0,
+    "primary_mc_authority_count": 0,
+    "device_delivery_receipt": false
+  },
+  "remaining_external_blockers": [
+    "Alpaca history data-only private Actions credentials absent; connected plugin does not transfer to runner",
+    "Lawful market data usage and same-asof corporate action shares classes / PIT MC C4.17 PRIMARY source not attested"
+  ],
+  "remaining_system_blockers": [
+    "root history incomplete; only shadow sample recovery 45 of 231",
+    "8 Oct terminal all official/event/MC SHA sources not bound and local setup must be rebuilt",
+    "no real registered verified research candidate; device push receipt cannot be tested on real signal"
+  ],
+  "go_no_go": "RESEARCH_PRODUCTION_NO_GO",
+  "next": "After separate data-only credentials plus vendor automated-use approval, live rerun SIP; independently approve same-asof PRIMARY MC with unchanged policy then build real technical current candidate-local provenance -> delivery receipt",
+  "claimed_completed": false
+}
