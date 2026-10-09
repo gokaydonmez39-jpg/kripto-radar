@@ -7,7 +7,8 @@ on:
   # Upstream uses immutable-main double-read and explicit workflow_dispatch.
   # Schedule remains an independent fallback; avoid duplicate workflow_run jobs.
   schedule:
-    - cron: "35 * * * 1-5"
+    - cron: "35 5-23 * * 1-5"
+    - cron: "35 0-3 * * 2-6"
   push:
     branches: [main]
     paths:
