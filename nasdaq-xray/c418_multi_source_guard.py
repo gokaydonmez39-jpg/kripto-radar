@@ -14,6 +14,7 @@ import hashlib
 import json
 import math
 import re
+import tempfile
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parent
@@ -49,6 +50,26 @@ def _number(x):
 
 def _sha(x,size=64):
     return isinstance(x,str) and bool((SHA256 if size==64 else SHA1).fullmatch(x))
+
+def _git_blob_sha(data:bytes)->str:
+    return hashlib.sha1(b"blob "+str(len(data)).encode()+bytes([0])+data).hexdigest()
+
+def canonical_price_binding(asof,ticker,claimed_sha):
+    """Accept only bytes of the actual current PRICE Git artifact and its ticker."""
+    try:
+        blob=(ROOT/"canonical_current_price_dv30.json").read_bytes()
+        price=json.loads(blob)
+        scope=price.get("pass_symbols")
+        return bool(
+            isinstance(scope,list) and all(isinstance(x,str) for x in scope)
+            and len(scope)==len(set(scope))
+            and type(price.get("pass_count")) is int
+            and len(scope)==price["pass_count"]
+            and ticker in scope and price.get("asof_et")==asof
+            and _git_blob_sha(blob)==claimed_sha
+        )
+    except (OSError, ValueError, TypeError, AttributeError):
+        return False
 
 def policy_is_frozen(p):
     return bool(
@@ -111,6 +132,8 @@ def validate(evidence, grants, policy, profile):
         or not isinstance(cik,str) or not re.fullmatch(r"\d{10}",cik)
         or not isinstance(share_class,str) or not share_class.strip()):
         return blocked(["ISSUER_TICKER_CLASS_ID_INVALID"])
+    if not canonical_price_binding(asof,ticker,evidence["price_blob_sha"]):
+        return blocked(["CANONICAL_PRICE_BLOB_ASOF_MISMATCH"])
     identity=evidence.get("identity")
     if (not isinstance(identity,dict) or identity.get("source")!="SEC_EDGAR"
         or identity.get("exchange_source")!="NASDAQ"
@@ -199,11 +222,11 @@ def validate(evidence, grants, policy, profile):
         "unknown_never_pass":True,"vendor_raw_data_exported":False,
     }
 
-def selftest(policy,profile):
+def _selftest_impl(policy,profile,test_price_sha):
     assert policy_is_frozen(policy)
     assert validate(None,None,policy,profile)["status"]=="DATA_BLOCKED"
     e={
-        "schema":SCHEMA,"asof_et":"2026-10-08","price_blob_sha":"a"*40,
+        "schema":SCHEMA,"asof_et":"2026-10-08","price_blob_sha":test_price_sha,
         "symbol":"TEST","issuer_cik":"0000123456","share_class":"CLASS_A",
         "identity":{"source":"SEC_EDGAR","exchange_source":"NASDAQ",
                     "ticker":"TEST","issuer_cik":"0000123456",
@@ -275,6 +298,21 @@ def selftest(policy,profile):
     tampered["sources"]["Massive"]["role"]="PRIMARY"
     assert "PROFILE_ROLES_TAMPERED" in validate(e,grant,policy,tampered)["reason_codes"]
     print("XRAY_C418_MULTI_SOURCE_SELFTEST=PASS_ADVISORY_POSITIVE_14_NEGATIVE_NO_PRIMARY_NO_R92")
+
+def selftest(policy,profile):
+    global ROOT
+    original=ROOT
+    with tempfile.TemporaryDirectory(prefix="xray-c418-price-sha-fixture-") as tmp:
+        try:
+            ROOT=Path(tmp)
+            blob=json.dumps({
+                "asof_et":"2026-10-08",
+                "pass_symbols":["TEST"],"pass_count":1
+            },sort_keys=True).encode()
+            (ROOT/"canonical_current_price_dv30.json").write_bytes(blob)
+            _selftest_impl(policy,profile,_git_blob_sha(blob))
+        finally:
+            ROOT=original
 
 def main():
     ap=argparse.ArgumentParser()
