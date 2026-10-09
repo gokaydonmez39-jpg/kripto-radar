@@ -17,6 +17,7 @@ on:
       - "nasdaq-xray/sec_ticker_cik_cache.json"
       - "nasdaq-xray/build_current_terminal.py"
       - "nasdaq-xray/mc_exact_source_sha_regression.py"
+      - "nasdaq-xray/mc_exact_runtime_selector_selftest.py"
       - "nasdaq-xray/delivery_prepare.py"
       - "nasdaq-xray/delivery_prepare_selftest.py"
       - "nasdaq-xray/recover_pre_mc_snapshot.py"
@@ -79,6 +80,8 @@ jobs:
         run: python nasdaq-xray/delivery_prepare_selftest.py
       - name: Require immutable exact PRICE blob at MC terminal selector
         run: python nasdaq-xray/mc_exact_source_sha_regression.py
+      - name: Execute runtime MC selector positive and negative cases
+        run: python nasdaq-xray/mc_exact_runtime_selector_selftest.py
 
       - name: Run deterministic invariants
         run: |
