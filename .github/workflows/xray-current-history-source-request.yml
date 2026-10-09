@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/current_history_source_request.py"
+      - "nasdaq-xray/free_history_source_preflight.py"
       - "nasdaq-xray/canonical_current_price_dv30.json"
       - "nasdaq-xray/canonical_current_master_manifest.json"
       - ".github/workflows/xray-current-history-source-request.yml"
@@ -31,6 +32,27 @@ jobs:
         run: |
           python -m py_compile nasdaq-xray/current_history_source_request.py
           python nasdaq-xray/current_history_source_request.py --selftest
+      - name: Validate $0 Twelve Data quota against exact current PRICE SHA (no API key or vendor calls)
+        run: |
+          python -m py_compile nasdaq-xray/free_history_source_preflight.py
+          python nasdaq-xray/free_history_source_preflight.py --selftest
+          python nasdaq-xray/free_history_source_preflight.py --out "$RUNNER_TEMP/xray_twelve_data_free_scope_preflight.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          x=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_twelve_data_free_scope_preflight.json").read_text())
+          assert x["schema"]=="XRAY_ZERO_DOLLAR_HISTORY_PROVIDER_PREFLIGHT_V1"
+          assert x["source_price_blob_sha"]==__import__("subprocess").check_output(
+              ["git","hash-object","nasdaq-xray/canonical_current_price_dv30.json"],text=True).strip()
+          assert x["scope_initial_credit_estimate"]==x["price_pass_count"]
+          assert x["scope_fits_published_daily_budget"] is True
+          assert x["universe_full_daily_refresh_fits_one_key"] is False
+          assert x["history_authoritative"] is False
+          assert x["actual_260_daily_52_week_source_proven"] is False
+          assert x["can_register_R92"] is False
+          assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
+          print("XRAY_TWELVE_BASIC_HISTORY_SCOPE_BUDGET_SHA_CHECK=PASS_NONAUTHORITY")
+          PY
       - name: Assemble current real Git scope (not market data)
         run: |
           python nasdaq-xray/current_history_source_request.py --out "${RUNNER_TEMP}/xray_current_history_source_request.json"
@@ -55,6 +77,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: xray-current-history-source-request-no-vendor-bars
-          path: ${{ runner.temp }}/xray_current_history_source_request.json
+          path: |
+            ${{ runner.temp }}/xray_current_history_source_request.json
+            ${{ runner.temp }}/xray_twelve_data_free_scope_preflight.json
           if-no-files-found: error
           retention-days: 14
