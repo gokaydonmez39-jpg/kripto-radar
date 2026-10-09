@@ -442,7 +442,15 @@ def selftest():
         assert publication_state(friday,ts(2026,10,12,4,10))=="BLOCKED_PROVIDER_EOD_PUBLICATION_WINDOW"
         assert publication_state(friday,ts(2026,10,12,4,16))=="PROVIDER_PUBLICATION_WINDOW_ELAPSED_NOT_DATA_PROOF"
         assert publication_state(friday,ts(2026,10,12,21,0))=="BLOCKED_STALE_SCOPE_REQUIRES_CURRENT_ASOF"
-        assert publication_state(smaller,ts(2026,10,9,5,15))=="PROVIDER_PUBLICATION_WINDOW_ELAPSED_NOT_DATA_PROOF"
+        # Exercise the latest actual PRICE ASOF, not a fixture pinned to the
+        # previous 8-Oct epoch. Source rollovers must not break self-tests.
+        test_day=date.fromisoformat(smaller["asof"])
+        next_valid=mcal.get_calendar("NASDAQ").valid_days(
+            start_date=(test_day+timedelta(days=1)).isoformat(),
+            end_date=(test_day+timedelta(days=15)).isoformat())[0].date()
+        valid_epoch=datetime.combine(next_valid,dtime(0,16),
+            tzinfo=ZoneInfo("America/New_York")).astimezone(timezone.utc).timestamp()
+        assert publication_state(smaller,valid_epoch)=="PROVIDER_PUBLICATION_WINDOW_ELAPSED_NOT_DATA_PROOF"
         cp=fresh(smaller)
         cp["bars"][symbol]=good
         cp["requests_total"]=1
@@ -497,14 +505,13 @@ def selftest():
             assert deny["vendor_requests_this_run"]==0 and not stub_calls
             # Test rights-granted Friday ASOF against Saturday timestamp:
             # latest session drift AND next-trading-day publication embargo.
-            stale_clock=ts(2026,10,10,12,0)
+            stale_clock=valid_epoch+3*86400
             stale=run(a1,env=fake_env,transport=vendor_fake,
                       now=lambda:stale_clock,sleep=lambda _:None)
             assert stale["vendor_requests_this_run"]==0, "STALE_ASOF_VENDOR_CALL_ACCEPTED"
             assert stale["status"]=="BLOCKED_STALE_SCOPE_REQUIRES_CURRENT_ASOF"
             # This fixture is after 2026-10-08 EOD publication (Friday
             # 2026-10-09 00:15 ET) but BEFORE 2026-10-09 market close.
-            valid_epoch=datetime(2026,10,9,5,15,tzinfo=timezone.utc).timestamp()
             one=run(a1,env=fake_env,transport=vendor_fake,
                     now=lambda:valid_epoch,sleep=lambda _:None)
             assert one["vendor_requests_this_run"]==1 and one["queried_symbols"]==1
