@@ -227,9 +227,46 @@ def rotate_sample(symbols,limit,day_ordinal=None):
     start=(n*limit)%len(ordered)
     return [ordered[(start+i)%len(ordered)] for i in range(min(limit,len(ordered)))]
 
-def produce(limit=3,http_get=http,runner=lookup):
+def source_epoch_blocked(reason: str)->dict:
+    """Do not fetch stale mixed-ASOF sources. Explicit zero-call telemetry.
+
+    A normal asynchronous MASTER/MC/HISTORY/TERMINAL revision is PENDING,
+    not a programming crash, not success and emphatically not an AL.
+    """
+    if reason not in ("SOURCE_DRIFT:MASTER","SOURCE_DRIFT:HISTORY",
+                      "SOURCE_DRIFT:EVENT","SOURCE_DRIFT:TERMINAL"):
+        raise ValueError("UNKNOWN_SOURCE_EPOCH_DRIFT")
+    source_names={"MASTER":"canonical_current_master_manifest.json",
+                  "HISTORY":"canonical_current_history.json",
+                  "EVENT":"canonical_current_event_state.json",
+                  "TERMINAL":"canonical_current_terminal.json"}
+    sha={k:blob(ROOT/filename) if (ROOT/filename).is_file() else None
+         for k,filename in source_names.items()}
+    sha["MC"]=None
+    lanes={k:{"scope_count":0,"scope_unverified":True,
+              "sample_attempted":0,"status_counts":{},"provider_attempts":{},
+              "reason":"SOURCE_EPOCH_DRIFT_BLOCKED"} for k in ROUTES}
+    return {"schema":SCHEMA,"asof_et":None,"policy":"C4.17","control":"C4.27",
+            "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
+            "research_only":True,"alpha_authority":False,
+            "mc_pass_created":False,"g9_pass":False,"account_pass":False,
+            "canonical_status_changed":False,"raw_market_data_persisted":False,
+            "provider_keys_present":{"MASSIVE":bool(os.getenv("XRAY_MASSIVE_API_KEY","")),
+                                     "BQ":bool(os.getenv("XRAY_BQ_API_KEY",""))},
+            "source_epoch_exact":False,"source_epoch_block_reason":reason,
+            "source_blobs":sha,"lanes":lanes,"invocation_counts":{},
+            "result":"BLOCKED_SOURCE_EPOCH_NO_CALLS_NO_ALPHA"}
+
+
+def produce(limit=3,http_get=http,runner=lookup,inputs_fn=inputs):
     if not isinstance(limit,int) or not 1<=limit<=3:raise ValueError("MAX_3_PER_LANE")
-    asof,scopes,sha=inputs()
+    try:
+        asof,scopes,sha=inputs_fn()
+    except ValueError as e:
+        msg=str(e)
+        if msg.startswith("SOURCE_DRIFT:"):
+            return source_epoch_blocked(msg)
+        raise
     keys={"MASSIVE":os.getenv("XRAY_MASSIVE_API_KEY","").strip(),
           "BQ":os.getenv("XRAY_BQ_API_KEY","").strip()}
     counters=collections.Counter()
@@ -290,6 +327,25 @@ def selftest():
     assert rotate_sample(["A","B","C","D","E","F"],2,1)==["C","D"]
     assert rotate_sample(["A","B","C","D","E","F"],2,2)==["E","F"]
     assert rotate_sample([],2,0)==[]
+    def stale_inputs():
+        raise ValueError("SOURCE_DRIFT:MASTER")
+    blocked=produce(1,inputs_fn=stale_inputs,
+                    runner=lambda *a: (_ for _ in ()).throw(AssertionError("NETWORK_ON_DRIFT")))
+    assert blocked["result"]=="BLOCKED_SOURCE_EPOCH_NO_CALLS_NO_ALPHA"
+    assert blocked["source_epoch_exact"] is False
+    assert set(blocked["source_blobs"])=={"MASTER","MC","HISTORY","EVENT","TERMINAL"}
+    assert set(blocked["lanes"])=={"MASTER","MC","EVENT"}
+    assert all(v["sample_attempted"]==0 and v["scope_unverified"] is True
+               for v in blocked["lanes"].values())
+    assert blocked["invocation_counts"]=={} and blocked["alpha_authority"] is False
+    for unsafe in ("HISTORY_MC_BLOB_DRIFT","FAKE_DRIFT"):
+        def bogus(c=unsafe):
+            raise ValueError(c)
+        try:
+            produce(1,inputs_fn=bogus)
+        except ValueError:
+            continue
+        raise AssertionError("CORRUPTION_OR_UNKNOWN_ERROR_WAS_SILENCED")
     assert _guard_invalid_url()
     print("XRAY_MULTI_PROVIDER_FAIL_CLOSED_SELFTEST=PASS")
 
