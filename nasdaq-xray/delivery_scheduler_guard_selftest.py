@@ -27,6 +27,43 @@ assert not ok and why=="ROOT_RECOVERY_ACTIVE",(ok,why)
 ok,why=evaluate_readiness(NOW,CONTRACT,root_kick,final_kick,root,final+[run(status="in_progress",conclusion=None)])
 assert not ok and why=="FINAL_RECOVERY_ACTIVE",(ok,why)
 
+# The old implementation blocked on any queued job forever, even after a
+# newer successful recovery. Prove both the recoverable and unrecovered paths.
+root_old_zombie=run(status="queued",conclusion=None,
+                    created="2026-10-05T18:00:00Z",updated="2026-10-05T18:00:00Z")
+final_old_zombie=run(status="in_progress",conclusion=None,
+                     created="2026-10-05T18:00:00Z",updated="2026-10-05T18:00:00Z")
+ok,why=evaluate_readiness(NOW,CONTRACT,root_kick,final_kick,
+                          root+[root_old_zombie],final)
+assert ok and why=="PASS",(ok,why)
+ok,why=evaluate_readiness(NOW,CONTRACT,root_kick,final_kick,
+                          root,final+[final_old_zombie])
+assert ok and why=="PASS",(ok,why)
+root_new_orphan=run(status="queued",conclusion=None,
+                    created="2026-10-05T19:00:00Z",updated="2026-10-05T19:00:00Z")
+ok,why=evaluate_readiness(NOW,CONTRACT,root_kick,final_kick,
+                          root+[root_new_orphan],final)
+assert not ok and why=="ROOT_ORPHAN_UNRECOVERED",(ok,why)
+final_new_orphan=run(status="in_progress",conclusion=None,
+                     created="2026-10-05T19:00:00Z",updated="2026-10-05T19:00:00Z")
+ok,why=evaluate_readiness(NOW,CONTRACT,root_kick,final_kick,
+                          root,final+[final_new_orphan])
+assert not ok and why=="FINAL_ORPHAN_UNRECOVERED",(ok,why)
+bad_status=run(status="unexpected",conclusion=None)
+ok,why=evaluate_readiness(NOW,CONTRACT,root_kick,final_kick,
+                          root+[bad_status],final)
+assert not ok and why=="ROOT_UNKNOWN_ACTIONS_RUN_STATUS",(ok,why)
+bad_clock=run(status="queued",conclusion=None,created="NAIVE",
+              updated="2026-10-05T20:50:00Z")
+ok,why=evaluate_readiness(NOW,CONTRACT,root_kick,final_kick,
+                          root+[bad_clock],final)
+assert not ok and why=="ROOT_ACTION_RUN_TIME_INVALID",(ok,why)
+future=run(status="queued",conclusion=None,
+           created="2026-10-05T21:10:00Z",updated="2026-10-05T21:10:00Z")
+ok,why=evaluate_readiness(NOW,CONTRACT,root_kick,final_kick,
+                          root+[future],final)
+assert not ok and why=="ROOT_ACTION_RUN_FROM_FUTURE",(ok,why)
+
 late_kick={"requested_at_utc":"2026-10-05T20:55:00Z"}
 ok,why=evaluate_readiness(NOW,CONTRACT,late_kick,final_kick,root,final)
 assert not ok and why=="ROOT_KICK_SUCCESS_NOT_OBSERVED",(ok,why)
