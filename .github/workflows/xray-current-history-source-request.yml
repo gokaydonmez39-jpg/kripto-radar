@@ -1,4 +1,4 @@
-name: XRAY Current PRICE 514 History Source Request (Research Only)
+name: XRAY Current PRICE Scope History Source Request (Research Only)
 on:
   push:
     branches: [main]
@@ -75,7 +75,8 @@ jobs:
           from pathlib import Path
           x=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_private_history_intake_shadow.json").read_text())
           assert x["schema"]=="XRAY_PRIVATE_HISTORY_514_TRANSPORT_INTAKE_SHADOW_V1"
-          assert x["price_pass_count"]==514
+          price=json.loads(Path("nasdaq-xray/canonical_current_price_dv30.json").read_text())
+          assert x["price_pass_count"]==price["pass_count"]
           assert x["source_price_blob_sha"]==subprocess.check_output(
               ["git","hash-object","nasdaq-xray/canonical_current_price_dv30.json"],
               text=True).strip()
@@ -88,7 +89,7 @@ jobs:
               assert x[k] is False,k
           assert x["canonical_history_pass_created"]==0 and x["primary_mc_pass_created"]==0
           assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
-          print("XRAY_PRIVATE_514_HISTORY_INTAKE_HEAD_BOUND=PASS_MISSING_VENDOR_DATA_BLOCKED")
+          print("XRAY_PRIVATE_CURRENT_SCOPE_HISTORY_INTAKE_HEAD_BOUND=PASS_MISSING_VENDOR_DATA_BLOCKED")
           PY
       - name: Validate free Massive split event ASOF bounds without lookahead or vendor fetch
         run: |
@@ -123,7 +124,8 @@ jobs:
           from pathlib import Path
           x=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_massive_grouped_scope.json").read_text())
           assert x["schema"]=="XRAY_MASSIVE_GROUPED_EOD_SHADOW_V1"
-          assert x["calls"]<=1 and x["scope_count"]==514
+          price=json.loads(Path("nasdaq-xray/canonical_current_price_dv30.json").read_text())
+          assert x["calls"]<=1 and x["scope_count"]==price["pass_count"]
           assert x["HISTORY_PASS"] is False and x["MC_PASS"] is False and x["R92_AL"] is False
           assert x["source_independent_of_RALLIES"] is False
           assert x["vendor_bars_persisted"] is False
@@ -147,7 +149,7 @@ jobs:
           assert doc["canonical_history_pass_created"]==0
           assert doc["can_register_R92"] is False
           assert doc["execution"]=="NONE" and doc["real_money"]=="NO-GO"
-          print("XRAY_HISTORY_CURRENT_514_REQUEST_SAFETY=PASS")
+          print("XRAY_HISTORY_CURRENT_SCOPE_REQUEST_SAFETY=PASS")
           PY
       - name: Persist only public tickers and official calendar schedule
         uses: actions/upload-artifact@v4

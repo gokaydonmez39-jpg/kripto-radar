@@ -2,6 +2,8 @@
 """Twelve Data Basic EOD research sample; never source/AL authority.
 
 One AAPL 320-bar query if XRAY_TWELVE_DATA_API_KEY is configured.
+Request unadjusted as-traded bars, not default split-adjusted bars that may
+retroactively encode future splits. Corporate-action/PIT rights remain UNPROVEN.
 Only aggregates emitted; vendor data and credentials are never stored.
 """
 from __future__ import annotations
@@ -17,6 +19,18 @@ from current_history_source_request import expected_dates
 ROOT=Path(__file__).resolve().parent
 SCHEMA="XRAY_TWELVE_EOD_SINGLE_SAMPLE_V1"
 SYMBOL="AAPL"
+
+
+def eod_query(asof:str)->str:
+    """Unadjusted historical EOD request; credential stays in HTTP header.
+
+    Twelve Data documents default adjustment 'splits'; for an as-of research
+    sample this must NOT silently incorporate a future split. Unadjusted source
+    bars alone do not prove a lawful complete PIT-adjustment chain or DV30.
+    """
+    return urllib.parse.urlencode({"symbol":SYMBOL,"interval":"1day",
+                                   "outputsize":320,"end_date":asof,
+                                   "adjust":"none"})
 
 
 def classify(data:dict,asof:str)->dict:
@@ -57,8 +71,7 @@ def probe(key:str,asof:str,fetch=None)->dict:
     out["api_calls"]=1
     try:
         if fetch is None:
-            params=urllib.parse.urlencode({"symbol":SYMBOL,"interval":"1day",
-                     "outputsize":320,"end_date":asof,"adjust":"splits"})
+            params=eod_query(asof)
             req=urllib.request.Request("https://api.twelvedata.com/time_series?"+params,
                    headers={"Authorization":"apikey "+key,"Accept":"application/json"})
             with urllib.request.urlopen(req,timeout=14) as resp:
@@ -80,6 +93,10 @@ def probe(key:str,asof:str,fetch=None)->dict:
 def selftest()->None:
     asof="2026-10-08"
     daily,weekly=expected_dates(asof)
+    q=urllib.parse.parse_qs(eod_query(asof),strict_parsing=True)
+    assert q=={"symbol":[SYMBOL],"interval":["1day"],"outputsize":["320"],
+               "end_date":[asof],"adjust":["none"]}, "PIT_SPLIT_LOOKAHEAD_REQUEST"
+    assert "apikey" not in eod_query(asof).lower(), "KEY_IN_VENDOR_QUERY"
     fixture={"status":"ok","meta":{"symbol":"AAPL","interval":"1day",
              "currency":"USD","mic_code":"XNAS"},
              "values":[{"datetime":d,"open":"10","high":"11",
@@ -102,7 +119,7 @@ def selftest()->None:
         assert probe("test",asof,lambda d=d:d)["status"]=="BLOCKED_VENDOR_RESPONSE_OR_ACCESS"
     truncated=dict(fixture,values=fixture["values"][:259])
     assert probe("test",asof,lambda:truncated)["status"]=="BLOCKED_HISTORY_SAMPLE_INCOMPLETE"
-    print("XRAY_TWELVE_EOD_SAMPLE_SELFTEST=PASS_260_52_AND_7_NEGATIVES_NO_ALPHA")
+    print("XRAY_TWELVE_UNADJUSTED_PIT_REQUEST_SELFTEST=PASS_260_52_AND_7_NEGATIVES_NO_ALPHA")
 
 
 def main()->None:
