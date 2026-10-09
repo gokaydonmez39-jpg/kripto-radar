@@ -37,7 +37,16 @@ jobs:
           from pathlib import Path
           j=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_mc_request_rebind_evidence.json").read_text())
           assert j["status"]=="CURRENT_REQUEST_EVIDENCE_READY_NO_MC_MEASUREMENT"
-          assert j["input_count"] if False else True
+          assert isinstance(j["input_pass_symbols"],list)
+          assert j["input_pass_symbols"]==sorted(set(j["input_pass_symbols"]))
+          assert len(j["input_pass_symbols"])==j["input_pass_count"]
+          assert j["input_unknown_count"]==0
+          assert j["input_blocked_count"]>=0
+          assert j["resolver_role"]=="FULL_SCOPE_MC_HANDOFF_AUTHORITY"
+          assert j["settlement_status"]=="PASS"
+          assert j["policy_version"]=="C4.17"
+          assert j["input_blob_sha"]==j["input_blob_sha"].lower()
+          assert len(j["input_blob_sha"])==40
           assert j["can_register_R92"] is False
           assert j["primary_mc_pass_created"]==0 and j["candidate_created"] is False
           assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
