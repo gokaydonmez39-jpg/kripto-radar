@@ -40,6 +40,7 @@ on:
       - "nasdaq-xray/build_resolver_full_scope_handoff.py"
       - "nasdaq-xray/recover_pre_mc_snapshot.py"
       - "nasdaq-xray/pre_mc_identity_replay_session_guard.py"
+      - "nasdaq-xray/pre_mc_noop_relay_selftest.py"
       - "nasdaq-xray/github_native_stage_relay.py"
       - "nasdaq-xray/canonical_resolver_bridge_*.json"
       - "nasdaq-xray/chatgpt_compiled_policy_v3.json"
@@ -155,6 +156,8 @@ jobs:
         run: python nasdaq-xray/nasdaq_screener_automation_policy_selftest.py
       - name: Exact SEC proof full-artifact versus listed-subset scope negative regression
         run: python nasdaq-xray/pre_mc_sec_scope_selftest.py
+      - name: Prevent frozen Pre-MC no-op from repeated Post-MC MC-release failures
+        run: python nasdaq-xray/pre_mc_noop_relay_selftest.py
       - name: Verify current-directory PIT eligibility regressions
         run: python nasdaq-xray/pre_mc_identity_replay_session_guard.py --selftest
       - name: Completed-session epoch rollover guard
