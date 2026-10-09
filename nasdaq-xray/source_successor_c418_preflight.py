@@ -17,6 +17,14 @@ POLICY=ROOT/"source_successor_c418_proposal.json"
 SCHEMA="XRAY_SOURCE_SUCCESSOR_POLICY_PROPOSAL_V1"
 CANARY="C4.18-SOURCE-SUCCESSOR-PROPOSAL"
 REQUIRED_SOURCE_NAMES={"Bigdata","Massive","SEC_EDGAR","NASDAQ","Alpaca","Yahoo_AKShare_Eastmoney"}
+SOURCE_ROLES={
+    "Bigdata":("EXISTING_PRIMARY","BLOCKED"),
+    "Massive":("ALTERNATIVE_CANDIDATE","BLOCKED"),
+    "SEC_EDGAR":("OFFICIAL_FILING_INPUT","EVIDENCE_ONLY"),
+    "NASDAQ":("EXCHANGE_IDENTITY_REFERENCE","EVIDENCE_ONLY"),
+    "Alpaca":("INTERACTIVE_HISTORY_DIAGNOSTIC","BLOCKED"),
+    "Yahoo_AKShare_Eastmoney":("PROVIDER_SHADOW","BLOCKED"),
+}
 REQUIRED={ 
     "PROVIDER_SIGNED_NONDISPLAY_LICENSE_FOR_UNATTENDED_GITHUB_RUNNER",
     "LICENSE_HAS_PRICE_DERIVATION_INTERNAL_STORAGE_RETENTION_AND_OUTPUT_SCOPE",
@@ -63,6 +71,15 @@ def inspect(p):
     names=[row.get("name") for row in s if isinstance(row,dict)] if isinstance(s,list) else []
     require(len(names)==len(REQUIRED_SOURCE_NAMES) and set(names)==REQUIRED_SOURCE_NAMES,
             "SOURCE_UNIVERSE_OR_DUPLICATE_INVALID")
+    if isinstance(s,list):
+        for source in s:
+            if not isinstance(source,dict) or source.get("name") not in SOURCE_ROLES:
+                require(False,"UNRECOGNIZED_SOURCE_ROLE")
+                continue
+            expected_role,expected_promotion=SOURCE_ROLES[source["name"]]
+            require(source.get("role")==expected_role and
+                    source.get("promotion")==expected_promotion,
+                    "UNAUTHORIZED_SOURCE_ROLE_OR_PROMOTION:"+source["name"])
     require(set(p.get("approval_required_for_activation") or [])==REQUIRED
             and len(p.get("approval_required_for_activation") or [])==len(REQUIRED),
             "ACTIVATION_EVIDENCE_CLAUSES_DRIFT")
