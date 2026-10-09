@@ -1,0 +1,158 @@
+{
+  "schema": "XRAY_C418_STRICT_DISPATCH_AND_POLICY_ROLE_CONTINUATION_V27",
+  "observed_at_utc": "2026-10-09",
+  "precedence": "LIVE_GITHUB_MAIN_AND_ACTIONS_SUPERSEDE_CHECKPOINT",
+  "repo": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "observed_source_head": "7f7783abab2f39bc59701ae0b8a7a3987096a6f1",
+  "predecessor_checkpoint": "nasdaq-xray/research/continuation_checkpoint_20261009_c418_231_measurement_v26.json",
+  "user_authorization": "ALTERNATIVE_SOURCE_RESEARCH_AND_VERSIONED_POLICY_DESIGN_GRANTED",
+  "authorization_limits": "USER_PERMISSION_IS_NOT_VENDOR_NONDISPLAY_LICENSE;NO_NEW_PAYMENT_NO_REAL_MONEY",
+  "policy_current": "C4.17",
+  "policy_successor": "C4.18-SOURCE-SUCCESSOR-PROPOSAL",
+  "control": "C4.27",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "mode": "RESEARCH_ONLY_MANUAL_DECISION",
+  "unknown_never_pass": true,
+  "production_go": false,
+  "alpha_thresholds_changed": false,
+  "evidence": [
+    {
+      "kind": "GITHUB_SOURCE",
+      "path": "nasdaq-xray/alpaca_strict_daily_shadow_v2.py",
+      "commit": "65be16628df36a2d5091c7c4a70acd7a3af388da",
+      "status": "GUARDED_SOURCE_ENTRYPOINT_CREATED"
+    },
+    {
+      "kind": "GITHUB_WORKFLOW",
+      "path": ".github/workflows/xray-alpaca-free-sip-shadow-proof.yml",
+      "commit": "19c0988a54700e51e932bcab75328c9cf35ebf94",
+      "status": "MAIN_SOURCE_CALL_ROUTED_TO_OFFICIAL_30_DISPATCH"
+    },
+    {
+      "kind": "GITHUB_SELFTEST",
+      "path": "nasdaq-xray/alpaca_root_history_exact_260_selftest.py",
+      "commit": "06972d956cc6b8838b0892c2cf5bf4fc47cb1ac4",
+      "status": "REGRESSION_ASSERTS_GUARDED_ENTRYPOINT"
+    },
+    {
+      "kind": "GITHUB_SOURCE",
+      "path": "nasdaq-xray/alpaca_root_rescue_strict_dispatch_v2.py",
+      "commit": "96667b718ac1dd702aeaf251f17bbf0efd0b979e",
+      "status": "ROOT_SHADOW_ENTRYPOINT_CREATED"
+    },
+    {
+      "kind": "GITHUB_WORKFLOW",
+      "path": ".github/workflows/xray-alpaca-free-sip-shadow-proof.yml",
+      "commit": "6a37d81f47961616048d4d0ba9007261cf4ff5f0",
+      "status": "ROOT_SOURCE_CALL_ROUTED_TO_GUARDED_DISPATCH"
+    },
+    {
+      "kind": "GITHUB_ACTIONS",
+      "run": 37966488459,
+      "status": "OVERALL_FAIL_CLOSED_NO_PRIVATE_ALPACA_CREDENTIALS",
+      "checks": [
+        "OFFICIAL_30_PREFLIGHT_PASS",
+        "ROOT_STRICT_DISPATCH_SELFTEST_PASS",
+        "DAILY_STRICT_DISPATCH_SELFTEST_PASS",
+        "260_OFFICIAL_SESSIONS_REGRESSION_PASS"
+      ],
+      "note": "OVERALL FAILURE IS NOT A SOURCE PASS"
+    },
+    {
+      "kind": "GITHUB_NEGATIVE",
+      "run": 37966673983,
+      "status": "EXPECTED_FAIL",
+      "root_cause": "C418_SOURCE_PROMOTION_UNTRUSTED_VALUE_ACCEPTED"
+    },
+    {
+      "kind": "GITHUB_FIX",
+      "path": "nasdaq-xray/source_successor_c418_preflight.py",
+      "commit": "7f7783abab2f39bc59701ae0b8a7a3987096a6f1",
+      "status": "SOURCE_NAMES_AND_ROLES_AND_PROMOTION_ALLOWLIST_LOCKED"
+    },
+    {
+      "kind": "GITHUB_ACTIONS",
+      "run": 37966733615,
+      "status": "SUCCESS",
+      "checks": [
+        "C418_NEGATIVE_SOURCE_PROMOTION_REJECTED",
+        "C417_UNCHANGED",
+        "NO_PRIMARY_CREATED",
+        "NO_R92_CREATED"
+      ]
+    }
+  ],
+  "root_history_research_shadow": {
+    "asof_et": "2026-10-08",
+    "source": "CONNECTED_ALPACA_SIP_INTERACTIVE_ONLY",
+    "symbols": 231,
+    "at_least_260_rows_asof": 90,
+    "below_260_rows_asof": 136,
+    "no_asof": 5,
+    "full_260_52_official_proof": false,
+    "canonical_history_pass_created": 0
+  },
+  "primary": {
+    "Bigdata_Payg_credits": 0,
+    "Bigdata_outOfCredits": true,
+    "current_same_asof_mc_primary_pass": 0,
+    "Massive_individuals_non_display_rights": "NOT_GRANTED_BY_GENERAL_INDIVIDUAL_MARKET_DATA_TERMS",
+    "Massive_business_source": "https://massive.com/legal/businesses-terms-of-service",
+    "Massive_business_order_form_and_third_party_entitlement": "NOT_OBTAINED",
+    "Massive_market_data_source": "https://www.massive.com/legal/market-data-terms-of-service",
+    "source_grant_received": false,
+    "C418_activated": false
+  },
+  "official_current": {
+    "root_asof": "2026-10-08",
+    "history_unknown": 231,
+    "terminal_asof": "2026-10-07",
+    "terminal_status": "PARTIAL",
+    "r92_candidates": 0,
+    "github_delivery_ledger_entries": 0,
+    "device_receipt": false,
+    "comparable_policy_sessions": 0,
+    "calibration_target": 60
+  },
+  "remaining": [
+    {
+      "priority": "P0",
+      "id": "C418_LICENSE_AND_PRIMARY",
+      "next": "OBTAIN_ACTUAL_PROVIDER_SCOPE_FOR_UNATTENDED_NONDISPLAY_AND_DERIVED_SIGNAL;VERIFY_ZERO/PRICE;C4.18_APPROVAL_AND_BLOB_BOUND_ACTIVATION;NO_UNLICENSED_AUTO_PROMOTION"
+    },
+    {
+      "priority": "P0",
+      "id": "HISTORY_231",
+      "next": "PIT_LICENSED_PROVIDER_SCOPE_AND_COMPLETE_260_OFFICIAL_SESSIONS_52_WEEKLY_CORPORATE_ACTION_CUSIP"
+    },
+    {
+      "priority": "P0",
+      "id": "LEGACY_ALPACA_DIRECT_CALL",
+      "next": "LEGACY_FUNCTION_STILL_ACCEPTS_ARBITRARY_SORTED_DATES;PRODUCTION_WORKFLOW_NOW_USES_GUARDED_V2;DIRECT_CODE_UPDATE_WAS_BLOCKED;DO_NOT_USE_LEGACY_ENTRYPOINT"
+    },
+    {
+      "priority": "P0",
+      "id": "CURRENT_SAME_ASOF_CHAIN",
+      "next": "FRESH_SOURCE_BOUND_MC_TO_FINAL_AFTER_ABOVE_GATES"
+    },
+    {
+      "priority": "P1",
+      "id": "REAL_R92_NOTIFICATION",
+      "next": "NO_REAL_REGISTERED_R92;DISTINGUISH_SUCCESSFUL_NOOP_FROM_DEVICE_RECEIPT"
+    },
+    {
+      "priority": "P2",
+      "id": "FORWARD_60_SESSION",
+      "next": "PROSPECTIVE_POINT_IN_TIME_SOURCE_EXACT_2_TO_8_SESSION_PER_SETUP_COSTS"
+    }
+  ],
+  "active_automations_count": 5,
+  "secrets_committed": false,
+  "raw_vendor_bars_committed": false,
+  "automations_created": 0,
+  "paid_service_enabled": false,
+  "safety_note": "GUARDED_DISPATCH_SELFTEST_PASS_IS_NOT_GITHUB_RUNNER_LIVE_DATA_SUCCESS_AND_NOT_ROOT_UNKNOWN_RESOLUTION",
+  "status": "CONTINUATION_INCOMPLETE_PRODUCTION_FAIL_CLOSED"
+}
