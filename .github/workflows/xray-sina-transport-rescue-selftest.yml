@@ -1,0 +1,43 @@
+name: XRAY Sina Bounded Transport Rescue Selftest
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/sina_transport_rescue.py"
+      - "nasdaq-xray/sina_stage.py"
+      - ".github/workflows/xray-sina-transport-rescue-selftest.yml"
+permissions:
+  contents: read
+concurrency:
+  group: xray-sina-bounded-transport-rescue-selftest
+  cancel-in-progress: true
+jobs:
+  fail-closed-rescue:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile transport rescue and actual integration
+        run: |
+          python -m py_compile nasdaq-xray/sina_transport_rescue.py nasdaq-xray/sina_stage.py
+      - name: Negative-positive finite controlled recovery test
+        run: |
+          python nasdaq-xray/sina_transport_rescue.py
+      - name: Confirm executed Sina integration retains C4.17 hard gates
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          x=Path("nasdaq-xray/sina_stage.py").read_text()
+          assert "from sina_transport_rescue import choose as choose_transport_rescue" in x
+          assert "transport_rescue=choose_transport_rescue(state)" in x
+          assert "for s in retry+transport_rescue+new:" in x
+          assert 'HARD_HISTORY=260' in x
+          assert 'HARD_DV30=50_000_000.0' in x
+          assert 'HARD_PRICE=5.0' in x
+          assert 'status="UNKNOWN_RETRY_EXHAUSTED"' in x
+          print("XRAY_SINA_RESCUE_POLICY_INVARIANTS=PASS_UNKNOWN_NEVER_PROMOTED")
+          PY
