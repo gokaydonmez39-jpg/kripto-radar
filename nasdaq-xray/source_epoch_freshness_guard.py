@@ -81,6 +81,16 @@ def selftest():
     assert last_complete_session(late)=="2026-10-09"
     assert last_complete_session(before_close)=="2026-10-08"
     assert last_complete_session(saturday)=="2026-10-09"
+    # U.S. stock market trades Columbus Day Monday 12 October 2026.
+    # Turkey midnight / UTC calendar rollover must NOT advance the ASOF.
+    sunday_et_monday_utc=dt.datetime(2026,10,12,3,0,tzinfo=dt.timezone.utc)
+    monday_before_open=dt.datetime(2026,10,12,13,0,tzinfo=dt.timezone.utc)
+    monday_before_close=dt.datetime(2026,10,12,19,59,tzinfo=dt.timezone.utc)
+    monday_buffer_edge=dt.datetime(2026,10,12,20,29,tzinfo=dt.timezone.utc)
+    monday_settled=dt.datetime(2026,10,12,20,30,tzinfo=dt.timezone.utc)
+    for instant in (sunday_et_monday_utc,monday_before_open,monday_before_close,monday_buffer_edge):
+        assert last_complete_session(instant)=="2026-10-09",("PREMATURE_MONDAY_ASOF",instant)
+    assert last_complete_session(monday_settled)=="2026-10-12","MONDAY_MARKET_OPEN_NOT_RECOGNIZED"
     o=audit(price,master,terminal,late)
     assert o["session_lag"]=={"PRICE":1,"MASTER":1,"TERMINAL":2}
     assert not o["freshness_ready"]
@@ -93,7 +103,7 @@ def selftest():
     try:last_complete_session(dt.datetime(2026,10,9,21,0))
     except ValueError:pass
     else:raise AssertionError("NAIVE_TIME_NOT_BLOCKED")
-    print("XRAY_NASDAQ_SESSION_FRESHNESS_SELFTEST=PASS_9OCT_POST_CLOSE_PRE_CLOSE_WEEKEND_STALE_AND_FALSE_GO")
+    print("XRAY_NASDAQ_SESSION_FRESHNESS_SELFTEST=PASS_9OCT_WEEKEND_12OCT_MARKET_OPEN_ET_30MIN_AND_FALSE_GO")
 
 
 def main():
