@@ -181,9 +181,27 @@ def save(cp,crypto,s,path):
     tmp=dest.with_name(dest.name+".pending")
     tmp.write_bytes(encoded);tmp.chmod(0o600);os.replace(tmp,dest)
 
+class VendorNotEntitled(ValueError):
+    """Provider explicitly did not grant this session's data on the plan."""
+
+def decode_provider_body(raw):
+    """Recognize account-level denial without persisting or logging vendor text."""
+    if isinstance(raw,bytes) and b"NOT_ENTITLED" in raw[:1024].upper():
+        raise VendorNotEntitled("PROVIDER_PLAN_NOT_ENTITLED")
+    parsed=json.loads(raw)
+    if isinstance(parsed,dict):
+        status=str(parsed.get("status") or "")
+        error_text=str(parsed.get("error") or "")[:300]
+        if "NOT_ENTITLED" in (status+" "+error_text).upper():
+            raise VendorNotEntitled("PROVIDER_PLAN_NOT_ENTITLED")
+    return parsed
+
 def read_day(payload,day,targets):
+    if isinstance(payload,dict) and "NOT_ENTITLED" in (
+        str(payload.get("status") or "")+" "+str(payload.get("error") or "")[:300]).upper():
+        raise VendorNotEntitled("PROVIDER_PLAN_NOT_ENTITLED")
     if not isinstance(payload,dict) or payload.get("status")!="OK" or payload.get("adjusted") is not False:
-        raise ValueError("VENDOR_RESPONSE_NOT_SPLIT_ADJUSTED")
+        raise ValueError("VENDOR_RESPONSE_NOT_UNADJUSTED")
     rows=payload.get("results")
     if not isinstance(rows,list) or not rows or len(rows)>30000:raise ValueError("UNBOUNDED_VENDOR_ROWS")
     if type(payload.get("resultsCount")) is not int or payload["resultsCount"]!=len(rows):
@@ -217,7 +235,7 @@ def fetch(day,key):
     with urllib.request.urlopen(request,timeout=24) as f:
         raw=f.read(MAX_BODY_BYTES+1)
     if len(raw)>MAX_BODY_BYTES:raise ValueError("VENDOR_RESPONSE_TOO_LARGE")
-    return json.loads(raw)
+    return decode_provider_body(raw)
 
 def telemetry(cp,s,status,request_count):
     n=len(cp["dates"])
@@ -237,6 +255,8 @@ def telemetry(cp,s,status,request_count):
 
 def safe_vendor_block_reason(error):
     # Return ONLY stable codes; vendor exception text may contain credentials.
+    if isinstance(error,VendorNotEntitled):
+        return "BLOCKED_PROVIDER_PLAN_NOT_ENTITLED"
     if isinstance(error,urllib.error.HTTPError):
         if error.code==429:return "BLOCKED_HTTP_429_FREE_TIER_RATE_LIMIT"
         if error.code in (401,402,403):return "BLOCKED_HTTP_VENDOR_AUTH_OR_PLAN"
@@ -363,6 +383,15 @@ def selftest():
          "XRAY_MASSIVE_LICENSE_EVIDENCE_SHA256":"f"*64}
     assert allowed(env)
     assert not allowed({**env,"XRAY_MASSIVE_LICENSE_EVIDENCE_SHA256":"NOT_A_DIGEST"})
+    for denial in (
+        b"Warning [NOT_ENTITLED]: Data not included",
+        b'{"status":"NOT_ENTITLED","results":[]}',
+        b'{"status":"ERROR","error":"NOT_ENTITLED"}'):
+        try:decode_provider_body(denial)
+        except VendorNotEntitled as e:
+            assert safe_vendor_block_reason(e)=="BLOCKED_PROVIDER_PLAN_NOT_ENTITLED"
+        else:raise AssertionError("ACCOUNT_DENIAL_WAS_ACCEPTED")
+    assert safe_vendor_block_reason(VendorNotEntitled("safe"))=="BLOCKED_PROVIDER_PLAN_NOT_ENTITLED"
     assert safe_vendor_block_reason(urllib.error.HTTPError(
         "https://example.invalid/?token=NEVER_PRINT",429,"secret",None,None)
         )=="BLOCKED_HTTP_429_FREE_TIER_RATE_LIMIT"
