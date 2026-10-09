@@ -1,0 +1,50 @@
+name: XRAY Current History Scope Truth (No Alpha)
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/current_history_epoch_guard.py"
+      - ".github/workflows/xray-history-current-epoch-guard.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  current-history-evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Ensure source commit is exact
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Test both positive and fail-closed scope classifications
+        run: |
+          python -m py_compile nasdaq-xray/current_history_epoch_guard.py
+          python nasdaq-xray/current_history_epoch_guard.py --selftest
+      - name: Measure exact repository ASOF and history provenance
+        run: |
+          python nasdaq-xray/current_history_epoch_guard.py --out "${RUNNER_TEMP}/xray_current_history_scope.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          j=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_current_history_scope.json").read_text())
+          assert j["schema"]=="XRAY_HISTORY_CURRENT_EPOCH_SCOPE_TRUTH_V1"
+          assert j["status"]!="HISTORY_CURRENT_SCOPE_PASS"
+          assert j["current_history_authority_proven"] is False
+          assert j["historical_root_unknown_is_current_514_history_measurement"] is False
+          assert j["r92_eligible"] is False
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          print("XRAY_HISTORY_EPOCH_NO_FALSE_PROGRESS=PASS")
+          PY
+      - name: Save counts-only evidence, never OHLCV
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-history-current-epoch-provenance
+          path: ${{ runner.temp }}/xray_current_history_scope.json
+          if-no-files-found: error
+          retention-days: 14
