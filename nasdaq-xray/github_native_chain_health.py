@@ -55,6 +55,31 @@ def classify(now, blobs, files, main_stable):
             drift.append(key)
     if drift:
         issues.append("TERMINAL_LIVE_BLOB_DRIFT")
+    # A GitHub tree is sufficient to prove an immutable MC bridge is ABSENT,
+    # but mere file presence can never prove C4.17 PRIMARY authority.
+    # Use the root ASOF (not the stale terminal ASOF) to prevent an old
+    # epoch's committed MC graph from masquerading as current.
+    root_asof=str(orchestrator.get("asof_et") or "")
+    try:
+        root_day=dt.date.fromisoformat(root_asof)
+        root_asof_valid=root_day.isoformat()==root_asof
+    except (ValueError,TypeError):
+        root_asof_valid=False
+    if not root_asof_valid:
+        issues.append("ROOT_ASOF_INVALID")
+    current_mc_bridges=[]
+    if root_asof_valid:
+        prefix=ROOT+"canonical_mc_bridge_"+root_asof.replace("-","")+"_c417_dv30_v"
+        current_mc_bridges=sorted(
+            path for path,sha in blobs.items()
+            if path.startswith(prefix) and path.endswith(".json")
+            and path[len(prefix):-5].isdigit()
+            and isinstance(sha,str) and len(sha)==40
+        )
+        if not current_mc_bridges:
+            issues.append("CURRENT_MC_AUTHORITY_ARTIFACT_ABSENT")
+        if terminal.get("asof_et")!=root_asof:
+            issues.append("CURRENT_TERMINAL_ASOF_LAG")
     master_count=int(master.get("unknown_count",-1))
     if master_count != 0:
         issues.append("MASTER_IDENTITY_EVIDENCE_INCOMPLETE")
@@ -101,6 +126,11 @@ def classify(now, blobs, files, main_stable):
         "terminal_drift_keys":drift,
         "master_pass_count":master.get("pass_count"),
         "master_unknown_count":master_count,
+        "root_asof_et":root_asof,
+        "canonical_terminal_asof_et":terminal.get("asof_et"),
+        "current_mc_bridge_artifact_count":len(current_mc_bridges),
+        "current_mc_bridge_artifact_presence_only":bool(current_mc_bridges),
+        "current_mc_primary_authority_proven_by_watchdog":False,
         "price_resolver_exact_current":resolver_price_exact,
         "price_pass_count_from_exact_resolver":resolver.get("source_price_pass_count") if resolver_price_exact else None,
         "official_guard_age_seconds":round(age),
@@ -161,6 +191,30 @@ def selftest():
     assert v["legacy_full_go_ready"] is False
     assert v["g9_and_account_required_for_manual_research"] is False
     assert "ROOT_HISTORY_NO_RETRYABLE_WORK" in v["issues"]
+    assert "ROOT_ASOF_INVALID" in v["issues"]  # Unknown ASOF is never a PASS.
+    # A valid ASOF and an old-epoch MC file must not hide missing current MC.
+    dated=dict(objects,orchestrator=dict(objects["orchestrator"],asof_et="2026-10-08"))
+    dated_v=classify(now,blobs,dated,True)
+    assert "CURRENT_MC_AUTHORITY_ARTIFACT_ABSENT" in dated_v["issues"]
+    assert "CURRENT_TERMINAL_ASOF_LAG" in dated_v["issues"]
+    assert dated_v["current_mc_bridge_artifact_count"]==0
+    old_mc=dict(blobs)
+    old_mc[ROOT+"canonical_mc_bridge_20261007_c417_dv30_v28.json"]="c"*40
+    assert "CURRENT_MC_AUTHORITY_ARTIFACT_ABSENT" in classify(now,old_mc,dated,True)["issues"]
+    new_mc=dict(blobs)
+    new_mc[ROOT+"canonical_mc_bridge_20261008_c417_dv30_v1.json"]="d"*40
+    new_v=classify(now,new_mc,dated,True)
+    assert "CURRENT_MC_AUTHORITY_ARTIFACT_ABSENT" not in new_v["issues"]
+    assert new_v["current_mc_bridge_artifact_count"]==1
+    assert new_v["current_mc_primary_authority_proven_by_watchdog"] is False
+    # A bridge's existence is not proof of policy, measurements or entitlement.
+    bad_mc=dict(new_mc)
+    bad_mc.pop(ROOT+"canonical_mc_bridge_20261008_c417_dv30_v1.json")
+    bad_mc[ROOT+"canonical_mc_bridge_20261008_c417_dv30_vN.json"]="e"*40
+    assert "CURRENT_MC_AUTHORITY_ARTIFACT_ABSENT" in classify(now,bad_mc,dated,True)["issues"]
+    matching_terminal=dict(terminal,asof_et="2026-10-08")
+    matching=dict(dated,terminal=matching_terminal)
+    assert "CURRENT_TERMINAL_ASOF_LAG" not in classify(now,blobs,matching,True)["issues"]
     assert v["root_history_unknown_count"]==231 and v["root_history_retryable"] is False
     retryable=dict(objects,orchestrator={"status":"PARTIAL_HISTORY",
                                          "pending_retry":3,"history_retryable":True})
