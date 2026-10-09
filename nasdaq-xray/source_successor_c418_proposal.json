@@ -1,0 +1,104 @@
+{
+  "schema": "XRAY_SOURCE_SUCCESSOR_POLICY_PROPOSAL_V1",
+  "candidate_version": "C4.18-SOURCE-SUCCESSOR-PROPOSAL",
+  "predecessor": "C4.17",
+  "control": "C4.27",
+  "operator_authorization": "APPROVED_TO_DESIGN_AND_RESEARCH_ALTERNATIVE_SOURCES_2026-10-09",
+  "effective_production_policy": "C4.17",
+  "activation_status": "PROPOSED_NOT_ACTIVATED",
+  "explicit_source_promotion_authorized": false,
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "mode": "RESEARCH_ONLY_MANUAL_DECISION",
+  "unknown_never_pass": true,
+  "alpha_thresholds_unchanged": true,
+  "numeric_thresholds": {
+    "min_market_cap_usd": 2000000000,
+    "min_price_usd": 5,
+    "min_dv30_usd": 50000000,
+    "min_daily_complete_sessions": 260,
+    "min_weekly_completed": 52,
+    "min_rr_basic": 2,
+    "min_rr_severe": 1.5
+  },
+  "source_role_separation": {
+    "existing_primary": "Bigdata exact-C4.17 authority, unavailable because outOfCredits=true and no 2026-10-08 exact bridge",
+    "fallback_candidates": [
+      "SEC_EXACT_PIT_SHARES+LICENSED_PRICE+INDEPENDENT_MC_CROSSCHECK",
+      "MASSIVE_LICENSED_REFERENCE_MC_WITH_OFFICIAL_IDENTITY_AND_INDEPENDENT_CROSSCHECK"
+    ],
+    "none_default": "UNKNOWN_SOURCE_NOT_LICENSED_OR_NOT_ATTESTED",
+    "historical_bars": "LICENSED_SAME_ASOF_ADJUSTED_DAILY_OHLCV_COMPLETE_EXCHANGE_SESSIONS",
+    "watch": "DATA_BLOCKED is not TECH_FAIL; WATCH never AL"
+  },
+  "sources": [
+    {
+      "name": "Bigdata",
+      "role": "EXISTING_PRIMARY",
+      "access": "ZERO_PAYG_CREDIT_CONFIRMED",
+      "runner_use": "UNAVAILABLE",
+      "license": "EXISTING_POLICY_SOURCE_NONPAYING_ACCOUNT_BLOCK",
+      "promotion": "BLOCKED"
+    },
+    {
+      "name": "Massive",
+      "role": "ALTERNATIVE_CANDIDATE",
+      "access": "CONNECTED_INTERACTIVE_REFERENCE_API_TESTED",
+      "license": "RUNNER_NONDISPLAY_DERIVED_DATA_RETAIN_RIGHTS_UNVERIFIED",
+      "promotion": "BLOCKED"
+    },
+    {
+      "name": "SEC_EDGAR",
+      "role": "OFFICIAL_FILING_INPUT",
+      "access": "PUBLIC_COMPANY_FACTS_WITH_FAIR_ACCESS_CONTACT",
+      "license": "OFFICIAL_FILINGS_NOT_A_MARKET_PRICE_LICENSE",
+      "promotion": "EVIDENCE_ONLY"
+    },
+    {
+      "name": "NASDAQ",
+      "role": "EXCHANGE_IDENTITY_REFERENCE",
+      "access": "PUBLIC_SCREENER_AND_LISTING",
+      "license": "BULK_PRICE_DERIVED_COMMERCIAL_USE_UNVERIFIED",
+      "promotion": "EVIDENCE_ONLY"
+    },
+    {
+      "name": "Alpaca",
+      "role": "INTERACTIVE_HISTORY_DIAGNOSTIC",
+      "access": "CONNECTED_TOOL_HISTORICAL_SIP_EXPERIMENTAL",
+      "license": "UNATTENDED_GITHUB_RUNNER_NONDISPLAY_REUSE_UNVERIFIED",
+      "promotion": "BLOCKED"
+    },
+    {
+      "name": "Yahoo_AKShare_Eastmoney",
+      "role": "PROVIDER_SHADOW",
+      "access": "EXISTING_BEST_EFFORT_SOURCES",
+      "license": "AUTOMATED_GITHUB_NONDISPLAY_REUSE_UNVERIFIED",
+      "promotion": "BLOCKED"
+    }
+  ],
+  "approval_required_for_activation": [
+    "PROVIDER_SIGNED_NONDISPLAY_LICENSE_FOR_UNATTENDED_GITHUB_RUNNER",
+    "LICENSE_HAS_PRICE_DERIVATION_INTERNAL_STORAGE_RETENTION_AND_OUTPUT_SCOPE",
+    "SEC_CIK_TICKER_EXCHANGE_SHARE_CLASS_PIT_CONTINUITY_PROOF",
+    "SHARES_OUTSTANDING_CLASS_CORPORATE_ACTIONS_SAME_EPOCH_RECONCILIATION",
+    "INDEPENDENT_SECOND_PROVIDER_SAME_ASOF_MC_CROSSCHECK_WITH_LICENSE",
+    "HISTORY_260_LAST_OFFICIAL_EXCHANGE_SESSIONS_AND_52_COMPLETED_WEEKS",
+    "ALL_CANONICAL_SOURCE_BLOB_SHA_ASOF_SCOPE_HASH_EXACT",
+    "NEW_C418_POLICY_HASH_OPERATOR_REVIEW_AND_ROLLBACK_PLAN",
+    "UNALTERED_RISK_RR_EARNINGS_LEGAL_AND_DELIVERY_GATES",
+    "PRODUCTION_GITHUB_ACTIONS_POSITIVE_AND_NEGATIVE_EVIDENCE"
+  ],
+  "rights_grant_document_sha256": null,
+  "secondary_provider_rights_sha256": null,
+  "automated_runner_entitlement_verified": false,
+  "non_display_scope_verified": false,
+  "corporate_actions_interval_complete_verified": false,
+  "independent_same_asof_crosscheck_verified": false,
+  "source_exhaustive_universe_scope_verified": false,
+  "can_register_R92": false,
+  "can_create_PRIMARY": false,
+  "new_customer_payment_authorized": false,
+  "success_definition": "ONLY_LICENSED_REAL_SAME_ASOF_DATA_E2E_GIT_SHA_AND_DEVICE_RECEIPT_COUNTS_GO",
+  "rollback": "KEEP_C4.17_ACTIVE_AND_DISABLE_C4.18_ON_ANY_SOURCE_DRIFT_LICENSE_UNKNOWN_OR_TEST_FAIL",
+  "policy_note": "User approval permits design of versioned successor; it never overrides upstream provider rights or substitutes evidence; no C4.17 silent promotion."
+}
