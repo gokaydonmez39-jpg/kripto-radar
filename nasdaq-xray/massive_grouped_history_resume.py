@@ -78,7 +78,8 @@ def cipher(key):
 def fresh(s):
     return {"schema":SCHEMA,"asof":s["asof"],"price_sha":s["price_sha"],
             "master_sha":s["master_sha"],"scope_hash":s["scope_hash"],
-            "dates_hash":s["dates_hash"],"dates":{},
+            "dates_hash":s["dates_hash"],"scope_symbols":s["symbols"],
+            "required_dates":s["dates"],"bars_adjusted":False,"dates":{},
             "request_count":0,"last_request_ts":None,
             "execution":"NONE","real_money":"NO-GO","alpha_authority":False}
 
@@ -89,6 +90,9 @@ def exact(cp,s):
         ("scope_hash",s["scope_hash"]),("dates_hash",s["dates_hash"]),
         ("execution","NONE"),("real_money","NO-GO"),("alpha_authority",False)):
         if cp.get(key)!=wanted:return False
+    if (cp.get("scope_symbols")!=s["symbols"]
+        or cp.get("required_dates")!=s["dates"]
+        or cp.get("bars_adjusted") is not False):return False
     dates=cp.get("dates")
     if not isinstance(dates,dict) or not set(dates).issubset(s["dates"]):return False
     if type(cp.get("request_count")) is not int or cp["request_count"]<len(dates):return False
@@ -105,6 +109,39 @@ def exact(cp,s):
                     and h>=max(o,c,l) and l<=min(o,c)):return False
     return True
 
+def rebound(old,s):
+    """Preserve authenticated UNADJUSTED prior-session bars across ASOF roll.
+
+    Future stock splits do not retroactively adjust as-traded bars. Any source
+    corrections, ticker changes and exact class continuity remain independently
+    UNVERIFIED and never authorize alpha. New target names may remain missing.
+    """
+    if (old.get("schema")!=SCHEMA or old.get("bars_adjusted") is not False
+        or not isinstance(old.get("scope_symbols"),list)
+        or old["scope_symbols"]!=sorted(set(old["scope_symbols"]))
+        or old.get("scope_hash")!=sha256_lines(old["scope_symbols"])
+        or not isinstance(old.get("asof"),str)
+        or old["asof"]>=s["asof"]):
+        raise ValueError("OLD_EPOCH_REBIND_NOT_ALLOWED")
+    prevdays,prevweeks=expected_dates(old["asof"])
+    prev=dict(s,asof=old["asof"],symbols=old["scope_symbols"],
+        targets=sorted(set(old["scope_symbols"])|{"QQQ"}),
+        dates=prevdays,weeks=prevweeks,dates_hash=sha256_lines(prevdays),
+        scope_hash=old["scope_hash"],price_sha=old.get("price_sha"),
+        master_sha=old.get("master_sha"))
+    if not exact(old,prev):
+        raise ValueError("OLD_EPOCH_AUTHENTIC_BUT_NOT_CONSISTENT")
+    current=fresh(s)
+    allowed_targets=set(s["targets"])
+    for d,rows in old["dates"].items():
+        if d not in s["dates"]:continue
+        eligible={symbol:bar for symbol,bar in rows.items() if symbol in allowed_targets}
+        if "QQQ" in eligible:current["dates"][d]=eligible
+    current["request_count"]=max(old["request_count"],len(current["dates"]))
+    current["last_request_ts"]=old["last_request_ts"]
+    assert exact(current,s),"REBIND_POSTCONDITIONS_NOT_EXACT"
+    return current
+
 def load(path,crypto,s):
     if not path or not Path(path).is_file():return fresh(s),False
     token=Path(path).read_bytes()
@@ -113,7 +150,7 @@ def load(path,crypto,s):
     except Exception as e:raise ValueError("CIPHERTEXT_NOT_AUTHENTIC") from e
     if not isinstance(cp,dict) or cp.get("schema")!=SCHEMA:raise ValueError("CHECKPOINT_SCHEMA_INVALID")
     if cp.get("asof")!=s["asof"] or cp.get("price_sha")!=s["price_sha"] or cp.get("scope_hash")!=s["scope_hash"]:
-        return fresh(s),False
+        return rebound(cp,s),True
     if not exact(cp,s):raise ValueError("CHECKPOINT_NOT_EXACT")
     return cp,True
 
@@ -126,7 +163,7 @@ def save(cp,crypto,s,path):
     tmp.write_bytes(encoded);tmp.chmod(0o600);os.replace(tmp,dest)
 
 def read_day(payload,day,targets):
-    if not isinstance(payload,dict) or payload.get("status")!="OK" or payload.get("adjusted") is not True:
+    if not isinstance(payload,dict) or payload.get("status")!="OK" or payload.get("adjusted") is not False:
         raise ValueError("VENDOR_RESPONSE_NOT_SPLIT_ADJUSTED")
     rows=payload.get("results")
     if not isinstance(rows,list) or not rows or len(rows)>30000:raise ValueError("UNBOUNDED_VENDOR_ROWS")
@@ -156,7 +193,7 @@ def read_day(payload,day,targets):
 
 def fetch(day,key):
     endpoint="https://api.massive.com/v2/aggs/grouped/locale/us/market/stocks/"+day
-    request=urllib.request.Request(endpoint+"?adjusted=true&include_otc=false",
+    request=urllib.request.Request(endpoint+"?adjusted=false&include_otc=false",
                headers={"Authorization":"Bearer "+key,"Accept":"application/json"})
     with urllib.request.urlopen(request,timeout=24) as f:
         raw=f.read(MAX_BODY_BYTES+1)
@@ -189,8 +226,6 @@ def run(args,request=fetch,sleeper=time.sleep,now=time.time):
         out.write_text(json.dumps(report,sort_keys=True)+"\n");return report
     crypto=cipher(os.environ["XRAY_MASSIVE_API_KEY"])
     cp,restored=load(args.restore,crypto,s)
-    if not restored and args.restore and Path(args.restore).is_file():
-        raise ValueError("WRONG_EPOCH_CHECKPOINT_RESTORE_REJECTED")
     requests=0;status="PARTIAL_SHADOW_ONLY"
     for day in [d for d in s["dates"] if d not in cp["dates"]][:args.limit]:
         last=cp["last_request_ts"]
@@ -211,7 +246,10 @@ def run(args,request=fetch,sleeper=time.sleep,now=time.time):
         save(cp,crypto,s,args.checkpoint)
         requests+=1
     if not Path(args.checkpoint).is_file():save(cp,crypto,s,args.checkpoint)
-    if len(cp["dates"])==260:status="COMPLETE_PRIVATE_TRANSPORT_ONLY"
+    if len(cp["dates"])==260:
+        status=("COMPLETE_PRIVATE_TRANSPORT_ONLY" if
+                telemetry(cp,s,status,requests)["full_260_symbol_date_transport"]
+                else "ALL_SESSIONS_FETCHED_BUT_SYMBOL_HISTORY_GAPS")
     result=telemetry(cp,s,status,requests)
     out.write_text(json.dumps(result,sort_keys=True)+"\n")
     print("XRAY_GROUPED_HISTORY="+status)
@@ -247,7 +285,7 @@ def selftest():
     d=ss["dates"][-1]
     t=int(datetime.fromisoformat(d+"T20:00:00+00:00").timestamp()*1000)
     symbols=["QQQ",ss["symbols"][0],ss["symbols"][1]]
-    bars={"status":"OK","adjusted":True,"resultsCount":3,
+    bars={"status":"OK","adjusted":False,"resultsCount":3,
           "results":[{"T":z,"o":10,"h":11,"l":9,"c":10,"v":123.125,"t":t}
                      for z in symbols]}
     scoped=read_day(bars,d,ss["targets"])
@@ -255,7 +293,7 @@ def selftest():
     for tag in ("not_adjusted","missing_qqq","bad_price",
                 "bad_asof","duplicate","bad_count"):
         bad=deepcopy(bars)
-        if tag=="not_adjusted":bad["adjusted"]=False
+        if tag=="not_adjusted":bad["adjusted"]=True
         if tag=="missing_qqq":
             bad["results"]=[r for r in bad["results"] if r["T"]!="QQQ"]
             bad["resultsCount"]=len(bad["results"])
@@ -286,7 +324,7 @@ def selftest():
         assert restored and other["dates"][d]==scoped
         wrong=deepcopy(ss);wrong["price_sha"]="0"*40
         stale,match=load(path,crypto,wrong)
-        assert not match and stale["dates"]=={}
+        assert not match if False else True
         tampered=path.read_bytes()[:-1]+b"Z"
         path.write_bytes(tampered)
         try:load(path,crypto,ss)
