@@ -1,0 +1,122 @@
+{
+  "schema": "XRAY_20261009_V28_MC_SOURCE_SHA_HARD_GATE_CONTINUATION",
+  "observed_date_trt": "2026-10-09",
+  "canonical_authority": "LIVE_MAIN_AND_ACTIONS_OVERRIDE_THIS_RECORD",
+  "repo": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "base_head": "b44af8655979367e4aecb3ea7451032149acfeb3",
+  "prev": "nasdaq-xray/research/continuation_checkpoint_20261009_c418_strict_dispatch_v27.json",
+  "current_policy": "C4.17",
+  "proposal_policy": "C4.18-SOURCE-SUCCESSOR-PROPOSAL",
+  "control": "C4.27",
+  "mode": "RESEARCH_ONLY_MANUAL_DECISION",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "no_alpha_gates_changed": true,
+  "no_new_automations_created": true,
+  "repair": {
+    "title": "PRICE-Git-blob-exact-only MC binding in terminal",
+    "production_file": "nasdaq-xray/build_current_terminal.py",
+    "production_commit": "176ada11dad264f40385ad064c60b54344c69547",
+    "test_files": [
+      "nasdaq-xray/mc_exact_source_sha_regression.py",
+      "nasdaq-xray/mc_exact_runtime_selector_selftest.py"
+    ],
+    "failed_static_test": {
+      "run": 37968198459,
+      "result": "FAILURE_EXPECTED_LEGACY_NO_SHA_GUARD"
+    },
+    "static_fixed": {
+      "run": 37968281884,
+      "result": "SUCCESS"
+    },
+    "dynamic_phase": {
+      "run": 37968281997,
+      "result": "SUCCESS"
+    },
+    "initial_runtime_fixture_fail": {
+      "run": 37969017591,
+      "result": "FAILURE_TEST_FIXTURE_MISSING_RESULTS_KEY"
+    },
+    "corrected_fixture_commit": "b44af8655979367e4aecb3ea7451032149acfeb3",
+    "passing_full_runtime": {
+      "run": 37969130736,
+      "result": "SUCCESS",
+      "expected": "ONE_EXACT_TWO_STALE_NEGATIVES"
+    },
+    "risk": "EQUAL_TICKER_SET_NOT_EQUAL_PRICE_DATA",
+    "verified_production_code_change": true
+  },
+  "source_license_facts": {
+    "Bigdata_connected_payg_balance": 0,
+    "Bigdata_connected_outOfCredits": true,
+    "Massive_unattended_non_display_and_derived_use": "UNVERIFIED_NOT_GRANTED_BY_GENERAL_INDIVIDUAL_MARKET_DATA_LICENSE",
+    "Massive_market_data_terms": "https://www.massive.com/legal/market-data-terms-of-service",
+    "SEC_EDGAR_public_xbrl": "https://www.sec.gov/search-filings/edgar-application-programming-interfaces",
+    "SEC_is_trusted_issuer_filing_not_trading_price_source": true,
+    "Alpaca_redistribution_disallowed": "https://alpaca.markets/support/redistribute-alpaca-api",
+    "user_approval_for_alternative_source_policy": true,
+    "user_approval_is_not_vendor_license": true,
+    "provider_entitlement_received": false,
+    "user_money_spent": false,
+    "secrets_or_vendor_bars_persisted": false
+  },
+  "root": {
+    "asof": "2026-10-08",
+    "status": "PARTIAL_HISTORY",
+    "unknown": 231,
+    "total_queue": 3183
+  },
+  "research_shadow": {
+    "source": "ALPACA_CONNECTED_INTERACTIVE_ONLY",
+    "count": 231,
+    "ge260_plus_asof": 90,
+    "lt260_plus_asof": 136,
+    "asof_absent": 5,
+    "canonical_pass_new": 0
+  },
+  "terminal": {
+    "asof": "2026-10-07",
+    "status": "PARTIAL",
+    "full_e2e": false,
+    "primary_mc_pass": 0,
+    "r92": 0
+  },
+  "delivery": {
+    "ledger_entries": 0,
+    "actual_phone_receipt": false
+  },
+  "calibration": {
+    "source_exact_comparable_sessions": 0,
+    "target": 60
+  },
+  "open": [
+    {
+      "priority": "P0",
+      "id": "LICENSED_MC_SOURCE_AND_PIT_SHARES",
+      "requirement": "Real licensed unattended non-display market cap data, stable identity and shares classes, same epoch, primary and secondary crosscheck; do not auto-promote C4.18."
+    },
+    {
+      "priority": "P0",
+      "id": "231_HISTORY",
+      "requirement": "Verify licensed 260 exact Nasdaq dates and 52 weekly completes per symbol, corporate actions + CUSIP ticker continuity, valid source use."
+    },
+    {
+      "priority": "P0",
+      "id": "CURRENT_TERMINAL",
+      "requirement": "Only after licensed same-ASOF MC and history run complete MC->HISTORY->WEEKLY->REGIME->EARNINGS->LEGAL->RISK/RR->FINAL with exact full blob readback."
+    },
+    {
+      "priority": "P1",
+      "id": "DELIVERY",
+      "requirement": "Real R92 candidate register->dedup->expiry->GitHub issue->delivery ledger->actual iPhone receipt."
+    },
+    {
+      "priority": "P2",
+      "id": "FORWARD_PERFORMANCE",
+      "requirement": "60 real comparable source-exact sessions, complete 2–8-session forward returns and costs; no unsupported win percentage."
+    }
+  ],
+  "production_go": false
+}
