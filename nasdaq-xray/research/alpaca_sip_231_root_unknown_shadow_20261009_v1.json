@@ -1,0 +1,2074 @@
+{
+  "schema": "XRAY_ALPACA_CONNECTED_SIP_ROOT_UNKNOWN_DIAGNOSTIC_V1",
+  "asof_et": "2026-10-08",
+  "source_root_sha": "5bb5cce43f921b9404994d8518d59ad86d3e34d5",
+  "source": "ALPACA_CONNECTED_SIP_INTERACTIVE_ONLY",
+  "market_data_authority": false,
+  "primary_mc_authority": false,
+  "licensed_runner_reuse_unverified": true,
+  "c417_history_pass_promoted": false,
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "no_vendor_raw_ohlcv_persisted": true,
+  "not_canonical_promotion": true,
+  "limitations": [
+    "No independent 260-official-session contiguous calendar attestation",
+    "No independent split-corporate-action or source terms license proof",
+    "No unattended Github runner Alpaca credentials in app connector",
+    "No Bigdata exact listing market cap source"
+  ],
+  "counts": {
+    "total": 231,
+    "queried": 231,
+    "provider_errors": 231,
+    "shadow_260_52w_last30": 0,
+    "last30_complete": 0,
+    "short_lt260": 0,
+    "no_asof": 0,
+    "empty": 0
+  },
+  "bygroup": {
+    "UNKNOWN_STATIC|PROVIDER_QUERY_ERROR": {
+      "count": 203,
+      "potential260_52w": 0
+    },
+    "UNKNOWN_RETRY_EXHAUSTED|PROVIDER_QUERY_ERROR": {
+      "count": 28,
+      "potential260_52w": 0
+    }
+  },
+  "errors": [
+    {
+      "batch": 0,
+      "count": 18,
+      "error": "The tool failed internally.",
+      "sample": [
+        "ACCV",
+        "ACFN"
+      ]
+    },
+    {
+      "batch": 1,
+      "count": 18,
+      "error": "The tool failed internally.",
+      "sample": [
+        "ARXS",
+        "ASTI"
+      ]
+    },
+    {
+      "batch": 2,
+      "count": 18,
+      "error": "The tool failed internally.",
+      "sample": [
+        "CAES",
+        "CBC"
+      ]
+    },
+    {
+      "batch": 3,
+      "count": 18,
+      "error": "The tool failed internally.",
+      "sample": [
+        "DSC",
+        "DYOR"
+      ]
+    },
+    {
+      "batch": 4,
+      "count": 18,
+      "error": "The tool failed internally.",
+      "sample": [
+        "FTH",
+        "FXHO"
+      ]
+    },
+    {
+      "batch": 5,
+      "count": 18,
+      "error": "The tool failed internally.",
+      "sample": [
+        "HONA",
+        "HQ"
+      ]
+    },
+    {
+      "batch": 6,
+      "count": 18,
+      "error": "The tool failed internally.",
+      "sample": [
+        "KRSA",
+        "KYNB"
+      ]
+    },
+    {
+      "batch": 8,
+      "count": 18,
+      "error": "The tool failed internally.",
+      "sample": [
+        "OIG",
+        "OPNW"
+      ]
+    },
+    {
+      "batch": 7,
+      "count": 18,
+      "error": "The tool failed internally.",
+      "sample": [
+        "MGYR",
+        "MMED"
+      ]
+    },
+    {
+      "batch": 9,
+      "count": 18,
+      "error": "The tool failed internally.",
+      "sample": [
+        "PPLI",
+        "PRHI"
+      ]
+    },
+    {
+      "batch": 11,
+      "count": 18,
+      "error": "The tool failed internally.",
+      "sample": [
+        "SUJA",
+        "SUNE"
+      ]
+    },
+    {
+      "batch": 10,
+      "count": 18,
+      "error": "The tool failed internally.",
+      "sample": [
+        "RZAI",
+        "SAIQ"
+      ]
+    },
+    {
+      "batch": 12,
+      "count": 15,
+      "error": "The tool failed internally.",
+      "sample": [
+        "VMET",
+        "VOGX"
+      ]
+    }
+  ],
+  "samples_technical_rescue": [],
+  "samples_unresolved": [
+    {
+      "sym": "ACCV",
+      "missing30": null
+    },
+    {
+      "sym": "ACFN",
+      "missing30": null
+    },
+    {
+      "sym": "ADAM",
+      "missing30": null
+    },
+    {
+      "sym": "ADRX",
+      "missing30": null
+    },
+    {
+      "sym": "AEC",
+      "missing30": null
+    },
+    {
+      "sym": "AGCC",
+      "missing30": null
+    },
+    {
+      "sym": "AGMB",
+      "missing30": null
+    },
+    {
+      "sym": "AGPU",
+      "missing30": null
+    },
+    {
+      "sym": "AIFA",
+      "missing30": null
+    },
+    {
+      "sym": "AIIR",
+      "missing30": null
+    },
+    {
+      "sym": "AIOS",
+      "missing30": null
+    },
+    {
+      "sym": "ALDF",
+      "missing30": null
+    },
+    {
+      "sym": "ALMR",
+      "missing30": null
+    },
+    {
+      "sym": "ALOV",
+      "missing30": null
+    },
+    {
+      "sym": "ALOY",
+      "missing30": null
+    }
+  ],
+  "per_symbol_source_coverage_classification": [
+    {
+      "symbol": "ACCV",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "ACFN",
+      "previous": "UNKNOWN_RETRY_EXHAUSTED",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "ADAM",
+      "previous": "UNKNOWN_RETRY_EXHAUSTED",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "ADRX",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "AEC",
+      "previous": "UNKNOWN_RETRY_EXHAUSTED",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "AGCC",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "AGMB",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "AGPU",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "AIFA",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "AIIR",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "AIOS",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "ALDF",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "ALMR",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "ALOV",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "ALOY",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "ALTI",
+      "previous": "UNKNOWN_RETRY_EXHAUSTED",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "APMD",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "APUR",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "ARXS",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "ASTI",
+      "previous": "UNKNOWN_RETRY_EXHAUSTED",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "AUC",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "AVLN",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "BBCI",
+      "previous": "UNKNOWN_RETRY_EXHAUSTED",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "BDCI",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "BGDE",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "BLIV",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "BLLN",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "BLSM",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "BOT",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "BRBI",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "BRTM",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "BRUN",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "BRVE",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "BTLN",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "BVC",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "BYFC",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "CAES",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "CBC",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "CBK",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "CBRS",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "CDNL",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "CEPS",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "CEPV",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "CGCF",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "CHRN",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "CHWM",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "CMTV",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "CNL",
+      "previous": "UNKNOWN_RETRY_EXHAUSTED",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "COAG",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "CUVL",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "DFTX",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "DMRA",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "DNMX",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "DPU",
+      "previous": "UNKNOWN_RETRY_EXHAUSTED",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "DSC",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "DYOR",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "EFTY",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "EIKN",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "ELE",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "ELMT",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "ELOX",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "ELWT",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "ENGN",
+      "previous": "UNKNOWN_RETRY_EXHAUSTED",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "EQPT",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "ETRA",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "FGC",
+      "previous": "UNKNOWN_RETRY_EXHAUSTED",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "FNRN",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "FORTY",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "FOXX",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "FRBT",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "FRNM",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "FRVO",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "FTH",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "FXHO",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "GCGR",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "GENB",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "GFUZ",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "GHXI",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "GIX",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "GRAL",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "GRML",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "GTEN",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "GYRO",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "HAPN",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "HCHL",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "HCIC",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "HDL",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "HELP",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "HFBL",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "HMH",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "HONA",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "HQ",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "HTCO",
+      "previous": "UNKNOWN_RETRY_EXHAUSTED",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "HVMC",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "HYNE",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "IA",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "INIO",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "INV",
+      "previous": "UNKNOWN_RETRY_EXHAUSTED",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "IOND",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "IPVV",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "IQMX",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "IRHO",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "JL",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "JONE",
+      "previous": "UNKNOWN_RETRY_EXHAUSTED",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "KARD",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "KBON",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "KLRA",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "KRAQ",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "KRSA",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "KYNB",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "LAWR",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "LFTO",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "LKFT",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "LMRI",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "LONA",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "LTGO",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "LTGR",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "MAGH",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "MAKO",
+      "previous": "UNKNOWN_RETRY_EXHAUSTED",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "MAMK",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "MAYS",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "MCTA",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "MDLN",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "MFI",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "MFP",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "MGRT",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "MGYR",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "MMED",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "MOLN",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "MPLT",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "MSLE",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "MWH",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "NAVN",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "NCEW",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "NHIV",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "NHP",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "NICM",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "NIPG",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "NOEM",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "NUCL",
+      "previous": "UNKNOWN_RETRY_EXHAUSTED",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "NWCL",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "OBX",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "OCTV",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "ODTX",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "OIG",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "OPNW",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "ORIQ",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "OST",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "OWLS",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "PAMT",
+      "previous": "UNKNOWN_RETRY_EXHAUSTED",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "PARK",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "PAYP",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "PBAM",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "PBLS",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "PBM",
+      "previous": "UNKNOWN_RETRY_EXHAUSTED",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "PC",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "PFX",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "PHOE",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "PHOS",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "PICS",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "PONO",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "PPHC",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "PPLI",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "PRHI",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "PSQL",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "PURR",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "PWRL",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "QMLS",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "QNBC",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "QNT",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "QVCG",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "RACC",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "RACD",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "RCBC",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "RJET",
+      "previous": "UNKNOWN_RETRY_EXHAUSTED",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "RMIX",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "RML",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "ROMA",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "RPGL",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "RTB",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "RZAI",
+      "previous": "UNKNOWN_RETRY_EXHAUSTED",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "SAIQ",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "SCPQ",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "SCTX",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "SCZM",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "SDA",
+      "previous": "UNKNOWN_RETRY_EXHAUSTED",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "SENEB",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "SHAZ",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "SHOE",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "SHOT",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "SKHY",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "SLBT",
+      "previous": "UNKNOWN_RETRY_EXHAUSTED",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "SLE",
+      "previous": "UNKNOWN_RETRY_EXHAUSTED",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "SOLS",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "SPCX",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "SPTX",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "SSBI",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "STLN",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "SUJA",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "SUNE",
+      "previous": "UNKNOWN_RETRY_EXHAUSTED",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "SVA",
+      "previous": "UNKNOWN_RETRY_EXHAUSTED",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "SVCC",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "SVRN",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "SWMR",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "TBCV",
+      "previous": "UNKNOWN_RETRY_EXHAUSTED",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "TJGC",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "TLNC",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "TMS",
+      "previous": "UNKNOWN_RETRY_EXHAUSTED",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "TRAX",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "TRGS",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "TTRX",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "TWLV",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "UCFI",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "USDE",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "VCRE",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "VHCP",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "VMET",
+      "previous": "UNKNOWN_RETRY_EXHAUSTED",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "VOGX",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "VSNT",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "WCCB",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "WEST",
+      "previous": "UNKNOWN_RETRY_EXHAUSTED",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "WLCO",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "WLTH",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "WQEY",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "WSE",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "XE",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "XMAX",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "YARW",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "YHGJ",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "YICC",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    },
+    {
+      "symbol": "YSWY",
+      "previous": "UNKNOWN_STATIC",
+      "bar_count": null,
+      "last30": null,
+      "possible": false,
+      "source_error": true
+    }
+  ],
+  "observed_main_before_commit": "126560067c87570f84593122a5c406456a611795"
+}
