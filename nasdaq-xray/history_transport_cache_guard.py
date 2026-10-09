@@ -6,8 +6,10 @@ import csv
 import gzip
 import hashlib
 import json
-from datetime import date
+from datetime import date, timedelta
+from functools import lru_cache
 from pathlib import Path
+import pandas_market_calendars as mcal
 
 TASK = "6a825366222081918997094d76e6ae46"
 HARD_DAILY = 260
@@ -16,6 +18,19 @@ HARD_DAILY = 260
 def cache_path(cache_dir: Path, symbol: str) -> Path:
     return cache_dir / (hashlib.sha256(symbol.encode()).hexdigest() + ".csv.gz")
 
+
+@lru_cache(maxsize=16)
+def official_completed_sessions(asof:str)->frozenset[str]:
+    """Six-year Nasdaq schedule: calendar holidays and ad-hoc closures excluded.
+
+    This checks dates only. Transport-cache dates still do NOT prove the
+    OHLCV values or any alpha / primary market-data authority.
+    """
+    asof_date=date.fromisoformat(asof)
+    start=asof_date-timedelta(days=365*6)
+    valid=mcal.get_calendar("NASDAQ").valid_days(
+        start_date=start.isoformat(),end_date=asof)
+    return frozenset(x.date().isoformat() for x in valid)
 
 def read_dates(path: Path, asof: str) -> list[str]:
     if not path.exists() or path.stat().st_size <= 0:
@@ -46,7 +61,17 @@ def read_dates(path: Path, asof: str) -> list[str]:
                     out.add(d.isoformat())
     except Exception:
         return []
-    return sorted(out)
+    try:
+        # Only recent history matters for a 260-day / 52-week minimum, and
+        # the same-ASOF official calendar is cached once for every symbol.
+        official=official_completed_sessions(asof)
+        relevant={d for d in out if d in official or d>=min(official)}
+        if not relevant or not relevant.issubset(official):
+            return []
+        return sorted(relevant)
+    except Exception:
+        # Missing calendar/library/invalid date must never be considered PASS.
+        return []
 
 
 def evaluate(cache_dir: Path, history: dict, legal: dict, identity: dict, require_qqq: bool = True) -> tuple[bool, dict]:
