@@ -1,0 +1,141 @@
+name: XRAY Twelve Basic Encrypted 260-Session EOD Shadow
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/twelve_data_history_resume.py"
+      - "nasdaq-xray/twelve_data_history_probe.py"
+      - "nasdaq-xray/qualified_history_ingress_shadow.py"
+      - "nasdaq-xray/current_history_source_request.py"
+      - "nasdaq-xray/canonical_current_price_dv30.json"
+      - "nasdaq-xray/canonical_current_master_manifest.json"
+      - ".github/workflows/xray-twelve-history-resume.yml"
+  schedule:
+    - cron: "53 * * * *"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: xray-twelve-private-history-resume-v1
+  cancel-in-progress: false
+jobs:
+  transport:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      XRAY_TWELVE_DATA_API_KEY: \${{ secrets.XRAY_TWELVE_DATA_API_KEY }}
+      XRAY_TWELVE_NONDISPLAY_LICENSE_OK: \${{ vars.XRAY_TWELVE_NONDISPLAY_LICENSE_OK }}
+      XRAY_TWELVE_PRIVATE_CACHE_RIGHTS_OK: \${{ vars.XRAY_TWELVE_PRIVATE_CACHE_RIGHTS_OK }}
+      XRAY_TWELVE_LICENSE_EVIDENCE_SHA256: \${{ secrets.XRAY_TWELVE_LICENSE_EVIDENCE_SHA256 }}
+      GH_TOKEN: \${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: \${{ github.sha }}
+      - name: Verify immutable triggering source commit
+        run: test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pinned exchange calendar and private encryption
+        run: python -m pip install --disable-pip-version-check "pandas_market_calendars==5.4.0" "cryptography>=44,<47"
+      - name: Fail-closed synthetic Twelve 260-source and private intake tests
+        run: |
+          python -m py_compile nasdaq-xray/twelve_data_history_resume.py
+          python nasdaq-xray/twelve_data_history_resume.py --selftest
+          python nasdaq-xray/qualified_history_ingress_shadow.py --selftest
+      - name: Restore previous authenticated private checkpoint only if operator holds actual source rights
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -z "$XRAY_TWELVE_DATA_API_KEY" || "$XRAY_TWELVE_NONDISPLAY_LICENSE_OK" != "true" || "$XRAY_TWELVE_PRIVATE_CACHE_RIGHTS_OK" != "true" || \${#XRAY_TWELVE_LICENSE_EVIDENCE_SHA256} -ne 64 ]]; then
+            echo "XRAY_TWELVE_RESUME_RESTORE=BLOCKED_SOURCE_LICENSE_OR_KEY"
+            exit 0
+          fi
+          ids=$(gh run list --workflow xray-twelve-history-resume.yml --status completed --branch main --limit 80 --json databaseId --jq '.[].databaseId')
+          for id in $ids; do
+            dest="$RUNNER_TEMP/twelve_download/$id"
+            if gh run download "$id" -n xray-twelve-private-ciphertext-v1 -D "$dest" >/dev/null 2>&1; then
+              source="$dest/twelve_history_checkpoint.enc"
+              test -s "$source" || exit 1
+              python nasdaq-xray/twelve_data_history_resume.py --check-restore "$source"
+              cp "$source" "$RUNNER_TEMP/twelve_prior.enc"
+              echo "XRAY_TWELVE_RESUME_RESTORE=AUTHENTIC"
+              exit 0
+            fi
+          done
+          echo "XRAY_TWELVE_RESUME_RESTORE=NEW_PRIVATE_CHECKPOINT"
+      - name: At most 32 legal scoped unadjusted EOD requests with rolling encrypted quota ledger
+        run: |
+          python nasdaq-xray/twelve_data_history_resume.py \
+            --limit 32 \
+            --restore "$RUNNER_TEMP/twelve_prior.enc" \
+            --checkpoint "$RUNNER_TEMP/twelve_history_checkpoint.enc" \
+            --report "$RUNNER_TEMP/twelve_history_health.json"
+      - name: Validate full real private transport separately; never assert HISTORY or MC authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          state=$(python -c 'import json,sys;d=json.load(open(sys.argv[1]));print(str(d["complete_260_symbols"]==d["target_count"] and d["queried_symbols"]==d["target_count"]).lower())' "$RUNNER_TEMP/twelve_history_health.json")
+          if [[ "$state" != "true" || ! -s "$RUNNER_TEMP/twelve_history_checkpoint.enc" ]]; then
+            echo "XRAY_TWELVE_PRIVATE_260_52_VALIDATOR=BLOCKED_INCOMPLETE_OR_NO_AUTH"
+            exit 0
+          fi
+          private="$RUNNER_TEMP/xray_twelve_ephemeral_ohlcv"
+          trap 'rm -rf "$private"' EXIT
+          python nasdaq-xray/twelve_data_history_resume.py \
+            --export-checkpoint "$RUNNER_TEMP/twelve_history_checkpoint.enc" \
+            --export-dir "$private"
+          python nasdaq-xray/qualified_history_ingress_shadow.py \
+            --private-cache-dir "$private" \
+            --out "$RUNNER_TEMP/twelve_private_260_52_intake.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          j=json.loads((Path(os.environ["RUNNER_TEMP"])/"twelve_private_260_52_intake.json").read_text())
+          assert j["structural_private_transport_complete"] is True
+          assert j["expected_daily_count"]==260 and j["expected_completed_week_closes"]==52
+          assert j["source_vendor_rights_independently_verified"] is False
+          assert j["source_exchangewide_volume_proven"] is False
+          assert j["canonical_history_pass_created"]==0
+          assert j["primary_mc_pass_created"]==0 and j["can_register_R92"] is False
+          print("XRAY_TWELVE_PRIVATE_260_52_VALIDATOR=STRUCTURAL_ONLY_NO_GO")
+          PY
+      - name: Attest sanitized report has no vendor bars or false AL
+        run: |
+          python - <<'PY'
+          import json,os,subprocess
+          from pathlib import Path
+          j=json.loads((Path(os.environ["RUNNER_TEMP"])/"twelve_history_health.json").read_text())
+          assert j["schema"]=="XRAY_TWELVE_260_HISTORY_HEALTH_V1"
+          assert j["source_price_blob_sha"]==subprocess.check_output(
+              ["git","hash-object","nasdaq-xray/canonical_current_price_dv30.json"],text=True).strip()
+          assert j["vendor_requests_this_run"]<=32
+          assert j["queried_symbols"]<=j["target_count"]
+          assert j["required_daily_sessions"]==260 and j["required_completed_weeks"]==52
+          assert j["source_license_independently_verified"] is False
+          assert j["canonical_HISTORY_pass"] is False and j["PRIMARY_MC_pass"] is False and j["R92_AL"] is False
+          assert j["raw_bars_public"] is False
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          print("XRAY_TWELVE_PRIVATE_INTAKE="+j["status"])
+          print("XRAY_TWELVE_PRIVATE_SCOPE="+str(j["queried_symbols"])+"/"+str(j["target_count"]))
+          PY
+      - name: Store only authenticated private ciphertext
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-twelve-private-ciphertext-v1
+          path: \${{ runner.temp }}/twelve_history_checkpoint.enc
+          retention-days: 14
+          if-no-files-found: ignore
+      - name: Store only sanitized operational telemetry
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-twelve-operational-health-v1
+          path: |
+            \${{ runner.temp }}/twelve_history_health.json
+            \${{ runner.temp }}/twelve_private_260_52_intake.json
+          retention-days: 14
+          if-no-files-found: ignore
