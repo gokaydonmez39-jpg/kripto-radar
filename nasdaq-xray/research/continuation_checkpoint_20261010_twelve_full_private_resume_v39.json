@@ -1,0 +1,148 @@
+{
+  "schema": "XRAY_C417_CANONICAL_CONTINUATION_20261010_TWELVE_ENCRYPTED_514_260_V39",
+  "asof_trt": "2026-10-10",
+  "authority": "LIVE_MAIN_AND_LIVE_ACTIONS_LOGS_AND_WRITTEN_SOURCE_LICENSE_OVERRIDE_THIS_RECORD",
+  "repo": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "predecessor": "nasdaq-xray/research/continuation_checkpoint_20261010_r92_rr_and_delivery_epoch_v38.json",
+  "predecessor_blob_sha": "d8c76101ab296c52557e2d0913b9715b31996017",
+  "observed_parent_head": "6742e3e40dfb27dbbe1525e09841e1e0a69899ce",
+  "policy": {
+    "effective": "C4.17",
+    "control": "C4.27",
+    "c418": "PROPOSAL_ONLY",
+    "mode": "RESEARCH_ONLY_MANUAL_DECISION",
+    "execution": "NONE",
+    "real_money": "NO-GO",
+    "unknown_not_pass": true,
+    "g9_required": false,
+    "broker_account_required": false,
+    "rr_basic_severe": {
+      "A": [
+        1.5,
+        1.1
+      ],
+      "B": [
+        2,
+        1.5
+      ],
+      "C": [
+        2,
+        1.5
+      ],
+      "D": [
+        2,
+        1.5
+      ]
+    },
+    "entry_stop_risk_max_percent": 8,
+    "risk_liquidity_alpha_threshold_relaxation": false
+  },
+  "twelve_work": {
+    "problem": "Prior Twelve path was only one AAPL no-storage sample, so zero-cost alternative could not actually collect 514 candidate names if rights became available.",
+    "implementation": "nasdaq-xray/twelve_data_history_resume.py",
+    "implementation_initial_commit": "9f0f9d8a1f751d10a0c792aedc856bce9fdd5e02",
+    "workflow": ".github/workflows/xray-twelve-history-resume.yml",
+    "workflow_initial_commit": "fadf06ff091631d1da98bd1f188f99ace760c6ef",
+    "initial_workflow_red_run": 37995192234,
+    "initial_workflow_red_reason": "Extra backslash escaped GitHub Actions expression in new YAML; checkout failed before tests. No vendor bars involved.",
+    "yaml_escape_repair_commit": "7fff5014713c137c0f93666cee7fa10d7e7be58f",
+    "yaml_escape_repair_green_run": 37995266803,
+    "implementation_actual_offline_resume_test_commit": "3bb4a4aa13c6ae1020a9f10e7c257e087da37f17",
+    "implementation_actual_offline_resume_test_run": 37995388343,
+    "full_cohort_offline_test": "nasdaq-xray/twelve_data_history_full_pipeline_selftest.py",
+    "full_cohort_test_commit": "a417f516146de14cf201d1bc5925d7db4789313a",
+    "full_cohort_workflow_commit": "6742e3e40dfb27dbbe1525e09841e1e0a69899ce",
+    "full_cohort_green_run": 37995503443,
+    "full_cohort_green_result": "SUCCESS_SYNTHETIC_260_COMPLETED_SESSIONS_52_WEEKS_2_NEGATIVES_NO_REAL_VENDOR_BAR_OR_ALPHA",
+    "full_cohort_symbols": "DYNAMIC_FROZEN_PRICE_PASS_COHORT_PLUS_QQQ_BENCHMARK",
+    "confirmed_current_test_scope_count": 515,
+    "frozen_current_price_pass_count": 514,
+    "min_vendor_spacing_seconds": 9,
+    "max_requests_per_job": 32,
+    "rolling_24h_per_checkpoint_max_requests": 800,
+    "runtime_schedule": "53 * * * *",
+    "private_storage": "Fernet authenticated ciphertext under GitHub artifact with 14-day retention; no raw bars publicly committed",
+    "checkpoint_resume": "Same-ASOF exact SHA-bound; on any epoch drift discard old bars and preserve authenticated rolling quota ledger only; no synthetic fills",
+    "positive_source_test": "Authorized-flag synthetic injection executes 2 symbol resumable pipeline WITHOUT vendor network; output structural only.",
+    "negative_tests": [
+      "missing key and rights blocks any network",
+      "vendor unknown identity or malformed OHLCV blocks",
+      "invalid/future/duplicate dates rejected",
+      "corrupted ciphertext rejected",
+      "source epoch revision drops stale raw bars",
+      "24-hour credit budget blocks all further requests",
+      "missing completed session fails symbol",
+      "zero-volume bar fails numeric gate"
+    ],
+    "real_connected_vendor_market_ohlcv_calls_in_latest_actions": 0,
+    "actual_private_vendor_history_covered_symbols": 0,
+    "production_authority": false,
+    "source_legal_verified": false,
+    "canonical_HISTORY_pass": false,
+    "PRIMARY_MC_pass": false,
+    "real_R92_AL": false,
+    "device_receipt_verified": false,
+    "workflow_health": "BLOCKED_KEY_OR_UNVERIFIED_NONDISPLAY_CACHE_RIGHTS",
+    "workflow_restore": "BLOCKED_SOURCE_LICENSE_OR_KEY",
+    "note": "Green CI means engineering synthetic tests and fail-closed report passed; it is NOT HISTORY production PASS or vendor entitlement."
+  },
+  "source_contract": {
+    "Twelve_Basic_public_plan": "$0 individual; 8 credits/minute and 800 credits/day",
+    "Twelve_docs_advertisement": "Historical EOD covers 100% of reported US volume starting Basic, but this is vendor claim requiring independent verification before DV30 PRIMARY.",
+    "Twelve_terms_date": "2026-01-01",
+    "legal": "https://twelvedata.com/terms",
+    "volume": "https://support.twelvedata.com/en/articles/9935903-us-equities-market-data",
+    "pricing": "https://twelvedata.com/pricing",
+    "terms_caching": "Twelve Terms 2.3(g) forbid storage/cache beyond allowed timeframes in Documentation. Applicable free Basic retention lifetime and upstream exchange requirements remain UNKNOWN.",
+    "source_non_display_note": "Basic advertises internal non-display; tier applicability to encrypted 260-day GitHub history retention and derived investment alerts must not be self-attested.",
+    "owner_secrets_required": [
+      "XRAY_TWELVE_DATA_API_KEY",
+      "XRAY_TWELVE_LICENSE_EVIDENCE_SHA256"
+    ],
+    "owner_variables_required": [
+      "XRAY_TWELVE_NONDISPLAY_LICENSE_OK",
+      "XRAY_TWELVE_PRIVATE_CACHE_RIGHTS_OK"
+    ],
+    "secrets_actual_values_seen": false,
+    "license_rights_flags_may_be_set_without_real_grant": false,
+    "no_licenses_fabricated": true
+  },
+  "latest_production": {
+    "asof_last_completed_nasdaq": "2026-10-09",
+    "canonical_master_asof": "2026-10-08",
+    "canonical_price_asof": "2026-10-08",
+    "canonical_terminal_asof": "2026-10-07",
+    "identity_pass": 3183,
+    "identity_unknown": 72,
+    "price_dv30_pass": 514,
+    "price_30day_bar_blocked": 45,
+    "verified_primary_mc": 0,
+    "current_true_history_514_260_52": false,
+    "eligible_confirmed_current_r92": 0,
+    "device_notification_observed": false,
+    "empirical_comparable_forward_sessions": "0/60",
+    "release": "NO_GO",
+    "blockers": [
+      "CURRENT_MC_AUTHORITY_MISSING",
+      "CURRENT_TERMINAL_FROZEN_OR_INCOMPLETE",
+      "IDENTITY_PARTITION_INCOMPLETE",
+      "NOTIFICATION_DEVICE_RECEIPT_NOT_PROVEN",
+      "PRICE_BLOCKED_30_SESSION_BARS",
+      "SOURCE_EPOCH_NOT_LATEST_COMPLETED_SESSION",
+      "TERMINAL_CURRENT_MC_CHAIN_NOT_PROVEN"
+    ]
+  },
+  "next": {
+    "blocked_external": "Written or explicit applicable $0 rights for unattended internal non-display, private encrypted >=260-day OHLCV caching and nonreconstructible derived candidate alerts; source key must be provided by owner in GitHub Secrets, never chat. Without this, no real vendor bars can be fetched lawfully and consistently.",
+    "after_rights": "Verify one actual low-cost Twelve EOD sample with adjust=none, MIC, vintage, marketwide DV30 and PIT corporate actions. Keep source_authority False until separately independently verified.",
+    "after_true_history": "Complete same-ASOF class-specific PRIMARY MC, full Nasdaq identity/price coverage and strict MC->HISTORY->Weekly->Regime->Earnings->Legal->Risk/RR->Final; real R92 registration, dedup, expiry, GitHub issue and device receipt.",
+    "execution_remains": "NONE",
+    "go_rule": "GO only for RESEARCH_ONLY_MANUAL_DECISION after full external source authority and real same-ASOF chain and delivery proof."
+  },
+  "raw_vendor_data_public": false,
+  "api_keys_public": false,
+  "previous_immutable_checkpoints_preserved": true,
+  "new_automations_created": 0,
+  "completion_claim": false
+}
