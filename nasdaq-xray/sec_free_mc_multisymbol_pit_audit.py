@@ -179,6 +179,11 @@ def main():
     print("XRAY_SEC_MULTI_TRANSPORT="+out["transport"])
     print("XRAY_SEC_MULTI_STATUS_COUNTS="+json.dumps(out["status_counts"],sort_keys=True))
     print("XRAY_SEC_MULTI_REASON_COUNTS="+json.dumps(out.get("reason_counts") or {},sort_keys=True))
+    if args.offset==0 and args.limit==0:
+        # Current canary symbols are public tickers; NO raw price/shares/filing.
+        print("XRAY_SEC_CANARY_REASON_BY_SYMBOL="+json.dumps(
+            {k:(out.get("reason_codes") or {}).get(k) for k,v in
+             (out.get("statuses") or {}).items() if v=="UNKNOWN"},sort_keys=True))
     print("XRAY_SEC_MULTI_PRIMARY=0_NO_C417_PRODUCTION_AUTHORITY")
     if out["transport"].startswith("BLOCKED_"):
         raise SystemExit(2)
