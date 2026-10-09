@@ -21,8 +21,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: main
           fetch-depth: 1
+      - name: Assert runner executes the exact triggering Git commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          actual="$(git rev-parse HEAD)"
+          if [[ "$actual" != "$GITHUB_SHA" ]]; then
+            echo "XRAY_C418_CHECKOUT_SHA_MISMATCH:FAIL_CLOSED" >&2
+            exit 1
+          fi
+          echo "XRAY_C418_CHECKOUT_EXACT_INVOCATION_SHA=PASS"
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
