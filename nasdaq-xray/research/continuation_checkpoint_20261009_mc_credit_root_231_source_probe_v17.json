@@ -1,0 +1,141 @@
+{
+  "schema": "XRAY_20261009_MC_CREDIT_HISTORY_231_PIT_SOURCE_CONTINUATION_V17",
+  "authority": "HISTORICAL_CHECKPOINT_ONLY_LIVE_GITHUB_MAIN_AND_ACTIONS_SUPERSEDE",
+  "repository": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "main_head_observed_before_checkpoint": "e00f119c0fe9c2cc7e78be8fbf9c52d7ea57a960",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "research_mode": "RESEARCH_ONLY_MANUAL_DECISION",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "release": "RESEARCH_PRODUCTION_NO_GO",
+  "changes_in_this_turn": [
+    {
+      "commit": "b5c7d807900e78aec47b6c9df675ba5cdf0d85d8",
+      "path": "nasdaq-xray/history_transport_cache_guard.py",
+      "effect": "require latest 260 official NASDAQ completed sessions, 52 distinct weeks for each ordinary stock, QQQ and verified predecessor composite; transport ONLY"
+    },
+    {
+      "commit": "7258d91a67e7a0d945d94205bd45cd3c6f153859",
+      "path": "nasdaq-xray/history_transport_cache_guard_selftest.py",
+      "effect": "negative regressions: 299 old+current dates with missing recent day; QQQ hidden day; ticker continuity hidden day",
+      "actions_run": 37923295317,
+      "test": "SUCCESS"
+    },
+    {
+      "commit": "e00f119c0fe9c2cc7e78be8fbf9c52d7ea57a960",
+      "path": "nasdaq-xray/history_unknown_source_triage.py",
+      "effect": "independent advisory root-cause class partition without creating alpha or bars",
+      "actions_run": 37923642232,
+      "test": "SUCCESS"
+    }
+  ],
+  "observed_github": {
+    "root_asof_et": "2026-10-08",
+    "root_status": "PARTIAL_HISTORY",
+    "root_unknown": 231,
+    "pending_retry": 0,
+    "history_retryable": false,
+    "canonical_terminal_asof_et": "2026-10-07",
+    "canonical_terminal_result": "PARTIAL_UNKNOWN",
+    "current_C417_primary_mc_proven": false,
+    "registered_r92_count": 0,
+    "delivery_ledger_count": 0,
+    "phone_receipt_proven": false
+  },
+  "root_history_root_cause_20261008": {
+    "source": "GitHub Actions run 37923642232 read-only triage on actual sina_state.json",
+    "root_status_counts": {
+      "PASS": 497,
+      "FAIL_DV30": 1160,
+      "FAIL_PRICE": 1295,
+      "UNKNOWN_STATIC": 203,
+      "UNKNOWN_RETRY_EXHAUSTED": 28
+    },
+    "unknown_reason_counts": {
+      "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION": 144,
+      "ASOF_MISSING_REQUIRES_RESOLUTION": 53,
+      "EXACT30_INCOMPLETE_NEVER_PASS": 6,
+      "PROVIDER_EXCEPTION_SyntaxError": 24,
+      "PROVIDER_EXCEPTION_IndexError": 4
+    },
+    "exact_unknown_sum": 231,
+    "no_alpha_promotion": true
+  },
+  "external_providers": {
+    "bigdata": {
+      "tool": "connected Bigdata help",
+      "payg_balance": 0,
+      "out_of_credits": true,
+      "scope": "OBSERVATION_AT_THIS_TURN_ONLY_NOT_ETERNAL"
+    },
+    "massive": {
+      "tool": "connected Massive API",
+      "endpoint_mc": "GET /v3/reference/tickers/AAPL?date=2026-10-08",
+      "market_cap_sample_observed": true,
+      "automated_github_runner_credential_proven": false,
+      "automated_nondisplay_license_grant_proven": false,
+      "date_is_asof_not_filing_acceptance_proof": true,
+      "primary_authority": false,
+      "daily_bars_probe": {
+        "from": "2025-08-01",
+        "to": "2026-10-08",
+        "adjusted": false,
+        "records": [
+          {
+            "symbol": "ACFN",
+            "sina_problem": "PROVIDER_EXCEPTION_SyntaxError",
+            "massive_bar_count": 299,
+            "distinct_weeks": 64,
+            "last_observed": "2026-10-08",
+            "source_eligible_for_further_proof": true
+          },
+          {
+            "symbol": "GRAL",
+            "sina_problem": "EXACT30_INCOMPLETE_NEVER_PASS",
+            "massive_bar_count": 298,
+            "distinct_weeks": 64,
+            "last_observed": "2026-10-08",
+            "missing_relative_to_ACFN": "2026-09-23",
+            "full_recent260_proven": false
+          },
+          {
+            "symbol": "ALDF",
+            "sina_problem": "ASOF_MISSING_REQUIRES_RESOLUTION",
+            "massive_bar_count": 190,
+            "last_observed": "2026-10-06"
+          },
+          {
+            "symbol": "BBCI",
+            "sina_problem": "PROVIDER_EXCEPTION_IndexError",
+            "massive_bar_count": 2,
+            "last_observed": "2026-10-08"
+          },
+          {
+            "symbol": "ACCV",
+            "sina_problem": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION",
+            "massive_bar_count": 7,
+            "last_observed": "2026-10-08"
+          }
+        ]
+      },
+      "raw_market_data_committed": false
+    }
+  },
+  "automation": {
+    "existing_health_id": "6abd0465d15c8191aac5888abb784f27",
+    "updated_existing_prompt": "PROVIDER_ZERO_CREDIT_AND_PIT_SAFE_V17",
+    "no_new_task_created": true,
+    "canonical_user_notification_task_id": "6a825366222081918997094d76e6ae46"
+  },
+  "next_hard_dependencies": [
+    "Legal same-ASOF C4.17 PRIMARY MC observation and immutable bridge: Bigdata has no available credits, Massive shadow cannot be substituted into PRIMARY without independent rights and policy authority",
+    "Obtain and securely attach unattended GitHub runner data-only credential via repository secret with documented automated usage rights; connected ChatGPT apps do not export runner secrets",
+    "Resolve root 144 historical-short,53 missing-ASOF,6 incomplete-30,28 Sina provider-parser errors without synthetic data",
+    "Re-run same-ASOF MC→260/52 PIT history→weekly→regime→earnings→legal→risk/RR→Final and enforce candidate-local exact source bindings",
+    "Prove real candidate durable registration, dedup, expiration, backup GitHub issue receipt, and actual device notification receipt separately"
+  ],
+  "safety": "EXECUTION_NONE_NO_TRADING_NO_FABRICATED_BARS_NO_FAKE_PASS"
+}
