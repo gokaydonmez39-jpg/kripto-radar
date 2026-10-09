@@ -90,14 +90,21 @@ def main():
     except ValueError:
         pass
 
-    history_prefix={f"H{i:03d}":(100.0,1_000_000.0) for i in range(260)}
-    rich_exact={**history_prefix,**exact}
-    rich_mid={**history_prefix,**mid}
-    st,info=resolver_classify(rich_exact,exp[-1],exp,"TEST")
+    # The legacy fake "H000" dates silently bypassed the real exchange
+    # calendar before the exact-last-260 repair. Use official sessions in
+    # this isolated fixture; never use generated fixtures as real market data.
+    from history_transport_cache_guard import official_completed_sessions
+    official=sorted(official_completed_sessions(exp[-1]))
+    assert len(official)>=261 and official[-1]==exp[-1]
+    resolver_exp=official[-30:]
+    rich_exact=bars(official[-260:])
+    rich_mid=bars([official[-261],*official[-260:-190],*official[-189:]])
+    assert len(rich_mid)==260 and resolver_exp[-1] in rich_mid
+    st,info=resolver_classify(rich_exact,exp[-1],resolver_exp,"TEST")
     assert st=="PASS_HARD_GATES",(st,info)
     assert info["known_session_count"]==30 and info["missing_sessions"]==[]
 
-    st,info=resolver_classify(rich_mid,exp[-1],exp,"TEST")
+    st,info=resolver_classify(rich_mid,exp[-1],resolver_exp,"TEST")
     assert st!="PASS_HARD_GATES",(st,info)
 
     sina=load_sina()
