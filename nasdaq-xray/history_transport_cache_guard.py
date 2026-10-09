@@ -74,6 +74,25 @@ def read_dates(path: Path, asof: str) -> list[str]:
         return []
 
 
+def exact_recent_sessions(dates: set[str] | list[str], asof: str) -> bool:
+    """Require *every* one of the 260 latest official NASDAQ completed dates.
+
+    An arbitrary 260 bars accumulated over six years is NOT 260 consecutive
+    completed exchange sessions. Calendar proof is not vendor OHLCV authority.
+    The 260 dates also span >=52 distinct ISO weeks (at most 5 sessions/week).
+    """
+    official=sorted(official_completed_sessions(asof))
+    if len(official)<HARD_DAILY or asof not in official:
+        return False
+    required=official[-HARD_DAILY:]
+    observed=set(dates)
+    if not set(required).issubset(observed):
+        return False
+    weeks={(date.fromisoformat(d).isocalendar().year,
+            date.fromisoformat(d).isocalendar().week) for d in required}
+    return len(weeks)>=52
+
+
 def evaluate(cache_dir: Path, history: dict, legal: dict, identity: dict, require_qqq: bool = True) -> tuple[bool, dict]:
     if history.get("task_id") != TASK or legal.get("task_id") != TASK:
         return False, {"reason": "TASK_MISMATCH"}
@@ -129,13 +148,20 @@ def evaluate(cache_dir: Path, history: dict, legal: dict, identity: dict, requir
             if len(combined) < HARD_DAILY:
                 missing[sym] = f"COMPOSITE_LT{HARD_DAILY}:{len(combined)}"
                 continue
+            if not exact_recent_sessions(combined, asof):
+                missing[sym] = "COMPOSITE_RECENT_260_OR_52_WEEK_GAP"
+                continue
         elif len(current) < HARD_DAILY:
             missing[sym] = f"CURRENT_LT{HARD_DAILY}:{len(current)}"
+        elif not exact_recent_sessions(current, asof):
+            missing[sym] = "CURRENT_RECENT_260_OR_52_WEEK_GAP"
 
     if require_qqq:
         q = exact_current("QQQ")
         if q and len(q) < HARD_DAILY:
             missing["QQQ"] = f"CURRENT_LT{HARD_DAILY}:{len(q)}"
+        elif q and not exact_recent_sessions(q, asof):
+            missing["QQQ"] = "CURRENT_RECENT_260_OR_52_WEEK_GAP"
 
     detail = {
         "schema": "XRAY_HISTORY_TRANSPORT_CACHE_GUARD_V1",
