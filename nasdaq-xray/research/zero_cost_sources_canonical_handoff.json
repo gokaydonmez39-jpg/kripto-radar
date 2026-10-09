@@ -352,5 +352,69 @@
     "current_full_history_authority": false,
     "current_primary_mc_authority": false,
     "current_R92": false
-  }
+  },
+  "engineering_grouped_260_private_history_v1": {
+    "created_date": "2026-10-09",
+    "implementation": "nasdaq-xray/massive_grouped_history_resume.py",
+    "ci_workflow": ".github/workflows/xray-massive-grouped-history-resume.yml",
+    "scope_price_asof": "2026-10-08",
+    "frozen_PRICE_pass_count": 514,
+    "required_nasdaq_official_days": 260,
+    "required_completed_nasdaq_weeks": 52,
+    "selected_provider_endpoint": "GET /v2/aggs/grouped/locale/us/market/stocks/{date}",
+    "source_price_mode": "UNADJUSTED_AS_TRADED_OHLCV_REQUIRES_INDEPENDENT_CORPORATE_ACTIONS_BEFORE_ALPHA",
+    "source_familiy_same_as_rallies": "EXACT_12592_TICKER_DATA_MATCH_NOT_TWO_INDEPENDENT_SOURCES",
+    "max_vendor_queries_per_run": 10,
+    "min_spacing_seconds": 13,
+    "planned_github_schedule": "cron 17 */3 * * *",
+    "checkpoint": "AES authenticated Fernet private ciphertext, GitHub Actions artifact retention 14 days",
+    "continuations": "Resume same PRICE Git blob; on next trading day reuse authenticated UNADJUSTED prior session observations intersecting exact new symbol scope; on same-ASOF blob revision classify stale and restart without merging",
+    "private_staging": "When 260 grouped daily sessions collected, decrypt within GitHub runner tmp and write ephemeral per-symbol gzip CSV for existing qualified_history_ingress_shadow.py; discard plaintext from runner; publish sanitized counts only",
+    "actor_permission_guard": [
+      "XRAY_MASSIVE_API_KEY GitHub Actions secret",
+      "XRAY_MASSIVE_NONDISPLAY_LICENSE_OK GitHub variable true only with actual license",
+      "XRAY_MASSIVE_PRIVATE_CACHE_RIGHTS_OK GitHub variable true only with actual storage license",
+      "XRAY_MASSIVE_LICENSE_EVIDENCE_SHA256 secret real document digest"
+    ],
+    "license_note": "Operator flags are declarations, not independent third-party authorization. Massive market data terms restrict non-display/derived investment strategy usage absent a separate license grant. Personal use FAQ about running scripts does NOT by itself resolve this restriction.",
+    "official_docs": [
+      "https://massive.com/pricing?product=stocks",
+      "https://massive.com/docs/rest/stocks/aggregates/daily-market-summary",
+      "https://massive.com/legal/market-data-terms-of-service",
+      "https://massive.com/knowledge-base/article/which-plan-do-i-need-to-show-massive-data-in-my-own-app"
+    ],
+    "test_run_id": 37989886198,
+    "test_job_id": 114021040709,
+    "test_run_result": "SUCCESS_FULL_SCOPE_CODE_TESTS_ONLY",
+    "source_access_actual_status": "BLOCKED_AUTH_OR_NONDISPLAY_AND_PRIVATE_CACHE_RIGHTS",
+    "real_260_day_collected_count": 0,
+    "live_514x260_plus_52_vendor_entitlement_attested": false,
+    "private_260_52_validation_status": "BLOCKED_INCOMPLETE_OR_NO_AUTH",
+    "e2e_attestation_status": "BLOCKED",
+    "e2e_blockers": [
+      "CURRENT_MC_AUTHORITY_MISSING",
+      "CURRENT_TERMINAL_FROZEN_OR_INCOMPLETE",
+      "IDENTITY_PARTITION_INCOMPLETE",
+      "NOTIFICATION_DEVICE_RECEIPT_NOT_PROVEN",
+      "PRICE_BLOCKED_30_SESSION_BARS",
+      "TERMINAL_CURRENT_MC_CHAIN_NOT_PROVEN"
+    ],
+    "production_primary_mc_pass_count": 0,
+    "production_HISTORY_PASS": false,
+    "production_R92_AL": false,
+    "stage_thresholds_changed": false,
+    "execution": "NONE",
+    "real_money": "NO-GO",
+    "last_tested_workflow_commit": "b09ce7c1e5e92286e11af74182f2f87d975becb6",
+    "last_tested_collector_commit": "fd8f57a6c51a89031a68ebe9e9fcfc313aa572e1",
+    "completion_claim": false
+  },
+  "next_actions_order_exact": [
+    "Actual legal right to use Massive Stocks Basic or another $0 provider as private unattended non-display investment-strategy research, retaining encrypted raw history and emitting nonreconstructible research alerts. Do not set license flags without real terms/permission.",
+    "Actual source account owner adds necessary GitHub Actions secrets/vars; never share API key in chat or public repo.",
+    "Three-hour source workflow must show nonzero real API calls, encrypted same-ASOF checkpoints, 260 real finished XNAS session days and exact 52 completed calendar week closes, with missing ticker/IPO/continuity separately explained.",
+    "Separate full 514 current class-specific same-ASOF primary MC provenance including history, share-class FIGI and SEC/IR corporate actions; no elevation of Rallies/Massive duplicated market source to independent confirmation.",
+    "Rebuild source-exact current MC > HISTORY > weekly > regime > earnings/legal > risk/RR > final; preserve frozen C4.17 A 1.5/1.1 and B/C/D 2.0/1.5 and <=8% entry-stop risk; calibration evidence required before threshold revisions.",
+    "Confirm real R92 research candidate, dedup/expiry, GitHub delivery record and actual device delivery separately; EXECUTION NONE, REAL_MONEY NO-GO."
+  ]
 }
