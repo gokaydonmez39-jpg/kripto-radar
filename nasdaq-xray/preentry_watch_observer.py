@@ -10,6 +10,7 @@ import collections
 import json
 import math
 import tempfile
+from datetime import datetime, timezone
 from pathlib import Path
 
 import research_watch_radar as existing
@@ -171,6 +172,8 @@ def build(root):
     live_armed=armed if source_ready else []
     return {
         "schema":SCHEMA,"asof_et":asof,
+        "observed_at_utc":datetime.now(timezone.utc).isoformat(),
+        "source_blobs":radar["source_blobs"],
         "source_asof":{"terminal":asof,"master":master.get("asof_et"),
                        "price":price.get("asof_et"),"root":root_state.get("asof_et")},
         "source_exact":radar["source_exact"],
