@@ -134,12 +134,15 @@ def select_shares(facts:dict,sub:dict,asof:str,expected_cik:str=CIK) -> dict:
                   .get("units") or {}).get("shares") or []
             reason=("NO_DEI_BUT_GAAP_SHARES_AVAILABLE_CLASS_UNRESOLVED"
                     if gaap else "NO_SEC_DEI_OR_GAAP_SHARES_FACT")
-        elif diag["post_close"]>0 and not diag["stale"]:
+        elif diag["missing_accession"]>0:
+            # A viable PIT fact without exact accession is actionable even if
+            # other unrelated XBRL facts are stale/future; don't hide the
+            # candidate-specific missing evidence behind unrelated rows.
+            reason="SEC_FACT_ACCESSION_NOT_VERIFIED_IN_RECENT_SUBMISSIONS"
+        elif diag["post_close"]>0:
             reason="SEC_FACT_ACCEPTED_AFTER_RTH_CLOSE"
         elif diag["stale"]>0:
             reason="SEC_SHARES_STALE_OR_FUTURE_OBSERVATION"
-        elif diag["missing_accession"]>0:
-            reason="SEC_FACT_ACCESSION_NOT_VERIFIED_IN_RECENT_SUBMISSIONS"
         elif diag["invalid_fact"]>0:
             reason="SEC_FACT_MALFORMED_OR_INVALID"
         else:
