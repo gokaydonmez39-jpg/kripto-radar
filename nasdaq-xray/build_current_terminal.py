@@ -237,14 +237,12 @@ def find_mc(price,price_blob):
             pass
     active=_active_mc_rows(rows,price)
     exact=[r for r in active if r[2]["blob_exact"]]
-    semantic=[r for r in active if not r[2]["blob_exact"]]
-    # Exact content-address binding always outranks a semantic rebind. Explicit
-    # immutable supersession may retire a proven predecessor, but ambiguity among
-    # remaining active authorities still fails closed.
-    if len(exact)==1:return exact[0]
-    if len(exact)>1:raise RuntimeError(f"MC_BRIDGE_EXACT_BINDING_MATCHES:{len(exact)}")
-    if len(semantic)!=1:raise RuntimeError(f"MC_BRIDGE_SEMANTIC_BINDING_MATCHES:{len(semantic)}")
-    return semantic[0]
+    # Equal ticker sets and pass hashes cannot attest that source PRICE/DV30
+    # observations are unchanged. Only the exact Git blob is authoritative.
+    # Supersession is still verified above; never resurrect a stale source.
+    if len(exact)!=1:
+        raise RuntimeError(f"MC_BRIDGE_EXACT_PRICE_BLOB_REQUIRED:{len(exact)}")
+    return exact[0]
 
 def main():
     d={k:load(p) for k,p in FILES.items()}
