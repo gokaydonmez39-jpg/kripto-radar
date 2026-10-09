@@ -38,10 +38,15 @@ def classify(now, runs):
     latest = runs[0] if runs else None
     success = next((r for r in runs if r.get("status")=="completed" and
                     r.get("conclusion")=="success"),None)
-    active = [r for r in runs if r.get("status") in ACTIVE]
+    # The scheduler contract bounds active-run suppression to 3300s.
+    # An orphaned/pending Actions run must not suppress restart forever.
+    active = [r for r in runs if r.get("status") in ACTIVE
+              and -60 <= (now-timestamp(r["created_at"])).total_seconds() <= 3300]
+    expired_active = [r for r in runs if r.get("status") in ACTIVE
+                      and (now-timestamp(r["created_at"])).total_seconds() > 3300]
     success_age = (now-timestamp(success["created_at"])).total_seconds() if success else None
     last_age = (now-timestamp(latest["created_at"])).total_seconds() if latest else None
-    if success_age is not None and success_age <= 4500:
+    if success_age is not None and -60 <= success_age <= 4500:
         decision = "FRESH_ROOT_SUCCESS"
     elif active:
         decision = "ACTIVE_ROOT_SUPPRESS"
@@ -55,6 +60,7 @@ def classify(now, runs):
         "last_success_id":success.get("id") if success else None,
         "last_success_age_seconds":round(success_age) if success_age is not None else None,
         "active_root_ids":[x.get("id") for x in active],
+        "expired_active_root_ids":[x.get("id") for x in expired_active],
     }
 
 def signature(runs):
@@ -115,6 +121,10 @@ def selftest():
     assert classify(now,fresh)["decision"]=="FRESH_ROOT_SUCCESS"
     assert classify(now,stale)["dispatch_allowed"] is True
     assert classify(now,active)["decision"]=="ACTIVE_ROOT_SUPPRESS"
+    # A stale orphaned queued/in_progress run is not an infinite kill-switch.
+    zombie=[r(8,"2026-10-08T08:00:00Z","in_progress")]+stale
+    assert classify(now,zombie)["decision"]=="STALE_ROOT_ELIGIBLE"
+    assert classify(now,zombie)["expired_active_root_ids"]==[8]
     assert classify(now,cooldown)["decision"]=="RECENT_ROOT_COOLDOWN"
     assert classify(dt.datetime(2026,10,10,11,tzinfo=UTC),stale)["decision"]=="WEEKEND_OBSERVE_ONLY"
     assert two_read_authorized(stale,stale,"a"*40,"a"*40,now)[0] is True
