@@ -2,6 +2,15 @@ name: XRAY GitHub-Native Root Watchdog
 on:
   schedule:
     - cron: "*/15 * * * 1-5"
+  # GitHub schedule alone is best-effort and can arrive hours late.
+  # Independent upstream completions must also wake the fail-closed watchdog.
+  workflow_run:
+    workflows:
+      - "XRAY 09-Oct Free Preopen 15-Minute Watch"
+      - "XRAY Live Truth Attestation"
+      - "XRAY E2E Production Readiness (Fail-Closed)"
+    types: [completed]
+    branches: [main]
   workflow_dispatch:
   push:
     branches: [main]
@@ -20,6 +29,8 @@ jobs:
     timeout-minutes: 4
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
