@@ -30,6 +30,14 @@ def git_blob_sha(data: bytes) -> str:
 
 def private_credential_classification(env: dict) -> dict:
     """Return public classification only; NEVER write key values to output."""
+    if str(env.get("XRAY_MC_CREDENTIAL_PROBE_ENABLED") or "").lower() != "true":
+        return {
+            "alpaca_history": "NOT_PROBED_BY_POST_MC_WORKFLOW",
+            "massive_shadow": "NOT_PROBED_BY_POST_MC_WORKFLOW",
+            "bigdata_primary_runner": "NOT_ATTESTED_BY_THIS_WITNESS",
+            "automated_use_rights_proven": False,
+            "source_promotion_allowed": False,
+        }
     alpaca_id = bool(str(env.get("XRAY_ALPACA_DATA_KEY_ID") or "").strip())
     alpaca_secret = bool(str(env.get("XRAY_ALPACA_DATA_SECRET_KEY") or "").strip())
     if alpaca_id and alpaca_secret:
@@ -163,7 +171,9 @@ def selftest() -> None:
     assert base["source_status"] == "CURRENT_MC_BRIDGE_ABSENT"
     assert base["price_resolver_git_blob_exact"] is True
     assert base["price_symbol_local_blocked"] == 45
-    assert base["credentials"]["alpaca_history"] == "CREDENTIAL_PAIR_ABSENT"
+    assert base["credentials"]["alpaca_history"] == "NOT_PROBED_BY_POST_MC_WORKFLOW"
+    assert private_credential_classification({"XRAY_MC_CREDENTIAL_PROBE_ENABLED": "true"})[
+        "alpaca_history"] == "CREDENTIAL_PAIR_ABSENT"
     assert not base["current_mc_primary_measured_proven"] and not base["alpha_authority"]
     with_file = summarize(objs, blobs,
         [MC_PREFIX + "20261008_c417_dv30_v1.json"], {})
