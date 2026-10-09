@@ -931,6 +931,7 @@ jobs:
           done < /tmp/xray_full_scope_out
 
       - name: Commit current pre-MC artifacts
+        id: precommit
         if: steps.identity_gate.outputs.ready == 'true' && (steps.rollover.outputs.build == 'true' || steps.rollover.outputs.policy_replay == 'true' || steps.rollover.outputs.coverage_repair == 'true' || steps.rollover.outputs.resolver_refresh == 'true' || steps.rollover.outputs.bridge_refresh == 'true' || steps.rollover.outputs.publication_replay == 'true' || steps.full_scope.outputs.created == 'true')
         shell: bash
         run: |
@@ -987,11 +988,13 @@ jobs:
             done
             git add -A -- "${files[@]}" 'nasdaq-xray/canonical_current_resolver_chunk_*.json' 2>/dev/null || true
             if git diff --cached --quiet; then
+              echo "changed=false" >> "$GITHUB_OUTPUT"
               echo "XRAY_FACTORY_COMMIT=NO_CHANGE"
               exit 0
             fi
             git commit -m "chore(xray): current epoch pre-MC factory [skip ci]"
             if git push origin HEAD:main; then
+              echo "changed=true" >> "$GITHUB_OUTPUT"
               echo "XRAY_FACTORY_COMMIT=PASS"
               exit 0
             fi
@@ -1004,7 +1007,10 @@ jobs:
       # workflow_dispatch. Explicit bounded relay keeps [skip ci] checkpoint
       # commits and GitHub chain-depth suppression from swallowing the handoff.
       - name: Atomically wake Post-MC from exact current Pre-MC sources
-        if: success()
+        # A frozen healthy no-op produces no new source. Never wake a doomed
+        # Post-MC retry for the unchanged MC-source gap; the independent Post-MC
+        # cron and its material-change push triggers remain available.
+        if: success() && steps.precommit.outputs.changed == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
