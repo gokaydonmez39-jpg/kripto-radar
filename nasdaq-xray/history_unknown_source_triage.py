@@ -33,7 +33,9 @@ def reason_code(info):
         return "NETWORK_OR_PROVIDER_EXCEPTION"
     if isinstance(info,str) and ":" in raw:
         error_type=raw.split(":",1)[0]
-        if re.fullmatch(r"[A-Za-z][A-Za-z0-9_]{0,55}",error_type):
+        if (re.fullmatch(r"[A-Za-z][A-Za-z0-9_]{0,55}",error_type)
+                and (error_type.endswith(("Error","Exception","Timeout"))
+                     or error_type in {"RemoteDisconnected","ConnectionReset"})):
             return "PROVIDER_EXCEPTION_"+error_type
     if not raw:
         return "NO_REASON_GIVEN"
