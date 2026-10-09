@@ -7,6 +7,7 @@ on:
       - "nasdaq-xray/massive_grouped_history_resume.py"
       - "nasdaq-xray/grouped_history_full_pipeline_selftest.py"
       - "nasdaq-xray/qualified_history_ingress_shadow.py"
+      - "nasdaq-xray/source_epoch_freshness_guard.py"
       - "nasdaq-xray/qualified_history_ingress_shadow.py"
       - ".github/workflows/xray-massive-grouped-history-resume.yml"
   schedule:
@@ -44,6 +45,23 @@ jobs:
           python nasdaq-xray/massive_grouped_history_resume.py --selftest
           python -m py_compile nasdaq-xray/grouped_history_full_pipeline_selftest.py
           python nasdaq-xray/grouped_history_full_pipeline_selftest.py
+      - name: Independent official last-complete Nasdaq ASOF gate, no false GO
+        run: |
+          python -m py_compile nasdaq-xray/source_epoch_freshness_guard.py
+          python nasdaq-xray/source_epoch_freshness_guard.py --selftest
+          python nasdaq-xray/source_epoch_freshness_guard.py \
+            --out "$RUNNER_TEMP/xray_grouped_source_freshness.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          x=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_grouped_source_freshness.json").read_text())
+          assert x["schema"]=="XRAY_OFFICIAL_NASDAQ_COMPLETE_SESSION_FRESHNESS_V1"
+          assert x["AL_or_execution_authorized"] is False
+          assert x["primary_mc_authority"] is False and x["canonical_history_authority"] is False
+          assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
+          print("XRAY_LAST_COMPLETED_SESSION="+x["latest_completed_nasdaq_session"])
+          print("XRAY_CANONICAL_PRICE_TERMINAL_FRESHNESS="+str(x["freshness_ready"]).lower())
+          PY
       - name: Restore authenticated previous private history
         shell: bash
         run: |
@@ -159,5 +177,6 @@ jobs:
             ${{ runner.temp }}/xray_grouped_history_health.json
             ${{ runner.temp }}/xray_grouped_private_260_52_validation.json
             ${{ runner.temp }}/xray_grouped_chain_readiness.json
+            ${{ runner.temp }}/xray_grouped_source_freshness.json
           if-no-files-found: ignore
           retention-days: 14
