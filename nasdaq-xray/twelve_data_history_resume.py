@@ -335,7 +335,67 @@ def selftest():
            "XRAY_TWELVE_LICENSE_EVIDENCE_SHA256":"INVALID"}):
             assert not authorized(bad_env)
         assert not health(fresh(smaller),smaller,"BLOCKED",0)["R92_AL"]
-    print("XRAY_TWELVE_260_RESUME_SELFTEST=PASS_OFFLINE_VENDOR_NEGATIVES_ENCRYPTION_TAMPER_QUOTA_SCOPE_NO_ALPHA")
+        # Exercise the ACTUAL run orchestration with only synthetic in-memory
+        # EOD bars. It must resume its ciphertext, respect rolling quota and
+        # never try a provider call when license/key authorization is absent.
+        from types import SimpleNamespace
+        from unittest.mock import patch
+        stub_calls=[]
+        fake_env={"XRAY_TWELVE_DATA_API_KEY":"OFFLINE-TEST-ONLY-"+"A"*32,
+                  "XRAY_TWELVE_NONDISPLAY_LICENSE_OK":"true",
+                  "XRAY_TWELVE_PRIVATE_CACHE_RIGHTS_OK":"true",
+                  "XRAY_TWELVE_LICENSE_EVIDENCE_SHA256":"a"*64}
+        def vendor_fake(sym,scope_arg,key):
+            assert scope_arg["asof"]==smaller["asof"]
+            assert key==fake_env["XRAY_TWELVE_DATA_API_KEY"]
+            stub_calls.append(sym)
+            response=deepcopy(fixture)
+            response["meta"]["symbol"]=sym
+            return response
+        with patch(__name__+".scope",lambda:smaller):
+            a1=SimpleNamespace(report=Path(tmp)/"first.json",
+                               checkpoint=Path(tmp)/"first.enc",
+                               restore=Path(tmp)/"no-prior.enc",limit=1)
+            deny=run(a1,env={},transport=lambda *a: (_ for _ in ()).throw(
+                AssertionError("UNLICENSED_NETWORK_CALLED")))
+            assert deny["status"]=="BLOCKED_KEY_OR_UNVERIFIED_NONDISPLAY_CACHE_RIGHTS"
+            assert deny["vendor_requests_this_run"]==0 and not stub_calls
+            one=run(a1,env=fake_env,transport=vendor_fake,
+                    now=lambda:100000.0,sleep=lambda _:None)
+            assert one["vendor_requests_this_run"]==1 and one["queried_symbols"]==1
+            a2=SimpleNamespace(report=Path(tmp)/"second.json",
+                               checkpoint=Path(tmp)/"second.enc",
+                               restore=a1.checkpoint,limit=1)
+            two=run(a2,env=fake_env,transport=vendor_fake,
+                    now=lambda:100009.0,sleep=lambda _:None)
+            assert two["queried_symbols"]==len(smaller["targets"])
+            assert two["complete_260_symbols"]==len(smaller["targets"])
+            assert two["status"]=="COMPLETE_260_PRIVATE_TRANSPORT_ONLY"
+            assert len(stub_calls)==2
+            cp2,reused=load(a2.checkpoint,smaller,crypt(fake_env["XRAY_TWELVE_DATA_API_KEY"]))
+            assert reused and export_private(cp2,smaller,Path(tmp)/"private")==2
+            assert len(list((Path(tmp)/"private").glob("*.csv.gz")))==2
+            # An authenticated ASOF/PRICE revision discards all bars BUT MUST
+            # carry signed 24h request accounting into the next cohort.
+            changed=dict(smaller,price_sha="2"*40)
+            carried,matched=load(a2.checkpoint,changed,crypt(fake_env["XRAY_TWELVE_DATA_API_KEY"]))
+            assert not matched and not carried["bars"]
+            assert len(carried["rate_times"])==2
+            limited=fresh(smaller,rate_times=[
+                99990.0+i*0.01 for i in range(DAY_BUDGET)],last_call=99997.99)
+            assert exact(limited,smaller)
+            capped=Path(tmp)/"capped.enc"
+            save(capped,limited,smaller,crypt(fake_env["XRAY_TWELVE_DATA_API_KEY"]))
+            a3=SimpleNamespace(report=Path(tmp)/"capped.json",
+                               checkpoint=Path(tmp)/"after_cap.enc",
+                               restore=capped,limit=1)
+            n_calls=len(stub_calls)
+            blocked=run(a3,env=fake_env,transport=vendor_fake,
+                        now=lambda:100000.0,sleep=lambda _:None)
+            assert blocked["status"]=="BLOCKED_ROLLING_24H_LOCAL_CREDIT_BUDGET"
+            assert blocked["vendor_requests_this_run"]==0
+            assert len(stub_calls)==n_calls
+    print("XRAY_TWELVE_260_RESUME_SELFTEST=PASS_OFFLINE_VENDOR_NEGATIVES_ENCRYPTION_RESUME_STALE_QUOTA_CAP_NO_ALPHA")
 
 def main():
     p=argparse.ArgumentParser()
