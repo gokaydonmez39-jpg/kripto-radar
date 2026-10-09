@@ -19,7 +19,10 @@ import os
 import time
 import urllib.error
 import urllib.request
-from datetime import date
+from datetime import date,datetime,time as dtime,timedelta,timezone
+from zoneinfo import ZoneInfo
+import pandas_market_calendars as mcal
+from source_epoch_freshness_guard import last_complete_session
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
@@ -105,6 +108,9 @@ def exact(cp,s):
             o,h,l,c,v=bar[1:]
             if h<max(o,c,l) or l>min(o,c):return False
         if [row[0] for row in rows]!=sorted(seen):return False
+        # Old checkpoints or partially published EOD cannot claim one ticker
+        # has already been fetched for the current market-data epoch.
+        if s["asof"] not in seen:return False
     return True
 
 def save(path,cp,s,c):
@@ -168,7 +174,37 @@ def parse_response(data,symbol,s):
         o,h,l,c,v=vals
         if h<max(o,l,c) or l>min(o,c):raise ValueError("INVALID_OHLC_RANGE")
         if raw in valid:ret[raw]=[raw,*vals]
+    # A vendor returning 259 old bars on a fresh but not-yet-published ASOF
+    # MUST NOT silently complete this symbol in the checkpoint. Retry safely.
+    if s["asof"] not in ret:
+        raise ProviderDenied("LATEST_COMPLETED_SESSION_NOT_YET_PUBLISHED")
     return [ret[k] for k in sorted(ret)]
+
+def publication_state(s,ts):
+    """Source-specific next-Nasdaq-trading-day EOD publication embargo.
+
+    Twelve Data documents U.S. consolidated EOD availability only AFTER
+    midnight ET on the next trading day. +15m is merely scheduling safety,
+    NOT proof data exists. Never call a vendor against a stale PRICE ASOF.
+    """
+    if type(ts) not in (int,float) or not math.isfinite(ts) or ts<=0:
+        raise ValueError("PROVIDER_CLOCK_INVALID")
+    now_utc=datetime.fromtimestamp(ts,tz=timezone.utc)
+    current=last_complete_session(now_utc)
+    if current!=s["asof"]:
+        return "BLOCKED_STALE_SCOPE_REQUIRES_CURRENT_ASOF"
+    session=date.fromisoformat(s["asof"])
+    next_days=mcal.get_calendar("NASDAQ").valid_days(
+        start_date=(session+timedelta(days=1)).isoformat(),
+        end_date=(session+timedelta(days=15)).isoformat())
+    if len(next_days)<1:
+        raise ValueError("NEXT_OFFICIAL_SESSION_NOT_FOUND")
+    next_day=next_days[0].date()
+    earliest=datetime.combine(next_day,dtime(0,15),
+                              tzinfo=ZoneInfo("America/New_York")).astimezone(timezone.utc)
+    if now_utc<earliest:
+        return "BLOCKED_PROVIDER_EOD_PUBLICATION_WINDOW"
+    return "PROVIDER_PUBLICATION_WINDOW_ELAPSED_NOT_DATA_PROOF"
 
 def fetch(symbol,s,key):
     # Twelve /time_series explicitly supports adjust=none. The credential is
@@ -189,7 +225,10 @@ def safe_error(e):
         if e.code in (401,402,403):return "BLOCKED_PROVIDER_AUTH_OR_ENTITLEMENT"
         return "BLOCKED_VENDOR_HTTP"
     if isinstance(e,(urllib.error.URLError,TimeoutError)):return "BLOCKED_VENDOR_TRANSPORT"
-    if isinstance(e,ProviderDenied):return "BLOCKED_PROVIDER_RESPONSE_NOT_ENTITLED_OR_INVALID"
+    if isinstance(e,ProviderDenied):
+        if str(e)=="LATEST_COMPLETED_SESSION_NOT_YET_PUBLISHED":
+            return "BLOCKED_VENDOR_EOD_LATEST_SESSION_ABSENT_RETRY_REQUIRED"
+        return "BLOCKED_PROVIDER_RESPONSE_NOT_ENTITLED_OR_INVALID"
     return "BLOCKED_VENDOR_OHLCV_VALIDATION"
 
 def health(cp,s,status,requests):
@@ -222,6 +261,13 @@ def run(args,env=None,transport=fetch,now=time.time,sleep=time.sleep):
     if not authorized(env):
         out=health(fresh(s),s,"BLOCKED_KEY_OR_UNVERIFIED_NONDISPLAY_CACHE_RIGHTS",0)
         report_path.write_text(json.dumps(out,sort_keys=True)+"\n")
+        return out
+    timing=publication_state(s,now())
+    if timing!="PROVIDER_PUBLICATION_WINDOW_ELAPSED_NOT_DATA_PROOF":
+        out=health(fresh(s),s,timing,0)
+        report_path.write_text(json.dumps(out,sort_keys=True)+"\n")
+        print("XRAY_TWELVE_HISTORY="+timing)
+        print("XRAY_TWELVE_VENDOR_CALLS=0")
         return out
     key=env["XRAY_TWELVE_DATA_API_KEY"]
     c=crypt(key)
@@ -316,6 +362,16 @@ def selftest():
             except (ValueError,ProviderDenied):continue
             raise AssertionError("INVALID_VENDOR_BAR_ACCEPTED_"+kind)
         assert not authorized({})
+        # Provider's published timestamp: a Friday session is not necessarily
+        # available on Saturday or Sunday; next trading day is Monday.
+        friday=dict(smaller,asof="2026-10-09")
+        def ts(year,month,day,hour,minute):
+            return datetime(year,month,day,hour,minute,tzinfo=timezone.utc).timestamp()
+        assert publication_state(friday,ts(2026,10,10,12,0))=="BLOCKED_PROVIDER_EOD_PUBLICATION_WINDOW"
+        assert publication_state(friday,ts(2026,10,12,4,10))=="BLOCKED_PROVIDER_EOD_PUBLICATION_WINDOW"
+        assert publication_state(friday,ts(2026,10,12,4,16))=="PROVIDER_PUBLICATION_WINDOW_ELAPSED_NOT_DATA_PROOF"
+        assert publication_state(friday,ts(2026,10,12,21,0))=="BLOCKED_STALE_SCOPE_REQUIRES_CURRENT_ASOF"
+        assert publication_state(smaller,ts(2026,10,9,5,15))=="PROVIDER_PUBLICATION_WINDOW_ELAPSED_NOT_DATA_PROOF"
         cp=fresh(smaller)
         cp["bars"][symbol]=good
         cp["requests_total"]=1
@@ -414,7 +470,7 @@ def selftest():
             assert blocked["status"]=="BLOCKED_ROLLING_24H_LOCAL_CREDIT_BUDGET"
             assert blocked["vendor_requests_this_run"]==0
             assert len(stub_calls)==n_calls
-    print("XRAY_TWELVE_260_RESUME_SELFTEST=PASS_OFFLINE_VENDOR_NEGATIVES_ENCRYPTION_RESUME_STALE_QUOTA_CAP_NO_ALPHA")
+    print("XRAY_TWELVE_260_RESUME_SELFTEST=PASS_NEXT_TRADING_DAY_ET_PUBLICATION_EMBARGO_MISSING_LATEST_RETRY_STALE_QUOTA_ENCRYPTION_NO_ALPHA")
 
 def main():
     p=argparse.ArgumentParser()
