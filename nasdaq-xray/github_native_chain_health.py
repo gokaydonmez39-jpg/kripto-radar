@@ -95,11 +95,28 @@ def classify(now, blobs, files, main_stable):
                              "DATA_PLANE_PASS_CANONICAL_DOWNSTREAM_DEFERRED"):
         issues.append("ROOT_DATA_PLANE_STATUS_UNVERIFIED")
     price_path=ROOT+"canonical_current_price_dv30.json"
-    resolver_price_exact=(resolver.get("source_price_blob_sha")==blobs.get(price_path)
-                          and resolver.get("price_blocked_count")==0
-                          and resolver.get("price_unknown_count")==0)
+    # SHA binding and per-symbol coverage are different controls.
+    # A frozen PRICE snapshot can contain explicit blocked symbols without
+    # changing the correctness of its exact Git-blob resolver link.
+    current_price_blob=blobs.get(price_path)
+    resolver_price_exact=bool(
+        isinstance(current_price_blob,str) and len(current_price_blob)==40
+        and resolver.get("source_price_blob_sha")==current_price_blob
+    )
     if not resolver_price_exact:
         issues.append("CURRENT_PRICE_RESOLVER_BINDING_UNPROVEN")
+    try:
+        resolver_price_blocked=int(resolver.get("price_blocked_count",-1))
+        resolver_price_unknown=int(resolver.get("price_unknown_count",-1))
+    except (ValueError,TypeError):
+        resolver_price_blocked=resolver_price_unknown=-1
+    if resolver_price_blocked<0 or resolver_price_unknown<0:
+        issues.append("PRICE_RESOLVER_COVERAGE_COUNTS_INVALID")
+    else:
+        if resolver_price_blocked:
+            issues.append("PRICE_SYMBOL_LOCAL_BLOCKED_PRESENT")
+        if resolver_price_unknown:
+            issues.append("PRICE_SYMBOL_LOCAL_UNKNOWN_PRESENT")
     age=(now-timestamp(official.get("generated_at_utc"))).total_seconds()
     if age>900:
         issues.append("OFFICIAL_GUARD_STALE_OVER_900S")
@@ -132,6 +149,9 @@ def classify(now, blobs, files, main_stable):
         "current_mc_bridge_artifact_presence_only":bool(current_mc_bridges),
         "current_mc_primary_authority_proven_by_watchdog":False,
         "price_resolver_exact_current":resolver_price_exact,
+        "price_resolver_source_blob_match_only":resolver_price_exact,
+        "price_symbol_local_blocked_count":resolver_price_blocked,
+        "price_symbol_local_unknown_count":resolver_price_unknown,
         "price_pass_count_from_exact_resolver":resolver.get("source_price_pass_count") if resolver_price_exact else None,
         "official_guard_age_seconds":round(age),
         "geometry_event_unknown_count":events.get("affected_geometry_event_unknown_count"),
@@ -183,6 +203,17 @@ def selftest():
     assert v["status"]=="OPEN_INCIDENTS_FAIL_CLOSED"
     assert v["terminal_drift_keys"]==[]
     assert v["price_resolver_exact_current"] is True
+    blocked_resolver=dict(objects["resolver"],price_blocked_count=45)
+    blocked_case=dict(objects,resolver=blocked_resolver)
+    blocked_v=classify(now,blobs,blocked_case,True)
+    assert blocked_v["price_resolver_exact_current"] is True
+    assert "CURRENT_PRICE_RESOLVER_BINDING_UNPROVEN" not in blocked_v["issues"]
+    assert "PRICE_SYMBOL_LOCAL_BLOCKED_PRESENT" in blocked_v["issues"]
+    assert blocked_v["price_symbol_local_blocked_count"]==45
+    missing_counts=dict(objects,resolver=dict(objects["resolver"],price_blocked_count="invalid"))
+    assert "PRICE_RESOLVER_COVERAGE_COUNTS_INVALID" in classify(now,blobs,missing_counts,True)["issues"]
+    wrong_sha=dict(objects,resolver=dict(objects["resolver"],source_price_blob_sha="wrong"))
+    assert "CURRENT_PRICE_RESOLVER_BINDING_UNPROVEN" in classify(now,blobs,wrong_sha,True)["issues"]
     assert "EXTERNAL_G9_ENTITLEMENT_UNPROVEN" not in v["issues"]
     assert "EXTERNAL_ACCOUNT_READ_SCOPE_UNPROVEN" not in v["issues"]
     assert set(v["legacy_full_go_blockers"])=={
