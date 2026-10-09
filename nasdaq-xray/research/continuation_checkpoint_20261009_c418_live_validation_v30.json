@@ -1,0 +1,111 @@
+{
+  "schema": "XRAY_20261009_C418_LIVE_SOURCE_INDEPENDENCE_REPAIR_V30",
+  "precedence": "LIVE_MAIN_AND_ACTIONS_OVERRIDE_THIS_CHECKPOINT",
+  "repository": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "observed_source_head": "5fabe50217b7af23bfe917541b6646e310387136",
+  "observed_date": "2026-10-09",
+  "predecessor": "nasdaq-xray/research/continuation_checkpoint_20261009_c418_multisource_validation_v29.json",
+  "mode": "RESEARCH_ONLY_MANUAL_DECISION",
+  "policy_effective": "C4.17",
+  "source_successor_candidate": "C4.18-SOURCE-SUCCESSOR-PROPOSAL",
+  "control": "C4.27",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "alpha_threshold_change": false,
+  "paid_service_activated": false,
+  "automation_created": 0,
+  "repairs": [
+    {
+      "severity": "HIGH",
+      "issue": "C418 source manifest could bind to arbitrary PRICE SHA with matching self-reports",
+      "negative_run": 37971284131,
+      "fix_commit": "2ba7132216a29a41b7277baa963500b770027e89",
+      "passing_run": 37971390664,
+      "effect": "EXACT_CANONICAL_PRICE_GIT_SHA_ASOF_AND_TICKER_REQUIRED",
+      "source": "nasdaq-xray/c418_multi_source_guard.py"
+    },
+    {
+      "severity": "MEDIUM",
+      "issue": "C418 workflow checkout main could differ from trigger revision",
+      "fix_commit": "325b4739ddb0fee74e73b084bbef978b6fc99376",
+      "passing_run": 37971445309,
+      "effect": "RUN_GITHUB_SHA_MUST_EQUAL_CHECKED_OUT_HEAD",
+      "source": ".github/workflows/xray-c418-multi-source-contract.yml"
+    },
+    {
+      "severity": "HIGH",
+      "issue": "Self-declared upstream_root strings counted as independent MC providers without trusted attestation",
+      "negative_run": 37971992072,
+      "fix_commit": "5fabe50217b7af23bfe917541b6646e310387136",
+      "passing_run": 37972086167,
+      "effect": "COUNT_ZERO_VERIFIED_INDEPENDENT_MC_PROVIDERS_IF_UNTRUSTED; REPORT_UPSTREAM_INDEPENDENCE_UNATTESTED",
+      "source": "nasdaq-xray/c418_multi_source_guard.py"
+    }
+  ],
+  "actual_sec_github_run": {
+    "run": 37971582678,
+    "conclusion": "SUCCESS",
+    "sample_count": 8,
+    "SHADOW_SHARES_VINTAGE_ONLY": 6,
+    "UNKNOWN": 2,
+    "unknown_reasons": {
+      "GOOGL": "NO_DEI_BUT_GAAP_SHARES_AVAILABLE_CLASS_UNRESOLVED",
+      "META": "NO_SEC_DEI_OR_GAAP_SHARES_FACT"
+    },
+    "c417_primary_created": 0,
+    "production_alpha_authority": false,
+    "scope": "EIGHT_CANARIES_NOT_FULL_UNIVERSE",
+    "notes": "SEC XBRL share vintage only; no exact shares-class corporate actions and PIT-close MC validated"
+  },
+  "source_research": {
+    "SEC_API": "CAN_READ_CANARY_ON_GITHUB",
+    "Bigdata_current_credit_from_connected_readback": 0,
+    "Massive_unattended_non_display_license": "NOT_ATTESTED",
+    "Alpaca_unattended_data_rights": "NOT_ATTESTED",
+    "trusted_upstream_signing_roots": "NOT_CONFIGURED",
+    "c418_policy_activated": false,
+    "canon_primary_mc_created": 0
+  },
+  "latest_production_readback": {
+    "root_asof": "2026-10-08",
+    "root_status": "PARTIAL_HISTORY",
+    "root_history_unknown": 231,
+    "terminal_asof": "2026-10-07",
+    "terminal_status": "PARTIAL",
+    "terminal_mc_primary_pass": 0,
+    "terminal_r92": 0,
+    "delivery_ledger_entries": 0,
+    "comparables_for_60": 0
+  },
+  "pending": [
+    {
+      "priority": "P0",
+      "id": "MC_LICENSE_AND_INDEPENDENCE",
+      "evidence_needed": "Provider-granted unattended/non-display rights + immutable source lineage + exact date/class/price and independent MC verification; user permission not substitute for provider contracts."
+    },
+    {
+      "priority": "P0",
+      "id": "HISTORY_231",
+      "evidence_needed": "Licensed complete 260 Nasdaq sessions, 52 completed weeks, listing/CUSIP and corporate actions reconciliation for every unresolved symbol."
+    },
+    {
+      "priority": "P0",
+      "id": "SAME_ASOF_CHAIN",
+      "evidence_needed": "Run MC->HISTORY->WEEKLY->REGIME->EARNINGS->LEGAL->RISK_RR->FINAL at current same ASOF; each source Git SHA exact."
+    },
+    {
+      "priority": "P1",
+      "id": "LIVE_R92_DELIVERY",
+      "evidence_needed": "Only when real registered R92 candidate exists: durable GitHub issue, dedup, expiry, separate phone receipt."
+    },
+    {
+      "priority": "P2",
+      "id": "FORWARD_METRICS",
+      "evidence_needed": "60 full comparable prospective source-exact sessions and 2-8 session outcomes net of spread/slippage with walk-forward."
+    }
+  ],
+  "status": "INCOMPLETE_PRODUCTION_NO_GO",
+  "integrity": "NO_REAL_AL_NO_SECRET_NO_VENDOR_RAW_MARKET_BARS_PUBLISHED"
+}
