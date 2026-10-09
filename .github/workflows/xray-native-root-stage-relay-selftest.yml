@@ -1,0 +1,46 @@
+name: XRAY Root Stage Relay Regression (No Dispatch)
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/github_native_stage_relay.py"
+      - ".github/workflows/nasdaq-xray-daily.yml"
+      - ".github/workflows/xray-native-root-stage-relay-selftest.yml"
+permissions:
+  contents: read
+jobs:
+  source-epoch-gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile root/watchdog and zero-alpha stage relay
+        run: |
+          python -m py_compile nasdaq-xray/github_native_stage_relay.py nasdaq-xray/github_native_root_watchdog.py
+          python nasdaq-xray/github_native_stage_relay.py --selftest
+      - name: Verify live 8 Oct root versus authoritative terminal (read only)
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          b=Path("nasdaq-xray")
+          root=json.loads((b/"orchestrator_state.json").read_text())
+          master=json.loads((b/"canonical_current_master_manifest.json").read_text())
+          price=json.loads((b/"canonical_current_price_dv30.json").read_text())
+          terminal=json.loads((b/"canonical_current_terminal.json").read_text())
+          assert root["execution"]=="NONE" and root["real_money"]=="NO-GO"
+          assert root["asof_et"]==master["asof_et"]==price["asof_et"]
+          print("XRAY_ROOT_CURRENT_ASOF="+root["asof_et"])
+          print("XRAY_TERMINAL_CURRENT_ASOF="+terminal["asof_et"])
+          print("XRAY_TERMINAL_LAG="+str(root["asof_et"]!=terminal["asof_et"]))
+          if root["asof_et"]!=terminal["asof_et"]:
+              print("XRAY_RELAY_REGRESSION=PASS_GATES_ONLY_CURRENT_TERMINAL_STALE")
+          else:
+              print("XRAY_RELAY_REGRESSION=PASS_GATES_ONLY_CANNOT_CLAIM_AL")
+          PY
