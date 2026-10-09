@@ -198,8 +198,10 @@ def selftest() -> None:
     assert summarize(objs, blobs,
         [MC_PREFIX + "20261008_c417_dv30_vN.json"], {})["current_mc_bridge_file_count"] == 0
     assert private_credential_classification({
+        "XRAY_MC_CREDENTIAL_PROBE_ENABLED": "true",
         "XRAY_ALPACA_DATA_KEY_ID": "example"})["alpaca_history"] == "CREDENTIAL_PAIR_PARTIAL"
     both = private_credential_classification({
+        "XRAY_MC_CREDENTIAL_PROBE_ENABLED": "true",
         "XRAY_ALPACA_DATA_KEY_ID": "example", "XRAY_ALPACA_DATA_SECRET_KEY": "secret"})
     assert both["alpaca_history"] == "CREDENTIAL_PAIR_PRESENT_RIGHTS_UNVERIFIED"
     assert both["automated_use_rights_proven"] is False
