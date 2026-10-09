@@ -16,7 +16,8 @@ from pathlib import Path
 from github_native_root_watchdog import github, head_sha, timestamp, UTC
 
 REPO="gokaydonmez39-jpg/kripto-radar"
-WORKFLOW="xray-canonical-current-pre-mc.yml"
+WORKFLOWS={"pre-mc":"xray-canonical-current-pre-mc.yml",
+           "post-mc":"xray-canonical-current-post-mc.yml"}
 ACTIVE={"queued","in_progress","pending","waiting","requested"}
 ROOT=Path(__file__).resolve().parent
 
@@ -57,8 +58,10 @@ def fingerprint(runs):
                    r.get("head_sha"),r.get("run_attempt"),r.get("created_at"))
                   for r in runs)
 
-def read_runs(token):
-    raw=github("GET","/actions/workflows/"+WORKFLOW+"/runs?per_page=35&branch=main",token)
+def read_runs(token,workflow):
+    if workflow not in WORKFLOWS.values():
+        raise ValueError("UNAUTHORIZED_STAGE_WORKFLOW")
+    raw=github("GET","/actions/workflows/"+workflow+"/runs?per_page=35&branch=main",token)
     runs=raw.get("workflow_runs")
     if not isinstance(runs,list):
         raise RuntimeError("PRE_MC_GITHUB_RUNS_UNAVAILABLE")
@@ -97,11 +100,14 @@ def selftest():
         which=rs if obj is r else ms if obj is m else ps
         which[name]="TAMPER" if name!="pass_count" else 22
         assert classify(now,rs,ms,ps,t,[])[1] is False
-    print("XRAY_STAGE_RELAY_SELFTEST=PASS_EXACT_EPOCH_7_NEGATIVE_NO_PRIMARY_OR_TRADE")
+    assert set(WORKFLOWS)=={"pre-mc","post-mc"}
+    assert len(set(WORKFLOWS.values()))==2
+    print("XRAY_STAGE_RELAY_SELFTEST=PASS_EXACT_EPOCH_7_NEGATIVE_TWO_TARGETS_NO_PRIMARY_OR_TRADE")
 
 def main():
     parser=argparse.ArgumentParser()
     parser.add_argument("--selftest",action="store_true")
+    parser.add_argument("--target",choices=sorted(WORKFLOWS),default="pre-mc")
     parser.add_argument("--out",type=Path,default=Path("/tmp/xray_stage_relay.json"))
     args=parser.parse_args()
     if args.selftest:
@@ -112,9 +118,10 @@ def main():
     token=os.environ.get("GITHUB_TOKEN","")
     if not token:
         raise RuntimeError("GITHUB_ACTIONS_DISPATCH_TOKEN_MISSING")
+    target=WORKFLOWS[args.target]
     a=head_sha(token)
     sources=load_sources()
-    first_runs=read_runs(token)
+    first_runs=read_runs(token,target)
     reason,eligible=classify(dt.datetime.now(UTC),*sources,first_runs)
     out={"schema":"XRAY_NATIVE_ROOT_TO_PRE_MC_RELAY_V1",
          "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
@@ -122,21 +129,22 @@ def main():
          "terminal_updated":False,"device_receipt_proven":False,
          "root_asof_et":sources[0].get("asof_et"),
          "current_terminal_asof":sources[3].get("asof_et"),
-         "reason":reason,"action":"NONE","dispatch_accepted":False,
+         "reason":reason,"target_workflow":target,
+         "action":"NONE","dispatch_accepted":False,
          "main_sha":a}
     if eligible:
         b=head_sha(token)
-        next_runs=read_runs(token)
+        next_runs=read_runs(token,target)
         again_reason,still_ok=classify(dt.datetime.now(UTC),*sources,next_runs)
         if a!=b or fingerprint(first_runs)!=fingerprint(next_runs) or not still_ok:
             out["action"]="SKIP_CONCURRENT_MAIN_OR_PRE_MC_CHANGE"
             out["second_reason"]=again_reason
         else:
-            result=github("POST","/actions/workflows/"+WORKFLOW+"/dispatches",
+            result=github("POST","/actions/workflows/"+target+"/dispatches",
                           token,{"ref":"main"})
             if result.get("http_status")!=204:
                 raise RuntimeError("PRE_MC_DISPATCH_NO_204")
-            out["action"]="PRE_MC_DISPATCH_ACCEPTED_NOT_PROVEN"
+            out["action"]=args.target.upper().replace("-","_")+"_DISPATCH_ACCEPTED_NOT_PROVEN"
             out["dispatch_accepted"]=True
     args.out.parent.mkdir(parents=True,exist_ok=True)
     args.out.write_text(json.dumps(out,indent=2,sort_keys=True)+"\n",encoding="utf-8")
