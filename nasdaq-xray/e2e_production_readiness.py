@@ -100,6 +100,72 @@ def scope_readiness(blockers,chain_exact):
         "actual_device_delivery_receipt_attested":False,
     }
 
+TASK_ID="6a825366222081918997094d76e6ae46"
+REQUIRED_REGISTERED_FIELDS=(
+    "delivery_key","symbol","setup","asof_et","entry_low","entry_high",
+    "chase_limit","stop","r1","rr_basic","rr_severe","dv30",
+    "event_status","mc_class","mc_source","liquidity","pass_reason",
+    "registered_at_utc","execution","real_money"
+)
+REQUIRED_LOCAL_CHECKS=(
+    "candidate_local_research_pass","alpha_semantic_conformance_exact",
+    "alpha_source_binding_exact","lifecycle_frozen_semantics_exact",
+    "candidate_legal_guard_exact_binding","all_finalists_detailed_legal_review_exact",
+    "mc_exact_price_pass_set","semantic_provenance_chain_exact"
+)
+
+def registered_research_candidate_exact(terminal,pointer,asof,terminal_sha):
+    """A positive *preparation* witness; actual delivery requires delivery_prepare.
+
+    No user notification/phone receipt/trading action is inferred from this.
+    All candidate fields, exact pointer and terminal registration must agree.
+    """
+    if not (terminal.get("asof_et")==asof
+            and terminal.get("candidate_local_research_pass") is True
+            and (terminal.get("candidate_delivery_safety") or {}).get("status")=="PASS"
+            and all((terminal.get("checks") or {}).get(x) is True for x in REQUIRED_LOCAL_CHECKS)
+            and pointer.get("schema")=="XRAY_GITHUB_DURABLE_STATE_V3"
+            and pointer.get("authority")=="GITHUB_CURRENT_POINTER"
+            and pointer.get("execution")=="NONE" and pointer.get("real_money")=="NO-GO"):
+        return False
+    state=pointer.get("state_json")
+    if isinstance(state,str):
+        try: state=json.loads(state)
+        except (ValueError,TypeError):return False
+    if not isinstance(state,dict):
+        return False
+    if not (state.get("task_id")==TASK_ID
+            and state.get("asof_et")==asof
+            and (state.get("deep_final_evidence") or {}).get("terminal_path")
+                =="nasdaq-xray/canonical_current_terminal.json"
+            and (state.get("deep_final_evidence") or {}).get("terminal_blob_sha")==terminal_sha):
+        return False
+    keys=state.get("delivery_keys") or []
+    rows=state.get("r92") or []
+    terminal_keys=terminal.get("r92_candidates") or []
+    pre_keys=(terminal.get("sets") or {}).get("pre_g9_tech_pass") or []
+    if not (isinstance(keys,list) and isinstance(rows,list)
+            and isinstance(terminal_keys,list) and isinstance(pre_keys,list)
+            and 1<=len(rows)<=3 and len(set(keys))==len(keys)
+            and set(terminal_keys)==set(pre_keys)
+            and bool(terminal_keys)):
+        return False
+    seen=set()
+    for row in rows:
+        if not isinstance(row,dict) or row.get("schema")!="XRAY_RESEARCH_CANDIDATE_R92_V1":
+            return False
+        if any(row.get(k) is None for k in REQUIRED_REGISTERED_FIELDS):
+            return False
+        key=str(row.get("symbol") or "").upper()+"|"+str(row.get("setup") or "").upper()
+        dkey=row.get("delivery_key")
+        if (key not in terminal_keys or dkey not in keys or dkey in seen
+            or row.get("asof_et")!=asof
+            or row.get("mc_class")!="MC_PASS_PRIMARY"
+            or row.get("execution")!="NONE" or row.get("real_money")!="NO-GO"):
+            return False
+        seen.add(dkey)
+    return True
+
 def snapshot():
     master=read("canonical_current_master_manifest.json")
     price=read("canonical_current_price_dv30.json")
@@ -155,6 +221,9 @@ def snapshot():
     current_chain=(len(mcs)==1 and terminal_chain_exact(
         terminal,asof,source_shas,mcs[0],sha(mcs[0])))
     fail("TERMINAL_CURRENT_MC_CHAIN_NOT_PROVEN",current_chain)
+    pointer=read("chatgpt_canonical_state_v2.json")
+    prepared=bool(current_chain and registered_research_candidate_exact(
+        terminal,pointer,asof,sha("canonical_current_terminal.json")))
     # Delivery is independent: a zero-signal scenario may be a legitimate
     # completed run, but a device receipt must never be inferred from a ledger.
     fail("NOTIFICATION_DEVICE_RECEIPT_NOT_PROVEN",False)
@@ -164,7 +233,9 @@ def snapshot():
         "asof_et":asof,"research_mode":"RESEARCH_ONLY_MANUAL_DECISION",
         "execution":"NONE","real_money":"NO-GO","alpha_authority":False,
         "blockers":sorted(set(blocks)),
-        "ready_for_current_research_signal":False,
+        "ready_for_current_research_signal":prepared,
+        "candidate_preparation_witness_only":prepared,
+        "actual_device_delivery_receipt_attested":False,
         "full_e2e_research_attested":current_chain
             and not any(k in blocks for k in (
                 "PRICE_PARTITION_NOT_EXACT_CURRENT","POLICY_SAFETY_NOT_ALL_ATTESTED",
@@ -237,6 +308,48 @@ def selftest():
                     "SETTLEMENT_UNVERIFIED_OR_PRICE_SHA_DRIFT",
                     "POLICY_SAFETY_NOT_ALL_ATTESTED"):
         assert scope_readiness([blocker],True)["candidate_local_source_chain_attested"] is False
+    # A negative-only readiness implementation is not a working state
+    # machine. Prove real future exact candidate registration is reachable,
+    # while tampered provenance, mismatched MC, or absent registration fail.
+    from copy import deepcopy
+    reg_t=deepcopy(t)
+    reg_t["candidate_local_research_pass"]=True
+    reg_t["candidate_delivery_safety"]={"status":"PASS"}
+    reg_t["checks"].update({key:True for key in REQUIRED_LOCAL_CHECKS})
+    reg_t["r92_candidates"]=["AAA|B"]
+    reg_t["sets"]={"pre_g9_tech_pass":["AAA|B"]}
+    reg_row={key:"present" for key in REQUIRED_REGISTERED_FIELDS}
+    reg_row.update({
+        "schema":"XRAY_RESEARCH_CANDIDATE_R92_V1",
+        "delivery_key":"exact-key", "symbol":"AAA","setup":"B",
+        "asof_et":"2026-10-08","mc_class":"MC_PASS_PRIMARY",
+        "execution":"NONE","real_money":"NO-GO"})
+    ptr={"schema":"XRAY_GITHUB_DURABLE_STATE_V3",
+         "authority":"GITHUB_CURRENT_POINTER","execution":"NONE",
+         "real_money":"NO-GO",
+         "state_json":{
+           "task_id":TASK_ID,"asof_et":"2026-10-08",
+           "deep_final_evidence":{
+             "terminal_path":"nasdaq-xray/canonical_current_terminal.json",
+             "terminal_blob_sha":"TERMINAL-SHA"},
+           "delivery_keys":["exact-key"],"r92":[reg_row]}}
+    assert registered_research_candidate_exact(reg_t,ptr,"2026-10-08","TERMINAL-SHA")
+    for edit in (
+        lambda t,p:p["state_json"]["deep_final_evidence"].update(terminal_blob_sha="DRIFT"),
+        lambda t,p:p["state_json"]["delivery_keys"].clear(),
+        lambda t,p:p["state_json"]["r92"][0].update(mc_class="MC_PASS_FALLBACK_WATCH"),
+        lambda t,p:p["state_json"]["r92"][0].update(execution="ORDER"),
+        lambda t,p:p["state_json"]["r92"][0].update(asof_et="2026-10-07"),
+        lambda t,p:p.update(authority="NOT_CANONICAL"),
+        lambda t,p:t["candidate_delivery_safety"].update(status="UNKNOWN"),
+        lambda t,p:t["checks"].update(candidate_legal_guard_exact_binding=False),
+        lambda t,p:t["sets"].update(pre_g9_tech_pass=[]),
+        lambda t,p:p["state_json"]["r92"].clear(),
+    ):
+        tbad,pbad=deepcopy(reg_t),deepcopy(ptr)
+        edit(tbad,pbad)
+        assert not registered_research_candidate_exact(tbad,pbad,"2026-10-08","TERMINAL-SHA")
+    print("XRAY_E2E_REGISTERED_RESEARCH_PREP_SELFTEST=PASS_POSITIVE_10_NEGATIVES_NO_DEVICE_CLAIM")
     print("XRAY_E2E_SCOPE_BOUNDARY_SELFTEST=PASS_INDEPENDENT_GLOBAL_AND_LOCAL_NO_AL")
     print("XRAY_E2E_READINESS_MC_SELFTEST=PASS_POSITIVE_7_NEGATIVES")
     print("XRAY_E2E_TERMINAL_SHA_BINDING_SELFTEST=PASS_POSITIVE_5_NEGATIVES")
