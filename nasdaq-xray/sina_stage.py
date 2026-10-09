@@ -22,6 +22,7 @@ import urllib.parse
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone, timedelta
+from sina_transport_rescue import choose as choose_transport_rescue
 from pathlib import Path
 
 import akshare as ak
@@ -1255,12 +1256,17 @@ def main():
       if results[s].get("status")=="UNKNOWN_RETRY"
       and int(results[s].get("attempts",0))<MAX_ATTEMPTS
     ][:RETRY_BATCH]
+    # Extra rescue is source-bound: only exhausted transport exceptions,
+    # after a real cooldown, once per exact state epoch. No static incomplete
+    # histories, IPOs, missing ASOF sessions or invalid data get promoted.
+    transport_rescue=choose_transport_rescue(state)
+    transport_rescue_set=set(transport_rescue)
 
     start=int(state.get("cursor",0))
     end=min(start+BATCH,len(queue))
     new=queue[start:end]
     work=[];seen=set()
-    for s in retry+new:
+    for s in retry+transport_rescue+new:
         if s not in seen:
             seen.add(s);work.append(s)
 
@@ -1282,6 +1288,10 @@ def main():
           "info":info,
           "attempts":attempts,
           "updated_at_utc":datetime.now(timezone.utc).isoformat(),
+          "transport_rescue_round":(
+              int(prev.get("transport_rescue_round",0))
+              + (1 if sym in transport_rescue_set else 0)
+          ),
         }
 
     resolution_overlay,resolution_overlay_meta=load_resolution_overlay(asof)
@@ -1321,6 +1331,8 @@ def main():
     state["cursor"]=end
     state["processed_new_this_run"]=len(new)
     state["processed_retry_this_run"]=len(retry)
+    state["processed_transport_rescue_this_run"]=len(transport_rescue)
+    state["transport_rescue_status"]="REAL_PROVIDER_RETRY_ONLY_UNKNOWN_IF_FAILED"
     state["counts"]=result_counts(results)
     state["pending_retry"]=sum(
       1 for x in results.values()
