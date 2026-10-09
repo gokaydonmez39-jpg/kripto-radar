@@ -8,6 +8,7 @@ Synthetic scenarios occur strictly inside --selftest and cannot be counted live.
 from __future__ import annotations
 import argparse
 import datetime as dt
+import hashlib
 import json
 import math
 from pathlib import Path
@@ -26,6 +27,12 @@ def parse_utc(value):
         v=dt.datetime.fromisoformat(value.replace("Z","+00:00"))
         return v.astimezone(dt.timezone.utc) if v.tzinfo else None
     except (ValueError,OverflowError):return None
+
+
+def watch_digest(watch):
+    """Content-address the complete immutable observation snapshot."""
+    canonical=json.dumps(watch,sort_keys=True,separators=(",",":"),ensure_ascii=True)
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
 def measure(watch,private,expected_session_dates):
@@ -49,10 +56,13 @@ def measure(watch,private,expected_session_dates):
             and private.get("corporate_actions_adjustment_basis_verified") is True
             and private.get("official_calendar_witness_verified") is True,
             "SOURCE_RIGHTS_OR_CORPORATE_ACTIONS_UNKNOWN")
+    observed=parse_utc(watch.get("observed_at_utc"))
     registered=parse_utc(private.get("registered_at_utc"))
     captured=parse_utc(private.get("captured_at_utc"))
-    require(registered is not None and captured is not None
-            and registered<=captured,"REGISTRATION_CLOCK_INVALID")
+    require(observed is not None and registered is not None and captured is not None
+            and observed<=registered<=captured,"REGISTRATION_CLOCK_INVALID_OR_BACKDATED")
+    require(private.get("watch_source_sha256")==watch_digest(watch),
+            "EXACT_WATCH_SNAPSHOT_SHA256_NOT_MATCHED")
     origin=str(watch.get("asof_et") or "")
     require(private.get("asof_et")==origin,"ORIGIN_ASOF_MISMATCH")
     records=(watch.get("preentry_watch") or [])+(watch.get("prebreakout_b_armed_watch") or [])
@@ -120,7 +130,9 @@ def selftest():
     import copy
     watch={"current_source_ready":True,"status":"PROSPECTIVE_RESEARCH_WATCH_ONLY",
            "alpha_authority":False,"buy_candidates":[],"execution":"NONE","real_money":"NO-GO",
-           "asof_et":"2026-10-07","preentry_watch":[{"symbol":"FIX","setup":"D"}],
+           "asof_et":"2026-10-07",
+           "observed_at_utc":"2026-10-07T20:59:00Z",
+           "preentry_watch":[{"symbol":"FIX","setup":"D"}],
            "prebreakout_b_armed_watch":[]}
     days=["2026-10-08","2026-10-09","2026-10-12","2026-10-13",
           "2026-10-14","2026-10-15","2026-10-16","2026-10-19"]
@@ -131,6 +143,7 @@ def selftest():
         "corporate_actions_adjustment_basis_verified":True,"official_calendar_witness_verified":True,
         "registered_at_utc":registration,"captured_at_utc":"2026-10-19T21:00:00Z",
         "asof_et":"2026-10-07","symbol":"FIX","setup":"D",
+        "watch_source_sha256":watch_digest(watch),
         "reference_close":100.0,"roundtrip_cost_bps":20.0,
         "future_sessions":[{"date":day,"high":103+i,"low":98+i,
              "close":100+i,"completed_at_utc":day+"T21:00:00Z"}
@@ -151,6 +164,8 @@ def selftest():
         ("private","reference_close",float("nan")),
         ("private","roundtrip_cost_bps",None),
         ("private","registered_at_utc","2026-10-20T21:00:00Z"),
+        ("private","registered_at_utc","2026-10-07T19:00:00Z"),
+        ("private","watch_source_sha256","0"*64),
     ]:
         a=copy.deepcopy(watch);b=copy.deepcopy(private)
         (a if segment=="watch" else b)[key]=value
@@ -159,7 +174,7 @@ def selftest():
     assert not measure(watch,a,days)["measured"]
     a=copy.deepcopy(private);a["future_sessions"][0]["low"]=float("inf")
     assert not measure(watch,a,days)["measured"]
-    print("XRAY_FORWARD_WATCH_METRICS_SELFTEST=PASS_POSITIVE_12_NEGATIVE_NO_ALPHA")
+    print("XRAY_FORWARD_WATCH_METRICS_SELFTEST=PASS_POSITIVE_14_NEGATIVE_SHA_CLOCK_NO_ALPHA")
 
 
 def main():
