@@ -162,6 +162,19 @@ with tempfile.TemporaryDirectory() as td:
     batch=json.load(open(p/".delivery_work/batch.json"))
     assert {x["symbol"] for x in batch["candidates"]}=={"AAA","BBB"}
 
+    # Positive: C4.17 A-family has its OWN RR floors (1.5 / 1.1);
+    # a delivery-safety repair must never invent stricter alpha thresholds.
+    a_family=dict(a); a_family["setup"]="A"
+    a_family["rr_basic"]=1.5; a_family["rr_severe"]=1.1
+    write_terminal(p,keys=("AAA|A",))
+    (p/"chatgpt_canonical_state_v2.json").write_text(json.dumps(
+        pointer(p,[a_family],[a_family["delivery_key"]])))
+    cp=run_case(p,True)
+    assert "XRAY_DELIVERY_READY=PASS" in cp.stdout
+    write_terminal(p)
+    (p/"chatgpt_canonical_state_v2.json").write_text(json.dumps(
+        pointer(p,[a,b],[a["delivery_key"],b["delivery_key"]])))
+
     # Negative: stale policy/source chain remains fail-closed.
     write_chain(p,unrelated_unknown=True,exact=False)
     if (p/".delivery_work").exists(): shutil.rmtree(p/".delivery_work")
@@ -188,6 +201,23 @@ with tempfile.TemporaryDirectory() as td:
     (p/"chatgpt_canonical_state_v2.json").write_text(json.dumps(pointer(p,[bad],[bad["delivery_key"]])))
     cp=run_case(p,False)
     assert "DELIVERY_R92_DV30_BINDING_MISMATCH:AAA|B" in (cp.stdout+cp.stderr)
+
+    # Negative: do not publish NaN/bool prices, inverted stop/chase, over-8%
+    # stop risk, or RR below the frozen C4.17 B-family floors.
+    for field,value,reason in [
+        ("entry_low",float("nan"),"DELIVERY_R92_NONFINITE_GEOMETRY:entry_low"),
+        ("stop",True,"DELIVERY_R92_NONFINITE_GEOMETRY:stop"),
+        ("chase_limit",100.5,"DELIVERY_R92_LONG_GEOMETRY_INVALID"),
+        ("r1",100.5,"DELIVERY_R92_LONG_GEOMETRY_INVALID"),
+        ("stop",90.0,"DELIVERY_R92_RISK_PERCENT_EXCEEDS_8"),
+        ("rr_basic",1.99,"DELIVERY_R92_RR_POLICY_FLOOR_FAILED"),
+        ("rr_severe",1.49,"DELIVERY_R92_RR_POLICY_FLOOR_FAILED"),
+    ]:
+        bad=dict(a); bad[field]=value
+        (p/"chatgpt_canonical_state_v2.json").write_text(json.dumps(
+            pointer(p,[bad],[bad["delivery_key"]])))
+        cp=run_case(p,False)
+        assert reason in (cp.stdout+cp.stderr),(field,cp.stdout,cp.stderr)
 
     # Negative: pointer must bind exact current terminal blob.
     goodptr=pointer(p,[a],[a["delivery_key"]])
