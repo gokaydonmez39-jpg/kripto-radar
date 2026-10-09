@@ -41,7 +41,7 @@ def classify(data:dict,asof:str)->dict:
             if not math.isfinite(v) or v<=0:raise ValueError("INVALID_OHLCV")
             values.append(v)
         o,h,l,c,v=values
-        if h<max(o,l,c) or l>min(o,l,c):raise ValueError("INVALID_PRICE_RANGE")
+        if h<max(o,l,c) or l>min(o,c):raise ValueError("INVALID_PRICE_RANGE")
     daily,weekly=expected_dates(asof)
     return {"bars_valid":len(bars),"260_dates_present":set(daily)<=dates,
             "52_completed_weeks_present":set(weekly)<=dates}
