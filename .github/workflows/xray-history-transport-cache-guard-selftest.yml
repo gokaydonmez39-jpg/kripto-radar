@@ -6,6 +6,8 @@ on:
     paths:
       - "nasdaq-xray/history_transport_cache_guard.py"
       - "nasdaq-xray/history_transport_cache_guard_selftest.py"
+      - "nasdaq-xray/history_phase.py"
+      - "nasdaq-xray/history_phase_source_gate_selftest.py"
       - ".github/workflows/xray-history-transport-cache-guard-selftest.yml"
   workflow_dispatch:
 
@@ -32,3 +34,6 @@ jobs:
       - name: Deterministic regression selftest
         working-directory: nasdaq-xray
         run: python history_transport_cache_guard_selftest.py
+      - name: Production HISTORY official-last-260 regression
+        working-directory: nasdaq-xray
+        run: python history_phase_source_gate_selftest.py
