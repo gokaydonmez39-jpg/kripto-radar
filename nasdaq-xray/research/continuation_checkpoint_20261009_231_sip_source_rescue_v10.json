@@ -1,0 +1,99 @@
+{
+  "schema": "XRAY_CONNECTED_SIP_SOURCE_COVERAGE_OBSERVATION_V10",
+  "observed_utc": "2026-10-09T07:26:20Z",
+  "repo": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "asof_et": "2026-10-08",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "mode": "RESEARCH_ONLY_MANUAL_DECISION",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "unknown_never_pass": true,
+  "zero_dollar_sources_only": true,
+  "observation_source": "Connected read-only Alpaca plugin SIP historical daily bars and Alpaca trading calendar. Rallies connected company overview used as indicative *current* MC, not same-ASOF market cap.",
+  "verification_limit": "Connected-app research observation: cannot be independently reproduced by GitHub runner until authorized private API credentials and licensed automation rights are proven. No raw vendor market data is stored in this public repository.",
+  "source_github_blobs": {
+    "root_sina_state": "38065c1e61de231b68e078561d81bc95ccb052a6",
+    "current_price_dv30": "42ed4a1c1a104aff94f73793194b25746d3bea59",
+    "current_master": "92c37207d8dd766ab3fe8f1300e3014c6c5ab629"
+  },
+  "scope": {
+    "root_unknown_total": 231,
+    "root_retry_exhausted": 28,
+    "root_static_unknown": 203,
+    "expected_sessions_260_first": "2025-09-26",
+    "expected_sessions_260_last": "2026-10-08",
+    "latest_30_complete_positive_volume": {
+      "retry_exhausted": 23,
+      "static_unknown": 121,
+      "total": 144
+    },
+    "latest_260_complete_positive_volume": {
+      "retry_exhausted": 16,
+      "static_unknown": 29,
+      "total": 45
+    },
+    "last_asof_daily_bar_observed": {
+      "retry_exhausted": 27,
+      "static_unknown": 199,
+      "total": 226
+    },
+    "not_260_positive_complete": 186,
+    "vendor_raw_prices_in_repo": false
+  },
+  "diagnostic_current_mc_45": {
+    "proven_same_asof_primary": false,
+    "provider": "Rallies connected read-only company overview",
+    "above_2_1B_current_mc_only": [
+      "CHRN",
+      "DFTX",
+      "PPLI"
+    ],
+    "above_2_1B_and_canonical_20261008_price_dv30_pass": [
+      "DFTX"
+    ],
+    "others_not_primary": true
+  },
+  "focused_DFTX": {
+    "canonical_price_dv30_status": "PASS_PRICE_DV30",
+    "historical_sip_last260_positive_volume": "OBSERVED",
+    "asof_market_cap_primary": "UNVERIFIED",
+    "last_completed_week_ending": "2026-10-02",
+    "weekly_close_above_ema10": false,
+    "ema10_four_rising_weeks": false,
+    "weekly_hard_gate_research_result": "FAIL",
+    "technical_al_signal": false
+  },
+  "sec_pit_repair": {
+    "bug": "stale or future filing was inspected for absent accession before basic PIT date eligibility, creating false archived filing root cause",
+    "evidence": "7 observed real 2026-10-08 source cases CHTR CMCSA CME IBKR REGN VICR WDAY",
+    "code_correction_commit": "ad876d87bb7a30cc4965e65feba4c5552e0bc433",
+    "regression_priority_commit": "1a15aeffc1810ec83222f9ec805a3d7f76c22a4e",
+    "real_shadow_test_run": 37898315313,
+    "real_result": "7 UNKNOWN_PIT_SHARES_TOO_OLD_OR_POST_ASOF_NO_ARCHIVE_FIX",
+    "live_sec_pit_run": 37898315424,
+    "live_sec_pit_result": "SUCCESS_HTTP200_GUARDS_PASS",
+    "four_stage_run": 37898315319,
+    "four_stage_result": "PASS_GUARDS_ONLY_NO_GO"
+  },
+  "production_blockers": [
+    "CURRENT C4.17 PRIMARY MC authority for 2026-10-08 missing; can't promote current Rallies MC or SEC shadow shares",
+    "Runner Alpaca API key and secret not configured; connected ChatGPT plugin is not an unattended GitHub runtime credential",
+    "No independent same-ASOF issuer share class, corporate actions, split basis and vendor automated-use license proven for new source",
+    "Canonical 2026-10-08 technical terminal remains unproven, cannot send AL",
+    "Push delivery receipt not verified",
+    "45 PRICE blocked and 72 master identity unknown remain symbol-local UNKNOWN/FAIL"
+  ],
+  "classification": "EVIDENCE_ONLY_NO_PRIMARY",
+  "candidate_count_attested": 0,
+  "production_ready": false,
+  "operator_action": "If selecting Alpaca as a lawful unattended history source, configure data-only API credential in GitHub Actions Repository Secrets; do not send secrets in chat, expose in Variables, or grant trading permissions.",
+  "next_steps": [
+    "Validate Alpaca unattended rights and separate data-only credentials before GitHub source requests",
+    "Resolve/share legally obtained exact 2026-10-08 market cap PRIMARY or explicit independent policy successor",
+    "Rebuild 260-session, 52-week history for proven candidate-local scope; verify splits/official calendar, don't promote source observation",
+    "Run current 2026-10-08 weekly/event/risk/RR terminal; trust real final candidates or NO_QUALIFIED_SETUP",
+    "Prove actual end-to-end research delivery and device receipt with real candidate, preserving no order/trade"
+  ]
+}
