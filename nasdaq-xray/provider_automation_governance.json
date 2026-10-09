@@ -31,6 +31,15 @@
       "narrow_account_read_candidate": true,
       "narrow_settlement_crosscheck_allowed": true,
       "paid_upgrade_allowed": false
+    },
+    "NASDAQ_PUBLIC_SCREENER": {
+      "unattended_automation_allowed": false,
+      "authority": "NASDAQ_LEGAL_TERMS_OF_USE_2026_05_11_SECTION_2_AND_7",
+      "terms_url": "https://www.nasdaq.com/legal",
+      "rule": "NO_AUTOMATED_WEBSITE_CONTENT_CAPTURE_FOR_DATA_ANALYSIS_WITHOUT_PRIOR_EXPRESS_WRITTEN_CONSENT",
+      "production_effect": "Website screener market-cap/industry collection blocked without separately verified automated analytics rights. Historic shadow artifacts do not make C4.17 primary MC. Official SEC may supply issuer filings only, never Nasdaq screener redistribution rights.",
+      "written_grant_required": true,
+      "cutover": false
     }
   }
 }
