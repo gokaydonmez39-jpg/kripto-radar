@@ -4,10 +4,8 @@ name: XRAY Canonical Current Pre-MC Factory
 # XRAY_SCHEDULE_REGISTRATION_REFRESH=20261002
 
 on:
-  workflow_run:
-    workflows: ["NASDAQ SWING XRAY Autonomous Data Plane"]
-    types: [completed]
-    branches: [main]
+  # Upstream uses immutable-main double-read and explicit workflow_dispatch.
+  # Schedule remains an independent fallback; avoid duplicate workflow_run jobs.
   schedule:
     - cron: "35 * * * 1-5"
   push:
