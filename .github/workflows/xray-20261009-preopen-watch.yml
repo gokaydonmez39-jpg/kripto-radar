@@ -3,7 +3,10 @@ on:
   workflow_dispatch:
   # Trigger on real factory completion even if GitHub cron scheduling is late.
   workflow_run:
-    workflows: ["XRAY Canonical Current Pre-MC Factory"]
+    workflows:
+      - "XRAY Canonical Current Pre-MC Factory"
+      - "NASDAQ SWING XRAY Autonomous Data Plane"
+      - "XRAY E2E Production Readiness (Fail-Closed)"
     types: [completed]
     branches: [main]
   schedule:
