@@ -26,14 +26,16 @@ def write_cache(root: Path, sym: str, dates: list[str]) -> None:
 
 
 def daily_ending(end: str, n: int) -> list[str]:
-    # Weekend observations cannot be counted as completed RTH sessions.
-    d = date.fromisoformat(end)
-    out=[]
-    while len(out)<n:
-        if d.weekday()<5:
-            out.append(d.isoformat())
-        d-=timedelta(days=1)
-    return list(reversed(out))
+    # Completed Nasdaq sessions are not simply Monday-Friday: Labor Day,
+    # Good Friday, Juneteenth, unscheduled closures etc must be omitted.
+    import pandas_market_calendars as mcal
+    d=date.fromisoformat(end)
+    start=d-timedelta(days=n*3+60)
+    idx=mcal.get_calendar("NASDAQ").valid_days(
+        start_date=start.isoformat(),end_date=end)
+    out=[x.date().isoformat() for x in idx]
+    assert len(out)>=n,("INSUFFICIENT_ACTUAL_SESSIONS",len(out),n)
+    return out[-n:]
 
 
 def fixtures():
@@ -140,7 +142,7 @@ def test_weekend_duplicate_and_invalid_bars_fail():
         good=daily_ending(ASOF,300)
         write_cache(root,"QQQ",daily_ending(ASOF,320))
         # Even with >=260 plausible observations, tampering must fail closed.
-        for injected in ("2026-10-04",good[-1],"NOT_A_DATE"):
+        for injected in ("2026-10-04","2026-09-07",good[-1],"NOT_A_DATE"):
             write_cache(root,"A",good+[injected])
             ok,detail=g.evaluate(root,h,l,{"records":{}},require_qqq=True)
             assert not ok and detail["missing"]["A"]=="CACHE_MISSING_OR_INVALID",detail
