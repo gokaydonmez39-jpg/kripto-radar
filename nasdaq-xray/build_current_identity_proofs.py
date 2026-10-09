@@ -8,10 +8,12 @@ import io
 import json
 import os
 import re
+import time
 import urllib.parse
 import urllib.request
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone, timedelta, time as clocktime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import pandas_market_calendars as mcal
 from master_spac_operating_guard import nonblank_requires_completion
@@ -24,7 +26,7 @@ SEC_TICKERS="https://www.sec.gov/files/company_tickers.json"
 SEC_TICKERS_EXCHANGE="https://www.sec.gov/files/company_tickers_exchange.json"
 SEC_CIK_DISCOVERY_DIAGNOSTICS={}
 SEC_SUBMISSIONS="https://data.sec.gov/submissions"
-SEC_UA=os.getenv("XRAY_SEC_USER_AGENT","NASDAQ-SWING-XRAY research bot; xray-dataplane-bot@users.noreply.github.com")
+SEC_UA=os.getenv("XRAY_SEC_USER_AGENT","")
 UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/126 Safari/537.36"
 TASK="6a825366222081918997094d76e6ae46"
 IDENTITY_DISCOVERY_VERSION="SEC_CURRENT_SUSPECT_DISCOVERY_V9"
@@ -480,9 +482,30 @@ def manual_identity_seed_registry(asof:str,names:dict)->tuple[dict,dict]:
     return rows,meta
 
 def latest_filing_date(sub:dict,asof:str):
+    """Return a SEC filing date only if accepted by same-ASOF RTH close."""
+    from datetime import date
     recent=((sub.get("filings") or {}).get("recent") or {})
-    dates=[str(x) for x in (recent.get("filingDate") or []) if str(x)<=asof and re.fullmatch(r"20\d{2}-\d{2}-\d{2}",str(x))]
-    return max(dates) if dates else None
+    days=recent.get("filingDate") or []
+    accepted=recent.get("acceptanceDateTime") or []
+    if not days or len(days)!=len(accepted):
+        return None
+    try:
+        asof_day=date.fromisoformat(asof)
+        cutoff=datetime.combine(asof_day,clocktime(16,0),
+                 tzinfo=ZoneInfo("America/New_York")).astimezone(timezone.utc)
+    except (ValueError,TypeError):
+        return None
+    valid=[]
+    for day,stamp in zip(days,accepted):
+        try:
+            d=date.fromisoformat(str(day))
+            t=datetime.fromisoformat(str(stamp).replace("Z","+00:00"))
+            if t.tzinfo is None:continue
+            if d<=asof_day and t.astimezone(timezone.utc)<=cutoff:
+                valid.append(d.isoformat())
+        except (ValueError,TypeError):continue
+    return max(valid) if valid else None
+
 
 def sec_entity_landing_row(sym:str,asof:str,cik:int|None,want_blank:bool,prior_evidence_date:str|None):
     if cik is None:
