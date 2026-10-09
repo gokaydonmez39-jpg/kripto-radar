@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Offline 514+QQQ x 260-day vendor-neutral HISTORY transport integration test.
+"""Offline current PRICE cohort + QQQ x 260-day HISTORY transport integration test.
 
 Synthetic fixtures only; never market authority, confidence, AL, or a vendor
 license. Tests actual encrypted checkpoint, ephemeral gzip transport, official
@@ -20,11 +20,13 @@ from history_transport_cache_guard import cache_path
 
 def main():
     ss=scope()
-    assert len(ss["symbols"])==514 and len(ss["targets"]) in (514,515)
-    assert len(ss["dates"])==260 and len(ss["weeks"])==52
     price=json.loads((Path(__file__).resolve().parent/"canonical_current_price_dv30.json").read_text())
+    assert ss["symbols"] and ss["symbols"]==sorted(set(ss["symbols"]))
+    assert len(ss["symbols"])==price["pass_count"]
+    assert len(ss["targets"])==len(set(ss["symbols"])|{"QQQ"})
+    assert len(ss["dates"])==260 and len(ss["weeks"])==52
     private_symbol=ss["symbols"][0]
-    with TemporaryDirectory(prefix="xray-514x260-fullmock-") as work:
+    with TemporaryDirectory(prefix="xray-current-scope-260-fullmock-") as work:
         tmp=Path(work)
         crypt=cipher("synthetic-test-key-only-"+"A"*38)
         cp=fresh(ss)
@@ -77,7 +79,7 @@ def main():
         corrupt=evaluate(price,ss["price_sha"],outputdir)
         assert corrupt["counts"]["invalid_or_unreadable"]==1
         assert not corrupt["can_register_R92"]
-    print("XRAY_514X260_XNAS_52W_ENCRYPTED_FULL_PIPELINE_SELFTEST=PASS_SYNTHETIC_ONLY_2_NEGATIVES_0_HISTORY_MC_AL_AUTHORITY")
+    print("XRAY_CURRENT_SCOPE_XNAS_260D_52W_ENCRYPTED_PIPELINE_SELFTEST=PASS_SYNTHETIC_ONLY_2_NEGATIVES_0_HISTORY_MC_AL_AUTHORITY")
 
 if __name__=="__main__":
     main()

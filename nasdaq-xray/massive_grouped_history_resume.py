@@ -360,7 +360,28 @@ def selftest():
     from copy import deepcopy
     from cryptography.fernet import InvalidToken
     ss=scope()  # Source is actual current PRICE+MASTER SHA-bound state.
-    assert len(ss["symbols"])==514 and len(ss["dates"])==260 and len(ss["weeks"])==52
+    # The C4.17 PRICE cohort changes with ASOF; never freeze selftest to 514.
+    assert ss["symbols"] and ss["symbols"]==sorted(set(ss["symbols"]))
+    assert len(ss["targets"])==len(set(ss["symbols"])|{"QQQ"})
+    assert len(ss["dates"])==260 and len(ss["weeks"])==52
+    # Change just the in-memory test scope in both directions. These fixtures
+    # never reach a vendor, private checkpoint artifact, or production alpha.
+    for variant in ("smaller","larger"):
+        alternative=deepcopy(ss)
+        if variant=="smaller":
+            alternative["symbols"]=ss["symbols"][1:]
+        else:
+            marker="__XRAY_OFFLINE_SCOPE_ONLY__"
+            assert marker not in ss["symbols"]
+            alternative["symbols"]=sorted(ss["symbols"]+[marker])
+        assert alternative["symbols"]
+        alternative["targets"]=sorted(set(alternative["symbols"])|{"QQQ"})
+        alternative["scope_hash"]=sha256_lines(alternative["symbols"])
+        shadow_cp=fresh(alternative)
+        assert exact(shadow_cp,alternative), "CHANGING_COHORT_FALSE_REJECTED"
+        assert not exact(shadow_cp,ss), "STALE_COHORT_FALSE_ACCEPTED"
+        assert (telemetry(shadow_cp,alternative,"SYNTHETIC_ONLY",0)
+                ["max_sample_symbols"]==len(alternative["targets"]))
     liveprice=json.loads((ROOT/"canonical_current_price_dv30.json").read_text())
     livemaster=json.loads((ROOT/"canonical_current_master_manifest.json").read_text())
     assert master_price_lineage_exact(liveprice,livemaster)
@@ -469,7 +490,7 @@ def selftest():
     no=telemetry(fresh(ss),ss,"BLOCKED",0)
     assert no["remaining_days"]==260 and no["canonical_HISTORY_pass"] is False
     assert no["primary_MC_pass"] is False and no["R92_AL"] is False
-    print("XRAY_MASSIVE_GROUPED_260_RESUME_SELFTEST=PASS_514_SCOPE_260_DAYS_52_WEEKS_6_VENDOR_NEGATIVES_ENCRYPTION_TAMPER_STALE_AND_NO_ALPHA")
+    print("XRAY_MASSIVE_GROUPED_260_RESUME_SELFTEST=PASS_DYNAMIC_SCOPE_260_DAYS_52_WEEKS_6_VENDOR_NEGATIVES_ENCRYPTION_TAMPER_STALE_AND_NO_ALPHA")
 
 
 def main():
