@@ -25,6 +25,10 @@ BASIC_PER_MINUTE = 8
 SERIES_COST_PER_SYMBOL = 1
 REQUEST_DAILY_OUTPUTSIZE = 320
 FULL_UNIVERSE_REFERENCE = 3401
+EULERPOOL_MONTHLY_REQUESTS = 100000  # 2026-10-09 current official pricing, NOT granted entitlement
+BUSINESSQUANT_DAILY_REQUESTS = 30
+BUSINESSQUANT_MONTHLY_GB = 0.1
+STRESS_SESSIONS_PER_MONTH = 22  # conservative calendar stress scenario, NOT a forecast
 
 
 def make(price: dict, source_blob_sha: str, universe_count: int = FULL_UNIVERSE_REFERENCE) -> dict:
@@ -74,6 +78,54 @@ def make(price: dict, source_blob_sha: str, universe_count: int = FULL_UNIVERSE_
         "history_authoritative": False,
         "can_register_R92": False, "execution": "NONE",
         "real_money": "NO-GO", "unknown_never_pass": True,
+        "other_free_source_quota_research": {
+            "Eulerpool Free": {
+                "official_pricing": "https://eulerpool.com/financial-data-api/pricing",
+                "official_licensing": "https://eulerpool.com/financial-data-api/licensing",
+                "official_history": "https://eulerpool.com/financial-data-api/historical-data",
+                "monthly_requests": EULERPOOL_MONTHLY_REQUESTS,
+                "personal_noncommercial_only": True,
+                "free_batch_max_symbols_advertised": 10,
+                "single_symbol_history_requests_514_scope": count,
+                "single_symbol_history_requests_3401_universe": universe_count,
+                "stress_22_session_full_universe_requests": universe_count * STRESS_SESSIONS_PER_MONTH,
+                "stress_22_session_full_universe_fits_monthly": universe_count * STRESS_SESSIONS_PER_MONTH <= EULERPOOL_MONTHLY_REQUESTS,
+                "stress_22_session_514_scope_requests": count * STRESS_SESSIONS_PER_MONTH,
+                "requires_api_key": True,
+                "api_key_available_in_actions_verified": False,
+                "full_history_endpoint_260_actual_bars_tested": False,
+                "data_retention_for_free_runner_granted": False,
+                "market_data_provenance_qualified": False,
+                "same_asof_class_mc_qualified": False,
+                "advertised_limit_in_all_marketing_consistent": False,
+                "public_blog_some_pages_still_say_10000": True,
+                "production_authority": False,
+            },
+            "Business Quant Free": {
+                "official_pricing": "https://businessquant.com/pricing",
+                "official_terms": "https://businessquant.com/terms-of-use",
+                "official_history": "https://businessquant.com/docs/api/quotes",
+                "daily_requests": BUSINESSQUANT_DAILY_REQUESTS,
+                "monthly_data_transfer_gb": BUSINESSQUANT_MONTHLY_GB,
+                "multi_ticker_eod_advertised": True,
+                "minimum_symbols_per_request_to_cover_scope_in_one_day": math.ceil(count / BUSINESSQUANT_DAILY_REQUESTS),
+                "actual_batch_max_verified": False,
+                "registered_key_available": False,
+                "actual_260_bar_full_scope_verified": False,
+                "public_data_repository_export_authorized": False,
+                "production_authority": False,
+            },
+            "HF Data Library": {
+                "official_api": "https://hfdatalibrary.com/pages/api",
+                "upstream_terms": "https://www.iex.io/legal/hist-data-terms",
+                "published_tickers_reference": 1391,
+                "post_2022_venue": "IEX_ONLY_NOT_CONSOLIDATED",
+                "post_2022_data_qualifies_as_NASDAQ_consolidated_DV30": False,
+                "scope_coverage_514_verified": False,
+                "registration_or_free_rotating_key_required": True,
+                "production_authority": False,
+            },
+        },
         "source_urls": [TWELVE_PRICING, TWELVE_TERMS, TWELVE_DOCS],
         "scope_symbol_list_committed": False,
         "vendor_bars_committed": False,
@@ -90,12 +142,24 @@ def selftest() -> None:
     assert v["universe_min_calendar_days_at_published_daily_limit"] == 5
     assert v["universe_full_daily_refresh_fits_one_key"] is False
     assert v["history_authoritative"] is False and v["can_register_R92"] is False
+    other = v["other_free_source_quota_research"]
+    e = other["Eulerpool Free"]
+    assert e["stress_22_session_full_universe_requests"] == 3401 * 22
+    assert e["stress_22_session_full_universe_fits_monthly"] is True
+    assert e["single_symbol_history_requests_514_scope"] == 2
+    assert e["production_authority"] is False
+    b = other["Business Quant Free"]
+    assert b["minimum_symbols_per_request_to_cover_scope_in_one_day"] == 1
+    assert b["production_authority"] is False
+    assert other["HF Data Library"]["post_2022_data_qualifies_as_NASDAQ_consolidated_DV30"] is False
     wide = dict(p, pass_symbols=[f"S{i:04d}" for i in range(801)], pass_count=801)
     wide["pass_hash"] = hashlib.sha256("\n".join(wide["pass_symbols"]).encode()).hexdigest()
     out = make(wide, "a" * 40)
     assert out["scope_initial_credit_estimate"] == 801 and out["scope_fits_published_daily_budget"] is False
     assert out["scope_lower_bound_minutes_at_published_rate"] == 101
     assert out["history_authoritative"] is False
+    assert out["other_free_source_quota_research"]["Business Quant Free"]["minimum_symbols_per_request_to_cover_scope_in_one_day"] == 27
+    assert out["other_free_source_quota_research"]["Eulerpool Free"]["production_authority"] is False
     corruptions = [
         dict(p, pass_count=3),
         dict(p, pass_hash="0" * 64),
@@ -129,6 +193,11 @@ def main() -> None:
     print("XRAY_TWELVE_SCOPE=" + str(out["price_pass_count"]))
     print("XRAY_TWELVE_MIN_CREDITS=" + str(out["scope_initial_credit_estimate"]))
     print("XRAY_TWELVE_MIN_MINUTES=" + str(out["scope_lower_bound_minutes_at_published_rate"]))
+    alt = out["other_free_source_quota_research"]
+    print("XRAY_EULERPOOL_FREE_MONTHLY_CAP=" + str(alt["Eulerpool Free"]["monthly_requests"]))
+    print("XRAY_EULERPOOL_FULL3401_STRESS22_REQUESTS=" + str(alt["Eulerpool Free"]["stress_22_session_full_universe_requests"]))
+    print("XRAY_BUSINESSQUANT_FREE_MIN_BATCH_SIZE=" + str(alt["Business Quant Free"]["minimum_symbols_per_request_to_cover_scope_in_one_day"]))
+    print("XRAY_HF_IEX_ONLY_NOT_CONSOLIDATED=PASS_NONAUTHORITY")
     print("XRAY_TWELVE_LICENSE_AND_BARS=" + ("UNVERIFIED" if not out["history_authoritative"] else "ERROR"))
 
 
