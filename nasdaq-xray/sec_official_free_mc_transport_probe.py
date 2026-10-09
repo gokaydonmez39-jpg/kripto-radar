@@ -118,7 +118,15 @@ def select_shares(facts:dict,sub:dict,asof:str,expected_cik:str=CIK) -> dict:
         valid.append((accepted, end, acc, shares, age))
     if not valid:
         if not concept:
-            reason="NO_SEC_DEI_ENTITY_SHARES_FACT"
+            # SEC companyfacts excludes dimensional facts; multiple-class
+            # issuers (e.g. dual-class A/B) can have no DEI entity rows.
+            # GAAP balance-sheet shares are only a diagnostic ALTERNATIVE,
+            # never a substitute for exact tradable listing class count.
+            gaap=((((facts.get("facts") or {}).get("us-gaap") or {})
+                   .get("CommonStockSharesOutstanding") or {})
+                  .get("units") or {}).get("shares") or []
+            reason=("NO_DEI_BUT_GAAP_SHARES_AVAILABLE_CLASS_UNRESOLVED"
+                    if gaap else "NO_SEC_DEI_OR_GAAP_SHARES_FACT")
         elif diag["post_close"]>0 and not diag["stale"]:
             reason="SEC_FACT_ACCEPTED_AFTER_RTH_CLOSE"
         elif diag["stale"]>0:
@@ -182,6 +190,17 @@ def selftest():
     bad=json.loads(json.dumps(fak))
     bad["facts"]["dei"]["EntityCommonStockSharesOutstanding"]["units"]["shares"][0]["val"]=True
     assert select_shares(bad,subs,asof)["status"]=="UNKNOWN"
+    empty_dei=json.loads(json.dumps(fak))
+    empty_dei["facts"]["dei"]={}
+    empty_dei["facts"]["us-gaap"]={"CommonStockSharesOutstanding":{
+        "units":{"shares":[{"val":100,"end":"2026-09-30",
+                             "filed":"2026-10-05","form":"10-Q",
+                             "accn":"0000320193-26-000001"}]}}}
+    gaap_row=select_shares(empty_dei,subs,asof)
+    assert gaap_row["status"]=="UNKNOWN"
+    assert gaap_row["reason"]=="NO_DEI_BUT_GAAP_SHARES_AVAILABLE_CLASS_UNRESOLVED"
+    empty_dei["facts"]["us-gaap"]={}
+    assert select_shares(empty_dei,subs,asof)["reason"]=="NO_SEC_DEI_OR_GAAP_SHARES_FACT"
     alt_facts=json.loads(json.dumps(fak))
     alt_sub=json.loads(json.dumps(subs))
     alt_facts["cik"]=1234567
