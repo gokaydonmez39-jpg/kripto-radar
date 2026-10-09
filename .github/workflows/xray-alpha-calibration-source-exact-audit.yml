@@ -1,0 +1,58 @@
+name: XRAY Alpha Calibration Source-Exact Audit
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/alpha_calibration_audit.py"
+      - ".github/workflows/xray-alpha-calibration-source-exact-audit.yml"
+permissions:
+  contents: read
+concurrency:
+  group: xray-alpha-calibration-source-exact
+  cancel-in-progress: false
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify calibration fail-closed and SHA negative tests
+        run: |
+          python -m py_compile nasdaq-xray/alpha_calibration_audit.py
+          python nasdaq-xray/alpha_calibration_audit.py --selftest
+      - name: Recompute historical final bottlenecks without rewriting canonical state
+        run: |
+          python nasdaq-xray/alpha_calibration_audit.py
+          python - <<'PY'
+          import json,pathlib
+          root=pathlib.Path("nasdaq-xray")
+          j=json.loads((root/"canonical_alpha_calibration_audit.json").read_text())
+          assert j["schema"]=="XRAY_ALPHA_CALIBRATION_AUDIT_V1"
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          assert j["alpha_authority"] is False and j["no_threshold_change"] is True
+          assert all(x["full_end_to_end_research_pass"] is True
+                     for x in j["observed_terminal_snapshots"]
+                     if x["comparable_to_current_c417"])
+          assert len({x["asof_et"] for x in j["observed_terminal_snapshots"]})==j["observed_snapshot_count"]
+          current=[x for x in j["observed_terminal_snapshots"]
+                   if x["terminal_path"]=="nasdaq-xray/canonical_current_terminal.json"]
+          assert all(x["full_end_to_end_research_pass"] is True
+                     or not x["comparable_to_current_c417"] for x in current)
+          print("XRAY_ALPHA_CALIBRATION_EVIDENCE="+j["status"])
+          print("XRAY_ALPHA_CALIBRATION_COMPLETED_EPOCHS="+str(j["comparable_current_policy_session_count"]))
+          print("XRAY_ALPHA_CALIBRATION_TEST_ONLY=NO_ALPHA_PROMOTION")
+          PY
+      - name: Preserve transparent non-authoritative calibration evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-alpha-calibration-source-exact-v2
+          path: nasdaq-xray/canonical_alpha_calibration_audit.json
+          retention-days: 14
+          if-no-files-found: error
