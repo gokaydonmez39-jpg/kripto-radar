@@ -39,6 +39,7 @@ on:
       - "nasdaq-xray/sip_settlement_witness_guard.py"
       - "nasdaq-xray/build_resolver_full_scope_handoff.py"
       - "nasdaq-xray/recover_pre_mc_snapshot.py"
+      - "nasdaq-xray/pre_mc_identity_replay_session_guard.py"
       - "nasdaq-xray/canonical_resolver_bridge_*.json"
       - "nasdaq-xray/chatgpt_compiled_policy_v3.json"
       - ".github/workflows/xray-canonical-current-pre-mc.yml"
@@ -145,6 +146,8 @@ jobs:
         run: |
           cd nasdaq-xray
           python price_official_listing_selftest.py
+      - name: Verify current-directory PIT eligibility regressions
+        run: python nasdaq-xray/pre_mc_identity_replay_session_guard.py --selftest
       - name: Completed-session epoch rollover guard
         id: rollover
         shell: bash
@@ -155,6 +158,7 @@ jobs:
           from datetime import datetime, timezone, timedelta
           import pandas_market_calendars as mcal
           sys.path.insert(0,"nasdaq-xray")
+          from pre_mc_identity_replay_session_guard import defer_live_identity_replay
           from price_dv30_recover_from_fullstate import (
               price_snapshot_integrity, bridge_refresh_relevant, deferred_bootstrap_artifact,
               publication_lag_artifact, publication_recheck,
@@ -340,6 +344,15 @@ jobs:
               )
           except Exception:
               identity_replay=bool(active_completed_epoch)
+          # A historical ASOF remains frozen after midnight in New York.
+          # Today's Nasdaq live directory is NOT an 8-Oct PIT identity input.
+          # Do not repeatedly rebuild a prior completed epoch from the
+          # next day's directory, or silently promote unresolved symbols.
+          identity_replay_deferred=defer_live_identity_replay(
+              now,latest_completed,active_completed_epoch,price_integrity_ok,
+              identity_replay)
+          if identity_replay_deferred:
+              identity_replay=False
           bootstrap_rebuild=bool(
               current_epoch_artifact_exists
               and price_semantics_ok
@@ -503,6 +516,7 @@ jobs:
               out.write(f"rallies_primary_status={rallies_primary_status}\n")
               out.write(f"publication_replay={'true' if publication_replay else 'false'}\n")
               out.write(f"identity_replay={'true' if identity_replay else 'false'}\n")
+              out.write(f"identity_replay_deferred={'true' if identity_replay_deferred else 'false'}\n")
               out.write(f"coverage_repair={'true' if coverage_repair else 'false'}\n")
               out.write(f"official_listing_fail_only_replay={'true' if official_listing_fail_only_replay else 'false'}\n")
               out.write(f"historical_halt_fail_only_replay={'true' if historical_halt_fail_only_replay else 'false'}\n")
@@ -527,6 +541,7 @@ jobs:
               "publication_replay":publication_replay,
               "publication_probe":publication_probe,
               "identity_replay":identity_replay,
+              "identity_replay_deferred":identity_replay_deferred,
               "sec_discovery_version":proof_discovery_version,
               "sec_discovery_coverage_complete":proof_coverage_complete,
               "sec_discovery_unresolved_count":proof_unresolved_count,
@@ -555,6 +570,7 @@ jobs:
               "terminal_asof":terminal_asof,
               "phase":phase,
               "reason":(
+                  "PRIOR_SESSION_IDENTITY_REPLAY_DEFERRED_LIVE_DIRECTORY_NOT_PIT" if identity_replay_deferred else
                   "REPLAY_COMPLETED_EPOCH_UNDER_CURRENT_IDENTITY_POLICY_V6" if identity_replay else
                   "REBUILD_DEFERRED_DV30_BOOTSTRAP" if bootstrap_rebuild else
                   "REPLAY_C417_RALLIES_PRIMARY_MATERIALIZATION" if rallies_primary_refresh else
@@ -578,8 +594,12 @@ jobs:
         run: python nasdaq-xray/recover_pre_mc_snapshot.py
 
       - name: Frozen completed epoch healthy no-op
-        if: steps.rollover.outputs.build != 'true' && steps.rollover.outputs.recover != 'true' && steps.rollover.outputs.policy_replay != 'true' && steps.rollover.outputs.coverage_repair != 'true' && steps.rollover.outputs.resolver_refresh != 'true' && steps.rollover.outputs.bridge_refresh != 'true' && steps.rollover.outputs.publication_replay != 'true'
+        if: steps.rollover.outputs.identity_replay_deferred != 'true' && steps.rollover.outputs.build != 'true' && steps.rollover.outputs.recover != 'true' && steps.rollover.outputs.policy_replay != 'true' && steps.rollover.outputs.coverage_repair != 'true' && steps.rollover.outputs.resolver_refresh != 'true' && steps.rollover.outputs.bridge_refresh != 'true' && steps.rollover.outputs.publication_replay != 'true'
         run: echo "XRAY_PRE_MC=HEALTHY_NOOP_COMPLETED_EPOCH pointer_asof=${{ steps.rollover.outputs.pointer_asof }} latest_completed=${{ steps.rollover.outputs.latest_completed }}"
+      - name: Report previous-session PIT identity replay blocked, preserve frozen sources
+        if: steps.rollover.outputs.identity_replay_deferred == 'true'
+        run: echo "XRAY_PRE_MC=DEFERRED_LIVE_DIRECTORY_NOT_EXACT_PREVIOUS_ASOF source_frozen=true unknown_never_pass=true"
+
       - name: Build exact current ASOF identity proofs
         if: steps.rollover.outputs.build == 'true' || steps.rollover.outputs.identity_replay == 'true'
         timeout-minutes: 4
