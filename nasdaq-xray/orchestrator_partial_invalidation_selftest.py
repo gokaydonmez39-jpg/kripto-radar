@@ -221,6 +221,25 @@ def main():
                 assert token in source,token
         finally:
             o.ROOT=original_root
+    # No-progress retry must not spin 16 times once all candidates are
+    # classified UNKNOWN_STATIC or UNKNOWN_RETRY_EXHAUSTED.
+    retry,reason=o.history_retry_plan({
+        "status":"HISTORY_PARTIAL","queue_total":3183,"cursor":3183,
+        "pending_retry":0,"unknown_count":231})
+    assert retry is False and reason=="NO_RETRYABLE_HISTORY_WORK_REMAINS"
+    assert o.history_retry_plan({"status":"HISTORY_PARTIAL","queue_total":3183,
+        "cursor":3000,"pending_retry":0})==(True,"NEW_HISTORY_SCOPE_REMAINS")
+    assert o.history_retry_plan({"status":"HISTORY_PARTIAL","queue_total":3183,
+        "cursor":3183,"pending_retry":3})==(True,"RETRYABLE_HISTORY_UNKNOWN_REMAINS")
+    assert o.history_retry_plan({"status":"HISTORY_COMPLETE","queue_total":3183,
+        "cursor":3183,"pending_retry":0})==(False,"COMPLETE")
+    for invalid in ({"queue_total":0,"cursor":0,"pending_retry":0},
+                    {"queue_total":1,"cursor":2,"pending_retry":0},
+                    {"queue_total":1,"cursor":1,"pending_retry":-1}):
+        try:o.history_retry_plan(invalid)
+        except ValueError:pass
+        else:raise AssertionError("INVALID_HISTORY_PROGRESS_ACCEPTED")
+    print("XRAY_HISTORY_RETRY_PROGRESS_SELFTEST=PASS_4_POSITIVE_3_NEGATIVE")
     print("XRAY_PARTIAL_HISTORY_STALE_STATE_SELFTEST=PASS")
 
 
