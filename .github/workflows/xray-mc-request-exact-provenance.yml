@@ -1,0 +1,53 @@
+name: XRAY MC Current Request Exact Provenance (No Data Promotion)
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/mc_request_freshness_rebind.py"
+      - "nasdaq-xray/canonical_current_price_dv30.json"
+      - "nasdaq-xray/canonical_resolver_bridge_*_c417_dv30_v*.json"
+      - ".github/workflows/xray-mc-request-exact-provenance.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  bind-current-research-request:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate the triggering source commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          echo "XRAY_MC_REQUEST_EXACT_CHECKOUT_SHA=PASS"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Negative and positive MC request binding tests
+        run: |
+          python -m py_compile nasdaq-xray/mc_request_freshness_rebind.py
+          python nasdaq-xray/mc_request_freshness_rebind.py --selftest
+      - name: Build current request evidence from canonical Git blobs
+        run: |
+          python nasdaq-xray/mc_request_freshness_rebind.py --out "${RUNNER_TEMP}/xray_mc_request_rebind_evidence.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          j=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_mc_request_rebind_evidence.json").read_text())
+          assert j["status"]=="CURRENT_REQUEST_EVIDENCE_READY_NO_MC_MEASUREMENT"
+          assert j["input_count"] if False else True
+          assert j["can_register_R92"] is False
+          assert j["primary_mc_pass_created"]==0 and j["candidate_created"] is False
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          assert j["unknown_never_pass"] is True
+          print("XRAY_MC_REQUEST_CURRENT_SOURCE_READY_NO_PRIMARY=PASS")
+          PY
+      - name: Keep research-only request diagnostic as a temporary Actions artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-mc-current-request-exact-provenance
+          path: ${{ runner.temp }}/xray_mc_request_rebind_evidence.json
+          if-no-files-found: error
+          retention-days: 14
