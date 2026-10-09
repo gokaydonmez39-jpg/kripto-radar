@@ -1,0 +1,103 @@
+{
+  "schema": "XRAY_20261009_SOURCE_REPAIR_CANONICAL_CONTINUATION_V14",
+  "authority": "LIVE_MAIN_ACTIONS_AND_GIT_BLOB_READBACK_BEATS_THIS_CHECKPOINT",
+  "repo": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "source_head_at_observation": "d3ddb570099776d2c71edec7d88876e2d9c31fd9",
+  "observed_utc": "2026-10-09T10:09:19Z",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "mode": "RESEARCH_ONLY_MANUAL_DECISION",
+  "unknown_never_pass": true,
+  "market_cap_threshold_usd": 2000000000,
+  "volume_dv30_threshold_usd": 50000000,
+  "source_snapshot": {
+    "root_asof_et": "2026-10-08",
+    "root_status": "PARTIAL_HISTORY",
+    "history_unknown": 231,
+    "pending_retry": 0,
+    "price_pass": 514,
+    "price_blocked": 45,
+    "master_identity_unknown": 72,
+    "current_mc_bridge_count": 0,
+    "terminal_asof_et": "2026-10-07",
+    "terminal_result": "PARTIAL_UNKNOWN",
+    "verified_r92_candidates": 0,
+    "delivery_ledger_count": 0
+  },
+  "repairs": [
+    {
+      "commit": "2095603a329789f985fac998a700dfd34250460d",
+      "kind": "ADD_READ_ONLY_POSTMC_SOURCE_DIAGNOSTIC"
+    },
+    {
+      "commit": "4692ccf0571ea1583f1ae9568e6978a38fb160c6",
+      "kind": "FIX_LITERAL_ENCODINGS_GIT_BLOB_REGEX_OUTPUT"
+    },
+    {
+      "commit": "a4441c55de2242308ef136e8fe49f90b32ac0faf",
+      "kind": "CREDENTIAL_NOT_PROBED_SEPARATE_FROM_ABSENT"
+    },
+    {
+      "commit": "dc98269f857b2807c927aec24a2579fad6d80c17",
+      "kind": "AUTOMATIC_POSTMC_SOURCE_WITNESS_ARTIFACT_BEFORE_FAILCLOSED"
+    },
+    {
+      "commit": "36281f04c4ffd62e10eaabc8bb38f6d55c70ac26",
+      "kind": "FIX_SELFTEST_PROBE_MARKER"
+    },
+    {
+      "commit": "d3ddb570099776d2c71edec7d88876e2d9c31fd9",
+      "kind": "REJECT_NONFINITE_ALPACA_OHLCV_ACROSS_ALL_HISTORY_ROWS"
+    }
+  ],
+  "tests": [
+    {
+      "run": 37915562118,
+      "conclusion": "FAILURE_SELFTEST_FIXTURE_PROBE_MARKER_MISSING",
+      "corrected": true
+    },
+    {
+      "run": 37915643518,
+      "conclusion": "FAILURE_EXPECTED_MC_BLOCKED",
+      "positive_negative_selftest": "PASS",
+      "live_source": "CURRENT_MC_BRIDGE_ABSENT",
+      "operational_artifact": "xray-post-mc-source-readiness",
+      "artifact_id": 11609242729,
+      "artifact_uploaded": true
+    },
+    {
+      "run": 37915819827,
+      "conclusion": "FAILURE_EXPECTED_ALPACA_KEYS_REQUIRED",
+      "strict_selftest": "PASS",
+      "history_rescue_selftest": "PASS",
+      "alpaca_live_probe": "BLOCKED",
+      "alpaca_source_reason": "ALPACA_PRIVATE_API_CREDENTIALS_REQUIRED",
+      "root_sample_reason": "PRIVATE_ALPACA_CREDENTIALS_REQUIRED",
+      "operational_artifact": "xray-alpaca-free-sip-shadow-counts-v1",
+      "artifact_uploaded": true
+    }
+  ],
+  "hard_external_dependencies": [
+    "Alpaca private data-only Actions credential pair incomplete; ChatGPT connected research access is not a GitHub Actions secret",
+    "Same-ASOF 2026-10-08 C4.17 primary Bigdata market-cap measurement and lawful unattended automated-use rights not attested",
+    "Neither SEC share-count shadow nor Massive shadow may auto-promote to PRIMARY without independent policy/versioned proof"
+  ],
+  "remaining_engineering_gates": [
+    "Proof-grade current MC bridge and entitlement from lawful measured provider",
+    "Bounded same-ASOF 260 trading sessions and 52 weekly data without unvalidated shadow promotion",
+    "Candidate-local weekly,regime,earnings,legal,R1/RR and exact SHA",
+    "Exact current Final release, real nonexpired candidate registration, delivery receipt"
+  ],
+  "deliverability": {
+    "releases_claimed": false,
+    "real_candidate_count": 0,
+    "real_device_receipt": false,
+    "current_asof_terminal_complete": false,
+    "missing_mc_never_overridden": true,
+    "no_broker_credentials_or_orders": true
+  },
+  "release": "RESEARCH_PRODUCTION_NO_GO"
+}
