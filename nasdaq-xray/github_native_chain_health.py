@@ -11,6 +11,8 @@ import datetime as dt
 import json
 import os
 import pathlib
+import time
+from unittest.mock import patch
 from github_native_root_watchdog import github, head_sha, timestamp, UTC
 
 ROOT="nasdaq-xray/"
@@ -133,13 +135,59 @@ def selftest():
     v=classify(now,blobs,objects,False)
     assert v["status"]=="UNVERIFIED_MAIN_CHANGED"
     assert v["alpha_authority"] is False
-    print("XRAY_GITHUB_NATIVE_CHAIN_FAULT_SELFTEST=PASS ZERO_ALPHA")
+    # Changes to main during concurrent writers cannot mix different commits
+    # into a single falsely exact report. Retry a bounded number of times.
+    pinned=[]
+    def fake_github(method,path,token):
+        pinned.append(path)
+        if path.startswith("/git/trees/"):
+            return {"truncated":False,"tree":[]}
+        raise AssertionError("UNEXPECTED_UNPINNED_GITHUB_REQUEST")
+    with patch(__name__+".head_sha", side_effect=["a"*40,"b"*40,"b"*40,"b"*40]), \
+         patch(__name__+".github",side_effect=fake_github), \
+         patch(__name__+".file_json",return_value={}):
+        stable,_,_,sha=stable_snapshot("dummy",max_attempts=2)
+    assert stable and sha=="b"*40 and pinned==[
+        "/git/trees/"+"a"*40+"?recursive=1",
+        "/git/trees/"+"b"*40+"?recursive=1"]
+    with patch(__name__+".head_sha", side_effect=["a"*40,"b"*40,"c"*40,"d"*40]), \
+         patch(__name__+".github",side_effect=fake_github), \
+         patch(__name__+".file_json",return_value={}):
+        stable,_,_,sha=stable_snapshot("dummy",max_attempts=2)
+    assert not stable and sha is None
+    assert "ref="+"a"*40 in "/contents/example?ref="+"a"*40
+    print("XRAY_GITHUB_NATIVE_CHAIN_FAULT_SELFTEST=PASS_ATOMIC_PINNED_RETRY ZERO_ALPHA")
 
-def file_json(token,short_path):
-    body=github("GET","/contents/"+ROOT+short_path+"?ref=main",token)
+def file_json(token,short_path,ref):
+    # Never read moving 'main' after taking its tree SHA: each object comes
+    # from the same immutable commit. A later main change fails closed.
+    if not isinstance(ref,str) or len(ref)!=40 or any(c not in "0123456789abcdef" for c in ref):
+        raise ValueError("UNVERIFIED_REF_NOT_40_CHAR_GIT_SHA")
+    body=github("GET","/contents/"+ROOT+short_path+"?ref="+ref,token)
     if body.get("encoding")!="base64" or not isinstance(body.get("content"),str):
         raise RuntimeError("GITHUB_BLOB_ENCODING_UNTRUSTED")
     return json.loads(base64.b64decode(body["content"]))
+
+def stable_snapshot(token,max_attempts=3):
+    if not isinstance(max_attempts,int) or not 1 <= max_attempts <= 5:
+        raise ValueError("INVALID_BOUNDED_ATTEMPT_COUNT")
+    last_blobs,last_files={},{}
+    for attempt in range(max_attempts):
+        before=head_sha(token)
+        if len(before)!=40:
+            raise RuntimeError("MISSING_MAIN_COMMIT_SHA")
+        tree=github("GET","/git/trees/"+before+"?recursive=1",token)
+        if tree.get("truncated") is True:
+            raise RuntimeError("TREE_TRUNCATED_NO_AUDIT")
+        last_blobs={x["path"]:x["sha"] for x in tree.get("tree",[])
+                    if x.get("type")=="blob" and x.get("path")}
+        last_files={key:file_json(token,path,before) for key,path in FILES.items()}
+        if head_sha(token)==before:
+            return True,last_blobs,last_files,before
+        # GitHub may move main during a concurrent writer's atomic commit.
+        # At most three snapshots; never re-use previous blobs for authority.
+        if attempt+1<max_attempts:time.sleep(0.25)
+    return False,last_blobs,last_files,None
 
 def main():
     p=argparse.ArgumentParser()
@@ -153,23 +201,16 @@ def main():
         or os.getenv("GITHUB_REF")!="refs/heads/main"):
         raise RuntimeError("REPO_BRANCH_AUTHORITY_MISMATCH")
     token=os.getenv("GITHUB_TOKEN","")
-    before=head_sha(token)
-    tree=github("GET","/git/trees/"+before+"?recursive=1",token)
-    if tree.get("truncated") is True:
-        raise RuntimeError("TREE_TRUNCATED_NO_AUDIT")
-    blobs={x["path"]:x["sha"] for x in tree.get("tree",[])
-           if x.get("type")=="blob" and x.get("path")}
-    objects={key:file_json(token,path) for key,path in FILES.items()}
-    after=head_sha(token)
-    result=classify(dt.datetime.now(UTC),blobs,objects,before==after)
+    stable,blobs,objects,pinned_sha=stable_snapshot(token)
+    result=classify(dt.datetime.now(UTC),blobs,objects,stable)
     result["schema"]="XRAY_GITHUB_NATIVE_CHAIN_INCIDENT_AUDIT_V1"
     result["generated_at_utc"]=dt.datetime.now(UTC).isoformat()
-    result["live_main_sha_if_stable"]=before if before==after else None
+    result["live_main_sha_if_stable"]=pinned_sha if stable else None
     pathlib.Path(args.out).write_text(json.dumps(result,indent=2,sort_keys=True)+"\n")
     print("XRAY_NATIVE_CHAIN_HEALTH="+result["status"]+" "+
           ",".join(result["issues"]))
-    if before!=after:
-        raise RuntimeError("MAIN_CHANGED_DURING_CHAIN_AUDIT_FAIL_CLOSED")
+    if not stable:
+        raise RuntimeError("MAIN_CHANGED_AFTER_BOUNDED_PINNED_RETRIES_FAIL_CLOSED")
 
 if __name__=="__main__":
     main()
