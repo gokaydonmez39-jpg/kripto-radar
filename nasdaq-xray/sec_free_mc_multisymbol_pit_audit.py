@@ -45,7 +45,7 @@ def map_ciks(source:dict)->dict:
         route.pop(ticker,None)
     return route
 
-def load_scope()->tuple[str,list[str]]:
+def load_scope(offset:int=0,limit:int=0)->tuple[str,list[str]]:
     master=json.loads((ROOT/"canonical_current_master_manifest.json").read_text())
     price=json.loads((ROOT/"canonical_current_price_dv30.json").read_text())
     asof=price.get("asof_et")
@@ -58,9 +58,17 @@ def load_scope()->tuple[str,list[str]]:
     if len(set(m))!=len(m) or not set(p).issubset(set(m)):
         raise ValueError("MASTER_SCOPE_INVALID")
     # A representative test is not a full-Nasdaq data coverage attestation.
-    symbols=[s for s in DEFAULT_CANARIES if s in p and s in m]
-    if len(symbols)<3:
-        raise ValueError("INSUFFICIENT_CURRENT_CANARY_SCOPE")
+    if offset==0 and limit==0:
+        symbols=[s for s in DEFAULT_CANARIES if s in p and s in m]
+        if len(symbols)<3:
+            raise ValueError("INSUFFICIENT_CURRENT_CANARY_SCOPE")
+    else:
+        # Deterministic, unique, bounded slice; source identity always binds
+        # to the exact PRICE/Master PASS intersection in the checked-out main.
+        if not (0<=offset<len(p) and 1<=limit<=514):
+            raise ValueError("INVALID_BOUNDED_BATCH")
+        symbols=sorted(p)[offset:offset+limit]
+        if not symbols: raise ValueError("EMPTY_SEC_BATCH")
     return asof,symbols
 
 def selftest():
@@ -81,14 +89,19 @@ def selftest():
         try:map_ciks(bad)
         except ValueError:pass
         else:raise AssertionError("SEC_MAP_INVALID_SCHEMA_ACCEPTED")
+    for bad_offset,bad_limit in ((-1,1),(0,-1),(0,515)):
+        try:load_scope(bad_offset,bad_limit)
+        except ValueError:pass
+        else:raise AssertionError("UNSAFE_BATCH_INPUT_ACCEPTED")
     print("XRAY_SEC_MULTI_SCOPE_SELFTEST=PASS_CIK_EXCHANGE_DUPLICATE_FAIL_CLOSED")
 
-def run()->dict:
-    asof,syms=load_scope()
+def run(offset:int=0,limit:int=0)->dict:
+    asof,syms=load_scope(offset,limit)
     result={"schema":"XRAY_SEC_MULTISYMBOL_PIT_SHADOW_V1",
             "asof_et":asof,"source":"SEC_EDGAR_OFFICIAL",
             "ticker_map_timestamp":"CURRENT_ONLY_NOT_HISTORICAL_PIT",
-            "sample_count":len(syms),"execution":"NONE","real_money":"NO-GO",
+            "sample_count":len(syms),"batch_offset":offset,"batch_limit":limit,
+            "execution":"NONE","real_money":"NO-GO",
             "unknown_never_pass":True,"production_alpha_authority":False,
             "c417_primary_mc_count":0,"market_cap_calculated":False,
             "price_binding_attested":False,
@@ -106,10 +119,12 @@ def run()->dict:
         return dict(result,transport="BLOCKED_MAP",status_counts={str(exc):len(syms)})
     result["transport"]="SEC_MAP_HTTP200_VALIDATED"
     status={}
+    reason_codes={}
     for i,sym in enumerate(syms):
         cik=routes.get(sym)
         if not cik:
             status[sym]="UNKNOWN_OFFICIAL_CIK_ROUTE"
+            reason_codes[sym]="SEC_CURRENT_CIK_ROUTE_MISSING"
             continue
         # Max 2 SEC calls/s, below official fair-access limit. No proxy
         # rotation, no bypass attempts and no unbounded retry.
@@ -119,12 +134,17 @@ def run()->dict:
             submissions=sec.get_json(f"https://data.sec.gov/submissions/CIK{cik}.json",ua)
             classified=sec.select_shares(cf,submissions,asof,expected_cik=cik)
             status[sym]=str(classified.get("status") or "UNKNOWN")
+            reason_codes[sym]=str(classified.get("reason") or "SEC_REASON_UNKNOWN")
         except ValueError as exc:
-            status[sym]="UNKNOWN_SEC_TRANSPORT_"+str(exc)
+            status[sym]="UNKNOWN_SEC_TRANSPORT"
+            # SEC transport failures never authorize a share-count PASS.
+            reason_codes[sym]=str(exc)
         if i+1<len(syms):
             time.sleep(0.55)
     result["statuses"]=dict(sorted(status.items()))
+    result["reason_codes"]=dict(sorted(reason_codes.items()))
     result["status_counts"]=dict(sorted(collections.Counter(status.values()).items()))
+    result["reason_counts"]=dict(sorted(collections.Counter(reason_codes.values()).items()))
     result["transport"]="SEC_OFFICIAL_MULTI_REQUESTS_COMPLETE_WITH_UNKNOWN_ALLOWED"
     return result
 
@@ -132,15 +152,18 @@ def main():
     p=argparse.ArgumentParser()
     p.add_argument("--selftest",action="store_true")
     p.add_argument("--output",type=Path)
+    p.add_argument("--offset",type=int,default=0)
+    p.add_argument("--limit",type=int,default=0)
     args=p.parse_args()
     if args.selftest:
         selftest()
         return
-    out=run()
+    out=run(args.offset,args.limit)
     if args.output:
         args.output.write_text(json.dumps(out,sort_keys=True,indent=2)+"\n")
     print("XRAY_SEC_MULTI_TRANSPORT="+out["transport"])
     print("XRAY_SEC_MULTI_STATUS_COUNTS="+json.dumps(out["status_counts"],sort_keys=True))
+    print("XRAY_SEC_MULTI_REASON_COUNTS="+json.dumps(out.get("reason_counts") or {},sort_keys=True))
     print("XRAY_SEC_MULTI_PRIMARY=0_NO_C417_PRODUCTION_AUTHORITY")
     if out["transport"].startswith("BLOCKED_"):
         raise SystemExit(2)
