@@ -1,0 +1,143 @@
+{
+  "schema": "XRAY_C418_LICENSE_HISTORY_231_MEASUREMENT_CONTINUATION_V26",
+  "state_replay_precedence": "LIVE_GITHUB_MAIN_AND_ACTIONS_OVERRIDE_THIS_RECORD",
+  "repo": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "observed_source_head": "0476390826586a1df69dd5353ff39c547985e6c7",
+  "observation_date_et": "2026-10-09",
+  "operator_authorization": "USER_AUTHORIZED_ALTERNATIVE_LICENSED_VERSIONED_SOURCE_RESEARCH_AND_POLICY_DESIGN",
+  "approval_scope": "POLICY_PROPOSAL_AND_READONLY_SOURCE_VALIDATION_NO_VENDOR_LICENSE_GRANT_NO_UNPRICED_PAYMENT_NO_REAL_ORDERS",
+  "effective_policy": "C4.17",
+  "proposed_policy": "C4.18-SOURCE-SUCCESSOR-PROPOSAL",
+  "control": "C4.27",
+  "mode": "RESEARCH_ONLY_MANUAL_DECISION",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "work_completed": [
+    {
+      "id": "C418_SOURCE_PROPOSAL",
+      "commit": "abaa5f5777a686c80123583279c145b336301b06",
+      "path": "nasdaq-xray/source_successor_c418_proposal.json",
+      "status": "COMMITTED_NOT_ACTIVATED"
+    },
+    {
+      "id": "C418_SOURCE_PREFLIGHT",
+      "commit": "b89f718e98732a33af35e07690e58d667313623d",
+      "ci_commit": "44d09c771fa344761c727b813650af394254c57f",
+      "run": 37962801691,
+      "status": "ACTIONS_SUCCESS_SELFTEST_19_NEGATIVE_NO_AUTHORITY",
+      "artifact": 11632166716
+    },
+    {
+      "id": "ALPACA_OFFICIAL_30_WORKFLOW_PREFLIGHT",
+      "commit": "f7fb27b8660e539b4da06ec34537ad13d7f80b00",
+      "ci_commit": "92c53455031909f6dad989e95c85f3a100e16f61",
+      "run": 37963023390,
+      "status": "WORKFLOW_CALENDAR_PREFLIGHT_PASS_OVERALL_FAILURE_LEGACY_DIRECT_CALL_STILL_ACCEPTS_ARBITRARY_30"
+    },
+    {
+      "id": "ALPACA_CONNECTED_231_RESEARCH_SHADOW",
+      "commit": "678bf99616fd09ad7896f620eba4a607f3f390f6",
+      "path": "nasdaq-xray/research/alpaca_connected_root_231_operational_shadow_20261009_v1.json",
+      "root_scope_sha256": "f50fc7081efa841c80952d704d2f8348470f956f946e1b6a3d845d93a6da739b",
+      "scope": 231,
+      "observed_ge260_and_asof": 90,
+      "short_with_asof": 136,
+      "asof_absent": 5,
+      "raw_vendor_market_data_committed": false
+    },
+    {
+      "id": "ALPACA_CONNECTED_231_SCOPE_INTEGRITY",
+      "commit": "9b284f3082acb69d0ff48d9fd603bb355bd2e97e",
+      "ci_commit": "0476390826586a1df69dd5353ff39c547985e6c7",
+      "run": 37964421259,
+      "status": "GITHUB_ACTIONS_SUCCESS_ROOT_SYMBOL_SET_SHA_9_NEGATIVE_NO_CANONICAL_PASS"
+    }
+  ],
+  "primary_source_truth": {
+    "Bigdata_last_connected_payg_balance": 0,
+    "Bigdata_last_connected_outOfCredits": true,
+    "Bigdata_live_company_screen": "CREDIT_EXHAUSTED_MESSAGE_RETURNED",
+    "Bigdata_current_primary_MC_bridge": "ABSENT",
+    "Massive_connected_reference_tool": "ACCESSIBLE_RESEARCH_INTERACTIVE_NOT_PROOF_OF_NONDISPLAY_RUNNER_RIGHTS",
+    "Massive_free_plan": "INDIVIDUAL_END_OF_DAY_5_CALLS_PER_MINUTE",
+    "Massive_market_data_license": "DISPLAY_ONLY_DEFAULT_UNLESS_PROVIDER_SUBSEQUENT_AGREEMENT",
+    "Massive_license_source": "https://www.massive.com/legal/market-data-terms-of-service",
+    "Alpaca_license_source": "https://alpaca.markets/support/redistribute-alpaca-api",
+    "SEC_source": "https://www.sec.gov/search-filings/edgar-application-programming-interfaces",
+    "provider_grant_document_received": false,
+    "production_source_entitlement_proven": false,
+    "primary_promoted": false
+  },
+  "canonical_readback": {
+    "root_asof": "2026-10-08",
+    "root_status": "PARTIAL_HISTORY",
+    "root_unknown": 231,
+    "identity_asof": "2026-10-08",
+    "identity_unknown": 72,
+    "terminal_asof": "2026-10-07",
+    "terminal_status": "PARTIAL",
+    "terminal_full_e2e": false,
+    "terminal_primary_pass": 0,
+    "terminal_R92": 0,
+    "github_delivery_ledger_entries": 0,
+    "device_notification_receipt": false,
+    "calibration_source_exact_comparable_completed": 0,
+    "calibration_target": 60,
+    "stale_data_not_promoted": true
+  },
+  "open_critical": [
+    {
+      "severity": "P0",
+      "issue": "BIGDATA_ACCOUNT_CREDITS_ZERO_C417_PRIMARY_NOT_AVAILABLE",
+      "root": "REAL_ACCOUNT_SCREEN_ERROR_CREDITS_EXHAUSTED",
+      "mandatory": "PROVIDER_BILLING_OR_LICENSED_ALTERNATIVE_WRITTEN_ENTITLEMENT_WITH_C418_ACTIVATION_APPROVAL"
+    },
+    {
+      "severity": "P0",
+      "issue": "MASSIVE_ALPACA_VENDOR_RIGHTS_FOR_NONDISPLAY_RUNNER_UNVERIFIED",
+      "root": "INDIVIDUAL_DISPLAY_OR_PERSONAL_LICENSE_DOES_NOT_AUTOMATICALLY_GRANT_NONDISPLAY_PIPELINE",
+      "mandatory": "ACTUAL_SIGNED_SCOPE_OR_OFFICIAL_AUTHORIZED_ENTITLEMENT_FOR_UNATTENDED_RUNNER_AND_DERIVED_OUTPUT"
+    },
+    {
+      "severity": "P0",
+      "issue": "231_ROOT_HISTORY_CANONICAL_UNKNOWN",
+      "root": "SINA_ERRORS_AND_SHORT_SOURCE_HISTORY; ALPACA_INTERACTIVE_ONLY; 90_OF_231_HAVE_GE260_ASOF_BUT_260_CALENDAR_52_WEEKS_SPLITS_LINEAGE_NOT_PROVEN",
+      "mandatory": "LICENSED_EXACT_SOURCE_AND_SAME_ASOF_260_SESSIONS_52_COMPLETED_WEEKS_IDENTITY_CORPORATE_ACTIONS"
+    },
+    {
+      "severity": "P0",
+      "issue": "ALPACA_LEGACY_DIRECT_30_CALENDAR_ACCEPTANCE_BUG",
+      "root": "NEGATIVE_GITHUB_ACTIONS_37959741933_AND_37963023390; GITHUB_SOURCE_UPDATE_BLOCKED_BY_SECURITY_CONTROL",
+      "mandatory": "SAFE_DIRECT_CLASSIFIER_UPDATE_WITH_TEST_BEFORE_ACTIVATION; WORKFLOW_PREFLIGHT_IS_NOT_DIRECT_CALL_REPAIR"
+    },
+    {
+      "severity": "P0",
+      "issue": "TERMINAL_NOT_CURRENT",
+      "root": "7_OCT_TERMINAL_WITH_8_OCT_ROOT; EXACT_PRIMARY_MC_COUNT_ZERO",
+      "mandatory": "SAME_ASOF_MC_HISTORY_WEEKLY_REGIME_EARNINGS_LEGAL_RISKRR_FINAL_WITH_BLOB_SHA_AND_SOURCE_RIGHTS"
+    },
+    {
+      "severity": "P1",
+      "issue": "ACTUAL_R92_TO_PHONE_DELIVERY_NOT_ATTESTED",
+      "root": "NO_REAL_R92_REGISTERED_AND_NO_DEVICE_READBACK",
+      "mandatory": "REAL_REGISTERED_R92_DEDUP_EXPIRY_GITHUB_LEDGER_AND_ACTUAL_DEVICE_RECEIPT"
+    },
+    {
+      "severity": "P2",
+      "issue": "C417_60_COMPARABLE_SESSIONS_UNOBSERVED",
+      "root": "ZERO_OF_SIXTY",
+      "mandatory": "PROSPECTIVE_REAL_2_8_DAY_PIT_FORWARD_MEASUREMENT_AND_COSTS"
+    }
+  ],
+  "active_xray_automations": 5,
+  "no_new_automation_created": true,
+  "no_vendor_raw_market_data_committed": true,
+  "no_api_keys_committed": true,
+  "no_paid_service_activated": true,
+  "no_execution_permission_changed": true,
+  "no_alpha_threshold_change": true,
+  "production_go": false,
+  "next_priority": "SECURE_LEGAL_RUNNING_PRIMARY_MC_SOURCE; OTHERWISE_TRUE_PRODUCTION_CANNOT_BE_ATTESTED"
+}
