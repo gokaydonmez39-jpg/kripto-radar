@@ -34,7 +34,7 @@ def paired_final(path: Path, asof: str):
 
 def git_blob_sha(path: Path) -> str:
     data=path.read_bytes()
-    return hashlib.sha1(b"blob "+str(len(data)).encode()+b"\\0"+data).hexdigest()
+    return hashlib.sha1(b"blob "+str(len(data)).encode()+b"\0"+data).hexdigest()
 
 
 def comparable_evidence(terminal: dict, final: dict, fp: Path,
