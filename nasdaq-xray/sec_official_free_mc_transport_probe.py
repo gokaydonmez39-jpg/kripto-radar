@@ -84,30 +84,52 @@ def select_shares(facts:dict,sub:dict,asof:str,expected_cik:str=CIK) -> dict:
     except ValueError as exc:
         return {"status":"UNKNOWN","reason":str(exc)}
     valid=[]
+    # Diagnostic counters contain no raw shares, filings or proprietary prices.
+    diag={"missing_accession":0,"form_nonannual":0,"stale":0,
+          "post_close":0,"invalid_fact":0}
     for row in concept:
         if not isinstance(row,dict):continue
-        if row.get("form") not in ACCEPTED_FORMS:continue
+        if row.get("form") not in ACCEPTED_FORMS:
+            diag["form_nonannual"]+=1
+            continue
         acc=row.get("accn")
         matched=idx.get(acc)
         if not matched or matched["form"]!=row.get("form") or matched["filed"]!=row.get("filed"):
+            diag["missing_accession"]+=1
             continue
         try:
             filed=dt.date.fromisoformat(str(row["filed"]))
             end=dt.date.fromisoformat(str(row["end"]))
             accepted=dt.datetime.fromisoformat(matched["accepted_at"].replace("Z","+00:00"))
             shares=row["val"]
-            if isinstance(shares,bool) or not isinstance(shares,int) or shares<=0:
+            if isinstance(shares,bool) or not isinstance(shares,int) or shares<=0 or accepted.tzinfo is None:
+                diag["invalid_fact"]+=1
                 continue
-            if accepted.tzinfo is None:
-                continue  # No assumption about missing SEC timezone.
             age=(cutoff-end).days
-            if not (0<=age<=MAX_AGE_DAYS and end<=filed<=cutoff
-                    and accepted.astimezone(dt.timezone.utc)<=session_close_utc):
+            if accepted.astimezone(dt.timezone.utc)>session_close_utc:
+                diag["post_close"]+=1
                 continue
-        except (KeyError,ValueError,TypeError):continue
+            if not (0<=age<=MAX_AGE_DAYS and end<=filed<=cutoff):
+                diag["stale"]+=1
+                continue
+        except (KeyError,ValueError,TypeError):
+            diag["invalid_fact"]+=1
+            continue
         valid.append((accepted, end, acc, shares, age))
     if not valid:
-        return {"status":"UNKNOWN","reason":"NO_FRESH_ACCEPTANCE_BOUND_SINGLE_ENTITY_SHARES"}
+        if not concept:
+            reason="NO_SEC_DEI_ENTITY_SHARES_FACT"
+        elif diag["post_close"]>0 and not diag["stale"]:
+            reason="SEC_FACT_ACCEPTED_AFTER_RTH_CLOSE"
+        elif diag["stale"]>0:
+            reason="SEC_SHARES_STALE_OR_FUTURE_OBSERVATION"
+        elif diag["missing_accession"]>0:
+            reason="SEC_FACT_ACCESSION_NOT_VERIFIED_IN_RECENT_SUBMISSIONS"
+        elif diag["invalid_fact"]>0:
+            reason="SEC_FACT_MALFORMED_OR_INVALID"
+        else:
+            reason="NO_FRESH_ACCEPTANCE_BOUND_SINGLE_ENTITY_SHARES"
+        return {"status":"UNKNOWN","reason":reason}
     valid.sort(key=lambda x:(x[0],x[1]))
     t,end,acc,shares,age=valid[-1]
     # SEC CompanyFacts can omit dimensional share-class facts. No class
