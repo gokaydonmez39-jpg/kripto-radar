@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/massive_grouped_history_resume.py"
+      - "nasdaq-xray/grouped_history_full_pipeline_selftest.py"
+      - "nasdaq-xray/qualified_history_ingress_shadow.py"
       - "nasdaq-xray/qualified_history_ingress_shadow.py"
       - ".github/workflows/xray-massive-grouped-history-resume.yml"
   schedule:
@@ -40,6 +42,8 @@ jobs:
         run: |
           python -m py_compile nasdaq-xray/massive_grouped_history_resume.py
           python nasdaq-xray/massive_grouped_history_resume.py --selftest
+          python -m py_compile nasdaq-xray/grouped_history_full_pipeline_selftest.py
+          python nasdaq-xray/grouped_history_full_pipeline_selftest.py
       - name: Restore authenticated previous private history
         shell: bash
         run: |
