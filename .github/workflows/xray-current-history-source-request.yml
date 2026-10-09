@@ -6,6 +6,7 @@ on:
       - "nasdaq-xray/current_history_source_request.py"
       - "nasdaq-xray/free_history_source_preflight.py"
       - "nasdaq-xray/qualified_history_ingress_shadow.py"
+      - "nasdaq-xray/massive_splits_asof_shadow.py"
       - "nasdaq-xray/history_transport_cache_guard.py"
       - "nasdaq-xray/canonical_current_price_dv30.json"
       - "nasdaq-xray/canonical_current_master_manifest.json"
@@ -82,6 +83,12 @@ jobs:
           assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
           print("XRAY_PRIVATE_514_HISTORY_INTAKE_HEAD_BOUND=PASS_MISSING_VENDOR_DATA_BLOCKED")
           PY
+      - name: Validate free Massive split event ASOF bounds without lookahead or vendor fetch
+        run: |
+          python -m py_compile nasdaq-xray/massive_splits_asof_shadow.py
+          python nasdaq-xray/massive_splits_asof_shadow.py --selftest
+          echo "XRAY_CORPORATE_SPLIT_DATA_RESEARCH_ONLY=PASS_NO_REAL_SOURCE_AUTHORITY"
+
       - name: Assemble current real Git scope (not market data)
         run: |
           python nasdaq-xray/current_history_source_request.py --out "${RUNNER_TEMP}/xray_current_history_source_request.json"
