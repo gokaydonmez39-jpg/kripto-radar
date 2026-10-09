@@ -62,6 +62,48 @@ def assert_same_asof(price,handoff,price_sha,handoff_sha,policy_sha,settlement=N
     assert ch.get("no_new_pass_beyond_resolver") is True
     assert handoff.get("price_unknown_count")==0
     assert handoff.get("union_disjoint_proof",{}).get("pass_set_exact_current_price") is True
+    # Do not trust boolean provenance alone. Independently rebuild the
+    # complete full-universe partition and compare exact membership with the
+    # current PRICE PASS and blocked sets.
+    compact=handoff.get("price_resolution_compact")
+    assert isinstance(compact,dict),"NO_COMPACT_RESOLVER_PARTITION"
+    names=("fail_price","fail_dv30","pass_price_dv30",
+           "block_current_run","unresolved_symbols")
+    assert set(compact)==set(names),"COMPACT_PARTITION_SCHEMA_DRIFT"
+    parts={}
+    for name in names:
+        value=compact[name]
+        assert isinstance(value,(dict,list)),"COMPACT_PARTITION_BAD_TYPE"
+        items=list(value)  # dict keys are tickers, list entries are tickers
+        assert all(isinstance(x,str) for x in items)
+        assert len(items)==len(set(items)),"COMPACT_PARTITION_DUPLICATE"
+        parts[name]=set(items)
+    assert parts["pass_price_dv30"]==set(symbols),"MC_SOURCE_PASS_SET_MISMATCH"
+    current_blocked=price.get("blocked_symbols")
+    assert isinstance(current_blocked,list) and len(current_blocked)==price["blocked_count"]
+    assert len(current_blocked)==len(set(current_blocked))
+    assert set(current_blocked)<=parts["block_current_run"],"MC_BLOCKED_NOT_SUBSET"
+    assert handoff.get("price_blocked_count")==len(current_blocked)
+    assert set(handoff.get("price_blocked_symbols",[]))==set(current_blocked)
+    complete=set()
+    for name in names:
+        assert not complete.intersection(parts[name]),"FULL_RESOLVER_PARTITION_OVERLAP"
+        complete.update(parts[name])
+    full=handoff.get("symbols")
+    assert isinstance(full,list) and len(full)==len(set(full))
+    assert complete==set(full),"FULL_RESOLVER_PARTITION_NOT_EXACT"
+    assert len(full)==handoff.get("queue_total")==handoff.get("symbol_count")
+    assert handoff.get("symbol_hash")==hash_lines(full),"FULL_RESOLVER_SYMBOL_HASH_DRIFT"
+    assert not parts["unresolved_symbols"],"FULL_RESOLVER_UNRESOLVED_NONZERO"
+    proof=handoff.get("union_disjoint_proof",{})
+    assert proof.get("partition_disjoint") is True and proof.get("partition_complete") is True
+    assert proof.get("unknown_zero") is True
+    counts=proof.get("counts",{})
+    for part,count in (("fail_price","FAIL_PRICE"),("fail_dv30","FAIL_DV30"),
+                       ("pass_price_dv30","PASS_PRICE_DV30"),("block_current_run","BLOCK_CURRENT_RUN"),
+                       ("unresolved_symbols","UNRESOLVED")):
+        assert counts.get(count)==len(parts[part]),"FULL_RESOLVER_COUNT_DRIFT:"+part
+    assert counts.get("TOTAL")==len(full)
     assert isinstance(handoff_sha,str) and re.fullmatch(r"[0-9a-f]{40}",handoff_sha)
     if settlement is not None:
         assert handoff.get("settlement_witness_blob_sha")==settlement_sha,"SETTLEMENT_BLOB_DRIFT"
@@ -158,14 +200,27 @@ def selftest():
       "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
       "asof_et":"2026-10-08","pass_symbols":["AAA","BBB"],
       "pass_count":2,"pass_hash":hash_lines(["AAA","BBB"]),
-      "unknown_count":0,"blocked_count":1}
+      "unknown_count":0,"blocked_count":1,"blocked_symbols":["CCC"]}
     hand={"execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
           "asof_et":"2026-10-08","status":"COMMITTED","bridge_role":"FULL_SCOPE_MC_HANDOFF_PROVENANCE",
           "coverage_complete":True,"classification_coverage_complete":True,"partial_data":False,
           "compiled_policy_blob_sha":POLICY_SHA,"compiled_policy_hash":POLICY_HASH,
           "compiled_policy_version":"C4.17","settlement_status":"PASS",
           "source_price_blob_sha":"a"*40,"price_unknown_count":0,
-          "union_disjoint_proof":{"pass_set_exact_current_price":True},
+          "union_disjoint_proof":{
+             "pass_set_exact_current_price":True,
+             "partition_complete":True,"partition_disjoint":True,"unknown_zero":True,
+             "counts":{"FAIL_PRICE":0,"FAIL_DV30":0,"PASS_PRICE_DV30":2,
+                       "BLOCK_CURRENT_RUN":1,"UNRESOLVED":0,"TOTAL":3}},
+          "symbols":["AAA","BBB","CCC"],"symbol_count":3,"queue_total":3,
+          "symbol_hash":hash_lines(["AAA","BBB","CCC"]),
+          "price_blocked_count":1,"price_blocked_symbols":["CCC"],
+          "price_resolution_compact":{
+             "fail_price":{},"fail_dv30":{},
+             "pass_price_dv30":{"AAA":{},"BBB":{}},
+             "block_current_run":{"CCC":{"reason":"SOURCE_MISSING"}},
+             "unresolved_symbols":[]},
+
           "current_handoff":{"price_blob_sha":"a"*40,"pass_count":2,
              "pass_hash":price["pass_hash"],"blocked_count":1,
              "blocked_subset_of_full_scope_block":True,"no_new_pass_beyond_resolver":True}}
@@ -181,6 +236,12 @@ def selftest():
         ("MC_HANDOFF_PARTIAL",lambda p,h:h.update(partial_data=True)),
         ("MC_HANDOFF_BLOCKED_SUBSET_FALSE",lambda p,h:h["current_handoff"].update(blocked_subset_of_full_scope_block=False)),
         ("PASS_SET_CHANGED",lambda p,h:h["current_handoff"].update(pass_hash="0"*64)),
+        ("COMPACT_FALSE_PASS",lambda p,h:h["price_resolution_compact"]["pass_price_dv30"].pop("BBB")),
+        ("COMPACT_BLOCKED_DISJOINT",lambda p,h:h["price_resolution_compact"]["block_current_run"].update(AAA={})),
+        ("COMPACT_MISSING_FULL",lambda p,h:h["price_resolution_compact"]["fail_price"].update(DDD={})),
+        ("BLOCKED_SET_DIFFERS",lambda p,h:p.update(blocked_symbols=["DDD"])),
+        ("RESOLVER_COUNTS_DRIFT",lambda p,h:h["union_disjoint_proof"]["counts"].update(PASS_PRICE_DV30=1)),
+
     ]
     import copy
     for label,alter in bad:
@@ -206,7 +267,7 @@ def selftest():
         try:select_active_handoff(case)
         except ValueError:continue
         raise AssertionError("SUPERSESSION_BAD_CASE_ACCEPTED:"+label)
-    print("XRAY_MC_REQUEST_REBIND_SELFTEST=PASS_1_BASELINE_9_NEGATIVE_SUPERSESSION_POSITIVE_3_NEGATIVE")
+    print("XRAY_MC_REQUEST_REBIND_SELFTEST=PASS_1_BASELINE_14_NEGATIVE_SUPERSESSION_POSITIVE_3_NEGATIVE")
 
 def main():
     ap=argparse.ArgumentParser()
