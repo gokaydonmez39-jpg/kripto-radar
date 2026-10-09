@@ -92,25 +92,32 @@ def select_shares(facts:dict,sub:dict,asof:str,expected_cik:str=CIK) -> dict:
         if row.get("form") not in ACCEPTED_FORMS:
             diag["form_nonannual"]+=1
             continue
+        # PIT eligibility precedes accession diagnostics. A filing AFTER
+        # ASOF or an old share observation cannot be rescued by chasing a
+        # historical accession: doing so misclassifies stale data as a gap.
+        try:
+            filed=dt.date.fromisoformat(str(row["filed"]))
+            end=dt.date.fromisoformat(str(row["end"]))
+            age=(cutoff-end).days
+        except (KeyError,ValueError,TypeError):
+            diag["invalid_fact"]+=1
+            continue
+        if not (0<=age<=MAX_AGE_DAYS and end<=filed<=cutoff):
+            diag["stale"]+=1
+            continue
         acc=row.get("accn")
         matched=idx.get(acc)
         if not matched or matched["form"]!=row.get("form") or matched["filed"]!=row.get("filed"):
             diag["missing_accession"]+=1
             continue
         try:
-            filed=dt.date.fromisoformat(str(row["filed"]))
-            end=dt.date.fromisoformat(str(row["end"]))
             accepted=dt.datetime.fromisoformat(matched["accepted_at"].replace("Z","+00:00"))
             shares=row["val"]
             if isinstance(shares,bool) or not isinstance(shares,int) or shares<=0 or accepted.tzinfo is None:
                 diag["invalid_fact"]+=1
                 continue
-            age=(cutoff-end).days
             if accepted.astimezone(dt.timezone.utc)>session_close_utc:
                 diag["post_close"]+=1
-                continue
-            if not (0<=age<=MAX_AGE_DAYS and end<=filed<=cutoff):
-                diag["stale"]+=1
                 continue
         except (KeyError,ValueError,TypeError):
             diag["invalid_fact"]+=1
@@ -167,6 +174,18 @@ def selftest():
     assert r["status"]=="SHADOW_SHARES_VINTAGE_ONLY"
     assert r["observation_date"]=="2026-09-30"
     assert r["production_mc_primary_pass"] is False
+    # A mismatched accession on an ineligible post-ASOF vintage is NOT
+    # evidence of missing official archive coverage.
+    stale=json.loads(json.dumps(fak))
+    stale_rows=stale["facts"]["dei"]["EntityCommonStockSharesOutstanding"]["units"]["shares"]
+    stale_rows[0]["filed"]="2026-10-09"
+    stale_rows[0]["end"]="2026-10-09"
+    assert select_shares(stale,subs,asof)["reason"]=="SEC_SHARES_STALE_OR_FUTURE_OBSERVATION"
+    # A genuinely valid pre-ASOF vintage with an unmatched accession must
+    # remain UNKNOWN and may be eligible for a historical-archive probe.
+    missing=json.loads(json.dumps(subs))
+    missing["filings"]["recent"]["accessionNumber"][0]="0000320193-26-999999"
+    assert select_shares(fak,missing,asof)["reason"]=="SEC_FACT_ACCESSION_NOT_VERIFIED_IN_RECENT_SUBMISSIONS"
     bad=json.loads(json.dumps(subs))
     bad["filings"]["recent"]["acceptanceDateTime"][0]="2026-10-09T12:00:00Z"
     assert select_shares(fak,bad,asof)["status"]=="UNKNOWN"
