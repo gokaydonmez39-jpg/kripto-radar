@@ -469,6 +469,28 @@ def selftest():
             assert blocked["status"]=="BLOCKED_ROLLING_24H_LOCAL_CREDIT_BUDGET"
             assert blocked["vendor_requests_this_run"]==0
             assert len(stub_calls)==n_calls
+            # Provider may have ONE invalid ticker. All other licensed
+            # symbols must be probed within rate budget; never let the first
+            # bad ticker permanently starve the entire Nasdaq cohort.
+            blocked_symbol=smaller["targets"][0]
+            success_symbol=smaller["targets"][1]
+            visited=[]
+            def one_bad_one_good(sym,sp,key):
+                visited.append(sym)
+                if sym==blocked_symbol:
+                    raise ValueError("TEST_SINGLE_ISSUER_VENDOR_BAR_INVALID")
+                response=deepcopy(fixture)
+                response["meta"]["symbol"]=sym
+                return response
+            a4=SimpleNamespace(report=Path(tmp)/"one_bad.json",
+                               checkpoint=Path(tmp)/"one_bad.enc",
+                               restore=Path(tmp)/"no-fault-prior.enc",limit=2)
+            mixed=run(a4,env=fake_env,transport=one_bad_one_good,
+                      now=lambda:valid_epoch,sleep=lambda _:None)
+            assert mixed["vendor_requests_this_run"]==2,"ONE_BAD_SYMBOL_STARVED_ALL_OTHER_NAMES"
+            assert mixed["queried_symbols"]==1,"OTHER_SYMBOL_NOT_PERSISTED"
+            assert visited==smaller["targets"]
+            assert mixed["canonical_HISTORY_pass"] is False
     print("XRAY_TWELVE_260_RESUME_SELFTEST=PASS_NEXT_TRADING_DAY_ET_PUBLICATION_EMBARGO_MISSING_LATEST_RETRY_STALE_QUOTA_ENCRYPTION_NO_ALPHA")
 
 def main():
