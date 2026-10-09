@@ -1,0 +1,103 @@
+{
+  "schema": "XRAY_ZERO_COST_SOURCES_CANONICAL_HANDOFF_V1",
+  "asof": "2026-10-09",
+  "authority": "LIVE_GITHUB_MAIN_ACTIONS_AND_VENDOR_TERMS_SUPERSEDE_THIS_RECORD",
+  "predecessor": "nasdaq-xray/research/continuation_checkpoint_20261009_v35_history_evidence_failclosed.json",
+  "detailed_research": "nasdaq-xray/research/zero_cost_market_data_deep_sweep_20261009.md",
+  "production": "NO_GO",
+  "policy": {
+    "effective": "C4.17",
+    "control": "C4.27",
+    "c418": "PROPOSED_NOT_ACTIVATED",
+    "mode": "RESEARCH_ONLY_MANUAL_DECISION",
+    "execution": "NONE",
+    "real_money": "NO-GO",
+    "unknown_not_pass": true,
+    "monthly_software_budget_usd": 0,
+    "broker_account_required": false,
+    "g9_required": false,
+    "alpha_thresholds_unchanged": true
+  },
+  "price": {
+    "asof_et": "2026-10-08",
+    "git_blob": "42ed4a1c1a104aff94f73793194b25746d3bea59",
+    "pass_count": 514,
+    "pass_hash": "6e6f8bbabb4c1aaba4db18671a470151843afdc88f7d843190acaf444d7ffb17"
+  },
+  "sources": {
+    "twelve_data": {
+      "tier": "Free Basic; 8 API credits/min; 800/day",
+      "rights": "Free internal non-display and irreconstructible derivatives advertised; caching period/third-party terms still require verification",
+      "proof": "DOCS_ONLY; NO_FREE_KEY_OR_514x260_RAW_BARS",
+      "url": "https://twelvedata.com/terms"
+    },
+    "eulerpool": {
+      "tier": "Free; advertised 100000 calls/month",
+      "rights": "Personal/evaluation use; caching and AI retrieval rights described as paid; written free unattended runner/storage/derived-use grant unproven",
+      "proof": "DOCS_ONLY; NO_FREE_KEY_OR_REAL_BARS",
+      "url": "https://eulerpool.com/financial-data-api/licensing"
+    },
+    "business_quant": {
+      "tier": "Free; 30 API calls/day; 0.1 GB/month",
+      "rights": "API internal research described; raw redistribution restricted; actual free batch capacity and use-specific rights unproven",
+      "proof": "DOCS_ONLY; NEED >=18 TICKERS PER QUERY IF 514 IN 30 CALLS AND SINGLE PAGE",
+      "url": "https://businessquant.com/terms-of-use"
+    },
+    "rallies": {
+      "tier": "Free user-facing connected platform",
+      "rights": "No sanctioned OHLCV endpoint in its published 19-route third-party B2B API; no unattended GitHub right proven",
+      "proof": "LIVE 12592 ALL-US ROWS; 514/514 2026-10-08 PRICE JOIN; NINE 278-ROW INDIVIDUAL DAILY HISTORIES; NO 514x260 VENDOR ORIGIN PROOF",
+      "url": "https://rallies.ai/api-docs/reference"
+    },
+    "nasdaq_openbb": {
+      "tier": "Keyless historical OHLCV documented",
+      "rights": "Nasdaq site terms restrict unapproved automated extraction for analytics software",
+      "proof": "LEGAL_BLOCK_AUTOMATED_RUNNER_UNLESS_WRITTEN_PERMISSION",
+      "url": "https://www.nasdaq.com/legal"
+    },
+    "iex_hist": {
+      "tier": "Free T+1 IEX venue only",
+      "rights": "Provider terms apply; not marketwide SIP",
+      "proof": "NOT_CONSOLIDATED_DV30",
+      "url": "https://www.iex.io/products/market-data-connectivity"
+    },
+    "financial_datasets": {
+      "tier": "Connected plugin",
+      "rights": "Not qualified",
+      "proof": "4 tests failed: $0 account balance or unauthorized"
+    }
+  },
+  "fractional_volume": {
+    "observed_first": "2026-02-23",
+    "comparison_last_integer": "2026-02-20",
+    "sample_series": 9,
+    "reason": "Date corresponds to FINRA fractional trade reporting transition; not itself corruption proof",
+    "source": "https://www.finra.org/filing-reporting/technical-notices/update-fractional-shares-reporting-20250328",
+    "upstream_tape_authority": false
+  },
+  "engineering": {
+    "private_intake": "nasdaq-xray/qualified_history_ingress_shadow.py",
+    "workflow": ".github/workflows/xray-current-history-source-request.yml",
+    "pass_failtests_commit": "149c1b0ae0364c3f51c14f615f476430ecf43913",
+    "ci_runs_success": [
+      37982328404,
+      37982544659
+    ],
+    "ci_actual_missing_private_files": 515,
+    "ci_real_ohlcv_files": 0,
+    "positive_test_only_synthetic_in_ephemeral_temp": true,
+    "source_license_verified": false,
+    "current_primary_mc_pass": 0,
+    "production_history_authority": false,
+    "verified_r92_al": 0,
+    "phone_notification_confirmed": false
+  },
+  "next_steps": [
+    "Prove free provider key, valid endpoint, exact written unattended internal non-display, caching lifetime, irreversible derived alert rights without paid upgrade",
+    "Use legally authorized private EOD cache, then 260 daily official completed sessions + 52 completed week closings for full exact 514 at same ASOF",
+    "Verify venue-wide volumes, split and ticker continuity, issuer-class PIT identity; do not promote self-asserted flags",
+    "Verify separate same-ASOF class-specific PRIMARY MC, canonical HISTORY -> Weekly -> Regime -> Earnings -> Legal -> Risk/RR -> FINAL",
+    "Real R92 candidate and device notification must be verified independently; no broker/execution and no extra task automations"
+  ],
+  "completion_claim": false
+}
