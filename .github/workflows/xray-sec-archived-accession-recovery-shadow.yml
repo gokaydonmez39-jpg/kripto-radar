@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/sec_archived_accession_recovery_shadow.py"
+      - "nasdaq-xray/sec_official_free_mc_transport_probe.py"
       - ".github/workflows/xray-sec-archived-accession-recovery-shadow.yml"
 permissions:
   contents: read
