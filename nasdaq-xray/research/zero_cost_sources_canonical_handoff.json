@@ -94,7 +94,8 @@
     "latest_commit_at_time_of_handoff": "4900b29085d896beb8b40a6915b3dd0565302673",
     "new_automations_created": 0,
     "alpha_thresholds_changed": false,
-    "current_last_verified_commit": "ce8094f944cda91b171867f8653c9d430ad63ee7"
+    "current_last_verified_commit": "ce8094f944cda91b171867f8653c9d430ad63ee7",
+    "latest_observed_main_before_this_report": "00c379a43d321afcfa194c85ed22b7c0a61d2376"
   },
   "next_steps": [
     "Prove free provider key, valid endpoint, exact written unattended internal non-display, caching lifetime, irreversible derived alert rights without paid upgrade",
@@ -278,5 +279,39 @@
       "https://twelvedata.com/docs/volatility-indicators/atr"
     ],
     "raw_vendor_history_persisted": false
+  },
+  "rallies_official_calendar_update": {
+    "research_path": "nasdaq-xray/research/rallies_interactive_eod_20261009_shadow_observation.json",
+    "asof_et": "2026-10-09",
+    "true_sample_history_symbols": 20,
+    "complete_260_nasdaq_sessions": 20,
+    "complete_52_week_close_dates": 20,
+    "official_XNAS_date_hashes_fnv32": {
+      "last260": "279d4c1e",
+      "last52weekcloses": "50913c7e"
+    },
+    "independent_calendar_implementation": "exchange_calendars 4.13.1",
+    "no_514_full_history_verified": true,
+    "still_no_rights_or_Actions_feed": true,
+    "immutable_observation_commit": "b60fcbab8ab9adc557f6072aac512de3b1f15280"
+  },
+  "massive_free_split_source_test": {
+    "source": "Massive Stocks Basic Free /stocks/v1/splits; advertised 2-year past event access",
+    "official_docs": [
+      "https://massive.com/docs/rest/stocks/corporate-actions/splits",
+      "https://massive.com/knowledge-base/article/does-massive-support-normal-and-reverse-splits"
+    ],
+    "connected_read_test": "SPLITS_API_RETURNED_REAL_ROWS",
+    "observation": "A single unbounded event query can return execution dates in November/December 2026, which are future relative to current 2026-10-09 ASOF, so exact retrospective validation must filter",
+    "asof_guard": "nasdaq-xray/massive_splits_asof_shadow.py",
+    "guard_code_commit": "acd4ed0f2ebecd9e647f7227e54f8652eaab0ac2",
+    "guard_ci_commit": "00c379a43d321afcfa194c85ed22b7c0a61d2376",
+    "tested_ci_run": 37986347658,
+    "tested_ci_result": "SUCCESS_SELFTEST_ONLY_NOT_ACTUAL_VENDOR_GITHUB_CONNECTION",
+    "no_live_GitHub_Massive_key_attested": true,
+    "free_split_event_transport_not_authoritative": true,
+    "PIT_first_publication_and_exchange_event_lineage_unverified": true,
+    "no_subsequent_split_api_call_used": true,
+    "threshold_relaxation": false
   }
 }
