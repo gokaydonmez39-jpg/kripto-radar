@@ -61,3 +61,24 @@ jobs:
           path: ${{ runner.temp }}/xray_e2e_readiness.json
           retention-days: 14
           if-no-files-found: error
+      # IMPORTANT: selftest PASS is not production readiness. The artifact is
+      # uploaded first, then the *separate* release check fails visibly.
+      # No synthetic release, no forced AL signal, no device receipt claim.
+      - name: Release gate - fail workflow when actual current research is NO-GO
+        run: |
+          python - <<'PY'
+          import json,os,sys
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])/"xray_e2e_readiness.json"
+          witness=json.loads(p.read_text())
+          assert witness["execution"]=="NONE" and witness["real_money"]=="NO-GO"
+          assert witness["no_trading_or_device_receipt_claim"] is True
+          blockers=witness["blockers"]
+          if witness["ready_for_current_research_signal"] is not True:
+              print("XRAY_RELEASE_GATE=NO_GO")
+              print("XRAY_RELEASE_GATE_BLOCKERS="+json.dumps(blockers,sort_keys=True))
+              print("XRAY_RELEASE_GATE_REPORT=ARTIFACT_SAVED_BUT_PRODUCTION_UNPROVEN")
+              sys.exit(2)
+          # Audit alone never places an order or attests a device push.
+          print("XRAY_RELEASE_GATE=SOURCE_READINESS_ATTESTED_RESEARCH_ONLY")
+          PY
