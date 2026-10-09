@@ -1,0 +1,55 @@
+name: XRAY SEC Official Archived Accession Rescue (SHADOW)
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/sec_archived_accession_recovery_shadow.py"
+      - ".github/workflows/xray-sec-archived-accession-recovery-shadow.yml"
+permissions:
+  contents: read
+concurrency:
+  group: xray-sec-archive-accession-exact-20261008
+  cancel-in-progress: false
+jobs:
+  official-archive-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Archived accession PIT positive and negative safety controls
+        run: |
+          python -m py_compile nasdaq-xray/sec_archived_accession_recovery_shadow.py
+          python nasdaq-xray/sec_archived_accession_recovery_shadow.py --selftest
+      - name: Probe seven exact-origin SEC exceptions, no PRIMARY upgrade
+        env:
+          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
+        run: |
+          python nasdaq-xray/sec_archived_accession_recovery_shadow.py --output "$RUNNER_TEMP/xray_sec_archive_7_shadow.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          j=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_sec_archive_7_shadow.json").read_text())
+          assert j["schema"]=="XRAY_SEC_ARCHIVED_ACCESSION_RECOVERY_SHADOW_V1"
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          assert j["unknown_never_pass"] is True
+          assert j["production_primary_mc_count"]==0 and j["candidate_created"] is False
+          assert j["no_vendor_raw_values_persisted"] is True
+          assert len(j["symbol_statuses"])==7
+          assert sum(j["reason_counts"].values())==7
+          assert j["status"]=="OFFICIAL_SEC_ARCHIVE_AUDIT_COMPLETED"
+          print("XRAY_SEC_ARCHIVE_AUDIT=PASS_ALL7_ACCOUNTED_NO_PRIMARY")
+          PY
+      - name: Preserve counts-only evidence (including on failed network)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-sec-archive-accessions-7-shadow-v1
+          path: ${{ runner.temp }}/xray_sec_archive_7_shadow.json
+          retention-days: 14
+          if-no-files-found: warn
