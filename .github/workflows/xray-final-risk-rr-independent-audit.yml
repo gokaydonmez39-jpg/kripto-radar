@@ -8,6 +8,8 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/final_risk_rr_independent_audit.py"
+      - "nasdaq-xray/final_gate_threshold_attribution_shadow.py"
+      - "nasdaq-xray/canonical_current_terminal.json"
       - "nasdaq-xray/canonical_current_final_tech.json"
       - ".github/workflows/xray-final-risk-rr-independent-audit.yml"
   workflow_dispatch:
@@ -36,6 +38,30 @@ jobs:
 
       - name: Compile independent audit
         run: python -m py_compile nasdaq-xray/final_risk_rr_independent_audit.py
+
+      - name: Recompute independent candidate threshold attribution and no-AL counterfactuals
+        run: |
+          python -m py_compile nasdaq-xray/final_gate_threshold_attribution_shadow.py
+          python nasdaq-xray/final_gate_threshold_attribution_shadow.py --selftest
+          python nasdaq-xray/final_gate_threshold_attribution_shadow.py \
+            --out "$RUNNER_TEMP/xray_final_gate_attribution_shadow.json"
+          python - <<'PY'
+          import json,os,subprocess
+          from pathlib import Path
+          x=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_final_gate_attribution_shadow.json").read_text())
+          assert x["schema"]=="XRAY_C417_FINAL_GATE_ATTRIBUTION_SHADOW_V1"
+          assert x["finalists_n"]==17
+          assert x["source_final_git_blob_sha"]==subprocess.check_output(
+              ["git","hash-object","nasdaq-xray/canonical_current_final_tech.json"],text=True).strip()
+          assert x["actual_pre_g9_tech_pass"]==0
+          assert x["counterfactual_risk_percent_caps_no_other_relaxation"]["20%"]["all_other_technical_gates_still_met"]==0
+          assert x["gate_failed_counts_nonexclusive"]["actual_risk_percent_pass"]==17
+          assert x["gate_failed_counts_nonexclusive"]["rr_ok"]==16
+          assert x["gate_failed_counts_nonexclusive"]["lifecycle_ok"]==17
+          assert x["win_rate_estimate"] is None
+          assert x["can_register_R92"] is False and x["threshold_changes_authorized"] is False
+          print("XRAY_C417_THRESHOLD_ATTRIBUTION_PINNED_FAIL_CLOSED=PASS")
+          PY
 
       - name: Recompute frozen Final risk R1 RR
         run: |
