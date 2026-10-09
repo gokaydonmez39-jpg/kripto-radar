@@ -13,10 +13,8 @@ name: XRAY Canonical Current Post-MC Factory
 # CURRENT_HEAD_RECOVERY_TRIGGER_2026_10_06_V6_EXACT_ASOF_FINAL_REPLAY
 
 on:
-  workflow_run:
-    workflows: ["XRAY Canonical Current Pre-MC Factory"]
-    types: [completed]
-    branches: [main]
+  # Upstream uses immutable-main double-read and explicit workflow_dispatch.
+  # Schedule remains an independent fallback; avoid duplicate workflow_run jobs.
   push:
     branches: [main]
     paths:
