@@ -90,7 +90,10 @@
     "current_primary_mc_pass": 0,
     "production_history_authority": false,
     "verified_r92_al": 0,
-    "phone_notification_confirmed": false
+    "phone_notification_confirmed": false,
+    "latest_commit_at_time_of_handoff": "dbc69a54c9ad9721a1ea14d05867d948a272440b",
+    "new_automations_created": 0,
+    "alpha_thresholds_changed": false
   },
   "next_steps": [
     "Prove free provider key, valid endpoint, exact written unattended internal non-display, caching lifetime, irreversible derived alert rights without paid upgrade",
@@ -99,5 +102,91 @@
     "Verify separate same-ASOF class-specific PRIMARY MC, canonical HISTORY -> Weekly -> Regime -> Earnings -> Legal -> Risk/RR -> FINAL",
     "Real R92 candidate and device notification must be verified independently; no broker/execution and no extra task automations"
   ],
-  "completion_claim": false
+  "completion_claim": false,
+  "last_audit_date": "2026-10-09",
+  "risk_threshold_independent_audit": {
+    "policy": "C4.17",
+    "final_asof_et": "2026-10-07",
+    "latest_price_asof_et": "2026-10-08",
+    "warning": "Older partial Final is not current same-ASOF production or predictive calibration",
+    "final_blob_sha": "4d220717a8e8a8f266ef5224ed31e8eb5090e34a",
+    "final_terminal_blob_sha": "ea9c41cd1e5971e78d85bf3f620d7f8c4e01034f",
+    "candidate_count": 17,
+    "all_family": "D",
+    "risk_percent_over_8pct": 17,
+    "rr_basic_severe_fail": 16,
+    "lifecycle_entry_not_ready": 17,
+    "extension_veto": 12,
+    "event_unknown": 11,
+    "target_overlap": 8,
+    "mc_watch_cap": 17,
+    "candidate_technical_pass_at_risk_caps": {
+      "8%": 0,
+      "9%": 0,
+      "10%": 0,
+      "12%": 0,
+      "15%": 0,
+      "20%": 0
+    },
+    "risk_percent_gate_alone_passing_at_caps": {
+      "8%": 0,
+      "9%": 1,
+      "10%": 5,
+      "12%": 9,
+      "15%": 11,
+      "20%": 17
+    },
+    "independently_recomputed_from_frozen_stop_entry_target_atr": true,
+    "ci_commit": "d8e0558371968a747718541cc3043fb1cbb881ef",
+    "ci_run": 37984123619,
+    "ci_result": "SUCCESS",
+    "empirical_c417_complete_comparable_sessions": 0,
+    "required_comparable_sessions": 60,
+    "empirical_win_rate_calibrated": false,
+    "interpretation": "8% is entry-to-stop maximum price risk, not win probability; even 20% cap alone would have yielded zero valid technical entries in this old sample. Do not lower risk/RR or advertise 80/90/100% wins without forward unbiased calibration."
+  },
+  "live_provider_onecall_probe": {
+    "provider": "Business Quant",
+    "endpoint": "/quotes?mode=eod",
+    "symbol": "AAPL",
+    "max_rows": 12,
+    "code": "nasdaq-xray/bq_history_onecall_shadow.py",
+    "workflow": ".github/workflows/xray-multi-provider-research-shadow.yml",
+    "existing_secret_name": "XRAY_BQ_API_KEY",
+    "actions_secret_observed": "NOT_CONFIGURED_IN_WORKFLOW_RUN",
+    "real_vendor_calls": 0,
+    "status": "BLOCKED_NO_API_KEY",
+    "fake_test_bars_not_market_data": true,
+    "no_vendor_bars_persisted": true,
+    "no_key_in_logs": true,
+    "exact_source_epoch_failclosed": true,
+    "red_run_id": 37984476945,
+    "red_reason": "PREEXISTING_MULTIPROVIDER_INPUTS_ASOF_MASTER_DRIFT_UNHANDLED",
+    "repair_commit": "dbc69a54c9ad9721a1ea14d05867d948a272440b",
+    "green_run_id": 37984593262,
+    "green_result": "SUCCESS_WITH_SOURCE_DRIFT_BLOCKED_ZERO_CALLS",
+    "canonical_primary_mc": false,
+    "history_source_verified": false,
+    "al_generated": false
+  },
+  "latest_release_readiness": {
+    "run_id": 37983161018,
+    "result": "FAILURE_BY_DESIGN_NO_GO",
+    "reasons": [
+      "CURRENT_MC_AUTHORITY_MISSING",
+      "CURRENT_TERMINAL_FROZEN_OR_INCOMPLETE",
+      "IDENTITY_PARTITION_INCOMPLETE",
+      "NOTIFICATION_DEVICE_RECEIPT_NOT_PROVEN",
+      "PRICE_BLOCKED_30_SESSION_BARS",
+      "TERMINAL_CURRENT_MC_CHAIN_NOT_PROVEN"
+    ],
+    "important": "Workflow run success for data-plane 37983207424 does not equal production GO; HISTORY_PARTIAL legacy 231 is not directly the current 514 HISTORY count."
+  },
+  "actionable_blockers_order": [
+    "Verify lawful free provider API key/entitlement for GitHub Actions and private caching with non-display-derived research use; no available XRAY_BQ_API_KEY",
+    "Use bounded vendor real EOD probe then 514 exact 260-session / 52 completed-week verification with issuer/adjustment/venue lineage",
+    "Acquire independent class-specific same-ASOF PRIMARY MC, then exact MC-HISTORY-weekly-regime-earnings-legal-risk-final chain",
+    "Verify full identity/price blocked/universe coverage (3401 target), current terminal blob/pointer and real device notification",
+    "Accumulate 60 COMPLETE comparable forward C4.17 sessions before assessing technical threshold efficacy; do not target 80%-90% guaranteed winner probabilities"
+  ]
 }
