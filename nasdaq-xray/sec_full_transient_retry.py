@@ -43,7 +43,7 @@ def validate_origin(origin:dict,master_sha:str,price_sha:str,scope:list[str]):
         raise ValueError("ORIGIN_SAMPLE_COUNT_WRONG")
     if int(origin.get("batch_limit",-1))!=len(scope) or int(origin.get("batch_offset",-1))!=0:
         raise ValueError("ORIGIN_BATCH_PARTITION_INVALID")
-    expected_hash=hashlib.sha256(("\\n".join(sorted(scope))+"\\n").encode()).hexdigest()
+    expected_hash=hashlib.sha256(("\n".join(sorted(scope))+"\n").encode()).hexdigest()
     if origin.get("sample_scope_sha256")!=expected_hash:
         raise ValueError("ORIGIN_PASS_SET_HASH_MISMATCH")
     # A transient request error never proves the whole issuer is bad;
@@ -143,7 +143,7 @@ def selftest():
        "reason_codes":{"A":TRANSIENT,"B":"SEC_HTTP_404",
                        "C":"SHARE_CLASS_CORP_ACTION_AND_PIT_PRICE_STILL_REQUIRED"},
        "batch_limit":3,"batch_offset":0,"sample_count":3,
-       "sample_scope_sha256":hashlib.sha256("A\\nB\\nC\\n".encode()).hexdigest()}
+       "sample_scope_sha256":hashlib.sha256("A\nB\nC\n".encode()).hexdigest()}
     assert validate_origin(o,"m"*40,"p"*40,scope)==["A"]
     from copy import deepcopy
     for mutation in (
@@ -171,7 +171,7 @@ if __name__=="__main__":
         if not a.origin or not a.output:
             p.error("--origin and --output required")
         result=run(a.origin)
-        a.output.write_text(json.dumps(result,sort_keys=True,indent=2)+"\\n",encoding="utf-8")
+        a.output.write_text(json.dumps(result,sort_keys=True,indent=2)+"\n",encoding="utf-8")
         print("XRAY_SEC_RECOVERY_STATUS="+result["status"])
         print("XRAY_SEC_RECOVERY_COUNTS="+json.dumps(result["counts"],sort_keys=True))
         print("XRAY_SEC_RECOVERY_ELIGIBLE="+str(result["eligible_retry_count"]))
