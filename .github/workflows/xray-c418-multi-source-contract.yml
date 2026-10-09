@@ -5,6 +5,7 @@ on:
     paths:
       - "nasdaq-xray/c418_multi_source_guard.py"
       - "nasdaq-xray/c418_canonical_source_sha_selftest.py"
+      - "nasdaq-xray/c418_upstream_independence_attestation_selftest.py"
       - "nasdaq-xray/c418_multi_source_profile_v1.json"
       - "nasdaq-xray/source_successor_c418_proposal.json"
       - ".github/workflows/xray-c418-multi-source-contract.yml"
@@ -41,6 +42,7 @@ jobs:
           python nasdaq-xray/source_successor_c418_preflight.py --selftest
           python nasdaq-xray/c418_multi_source_guard.py --selftest
           python nasdaq-xray/c418_canonical_source_sha_selftest.py
+          python nasdaq-xray/c418_upstream_independence_attestation_selftest.py
       - name: Confirm missing real provider rights cannot become PRIMARY or R92
         shell: bash
         run: |
