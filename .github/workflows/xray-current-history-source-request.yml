@@ -8,6 +8,7 @@ on:
       - "nasdaq-xray/qualified_history_ingress_shadow.py"
       - "nasdaq-xray/massive_splits_asof_shadow.py"
       - "nasdaq-xray/twelve_data_history_probe.py"
+      - "nasdaq-xray/massive_grouped_one_day.py"
       - "nasdaq-xray/history_transport_cache_guard.py"
       - "nasdaq-xray/canonical_current_price_dv30.json"
       - "nasdaq-xray/canonical_current_master_manifest.json"
@@ -21,6 +22,9 @@ jobs:
     timeout-minutes: 6
     env:
       XRAY_TWELVE_DATA_API_KEY: ${{ secrets.XRAY_TWELVE_DATA_API_KEY }}
+      XRAY_MASSIVE_API_KEY: ${{ secrets.XRAY_MASSIVE_API_KEY }}
+      XRAY_MASSIVE_NONDISPLAY_LICENSE_OK: ${{ vars.XRAY_MASSIVE_NONDISPLAY_LICENSE_OK }}
+      XRAY_MASSIVE_LICENSE_EVIDENCE_SHA256: ${{ secrets.XRAY_MASSIVE_LICENSE_EVIDENCE_SHA256 }}
     steps:
       - uses: actions/checkout@v4
       - name: Exact triggering source commit
@@ -109,6 +113,22 @@ jobs:
           print("XRAY_TWELVE_REAL_HISTORY_AUTHORITY=BLOCKED_UNTIL_FULL_LICENSE_AND_SOURCE")
           PY
 
+      - name: Validate Massive Basic grouped one-call full PRICE scope under rights gate
+        run: |
+          python -m py_compile nasdaq-xray/massive_grouped_one_day.py
+          python nasdaq-xray/massive_grouped_one_day.py --selftest
+          python nasdaq-xray/massive_grouped_one_day.py --out "$RUNNER_TEMP/xray_massive_grouped_scope.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          x=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_massive_grouped_scope.json").read_text())
+          assert x["schema"]=="XRAY_MASSIVE_GROUPED_EOD_SHADOW_V1"
+          assert x["calls"]<=1 and x["scope_count"]==514
+          assert x["HISTORY_PASS"] is False and x["MC_PASS"] is False and x["R92_AL"] is False
+          assert x["source_independent_of_RALLIES"] is False
+          assert x["vendor_bars_persisted"] is False
+          print("XRAY_MASSIVE_GROUPED_FREE_SINGLE_CALL="+x["status"])
+          PY
       - name: Assemble current real Git scope (not market data)
         run: |
           python nasdaq-xray/current_history_source_request.py --out "${RUNNER_TEMP}/xray_current_history_source_request.json"
@@ -138,5 +158,6 @@ jobs:
             ${{ runner.temp }}/xray_twelve_data_free_scope_preflight.json
             ${{ runner.temp }}/xray_private_history_intake_shadow.json
             ${{ runner.temp }}/xray_twelve_data_history_sample.json
+            ${{ runner.temp }}/xray_massive_grouped_scope.json
           if-no-files-found: error
           retention-days: 14
