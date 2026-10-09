@@ -43,6 +43,15 @@ jobs:
           for item in (old,new):
               item.pop("generated_at_utc",None)
           if old != new:
+              def find_diff(a,b,p=""):
+                  if isinstance(a,dict) and isinstance(b,dict):
+                      return sum((find_diff(a.get(k),b.get(k),p+"."+k)
+                                  for k in set(a)|set(b)),[])
+                  if isinstance(a,list) and isinstance(b,list) and len(a)==len(b):
+                      return sum((find_diff(x,y,p+"["+str(i)+"]")
+                                  for i,(x,y) in enumerate(zip(a,b))),[])
+                  return [(p,repr(a)[:160],repr(b)[:160])] if a!=b else []
+              print("XRAY_ALPHA_CALIBRATION_DIFF="+str(find_diff(old,new)[:12]))
               print("XRAY_ALPHA_CALIBRATION_STORED_SNAPSHOT=FAIL_STALE_OR_MANUALLY_MISMATCHED")
               raise SystemExit(1)
           assert not any(x["comparable_to_current_c417"] and
