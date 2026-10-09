@@ -1,0 +1,210 @@
+{
+  "schema": "XRAY_20261009_NEW_CHAT_CANONICAL_HANDOFF_V23",
+  "generated_for": "Continue work in a new ChatGPT conversation without starting from scratch",
+  "authority": "LIVE_GITHUB_MAIN_CAS_READBACK_OVERRIDES_THIS_SNAPSHOT",
+  "repo": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "live_head_before_checkpoint": "d3456006d6441d27c054a6305189e2a5d21d3b42",
+  "observed_date": "2026-10-09",
+  "last_observed_asof_et": "2026-10-08",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "mode": "RESEARCH_ONLY_MANUAL_DECISION",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "no_unapproved_alpha_or_mc_authority_threshold_changes": true,
+  "production_status": "NO_GO",
+  "frozen_evidence": {
+    "root": {
+      "asof_et": "2026-10-08",
+      "status": "PARTIAL_HISTORY",
+      "unknown_count": 231,
+      "pending_retry": 0,
+      "history_retryable": false,
+      "sha": "2b027d89b93cf8d99079b53c9820787383e2dfb8",
+      "transient_source_retried_once": 28,
+      "new_history_pass_from_retry": 0
+    },
+    "master": {
+      "asof_et": "2026-10-08",
+      "unknown_identity": 72,
+      "identity_pass": 3183,
+      "sha": "92c37207d8dd766ab3fe8f1300e3014c6c5ab629"
+    },
+    "price": {
+      "asof_et": "2026-10-08",
+      "price_dv30_pass_last_verified": 514,
+      "price_dv30_blocked": 45,
+      "source_blob": "42ed4a1c1a104aff94f73793194b25746d3bea59"
+    },
+    "mc": {
+      "exact_C417_bigdata_primary_pass": 0,
+      "current_bridge_exists": false,
+      "post_mc_run": 37942309970,
+      "post_mc_outcome": "FAILURE_MC_AUTHORITY_MEASUREMENT_REQUIRED"
+    },
+    "terminal": {
+      "asof_et": "2026-10-07",
+      "status": "PARTIAL",
+      "full_e2e": false,
+      "r92_count": 0,
+      "sha": "ea9c41cd1e5971e78d85bf3f620d7f8c4e01034f",
+      "alpha_failures": "17 historical D finalists all risk geometry failed; 16 RR failed, 15 chase exceeded, not current"
+    },
+    "delivery": {
+      "rows": 0,
+      "sha": "cb14dfc2233ff074fdaa030aee564863db401b29",
+      "device_receipt_confirmed": false,
+      "latest_successful_run": 37945448887,
+      "result": "NO_REGISTERED_R92_NO_NOTIFICATION_ATTEMPTED"
+    },
+    "calibration": {
+      "source_exact_completed_sessions": 0,
+      "historical_epochs": 4,
+      "target": 60,
+      "sha": "054fbcee2bbf6bfbc845465e5b5bbc29cb255adc",
+      "live_test": 37942833153
+    },
+    "watch": {
+      "research_watch_code_committed": true,
+      "preentry_test_passed": true,
+      "source_blocked_17_legacy_final": true,
+      "confirmed_live_watch": 0,
+      "forward_2_to_8_day_licensed_data_available": false
+    }
+  },
+  "latest_actions": [
+    {
+      "id": 37945448887,
+      "name": "XRAY Research Candidate Delivery",
+      "status": "completed",
+      "conclusion": "success",
+      "sha": "d3456006d6441d27c054a6305189e2a5d21d3b42"
+    },
+    {
+      "id": 37945393333,
+      "name": "XRAY Research Candidate Delivery",
+      "status": "completed",
+      "conclusion": "failure",
+      "sha": "361af16582225be4dcc34b1207c14fcbea52b72b"
+    },
+    {
+      "id": 37944779306,
+      "name": "XRAY Research Candidate Delivery",
+      "status": "completed",
+      "conclusion": "success",
+      "sha": "1ae00048a51c2ce4f821da7d9cb1c9e862f81415"
+    },
+    {
+      "id": 37942833153,
+      "name": "XRAY Alpha Calibration Source-Exact Audit",
+      "status": "completed",
+      "conclusion": "success",
+      "sha": "72b045b466a292e15ed4356cd95b43f6a821de1b"
+    },
+    {
+      "id": 37942771346,
+      "name": "XRAY Alpha Calibration Source-Exact Audit",
+      "status": "completed",
+      "conclusion": "failure",
+      "sha": "338bc5b2eac76503440dd0a860559bd748e96e97"
+    },
+    {
+      "id": 37942666481,
+      "name": "XRAY Alpha Calibration Source-Exact Audit",
+      "status": "completed",
+      "conclusion": "failure",
+      "sha": "6bfc50882f4d9fde56c2dc1e1555637eb4b4ff46"
+    },
+    {
+      "id": 37942309970,
+      "name": "XRAY Canonical Current Post-MC Factory",
+      "status": "completed",
+      "conclusion": "failure",
+      "sha": "9aef11794a6ac643e3be1de8aff7fbce837a9c8e"
+    },
+    {
+      "id": 37942237641,
+      "name": "XRAY Canonical Current Pre-MC Factory",
+      "status": "completed",
+      "conclusion": "success",
+      "sha": "9aef11794a6ac643e3be1de8aff7fbce837a9c8e"
+    }
+  ],
+  "last_source_patch": {
+    "delivery_candidate_preflight": "nasdaq-xray/delivery_candidate_preflight.py",
+    "delivery_workflow": ".github/workflows/nasdaq-xray-delivery.yml",
+    "last_verified_run": 37945448887,
+    "first_sha_validation_failure_run": 37945393333,
+    "post_fix_behavior": "NO_REGISTERED_R92 classified as genuine NOOP; when R92 registered, scheduler, official guard, candidate-local C4.17 and GitHub ledger still gate delivery",
+    "no_phone_receipt_claim": true
+  },
+  "critical_root_causes": [
+    {
+      "rank": 1,
+      "stage": "PRIMARY_MC",
+      "finding": "Bigdata previous connector confirmed zero credit. No same-ASOF C4.17 PRIMARY bridge or verified entitled licensed runner replacement.",
+      "safe_fix": "Either restore Bigdata current C4.17 exact primary service with verifiable right/cost, OR explicitly version a successor policy and demonstrate license+exact issuer/asof/share class/corporate action dual-validation before activation. Massive/Alpaca/SEC interactive SHADOW not production primary."
+    },
+    {
+      "rank": 2,
+      "stage": "HISTORY",
+      "finding": "231 root UNKNOWN; 28 transport exceptions actually retried once with 0 new PASS, 203 static incomplete/asof/30-day. No blanket retry solves static lack.",
+      "safe_fix": "Triaged 231 by root source exception, IPO/history genuine <260, missing last30, same-ASOF; use independent authorized source and exact 260 daily/52 weekly/corporate action proof, preserve FAIL/UNKNOWN where history impossible. No invented bars or pass."
+    },
+    {
+      "rank": 3,
+      "stage": "ASOF_PIPELINE",
+      "finding": "Root/Price 2026-10-08 vs terminal 2026-10-07; Pre-MC protected 8-Oct frozen Nasdaq directory from 9-Oct look-ahead; Post-MC blocked on MC authority.",
+      "safe_fix": "Recover legitimate ASOF PIT directory witness or preserve frozen snapshot, then exact MC=>HISTORY=>WEEKLY=>REGIME=>EARNINGS=>LEGAL=>RISK_RR=>FINAL with SHA-linked evidence, E2E readback. Do not interpret root/preMC SUCCESS as final."
+    },
+    {
+      "rank": 4,
+      "stage": "AL_AND_DELIVERY",
+      "finding": "No registered R92, no GitHub issue, no phone push receipt. WATCH observations are not AL.",
+      "safe_fix": "Once legitimate local candidate exists, verify registered R92, expiry/dedup, official halt guard, GitHub issue+ledger, and separate user device notification receipt. No synthetic candidate as live."
+    },
+    {
+      "rank": 5,
+      "stage": "STRATEGY_CALIBRATION",
+      "finding": "0 completed exact C4.17 source-bound comparable sessions of target 60. Historic 17 rejected due risk/RR, chasing.",
+      "safe_fix": "Preserve thresholds while collecting sample; measure 2-8 session paper expectancy, max drawdown, costs, setup-family win/loss walk-forward, no 90% marketing claim."
+    }
+  ],
+  "priorities_and_runbook": [
+    "READ LIVE HEAD, tree, last 50 Actions, checkout/sha pointer, all five ACTIVE automations; do not trust this static snapshot over live.",
+    "Verify no silent new MC bridge and freshness; account license/credential proof or explicit user approval of successor required. NEVER write raw vendor bars or secret keys into public GitHub.",
+    "Investigate 231 by evidence and provider-specific rescue; no blind retries after exhaust, no synthetic or fake splits, no unidentified insider inputs.",
+    "Run exact C4.17 E2E in sequence only after truth-capable source; collect SHA-bound artifacts and confirm actual readback.",
+    "Fix actual code defects with atomic CAS to main, tests, Actions run IDs and verified resulting blobs; guard concurrent HEAD edits.",
+    "Before claiming AL, validate registered R92 and user-device receipt separately; never equate automation execution or GitHub issue with phone delivery.",
+    "Report 100%-completion only when all evidenced; until then give exact measurable blockers. No order, account balances or real-money execution."
+  ],
+  "automations": {
+    "active_titles": [
+      "XRAY Health + G9 Multi-Watch",
+      "XRAY Full Nasdaq Autonomous Radar",
+      "XRAY Epoch Multi-Reader",
+      "XRAY Epoch Multi-Committer",
+      "XRAY Bridge Finisher 2"
+    ],
+    "active_count_last_verified": 5,
+    "duplicate_monitor_prohibited": true
+  },
+  "known_critical_paths": [
+    "nasdaq-xray/orchestrator_state.json",
+    "nasdaq-xray/sina_state.json",
+    "nasdaq-xray/canonical_current_price_dv30.json",
+    "nasdaq-xray/canonical_current_master_manifest.json",
+    "nasdaq-xray/canonical_current_terminal.json",
+    "nasdaq-xray/canonical_alpha_calibration_audit.json",
+    "nasdaq-xray/chatgpt_canonical_state_v2.json",
+    "nasdaq-xray/delivery_ledger.json",
+    "nasdaq-xray/delivery_candidate_preflight.py",
+    "nasdaq-xray/resolve_unknowns_fallback.py",
+    "nasdaq-xray/mc_free_successor_contract.py",
+    "nasdaq-xray/research/continuation_checkpoint_20261009_actual_repair_effectiveness_v22.json"
+  ],
+  "strict_reporting": "GitHub workflow SUCCESS means runner succeeded only. CANONICAL AL and device push require exact proven record. UNKNOWN != PASS. Completion claim currently false."
+}
