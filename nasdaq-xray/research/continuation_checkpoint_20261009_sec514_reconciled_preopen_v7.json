@@ -1,0 +1,205 @@
+{
+  "schema": "XRAY_CONTINUATION_20261009_SEC514_RECONCILED_PREOPEN_V7",
+  "kind": "SOURCE_AND_ACTIONS_BACKED_CONTINUATION_NEVER_ALPHA_GO",
+  "repo": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "head_before_checkpoint": "873e8bd5895e138059f57a32473d3239fdad5e88",
+  "asof_et": "2026-10-08",
+  "target_next_session": "2026-10-09 09:30 America/New_York / 16:30 Europe/Istanbul",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "mode": "RESEARCH_ONLY_MANUAL_DECISION",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "threshold_loosening": false,
+  "all_external_market_data_free_only": true,
+  "go": false,
+  "proven_current": {
+    "master_identity_pass": 3183,
+    "master_identity_unknown": 72,
+    "master_git_blob_sha": "92c37207d8dd766ab3fe8f1300e3014c6c5ab629",
+    "price_dv30_pass_count": 514,
+    "price_blocked_count": 45,
+    "price_git_blob_sha": "42ed4a1c1a104aff94f73793194b25746d3bea59",
+    "sec_514_full_scan_run_id": 37863746633,
+    "sec_514_scan_conclusion": "success",
+    "sec_514_initial_shadow_share_vintages": 342,
+    "sec_514_initial_unknown": 166,
+    "sec_514_initial_transport_unknown": 6,
+    "sec_transient_recovery_run_id": 37865380372,
+    "sec_transient_recovery_conclusion": "success",
+    "sec_transient_retry_count": 5,
+    "sec_transient_new_shadow_evidence": 4,
+    "sec_reconciliation_run_id": 37865516302,
+    "sec_reconciliation_conclusion": "success",
+    "sec_reconciled_shadow_share_vintages": 346,
+    "sec_reconciled_unresolved": 168,
+    "sec_reconciled_authoritative_market_cap_pass": 0,
+    "shadow_never_primary": true,
+    "sec_reconciled_artifact": "xray-sec-514-shadow-reconciled-operational-v1",
+    "unknown_72_current_sic_run_id": 37863947997,
+    "unknown_72_current_sic_counts": {
+      "SIC6770_CURRENT_BLANK_CHECK": 59,
+      "NON6770_COMPLETED_MERGER_UNVERIFIED": 12,
+      "OFFICIAL_CIK_NOT_FOUND": 1
+    },
+    "identity_authority_mutated": false,
+    "price45_diagnostics_run_id": 37864731289,
+    "price45_breakdown": {
+      "RALLIES_CURRENT_CLOSE_MISSING_UNVERIFIED": 44,
+      "RALLIES_PRIMARY_EXACT30_INCOMPLETE_NEVER_PASS": 1
+    },
+    "historic_sip_oct8_45_query": "ONLY_GRAL_VALID_SIP_BAR_44_MISSING",
+    "gral_last30_official_dates_valid_volume": 29,
+    "gral_last30_zero_volume_dates": [
+      "2026-09-23"
+    ],
+    "gral_source_fallback_primary_authority": "NOT_PROVEN",
+    "history_calendar_run": 37864620269,
+    "history_calendar_test": "SUCCESS_PINNED_NASDAQ_OFFICIAL_TRADING_DAYS",
+    "four_stage_run": 37865157406,
+    "four_stage_result": "SUCCESS_SYNTHETIC_GUARDS_ONLY",
+    "preopen_watch_run": 37865593256,
+    "preopen_watch_result": "SUCCESS_SOURCE_INTEGRITY_PASS_NO_ALPHA_GO",
+    "research_technical_terminal_current_complete": false,
+    "real_research_candidate_proven": false,
+    "actual_phone_receipt_proven": false
+  },
+  "repairs_this_turn": [
+    [
+      "90009c3f9eef7252bf5033a0f4102a9defdc1810",
+      "SEC filing acceptance before exact 16:00 NY regular close"
+    ],
+    [
+      "828ed81a00471c3f106af56d624b4d4d0960ddbf",
+      "bounded current 514 PRICE-PASS SEC symbol batching and unknown cause telemetry"
+    ],
+    [
+      "67b8b3a04dcebf446ffdcf45fca98edc1b82dc8d",
+      "distinct SEC reason codes not broad UNKNOWN"
+    ],
+    [
+      "0de631fc48838589c019c50488fadd898f21eb69",
+      "exact PRICE/MASTER source SHA plus fail-closed SEC fair access"
+    ],
+    [
+      "1ac344ce9dc6770efdc26ad5e480cf670829dd7d",
+      "real 514 current asof SEC scan"
+    ],
+    [
+      "cce7635ce172c2eabb0226b6d6ddc58a75723309",
+      "72 SEC current SIC SHADOW scope"
+    ],
+    [
+      "e4b1b487d3af6456b4c055fa35ee4d1119c09bd0",
+      "72 SEC current SIC runner test"
+    ],
+    [
+      "338ba42b05e1a186b6105c986a3eacdac75c7ffb",
+      "remove fake SEC noreply contact and SEC filing cutoff in master proof builder"
+    ],
+    [
+      "640a2303dd5501d55da64cbbde1a14a583a4bfa8",
+      "SEC identity cutoff positive/negative regressions"
+    ],
+    [
+      "5fc9712b3217915ec4280667cf3f7a12a4f38502",
+      "actual Pre-MC factory SEC contact binding (note identity builder step skipped on healthy no-op)"
+    ],
+    [
+      "e69bfe6968d612728aee46230995a396e69f10a1",
+      "preopen 15-minute operational GH Actions time guard"
+    ],
+    [
+      "873e8bd5895e138059f57a32473d3239fdad5e88",
+      "hourly Pre-MC workflow-run fallback for preopen watcher"
+    ],
+    [
+      "020c3720441d883d102c61aa51ffb707195782a3",
+      "disabled automated Nasdaq.com public screener without licence"
+    ],
+    [
+      "8862b74b7b0570c0026953bffe88c3f8813b16d5",
+      "pinned Nasdaq screener automation governance"
+    ],
+    [
+      "b0cfa86054f62e6a540442a67732447029b62b4f",
+      "real Nasdaq trading-calendar history session guard"
+    ],
+    [
+      "ef7814f3bf31eef460096ad5288319dae6ae3c4b",
+      "holiday and duplicate history calendar regressions"
+    ],
+    [
+      "9b8da3a26dbf033c59e67ef4e3232b3bbb5d28a1",
+      "pinned runtime calendar selftest"
+    ],
+    [
+      "ceb864a5deefd45374c51412786d456b4cd3f762",
+      "pinned runtime calendar four-stage selftest"
+    ],
+    [
+      "b8c8eeae3d1e8f7722578126d5e8b2a97c2e9be7",
+      "source reason code coverage for blocked PRICE45"
+    ],
+    [
+      "f7d976e69a5f04e20af2b8114167e9da63d42ab9",
+      "correct provenance SHA and JSON output in PRICE45 witness"
+    ],
+    [
+      "400a5ba9d788ddfe4f9cd29f80390631537f3a23",
+      "exact UNKNOWN canary names and reason codes only"
+    ],
+    [
+      "f277236d83b7937d9e6c9983578c0dd68e01e648",
+      "SEC US-GAAP missing DEI diagnostic no class false-pass"
+    ],
+    [
+      "59e49d974469d8b535dd43eeb574ca3bb2b09be9",
+      "bounded 5 transient-only retry contract"
+    ],
+    [
+      "dedc134ce6d9cfdd9a79f693d9e3f28ca37ebfda",
+      "exact source set SHA newline in retry helper"
+    ],
+    [
+      "d92fcd6a3a241c0ecd0769608fb1d29cf3b1add0",
+      "run retry only 5 verified transient symbols on GitHub"
+    ],
+    [
+      "f1341f3690a471a129d287decde7e742c0bfc956",
+      "shadow 514 origin + transient reconciliation, no MC authority"
+    ],
+    [
+      "0207ba8edfda724da35b08591149fc4b91ed3cdf",
+      "reconciliation GH run source proof"
+    ]
+  ],
+  "automation_truth": {
+    "existing_full_nasdaq_automation_run_now_requested": true,
+    "existing_health_automation_run_now_requested": true,
+    "automations_run_result": "REQUEST_ACCEPTED_EXECUTION_NOT_ATTESTED",
+    "new_chatgpt_preopen_automation": "NOT_CREATED_PLAN_FIVE_TASK_LIMIT",
+    "github_preopen_15m_workflow": "ACTIVE_INITIAL_PUSH_AND_FOLLOWUP_PASS; FUTURE_SCHEDULE_DELIVERY_NOT_GUARANTEED",
+    "notifications_actual_device_receipt": false
+  },
+  "unresolved_critical": [
+    "Bigdata C4.17 CURRENT primary MC entitlement unavailable; Massive automated non-display license unverified",
+    "SEC shares shadow has no share-class/ADR/splits/issuer market-cap price independent PIT and licensed automation source; 346 SHADOW not PRIMARY",
+    "168 symbols SEC shares remain UNKNOWN; full market universe full-identity unknown72 and PRICE45",
+    "8 Oct technical chain HISTORY weekly regime A/B/C/D LEGAL earnings/event risk RR and terminal not exact PRODUCTION attested",
+    "Delivery run 37865511249 FAIL ROOT_SUCCESS_STALE; fail-closed preserved; existing root/health automation runs requested but completion NOT confirmed",
+    "Actual research AL / device push receipt not proven",
+    "GitHub schedule is read-only and can lag; cannot autonomously repair code continuously in background"
+  ],
+  "next_steps": [
+    "Re-read live main, root Data Plane Actions and Health task outcome before updating any production pointer.",
+    "If root remains stale, review scheduler failover lease and root workflow logs; never bypass stale veto.",
+    "Review result from canonical exact 8 Oct technical terminal; do not claim no setup unless full source chain.",
+    "Explore legally authorized zero-dollar historical SIP + official SEC corporate actions as versioned source successor; no silent C4.17 primary promotion.",
+    "Keep 9 Oct schedule watch until 13:30 UTC, and record actual statuses in this repo.",
+    "Do not create phone delivery claim without provider + device receipt."
+  ],
+  "status": "RESEARCH_ONLY_NO_GO"
+}
