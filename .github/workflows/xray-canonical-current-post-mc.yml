@@ -23,6 +23,7 @@ on:
       - "nasdaq-xray/build_resolver_full_scope_handoff.py"
       - "nasdaq-xray/canonical_mc_bridge_*.json"
       - "nasdaq-xray/build_mc_provenance_rebind.py"
+      - "nasdaq-xray/post_mc_source_readiness.py"
       - "nasdaq-xray/history_phase.py"
       - "nasdaq-xray/post_mc_history_legal_reuse_guard.py"
       - "nasdaq-xray/post_mc_live_source_guard.py"
@@ -1222,6 +1223,21 @@ jobs:
       # A pending MC source means the stage is NOT complete. Publish the
       # operational diagnostic above, then report a visible NO-GO instead of
       # a misleading green job that wakes Final as if authority existed.
+      - name: Diagnose exact source authority before blocked Post-MC release
+        if: always() && steps.freeze.outputs.frozen != 'true' && steps.mc.outputs.ready != 'true'
+        run: |
+          python -m py_compile nasdaq-xray/post_mc_source_readiness.py
+          python nasdaq-xray/post_mc_source_readiness.py --selftest
+          python nasdaq-xray/post_mc_source_readiness.py --out /tmp/xray_post_mc_source_readiness.json
+      - name: Upload source-blocker witness before fail-closed release
+        if: always() && steps.freeze.outputs.frozen != 'true' && steps.mc.outputs.ready != 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-post-mc-source-readiness
+          path: /tmp/xray_post_mc_source_readiness.json
+          retention-days: 14
+          if-no-files-found: warn
+
       - name: Enforce actual current MC authority before Post-MC SUCCESS
         if: steps.freeze.outputs.frozen != 'true' && steps.mc.outputs.ready != 'true'
         run: |
