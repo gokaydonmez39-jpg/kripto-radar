@@ -583,6 +583,8 @@ jobs:
       - name: Build exact current ASOF identity proofs
         if: steps.rollover.outputs.build == 'true' || steps.rollover.outputs.identity_replay == 'true'
         timeout-minutes: 4
+        env:
+          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
         run: python nasdaq-xray/build_current_identity_proofs.py
       - name: Build identity-only full universe
         if: steps.rollover.outputs.build == 'true'
