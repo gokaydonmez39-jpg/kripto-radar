@@ -8,6 +8,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parent
@@ -104,8 +105,8 @@ TASK_ID="6a825366222081918997094d76e6ae46"
 REQUIRED_REGISTERED_FIELDS=(
     "delivery_key","symbol","setup","asof_et","entry_low","entry_high",
     "chase_limit","stop","r1","rr_basic","rr_severe","dv30",
-    "event_status","mc_class","mc_source","liquidity","pass_reason",
-    "registered_at_utc","execution","real_money"
+    "regime","event_status","mc_class","mc_source","liquidity","pass_reason",
+    "g9_status","account_status","registered_at_utc","execution","real_money"
 )
 REQUIRED_LOCAL_CHECKS=(
     "candidate_local_research_pass","alpha_semantic_conformance_exact",
@@ -155,6 +156,16 @@ def registered_research_candidate_exact(terminal,pointer,asof,terminal_sha):
         if not isinstance(row,dict) or row.get("schema")!="XRAY_RESEARCH_CANDIDATE_R92_V1":
             return False
         if any(row.get(k) is None for k in REQUIRED_REGISTERED_FIELDS):
+            return False
+        nums=("entry_low","entry_high","chase_limit","stop",
+              "r1","rr_basic","rr_severe","dv30")
+        if any(isinstance(row.get(n),bool) or not isinstance(row.get(n),(int,float))
+               or not math.isfinite(row[n]) for n in nums):
+            return False
+        if not (0 < row["stop"] < row["entry_low"] <= row["entry_high"]
+                <= row["chase_limit"] < row["r1"]
+                and row["dv30"]>=50_000_000
+                and row["rr_basic"]>=2.0 and row["rr_severe"]>=1.5):
             return False
         key=str(row.get("symbol") or "").upper()+"|"+str(row.get("setup") or "").upper()
         dkey=row.get("delivery_key")
@@ -323,7 +334,10 @@ def selftest():
         "schema":"XRAY_RESEARCH_CANDIDATE_R92_V1",
         "delivery_key":"exact-key", "symbol":"AAA","setup":"B",
         "asof_et":"2026-10-08","mc_class":"MC_PASS_PRIMARY",
-        "execution":"NONE","real_money":"NO-GO"})
+        "execution":"NONE","real_money":"NO-GO",
+        "entry_low":20.0,"entry_high":21.0,"chase_limit":22.0,
+        "stop":18.0,"r1":27.0,"rr_basic":2.5,"rr_severe":1.7,
+        "dv30":100_000_000.0})
     ptr={"schema":"XRAY_GITHUB_DURABLE_STATE_V3",
          "authority":"GITHUB_CURRENT_POINTER","execution":"NONE",
          "real_money":"NO-GO",
@@ -345,11 +359,16 @@ def selftest():
         lambda t,p:t["checks"].update(candidate_legal_guard_exact_binding=False),
         lambda t,p:t["sets"].update(pre_g9_tech_pass=[]),
         lambda t,p:p["state_json"]["r92"].clear(),
+        lambda t,p:p["state_json"]["r92"][0].update(rr_basic=1.9),
+        lambda t,p:p["state_json"]["r92"][0].update(rr_severe=1.4),
+        lambda t,p:p["state_json"]["r92"][0].update(dv30=49_999_999),
+        lambda t,p:p["state_json"]["r92"][0].update(entry_low=float("nan")),
+        lambda t,p:p["state_json"]["r92"][0].update(stop=21),
     ):
         tbad,pbad=deepcopy(reg_t),deepcopy(ptr)
         edit(tbad,pbad)
         assert not registered_research_candidate_exact(tbad,pbad,"2026-10-08","TERMINAL-SHA")
-    print("XRAY_E2E_REGISTERED_RESEARCH_PREP_SELFTEST=PASS_POSITIVE_10_NEGATIVES_NO_DEVICE_CLAIM")
+    print("XRAY_E2E_REGISTERED_RESEARCH_PREP_SELFTEST=PASS_POSITIVE_15_NEGATIVES_NO_DEVICE_CLAIM")
     print("XRAY_E2E_SCOPE_BOUNDARY_SELFTEST=PASS_INDEPENDENT_GLOBAL_AND_LOCAL_NO_AL")
     print("XRAY_E2E_READINESS_MC_SELFTEST=PASS_POSITIVE_7_NEGATIVES")
     print("XRAY_E2E_TERMINAL_SHA_BINDING_SELFTEST=PASS_POSITIVE_5_NEGATIVES")
