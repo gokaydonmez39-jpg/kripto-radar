@@ -548,7 +548,34 @@ def selftest():
             assert recovery["queried_symbols"]==len(smaller["targets"])
             assert recovery["individual_symbol_retry_or_quarantine_count"]==0
             assert recovery["complete_260_symbols"]==len(smaller["targets"])
-    print("XRAY_TWELVE_260_RESUME_SELFTEST=PASS_PUBLICATION_ET_AND_ONE_BAD_SYMBOL_NONSTARVATION_RETRY_RECOVERY_QUOTA_ENCRYPTION_NO_ALPHA")
+            # Independent quarantine path: after exactly three invalid bars,
+            # retain the failed ticker as UNKNOWN and stop spending free
+            # credits on it; never silently turn failure into HISTORY PASS.
+            prior=a4.checkpoint
+            for attempt in (2,3):
+                next_path=Path(tmp)/("quarantine_"+str(attempt)+".enc")
+                next_report=Path(tmp)/("quarantine_"+str(attempt)+".json")
+                args_q=SimpleNamespace(report=next_report,checkpoint=next_path,
+                                       restore=prior,limit=2)
+                bad_response=run(args_q,env=fake_env,transport=one_bad_one_good,
+                                 now=lambda attempt=attempt:valid_epoch+9*attempt,
+                                 sleep=lambda _:None)
+                assert bad_response["vendor_requests_this_run"]==1
+                assert bad_response["individual_symbol_retry_or_quarantine_count"]==1
+                assert bad_response["canonical_HISTORY_pass"] is False
+                if attempt==3:
+                    assert bad_response["individual_symbol_quarantined_after_3_count"]==1
+                prior=next_path
+            args_last=SimpleNamespace(report=Path(tmp)/"q_final.json",
+                                      checkpoint=Path(tmp)/"q_final.enc",
+                                      restore=prior,limit=2)
+            no_more=run(args_last,env=fake_env,transport=one_bad_one_good,
+                        now=lambda:valid_epoch+40,sleep=lambda _:None)
+            assert no_more["vendor_requests_this_run"]==0
+            assert no_more["individual_symbol_quarantined_after_3_count"]==1
+            assert no_more["complete_260_symbols"]==1
+            assert no_more["R92_AL"] is False
+    print("XRAY_TWELVE_260_RESUME_SELFTEST=PASS_ET_PUBLICATION_NONSTARVATION_RECOVERY_THREE_STRIKE_QUARANTINE_QUOTA_ENCRYPTION_NO_ALPHA")
 
 def main():
     p=argparse.ArgumentParser()
