@@ -168,7 +168,7 @@ def selftest():
     assert ok["unknown_count"]==2
     assert ok["unknown_reason_counts"]["UNKNOWN_STATIC | SINA_HISTORY_EMPTY"]==1
     assert ok["public_sample_tickers_by_reason"]["UNKNOWN_STATIC | SINA_HISTORY_EMPTY"]==["B"]
-    assert ok["unknown_reason_counts"]["UNKNOWN_RETRY_EXHAUSTED | NETWORK_OR_PROVIDER_EXCEPTION"]==1
+    assert ok["unknown_reason_counts"]["UNKNOWN_RETRY_EXHAUSTED | PROVIDER_EXCEPTION_TimeoutError"]==1
     assert sum(ok["advisory_recovery_class_counts"].values())==2
     assert ok["advisory_recovery_class_counts"]=={
         "PROVIDER_TRANSPORT_OR_QUOTA_UNVERIFIED":1,
