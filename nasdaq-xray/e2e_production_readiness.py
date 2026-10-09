@@ -195,6 +195,19 @@ def registered_research_candidate_exact(terminal,pointer,asof,terminal_sha):
                 and row["dv30"]>=50_000_000
                 and row["rr_basic"]>=rr_min[0] and row["rr_severe"]>=rr_min[1]):
             return False
+        # Independent necessary R92 bounds: final_tech uses entry_model =
+        # entry_high, and both RR scenarios deduct nonnegative trading costs.
+        # Neither reported RR can EXCEED its zero-cost price-geometry maximum.
+        # This never asserts exact ATR/cost correctness or creates alpha.
+        hi=row["entry_high"]
+        stop=row["stop"]
+        r1=row["r1"]
+        no_cost_rr_upper=(r1-hi)/(hi-stop)
+        if ((hi-stop)/hi>0.08
+            or row["rr_basic"]>no_cost_rr_upper+1e-10
+            or row["rr_severe"]>no_cost_rr_upper+1e-10
+            or row["rr_severe"]>row["rr_basic"]+1e-10):
+            return False
         key=str(row.get("symbol") or "").upper()+"|"+str(row.get("setup") or "").upper()
         dkey=row.get("delivery_key")
         if (key not in terminal_keys or dkey not in keys or dkey in seen

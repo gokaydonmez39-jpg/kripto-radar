@@ -111,6 +111,14 @@ def validate_delivery_geometry(row):
     min_basic,min_severe=(1.5,1.1) if setup=="A" else (2.0,1.5)
     if v["rr_basic"]<min_basic or v["rr_severe"]<min_severe:
         raise RuntimeError("DELIVERY_R92_RR_POLICY_FLOOR_FAILED")
+    # Final C4.17 geometry models the entry at entry_high. Adding
+    # nonnegative trading costs must decrease RR from this zero-cost upper
+    # bound; self-reported ratios alone are never market-data proof.
+    upper=(r1-hi)/(hi-stop)
+    if v["rr_basic"]>upper+1e-10 or v["rr_severe"]>upper+1e-10:
+        raise RuntimeError("DELIVERY_R92_RR_GEOMETRY_UPPER_BOUND")
+    if v["rr_severe"]>v["rr_basic"]+1e-10:
+        raise RuntimeError("DELIVERY_R92_RR_SEVERE_EXCEEDS_BASIC")
     return True
 
 
