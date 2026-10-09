@@ -272,12 +272,12 @@ eligible = []
 seen = set()
 for x in r92:
     if not isinstance(x, dict) or x.get("schema") != "XRAY_RESEARCH_CANDIDATE_R92_V1":
-        continue
+        raise RuntimeError("DELIVERY_R92_REGISTRATION_SCHEMA_INVALID")
     if x.get("execution") != "NONE" or x.get("real_money") != "NO-GO":
         raise RuntimeError("DELIVERY_R92_SAFETY_LOCK_FAIL")
     key = x.get("delivery_key")
-    if key not in delivery_keys:
-        continue
+    if not isinstance(key,str) or not key or key not in delivery_keys:
+        raise RuntimeError("DELIVERY_R92_UNREGISTERED_KEY")
     if key in seen:
         raise RuntimeError("DELIVERY_DUPLICATE_R92_KEY")
     seen.add(key)
