@@ -29475,6 +29475,7 @@
   "pending_retry": 0,
   "processed_new_this_run": 0,
   "processed_retry_this_run": 0,
+  "processed_transport_rescue_this_run": 28,
   "queue": [
     "AACG",
     "AAL",
@@ -32978,10 +32979,11 @@
       "updated_at_utc": "2026-10-09T02:23:59.976420+00:00"
     },
     "ACFN": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "SyntaxError:invalid syntax (<string>, line 1)",
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "updated_at_utc": "2026-10-09T02:25:33.595637+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-09T12:50:55.151528+00:00"
     },
     "ACGL": {
       "attempts": 1,
@@ -33218,10 +33220,11 @@
       "updated_at_utc": "2026-10-09T02:23:59.976487+00:00"
     },
     "ADAM": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "SyntaxError:invalid syntax (<string>, line 1)",
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "updated_at_utc": "2026-10-09T02:25:33.595631+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-09T12:50:55.151522+00:00"
     },
     "ADBE": {
       "attempts": 1,
@@ -33470,10 +33473,11 @@
       "updated_at_utc": "2026-10-09T02:23:59.976529+00:00"
     },
     "AEC": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "SyntaxError:invalid syntax (<string>, line 1)",
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "updated_at_utc": "2026-10-09T02:25:33.595660+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-09T12:50:55.151538+00:00"
     },
     "AEHL": {
       "attempts": 1,
@@ -34475,10 +34479,11 @@
       "updated_at_utc": "2026-10-09T02:23:59.976729+00:00"
     },
     "ALTI": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "SyntaxError:invalid syntax (<string>, line 1)",
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "updated_at_utc": "2026-10-09T02:25:33.595650+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-09T12:50:55.151533+00:00"
     },
     "ALTO": {
       "attempts": 1,
@@ -35752,10 +35757,11 @@
       "updated_at_utc": "2026-10-09T02:24:29.433853+00:00"
     },
     "ASTI": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "SyntaxError:invalid syntax (<string>, line 1)",
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "updated_at_utc": "2026-10-09T02:26:02.338922+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-09T12:50:55.151552+00:00"
     },
     "ASTL": {
       "attempts": 1,
@@ -36680,10 +36686,11 @@
       "updated_at_utc": "2026-10-09T02:24:29.434056+00:00"
     },
     "BBCI": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "IndexError:list index out of range",
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "updated_at_utc": "2026-10-09T02:26:02.338893+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-09T12:50:55.151501+00:00"
     },
     "BBCP": {
       "attempts": 1,
@@ -40580,10 +40587,11 @@
       "updated_at_utc": "2026-10-09T02:25:00.025430+00:00"
     },
     "CNL": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "SyntaxError:invalid syntax (<string>, line 1)",
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "updated_at_utc": "2026-10-09T02:26:33.577803+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-09T12:50:55.151543+00:00"
     },
     "CNOB": {
       "attempts": 1,
@@ -42839,10 +42847,11 @@
       "updated_at_utc": "2026-10-09T02:25:33.595977+00:00"
     },
     "DPU": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "SyntaxError:invalid syntax (<string>, line 1)",
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "updated_at_utc": "2026-10-09T02:27:02.176688+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-09T12:50:55.151548+00:00"
     },
     "DPZ": {
       "attempts": 1,
@@ -43872,10 +43881,11 @@
       "updated_at_utc": "2026-10-09T02:25:33.596211+00:00"
     },
     "ENGN": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "SyntaxError:invalid syntax (<string>, line 1)",
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "updated_at_utc": "2026-10-09T02:27:02.176694+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-09T12:50:55.151564+00:00"
     },
     "ENGS": {
       "attempts": 1,
@@ -45190,10 +45200,11 @@
       "updated_at_utc": "2026-10-09T02:26:02.339020+00:00"
     },
     "FGC": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "IndexError:list index out of range",
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "updated_at_utc": "2026-10-09T02:27:31.568960+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-09T12:50:55.151559+00:00"
     },
     "FGI": {
       "attempts": 1,
@@ -48944,10 +48955,11 @@
       "updated_at_utc": "2026-10-09T02:26:33.578039+00:00"
     },
     "HTCO": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "SyntaxError:invalid syntax (<string>, line 1)",
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "updated_at_utc": "2026-10-09T02:28:02.486246+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-09T12:50:55.151580+00:00"
     },
     "HTCR": {
       "attempts": 1,
@@ -50370,10 +50382,11 @@
       "updated_at_utc": "2026-10-09T02:26:33.578355+00:00"
     },
     "INV": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "SyntaxError:invalid syntax (<string>, line 1)",
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "updated_at_utc": "2026-10-09T02:28:02.486233+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-09T12:50:55.151568+00:00"
     },
     "INVA": {
       "attempts": 1,
@@ -51248,10 +51261,11 @@
       "updated_at_utc": "2026-10-09T02:27:02.176788+00:00"
     },
     "JONE": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "SyntaxError:invalid syntax (<string>, line 1)",
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "updated_at_utc": "2026-10-09T02:28:33.114403+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-09T12:50:55.151575+00:00"
     },
     "JOUT": {
       "attempts": 1,
@@ -53843,10 +53857,11 @@
       "updated_at_utc": "2026-10-09T02:27:02.177362+00:00"
     },
     "MAKO": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "SyntaxError:invalid syntax (<string>, line 1)",
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "updated_at_utc": "2026-10-09T02:28:33.114428+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-09T12:50:55.151591+00:00"
     },
     "MAMA": {
       "attempts": 1,
@@ -57294,10 +57309,11 @@
       "updated_at_utc": "2026-10-09T02:28:02.486373+00:00"
     },
     "NUCL": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "SyntaxError:invalid syntax (<string>, line 1)",
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "updated_at_utc": "2026-10-09T02:29:31.363599+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-09T12:50:55.151585+00:00"
     },
     "NUR": {
       "attempts": 1,
@@ -58943,10 +58959,11 @@
       "updated_at_utc": "2026-10-09T02:28:02.486736+00:00"
     },
     "PAMT": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "SyntaxError:invalid syntax (<string>, line 1)",
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "updated_at_utc": "2026-10-09T02:29:31.363567+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-09T12:50:55.151600+00:00"
     },
     "PANL": {
       "attempts": 1,
@@ -59181,10 +59198,11 @@
       "updated_at_utc": "2026-10-09T02:28:02.486785+00:00"
     },
     "PBM": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "SyntaxError:invalid syntax (<string>, line 1)",
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "updated_at_utc": "2026-10-09T02:29:31.363590+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-09T12:50:55.151604+00:00"
     },
     "PBYI": {
       "attempts": 1,
@@ -62271,10 +62289,11 @@
       "updated_at_utc": "2026-10-09T02:28:33.115002+00:00"
     },
     "RJET": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "SyntaxError:invalid syntax (<string>, line 1)",
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "updated_at_utc": "2026-10-09T02:29:56.848695+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-09T12:50:55.151608+00:00"
     },
     "RKDA": {
       "attempts": 1,
@@ -63009,10 +63028,11 @@
       "updated_at_utc": "2026-10-09T02:28:33.115186+00:00"
     },
     "RZAI": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "IndexError:list index out of range",
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "updated_at_utc": "2026-10-09T02:29:56.848640+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-09T12:50:55.151595+00:00"
     },
     "RZLT": {
       "attempts": 1,
@@ -63491,10 +63511,11 @@
       "updated_at_utc": "2026-10-09T02:29:02.071239+00:00"
     },
     "SDA": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "SyntaxError:invalid syntax (<string>, line 1)",
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "updated_at_utc": "2026-10-09T02:29:59.272633+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-09T12:50:55.151620+00:00"
     },
     "SDGR": {
       "attempts": 1,
@@ -64417,10 +64438,11 @@
       "updated_at_utc": "2026-10-09T02:29:02.071445+00:00"
     },
     "SLBT": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "SyntaxError:invalid syntax (<string>, line 1)",
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "updated_at_utc": "2026-10-09T02:29:59.272622+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-09T12:50:55.151616+00:00"
     },
     "SLDB": {
       "attempts": 1,
@@ -64461,10 +64483,11 @@
       "updated_at_utc": "2026-10-09T02:29:02.071459+00:00"
     },
     "SLE": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "SyntaxError:invalid syntax (<string>, line 1)",
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "updated_at_utc": "2026-10-09T02:29:59.272628+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-09T12:50:55.151629+00:00"
     },
     "SLGB": {
       "attempts": 1,
@@ -65790,10 +65813,11 @@
       "updated_at_utc": "2026-10-09T02:29:02.071746+00:00"
     },
     "SUNE": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "SyntaxError:invalid syntax (<string>, line 1)",
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "updated_at_utc": "2026-10-09T02:29:59.272650+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-09T12:50:55.151648+00:00"
     },
     "SUNS": {
       "attempts": 1,
@@ -65848,10 +65872,11 @@
       "updated_at_utc": "2026-10-09T02:29:02.071767+00:00"
     },
     "SVA": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "SyntaxError:invalid syntax (<string>, line 1)",
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "updated_at_utc": "2026-10-09T02:29:59.272636+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-09T12:50:55.151625+00:00"
     },
     "SVC": {
       "attempts": 1,
@@ -66248,10 +66273,11 @@
       "updated_at_utc": "2026-10-09T02:29:31.363654+00:00"
     },
     "TBCV": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "IndexError:list index out of range",
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "updated_at_utc": "2026-10-09T02:30:00.752281+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-09T12:50:55.151612+00:00"
     },
     "TBLA": {
       "attempts": 1,
@@ -66921,10 +66947,11 @@
       "updated_at_utc": "2026-10-09T02:29:31.363826+00:00"
     },
     "TMS": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "SyntaxError:invalid syntax (<string>, line 1)",
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "updated_at_utc": "2026-10-09T02:30:00.752315+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-09T12:50:55.151634+00:00"
     },
     "TMUS": {
       "attempts": 1,
@@ -69067,10 +69094,11 @@
       "updated_at_utc": "2026-10-09T02:29:31.364269+00:00"
     },
     "VMET": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "SyntaxError:invalid syntax (<string>, line 1)",
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "updated_at_utc": "2026-10-09T02:30:00.752302+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-09T12:50:55.151639+00:00"
     },
     "VNCE": {
       "attempts": 1,
@@ -69759,10 +69787,11 @@
       "updated_at_utc": "2026-10-09T02:29:56.848886+00:00"
     },
     "WEST": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "SyntaxError:invalid syntax (<string>, line 1)",
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "updated_at_utc": "2026-10-09T02:30:02.451992+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-09T12:50:55.151643+00:00"
     },
     "WETH": {
       "attempts": 1,
@@ -74525,10 +74554,11 @@
     "ZYBT": "Zhengye Biotechnology Holding Limited - Class A Ordinary Shares",
     "ZYME": "Zymeworks Inc. - Common Stock"
   },
-  "state_hash": "b91d468d936a38b3c3533ddb97db14cfdb9aab26f1bd89c9e4d17e401e9661ed",
+  "state_hash": "dc826a9576606423e6b35ba720412904d88e76e6285037e5b52586824b487bcd",
   "status": "HISTORY_PARTIAL",
   "task_id": "6a825366222081918997094d76e6ae46",
+  "transport_rescue_status": "REAL_PROVIDER_RETRY_ONLY_UNKNOWN_IF_FAILED",
   "unknown_count": 231,
   "unknown_never_pass": true,
-  "updated_at_utc": "2026-10-09T10:42:30.632531+00:00"
+  "updated_at_utc": "2026-10-09T12:50:55.153049+00:00"
 }
