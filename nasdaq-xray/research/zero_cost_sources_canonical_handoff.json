@@ -188,5 +188,33 @@
     "Acquire independent class-specific same-ASOF PRIMARY MC, then exact MC-HISTORY-weekly-regime-earnings-legal-risk-final chain",
     "Verify full identity/price blocked/universe coverage (3401 target), current terminal blob/pointer and real device notification",
     "Accumulate 60 COMPLETE comparable forward C4.17 sessions before assessing technical threshold efficacy; do not target 80%-90% guaranteed winner probabilities"
-  ]
+  ],
+  "price_filter_exact_20261008": {
+    "identity_pass_symbols": 3183,
+    "identity_unknown": 72,
+    "price_scope_input_count": 3183,
+    "pass_price_dv30": 514,
+    "exclusive_price_partition": {
+      "FAIL_PRICE": 1306,
+      "FAIL_DV30": 1299,
+      "FAIL_DV30_INSUFFICIENT_SESSIONS": 9,
+      "FAIL_PRICE_NO_ASOF_BAR": 10,
+      "BLOCK_CURRENT_RUN": 45,
+      "PASS_PRICE_DV30": 514
+    },
+    "partition_total": 3183,
+    "scored_universe_goal_reference": 3401,
+    "interpretation": "All 3183 authorized identity names were evaluated, 514 survived sequential price>=USD5 and exact30 median DV>=USD50m, but 72 identities and 45 price blocked are not PASS. This is price/liquidity eligibility, not estimated hit probability.",
+    "source": "nasdaq-xray/canonical_current_price_dv30.json",
+    "source_git_blob": "42ed4a1c1a104aff94f73793194b25746d3bea59",
+    "identity_source": "nasdaq-xray/canonical_current_master_manifest.json",
+    "identity_git_blob": "92c37207d8dd766ab3fe8f1300e3014c6c5ab629"
+  },
+  "user_concern_alwin": {
+    "hard_risk_percent": "8% is distance from frozen entry to stop, NOT confidence or 92% win rate",
+    "empirical_wins": "UNKNOWN; zero of sixty point-in-time comparable C4.17 completed sessions",
+    "risk_relaxation_20pct_only": "Still zero technical valid among 17 older 2026-10-07 setups when all other gates held",
+    "no_overfitted_alpha_change": true,
+    "release_rule": "DO_NOT_MINT_AL_TO_MEET_DEADLINE; NO_FALSE_PASS; no broker/account/G9 requirements"
+  }
 }
