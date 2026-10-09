@@ -29,7 +29,7 @@ def classify(pointer:dict)->str:
     if type(rev) is not int or rev<0 or state.get("revision")!=rev or state.get("schema")!="XRAY_STATE_REGISTER_V1":
         raise ValueError("POINTER_REVISION_AND_STATE_SCHEMA_INVALID")
     compact=json.dumps(state,ensure_ascii=False,separators=(",",":"))
-    actual=hashlib.sha256(("XRAY_STATE_REGISTER_V1\\n"+str(rev)+"\\n"+compact).encode("utf-8")).hexdigest()
+    actual=hashlib.sha256(("XRAY_STATE_REGISTER_V1\n"+str(rev)+"\n"+compact).encode("utf-8")).hexdigest()
     if actual!=pointer.get("state_hash"):
         raise ValueError("POINTER_STATE_HASH_INVALID")
     if state.get("execution") not in (None,"NONE") or state.get("real_money") not in (None,"NO-GO"):
@@ -59,7 +59,7 @@ def selftest():
           "state_json":{"schema":"XRAY_STATE_REGISTER_V1","revision":4,
                         "task_id":TASK,"r92":[],"delivery_keys":["CONTROL|TEST"]}}
     def seal(x):
-        raw="XRAY_STATE_REGISTER_V1\\n"+str(x["revision"])+"\\n"+json.dumps(
+        raw="XRAY_STATE_REGISTER_V1\n"+str(x["revision"])+"\n"+json.dumps(
             x["state_json"],ensure_ascii=False,separators=(",",":"))
         x["state_hash"]=hashlib.sha256(raw.encode("utf-8")).hexdigest()
     seal(base)
