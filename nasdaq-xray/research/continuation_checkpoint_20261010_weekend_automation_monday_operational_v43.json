@@ -1,0 +1,243 @@
+{
+  "schema": "XRAY_C417_CANONICAL_CONTINUATION_20261010_WEEKEND_MON_OPEN_V43",
+  "repo": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "authority": "LIVE_GITHUB_MAIN_AND_AUTOMATION_READBACK_OVERRIDE_STATIC_CHECKPOINT",
+  "observed_head_before_checkpoint": "855189d0e26197f5c1979c7046b955e2c0c0c6f1",
+  "predecessor": "nasdaq-xray/research/continuation_checkpoint_20261010_seven_blocker_live_source_audit_v42.json",
+  "safety": {
+    "policy": "C4.17",
+    "control": "C4.27",
+    "c418": "PROPOSED_INACTIVE",
+    "execution": "NONE",
+    "real_money": "NO-GO",
+    "unknown_never_pass": true,
+    "no_threshold_relaxation": true,
+    "no_synthetic_market_promotion": true
+  },
+  "source_snapshot": {
+    "master": {
+      "asof_et": "2026-10-09",
+      "git_blob": "9f2c539165f412d8675b4db131e9f527c55b6a07",
+      "identity_pass": 3184,
+      "identity_unknown": 12
+    },
+    "price": {
+      "asof_et": "2026-10-09",
+      "git_blob": "b74444f88c57e2bd497495e62c14969184fd9878",
+      "pass": 0,
+      "unknown": 553,
+      "fail_price": 1304,
+      "fail_dv30": 1311,
+      "fail_insufficient_30": 7,
+      "fail_no_asof": 9
+    },
+    "current_primary_mc_pass": 0,
+    "current_licensed_260daily_52weekly_real_history_count": 0,
+    "historical_seven_oct_history": {
+      "asof_et": "2026-10-07",
+      "pass": 460,
+      "scoped_input": 472,
+      "git_blob": "28e182225c45c3adf4243e40eb7df7ebdb783884",
+      "role": "STALE_DIAGNOSTIC_NOT_9OCT_HISTORY_AUTHORITY"
+    },
+    "terminal": {
+      "asof_et": "2026-10-07",
+      "r92_count": 0,
+      "git_blob": "ea9c41cd1e5971e78d85bf3f620d7f8c4e01034f"
+    },
+    "pointer": {
+      "asof_et": "2026-10-07",
+      "r92_count": 0,
+      "git_blob": "11761c589063d28d8795621844c9ce8f965dd911"
+    },
+    "delivery_ledger_confirmed_records": 0,
+    "official_guard": {
+      "status": "PASS",
+      "generated_at_utc": "2026-10-08T20:07:51.835726+00:00",
+      "git_blob": "13064394f7ae7fd8f965fb344f02c2cdde8c35e1",
+      "interpretation": "OLD_STALE_AS_OF_CURRENT_CHECK;REFRESH_REQUIRED_IMMEDIATELY_BEFORE_ANY_REAL_CANDIDATE"
+    },
+    "strict_g9": {
+      "pass": false,
+      "reason": "BLOCKED_ENTITLEMENT_AUTHORITY_UNPROVEN",
+      "not_required_for_manual_research": true
+    },
+    "account": {
+      "status": "ACCOUNT_BOOTSTRAP_READY_CREDENTIALS_REQUIRED",
+      "not_required_for_manual_research": true
+    },
+    "actual_phone_receipt_attested": false,
+    "sixty_completed_forward_candidate_sessions_attested": false
+  },
+  "automation_topology": {
+    "checked_live": true,
+    "active_exactly_five": true,
+    "timezone": "America/New_York",
+    "five": [
+      {
+        "name": "Canonical",
+        "id": "6a825366222081918997094d76e6ae46",
+        "hour_minute": 57,
+        "enabled": true,
+        "notifications": true,
+        "email": true
+      },
+      {
+        "name": "Reader",
+        "id": "6abeb37721ec81918e78b0ac65eb64a0",
+        "hour_minute": 43,
+        "enabled": true,
+        "notifications": false,
+        "email": false
+      },
+      {
+        "name": "Committer",
+        "id": "6abeb39630a88191a672574b45bdcd1b",
+        "hour_minute": 46,
+        "enabled": true,
+        "notifications": false,
+        "email": false
+      },
+      {
+        "name": "Health",
+        "id": "6abd0465d15c8191aac5888abb784f27",
+        "hour_minute": 49,
+        "enabled": true,
+        "notifications": false,
+        "email": false
+      },
+      {
+        "name": "Finisher",
+        "id": "6abeb68907a88191a364437de1fb2275",
+        "hour_minute": 52,
+        "enabled": true,
+        "notifications": false,
+        "email": false
+      }
+    ],
+    "settings_are_not_receipt": true,
+    "actual_phone_or_email_delivery_verified": false,
+    "duplicate_task_created": false,
+    "github_schedules": [
+      {
+        "name": "root",
+        "cron_utc": "30 * * * *",
+        "ny_weekend_market_work": "GUARDED_AFTER_CODE_REPAIR",
+        "real_market_after_repair_run": "NOT_FINISHED_AT_CAPTURE"
+      },
+      {
+        "name": "Pre-MC",
+        "cron_utc": "35 * * * 1-5"
+      },
+      {
+        "name": "Post-MC",
+        "cron_utc": "50 * * * 1-5"
+      },
+      {
+        "name": "Final",
+        "cron_utc": "53 * * * 1-5"
+      },
+      {
+        "name": "Delivery",
+        "cron_utc": [
+          "*/15 * * * 1-5",
+          "7 * * * 0,6"
+        ],
+        "real_candidate": false
+      },
+      {
+        "name": "Twelve private",
+        "cron_utc": "53 * * * *",
+        "license_and_key_blocked": true
+      }
+    ]
+  },
+  "calendar": {
+    "us_equities": "NASDAQ",
+    "latest_completed_session": "2026-10-09",
+    "saturday": "2026-10-10",
+    "sunday": "2026-10-11",
+    "monday": "2026-10-12",
+    "monday_is_nasdaq_trading_day": true,
+    "new_york_open": "2026-10-12 09:30 EDT",
+    "turkey_open": "2026-10-12 16:30 TRT",
+    "new_york_close": "2026-10-12 16:00 EDT",
+    "turkey_close": "2026-10-12 23:00 TRT",
+    "current_monday_session_becomes_completed_for_source_guard": "2026-10-12 16:30 EDT=23:30 TRT",
+    "primary_time_authority": "America/New_York",
+    "weekend_enters_ny": "2026-10-10T00:00:00-04:00",
+    "do_not_promote_rth_session_on_midnight": true
+  },
+  "repairs": [
+    {
+      "code": "ROOT_NY_WEEKEND_QUOTA_GUARD",
+      "red_commit": "53d0fb45bf9c7d1106d713a73ebe38b698fdaf03",
+      "red_run": 38000289044,
+      "red_reason": "WEEKEND_COMPUTE_GATE_NOT_WIRED",
+      "green_fix_commit": "39f5658553937323042c2affc795f5cd1a1ba060",
+      "green_run": 38000329077,
+      "green_run_state_at_capture": "IN_PROGRESS_AFTER_WEEKEND_REGRESSION_PASS;ROOT_VENDOR_RUN_ACTIVE;NO_COMPLETED_FULL_GREEN_CLAIM",
+      "tests": "NY_UTC_BOUNDARY_SAT_SUN_MANUAL_AND_MONDAY_VALID;5_COSTLY_ROOT_STEPS_CONDITIONED"
+    },
+    {
+      "code": "NASD_MONDAY_OCT12_TRADING_AND_SOURCE_EPOCH",
+      "test_commit": "4801f584dd365b5d10df70e5d5d5969a8970a71e",
+      "wire_commit": "855189d0e26197f5c1979c7046b955e2c0c0c6f1",
+      "green_run": 38000548174,
+      "green_conclusion": "SUCCESS",
+      "marker": "XRAY_NASDAQ_SESSION_FRESHNESS_SELFTEST=PASS_9OCT_WEEKEND_12OCT_MARKET_OPEN_ET_30MIN_AND_FALSE_GO"
+    }
+  ],
+  "go_gates_ordered": [
+    {
+      "n": 1,
+      "name": "AUTHORIZE_LAWFUL_PROVIDER",
+      "status": "BLOCKED",
+      "acceptance": "Actual automated/non-display and private retention/caching rights independently proven, credentials in private runner; no false assumption from connected app call."
+    },
+    {
+      "n": 2,
+      "name": "CURRENT_C417_EXACT30_PRICE",
+      "status": "BLOCKED",
+      "acceptance": "A 9Oct exact-scope same-ASOF licensed official RTH close/volume classification, validated 30 session names/partition hashes; no fractional adjusted volume promoted as consolidated volume; PRICE PASS may be nonzero only from evidence."
+    },
+    {
+      "n": 3,
+      "name": "CURRENT_C417_PRIMARY_MC",
+      "status": "BLOCKED",
+      "acceptance": "Complete exact current PRICE pass set measured by policy-compliant independent USD MC source, with licensed rights, timestamp and class identity; fallback WATCH never R92."
+    },
+    {
+      "n": 4,
+      "name": "REAL_HISTORY_WEEKLY",
+      "status": "BLOCKED",
+      "acceptance": "Every eligible ticker & QQQ 260 true completed official daily bars and 52 true ISO weeks, corporate action/ticker continuity, no synthetic bars, encrypted private storage and rights."
+    },
+    {
+      "n": 5,
+      "name": "CURRENT_E2E_PROVENANCE",
+      "status": "BLOCKED",
+      "acceptance": "MASTER 12 identity UNKNOWN stay excluded; exact same-ASOF PRICE, resolver, MC, HISTORY, LEGAL, Stage1, WEEKLY, DEEP, EVENTS, FINAL, terminal/pointer and SHA/set equality."
+    },
+    {
+      "n": 6,
+      "name": "C417_SIGNAL_RULES",
+      "status": "BLOCKED",
+      "acceptance": "Actual risk <=8% and independent RR/PRE_G9 evidence, events and official halt/suspension safety fresh, top 3 signed R92 if and only if real setup exists."
+    },
+    {
+      "n": 7,
+      "name": "DELIVERY_MONITORING_FORWARD_AUDIT",
+      "status": "BLOCKED",
+      "acceptance": "Registered R92, dedup ledger/issue and actual user-phone delivery receipt plus tested recurring lifecycle/alert path, forward evaluation true completed sessions; never claim notified without receipt."
+    }
+  ],
+  "release": {
+    "manual_research_go": false,
+    "full_g9_account_go": false,
+    "real_money_go": false,
+    "blocker": "ZERO_CURRENT_PRICE_PASS, NO_CURRENT_PRIMARY_MC, NO_LICENSED_260_HISTORY, OLD_TERMINAL_AND_ZERO_R92, NO_DEVICE_RECEIPT",
+    "next_safe_operation": "After real source rights verified, resume current exact30 C4.17 PRICE and full provenance, then MC/history/Final; no invented market data or purchase."
+  }
+}
