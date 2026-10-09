@@ -84,6 +84,36 @@ def close_num(a, b):
     except Exception:
         return False
 
+def validate_delivery_geometry(row):
+    """Fail closed on a forged/malformed registered candidate's reported levels.
+
+    This is an independent delivery surface guard, NOT a proof of the source
+    alpha geometry. Exact current Final/R92 lineage remains separately required.
+    A-family RR floors are preserved from C4.17, not silently raised to B/C/D.
+    """
+    setup=str(row.get("setup") or "").upper()
+    if setup not in {"A","B","C","D"}:
+        raise RuntimeError("DELIVERY_R92_SETUP_INVALID")
+    fields=("entry_low","entry_high","chase_limit","stop","r1",
+            "rr_basic","rr_severe")
+    v={}
+    for key in fields:
+        x=row.get(key)
+        if type(x) not in (int,float) or not math.isfinite(x):
+            raise RuntimeError("DELIVERY_R92_NONFINITE_GEOMETRY:"+key)
+        v[key]=float(x)
+    lo,hi,chase,stop,r1=(v[k] for k in
+                         ("entry_low","entry_high","chase_limit","stop","r1"))
+    if not (0<stop<lo<=hi<chase and r1>hi):
+        raise RuntimeError("DELIVERY_R92_LONG_GEOMETRY_INVALID")
+    if (hi-stop)/hi>0.08:
+        raise RuntimeError("DELIVERY_R92_RISK_PERCENT_EXCEEDS_8")
+    min_basic,min_severe=(1.5,1.1) if setup=="A" else (2.0,1.5)
+    if v["rr_basic"]<min_basic or v["rr_severe"]<min_severe:
+        raise RuntimeError("DELIVERY_R92_RR_POLICY_FLOOR_FAILED")
+    return True
+
+
 def validate_candidate_local_terminal(state, current_price, history, mc_path, mc, rows):
     """Exact candidate-local gate. Global unrelated UNKNOWN is intentionally not a veto."""
     if not TERMINAL.exists():
@@ -256,6 +286,7 @@ for x in r92:
         missing.append("dv30")
     if missing:
         raise RuntimeError("DELIVERY_R92_FIELDS_MISSING:" + ",".join(missing))
+    validate_delivery_geometry(x)
     eligible.append(x)
 
 if not eligible:
