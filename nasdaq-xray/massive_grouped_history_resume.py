@@ -150,6 +150,10 @@ def load(path,crypto,s):
     except Exception as e:raise ValueError("CIPHERTEXT_NOT_AUTHENTIC") from e
     if not isinstance(cp,dict) or cp.get("schema")!=SCHEMA:raise ValueError("CHECKPOINT_SCHEMA_INVALID")
     if cp.get("asof")!=s["asof"] or cp.get("price_sha")!=s["price_sha"] or cp.get("scope_hash")!=s["scope_hash"]:
+        # Authentic same-date PRICE revisions are STALE, not corrupt.
+        # Never merge two same-ASOF identities or price-blobs.
+        if cp.get("asof")==s["asof"] or cp.get("asof")>s["asof"]:
+            return fresh(s),False
         return rebound(cp,s),True
     if not exact(cp,s):raise ValueError("CHECKPOINT_NOT_EXACT")
     return cp,True
@@ -364,12 +368,8 @@ def selftest():
         other,restored=load(path,crypto,ss)
         assert restored and other["dates"][d]==scoped
         wrong=deepcopy(ss);wrong["price_sha"]="0"*40
-        try:
-            load(path,crypto,wrong)
-        except ValueError:
-            pass
-        else:
-            raise AssertionError("SAME_ASOF_BLOB_DRIFT_ACCEPTED")
+        stale,reused=load(path,crypto,wrong)
+        assert not reused and stale["dates"]=={}, "SAME_ASOF_SHA_DRIFT_WAS_MERGED"
         newer=deepcopy(ss)
         newer["asof"]="2026-10-09"
         newer["dates"],newer["weeks"]=expected_dates("2026-10-09")
