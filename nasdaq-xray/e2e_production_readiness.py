@@ -109,7 +109,7 @@ def scope_readiness(blockers,chain_exact):
         "CURRENT_TERMINAL_FROZEN_OR_INCOMPLETE",
         "TERMINAL_CURRENT_MC_CHAIN_NOT_PROVEN",
     }
-    global_only={"IDENTITY_PARTITION_INCOMPLETE","PRICE_BLOCKED_30_SESSION_BARS"}
+    global_only={"IDENTITY_PARTITION_INCOMPLETE","PRICE_BLOCKED_30_SESSION_BARS","PRICE_UNKNOWN_CURRENT"}
     blocks=set(blockers)
     local=bool(chain_exact) and blocks.isdisjoint(local_hard)
     return {
@@ -257,9 +257,9 @@ def snapshot():
          and len(price.get("results") or {})==len(master_set)
          and set(price.get("results") or {})==master_set
          and set(price.get("blocked_symbols") or []).isdisjoint(price_set)
-         and int(price.get("pass_count") or -1)==len(price_set))
-    fail("PRICE_BLOCKED_30_SESSION_BARS",price.get("unknown_count")==0
-         and price.get("blocked_count")==0)
+         and int(price.get("pass_count") if price.get("pass_count") is not None else -1)==len(price_set))
+    fail("PRICE_UNKNOWN_CURRENT",price.get("unknown_count")==0)
+    fail("PRICE_BLOCKED_30_SESSION_BARS",price.get("blocked_count")==0)
     price_sha=sha("canonical_current_price_dv30.json")
     fail("SETTLEMENT_UNVERIFIED_OR_PRICE_SHA_DRIFT",req.get("asof_et")==asof
          and req.get("source_master_blob_sha")==sha("canonical_current_master_manifest.json")
@@ -309,7 +309,8 @@ def snapshot():
             and not any(k in blocks for k in (
                 "PRICE_PARTITION_NOT_EXACT_CURRENT","POLICY_SAFETY_NOT_ALL_ATTESTED",
                 "SETTLEMENT_UNVERIFIED_OR_PRICE_SHA_DRIFT",
-                "IDENTITY_PARTITION_INCOMPLETE","PRICE_BLOCKED_30_SESSION_BARS")),
+                "IDENTITY_PARTITION_INCOMPLETE","PRICE_BLOCKED_30_SESSION_BARS",
+                "PRICE_UNKNOWN_CURRENT")),
         "current_mc_authority_count":len(mcs),
         "latest_completed_nasdaq_session":freshness.get("latest_completed_nasdaq_session"),
         "official_nasdaq_session_freshness_attested":freshness.get("freshness_ready") is True,
