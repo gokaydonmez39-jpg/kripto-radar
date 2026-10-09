@@ -118,6 +118,45 @@ def merge_archive(sub,archive):
     merged["filings"]=filings
     return merged
 
+def classify_recent_mismatch(facts,sub,asof):
+    """Counts-only evidence distinguishing missing accession / form / filed date.
+
+    Historical filed dates are not modified or guessed. A genuinely different
+    issuer/accession remains UNKNOWN, regardless of a ticker's current mapping.
+    """
+    raw=((((facts.get("facts") or {}).get("dei") or {})
+          .get("EntityCommonStockSharesOutstanding") or {})
+          .get("units") or {}).get("shares") or []
+    recent=((sub.get("filings") or {}).get("recent") or {})
+    cols=filing_columns(recent)
+    index={row[0]:row for row in zip(*(cols[k] for k in FIELDS))
+           if isinstance(row[0],str)}
+    cutoff=dt.date.fromisoformat(asof)
+    reasons=collections.Counter()
+    for row in raw:
+        if not isinstance(row,dict) or row.get("form") not in ACCEPTED_FORMS:
+            continue
+        try:
+            filed=dt.date.fromisoformat(str(row["filed"]))
+            obs=dt.date.fromisoformat(str(row["end"]))
+        except (ValueError,KeyError,TypeError):
+            reasons["MALFORMED_DEI_DATE"]+=1
+            continue
+        if not (obs<=filed<=cutoff and 0<=(cutoff-obs).days<=MAX_AGE_DAYS):
+            continue
+        accession=str(row.get("accn") or "")
+        entry=index.get(accession)
+        if entry is None:
+            reasons["ACCESSION_NOT_IN_RECENT"]+=1
+        elif entry[1]!=row["form"]:
+            reasons["FORM_CONFLICT_SAME_ACCESSION"]+=1
+        elif str(entry[2])!=str(row["filed"]):
+            reasons["FILED_DATE_CONFLICT_SAME_ACCESSION"]+=1
+        else:
+            reasons["MATCHED_CURRENT_FILING_METADATA"]+=1
+    if not reasons:reasons["NO_VIABLE_DEI_FACT_IN_ASOF_WINDOW"]=1
+    return dict(sorted(reasons.items()))
+
 def run():
     asof=exact_scope()
     result={
@@ -126,6 +165,7 @@ def run():
         "source_artifact_sha256":"636b66a99e887b2c4dd53fa254e628ca3ee409fede08e681f4806eddca28a88c",
         "source_master_blob_sha":ORIGIN_MASTER_SHA,"source_price_blob_sha":ORIGIN_PRICE_SHA,
         "status":"BLOCKED","reason_counts":{},"symbol_statuses":{},
+        "recent_filing_metadata_diagnostics":{},
         "execution":"NONE","real_money":"NO-GO",
         "production_primary_mc_count":0,"no_vendor_raw_values_persisted":True,
         "source":"OFFICIAL_SEC_EDGAR","candidate_created":False,
@@ -149,6 +189,7 @@ def run():
             time.sleep(0.55)
             sub=get_json(f"https://data.sec.gov/submissions/CIK{cik}.json",ua)
             before=select_shares(facts,sub,asof,expected_cik=cik)
+            result["recent_filing_metadata_diagnostics"][sym]=classify_recent_mismatch(facts,sub,asof)
             if before["status"]=="SHADOW_SHARES_VINTAGE_ONLY":
                 statuses[sym]="SHADOW_RECENT_SOURCE_NOW_PRESENT"
             elif before.get("reason")!="SEC_FACT_ACCESSION_NOT_VERIFIED_IN_RECENT_SUBMISSIONS":
@@ -192,12 +233,20 @@ def selftest():
         "recent":{"accessionNumber":[],"form":[],"filingDate":[],"acceptanceDateTime":[]},
         "files":[{"name":"CIK0000320193-submissions-001.json","filingFrom":"2026-01-01","filingTo":"2026-10-08"}]}}
     assert archive_names(sub,facts,"2026-10-08")==["CIK0000320193-submissions-001.json"]
+    assert classify_recent_mismatch({"cik":320193,**facts},sub,"2026-10-08")=={"ACCESSION_NOT_IN_RECENT":1}
     archive={"accessionNumber":["0000320193-26-000001"],"form":["10-Q"],
              "filingDate":["2026-10-07"],"acceptanceDateTime":["2026-10-07T15:45:00-04:00"]}
     old=select_shares({"cik":320193,**facts},sub,"2026-10-08")
     assert old["status"]=="UNKNOWN"
     new=select_shares({"cik":320193,**facts},merge_archive(sub,archive),"2026-10-08")
     assert new["status"]=="SHADOW_SHARES_VINTAGE_ONLY"
+    mismatch={"cik":320193,"filings":{"recent":{
+      "accessionNumber":["0000320193-26-000001"],
+      "form":["10-Q"],"filingDate":["2026-10-06"],
+      "acceptanceDateTime":["2026-10-07T15:45:00-04:00"]}}}
+    assert classify_recent_mismatch({"cik":320193,**facts},mismatch,"2026-10-08")=={"FILED_DATE_CONFLICT_SAME_ACCESSION":1}
+    mismatch["filings"]["recent"]["form"]=["10-K"]
+    assert classify_recent_mismatch({"cik":320193,**facts},mismatch,"2026-10-08")=={"FORM_CONFLICT_SAME_ACCESSION":1}
     from copy import deepcopy
     late=deepcopy(archive);late["acceptanceDateTime"]=["2026-10-08T16:30:00-04:00"]
     assert select_shares({"cik":320193,**facts},merge_archive(sub,late),"2026-10-08")["status"]=="UNKNOWN"
@@ -227,6 +276,7 @@ def main():
     print("XRAY_SEC_ARCHIVE_TRANSPORT="+out["status"])
     print("XRAY_SEC_ARCHIVE_RESULT_COUNTS="+json.dumps(out["reason_counts"],sort_keys=True))
     print("XRAY_SEC_ARCHIVE_RESULTS="+json.dumps(out["symbol_statuses"],sort_keys=True))
+    print("XRAY_SEC_ARCHIVE_RECENT_METADATA_DIAG="+json.dumps(out["recent_filing_metadata_diagnostics"],sort_keys=True))
     print("XRAY_SEC_ARCHIVE_PRIMARY=ZERO_NEVER_PROMOTED")
     if out["status"].startswith("BLOCKED_"):raise SystemExit(2)
 
