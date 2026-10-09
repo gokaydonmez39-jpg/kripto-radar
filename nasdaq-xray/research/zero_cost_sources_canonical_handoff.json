@@ -325,5 +325,32 @@
     "twelve_full_514_verified": false,
     "primary_mc_authority": false,
     "production": "NO_GO"
+  },
+  "massive_grouped_source_verification_20261009": {
+    "date": "2026-10-08",
+    "grouped_endpoint": "/v2/aggs/grouped/locale/us/market/stocks/{date}",
+    "publicly_documented_tier": "Stocks Basic Free $0, 5 API calls per minute, 2 years EOD, grouped daily in all Stocks plans",
+    "real_tool_massive_US_rows": 12592,
+    "real_tool_rallies_US_rows": 12592,
+    "matching_ticker_OHLCV_VWAP_timestamp": 12592,
+    "provider_independence_conclusion": "MASSIVE_GROUPED_AND_RALLIES_BULK_SAME_FEED_FAMILY_UNTIL_INDEPENDENT_UPSTREAM_PROVEN",
+    "caution": "Do not use Massive grouped and Rallies bulk as 2 independent confirmations; exact equality is not source redundancy",
+    "initial_260_day_bulk_calls_if_one_complete_grouped_request_per_completed_session": 260,
+    "basic_minimum_minutes_at_5_per_min": 52,
+    "asof_514_price_pass_covered_interactively": 514,
+    "gh_code": "nasdaq-xray/massive_grouped_one_day.py",
+    "gh_workflow": ".github/workflows/xray-current-history-source-request.yml",
+    "gh_run": 37988405147,
+    "gh_run_conclusion": "SUCCESS_TESTS_ONLY",
+    "gh_probe_result": "BLOCKED_RIGHTS_OR_KEY",
+    "gh_actual_outbound_vendor_calls": 0,
+    "config_requires": [
+      "XRAY_MASSIVE_API_KEY",
+      "XRAY_MASSIVE_NONDISPLAY_LICENSE_OK",
+      "XRAY_MASSIVE_LICENSE_EVIDENCE_SHA256"
+    ],
+    "current_full_history_authority": false,
+    "current_primary_mc_authority": false,
+    "current_R92": false
   }
 }
