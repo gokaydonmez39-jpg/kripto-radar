@@ -41,6 +41,23 @@ def reason_code(info):
         return "NO_REASON_GIVEN"
     return "UNCLASSIFIED_PROVIDER_DIAGNOSTIC"
 
+def recovery_class(code):
+    """Stable incident grouping; advisory ONLY, never source recovery PASS."""
+    if code.startswith("NETWORK_OR_PROVIDER_EXCEPTION") or code.startswith("PROVIDER_EXCEPTION_"):
+        return "PROVIDER_TRANSPORT_OR_QUOTA_UNVERIFIED"
+    if code=="EXACT30_INCOMPLETE_NEVER_PASS":
+        return "LATEST_30_COMPLETED_SESSIONS_MISSING"
+    if code in {"ASOF_MISSING_REQUIRES_RESOLUTION","SINA_NO_ASOF_BAR"}:
+        return "SAME_ASOF_SESSION_MISSING"
+    if code in {"SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION",
+                "SINA_HISTORY_TOO_SHORT","SINA_HISTORY_INSUFFICIENT",
+                "SINA_MISSING_SESSIONS","INCOMPLETE_RTH_SESSIONS"}:
+        return "HISTORICAL_260_OR_52W_COVERAGE_MISSING"
+    if code=="SINA_HISTORY_EMPTY":
+        return "SOURCE_NO_HISTORY_RETURNED"
+    return "SOURCE_UNVERIFIED_NEEDS_INDEPENDENT_MEASUREMENT"
+
+
 def audit(state):
     if not isinstance(state,dict):
         raise ValueError("STATE_MUST_BE_OBJECT")
@@ -68,6 +85,9 @@ def audit(state):
     if len(unknown)!=int(state.get("unknown_count",-1)):
         raise ValueError("UNKNOWN_COUNT_MISMATCH")
     reasons=Counter((str(row.get("status"))+" | "+reason_code(row.get("info"))) for row in unknown.values())
+    recovery=Counter(recovery_class(reason_code(row.get("info"))) for row in unknown.values())
+    if sum(recovery.values())!=len(unknown):
+        raise ValueError("RECOVERY_CLASS_PARTITION_INCOMPLETE")
     # Public ticker IDs only, at most three per reason. No prices, bars,
     # provider URLs, exceptions or raw metadata are serialized.
     samples={}
@@ -90,6 +110,8 @@ def audit(state):
         "unknown_count":len(unknown),"pending_retry":retry_count,
         "status_counts":dict(sorted(counts.items())),
         "unknown_reason_counts":dict(sorted(reasons.items())),
+        "advisory_recovery_class_counts":dict(sorted(recovery.items())),
+        "recovery_execution_authorized":False,
         "public_sample_tickers_by_reason":dict(sorted(samples.items())),
         "public_market_bars_persisted":False,
         "fully_verified_260_session_candidate_count":None,
@@ -110,6 +132,18 @@ def selftest():
     assert ok["unknown_reason_counts"]["UNKNOWN_STATIC | SINA_HISTORY_EMPTY"]==1
     assert ok["public_sample_tickers_by_reason"]["UNKNOWN_STATIC | SINA_HISTORY_EMPTY"]==["B"]
     assert ok["unknown_reason_counts"]["UNKNOWN_RETRY_EXHAUSTED | NETWORK_OR_PROVIDER_EXCEPTION"]==1
+    assert sum(ok["advisory_recovery_class_counts"].values())==2
+    assert ok["advisory_recovery_class_counts"]=={
+        "PROVIDER_TRANSPORT_OR_QUOTA_UNVERIFIED":1,
+        "SOURCE_NO_HISTORY_RETURNED":1}
+    assert ok["recovery_execution_authorized"] is False
+    for reason,expected in [
+        ("EXACT30_INCOMPLETE_NEVER_PASS","LATEST_30_COMPLETED_SESSIONS_MISSING"),
+        ("ASOF_MISSING_REQUIRES_RESOLUTION","SAME_ASOF_SESSION_MISSING"),
+        ("SINA_HISTORY_TOO_SHORT","HISTORICAL_260_OR_52W_COVERAGE_MISSING"),
+        ("SINA_HISTORY_EMPTY","SOURCE_NO_HISTORY_RETURNED"),
+        ("UNCLASSIFIED_PROVIDER_DIAGNOSTIC","SOURCE_UNVERIFIED_NEEDS_INDEPENDENT_MEASUREMENT")]:
+        assert recovery_class(reason)==expected
     assert reason_code({"reason":"ASOF_MISSING_REQUIRES_RESOLUTION"})=="ASOF_MISSING_REQUIRES_RESOLUTION"
     assert reason_code({"reason":"EXACT30_INCOMPLETE_NEVER_PASS"})=="EXACT30_INCOMPLETE_NEVER_PASS"
     assert reason_code("RuntimeError:provider unavailable")=="PROVIDER_EXCEPTION_RuntimeError"
