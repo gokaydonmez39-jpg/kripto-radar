@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import collections, glob, json, math, re
+import collections, glob, hashlib, json, math, re, sys
 from pathlib import Path
 from statistics import median
 from datetime import datetime, timezone
@@ -32,17 +32,79 @@ def paired_final(path: Path, asof: str):
     tag=asof.replace("-","")
     return ROOT/f"canonical_final_tech_{tag}.json"
 
+def git_blob_sha(path: Path) -> str:
+    data=path.read_bytes()
+    return hashlib.sha1(b"blob "+str(len(data)).encode()+b"\\0"+data).hexdigest()
+
+
+def comparable_evidence(terminal: dict, final: dict, fp: Path,
+                        asof: str, version: str, has_dv30: bool) -> tuple[bool, list[str]]:
+    """Empirical calibration only: no partial/stale snapshot is one full session."""
+    checks={
+        "C417_POLICY_EXACT": version==CURRENT_POLICY_VERSION
+            and final.get("source_compiled_policy_version")==CURRENT_POLICY_VERSION,
+        "DV30_SCOPE_PRESENT": has_dv30,
+        "COMPLETED_E2E": terminal.get("full_end_to_end_research_pass") is True
+            and terminal.get("status")=="FULL_E2E_RESEARCH_PASS",
+        "FINAL_SAME_ASOF": bool(asof and terminal.get("asof_et")==asof
+            and final.get("asof_et")==asof),
+        "FINAL_BLOB_EXACT": False,
+    }
+    link=(terminal.get("evidence") or {}).get("final") or {}
+    if fp.is_file():
+        checks["FINAL_BLOB_EXACT"]=(
+            link.get("path")=="nasdaq-xray/"+fp.name
+            and link.get("blob_sha")==git_blob_sha(fp)
+        )
+    rejected=sorted(k for k,passed in checks.items() if not passed)
+    return not rejected,rejected
+
+
+def selftest():
+    import tempfile
+    with tempfile.TemporaryDirectory() as td:
+        fp=Path(td)/"canonical_current_final_tech.json"
+        final={"asof_et":"2026-10-08","source_compiled_policy_version":"C4.17"}
+        fp.write_text(json.dumps(final))
+        t={"asof_et":"2026-10-08","status":"FULL_E2E_RESEARCH_PASS",
+           "full_end_to_end_research_pass":True,
+           "evidence":{"final":{"path":"nasdaq-xray/"+fp.name,
+                                "blob_sha":git_blob_sha(fp)}}}
+        ok,why=comparable_evidence(t,final,fp,"2026-10-08","C4.17",True)
+        assert ok and not why,(ok,why)
+        from copy import deepcopy
+        tests=[
+            ("terminal_partial",lambda x,y:x.update(status="PARTIAL")),
+            ("e2e_missing",lambda x,y:x.update(full_end_to_end_research_pass=False)),
+            ("policy_drift",lambda x,y:y.update(source_compiled_policy_version="C4.14")),
+            ("final_stale",lambda x,y:y.update(asof_et="2026-10-07")),
+            ("blob_drift",lambda x,y:x["evidence"]["final"].update(blob_sha="0"*40)),
+            ("path_drift",lambda x,y:x["evidence"]["final"].update(path="nasdaq-xray/fake.json")),
+        ]
+        for name,mutation in tests:
+            case=deepcopy(t);v=deepcopy(final);mutation(case,v)
+            valid,errors=comparable_evidence(case,v,fp,"2026-10-08","C4.17",True)
+            assert not valid and errors,(name,errors)
+        assert not comparable_evidence(t,final,fp,"2026-10-08","C4.17",False)[0]
+        assert not comparable_evidence(t,final,fp,"2026-10-08","C4.14",True)[0]
+        fp.unlink()
+        assert not comparable_evidence(t,final,fp,"2026-10-08","C4.17",True)[0]
+    print("XRAY_ALPHA_CALIBRATION_SOURCE_EXACT_SELFTEST=PASS_POSITIVE_9_NEGATIVE")
+
+
 def main():
     terminals=[]
     seen=set()
-    for p in sorted(ROOT.glob("canonical_terminal_20??????.json"))+[ROOT/"canonical_current_terminal.json"]:
+    # Prefer the canonical current pointer for a repeated ASOF. One session
+    # can never contribute more than one observation to calibration.
+    for p in [ROOT/"canonical_current_terminal.json"]+sorted(ROOT.glob("canonical_terminal_20??????.json")):
         if not p.exists():
             continue
         t=load(p)
         asof=terminal_date(p,t)
-        if not asof or (asof,p.name) in seen:
+        if not asof or asof in seen:
             continue
-        seen.add((asof,p.name))
+        seen.add(asof)
         fp=paired_final(p,asof)
         f=load(fp) if fp.exists() else {}
         version=str(t.get("compiled_policy_version") or f.get("source_compiled_policy_version") or "")
@@ -50,7 +112,8 @@ def main():
         pre=int(counts.get("pre_g9_tech_pass",f.get("pre_g9_tech_pass_count",0)) or 0)
         final_count=int(counts.get("final_confirmed_candidates",f.get("fresh_current_candidate_count",0)) or 0)
         has_dv30=("price_dv30_pass" in counts) or (p.name=="canonical_current_terminal.json")
-        comparable=bool(version==CURRENT_POLICY_VERSION and has_dv30)
+        comparable,rejection_reasons=comparable_evidence(
+            t,f,fp,asof,version,has_dv30)
         terminals.append({
           "asof_et":asof,
           "terminal_path":f"nasdaq-xray/{p.name}",
@@ -61,6 +124,7 @@ def main():
           "compiled_policy_version":version or None,
           "dv30_semantics_observed":has_dv30,
           "comparable_to_current_c417":comparable,
+          "calibration_exclusion_reasons":rejection_reasons,
           "final_confirmed_candidates":final_count,
           "pre_g9_tech_pass":pre,
         })
@@ -107,9 +171,9 @@ def main():
       "status":status,
       "calibration_pass":bool(sample_ok),
       "reason":(
-        "At least 60 point-in-time current-policy terminal snapshots are available."
+        "At least 60 source-exact completed point-in-time C4.17 sessions are available."
         if sample_ok else
-        "Fewer than 60 point-in-time C4.17+DV30 terminal snapshots exist; mixed-policy zero-signal history is diagnostic only and cannot prove calibration."
+        "Fewer than 60 complete, exact-final-SHA-bound C4.17+DV30 session snapshots exist; partial/stale and mixed-policy terminal outputs cannot prove signal scarcity or excessive thresholds."
       ),
       "observed_terminal_snapshots":terminals,
       "observed_snapshot_count":len(terminals),
@@ -147,4 +211,7 @@ def main():
                       "kill_reasons":out["current_finalist_diagnostics"]["kill_reason_counts"]},sort_keys=True))
 
 if __name__=="__main__":
-    main()
+    if "--selftest" in sys.argv:
+        selftest()
+    else:
+        main()
