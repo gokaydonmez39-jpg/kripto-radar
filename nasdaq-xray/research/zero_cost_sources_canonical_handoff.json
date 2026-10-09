@@ -313,5 +313,17 @@
     "PIT_first_publication_and_exchange_event_lineage_unverified": true,
     "no_subsequent_split_api_call_used": true,
     "threshold_relaxation": false
+  },
+  "activation_check_20261009": {
+    "twelve_sample_code": "nasdaq-xray/twelve_data_history_probe.py",
+    "twelve_sample_workflow_run": 37987722525,
+    "twelve_sample_status": "BLOCKED_NO_KEY",
+    "massive_same_asof_reference_independent_price_matches": "3/3 AAPL FSLY NVDA at 2026-10-08",
+    "massive_existing_collector": "nasdaq-xray/massive_mc_resume_shadow.py",
+    "massive_existing_workflow": ".github/workflows/xray-massive-mc-resume-shadow.yml",
+    "massive_full_514_verified": false,
+    "twelve_full_514_verified": false,
+    "primary_mc_authority": false,
+    "production": "NO_GO"
   }
 }
