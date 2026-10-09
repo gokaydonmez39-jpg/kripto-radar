@@ -6,6 +6,8 @@ on:
     paths:
       - ".github/workflows/xray-native-stage-relay-live.yml"
       - "nasdaq-xray/github_native_stage_relay.py"
+      - "nasdaq-xray/pre_mc_identity_replay_session_guard.py"
+      - ".github/workflows/xray-canonical-current-pre-mc.yml"
 permissions:
   contents: read
   actions: write
