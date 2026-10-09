@@ -40,6 +40,7 @@ on:
       - "nasdaq-xray/build_resolver_full_scope_handoff.py"
       - "nasdaq-xray/recover_pre_mc_snapshot.py"
       - "nasdaq-xray/pre_mc_identity_replay_session_guard.py"
+      - "nasdaq-xray/github_native_stage_relay.py"
       - "nasdaq-xray/canonical_resolver_bridge_*.json"
       - "nasdaq-xray/chatgpt_compiled_policy_v3.json"
       - ".github/workflows/xray-canonical-current-pre-mc.yml"
@@ -47,6 +48,7 @@ on:
 
 permissions:
   contents: write
+  actions: write
 
 concurrency:
   group: xray-canonical-current-pre-mc
@@ -988,4 +990,23 @@ jobs:
           done
           echo "XRAY_FACTORY_COMMIT=FAIL" >&2
           exit 1
+      # Do not assume workflow_run reaches Post-MC after a delegated root
+      # workflow_dispatch. Explicit bounded relay keeps [skip ci] checkpoint
+      # commits and GitHub chain-depth suppression from swallowing the handoff.
+      - name: Atomically wake Post-MC from exact current Pre-MC sources
+        if: success()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python nasdaq-xray/github_native_stage_relay.py --selftest
+          python nasdaq-xray/github_native_stage_relay.py --target post-mc --out /tmp/xray_postmc_relay.json
+      - name: Store Pre-MC to Post-MC dispatch operational witness
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-premc-to-postmc-relay
+          path: /tmp/xray_postmc_relay.json
+          retention-days: 7
+          if-no-files-found: warn
+
 # XRAY_CONTROL_KICK_20261003_PREMC_NO_SEMANTIC_CHANGE
