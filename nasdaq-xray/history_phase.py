@@ -738,30 +738,32 @@ def eval_one(sym,asof):
             return _history_pass(sym,asof,bst,binfo,{"sina":sm,"nasdaq":nm,"yahoo":ym,"eastmoney":em,"history_bridge":HISTORY_BRIDGE_PATH})
         return sym,bst,binfo,{"sina":sm,"nasdaq":nm,"yahoo":ym,"eastmoney":em,"history_bridge":HISTORY_BRIDGE_PATH}
 
-    # Recent-listing proof: two independent providers with the exact same
-    # first bar can establish a hard maximum number of sessions even when a
-    # latest provider bar is missing. Evidence-only: this can never create PASS.
+    # Providers reporting a common first bar does NOT establish an IPO:
+    # multiple APIs can share truncation windows or upstream feeds.
+    # Only official_listing_upper_bound_fail() above can assert listing-age FAIL.
+    first_bar_advisory=[]
     for aa,bb in ((si,yi),(si,ei),(yi,ei),(ni,yi),(ni,ei)):
         proof=aligned_first_bar_upper_bound_fail(aa,bb,asof)
         if proof:
-            return sym,"FAIL_HISTORY",proof,{"sina":sm,"nasdaq":nm,"yahoo":ym,"eastmoney":em}
+            first_bar_advisory.append(proof)
 
-    # Terminal FAIL requires at least two independent providers to agree below either threshold.
+    # A pair of incomplete provider histories cannot distinguish an issuer
+    # without 260 completed sessions from a shared provider gap. Never turn
+    # DATA_BLOCKED into TECH_FAIL / FAIL_HISTORY without an independent
+    # official listing-date bound or a source-authorized terminal proof.
     fails=[x for x in [
       si if ss=="POTENTIAL_FAIL_HISTORY" else None,
       ni if ns=="POTENTIAL_FAIL_HISTORY" else None,
       yi if ys=="POTENTIAL_FAIL_HISTORY" else None,
       ei if es=="POTENTIAL_FAIL_HISTORY" else None
     ] if x]
-    if len(fails)>=2:
-        return sym,"FAIL_HISTORY",{
-          "proof":"TWO_PROVIDER_BELOW_HISTORY_GATE",
-          "provider_results":fails,
-          "daily_max":max(x["daily_bars"] for x in fails),
-          "weekly_max":max(x["completed_week_count"] for x in fails)
-        },{"sina":sm,"nasdaq":nm,"yahoo":ym,"eastmoney":em}
     return sym,"UNKNOWN_HISTORY",{
-      "reason":"INSUFFICIENT_AGREEMENT",
+      "reason":("SOURCE_HISTORY_INCOMPLETE_NOT_ISSUER_FAIL"
+                if len(fails)>=2 else "INSUFFICIENT_AGREEMENT"),
+      "provider_below_gate_count":len(fails),
+      "provider_history_below_gate":fails,
+      "aligned_first_bar_is_not_ipo_proof":True,
+      "first_bar_advisory":first_bar_advisory,
       "sina":si,"nasdaq":ni,"yahoo":yi,"eastmoney":ei
     },{"sina":sm,"nasdaq":nm,"yahoo":ym,"eastmoney":em}
 
