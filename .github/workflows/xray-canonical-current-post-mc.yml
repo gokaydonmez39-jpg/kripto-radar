@@ -1221,6 +1221,16 @@ jobs:
           echo "XRAY_FACTORY_COMMIT=FAIL" >&2
           exit 1
 
+      # A pending MC source means the stage is NOT complete. Publish the
+      # operational diagnostic above, then report a visible NO-GO instead of
+      # a misleading green job that wakes Final as if authority existed.
+      - name: Enforce actual current MC authority before Post-MC SUCCESS
+        if: steps.freeze.outputs.frozen != 'true' && steps.mc.outputs.ready != 'true'
+        run: |
+          echo "XRAY_POST_MC_RELEASE=BLOCKED_CURRENT_MC_AUTHORITY_REQUIRED"
+          echo "XRAY_POST_MC_NEXT=DO_NOT_PROMOTE_SHADOW_OR_REUSE_STALE_TERMINAL"
+          exit 2
+
 # REGIME_INTERVAL_FINALIST_REBIND_TRIGGER_2026_10_05
 
 # LIFECYCLE_REGIME_REVALIDATION_REBIND_TRIGGER_2026_10_05
