@@ -148,6 +148,43 @@ def test_weekend_duplicate_and_invalid_bars_fail():
             assert not ok and detail["missing"]["A"]=="CACHE_MISSING_OR_INVALID",detail
 
 
+def test_recent_calendar_gap_hidden_by_older_dates_fails():
+    # >=260 distinct valid dates and a fresh ASOF do NOT mean the latest
+    # 260 official sessions are fully covered.
+    h,l,i=fixtures()
+    h["pass_symbols"]=["A"];l["pass_symbols"]=["A"]
+    with tempfile.TemporaryDirectory() as td:
+        root=Path(td)
+        dates=daily_ending(ASOF,300)
+        omitted=dates[-100]
+        write_cache(root,"A",[d for d in dates if d!=omitted])
+        write_cache(root,"QQQ",daily_ending(ASOF,320))
+        ok,detail=g.evaluate(root,h,l,{"records":{}},require_qqq=True)
+        assert not ok and detail["missing"]["A"]=="CURRENT_RECENT_260_OR_52_WEEK_GAP",detail
+
+
+def test_qqq_recent_gap_hidden_by_old_days_fails():
+    h,l,i=fixtures()
+    with tempfile.TemporaryDirectory() as td:
+        root=Path(td)
+        make_good_cache(root)
+        q=daily_ending(ASOF,320)
+        write_cache(root,"QQQ",[d for d in q if d!=q[-100]])
+        ok,detail=g.evaluate(root,h,l,i,require_qqq=True)
+        assert not ok and detail["missing"]["QQQ"]=="CURRENT_RECENT_260_OR_52_WEEK_GAP",detail
+
+
+def test_predecessor_composite_recent_gap_hidden_by_old_days_fails():
+    h,l,i=fixtures()
+    with tempfile.TemporaryDirectory() as td:
+        root=Path(td)
+        make_good_cache(root)
+        predecessor=daily_ending("2026-06-23",240)
+        write_cache(root,"SATS",[d for d in predecessor if d!=predecessor[-15]])
+        ok,detail=g.evaluate(root,h,l,i,require_qqq=True)
+        assert not ok and detail["missing"]["ECHO"]=="COMPOSITE_RECENT_260_OR_52_WEEK_GAP",detail
+
+
 if __name__=="__main__":
     test_weekend_duplicate_and_invalid_bars_fail()
     test_complete_exact_asof_cache_passes()
@@ -155,4 +192,7 @@ if __name__=="__main__":
     test_missing_continuity_predecessor_fails()
     test_legal_scope_outside_history_fails()
     test_current_cache_lt260_fails()
-    print("HISTORY_TRANSPORT_CACHE_GUARD_SELFTEST=PASS")
+    test_recent_calendar_gap_hidden_by_older_dates_fails()
+    test_qqq_recent_gap_hidden_by_old_days_fails()
+    test_predecessor_composite_recent_gap_hidden_by_old_days_fails()
+    print("HISTORY_TRANSPORT_CACHE_GUARD_SELFTEST=PASS_RECENT260_52WEEKS_3_NEW_NEGATIVE")
