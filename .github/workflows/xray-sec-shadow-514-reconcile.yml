@@ -1,0 +1,67 @@
+name: XRAY SEC Exact 514 Shadow Reconciliation
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/sec_shadow_reconcile.py"
+      - ".github/workflows/xray-sec-shadow-514-reconcile.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: xray-sec-full-514-shadow-reconcile
+  cancel-in-progress: true
+jobs:
+  reconcile-only-official-metadata:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify exact-source SHA, transient-only and 404-negative tests
+        run: |
+          python -m py_compile nasdaq-xray/sec_shadow_reconcile.py
+          python nasdaq-xray/sec_shadow_reconcile.py --selftest
+      - name: Download canonical origin and bounded retry records from completed immutable runs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh run download 37863746633 -R "${{ github.repository }}" \
+            -n xray-sec-full-price-pass-vintage-shadow-v1 -D "$RUNNER_TEMP/ori"
+          gh run download 37865380372 -R "${{ github.repository }}" \
+            -n xray-sec-transient-retry-only-operational-v1 -D "$RUNNER_TEMP/recovered"
+          test -s "$RUNNER_TEMP/ori/xray_sec_full_price_pass_vintage_operational.json"
+          test -s "$RUNNER_TEMP/recovered/xray_sec_transient_retry.json"
+      - name: Reconcile only permitted observation metadata; no price/capitalization signal
+        run: |
+          python nasdaq-xray/sec_shadow_reconcile.py \
+            --origin "$RUNNER_TEMP/ori/xray_sec_full_price_pass_vintage_operational.json" \
+            --recovery "$RUNNER_TEMP/recovered/xray_sec_transient_retry.json" \
+            --output "$RUNNER_TEMP/xray_sec_reconciled_514.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          r=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_sec_reconciled_514.json").read_text())
+          assert r["source_scope_count"]==514 and len(r["symbol_statuses"])==514
+          assert r["baseline_shadow_count"]==342
+          assert r["recovered_additional_shadow_count"]==4
+          assert r["unresolved_scope_count"]==168
+          assert r["c417_primary_mc_count"]==0
+          assert r["production_alpha_authority"] is False
+          assert r["same_asof_market_price_binding"] is False
+          assert r["corporate_action_share_class_binding"] is False
+          assert r["execution"]=="NONE" and r["real_money"]=="NO-GO"
+          print("XRAY_SEC_RECONCILE_WITNESS=PASS_346_SHADOW_168_UNRESOLVED_ZERO_PRIMARY")
+          PY
+      - name: Keep operational-only source-SHA-bound artifact for 14 days
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-sec-514-shadow-reconciled-operational-v1
+          path: ${{ runner.temp }}/xray_sec_reconciled_514.json
+          retention-days: 14
+          if-no-files-found: error
