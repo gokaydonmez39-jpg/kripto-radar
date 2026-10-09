@@ -375,6 +375,9 @@ def selftest():
     from copy import deepcopy
     with TemporaryDirectory() as tmp:
         s=scope()
+        # RED regression: with zero currently admitted PRICE PASS,
+        # even benchmark QQQ must not be treated as a live EOD cohort.
+        assert s["symbols"] or not s["targets"],"BUG_ZERO_PRICE_PASS_QQQ_ONLY_PHANTOM_SCOPE"
         assert s["symbols"] and len(s["dates"])==260 and len(s["weeks"])==52
         symbol=s["symbols"][0]
         smaller=dict(s,symbols=[symbol],targets=sorted({symbol,"QQQ"}),
