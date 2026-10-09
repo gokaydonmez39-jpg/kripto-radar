@@ -71,8 +71,13 @@ def inspect(master,price,req,terminal,readiness,master_sha,price_sha):
     verified=all(invariants.values())
     mc_ok=(readiness.get("current_mc_authority_count")==1
            and "CURRENT_MC_AUTHORITY_MISSING" not in (readiness.get("blockers") or []))
-    terminal_ok=(readiness.get("full_e2e_research_attested") is True
-                 and terminal.get("asof_et")==master.get("asof_et"))
+    # Proven candidate-local lineage is independent of irrelevant global
+    # identity/PRICE unknowns. Real AL still requires exact R92 registration,
+    # separate C4.17 MC, setup/risk/legal gates and delivery receipt.
+    terminal_ok=((
+        readiness.get("full_e2e_research_attested") is True or
+        readiness.get("candidate_local_source_chain_attested") is True
+    ) and terminal.get("asof_et")==master.get("asof_et"))
     # Global discovery and candidate-local readiness are *separate*.
     # Incomplete global identity must not become candidate-local PASS.
     global_complete=(verified and not identity_unknown and not blocked and not unknown)
@@ -157,7 +162,16 @@ def selftest():
     assert not result["full_universe_discovery_complete"]
     assert result["verified_live_manual_buy_candidates"] is None
     assert result["research_go"] is False
-    print("XRAY_PREOPEN_SOURCE_AUDIT_SELFTEST=PASS_POSITIVE_NEGATIVE_SHA_PARTITION_NO_FALSE_ALPHA")
+    local=dict(r,current_mc_authority_count=1,
+               full_e2e_research_attested=False,
+               candidate_local_source_chain_attested=True,blockers=[])
+    local_result=inspect(m,p,q,{**t,"asof_et":"2026-10-08"},local,"M","P")
+    assert local_result["candidate_local_source_preconditions_proven"]
+    assert not local_result["full_universe_discovery_complete"]
+    unbound=dict(local,candidate_local_source_chain_attested=False)
+    assert not inspect(m,p,q,{**t,"asof_et":"2026-10-08"},
+                       unbound,"M","P")["candidate_local_source_preconditions_proven"]
+    print("XRAY_PREOPEN_SOURCE_AUDIT_SELFTEST=PASS_GLOBAL_AND_LOCAL_SEPARATE_NO_FALSE_ALPHA")
 
 def main():
     parser=argparse.ArgumentParser()
