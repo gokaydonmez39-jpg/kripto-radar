@@ -10,6 +10,7 @@ import argparse
 import datetime as dt
 import hashlib
 import json
+import math
 import os
 import pathlib
 import urllib.error
@@ -66,6 +67,8 @@ def evaluate_daily(symbol_rows:list,expected30:list[str],asof:str,now:dt.datetim
             vals=[row[k] for k in ("o","h","l","c","v")]
             if any(isinstance(v,bool) or not isinstance(v,(int,float)) for v in vals):
                 return "UNKNOWN","OHLCV_NOT_NUMERIC",0
+            if any(not math.isfinite(v) for v in vals):
+                return "UNKNOWN","OHLCV_NOT_FINITE",0
             o,h,l,c,v=vals
             if not (0<o<=h and 0<l<=h and 0<c<=h and l<=o and l<=c and v>=0):
                 return "UNKNOWN","OHLCV_INVALID",0
@@ -191,7 +194,16 @@ def selftest():
     assert evaluate_daily(sample,dates[:-1], "2026-10-08",now)[1]=="OFFICIAL_30_SESSION_LIST_UNVERIFIED"
     from copy import deepcopy
     corrupted=deepcopy(sample);corrupted[-1]["c"]=float("nan")
-    assert evaluate_daily(corrupted,dates,"2026-10-08",now)[0]=="UNKNOWN"
+    assert evaluate_daily(corrupted,dates,"2026-10-08",now)[1]=="OHLCV_NOT_FINITE"
+    for field,bad_value in (("o",float("inf")),("h",float("inf")),
+                            ("l",float("-inf")),("c",float("nan")),
+                            ("v",float("inf"))):
+        corrupted=deepcopy(sample)
+        corrupted[0][field]=bad_value
+        assert evaluate_daily(corrupted,dates,"2026-10-08",now)[1]=="OHLCV_NOT_FINITE",field
+    corrupted=deepcopy(sample)
+    corrupted[0]["t"]="2026-09-01T00:00:00"
+    assert evaluate_daily(corrupted,dates,"2026-10-08",now)[1]=="OHLCV_OR_DATE_PARSE_ERROR"
     corrupted=deepcopy(sample);corrupted[-1]["c"]=True
     assert evaluate_daily(corrupted,dates,"2026-10-08",now)[1]=="OHLCV_NOT_NUMERIC"
     print("XRAY_ALPACA_FREE_SIP_SHADOW_SELFTEST=PASS_HOLDBACK_30_SESSIONS_DUPLICATE_GAPS_ZERO_VOL_FUTURE")
