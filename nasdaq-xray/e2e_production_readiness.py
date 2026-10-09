@@ -56,6 +56,18 @@ def mc_exact(mc,price,price_sha):
         return False
     return seen==symbols
 
+def terminal_research_seal(terminal):
+    """Full-universe success OR independently attested candidate-local success.
+
+    Candidate-local mode still requires every semantic, risk, legal, lifecycle
+    and source-binding control; neither mode implies trade or phone receipt.
+    """
+    checks=terminal.get("checks") or {}
+    local=(terminal.get("candidate_local_research_pass") is True
+           and (terminal.get("candidate_delivery_safety") or {}).get("status")=="PASS"
+           and all(checks.get(key) is True for key in REQUIRED_LOCAL_CHECKS))
+    return terminal.get("full_end_to_end_research_pass") is True or local
+
 def terminal_chain_exact(terminal, asof, source_shas, mc_name, mc_sha):
     """Full terminal is current ONLY with every upstream Git blob bound."""
     ev=terminal.get("evidence") or {}
@@ -65,10 +77,7 @@ def terminal_chain_exact(terminal, asof, source_shas, mc_name, mc_sha):
     # FULL_E2E requires complete universe; candidate-local may remain valid
     # with unrelated global UNKNOWN, but only after its exact C4.17, legal,
     # lifecycle, safety and AL semantics checks all PASS independently.
-    local_seal=(terminal.get("candidate_local_research_pass") is True
-                and (terminal.get("candidate_delivery_safety") or {}).get("status")=="PASS"
-                and all(checks.get(k) is True for k in REQUIRED_LOCAL_CHECKS))
-    full_or_local=terminal.get("full_end_to_end_research_pass") is True or local_seal
+    full_or_local=terminal_research_seal(terminal)
     if not (
         terminal.get("asof_et")==asof
         and terminal.get("compiled_policy_hash")==POLICY
@@ -228,7 +237,7 @@ def snapshot():
         if mc_exact(j,price,price_sha):mcs.append(p.name)
     fail("CURRENT_MC_AUTHORITY_MISSING",len(mcs)==1)
     exact_terminal=(terminal.get("asof_et")==asof
-        and terminal.get("full_end_to_end_research_pass") is True
+        and terminal_research_seal(terminal)
         and terminal.get("compiled_policy_hash")==POLICY)
     fail("CURRENT_TERMINAL_FROZEN_OR_INCOMPLETE",exact_terminal)
     source_shas={key:sha(name) for key,name in {
@@ -324,7 +333,10 @@ def selftest():
     cand["candidate_local_research_pass"]=True
     cand["candidate_delivery_safety"]={"status":"PASS"}
     cand["checks"].update({key:True for key in REQUIRED_LOCAL_CHECKS})
+    assert terminal_research_seal(cand) is True
     assert terminal_chain_exact(cand,"2026-10-08",base_shas,good,"MC_SHA")
+    assert terminal_research_seal({"full_end_to_end_research_pass":False,
+                                   "candidate_local_research_pass":True}) is False
     for edit in (
        lambda x:x.update(candidate_local_research_pass=False),
        lambda x:x["candidate_delivery_safety"].update(status="UNKNOWN"),
