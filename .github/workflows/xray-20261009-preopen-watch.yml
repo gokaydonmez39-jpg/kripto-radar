@@ -1,6 +1,11 @@
 name: XRAY 09-Oct Free Preopen 15-Minute Watch
 on:
   workflow_dispatch:
+  # Trigger on real factory completion even if GitHub cron scheduling is late.
+  workflow_run:
+    workflows: ["XRAY Canonical Current Pre-MC Factory"]
+    types: [completed]
+    branches: [main]
   schedule:
     # 2026-10-09 only (extra year is time-gated below), 00:00-13:15 UTC.
     # Schedule arrival can be delayed by GitHub; no guaranteed wall-clock SLA.
