@@ -1,0 +1,104 @@
+{
+  "schema": "XRAY_ALPACA_CONNECTED_ROOT_231_OPERATIONAL_SHADOW_V1",
+  "authority": "CONNECTED_INTERACTIVE_SHADOW_NOT_GITHUB_RUNNER_OR_C417_PRIMARY",
+  "observed_on": "2026-10-09",
+  "asof_et": "2026-10-08",
+  "history_input_zip_sha256": "3af122476faaf4b017cccf24b8323aa77b3c0e90c6804b36dc6f3a64a0e6f090",
+  "history_input_json_sha256": "87b8f84092cb7fee0c6dcdb94de4385b1e36972e7da86f202ed4e5afa1f482a8",
+  "history_unknown_symbols_sha256": "f50fc7081efa841c80952d704d2f8348470f956f946e1b6a3d845d93a6da739b",
+  "existing_triage_workflow_run": 37951638945,
+  "root_unknown": 231,
+  "provider": "ALPACA_CONNECTED_TOOL_HISTORICAL_SIP_RESEARCH",
+  "requested_window_start_et": "2025-07-01",
+  "requested_window_end_exclusive_et": "2026-10-09",
+  "aggregation_slices": [
+    {
+      "original_reason": "PROVIDER_PARSER_OR_SCHEMA_ERROR",
+      "sample_count": 28,
+      "at_least_260_daily_rows_and_asof": 20,
+      "under_260_with_asof": 7,
+      "no_asof": 1
+    },
+    {
+      "original_reason": "SAME_ASOF_SESSION_MISSING",
+      "sample_count": 53,
+      "at_least_260_daily_rows_and_asof": 28,
+      "under_260_with_asof": 21,
+      "no_asof": 4
+    },
+    {
+      "original_reason": "HISTORY_COVERAGE_AND_EXACT30_PARTITION",
+      "offset": 0,
+      "sample_count": 25,
+      "at_least_260_daily_rows_and_asof": 10,
+      "under_260_with_asof": 15,
+      "no_asof": 0
+    },
+    {
+      "original_reason": "HISTORY_COVERAGE_AND_EXACT30_PARTITION",
+      "offset": 25,
+      "sample_count": 25,
+      "at_least_260_daily_rows_and_asof": 4,
+      "under_260_with_asof": 21,
+      "no_asof": 0
+    },
+    {
+      "original_reason": "HISTORY_COVERAGE_AND_EXACT30_PARTITION",
+      "offset": 50,
+      "sample_count": 25,
+      "at_least_260_daily_rows_and_asof": 10,
+      "under_260_with_asof": 15,
+      "no_asof": 0
+    },
+    {
+      "original_reason": "HISTORY_COVERAGE_AND_EXACT30_PARTITION",
+      "offset": 75,
+      "sample_count": 25,
+      "at_least_260_daily_rows_and_asof": 6,
+      "under_260_with_asof": 19,
+      "no_asof": 0
+    },
+    {
+      "original_reason": "HISTORY_COVERAGE_AND_EXACT30_PARTITION",
+      "offset": 100,
+      "sample_count": 25,
+      "at_least_260_daily_rows_and_asof": 6,
+      "under_260_with_asof": 19,
+      "no_asof": 0
+    },
+    {
+      "original_reason": "HISTORY_COVERAGE_AND_EXACT30_PARTITION",
+      "offset": 125,
+      "sample_count": 25,
+      "at_least_260_daily_rows_and_asof": 6,
+      "under_260_with_asof": 19,
+      "no_asof": 0
+    }
+  ],
+  "totals": {
+    "measured_symbols": 231,
+    "at_least_260_daily_rows_and_asof": 90,
+    "under_260_with_asof": 136,
+    "no_asof": 5,
+    "api_error_symbols": 0
+  },
+  "completed_calendar_260_proven": false,
+  "weekly_52_completed_proven": false,
+  "corporate_actions_and_split_basis_proven": false,
+  "ticker_lineage_PIT_proven": false,
+  "provider_runner_non_display_rights_proven": false,
+  "source_exact_market_data_accession_persisted": false,
+  "meta_integrity_level": "SCOPE_HASH_AND_COUNT_RECONCILIATION_ONLY_NO_INDEPENDENT_REPLAY",
+  "market_data_in_public_artifact": false,
+  "price_volume_ohlcv_in_public_artifact": false,
+  "symbol_level_vendor_derived_rows_in_public_artifact": false,
+  "operational_classification_only": true,
+  "live_root_history_changed": false,
+  "c417_primary_pass_created": 0,
+  "canonical_history_pass_created": 0,
+  "r92_created": 0,
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "notes": "Connected Alpaca tool observations are NOT licensed unattended runner market-data evidence; >=260 bars+ASOF is not a completed-session/52-week proof; short histories do not prove an IPO."
+}
