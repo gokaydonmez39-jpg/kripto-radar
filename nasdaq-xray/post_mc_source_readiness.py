@@ -91,9 +91,46 @@ def summarize(objects: dict, blobs: dict, filenames: list[str], env: dict) -> di
     except (TypeError, ValueError):
         price_count, resolver_count = -1, -2
         blocked = unknown = master_unknown = -1
+    # A matching count never substitutes for exact symbol-set equality.
+    def ordered_symbols(value, expected):
+        return bool(
+            isinstance(value, list) and type(expected) is int and expected >= 0
+            and len(value) == expected and len(set(value)) == expected
+            and value == sorted(value)
+            and all(isinstance(x, str) and x for x in value)
+        )
+    p_pass = price.get("pass_symbols")
+    p_blocked = price.get("blocked_symbols")
+    p_unknown = price.get("unknown_symbols")
+    m_pass = master.get("pass_symbols")
+    m_unknown = master.get("unknown_symbols")
+    r_blocked = resolver.get("price_blocked_symbols")
+    r_unknown = resolver.get("price_unknown_symbols")
+    price_pass_hash = price.get("pass_hash")
+    expected_master_count = master.get("queue_total")
+    try:
+        mc = int(expected_master_count)
+    except (TypeError, ValueError):
+        mc = -1
     scope_exact = bool(
         price_count >= 0 and price_count == resolver_count
         and blocked >= 0 and unknown >= 0 and master_unknown >= 0
+        and ordered_symbols(p_pass, price_count)
+        and ordered_symbols(p_blocked, blocked)
+        and ordered_symbols(p_unknown, unknown)
+        and ordered_symbols(m_pass, mc)
+        and ordered_symbols(m_unknown, master_unknown)
+        and p_blocked == r_blocked and p_unknown == r_unknown
+        and set(p_pass).isdisjoint(p_blocked)
+        and set(p_pass).isdisjoint(p_unknown)
+        and set(p_blocked).isdisjoint(p_unknown)
+        and set(m_pass).isdisjoint(m_unknown)
+        and set(p_pass).issubset(m_pass)
+        and price_pass_hash == hashlib.sha256("\n".join(p_pass).encode()).hexdigest()
+        and resolver.get("source_price_pass_hash") == price_pass_hash
+        and price.get("source_master_queue_hash") == master.get("queue_hash")
+        and resolver.get("queue_hash") == master.get("queue_hash")
+        and price.get("source_master_count") == mc
         and price.get("unknown_never_pass") is True
         and master.get("unknown_never_pass") is True
         and root.get("execution") == "NONE"
@@ -152,15 +189,28 @@ def summarize(objects: dict, blobs: dict, filenames: list[str], env: dict) -> di
 def selftest() -> None:
     from copy import deepcopy
     pblob = "a" * 40
+    passed = ["S%04d" % i for i in range(514)]
+    blocked_syms = ["B%04d" % i for i in range(45)]
+    master_syms = sorted(passed + blocked_syms)
+    master_unknown_syms = ["U%04d" % i for i in range(72)]
+    phash = hashlib.sha256("\n".join(passed).encode()).hexdigest()
+    queue_hash = "q" * 64
     objs = {
         "root": {"asof_et": "2026-10-08", "execution": "NONE", "real_money": "NO-GO"},
         "master": {"asof_et": "2026-10-08", "unknown_never_pass": True,
-                   "unknown_count": 72},
+                   "unknown_count": 72, "unknown_symbols": master_unknown_syms,
+                   "queue_total": len(master_syms), "pass_symbols": master_syms,
+                   "queue_hash": queue_hash},
         "price": {"asof_et": "2026-10-08", "unknown_never_pass": True,
-                  "pass_count": 514},
+                  "pass_count": 514, "pass_symbols": passed, "pass_hash": phash,
+                  "blocked_symbols": blocked_syms, "unknown_symbols": [],
+                  "source_master_count": len(master_syms),
+                  "source_master_queue_hash": queue_hash},
         "resolver": {"asof_et": "2026-10-08", "source_price_blob_sha": pblob,
-                     "source_price_pass_count": 514, "price_blocked_count": 45,
-                     "price_unknown_count": 0},
+                     "source_price_pass_count": 514, "source_price_pass_hash": phash,
+                     "price_blocked_count": 45, "price_blocked_symbols": blocked_syms,
+                     "price_unknown_count": 0, "price_unknown_symbols": [],
+                     "queue_hash": queue_hash},
         "terminal": {"asof_et": "2026-10-07"},
         "policy": {"version": "C4.17",
                    "hard_gates": {"market_cap": ">=2000000000 USD"},
@@ -171,6 +221,20 @@ def selftest() -> None:
     assert base["source_status"] == "CURRENT_MC_BRIDGE_ABSENT"
     assert base["price_resolver_git_blob_exact"] is True
     assert base["price_symbol_local_blocked"] == 45
+    for path, key, bad in [
+        ("price", "pass_hash", "wrong-hash"),
+        ("resolver", "source_price_pass_hash", "wrong-hash"),
+        ("price", "pass_symbols", list(reversed(passed))),
+        ("price", "blocked_symbols", ["DIFFERENT"] * 45),
+        ("resolver", "price_blocked_symbols", []),
+        ("master", "pass_symbols", blocked_syms),
+        ("master", "queue_hash", "incorrect"),
+    ]:
+        tampered = deepcopy(objs)
+        tampered[path][key] = bad
+        assert summarize(tampered, blobs, [], {})["source_status"] == (
+            "SOURCE_LINEAGE_OR_POLICY_NOT_EXACT"
+        ), (path, key)
     assert base["credentials"]["alpaca_history"] == "NOT_PROBED_BY_POST_MC_WORKFLOW"
     assert private_credential_classification({"XRAY_MC_CREDENTIAL_PROBE_ENABLED": "true"})[
         "alpaca_history"] == "CREDENTIAL_PAIR_ABSENT"
