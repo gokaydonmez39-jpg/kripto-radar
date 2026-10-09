@@ -67,18 +67,25 @@ def decide(price:dict,history:dict,root:dict,master:dict,price_blob_sha:str|None
          and sum(v.get("status")=="PASS_HISTORY" for v in results.values())==len(hs)
          and {k for k,v in results.items() if v.get("status")=="PASS_HISTORY"}==set(hs))
     actual_unknown=sum(v.get("status")=="UNKNOWN_HISTORY" for v in results.values()) if isinstance(results,dict) else -1
-    history_authoritative=(current_asof and exact_hist_count and input_set_exact
+    # A source-file's asserted '260/52 proof exact' flag is NOT evidence of
+    # licensed OHLCV, price integrity or point-in-time corporate-action checks.
+    # This guard sees only self-reported canonical JSON and cannot inspect an
+    # independently verified provider grant or actual exchange-session bars.
+    # Keep structural consistency observable but never mint source authority.
+    scope_claim_structurally_consistent=(current_asof and exact_hist_count and input_set_exact
          and bound_price_sha and completed and actual_unknown==0
          and history.get("unknown_count")==0
          and history.get("history_260_52_proof_exact") is True)
-    status="HISTORY_CURRENT_SCOPE_PROVEN" if history_authoritative else "HISTORY_CURRENT_SCOPE_NOT_PROVEN"
+    history_authoritative=False
+    status=("HISTORY_CURRENT_SCOPE_CLAIM_ONLY_SOURCE_UNVERIFIED"
+            if scope_claim_structurally_consistent else "HISTORY_CURRENT_SCOPE_NOT_PROVEN")
     if not current_asof:
         status="HISTORY_STALE_ASOF"
     elif not exact_hist_count or not input_set_exact:
         status="HISTORY_CURRENT_INPUT_SET_UNVERIFIED"
     elif not bound_price_sha:
         status="HISTORY_CURRENT_SOURCE_PRICE_BLOB_UNVERIFIED"
-    elif not history_authoritative:
+    elif not scope_claim_structurally_consistent:
         status="HISTORY_CURRENT_260_52_OR_RESULT_PROOF_UNVERIFIED"
     return {
       "schema":SCHEMA,"status":status,"asof_et":asof,
@@ -86,6 +93,9 @@ def decide(price:dict,history:dict,root:dict,master:dict,price_blob_sha:str|None
       "history_asof_et":h_asof,
       "history_input_count":history.get("input_count"),
       "current_history_authority_proven":history_authoritative,
+      "scope_claim_structurally_consistent":scope_claim_structurally_consistent,
+      "source_entitlement_independently_verified":False,
+      "actual_260_52_ohlcv_independently_verified":False,
       "history_input_set_equals_price_pass":input_set_exact,
       "history_source_price_blob_exact":bound_price_sha,
       "history_output_pass_equals_price_pass":exact_hist_scope,
@@ -136,11 +146,20 @@ def selftest():
     # cannot make a current HISTORY result authoritative.
     assert decide(p,h,r,m,price_blob_sha="a"*40)["current_history_authority_proven"] is False, "UNLICENSED_HISTORY_FALSE_POSITIVE"
     good=decide(p,h,r,m,price_blob_sha="a"*40)
-    assert good["status"]=="HISTORY_CURRENT_SCOPE_PROVEN"
-    assert good["current_history_authority_proven"] is True
+    assert good["status"]=="HISTORY_CURRENT_SCOPE_CLAIM_ONLY_SOURCE_UNVERIFIED"
+    assert good["scope_claim_structurally_consistent"] is True
+    assert good["current_history_authority_proven"] is False
+    # Even self-asserted source rights cannot become independent verification.
+    claimed=copy.deepcopy(h)
+    claimed["source_entitlement_proven"]=True
+    claimed["source_grant_sha256"]="b"*64
+    asserted=decide(p,claimed,r,m,price_blob_sha="a"*40)
+    assert asserted["scope_claim_structurally_consistent"] is True
+    assert asserted["current_history_authority_proven"] is False
+    assert asserted["source_entitlement_independently_verified"] is False
     h["history_260_52_proof_exact"]=False
     assert decide(p,h,r,m,price_blob_sha="a"*40)["status"]=="HISTORY_CURRENT_260_52_OR_RESULT_PROOF_UNVERIFIED"
-    print("XRAY_HISTORY_EPOCH_SCOPE_SELFTEST=PASS_STALE_5_NEGATIVE_1_ATTAINABLE_POSITIVE")
+    print("XRAY_HISTORY_EPOCH_SCOPE_SELFTEST=PASS_STALE_5_NEGATIVE_2_UNLICENSED_CLAIMS_BLOCKED_NO_SOURCE_AUTHORITY")
 
 def main():
     parser=argparse.ArgumentParser()
