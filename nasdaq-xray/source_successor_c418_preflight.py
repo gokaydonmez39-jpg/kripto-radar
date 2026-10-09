@@ -117,6 +117,14 @@ def selftest(p):
         assert result["can_register_R92"] is False
     z=copy.deepcopy(p);z["numeric_thresholds"]["min_rr_basic"]=1
     assert inspect(z)["status"]=="REJECTED_INVALID_POLICY"
+    # Source-role escalation must not be silently accepted by a proposal.
+    for name in REQUIRED_SOURCE_NAMES:
+        z=copy.deepcopy(p)
+        row=next(v for v in z["sources"] if v["name"]==name)
+        row["promotion"]="AUTHORIZED_PRIMARY"
+        result=inspect(z)
+        assert result["status"]=="REJECTED_INVALID_POLICY",(
+            "UNAPPROVED_SOURCE_PROMOTION_ACCEPTED",name,result)
     z=copy.deepcopy(p);z["numeric_thresholds"]["min_market_cap_usd"]=100000000
     assert inspect(z)["status"]=="REJECTED_INVALID_POLICY"
     assert inspect({})["status"]=="REJECTED_INVALID_POLICY"
