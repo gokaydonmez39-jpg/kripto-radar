@@ -65,11 +65,11 @@ def accession_acceptance_index(sub: dict) -> dict:
         idx[acc]={"form":form,"filed":filed,"accepted_at":stamp}
     return idx
 
-def select_shares(facts:dict,sub:dict,asof:str) -> dict:
+def select_shares(facts:dict,sub:dict,asof:str,expected_cik:str=CIK) -> dict:
     cutoff=dt.date.fromisoformat(asof)
-    if str(facts.get("cik") or "").lstrip("0")!=CIK.lstrip("0"):
+    if str(facts.get("cik") or "").lstrip("0")!=expected_cik.lstrip("0"):
         return {"status":"UNKNOWN","reason":"SEC_COMPANYFACTS_CIK_MISMATCH"}
-    if str(sub.get("cik") or "").lstrip("0")!=CIK.lstrip("0"):
+    if str(sub.get("cik") or "").lstrip("0")!=expected_cik.lstrip("0"):
         return {"status":"UNKNOWN","reason":"SEC_SUBMISSIONS_CIK_MISMATCH"}
     concept=((((facts.get("facts") or {}).get("dei") or {})
               .get("EntityCommonStockSharesOutstanding") or {})
