@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/e2e_production_readiness.py"
+      - "nasdaq-xray/source_epoch_freshness_guard.py"
       - ".github/workflows/xray-e2e-production-readiness.yml"
   workflow_run:
     workflows:
@@ -34,6 +35,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Install pinned official exchange session calendar
+        run: python -m pip install --disable-pip-version-check "pandas_market_calendars==5.4.0"
       - name: Compile and regression-test exact C4.17 binding rules
         run: |
           python -m py_compile nasdaq-xray/e2e_production_readiness.py
@@ -49,6 +52,11 @@ jobs:
           assert o["execution"]=="NONE" and o["real_money"]=="NO-GO"
           assert o["alpha_authority"] is False
           assert isinstance(o["ready_for_current_research_signal"],bool)
+          if not o["official_nasdaq_session_freshness_attested"]:
+              assert "SOURCE_EPOCH_NOT_LATEST_COMPLETED_SESSION" in o["blockers"]
+              assert o["ready_for_current_research_signal"] is False
+              assert o["full_e2e_research_attested"] is False
+          print("XRAY_OFFICIAL_SESSION_LAGS="+json.dumps(o["source_session_lags"],sort_keys=True))
           # Future proven registered candidates must not be rejected solely
           # because an old test asserted that readiness is always False.
           if o["ready_for_current_research_signal"]:
