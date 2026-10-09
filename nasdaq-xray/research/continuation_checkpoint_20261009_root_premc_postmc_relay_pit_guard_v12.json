@@ -1,0 +1,136 @@
+{
+  "schema": "XRAY_20261009_ROOT_PREMC_POSTMC_RELAY_PIT_GUARD_V12",
+  "repo": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "last_observation_utc": "2026-10-09T08:52:20Z",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "mode": "RESEARCH_ONLY_MANUAL_DECISION",
+  "initial_problem": "Canonical technical terminal frozen on 2026-10-07 while independent authoritative root/master/PRICE sources are 2026-10-08",
+  "confirmed_causes": [
+    "Next-day Pre-MC identity replay attempted to re-read live Nasdaq directory dated 2026-10-09 as if PIT dated 2026-10-08; caused live 37906434421 failure NASDAQ_DIRECTORY_NOT_EXACT_ASOF",
+    "Root's [skip ci] checkpoint and nested workflow_run chains alone gave no guaranteed immediate Pre-MC / Post-MC continuation",
+    "High-frequency Pre-MC push/workflow triggers cancelled active writer when cancel-in-progress=true",
+    "Real Post-MC source authority not available: MC_AUTHORITY_MEASUREMENT_REQUIRED; existing resolver full-scope handoff was present"
+  ],
+  "fixes": [
+    {
+      "commit": "f63e5a2d8d767e8ff24964eb6686bb4ac4b86ac5",
+      "path": "nasdaq-xray/github_native_stage_relay.py",
+      "effect": "bound exact-ASOF active suppress and main SHA double-read before Actions dispatch"
+    },
+    {
+      "commit": "d73197137a1f772d54778ec2c3fc92f5d5510310",
+      "path": ".github/workflows/nasdaq-xray-daily.yml",
+      "effect": "root checkpoint explicitly dispatches Pre-MC with actions write and operational witness"
+    },
+    {
+      "commit": "8058653ea4d3dfd8c0daedea48235faf5e4106a8",
+      "path": ".github/workflows/xray-native-root-stage-relay-selftest.yml",
+      "effect": "prove terminal 7/8 date gap with no false candidate"
+    },
+    {
+      "commit": "17a3cd82d1ab9c3fbb35f0b5758c3595ff1696ee",
+      "path": ".github/workflows/xray-native-stage-relay-live.yml",
+      "effect": "real independent Pre-MC relay proof"
+    },
+    {
+      "commit": "6889b505b311f803b968d25f3a37a96480404b68",
+      "path": "nasdaq-xray/pre_mc_identity_replay_session_guard.py",
+      "effect": "PIT date guard stops next-day current Nasdaq listing rewriting prior session"
+    },
+    {
+      "commit": "006eb8918de420e583de63ef2c39e3a34a956034",
+      "path": ".github/workflows/xray-canonical-current-pre-mc.yml",
+      "effect": "defer impossible historical live identity replay, keep frozen legitimate same-ASOF PRICE and master"
+    },
+    {
+      "commit": "bf468f3743ca371404a63322e420f9d3542b7e77",
+      "path": ".github/workflows/xray-canonical-current-post-mc.yml",
+      "effect": "actual missing MC authority gives visible failed release, not green no-op"
+    },
+    {
+      "commit": "7fdb2ab57f32c2954f837412d9736399ef509dea",
+      "path": "nasdaq-xray/github_native_stage_relay.py",
+      "effect": "explicit authorized post-MC dispatch target, same strict source guard"
+    },
+    {
+      "commit": "2bcecd514f335af5c86e1308de476e802d6cc4c4",
+      "path": ".github/workflows/xray-canonical-current-pre-mc.yml",
+      "effect": "direct secure Pre-MC to Post-MC dispatch independent of nested workflow_run"
+    },
+    {
+      "commit": "d13a4f3d389e5c69fdbd33da3f6360ba7aad0880",
+      "path": ".github/workflows/xray-canonical-current-pre-mc.yml",
+      "effect": "do not cancel long-running Pre-MC upon root/watchdog triggers"
+    },
+    {
+      "commit": "f3f914781bfc3900cbd3fdeeceb45bc4afcf597c",
+      "path": ".github/workflows/xray-canonical-current-pre-mc.yml",
+      "effect": "remove duplicate workflow_run wakeup; explicit dispatch plus schedule"
+    },
+    {
+      "commit": "651dce85ea518158cf8c0d990111637d54edf4a9",
+      "path": ".github/workflows/xray-canonical-current-post-mc.yml",
+      "effect": "remove redundant pre-MC workflow_run wakeup; explicit dispatch plus schedule"
+    }
+  ],
+  "live_actions": {
+    "root_to_premc_relay": {
+      "id": 37906415069,
+      "result": "SUCCESS_DISPATCH_ACCEPTED"
+    },
+    "premc_direct": {
+      "id": 37906434421,
+      "result": "FAILURE_DIAGNOSED_NEXT_DAY_DIRECTORY"
+    },
+    "premc_pit_guard": {
+      "id": 37907012061,
+      "result": "SUCCESS_DEFER_IDENTITY_REPLAY_UNCHANGED_FROZEN_SOURCE"
+    },
+    "postmc_mc_failure": {
+      "id": 37906926620,
+      "result": "FAILURE_AS_INTENDED_CURRENT_PRIMARY_MC_MISSING"
+    },
+    "premc_to_postmc_relay": {
+      "id": 37907381210,
+      "result": "SUCCESS_POST_MC_DISPATCH_ACCEPTED"
+    },
+    "postmc_direct_live": {
+      "id": 37907464334,
+      "result": "FAILURE_AS_INTENDED_CURRENT_PRIMARY_MC_MISSING"
+    },
+    "premc_new_concurrency": {
+      "id": 37907576023,
+      "result": "SUCCESS_POST_MC_DISPATCH_ACCEPTED"
+    }
+  },
+  "latest_observed": {
+    "root_asof": "2026-10-08",
+    "root_history_unknown": 231,
+    "root_history_status": "PARTIAL_HISTORY",
+    "price_asof": "2026-10-08",
+    "price_pass": 514,
+    "price_blocked": 45,
+    "master_identity_unknown": 72,
+    "canonical_terminal_asof": "2026-10-07",
+    "canonical_terminal": "PARTIAL_UNKNOWN",
+    "real_confirmed_r92": 0,
+    "real_device_delivery_receipt": false,
+    "mc_primary_current": "UNPROVEN"
+  },
+  "remaining_blockers": [
+    "Source-authorized same-ASOF C4.17 PRIMARY MC is absent; SEC shadow and current market-cap lookups cannot be upgraded without legal/time/CA/class proof",
+    "GitHub Alpaca read-only historical SIP secret integration not configured",
+    "231 HISTORY UNKNOWN still in root; 45 connected SIP observations are shadow only, not canonical",
+    "Master PIT SEC 497 unresolved identity re-discovery cannot use next-day directory; require genuine PIT witness for Oct8",
+    "Terminal 8-Oct final candidate-local weekly/event/risk/RR must be built after MC source authority",
+    "Real AL registered candidate and phone delivery receipt not proven"
+  ],
+  "release": "RESEARCH_PRODUCTION_NO_GO",
+  "prohibited": "No threshold loosening, fake bars, shadow MC PRIMARY, stock orders, trading, broker account permissions or invented device receipts",
+  "note": "Historical checkpoint; always reread live GitHub head, Action jobs and committed current JSON source SHA."
+}
