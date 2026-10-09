@@ -88,12 +88,12 @@ def main():
             if "CIK0002128462.json" in url:
                 return {
                   "tickers":["TLAC"],"sic":"6770","sicDescription":"Blank Checks",
-                  "filings":{"recent":{"filingDate":["2026-09-30","2026-10-07"]}},
+                  "filings":{"recent":{"filingDate":["2026-09-30","2026-10-07"],"acceptanceDateTime":["2026-09-30T18:10:00Z","2026-10-07T18:10:00Z"]}},
                 }
             if "CIK0001234567.json" in url:
                 return {
                   "tickers":["OPER"],"sic":"3571","sicDescription":"Electronic Computers",
-                  "filings":{"recent":{"filingDate":["2026-09-29"]}},
+                  "filings":{"recent":{"filingDate":["2026-09-29"],"acceptanceDateTime":["2026-09-29T18:10:00Z"]}},
                 }
             raise AssertionError("unexpected URL "+url)
         m.load_json_url=fake_load
@@ -156,6 +156,16 @@ def main():
             m.pinned_github_sec_cik_mirror=original_mirror
         m.load_json_url=fake_load
         m.load_json_url=fake_load
+        # Same-day filings after the 16:00 New York regular close are
+        # future information and must never become historical identity proof.
+        clock_probe={"filings":{"recent":{
+            "filingDate":["2026-10-06","2026-09-30"],
+            "acceptanceDateTime":["2026-10-06T20:01:00Z","2026-09-30T18:00:00Z"]}}}
+        assert m.latest_filing_date(clock_probe,"2026-10-06")=="2026-09-30"
+        clock_probe["filings"]["recent"]["acceptanceDateTime"][0]="2026-10-06T19:59:00Z"
+        assert m.latest_filing_date(clock_probe,"2026-10-06")=="2026-10-06"
+        clock_probe["filings"]["recent"]["acceptanceDateTime"]=[]
+        assert m.latest_filing_date(clock_probe,"2026-10-06") is None
         blank_row=m.sec_current_classification("TLAC","2026-10-06",cmap["TLAC"])
         assert blank_row and blank_row["is_blank_check"] is True and blank_row["sic"]==6770
         assert blank_row["evidence_date"]=="2026-09-30"
@@ -169,7 +179,7 @@ def main():
         def missing_sic(url):
             if "CIK0001234567.json" in url:
                 return {"tickers":["OPER"],"sic":None,"sicDescription":"",
-                        "filings":{"recent":{"filingDate":["2026-09-29"]}}}
+                        "filings":{"recent":{"filingDate":["2026-09-29"],"acceptanceDateTime":["2026-09-29T18:10:00Z"]}}}
             return fake_load(url)
         m.load_json_url=missing_sic
         assert m.sec_current_classification("OPER","2026-10-06",cmap["OPER"]) is None
@@ -178,7 +188,7 @@ def main():
         def contradictory_sic(url):
             if "CIK0001234567.json" in url:
                 return {"tickers":["OPER"],"sic":"3571","sicDescription":"Blank Checks",
-                        "filings":{"recent":{"filingDate":["2026-09-29"]}}}
+                        "filings":{"recent":{"filingDate":["2026-09-29"],"acceptanceDateTime":["2026-09-29T18:10:00Z"]}}}
             return fake_load(url)
         m.load_json_url=contradictory_sic
         assert m.sec_current_classification("OPER","2026-10-06",cmap["OPER"]) is None
