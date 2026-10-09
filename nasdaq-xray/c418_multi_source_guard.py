@@ -85,12 +85,23 @@ def policy_is_frozen(p):
         and p.get("numeric_thresholds",{}).get("min_market_cap_usd")==2000000000
     )
 
+def verified_upstream_evidence(attestation):
+    """Require independent, cryptographically verifiable provider lineage.
+
+    There is currently no independently audited and pinned trust root for
+    issuer-share-class market-cap lineage in the repo. A vendor-provided
+    'upstream_root' string or an ordinary SHA does not verify independence.
+    Fail closed until such a trust root and signature verification exist.
+    """
+    return False
+
 def blocked(reasons,observed=0):
     return {
         "schema":REPORT,"status":"DATA_BLOCKED",
         "reason_codes":sorted(set(reasons)),
         "observed_source_count":observed,
         "independent_mc_source_count":0,
+        "declared_distinct_upstream_roots_count":0,
         "diagnostic_mc_agreement":False,
         "production_authority":False,"can_create_PRIMARY":False,
         "can_register_R92":False,"execution":"NONE","real_money":"NO-GO",
@@ -199,6 +210,9 @@ def validate(evidence, grants, policy, profile):
     distinct={r["upstream_root"] for r in groups["MC"]}
     if len(groups["MC"])>=2 and len(distinct)<2:
         reasons.append("MC_SHARED_UPSTREAM_NOT_INDEPENDENT")
+    if len(groups["MC"])>=2 and len(distinct)>=2 and not verified_upstream_evidence(
+            evidence.get("independence_attestation")):
+        reasons.append("UPSTREAM_INDEPENDENCE_UNATTESTED")
     agreement=False
     if len(groups["MC"])>=2 and len(distinct)>=2:
         vals=[r["market_cap_usd"] for r in groups["MC"]]
@@ -207,7 +221,9 @@ def validate(evidence, grants, policy, profile):
         if not agreement: reasons.append("MC_DIAGNOSTIC_CROSSCHECK_DISAGREEMENT")
     if reasons:
         result=blocked(reasons,len(obs))
-        result["independent_mc_source_count"]=len(distinct)
+        result["declared_distinct_upstream_roots_count"]=len(distinct)
+        # Unverified strings must not be reported as independently proven MC
+        # sources; keep verified count at zero.
         return result
     return {
         "schema":REPORT,
@@ -257,7 +273,10 @@ def _selftest_impl(policy,profile,test_price_sha):
                      output_delivery=True)
            for name in ("Bigdata","Massive","Alpaca")}
     ok=validate(e,grant,policy,profile)
-    assert ok["status"]=="SHADOW_CROSSCHECK_COMPLETE_NOT_PRIMARY",ok
+    assert ok["status"]=="DATA_BLOCKED",ok
+    assert "UPSTREAM_INDEPENDENCE_UNATTESTED" in ok["reason_codes"],ok
+    assert ok["independent_mc_source_count"]==0
+    assert ok["declared_distinct_upstream_roots_count"]==2
     assert ok["can_register_R92"] is False and ok["can_create_PRIMARY"] is False
     failures=[
        ("LICENSE",lambda a,g:g["Alpaca"].update(non_display=False),
@@ -297,7 +316,7 @@ def _selftest_impl(policy,profile,test_price_sha):
     tampered=copy.deepcopy(profile)
     tampered["sources"]["Massive"]["role"]="PRIMARY"
     assert "PROFILE_ROLES_TAMPERED" in validate(e,grant,policy,tampered)["reason_codes"]
-    print("XRAY_C418_MULTI_SOURCE_SELFTEST=PASS_ADVISORY_POSITIVE_14_NEGATIVE_NO_PRIMARY_NO_R92")
+    print("XRAY_C418_MULTI_SOURCE_SELFTEST=PASS_STRUCTURAL_SOURCE_COMPARISON_REQUIRES_ATTESTATION_14_NEGATIVE_NO_PRIMARY_NO_R92")
 
 def selftest(policy,profile):
     global ROOT
