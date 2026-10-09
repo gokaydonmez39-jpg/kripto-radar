@@ -1,0 +1,146 @@
+{
+  "schema": "XRAY_C417_CANONICAL_CONTINUATION_20261010_PUBLICATION_RETRY_MC_TRUTH_V40",
+  "auth": "LIVE_GITHUB_MAIN_AND_VENDOR_TERMS_OVERRIDE_CHECKPOINT",
+  "time_scope_trt": "2026-10-10",
+  "repo": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "verified_code_head": "50207e132fcaed4a37ccbf78305aab4dab291d1d",
+  "predecessor": "nasdaq-xray/research/continuation_checkpoint_20261010_twelve_full_private_resume_v39.json",
+  "predecessor_blob_sha": "a46de4d2205e29b44b992408c9e20f15954ef715",
+  "policy": {
+    "effective": "C4.17",
+    "control": "C4.27",
+    "c418": "PROPOSED_INACTIVE",
+    "mode": "RESEARCH_ONLY_MANUAL_DECISION",
+    "execution": "NONE",
+    "real_money": "NO-GO",
+    "unknown_not_pass": true,
+    "broker_account_g9_required": false,
+    "alpha_thresholds_relaxed": false,
+    "entry_to_stop_price_risk_pct_max": 8,
+    "minimum_rr_basic_severe": {
+      "A": [
+        1.5,
+        1.1
+      ],
+      "B": [
+        2,
+        1.5
+      ],
+      "C": [
+        2,
+        1.5
+      ],
+      "D": [
+        2,
+        1.5
+      ]
+    }
+  },
+  "audit_findings": [
+    {
+      "severity": "HIGH",
+      "name": "Twelve Data U.S. EOD next trading-day release window omitted",
+      "vendor_official_source": "https://support.twelvedata.com/en/articles/9935903-us-equities-market-data",
+      "official_statement": "Historical and end-of-day US equities become available only AFTER 12:00 AM Eastern Time on the next trading day after each close; provider claims 100% US consolidated total volume on Basic, not independently proven on actual symbol.",
+      "risk": "A Friday source epoch was queried over the weekend before valid vendor release; missing latest completed ASOF bars could be accepted and recorded as fetched permanently.",
+      "red_commit": "e33a1753746e7b914dbc2b92af7c4946b07d867e",
+      "red_run": 37995967113,
+      "red_failure": "AssertionError: MISSING_LATEST_EOD_SILENTLY_STORED in Twelve synthetic provider fixture",
+      "initial_fix_commit": "125afb5e95e8d67cbc0a234e7cb3b852321a3916",
+      "initial_green_red_run": 37996031827,
+      "initial_green_failure": "Selftest-only Python local datetime name shadow; unbound closure; not a market or vendor failure.",
+      "final_fix_commit": "e28b9a380c7b3008ecd72fd2081e34d7c7c79fbe",
+      "final_green_run": 37996115544,
+      "final_green_result": "SUCCESS synthetic midnight ET next trading day embargo, provider missing latest ASOF retry, stale master/price source blocks all calls, quota and encrypted artifact tests; zero source/data authority.",
+      "changed_file": "nasdaq-xray/twelve_data_history_resume.py",
+      "safety": "Never make an as-of request against stale canonical PRICE; even after provider announced publication time no data validity claimed; vendor response must contain official last completed ASOF OHLCV."
+    },
+    {
+      "severity": "HIGH",
+      "name": "Twelve private 515 scope head-of-line blocker",
+      "risk": "An invalid bar for one symbol caused break in 515-symbol loop; all later tickers starved each hourly invocation even when API entitlement exists.",
+      "red_commit": "291fbd22f584f900f370f6cc9905a13ed45c31e0",
+      "red_run": 37996239441,
+      "red_failure": "AssertionError: ONE_BAD_SYMBOL_STARVED_ALL_OTHER_NAMES",
+      "fix_commit": "fff3312e2c1f66695407352f0565ba912d060545",
+      "green_run": 37996301558,
+      "green_result": "SUCCESS synthetic one corrupted ticker quarantined, another completed and persisted; first then retried and recovered; quota and full cohort synthetic tests still passed",
+      "retry_limit_per_symbol": 3,
+      "persistent_only_encrypted_checkpoint": true,
+      "global_entitlement_rate_http_transport_failures": "STOP_FETCH",
+      "single_symbol_invalid_ohlcv_missing_asof": "BOUNDED_RETRY_THEN_QUARANTINE_NEVER_PASS",
+      "candidate_or_mc_authority_created": false
+    },
+    {
+      "severity": "SOURCE_FEASIBILITY",
+      "name": "Twelve /market_cap is Ultra tier only, not Basic",
+      "vendor_official_source": "https://twelvedata.com/docs",
+      "vendor_market_cap_api_credit_cost": 5,
+      "vendor_market_cap_minimum_individual_tier": "Ultra",
+      "red_or_negative_test": "Twelve free HISTORY preflight asserts Basic cannot be MC PRIMARY source",
+      "fix_commit": "50207e132fcaed4a37ccbf78305aab4dab291d1d",
+      "green_run": 37996396225,
+      "green_result": "SUCCESS `XRAY_TWELVE_BASIC_PRIMARY_MC=NOT_AVAILABLE_ULTRA_ONLY`, EOD sample still BLOCKED_NO_KEY",
+      "mc_source_alternative_required": true
+    }
+  ],
+  "live_scope": {
+    "session_last_completed_nasdaq": "2026-10-09",
+    "canonical_master_asof": "2026-10-08",
+    "canonical_price_asof": "2026-10-08",
+    "terminal_asof": "2026-10-07",
+    "master_identity_pass": 3183,
+    "master_identity_unknown": 72,
+    "master_unknown_reason": "ALL_72_SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
+    "master_unknown_never_pass": true,
+    "PRICE_PASS_514": 514,
+    "price_blocked_30_bar": 45,
+    "Twelve_expected_scope_with_benchmark": 515,
+    "Twelve_real_live_vendor_history": 0,
+    "Twelve_latest_worker_health": "BLOCKED_KEY_OR_UNVERIFIED_NONDISPLAY_CACHE_RIGHTS",
+    "Twelve_latest_worker_calls": 0,
+    "Twelve_real_260x52_completed": false,
+    "current_C417_PRIMARY_MC_pass": 0,
+    "current_registered_R92_AL": 0,
+    "phone_receipt_attested": false,
+    "forward_test_60_sessions_done": false,
+    "release": "NO_GO"
+  },
+  "zero_cost_math": {
+    "Twelve_basic_credits_per_minute": 8,
+    "Twelve_basic_credits_per_day": 800,
+    "one_symbol_day_history_credits": 1,
+    "current_history_plus_QQQ_initial_calls": 515,
+    "full_NASDAQ_research_universe_reference": 3401,
+    "single_basic_key_full_universe_same_day": "IMPOSSIBLE_3401_GT_800",
+    "single_basic_key_full_universe_min_days_initial": 5,
+    "note": "No promise daily 3401 refresh from one free key; user permits delayed data, but current session freshness gate for all 3401 cannot be proven with 800/day; alternative authorized batch feed required."
+  },
+  "release_blockers": [
+    "CURRENT_MC_AUTHORITY_MISSING",
+    "CURRENT_TERMINAL_FROZEN_OR_INCOMPLETE",
+    "IDENTITY_PARTITION_INCOMPLETE",
+    "NOTIFICATION_DEVICE_RECEIPT_NOT_PROVEN",
+    "PRICE_BLOCKED_30_SESSION_BARS",
+    "SOURCE_EPOCH_NOT_LATEST_COMPLETED_SESSION",
+    "TERMINAL_CURRENT_MC_CHAIN_NOT_PROVEN"
+  ],
+  "remaining_external_authority": [
+    "Owner must document lawful Twelve Basic internal non-display history use and 260-session privately encrypted persistence/retention plus derivative candidate-alert rights; establish provider key only in GitHub Secrets, not public.",
+    "Vendor legal acceptance / sample actual EOD 100%-venue volume and PIT shares/splits not independently verified; under UNKNOWN != PASS no source-to-alpha promotion.",
+    "Independent, zero-dollar, as-of-current PRIMARY market cap source remains MISSING; Twelve /market_cap is Ultra only.",
+    "51? NEVER report 515 synthetic validated records as actual 515 vendor real bars.",
+    "Need same-ASOF full universe, MC, HISTORY, weekly, regime, earnings, legal, risk RR, final, real R92 and actual phone receipt evidence."
+  ],
+  "evidence_rules": "Source code and GitHub CI test PASS only asserts algorithm integrity. Current real license/key missing, actual vendor requests zero. No synthetic or staged data can promote actual HISTORY/MC/AL GO.",
+  "git_provenance": {
+    "code_head": "50207e132fcaed4a37ccbf78305aab4dab291d1d",
+    "previous_checkpoint_v39_immutable": true,
+    "no_vendor_bars_public": true,
+    "no_credentials_public": true,
+    "no_automations_created": true,
+    "no_execution": true
+  },
+  "status": "ENGINEERING_TESTS_GREEN_PRODUCTION_NO_GO"
+}
