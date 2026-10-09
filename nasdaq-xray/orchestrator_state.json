@@ -1,30 +1,30 @@
 {
   "account_gate": "UNKNOWN_NOT_CONFIGURED",
-  "asof_et": "2026-10-08",
-  "cursor": 3183,
+  "asof_et": "2026-10-09",
+  "cursor": 3184,
   "downstream_invalidation": {
     "deep_pre_r1_shadow.json": {
-      "asof_et": "2026-10-08",
+      "asof_et": "2026-10-09",
       "schema": "XRAY_DEEP_PRE_R1_SHADOW_V1",
       "status": "WAITING_UPSTREAM_HISTORY"
     },
     "mc_zero_key_state.json": {
-      "asof_et": "2026-10-08",
+      "asof_et": "2026-10-09",
       "schema": "XRAY_MC_ZERO_KEY_V3",
       "status": "WAITING_UPSTREAM_HISTORY"
     },
     "production_core_state.json": {
-      "asof_et": "2026-10-08",
+      "asof_et": "2026-10-09",
       "schema": "XRAY_EXTERNAL_ZERO_KEY_CORE_V1",
       "status": "WAITING_UPSTREAM_HISTORY"
     },
     "regime_breadth_shadow.json": {
-      "asof_et": "2026-10-08",
+      "asof_et": "2026-10-09",
       "schema": "XRAY_REGIME_BREADTH_SHADOW_V1",
       "status": "WAITING_UPSTREAM_HISTORY"
     },
     "stage1_shadow.json": {
-      "asof_et": "2026-10-08",
+      "asof_et": "2026-10-09",
       "schema": "XRAY_STAGE1_SHADOW_V1",
       "status": "WAITING_UPSTREAM_HISTORY"
     }
@@ -35,12 +35,12 @@
   "history_retry_reason": "NO_RETRYABLE_HISTORY_WORK_REMAINS",
   "history_retryable": false,
   "pending_retry": 0,
-  "queue_hash": "b8d6f3af2ca0eb804eb13ba180df104446ec20cc453c8d28246762b1aaf8ad4d",
-  "queue_total": 3183,
+  "queue_hash": "5520f9c2c16c484f75581f84a17fc6ec23e195665d9aed17351a852ca3981fef",
+  "queue_total": 3184,
   "real_money": "NO-GO",
   "schema": "XRAY_ORCHESTRATOR_V1",
   "status": "PARTIAL_HISTORY",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 231,
-  "updated_at_utc": "2026-10-09T19:53:09.309710+00:00"
+  "unknown_count": 3184,
+  "updated_at_utc": "2026-10-09T21:14:04.420010+00:00"
 }
