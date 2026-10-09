@@ -1,0 +1,59 @@
+{
+  "schema": "XRAY_C418_MULTI_SOURCE_PROFILE_V1",
+  "predecessor": "C4.17",
+  "candidate_version": "C4.18-SOURCE-SUCCESSOR-PROPOSAL",
+  "effective_policy": "C4.17",
+  "activation": "INACTIVE_RESEARCH_ONLY",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "sources": {
+    "SEC_EDGAR": {
+      "role": "OFFICIAL_PIT_IDENTITY",
+      "production_eligible": false,
+      "use": "CIK issuer filings XBRL share-class review; no market close data",
+      "source": "https://www.sec.gov/search-filings/edgar-application-programming-interfaces"
+    },
+    "NASDAQ": {
+      "role": "EXCHANGE_IDENTITY",
+      "production_eligible": false,
+      "use": "listing venue ticker share-class and corporate events verification"
+    },
+    "Massive": {
+      "role": "SHADOW_MC_OR_PRICE",
+      "production_eligible": false,
+      "use": "date-scoped MC and price research; unattended non-display use and derived signals NOT licensed by ordinary personal terms",
+      "terms": "https://massive.com/legal/market-data-terms-of-service"
+    },
+    "Alpaca": {
+      "role": "SHADOW_HISTORY_OR_PRICE",
+      "production_eligible": false,
+      "use": "history dates-only shadow, no automated runner entitlement attested"
+    },
+    "Bigdata": {
+      "role": "BLOCKED_EXISTING_PRIMARY",
+      "production_eligible": false,
+      "use": "C4.17 source, outOfCredits; no paid topup"
+    },
+    "Yahoo_AKShare_Eastmoney": {
+      "role": "UNLICENSED_SHADOW",
+      "production_eligible": false,
+      "use": "best effort source with independent rights UNKNOWN"
+    }
+  },
+  "independent_sources_min_for_mc_diagnostic": 2,
+  "diagnostic_max_relative_spread": 0.1,
+  "source_lineage_independence": "upstream_root distinct; counts alone do not establish legal or feed independence",
+  "license_requirements": [
+    "unattended_runner",
+    "non_display",
+    "derived_signals",
+    "internal_retention",
+    "output_delivery"
+  ],
+  "evidence_persistence": "NO_VENDOR_RAW_DATA_IN_PUBLIC_GITHUB",
+  "provider_license_required": "EXTERNAL_SIGNED_GRANTS_NOT_YET_OBTAINED",
+  "production_promotion_authority": false,
+  "can_register_R92": false,
+  "rule": "Advisory source comparison is NOT C4.18 activation; fail closed if absent rights / PIT or disagreement."
+}
