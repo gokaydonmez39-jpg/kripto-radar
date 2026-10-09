@@ -25,14 +25,60 @@ FINAL_WORKFLOW="xray-canonical-current-final.yml"
 def _dt(value):
     if not value:
         return None
-    return datetime.fromisoformat(str(value).replace("Z","+00:00")).astimezone(timezone.utc)
+    t=datetime.fromisoformat(str(value).replace("Z","+00:00"))
+    if t.tzinfo is None:
+        raise ValueError("DELIVERY_NAIVE_TIMESTAMP_FORBIDDEN")
+    return t.astimezone(timezone.utc)
 
 def _successful_runs(runs):
     return [r for r in runs if r.get("status")=="completed" and r.get("conclusion")=="success"]
 
-def _active_runs(runs):
-    # GitHub may report queued, pending, waiting, requested or in_progress.
-    return [r for r in runs if r.get("status")!="completed"]
+ACTIVE={"queued","in_progress","pending","waiting","requested"}
+COMPLETED="completed"
+
+
+def classify_active(now_utc, runs, grace_seconds):
+    """Suppress genuinely active runs; expire zombies only with newer SUCCESS.
+
+    An old queued job is not evidence of ongoing recovery forever. However,
+    expiry alone cannot authorize signal delivery: require a completed SUCCESS
+    created after that orphan, or fail with a distinct unrecovered fault.
+    Unknown statuses, impossible clocks and malformed dates remain fail-closed.
+    """
+    if type(grace_seconds) is not int or grace_seconds <= 0:
+        return "ACTIVE_GRACE_INVALID"
+    successes=_successful_runs(runs)
+    for run in runs:
+        status=run.get("status")
+        if status==COMPLETED:
+            continue
+        if status not in ACTIVE:
+            return "UNKNOWN_ACTIONS_RUN_STATUS"
+        try:
+            started=_dt(run.get("created_at"))
+            if started is None:
+                return "ACTION_RUN_TIME_MISSING"
+            age=(now_utc-started).total_seconds()
+        except (ValueError,TypeError,OverflowError):
+            return "ACTION_RUN_TIME_INVALID"
+        if age < -60:
+            return "ACTION_RUN_FROM_FUTURE"
+        if age <= grace_seconds:
+            return "ACTIVE"
+        # A later completion must have been started after the orphan.
+        # A different, older run succeeding cannot cover a newer zombie.
+        recovered=False
+        for success in successes:
+            try:
+                succ_started=_dt(success.get("created_at"))
+            except (ValueError,TypeError,OverflowError):
+                return "SUCCESS_RUN_TIME_INVALID"
+            if succ_started is not None and succ_started > started:
+                recovered=True
+                break
+        if not recovered:
+            return "ORPHAN_UNRECOVERED"
+    return "CLEAR"
 
 def evaluate_readiness(now_utc,contract,root_kick,final_kick,root_runs,final_runs):
     if now_utc.tzinfo is None:
@@ -45,10 +91,16 @@ def evaluate_readiness(now_utc,contract,root_kick,final_kick,root_runs,final_run
     if contract.get("unknown_never_pass") is not True:
         return False,"CONTRACT_UNKNOWN_POLICY"
 
-    if _active_runs(root_runs):
-        return False,"ROOT_RECOVERY_ACTIVE"
-    if _active_runs(final_runs):
-        return False,"FINAL_RECOVERY_ACTIVE"
+    root_grace=contract.get("root_active_run_grace_seconds",3300)
+    final_grace=contract.get("final_active_run_grace_seconds",3600)
+    root_active=classify_active(now_utc,root_runs,root_grace)
+    if root_active!="CLEAR":
+        return False,("ROOT_RECOVERY_ACTIVE" if root_active=="ACTIVE"
+                      else "ROOT_"+root_active)
+    final_active=classify_active(now_utc,final_runs,final_grace)
+    if final_active!="CLEAR":
+        return False,("FINAL_RECOVERY_ACTIVE" if final_active=="ACTIVE"
+                      else "FINAL_"+final_active)
 
     root_success=_successful_runs(root_runs)
     final_success=_successful_runs(final_runs)
