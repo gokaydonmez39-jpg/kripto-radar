@@ -1,0 +1,114 @@
+{
+  "schema": "XRAY_20261009_PREENTRY_WATCH_FORWARD_CONTINUATION_V19",
+  "authority": "HISTORICAL_CHECKPOINT_ONLY_LIVE_MAIN_AND_ACTIONS_SUPERSEDE",
+  "repo": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "source_main_head": "bdff66e8e66734ae1dc9a7cfba5ef01d500126db",
+  "verified_at_utc": "2026-10-09T12:08:22Z",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "research_mode": "RESEARCH_ONLY_MANUAL_DECISION",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "objective": "Monitor B tight-base armed and frozen pivots before price chases; keep fail-closed AL; attribute DATA_BLOCKED vs TECH_FAIL; prepare 2-8 session prospective paper follow-up",
+  "implemented": {
+    "early_watch": "nasdaq-xray/preentry_watch_observer.py",
+    "forward_metrics": "nasdaq-xray/forward_watch_metrics.py",
+    "workflow": ".github/workflows/xray-research-watch-radar.yml",
+    "preserved_existing_schedule": true,
+    "watch_boundary": [
+      "BELOW_PIVOT_FAR",
+      "NEAR_PIVOT_HALF_ATR",
+      "IN_FROZEN_ENTRY_BAND",
+      "ABOVE_ENTRY_WAIT_RETEST",
+      "CHASE_EXCEEDED_NO_LATE_ENTRY"
+    ],
+    "b_armed_classification": "NEAR_B_PIVOT_HALF_ATR_OR_PENDING_BREAKOUT; no AL",
+    "data_vs_tech": "Missing current exact source lineage / MC primary / event = DATA_BLOCKED. Only fully source-bound genuine frozen risk/target/RR fail = TECH_FAIL. Diagnostic old fails may coexist as historical only.",
+    "source_safety": "exact Git blob source bindings; ASOF equality; invalid arithmetic/NaN/fake risks excluded; no relaxed hard gates",
+    "forward_horizons": [
+      2,
+      3,
+      5,
+      8
+    ],
+    "forward_contract": "Real future session evidence, same source ASOF, SHA-bound WATCH snapshot origin and observed timestamp, registration not backdated, exactly eight future completed sessions, corporate action/rights/calendar attestation, explicit cost; synthetic only in unit tests",
+    "forward_outputs": "paper-only net return/excursion/drawdown if lawful real evidence; no raw OHLCV re-emit, no execution, no AL"
+  },
+  "commits": [
+    "2d33f9e6ae0e7334f31558dcc744fcdc5d6e4405",
+    "8e10056df86da34fb26deb1e900424583793578e",
+    "da8a47c9b1413bbcacc44955d4e4d5d8db4c2170",
+    "a3a8ec3a842a0af040f80796e537041205969924",
+    "26b11097a2f2a854dd1d37fbfca2c234f90eb9af",
+    "7ca717f036e89d71dee07496ada4edf4bacec8d4",
+    "bdff66e8e66734ae1dc9a7cfba5ef01d500126db"
+  ],
+  "actions_runs": [
+    {
+      "id": 37927518715,
+      "result": "SUCCESS",
+      "role": "initial preentry source classifier"
+    },
+    {
+      "id": 37927686617,
+      "result": "SUCCESS",
+      "role": "B armed prebreakout observation"
+    },
+    {
+      "id": 37927900340,
+      "result": "SUCCESS",
+      "role": "watch + forward paper proof"
+    },
+    {
+      "id": 37928074430,
+      "result": "SUCCESS",
+      "role": "SHA-bound origin registration paper proof"
+    }
+  ],
+  "latest_run_observations": {
+    "radar_status": "DATA_BLOCKED_STALE_OR_INCOMPLETE_SOURCE",
+    "stage_b_armed_historical_count": 4,
+    "historical_final_rejects": 17,
+    "disjoint_operational_final_class_counts": {
+      "DATA_BLOCKED": 17
+    },
+    "current_prospective_watch_count": 0,
+    "actual_R92_count": 0,
+    "actual_orders": 0,
+    "forward_metrics": "FORWARD_EVIDENCE_NOT_CONFIGURED",
+    "actual_forward_sample_count": 0,
+    "device_push_receipt_proven": false,
+    "contract_selftests": [
+      "XRAY_WATCH_RESEARCH_FAIL_CLOSED_SELFTEST=PASS",
+      "XRAY_PREENTRY_OBSERVER_SELFTEST=PASS",
+      "XRAY_FORWARD_WATCH_METRICS_SELFTEST=PASS_POSITIVE_14_NEGATIVE_SHA_CLOCK_NO_ALPHA"
+    ]
+  },
+  "current_hard_blockers": [
+    "CURRENT_C417_PRIMARY_MC_SOURCE_AND_LEGAL_AUTOMATED_USE_RIGHTS_NOT_VERIFIED",
+    "2026-10-08_ROOT_HISTORY_231_UNKNOWN",
+    "2026-10-08_IDENTITY_72_UNKNOWN_AND_PRICE_DV30_45_BLOCKED",
+    "2026-10-07_TERMINAL_STALE_VS_CURRENT_SOURCE",
+    "NO_REAL_CANDIDATE_REGISTRATION_AND_DELIVERY_LEDGER",
+    "NO_DEVICE_NOTIFICATION_RECEIPT",
+    "NO_PROSPECTIVE_REAL_BAR_DATA_FOR_2_TO_8_SESSION_METRICS"
+  ],
+  "automation": {
+    "existing_health_id": "6abd0465d15c8191aac5888abb784f27",
+    "health_prompt_updated_with": "XRAY_PREENTRY_WATCH_FORWARD_V19",
+    "existing_health_schedule_preserved": true,
+    "no_duplicate_alarm_created": true,
+    "canonical_research_notification_sole_authority": "6a825366222081918997094d76e6ae46"
+  },
+  "release": "RESEARCH_PRODUCTION_NO_GO",
+  "next_action": "First establish authorized unattended C4.17 MC and real HISTORY, then rerun exact new ASOF; prospective WATCH and forward follow-up only when current source and real samples exist; never claim 90% success without collected outcomes.",
+  "claims_disallowed": [
+    "FULLY_READY",
+    "USER_DEVICE_DELIVERED",
+    "VERIFIED_90_PERCENT_WINRATE",
+    "CURRENT_AL_CANDIDATE",
+    "PRIMARY_FROM_SHADOW_VENDOR"
+  ]
+}
