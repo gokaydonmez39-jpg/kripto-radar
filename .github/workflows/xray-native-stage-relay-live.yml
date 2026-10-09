@@ -29,6 +29,7 @@ jobs:
         run: |
           python -m py_compile nasdaq-xray/github_native_stage_relay.py
           python nasdaq-xray/github_native_stage_relay.py --selftest
+          python nasdaq-xray/pre_mc_identity_replay_session_guard.py --selftest
       - name: Dispatch PRE-MC directly from current exact source snapshot
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
