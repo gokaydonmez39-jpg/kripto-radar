@@ -17,6 +17,8 @@ on:
     paths:
       - "nasdaq-xray/github_native_root_watchdog.py"
       - "nasdaq-xray/github_native_chain_health.py"
+      - "nasdaq-xray/retired_09oct_watch_topology_selftest.py"
+      - ".github/workflows/xray-20261009-preopen-watch.yml"
       - ".github/workflows/xray-github-native-root-watchdog.yml"
 permissions:
   contents: read
@@ -35,6 +37,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Dated preopen watch retirement, no duplicate trigger chain
+        run: python nasdaq-xray/retired_09oct_watch_topology_selftest.py
       - name: Compile and regress failure classes
         run: |
           python -m py_compile nasdaq-xray/github_native_root_watchdog.py
