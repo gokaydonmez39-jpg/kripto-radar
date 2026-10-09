@@ -101,6 +101,7 @@ def scope_readiness(blockers,chain_exact):
     notification; neither can be inferred from symbol counts or workflow PASS.
     """
     local_hard={
+        "SOURCE_EPOCH_NOT_LATEST_COMPLETED_SESSION",
         "POLICY_SAFETY_NOT_ALL_ATTESTED",
         "PRICE_PARTITION_NOT_EXACT_CURRENT",
         "SETTLEMENT_UNVERIFIED_OR_PRICE_SHA_DRIFT",
@@ -217,6 +218,21 @@ def snapshot():
     safety=(all(x.get("execution")=="NONE" and x.get("real_money")=="NO-GO"
                 and x.get("unknown_never_pass") is True for x in (master,price,req,terminal)))
     fail("POLICY_SAFETY_NOT_ALL_ATTESTED",safety)
+    # A perfectly internally consistent but 1-2-session-old chain is NOT
+    # current GO. Use the independently tested official XNAS close + 30m
+    # finality buffer, never calendar date or workflow success.
+    freshness={"freshness_ready":False,"latest_completed_nasdaq_session":None,
+               "session_lag":{"MASTER":None,"PRICE":None,"TERMINAL":None}}
+    try:
+        import datetime as _dt
+        from source_epoch_freshness_guard import audit as _session_audit
+        freshness=_session_audit(price,master,terminal,_dt.datetime.now(_dt.timezone.utc))
+    except (ImportError,ValueError,TypeError,AttributeError,KeyError,OverflowError):
+        # Missing library, unreliable clock, illegal source ASOF or safety
+        # drift must NEVER become an implied same-session PASS.
+        pass
+    fail("SOURCE_EPOCH_NOT_LATEST_COMPLETED_SESSION",
+         freshness.get("freshness_ready") is True)
     master_set=set(master.get("pass_symbols") or [])
     fail("IDENTITY_PARTITION_INCOMPLETE",master.get("unknown_count")==0
          and int(master.get("queue_total") or -1)==len(master_set))
@@ -260,7 +276,7 @@ def snapshot():
         terminal,asof,source_shas,mcs[0],sha(mcs[0])))
     fail("TERMINAL_CURRENT_MC_CHAIN_NOT_PROVEN",current_chain)
     pointer=read("chatgpt_canonical_state_v2.json")
-    prepared=bool(current_chain and registered_research_candidate_exact(
+    prepared=bool(current_chain and freshness.get("freshness_ready") is True and registered_research_candidate_exact(
         terminal,pointer,asof,sha("canonical_current_terminal.json")))
     # Delivery is independent: a zero-signal scenario may be a legitimate
     # completed run, but a device receipt must never be inferred from a ledger.
@@ -275,12 +291,16 @@ def snapshot():
         "candidate_preparation_witness_only":prepared,
         "actual_device_delivery_receipt_attested":False,
         "full_e2e_research_attested":current_chain
+            and freshness.get("freshness_ready") is True
             and terminal.get("full_end_to_end_research_pass") is True
             and not any(k in blocks for k in (
                 "PRICE_PARTITION_NOT_EXACT_CURRENT","POLICY_SAFETY_NOT_ALL_ATTESTED",
                 "SETTLEMENT_UNVERIFIED_OR_PRICE_SHA_DRIFT",
                 "IDENTITY_PARTITION_INCOMPLETE","PRICE_BLOCKED_30_SESSION_BARS")),
         "current_mc_authority_count":len(mcs),
+        "latest_completed_nasdaq_session":freshness.get("latest_completed_nasdaq_session"),
+        "official_nasdaq_session_freshness_attested":freshness.get("freshness_ready") is True,
+        "source_session_lags":freshness.get("session_lag"),
         **scopes,
         "price_pass_count":price.get("pass_count"),"price_blocked_count":price.get("blocked_count"),
         "master_unknown_count":master.get("unknown_count"),
@@ -368,7 +388,7 @@ def selftest():
     assert x["actual_device_delivery_receipt_attested"] is False
     assert scope_readiness([],True)["full_universe_source_coverage_attested"] is True
     assert scope_readiness([],False)["candidate_local_source_chain_attested"] is False
-    for blocker in ("CURRENT_MC_AUTHORITY_MISSING","TERMINAL_CURRENT_MC_CHAIN_NOT_PROVEN",
+    for blocker in ("SOURCE_EPOCH_NOT_LATEST_COMPLETED_SESSION","CURRENT_MC_AUTHORITY_MISSING","TERMINAL_CURRENT_MC_CHAIN_NOT_PROVEN",
                     "SETTLEMENT_UNVERIFIED_OR_PRICE_SHA_DRIFT",
                     "POLICY_SAFETY_NOT_ALL_ATTESTED"):
         assert scope_readiness([blocker],True)["candidate_local_source_chain_attested"] is False
