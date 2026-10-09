@@ -6,6 +6,7 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/orchestrator_run.py"
+      - "nasdaq-xray/github_native_stage_relay.py"
       - "nasdaq-xray/orchestrator_partial_invalidation_selftest.py"
       - "nasdaq-xray/scheduler_kick_dataplane.json"
       - "nasdaq-xray/scheduler_failover_contract.json"
@@ -29,6 +30,7 @@ on:
 
 permissions:
   contents: write
+  actions: write
 
 concurrency:
   group: nasdaq-xray-autonomous-dataplane
@@ -59,6 +61,11 @@ jobs:
 
       - name: Scheduler failover self-test
         run: python nasdaq-xray/scheduler_failover_selftest.py
+
+      - name: Root-to-preMC relay negative and positive self-tests
+        run: |
+          python -m py_compile nasdaq-xray/github_native_stage_relay.py
+          python nasdaq-xray/github_native_stage_relay.py --selftest
 
       - name: Partial-history stale-state self-test
         run: python nasdaq-xray/orchestrator_partial_invalidation_selftest.py
@@ -136,6 +143,13 @@ jobs:
           fi
           echo "XRAY_DURABLE_COMMIT=PASS"
 
+      - name: Atomically wake pre-MC after root checkpoint, never claim terminal success
+        if: success()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python nasdaq-xray/github_native_stage_relay.py --out /tmp/xray_stage_relay.json
+
       - name: Upload audit state
         if: always()
         uses: actions/upload-artifact@v4
@@ -150,5 +164,6 @@ jobs:
             nasdaq-xray/regime_breadth_shadow.json
             nasdaq-xray/deep_pre_r1_shadow.json
             nasdaq-xray/orchestrator_state.json
+            /tmp/xray_stage_relay.json
           retention-days: 30
           if-no-files-found: ignore
