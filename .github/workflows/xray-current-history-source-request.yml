@@ -5,6 +5,8 @@ on:
     paths:
       - "nasdaq-xray/current_history_source_request.py"
       - "nasdaq-xray/free_history_source_preflight.py"
+      - "nasdaq-xray/qualified_history_ingress_shadow.py"
+      - "nasdaq-xray/history_transport_cache_guard.py"
       - "nasdaq-xray/canonical_current_price_dv30.json"
       - "nasdaq-xray/canonical_current_master_manifest.json"
       - ".github/workflows/xray-current-history-source-request.yml"
@@ -53,6 +55,33 @@ jobs:
           assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
           print("XRAY_TWELVE_BASIC_HISTORY_SCOPE_BUDGET_SHA_CHECK=PASS_NONAUTHORITY")
           PY
+      - name: Private licensed-source transport stage structural positive and negatives
+        run: |
+          python -m py_compile nasdaq-xray/qualified_history_ingress_shadow.py
+          python nasdaq-xray/qualified_history_ingress_shadow.py --selftest
+          python nasdaq-xray/qualified_history_ingress_shadow.py \
+            --private-cache-dir "$RUNNER_TEMP/xray-private-vendor-cache-does-not-exist" \
+            --out "$RUNNER_TEMP/xray_private_history_intake_shadow.json"
+          python - <<'PY'
+          import json,os,subprocess
+          from pathlib import Path
+          x=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_private_history_intake_shadow.json").read_text())
+          assert x["schema"]=="XRAY_PRIVATE_HISTORY_514_TRANSPORT_INTAKE_SHADOW_V1"
+          assert x["price_pass_count"]==514
+          assert x["source_price_blob_sha"]==subprocess.check_output(
+              ["git","hash-object","nasdaq-xray/canonical_current_price_dv30.json"],
+              text=True).strip()
+          assert x["expected_daily_count"]==260 and x["expected_completed_week_closes"]==52
+          assert x["counts"]["missing_file"]==x["private_transport_tickers_checked"]
+          assert x["structural_private_transport_complete"] is False
+          for k in ("source_vendor_rights_independently_verified",
+                    "source_exchangewide_volume_proven",
+                    "current_history_authority_proven","can_register_R92"):
+              assert x[k] is False,k
+          assert x["canonical_history_pass_created"]==0 and x["primary_mc_pass_created"]==0
+          assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
+          print("XRAY_PRIVATE_514_HISTORY_INTAKE_HEAD_BOUND=PASS_MISSING_VENDOR_DATA_BLOCKED")
+          PY
       - name: Assemble current real Git scope (not market data)
         run: |
           python nasdaq-xray/current_history_source_request.py --out "${RUNNER_TEMP}/xray_current_history_source_request.json"
@@ -80,5 +109,6 @@ jobs:
           path: |
             ${{ runner.temp }}/xray_current_history_source_request.json
             ${{ runner.temp }}/xray_twelve_data_free_scope_preflight.json
+            ${{ runner.temp }}/xray_private_history_intake_shadow.json
           if-no-files-found: error
           retention-days: 14
