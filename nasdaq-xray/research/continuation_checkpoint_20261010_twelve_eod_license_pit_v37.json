@@ -1,0 +1,137 @@
+{
+  "schema": "XRAY_C417_CANONICAL_CONTINUATION_20261010_TWELVE_UNADJUSTED_V37",
+  "created_date_trt": "2026-10-10",
+  "repo": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "authority": "LIVE_MAIN_ACTIONS_PROVIDER_TERMS_AND_PRIVATE_VERIFIED_LICENSE_SUPERSEDE_THIS_HANDOFF",
+  "predecessor": "nasdaq-xray/research/continuation_checkpoint_20261010_live_head_scope_drift_repair_v36.json",
+  "predecessor_commit": "59224115577ca2ad518191bd853ec4e6b0e90678",
+  "start_head": "6296a132f7db7bf2b4b47f9ec39ae79c63783960",
+  "verified_head_prior_to_checkpoint": "8c83ecb36db780dfe33314256e85c235758a2c2e",
+  "policy": {
+    "effective": "C4.17",
+    "control": "C4.27",
+    "c418": "PROPOSED_NOT_ACTIVE",
+    "mode": "RESEARCH_ONLY_MANUAL_DECISION",
+    "execution": "NONE",
+    "real_money": "NO-GO",
+    "unknown_not_pass": true,
+    "g9_required": false,
+    "broker_or_account_required": false,
+    "rr_family_basic_severe": {
+      "A": [
+        1.5,
+        1.1
+      ],
+      "B": [
+        2,
+        1.5
+      ],
+      "C": [
+        2,
+        1.5
+      ],
+      "D": [
+        2,
+        1.5
+      ]
+    },
+    "stop_risk_max_percent": 8,
+    "risk_or_alpha_thresholds_changed": false
+  },
+  "code_repair_sequence": [
+    {
+      "commit": "7cde5ef656a9abb5fd56c5f9a36b890bb640cd26",
+      "files": [
+        "nasdaq-xray/massive_grouped_history_resume.py",
+        "nasdaq-xray/grouped_history_full_pipeline_selftest.py"
+      ],
+      "fix": "Remove 514 cohort constant from HISTORY selftests; test smaller/larger synthetic scope and cohort binding.",
+      "actions_run": 37993249752,
+      "actions_result": "SUCCESS_SYNTHETIC_ONLY_WITH_RIGHTS_BLOCK"
+    },
+    {
+      "commit": "437179abd0c0ba8574b1e63a7554d185666b3812",
+      "files": [
+        "nasdaq-xray/twelve_data_history_probe.py",
+        ".github/workflows/xray-current-history-source-request.yml"
+      ],
+      "fix": "Twelve time_series explicit adjust=none prevents default retroactively split-adjusted bars; offline query test and dynamic PRICE cohort CI counts.",
+      "actions_run": 37993717006,
+      "actions_result": "SUCCESS_SHADOW_NO_KEY"
+    },
+    {
+      "commit": "8c83ecb36db780dfe33314256e85c235758a2c2e",
+      "files": [
+        "nasdaq-xray/massive_grouped_one_day.py"
+      ],
+      "fix": "Grouped one-day shadow uses adjusted=false and rejects any adjusted response, including synthetic future-split positive regression.",
+      "actions_run": 37993835690,
+      "actions_result": "SUCCESS_SHADOW_NO_LICENSE_OR_KEY"
+    }
+  ],
+  "market_data_provider_findings": {
+    "massive": {
+      "rights": "NOT_VERIFIED: Market Data Terms Section 5(d) restrict non-display/derivative investment strategy without explicit license",
+      "connected_app_2026_10_09_grouped_unadjusted": "NOT_ENTITLED",
+      "github_runner_grouped_2026_10_10_ci": "BLOCKED_AUTH_OR_NONDISPLAY_AND_PRIVATE_CACHE_RIGHTS",
+      "actual_260_day_vendor_collected": 0,
+      "source": "https://massive.com/legal/market-data-terms-of-service"
+    },
+    "twelve_data": {
+      "important_new_official_2026_08_18_statement": "Vendor states free Basic historical EOD US stock volume represents 100% US venue volume; ~5% caveat pertains default real-time. This assertion NOT independently validated with samples.",
+      "eod_data_first_available": "After midnight ET on next trading day following completed market close; 2026-10-09 Friday may not be published during weekend.",
+      "official_scope_source": "https://support.twelvedata.com/en/articles/9935903-us-equities-market-data",
+      "free_tier": "8 credits/minute and 800 credits/day; 1 credit for each time_series symbol",
+      "quota_scope_credit_count_2026_10_08": 514,
+      "quota_preflight_min_minutes_ceiling": 65,
+      "cost_source": "https://twelvedata.com/pricing",
+      "terms": "https://twelvedata.com/terms",
+      "rights": "Basic internal non-display and irreconstructible derived data contractually described, but cache retention limit and any third-party-specific restriction must be independently confirmed; not promoted to production.",
+      "runner_actual_2026_10_10": "BLOCKED_NO_KEY; zero real vendor API calls",
+      "actual_514x260_history": false,
+      "adjustment": "time_series adjusted none requested explicitly; verified in synthetic request contract only; raw unadjusted bars are NOT full PIT split chain",
+      "corporate_action_free_rights": "SPLITS_ENDPOINT_NOT_VERIFIED_AS_FREE",
+      "independent_marketwide_volume_source_proven": false
+    }
+  },
+  "live_release": {
+    "e2e_run": 37992934946,
+    "result": "EXPECTED_FAILURE_NO_GO",
+    "latest_completed_nasdaq_session": "2026-10-09",
+    "canonical_price_asof": "2026-10-08",
+    "canonical_master_asof": "2026-10-08",
+    "canonical_terminal_asof": "2026-10-07",
+    "PRICE_DV30_PASS": 514,
+    "MASTER_IDENTITY_UNKNOWN": 72,
+    "PRICE_BLOCKED": 45,
+    "PRIMARY_MC_VERIFIED": 0,
+    "REAL_HISTORY_COMPLETE": false,
+    "REAL_R92_AL_VERIFIED": 0,
+    "ACTUAL_DEVICE_RECEIPT_VERIFIED": false,
+    "calibration_comparable_sessions": "0/60",
+    "production": "NO_GO",
+    "blockers": [
+      "CURRENT_MC_AUTHORITY_MISSING",
+      "CURRENT_TERMINAL_FROZEN_OR_INCOMPLETE",
+      "IDENTITY_PARTITION_INCOMPLETE",
+      "NOTIFICATION_DEVICE_RECEIPT_NOT_PROVEN",
+      "PRICE_BLOCKED_30_SESSION_BARS",
+      "SOURCE_EPOCH_NOT_LATEST_COMPLETED_SESSION",
+      "TERMINAL_CURRENT_MC_CHAIN_NOT_PROVEN"
+    ]
+  },
+  "operator_access": "GitHub connector cannot inspect repository secret inventories; Twelve runner output definitively empty XRAY_TWELVE_DATA_API_KEY for run 37993835690. Massive blocked composite rights/key guard does NOT tell which individual prerequisite is missing.",
+  "next_work": [
+    "Account owner verifies rights, personal/free non-commercial GitHub unattended use, raw bar cache retention period, derivative nonreconstructible research alerts. Never enter secret values into chat.",
+    "Provision XRAY_TWELVE_DATA_API_KEY in GitHub Actions only after allowed; original code sample would do 1 AAPL query and only output non-authoritative count, not historical alpha.",
+    "If rights permit, construct secure resumable 514 current PRICE cohort real 260 EOD intake; independently compare consolidated venue volumes, splits corporate-action PIT and 52 weeks; no fabricated rows.",
+    "Repair full 3401 class-identity coverage (72 UNKNOWN) and missing price sessions (45 blocked) with independent source evidence.",
+    "Provide same-ASOF PRIMARY MC issuer class FIGI/CIK, shares-outstanding and corporate actions before HISTORY-to-final chain; keep strict full research GO and phone R92 receipt tests; no execution."
+  ],
+  "no_secret_values_exposed": true,
+  "no_public_raw_bars": true,
+  "previous_checkpoints_immutable": true,
+  "new_automations_created": 0,
+  "completion_claim": false
+}
