@@ -50,6 +50,24 @@ def run():
     state, info = classify(stale, ASOF, "ISOLATED_UNIT_TEST")
     assert state != "PASS_HISTORY", ("STALE_ASOF_PROMOTED_TO_PASS", state, info)
 
+    # Two independent feeds may share a missing provider date. This proves
+    # data incompleteness, NOT that the issuer never traded on that date.
+    eval_node = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == "eval_one")
+    ns = {
+        "official_listing_upper_bound_fail": lambda symbol, asof: None,
+        "sina": lambda symbol, asof: (hole, {}),
+        "nasdaq": lambda symbol, asof: (hole, {}),
+        "yahoo": lambda symbol, asof: (hole, {}),
+        "eastmoney": lambda symbol, asof: (hole, {}),
+        "classify": classify,
+        "continuity_composite_pass": lambda *args: None,
+        "bridge_resolution": lambda *args: None,
+        "aligned_first_bar_upper_bound_fail": lambda *args: None,
+    }
+    exec(compile(ast.Module(body=[eval_node], type_ignores=[]), "history_phase.py", "exec"), ns)
+    _, status, result, _ = ns["eval_one"]("FAKE_SYMBOL_UNIT_TEST", ASOF)
+    assert status == "UNKNOWN_HISTORY", ("TWO_SOURCES_SAME_MISSING_BAR_FALSE_FAIL", status, result)
+
     for name in ("continuity_composite_pass",):
         node = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == name)
         calls = {n.func.id for n in ast.walk(node) if isinstance(n, ast.Call) and isinstance(n.func, ast.Name)}
