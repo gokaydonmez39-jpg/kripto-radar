@@ -28,7 +28,7 @@ from tempfile import TemporaryDirectory
 
 from current_history_source_request import sha256_lines
 from history_transport_cache_guard import cache_path
-from massive_grouped_history_resume import scope
+from massive_grouped_history_resume import scope as _raw_scope
 from twelve_data_history_probe import eod_query
 
 ROOT=Path(__file__).resolve().parent
@@ -45,6 +45,14 @@ MAX_CIPHERTEXT_BYTES=90000000
 
 class ProviderDenied(Exception):
     pass
+
+def scope():
+    """A zero-PASS PRICE cohort is empty, NEVER phantom QQQ-only history."""
+    s=_raw_scope()
+    if not s["symbols"]:
+        assert s["targets"]==["QQQ"],"UNEXPECTED_EMPTY_PRICE_SCOPE_SHAPE"
+        s=dict(s,targets=[])
+    return s
 
 def authorized(env):
     d=env.get("XRAY_TWELVE_LICENSE_EVIDENCE_SHA256","")
@@ -278,6 +286,13 @@ def run(args,env=None,transport=fetch,now=time.time,sleep=time.sleep):
            for p in (args.report,args.checkpoint,args.restore)):
         raise ValueError("PUBLIC_DATA_PATH_FORBIDDEN")
     report_path=Path(args.report)
+    if not s["symbols"]:
+        if s["targets"]:raise ValueError("ZERO_PRICE_PASS_BENCHMARK_ONLY_SCOPE")
+        out=health(fresh(s),s,"BLOCKED_NO_CURRENT_PRICE_PASS_SCOPE",0)
+        report_path.write_text(json.dumps(out,sort_keys=True)+"\n")
+        print("XRAY_TWELVE_HISTORY=BLOCKED_NO_CURRENT_PRICE_PASS_SCOPE")
+        print("XRAY_TWELVE_VENDOR_CALLS=0")
+        return out
     if not authorized(env):
         out=health(fresh(s),s,"BLOCKED_KEY_OR_UNVERIFIED_NONDISPLAY_CACHE_RIGHTS",0)
         report_path.write_text(json.dumps(out,sort_keys=True)+"\n")
@@ -355,6 +370,8 @@ def run(args,env=None,transport=fetch,now=time.time,sleep=time.sleep):
     return out
 
 def export_private(cp,s,directory):
+    if not s["symbols"] or not s["targets"]:
+        raise ValueError("EMPTY_PRICE_PASS_SCOPE_NOT_EXPORTABLE")
     if not exact(cp,s) or len(cp["bars"])!=len(s["targets"]):
         raise ValueError("NOT_ALL_SYMBOLS_FETCHED")
     dest=Path(directory).resolve()
@@ -375,11 +392,17 @@ def selftest():
     from copy import deepcopy
     with TemporaryDirectory() as tmp:
         s=scope()
-        # RED regression: with zero currently admitted PRICE PASS,
-        # even benchmark QQQ must not be treated as a live EOD cohort.
+        # Zero current PRICE PASS is legitimate production NO-GO. Synthetic
+        # nonempty test fixture is created ONLY in memory and never authority.
+        assert len(s["dates"])==260 and len(s["weeks"])==52
         assert s["symbols"] or not s["targets"],"BUG_ZERO_PRICE_PASS_QQQ_ONLY_PHANTOM_SCOPE"
-        assert s["symbols"] and len(s["dates"])==260 and len(s["weeks"])==52
-        symbol=s["symbols"][0]
+        if s["symbols"]:
+            symbol=s["symbols"][0]
+        else:
+            assert s["targets"]==[]
+            master=json.loads((ROOT/"canonical_current_master_manifest.json").read_text())
+            assert master["pass_symbols"]
+            symbol=master["pass_symbols"][0]
         smaller=dict(s,symbols=[symbol],targets=sorted({symbol,"QQQ"}),
                      scope_hash=sha256_lines([symbol]))
         dt=smaller["dates"][-1]
