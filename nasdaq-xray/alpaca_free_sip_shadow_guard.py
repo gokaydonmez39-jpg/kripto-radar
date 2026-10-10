@@ -192,6 +192,17 @@ def run(now=None):
 def selftest():
     dates=["2026-09-%02d"%x for x in range(1,29)]+["2026-10-07","2026-10-08"]
     now=dt.datetime(2026,10,9,14,tzinfo=UTC)
+    # RED: a completed regular or early-close NASDAQ day is available
+    # 20 minutes after the OFFICIAL RTH close, not after next midnight.
+    import pandas_market_calendars as mcal
+    for official_day in ("2026-10-08","2026-11-27"):
+        sched=mcal.get_calendar("NASDAQ").schedule(
+            start_date=official_day,end_date=official_day)
+        assert len(sched)==1,("NASDAQ_SESSION_NOT_FOUND",official_day)
+        close=sched.iloc[0]["market_close"].to_pydatetime()
+        assert sufficient_delay(official_day,close+GUARD_DELAY) is True, (
+            "ALPACA_OFFICIAL_CLOSE_HOLDBACK_UNNECESSARILY_LATE",official_day)
+        assert sufficient_delay(official_day,close+GUARD_DELAY-dt.timedelta(seconds=1)) is False
     assert sufficient_delay("2026-10-08",now) is True
     assert sufficient_delay("2026-10-08",dt.datetime(2026,10,9,4,5,tzinfo=UTC)) is False
     def bar(day,vol=10000):
