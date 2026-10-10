@@ -24,6 +24,27 @@ def _stamp(s):
     return z.astimezone(dt.timezone.utc) if z.tzinfo is not None else None
 
 
+def _source_ready(rows,close):
+    # A real, timely, as-of Sina measurement can attest publication readiness
+    # even when the alpha price/DV30 hard gate correctly FAILS. Neither status
+    # grants HISTORY/MC/R92 authority. Overlays cannot be source canaries.
+    for v in rows.values():
+        if not isinstance(v,dict) or v.get("resolution_overlay") is True:
+            continue
+        if type(v.get("attempts")) is not int or v["attempts"]<1:
+            continue
+        if (_stamp(v.get("updated_at_utc")) or close-dt.timedelta(days=1))<close:
+            continue
+        info=v.get("info")
+        if not isinstance(info,dict):continue
+        status=v.get("status")
+        proof=info.get("proof")
+        if ((status in ("PASS","FAIL_DV30") and proof=="EXACT30_MEDIAN")
+            or (status=="FAIL_PRICE" and proof=="ASOF_CLOSE")):
+            return True
+    return False
+
+
 def choose(state,official_close_utc,now=None,limit=MAX_PER_RUN):
     """Return ONLY symbols eligible for re-observation; never PASS/price.
     official_close_utc MUST be from a verified Nasdaq session schedule.
@@ -61,16 +82,8 @@ def choose(state,official_close_utc,now=None,limit=MAX_PER_RUN):
         return []
     if type(limit) is not int or not (1<=limit<=MAX_PER_RUN):
         raise ValueError("RECHECK_RATE_LIMIT_INVALID")
-    # Do not reissue 3,000 requests while Sina has not published the ASOF.
-    # A source-observed exact30 PASS is a readiness canary, not an alpha gate.
-    # The canary itself is obtained only from the existing real-source reader.
-    source_ready=any(
-        isinstance(v,dict) and v.get("status")=="PASS"
-        and isinstance(v.get("info"),dict)
-        and v["info"].get("proof")=="EXACT30_MEDIAN"
-        and (_stamp(v.get("updated_at_utc")) or close-dt.timedelta(days=1))>=close
-        for v in rows.values()
-    )
+    # Only real source-observed dates open bounded delayed EOD rechecks.
+    source_ready=_source_ready(rows,close)
     if not source_ready:
         return []
     eligible=[]
@@ -103,11 +116,7 @@ def choose_canary_probe(state,official_close_utc,now=None):
     if state.get("status")!="HISTORY_PARTIAL" or now<close+MIN_AFTER_RTH_CLOSE:
         return []
     rows=state["results"]
-    if any(isinstance(v,dict) and v.get("status")=="PASS"
-           and isinstance(v.get("info"),dict)
-           and v["info"].get("proof")=="EXACT30_MEDIAN"
-           and (_stamp(v.get("updated_at_utc")) or close-dt.timedelta(days=1))>=close
-           for v in rows.values()):
+    if _source_ready(rows,close):
         return []
     for sym in ("AAPL","NVDA","MSFT"):
         v=rows.get(sym)
