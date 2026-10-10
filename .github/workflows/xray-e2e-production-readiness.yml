@@ -2,7 +2,7 @@ name: XRAY E2E Production Readiness (Fail-Closed)
 on:
   workflow_dispatch:
   push:
-    branches: [main]
+    branches: [main, fix/c417-terminal-bound-mc-selection]
     paths:
       - "nasdaq-xray/e2e_production_readiness.py"
       - "nasdaq-xray/source_epoch_freshness_guard.py"
@@ -30,7 +30,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.ref_name }}
           fetch-depth: 1
       - uses: actions/setup-python@v5
         with:
@@ -80,6 +80,7 @@ jobs:
       # uploaded first, then the *separate* release check fails visibly.
       # No synthetic release, no forced AL signal, no device receipt claim.
       - name: Release gate - fail workflow when actual current research is NO-GO
+        if: github.ref_name == 'main'
         run: |
           python - <<'PY'
           import json,os,sys
