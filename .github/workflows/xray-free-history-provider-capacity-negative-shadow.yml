@@ -1,0 +1,75 @@
+name: XRAY Free HISTORY Source Capacity & Rights - No Vendor Calls
+on:
+  push:
+    branches: [audit/c417-free-history-capacity-and-rights-20261010, main]
+    paths:
+      - "nasdaq-xray/free_history_source_preflight.py"
+      - ".github/workflows/xray-free-history-provider-capacity-negative-shadow.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  capacity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Exact code SHA
+        run: test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Execute only real-plan quota arithmetic, no network or API key
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile nasdaq-xray/free_history_source_preflight.py
+          python nasdaq-xray/free_history_source_preflight.py --selftest
+          python nasdaq-xray/free_history_source_preflight.py --out "$RUNNER_TEMP/xray_free_history_capacity.json"
+          python - <<'PY'
+          import json,os,subprocess
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])/"xray_free_history_capacity.json"
+          d=json.loads(p.read_text())
+          current=json.loads(Path("nasdaq-xray/canonical_current_price_dv30.json").read_text())
+          assert d["source_price_blob_sha"]==subprocess.check_output(
+              ["git","hash-object","nasdaq-xray/canonical_current_price_dv30.json"],text=True).strip()
+          assert d["price_pass_count"]==current["pass_count"]==514
+          assert d["price_unknown_count"]==current["unknown_count"]
+          assert d["scope_initial_credit_estimate"]==514
+          b=d["other_free_source_quota_research"]["Business Quant Free"]
+          assert b["scope_including_qqq"]==515
+          assert b["published_free_simultaneous_ticker_limit"]==2
+          assert b["minimum_calls_for_complete_initial_scope"]==258
+          assert b["minimum_calendar_days_for_complete_initial_scope"]==9
+          assert b["one_day_full_scope_refresh_feasible_by_published_limits"] is False
+          assert b["market_data_automatic_cache_rights_verified"] is False
+          sg=d["other_free_source_quota_research"]["StashGamma Free (unverified research lead)"]
+          assert sg["minimum_calls_one_initial_scope"]==515
+          assert sg["initial_scope_fits_published_daily_limit"] is True
+          assert sg["automated_non_display_private_cache_rights_verified"] is False
+          assert sg["production_authority"] is False
+          assert d["canonical_history_pass_created"]==0
+          assert d["primary_mc_pass_created"]==0
+          assert d["can_register_R92"] is False
+          assert d["execution"]=="NONE" and d["real_money"]=="NO-GO"
+          safe={"schema":"XRAY_C417_FREE_HISTORY_PROVIDER_CAPACITY_NOAUTH_V1",
+                "git_sha":subprocess.check_output(["git","rev-parse","HEAD"],text=True).strip(),
+                "price_blob_sha":d["source_price_blob_sha"],
+                "price_scope_count":514,
+                "bq_minimum_requests":258,"bq_minimum_calendar_days":9,
+                "bq_daily_whole_scope_feasible":False,
+                "stashgamma_published_quota_scope_feasible_not_license":True,
+                "vendor_bar_retrieved":False,"provider_grant_verified":False,
+                "mc_primary_created":False,"r92_created":False,
+                "execution":"NONE","real_money":"NO-GO"}
+          p.with_name("xray_free_history_noauth_witness.json").write_text(json.dumps(safe,indent=2,sort_keys=True)+"\n")
+          print("XRAY_SOURCE_CAPACITY_EXACT_514_AND_515_NOAUTH=PASS")
+          PY
+      - name: Upload numbers only, no source market data
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-free-history-capacity-rights-noauth-witness
+          path: ${{ runner.temp }}/xray_free_history_noauth_witness.json
+          if-no-files-found: error
+          retention-days: 14
