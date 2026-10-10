@@ -102,6 +102,18 @@ def test_recheck():
     later=dt.datetime(2026,10,10,1,tzinfo=dt.timezone.utc)
     s=state_fixture()
     assert choose(s,close,later)==["AAPL","GRAL"]
+    # Source publication does NOT require a positive trading candidate.
+    fail_observed=copy.deepcopy(s)
+    fail_observed["results"]["DONE"]["status"]="FAIL_PRICE"
+    fail_observed["results"]["DONE"]["info"]={"proof":"ASOF_CLOSE","price":4.0}
+    assert choose(fail_observed,close,later)==["AAPL","GRAL"]
+    fake_overlay=copy.deepcopy(fail_observed)
+    fake_overlay["results"]["DONE"]["resolution_overlay"]=True
+    assert choose(fake_overlay,close,later)==[]
+    fake_overlay["results"]["DONE"]["resolution_overlay"]=False
+    fake_overlay["results"]["DONE"]["attempts"]=0
+    assert choose(fake_overlay,close,later)==[]
+
     assert choose_canary_probe(s,close,later)==[]
     not_ready=copy.deepcopy(s)
     not_ready["results"]["DONE"]={"status":"UNKNOWN_STATIC",
