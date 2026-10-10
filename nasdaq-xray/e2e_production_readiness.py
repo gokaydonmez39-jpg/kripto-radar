@@ -9,6 +9,7 @@ import argparse
 import hashlib
 import json
 import math
+import re
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parent
@@ -86,6 +87,42 @@ def mc_exact(mc,price,price_sha):
             if "r92_eligible" in row and row["r92_eligible"] is not False:
                 return False
     return seen==symbols
+
+def terminal_bound_mc_selection(valid_bridge_names,terminal,asof,blob_sha):
+    """Select ONLY the exact terminal-attested Git blob from source-validated MC.
+
+    Historical version files may coexist. No filename sorting, newest-wins
+    selection, fabricated PRIMARY, or unbound fallback is allowed.
+    A separate terminal_chain_exact() checks every other upstream source SHA.
+    """
+    if (not isinstance(valid_bridge_names,list)
+            or not valid_bridge_names
+            or not all(isinstance(x,str) for x in valid_bridge_names)
+            or len(valid_bridge_names)!=len(set(valid_bridge_names))
+            or not isinstance(terminal,dict)
+            or not isinstance(asof,str)
+            or not re.fullmatch(r"20\d{2}-\d{2}-\d{2}",asof)):
+        return None
+    evidence=terminal.get("evidence")
+    if not isinstance(evidence,dict):return None
+    binding=evidence.get("mc")
+    if not isinstance(binding,dict):return None
+    path=binding.get("path")
+    blob=binding.get("blob_sha")
+    if not isinstance(path,str) or not isinstance(blob,str):return None
+    prefix="canonical_mc_bridge_"+asof.replace("-","")+"_c417_dv30_v"
+    if not path.startswith("nasdaq-xray/"):return None
+    name=path[len("nasdaq-xray/"):]
+    if not (name.startswith(prefix)
+            and name.endswith(".json")
+            and re.fullmatch(r"[1-9][0-9]*",name[len(prefix):-5])
+            and name in valid_bridge_names
+            and re.fullmatch(r"[0-9a-f]{40}",blob)):
+        return None
+    # Git readback: the terminal must bind the precise bytes on disk.
+    # A matching same-day filename without its SHA never creates authority.
+    actual=blob_sha(name)
+    return name if actual is not None and actual==blob else None
 
 def terminal_research_seal(terminal):
     """Full-universe success OR independently attested candidate-local success.
@@ -305,7 +342,11 @@ def snapshot():
         try:j=json.loads(p.read_text(encoding="utf-8"))
         except (OSError,ValueError):continue
         if mc_exact(j,price,price_sha):mcs.append(p.name)
-    fail("CURRENT_MC_AUTHORITY_MISSING",len(mcs)==1)
+    # Do not fail on a *second valid revision* of the same day: the terminal
+    # selects exactly one cryptographically bound bridge. But valid upstream
+    # source material alone does not attest the terminal research chain.
+    fail("CURRENT_MC_AUTHORITY_MISSING",bool(mcs))
+    terminal_mc=terminal_bound_mc_selection(mcs,terminal,asof,sha)
     exact_terminal=(terminal.get("asof_et")==asof
         and terminal_research_seal(terminal)
         and terminal.get("compiled_policy_hash")==POLICY)
@@ -316,8 +357,8 @@ def snapshot():
         "history":"canonical_current_history.json",
         "events":"canonical_current_event_state.json",
         "final":"canonical_current_final_tech.json"}.items()}
-    current_chain=(len(mcs)==1 and terminal_chain_exact(
-        terminal,asof,source_shas,mcs[0],sha(mcs[0])))
+    current_chain=(terminal_mc is not None and terminal_chain_exact(
+        terminal,asof,source_shas,terminal_mc,sha(terminal_mc)))
     fail("TERMINAL_CURRENT_MC_CHAIN_NOT_PROVEN",current_chain)
     pointer=read("chatgpt_canonical_state_v2.json")
     prepared=bool(current_chain and freshness.get("freshness_ready") is True and registered_research_candidate_exact(
@@ -342,7 +383,8 @@ def snapshot():
                 "SETTLEMENT_UNVERIFIED_OR_PRICE_SHA_DRIFT",
                 "IDENTITY_PARTITION_INCOMPLETE","PRICE_BLOCKED_30_SESSION_BARS",
                 "PRICE_UNKNOWN_CURRENT")),
-        "current_mc_authority_count":len(mcs),
+        "current_mc_authority_count":1 if terminal_mc else 0,
+        "current_mc_valid_revision_count":len(mcs),
         "latest_completed_nasdaq_session":freshness.get("latest_completed_nasdaq_session"),
         "official_nasdaq_session_freshness_attested":freshness.get("freshness_ready") is True,
         "source_session_lags":freshness.get("session_lag"),
@@ -448,6 +490,39 @@ def selftest():
             "pass_hash":bridge["input_pass_hash"]}
         assert mc_exact(bridge,historical_scope,bridge["input_blob_sha"]),(
             "HISTORIC_NATIVE_MC_SCHEMA_FALSE_REJECTION",file_name)
+    # RED: multiple historically valid same-ASOF MC revision files must not
+    # indefinitely deadlock current readiness when terminal pins EXACTLY ONE
+    # Git blob. No terminal-selected proof => always blocked.
+    v1="canonical_mc_bridge_20261009_c417_dv30_v1.json"
+    v2="canonical_mc_bridge_20261009_c417_dv30_v2.json"
+    mc_terminal={"evidence":{"mc":{"path":"nasdaq-xray/"+v2,
+                                  "blob_sha":"b"*40}}}
+    sha_lookup=lambda name: {"a":None,v1:"a"*40,v2:"b"*40}.get(name)
+    assert terminal_bound_mc_selection([v1,v2],mc_terminal,
+                 "2026-10-09",sha_lookup)==v2, "MULTIPLE_VALID_REVISIONS_FALSE_BLOCK"
+    for altered in (
+        {"path":"nasdaq-xray/"+v2,"blob_sha":"a"*40},
+        {"path":"nasdaq-xray/"+v1,"blob_sha":"b"*40},
+        {"path":"nasdaq-xray/../"+v2,"blob_sha":"b"*40},
+        {"path":"nasdaq-xray/canonical_mc_bridge_20261008_c417_dv30_v2.json","blob_sha":"b"*40},
+        {"path":"nasdaq-xray/"+v2,"blob_sha":"b"*39+"c"},
+    ):
+        poisoned={"evidence":{"mc":altered}}
+        assert terminal_bound_mc_selection([v1,v2],poisoned,
+                        "2026-10-09",sha_lookup) is None, "UNBOUND_MC_AUTHORITY_ACCEPTED"
+    assert terminal_bound_mc_selection([v1,v2],{},
+                   "2026-10-09",sha_lookup) is None
+    assert terminal_bound_mc_selection([v2,v2],mc_terminal,
+                   "2026-10-09",sha_lookup) is None
+    assert terminal_bound_mc_selection([],mc_terminal,
+                   "2026-10-09",sha_lookup) is None
+    assert terminal_bound_mc_selection([v1,v2],{"evidence":[]},
+                   "2026-10-09",sha_lookup) is None
+    assert terminal_bound_mc_selection([v1,v2],{"evidence":{"mc":[]}},
+                   "2026-10-09",sha_lookup) is None
+    assert terminal_bound_mc_selection([v1,v2],{"evidence":{"mc":{}}},
+                   "2026-10-09",sha_lookup) is None
+    print("XRAY_MC_TERMINAL_BOUND_SELECTION=PASS_MULTI_REVISION_POSITIVE_11_NO_AUTHORITY_NEGATIVES")
     print("XRAY_MC_HISTORIC_REAL_BRIDGES=PASS_OCT05_504_OCT07_510_NO_CURRENT_PROMOTION")
     print("XRAY_MC_NATIVE_NEGATIVE_ROWS=PASS_3_MISSING_FLAG_POSITIVES_6_CONTRADICTORY_NEGATIVES")
     print("XRAY_MC_PRIMARY_ROW_EVIDENCE=PASS_8_ADVERSARIAL_NEGATIVES")
