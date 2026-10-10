@@ -17,6 +17,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from collections import Counter
+from alpaca_sip_paginated_transport_shadow import collect_pages
 from zoneinfo import ZoneInfo
 
 ROOT=pathlib.Path(__file__).resolve().parent
@@ -111,33 +112,39 @@ def load_scope():
     return m,p,symbols,dates,blob_sha(master_path),blob_sha(price_path)
 
 def request_batch(symbols,start,period_end,key,secret):
-    query=urllib.parse.urlencode({
-        "symbols":",".join(symbols),"start":start,"end":period_end,
-        "timeframe":"1Day","feed":"sip","adjustment":"raw","limit":10000})
+    """Consume ALL pages; no partial symbol cohort can appear complete.
+
+    Vendor data stays in process memory. No persistent cached bars, quote
+    redistribution, LICENSE PASS or canonical promotion is implied.
+    """
     if not key or not secret:
         raise RuntimeError("ALPACA_SECRETS_MISSING")
-    req=urllib.request.Request(BASE+"?"+query,headers={
-        "APCA-API-KEY-ID":key,"APCA-API-SECRET-KEY":secret,
-        "Accept":"application/json","User-Agent":"NASDAQ-XRAY-Research/1.0"})
-    try:
-        with urllib.request.urlopen(req,timeout=25) as reply:
-            if reply.status!=200:raise RuntimeError("ALPACA_HTTP_NON200")
-            raw=reply.read(3_000_001)
-            if len(raw)>3_000_000:raise RuntimeError("ALPACA_RESPONSE_TOO_LARGE")
-    except urllib.error.HTTPError as exc:
-        # Account/auth/rate/entitlement errors are diagnostics, never synthetic
-        # fallback price data. Do not surface credentials in logs.
-        raise RuntimeError("ALPACA_HTTP_"+str(exc.code)) from exc
-    except (TimeoutError,urllib.error.URLError) as exc:
-        raise RuntimeError("ALPACA_NETWORK_UNAVAILABLE") from exc
-    data=json.loads(raw)
-    if not isinstance(data,dict) or not isinstance(data.get("bars"),dict):
-        raise RuntimeError("ALPACA_RESPONSE_SCHEMA_INVALID")
-    if data.get("next_page_token"):
-        # Reject partial paginated windows; a later complete parser must
-        # explicitly iterate bounded tokens with same exact scope SHA.
-        raise RuntimeError("ALPACA_PAGE_INCOMPLETE_FAIL_CLOSED")
-    return data["bars"]
+    base={"symbols":",".join(symbols),"start":start,"end":period_end,
+          "timeframe":"1Day","feed":"sip","adjustment":"raw","limit":10000}
+    def fetch_page(token):
+        params=dict(base)
+        if token is not None:
+            params["page_token"]=token
+        req=urllib.request.Request(BASE+"?"+urllib.parse.urlencode(params),headers={
+            "APCA-API-KEY-ID":key,"APCA-API-SECRET-KEY":secret,
+            "Accept":"application/json","User-Agent":"NASDAQ-XRAY-Research/1.0"})
+        try:
+            with urllib.request.urlopen(req,timeout=25) as reply:
+                if reply.status!=200:
+                    raise RuntimeError("ALPACA_HTTP_NON200")
+                raw=reply.read(3_000_001)
+                if len(raw)>3_000_000:
+                    raise RuntimeError("ALPACA_RESPONSE_TOO_LARGE")
+        except urllib.error.HTTPError as exc:
+            raise RuntimeError("ALPACA_HTTP_"+str(exc.code)) from exc
+        except (TimeoutError,urllib.error.URLError) as exc:
+            raise RuntimeError("ALPACA_NETWORK_UNAVAILABLE") from exc
+        try:
+            return json.loads(raw)
+        except (ValueError,TypeError) as exc:
+            raise RuntimeError("ALPACA_JSON_INVALID") from exc
+
+    return collect_pages(symbols,fetch_page)
 
 def run(now=None):
     if now is None:now=dt.datetime.now(UTC)
@@ -206,7 +213,40 @@ def selftest():
     assert evaluate_daily(corrupted,dates,"2026-10-08",now)[1]=="OHLCV_OR_DATE_PARSE_ERROR"
     corrupted=deepcopy(sample);corrupted[-1]["c"]=True
     assert evaluate_daily(corrupted,dates,"2026-10-08",now)[1]=="OHLCV_NOT_NUMERIC"
+    # In-process HTTP mock verifies page_token and unchanged exact query scope.
+    # It must never access a real provider or emit raw test rows.
+    from unittest.mock import patch
+    p0={"bars":{"AAPL":[bar(dates[-2])]},"next_page_token":"pageA=="}
+    p1={"bars":{"MSFT":[bar(dates[-1])]},"next_page_token":None}
+    seen=[]
+    class Reply:
+        status=200
+        def __init__(self,data):self.raw=json.dumps(data).encode()
+        def __enter__(self):return self
+        def __exit__(self,*args):return False
+        def read(self,n):return self.raw[:n]
+    def mock_open(req,timeout=None):
+        url=req.full_url
+        parsed=urllib.parse.urlsplit(url)
+        q=urllib.parse.parse_qs(parsed.query)
+        assert req.get_header("Apca-api-key-id")=="offline-key"
+        assert "offline-key" not in url and "offline-secret" not in url
+        assert q["feed"]==["sip"] and q["adjustment"]==["raw"]
+        assert q["symbols"]==["AAPL,MSFT"] and q["limit"]==["10000"]
+        assert q["start"]==["2025-01-01"] and q["end"]==["2026-01-01"]
+        index=len(seen)
+        if index==0:
+            assert "page_token" not in q
+        else:
+            assert q["page_token"]==["pageA=="]
+        seen.append(q)
+        return Reply(p0 if index==0 else p1)
+    with patch("urllib.request.urlopen",side_effect=mock_open):
+        loaded=request_batch(["AAPL","MSFT"],"2025-01-01","2026-01-01",
+                             "offline-key","offline-secret")
+    assert len(seen)==2 and len(loaded["AAPL"])==len(loaded["MSFT"])==1
     print("XRAY_ALPACA_FREE_SIP_SHADOW_SELFTEST=PASS_HOLDBACK_30_SESSIONS_DUPLICATE_GAPS_ZERO_VOL_FUTURE")
+    print("XRAY_ALPACA_SIP_PAGINATED_REQUEST_MOCK=PASS_TWO_PAGES_SCOPE_CONSTANT_NO_NETWORK")
 if __name__=="__main__":
     p=argparse.ArgumentParser()
     p.add_argument("--selftest",action="store_true")
