@@ -49,6 +49,30 @@ jobs:
           python -m py_compile nasdaq-xray/twelve_data_history_full_pipeline_selftest.py
           python nasdaq-xray/twelve_data_history_resume.py --selftest
           python nasdaq-xray/twelve_data_history_full_pipeline_selftest.py
+      - name: Bind exact current PRICE PASS scope to 260 daily and 52 weekly official dates
+        run: |
+          python nasdaq-xray/current_history_source_request.py --selftest
+          python nasdaq-xray/current_history_source_request.py --out "$RUNNER_TEMP/xray_history_current_scope.json"
+          python - <<'PY'
+          import json,hashlib,subprocess,os
+          from pathlib import Path
+          q=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_history_current_scope.json").read_text())
+          p=json.loads(Path("nasdaq-xray/canonical_current_price_dv30.json").read_text())
+          actual=subprocess.check_output(["git","hash-object","nasdaq-xray/canonical_current_price_dv30.json"],text=True).strip()
+          assert q["source_price_blob_sha"]==actual
+          assert q["asof_et"]==p["asof_et"]
+          assert p["unknown_count"]==0 and p["blocked_count"]==0
+          assert q["source_price_pass_count"]==p["pass_count"]==len(q["symbol_scope"])
+          assert q["source_price_pass_hash"]==p["pass_hash"]
+          assert len(q["required_daily_official_sessions"])==260
+          assert len(q["required_completed_week_closes"])==52
+          assert q["required_daily_official_sessions"][-1]==p["asof_et"]
+          assert q["source_entitlement_proven"] is False
+          assert q["current_history_authority_proven"] is False
+          assert q["canonical_history_pass_created"]==0 and q["can_register_R92"] is False
+          assert q["execution"]=="NONE" and q["real_money"]=="NO-GO"
+          print("XRAY_CURRENT_PRICE_PASS_SCOPE_BOUND_TO_REAL_OFFICIAL_HISTORY_CALENDAR",p["pass_count"],p["asof_et"])
+          PY
       - name: No live source, PRIMARY, R92, account, trade or delivery
         run: |
           python - <<'PY'
@@ -57,11 +81,18 @@ jobs:
           assert not os.environ.get("XRAY_TWELVE_DATA_API_KEY")
           print("XRAY_HISTORY_TWO_PROVIDER_OFFLINE_ONLY_NO_VENDOR_DATA_NO_PRIMARY_NO_R92_NO_GO")
           import pathlib,subprocess
+          scope=json.loads((pathlib.Path(os.environ["RUNNER_TEMP"])/"xray_history_current_scope.json").read_text())
           out=pathlib.Path(os.environ["RUNNER_TEMP"])/"xray_grouped_twelve_offline_regression_witness.json"
           out.write_text(json.dumps({
             "schema":"XRAY_MASSIVE_TWELVE_260_SYNTHETIC_REGRESSION_CI_SHADOW_V1",
             "git_sha":subprocess.check_output(["git","rev-parse","HEAD"],text=True).strip(),
             "massive_offline_selftest":"PASS","twelve_offline_selftest":"PASS",
+            "price_pass_count":scope["source_price_pass_count"],
+            "price_blob_sha":scope["source_price_blob_sha"],
+            "asof_et":scope["asof_et"],
+            "official_daily_count":len(scope["required_daily_official_sessions"]),
+            "official_weekly_count":len(scope["required_completed_week_closes"]),
+            "current_history_scope_ready_no_market_bars":True,
             "current_price_unknown_promoted":False,
             "vendor_request_executed":False,"vendor_entitlement_verified":False,
             "canonical_history_promoted":False,"mc_primary_promoted":False,
@@ -75,6 +106,9 @@ jobs:
           import json,os,pathlib
           x=json.loads((pathlib.Path(os.environ["RUNNER_TEMP"])/"xray_grouped_twelve_offline_regression_witness.json").read_text())
           assert x["massive_offline_selftest"]=="PASS" and x["twelve_offline_selftest"]=="PASS"
+          assert x["price_pass_count"]>0 and len(x["price_blob_sha"])==40
+          assert x["official_daily_count"]==260 and x["official_weekly_count"]==52
+          assert x["current_history_scope_ready_no_market_bars"] is True
           for key in ("vendor_request_executed","vendor_entitlement_verified","canonical_history_promoted",
                       "mc_primary_promoted","r92_created","current_price_unknown_promoted"):
               assert x[key] is False,key
