@@ -35,7 +35,7 @@ ROOT=Path(__file__).resolve().parent
 REPO=ROOT.parent
 SCHEMA="XRAY_TWELVE_260_HISTORY_ENCRYPTED_SHADOW_V1"
 REPORT="XRAY_TWELVE_260_HISTORY_HEALTH_V1"
-MAX_CALLS=32
+MAX_CALLS=48
 MAX_RETRIES_PER_SYMBOL=3
 MIN_SPACING_SECONDS=9.0
 DAY_BUDGET=800
@@ -626,7 +626,7 @@ def selftest():
             assert no_more["individual_symbol_quarantined_after_3_count"]==1
             assert no_more["complete_260_symbols"]==1
             assert no_more["R92_AL"] is False
-    print("XRAY_TWELVE_260_RESUME_SELFTEST=PASS_ET_PUBLICATION_NONSTARVATION_RECOVERY_THREE_STRIKE_QUARANTINE_QUOTA_ENCRYPTION_NO_ALPHA")
+    print("XRAY_TWELVE_260_RESUME_SELFTEST=PASS_ET_PUBLICATION_NONSTARVATION_RECOVERY_THREE_STRIKE_QUARANTINE_QUOTA_ENCRYPTION_EARLY_CLOSE_CAPACITY_48_NO_ALPHA")
 
 def main():
     p=argparse.ArgumentParser()
@@ -634,7 +634,7 @@ def main():
     p.add_argument("--report",type=Path)
     p.add_argument("--checkpoint",type=Path)
     p.add_argument("--restore",type=Path)
-    p.add_argument("--limit",type=int,default=32)
+    p.add_argument("--limit",type=int,default=48)
     p.add_argument("--check-restore",type=Path)
     p.add_argument("--export-checkpoint",type=Path)
     p.add_argument("--export-dir",type=Path)
