@@ -91,7 +91,11 @@ def main():
         assert corrupted["counts"]["invalid_or_unreadable"]==1
         assert not corrupted["can_register_R92"]
         tampered=enc.read_bytes()
-        enc.write_bytes(tampered[:-1]+b"Z")
+        index=len(tampered)//2
+        assert 8<=index<len(tampered)-8
+        changed=b"A" if tampered[index:index+1]!=b"A" else b"B"
+        assert changed!=tampered[index:index+1]
+        enc.write_bytes(tampered[:index]+changed+tampered[index+1:])
         try:load(enc,s,c)
         except ValueError:pass
         else:raise AssertionError("CIPHER_TAMPER_ACCEPTED")
