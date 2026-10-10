@@ -27,7 +27,11 @@ REQUEST_DAILY_OUTPUTSIZE = 320
 FULL_UNIVERSE_REFERENCE = 3401
 EULERPOOL_MONTHLY_REQUESTS = 100000  # 2026-10-09 current official pricing, NOT granted entitlement
 BUSINESSQUANT_DAILY_REQUESTS = 30
+BUSINESSQUANT_MAX_FREE_TICKERS_PER_REQUEST = 2  # published pricing, not tested access
 BUSINESSQUANT_MONTHLY_GB = 0.1
+STASHGAMMA_DAILY_REQUESTS = 800  # provider's own claim, NOT data rights
+STASHGAMMA_HOURLY_REQUESTS = 300
+STASHGAMMA_WEEKLY_REQUESTS = 4000
 STRESS_SESSIONS_PER_MONTH = 22  # conservative calendar stress scenario, NOT a forecast
 
 
@@ -53,6 +57,11 @@ def make(price: dict, source_blob_sha: str, universe_count: int = FULL_UNIVERSE_
     assert type(universe_count) is int and universe_count >= len(symbols)
     count = len(symbols)
     credits = count * SERIES_COST_PER_SYMBOL
+    # QQQ benchmark is distinct from the PRICE equity cohort.
+    extra_benchmark = 0 if "QQQ" in symbols else 1
+    history_targets = count + extra_benchmark
+    bq_calls = math.ceil(history_targets / BUSINESSQUANT_MAX_FREE_TICKERS_PER_REQUEST)
+    bq_required_batch_one_day = math.ceil(history_targets / BUSINESSQUANT_DAILY_REQUESTS)
     return {
         "schema": SCHEMA, "status": "RESEARCH_QUOTA_FEASIBLE_ENTITLEMENT_AND_BARS_UNVERIFIED",
         "asof_et": asof, "policy": "C4.17", "control": "C4.27",
@@ -129,11 +138,43 @@ def make(price: dict, source_blob_sha: str, universe_count: int = FULL_UNIVERSE_
                 "daily_requests": BUSINESSQUANT_DAILY_REQUESTS,
                 "monthly_data_transfer_gb": BUSINESSQUANT_MONTHLY_GB,
                 "multi_ticker_eod_advertised": True,
-                "minimum_symbols_per_request_to_cover_scope_in_one_day": math.ceil(count / BUSINESSQUANT_DAILY_REQUESTS),
+                "published_free_simultaneous_ticker_limit": BUSINESSQUANT_MAX_FREE_TICKERS_PER_REQUEST,
+                "scope_including_qqq": history_targets,
+                "minimum_symbols_per_request_to_cover_scope_in_one_day": bq_required_batch_one_day,
+                "one_day_required_batch_size_exceeds_published_free_limit":
+                    bq_required_batch_one_day > BUSINESSQUANT_MAX_FREE_TICKERS_PER_REQUEST,
+                "minimum_calls_for_complete_initial_scope": bq_calls,
+                "minimum_calendar_days_for_complete_initial_scope": math.ceil(
+                    bq_calls / BUSINESSQUANT_DAILY_REQUESTS),
+                "one_day_full_scope_refresh_feasible_by_published_limits":
+                    bq_calls <= BUSINESSQUANT_DAILY_REQUESTS,
+                "published_call_limit_not_access_entitlement": True,
+                "source_venue_consolidated_volume_proven": False,
+                "market_data_automatic_cache_rights_verified": False,
                 "actual_batch_max_verified": False,
                 "registered_key_available": False,
                 "actual_260_bar_full_scope_verified": False,
                 "public_data_repository_export_authorized": False,
+                "production_authority": False,
+            },
+            "StashGamma Free (unverified research lead)": {
+                "published_docs": "https://stashgamma.com/developer-docs",
+                "published_rate_limit_hour": STASHGAMMA_HOURLY_REQUESTS,
+                "published_rate_limit_day": STASHGAMMA_DAILY_REQUESTS,
+                "published_rate_limit_week": STASHGAMMA_WEEKLY_REQUESTS,
+                "published_single_symbol_eod_endpoint": True,
+                "scope_including_qqq": history_targets,
+                "minimum_calls_one_initial_scope": history_targets,
+                "minimum_hours_for_initial_scope": math.ceil(
+                    history_targets / STASHGAMMA_HOURLY_REQUESTS),
+                "initial_scope_fits_published_daily_limit":
+                    history_targets <= STASHGAMMA_DAILY_REQUESTS,
+                "live_production_source_measured": False,
+                "all_515_symbols_covered_tested": False,
+                "consolidated_us_equity_volume_independently_proven": False,
+                "automated_non_display_private_cache_rights_verified": False,
+                "api_key_available_in_runner": False,
+                "market_cap_primary_authority": False,
                 "production_authority": False,
             },
             "HF Data Library": {
@@ -183,7 +224,13 @@ def selftest() -> None:
     assert e["production_authority"] is False
     b = other["Business Quant Free"]
     assert b["minimum_symbols_per_request_to_cover_scope_in_one_day"] == 1
+    assert b["minimum_calls_for_complete_initial_scope"] == 2  # AAA, BBB, QQQ
+    assert b["one_day_full_scope_refresh_feasible_by_published_limits"] is True
     assert b["production_authority"] is False
+    sg=other["StashGamma Free (unverified research lead)"]
+    assert sg["minimum_calls_one_initial_scope"]==3
+    assert sg["initial_scope_fits_published_daily_limit"] is True
+    assert sg["production_authority"] is False
     assert other["HF Data Library"]["post_2022_data_qualifies_as_NASDAQ_consolidated_DV30"] is False
     wide = dict(p, pass_symbols=[f"S{i:04d}" for i in range(801)], pass_count=801)
     wide["pass_hash"] = hashlib.sha256("\n".join(wide["pass_symbols"]).encode()).hexdigest()
@@ -191,8 +238,27 @@ def selftest() -> None:
     assert out["scope_initial_credit_estimate"] == 801 and out["scope_fits_published_daily_budget"] is False
     assert out["scope_lower_bound_minutes_at_published_rate"] == 101
     assert out["history_authoritative"] is False
-    assert out["other_free_source_quota_research"]["Business Quant Free"]["minimum_symbols_per_request_to_cover_scope_in_one_day"] == 27
+    big_bq=out["other_free_source_quota_research"]["Business Quant Free"]
+    assert big_bq["minimum_symbols_per_request_to_cover_scope_in_one_day"] == 27
+    assert big_bq["minimum_calls_for_complete_initial_scope"] == 401
+    assert big_bq["minimum_calendar_days_for_complete_initial_scope"] == 14
+    assert big_bq["one_day_full_scope_refresh_feasible_by_published_limits"] is False
+    assert big_bq["one_day_required_batch_size_exceeds_published_free_limit"] is True
+    assert big_bq["market_data_automatic_cache_rights_verified"] is False
     assert out["other_free_source_quota_research"]["Eulerpool Free"]["production_authority"] is False
+    current514=dict(p,pass_symbols=[f"S{i:04d}" for i in range(514)],pass_count=514)
+    current514["pass_hash"]=hashlib.sha256("\\n".join(current514["pass_symbols"]).encode()).hexdigest()
+    b514=make(current514,"a"*40)["other_free_source_quota_research"]["Business Quant Free"]
+    assert b514["scope_including_qqq"]==515
+    assert b514["minimum_calls_for_complete_initial_scope"]==258
+    assert b514["minimum_calendar_days_for_complete_initial_scope"]==9
+    assert b514["minimum_symbols_per_request_to_cover_scope_in_one_day"]==18
+    assert b514["one_day_full_scope_refresh_feasible_by_published_limits"] is False
+    sg514=make(current514,"a"*40)["other_free_source_quota_research"]["StashGamma Free (unverified research lead)"]
+    assert sg514["minimum_calls_one_initial_scope"]==515
+    assert sg514["initial_scope_fits_published_daily_limit"] is True
+    assert sg514["minimum_hours_for_initial_scope"]==2
+    assert sg514["production_authority"] is False
     corruptions = [
         dict(p, pass_count=3),
         dict(p, pass_hash="0" * 64),
@@ -232,6 +298,14 @@ def main() -> None:
     print("XRAY_EULERPOOL_FREE_MONTHLY_CAP=" + str(alt["Eulerpool Free"]["monthly_requests"]))
     print("XRAY_EULERPOOL_FULL3401_STRESS22_REQUESTS=" + str(alt["Eulerpool Free"]["stress_22_session_full_universe_requests"]))
     print("XRAY_BUSINESSQUANT_FREE_MIN_BATCH_SIZE=" + str(alt["Business Quant Free"]["minimum_symbols_per_request_to_cover_scope_in_one_day"]))
+    bq=alt["Business Quant Free"]
+    print("XRAY_BQ_FREE_SCOPE_WITH_QQQ="+str(bq["scope_including_qqq"]))
+    print("XRAY_BQ_FREE_MIN_CALLS="+str(bq["minimum_calls_for_complete_initial_scope"]))
+    print("XRAY_BQ_FREE_MIN_DAYS="+str(bq["minimum_calendar_days_for_complete_initial_scope"]))
+    print("XRAY_BQ_FREE_DAILY_FULL_SCOPE_FEASIBLE="+str(bq["one_day_full_scope_refresh_feasible_by_published_limits"]).lower())
+    sg=alt["StashGamma Free (unverified research lead)"]
+    print("XRAY_STASHGAMMA_QUOTA_THEORETIC_SCOPE="+str(sg["minimum_calls_one_initial_scope"]))
+    print("XRAY_STASHGAMMA_SOURCE_RIGHTS=UNKNOWN_NO_GO")
     print("XRAY_HF_IEX_ONLY_NOT_CONSOLIDATED=PASS_NONAUTHORITY")
     print("XRAY_TWELVE_LICENSE_AND_BARS=" + ("UNVERIFIED" if not out["history_authoritative"] else "ERROR"))
     print("XRAY_TWELVE_BASIC_PRIMARY_MC=NOT_AVAILABLE_ULTRA_ONLY")
