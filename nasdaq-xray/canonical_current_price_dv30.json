@@ -3206,11 +3206,10 @@
   "c417_rallies_primary_post_recovery_veto_symbols": [],
   "counts": {
     "FAIL_DV30": 1339,
-    "FAIL_DV30_INSUFFICIENT_SESSIONS": 10,
+    "FAIL_DV30_INSUFFICIENT_SESSIONS": 11,
     "FAIL_PRICE": 1311,
     "FAIL_PRICE_NO_ASOF_BAR": 9,
-    "PASS_PRICE_DV30": 514,
-    "UNKNOWN": 1
+    "PASS_PRICE_DV30": 514
   },
   "current_baseline_reuse": true,
   "exception_bridge_meta": {
@@ -3264,11 +3263,15 @@
     "status": "NOT_EVALUATED"
   },
   "global_asof_sentinel_fast_fail": false,
+  "gral_same_asof_halt_fail_only_count": 1,
+  "gral_same_asof_halt_fail_only_symbols": [
+    "GRAL"
+  ],
   "historical_halt_terminalized_count": 0,
   "historical_halt_terminalized_symbols": [],
   "monotonic_legacy_pass_reuse_count": 0,
   "official_halt_guard_meta": {
-    "content_sha256": "32c10fc708dc2466d8789f9b33bfb53655e1958ef23b92d32c06b5df261aec76",
+    "content_sha256": "d786f43667042432a40c6512cf5be854ca36d1c4bc6cf33b7b9de7d3cd8c0b55",
     "path": "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_official_source_guard.json",
     "source_status": "PASS",
     "status": "PASS"
@@ -3281,12 +3284,8 @@
     "record_count": 13,
     "status": "PASS"
   },
-  "official_listing_terminalized_count": 3,
-  "official_listing_terminalized_symbols": [
-    "AIOK",
-    "RTSN",
-    "TRXB"
-  ],
+  "official_listing_terminalized_count": 0,
+  "official_listing_terminalized_symbols": [],
   "pass_count": 514,
   "pass_hash": "cb6d740f43378cacca40351e7503384d52b5a81a8b9b6cdc444f58a3965bbaef",
   "pass_symbols": [
@@ -3820,7 +3819,7 @@
   "policy_replay_symbols": [],
   "real_money": "NO-GO",
   "redo_deferred_to_bridge": true,
-  "reevaluated_count": 4,
+  "reevaluated_count": 1,
   "results": {
     "AACG": {
       "info": {
@@ -6085,7 +6084,7 @@
         "source": "NASDAQ_TRADER_PRIMARY",
         "source_url": "https://m.nasdaqtrader.com/TraderNews.aspx?id=ECA2026-690"
       },
-      "provenance": "OFFICIAL_RECENT_LISTING_FAIL_ONLY",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "FAIL_DV30_INSUFFICIENT_SESSIONS"
     },
     "AIOS": {
@@ -30265,10 +30264,31 @@
     },
     "GRAL": {
       "info": {
-        "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
+        "alpha_authority": false,
+        "asof_et": "2026-10-09",
+        "decision_direction": "FAIL_ONLY_NEVER_PASS",
+        "execution": "NONE",
+        "expected_sessions": 30,
+        "mc_primary_authority": false,
+        "missing_sessions": [
+          "2026-09-23"
+        ],
+        "no_synthetic_bar": true,
+        "observed_usable_sessions": 29,
+        "official_event_witness_git_blob_sha": "55f807af528a723883e307105d7f59f202324dbb",
+        "official_halt_date": "2026-09-23",
+        "official_resumption_date": "2026-09-24",
+        "proof": "IMMUTABLE_OFFICIAL_RSS_HALT_PLUS_SAME_ASOF_29_SINA_BARS",
+        "real_money": "NO-GO",
+        "reason": "OFFICIAL_NASDAQ_GRAL_FULL_SESSION_HALT_EXACT30_UNUSABLE",
+        "same_asof_sina_queue_hash": "5520f9c2c16c484f75581f84a17fc6ec23e195665d9aed17351a852ca3981fef",
+        "same_asof_sina_state_git_blob_sha": "ffee6b60305336d9b6c89e52621f98a12a8850e9",
+        "schema": "XRAY_PRICE_GRAL_20261009_HALTED_SESSION_FAIL_ONLY_V1",
+        "source": "NASDAQ_TRADER_HISTORICAL_HALT_FAIL_ONLY",
+        "unknown_never_pass": true
       },
-      "provenance": "DYNAMIC_BRIDGE_DEFERRED",
-      "status": "UNKNOWN"
+      "provenance": "EXACT_20261009_OFFICIAL_HALT_SINA_FAIL_ONLY",
+      "status": "FAIL_DV30_INSUFFICIENT_SESSIONS"
     },
     "GRAN": {
       "info": {
@@ -57525,7 +57545,7 @@
         "source": "ISSUER_IR_PRIMARY",
         "source_url": "https://ir.retensionpharmaceuticals.com/news-releases/news-release-details/retension-pharmaceuticals-announces-pricing-initial-public"
       },
-      "provenance": "OFFICIAL_RECENT_LISTING_FAIL_ONLY",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "FAIL_DV30_INSUFFICIENT_SESSIONS"
     },
     "RUBI": {
@@ -65863,7 +65883,7 @@
         "source": "ISSUER_IR_PRIMARY",
         "source_url": "https://www.globenewswire.com/news-release/2026/10/09/3377793/0/en/trexbio-announces-pricing-of-initial-public-offering.html"
       },
-      "provenance": "OFFICIAL_RECENT_LISTING_FAIL_ONLY",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "FAIL_DV30_INSUFFICIENT_SESSIONS"
     },
     "TSAT": {
@@ -72718,7 +72738,7 @@
       "status": "FAIL_DV30"
     }
   },
-  "reused_terminal_count": 3180,
+  "reused_terminal_count": 3183,
   "schema": "XRAY_CANONICAL_PRICE_DV30_V1",
   "source_master_count": 3184,
   "source_master_queue_hash": "5520f9c2c16c484f75581f84a17fc6ec23e195665d9aed17351a852ca3981fef",
@@ -72727,9 +72747,7 @@
     "dv30": ">=50000000 exact30 median",
     "price": ">=5"
   },
-  "unknown_count": 1,
+  "unknown_count": 0,
   "unknown_never_pass": true,
-  "unknown_symbols": [
-    "GRAL"
-  ]
+  "unknown_symbols": []
 }
