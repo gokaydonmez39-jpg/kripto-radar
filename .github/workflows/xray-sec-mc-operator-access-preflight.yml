@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 8
     env:
-      XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
+      XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
