@@ -149,6 +149,15 @@ def select_shares(facts:dict,sub:dict,asof:str,expected_cik:str=CIK) -> dict:
             reason="NO_FRESH_ACCEPTANCE_BOUND_SINGLE_ENTITY_SHARES"
         return {"status":"UNKNOWN","reason":reason}
     valid.sort(key=lambda x:(x[0],x[1]))
+    # SEC CompanyFacts may contain repeated disclosures for one accepted
+    # accession and observation date. Never choose an arbitrary raw row when
+    # the latest identical filing vintage reports contradictory share counts.
+    latest_vintage=valid[-1][:3]  # acceptance time, period-end, accession
+    latest_values={row[3] for row in valid if row[:3]==latest_vintage}
+    if len(latest_values)!=1:
+        return {"status":"UNKNOWN",
+                "reason":"SEC_CONFLICTING_SAME_VINTAGE_SHARES",
+                "production_mc_primary_pass":False}
     t,end,acc,shares,age=valid[-1]
     # SEC CompanyFacts can omit dimensional share-class facts. No class
     # cardinality, corporate actions, split-adjustment or price is asserted.
