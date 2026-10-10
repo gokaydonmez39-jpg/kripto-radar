@@ -41,7 +41,12 @@ def timestamp_date(s):
     t=dt.datetime.fromisoformat(s.replace("Z","+00:00"))
     if t.tzinfo is None:
         raise ValueError("BAR_TIMESTAMP_NAIVE")
-    return t.astimezone(EST).date()
+    local=t.astimezone(EST)
+    # Alpaca 1Day SIP bars are stamped at midnight New York local time.
+    # An intraday/extended-hours record on the correct date is not a daily bar.
+    if local.time()!=dt.time(0,0):
+        raise ValueError("NON_DAILY_ALPACA_BAR_TIMESTAMP")
+    return local.date()
 
 def sufficient_delay(asof:str,now:dt.datetime)->bool:
     if now.tzinfo is None:
