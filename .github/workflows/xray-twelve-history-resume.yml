@@ -2,7 +2,7 @@ name: XRAY Twelve Basic Encrypted 260-Session EOD Shadow
 on:
   workflow_dispatch:
   push:
-    branches: [main]
+    branches: [main, fix/twelve-basic-zero-cost-epoch-capacity-20261011]
     paths:
       - "nasdaq-xray/twelve_data_history_resume.py"
       - "nasdaq-xray/twelve_data_history_full_pipeline_selftest.py"
