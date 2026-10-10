@@ -21,6 +21,20 @@ def run():
         assert len(rec["sources"])>=2
         days=mcal.get_calendar("NYSE").schedule(start_date=first,end_date=price["asof_et"])
         assert 0<len(days)<260,(symbol,len(days))
+    # Official Nasdaq ECA2025-559: same common shares traded as SOLSV
+    # when-issued from 2025-10-20, then SOLS regular-way on 2025-10-30.
+    # Reject a registry that incorrectly treats 2025-10-30 as the
+    # earliest public trading date. This remains FAIL_ONLY (<260).
+    sols=evidence["records"]["SOLS"]
+    assert sols["mode"]=="OFFICIAL_LISTING_UPPER_BOUND_FAIL_ONLY"
+    assert sols["earliest_public_trading_date"]=="2025-10-20",sols
+    assert sols["regular_way_trading_date"]=="2025-10-30",sols
+    assert sols["predecessor_when_issued_symbol"]=="SOLSV",sols
+    assert "https://classic.nasdaqtrader.com/TraderNews.aspx?id=ECA2025-559" in sols["sources"]
+    sessions=mcal.get_calendar("NASDAQ").valid_days(
+        start_date=sols["earliest_public_trading_date"],
+        end_date=price["asof_et"])
+    assert 0<len(sessions)<260,len(sessions)
     source=(ROOT/"history_phase.py").read_text()
     tree=ast.parse(source)
     names={x.name for x in tree.body if isinstance(x,ast.FunctionDef)}
