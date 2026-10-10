@@ -131,6 +131,39 @@ def exact_checkpoint(cp,scope):
                 return False
     return True
 
+def is_obsolete_authenticated_reference_checkpoint(cp,scope):
+    """Only identify exact-source authenticated old Massive records for DISCARD.
+
+    A legacy record's provider date may have leaked future SEC facts because
+    it meant report period, not filing acceptance. NEVER carry any old record
+    into the replacement checkpoint. Strictly reject mixed/new malformed
+    semantics. Fernet authentication has already been performed by restore().
+    """
+    if (not isinstance(cp,dict) or cp.get("schema")!=SCHEMA
+        or cp.get("asof_et")!=scope["asof_et"]
+        or cp.get("price_blob_sha")!=scope["price_blob_sha"]
+        or cp.get("scope_hash")!=scope["scope_hash"]
+        or cp.get("execution")!="NONE" or cp.get("real_money")!="NO-GO"
+        or cp.get("unknown_never_pass") is not True
+        or cp.get("alpha_authority") is not False
+        or cp.get("policy_unchanged")!="C4.17"
+        or not isinstance(cp.get("records"),dict)
+        or not cp["records"]
+        or not set(cp["records"]).issubset(set(scope["symbols"]))
+        or type(cp.get("request_count_cumulative")) is not int
+        or cp["request_count_cumulative"]<len(cp["records"])):
+        return False
+    return all(
+        isinstance(rec,dict)
+        and rec.get("source")=="MASSIVE_REFERENCE_TICKER_OVERVIEW_PIT"
+        and rec.get("asof_et")==scope["asof_et"]
+        and rec.get("alpha_authority") is False
+        and rec.get("r92_eligible") is False
+        and "filing_acceptance_pit_attested" not in rec
+        and "possible_historical_filing_lookahead" not in rec
+        for rec in cp["records"].values()
+    )
+
 def restore(ciphertext:bytes,fernet,scope):
     if not ciphertext:
         return fresh_checkpoint(scope),False
@@ -150,6 +183,11 @@ def restore(ciphertext:bytes,fernet,scope):
             raise ValueError("CHECKPOINT_SCHEMA_CHANGED")
         return fresh_checkpoint(scope),False
     if not exact_checkpoint(cp,scope):
+        if is_obsolete_authenticated_reference_checkpoint(cp,scope):
+            # This ciphertext was authentic, but the data's historical
+            # availability time was never SEC-filing-attested. Discard all
+            # observations, not just the misleading legacy source label.
+            return fresh_checkpoint(scope),False
         raise ValueError("CHECKPOINT_SOURCE_OR_SEMANTICS_DRIFT")
     return cp,True
 
