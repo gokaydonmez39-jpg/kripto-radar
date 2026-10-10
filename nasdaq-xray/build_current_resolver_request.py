@@ -2,6 +2,7 @@
 from __future__ import annotations
 import hashlib,json,os
 from pathlib import Path
+from settlement_same_asof_failonly_rebind import safe_same_asof_failonly_settlement
 
 ROOT=Path(__file__).resolve().parent
 STATE=Path(os.getenv("XRAY_RESOLVER_STATE",str(ROOT/"canonical_current_full_state.json")))
@@ -401,6 +402,20 @@ def main():
     selected_policy_bridge=select_current_policy_resolver_bridge(
         current_policy_bridges,current_price_blob,current_request_blob
     )
+    # When an earlier immutable SAME-ASOF witness has independently measured
+    # the RTH settlement, an exact and strictly FAIL-only classification replay
+    # must not force new paid SIP measurements or fabricate a settlement gap.
+    # This fallback is ONLY for settlement; it is not a new PRICE/MC authority.
+    # All old PASS must remain identical PASS; every former unresolved symbol
+    # must now be terminal FAIL; the three settlement cores must be unchanged.
+    if (selected_policy_bridge is None and settlement_required
+        and not union and p.get("unknown_count")==0 and p.get("blocked_count")==0):
+        matching=[row for row in current_policy_bridges
+                  if safe_same_asof_failonly_settlement(
+                      row[1],p,m,blob_sha(MASTER),current_price_blob)]
+        assert len(matching)<=1, "AMBIGUOUS_FAILONLY_SETTLEMENT_WITNESS"
+        if matching:
+            selected_policy_bridge=matching[0]
     settlement_already_proven=selected_policy_bridge is not None
     settlement_bridge_blob_sha=blob_sha(selected_policy_bridge[0]) if selected_policy_bridge else None
     settlement_bridge_path=(str(selected_policy_bridge[0].relative_to(ROOT.parent)).replace("\\","/") if selected_policy_bridge else None)
