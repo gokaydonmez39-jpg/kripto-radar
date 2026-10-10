@@ -1,7 +1,7 @@
 name: XRAY Sina Oct7-Oct9 ASOF Recovery Regression (SHADOW)
 on:
   push:
-    branches: [audit/c417-mc-alternatives-sec-pit-20261010]
+    branches: [main, audit/c417-mc-alternatives-sec-pit-20261010]
     paths:
       - "nasdaq-xray/research/test_sina_asof_recovery.py"
       - "nasdaq-xray/sina_identity_epoch.py"
@@ -55,7 +55,7 @@ jobs:
               "delivery_claimed":False,
               "execution":"NONE",
               "real_money":"NO-GO",
-              "release_status":"RESEARCH_ONLY_NOT_PRODUCTION"
+              "release_status":"OFFLINE_TEST_ONLY_NOT_REAL_VENDOR_OR_ALPHA_PROOF"
           },sort_keys=True,indent=2)+"\n")
           PY
       - name: Upload safe diagnostic regression-only artifact
