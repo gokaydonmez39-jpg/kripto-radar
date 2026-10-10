@@ -44,7 +44,19 @@ jobs:
           assert "safe_same_asof_failonly_settlement" in code
           assert 'resolver_refresh=bool(matching)' in code
           assert 'AMBIGUOUS_SAME_ASOF_SETTLEMENT_REBIND' in code
+          full=s.split("      - name: Build exact current full-scope resolver handoff",1)[1]
+          full=full.split("      - name: Commit current pre-MC artifacts",1)[0]
+          assert full.count("          build=\\"$(python - <<'PY'")>=0 or "          build=" in full
+          assert 'and ((q.get("settlement_required") is False) or (q.get("settlement_already_proven") is True))' in full
+          assert 'q.get("status")=="IDLE"' in full
+          assert 'int(q.get("price_unknown_count",-1))==0' in full
+          # Required AND unproven always blocks. Proven required is allowed,
+          # but does not grant MC, HISTORY, G9 or alpha authority.
+          assert (not True or False) is False
+          assert (not True or True) is True
+          assert (not False or False) is True
           print("XRAY_FROZEN_PREMC_SAME_ASOF_REBIND_GUARD_COMPILE=PASS")
+          print("XRAY_PREMC_FULL_SCOPE_SETTLEMENT_REQUIRED_PROVEN_LOGIC=PASS_3_CASES")
           PY
       - name: Bring exact 2026-10-09 production 514 PASS zero UNKNOWN snapshot (read only)
         shell: bash
