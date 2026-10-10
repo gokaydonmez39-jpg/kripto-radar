@@ -1,0 +1,170 @@
+#!/usr/bin/env python3
+"""Validate SOURCE-scope math in v46 shadow triage; NOT data-provider proof.
+
+No network, API credentials, canonical mutations, MC promotion or notifications.
+This protects readers against accidental treatment of connected-app observations
+as authorized same-ASOF market-data evidence.
+"""
+import copy
+import hashlib
+import json
+from pathlib import Path
+
+ROOT=Path(__file__).resolve().parents[1]
+RECORD=Path(__file__).with_name(
+    "continuation_checkpoint_20261010_price514_three_source_shadow_triage_v46.json"
+)
+
+def git_blob_sha(raw:bytes)->str:
+    return hashlib.sha1(b"blob "+str(len(raw)).encode()+b"\0"+raw).hexdigest()
+
+def validate(record:dict,price:dict,price_sha:str)->tuple[bool,list[str]]:
+    errors=[]
+    def demand(test,reason):
+        if not test:errors.append(reason)
+    demand(record.get("schema")=="XRAY_PRICE514_THREE_SOURCE_RESEARCH_SHADOW_TRIAGE_V1","SCHEMA_DRIFT")
+    demand(record.get("source_price_git_blob_sha")==price_sha,"PRICE_SHA_DRIFT")
+    demand(record.get("asof_et")==price.get("asof_et"),"ASOF_MISMATCH")
+    scope=price.get("pass_symbols") or []
+    n=price.get("pass_count")
+    demand(type(n) is int and len(scope)==n and len(set(scope))==n,"PRICE_SCOPE_INVALID")
+    demand(record.get("price_pass_count")==n,"PRICE_PASS_COUNT_MISMATCH")
+    universe=set(scope)
+    h=record.get("history_alpaca_connected") or {}
+    m=record.get("mc_longbridge_connected") or {}
+    sec=record.get("sec_edgar") or {}
+    missing=h.get("incomplete_symbols") or []
+    below=m.get("below_floor_symbols") or []
+    demand(len(missing)==len(set(missing)) and set(missing)<=universe,"HISTORY_SET_INVALID")
+    demand(len(below)==len(set(below)) and set(below)<=universe,"MC_SET_INVALID")
+    demand(h.get("requested_price_pass_symbols")==n and h.get("batches_complete")==26
+           and h.get("exchange_sessions_exact")==260 and h.get("weekly_last_closes_exact")==52
+           and h.get("calendar_first")=="2025-09-29"
+           and h.get("calendar_last")=="2026-10-09", "HISTORY_SCOPE_UNVERIFIED")
+    demand(h.get("exact_session_and_week_date_coverage")==n-len(missing)
+           and h.get("incomplete_date_coverage")==len(missing), "HISTORY_COUNT_MISMATCH")
+    # A symbol is NOT an asset identity. SPCX formerly denoted an ETF that
+    # changed to SPCK; its history must never fill the new SPCX issuer gap.
+    # This only validates the recorded non-authoritative warning, not source truth.
+    alerts=record.get("identity_reuse_alerts")
+    spcx_alerts=([a for a in alerts if isinstance(a,dict)
+                  and a.get("symbol")=="SPCX"]
+                 if isinstance(alerts,list) else [])
+    alert=spcx_alerts[0] if len(spcx_alerts)==1 else {}
+    demand(len(spcx_alerts)==1 and "SPCX" in set(missing)
+           and alert.get("asof_et")==record.get("asof_et")
+           and alert.get("problem")=="SYMBOL_REUSED_ACROSS_DISTINCT_ASSETS"
+           and alert.get("historical_rename_from")=="SPCX"
+           and alert.get("historical_rename_to")=="SPCK"
+           and alert.get("allow_previous_spcx_etf_history_stitch_to_current_spcx") is False
+           and alert.get("source_same_asof_identity_roots_officially_attested") is False
+           and alert.get("decision")=="HISTORY_UNKNOWN_UNTIL_CURRENT_CIK_CLASS_AND_PREDECESSOR_INTERVAL_PROOF",
+           "SYMBOL_REUSE_HISTORY_STITCH_FORBIDDEN")
+    # Sina's PASS here certifies EXACT30 DV30/price, NEVER 260-day HISTORY.
+    # Bind a literal code-only conflict note to the actual committed Sina SHA.
+    stage=record.get("sina_vs_history_stage_semantics") or {}
+    bsp=stage.get("example_bsp") or {}
+    dftx=stage.get("example_dftx") or {}
+    try:
+        sina_bytes=(ROOT/"sina_state.json").read_bytes()
+        sina=json.loads(sina_bytes)
+        source_sina_sha=git_blob_sha(sina_bytes)
+    except (OSError, ValueError, TypeError):
+        sina={}
+        source_sina_sha=None
+    sina_rows=sina.get("results") or {}
+    sina_bsp=sina_rows.get("BSP") or {}
+    sina_dftx=sina_rows.get("DFTX") or {}
+    demand(stage.get("source_sina_path")=="nasdaq-xray/sina_state.json"
+           and stage.get("source_sina_blob_sha")==source_sina_sha
+           and stage.get("source_sina_asof_et")==sina.get("asof_et")
+           and sina.get("asof_et")==record.get("asof_et")
+           and stage.get("rule")=="SINA_EXACT30_MEDIAN_PRICE_LIQUIDITY_PASS_IS_NOT_260_SESSION_HISTORY_PASS"
+           and "BSP" in set(missing) and "DFTX" not in set(missing)
+           and sina_bsp.get("status")=="PASS"
+           and (sina_bsp.get("info") or {}).get("proof")=="EXACT30_MEDIAN"
+           and bsp.get("sina_stage")=="PASS"
+           and bsp.get("sina_proof")=="EXACT30_MEDIAN"
+           and bsp.get("connected_alpaca_260_daily_bars")==71
+           and bsp.get("claim_history260_pass") is False
+           and sina_dftx.get("status")=="UNKNOWN_STATIC"
+           and (sina_dftx.get("info") or {}).get("reason")=="SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+           and dftx.get("sina_stage")=="UNKNOWN_STATIC"
+           and dftx.get("sina_reason")=="SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+           and dftx.get("connected_alpaca_260_daily_bars")==260
+           and dftx.get("claim_canonical_history_pass") is False
+           and stage.get("vendor_rights_verified") is False
+           and stage.get("canonical_history_mutated") is False,
+           "SINA_EXACT30_VS_260_HISTORY_ROLE_OR_SHA_MISMATCH")
+    demand(m.get("requested_price_pass_symbols")==n and m.get("groups_complete")==11
+           and m.get("market_cap_values_received")==n, "MC_SCOPE_INCOMPLETE")
+    demand(m.get("above_or_equal_existing_usd_2b_mc_floor")==n-len(below)
+           and m.get("below_existing_usd_2b_mc_floor")==len(below),"MC_COUNT_MISMATCH")
+    demand(sec.get("source_exact_price_pass_scope")==n
+           and (sec.get("accepted_share_vintage_shadows",0)+
+                sec.get("unknown_issuer_shares",0)+
+                sec.get("unknown_sec_transport",0))==n,"SEC_PARTITION_MISMATCH")
+    both=sorted(set(missing)&set(below))
+    joint=record.get("shadow_joint_partition") or {}
+    demand(joint.get("intersection_both_missing")==both
+           and joint.get("history_and_mc_shadow_preliminary_qualifiers")==
+              n-len(missing)-len(below)+len(both),"CROSS_SOURCE_SET_MATH_INVALID")
+    # A successful diagnostic may NEVER become authority, even if the math checks.
+    demand(record.get("execution")=="NONE" and record.get("real_money")=="NO-GO"
+           and record.get("unknown_never_pass") is True
+           and record.get("can_create_primary_mc") is False
+           and record.get("can_repair_canonical_history") is False
+           and record.get("can_register_r92") is False
+           and record.get("release_status")=="RESEARCH_DIAGNOSTIC_ONLY_NO_GO",
+           "ILLEGAL_PRIMARY_OR_R92_PROMOTION")
+    demand(m.get("market_cap_primary_promotion") is False
+           and m.get("asof_et_value_witness_present") is False
+           and m.get("non_display_automation_license_proven") is False
+           and h.get("git_runner_secret_present") is False
+           and h.get("connected_app_evidence_publicly_replayable") is False,
+           "NON_ATTESTED_SOURCE_MUST_REMAIN_BLOCKED")
+    return not errors, sorted(set(errors))
+
+def selftest():
+    raw=(ROOT/"canonical_current_price_dv30.json").read_bytes()
+    price=json.loads(raw)
+    record=json.loads(RECORD.read_bytes())
+    sha=git_blob_sha(raw)
+    assert validate(record,price,sha)==(True,[]),validate(record,price,sha)
+    cases=[
+       ("sha",lambda a: a.update({"source_price_git_blob_sha":"0"*40})),
+       ("asof",lambda a: a.update({"asof_et":"2026-10-08"})),
+       ("noauth",lambda a: a.update({"can_create_primary_mc":True})),
+       ("device",lambda a: a.update({"can_register_r92":True})),
+       ("history",lambda a:a["history_alpaca_connected"]["incomplete_symbols"].append("AAPL")),
+       ("mc",lambda a:a["mc_longbridge_connected"]["above_or_equal_existing_usd_2b_mc_floor"].__class__),
+       ("partition",lambda a:a["sec_edgar"].update({"accepted_share_vintage_shadows":347})),
+       ("math",lambda a:a["shadow_joint_partition"].update({"history_and_mc_shadow_preliminary_qualifiers":514})),
+       ("license",lambda a:a["mc_longbridge_connected"].update({"non_display_automation_license_proven":True})),
+       ("sina_falsely_promotes_30_to_260",lambda a:a["sina_vs_history_stage_semantics"].update(
+           {"rule":"SINA_EXACT30_MEDIAN_COUNTS_AS_260_DAY_HISTORY_PASS"})),
+       ("bsp_false_history_pass",lambda a:a["sina_vs_history_stage_semantics"]["example_bsp"].update(
+           {"claim_history260_pass":True})),
+       ("dftx_false_canonical_pass",lambda a:a["sina_vs_history_stage_semantics"]["example_dftx"].update(
+           {"claim_canonical_history_pass":True})),
+       ("sina_false_blob",lambda a:a["sina_vs_history_stage_semantics"].update(
+           {"source_sina_blob_sha":"0"*40})),
+
+       ("identity_reuse_absent",lambda a:a.update({"identity_reuse_alerts":[]})),
+       ("identity_reuse_stitch",lambda a:a["identity_reuse_alerts"][0].update(
+           {"allow_previous_spcx_etf_history_stitch_to_current_spcx":True})),
+       ("identity_reuse_false_authority",lambda a:a["identity_reuse_alerts"][0].update(
+           {"source_same_asof_identity_roots_officially_attested":True})),
+
+    ]
+    for name,mutate in cases:
+        a=copy.deepcopy(record)
+        if name=="mc":
+            a["mc_longbridge_connected"]["above_or_equal_existing_usd_2b_mc_floor"]+=1
+        else:mutate(a)
+        ok,reasons=validate(a,price,sha)
+        assert not ok,(name,reasons)
+    print("XRAY_SHADOW_V46_READBACK_TEST=PASS_POSITIVE_16_NEGATIVES_NO_PRIMARY")
+
+if __name__=="__main__":
+    selftest()

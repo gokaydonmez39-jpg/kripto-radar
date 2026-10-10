@@ -1,0 +1,89 @@
+{
+  "schema": "XRAY_20261009_PRICE_FOUR_UNKNOWN_SOURCE_TRIAGE_SHADOW_V1",
+  "asof_et": "2026-10-09",
+  "price_source_path": "nasdaq-xray/canonical_current_price_dv30.json",
+  "price_source_git_blob_sha": "77ef4ec6c0bcf2db4e31f4c9b7f0e0b46544d096",
+  "price_unknown_symbols": [
+    "AIOK",
+    "GRAL",
+    "RTSN",
+    "TRXB"
+  ],
+  "price_unknown_count": 4,
+  "alpaca_connector_observation": {
+    "feed": "SIP",
+    "timeframe": "1Day",
+    "type": "READ_ONLY_PLUGIN_OBSERVATION_NOT_GITHUB_RUNNER_EVIDENCE",
+    "interval_start": "2026-08-24",
+    "interval_end_exclusive": "2026-10-10",
+    "source_automated_use_rights_verified": false,
+    "raw_vendor_bars_committed": false,
+    "per_symbol": {
+      "AIOK": {
+        "observed_in_30": 1,
+        "missing_of_30": 29,
+        "asof_record_seen": true,
+        "decision": "SHADOW_LISTING_AGE_LT30_NO_HISTORY_PASS"
+      },
+      "GRAL": {
+        "observed_in_30": 30,
+        "missing_of_30": 0,
+        "asof_record_seen": true,
+        "extended_observed_dates": 265,
+        "dv30_ge_50m_by_connector_math": true,
+        "decision": "SHADOW_30_30_PRICE_DV_SOURCE_OBSERVED_NOT_LICENSED_PRIMARY"
+      },
+      "RTSN": {
+        "observed_in_30": 1,
+        "missing_of_30": 29,
+        "asof_record_seen": true,
+        "decision": "SHADOW_LISTING_AGE_LT30_NO_HISTORY_PASS"
+      },
+      "TRXB": {
+        "observed_in_30": 1,
+        "missing_of_30": 29,
+        "asof_record_seen": true,
+        "decision": "SHADOW_LISTING_AGE_LT30_NO_HISTORY_PASS"
+      }
+    }
+  },
+  "listing_identity_evidence": {
+    "AIOK": {
+      "type": "NASDAQ_OFFICIAL_FIRST_TRADE_DATE",
+      "date": "2026-10-09",
+      "new_security_class": "SPINOFF_NEW_CUSIP_NOT_PARENT_CONTINUITY_PROVEN",
+      "official_source": "https://m.nasdaqtrader.com/TraderNews.aspx?id=ECA2026-690",
+      "independent_parent_composite_authorized": false
+    },
+    "RTSN": {
+      "type": "ISSUER_EXPECTED_TRADE_DATE_PLUS_NASDAQ_ADDITION_PLUS_SIP_BAR",
+      "date": "2026-10-09",
+      "official_source": "https://ir.retensionpharmaceuticals.com/news-releases/news-release-details/retension-pharmaceuticals-announces-pricing-initial-public",
+      "nasdaq_source": "https://www.nasdaqtrader.com/Trader.aspx?id=nasdaq-security-status-updates&page=1",
+      "predecessor_composite_authorized": false
+    },
+    "TRXB": {
+      "type": "ISSUER_EXPECTED_TRADE_DATE_PLUS_NASDAQ_ADDITION_PLUS_SIP_BAR",
+      "date": "2026-10-09",
+      "official_source": "https://rss.globenewswire.com/news-release/2026/10/09/3377793/0/en/trexbio-announces-pricing-of-initial-public-offering.html",
+      "nasdaq_source": "https://www.nasdaqtrader.com/Trader.aspx?id=nasdaq-security-status-updates&page=1",
+      "predecessor_composite_authorized": false
+    }
+  },
+  "authority": "INDEPENDENT_RESEARCH_DIAGNOSTIC_ONLY_NOT_C417_PRICE_PRIMARY",
+  "source_rights_independently_verified": false,
+  "primary_price_pass_created": 0,
+  "canonical_history_pass_created": 0,
+  "mc_primary_pass_created": 0,
+  "r92_created": false,
+  "device_delivery_proven": false,
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "limitations": [
+    "API response replay unavailable in GitHub runner without separately licensed credentials and exact source witness",
+    "Alpaca 265 distinct observed dates for GRAL does not alone prove 260 consecutive official Nasdaq sessions or share-class corporate actions",
+    "New issue first-trade identity is not permission to merge historical parent-company prices",
+    "No current resolver-bridge mutation or canonical promotion"
+  ]
+}

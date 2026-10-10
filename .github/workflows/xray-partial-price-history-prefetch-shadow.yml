@@ -1,0 +1,98 @@
+name: XRAY Partial PRICE 514 HISTORY Prefetch Contract (No GO)
+on:
+  push:
+    branches: [audit/c417-mc-alternatives-sec-pit-20261010]
+    paths:
+      - "nasdaq-xray/research/history_prefetch_while_price_unknown_shadow.py"
+      - "nasdaq-xray/research/20261009_price_four_unknown_source_triage_shadow.json"
+      - "nasdaq-xray/research/verify_20261009_price_four_unknown_source_triage_shadow.py"
+      - ".github/workflows/xray-partial-price-history-prefetch-shadow.yml"
+  pull_request:
+    paths:
+      - "nasdaq-xray/research/history_prefetch_while_price_unknown_shadow.py"
+      - "nasdaq-xray/research/20261009_price_four_unknown_source_triage_shadow.json"
+      - "nasdaq-xray/research/verify_20261009_price_four_unknown_source_triage_shadow.py"
+      - ".github/workflows/xray-partial-price-history-prefetch-shadow.yml"
+permissions:
+  contents: read
+jobs:
+  price-partial-shadow-research-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install official Nasdaq calendar only, no market-data credentials
+        run: python -m pip install --disable-pip-version-check "pandas_market_calendars==5.4.0"
+      - name: Price UNKNOWN hard gate remains closed, shadow prefetch explicit
+        run: |
+          python -m py_compile nasdaq-xray/research/history_prefetch_while_price_unknown_shadow.py
+          python nasdaq-xray/research/history_prefetch_while_price_unknown_shadow.py --selftest
+          python nasdaq-xray/research/history_prefetch_while_price_unknown_shadow.py --out "$RUNNER_TEMP/history_prefetch_private.json"
+      - name: Verify four unresolved PRICE names against public listing evidence and private SIP observation classification
+        run: |
+          python -m py_compile nasdaq-xray/research/verify_20261009_price_four_unknown_source_triage_shadow.py
+          python nasdaq-xray/research/verify_20261009_price_four_unknown_source_triage_shadow.py --selftest
+          python nasdaq-xray/research/verify_20261009_price_four_unknown_source_triage_shadow.py --out "$RUNNER_TEMP/four_unknown_listing_triage.json"
+      - name: Independently check exact current Git blobs and safety flags
+        run: |
+          python - <<'PY'
+          import json,os,pathlib,subprocess
+          f=pathlib.Path(os.environ["RUNNER_TEMP"])/"history_prefetch_private.json"
+          j=json.loads(f.read_text())
+          assert j["schema"]=="XRAY_C417_PRICE_PARTIAL_HISTORY_PREFETCH_SHADOW_V1"
+          assert j["price_blob_sha"]==subprocess.check_output(
+            ["git","hash-object","nasdaq-xray/canonical_current_price_dv30.json"],text=True).strip()
+          assert j["master_blob_sha"]==subprocess.check_output(
+            ["git","hash-object","nasdaq-xray/canonical_current_master_manifest.json"],text=True).strip()
+          assert j["target_daily_count"]==260 and j["target_weekly_count"]==52
+          assert j["requested_price_pass_count"]==514 and j["explicit_unresolved_price_count"]==4
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          for k in ("vendor_bars_present","provider_entitlement_proven",
+                    "canonical_history_authority","full_e2e_pass",
+                    "r92_eligible","can_register_R92","device_receipt_proven"):
+            assert j[k] is False,k
+          for k in ("canonical_history_pass_created","mc_primary_pass_created","vendor_calls_made"):
+            assert j[k]==0,k
+          assert not (set(j["requested_symbols"]) & set(j["excluded_unknown_symbols"]))
+          # No vendor-derived observations, keys, or raw bars may be uploaded.
+          four=json.loads((pathlib.Path(os.environ["RUNNER_TEMP"])/"four_unknown_listing_triage.json").read_text())
+          assert four["four_unknown_remain_unknown"] is True
+          assert four["gral_exact_30_sip_observed"] is True
+          assert four["new_issue_less_than_30"]==3
+          assert four["private_sip_connector_response_replayed_in_CI"] is False
+          assert four["source_entitlement_proven"] is False
+          assert four["r92_created"] is False
+          assert four["price_blob_sha"]==j["price_blob_sha"]
+          report={
+            "schema":"XRAY_PARTIAL_PRICE_514_HISTORY_RESEARCH_REQUEST_CI_V1",
+            "head_sha":subprocess.check_output(["git","rev-parse","HEAD"],text=True).strip(),
+            "price_blob_sha":j["price_blob_sha"],
+            "master_blob_sha":j["master_blob_sha"],
+            "asof_et":j["asof_et"],
+            "request_ready":True,
+            "requested_price_pass_count":j["requested_price_pass_count"],
+            "excluded_unknown_count":j["explicit_unresolved_price_count"],
+            "history_days_required":260,"history_weeks_required":52,
+            "three_new_listings_history_not_260":True,
+            "gral_30_day_sip_observation_unlicensed":True,
+            "vendor_calls_made":0,"vendor_license_proven":False,
+            "canonical_history_authority":False,
+            "canonical_mc_primary_pass":False,
+            "r92_created":False,"delivery_proven":False,
+            "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True
+          }
+          dest=pathlib.Path(os.environ["RUNNER_TEMP"])/"history_prefetch_counts_only.json"
+          dest.write_text(json.dumps(report,sort_keys=True,indent=2)+chr(10))
+          print("XRAY_SHADOW_514_PREFETCH=PASS_514_SCOPE_4_UNKNOWN_EXCLUDED_NO_CANONICAL")
+          PY
+      - name: Upload sanitized test report only, never market bars
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-partial-price-514-history-shadow-contract
+          path: ${{ runner.temp }}/history_prefetch_counts_only.json
+          retention-days: 14
+          if-no-files-found: warn

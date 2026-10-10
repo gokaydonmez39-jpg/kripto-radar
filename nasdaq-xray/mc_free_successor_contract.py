@@ -10,6 +10,7 @@ import datetime as dt
 import json
 import math
 import sys
+from zoneinfo import ZoneInfo
 
 SCHEMA="XRAY_FREE_MC_SUCCESSOR_EVIDENCE_V1"
 KNOWN_EXCHANGES={"XNAS","XNGS","XNMS","XNCM"}
@@ -43,12 +44,32 @@ def evaluate(evidence):
     actions=evidence.get("corporate_actions") or {}
     identity=evidence.get("identity") or {}
     cross=evidence.get("independent_crosscheck") or {}
+    session=evidence.get("official_session") or {}
     asof=str(evidence.get("asof_et") or "")
     cutoff=timestamp(evidence.get("decision_cutoff_utc"))
     try: asof_date=dt.date.fromisoformat(asof)
     except ValueError: asof_date=None
     require(asof_date is not None and cutoff is not None and cutoff.date()==asof_date,
             "INVALID_ASOF_OR_DECISION_CUTOFF")
+    # The research decision may be 15 minutes AFTER the market close,
+    # but SEC shares must have been PUBLIC no later than the ACTUAL RTH close.
+    # Never assume a fixed 16:00 ET close (early closes are 13:00 ET).
+    # The upstream adapter must validate the exchange calendar witness.
+    market_close=timestamp(session.get("rth_close_utc"))
+    local_close=(market_close.astimezone(ZoneInfo("America/New_York"))
+                 if market_close is not None else None)
+    require(session.get("exchange")=="XNAS"
+            and session.get("asof_et")==asof
+            and session.get("calendar_source")=="ALPACA_MARKET_CALENDAR"
+            and session.get("calendar_verified") is True
+            and local_close is not None
+            and asof_date is not None
+            and local_close.date()==asof_date
+            and (local_close.hour,local_close.minute,local_close.second)
+                in ((16,0,0),(13,0,0))
+            and cutoff is not None and market_close is not None
+            and cutoff>=market_close+dt.timedelta(minutes=15),
+            "OFFICIAL_RTH_CLOSE_MISSING_OR_INCONSISTENT")
     symbol=identity.get("ticker")
     cik=identity.get("cik")
     require(isinstance(symbol,str) and symbol and symbol==sec.get("ticker")
@@ -64,8 +85,9 @@ def evaluate(evidence):
             and sec.get("fact_in_filing_verified") is True,
             "SEC_FILING_FACT_NOT_VERIFIED")
     accepted=timestamp(sec.get("acceptance_utc"))
-    require(cutoff is not None and accepted is not None and accepted<=cutoff,
-            "PIT_ACCEPTANCE_AFTER_CUTOFF_OR_UNKNOWN")
+    require(market_close is not None and accepted is not None
+            and accepted<=market_close,
+            "PIT_ACCEPTANCE_AFTER_RTH_CLOSE_OR_UNKNOWN")
     try:
         filed=dt.date.fromisoformat(str(sec["filed"]))
         observed=dt.date.fromisoformat(str(sec["observed"]))
@@ -147,9 +169,41 @@ def selftest():
                 "market_cap_usd":10_000_000_000}
     }
     from copy import deepcopy
+    # Official session closes are immutable reference witnesses in unit fixtures.
+    base["official_session"]={"exchange":"XNAS","asof_et":"2026-10-08",
+        "rth_close_utc":"2026-10-08T20:00:00Z",
+        "calendar_source":"ALPACA_MARKET_CALENDAR",
+        "calendar_verified":True}
     good=evaluate(base)
     assert good["status"]=="SHADOW_ELIGIBLE_FOR_INDEPENDENT_POLICY_REVIEW"
     assert good["c417_primary_pass"] is False and good["r92_eligible"] is False
+    # RED: SEC acceptance at 16:07 ET is AFTER the 16:00 RTH close,
+    # but BEFORE a 16:15 research read. Never apply post-close shares.
+    post_close=deepcopy(base)
+    post_close["sec"]["acceptance_utc"]="2026-10-08T20:07:00Z"
+    assert evaluate(post_close)["status"]=="UNKNOWN"
+    # RED: Black Friday 13:00 ET early close is 18:00 UTC (EST).
+    early=deepcopy(base)
+    early["asof_et"]=early["price"]["asof_et"]="2026-11-27"
+    early["independent_crosscheck"]["asof_et"]="2026-11-27"
+    early["decision_cutoff_utc"]="2026-11-27T18:15:00Z"
+    early["official_session"]["asof_et"]="2026-11-27"
+    early["official_session"]["rth_close_utc"]="2026-11-27T18:00:00Z"
+    early["sec"]["observed"]="2026-11-25"
+    early["sec"]["filed"]="2026-11-27"
+    early["sec"]["acceptance_utc"]="2026-11-27T18:05:00Z"
+    assert evaluate(early)["status"]=="UNKNOWN"
+    early["sec"]["acceptance_utc"]="2026-11-27T17:59:00Z"
+    assert evaluate(early)["status"]=="SHADOW_ELIGIBLE_FOR_INDEPENDENT_POLICY_REVIEW"
+    bad_calendar=deepcopy(base)
+    bad_calendar["official_session"]["calendar_verified"]=False
+    assert evaluate(bad_calendar)["status"]=="UNKNOWN"
+    missing_close=deepcopy(base)
+    missing_close["official_session"].pop("rth_close_utc")
+    assert evaluate(missing_close)["status"]=="UNKNOWN"
+    wrong_date=deepcopy(base)
+    wrong_date["official_session"]["asof_et"]="2026-10-07"
+    assert evaluate(wrong_date)["status"]=="UNKNOWN"
     negatives=[
       ("sec","acceptance_utc","2026-10-09T00:01:00Z"),
       ("sec","cik","0000000001"),

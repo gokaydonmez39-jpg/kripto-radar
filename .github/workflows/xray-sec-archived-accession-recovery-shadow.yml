@@ -29,7 +29,7 @@ jobs:
           python nasdaq-xray/sec_archived_accession_recovery_shadow.py --selftest
       - name: Probe seven exact-origin SEC exceptions, no PRIMARY upgrade
         env:
-          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
+          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT }}
         run: |
           python nasdaq-xray/sec_archived_accession_recovery_shadow.py --output "$RUNNER_TEMP/xray_sec_archive_7_shadow.json"
           python - <<'PY'

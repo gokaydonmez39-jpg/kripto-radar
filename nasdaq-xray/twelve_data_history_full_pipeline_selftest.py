@@ -7,6 +7,8 @@ real HISTORY/MC, R92 signal or trading execution.
 from __future__ import annotations
 import gzip
 import json
+import hashlib
+import copy
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
@@ -46,7 +48,24 @@ def main():
         assert health(restored,s,"SYNTHETIC_ONLY",0)["complete_260_symbols"]==len(s["targets"])
         raw=temp/"private_csv"
         assert export_private(restored,s,raw)==len(s["targets"])
-        structural=evaluate(price,s["price_sha"],raw)
+        # Live PRICE may correctly have UNKNOWN (09-Oct: four symbols).
+        # A real UNKNOWN MUST be rejected; do not weaken the intake guard.
+        if price.get("unknown_count",0)!=0:
+            try:evaluate(price,s["price_sha"],raw)
+            except ValueError as exc:
+                assert str(exc)=="PRICE_SCOPE_OR_SAFETY_INVALID"
+            else:raise AssertionError("REAL_PRICE_UNKNOWN_PROMOTED_IN_TEST")
+        # Synthetic *control fixture* only, not a historical data source.
+        # Test structural CSV mechanics with a logically complete input,
+        # but never mutate live PRICE, its Git SHA or production authority.
+        fixture=copy.deepcopy(price)
+        fixture["unknown_count"]=0
+        fixture["unknown_symbols"]=[]
+        raw_fixture=json.dumps(fixture,sort_keys=True).encode()
+        fixture_sha=hashlib.sha1(
+            b"blob "+str(len(raw_fixture)).encode()+b"\0"+raw_fixture
+        ).hexdigest()
+        structural=evaluate(fixture,fixture_sha,raw)
         assert structural["structural_private_transport_complete"] is True
         assert structural["counts"]["complete_private_transport"]==len(s["targets"])
         assert structural["source_vendor_rights_independently_verified"] is False
@@ -60,7 +79,7 @@ def main():
         with gzip.open(path,"rt",encoding="utf-8") as f:lines=f.readlines()
         assert len(lines)==261
         with gzip.open(path,"wt",encoding="utf-8") as f:f.writelines(lines[:-1])
-        bad=evaluate(price,s["price_sha"],raw)
+        bad=evaluate(fixture,fixture_sha,raw)
         assert bad["counts"]["stale_or_session_gap"]==1
         assert not bad["structural_private_transport_complete"]
         # Invalid numeric source record is a distinct hard invalidity.
@@ -68,7 +87,7 @@ def main():
             mutated=lines.copy()
             mutated[3]=mutated[3].rsplit(",",1)[0]+",0\n"
             f.writelines(mutated)
-        corrupted=evaluate(price,s["price_sha"],raw)
+        corrupted=evaluate(fixture,fixture_sha,raw)
         assert corrupted["counts"]["invalid_or_unreadable"]==1
         assert not corrupted["can_register_R92"]
         tampered=enc.read_bytes()

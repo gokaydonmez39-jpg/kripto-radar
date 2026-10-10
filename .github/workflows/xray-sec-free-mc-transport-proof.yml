@@ -31,7 +31,7 @@ jobs:
           # Prefer repository secret, allow a non-sensitive dedicated-contact
           # repository variable when GitHub's Secret UI cannot save a value.
           # Never print the User-Agent, email address, or variable contents.
-          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
+          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT }}
         run: |
           python nasdaq-xray/sec_official_free_mc_transport_probe.py \
             --asof 2026-10-08 \

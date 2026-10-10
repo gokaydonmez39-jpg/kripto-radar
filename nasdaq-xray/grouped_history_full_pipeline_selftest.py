@@ -9,6 +9,7 @@ from __future__ import annotations
 import copy
 import gzip
 import json
+import hashlib
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
@@ -51,7 +52,20 @@ def main():
         outputdir=tmp/"private-raw"
         exported=export_completed_private_csv(decrypted,ss,outputdir)
         assert exported["symbol_csv_private"]==len(ss["targets"])
-        complete=evaluate(price,ss["price_sha"],outputdir)
+        # Real PRICE UNKNOWN is a correct hard STOP, never weaken ingress.
+        if price.get("unknown_count",0)!=0:
+            try:evaluate(price,ss["price_sha"],outputdir)
+            except ValueError as exc:
+                assert str(exc)=="PRICE_SCOPE_OR_SAFETY_INVALID"
+            else:raise AssertionError("REAL_UNKNOWN_WAS_ACCEPTED")
+        # Pure synthetic control fixture; no real vendor proof or authority.
+        fixture=copy.deepcopy(price)
+        fixture["unknown_count"]=0
+        fixture["unknown_symbols"]=[]
+        raw_fixture=json.dumps(fixture,sort_keys=True).encode()
+        fixture_sha=hashlib.sha1(b"blob "+str(len(raw_fixture)).encode()
+                                 +bytes([0])+raw_fixture).hexdigest()
+        complete=evaluate(fixture,fixture_sha,outputdir)
         assert complete["structural_private_transport_complete"]
         assert complete["counts"]["complete_private_transport"]==len(ss["targets"])
         assert not complete["source_vendor_rights_independently_verified"]
@@ -67,7 +81,7 @@ def main():
         assert len(lines)==261
         with gzip.open(path,"wt",encoding="utf-8") as fh:
             fh.writelines(lines[:-1])
-        missing=evaluate(price,ss["price_sha"],outputdir)
+        missing=evaluate(fixture,fixture_sha,outputdir)
         assert missing["counts"]["stale_or_session_gap"]==1
         assert not missing["structural_private_transport_complete"]
         # Restore and corrupt one real numeric column: hard FAIL, not
@@ -76,7 +90,7 @@ def main():
             mutated=lines.copy()
             mutated[2]=mutated[2].rsplit(",",1)[0]+",0\n"
             fh.writelines(mutated)
-        corrupt=evaluate(price,ss["price_sha"],outputdir)
+        corrupt=evaluate(fixture,fixture_sha,outputdir)
         assert corrupt["counts"]["invalid_or_unreadable"]==1
         assert not corrupt["can_register_R92"]
     print("XRAY_CURRENT_SCOPE_XNAS_260D_52W_ENCRYPTED_PIPELINE_SELFTEST=PASS_SYNTHETIC_ONLY_2_NEGATIVES_0_HISTORY_MC_AL_AUTHORITY")

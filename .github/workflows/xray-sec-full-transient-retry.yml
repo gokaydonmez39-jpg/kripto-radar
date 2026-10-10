@@ -36,7 +36,7 @@ jobs:
           test -s "$RUNNER_TEMP/xray_sec_full_origin/xray_sec_full_price_pass_vintage_operational.json"
       - name: Retry only exact-source SEC timeouts without handling SEC 404 as transient
         env:
-          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
+          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT }}
         run: |
           python nasdaq-xray/sec_full_transient_retry.py \
             --origin "$RUNNER_TEMP/xray_sec_full_origin/xray_sec_full_price_pass_vintage_operational.json" \

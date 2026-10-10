@@ -2,7 +2,7 @@ name: XRAY SEC Full PRICE-PASS Vintage Shadow
 on:
   workflow_dispatch:
   push:
-    branches: [main]
+    branches: [main, audit/c417-mc-alternatives-sec-pit-20261010]
     paths:
       - ".github/workflows/xray-sec-full-price-pass-vintage-shadow.yml"
 permissions:
@@ -17,11 +17,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.sha }}
           fetch-depth: 1
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Install pinned official NASDAQ calendar for SEC PIT acceptance
+        run: python -m pip install --disable-pip-version-check "pandas_market_calendars==5.4.0"
+      - name: Bind exact triggering Git commit to checked out shadow sources
+        shell: bash
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          echo "XRAY_SEC_FULL_SCOPE_TRIGGER_SHA=PASS"
       - name: Compile and run SEC/PIT/exchange guard regressions
         run: |
           python -m py_compile nasdaq-xray/sec_official_free_mc_transport_probe.py nasdaq-xray/sec_free_mc_multisymbol_pit_audit.py
@@ -29,9 +36,23 @@ jobs:
           python nasdaq-xray/sec_free_mc_multisymbol_pit_audit.py --selftest
       - name: Acquire official SEC filing timestamps for complete current PRICE-PASS scope, non-primary
         env:
-          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
+          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT }}
         run: |
-          python nasdaq-xray/sec_free_mc_multisymbol_pit_audit.py --offset 0 --limit 514 \
+          python - <<'PY' > "$RUNNER_TEMP/xray_sec_exact_pass_count.txt"
+          import json
+          from pathlib import Path
+          master=json.loads(Path("nasdaq-xray/canonical_current_master_manifest.json").read_text())
+          price=json.loads(Path("nasdaq-xray/canonical_current_price_dv30.json").read_text())
+          n=price.get("pass_count")
+          assert master.get("asof_et")==price.get("asof_et")
+          assert type(n) is int and 0<n<=1000
+          assert len(price.get("pass_symbols") or [])==n
+          assert len(set(price["pass_symbols"]))==n
+          assert set(price["pass_symbols"]).issubset(set(master.get("pass_symbols") or []))
+          print(n)
+          PY
+          exact_scope="$(cat "$RUNNER_TEMP/xray_sec_exact_pass_count.txt")"
+          python nasdaq-xray/sec_free_mc_multisymbol_pit_audit.py --offset 0 --limit "$exact_scope" \
             --output "$RUNNER_TEMP/xray_sec_full_price_pass_vintage_operational.json"
       - name: Assert exact 514-symbol scope and zero false MC authority
         run: |
@@ -40,16 +61,20 @@ jobs:
           from pathlib import Path
           j=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_sec_full_price_pass_vintage_operational.json").read_text())
           assert j["schema"]=="XRAY_SEC_MULTISYMBOL_PIT_SHADOW_V1"
-          assert j["asof_et"]=="2026-10-08"
-          assert j["sample_count"]==514 and len(j["statuses"])==514
-          assert j["batch_offset"]==0 and j["batch_limit"]==514
+          price=json.loads(Path("nasdaq-xray/canonical_current_price_dv30.json").read_text())
+          n=price["pass_count"]
+          assert 0<n<=1000
+          assert j["asof_et"]==price["asof_et"]
+          assert j["sample_count"]==n and len(j["statuses"])==n
+          assert set(j["statuses"])==set(price["pass_symbols"])
+          assert j["batch_offset"]==0 and j["batch_limit"]==n
           assert j["c417_primary_mc_count"]==0 and j["market_cap_calculated"] is False
           assert j["production_alpha_authority"] is False
           assert j["price_binding_attested"] is False
           assert j["corporate_action_binding_attested"] is False
           assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
           assert len(j["master_git_blob_sha"])==40 and len(j["price_git_blob_sha"])==40
-          print("XRAY_SEC_FULL_SCOPE=514_VERIFIED_SHADOW_ONLY")
+          print("XRAY_SEC_FULL_SCOPE_EXACT_PRICE_PASS_COUNT="+str(n)+"_SHADOW_ONLY")
           print("XRAY_SEC_FULL_SCOPE_UNKNOWN_COUNTS="+json.dumps(j["status_counts"],sort_keys=True))
           print("XRAY_SEC_FULL_SCOPE_REASON_COUNTS="+json.dumps(j["reason_counts"],sort_keys=True))
           PY

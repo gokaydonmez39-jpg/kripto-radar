@@ -1,0 +1,94 @@
+{
+  "schema": "XRAY_SEC514_HISTORY514_20261010_JOINT_SHADOW_CHECKPOINT_V2",
+  "asof_et": "2026-10-09",
+  "canonical_price": {
+    "path": "nasdaq-xray/canonical_current_price_dv30.json",
+    "blob_sha": "77ef4ec6c0bcf2db4e31f4c9b7f0e0b46544d096",
+    "pass_count": 514
+  },
+  "official_SEC_execution": {
+    "workflow_run_id": 38037486395,
+    "conclusion": "SUCCESS",
+    "head_commit_sha": "eef5e1ef14ed2dd857252c9783a98d9d77f61778",
+    "artifact_id": 11664626544,
+    "artifact_zip_sha256": "6c976363c49ac74d83cf3a9b8b3e4b7ae39cb629b3a73e9e5374484b5ea66aca",
+    "source_asof": "2026-10-09",
+    "source_PRICE_sha_exact": true,
+    "source_set_verified_by_workflow": true,
+    "scope_count": 514,
+    "status_counts": {
+      "SHADOW_SHARES_VINTAGE_ONLY": 346,
+      "UNKNOWN": 167,
+      "UNKNOWN_SEC_TRANSPORT": 1
+    },
+    "reason_counts": {
+      "NO_DEI_BUT_GAAP_SHARES_AVAILABLE_CLASS_UNRESOLVED": 34,
+      "NO_FRESH_ACCEPTANCE_BOUND_SINGLE_ENTITY_SHARES": 38,
+      "NO_SEC_DEI_OR_GAAP_SHARES_FACT": 43,
+      "SEC_HTTP_404": 1,
+      "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION": 52,
+      "SHARE_CLASS_CORP_ACTION_AND_PIT_PRICE_STILL_REQUIRED": 346
+    },
+    "http_404_symbol": "OZK"
+  },
+  "history_connected_app_shadow": {
+    "source": "ALPACA_HISTORICAL_SIP",
+    "scope_count": 514,
+    "daily_sessions_expected": 260,
+    "weekly_closes_expected": 52,
+    "history_complete_shadow_count": 497,
+    "history_incomplete_count": 17,
+    "history_incomplete_symbols": [
+      "BSP",
+      "CBRS",
+      "EQPT",
+      "FRVO",
+      "HONA",
+      "INIO",
+      "MDLN",
+      "MMED",
+      "NAVN",
+      "PURR",
+      "QNT",
+      "SHAZ",
+      "SKHY",
+      "SOLS",
+      "SPCX",
+      "VSNT",
+      "XE"
+    ],
+    "live_vendor_bars_persisted": false,
+    "replayable_in_GitHub_Actions": false
+  },
+  "crosscheck": {
+    "sec_shares_vintage_AND_history_complete_count": 341,
+    "sec_shares_missing_AND_history_complete_count": 156,
+    "sec_shares_vintage_AND_history_missing_count": 5,
+    "neither_count": 12,
+    "sec_vintage_AND_history_missing_symbols": [
+      "HONA",
+      "INIO",
+      "MMED",
+      "PURR",
+      "SOLS"
+    ],
+    "exact_341_symbol_join_sha256": "8f78d3ed79621c215f66448e33a7a322eb76d4723256b7f26c41ef7e3d614084",
+    "production_mc_primary_count": 0
+  },
+  "controls": {
+    "execution": "NONE",
+    "real_money": "NO-GO",
+    "unknown_never_pass": true,
+    "policy": "C4.17",
+    "control": "C4.27",
+    "proposed_source_policy": "C4.18_NOT_ACTIVATED",
+    "all_thresholds_unchanged": true,
+    "automated_vendor_data_rights_verified": false,
+    "shares_class_corporate_actions_verified": false,
+    "independent_same_asof_mc_verified": false,
+    "canonical_history_updated": false,
+    "terminal_updated": false,
+    "device_receipt_verified": false
+  },
+  "interpretation": "Counts-only SEC-vintage and connected-app history research overlap; NEVER classify any of 341 as MC PRIMARY PASS or AL. Full canonical E2E blocked until legal rights, exact 9-Oct MC, current HISTORY/EVENT, guards and delivery evidence."
+}

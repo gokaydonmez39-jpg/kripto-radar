@@ -15,6 +15,7 @@ import re
 import urllib.error
 import urllib.request
 from pathlib import Path
+from functools import lru_cache
 from zoneinfo import ZoneInfo
 
 DEFAULT_ASOF="2026-10-08"
@@ -66,13 +67,35 @@ def accession_acceptance_index(sub: dict) -> dict:
         idx[acc]={"form":form,"filed":filed,"accepted_at":stamp}
     return idx
 
+@lru_cache(maxsize=64)
+def official_rth_close_utc(asof:str):
+    """Exchange-calendared actual regular session close, including 13 ET half-days.
+
+    A future/non-session/unsupported calendar must NOT silently use 16 ET.
+    Cache only schedule witnesses for performance; no market measurements.
+    """
+    try:
+        import pandas_market_calendars as mcal
+        day=dt.date.fromisoformat(asof)
+        schedule=mcal.get_calendar("NASDAQ").schedule(start_date=asof,end_date=asof)
+        if len(schedule)!=1:
+            return None
+        close=schedule.iloc[0]["market_close"].to_pydatetime()
+        local=close.astimezone(ZoneInfo("America/New_York"))
+        if (local.date()!=day or local.second!=0 or
+            (local.hour,local.minute) not in ((13,0),(16,0))):
+            return None
+        return close.astimezone(dt.timezone.utc)
+    except (ImportError,ValueError,TypeError,AttributeError,IndexError,KeyError):
+        return None
+
 def select_shares(facts:dict,sub:dict,asof:str,expected_cik:str=CIK) -> dict:
     cutoff=dt.date.fromisoformat(asof)
-    # PIT authority is bounded at the completed regular Nasdaq session close,
-    # NOT midnight UTC: otherwise late SEC filings cause lookahead leakage.
-    session_close_utc=dt.datetime.combine(
-        cutoff,dt.time(16,0),tzinfo=ZoneInfo("America/New_York")
-    ).astimezone(dt.timezone.utc)
+    # PIT is strictly the ACTUAL completed Nasdaq regular close, never the
+    # post-close research-read time or an assumed 16 ET on a 13 ET half-day.
+    session_close_utc=official_rth_close_utc(asof)
+    if session_close_utc is None:
+        return {"status":"UNKNOWN","reason":"OFFICIAL_RTH_SESSION_CLOSE_UNVERIFIED"}
     if str(facts.get("cik") or "").lstrip("0")!=expected_cik.lstrip("0"):
         return {"status":"UNKNOWN","reason":"SEC_COMPANYFACTS_CIK_MISMATCH"}
     if str(sub.get("cik") or "").lstrip("0")!=expected_cik.lstrip("0"):
@@ -203,6 +226,26 @@ def selftest():
     assert select_shares(same_close,sub_close,asof)["status"]=="UNKNOWN"
     sub_close["filings"]["recent"]["acceptanceDateTime"][0]="2026-10-08T19:59:00Z"
     assert select_shares(same_close,sub_close,asof)["status"]=="SHADOW_SHARES_VINTAGE_ONLY"
+    # RED: Black Friday 27 Nov 2026 closed 13:00 New York, not 16:00.
+    # At 14:05 ET the filing is AFTER RTH; it must not enter the EOD ASOF.
+    early_facts=json.loads(json.dumps(fak))
+    early_sub=json.loads(json.dumps(subs))
+    # Isolate one contemporaneous filing. The unrelated older synthetic
+    # 10-Oct filing from the generic fixture would correctly remain PIT-valid
+    # on 27-Nov and mask the specific post-close rejection being tested.
+    early_rows=early_facts["facts"]["dei"]["EntityCommonStockSharesOutstanding"]["units"]["shares"]
+    del early_rows[1:]
+    for field in ("accessionNumber","form","filingDate","acceptanceDateTime"):
+        del early_sub["filings"]["recent"][field][1:]
+    early_fact=early_rows[0]
+    early_fact["end"]="2026-11-25"
+    early_fact["filed"]="2026-11-27"
+    early_sub["filings"]["recent"]["filingDate"][0]="2026-11-27"
+    early_sub["filings"]["recent"]["acceptanceDateTime"][0]="2026-11-27T19:05:00Z"
+    assert select_shares(early_facts,early_sub,"2026-11-27")["status"]=="UNKNOWN"
+    early_sub["filings"]["recent"]["acceptanceDateTime"][0]="2026-11-27T17:59:00Z"
+    assert select_shares(early_facts,early_sub,"2026-11-27")["status"]=="SHADOW_SHARES_VINTAGE_ONLY"
+    assert select_shares(early_facts,early_sub,"2026-11-26")["status"]=="UNKNOWN"
     bad=json.loads(json.dumps(fak))
     bad["cik"]=1234
     assert select_shares(bad,subs,asof)["reason"]=="SEC_COMPANYFACTS_CIK_MISMATCH"
@@ -239,7 +282,7 @@ def selftest():
         assert run("2026-10-08")["reason"]=="SEC_OPERATOR_CONTACT_CONFIG_MISSING"
     with patch.dict(os.environ,{"XRAY_SEC_USER_AGENT":"bot@users.noreply.github.com"}),patch(__name__+".get_json",side_effect=AssertionError("NETWORK_REQUEST_WHEN_CONTACT_INVALID")):
         assert run("2026-10-08")["reason"]=="SEC_OPERATOR_CONTACT_FORMAT_INVALID"
-    print("SEC_FREE_MC_PIT_SELFTEST=PASS_ACCEPTANCE_FUTURE_CIK_LIST_BOOL_CONTACT_DIAG_NO_PRIMARY")
+    print("SEC_FREE_MC_PIT_SELFTEST=PASS_RTH_EARLY_CLOSE_ACCEPTANCE_FUTURE_CIK_LIST_BOOL_NO_PRIMARY")
 
 def valid_operator_contact(ua:str) -> bool:
     """SEC requires a real contact; GitHub noreply cannot identify an operator."""

@@ -1,0 +1,79 @@
+name: XRAY SEC MC PIT RTH-Close Contract (Shadow Only)
+on:
+  push:
+    branches: [main, audit/c417-mc-alternatives-sec-pit-20261010]
+    paths:
+      - "nasdaq-xray/mc_free_successor_contract.py"
+      - "nasdaq-xray/sec_official_free_mc_transport_probe.py"
+      - "nasdaq-xray/sec_free_mc_multisymbol_pit_audit.py"
+      - "nasdaq-xray/research/continuation_checkpoint_20261010_price514_three_source_shadow_triage_v46.json"
+      - "nasdaq-xray/research/validate_20261010_price514_shadow_v46.py"
+      - ".github/workflows/xray-sec-full-price-pass-vintage-shadow.yml"
+      - ".github/workflows/xray-sec-mc-pit-early-close-contract.yml"
+  pull_request:
+    paths:
+      - "nasdaq-xray/mc_free_successor_contract.py"
+      - "nasdaq-xray/sec_official_free_mc_transport_probe.py"
+      - "nasdaq-xray/sec_free_mc_multisymbol_pit_audit.py"
+      - "nasdaq-xray/research/continuation_checkpoint_20261010_price514_three_source_shadow_triage_v46.json"
+      - "nasdaq-xray/research/validate_20261010_price514_shadow_v46.py"
+      - ".github/workflows/xray-sec-full-price-pass-vintage-shadow.yml"
+      - ".github/workflows/xray-sec-mc-pit-early-close-contract.yml"
+permissions:
+  contents: read
+jobs:
+  shadow-pit-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Assert code matches GitHub event SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          echo "XRAY_MC_PIT_SHA_BIND=PASS"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pinned official NASDAQ calendar for SEC PIT acceptance
+        run: python -m pip install --disable-pip-version-check "pandas_market_calendars==5.4.0"
+      - name: Compile strict SEC filing cutoffs and MC successor
+        run: |
+          python -m py_compile nasdaq-xray/mc_free_successor_contract.py
+          python -m py_compile nasdaq-xray/sec_official_free_mc_transport_probe.py
+          python -m py_compile nasdaq-xray/sec_free_mc_multisymbol_pit_audit.py
+      - name: Test normal/early RTH close and post-close SEC lookahead (NO PRIMARY)
+        run: |
+          python nasdaq-xray/mc_free_successor_contract.py --selftest
+          python nasdaq-xray/sec_official_free_mc_transport_probe.py --selftest
+          python nasdaq-xray/sec_free_mc_multisymbol_pit_audit.py --selftest
+      - name: Bind full PRICE scope and SEC/HISTORY/MC diagnostic math without production authority
+        run: |
+          python -m py_compile nasdaq-xray/research/validate_20261010_price514_shadow_v46.py
+          python nasdaq-xray/research/validate_20261010_price514_shadow_v46.py
+      - name: Reject public GitHub variable interpolation for SEC operator contact
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          paths=[
+            Path(".github/workflows/xray-sec-full-price-pass-vintage-shadow.yml"),
+            Path(".github/workflows/xray-sec-mc-operator-access-preflight.yml"),
+            Path(".github/workflows/xray-sec-ozk-404-isolation-shadow.yml"),
+            Path(".github/workflows/xray-sec-archived-accession-recovery-shadow.yml"),
+            Path(".github/workflows/xray-sec-free-mc-multisymbol-pit-shadow.yml"),
+            Path(".github/workflows/xray-sec-free-mc-transport-proof.yml"),
+            Path(".github/workflows/xray-sec-full-transient-retry.yml"),
+            Path(".github/workflows/xray-sec-identity-unknown-72-shadow.yml"),
+          ]
+          leaks=[str(p) for p in paths if "vars.XRAY_SEC_USER_AGENT" in p.read_text()]
+          assert not leaks, "SEC_CONTACT_UNMASKED_GITHUB_VARS="+",".join(leaks)
+          print("XRAY_SEC_CONTACT_LOG_EXPOSURE_GUARD=PASS_SECRET_ONLY")
+          PY
+      - name: Enforce zero trading and no C4.17 admission
+        shell: bash
+        run: |
+          grep -q '"c417_primary_pass":False' nasdaq-xray/mc_free_successor_contract.py
+          grep -q '"production_mc_primary_pass":False' nasdaq-xray/sec_official_free_mc_transport_probe.py
+          echo "XRAY_MC_PIT_NO_PRIMARY=PASS"

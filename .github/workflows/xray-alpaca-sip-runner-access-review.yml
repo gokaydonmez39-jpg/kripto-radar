@@ -1,0 +1,58 @@
+name: XRAY Alpaca SIP Runner Credential + 260-History Preflight (Shadow)
+on:
+  push:
+    branches: [audit/c417-mc-alternatives-sec-pit-20261010]
+    paths:
+      - ".github/workflows/xray-alpaca-sip-runner-access-review.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  strictly-private-sip:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID }}
+      XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pinned official exchange calendar
+        run: python -m pip install --disable-pip-version-check "pandas_market_calendars==5.4.0"
+      - name: Exact Git SHA, 30/260-session strict calendar, negative safety tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python nasdaq-xray/alpaca_official_30_workflow_preflight.py --selftest
+          python nasdaq-xray/alpaca_official_30_workflow_preflight.py
+          python nasdaq-xray/alpaca_free_sip_shadow_guard.py --selftest
+          python nasdaq-xray/alpaca_strict_daily_shadow_v2.py --selftest
+          python nasdaq-xray/alpaca_root_history_exact_260_selftest.py
+      - name: Query bounded current-PRICE PASS SIP without logging private bars
+        shell: bash
+        run: |
+          set -euo pipefail
+          python nasdaq-xray/alpaca_strict_daily_shadow_v2.py --output "$RUNNER_TEMP/xray_sip_live_runner_shadow.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          j=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_sip_live_runner_shadow.json").read_text())
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          assert j["c417_price_pass_promoted"] is False and j["primary_mc_authority"] is False
+          assert j["vendor_raw_bars_persisted"] is False and j["candidate_created"] is False
+          print("XRAY_ALPACA_RUNNER_STATUS="+j["status"])
+          print("XRAY_ALPACA_RUNNER_REASONS="+json.dumps(j["reason_counts"],sort_keys=True))
+          if j["status"]!="SHADOW_MEASUREMENT_COMPLETED_NO_PRIMARY_AUTHORITY":
+              raise SystemExit("ALPACA_CONNECTED_APP_ACCESS_NOT_RUNNER_SECRET")
+          PY
+      - name: Upload counts-only proof even when secrets unavailable
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-alpaca-private-sip-runner-preflight
+          path: ${{ runner.temp }}/xray_sip_live_runner_shadow.json
+          retention-days: 7
+          if-no-files-found: warn
