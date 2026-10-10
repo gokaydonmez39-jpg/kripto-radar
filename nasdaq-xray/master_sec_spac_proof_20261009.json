@@ -14,21 +14,21 @@
     "sec_cik_routing": {
       "source": "SEC_TICKERS_PLUS_NASDAQ_EXCHANGE_CIK_ROUTING_ONLY",
       "legacy_valid_count": 10435,
-      "exchange_added_count": 8,
+      "exchange_added_count": 0,
       "conflict_count": 0,
       "classification_authority": false,
       "exact_asof_proof_required": true,
-      "exchange_valid_count": 4378,
+      "exchange_valid_count": 4376,
       "status": "PASS_DUAL_SEC_CIK_DISCOVERY",
-      "total_resolved_cik_routes": 10443,
-      "sec_submissions_blocked_http_code": null,
-      "sec_submissions_blocked_at": null,
-      "sec_submissions_skip_count": 0,
+      "total_resolved_cik_routes": 10435,
+      "sec_submissions_blocked_http_code": 429,
+      "sec_submissions_blocked_at": "IPXGW",
+      "sec_submissions_skip_count": 284,
       "sec_submissions_classification_authority": false
     },
     "current_suspect_count": 638,
-    "resolved_current_suspect_count": 577,
-    "unresolved_current_suspect_count": 61,
+    "resolved_current_suspect_count": 330,
+    "unresolved_current_suspect_count": 308,
     "unresolved_current_suspects": [
       "ALIS",
       "ALISR",
@@ -57,40 +57,287 @@
       "IPXG",
       "IPXGU",
       "IPXGW",
+      "ISNR",
+      "ISNRU",
+      "ISNRW",
+      "ITHAU",
+      "ITHAW",
+      "JTTT",
+      "KCHV",
+      "KCHVR",
+      "KCHVU",
+      "KEYYU",
+      "KEYYW",
+      "KFIIR",
+      "KFIIU",
+      "KOYNU",
+      "KOYNW",
+      "KTWOR",
+      "KTWOU",
+      "LAFA",
+      "LAFAR",
+      "LAFAU",
+      "LATAU",
+      "LATAW",
+      "LCCCR",
+      "LCCCU",
+      "LEDRU",
+      "LFAC",
+      "LFACU",
+      "LFACW",
+      "LKSP",
+      "LKSPR",
+      "LKSPU",
+      "LOVIU",
+      "LPAAU",
+      "LPAAW",
       "LPBBU",
       "LPBBW",
+      "LPCVU",
+      "LPCVW",
+      "LWACU",
+      "LWACW",
       "MACI",
       "MACIU",
       "MACIW",
+      "MBVI",
+      "MBVIU",
+      "MBVIW",
+      "MCAH",
+      "MCAHR",
+      "MCAHU",
       "MCGA",
       "MCGAU",
       "MCGAW",
+      "MESHU",
+      "MESHW",
+      "MEVO",
+      "MEVOU",
+      "MEVOW",
+      "MIACU",
+      "MIACW",
       "MKLYR",
       "MKLYU",
+      "MLAA",
+      "MLAAU",
+      "MLAAW",
       "MMTX",
       "MMTXU",
       "MMTXW",
+      "MRCO",
+      "MRCOU",
+      "MRCOW",
+      "MTAKU",
+      "MTAKW",
+      "MUZE",
+      "MUZEU",
+      "MUZEW",
+      "MYX",
+      "MYXXR",
+      "MYXXU",
+      "MYXXW",
       "NBRG",
       "NBRGR",
       "NBRGU",
+      "NCO",
+      "NCOOR",
+      "NCOOU",
+      "NCOOW",
+      "NMP",
+      "NMPAR",
+      "NMPAU",
+      "NPACU",
+      "NPACW",
+      "NSAIR",
+      "NSAIU",
+      "NSAIW",
       "NTWOU",
       "NTWOW",
+      "OACC",
+      "OACCU",
+      "OACCW",
+      "OBA",
+      "OBAWU",
+      "OBAWW",
+      "OCLTR",
+      "OCLTU",
+      "OCLTW",
+      "OHACR",
+      "OHACU",
+      "OIM",
+      "OIMAU",
+      "OIMAW",
+      "ONCHU",
+      "ONCHW",
+      "OSPRU",
+      "OSPRW",
+      "OTGA",
+      "OTGAU",
+      "OTGAW",
+      "OYSER",
+      "OYSEU",
+      "PAACU",
+      "PAACW",
+      "PACHU",
+      "PACHW",
+      "PALO",
+      "PALOU",
+      "PALOW",
+      "PAXGU",
+      "PCAP",
+      "PCAPU",
+      "PCAPW",
+      "PECE",
+      "PECER",
+      "PECEU",
+      "PECEW",
+      "PGACR",
+      "PGACU",
+      "PLCIR",
+      "PLCIU",
       "PLMKU",
       "PLMKW",
+      "PMTR",
+      "PMTRU",
+      "PMTRW",
+      "POLEU",
+      "POLEW",
+      "PTACU",
+      "PTACW",
+      "PTOR",
+      "PTORU",
+      "PTORW",
+      "QADR",
+      "QADRU",
+      "QADRW",
+      "QETAR",
+      "QETAU",
+      "QSEAR",
+      "QSEAU",
+      "QUMSR",
+      "QUMSU",
+      "RANGR",
+      "RANGU",
+      "RDACR",
+      "RDACU",
+      "RDAGU",
+      "RDAGW",
+      "RFAIR",
+      "RFAIU",
+      "RFAMR",
+      "RFAMU",
+      "RIBBR",
+      "RIBBU",
+      "RNAQ",
+      "RNAQU",
+      "RNAQW",
+      "RNGT",
+      "RNGTU",
+      "RNGTW",
+      "RREVU",
+      "RREVW",
+      "RTACU",
+      "RTACW",
+      "SAAQU",
+      "SAAQW",
+      "SCAT",
       "SCATR",
+      "SCATU",
       "SCATW",
+      "SCIIR",
+      "SCIIU",
+      "SDHI",
+      "SDHIR",
+      "SDHIU",
+      "SIMAU",
+      "SIMAW",
+      "SOCA",
+      "SOCAU",
+      "SOCAW",
+      "SORN",
+      "SORNU",
+      "SORNW",
       "SPAQ",
       "SPCK",
+      "SPEGR",
+      "SPEGU",
       "SSACR",
       "SSACU",
       "SSACW",
+      "SSEA",
+      "SSEAR",
+      "SSEAU",
+      "SUMA",
+      "SUMAR",
+      "SUMAU",
       "SVAQU",
       "SVAQW",
+      "SVIVU",
+      "SVIVW",
+      "SZZLR",
+      "SZZLU",
+      "TACHU",
+      "TACHW",
+      "TACO",
+      "TACOU",
+      "TACOW",
+      "TAVIR",
+      "TAVIU",
+      "TDAC",
+      "TDACU",
+      "TDACW",
+      "TDWD",
+      "TDWDR",
+      "TDWDU",
+      "THEO",
+      "THEOR",
+      "THEOU",
+      "TLACU",
+      "TLACW",
+      "TMTS",
+      "TMTSU",
+      "TMTSW",
+      "TVACU",
+      "TVACW",
+      "TVAI",
+      "TVAIR",
+      "TVAIU",
+      "TVIVU",
+      "TVIVW",
+      "UYSC",
+      "UYSCR",
+      "UYSCU",
+      "VLOSU",
+      "VLOSW",
+      "VNME",
+      "VNMEU",
+      "VNMEW",
+      "WENN",
+      "WENNU",
+      "WENNW",
+      "WLII",
+      "WLIIU",
+      "WLIIW",
       "WSTNR",
       "WSTNU",
       "WTG",
       "WTGUR",
-      "WTGUU"
+      "WTGUU",
+      "XCBE",
+      "XCBEU",
+      "XCBEW",
+      "XRPN",
+      "XRPNU",
+      "XRPNW",
+      "XSLLU",
+      "XSLLW",
+      "XTERU",
+      "XTERW",
+      "YHNAR",
+      "YHNAU",
+      "ZKP",
+      "ZKPU",
+      "ZKPW"
     ],
     "nonblank_sic_without_completed_merger_proof": [
       "ALIS",
@@ -117,42 +364,11 @@
       "IBAC",
       "IBACR",
       "IPXG",
-      "IPXGU",
-      "IPXGW",
-      "LPBBU",
-      "LPBBW",
-      "MACI",
-      "MACIU",
-      "MACIW",
-      "MCGA",
-      "MCGAU",
-      "MCGAW",
-      "MKLYR",
-      "MKLYU",
-      "MMTX",
-      "MMTXU",
-      "MMTXW",
-      "NBRG",
-      "NBRGR",
-      "NBRGU",
-      "NTWOU",
-      "NTWOW",
-      "PLMKU",
-      "PLMKW",
-      "SSACR",
-      "SSACU",
-      "SSACW",
-      "SVAQU",
-      "SVAQW",
-      "WSTNR",
-      "WSTNU",
-      "WTG",
-      "WTGUR",
-      "WTGUU"
+      "IPXGU"
     ],
     "nonblank_sic_is_not_merger_completion": true,
     "coverage_complete": false,
-    "sec_transport_error": null,
+    "sec_transport_error": "HTTPError:HTTP Error 429: Too Many Requests",
     "fail_closed": true
   },
   "proofs": {
@@ -166,7 +382,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Armada Acquisition Corp. III - Class A Ordinary Share",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -198,7 +414,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Abony Acquisition Corp. I - Class A Ordinary Share",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -230,7 +446,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Apogee Acquisition Corp - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -271,7 +487,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Averin Capital Acquisition Corp. - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -303,7 +519,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "ACP Holdings Acquisition Corp. - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -335,7 +551,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "American Drive Acquisition Company - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -367,7 +583,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Activate Energy Acquisition Corp. - Class A Ordinary Share",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -399,7 +615,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Aeon Acquisition I Corp. - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -440,7 +656,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Centurion Acquisition Corp. - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -472,7 +688,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Alpex Acquisition Corporation - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -513,7 +729,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "AMR Resources Acquisition Corp - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -545,7 +761,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Amanat Acquisition Corp - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -559,7 +775,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "StoneBridge Acquisition II Corporation - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -591,7 +807,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "AmperCap Acquisition Company - Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -623,7 +839,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Archimedes Tech SPAC Partners III Co. - Ordinary Share",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -655,7 +871,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "ARC Group Acquisition I Corp - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -696,7 +912,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Art Technology Acquisition Corp. - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -728,7 +944,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "A SPAC III Acquisition Corp. - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -760,7 +976,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Archimedes Tech SPAC Partners II Co. - Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -855,7 +1071,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Blue Acquisition Corp. - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -887,7 +1103,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Bleichroeder Acquisition Corp. III - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -919,7 +1135,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Bold Eagle Acquisition Corp. - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -951,7 +1167,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "BHAV Acquisition Corp - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -983,7 +1199,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Tribeca Strategic Acquisition Corp. - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -1015,7 +1231,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Bitcoin Infrastructure Acquisition Corp Ltd. - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -1047,7 +1263,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Black Hawk Acquisition Corporation - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -1061,7 +1277,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Bluerock Acquisition Corp. - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -1093,7 +1309,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Blue Water Acquisition Corp. III - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -1125,7 +1341,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Trailblazer Acquisition Corp. - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -1157,7 +1373,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Blueport Acquisition Ltd - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -1189,7 +1405,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Breeze Acquisition Corp. II - Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -1212,7 +1428,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Burtech Acquisition Corp II - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -1253,7 +1469,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Collective Acquisition Corp. II - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -1285,7 +1501,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Cayson Acquisition Corp - Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -1317,7 +1533,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Cambridge Acquisition Corp. - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -1349,7 +1565,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Catalyst Acquisition Corp. - Class A Ordinary Share",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -1381,7 +1597,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Collective Acquisition Corp. - Class A ordinary shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -1413,7 +1629,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Columbus Circle Capital Corp III - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -1427,7 +1643,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Cohen Circle Acquisition Corp. II - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -1459,7 +1675,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Churchill Capital Corp XI - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -1473,7 +1689,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Charlton Aria Acquisition Corporation - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -1505,7 +1721,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Chenghe Acquisition III Co. - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -1537,7 +1753,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "ChampionsGate Acquisition Corporation - Class A Ordinary Share",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -1569,7 +1785,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Crown Reserve Acquisition Corp. I - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -1610,7 +1826,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Crane Harbor Acquisition Corp. II - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -1642,7 +1858,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Cal Redwood Acquisition Corp. - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -1674,7 +1890,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "ClearThink 1 Acquisition Corp. - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -1706,7 +1922,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Churchill Capital Corp XII - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -1720,7 +1936,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Digital Asset Acquisition Corp. - Class A Ordinary shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -1734,7 +1950,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "D. Boral Acquisition I Corp. - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -1766,7 +1982,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Drugs Made In America Acquisition Corp. - Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -1825,7 +2041,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Roman DBDR Acquisition Corp. II - Ordinary shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -1857,7 +2073,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Daedalus Special Acquisition Corp. - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -1889,7 +2105,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "DT Cloud Star Acquisition Corporation - Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -1921,7 +2137,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "EGH Acquisition Corp. - Class A ordinary shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -1953,7 +2169,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Emmis Acquisition Corp. - Class A Ordinary Share",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -1976,7 +2192,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Eureka Acquisition Corp - Class A Ordinary Share",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -1990,7 +2206,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Evolution Global Acquisition Corp - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -2022,7 +2238,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "East West Ave Acquisition Corp. - Common Stock",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -2054,7 +2270,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Freedom Metals Acquisition Corp. - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -2086,7 +2302,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Fifth Era Acquisition Corp I - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -2118,7 +2334,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "FG Imperii Acquisition Corp. - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -2150,7 +2366,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "FIGX Capital Acquisition Corp. - Class A ordinary share",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -2245,7 +2461,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Flag Ship Acquisition Corp. - Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -2277,7 +2493,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Forefront Tech Holdings Acquisition Corp - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -2309,7 +2525,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Fortress Value Acquisition Corp. V - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -2323,7 +2539,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Futurewave Acquisition Corporation - Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -2364,7 +2580,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "FortuneX Acquisition Corporation - Ordinary shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -2396,7 +2612,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "General Purpose Acquisition Corp. - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -2428,7 +2644,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "GP-Act III Acquisition Corp. - Class A Ordinary Share",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -2514,7 +2730,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "GSR V Acquisition Corp. - Class A ordinary shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -2582,7 +2798,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Berto Acquisition Corp. II - Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -2668,7 +2884,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "HCM III Acquisition Corp. - Class A Ordinary Share",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -2700,7 +2916,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Helix Acquisition Corp. III - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -2768,7 +2984,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Iron Dome Acquisition I Corp. - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -2827,7 +3043,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Invest Green Acquisition Corporation - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -2948,33 +3164,6 @@
       "same_asof_revalidated_without_sec_network": false,
       "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
-    "ISNR": {
-      "cik": "0002123475",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2123475",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "ISNRU": {
-      "cik": "0002123475",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2123475",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "ISNRW": {
-      "cik": "0002123475",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2123475",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
     "ITHA": {
       "cik": "0002080985",
       "sic": 6770,
@@ -2985,27 +3174,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "ITHAX Acquisition Corp III - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "ITHAU": {
-      "cik": "0002080985",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2080985",
-      "evidence_date": "2026-08-13",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "ITHAW": {
-      "cik": "0002080985",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2080985",
-      "evidence_date": "2026-08-13",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "JATT": {
       "cik": "0002112446",
@@ -3017,45 +3188,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "JATT II Acquisition Corp - Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "JTTT": {
-      "cik": "0002145659",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2145659",
-      "evidence_date": "2026-09-03",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "KCHV": {
-      "cik": "0002053799",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2053799",
-      "evidence_date": "2026-08-13",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "KCHVR": {
-      "cik": "0002053799",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2053799",
-      "evidence_date": "2026-08-13",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "KCHVU": {
-      "cik": "0002053799",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2053799",
-      "evidence_date": "2026-08-13",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "KEYY": {
       "cik": "0002102771",
@@ -3067,27 +3202,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Keystone Acquisition Corp. - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "KEYYU": {
-      "cik": "0002102771",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2102771",
-      "evidence_date": "2026-08-13",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "KEYYW": {
-      "cik": "0002102771",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2102771",
-      "evidence_date": "2026-08-13",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "KFII": {
       "cik": "0002029976",
@@ -3099,27 +3216,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "K&F Growth Acquisition Corp. II - Class A Ordinary shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "KFIIR": {
-      "cik": "0002029976",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2029976",
-      "evidence_date": "2026-10-08",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "KFIIU": {
-      "cik": "0002029976",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2029976",
-      "evidence_date": "2026-10-08",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "KOYN": {
       "cik": "0002068454",
@@ -3131,27 +3230,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "CSLM Digital Asset Acquisition Corp III - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "KOYNU": {
-      "cik": "0002068454",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2068454",
-      "evidence_date": "2026-10-07",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "KOYNW": {
-      "cik": "0002068454",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2068454",
-      "evidence_date": "2026-10-07",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "KTWO": {
       "cik": "0002086524",
@@ -3163,54 +3244,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "K2 Capital Acquisition Corporation - Class A Ordinary Share",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "KTWOR": {
-      "cik": "0002086524",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2086524",
-      "evidence_date": "2026-08-27",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "KTWOU": {
-      "cik": "0002086524",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2086524",
-      "evidence_date": "2026-08-27",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "LAFA": {
-      "cik": "0002079106",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2079106",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "LAFAR": {
-      "cik": "0002079106",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2079106",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "LAFAU": {
-      "cik": "0002079106",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2079106",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "LATA": {
       "cik": "0002076427",
@@ -3222,27 +3258,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Galata Acquisition Corp. II - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "LATAU": {
-      "cik": "0002076427",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2076427",
-      "evidence_date": "2026-08-13",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "LATAW": {
-      "cik": "0002076427",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2076427",
-      "evidence_date": "2026-08-13",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "LCCC": {
       "cik": "0002049248",
@@ -3254,99 +3272,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Lakeshore Acquisition III Corp. - Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "LCCCR": {
-      "cik": "0002049248",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2049248",
-      "evidence_date": "2026-10-07",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "LCCCU": {
-      "cik": "0002049248",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2049248",
-      "evidence_date": "2026-10-07",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "LEDRU": {
-      "cik": "0002109823",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2109823",
-      "evidence_date": "2026-10-08",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "LFAC": {
-      "cik": "0002084563",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2084563",
-      "evidence_date": "2026-08-12",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "LFACU": {
-      "cik": "0002084563",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2084563",
-      "evidence_date": "2026-08-12",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "LFACW": {
-      "cik": "0002084563",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2084563",
-      "evidence_date": "2026-08-12",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "LKSP": {
-      "cik": "0002043508",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2043508",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "LKSPR": {
-      "cik": "0002043508",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2043508",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "LKSPU": {
-      "cik": "0002043508",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2043508",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "LOVIU": {
-      "cik": "0002115191",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2115191",
-      "evidence_date": "2026-10-01",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "LPAA": {
       "cik": "0002015502",
@@ -3358,27 +3286,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Launch One Acquisition Corp. - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "LPAAU": {
-      "cik": "0002015502",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2015502",
-      "evidence_date": "2026-08-13",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "LPAAW": {
-      "cik": "0002015502",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2015502",
-      "evidence_date": "2026-08-13",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "LPBB": {
       "cik": "0002023676",
@@ -3390,7 +3300,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Launch Two Acquisition Corp. - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -3404,27 +3314,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Launchpad Cadenza Acquisition Corp I - Class A Ordinary Share",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "LPCVU": {
-      "cik": "0002083728",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2083728",
-      "evidence_date": "2026-08-13",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "LPCVW": {
-      "cik": "0002083728",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2083728",
-      "evidence_date": "2026-08-13",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "LWAC": {
       "cik": "0002061379",
@@ -3436,81 +3328,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "LightWave Acquisition Corp. - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "LWACU": {
-      "cik": "0002061379",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2061379",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "LWACW": {
-      "cik": "0002061379",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2061379",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "MBVI": {
-      "cik": "0002073928",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2073928",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "MBVIU": {
-      "cik": "0002073928",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2073928",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "MBVIW": {
-      "cik": "0002073928",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2073928",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "MCAH": {
-      "cik": "0002109876",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2109876",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "MCAHR": {
-      "cik": "0002109876",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2109876",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "MCAHU": {
-      "cik": "0002109876",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2109876",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "MESH": {
       "cik": "0002081468",
@@ -3522,54 +3342,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Meshflow Acquisition Corp. - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "MESHU": {
-      "cik": "0002081468",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2081468",
-      "evidence_date": "2026-09-08",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "MESHW": {
-      "cik": "0002081468",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2081468",
-      "evidence_date": "2026-09-08",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "MEVO": {
-      "cik": "0002087361",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2087361",
-      "evidence_date": "2026-09-11",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "MEVOU": {
-      "cik": "0002087361",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2087361",
-      "evidence_date": "2026-09-11",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "MEVOW": {
-      "cik": "0002087361",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2087361",
-      "evidence_date": "2026-09-11",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "MIAC": {
       "cik": "0002136530",
@@ -3581,27 +3356,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Meridian3 Industrials Acquisition Corp - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "MIACU": {
-      "cik": "0002136530",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2136530",
-      "evidence_date": "2026-08-21",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "MIACW": {
-      "cik": "0002136530",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2136530",
-      "evidence_date": "2026-08-21",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "MKLY": {
       "cik": "0002067592",
@@ -3613,216 +3370,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "McKinley Acquisition Corporation - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "MLAA": {
-      "cik": "0002094265",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2094265",
-      "evidence_date": "2026-08-11",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "MLAAU": {
-      "cik": "0002094265",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2094265",
-      "evidence_date": "2026-08-11",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "MLAAW": {
-      "cik": "0002094265",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2094265",
-      "evidence_date": "2026-08-11",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "MRCO": {
-      "cik": "0002106436",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2106436",
-      "evidence_date": "2026-08-25",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "MRCOU": {
-      "cik": "0002106436",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2106436",
-      "evidence_date": "2026-08-25",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "MRCOW": {
-      "cik": "0002106436",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2106436",
-      "evidence_date": "2026-08-25",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "MTAK": {
-      "cik": "0002133136",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2133136",
-      "evidence_date": "2026-09-16",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "MTAKU": {
-      "cik": "0002133136",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2133136",
-      "evidence_date": "2026-09-16",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "MTAKW": {
-      "cik": "0002133136",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2133136",
-      "evidence_date": "2026-09-16",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "MUZE": {
-      "cik": "0002093484",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2093484",
-      "evidence_date": "2026-08-13",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "MUZEU": {
-      "cik": "0002093484",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2093484",
-      "evidence_date": "2026-08-13",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "MUZEW": {
-      "cik": "0002093484",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2093484",
-      "evidence_date": "2026-08-13",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "MYX": {
-      "cik": "0002080087",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2080087",
-      "evidence_date": "2026-10-06",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "MYXXR": {
-      "cik": "0002080087",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2080087",
-      "evidence_date": "2026-10-06",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "MYXXU": {
-      "cik": "0002080087",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2080087",
-      "evidence_date": "2026-10-06",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "MYXXW": {
-      "cik": "0002080087",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2080087",
-      "evidence_date": "2026-10-06",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "NCO": {
-      "cik": "0002116230",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2116230",
-      "evidence_date": "2026-09-02",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "NCOOR": {
-      "cik": "0002116230",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2116230",
-      "evidence_date": "2026-09-02",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "NCOOU": {
-      "cik": "0002116230",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2116230",
-      "evidence_date": "2026-09-02",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "NCOOW": {
-      "cik": "0002116230",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2116230",
-      "evidence_date": "2026-09-02",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "NMP": {
-      "cik": "0002054876",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2054876",
-      "evidence_date": "2026-09-25",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "NMPAR": {
-      "cik": "0002054876",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2054876",
-      "evidence_date": "2026-09-25",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "NMPAU": {
-      "cik": "0002054876",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2054876",
-      "evidence_date": "2026-09-25",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "NPAC": {
       "cik": "0002048948",
@@ -3834,27 +3384,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "New Providence Acquisition Corp. III - Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "NPACU": {
-      "cik": "0002048948",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2048948",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "NPACW": {
-      "cik": "0002048948",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2048948",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "NSAI": {
       "cik": "0002133719",
@@ -3866,36 +3398,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "NorthStrive Acquisition Corp I. - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "NSAIR": {
-      "cik": "0002133719",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2133719",
-      "evidence_date": "2026-09-29",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "NSAIU": {
-      "cik": "0002133719",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2133719",
-      "evidence_date": "2026-09-29",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "NSAIW": {
-      "cik": "0002133719",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2133719",
-      "evidence_date": "2026-09-29",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "NTWO": {
       "cik": "0002028027",
@@ -3907,63 +3412,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Newbury Street II Acquisition Corp - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "OACC": {
-      "cik": "0002029769",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2029769",
-      "evidence_date": "2026-10-02",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "OACCU": {
-      "cik": "0002029769",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2029769",
-      "evidence_date": "2026-10-02",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "OACCW": {
-      "cik": "0002029769",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2029769",
-      "evidence_date": "2026-10-02",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "OBA": {
-      "cik": "0002034313",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2034313",
-      "evidence_date": "2026-10-05",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "OBAWU": {
-      "cik": "0002034313",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2034313",
-      "evidence_date": "2026-10-05",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "OBAWW": {
-      "cik": "0002034313",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2034313",
-      "evidence_date": "2026-10-05",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "OCLT": {
       "cik": "0002137679",
@@ -3975,36 +3426,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "OceanLight Acquisition Corporation - Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "OCLTR": {
-      "cik": "0002137679",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2137679",
-      "evidence_date": "2026-10-02",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "OCLTU": {
-      "cik": "0002137679",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2137679",
-      "evidence_date": "2026-10-02",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "OCLTW": {
-      "cik": "0002137679",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2137679",
-      "evidence_date": "2026-10-02",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "OHAC": {
       "cik": "0002090787",
@@ -4016,54 +3440,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Oceanhawk Acquisition Corp. - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "OHACR": {
-      "cik": "0002090787",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2090787",
-      "evidence_date": "2026-10-06",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "OHACU": {
-      "cik": "0002090787",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2090787",
-      "evidence_date": "2026-10-06",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "OIM": {
-      "cik": "0002088325",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2088325",
-      "evidence_date": "2026-08-13",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "OIMAU": {
-      "cik": "0002088325",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2088325",
-      "evidence_date": "2026-08-13",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "OIMAW": {
-      "cik": "0002088325",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2088325",
-      "evidence_date": "2026-08-13",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "ONCH": {
       "cik": "0002054272",
@@ -4075,27 +3454,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "1RT Acquisition Corp. - Class A Ordinary Share",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "ONCHU": {
-      "cik": "0002054272",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2054272",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "ONCHW": {
-      "cik": "0002054272",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2054272",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "OSPR": {
       "cik": "0002113481",
@@ -4107,54 +3468,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Osprey Acquisition Corp. III - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "OSPRU": {
-      "cik": "0002113481",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2113481",
-      "evidence_date": "2026-08-18",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "OSPRW": {
-      "cik": "0002113481",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2113481",
-      "evidence_date": "2026-08-18",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "OTGA": {
-      "cik": "0002077010",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2077010",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "OTGAU": {
-      "cik": "0002077010",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2077010",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "OTGAW": {
-      "cik": "0002077010",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2077010",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "OYSE": {
       "cik": "0002042182",
@@ -4166,27 +3482,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Oyster Enterprises II Acquisition Corp - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "OYSER": {
-      "cik": "0002042182",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2042182",
-      "evidence_date": "2026-08-06",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "OYSEU": {
-      "cik": "0002042182",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2042182",
-      "evidence_date": "2026-08-06",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "PAAC": {
       "cik": "0002087446",
@@ -4198,27 +3496,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Proem Acquisition Corp I - Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "PAACU": {
-      "cik": "0002087446",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2087446",
-      "evidence_date": "2026-10-07",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "PAACW": {
-      "cik": "0002087446",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2087446",
-      "evidence_date": "2026-10-07",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "PACH": {
       "cik": "0002040381",
@@ -4230,126 +3510,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Pioneer Acquisition I Corp - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "PACHU": {
-      "cik": "0002040381",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2040381",
-      "evidence_date": "2026-10-08",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "PACHW": {
-      "cik": "0002040381",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2040381",
-      "evidence_date": "2026-10-08",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "PALO": {
-      "cik": "0002101562",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2101562",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "PALOU": {
-      "cik": "0002101562",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2101562",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "PALOW": {
-      "cik": "0002101562",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2101562",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "PAXGU": {
-      "cik": "0002076561",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2076561",
-      "evidence_date": "2026-10-09",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "PCAP": {
-      "cik": "0002056634",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2056634",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "PCAPU": {
-      "cik": "0002056634",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2056634",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "PCAPW": {
-      "cik": "0002056634",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2056634",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "PECE": {
-      "cik": "0002088626",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2088626",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "PECER": {
-      "cik": "0002088626",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2088626",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "PECEU": {
-      "cik": "0002088626",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2088626",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "PECEW": {
-      "cik": "0002088626",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2088626",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "PGAC": {
       "cik": "0002030829",
@@ -4361,27 +3524,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Pantages Capital Acquisition Corporation - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "PGACR": {
-      "cik": "0002030829",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2030829",
-      "evidence_date": "2026-10-06",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "PGACU": {
-      "cik": "0002030829",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2030829",
-      "evidence_date": "2026-10-06",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "PLCI": {
       "cik": "0002122392",
@@ -4393,27 +3538,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Pelican Acquisition II Corporation - Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "PLCIR": {
-      "cik": "0002122392",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2122392",
-      "evidence_date": "2026-08-19",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "PLCIU": {
-      "cik": "0002122392",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2122392",
-      "evidence_date": "2026-08-19",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "PLMK": {
       "cik": "0002030482",
@@ -4425,36 +3552,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Plum Acquisition Corp. IV - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "PMTR": {
-      "cik": "0002061473",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2061473",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "PMTRU": {
-      "cik": "0002061473",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2061473",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "PMTRW": {
-      "cik": "0002061473",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2061473",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "POLE": {
       "cik": "0002025341",
@@ -4466,27 +3566,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Andretti Acquisition Corp. II - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "POLEU": {
-      "cik": "0002025341",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2025341",
-      "evidence_date": "2026-10-05",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "POLEW": {
-      "cik": "0002025341",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2025341",
-      "evidence_date": "2026-10-05",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "PTAC": {
       "cik": "0002099095",
@@ -4498,81 +3580,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Patriot Acquisition Corp. - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "PTACU": {
-      "cik": "0002099095",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2099095",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "PTACW": {
-      "cik": "0002099095",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2099095",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "PTOR": {
-      "cik": "0002093912",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2093912",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "PTORU": {
-      "cik": "0002093912",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2093912",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "PTORW": {
-      "cik": "0002093912",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2093912",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "QADR": {
-      "cik": "0002083217",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2083217",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "QADRU": {
-      "cik": "0002083217",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2083217",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "QADRW": {
-      "cik": "0002083217",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2083217",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "QETA": {
       "cik": "0001978528",
@@ -4584,27 +3594,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Quetta Acquisition Corporation - Common Stock",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "QETAR": {
-      "cik": "0001978528",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=1978528",
-      "evidence_date": "2026-10-08",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "QETAU": {
-      "cik": "0001978528",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=1978528",
-      "evidence_date": "2026-10-08",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "QSEA": {
       "cik": "0002047455",
@@ -4616,27 +3608,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Quartzsea Acquisition Corporation - Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "QSEAR": {
-      "cik": "0002047455",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2047455",
-      "evidence_date": "2026-10-01",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "QSEAU": {
-      "cik": "0002047455",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2047455",
-      "evidence_date": "2026-10-01",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "QUMS": {
       "cik": "0002070900",
@@ -4648,27 +3622,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Quantumsphere Acquisition Corp. - Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "QUMSR": {
-      "cik": "0002070900",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2070900",
-      "evidence_date": "2026-10-06",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "QUMSU": {
-      "cik": "0002070900",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2070900",
-      "evidence_date": "2026-10-06",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "RANG": {
       "cik": "0002035644",
@@ -4680,27 +3636,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Range Capital Acquisition Corp. - Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "RANGR": {
-      "cik": "0002035644",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2035644",
-      "evidence_date": "2026-09-23",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "RANGU": {
-      "cik": "0002035644",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2035644",
-      "evidence_date": "2026-09-23",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "RDAC": {
       "cik": "0002018145",
@@ -4712,27 +3650,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Rising Dragon Acquisition Corp. - Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "RDACR": {
-      "cik": "0002018145",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2018145",
-      "evidence_date": "2026-08-20",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "RDACU": {
-      "cik": "0002018145",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2018145",
-      "evidence_date": "2026-08-20",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "RDAG": {
       "cik": "0002055459",
@@ -4744,27 +3664,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Republic Digital Acquisition Company - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "RDAGU": {
-      "cik": "0002055459",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2055459",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "RDAGW": {
-      "cik": "0002055459",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2055459",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "RFAI": {
       "cik": "0002012807",
@@ -4776,27 +3678,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "RF Acquisition Corp II - Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "RFAIR": {
-      "cik": "0002012807",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2012807",
-      "evidence_date": "2026-09-04",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "RFAIU": {
-      "cik": "0002012807",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2012807",
-      "evidence_date": "2026-09-04",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "RFAM": {
       "cik": "0002091712",
@@ -4808,27 +3692,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "RF Acquisition Corp III - Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "RFAMR": {
-      "cik": "0002091712",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2091712",
-      "evidence_date": "2026-08-12",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "RFAMU": {
-      "cik": "0002091712",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2091712",
-      "evidence_date": "2026-08-12",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "RIBB": {
       "cik": "0002035016",
@@ -4840,81 +3706,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Ribbon Acquisition Corp - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "RIBBR": {
-      "cik": "0002035016",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2035016",
-      "evidence_date": "2026-10-05",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "RIBBU": {
-      "cik": "0002035016",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2035016",
-      "evidence_date": "2026-10-05",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "RNAQ": {
-      "cik": "0002147219",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2147219",
-      "evidence_date": "2026-09-11",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "RNAQU": {
-      "cik": "0002147219",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2147219",
-      "evidence_date": "2026-09-11",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "RNAQW": {
-      "cik": "0002147219",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2147219",
-      "evidence_date": "2026-09-11",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "RNGT": {
-      "cik": "0002078653",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2078653",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "RNGTU": {
-      "cik": "0002078653",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2078653",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "RNGTW": {
-      "cik": "0002078653",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2078653",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "RREV": {
       "cik": "0002123969",
@@ -4926,27 +3720,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "RRE Ventures Acquisition Corp. - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "RREVU": {
-      "cik": "0002123969",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2123969",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "RREVW": {
-      "cik": "0002123969",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2123969",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "RTAC": {
       "cik": "0002035173",
@@ -4958,27 +3734,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Renatus Tactical Acquisition Corp I - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "RTACU": {
-      "cik": "0002035173",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2035173",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "RTACW": {
-      "cik": "0002035173",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2035173",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "SAAQ": {
       "cik": "0002091222",
@@ -4990,45 +3748,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Space Asset Acquisition Corp. - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "SAAQU": {
-      "cik": "0002091222",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2091222",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "SAAQW": {
-      "cik": "0002091222",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2091222",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "SCAT": {
-      "cik": "0002133239",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2133239",
-      "evidence_date": "2026-10-06",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "SCATU": {
-      "cik": "0002133239",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2133239",
-      "evidence_date": "2026-10-06",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "SCII": {
       "cik": "0002076739",
@@ -5040,54 +3762,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "SC II Acquisition Corp. - Class A ordinary share",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "SCIIR": {
-      "cik": "0002076739",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2076739",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "SCIIU": {
-      "cik": "0002076739",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2076739",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "SDHI": {
-      "cik": "0002034037",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2034037",
-      "evidence_date": "2026-08-06",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "SDHIR": {
-      "cik": "0002034037",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2034037",
-      "evidence_date": "2026-08-06",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "SDHIU": {
-      "cik": "0002034037",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2034037",
-      "evidence_date": "2026-08-06",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "SIMA": {
       "cik": "0002014982",
@@ -5099,81 +3776,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "SIM Acquisition Corp. I - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "SIMAU": {
-      "cik": "0002014982",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2014982",
-      "evidence_date": "2026-10-05",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "SIMAW": {
-      "cik": "0002014982",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2014982",
-      "evidence_date": "2026-10-05",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "SOCA": {
-      "cik": "0002065948",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2065948",
-      "evidence_date": "2026-10-06",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "SOCAU": {
-      "cik": "0002065948",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2065948",
-      "evidence_date": "2026-10-06",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "SOCAW": {
-      "cik": "0002065948",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2065948",
-      "evidence_date": "2026-10-06",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "SORN": {
-      "cik": "0002086263",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2086263",
-      "evidence_date": "2026-08-13",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "SORNU": {
-      "cik": "0002086263",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2086263",
-      "evidence_date": "2026-08-13",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "SORNW": {
-      "cik": "0002086263",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2086263",
-      "evidence_date": "2026-08-13",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "SPEG": {
       "cik": "0002028735",
@@ -5185,27 +3790,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Silver Pegasus Acquisition Corp - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "SPEGR": {
-      "cik": "0002028735",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2028735",
-      "evidence_date": "2026-08-13",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "SPEGU": {
-      "cik": "0002028735",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2028735",
-      "evidence_date": "2026-08-13",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "SSAC": {
       "cik": "0002081300",
@@ -5217,63 +3804,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "SPACSphere Acquisition Corp. - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "SSEA": {
-      "cik": "0002059165",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2059165",
-      "evidence_date": "2026-10-09",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "SSEAR": {
-      "cik": "0002059165",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2059165",
-      "evidence_date": "2026-10-09",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "SSEAU": {
-      "cik": "0002059165",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2059165",
-      "evidence_date": "2026-10-09",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "SUMA": {
-      "cik": "0002105838",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2105838",
-      "evidence_date": "2026-08-13",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "SUMAR": {
-      "cik": "0002105838",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2105838",
-      "evidence_date": "2026-08-13",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "SUMAU": {
-      "cik": "0002105838",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2105838",
-      "evidence_date": "2026-08-13",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "SVAQ": {
       "cik": "0002085659",
@@ -5285,7 +3818,7 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Silicon Valley Acquisition Corp. - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
@@ -5299,27 +3832,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Spring Valley Acquisition Corp. IV - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "SVIVU": {
-      "cik": "0002098242",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2098242",
-      "evidence_date": "2026-08-07",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "SVIVW": {
-      "cik": "0002098242",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2098242",
-      "evidence_date": "2026-08-07",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "SZZL": {
       "cik": "0002030663",
@@ -5331,27 +3846,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Sizzle Acquisition Corp. II - Class A ordinary shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "SZZLR": {
-      "cik": "0002030663",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2030663",
-      "evidence_date": "2026-10-07",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "SZZLU": {
-      "cik": "0002030663",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2030663",
-      "evidence_date": "2026-10-07",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "TACH": {
       "cik": "0002009183",
@@ -5363,54 +3860,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Titan Acquisition Corp. - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "TACHU": {
-      "cik": "0002009183",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2009183",
-      "evidence_date": "2026-10-05",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "TACHW": {
-      "cik": "0002009183",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2009183",
-      "evidence_date": "2026-10-05",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "TACO": {
-      "cik": "0002033122",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2033122",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "TACOU": {
-      "cik": "0002033122",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2033122",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "TACOW": {
-      "cik": "0002033122",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2033122",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "TAVI": {
       "cik": "0002020385",
@@ -5422,27 +3874,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Tavia Acquisition Corp. - Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "TAVIR": {
-      "cik": "0002020385",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2020385",
-      "evidence_date": "2026-10-06",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "TAVIU": {
-      "cik": "0002020385",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2020385",
-      "evidence_date": "2026-10-06",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "TCGX": {
       "cik": "0002137965",
@@ -5454,144 +3888,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "TCGX Acquisition Corp. - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "TDAC": {
-      "cik": "0001926599",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=1926599",
-      "evidence_date": "2026-10-08",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "TDACU": {
-      "cik": "0001926599",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=1926599",
-      "evidence_date": "2026-10-08",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "TDACW": {
-      "cik": "0001926599",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=1926599",
-      "evidence_date": "2026-10-08",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "TDWD": {
-      "cik": "0002076616",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2076616",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "TDWDR": {
-      "cik": "0002076616",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2076616",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "TDWDU": {
-      "cik": "0002076616",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2076616",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "THEO": {
-      "cik": "0002080216",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2080216",
-      "evidence_date": "2026-08-26",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "THEOR": {
-      "cik": "0002080216",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2080216",
-      "evidence_date": "2026-08-26",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "THEOU": {
-      "cik": "0002080216",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2080216",
-      "evidence_date": "2026-08-26",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "TLAC": {
-      "cik": "0002128462",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2128462",
-      "evidence_date": "2026-09-16",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "TLACU": {
-      "cik": "0002128462",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2128462",
-      "evidence_date": "2026-09-16",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "TLACW": {
-      "cik": "0002128462",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2128462",
-      "evidence_date": "2026-09-16",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "TMTS": {
-      "cik": "0002097364",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2097364",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "TMTSU": {
-      "cik": "0002097364",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2097364",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "TMTSW": {
-      "cik": "0002097364",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2097364",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "TVA": {
       "cik": "0002033991",
@@ -5603,54 +3902,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Texas Ventures Acquisition III Corp - Class A Ordinary Share",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "TVACU": {
-      "cik": "0002033991",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2033991",
-      "evidence_date": "2026-10-09",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "TVACW": {
-      "cik": "0002033991",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2033991",
-      "evidence_date": "2026-10-09",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "TVAI": {
-      "cik": "0001872228",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=1872228",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "TVAIR": {
-      "cik": "0001872228",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=1872228",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "TVAIU": {
-      "cik": "0001872228",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=1872228",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "TVIV": {
       "cik": "0002096755",
@@ -5662,54 +3916,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Texas Ventures Acquisition IV Corp - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "TVIVU": {
-      "cik": "0002096755",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2096755",
-      "evidence_date": "2026-08-13",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "TVIVW": {
-      "cik": "0002096755",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2096755",
-      "evidence_date": "2026-08-13",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "UYSC": {
-      "cik": "0002036973",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2036973",
-      "evidence_date": "2026-10-06",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "UYSCR": {
-      "cik": "0002036973",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2036973",
-      "evidence_date": "2026-10-06",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "UYSCU": {
-      "cik": "0002036973",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2036973",
-      "evidence_date": "2026-10-06",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "VLOS": {
       "cik": "0002016072",
@@ -5721,108 +3930,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Velos Acquisition I Corp. - Class A Ordinary shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "VLOSU": {
-      "cik": "0002016072",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2016072",
-      "evidence_date": "2026-09-29",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "VLOSW": {
-      "cik": "0002016072",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2016072",
-      "evidence_date": "2026-09-29",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "VNME": {
-      "cik": "0002055879",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2055879",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "VNMEU": {
-      "cik": "0002055879",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2055879",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "VNMEW": {
-      "cik": "0002055879",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2055879",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "WENN": {
-      "cik": "0002057043",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2057043",
-      "evidence_date": "2026-08-13",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "WENNU": {
-      "cik": "0002057043",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2057043",
-      "evidence_date": "2026-08-13",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "WENNW": {
-      "cik": "0002057043",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2057043",
-      "evidence_date": "2026-08-13",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "WLII": {
-      "cik": "0002083946",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2083946",
-      "evidence_date": "2026-08-12",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "WLIIU": {
-      "cik": "0002083946",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2083946",
-      "evidence_date": "2026-08-12",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "WLIIW": {
-      "cik": "0002083946",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2083946",
-      "evidence_date": "2026-08-12",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "WSTN": {
       "cik": "0002076192",
@@ -5834,72 +3944,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Westin Acquisition Corp - Class A Ordinary Share",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "XCBE": {
-      "cik": "0002083493",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2083493",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "XCBEU": {
-      "cik": "0002083493",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2083493",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "XCBEW": {
-      "cik": "0002083493",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2083493",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "XIII": {
-      "cik": "0002114229",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2114229",
-      "evidence_date": "2026-09-16",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "XRPN": {
-      "cik": "0002044009",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2044009",
-      "evidence_date": "2026-10-05",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "XRPNU": {
-      "cik": "0002044009",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2044009",
-      "evidence_date": "2026-10-05",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "XRPNW": {
-      "cik": "0002044009",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2044009",
-      "evidence_date": "2026-10-05",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "XSLL": {
       "cik": "0002088807",
@@ -5911,27 +3958,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Xsolla SPAC 1 - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "XSLLU": {
-      "cik": "0002088807",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2088807",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "XSLLW": {
-      "cik": "0002088807",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2088807",
-      "evidence_date": "2026-08-14",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "XTER": {
       "cik": "0002134856",
@@ -5943,27 +3972,9 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "Karman Line Acquisition Corp. - Class A Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
-    },
-    "XTERU": {
-      "cik": "0002134856",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2134856",
-      "evidence_date": "2026-10-01",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "XTERW": {
-      "cik": "0002134856",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2134856",
-      "evidence_date": "2026-10-01",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
     },
     "YHNA": {
       "cik": "0002020987",
@@ -5975,54 +3986,45 @@
       "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
       "same_asof_nasdaq_security_name": "YHN Acquisition I Limited - Ordinary Shares",
       "same_asof_nasdaq_screener_industry": "",
-      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202618:01|||||||",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
       "manual_seed_registry_blob_sha": "3750588662ed0d869c533f26ea9e63b0a149c0f9"
     },
-    "YHNAR": {
-      "cik": "0002020987",
+    "MTAK": {
+      "cik": "0002133136",
       "sic": 6770,
       "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2020987",
-      "evidence_date": "2026-10-08",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
+      "source_url": "https://www.sec.gov/Archives/edgar/data/2133136/000121390026097207/0001213900-26-097207-index.htm",
+      "evidence_date": "2026-09-03",
+      "same_asof_nasdaq_security_name": "Market Technology Acquisition Corp - Class A Ordinary Shares",
+      "same_asof_nasdaq_screener_industry": "",
+      "same_asof_revalidated_without_sec_network": true,
+      "revalidation_semantics": "PRIOR_SEC_SIC6770_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||"
     },
-    "YHNAU": {
-      "cik": "0002020987",
+    "TLAC": {
+      "cik": "0002128462",
       "sic": 6770,
       "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2020987",
-      "evidence_date": "2026-10-08",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
+      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2128462",
+      "evidence_date": "2026-09-01",
+      "same_asof_nasdaq_security_name": "Three Lions Acquisition Corp. - Ordinary Shares",
+      "same_asof_nasdaq_screener_industry": "",
+      "same_asof_revalidated_without_sec_network": true,
+      "revalidation_semantics": "PRIOR_SEC_SIC6770_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||"
     },
-    "ZKP": {
-      "cik": "0002087447",
+    "XIII": {
+      "cik": "0002114229",
       "sic": 6770,
       "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2087447",
-      "evidence_date": "2026-08-13",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "ZKPU": {
-      "cik": "0002087447",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2087447",
-      "evidence_date": "2026-08-13",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
-    },
-    "ZKPW": {
-      "cik": "0002087447",
-      "sic": 6770,
-      "classification": "Blank Checks",
-      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2087447",
-      "evidence_date": "2026-08-13",
-      "same_asof_revalidated_without_sec_network": false,
-      "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9"
+      "source_url": "https://www.sec.gov/edgar/browse/?CIK=2114229",
+      "evidence_date": "2026-09-16",
+      "same_asof_nasdaq_security_name": "Churchill Capital Corp XIII - Class A Ordinary Shares",
+      "same_asof_nasdaq_screener_industry": "",
+      "same_asof_revalidated_without_sec_network": true,
+      "revalidation_semantics": "PRIOR_SEC_SIC6770_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1009202621:31|||||||"
     }
   }
 }
