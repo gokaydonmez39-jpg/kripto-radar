@@ -5,6 +5,7 @@ on:
     paths:
       - "nasdaq-xray/nasdaq_20261009_immutable_archive_shadow.py"
       - "nasdaq-xray/tests/test_archived_directory_mismatch.py"
+      - "nasdaq-xray/tests/test_archived_directory_duplicate.py"
       - "nasdaq-xray/canonical_current_full_state.json"
       - "nasdaq-xray/canonical_current_master_manifest.json"
       - "nasdaq-xray/master_asof_identity_proof_20261009.json"
@@ -34,6 +35,7 @@ jobs:
           python -m py_compile nasdaq-xray/nasdaq_20261009_immutable_archive_shadow.py
           python nasdaq-xray/nasdaq_20261009_immutable_archive_shadow.py --selftest
           python nasdaq-xray/tests/test_archived_directory_mismatch.py
+          python nasdaq-xray/tests/test_archived_directory_duplicate.py
       - name: Compare independently archived Nasdaq October-09 file against canonical source
         if: github.ref == 'refs/heads/main'
         run: |
