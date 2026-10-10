@@ -188,8 +188,6 @@ def selftest():
         assert v["status"]=="SHADOW_INCOMPLETE_OR_INVALID_CA" and v["measured_symbols"]==0,v
         assert v["canonical_pass_created"]==0
         return v
-    assert query(lambda *x:{"corporate_actions":{}} if x[3] is None
-                 else {})["failure_reason_class"] is None or True
     # The empty total-event response is a valid provider answer (not proof of completeness).
     z=audit(asof,fake,"2025-09-29",lambda *x:{
         "corporate_actions":{"cash_dividends":[]},"next_page_token":None},now=now)
