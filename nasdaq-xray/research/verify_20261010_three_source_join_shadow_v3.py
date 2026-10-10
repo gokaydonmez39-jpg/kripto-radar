@@ -5,6 +5,7 @@ No production changes, AL registration, C4.18 approval or device notification.
 """
 from __future__ import annotations
 import argparse
+import collections
 import copy
 import hashlib
 import json
@@ -20,6 +21,37 @@ ASOF="2026-10-09"
 EXPECTED_SCOPE=514
 EXPECTED_ARTIFACT_ID=11664626544
 EXPECTED_JOIN_SHA256="043394d78aaf1fd6a0515fa136627b3bd5eb1f8b401ede63a0ea0052ad913ff0"
+# Pinned SHA-256 of all 514 exact official SEC artifact status/reason rows.
+# Computed from verified immutable artifact 11664626544 ZIP sha256:
+# 6c976363c49ac74d83cf3a9b8b3e4b7ae39cb629b3a73e9e5374484b5ea66aca
+EXPECTED_SEC_SCOPE_SHA256="f1073b9026483455bb6402cefcccdad340631a328788896777cc625e57567de6"
+EXPECTED_SEC_ALL_STATUS_SHA256="7cf81dc074215512df89de3a98e6cee9b5be472ee47d6f8b2ea67eb36fb36258"
+EXPECTED_SEC_ALL_REASON_SHA256="3e34aa648577ad00163a9ff1841c76413060cecb6498b64d51e6bfd546b99fa4"
+EXPECTED_SEC_REASON_COUNTS={
+    "SHARE_CLASS_CORP_ACTION_AND_PIT_PRICE_STILL_REQUIRED":346,
+    "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION":52,
+    "NO_SEC_DEI_OR_GAAP_SHARES_FACT":43,
+    "NO_FRESH_ACCEPTANCE_BOUND_SINGLE_ENTITY_SHARES":38,
+    "NO_DEI_BUT_GAAP_SHARES_AVAILABLE_CLASS_UNRESOLVED":34,
+    "SEC_HTTP_404":1,
+}
+EXPECTED_SEC_STATUS_COUNTS={
+    "SHADOW_SHARES_VINTAGE_ONLY":346,
+    "UNKNOWN":167,
+    "UNKNOWN_SEC_TRANSPORT":1,
+}
+EXPECTED_STATUS_REASON_PAIRS={
+    "SHADOW_SHARES_VINTAGE_ONLY":{"SHARE_CLASS_CORP_ACTION_AND_PIT_PRICE_STILL_REQUIRED"},
+    "UNKNOWN":{"SEC_SHARES_STALE_OR_FUTURE_OBSERVATION",
+               "NO_SEC_DEI_OR_GAAP_SHARES_FACT",
+               "NO_FRESH_ACCEPTANCE_BOUND_SINGLE_ENTITY_SHARES",
+               "NO_DEI_BUT_GAAP_SHARES_AVAILABLE_CLASS_UNRESOLVED"},
+    "UNKNOWN_SEC_TRANSPORT":{"SEC_HTTP_404"},
+}
+
+def _keyed_sha256(data):
+    return hashlib.sha256(("\n".join(f"{k}:{v}" for k,v in sorted(data.items()))+"\n").encode()).hexdigest()
+
 
 def git_blob(b:bytes)->str:
     return hashlib.sha1(b"blob "+str(len(b)).encode()+bytes([0])+b).hexdigest()
@@ -57,6 +89,27 @@ def verify(sec,price,v2,v46,price_sha):
     categories=set(statuses.values())
     check(categories<= {OFFICIAL_SEC_STATUS,"UNKNOWN","UNKNOWN_SEC_TRANSPORT"},
           "SEC_STATUS_ILLEGAL")
+    # A correct 330-ticker overlap alone does not authenticate the 184 other
+    # SEC explanations. Bind every symbol, status and reason to the real archive.
+    reason_data=sec.get("reason_codes")
+    reasons=reason_data if isinstance(reason_data,dict) else {}
+    check(set(reasons)==set(syms),"SEC_514_REASON_SYMBOL_SET_MISMATCH")
+    check(sec.get("sample_scope_sha256")==EXPECTED_SEC_SCOPE_SHA256,
+          "SEC_PRICE_SCOPE_FINGERPRINT_INVALID")
+    check(_keyed_sha256(statuses)==EXPECTED_SEC_ALL_STATUS_SHA256,
+          "SEC_FULL_STATUS_FINGERPRINT_INVALID")
+    check(_keyed_sha256(reasons)==EXPECTED_SEC_ALL_REASON_SHA256,
+          "SEC_FULL_REASON_FINGERPRINT_INVALID")
+    check(sec.get("status_counts")==EXPECTED_SEC_STATUS_COUNTS
+          and dict(collections.Counter(statuses.values()))==EXPECTED_SEC_STATUS_COUNTS,
+          "SEC_STATUS_COUNTS_INCONSISTENT")
+    check(sec.get("reason_counts")==EXPECTED_SEC_REASON_COUNTS
+          and dict(collections.Counter(reasons.values()))==EXPECTED_SEC_REASON_COUNTS,
+          "SEC_REASON_COUNTS_INCONSISTENT")
+    check(all(reasons.get(k) in EXPECTED_STATUS_REASON_PAIRS.get(v,set())
+              for k,v in statuses.items()),
+          "SEC_STATUS_REASON_PAIR_INVALID")
+
     hist=v46.get("history_alpaca_connected") or {}
     market=v46.get("mc_longbridge_connected") or {}
     missing=hist.get("incomplete_symbols") or []
