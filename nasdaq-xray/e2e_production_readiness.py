@@ -71,11 +71,19 @@ def mc_exact(mc,price,price_sha):
             return False
         if (sym in statuses["MC_PASS_PRIMARY"]) != (amount>=2_000_000_000):
             return False
-    # A fallback/unknown row can NEVER opt into R92 by setting an extra flag,
-    # nor can missing eligibility be silently treated as an explicit veto.
-    for group in ("MC_PASS_FALLBACK_WATCH","MC_FAIL_FALLBACK_TWO_SOURCE","MC_UNKNOWN"):
+    # WATCH is an admissible observation class only with an EXPLICIT R92 veto.
+    # The native historical MC_FAIL_PRIMARY / MC_FAIL_FALLBACK / MC_UNKNOWN
+    # schemas, by contrast, express their veto by the negative status itself;
+    # they have no per-row r92_eligible property. Never turn these into PASS.
+    for sym in statuses["MC_PASS_FALLBACK_WATCH"]:
+        if (mc["results"].get(sym) or {}).get("r92_eligible") is not False:
+            return False
+    for group in ("MC_FAIL_PRIMARY","MC_FAIL_FALLBACK_TWO_SOURCE","MC_UNKNOWN"):
         for sym in statuses[group]:
-            if (mc["results"].get(sym) or {}).get("r92_eligible") is not False:
+            row=mc["results"].get(sym) or {}
+            # If supplied, the eligibility bit must explicitly be False:
+            # True, strings, numbers, or null contradict native negative rows.
+            if "r92_eligible" in row and row["r92_eligible"] is not False:
                 return False
     return seen==symbols
 
@@ -392,6 +400,56 @@ def selftest():
     ):
         bad=deepcopy(mc);edit(bad)
         assert not mc_exact(bad,price,"P"),("UNPROVEN_PRIMARY_OR_WATCH_ESCAPED",bad)
+    # Native C4.17 bridge schemas deliberately omit r92_eligible on
+    # MC_FAIL_PRIMARY, MC_FAIL_FALLBACK_TWO_SOURCE and MC_UNKNOWN rows.
+    # Their *negative status* is an R92 veto: missing eligibility is not
+    # positive evidence, but it must not make an intact bridge unverifiable.
+    # MC_PASS_FALLBACK_WATCH is different: require explicit False.
+    native=deepcopy(mc)
+    native["input_pass_symbols"]=["A","B","C","D","E"]
+    native["results"]["C"]={"status":"MC_FAIL_FALLBACK_TWO_SOURCE"}
+    native["results"]["D"]={"status":"MC_UNKNOWN","unknown_never_pass":True}
+    native["results"]["E"]={
+        "status":"MC_FAIL_PRIMARY",
+        "mode":"BIGDATA_EXACT_XNAS_COMPANY_PUBLIC_USD",
+        "listing":"XNAS:E",
+        "market_cap_usd":1_500_000_000,
+        "bigdata_entity_id":"ISOLATED_NEGATIVE_PRIMARY_TEST"}
+    native["fallback_fail_symbols"]=["C"]
+    native["unknown_symbols"]=["D"]
+    native["primary_fail_symbols"]=["E"]
+    native["counts"]["MC_FAIL_FALLBACK_TWO_SOURCE"]=1
+    native["counts"]["MC_UNKNOWN"]=1
+    native["counts"]["MC_FAIL_PRIMARY"]=1
+    native_price=dict(price,pass_symbols=["A","B","C","D","E"])
+    assert mc_exact(native,native_price,"P"),"NEGATIVE_NATIVE_SCHEMA_FALSE_REJECTION"
+    for sym in ("C","D","E"):
+        forged=deepcopy(native)
+        forged["results"][sym]["r92_eligible"]=True
+        assert not mc_exact(forged,native_price,"P"),("CONTRADICTORY_R92_FLAG_ACCEPTED",sym)
+    for sym in ("C","D","E"):
+        forged=deepcopy(native)
+        forged["results"][sym]["r92_eligible"]="false"
+        assert not mc_exact(forged,native_price,"P"),("NONBOOL_R92_FLAG_ACCEPTED",sym)
+    # Read the immutable real October 5/7 bridges as schema fixtures. This
+    # is a compatibility check only, NOT a new ASOF, quote, or MC authority.
+    for file_name,expected_sha,expected_rows in (
+        ("canonical_mc_bridge_20261005_c417_dv30_v4.json",
+         "5dae47c183a7e2f4b631e3ce2fb7bd8021ca250b",504),
+        ("canonical_mc_bridge_20261007_c417_dv30_v28.json",
+         "7eedf06479502b59257788e268df92816f9a3163",510),
+    ):
+        assert sha(file_name)==expected_sha,"HISTORIC_FIXTURE_SHA_DRIFT"
+        bridge=read(file_name)
+        assert len(bridge["input_pass_symbols"])==expected_rows
+        historical_scope={
+            "asof_et":bridge["asof_et"],
+            "pass_symbols":bridge["input_pass_symbols"],
+            "pass_hash":bridge["input_pass_hash"]}
+        assert mc_exact(bridge,historical_scope,bridge["input_blob_sha"]),(
+            "HISTORIC_NATIVE_MC_SCHEMA_FALSE_REJECTION",file_name)
+    print("XRAY_MC_HISTORIC_REAL_BRIDGES=PASS_OCT05_504_OCT07_510_NO_CURRENT_PROMOTION")
+    print("XRAY_MC_NATIVE_NEGATIVE_ROWS=PASS_3_MISSING_FLAG_POSITIVES_6_CONTRADICTORY_NEGATIVES")
     print("XRAY_MC_PRIMARY_ROW_EVIDENCE=PASS_8_ADVERSARIAL_NEGATIVES")
     base_shas={k:k+"_SHA" for k in ("master","price","history","events","final")}
     t={"asof_et":"2026-10-08","compiled_policy_hash":POLICY,
