@@ -1,0 +1,32 @@
+name: XRAY Massive Report-Period vs Filing-Acceptance PIT Safety
+on:
+  push:
+    branches: [audit/c417-massive-report-period-not-acceptance-pit-20261010, main]
+    paths:
+      - "nasdaq-xray/massive_mc_shadow_probe.py"
+      - "nasdaq-xray/massive_mc_resume_shadow.py"
+      - "nasdaq-xray/tests/test_massive_asof_not_acceptance_pit.py"
+      - ".github/workflows/xray-massive-asof-filing-acceptance-negative.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  no-lookahead-primary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Exact SHA checkout
+        run: test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install test-only checkpoint Fernet dependency
+        run: python -m pip install "cryptography>=44,<47"
+      - name: Fail if vendor report-period date is falsely labeled filing PIT
+        run: |
+          python -m py_compile nasdaq-xray/massive_mc_shadow_probe.py nasdaq-xray/massive_mc_resume_shadow.py nasdaq-xray/tests/test_massive_asof_not_acceptance_pit.py
+          python nasdaq-xray/tests/test_massive_asof_not_acceptance_pit.py
+          python nasdaq-xray/massive_mc_shadow_probe.py --selftest
+          python nasdaq-xray/massive_mc_resume_shadow.py --selftest
+          echo XRAY_MASSIVE_FILING_LOOKAHEAD=FENCED_NO_VENDOR_HTTP_NO_PRIMARY
