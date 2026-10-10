@@ -457,7 +457,14 @@ def selftest():
         cp["request_count"]=1
         cp["dates"][d]=scoped
         save(cp,crypto,ss,path)
-        assert b"QQQ" not in path.read_bytes()
+        # Fernet ciphertext is randomized base64: a three-byte ASCII sequence
+        # such as QQQ may occur by chance. Reject *plaintext JSON structure*,
+        # which base64 ciphertext cannot encode literally, then authenticate
+        # and inspect the decrypted value. Never assert absence of arbitrary
+        # substrings from encryption output.
+        encoded=path.read_bytes()
+        assert encoded and b'"QQQ"' not in encoded
+        assert b'"QQQ"' in crypto.decrypt(encoded)
         other,restored=load(path,crypto,ss)
         assert restored and other["dates"][d]==scoped
         wrong=deepcopy(ss);wrong["price_sha"]="0"*40
