@@ -303,9 +303,11 @@ def main():
               "records":{
                 "TLAC":{"cik":"0002128462","sic":6770,"classification":"Blank Checks",
                         "is_blank_check":True,"evidence_date":"2026-09-01",
+                        "verified_asof_et":"2026-10-06",
                         "source_url":"https://www.sec.gov/Archives/edgar/data/2128462/example-index.htm"},
                 "ALIS":{"cik":"0002026767","sic":7374,"classification":"Services-Computer Processing & Data Preparation",
                         "is_blank_check":False,"evidence_date":"2026-09-04",
+                        "verified_asof_et":"2026-10-06",
                         "source_url":"https://www.sec.gov/Archives/edgar/data/2026767/example-index.htm"},
                 "OLD":{"cik":"0002000000","sic":6770,"classification":"Blank Checks",
                         "is_blank_check":True,"evidence_date":"2026-01-01",
@@ -320,6 +322,11 @@ def main():
                  "OLD":"Old Acquisition Corp."},
             )
             assert set(rows)=={"TLAC","ALIS"}
+            assert all(rows[s]["verified_asof_et"]=="2026-10-06" for s in rows)
+            earlier,_=m.manual_identity_seed_registry("2026-10-05",
+                {"TLAC":"Three Lions Acquisition Corp.",
+                 "ALIS":"Calisa Acquisition Corp - Ordinary shares"})
+            assert earlier=={},("FUTURE_VERIFICATION_REACHED_OLDER_ASOF",earlier)
             assert rows["TLAC"]["is_blank_check"] is True and rows["TLAC"]["sic"]==6770
             assert rows["ALIS"]["is_blank_check"] is False and rows["ALIS"]["sic"]==7374
             assert meta["record_count"]==2 and meta["blob_sha"]==m.file_blob_sha(seed)
