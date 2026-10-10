@@ -152,6 +152,18 @@ def main():
     b=PRICE.read_bytes()
     result=verify(sec,json.loads(b),json.loads(V2.read_bytes()),
                   json.loads(V46.read_bytes()),git_blob(b))
+    # RED regression: an authentic SEC artifact with one rewritten per-ticker
+    # explanation must NOT be accepted just because its 330-set stays intact.
+    if result["status"] != "BLOCKED":
+        mutated=copy.deepcopy(sec)
+        if not isinstance(mutated.get("reason_codes"),dict) or "OZK" not in mutated["reason_codes"]:
+            raise SystemExit("SEC_REASON_PROVENANCE_MISSING")
+        mutated["reason_codes"]["OZK"]="SEC_HTTP_200_MISCLASSIFIED"
+        tampered=verify(mutated,json.loads(b),json.loads(V2.read_bytes()),
+                        json.loads(V46.read_bytes()),git_blob(b))
+        if tampered["status"]!="BLOCKED":
+            raise SystemExit("RED_EXPECTED_SEC_REASON_TAMPER_REJECTION")
+        print("XRAY_SEC_REASON_TAMPER_NEGATIVE=PASS_FAIL_CLOSED")
     if args.out:
         args.out.write_text(json.dumps(result,indent=2,sort_keys=True)+"\n")
     print("XRAY_THREE_SOURCE_JOIN_SHADOW_STATUS="+result["status"])
