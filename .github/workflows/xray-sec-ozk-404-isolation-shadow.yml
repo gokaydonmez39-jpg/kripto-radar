@@ -1,0 +1,60 @@
+name: XRAY SEC OZK 404 Endpoint Isolation (Shadow Only)
+on:
+  push:
+    branches: [audit/c417-mc-alternatives-sec-pit-20261010]
+    paths:
+      - ".github/workflows/xray-sec-ozk-404-isolation-shadow.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  isolate-sec-http-404:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: One bounded SEC official CIK and per-endpoint response test (OZK)
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python - <<'PY'
+          import os,sys,json
+          sys.path.insert(0,"nasdaq-xray")
+          from sec_official_free_mc_transport_probe import get_json,valid_operator_contact
+          from sec_free_mc_multisymbol_pit_audit import map_ciks,SEC_MAP
+          ua=os.environ.get("XRAY_SEC_USER_AGENT","")
+          if not valid_operator_contact(ua):
+              print("XRAY_SEC_OZK=BLOCKED_SEC_OPERATOR_CONTACT_INVALID")
+              raise SystemExit(2)
+          try:
+              mp=map_ciks(get_json(SEC_MAP,ua))
+          except ValueError as e:
+              print("XRAY_SEC_OZK=BLOCKED_MAP_"+str(e))
+              raise SystemExit(2)
+          cik=mp.get("OZK")
+          if not cik or not cik.isdigit() or len(cik)!=10:
+              print("XRAY_SEC_OZK=BLOCKED_CIK_UNVERIFIED")
+              raise SystemExit(2)
+          codes={}
+          for name,url in (
+              ("companyfacts",f"https://data.sec.gov/api/xbrl/companyfacts/CIK{cik}.json"),
+              ("submissions",f"https://data.sec.gov/submissions/CIK{cik}.json")
+          ):
+              try:
+                  x=get_json(url,ua)
+                  codes[name]="HTTP_200_CIK_MATCH" if str(x.get("cik","")).lstrip("0")==cik.lstrip("0") else "CIK_MISMATCH"
+              except ValueError as e:
+                  codes[name]=str(e)
+          print("XRAY_SEC_OZK_CIK_VERIFIED_FROM_MAP=true")
+          print("XRAY_SEC_OZK_OFFICIAL_ENDPOINT_CODES="+json.dumps(codes,sort_keys=True))
+          print("XRAY_SEC_OZK_MC_PRIMARY=0_NO_ALPHA")
+          if any(v!="HTTP_200_CIK_MATCH" for v in codes.values()):
+              raise SystemExit("SEC_OZK_ENDPOINT_UNRESOLVED_FAIL_CLOSED")
+          print("XRAY_SEC_OZK_TRANSPORT=PASS_SOURCE_ONLY_NOT_MC")
+          PY
