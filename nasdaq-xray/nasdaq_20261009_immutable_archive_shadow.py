@@ -77,8 +77,10 @@ def correlate(names,footer,digest,length):
         or full.get("real_money")!="NO-GO" or master.get("real_money")!="NO-GO"):
         raise ValueError("CANONICAL_POLICY_GATES_CHANGED")
     q=full.get("queue") or []
+    master_pass=master.get("pass_symbols") or []
     missing_ids=set(full.get("identity_unknown_symbols") or [])
-    if (not isinstance(q,list) or not isinstance(missing_ids,(set,list))
+    if (not isinstance(q,list) or not isinstance(master_pass,list)
+        or len(q)!=len(set(q)) or len(master_pass)!=len(set(master_pass))
         or not q or set(q)&missing_ids
         or len(q)+len(missing_ids)!=full.get("raw_identity_total")
         or set(q)!=set(master.get("pass_symbols") or [])):
