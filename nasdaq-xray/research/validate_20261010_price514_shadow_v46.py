@@ -164,7 +164,7 @@ def selftest():
         else:mutate(a)
         ok,reasons=validate(a,price,sha)
         assert not ok,(name,reasons)
-    print("XRAY_SHADOW_V46_READBACK_TEST=PASS_POSITIVE_9_NEGATIVES_NO_PRIMARY")
+    print("XRAY_SHADOW_V46_READBACK_TEST=PASS_POSITIVE_16_NEGATIVES_NO_PRIMARY")
 
 if __name__=="__main__":
     selftest()
