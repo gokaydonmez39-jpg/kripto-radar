@@ -1,0 +1,86 @@
+name: XRAY Alpaca 515 Exact-260 SIP Shadow Full Scope (No GO)
+on:
+  push:
+    branches: [main, audit/c417-alpaca-full-515-sip-20261010]
+    paths:
+      - "nasdaq-xray/alpaca_full_scope_260_shadow.py"
+      - "nasdaq-xray/alpaca_free_sip_shadow_guard.py"
+      - "nasdaq-xray/alpaca_sip_paginated_transport_shadow.py"
+      - "nasdaq-xray/current_history_source_request.py"
+      - "nasdaq-xray/canonical_current_price_dv30.json"
+      - "nasdaq-xray/canonical_current_master_manifest.json"
+      - ".github/workflows/xray-alpaca-full-515-260-sip-shadow.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: xray-alpaca-515-full-scope-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  full-scope:
+    runs-on: ubuntu-latest
+    timeout-minutes: 28
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+      - name: Verify invocation SHA
+        run: test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pinned official NASDAQ calendar
+        run: python -m pip install --disable-pip-version-check "pandas_market_calendars==5.4.0"
+      - name: Compile and run adversarial offline selftests before vendor calls
+        run: |
+          python -m py_compile nasdaq-xray/alpaca_full_scope_260_shadow.py
+          python nasdaq-xray/alpaca_sip_paginated_transport_shadow.py
+          python nasdaq-xray/alpaca_free_sip_shadow_guard.py --selftest
+          python nasdaq-xray/alpaca_full_scope_260_shadow.py --selftest
+      - name: Read full current PRICE pass scope from Alpaca SIP without persistence
+        if: github.ref == 'refs/heads/main'
+        env:
+          XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID }}
+          XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY }}
+        run: |
+          python nasdaq-xray/alpaca_full_scope_260_shadow.py --out "$RUNNER_TEMP/xray_alpaca_full_515_shadow.json"
+      - name: Gate completeness of request processing, not C4.17 authority
+        if: github.ref == 'refs/heads/main'
+        run: |
+          python - <<'PY'
+          import json,os,subprocess
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])/"xray_alpaca_full_515_shadow.json"
+          j=json.loads(p.read_text(encoding="utf-8"))
+          assert j["schema"]=="XRAY_ALPACA_CURRENT_515_EXACT260_SIP_SHADOW_V1"
+          assert j["source_price_blob_sha"]==subprocess.check_output(
+              ["git","hash-object","nasdaq-xray/canonical_current_price_dv30.json"],text=True).strip()
+          assert j["source_master_blob_sha"]==subprocess.check_output(
+              ["git","hash-object","nasdaq-xray/canonical_current_master_manifest.json"],text=True).strip()
+          assert j["expected_scope_count"]==j["price_pass_count"]+1
+          assert j["expected_daily_sessions"]==260
+          assert j["required_completed_week_closes"]==52
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          assert j["current_c417_history_primary_authority"] is False
+          assert j["source_market_data_rights_independently_attested"] is False
+          assert j["corporate_action_adjustment_and_share_class_attested"] is False
+          assert j["canonical_history_pass_created"]==0
+          assert j["primary_mc_pass_created"]==0 and j["r92_created"] is False
+          assert j["vendor_ohlcv_in_artifact"] is False
+          assert j["vendor_raw_bars_persisted"] is False
+          assert sum(j["counts"].values())==j["expected_scope_count"]
+          if j["status"]!="SHADOW_FULL_515_SCOPE_MEASURED_NO_AUTHORITY":
+              raise SystemExit("XRAY_515_SHADOW_TRANSPORT_PARTIAL_FAIL_CLOSED")
+          if j["measured_scope_count"]!=j["expected_scope_count"]:
+              raise SystemExit("XRAY_515_SHADOW_SCOPE_NOT_COMPLETE_FAIL_CLOSED")
+          print("XRAY_515_REAL_FULL_SCOPE_MEASURED=PASS_NO_PRIMARY_NO_AL")
+          PY
+      - name: Archive non-vendor per-symbol status and source SHAs only
+        if: ${{ always() && github.ref == 'refs/heads/main' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-515-exact260-sip-status-no-vendor-bars
+          path: ${{ runner.temp }}/xray_alpaca_full_515_shadow.json
+          if-no-files-found: ignore
+          retention-days: 7
