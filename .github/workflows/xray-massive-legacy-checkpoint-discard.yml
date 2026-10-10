@@ -1,0 +1,27 @@
+name: XRAY Massive Legacy Checkpoint Safe Discard Regression
+on:
+  push:
+    branches: [main, audit/c417-massive-legacy-checkpoint-safe-discard-20261010]
+    paths:
+      - "nasdaq-xray/massive_mc_resume_shadow.py"
+      - "nasdaq-xray/tests/test_massive_legacy_checkpoint_discard.py"
+      - ".github/workflows/xray-massive-legacy-checkpoint-discard.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  obsolete-encrypted-reference:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - run: test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install "cryptography>=44,<47"
+      - name: Reject replay of old PIT-labeled ciphertext without blocking safe reset
+        run: |
+          python nasdaq-xray/tests/test_massive_legacy_checkpoint_discard.py
+          python nasdaq-xray/massive_mc_resume_shadow.py --selftest
+          echo XRAY_MASSIVE_OLD_REPORT_PERIOD=NO_PRIMARY_NO_TRADE_NO_VENDOR_HTTP
