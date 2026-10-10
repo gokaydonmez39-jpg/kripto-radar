@@ -88,6 +88,12 @@ def selftest():
        ("partition",lambda a:a["sec_edgar"].update({"accepted_share_vintage_shadows":347})),
        ("math",lambda a:a["shadow_joint_partition"].update({"history_and_mc_shadow_preliminary_qualifiers":514})),
        ("license",lambda a:a["mc_longbridge_connected"].update({"non_display_automation_license_proven":True})),
+       ("identity_reuse_absent",lambda a:a.update({"identity_reuse_alerts":[]})),
+       ("identity_reuse_stitch",lambda a:a["identity_reuse_alerts"][0].update(
+           {"allow_previous_spcx_etf_history_stitch_to_current_spcx":True})),
+       ("identity_reuse_false_authority",lambda a:a["identity_reuse_alerts"][0].update(
+           {"source_same_asof_identity_roots_officially_attested":True})),
+
     ]
     for name,mutate in cases:
         a=copy.deepcopy(record)
