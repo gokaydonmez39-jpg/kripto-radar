@@ -117,5 +117,24 @@
     "CURRENT_ASOF_TERMINAL_AND_DEVICE_RECEIPT_NOT_PROVEN"
   ],
   "evidence_caveat": "GitHub SEC workflow is replayable. Alpaca and Longbridge interactive connector counts were measured live in ChatGPT but their raw vendor records and signed lineage were not persisted; this JSON must never be interpreted as production evidence.",
-  "release_status": "RESEARCH_DIAGNOSTIC_ONLY_NO_GO"
+  "release_status": "RESEARCH_DIAGNOSTIC_ONLY_NO_GO",
+  "identity_reuse_alerts": [
+    {
+      "asof_et": "2026-10-09",
+      "symbol": "SPCX",
+      "problem": "SYMBOL_REUSED_ACROSS_DISTINCT_ASSETS",
+      "historical_rename_from": "SPCX",
+      "historical_rename_to": "SPCK",
+      "historical_rename_effective_date": "2026-04-07",
+      "historical_old_cusip": "19423L672",
+      "historical_new_cusip": "19423L672",
+      "current_spcx_company_name": "Space Exploration Technologies Corp. Class A Common Stock",
+      "current_spck_asset_name": "Collaborative Investment Series Trust The SPAC and New Issue ETF",
+      "reference_source": "ALPACA_CONNECTED_CORPORATE_ACTIONS_AND_ASSET_LOOKUP",
+      "independent_company_name_crosscheck": "RALLIES_CONNECTED_COMPANY_OVERVIEW",
+      "source_same_asof_identity_roots_officially_attested": false,
+      "allow_previous_spcx_etf_history_stitch_to_current_spcx": false,
+      "decision": "HISTORY_UNKNOWN_UNTIL_CURRENT_CIK_CLASS_AND_PREDECESSOR_INTERVAL_PROOF"
+    }
+  ]
 }
