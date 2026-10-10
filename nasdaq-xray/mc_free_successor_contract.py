@@ -100,6 +100,28 @@ def evaluate(evidence):
             and cross.get("automated_use_entitlement_verified") is True
             and cross_mc is not None,
             "INDEPENDENT_CROSSCHECK_OR_RIGHTS_UNKNOWN")
+    # Provider `date=ASOF` alone is NOT PIT evidence: an SEC period-end
+    # payload can incorporate a filing accepted AFTER the decision cutoff.
+    # Require an independently witnessed source timestamp and an immutable
+    # as-of snapshot, or a filing-backed value with acceptance-time proof.
+    cross_kind=cross.get("source_kind")
+    cross_observed=timestamp(cross.get("source_observed_utc"))
+    require(cross_kind in {"IMMUTABLE_PIT_VENDOR_SNAPSHOT","FILING_BACKED_FUNDAMENTAL"}
+            and cross_observed is not None and cutoff is not None
+            and cross_observed<=cutoff
+            and cross.get("source_time_independently_verified") is True
+            and cross.get("period_end_backfill_excluded") is True,
+            "INDEPENDENT_MC_PIT_TIMESTAMP_OR_BACKFILL_UNVERIFIED")
+    if cross_kind=="IMMUTABLE_PIT_VENDOR_SNAPSHOT":
+        require(cross.get("immutable_asof_snapshot_verified") is True,
+                "INDEPENDENT_MC_IMMUTABLE_SNAPSHOT_UNVERIFIED")
+    elif cross_kind=="FILING_BACKED_FUNDAMENTAL":
+        cross_filed=timestamp(cross.get("filing_accepted_utc"))
+        require(cross.get("filing_acceptance_independently_verified") is True
+                and cross_filed is not None and cutoff is not None
+                and cross_observed is not None and cross_filed<=cross_observed
+                and cross_filed<=cutoff,
+                "INDEPENDENT_MC_FILING_ACCEPTANCE_LOOKAHEAD_UNVERIFIED")
     if not reasons:
         derived=shares*close
         if not math.isfinite(derived) or derived<=0:
@@ -144,12 +166,34 @@ def selftest():
       "independent_crosscheck":{"ticker":"TEST","asof_et":"2026-10-08",
                 "independent_lineage_verified":True,
                 "automated_use_entitlement_verified":True,
-                "market_cap_usd":10_000_000_000}
+                "market_cap_usd":10_000_000_000,
+                "source_kind":"IMMUTABLE_PIT_VENDOR_SNAPSHOT",
+                "source_observed_utc":"2026-10-08T20:04:00Z",
+                "source_time_independently_verified":True,
+                "period_end_backfill_excluded":True,
+                "immutable_asof_snapshot_verified":True}
     }
     from copy import deepcopy
     good=evaluate(base)
     assert good["status"]=="SHADOW_ELIGIBLE_FOR_INDEPENDENT_POLICY_REVIEW"
     assert good["c417_primary_pass"] is False and good["r92_eligible"] is False
+    # Regression RED: an asof label cannot prove source time/PIT lineage.
+    future_vendor=deepcopy(base)
+    future_vendor["independent_crosscheck"].update({
+        "source_kind":"IMMUTABLE_PIT_VENDOR_SNAPSHOT",
+        "source_observed_utc":"2026-10-09T14:00:00Z",
+        "source_time_independently_verified":True})
+    assert evaluate(future_vendor)["status"]=="UNKNOWN", (
+        "MC_FUTURE_VENDOR_TIMESTAMP_ACCEPTED",evaluate(future_vendor))
+    future_filing=deepcopy(base)
+    future_filing["independent_crosscheck"].update({
+        "source_kind":"FILING_BACKED_FUNDAMENTAL",
+        "source_observed_utc":"2026-10-08T20:05:00Z",
+        "source_time_independently_verified":True,
+        "filing_accepted_utc":"2026-10-09T14:00:00Z",
+        "filing_acceptance_independently_verified":True})
+    assert evaluate(future_filing)["status"]=="UNKNOWN", (
+        "MC_FUTURE_FILING_ACCEPTANCE_ACCEPTED",evaluate(future_filing))
     negatives=[
       ("sec","acceptance_utc","2026-10-09T00:01:00Z"),
       ("sec","cik","0000000001"),
@@ -166,6 +210,13 @@ def selftest():
       ("independent_crosscheck","independent_lineage_verified",False),
       ("independent_crosscheck","market_cap_usd",6_000_000_000),
       ("independent_crosscheck","market_cap_usd",1_990_000_000),
+      ("independent_crosscheck","source_kind","UNKNOWN_VENDOR_DATE_ONLY"),
+      ("independent_crosscheck","source_observed_utc","2026-10-09T00:01:00Z"),
+      ("independent_crosscheck","source_observed_utc","2026-10-08T15:00:00"),
+      ("independent_crosscheck","source_time_independently_verified",False),
+      ("independent_crosscheck","period_end_backfill_excluded",False),
+      ("independent_crosscheck","immutable_asof_snapshot_verified",False),
+      ("independent_crosscheck","source_observed_utc",None),
     ]
     for segment,key,val in negatives:
         case=deepcopy(base)
@@ -174,7 +225,7 @@ def selftest():
         assert result["status"]=="UNKNOWN",(segment,key,result)
         assert result["c417_primary_pass"] is False
     assert evaluate({"asof_et":"2026-10-08"})["status"]=="UNKNOWN"
-    print("XRAY_FREE_MC_SUCCESSOR_CONTRACT_SELFTEST=PASS_POSITIVE_16_NEGATIVE_NO_PRIMARY")
+    print("XRAY_FREE_MC_SUCCESSOR_CONTRACT_SELFTEST=PASS_POSITIVE_24_NEGATIVE_PIT_NO_PRIMARY")
 if __name__=="__main__":
     if "--selftest" in sys.argv:selftest()
     else:raise SystemExit("Only --selftest is authorized; NO LIVE PRIMARY PROMOTION")
