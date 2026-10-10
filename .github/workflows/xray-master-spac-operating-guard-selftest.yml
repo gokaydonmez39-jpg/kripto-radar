@@ -1,7 +1,7 @@
 name: XRAY SPAC Nonblank SIC Premature PASS Guard
 on:
   push:
-    branches: [main]
+    branches: [main, audit/c417-sec-fvn-ibac-seeds-20261010]
     paths:
       - "nasdaq-xray/master_spac_operating_guard.py"
       - "nasdaq-xray/master_sec_identity_manual_seed_registry.json"
