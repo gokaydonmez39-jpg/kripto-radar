@@ -2,9 +2,10 @@ name: XRAY Alpaca Delayed SIP Research Canary
 on:
   workflow_dispatch:
   push:
-    branches: [main]
+    branches: [main, audit/c417-alpaca-legacy-canary-key-alias-20261010]
     paths:
       - "nasdaq-xray/alpaca_delayed_sip_research_shadow.py"
+      - "nasdaq-xray/alpaca_sip_legacy_key_mapping_selftest.py"
       - "nasdaq-xray/evidence/alpaca_connected_historical_sip_20261007_v1.json"
       - ".github/workflows/xray-alpaca-delayed-sip-research.yml"
   schedule:
@@ -30,6 +31,7 @@ jobs:
         run: |
           python -m py_compile nasdaq-xray/alpaca_delayed_sip_research_shadow.py
           python nasdaq-xray/alpaca_delayed_sip_research_shadow.py --selftest
+          python nasdaq-xray/alpaca_sip_legacy_key_mapping_selftest.py
       - name: Validate historical SIP connector research-only proof without prices
         run: |
           python - <<'PY'
