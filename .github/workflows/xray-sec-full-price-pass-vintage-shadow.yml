@@ -2,7 +2,7 @@ name: XRAY SEC Full PRICE-PASS Vintage Shadow
 on:
   workflow_dispatch:
   push:
-    branches: [main]
+    branches: [main, audit/c417-mc-alternatives-sec-pit-20261010]
     paths:
       - ".github/workflows/xray-sec-full-price-pass-vintage-shadow.yml"
 permissions:
