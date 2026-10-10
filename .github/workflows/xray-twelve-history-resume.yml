@@ -71,10 +71,10 @@ jobs:
             fi
           done
           echo "XRAY_TWELVE_RESUME_RESTORE=NEW_PRIVATE_CHECKPOINT"
-      - name: At most 32 legal scoped unadjusted EOD requests with rolling encrypted quota ledger
+      - name: At most 48 legal scoped unadjusted EOD requests with rolling encrypted quota ledger
         run: |
           python nasdaq-xray/twelve_data_history_resume.py \
-            --limit 32 \
+            --limit 48 \
             --restore "$RUNNER_TEMP/twelve_prior.enc" \
             --checkpoint "$RUNNER_TEMP/twelve_history_checkpoint.enc" \
             --report "$RUNNER_TEMP/twelve_history_health.json"
@@ -116,7 +116,7 @@ jobs:
           assert j["schema"]=="XRAY_TWELVE_260_HISTORY_HEALTH_V1"
           assert j["source_price_blob_sha"]==subprocess.check_output(
               ["git","hash-object","nasdaq-xray/canonical_current_price_dv30.json"],text=True).strip()
-          assert j["vendor_requests_this_run"]<=32
+          assert j["vendor_requests_this_run"]<=48
           assert j["queried_symbols"]<=j["target_count"]
           assert j["required_daily_sessions"]==260 and j["required_completed_weeks"]==52
           assert j["source_license_independently_verified"] is False
