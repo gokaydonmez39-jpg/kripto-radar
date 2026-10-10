@@ -1,0 +1,44 @@
+name: XRAY SEC MC PIT RTH-Close Contract (Shadow Only)
+on:
+  push:
+    branches: [main, audit/c417-mc-alternatives-sec-pit-20261010]
+    paths:
+      - "nasdaq-xray/mc_free_successor_contract.py"
+      - "nasdaq-xray/sec_official_free_mc_transport_probe.py"
+      - ".github/workflows/xray-sec-mc-pit-early-close-contract.yml"
+  pull_request:
+    paths:
+      - "nasdaq-xray/mc_free_successor_contract.py"
+      - "nasdaq-xray/sec_official_free_mc_transport_probe.py"
+      - ".github/workflows/xray-sec-mc-pit-early-close-contract.yml"
+permissions:
+  contents: read
+jobs:
+  shadow-pit-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Assert code matches GitHub event SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          echo "XRAY_MC_PIT_SHA_BIND=PASS"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compile strict SEC filing cutoffs and MC successor
+        run: |
+          python -m py_compile nasdaq-xray/mc_free_successor_contract.py
+          python -m py_compile nasdaq-xray/sec_official_free_mc_transport_probe.py
+      - name: Test normal/early RTH close and post-close SEC lookahead (NO PRIMARY)
+        run: |
+          python nasdaq-xray/mc_free_successor_contract.py --selftest
+          python nasdaq-xray/sec_official_free_mc_transport_probe.py --selftest
+      - name: Enforce zero trading and no C4.17 admission
+        shell: bash
+        run: |
+          grep -q '"c417_primary_pass":False' nasdaq-xray/mc_free_successor_contract.py
+          grep -q '"production_mc_primary_pass":False' nasdaq-xray/sec_official_free_mc_transport_probe.py
+          echo "XRAY_MC_PIT_NO_PRIMARY=PASS"
