@@ -1,0 +1,60 @@
+name: XRAY 514 SEC HISTORY MC Exact Three-Source Shadow Join (No GO)
+on:
+  push:
+    branches: [audit/c417-mc-alternatives-sec-pit-20261010]
+    paths:
+      - "nasdaq-xray/research/verify_20261010_three_source_join_shadow_v3.py"
+      - ".github/workflows/xray-three-source-330-join-shadow-verify.yml"
+  pull_request:
+    paths:
+      - "nasdaq-xray/research/verify_20261010_three_source_join_shadow_v3.py"
+      - ".github/workflows/xray-three-source-330-join-shadow-verify.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: xray-sec-history-mc-triple-shadow-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  exact-sec-artifact-three-way-math:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Ensure immutable source invocation and fail-closed negative cases
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_EVENT_NAME" == "push" ]]; then
+            test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          fi
+          python -m py_compile nasdaq-xray/research/verify_20261010_three_source_join_shadow_v3.py
+          python nasdaq-xray/research/verify_20261010_three_source_join_shadow_v3.py --selftest
+      - name: Replay pinned successful SEC 514 scope artifact through GitHub API
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/sec_shadow"
+          gh run download 38037486395 \
+            --repo gokaydonmez39-jpg/kripto-radar \
+            --name xray-sec-full-price-pass-vintage-shadow-v1 \
+            --dir "$RUNNER_TEMP/sec_shadow"
+          test -s "$RUNNER_TEMP/sec_shadow/xray_sec_full_price_pass_vintage_operational.json"
+          python nasdaq-xray/research/verify_20261010_three_source_join_shadow_v3.py \
+            --sec-artifact-json "$RUNNER_TEMP/sec_shadow/xray_sec_full_price_pass_vintage_operational.json" \
+            --out "$RUNNER_TEMP/xray_514_three_way_counts_only.json"
+      - name: Preserve reason codes and counts, never provider OHLCV or market cap
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-514-three-way-330-counts-only-shadow
+          path: ${{ runner.temp }}/xray_514_three_way_counts_only.json
+          retention-days: 7
+          if-no-files-found: warn
