@@ -5,6 +5,7 @@ on:
     paths:
       - "nasdaq-xray/price_gral_halt_fail_only.py"
       - "nasdaq-xray/price_dv30_recover_from_fullstate.py"
+      - ".github/workflows/xray-canonical-current-pre-mc.yml"
       - "nasdaq-xray/evidence/nasdaq_gral_20260923_full_session_halt_v1.json"
       - ".github/workflows/xray-gral-20261009-official-halt-fail-only-regression.yml"
   pull_request:
@@ -54,6 +55,10 @@ jobs:
           assert len(data["pass_symbols"])==514
           assert "from price_gral_halt_fail_only import apply_to_results as apply_official_gral_same_asof_fail_only" in (root/"price_dv30_recover_from_fullstate.py").read_text()
           assert "gral_halt_terminalized=apply_official_gral_same_asof_fail_only(" in (root/"price_dv30_recover_from_fullstate.py").read_text()
+          guard=pathlib.Path(".github/workflows/xray-canonical-current-pre-mc.yml").read_text()
+          assert "gral_halt_fail_only_symbols=gral_fail_only(" in guard
+          assert "or gral_halt_fail_only_replay" in guard
+          assert "gral_halt_fail_only_replay={'true' if gral_halt_fail_only_replay else 'false'}" in guard
           report={
             "schema":"XRAY_20261009_GRAL_PINNED_OFFICIAL_HALT_AND_REAL_SOURCE_CI_V1",
             "git_head":subprocess.check_output(["git","rev-parse","HEAD"],text=True).strip(),
