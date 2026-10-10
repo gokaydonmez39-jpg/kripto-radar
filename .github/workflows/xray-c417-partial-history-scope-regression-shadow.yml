@@ -1,0 +1,77 @@
+name: XRAY C4.17 Partial PRICE History No Starvation - Negative Regression
+on:
+  push:
+    branches: [audit/c417-partial-price-history-no-global-starvation-20261010, main]
+    paths:
+      - "nasdaq-xray/current_history_source_request.py"
+      - "nasdaq-xray/qualified_history_ingress_shadow.py"
+      - ".github/workflows/xray-c417-partial-history-scope-regression-shadow.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  fail-closed-partial-price:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Exact triggering HEAD
+        run: test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install exchange calendar only, no vendor/network data calls
+        run: python -m pip install --disable-pip-version-check "pandas_market_calendars==5.4.0"
+      - name: Positive known PASS and negative UNKNOWN overlap
+        run: |
+          python -m py_compile nasdaq-xray/current_history_source_request.py nasdaq-xray/qualified_history_ingress_shadow.py
+          python nasdaq-xray/current_history_source_request.py --selftest
+          python nasdaq-xray/qualified_history_ingress_shadow.py --selftest
+      - name: Verify actual current source 514 scope is invariant after fix
+        run: |
+          python nasdaq-xray/current_history_source_request.py --out "$RUNNER_TEMP/current_history_partial_safe.json"
+          python nasdaq-xray/qualified_history_ingress_shadow.py --private-cache-dir "$RUNNER_TEMP/xray-no-vendor-bar-cache" --out "$RUNNER_TEMP/private_history_partial_safe.json"
+          python - <<'PY'
+          import os,json,subprocess
+          from pathlib import Path
+          tmp=Path(os.environ["RUNNER_TEMP"])
+          h=json.loads((tmp/"current_history_partial_safe.json").read_text())
+          i=json.loads((tmp/"private_history_partial_safe.json").read_text())
+          p=json.loads(Path("nasdaq-xray/canonical_current_price_dv30.json").read_text())
+          digest=subprocess.check_output(["git","hash-object","nasdaq-xray/canonical_current_price_dv30.json"],text=True).strip()
+          assert h["source_price_blob_sha"]==i["source_price_blob_sha"]==digest
+          assert h["source_price_pass_count"]==i["price_pass_count"]==p["pass_count"]
+          assert h["symbol_scope"]==p["pass_symbols"]
+          assert h["source_price_unknown_count"]==i["source_price_unknown_count"]==p["unknown_count"]
+          assert h["source_price_blocked_count"]==i["source_price_blocked_count"]==p["blocked_count"]
+          assert h["source_price_unknown_omitted_from_scope"] is True
+          assert i["source_price_unknown_and_blocked_omitted_from_scope"] is True
+          assert h["required_daily_count"]==260 and h["required_completed_week_count"]==52
+          assert h["source_bar_count_measured"]==0 and h["source_entitlement_proven"] is False
+          assert i["counts"]["complete_private_transport"]==0
+          assert i["current_history_authority_proven"] is False
+          assert h["canonical_history_pass_created"]==i["canonical_history_pass_created"]==0
+          assert h["can_register_R92"] is False and i["can_register_R92"] is False
+          assert h["execution"]==i["execution"]=="NONE"
+          assert h["real_money"]==i["real_money"]=="NO-GO"
+          assert h["source_price_pass_hash"]==p["pass_hash"]
+          print("XRAY_PARTIAL_HISTORY_CURRENT_SCOPE_EXACT",p["pass_count"],p["unknown_count"],p["blocked_count"])
+          print("XRAY_PARTIAL_HISTORY_NO_VENDOR_NO_MC_NO_R92_NO_GO=PASS")
+          witness={"schema":"XRAY_C417_PARTIAL_PRICE_SHADOW_TRANSPORT_ONLY_V1",
+                   "run_head":subprocess.check_output(["git","rev-parse","HEAD"],text=True).strip(),
+                   "price_git_blob_sha":digest,"asof_et":p["asof_et"],
+                   "price_pass_count":p["pass_count"],
+                   "price_unknown_count":p["unknown_count"],
+                   "price_blocked_count":p["blocked_count"],
+                   "real_bars_measured":0,"canonical_history_pass":0,
+                   "primary_mc_pass":0,"R92_created":False,"research_only":True,
+                   "execution":"NONE","real_money":"NO-GO"}
+          (tmp/"xray_partial_history_regression_witness.json").write_text(json.dumps(witness,sort_keys=True,indent=2)+"\n")
+          PY
+      - name: Upload counts-only, no proprietary bars or false GO
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-partial-price-260-history-regression-no-source
+          path: ${{ runner.temp }}/xray_partial_history_regression_witness.json
+          retention-days: 14
+          if-no-files-found: error
