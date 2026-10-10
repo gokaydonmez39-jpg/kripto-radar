@@ -105,6 +105,15 @@ def selftest():
        ("partition",lambda a:a["sec_edgar"].update({"accepted_share_vintage_shadows":347})),
        ("math",lambda a:a["shadow_joint_partition"].update({"history_and_mc_shadow_preliminary_qualifiers":514})),
        ("license",lambda a:a["mc_longbridge_connected"].update({"non_display_automation_license_proven":True})),
+       ("sina_falsely_promotes_30_to_260",lambda a:a["sina_vs_history_stage_semantics"].update(
+           {"rule":"SINA_EXACT30_MEDIAN_COUNTS_AS_260_DAY_HISTORY_PASS"})),
+       ("bsp_false_history_pass",lambda a:a["sina_vs_history_stage_semantics"]["example_bsp"].update(
+           {"claim_history260_pass":True})),
+       ("dftx_false_canonical_pass",lambda a:a["sina_vs_history_stage_semantics"]["example_dftx"].update(
+           {"claim_canonical_history_pass":True})),
+       ("sina_false_blob",lambda a:a["sina_vs_history_stage_semantics"].update(
+           {"source_sina_blob_sha":"0"*40})),
+
        ("identity_reuse_absent",lambda a:a.update({"identity_reuse_alerts":[]})),
        ("identity_reuse_stitch",lambda a:a["identity_reuse_alerts"][0].update(
            {"allow_previous_spcx_etf_history_stitch_to_current_spcx":True})),
