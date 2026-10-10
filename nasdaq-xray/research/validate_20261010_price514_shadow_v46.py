@@ -60,6 +60,42 @@ def validate(record:dict,price:dict,price_sha:str)->tuple[bool,list[str]]:
            and alert.get("source_same_asof_identity_roots_officially_attested") is False
            and alert.get("decision")=="HISTORY_UNKNOWN_UNTIL_CURRENT_CIK_CLASS_AND_PREDECESSOR_INTERVAL_PROOF",
            "SYMBOL_REUSE_HISTORY_STITCH_FORBIDDEN")
+    # Sina's PASS here certifies EXACT30 DV30/price, NEVER 260-day HISTORY.
+    # Bind a literal code-only conflict note to the actual committed Sina SHA.
+    stage=record.get("sina_vs_history_stage_semantics") or {}
+    bsp=stage.get("example_bsp") or {}
+    dftx=stage.get("example_dftx") or {}
+    try:
+        sina_bytes=(ROOT/"sina_state.json").read_bytes()
+        sina=json.loads(sina_bytes)
+        source_sina_sha=git_blob_sha(sina_bytes)
+    except (OSError, ValueError, TypeError):
+        sina={}
+        source_sina_sha=None
+    sina_rows=sina.get("results") or {}
+    sina_bsp=sina_rows.get("BSP") or {}
+    sina_dftx=sina_rows.get("DFTX") or {}
+    demand(stage.get("source_sina_path")=="nasdaq-xray/sina_state.json"
+           and stage.get("source_sina_blob_sha")==source_sina_sha
+           and stage.get("source_sina_asof_et")==sina.get("asof_et")
+           and sina.get("asof_et")==record.get("asof_et")
+           and stage.get("rule")=="SINA_EXACT30_MEDIAN_PRICE_LIQUIDITY_PASS_IS_NOT_260_SESSION_HISTORY_PASS"
+           and "BSP" in set(missing) and "DFTX" not in set(missing)
+           and sina_bsp.get("status")=="PASS"
+           and (sina_bsp.get("info") or {}).get("proof")=="EXACT30_MEDIAN"
+           and bsp.get("sina_stage")=="PASS"
+           and bsp.get("sina_proof")=="EXACT30_MEDIAN"
+           and bsp.get("connected_alpaca_260_daily_bars")==71
+           and bsp.get("claim_history260_pass") is False
+           and sina_dftx.get("status")=="UNKNOWN_STATIC"
+           and (sina_dftx.get("info") or {}).get("reason")=="SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+           and dftx.get("sina_stage")=="UNKNOWN_STATIC"
+           and dftx.get("sina_reason")=="SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+           and dftx.get("connected_alpaca_260_daily_bars")==260
+           and dftx.get("claim_canonical_history_pass") is False
+           and stage.get("vendor_rights_verified") is False
+           and stage.get("canonical_history_mutated") is False,
+           "SINA_EXACT30_VS_260_HISTORY_ROLE_OR_SHA_MISMATCH")
     demand(m.get("requested_price_pass_symbols")==n and m.get("groups_complete")==11
            and m.get("market_cap_values_received")==n, "MC_SCOPE_INCOMPLETE")
     demand(m.get("above_or_equal_existing_usd_2b_mc_floor")==n-len(below)
