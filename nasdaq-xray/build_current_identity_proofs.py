@@ -477,7 +477,7 @@ def manual_identity_seed_registry(asof:str,names:dict)->tuple[dict,dict]:
                 and type(mismatch.get("official_sec_filer_sic")) is int
                 and mismatch["official_sec_filer_sic"]!=6770
                 and mismatch.get("official_filing_date")==evidence
-                and re.fullmatch(r"\\d{10}-\\d{2}-\\d{6}",accession)
+                and re.fullmatch(r"\d{10}-\d{2}-\d{6}",accession)
                 and accession.replace("-","") in source
                 and accession.replace("-","") in official
                 and official.startswith("https://www.sec.gov/Archives/edgar/data/")
