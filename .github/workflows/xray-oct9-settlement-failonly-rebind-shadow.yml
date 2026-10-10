@@ -46,7 +46,7 @@ jobs:
           assert 'AMBIGUOUS_SAME_ASOF_SETTLEMENT_REBIND' in code
           full=s.split("      - name: Build exact current full-scope resolver handoff",1)[1]
           full=full.split("      - name: Commit current pre-MC artifacts",1)[0]
-          assert full.count("          build=\\"$(python - <<'PY'")>=0 or "          build=" in full
+          assert "          build=" in full
           assert 'and ((q.get("settlement_required") is False) or (q.get("settlement_already_proven") is True))' in full
           assert 'q.get("status")=="IDLE"' in full
           assert 'int(q.get("price_unknown_count",-1))==0' in full
