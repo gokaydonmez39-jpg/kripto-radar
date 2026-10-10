@@ -54,6 +54,29 @@ def mc_exact(mc,price,price_sha):
     counts=mc.get("counts") or {}
     if any(int(counts.get(k,-1))!=len(v) for k,v in statuses.items()):
         return False
+    # Independent row-level semantics: a primary label and exact symbol-set
+    # equality cannot substitute for an XNAS issuer or C4.17 USD cap value.
+    # The only currently defined primary MC row schema is BIGDATA exact XNAS;
+    # a successor must have a separately reviewed primary contract, not WATCH.
+    for sym in statuses["MC_PASS_PRIMARY"] | statuses["MC_FAIL_PRIMARY"]:
+        row=mc["results"].get(sym) or {}
+        amount=row.get("market_cap_usd")
+        if (row.get("mode")!="BIGDATA_EXACT_XNAS_COMPANY_PUBLIC_USD"
+                or row.get("listing")!="XNAS:"+sym
+                or not isinstance(row.get("bigdata_entity_id"),str)
+                or not row["bigdata_entity_id"].strip()
+                or type(amount) not in (int,float)
+                or not math.isfinite(amount)
+                or amount<0):
+            return False
+        if (sym in statuses["MC_PASS_PRIMARY"]) != (amount>=2_000_000_000):
+            return False
+    # A fallback/unknown row can NEVER opt into R92 by setting an extra flag,
+    # nor can missing eligibility be silently treated as an explicit veto.
+    for group in ("MC_PASS_FALLBACK_WATCH","MC_FAIL_FALLBACK_TWO_SOURCE","MC_UNKNOWN"):
+        for sym in statuses[group]:
+            if (mc["results"].get(sym) or {}).get("r92_eligible") is not False:
+                return False
     return seen==symbols
 
 def terminal_research_seal(terminal):
