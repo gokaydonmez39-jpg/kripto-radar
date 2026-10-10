@@ -432,6 +432,7 @@ def manual_identity_seed_registry(asof:str,names:dict)->tuple[dict,dict]:
             continue
         source=str(row.get("source_url") or "")
         evidence=str(row.get("evidence_date") or "")
+        verified_asof=str(row.get("verified_asof_et") or "")
         cik=str(row.get("cik") or "").strip()
         try:sic=int(row.get("sic"))
         except Exception:continue
@@ -441,6 +442,10 @@ def manual_identity_seed_registry(asof:str,names:dict)->tuple[dict,dict]:
           or not sec_source_binds_cik(source,cik)
           or not re.fullmatch(r"20\d{2}-\d{2}-\d{2}",evidence)
           or evidence>asof
+          # Audit/verification time cannot flow backward into an older ASOF.
+          or not re.fullmatch(r"20\d{2}-\d{2}-\d{2}",verified_asof)
+          or verified_asof>asof
+          or verified_asof<evidence
           or not re.fullmatch(r"\d{10}",cik)
           or not isinstance(is_blank,bool)
           or (is_blank and sic!=6770)
