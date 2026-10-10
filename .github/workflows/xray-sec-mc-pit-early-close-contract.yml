@@ -61,6 +61,11 @@ jobs:
             Path(".github/workflows/xray-sec-full-price-pass-vintage-shadow.yml"),
             Path(".github/workflows/xray-sec-mc-operator-access-preflight.yml"),
             Path(".github/workflows/xray-sec-ozk-404-isolation-shadow.yml"),
+            Path(".github/workflows/xray-sec-archived-accession-recovery-shadow.yml"),
+            Path(".github/workflows/xray-sec-free-mc-multisymbol-pit-shadow.yml"),
+            Path(".github/workflows/xray-sec-free-mc-transport-proof.yml"),
+            Path(".github/workflows/xray-sec-full-transient-retry.yml"),
+            Path(".github/workflows/xray-sec-identity-unknown-72-shadow.yml"),
           ]
           leaks=[str(p) for p in paths if "vars.XRAY_SEC_USER_AGENT" in p.read_text()]
           assert not leaks, "SEC_CONTACT_UNMASKED_GITHUB_VARS="+",".join(leaks)
