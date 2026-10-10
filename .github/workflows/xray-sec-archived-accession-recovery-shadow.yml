@@ -1,56 +1,73 @@
-name: XRAY SEC Official Archived Accession Rescue (SHADOW)
+name: XRAY SEC 2026-10-08 Immutable Legacy Archive Fence (No Live Replay)
 on:
-  workflow_dispatch:
   push:
-    branches: [main]
+    branches: [main, audit/c417-sec-legacy-oct8-offline-fence-20261010]
     paths:
       - "nasdaq-xray/sec_archived_accession_recovery_shadow.py"
-      - "nasdaq-xray/sec_official_free_mc_transport_probe.py"
+      - "nasdaq-xray/sec_current_accession_seven_recheck_shadow.py"
       - ".github/workflows/xray-sec-archived-accession-recovery-shadow.yml"
+  workflow_dispatch:
 permissions:
   contents: read
-concurrency:
-  group: xray-sec-archive-accession-exact-20261008
-  cancel-in-progress: false
 jobs:
-  official-archive-proof:
+  historical-origin-fence:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: main
+      - name: Verify triggering SHA
+        run: test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Archived accession PIT positive and negative safety controls
+      - name: Preserve original seven-issuer SEC archive regression offline
         run: |
           python -m py_compile nasdaq-xray/sec_archived_accession_recovery_shadow.py
           python nasdaq-xray/sec_archived_accession_recovery_shadow.py --selftest
-      - name: Probe seven exact-origin SEC exceptions, no PRIMARY upgrade
-        env:
-          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
+      - name: Prove old source cannot masquerade as 9-Oct official SEC observations
         run: |
-          python nasdaq-xray/sec_archived_accession_recovery_shadow.py --output "$RUNNER_TEMP/xray_sec_archive_7_shadow.json"
           python - <<'PY'
-          import json,os
+          import hashlib,json,os,subprocess,sys
           from pathlib import Path
-          j=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_sec_archive_7_shadow.json").read_text())
-          assert j["schema"]=="XRAY_SEC_ARCHIVED_ACCESSION_RECOVERY_SHADOW_V1"
-          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
-          assert j["unknown_never_pass"] is True
-          assert j["production_primary_mc_count"]==0 and j["candidate_created"] is False
-          assert j["no_vendor_raw_values_persisted"] is True
-          assert len(j["symbol_statuses"])==7
-          assert sum(j["reason_counts"].values())==7
-          assert j["status"]=="OFFICIAL_SEC_ARCHIVE_AUDIT_COMPLETED"
-          print("XRAY_SEC_ARCHIVE_AUDIT=PASS_ALL7_ACCOUNTED_NO_PRIMARY")
+          sys.path.insert(0,"nasdaq-xray")
+          import sec_archived_accession_recovery_shadow as legacy
+          from sec_free_mc_multisymbol_pit_audit import git_blob_sha
+          root=Path("nasdaq-xray")
+          m=(root/"canonical_current_master_manifest.json").read_bytes()
+          p=(root/"canonical_current_price_dv30.json").read_bytes()
+          mo=json.loads(m);po=json.loads(p)
+          master_sha=git_blob_sha(m);price_sha=git_blob_sha(p)
+          # Immutable historical origin has not been edited or falsely rebased.
+          assert legacy.ORIGIN_MASTER_SHA=="92c37207d8dd766ab3fe8f1300e3014c6c5ab629"
+          assert legacy.ORIGIN_PRICE_SHA=="42ed4a1c1a104aff94f73793194b25746d3bea59"
+          assert mo["asof_et"]==po["asof_et"]
+          assert price_sha!=legacy.ORIGIN_PRICE_SHA or master_sha!=legacy.ORIGIN_MASTER_SHA
+          try:
+              legacy.exact_scope()
+          except ValueError as exc:
+              assert str(exc)=="ORIGIN_EXACT_SCOPE_SHA_OR_ASOF_MISMATCH"
+          else:
+              raise AssertionError("LEGACY_8OCT_ARCHIVE_REPLAYED_AS_CURRENT")
+          out={"schema":"XRAY_SEC_LEGACY_OCT8_ARCHIVE_QUARANTINE_V1",
+               "status":"OLD_8OCT_SOURCE_PIN_RESPECTED_NO_REPLAY",
+               "head_sha":subprocess.check_output(["git","rev-parse","HEAD"],text=True).strip(),
+               "old_asof_et":"2026-10-08","current_asof_et":po["asof_et"],
+               "old_master_blob_sha":legacy.ORIGIN_MASTER_SHA,
+               "old_price_blob_sha":legacy.ORIGIN_PRICE_SHA,
+               "current_master_blob_sha":master_sha,
+               "current_price_blob_sha":price_sha,
+               "current_recheck_workflow":"xray-sec-current-20261009-seven-recheck.yml",
+               "SEC_HTTP_calls":0,"production_primary_mc_count":0,
+               "replay_admitted":False,"execution":"NONE","real_money":"NO-GO",
+               "unknown_never_pass":True}
+          assert out["head_sha"]==os.environ["GITHUB_SHA"]
+          (Path(os.environ["RUNNER_TEMP"])/"xray_sec_legacy_fence.json").write_text(json.dumps(out,indent=2,sort_keys=True)+"\n")
+          print("XRAY_SEC_8OCT_LEGACY=QUARANTINED_STALE_NO_LIVE_SEC_NO_PRIMARY")
           PY
-      - name: Preserve counts-only evidence (including on failed network)
-        if: always()
+      - name: Record SHA-only historical quarantine
         uses: actions/upload-artifact@v4
         with:
-          name: xray-sec-archive-accessions-7-shadow-v1
-          path: ${{ runner.temp }}/xray_sec_archive_7_shadow.json
+          name: xray-sec-oct8-immutable-origin-fence-v1
+          path: ${{ runner.temp }}/xray_sec_legacy_fence.json
           retention-days: 14
-          if-no-files-found: warn
+          if-no-files-found: error
