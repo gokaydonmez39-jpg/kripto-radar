@@ -185,6 +185,7 @@ def selftest():
     # RED: Black Friday 13:00 ET early close is 18:00 UTC (EST).
     early=deepcopy(base)
     early["asof_et"]=early["price"]["asof_et"]="2026-11-27"
+    early["independent_crosscheck"]["asof_et"]="2026-11-27"
     early["decision_cutoff_utc"]="2026-11-27T18:15:00Z"
     early["official_session"]["asof_et"]="2026-11-27"
     early["official_session"]["rth_close_utc"]="2026-11-27T18:00:00Z"
