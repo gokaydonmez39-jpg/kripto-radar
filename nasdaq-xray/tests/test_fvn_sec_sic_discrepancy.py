@@ -23,7 +23,7 @@ def read_producer():
     function=next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name=="manual_identity_seed_registry")
     ns={"ROOT":ROOT,"MANUAL_IDENTITY_SEED":ROOT/"master_sec_identity_manual_seed_registry.json",
         "json":json,"re":re,"datetime":datetime,
-        "SPAC_SUSPECT_RE":re.compile(r"\\bacquisition\\b|\\bspac\\b",re.I),
+        "SPAC_SUSPECT_RE":re.compile(r"acquisition|spac",re.I),
         "sec_source_binds_cik":lambda url,cik:f"/data/{int(cik)}/" in url,
         "file_blob_sha":lambda path:"OFFLINE_ONLY_SHA"}
     exec(compile(ast.Module(body=[function],type_ignores=[]),str(ROOT/"build_current_identity_proofs.py"),"exec"),ns)
