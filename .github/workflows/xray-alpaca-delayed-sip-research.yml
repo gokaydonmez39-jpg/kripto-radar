@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/alpaca_delayed_sip_research_shadow.py"
+      - "nasdaq-xray/alpaca_sip_legacy_key_mapping_selftest.py"
       - "nasdaq-xray/evidence/alpaca_connected_historical_sip_20261007_v1.json"
       - ".github/workflows/xray-alpaca-delayed-sip-research.yml"
   schedule:
@@ -19,10 +20,14 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     env:
-      XRAY_ALPACA_API_KEY_ID: ${{ secrets.XRAY_ALPACA_API_KEY_ID }}
-      XRAY_ALPACA_API_SECRET_KEY: ${{ secrets.XRAY_ALPACA_API_SECRET_KEY }}
+      XRAY_ALPACA_API_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID }}
+      XRAY_ALPACA_API_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - name: Verify exact invoking SHA
+        run: test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -30,6 +35,7 @@ jobs:
         run: |
           python -m py_compile nasdaq-xray/alpaca_delayed_sip_research_shadow.py
           python nasdaq-xray/alpaca_delayed_sip_research_shadow.py --selftest
+          python nasdaq-xray/alpaca_sip_legacy_key_mapping_selftest.py
       - name: Validate historical SIP connector research-only proof without prices
         run: |
           python - <<'PY'
