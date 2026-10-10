@@ -431,6 +431,24 @@ def selftest():
         forged=deepcopy(native)
         forged["results"][sym]["r92_eligible"]="false"
         assert not mc_exact(forged,native_price,"P"),("NONBOOL_R92_FLAG_ACCEPTED",sym)
+    # Read the immutable real October 5/7 bridges as schema fixtures. This
+    # is a compatibility check only, NOT a new ASOF, quote, or MC authority.
+    for file_name,expected_sha,expected_rows in (
+        ("canonical_mc_bridge_20261005_c417_dv30_v4.json",
+         "5dae47c183a7e2f4b631e3ce2fb7bd8021ca250b",504),
+        ("canonical_mc_bridge_20261007_c417_dv30_v28.json",
+         "7eedf06479502b59257788e268df92816f9a3163",510),
+    ):
+        assert sha(file_name)==expected_sha,"HISTORIC_FIXTURE_SHA_DRIFT"
+        bridge=read(file_name)
+        assert len(bridge["input_pass_symbols"])==expected_rows
+        historical_scope={
+            "asof_et":bridge["asof_et"],
+            "pass_symbols":bridge["input_pass_symbols"],
+            "pass_hash":bridge["input_pass_hash"]}
+        assert mc_exact(bridge,historical_scope,bridge["input_blob_sha"]),(
+            "HISTORIC_NATIVE_MC_SCHEMA_FALSE_REJECTION",file_name)
+    print("XRAY_MC_HISTORIC_REAL_BRIDGES=PASS_OCT05_504_OCT07_510_NO_CURRENT_PROMOTION")
     print("XRAY_MC_NATIVE_NEGATIVE_ROWS=PASS_3_MISSING_FLAG_POSITIVES_6_CONTRADICTORY_NEGATIVES")
     print("XRAY_MC_PRIMARY_ROW_EVIDENCE=PASS_8_ADVERSARIAL_NEGATIVES")
     base_shas={k:k+"_SHA" for k in ("master","price","history","events","final")}
