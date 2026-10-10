@@ -9,6 +9,7 @@ import argparse
 import hashlib
 import json
 import math
+import re
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parent
@@ -88,8 +89,38 @@ def mc_exact(mc,price,price_sha):
     return seen==symbols
 
 def terminal_bound_mc_selection(valid_bridge_names,terminal,asof,blob_sha):
-    """Selection parity with existing snapshot len(mcs)==1: test baseline."""
-    return valid_bridge_names[0] if len(valid_bridge_names)==1 else None
+    """Select ONLY the exact terminal-attested Git blob from source-validated MC.
+
+    Historical version files may coexist. No filename sorting, newest-wins
+    selection, fabricated PRIMARY, or unbound fallback is allowed.
+    A separate terminal_chain_exact() checks every other upstream source SHA.
+    """
+    if (not isinstance(valid_bridge_names,list)
+            or not valid_bridge_names
+            or not all(isinstance(x,str) for x in valid_bridge_names)
+            or len(valid_bridge_names)!=len(set(valid_bridge_names))
+            or not isinstance(terminal,dict)
+            or not isinstance(asof,str)
+            or not re.fullmatch(r"20\d{2}-\d{2}-\d{2}",asof)):
+        return None
+    binding=(terminal.get("evidence") or {}).get("mc") or {}
+    if not isinstance(binding,dict):return None
+    path=binding.get("path")
+    blob=binding.get("blob_sha")
+    if not isinstance(path,str) or not isinstance(blob,str):return None
+    prefix="canonical_mc_bridge_"+asof.replace("-","")+"_c417_dv30_v"
+    if not path.startswith("nasdaq-xray/"):return None
+    name=path[len("nasdaq-xray/"):]
+    if not (name.startswith(prefix)
+            and name.endswith(".json")
+            and re.fullmatch(r"[1-9][0-9]*",name[len(prefix):-5])
+            and name in valid_bridge_names
+            and re.fullmatch(r"[0-9a-f]{40}",blob)):
+        return None
+    # Git readback: the terminal must bind the precise bytes on disk.
+    # A matching same-day filename without its SHA never creates authority.
+    actual=blob_sha(name)
+    return name if actual is not None and actual==blob else None
 
 def terminal_research_seal(terminal):
     """Full-universe success OR independently attested candidate-local success.
@@ -309,7 +340,11 @@ def snapshot():
         try:j=json.loads(p.read_text(encoding="utf-8"))
         except (OSError,ValueError):continue
         if mc_exact(j,price,price_sha):mcs.append(p.name)
-    fail("CURRENT_MC_AUTHORITY_MISSING",len(mcs)==1)
+    # Do not fail on a *second valid revision* of the same day: the terminal
+    # selects exactly one cryptographically bound bridge. But valid upstream
+    # source material alone does not attest the terminal research chain.
+    fail("CURRENT_MC_AUTHORITY_MISSING",bool(mcs))
+    terminal_mc=terminal_bound_mc_selection(mcs,terminal,asof,sha)
     exact_terminal=(terminal.get("asof_et")==asof
         and terminal_research_seal(terminal)
         and terminal.get("compiled_policy_hash")==POLICY)
@@ -320,8 +355,8 @@ def snapshot():
         "history":"canonical_current_history.json",
         "events":"canonical_current_event_state.json",
         "final":"canonical_current_final_tech.json"}.items()}
-    current_chain=(len(mcs)==1 and terminal_chain_exact(
-        terminal,asof,source_shas,mcs[0],sha(mcs[0])))
+    current_chain=(terminal_mc is not None and terminal_chain_exact(
+        terminal,asof,source_shas,terminal_mc,sha(terminal_mc)))
     fail("TERMINAL_CURRENT_MC_CHAIN_NOT_PROVEN",current_chain)
     pointer=read("chatgpt_canonical_state_v2.json")
     prepared=bool(current_chain and freshness.get("freshness_ready") is True and registered_research_candidate_exact(
@@ -346,7 +381,8 @@ def snapshot():
                 "SETTLEMENT_UNVERIFIED_OR_PRICE_SHA_DRIFT",
                 "IDENTITY_PARTITION_INCOMPLETE","PRICE_BLOCKED_30_SESSION_BARS",
                 "PRICE_UNKNOWN_CURRENT")),
-        "current_mc_authority_count":len(mcs),
+        "current_mc_authority_count":1 if terminal_mc else 0,
+        "current_mc_valid_revision_count":len(mcs),
         "latest_completed_nasdaq_session":freshness.get("latest_completed_nasdaq_session"),
         "official_nasdaq_session_freshness_attested":freshness.get("freshness_ready") is True,
         "source_session_lags":freshness.get("session_lag"),
