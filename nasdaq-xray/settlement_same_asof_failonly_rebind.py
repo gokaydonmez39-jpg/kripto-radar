@@ -43,7 +43,7 @@ def safe_same_asof_failonly_settlement(bridge,price,master,master_blob,price_blo
     if (bridge.get("schema")!="XRAY_RESOLVER_EPOCH_RESULT_V1"
         or bridge.get("status")!="COMMITTED"
         or bridge.get("bridge_role")!="CURRENT_RESIDUAL_REQUEST_AUTHORITY"
-        or bridge.get("task_id")!=price.get("task_id")!=master.get("task_id")):
+        or not (bridge.get("task_id")==price.get("task_id")==master.get("task_id")==TASK)):
         return False
     if bridge.get("task_id")!=TASK:return False
     if (bridge.get("asof_et")!=asof or master.get("asof_et")!=asof
