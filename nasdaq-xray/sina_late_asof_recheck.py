@@ -61,6 +61,18 @@ def choose(state,official_close_utc,now=None,limit=MAX_PER_RUN):
         return []
     if type(limit) is not int or not (1<=limit<=MAX_PER_RUN):
         raise ValueError("RECHECK_RATE_LIMIT_INVALID")
+    # Do not reissue 3,000 requests while Sina has not published the ASOF.
+    # A source-observed exact30 PASS is a readiness canary, not an alpha gate.
+    # The canary itself is obtained only from the existing real-source reader.
+    source_ready=any(
+        isinstance(v,dict) and v.get("status")=="PASS"
+        and isinstance(v.get("info"),dict)
+        and v["info"].get("proof")=="EXACT30_MEDIAN"
+        and (_stamp(v.get("updated_at_utc")) or close-dt.timedelta(days=1))>=close
+        for v in rows.values()
+    )
+    if not source_ready:
+        return []
     eligible=[]
     for sym in sorted(rows):
         rec=rows[sym]
