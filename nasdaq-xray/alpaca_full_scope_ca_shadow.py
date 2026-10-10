@@ -203,6 +203,28 @@ def selftest():
     ):
         v=query(lambda *x, r=response:r)
         assert v["failure_reason_class"].startswith("ALPACA_CA_")
+    # RED: a legitimate merger spanning different 65-symbol batches can be
+    # returned twice with the SAME official event ID. Accept once only if
+    # the complete event body and type are byte-for-byte semantically equal.
+    two_batches=sorted(["QQQ"]+[f"A{i:03d}" for i in range(65)])
+    shared={"id":"same-issuer-event","process_date":"2026-10-08",
+            "acquirer_symbol":"A000","acquiree_symbol":"QQQ",
+            "acquirer_rate":1,"acquiree_rate":1}
+    def cross_batches(batch,start,end,token):
+        assert token is None
+        return {"corporate_actions":{"stock_mergers":[shared]},
+                "next_page_token":None}
+    replay=audit(asof,two_batches,"2025-09-29",cross_batches,now=now)
+    assert replay["measured_symbols"]==66,replay
+    assert replay["total_events_seen"]==1,replay
+    assert replay["duplicate_cross_batch_events_deduped"]==1,replay
+    def mismatched(batch,start,end,token):
+        rec=shared if "A000" in batch else dict(shared,acquirer_rate=2)
+        return {"corporate_actions":{"stock_mergers":[rec]},
+                "next_page_token":None}
+    conflict=audit(asof,two_batches,"2025-09-29",mismatched,now=now)
+    assert conflict["status"]=="SHADOW_INCOMPLETE_OR_INVALID_CA",conflict
+    assert conflict["failure_reason_class"]=="ALPACA_CA_DUPLICATE_EVENT_CONFLICT",conflict
     print("XRAY_ALPACA_CA_515_SELFTEST=PASS_NO_PIT_NO_PRIMARY_7_NEGATIVE")
 
 
