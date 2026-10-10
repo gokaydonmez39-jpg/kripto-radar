@@ -69,7 +69,7 @@ def load_scope(offset:int=0,limit:int=0)->tuple[str,list[str]]:
     else:
         # Deterministic, unique, bounded slice; source identity always binds
         # to the exact PRICE/Master PASS intersection in the checked-out main.
-        if not (0<=offset<len(p) and 1<=limit<=514):
+        if not (0<=offset<len(p) and 1<=limit<=min(len(p),1000)):
             raise ValueError("INVALID_BOUNDED_BATCH")
         symbols=sorted(p)[offset:offset+limit]
         if not symbols: raise ValueError("EMPTY_SEC_BATCH")
@@ -93,11 +93,14 @@ def selftest():
         try:map_ciks(bad)
         except ValueError:pass
         else:raise AssertionError("SEC_MAP_INVALID_SCHEMA_ACCEPTED")
-    for bad_offset,bad_limit in ((-1,1),(0,-1),(0,515)):
+    for bad_offset,bad_limit in ((-1,1),(0,-1),(0,1001)):
         try:load_scope(bad_offset,bad_limit)
         except ValueError:pass
         else:raise AssertionError("UNSAFE_BATCH_INPUT_ACCEPTED")
-    print("XRAY_SEC_MULTI_SCOPE_SELFTEST=PASS_CIK_EXCHANGE_DUPLICATE_FAIL_CLOSED")
+    # Source-derived bounded selection, never a hard-coded historical 514 size.
+    asof,selected=load_scope(0,3)
+    assert len(selected)==3 and selected==sorted(selected) and asof
+    print("XRAY_SEC_MULTI_SCOPE_SELFTEST=PASS_CIK_EXCHANGE_DUPLICATE_DYNAMIC_BOUND_FAIL_CLOSED")
 
 def run(offset:int=0,limit:int=0)->dict:
     asof,syms=load_scope(offset,limit)
