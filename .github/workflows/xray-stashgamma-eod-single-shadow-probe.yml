@@ -1,0 +1,71 @@
+name: XRAY StashGamma EOD One Symbol SHADOW - Rights Fail Closed
+on:
+  push:
+    branches: [audit/c417-stashgamma-single-symbol-eod-20261010, main]
+    paths:
+      - "nasdaq-xray/stashgamma_eod_single_shadow_probe.py"
+      - ".github/workflows/xray-stashgamma-eod-single-shadow-probe.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  single-symbol-research-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      XRAY_STASHGAMMA_API_KEY: ${{ secrets.XRAY_STASHGAMMA_API_KEY }}
+      XRAY_STASHGAMMA_PERSONAL_UNATTENDED_OK: ${{ vars.XRAY_STASHGAMMA_PERSONAL_UNATTENDED_OK }}
+      XRAY_STASHGAMMA_PRIVATE_CACHE_RIGHTS_OK: ${{ vars.XRAY_STASHGAMMA_PRIVATE_CACHE_RIGHTS_OK }}
+      XRAY_STASHGAMMA_LICENSE_EVIDENCE_SHA256: ${{ secrets.XRAY_STASHGAMMA_LICENSE_EVIDENCE_SHA256 }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Immutable triggering ref
+        run: test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install official calendar dependency only
+        run: python -m pip install --disable-pip-version-check "pandas_market_calendars==5.4.0"
+      - name: Positive mocked 260D/52W and all fail-closed negative controls
+        run: |
+          python -m py_compile nasdaq-xray/stashgamma_eod_single_shadow_probe.py
+          python nasdaq-xray/stashgamma_eod_single_shadow_probe.py --selftest
+      - name: One actual QQQ request only if explicit key and external rights claims exist
+        run: |
+          python nasdaq-xray/stashgamma_eod_single_shadow_probe.py --out "$RUNNER_TEMP/xray_stashgamma_one_symbol_noauth.json"
+      - name: Independently audit source role and never falsely promote to canonical
+        run: |
+          python - <<'PY'
+          import json,os,subprocess
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])/"xray_stashgamma_one_symbol_noauth.json"
+          d=json.loads(p.read_text())
+          price=json.loads(Path("nasdaq-xray/canonical_current_price_dv30.json").read_text())
+          assert d["schema"]=="XRAY_STASHGAMMA_ONE_SYMBOL_EOD_SHADOW_PROBE_V1"
+          assert d["asof_et"]==price["asof_et"] and d["symbol"]=="QQQ"
+          assert d["api_calls"] in (0,1)
+          assert d["market_consolidated_volume_proven"] is False
+          assert d["issuer_share_class_figi_proven"] is False
+          assert d["unadjusted_pit_bar_semantics_proven"] is False
+          assert d["vendor_entitlement_proven"] is False
+          assert d["private_cache_reuse_rights_independently_proven"] is False
+          assert d["can_register_R92"] is False and d["alpha_authority"] is False
+          assert d["canonical_history_pass_created"]==0
+          assert d["primary_mc_created"] is False
+          assert d["raw_bar_persisted"] is False and d["secret_logged"] is False
+          assert d["real_money"]=="NO-GO" and d["execution"]=="NONE"
+          if d["api_calls"]==0:
+              assert d["status"]=="BLOCKED_NO_INDEPENDENT_KEY_OR_RIGHTS_CLAIM"
+          if d["api_calls"]==1 and d["status"]=="SHADOW_COMPLETE_260D_52W_STRUCTURE_NOT_AUTHORITY":
+              assert d["daily_260_dates_present"] and d["weekly_52_dates_present"]
+          assert "bars" not in d and "X-Api-Key" not in str(d) and "sg_live_" not in str(d)
+          print("XRAY_STASHGAMMA_SHADOW_SOURCE_COUNTS_ONLY_SAFE=PASS",d["api_calls"],d["status"])
+          print("XRAY_STASHGAMMA_NO_HISTORY_AUTH_NO_MC_NO_R92=PASS")
+          PY
+      - name: Upload safe aggregate witness only
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-stashgamma-one-symbol-rights-blocked-or-research-only
+          path: ${{ runner.temp }}/xray_stashgamma_one_symbol_noauth.json
+          if-no-files-found: error
+          retention-days: 14
