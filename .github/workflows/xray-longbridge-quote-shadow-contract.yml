@@ -1,0 +1,39 @@
+name: XRAY Longbridge Quote-Only MC Shadow Contract
+on:
+  push:
+    branches: [main, audit/c417-longbridge-quote-shadow-contract-20261010]
+    paths:
+      - "nasdaq-xray/longbridge_quote_shadow_contract.py"
+      - "nasdaq-xray/tests/test_longbridge_quote_shadow_contract.py"
+      - ".github/workflows/xray-longbridge-quote-shadow-contract.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  vendor-free-safety:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - run: test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Exact-source synthetic classification and negative rights/PIT tests
+        run: |
+          python -m py_compile nasdaq-xray/tests/test_longbridge_quote_shadow_contract.py nasdaq-xray/longbridge_quote_shadow_contract.py
+          python nasdaq-xray/tests/test_longbridge_quote_shadow_contract.py
+          python nasdaq-xray/longbridge_quote_shadow_contract.py --selftest
+      - name: Confirm no unattended market-data entitlement was inferred
+        run: |
+          python nasdaq-xray/longbridge_quote_shadow_contract.py --preflight > "$RUNNER_TEMP/longbridge_status.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          j=json.loads((Path(os.environ["RUNNER_TEMP"])/"longbridge_status.json").read_text())
+          assert j["status"]=="BLOCKED_OPENAPI_RUNTIME_AND_NONDISPLAY_RIGHTS"
+          assert j["coverage"]==0 and j["primary_mc_pass_created"] is False
+          assert j["source_market_cap_asof_attested"] is False
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          print("XRAY_LONGBRIDGE_OPENAPI=CONTRACT_READY_PROVIDER_NOT_IMPERSONATED")
+          PY
