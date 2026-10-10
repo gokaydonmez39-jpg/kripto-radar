@@ -71,11 +71,19 @@ def mc_exact(mc,price,price_sha):
             return False
         if (sym in statuses["MC_PASS_PRIMARY"]) != (amount>=2_000_000_000):
             return False
-    # A fallback/unknown row can NEVER opt into R92 by setting an extra flag,
-    # nor can missing eligibility be silently treated as an explicit veto.
-    for group in ("MC_PASS_FALLBACK_WATCH","MC_FAIL_FALLBACK_TWO_SOURCE","MC_UNKNOWN"):
+    # WATCH is an admissible observation class only with an EXPLICIT R92 veto.
+    # The native historical MC_FAIL_PRIMARY / MC_FAIL_FALLBACK / MC_UNKNOWN
+    # schemas, by contrast, express their veto by the negative status itself;
+    # they have no per-row r92_eligible property. Never turn these into PASS.
+    for sym in statuses["MC_PASS_FALLBACK_WATCH"]:
+        if (mc["results"].get(sym) or {}).get("r92_eligible") is not False:
+            return False
+    for group in ("MC_FAIL_PRIMARY","MC_FAIL_FALLBACK_TWO_SOURCE","MC_UNKNOWN"):
         for sym in statuses[group]:
-            if (mc["results"].get(sym) or {}).get("r92_eligible") is not False:
+            row=mc["results"].get(sym) or {}
+            # If supplied, the eligibility bit must explicitly be False:
+            # True, strings, numbers, or null contradict native negative rows.
+            if "r92_eligible" in row and row["r92_eligible"] is not False:
                 return False
     return seen==symbols
 
