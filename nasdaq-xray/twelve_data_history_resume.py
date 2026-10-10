@@ -35,7 +35,7 @@ ROOT=Path(__file__).resolve().parent
 REPO=ROOT.parent
 SCHEMA="XRAY_TWELVE_260_HISTORY_ENCRYPTED_SHADOW_V1"
 REPORT="XRAY_TWELVE_260_HISTORY_HEALTH_V1"
-MAX_CALLS=32
+MAX_CALLS=48
 MAX_RETRIES_PER_SYMBOL=3
 MIN_SPACING_SECONDS=9.0
 DAY_BUDGET=800
@@ -395,6 +395,24 @@ def selftest():
         # Zero current PRICE PASS is legitimate production NO-GO. Synthetic
         # nonempty test fixture is created ONLY in memory and never authority.
         assert len(s["dates"])==260 and len(s["weeks"])==52
+        # The free Twelve 800-credit/day transport must be capable of
+        # completing the *current real PRICE+QQQ* cohort before next session.
+        # On the official Nasdaq 2026-11-27 early close (13:00 ET), an hourly
+        # :53 run can fire only 13 times after 00:15 ET EOD release; standard
+        # 16:00 ET days offer 16. This is planning capacity, NOT source proof.
+        calendar=mcal.get_calendar("NASDAQ")
+        early=calendar.schedule(start_date="2026-11-27",end_date="2026-11-27")
+        assert len(early)==1, "NASDAQ_EARLY_CLOSE_CALENDAR_UNAVAILABLE"
+        early_close=early.iloc[0]["market_close"].tz_convert("America/New_York")
+        assert (early_close.hour,early_close.minute)==(13,0), "EARLY_CLOSE_WINDOW_CHANGED"
+        early_slots=early_close.hour  # :53 each hour from 00:53 to 12:53
+        standard_slots=16              # :53 from 00:53 to 15:53
+        assert MAX_CALLS*MIN_SPACING_SECONDS<=14*60, "RUNNER_15_MIN_CAPACITY_EXCEEDED"
+        assert MAX_CALLS*standard_slots<=DAY_BUDGET, "BASIC_DAILY_800_CREDIT_CAPACITY_EXCEEDED"
+        assert early_slots*MAX_CALLS>=len(s["targets"]),(
+            "BASIC_EOD_CURRENT_COHORT_UNSCHEDULABLE_ON_EARLY_CLOSE",
+            len(s["targets"]),early_slots*MAX_CALLS)
+
         assert s["symbols"] or not s["targets"],"BUG_ZERO_PRICE_PASS_QQQ_ONLY_PHANTOM_SCOPE"
         if s["symbols"]:
             symbol=s["symbols"][0]
@@ -608,7 +626,7 @@ def selftest():
             assert no_more["individual_symbol_quarantined_after_3_count"]==1
             assert no_more["complete_260_symbols"]==1
             assert no_more["R92_AL"] is False
-    print("XRAY_TWELVE_260_RESUME_SELFTEST=PASS_ET_PUBLICATION_NONSTARVATION_RECOVERY_THREE_STRIKE_QUARANTINE_QUOTA_ENCRYPTION_NO_ALPHA")
+    print("XRAY_TWELVE_260_RESUME_SELFTEST=PASS_ET_PUBLICATION_NONSTARVATION_RECOVERY_THREE_STRIKE_QUARANTINE_QUOTA_ENCRYPTION_EARLY_CLOSE_CAPACITY_48_NO_ALPHA")
 
 def main():
     p=argparse.ArgumentParser()
@@ -616,7 +634,7 @@ def main():
     p.add_argument("--report",type=Path)
     p.add_argument("--checkpoint",type=Path)
     p.add_argument("--restore",type=Path)
-    p.add_argument("--limit",type=int,default=32)
+    p.add_argument("--limit",type=int,default=48)
     p.add_argument("--check-restore",type=Path)
     p.add_argument("--export-checkpoint",type=Path)
     p.add_argument("--export-dir",type=Path)
