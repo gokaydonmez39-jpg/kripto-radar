@@ -4,6 +4,7 @@ on:
     branches: [audit/c417-partial-price-history-no-global-starvation-20261010, main]
     paths:
       - "nasdaq-xray/current_history_source_request.py"
+      - "nasdaq-xray/free_history_source_preflight.py"
       - "nasdaq-xray/qualified_history_ingress_shadow.py"
       - ".github/workflows/xray-c417-partial-history-scope-regression-shadow.yml"
   workflow_dispatch:
@@ -27,9 +28,11 @@ jobs:
           python -m py_compile nasdaq-xray/current_history_source_request.py nasdaq-xray/qualified_history_ingress_shadow.py
           python nasdaq-xray/current_history_source_request.py --selftest
           python nasdaq-xray/qualified_history_ingress_shadow.py --selftest
+          python nasdaq-xray/free_history_source_preflight.py --selftest
       - name: Verify actual current source 514 scope is invariant after fix
         run: |
           python nasdaq-xray/current_history_source_request.py --out "$RUNNER_TEMP/current_history_partial_safe.json"
+          python nasdaq-xray/free_history_source_preflight.py --out "$RUNNER_TEMP/current_quota_partial_safe.json"
           python nasdaq-xray/qualified_history_ingress_shadow.py --private-cache-dir "$RUNNER_TEMP/xray-no-vendor-bar-cache" --out "$RUNNER_TEMP/private_history_partial_safe.json"
           python - <<'PY'
           import os,json,subprocess
@@ -37,6 +40,7 @@ jobs:
           tmp=Path(os.environ["RUNNER_TEMP"])
           h=json.loads((tmp/"current_history_partial_safe.json").read_text())
           i=json.loads((tmp/"private_history_partial_safe.json").read_text())
+          q=json.loads((tmp/"current_quota_partial_safe.json").read_text())
           p=json.loads(Path("nasdaq-xray/canonical_current_price_dv30.json").read_text())
           digest=subprocess.check_output(["git","hash-object","nasdaq-xray/canonical_current_price_dv30.json"],text=True).strip()
           assert h["source_price_blob_sha"]==i["source_price_blob_sha"]==digest
@@ -55,6 +59,12 @@ jobs:
           assert h["execution"]==i["execution"]=="NONE"
           assert h["real_money"]==i["real_money"]=="NO-GO"
           assert h["source_price_pass_hash"]==p["pass_hash"]
+          assert q["source_price_blob_sha"]==digest and q["price_pass_count"]==p["pass_count"]
+          assert q["price_unknown_count"]==p["unknown_count"]
+          assert q["price_blocked_count"]==p["blocked_count"]
+          assert q["scope_initial_credit_estimate"]==p["pass_count"]
+          assert q["unknown_blocked_excluded_from_quota"] is True
+          assert q["history_authoritative"] is False and q["can_register_R92"] is False
           print("XRAY_PARTIAL_HISTORY_CURRENT_SCOPE_EXACT",p["pass_count"],p["unknown_count"],p["blocked_count"])
           print("XRAY_PARTIAL_HISTORY_NO_VENDOR_NO_MC_NO_R92_NO_GO=PASS")
           witness={"schema":"XRAY_C417_PARTIAL_PRICE_SHADOW_TRANSPORT_ONLY_V1",
