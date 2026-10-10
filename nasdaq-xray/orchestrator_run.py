@@ -491,7 +491,8 @@ def history_retry_plan(ss):
     total=int(ss.get("queue_total",0) or 0)
     cursor=int(ss.get("cursor",0) or 0)
     pending=int(ss.get("pending_retry",0) or 0)
-    if total<=0 or cursor<0 or cursor>total or pending<0:
+    late=int(ss.get("pending_late_asof_recheck",0) or 0)
+    if total<=0 or cursor<0 or cursor>total or pending<0 or late<0 or late>250:
         raise ValueError("INVALID_HISTORY_PROGRESS_COUNTERS")
     if ss.get("status")=="HISTORY_COMPLETE":
         return False,"COMPLETE"
@@ -499,6 +500,8 @@ def history_retry_plan(ss):
         return True,"NEW_HISTORY_SCOPE_REMAINS"
     if pending>0:
         return True,"RETRYABLE_HISTORY_UNKNOWN_REMAINS"
+    if late>0:
+        return True,"REAL_SOURCE_LATE_ASOF_RECHECK_PENDING"
     return False,"NO_RETRYABLE_HISTORY_WORK_REMAINS"
 
 def main():
