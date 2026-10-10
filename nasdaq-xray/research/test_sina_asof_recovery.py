@@ -12,7 +12,8 @@ from pathlib import Path
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from sina_identity_epoch import frozen_identity_fingerprint
-from sina_late_asof_recheck import choose,MAX_RECHECK_ROUNDS,MAX_PER_RUN
+from sina_late_asof_recheck import choose,choose_canary_probe,MAX_RECHECK_ROUNDS,MAX_PER_RUN
+import orchestrator_run as orchestrator
 
 def sha_lines(rows):
     return hashlib.sha256("\n".join(rows).encode()).hexdigest()
@@ -95,6 +96,22 @@ def test_recheck():
     later=dt.datetime(2026,10,10,1,tzinfo=dt.timezone.utc)
     s=state_fixture()
     assert choose(s,close,later)==["AAPL","GRAL"]
+    assert choose_canary_probe(s,close,later)==[]
+    not_ready=copy.deepcopy(s)
+    not_ready["results"]["DONE"]={"status":"UNKNOWN_STATIC",
+        "info":{"reason":"ASOF_MISSING_REQUIRES_RESOLUTION"},
+        "updated_at_utc":"2026-10-09T22:30:00Z"}
+    assert choose(not_ready,close,later)==[], "PREMATURE_MASS_PROVIDER_RETRY"
+    assert choose_canary_probe(not_ready,close,later)==["AAPL"]
+    assert choose_canary_probe(not_ready,close,close+dt.timedelta(minutes=89))==[]
+    assert orchestrator.history_retry_plan({
+        "status":"HISTORY_PARTIAL","queue_total":6,"cursor":6,
+        "pending_retry":0,"pending_late_asof_recheck":2
+    })==(True,"REAL_SOURCE_LATE_ASOF_RECHECK_PENDING")
+    assert orchestrator.history_retry_plan({
+        "status":"HISTORY_PARTIAL","queue_total":6,"cursor":6,
+        "pending_retry":0,"pending_late_asof_recheck":0
+    })==(False,"NO_RETRYABLE_HISTORY_WORK_REMAINS")
     assert choose(s,close,later,limit=1)==["AAPL"]
     assert choose(s,close,close+dt.timedelta(minutes=89))==[]
     assert choose(s,close,dt.datetime(2026,10,9,22,45,tzinfo=dt.timezone.utc))==[]
