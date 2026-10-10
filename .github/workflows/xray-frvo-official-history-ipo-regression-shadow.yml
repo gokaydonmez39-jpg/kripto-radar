@@ -1,0 +1,47 @@
+name: XRAY Official FRVO BSP 260 Daily IPO Bound - Fail Only
+on:
+  push:
+    branches: [audit/c417-frvo-official-history-upper-bound-20261010, main]
+    paths:
+      - "nasdaq-xray/history_official_identity_evidence.json"
+      - "nasdaq-xray/history_official_ipo_260_selftest.py"
+      - ".github/workflows/xray-frvo-official-history-ipo-regression-shadow.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  ipo-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - name: Source SHA must equal triggered commit
+        run: test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install --disable-pip-version-check "pandas_market_calendars==5.4.0"
+      - name: Verify exact official IPO date and integrated fail-only gate
+        run: |
+          python -m py_compile nasdaq-xray/history_official_ipo_260_selftest.py
+          python nasdaq-xray/history_official_ipo_260_selftest.py
+      - name: Record safe no-vendor proof
+        run: |
+          python - <<'PY'
+          import json,os,subprocess
+          from pathlib import Path
+          data={"schema":"XRAY_C417_IPO_OFFICIAL_FAIL_ONLY_WITNESS_V1",
+                "head_sha":subprocess.check_output(["git","rev-parse","HEAD"],text=True).strip(),
+                "symbols":["BSP","FRVO"],"asof_et":"2026-10-09",
+                "real_vendor_calls":0,"history_pass_created":0,
+                "mc_pass_created":0,"r92_created":False,
+                "execution":"NONE","real_money":"NO-GO"}
+          assert data["head_sha"]==os.environ["GITHUB_SHA"]
+          (Path(os.environ["RUNNER_TEMP"])/"xray_ipo_only.json").write_text(json.dumps(data,indent=2)+"\n")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: xray-frvo-bsp-official-ipo-age-no-go-witness
+          path: ${{ runner.temp }}/xray_ipo_only.json
+          retention-days: 14
+          if-no-files-found: error
