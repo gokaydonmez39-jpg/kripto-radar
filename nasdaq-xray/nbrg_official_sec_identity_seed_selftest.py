@@ -54,9 +54,28 @@ def run():
     exec(compile(ast.Module(body=[target],type_ignores=[]),
                  "producer:manual_identity_seed_registry","exec"),ns)
     consumer=ns["manual_identity_seed_registry"]
-    names={"NBRG":"Newbridge Acquisition Limited - Class A Ordinary Share"}
+    # Exact SEC filings available before the Oct-09 epoch, fail-only.
+    for sym,cik,evidence,document in (
+        ("IBAC","0001998781","2026-07-24",
+         "https://www.sec.gov/Archives/edgar/data/1998781/000149315226034626/0001493152-26-034626-index.htm"),
+        ("FVN","0002010653","2026-06-12",
+         "https://www.sec.gov/Archives/edgar/data/2010653/000182912626006424/futurevision2_s4a.htm"),
+    ):
+        row=j["records"].get(sym)
+        assert isinstance(row,dict),("OFFICIAL_6770_SEED_MISSING",sym)
+        assert row["cik"]==cik and row["sic"]==6770 and row["is_blank_check"] is True,row
+        assert row["evidence_date"]==evidence and row["source_url"]==document,row
+        assert row["verified_asof_et"]==ASOF,row
+        assert row["evidence_authority"]=="SEC_EDGAR_OFFICIAL"
+        assert row.get("alpha_authority") is not True
+    names={"NBRG":"Newbridge Acquisition Limited - Class A Ordinary Share",
+           "FVN":"Future Vision II Acquisition Corporation - Ordinary Shares",
+           "IBAC":"IB Acquisition Corp. - Common Stock"}
     current,meta=consumer("2026-10-09",names)
     assert "NBRG" in current,(current,meta)
+    assert {"FVN","IBAC"}.issubset(current),("NEW_SEC_SEED_NOT_USABLE_EXACT_ASOF",current)
+    for symbol in ("FVN","IBAC"):
+        assert current[symbol]["seed_semantics"].endswith("NO_ALPHA_PASS")
     prior,meta=consumer("2026-10-07",names)
     assert "NBRG" not in prior,("FUTURE_MANUAL_VERIFICATION_LEAKED_BACK_TO_PRIOR_EPOCH",prior)
     # No candidate can receive MC/HISTORY/AL authority from this seed.
