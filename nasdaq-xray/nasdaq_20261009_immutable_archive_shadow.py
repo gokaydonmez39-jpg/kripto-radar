@@ -182,7 +182,8 @@ def main():
     print("XRAY_NASDAQ_ARCHIVE_20261009_LISTED="+str(result["archive_total_listed_rows"]))
     print("XRAY_NASDAQ_ARCHIVE_20261009_PROJECTED="+str(result["canonical_projected_symbols"]))
     print("XRAY_NASDAQ_ARCHIVE_20261009_MISSING="+str(len(result["canonical_projected_missing_symbols"])))
-    if result["canonical_projected_missing_symbols"]:
+    if (result["canonical_projected_missing_symbols"]
+        or result["canonical_projected_name_mismatch_symbols"]):
         raise SystemExit(2)
 
 
