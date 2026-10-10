@@ -1,7 +1,7 @@
 name: XRAY Official FRVO BSP 260 Daily IPO Bound - Fail Only
 on:
   push:
-    branches: [audit/c417-frvo-official-history-upper-bound-20261010, main]
+    branches: [audit/c417-frvo-official-history-upper-bound-20261010, audit/c417-sols-whenissued-lineage-20261010, main]
     paths:
       - "nasdaq-xray/history_official_identity_evidence.json"
       - "nasdaq-xray/history_official_ipo_260_selftest.py"
