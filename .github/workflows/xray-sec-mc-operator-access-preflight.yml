@@ -1,0 +1,64 @@
+name: XRAY SEC Operator Contact + PIT Access Proof (Shadow Only)
+on:
+  push:
+    branches: [audit/c417-mc-alternatives-sec-pit-20261010]
+    paths:
+      - ".github/workflows/xray-sec-mc-operator-access-preflight.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: xray-sec-operator-contact-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  sec-live-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Source SHA and fail-closed regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python nasdaq-xray/sec_official_free_mc_transport_probe.py --selftest
+          python nasdaq-xray/sec_free_mc_multisymbol_pit_audit.py --selftest
+          python nasdaq-xray/mc_free_successor_contract.py --selftest
+      - name: Official SEC two-endpoint authenticated operator probe, bounded
+        shell: bash
+        run: |
+          set -euo pipefail
+          asof="$(python -c 'import json;print(json.load(open("nasdaq-xray/canonical_current_price_dv30.json"))["asof_et"])')"
+          python nasdaq-xray/sec_official_free_mc_transport_probe.py --asof "$asof" --output "$RUNNER_TEMP/xray_sec_operator_canary.json"
+      - name: Validate anonymous raw SEC outputs never elevate MC authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import os,json
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])/"xray_sec_operator_canary.json"
+          j=json.loads(p.read_text())
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          assert j["policy_unchanged"]=="C4.17"
+          assert j["production_mc_primary_pass"] is False and j["alpha_authority"] is False
+          assert j["sec_transport"] in ("HTTP_200_BOTH","BLOCKED","BLOCKED_OR_UNAVAILABLE")
+          print("XRAY_SEC_OPERATOR_PROBE="+j["sec_transport"])
+          print("XRAY_SEC_OPERATOR_CODE="+j["reason"])
+          if j["sec_transport"]!="HTTP_200_BOTH":
+              raise SystemExit("SEC_OFFICIAL_TRANSPORT_NOT_PROVEN")
+          print("XRAY_SEC_OFFICIAL_TRANSPORT=PASS_WITHOUT_MC_AUTHORITY")
+          PY
+      - name: Safe source and rights metadata artifact, even if no contact secret
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-sec-operator-contact-proof-shadow
+          path: ${{ runner.temp }}/xray_sec_operator_canary.json
+          retention-days: 7
+          if-no-files-found: warn
