@@ -464,7 +464,18 @@ def selftest():
         stale,reused=load(path,crypto,wrong)
         assert not reused and stale["dates"]=={}, "SAME_ASOF_SHA_DRIFT_WAS_MERGED"
         newer=deepcopy(ss)
-        newer["asof"]="2026-10-09"
+        # Regression: this was hard-coded to 09-Oct, which ceases to be a
+        # LATER session once live PRICE itself advances to 09-Oct.
+        # Select the *next official Nasdaq session* only for this synthetic
+        # rollover test. It creates no bars or time-travel production claim.
+        from datetime import date,timedelta
+        import pandas_market_calendars as mcal
+        oldday=date.fromisoformat(ss["asof"])
+        following=mcal.get_calendar("NASDAQ").valid_days(
+            start_date=(oldday+timedelta(days=1)).isoformat(),
+            end_date=(oldday+timedelta(days=14)).isoformat())
+        assert len(following)>0
+        newer["asof"]=following[0].date().isoformat()
         newer["dates"],newer["weeks"]=expected_dates("2026-10-09")
         newer["dates_hash"]=sha256_lines(newer["dates"])
         newer["price_sha"]="0"*40
