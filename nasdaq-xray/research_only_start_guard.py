@@ -42,7 +42,7 @@ def validate(j):
     return True
 
 def blob_sha(raw):
-    return hashlib.sha1(b"blob "+str(len(raw)).encode()+b"\\0"+raw).hexdigest()
+    return hashlib.sha1(b"blob "+str(len(raw)).encode()+bytes([0])+raw).hexdigest()
 
 def build(root=ROOT):
     launch_raw=(root/NAME).read_bytes()
@@ -97,7 +97,7 @@ def selftest():
     assert r["execution"]=="NONE" and r["real_money"]=="NO-GO"
     assert r["alpha_go"] is False and r["orders"]==[]
     assert r["current_signal_release"]=="NOT_ATTESTED"
-    print("XRAY_RESEARCH_START_SELFTEST=PASS_24_NEGATIVES_NO_TRADING_NO_SIGNAL_GO")
+    print("XRAY_RESEARCH_START_SELFTEST=PASS_MULTIPLE_NEGATIVES_NO_TRADING_NO_SIGNAL_GO")
 
 def main():
     p=argparse.ArgumentParser()
