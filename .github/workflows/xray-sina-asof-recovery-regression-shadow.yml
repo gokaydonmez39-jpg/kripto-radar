@@ -33,3 +33,35 @@ jobs:
         run: |
           python -m py_compile nasdaq-xray/sina_identity_epoch.py nasdaq-xray/sina_late_asof_recheck.py nasdaq-xray/sina_stage.py nasdaq-xray/orchestrator_run.py
           python nasdaq-xray/research/test_sina_asof_recovery.py
+      - name: Persist exact-CI SHA and no-authority research witness
+        if: success()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA" || [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]
+          python - <<'PY'
+          import json,os,pathlib,subprocess
+          out=pathlib.Path(os.environ["RUNNER_TEMP"])/"xray_sina_late_asof_regression_witness.json"
+          out.write_text(json.dumps({
+              "schema":"XRAY_SINA_ASOF_LAG_ROOT_CAUSE_CI_SHADOW_V1",
+              "git_sha":subprocess.check_output(["git","rev-parse","HEAD"],text=True).strip(),
+              "test_name":"TEST_SINA_ASOF_RECOVERY",
+              "offline_regression":"PASS",
+              "actual_sina_call_executed":False,
+              "actual_history_source_authority":False,
+              "primary_mc_pass":False,
+              "r92_created":False,
+              "delivery_claimed":False,
+              "execution":"NONE",
+              "real_money":"NO-GO",
+              "release_status":"RESEARCH_ONLY_NOT_PRODUCTION"
+          },sort_keys=True,indent=2)+"\n")
+          PY
+      - name: Upload safe diagnostic regression-only artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-sina-asof-recovery-regression-only
+          path: ${{ runner.temp }}/xray_sina_late_asof_regression_witness.json
+          retention-days: 14
+          if-no-files-found: warn
