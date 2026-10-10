@@ -1297,6 +1297,7 @@ def main():
         if not late_asof:
             late_probe=choose_canary_probe(state,official_close)
     late_asof_set=set(late_asof)
+    late_probe_set=set(late_probe)
 
     start=int(state.get("cursor",0))
     end=min(start+BATCH,len(queue))
@@ -1331,6 +1332,10 @@ def main():
           "late_asof_recheck_round":(
               int(prev.get("late_asof_recheck_round",0))
               + (1 if sym in late_asof_set else 0)
+          ),
+          "late_asof_canary_probe_round":(
+              int(prev.get("late_asof_canary_probe_round",0))
+              + (1 if sym in late_probe_set else 0)
           ),
         }
 
