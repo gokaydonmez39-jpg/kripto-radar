@@ -1,7 +1,7 @@
 name: XRAY Alpaca SIP Complete Pages - Fail-Closed Offline
 on:
   push:
-    branches: [audit/c417-alpaca-sip-paginated-history-20261010, main]
+    branches: [audit/c417-alpaca-sip-paginated-history-20261010, audit/c417-alpaca-official-close-holdback-20261010, main]
     paths:
       - "nasdaq-xray/alpaca_sip_paginated_transport_shadow.py"
       - "nasdaq-xray/alpaca_free_sip_shadow_guard.py"
@@ -20,6 +20,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Install pinned official Nasdaq calendar for SIP holdback validation
+        run: python -m pip install --disable-pip-version-check "pandas_market_calendars==5.4.0"
       - name: Compile fail-closed SIP and mocked-only tests
         run: |
           python -m py_compile nasdaq-xray/alpaca_sip_paginated_transport_shadow.py nasdaq-xray/alpaca_free_sip_shadow_guard.py
