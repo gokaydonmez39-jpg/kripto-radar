@@ -1,0 +1,28 @@
+{
+  "schema": "XRAY_SEC_MANUAL_SOURCE_SIC_DISCREPANCY_V1",
+  "asof_et": "2026-10-09",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "alpha_authority": false,
+  "authority": "OFFICIAL_SEC_INDEX_SOURCE_ROW_CONFLICT_FAIL_ONLY",
+  "intended_effect": "REMOVE_CONTRADICTED_MANUAL_SIC_6770_SEED_FROM_FUTURE_REPLAY_ONLY",
+  "canonical_20261009_state_rewritten": false,
+  "never_promote_operating_on_non6770_sic": true,
+  "source_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
+  "discrepancies": {
+    "FVN": {
+      "cik": "0002010653",
+      "manual_seed_sic": 6770,
+      "official_sec_filer_sic": 7373,
+      "official_sec_filer_name": "Future Vision II Acquisition Corp.",
+      "official_filing_date": "2026-06-12",
+      "official_sec_acceptance_datetime": "2026-06-12T11:44:09-04:00",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/2010653/000182912626006424/futurevision2_s4a.htm",
+      "official_index_url": "https://www.sec.gov/Archives/edgar/data/2110070/000182912626006424/0001829126-26-006424-index.htm",
+      "official_accession": "0001829126-26-006424",
+      "action": "VETO_MANUAL_SIC6770_BLANK_PROOF_KEEP_UNKNOWN",
+      "source_scope_note": "S-4/A joint-filer index lists Future Vision II CIK 2010653 with SIC 7373; does NOT establish completed de-SPAC. Do not upgrade to operating PASS."
+    }
+  }
+}
