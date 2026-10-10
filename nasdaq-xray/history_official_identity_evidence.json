@@ -109,6 +109,16 @@
         "https://www.nasdaq.com/events/ethos-rings-closing-bell"
       ],
       "note": "Ethos Technologies Class A common stock began Nasdaq trading under LIFE on 2026-01-29; SEC states there was no public trading market before that date. The listing-age upper bound is fail-only and cannot manufacture a history PASS."
+    },
+    "FRVO": {
+      "mode": "OFFICIAL_LISTING_UPPER_BOUND_FAIL_ONLY",
+      "earliest_public_trading_date": "2026-05-13",
+      "regular_way_trading_date": "2026-05-13",
+      "sources": [
+        "https://www.nasdaq.com/videos/fervo-energy-rings-nasdaq-stock-market-opening-bell",
+        "https://www.sec.gov/Archives/edgar/data/1853868/000162828026035311/fervo-8xkmay2026.htm"
+      ],
+      "note": "FRVO Class A common shares first traded 2026-05-13 after IPO. Official Nasdaq and SEC evidence. Fail-only HISTORY upper bound, no PASS."
     }
   }
 }
