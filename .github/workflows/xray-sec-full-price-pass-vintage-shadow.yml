@@ -36,7 +36,7 @@ jobs:
           python nasdaq-xray/sec_free_mc_multisymbol_pit_audit.py --selftest
       - name: Acquire official SEC filing timestamps for complete current PRICE-PASS scope, non-primary
         env:
-          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
+          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT }}
         run: |
           python - <<'PY' > "$RUNNER_TEMP/xray_sec_exact_pass_count.txt"
           import json
