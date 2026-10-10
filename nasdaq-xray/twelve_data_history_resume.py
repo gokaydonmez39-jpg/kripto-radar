@@ -483,7 +483,13 @@ def selftest():
         assert not exact_epoch and new["bars"]=={}
         assert not health(cp,smaller,"TEST_ONLY",0)["canonical_HISTORY_pass"]
         tamper=secret.read_bytes()
-        secret.write_bytes(tamper[:-1]+b"Z")
+        # Change an authenticated interior token byte, not a possibly
+        # identical or non-significant terminal base64/padding character.
+        index=len(tamper)//2
+        assert 8<=index<len(tamper)-8
+        changed=b"A" if tamper[index:index+1]!=b"A" else b"B"
+        assert changed!=tamper[index:index+1]
+        secret.write_bytes(tamper[:index]+changed+tamper[index+1:])
         try:load(secret,smaller,c)
         except ValueError:pass
         else:raise AssertionError("CIPHERTEXT_TAMPER_ACCEPTED")
