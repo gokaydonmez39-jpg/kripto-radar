@@ -89,3 +89,32 @@ def choose(state,official_close_utc,now=None,limit=MAX_PER_RUN):
             continue
         eligible.append(sym)
     return eligible[:limit]
+
+def choose_canary_probe(state,official_close_utc,now=None):
+    """At most ONE real-source canary request/hour when all latest bars absent.
+    Caller MUST invoke choose() first, which rejects invalid scope/safety.
+    No canary observation is invented or promoted to PRIMARY.
+    """
+    now=now if now is not None else dt.datetime.now(dt.timezone.utc)
+    if now.tzinfo is None:
+        raise ValueError("NAIVE_CANARY_CLOCK")
+    now=now.astimezone(dt.timezone.utc)
+    close=official_close_utc.astimezone(dt.timezone.utc)
+    if state.get("status")!="HISTORY_PARTIAL" or now<close+MIN_AFTER_RTH_CLOSE:
+        return []
+    rows=state["results"]
+    if any(isinstance(v,dict) and v.get("status")=="PASS"
+           and isinstance(v.get("info"),dict)
+           and v["info"].get("proof")=="EXACT30_MEDIAN"
+           and (_stamp(v.get("updated_at_utc")) or close-dt.timedelta(days=1))>=close
+           for v in rows.values()):
+        return []
+    for sym in ("AAPL","NVDA","MSFT"):
+        v=rows.get(sym)
+        if (isinstance(v,dict) and v.get("status")=="UNKNOWN_STATIC"
+            and isinstance(v.get("info"),dict)
+            and v["info"].get("reason")=="ASOF_MISSING_REQUIRES_RESOLUTION"):
+            t=_stamp(v.get("updated_at_utc"))
+            if t and close<=t<=now and now-t>=MIN_SINCE_LAST_OBSERVATION:
+                return [sym]
+    return []
