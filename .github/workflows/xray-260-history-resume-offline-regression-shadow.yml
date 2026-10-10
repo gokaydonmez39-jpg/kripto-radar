@@ -59,7 +59,19 @@ jobs:
             "canonical_history_promoted":False,"mc_primary_promoted":False,
             "r92_created":False,"execution":"NONE","real_money":"NO-GO",
             "release_status":"RESEARCH_ONLY"
-          },indent=2,sort_keys=True)+"\\n")
+          },indent=2,sort_keys=True)+"\n")
+          PY
+      - name: JSON witness independently parses and does not assert live source authority
+        run: |
+          python - <<'PY'
+          import json,os,pathlib
+          x=json.loads((pathlib.Path(os.environ["RUNNER_TEMP"])/"xray_grouped_twelve_offline_regression_witness.json").read_text())
+          assert x["massive_offline_selftest"]=="PASS" and x["twelve_offline_selftest"]=="PASS"
+          for key in ("vendor_request_executed","vendor_entitlement_verified","canonical_history_promoted",
+                      "mc_primary_promoted","r92_created","current_price_unknown_promoted"):
+              assert x[key] is False,key
+          assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
+          print("XRAY_OFFLINE_WITNESS_JSON_VALID_AND_NO_FAKE_GO")
           PY
       - name: Upload counts-only synthetic regression witness
         if: always()
