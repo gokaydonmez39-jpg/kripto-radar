@@ -1,0 +1,74 @@
+name: XRAY C4.17 Dual Lane GO Observer - No Authority
+on:
+  push:
+    branches: [audit/c417-dual-lane-go-shadow-20261010, main]
+    paths:
+      - "nasdaq-xray/research/c417_dual_lane_go_shadow.py"
+      - "nasdaq-xray/canonical_current_master_manifest.json"
+      - "nasdaq-xray/canonical_current_price_dv30.json"
+      - "nasdaq-xray/canonical_current_resolver_request.json"
+      - "nasdaq-xray/canonical_current_terminal.json"
+      - "nasdaq-xray/current_history_source_request.py"
+      - "nasdaq-xray/e2e_production_readiness.py"
+      - ".github/workflows/xray-c417-dual-lane-go-observer-shadow.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Exact source ref and SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          echo XRAY_DUAL_LANE_CODE_SHA_EXACT=PASS
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Pinned completed NASDAQ exchange calendar only
+        run: python -m pip install --disable-pip-version-check "pandas_market_calendars==5.4.0"
+      - name: All fail-closed boundaries with artificial source drift
+        run: |
+          python -m py_compile nasdaq-xray/research/c417_dual_lane_go_shadow.py
+          python nasdaq-xray/research/c417_dual_lane_go_shadow.py --selftest
+          python nasdaq-xray/current_history_source_request.py --selftest
+          python nasdaq-xray/e2e_production_readiness.py --selftest
+      - name: Build source-bound 514 cohort concurrent research-only witness
+        run: |
+          python nasdaq-xray/research/c417_dual_lane_go_shadow.py --out "$RUNNER_TEMP/xray_c417_dual_lane_go_shadow.json"
+          python - <<'PY'
+          import hashlib,json,os,subprocess
+          from pathlib import Path
+          report=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_c417_dual_lane_go_shadow.json").read_text())
+          p=json.loads(Path("nasdaq-xray/canonical_current_price_dv30.json").read_text())
+          assert report["schema"]=="XRAY_C417_DUAL_LANE_GO_OBSERVABILITY_SHADOW_V1"
+          assert report["source_integrity_pass"] is True,report["source_integrity_failures"]
+          assert report["shadow_lane"]["price_pass_scope_count"]==p["pass_count"]
+          assert report["shadow_lane"]["price_pass_scope_hash"]==p["pass_hash"]
+          assert report["source_blob_shas"]["price"]==subprocess.check_output(
+              ["git","hash-object","nasdaq-xray/canonical_current_price_dv30.json"],
+              text=True).strip()
+          assert report["shadow_lane"]["required_official_daily_sessions"]==260
+          assert report["shadow_lane"]["required_completed_week_closes"]==52
+          assert report["shadow_lane"]["vendor_calls_made_by_dual_lane"]==0
+          assert report["shadow_lane"]["shadow_is_canonical_source"] is False
+          assert report["shadow_lane"]["measured_vendor_ohlcv_by_dual_lane"] is False
+          assert report["shadow_lane"]["provider_rights_attested_by_dual_lane"] is False
+          assert report["go_authority"] is False and report["can_register_R92"] is False
+          assert report["can_notify_device"] is False
+          assert report["actual_device_delivery_receipt_attested"] is False
+          assert report["execution"]=="NONE" and report["real_money"]=="NO-GO"
+          print("XRAY_DUAL_LANE_CURRENT_SCOPE_BOUND=PASS_COUNT",p["pass_count"])
+          print("XRAY_DUAL_LANE_FAIL_CLOSED_NO_SHADOW_PROMOTION=PASS")
+          PY
+      - name: Upload only SHA, counts and negative evidence, no vendor price
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-c417-dual-lane-no-source-go-shadow
+          path: ${{ runner.temp }}/xray_c417_dual_lane_go_shadow.json
+          retention-days: 14
+          if-no-files-found: error
