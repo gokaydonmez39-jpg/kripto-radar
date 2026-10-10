@@ -1,0 +1,58 @@
+name: XRAY SEC 2026-10-09 Current Seven Accession Recheck (Shadow)
+on:
+  push:
+    branches: [main, audit/c417-current-20261009-sec-archive-recheck-20261010]
+    paths:
+      - "nasdaq-xray/sec_current_accession_seven_recheck_shadow.py"
+      - "nasdaq-xray/tests/test_sec_current_seven_recheck.py"
+      - ".github/workflows/xray-sec-current-20261009-seven-recheck.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: xray-sec-current-20261009-seven-recheck
+  cancel-in-progress: false
+jobs:
+  current-sec:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - name: Pin exact workflow commit and current canonical sources
+        run: test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Prove exact canonical SHA and ten-negative no-primary controls
+        run: |
+          python -m py_compile nasdaq-xray/sec_current_accession_seven_recheck_shadow.py nasdaq-xray/tests/test_sec_current_seven_recheck.py
+          python nasdaq-xray/tests/test_sec_current_seven_recheck.py
+      - name: Current seven official SEC reads only, not stale 2026-10-08 replay
+        env:
+          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
+        run: |
+          python nasdaq-xray/sec_current_accession_seven_recheck_shadow.py --out "$RUNNER_TEMP/xray_sec_current_7_shadow.json"
+          python - <<'PY'
+          import os,json
+          from pathlib import Path
+          x=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_sec_current_7_shadow.json").read_text())
+          assert x["schema"]=="XRAY_SEC_CURRENT_20261009_SEVEN_ACCESSION_RECHECK_SHADOW_V1"
+          assert x["asof_et"]=="2026-10-09"
+          assert x["status"]=="CURRENT_SEVEN_OFFICIAL_RECHECK_COMPLETED_SHADOW"
+          assert x["legacy_cohort_20261008_only_rechecked_not_reused"] is True
+          assert x["price_pass_count"]==514 and len(x["seven_scope"])==7
+          assert len(x["symbol_statuses"])==7 and sum(x["reason_counts"].values())==7
+          assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
+          assert x["unknown_never_pass"] is True
+          assert x["primary_mc_count"]==x["history_pass_count"]==0 and x["r92_created"] is False
+          assert x["raw_shares_persisted"] is False and x["market_cap_derived"] is False
+          print("XRAY_20261009_SEC_CURRENT_SEVEN=PASS_REAL_OFFICIAL_SCOPE_NO_PRIMARY")
+          PY
+      - name: Retain only public issuer IDs and operational classifications
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-sec-20261009-exact-current-seven-shadow-v1
+          path: ${{ runner.temp }}/xray_sec_current_7_shadow.json
+          retention-days: 14
+          if-no-files-found: warn
