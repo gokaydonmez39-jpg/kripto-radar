@@ -150,6 +150,23 @@ def selftest():
     good=evaluate(base)
     assert good["status"]=="SHADOW_ELIGIBLE_FOR_INDEPENDENT_POLICY_REVIEW"
     assert good["c417_primary_pass"] is False and good["r92_eligible"] is False
+    # Regression RED: an asof label cannot prove source time/PIT lineage.
+    future_vendor=deepcopy(base)
+    future_vendor["independent_crosscheck"].update({
+        "source_kind":"IMMUTABLE_PIT_VENDOR_SNAPSHOT",
+        "source_observed_utc":"2026-10-09T14:00:00Z",
+        "source_time_independently_verified":True})
+    assert evaluate(future_vendor)["status"]=="UNKNOWN", (
+        "MC_FUTURE_VENDOR_TIMESTAMP_ACCEPTED",evaluate(future_vendor))
+    future_filing=deepcopy(base)
+    future_filing["independent_crosscheck"].update({
+        "source_kind":"FILING_BACKED_FUNDAMENTAL",
+        "source_observed_utc":"2026-10-08T20:05:00Z",
+        "source_time_independently_verified":True,
+        "filing_accepted_utc":"2026-10-09T14:00:00Z",
+        "filing_acceptance_independently_verified":True})
+    assert evaluate(future_filing)["status"]=="UNKNOWN", (
+        "MC_FUTURE_FILING_ACCEPTANCE_ACCEPTED",evaluate(future_filing))
     negatives=[
       ("sec","acceptance_utc","2026-10-09T00:01:00Z"),
       ("sec","cik","0000000001"),
