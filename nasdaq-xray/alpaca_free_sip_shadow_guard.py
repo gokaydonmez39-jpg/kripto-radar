@@ -17,6 +17,8 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from collections import Counter
+from functools import lru_cache
+import pandas_market_calendars as mcal
 from alpaca_sip_paginated_transport_shadow import collect_pages
 from zoneinfo import ZoneInfo
 
@@ -48,12 +50,25 @@ def timestamp_date(s):
         raise ValueError("NON_DAILY_ALPACA_BAR_TIMESTAMP")
     return local.date()
 
+@lru_cache(maxsize=512)
+def official_nasdaq_close_utc(asof:str)->dt.datetime:
+    """NASDAQ exchange close including holidays and scheduled early closes.
+
+    A closed non-session has no authorization to appear complete.
+    """
+    parse_date(asof)
+    sched=mcal.get_calendar("NASDAQ").schedule(start_date=asof,end_date=asof)
+    if len(sched)!=1 or sched.index[0].date().isoformat()!=asof:
+        raise ValueError("ASOF_NOT_OFFICIAL_NASDAQ_SESSION")
+    close=sched.iloc[0]["market_close"].to_pydatetime()
+    if close.tzinfo is None:
+        raise ValueError("OFFICIAL_NASDAQ_CLOSE_TZ_UNVERIFIED")
+    return close.astimezone(UTC)
+
 def sufficient_delay(asof:str,now:dt.datetime)->bool:
     if now.tzinfo is None:
         raise ValueError("NOW_UNZONED")
-    day=parse_date(asof)
-    period_end=dt.datetime.combine(day+dt.timedelta(days=1),dt.time(0,0),EST)
-    return now.astimezone(UTC)>=period_end.astimezone(UTC)+GUARD_DELAY
+    return now.astimezone(UTC)>=official_nasdaq_close_utc(asof)+GUARD_DELAY
 
 def evaluate_daily(symbol_rows:list,expected30:list[str],asof:str,now:dt.datetime) -> tuple[str,str,int]:
     if not sufficient_delay(asof,now):
@@ -192,8 +207,26 @@ def run(now=None):
 def selftest():
     dates=["2026-09-%02d"%x for x in range(1,29)]+["2026-10-07","2026-10-08"]
     now=dt.datetime(2026,10,9,14,tzinfo=UTC)
+    # RED: a completed regular or early-close NASDAQ day is available
+    # 20 minutes after the OFFICIAL RTH close, not after next midnight.
+    import pandas_market_calendars as mcal
+    for official_day in ("2026-10-08","2026-11-27"):
+        sched=mcal.get_calendar("NASDAQ").schedule(
+            start_date=official_day,end_date=official_day)
+        assert len(sched)==1,("NASDAQ_SESSION_NOT_FOUND",official_day)
+        close=sched.iloc[0]["market_close"].to_pydatetime()
+        assert sufficient_delay(official_day,close+GUARD_DELAY) is True, (
+            "ALPACA_OFFICIAL_CLOSE_HOLDBACK_UNNECESSARILY_LATE",official_day)
+        assert sufficient_delay(official_day,close+GUARD_DELAY-dt.timedelta(seconds=1)) is False
     assert sufficient_delay("2026-10-08",now) is True
-    assert sufficient_delay("2026-10-08",dt.datetime(2026,10,9,4,5,tzinfo=UTC)) is False
+    assert sufficient_delay("2026-10-08",dt.datetime(2026,10,9,4,5,tzinfo=UTC)) is True
+    # Holidays/weekends can never become valid by waiting a long time.
+    try:
+        sufficient_delay("2026-10-10",dt.datetime(2026,10,12,20,tzinfo=UTC))
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("ALPACA_WEEKEND_TREATED_AS_COMPLETED_NASDAQ_SESSION")
     def bar(day,vol=10000):
         t=dt.datetime.combine(parse_date(day),dt.time(0,0),EST).astimezone(UTC).isoformat()
         return {"t":t,"o":10.0,"h":11.0,"l":9.0,"c":10.5,"v":vol}
