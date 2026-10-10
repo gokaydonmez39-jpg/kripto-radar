@@ -13,6 +13,8 @@ on:
       - "nasdaq-xray/scheduler_failover_selftest.py"
       - "nasdaq-xray/root_weekend_quota_guard.py"
       - "nasdaq-xray/sina_stage.py"
+      - "nasdaq-xray/sina_identity_epoch.py"
+      - "nasdaq-xray/sina_late_asof_recheck.py"
       - "nasdaq-xray/mc_zero_key.py"
       - "nasdaq-xray/mc_resolution_overlay.json"
       - "nasdaq-xray/history_resolution_overlay.json"
@@ -75,7 +77,7 @@ jobs:
         run: python nasdaq-xray/orchestrator_partial_invalidation_selftest.py
 
       - name: Static compile gate
-        run: python -m py_compile nasdaq-xray/orchestrator_run.py nasdaq-xray/orchestrator_partial_invalidation_selftest.py nasdaq-xray/sina_stage.py nasdaq-xray/mc_zero_key.py nasdaq-xray/production_core_build.py nasdaq-xray/alpha_semantics.py nasdaq-xray/test_alpha_semantics.py nasdaq-xray/stage1_shadow.py nasdaq-xray/regime_breadth_shadow.py nasdaq-xray/deep_pre_r1_shadow.py
+        run: python -m py_compile nasdaq-xray/orchestrator_run.py nasdaq-xray/orchestrator_partial_invalidation_selftest.py nasdaq-xray/sina_stage.py nasdaq-xray/sina_identity_epoch.py nasdaq-xray/sina_late_asof_recheck.py nasdaq-xray/mc_zero_key.py nasdaq-xray/production_core_build.py nasdaq-xray/alpha_semantics.py nasdaq-xray/test_alpha_semantics.py nasdaq-xray/stage1_shadow.py nasdaq-xray/regime_breadth_shadow.py nasdaq-xray/deep_pre_r1_shadow.py
 
       - name: Determine U.S. ET weekend unattended-market quota gate
         id: session
