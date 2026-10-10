@@ -16,6 +16,8 @@ TASK_ID="6a825366222081918997094d76e6ae46"
 
 ENGINE_FILES=[
  "sina_stage.py",
+ "sina_identity_epoch.py",
+ "sina_late_asof_recheck.py",
  "mc_zero_key.py",
  "production_core_build.py",
  "alpha_semantics.py",
@@ -553,6 +555,8 @@ def main():
           "cursor":ss.get("cursor"),"queue_total":ss.get("queue_total"),
           "unknown_count":ss.get("unknown_count"),
           "pending_retry":ss.get("pending_retry"),
+          "pending_late_asof_recheck":ss.get("pending_late_asof_recheck",0),
+          "late_asof_canary_probes_this_run":ss.get("processed_late_asof_canary_this_run",0),
           "history_retryable":retry_allowed,
           "history_retry_reason":retry_reason,
           "full_universe_identity":True,"queue_hash":ss.get("queue_hash"),
