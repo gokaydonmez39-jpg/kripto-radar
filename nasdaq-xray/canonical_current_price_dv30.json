@@ -1,45 +1,9 @@
 {
   "asof_et": "2026-10-09",
   "block_recovery_attempted": true,
-  "block_recovery_input_count": 35,
-  "block_recovery_resolved_count": 35,
-  "block_recovery_resolved_symbols": [
-    "ALDF",
-    "APUR",
-    "BDCI",
-    "CGCF",
-    "DYOR",
-    "FORTY",
-    "GCGR",
-    "GYRO",
-    "HCIC",
-    "HDL",
-    "HFBL",
-    "HVMC",
-    "IPVV",
-    "KBON",
-    "KELYB",
-    "KRKR",
-    "LTGR",
-    "MAYS",
-    "MDBH",
-    "MDRR",
-    "MGRT",
-    "NHIV",
-    "PONO",
-    "RACD",
-    "ROMA",
-    "RYOJ",
-    "SENEB",
-    "SHOT",
-    "SPPL",
-    "TLIH",
-    "TRGS",
-    "TULP",
-    "TWLV",
-    "VHCP",
-    "YIBO"
-  ],
+  "block_recovery_input_count": 0,
+  "block_recovery_resolved_count": 0,
+  "block_recovery_resolved_symbols": [],
   "blocked_count": 0,
   "blocked_symbols": [],
   "bridge_defer_enabled": true,
@@ -3242,21 +3206,21 @@
   "c417_rallies_primary_post_recovery_veto_symbols": [],
   "counts": {
     "FAIL_DV30": 1339,
-    "FAIL_DV30_INSUFFICIENT_SESSIONS": 7,
+    "FAIL_DV30_INSUFFICIENT_SESSIONS": 10,
     "FAIL_PRICE": 1311,
     "FAIL_PRICE_NO_ASOF_BAR": 9,
     "PASS_PRICE_DV30": 514,
-    "UNKNOWN": 4
+    "UNKNOWN": 1
   },
   "current_baseline_reuse": true,
   "exception_bridge_meta": {
-    "input_binding_role": "EXACT_CURRENT_REQUEST_MANIFEST",
-    "path": "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261009_c417_dv30_v1.json",
-    "result_encoding": "RALLIES_BULK_EXACT30_EXPANDED_PASSIVE_READER_V1",
-    "source_result_task_id": "6abe7ffd2a9c8191ace5e8a0acbea6c2",
-    "status": "PASS",
-    "symbol_hash": "c207c5b8de1ba97cfcf2c5b84368d0829e4e8cc22a3bc32c5cb5cccbe83bb009",
-    "terminal_override_count": 0
+    "paths": [
+      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261009_c417_dv30_v1.json"
+    ],
+    "rejected": [
+      "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_resolver_bridge_20261009_c417_dv30_v1.json:SOURCE_PRICE_BLOB_MISMATCH"
+    ],
+    "status": "ABSENT_CURRENT_POLICY"
   },
   "execution": "NONE",
   "expected30": [
@@ -3304,7 +3268,7 @@
   "historical_halt_terminalized_symbols": [],
   "monotonic_legacy_pass_reuse_count": 0,
   "official_halt_guard_meta": {
-    "content_sha256": "85049a2ac3822a5fcedaea4e6f02016c5dc4be5b6e3c60a0aaa6ab5404235219",
+    "content_sha256": "32c10fc708dc2466d8789f9b33bfb53655e1958ef23b92d32c06b5df261aec76",
     "path": "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/canonical_official_source_guard.json",
     "source_status": "PASS",
     "status": "PASS"
@@ -3312,13 +3276,17 @@
   "official_halt_terminalized_count": 0,
   "official_halt_terminalized_symbols": [],
   "official_listing_registry_meta": {
-    "content_sha256": "391a04f0ca56706c24c36f719a11f3fc15fcafab4d1a12123a4ec1a52fe266ea",
+    "content_sha256": "5c0cc4d652a9a175b11c78cc5c15d38f30017ea9f204615e3105f58f239b794b",
     "path": "/home/runner/work/kripto-radar/kripto-radar/nasdaq-xray/price_official_listing_registry.json",
-    "record_count": 10,
+    "record_count": 13,
     "status": "PASS"
   },
-  "official_listing_terminalized_count": 0,
-  "official_listing_terminalized_symbols": [],
+  "official_listing_terminalized_count": 3,
+  "official_listing_terminalized_symbols": [
+    "AIOK",
+    "RTSN",
+    "TRXB"
+  ],
   "pass_count": 514,
   "pass_hash": "cb6d740f43378cacca40351e7503384d52b5a81a8b9b6cdc444f58a3965bbaef",
   "pass_symbols": [
@@ -3852,7 +3820,7 @@
   "policy_replay_symbols": [],
   "real_money": "NO-GO",
   "redo_deferred_to_bridge": true,
-  "reevaluated_count": 553,
+  "reevaluated_count": 4,
   "results": {
     "AACG": {
       "info": {
@@ -3886,7 +3854,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "AAME": {
@@ -3921,7 +3889,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "AAON": {
@@ -3933,7 +3901,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "AAPG": {
@@ -3969,7 +3937,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "AARD": {
@@ -4027,7 +3995,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ABEO": {
@@ -4085,7 +4053,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ABOS": {
@@ -4237,7 +4205,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ACAD": {
@@ -4407,7 +4375,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ACHC": {
@@ -4562,7 +4530,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ACNB": {
@@ -4855,7 +4823,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ADBT": {
@@ -4937,7 +4905,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ADIL": {
@@ -4996,7 +4964,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ADPT": {
@@ -5073,7 +5041,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ADTN": {
@@ -5299,7 +5267,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "AEI": {
@@ -5334,7 +5302,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "AEMD": {
@@ -5393,7 +5361,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "AERT": {
@@ -5548,7 +5516,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "AFYA": {
@@ -5703,7 +5671,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "AGNT": {
@@ -6105,10 +6073,20 @@
     },
     "AIOK": {
       "info": {
-        "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
+        "asof_et": "2026-10-09",
+        "decision_direction": "FAIL_ONLY_NEVER_PASS",
+        "evidence_kind": "NASDAQ_SPINOFF_FIRST_TRADING_DATE",
+        "exact30_window_start": "2026-08-28",
+        "first_trade_date": "2026-10-09",
+        "max_possible_completed_sessions_in_exact30_window": 1,
+        "no_synthetic_bar": true,
+        "proof": "OFFICIAL_FIRST_TRADE_DATE_AFTER_EXACT30_WINDOW_START",
+        "reason": "OFFICIAL_RECENT_LISTING_LT_30_COMPLETED_SESSIONS",
+        "source": "NASDAQ_TRADER_PRIMARY",
+        "source_url": "https://m.nasdaqtrader.com/TraderNews.aspx?id=ECA2026-690"
       },
-      "provenance": "DYNAMIC_BRIDGE_DEFERRED",
-      "status": "UNKNOWN"
+      "provenance": "OFFICIAL_RECENT_LISTING_FAIL_ONLY",
+      "status": "FAIL_DV30_INSUFFICIENT_SESSIONS"
     },
     "AIOS": {
       "info": {
@@ -6376,7 +6354,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "AKAN": {
@@ -6482,7 +6460,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ALAR": {
@@ -6539,7 +6517,7 @@
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "provider_meta": {
         "nasdaq": {
           "disabled": true,
@@ -6611,7 +6589,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ALGN": {
@@ -6623,7 +6601,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ALGS": {
@@ -6683,7 +6661,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ALKS": {
@@ -6695,7 +6673,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ALKT": {
@@ -6801,7 +6779,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ALMR": {
@@ -6909,7 +6887,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ALOV": {
@@ -7226,7 +7204,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "AMBA": {
@@ -7238,7 +7216,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "AMBR": {
@@ -7320,7 +7298,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "AMGN": {
@@ -7332,7 +7310,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "AMIX": {
@@ -7367,7 +7345,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "AMLX": {
@@ -7521,7 +7499,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "AMSC": {
@@ -7650,7 +7628,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ANAB": {
@@ -8039,7 +8017,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "APC": {
@@ -8122,7 +8100,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "APLM": {
@@ -8206,7 +8184,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "APPF": {
@@ -8218,7 +8196,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "APPN": {
@@ -8299,7 +8277,7 @@
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "provider_meta": {
         "nasdaq": {
           "disabled": true,
@@ -8696,7 +8674,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ARHS": {
@@ -8778,7 +8756,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "AROW": {
@@ -8861,7 +8839,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ARRY": {
@@ -9014,7 +8992,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ARXS": {
@@ -9122,7 +9100,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ASND": {
@@ -9134,7 +9112,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ASO": {
@@ -9146,7 +9124,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ASPI": {
@@ -9228,7 +9206,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ASTC": {
@@ -9358,7 +9336,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ASUR": {
@@ -9793,7 +9771,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ATRO": {
@@ -9994,7 +9972,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "AUID": {
@@ -10053,7 +10031,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "AURA": {
@@ -10205,7 +10183,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "AVBH": {
@@ -10265,7 +10243,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "AVIR": {
@@ -10421,7 +10399,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "AVTX": {
@@ -10549,7 +10527,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "AXON": {
@@ -10561,7 +10539,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "AXSM": {
@@ -10573,7 +10551,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "AXTI": {
@@ -10585,7 +10563,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "AYA": {
@@ -11016,7 +10994,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "BBLG": {
@@ -11379,7 +11357,7 @@
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "provider_meta": {
         "nasdaq": {
           "disabled": true,
@@ -12038,7 +12016,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "BIIB": {
@@ -12050,7 +12028,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "BILI": {
@@ -12272,7 +12250,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "BKR": {
@@ -12284,7 +12262,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "BKYI": {
@@ -12834,7 +12812,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "BNAI": {
@@ -12988,7 +12966,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "BODI": {
@@ -13257,7 +13235,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "BPRN": {
@@ -13434,7 +13412,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "BRLS": {
@@ -13623,7 +13601,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "BSBK": {
@@ -13729,7 +13707,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "BSRR": {
@@ -13789,7 +13767,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "BTBD": {
@@ -13893,7 +13871,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "BTLN": {
@@ -14004,7 +13982,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "BTTC": {
@@ -14039,7 +14017,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "BUSE": {
@@ -14266,7 +14244,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "BWMN": {
@@ -14442,7 +14420,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "BZAI": {
@@ -14616,7 +14594,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "CADL": {
@@ -14700,7 +14678,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "CAKE": {
@@ -14712,7 +14690,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "CALC": {
@@ -14747,7 +14725,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "CAMP": {
@@ -14782,7 +14760,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "CAN": {
@@ -14960,7 +14938,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "CASH": {
@@ -15043,7 +15021,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "CATY": {
@@ -15246,7 +15224,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "CBRS": {
@@ -15258,7 +15236,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "CBSH": {
@@ -15270,7 +15248,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "CBUS": {
@@ -15377,7 +15355,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "CCCC": {
@@ -15436,7 +15414,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "CCG": {
@@ -15682,7 +15660,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "CDNL": {
@@ -15718,7 +15696,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "CDRO": {
@@ -15800,7 +15778,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "CDXS": {
@@ -15906,7 +15884,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "CELH": {
@@ -15918,7 +15896,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "CELU": {
@@ -16047,7 +16025,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "CEPF": {
@@ -16367,7 +16345,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "CGC": {
@@ -16400,7 +16378,7 @@
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "provider_meta": {
         "nasdaq": {
           "disabled": true,
@@ -16497,7 +16475,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "CGON": {
@@ -16509,7 +16487,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "CGTL": {
@@ -16662,7 +16640,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "CHEF": {
@@ -16674,7 +16652,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "CHGA": {
@@ -16709,7 +16687,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "CHMG": {
@@ -16791,7 +16769,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "CHRN": {
@@ -16850,7 +16828,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "CHSN": {
@@ -16885,7 +16863,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "CHWM": {
@@ -16914,7 +16892,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "CIFR": {
@@ -16926,7 +16904,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "CIGI": {
@@ -17008,7 +16986,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "CING": {
@@ -17394,7 +17372,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "CLNE": {
@@ -17568,7 +17546,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "CLST": {
@@ -17675,7 +17653,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "CMCT": {
@@ -17710,7 +17688,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "CMMB": {
@@ -18330,7 +18308,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "COCP": {
@@ -18436,7 +18414,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "COHU": {
@@ -18448,7 +18426,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "COIN": {
@@ -18460,7 +18438,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "COKE": {
@@ -18472,7 +18450,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "COLB": {
@@ -18484,7 +18462,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "COLL": {
@@ -18544,7 +18522,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "COOT": {
@@ -18579,7 +18557,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "CORZ": {
@@ -18591,7 +18569,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "COSM": {
@@ -18626,7 +18604,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "COYA": {
@@ -18661,7 +18639,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "CPBI": {
@@ -18768,7 +18746,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "CPSH": {
@@ -18968,7 +18946,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "CRE": {
@@ -19237,7 +19215,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "CRSP": {
@@ -19249,7 +19227,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "CRSR": {
@@ -19309,7 +19287,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "CRVL": {
@@ -19392,7 +19370,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "CRWS": {
@@ -19427,7 +19405,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "CSAI": {
@@ -19485,7 +19463,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "CSGP": {
@@ -19497,7 +19475,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "CSHR": {
@@ -19651,7 +19629,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "CTAS": {
@@ -19663,7 +19641,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "CTBI": {
@@ -19863,7 +19841,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "CTSO": {
@@ -20180,7 +20158,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "CVGI": {
@@ -20238,7 +20216,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "CVRX": {
@@ -20554,7 +20532,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "CZFS": {
@@ -20614,7 +20592,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "CZWI": {
@@ -20743,7 +20721,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "DAVE": {
@@ -20755,7 +20733,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "DBGI": {
@@ -20814,7 +20792,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "DCBO": {
@@ -20967,7 +20945,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "DEFT": {
@@ -21142,7 +21120,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "DGICA": {
@@ -21437,7 +21415,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "DLHC": {
@@ -21542,7 +21520,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "DLXY": {
@@ -21697,7 +21675,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "DNUT": {
@@ -21732,7 +21710,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "DOGZ": {
@@ -21838,7 +21816,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "DOYU": {
@@ -21919,7 +21897,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "DRH": {
@@ -22449,7 +22427,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "DUOT": {
@@ -22554,7 +22532,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "DXLG": {
@@ -22659,7 +22637,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "DYNC": {
@@ -22693,7 +22671,7 @@
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "provider_meta": {
         "nasdaq": {
           "disabled": true,
@@ -22719,7 +22697,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "EBC": {
@@ -22826,7 +22804,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ECOR": {
@@ -23701,7 +23679,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ELVR": {
@@ -23948,7 +23926,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ENRD": {
@@ -24006,7 +23984,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ENTA": {
@@ -24042,7 +24020,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ENTX": {
@@ -24310,7 +24288,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "EQPT": {
@@ -24322,7 +24300,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ERAS": {
@@ -24334,7 +24312,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ERIC": {
@@ -24346,7 +24324,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ERIE": {
@@ -24500,7 +24478,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ESOA": {
@@ -24931,7 +24909,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "EWBC": {
@@ -24943,7 +24921,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "EWTX": {
@@ -24955,7 +24933,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "EXC": {
@@ -24967,7 +24945,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "EXE": {
@@ -24979,7 +24957,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "EXEL": {
@@ -24991,7 +24969,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "EXFY": {
@@ -25026,7 +25004,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "EXOZ": {
@@ -25062,7 +25040,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "EXPO": {
@@ -25356,7 +25334,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "FAST": {
@@ -25368,7 +25346,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "FATE": {
@@ -25687,7 +25665,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "FCFS": {
@@ -25699,7 +25677,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "FCHL": {
@@ -25734,7 +25712,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "FCUV": {
@@ -25982,7 +25960,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "FFAI": {
@@ -26065,7 +26043,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "FFR": {
@@ -26289,7 +26267,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "FINW": {
@@ -26395,7 +26373,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "FIVE": {
@@ -26407,7 +26385,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "FIVN": {
@@ -26419,7 +26397,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "FIZZ": {
@@ -26501,7 +26479,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "FLGT": {
@@ -26583,7 +26561,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "FLNT": {
@@ -26711,7 +26689,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "FLYE": {
@@ -27100,7 +27078,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "FORR": {
@@ -27134,7 +27112,7 @@
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "provider_meta": {
         "nasdaq": {
           "disabled": true,
@@ -27184,7 +27162,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "FOXA": {
@@ -27196,7 +27174,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "FOXF": {
@@ -27492,7 +27470,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "FRPH": {
@@ -27528,7 +27506,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "FRSH": {
@@ -27540,7 +27518,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "FRST": {
@@ -27622,7 +27600,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "FSBC": {
@@ -27682,7 +27660,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "FSLY": {
@@ -27694,7 +27672,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "FSTR": {
@@ -27778,7 +27756,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "FTCI": {
@@ -27954,7 +27932,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "FTRE": {
@@ -28131,7 +28109,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "FVCB": {
@@ -28215,7 +28193,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "FWRD": {
@@ -28580,7 +28558,7 @@
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "provider_meta": {
         "nasdaq": {
           "disabled": true,
@@ -28887,7 +28865,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "GELS": {
@@ -28945,7 +28923,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "GENB": {
@@ -29096,7 +29074,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "GFUZ": {
@@ -29179,7 +29157,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "GHRS": {
@@ -29333,7 +29311,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "GILT": {
@@ -29486,7 +29464,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "GLBS": {
@@ -29615,7 +29593,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "GLOO": {
@@ -29650,7 +29628,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "GLRE": {
@@ -29757,7 +29735,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "GMAB": {
@@ -29769,7 +29747,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "GMEX": {
@@ -30083,7 +30061,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "GOOGL": {
@@ -30095,7 +30073,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "GOSS": {
@@ -30894,7 +30872,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "GTM": {
@@ -30929,7 +30907,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "GURE": {
@@ -31124,7 +31102,7 @@
         "proof": "ASOF_CLOSE_LT_5",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "provider_meta": {
         "nasdaq": {
           "disabled": true,
@@ -31197,7 +31175,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "HAO": {
@@ -31256,7 +31234,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "HBAN": {
@@ -31268,7 +31246,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "HBCP": {
@@ -31462,7 +31440,7 @@
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "provider_meta": {
         "nasdaq": {
           "disabled": true,
@@ -31604,7 +31582,7 @@
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "provider_meta": {
         "nasdaq": {
           "disabled": true,
@@ -31769,7 +31747,7 @@
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "provider_meta": {
         "nasdaq": {
           "disabled": true,
@@ -32122,7 +32100,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "HLP": {
@@ -32370,7 +32348,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "HONA": {
@@ -32382,7 +32360,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "HOOD": {
@@ -32394,7 +32372,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "HOPE": {
@@ -32594,7 +32572,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "HRMY": {
@@ -32770,7 +32748,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "HST": {
@@ -32782,7 +32760,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "HSTM": {
@@ -32864,7 +32842,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "HTHT": {
@@ -32876,7 +32854,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "HTLD": {
@@ -33238,7 +33216,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "HVMC": {
@@ -33248,7 +33226,7 @@
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "provider_meta": {
         "nasdaq": {
           "disabled": true,
@@ -33298,7 +33276,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "HWKN": {
@@ -33639,7 +33617,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "IBOC": {
@@ -33675,7 +33653,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ICCC": {
@@ -33805,7 +33783,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ICMB": {
@@ -33933,7 +33911,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "IDN": {
@@ -33968,7 +33946,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "IDYA": {
@@ -34004,7 +33982,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "IFBD": {
@@ -34203,7 +34181,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ILPT": {
@@ -34828,7 +34806,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "INDB": {
@@ -34910,7 +34888,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "INEO": {
@@ -34992,7 +34970,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "INKT": {
@@ -35168,7 +35146,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "INSE": {
@@ -35226,7 +35204,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "INTA": {
@@ -35262,7 +35240,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "INTG": {
@@ -35368,7 +35346,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "INTZ": {
@@ -35543,7 +35521,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "IOSP": {
@@ -35602,7 +35580,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "IPAR": {
@@ -35775,7 +35753,7 @@
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "provider_meta": {
         "nasdaq": {
           "disabled": true,
@@ -35988,7 +35966,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "IRHO": {
@@ -36095,7 +36073,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "IRWD": {
@@ -36200,7 +36178,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ISTR": {
@@ -36611,7 +36589,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "JBDI": {
@@ -36646,7 +36624,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "JBIO": {
@@ -36799,7 +36777,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "JDZG": {
@@ -36975,7 +36953,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "JL": {
@@ -37533,7 +37511,7 @@
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "provider_meta": {
         "nasdaq": {
           "disabled": true,
@@ -37629,7 +37607,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "KE": {
@@ -37710,7 +37688,7 @@
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "provider_meta": {
         "nasdaq": {
           "disabled": true,
@@ -37925,7 +37903,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "KLIC": {
@@ -37937,7 +37915,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "KLRA": {
@@ -38042,7 +38020,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "KMDA": {
@@ -38332,7 +38310,7 @@
         "proof": "ASOF_CLOSE_LT_5",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "provider_meta": {
         "nasdaq": {
           "disabled": true,
@@ -38549,7 +38527,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "KSCP": {
@@ -38584,7 +38562,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "KTCC": {
@@ -38619,7 +38597,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "KTTA": {
@@ -38772,7 +38750,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "KYNB": {
@@ -38949,7 +38927,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "LAND": {
@@ -39336,7 +39314,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "LEDS": {
@@ -39607,7 +39585,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "LFVN": {
@@ -39737,7 +39715,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "LGND": {
@@ -39749,7 +39727,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "LGO": {
@@ -40090,7 +40068,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "LINC": {
@@ -40220,7 +40198,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "LITS": {
@@ -40351,7 +40329,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "LLYVA": {
@@ -40577,7 +40555,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "LNTH": {
@@ -40589,7 +40567,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "LNZA": {
@@ -40695,7 +40673,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "LONA": {
@@ -40848,7 +40826,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "LPTH": {
@@ -40884,7 +40862,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "LQDT": {
@@ -40920,7 +40898,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "LRE": {
@@ -41048,7 +41026,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "LSE": {
@@ -41107,7 +41085,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "LTBR": {
@@ -41165,7 +41143,7 @@
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "provider_meta": {
         "nasdaq": {
           "disabled": true,
@@ -41284,7 +41262,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "LUMN": {
@@ -41296,7 +41274,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "LUNG": {
@@ -41331,7 +41309,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "LVLU": {
@@ -41553,7 +41531,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "LYTS": {
@@ -41750,7 +41728,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "MAR": {
@@ -41762,7 +41740,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "MARA": {
@@ -41774,7 +41752,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "MASK": {
@@ -41833,7 +41811,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "MATH": {
@@ -41890,7 +41868,7 @@
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "provider_meta": {
         "nasdaq": {
           "disabled": true,
@@ -42271,7 +42249,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "MCHX": {
@@ -42395,7 +42373,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "MDBH": {
@@ -42404,7 +42382,7 @@
         "proof": "ASOF_CLOSE_LT_5",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "provider_meta": {
         "nasdaq": {
           "disabled": true,
@@ -42453,7 +42431,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "MDIA": {
@@ -42488,7 +42466,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "MDLZ": {
@@ -42500,7 +42478,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "MDRR": {
@@ -42510,7 +42488,7 @@
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "provider_meta": {
         "nasdaq": {
           "disabled": true,
@@ -42606,7 +42584,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "MEDS": {
@@ -42664,7 +42642,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "MENS": {
@@ -42770,7 +42748,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "METC": {
@@ -43088,7 +43066,7 @@
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "provider_meta": {
         "nasdaq": {
           "disabled": true,
@@ -43208,7 +43186,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "MIMI": {
@@ -43289,7 +43267,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "MIST": {
@@ -43371,7 +43349,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "MKTW": {
@@ -43407,7 +43385,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "MKZR": {
@@ -43630,7 +43608,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "MMSI": {
@@ -43736,7 +43714,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "MNKD": {
@@ -43890,7 +43868,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "MNTK": {
@@ -44110,7 +44088,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "MOVE": {
@@ -44218,7 +44196,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "MQ": {
@@ -44442,7 +44420,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "MRNO": {
@@ -44525,7 +44503,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "MRX": {
@@ -44537,7 +44515,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "MSAI": {
@@ -44620,7 +44598,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "MSGM": {
@@ -44726,7 +44704,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "MTC": {
@@ -44761,7 +44739,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "MTEK": {
@@ -44891,7 +44869,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "MTVA": {
@@ -44926,7 +44904,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "MVBF": {
@@ -45101,7 +45079,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "MYFW": {
@@ -45183,7 +45161,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "MYSE": {
@@ -45546,7 +45524,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "NB": {
@@ -45605,7 +45583,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "NBIX": {
@@ -45617,7 +45595,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "NBN": {
@@ -45956,7 +45934,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "NDLS": {
@@ -46016,7 +45994,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "NECB": {
@@ -46216,7 +46194,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "NEUP": {
@@ -46392,7 +46370,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "NGEN": {
@@ -46449,7 +46427,7 @@
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "provider_meta": {
         "nasdaq": {
           "disabled": true,
@@ -46522,7 +46500,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "NICM": {
@@ -46721,7 +46699,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "NKTX": {
@@ -47416,7 +47394,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "NTCL": {
@@ -47475,7 +47453,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "NTGR": {
@@ -47558,7 +47536,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "NTNX": {
@@ -47570,7 +47548,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "NTRA": {
@@ -47582,7 +47560,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "NTRB": {
@@ -47641,7 +47619,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "NTSK": {
@@ -47653,7 +47631,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "NTWK": {
@@ -47806,7 +47784,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "NVCR": {
@@ -47866,7 +47844,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "NVEC": {
@@ -47902,7 +47880,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "NVNO": {
@@ -47938,7 +47916,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "NVX": {
@@ -48164,7 +48142,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "NWTG": {
@@ -48291,7 +48269,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "NXPL": {
@@ -48327,7 +48305,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "NXT": {
@@ -48339,7 +48317,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "NXTC": {
@@ -48777,7 +48755,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ODTX": {
@@ -49020,7 +48998,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "OKUR": {
@@ -49101,7 +49079,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "OLLI": {
@@ -49113,7 +49091,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "OLMA": {
@@ -49360,7 +49338,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ONB": {
@@ -49372,7 +49350,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ONC": {
@@ -49384,7 +49362,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ONCO": {
@@ -49442,7 +49420,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ONEG": {
@@ -50017,7 +49995,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ORKT": {
@@ -50052,7 +50030,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ORMP": {
@@ -50368,7 +50346,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "OVBC": {
@@ -50498,7 +50476,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "PACB": {
@@ -50675,7 +50653,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "PARA": {
@@ -50946,7 +50924,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "PBAM": {
@@ -51143,7 +51121,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "PCB": {
@@ -51273,7 +51251,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "PCVX": {
@@ -51285,7 +51263,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "PCYO": {
@@ -51344,7 +51322,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "PDEX": {
@@ -51547,7 +51525,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "PENG": {
@@ -51559,7 +51537,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "PENN": {
@@ -51595,7 +51573,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "PEPG": {
@@ -51747,7 +51725,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "PFIS": {
@@ -52092,7 +52070,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "PICS": {
@@ -52506,7 +52484,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "PLUG": {
@@ -52611,7 +52589,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "PLYX": {
@@ -52949,7 +52927,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "POET": {
@@ -52961,7 +52939,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "POLA": {
@@ -53017,7 +52995,7 @@
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "provider_meta": {
         "nasdaq": {
           "disabled": true,
@@ -53067,7 +53045,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "POWI": {
@@ -53103,7 +53081,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "POWW": {
@@ -53351,7 +53329,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "PRCH": {
@@ -54072,7 +54050,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "PTCT": {
@@ -54084,7 +54062,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "PTEN": {
@@ -54096,7 +54074,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "PTGX": {
@@ -54108,7 +54086,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "PTLE": {
@@ -54286,7 +54264,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "PUSA": {
@@ -54488,7 +54466,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "PYXS": {
@@ -54547,7 +54525,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "QCLS": {
@@ -54582,7 +54560,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "QCRH": {
@@ -54689,7 +54667,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "QMCO": {
@@ -54867,7 +54845,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "QNTM": {
@@ -55064,7 +55042,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "QUCY": {
@@ -55123,7 +55101,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "QVCG": {
@@ -55204,7 +55182,7 @@
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "provider_meta": {
         "nasdaq": {
           "disabled": true,
@@ -55347,7 +55325,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "RAVE": {
@@ -56088,7 +56066,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "REGN": {
@@ -56100,7 +56078,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "REKR": {
@@ -56159,7 +56137,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "RENT": {
@@ -56383,7 +56361,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "RGLD": {
@@ -56395,7 +56373,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "RGNX": {
@@ -56478,7 +56456,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "RICK": {
@@ -56585,7 +56563,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "RIVN": {
@@ -56597,7 +56575,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "RJET": {
@@ -56656,7 +56634,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "RKTO": {
@@ -56691,7 +56669,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "RLMD": {
@@ -56774,7 +56752,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "RMCF": {
@@ -57127,7 +57105,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ROC": {
@@ -57186,7 +57164,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ROKU": {
@@ -57198,7 +57176,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ROMA": {
@@ -57208,7 +57186,7 @@
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "provider_meta": {
         "nasdaq": {
           "disabled": true,
@@ -57258,7 +57236,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ROST": {
@@ -57270,7 +57248,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "RPAY": {
@@ -57376,7 +57354,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "RR": {
@@ -57459,7 +57437,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "RSSS": {
@@ -57535,10 +57513,20 @@
     },
     "RTSN": {
       "info": {
-        "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
+        "asof_et": "2026-10-09",
+        "decision_direction": "FAIL_ONLY_NEVER_PASS",
+        "evidence_kind": "IPO_EXPECTED_FIRST_TRADING_DATE_CORROBORATED_BY_09_OCT_SIP_BAR",
+        "exact30_window_start": "2026-08-28",
+        "first_trade_date": "2026-10-09",
+        "max_possible_completed_sessions_in_exact30_window": 1,
+        "no_synthetic_bar": true,
+        "proof": "OFFICIAL_FIRST_TRADE_DATE_AFTER_EXACT30_WINDOW_START",
+        "reason": "OFFICIAL_RECENT_LISTING_LT_30_COMPLETED_SESSIONS",
+        "source": "ISSUER_IR_PRIMARY",
+        "source_url": "https://ir.retensionpharmaceuticals.com/news-releases/news-release-details/retension-pharmaceuticals-announces-pricing-initial-public"
       },
-      "provenance": "DYNAMIC_BRIDGE_DEFERRED",
-      "status": "UNKNOWN"
+      "provenance": "OFFICIAL_RECENT_LISTING_FAIL_ONLY",
+      "status": "FAIL_DV30_INSUFFICIENT_SESSIONS"
     },
     "RUBI": {
       "info": {
@@ -57596,7 +57584,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "RUSHA": {
@@ -57656,7 +57644,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "RVSB": {
@@ -57808,7 +57796,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "RYET": {
@@ -57864,7 +57852,7 @@
         "proof": "ASOF_CLOSE_LT_5",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "provider_meta": {
         "nasdaq": {
           "disabled": true,
@@ -57890,7 +57878,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "RZAI": {
@@ -58081,7 +58069,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "SAIC": {
@@ -58093,7 +58081,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "SAIH": {
@@ -58129,7 +58117,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "SAIQ": {
@@ -58234,7 +58222,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "SATL": {
@@ -58270,7 +58258,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "SBC": {
@@ -58330,7 +58318,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "SBFG": {
@@ -58413,7 +58401,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "SBRA": {
@@ -58449,7 +58437,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "SCAG": {
@@ -58788,7 +58776,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "SDOT": {
@@ -58870,7 +58858,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "SEED": {
@@ -58951,7 +58939,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "SELF": {
@@ -59008,7 +58996,7 @@
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "provider_meta": {
         "nasdaq": {
           "disabled": true,
@@ -59175,7 +59163,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "SFBC": {
@@ -59281,7 +59269,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "SFNC": {
@@ -59608,7 +59596,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "SHBI": {
@@ -59857,7 +59845,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "SHOT": {
@@ -59867,7 +59855,7 @@
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "provider_meta": {
         "nasdaq": {
           "disabled": true,
@@ -60105,7 +60093,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "SINT": {
@@ -60163,7 +60151,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "SITM": {
@@ -60175,7 +60163,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "SJ": {
@@ -60210,7 +60198,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "SKIN": {
@@ -60409,7 +60397,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "SLBT": {
@@ -60703,7 +60691,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "SLSN": {
@@ -60785,7 +60773,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "SMID": {
@@ -60821,7 +60809,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "SMPL": {
@@ -60880,7 +60868,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "SMTI": {
@@ -61102,7 +61090,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "SNFCA": {
@@ -61184,7 +61172,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "SNT": {
@@ -61289,7 +61277,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "SOFI": {
@@ -61301,7 +61289,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "SOGP": {
@@ -61361,7 +61349,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "SONM": {
@@ -61491,7 +61479,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "SOWG": {
@@ -61573,7 +61561,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "SPFI": {
@@ -61653,7 +61641,7 @@
         "proof": "ASOF_CLOSE_LT_5",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "provider_meta": {
         "nasdaq": {
           "disabled": true,
@@ -61985,7 +61973,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "SRRK": {
@@ -61997,7 +61985,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "SRTA": {
@@ -62149,7 +62137,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "SSP": {
@@ -62184,7 +62172,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "SSTI": {
@@ -62315,7 +62303,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "STEX": {
@@ -62537,7 +62525,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "STLN": {
@@ -62645,7 +62633,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "STRO": {
@@ -62777,7 +62765,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "SUGP": {
@@ -63232,7 +63220,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "SWMR": {
@@ -63407,7 +63395,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "SYNA": {
@@ -63419,7 +63407,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "SYPR": {
@@ -63454,7 +63442,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "TACT": {
@@ -63861,7 +63849,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "TCRT": {
@@ -64035,7 +64023,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "TECH": {
@@ -64047,7 +64035,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "TECX": {
@@ -64129,7 +64117,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "TENB": {
@@ -64141,7 +64129,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "TENX": {
@@ -64176,7 +64164,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "TFSL": {
@@ -64258,7 +64246,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "TH": {
@@ -64411,7 +64399,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "TIGR": {
@@ -64634,7 +64622,7 @@
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "provider_meta": {
         "nasdaq": {
           "disabled": true,
@@ -64660,7 +64648,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "TLNC": {
@@ -64904,7 +64892,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "TMS": {
@@ -64940,7 +64928,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "TNDM": {
@@ -64976,7 +64964,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "TNMG": {
@@ -65268,7 +65256,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "TPST": {
@@ -65442,7 +65430,7 @@
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "provider_meta": {
         "nasdaq": {
           "disabled": true,
@@ -65468,7 +65456,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "TRIB": {
@@ -65528,7 +65516,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "TRMD": {
@@ -65540,7 +65528,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "TRMK": {
@@ -65669,7 +65657,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "TRS": {
@@ -65863,10 +65851,20 @@
     },
     "TRXB": {
       "info": {
-        "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
+        "asof_et": "2026-10-09",
+        "decision_direction": "FAIL_ONLY_NEVER_PASS",
+        "evidence_kind": "ISSUER_GLOBENEWSWIRE_EXPECTED_FIRST_TRADING_DATE_CORROBORATED_BY_09_OCT_SIP_BAR",
+        "exact30_window_start": "2026-08-28",
+        "first_trade_date": "2026-10-09",
+        "max_possible_completed_sessions_in_exact30_window": 1,
+        "no_synthetic_bar": true,
+        "proof": "OFFICIAL_FIRST_TRADE_DATE_AFTER_EXACT30_WINDOW_START",
+        "reason": "OFFICIAL_RECENT_LISTING_LT_30_COMPLETED_SESSIONS",
+        "source": "ISSUER_IR_PRIMARY",
+        "source_url": "https://www.globenewswire.com/news-release/2026/10/09/3377793/0/en/trexbio-announces-pricing-of-initial-public-offering.html"
       },
-      "provenance": "DYNAMIC_BRIDGE_DEFERRED",
-      "status": "UNKNOWN"
+      "provenance": "OFFICIAL_RECENT_LISTING_FAIL_ONLY",
+      "status": "FAIL_DV30_INSUFFICIENT_SESSIONS"
     },
     "TSAT": {
       "info": {
@@ -65925,7 +65923,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "TSEM": {
@@ -65937,7 +65935,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "TSHA": {
@@ -65972,7 +65970,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "TSSI": {
@@ -66008,7 +66006,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "TTD": {
@@ -66020,7 +66018,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "TTEC": {
@@ -66055,7 +66053,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "TTGT": {
@@ -66090,7 +66088,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "TTRX": {
@@ -66126,7 +66124,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "TULP": {
@@ -66135,7 +66133,7 @@
         "proof": "ASOF_CLOSE_LT_5",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "provider_meta": {
         "nasdaq": {
           "disabled": true,
@@ -66254,7 +66252,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "TW": {
@@ -66266,7 +66264,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "TWAV": {
@@ -66370,7 +66368,7 @@
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "provider_meta": {
         "nasdaq": {
           "disabled": true,
@@ -66396,7 +66394,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "TXG": {
@@ -66408,7 +66406,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "TXMD": {
@@ -66443,7 +66441,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "TXRH": {
@@ -66455,7 +66453,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "TYGO": {
@@ -66538,7 +66536,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "UBCP": {
@@ -66663,7 +66661,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "UEIC": {
@@ -66913,7 +66911,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "UMBF": {
@@ -66925,7 +66923,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "UNB": {
@@ -67171,7 +67169,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "UPWK": {
@@ -67230,7 +67228,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "URGN": {
@@ -67289,7 +67287,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "USAU": {
@@ -67467,7 +67465,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "UTMD": {
@@ -67856,7 +67854,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "VCYT": {
@@ -67868,7 +67866,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "VECO": {
@@ -68000,7 +67998,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "VERI": {
@@ -68173,7 +68171,7 @@
         "proof": "EXACT30_MEDIAN_LT_GATE",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "provider_meta": {
         "nasdaq": {
           "disabled": true,
@@ -68222,7 +68220,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "VICR": {
@@ -68234,7 +68232,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "VINP": {
@@ -68481,7 +68479,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "VLGEA": {
@@ -68517,7 +68515,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "VMAR": {
@@ -68672,7 +68670,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "VOD": {
@@ -68684,7 +68682,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "VOGX": {
@@ -68910,7 +68908,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "VRRM": {
@@ -68945,7 +68943,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "VRSN": {
@@ -68957,7 +68955,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "VRTX": {
@@ -68969,7 +68967,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "VRXA": {
@@ -69050,7 +69048,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "VSEC": {
@@ -69062,7 +69060,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "VSME": {
@@ -69097,7 +69095,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "VSTM": {
@@ -69179,7 +69177,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "VTSI": {
@@ -69663,7 +69661,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "WDC": {
@@ -69675,7 +69673,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "WDFC": {
@@ -69901,7 +69899,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "WGS": {
@@ -70030,7 +70028,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "WIX": {
@@ -70042,7 +70040,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "WKHS": {
@@ -70219,7 +70217,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "WMT": {
@@ -70231,7 +70229,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "WNEB": {
@@ -70683,7 +70681,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "WTW": {
@@ -70695,7 +70693,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "WULF": {
@@ -70707,7 +70705,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "WVE": {
@@ -70789,7 +70787,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "WXM": {
@@ -70871,7 +70869,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "XAIR": {
@@ -71021,7 +71019,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "XEL": {
@@ -71033,7 +71031,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "XELB": {
@@ -71068,7 +71066,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "XERS": {
@@ -71268,7 +71266,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "XNCR": {
@@ -71374,7 +71372,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "XPEL": {
@@ -71825,7 +71823,7 @@
         "proof": "ASOF_CLOSE_LT_5",
         "source": "YAHOO_CHART_FREE_FAIL_ONLY"
       },
-      "provenance": "BLOCK_CURRENT_RUN_ZERO_DOLLAR_RECOVERY",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "provider_meta": {
         "nasdaq": {
           "disabled": true,
@@ -72130,7 +72128,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ZBAO": {
@@ -72189,7 +72187,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ZCMD": {
@@ -72341,7 +72339,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ZJK": {
@@ -72446,7 +72444,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ZNB": {
@@ -72528,7 +72526,7 @@
         "proof": "EXACT30_MEDIAN_GE_GATE",
         "source": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"
       },
-      "provenance": "AUTHENTICATED_TASKSTATE_RESOLVER_BRIDGE",
+      "provenance": "CURRENT_PRICE_SAME_POLICY_REUSE",
       "status": "PASS_PRICE_DV30"
     },
     "ZSQR": {
@@ -72720,7 +72718,7 @@
       "status": "FAIL_DV30"
     }
   },
-  "reused_terminal_count": 2631,
+  "reused_terminal_count": 3180,
   "schema": "XRAY_CANONICAL_PRICE_DV30_V1",
   "source_master_count": 3184,
   "source_master_queue_hash": "5520f9c2c16c484f75581f84a17fc6ec23e195665d9aed17351a852ca3981fef",
@@ -72729,12 +72727,9 @@
     "dv30": ">=50000000 exact30 median",
     "price": ">=5"
   },
-  "unknown_count": 4,
+  "unknown_count": 1,
   "unknown_never_pass": true,
   "unknown_symbols": [
-    "AIOK",
-    "GRAL",
-    "RTSN",
-    "TRXB"
+    "GRAL"
   ]
 }

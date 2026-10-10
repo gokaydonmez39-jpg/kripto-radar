@@ -176,18 +176,8 @@
     "dv30": ">=50000000 exact30 median",
     "price": ">=5"
   },
-  "price_unknown_count": 4,
+  "price_unknown_count": 1,
   "price_unknown_detail": {
-    "AIOK": {
-      "price_result": {
-        "info": {
-          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
-        },
-        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
-        "status": "UNKNOWN"
-      },
-      "security_name": "AI OKTO CORP. - Common Stock"
-    },
     "GRAL": {
       "price_result": {
         "info": {
@@ -197,43 +187,20 @@
         "status": "UNKNOWN"
       },
       "security_name": "GRAIL, Inc. - Common Stock"
-    },
-    "RTSN": {
-      "price_result": {
-        "info": {
-          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
-        },
-        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
-        "status": "UNKNOWN"
-      },
-      "security_name": "Retension Pharmaceuticals, Inc. - Common Stock"
-    },
-    "TRXB": {
-      "price_result": {
-        "info": {
-          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
-        },
-        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
-        "status": "UNKNOWN"
-      },
-      "security_name": "TRex Bio, Inc. - Common stock"
     }
   },
-  "price_unknown_hash": "d6f8f6e1d3f869f2926fe201a912bc3cd1d6cafe054dc1f8b7cb3d547a518c81",
+  "price_unknown_hash": "9735de30c8179b3e2eb328ad4ff160a5b824a7656a85048d3fa8582b2fe66a1c",
   "price_unknown_symbols": [
-    "AIOK",
-    "GRAL",
-    "RTSN",
-    "TRXB"
+    "GRAL"
   ],
   "queue_hash": "5520f9c2c16c484f75581f84a17fc6ec23e195665d9aed17351a852ca3981fef",
   "queue_total": 3184,
   "real_money": "NO-GO",
   "resolver_policy": "ALPACA_SIP_PREFERRED__RALLIES_LONGBRIDGE_DUAL_SOURCE_CONNECTOR_FAILOVER__NEVER_G9__FAIL_CLOSED__SAME_ASOF_QUEUE_BINDING",
   "schema": "XRAY_RESOLVER_EPOCH_REQUEST_V1",
-  "settlement_already_proven": true,
-  "settlement_bridge_blob_sha": "4ae224884b2cbc40bfe8081af08384af7d3d7ebf",
-  "settlement_bridge_path": "nasdaq-xray/canonical_resolver_bridge_20261009_c417_dv30_v1.json",
+  "settlement_already_proven": false,
+  "settlement_bridge_blob_sha": null,
+  "settlement_bridge_path": null,
   "settlement_core_source_blob_sha": "ea9c41cd1e5971e78d85bf3f620d7f8c4e01034f",
   "settlement_core_source_path": "nasdaq-xray/canonical_current_terminal.json",
   "settlement_core_symbol": "MSFT",
@@ -250,14 +217,14 @@
   "source_overlay_path": "nasdaq-xray/canonical_current_resolution_overlay.json",
   "source_pointer_blob_sha": "11761c589063d28d8795621844c9ce8f965dd911",
   "source_pointer_path": "nasdaq-xray/chatgpt_canonical_state_v2.json",
-  "source_price_blob_sha": "77ef4ec6c0bcf2db4e31f4c9b7f0e0b46544d096",
+  "source_price_blob_sha": "e2bbded462cb26742cf18b42a3bb58ef0551f898",
   "source_price_counts": {
     "FAIL_DV30": 1339,
-    "FAIL_DV30_INSUFFICIENT_SESSIONS": 7,
+    "FAIL_DV30_INSUFFICIENT_SESSIONS": 10,
     "FAIL_PRICE": 1311,
     "FAIL_PRICE_NO_ASOF_BAR": 9,
     "PASS_PRICE_DV30": 514,
-    "UNKNOWN": 4
+    "UNKNOWN": 1
   },
   "source_price_global_asof_sentinel_fast_fail": false,
   "source_price_pass_count": 514,
@@ -268,13 +235,10 @@
   "source_unknowns_blob_sha": "0670d184e8c03ab9ebf568d67878c88c80f931a9",
   "source_unknowns_path": "nasdaq-xray/canonical_current_unknowns.json",
   "status": "READY",
-  "symbol_count": 4,
-  "symbol_hash": "d6f8f6e1d3f869f2926fe201a912bc3cd1d6cafe054dc1f8b7cb3d547a518c81",
+  "symbol_count": 1,
+  "symbol_hash": "9735de30c8179b3e2eb328ad4ff160a5b824a7656a85048d3fa8582b2fe66a1c",
   "symbols": [
-    "AIOK",
-    "GRAL",
-    "RTSN",
-    "TRXB"
+    "GRAL"
   ],
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_never_pass": true
