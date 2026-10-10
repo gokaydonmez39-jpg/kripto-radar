@@ -50,7 +50,17 @@ def evaluate(price: dict, price_sha: str, cache_dir: Path, *,
         or len(symbols) != price.get("pass_count")
         or any(not isinstance(s, str) for s in symbols)
         or sha256_lines(symbols) != price.get("pass_hash")
-        or price.get("unknown_count") != 0
+        or not isinstance(price.get("unknown_symbols", []), list)
+        or not isinstance(price.get("blocked_symbols", []), list)
+        or price.get("unknown_symbols", []) != sorted(set(price.get("unknown_symbols", [])))
+        or price.get("blocked_symbols", []) != sorted(set(price.get("blocked_symbols", [])))
+        or type(price.get("unknown_count")) is not int
+        or price.get("unknown_count") != len(price.get("unknown_symbols", []))
+        or type(price.get("blocked_count", 0)) is not int
+        or price.get("blocked_count", 0) != len(price.get("blocked_symbols", []))
+        or not set(symbols).isdisjoint(price.get("unknown_symbols", []))
+        or not set(symbols).isdisjoint(price.get("blocked_symbols", []))
+        or not set(price.get("unknown_symbols", [])).isdisjoint(price.get("blocked_symbols", []))
         or price.get("execution") != "NONE"
         or price.get("real_money") != "NO-GO"
         or price.get("unknown_never_pass") is not True
@@ -130,6 +140,9 @@ def evaluate(price: dict, price_sha: str, cache_dir: Path, *,
         "price_pass_count": len(symbols),
         "source_price_blob_sha": price_sha,
         "source_price_pass_hash": price["pass_hash"],
+        "source_price_unknown_count": price.get("unknown_count"),
+        "source_price_blocked_count": price.get("blocked_count",0),
+        "source_price_unknown_and_blocked_omitted_from_scope": True,
         "expected_daily_count": len(required_daily),
         "expected_completed_week_closes": len(completed_weeks),
         "scope_includes_QQQ_benchmark": require_qqq,
@@ -185,6 +198,13 @@ def selftest() -> None:
         assert clean["canonical_history_pass_created"] == 0
         assert clean["current_history_authority_proven"] is False
         assert clean["can_register_R92"] is False
+        partial = dict(price, unknown_count=1, unknown_symbols=["CCC"])
+        partial_clean = evaluate(partial, "a"*40, cache)
+        assert partial_clean["structural_private_transport_complete"]
+        assert partial_clean["private_transport_tickers_checked"]==3
+        assert partial_clean["source_price_unknown_count"]==1
+        assert partial_clean["canonical_history_pass_created"]==0
+        assert partial_clean["can_register_R92"] is False
         # Claiming a vendor grant in the untrusted price manifest changes nothing.
         claim = dict(price, vendor_entitlement_verified=True,
                      independent_source_proven=True, can_register_R92=True)
@@ -198,7 +218,10 @@ def selftest() -> None:
         cache_path(cache, "BBB").unlink()
         assert evaluate(price, "a" * 40, cache)["counts"]["missing_file"] == 1
         for bad in (dict(price, pass_count=99), dict(price, pass_hash="0"*64),
-                    dict(price, unknown_count=1), dict(price, execution="REAL"),
+                    dict(price, unknown_count=1),
+                    dict(price, unknown_count=1, unknown_symbols=["AAA"]),
+                    dict(price, blocked_count=1, blocked_symbols=["BBB"]),
+                    dict(price, execution="REAL"),
                     dict(price, pass_symbols=["AAA", "AAA"])):
             try:
                 evaluate(bad, "a"*40, cache)
@@ -211,7 +234,7 @@ def selftest() -> None:
             assert str(e) == "CACHE_IN_PUBLIC_REPO_FORBIDDEN"
         else:
             raise AssertionError("PUBLIC_CACHE_ACCEPTED")
-    print("XRAY_PRIVATE_HISTORY_INTAKE_SELFTEST=PASS_COMPLETE_260_52_5_CORRUPT_NEGATIVES_PUBLIC_PATH_BLOCKED_NO_SOURCE_AUTHORITY")
+    print("XRAY_PRIVATE_HISTORY_INTAKE_SELFTEST=PASS_PARTIAL_UNKNOWN_NOT_STARVED_COMPLETE_260_52_7_CORRUPT_NEGATIVES_PUBLIC_PATH_BLOCKED_NO_SOURCE_AUTHORITY")
 
 
 def main() -> None:
