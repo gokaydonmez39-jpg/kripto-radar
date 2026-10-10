@@ -131,6 +131,64 @@
         "https://www.nasdaq.com/press-release/equipmentshare-debuts-nasdaq-eqpt-advancing-digital-transformation-construction-2026"
       ],
       "note": "EquipmentShare Class A common shares began Nasdaq public trading as EQPT on 2026-01-23; issuer official Nasdaq distribution on same date independently confirms actual start following IPO price release. Exact 2026-10-09 official session-age bound is <260 daily and <52 completed weeks. FAIL_HISTORY only: never synthetic pre-IPO EQPT bars, primary MC, AL or R92."
+    },
+    "CBRS": {
+      "mode": "OFFICIAL_LISTING_UPPER_BOUND_FAIL_ONLY",
+      "earliest_public_trading_date": "2026-05-14",
+      "regular_way_trading_date": "2026-05-14",
+      "sources": [
+        "https://www.nasdaq.com/press-release/cerebras-systems-announces-closing-initial-public-offering-2026-05-15",
+        "https://www.sec.gov/Archives/edgar/data/2021728/000162828026056357/cbrs-20260630.htm"
+      ],
+      "note": "Cerebras Systems Class A shares first Nasdaq public trading 2026-05-14. As of 2026-10-09, official Nasdaq session upper bound is below both mandatory 260 daily and 52 completed weekly bars: terminal FAIL_HISTORY only. No synthetically imported pre-IPO price bars, no MC PASS, no AL, no R92."
+    },
+    "MDLN": {
+      "mode": "OFFICIAL_LISTING_UPPER_BOUND_FAIL_ONLY",
+      "earliest_public_trading_date": "2025-12-17",
+      "regular_way_trading_date": "2025-12-17",
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/2046386/000204638626000009/mdln-20251231.htm",
+        "https://www.sec.gov/Archives/edgar/data/2046386/000204638626000051/mdln-20260627.htm"
+      ],
+      "note": "Medline Class A first Nasdaq trading 2025-12-17, official SEC annual and subsequent interim filings. As of 2026-10-09, official Nasdaq session upper bound is below both mandatory 260 daily and 52 completed weekly bars: terminal FAIL_HISTORY only. No synthetically imported pre-IPO price bars, no MC PASS, no AL, no R92."
+    },
+    "MMED": {
+      "mode": "OFFICIAL_LISTING_UPPER_BOUND_FAIL_ONLY",
+      "earliest_public_trading_date": "2026-03-06",
+      "regular_way_trading_date": "2026-03-06",
+      "sources": [
+        "https://www.nasdaq.com/press-release/minimed-begins-trading-nasdaq-global-select-market-2026-03-06"
+      ],
+      "note": "MiniMed Group started trading on Nasdaq under MMED 2026-03-06 at issuer IPO. As of 2026-10-09, official Nasdaq session upper bound is below both mandatory 260 daily and 52 completed weekly bars: terminal FAIL_HISTORY only. No synthetically imported pre-IPO price bars, no MC PASS, no AL, no R92."
+    },
+    "NAVN": {
+      "mode": "OFFICIAL_LISTING_UPPER_BOUND_FAIL_ONLY",
+      "earliest_public_trading_date": "2025-10-30",
+      "regular_way_trading_date": "2025-10-30",
+      "sources": [
+        "https://investors.navan.com/news-releases/news-release-details/navan-announces-pricing-initial-public-offering",
+        "https://navan.gcs-web.com/news-releases/news-release-details/navan-announces-closing-initial-public-offering"
+      ],
+      "note": "Navan Class A first public Nasdaq trading 2025-10-30, official issuer pricing and closing releases. As of 2026-10-09, official Nasdaq session upper bound is below both mandatory 260 daily and 52 completed weekly bars: terminal FAIL_HISTORY only. No synthetically imported pre-IPO price bars, no MC PASS, no AL, no R92."
+    },
+    "QNT": {
+      "mode": "OFFICIAL_LISTING_UPPER_BOUND_FAIL_ONLY",
+      "earliest_public_trading_date": "2026-06-04",
+      "regular_way_trading_date": "2026-06-04",
+      "sources": [
+        "https://ir.quantinuum.com/news-releases/news-release-details/quantinuum-announces-pricing-upsized-initial-public-offering-0",
+        "https://www.nasdaq.com/press-release/quantinuum-announces-closing-upsized-initial-public-offering-2026-06-05"
+      ],
+      "note": "Quantinuum Class A began Nasdaq public trading 2026-06-04 per 2026-06-03 issuer official pricing, confirmed by 2026-06-05 completed IPO. As of 2026-10-09, official Nasdaq session upper bound is below both mandatory 260 daily and 52 completed weekly bars: terminal FAIL_HISTORY only. No synthetically imported pre-IPO price bars, no MC PASS, no AL, no R92."
+    },
+    "XE": {
+      "mode": "OFFICIAL_LISTING_UPPER_BOUND_FAIL_ONLY",
+      "earliest_public_trading_date": "2026-04-24",
+      "regular_way_trading_date": "2026-04-24",
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/2088896/000119312526256369/xe-ex99_1.htm"
+      ],
+      "note": "X-energy issuer SEC exhibit confirms 2026-04-24 first Nasdaq public trading under XE. As of 2026-10-09, official Nasdaq session upper bound is below both mandatory 260 daily and 52 completed weekly bars: terminal FAIL_HISTORY only. No synthetically imported pre-IPO price bars, no MC PASS, no AL, no R92."
     }
   }
 }
