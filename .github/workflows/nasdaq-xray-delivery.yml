@@ -9,6 +9,8 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/chatgpt_canonical_state_v2.json"
+      - "nasdaq-xray/research_only_start_20261010.json"
+      - "nasdaq-xray/research_only_start_guard.py"
       - "nasdaq-xray/delivery_prepare.py"
       - "nasdaq-xray/source_epoch_freshness_guard.py"
       - "nasdaq-xray/delivery_scheduler_guard.py"
@@ -45,6 +47,20 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Validate user-approved RESEARCH_ONLY launch and source epochs
+        run: |
+          python nasdaq-xray/research_only_start_guard.py --selftest
+          python nasdaq-xray/research_only_start_guard.py --out "$RUNNER_TEMP/xray_research_start_witness.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          j=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_research_start_witness.json").read_text())
+          assert j["operational_status"]=="RESEARCH_MONITORING_START_CONFIGURED"
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          assert j["alpha_go"] is False and j["orders"]==[]
+          assert j["current_signal_release"]=="NOT_ATTESTED"
+          print("XRAY_RESEARCH_ONLY_LAUNCH=ACTIVATED_MONITORING_NOT_AL")
+          PY
       - name: Compile delivery safety modules
         run: |
           python -m py_compile \
