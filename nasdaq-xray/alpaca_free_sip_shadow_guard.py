@@ -17,6 +17,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from collections import Counter
+from alpaca_sip_paginated_transport_shadow import collect_pages
 from zoneinfo import ZoneInfo
 
 ROOT=pathlib.Path(__file__).resolve().parent
@@ -111,33 +112,39 @@ def load_scope():
     return m,p,symbols,dates,blob_sha(master_path),blob_sha(price_path)
 
 def request_batch(symbols,start,period_end,key,secret):
-    query=urllib.parse.urlencode({
-        "symbols":",".join(symbols),"start":start,"end":period_end,
-        "timeframe":"1Day","feed":"sip","adjustment":"raw","limit":10000})
+    """Consume ALL pages; no partial symbol cohort can appear complete.
+
+    Vendor data stays in process memory. No persistent cached bars, quote
+    redistribution, LICENSE PASS or canonical promotion is implied.
+    """
     if not key or not secret:
         raise RuntimeError("ALPACA_SECRETS_MISSING")
-    req=urllib.request.Request(BASE+"?"+query,headers={
-        "APCA-API-KEY-ID":key,"APCA-API-SECRET-KEY":secret,
-        "Accept":"application/json","User-Agent":"NASDAQ-XRAY-Research/1.0"})
-    try:
-        with urllib.request.urlopen(req,timeout=25) as reply:
-            if reply.status!=200:raise RuntimeError("ALPACA_HTTP_NON200")
-            raw=reply.read(3_000_001)
-            if len(raw)>3_000_000:raise RuntimeError("ALPACA_RESPONSE_TOO_LARGE")
-    except urllib.error.HTTPError as exc:
-        # Account/auth/rate/entitlement errors are diagnostics, never synthetic
-        # fallback price data. Do not surface credentials in logs.
-        raise RuntimeError("ALPACA_HTTP_"+str(exc.code)) from exc
-    except (TimeoutError,urllib.error.URLError) as exc:
-        raise RuntimeError("ALPACA_NETWORK_UNAVAILABLE") from exc
-    data=json.loads(raw)
-    if not isinstance(data,dict) or not isinstance(data.get("bars"),dict):
-        raise RuntimeError("ALPACA_RESPONSE_SCHEMA_INVALID")
-    if data.get("next_page_token"):
-        # Reject partial paginated windows; a later complete parser must
-        # explicitly iterate bounded tokens with same exact scope SHA.
-        raise RuntimeError("ALPACA_PAGE_INCOMPLETE_FAIL_CLOSED")
-    return data["bars"]
+    base={"symbols":",".join(symbols),"start":start,"end":period_end,
+          "timeframe":"1Day","feed":"sip","adjustment":"raw","limit":10000}
+    def fetch_page(token):
+        params=dict(base)
+        if token is not None:
+            params["page_token"]=token
+        req=urllib.request.Request(BASE+"?"+urllib.parse.urlencode(params),headers={
+            "APCA-API-KEY-ID":key,"APCA-API-SECRET-KEY":secret,
+            "Accept":"application/json","User-Agent":"NASDAQ-XRAY-Research/1.0"})
+        try:
+            with urllib.request.urlopen(req,timeout=25) as reply:
+                if reply.status!=200:
+                    raise RuntimeError("ALPACA_HTTP_NON200")
+                raw=reply.read(3_000_001)
+                if len(raw)>3_000_000:
+                    raise RuntimeError("ALPACA_RESPONSE_TOO_LARGE")
+        except urllib.error.HTTPError as exc:
+            raise RuntimeError("ALPACA_HTTP_"+str(exc.code)) from exc
+        except (TimeoutError,urllib.error.URLError) as exc:
+            raise RuntimeError("ALPACA_NETWORK_UNAVAILABLE") from exc
+        try:
+            return json.loads(raw)
+        except (ValueError,TypeError) as exc:
+            raise RuntimeError("ALPACA_JSON_INVALID") from exc
+
+    return collect_pages(symbols,fetch_page)
 
 def run(now=None):
     if now is None:now=dt.datetime.now(UTC)
