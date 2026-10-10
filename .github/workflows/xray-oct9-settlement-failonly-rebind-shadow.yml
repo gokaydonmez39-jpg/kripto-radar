@@ -41,6 +41,39 @@ jobs:
             --master "$RUNNER_TEMP/source_master.json" \
             --price "$RUNNER_TEMP/source_price.json" \
             --bridge "$RUNNER_TEMP/source_resolver.json"
+      - name: Offline end-to-end request and full-scope resolver successor dry run
+        shell: bash
+        run: |
+          set -euo pipefail
+          for path in canonical_current_full_state.json canonical_current_unknowns.json canonical_current_resolution_overlay.json canonical_current_price_dv30.json canonical_current_master_manifest.json chatgpt_canonical_state_v2.json canonical_current_resolver_request.json canonical_current_resolver_chunk_manifest.json; do
+            git show f235874482c0b00856954c03078dd52f80f377a3:"nasdaq-xray/$path" > "nasdaq-xray/$path"
+          done
+          python -m py_compile nasdaq-xray/build_current_resolver_request.py nasdaq-xray/build_resolver_full_scope_handoff.py
+          python nasdaq-xray/build_current_resolver_request.py
+          python - <<'PY'
+          import json,pathlib
+          p=pathlib.Path("nasdaq-xray")
+          q=json.loads((p/"canonical_current_resolver_request.json").read_text())
+          assert q["asof_et"]=="2026-10-09"
+          assert q["price_unknown_count"]==q["price_blocked_count"]==q["symbol_count"]==0
+          assert q["settlement_required"] is True and q["settlement_already_proven"] is True
+          assert q["settlement_bridge_path"]=="nasdaq-xray/canonical_resolver_bridge_20261009_c417_dv30_v1.json"
+          print("XRAY_SAME_ASOF_SETTLEMENT_CURRENT_REQUEST=PASS_NO_VENDOR")
+          PY
+          python nasdaq-xray/build_resolver_full_scope_handoff.py
+          python - <<'PY'
+          import json,pathlib
+          r=pathlib.Path("nasdaq-xray")
+          obj=json.loads((r/"canonical_resolver_bridge_20261009_c417_dv30_v2.json").read_text())
+          assert obj["settlement_status"]=="PASS"
+          assert obj["bridge_role"]=="FULL_SCOPE_MC_HANDOFF_PROVENANCE"
+          assert obj["source_price_blob_sha"]
+          assert obj["price_unknown_count"]==obj["price_blocked_count"]==0
+          assert obj["union_disjoint_proof"]["counts"]["PASS_PRICE_DV30"]==514
+          assert obj["settlement_witness_path"]=="nasdaq-xray/canonical_resolver_bridge_20261009_c417_dv30_v1.json"
+          assert obj["execution"]=="NONE" and obj["real_money"]=="NO-GO"
+          print("XRAY_SAME_ASOF_FULL_SCOPE_HANDOFF=PASS_514_PRICE_0_UNKNOWN_NO_MC")
+          PY
       - name: Publish classification-only digest-bound CI witness
         shell: bash
         run: |
