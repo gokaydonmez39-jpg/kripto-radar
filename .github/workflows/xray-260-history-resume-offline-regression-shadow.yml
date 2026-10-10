@@ -1,0 +1,49 @@
+name: XRAY 260 History Resume Regression - Offline No Source Authority
+on:
+  push:
+    branches: [audit/c417-mc-alternatives-sec-pit-20261010]
+    paths:
+      - "nasdaq-xray/massive_grouped_history_resume.py"
+      - "nasdaq-xray/twelve_data_history_full_pipeline_selftest.py"
+      - ".github/workflows/xray-260-history-resume-offline-regression-shadow.yml"
+  pull_request:
+    paths:
+      - "nasdaq-xray/massive_grouped_history_resume.py"
+      - "nasdaq-xray/twelve_data_history_full_pipeline_selftest.py"
+      - ".github/workflows/xray-260-history-resume-offline-regression-shadow.yml"
+permissions:
+  contents: read
+jobs:
+  two-provider-transport-control-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      XRAY_MASSIVE_API_KEY: ""
+      XRAY_TWELVE_DATA_API_KEY: ""
+      XRAY_MASSIVE_NONDISPLAY_LICENSE_OK: "false"
+      XRAY_MASSIVE_PRIVATE_CACHE_RIGHTS_OK: "false"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pinned NASDAQ calendar and private fixture crypto, NO vendor calls
+        run: python -m pip install --disable-pip-version-check "pandas_market_calendars==5.4.0" "cryptography>=44,<47"
+      - name: Massive official-next-session rollover and negative controls
+        run: |
+          python -m py_compile nasdaq-xray/massive_grouped_history_resume.py
+          python nasdaq-xray/massive_grouped_history_resume.py --selftest
+          python nasdaq-xray/grouped_history_full_pipeline_selftest.py
+      - name: Twelve unknown-safe synthetic 260/52 controls
+        run: |
+          python -m py_compile nasdaq-xray/twelve_data_history_full_pipeline_selftest.py
+          python nasdaq-xray/twelve_data_history_resume.py --selftest
+          python nasdaq-xray/twelve_data_history_full_pipeline_selftest.py
+      - name: No live source, PRIMARY, R92, account, trade or delivery
+        run: |
+          python - <<'PY'
+          import os
+          assert not os.environ.get("XRAY_MASSIVE_API_KEY")
+          assert not os.environ.get("XRAY_TWELVE_DATA_API_KEY")
+          print("XRAY_HISTORY_TWO_PROVIDER_OFFLINE_ONLY_NO_VENDOR_DATA_NO_PRIMARY_NO_R92_NO_GO")
+          PY
