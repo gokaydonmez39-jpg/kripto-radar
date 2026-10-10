@@ -1,7 +1,7 @@
 name: XRAY Alpaca 515 Corporate Actions Census Shadow (No PIT GO)
 on:
   push:
-    branches: [main]
+    branches: [main, audit/c417-ca-crossbatch-dedupe-20261010]
     paths:
       - "nasdaq-xray/alpaca_full_scope_ca_shadow.py"
       - "nasdaq-xray/alpaca_full_scope_260_shadow.py"
