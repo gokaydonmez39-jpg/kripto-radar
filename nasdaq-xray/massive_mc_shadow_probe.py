@@ -22,6 +22,12 @@ import urllib.request
 
 ROOT = pathlib.Path(__file__).resolve().parent
 SCHEMA = "XRAY_MASSIVE_MC_SHADOW_V1"
+# Massive's documented "date" can select SEC facts by REPORT PERIOD, even
+# before the filing acceptance timestamp. Therefore NOT acceptance-time PIT.
+# A date-filtered reference market cap is shadow-only until independently
+# matched to a publication-time evidence chain; data rights are separate.
+SOURCE_ID = "MASSIVE_REFERENCE_REPORT_PERIOD_DATE_NOT_ACCEPTANCE_PIT"
+
 MC_FLOOR = 2_000_000_000
 MAX_REQUESTS_PER_INVOCATION = 5
 ALLOWED_EXCHANGE = {"XNAS", "XNGS", "XNMS", "XNCM"}
@@ -82,7 +88,9 @@ def classify(symbol, row):
         "type": row["type"], "primary_exchange": row["primary_exchange"],
         "market_cap_usd": mc,
         "threshold_usd": MC_FLOOR,
-        "source": "MASSIVE_REFERENCE_TICKER_OVERVIEW_PIT",
+        "source": SOURCE_ID,
+        "filing_acceptance_pit_attested": False,
+        "possible_historical_filing_lookahead": True,
         "alpha_authority": False, "r92_eligible": False,
     }
 
@@ -116,6 +124,8 @@ def selftest():
                "type": "CS", "primary_exchange": "XNAS",
                "currency_name": "usd", "cik": "0000123456", "market_cap": 2_300_000_000}
     assert classify("TEST", fixture)["state"] == "SHADOW_OBSERVED_ABOVE_2B"
+    assert classify("TEST", fixture)["source"] == SOURCE_ID
+    assert classify("TEST", fixture)["filing_acceptance_pit_attested"] is False
     assert classify("WRONG", fixture)["state"] == "UNKNOWN"
     for key, value in [("primary_exchange", "XNYS"), ("type", "ETF"),
                        ("market_cap", 0), ("market_cap", float("nan")),
@@ -253,6 +263,8 @@ def run(args):
         "source_price_artifact": "nasdaq-xray/canonical_current_price_dv30.json",
         "source_price_pass_count": len(scope),
         "source_epoch_exact": True,
+        "filing_acceptance_pit_attested": False,
+        "possible_historical_filing_lookahead": True,
         "mc_history_not_required_for_price_sample": True,
         "free_plan_5_calls_per_minute": True, "requested_count": len(chosen),
         "status": status, "offset": offset, "records": records
