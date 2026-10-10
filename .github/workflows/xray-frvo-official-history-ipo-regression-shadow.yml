@@ -1,7 +1,7 @@
-name: XRAY Official FRVO BSP 260 Daily IPO Bound - Fail Only
+name: XRAY Official IPO 260 Daily Bound - Fail Only
 on:
   push:
-    branches: [audit/c417-frvo-official-history-upper-bound-20261010, main]
+    branches: [audit/c417-eqpt-official-ipo-history-failonly-20261010, audit/c417-frvo-official-history-upper-bound-20261010, main]
     paths:
       - "nasdaq-xray/history_official_identity_evidence.json"
       - "nasdaq-xray/history_official_ipo_260_selftest.py"
@@ -33,7 +33,7 @@ jobs:
           from pathlib import Path
           data={"schema":"XRAY_C417_IPO_OFFICIAL_FAIL_ONLY_WITNESS_V1",
                 "head_sha":subprocess.check_output(["git","rev-parse","HEAD"],text=True).strip(),
-                "symbols":["BSP","FRVO"],"asof_et":"2026-10-09",
+                "symbols":["BSP","EQPT","FRVO"],"asof_et":"2026-10-09",
                 "real_vendor_calls":0,"history_pass_created":0,
                 "mc_pass_created":0,"r92_created":False,
                 "execution":"NONE","real_money":"NO-GO"}
@@ -42,7 +42,7 @@ jobs:
           PY
       - uses: actions/upload-artifact@v4
         with:
-          name: xray-frvo-bsp-official-ipo-age-no-go-witness
+          name: xray-bsp-eqpt-frvo-official-ipo-age-no-go-witness
           path: ${{ runner.temp }}/xray_ipo_only.json
           retention-days: 14
           if-no-files-found: error
