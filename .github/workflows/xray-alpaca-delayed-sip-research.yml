@@ -20,10 +20,14 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     env:
-      XRAY_ALPACA_API_KEY_ID: ${{ secrets.XRAY_ALPACA_API_KEY_ID }}
-      XRAY_ALPACA_API_SECRET_KEY: ${{ secrets.XRAY_ALPACA_API_SECRET_KEY }}
+      XRAY_ALPACA_API_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID }}
+      XRAY_ALPACA_API_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - name: Verify exact invoking SHA
+        run: test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
