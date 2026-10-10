@@ -47,7 +47,7 @@ def run():
         "ROOT":ROOT,
         "MANUAL_IDENTITY_SEED":ROOT/"master_sec_identity_manual_seed_registry.json",
         "json":json,"re":re,"datetime":datetime,
-        "SPAC_SUSPECT_RE":re.compile(r"\\bacquisition\\b",re.I),
+        "SPAC_SUSPECT_RE":re.compile("acquisition",re.I),
         "sec_source_binds_cik":lambda url,cik:f"/data/{int(cik)}/" in url,
         "file_blob_sha":lambda p:"OFFLINE_UNIT_SHA_NOT_PRIMARY",
     }
