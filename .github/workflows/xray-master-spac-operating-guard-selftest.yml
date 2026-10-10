@@ -6,6 +6,7 @@ on:
       - "nasdaq-xray/master_spac_operating_guard.py"
       - "nasdaq-xray/master_sec_identity_manual_seed_registry.json"
       - "nasdaq-xray/nbrg_official_sec_identity_seed_selftest.py"
+      - "nasdaq-xray/current_identity_proof_selftest.py"
       - "nasdaq-xray/build_current_identity_proofs.py"
       - ".github/workflows/xray-master-spac-operating-guard-selftest.yml"
   workflow_dispatch:
@@ -20,11 +21,14 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Install pinned Nasdaq calendar for producer integration selftest
+        run: python -m pip install --disable-pip-version-check "pandas_market_calendars==5.4.0"
       - name: Compile and dual positive/negative regression
         run: |
           python -m py_compile nasdaq-xray/master_spac_operating_guard.py nasdaq-xray/build_current_identity_proofs.py
           python nasdaq-xray/master_spac_operating_guard.py
           python nasdaq-xray/nbrg_official_sec_identity_seed_selftest.py
+          (cd nasdaq-xray && python current_identity_proof_selftest.py)
       - name: Assert full producer binding, no SEC SIC shortcut
         run: |
           python - <<'PY'
