@@ -44,7 +44,7 @@ jobs:
       - name: No live source, PRIMARY, R92, account, trade or delivery
         run: |
           python - <<'PY'
-          import os
+          import os,json
           assert not os.environ.get("XRAY_MASSIVE_API_KEY")
           assert not os.environ.get("XRAY_TWELVE_DATA_API_KEY")
           print("XRAY_HISTORY_TWO_PROVIDER_OFFLINE_ONLY_NO_VENDOR_DATA_NO_PRIMARY_NO_R92_NO_GO")
