@@ -417,10 +417,28 @@ jobs:
               except Exception:
                   historical_halt_fail_only_symbols=[]
           historical_halt_fail_only_replay=bool(historical_halt_fail_only_symbols)
+          # A healthy frozen epoch is NOT a no-op when an immutable official
+          # GRAL Sep-23 halt + same-ASOF Sina 29/30 source now prove FAIL only.
+          # Probe the production evaluator with an isolated one-symbol copy.
+          gral_halt_fail_only_symbols=[]
+          if active_completed_epoch and price_ok:
+              try:
+                  from price_gral_halt_fail_only import apply_to_results as gral_fail_only
+                  old_gral=(px.get("results") or {}).get("GRAL")
+                  if isinstance(old_gral,dict) and old_gral.get("status") in {"UNKNOWN","BLOCK_CURRENT_RUN"}:
+                      sample={"GRAL":dict(old_gral)}
+                      gral_halt_fail_only_symbols=gral_fail_only(
+                          sample,latest_completed,list(px.get("expected30") or []),
+                          str(px.get("source_master_queue_hash") or "")
+                      )
+              except Exception:
+                  gral_halt_fail_only_symbols=[]
+          gral_halt_fail_only_replay=bool(gral_halt_fail_only_symbols)
           coverage_repair=bool(
               (active_completed_epoch and price_ok and blocked_count>0 and not block_recovery_attempted)
               or official_listing_fail_only_replay
               or historical_halt_fail_only_replay
+              or gral_halt_fail_only_replay
           )
           resolver_refresh=False
           if active_completed_epoch and price_ok and block_recovery_attempted:
@@ -538,6 +556,8 @@ jobs:
               out.write(f"coverage_repair={'true' if coverage_repair else 'false'}\n")
               out.write(f"official_listing_fail_only_replay={'true' if official_listing_fail_only_replay else 'false'}\n")
               out.write(f"historical_halt_fail_only_replay={'true' if historical_halt_fail_only_replay else 'false'}\n")
+              out.write(f"gral_halt_fail_only_replay={'true' if gral_halt_fail_only_replay else 'false'}\n")
+              out.write("gral_halt_fail_only_symbols_csv="+",".join(gral_halt_fail_only_symbols)+"\n")
               out.write("historical_halt_fail_only_symbols_csv="+",".join(historical_halt_fail_only_symbols)+"\n")
               out.write(f"official_listing_fail_only_count={len(official_listing_fail_only_symbols)}\n")
               out.write("official_listing_fail_only_symbols_csv="+",".join(official_listing_fail_only_symbols)+"\n")
@@ -568,6 +588,8 @@ jobs:
               "price_integrity_ok":price_integrity_ok,
               "price_semantics_ok":price_semantics_ok,
               "coverage_repair":coverage_repair,
+              "gral_halt_fail_only_replay":gral_halt_fail_only_replay,
+              "gral_halt_fail_only_symbols":gral_halt_fail_only_symbols,
               "official_listing_fail_only_replay":official_listing_fail_only_replay,
               "official_listing_fail_only_symbols":official_listing_fail_only_symbols,
               "historical_halt_fail_only_replay":historical_halt_fail_only_replay,
