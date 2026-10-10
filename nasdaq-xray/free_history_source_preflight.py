@@ -247,7 +247,7 @@ def selftest() -> None:
     assert big_bq["market_data_automatic_cache_rights_verified"] is False
     assert out["other_free_source_quota_research"]["Eulerpool Free"]["production_authority"] is False
     current514=dict(p,pass_symbols=[f"S{i:04d}" for i in range(514)],pass_count=514)
-    current514["pass_hash"]=hashlib.sha256("\\n".join(current514["pass_symbols"]).encode()).hexdigest()
+    current514["pass_hash"]=hashlib.sha256(chr(10).join(current514["pass_symbols"]).encode()).hexdigest()
     b514=make(current514,"a"*40)["other_free_source_quota_research"]["Business Quant Free"]
     assert b514["scope_including_qqq"]==515
     assert b514["minimum_calls_for_complete_initial_scope"]==258
