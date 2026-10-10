@@ -122,6 +122,23 @@ def test_recheck():
     assert choose(not_ready,close,later)==[], "PREMATURE_MASS_PROVIDER_RETRY"
     assert choose_canary_probe(not_ready,close,later)==["AAPL"]
     assert choose_canary_probe(not_ready,close,close+dt.timedelta(minutes=89))==[]
+    # Repeated hourly EOD canaries must not spin forever when the vendor
+    # never publishes its ASOF bar: max eight per same-ASOF epoch, 16h horizon.
+    recent=copy.deepcopy(not_ready)
+    recent["results"]["AAPL"]["late_asof_canary_probe_round"]=1
+    recent["results"]["AAPL"]["updated_at_utc"]="2026-10-10T00:30:00Z"
+    assert choose_canary_probe(recent,close,later)==[]
+    assert choose_canary_probe(recent,close,later+dt.timedelta(minutes=31))==["AAPL"]
+    exhausted=copy.deepcopy(not_ready)
+    exhausted["results"]["AAPL"]["late_asof_canary_probe_round"]=8
+    assert choose_canary_probe(exhausted,close,later)==[]
+    assert choose_canary_probe(not_ready,close,close+dt.timedelta(hours=17))==[]
+    malformed=copy.deepcopy(not_ready)
+    malformed["results"]["AAPL"]["late_asof_canary_probe_round"]=-1
+    assert choose_canary_probe(malformed,close,later)==[]
+    fake_counter=copy.deepcopy(not_ready)
+    fake_counter["results"]["AAPL"]["late_asof_canary_probe_round"]=True
+    assert choose_canary_probe(fake_counter,close,later)==[]
     assert orchestrator.history_retry_plan({
         "status":"HISTORY_PARTIAL","queue_total":6,"cursor":6,
         "pending_retry":0,"pending_late_asof_recheck":2
