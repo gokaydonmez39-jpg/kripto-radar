@@ -37,7 +37,15 @@ def make(price: dict, source_blob_sha: str, universe_count: int = FULL_UNIVERSE_
     assert symbols == sorted(set(symbols)), "PRICE_DUPLICATE_OR_UNSORTED"
     assert len(symbols) == price.get("pass_count"), "PRICE_COUNT_DRIFT"
     assert hashlib.sha256("\n".join(symbols).encode()).hexdigest() == price.get("pass_hash"), "PRICE_HASH_DRIFT"
-    assert price.get("unknown_count") == 0, "PRICE_UNKNOWN_NOT_ZERO"
+    # Estimate only independently proven PASS symbols; global UNKNOWN rows
+    # are not converted to PASS and cannot starve source-quota research.
+    unknown=price.get("unknown_symbols", [])
+    blocked=price.get("blocked_symbols", [])
+    assert isinstance(unknown,list) and unknown==sorted(set(unknown)), "UNKNOWN_SCOPE_INVALID"
+    assert isinstance(blocked,list) and blocked==sorted(set(blocked)), "BLOCKED_SCOPE_INVALID"
+    assert type(price.get("unknown_count")) is int and price["unknown_count"]==len(unknown), "UNKNOWN_COUNT_MISMATCH"
+    assert type(price.get("blocked_count",0)) is int and price.get("blocked_count",0)==len(blocked), "BLOCKED_COUNT_MISMATCH"
+    assert not (set(symbols)&set(unknown) or set(symbols)&set(blocked) or set(unknown)&set(blocked)), "PRICE_SCOPE_OVERLAP"
     assert price.get("execution") == "NONE" and price.get("real_money") == "NO-GO", "SAFETY_MISMATCH"
     asof = price.get("asof_et")
     assert isinstance(asof, str) and len(asof) == 10, "ASOF_INVALID"
@@ -50,6 +58,9 @@ def make(price: dict, source_blob_sha: str, universe_count: int = FULL_UNIVERSE_
         "asof_et": asof, "policy": "C4.17", "control": "C4.27",
         "source_price_path": PRICE, "source_price_blob_sha": source_blob_sha,
         "price_pass_count": count, "price_pass_hash": price["pass_hash"],
+        "price_unknown_count":len(unknown), "price_blocked_count":len(blocked),
+        "unknown_blocked_excluded_from_quota":True,
+        "global_price_partition_complete":not unknown and not blocked,
         "full_universe_reference_count": universe_count,
         "provider": "Twelve Data Basic", "tier_cost_usd_per_month": 0,
         "public_documented_internal_non_display": True,
@@ -146,9 +157,17 @@ def make(price: dict, source_blob_sha: str, universe_count: int = FULL_UNIVERSE_
 def selftest() -> None:
     syms = ["AAA", "BBB"]
     p = {"pass_symbols": syms, "pass_count": 2, "pass_hash": hashlib.sha256("\n".join(syms).encode()).hexdigest(),
-         "unknown_count": 0, "execution": "NONE", "real_money": "NO-GO", "asof_et": "2026-10-08"}
+         "unknown_count": 0, "unknown_symbols":[], "blocked_count":0, "blocked_symbols":[],
+         "execution": "NONE", "real_money": "NO-GO", "asof_et": "2026-10-08"}
     v = make(p, "a" * 40)
     assert v["scope_initial_credit_estimate"] == 2
+    partial=dict(p, unknown_count=1, unknown_symbols=["CCC"])
+    partial_out=make(partial,"a"*40)
+    assert partial_out["scope_initial_credit_estimate"]==2
+    assert partial_out["price_unknown_count"]==1
+    assert partial_out["unknown_blocked_excluded_from_quota"] is True
+    assert partial_out["global_price_partition_complete"] is False
+    assert partial_out["history_authoritative"] is False and partial_out["can_register_R92"] is False
     assert v["universe_min_calendar_days_at_published_daily_limit"] == 5
     assert v["universe_full_daily_refresh_fits_one_key"] is False
     assert v["history_authoritative"] is False and v["can_register_R92"] is False
@@ -178,6 +197,8 @@ def selftest() -> None:
         dict(p, pass_count=3),
         dict(p, pass_hash="0" * 64),
         dict(p, unknown_count=1),
+        dict(p, unknown_count=1, unknown_symbols=["AAA"]),
+        dict(p, blocked_count=1, blocked_symbols=["BBB"]),
         dict(p, execution="REAL"),
         dict(p, pass_symbols=["AAA", "AAA"]),
     ]
