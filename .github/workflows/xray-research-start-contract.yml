@@ -1,0 +1,55 @@
+name: XRAY Research Only Explicit Start Safety
+on:
+  push:
+    branches: [main, audit/c417-research-only-live-start-20261010]
+    paths:
+      - "nasdaq-xray/research_only_start_20261010.json"
+      - "nasdaq-xray/research_only_start_guard.py"
+      - ".github/workflows/xray-research-start-contract.yml"
+      - ".github/workflows/xray-research-watch-radar.yml"
+      - ".github/workflows/nasdaq-xray-delivery.yml"
+      - ".github/workflows/xray-manual-decision-research-shadow.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  research-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Enforce exact event source
+        run: test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify launched scope, immutable source witnesses, and no trading
+        run: |
+          python -m py_compile nasdaq-xray/research_only_start_guard.py
+          python nasdaq-xray/research_only_start_guard.py --selftest
+          python nasdaq-xray/research_only_start_guard.py --out "$RUNNER_TEMP/xray_research_start_witness.json"
+          python - <<'PY'
+          from pathlib import Path
+          import json,os,hashlib,subprocess
+          root=Path("nasdaq-xray")
+          witness=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_research_start_witness.json").read_text())
+          assert witness["execution"]=="NONE" and witness["real_money"]=="NO-GO"
+          assert witness["alpha_go"] is False and witness["buy_candidates"]==[]
+          assert witness["current_signal_release"]=="NOT_ATTESTED"
+          for source in ("price","master","terminal"):
+              names={"price":"canonical_current_price_dv30.json","master":"canonical_current_master_manifest.json","terminal":"canonical_current_terminal.json"}
+              actual=subprocess.check_output(["git","hash-object",str(root/names[source])],text=True).strip()
+              assert actual==witness["readback"][source]["blob_sha"],"GIT_BLOB_SHA_MISMATCH:"+source
+          for wf in ("xray-research-watch-radar.yml","nasdaq-xray-delivery.yml","xray-manual-decision-research-shadow.yml"):
+              body=(Path(".github/workflows")/wf).read_text()
+              assert 'nasdaq-xray/research_only_start_20261010.json' in body,wf
+              assert 'python nasdaq-xray/research_only_start_guard.py --selftest' in body,wf
+              assert 'XRAY_RESEARCH_ONLY_LAUNCH=ACTIVATED_MONITORING_NOT_AL' in body,wf
+          print("XRAY_START_RESEARCH_ONLY=PASS_EXACT_GITHUB_SOURCE_ZERO_BROKER_ZERO_BUY_CLAIM")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: xray-research-only-start-witness
+          path: ${{ runner.temp }}/xray_research_start_witness.json
+          retention-days: 14
+          if-no-files-found: error
