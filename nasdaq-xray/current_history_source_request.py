@@ -57,9 +57,29 @@ def build(price,master,price_sha):
     assert isinstance(symbols,list) and symbols==sorted(set(symbols)) and symbols,"PRICE_PASS_SYMBOL_SET_INVALID"
     assert len(symbols)==price.get("pass_count"),"PRICE_PASS_COUNT_DRIFT"
     assert sha256_lines(symbols)==price.get("pass_hash"),"PRICE_PASS_HASH_DRIFT"
-    assert price.get("unknown_count")==0,"PRICE_UNKNOWN_NONZERO"
-    assert set(symbols)<=set(master.get("pass_symbols",[])),"PRICE_OUTSIDE_MASTER"
-    assert type(price.get("blocked_count")) is int and price.get("blocked_count")>=0
+    # UNKNOWN/BLOCKED outside the independently established PASS set may
+    # NEVER starve history preparation for the other known PASS symbols.
+    # This is a SHADOW request only; global canonical completion remains blocked.
+    unknown=price.get("unknown_symbols",[])
+    blocked=price.get("blocked_symbols",[])
+    assert isinstance(unknown,list) and unknown==sorted(set(unknown)),"PRICE_UNKNOWN_SET_INVALID"
+    assert isinstance(blocked,list) and blocked==sorted(set(blocked)),"PRICE_BLOCKED_SET_INVALID"
+    assert type(price.get("unknown_count")) is int and price["unknown_count"]==len(unknown),"PRICE_UNKNOWN_COUNT_INVALID"
+    assert type(price.get("blocked_count")) is int and price["blocked_count"]==len(blocked),"PRICE_BLOCKED_COUNT_INVALID"
+    pass_set=set(symbols)
+    unknown_set=set(unknown)
+    blocked_set=set(blocked)
+    assert not(pass_set & unknown_set or pass_set & blocked_set or unknown_set & blocked_set),"PRICE_PARTITION_OVERLAP"
+    master_set=set(master.get("pass_symbols",[]))
+    assert pass_set|unknown_set|blocked_set <= master_set,"PRICE_OUTSIDE_MASTER"
+    results=price.get("results")
+    if results is not None:
+        assert isinstance(results,dict) and set(results)==master_set,"PRICE_RESULT_PARTITION_DRIFT"
+        for symbol in unknown:
+            assert isinstance(results[symbol],dict) and results[symbol].get("status")!="PASS_PRICE_DV30","PRICE_UNKNOWN_RESULT_FALSE_PASS"
+        for symbol in blocked:
+            assert isinstance(results[symbol],dict) and results[symbol].get("status")!="PASS_PRICE_DV30","PRICE_BLOCKED_RESULT_FALSE_PASS"
+    assert master.get("asof_et")==price.get("asof_et"),"SAME_ASOF_REQUIRED"
     daily,weekly=expected_dates(asof)
     assert len(daily)==260 and len(weekly)==52 and daily[-1]==asof
     assert len(set(daily))==260 and len(set(weekly))==52
@@ -72,6 +92,11 @@ def build(price,master,price_sha):
         "source_price_path":PRICE,"source_price_blob_sha":price_sha,
         "source_price_pass_count":len(symbols),
         "source_price_pass_hash":price["pass_hash"],
+        "source_price_unknown_count":len(unknown),
+        "source_price_unknown_omitted_from_scope":True,
+        "source_price_blocked_count":len(blocked),
+        "source_price_blocked_omitted_from_scope":True,
+        "global_price_partition_complete":len(unknown)==0 and len(blocked)==0,
         "symbol_scope":symbols,
         "required_daily_official_sessions":daily,
         "required_completed_week_closes":weekly,
@@ -90,19 +115,36 @@ def selftest():
     m={"asof_et":asof,"pass_symbols":["AAA","BBB"],"execution":"NONE","real_money":"NO-GO"}
     p={"asof_et":asof,"pass_symbols":["AAA","BBB"],"pass_count":2,
        "pass_hash":sha256_lines(["AAA","BBB"]),
-       "unknown_count":0,"blocked_count":0,"execution":"NONE","real_money":"NO-GO"}
+       "unknown_count":0,"unknown_symbols":[],"blocked_count":0,"blocked_symbols":[],
+       "execution":"NONE","real_money":"NO-GO"}
     out=build(p,m,"a"*40)
     assert out["status"]=="RESEARCH_HISTORY_REQUEST_READY_NO_MARKET_HISTORY_MEASURED"
     assert out["required_daily_count"]==260 and len(out["required_daily_official_sessions"])==260
     assert out["required_completed_week_count"]==52 and len(out["required_completed_week_closes"])==52
     assert out["can_register_R92"] is False and out["source_entitlement_proven"] is False
+    # A single independent UNKNOWN must not suppress known-PASS SHADOW history.
+    m_partial=copy.deepcopy(m)
+    p_partial=copy.deepcopy(p)
+    m_partial["pass_symbols"].append("CCC")
+    p_partial["unknown_symbols"]=["CCC"]
+    p_partial["unknown_count"]=1
+    partial=build(p_partial,m_partial,"b"*40)
+    assert partial["symbol_scope"]==["AAA","BBB"]
+    assert partial["source_price_unknown_count"]==1
+    assert partial["global_price_partition_complete"] is False
+    assert partial["canonical_history_pass_created"]==0 and partial["can_register_R92"] is False
+    assert partial["current_history_authority_proven"] is False
     cases=[
        ("ASOF_DRIFT",lambda a,b:b.update(asof_et="2026-10-07")),
        ("PRICE_HASH_DRIFT",lambda a,b:a.update(pass_hash="0"*64)),
        ("BAD_COUNT",lambda a,b:a.update(pass_count=3)),
        ("DUPLICATE",lambda a,b:a.update(pass_symbols=["AAA","AAA"])),
        ("OUTSIDE_MASTER",lambda a,b:a.update(pass_symbols=["ZZZ"])),
-       ("UNKNOWN",lambda a,b:a.update(unknown_count=1)),
+       ("UNKNOWN_COUNT_MISMATCH",lambda a,b:a.update(unknown_count=1)),
+       ("UNKNOWN_COLLISION",lambda a,b:a.update(unknown_symbols=["AAA"],unknown_count=1)),
+       ("BLOCKED_COLLISION",lambda a,b:a.update(blocked_symbols=["BBB"],blocked_count=1)),
+       ("UNKNOWN_BLOCKED_OVERLAP",lambda a,b:a.update(unknown_symbols=["CCC"],unknown_count=1,blocked_symbols=["CCC"],blocked_count=1)),
+       ("FOREIGN_UNKNOWN",lambda a,b:a.update(unknown_symbols=["ZZZ"],unknown_count=1)),
        ("EXECUTION",lambda a,b:a.update(execution="REAL")),
        ("NONSESSION",lambda a,b:(a.update(asof_et="2026-10-10"),b.update(asof_et="2026-10-10")))
     ]
@@ -112,7 +154,7 @@ def selftest():
         try:build(a,b,"a"*40)
         except (AssertionError,ValueError):continue
         raise AssertionError("INVALID_CURRENT_HISTORY_REQUEST_ACCEPTED:"+name)
-    print("XRAY_CURRENT_HISTORY_REQUEST_SELFTEST=PASS_ONE_POSITIVE_EIGHT_FAIL_CLOSED")
+    print("XRAY_CURRENT_HISTORY_REQUEST_SELFTEST=PASS_TWO_POSITIVES_TWELVE_FAIL_CLOSED")
 
 def main():
     ap=argparse.ArgumentParser()
