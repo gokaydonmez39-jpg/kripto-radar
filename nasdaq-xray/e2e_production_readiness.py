@@ -87,6 +87,10 @@ def mc_exact(mc,price,price_sha):
                 return False
     return seen==symbols
 
+def terminal_bound_mc_selection(valid_bridge_names,terminal,asof,blob_sha):
+    """Selection parity with existing snapshot len(mcs)==1: test baseline."""
+    return valid_bridge_names[0] if len(valid_bridge_names)==1 else None
+
 def terminal_research_seal(terminal):
     """Full-universe success OR independently attested candidate-local success.
 
@@ -448,6 +452,33 @@ def selftest():
             "pass_hash":bridge["input_pass_hash"]}
         assert mc_exact(bridge,historical_scope,bridge["input_blob_sha"]),(
             "HISTORIC_NATIVE_MC_SCHEMA_FALSE_REJECTION",file_name)
+    # RED: multiple historically valid same-ASOF MC revision files must not
+    # indefinitely deadlock current readiness when terminal pins EXACTLY ONE
+    # Git blob. No terminal-selected proof => always blocked.
+    v1="canonical_mc_bridge_20261009_c417_dv30_v1.json"
+    v2="canonical_mc_bridge_20261009_c417_dv30_v2.json"
+    mc_terminal={"evidence":{"mc":{"path":"nasdaq-xray/"+v2,
+                                  "blob_sha":"b"*40}}}
+    sha_lookup=lambda name: {"a":None,v1:"a"*40,v2:"b"*40}.get(name)
+    assert terminal_bound_mc_selection([v1,v2],mc_terminal,
+                 "2026-10-09",sha_lookup)==v2, "MULTIPLE_VALID_REVISIONS_FALSE_BLOCK"
+    for altered in (
+        {"path":"nasdaq-xray/"+v2,"blob_sha":"a"*40},
+        {"path":"nasdaq-xray/"+v1,"blob_sha":"b"*40},
+        {"path":"nasdaq-xray/../"+v2,"blob_sha":"b"*40},
+        {"path":"nasdaq-xray/canonical_mc_bridge_20261008_c417_dv30_v2.json","blob_sha":"b"*40},
+        {"path":"nasdaq-xray/"+v2,"blob_sha":"b"*39+"c"},
+    ):
+        poisoned={"evidence":{"mc":altered}}
+        assert terminal_bound_mc_selection([v1,v2],poisoned,
+                        "2026-10-09",sha_lookup) is None, "UNBOUND_MC_AUTHORITY_ACCEPTED"
+    assert terminal_bound_mc_selection([v1,v2],{},
+                   "2026-10-09",sha_lookup) is None
+    assert terminal_bound_mc_selection([v2,v2],mc_terminal,
+                   "2026-10-09",sha_lookup) is None
+    assert terminal_bound_mc_selection([],mc_terminal,
+                   "2026-10-09",sha_lookup) is None
+    print("XRAY_MC_TERMINAL_BOUND_SELECTION=PASS_MULTI_REVISION_POSITIVE_8_NO_AUTHORITY_NEGATIVES")
     print("XRAY_MC_HISTORIC_REAL_BRIDGES=PASS_OCT05_504_OCT07_510_NO_CURRENT_PROMOTION")
     print("XRAY_MC_NATIVE_NEGATIVE_ROWS=PASS_3_MISSING_FLAG_POSITIVES_6_CONTRADICTORY_NEGATIVES")
     print("XRAY_MC_PRIMARY_ROW_EVIDENCE=PASS_8_ADVERSARIAL_NEGATIVES")
