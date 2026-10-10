@@ -33,6 +33,7 @@ jobs:
         run: |
           python -m py_compile nasdaq-xray/sina_identity_epoch.py nasdaq-xray/sina_late_asof_recheck.py nasdaq-xray/sina_stage.py nasdaq-xray/orchestrator_run.py
           python nasdaq-xray/research/test_sina_asof_recovery.py
+          python nasdaq-xray/orchestrator_partial_invalidation_selftest.py
       - name: Persist exact-CI SHA and no-authority research witness
         if: success()
         shell: bash
