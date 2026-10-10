@@ -11,6 +11,7 @@ PRIMARY MC, G9, account and device receipts are NOT certified here.
 from __future__ import annotations
 import argparse
 import collections
+import hashlib
 import datetime as dt
 import json
 import os
@@ -75,7 +76,8 @@ def audit(asof,targets,start,fetch,*,now):
     if start>=asof or not isinstance(start,str):
         raise ValueError("ALPACA_CA_HORIZON_INVALID")
     counts=collections.Counter()
-    event_ids=set()
+    event_fingerprints={}
+    cross_batch_duplicates=0
     unknown_group_count=0
     unmatched_subjects=0
     measured=0
@@ -83,6 +85,7 @@ def audit(asof,targets,start,fetch,*,now):
     fault=None
     for i in range(0,len(targets),BATCH_SIZE):
         batch=targets[i:i+BATCH_SIZE]
+        batch_event_ids=set()
         seen_tokens=set()
         token=None
         try:
@@ -106,8 +109,9 @@ def audit(asof,targets,start,fetch,*,now):
                         day=row.get("process_date")
                         if not isinstance(identifier,str) or not identifier:
                             raise RuntimeError("ALPACA_CA_MISSING_EVENT_ID")
-                        if identifier in event_ids:
-                            raise RuntimeError("ALPACA_CA_DUPLICATE_EVENT_ID")
+                        if identifier in batch_event_ids:
+                            raise RuntimeError("ALPACA_CA_DUPLICATE_EVENT_ID_IN_BATCH")
+                        batch_event_ids.add(identifier)
                         try:
                             date=dt.date.fromisoformat(day)
                         except (TypeError,ValueError):
@@ -118,9 +122,18 @@ def audit(asof,targets,start,fetch,*,now):
                                   if isinstance(row.get(k),str) and row[k]}
                         if not subjects.intersection(batch):
                             unmatched_subjects+=1
-                        event_ids.add(identifier)
-                        counts[group]+=1
                         page_size+=1
+                        fingerprint=hashlib.sha256(json.dumps(
+                            {"group":group,"row":row},sort_keys=True,
+                            separators=(",",":"),ensure_ascii=True
+                        ).encode("utf-8")).hexdigest()
+                        if identifier in event_fingerprints:
+                            if event_fingerprints[identifier]!=fingerprint:
+                                raise RuntimeError("ALPACA_CA_DUPLICATE_EVENT_CONFLICT")
+                            cross_batch_duplicates+=1
+                            continue
+                        event_fingerprints[identifier]=fingerprint
+                        counts[group]+=1
                 pages+=1
                 nt=response.get("next_page_token")
                 if nt is None or nt=="":
@@ -145,6 +158,7 @@ def audit(asof,targets,start,fetch,*,now):
         "pages_consumed":pages,"total_events_seen":sum(counts.values()),
         "counts_by_group":dict(sorted(counts.items())),
         "non_cash_dividend_events":sum(counts.values())-counts["cash_dividends"],
+        "duplicate_cross_batch_events_deduped":cross_batch_duplicates,
         "unknown_vendor_group_events":unknown_group_count,
         "subject_not_in_requested_batch":unmatched_subjects,
         "status":("SHADOW_SCOPE_COMPLETE_CA_NOT_PIT"
@@ -225,7 +239,7 @@ def selftest():
     conflict=audit(asof,two_batches,"2025-09-29",mismatched,now=now)
     assert conflict["status"]=="SHADOW_INCOMPLETE_OR_INVALID_CA",conflict
     assert conflict["failure_reason_class"]=="ALPACA_CA_DUPLICATE_EVENT_CONFLICT",conflict
-    print("XRAY_ALPACA_CA_515_SELFTEST=PASS_NO_PIT_NO_PRIMARY_7_NEGATIVE")
+    print("XRAY_ALPACA_CA_515_SELFTEST=PASS_NO_PIT_NO_PRIMARY_9_NEGATIVE")
 
 
 def main():
