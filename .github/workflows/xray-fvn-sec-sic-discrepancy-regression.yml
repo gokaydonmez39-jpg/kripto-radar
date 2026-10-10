@@ -1,0 +1,31 @@
+name: XRAY SEC SIC Source Discrepancy Negative Regression
+on:
+  push:
+    branches: [main, audit/c417-fvn-sec-sic-conflict-fence-20261010]
+    paths:
+      - "nasdaq-xray/master_sec_sic_discrepancies_20261009.json"
+      - "nasdaq-xray/build_current_identity_proofs.py"
+      - "nasdaq-xray/master_sec_identity_manual_seed_registry.json"
+      - "nasdaq-xray/nbrg_official_sec_identity_seed_selftest.py"
+      - "nasdaq-xray/tests/test_fvn_sec_sic_discrepancy.py"
+      - ".github/workflows/xray-fvn-sec-sic-discrepancy-regression.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  contradictory-sec-identity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Exact triggered commit, never checkout mutable main
+        run: test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Reject unsupported blank-check proof while retaining exact SEC seeds
+        run: |
+          python -m py_compile nasdaq-xray/tests/test_fvn_sec_sic_discrepancy.py
+          python nasdaq-xray/tests/test_fvn_sec_sic_discrepancy.py
+          python nasdaq-xray/nbrg_official_sec_identity_seed_selftest.py
+          echo XRAY_SEC_SIC_FILING_CONFLICT=FAIL_CLOSED_NO_PRIMARY_NO_SIGNAL
