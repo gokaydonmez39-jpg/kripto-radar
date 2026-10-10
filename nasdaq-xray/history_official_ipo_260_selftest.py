@@ -13,12 +13,14 @@ def run():
     assert evidence["execution"]=="NONE" and evidence["real_money"]=="NO-GO"
     assert evidence["alpha_authority"] is False
     assert price["asof_et"]=="2026-10-09"
-    assert {"FRVO","BSP"}<=set(price["pass_symbols"])
-    for symbol,first in (("FRVO","2026-05-13"),("BSP","2026-07-01")):
+    assert {"FRVO","BSP","EQPT"}<=set(price["pass_symbols"])
+    for symbol,first in (("FRVO","2026-05-13"),("BSP","2026-07-01"),("EQPT","2026-01-23")):
         rec=evidence["records"][symbol]
         assert rec["mode"]=="OFFICIAL_LISTING_UPPER_BOUND_FAIL_ONLY"
         assert rec["earliest_public_trading_date"]==first
         assert len(rec["sources"])>=2
+        if symbol=="EQPT":
+            assert "https://www.nasdaq.com/press-release/equipmentshare-debuts-nasdaq-eqpt-advancing-digital-transformation-construction-2026" in rec["sources"]
         days=mcal.get_calendar("NYSE").schedule(start_date=first,end_date=price["asof_et"])
         assert 0<len(days)<260,(symbol,len(days))
     # Official Nasdaq ECA2025-559: same common shares traded as SOLSV
