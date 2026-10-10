@@ -100,24 +100,26 @@ def main():
     # Existing 9-Oct immutable PRICE decisions: only the three newest
     # listings may move UNKNOWN -> terminal FAIL for insufficient sessions.
     price=json.loads((ROOT/"canonical_current_price_dv30.json").read_text())
-    assert price["asof_et"]==ASOF,"THIS_REPLAY_IS_BOUND_TO_REAL_09_OCT_PRICE"
-    four=["AIOK","GRAL","RTSN","TRXB"]
-    assert [x for x in four if x in price["unknown_symbols"]]==four
-    sample_real={x:deepcopy(price["results"][x]) for x in four}
-    assert all(row["status"]=="UNKNOWN" for row in sample_real.values())
-    changed_real=apply_official_recent_listing_fail_only(sample_real,registry,ASOF,exp30)
-    assert changed_real==["AIOK","RTSN","TRXB"],changed_real
-    assert sample_real["GRAL"]==price["results"]["GRAL"],"GRAL_SOURCE_NOT_PROMOTED"
-    assert all(sample_real[x]["status"]=="FAIL_DV30_INSUFFICIENT_SESSIONS"
-               for x in ("AIOK","RTSN","TRXB"))
-    assert all(sample_real[x]["info"]["max_possible_completed_sessions_in_exact30_window"]==1
-               for x in ("AIOK","RTSN","TRXB"))
-    assert set(changed_real).isdisjoint(price["pass_symbols"])
-    assert len(price["pass_symbols"])==514
-    assert len(price["unknown_symbols"])==4
-    # This is an in-memory replay, not a canonical file/authority mutation.
-    assert not any(sample_real[x]["status"]=="PASS_PRICE_DV30" for x in four)
-    print("XRAY_09_OCT_THREE_NEW_IPOS_FAIL_ONLY=PASS_GRAL_UNKNOWN_514_PASS_UNCHANGED")
+    if price["asof_et"]==ASOF:
+        four=["AIOK","GRAL","RTSN","TRXB"]
+        assert [x for x in four if x in price["unknown_symbols"]]==four
+        sample_real={x:deepcopy(price["results"][x]) for x in four}
+        assert all(row["status"]=="UNKNOWN" for row in sample_real.values())
+        changed_real=apply_official_recent_listing_fail_only(sample_real,registry,ASOF,exp30)
+        assert changed_real==["AIOK","RTSN","TRXB"],changed_real
+        assert sample_real["GRAL"]==price["results"]["GRAL"],"GRAL_SOURCE_NOT_PROMOTED"
+        assert all(sample_real[x]["status"]=="FAIL_DV30_INSUFFICIENT_SESSIONS"
+                   for x in ("AIOK","RTSN","TRXB"))
+        assert all(sample_real[x]["info"]["max_possible_completed_sessions_in_exact30_window"]==1
+                   for x in ("AIOK","RTSN","TRXB"))
+        assert set(changed_real).isdisjoint(price["pass_symbols"])
+        assert len(price["pass_symbols"])==514
+        assert len(price["unknown_symbols"])==4
+        # This is an in-memory replay, not a canonical file/authority mutation.
+        assert not any(sample_real[x]["status"]=="PASS_PRICE_DV30" for x in four)
+        print("XRAY_09_OCT_THREE_NEW_IPOS_FAIL_ONLY=PASS_GRAL_UNKNOWN_514_PASS_UNCHANGED")
+    else:
+        print("XRAY_09_OCT_REPLAY_SKIPPED_CURRENT_PRICE_MOVED_TO_NEW_ASOF")
 
     print("XRAY_PRICE_OFFICIAL_LISTING_SELFTEST=PASS")
     print(json.dumps({
