@@ -38,13 +38,15 @@
     },
     "SOLS": {
       "mode": "OFFICIAL_LISTING_UPPER_BOUND_FAIL_ONLY",
-      "earliest_public_trading_date": "2025-10-30",
+      "earliest_public_trading_date": "2025-10-20",
       "regular_way_trading_date": "2025-10-30",
       "sources": [
         "https://www.nasdaq.com/press-release/solstice-advanced-materials-completes-spin-honeywell-and-begins-trading-nasdaq-2025",
-        "https://www.sec.gov/Archives/edgar/data/2064953/000206495326000008/sols-20251231.htm"
+        "https://www.sec.gov/Archives/edgar/data/2064953/000206495326000008/sols-20251231.htm",
+        "https://classic.nasdaqtrader.com/TraderNews.aspx?id=ECA2025-559"
       ],
-      "note": "Solstice began regular-way Nasdaq trading as an independent public company under SOLS on 2025-10-30."
+      "note": "Nasdaq Corporate Actions Alert ECA2025-559 confirms SOLSV when-issued shares first traded 2025-10-20 (CUSIP 83443Q103) and the symbol changed to SOLS for regular-way trading on 2025-10-30. Earliest bona fide public trading used only as conservative 260-session FAIL upper bound; no 260 PASS, no imported HON history, no R92.",
+      "predecessor_when_issued_symbol": "SOLSV"
     },
     "VSNT": {
       "mode": "OFFICIAL_LISTING_UPPER_BOUND_FAIL_ONLY",
