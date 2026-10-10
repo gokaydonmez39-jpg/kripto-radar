@@ -1,0 +1,88 @@
+name: XRAY Oct9 Same-ASOF Settlement Rebind Fail-Only Regression
+on:
+  push:
+    branches: [audit/c417-mc-alternatives-sec-pit-20261010]
+    paths:
+      - "nasdaq-xray/settlement_same_asof_failonly_rebind.py"
+      - "nasdaq-xray/research/test_settlement_same_asof_failonly_rebind.py"
+      - "nasdaq-xray/build_current_resolver_request.py"
+      - ".github/workflows/xray-oct9-settlement-failonly-rebind-shadow.yml"
+  pull_request:
+    paths:
+      - "nasdaq-xray/settlement_same_asof_failonly_rebind.py"
+      - "nasdaq-xray/research/test_settlement_same_asof_failonly_rebind.py"
+      - "nasdaq-xray/build_current_resolver_request.py"
+      - ".github/workflows/xray-oct9-settlement-failonly-rebind-shadow.yml"
+permissions:
+  contents: read
+jobs:
+  original-current-source-immutable-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 1}
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - name: Bring exact 2026-10-09 production 514 PASS zero UNKNOWN snapshot (read only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --quiet --no-tags --depth=1 origin f235874482c0b00856954c03078dd52f80f377a3
+          git show f235874482c0b00856954c03078dd52f80f377a3:nasdaq-xray/canonical_current_master_manifest.json > "$RUNNER_TEMP/source_master.json"
+          git show f235874482c0b00856954c03078dd52f80f377a3:nasdaq-xray/canonical_current_price_dv30.json > "$RUNNER_TEMP/source_price.json"
+          cp nasdaq-xray/canonical_resolver_bridge_20261009_c417_dv30_v1.json "$RUNNER_TEMP/source_resolver.json"
+      - name: Run 24 fail-closed adversarial cases against actual GitHub source blobs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile nasdaq-xray/settlement_same_asof_failonly_rebind.py nasdaq-xray/research/test_settlement_same_asof_failonly_rebind.py
+          python nasdaq-xray/research/test_settlement_same_asof_failonly_rebind.py \
+            --master "$RUNNER_TEMP/source_master.json" \
+            --price "$RUNNER_TEMP/source_price.json" \
+            --bridge "$RUNNER_TEMP/source_resolver.json"
+      - name: Publish classification-only digest-bound CI witness
+        shell: bash
+        run: |
+          python - <<'PY'
+          import hashlib,json,os,pathlib,subprocess
+          root=pathlib.Path(os.environ["RUNNER_TEMP"])
+          def sha(b):return hashlib.sha1(b"blob "+str(len(b)).encode()+bytes([0])+b).hexdigest()
+          master,price,old=((root/n).read_bytes() for n in ("source_master.json","source_price.json","source_resolver.json"))
+          m,p,b=(json.loads(x) for x in (master,price,old))
+          assert p["asof_et"]==b["asof_et"]==m["asof_et"]=="2026-10-09"
+          assert p["pass_count"]==len(b["pass_price_dv30_symbols"])==514
+          assert p["unknown_count"]==p["blocked_count"]==0
+          assert len(b["block_current_run"])==39
+          assert sha(master)==b["source_master_blob_sha"]
+          report={
+           "schema":"XRAY_20261009_SETTLEMENT_FAILONLY_REBIND_OFFLINE_V1",
+           "git_head":subprocess.check_output(["git","rev-parse","HEAD"],text=True).strip(),
+           "source_price_git_blob_sha":sha(price),
+           "source_master_git_blob_sha":sha(master),
+           "immutable_settlement_bridge_git_blob_sha":sha(old),
+           "asof_et":"2026-10-09",
+           "same_asof_settlement_reuse_eligible_offline":True,
+           "existing_pass_count":514,
+           "terminalized_old_residual_count":39,
+           "adversarial_negative_cases":24,
+           "actual_vendor_call_made":False,
+           "new_settlement_measurement_made":False,
+           "rights_to_automated_data_use_verified":False,
+           "canonical_price_promoted":False,
+           "canonical_mc_primary_promoted":False,
+           "history260_proven":False,
+           "r92_created":False,
+           "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True
+          }
+          (root/"xray_settlement_rebind_counts_only.json").write_text(
+              json.dumps(report,indent=2,sort_keys=True)+chr(10))
+          print("XRAY_SETTLEMENT_REBIND_OFFLINE_CI=PASS_FAILONLY_NO_VENDOR_NO_MC")
+          PY
+      - name: Archive counts only; never persist paid vendor OHLCV
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-oct9-settlement-same-asof-failonly-counts
+          path: ${{ runner.temp }}/xray_settlement_rebind_counts_only.json
+          retention-days: 14
+          if-no-files-found: error
