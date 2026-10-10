@@ -6,6 +6,7 @@ on:
     paths:
       - nasdaq-xray/nasdaq_20261009_immutable_archive_shadow.py
       - nasdaq-xray/tests/test_archived_directory_mismatch.py
+      - nasdaq-xray/tests/test_archived_directory_duplicate.py
       - .github/workflows/xray-archive-issuer-identity-negative.yml
   workflow_dispatch:
 permissions:
@@ -23,5 +24,7 @@ jobs:
           python-version: '3.12'
       - name: Assert mismatched same-ticker issuer fails closed
         run: python nasdaq-xray/tests/test_archived_directory_mismatch.py
+      - name: Assert duplicate queue is fail-closed
+        run: python nasdaq-xray/tests/test_archived_directory_duplicate.py
       - name: Run existing parser adversarial regressions
         run: python nasdaq-xray/nasdaq_20261009_immutable_archive_shadow.py --selftest
