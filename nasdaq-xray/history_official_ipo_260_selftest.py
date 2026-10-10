@@ -13,12 +13,14 @@ def run():
     assert evidence["execution"]=="NONE" and evidence["real_money"]=="NO-GO"
     assert evidence["alpha_authority"] is False
     assert price["asof_et"]=="2026-10-09"
-    assert {"FRVO","BSP"}<=set(price["pass_symbols"])
-    for symbol,first in (("FRVO","2026-05-13"),("BSP","2026-07-01")):
+    assert {"FRVO","BSP","EQPT"}<=set(price["pass_symbols"])
+    for symbol,first in (("FRVO","2026-05-13"),("BSP","2026-07-01"),("EQPT","2026-01-23")):
         rec=evidence["records"][symbol]
         assert rec["mode"]=="OFFICIAL_LISTING_UPPER_BOUND_FAIL_ONLY"
         assert rec["earliest_public_trading_date"]==first
         assert len(rec["sources"])>=2
+        if symbol=="EQPT":
+            assert "https://www.nasdaq.com/press-release/equipmentshare-debuts-nasdaq-eqpt-advancing-digital-transformation-construction-2026" in rec["sources"]
         days=mcal.get_calendar("NYSE").schedule(start_date=first,end_date=price["asof_et"])
         assert 0<len(days)<260,(symbol,len(days))
     # Official Nasdaq ECA2025-559: same common shares traded as SOLSV
@@ -53,6 +55,24 @@ def run():
     assert isinstance(fn.body[0].value,ast.Call)
     assert isinstance(fn.body[0].value.func,ast.Name)
     assert fn.body[0].value.func.id=="official_listing_upper_bound_fail"
-    print("XRAY_FRVO_BSP_OFFICIAL_260_FAIL_ONLY=PASS_ZERO_VENDOR_NO_HISTORY_PASS")
+    # Execute the production functions in isolation, not just a static record check.
+    # This imports no vendor SDK and reads no market bars or credentials.
+    from datetime import datetime, timedelta
+    sandbox={"OFFICIAL_RECORDS":evidence["records"],"mcal":mcal,
+             "HARD_DAILY":260,"HARD_WEEKLY":52,
+             "datetime":datetime,"timedelta":timedelta}
+    funcs=[n for n in tree.body if isinstance(n,ast.FunctionDef) and
+           n.name in {"week_count","official_listing_upper_bound_fail"}]
+    assert len(funcs)==2
+    exec(compile(ast.Module(body=funcs,type_ignores=[]),str(ROOT/"history_phase.py"),"exec"),sandbox)
+    for sym in ("BSP","EQPT","FRVO"):
+        witness=sandbox["official_listing_upper_bound_fail"](sym,"2026-10-09")
+        assert witness is not None,("PRODUCTION_HISTORY_FAIL_BOUND_MISSING",sym)
+        assert witness["proof"]=="OFFICIAL_LISTING_DATE_HISTORY_UPPER_BOUND"
+        assert witness["max_possible_daily_bars"]<260
+        assert witness["max_possible_completed_weeks"]<52
+        assert witness["thresholds"]=={"daily":260,"weekly_completed":52}
+    assert sandbox["official_listing_upper_bound_fail"]("AAPL","2026-10-09") is None
+    print("XRAY_BSP_EQPT_FRVO_OFFICIAL_260_FAIL_ONLY=PASS_PRODUCTION_FUNCTION_ZERO_VENDOR_NO_HISTORY_PASS")
 if __name__=="__main__":
     run()
