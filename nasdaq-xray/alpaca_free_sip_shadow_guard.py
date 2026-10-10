@@ -213,7 +213,40 @@ def selftest():
     assert evaluate_daily(corrupted,dates,"2026-10-08",now)[1]=="OHLCV_OR_DATE_PARSE_ERROR"
     corrupted=deepcopy(sample);corrupted[-1]["c"]=True
     assert evaluate_daily(corrupted,dates,"2026-10-08",now)[1]=="OHLCV_NOT_NUMERIC"
+    # In-process HTTP mock verifies page_token and unchanged exact query scope.
+    # It must never access a real provider or emit raw test rows.
+    from unittest.mock import patch
+    p0={"bars":{"AAPL":[bar(dates[-2])]},"next_page_token":"pageA=="}
+    p1={"bars":{"MSFT":[bar(dates[-1])]},"next_page_token":None}
+    seen=[]
+    class Reply:
+        status=200
+        def __init__(self,data):self.raw=json.dumps(data).encode()
+        def __enter__(self):return self
+        def __exit__(self,*args):return False
+        def read(self,n):return self.raw[:n]
+    def mock_open(req,timeout=None):
+        url=req.full_url
+        parsed=urllib.parse.urlsplit(url)
+        q=urllib.parse.parse_qs(parsed.query)
+        assert req.get_header("Apca-api-key-id")=="offline-key"
+        assert "offline-key" not in url and "offline-secret" not in url
+        assert q["feed"]==["sip"] and q["adjustment"]==["raw"]
+        assert q["symbols"]==["AAPL,MSFT"] and q["limit"]==["10000"]
+        assert q["start"]==["2025-01-01"] and q["end"]==["2026-01-01"]
+        index=len(seen)
+        if index==0:
+            assert "page_token" not in q
+        else:
+            assert q["page_token"]==["pageA=="]
+        seen.append(q)
+        return Reply(p0 if index==0 else p1)
+    with patch("urllib.request.urlopen",side_effect=mock_open):
+        loaded=request_batch(["AAPL","MSFT"],"2025-01-01","2026-01-01",
+                             "offline-key","offline-secret")
+    assert len(seen)==2 and len(loaded["AAPL"])==len(loaded["MSFT"])==1
     print("XRAY_ALPACA_FREE_SIP_SHADOW_SELFTEST=PASS_HOLDBACK_30_SESSIONS_DUPLICATE_GAPS_ZERO_VOL_FUTURE")
+    print("XRAY_ALPACA_SIP_PAGINATED_REQUEST_MOCK=PASS_TWO_PAGES_SCOPE_CONSTANT_NO_NETWORK")
 if __name__=="__main__":
     p=argparse.ArgumentParser()
     p.add_argument("--selftest",action="store_true")
