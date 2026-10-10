@@ -1,0 +1,27 @@
+name: XRAY Archived Nasdaq Issuer Identity Negative Regression
+on:
+  push:
+    branches:
+      - audit/xray-archive-identity-name-guard-20261010
+    paths:
+      - nasdaq-xray/nasdaq_20261009_immutable_archive_shadow.py
+      - nasdaq-xray/tests/test_archived_directory_mismatch.py
+      - .github/workflows/xray-archive-issuer-identity-negative.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  negative-issuer-identity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Assert mismatched same-ticker issuer fails closed
+        run: python nasdaq-xray/tests/test_archived_directory_mismatch.py
+      - name: Run existing parser adversarial regressions
+        run: python nasdaq-xray/nasdaq_20261009_immutable_archive_shadow.py --selftest
