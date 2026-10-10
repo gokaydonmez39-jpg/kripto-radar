@@ -392,6 +392,38 @@ def selftest():
     ):
         bad=deepcopy(mc);edit(bad)
         assert not mc_exact(bad,price,"P"),("UNPROVEN_PRIMARY_OR_WATCH_ESCAPED",bad)
+    # Native C4.17 bridge schemas deliberately omit r92_eligible on
+    # MC_FAIL_PRIMARY, MC_FAIL_FALLBACK_TWO_SOURCE and MC_UNKNOWN rows.
+    # Their *negative status* is an R92 veto: missing eligibility is not
+    # positive evidence, but it must not make an intact bridge unverifiable.
+    # MC_PASS_FALLBACK_WATCH is different: require explicit False.
+    native=deepcopy(mc)
+    native["input_pass_symbols"]=["A","B","C","D","E"]
+    native["results"]["C"]={"status":"MC_FAIL_FALLBACK_TWO_SOURCE"}
+    native["results"]["D"]={"status":"MC_UNKNOWN","unknown_never_pass":True}
+    native["results"]["E"]={
+        "status":"MC_FAIL_PRIMARY",
+        "mode":"BIGDATA_EXACT_XNAS_COMPANY_PUBLIC_USD",
+        "listing":"XNAS:E",
+        "market_cap_usd":1_500_000_000,
+        "bigdata_entity_id":"ISOLATED_NEGATIVE_PRIMARY_TEST"}
+    native["fallback_fail_symbols"]=["C"]
+    native["unknown_symbols"]=["D"]
+    native["primary_fail_symbols"]=["E"]
+    native["counts"]["MC_FAIL_FALLBACK_TWO_SOURCE"]=1
+    native["counts"]["MC_UNKNOWN"]=1
+    native["counts"]["MC_FAIL_PRIMARY"]=1
+    native_price=dict(price,pass_symbols=["A","B","C","D","E"])
+    assert mc_exact(native,native_price,"P"),"NEGATIVE_NATIVE_SCHEMA_FALSE_REJECTION"
+    for sym in ("C","D","E"):
+        forged=deepcopy(native)
+        forged["results"][sym]["r92_eligible"]=True
+        assert not mc_exact(forged,native_price,"P"),("CONTRADICTORY_R92_FLAG_ACCEPTED",sym)
+    for sym in ("C","D","E"):
+        forged=deepcopy(native)
+        forged["results"][sym]["r92_eligible"]="false"
+        assert not mc_exact(forged,native_price,"P"),("NONBOOL_R92_FLAG_ACCEPTED",sym)
+    print("XRAY_MC_NATIVE_NEGATIVE_ROWS=PASS_3_MISSING_FLAG_POSITIVES_6_CONTRADICTORY_NEGATIVES")
     print("XRAY_MC_PRIMARY_ROW_EVIDENCE=PASS_8_ADVERSARIAL_NEGATIVES")
     base_shas={k:k+"_SHA" for k in ("master","price","history","events","final")}
     t={"asof_et":"2026-10-08","compiled_policy_hash":POLICY,
