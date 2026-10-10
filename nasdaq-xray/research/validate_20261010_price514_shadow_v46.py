@@ -43,6 +43,23 @@ def validate(record:dict,price:dict,price_sha:str)->tuple[bool,list[str]]:
            and h.get("calendar_last")=="2026-10-09", "HISTORY_SCOPE_UNVERIFIED")
     demand(h.get("exact_session_and_week_date_coverage")==n-len(missing)
            and h.get("incomplete_date_coverage")==len(missing), "HISTORY_COUNT_MISMATCH")
+    # A symbol is NOT an asset identity. SPCX formerly denoted an ETF that
+    # changed to SPCK; its history must never fill the new SPCX issuer gap.
+    # This only validates the recorded non-authoritative warning, not source truth.
+    alerts=record.get("identity_reuse_alerts")
+    spcx_alerts=([a for a in alerts if isinstance(a,dict)
+                  and a.get("symbol")=="SPCX"]
+                 if isinstance(alerts,list) else [])
+    alert=spcx_alerts[0] if len(spcx_alerts)==1 else {}
+    demand(len(spcx_alerts)==1 and "SPCX" in set(missing)
+           and alert.get("asof_et")==record.get("asof_et")
+           and alert.get("problem")=="SYMBOL_REUSED_ACROSS_DISTINCT_ASSETS"
+           and alert.get("historical_rename_from")=="SPCX"
+           and alert.get("historical_rename_to")=="SPCK"
+           and alert.get("allow_previous_spcx_etf_history_stitch_to_current_spcx") is False
+           and alert.get("source_same_asof_identity_roots_officially_attested") is False
+           and alert.get("decision")=="HISTORY_UNKNOWN_UNTIL_CURRENT_CIK_CLASS_AND_PREDECESSOR_INTERVAL_PROOF",
+           "SYMBOL_REUSE_HISTORY_STITCH_FORBIDDEN")
     demand(m.get("requested_price_pass_symbols")==n and m.get("groups_complete")==11
            and m.get("market_cap_values_received")==n, "MC_SCOPE_INCOMPLETE")
     demand(m.get("above_or_equal_existing_usd_2b_mc_floor")==n-len(below)
