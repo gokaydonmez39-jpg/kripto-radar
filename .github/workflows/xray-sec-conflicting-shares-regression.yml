@@ -1,0 +1,27 @@
+name: XRAY SEC Same-Vintage Conflicting Shares Regression (No Primary)
+on:
+  push:
+    branches: [audit/c417-sec-conflicting-vintage-shares-20261010, main]
+    paths:
+      - "nasdaq-xray/sec_official_free_mc_transport_probe.py"
+      - "nasdaq-xray/tests/test_sec_share_vintage_ambiguous.py"
+      - ".github/workflows/xray-sec-conflicting-shares-regression.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  sec-vintage-fence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify exact triggered source
+        run: test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Test original SEC PIT and adversarial same-filing share conflict
+        run: |
+          python -m py_compile nasdaq-xray/sec_official_free_mc_transport_probe.py nasdaq-xray/tests/test_sec_share_vintage_ambiguous.py
+          python nasdaq-xray/sec_official_free_mc_transport_probe.py --selftest
+          python nasdaq-xray/tests/test_sec_share_vintage_ambiguous.py
