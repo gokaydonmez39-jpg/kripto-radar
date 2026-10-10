@@ -136,5 +136,26 @@
       "allow_previous_spcx_etf_history_stitch_to_current_spcx": false,
       "decision": "HISTORY_UNKNOWN_UNTIL_CURRENT_CIK_CLASS_AND_PREDECESSOR_INTERVAL_PROOF"
     }
-  ]
+  ],
+  "sina_vs_history_stage_semantics": {
+    "source_sina_path": "nasdaq-xray/sina_state.json",
+    "source_sina_blob_sha": "ffee6b60305336d9b6c89e52621f98a12a8850e9",
+    "source_sina_asof_et": "2026-10-09",
+    "rule": "SINA_EXACT30_MEDIAN_PRICE_LIQUIDITY_PASS_IS_NOT_260_SESSION_HISTORY_PASS",
+    "example_bsp": {
+      "sina_stage": "PASS",
+      "sina_proof": "EXACT30_MEDIAN",
+      "connected_alpaca_260_daily_bars": 71,
+      "claim_history260_pass": false
+    },
+    "example_dftx": {
+      "sina_stage": "UNKNOWN_STATIC",
+      "sina_reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION",
+      "connected_alpaca_260_daily_bars": 260,
+      "claim_canonical_history_pass": false
+    },
+    "interpretation": "BSP stage outputs are NOT contradictory; DFTX is a provider-specific 260-coverage rescue opportunity. Both remain non-authoritative pending licensed and replayable source.",
+    "vendor_rights_verified": false,
+    "canonical_history_mutated": false
+  }
 }
