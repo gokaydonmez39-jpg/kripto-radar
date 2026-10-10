@@ -6,6 +6,8 @@ on:
       - "nasdaq-xray/mc_free_successor_contract.py"
       - "nasdaq-xray/sec_official_free_mc_transport_probe.py"
       - "nasdaq-xray/sec_free_mc_multisymbol_pit_audit.py"
+      - "nasdaq-xray/research/continuation_checkpoint_20261010_price514_three_source_shadow_triage_v46.json"
+      - "nasdaq-xray/research/validate_20261010_price514_shadow_v46.py"
       - ".github/workflows/xray-sec-full-price-pass-vintage-shadow.yml"
       - ".github/workflows/xray-sec-mc-pit-early-close-contract.yml"
   pull_request:
@@ -13,6 +15,8 @@ on:
       - "nasdaq-xray/mc_free_successor_contract.py"
       - "nasdaq-xray/sec_official_free_mc_transport_probe.py"
       - "nasdaq-xray/sec_free_mc_multisymbol_pit_audit.py"
+      - "nasdaq-xray/research/continuation_checkpoint_20261010_price514_three_source_shadow_triage_v46.json"
+      - "nasdaq-xray/research/validate_20261010_price514_shadow_v46.py"
       - ".github/workflows/xray-sec-full-price-pass-vintage-shadow.yml"
       - ".github/workflows/xray-sec-mc-pit-early-close-contract.yml"
 permissions:
@@ -44,6 +48,10 @@ jobs:
           python nasdaq-xray/mc_free_successor_contract.py --selftest
           python nasdaq-xray/sec_official_free_mc_transport_probe.py --selftest
           python nasdaq-xray/sec_free_mc_multisymbol_pit_audit.py --selftest
+      - name: Bind full PRICE scope and SEC/HISTORY/MC diagnostic math without production authority
+        run: |
+          python -m py_compile nasdaq-xray/research/validate_20261010_price514_shadow_v46.py
+          python nasdaq-xray/research/validate_20261010_price514_shadow_v46.py
       - name: Enforce zero trading and no C4.17 admission
         shell: bash
         run: |
