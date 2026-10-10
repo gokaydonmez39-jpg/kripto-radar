@@ -524,6 +524,37 @@ jobs:
                       if len(matching)>1:
                           raise RuntimeError("AMBIGUOUS_SAME_ASOF_SETTLEMENT_REBIND")
                       resolver_refresh=bool(matching)
+                  # A proven rollover settlement is NOT a finished resolver
+                  # handoff. Force exactly one full-scope successor if missing;
+                  # once SHA-exact successor exists, remain frozen/no-op.
+                  if (not resolver_refresh and rq.get("settlement_required") is True
+                      and rq.get("settlement_already_proven") is True
+                      and rq.get("status")=="IDLE"
+                      and rq.get("symbol_count")==0
+                      and px.get("unknown_count")==0 and px.get("blocked_count")==0):
+                      import glob
+                      pb=pathlib.Path("nasdaq-xray/canonical_current_price_dv30.json").read_bytes()
+                      rb=rq_path.read_bytes()
+                      ps=hashlib.sha1(b"blob "+str(len(pb)).encode()+bytes([0])+pb).hexdigest()
+                      rs=hashlib.sha1(b"blob "+str(len(rb)).encode()+bytes([0])+rb).hexdigest()
+                      full=[]
+                      stamp=latest_completed.replace("-","")
+                      for fp in glob.glob(f"nasdaq-xray/canonical_resolver_bridge_{stamp}*.json"):
+                          candidate=json.load(open(fp))
+                          if (candidate.get("bridge_role")=="FULL_SCOPE_MC_HANDOFF_PROVENANCE"
+                              and candidate.get("schema")=="XRAY_RESOLVER_EPOCH_RESULT_V1"
+                              and candidate.get("status")=="COMMITTED"
+                              and candidate.get("settlement_status")=="PASS"
+                              and candidate.get("asof_et")==latest_completed
+                              and candidate.get("queue_hash")==rq.get("queue_hash")
+                              and candidate.get("source_price_blob_sha")==ps
+                              and candidate.get("source_request_blob_sha")==rs
+                              and candidate.get("execution")=="NONE"
+                              and candidate.get("real_money")=="NO-GO"):
+                              full.append(fp)
+                      if len(full)>1:
+                          raise RuntimeError("AMBIGUOUS_EXACT_FULL_SCOPE_HANDOFF")
+                      resolver_refresh=(len(full)==0)
               except Exception:
                   resolver_refresh=True
           bridge_refresh=False
@@ -951,7 +982,7 @@ jobs:
               and len(q.get("symbols") or [])==0
               and int(q.get("price_unknown_count",-1))==0
               and int(q.get("price_blocked_count",-1))==0
-              and q.get("settlement_required") is False
+              and ((q.get("settlement_required") is False) or (q.get("settlement_already_proven") is True))
           )
           print("true" if ready else "false")
           PY
