@@ -6,6 +6,7 @@ from pathlib import Path
 from datetime import datetime
 from price_dv30_phase import eval_one, expected30, sina, classify
 from historical_halt_fail_only import apply_to_results as apply_historical_halt_fail_only
+from price_gral_halt_fail_only import apply_to_results as apply_official_gral_same_asof_fail_only
 
 ROOT=Path(__file__).resolve().parent
 INPUT=Path(os.getenv("XRAY_FULLSTATE_INPUT",str(ROOT/"canonical_full_hard_gate_20260930_state.json")))
@@ -1827,6 +1828,12 @@ def main():
     historical_halt_terminalized=apply_historical_halt_fail_only(
         results,asof,exp30
     )
+    # Historic Nasdaq GRAL Sep-23 full halt still lies in Oct-09 exact30.
+    # Real same-ASOF Sina missing-session observation corroborates the
+    # immutable official event. UNKNOWN/BLOCK -> FAIL only; NEVER PASS.
+    gral_halt_terminalized=apply_official_gral_same_asof_fail_only(
+        results,asof,exp30,s["queue_hash"]
+    )
 
     counts={}
     for r in results.values():counts[r["status"]]=counts.get(r["status"],0)+1
@@ -1877,6 +1884,8 @@ def main():
       "official_halt_guard_meta":official_halt_guard_meta,
       "historical_halt_terminalized_count":len(historical_halt_terminalized),
       "historical_halt_terminalized_symbols":sorted(historical_halt_terminalized),
+      "gral_same_asof_halt_fail_only_count":len(gral_halt_terminalized),
+      "gral_same_asof_halt_fail_only_symbols":sorted(gral_halt_terminalized),
       "official_halt_terminalized_count":len(official_halt_terminalized),
       "official_halt_terminalized_symbols":sorted(official_halt_terminalized),
       "official_listing_registry_meta":official_listing_registry_meta,

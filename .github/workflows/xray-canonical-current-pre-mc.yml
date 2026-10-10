@@ -27,6 +27,7 @@ on:
       - "nasdaq-xray/nasdaq_screener_automation_policy_selftest.py"
       - "nasdaq-xray/price_dv30_phase.py"
       - "nasdaq-xray/price_dv30_recover_from_fullstate.py"
+      - "nasdaq-xray/price_gral_halt_fail_only.py"
       - "nasdaq-xray/historical_halt_fail_only.py"
       - "nasdaq-xray/evidence/nasdaq_gral_20260923_full_session_halt_v1.json"
       - "nasdaq-xray/price_dv30_authority_selftest.py"
@@ -124,6 +125,7 @@ jobs:
             nasdaq-xray/build_current_master_manifest.py \
             nasdaq-xray/price_dv30_phase.py \
             nasdaq-xray/price_dv30_recover_from_fullstate.py \
+            nasdaq-xray/price_gral_halt_fail_only.py \
             nasdaq-xray/price_dv30_authority_selftest.py \
             nasdaq-xray/price_official_listing_selftest.py \
             nasdaq-xray/price_official_halt_selftest.py \

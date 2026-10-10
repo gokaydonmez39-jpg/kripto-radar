@@ -1,0 +1,84 @@
+name: XRAY Oct9 GRAL Official Halt + Same-ASOF 29 Session FAIL-Only
+on:
+  push:
+    branches: [main, audit/c417-mc-alternatives-sec-pit-20261010]
+    paths:
+      - "nasdaq-xray/price_gral_halt_fail_only.py"
+      - "nasdaq-xray/price_dv30_recover_from_fullstate.py"
+      - "nasdaq-xray/evidence/nasdaq_gral_20260923_full_session_halt_v1.json"
+      - ".github/workflows/xray-gral-20261009-official-halt-fail-only-regression.yml"
+  pull_request:
+    paths:
+      - "nasdaq-xray/price_gral_halt_fail_only.py"
+      - "nasdaq-xray/price_dv30_recover_from_fullstate.py"
+      - ".github/workflows/xray-gral-20261009-official-halt-fail-only-regression.yml"
+permissions:
+  contents: read
+jobs:
+  official-source-positive-and-negative:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - name: Install offline research calendar and phase compile imports
+        run: python -m pip install --disable-pip-version-check "pandas_market_calendars==5.4.0" akshare
+      - name: Exact Nasdaq 23 Sep official halt + real Oct9 Sina session gap proof
+        run: |
+          set -euo pipefail
+          python -m py_compile nasdaq-xray/price_gral_halt_fail_only.py nasdaq-xray/price_dv30_recover_from_fullstate.py
+          python nasdaq-xray/price_gral_halt_fail_only.py --selftest
+      - name: Replay only Oct9 514 PASS plus GRAL UNKNOWN without writing canonical PRICE
+        run: |
+          python - <<'PY'
+          import hashlib,json,os,pathlib,subprocess,sys
+          sys.path.insert(0,"nasdaq-xray")
+          from price_gral_halt_fail_only import apply_to_results
+          root=pathlib.Path("nasdaq-xray")
+          data=json.loads((root/"canonical_current_price_dv30.json").read_text())
+          must_replay=data["asof_et"]=="2026-10-09" and "GRAL" in data["unknown_symbols"]
+          assert data["pass_count"]==514 and data["unknown_never_pass"] is True
+          assert data["execution"]=="NONE" and data["real_money"]=="NO-GO"
+          evidence={"GRAL":dict(data["results"]["GRAL"]),"AAPL":dict(data["results"]["AAPL"])}
+          if must_replay:
+            replaced=apply_to_results(evidence,data["asof_et"],data["expected30"],data["source_master_queue_hash"])
+            assert replaced==["GRAL"],replaced
+            assert evidence["GRAL"]["status"]=="FAIL_DV30_INSUFFICIENT_SESSIONS"
+          else:
+            # After canonical repair, never overwrite an existing terminal.
+            assert data["asof_et"]!="2026-10-09" or "GRAL" not in data["unknown_symbols"]
+            replaced=apply_to_results(evidence,data["asof_et"],data["expected30"],data["source_master_queue_hash"])
+            assert replaced==[]
+          assert evidence["AAPL"]==data["results"]["AAPL"]
+          assert len(data["pass_symbols"])==514
+          assert "from price_gral_halt_fail_only import apply_to_results as apply_official_gral_same_asof_fail_only" in (root/"price_dv30_recover_from_fullstate.py").read_text()
+          assert "gral_halt_terminalized=apply_official_gral_same_asof_fail_only(" in (root/"price_dv30_recover_from_fullstate.py").read_text()
+          report={
+            "schema":"XRAY_20261009_GRAL_PINNED_OFFICIAL_HALT_AND_REAL_SOURCE_CI_V1",
+            "git_head":subprocess.check_output(["git","rev-parse","HEAD"],text=True).strip(),
+            "asof_et":data["asof_et"],
+            "price_git_blob_sha":subprocess.check_output(["git","hash-object",str(root/"canonical_current_price_dv30.json")],text=True).strip(),
+            "event_git_blob_sha":subprocess.check_output(["git","hash-object",str(root/"evidence/nasdaq_gral_20260923_full_session_halt_v1.json")],text=True).strip(),
+            "sina_git_blob_sha":subprocess.check_output(["git","hash-object",str(root/"sina_state.json")],text=True).strip(),
+            "replay_gral_fail_only":must_replay,
+            "gral_pass_promoted":False,
+            "price_pass_original":514,
+            "actual_canonical_changed_by_test":False,
+            "vendor_called":False,"provider_rights_verified":False,
+            "history_primary_authority":False,
+            "mc_primary_authority":False,
+            "r92_created":False,"alpha_authority":False,
+            "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True
+          }
+          dest=pathlib.Path(os.environ["RUNNER_TEMP"])/"gral_halt_failonly_counts.json"
+          dest.write_text(json.dumps(report,sort_keys=True,indent=2)+chr(10))
+          print("XRAY_GRAL_HALT_REPLAY=PASS_FAIL_ONLY_514_PASS_STABLE_ZERO_VENDOR_NO_GO")
+          PY
+      - name: Upload count and source SHA witness only
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-gral-oct9-halt-failonly-source-bound
+          path: ${{ runner.temp }}/gral_halt_failonly_counts.json
+          retention-days: 14
+          if-no-files-found: error
