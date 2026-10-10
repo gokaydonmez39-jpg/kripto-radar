@@ -23,6 +23,17 @@ def run():
             assert "https://www.nasdaq.com/press-release/equipmentshare-debuts-nasdaq-eqpt-advancing-digital-transformation-construction-2026" in rec["sources"]
         days=mcal.get_calendar("NYSE").schedule(start_date=first,end_date=price["asof_et"])
         assert 0<len(days)<260,(symbol,len(days))
+    new_ipo_dates=(("CBRS","2026-05-14"),("MDLN","2025-12-17"),("MMED","2026-03-06"),("NAVN","2025-10-30"),("QNT","2026-06-04"),("XE","2026-04-24"))
+    assert {s for s,_ in new_ipo_dates} <= set(price["pass_symbols"])
+    for symbol,first in new_ipo_dates:
+        rec=evidence["records"][symbol]
+        assert rec["mode"]=="OFFICIAL_LISTING_UPPER_BOUND_FAIL_ONLY"
+        assert rec["earliest_public_trading_date"]==first
+        assert rec["regular_way_trading_date"]==first
+        assert rec["sources"]
+        assert all(url.startswith("https://www.sec.gov/") or url.startswith("https://www.nasdaq.com/") or url.startswith("https://ir.quantinuum.com/") or url.startswith("https://investors.navan.com/") or url.startswith("https://navan.gcs-web.com/") for url in rec["sources"])
+        n=mcal.get_calendar("NASDAQ").schedule(start_date=first,end_date=price["asof_et"])
+        assert 0<len(n)<260,(symbol,len(n))
     # Official Nasdaq ECA2025-559: same common shares traded as SOLSV
     # when-issued from 2025-10-20, then SOLS regular-way on 2025-10-30.
     # Reject a registry that incorrectly treats 2025-10-30 as the
@@ -65,7 +76,7 @@ def run():
            n.name in {"week_count","official_listing_upper_bound_fail"}]
     assert len(funcs)==2
     exec(compile(ast.Module(body=funcs,type_ignores=[]),str(ROOT/"history_phase.py"),"exec"),sandbox)
-    for sym in ("BSP","EQPT","FRVO"):
+    for sym in ("BSP","EQPT","FRVO",*(s for s,_ in new_ipo_dates)):
         witness=sandbox["official_listing_upper_bound_fail"](sym,"2026-10-09")
         assert witness is not None,("PRODUCTION_HISTORY_FAIL_BOUND_MISSING",sym)
         assert witness["proof"]=="OFFICIAL_LISTING_DATE_HISTORY_UPPER_BOUND"
@@ -73,6 +84,6 @@ def run():
         assert witness["max_possible_completed_weeks"]<52
         assert witness["thresholds"]=={"daily":260,"weekly_completed":52}
     assert sandbox["official_listing_upper_bound_fail"]("AAPL","2026-10-09") is None
-    print("XRAY_BSP_EQPT_FRVO_OFFICIAL_260_FAIL_ONLY=PASS_PRODUCTION_FUNCTION_ZERO_VENDOR_NO_HISTORY_PASS")
+    print("XRAY_9_IPO_OFFICIAL_260_FAIL_ONLY=PASS_PRODUCTION_FUNCTION_ZERO_VENDOR_NO_HISTORY_PASS")
 if __name__=="__main__":
     run()
