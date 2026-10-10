@@ -9,6 +9,8 @@ from zoneinfo import ZoneInfo
 
 MAX_RECHECK_ROUNDS=2
 MAX_PER_RUN=250
+MAX_CANARY_PROBES_PER_EPOCH=8
+MAX_CANARY_HORIZON=dt.timedelta(hours=16)
 MIN_AFTER_RTH_CLOSE=dt.timedelta(minutes=90)
 MIN_SINCE_LAST_OBSERVATION=dt.timedelta(minutes=60)
 REASONS=frozenset({"ASOF_MISSING_REQUIRES_RESOLUTION",
@@ -104,7 +106,7 @@ def choose(state,official_close_utc,now=None,limit=MAX_PER_RUN):
     return eligible[:limit]
 
 def choose_canary_probe(state,official_close_utc,now=None):
-    """At most ONE real-source canary request/hour when all latest bars absent.
+    """At most ONE real-source canary request/hour, eight per ASOF epoch total.
     Caller MUST invoke choose() first, which rejects invalid scope/safety.
     No canary observation is invented or promoted to PRIMARY.
     """
@@ -113,9 +115,26 @@ def choose_canary_probe(state,official_close_utc,now=None):
         raise ValueError("NAIVE_CANARY_CLOCK")
     now=now.astimezone(dt.timezone.utc)
     close=official_close_utc.astimezone(dt.timezone.utc)
-    if state.get("status")!="HISTORY_PARTIAL" or now<close+MIN_AFTER_RTH_CLOSE:
+    if (state.get("status")!="HISTORY_PARTIAL"
+        or now<close+MIN_AFTER_RTH_CLOSE
+        or now>close+MAX_CANARY_HORIZON):
         return []
     rows=state["results"]
+    probes=0
+    last_probe=None
+    for rec in rows.values():
+        if not isinstance(rec,dict):return []
+        n=rec.get("late_asof_canary_probe_round",0)
+        if type(n) is not int or not 0<=n<=MAX_CANARY_PROBES_PER_EPOCH:
+            return []
+        probes+=n
+        if n:
+            when=_stamp(rec.get("updated_at_utc"))
+            if when is None or when<close or when>now:return []
+            last_probe=max(last_probe,when) if last_probe else when
+    if probes>=MAX_CANARY_PROBES_PER_EPOCH:return []
+    if last_probe and now-last_probe<MIN_SINCE_LAST_OBSERVATION:
+        return []
     if _source_ready(rows,close):
         return []
     for sym in ("AAPL","NVDA","MSFT"):
