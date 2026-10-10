@@ -40,6 +40,12 @@ def test_epoch():
     b=copy.deepcopy(a)
     # Actual GitHub 09-Oct same 3184-ticker scope changed frozen state hash.
     b["source_state_hash"]="f0f7acbf05ed808fe924c5a28074004322cc70332e7e70a2b89d5d797af1f9bc"
+    # RED reproduction of the historic bug: the old implementation keyed
+    # identity from *mutable* frozen state_hash even though official symbol
+    # identity and current PRICE Git blob were unchanged in real Oct-9 readback.
+    def legacy_frozen_key(x):
+        return "CANONICAL_FROZEN:"+x["source_state_hash"]
+    assert legacy_frozen_key(a)!=legacy_frozen_key(b), "LEGACY_RESET_BUG_NOT_REPRODUCED"
     assert frozen_identity_fingerprint(a)==frozen_identity_fingerprint(b), "SAME_IDENTITY_MUST_NOT_RESET_3184"
     for mutation in (
        lambda c:c["queue"].append("ZS"),
