@@ -403,7 +403,7 @@ def official_listing_upper_bound_fail(sym,asof):
     if not start:
         return None
     try:
-        cal=mcal.get_calendar("NYSE")
+        cal=mcal.get_calendar("NASDAQ")
         sched=cal.schedule(start_date=start,end_date=asof)
         sessions=[x.date().isoformat() for x in sched.index]
         max_daily=len(sessions)
@@ -494,7 +494,7 @@ def aligned_first_bar_upper_bound_fail(a,b,asof):
     if not fa or fa!=fb:
         return None
     try:
-        cal=mcal.get_calendar("NYSE")
+        cal=mcal.get_calendar("NASDAQ")
         sched=cal.schedule(start_date=fa,end_date=asof)
         sessions=[x.date().isoformat() for x in sched.index]
         max_daily=len(sessions)
