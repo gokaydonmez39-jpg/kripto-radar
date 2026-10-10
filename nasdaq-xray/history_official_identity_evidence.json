@@ -121,6 +121,16 @@
         "https://www.sec.gov/Archives/edgar/data/1853868/000162828026035311/fervo-8xkmay2026.htm"
       ],
       "note": "FRVO Class A common shares first traded 2026-05-13 after IPO. Official Nasdaq and SEC evidence. Fail-only HISTORY upper bound, no PASS."
+    },
+    "EQPT": {
+      "mode": "OFFICIAL_LISTING_UPPER_BOUND_FAIL_ONLY",
+      "earliest_public_trading_date": "2026-01-23",
+      "regular_way_trading_date": "2026-01-23",
+      "sources": [
+        "https://www.nasdaq.com/press-release/equipmentshare-prices-initial-public-offering-2026-01-23",
+        "https://www.nasdaq.com/press-release/equipmentshare-debuts-nasdaq-eqpt-advancing-digital-transformation-construction-2026"
+      ],
+      "note": "EquipmentShare Class A common shares began Nasdaq public trading as EQPT on 2026-01-23; issuer official Nasdaq distribution on same date independently confirms actual start following IPO price release. Exact 2026-10-09 official session-age bound is <260 daily and <52 completed weeks. FAIL_HISTORY only: never synthetic pre-IPO EQPT bars, primary MC, AL or R92."
     }
   }
 }
