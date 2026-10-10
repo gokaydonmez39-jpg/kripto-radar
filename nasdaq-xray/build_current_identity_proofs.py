@@ -422,6 +422,30 @@ def manual_identity_seed_registry(asof:str,names:dict)->tuple[dict,dict]:
     assert j.get("execution")=="NONE" and j.get("real_money")=="NO-GO"
     assert j.get("unknown_never_pass") is True
     assert j.get("authority")=="OFFICIAL_SEC_EVIDENCE_DISCOVERY_SEED_ONLY"
+    # Offline official SEC accession/index crosscheck. This vetoes only a
+    # contradicted manual SIC=6770 EXCLUSION seed; it cannot manufacture an
+    # operating or alpha PASS. The registry and already committed historical
+    # proof blobs remain immutable to preserve their SHA chains.
+    sec_conflict_file=ROOT/"master_sec_sic_discrepancies_20261009.json"
+    discrepancies={}
+    if asof>="2026-10-09":
+        if not sec_conflict_file.is_file():
+            raise RuntimeError("OFFICIAL_SEC_SIC_DISCREPANCY_WITNESS_MISSING")
+        witness=json.loads(sec_conflict_file.read_text(encoding="utf-8"))
+        if not (
+            witness.get("schema")=="XRAY_SEC_MANUAL_SOURCE_SIC_DISCREPANCY_V1"
+            and witness.get("asof_et")=="2026-10-09"
+            and witness.get("execution")=="NONE"
+            and witness.get("real_money")=="NO-GO"
+            and witness.get("unknown_never_pass") is True
+            and witness.get("alpha_authority") is False
+            and witness.get("authority")=="OFFICIAL_SEC_INDEX_SOURCE_ROW_CONFLICT_FAIL_ONLY"
+            and witness.get("canonical_20261009_state_rewritten") is False
+            and witness.get("never_promote_operating_on_non6770_sic") is True
+            and isinstance(witness.get("discrepancies"),dict)
+        ):
+            raise RuntimeError("OFFICIAL_SEC_SIC_DISCREPANCY_WITNESS_INVALID")
+        discrepancies=witness["discrepancies"]
     rows={}
     for sym,row in sorted((j.get("records") or {}).items()):
         sym=str(sym).upper().strip()
@@ -437,6 +461,33 @@ def manual_identity_seed_registry(asof:str,names:dict)->tuple[dict,dict]:
         try:sic=int(row.get("sic"))
         except Exception:continue
         is_blank=row.get("is_blank_check")
+        if sym in discrepancies:
+            # The SEC index for the SAME 2026-06-12 S-4/A names FVN issuer
+            # CIK 2010653 SIC 7373, not the registry's claimed SIC 6770.
+            # Never use source metadata contradicted by the actual filing.
+            mismatch=discrepancies[sym]
+            official=str(mismatch.get("official_index_url") or "")
+            accession=str(mismatch.get("official_accession") or "")
+            if not (
+                mismatch.get("action")=="VETO_MANUAL_SIC6770_BLANK_PROOF_KEEP_UNKNOWN"
+                and mismatch.get("cik")==cik
+                and mismatch.get("source_url")==source
+                and mismatch.get("manual_seed_sic")==sic==6770
+                and is_blank is True
+                and type(mismatch.get("official_sec_filer_sic")) is int
+                and mismatch["official_sec_filer_sic"]!=6770
+                and mismatch.get("official_filing_date")==evidence
+                and re.fullmatch(r"\\d{10}-\\d{2}-\\d{6}",accession)
+                and accession.replace("-","") in source
+                and accession.replace("-","") in official
+                and official.startswith("https://www.sec.gov/Archives/edgar/data/")
+                and official.endswith("-index.htm")
+                and evidence<=asof
+            ):
+                raise RuntimeError("OFFICIAL_SEC_SIC_DISCREPANCY_BAD_BINDING:"+sym)
+            # Fail-only: let live SEC classification return UNKNOWN or a
+            # separately proven current answer; NEVER classify 7373 as PASS.
+            continue
         if (
           not source.startswith("https://www.sec.gov/")
           or not sec_source_binds_cik(source,cik)
