@@ -39,6 +39,15 @@ def run():
     tree=ast.parse(source)
     names={x.name for x in tree.body if isinstance(x,ast.FunctionDef)}
     assert {"official_listing_upper_bound_fail","eval_one"}<=names
+    # RED: Nasdaq HISTORY upper bounds must use the same official Nasdaq
+    # calendar as 260/52 guards, not a different exchange calendar.
+    for function in ("official_listing_upper_bound_fail",
+                     "aligned_first_bar_upper_bound_fail"):
+        fnode=next(x for x in tree.body
+                   if isinstance(x,ast.FunctionDef) and x.name==function)
+        part=ast.get_source_segment(source,fnode)
+        assert 'mcal.get_calendar("NASDAQ")' in part, (
+            "WRONG_EXCHANGE_CALENDAR_FOR_NASDAQ_HISTORY",function)
     fn=next(x for x in tree.body if isinstance(x,ast.FunctionDef) and x.name=="eval_one")
     assert isinstance(fn.body[0],ast.Assign)
     assert isinstance(fn.body[0].value,ast.Call)
