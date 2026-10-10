@@ -23,7 +23,7 @@ PRICE=ROOT/"canonical_current_price_dv30.json"
 MASTER=ROOT/"canonical_current_master_manifest.json"
 
 def git_blob(buf:bytes)->str:
-    return hashlib.sha1(b"blob "+str(len(buf)).encode()+b"\\0"+buf).hexdigest()
+    return hashlib.sha1(b"blob "+str(len(buf)).encode()+bytes([0])+buf).hexdigest()
 
 def ordered(xs):
     return isinstance(xs,list) and xs==sorted(set(xs)) and all(
@@ -145,7 +145,7 @@ def selftest():
       ("asof_drift",lambda pp,mm:mm.update(asof_et="2026-10-08")),
       ("unsafe",lambda pp,mm:pp.update(real_money="GO")),
       ("duplicate",lambda pp,mm:pp["unknown_symbols"].append("DDD")),
-      ("bad_date",lambda pp,mm:pp["expected30"][-1:]=["2026-10-08"]),
+      ("bad_date",lambda pp,mm:pp.update(expected30=pp["expected30"][:-1]+["2026-10-08"])),
       ("counts_mismatch",lambda pp,mm:pp["counts"].update(UNKNOWN=3)),
     ):
         x,y=copy.deepcopy(p),copy.deepcopy(m);fn(x,y)
@@ -169,7 +169,7 @@ def main():
     if args.out:
         if args.out.resolve().is_relative_to(ROOT.parent):
             raise ValueError("OUTPUT_TO_PUBLIC_GITHUB_TREE_FORBIDDEN")
-        args.out.write_text(json.dumps(report,sort_keys=True,indent=2)+"\\n")
+        args.out.write_text(json.dumps(report,sort_keys=True,indent=2)+chr(10))
     print("XRAY_SHADOW_PREFETCH=SAFE_RESEARCH_ONLY_NO_HISTORY_PASS_OR_TRADES")
 
 if __name__=="__main__":
