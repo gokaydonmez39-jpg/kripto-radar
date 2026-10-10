@@ -16,6 +16,8 @@ TASK_ID="6a825366222081918997094d76e6ae46"
 
 ENGINE_FILES=[
  "sina_stage.py",
+ "sina_identity_epoch.py",
+ "sina_late_asof_recheck.py",
  "mc_zero_key.py",
  "production_core_build.py",
  "alpha_semantics.py",
@@ -491,7 +493,8 @@ def history_retry_plan(ss):
     total=int(ss.get("queue_total",0) or 0)
     cursor=int(ss.get("cursor",0) or 0)
     pending=int(ss.get("pending_retry",0) or 0)
-    if total<=0 or cursor<0 or cursor>total or pending<0:
+    late=int(ss.get("pending_late_asof_recheck",0) or 0)
+    if total<=0 or cursor<0 or cursor>total or pending<0 or late<0 or late>250:
         raise ValueError("INVALID_HISTORY_PROGRESS_COUNTERS")
     if ss.get("status")=="HISTORY_COMPLETE":
         return False,"COMPLETE"
@@ -499,6 +502,8 @@ def history_retry_plan(ss):
         return True,"NEW_HISTORY_SCOPE_REMAINS"
     if pending>0:
         return True,"RETRYABLE_HISTORY_UNKNOWN_REMAINS"
+    if late>0:
+        return True,"REAL_SOURCE_LATE_ASOF_RECHECK_PENDING"
     return False,"NO_RETRYABLE_HISTORY_WORK_REMAINS"
 
 def main():
@@ -550,6 +555,8 @@ def main():
           "cursor":ss.get("cursor"),"queue_total":ss.get("queue_total"),
           "unknown_count":ss.get("unknown_count"),
           "pending_retry":ss.get("pending_retry"),
+          "pending_late_asof_recheck":ss.get("pending_late_asof_recheck",0),
+          "late_asof_canary_probes_this_run":ss.get("processed_late_asof_canary_this_run",0),
           "history_retryable":retry_allowed,
           "history_retry_reason":retry_reason,
           "full_universe_identity":True,"queue_hash":ss.get("queue_hash"),

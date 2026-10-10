@@ -1,0 +1,68 @@
+name: XRAY Sina Oct7-Oct9 ASOF Recovery Regression (SHADOW)
+on:
+  push:
+    branches: [main, audit/c417-mc-alternatives-sec-pit-20261010]
+    paths:
+      - "nasdaq-xray/research/test_sina_asof_recovery.py"
+      - "nasdaq-xray/sina_identity_epoch.py"
+      - "nasdaq-xray/sina_late_asof_recheck.py"
+      - "nasdaq-xray/sina_stage.py"
+      - "nasdaq-xray/orchestrator_run.py"
+      - "nasdaq-xray/orchestrator_partial_invalidation_selftest.py"
+      - ".github/workflows/xray-sina-asof-recovery-regression-shadow.yml"
+  pull_request:
+    paths:
+      - "nasdaq-xray/research/test_sina_asof_recovery.py"
+      - "nasdaq-xray/sina_identity_epoch.py"
+      - "nasdaq-xray/sina_late_asof_recheck.py"
+      - "nasdaq-xray/sina_stage.py"
+      - "nasdaq-xray/orchestrator_run.py"
+      - ".github/workflows/xray-sina-asof-recovery-regression-shadow.yml"
+permissions:
+  contents: read
+jobs:
+  static-epoch-and-asof-rescue:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile only, never call Sina vendor, no PRIMARY/no R92
+        run: |
+          python -m py_compile nasdaq-xray/sina_identity_epoch.py nasdaq-xray/sina_late_asof_recheck.py nasdaq-xray/sina_stage.py nasdaq-xray/orchestrator_run.py
+          python nasdaq-xray/research/test_sina_asof_recovery.py
+          python nasdaq-xray/orchestrator_partial_invalidation_selftest.py
+      - name: Persist exact-CI SHA and no-authority research witness
+        if: success()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA" || [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]
+          python - <<'PY'
+          import json,os,pathlib,subprocess
+          out=pathlib.Path(os.environ["RUNNER_TEMP"])/"xray_sina_late_asof_regression_witness.json"
+          out.write_text(json.dumps({
+              "schema":"XRAY_SINA_ASOF_LAG_ROOT_CAUSE_CI_SHADOW_V1",
+              "git_sha":subprocess.check_output(["git","rev-parse","HEAD"],text=True).strip(),
+              "test_name":"TEST_SINA_ASOF_RECOVERY",
+              "offline_regression":"PASS",
+              "actual_sina_call_executed":False,
+              "actual_history_source_authority":False,
+              "primary_mc_pass":False,
+              "r92_created":False,
+              "delivery_claimed":False,
+              "execution":"NONE",
+              "real_money":"NO-GO",
+              "release_status":"OFFLINE_TEST_ONLY_NOT_REAL_VENDOR_OR_ALPHA_PROOF"
+          },sort_keys=True,indent=2)+"\n")
+          PY
+      - name: Upload safe diagnostic regression-only artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-sina-asof-recovery-regression-only
+          path: ${{ runner.temp }}/xray_sina_late_asof_regression_witness.json
+          retention-days: 14
+          if-no-files-found: warn

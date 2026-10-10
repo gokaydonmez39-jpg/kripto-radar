@@ -23,6 +23,8 @@ import urllib.request
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone, timedelta
 from sina_transport_rescue import choose as choose_transport_rescue
+from sina_identity_epoch import frozen_identity_fingerprint
+from sina_late_asof_recheck import choose as choose_late_asof, choose_canary_probe
 from pathlib import Path
 
 import akshare as ak
@@ -1049,7 +1051,7 @@ def main():
         footer=str(frozen.get("official_footer") or "CANONICAL_FROZEN_IDENTITY")
         if official_footer_date(footer)!=asof:
             raise RuntimeError("FROZEN_IDENTITY_FOOTER_NOT_EXACT_ASOF")
-        identity_token="CANONICAL_FROZEN:"+str(frozen.get("source_state_hash") or frozen["queue_hash"])+"|"+sec_identity_token+"|"+asof_identity_token
+        identity_token="CANONICAL_FROZEN_IDENTITY:"+frozen_identity_fingerprint(frozen)+"|"+sec_identity_token+"|"+asof_identity_token
     elif membership_snapshot is not None:
         names=dict(membership_snapshot["security_names"])
         excluded={}
@@ -1280,11 +1282,28 @@ def main():
     transport_rescue=choose_transport_rescue(state)
     transport_rescue_set=set(transport_rescue)
 
+    # Re-observe ONLY real bars for still-UNKNOWN same-ASOF names.
+    # Never infer history or fabricate an absent close/volume.
+    late_asof=[]
+    late_probe=[]
+    if (state.get("status")=="HISTORY_PARTIAL"
+        and state.get("cursor")==len(queue)):
+        official=mcal.get_calendar("NASDAQ").schedule(
+            start_date=asof,end_date=asof)
+        if len(official)!=1:
+            raise RuntimeError("LATE_ASOF_OFFICIAL_CLOSE_UNVERIFIED")
+        official_close=official.iloc[0]["market_close"].to_pydatetime()
+        late_asof=choose_late_asof(state,official_close)
+        if not late_asof:
+            late_probe=choose_canary_probe(state,official_close)
+    late_asof_set=set(late_asof)
+    late_probe_set=set(late_probe)
+
     start=int(state.get("cursor",0))
     end=min(start+BATCH,len(queue))
     new=queue[start:end]
     work=[];seen=set()
-    for s in retry+transport_rescue+new:
+    for s in retry+transport_rescue+late_probe+late_asof+new:
         if s not in seen:
             seen.add(s);work.append(s)
 
@@ -1309,6 +1328,14 @@ def main():
           "transport_rescue_round":(
               int(prev.get("transport_rescue_round",0))
               + (1 if sym in transport_rescue_set else 0)
+          ),
+          "late_asof_recheck_round":(
+              int(prev.get("late_asof_recheck_round",0))
+              + (1 if sym in late_asof_set else 0)
+          ),
+          "late_asof_canary_probe_round":(
+              int(prev.get("late_asof_canary_probe_round",0))
+              + (1 if sym in late_probe_set else 0)
           ),
         }
 
@@ -1350,6 +1377,8 @@ def main():
     state["processed_new_this_run"]=len(new)
     state["processed_retry_this_run"]=len(retry)
     state["processed_transport_rescue_this_run"]=len(transport_rescue)
+    state["processed_late_asof_recheck_this_run"]=len(late_asof)
+    state["processed_late_asof_canary_this_run"]=len(late_probe)
     state["transport_rescue_status"]="REAL_PROVIDER_RETRY_ONLY_UNKNOWN_IF_FAILED"
     state["counts"]=result_counts(results)
     state["pending_retry"]=sum(
@@ -1360,6 +1389,13 @@ def main():
     unknown_count=sum(1 for x in results.values() if str(x.get("status","")).startswith("UNKNOWN"))
     state["unknown_count"]=unknown_count
     state["status"]="HISTORY_COMPLETE" if end>=len(queue) and state["pending_retry"]==0 and unknown_count==0 else "HISTORY_PARTIAL"
+    state["pending_late_asof_recheck"]=0
+    if state["status"]=="HISTORY_PARTIAL" and state["cursor"]==len(queue):
+        schedule=mcal.get_calendar("NASDAQ").schedule(start_date=asof,end_date=asof)
+        if len(schedule)!=1:
+            raise RuntimeError("LATE_ASOF_PENDING_CLOSE_UNVERIFIED")
+        close=schedule.iloc[0]["market_close"].to_pydatetime()
+        state["pending_late_asof_recheck"]=len(choose_late_asof(state,close))
     state["state_hash"]=hashlib.sha256(
       json.dumps(state,sort_keys=True,separators=(",",":")).encode("utf-8")
     ).hexdigest()
