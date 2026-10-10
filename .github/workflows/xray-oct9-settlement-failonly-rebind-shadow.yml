@@ -6,12 +6,14 @@ on:
       - "nasdaq-xray/settlement_same_asof_failonly_rebind.py"
       - "nasdaq-xray/research/test_settlement_same_asof_failonly_rebind.py"
       - "nasdaq-xray/build_current_resolver_request.py"
+      - ".github/workflows/xray-canonical-current-pre-mc.yml"
       - ".github/workflows/xray-oct9-settlement-failonly-rebind-shadow.yml"
   pull_request:
     paths:
       - "nasdaq-xray/settlement_same_asof_failonly_rebind.py"
       - "nasdaq-xray/research/test_settlement_same_asof_failonly_rebind.py"
       - "nasdaq-xray/build_current_resolver_request.py"
+      - ".github/workflows/xray-canonical-current-pre-mc.yml"
       - ".github/workflows/xray-oct9-settlement-failonly-rebind-shadow.yml"
 permissions:
   contents: read
@@ -24,6 +26,26 @@ jobs:
         with: {fetch-depth: 1}
       - uses: actions/setup-python@v5
         with: {python-version: "3.12"}
+      - name: Compile frozen Pre-MC rollover guard from actual YAML embedded Python
+        shell: bash
+        run: |
+          python - <<'PY'
+          import pathlib,textwrap
+          s=pathlib.Path(".github/workflows/xray-canonical-current-pre-mc.yml").read_text()
+          head="      - name: Completed-session epoch rollover guard"
+          tail="      - name: Recover corrupted frozen pre-MC snapshot"
+          assert s.count(head)==s.count(tail)==1
+          block=s.split(head,1)[1].split(tail,1)[0]
+          start="          python - <<'PY'"
+          assert block.count(start)==1
+          code=block.split(start,1)[1].split("          PY",1)[0]
+          code=textwrap.dedent(code)
+          compile(code,"pre_mc_rollover_guard","exec")
+          assert "safe_same_asof_failonly_settlement" in code
+          assert 'resolver_refresh=bool(matching)' in code
+          assert 'AMBIGUOUS_SAME_ASOF_SETTLEMENT_REBIND' in code
+          print("XRAY_FROZEN_PREMC_SAME_ASOF_REBIND_GUARD_COMPILE=PASS")
+          PY
       - name: Bring exact 2026-10-09 production 514 PASS zero UNKNOWN snapshot (read only)
         shell: bash
         run: |
