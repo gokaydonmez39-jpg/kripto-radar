@@ -103,7 +103,9 @@ def terminal_bound_mc_selection(valid_bridge_names,terminal,asof,blob_sha):
             or not isinstance(asof,str)
             or not re.fullmatch(r"20\d{2}-\d{2}-\d{2}",asof)):
         return None
-    binding=(terminal.get("evidence") or {}).get("mc") or {}
+    evidence=terminal.get("evidence")
+    if not isinstance(evidence,dict):return None
+    binding=evidence.get("mc")
     if not isinstance(binding,dict):return None
     path=binding.get("path")
     blob=binding.get("blob_sha")
@@ -514,7 +516,13 @@ def selftest():
                    "2026-10-09",sha_lookup) is None
     assert terminal_bound_mc_selection([],mc_terminal,
                    "2026-10-09",sha_lookup) is None
-    print("XRAY_MC_TERMINAL_BOUND_SELECTION=PASS_MULTI_REVISION_POSITIVE_8_NO_AUTHORITY_NEGATIVES")
+    assert terminal_bound_mc_selection([v1,v2],{"evidence":[]},
+                   "2026-10-09",sha_lookup) is None
+    assert terminal_bound_mc_selection([v1,v2],{"evidence":{"mc":[]}},
+                   "2026-10-09",sha_lookup) is None
+    assert terminal_bound_mc_selection([v1,v2],{"evidence":{"mc":{}}},
+                   "2026-10-09",sha_lookup) is None
+    print("XRAY_MC_TERMINAL_BOUND_SELECTION=PASS_MULTI_REVISION_POSITIVE_11_NO_AUTHORITY_NEGATIVES")
     print("XRAY_MC_HISTORIC_REAL_BRIDGES=PASS_OCT05_504_OCT07_510_NO_CURRENT_PROMOTION")
     print("XRAY_MC_NATIVE_NEGATIVE_ROWS=PASS_3_MISSING_FLAG_POSITIVES_6_CONTRADICTORY_NEGATIVES")
     print("XRAY_MC_PRIMARY_ROW_EVIDENCE=PASS_8_ADVERSARIAL_NEGATIVES")
