@@ -5,6 +5,9 @@ on:
     paths:
       - "nasdaq-xray/alpaca_sip_paginated_transport_shadow.py"
       - "nasdaq-xray/alpaca_free_sip_shadow_guard.py"
+      - "nasdaq-xray/source_workflow_invocation_sha_selftest.py"
+      - ".github/workflows/xray-alpaca-free-sip-shadow-proof.yml"
+      - ".github/workflows/xray-c418-source-successor-preflight.yml"
       - ".github/workflows/xray-alpaca-sip-pagination-offline-regression-shadow.yml"
   workflow_dispatch:
 permissions:
@@ -27,6 +30,7 @@ jobs:
           python -m py_compile nasdaq-xray/alpaca_sip_paginated_transport_shadow.py nasdaq-xray/alpaca_free_sip_shadow_guard.py
           python nasdaq-xray/alpaca_sip_paginated_transport_shadow.py
           python nasdaq-xray/alpaca_free_sip_shadow_guard.py --selftest
+          python nasdaq-xray/source_workflow_invocation_sha_selftest.py
       - name: No provider invocation or fake history/MC/GO witness
         run: |
           python - <<'PY'
