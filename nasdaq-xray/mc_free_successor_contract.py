@@ -147,9 +147,29 @@ def selftest():
                 "market_cap_usd":10_000_000_000}
     }
     from copy import deepcopy
+    # Official session closes are immutable reference witnesses in unit fixtures.
+    base["official_session"]={"exchange":"XNAS","asof_et":"2026-10-08",
+        "rth_close_utc":"2026-10-08T20:00:00Z",
+        "calendar_source":"ALPACA_MARKET_CALENDAR",
+        "calendar_verified":True}
     good=evaluate(base)
     assert good["status"]=="SHADOW_ELIGIBLE_FOR_INDEPENDENT_POLICY_REVIEW"
     assert good["c417_primary_pass"] is False and good["r92_eligible"] is False
+    # RED: SEC acceptance at 16:07 ET is AFTER the 16:00 RTH close,
+    # but BEFORE a 16:15 research read. Never apply post-close shares.
+    post_close=deepcopy(base)
+    post_close["sec"]["acceptance_utc"]="2026-10-08T20:07:00Z"
+    assert evaluate(post_close)["status"]=="UNKNOWN"
+    # RED: Black Friday 13:00 ET early close is 18:00 UTC (EST).
+    early=deepcopy(base)
+    early["asof_et"]=early["price"]["asof_et"]="2026-11-27"
+    early["decision_cutoff_utc"]="2026-11-27T18:15:00Z"
+    early["official_session"]["asof_et"]="2026-11-27"
+    early["official_session"]["rth_close_utc"]="2026-11-27T18:00:00Z"
+    early["sec"]["observed"]="2026-11-25"
+    early["sec"]["filed"]="2026-11-27"
+    early["sec"]["acceptance_utc"]="2026-11-27T18:05:00Z"
+    assert evaluate(early)["status"]=="UNKNOWN"
     negatives=[
       ("sec","acceptance_utc","2026-10-09T00:01:00Z"),
       ("sec","cik","0000000001"),
