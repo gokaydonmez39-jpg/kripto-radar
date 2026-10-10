@@ -1,7 +1,7 @@
 name: XRAY 260 History Resume Regression - Offline No Source Authority
 on:
   push:
-    branches: [audit/c417-history-asof-rollover-20261010, main]
+    branches: [audit/c417-history-asof-rollover-20261010, audit/c417-partial-history-offline-workflow-20261010, main]
     paths:
       - "nasdaq-xray/massive_grouped_history_resume.py"
       - "nasdaq-xray/grouped_history_full_pipeline_selftest.py"
@@ -61,7 +61,13 @@ jobs:
           actual=subprocess.check_output(["git","hash-object","nasdaq-xray/canonical_current_price_dv30.json"],text=True).strip()
           assert q["source_price_blob_sha"]==actual
           assert q["asof_et"]==p["asof_et"]
-          assert p["unknown_count"]==0 and p["blocked_count"]==0
+          assert q["source_price_unknown_count"]==p["unknown_count"]
+          assert q["source_price_blocked_count"]==p["blocked_count"]
+          assert q["source_price_unknown_omitted_from_scope"] is True
+          assert q["source_price_blocked_omitted_from_scope"] is True
+          assert set(q["symbol_scope"]).isdisjoint(p.get("unknown_symbols",[]))
+          assert set(q["symbol_scope"]).isdisjoint(p.get("blocked_symbols",[]))
+          assert set(p.get("unknown_symbols",[])).isdisjoint(p.get("blocked_symbols",[]))
           assert q["source_price_pass_count"]==p["pass_count"]==len(q["symbol_scope"])
           assert q["source_price_pass_hash"]==p["pass_hash"]
           assert len(q["required_daily_official_sessions"])==260
