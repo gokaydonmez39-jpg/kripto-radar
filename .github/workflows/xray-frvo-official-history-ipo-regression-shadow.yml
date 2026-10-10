@@ -5,6 +5,7 @@ on:
     paths:
       - "nasdaq-xray/history_official_identity_evidence.json"
       - "nasdaq-xray/history_official_ipo_260_selftest.py"
+      - "nasdaq-xray/history_phase.py"
       - ".github/workflows/xray-frvo-official-history-ipo-regression-shadow.yml"
   workflow_dispatch:
 permissions:
