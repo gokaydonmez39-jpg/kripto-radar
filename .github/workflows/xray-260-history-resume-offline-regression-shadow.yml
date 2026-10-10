@@ -4,11 +4,13 @@ on:
     branches: [audit/c417-mc-alternatives-sec-pit-20261010]
     paths:
       - "nasdaq-xray/massive_grouped_history_resume.py"
+      - "nasdaq-xray/grouped_history_full_pipeline_selftest.py"
       - "nasdaq-xray/twelve_data_history_full_pipeline_selftest.py"
       - ".github/workflows/xray-260-history-resume-offline-regression-shadow.yml"
   pull_request:
     paths:
       - "nasdaq-xray/massive_grouped_history_resume.py"
+      - "nasdaq-xray/grouped_history_full_pipeline_selftest.py"
       - "nasdaq-xray/twelve_data_history_full_pipeline_selftest.py"
       - ".github/workflows/xray-260-history-resume-offline-regression-shadow.yml"
 permissions:
