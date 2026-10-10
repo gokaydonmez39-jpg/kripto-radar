@@ -1,7 +1,7 @@
 name: XRAY MC Current Request Exact Provenance (No Data Promotion)
 on:
   push:
-    branches: [main]
+    branches: [main, audit/c417-mc-request-current-20261009-live-rebind]
     paths:
       - "nasdaq-xray/mc_request_freshness_rebind.py"
       - "nasdaq-xray/tests/test_mc_request_20261009_live_rebind.py"
