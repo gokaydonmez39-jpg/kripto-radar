@@ -6,6 +6,8 @@ on:
     paths:
       - "nasdaq-xray/sina_transport_rescue.py"
       - "nasdaq-xray/sina_stage.py"
+      - "nasdaq-xray/sina_late_asof_recheck.py"
+      - "nasdaq-xray/sina_identity_epoch.py"
       - ".github/workflows/xray-sina-transport-rescue-selftest.yml"
 permissions:
   contents: read
@@ -23,7 +25,7 @@ jobs:
           python-version: "3.12"
       - name: Compile transport rescue and actual integration
         run: |
-          python -m py_compile nasdaq-xray/sina_transport_rescue.py nasdaq-xray/sina_stage.py
+          python -m py_compile nasdaq-xray/sina_transport_rescue.py nasdaq-xray/sina_stage.py nasdaq-xray/sina_late_asof_recheck.py nasdaq-xray/sina_identity_epoch.py
       - name: Negative-positive finite controlled recovery test
         run: |
           python nasdaq-xray/sina_transport_rescue.py
@@ -34,10 +36,16 @@ jobs:
           x=Path("nasdaq-xray/sina_stage.py").read_text()
           assert "from sina_transport_rescue import choose as choose_transport_rescue" in x
           assert "transport_rescue=choose_transport_rescue(state)" in x
-          assert "for s in retry+transport_rescue+new:" in x
+          assert "for s in retry+transport_rescue+late_probe+late_asof+new:" in x
+          assert "late_asof_set=set(late_asof)" in x
+          assert "late_probe_set=set(late_probe)" in x
+          assert "\"late_asof_canary_probe_round\"" in x
+          recovery=Path("nasdaq-xray/sina_late_asof_recheck.py").read_text()
+          assert "MAX_CANARY_PROBES_PER_EPOCH=8" in recovery
+          assert "MAX_CANARY_HORIZON=dt.timedelta(hours=16)" in recovery
           assert 'HARD_HISTORY=260' in x
           assert 'HARD_DV30=50_000_000.0' in x
           assert 'HARD_PRICE=5.0' in x
           assert 'status="UNKNOWN_RETRY_EXHAUSTED"' in x
-          print("XRAY_SINA_RESCUE_POLICY_INVARIANTS=PASS_UNKNOWN_NEVER_PROMOTED")
+          print("XRAY_SINA_RESCUE_POLICY_INVARIANTS=PASS_BOUNDED_CANARY_OLD_TRANSPORT_PRESERVED_NO_ALPHA")
           PY
