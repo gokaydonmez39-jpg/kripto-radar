@@ -41,7 +41,12 @@ def timestamp_date(s):
     t=dt.datetime.fromisoformat(s.replace("Z","+00:00"))
     if t.tzinfo is None:
         raise ValueError("BAR_TIMESTAMP_NAIVE")
-    return t.astimezone(EST).date()
+    local=t.astimezone(EST)
+    # Alpaca 1Day SIP bars are stamped at midnight New York local time.
+    # An intraday/extended-hours record on the correct date is not a daily bar.
+    if local.time()!=dt.time(0,0):
+        raise ValueError("NON_DAILY_ALPACA_BAR_TIMESTAMP")
+    return local.date()
 
 def sufficient_delay(asof:str,now:dt.datetime)->bool:
     if now.tzinfo is None:
@@ -245,6 +250,14 @@ def selftest():
         loaded=request_batch(["AAPL","MSFT"],"2025-01-01","2026-01-01",
                              "offline-key","offline-secret")
     assert len(seen)==2 and len(loaded["AAPL"])==len(loaded["MSFT"])==1
+    # RED regression: an intraday record must never impersonate a daily SIP bar.
+    # These are synthetic negative-test values, NEVER canonical market data.
+    intraday=deepcopy(sample)
+    intraday[0]["t"]=dt.datetime.combine(parse_date(dates[0]),
+        dt.time(15,45),EST).astimezone(UTC).isoformat()
+    assert evaluate_daily(intraday,dates,"2026-10-08",now)[1]=="OHLCV_OR_DATE_PARSE_ERROR", (
+        "ALPACA_INTRADAY_BAR_ACCEPTED_AS_DAILY",
+        evaluate_daily(intraday,dates,"2026-10-08",now))
     print("XRAY_ALPACA_FREE_SIP_SHADOW_SELFTEST=PASS_HOLDBACK_30_SESSIONS_DUPLICATE_GAPS_ZERO_VOL_FUTURE")
     print("XRAY_ALPACA_SIP_PAGINATED_REQUEST_MOCK=PASS_TWO_PAGES_SCOPE_CONSTANT_NO_NETWORK")
 if __name__=="__main__":
