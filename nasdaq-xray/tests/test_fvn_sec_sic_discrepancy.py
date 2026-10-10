@@ -13,7 +13,7 @@ import re
 from datetime import datetime
 from pathlib import Path
 
-ROOT=Path(__file__).resolve().parent
+ROOT=Path(__file__).resolve().parents[1]
 SEC_INDEX="https://www.sec.gov/Archives/edgar/data/2110070/000182912626006424/0001829126-26-006424-index.htm"
 FVN_SOURCE="https://www.sec.gov/Archives/edgar/data/2010653/000182912626006424/futurevision2_s4a.htm"
 
