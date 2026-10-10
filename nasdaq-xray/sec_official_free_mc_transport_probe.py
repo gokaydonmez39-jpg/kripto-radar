@@ -230,7 +230,14 @@ def selftest():
     # At 14:05 ET the filing is AFTER RTH; it must not enter the EOD ASOF.
     early_facts=json.loads(json.dumps(fak))
     early_sub=json.loads(json.dumps(subs))
-    early_fact=early_facts["facts"]["dei"]["EntityCommonStockSharesOutstanding"]["units"]["shares"][0]
+    # Isolate one contemporaneous filing. The unrelated older synthetic
+    # 10-Oct filing from the generic fixture would correctly remain PIT-valid
+    # on 27-Nov and mask the specific post-close rejection being tested.
+    early_rows=early_facts["facts"]["dei"]["EntityCommonStockSharesOutstanding"]["units"]["shares"]
+    del early_rows[1:]
+    for field in ("accessionNumber","form","filingDate","acceptanceDateTime"):
+        del early_sub["filings"]["recent"][field][1:]
+    early_fact=early_rows[0]
     early_fact["end"]="2026-11-25"
     early_fact["filed"]="2026-11-27"
     early_sub["filings"]["recent"]["filingDate"][0]="2026-11-27"
