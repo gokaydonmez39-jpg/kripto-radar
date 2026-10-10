@@ -35,6 +35,30 @@ def run():
     assert 'sec_source_binds_cik(source,cik)' in source
     assert '"same_asof_nasdaq_security_name"' in source
     assert '"OFFICIAL_SEC_STATIC_EVIDENCE_PLUS_EXACT_ASOF_NASDAQ_IDENTITY;NO_ALPHA_PASS"' in source
+    # PIT regression: proof verified on Oct 9 must NEVER be backported
+    # to an earlier Oct 7 canonical epoch just because the filing is older.
+    # Exercise the REAL producer function in an isolated stdlib namespace.
+    import ast
+    from datetime import datetime
+    tree=ast.parse(source)
+    target=next(n for n in tree.body
+                if isinstance(n,ast.FunctionDef) and n.name=="manual_identity_seed_registry")
+    ns={
+        "ROOT":ROOT,
+        "MANUAL_IDENTITY_SEED":ROOT/"master_sec_identity_manual_seed_registry.json",
+        "json":json,"re":re,"datetime":datetime,
+        "SPAC_SUSPECT_RE":re.compile(r"\\bacquisition\\b",re.I),
+        "sec_source_binds_cik":lambda url,cik:f"/data/{int(cik)}/" in url,
+        "file_blob_sha":lambda p:"OFFLINE_UNIT_SHA_NOT_PRIMARY",
+    }
+    exec(compile(ast.Module(body=[target],type_ignores=[]),
+                 "producer:manual_identity_seed_registry","exec"),ns)
+    consumer=ns["manual_identity_seed_registry"]
+    names={"NBRG":"Newbridge Acquisition Limited - Class A Ordinary Share"}
+    current,meta=consumer("2026-10-09",names)
+    assert "NBRG" in current,(current,meta)
+    prior,meta=consumer("2026-10-07",names)
+    assert "NBRG" not in prior,("FUTURE_MANUAL_VERIFICATION_LEAKED_BACK_TO_PRIOR_EPOCH",prior)
     # No candidate can receive MC/HISTORY/AL authority from this seed.
     assert rec.get("alpha_authority") is not True
     print("XRAY_NBRG_SEC_OFFICIAL_20260803_IDENTITY_SEED=PASS_FAIL_ONLY_NO_PRIMARY")
