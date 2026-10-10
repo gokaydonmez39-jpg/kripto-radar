@@ -1,0 +1,79 @@
+name: XRAY Alpaca 515 Corporate Actions Census Shadow (No PIT GO)
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/alpaca_full_scope_ca_shadow.py"
+      - "nasdaq-xray/alpaca_full_scope_260_shadow.py"
+      - "nasdaq-xray/alpaca_free_sip_shadow_guard.py"
+      - "nasdaq-xray/canonical_current_price_dv30.json"
+      - "nasdaq-xray/canonical_current_master_manifest.json"
+      - ".github/workflows/xray-alpaca-515-corporate-actions-shadow.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: xray-515-ca-shadow-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  ca-census:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+      - name: Verify precise invoking source SHA
+        run: test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pinned NASDAQ calendar
+        run: python -m pip install --disable-pip-version-check "pandas_market_calendars==5.4.0"
+      - name: Run strict offline negative/positive CA regressions
+        run: |
+          python -m py_compile nasdaq-xray/alpaca_full_scope_ca_shadow.py
+          python nasdaq-xray/alpaca_full_scope_ca_shadow.py --selftest
+          python nasdaq-xray/alpaca_full_scope_260_shadow.py --selftest
+      - name: Measure 515 real Alpaca CA corp-action events, no vendor event persistence
+        if: github.ref == 'refs/heads/main'
+        env:
+          XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID }}
+          XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY }}
+        run: python nasdaq-xray/alpaca_full_scope_ca_shadow.py --out "$RUNNER_TEMP/xray_515_ca_census_shadow.json"
+      - name: Assert source blob, counts and canonical/rights zero authority
+        if: github.ref == 'refs/heads/main'
+        run: |
+          python - <<'PY'
+          import json,os,subprocess
+          from pathlib import Path
+          r=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_515_ca_census_shadow.json").read_text())
+          assert r["schema"]=="XRAY_ALPACA_515_CORPORATE_ACTIONS_CENSUS_SHADOW_V1"
+          assert r["status"]=="SHADOW_SCOPE_COMPLETE_CA_NOT_PIT"
+          assert r["expected_symbols"]==515 and r["measured_symbols"]==515
+          assert r["unmeasured_symbols"]==0 and r["pages_consumed"]>=8
+          assert r["source_price_count"]==514
+          assert r["total_events_seen"]==sum(r["counts_by_group"].values())
+          assert r["source_price_blob_sha"]==subprocess.check_output(
+             ["git","hash-object","nasdaq-xray/canonical_current_price_dv30.json"],text=True).strip()
+          assert r["source_master_blob_sha"]==subprocess.check_output(
+             ["git","hash-object","nasdaq-xray/canonical_current_master_manifest.json"],text=True).strip()
+          assert r["provider_publication_time_attested"] is False
+          assert r["independent_issuer_corporate_actions_reconciled"] is False
+          assert r["source_market_data_rights_attested"] is False
+          assert r["current_c417_history_primary_authority"] is False
+          assert r["current_c417_mc_primary_authority"] is False
+          assert r["canonical_pass_created"]==0 and r["r92_created"] is False
+          assert r["vendor_raw_events_persisted"] is False
+          assert r["execution"]=="NONE" and r["real_money"]=="NO-GO"
+          print("XRAY_515_CORPORATE_ACTION_SCOPE=PASS_RESEARCH_CENSUS_NO_PIT_NO_GO")
+          PY
+      - name: Upload count-only processed CA event census, no vendor events
+        if: ${{ always() && github.ref == 'refs/heads/main' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-515-corporate-actions-count-only-no-pit
+          path: ${{ runner.temp }}/xray_515_ca_census_shadow.json
+          if-no-files-found: ignore
+          retention-days: 7
