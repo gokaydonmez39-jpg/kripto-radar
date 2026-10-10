@@ -52,6 +52,20 @@ jobs:
         run: |
           python -m py_compile nasdaq-xray/research/validate_20261010_price514_shadow_v46.py
           python nasdaq-xray/research/validate_20261010_price514_shadow_v46.py
+      - name: Reject public GitHub variable interpolation for SEC operator contact
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          paths=[
+            Path(".github/workflows/xray-sec-full-price-pass-vintage-shadow.yml"),
+            Path(".github/workflows/xray-sec-mc-operator-access-preflight.yml"),
+            Path(".github/workflows/xray-sec-ozk-404-isolation-shadow.yml"),
+          ]
+          leaks=[str(p) for p in paths if "vars.XRAY_SEC_USER_AGENT" in p.read_text()]
+          assert not leaks, "SEC_CONTACT_UNMASKED_GITHUB_VARS="+",".join(leaks)
+          print("XRAY_SEC_CONTACT_LOG_EXPOSURE_GUARD=PASS_SECRET_ONLY")
+          PY
       - name: Enforce zero trading and no C4.17 admission
         shell: bash
         run: |
