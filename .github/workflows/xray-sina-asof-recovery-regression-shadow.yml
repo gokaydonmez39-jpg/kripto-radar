@@ -1,0 +1,35 @@
+name: XRAY Sina Oct7-Oct9 ASOF Recovery Regression (SHADOW)
+on:
+  push:
+    branches: [audit/c417-mc-alternatives-sec-pit-20261010]
+    paths:
+      - "nasdaq-xray/research/test_sina_asof_recovery.py"
+      - "nasdaq-xray/sina_identity_epoch.py"
+      - "nasdaq-xray/sina_late_asof_recheck.py"
+      - "nasdaq-xray/sina_stage.py"
+      - "nasdaq-xray/orchestrator_run.py"
+      - "nasdaq-xray/orchestrator_partial_invalidation_selftest.py"
+      - ".github/workflows/xray-sina-asof-recovery-regression-shadow.yml"
+  pull_request:
+    paths:
+      - "nasdaq-xray/research/test_sina_asof_recovery.py"
+      - "nasdaq-xray/sina_identity_epoch.py"
+      - "nasdaq-xray/sina_late_asof_recheck.py"
+      - "nasdaq-xray/sina_stage.py"
+      - "nasdaq-xray/orchestrator_run.py"
+      - ".github/workflows/xray-sina-asof-recovery-regression-shadow.yml"
+permissions:
+  contents: read
+jobs:
+  static-epoch-and-asof-rescue:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile only, never call Sina vendor, no PRIMARY/no R92
+        run: |
+          python -m py_compile nasdaq-xray/sina_identity_epoch.py nasdaq-xray/sina_late_asof_recheck.py nasdaq-xray/sina_stage.py nasdaq-xray/orchestrator_run.py
+          python nasdaq-xray/research/test_sina_asof_recovery.py
