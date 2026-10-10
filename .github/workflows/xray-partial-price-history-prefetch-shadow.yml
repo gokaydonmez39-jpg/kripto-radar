@@ -4,10 +4,14 @@ on:
     branches: [audit/c417-mc-alternatives-sec-pit-20261010]
     paths:
       - "nasdaq-xray/research/history_prefetch_while_price_unknown_shadow.py"
+      - "nasdaq-xray/research/20261009_price_four_unknown_source_triage_shadow.json"
+      - "nasdaq-xray/research/verify_20261009_price_four_unknown_source_triage_shadow.py"
       - ".github/workflows/xray-partial-price-history-prefetch-shadow.yml"
   pull_request:
     paths:
       - "nasdaq-xray/research/history_prefetch_while_price_unknown_shadow.py"
+      - "nasdaq-xray/research/20261009_price_four_unknown_source_triage_shadow.json"
+      - "nasdaq-xray/research/verify_20261009_price_four_unknown_source_triage_shadow.py"
       - ".github/workflows/xray-partial-price-history-prefetch-shadow.yml"
 permissions:
   contents: read
@@ -27,6 +31,11 @@ jobs:
           python -m py_compile nasdaq-xray/research/history_prefetch_while_price_unknown_shadow.py
           python nasdaq-xray/research/history_prefetch_while_price_unknown_shadow.py --selftest
           python nasdaq-xray/research/history_prefetch_while_price_unknown_shadow.py --out "$RUNNER_TEMP/history_prefetch_private.json"
+      - name: Verify four unresolved PRICE names against public listing evidence and private SIP observation classification
+        run: |
+          python -m py_compile nasdaq-xray/research/verify_20261009_price_four_unknown_source_triage_shadow.py
+          python nasdaq-xray/research/verify_20261009_price_four_unknown_source_triage_shadow.py --selftest
+          python nasdaq-xray/research/verify_20261009_price_four_unknown_source_triage_shadow.py --out "$RUNNER_TEMP/four_unknown_listing_triage.json"
       - name: Independently check exact current Git blobs and safety flags
         run: |
           python - <<'PY'
@@ -49,6 +58,14 @@ jobs:
             assert j[k]==0,k
           assert not (set(j["requested_symbols"]) & set(j["excluded_unknown_symbols"]))
           # No vendor-derived observations, keys, or raw bars may be uploaded.
+          four=json.loads((pathlib.Path(os.environ["RUNNER_TEMP"])/"four_unknown_listing_triage.json").read_text())
+          assert four["four_unknown_remain_unknown"] is True
+          assert four["gral_exact_30_sip_observed"] is True
+          assert four["new_issue_less_than_30"]==3
+          assert four["private_sip_connector_response_replayed_in_CI"] is False
+          assert four["source_entitlement_proven"] is False
+          assert four["r92_created"] is False
+          assert four["price_blob_sha"]==j["price_blob_sha"]
           report={
             "schema":"XRAY_PARTIAL_PRICE_514_HISTORY_RESEARCH_REQUEST_CI_V1",
             "head_sha":subprocess.check_output(["git","rev-parse","HEAD"],text=True).strip(),
@@ -59,6 +76,8 @@ jobs:
             "requested_price_pass_count":j["requested_price_pass_count"],
             "excluded_unknown_count":j["explicit_unresolved_price_count"],
             "history_days_required":260,"history_weeks_required":52,
+            "three_new_listings_history_not_260":True,
+            "gral_30_day_sip_observation_unlicensed":True,
             "vendor_calls_made":0,"vendor_license_proven":False,
             "canonical_history_authority":False,
             "canonical_mc_primary_pass":False,
