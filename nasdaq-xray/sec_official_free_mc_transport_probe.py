@@ -203,6 +203,19 @@ def selftest():
     assert select_shares(same_close,sub_close,asof)["status"]=="UNKNOWN"
     sub_close["filings"]["recent"]["acceptanceDateTime"][0]="2026-10-08T19:59:00Z"
     assert select_shares(same_close,sub_close,asof)["status"]=="SHADOW_SHARES_VINTAGE_ONLY"
+    # RED: Black Friday 27 Nov 2026 closed 13:00 New York, not 16:00.
+    # At 14:05 ET the filing is AFTER RTH; it must not enter the EOD ASOF.
+    early_facts=json.loads(json.dumps(fak))
+    early_sub=json.loads(json.dumps(subs))
+    early_fact=early_facts["facts"]["dei"]["EntityCommonStockSharesOutstanding"]["units"]["shares"][0]
+    early_fact["end"]="2026-11-25"
+    early_fact["filed"]="2026-11-27"
+    early_sub["filings"]["recent"]["filingDate"][0]="2026-11-27"
+    early_sub["filings"]["recent"]["acceptanceDateTime"][0]="2026-11-27T19:05:00Z"
+    assert select_shares(early_facts,early_sub,"2026-11-27")["status"]=="UNKNOWN"
+    early_sub["filings"]["recent"]["acceptanceDateTime"][0]="2026-11-27T17:59:00Z"
+    assert select_shares(early_facts,early_sub,"2026-11-27")["status"]=="SHADOW_SHARES_VINTAGE_ONLY"
+    assert select_shares(early_facts,early_sub,"2026-11-26")["status"]=="UNKNOWN"
     bad=json.loads(json.dumps(fak))
     bad["cik"]=1234
     assert select_shares(bad,subs,asof)["reason"]=="SEC_COMPANYFACTS_CIK_MISMATCH"
