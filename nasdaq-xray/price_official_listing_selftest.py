@@ -97,28 +97,39 @@ def main():
     assert sample["BBCI"]["info"]["source_url"]=="https://www.nasdaqtrader.com/TraderNews.aspx?id=ECA2026-717"
     assert official_recent_listing_terminal(registry,"BBCI","2026-10-06",expected30("2026-10-06")) is None
 
-    # Pinned 9-Oct production PRICE proof: accept both the prior four-UNKNOWN
-    # state and the exact in-place 3 FAIL + 1 UNKNOWN result. Never infer GO.
+    # Three legitimate canonical epochs from one ASOF are deterministic:
+    # 4 UNKNOWN -> 1 UNKNOWN -> 0 UNKNOWN following separate FAIL-only proofs.
     price=json.loads((ROOT/"canonical_current_price_dv30.json").read_text())
     if price["asof_et"]==ASOF:
         four=["AIOK","GRAL","RTSN","TRXB"]
         ipo=["AIOK","RTSN","TRXB"]
         assert price["pass_count"]==514 and len(price["pass_symbols"])==514
         assert set(price["pass_symbols"]).isdisjoint(four)
-        assert price["results"]["GRAL"]["status"]=="UNKNOWN"
-        assert price["unknown_symbols"] in (four,["GRAL"]), "UNEXPECTED_PRICE_UNKNOWN_TRANSITION"
+        assert price["unknown_symbols"] in (four,["GRAL"],[]), "UNEXPECTED_PRICE_UNKNOWN_TRANSITION"
+        assert price["unknown_count"]==len(price["unknown_symbols"])
+        gral=price["results"]["GRAL"]
+        assert gral["status"] in {"UNKNOWN","FAIL_DV30_INSUFFICIENT_SESSIONS"}
+        if gral["status"]=="FAIL_DV30_INSUFFICIENT_SESSIONS":
+            evidence=gral["info"]
+            assert price["unknown_symbols"]==[]
+            assert evidence["proof"]=="IMMUTABLE_OFFICIAL_RSS_HALT_PLUS_SAME_ASOF_29_SINA_BARS"
+            assert evidence["decision_direction"]=="FAIL_ONLY_NEVER_PASS"
+            assert evidence["no_synthetic_bar"] is True
+            assert evidence["missing_sessions"]==["2026-09-23"]
+            assert evidence["observed_usable_sessions"]==29
+        else:
+            assert price["unknown_symbols"] in (four,["GRAL"])
         sample_real={x:deepcopy(price["results"][x]) for x in four}
         changed_real=apply_official_recent_listing_fail_only(sample_real,registry,ASOF,exp30)
         if price["unknown_symbols"]==four:
             assert changed_real==ipo,changed_real
-            assert price["unknown_count"]==4
             print("XRAY_09_OCT_IPO_FAIL_ONLY=PASS_PRIOR_FOUR_UNKNOWN_EXACT_REPLAY")
+        elif price["unknown_symbols"]==["GRAL"]:
+            assert changed_real==[],changed_real
+            print("XRAY_09_OCT_IPO_FAIL_ONLY=PASS_COMMITTED_THREE_FAIL_ONE_UNKNOWN")
         else:
             assert changed_real==[],changed_real
-            assert price["unknown_count"]==1
-            assert all(price["results"][x]["status"]=="FAIL_DV30_INSUFFICIENT_SESSIONS"
-                       for x in ipo)
-            print("XRAY_09_OCT_IPO_FAIL_ONLY=PASS_COMMITTED_THREE_FAIL_ONE_UNKNOWN")
+            print("XRAY_09_OCT_IPO_FAIL_ONLY=PASS_COMMITTED_ALL_FOUR_FAIL_ZERO_UNKNOWN")
         assert sample_real["GRAL"]==price["results"]["GRAL"]
         assert all(sample_real[x]["status"]=="FAIL_DV30_INSUFFICIENT_SESSIONS"
                    for x in ipo)
