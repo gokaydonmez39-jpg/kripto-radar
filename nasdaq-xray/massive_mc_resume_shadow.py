@@ -20,7 +20,7 @@ import sys
 import time
 
 from massive_mc_shadow_probe import (
-    ROOT, MC_FLOOR, classify, probe, select_current_price_scope
+    ROOT, MC_FLOOR, classify, probe, select_current_price_scope, SOURCE_ID
 )
 
 SCHEMA="XRAY_MASSIVE_MC_RESUME_SHADOW_V1"
@@ -108,7 +108,9 @@ def exact_checkpoint(cp,scope):
         return False
     for symbol,rec in cp["records"].items():
         if (not isinstance(rec,dict)
-            or rec.get("source")!="MASSIVE_REFERENCE_TICKER_OVERVIEW_PIT"
+            or rec.get("source")!=SOURCE_ID
+            or rec.get("filing_acceptance_pit_attested") is not False
+            or rec.get("possible_historical_filing_lookahead") is not True
             or rec.get("asof_et")!=scope["asof_et"]
             or rec.get("alpha_authority") is not False
             or rec.get("r92_eligible") is not False
@@ -174,17 +176,21 @@ def clean_record(symbol,asof,raw):
     if state not in ("SHADOW_OBSERVED_ABOVE_2B","SHADOW_OBSERVED_BELOW_2B"):
         return {"state":"UNKNOWN",
                 "reason":str(raw.get("reason") or "VENDOR_PROOF_UNVERIFIED")[:80],
-                "source":"MASSIVE_REFERENCE_TICKER_OVERVIEW_PIT",
+                "source":SOURCE_ID,
+                "filing_acceptance_pit_attested":False,
+                "possible_historical_filing_lookahead":True,
                 "asof_et":asof,"alpha_authority":False,"r92_eligible":False}
     return {"state":state,
         "ticker":symbol,"cik":str(raw["cik"]),
         "market_cap_usd":raw["market_cap_usd"],
         "primary_exchange":raw["primary_exchange"],"type":raw["type"],
-        "source":"MASSIVE_REFERENCE_TICKER_OVERVIEW_PIT",
+        "source":SOURCE_ID,
+        "filing_acceptance_pit_attested":False,
+        "possible_historical_filing_lookahead":True,
         "asof_et":asof,"alpha_authority":False,"r92_eligible":False}
 
 def shadow_coverage_complete(scope, cp):
-    """Only classify shadow coverage complete when EVERY symbol has valid PIT data."""
+    """Shadow coverage does not imply filing-acceptance point-in-time correctness."""
     rows=(cp or {}).get("records") or {}
     return (len(rows)==len(scope["symbols"])
             and all(rec.get("state") in (
@@ -203,6 +209,8 @@ def health(scope, cp=None,status="UNKNOWN",requests=0,restored=False,reason=None
         "policy_unchanged":"C4.17","mc_primary_pass_created":False,
         "r92_created":False,"research_signal_created":False,
         "vendor_data_in_public_artifact":False,
+        "filing_acceptance_pit_attested":False,
+        "possible_historical_filing_lookahead":True,
         "source_price_blob_sha":scope["price_blob_sha"],
         "source_scope_sha256":scope["scope_hash"],
         "source_master_price_scope_equal":scope["master_price_content_binding_exact"],
