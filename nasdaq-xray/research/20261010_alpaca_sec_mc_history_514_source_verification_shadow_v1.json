@@ -1,0 +1,120 @@
+{
+  "schema": "XRAY_20261010_C417_514_MC_HISTORY_SOURCE_SHADOW_V1",
+  "audit_date": "2026-10-10",
+  "source_asof_et": "2026-10-09",
+  "repo": "gokaydonmez39-jpg/kripto-radar",
+  "source_branch": "main",
+  "price": {
+    "path": "nasdaq-xray/canonical_current_price_dv30.json",
+    "git_blob_sha": "77ef4ec6c0bcf2db4e31f4c9b7f0e0b46544d096",
+    "pass_count": 514,
+    "unknown_count": 4,
+    "unknown_symbols": [
+      "AIOK",
+      "GRAL",
+      "RTSN",
+      "TRXB"
+    ],
+    "c417_primary_materialized_count": 0
+  },
+  "history_connected_alpaca_research": {
+    "measurement_kind": "INTERACTIVE_CONNECTED_APP_NOT_GITHUB_RUNNER",
+    "provider": "ALPACA_HISTORICAL_SIP",
+    "verified_scope_source": "EXACT_2026_10_09_PRICE_PASS_SYMBOLS",
+    "source_price_git_blob_sha": "77ef4ec6c0bcf2db4e31f4c9b7f0e0b46544d096",
+    "sample_method": "22 non-overlapping requests each with <=24 symbols; exact 514 total",
+    "official_nasdaq_session_basis": "ALPACA_MARKET_CALENDAR",
+    "daily_required": 260,
+    "first_expected_session": "2025-09-29",
+    "last_expected_session": "2026-10-09",
+    "weekly_required": 52,
+    "hist_260_52_complete_shadow_count": 497,
+    "hist_insufficient_exact260_count": 17,
+    "hist_insufficient_symbols": [
+      "BSP",
+      "CBRS",
+      "EQPT",
+      "FRVO",
+      "HONA",
+      "INIO",
+      "MDLN",
+      "MMED",
+      "NAVN",
+      "PURR",
+      "QNT",
+      "SHAZ",
+      "SKHY",
+      "SOLS",
+      "SPCX",
+      "VSNT",
+      "XE"
+    ],
+    "dfTx_exact260_verified_in_connected_app": true,
+    "corporate_action_and_symbol_continuity_attested": false,
+    "vendor_entitlement_for_unattended_runner_verified": false,
+    "raw_bars_exported_to_public_repo": false,
+    "canonical_history_pass_promoted": false,
+    "note": "Counts were manually transcribed from connected-app readbacks, not independently persisted raw evidence or signed replay. Do not treat as production source authority."
+  },
+  "sec": {
+    "provider": "SEC_EDGAR",
+    "operator_github_runner_canary_run_id": 38037422731,
+    "operator_canary_commit_sha": "103261a539d846241fae71502f4b5975068bbc3b",
+    "operator_canary_result": "HTTP_200_BOTH;SHADOW_SHARES_VINTAGE_ONLY",
+    "full_scope_workflow_run_id": 38037486395,
+    "full_scope_status_at_report": "IN_PROGRESS_NO_COMPLETION_CLAIM",
+    "official_share_class_corporate_action_exactness_proven": false,
+    "market_cap_primary_pass_created": false,
+    "note": "SEC CIK + filing-vintage count is not a market-cap primary. 514-symbol job report is authoritative for its own eventual completed audit status only."
+  },
+  "github_alpaca_runner": {
+    "run_id": 38037659761,
+    "conclusion": "FAILURE_CORRECT_FAIL_CLOSED",
+    "root_cause": "XRAY_ALPACA_DATA_KEY_ID_AND_XRAY_ALPACA_DATA_SECRET_KEY_MISSING_IN_ACTIONS_RUNNER",
+    "calendar_unit_regressions_green": true,
+    "provider_request_executed": false,
+    "connector_available_in_foreground_not_usable_as_github_secret": true
+  },
+  "sec_market_close_safety": {
+    "review_branch_commit": "e9337d262362546cfc2386430e1d0209fe3aca87",
+    "normal_close_et": "16:00",
+    "early_close_et": "13:00",
+    "official_calendar_pinned": "pandas_market_calendars==5.4.0",
+    "post_close_sec_filing_asof_rejected": true,
+    "ci_green_runs": [
+      38037940120,
+      38037942059
+    ],
+    "code_lives_only_on_review_branch": true
+  },
+  "alternative_mc": {
+    "existing_primary": "BIGDATA_C4_17_CREDITS_EXHAUSTED",
+    "proposed": "SEC_PIT_SHARES_TIMES_ASOF_LICENSED_RTH_PRICE_WITH_INDEPENDENT_MC_CROSSCHECK",
+    "massive": "RATE_LIMIT_AND_ENTITLEMENT_UNKNOWN_SHADOW",
+    "rallies_longbridge": "12_TICKER_SHADOW_COMPARISON_11_AGREEMENTS_UNDER_10_PERCENT_FSLY_FAILS_13_69_PERCENT",
+    "independent_timestamp_and_rights_and_corporate_action_proofs_complete": false,
+    "c418_policy_activated": false
+  },
+  "e2e": {
+    "latest_verified_run_id": 38035723830,
+    "latest_result": "BLOCKED_FAIL_CLOSED",
+    "terminal_asof_et": "2026-10-07",
+    "current_mc_primary_attested": false,
+    "device_delivery_receipt_attested": false,
+    "no_actual_order_or_real_money": true
+  },
+  "safety": {
+    "execution": "NONE",
+    "real_money": "NO-GO",
+    "unknown_never_pass": true,
+    "effective_policy": "C4.17",
+    "control": "C4.27",
+    "mc_min_usd_unchanged": 2000000000,
+    "price_min_usd_unchanged": 5,
+    "dv30_median_min_usd_unchanged": 50000000,
+    "daily_history_min_sessions_unchanged": 260,
+    "weekly_min_unchanged": 52,
+    "primary_replacement_not_authorized": true,
+    "research_only_manual_decision": true
+  }
+}
