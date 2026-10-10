@@ -338,7 +338,11 @@ def selftest():
        "fallback_watch_symbols":["B"],"fallback_fail_symbols":[],"unknown_symbols":[],
        "counts":{"MC_PASS_PRIMARY":1,"MC_FAIL_PRIMARY":0,"MC_PASS_FALLBACK_WATCH":1,
                 "MC_FAIL_FALLBACK_TWO_SOURCE":0,"MC_UNKNOWN":0},
-       "results":{"A":{"status":"MC_PASS_PRIMARY"},"B":{"status":"MC_PASS_FALLBACK_WATCH"}}}
+       "results":{"A":{"status":"MC_PASS_PRIMARY",
+                        "mode":"BIGDATA_EXACT_XNAS_COMPANY_PUBLIC_USD",
+                        "listing":"XNAS:A","market_cap_usd":2100000000,
+                        "bigdata_entity_id":"ISOLATED_TEST_NOT_A_LIVE_QUOTE"},
+                  "B":{"status":"MC_PASS_FALLBACK_WATCH","r92_eligible":False}}}
     assert mc_exact(mc,price,"P")
     from copy import deepcopy
     for change in (
@@ -351,6 +355,21 @@ def selftest():
        lambda x:x.update(policy_hash="INVALID")):
         bad=deepcopy(mc);change(bad)
         assert not mc_exact(bad,price,"P"),bad
+    # Adversarial RED: a mere MC_PASS_PRIMARY label and partition is never
+    # proof of an exact XNAS issuer, finite USD cap or primary source.
+    for edit in (
+        lambda x:x["results"]["A"].pop("market_cap_usd"),
+        lambda x:x["results"]["A"].update(market_cap_usd=1999999999),
+        lambda x:x["results"]["A"].update(market_cap_usd=float("nan")),
+        lambda x:x["results"]["A"].update(listing="XNYS:A"),
+        lambda x:x["results"]["A"].update(mode="LONG BRIDGE SHADOW"),
+        lambda x:x["results"]["A"].pop("bigdata_entity_id"),
+        lambda x:x["results"]["B"].update(r92_eligible=True),
+        lambda x:x["results"]["B"].pop("r92_eligible"),
+    ):
+        bad=deepcopy(mc);edit(bad)
+        assert not mc_exact(bad,price,"P"),("UNPROVEN_PRIMARY_OR_WATCH_ESCAPED",bad)
+    print("XRAY_MC_PRIMARY_ROW_EVIDENCE=PASS_8_ADVERSARIAL_NEGATIVES")
     base_shas={k:k+"_SHA" for k in ("master","price","history","events","final")}
     t={"asof_et":"2026-10-08","compiled_policy_hash":POLICY,
        "full_end_to_end_research_pass":True,
