@@ -50,20 +50,31 @@ def test_epoch():
     ):
         c=copy.deepcopy(a)
         mutation(c)
-        assert frozen_identity_fingerprint(a)!=frozen_identity_fingerprint(c),"IDENTITY_DRIFT_UNDETECTED"
+        try:changed=frozen_identity_fingerprint(c)
+        except ValueError:continue  # exact hash/set inconsistency itself fails closed
+        assert frozen_identity_fingerprint(a)!=changed,"IDENTITY_DRIFT_UNDETECTED"
     c=copy.deepcopy(a)
     c["queue_hash"]="0"*64
     try:frozen_identity_fingerprint(c)
     except ValueError:pass
     else:raise AssertionError("FORGED_QUEUE_HASH_ACCEPTED")
 
+def last_30_weekdays():
+    d=dt.date(2026,10,9)
+    days=[]
+    while len(days)<30:
+        if d.weekday()<5 and d!=dt.date(2026,9,7):
+            days.append(d.isoformat())
+        d-=dt.timedelta(days=1)
+    return sorted(days)
+
 def state_fixture():
     syms=["AAPL","GRAL","NVDA","OLD","FAIL","DONE"]
     def row(status,reason,rounds=0,stamp="2026-10-09T22:30:00Z"):
         return {"status":status,"info":{"reason":reason},"attempts":1,
                 "updated_at_utc":stamp,"late_asof_recheck_round":rounds}
-    return {
-      "asof_et":"2026-10-09","expected30":["2026-10-08","2026-10-09"],
+    state={
+      "asof_et":"2026-10-09","expected30":last_30_weekdays(),
       "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
       "status":"HISTORY_PARTIAL","queue":syms,"queue_total":6,
       "queue_hash":sha_lines(syms),"cursor":6,
@@ -76,6 +87,8 @@ def state_fixture():
         "DONE":row("PASS","EXACT30_MEDIAN"),
        }
     }
+    state["results"]["DONE"]["info"]["proof"]="EXACT30_MEDIAN"
+    return state
 
 def test_recheck():
     close=dt.datetime(2026,10,9,20,tzinfo=dt.timezone.utc)
