@@ -1,0 +1,58 @@
+name: XRAY Alpaca SIP Complete Pages - Fail-Closed Offline
+on:
+  push:
+    branches: [audit/c417-alpaca-sip-paginated-history-20261010, main]
+    paths:
+      - "nasdaq-xray/alpaca_sip_paginated_transport_shadow.py"
+      - "nasdaq-xray/alpaca_free_sip_shadow_guard.py"
+      - ".github/workflows/xray-alpaca-sip-pagination-offline-regression-shadow.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  full-page-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - name: Source SHA exactly triggering commit
+        run: test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile fail-closed SIP and mocked-only tests
+        run: |
+          python -m py_compile nasdaq-xray/alpaca_sip_paginated_transport_shadow.py nasdaq-xray/alpaca_free_sip_shadow_guard.py
+          python nasdaq-xray/alpaca_sip_paginated_transport_shadow.py
+          python nasdaq-xray/alpaca_free_sip_shadow_guard.py --selftest
+      - name: No provider invocation or fake history/MC/GO witness
+        run: |
+          python - <<'PY'
+          import ast,json,os,subprocess
+          from pathlib import Path
+          path=Path("nasdaq-xray/alpaca_sip_paginated_transport_shadow.py")
+          source=path.read_text()
+          assert "ALPACA_PAGE_CURSOR_LOOP" in source
+          assert "ALPACA_PAGE_BUDGET_EXHAUSTED_NEVER_PARTIAL_PASS" in source
+          assert "ALPACA_PAGE_FOREIGN_SYMBOL" in source
+          assert "ALPACA_PAGE_DUPLICATE_TIMESTAMP" in source
+          guard=Path("nasdaq-xray/alpaca_free_sip_shadow_guard.py").read_text()
+          assert "return collect_pages(symbols,fetch_page)" in guard
+          assert 'params["page_token"]=token' in guard
+          head=subprocess.check_output(["git","rev-parse","HEAD"],text=True).strip()
+          assert head==os.environ["GITHUB_SHA"]
+          manifest={"schema":"XRAY_C417_SIP_PAGINATION_SHADOW_OFFLINE_V1",
+             "git_head":head,"real_vendor_calls":0,"mocked_two_pages":True,
+             "reject_foreign_symbol":True,"reject_partial_scope":True,
+             "reject_cursor_loop":True,"no_source_license_promotion":True,
+             "canonical_history_pass_created":0,"primary_mc_pass_created":0,
+             "r92_created":False,"execution":"NONE","real_money":"NO-GO"}
+          (Path(os.environ["RUNNER_TEMP"])/"alpaca_pagination_noauth.json").write_text(json.dumps(manifest,sort_keys=True,indent=2)+"\n")
+          print("XRAY_ALPACA_SIP_PAGINATION_STRICT_SCOPE_WITNESS=PASS")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: xray-alpaca-sip-paginated-offline-no-authority
+          path: ${{ runner.temp }}/alpaca_pagination_noauth.json
+          if-no-files-found: error
+          retention-days: 14
