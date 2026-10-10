@@ -1,0 +1,67 @@
+name: XRAY Historical 2026-10-09 Nasdaq Directory Source Identity Audit (No GO)
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/nasdaq_20261009_immutable_archive_shadow.py"
+      - "nasdaq-xray/canonical_current_full_state.json"
+      - "nasdaq-xray/canonical_current_master_manifest.json"
+      - "nasdaq-xray/master_asof_identity_proof_20261009.json"
+      - ".github/workflows/xray-nasdaq-20261009-archived-directory-shadow.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: xray-historical-nasdaq-20261009-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  compare-historical-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+      - name: Verify immutable exact invoking SHA
+        run: test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify official-date and immutable compressed blob adversarial tests
+        run: |
+          python -m py_compile nasdaq-xray/nasdaq_20261009_immutable_archive_shadow.py
+          python nasdaq-xray/nasdaq_20261009_immutable_archive_shadow.py --selftest
+      - name: Compare independently archived Nasdaq October-09 file against canonical source
+        if: github.ref == 'refs/heads/main'
+        run: |
+          python nasdaq-xray/nasdaq_20261009_immutable_archive_shadow.py --out "$RUNNER_TEMP/nasdaq_20261009_archive_source_census.json"
+      - name: Assert no PRIMARY, no trading, no redistributable raw directory
+        if: github.ref == 'refs/heads/main'
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          r=json.loads((Path(os.environ["RUNNER_TEMP"])/"nasdaq_20261009_archive_source_census.json").read_text())
+          assert r["schema"]=="XRAY_20261009_NASDAQ_ARCHIVED_DIRECTORY_RESEARCH_PROVENANCE_V1"
+          assert r["asof_et"]=="2026-10-09"
+          assert r["source_commit_sha"]=="bdc7e69ea7d21871f2b894096179830d804d4a56"
+          assert r["source_github_git_blob_sha"]=="a8f253d1635108a47f195d8002f67a73c41af1e6"
+          assert r["archived_data_publisher_independently_attested"] is False
+          assert r["nasdaq_archive_data_usage_rights_attested"] is False
+          assert r["history_or_market_cap_primary_authority"] is False
+          assert r["canonical_identity_replay_applied"] is False
+          assert r["execution"]=="NONE" and r["real_money"]=="NO-GO"
+          assert r["canonical_projected_symbols"]==3196
+          assert r["archive_total_listed_rows"]>3196
+          assert r["canonical_projected_symbol_presence_exact"] is True
+          print("XRAY_ARCHIVE_MEMBERSHIP_RESEARCH_COVERAGE=PASS_NO_PRIMARY_NO_GO")
+          PY
+      - name: Upload hashes and membership counts only, not Nasdaq licensed raw rows
+        if: ${{ always() && github.ref == 'refs/heads/main' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-20261009-third-party-nasdaq-directory-provenance-counts-only
+          path: ${{ runner.temp }}/nasdaq_20261009_archive_source_census.json
+          if-no-files-found: ignore
+          retention-days: 7
