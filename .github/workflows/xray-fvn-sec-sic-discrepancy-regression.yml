@@ -5,6 +5,8 @@ on:
     paths:
       - "nasdaq-xray/master_sec_sic_discrepancies_20261009.json"
       - "nasdaq-xray/build_current_identity_proofs.py"
+      - "nasdaq-xray/master_sec_identity_manual_seed_registry.json"
+      - "nasdaq-xray/nbrg_official_sec_identity_seed_selftest.py"
       - "nasdaq-xray/tests/test_fvn_sec_sic_discrepancy.py"
       - ".github/workflows/xray-fvn-sec-sic-discrepancy-regression.yml"
   workflow_dispatch:
