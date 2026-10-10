@@ -97,27 +97,34 @@ def main():
     assert sample["BBCI"]["info"]["source_url"]=="https://www.nasdaqtrader.com/TraderNews.aspx?id=ECA2026-717"
     assert official_recent_listing_terminal(registry,"BBCI","2026-10-06",expected30("2026-10-06")) is None
 
-    # Existing 9-Oct immutable PRICE decisions: only the three newest
-    # listings may move UNKNOWN -> terminal FAIL for insufficient sessions.
+    # Pinned 9-Oct production PRICE proof: accept both the prior four-UNKNOWN
+    # state and the exact in-place 3 FAIL + 1 UNKNOWN result. Never infer GO.
     price=json.loads((ROOT/"canonical_current_price_dv30.json").read_text())
     if price["asof_et"]==ASOF:
         four=["AIOK","GRAL","RTSN","TRXB"]
-        assert [x for x in four if x in price["unknown_symbols"]]==four
+        ipo=["AIOK","RTSN","TRXB"]
+        assert price["pass_count"]==514 and len(price["pass_symbols"])==514
+        assert set(price["pass_symbols"]).isdisjoint(four)
+        assert price["results"]["GRAL"]["status"]=="UNKNOWN"
+        assert price["unknown_symbols"] in (four,["GRAL"]), "UNEXPECTED_PRICE_UNKNOWN_TRANSITION"
         sample_real={x:deepcopy(price["results"][x]) for x in four}
-        assert all(row["status"]=="UNKNOWN" for row in sample_real.values())
         changed_real=apply_official_recent_listing_fail_only(sample_real,registry,ASOF,exp30)
-        assert changed_real==["AIOK","RTSN","TRXB"],changed_real
-        assert sample_real["GRAL"]==price["results"]["GRAL"],"GRAL_SOURCE_NOT_PROMOTED"
+        if price["unknown_symbols"]==four:
+            assert changed_real==ipo,changed_real
+            assert price["unknown_count"]==4
+            print("XRAY_09_OCT_IPO_FAIL_ONLY=PASS_PRIOR_FOUR_UNKNOWN_EXACT_REPLAY")
+        else:
+            assert changed_real==[],changed_real
+            assert price["unknown_count"]==1
+            assert all(price["results"][x]["status"]=="FAIL_DV30_INSUFFICIENT_SESSIONS"
+                       for x in ipo)
+            print("XRAY_09_OCT_IPO_FAIL_ONLY=PASS_COMMITTED_THREE_FAIL_ONE_UNKNOWN")
+        assert sample_real["GRAL"]==price["results"]["GRAL"]
         assert all(sample_real[x]["status"]=="FAIL_DV30_INSUFFICIENT_SESSIONS"
-                   for x in ("AIOK","RTSN","TRXB"))
+                   for x in ipo)
         assert all(sample_real[x]["info"]["max_possible_completed_sessions_in_exact30_window"]==1
-                   for x in ("AIOK","RTSN","TRXB"))
-        assert set(changed_real).isdisjoint(price["pass_symbols"])
-        assert len(price["pass_symbols"])==514
-        assert len(price["unknown_symbols"])==4
-        # This is an in-memory replay, not a canonical file/authority mutation.
+                   and sample_real[x]["info"]["first_trade_date"]==ASOF for x in ipo)
         assert not any(sample_real[x]["status"]=="PASS_PRICE_DV30" for x in four)
-        print("XRAY_09_OCT_THREE_NEW_IPOS_FAIL_ONLY=PASS_GRAL_UNKNOWN_514_PASS_UNCHANGED")
     else:
         print("XRAY_09_OCT_REPLAY_SKIPPED_CURRENT_PRICE_MOVED_TO_NEW_ASOF")
 
