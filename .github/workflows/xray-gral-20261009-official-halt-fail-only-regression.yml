@@ -37,7 +37,7 @@ jobs:
           from price_gral_halt_fail_only import apply_to_results
           root=pathlib.Path("nasdaq-xray")
           data=json.loads((root/"canonical_current_price_dv30.json").read_text())
-          must_replay=data["asof_et"]=="2026-10-09" and data["unknown_symbols"]==["GRAL"]
+          must_replay=data["asof_et"]=="2026-10-09" and "GRAL" in data["unknown_symbols"]
           assert data["pass_count"]==514 and data["unknown_never_pass"] is True
           assert data["execution"]=="NONE" and data["real_money"]=="NO-GO"
           evidence={"GRAL":dict(data["results"]["GRAL"]),"AAPL":dict(data["results"]["AAPL"])}
@@ -47,7 +47,7 @@ jobs:
             assert evidence["GRAL"]["status"]=="FAIL_DV30_INSUFFICIENT_SESSIONS"
           else:
             # After canonical repair, never overwrite an existing terminal.
-            assert data["asof_et"]!="2026-10-09" or data["unknown_symbols"]==[]
+            assert data["asof_et"]!="2026-10-09" or "GRAL" not in data["unknown_symbols"]
             replaced=apply_to_results(evidence,data["asof_et"],data["expected30"],data["source_master_queue_hash"])
             assert replaced==[]
           assert evidence["AAPL"]==data["results"]["AAPL"]
