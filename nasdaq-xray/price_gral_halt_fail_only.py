@@ -149,14 +149,18 @@ def selftest():
     assert real["GRAL"]["status"]=="FAIL_DV30_INSUFFICIENT_SESSIONS"
     assert real["AAPL"]=={"status":"PASS_PRICE_DV30"}
     assert apply_to_results(real,ONLY_ASOF,dates,sina["queue_hash"])==[]
+    corrupt_count=deepcopy(sina)
+    corrupt_count["results"]["GRAL"]["info"]["known_session_count"]=30
+    corrupt_bar=deepcopy(sina)
+    corrupt_bar["results"]["GRAL"]["info"]["no_synthetic_bar"]=False
     cases=[
       ("ASOF",row,"2026-10-08",dates,event,PINNED_EVENT_BLOB,sina),
       ("WRONG_EVENT_SHA",row,ONLY_ASOF,dates,event,"0"*40,sina),
       ("NO_HALT_DAY",row,ONLY_ASOF,[d for d in dates if d!=HALT_DAY],event,PINNED_EVENT_BLOB,sina),
       ("TAMPERED_OFFICIAL",row,ONLY_ASOF,dates,dict(event,official_rss_record=dict(event["official_rss_record"],ResumptionDate="09/23/2026")),PINNED_EVENT_BLOB,sina),
       ("SOURCE_ASOF_DRIFT",row,ONLY_ASOF,dates,event,PINNED_EVENT_BLOB,dict(sina,asof_et="2026-10-08")),
-      ("SOURCE_BAD_COUNT",row,ONLY_ASOF,dates,event,PINNED_EVENT_BLOB,dict(sina,results=dict(sina["results"],GRAL=dict(sina["results"]["GRAL"],info=dict(sina["results"]["GRAL"]["info"],known_session_count=30)))),
-      ("SOURCE_NO_SYNTHETIC_FALSE",row,ONLY_ASOF,dates,event,PINNED_EVENT_BLOB,dict(sina,results=dict(sina["results"],GRAL=dict(sina["results"]["GRAL"],info=dict(sina["results"]["GRAL"]["info"],no_synthetic_bar=False)))),
+      ("SOURCE_BAD_COUNT",row,ONLY_ASOF,dates,event,PINNED_EVENT_BLOB,corrupt_count),
+      ("SOURCE_NO_SYNTHETIC_FALSE",row,ONLY_ASOF,dates,event,PINNED_EVENT_BLOB,corrupt_bar),
       ("PREEXISTING_PASS",{"status":"PASS_PRICE_DV30"},ONLY_ASOF,dates,event,PINNED_EVENT_BLOB,sina),
       ("PREEXISTING_FAIL",{"status":"FAIL_DV30"},ONLY_ASOF,dates,event,PINNED_EVENT_BLOB,sina),
       ("SCOPE_QUEUE_HASH",row,ONLY_ASOF,dates,event,PINNED_EVENT_BLOB,dict(sina,queue_hash="0"*64)),
