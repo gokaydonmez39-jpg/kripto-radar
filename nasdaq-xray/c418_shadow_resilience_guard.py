@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import argparse
 import json
-from datetime import datetime, timezone, date, timedelta
+from datetime import datetime, timezone, date
 from pathlib import Path
 
 SCHEMA = "XRAY_C418_SHADOW_RESILIENCE_GUARD_V1"
@@ -34,20 +34,14 @@ def _timestamp(value):
     return stamp.astimezone(timezone.utc)
 
 def _latest_completed_nasdaq_session(now):
-    """Calendar-certified market close plus >=20min SIP holdback. No day guess."""
-    import pandas_market_calendars as mcal
-    calendar = mcal.get_calendar("NASDAQ")
-    schedule = calendar.schedule(
-        start_date=(now.date() - timedelta(days=14)).isoformat(),
-        end_date=now.date().isoformat(),
-    )
-    for idx, session in schedule.iloc[::-1].iterrows():
-        close = session["market_close"].to_pydatetime()
-        if close.tzinfo is None:
-            raise ValueError("unverified_session_timezone")
-        if now >= close.astimezone(timezone.utc) + timedelta(minutes=20):
-            return idx.date().isoformat()
-    raise ValueError("no_settled_session")
+    """Reuse the C4.17 E2E authoritative official session/30m EOD buffer.
+
+    Historical SIP access after 15m is NOT a 15m permission to advance the
+    production ASOF. Prevent C4.18 selecting 12 Oct at 20:20 UTC while E2E
+    still correctly requires 9 Oct until 20:30 UTC.
+    """
+    from source_epoch_freshness_guard import last_complete_session
+    return last_complete_session(now)
 
 def advisory_route(profile: dict, state: dict, purpose: str, asof: str,
                    now_utc: str) -> dict:
@@ -176,6 +170,18 @@ def selftest():
     early_routes = {name: dict(template, observed_at_utc="2026-10-12T19:30:00Z")
                     for name in PURPOSES["HISTORY"]}
     assert advisory_route(profile, early_routes, "HISTORY", "2026-10-09", early)["advisory_order"] == list(PURPOSES["HISTORY"])
+    # Hard negative: C4.18 must agree with C4.17 E2E's 30m settle,
+    # not advance on the provider's shorter SIP holdback.
+    almost = "2026-10-12T20:20:00Z"
+    on_friday = {name: dict(template, observed_at_utc="2026-10-12T20:10:00Z")
+                 for name in PURPOSES["HISTORY"]}
+    assert _latest_completed_nasdaq_session(_timestamp(almost)) == "2026-10-09"
+    assert advisory_route(profile, on_friday, "HISTORY", "2026-10-09", almost)["advisory_order"] == list(PURPOSES["HISTORY"])
+    latest = {name: dict(template, asof_et="2026-10-12",
+                         observed_at_utc="2026-10-12T20:25:00Z")
+              for name in PURPOSES["HISTORY"]}
+    assert _latest_completed_nasdaq_session(_timestamp("2026-10-12T20:30:00Z")) == "2026-10-12"
+    assert advisory_route(profile, latest, "HISTORY", "2026-10-12", "2026-10-12T20:30:00Z")["advisory_order"] == list(PURPOSES["HISTORY"])
     settled = "2026-10-12T20:30:00Z"
     assert advisory_route(profile, early_routes, "HISTORY", "2026-10-09", settled)["reasons"] == {"GLOBAL": "ASOF_NOT_LATEST_SETTLED_NASDAQ_SESSION"}
     assert advisory_route(profile, routes, "HISTORY", "invalid-date", now)["reasons"] == {"GLOBAL": "DATE_OR_CLOCK_INVALID"}
@@ -222,7 +228,7 @@ def selftest():
         assert backtest_pit_guard(x)["status"] == "BACKTEST_DATA_BLOCKED", field
     x = dict(defaults, features_available_at_utc="2026-10-10T20:00:00Z")
     assert "FUTURE_INFORMATION_features_available_at_utc" in backtest_pit_guard(x)["reason_codes"]
-    print("XRAY_C418_SHADOW_RESILIENCE_SELFTEST=PASS_12_NEGATIVE_6_SETTLEMENT_PLUS_9_PIT_GATES_NO_PRIMARY_NO_R92")
+    print("XRAY_C418_SHADOW_RESILIENCE_SELFTEST=PASS_12_NEGATIVE_8_SETTLEMENT_PLUS_9_PIT_GATES_NO_PRIMARY_NO_R92")
 
 def main():
     parser = argparse.ArgumentParser()
