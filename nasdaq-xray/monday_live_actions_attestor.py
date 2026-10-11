@@ -37,6 +37,17 @@ WORKFLOWS={
     "legacy_overlay":"xray-final-gate-overlay.yml",
     "resilience":"xray-resilience-observability.yml",
 }
+# Additional scheduled SHADOW/diagnostic workflows: observe but do not demand
+# activation of paid licensed transports. Disabled is legitimate fail-closed.
+SUPPLEMENTAL_SCHEDULED={
+    "alpaca_delayed_sip":"xray-alpaca-delayed-sip-research.yml",
+    "massive_encrypted_history":"xray-massive-grouped-history-resume.yml",
+    "multi_provider_shadow":"xray-multi-provider-research-shadow.yml",
+    "sec_mirror_cik":"xray-sec-mirror-cik-shadow.yml",
+    "sec_transport_probe":"xray-sec-transport-matrix-probe.yml",
+    "twelve_encrypted_history":"xray-twelve-history-resume.yml",
+    "zero_cost_stage_verification":"xray-zero-cost-four-stage-verification.yml",
+}
 SUCCESS="completed"
 
 def stamp(v):
@@ -112,8 +123,18 @@ def workflow_inventory(rows):
         if state!="active":
             blockers.append(key+":"+str(state))
         found[key]={"id":row.get("id"),"state":state,"path":expected_path}
+    additional={}
+    for key,basename in SUPPLEMENTAL_SCHEDULED.items():
+        path=".github/workflows/"+basename
+        row=by_path.get(path)
+        additional[key]={"path":path,
+                         "state":row.get("state") if row else "MISSING",
+                         "id":row.get("id") if row else None}
     return {"all_required_active":not blockers,"blockers":blockers,
-            "required":found,"total_enumerated":len(rows)}
+            "required":found,"supplemental":additional,
+            "supplemental_active_count":sum(x["state"]=="active"
+                                            for x in additional.values()),
+            "total_enumerated":len(rows)}
 
 def fetch_workflow_inventory(token):
     first=github("/actions/workflows?per_page=100&page=1",token)
@@ -172,6 +193,15 @@ def selftest():
           for i,v in enumerate(WORKFLOWS.values())]
     assert workflow_inventory(good)["all_required_active"] is True
     assert len(workflow_inventory(good)["required"])==17
+    assert len(workflow_inventory(good)["supplemental"])==7
+    with_supplemental=good+[
+        {"path":".github/workflows/"+v,"id":50+i,"state":"active"}
+        for i,v in enumerate(SUPPLEMENTAL_SCHEDULED.values())]
+    assert workflow_inventory(with_supplemental)["supplemental_active_count"]==7
+    optional_disabled=[dict(x) for x in with_supplemental]
+    optional_disabled[-1]["state"]="disabled_manually"
+    assert workflow_inventory(optional_disabled)["all_required_active"] is True
+    assert workflow_inventory(optional_disabled)["supplemental_active_count"]==6
     disabled=[dict(row) for row in good]
     disabled[2]["state"]="disabled_manually"
     assert workflow_inventory(disabled)["all_required_active"] is False
@@ -219,6 +249,11 @@ def main():
         runs=verify_response(github(
             "/actions/workflows/"+name+"/runs?per_page=20&branch=main",token))
         entries[key]=summarize(now,key,runs)
+    supplementary={}
+    for key,name in SUPPLEMENTAL_SCHEDULED.items():
+        runs=verify_response(github(
+            "/actions/workflows/"+name+"/runs?per_page=20&branch=main",token))
+        supplementary[key]=summarize(now,key,runs)
     head_b=github("/git/ref/heads/main",token)["object"]["sha"]
     main_exact=bool(head_a and head_a==head_b)
     if not main_exact:raise RuntimeError("GITHUB_MAIN_CHANGED_DURING_ACTIONS_AUDIT")
@@ -227,6 +262,7 @@ def main():
         "main_stable_during_observation":True,
         "workflow_inventory":inventory,
         "execution_witnesses":entries,
+        "supplemental_scheduled_witnesses":supplementary,
         # Do not call a prior green job current when a newer failure, queued
         # root or new main commit supersedes its execution witness.
         "root_fresh_weekday_job_only":bool(
@@ -246,6 +282,8 @@ def main():
     }
     a.out.write_text(json.dumps(result,sort_keys=True,indent=2)+"\n")
     print("XRAY_MONDAY_LIVE_ACTIONS=OBSERVED_"+str(len(entries)))
+    print("XRAY_MONDAY_SUPPLEMENTAL_SCHEDULES=OBSERVED_"+str(len(supplementary)))
+    print("XRAY_MONDAY_SUPPLEMENTAL_ACTIVE="+str(inventory["supplemental_active_count"]))
     print("XRAY_MONDAY_ROOT_WEEKDAY_GREEN_AGE_BOUND="+
           str(result["root_fresh_weekday_job_only"]).lower())
     print("XRAY_MONDAY_USER_DELIVERY_RECEIPT=UNVERIFIED")
