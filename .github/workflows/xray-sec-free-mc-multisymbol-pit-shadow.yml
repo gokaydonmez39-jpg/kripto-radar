@@ -2,7 +2,7 @@ name: XRAY SEC Free MC Multi-Symbol PIT Shadow Probe
 on:
   workflow_dispatch:
   push:
-    branches: [main]
+    branches: [main, fix/c417-sec-168-root-cause-routing-20261011]
     paths:
       - "nasdaq-xray/sec_free_mc_multisymbol_pit_audit.py"
       - "nasdaq-xray/sec_official_free_mc_transport_probe.py"
@@ -10,7 +10,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: xray-sec-multisymbol-pit-shadow-${{ github.ref }}
+  group: xray-sec-multisymbol-pit-shadow-${{ github.ref }}-${{ github.ref }}
   cancel-in-progress: false
 jobs:
   official-sec-vintages:
