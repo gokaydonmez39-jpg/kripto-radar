@@ -196,6 +196,28 @@ def decode_provider_body(raw):
             raise VendorNotEntitled("PROVIDER_PLAN_NOT_ENTITLED")
     return parsed
 
+def official_grouped_close_ms(day):
+    """Only the NASDAQ RTH daily bar window's OFFICIAL close may enter cache.
+
+    A timestamp sharing UTC calendar date is insufficient: it can be an
+    intraday/future placeholder, a DST clock bug, or a false 16:00 on
+    an official 13:00 early close. Official close includes DST/holidays.
+    """
+    import pandas_market_calendars as mcal
+    from datetime import date
+    try:
+        require_day=date.fromisoformat(day)
+    except (TypeError,ValueError) as error:
+        raise ValueError("INVALID_NASDAQ_SESSION_DAY") from error
+    if require_day.isoformat()!=day:
+        raise ValueError("INVALID_NASDAQ_SESSION_DAY")
+    calendar=mcal.get_calendar("NASDAQ")
+    schedule=calendar.schedule(start_date=day,end_date=day)
+    if len(schedule)!=1:
+        raise ValueError("DAY_NOT_NASDAQ_TRADING_SESSION")
+    close=schedule.iloc[0]["market_close"].to_pydatetime().astimezone(timezone.utc)
+    return int(close.timestamp()*1000)
+
 def read_day(payload,day,targets):
     if isinstance(payload,dict) and "NOT_ENTITLED" in (
         str(payload.get("status") or "")+" "+str(payload.get("error") or "")[:300]).upper():
@@ -206,6 +228,7 @@ def read_day(payload,day,targets):
     if not isinstance(rows,list) or not rows or len(rows)>30000:raise ValueError("UNBOUNDED_VENDOR_ROWS")
     if type(payload.get("resultsCount")) is not int or payload["resultsCount"]!=len(rows):
         raise ValueError("GROUPED_RESULTS_COUNT_MISMATCH")
+    close_ms=official_grouped_close_ms(day)
     wanted=set(targets);got={}
     for r in rows:
         if not isinstance(r,dict):raise ValueError("VENDOR_ROW_NOT_OBJECT")
@@ -213,7 +236,7 @@ def read_day(payload,day,targets):
         if symbol not in wanted:continue
         if symbol in got:raise ValueError("DUPLICATED_SCOPE_TICKER")
         ts=r.get("t")
-        if type(ts) is not int or datetime.fromtimestamp(ts/1000,timezone.utc).date().isoformat()!=day:
+        if type(ts) is not int or ts!=close_ms:
             raise ValueError("WRONG_EPOCH_TIMESTAMP")
         values=[]
         for k in ("o","h","l","c","v"):

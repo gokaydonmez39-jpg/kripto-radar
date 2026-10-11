@@ -1,0 +1,19 @@
+{
+  "schema": "XRAY_GROUPED_EOD_EXACT_OFFICIAL_CLOSE_GUARD_V1",
+  "preimage_main": "7521deb7257727a7061c0837ee62b6572d49a03e",
+  "bug": "SAME_UTC_DATE_WAS_ACCEPTED_AS_FULL_COMPLETED_SESSION; DST_HOLIDAY_AND_13_00_EARLY_CLOSE_NOT_PROVEN",
+  "repair": "pandas_market_calendars NASDAQ market_close exact UTC millisecond for daily grouped rows",
+  "negative_tests": 12,
+  "positive_tests": 3,
+  "modes": [
+    "python",
+    "python -O"
+  ],
+  "new_alpha_authority": false,
+  "zero_vendor_data": true,
+  "threshold_change": false,
+  "rights_status": "UNVERIFIED",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "ci": "PENDING"
+}
