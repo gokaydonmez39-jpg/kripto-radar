@@ -151,6 +151,10 @@ def audit(asof,targets,start,fetch,*,now):
             fault=(msg if msg.startswith("ALPACA_CA_")
                    else "ALPACA_CA_UNVERIFIED_TRANSPORT")
             break
+    if fault is None and unknown_group_count:
+        fault="ALPACA_CA_UNKNOWN_VENDOR_GROUP_SCHEMA"
+    if fault is None and unmatched_subjects:
+        fault="ALPACA_CA_EVENT_SUBJECT_NOT_BOUND_TO_REQUEST"
     return {
         "schema":SCHEMA,"asof_et":asof,"asof_start":start,
         "expected_symbols":len(targets),"measured_symbols":measured,

@@ -1,0 +1,15 @@
+{
+  "schema": "XRAY_P0_ALPACA_CA_515_SCHEMA_BINDING_HARDENED_V1",
+  "head_before": "899491cc6bc061721935c089900cfcc53a7f6c79",
+  "asof": "2026-10-09",
+  "bug": "UNKNOWN_VENDOR_EVENT_TYPES_AND_TICKER_UNBOUND_EVENTS_PREVIOUSLY_NOT_SUFFICIENT_TO_DOWNGRADE_CENSUS_COMPLETENESS",
+  "repair": "unknown_group_or_unbound_subject_marks_SHADOW_INCOMPLETE_INSTEAD_OF_CENSUS_COMPLETE",
+  "already_supported_type": "forward_split",
+  "alpaca_provider_caveat": "no guaranteed event creation time, data_quality complete excludes unprocessed incomplete events",
+  "primary_market_cap": false,
+  "history_primary": false,
+  "no_licensed_prices_persisted": true,
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "ci": "PENDING"
+}

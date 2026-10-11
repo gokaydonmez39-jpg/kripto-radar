@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/alpaca_full_scope_ca_shadow.py"
+      - "nasdaq-xray/p0_ca_schema_drift_selftest.py"
       - "nasdaq-xray/alpaca_full_scope_260_shadow.py"
       - "nasdaq-xray/alpaca_free_sip_shadow_guard.py"
       - "nasdaq-xray/canonical_current_price_dv30.json"
@@ -35,6 +36,8 @@ jobs:
         run: |
           python -m py_compile nasdaq-xray/alpaca_full_scope_ca_shadow.py
           python nasdaq-xray/alpaca_full_scope_ca_shadow.py --selftest
+          python nasdaq-xray/p0_ca_schema_drift_selftest.py
+          python -O nasdaq-xray/p0_ca_schema_drift_selftest.py
           python nasdaq-xray/alpaca_full_scope_260_shadow.py --selftest
       - name: Measure 515 real Alpaca CA corp-action events, no vendor event persistence
         if: github.ref == 'refs/heads/main'
@@ -55,6 +58,8 @@ jobs:
           assert r["unmeasured_symbols"]==0 and r["pages_consumed"]>=8
           assert r["source_price_count"]==514
           assert r["total_events_seen"]==sum(r["counts_by_group"].values())
+          assert r["unknown_vendor_group_events"]==0
+          assert r["subject_not_in_requested_batch"]==0
           assert r["source_price_blob_sha"]==subprocess.check_output(
              ["git","hash-object","nasdaq-xray/canonical_current_price_dv30.json"],text=True).strip()
           assert r["source_master_blob_sha"]==subprocess.check_output(
