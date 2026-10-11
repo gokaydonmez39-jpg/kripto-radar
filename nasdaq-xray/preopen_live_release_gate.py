@@ -83,6 +83,13 @@ def evaluate(now,root,master,price,terminal,official,readiness,sources):
             "ROOT_HISTORY_PARTIAL_OR_UNKNOWN")
     require(sources.get("source_integrity_pass") is True,
             "SOURCE_SHA_AND_SET_CHAIN_UNVERIFIED")
+    # Independent non-G9 veto, derived directly from PRICE rows. A forged or
+    # stale summary flag cannot authorize a non-C4.17 vendor source even when
+    # all other readiness booleans are accidentally set True.
+    non_g9_price_count=e2e.non_g9_price_pass_count(price)
+    require(non_g9_price_count==0 and
+            readiness.get("price_pass_explicit_non_g9_count")==0,
+            "C417_NON_G9_PRICE_SOURCE_RELEASE_VETO")
     require(readiness.get("current_mc_authority_count")==1 and
             sources.get("current_primary_mc_proof_complete") is True,
             "C417_MC_PRIMARY_CHAIN_NOT_PROVEN")
@@ -120,6 +127,7 @@ def evaluate(now,root,master,price,terminal,official,readiness,sources):
         "root_age_seconds":round(age) if age is not None and math.isfinite(age) else None,
         "official_guard_age_seconds":round(age_guard) if age_guard is not None and math.isfinite(age_guard) else None,
         "registered_candidate_count":candidate_count,
+        "explicit_non_g9_price_pass_count":non_g9_price_count,
         "status":"PREOPEN_RESEARCH_CHAIN_ATTESTED_NO_DEVICE_RECEIPT" if source_ready else "PREOPEN_BLOCKED_NO_GO",
         "research_source_chain_ready":source_ready,
         "blockers":sorted(reasons),
@@ -151,7 +159,8 @@ def selftest():
               "generated_at_utc":"2026-10-12T13:14:00Z",
               "sources":{"trade_halts":{"status":"PASS"},
                          "security_status":{"status":"PASS"}}}
-    readiness=dict(base,current_mc_authority_count=1,
+    readiness=dict(base,price_pass_explicit_non_g9_count=0,
+       current_mc_authority_count=1,
        official_nasdaq_session_freshness_attested=True,
        full_e2e_research_attested=True,
        candidate_local_source_chain_attested=True,
@@ -172,6 +181,8 @@ def selftest():
         (4,"generated_at_utc","2026-10-12T12:00:00Z","OFFICIAL_GUARD_STALE"),
         (5,"current_mc_authority_count",0,"C417_MC_PRIMARY_CHAIN_NOT_PROVEN"),
         (6,"source_integrity_pass",False,"SOURCE_SHA_AND_SET_CHAIN_UNVERIFIED"),
+        (5,"price_pass_explicit_non_g9_count",1,
+         "C417_NON_G9_PRICE_SOURCE_RELEASE_VETO"),
         (6,"current_primary_mc_proof_complete",False,"C417_MC_PRIMARY_CHAIN_NOT_PROVEN"),
     ]
     for idx,k,val,reason in cases:
@@ -180,6 +191,16 @@ def selftest():
         a=evaluate(monday,*m)
         assert a["status"]=="PREOPEN_BLOCKED_NO_GO" and reason in a["blockers"],(k,a)
         assert not a["real_device_receipt_verified"] and not a["alpha_promotion_authorized"]
+    bad=copy.deepcopy(objs)
+    bad[2]["pass_symbols"]=["TEST_NON_G9_SOURCE"]
+    bad[2]["results"]={"TEST_NON_G9_SOURCE":{
+        "status":"PASS_PRICE_DV30",
+        "info":{"source":"RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"}}}
+    direct=evaluate(monday,*bad)
+    assert direct["status"]=="PREOPEN_BLOCKED_NO_GO"
+    assert direct["explicit_non_g9_price_pass_count"]==1
+    assert "C417_NON_G9_PRICE_SOURCE_RELEASE_VETO" in direct["blockers"]
+    assert direct["alpha_promotion_authorized"] is False
     bad=copy.deepcopy(objs)
     bad[3]["r92_candidates"]=["TEST_NOT_REGISTERED"]
     assert "POSITIVE_CANDIDATE_NOT_RESEARCH_REGISTERED" in evaluate(monday,*bad)["blockers"]
@@ -211,6 +232,7 @@ def main():
     args.out.write_text(json.dumps(result,sort_keys=True,indent=2)+"\n",encoding="utf-8")
     print("XRAY_DYNAMIC_PREOPEN="+result["status"])
     print("XRAY_DYNAMIC_PREOPEN_ASOF="+str(result["expected_completed_session_et"]))
+    print("XRAY_DYNAMIC_PREOPEN_EXPLICIT_NON_G9_PRICE="+str(result["explicit_non_g9_price_pass_count"]))
     print("XRAY_DYNAMIC_PREOPEN_BLOCKERS="+json.dumps(result["blockers"]))
     print("XRAY_DYNAMIC_PREOPEN_USER_DEVICE_RECEIPT=UNVERIFIED")
 
