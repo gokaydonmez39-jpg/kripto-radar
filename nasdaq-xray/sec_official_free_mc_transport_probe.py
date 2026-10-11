@@ -13,6 +13,7 @@ import json
 import os
 import re
 import urllib.error
+import http.client
 import urllib.request
 from pathlib import Path
 from functools import lru_cache
@@ -39,7 +40,8 @@ def get_json(url: str, user_agent: str) -> dict:
     except urllib.error.HTTPError as exc:
         # Fail closed; never rotate IPs or user agents to bypass SEC blocks.
         raise ValueError("SEC_HTTP_"+str(exc.code)) from exc
-    except (urllib.error.URLError,TimeoutError,ConnectionError) as exc:
+    except (urllib.error.URLError,TimeoutError,ConnectionError,
+            http.client.HTTPException,OSError) as exc:
         raise ValueError("SEC_TRANSPORT_UNAVAILABLE") from exc
     try:
         obj=json.loads(data)
@@ -297,11 +299,27 @@ def selftest():
     assert valid_operator_contact("NASDAQ-XRAY operator (operator@sample.org)")
     # No HTTP calls when the secret is absent or invalid.
     from unittest.mock import patch
+    # Real 2026-10-11 GitHub run 38143078231 demonstrated a chunked SEC
+    # response terminating after partial bytes. It must classify as one
+    # transient UNKNOWN, not crash the entire full-price-scope census.
+    class PartialSECResponse:
+        status=200
+        def __enter__(self): return self
+        def __exit__(self,*args): return False
+        def read(self,*args):
+            raise http.client.IncompleteRead(b'{"partial":', 2738730)
+    with patch("urllib.request.urlopen",return_value=PartialSECResponse()):
+        try:
+            get_json(FACTS_URL,"NASDAQ XRAY operator (operator@sample.org)")
+        except ValueError as exc:
+            assert str(exc)=="SEC_TRANSPORT_UNAVAILABLE",str(exc)
+        else:
+            raise AssertionError("SEC_PARTIAL_CHUNK_WRONGLY_ACCEPTED")
     with patch.dict(os.environ,{"XRAY_SEC_USER_AGENT":""}),patch(__name__+".get_json",side_effect=AssertionError("NETWORK_REQUEST_WHEN_SECRET_MISSING")):
         assert run("2026-10-08")["reason"]=="SEC_OPERATOR_CONTACT_CONFIG_MISSING"
     with patch.dict(os.environ,{"XRAY_SEC_USER_AGENT":"bot@users.noreply.github.com"}),patch(__name__+".get_json",side_effect=AssertionError("NETWORK_REQUEST_WHEN_CONTACT_INVALID")):
         assert run("2026-10-08")["reason"]=="SEC_OPERATOR_CONTACT_FORMAT_INVALID"
-    print("SEC_FREE_MC_PIT_SELFTEST=PASS_ACCEPTANCE_FUTURE_CIK_LIST_BOOL_CONTACT_DIAG_NO_PRIMARY")
+    print("SEC_FREE_MC_PIT_SELFTEST=PASS_PARTIAL_CHUNK_TRANSPORT_UNKNOWN_ACCEPTANCE_CIK_CONTACT_NO_PRIMARY")
 
 def valid_operator_contact(ua:str) -> bool:
     """SEC requires a real contact; GitHub noreply cannot identify an operator."""
