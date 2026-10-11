@@ -11,6 +11,7 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/manual_decision_report.py"
+      - "nasdaq-xray/manual_workflow_trigger_sha_guard.py"
       - "nasdaq-xray/research_only_start_20261010.json"
       - "nasdaq-xray/research_only_start_guard.py"
       - "nasdaq-xray/manual_signal_lifecycle_shadow.py"
@@ -34,6 +35,11 @@ jobs:
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: "3.12"
+      - name: Enforce exact source Final invocation vs current checked-out main
+        run: |
+          python -m py_compile nasdaq-xray/manual_workflow_trigger_sha_guard.py
+          python nasdaq-xray/manual_workflow_trigger_sha_guard.py --selftest
+          python nasdaq-xray/manual_workflow_trigger_sha_guard.py --out "$RUNNER_TEMP/xray_manual_invocation_witness.json"
       - name: Validate user-approved RESEARCH_ONLY launch and source epochs
         run: |
           python nasdaq-xray/research_only_start_guard.py --selftest
