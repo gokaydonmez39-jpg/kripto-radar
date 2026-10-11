@@ -1,0 +1,47 @@
+{
+  "schema": "XRAY_P0_20261012_OFFICIAL_SPLIT_11_PLUS_12_HARD_CI_FINAL_V6",
+  "preimage_main": "d21bdbb8681e4727479f562e5d8b41d81c22ca98",
+  "asof_et": "2026-10-09",
+  "primary_policy": "C4.17",
+  "safety_control": "C4.27",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "source_SEC_12_filing_and_ratio_run": 38181151299,
+  "source_SEC_12_orig_zip_sha256": "sha256:2d9bb3705a1699933dde2c5edf3acb70efbe3459801b23591a4dad95a6cbcc39",
+  "source_alpaca_11x260_factor_and_official_registry_run": 38180793363,
+  "source_alpaca_11x260_zip_sha256": "sha256:6d55ced0d006e1e119b3d56c2d1af6a9da9bcda0f4e9920c3dda4f40b19f1d60",
+  "proofs": {
+    "issuer_SEC_original_documents_HTTP_and_acceptance_before_official_asof_close": 12,
+    "issuer_SEC_original_documents_split_text_ratio_machine_parsed": 12,
+    "issuer_rate_vendor_CA_exact_date_ratio_matched": 11,
+    "full_260_session_ohlcv_split_factor_arithmetic": 11,
+    "unknown_in_12_files": 0,
+    "unknown_in_11_split_factor": 0,
+    "history_other_497_stock_scope_prior_four_witness": 497,
+    "history_young_listing_nonpass": 17,
+    "source_FULL_514_MC_PRIMARY_PASS": 0
+  },
+  "remaining_hard_blockers": [
+    "C417_PRIMARY_MC_0_514_CORPORATE_CLASS_AND_ISSUER_PIT_PRICE_INDEPENDENT_CAP",
+    "FULL_497_260_52_HISTORY_ISSUER_CLASS_AND_NON_SPLIT_CORPORATE_ACTION_PIT_NOT_ATTESTED",
+    "CURRENT_CANONICAL_HISTORY_AND_TERMINAL_ASOF_2026_10_07_STALE_VS_PRICE_2026_10_09",
+    "MASTER_12_UNKNOWN_AND_G9_ACCOUNT_DELIVERY_SEPARATE"
+  ],
+  "new_CI_restrictions": [
+    "11_OF_11_VENDOR_260_SPLIT_ARITHMETIC_AND_ISSUER_SOURCE_MATCH_REQUIRED",
+    "12_OF_12_OFFICIAL_SEC_ORIGINAL_HTTP_ISSUER_TIMESTAMP_AND_RATIO_TEXT_REQUIRED"
+  ],
+  "source_regulatory_docs": [
+    "https://files.alpaca.markets/disclosures/library/TermsAndConditions.pdf",
+    "https://docs.alpaca.markets/us/docs/market-data-faq",
+    "https://www.sec.gov/Archives/edgar/data/773840/000077384026000084/hon-20260625.htm"
+  ],
+  "personal_noncommercial_user_declared": true,
+  "commercial_data_resale": false,
+  "paid_data_license_automatically_required": false,
+  "unattended_third_party_non_display_entitlement_conclusively_established": false,
+  "execution_code_or_trade_write_changed": false,
+  "production_GO": false,
+  "ci": "PENDING"
+}

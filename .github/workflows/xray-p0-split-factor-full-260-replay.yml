@@ -56,6 +56,9 @@ jobs:
           assert d["schema"]=="XRAY_P0_11_SPLIT_FACTOR_FULL_260_MATHEMATICAL_REPLAY_SHADOW_V1"
           assert d["full_515_scope_bound"]==515 and d["split_restatement_cohort"]==11
           assert d["issuer_SEC_source_ratio_register_verified"]+d["issuer_SEC_source_ratio_register_unresolved"]==11
+          assert d["issuer_SEC_source_ratio_register_verified"]==11, "NOT_ALL_11_ISSUER_RATIO_REFERENCES_MATCH"
+          assert d["issuer_SEC_source_ratio_register_unresolved"]==0
+          assert d["verified_split_factor_math"]==11 and d["unresolved_split_factor_math"]==0
           assert d["SEC_document_source_urls_machine_fetched_verified"] is False
           assert d["SEC_filing_acceptance_times_independently_verified"] is False
           assert d["verified_split_factor_math"]+d["unresolved_split_factor_math"]==11

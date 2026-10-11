@@ -44,6 +44,9 @@ jobs:
           assert d["schema"]=="XRAY_SEC_12_OFFICIAL_SPLIT_DOC_AND_SUBMISSION_PIT_CANARY_V1"
           assert d["source_events"]==len(d["event_statuses"])==12
           assert d["SEC_document_and_acceptance_verified_count"]+d["SEC_document_or_acceptance_unknown_count"]==12
+          assert d["SEC_document_and_acceptance_verified_count"]==12, "EXACT_12_OFFICIAL_SOURCE_RATIO_UNPROVEN"
+          assert d["SEC_document_or_acceptance_unknown_count"]==0
+          assert d["all_ratio_strings_machine_parsed_and_verified"] is True
           assert d["source_registry_git_blob_sha"]==subprocess.check_output(
            ["git","hash-object","nasdaq-xray/research/p0_11_split_events_official_sec_issuer_registry_20261012.json"],
             text=True).strip()
