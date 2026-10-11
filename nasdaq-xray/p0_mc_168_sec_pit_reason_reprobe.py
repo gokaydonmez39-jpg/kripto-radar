@@ -54,7 +54,7 @@ def git_blob(data):
     return hashlib.sha1(b"blob " + str(len(data)).encode() + b"\0" + data).hexdigest()
 
 def symbol_sha(symbols):
-    return hashlib.sha256(("\n".join(symbols) + "\n").encode()).hexdigest()
+    return hashlib.sha256("\n".join(symbols).encode("utf-8")).hexdigest()
 
 def safe_reason(code):
     return code if type(code) is str and code in SEC_REASON_CODES else "SEC_REASON_UNCLASSIFIED"
