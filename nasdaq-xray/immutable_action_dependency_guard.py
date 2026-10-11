@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fail-closed GitHub Actions supply-chain guard for fifteen critical XRAY workflows.
+"""Fail-closed GitHub Actions supply-chain guard for sixteen critical XRAY workflows.
 
 Only exact vendor-owned commit refs independently verified against official
 GitHub release tags are accepted. This verifies pinned dependency identity,
@@ -30,6 +30,7 @@ EXPECTED = {
     ".github/workflows/xray-live-truth-attestation.yml": (CHECKOUT, PYTHON, ARTIFACT),
     ".github/workflows/xray-manual-decision-research-shadow.yml": (CHECKOUT, PYTHON, ARTIFACT),
     ".github/workflows/xray-sec-free-mc-transport-proof.yml": (CHECKOUT, PYTHON, ARTIFACT),
+    ".github/workflows/xray-current-history-source-request.yml": (CHECKOUT, PYTHON, ARTIFACT),
 }
 LINE = re.compile(r"^\s*(?:-\s*)?uses:\s*(\S+)(?:\s*(?:#.*)?)?$")
 
@@ -63,6 +64,12 @@ def verify(path: str, contents: str) -> int:
         if ("git rev-parse HEAD" not in contents or "$GITHUB_SHA" not in contents
                 or "XRAY_SEC_TRANSPORT_CHECKOUT_EXACT=PASS" not in contents):
             raise ValueError("SEC_CHECKOUT_INVOCATION_SHA_FENCE_MISSING")
+    if path == ".github/workflows/xray-current-history-source-request.yml":
+        if (re.search(r"(?m)^\s*ref:\s*(?:main|master)\s*$", contents)
+                or 'python -O nasdaq-xray/current_history_source_request.py --selftest' not in contents
+                or 'XRAY_HISTORY_REQUEST_HEAD_EXACT=PASS' not in contents
+                or '"$(git rev-parse HEAD)" = "$GITHUB_SHA"' not in contents):
+            raise ValueError("HISTORY_REQUEST_OPTIMIZE_OR_INVOCATION_SOURCE_FENCE_MISSING")
     if path == ".github/workflows/xray-manual-decision-research-shadow.yml":
         if ("nasdaq-xray/manual_workflow_trigger_sha_guard.py --selftest" not in contents
                 or "nasdaq-xray/manual_workflow_trigger_sha_guard.py --out" not in contents
@@ -124,6 +131,29 @@ def selftest() -> None:
         try:verify(manual,altered)
         except ValueError:continue
         raise AssertionError("MANUAL_PROVENANCE_SHA_FENCE_REMOVAL_ACCEPTED")
+    history=".github/workflows/xray-current-history-source-request.yml"
+    history_source=("\n".join((
+        "steps:",
+        "  - uses: "+CHECKOUT,
+        "  - uses: "+PYTHON,
+        "  - name: Exact triggering source commit",
+        "    run: |",
+        '      test "$(git rev-parse HEAD)" = "$GITHUB_SHA"',
+        '      echo "XRAY_HISTORY_REQUEST_HEAD_EXACT=PASS"',
+        "  - name: Optimized fail-closed",
+        "    run: |",
+        "      python -O nasdaq-xray/current_history_source_request.py --selftest",
+        "  - uses: "+ARTIFACT,
+    ))+"\n")
+    assert verify(history,history_source)==3
+    for mutated in (
+        history_source.replace("python -O", "python"),
+        history_source.replace('"$GITHUB_SHA"', '"$OTHER_SHA"'),
+        history_source+"  ref: main\n",
+    ):
+        try: verify(history,mutated)
+        except ValueError: continue
+        raise AssertionError("HISTORY_ACTION_OR_OPTIMIZATION_NEGATIVE_BYPASS")
     print("XRAY_IMMUTABLE_ACTION_GUARD_SELFTEST=PASS_11_NEGATIVES")
 
 
@@ -134,7 +164,7 @@ def live() -> dict:
         if not file.is_file():
             raise ValueError("CRITICAL_WORKFLOW_MISSING:" + path)
         audited[path] = verify(path, file.read_text(encoding="utf-8"))
-    if sum(audited.values()) != 41:
+    if sum(audited.values()) != 44:
         raise ValueError("CRITICAL_ACTION_REFERENCE_COVERAGE_CHANGED")
     return audited
 
@@ -142,4 +172,4 @@ def live() -> dict:
 if __name__ == "__main__":
     selftest()
     d = live()
-    print("XRAY_IMMUTABLE_ACTION_GUARD=PASS_15_WORKFLOWS_41_EXACT_OFFICIAL_SHAS")
+    print("XRAY_IMMUTABLE_ACTION_GUARD=PASS_16_WORKFLOWS_44_EXACT_OFFICIAL_SHAS")
