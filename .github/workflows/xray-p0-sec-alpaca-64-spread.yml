@@ -1,0 +1,67 @@
+name: XRAY P0 64 Distributed SEC Alpaca MC Personal Evidence Shadow
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/p0_sec_alpaca_64_spread_shadow.py"
+      - ".github/workflows/xray-p0-sec-alpaca-64-spread.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  distributed-mc-evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 19
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+      - name: Source SHA exact
+        run: test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: '3.12'
+      - name: Install official calendar and negative provenance proofs
+        run: |
+          python -m pip install --disable-pip-version-check "pandas_market_calendars==5.4.0"
+          python -m py_compile nasdaq-xray/p0_sec_alpaca_64_spread_shadow.py
+          python nasdaq-xray/p0_sec_alpaca_64_spread_shadow.py --selftest
+          python -O nasdaq-xray/p0_sec_alpaca_64_spread_shadow.py --selftest
+      - name: Free SEC official company facts and Alpaca SIP 64 spread research
+        env:
+          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
+          XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID }}
+          XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY }}
+        run: |
+          python nasdaq-xray/p0_sec_alpaca_64_spread_shadow.py \
+            --out "$RUNNER_TEMP/xray_mc_64_spread_shadow.json"
+      - name: Enforce complete source accounting and no canonical MC authority
+        run: |
+          python - <<'PY'
+          import json,os,subprocess
+          from pathlib import Path
+          d=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_mc_64_spread_shadow.json").read_text())
+          assert d["schema"]=="XRAY_PERSONAL_SEC_ALPACA_64_DISTRIBUTED_MC_SHADOW_V1"
+          assert d["status"]=="SHADOW_64_SYMBOLS_EXACT_ACCOUNTING_NO_MC_PRIMARY"
+          assert d["sampled_count"]==len(d["sampled_symbols"])==64
+          assert len(d["outcomes"])==64
+          assert sum(d["status_counts"].values())==64
+          assert d["matched_official_SEC_CIK"]+d["unmatched_official_SEC_CIK"]==64
+          assert d["price_source_git_blob_sha"]==subprocess.check_output(
+             ["git","hash-object","nasdaq-xray/canonical_current_price_dv30.json"],text=True).strip()
+          assert d["master_source_git_blob_sha"]==subprocess.check_output(
+             ["git","hash-object","nasdaq-xray/canonical_current_master_manifest.json"],text=True).strip()
+          assert d["production_C417_PRIMARY_MC_created"]==0
+          assert d["production_HISTORY_PASS_created"]==0
+          assert d["AL_R92_created"] is False and d["GO"] is False
+          assert d["raw_vendor_OHLCV_SEC_share_counts_archived"] is False
+          assert d["execution"]=="NONE" and d["real_money"]=="NO-GO"
+          print("XRAY_PERSONAL_MC_64_SAMPLE_COMPLETE=NO_PRIMARY_NO_R92")
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: xray-p0-personal-mc-64-spread-sec-alpaca-shadow
+          path: ${{ runner.temp }}/xray_mc_64_spread_shadow.json
+          retention-days: 14
+          if-no-files-found: error

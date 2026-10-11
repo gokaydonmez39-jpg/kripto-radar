@@ -1,0 +1,13 @@
+{
+  "schema": "XRAY_P0_FREE_PERSONAL_SEC_ALPACA_MC_64_SPREAD_V1",
+  "parent_main": "2c3c0b0f94bc4b288ccc7267acb972ae06977b6c",
+  "source_ASOF": "2026-10-09",
+  "objective": "64 distributed alphabetic samples from current 514 PRICE PASS; 2 SEC official endpoints per exact ticker/CIK, raw SIP same-ASOF close, no full 514 claims",
+  "sec_fair_access_gap_ms": 650,
+  "volume_semantics": "raw SIP RTH 1Day; not independently DV30 certified",
+  "issuer_class_and_CA_verified": false,
+  "primary_MC": 0,
+  "real_money": "NO-GO",
+  "execution": "NONE",
+  "CI": "PENDING"
+}
