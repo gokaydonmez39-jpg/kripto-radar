@@ -23,7 +23,8 @@ def latest_filing_market_calendar_regression():
                                 "2026-10-09")=="2026-10-09"
 
 
-def main():    latest_filing_market_calendar_regression()
+def main():
+    latest_filing_market_calendar_regression()
 
     # A same-ASOF Nasdaq "Blank Checks" industry label must not bypass the
     # SEC/manual identity proof queue.  It is supporting evidence only.
