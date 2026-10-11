@@ -29,7 +29,7 @@ def require(cond,why):
     if not cond:raise ValueError("XRAY_P0_SPLIT_RATIO:"+why)
 
 def dec(x):
-    require(type(x) in (float,int,str) and not isinstance(x,bool),
+    require(type(x) in (float,int,str,Decimal) and not isinstance(x,bool),
             "NON_NUMERIC_RATIO")
     try:v=Decimal(str(x))
     except InvalidOperation as e:raise ValueError("XRAY_P0_SPLIT_RATIO:INVALID_DECIMAL") from e
