@@ -1,0 +1,103 @@
+{
+  "schema": "XRAY_20261011_MANUAL_FINAL_AND_SEC_514_CHECKPOINT_V4",
+  "asof_et": "2026-10-09",
+  "utc_date": "2026-10-11",
+  "base_main_sha": "77341ddf525039fc22303401ece168791d897849",
+  "source_policy": "C4.17",
+  "control": "C4.27",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "research_only": true,
+  "go_decision": "NO-GO",
+  "real_buy_signal_proven": false,
+  "device_receipt_proven": false,
+  "last_completed_sec_514": {
+    "workflow_run": 38169144342,
+    "result": "SUCCESS",
+    "source_head_sha": "6be676d8b92b5cb86033270a116c462c8309cba5",
+    "artifact_id": 11713297858,
+    "artifact_json_sha256": "6961725a874196cbc7b788dda85e77b7f5ed9fd559d309f509c5eaefbf8e16b6",
+    "master_blob_sha": "828c21436a836b69fe5084387e1c54446c7b5075",
+    "price_blob_sha": "6f3f68fff0897d68f200ad3621c51a5071494714",
+    "source_price_pass_count": 514,
+    "sec_share_vintage_shadow_only": 346,
+    "sec_unknown_structural": 167,
+    "sec_http_404_unknown": 1,
+    "sec_primary_mc_created": 0
+  },
+  "exact_intersection": {
+    "workflow_run": 38170066523,
+    "result": "SUCCESS",
+    "artifact_id": 11713732366,
+    "artifact_json_sha256": "7bce86d732bba0092a14b5cccf6fb9a2703de5c83482a8acfe19b4472f689c46",
+    "same_asof_price_pass": 514,
+    "alpaca_numeric_history_shadow": 497,
+    "sec_share_vintage_shadow": 346,
+    "technical_intersection_only": 341,
+    "numeric_history_complete_sec_unknown": 156,
+    "sec_share_vintage_history_short": 5,
+    "both_incomplete": 12,
+    "source_legal_authority": false,
+    "source_current_mc_primary": false,
+    "registered_r92": false
+  },
+  "no_retry_needed": {
+    "workflow_run": 38170066529,
+    "result": "SUCCESS",
+    "artifact_id": 11713857241,
+    "artifact_json_sha256": "d36cf072997c3c57b336498d7f382451f6babc75a648e6eef9fa93749f603ba6",
+    "status": "NO_TRANSIENT_RETRY_REQUIRED",
+    "eligible_count": 0,
+    "attempts": 0
+  },
+  "new_provenance_guard": {
+    "python_path": "nasdaq-xray/manual_workflow_trigger_sha_guard.py",
+    "workflow_path": ".github/workflows/xray-manual-decision-research-shadow.yml",
+    "code_commit": "7b2060a4a90ea64c27d4d997b1348298d8b17cd1",
+    "wiring_commit": "4656b18184fab27044ce6e1ee4590a3690a1e3d1",
+    "ci_run": 38170307031,
+    "result": "SUCCESS",
+    "ci_selftest": "PASS_3_POSITIVE_10_NEGATIVE_NO_R92",
+    "real_manual_output": "SOURCE_INTEGRITY_BLOCKED",
+    "upstream_workflow_run_head_sha_must_equal_checked_out_sha": true,
+    "other_events_cannot_claim_upstream_final_provenance": true
+  },
+  "immutable_action_guard": {
+    "regression_failed_run": 38170422435,
+    "failure_root": "NEW_STATIC_GUARD_CHECKED_NONEXISTENT_LABEL",
+    "fixed_commit": "77341ddf525039fc22303401ece168791d897849",
+    "success_run": 38170480051,
+    "success": "SUCCESS",
+    "protected_workflows": 15,
+    "exact_shas": 41,
+    "negative_tests": 11,
+    "rights_proof_absent_remains_blocked": true
+  },
+  "biggest_remaining_production_hardstops": [
+    "SAME_ASOF_C417_PRIMARY_MC_PROVIDER_OR_AUTHORIZED_INDEPENDENT_MC_WITNESS_UNAVAILABLE",
+    "PRICE_514_NON_G9_RELEASE_LICENSE_UNATTESTED",
+    "LICENSED_260_DAILY_AND_52_WEEK_HISTORY_UNATTESTED",
+    "MASTER_IDENTITY_12_UNKNOWN",
+    "ROOT_HISTORY_229_UNKNOWN_PARTIAL_SCOPE",
+    "SEC_SHARE_CLASS_AND_CORPORATE_ACTION_PIT_UNPROVEN",
+    "CURRENT_TERMINAL_EPOCH_20261007_LAGS_PRICE_20261009",
+    "G9_ACCOUNT_AND_ACTUAL_R92_DEVICE_RECEIPT_NOT_PROVEN"
+  ],
+  "x_com_research": {
+    "official_post_sample": "https://x.com/AlpacaHQ/status/2024546176377205242",
+    "post_about": "BROKER_API_24_5_PARTNERSHIP_NOT_HISTORICAL_MARKET_DATA_LICENSE",
+    "license_proof_from_social_posts": false,
+    "license_proof_from_api_access": false
+  },
+  "official_sources": [
+    "https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows",
+    "https://docs.alpaca.markets/us/docs/market-data-faq",
+    "https://www.sec.gov/search-filings/edgar-application-programming-interfaces",
+    "https://github.com/dgunning/edgartools/issues/557",
+    "https://github.com/dgunning/edgartools"
+  ],
+  "public_data_policy": "METADATA_HASHES_AND_COUNTS_ONLY_NO_RAW_VENDOR_OHLCV_OR_ISSUER_SHARES",
+  "next_verification": "FRESH_LIVE_GITHUB_MAIN_READBACK_OVER_CHECKPOINT;LEGAL_PROVIDER_RIGHTS_AND_PRIMARY_MC_REQUIRED_FOR_RESEARCH_GO",
+  "note": "Research source and CI guard success are not market-data licensing, full production GO, AL, execution or actual phone delivery."
+}
