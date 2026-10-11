@@ -14,9 +14,16 @@ on:
       - "XRAY Canonical Current Final Factory"
     types: [completed]
     branches: [main]
+  # Multiple independent preopen observations withstand late GitHub cron runs.
+  # 12:xx UTC is EDT 08:xx; 13:xx UTC is EDT 09:xx / EST 08:xx.
+  # 14:15 UTC restores a final 09:15 ET check after November DST change.
+  # The Python NASDAQ calendar is always the gate; extra UTC ticks are NOT GO.
   schedule:
+    - cron: "5 12 * * 1-5"
     - cron: "25 12 * * 1-5"
+    - cron: "5 13 * * 1-5"
     - cron: "15 13 * * 1-5"
+    - cron: "15 14 * * 1-5"
 permissions:
   contents: read
 concurrency:
