@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import argparse
 import json
-from datetime import datetime, timezone
+from datetime import datetime, timezone, date, timedelta
 from pathlib import Path
 
 SCHEMA = "XRAY_C418_SHADOW_RESILIENCE_GUARD_V1"
@@ -33,6 +33,22 @@ def _timestamp(value):
         raise ValueError("timezone_missing")
     return stamp.astimezone(timezone.utc)
 
+def _latest_completed_nasdaq_session(now):
+    """Calendar-certified market close plus >=20min SIP holdback. No day guess."""
+    import pandas_market_calendars as mcal
+    calendar = mcal.get_calendar("NASDAQ")
+    schedule = calendar.schedule(
+        start_date=(now.date() - timedelta(days=14)).isoformat(),
+        end_date=now.date().isoformat(),
+    )
+    for idx, session in schedule.iloc[::-1].iterrows():
+        close = session["market_close"].to_pydatetime()
+        if close.tzinfo is None:
+            raise ValueError("unverified_session_timezone")
+        if now >= close.astimezone(timezone.utc) + timedelta(minutes=20):
+            return idx.date().isoformat()
+    raise ValueError("no_settled_session")
+
 def advisory_route(profile: dict, state: dict, purpose: str, asof: str,
                    now_utc: str) -> dict:
     """Pure selection for later human/legal review, NEVER actual provider calls."""
@@ -47,9 +63,17 @@ def advisory_route(profile: dict, state: dict, purpose: str, asof: str,
         return dict(report, reasons={"GLOBAL": "PROFILE_OR_PURPOSE_UNSAFE"})
     try:
         now = _timestamp(now_utc)
-        datetime.strptime(asof, "%Y-%m-%d")
+        parsed = date.fromisoformat(asof)
+        if parsed.isoformat() != asof:
+            raise ValueError("asof_noncanonical")
     except (ValueError, TypeError):
         return dict(report, reasons={"GLOBAL": "DATE_OR_CLOCK_INVALID"})
+    try:
+        latest = _latest_completed_nasdaq_session(now)
+    except (ValueError, TypeError, AttributeError, ImportError, KeyError, OverflowError):
+        return dict(report, reasons={"GLOBAL": "OFFICIAL_NASDAQ_SESSION_CLOCK_UNAVAILABLE"})
+    if asof != latest:
+        return dict(report, reasons={"GLOBAL": "ASOF_NOT_LATEST_SETTLED_NASDAQ_SESSION"})
     if not isinstance(state, dict):
         return dict(report, reasons={"GLOBAL": "NO_PROVIDER_HEALTH"})
     for name in PURPOSES[purpose]:
@@ -145,6 +169,16 @@ def selftest():
     valid = advisory_route(profile, routes, "HISTORY", "2026-10-09", now)
     assert valid["advisory_order"] == list(PURPOSES["HISTORY"])
     assert valid["can_create_PRIMARY"] is False and valid["can_register_R92"] is False
+    assert advisory_route(profile, routes, "HISTORY", "2026-10-12", now)["reasons"] == {"GLOBAL": "ASOF_NOT_LATEST_SETTLED_NASDAQ_SESSION"}
+    assert advisory_route(profile, routes, "HISTORY", "2026-10-08", now)["reasons"] == {"GLOBAL": "ASOF_NOT_LATEST_SETTLED_NASDAQ_SESSION"}
+    assert advisory_route(profile, routes, "HISTORY", "2026-10-10", now)["reasons"] == {"GLOBAL": "ASOF_NOT_LATEST_SETTLED_NASDAQ_SESSION"}
+    early = "2026-10-12T19:45:00Z"
+    early_routes = {name: dict(template, observed_at_utc="2026-10-12T19:30:00Z")
+                    for name in PURPOSES["HISTORY"]}
+    assert advisory_route(profile, early_routes, "HISTORY", "2026-10-09", early)["advisory_order"] == list(PURPOSES["HISTORY"])
+    settled = "2026-10-12T20:30:00Z"
+    assert advisory_route(profile, early_routes, "HISTORY", "2026-10-09", settled)["reasons"] == {"GLOBAL": "ASOF_NOT_LATEST_SETTLED_NASDAQ_SESSION"}
+    assert advisory_route(profile, routes, "HISTORY", "invalid-date", now)["reasons"] == {"GLOBAL": "DATE_OR_CLOCK_INVALID"}
     import copy
     negatives = [
         ("NO_HEALTH", lambda x: x.pop("Alpaca"), "UNKNOWN_HEALTH"),
@@ -188,7 +222,7 @@ def selftest():
         assert backtest_pit_guard(x)["status"] == "BACKTEST_DATA_BLOCKED", field
     x = dict(defaults, features_available_at_utc="2026-10-10T20:00:00Z")
     assert "FUTURE_INFORMATION_features_available_at_utc" in backtest_pit_guard(x)["reason_codes"]
-    print("XRAY_C418_SHADOW_RESILIENCE_SELFTEST=PASS_12_NEGATIVE_PLUS_9_PIT_GATES_NO_PRIMARY_NO_R92")
+    print("XRAY_C418_SHADOW_RESILIENCE_SELFTEST=PASS_12_NEGATIVE_6_SETTLEMENT_PLUS_9_PIT_GATES_NO_PRIMARY_NO_R92")
 
 def main():
     parser = argparse.ArgumentParser()
