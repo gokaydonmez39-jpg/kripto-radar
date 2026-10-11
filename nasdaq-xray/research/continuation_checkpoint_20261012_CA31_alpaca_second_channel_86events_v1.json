@@ -1,0 +1,143 @@
+{
+  "schema": "XRAY_20261012_P0_CA31_SECOND_ALPACA_CONNECTOR_CENSUS_V1",
+  "asof_et": "2026-10-09",
+  "window_start": "2025-09-29",
+  "window_end": "2026-10-09",
+  "route": "READ_ONLY_CONNECTED_ALPACA_GET_CORPORATE_ACTIONS",
+  "scope_symbols": [
+    "ASND",
+    "ASST",
+    "BKR",
+    "BNTX",
+    "CBSH",
+    "CCC",
+    "CHTR",
+    "CMCSA",
+    "CORZ",
+    "DFTX",
+    "ECHO",
+    "FISV",
+    "GMAB",
+    "HBAN",
+    "HON",
+    "IESC",
+    "INDV",
+    "IRTC",
+    "LGND",
+    "MIDD",
+    "MRX",
+    "NBIX",
+    "NXST",
+    "RGEN",
+    "RGLD",
+    "SNY",
+    "SOUN",
+    "SWKS",
+    "TRI",
+    "USAR",
+    "WFRD"
+  ],
+  "scope_size": 31,
+  "original_CI_direct_security_or_price_event": [
+    "ASND",
+    "CBSH",
+    "CCC",
+    "CMCSA",
+    "DFTX",
+    "ECHO",
+    "FISV",
+    "HON",
+    "INDV",
+    "IRTC",
+    "MIDD",
+    "MRX",
+    "TRI"
+  ],
+  "original_CI_acquirer_capital_structure_only": [
+    "ASST",
+    "BKR",
+    "BNTX",
+    "CHTR",
+    "CORZ",
+    "GMAB",
+    "HBAN",
+    "IESC",
+    "LGND",
+    "NBIX",
+    "NXST",
+    "RGEN",
+    "RGLD",
+    "SNY",
+    "SOUN",
+    "SWKS",
+    "USAR",
+    "WFRD"
+  ],
+  "connector_announcement_count": 86,
+  "connector_unique_event_id_count": 86,
+  "connector_group_counts": {
+    "cash_dividends": 46,
+    "cash_mergers": 7,
+    "forward_splits": 1,
+    "name_changes": 8,
+    "reverse_splits": 3,
+    "spin_offs": 4,
+    "stock_and_cash_mergers": 3,
+    "stock_dividends": 1,
+    "stock_mergers": 13
+  },
+  "connector_non_cash_dividend_event_count": 40,
+  "connector_groups_by_source_role_example": {
+    "source_spinoff": {
+      "CMCSA": [
+        "2026-01-05"
+      ],
+      "HON": [
+        "2025-10-30",
+        "2026-06-29"
+      ],
+      "MIDD": [
+        "2026-07-07"
+      ]
+    },
+    "name_transition": {
+      "CCC": "CCCS->CCC",
+      "FISV": "FI->FISV",
+      "DFTX": "MNMD->DFTX",
+      "ECHO": "SATS->ECHO",
+      "MIDD": "MIDDV->MIDD"
+    },
+    "split_present": {
+      "IESC": "2026-08-24",
+      "ASST": "2026-02-06",
+      "HON": "2026-06-29",
+      "TRI": "2026-05-04"
+    },
+    "acquirer_20261007": {
+      "RGEN": "2026-10-07"
+    },
+    "acquirer_20261006": {
+      "SWKS": "2026-10-06"
+    },
+    "quality_difference_research_targets": [
+      "IESC",
+      "WFRD"
+    ]
+  },
+  "exact_31_symbols_with_at_least_one_observed_connector_event": true,
+  "same_underlying_alpaca_provider_so_not_independent_official_CA_evidence": true,
+  "connector_data_quality_parameter_not_exposed_so_complete_vs_all_not_retested": true,
+  "source_event_process_dates_not_publication_PIT": true,
+  "source_SEC_original_issuer_lineage_and_deal_closing_not_confirmed": true,
+  "automatic_historical_price_rebase_not_authorized": true,
+  "automatic_issuer_shares_or_market_cap_rebase_not_authorized": true,
+  "raw_event_ids_CUSIP_vendor_prices_shares_not_persisted": true,
+  "C417_PRIMARY_MC_created": 0,
+  "canonical_HISTORY_PASS_created": 0,
+  "R92_created": false,
+  "GO": false,
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "CI": "CONNECTED_PROVIDER_REAL_READBACK_NO_NEW_GITHUB_ACTIONS_TEST"
+}
