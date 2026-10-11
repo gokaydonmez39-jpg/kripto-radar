@@ -189,6 +189,16 @@ def evaluate(now,root,master,price,terminal,official,readiness,sources):
 
 def selftest():
     monday=dt.datetime(2026,10,12,13,15,tzinfo=UTC)
+    # Independent 08:05, 08:25, 09:05 and 09:15 ET observations.
+    for h,m in ((12,5),(12,25),(13,5),(13,15)):
+        probe=official_window(dt.datetime(2026,10,12,h,m,tzinfo=UTC))
+        assert probe["preopen"] and probe["current_session"]=="2026-10-12"
+    # EST shift: 12:05 UTC is only 07:05 ET (must not claim preopen),
+    # 13:05/13:15/14:15 UTC are safely inside the actual exchange window.
+    assert not official_window(dt.datetime(2026,11,2,12,5,tzinfo=UTC))["preopen"]
+    for h,m in ((13,5),(13,15),(14,15)):
+        assert official_window(dt.datetime(2026,11,2,h,m,tzinfo=UTC))["preopen"]
+    assert not official_window(dt.datetime(2026,11,2,14,30,tzinfo=UTC))["preopen"]
     window=official_window(monday)
     assert window["preopen"] and window["current_session"]=="2026-10-12"
     assert window["opening_utc"]=="2026-10-12T13:30:00+00:00"
