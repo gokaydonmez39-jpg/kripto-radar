@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fail-closed GitHub Actions supply-chain guard for fourteen critical XRAY workflows.
+"""Fail-closed GitHub Actions supply-chain guard for fifteen critical XRAY workflows.
 
 Only exact vendor-owned commit refs independently verified against official
 GitHub release tags are accepted. This verifies pinned dependency identity,
@@ -29,6 +29,7 @@ EXPECTED = {
     ".github/workflows/xray-account-gate-reconcile.yml": (CHECKOUT, PYTHON),
     ".github/workflows/xray-live-truth-attestation.yml": (CHECKOUT, PYTHON, ARTIFACT),
     ".github/workflows/xray-manual-decision-research-shadow.yml": (CHECKOUT, PYTHON, ARTIFACT),
+    ".github/workflows/xray-sec-free-mc-transport-proof.yml": (CHECKOUT, PYTHON, ARTIFACT),
 }
 LINE = re.compile(r"^\s*(?:-\s*)?uses:\s*(\S+)(?:\s*(?:#.*)?)?$")
 
@@ -56,6 +57,12 @@ def verify(path: str, contents: str) -> int:
     if any(not re.fullmatch(r"actions/[a-z-]+@[a-f0-9]{40}", ref)
            for ref in observed):
         raise ValueError("ACTION_NOT_IMMUTABLE")
+    if path == ".github/workflows/xray-sec-free-mc-transport-proof.yml":
+        if re.search(r"(?m)^s*ref:s*(?:main|master)s*$", contents):
+            raise ValueError("SEC_CHECKOUT_MOVING_MAIN_DISALLOWED")
+        if ("git rev-parse HEAD" not in contents or "$GITHUB_SHA" not in contents
+                or "XRAY_SEC_TRANSPORT_CHECKOUT_EXACT=PASS" not in contents):
+            raise ValueError("SEC_CHECKOUT_INVOCATION_SHA_FENCE_MISSING")
     return len(observed)
 
 
@@ -81,7 +88,20 @@ def selftest() -> None:
         except ValueError:
             continue
         raise AssertionError("ACTION_DEPENDENCY_NEGATIVE_BYPASS")
-    print("XRAY_IMMUTABLE_ACTION_GUARD_SELFTEST=PASS_7_NEGATIVES")
+    sec=".github/workflows/xray-sec-free-mc-transport-proof.yml"
+    fenced=(source+"  - name: source check\n    run: |\n"
+            "      test \"$(git rev-parse HEAD)\" = \"$GITHUB_SHA\"\n"
+            "      echo XRAY_SEC_TRANSPORT_CHECKOUT_EXACT=PASS\n")
+    assert verify(sec,fenced)==3
+    for modified in (fenced+"  ref: main\n",
+                     fenced.replace("XRAY_SEC_TRANSPORT_CHECKOUT_EXACT=PASS",
+                                    "SOURCE_FENCE_MISSING")):
+        try:
+            verify(sec,modified)
+        except ValueError:
+            continue
+        raise AssertionError("SEC_EXACT_INVOCATION_NEGATIVE_BYPASS")
+    print("XRAY_IMMUTABLE_ACTION_GUARD_SELFTEST=PASS_9_NEGATIVES")
 
 
 def live() -> dict:
@@ -91,7 +111,7 @@ def live() -> dict:
         if not file.is_file():
             raise ValueError("CRITICAL_WORKFLOW_MISSING:" + path)
         audited[path] = verify(path, file.read_text(encoding="utf-8"))
-    if sum(audited.values()) != 38:
+    if sum(audited.values()) != 41:
         raise ValueError("CRITICAL_ACTION_REFERENCE_COVERAGE_CHANGED")
     return audited
 
@@ -99,4 +119,4 @@ def live() -> dict:
 if __name__ == "__main__":
     selftest()
     d = live()
-    print("XRAY_IMMUTABLE_ACTION_GUARD=PASS_14_WORKFLOWS_38_EXACT_OFFICIAL_SHAS")
+    print("XRAY_IMMUTABLE_ACTION_GUARD=PASS_15_WORKFLOWS_41_EXACT_OFFICIAL_SHAS")
