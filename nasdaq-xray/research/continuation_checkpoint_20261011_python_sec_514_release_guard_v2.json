@@ -1,0 +1,33 @@
+{
+  "schema": "XRAY_20261011_PYTHON_SEC_514_SOURCE_RELEASE_GUARD_V2",
+  "main_preimage_sha": "7b4b3cecd954a4451bf3f510fd1372099ba7d60b",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "purpose": "Fail-closed full PRICE-pass SEC research shadow metadata attestation independent of Python assert -O",
+  "new_guard": "nasdaq-xray/sec_full_scope_release_guard.py",
+  "source": "SEC_OFFICIAL",
+  "checks": {
+    "positive": 2,
+    "negative": 22,
+    "scope_and_blob_exact": true,
+    "reason_counts_exact": true,
+    "status_count_exact": true,
+    "remediation_count_exact": true,
+    "rights_unverified_never_primary": true
+  },
+  "action_pins": {
+    "checkout": "11d5960a326750d5838078e36cf38b85af677262",
+    "setup-python": "a26af69be951a213d495a4c3e4e4022e16d87065",
+    "upload-artifact": "ea165f8d65b6e75b540449e92b4886f43607fa02"
+  },
+  "upstream_edgartools_pit_issue": "https://github.com/dgunning/edgartools/issues/697",
+  "data_license_solved": false,
+  "source_companyfacts_accepted_shareclass_solved": false,
+  "can_create_mc_primary": false,
+  "can_create_r92": false,
+  "go": "NO-GO",
+  "ci_at_write": "PENDING",
+  "metadata_only": true
+}

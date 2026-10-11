@@ -5,6 +5,7 @@ on:
     paths:
       - "nasdaq-xray/sec_official_free_mc_transport_probe.py"
       - "nasdaq-xray/tests/test_sec_share_vintage_ambiguous.py"
+      - "nasdaq-xray/sec_full_scope_release_guard.py"
       - ".github/workflows/xray-sec-conflicting-shares-regression.yml"
   workflow_dispatch:
 permissions:
@@ -14,10 +15,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       - name: Verify exact triggered source
         run: test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: "3.12"
       - name: Install pinned official Nasdaq market-session calendar
@@ -27,3 +28,6 @@ jobs:
           python -m py_compile nasdaq-xray/sec_official_free_mc_transport_probe.py nasdaq-xray/tests/test_sec_share_vintage_ambiguous.py
           python nasdaq-xray/sec_official_free_mc_transport_probe.py --selftest
           python nasdaq-xray/tests/test_sec_share_vintage_ambiguous.py
+          python -m py_compile nasdaq-xray/sec_full_scope_release_guard.py
+          python nasdaq-xray/sec_full_scope_release_guard.py --selftest
+          python -O nasdaq-xray/sec_full_scope_release_guard.py --selftest

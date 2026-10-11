@@ -8,6 +8,7 @@ on:
       - "nasdaq-xray/canonical_current_master_manifest.json"
       - "nasdaq-xray/sec_free_mc_multisymbol_pit_audit.py"
       - "nasdaq-xray/sec_official_free_mc_transport_probe.py"
+      - "nasdaq-xray/sec_full_scope_release_guard.py"
       - ".github/workflows/xray-sec-full-price-pass-vintage-shadow.yml"
 permissions:
   contents: read
@@ -19,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 35
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           ref: ${{ github.sha }}
           fetch-depth: 1
@@ -28,7 +29,7 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           echo "XRAY_SEC_FULL_SCOPE_TRIGGER_SHA=PASS_EXACT"
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: "3.12"
       - name: Install pinned Nasdaq official trading-session calendar
@@ -38,45 +39,23 @@ jobs:
           python -m py_compile nasdaq-xray/sec_official_free_mc_transport_probe.py nasdaq-xray/sec_free_mc_multisymbol_pit_audit.py
           python nasdaq-xray/sec_official_free_mc_transport_probe.py --selftest
           python nasdaq-xray/sec_free_mc_multisymbol_pit_audit.py --selftest
+          python nasdaq-xray/sec_full_scope_release_guard.py --selftest
+          python -O nasdaq-xray/sec_full_scope_release_guard.py --selftest
       - name: Acquire official SEC filing timestamps for complete current PRICE-PASS scope, non-primary
         env:
           XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
         run: |
           python nasdaq-xray/sec_free_mc_multisymbol_pit_audit.py --all-price-pass \
             --output "$RUNNER_TEMP/xray_sec_full_price_pass_vintage_operational.json"
-      - name: Assert exact 514-symbol scope and zero false MC authority
+      - name: Verify full SEC scope, Git blobs, all reason counts and zero PRIMARY without Python assert
+        shell: bash
         run: |
-          python - <<'PY'
-          import os,json
-          from pathlib import Path
-          j=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_sec_full_price_pass_vintage_operational.json").read_text())
-          assert j["schema"]=="XRAY_SEC_MULTISYMBOL_PIT_SHADOW_V1"
-          source=json.load(open("nasdaq-xray/canonical_current_price_dv30.json",encoding="utf-8"))
-          assert j["asof_et"]==source["asof_et"]
-          import hashlib
-          assert len(source["pass_symbols"])==source["pass_count"]
-          assert len(set(source["pass_symbols"]))==source["pass_count"]
-          assert 1<=source["pass_count"]<=650
-          assert j["full_current_price_pass_scope"] is True
-          assert j["sample_count"]==source["pass_count"]
-          assert len(j["statuses"])==source["pass_count"]
-          assert set(j["statuses"])==set(source["pass_symbols"])
-          expected=hashlib.sha256(("\n".join(sorted(source["pass_symbols"]))+"\n").encode()).hexdigest()
-          assert j["sample_scope_sha256"]==expected
-          assert j["batch_offset"]==0 and j["batch_limit"]==source["pass_count"]
-          assert j["c417_primary_mc_count"]==0 and j["market_cap_calculated"] is False
-          assert j["production_alpha_authority"] is False
-          assert j["price_binding_attested"] is False
-          assert j["corporate_action_binding_attested"] is False
-          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
-          assert len(j["master_git_blob_sha"])==40 and len(j["price_git_blob_sha"])==40
-          print("XRAY_SEC_FULL_SCOPE="+str(source["pass_count"])+"_VERIFIED_SHADOW_ONLY")
-          print("XRAY_SEC_FULL_SCOPE_UNKNOWN_COUNTS="+json.dumps(j["status_counts"],sort_keys=True))
-          print("XRAY_SEC_FULL_SCOPE_REASON_COUNTS="+json.dumps(j["reason_counts"],sort_keys=True))
-          PY
+          set -euo pipefail
+          python nasdaq-xray/sec_full_scope_release_guard.py --artifact "$RUNNER_TEMP/xray_sec_full_price_pass_vintage_operational.json"
+          python -O nasdaq-xray/sec_full_scope_release_guard.py --artifact "$RUNNER_TEMP/xray_sec_full_price_pass_vintage_operational.json"
       - name: Preserve operational metadata, no raw filing shares or licensed vendor price
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: xray-sec-full-price-pass-vintage-shadow-v1
           path: ${{ runner.temp }}/xray_sec_full_price_pass_vintage_operational.json
