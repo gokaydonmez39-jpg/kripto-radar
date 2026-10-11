@@ -1,0 +1,198 @@
+{
+  "schema": "XRAY_C418_GLOBAL_SOURCE_EVIDENCE_V1",
+  "asof_et": "2026-10-09",
+  "researched_on": "2026-10-11",
+  "status": "RESEARCH_DIAGNOSTIC_ONLY_NOT_C417_PRODUCTION",
+  "source_priority": [
+    "LIVE_CONNECTED_READ",
+    "PROVIDER_OFFICIAL_DOCS",
+    "GITHUB_CODE_REFERENCE",
+    "INFERENCE"
+  ],
+  "tests": {
+    "alpaca_historical_sip_5_symbols": {
+      "provider": "Alpaca",
+      "feed": "sip",
+      "symbols": [
+        "AAPL",
+        "FSLY",
+        "CORT",
+        "GH",
+        "QQQ"
+      ],
+      "observed_rows": 1395,
+      "rows_per_symbol": 279,
+      "last260_session_dates_each": true,
+      "price_c417_history_promoted": false,
+      "unattended_runner_grant_verified": false
+    },
+    "rallies_range_5_symbols": {
+      "provider": "Rallies",
+      "date_scope": "2025-09-02_to_2026-10-09",
+      "observed_rows": 1395,
+      "rows_per_symbol": 279,
+      "volume_adjustment_verified": false
+    },
+    "alpaca_sip_rallies_close_comparison": {
+      "matched_dates": 1395,
+      "exact_matching_closes": 1395,
+      "source_independence": false,
+      "reason": "MATCHING_SIP_CLOSINGS_DO_NOT_PROVE_INDEPENDENT_FEEDS"
+    },
+    "massive_grouped_daily": {
+      "asof": "2026-10-09",
+      "rows": 12598,
+      "params": {
+        "adjusted": "false",
+        "include_otc": "false"
+      },
+      "free_plan_docs_confirm_endpoint": true,
+      "unattended_non_display_rights_verified": false
+    },
+    "rallies_bulk_same_date": {
+      "asof": "2026-10-09",
+      "rows": 12598,
+      "one_date_only": true
+    },
+    "massive_rallies_bulk_fingerprint": {
+      "selection": "deterministic_every_100th_sorted_Rallies_ticker_plus_named_diagnostic_symbols",
+      "requested_symbols": 140,
+      "joined_comparable_records": 139,
+      "full_ohlcv_vwap_trade_count_timestamp_matches": 139,
+      "noninteger_volume_matches": 113,
+      "independence_proven": false,
+      "possible_shared_feed": true,
+      "claim_of_same_vendor": false,
+      "negative_guard_path": "nasdaq-xray/c418_duplicate_feed_shadow_guard.py",
+      "negative_guard_ci_run_id": 38135227793
+    },
+    "massive_adjustment_toggle_same_date": {
+      "unadjusted_rows": 12598,
+      "adjusted_rows": 12598,
+      "paired_row_count": 12598,
+      "same_day_ohlcv_equal": 12598,
+      "interpretation": "SAME_DAY_EQUALITY_NEVER_PROVES_HISTORICAL_SPLIT_ADJUSTMENTS"
+    },
+    "alpaca_sip_low_volume": {
+      "explanation": "Alpaca dates with zero volume and O=H=L=C not counted as real traded OHLCV sessions",
+      "symbols": {
+        "BSAA": {
+          "returned_rows": 279,
+          "zero_volume_flat": 105,
+          "rallies_rows": 174
+        },
+        "FACT": {
+          "returned_rows": 279,
+          "zero_volume_flat": 52,
+          "rallies_rows": 227
+        },
+        "FVN": {
+          "returned_rows": 279,
+          "zero_volume_flat": 133,
+          "rallies_rows": 146
+        },
+        "IBAC": {
+          "returned_rows": 279,
+          "zero_volume_flat": 80,
+          "rallies_rows": 198
+        },
+        "MACI": {
+          "returned_rows": 279,
+          "zero_volume_flat": 87,
+          "rallies_rows": 192
+        },
+        "WTG": {
+          "returned_rows": 279,
+          "zero_volume_flat": 152,
+          "rallies_rows": 127
+        }
+      },
+      "required_guard": "positive_volume_and_exact_260_completed_official_sessions",
+      "guard_present": "nasdaq-xray/history_transport_cache_guard.py",
+      "all_12_spac_pit_identity_authority": false
+    }
+  },
+  "rights_and_coverage": {
+    "Alpaca": {
+      "history_sip_older_than_15m": "OFFICIAL_DOC_AND_5_SYMBOL_LIVE_READ_PROVEN",
+      "runner_non_display_and_cache": "UNVERIFIED",
+      "redistribution": "RESTRICTED",
+      "price_authority": "NON_G9_SHADOW"
+    },
+    "Massive": {
+      "basic_free_grouped_endpoint": "OFFICIAL_DOC_AND_CONNECTED_12598_READ",
+      "personal_non_display_derived_signal": "PROHIBITED_WITHOUT_SEPARATE_LICENSE",
+      "runner_authority": "BLOCKED"
+    },
+    "Rallies": {
+      "history_bulk": "CONNECTED_READ_PROVEN",
+      "unattended_licensing": "UNVERIFIED",
+      "upstream_independence": "STRONGLY_DISPUTED_BY_139_EXACT_ROWS"
+    },
+    "Twelve_Data": {
+      "basic_credits_per_minute": 8,
+      "basic_daily_credits": 800,
+      "internal_non_display": "ADVERTISED_BY_PROVIDER",
+      "derived_data": "CONDITIONAL_ON_SUBSCRIPTION_AND_NOT_RECONSTRUCTIBLE",
+      "api_runner_credential": "NOT_PROBED",
+      "same_514_symbols_history_legal_entitlement": "UNVERIFIED"
+    },
+    "SEC_EDGAR": {
+      "bulk_companyfacts_and_submissions": "OFFICIAL_PUBLIC_API",
+      "market_price": "NOT_PROVIDED",
+      "PIT_share_class_and_action_checks": "REQUIRED"
+    },
+    "HF_Data_Library": {
+      "claimed_ticker_count": 1391,
+      "data_license": "CC_BY_4_CLAIMED_WITH_UNDERLYING_IEX_RIGHTS_CAVEAT",
+      "coverage_of_514": "UNTESTED",
+      "production_eligibility": false
+    },
+    "GitHub_PIT": {
+      "references": [
+        "https://github.com/SchoenTom/hyperdb",
+        "https://github.com/tenicho/data-cleaning",
+        "https://github.com/LuxAlgo/market-trackers-data"
+      ],
+      "source_data_rights": "NEED_SEPARATE_VALIDATION"
+    }
+  },
+  "sources": [
+    "https://docs.alpaca.markets/us/docs/market-data-faq",
+    "https://docs.alpaca.markets/us/reference/stockbars",
+    "https://alpaca.markets/support/redistribute-alpaca-api",
+    "https://massive.com/docs/rest/stocks/aggregates/daily-market-summary",
+    "https://massive.com/pricing?product=stocks",
+    "https://massive.com/legal/market-data-terms-of-service",
+    "https://twelvedata.com/pricing",
+    "https://twelvedata.com/terms",
+    "https://support.twelvedata.com/en/articles/5203360-batch-api-requests",
+    "https://www.sec.gov/search-filings/edgar-application-programming-interfaces",
+    "https://github.com/elkassabgi/hfdatalibrary"
+  ],
+  "x_com": {
+    "direct_company_profiles": "FETCH_403_OR_NO_VERIFIABLE_POST",
+    "market_data_legal_authority": false
+  },
+  "unsatisfied_preconditions": [
+    "C417_MC_PRIMARY_514_SAME_ASOF_ZERO",
+    "C417_HISTORY_514_SOURCE_AUTHORITY_UNPROVEN",
+    "Twelve_Data_BASIC_GITHUB_RUNNER_AND_260_52_NOT_TESTED",
+    "Alpaca_HISTORICAL_SIP_RUNNER_LICENSE_NOT_ATTESTED",
+    "LOW_LIQUIDITY_ZERO_VOLUME_GAPS_REQUIRE_PER_SYMBOL_HARD_FAILURE",
+    "RALLIES_MASSIVE_UNIQUE_UPSTREAM_NOT_ATTESTED",
+    "CORPORATE_ACTIONS_RAW_ADJUSTED_PIT_UNPROVEN",
+    "CURRENT_TERMINAL_ASOF_2026_10_07_NOT_CURRENT_2026_10_09",
+    "DEVICE_DELIVERY_RECEIPT_NOT_ATTESTED"
+  ],
+  "no_vendor_raw_bars_stored": true,
+  "operator_approval_to_promote": false,
+  "C417_threshold_change": false,
+  "can_create_PRIMARY": false,
+  "can_create_HISTORY_PASS": false,
+  "can_register_R92": false,
+  "full_e2e_research_pass": false,
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true
+}
