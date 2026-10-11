@@ -186,12 +186,17 @@ def selftest():
         modified=dict(files)
         modified[name]=files[name].replace(needle,replacement)
         assert not validate_contract(modified)["ok"],(name,needle)
-    # Reordering official guard after issue creation must be rejected.
+    # Move the *entire* refresh step after issue creation, not just rename it.
+    # This must fail even though all original safety step names remain present.
     modified=dict(files)
     raw=modified["nasdaq-xray-delivery.yml"]
-    modified["nasdaq-xray-delivery.yml"]=raw.replace(
-        "Refresh official Nasdaq halt + Security Status guard",
-        "zz Refresh official Nasdaq halt + Security Status guard",1)
+    start=raw.index("      - name: Refresh official Nasdaq halt + Security Status guard")
+    stop=raw.index("      - name: Synthetic registered-R92 delivery self-test",start)
+    guard_step=raw[start:stop]
+    without_guard=raw[:start]+raw[stop:]
+    destination=without_guard.index("      - name: Reconcile durable delivery ledger")
+    modified["nasdaq-xray-delivery.yml"]=(
+        without_guard[:destination]+guard_step+without_guard[destination:])
     assert not validate_contract(modified)["ok"]
     assert session_timeline()
     print("XRAY_MONDAY_MICROAUDIT_SELFTEST=PASS_8_NEGATIVES_DST_DELIVERY_RECOVERY_NO_FALSE_GO")
