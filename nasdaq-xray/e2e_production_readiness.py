@@ -197,6 +197,33 @@ def terminal_chain_exact(terminal, asof, source_shas, mc_name, mc_sha):
         return False
     return True
 
+def non_g9_price_pass_count(price):
+    """Never let explicitly NON_G9 PRICE-pass sources imply release authority.
+
+    No third-party license can be inferred from a missing tag or source name:
+    this is a necessary exclusion only, not a sufficient entitlement proof.
+    """
+    if not isinstance(price,dict):
+        return None
+    rows=price.get("results")
+    symbols=price.get("pass_symbols")
+    if (not isinstance(rows,dict) or not isinstance(symbols,list)
+        or not all(isinstance(sym,str) and sym for sym in symbols)
+        or len(set(symbols))!=len(symbols)):
+        return None
+    total=0
+    for sym in symbols:
+        row=rows.get(sym)
+        if not isinstance(row,dict) or row.get("status")!="PASS_PRICE_DV30":
+            return None
+        info=row.get("info")
+        source=info.get("source") if isinstance(info,dict) else None
+        if not isinstance(source,str) or not source:
+            return None
+        if "NON_G9" in source.upper():
+            total+=1
+    return total
+
 def scope_readiness(blockers,chain_exact):
     """Distinguish global universe completion from exact candidate-local lineage.
 
@@ -207,6 +234,7 @@ def scope_readiness(blockers,chain_exact):
         "SOURCE_EPOCH_NOT_LATEST_COMPLETED_SESSION",
         "POLICY_SAFETY_NOT_ALL_ATTESTED",
         "PRICE_PARTITION_NOT_EXACT_CURRENT",
+        "PRICE_PASS_NON_G9_SOURCE_NOT_RELEASE_AUTHORITY",
         "SETTLEMENT_UNVERIFIED_OR_PRICE_SHA_DRIFT",
         "CURRENT_MC_AUTHORITY_MISSING",
         "CURRENT_TERMINAL_FROZEN_OR_INCOMPLETE",
@@ -361,6 +389,8 @@ def snapshot():
          and set(price.get("results") or {})==master_set
          and set(price.get("blocked_symbols") or []).isdisjoint(price_set)
          and int(price.get("pass_count") if price.get("pass_count") is not None else -1)==len(price_set))
+    non_g9_count=non_g9_price_pass_count(price)
+    fail("PRICE_PASS_NON_G9_SOURCE_NOT_RELEASE_AUTHORITY",non_g9_count==0)
     fail("PRICE_UNKNOWN_CURRENT",price.get("unknown_count")==0)
     fail("PRICE_BLOCKED_30_SESSION_BARS",price.get("blocked_count")==0)
     price_sha=sha("canonical_current_price_dv30.json")
@@ -396,7 +426,9 @@ def snapshot():
         terminal,asof,source_shas,terminal_mc,sha(terminal_mc)))
     fail("TERMINAL_CURRENT_MC_CHAIN_NOT_PROVEN",current_chain)
     pointer=read("chatgpt_canonical_state_v2.json")
-    prepared=bool(current_chain and freshness.get("freshness_ready") is True and registered_research_candidate_exact(
+    prepared=bool(non_g9_count==0 and current_chain
+                  and freshness.get("freshness_ready") is True
+                  and registered_research_candidate_exact(
         terminal,pointer,asof,sha("canonical_current_terminal.json")))
     # Delivery is independent: a zero-signal scenario may be a legitimate
     # completed run, but a device receipt must never be inferred from a ledger.
@@ -414,7 +446,8 @@ def snapshot():
             and freshness.get("freshness_ready") is True
             and terminal.get("full_end_to_end_research_pass") is True
             and not any(k in blocks for k in (
-                "PRICE_PARTITION_NOT_EXACT_CURRENT","POLICY_SAFETY_NOT_ALL_ATTESTED",
+                "PRICE_PARTITION_NOT_EXACT_CURRENT","PRICE_PASS_NON_G9_SOURCE_NOT_RELEASE_AUTHORITY",
+                "POLICY_SAFETY_NOT_ALL_ATTESTED",
                 "SETTLEMENT_UNVERIFIED_OR_PRICE_SHA_DRIFT",
                 "IDENTITY_PARTITION_INCOMPLETE","PRICE_BLOCKED_30_SESSION_BARS",
                 "PRICE_UNKNOWN_CURRENT")),
@@ -425,6 +458,7 @@ def snapshot():
         "source_session_lags":freshness.get("session_lag"),
         **scopes,
         "price_pass_count":price.get("pass_count"),"price_blocked_count":price.get("blocked_count"),
+        "price_pass_explicit_non_g9_count":non_g9_count,
         "master_unknown_count":master.get("unknown_count"),
         "terminal_asof_et":terminal.get("asof_et"),
         "ledger_entry_count":len(ledger.get("deliveries") or {}),
@@ -438,6 +472,27 @@ def snapshot():
     }
 
 def selftest():
+    sample={
+      "pass_symbols":["A","B"],
+      "results":{
+        "A":{"status":"PASS_PRICE_DV30","info":{"source":"RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9"}},
+        "B":{"status":"PASS_PRICE_DV30","info":{"source":"AUTHORITY_TEST_FIXTURE_ONLY"}},
+      }}
+    assert non_g9_price_pass_count(sample)==1
+    assert non_g9_price_pass_count({}) is None
+    from copy import deepcopy as _deepcopy
+    invalid=_deepcopy(sample)
+    invalid["results"]["B"]["info"].pop("source")
+    assert non_g9_price_pass_count(invalid) is None
+    invalid=_deepcopy(sample)
+    invalid["pass_symbols"].append("A")
+    assert non_g9_price_pass_count(invalid) is None
+    invalid=_deepcopy(sample)
+    invalid["results"]["A"]["status"]="UNKNOWN"
+    assert non_g9_price_pass_count(invalid) is None
+    assert scope_readiness(
+        ["PRICE_PASS_NON_G9_SOURCE_NOT_RELEASE_AUTHORITY"],True
+        )["candidate_local_source_chain_attested"] is False
     price={"asof_et":"2026-10-08","pass_symbols":["A","B"],"pass_hash":"X"}
     mc={"asof_et":"2026-10-08","input_blob_sha":"P","input_pass_hash":"X",
        "input_pass_symbols":["A","B"],"policy_hash":POLICY,"execution":"NONE",
@@ -724,6 +779,7 @@ def selftest():
         assert not registered_research_candidate_exact(tbad,pbad,"2026-10-08","TERMINAL-SHA")
     print("XRAY_E2E_REGISTERED_RESEARCH_PREP_SELFTEST=PASS_BCD_AND_A_C417_RR_POSITIVE_19_NEGATIVES_NO_DEVICE_CLAIM")
     print("XRAY_E2E_SCOPE_BOUNDARY_SELFTEST=PASS_INDEPENDENT_GLOBAL_AND_LOCAL_NO_AL")
+    print("XRAY_E2E_NON_G9_PRICE_RELEASE_VETO=PASS_5_NEGATIVE_NO_LICENSE_INFERENCE")
     print("XRAY_E2E_READINESS_MC_SELFTEST=PASS_POSITIVE_7_NEGATIVES")
     print("XRAY_E2E_TERMINAL_SHA_BINDING_SELFTEST=PASS_POSITIVE_5_NEGATIVES")
 
