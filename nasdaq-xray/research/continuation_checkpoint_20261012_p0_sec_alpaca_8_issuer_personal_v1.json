@@ -1,0 +1,16 @@
+{
+  "schema": "XRAY_PERSONAL_P0_SEC_ALPACA_EIGHT_CANARIES_V1",
+  "parent_commit": "e481c160badda79f621d2d6acb3dbfb5094d0cad",
+  "context": "Personal private research. Does not assume commercial license or signal sale.",
+  "symbols": "DYNAMIC_INTERSECTION_SEC_DEFAULT_8_AND_CURRENT_PRICE_MASTER",
+  "SEC_OFFICIAL_CIK_MAP": "https://www.sec.gov/files/company_tickers_exchange.json",
+  "source_day": "2026-10-09",
+  "MaxSECRequestRate": "<=2/s",
+  "SIP_adjustment": "raw",
+  "MC_class_CA_PIT_unproven": true,
+  "outputs": "DERIVED_BOOL_AND_SANITIZED_ERROR_CLASS_ONLY",
+  "primary_mc": 0,
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "CI": "PENDING"
+}
