@@ -418,6 +418,23 @@ def selftest():
                   "B":{"status":"MC_PASS_FALLBACK_WATCH","r92_eligible":False}}}
     assert mc_exact(mc,price,"P")
     from copy import deepcopy
+    # RED: set() deduplication and int() coercion cannot prove the exact
+    # PRIMARY partition and counters. Native C4.17 bridges preserve lists and
+    # exact integer counts; aliases must not disagree about FAIL membership.
+    for label,edit in (
+        ("DUPLICATE_PRIMARY_MEMBER",lambda x:x["primary_pass_symbols"].append("A")),
+        ("PRIMARY_COUNT_STRING",lambda x:x["counts"].update(MC_PASS_PRIMARY="1")),
+        ("PRIMARY_COUNT_FLOAT",lambda x:x["counts"].update(MC_PASS_PRIMARY=1.9)),
+        ("PRIMARY_COUNT_BOOLEAN",lambda x:x["counts"].update(MC_PASS_PRIMARY=True)),
+        ("TOTAL_WRONG",lambda x:x["counts"].update(TOTAL=99)),
+        ("TOTAL_WRONG_TYPE",lambda x:x["counts"].update(TOTAL="2")),
+        ("PRIMARY_GROUP_NOT_LIST",lambda x:x.update(primary_pass_symbols="A")),
+    ):
+        bad=deepcopy(mc)
+        edit(bad)
+        assert not mc_exact(bad,price,"P"),("UNTRUSTWORTHY_MC_PARTITION_ACCEPTED",label)
+    bad_price=dict(price,pass_symbols=["A","A","B"])
+    assert not mc_exact(mc,bad_price,"P"),"DUPLICATED_PRICE_PROOF_SCOPE_ACCEPTED"
     for change in (
        lambda x:x.update(input_blob_sha="OTHER"),
        lambda x:x.update(asof_et="2026-10-07"),
@@ -465,6 +482,16 @@ def selftest():
     native["counts"]["MC_FAIL_PRIMARY"]=1
     native_price=dict(price,pass_symbols=["A","B","C","D","E"])
     assert mc_exact(native,native_price,"P"),"NEGATIVE_NATIVE_SCHEMA_FALSE_REJECTION"
+    conflicting=deepcopy(native)
+    conflicting["fallback_two_source_fail_symbols"]=["A"]
+    assert not mc_exact(conflicting,native_price,"P"),"CONFLICTING_FALLBACK_ALIAS_SILENTLY_ACCEPTED"
+    duplicated=deepcopy(native)
+    duplicated["fallback_fail_symbols"]=["C","C"]
+    assert not mc_exact(duplicated,native_price,"P"),"DUPLICATE_NEGATIVE_GROUP_ACCEPTED"
+    consistent=deepcopy(native)
+    consistent["fallback_two_source_fail_symbols"]=["C"]
+    assert mc_exact(consistent,native_price,"P"),"MATCHING_NATIVE_ALIAS_FALSE_REJECTED"
+
     for sym in ("C","D","E"):
         forged=deepcopy(native)
         forged["results"][sym]["r92_eligible"]=True
