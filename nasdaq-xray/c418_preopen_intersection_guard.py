@@ -23,6 +23,11 @@ def _sha(data:bytes)->str:
     return hashlib.sha1(b"blob "+str(len(data)).encode()+b"\0"+data).hexdigest()
 
 def _digest(items)->str:
+    """Canonical PRICE hashes do NOT include a trailing newline."""
+    return hashlib.sha256("\n".join(sorted(items)).encode()).hexdigest()
+
+def _sec_digest(items)->str:
+    """SEC batch-scoped SHA uses exactly one trailing newline."""
     return hashlib.sha256(("\n".join(sorted(items))+"\n").encode()).hexdigest()
 
 def audit(price,master,alpaca,sec,price_sha,master_sha):
@@ -78,7 +83,7 @@ def audit(price,master,alpaca,sec,price_sha,master_sha):
         or sec.get("asof_et")!=asof
         or sec.get("master_git_blob_sha")!=master_sha
         or sec.get("price_git_blob_sha")!=price_sha
-        or sec.get("sample_scope_sha256")!=_digest(names)
+        or sec.get("sample_scope_sha256")!=_sec_digest(names)
         or sec.get("sample_count")!=len(names)
         or sec.get("batch_offset")!=0
         or sec.get("batch_limit")!=len(names)
@@ -148,7 +153,7 @@ def selftest():
        "execution":"NONE","real_money":"NO-GO"}
     t={"schema":"XRAY_SEC_MULTISYMBOL_PIT_SHADOW_V1",
        "asof_et":"2026-10-09","master_git_blob_sha":"b"*40,
-       "price_git_blob_sha":"a"*40,"sample_scope_sha256":_digest(symbols),
+       "price_git_blob_sha":"a"*40,"sample_scope_sha256":_sec_digest(symbols),
        "sample_count":3,"batch_limit":3,"batch_offset":0,
        "c417_primary_mc_count":0,"market_cap_calculated":False,
        "production_alpha_authority":False,"price_binding_attested":False,
@@ -160,6 +165,7 @@ def selftest():
        "status_counts":{SEC_VINTAGE:2,"UNKNOWN":1},
        "execution":"NONE","real_money":"NO-GO"}
     from copy import deepcopy
+    assert _digest(symbols)!=_sec_digest(symbols)
     out=audit(p,m,a,t,"a"*40,"b"*40)
     assert (out["technical_intersection"],out["history_observed_sec_unknown"],
             out["history_short_in_price_pass"])==(1,1,1)
