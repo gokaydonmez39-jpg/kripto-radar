@@ -1,0 +1,92 @@
+{
+  "schema": "XRAY_ACTION_SUPPLY_CHAIN_RELEASE_GUARD_EVIDENCE_V1",
+  "asof_utc_date": "2026-10-11",
+  "base_main_commit": "27014ac919a5feb1d21f5270dcfd102948e81ddf",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "alpha_authority": false,
+  "unknown_never_pass": true,
+  "tag_refs_live_verified_against_official_github": {
+    "actions/checkout@v4.4.0": "11d5960a326750d5838078e36cf38b85af677262",
+    "actions/setup-python@v5.6.0": "a26af69be951a213d495a4c3e4e4022e16d87065",
+    "actions/upload-artifact@v4.6.2": "ea165f8d65b6e75b540449e92b4886f43607fa02"
+  },
+  "protected_workflows": [
+    ".github/workflows/nasdaq-xray-daily.yml",
+    ".github/workflows/nasdaq-xray-delivery.yml",
+    ".github/workflows/xray-e2e-production-readiness.yml",
+    ".github/workflows/xray-preopen-source-audit.yml",
+    ".github/workflows/xray-c418-multi-source-contract.yml",
+    ".github/workflows/xray-c418-sec-alpaca-intersection-shadow.yml"
+  ],
+  "supply_chain_guard": {
+    "path": "nasdaq-xray/immutable_action_dependency_guard.py",
+    "guard_runner_commit": "27014ac919a5feb1d21f5270dcfd102948e81ddf",
+    "latest_ci_run": 38167192046,
+    "latest_ci": "SUCCESS",
+    "expected_workflows": 6,
+    "expected_pinned_dependencies": 17,
+    "adversarial_negative_tests": 7,
+    "selftest_log": "XRAY_IMMUTABLE_ACTION_GUARD_SELFTEST=PASS_7_NEGATIVES",
+    "live_log": "XRAY_IMMUTABLE_ACTION_GUARD=PASS_6_WORKFLOWS_17_EXACT_OFFICIAL_SHAS",
+    "rights_attestation_proven": false
+  },
+  "runtime_proof": {
+    "root_live_run": 38166979752,
+    "root_result": "SUCCESS_SELFTESTS_WEEKEND_MARKET_DATA_PHASE_SKIPPED",
+    "root_stage_relay_run": 38166979693,
+    "root_stage_relay_result": "SUCCESS",
+    "candidate_delivery_run": 38166997686,
+    "candidate_delivery_result": "SUCCESS_NO_R92_DEVICE_RECEIPT_CLAIM",
+    "preopen_source_run": 38167191884,
+    "preopen_source_result": "SUCCESS_FAIL_CLOSED_SOURCE_BLOCKERS",
+    "preopen_witness_artifact_id": 11712807173,
+    "e2e_release_veto_run": 38167067632,
+    "e2e_release_result": "INTENTIONAL_FAILURE_EXIT_2_WHEN_RESEARCH_NO_GO",
+    "e2e_blockers": [
+      "CURRENT_MC_AUTHORITY_MISSING",
+      "CURRENT_TERMINAL_FROZEN_OR_INCOMPLETE",
+      "IDENTITY_PARTITION_INCOMPLETE",
+      "NOTIFICATION_DEVICE_RECEIPT_NOT_PROVEN",
+      "PRICE_PASS_NON_G9_SOURCE_NOT_RELEASE_AUTHORITY",
+      "SOURCE_EPOCH_NOT_LATEST_COMPLETED_SESSION",
+      "TERMINAL_CURRENT_MC_CHAIN_NOT_PROVEN"
+    ],
+    "last_completed_session_asof_et": "2026-10-09",
+    "current_terminal_asof_et": "2026-10-07",
+    "bigdata_primary_mc_ready": false,
+    "current_price_pass_count": 514,
+    "price_source_non_g9_count": 514,
+    "root_sina_unknown_count": 229,
+    "root_transient_real_provider_retry_eligible": 30,
+    "r92_proven": false,
+    "user_device_receipt_proven": false
+  },
+  "unresolved_supply_chain_scope": {
+    "sampled_scheduled_or_supplemental_workflows": 24,
+    "initial_unpinned_uses_in_24": 68,
+    "now_pinned_within_those_24": 11,
+    "remaining_unpinned_within_those_24": 57,
+    "pinned_two_additional_non_top24_c418_workflows": 6,
+    "complete_all_135_workflow_security_audit": false,
+    "global_action_policy_mandatory_sha_enabled_proven": false
+  },
+  "live_sources": [
+    "https://docs.github.com/en/actions/reference/security/secure-use",
+    "https://docs.alpaca.markets/us/docs/market-data-faq",
+    "https://alpaca.markets/support/redistribute-alpaca-api",
+    "https://www.sec.gov/search-filings/edgar-application-programming-interfaces"
+  ],
+  "open_production_hardstops": [
+    "INDEPENDENT_LICENSED_C417_MC_PRIMARY_ZERO",
+    "PRICE_HISTORICAL_SIP_NON_DISPLAY_LICENSE_AND_RETENTION_UNKNOWN",
+    "COMPLETE_OFFICIAL_PIT_HISTORY_AND_CORPORATE_ACTIONS_NOT_AUTHORIZED",
+    "SAME_ASOF_TERMINAL_CHAIN_NOT_ATTESTED",
+    "REAL_R92_AND_DEVICE_DELIVERY_RECEIPT_UNPROVEN",
+    "STRICT_G9_AND_ACCOUNT_UNATTESTED_FOR_TRUE_FULL_GO"
+  ],
+  "release_decision": "RESEARCH_NO_GO",
+  "note": "Production-grade source rights and pipeline completion cannot be created by software refactoring; no threshold, signal, real-money or automated-execution promotion was made."
+}
