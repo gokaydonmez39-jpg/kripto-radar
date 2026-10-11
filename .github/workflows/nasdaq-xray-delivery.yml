@@ -12,6 +12,7 @@ on:
       - "nasdaq-xray/research_only_start_20261010.json"
       - "nasdaq-xray/research_only_start_guard.py"
       - "nasdaq-xray/delivery_prepare.py"
+      - "nasdaq-xray/delivery_issue_receipt_guard.py"
       - "nasdaq-xray/source_epoch_freshness_guard.py"
       - "nasdaq-xray/delivery_scheduler_guard.py"
       - "nasdaq-xray/delivery_candidate_preflight.py"
@@ -67,6 +68,7 @@ jobs:
             nasdaq-xray/resilience_runtime.py \
             nasdaq-xray/official_source_guard.py \
             nasdaq-xray/delivery_prepare.py \
+            nasdaq-xray/delivery_issue_receipt_guard.py \
             nasdaq-xray/delivery_candidate_preflight.py \
             nasdaq-xray/delivery_prepare_selftest.py \
             nasdaq-xray/delivery_scheduler_guard.py \
@@ -95,6 +97,7 @@ jobs:
           python nasdaq-xray/delivery_prepare_selftest.py
           python nasdaq-xray/delivery_scheduler_guard_selftest.py
           python nasdaq-xray/delivery_candidate_preflight.py --selftest
+          python nasdaq-xray/delivery_issue_receipt_guard.py --selftest
 
       - name: Classify registered R92 presence without claiming source readiness
         id: presence
@@ -203,12 +206,28 @@ jobs:
                 existing=$(gh issue list --state all --search "$delivery_key in:title" --json number --jq '.[0].number // empty')
               fi
             fi
-            if [ -n "$existing" ]; then
+            # Issue number or search result alone is never a delivery receipt:
+            # verify exact repository URL, issue number, title, candidate key,
+            # full immutable body and safety semantics before ledger DELIVERED.
+            verified=false
+            if [[ "$existing" =~ ^[0-9]+$ ]]; then
+              receipt_file="$(mktemp)"
+              if gh issue view "$existing" --json number,title,body,url > "$receipt_file" &&
+                 python nasdaq-xray/delivery_issue_receipt_guard.py \
+                   --issue-json "$receipt_file" \
+                   --issue-number "$existing" \
+                   --delivery-key "$delivery_key" \
+                   --symbol "$ticker" --body-file "$body_file"; then
+                verified=true
+              fi
+              rm -f "$receipt_file"
+            fi
+            if [ "$verified" = true ]; then
               printf '%s\t%s\t%s\tDELIVERED\n' "$delivery_key" "$ticker" "$existing" >> /tmp/xray_delivery_result.tsv
-              echo "XRAY_BACKUP_DELIVERY=PASS key=$delivery_key issue=$existing"
+              echo "XRAY_BACKUP_DELIVERY=PASS_EXACT_ISSUE_RECEIPT_ONLY key=$delivery_key issue=$existing"
             else
               printf '%s\t%s\t\tMISSING_RETRY_REQUIRED\n' "$delivery_key" "$ticker" >> /tmp/xray_delivery_result.tsv
-              echo "XRAY_BACKUP_DELIVERY=MISSING key=$delivery_key" >&2
+              echo "::error::XRAY_BACKUP_DELIVERY_UNVERIFIED key=$delivery_key issue=$existing" >&2
             fi
           done < /tmp/xray_delivery.tsv
           if grep -q $'\tMISSING_RETRY_REQUIRED$' /tmp/xray_delivery_result.tsv; then
