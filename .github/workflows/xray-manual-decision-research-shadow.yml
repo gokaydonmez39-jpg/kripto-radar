@@ -25,16 +25,32 @@ concurrency:
   cancel-in-progress: false
 jobs:
   manual-research:
-    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_repository.full_name == github.repository && github.event.workflow_run.head_branch == 'main') }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
-          ref: main
+          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: "3.12"
+      - name: Verify event checkout SHA and synthetic race regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          python nasdaq-xray/workflow_source_epoch_fence_selftest.py
+          python -O nasdaq-xray/workflow_source_epoch_fence_selftest.py
+          python - <<'PY'
+          import json,os,subprocess
+          from pathlib import Path
+          event=json.loads(Path(os.environ["GITHUB_EVENT_PATH"]).read_text())
+          expected=(event["workflow_run"]["head_sha"] if os.environ["GITHUB_EVENT_NAME"]=="workflow_run"
+                    else os.environ["GITHUB_SHA"])
+          if subprocess.check_output(["git","rev-parse","HEAD"],text=True).strip()!=expected:
+              raise SystemExit("XRAY_MANUAL_CHECKOUT_SHA_DRIFT")
+          print("XRAY_MANUAL_EVENT_SHA=PASS_EXACT")
+          PY
       - name: Enforce exact source Final invocation vs current checked-out main
         run: |
           python -m py_compile nasdaq-xray/manual_workflow_trigger_sha_guard.py
@@ -76,6 +92,16 @@ jobs:
           assert r["user_notification_delivered"] is False
           print("XRAY_MANUAL_FOLLOWUP_NO_DELIVERY_CLAIM=PASS")
           PY
+      - name: Block stale main before manual candidate research
+        shell: bash
+        run: |
+          set -euo pipefail
+          latest="$(git ls-remote origin refs/heads/main | cut -f1)"
+          if [[ -z "$latest" || "$(git rev-parse HEAD)" != "$latest" ]]; then
+            echo "XRAY_MANUAL_SOURCE_EPOCH=BLOCKED_MAIN_ADVANCED" >&2
+            exit 1
+          fi
+          echo "XRAY_MANUAL_SOURCE_EPOCH=CURRENT_EXACT"
       - name: Build exact-source manual-decision research report
         env:
           GITHUB_TOKEN: ${{ github.token }}

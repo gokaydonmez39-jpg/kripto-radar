@@ -27,10 +27,18 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           fetch-depth: 1
-          ref: main
+          ref: ${{ github.sha }}
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with: {python-version: "3.12"}
 
+      - name: Exact source SHA and synthetic race regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python nasdaq-xray/workflow_source_epoch_fence_selftest.py
+          python -O nasdaq-xray/workflow_source_epoch_fence_selftest.py
+          echo "XRAY_ACCOUNT_INVOCATION_SHA=PASS_EXACT"
       - name: Compile
         run: python -m py_compile nasdaq-xray/reconcile_account_gate.py nasdaq-xray/reconcile_account_gate_selftest.py
 
@@ -43,9 +51,20 @@ jobs:
           set -euo pipefail
           git config user.name "xray-control-bot"
           git config user.email "xray-control-bot@users.noreply.github.com"
+          TESTED_RECONCILER_BLOB="$(git rev-parse HEAD:nasdaq-xray/reconcile_account_gate.py)"
+          TESTED_SELFTEST_BLOB="$(git rev-parse HEAD:nasdaq-xray/reconcile_account_gate_selftest.py)"
+          TESTED_FENCE_BLOB="$(git rev-parse HEAD:nasdaq-xray/workflow_source_epoch_fence_selftest.py)"
           for attempt in 1 2 3 4 5; do
             git fetch origin main
             git reset --hard origin/main
+            if [[ "$(git rev-parse HEAD:nasdaq-xray/reconcile_account_gate.py)" != "$TESTED_RECONCILER_BLOB" ||
+                  "$(git rev-parse HEAD:nasdaq-xray/reconcile_account_gate_selftest.py)" != "$TESTED_SELFTEST_BLOB" ||
+                  "$(git rev-parse HEAD:nasdaq-xray/workflow_source_epoch_fence_selftest.py)" != "$TESTED_FENCE_BLOB" ]]; then
+              echo "XRAY_ACCOUNT_TESTED_SOURCE_EPOCH_DRIFT=BLOCKED" >&2
+              exit 1
+            fi
+            python -m py_compile nasdaq-xray/reconcile_account_gate.py nasdaq-xray/reconcile_account_gate_selftest.py
+            python nasdaq-xray/reconcile_account_gate_selftest.py
             python nasdaq-xray/reconcile_account_gate.py
             git add nasdaq-xray/account_gate_contract.json
             if git diff --cached --quiet; then

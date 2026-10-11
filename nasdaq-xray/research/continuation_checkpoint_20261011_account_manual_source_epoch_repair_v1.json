@@ -1,0 +1,32 @@
+{
+  "schema": "XRAY_ACCOUNT_MANUAL_SOURCE_EPOCH_CHECKPOINT_20261011_V1",
+  "main_preimage_sha": "fa0e342d403709861c182be97976fbb1eca4996a",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "negative_repro": "STATIC_RACE_A_TRIGGER_B_MAIN_RED_BOTH",
+  "patch": "ACCOUNT_TRIGGERS_FIXED_SHA_TESTED_CODE_FENCE;MANUAL_WORKFLOW_RUN_HEAD_SHA_EVENT_BIND_CURRENT_MAIN_GUARD",
+  "sec_live": {
+    "run_id": 38169144342,
+    "scope": 514,
+    "shadow_vintage": 346,
+    "unknown": 167,
+    "transport_unknown": 1,
+    "primary_mc": 0
+  },
+  "account": {
+    "run_id": 38171234440,
+    "account_pass": false
+  },
+  "manual": {
+    "run_id": 38170307031,
+    "public_status": "SOURCE_INTEGRITY_BLOCKED"
+  },
+  "source_rights_proven": false,
+  "real_r92_proven": false,
+  "device_receipt_proven": false,
+  "go": "NO-GO",
+  "ci": "NOT_YET_VERIFIED_AFTER_COMMIT",
+  "metadata_only": true
+}
