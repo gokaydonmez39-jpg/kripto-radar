@@ -152,7 +152,7 @@ def selftest():
     root=dict(base,updated_at_utc="2026-10-12T13:00:00Z",
               status="DATA_PLANE_PASS_CANONICAL_DOWNSTREAM_DEFERRED",unknown_count=0)
     master=dict(base)
-    price=dict(base)
+    price=dict(base,pass_symbols=[],results={})
     terminal=dict(base,full_end_to_end_research_pass=True,
                   candidate_local_research_pass=True,r92_candidates=[])
     official={"execution":"NONE","real_money":"NO-GO",
