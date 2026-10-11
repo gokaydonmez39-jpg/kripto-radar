@@ -178,7 +178,21 @@ def classify_shadow_candidate(mc_rec: dict, nq_rec: dict | None) -> tuple[str, l
     ]
 
 
+def count_exact_pit_unknowns(rows: dict) -> int:
+    return sum(1 for row in rows.values()
+               if row.get("nasdaq_shadow_eligible") is True)
+
+
 def selftest() -> None:
+    samples = {
+        "verified": {"nasdaq_shadow_eligible": True,
+                     "nasdaq_close_match": True,
+                     "nasdaq_pit_status": "SHADOW_ELIGIBLE"},
+        "missing": {"nasdaq_shadow_eligible": False,
+                    "nasdaq_close_match": False,
+                    "nasdaq_pit_status": "UNKNOWN"},
+    }
+    assert count_exact_pit_unknowns(samples)==1, "PIT_UNKNOWN_COUNT_INVERTED"
     high = {
         "rallies_market_cap_usd": 3_000_000_000,
         "longbridge_market_cap_usd": 3_100_000_000,
@@ -284,9 +298,7 @@ def main() -> None:
         1 for r in rows.values()
         if r["production_status_before"] != r["production_status_after"]
     )
-    exact_pit_unknowns = sum(
-        1 for r in rows.values() if r["nasdaq_shadow_eligible"] is True
-    )
+    exact_pit_unknowns = count_exact_pit_unknowns(rows)
     out = {
         "schema": "XRAY_MC_ZERO_DOLLAR_SUCCESSOR_SHADOW_AUDIT_V1",
         "task_id": TASK_ID,
