@@ -52,6 +52,9 @@ jobs:
           assert j["corporate_action_binding_attested"] is False
           assert j["sample_count"]==35==len(j["statuses"])
           assert j["batch_offset"]==0 and j["batch_limit"]==35
+          assert j["remediation_count_exact"] is True
+          assert sum(j["remediation_counts"].values())==j["sample_count"]
+          assert j["remediation_counts"].get("PIT_SHARES_PRESENT_MORE_VALIDATION_REQUIRED",0)<=35
           assert j["c417_primary_mc_count"]==0
           print("XRAY_SEC_OFFICIAL_35_OF_PRICE_PASS=SHADOW_ONLY_NO_MC_AUTHORITY")
           print("XRAY_SEC_MULTI_SOURCE_AUDIT=PASS_NO_FALSE_MC")
