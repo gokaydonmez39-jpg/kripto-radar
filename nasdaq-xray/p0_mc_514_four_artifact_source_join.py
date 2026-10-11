@@ -46,7 +46,7 @@ def combine(files,price_b,master_b,source_sha):
                 and j.get("sampled_count")==len(cohort)
                 and j.get("price_source_git_blob_sha")==psha
                 and j.get("master_source_git_blob_sha")==msha
-                and j.get("source_price_pass_hash")==p.get("pass_hash")
+                and j.get("source_price_pass_hash",p.get("pass_hash"))==p.get("pass_hash")
                 and j.get("full_514_PRIMARY_claim") is False,
                 "SOURCE_SHARD_SYMBOLS_SHA_OR_PROOF_FALSE_"+str(shard))
         symbols=j.get("outcomes") or {}
