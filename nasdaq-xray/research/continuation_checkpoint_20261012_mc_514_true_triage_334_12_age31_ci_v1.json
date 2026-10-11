@@ -1,0 +1,92 @@
+{
+  "schema": "XRAY_20261012_MC_514_SOURCE_EXACT_TRIAGE_FOUR_SHARDS_AND_CA31_V1",
+  "asof_et": "2026-10-09",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "origin_price_blob": "6f3f68fff0897d68f200ad3621c51a5071494714",
+  "origin_master_blob": "828c21436a836b69fe5084387e1c54446c7b5075",
+  "source_measurement_four_shard_run": 38183058048,
+  "source_join_run": 38183357135,
+  "source_new_triage_run": 38184753840,
+  "source_new_triage_code_commit": "35b107364babe26a3e7c6f0049e0b0c0b4f1146e",
+  "new_triage_artifact_id": 11718957814,
+  "new_triage_artifact_zip_sha256": "7e2c173dadd0c2bff5e0b2f1c55342a175442a8a742f861c6788f901f86c3638",
+  "full_price_pass_count": 514,
+  "MC_shadow_total": 346,
+  "MC_unknown_total": 168,
+  "issuer_unadjusted_arithmetic_above_2b_count": 334,
+  "issuer_unadjusted_arithmetic_below_2b_count": 12,
+  "issuer_unadjusted_arithmetic_below_2b": [
+    "ALHC",
+    "AXGN",
+    "CBRL",
+    "FCEL",
+    "NKTR",
+    "NTLA",
+    "QUBT",
+    "RARE",
+    "RUN",
+    "SBET",
+    "SEDG",
+    "SRPT"
+  ],
+  "SEC_shares_filing_age_bucket_counts": {
+    "0_30": 9,
+    "31_60": 44,
+    "61_90": 280,
+    "91_120": 13
+  },
+  "SEC_shares_filing_age_over90_symbols": [
+    "CSX",
+    "FAST",
+    "HON",
+    "JBHT",
+    "LECO",
+    "LIN",
+    "MU",
+    "NESR",
+    "NFLX",
+    "NTRS",
+    "PENG",
+    "SEIC",
+    "UAL"
+  ],
+  "CA31_subcohort": {
+    "direct_security_class_filing_identity_13": {
+      "sec_shadow": 8,
+      "sec_unknown": [
+        "ASND",
+        "CMCSA",
+        "ECHO",
+        "MRX",
+        "TRI"
+      ]
+    },
+    "acquirer_issuer_cap_table_18": {
+      "sec_shadow": 10,
+      "sec_unknown": [
+        "ASST",
+        "BNTX",
+        "CHTR",
+        "GMAB",
+        "HBAN",
+        "SNY",
+        "SOUN",
+        "USAR"
+      ]
+    },
+    "total_source_shadow": 18,
+    "total_source_unknown": 13,
+    "none_of_12_below_issuer_arithmetic_in_CA31": true
+  },
+  "priority_rule": "SEC issuer shares × one listed class EOD is a SHADOW boolean, not issuer/class cap; reconcile issuer total class-specific shares, ADS factor and PIT corporate actions with independent issuer MC",
+  "negative_test_evidence": "GitHub run passed original real 514 source union plus four SHA-pinned shard artifacts, source set and symbol statuses; Python and python -O 1 positive 8 negative fixtures",
+  "new_alpha_pass_or_fail_created": false,
+  "C417_PRIMARY_MC_created": 0,
+  "HISTORY_PASS_created": 0,
+  "R92_created": false,
+  "GO": false,
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true
+}
