@@ -93,6 +93,7 @@ def interpret(frames_by_concept:dict,symbol_to_cik:dict,asof:str):
     """Deduplicate accession-level facts; never synthesize per-class shares."""
     symbols=sorted(symbol_to_cik)
     ciks={int(cik) for cik in symbol_to_cik.values()}
+    cik_symbol_cardinality=collections.Counter(int(cik) for cik in symbol_to_cik.values())
     seen=collections.defaultdict(set)
     available=collections.defaultdict(set)
     duplicates=collections.Counter()
@@ -125,7 +126,9 @@ def interpret(frames_by_concept:dict,symbol_to_cik:dict,asof:str):
         cik=int(symbol_to_cik[symbol])
         dei=available.get(("dei",cik),set())
         gaap=available.get(("us-gaap",cik),set())
-        if dei:
+        if cik_symbol_cardinality[cik]>1:
+            status="MULTI_TICKER_ISSUER_CLASS_AMBIGUOUS"
+        elif dei:
             by_vintage=collections.defaultdict(set)
             for stamp,value in dei:
                 by_vintage[stamp].add(value)
@@ -139,13 +142,15 @@ def interpret(frames_by_concept:dict,symbol_to_cik:dict,asof:str):
         else:
             status="NO_FRESH_FRAME_SHARE_FACT"
         result[symbol]=status
-    return dict(sorted(collections.Counter(result.values()).items())),dict(rejected),dict(duplicates)
+    return (dict(sorted(collections.Counter(result.values()).items())),
+            dict(rejected),dict(duplicates),dict(sorted(result.items())))
 
 def report(asof,count,status,classification=None,reason=None):
     return dict(NO_AUTH,
         schema=SCHEMA,asof_et=asof,status=status,
         current_price_pass_scope_count=count,received_symbols=0 if classification is None else count,
-        classes=classification or {},rejected_frame_row_reason_counts={},
+        classes=classification or {},status_by_symbol={},
+        rejected_frame_row_reason_counts={},
         duplicate_frame_fact_counts={},reason_codes=[reason] if reason else [],
         source="SEC_OFFICIAL_XBRL_FRAMES",
         current_cik_mapping_not_pit=True,SEC_frame_filed_date_only=True,
@@ -185,12 +190,15 @@ def execute():
                 return r
             frames[concept].append(blob)
             fetched+=1
-    groups,invalid,dupes=interpret(frames,mapped,asof)
-    if missing_map:groups["NO_CURRENT_SEC_CIK_ROUTE"]=missing_map
-    if sum(groups.values())!=len(symbols):
+    groups,invalid,dupes,per_symbol=interpret(frames,mapped,asof)
+    if missing_map:
+        groups["NO_CURRENT_SEC_CIK_ROUTE"]=missing_map
+        per_symbol.update({s:"NO_CURRENT_SEC_CIK_ROUTE" for s in symbols if s not in mapped})
+    if sum(groups.values())!=len(symbols) or len(per_symbol)!=len(symbols):
         return dict(r,reason_codes=["NOT_EXACT_514_SCOPE_PARTITION"])
     return dict(r,status="SHADOW_FRAME_DISCOVERY_COMPLETE_NOT_PIT",
         received_symbols=len(symbols),classes=groups,
+        status_by_symbol=dict(sorted(per_symbol.items())),
         rejected_frame_row_reason_counts=invalid,
         duplicate_frame_fact_counts=dupes,frames_http200=fetched,
         reason_codes=["DATE_ONLY_CLASS_UNVERIFIED_NOT_PRIMARY"])
@@ -205,8 +213,12 @@ def selftest():
     sparse={"cik":1,"end":"2026-06-30","val":10_000_000}
     assert classify_fact(sparse,"2026-10-09")=="FRAME_DISCOVERY_ONLY_MISSING_FILING_METADATA"
     frames_probe={"dei":[{"data":[sparse]}],"us-gaap":[{"data":[]}]}
-    cov,_,_=interpret(frames_probe,{"A":"0000000001"},"2026-10-09")
+    cov,_,_,symbols_status=interpret(frames_probe,{"A":"0000000001"},"2026-10-09")
     assert cov=={"DEI_FRAME_CANDIDATE_NEEDS_OFFICIAL_CLASS_AND_ACCEPTANCE":1}
+    assert symbols_status=={"A":"DEI_FRAME_CANDIDATE_NEEDS_OFFICIAL_CLASS_AND_ACCEPTANCE"}
+    multi,_,_,groups_by_sym=interpret(frames_probe,{"A":"0000000001","A.B":"0000000001"},"2026-10-09")
+    assert multi=={"MULTI_TICKER_ISSUER_CLASS_AMBIGUOUS":2}
+    assert groups_by_sym["A"]==groups_by_sym["A.B"]=="MULTI_TICKER_ISSUER_CLASS_AMBIGUOUS"
 
     altered=dict(ok,filed="2026-10-09")
     assert classify_fact(altered,"2026-10-09")=="FILED_ON_OR_AFTER_ASOF_NO_PRE_CLOSE_PIT"
@@ -221,17 +233,17 @@ def selftest():
     a=dict(ok,cik=2,val=100)
     frames={"dei":[{"data":[ok,ok]}],
             "us-gaap":[{"data":[a]}]}
-    counts,invalid,duplicates=interpret(frames,{"A":"0000000001","B":"0000000002","C":"0000000003"},"2026-10-09")
+    counts,invalid,duplicates,sym_status=interpret(frames,{"A":"0000000001","B":"0000000002","C":"0000000003"},"2026-10-09")
     assert counts=={"DEI_FRAME_CANDIDATE_NEEDS_OFFICIAL_CLASS_AND_ACCEPTANCE":1,
                     "USGAAP_ONLY_DIMENSIONAL_CLASS_UNKNOWN":1,
                     "NO_FRESH_FRAME_SHARE_FACT":1}
     assert duplicates["dei"]==1
     conflict=dict(ok,val=11_000_000)
     frames["dei"][0]["data"].append(conflict)
-    counts,_,_=interpret(frames,{"A":"0000000001"},"2026-10-09")
+    counts,_,_,sym_status=interpret(frames,{"A":"0000000001"},"2026-10-09")
     assert counts=={"CONFLICTING_DEI_SAME_VINTAGE":1}
     assert report("2026-10-09",514,"TEST")["c417_mc_primary_created"] is False
-    print("XRAY_C418_SEC_FRAMES_SHADOW_SELFTEST=PASS_PIT_CLASS_DUPLICATE_CONFLICT_NO_PRIMARY")
+    print("XRAY_C418_SEC_FRAMES_SHADOW_SELFTEST=PASS_PIT_CLASS_DUPLICATE_CONFLICT_MULTI_TICKER_NO_PRIMARY")
 
 def main():
     parser=argparse.ArgumentParser()
