@@ -1,0 +1,113 @@
+{
+  "schema": "XRAY_C417_MICROSCOPE_AUDIT_20261012_V1",
+  "trt_date": "2026-10-12",
+  "authority": "LIVE_GITHUB_MAIN_PLUS_IMMUTABLE_ACTIONS_ARTIFACT_DIGEST_READBACK",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "scope": [
+    "Post-MC settlement-witness relation",
+    "C4.17 9-Oct resolver immutable pair",
+    "real CI negative cases",
+    "9-Oct readiness artifact",
+    "source epoch terminal mismatch",
+    "delivery receipt and research readiness"
+  ],
+  "repo": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "source_epoch": {
+    "master_asof_et": "2026-10-09",
+    "master_pass_identity_count": 3184,
+    "master_unknown_identity_count": 12,
+    "price_asof_et": "2026-10-09",
+    "price_dv30_pass_count": 514,
+    "price_unknown_count": 0,
+    "price_blocked_count": 0,
+    "resolver_v1_symbols": 553,
+    "resolver_v1_queue_total": 3184,
+    "resolver_v2_symbols": 3184,
+    "resolver_v2_queue_total": 3184,
+    "current_canonical_mc_bridges_for_20261009": 0,
+    "current_history_asof_et": "2026-10-07",
+    "current_terminal_asof_et": "2026-10-07",
+    "latest_completed_nasdaq_session_from_e2e": "2026-10-09"
+  },
+  "confirmed_source_semantics_faults": [
+    {
+      "id": "MC_SCOPE_HASH_COUNT_FALSE_EXACT",
+      "severity": "HIGH",
+      "prior_code": "queue_hash == current queue hash AND queue_total == current total could classify partial 553-symbol resolver as EXACT_QUEUE despite complete 3184-membership being absent",
+      "repaired": true
+    },
+    {
+      "id": "MC_SUBSET_REBIND_SPOOFED_QUEUE_COUNT",
+      "severity": "HIGH",
+      "prior_code": "source count/hash mutated while membership unchanged could pass through SAFE_SUBSET_REBIND branch",
+      "repaired": true
+    }
+  ],
+  "repair": {
+    "files": [
+      "nasdaq-xray/build_mc_provenance_rebind.py",
+      "nasdaq-xray/tests/test_resolver_mc_scope_boundary_20261012.py",
+      ".github/workflows/xray-mc-resolver-scope-boundary-audit.yml"
+    ],
+    "commits": [
+      "ae2dca4820cd9e6e53867a6768ece2ef88eb4cff",
+      "2f2b4142a7e9aee5f42db6f9014f639bcdb1e87f",
+      "2244985f9e219ed599edbaf0f47ddfa687512063",
+      "e6cdeb4de5ae0f7ed4de32beed3f4f39b9a813d7",
+      "c516f10f9bfa4cfe89936109ee1192d3e7b6dfac"
+    ],
+    "failed_first_regression_run_id": 38186014115,
+    "failed_first_regression_reason": "accepted_mutant_queue_count_spoof",
+    "passed_regression_run_id": 38186083731,
+    "passed_regression_conclusion": "SUCCESS",
+    "passed_regression_artifact_id": 11719950782,
+    "passed_regression_zip_sha256": "f41d81669a134c550de3367d7996bde7e5fd2256a8af9e8ff1ef271702545ffd",
+    "negative_mutations_rejected": 14,
+    "safety": "No data promotion; no order; no R92; no GO"
+  },
+  "latest_e2e": {
+    "run_id": 38186106452,
+    "run_conclusion": "FAILURE_AT_EXPLICIT_NO_GO_RELEASE_GATE",
+    "artifact_id": 11719024917,
+    "artifact_zip_sha256": "c2e23875e7c805a13938588ea65ab167716b8c07c0e0a89de498ef00ea1dbf43",
+    "ready_for_current_research_signal": false,
+    "current_mc_authority_count": 0,
+    "source_session_lags": {
+      "MASTER": 0,
+      "PRICE": 0,
+      "TERMINAL": 2
+    },
+    "blockers": [
+      "CURRENT_MC_AUTHORITY_MISSING",
+      "CURRENT_TERMINAL_FROZEN_OR_INCOMPLETE",
+      "IDENTITY_PARTITION_INCOMPLETE",
+      "NOTIFICATION_DEVICE_RECEIPT_NOT_PROVEN",
+      "PRICE_PASS_NON_G9_SOURCE_NOT_RELEASE_AUTHORITY",
+      "SOURCE_EPOCH_NOT_LATEST_COMPLETED_SESSION",
+      "TERMINAL_CURRENT_MC_CHAIN_NOT_PROVEN"
+    ]
+  },
+  "postmc_after_patch": {
+    "run_id": 38186083677,
+    "conclusion": "FAILURE_AT_ACTUAL_CURRENT_MC_AUTHORITY_REQUIRED",
+    "reason": "NO_CURRENT_CANONICAL_MC_MEASUREMENT",
+    "not_evidence_of_new_scope_patch_breakage": true
+  },
+  "remaining": [
+    "Valid 9-Oct PRIMARY MC under the unchanged C4.17 primary-contract must be measured and committed; SEC issuer-shares and Alpaca EOD SHADOW are not PRIMARY.",
+    "Post-MC HISTORY/LEGAL/STAGE1/REGIME/DEEP/Event and FINAL must run against exact same 9-Oct source SHA chain and be verified via artifacts.",
+    "12 master identity UNKNOWN remain until independent primary proof; UNKNOWN is never PASS.",
+    "Strict G9 entitlement remains blocked, phone/device receipt not attested, and account gate lacks authorized read-scope."
+  ],
+  "release": {
+    "corrected_scope_relation_regression": "PASS",
+    "full_universe_e2e_go": false,
+    "actual_current_research_signal_release": false,
+    "any_r92_registered": false,
+    "phone_delivery_verified": false,
+    "live_trade_execution_allowed": false
+  }
+}
