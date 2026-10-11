@@ -13,6 +13,7 @@ import json
 from pathlib import Path
 
 from sina_transport_rescue import choose as choose_transport_rescue
+from sina_state_hash_guard import compute as checksum, seal as seal_state, verify as verify_state_hash
 
 ROOT=Path(__file__).resolve().parent
 SCHEMA="XRAY_ROOT_HISTORY_RECOVERY_MICROAUDIT_V1"
@@ -23,12 +24,6 @@ STATIC={
 }
 TRANSIENT=("SyntaxError:","IndexError:","JSONDecodeError:","TimeoutError:",
            "ConnectionError:","HTTPError:")
-
-def checksum(d):
-    clone=dict(d)
-    clone.pop("state_hash",None)
-    return hashlib.sha256(json.dumps(
-        clone,sort_keys=True,separators=(",",":")).encode("utf-8")).hexdigest()
 
 def audit(state,root,now):
     if now.tzinfo is None:
@@ -58,7 +53,9 @@ def audit(state,root,now):
         raise ValueError("HISTORY_QUEUE_PARTITION_NOT_EXACT")
     if state.get("queue_hash")!=hashlib.sha256("\n".join(q).encode()).hexdigest():
         raise ValueError("HISTORY_QUEUE_HASH_MISMATCH")
-    if state.get("state_hash")!=checksum(state):
+    hash_integrity=verify_state_hash(state)
+    if hash_integrity not in ("PASS_DETERMINISTIC_BLOB_INTERNAL",
+                             "LEGACY_HASH_NOT_INDEPENDENTLY_VERIFIABLE"):
         raise ValueError("HISTORY_STATE_HASH_MISMATCH")
     classified=collections.Counter()
     bystatus=collections.Counter()
@@ -108,6 +105,8 @@ def audit(state,root,now):
         "schema":SCHEMA,
         "asof_et":asof,
         "root_status":root["status"],
+        "source_state_hash_integrity":hash_integrity,
+        "source_state_reproducible_hash":hash_integrity=="PASS_DETERMINISTIC_BLOB_INTERNAL",
         "input_symbols":len(q),
         "unknown_count":unknown,
         "known_status_counts":dict(sorted(bystatus.items())),
@@ -146,10 +145,7 @@ def selftest():
        "queue":queue,"queue_total":3,"cursor":3,"results":rows,
        "queue_hash":hashlib.sha256("\n".join(queue).encode()).hexdigest(),
        "unknown_count":2,"pending_retry":0}
-    def seal(d):
-        d["state_hash"]=checksum(d)
-        return d
-    seal(s)
+    seal_state(s)
     r={"schema":"XRAY_ORCHESTRATOR_V1","asof_et":"2026-10-09",
        "execution":"NONE","real_money":"NO-GO",
        "status":"PARTIAL_HISTORY","unknown_count":2,
@@ -174,14 +170,19 @@ def selftest():
     for mutation,code in cases:
         x,y=copy.deepcopy(s),copy.deepcopy(r)
         mutation(x,y)
+        if code!="HISTORY_STATE_HASH_MISMATCH":
+            seal_state(x)  # semantics tested independently from integrity guard
         try:audit(x,y,now)
         except ValueError as ex:
             assert code in str(ex),(code,str(ex))
         else:raise AssertionError("INVALID_HISTORY_MUTATION_WAS_ACCEPTED:"+code)
+    old=copy.deepcopy(s)
+    old.pop("state_hash_version")
+    assert audit(old,r,now)["source_state_hash_integrity"]=="LEGACY_HASH_NOT_INDEPENDENTLY_VERIFIABLE"
     try:audit(s,r,now.replace(tzinfo=None))
     except ValueError:pass
     else:raise AssertionError("NAIVE_CLOCK_ACCEPTED")
-    print("XRAY_ROOT_HISTORY_RECOVERY_SELFTEST=PASS_10_NEGATIVES_REAL_TRANSIENT_RESCUE_AND_NO_ALPHA")
+    print("XRAY_ROOT_HISTORY_RECOVERY_SELFTEST=PASS_10_NEGATIVES_LEGACY_HASH_DIAGNOSIS_REAL_TRANSIENT_RESCUE_NO_AL")
 
 def main():
     p=argparse.ArgumentParser()
@@ -200,6 +201,7 @@ def main():
           str(d["independent_history_or_asof_proof_required_count"]))
     print("XRAY_ROOT_HISTORY_UNKNOWN_COUNTS="+
           json.dumps(d["unknown_reason_counts"],sort_keys=True))
+    print("XRAY_ROOT_HISTORY_STATE_HASH_INTEGRITY="+d["source_state_hash_integrity"])
     print("XRAY_ROOT_HISTORY_ALPHA=NOT_AUTHORIZED")
 
 if __name__=="__main__":main()
