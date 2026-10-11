@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/p0_split_factor_full_260_replay_shadow.py"
+      - "nasdaq-xray/research/p0_11_split_events_official_sec_issuer_registry_20261012.json"
       - ".github/workflows/xray-p0-split-factor-full-260-replay.yml"
   workflow_dispatch:
 permissions:
@@ -54,6 +55,9 @@ jobs:
           d=json.loads(p.read_text())
           assert d["schema"]=="XRAY_P0_11_SPLIT_FACTOR_FULL_260_MATHEMATICAL_REPLAY_SHADOW_V1"
           assert d["full_515_scope_bound"]==515 and d["split_restatement_cohort"]==11
+          assert d["issuer_SEC_source_ratio_register_verified"]+d["issuer_SEC_source_ratio_register_unresolved"]==11
+          assert d["SEC_document_source_urls_machine_fetched_verified"] is False
+          assert d["SEC_filing_acceptance_times_independently_verified"] is False
           assert d["verified_split_factor_math"]+d["unresolved_split_factor_math"]==11
           assert len(d["per_symbol_status"])==11
           assert d["source_price_blob_sha"]==subprocess.check_output([

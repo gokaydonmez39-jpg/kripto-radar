@@ -126,6 +126,55 @@ def verify_one(symbol,raw,split,split_events,daily,weeks,asof):
             "price_volume_factor_math_pass":True,
             "issuer_official_CA_independent":False}
 
+def official_registry_check(registry, expected_symbols, alpaca_events_by_symbol):
+    """Exact 12 event date+share-factor parity with issuer SEC source registry.
+
+    The original SEC documents were verified externally and their references
+    are pinned in Git. This checks the TRANSCRIBED factors against live vendor
+    data. It does NOT claim all SEC bytes were fetched and accepted timestamps
+    independently proved by this job.
+    """
+    require(type(registry) is dict and registry.get("schema")==
+            "XRAY_P0_11_SPLIT_OFFICIAL_SEC_ISSUER_SOURCE_REGISTRY_V1",
+            "OFFICIAL_REGISTRY_SCHEMA")
+    require(registry.get("decision_asof")=="2026-10-09"
+            and registry.get("source_file_bodies_and_SHA256_downloaded_attested") is False
+            and registry.get("SEC_accepted_filing_times_all_events_machine_attested") is False
+            and registry.get("current_C417_PRIMARY_MC_created")==0
+            and registry.get("GO") is False
+            and registry.get("execution")=="NONE"
+            and registry.get("real_money")=="NO-GO",
+            "OFFICIAL_REGISTRY_PIT_AUTHORITY_FALSE")
+    entries=registry.get("events")
+    require(type(entries) is list and len(entries)==12,
+            "OFFICIAL_12_EVENT_SCOPE")
+    documented={}
+    for item in entries:
+        require(type(item) is dict,"OFFICIAL_EVENT_TYPE")
+        sym=item.get("symbol");day=item.get("process_date")
+        require(type(sym) is str and sym in expected_symbols
+                and type(day) is str and len(day)==10 and
+                "2025-09-29"<=day<="2026-10-09",
+                "OFFICIAL_EVENT_EXACT_SCOPE")
+        url=item.get("document")
+        require(type(url) is str and
+                url.startswith("https://www.sec.gov/Archives/edgar/data/")
+                and item.get("type") in ("forward_split","reverse_split"),
+                "OFFICIAL_SEC_ARCHIVE_OR_EVENT_TYPE")
+        factor=dec(item.get("factor_new_over_old"))
+        documented.setdefault(sym,[]).append((day,factor))
+    require(set(documented)==set(expected_symbols)
+            and len(documented["SNEX"])==2
+            and all(len(v)==1 for sym,v in documented.items() if sym!="SNEX"),
+            "OFFICIAL_EVENT_SYMBOL_OR_MULTIPLE_SPLIT_GAP")
+    require(set(alpaca_events_by_symbol)==set(expected_symbols),
+            "ALPACA_EVENT_SET_NOT_11")
+    statuses={}
+    for sym in expected_symbols:
+        statuses[sym]=(sorted(documented[sym])==
+                       sorted(alpaca_events_by_symbol[sym]))
+    return statuses
+
 def audit(dual,fetch_bars,fetch_events):
     price=json.loads(PRICE.read_text());master=json.loads(MASTER.read_text())
     asof,targets,daily,weeks=scope(price,master)
@@ -149,18 +198,30 @@ def audit(dual,fetch_bars,fetch_events):
             set(changed).issubset(set(targets)-{"QQQ"}) and
             all(dual["source_symbol_statuses"][sym].get("dual_classification")==SPLIT
                 for sym in changed),"EXACT_11_NUMERIC_RESTATEMENT_SCOPE")
+    official=json.loads((Path(__file__).resolve().parent/
+       "research/p0_11_split_events_official_sec_issuer_registry_20261012.json").read_text())
     outcome={}
+    event_matched={}
+    all_split_events={}
     for symbol in changed:
         try:
             original=fetch_bars(symbol,daily[0],asof,"raw")
             adjusted=fetch_bars(symbol,daily[0],asof,"split")
             announces=events(symbol,daily[0],asof,fetch_events)
+            all_split_events[symbol]=announces
             outcome[symbol]=verify_one(symbol,original,adjusted,announces,daily,weeks,asof)
         except (ValueError,RuntimeError,TypeError,KeyError,OverflowError,InvalidOperation):
             outcome[symbol]={"classification":"UNKNOWN_SPLIT_FACTOR_CA_OR_BAR_PIT",
                              "price_volume_factor_math_pass":False,
                              "issuer_official_CA_independent":False}
+    # All 11 symbols must be present before SEC source-registry comparison.
+    # Any missing/invalid Alpaca feed remains local UNKNOWN, not global PASS.
+    if set(all_split_events)==set(changed):
+        event_matched=official_registry_check(official,changed,all_split_events)
+    else:
+        event_matched={sym:False for sym in changed}
     passed=[s for s,x in outcome.items() if x["price_volume_factor_math_pass"]]
+    independently_documented=[sym for sym in passed if event_matched[sym]]
     return {"schema":SCHEMA,"asof_et":asof,
             "source_dual_raw_split_run":38178676524,
             "source_price_blob_sha":blob_sha(PRICE),
@@ -169,6 +230,10 @@ def audit(dual,fetch_bars,fetch_events):
             "full_515_scope_bound":515,
             "split_restatement_cohort":len(changed),
             "verified_split_factor_math":len(passed),
+        "issuer_SEC_source_ratio_register_verified":len(independently_documented),
+        "issuer_SEC_source_ratio_register_unresolved":len(changed)-len(independently_documented),
+        "SEC_document_source_urls_machine_fetched_verified":False,
+        "SEC_filing_acceptance_times_independently_verified":False,
             "unresolved_split_factor_math":len(changed)-len(passed),
             "per_symbol_status":{s:{"classification":x["classification"],
                     "price_volume_factor_math_pass":x["price_volume_factor_math_pass"]}
@@ -221,7 +286,23 @@ def selftest():
     negative("CA_EX_DATE",lambda:re(dict(test_event,ex_date="2026-10-09")))
     negative("CA_RATE_ZERO",lambda:re(dict(test_event,new_rate=0)))
     negative("CA_UNKNOWN_GROUP",lambda:re(test_event,group="UNKNOWN_EVENT"))
-    print("XRAY_P0_11_SPLIT_RATIO_REPLAY_SELFTEST=PASS_4_POSITIVE_13_NEGATIVE_PYTHON_O_SAFE_NO_PRIMARY")
+    register=json.loads((Path(__file__).resolve().parent/
+        "research/p0_11_split_events_official_sec_issuer_registry_20261012.json").read_text())
+    expected={}
+    for item in register["events"]:
+        expected.setdefault(item["symbol"],[]).append(
+            (item["process_date"],dec(item["factor_new_over_old"])))
+    require(sum(official_registry_check(register, sorted(expected),expected).values())==11,
+            "OFFICIAL_REGISTRY_COMPLETE_POSITIVE")
+    tamper=json.loads(json.dumps(register))
+    tamper["events"][0]["factor_new_over_old"]="1.2"
+    require(not all(official_registry_check(tamper,sorted(expected),expected).values()),
+            "OFFICIAL_VENDOR_FALSE_FACTOR_MATCH")
+    tamper=json.loads(json.dumps(register))
+    tamper["events"][0]["document"]="https://wrong.example/SEC"
+    negative("UNTRUSTED_OFFICIAL_URL",lambda:
+             official_registry_check(tamper,sorted(expected),expected))
+    print("XRAY_P0_11_SPLIT_RATIO_REPLAY_SELFTEST=PASS_5_POSITIVE_15_NEGATIVE_PYTHON_O_SAFE_NO_PRIMARY")
 
 def main():
     ap=argparse.ArgumentParser()

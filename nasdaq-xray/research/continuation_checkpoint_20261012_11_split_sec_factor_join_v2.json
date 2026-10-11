@@ -1,0 +1,13 @@
+{
+  "schema": "XRAY_20261012_11_SPLIT_SEC_ISSUER_RATIO_V2",
+  "before_head": "00c26611febe2523f9736faeeb99e20de3d2e570",
+  "registry_path": "nasdaq-xray/research/p0_11_split_events_official_sec_issuer_registry_20261012.json",
+  "purpose": "Compare all 12 issuer SEC-listed split ratios and 11 exact issuer-date groups to real Alpaca CA split factors and 260-session raw/split math, no vendor raw persist",
+  "doc_url_bodies_not_independently_retrieved_in_job": true,
+  "SEC_acceptance_PIT_not_witnessed_all": false,
+  "produces_PRIMARY_MC": false,
+  "produces_HISTORY_PASS": false,
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "ci": "PENDING"
+}
