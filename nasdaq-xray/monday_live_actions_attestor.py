@@ -78,6 +78,53 @@ def verify_response(rows):
         raise RuntimeError("GITHUB_WORKFLOW_RUNS_UNAVAILABLE")
     return rows["workflow_runs"]
 
+def workflow_inventory(rows):
+    """Require unique actively enabled workflows, not only historical green jobs."""
+    if not isinstance(rows,list):
+        raise RuntimeError("WORKFLOW_INVENTORY_UNAVAILABLE")
+    by_path={}
+    for row in rows:
+        if not isinstance(row,dict) or not isinstance(row.get("path"),str):
+            raise RuntimeError("WORKFLOW_INVENTORY_ROW_INVALID")
+        path=row["path"]
+        if path in by_path:
+            raise RuntimeError("WORKFLOW_INVENTORY_DUPLICATE_PATH")
+        by_path[path]=row
+    found={}
+    blockers=[]
+    for key,basename in WORKFLOWS.items():
+        expected_path=".github/workflows/"+basename
+        row=by_path.get(expected_path)
+        if row is None:
+            found[key]={"state":"MISSING","path":expected_path}
+            blockers.append(key+":MISSING")
+            continue
+        state=row.get("state")
+        if state!="active":
+            blockers.append(key+":"+str(state))
+        found[key]={"id":row.get("id"),"state":state,"path":expected_path}
+    return {"all_required_active":not blockers,"blockers":blockers,
+            "required":found,"total_enumerated":len(rows)}
+
+def fetch_workflow_inventory(token):
+    first=github("/actions/workflows?per_page=100&page=1",token)
+    total=first.get("total_count")
+    rows=first.get("workflows")
+    if (type(total) is not int or total<0 or total>1000
+        or not isinstance(rows,list)):
+        raise RuntimeError("WORKFLOW_INVENTORY_PAGINATION_UNVERIFIED")
+    page=2
+    while len(rows)<total:
+        next_page=github("/actions/workflows?per_page=100&page="+str(page),token)
+        chunk=next_page.get("workflows")
+        if not isinstance(chunk,list) or not chunk or page>11:
+            raise RuntimeError("WORKFLOW_INVENTORY_PAGE_MISSING")
+        rows+=chunk
+        page+=1
+    if len(rows)!=total:
+        raise RuntimeError("WORKFLOW_INVENTORY_COUNT_MISMATCH")
+    return workflow_inventory(rows)
+
 def selftest():
     date=dt.datetime(2026,10,12,4,5,tzinfo=UTC)
     run=lambda id,date,status="completed",conclusion="success":{
@@ -103,6 +150,21 @@ def selftest():
         try:verify_response(value)
         except RuntimeError:pass
         else:raise AssertionError("INVALID_GITHUB_RESPONSE_ACCEPTED")
+    good=[{"path":".github/workflows/"+v,"id":i+1,"state":"active"}
+          for i,v in enumerate(WORKFLOWS.values())]
+    assert workflow_inventory(good)["all_required_active"] is True
+    assert len(workflow_inventory(good)["required"])==8
+    disabled=[dict(row) for row in good]
+    disabled[2]["state"]="disabled_manually"
+    assert workflow_inventory(disabled)["all_required_active"] is False
+    assert workflow_inventory(disabled)["blockers"]==["post_mc:disabled_manually"]
+    assert workflow_inventory(good[1:])["blockers"]==["root:MISSING"]
+    try:workflow_inventory(good+good[:1])
+    except RuntimeError:pass
+    else:raise AssertionError("DUPLICATE_WORKFLOW_INVENTORY_ACCEPTED")
+    try:workflow_inventory(None)
+    except RuntimeError:pass
+    else:raise AssertionError("MISSING_WORKFLOW_INVENTORY_ACCEPTED")
     try:summarize(dt.datetime(2026,10,12,4,5),"root",[])
     except ValueError:pass
     else:raise AssertionError("NAIVE_CLOCK_ACCEPTED")
@@ -133,6 +195,7 @@ def main():
     token=os.environ.get("GITHUB_TOKEN","")
     head_a=github("/git/ref/heads/main",token)["object"]["sha"]
     now=dt.datetime.now(UTC)
+    inventory=fetch_workflow_inventory(token)
     entries={}
     for key,name in WORKFLOWS.items():
         runs=verify_response(github(
@@ -144,10 +207,17 @@ def main():
     result={
         "schema":SCHEMA,"generated_at_utc":now.isoformat(),"main_sha":head_a,
         "main_stable_during_observation":True,
+        "workflow_inventory":inventory,
         "execution_witnesses":entries,
+        # Do not call a prior green job current when a newer failure, queued
+        # root or new main commit supersedes its execution witness.
         "root_fresh_weekday_job_only":bool(
             entries["root"]["last_success_age_seconds"] is not None
             and -60<=entries["root"]["last_success_age_seconds"]<=4500
+            and entries["root"]["status"]=="completed"
+            and entries["root"]["conclusion"]=="success"
+            and entries["root"]["head_sha"]==head_a
+            and inventory["all_required_active"]
         ),
         "scheduler_ready_for_alpha_attested":False,
         "full_end_to_end_research_attested":False,
@@ -162,5 +232,10 @@ def main():
           str(result["root_fresh_weekday_job_only"]).lower())
     print("XRAY_MONDAY_USER_DELIVERY_RECEIPT=UNVERIFIED")
     print("XRAY_MONDAY_LIVE_ACTIONS_NOT_RESEARCH_GO=TRUE")
+    print("XRAY_MONDAY_WORKFLOW_INVENTORY="+
+          ("ALL_REQUIRED_ACTIVE" if inventory["all_required_active"]
+           else "DISABLED_OR_MISSING:"+",".join(inventory["blockers"])))
+    if not inventory["all_required_active"]:
+        raise SystemExit("XRAY_MONDAY_CRITICAL_WORKFLOW_DISABLED_OR_MISSING")
 
 if __name__=="__main__":main()
