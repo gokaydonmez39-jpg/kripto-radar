@@ -1,0 +1,151 @@
+{
+  "schema": "XRAY_C418_SEC_12_IDENTITY_RESEARCH_V1",
+  "asof_et": "2026-10-09",
+  "source": "SEC_EDGAR_OFFICIAL_PUBLIC_DOCUMENTS",
+  "source_scope": "issuer_identity_at_filing_not_same_asof_listing_or_share_class",
+  "status": "RESEARCH_WITNESS_ONLY_NO_CANONICAL_PIT_UPGRADE",
+  "entries_count": 12,
+  "production_authority": false,
+  "can_change_MASTER": false,
+  "can_create_PRIMARY": false,
+  "can_create_HISTORY_PASS": false,
+  "can_register_R92": false,
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "examples_of_structural_risk": {
+    "IPXG": "SEC 2026-09-21 filing describes Inflection Point VII as formerly Columbus Circle Capital Corp II; ticker change effective 2026-08-27. Validate effective-dated mapping, class and corporate actions.",
+    "FACT": "SEC 2025 filing SIC 6770, 2026-03 filing SIC 3728; SIC is time-varying and not a reliable standalone SPAC pass/fail test.",
+    "BSAA": "SEC 2026-05 filing SIC 8200; ordinary company name is not standalone issuer status proof."
+  },
+  "required_to_clear_unknown": [
+    "same_asof_exchange_ticker_CIK_class_attestation",
+    "issuer_continuity_through_merger_and_rename",
+    "SEC_filing_acceptance_before_ASOF",
+    "asof_valid_corporate_actions",
+    "PIT_listing_status",
+    "official_issuer_classification"
+  ],
+  "entries": [
+    {
+      "ticker": "ALIS",
+      "cik": "0002026767",
+      "issuer": "Calisa Acquisition Corp",
+      "sec_filing_url": "https://www.sec.gov/Archives/edgar/data/2026767/000149315226023852/form10-q.htm",
+      "official_filing_exists": true,
+      "sec_reference_identity_only": true,
+      "same_asof_pit_class_verified": false,
+      "canonical_status": "UNKNOWN"
+    },
+    {
+      "ticker": "BSAA",
+      "cik": "0002051587",
+      "issuer": "BEST SPAC I Acquisition Corp.",
+      "sec_filing_url": "https://www.sec.gov/Archives/edgar/data/2051587/000121390026059046/0001213900-26-059046-index.htm",
+      "official_filing_exists": true,
+      "sec_reference_identity_only": true,
+      "same_asof_pit_class_verified": false,
+      "canonical_status": "UNKNOWN"
+    },
+    {
+      "ticker": "FACT",
+      "cik": "0002028935",
+      "issuer": "FACT II Acquisition Corp.",
+      "sec_filing_url": "https://www.sec.gov/Archives/edgar/data/2028935/000121390026034254/0001213900-26-034254-index.htm",
+      "official_filing_exists": true,
+      "sec_reference_identity_only": true,
+      "same_asof_pit_class_verified": false,
+      "canonical_status": "UNKNOWN"
+    },
+    {
+      "ticker": "FVN",
+      "cik": "0002010653",
+      "issuer": "Future Vision II Acquisition Corp.",
+      "sec_filing_url": "https://www.sec.gov/Archives/edgar/data/2010653/000182912626005285/futurevision2_10q.htm",
+      "official_filing_exists": true,
+      "sec_reference_identity_only": true,
+      "same_asof_pit_class_verified": false,
+      "canonical_status": "UNKNOWN"
+    },
+    {
+      "ticker": "HCAC",
+      "cik": "0002079013",
+      "issuer": "Hall Chadwick Acquisition Corp.",
+      "sec_filing_url": "https://www.sec.gov/Archives/edgar/data/2079013/000182912626005649/hallchadwickacq_10q.htm",
+      "official_filing_exists": true,
+      "sec_reference_identity_only": true,
+      "same_asof_pit_class_verified": false,
+      "canonical_status": "UNKNOWN"
+    },
+    {
+      "ticker": "IBAC",
+      "cik": "0001998781",
+      "issuer": "IB Acquisition Corp.",
+      "sec_filing_url": "https://www.sec.gov/Archives/edgar/data/1998781/000149315226023743/form10-q.htm",
+      "official_filing_exists": true,
+      "sec_reference_identity_only": true,
+      "same_asof_pit_class_verified": false,
+      "canonical_status": "UNKNOWN"
+    },
+    {
+      "ticker": "IPXG",
+      "cik": "0002088805",
+      "issuer": "Inflection Point Acquisition Corp. VII",
+      "sec_filing_url": "https://www.sec.gov/Archives/edgar/data/2088805/000121390026101659/ea0306061-8k425_inflection7.htm",
+      "official_filing_exists": true,
+      "sec_reference_identity_only": true,
+      "same_asof_pit_class_verified": false,
+      "canonical_status": "UNKNOWN"
+    },
+    {
+      "ticker": "MACI",
+      "cik": "0002016221",
+      "issuer": "Melar Acquisition Corp. I",
+      "sec_filing_url": "https://www.sec.gov/Archives/edgar/data/2016221/000121390026089243/ea0301493-10q_melar1.htm",
+      "official_filing_exists": true,
+      "sec_reference_identity_only": true,
+      "same_asof_pit_class_verified": false,
+      "canonical_status": "UNKNOWN"
+    },
+    {
+      "ticker": "MCGA",
+      "cik": "0002064658",
+      "issuer": "Yorkville Acquisition Corp.",
+      "sec_filing_url": "https://www.sec.gov/Archives/edgar/data/2064658/000110465926037697/mcga-20251231x10k.htm",
+      "official_filing_exists": true,
+      "sec_reference_identity_only": true,
+      "same_asof_pit_class_verified": false,
+      "canonical_status": "UNKNOWN"
+    },
+    {
+      "ticker": "MMTX",
+      "cik": "0002077033",
+      "issuer": "Miluna Acquisition Corp",
+      "sec_filing_url": "https://www.sec.gov/Archives/edgar/data/2077033/000149315226023796/form10-q.htm",
+      "official_filing_exists": true,
+      "sec_reference_identity_only": true,
+      "same_asof_pit_class_verified": false,
+      "canonical_status": "UNKNOWN"
+    },
+    {
+      "ticker": "NBRG",
+      "cik": "0001918414",
+      "issuer": "Newbridge Acquisition Limited",
+      "sec_filing_url": "https://www.sec.gov/Archives/edgar/data/1918414/000121390026086733/ea0300911-10q_newbridge.htm",
+      "official_filing_exists": true,
+      "sec_reference_identity_only": true,
+      "same_asof_pit_class_verified": false,
+      "canonical_status": "UNKNOWN"
+    },
+    {
+      "ticker": "WTG",
+      "cik": "0002053927",
+      "issuer": "Wintergreen Acquisition Corp.",
+      "sec_filing_url": "https://www.sec.gov/Archives/edgar/data/2053927/000182912626005182/wintergreenacq_10q.htm",
+      "official_filing_exists": true,
+      "sec_reference_identity_only": true,
+      "same_asof_pit_class_verified": false,
+      "canonical_status": "UNKNOWN"
+    }
+  ]
+}
