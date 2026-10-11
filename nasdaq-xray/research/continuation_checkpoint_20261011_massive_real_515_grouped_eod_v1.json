@@ -1,0 +1,90 @@
+{
+  "schema": "XRAY_20261011_MASSIVE_GROUPED_REAL_API_515_SCOPE_READBACK_V1",
+  "source_main_sha": "d0bd6cf4dd9c6f8804fc09c08632490a0740e470",
+  "source_asof_et": "2026-10-09",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "live_interactive_readback": {
+    "provider": "MASSIVE_CONNECTED_READ_ONLY_TOOL",
+    "endpoint": "GET /v2/aggs/grouped/locale/us/market/stocks/2026-10-09",
+    "query_variants": [
+      {
+        "adjusted": true,
+        "include_otc": false
+      },
+      {
+        "adjusted": false,
+        "include_otc": false
+      }
+    ],
+    "observed_rows_each": 12598,
+    "distinct_symbols_each": 12598,
+    "ohlcv_numeric_valid_each": 12594,
+    "known_numeric_nonpositive_outside_current_pass": [
+      "UPGR",
+      "ZBZX",
+      "ZTEST",
+      "ZTST"
+    ],
+    "timestamp_ms": "1791576000000",
+    "timestamp_utc": "2026-10-09T20:00:00Z",
+    "adjusted_unadjusted_shared_rows": 12598,
+    "adjusted_unadjusted_ohlcv_different_rows_on_this_day": 0,
+    "full_universe_session_or_corporate_actions_pit_verified": false
+  },
+  "canonical_exact_scope": {
+    "price_blob_sha": "6f3f68fff0897d68f200ad3621c51a5071494714",
+    "price_asof_et": "2026-10-09",
+    "price_pass_symbols": 514,
+    "price_pass_all_found_in_adjusted": true,
+    "price_pass_all_found_in_unadjusted": true,
+    "price_pass_numeric_valid_in_both": 514,
+    "missing_price_pass": 0,
+    "history_targets_include_QQQ": 515,
+    "history_unadjusted_targets_found": 515,
+    "history_unadjusted_targets_numeric_valid": 515,
+    "history_missing_targets": 0
+  },
+  "cost_and_rights": {
+    "provider_basic_endpoint_one_request_per_market_day": true,
+    "source_price": "https://massive.com/pricing?product=stocks",
+    "source_reference_date_pit": "https://massive.com/docs/rest/stocks/tickers/ticker-overview",
+    "source_market_cap_method": "https://massive.com/knowledge-base/categories/reference-data",
+    "rights_for_unattended_GitHub_runner": "UNVERIFIED",
+    "private_cache_storage_rights": "UNVERIFIED",
+    "source_license_digest": null,
+    "live_api_key_in_GitHub": "UNATTESTED",
+    "full_260_sessions_verified": false,
+    "full_52_weeks_verified": false,
+    "unadjusted_corporate_actions_historical_reconciliation": "NOT_PROVEN",
+    "ticker_reference_date_sec_acceptance_pit": "NOT_PROVEN"
+  },
+  "data_handling": {
+    "raw_vendor_prices_committed": false,
+    "raw_bars_public": false,
+    "store": "EPHEMERAL_CONNECTED_MASSIVE_WORKSPACE_ONLY",
+    "persistence": "COUNTS_SHA_TIMESTAMPS_AND_SAFE_METADATA_ONLY"
+  },
+  "ci_hardening": {
+    "massive_mc_workflow_commit": "dd4520b0128a569f2b428da091728fea33d03b44",
+    "run": 38174370324,
+    "conclusion": "success",
+    "sha_fence_test": "PASS_2_POSITIVE_4_NEGATIVE_PYTHON_O_SAFE",
+    "massive_grouped_twelve_history_commit": "d0bd6cf4dd9c6f8804fc09c08632490a0740e470",
+    "massive_run": 38174587581,
+    "twelve_run": 38174587633,
+    "tests": "PASS_2_POSITIVE_7_NEGATIVE_PYTHON_O_SAFE",
+    "massive_live_runner": "BLOCKED_RIGHTS_OR_KEY",
+    "twelve_live_runner": "BLOCKED_SOURCE_LICENSE_OR_KEY"
+  },
+  "new_sec_full_run_38173716522": "IN_PROGRESS_AT_PRIOR_READBACK",
+  "mc_primary_proven": 0,
+  "history_c417_pass_created": false,
+  "can_create_primary": false,
+  "can_register_R92": false,
+  "research_go": "NO-GO",
+  "decision": "CONTINUE_LICENSE_AND_ACTUAL_260_SESSION_VALIDATION; DO_NOT_DECLARE_GO_FROM_SINGLE_MARKET_DAY"
+}
