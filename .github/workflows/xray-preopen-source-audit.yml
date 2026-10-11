@@ -48,7 +48,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
           fetch-depth: 1
@@ -65,7 +65,7 @@ jobs:
             exit 2
           }
           echo "XRAY_PREOPEN_CURRENT_MAIN_SHA_EXACT=PASS"
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: "3.12"
       - name: Install pinned official NASDAQ calendar for dynamic opening proof
@@ -235,7 +235,7 @@ jobs:
           print("XRAY_PREOPEN_OPERATIONAL_TRUTH="+r["status"])
           PY
       - name: Upload public operational counts only
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: xray-preopen-source-readiness-v1
           path: |
