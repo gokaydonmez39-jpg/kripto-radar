@@ -3,7 +3,7 @@ name: XRAY MC Zero-Dollar Successor Shadow Audit
 on:
   workflow_dispatch:
   push:
-    branches: [main]
+    branches: [main, fix/c417-zero-dollar-mc-shadow-pit-accounting-20261011]
     paths:
       - 'nasdaq-xray/mc_zero_dollar_successor_shadow_audit.py'
       - 'nasdaq-xray/canonical_current_terminal.json'
@@ -17,7 +17,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: xray-mc-zero-dollar-successor-shadow-audit
+  group: xray-mc-zero-dollar-successor-shadow-audit-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
