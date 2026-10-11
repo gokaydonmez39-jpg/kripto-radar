@@ -1,0 +1,135 @@
+{
+  "schema": "XRAY_20261011_REAL_PROVIDER_AND_CI_POSTHARDEN_VERIFIED_V3",
+  "parent_live_main": "11cc94bd190bdb95d6542bc95b3f32212ac12511",
+  "asof_et": "2026-10-09",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "verified_ci": [
+    {
+      "run_id": 38173716522,
+      "source_sha": "7395feb3f4fdace73c328d2604f791abb3a9869a",
+      "status": "success",
+      "role": "LIVE_SEC_PRICE_PASS_514_STRICT_SOURCE_RELEASE",
+      "release": "VERIFIED_SHADOW_ONLY_514_NORMAL_AND_OPTIMIZED_PYTHON",
+      "primary_mc": 0,
+      "artifact_id": 11715069202,
+      "artifact_sha256": "sha256:1c6aeea90390efb1fd401aa3803f609b8367067009224e34aac136952363dc56"
+    },
+    {
+      "run_id": 38174370324,
+      "source_sha": "dd4520b0128a569f2b428da091728fea33d03b44",
+      "status": "success",
+      "role": "MASSIVE_MC_SHADOW_SOURCE_EPOCH",
+      "tests": "2_POSITIVE_4_NEGATIVE_NORMAL_OPTIMIZED",
+      "live_source": "BLOCKED_NONDISPLAY_LICENSE_UNVERIFIED"
+    },
+    {
+      "run_id": 38174587581,
+      "source_sha": "d0bd6cf4dd9c6f8804fc09c08632490a0740e470",
+      "status": "success",
+      "role": "MASSIVE_GROUPED_HISTORY_SHA_PINS",
+      "tests": "2_POSITIVE_7_NEGATIVE_NORMAL_OPTIMIZED",
+      "live_source": "BLOCKED_RIGHTS_OR_KEY"
+    },
+    {
+      "run_id": 38174587633,
+      "source_sha": "d0bd6cf4dd9c6f8804fc09c08632490a0740e470",
+      "status": "success",
+      "role": "TWELVE_HISTORY_SHA_PINS",
+      "tests": "2_POSITIVE_7_NEGATIVE_NORMAL_OPTIMIZED",
+      "live_source": "BLOCKED_SOURCE_LICENSE_OR_KEY"
+    },
+    {
+      "run_id": 38175177080,
+      "source_sha": "1c9cb5fd0e9a5b229b7b995e801a24acfcaae4d8",
+      "status": "success",
+      "role": "DAILY_CROSSFEED_INITIAL_SOURCE_NORMALIZATION",
+      "tests": "3_POSITIVE_10_NEGATIVE_NORMAL_OPTIMIZED"
+    },
+    {
+      "run_id": 38175270958,
+      "source_sha": "11cc94bd190bdb95d6542bc95b3f32212ac12511",
+      "status": "success",
+      "role": "DAILY_CROSSFEED_SYNTHETIC_ONLY_FIX",
+      "tests": "3_POSITIVE_10_NEGATIVE_NORMAL_OPTIMIZED",
+      "real_vendor_prices_in_current_fixture": false
+    },
+    {
+      "run_id": 38174712267,
+      "source_sha": "d0bd6cf4dd9c6f8804fc09c08632490a0740e470",
+      "status": "success",
+      "role": "SEC_ALPACA_EXACT_SCOPED_INTERSECTION",
+      "counts": {
+        "technical_class_ca_pit_queue": 341,
+        "history_observed_sec_unknown": 156,
+        "history_short_with_shares": 5,
+        "both_source_unresolved": 12
+      }
+    },
+    {
+      "run_id": 38174712239,
+      "source_sha": "d0bd6cf4dd9c6f8804fc09c08632490a0740e470",
+      "status": "success",
+      "role": "SEC_TRANSIENT_ONLY_RETRY",
+      "retry_eligible": 0,
+      "retry_attempted": 0
+    }
+  ],
+  "data_observations": {
+    "price_pass_scope": 514,
+    "master_pass": 3184,
+    "master_unknown": 12,
+    "sec_shares_shadow": 346,
+    "sec_unknown": 167,
+    "sec_transport_unknown": 1,
+    "mc_primary": 0,
+    "passive_mc_fallback_watch_research_only": 475,
+    "passive_mc_conservative_fail": 10,
+    "passive_mc_unresolved": 29,
+    "massive_20261009_us_symbols": 12598,
+    "massive_exact_514_OHLCV_valid": 514,
+    "massive_exact_515_with_QQQ_OHLCV_valid": 515,
+    "massive_crossprovider_sample": [
+      "AAPL",
+      "PLTR",
+      "OZK"
+    ],
+    "crossprovider_OHLC_equal": 12,
+    "crossprovider_OHLC_total": 12,
+    "crossprovider_volume_unequal": 3,
+    "grouped_adjusted_and_unadjusted_match_for_one_asof": true,
+    "all_260_sessions_52_weeks_unverified": true,
+    "volume_trade_conditions_unverified": true
+  },
+  "law_and_provider": {
+    "massive_market_data_terms": "https://massive.com/legal/market-data-terms-of-service",
+    "massive_normal_plan_forbids_unlicensed_non_display_strategy_use": true,
+    "independent_runner_non_display_and_retention_rights_attested": false,
+    "interactive_connected_api_does_not_authorize_runner": true,
+    "source_data_license_created": false,
+    "market_cap_historical_filing_acceptance_pit_unresolved": true
+  },
+  "diagnostic_source": "https://massive.com/knowledge-base/article/why-is-massives-market-data-different-from-other-providers",
+  "x_public_primary_research": "SEARCH_ATTEMPTED_X_ACCESS_RESTRICTED_TWEET_CLAIMS_NOT_USED",
+  "risk": "public_Git_commit_1c9cb5f_test_initially_included_sample_real_vendor_BARS_AND_HISTORICAL_COMMIT_REMAINS_IMMUTABLE;CURRENT_CODE_REPLACED_WITH_SYNTHETIC_TEST_ONLY_BY_11cc94b",
+  "raw_prices_in_current_main_test": false,
+  "remaining_blockers": [
+    "C417_CURRENT_PRIMARY_MC_ZERO",
+    "PROVIDER_UNATTENDED_NONDISPLAY_AND_PRIVATE_RETENTION_LICENSE_NOT_PROVEN",
+    "SEC_PIT_SHARE_CLASS_CORP_ACTION_JOIN_NOT_PROVEN",
+    "FULL_260_DAILY_52_WEEKS_LAWFUL_HISTORY_NOT_PROVEN",
+    "CROSSPROVIDER_VOLUME_DV30_SEMANTIC_UNVERIFIED",
+    "MASTER_12_UNKNOWN",
+    "CANONICAL_TERMINAL_STILL_ASOF_2026-10-07_NOT_2026-10-09",
+    "G9_BLOCKED_ENTITLEMENT",
+    "ACCOUNT_BOOTSTRAP_CREDENTIALS_REQUIRED",
+    "NO_REGISTERED_R92_AND_NO_INDEPENDENT_DEVICE_RECEIPT"
+  ],
+  "real_money_authorized": false,
+  "research_only_mode_go": false,
+  "true_full_go": false,
+  "new_licensed_vendor_data_persisted_to_checkpoint": false
+}
