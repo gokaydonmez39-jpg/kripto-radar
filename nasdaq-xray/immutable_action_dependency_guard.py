@@ -63,6 +63,11 @@ def verify(path: str, contents: str) -> int:
         if ("git rev-parse HEAD" not in contents or "$GITHUB_SHA" not in contents
                 or "XRAY_SEC_TRANSPORT_CHECKOUT_EXACT=PASS" not in contents):
             raise ValueError("SEC_CHECKOUT_INVOCATION_SHA_FENCE_MISSING")
+    if path == ".github/workflows/xray-manual-decision-research-shadow.yml":
+        if ("nasdaq-xray/manual_workflow_trigger_sha_guard.py --selftest" not in contents
+                or "nasdaq-xray/manual_workflow_trigger_sha_guard.py --out" not in contents
+                or "XRAY_MANUAL_INVOCATION" not in contents):
+            raise ValueError("MANUAL_WORKFLOW_UPSTREAM_FINAL_SHA_FENCE_MISSING")
     return len(observed)
 
 
@@ -101,7 +106,25 @@ def selftest() -> None:
         except ValueError:
             continue
         raise AssertionError("SEC_EXACT_INVOCATION_NEGATIVE_BYPASS")
-    print("XRAY_IMMUTABLE_ACTION_GUARD_SELFTEST=PASS_9_NEGATIVES")
+    manual=".github/workflows/xray-manual-decision-research-shadow.yml"
+    manual_source="\n".join((
+        "steps:",
+        "  - uses: " + CHECKOUT,
+        "  - uses: " + PYTHON,
+        "  - name: XRAY_MANUAL_INVOCATION provenance",
+        "    run: |",
+        "      python nasdaq-xray/manual_workflow_trigger_sha_guard.py --selftest",
+        "      python nasdaq-xray/manual_workflow_trigger_sha_guard.py --out result.json",
+        "  - uses: " + ARTIFACT,
+    ))
+    assert verify(manual,manual_source)==3
+    for altered in (
+        manual_source.replace("--selftest","--skipped"),
+        manual_source.replace("--out result.json","--unchecked result.json")):
+        try:verify(manual,altered)
+        except ValueError:continue
+        raise AssertionError("MANUAL_PROVENANCE_SHA_FENCE_REMOVAL_ACCEPTED")
+    print("XRAY_IMMUTABLE_ACTION_GUARD_SELFTEST=PASS_11_NEGATIVES")
 
 
 def live() -> dict:
