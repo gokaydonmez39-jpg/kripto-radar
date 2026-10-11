@@ -1,0 +1,12 @@
+{
+  "schema": "XRAY_20261012_P0_12_SEC_ORIGINAL_DOC_FIRST_PARTY_ACCEPTANCE_TEST_V1",
+  "preimage_main": "4fbdae65b1598aee7e87e5b3e08db1f1f76df8d1",
+  "purpose": "Test original HTTP SEC Archives 12 documents and official SEC submissions acceptance pre-ASOF with 2 plausible UTC/NY clock interpretations and strict SEC fair access. Never assume success on 403/404/expired accession.",
+  "source_registry": "nasdaq-xray/research/p0_11_split_events_official_sec_issuer_registry_20261012.json",
+  "source_doc_machine_ratio_text_not_parsed": true,
+  "can_create_PRIMARY_MC": false,
+  "can_create_HISTORY_PASS": false,
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "ci": "PENDING"
+}
