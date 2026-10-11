@@ -1,0 +1,881 @@
+{
+  "schema": "XRAY_P0_MC168_OFFICIAL_SEC_EXACT_REASON_CHECKPOINT_V1",
+  "asof_et": "2026-10-09",
+  "upstream_union_run_id": 38183357135,
+  "upstream_union_artifact_id": 11718354595,
+  "upstream_union_zip_sha256": "0d19da570cf17999db18aa69b530d1b63dd13718a267a1fb3e75a252b901bb42",
+  "official_SEC_reprobe_run_id": 38183937885,
+  "official_SEC_reprobe_artifact_id": 11718732409,
+  "official_SEC_reprobe_zip_sha256": "12e21900ca5f7f93fc16db46ece06d42e8507d07f4af1741c1df8b7ce8d3a66f",
+  "official_SEC_reprobe_json_sha256": "3188a0964c14a2e2f1ac90ac88a0fe961462495e2e4f60910308a042626c2ad8",
+  "original_514_MC_scope": 514,
+  "original_shadow": 346,
+  "original_unknown": 168,
+  "SEC_reprobe_attempted_ticker_count": 168,
+  "SEC_fair_access_stopped": false,
+  "reason_counts": {
+    "NO_DEI_BUT_GAAP_SHARES_AVAILABLE_CLASS_UNRESOLVED": 34,
+    "NO_FRESH_ACCEPTANCE_BOUND_SINGLE_ENTITY_SHARES": 38,
+    "NO_SEC_DEI_OR_GAAP_SHARES_FACT": 43,
+    "SEC_HTTP_404": 1,
+    "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION": 52
+  },
+  "unknown_symbols_sha256": "febd6c754e4088f0b5e3799bfe610dada7a97ce1186f841b466b09eb84b4abf2",
+  "unknown_symbols_sha256_rule": "SHA256 of uppercase case-preserved ticker strings sorted and joined with LF, no trailing newline",
+  "manual_transcription_verified_against_source_168_symbol_sha256_in_isolated_test": true,
+  "symbol_reasons": {
+    "AAL": {
+      "SEC_reprobe_reason": "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION",
+      "root_cause_remediation": "SEC_SHARES_FACT_OUTSIDE_ASOF_WINDOW",
+      "C417_PRIMARY_MC": false
+    },
+    "ABNB": {
+      "SEC_reprobe_reason": "NO_SEC_DEI_OR_GAAP_SHARES_FACT",
+      "root_cause_remediation": "SEC_SHARES_TAG_ABSENT",
+      "C417_PRIMARY_MC": false
+    },
+    "ABVX": {
+      "SEC_reprobe_reason": "NO_FRESH_ACCEPTANCE_BOUND_SINGLE_ENTITY_SHARES",
+      "root_cause_remediation": "SEC_FILING_VINTAGE_NOT_PIT_VERIFIED",
+      "C417_PRIMARY_MC": false
+    },
+    "ACMR": {
+      "SEC_reprobe_reason": "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION",
+      "root_cause_remediation": "SEC_SHARES_FACT_OUTSIDE_ASOF_WINDOW",
+      "C417_PRIMARY_MC": false
+    },
+    "AEP": {
+      "SEC_reprobe_reason": "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION",
+      "root_cause_remediation": "SEC_SHARES_FACT_OUTSIDE_ASOF_WINDOW",
+      "C417_PRIMARY_MC": false
+    },
+    "AFRM": {
+      "SEC_reprobe_reason": "NO_DEI_BUT_GAAP_SHARES_AVAILABLE_CLASS_UNRESOLVED",
+      "root_cause_remediation": "ISSUER_SHARE_CLASS_AMBIGUITY",
+      "C417_PRIMARY_MC": false
+    },
+    "ALM": {
+      "SEC_reprobe_reason": "NO_FRESH_ACCEPTANCE_BOUND_SINGLE_ENTITY_SHARES",
+      "root_cause_remediation": "SEC_FILING_VINTAGE_NOT_PIT_VERIFIED",
+      "C417_PRIMARY_MC": false
+    },
+    "AMKR": {
+      "SEC_reprobe_reason": "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION",
+      "root_cause_remediation": "SEC_SHARES_FACT_OUTSIDE_ASOF_WINDOW",
+      "C417_PRIMARY_MC": false
+    },
+    "APP": {
+      "SEC_reprobe_reason": "NO_DEI_BUT_GAAP_SHARES_AVAILABLE_CLASS_UNRESOLVED",
+      "root_cause_remediation": "ISSUER_SHARE_CLASS_AMBIGUITY",
+      "C417_PRIMARY_MC": false
+    },
+    "APPF": {
+      "SEC_reprobe_reason": "NO_SEC_DEI_OR_GAAP_SHARES_FACT",
+      "root_cause_remediation": "SEC_SHARES_TAG_ABSENT",
+      "C417_PRIMARY_MC": false
+    },
+    "ARGX": {
+      "SEC_reprobe_reason": "NO_FRESH_ACCEPTANCE_BOUND_SINGLE_ENTITY_SHARES",
+      "root_cause_remediation": "SEC_FILING_VINTAGE_NOT_PIT_VERIFIED",
+      "C417_PRIMARY_MC": false
+    },
+    "ARM": {
+      "SEC_reprobe_reason": "NO_FRESH_ACCEPTANCE_BOUND_SINGLE_ENTITY_SHARES",
+      "root_cause_remediation": "SEC_FILING_VINTAGE_NOT_PIT_VERIFIED",
+      "C417_PRIMARY_MC": false
+    },
+    "ASML": {
+      "SEC_reprobe_reason": "NO_FRESH_ACCEPTANCE_BOUND_SINGLE_ENTITY_SHARES",
+      "root_cause_remediation": "SEC_FILING_VINTAGE_NOT_PIT_VERIFIED",
+      "C417_PRIMARY_MC": false
+    },
+    "ASND": {
+      "SEC_reprobe_reason": "NO_FRESH_ACCEPTANCE_BOUND_SINGLE_ENTITY_SHARES",
+      "root_cause_remediation": "SEC_FILING_VINTAGE_NOT_PIT_VERIFIED",
+      "C417_PRIMARY_MC": false
+    },
+    "ASST": {
+      "SEC_reprobe_reason": "NO_DEI_BUT_GAAP_SHARES_AVAILABLE_CLASS_UNRESOLVED",
+      "root_cause_remediation": "ISSUER_SHARE_CLASS_AMBIGUITY",
+      "C417_PRIMARY_MC": false
+    },
+    "ASTS": {
+      "SEC_reprobe_reason": "NO_SEC_DEI_OR_GAAP_SHARES_FACT",
+      "root_cause_remediation": "SEC_SHARES_TAG_ABSENT",
+      "C417_PRIMARY_MC": false
+    },
+    "AUGO": {
+      "SEC_reprobe_reason": "NO_FRESH_ACCEPTANCE_BOUND_SINGLE_ENTITY_SHARES",
+      "root_cause_remediation": "SEC_FILING_VINTAGE_NOT_PIT_VERIFIED",
+      "C417_PRIMARY_MC": false
+    },
+    "AUR": {
+      "SEC_reprobe_reason": "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION",
+      "root_cause_remediation": "SEC_SHARES_FACT_OUTSIDE_ASOF_WINDOW",
+      "C417_PRIMARY_MC": false
+    },
+    "BIDU": {
+      "SEC_reprobe_reason": "NO_SEC_DEI_OR_GAAP_SHARES_FACT",
+      "root_cause_remediation": "SEC_SHARES_TAG_ABSENT",
+      "C417_PRIMARY_MC": false
+    },
+    "BIIB": {
+      "SEC_reprobe_reason": "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION",
+      "root_cause_remediation": "SEC_SHARES_FACT_OUTSIDE_ASOF_WINDOW",
+      "C417_PRIMARY_MC": false
+    },
+    "BNTX": {
+      "SEC_reprobe_reason": "NO_FRESH_ACCEPTANCE_BOUND_SINGLE_ENTITY_SHARES",
+      "root_cause_remediation": "SEC_FILING_VINTAGE_NOT_PIT_VERIFIED",
+      "C417_PRIMARY_MC": false
+    },
+    "BRKR": {
+      "SEC_reprobe_reason": "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION",
+      "root_cause_remediation": "SEC_SHARES_FACT_OUTSIDE_ASOF_WINDOW",
+      "C417_PRIMARY_MC": false
+    },
+    "BSP": {
+      "SEC_reprobe_reason": "NO_SEC_DEI_OR_GAAP_SHARES_FACT",
+      "root_cause_remediation": "SEC_SHARES_TAG_ABSENT",
+      "C417_PRIMARY_MC": false
+    },
+    "BSY": {
+      "SEC_reprobe_reason": "NO_SEC_DEI_OR_GAAP_SHARES_FACT",
+      "root_cause_remediation": "SEC_SHARES_TAG_ABSENT",
+      "C417_PRIMARY_MC": false
+    },
+    "BTDR": {
+      "SEC_reprobe_reason": "NO_FRESH_ACCEPTANCE_BOUND_SINGLE_ENTITY_SHARES",
+      "root_cause_remediation": "SEC_FILING_VINTAGE_NOT_PIT_VERIFIED",
+      "C417_PRIMARY_MC": false
+    },
+    "BULL": {
+      "SEC_reprobe_reason": "NO_SEC_DEI_OR_GAAP_SHARES_FACT",
+      "root_cause_remediation": "SEC_SHARES_TAG_ABSENT",
+      "C417_PRIMARY_MC": false
+    },
+    "BWIN": {
+      "SEC_reprobe_reason": "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION",
+      "root_cause_remediation": "SEC_SHARES_FACT_OUTSIDE_ASOF_WINDOW",
+      "C417_PRIMARY_MC": false
+    },
+    "BZ": {
+      "SEC_reprobe_reason": "NO_DEI_BUT_GAAP_SHARES_AVAILABLE_CLASS_UNRESOLVED",
+      "root_cause_remediation": "ISSUER_SHARE_CLASS_AMBIGUITY",
+      "C417_PRIMARY_MC": false
+    },
+    "CAMT": {
+      "SEC_reprobe_reason": "NO_FRESH_ACCEPTANCE_BOUND_SINGLE_ENTITY_SHARES",
+      "root_cause_remediation": "SEC_FILING_VINTAGE_NOT_PIT_VERIFIED",
+      "C417_PRIMARY_MC": false
+    },
+    "CBRS": {
+      "SEC_reprobe_reason": "NO_SEC_DEI_OR_GAAP_SHARES_FACT",
+      "root_cause_remediation": "SEC_SHARES_TAG_ABSENT",
+      "C417_PRIMARY_MC": false
+    },
+    "CCEP": {
+      "SEC_reprobe_reason": "NO_FRESH_ACCEPTANCE_BOUND_SINGLE_ENTITY_SHARES",
+      "root_cause_remediation": "SEC_FILING_VINTAGE_NOT_PIT_VERIFIED",
+      "C417_PRIMARY_MC": false
+    },
+    "CDNS": {
+      "SEC_reprobe_reason": "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION",
+      "root_cause_remediation": "SEC_SHARES_FACT_OUTSIDE_ASOF_WINDOW",
+      "C417_PRIMARY_MC": false
+    },
+    "CHEF": {
+      "SEC_reprobe_reason": "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION",
+      "root_cause_remediation": "SEC_SHARES_FACT_OUTSIDE_ASOF_WINDOW",
+      "C417_PRIMARY_MC": false
+    },
+    "CHKP": {
+      "SEC_reprobe_reason": "NO_FRESH_ACCEPTANCE_BOUND_SINGLE_ENTITY_SHARES",
+      "root_cause_remediation": "SEC_FILING_VINTAGE_NOT_PIT_VERIFIED",
+      "C417_PRIMARY_MC": false
+    },
+    "CHTR": {
+      "SEC_reprobe_reason": "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION",
+      "root_cause_remediation": "SEC_SHARES_FACT_OUTSIDE_ASOF_WINDOW",
+      "C417_PRIMARY_MC": false
+    },
+    "CHYM": {
+      "SEC_reprobe_reason": "NO_DEI_BUT_GAAP_SHARES_AVAILABLE_CLASS_UNRESOLVED",
+      "root_cause_remediation": "ISSUER_SHARE_CLASS_AMBIGUITY",
+      "C417_PRIMARY_MC": false
+    },
+    "CMCSA": {
+      "SEC_reprobe_reason": "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION",
+      "root_cause_remediation": "SEC_SHARES_FACT_OUTSIDE_ASOF_WINDOW",
+      "C417_PRIMARY_MC": false
+    },
+    "CME": {
+      "SEC_reprobe_reason": "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION",
+      "root_cause_remediation": "SEC_SHARES_FACT_OUTSIDE_ASOF_WINDOW",
+      "C417_PRIMARY_MC": false
+    },
+    "COIN": {
+      "SEC_reprobe_reason": "NO_DEI_BUT_GAAP_SHARES_AVAILABLE_CLASS_UNRESOLVED",
+      "root_cause_remediation": "ISSUER_SHARE_CLASS_AMBIGUITY",
+      "C417_PRIMARY_MC": false
+    },
+    "COKE": {
+      "SEC_reprobe_reason": "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION",
+      "root_cause_remediation": "SEC_SHARES_FACT_OUTSIDE_ASOF_WINDOW",
+      "C417_PRIMARY_MC": false
+    },
+    "CRWV": {
+      "SEC_reprobe_reason": "NO_SEC_DEI_OR_GAAP_SHARES_FACT",
+      "root_cause_remediation": "SEC_SHARES_TAG_ABSENT",
+      "C417_PRIMARY_MC": false
+    },
+    "CTSH": {
+      "SEC_reprobe_reason": "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION",
+      "root_cause_remediation": "SEC_SHARES_FACT_OUTSIDE_ASOF_WINDOW",
+      "C417_PRIMARY_MC": false
+    },
+    "DASH": {
+      "SEC_reprobe_reason": "NO_SEC_DEI_OR_GAAP_SHARES_FACT",
+      "root_cause_remediation": "SEC_SHARES_TAG_ABSENT",
+      "C417_PRIMARY_MC": false
+    },
+    "DAVE": {
+      "SEC_reprobe_reason": "NO_SEC_DEI_OR_GAAP_SHARES_FACT",
+      "root_cause_remediation": "SEC_SHARES_TAG_ABSENT",
+      "C417_PRIMARY_MC": false
+    },
+    "DBX": {
+      "SEC_reprobe_reason": "NO_SEC_DEI_OR_GAAP_SHARES_FACT",
+      "root_cause_remediation": "SEC_SHARES_TAG_ABSENT",
+      "C417_PRIMARY_MC": false
+    },
+    "DDOG": {
+      "SEC_reprobe_reason": "NO_DEI_BUT_GAAP_SHARES_AVAILABLE_CLASS_UNRESOLVED",
+      "root_cause_remediation": "ISSUER_SHARE_CLASS_AMBIGUITY",
+      "C417_PRIMARY_MC": false
+    },
+    "DKNG": {
+      "SEC_reprobe_reason": "NO_SEC_DEI_OR_GAAP_SHARES_FACT",
+      "root_cause_remediation": "SEC_SHARES_TAG_ABSENT",
+      "C417_PRIMARY_MC": false
+    },
+    "DOX": {
+      "SEC_reprobe_reason": "NO_FRESH_ACCEPTANCE_BOUND_SINGLE_ENTITY_SHARES",
+      "root_cause_remediation": "SEC_FILING_VINTAGE_NOT_PIT_VERIFIED",
+      "C417_PRIMARY_MC": false
+    },
+    "DUOL": {
+      "SEC_reprobe_reason": "NO_DEI_BUT_GAAP_SHARES_AVAILABLE_CLASS_UNRESOLVED",
+      "root_cause_remediation": "ISSUER_SHARE_CLASS_AMBIGUITY",
+      "C417_PRIMARY_MC": false
+    },
+    "ECHO": {
+      "SEC_reprobe_reason": "NO_DEI_BUT_GAAP_SHARES_AVAILABLE_CLASS_UNRESOLVED",
+      "root_cause_remediation": "ISSUER_SHARE_CLASS_AMBIGUITY",
+      "C417_PRIMARY_MC": false
+    },
+    "ENPH": {
+      "SEC_reprobe_reason": "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION",
+      "root_cause_remediation": "SEC_SHARES_FACT_OUTSIDE_ASOF_WINDOW",
+      "C417_PRIMARY_MC": false
+    },
+    "EQPT": {
+      "SEC_reprobe_reason": "NO_DEI_BUT_GAAP_SHARES_AVAILABLE_CLASS_UNRESOLVED",
+      "root_cause_remediation": "ISSUER_SHARE_CLASS_AMBIGUITY",
+      "C417_PRIMARY_MC": false
+    },
+    "ERIC": {
+      "SEC_reprobe_reason": "NO_SEC_DEI_OR_GAAP_SHARES_FACT",
+      "root_cause_remediation": "SEC_SHARES_TAG_ABSENT",
+      "C417_PRIMARY_MC": false
+    },
+    "ESLT": {
+      "SEC_reprobe_reason": "NO_FRESH_ACCEPTANCE_BOUND_SINGLE_ENTITY_SHARES",
+      "root_cause_remediation": "SEC_FILING_VINTAGE_NOT_PIT_VERIFIED",
+      "C417_PRIMARY_MC": false
+    },
+    "EVRG": {
+      "SEC_reprobe_reason": "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION",
+      "root_cause_remediation": "SEC_SHARES_FACT_OUTSIDE_ASOF_WINDOW",
+      "C417_PRIMARY_MC": false
+    },
+    "EXC": {
+      "SEC_reprobe_reason": "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION",
+      "root_cause_remediation": "SEC_SHARES_FACT_OUTSIDE_ASOF_WINDOW",
+      "C417_PRIMARY_MC": false
+    },
+    "EXLS": {
+      "SEC_reprobe_reason": "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION",
+      "root_cause_remediation": "SEC_SHARES_FACT_OUTSIDE_ASOF_WINDOW",
+      "C417_PRIMARY_MC": false
+    },
+    "EXPE": {
+      "SEC_reprobe_reason": "NO_DEI_BUT_GAAP_SHARES_AVAILABLE_CLASS_UNRESOLVED",
+      "root_cause_remediation": "ISSUER_SHARE_CLASS_AMBIGUITY",
+      "C417_PRIMARY_MC": false
+    },
+    "FCNCA": {
+      "SEC_reprobe_reason": "NO_SEC_DEI_OR_GAAP_SHARES_FACT",
+      "root_cause_remediation": "SEC_SHARES_TAG_ABSENT",
+      "C417_PRIMARY_MC": false
+    },
+    "FER": {
+      "SEC_reprobe_reason": "NO_FRESH_ACCEPTANCE_BOUND_SINGLE_ENTITY_SHARES",
+      "root_cause_remediation": "SEC_FILING_VINTAGE_NOT_PIT_VERIFIED",
+      "C417_PRIMARY_MC": false
+    },
+    "FIGR": {
+      "SEC_reprobe_reason": "NO_SEC_DEI_OR_GAAP_SHARES_FACT",
+      "root_cause_remediation": "SEC_SHARES_TAG_ABSENT",
+      "C417_PRIMARY_MC": false
+    },
+    "FLNC": {
+      "SEC_reprobe_reason": "NO_DEI_BUT_GAAP_SHARES_AVAILABLE_CLASS_UNRESOLVED",
+      "root_cause_remediation": "ISSUER_SHARE_CLASS_AMBIGUITY",
+      "C417_PRIMARY_MC": false
+    },
+    "FOX": {
+      "SEC_reprobe_reason": "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION",
+      "root_cause_remediation": "SEC_SHARES_FACT_OUTSIDE_ASOF_WINDOW",
+      "C417_PRIMARY_MC": false
+    },
+    "FOXA": {
+      "SEC_reprobe_reason": "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION",
+      "root_cause_remediation": "SEC_SHARES_FACT_OUTSIDE_ASOF_WINDOW",
+      "C417_PRIMARY_MC": false
+    },
+    "FRSH": {
+      "SEC_reprobe_reason": "NO_DEI_BUT_GAAP_SHARES_AVAILABLE_CLASS_UNRESOLVED",
+      "root_cause_remediation": "ISSUER_SHARE_CLASS_AMBIGUITY",
+      "C417_PRIMARY_MC": false
+    },
+    "FRVO": {
+      "SEC_reprobe_reason": "NO_SEC_DEI_OR_GAAP_SHARES_FACT",
+      "root_cause_remediation": "SEC_SHARES_TAG_ABSENT",
+      "C417_PRIMARY_MC": false
+    },
+    "FUTU": {
+      "SEC_reprobe_reason": "NO_DEI_BUT_GAAP_SHARES_AVAILABLE_CLASS_UNRESOLVED",
+      "root_cause_remediation": "ISSUER_SHARE_CLASS_AMBIGUITY",
+      "C417_PRIMARY_MC": false
+    },
+    "FWONK": {
+      "SEC_reprobe_reason": "NO_SEC_DEI_OR_GAAP_SHARES_FACT",
+      "root_cause_remediation": "SEC_SHARES_TAG_ABSENT",
+      "C417_PRIMARY_MC": false
+    },
+    "GEHC": {
+      "SEC_reprobe_reason": "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION",
+      "root_cause_remediation": "SEC_SHARES_FACT_OUTSIDE_ASOF_WINDOW",
+      "C417_PRIMARY_MC": false
+    },
+    "GFS": {
+      "SEC_reprobe_reason": "NO_FRESH_ACCEPTANCE_BOUND_SINGLE_ENTITY_SHARES",
+      "root_cause_remediation": "SEC_FILING_VINTAGE_NOT_PIT_VERIFIED",
+      "C417_PRIMARY_MC": false
+    },
+    "GLBE": {
+      "SEC_reprobe_reason": "NO_FRESH_ACCEPTANCE_BOUND_SINGLE_ENTITY_SHARES",
+      "root_cause_remediation": "SEC_FILING_VINTAGE_NOT_PIT_VERIFIED",
+      "C417_PRIMARY_MC": false
+    },
+    "GLNG": {
+      "SEC_reprobe_reason": "NO_FRESH_ACCEPTANCE_BOUND_SINGLE_ENTITY_SHARES",
+      "root_cause_remediation": "SEC_FILING_VINTAGE_NOT_PIT_VERIFIED",
+      "C417_PRIMARY_MC": false
+    },
+    "GLXY": {
+      "SEC_reprobe_reason": "NO_DEI_BUT_GAAP_SHARES_AVAILABLE_CLASS_UNRESOLVED",
+      "root_cause_remediation": "ISSUER_SHARE_CLASS_AMBIGUITY",
+      "C417_PRIMARY_MC": false
+    },
+    "GMAB": {
+      "SEC_reprobe_reason": "NO_SEC_DEI_OR_GAAP_SHARES_FACT",
+      "root_cause_remediation": "SEC_SHARES_TAG_ABSENT",
+      "C417_PRIMARY_MC": false
+    },
+    "GOOG": {
+      "SEC_reprobe_reason": "NO_DEI_BUT_GAAP_SHARES_AVAILABLE_CLASS_UNRESOLVED",
+      "root_cause_remediation": "ISSUER_SHARE_CLASS_AMBIGUITY",
+      "C417_PRIMARY_MC": false
+    },
+    "GOOGL": {
+      "SEC_reprobe_reason": "NO_DEI_BUT_GAAP_SHARES_AVAILABLE_CLASS_UNRESOLVED",
+      "root_cause_remediation": "ISSUER_SHARE_CLASS_AMBIGUITY",
+      "C417_PRIMARY_MC": false
+    },
+    "GTLB": {
+      "SEC_reprobe_reason": "NO_SEC_DEI_OR_GAAP_SHARES_FACT",
+      "root_cause_remediation": "SEC_SHARES_TAG_ABSENT",
+      "C417_PRIMARY_MC": false
+    },
+    "GTX": {
+      "SEC_reprobe_reason": "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION",
+      "root_cause_remediation": "SEC_SHARES_FACT_OUTSIDE_ASOF_WINDOW",
+      "C417_PRIMARY_MC": false
+    },
+    "HBAN": {
+      "SEC_reprobe_reason": "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION",
+      "root_cause_remediation": "SEC_SHARES_FACT_OUTSIDE_ASOF_WINDOW",
+      "C417_PRIMARY_MC": false
+    },
+    "HLNE": {
+      "SEC_reprobe_reason": "NO_DEI_BUT_GAAP_SHARES_AVAILABLE_CLASS_UNRESOLVED",
+      "root_cause_remediation": "ISSUER_SHARE_CLASS_AMBIGUITY",
+      "C417_PRIMARY_MC": false
+    },
+    "HOOD": {
+      "SEC_reprobe_reason": "NO_DEI_BUT_GAAP_SHARES_AVAILABLE_CLASS_UNRESOLVED",
+      "root_cause_remediation": "ISSUER_SHARE_CLASS_AMBIGUITY",
+      "C417_PRIMARY_MC": false
+    },
+    "HTHT": {
+      "SEC_reprobe_reason": "NO_FRESH_ACCEPTANCE_BOUND_SINGLE_ENTITY_SHARES",
+      "root_cause_remediation": "SEC_FILING_VINTAGE_NOT_PIT_VERIFIED",
+      "C417_PRIMARY_MC": false
+    },
+    "IBKR": {
+      "SEC_reprobe_reason": "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION",
+      "root_cause_remediation": "SEC_SHARES_FACT_OUTSIDE_ASOF_WINDOW",
+      "C417_PRIMARY_MC": false
+    },
+    "ICLR": {
+      "SEC_reprobe_reason": "NO_FRESH_ACCEPTANCE_BOUND_SINGLE_ENTITY_SHARES",
+      "root_cause_remediation": "SEC_FILING_VINTAGE_NOT_PIT_VERIFIED",
+      "C417_PRIMARY_MC": false
+    },
+    "INCY": {
+      "SEC_reprobe_reason": "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION",
+      "root_cause_remediation": "SEC_SHARES_FACT_OUTSIDE_ASOF_WINDOW",
+      "C417_PRIMARY_MC": false
+    },
+    "IREN": {
+      "SEC_reprobe_reason": "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION",
+      "root_cause_remediation": "SEC_SHARES_FACT_OUTSIDE_ASOF_WINDOW",
+      "C417_PRIMARY_MC": false
+    },
+    "JD": {
+      "SEC_reprobe_reason": "NO_DEI_BUT_GAAP_SHARES_AVAILABLE_CLASS_UNRESOLVED",
+      "root_cause_remediation": "ISSUER_SHARE_CLASS_AMBIGUITY",
+      "C417_PRIMARY_MC": false
+    },
+    "KSPI": {
+      "SEC_reprobe_reason": "NO_FRESH_ACCEPTANCE_BOUND_SINGLE_ENTITY_SHARES",
+      "root_cause_remediation": "SEC_FILING_VINTAGE_NOT_PIT_VERIFIED",
+      "C417_PRIMARY_MC": false
+    },
+    "LAMR": {
+      "SEC_reprobe_reason": "NO_SEC_DEI_OR_GAAP_SHARES_FACT",
+      "root_cause_remediation": "SEC_SHARES_TAG_ABSENT",
+      "C417_PRIMARY_MC": false
+    },
+    "LFUS": {
+      "SEC_reprobe_reason": "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION",
+      "root_cause_remediation": "SEC_SHARES_FACT_OUTSIDE_ASOF_WINDOW",
+      "C417_PRIMARY_MC": false
+    },
+    "LGN": {
+      "SEC_reprobe_reason": "NO_SEC_DEI_OR_GAAP_SHARES_FACT",
+      "root_cause_remediation": "SEC_SHARES_TAG_ABSENT",
+      "C417_PRIMARY_MC": false
+    },
+    "LNT": {
+      "SEC_reprobe_reason": "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION",
+      "root_cause_remediation": "SEC_SHARES_FACT_OUTSIDE_ASOF_WINDOW",
+      "C417_PRIMARY_MC": false
+    },
+    "LSTR": {
+      "SEC_reprobe_reason": "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION",
+      "root_cause_remediation": "SEC_SHARES_FACT_OUTSIDE_ASOF_WINDOW",
+      "C417_PRIMARY_MC": false
+    },
+    "LUNR": {
+      "SEC_reprobe_reason": "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION",
+      "root_cause_remediation": "SEC_SHARES_FACT_OUTSIDE_ASOF_WINDOW",
+      "C417_PRIMARY_MC": false
+    },
+    "MDLN": {
+      "SEC_reprobe_reason": "NO_SEC_DEI_OR_GAAP_SHARES_FACT",
+      "root_cause_remediation": "SEC_SHARES_TAG_ABSENT",
+      "C417_PRIMARY_MC": false
+    },
+    "MDLZ": {
+      "SEC_reprobe_reason": "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION",
+      "root_cause_remediation": "SEC_SHARES_FACT_OUTSIDE_ASOF_WINDOW",
+      "C417_PRIMARY_MC": false
+    },
+    "META": {
+      "SEC_reprobe_reason": "NO_SEC_DEI_OR_GAAP_SHARES_FACT",
+      "root_cause_remediation": "SEC_SHARES_TAG_ABSENT",
+      "C417_PRIMARY_MC": false
+    },
+    "MNDY": {
+      "SEC_reprobe_reason": "NO_FRESH_ACCEPTANCE_BOUND_SINGLE_ENTITY_SHARES",
+      "root_cause_remediation": "SEC_FILING_VINTAGE_NOT_PIT_VERIFIED",
+      "C417_PRIMARY_MC": false
+    },
+    "MRX": {
+      "SEC_reprobe_reason": "NO_FRESH_ACCEPTANCE_BOUND_SINGLE_ENTITY_SHARES",
+      "root_cause_remediation": "SEC_FILING_VINTAGE_NOT_PIT_VERIFIED",
+      "C417_PRIMARY_MC": false
+    },
+    "MSTR": {
+      "SEC_reprobe_reason": "NO_SEC_DEI_OR_GAAP_SHARES_FACT",
+      "root_cause_remediation": "SEC_SHARES_TAG_ABSENT",
+      "C417_PRIMARY_MC": false
+    },
+    "NAVN": {
+      "SEC_reprobe_reason": "NO_DEI_BUT_GAAP_SHARES_AVAILABLE_CLASS_UNRESOLVED",
+      "root_cause_remediation": "ISSUER_SHARE_CLASS_AMBIGUITY",
+      "C417_PRIMARY_MC": false
+    },
+    "NBIS": {
+      "SEC_reprobe_reason": "NO_DEI_BUT_GAAP_SHARES_AVAILABLE_CLASS_UNRESOLVED",
+      "root_cause_remediation": "ISSUER_SHARE_CLASS_AMBIGUITY",
+      "C417_PRIMARY_MC": false
+    },
+    "NICE": {
+      "SEC_reprobe_reason": "NO_FRESH_ACCEPTANCE_BOUND_SINGLE_ENTITY_SHARES",
+      "root_cause_remediation": "SEC_FILING_VINTAGE_NOT_PIT_VERIFIED",
+      "C417_PRIMARY_MC": false
+    },
+    "NTES": {
+      "SEC_reprobe_reason": "NO_FRESH_ACCEPTANCE_BOUND_SINGLE_ENTITY_SHARES",
+      "root_cause_remediation": "SEC_FILING_VINTAGE_NOT_PIT_VERIFIED",
+      "C417_PRIMARY_MC": false
+    },
+    "NTSK": {
+      "SEC_reprobe_reason": "NO_SEC_DEI_OR_GAAP_SHARES_FACT",
+      "root_cause_remediation": "SEC_SHARES_TAG_ABSENT",
+      "C417_PRIMARY_MC": false
+    },
+    "NVMI": {
+      "SEC_reprobe_reason": "NO_FRESH_ACCEPTANCE_BOUND_SINGLE_ENTITY_SHARES",
+      "root_cause_remediation": "SEC_FILING_VINTAGE_NOT_PIT_VERIFIED",
+      "C417_PRIMARY_MC": false
+    },
+    "NVTS": {
+      "SEC_reprobe_reason": "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION",
+      "root_cause_remediation": "SEC_SHARES_FACT_OUTSIDE_ASOF_WINDOW",
+      "C417_PRIMARY_MC": false
+    },
+    "NWSA": {
+      "SEC_reprobe_reason": "NO_DEI_BUT_GAAP_SHARES_AVAILABLE_CLASS_UNRESOLVED",
+      "root_cause_remediation": "ISSUER_SHARE_CLASS_AMBIGUITY",
+      "C417_PRIMARY_MC": false
+    },
+    "NXPI": {
+      "SEC_reprobe_reason": "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION",
+      "root_cause_remediation": "SEC_SHARES_FACT_OUTSIDE_ASOF_WINDOW",
+      "C417_PRIMARY_MC": false
+    },
+    "NXT": {
+      "SEC_reprobe_reason": "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION",
+      "root_cause_remediation": "SEC_SHARES_FACT_OUTSIDE_ASOF_WINDOW",
+      "C417_PRIMARY_MC": false
+    },
+    "OKTA": {
+      "SEC_reprobe_reason": "NO_SEC_DEI_OR_GAAP_SHARES_FACT",
+      "root_cause_remediation": "SEC_SHARES_TAG_ABSENT",
+      "C417_PRIMARY_MC": false
+    },
+    "ONB": {
+      "SEC_reprobe_reason": "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION",
+      "root_cause_remediation": "SEC_SHARES_FACT_OUTSIDE_ASOF_WINDOW",
+      "C417_PRIMARY_MC": false
+    },
+    "OZK": {
+      "SEC_reprobe_reason": "SEC_HTTP_404",
+      "root_cause_remediation": "FDIC_EXCHANGE_ACT_FILING_AND_SHARE_CLASS_PIT_REQUIRED",
+      "C417_PRIMARY_MC": false
+    },
+    "PDD": {
+      "SEC_reprobe_reason": "NO_DEI_BUT_GAAP_SHARES_AVAILABLE_CLASS_UNRESOLVED",
+      "root_cause_remediation": "ISSUER_SHARE_CLASS_AMBIGUITY",
+      "C417_PRIMARY_MC": false
+    },
+    "PFG": {
+      "SEC_reprobe_reason": "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION",
+      "root_cause_remediation": "SEC_SHARES_FACT_OUTSIDE_ASOF_WINDOW",
+      "C417_PRIMARY_MC": false
+    },
+    "PLTR": {
+      "SEC_reprobe_reason": "NO_DEI_BUT_GAAP_SHARES_AVAILABLE_CLASS_UNRESOLVED",
+      "root_cause_remediation": "ISSUER_SHARE_CLASS_AMBIGUITY",
+      "C417_PRIMARY_MC": false
+    },
+    "POET": {
+      "SEC_reprobe_reason": "NO_FRESH_ACCEPTANCE_BOUND_SINGLE_ENTITY_SHARES",
+      "root_cause_remediation": "SEC_FILING_VINTAGE_NOT_PIT_VERIFIED",
+      "C417_PRIMARY_MC": false
+    },
+    "POOL": {
+      "SEC_reprobe_reason": "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION",
+      "root_cause_remediation": "SEC_SHARES_FACT_OUTSIDE_ASOF_WINDOW",
+      "C417_PRIMARY_MC": false
+    },
+    "PYPL": {
+      "SEC_reprobe_reason": "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION",
+      "root_cause_remediation": "SEC_SHARES_FACT_OUTSIDE_ASOF_WINDOW",
+      "C417_PRIMARY_MC": false
+    },
+    "QNT": {
+      "SEC_reprobe_reason": "NO_SEC_DEI_OR_GAAP_SHARES_FACT",
+      "root_cause_remediation": "SEC_SHARES_TAG_ABSENT",
+      "C417_PRIMARY_MC": false
+    },
+    "QURE": {
+      "SEC_reprobe_reason": "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION",
+      "root_cause_remediation": "SEC_SHARES_FACT_OUTSIDE_ASOF_WINDOW",
+      "C417_PRIMARY_MC": false
+    },
+    "REG": {
+      "SEC_reprobe_reason": "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION",
+      "root_cause_remediation": "SEC_SHARES_FACT_OUTSIDE_ASOF_WINDOW",
+      "C417_PRIMARY_MC": false
+    },
+    "REGN": {
+      "SEC_reprobe_reason": "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION",
+      "root_cause_remediation": "SEC_SHARES_FACT_OUTSIDE_ASOF_WINDOW",
+      "C417_PRIMARY_MC": false
+    },
+    "RIVN": {
+      "SEC_reprobe_reason": "NO_DEI_BUT_GAAP_SHARES_AVAILABLE_CLASS_UNRESOLVED",
+      "root_cause_remediation": "ISSUER_SHARE_CLASS_AMBIGUITY",
+      "C417_PRIMARY_MC": false
+    },
+    "RMBS": {
+      "SEC_reprobe_reason": "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION",
+      "root_cause_remediation": "SEC_SHARES_FACT_OUTSIDE_ASOF_WINDOW",
+      "C417_PRIMARY_MC": false
+    },
+    "ROAD": {
+      "SEC_reprobe_reason": "NO_DEI_BUT_GAAP_SHARES_AVAILABLE_CLASS_UNRESOLVED",
+      "root_cause_remediation": "ISSUER_SHARE_CLASS_AMBIGUITY",
+      "C417_PRIMARY_MC": false
+    },
+    "ROKU": {
+      "SEC_reprobe_reason": "NO_DEI_BUT_GAAP_SHARES_AVAILABLE_CLASS_UNRESOLVED",
+      "root_cause_remediation": "ISSUER_SHARE_CLASS_AMBIGUITY",
+      "C417_PRIMARY_MC": false
+    },
+    "RPRX": {
+      "SEC_reprobe_reason": "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION",
+      "root_cause_remediation": "SEC_SHARES_FACT_OUTSIDE_ASOF_WINDOW",
+      "C417_PRIMARY_MC": false
+    },
+    "RRR": {
+      "SEC_reprobe_reason": "NO_SEC_DEI_OR_GAAP_SHARES_FACT",
+      "root_cause_remediation": "SEC_SHARES_TAG_ABSENT",
+      "C417_PRIMARY_MC": false
+    },
+    "RYAAY": {
+      "SEC_reprobe_reason": "NO_FRESH_ACCEPTANCE_BOUND_SINGLE_ENTITY_SHARES",
+      "root_cause_remediation": "SEC_FILING_VINTAGE_NOT_PIT_VERIFIED",
+      "C417_PRIMARY_MC": false
+    },
+    "SBLK": {
+      "SEC_reprobe_reason": "NO_FRESH_ACCEPTANCE_BOUND_SINGLE_ENTITY_SHARES",
+      "root_cause_remediation": "SEC_FILING_VINTAGE_NOT_PIT_VERIFIED",
+      "C417_PRIMARY_MC": false
+    },
+    "SDGR": {
+      "SEC_reprobe_reason": "NO_DEI_BUT_GAAP_SHARES_AVAILABLE_CLASS_UNRESOLVED",
+      "root_cause_remediation": "ISSUER_SHARE_CLASS_AMBIGUITY",
+      "C417_PRIMARY_MC": false
+    },
+    "SHAZ": {
+      "SEC_reprobe_reason": "NO_SEC_DEI_OR_GAAP_SHARES_FACT",
+      "root_cause_remediation": "SEC_SHARES_TAG_ABSENT",
+      "C417_PRIMARY_MC": false
+    },
+    "SHOP": {
+      "SEC_reprobe_reason": "NO_DEI_BUT_GAAP_SHARES_AVAILABLE_CLASS_UNRESOLVED",
+      "root_cause_remediation": "ISSUER_SHARE_CLASS_AMBIGUITY",
+      "C417_PRIMARY_MC": false
+    },
+    "SIMO": {
+      "SEC_reprobe_reason": "NO_FRESH_ACCEPTANCE_BOUND_SINGLE_ENTITY_SHARES",
+      "root_cause_remediation": "SEC_FILING_VINTAGE_NOT_PIT_VERIFIED",
+      "C417_PRIMARY_MC": false
+    },
+    "SKHY": {
+      "SEC_reprobe_reason": "NO_SEC_DEI_OR_GAAP_SHARES_FACT",
+      "root_cause_remediation": "SEC_SHARES_TAG_ABSENT",
+      "C417_PRIMARY_MC": false
+    },
+    "SMTC": {
+      "SEC_reprobe_reason": "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION",
+      "root_cause_remediation": "SEC_SHARES_FACT_OUTSIDE_ASOF_WINDOW",
+      "C417_PRIMARY_MC": false
+    },
+    "SNY": {
+      "SEC_reprobe_reason": "NO_FRESH_ACCEPTANCE_BOUND_SINGLE_ENTITY_SHARES",
+      "root_cause_remediation": "SEC_FILING_VINTAGE_NOT_PIT_VERIFIED",
+      "C417_PRIMARY_MC": false
+    },
+    "SOUN": {
+      "SEC_reprobe_reason": "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION",
+      "root_cause_remediation": "SEC_SHARES_FACT_OUTSIDE_ASOF_WINDOW",
+      "C417_PRIMARY_MC": false
+    },
+    "SPCX": {
+      "SEC_reprobe_reason": "NO_SEC_DEI_OR_GAAP_SHARES_FACT",
+      "root_cause_remediation": "SEC_SHARES_TAG_ABSENT",
+      "C417_PRIMARY_MC": false
+    },
+    "STEP": {
+      "SEC_reprobe_reason": "NO_SEC_DEI_OR_GAAP_SHARES_FACT",
+      "root_cause_remediation": "SEC_SHARES_TAG_ABSENT",
+      "C417_PRIMARY_MC": false
+    },
+    "SYM": {
+      "SEC_reprobe_reason": "NO_DEI_BUT_GAAP_SHARES_AVAILABLE_CLASS_UNRESOLVED",
+      "root_cause_remediation": "ISSUER_SHARE_CLASS_AMBIGUITY",
+      "C417_PRIMARY_MC": false
+    },
+    "TCOM": {
+      "SEC_reprobe_reason": "NO_FRESH_ACCEPTANCE_BOUND_SINGLE_ENTITY_SHARES",
+      "root_cause_remediation": "SEC_FILING_VINTAGE_NOT_PIT_VERIFIED",
+      "C417_PRIMARY_MC": false
+    },
+    "TEAM": {
+      "SEC_reprobe_reason": "NO_SEC_DEI_OR_GAAP_SHARES_FACT",
+      "root_cause_remediation": "SEC_SHARES_TAG_ABSENT",
+      "C417_PRIMARY_MC": false
+    },
+    "TEM": {
+      "SEC_reprobe_reason": "NO_SEC_DEI_OR_GAAP_SHARES_FACT",
+      "root_cause_remediation": "SEC_SHARES_TAG_ABSENT",
+      "C417_PRIMARY_MC": false
+    },
+    "TIGO": {
+      "SEC_reprobe_reason": "NO_FRESH_ACCEPTANCE_BOUND_SINGLE_ENTITY_SHARES",
+      "root_cause_remediation": "SEC_FILING_VINTAGE_NOT_PIT_VERIFIED",
+      "C417_PRIMARY_MC": false
+    },
+    "TPG": {
+      "SEC_reprobe_reason": "NO_SEC_DEI_OR_GAAP_SHARES_FACT",
+      "root_cause_remediation": "SEC_SHARES_TAG_ABSENT",
+      "C417_PRIMARY_MC": false
+    },
+    "TRI": {
+      "SEC_reprobe_reason": "NO_FRESH_ACCEPTANCE_BOUND_SINGLE_ENTITY_SHARES",
+      "root_cause_remediation": "SEC_FILING_VINTAGE_NOT_PIT_VERIFIED",
+      "C417_PRIMARY_MC": false
+    },
+    "TRMD": {
+      "SEC_reprobe_reason": "NO_FRESH_ACCEPTANCE_BOUND_SINGLE_ENTITY_SHARES",
+      "root_cause_remediation": "SEC_FILING_VINTAGE_NOT_PIT_VERIFIED",
+      "C417_PRIMARY_MC": false
+    },
+    "TSEM": {
+      "SEC_reprobe_reason": "NO_FRESH_ACCEPTANCE_BOUND_SINGLE_ENTITY_SHARES",
+      "root_cause_remediation": "SEC_FILING_VINTAGE_NOT_PIT_VERIFIED",
+      "C417_PRIMARY_MC": false
+    },
+    "TTAN": {
+      "SEC_reprobe_reason": "NO_DEI_BUT_GAAP_SHARES_AVAILABLE_CLASS_UNRESOLVED",
+      "root_cause_remediation": "ISSUER_SHARE_CLASS_AMBIGUITY",
+      "C417_PRIMARY_MC": false
+    },
+    "TTD": {
+      "SEC_reprobe_reason": "NO_SEC_DEI_OR_GAAP_SHARES_FACT",
+      "root_cause_remediation": "SEC_SHARES_TAG_ABSENT",
+      "C417_PRIMARY_MC": false
+    },
+    "TW": {
+      "SEC_reprobe_reason": "NO_DEI_BUT_GAAP_SHARES_AVAILABLE_CLASS_UNRESOLVED",
+      "root_cause_remediation": "ISSUER_SHARE_CLASS_AMBIGUITY",
+      "C417_PRIMARY_MC": false
+    },
+    "TXG": {
+      "SEC_reprobe_reason": "NO_DEI_BUT_GAAP_SHARES_AVAILABLE_CLASS_UNRESOLVED",
+      "root_cause_remediation": "ISSUER_SHARE_CLASS_AMBIGUITY",
+      "C417_PRIMARY_MC": false
+    },
+    "USAR": {
+      "SEC_reprobe_reason": "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION",
+      "root_cause_remediation": "SEC_SHARES_FACT_OUTSIDE_ASOF_WINDOW",
+      "C417_PRIMARY_MC": false
+    },
+    "VICR": {
+      "SEC_reprobe_reason": "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION",
+      "root_cause_remediation": "SEC_SHARES_FACT_OUTSIDE_ASOF_WINDOW",
+      "C417_PRIMARY_MC": false
+    },
+    "VNOM": {
+      "SEC_reprobe_reason": "NO_SEC_DEI_OR_GAAP_SHARES_FACT",
+      "root_cause_remediation": "SEC_SHARES_TAG_ABSENT",
+      "C417_PRIMARY_MC": false
+    },
+    "VOD": {
+      "SEC_reprobe_reason": "NO_FRESH_ACCEPTANCE_BOUND_SINGLE_ENTITY_SHARES",
+      "root_cause_remediation": "SEC_FILING_VINTAGE_NOT_PIT_VERIFIED",
+      "C417_PRIMARY_MC": false
+    },
+    "VRSK": {
+      "SEC_reprobe_reason": "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION",
+      "root_cause_remediation": "SEC_SHARES_FACT_OUTSIDE_ASOF_WINDOW",
+      "C417_PRIMARY_MC": false
+    },
+    "VSNT": {
+      "SEC_reprobe_reason": "NO_SEC_DEI_OR_GAAP_SHARES_FACT",
+      "root_cause_remediation": "SEC_SHARES_TAG_ABSENT",
+      "C417_PRIMARY_MC": false
+    },
+    "WDAY": {
+      "SEC_reprobe_reason": "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION",
+      "root_cause_remediation": "SEC_SHARES_FACT_OUTSIDE_ASOF_WINDOW",
+      "C417_PRIMARY_MC": false
+    },
+    "WIX": {
+      "SEC_reprobe_reason": "NO_FRESH_ACCEPTANCE_BOUND_SINGLE_ENTITY_SHARES",
+      "root_cause_remediation": "SEC_FILING_VINTAGE_NOT_PIT_VERIFIED",
+      "C417_PRIMARY_MC": false
+    },
+    "WMG": {
+      "SEC_reprobe_reason": "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION",
+      "root_cause_remediation": "SEC_SHARES_FACT_OUTSIDE_ASOF_WINDOW",
+      "C417_PRIMARY_MC": false
+    },
+    "XE": {
+      "SEC_reprobe_reason": "NO_SEC_DEI_OR_GAAP_SHARES_FACT",
+      "root_cause_remediation": "SEC_SHARES_TAG_ABSENT",
+      "C417_PRIMARY_MC": false
+    },
+    "XMTR": {
+      "SEC_reprobe_reason": "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION",
+      "root_cause_remediation": "SEC_SHARES_FACT_OUTSIDE_ASOF_WINDOW",
+      "C417_PRIMARY_MC": false
+    },
+    "XP": {
+      "SEC_reprobe_reason": "NO_SEC_DEI_OR_GAAP_SHARES_FACT",
+      "root_cause_remediation": "SEC_SHARES_TAG_ABSENT",
+      "C417_PRIMARY_MC": false
+    },
+    "Z": {
+      "SEC_reprobe_reason": "NO_SEC_DEI_OR_GAAP_SHARES_FACT",
+      "root_cause_remediation": "SEC_SHARES_TAG_ABSENT",
+      "C417_PRIMARY_MC": false
+    },
+    "ZM": {
+      "SEC_reprobe_reason": "NO_SEC_DEI_OR_GAAP_SHARES_FACT",
+      "root_cause_remediation": "SEC_SHARES_TAG_ABSENT",
+      "C417_PRIMARY_MC": false
+    }
+  },
+  "original_unknowns_remain_unknown": true,
+  "historical_listed_class_PIT_confirmed": false,
+  "issuer_shares_CA_and_independent_MC_confirmed": false,
+  "SEC_companyfacts_dimensional_limit_not_resolved": true,
+  "raw_vendor_prices_or_share_counts_or_MC_amounts_retained": false,
+  "C417_PRIMARY_MC_created": 0,
+  "canonical_HISTORY_PASS_created": 0,
+  "R92_created": false,
+  "GO": false,
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "CI": "REAL_REPROBE_38183937885_SUCCESS_ARTIFACT_SHA256_VERIFIED_NORMAL_AND_OPTIMIZED_TESTS_PASS"
+}
