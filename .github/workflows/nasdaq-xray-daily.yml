@@ -13,6 +13,8 @@ on:
       - "nasdaq-xray/scheduler_failover_selftest.py"
       - "nasdaq-xray/root_weekend_quota_guard.py"
       - "nasdaq-xray/sina_stage.py"
+      - "nasdaq-xray/sina_state_hash_guard.py"
+      - "nasdaq-xray/root_history_recovery_microaudit.py"
       - "nasdaq-xray/sina_identity_epoch.py"
       - "nasdaq-xray/sina_late_asof_recheck.py"
       - "nasdaq-xray/mc_zero_key.py"
@@ -76,6 +78,13 @@ jobs:
       - name: Partial-history stale-state self-test
         run: python nasdaq-xray/orchestrator_partial_invalidation_selftest.py
 
+      - name: Selftest hash integrity and bounded root HISTORY transport recovery
+        run: |
+          python -m py_compile nasdaq-xray/sina_state_hash_guard.py nasdaq-xray/root_history_recovery_microaudit.py
+          python nasdaq-xray/sina_state_hash_guard.py
+          python nasdaq-xray/sina_transport_rescue.py
+          python nasdaq-xray/root_history_recovery_microaudit.py --selftest
+
       - name: Static compile gate
         run: python -m py_compile nasdaq-xray/orchestrator_run.py nasdaq-xray/orchestrator_partial_invalidation_selftest.py nasdaq-xray/sina_stage.py nasdaq-xray/sina_identity_epoch.py nasdaq-xray/sina_late_asof_recheck.py nasdaq-xray/mc_zero_key.py nasdaq-xray/production_core_build.py nasdaq-xray/alpha_semantics.py nasdaq-xray/test_alpha_semantics.py nasdaq-xray/stage1_shadow.py nasdaq-xray/regime_breadth_shadow.py nasdaq-xray/deep_pre_r1_shadow.py
 
@@ -94,6 +103,24 @@ jobs:
       - name: Run autonomous XRAY data plane
         if: steps.session.outputs.allow_compute == 'true'
         run: python nasdaq-xray/orchestrator_run.py
+
+      - name: Verify live root HISTORY source lineage and repair outcomes before commit
+        if: steps.session.outputs.allow_compute == 'true'
+        run: |
+          python nasdaq-xray/root_history_recovery_microaudit.py --out /tmp/xray_root_history_recovery.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path("/tmp/xray_root_history_recovery.json").read_text())
+          assert d["source_state_hash_integrity"]=="PASS_DETERMINISTIC_BLOB_INTERNAL"
+          assert d["source_state_reproducible_hash"] is True
+          assert d["unknown_count"]==sum(d["unknown_reason_counts"].values())
+          assert d["eligible_single_round_real_provider_retries_now"]<=32
+          assert d["execution"]=="NONE" and d["real_money"]=="NO-GO"
+          assert not d["alpha_authority"] and not d["real_user_device_receipt_attested"]
+          print("XRAY_ROOT_POST_COMPUTE_SOURCE_HASH=EXACT_NO_ALPHA")
+          print("XRAY_ROOT_POST_COMPUTE_HISTORY_RECOVERY_WITNESS=COUNTS_ONLY_NO_GO")
+          PY
 
       - name: Commit durable XRAY checkpoints
         if: steps.session.outputs.allow_compute == 'true'
@@ -179,5 +206,6 @@ jobs:
             nasdaq-xray/deep_pre_r1_shadow.json
             nasdaq-xray/orchestrator_state.json
             /tmp/xray_stage_relay.json
+            /tmp/xray_root_history_recovery.json
           retention-days: 30
           if-no-files-found: ignore
