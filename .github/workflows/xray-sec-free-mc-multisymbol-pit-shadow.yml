@@ -73,6 +73,12 @@ jobs:
           j=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_sec_frames_shadow.json").read_text())
           assert j["schema"]=="XRAY_C418_SEC_FRAMES_SHARE_DISCOVERY_SHADOW_V1"
           assert j["current_price_pass_scope_count"]==514
+          import subprocess
+          for actual_key, file in (
+              ("source_price_git_blob_sha","nasdaq-xray/canonical_current_price_dv30.json"),
+              ("source_master_git_blob_sha","nasdaq-xray/canonical_current_master_manifest.json")):
+              expected=subprocess.check_output(["git","hash-object",file],text=True).strip()
+              assert j[actual_key]==expected,(actual_key,"CANONICAL_SHA_MISMATCH")
           assert j["c417_mc_primary_created"] is False
           assert j["c417_history_pass_created"] is False
           assert j["r92_eligible"] is False
@@ -82,6 +88,10 @@ jobs:
           assert j["filing_acceptance_intraday_attested"] is False
           assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
           if j["status"]=="SHADOW_FRAME_DISCOVERY_COMPLETE_NOT_PIT":
+              assert j["received_symbols"]==514
+              assert len(j["status_by_symbol"])==514
+              from collections import Counter
+              assert dict(Counter(j["status_by_symbol"].values()))==j["classes"]
               assert j["frames_http200"]==6
               assert sum(j["classes"].values())==514
           else:
