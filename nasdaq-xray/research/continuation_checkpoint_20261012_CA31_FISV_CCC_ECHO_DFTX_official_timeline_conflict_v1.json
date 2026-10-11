@@ -1,0 +1,82 @@
+{
+  "schema": "XRAY_P0_CA31_FOUR_SYMBOL_OFFICIAL_EVENT_LINEAGE_PIT_V1",
+  "asof_et": "2026-10-09",
+  "symbols": [
+    "CCC",
+    "DFTX",
+    "ECHO",
+    "FISV"
+  ],
+  "official_document_evidence": [
+    {
+      "symbol": "CCC",
+      "event": "NASDAQ_TICKER_RENAME",
+      "predecessor": "CCCS",
+      "successor": "CCC",
+      "issuer": "CCC Intelligent Solutions Holdings Inc.",
+      "official_issuer": "https://ir.cccis.com/news-releases/news-release-details/ccc-intelligent-solutions-announces-change-ticker-symbol-ccc-and",
+      "issuer_publication_date": "2025-10-09",
+      "announced_effective_trading_day": "2025-10-31",
+      "issuer_asserts_unmodified_CUSIP": true,
+      "issuer_asserts_Nasdaq_listing_continuity": true,
+      "source_type": "ISSUER_PRIMARY"
+    },
+    {
+      "symbol": "FISV",
+      "event": "NYSE_TO_NASDAQ_TRANSFER_AND_TICKER_CHANGE",
+      "predecessor": "FI",
+      "successor": "FISV",
+      "issuer": "Fiserv, Inc.",
+      "official_SEC_8K": "https://www.sec.gov/Archives/edgar/data/798354/000119312525254670/d17957d8k.htm",
+      "official_issuer": "https://investors.fiserv.com/news-releases/news-release-details/fiserv-announces-transfer-stock-exchange-listing-nasdaq",
+      "announced_effective_trading_day": "2025-11-11",
+      "previous_trading_venue": "NYSE",
+      "new_trading_venue": "Nasdaq",
+      "same_issuer_record_but_Nasdaq_260_session_eligibility_not_established": true,
+      "source_type": "SEC_8K_AND_ISSUER_PRIMARY"
+    },
+    {
+      "symbol": "ECHO",
+      "event": "NASDAQ_TICKER_RENAME",
+      "predecessor": "SATS",
+      "successor": "ECHO",
+      "issuer": "EchoStar Corporation",
+      "official_issuer": "https://ir.echostar.com/news-releases/news-release-details/echostar-changing-stocker-ticker-sats-echo-marking-companys-next",
+      "issuer_publication_date": "2026-06-22",
+      "announced_effective_trading_day": "2026-06-24",
+      "issuer_asserts_no_holder_action": true,
+      "CUSIP_and_full_history_lineage_PIT_unverified": true,
+      "source_type": "ISSUER_PRIMARY"
+    },
+    {
+      "symbol": "DFTX",
+      "event": "NASDAQ_TICKER_AND_ISSUER_NAME_REBRANDING_WITH_EFFECTIVE_DATE_UPDATE",
+      "predecessor": "MNMD",
+      "successor": "DFTX",
+      "issuer": "Definium Therapeutics Inc. formerly Mind Medicine (MindMed) Inc.",
+      "original_SEC_8K": "https://www.sec.gov/Archives/edgar/data/1813814/000119312526009854/mnmd-20260109.htm",
+      "original_8K_date": "2026-01-12",
+      "original_stated_effective_trading_day": "2026-01-13",
+      "updated_issuer": "https://ir.definiumtx.com/news-events/press-releases/detail/208/definium-therapeutics-common-shares-to-trade-under-new-nasdaq-ticker-symbol-dftx-effective-january-15-2026",
+      "revised_effective_trading_day": "2026-01-15",
+      "independent_OCC_memo": "https://infomemo.theocc.com/infomemos?number=58181",
+      "OCC_memo_date": "2026-01-14",
+      "OCC_effective_date": "2026-01-15",
+      "CUSIP_wording_conflict": "Original SEC 8-K states CUSIP remains unchanged; OCC memo is titled Name/Symbol/CUSIP Change and specifies new CUSIP. Treat precise old/new instrument identifier continuity as unverified pending reconciliation.",
+      "critical_pit_guard": "Do not use original Jan13 expected date to backdate Jan15 event; latest primary issuer revision and OCC corroborate Jan15",
+      "source_type": "SEC_8K_ISSUER_AND_OCC"
+    }
+  ],
+  "canonical_260_52_same_security_history_release_created": 0,
+  "source_registration_and_security_identifier_change_verification_complete": false,
+  "market_data_vendor_symbol_bar_splicing_authorized": false,
+  "official_primary_source_documents_readback": "WEB_PRIMARY_SOURCES_NOT_GITHUB_ACTIONS_ATTESTED",
+  "CI": "PENDING_EVENT_SPECIFIC_AUTOMATED_BACKTEST_NO_CANONICAL_PASS",
+  "C417_PRIMARY_MC_created": 0,
+  "canonical_HISTORY_PASS_created": 0,
+  "R92_created": false,
+  "GO": false,
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true
+}
