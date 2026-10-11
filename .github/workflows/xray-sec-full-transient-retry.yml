@@ -19,7 +19,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.sha }}
+      - name: Assert exact triggering source code SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$(git rev-parse HEAD)" == "$GITHUB_SHA" ]] || exit 2
+          echo "XRAY_SEC_TRANSIENT_TRIGGER_SHA=PASS_EXACT"
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -27,13 +33,52 @@ jobs:
         run: |
           python -m py_compile nasdaq-xray/sec_full_transient_retry.py
           python nasdaq-xray/sec_full_transient_retry.py --selftest
-      - name: Retrieve completed 514-symbol SEC witness from immutable run
+      - name: Discover most recent same-ASOF exact-source SEC census; reject old immutable vintages
+        shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh run download 37863746633 -R "${{ github.repository }}" \
-            -n xray-sec-full-price-pass-vintage-shadow-v1 -D "$RUNNER_TEMP/xray_sec_full_origin"
-          test -s "$RUNNER_TEMP/xray_sec_full_origin/xray_sec_full_price_pass_vintage_operational.json"
+          set -euo pipefail
+          matches="$(gh run list --workflow xray-sec-full-price-pass-vintage-shadow.yml \
+            --branch main --status success --limit 50 --json databaseId --jq '.[].databaseId')"
+          found=0
+          for id in $matches; do
+            candidate="$RUNNER_TEMP/xray_sec_candidate_$id"
+            if ! gh run download "$id" -R "${{ github.repository }}" \
+              -n xray-sec-full-price-pass-vintage-shadow-v1 -D "$candidate" >/dev/null 2>&1; then
+              continue
+            fi
+            witness="$candidate/xray_sec_full_price_pass_vintage_operational.json"
+            [[ -s "$witness" ]] || continue
+            if python - "$witness" <<'PY'
+          import json,sys
+          from pathlib import Path
+          sys.path.insert(0,"nasdaq-xray")
+          from sec_full_transient_retry import validate_origin
+          from sec_free_mc_multisymbol_pit_audit import git_blob_sha
+          root=Path("nasdaq-xray")
+          price_bytes=(root/"canonical_current_price_dv30.json").read_bytes()
+          master_bytes=(root/"canonical_current_master_manifest.json").read_bytes()
+          price=json.loads(price_bytes)
+          master=json.loads(master_bytes)
+          assert price["asof_et"]==master["asof_et"]
+          origin=json.loads(Path(sys.argv[1]).read_text())
+          validate_origin(origin,git_blob_sha(master_bytes),git_blob_sha(price_bytes),
+                          price["pass_symbols"],price["asof_et"])
+          print("XRAY_SEC_TRANSIENT_SOURCE_SHA_ASOF_SET=PASS_EXACT")
+          PY
+            then
+              mkdir -p "$RUNNER_TEMP/xray_sec_full_origin"
+              cp "$witness" "$RUNNER_TEMP/xray_sec_full_origin/xray_sec_full_price_pass_vintage_operational.json"
+              echo "XRAY_SEC_TRANSIENT_LATEST_SAME_SOURCE_CENSUS_ID=$id"
+              found=1
+              break
+            fi
+          done
+          if [[ "$found" != 1 ]]; then
+            echo "XRAY_SEC_TRANSIENT_NO_CURRENT_SHA_BOUND_CENSUS=FAIL_CLOSED" >&2
+            exit 2
+          fi
       - name: Retry only exact-source SEC timeouts without handling SEC 404 as transient
         env:
           XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
@@ -46,11 +91,22 @@ jobs:
           from pathlib import Path
           x=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_sec_transient_retry.json").read_text())
           assert x["schema"]=="XRAY_SEC_TRANSIENT_RECOVERY_SHADOW_V1"
-          assert x["origin_source_scope_count"]==514
-          assert x["eligible_retry_count"]==5
+          origin=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_sec_full_origin/xray_sec_full_price_pass_vintage_operational.json").read_text())
+          required=sum(
+              status=="UNKNOWN_SEC_TRANSPORT" and
+              origin["reason_codes"].get(sym)=="SEC_TRANSPORT_UNAVAILABLE"
+              for sym,status in origin["statuses"].items())
+          assert x["origin_source_scope_count"]==origin["sample_count"]
+          assert x["eligible_retry_count"]==required
           assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
           assert x["c417_primary_mc_count"]==0 and x["production_authority"] is False
-          assert "OZK" not in x["eligible_retry_symbols"]
+          assert all(origin["reason_codes"].get(sym)=="SEC_TRANSPORT_UNAVAILABLE"
+                     for sym in x["eligible_retry_symbols"])
+          assert not any(origin["reason_codes"].get(sym)=="SEC_HTTP_404"
+                         for sym in x["eligible_retry_symbols"])
+          if required==0:
+              assert x["status"]=="NO_TRANSIENT_RETRY_REQUIRED"
+              assert x["attempted"]==0 and x["outcomes"]=={}
           assert x["raw_share_counts_stored"] is False
           assert set(x["outcomes"]).issubset(set(x["eligible_retry_symbols"]))
           print("XRAY_SEC_TRANSIENT_RETRY_GUARD=PASS_PIT_SHADOW_ONLY")
