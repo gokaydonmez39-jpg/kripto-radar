@@ -1,0 +1,41 @@
+name: XRAY P0 MC Multi-Class Vendor Ref Independent Oracle Guard
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/p0_mc_multiclass_vendor_nonindependence.py"
+      - ".github/workflows/xray-p0-mc-multiclass-vendor-nonindependence.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  no-ticker-cap-false-primary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+      - name: Exact SHA binding
+        run: test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: '3.12'
+      - name: Require vendor MC no lookahead/issuer-class selftest
+        run: |
+          python -m py_compile nasdaq-xray/p0_mc_multiclass_vendor_nonindependence.py
+          python nasdaq-xray/p0_mc_multiclass_vendor_nonindependence.py --selftest
+          python -O nasdaq-xray/p0_mc_multiclass_vendor_nonindependence.py --selftest
+      - name: Evidence safety sentinel
+        run: |
+          python - <<'PY'
+          import ast
+          from pathlib import Path
+          p=Path("nasdaq-xray/p0_mc_multiclass_vendor_nonindependence.py")
+          src=p.read_text()
+          assert "C417_PRIMARY_MC_created" in src
+          assert "independent_issuer_cap_observation" in src
+          assert not any(isinstance(x,ast.Assert) for x in ast.walk(ast.parse(src)))
+          print("XRAY_MC_DUAL_CLASS_TICKER_REFERENCE=RESEARCH_ONLY_NO_PRIMARY")
+          PY

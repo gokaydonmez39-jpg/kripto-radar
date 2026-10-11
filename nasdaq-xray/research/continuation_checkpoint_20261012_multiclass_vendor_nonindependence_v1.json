@@ -1,0 +1,22 @@
+{
+  "schema": "XRAY_20261012_VENDOR_REFERENCE_MC_MULTICLASS_FALSE_INDEPENDENCE_V1",
+  "parent_main": "068aed283b34082176a166ea1d5a9e7ec85584c5",
+  "context": "Connected interactive Massive reference 2026-10-09 vs Alpaca SIP close 2026-10-09: three ticker reference MC formulas parity, not independent cap source. GOOG and GOOGL same CIK but unequal class closes give distinct ticker MC for same issuer.",
+  "crossfeed_research_tickers": [
+    "AAPL",
+    "META",
+    "GOOGL",
+    "GOOG"
+  ],
+  "three_provider_formula_reproduction_passes": 3,
+  "GOOG_vs_GOOGL_same_issuer_vendor_ticker_mc_relative_difference_approximately": "1.08%",
+  "potential_source_bias": "Massive reference date SEC report period, may precede SEC filing accepted date; reference MC is computed using weighted shares*selected ticker close",
+  "vendor_data_prices_shares_marketcap_in_json": false,
+  "class_weighted_mc_primary_verified": false,
+  "issuer_acceptance_to_asof_postfiling_CA_verified": false,
+  "C417_PRIMARY_MC": 0,
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "source_doc": "https://massive.com/docs/rest/forex/tickers/ticker-overview?auth=signup",
+  "CI": "PENDING"
+}
