@@ -1,0 +1,69 @@
+name: XRAY P0 History 515 Official Listing Reconciliation (No GO)
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/p0_history_official_reconciliation.py"
+      - ".github/workflows/xray-p0-history-official-reconciliation.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+      - name: Require exact source epoch
+        run: test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: '3.12'
+      - name: Install official calendar and execute no-provider 28 negative tests
+        run: |
+          python -m pip install --disable-pip-version-check "pandas_market_calendars==5.4.0"
+          python -m py_compile nasdaq-xray/p0_history_official_reconciliation.py
+          python nasdaq-xray/p0_history_official_reconciliation.py --selftest
+          python -O nasdaq-xray/p0_history_official_reconciliation.py --selftest
+      - name: Retrieve exact previous GitHub Alpaca real 515 run metadata only
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/xray-p0"
+          gh run download 38170900300 -R "${{ github.repository }}" \
+            -n xray-515-exact260-sip-status-no-vendor-bars \
+            -D "$RUNNER_TEMP/xray-p0"
+          test -s "$RUNNER_TEMP/xray-p0/xray_alpaca_full_515_shadow.json"
+      - name: Verify actual PRICE + MASTER blob lineage and all official IPO short-bounds
+        run: |
+          python nasdaq-xray/p0_history_official_reconciliation.py \
+            --alpaca "$RUNNER_TEMP/xray-p0/xray_alpaca_full_515_shadow.json" \
+            --out "$RUNNER_TEMP/xray-p0/xray_history_515_official_shadow.json"
+      - name: Confirm strict NON-AUTHORITY result before archive
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])/"xray-p0/xray_history_515_official_shadow.json"
+          j=json.loads(p.read_text())
+          assert j["classification"]=="RECONCILED_OBSERVATION_SHADOW_NOT_PRODUCTION"
+          assert j["full_scope_with_qqq"]==515
+          assert j["observed_exact_260_52"]==498
+          assert j["official_listing_ineligible"]==17
+          assert j["other_unresolved_symbols"]==[]
+          assert j["production_history_primary_pass"]==j["c417_primary_mc_pass"]==0
+          assert j["can_register_R92"] is False
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          print("XRAY_P0_515_RESEARCH_HISTORY=VERIFIED_498_OBSERVED_17_OFFICIAL_TOO_YOUNG_ZERO_PRIMARY")
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: xray-p0-history-515-official-evidence-no-go
+          path: ${{ runner.temp }}/xray-p0/xray_history_515_official_shadow.json
+          retention-days: 14
+          if-no-files-found: error
