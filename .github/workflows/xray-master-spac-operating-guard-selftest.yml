@@ -1,7 +1,7 @@
 name: XRAY SPAC Nonblank SIC Premature PASS Guard
 on:
   push:
-    branches: [main]
+    branches: [main, fix/c417-identity-sec-filing-session-calendar-20261011]
     paths:
       - "nasdaq-xray/master_spac_operating_guard.py"
       - "nasdaq-xray/master_sec_identity_manual_seed_registry.json"
