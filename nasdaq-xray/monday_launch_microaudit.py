@@ -112,6 +112,8 @@ def validate_contract(files:dict[str,str])->dict:
     for needle in ("def _weekday_root_successes(", "def _later_red_than_green(",
                    "ROOT_LATEST_RUN_FAILED_OR_CANCELLED",
                    "FINAL_LATEST_RUN_FAILED_OR_CANCELLED",
+                   "ACTIONS_MAIN_BRANCH_RUN_IDENTITY_UNVERIFIED",
+                   "per_page=50&branch=main",
                    'rt=_dt(latest_root.get("created_at"))'):
         if needle not in scheduler:
             errors.append("DELIVERY_SCHEDULER_FAIL_CLOSED_REGRESSION:"+needle)
