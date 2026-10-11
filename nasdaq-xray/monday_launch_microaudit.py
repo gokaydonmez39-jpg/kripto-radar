@@ -30,6 +30,18 @@ REQUIRED={
     "xray-preopen-source-audit.yml":(
         "5 12 * * 1-5","25 12 * * 1-5","5 13 * * 1-5",
         "15 13 * * 1-5","15 14 * * 1-5"),
+    "xray-research-watch-radar.yml":("17 15,20,23 * * 1-5",),
+    "xray-strict-g9-gate.yml":("32 * * * 1-5",),
+    "xray-account-gate-reconcile.yml":("12 * * * *",),
+    "xray-live-truth-attestation.yml":("13 * * * 1-5",),
+    "xray-native-stage-relay-live.yml":(),
+    "xray-manual-decision-research-shadow.yml":("17 21 * * 1-5",),
+    "xray-final-gate-overlay-v2.yml":("55 * * * 1-5",),
+    "xray-e2e-production-readiness.yml":("13 * * * 1-5",),
+    # Two non-core but independently scheduled control writers must not race
+    # with the 15 critical workflows: keep their cron and writer lease audited.
+    "xray-final-gate-overlay.yml":("15 * * * *",),
+    "xray-resilience-observability.yml":("47 * * * 1-5","47 */3 * * 0,6"),
 }
 CHECKS={
     "root_weekend_guard":("nasdaq-xray-daily.yml",(
@@ -79,6 +91,18 @@ CHECKS={
     "root_relay_checkout_immutability":("nasdaq-xray-daily.yml",(
         "Atomically wake pre-MC after root checkpoint",
         "github_native_stage_relay.py --out",
+    )),
+    "legacy_overlay_exclusive_writer":("xray-final-gate-overlay.yml",(
+        "group: xray-canonical-final-overlay-single-writer",
+        "cancel-in-progress: false",
+        "python nasdaq-xray/build_final_gate_overlay_v2.py",
+    )),
+    "v2_overlay_exclusive_and_durable_readback":("xray-final-gate-overlay-v2.yml",(
+        "group: xray-canonical-final-overlay-single-writer",
+        "cancel-in-progress: false",
+        "REMOTE_MAIN_EXACT_BLOB_READBACK_PASS_NOT_ALPHA_GO",
+        "XRAY_OVERLAY_V2=NO_DURABLE_COMMIT_AFTER_RETRIES",
+        "git show origin/main:nasdaq-xray/canonical_current_final_gate_overlay.json",
     )),
 }
 
@@ -207,6 +231,17 @@ def selftest():
     regressions=[
         ("nasdaq-xray-daily.yml",'"30 * * * *"','"31 * * * *"'),
         ("xray-preopen-source-audit.yml",'"15 13 * * 1-5"','"16 13 * * 1-5"'),
+        ("xray-strict-g9-gate.yml",'"32 * * * 1-5"','"33 * * * 1-5"'),
+        ("xray-account-gate-reconcile.yml",'"12 * * * *"','"13 * * * *"'),
+        ("xray-final-gate-overlay-v2.yml",
+         "group: xray-canonical-final-overlay-single-writer",
+         "group: uncoordinated-v2-writer"),
+        ("xray-final-gate-overlay.yml",
+         "group: xray-canonical-final-overlay-single-writer",
+         "group: uncoordinated-legacy-writer"),
+        ("xray-final-gate-overlay-v2.yml",
+         "REMOTE_MAIN_EXACT_BLOB_READBACK_PASS_NOT_ALPHA_GO",
+         "RACE_DEFERRED_TO_NEWER_RUN"),
         ("nasdaq-xray-delivery.yml","gh issue create","echo no-issue"),
         ("nasdaq-xray-delivery.yml",
          "if: steps.prep.outputs.ready == 'true'",
@@ -243,7 +278,7 @@ def selftest():
         without_guard[:destination]+guard_step+without_guard[destination:])
     assert not validate_contract(modified)["ok"]
     assert session_timeline()
-    print("XRAY_MONDAY_MICROAUDIT_SELFTEST=PASS_12_NEGATIVES_DST_DELIVERY_RECEIPTS_RECOVERY_NO_FALSE_GO")
+    print("XRAY_MONDAY_MICROAUDIT_SELFTEST=PASS_17_NEGATIVES_17_WORKFLOW_CRONS_DUAL_OVERLAY_SINGLE_WRITER_NO_FALSE_GO")
 
 def main():
     parser=argparse.ArgumentParser()
