@@ -127,7 +127,7 @@ def selftest():
         assert result["contract_status"]=="FAIL"
         assert any(want in x for x in result["blockers"]),(want,result["blockers"])
     bad(lambda x:x.update({"nasdaq-xray.yml":x["nasdaq-xray.yml"]+
-        '\\nschedule:\\n  - cron: "15 * * * *"\\n'}),"UNREVIEWED_NEW_SCHEDULE")
+        '\nschedule:\n  - cron: "15 * * * *"\n'}),"UNREVIEWED_NEW_SCHEDULE")
     bad(lambda x:x.update({"xray-sec-mirror-cik-shadow.yml":
         x["xray-sec-mirror-cik-shadow.yml"].replace(
             "contents: read","contents: write")}),
@@ -146,7 +146,7 @@ def selftest():
         "SCHEDULED_CRON_CHANGED")
     bad(lambda x:x.update({"xray-sec-mirror-cik-shadow.yml":
         x["xray-sec-mirror-cik-shadow.yml"].replace(
-            "contents: read","contents: read\\n  issues: write")}),
+            "contents: read","contents: read\n  issues: write")}),
         "UNAUTHORIZED_ISSUE_WRITE_PRIVILEGE")
     bad(lambda x:x.pop("xray-research-watch-radar.yml"),
         "SCHEDULED_WORKFLOW_FILE_MISSING")
@@ -160,7 +160,7 @@ def main():
     if a.selftest:selftest();return
     if not a.out:p.error("--out required")
     result=inventory(read_files())
-    a.out.write_text(json.dumps(result,sort_keys=True,indent=2)+"\\n",encoding="utf-8")
+    a.out.write_text(json.dumps(result,sort_keys=True,indent=2)+"\n",encoding="utf-8")
     print("XRAY_ALL_WORKFLOW_SCHEDULE_INVENTORY="+result["contract_status"])
     print("XRAY_ALL_WORKFLOW_YAML_FILES="+str(result["total_workflow_yaml_files"]))
     print("XRAY_ALL_WORKFLOW_SCHEDULES="+str(result["scheduled_count"]))
