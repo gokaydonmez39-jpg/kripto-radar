@@ -9,6 +9,7 @@ import datetime as dt
 import json
 import os
 import pathlib
+import subprocess
 import urllib.request
 from zoneinfo import ZoneInfo
 
@@ -82,6 +83,13 @@ def signature(runs):
     return sorted((x.get("id"),x.get("status"),x.get("conclusion"),
                    x.get("created_at"),x.get("head_sha"),x.get("run_attempt"))
                   for x in runs)
+
+def checkout_head_authorized(local_sha,remote_a,remote_b):
+    """A stable remote branch is not enough if the runner executes old code."""
+    return (all(isinstance(sha,str) and len(sha)==40
+                and all(c in "0123456789abcdef" for c in sha)
+                for sha in (local_sha,remote_a,remote_b))
+            and local_sha==remote_a==remote_b)
 
 def two_read_authorized(a,b,head_a,head_b,now):
     if not head_a or head_a != head_b:
@@ -203,6 +211,12 @@ def selftest():
     assert two_read_authorized(stale,stale,"a"*40,"a"*40,now)[0] is True
     assert two_read_authorized(stale,fresh,"a"*40,"a"*40,now)[0] is False
     assert two_read_authorized(stale,stale,"a"*40,"b"*40,now)[0] is False
+    good="a"*40
+    assert checkout_head_authorized(good,good,good)
+    for v in (("",good,good),(good,"b"*40,good),(good,good,"b"*40),
+              (good,good,""),("g"*40,good,good),
+              (good.upper(),good,good),(None,good,good)):
+        assert not checkout_head_authorized(*v)
     assert classify(now,[])["dispatch_allowed"] is True
     old_lease={"sha":"a"*40,"sequence":4,
                "requested_at_utc":"2026-10-08T09:30:00Z"}
@@ -239,6 +253,8 @@ def main():
         raise RuntimeError("REPO_BRANCH_AUTHORITY_MISMATCH")
     token=os.environ.get("GITHUB_TOKEN","")
     now=dt.datetime.now(UTC)
+    local_head=subprocess.check_output(
+        ["git","rev-parse","HEAD"],text=True).strip()
     before=get_runs(token)
     before_head=head_sha(token)
     first=classify(now,before)
@@ -251,6 +267,9 @@ def main():
         "r92_created":False,"terminal_pass_claimed":False,"recovery_proven":False,
         "first_snapshot":first,"action":"NONE","second_snapshot":None,
         "health_kick_lease_check":"NOT_NEEDED",
+        "checked_out_sha":local_head,
+        "live_main_initial_sha":before_head,
+        "checkout_live_main_exact_at_first_read":local_head==before_head,
     }
     try:
         if first["dispatch_allowed"]:
@@ -267,7 +286,9 @@ def main():
                 dt.datetime.now(UTC),kick_before,kick_after)
             output["second_snapshot"]=reason
             output["health_kick_lease_check"]=lease_reason
-            if accepted and lease_ok:
+            checkout_ok=checkout_head_authorized(local_head,before_head,after_head)
+            output["checkout_live_main_exact_at_second_read"]=checkout_ok
+            if accepted and lease_ok and checkout_ok:
                 response=github("POST","/actions/workflows/"+WORKFLOW+
                                 "/dispatches",token,{"ref":"main"})
                 output["action"]="ROOT_DISPATCH_ACCEPTED_NOT_RECOVERY"
