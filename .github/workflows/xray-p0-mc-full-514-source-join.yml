@@ -1,0 +1,78 @@
+name: XRAY P0 514 MC Four-Shard Source Join No GO
+on:
+  workflow_run:
+    workflows: ["XRAY Free Personal MC Exact 514 SEC Alpaca Four Shards"]
+    types: [completed]
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  join-exact-514:
+    if: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+      - name: Establish four genuine artifacts for the exact finished run
+        env:
+          GH_TOKEN: ${{ github.token }}
+          UPSTREAM_ID: ${{ github.event.workflow_run.id }}
+        run: |
+          set -euo pipefail
+          for i in 0 1 2 3; do
+            mkdir -p "$RUNNER_TEMP/shard$i"
+            gh run download "$UPSTREAM_ID" -R "${{ github.repository }}" \
+              -n "xray-mc-514-shard-$i-no-primary" -D "$RUNNER_TEMP/shard$i"
+            test -s "$RUNNER_TEMP/shard$i/xray_mc_64_spread_shadow.json" || \
+              test -s "$RUNNER_TEMP/shard$i/xray_mc_64_spread_shadow.json"
+          done
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Verify optimizer-safe exact-set union and no PRIMARY
+        env:
+          SOURCE_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          python nasdaq-xray/p0_mc_514_four_artifact_source_join.py \
+            --shard0 "$RUNNER_TEMP/shard0/xray_mc_64_spread_shadow.json" \
+            --shard1 "$RUNNER_TEMP/shard1/xray_mc_64_spread_shadow.json" \
+            --shard2 "$RUNNER_TEMP/shard2/xray_mc_64_spread_shadow.json" \
+            --shard3 "$RUNNER_TEMP/shard3/xray_mc_64_spread_shadow.json" \
+            --source-sha "$SOURCE_SHA" --selftest
+          python -O nasdaq-xray/p0_mc_514_four_artifact_source_join.py \
+            --shard0 "$RUNNER_TEMP/shard0/xray_mc_64_spread_shadow.json" \
+            --shard1 "$RUNNER_TEMP/shard1/xray_mc_64_spread_shadow.json" \
+            --shard2 "$RUNNER_TEMP/shard2/xray_mc_64_spread_shadow.json" \
+            --shard3 "$RUNNER_TEMP/shard3/xray_mc_64_spread_shadow.json" \
+            --source-sha "$SOURCE_SHA" --selftest
+          python nasdaq-xray/p0_mc_514_four_artifact_source_join.py \
+            --shard0 "$RUNNER_TEMP/shard0/xray_mc_64_spread_shadow.json" \
+            --shard1 "$RUNNER_TEMP/shard1/xray_mc_64_spread_shadow.json" \
+            --shard2 "$RUNNER_TEMP/shard2/xray_mc_64_spread_shadow.json" \
+            --shard3 "$RUNNER_TEMP/shard3/xray_mc_64_spread_shadow.json" \
+            --source-sha "$SOURCE_SHA" \
+            --out "$RUNNER_TEMP/xray_mc_full_514_union.json"
+      - name: Final no-GO guard
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          x=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_mc_full_514_union.json").read_text())
+          assert x["schema"]=="XRAY_P0_SEC_ALPACA_514_MC_FOUR_ARTIFACT_JOIN_V1"
+          assert x["stock_scope"]==x["unique_symbol_count"]==x["measured_symbol_count"]==514
+          assert sum(x["classification_counts"].values())==514
+          assert x["unaccounted_symbols"]==[]
+          assert x["C417_PRIMARY_MC_created"]==x["canonical_HISTORY_PASS_created"]==0
+          assert x["AL_R92_created"] is False and x["GO"] is False
+          assert x["raw_vendor_OHLCV_shares_MC_dollars_persisted"] is False
+          print("XRAY_514_MC_SOURCE_UNION=PASS_RESEARCH_ONLY_NO_PRIMARY")
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: xray-p0-full-514-mc-four-shard-classifications-only
+          path: ${{ runner.temp }}/xray_mc_full_514_union.json
+          retention-days: 14
+          if-no-files-found: error
