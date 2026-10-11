@@ -1,0 +1,13 @@
+{
+  "schema": "XRAY_SHORT_17_DOMAIN_V2",
+  "previous_main": "74b00f7b4424fdded37c82d7945388d5fde12534",
+  "failure_run": 38176437445,
+  "cause": "EXISTING_SPACEX_ISSUER_IR_HOST_WAS_NOT_IN_THE_TEST_DOMAIN_ALLOWLIST",
+  "action": "ALLOW_EXACT_HTTPS_IR_SPACEX_COM_IN_FAIL_ONLY_SELFTEST",
+  "verified_original_registry_sources": "TWO_SEC_ARCHIVES_PLUS_ISSUER_IR",
+  "assertions_updated": false,
+  "production_data_unchanged": true,
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "ci": "PENDING"
+}
