@@ -154,7 +154,7 @@ def selftest() -> None:
         try: verify(history,mutated)
         except ValueError: continue
         raise AssertionError("HISTORY_ACTION_OR_OPTIMIZATION_NEGATIVE_BYPASS")
-    print("XRAY_IMMUTABLE_ACTION_GUARD_SELFTEST=PASS_11_NEGATIVES")
+    print("XRAY_IMMUTABLE_ACTION_GUARD_SELFTEST=PASS_14_NEGATIVES")
 
 
 def live() -> dict:
