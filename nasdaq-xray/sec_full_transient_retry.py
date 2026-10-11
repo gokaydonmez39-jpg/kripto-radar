@@ -23,10 +23,10 @@ TRANSIENT="SEC_TRANSPORT_UNAVAILABLE"
 SCHEMA="XRAY_SEC_TRANSIENT_RECOVERY_SHADOW_V1"
 ORIGIN_SCHEMA="XRAY_SEC_MULTISYMBOL_PIT_SHADOW_V1"
 
-def validate_origin(origin:dict,master_sha:str,price_sha:str,scope:list[str]):
+def validate_origin(origin:dict,master_sha:str,price_sha:str,scope:list[str],expected_asof:str):
     if origin.get("schema")!=ORIGIN_SCHEMA:
         raise ValueError("BAD_ORIGIN_SCHEMA")
-    if origin.get("asof_et")!="2026-10-08":
+    if origin.get("asof_et")!=expected_asof:
         raise ValueError("ORIGIN_ASOF_MISMATCH")
     if (origin.get("master_git_blob_sha")!=master_sha or
             origin.get("price_git_blob_sha")!=price_sha):
@@ -59,17 +59,21 @@ def run(source_path:Path):
     master=json.loads(mb)
     price=json.loads(pb)
     price_pass=price.get("pass_symbols") or []
-    if master.get("asof_et")!="2026-10-08" or price.get("asof_et")!="2026-10-08":
+    asof=price.get("asof_et")
+    if (not isinstance(asof,str) or len(asof)!=10 or
+        master.get("asof_et")!=asof):
         raise ValueError("CURRENT_ASOF_CHANGED")
-    if len(set(price_pass))!=len(price_pass)==514:
+    if (not isinstance(price_pass,list) or not price_pass or
+        len(set(price_pass))!=len(price_pass) or
+        len(price_pass)!=price.get("pass_count")):
         raise ValueError("PRICE_PASS_SET_CHANGED")
     if not set(price_pass).issubset(set(master.get("pass_symbols") or [])):
         raise ValueError("MASTER_PRICE_IDENTITY_DRIFT")
-    syms=validate_origin(origin,git_blob_sha(mb),git_blob_sha(pb),price_pass)
-    out={"schema":SCHEMA,"origin_asof_et":"2026-10-08",
+    syms=validate_origin(origin,git_blob_sha(mb),git_blob_sha(pb),price_pass,asof)
+    out={"schema":SCHEMA,"origin_asof_et":asof,
          "origin_master_blob_sha":git_blob_sha(mb),
          "origin_price_blob_sha":git_blob_sha(pb),
-         "origin_source_scope_count":514,
+         "origin_source_scope_count":len(price_pass),
          "eligible_retry_count":len(syms),
          "eligible_retry_symbols":syms,
          "attempted":0,
@@ -81,11 +85,13 @@ def run(source_path:Path):
          "raw_share_counts_stored":False,
          "source_rights_unchanged":True,
          "status":"NOT_ATTEMPTED"}
+    if not syms:
+        # Not even a ticker-map request when the latest exact scope has
+        # zero genuine transient failures. 404 and stale filing stay UNKNOWN.
+        return dict(out,status="NO_TRANSIENT_RETRY_REQUIRED")
     ua=os.getenv("XRAY_SEC_USER_AGENT","")
     if not valid_operator_contact(ua):
         return dict(out,status="BLOCKED_OPERATOR_CONTACT")
-    if not syms:
-        return dict(out,status="NO_TRANSIENT_RETRY_REQUIRED")
     try:
         mapdata=map_ciks(get_json(SEC_MAP,ua))
     except ValueError as exc:
@@ -105,7 +111,7 @@ def run(source_path:Path):
                 facts=get_json(f"https://data.sec.gov/api/xbrl/companyfacts/CIK{cik}.json",ua)
                 time.sleep(0.55)
                 sub=get_json(f"https://data.sec.gov/submissions/CIK{cik}.json",ua)
-                classified=select_shares(facts,sub,"2026-10-08",expected_cik=cik)
+                classified=select_shares(facts,sub,asof,expected_cik=cik)
                 break
             except ValueError as exc:
                 code=str(exc)
@@ -133,7 +139,7 @@ def run(source_path:Path):
 
 def selftest():
     scope=["A","B","C"]
-    o={"schema":ORIGIN_SCHEMA,"asof_et":"2026-10-08",
+    o={"schema":ORIGIN_SCHEMA,"asof_et":"2026-10-09",
        "master_git_blob_sha":"m"*40,"price_git_blob_sha":"p"*40,
        "execution":"NONE","real_money":"NO-GO",
        "production_alpha_authority":False,"c417_primary_mc_count":0,
@@ -144,20 +150,28 @@ def selftest():
                        "C":"SHARE_CLASS_CORP_ACTION_AND_PIT_PRICE_STILL_REQUIRED"},
        "batch_limit":3,"batch_offset":0,"sample_count":3,
        "sample_scope_sha256":hashlib.sha256("A\nB\nC\n".encode()).hexdigest()}
-    assert validate_origin(o,"m"*40,"p"*40,scope)==["A"]
+    assert validate_origin(o,"m"*40,"p"*40,scope,"2026-10-09")==["A"]
     from copy import deepcopy
     for mutation in (
         ("master_git_blob_sha","z"*40),
         ("price_git_blob_sha","z"*40),
         ("c417_primary_mc_count",1),
-        ("asof_et","2026-10-07"),
+        ("asof_et","2026-10-08"),
         ("sample_scope_sha256","0"*64)):
         changed=deepcopy(o)
         changed[mutation[0]]=mutation[1]
-        try:validate_origin(changed,"m"*40,"p"*40,scope)
+        try:validate_origin(changed,"m"*40,"p"*40,scope,"2026-10-09")
         except ValueError:pass
         else:raise AssertionError("SOURCE_DRIFT_ACCEPTED:"+mutation[0])
-    print("XRAY_SEC_TRANSIENT_RETRY_SELFTEST=PASS_ORIGIN_SHA_EXACT_FIVE_NEGATIVES_NO_404_RETRY")
+    # Current 9 Oct 514-scope census has a 404 but no confirmed
+    # SEC_TRANSPORT_UNAVAILABLE. A no-op must make zero SEC calls.
+    z=json.loads(json.dumps(o))
+    z["statuses"]={"A":"SHADOW_SHARES_VINTAGE_ONLY",
+                   "B":"UNKNOWN_SEC_TRANSPORT","C":"UNKNOWN"}
+    z["reason_codes"]={"A":"SHARE_CLASS_CORP_ACTION_AND_PIT_PRICE_STILL_REQUIRED",
+                       "B":"SEC_HTTP_404","C":"SEC_SHARES_STALE_OR_FUTURE_OBSERVATION"}
+    assert validate_origin(z,"m"*40,"p"*40,scope,"2026-10-09")==[]
+    print("XRAY_SEC_TRANSIENT_RETRY_SELFTEST=PASS_LATEST_ASOF_ORIGIN_SHA_404_NO_RETRY_NEGATIVES")
 
 if __name__=="__main__":
     p=argparse.ArgumentParser()
