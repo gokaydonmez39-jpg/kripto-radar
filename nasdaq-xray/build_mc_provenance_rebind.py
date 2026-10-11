@@ -109,6 +109,15 @@ def settlement_witness_relation(j: dict, master: dict) -> str | None:
             or master["queue_total"] != len(current_symbols)
             or j.get("symbol_hash") != hash_lines(source_symbols)):
         return None
+    # Queue hash is a commitment to the ENTIRE source membership on a full
+    # MC handoff, never merely an independently asserted field. Residual
+    # requests intentionally carry the master hash while containing a subset.
+    if j.get("bridge_role") == "FULL_SCOPE_MC_HANDOFF_PROVENANCE":
+        if (j["queue_total"] != len(source_symbols)
+                or j.get("queue_hash") != j.get("symbol_hash")):
+            return None
+    if master.get("queue_hash") != hash_lines(current_symbols):
+        return None
     source_set = set(source_symbols)
     current_set = set(current_symbols)
     settled_set = set(settlement_symbols)
@@ -289,13 +298,13 @@ def full_scope_price_pending_reason(price: dict) -> str | None:
 
 def selftest() -> None:
     synthetic_master = {
-        "queue_hash": "current-hash",
+        "queue_hash": hash_lines(["AAA", "BBB"]),
         "queue_total": 2,
         "pass_symbols": ["AAA", "BBB"],
     }
     synthetic_witness = {
         "bridge_role": "FULL_SCOPE_MC_HANDOFF_PROVENANCE",
-        "queue_hash": "older-hash",
+        "queue_hash": hash_lines(["AAA", "BBB", "CCC"]),
         "queue_total": 3,
         "symbol_count": 3,
         "symbols": ["AAA", "BBB", "CCC"],
@@ -309,7 +318,7 @@ def selftest() -> None:
     synthetic_witness["bridge_role"] = "CURRENT_RESIDUAL_REQUEST_AUTHORITY"
     assert settlement_witness_relation(synthetic_witness, synthetic_master) is None
     synthetic_witness["bridge_role"] = "FULL_SCOPE_MC_HANDOFF_PROVENANCE"
-    synthetic_witness["queue_hash"] = "current-hash"
+    synthetic_witness["queue_hash"] = synthetic_master["queue_hash"]
     synthetic_witness["queue_total"] = 2
     # Previously this malformed 3-vs-2 witness was accepted as EXACT_QUEUE.
     assert settlement_witness_relation(synthetic_witness, synthetic_master) is None
@@ -347,7 +356,7 @@ def selftest() -> None:
             "compiled_policy_version": POLICY_VERSION,
             "settlement_status": "PASS",
             "bridge_role": "FULL_SCOPE_MC_HANDOFF_PROVENANCE",
-            "queue_hash": "older-hash",
+            "queue_hash": hash_lines(["AAA", "BBB", "CCC"]),
             "queue_total": 3,
             "symbols": ["AAA", "BBB", "CCC"],
             "symbol_count": 3,
