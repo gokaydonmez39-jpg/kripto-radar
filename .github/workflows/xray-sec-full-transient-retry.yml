@@ -25,11 +25,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
-      - name: Assert exact invocation and still-current main source
+          ref: ${{ github.sha }}
+      - name: Checkout current default-branch code; bind upstream artifact by canonical blobs
         shell: bash
         env:
-          XRAY_EXPECTED_SHA: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
+          XRAY_EXPECTED_SHA: ${{ github.sha }}
         run: |
           set -euo pipefail
           [[ "$(git rev-parse HEAD)" == "$XRAY_EXPECTED_SHA" ]] || exit 2
