@@ -64,7 +64,7 @@ CHECKS={
         "XRAY_PREOPEN_CURRENT_MAIN_SHA_EXACT=PASS",
         "preopen_live_release_gate.py --selftest",
         "r[\"r92_created\"] is False",
-        "r[\"notification_attempted\"] is False",
+        "r[\"real_device_receipt_verified\"] is False",
     )),
     "root_relay_checkout_immutability":("nasdaq-xray-daily.yml",(
         "Atomically wake pre-MC after root checkpoint",
