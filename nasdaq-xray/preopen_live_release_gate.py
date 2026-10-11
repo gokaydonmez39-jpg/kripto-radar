@@ -118,6 +118,48 @@ def evaluate(now,root,master,price,terminal,official,readiness,sources):
     # This witness never claims notification or device receipt, even if code
     # checks, platform toggles, or a backup GitHub issue are healthy.
     source_ready=not reasons
+    # Candidate-local research is independent of unrelated global universe
+    # unknowns. All positive local proof MUST still be bound to the real E2E
+    # registered-R92 witness, exact current session and official safety.
+    # This gate never registers, delivers or promotes an R92 itself.
+    local_reasons=set()
+    def local_require(ok,code):
+        if not ok: local_reasons.add(code)
+    local_require(w["preopen"],"LOCAL_NOT_OFFICIAL_PREOPEN")
+    local_require(last is not None and all(
+        d.get("asof_et")==last for d in
+        (root,master,price,terminal,readiness,sources)),
+        "LOCAL_CURRENT_EPOCH_NOT_EXACT")
+    local_require(age is not None and -60<=age<=MAX_ROOT_AGE,
+                  "LOCAL_ROOT_SCHEDULER_STALE")
+    for role,data in (("ROOT",root),("MASTER",master),("PRICE",price),
+                      ("TERMINAL",terminal),("OFFICIAL",official),
+                      ("READINESS",readiness),("SOURCE",sources)):
+        local_require(isinstance(data,dict) and data.get("execution")=="NONE"
+                      and data.get("real_money")=="NO-GO",
+                      "LOCAL_"+role+"_SAFETY_UNVERIFIED")
+    local_require(sources.get("source_integrity_pass") is True,
+                  "LOCAL_SOURCE_SHA_SET_NOT_PROVEN")
+    local_require(non_g9_price_count==0 and
+                  readiness.get("price_pass_explicit_non_g9_count")==0,
+                  "LOCAL_NON_G9_PRICE_RELEASE_VETO")
+    local_require(readiness.get("current_mc_authority_count")==1 and
+                  sources.get("current_primary_mc_proof_complete") is True,
+                  "LOCAL_PRIMARY_MC_NOT_PROVEN")
+    local_require(readiness.get("official_nasdaq_session_freshness_attested") is True
+                  and readiness.get("candidate_local_source_chain_attested") is True
+                  and sources.get("candidate_local_source_preconditions_proven") is True,
+                  "LOCAL_CANDIDATE_LINEAGE_NOT_PROVEN")
+    local_require((ss.get("trade_halts") or {}).get("status")=="PASS" and
+                  (ss.get("security_status") or {}).get("status")=="PASS",
+                  "LOCAL_OFFICIAL_SAFETY_NOT_PASS")
+    local_require(age_guard is not None and -60<=age_guard<=MAX_OFFICIAL_GUARD_AGE,
+                  "LOCAL_OFFICIAL_GUARD_STALE")
+    local_require(candidate_count>0,"LOCAL_NO_REGISTERED_R92")
+    local_require(terminal.get("candidate_local_research_pass") is True and
+                  readiness.get("ready_for_current_research_signal") is True,
+                  "LOCAL_EXACT_R92_REGISTRATION_NOT_ATTESTED")
+    candidate_local_ready=not local_reasons
     return {
         "schema":SCHEMA,"observed_utc":now.isoformat(),
         "opening_utc":w["opening_utc"],"session_date_et":w["current_session"],
@@ -128,6 +170,11 @@ def evaluate(now,root,master,price,terminal,official,readiness,sources):
         "official_guard_age_seconds":round(age_guard) if age_guard is not None and math.isfinite(age_guard) else None,
         "registered_candidate_count":candidate_count,
         "explicit_non_g9_price_pass_count":non_g9_price_count,
+        "candidate_local_research_preconditions_attested":candidate_local_ready,
+        "candidate_local_preopen_blockers":sorted(local_reasons),
+        "candidate_local_preopen_status":(
+            "CURRENT_R92_LOCAL_PRECONDITIONS_ONLY_NO_DEVICE_RECEIPT"
+            if candidate_local_ready else "LOCAL_RESEARCH_BLOCKED_NO_GO"),
         "status":"PREOPEN_RESEARCH_CHAIN_ATTESTED_NO_DEVICE_RECEIPT" if source_ready else "PREOPEN_BLOCKED_NO_GO",
         "research_source_chain_ready":source_ready,
         "blockers":sorted(reasons),
@@ -171,6 +218,8 @@ def selftest():
     good=evaluate(monday,*objs)
     assert good["research_source_chain_ready"] and not good["real_device_receipt_verified"]
     assert good["registered_candidate_count"]==0
+    assert not good["candidate_local_research_preconditions_attested"]
+    assert "LOCAL_NO_REGISTERED_R92" in good["candidate_local_preopen_blockers"]
     import copy
     cases=[
         (0,"status","PARTIAL_HISTORY","ROOT_HISTORY_PARTIAL_OR_UNKNOWN"),
@@ -201,6 +250,47 @@ def selftest():
     assert direct["explicit_non_g9_price_pass_count"]==1
     assert "C417_NON_G9_PRICE_SOURCE_RELEASE_VETO" in direct["blockers"]
     assert direct["alpha_promotion_authorized"] is False
+    # The ONLY local positive is already-registered and SHA-validated by the
+    # upstream E2E witness (simulated here). Incomplete global coverage does
+    # not erase that independent precondition; this creates no signal.
+    local=copy.deepcopy(objs)
+    local[0]["status"]="PARTIAL_HISTORY"
+    local[0]["unknown_count"]=23
+    local[3]["full_end_to_end_research_pass"]=False
+    local[3]["r92_candidates"]=["TEST_RESEARCH|B"]
+    local[5]["full_e2e_research_attested"]=False
+    local[5]["ready_for_current_research_signal"]=True
+    local[6]["candidate_local_source_preconditions_proven"]=True
+    separate=evaluate(monday,*local)
+    assert separate["status"]=="PREOPEN_BLOCKED_NO_GO"
+    assert separate["candidate_local_research_preconditions_attested"] is True
+    assert separate["registered_candidate_count"]==1
+    assert separate["notification_attempted"] is False
+    assert separate["real_device_receipt_verified"] is False
+    for index,patch,reason in (
+        (5,{"ready_for_current_research_signal":False},
+         "LOCAL_EXACT_R92_REGISTRATION_NOT_ATTESTED"),
+        (6,{"candidate_local_source_preconditions_proven":False},
+         "LOCAL_CANDIDATE_LINEAGE_NOT_PROVEN"),
+        (4,{"generated_at_utc":"2026-10-12T12:00:00Z"},
+         "LOCAL_OFFICIAL_GUARD_STALE"),
+        (5,{"current_mc_authority_count":0},"LOCAL_PRIMARY_MC_NOT_PROVEN"),
+        (0,{"updated_at_utc":"2026-10-09T12:00:00Z"},
+         "LOCAL_ROOT_SCHEDULER_STALE"),
+    ):
+        corrupted=copy.deepcopy(local)
+        corrupted[index].update(patch)
+        denied=evaluate(monday,*corrupted)
+        assert not denied["candidate_local_research_preconditions_attested"]
+        assert reason in denied["candidate_local_preopen_blockers"],reason
+    corrupted=copy.deepcopy(local)
+    corrupted[2]["pass_symbols"]=["TEST_NON_G9"]
+    corrupted[2]["results"]={"TEST_NON_G9":{
+        "status":"PASS_PRICE_DV30",
+        "info":{"source":"RALLIES_BULK_NON_G9"}}}
+    denied=evaluate(monday,*corrupted)
+    assert not denied["candidate_local_research_preconditions_attested"]
+    assert "LOCAL_NON_G9_PRICE_RELEASE_VETO" in denied["candidate_local_preopen_blockers"]
     bad=copy.deepcopy(objs)
     bad[3]["r92_candidates"]=["TEST_NOT_REGISTERED"]
     assert "POSITIVE_CANDIDATE_NOT_RESEARCH_REGISTERED" in evaluate(monday,*bad)["blockers"]
@@ -234,6 +324,9 @@ def main():
     print("XRAY_DYNAMIC_PREOPEN_ASOF="+str(result["expected_completed_session_et"]))
     print("XRAY_DYNAMIC_PREOPEN_EXPLICIT_NON_G9_PRICE="+str(result["explicit_non_g9_price_pass_count"]))
     print("XRAY_DYNAMIC_PREOPEN_BLOCKERS="+json.dumps(result["blockers"]))
+    print("XRAY_DYNAMIC_PREOPEN_LOCAL="+result["candidate_local_preopen_status"])
+    print("XRAY_DYNAMIC_PREOPEN_LOCAL_BLOCKERS="+json.dumps(
+        result["candidate_local_preopen_blockers"]))
     print("XRAY_DYNAMIC_PREOPEN_USER_DEVICE_RECEIPT=UNVERIFIED")
 
 if __name__=="__main__":
