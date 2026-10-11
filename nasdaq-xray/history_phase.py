@@ -19,6 +19,12 @@ TASK_ID="6a825366222081918997094d76e6ae46"
 ASOF_ENV=os.getenv("XRAY_ASOF")
 HARD_DAILY=260
 HARD_WEEKLY=52
+
+def require(condition, reason):
+    """HISTORY evidence barriers must survive Python -O optimization."""
+    if not condition:
+        raise AssertionError("XRAY_HISTORY_GATE:"+str(reason))
+
 WORKERS=int(os.getenv("XRAY_HISTORY_WORKERS","10"))
 PROVIDER_MAX_INFLIGHT=max(1,int(os.getenv("XRAY_HISTORY_PROVIDER_MAX_INFLIGHT","3")))
 RETRY_DELAYS=(0.0,1.0,2.5)
@@ -99,15 +105,15 @@ def load_history_bridge(src,asof):
         HISTORY_BRIDGE_BINDING_ROLE=None
         return {}
     j=json.loads(p.read_text())
-    assert j.get("schema")=="XRAY_HISTORY_EVIDENCE_BRIDGE_V1"
-    assert j.get("status")=="READY"
-    assert j.get("task_id")==TASK_ID
-    assert j.get("asof_et")==asof
-    assert j.get("execution")=="NONE" and j.get("real_money")=="NO-GO"
-    assert j.get("unknown_never_pass") is True
-    assert j.get("no_threshold_change") is True and j.get("no_synthetic_bars") is True
-    assert (j.get("thresholds") or {}).get("daily")==HARD_DAILY
-    assert (j.get("thresholds") or {}).get("weekly_completed")==HARD_WEEKLY
+    require(j.get("schema")=="XRAY_HISTORY_EVIDENCE_BRIDGE_V1","HISTORY_SOURCE_GUARD_L102")
+    require(j.get("status")=="READY","HISTORY_SOURCE_GUARD_L103")
+    require(j.get("task_id")==TASK_ID,"HISTORY_SOURCE_GUARD_L104")
+    require(j.get("asof_et")==asof,"HISTORY_SOURCE_GUARD_L105")
+    require(j.get("execution")=="NONE" and j.get("real_money")=="NO-GO","HISTORY_SOURCE_GUARD_L106")
+    require(j.get("unknown_never_pass") is True,"HISTORY_SOURCE_GUARD_L107")
+    require(j.get("no_threshold_change") is True and j.get("no_synthetic_bars") is True,"HISTORY_SOURCE_GUARD_L108")
+    require((j.get("thresholds") or {}).get("daily")==HARD_DAILY,"HISTORY_SOURCE_GUARD_L109")
+    require((j.get("thresholds") or {}).get("weekly_completed")==HARD_WEEKLY,"HISTORY_SOURCE_GUARD_L110")
 
     current_path=relpath(INPUT)
     current_blob=blob_sha(INPUT)
@@ -117,30 +123,30 @@ def load_history_bridge(src,asof):
         binding_role="EXACT_CURRENT_MC"
     else:
         pred_rel=str(j.get("source_mc_path") or "")
-        assert pred_rel and j.get("source_mc_blob_sha")
+        require(pred_rel and j.get("source_mc_blob_sha"),"HISTORY_SOURCE_GUARD_L120")
         pred=ROOT.parent/pred_rel
-        assert pred.exists()
-        assert blob_sha(pred)==j.get("source_mc_blob_sha")
+        require(pred.exists(),"HISTORY_SOURCE_GUARD_L122")
+        require(blob_sha(pred)==j.get("source_mc_blob_sha"),"HISTORY_SOURCE_GUARD_L123")
         prior=json.loads(pred.read_text())
-        assert mc_partition_semantic_equivalent(src,prior)
+        require(mc_partition_semantic_equivalent(src,prior),"HISTORY_SOURCE_GUARD_L125")
         binding_role="SEMANTIC_REBIND_EXACT_MC_PARTITIONS"
 
-    assert j.get("source_mc_policy_hash")==src.get("policy_hash")
-    assert j.get("source_mc_policy_version")==src.get("policy_version")
+    require(j.get("source_mc_policy_hash")==src.get("policy_hash"),"HISTORY_SOURCE_GUARD_L128")
+    require(j.get("source_mc_policy_version")==src.get("policy_version"),"HISTORY_SOURCE_GUARD_L129")
     entries=j.get("entries") or {}
     if any((x or {}).get("outcome")=="PASS_HISTORY" for x in entries.values()):
         if exact:
-            assert j.get("source_price_blob_sha")==src.get("input_blob_sha")
-            assert j.get("source_price_path")==src.get("input_path")
+            require(j.get("source_price_blob_sha")==src.get("input_blob_sha"),"HISTORY_SOURCE_GUARD_L133")
+            require(j.get("source_price_path")==src.get("input_path"),"HISTORY_SOURCE_GUARD_L134")
         else:
-            assert prior is not None
-            assert j.get("source_price_blob_sha")==prior.get("input_blob_sha")
-            assert j.get("source_price_path")==prior.get("input_path")==src.get("input_path")
-            assert prior.get("input_pass_hash")==src.get("input_pass_hash")
-            assert int(prior.get("input_count",-1))==int(src.get("input_count",-2))
-    assert isinstance(entries,dict)
-    assert set(entries)==set(j.get("scope_symbols") or [])
-    assert int((j.get("counts") or {}).get("TOTAL",-1))==len(entries)
+            require(prior is not None,"HISTORY_SOURCE_GUARD_L136")
+            require(j.get("source_price_blob_sha")==prior.get("input_blob_sha"),"HISTORY_SOURCE_GUARD_L137")
+            require(j.get("source_price_path")==prior.get("input_path")==src.get("input_path"),"HISTORY_SOURCE_GUARD_L138")
+            require(prior.get("input_pass_hash")==src.get("input_pass_hash"),"HISTORY_SOURCE_GUARD_L139")
+            require(int(prior.get("input_count",-1))==int(src.get("input_count",-2)),"HISTORY_SOURCE_GUARD_L140")
+    require(isinstance(entries,dict),"HISTORY_SOURCE_GUARD_L141")
+    require(set(entries)==set(j.get("scope_symbols") or []),"HISTORY_SOURCE_GUARD_L142")
+    require(int((j.get("counts") or {}).get("TOTAL",-1))==len(entries),"HISTORY_SOURCE_GUARD_L143")
     HISTORY_BRIDGE_PATH=relpath(p)
     HISTORY_BRIDGE_BINDING_ROLE=binding_role
     return entries
@@ -188,9 +194,9 @@ def bridge_resolution(sym,asof,sina_status=None,sina_info=None,sina_by=None,yaho
         return None
     mode=e.get("mode"); outcome=e.get("outcome")
     if mode=="RALLIES_CROSS_SOURCE_EXACT_HISTORY_PASS_V1" and outcome=="PASS_HISTORY":
-        assert e.get("source")=="RALLIES_CONNECTOR_DAILY"
-        assert e.get("proof")=="RALLIES_EXACT_ASOF_PLUS_LAGGING_CROSS_SOURCE_OVERLAP"
-        assert e.get("no_synthetic_bars") is True and e.get("can_create_pass") is True
+        require(e.get("source")=="RALLIES_CONNECTOR_DAILY","HISTORY_SOURCE_GUARD_L191")
+        require(e.get("proof")=="RALLIES_EXACT_ASOF_PLUS_LAGGING_CROSS_SOURCE_OVERLAP","HISTORY_SOURCE_GUARD_L192")
+        require(e.get("no_synthetic_bars") is True and e.get("can_create_pass") is True,"HISTORY_SOURCE_GUARD_L193")
         x,rb=_bridge_rallies_frame(e,asof)
         rs,ri=classify(rb,asof,"RALLIES_CONNECTOR_DAILY")
         if rs!="PASS_HISTORY":
@@ -214,10 +220,10 @@ def bridge_resolution(sym,asof,sina_status=None,sina_info=None,sina_by=None,yaho
         }
     if mode=="RALLIES_SINA_EXACT_TERMINAL_FAIL_V1" and outcome=="FAIL_HISTORY":
         r=e.get("rallies_observation") or {}
-        assert e.get("can_create_pass") is False
-        assert e.get("proof")=="TWO_INDEPENDENT_SOURCES_EXACT_HISTORY_BELOW_GATE"
-        assert r.get("asof_present") is True and r.get("last_date")==asof
-        assert int(r.get("daily_bars",-1))<HARD_DAILY or int(r.get("completed_week_count",-1))<HARD_WEEKLY
+        require(e.get("can_create_pass") is False,"HISTORY_SOURCE_GUARD_L217")
+        require(e.get("proof")=="TWO_INDEPENDENT_SOURCES_EXACT_HISTORY_BELOW_GATE","HISTORY_SOURCE_GUARD_L218")
+        require(r.get("asof_present") is True and r.get("last_date")==asof,"HISTORY_SOURCE_GUARD_L219")
+        require(int(r.get("daily_bars",-1))<HARD_DAILY or int(r.get("completed_week_count",-1))<HARD_WEEKLY,"HISTORY_SOURCE_GUARD_L220")
         # Static connector evidence can only become terminal when the live
         # same-run Sina classification independently matches the exact history
         # fingerprint. Any drift/mismatch simply leaves the symbol unresolved.
@@ -247,13 +253,13 @@ def bridge_resolution(sym,asof,sina_status=None,sina_info=None,sina_by=None,yaho
         ld=datetime.fromisoformat(e["listing_date"]).date()
         ad=datetime.fromisoformat(asof).date()
         age=(ad-ld).days
-        assert 0<=age<364
-        assert int(e.get("calendar_days_since_listing",-1))==age
-        assert e.get("proof")=="LISTING_AGE_LT_364_DAYS__52_COMPLETED_WEEKS_IMPOSSIBLE"
+        require(0<=age<364,"HISTORY_SOURCE_GUARD_L250")
+        require(int(e.get("calendar_days_since_listing",-1))==age,"HISTORY_SOURCE_GUARD_L251")
+        require(e.get("proof")=="LISTING_AGE_LT_364_DAYS__52_COMPLETED_WEEKS_IMPOSSIBLE","HISTORY_SOURCE_GUARD_L252")
         auth=e.get("listing_authority")
-        assert auth in {"BIGDATA_CORPORATE_CALENDAR","NASDAQ_OFFICIAL"}
+        require(auth in {"BIGDATA_CORPORATE_CALENDAR","NASDAQ_OFFICIAL"},"HISTORY_SOURCE_GUARD_L254")
         if auth=="NASDAQ_OFFICIAL":
-            assert str(e.get("listing_source_url") or "").startswith("https://www.nasdaq.com/")
+            require(str(e.get("listing_source_url") or "").startswith("https://www.nasdaq.com/"),"HISTORY_SOURCE_GUARD_L256")
         return "FAIL_HISTORY",{
           "proof":"LISTING_AGE_TERMINAL_FAIL_V1",
           "listing_date":e["listing_date"],
@@ -295,7 +301,7 @@ def _call_with_retry(fn):
             last=e
             if not _is_transient(e):
                 raise
-    assert last is not None
+    require(last is not None,"HISTORY_SOURCE_GUARD_L298")
     raise last
 
 def blob_sha(p:Path):
@@ -771,9 +777,9 @@ def main():
     global HISTORY_BRIDGE
     src=json.loads(INPUT.read_text())
     asof=ASOF_ENV or src.get("asof_et")
-    assert src["task_id"]==TASK_ID and src["asof_et"]==asof
+    require(src["task_id"]==TASK_ID and src["asof_et"]==asof,"HISTORY_SOURCE_GUARD_L774")
     HISTORY_BRIDGE=load_history_bridge(src,asof)
-    assert src.get("schema") in {"XRAY_CANONICAL_MC_INPUT_20260930_V1","XRAY_CANONICAL_MC_INPUT_V2","XRAY_MC_EPOCH_RESULT_V1"}
+    require(src.get("schema") in {"XRAY_CANONICAL_MC_INPUT_20260930_V1","XRAY_CANONICAL_MC_INPUT_V2","XRAY_MC_EPOCH_RESULT_V1"},"HISTORY_SOURCE_GUARD_L776")
     # C4.17 MC fallback PASS is WATCH-only/R92-ineligible, not an alpha-universe exclusion.
     # Carry both primary PASS and fallback WATCH through HISTORY; the WATCH cap is
     # preserved downstream and prevents PRE_G9 while still allowing technical radar discovery.
@@ -782,7 +788,7 @@ def main():
     syms=sorted(set(src.get("current_core_symbols") or []) or (set(primary)|set(watch)))
     if not set(primary).issubset(syms) or not set(watch).issubset(syms):
         syms=sorted(set(syms)|set(primary)|set(watch))
-    assert len(syms)==len(set(syms)) and len(syms)>0
+    require(len(syms)==len(set(syms)) and len(syms)>0,"HISTORY_SOURCE_GUARD_L785")
     results={};unknown=[]
     with ThreadPoolExecutor(max_workers=WORKERS) as ex:
         futs={ex.submit(eval_one,s,asof):s for s in syms}

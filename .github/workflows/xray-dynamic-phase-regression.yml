@@ -8,6 +8,7 @@ on:
       - "nasdaq-xray/build_current_resolver_request.py"
       - "nasdaq-xray/price_dv30_recover_from_fullstate.py"
       - "nasdaq-xray/history_phase.py"
+      - "nasdaq-xray/history_phase_optimized_guard_selftest.py"
       - "nasdaq-xray/legal_phase.py"
       - "nasdaq-xray/sina_stage.py"
       - "nasdaq-xray/master_sec_spac_proof_20261005.json"
@@ -50,6 +51,10 @@ jobs:
       - name: Install regression runtime
         run: python -m pip install --disable-pip-version-check -r nasdaq-xray/requirements-runtime.txt
 
+      - name: Fail-closed HISTORY bridge and 260/52 barriers under Python and -O
+        run: |
+          python nasdaq-xray/history_phase_optimized_guard_selftest.py
+          python -O nasdaq-xray/history_phase_optimized_guard_selftest.py
       - name: Compile dynamic phase scripts
         run: |
           python -m py_compile \

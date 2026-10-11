@@ -1,0 +1,23 @@
+{
+  "schema": "XRAY_HISTORY_41_OPTIMIZABLE_ASSERT_HARDENING_V1",
+  "live_source_before": "c23fc888d6c424bb7961965bd4513c0aca6ebcc4",
+  "file": "nasdaq-xray/history_phase.py",
+  "replaced_asserts": 41,
+  "purpose": "EVERY_SOURCE_BRIDGE_MC_SHA_ASOF_POLICY_HISTORY_260_52_GUARD_SURVIVES_PYTHON_O",
+  "tests": {
+    "positive": 2,
+    "negative": 21
+  },
+  "run_with": [
+    "python",
+    "python -O"
+  ],
+  "raw_prices": false,
+  "provider_calls": false,
+  "alpha_change": false,
+  "primary_mc_authority": false,
+  "history_primary_authority": false,
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "status": "PENDING_CI"
+}
