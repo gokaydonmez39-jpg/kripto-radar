@@ -1,0 +1,88 @@
+{
+  "schema": "XRAY_20261012_PERSONAL_FREE_ALPACA_P0_MC_HISTORY_REAL_CI_VERIFIED_V2",
+  "date_istanbul": "2026-10-12",
+  "head_before_commit": "1cc683db9a96870b865ec5dbb0f22f4daf0094b7",
+  "intended_use": "ONE_PERSON_PRIVATE_NONCOMMERCIAL_NASDAQ_RESEARCH_ALERTS_NO_SIGNAL_RESALE_NO_EXECUTION",
+  "canonical_asof_et": "2026-10-09",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "paid_license_not_assumed": true,
+  "alpaca_basic_historical_sip_older_15min_supported_by_official_docs": true,
+  "alpaca_plan_execution_within_account_not_guaranteed_for_other_services": true,
+  "source_links": [
+    "https://docs.alpaca.markets/us/docs/about-market-data-api",
+    "https://docs.alpaca.markets/us/v1.1/docs/market-data-faq",
+    "https://www.sec.gov/search-filings/edgar-application-programming-interfaces",
+    "https://github.com/dgunning/edgartools/blob/main/docs/guides/equity-statement-data-layers.md"
+  ],
+  "p0_history": {
+    "original_github_run": 38170900300,
+    "original_artifact_id": 11714078156,
+    "source_price_blob": "6f3f68fff0897d68f200ad3621c51a5071494714",
+    "source_master_blob": "828c21436a836b69fe5084387e1c54446c7b5075",
+    "scope_with_qqq": 515,
+    "observed_exact_260_52": 498,
+    "official_listing_too_young": 17,
+    "unmeasured_transport": 0,
+    "unexplained_set_difference": 0,
+    "official_17_run": 38176520535,
+    "new_guard_commit": "3cfc1f4237211b96e1ffaa86e7fbddbeae562b5e",
+    "new_guard_ci_run": 38177612990,
+    "ci_status": "success",
+    "positive_negative_tests": "1_SYNTHETIC_POSITIVE_29_NEGATIVE_NORMAL_AND_PYTHON_O",
+    "new_sanitized_artifact_id": 11716551030,
+    "new_sanitized_artifact_sha256": "sha256:7c0b1823a388aca1a914c5fea2604d1f4754b3ba2656be8a7afc8d3f723f3a5f",
+    "history_production_primary_pass_created": 0,
+    "license_automatic_unattended_rights_independently_attested": false,
+    "stock_split_class_ca_attested": false
+  },
+  "p0_mc": {
+    "primary_count": 0,
+    "bigdata_account_balance_zero": true,
+    "SEC_full_514_run": 38173716522,
+    "SEC_status_counts": {
+      "SHADOW_SHARES_VINTAGE_ONLY": 346,
+      "UNKNOWN": 167,
+      "UNKNOWN_SEC_TRANSPORT": 1
+    },
+    "alpaca_asset_endpoint_market_cap_attribute_observed": false,
+    "single_canary_symbol": "AAPL",
+    "canary_source": "SEC_EDGAR_OFFICIAL_PIT_VINTAGE_AND_ALPACA_BASIC_SIP_ONE_DAY",
+    "canary_commit": "1cc683db9a96870b865ec5dbb0f22f4daf0094b7",
+    "canary_run": 38177717290,
+    "canary_ci": "success",
+    "canary_result": "SHADOW_SEC_PIT_AND_SIP_CLOSE_ARITHMETIC_VERIFIED_CLASS_CA_UNPROVEN",
+    "canary_negative_tests": "1_POSITIVE_21_NEGATIVE_NORMAL_AND_PYTHON_O",
+    "canary_artifact_id": 11716885868,
+    "canary_artifact_sha256": "sha256:2b1132a59d8766e43f3cfa326b49bb1c2a3023dc58560ce7f054000eea2b48d7",
+    "class_pit_corporate_actions_resolved": false,
+    "independent_asof_market_cap_verified": false,
+    "existing_C417_primary_policy_not_amended": true
+  },
+  "technical_changes_merged": [
+    {
+      "commit": "3cfc1f4237211b96e1ffaa86e7fbddbeae562b5e",
+      "proof": "515_FULL_SCOPE_PERSONAL_HISTORY_SPLIT_498_17_REAL_ARTIFACT_EXACT_LINEAGE"
+    },
+    {
+      "commit": "1cc683db9a96870b865ec5dbb0f22f4daf0094b7",
+      "proof": "SEC_PIT_SHARES_TIMES_PERSONAL_SIP_DAILY_MC_ARITHMETIC_CANARY_REAL_ONE_ISSUER"
+    }
+  ],
+  "research_go_state": "VALIDATED_BOUNDED_SHADOW_PATH",
+  "production_research_go": false,
+  "R92": 0,
+  "remaining_HARD": [
+    "C417_PRIMARY_MC_0_OF_514_NOT_AUTHORIZED",
+    "SEC_ENTITY_VS_TRADED_SHARE_CLASS_AND_POST_FILING_CA",
+    "INDEPENDENT_ASOF_MC_CROSSCHECK_AT_FULL_SCOPE",
+    "Alpaca_498_HISTORY_SPLIT_ADJUSTMENT_AND_DATE_CLASS_CONTINUITY_NOT_PROVEN",
+    "USER_PERSONAL_RIGHTS_NOT_GENERAL_UNATTENDED_THIRD_PARTY_LICENSE",
+    "CURRENT_10_09_HISTORY_CANONICAL_10_07_TERMINAL_LAG",
+    "G9_ACCOUNT_AND_RECEIPT_ORIGIN_NOT_PROVEN"
+  ],
+  "next_engineering_focus": "Scope official SEC + Alpaca EOD point in time arithmetic beyond AAPL; reconcile class/CA/ADR and independent same-ASOF market cap witness per eligible symbol before formal C4.17 SOURCE-SUCCESSOR review; preserve 498/17 technical shadow until rights and adjusted-session verification. Never auto-promote shadow."
+}
