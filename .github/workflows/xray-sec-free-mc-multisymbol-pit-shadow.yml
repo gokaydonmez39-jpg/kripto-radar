@@ -2,7 +2,7 @@ name: XRAY SEC Free MC Multi-Symbol PIT Shadow Probe
 on:
   workflow_dispatch:
   push:
-    branches: [main]
+    branches: [main, fix/sec-pit-session-calendar-early-close-20261011]
     paths:
       - "nasdaq-xray/sec_free_mc_multisymbol_pit_audit.py"
       - "nasdaq-xray/sec_official_free_mc_transport_probe.py"
@@ -10,7 +10,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: xray-sec-multisymbol-pit-shadow
+  group: xray-sec-multisymbol-pit-shadow-${{ github.ref }}
   cancel-in-progress: false
 jobs:
   official-sec-vintages:
@@ -30,6 +30,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Install exact Nasdaq trading-session calendar
+        run: python -m pip install --disable-pip-version-check "pandas_market_calendars==5.4.0"
       - name: Prove SEC current exchange map, CIK and negative source guards
         run: |
           python -m py_compile nasdaq-xray/sec_official_free_mc_transport_probe.py nasdaq-xray/sec_free_mc_multisymbol_pit_audit.py
