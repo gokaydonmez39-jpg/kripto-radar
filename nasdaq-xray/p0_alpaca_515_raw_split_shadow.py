@@ -138,13 +138,21 @@ def selftest():
         return {"t":t.astimezone(UTC).isoformat(),
                 "o":open,"h":high,"l":low,"c":close,"v":volume}
     original=[bar(d) for d in dates]
-    # Purely synthetic and no provider records; compare expects 260 and 52
-    # predicates from production classifier, which will reject a 3-day sample.
-    require(compare(original,original,dates,weekly,asof)[0]==BAD,
-            "SHORT_SYNTHETIC_DOES_NOT_CREATE_FULL_260")
-    # Fully sized synthetic dates from official calendar, no market prices.
+    # Purely synthetic and no provider records. A comparison alone is not
+    # permitted to mint HISTORY PASS. audit() rejects fake 3-session horizons.
+    try:
+        audit(asof,["QQQ"],dates,weekly,lambda *a:{"QQQ":original},
+              dt.datetime(2026,10,10,18,tzinfo=UTC))
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("FAKE_THREE_SESSION_SCOPE_ACCEPTED")
+    # The isolated classifier receives the complete 260/52 official contract.
     from current_history_source_request import expected_dates
     daily,weeks=expected_dates(asof)
+    limited=compare(original,original,daily,weeks,asof)
+    require(limited[0]==MATCH and limited[2]==SHORT and limited[3]==SHORT,
+            "SHORT_STAYS_SHORT_NOT_HISTORY_PASS")
     base=[bar(d) for d in daily]
     require(compare(base,base,daily,weeks,asof)[0]==MATCH,
             "IDENTICAL_POSITIVE")
