@@ -41,7 +41,7 @@ jobs:
         env:
           XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
         run: |
-          python nasdaq-xray/sec_free_mc_multisymbol_pit_audit.py --output "$RUNNER_TEMP/xray_sec_multisymbol_pit_shadow.json"
+          python nasdaq-xray/sec_free_mc_multisymbol_pit_audit.py --offset 0 --limit 35 --output "$RUNNER_TEMP/xray_sec_multisymbol_pit_shadow.json"
           python - <<'PY'
           import json,os
           from pathlib import Path
@@ -50,7 +50,10 @@ jobs:
           assert j["c417_primary_mc_count"]==0 and j["production_alpha_authority"] is False
           assert j["market_cap_calculated"] is False and j["price_binding_attested"] is False
           assert j["corporate_action_binding_attested"] is False
-          assert j["sample_count"]==len(j["statuses"])
+          assert j["sample_count"]==35==len(j["statuses"])
+          assert j["batch_offset"]==0 and j["batch_limit"]==35
+          assert j["c417_primary_mc_count"]==0
+          print("XRAY_SEC_OFFICIAL_35_OF_PRICE_PASS=SHADOW_ONLY_NO_MC_AUTHORITY")
           print("XRAY_SEC_MULTI_SOURCE_AUDIT=PASS_NO_FALSE_MC")
           PY
       - name: Persist operational results only, 14 days
