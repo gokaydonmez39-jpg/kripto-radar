@@ -160,6 +160,11 @@ def report(asof,count,status,classification=None,reason=None):
 def execute():
     asof,symbols=core.load_scope(0,514)
     r=report(asof,len(symbols),"SOURCE_NOT_AVAILABLE")
+    # Bind this public count-only discovery to exact immutable current inputs.
+    r["source_price_git_blob_sha"]=core.git_blob_sha(
+        (ROOT/"canonical_current_price_dv30.json").read_bytes())
+    r["source_master_git_blob_sha"]=core.git_blob_sha(
+        (ROOT/"canonical_current_master_manifest.json").read_bytes())
     useragent=os.getenv("XRAY_SEC_USER_AGENT","")
     if not sec.valid_operator_contact(useragent):
         r["reason_codes"]=["SEC_OPERATOR_CONTACT_MISSING"]
