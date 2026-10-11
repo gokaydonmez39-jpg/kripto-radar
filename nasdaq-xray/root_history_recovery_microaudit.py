@@ -180,7 +180,7 @@ def selftest():
     cases=[
         (lambda x,y:x.update(asof_et="2026-10-08"),"ROOT_SINA_ASOF_DRIFT"),
         (lambda x,y:x.update(unknown_count=0),"SINA_UNKNOWN_COUNT_DRIFT"),
-        (lambda x,y:x["results"]["BBB"].update(status="PASS"),"ROOT_UNKNOWN_COUNT_DRIFT"),
+        (lambda x,y:x["results"]["BBB"].update(status="PASS"),"SINA_UNKNOWN_COUNT_DRIFT"),
         (lambda x,y:x["results"]["CCC"].update(info={"reason":"FAKE_PASS"}),"UNKNOWN_STATIC_REASON_UNCLASSIFIED"),
         (lambda x,y:x["results"]["BBB"].update(attempts=2),"UNKNOWN_EXHAUSTED_WITHOUT_FOUR_ATTEMPTS"),
         (lambda x,y:x["results"].pop("CCC"),"HISTORY_QUEUE_PARTITION_NOT_EXACT"),
