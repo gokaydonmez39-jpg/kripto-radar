@@ -15,7 +15,6 @@ import re
 import urllib.error
 import urllib.request
 from pathlib import Path
-from zoneinfo import ZoneInfo
 
 DEFAULT_ASOF="2026-10-08"
 CIK="0000320193"  # Apple: transport canary, not a real trading candidate
@@ -66,13 +65,41 @@ def accession_acceptance_index(sub: dict) -> dict:
         idx[acc]={"form":form,"filed":filed,"accepted_at":stamp}
     return idx
 
+def official_nasdaq_close_utc(asof: str) -> dt.datetime:
+    """Official regular-session close, including 13:00 ET half days.
+
+    No trading session, unknown schedule, or unavailable calendar => no
+    share-vintage PIT acceptance; there is no 16:00 fallback.
+    """
+    import pandas_market_calendars as mcal
+    from functools import lru_cache
+    # The calendar library resolves exchange holidays and early closes.
+    try:
+        day=dt.date.fromisoformat(asof)
+        cal=mcal.get_calendar("NASDAQ")
+        sched=cal.schedule(start_date=day,end_date=day)
+        if len(sched)!=1:
+            raise ValueError("NASDAQ_ASOF_NOT_TRADING_SESSION")
+        stamp=sched.iloc[0]["market_close"]
+        if stamp.tzinfo is None:
+            raise ValueError("NASDAQ_SESSION_CLOSE_TIMEZONE_MISSING")
+        result=stamp.to_pydatetime().astimezone(dt.timezone.utc)
+        if result.date()!=day:
+            raise ValueError("NASDAQ_SESSION_CLOSE_DATE_MISMATCH")
+        return result
+    except (KeyError,IndexError,TypeError,AttributeError) as exc:
+        raise ValueError("NASDAQ_SESSION_CALENDAR_UNAVAILABLE") from exc
+
+
 def select_shares(facts:dict,sub:dict,asof:str,expected_cik:str=CIK) -> dict:
     cutoff=dt.date.fromisoformat(asof)
-    # PIT authority is bounded at the completed regular Nasdaq session close,
-    # NOT midnight UTC: otherwise late SEC filings cause lookahead leakage.
-    session_close_utc=dt.datetime.combine(
-        cutoff,dt.time(16,0),tzinfo=ZoneInfo("America/New_York")
-    ).astimezone(dt.timezone.utc)
+    # The official Nasdaq trading calendar, not assumed 16:00 ET, is the
+    # sole completed-session PIT cutoff (holidays/half-days fail closed).
+    try:
+        session_close_utc=official_nasdaq_close_utc(asof)
+    except ValueError as exc:
+        return {"status":"UNKNOWN","reason":str(exc),
+                "production_mc_primary_pass":False}
     if str(facts.get("cik") or "").lstrip("0")!=expected_cik.lstrip("0"):
         return {"status":"UNKNOWN","reason":"SEC_COMPANYFACTS_CIK_MISMATCH"}
     if str(sub.get("cik") or "").lstrip("0")!=expected_cik.lstrip("0"):
