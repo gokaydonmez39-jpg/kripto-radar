@@ -1,0 +1,120 @@
+{
+  "schema": "XRAY_20261012_P0_FULL_514_SEC_ALPACA_AND_497_CA_QUALITY_ACTUAL_CI_V11",
+  "compiled_local_date": "2026-10-12",
+  "asof_et": "2026-10-09",
+  "branch": "main",
+  "verified_readback_preimage_head": "c347ad77d25378903315d057622558f965271f39",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "user_scoping": "PERSONAL_NONCOMMERCIAL_READ_ONLY_ALERTS",
+  "thresholds_not_relaxed": true,
+  "zero_new_paid_feed": true,
+  "full_MC": {
+    "original_full_four_shard_run": 38183058048,
+    "original_four_shard_CI": "success",
+    "actual_source_commit": "0d40b9577183b6cc6e4e5c6309b35873b2c19d9d",
+    "union_join_run": 38183357135,
+    "union_join_CI": "success",
+    "union_join_artifact_id": 11718354595,
+    "union_join_zip_sha256": "0d19da570cf17999db18aa69b530d1b63dd13718a267a1fb3e75a252b901bb42",
+    "PRICE_source_git_blob_sha": "6f3f68fff0897d68f200ad3621c51a5071494714",
+    "MASTER_source_git_blob_sha": "828c21436a836b69fe5084387e1c54446c7b5075",
+    "asof": "2026-10-09",
+    "exact_total_unique_symbols": 514,
+    "duplicate_symbols": 0,
+    "unmeasured_symbols": 0,
+    "per_shard": [
+      {
+        "shard": 0,
+        "scope": 129,
+        "arithmetic_shadow": 86,
+        "unknown": 43
+      },
+      {
+        "shard": 1,
+        "scope": 129,
+        "arithmetic_shadow": 92,
+        "unknown": 37
+      },
+      {
+        "shard": 2,
+        "scope": 128,
+        "arithmetic_shadow": 89,
+        "unknown": 39
+      },
+      {
+        "shard": 3,
+        "scope": 128,
+        "arithmetic_shadow": 79,
+        "unknown": 49
+      }
+    ],
+    "SEC_EDGAR_official_accepted_shares_x_Alpaca_SIP_close_calculable_SHADOW_only": 346,
+    "UNKNOWN_SEC_dimensional_class_or_PIT": 168,
+    "C417_PRIMARY_MC_CREATED": 0,
+    "listed_traded_class_and_postfiling_issuance_exact_asof_proven": false,
+    "independent_PIT_issuer_marketcap_crosscheck_proven": false,
+    "source_license_for_personal_unattended_automation_independently_attested": false,
+    "raw_vendor_OHLCV_sharecount_marketcap_persisted": false
+  },
+  "history": {
+    "original_515_raw_split_run": 38178676524,
+    "raw_split_math_full_stocks": 497,
+    "official_short_260_52_ineligible": 17,
+    "QQQ_reference_full": 1,
+    "split_restatement_full260_verified_11": 11,
+    "official_SEC_original_split_ratio_12_run": 38181275008,
+    "official_SEC_docs_accepted_ratio_all_12": 12,
+    "non_split_CA_direct_role_13": 13,
+    "non_split_CA_acquirer_cap_table_role_18": 18,
+    "previous_complete_provider_CA_event_count": 859,
+    "provider_all_CA_event_count": 861,
+    "data_quality_complete_vs_all_full_run": 38182564771,
+    "complete_missing_2_in_all_for_symbols": [
+      "IESC",
+      "WFRD"
+    ],
+    "quality_to_31_roles_bound_run": 38182796381,
+    "quality_role_join_ci": "success",
+    "source_31_role_non_split_review_count": 31,
+    "independent_full_497_CA_PIT_published_and_security_class_verified": false,
+    "production_canonical_history_pass_created": 0
+  },
+  "current_known_canonical": {
+    "PRICE_asof_et": "2026-10-09",
+    "PRICE_pass": 514,
+    "MASTER_asof_et": "2026-10-09",
+    "MASTER_PASS_identity": 3184,
+    "MASTER_unknown_SPAC_exact_official_classification": 12,
+    "canonical_HISTORY_asof_et": "2026-10-07",
+    "canonical_HISTORY_PASS_count": 460,
+    "terminal_asof_et": "2026-10-07",
+    "terminal_state": "PARTIAL",
+    "terminal_R92_count": 0
+  },
+  "unresolved_mandatory_release_items": [
+    "346_RESEARCH_ISSUER_MC_NOT_C417_PRIMARY_CLASS_ISSUANCE_PIT",
+    "168_OFFICIAL_SEC_SHARE_CLASS_OR_CURRENT_VALID_SHARES_UNKNOWN",
+    "497_HISTORY_INDEPENDENT_IDENTITY_NON_SPLIT_CA_PIT_AND_VENDOR_UNATTENDED_RIGHTS_NOT_FINAL",
+    "MASTER_12_SPAC_UNKNOWN",
+    "CANONICAL_HISTORY_TERMINAL_DATE_DRIFT_AND_NO_R92",
+    "G9_ACCOUNT_AND_ACTUAL_DEVICE_DELIVERY_SEPARATE_APPROVAL"
+  ],
+  "GO_decision": "NO-GO",
+  "no_fabricated_primary": true,
+  "official_source_docs": [
+    "https://docs.alpaca.markets/us/docs/about-market-data-api",
+    "https://docs.alpaca.markets/us/reference/corporateactions-1",
+    "https://docs.alpaca.markets/us/reference/stockbars",
+    "https://www.sec.gov/search-filings/edgar-application-programming-interfaces"
+  ],
+  "next_source_actions": [
+    "Resolve 168 SEC class/ADR/PIT issuer share witnesses using original filing dimensions and no post-filing issuance gap",
+    "Review 346 issuer arithmetic asof independent MC comparable for C4.17 approval not ticker-weighted self-consistency",
+    "Read non-split 31 CA roles from official issuer SEC accepted filings, and outstanding corporate-action lag risks among 466",
+    "Rebind same ASOF history and terminal only after authority; never derive R92 from SHADOW"
+  ]
+}
