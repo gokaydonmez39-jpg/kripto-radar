@@ -65,7 +65,13 @@ def accession_acceptance_index(sub: dict) -> dict:
             continue
         if not isinstance(stamp,str) or len(stamp)<19:
             continue
-        idx[acc]={"form":form,"filed":filed,"accepted_at":stamp}
+        row={"form":form,"filed":filed,"accepted_at":stamp}
+        # EDGAR accession is an immutable filing identity. A duplicate
+        # accession with conflicting filing/acceptance metadata must never
+        # silently overwrite an earlier PIT record (last-write-wins).
+        if acc in idx and idx[acc]!=row:
+            raise ValueError("SEC_SUBMISSIONS_CONFLICTING_ACCESSION")
+        idx[acc]=row
     return idx
 
 @lru_cache(maxsize=512)
@@ -216,6 +222,23 @@ def selftest():
     assert r["status"]=="SHADOW_SHARES_VINTAGE_ONLY"
     assert r["observation_date"]=="2026-09-30"
     assert r["production_mc_primary_pass"] is False
+    # Duplicate accession rows with identical metadata are idempotent.
+    # Conflicting acceptance stamps are an invalid PIT source, regardless
+    # of whether the bad row comes first or last in SEC Submissions.
+    duplicate=json.loads(json.dumps(subs))
+    for k in ("accessionNumber","form","filingDate","acceptanceDateTime"):
+        duplicate["filings"]["recent"][k].append(duplicate["filings"]["recent"][k][0])
+    assert select_shares(fak,duplicate,asof)["status"]=="SHADOW_SHARES_VINTAGE_ONLY"
+    duplicate["filings"]["recent"]["acceptanceDateTime"][-1]="2026-10-10T12:00:00Z"
+    bad_order=select_shares(fak,duplicate,asof)
+    assert bad_order["status"]=="UNKNOWN"
+    assert bad_order["reason"]=="SEC_SUBMISSIONS_CONFLICTING_ACCESSION"
+    for k in ("accessionNumber","form","filingDate","acceptanceDateTime"):
+        duplicate["filings"]["recent"][k][0],duplicate["filings"]["recent"][k][-1]=(
+            duplicate["filings"]["recent"][k][-1],duplicate["filings"]["recent"][k][0])
+    bad_order=select_shares(fak,duplicate,asof)
+    assert bad_order["status"]=="UNKNOWN"
+    assert bad_order["reason"]=="SEC_SUBMISSIONS_CONFLICTING_ACCESSION"
     # A mismatched accession on an ineligible post-ASOF vintage is NOT
     # evidence of missing official archive coverage.
     stale=json.loads(json.dumps(fak))
