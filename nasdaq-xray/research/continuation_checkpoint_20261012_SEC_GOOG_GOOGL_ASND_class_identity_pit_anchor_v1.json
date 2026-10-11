@@ -1,0 +1,69 @@
+{
+  "schema": "XRAY_20261012_OFFICIAL_SEC_MULTICLASS_ADS_IDENTITY_EVIDENCE_V1",
+  "asof_et": "2026-10-09",
+  "scope": "RESEARCH_ONLY_ORIGINAL_SEC_FILINGS",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "original_full_514_UNKNOWN_symbols": [
+    "GOOG",
+    "GOOGL",
+    "ASND"
+  ],
+  "sec_primary_document_witnesses": [
+    {
+      "issuer": "Alphabet Inc.",
+      "cik": "0001652044",
+      "original_filing": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/goog-20260630.htm",
+      "official_accession_index": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/0001652044-26-000071-index.htm",
+      "official_class_xbrl": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R1.htm",
+      "accession": "0001652044-26-000071",
+      "filing_type": "10-Q",
+      "document_report_period": "2026-06-30",
+      "filing_acceptance_clock_as_displayed_by_SEC": "2026-07-22 21:15:54",
+      "classes": [
+        {
+          "nasdaq_symbol": "GOOGL",
+          "class": "Class A Common Stock"
+        },
+        {
+          "nasdaq_symbol": "GOOG",
+          "class": "Class C Capital Stock"
+        },
+        {
+          "nasdaq_symbol": null,
+          "class": "Class B Common Stock",
+          "listed_under_GOOG_or_GOOGL": false
+        }
+      ],
+      "filing_shares_reference_date": "2026-07-15",
+      "known_continuity_issue": "Same issuer has different listed stock classes and unlisted Class B; class-specific quantity must not be multiplied by unrelated share-class ticker close. Post-document issuance and repurchases until 2026-10-09 unverified.",
+      "sec_20261009_tradable_class_and_issuer_MC_PIT_complete": false
+    },
+    {
+      "issuer": "Ascendis Pharma A/S",
+      "original_filing": "https://www.sec.gov/Archives/edgar/data/1612042/000119312526046590/asnd-20251231.htm",
+      "filing_type": "20-F",
+      "document_report_period": "2025-12-31",
+      "nasdaq_symbol": "ASND",
+      "security": "American Depositary Shares",
+      "underlying": "ordinary shares",
+      "ads_to_ordinary_share_ratio_in_document": "1:1",
+      "known_continuity_issue": "Document establishes historical ratio only; effective ratio and direct corporate-action rebasing through 2026-10-09 still require event-by-event official evidence.",
+      "sec_20261009_ADS_ratio_and_CA_PIT_complete": false
+    }
+  ],
+  "category_notes": {
+    "issuer_vs_traded_class_not_interchangeable": true,
+    "SEC_companyfacts_entity_level_non_dimensional_only": true,
+    "share_classes_are_not_one_security": true,
+    "possible_post_filing_capital_structure_changes_not_proven_absent": true
+  },
+  "source_date_requirement": "Original filing acceptance before asof does not prove share-class outstanding quantities remain unchanged at asof",
+  "C417_PRIMARY_MC_created": 0,
+  "canonical_HISTORY_PASS_created": 0,
+  "R92_created": false,
+  "GO": false,
+  "CI": "SEC_PRIMARY_DOCUMENT_MANUAL_READ_ONLY_NOT_ACTIONS_ATTESTED",
+  "source_evidence_policy": "SEC documents are public; no vendor price, raw share count or issuer MC dollars persisted in checkpoint"
+}
