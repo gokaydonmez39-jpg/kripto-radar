@@ -88,7 +88,7 @@ jobs:
       XRAY_PRICE_DV30_RECOVER_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_current_price_dv30.json
       XRAY_PHASE_WORKERS: "12"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with: {fetch-depth: 1}
       - name: Enforce immutable resolver authority artifacts
         if: github.event_name == 'push'
@@ -113,7 +113,7 @@ jobs:
             esac
           done < <(git diff --name-status "$before" "$after" -- 'nasdaq-xray/canonical_resolver_bridge_*.json')
           [[ "$bad" -eq 0 ]]
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with: {python-version: "3.12"}
       - name: Compile factory
         run: |
@@ -1091,7 +1091,7 @@ jobs:
           python nasdaq-xray/github_native_stage_relay.py --target post-mc --out /tmp/xray_postmc_relay.json
       - name: Store Pre-MC to Post-MC dispatch operational witness
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: xray-premc-to-postmc-relay
           path: /tmp/xray_postmc_relay.json
