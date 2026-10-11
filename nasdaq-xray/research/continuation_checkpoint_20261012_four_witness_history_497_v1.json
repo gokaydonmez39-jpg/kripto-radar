@@ -1,0 +1,17 @@
+{
+  "schema": "XRAY_P0_FOUR_WITNESS_497_HISTORY_SAFE_SOURCE_JOIN_V1",
+  "parent_head": "9617166cdf010d20b169e9d9c70206893cb5345c",
+  "asof": "2026-10-09",
+  "source_runs": [
+    38178518447,
+    38178676524,
+    38178327791,
+    38178886981
+  ],
+  "goal": "Strict set equality of 497 full history stocks (11 split-restated, 486 no restatement) + QQQ plus 17 official early-listing exclusions; 4 sanitized sources only",
+  "production_history_pass": 0,
+  "C417_primary_mc": 0,
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "CI": "PENDING"
+}
