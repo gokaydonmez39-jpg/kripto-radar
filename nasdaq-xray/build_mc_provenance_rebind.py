@@ -350,6 +350,7 @@ def selftest() -> None:
             "queue_hash": "older-hash",
             "queue_total": 3,
             "symbols": ["AAA", "BBB", "CCC"],
+            "symbol_count": 3,
             "symbol_hash": hash_lines(["AAA", "BBB", "CCC"]),
             "settlement_symbols": ["AAA", "BBB"],
         }
