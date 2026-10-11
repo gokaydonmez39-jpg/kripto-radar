@@ -1,0 +1,14 @@
+{
+  "schema": "XRAY_20261012_12_SEC_DOC_RATE_TEXT_VERIFIER_V2",
+  "head_before": "4503629134091dc5bb11a803b8390473db898730",
+  "asof": "2026-10-09",
+  "source_12_urls": "nasdaq-xray/research/p0_11_split_events_official_sec_issuer_registry_20261012.json",
+  "change": "After SEC 12/12 HTTP/acceptance success, parse original documents for exact split-ratio language. Real source matching required; no synthetic positives",
+  "independent_issuer_class_MC_verified": false,
+  "SEC_document_digest_not_archived": true,
+  "production_HISTORY_PASS": 0,
+  "PRIMARY_MC": 0,
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "ci": "PENDING"
+}

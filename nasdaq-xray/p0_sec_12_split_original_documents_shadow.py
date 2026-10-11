@@ -65,6 +65,24 @@ def match_submission(event,sub,asof):
             "SEC_ISSUER_DOCUMENT_LOOKAHEAD")
     return acc
 
+# Verified SEC filing language: acceptance at current ASOF was tested
+# independently in this job. This is document text verification, not an
+# independently reconstructed cap table or historical issuer CUSIP chain.
+OFFICIAL_SPLIT_TEXT={
+  "ASST@2026-02-06":(r"\b1\s*[:/-]\s*20\b",r"\b1\s*[- ]\s*for\s*[- ]\s*20\b"),
+  "BKNG@2026-04-06":(r"twenty\s*[- ]\s*five\s*[- ]\s*for\s*[- ]\s*one",r"\b25\s*[- ]\s*for\s*[- ]\s*1\b"),
+  "CRWD@2026-07-02":(r"four\s*[- ]\s*for\s*[- ]\s*one",r"\b4\s*[- ]\s*for\s*[- ]\s*1\b"),
+  "HON@2026-06-29":(r"\b1\s*[- ]\s*for\s*[- ]\s*2\b",r"\b1\s*[:/]\s*2\b"),
+  "IESC@2026-08-24":(r"two\s*[- ]\s*for\s*[- ]\s*one",r"\b2\s*[- ]\s*for\s*[- ]\s*1\b"),
+  "KLAC@2026-06-12":(r"ten\s*[- ]\s*to\s*[- ]\s*one",r"ten\s*[- ]\s*for\s*[- ]\s*one",r"\b10\s*[- ]\s*for\s*[- ]\s*1\b"),
+  "MNST@2026-08-11":(r"two\s*[- ]\s*for\s*[- ]\s*one",r"\b2\s*[- ]\s*for\s*[- ]\s*1\b"),
+  "NFLX@2025-11-17":(r"ten\s*[- ]\s*for\s*[- ]\s*one",r"\b10\s*[- ]\s*for\s*[- ]\s*1\b"),
+  "POWL@2026-04-06":(r"three\s*[- ]\s*for\s*[- ]\s*one",r"\b3\s*[- ]\s*for\s*[- ]\s*1\b"),
+  "SNEX@2026-03-23":(r"three\s*[- ]\s*for\s*[- ]\s*two",r"\b3\s*[- ]\s*for\s*[- ]\s*2\b"),
+  "SNEX@2026-07-20":(r"three\s*[- ]\s*for\s*[- ]\s*two",r"\b3\s*[- ]\s*for\s*[- ]\s*2\b"),
+  "TRI@2026-05-04":(r"\b0\.984560\b",r"\b0\.98456\b")
+}
+
 def check_html(event,body):
     require(type(body) is bytes and 100<=len(body)<=8_000_000,
             "SEC_ORIGINAL_DOC_UNREADABLE")
@@ -72,6 +90,11 @@ def check_html(event,body):
     readable=re.sub(r"\s+"," ",readable).lower()
     require("split" in readable or "consolidat" in readable,
             "ORIGINAL_DOC_NO_SPLIT_TEXT")
+    key=event.get("symbol","")+"@"+event.get("process_date","")
+    required=OFFICIAL_SPLIT_TEXT.get(key)
+    require(type(required) is tuple and bool(required),"OFFICIAL_RATIO_PATTERN_NOT_REGISTERED")
+    require(any(re.search(regex,readable) for regex in required),
+            "OFFICIAL_DOC_NUMERIC_SPLIT_RATIO_NOT_PARSED")
     return True
 
 def audit(registry,fetch_sub,fetch_original):
@@ -96,7 +119,7 @@ def audit(registry,fetch_sub,fetch_original):
             match_submission(e,by_cik[cik],"2026-10-09")
             body=fetch_original(url)
             check_html(e,body)
-            out[key]="SEC_OFFICIAL_ACCEPTED_PRE_ASOF_DOC_HTTP200_SPLIT_TEXT"
+            out[key]="SEC_OFFICIAL_ACCEPTED_PRE_ASOF_ORIGINAL_DOC_RATIO_TEXT_VERIFIED"
         except (ValueError,RuntimeError,KeyError,TypeError,
                 urllib.error.HTTPError,urllib.error.URLError,TimeoutError):
             out[key]="UNKNOWN_SEC_DOC_OR_ACCEPTANCE_NOT_PROVEN"
@@ -108,11 +131,12 @@ def audit(registry,fetch_sub,fetch_original):
             "source_registry_git_blob_sha":blob_sha(REG),
             "source_events":12,"source_symbols":11,
             "SEC_document_and_acceptance_verified_count":stats[
-              "SEC_OFFICIAL_ACCEPTED_PRE_ASOF_DOC_HTTP200_SPLIT_TEXT"],
+              "SEC_OFFICIAL_ACCEPTED_PRE_ASOF_ORIGINAL_DOC_RATIO_TEXT_VERIFIED"],
             "SEC_document_or_acceptance_unknown_count":stats[
               "UNKNOWN_SEC_DOC_OR_ACCEPTANCE_NOT_PROVEN"],
             "event_statuses":out,
-            "all_ratio_strings_machine_parsed_and_verified":False,
+            "all_ratio_strings_machine_parsed_and_verified":stats[
+               "SEC_OFFICIAL_ACCEPTED_PRE_ASOF_ORIGINAL_DOC_RATIO_TEXT_VERIFIED"]==12,
             "post_filing_issuer_shareclass_issuance_bound":False,
             "historical_CA_publication_time_machine_attested":False,
             "raw_SEC_HTML_prices_or_shares_persisted":False,
@@ -133,7 +157,7 @@ def selftest():
         "acceptanceDateTime":["2026-04-03T11:00:00Z"]}}}
     require(match_submission(e,source,"2026-10-09")==acc,
             "FILING_PRE_ASOF_POSITIVE")
-    require(check_html(e,b"<html>" + b"split a company" * 50 + b"</html>"),
+    require(check_html(e,b"<html>" + b"twenty-five-for-one split a company" * 50 + b"</html>"),
             "ORIGINAL_DOCUMENT_POSITIVE")
     red=[
       ("FOREIGN_CIK",dict(source,cik=111)),
@@ -154,10 +178,13 @@ def selftest():
     try:doc_key(wrong)
     except ValueError:pass
     else:raise AssertionError("UNOFFICIAL_ARCHIVE_ACCEPTED")
+    try:check_html(e,b"<html>" + b"two-for-one split stock" * 40 + b"</html>")
+    except ValueError:pass
+    else:raise AssertionError("WRONG_OFFICIAL_RATIO_TEXT_ACCEPTED")
     try:check_html(e,b"<html>" + b"unrelated publication" * 30+b"</html>")
     except ValueError:pass
     else:raise AssertionError("NO_SPLIT_DOCUMENT_ACCEPTED")
-    print("XRAY_SEC_12_SPLIT_DOC_PIT_SELFTEST=PASS_3_POSITIVE_5_NEGATIVE_PYTHON_O_SAFE")
+    print("XRAY_SEC_12_SPLIT_DOC_PIT_SELFTEST=PASS_3_POSITIVE_6_NEGATIVE_PYTHON_O_SAFE")
 
 def main():
     ap=argparse.ArgumentParser()

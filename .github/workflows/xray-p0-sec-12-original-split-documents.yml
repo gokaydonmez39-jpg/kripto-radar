@@ -47,7 +47,7 @@ jobs:
           assert d["source_registry_git_blob_sha"]==subprocess.check_output(
            ["git","hash-object","nasdaq-xray/research/p0_11_split_events_official_sec_issuer_registry_20261012.json"],
             text=True).strip()
-          assert d["all_ratio_strings_machine_parsed_and_verified"] is False
+          assert d["all_ratio_strings_machine_parsed_and_verified"] == (d["SEC_document_and_acceptance_verified_count"] == 12)
           assert d["canonical_HISTORY_PASS_created"]==d["C417_PRIMARY_MC_created"]==0
           assert d["GO"] is False and d["R92_created"] is False
           assert d["raw_SEC_HTML_prices_or_shares_persisted"] is False
