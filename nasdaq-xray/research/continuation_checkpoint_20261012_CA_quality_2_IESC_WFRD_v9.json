@@ -1,0 +1,22 @@
+{
+  "schema": "XRAY_20261012_P0_515_COMPLETE_ALL_2_EXTRA_CA_V9",
+  "preimage_main": "916a41ef101f4868d79f1fc04706399cf6639bdf",
+  "asof_et": "2026-10-09",
+  "original_CA_complete_events": 859,
+  "original_Alpaca_all_events": 861,
+  "unprocessed_in_complete_but_present_in_all": 2,
+  "extra_non_split_symbols": [
+    "IESC",
+    "WFRD"
+  ],
+  "existing_31_ca_review_is_superset": true,
+  "existing_18_acquirer_capital_roles_includes_both": true,
+  "new_CA_source_quality_run": 38182564771,
+  "original_CA_31_roles_run": 38181849385,
+  "why": "Official docs show data_quality=complete excludes some incomplete events and no creation timestamp guarantee",
+  "C417_PRIMARY_MC": 0,
+  "canonical_HISTORY_PASS": 0,
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "ci": "PENDING"
+}
