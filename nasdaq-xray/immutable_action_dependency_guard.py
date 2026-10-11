@@ -58,7 +58,7 @@ def verify(path: str, contents: str) -> int:
            for ref in observed):
         raise ValueError("ACTION_NOT_IMMUTABLE")
     if path == ".github/workflows/xray-sec-free-mc-transport-proof.yml":
-        if re.search(r"(?m)^s*ref:s*(?:main|master)s*$", contents):
+        if re.search(r"(?m)^\s*ref:\s*(?:main|master)\s*$", contents):
             raise ValueError("SEC_CHECKOUT_MOVING_MAIN_DISALLOWED")
         if ("git rev-parse HEAD" not in contents or "$GITHUB_SHA" not in contents
                 or "XRAY_SEC_TRANSPORT_CHECKOUT_EXACT=PASS" not in contents):
