@@ -1,0 +1,111 @@
+{
+  "schema": "XRAY_20261011_EXTREME_PRODUCTION_READBACK_FINAL_V4",
+  "observed_at_utc": "2026-10-11",
+  "parent_main_sha": "6db991a176be286a9528333aeccb0c940b9b817f",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "verified_repairs": [
+    {
+      "commit": "e081641402e73b96541436d28f89256c79464fe1",
+      "description": "account and manual event SHA fences; account tested-code immutable after main reset",
+      "account_run": 38172722882,
+      "manual_run": 38172722873,
+      "both_conclusion": "success",
+      "synthetic_race_regression": {
+        "positive": 5,
+        "negative": 6,
+        "python_modes": [
+          "normal",
+          "optimized"
+        ]
+      },
+      "real_workflow_run_event_probe_performed": false
+    },
+    {
+      "commit": "88b0fb9f3463cae57172d920c6f008a015def60d",
+      "description": "all six account reconciler assertion safety gates replaced with always-on exceptions",
+      "account_run": 38172851023,
+      "conclusion": "success"
+    },
+    {
+      "commit": "6db991a176be286a9528333aeccb0c940b9b817f",
+      "description": "correct selftest report miscount from 4 to 2 positives",
+      "account_run": 38172988602,
+      "conclusion": "success",
+      "account_selftest_real_counts": {
+        "positive": 2,
+        "negative": 7,
+        "normal_and_optimized": "pass"
+      },
+      "reconciliation": "NO_CHANGE"
+    }
+  ],
+  "other_ci": {
+    "preopen_38172851000": "success_no_production_go",
+    "twelve_38172981367": "success_with_BLOCKED_SOURCE_LICENSE_OR_KEY",
+    "delivery_38172311055": "success_with_NO_REGISTERED_R92_NOOP"
+  },
+  "sec_full_live": {
+    "run_id": 38169144342,
+    "conclusion": "success",
+    "price_pass_scope": 514,
+    "shares_vintage_shadow": 346,
+    "unknown": 167,
+    "transport_unknown": 1,
+    "c417_primary_mc": 0,
+    "sgml_full_universe_point_in_time_attested": false
+  },
+  "root_source": {
+    "history_20261009": {
+      "pass": 497,
+      "unknown": 229,
+      "unknown_breakdown": {
+        "provider_transport": 30,
+        "independent_history_missing": 150,
+        "asof_missing": 44,
+        "exact30_incomplete": 5
+      }
+    },
+    "numeric_alpaca_history_shadow": 497,
+    "source_rights_unattested": true,
+    "twelve_full_scope_intake": 0,
+    "twelve_target_scope": 515,
+    "master_20261009": {
+      "pass": 3184,
+      "unknown": 12
+    },
+    "terminal_asof_et": "2026-10-07",
+    "source_asof_et": "2026-10-09"
+  },
+  "gates": {
+    "primary_market_cap": "BLOCKED_0",
+    "history_production": "BLOCKED",
+    "master": "PARTIAL_12_UNKNOWN",
+    "terminal": "STALE_20261007",
+    "account": "BOOTSTRAP_READY_MISSING_READ_ONLY_AUTH_SECRETS",
+    "g9": "BLOCKED_STRICT_PERMANENT_ZERO",
+    "registered_r92": "NO_PROOF_DELIVERY_RUN_NOOP",
+    "device_receipt": "NO_PROOF"
+  },
+  "unproven_scenarios": [
+    "MANUAL_REAL_WORKFLOW_RUN_TRIGGER_WITH_MOVING_DEFAULT_MAIN_NOT_EXECUTED_AFTER_PATCH",
+    "ACCOUNT_TRUE_CONCURRENT_SOURCE_CODE_REWRITE_NOT_INJECTED",
+    "ALL_514_SGML_FILING_ACCEPTANCE_PROOFS_NOT_VERIFIED",
+    "PROVIDER_USAGE_RIGHTS_AND_CURRENT_SOURCE_DATA_NOT_GRANTED"
+  ],
+  "known_external_documents": [
+    "https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows",
+    "https://www.sec.gov/search-filings/edgar-application-programming-interfaces",
+    "https://massive.com/legal/market-data-terms-of-service",
+    "https://alpaca.markets/support/redistribute-alpaca-api"
+  ],
+  "research_go": "NO-GO",
+  "real_money_go": "NO-GO",
+  "metadata_only": true,
+  "raw_vendor_price_or_shares_persisted": false,
+  "credential_values_persisted": false,
+  "supersedes": "nasdaq-xray/research/continuation_checkpoint_20261011_postrepair_ci_readback_v3.json"
+}
