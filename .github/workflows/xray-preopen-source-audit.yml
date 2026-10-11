@@ -7,6 +7,8 @@ on:
       - "nasdaq-xray/research_preopen_source_audit.py"
       - "nasdaq-xray/preopen_live_release_gate.py"
       - "nasdaq-xray/monday_launch_microaudit.py"
+      - "nasdaq-xray/all_workflow_schedule_audit.py"
+      - ".github/workflows/**"
       - "nasdaq-xray/monday_live_actions_attestor.py"
       - "nasdaq-xray/delivery_issue_receipt_guard.py"
       - "nasdaq-xray/delivery_scheduler_guard.py"
@@ -83,6 +85,24 @@ jobs:
           assert j["alpha_authority"] is False and j["no_real_device_receipt_claim"] is True
           assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
           print("XRAY_MONDAY_LAUNCH_TOPOLOGY_CONTRACT=PASS_NOT_PRODUCTION_GO")
+          PY
+      - name: Full 135-workflow automatic schedule, privilege and licensing topology
+        run: |
+          python -m py_compile nasdaq-xray/all_workflow_schedule_audit.py
+          python nasdaq-xray/all_workflow_schedule_audit.py --selftest
+          python nasdaq-xray/all_workflow_schedule_audit.py --out "$RUNNER_TEMP/xray_all_workflow_schedule_audit.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])/"xray_all_workflow_schedule_audit.json"
+          j=json.loads(p.read_text())
+          assert j["schema"]=="XRAY_ALL_GITHUB_WORKFLOW_SCHEDULE_PRIVILEGE_AUDIT_V1"
+          assert j["contract_status"]=="PASS" and not j["blockers"]
+          assert j["scheduled_count"]==23 and j["expected_scheduled_count"]==23
+          assert j["issue_writers"]==["nasdaq-xray-delivery.yml"]
+          assert j["alpha_authority"] is False and j["device_delivery_attested"] is False
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          print("XRAY_ALL_WORKFLOW_TRIGGER_PRIVILEGE=PASS_TOPOLOGY_NOT_DATA_GO")
           PY
       - name: Inspect real root, stages, preopen, E2E and delivery Actions receipts
         env:
@@ -199,5 +219,6 @@ jobs:
             ${{ runner.temp }}/xray_current_preopen.json
             ${{ runner.temp }}/xray_monday_launch_microaudit.json
             ${{ runner.temp }}/xray_monday_live_actions.json
+            ${{ runner.temp }}/xray_all_workflow_schedule_audit.json
           retention-days: 14
           if-no-files-found: error
