@@ -7,6 +7,7 @@ on:
       - "nasdaq-xray/massive_mc_resume_shadow.py"
       - "nasdaq-xray/massive_mc_shadow_probe.py"
       - "nasdaq-xray/massive_mc_public_telemetry.py"
+      - "nasdaq-xray/massive_workflow_source_epoch_selftest.py"
       - ".github/workflows/xray-massive-mc-resume-shadow.yml"
   # Deliberately no schedule while the required non-display grant is absent.
   # Manual diagnostics and source-code-triggered safety tests remain enabled.
@@ -22,11 +23,17 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
-          ref: main
+          ref: ${{ github.sha }}
           fetch-depth: 1
-      - uses: actions/setup-python@v5
+      - name: Prove immutable source checkout equals exact workflow invocation
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          echo "XRAY_MASSIVE_MC_SOURCE_EPOCH=PASS_EXACT_INVOCATION"
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: "3.12"
       - name: Install Fernet authenticated encryption dependency (AES-CBC + HMAC)
@@ -37,6 +44,8 @@ jobs:
           python -m py_compile nasdaq-xray/massive_mc_resume_shadow.py
           python nasdaq-xray/massive_mc_resume_shadow.py --selftest
           python nasdaq-xray/massive_mc_shadow_probe.py --selftest
+          python nasdaq-xray/massive_workflow_source_epoch_selftest.py
+          python -O nasdaq-xray/massive_workflow_source_epoch_selftest.py
       - name: Independent synthetic signal and delivery safety regressions (NO notification sent)
         run: |
           python nasdaq-xray/manual_decision_report.py --selftest
@@ -98,7 +107,10 @@ jobs:
           XRAY_MASSIVE_API_KEY: ${{ secrets.XRAY_MASSIVE_API_KEY }}
           XRAY_MASSIVE_NONDISPLAY_LICENSE_OK: ${{ vars.XRAY_MASSIVE_NONDISPLAY_LICENSE_OK }}
           XRAY_MASSIVE_LICENSE_EVIDENCE_SHA256: ${{ secrets.XRAY_MASSIVE_LICENSE_EVIDENCE_SHA256 }}
+        shell: bash
         run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           python nasdaq-xray/massive_mc_resume_shadow.py \
             --limit 25 \
             --restore "$RUNNER_TEMP/xray_mc_checkpoint_previous.enc" \
@@ -124,7 +136,7 @@ jobs:
           PY
       - name: Store ciphertext only (never plaintext vendor data)
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: xray-massive-mc-checkpoint-encrypted-v1
           path: ${{ runner.temp }}/xray_mc_checkpoint_current.enc
@@ -132,7 +144,7 @@ jobs:
           if-no-files-found: ignore
       - name: Store safe operational-only status
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: xray-massive-mc-resume-operational-v1
           path: ${{ runner.temp }}/xray_mc_resume_health.json

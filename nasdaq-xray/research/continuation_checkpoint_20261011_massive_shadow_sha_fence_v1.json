@@ -1,0 +1,24 @@
+{
+  "schema": "XRAY_20261011_MASSIVE_SHADOW_IMMUTABLE_WORKFLOW_SOURCE_V1",
+  "parent_main_sha": "eafe580644c75b8f56b99ae5ca706773525da479",
+  "commit_status": "PENDING",
+  "fix": [
+    "IMMUTABLE_SHA_CHECKOUT",
+    "SECOND_SOURCE_READBACK_BEFORE_PROVIDER",
+    "SHA_PIN_ALL_OFFICIAL_ACTIONS",
+    "NORMAL_OPTIMIZED_PYTHON_NO_PROVIDER_SELFTEST"
+  ],
+  "tests": {
+    "positive": 2,
+    "negative": 4
+  },
+  "unchanged": {
+    "license_grant": "REQUIRED_NOT_SUPPLIED",
+    "github_api_key": "NOT_READ_OR_CREATED",
+    "mc_authority": "NONE",
+    "price_or_vendor_data_in_repo": false,
+    "execution": "NONE",
+    "real_money": "NO-GO"
+  },
+  "release": "SHADOW_RESEARCH_NO-GO"
+}
