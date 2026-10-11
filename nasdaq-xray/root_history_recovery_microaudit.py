@@ -83,6 +83,14 @@ def audit(state,root,now):
             classified["UNEXHAUSTED_RETRYABLE_UNKNOWN"]+=1
         elif status.startswith("UNKNOWN"):
             raise ValueError("UNRECOGNIZED_UNKNOWN_CLASS:"+symbol)
+        elif status!="PASS" and not status.startswith(("FAIL_","BLOCK_")):
+            raise ValueError("HISTORY_RESULT_STATUS_UNRECOGNIZED:"+symbol)
+    # C4.17: a complete cursor and matching UNKNOWN subtotal do not prove
+    # the persisted PASS/FAIL/BLOCK partition matches individual source rows.
+    # This guard is required even when a legacy hash cannot be reconstructed.
+    declared_counts=state.get("counts")
+    if not isinstance(declared_counts,dict) or declared_counts!=dict(bystatus):
+        raise ValueError("HISTORY_DECLARED_STATUS_COUNTS_DRIFT")
     unknown=sum(n for status,n in bystatus.items() if status.startswith("UNKNOWN"))
     if unknown!=state.get("unknown_count"):
         raise ValueError("SINA_UNKNOWN_COUNT_DRIFT")
@@ -165,6 +173,7 @@ def selftest():
        "asof_et":"2026-10-09","status":"HISTORY_PARTIAL",
        "queue":queue,"queue_total":3,"cursor":3,"results":rows,
        "queue_hash":hashlib.sha256("\n".join(queue).encode()).hexdigest(),
+       "counts":{"PASS":1,"UNKNOWN_RETRY_EXHAUSTED":1,"UNKNOWN_STATIC":1},
        "unknown_count":2,"pending_retry":0}
     seal_state(s)
     r={"schema":"XRAY_ORCHESTRATOR_V1","asof_et":"2026-10-09",
@@ -176,12 +185,15 @@ def selftest():
     assert yes["eligible_single_round_real_provider_retries_now"]==1
     assert yes["independent_history_or_asof_proof_required_count"]==1
     assert yes["unknown_count"]==2 and not yes["alpha_authority"]
+    assert yes["known_status_counts"]==s["counts"]
     import copy
     cases=[
         (lambda x,y:x.update(asof_et="2026-10-08"),"ROOT_SINA_ASOF_DRIFT"),
         (lambda x,y:x.update(unknown_count=0),"SINA_UNKNOWN_COUNT_DRIFT"),
         (lambda x,y:x["results"]["BBB"].update(status="PASS"),"SINA_UNKNOWN_COUNT_DRIFT"),
         (lambda x,y:x["results"]["CCC"].update(info={"reason":"FAKE_PASS"}),"UNKNOWN_STATIC_REASON_UNCLASSIFIED"),
+        (lambda x,y:x["counts"].update(PASS=99),"HISTORY_DECLARED_STATUS_COUNTS_DRIFT"),
+        (lambda x,y:x["results"]["AAA"].update(status="FABRICATED_GO"),"HISTORY_RESULT_STATUS_UNRECOGNIZED"),
         (lambda x,y:x["results"]["BBB"].update(attempts=2),"UNKNOWN_EXHAUSTED_WITHOUT_FOUR_ATTEMPTS"),
         (lambda x,y:x["results"].pop("CCC"),"HISTORY_QUEUE_PARTITION_NOT_EXACT"),
         (lambda x,y:x.update(execution="TRADE"),"EXECUTION_SAFETY_DRIFT"),
@@ -236,7 +248,7 @@ def selftest():
     try:audit(s,r,now.replace(tzinfo=None))
     except ValueError:pass
     else:raise AssertionError("NAIVE_CLOCK_ACCEPTED")
-    print("XRAY_ROOT_HISTORY_RECOVERY_SELFTEST=PASS_12_NEGATIVES_COMPLETE_SOURCE_NESTED_ROOT_LEGACY_HASH_NO_AL")
+    print("XRAY_ROOT_HISTORY_RECOVERY_SELFTEST=PASS_14_NEGATIVES_COMPLETE_SOURCE_NESTED_ROOT_LEGACY_HASH_STATUS_COUNTS_NO_AL")
 
 def main():
     p=argparse.ArgumentParser()
