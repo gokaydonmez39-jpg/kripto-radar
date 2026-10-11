@@ -11,6 +11,7 @@ import copy
 from datetime import date,timedelta
 import hashlib
 import json
+import re
 import subprocess
 from pathlib import Path
 from history_transport_cache_guard import official_completed_sessions
@@ -31,7 +32,7 @@ def git_blob(path):
 def expected_dates(asof):
     try:
         d=date.fromisoformat(asof)
-        assert d.isoformat()==asof
+        if not (d.isoformat()==asof): raise ValueError("C417_EXPLICIT_GUARD_LINE_34")
         official=sorted(official_completed_sessions(asof))
         # Enumerate the next week too: asof Thursday is not completed Friday week.
         extended=sorted(official_completed_sessions((d+timedelta(days=10)).isoformat()))
@@ -41,53 +42,53 @@ def expected_dates(asof):
             iso=v.isocalendar()
             week_last[(iso.year,iso.week)]=raw
         completed=sorted(day for day in week_last.values() if day<=asof)
-        assert len(official)>=261 and len(completed)>=52
-        assert official[-1]==asof,"ASOF_NOT_COMPLETED_EXCHANGE_SESSION"
+        if not (len(official)>=261 and len(completed)>=52): raise ValueError("C417_EXPLICIT_GUARD_LINE_44")
+        if not (official[-1]==asof): raise ValueError("ASOF_NOT_COMPLETED_EXCHANGE_SESSION")
         return official[-260:],completed[-52:]
     except Exception as e:
         raise ValueError("OFFICIAL_CALENDAR_UNAVAILABLE_OR_NOT_COMPLETED") from e
 
 def build(price,master,price_sha):
     asof=price.get("asof_et")
-    assert isinstance(price_sha,str) and len(price_sha)==40,"PRICE_BLOB_SHA_INVALID"
-    assert isinstance(asof,str),"PRICE_ASOF_INVALID"
-    assert master.get("asof_et")==asof,"MASTER_PRICE_ASOF_DRIFT"
-    assert all(x.get("execution")=="NONE" and x.get("real_money")=="NO-GO" for x in (price,master))
+    if not (isinstance(price_sha,str) and re.fullmatch(r"[a-f0-9]{40}",price_sha)): raise ValueError("PRICE_BLOB_SHA_INVALID")
+    if not (isinstance(asof,str)): raise ValueError("PRICE_ASOF_INVALID")
+    if not (master.get("asof_et")==asof): raise ValueError("MASTER_PRICE_ASOF_DRIFT")
+    if not (all(x.get("execution")=="NONE" and x.get("real_money")=="NO-GO" for x in (price,master))): raise ValueError("C417_EXPLICIT_GUARD_LINE_55")
     symbols=price.get("pass_symbols")
-    assert isinstance(symbols,list) and symbols==sorted(set(symbols)) and symbols,"PRICE_PASS_SYMBOL_SET_INVALID"
-    assert len(symbols)==price.get("pass_count"),"PRICE_PASS_COUNT_DRIFT"
-    assert sha256_lines(symbols)==price.get("pass_hash"),"PRICE_PASS_HASH_DRIFT"
+    if not (isinstance(symbols,list) and symbols==sorted(set(symbols)) and symbols): raise ValueError("PRICE_PASS_SYMBOL_SET_INVALID")
+    if not (len(symbols)==price.get("pass_count")): raise ValueError("PRICE_PASS_COUNT_DRIFT")
+    if not (sha256_lines(symbols)==price.get("pass_hash")): raise ValueError("PRICE_PASS_HASH_DRIFT")
     # UNKNOWN/BLOCKED outside the independently established PASS set may
     # NEVER starve history preparation for the other known PASS symbols.
     # This is a SHADOW request only; global canonical completion remains blocked.
     unknown=price.get("unknown_symbols",[])
     blocked=price.get("blocked_symbols",[])
-    assert isinstance(unknown,list) and unknown==sorted(set(unknown)),"PRICE_UNKNOWN_SET_INVALID"
-    assert isinstance(blocked,list) and blocked==sorted(set(blocked)),"PRICE_BLOCKED_SET_INVALID"
-    assert type(price.get("unknown_count")) is int and price["unknown_count"]==len(unknown),"PRICE_UNKNOWN_COUNT_INVALID"
-    assert type(price.get("blocked_count")) is int and price["blocked_count"]==len(blocked),"PRICE_BLOCKED_COUNT_INVALID"
+    if not (isinstance(unknown,list) and unknown==sorted(set(unknown))): raise ValueError("PRICE_UNKNOWN_SET_INVALID")
+    if not (isinstance(blocked,list) and blocked==sorted(set(blocked))): raise ValueError("PRICE_BLOCKED_SET_INVALID")
+    if not (type(price.get("unknown_count")) is int and price["unknown_count"]==len(unknown)): raise ValueError("PRICE_UNKNOWN_COUNT_INVALID")
+    if not (type(price.get("blocked_count")) is int and price["blocked_count"]==len(blocked)): raise ValueError("PRICE_BLOCKED_COUNT_INVALID")
     pass_set=set(symbols)
     unknown_set=set(unknown)
     blocked_set=set(blocked)
-    assert not(pass_set & unknown_set or pass_set & blocked_set or unknown_set & blocked_set),"PRICE_PARTITION_OVERLAP"
+    if not (not(pass_set & unknown_set or pass_set & blocked_set or unknown_set & blocked_set)): raise ValueError("PRICE_PARTITION_OVERLAP")
     master_set=set(master.get("pass_symbols",[]))
-    assert pass_set|unknown_set|blocked_set <= master_set,"PRICE_OUTSIDE_MASTER"
+    if not (pass_set|unknown_set|blocked_set <= master_set): raise ValueError("PRICE_OUTSIDE_MASTER")
     # PASS list hashes bind membership but do not prove each PRICE classifier
     # row is genuinely PASS. Reject missing or contradictory per-symbol rows.
     results=price.get("results")
-    assert isinstance(results,dict) and set(results)==master_set,"PRICE_RESULT_PARTITION_DRIFT"
+    if not (isinstance(results,dict) and set(results)==master_set): raise ValueError("PRICE_RESULT_PARTITION_DRIFT")
     for symbol in symbols:
-        assert isinstance(results[symbol],dict) and results[symbol].get("status")=="PASS_PRICE_DV30","PRICE_PASS_RESULT_FALSE_PASS"
+        if not (isinstance(results[symbol],dict) and results[symbol].get("status")=="PASS_PRICE_DV30"): raise ValueError("PRICE_PASS_RESULT_FALSE_PASS")
     for symbol in master_set-pass_set:
-        assert isinstance(results[symbol],dict) and results[symbol].get("status")!="PASS_PRICE_DV30","PRICE_UNLISTED_RESULT_FALSE_PASS"
+        if not (isinstance(results[symbol],dict) and results[symbol].get("status")!="PASS_PRICE_DV30"): raise ValueError("PRICE_UNLISTED_RESULT_FALSE_PASS")
     for symbol in unknown:
-        assert isinstance(results[symbol],dict) and results[symbol].get("status")!="PASS_PRICE_DV30","PRICE_UNKNOWN_RESULT_FALSE_PASS"
+        if not (isinstance(results[symbol],dict) and results[symbol].get("status")!="PASS_PRICE_DV30"): raise ValueError("PRICE_UNKNOWN_RESULT_FALSE_PASS")
     for symbol in blocked:
-        assert isinstance(results[symbol],dict) and results[symbol].get("status")!="PASS_PRICE_DV30","PRICE_BLOCKED_RESULT_FALSE_PASS"
-    assert master.get("asof_et")==price.get("asof_et"),"SAME_ASOF_REQUIRED"
+        if not (isinstance(results[symbol],dict) and results[symbol].get("status")!="PASS_PRICE_DV30"): raise ValueError("PRICE_BLOCKED_RESULT_FALSE_PASS")
+    if not (master.get("asof_et")==price.get("asof_et")): raise ValueError("SAME_ASOF_REQUIRED")
     daily,weekly=expected_dates(asof)
-    assert len(daily)==260 and len(weekly)==52 and daily[-1]==asof
-    assert len(set(daily))==260 and len(set(weekly))==52
+    if not (len(daily)==260 and len(weekly)==52 and daily[-1]==asof): raise ValueError("C417_EXPLICIT_GUARD_LINE_89")
+    if not (len(set(daily))==260 and len(set(weekly))==52): raise ValueError("C417_EXPLICIT_GUARD_LINE_90")
     # An official calendar is only a target-date schedule; no real bar exists
     # until an authorized provider has supplied date-scoped evidence.
     return {
@@ -144,6 +145,7 @@ def selftest():
     cases=[
        ("ASOF_DRIFT",lambda a,b:b.update(asof_et="2026-10-07")),
        ("PRICE_HASH_DRIFT",lambda a,b:a.update(pass_hash="0"*64)),
+       ("PRICE_BLOB_NOT_HEX",lambda a,b:None),
        ("BAD_COUNT",lambda a,b:a.update(pass_count=3)),
        ("DUPLICATE",lambda a,b:a.update(pass_symbols=["AAA","AAA"])),
        ("OUTSIDE_MASTER",lambda a,b:a.update(pass_symbols=["ZZZ"])),
@@ -163,10 +165,10 @@ def selftest():
     for name,mutator in cases:
         a,b=copy.deepcopy(p),copy.deepcopy(m)
         mutator(a,b)
-        try:build(a,b,"a"*40)
+        try:build(a,b,("z"*40 if name=="PRICE_BLOB_NOT_HEX" else "a"*40))
         except (AssertionError,ValueError):continue
         raise AssertionError("INVALID_CURRENT_HISTORY_REQUEST_ACCEPTED:"+name)
-    print("XRAY_CURRENT_HISTORY_REQUEST_SELFTEST=PASS_TWO_POSITIVES_FIFTEEN_FAIL_CLOSED")
+    print("XRAY_CURRENT_HISTORY_REQUEST_SELFTEST=PASS_TWO_POSITIVES_SIXTEEN_FAIL_CLOSED_EXPLICIT_OPT_SAFE")
 
 def main():
     ap=argparse.ArgumentParser()
