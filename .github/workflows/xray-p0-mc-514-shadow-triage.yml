@@ -1,0 +1,94 @@
+name: XRAY P0 Exact 514 SEC Alpaca MC Shadow Triage No GO
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/p0_mc_514_shadow_triage_guard.py"
+      - ".github/workflows/xray-p0-mc-514-shadow-triage.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  original-four-shard-triage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Fail if exact source HEAD does not match invocation
+        run: test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+      - name: Fetch real historical 514 source artifacts, verify digests
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          for item in \
+            "11718044884:4b4427ce8a3a261d3a2d2f83ae1404fb6cc4c0b6d959c4bc132e7d4462f3e8aa" \
+            "11717643834:1ef811feb3a3a3e7ece6a0e76363df660ba4f7f9a49cbac8bf08084a822bda9b" \
+            "11717703730:e272c4ff7eb934523da685d8ff09c83d73431ad8bc973f3349fcdecdf582222b" \
+            "11718269660:0ac005b7e4803a28e3e8ead7f8a2ef8575e445ffec92558d45d3fbf830f683ff" \
+            "11718354595:0d19da570cf17999db18aa69b530d1b63dd13718a267a1fb3e75a252b901bb42"; do
+            IFS=: read -r id digest <<< "$item"
+            actual="$(gh api "repos/${{ github.repository }}/actions/artifacts/$id" --jq '.digest')"
+            test "$actual" = "sha256:$digest"
+          done
+          mkdir -p "$RUNNER_TEMP/mc"
+          for i in 0 1 2 3; do
+            gh run download 38183058048 -R "${{ github.repository }}" \
+               -n "xray-mc-514-shard-$i-no-primary" \
+               -D "$RUNNER_TEMP/mc"
+            test -s "$RUNNER_TEMP/mc/mc514_$i.json"
+          done
+          gh run download 38183357135 -R "${{ github.repository }}" \
+            -n "xray-p0-full-514-mc-four-shard-classifications-only" \
+            -D "$RUNNER_TEMP/mc"
+          test -s "$RUNNER_TEMP/mc/xray_mc_full_514_union.json"
+      - name: Run negative optimizer-safe tests on original real artifact matrix
+        run: |
+          set -euo pipefail
+          for flags in "" "-O"; do
+            python $flags nasdaq-xray/p0_mc_514_shadow_triage_guard.py \
+              --union "$RUNNER_TEMP/mc/xray_mc_full_514_union.json" \
+              --shard0 "$RUNNER_TEMP/mc/mc514_0.json" \
+              --shard1 "$RUNNER_TEMP/mc/mc514_1.json" \
+              --shard2 "$RUNNER_TEMP/mc/mc514_2.json" \
+              --shard3 "$RUNNER_TEMP/mc/mc514_3.json" --selftest
+          done
+      - name: Produce source-exact no-PASS/no-GO risk classification artifact
+        run: |
+          python nasdaq-xray/p0_mc_514_shadow_triage_guard.py \
+              --union "$RUNNER_TEMP/mc/xray_mc_full_514_union.json" \
+              --shard0 "$RUNNER_TEMP/mc/mc514_0.json" \
+              --shard1 "$RUNNER_TEMP/mc/mc514_1.json" \
+              --shard2 "$RUNNER_TEMP/mc/mc514_2.json" \
+              --shard3 "$RUNNER_TEMP/mc/mc514_3.json" \
+              --out "$RUNNER_TEMP/xray_mc_514_shadow_triage.json"
+      - name: Strict final arithmetic and authority guard
+        run: |
+          python - <<'PY'
+          import os,json
+          from pathlib import Path
+          d=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_mc_514_shadow_triage.json").read_text())
+          assert d["schema"]=="XRAY_P0_514_SHADOW_TRIAGE_ORIGINAL_FOUR_SHARD_V1"
+          assert d["original_full_unique_scope"]==514
+          assert d["original_shadow_count"]==346 and d["original_unknown_count"]==168
+          assert d["original_issuer_arithmetic_unadjusted_above_floor_only_count"]==334
+          assert d["original_issuer_arithmetic_unadjusted_below_floor_only_count"]==12
+          assert sum(d["SEC_share_vintage_age_bucket_counts"].values())==346
+          assert d["CA31_total"]==31
+          assert d["CA_direct13_shadow_count"]+len(d["CA_direct13_unknown_symbols"])==13
+          assert d["CA_acquirer18_shadow_count"]+len(d["CA_acquirer18_unknown_symbols"])==18
+          assert d["C417_PRIMARY_MC_created"]==d["canonical_HISTORY_PASS_created"]==0
+          assert d["R92_created"] is False and d["GO"] is False
+          assert d["execution"]=="NONE" and d["real_money"]=="NO-GO"
+          print("XRAY_MC514_SHADOW_TRIAGE=SOURCE_EXACT_RESEARCH_ONLY_NO_PRIMARY")
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: xray-mc-514-shadow-vintage-ca31-risk-triage-no-primary
+          path: ${{ runner.temp }}/xray_mc_514_shadow_triage.json
+          retention-days: 14
+          if-no-files-found: error
