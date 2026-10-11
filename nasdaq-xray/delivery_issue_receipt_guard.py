@@ -22,7 +22,7 @@ def validate_receipt(issue, *, issue_number, delivery_key, symbol, expected_body
     if (not isinstance(issue,dict) or
         type(issue_number) is not int or issue_number<=0 or
         not isinstance(delivery_key,str) or not delivery_key or
-        not isinstance(symbol,str) or not re.fullmatch(r"[A-Z0-9.\\-]{1,12}",symbol)):
+        not isinstance(symbol,str) or not re.fullmatch(r"[A-Z0-9.-]{1,12}",symbol)):
         return False,"ISSUE_OR_DELIVERY_IDENTITY_INVALID"
     if type(issue.get("number")) is not int or issue["number"]!=issue_number:
         return False,"ISSUE_NUMBER_MISMATCH"
@@ -52,7 +52,7 @@ def unique_exact_issue(rows, *, delivery_key, symbol, max_results=10000):
     """An approximate GitHub search hit is NEVER an exact-key receipt."""
     if (not isinstance(rows,list) or not isinstance(delivery_key,str)
         or not delivery_key or not isinstance(symbol,str)
-        or not re.fullmatch(r"[A-Z0-9.\\-]{1,12}",symbol)):
+        or not re.fullmatch(r"[A-Z0-9.-]{1,12}",symbol)):
         raise ValueError("ISSUE_LOOKUP_INPUT_UNVERIFIED")
     # The workflow obtains an exhaustive paginated REST snapshot (not GitHub
     # search); this cap is a fail-closed processing budget, not a page limit.
@@ -103,6 +103,8 @@ def selftest():
     assert not validate_receipt(good,issue_number=123,delivery_key=key,
                                 symbol="BAD SYMBOL",expected_body=body)[0]
     assert not validate_receipt(good,issue_number=123,delivery_key=key,
+                                symbol="A\\",expected_body=body)[0]
+    assert not validate_receipt(good,issue_number=123,delivery_key=key,
                                 symbol=symbol,expected_body=body+"new field\n")[0]
     assert validate_receipt(dict(good,body=body.replace("\n","\r\n")),
                             issue_number=123,delivery_key=key,
@@ -111,6 +113,9 @@ def selftest():
     partial={"number":122,"title":good["title"]+" NOT EXACT"}
     assert unique_exact_issue([partial,exact],delivery_key=key,symbol=symbol)==123
     assert unique_exact_issue([partial],delivery_key=key,symbol=symbol) is None
+    try:unique_exact_issue([exact],delivery_key=key,symbol="A\\")
+    except ValueError:pass
+    else:raise AssertionError("BACKSLASH_TICKER_ACCEPTED")
     for bad_rows in ([exact,dict(exact,number=124)],
                      [exact,exact], [dict(exact,number=0)],
                      [dict(exact,number=True)], [None], None):
