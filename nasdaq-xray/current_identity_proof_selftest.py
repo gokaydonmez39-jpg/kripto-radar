@@ -2,7 +2,30 @@
 import json
 import build_current_identity_proofs as m
 
+def latest_filing_market_calendar_regression():
+    # 2026-11-26 Thanksgiving holiday; Friday 2026-11-27 early 13:00 ET
+    # close (18:00Z). A post-close 18:30Z filing must not enter same-ASOF
+    # SEC identity proof, while 17:59Z may enter as a date-bound witness.
+    def sub(date,accepted):
+        return {"filings":{"recent":{"filingDate":[date],
+                    "acceptanceDateTime":[accepted]}}}
+    assert m.latest_filing_date(sub("2026-11-27","2026-11-27T18:30:00Z"),
+                                "2026-11-27") is None, (
+        "IDENTITY_EARLY_CLOSE_LOOKAHEAD_ACCEPTED")
+    assert m.latest_filing_date(sub("2026-11-27","2026-11-27T17:59:00Z"),
+                                "2026-11-27")=="2026-11-27"
+    assert m.latest_filing_date(sub("2026-11-26","2026-11-26T18:00:00Z"),
+                                "2026-11-26") is None, (
+        "IDENTITY_HOLIDAY_FALSE_SESSION_ACCEPTED")
+    assert m.latest_filing_date(sub("2026-10-09","2026-10-09T20:01:00Z"),
+                                "2026-10-09") is None
+    assert m.latest_filing_date(sub("2026-10-09","2026-10-09T19:59:00Z"),
+                                "2026-10-09")=="2026-10-09"
+
+
 def main():
+    latest_filing_market_calendar_regression()
+
     # A same-ASOF Nasdaq "Blank Checks" industry label must not bypass the
     # SEC/manual identity proof queue.  It is supporting evidence only.
     suspects=m.current_spac_suspects(
