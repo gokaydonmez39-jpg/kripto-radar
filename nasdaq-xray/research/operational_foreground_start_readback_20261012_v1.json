@@ -1,0 +1,79 @@
+{
+  "schema": "XRAY_EXPLICIT_USER_FOREGROUND_RESEARCH_START_VERIFIED_V1",
+  "date_trt": "2026-10-12",
+  "requested_at_utc": "2026-10-11T23:43:49.364Z",
+  "repo": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "source_start_commit": "4711e5e12dcba5a6bb911df1116d9b4744660940",
+  "launch_mode": "EXISTING_SCHEDULED_RESEARCH_ONLY_ZERO_TRADING",
+  "run_readback": {
+    "watch": {
+      "id": 38185376862,
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "4711e5e12dcba5a6bb911df1116d9b4744660940",
+      "workflow_path": ".github/workflows/xray-research-watch-radar.yml",
+      "html_url": "https://github.com/gokaydonmez39-jpg/kripto-radar/actions/runs/38185376862"
+    },
+    "manual": {
+      "id": 38185376923,
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "4711e5e12dcba5a6bb911df1116d9b4744660940",
+      "workflow_path": ".github/workflows/xray-manual-decision-research-shadow.yml",
+      "html_url": "https://github.com/gokaydonmez39-jpg/kripto-radar/actions/runs/38185376923"
+    },
+    "delivery": {
+      "id": 38185376919,
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "4711e5e12dcba5a6bb911df1116d9b4744660940",
+      "workflow_path": ".github/workflows/nasdaq-xray-delivery.yml",
+      "html_url": "https://github.com/gokaydonmez39-jpg/kripto-radar/actions/runs/38185376919"
+    },
+    "safety": {
+      "id": 38185376912,
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "4711e5e12dcba5a6bb911df1116d9b4744660940",
+      "workflow_path": ".github/workflows/xray-research-start-contract.yml",
+      "html_url": "https://github.com/gokaydonmez39-jpg/kripto-radar/actions/runs/38185376912"
+    }
+  },
+  "source_price_asof": "2026-10-09",
+  "source_master_asof": "2026-10-09",
+  "canonical_terminal_asof": "2026-10-07",
+  "source_binding_exact": false,
+  "observed_watch_status": "STALE_SNAPSHOT_WATCH_BLOCKED",
+  "observed_live_research_watch_count": 0,
+  "observed_manual_signal_status": "SOURCE_INTEGRITY_BLOCKED",
+  "observed_manual_research_signal_count": 0,
+  "delivery_registered_r92_present": false,
+  "delivery_issue_created": false,
+  "notification_device_receipt_verified": false,
+  "source_watch_artifact": {
+    "id": 11718948773,
+    "digest": "sha256:55a2c718ccc275214928fdb8c4981b8dd1940b848a5fb038bdb000944953b297"
+  },
+  "source_manual_artifact": {
+    "id": 11718993755,
+    "digest": "sha256:cf60f46054cc4b0ca030b5e1463c15196c2d7e45026237f612f96a38cae976b6"
+  },
+  "source_start_artifact": {
+    "id": 11718704639,
+    "digest": "sha256:687ba8a41e8daf5dd190201af784dc829c239d2cadb619db17ec97dedf21b26e"
+  },
+  "observed_root_weekend_gate": {
+    "root_run_id": 38176437400,
+    "result": "COMPLETED_SUCCESS_MARKET_COMPUTE_SKIPPED_US_SUNDAY",
+    "not_an_asof_refresh": true
+  },
+  "interpretation": "Workflow SUCCESS proves checks executed; no 9 Oct full C4.17 E2E, no R92, no device delivery.",
+  "C417_PRIMARY_MC_created": 0,
+  "research_only_operational_start": "COMPLETED_FOUR_WORKFLOWS_SOURCE_INTEGRITY_BLOCKED",
+  "C417_TRUE_FULL_GO": false,
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "future_trigger_claim": "NONE; LIVE_US_WEEKDAY_SCHEDULE_EXISTS_BUT_NEXT_RUN_NOT_YET_OBSERVED"
+}
