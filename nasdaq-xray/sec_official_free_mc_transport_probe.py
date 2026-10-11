@@ -15,6 +15,7 @@ import re
 import urllib.error
 import http.client
 import urllib.request
+from zoneinfo import ZoneInfo
 from pathlib import Path
 from functools import lru_cache
 
@@ -122,7 +123,7 @@ def select_shares(facts:dict,sub:dict,asof:str,expected_cik:str=CIK) -> dict:
     valid=[]
     # Diagnostic counters contain no raw shares, filings or proprietary prices.
     diag={"missing_accession":0,"form_nonannual":0,"stale":0,
-          "post_close":0,"invalid_fact":0}
+          "post_close":0,"ambiguous_clock":0,"invalid_fact":0}
     for row in concept:
         if not isinstance(row,dict):continue
         if row.get("form") not in ACCEPTED_FORMS:
@@ -152,7 +153,22 @@ def select_shares(facts:dict,sub:dict,asof:str,expected_cik:str=CIK) -> dict:
             if isinstance(shares,bool) or not isinstance(shares,int) or shares<=0 or accepted.tzinfo is None:
                 diag["invalid_fact"]+=1
                 continue
-            if accepted.astimezone(dt.timezone.utc)>session_close_utc:
+            # SEC Submissions acceptanceDateTime has documented raw-clock
+            # ambiguity: historical records may mix UTC and New York clock
+            # values even when suffixed Z. Both plausible instants must be
+            # before the exact NASDAQ session close; Z alone is not proof UTC.
+            accepted_utc=accepted.astimezone(dt.timezone.utc)
+            possible=[accepted_utc]
+            stamp=matched["accepted_at"]
+            if stamp.endswith("Z") or stamp.endswith("+00:00"):
+                eastern_clock=(accepted.replace(tzinfo=None)
+                    .replace(tzinfo=ZoneInfo("America/New_York"))
+                    .astimezone(dt.timezone.utc))
+                possible.append(eastern_clock)
+            if min(possible)<=session_close_utc<max(possible):
+                diag["ambiguous_clock"]+=1
+                continue
+            if min(possible)>session_close_utc:
                 diag["post_close"]+=1
                 continue
         except (KeyError,ValueError,TypeError):
@@ -175,6 +191,8 @@ def select_shares(facts:dict,sub:dict,asof:str,expected_cik:str=CIK) -> dict:
             # other unrelated XBRL facts are stale/future; don't hide the
             # candidate-specific missing evidence behind unrelated rows.
             reason="SEC_FACT_ACCESSION_NOT_VERIFIED_IN_RECENT_SUBMISSIONS"
+        elif diag["ambiguous_clock"]>0:
+            reason="SEC_ACCEPTANCE_CLOCK_AMBIGUOUS_PIT"
         elif diag["post_close"]>0:
             reason="SEC_FACT_ACCEPTED_AFTER_RTH_CLOSE"
         elif diag["stale"]>0:
@@ -264,6 +282,12 @@ def selftest():
     sub_close["filings"]["recent"]["acceptanceDateTime"][0]="2026-10-08T20:01:00Z"
     assert select_shares(same_close,sub_close,asof)["status"]=="UNKNOWN"
     sub_close["filings"]["recent"]["acceptanceDateTime"][0]="2026-10-08T19:59:00Z"
+    suspect=select_shares(same_close,sub_close,asof)
+    assert suspect["status"]=="UNKNOWN"
+    assert suspect["reason"]=="SEC_ACCEPTANCE_CLOCK_AMBIGUOUS_PIT"
+    # When BOTH possible UTC and New York-clock interpretations are
+    # before the regular close, the source is only SHADOW-eligible.
+    sub_close["filings"]["recent"]["acceptanceDateTime"][0]="2026-10-08T15:59:00Z"
     assert select_shares(same_close,sub_close,asof)["status"]=="SHADOW_SHARES_VINTAGE_ONLY"
     # Nasdaq official 2026 calendar: 27 Nov is an early-close session
     # (13:00 ET / 18:00 UTC); 26 Nov is Thanksgiving market holiday.
@@ -279,8 +303,12 @@ def selftest():
     assert select_shares(early_fak,early_sub,"2026-11-27")["status"]=="UNKNOWN", (
         "EARLY_CLOSE_POST_13_ET_LOOKAHEAD_ACCEPTED")
     early_sub["filings"]["recent"]["acceptanceDateTime"][0]="2026-11-27T17:59:00Z"
+    ambiguous=select_shares(early_fak,early_sub,"2026-11-27")
+    assert ambiguous["reason"]=="SEC_ACCEPTANCE_CLOCK_AMBIGUOUS_PIT", (
+        "EARLY_CLOSE_UNVERIFIED_UTC_VS_ET_PIT_FALSE_ACCEPTED")
+    early_sub["filings"]["recent"]["acceptanceDateTime"][0]="2026-11-27T12:59:00Z"
     assert select_shares(early_fak,early_sub,"2026-11-27")["status"]=="SHADOW_SHARES_VINTAGE_ONLY", (
-        "VALID_EARLY_CLOSE_PRE_13_ET_FACT_FALSE_REJECTED")
+        "VALID_EARLY_CLOSE_BOTH_CLOCKS_PRE_13_ET_FALSE_REJECTED")
     holiday_fak=json.loads(json.dumps(early_fak))
     holiday_fak["facts"]["dei"]["EntityCommonStockSharesOutstanding"]["units"]["shares"][0].update({
         "filed":"2026-11-26","end":"2026-11-26"})
