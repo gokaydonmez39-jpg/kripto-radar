@@ -1,0 +1,16 @@
+{
+  "schema": "XRAY_20261012_P0_SEC_ALPACA_FREE_PERSONAL_MC_CANARY_V1",
+  "asof": "2026-10-09",
+  "source_preimage_sha": "3cfc1f4237211b96e1ffaa86e7fbddbeae562b5e",
+  "source": "SEC_EDGAR_OFFICIAL_ISSUER_SHARES_PLUS_ALPACA_HISTORICAL_SIP_EOD",
+  "single_canary": "AAPL",
+  "reason": "Establish accurate SEC PIT share-vintage and exact dated Alpaca EOD arithmetic; issuer class, CA and crosscheck still unproved",
+  "user_use": "PERSONAL_NONCOMMERCIAL_RESEARCH_ONLY",
+  "cost": "ZERO_ADDITIONAL_SUBSCRIPTION",
+  "output": "PROVENANCE_CLASSIFICATION_ONLY_NO_RAW_PRICE_SHARES_MC",
+  "C417_primary": false,
+  "al_candidate": false,
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "ci": "PENDING"
+}
