@@ -7,6 +7,7 @@ on:
       - "nasdaq-xray/research_preopen_source_audit.py"
       - "nasdaq-xray/preopen_live_release_gate.py"
       - "nasdaq-xray/monday_launch_microaudit.py"
+      - "nasdaq-xray/monday_live_actions_attestor.py"
       - ".github/workflows/xray-preopen-source-audit.yml"
   workflow_run:
     workflows:
@@ -27,6 +28,7 @@ on:
     - cron: "15 14 * * 1-5"
 permissions:
   contents: read
+  actions: read
 concurrency:
   group: xray-preopen-source-audit-v1
   cancel-in-progress: true
@@ -71,6 +73,24 @@ jobs:
           assert j["alpha_authority"] is False and j["no_real_device_receipt_claim"] is True
           assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
           print("XRAY_MONDAY_LAUNCH_TOPOLOGY_CONTRACT=PASS_NOT_PRODUCTION_GO")
+          PY
+      - name: Inspect real root, stages, preopen, E2E and delivery Actions receipts
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python -m py_compile nasdaq-xray/monday_live_actions_attestor.py
+          python nasdaq-xray/monday_live_actions_attestor.py --selftest
+          python nasdaq-xray/monday_live_actions_attestor.py --out "$RUNNER_TEMP/xray_monday_live_actions.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          j=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_monday_live_actions.json").read_text())
+          assert j["schema"]=="XRAY_MONDAY_LIVE_ACTIONS_EXECUTION_WITNESS_V1"
+          assert j["main_stable_during_observation"] is True
+          assert len(j["execution_witnesses"])==8
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          assert not j["alpha_authority"] and not j["real_user_device_receipt_attested"]
+          print("XRAY_MONDAY_LIVE_ACTIONS_REPORT=RECORDED_NOT_PROVIDER_OR_DEVICE_RELEASE")
           PY
       - name: Compile and test true positive/negative proof boundaries
         run: |
@@ -168,5 +188,6 @@ jobs:
             ${{ runner.temp }}/xray_preopen_source_readiness.json
             ${{ runner.temp }}/xray_current_preopen.json
             ${{ runner.temp }}/xray_monday_launch_microaudit.json
+            ${{ runner.temp }}/xray_monday_live_actions.json
           retention-days: 14
           if-no-files-found: error
