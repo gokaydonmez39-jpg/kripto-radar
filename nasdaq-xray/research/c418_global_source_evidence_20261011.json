@@ -110,6 +110,18 @@
       "required_guard": "positive_volume_and_exact_260_completed_official_sessions",
       "guard_present": "nasdaq-xray/history_transport_cache_guard.py",
       "all_12_spac_pit_identity_authority": false
+    },
+    "massive_rallies_514_current_price_pass_coverage": {
+      "asof_et": "2026-10-09",
+      "current_price_blob_sha": "6f3f68fff0897d68f200ad3621c51a5071494714",
+      "exact_c417_price_pass_symbol_count": 514,
+      "massive_grouped_present_count": 514,
+      "rallies_bulk_present_count": 514,
+      "missing_in_massive": 0,
+      "missing_in_rallies": 0,
+      "required_260x52_validated_symbol_count": 0,
+      "interpretation": "SAME_DAY_EXISTENCE_ONLY_NOT_260_SESSIONS_NOT_INDEPENDENT_NOT_LICENSED",
+      "history_pass_created": false
     }
   },
   "rights_and_coverage": {
@@ -183,7 +195,8 @@
     "RALLIES_MASSIVE_UNIQUE_UPSTREAM_NOT_ATTESTED",
     "CORPORATE_ACTIONS_RAW_ADJUSTED_PIT_UNPROVEN",
     "CURRENT_TERMINAL_ASOF_2026_10_07_NOT_CURRENT_2026_10_09",
-    "DEVICE_DELIVERY_RECEIPT_NOT_ATTESTED"
+    "DEVICE_DELIVERY_RECEIPT_NOT_ATTESTED",
+    "RALLIES_MASSIVE_514_ASOF_COVERAGE_IS_ONE_DAY_ONLY_NOT_260_HISTORY"
   ],
   "no_vendor_raw_bars_stored": true,
   "operator_approval_to_promote": false,
