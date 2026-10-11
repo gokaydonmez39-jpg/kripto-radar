@@ -189,6 +189,28 @@
         "https://www.sec.gov/Archives/edgar/data/2088896/000119312526256369/xe-ex99_1.htm"
       ],
       "note": "X-energy issuer SEC exhibit confirms 2026-04-24 first Nasdaq public trading under XE. As of 2026-10-09, official Nasdaq session upper bound is below both mandatory 260 daily and 52 completed weekly bars: terminal FAIL_HISTORY only. No synthetically imported pre-IPO price bars, no MC PASS, no AL, no R92."
+    },
+    "PURR": {
+      "mode": "OFFICIAL_LISTING_UPPER_BOUND_FAIL_ONLY",
+      "earliest_public_trading_date": "2025-12-03",
+      "regular_way_trading_date": "2025-12-03",
+      "predecessor_symbol_not_automatically_continuous": "SONN",
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/2078856/000149315225025886/ex99-1.htm",
+        "https://www.sec.gov/Archives/edgar/data/2078856/000119312526055449/purr-20251202.htm"
+      ],
+      "note": "Company SEC confirms 2025-12-02 business combination with former SONN; PURR common stock began 2025-12-03. Predecessor SONN/old CUSIP cannot supply new PURR 260-session common-class history without exact official lineage, corporate-action and exchange-level price/volume reconciliation. FAIL-only; no history PASS."
+    },
+    "SHAZ": {
+      "mode": "OFFICIAL_LISTING_UPPER_BOUND_FAIL_ONLY",
+      "earliest_public_trading_date": "2026-02-18",
+      "regular_way_trading_date": "2026-02-18",
+      "pre_nasdaq_market_not_automatically_continuous": "OTC",
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/2068385/000182912626001479/sharonai_ex99-1.htm",
+        "https://www.sec.gov/Archives/edgar/data/2068385/000182912626001448/sharonaiholdings_424b4.htm"
+      ],
+      "note": "SEC 8-K and prospectus: SHAZ Class A Nasdaq first trading 2026-02-18, previously OTC after merger; OTC history not valid Nasdaq 260 official RTH sessions. FAIL-only; no history PASS."
     }
   }
 }

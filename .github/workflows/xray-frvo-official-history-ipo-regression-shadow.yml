@@ -5,6 +5,7 @@ on:
     paths:
       - "nasdaq-xray/history_official_identity_evidence.json"
       - "nasdaq-xray/history_official_ipo_260_selftest.py"
+      - "nasdaq-xray/history_17_short_official_bound_selftest.py"
       - "nasdaq-xray/history_phase.py"
       - ".github/workflows/xray-frvo-official-history-ipo-regression-shadow.yml"
   workflow_dispatch:
@@ -26,24 +27,26 @@ jobs:
         run: |
           python -m py_compile nasdaq-xray/history_official_ipo_260_selftest.py
           python nasdaq-xray/history_official_ipo_260_selftest.py
+          python nasdaq-xray/history_17_short_official_bound_selftest.py
+          python -O nasdaq-xray/history_17_short_official_bound_selftest.py
       - name: Record safe no-vendor proof
         run: |
           python - <<'PY'
           import json,os,subprocess
           from pathlib import Path
-          data={"schema":"XRAY_C417_IPO_OFFICIAL_FAIL_ONLY_WITNESS_V1",
+          data={"schema":"XRAY_C417_IPO_OFFICIAL_FAIL_ONLY_WITNESS_V2",
                 "head_sha":subprocess.check_output(["git","rev-parse","HEAD"],text=True).strip(),
-                "symbols":["BSP","CBRS","EQPT","FRVO","MDLN","MMED","NAVN","QNT","XE"],"asof_et":"2026-10-09",
+                "symbols":["BSP","CBRS","EQPT","FRVO","HONA","INIO","MDLN","MMED","NAVN","PURR","QNT","SHAZ","SKHY","SOLS","SPCX","VSNT","XE"],"asof_et":"2026-10-09",
                 "real_vendor_calls":0,"history_pass_created":0,
                 "mc_pass_created":0,"r92_created":False,
                 "execution":"NONE","real_money":"NO-GO"}
           assert data["head_sha"]==os.environ["GITHUB_SHA"]
-          assert len(data["symbols"])==9 and data["symbols"]==sorted(set(data["symbols"]))
+          assert len(data["symbols"])==17 and data["symbols"]==sorted(set(data["symbols"]))
           (Path(os.environ["RUNNER_TEMP"])/"xray_ipo_only.json").write_text(json.dumps(data,indent=2)+"\n")
           PY
       - uses: actions/upload-artifact@v4
         with:
-          name: xray-nine-ipo-official-age-no-go-witness
+          name: xray-seventeen-ipo-official-age-no-go-witness
           path: ${{ runner.temp }}/xray_ipo_only.json
           retention-days: 14
           if-no-files-found: error

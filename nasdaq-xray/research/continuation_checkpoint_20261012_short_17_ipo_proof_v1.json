@@ -1,0 +1,47 @@
+{
+  "schema": "XRAY_20261012_17_SHORT_HISTORY_OFFICIAL_NASDAQ_UPPER_BOUND_V1",
+  "parent_main": "fc53e0bb55742140444654963535cc94aace887e",
+  "source_full_scope_alpaca_run": 38170900300,
+  "source_full_scope_alpaca_artifact": 11714078156,
+  "source_status_counts": {
+    "SHADOW_260_DAILY_52_WEEK_OBSERVED": 498,
+    "MISSING_EXACT_COMPLETED_SESSIONS": 17,
+    "UNCHECKED_DUE_TO_TRANSPORT": 0
+  },
+  "short_exact_symbols": [
+    "BSP",
+    "CBRS",
+    "EQPT",
+    "FRVO",
+    "HONA",
+    "INIO",
+    "MDLN",
+    "MMED",
+    "NAVN",
+    "PURR",
+    "QNT",
+    "SHAZ",
+    "SKHY",
+    "SOLS",
+    "SPCX",
+    "VSNT",
+    "XE"
+  ],
+  "official_registry_added": {
+    "PURR": "2025-12-03",
+    "SHAZ": "2026-02-18"
+  },
+  "sources": [
+    "https://www.sec.gov/Archives/edgar/data/2078856/000119312526055449/purr-20251202.htm",
+    "https://www.sec.gov/Archives/edgar/data/2068385/000182912626001479/sharonai_ex99-1.htm"
+  ],
+  "gate": "PRODUCTION_HISTORY_OFFICIAL_LISTING_UPPER_BOUND_FAIL_ONLY",
+  "symbol_local_failure_only": true,
+  "no_predecessor_substitution": true,
+  "no_synthetic_bars": true,
+  "history_pass_created": 0,
+  "license_independently_verified": false,
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "status": "CI_PENDING"
+}
