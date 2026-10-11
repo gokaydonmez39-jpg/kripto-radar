@@ -56,6 +56,9 @@ CHECKS={
         'gh issue view "$existing" --json number,title,body,url',
         "delivery_issue_receipt_guard.py",
         "XRAY_BACKUP_DELIVERY_UNVERIFIED",
+        "--search-json",
+        "gh label list --repo",
+        "--limit 100 --search",
     )),
     "official_safety_before_delivery":("nasdaq-xray-delivery.yml",(
         "Refresh official Nasdaq halt + Security Status guard",
@@ -88,6 +91,27 @@ def validate_contract(files:dict[str,str])->dict:
         if any(n not in files[name] for n in needles):
             errors.append("SAFETY_STEP_MISSING:"+label)
     d=files["nasdaq-xray-delivery.yml"]
+    # One issue creation per key; fallback double-create after uncertain HTTP
+    # failure risks two user-facing notifications for one registered R92.
+    if d.count("gh issue create")!=1 or "|| gh issue create" in d:
+        errors.append("DELIVERY_DUPLICATE_ISSUE_CREATE_PATH")
+    if "'.[0].number // empty'" in d:
+        errors.append("DELIVERY_UNVERIFIED_FIRST_FUZZY_MATCH")
+    receipt_guard=(DATA/"delivery_issue_receipt_guard.py").read_text()
+    if "def unique_exact_issue(" not in receipt_guard:
+        errors.append("DELIVERY_EXACT_ISSUE_LOOKUP_GUARD_MISSING")
+    scheduler=(DATA/"delivery_scheduler_guard.py").read_text()
+    for needle in ("def _weekday_root_successes(", "def _later_red_than_green(",
+                   "ROOT_LATEST_RUN_FAILED_OR_CANCELLED",
+                   "FINAL_LATEST_RUN_FAILED_OR_CANCELLED",
+                   'rt=_dt(latest_root.get("created_at"))'):
+        if needle not in scheduler:
+            errors.append("DELIVERY_SCHEDULER_FAIL_CLOSED_REGRESSION:"+needle)
+    ledger=(DATA/"delivery_ledger_merge.py").read_text()
+    for needle in ("def _checked_at(", "DELIVERY_EQUAL_TIMESTAMP_RECEIPT_CONFLICT",
+                   'combined["backup_issue_status"] = best.get("backup_issue_status")'):
+        if needle not in ledger:
+            errors.append("DELIVERY_LEDGER_LATEST_OBSERVATION_REGRESSION:"+needle)
     ordering=(
         "Refresh official Nasdaq halt + Security Status guard",
         "Synthetic registered-R92 delivery self-test",
@@ -186,6 +210,10 @@ def selftest():
         ("nasdaq-xray-delivery.yml","delivery_issue_receipt_guard.py","MISSING_VERIFIER"),
         ("nasdaq-xray-delivery.yml",'gh issue view "$existing" --json number,title,body,url',
          "UNVERIFIED_ISSUE_SEARCH_RESULT"),
+        ("nasdaq-xray-delivery.yml","--search-json",
+         "UNVERIFIED_ISSUE_FUZZY_RESULT"),
+        ("nasdaq-xray-delivery.yml","gh issue create",
+         "gh issue create || gh issue create"),
     ]
     for name,needle,replacement in regressions:
         assert needle in files[name],(name,needle)
@@ -205,7 +233,7 @@ def selftest():
         without_guard[:destination]+guard_step+without_guard[destination:])
     assert not validate_contract(modified)["ok"]
     assert session_timeline()
-    print("XRAY_MONDAY_MICROAUDIT_SELFTEST=PASS_10_NEGATIVES_DST_DELIVERY_RECEIPTS_RECOVERY_NO_FALSE_GO")
+    print("XRAY_MONDAY_MICROAUDIT_SELFTEST=PASS_12_NEGATIVES_DST_DELIVERY_RECEIPTS_RECOVERY_NO_FALSE_GO")
 
 def main():
     parser=argparse.ArgumentParser()
