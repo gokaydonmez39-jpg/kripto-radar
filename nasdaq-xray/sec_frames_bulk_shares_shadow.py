@@ -51,28 +51,42 @@ def periods(asof:str)->tuple[str,...]:
     return tuple(result)
 
 def classify_fact(row,asof):
-    if not isinstance(row,dict):
-        return "ROW_INVALID"
-    required=("cik","accn","form","filed","end","val")
-    if any(k not in row for k in required):return "ROW_MISSING_FIELD"
+    """SEC frames omit some per-filing fields. Such rows are discovery ONLY.
+
+    The frames endpoint provides ONE selected company fact per period; it is
+    not the submissions/filing-acceptance record. Absence of metadata NEVER
+    authorizes a C4.17 point-in-time share-count promotion.
+    """
+    if not isinstance(row,dict):return "ROW_INVALID"
+    if any(k not in row for k in ("cik","end","val")):
+        return "ROW_MISSING_ISSUER_END_OR_VALUE"
     try:
+        if isinstance(row["cik"],bool):return "ROW_INVALID"
         cik=int(row["cik"])
-        filed=dt.date.fromisoformat(str(row["filed"]))
         end=dt.date.fromisoformat(str(row["end"]))
         today=dt.date.fromisoformat(asof)
+        filed=(dt.date.fromisoformat(str(row["filed"]))
+               if row.get("filed") is not None else None)
     except (ValueError,TypeError,OverflowError):
         return "ROW_INVALID"
-    if cik<=0 or not isinstance(row["accn"],str) or not row["accn"]:
+    if cik<=0 or ("accn" in row and (
+        not isinstance(row["accn"],str) or not row["accn"])):
         return "ROW_INVALID"
-    if row["form"] not in ("10-Q","10-K","10-Q/A","10-K/A","20-F","40-F"):
+    if row.get("form") is not None and row["form"] not in (
+            "10-Q","10-K","10-Q/A","10-K/A","20-F","40-F"):
         return "FORM_NOT_FILING_SCOPE"
-    if filed>=today:
-        return "FILED_ON_OR_AFTER_ASOF_NO_PRE_CLOSE_PIT"
-    if end>filed or end>today or (today-end).days>MAX_VINTAGE_AGE_DAYS:
+    if end>today or (today-end).days>MAX_VINTAGE_AGE_DAYS:
         return "STALE_OR_FUTURE_SHARE_OBSERVATION"
+    if filed is not None:
+        if filed>=today:
+            return "FILED_ON_OR_AFTER_ASOF_NO_PRE_CLOSE_PIT"
+        if end>filed:
+            return "STALE_OR_FUTURE_SHARE_OBSERVATION"
     val=row["val"]
     if type(val) is not int or val<=0:
         return "NON_POSITIVE_OR_NONINTEGER_SHARES"
+    if filed is None or row.get("form") is None or not row.get("accn"):
+        return "FRAME_DISCOVERY_ONLY_MISSING_FILING_METADATA"
     return "DATE_ONLY_ELIGIBLE_NO_INTRADAY_ACCEPTANCE"
 
 def interpret(frames_by_concept:dict,symbol_to_cik:dict,asof:str):
@@ -93,12 +107,15 @@ def interpret(frames_by_concept:dict,symbol_to_cik:dict,asof:str):
                 raise ValueError("FRAME_DATA_SCHEMA_INVALID")
             for row in frame["data"]:
                 reason=classify_fact(row,asof)
-                if reason!="DATE_ONLY_ELIGIBLE_NO_INTRADAY_ACCEPTANCE":
+                if reason not in (
+                    "DATE_ONLY_ELIGIBLE_NO_INTRADAY_ACCEPTANCE",
+                    "FRAME_DISCOVERY_ONLY_MISSING_FILING_METADATA"):
                     rejected[reason]+=1
                     continue
                 cik=int(row["cik"])
                 if cik not in ciks:continue
-                stamp=(row["accn"],row["end"],row["filed"])
+                stamp=(row.get("accn","UNKNOWN_ACCESSION"),
+                       row["end"],row.get("filed","UNKNOWN_FILED"))
                 if stamp in seen[(concept,cik)]:
                     duplicates[concept]+=1
                 seen[(concept,cik)].add(stamp)
@@ -116,7 +133,7 @@ def interpret(frames_by_concept:dict,symbol_to_cik:dict,asof:str):
             if len(by_vintage[latest])!=1:
                 status="CONFLICTING_DEI_SAME_VINTAGE"
             else:
-                status="DEI_DATE_ONLY_UNVERIFIED_CLASS_AND_ACCEPTANCE"
+                status="DEI_FRAME_CANDIDATE_NEEDS_OFFICIAL_CLASS_AND_ACCEPTANCE"
         elif gaap:
             status="USGAAP_ONLY_DIMENSIONAL_CLASS_UNKNOWN"
         else:
@@ -183,6 +200,14 @@ def selftest():
     ok={"cik":1,"accn":"0000000001-26-000001","form":"10-Q",
         "filed":"2026-08-01","end":"2026-06-30","val":10_000_000}
     assert classify_fact(ok,"2026-10-09")=="DATE_ONLY_ELIGIBLE_NO_INTRADAY_ACCEPTANCE"
+    # Real SEC frame rows may lack filing/form/accession; retain discovery
+    # coverage without claiming any as-of market cap or shares authority.
+    sparse={"cik":1,"end":"2026-06-30","val":10_000_000}
+    assert classify_fact(sparse,"2026-10-09")=="FRAME_DISCOVERY_ONLY_MISSING_FILING_METADATA"
+    frames_probe={"dei":[{"data":[sparse]}],"us-gaap":[{"data":[]}]}
+    cov,_,_=interpret(frames_probe,{"A":"0000000001"},"2026-10-09")
+    assert cov=={"DEI_FRAME_CANDIDATE_NEEDS_OFFICIAL_CLASS_AND_ACCEPTANCE":1}
+
     altered=dict(ok,filed="2026-10-09")
     assert classify_fact(altered,"2026-10-09")=="FILED_ON_OR_AFTER_ASOF_NO_PRE_CLOSE_PIT"
     altered=dict(ok,val=0)
@@ -197,7 +222,7 @@ def selftest():
     frames={"dei":[{"data":[ok,ok]}],
             "us-gaap":[{"data":[a]}]}
     counts,invalid,duplicates=interpret(frames,{"A":"0000000001","B":"0000000002","C":"0000000003"},"2026-10-09")
-    assert counts=={"DEI_DATE_ONLY_UNVERIFIED_CLASS_AND_ACCEPTANCE":1,
+    assert counts=={"DEI_FRAME_CANDIDATE_NEEDS_OFFICIAL_CLASS_AND_ACCEPTANCE":1,
                     "USGAAP_ONLY_DIMENSIONAL_CLASS_UNKNOWN":1,
                     "NO_FRESH_FRAME_SHARE_FACT":1}
     assert duplicates["dei"]==1
