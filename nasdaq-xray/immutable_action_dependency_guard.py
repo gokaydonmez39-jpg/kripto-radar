@@ -66,7 +66,7 @@ def verify(path: str, contents: str) -> int:
     if path == ".github/workflows/xray-manual-decision-research-shadow.yml":
         if ("nasdaq-xray/manual_workflow_trigger_sha_guard.py --selftest" not in contents
                 or "nasdaq-xray/manual_workflow_trigger_sha_guard.py --out" not in contents
-                or "XRAY_MANUAL_INVOCATION" not in contents):
+                or "Enforce exact source Final invocation vs current checked-out main" not in contents):
             raise ValueError("MANUAL_WORKFLOW_UPSTREAM_FINAL_SHA_FENCE_MISSING")
     return len(observed)
 
@@ -111,7 +111,7 @@ def selftest() -> None:
         "steps:",
         "  - uses: " + CHECKOUT,
         "  - uses: " + PYTHON,
-        "  - name: XRAY_MANUAL_INVOCATION provenance",
+        "  - name: Enforce exact source Final invocation vs current checked-out main",
         "    run: |",
         "      python nasdaq-xray/manual_workflow_trigger_sha_guard.py --selftest",
         "      python nasdaq-xray/manual_workflow_trigger_sha_guard.py --out result.json",
