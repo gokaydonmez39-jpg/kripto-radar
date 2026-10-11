@@ -48,14 +48,16 @@ def validate_receipt(issue, *, issue_number, delivery_key, symbol, expected_body
     return True,"BACKUP_ISSUE_EXACT_CONTENT_AND_URL_VERIFIED_NO_USER_RECEIPT"
 
 
-def unique_exact_issue(rows, *, delivery_key, symbol, max_results=100):
+def unique_exact_issue(rows, *, delivery_key, symbol, max_results=10000):
     """An approximate GitHub search hit is NEVER an exact-key receipt."""
     if (not isinstance(rows,list) or not isinstance(delivery_key,str)
         or not delivery_key or not isinstance(symbol,str)
         or not re.fullmatch(r"[A-Z0-9.\\-]{1,12}",symbol)):
         raise ValueError("ISSUE_LOOKUP_INPUT_UNVERIFIED")
-    if len(rows)>=max_results:
-        raise ValueError("ISSUE_LOOKUP_TRUNCATED_SCOPE")
+    # The workflow obtains an exhaustive paginated REST snapshot (not GitHub
+    # search); this cap is a fail-closed processing budget, not a page limit.
+    if type(max_results) is not int or max_results<1 or len(rows)>=max_results:
+        raise ValueError("ISSUE_LOOKUP_OVER_PROCESSING_BUDGET")
     title="[XRAY RESEARCH AL ADAYI] "+symbol+" — "+delivery_key
     matches=[]
     for row in rows:
@@ -111,12 +113,19 @@ def selftest():
     assert unique_exact_issue([partial],delivery_key=key,symbol=symbol) is None
     for bad_rows in ([exact,dict(exact,number=124)],
                      [exact,exact], [dict(exact,number=0)],
-                     [dict(exact,number=True)], [None], None,
-                     [partial]*100):
+                     [dict(exact,number=True)], [None], None):
         try:unique_exact_issue(bad_rows,delivery_key=key,symbol=symbol)
         except ValueError:pass
-        else:raise AssertionError("AMBIGUOUS_OR_TRUNCATED_LOOKUP_ACCEPTED")
-    print("XRAY_BACKUP_ISSUE_RECEIPT_SELFTEST=PASS_13_NEGATIVE_CRLF_EXACT_SEARCH_AMBIGUITY_NO_PHONE_CLAIM")
+        else:raise AssertionError("AMBIGUOUS_ISSUE_LOOKUP_ACCEPTED")
+    try:unique_exact_issue([partial,exact],delivery_key=key,symbol=symbol,max_results=2)
+    except ValueError:pass
+    else:raise AssertionError("PROCESSING_BUDGET_BYPASSED")
+    # An exact Issue must be detected even with >100 unrelated repository
+    # issues; pagination, not search's first page, establishes completeness.
+    many=[{"number":1000+i,"title":"unrelated "+str(i)}
+          for i in range(150)]+[exact]
+    assert unique_exact_issue(many,delivery_key=key,symbol=symbol)==123
+    print("XRAY_BACKUP_ISSUE_RECEIPT_SELFTEST=PASS_FULL_PAGINATION_NEGATIVES_UNIQUE_EXACT_KEY_NO_DEVICE_CLAIM")
 
 def main():
     parser=argparse.ArgumentParser()
