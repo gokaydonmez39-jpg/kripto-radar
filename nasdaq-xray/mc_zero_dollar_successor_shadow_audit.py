@@ -179,8 +179,12 @@ def classify_shadow_candidate(mc_rec: dict, nq_rec: dict | None) -> tuple[str, l
 
 
 def count_exact_pit_unknowns(rows: dict) -> int:
+    # An exact Nasdaq PIT observation requires the conjunction used by
+    # classify_shadow_candidate; a mere True flag is insufficient.
     return sum(1 for row in rows.values()
-               if row.get("nasdaq_shadow_eligible") is True)
+               if not (row.get("nasdaq_shadow_eligible") is True
+                       and row.get("nasdaq_close_match") is True
+                       and row.get("nasdaq_pit_status") == "SHADOW_ELIGIBLE"))
 
 
 def selftest() -> None:
@@ -194,6 +198,12 @@ def selftest() -> None:
     }
     samples["also_verified"] = dict(samples["verified"])
     assert count_exact_pit_unknowns(samples)==1, "PIT_UNKNOWN_COUNT_INVERTED"
+    assert count_exact_pit_unknowns({"ready":samples["verified"]})==0
+    assert count_exact_pit_unknowns({"missing":samples["missing"]})==1
+    deceptive=dict(samples["verified"],nasdaq_close_match=False)
+    assert count_exact_pit_unknowns({"ready":samples["verified"],
+                                     "false_ready":deceptive})==1
+    assert count_exact_pit_unknowns({})==0
     high = {
         "rallies_market_cap_usd": 3_000_000_000,
         "longbridge_market_cap_usd": 3_100_000_000,
