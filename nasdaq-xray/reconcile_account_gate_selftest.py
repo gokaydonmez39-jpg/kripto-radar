@@ -39,6 +39,10 @@ def adapters(include_current=True):
         a["adapters"]["LONGBRIDGE"]={"status":"BLOCKED_SCOPE"}
     return a
 
+def check(ok):
+    if not ok:
+        raise AssertionError("ACCOUNT_OUTPUT_INVARIANT_FAILED")
+
 def run_case(gate,adapter_obj,expect_ok,expect_error=None):
     mod=load_mod()
     with tempfile.TemporaryDirectory() as td:
@@ -57,15 +61,15 @@ def run_case(gate,adapter_obj,expect_ok,expect_error=None):
                 raise AssertionError(f"wrong error: {e}")
             return
         out=json.loads(gp.read_text())
-        assert out["current_status"]==gate["current_status"]
-        assert out["current_status"] not in {"PASS","ACCOUNT_PASS"}
-        assert out["adapter_contract"]["blob_sha"]==mod.blob_sha(ap)
-        assert out["adapter_registry_sync"]=="EVIDENCE_PIN_ONLY_NEVER_PASS_AUTHORITY"
-        assert out["binding_revalidation"]["status"]=="EXACT"
-        assert out["binding_revalidation"]["adapter_blob_sha"]==mod.blob_sha(ap)
+        check(out["current_status"]==gate["current_status"])
+        check(out["current_status"] not in {"PASS","ACCOUNT_PASS"})
+        check(out["adapter_contract"]["blob_sha"]==mod.blob_sha(ap))
+        check(out["adapter_registry_sync"]=="EVIDENCE_PIN_ONLY_NEVER_PASS_AUTHORITY")
+        check(out["binding_revalidation"]["status"]=="EXACT")
+        check(out["binding_revalidation"]["adapter_blob_sha"]==mod.blob_sha(ap))
         if "RALLIES_ACCOUNT_READ_V1" in adapter_obj.get("adapters",{}):
-            assert out["alternate_adapter_candidates"]["RALLIES_ACCOUNT_READ_V1"]==adapter_obj["adapters"]["RALLIES_ACCOUNT_READ_V1"]["status"]
-        assert out["no_policy_weakening"] is True
+            check(out["alternate_adapter_candidates"]["RALLIES_ACCOUNT_READ_V1"]==adapter_obj["adapters"]["RALLIES_ACCOUNT_READ_V1"]["status"])
+        check(out["no_policy_weakening"] is True)
 
 def main():
     # 1) BLOCKED state may synchronize evidence only; status cannot change.
@@ -84,7 +88,13 @@ def main():
     a["adapters"]["RALLIES_ACCOUNT_READ_V1"]={"status":"BLOCKED_NO_CURRENT_PORTFOLIO_WITNESS"}
     run_case(base_gate(),a,True)
 
-    print("XRAY_ACCOUNT_GATE_RECONCILER_SELFTEST=PASS")
+    # Fail-closed under both python and python -O.
+    bad=base_gate();bad["schema"]="INVALID";run_case(bad,adapters(),False,"ACCOUNT_GATE_SCHEMA_INVALID")
+    bad=adapters();bad["schema"]="INVALID";run_case(base_gate(),bad,False,"ACCOUNT_ADAPTER_SCHEMA_INVALID")
+    bad=base_gate();bad["execution"]="TRADE";run_case(bad,adapters(),False,"ACCOUNT_GATE_EXECUTION_UNSAFE")
+    bad=adapters();bad["real_money"]="GO";run_case(base_gate(),bad,False,"ACCOUNT_ADAPTER_EXECUTION_UNSAFE")
+    bad=base_gate();bad["provider"]="BAD";run_case(bad,adapters(),False,"ACCOUNT_GATE_PROVIDER_INVALID")
+    print("XRAY_ACCOUNT_GATE_RECONCILER_SELFTEST=PASS_4_POSITIVE_7_NEGATIVE_OPTIMIZED_SAFE")
 
 if __name__=="__main__":
     main()

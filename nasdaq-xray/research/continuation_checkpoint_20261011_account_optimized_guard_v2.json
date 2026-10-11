@@ -1,0 +1,17 @@
+{
+  "schema": "XRAY_ACCOUNT_OPTIMIZED_INTERPRETER_GUARD_20261011_V2",
+  "parent_head_sha": "e081641402e73b96541436d28f89256c79464fe1",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "fixed": "SIX_UNOPTIMIZABLE_ACCOUNT_GATES_REPLACE_PYTHON_ASSERT",
+  "test_matrix": "4_POSITIVE_7_NEGATIVE_BOTH_INTERPRETER_MODES",
+  "can_create_account_pass": false,
+  "account_status": "ACCOUNT_BOOTSTRAP_READY_CREDENTIALS_REQUIRED",
+  "source_sha_fences_unchanged": true,
+  "no_primary_mc_created": true,
+  "production_go": "NO-GO",
+  "ci_status_at_write": "PENDING",
+  "metadata_only": true
+}

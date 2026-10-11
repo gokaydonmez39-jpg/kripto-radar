@@ -13,16 +13,21 @@ def blob_sha(p):
     b=p.read_bytes()
     return hashlib.sha1(b"blob " + str(len(b)).encode() + bytes([0]) + b).hexdigest()
 
+def require(ok,reason):
+    # An optimized interpreter must not remove any production safety gate.
+    if not ok:
+        raise AssertionError(reason)
+
 def main():
     g=load(GATE)
     a=load(ADAPTER)
-    assert g.get("schema")=="XRAY_ACCOUNT_GATE_CONTRACT_V1"
-    assert a.get("schema")=="XRAY_ACCOUNT_PROVIDER_ADAPTER_CONTRACT_V1"
-    assert g.get("execution")=="NONE" and g.get("real_money")=="NO-GO"
-    assert a.get("execution")=="NONE" and a.get("real_money")=="NO-GO"
-    assert g.get("provider")=="PROVIDER_NEUTRAL"
+    require(g.get("schema")=="XRAY_ACCOUNT_GATE_CONTRACT_V1","ACCOUNT_GATE_SCHEMA_INVALID")
+    require(a.get("schema")=="XRAY_ACCOUNT_PROVIDER_ADAPTER_CONTRACT_V1","ACCOUNT_ADAPTER_SCHEMA_INVALID")
+    require(g.get("execution")=="NONE" and g.get("real_money")=="NO-GO","ACCOUNT_GATE_EXECUTION_UNSAFE")
+    require(a.get("execution")=="NONE" and a.get("real_money")=="NO-GO","ACCOUNT_ADAPTER_EXECUTION_UNSAFE")
+    require(g.get("provider")=="PROVIDER_NEUTRAL","ACCOUNT_GATE_PROVIDER_INVALID")
     current=str(g.get("current_adapter") or "")
-    assert current and current in (a.get("adapters") or {}), "CURRENT_ACCOUNT_ADAPTER_MISSING_FROM_REGISTRY"
+    require(bool(current and current in (a.get("adapters") or {})),"CURRENT_ACCOUNT_ADAPTER_MISSING_FROM_REGISTRY")
 
     # Evidence synchronization only. This reconciler has no authority to create
     # ACCOUNT PASS or persist any account/private values.

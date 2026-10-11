@@ -43,7 +43,9 @@ jobs:
         run: python -m py_compile nasdaq-xray/reconcile_account_gate.py nasdaq-xray/reconcile_account_gate_selftest.py
 
       - name: Run fail-closed reconciler selftest
-        run: python nasdaq-xray/reconcile_account_gate_selftest.py
+        run: |
+          python nasdaq-xray/reconcile_account_gate_selftest.py
+          python -O nasdaq-xray/reconcile_account_gate_selftest.py
 
       - name: Reconcile latest main
         shell: bash
@@ -65,6 +67,7 @@ jobs:
             fi
             python -m py_compile nasdaq-xray/reconcile_account_gate.py nasdaq-xray/reconcile_account_gate_selftest.py
             python nasdaq-xray/reconcile_account_gate_selftest.py
+            python -O nasdaq-xray/reconcile_account_gate_selftest.py
             python nasdaq-xray/reconcile_account_gate.py
             git add nasdaq-xray/account_gate_contract.json
             if git diff --cached --quiet; then
