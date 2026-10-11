@@ -41,11 +41,13 @@ KNOWN_GROUPS={
 }
 
 
-def request_page(batch,start,end,key,secret,token):
+def request_page(batch,start,end,key,secret,token,*,data_quality="complete"):
+    if data_quality not in {"complete","all"}:
+        raise ValueError("ALPACA_CA_UNSUPPORTED_DATA_QUALITY")
     if not key or not secret:
         raise RuntimeError("ALPACA_CA_MISSING_PRIVATE_CREDENTIALS")
     params={"symbols":",".join(batch),"start":start,"end":end,
-            "data_quality":"complete","limit":1000,"sort":"asc"}
+            "data_quality":data_quality,"limit":1000,"sort":"asc"}
     if token is not None:
         params["page_token"]=token
     req=urllib.request.Request(URL+"?"+urllib.parse.urlencode(params),headers={
