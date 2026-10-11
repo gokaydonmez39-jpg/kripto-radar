@@ -122,6 +122,108 @@
       "required_260x52_validated_symbol_count": 0,
       "interpretation": "SAME_DAY_EXISTENCE_ONLY_NOT_260_SESSIONS_NOT_INDEPENDENT_NOT_LICENSED",
       "history_pass_created": false
+    },
+    "alpaca_sip_514_pass_universe": {
+      "asof_et": "2026-10-09",
+      "canonical_price_blob_sha": "6f3f68fff0897d68f200ad3621c51a5071494714",
+      "canonical_symbols": 514,
+      "alpaca_sip_symbols_with_response": 514,
+      "scan_start": "2025-09-02",
+      "scan_end": "2026-10-09",
+      "sweep_batches": 22,
+      "positive_volume_bar_count_gte_260": 497,
+      "positive_volume_bar_count_lt_260": 17,
+      "zero_volume_bars_observed_among_price_pass_514": 0,
+      "stale_last_date_symbols": 0,
+      "short_history_symbols": [
+        "BSP",
+        "CBRS",
+        "EQPT",
+        "FRVO",
+        "HONA",
+        "INIO",
+        "MDLN",
+        "MMED",
+        "NAVN",
+        "PURR",
+        "QNT",
+        "SHAZ",
+        "SKHY",
+        "SOLS",
+        "SPCX",
+        "VSNT",
+        "XE"
+      ],
+      "exact_official_260_session_match_all_symbols": "NOT_COMPLETED_ADDL_ALPACA_PLUGIN_INTERNAL_FAILURE",
+      "not_proof_of": "PIT_ADJUSTMENT_RIGHTS_PRIMARY_MC_C417_HISTORY_PASS",
+      "new_shadow_guard": "nasdaq-xray/c418_history_exact_session_shadow_guard.py",
+      "new_shadow_ci_run_id": 38136706144,
+      "new_shadow_ci_status": "SUCCESS_NEGATIVE_TESTS_ONLY",
+      "numeric_shadow_only": true,
+      "rights_to_retain_in_public_repo": false,
+      "same_security_predecessor_splicing_prohibited_without_official_identity_evidence": true
+    },
+    "short_history_official_explanations": [
+      {
+        "ticker": "SOLS",
+        "classification": "POST_HONEYWELL_SPINOFF_NEW_DISTINCT_SECURITY",
+        "official_regular_trade_start": "2025-10-30",
+        "sources": [
+          "https://www.solstice.com/us/en/news-events/press-releases/2025/10/solstice-advanced-materials-completes-spin-off-from-honeywell-and-begins-trading-on-nasdaq",
+          "https://www.sec.gov/Archives/edgar/data/2064953/000206495326000087/sols-20260630.htm"
+        ],
+        "predecessor_HON_bars_ineligible": true
+      },
+      {
+        "ticker": "NAVN",
+        "classification": "POST_IPO_NEW_CLASS_A_SECURITY",
+        "official_trade_start": "2025-10-30",
+        "sources": [
+          "https://investors.navan.com/ir-resources/investor-faqs",
+          "https://investors.navan.com/news-releases/news-release-details/navan-announces-pricing-initial-public-offering"
+        ],
+        "prelisting_bars_ineligible": true
+      }
+    ],
+    "global_sources_research_addendum": {
+      "Twelve_Data": {
+        "provider_pricing": "https://twelvedata.com/pricing",
+        "free_credits_per_minute": 8,
+        "free_credits_per_day": 800,
+        "internal_non_display_advertised": true,
+        "full_3401_refresh_per_day_possible_at_one_credit_per_symbol": false,
+        "full_514_refresh_per_day_possible_at_one_credit_per_symbol": true,
+        "quarter_hour_credit_batch_pacing_needed": true,
+        "current_github_runner_api_key_present": "NOT_ATTESTED",
+        "rights_personal_internal_noncommercial_from_pricing": true,
+        "retention_redistribution_claim": "NOT_ATTESTED",
+        "production_promoted": false
+      },
+      "Business_Quant": {
+        "pricing": "https://businessquant.com/pricing/",
+        "terms": "https://businessquant.com/terms-of-use",
+        "docs": "https://businessquant.com/docs/api/quotes",
+        "free_calls_per_day": 30,
+        "documented_multi_ticker_eod": true,
+        "free_total_history_514_symbol_batch_coverage": "UNKNOWN",
+        "scope_internal_purposes": "CONDITIONAL_TO_PLAN_AND_TERMS",
+        "free_account_registered": "NOT_ATTESTED",
+        "api_key_available_to_github": "NOT_ATTESTED",
+        "risk": "FREE_30_DAILY_CALLS_AND_MONTHLY_0_1GB;NO_VERIFIED_NASDAQ_FULL_UNIVERSE",
+        "production_promoted": false
+      },
+      "External_GitHub": {
+        "survivorship_panel_ref": "https://github.com/tenicho/data-cleaning",
+        "SEC_PIT_mc_reference": "https://github.com/mihir-gonsalves/OpenValuation",
+        "SEC_risk": "COVER_PAGE_DEI_SHARE_CLASS_IS_NOT_ALWAYS_TOTAL_TRADEABLE_EQUITY",
+        "fake_provider_reference": "https://github.com/tj-miller-dev/stock_simulator",
+        "fake_provider_data_prohibited_for_real_markets": true
+      },
+      "X_com": {
+        "official_Alpaca_post_seen": "https://x.com/AlpacaHQ/status/2024546176377205242",
+        "market_data_license_information_found_in_social_post": false,
+        "authority": "OFFICIAL_PROVIDER_TERMS_AND_LIVE_DATA_ONLY"
+      }
     }
   },
   "rights_and_coverage": {
@@ -196,7 +298,10 @@
     "CORPORATE_ACTIONS_RAW_ADJUSTED_PIT_UNPROVEN",
     "CURRENT_TERMINAL_ASOF_2026_10_07_NOT_CURRENT_2026_10_09",
     "DEVICE_DELIVERY_RECEIPT_NOT_ATTESTED",
-    "RALLIES_MASSIVE_514_ASOF_COVERAGE_IS_ONE_DAY_ONLY_NOT_260_HISTORY"
+    "RALLIES_MASSIVE_514_ASOF_COVERAGE_IS_ONE_DAY_ONLY_NOT_260_HISTORY",
+    "514_PRICE_PASS_ALPACA_HISTORY_497_GTE260_BARCOUNT_NOT_EXACT_CALENDAR_PIT_LICENSE",
+    "FULL_3401_REFRESH_NOT_FIT_TWELVE_DATA_FREE_800_PER_DAY",
+    "BUSINESS_QUANT_30_CALLS_DAY_BATCH_COVERAGE_AND_RIGHTS_UNTESTED"
   ],
   "no_vendor_raw_bars_stored": true,
   "operator_approval_to_promote": false,
