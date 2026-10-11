@@ -17,6 +17,7 @@ NAME = "NASDAQ SWING XRAY Autonomous Data Plane"
 API = "https://api.github.com/repos/" + REPO
 ACTIVE = {"queued", "in_progress", "pending", "waiting", "requested"}
 UTC = dt.timezone.utc
+NY = ZoneInfo("America/New_York")
 
 def timestamp(value):
     value = dt.datetime.fromisoformat(str(value).replace("Z", "+00:00"))
@@ -26,7 +27,7 @@ def timestamp(value):
 
 def classify(now, runs):
     now = now.astimezone(UTC)
-    if now.astimezone(ZoneInfo("America/New_York")).weekday() >= 5:
+    if now.astimezone(NY).weekday() >= 5:
         return {"decision":"WEEKEND_OBSERVE_ONLY","dispatch_allowed":False}
     if not isinstance(runs, list) or any(not isinstance(r,dict) for r in runs):
         raise ValueError("XRAY_ROOT_RUNS_INVALID")
@@ -35,8 +36,17 @@ def classify(now, runs):
             raise ValueError("XRAY_WRONG_ROOT_WORKFLOW_IDENTITY")
         timestamp(r.get("created_at"))
     runs = sorted(runs,key=lambda r:timestamp(r["created_at"]),reverse=True)
-    latest = runs[0] if runs else None
-    success = next((r for r in runs if r.get("status")=="completed" and
+    # The unattended root deliberately skips provider/compute work on the
+    # U.S.-ET weekend. A green GitHub job then only proves control/CI checks:
+    # it is NOT a Monday data-plane heartbeat.  Excluding it from scheduler
+    # success and cooldown is conservative even when a weekend workflow
+    #_dispatch was manually invoked; no signal or PASS is inferred here.
+    operational = [r for r in runs if
+                   timestamp(r["created_at"]).astimezone(NY).weekday()<5]
+    weekend_noop = [r for r in runs if r not in operational]
+    latest = operational[0] if operational else None
+    success = next((r for r in operational if
+                    r.get("status")=="completed" and
                     r.get("conclusion")=="success"),None)
     # The scheduler contract bounds active-run suppression to 3300s.
     # An orphaned/pending Actions run must not suppress restart forever.
@@ -50,7 +60,7 @@ def classify(now, runs):
         decision = "FRESH_ROOT_SUCCESS"
     elif active:
         decision = "ACTIVE_ROOT_SUPPRESS"
-    elif last_age is not None and last_age < 1800:
+    elif last_age is not None and -60 <= last_age < 1800:
         decision = "RECENT_ROOT_COOLDOWN"
     else:
         decision = "STALE_ROOT_ELIGIBLE"
@@ -61,6 +71,8 @@ def classify(now, runs):
         "last_success_age_seconds":round(success_age) if success_age is not None else None,
         "active_root_ids":[x.get("id") for x in active],
         "expired_active_root_ids":[x.get("id") for x in expired_active],
+        "weekend_noop_root_ids_ignored_for_weekday_success":[
+            x.get("id") for x in weekend_noop],
     }
 
 def signature(runs):
@@ -127,6 +139,28 @@ def selftest():
     assert classify(now,zombie)["expired_active_root_ids"]==[8]
     assert classify(now,cooldown)["decision"]=="RECENT_ROOT_COOLDOWN"
     assert classify(dt.datetime(2026,10,10,11,tzinfo=UTC),stale)["decision"]=="WEEKEND_OBSERVE_ONLY"
+    # Monday 00:05 EDT.  Sunday 23:59 EDT push returned green, but its
+    # root data-plane compute was explicitly SKIPPED by weekend quota gate.
+    monday=dt.datetime(2026,10,12,4,5,tzinfo=UTC)
+    sunday_green=r(22,"2026-10-12T03:59:00Z","completed","success")
+    friday_green=r(21,"2026-10-09T20:30:00Z","completed","success")
+    monday_stale=classify(monday,[sunday_green,friday_green])
+    assert monday_stale["decision"]=="STALE_ROOT_ELIGIBLE"
+    assert monday_stale["dispatch_allowed"] is True
+    assert monday_stale["last_success_id"]==21
+    assert monday_stale["weekend_noop_root_ids_ignored_for_weekday_success"]==[22]
+    assert two_read_authorized([sunday_green,friday_green],
+                               [sunday_green,friday_green],
+                               "a"*40,"a"*40,monday)[0] is True
+    # A real Monday root success satisfies normal freshness again.
+    monday_green=r(23,"2026-10-12T04:02:00Z","completed","success")
+    assert classify(monday,[monday_green,sunday_green])["decision"]=="FRESH_ROOT_SUCCESS"
+    # A real weekday active invocation still suppresses duplicate dispatch.
+    monday_active=r(24,"2026-10-12T04:03:00Z","in_progress")
+    assert classify(monday,[monday_active,sunday_green])["decision"]=="ACTIVE_ROOT_SUPPRESS"
+    # Weekend observes only: even a nominally fresh success cannot dispatch.
+    assert classify(dt.datetime(2026,10,12,3,55,tzinfo=UTC),
+                    [sunday_green])["decision"]=="WEEKEND_OBSERVE_ONLY"
     assert two_read_authorized(stale,stale,"a"*40,"a"*40,now)[0] is True
     assert two_read_authorized(stale,fresh,"a"*40,"a"*40,now)[0] is False
     assert two_read_authorized(stale,stale,"a"*40,"b"*40,now)[0] is False
