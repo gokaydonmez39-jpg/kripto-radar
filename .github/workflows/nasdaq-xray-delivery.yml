@@ -197,13 +197,36 @@ jobs:
           while IFS=$'\t' read -r delivery_key ticker body_file; do
             [ -n "$delivery_key" ] || continue
             title="[XRAY RESEARCH AL ADAYI] $ticker — $delivery_key"
-            existing=$(gh issue list --state all --search "$delivery_key in:title" --json number --jq '.[0].number // empty')
-            if [ -z "$existing" ]; then
-              new_issue_url=$(gh issue create --title "$title" --body-file "$body_file" --label "xray-signal" 2>/tmp/issue_err || gh issue create --title "$title" --body-file "$body_file")
-              # Direct creation receipt avoids issue-search indexing delay.
-              existing=$(printf '%s\n' "$new_issue_url" | sed -nE 's@.*/issues/([0-9]+).*@\1@p' | head -n1)
+            # GitHub issue search is fuzzy/eventually consistent. Inspect a
+            # bounded exact title/key set; ambiguous or truncated => fail closed.
+            search_file="$(mktemp)"
+            gh issue list --repo "$GITHUB_REPOSITORY" --state all \
+              --limit 100 --search "$delivery_key in:title" \
+              --json number,title > "$search_file"
+            existing=$(python nasdaq-xray/delivery_issue_receipt_guard.py \
+              --search-json "$search_file" --delivery-key "$delivery_key" \
+              --symbol "$ticker")
+            rm -f "$search_file"
+            if [ "$existing" = NONE ]; then
+              existing=""
+              # Optional label lookup precedes creation. Always issue ONE
+              # create request: a failed labeled create must NOT be blindly
+              # retried as an unlabeled duplicate after an uncertain timeout.
+              labels_json=$(gh label list --repo "$GITHUB_REPOSITORY" \
+                --search xray-signal --limit 100 --json name)
+              label_flags=()
+              if printf '%s' "$labels_json" | jq -e \
+                 '.[] | select(.name=="xray-signal")' >/dev/null; then
+                label_flags=(--label xray-signal)
+              fi
+              new_issue_url=$(gh issue create --repo "$GITHUB_REPOSITORY" \
+                --title "$title" --body-file "$body_file" "${label_flags[@]}")
+              # A returned URL is a provisional receipt; content readback
+              # below is mandatory before ledger status can be DELIVERED.
+              existing=$(printf '%s\n' "$new_issue_url" | \
+                sed -nE 's@^https://github[.]com/gokaydonmez39-jpg/kripto-radar/issues/([0-9]+)$@\1@p')
               if [ -z "$existing" ]; then
-                existing=$(gh issue list --state all --search "$delivery_key in:title" --json number --jq '.[0].number // empty')
+                echo "::error::XRAY_NEW_ISSUE_URL_NOT_EXACT_REPO_RECEIPT" >&2
               fi
             fi
             # Issue number or search result alone is never a delivery receipt:
