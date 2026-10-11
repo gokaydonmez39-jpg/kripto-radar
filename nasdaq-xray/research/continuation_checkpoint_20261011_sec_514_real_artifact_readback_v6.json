@@ -1,0 +1,60 @@
+{
+  "schema": "XRAY_20261011_SEC_REAL_ARCHIVED_514_ARTIFACT_INDEPENDENT_READBACK_V6",
+  "based_on_head_sha": "c10e5aa0ed32a6f0c535faa45239ba9925f2f5ce",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "raw_shares_or_prices_persisted": false,
+  "source": {
+    "run_id": 38169144342,
+    "artifact_id": 11713297858,
+    "artifact_json_sha256": "6961725a874196cbc7b788dda85e77b7f5ed9fd559d309f509c5eaefbf8e16b6",
+    "head_sha": "6be676d8b92b5cb86033270a116c462c8309cba5",
+    "asof_et": "2026-10-09",
+    "price_git_blob_sha": "6f3f68fff0897d68f200ad3621c51a5071494714",
+    "master_git_blob_sha": "828c21436a836b69fe5084387e1c54446c7b5075"
+  },
+  "independently_readback": {
+    "source": "REAL_DOWNLOADED_GITHUB_ACTION_ARTIFACT_ZIP",
+    "asof_et": "2026-10-09",
+    "scope_count": 514,
+    "scope_symbol_hash": "f1073b9026483455bb6402cefcccdad340631a328788896777cc625e57567de6",
+    "statuses_keys_equal_reason_keys": true,
+    "status_counts_match_counter": true,
+    "reason_counts_match_counter": true,
+    "remediation_counts_total": 514,
+    "status_count": {
+      "SHADOW_SHARES_VINTAGE_ONLY": 346,
+      "UNKNOWN": 167,
+      "UNKNOWN_SEC_TRANSPORT": 1
+    },
+    "reason_count": {
+      "NO_DEI_BUT_GAAP_SHARES_AVAILABLE_CLASS_UNRESOLVED": 34,
+      "NO_FRESH_ACCEPTANCE_BOUND_SINGLE_ENTITY_SHARES": 38,
+      "NO_SEC_DEI_OR_GAAP_SHARES_FACT": 43,
+      "SEC_HTTP_404": 1,
+      "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION": 52,
+      "SHARE_CLASS_CORP_ACTION_AND_PIT_PRICE_STILL_REQUIRED": 346
+    },
+    "primary_mc_count": 0,
+    "market_cap_calculated": false,
+    "price_binding_attested": false,
+    "corporate_action_binding_attested": false,
+    "strict_complete_transport": true
+  },
+  "current_master_price_live_readback": {
+    "asof_et": "2026-10-09",
+    "price_pass_count": 514,
+    "price_pass_unique": 514,
+    "master_pass_count": 3184,
+    "master_pass_unique": 3184,
+    "price_exact_subset_of_master": true,
+    "missing_from_master_count": 0
+  },
+  "limitation": "This archived SEC artifact is from a prior source commit, independently corroborates 514 scope and reason counters, but is not evidence that the newest 7395feb code has already finished the new 514 online run.",
+  "new_online_run_id": 38173716522,
+  "new_online_run_status_at_record": "IN_PROGRESS_UNCONFIRMED",
+  "research_go": "NO-GO"
+}
