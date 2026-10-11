@@ -47,6 +47,28 @@ def validate_receipt(issue, *, issue_number, delivery_key, symbol, expected_body
         return False,"ISSUE_BODY_SEMANTIC_BINDING_INVALID"
     return True,"BACKUP_ISSUE_EXACT_CONTENT_AND_URL_VERIFIED_NO_USER_RECEIPT"
 
+
+def unique_exact_issue(rows, *, delivery_key, symbol, max_results=100):
+    """An approximate GitHub search hit is NEVER an exact-key receipt."""
+    if (not isinstance(rows,list) or not isinstance(delivery_key,str)
+        or not delivery_key or not isinstance(symbol,str)
+        or not re.fullmatch(r"[A-Z0-9.\\-]{1,12}",symbol)):
+        raise ValueError("ISSUE_LOOKUP_INPUT_UNVERIFIED")
+    if len(rows)>=max_results:
+        raise ValueError("ISSUE_LOOKUP_TRUNCATED_SCOPE")
+    title="[XRAY RESEARCH AL ADAYI] "+symbol+" — "+delivery_key
+    matches=[]
+    for row in rows:
+        if (not isinstance(row,dict) or type(row.get("number")) is not int
+            or row["number"]<=0 or not isinstance(row.get("title"),str)):
+            raise ValueError("ISSUE_LOOKUP_RECORD_UNVERIFIED")
+        if row["title"]==title:
+            matches.append(row["number"])
+    if len(matches)>1 or len(set(matches))!=len(matches):
+        raise ValueError("ISSUE_LOOKUP_AMBIGUOUS_EXACT_MATCHES")
+    return matches[0] if matches else None
+
+
 def selftest():
     key="XRAY|2026-10-09|AAPL|R92_01"
     symbol="AAPL"
@@ -83,12 +105,24 @@ def selftest():
     assert validate_receipt(dict(good,body=body.replace("\n","\r\n")),
                             issue_number=123,delivery_key=key,
                             symbol=symbol,expected_body=body)[0]
-    print("XRAY_BACKUP_ISSUE_RECEIPT_SELFTEST=PASS_13_NEGATIVE_AND_CRLF_NO_PHONE_CLAIM")
+    exact={"number":123,"title":good["title"]}
+    partial={"number":122,"title":good["title"]+" NOT EXACT"}
+    assert unique_exact_issue([partial,exact],delivery_key=key,symbol=symbol)==123
+    assert unique_exact_issue([partial],delivery_key=key,symbol=symbol) is None
+    for bad_rows in ([exact,dict(exact,number=124)],
+                     [exact,exact], [dict(exact,number=0)],
+                     [dict(exact,number=True)], [None], None,
+                     [partial]*100):
+        try:unique_exact_issue(bad_rows,delivery_key=key,symbol=symbol)
+        except ValueError:pass
+        else:raise AssertionError("AMBIGUOUS_OR_TRUNCATED_LOOKUP_ACCEPTED")
+    print("XRAY_BACKUP_ISSUE_RECEIPT_SELFTEST=PASS_13_NEGATIVE_CRLF_EXACT_SEARCH_AMBIGUITY_NO_PHONE_CLAIM")
 
 def main():
     parser=argparse.ArgumentParser()
     parser.add_argument("--selftest",action="store_true")
     parser.add_argument("--issue-json",type=Path)
+    parser.add_argument("--search-json",type=Path)
     parser.add_argument("--issue-number",type=int)
     parser.add_argument("--delivery-key")
     parser.add_argument("--symbol")
@@ -96,6 +130,17 @@ def main():
     a=parser.parse_args()
     if a.selftest:
         selftest();return
+    if a.search_json is not None:
+        if not a.delivery_key or not a.symbol or a.issue_json or a.body_file:
+            parser.error("Search needs only search-json, candidate key and symbol")
+        try:
+            results=json.loads(a.search_json.read_text(encoding="utf-8"))
+            found=unique_exact_issue(results,delivery_key=a.delivery_key,
+                                     symbol=a.symbol)
+        except (OSError,ValueError,UnicodeError) as exc:
+            raise SystemExit("XRAY_ISSUE_SEARCH=FAIL_CLOSED:"+str(exc))
+        print(str(found) if found else "NONE")
+        return
     if not all((a.issue_json,a.issue_number,a.delivery_key,a.symbol,a.body_file)):
         parser.error("Issue JSON, positive number, key, symbol and body file required")
     try:
