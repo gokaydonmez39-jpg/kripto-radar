@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fail-closed GitHub Actions supply-chain guard for six critical XRAY workflows.
+"""Fail-closed GitHub Actions supply-chain guard for fourteen critical XRAY workflows.
 
 Only exact vendor-owned commit refs independently verified against official
 GitHub release tags are accepted. This verifies pinned dependency identity,
@@ -21,6 +21,14 @@ EXPECTED = {
     ".github/workflows/xray-preopen-source-audit.yml": (CHECKOUT, PYTHON, ARTIFACT),
     ".github/workflows/xray-c418-multi-source-contract.yml": (CHECKOUT, PYTHON, ARTIFACT),
     ".github/workflows/xray-c418-sec-alpaca-intersection-shadow.yml": (CHECKOUT, PYTHON, ARTIFACT),
+    ".github/workflows/xray-canonical-current-pre-mc.yml": (CHECKOUT, PYTHON, ARTIFACT),
+    ".github/workflows/xray-canonical-current-post-mc.yml": (CHECKOUT, PYTHON, ARTIFACT, ARTIFACT),
+    ".github/workflows/xray-canonical-current-final.yml": (CHECKOUT, PYTHON),
+    ".github/workflows/xray-final-gate-overlay-v2.yml": (CHECKOUT, PYTHON),
+    ".github/workflows/xray-strict-g9-gate.yml": (CHECKOUT, PYTHON),
+    ".github/workflows/xray-account-gate-reconcile.yml": (CHECKOUT, PYTHON),
+    ".github/workflows/xray-live-truth-attestation.yml": (CHECKOUT, PYTHON, ARTIFACT),
+    ".github/workflows/xray-manual-decision-research-shadow.yml": (CHECKOUT, PYTHON, ARTIFACT),
 }
 LINE = re.compile(r"^\s*(?:-\s*)?uses:\s*(\S+)(?:\s*(?:#.*)?)?$")
 
@@ -83,7 +91,7 @@ def live() -> dict:
         if not file.is_file():
             raise ValueError("CRITICAL_WORKFLOW_MISSING:" + path)
         audited[path] = verify(path, file.read_text(encoding="utf-8"))
-    if sum(audited.values()) != 17:
+    if sum(audited.values()) != 38:
         raise ValueError("CRITICAL_ACTION_REFERENCE_COVERAGE_CHANGED")
     return audited
 
@@ -91,4 +99,4 @@ def live() -> dict:
 if __name__ == "__main__":
     selftest()
     d = live()
-    print("XRAY_IMMUTABLE_ACTION_GUARD=PASS_6_WORKFLOWS_17_EXACT_OFFICIAL_SHAS")
+    print("XRAY_IMMUTABLE_ACTION_GUARD=PASS_14_WORKFLOWS_38_EXACT_OFFICIAL_SHAS")
