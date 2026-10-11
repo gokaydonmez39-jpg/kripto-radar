@@ -84,18 +84,38 @@ def audit(state,root,now):
         elif status.startswith("UNKNOWN"):
             raise ValueError("UNRECOGNIZED_UNKNOWN_CLASS:"+symbol)
     unknown=sum(n for status,n in bystatus.items() if status.startswith("UNKNOWN"))
-    if unknown!=state.get("unknown_count") or unknown!=root.get("unknown_count"):
-        raise ValueError("ROOT_UNKNOWN_COUNT_DRIFT")
+    if unknown!=state.get("unknown_count"):
+        raise ValueError("SINA_UNKNOWN_COUNT_DRIFT")
     remaining=sum(1 for row in rows.values() if row.get("status")=="UNKNOWN_RETRY"
                   and row.get("attempts",99)<4)
-    if remaining!=state.get("pending_retry") or remaining!=root.get("pending_retry"):
-        raise ValueError("RETRY_COUNTER_DRIFT")
+    if remaining!=state.get("pending_retry"):
+        raise ValueError("SINA_RETRY_COUNTER_DRIFT")
     if sum(bystatus.values())!=len(q):
         raise ValueError("HISTORY_CLASSIFICATION_SUM_DRIFT")
-    if root.get("status")=="PARTIAL_HISTORY" and unknown<=0:
-        raise ValueError("PARTIAL_HISTORY_WITHOUT_UNKNOWN")
-    if root.get("status") not in ("PARTIAL_HISTORY","DATA_PLANE_PARTIAL_UNKNOWN",
-                                 "DATA_PLANE_PASS_CANONICAL_DOWNSTREAM_DEFERRED"):
+    root_status=root.get("status")
+    if root_status=="PARTIAL_HISTORY":
+        if state.get("status")!="HISTORY_PARTIAL" or unknown<=0:
+            raise ValueError("PARTIAL_HISTORY_INCONSISTENT")
+        if unknown!=root.get("unknown_count"):
+            raise ValueError("ROOT_UNKNOWN_COUNT_DRIFT")
+        if remaining!=root.get("pending_retry"):
+            raise ValueError("RETRY_COUNTER_DRIFT")
+        root_binding="PARTIAL_COUNTERS_EXACT"
+    elif root_status in ("DATA_PLANE_PARTIAL_UNKNOWN",
+                         "DATA_PLANE_PASS_CANONICAL_DOWNSTREAM_DEFERRED"):
+        # In orchestrator_run.py, post-HISTORY root reports counts under
+        # root.history, not at root level. Do not fail a genuinely COMPLETE
+        # root simply because it lacks partial-only top-level counters.
+        h=root.get("history")
+        if (not isinstance(h,dict) or state.get("status")!="HISTORY_COMPLETE"
+            or unknown!=0 or remaining!=0
+            or h.get("status")!="HISTORY_COMPLETE"
+            or h.get("queue_total")!=len(q)
+            or h.get("queue_hash")!=state.get("queue_hash")
+            or h.get("counts")!=state.get("counts")):
+            raise ValueError("COMPLETE_HISTORY_ROOT_BINDING_MISMATCH")
+        root_binding="COMPLETE_NESTED_HISTORY_EXACT_NOT_ALPHA"
+    else:
         raise ValueError("ROOT_STATUS_UNRECOGNIZED")
     rescue=choose_transport_rescue(state,now)
     exhausted=classified["EXHAUSTED_TRANSIENT_PROVIDER_EXCEPTION"]
@@ -105,6 +125,7 @@ def audit(state,root,now):
         "schema":SCHEMA,
         "asof_et":asof,
         "root_status":root["status"],
+        "root_state_binding":root_binding,
         "source_state_hash_integrity":hash_integrity,
         "source_state_reproducible_hash":hash_integrity=="PASS_DETERMINISTIC_BLOB_INTERNAL",
         "input_symbols":len(q),
@@ -158,7 +179,7 @@ def selftest():
     import copy
     cases=[
         (lambda x,y:x.update(asof_et="2026-10-08"),"ROOT_SINA_ASOF_DRIFT"),
-        (lambda x,y:x.update(unknown_count=0),"ROOT_UNKNOWN_COUNT_DRIFT"),
+        (lambda x,y:x.update(unknown_count=0),"SINA_UNKNOWN_COUNT_DRIFT"),
         (lambda x,y:x["results"]["BBB"].update(status="PASS"),"ROOT_UNKNOWN_COUNT_DRIFT"),
         (lambda x,y:x["results"]["CCC"].update(info={"reason":"FAKE_PASS"}),"UNKNOWN_STATIC_REASON_UNCLASSIFIED"),
         (lambda x,y:x["results"]["BBB"].update(attempts=2),"UNKNOWN_EXHAUSTED_WITHOUT_FOUR_ATTEMPTS"),
@@ -176,13 +197,46 @@ def selftest():
         except ValueError as ex:
             assert code in str(ex),(code,str(ex))
         else:raise AssertionError("INVALID_HISTORY_MUTATION_WAS_ACCEPTED:"+code)
+    # A fully completed source must NEVER be rejected by the partial-only
+    # counter expectations; however a falsified COMPLETE claim is rejected.
+    good=copy.deepcopy(s)
+    good["results"]={key:rec("PASS",{}) for key in queue}
+    good["status"]="HISTORY_COMPLETE"
+    good["counts"]={"PASS":len(queue)}
+    good["unknown_count"]=0
+    good["pending_retry"]=0
+    seal_state(good)
+    full=copy.deepcopy(r)
+    full["status"]="DATA_PLANE_PASS_CANONICAL_DOWNSTREAM_DEFERRED"
+    full.pop("unknown_count")
+    full.pop("pending_retry")
+    full["history"]={"status":"HISTORY_COMPLETE",
+                     "queue_total":len(queue),
+                     "queue_hash":good["queue_hash"],
+                     "counts":good["counts"]}
+    accepted=audit(good,full,now)
+    assert accepted["root_state_binding"]=="COMPLETE_NESTED_HISTORY_EXACT_NOT_ALPHA"
+    assert accepted["unknown_count"]==0 and not accepted["full_e2e_research_attested"]
+    assert accepted["source_proof_full_history_attested"] is False
+    wrong=copy.deepcopy(full)
+    wrong["history"]["queue_hash"]="a"*64
+    try:audit(good,wrong,now)
+    except ValueError as ex:
+        assert "COMPLETE_HISTORY_ROOT_BINDING_MISMATCH" in str(ex)
+    else:raise AssertionError("FALSE_COMPLETE_ROOT_HASH_ACCEPTED")
+    wrong=copy.deepcopy(full)
+    wrong["history"]["counts"]={"PASS":1}
+    try:audit(good,wrong,now)
+    except ValueError as ex:
+        assert "COMPLETE_HISTORY_ROOT_BINDING_MISMATCH" in str(ex)
+    else:raise AssertionError("FALSE_COMPLETE_ROOT_COUNTS_ACCEPTED")
     old=copy.deepcopy(s)
     old.pop("state_hash_version")
     assert audit(old,r,now)["source_state_hash_integrity"]=="LEGACY_HASH_NOT_INDEPENDENTLY_VERIFIABLE"
     try:audit(s,r,now.replace(tzinfo=None))
     except ValueError:pass
     else:raise AssertionError("NAIVE_CLOCK_ACCEPTED")
-    print("XRAY_ROOT_HISTORY_RECOVERY_SELFTEST=PASS_10_NEGATIVES_LEGACY_HASH_DIAGNOSIS_REAL_TRANSIENT_RESCUE_NO_AL")
+    print("XRAY_ROOT_HISTORY_RECOVERY_SELFTEST=PASS_12_NEGATIVES_COMPLETE_SOURCE_NESTED_ROOT_LEGACY_HASH_NO_AL")
 
 def main():
     p=argparse.ArgumentParser()
