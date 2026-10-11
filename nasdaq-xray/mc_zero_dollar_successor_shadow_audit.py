@@ -313,7 +313,7 @@ def main() -> None:
         if str(exc)!="NO_EXACT_CURRENT_MC_AUTHORITY":
             raise
         blocked=blocked_current_mc_report(price)
-        OUT.write_text(json.dumps(blocked,sort_keys=True,indent=2)+"\\n",encoding="utf-8")
+        OUT.write_text(json.dumps(blocked,sort_keys=True,indent=2)+"\n",encoding="utf-8")
         print("XRAY_MC_SHADOW_AUDIT=BLOCKED_NO_EXACT_CURRENT_MC_AUTHORITY_NO_GO")
         return
     evidence = (terminal.get("evidence") or {}).get("mc") or {}
@@ -370,6 +370,7 @@ def main() -> None:
     exact_pit_unknowns = count_exact_pit_unknowns(rows)
     out = {
         "schema": "XRAY_MC_ZERO_DOLLAR_SUCCESSOR_SHADOW_AUDIT_V1",
+        "status": "SHADOW_ONLY_MC_SOURCE_AVAILABLE",
         "task_id": TASK_ID,
         "asof_et": price["asof_et"],
         "execution": "NONE",
