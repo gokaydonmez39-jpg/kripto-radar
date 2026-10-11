@@ -1,0 +1,94 @@
+{
+  "schema": "XRAY_C418_LIVE_SOURCE_PROVENANCE_CHECKPOINT_V1",
+  "researched_on_utc": "2026-10-11",
+  "source_asof_et": "2026-10-09",
+  "repo_main_sha_before_checkpoint": "274dee720d85feabb952901c4548b588741b83bc",
+  "authority": "RESEARCH_DIAGNOSTIC_ONLY_NOT_C417_PRODUCTION",
+  "immutable_safety": {
+    "policy": "C4.17",
+    "control": "C4.27",
+    "execution": "NONE",
+    "real_money": "NO-GO",
+    "unknown_never_pass": true,
+    "c418_source_promotion": false,
+    "primary_mc_created": false,
+    "history_production_pass_created": false,
+    "r92_created": false
+  },
+  "root_sina_transport_30_interactive": {
+    "source_root_git_blob_sha": "ffee6b60305336d9b6c89e52621f98a12a8850e9",
+    "status": "CONNECTED_ALPACA_SIP_NUMERIC_SHADOW_ONLY",
+    "scoped_symbols": 30,
+    "official_session_calendar": "ALPACA_CALENDAR",
+    "exact_last_260_sessions_start": "2025-09-29",
+    "exact_last_260_sessions_end": "2026-10-09",
+    "numeric_260_positive_volume_observed": 17,
+    "missing_or_zero_volume_260_sessions": 13,
+    "not_tested_for_independent_market_data_rights": true,
+    "same_source_calendar_and_bars_not_independent": true,
+    "github_runner_non_display_entitlement_proven": false,
+    "zero_raw_vendor_ohlcv_in_public_checkpoint": true
+  },
+  "sec_full_514": {
+    "workflow_run_id": 38165250330,
+    "workflow_head_sha": "0d62ffdb4e510b9bd46cfeee354fad578de27a48",
+    "artifact_id": 11712506168,
+    "artifact_json_sha256": "6961725a874196cbc7b788dda85e77b7f5ed9fd559d309f509c5eaefbf8e16b6",
+    "source_price_blob_sha": "6f3f68fff0897d68f200ad3621c51a5071494714",
+    "source_master_blob_sha": "828c21436a836b69fe5084387e1c54446c7b5075",
+    "exact_price_pass_count": 514,
+    "shadow_sec_share_vintage": 346,
+    "sec_unknown": 167,
+    "sec_transport_unknown": 1,
+    "status": "FULL_SCOPE_OBSERVED_WITH_UNKNOWN_NOT_MC",
+    "pit_issuer_class_acceptance_ca_price_authority_proven": false
+  },
+  "sec_alpaca_exact_intersection": {
+    "workflow_run_id": 38166391902,
+    "workflow_head_sha": "274dee720d85feabb952901c4548b588741b83bc",
+    "artifact_id": 11712740852,
+    "artifact_json_sha256": "7bce86d732bba0092a14b5cccf6fb9a2703de5c83482a8acfe19b4472f689c46",
+    "price_pass_count": 514,
+    "history_numeric_shadow_complete": 497,
+    "history_short": 17,
+    "technical_intersection_only": 341,
+    "history_complete_but_sec_unknown": 156,
+    "sec_vintage_but_history_short": 5,
+    "both_incomplete": 12,
+    "exact_set_and_source_sha_validated": true,
+    "vendor_usage_licensing_independently_attested": false,
+    "current_c417_primary_mc_created": 0,
+    "current_c417_history_pass_created": 0,
+    "r92_created": 0
+  },
+  "code_guard_commits": [
+    "0d62ffdb4e510b9bd46cfeee354fad578de27a48",
+    "5003314e3f1b9d0c397ce45438f78fdb2a29ba44",
+    "9b04805d0d8c06d54464ef7a9cd41b5117366a2a",
+    "274dee720d85feabb952901c4548b588741b83bc"
+  ],
+  "last_guard_ci": {
+    "intersection_run_id": 38166391902,
+    "contract_run_id": 38166391886,
+    "intersection": "SUCCESS",
+    "contract": "SUCCESS",
+    "provider_license": "NOT_ATTESTED"
+  },
+  "provider_access": {
+    "alpaca_sip": "INTERACTIVE_HISTORICAL_ACCESS_OBSERVED_NOT_UNATTENDED_USE_RIGHTS",
+    "sec_edgar": "FULL_514_PUBLIC_SHADOW_TRANSPORT_OBSERVED",
+    "bigdata": "BALANCE_ZERO_OUT_OF_CREDITS",
+    "financial_datasets": "PRICE_REQUEST_BLOCKED_ZERO_CREDIT",
+    "twelve_data": "QUOTA_ONLY_DOCUMENTED_GITHUB_ENTITLEMENT_NOT_TESTED"
+  },
+  "unresolved_hardstops": [
+    "C417_CURRENT_SAME_ASOF_PRIMARY_MC_ZERO",
+    "PROVIDER_NONDISPLAY_AND_PRIVATE_REUSE_LICENSE_NOT_ATTESTED",
+    "SEC_SHARE_CLASS_AND_CORPORATE_ACTION_POINT_IN_TIME_UNRESOLVED",
+    "C417_HISTORY_PRIMARY_SOURCE_NOT_ATTESTED",
+    "CANONICAL_POST_MC_TERMINAL_SAME_EPOCH_NOT_PROVEN",
+    "REGISTERED_R92_AND_REAL_DEVICE_RECEIPT_NOT_PROVEN"
+  ],
+  "output_interpretation": "RESEARCH_NO_GO_NO_LICENSING_INFERENCE",
+  "persistence_scope": "PUBLIC_OPERATIONAL_METADATA_ONLY_NO_RAW_VENDOR_BAR_OR_SHARE_VALUES"
+}
