@@ -277,14 +277,61 @@
       "artifact_per_symbol_exact_partition_validated": true,
       "targeted_reconciliation_queue": "nasdaq-xray/research/c418_sec_34_pit_reconciliation_queue_20261009.json",
       "targeted_reconciliation_queue_blob_sha": "cb90b6c2367a6de12b017715968ce1e08359d4ae"
+    },
+    "live_github_alpaca_515_history_scope": {
+      "run_id": 38070258247,
+      "conclusion": "SUCCESS",
+      "asof_et": "2026-10-09",
+      "canonical_price_pass": 514,
+      "plus_qqq_benchmark": 1,
+      "measured_targets": 515,
+      "strict_exact_260_daily_and_52_week_shadow_observed": 498,
+      "missing_exact_official_sessions": 17,
+      "unmeasured_transport": 0,
+      "authenticated_github_runner_sip_fetch_proven": true,
+      "git_action_proof": "https://github.com/gokaydonmez39-jpg/kripto-radar/actions/runs/38070258247",
+      "source_market_data_rights_independently_attested": false,
+      "corporate_action_adjustment_and_share_class_attested": false,
+      "c417_history_pass_created": 0,
+      "r92_created": false
+    },
+    "live_github_alpaca_515_corporate_actions": {
+      "run_id": 38072329125,
+      "conclusion": "SUCCESS",
+      "measured_symbols": 515,
+      "provider_publication_time_attested": false,
+      "independent_issuer_corporate_actions_reconciled": false,
+      "source_market_data_rights_attested": false,
+      "alpha_authority": false
+    },
+    "live_git_immutability_and_asof_repairs": {
+      "sec_514_trigger_sha_fix": "4ba251e241ce07410bc386312438db77da1f25b0",
+      "sec_514_real_census_run_id": 38140358061,
+      "sec_514_latest_result": "IN_PROGRESS_AT_READBACK_NO_PASS_CLAIM",
+      "c418_settlement_freshness_fix": "dce42810b829f7b67e78e3a80b20956cd56bc338",
+      "c418_settlement_ci_id": 38140396903,
+      "c418_settlement_ci_conclusion": "SUCCESS",
+      "e2e_immutability_fix": "8980815352eb234b68be2bcdea505fca7d457aac",
+      "e2e_run_id": 38140538161,
+      "e2e_run_conclusion": "FAILURE_EXPECTED_NO_GO",
+      "e2e_blockers": [
+        "CURRENT_MC_AUTHORITY_MISSING",
+        "CURRENT_TERMINAL_FROZEN_OR_INCOMPLETE",
+        "IDENTITY_PARTITION_INCOMPLETE",
+        "NOTIFICATION_DEVICE_RECEIPT_NOT_PROVEN",
+        "SOURCE_EPOCH_NOT_LATEST_COMPLETED_SESSION",
+        "TERMINAL_CURRENT_MC_CHAIN_NOT_PROVEN"
+      ]
     }
   },
   "rights_and_coverage": {
     "Alpaca": {
       "history_sip_older_than_15m": "OFFICIAL_DOC_AND_5_SYMBOL_LIVE_READ_PROVEN",
-      "runner_non_display_and_cache": "UNVERIFIED",
+      "runner_non_display_and_cache": "TECHNICAL_ACCESS_PROVEN; MARKET_DATA_REUSE_AND_RETENTION_RIGHTS_INDEPENDENTLY_UNATTESTED",
       "redistribution": "RESTRICTED",
-      "price_authority": "NON_G9_SHADOW"
+      "price_authority": "NON_G9_SHADOW",
+      "existing_github_runner_sip_fetch_observed": true,
+      "existing_github_runner_sip_fetch_proof_run_id": 38070258247
     },
     "Massive": {
       "basic_free_grouped_endpoint": "OFFICIAL_DOC_AND_CONNECTED_12598_READ",
@@ -356,7 +403,8 @@
     "FULL_3401_REFRESH_NOT_FIT_TWELVE_DATA_FREE_800_PER_DAY",
     "BUSINESS_QUANT_30_CALLS_DAY_BATCH_COVERAGE_AND_RIGHTS_UNTESTED",
     "SEC_FRAMES_34_PRIOR_UNKNOWN_RESEARCH_CANDIDATES_STILL_REQUIRE_PIT_FILINGS_SHARE_CLASS_AND_CORPORATE_ACTIONS",
-    "SEC_FRAMES_OUTPUT_SAME_ASOF_BLOB_SHA_BINDING_VERIFIED_BUT_DOES_NOT_CREATE_MC_AUTHORITY"
+    "SEC_FRAMES_OUTPUT_SAME_ASOF_BLOB_SHA_BINDING_VERIFIED_BUT_DOES_NOT_CREATE_MC_AUTHORITY",
+    "SEC_514_FULL_VINTAGE_RESCAN_TRIGGERED_RESULT_PENDING_NEVER_PRIMARY_BY_WORKFLOW"
   ],
   "no_vendor_raw_bars_stored": true,
   "operator_approval_to_promote": false,
@@ -367,5 +415,13 @@
   "full_e2e_research_pass": false,
   "execution": "NONE",
   "real_money": "NO-GO",
-  "unknown_never_pass": true
+  "unknown_never_pass": true,
+  "technical_next_steps": [
+    "Retain existing Alpaca 515 daily/260/52 no vendor bar export; do not duplicate transport implementation",
+    "Review licensing scope for personal automated GitHub runner, derived swing alerts and private retention independently",
+    "Reconcile SEC 514 full vintage shadow census, status-by-status; no class-assumption shortcuts",
+    "Bridge SEC accepted CIK class shares and corporate actions to same-asof licensed settled price and independent documented market cap witness",
+    "Re-run current canonical MC, history, legal, stage1, weekly, final and G9 at same settled session with exact SHA chain",
+    "Prove real user-device notification receipt before delivery GO"
+  ]
 }
