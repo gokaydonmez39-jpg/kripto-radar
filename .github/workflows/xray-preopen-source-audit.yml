@@ -8,6 +8,8 @@ on:
       - "nasdaq-xray/preopen_live_release_gate.py"
       - "nasdaq-xray/monday_launch_microaudit.py"
       - "nasdaq-xray/monday_live_actions_attestor.py"
+      - "nasdaq-xray/delivery_issue_receipt_guard.py"
+      - ".github/workflows/nasdaq-xray-delivery.yml"
       - ".github/workflows/xray-preopen-source-audit.yml"
   workflow_run:
     workflows:
@@ -63,6 +65,8 @@ jobs:
         run: |
           python -m py_compile nasdaq-xray/monday_launch_microaudit.py
           python nasdaq-xray/monday_launch_microaudit.py --selftest
+          python -m py_compile nasdaq-xray/delivery_issue_receipt_guard.py
+          python nasdaq-xray/delivery_issue_receipt_guard.py --selftest
           python nasdaq-xray/monday_launch_microaudit.py --out "$RUNNER_TEMP/xray_monday_launch_microaudit.json"
           python - <<'PY'
           import json,os
