@@ -18,6 +18,17 @@ import sec_official_free_mc_transport_probe as sec
 ROOT=Path(__file__).resolve().parent
 SEC_MAP="https://www.sec.gov/files/company_tickers_exchange.json"
 DEFAULT_CANARIES=("AAPL","MSFT","NVDA","AMZN","GOOGL","META","ADBE","ADI")
+# Exact official exception, established by FDIC Cert #110 and Bank OZK's
+# FDIC-filed 2026-06-30 Form 10-Q. This maps ONLY remediation routing;
+# never replaces FDIC acceptance evidence, shares, MC or PRIMARY authority.
+FDIC_DIRECT_FILERS={
+    "OZK":{
+        "regulator":"FDIC", "certificate":"110",
+        "official_source":"https://securitiesfilings.fdicconnect.fdic.gov/",
+        "official_bankfind":"https://banks.data.fdic.gov/bankfind-suite/bankfind/details/110",
+    }
+}
+
 MAX_FULL_PRICE_PASS_SCOPE=650  # bounded ~15 min at <=2 SEC requests/s
 
 def map_ciks(source:dict)->dict:
@@ -84,8 +95,13 @@ def load_scope(offset:int=0,limit:int=0,*,full_current:bool=False)->tuple[str,li
         if not symbols: raise ValueError("EMPTY_SEC_BATCH")
     return asof,symbols
 
-def root_cause_class(status:str,reason:str)->str:
+def root_cause_class(status:str,reason:str,symbol:str="")->str:
     """A source-remediation queue only; no authority for C4.17 MC or R92."""
+    if (status=="UNKNOWN_SEC_TRANSPORT" and reason=="SEC_HTTP_404"
+        and symbol in FDIC_DIRECT_FILERS):
+        # A genuine alternate federal securities regulator is not a stale
+        # SEC endpoint that should be retried, nor a missing Nasdaq listing.
+        return "FDIC_EXCHANGE_ACT_FILING_AND_SHARE_CLASS_PIT_REQUIRED"
     if status=="SHADOW_SHARES_VINTAGE_ONLY":
         return "PIT_SHARES_PRESENT_MORE_VALIDATION_REQUIRED"
     if reason in ("SEC_HTTP_403","SEC_HTTP_429","SEC_FAIR_ACCESS_STOP"):
@@ -147,9 +163,18 @@ def selftest():
         ("UNKNOWN_SEC_TRANSPORT","SEC_HTTP_404"):"SEC_IDENTIFIER_OR_RESOURCE_REVIEW"}
     for (status,reason),expected in categories.items():
         assert root_cause_class(status,reason)==expected,("WRONG_SEC_REMEDIATION",reason)
+    assert root_cause_class("UNKNOWN_SEC_TRANSPORT","SEC_HTTP_404","OZK")==(
+        "FDIC_EXCHANGE_ACT_FILING_AND_SHARE_CLASS_PIT_REQUIRED")
+    assert FDIC_DIRECT_FILERS["OZK"]["certificate"]=="110"
+    assert root_cause_class("UNKNOWN_SEC_TRANSPORT","SEC_HTTP_404","AAPL")==(
+        "SEC_IDENTIFIER_OR_RESOURCE_REVIEW")
+    assert root_cause_class("UNKNOWN_SEC_TRANSPORT","SEC_HTTP_404","")==(
+        "SEC_IDENTIFIER_OR_RESOURCE_REVIEW")
+    assert root_cause_class("SHADOW_SHARES_VINTAGE_ONLY","SEC_HTTP_404","OZK")==(
+        "PIT_SHARES_PRESENT_MORE_VALIDATION_REQUIRED")
     assert root_cause_class("UNKNOWN","SEC_HTTP_429")=="FAIR_ACCESS_HALT"
     assert root_cause_class("UNKNOWN","UNCLASSIFIED")=="UNRESOLVED_SOURCE"
-    print("XRAY_SEC_MULTI_SCOPE_SELFTEST=PASS_CIK_EXCHANGE_DUPLICATE_FAIL_CLOSED")
+    print("XRAY_SEC_MULTI_SCOPE_SELFTEST=PASS_CIK_EXCHANGE_DUPLICATE_FDIC110_FAIL_CLOSED")
 
 def run(offset:int=0,limit:int=0,*,full_current:bool=False)->dict:
     asof,syms=load_scope(offset,limit,full_current=full_current)
@@ -215,7 +240,7 @@ def run(offset:int=0,limit:int=0,*,full_current:bool=False)->dict:
     result["reason_counts"]=dict(sorted(collections.Counter(reason_codes.values()).items()))
     # Deterministic root-cause routing exposes the exact 168 unresolved
     # reasons without inventing shares, quote prices or C4.17 PRIMARY passes.
-    remediation={sym:root_cause_class(status[sym],reason_codes[sym])
+    remediation={sym:root_cause_class(status[sym],reason_codes[sym],sym)
                  for sym in status}
     result["remediation_counts"]=dict(sorted(collections.Counter(
         remediation.values()).items()))
