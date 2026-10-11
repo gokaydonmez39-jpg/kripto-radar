@@ -26,8 +26,7 @@ jobs:
             mkdir -p "$RUNNER_TEMP/shard$i"
             gh run download "$UPSTREAM_ID" -R "${{ github.repository }}" \
               -n "xray-mc-514-shard-$i-no-primary" -D "$RUNNER_TEMP/shard$i"
-            test -s "$RUNNER_TEMP/shard$i/xray_mc_64_spread_shadow.json" || \
-              test -s "$RUNNER_TEMP/shard$i/xray_mc_64_spread_shadow.json"
+            test -s "$RUNNER_TEMP/shard$i/mc514_$i.json"
           done
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
@@ -37,22 +36,22 @@ jobs:
           SOURCE_SHA: ${{ github.event.workflow_run.head_sha }}
         run: |
           python nasdaq-xray/p0_mc_514_four_artifact_source_join.py \
-            --shard0 "$RUNNER_TEMP/shard0/xray_mc_64_spread_shadow.json" \
-            --shard1 "$RUNNER_TEMP/shard1/xray_mc_64_spread_shadow.json" \
-            --shard2 "$RUNNER_TEMP/shard2/xray_mc_64_spread_shadow.json" \
-            --shard3 "$RUNNER_TEMP/shard3/xray_mc_64_spread_shadow.json" \
+            --shard0 "$RUNNER_TEMP/shard0/mc514_0.json" \
+            --shard1 "$RUNNER_TEMP/shard1/mc514_1.json" \
+            --shard2 "$RUNNER_TEMP/shard2/mc514_2.json" \
+            --shard3 "$RUNNER_TEMP/shard3/mc514_3.json" \
             --source-sha "$SOURCE_SHA" --selftest
           python -O nasdaq-xray/p0_mc_514_four_artifact_source_join.py \
-            --shard0 "$RUNNER_TEMP/shard0/xray_mc_64_spread_shadow.json" \
-            --shard1 "$RUNNER_TEMP/shard1/xray_mc_64_spread_shadow.json" \
-            --shard2 "$RUNNER_TEMP/shard2/xray_mc_64_spread_shadow.json" \
-            --shard3 "$RUNNER_TEMP/shard3/xray_mc_64_spread_shadow.json" \
+            --shard0 "$RUNNER_TEMP/shard0/mc514_0.json" \
+            --shard1 "$RUNNER_TEMP/shard1/mc514_1.json" \
+            --shard2 "$RUNNER_TEMP/shard2/mc514_2.json" \
+            --shard3 "$RUNNER_TEMP/shard3/mc514_3.json" \
             --source-sha "$SOURCE_SHA" --selftest
           python nasdaq-xray/p0_mc_514_four_artifact_source_join.py \
-            --shard0 "$RUNNER_TEMP/shard0/xray_mc_64_spread_shadow.json" \
-            --shard1 "$RUNNER_TEMP/shard1/xray_mc_64_spread_shadow.json" \
-            --shard2 "$RUNNER_TEMP/shard2/xray_mc_64_spread_shadow.json" \
-            --shard3 "$RUNNER_TEMP/shard3/xray_mc_64_spread_shadow.json" \
+            --shard0 "$RUNNER_TEMP/shard0/mc514_0.json" \
+            --shard1 "$RUNNER_TEMP/shard1/mc514_1.json" \
+            --shard2 "$RUNNER_TEMP/shard2/mc514_2.json" \
+            --shard3 "$RUNNER_TEMP/shard3/mc514_3.json" \
             --source-sha "$SOURCE_SHA" \
             --out "$RUNNER_TEMP/xray_mc_full_514_union.json"
       - name: Final no-GO guard
