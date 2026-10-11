@@ -1,0 +1,47 @@
+{
+  "schema": "XRAY_OZK_SEC_404_ISSUER_IR_RESEARCH_ROUTE_V1",
+  "date": "2026-10-11",
+  "asof_et": "2026-10-09",
+  "ticker": "OZK",
+  "issuer": "Bank OZK",
+  "source_cik": "0001569650",
+  "live_main_base_sha": "4fb124bedda3fe72eb86a550711f05a89f2c3a4c",
+  "source_514_census_run_id": 38165250330,
+  "source_514_census_status": "UNKNOWN_SEC_TRANSPORT",
+  "source_514_census_reason": "SEC_HTTP_404",
+  "observations": [
+    {
+      "role": "OFFICIAL_ISSUER_LISTED_COMMON_STOCK",
+      "url": "https://ir.ozk.com/",
+      "fact": "Bank OZK Nasdaq-listed OZK, issuer historical corporate profile",
+      "authority_for_primary_market_cap": false
+    },
+    {
+      "role": "ISSUER_PUBLISHED_AUG_2026_QUARTERLY_REPORT",
+      "url": "https://ir.ozk.com/filings/documents?mobile=1&page=6",
+      "fact": "Bank investor documents list August 5, 2026 Form 10-Q",
+      "authority_for_sec_companyfacts_api_availability": false
+    },
+    {
+      "role": "SEC_CONFIRMED_CIK_AND_FILING",
+      "url": "https://www.sec.gov/Archives/edgar/data/1569650/000119312526353894/0001193125-26-353894-index.htm",
+      "fact": "SEC 13F-HR accepted 2026-08-17, filer CIK 1569650",
+      "authority_for_companyfacts_xbrl": false
+    }
+  ],
+  "needs_direct_official_proof": [
+    "EXACT_ON_2026_10_09_ISSUER_TICKER_CIK_SECURITY_CLASS_MAPPING",
+    "LEGALLY_USABLE_ACCEPTED_CIK_2026_10_09_CORPORATE_REPORT_ASOF",
+    "ISSUER_CLASS_SPECIFIC_SHARES_OUTSTANDING_VINTAGE_AND_SPLITS",
+    "LICENSED_SAME_ASOF_PRICE_AND_INDEPENDENT_C417_MC_PROVIDER"
+  ],
+  "next_action": "RESEARCH_ONLY_OFFICIAL_ISSUER_IR_FILING_PROBE_IF_SEC_COMPANYFACTS_404;NEVER_TREAT_404_AS_TRANSIENT;NO_VENDOR_OR_SOURCE_SUBSTITUTION_WITHOUT_POLICY",
+  "source_gap_class": "SEC_COMPANYFACTS_404_WITH_PUBLIC_IR_DOCUMENT_AVAILABLE_NOT_PROVEN_SEC_DATA_ERROR",
+  "status": "UNKNOWN_RESEARCH_ONLY",
+  "can_create_PRIMARY": false,
+  "can_register_R92": false,
+  "can_change_MASTER": false,
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true
+}
