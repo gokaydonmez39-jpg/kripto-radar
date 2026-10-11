@@ -80,11 +80,51 @@ sun_root_kick={"requested_at_utc":"2026-10-04T11:00:00Z"}
 sun_final=[run(created="2026-10-04T12:30:00Z",updated="2026-10-04T12:40:00Z")]
 sun_final_kick={"requested_at_utc":"2026-10-04T11:00:00Z"}
 ok,why=evaluate_readiness(SUN,CONTRACT,sun_root_kick,sun_final_kick,sun_root,sun_final)
-assert ok and why=="PASS",(ok,why)
+assert not ok and why=="ROOT_KICK_SUCCESS_NOT_OBSERVED",(ok,why)
+
+# Sunday 23:59 ET green Root is an intentional NO-COMPUTE quota guard,
+# even if GitHub says completed-success after Monday UTC begins.
+MON=datetime(2026,10,12,4,5,tzinfo=timezone.utc)
+friday_root=run(created="2026-10-09T19:50:00Z",
+                updated="2026-10-09T20:00:00Z")
+sunday_green=run(created="2026-10-12T03:59:00Z",
+                 updated="2026-10-12T04:01:00Z")
+old_root_kick={"requested_at_utc":"2026-10-09T19:40:00Z"}
+old_final_kick={"requested_at_utc":"2026-10-09T19:40:00Z"}
+friday_final=[run(created="2026-10-09T20:00:00Z",
+                  updated="2026-10-09T20:10:00Z")]
+ok,why=evaluate_readiness(MON,CONTRACT,old_root_kick,old_final_kick,
+                          [sunday_green,friday_root],friday_final)
+assert not ok and why=="ROOT_SUCCESS_STALE",(ok,why)
+ok,why=evaluate_readiness(MON,CONTRACT,old_root_kick,old_final_kick,
+                          [sunday_green],friday_final)
+assert not ok and why=="ROOT_KICK_SUCCESS_NOT_OBSERVED",(ok,why)
+
+# A newer completed red run must veto delivery even if an earlier green
+# root/final was created recently.
+red_root=run(status="completed",conclusion="failure",
+             created="2026-10-05T20:35:00Z",
+             updated="2026-10-05T20:40:00Z")
+ok,why=evaluate_readiness(NOW,CONTRACT,root_kick,final_kick,
+                          root+[red_root],final)
+assert not ok and why=="ROOT_LATEST_RUN_FAILED_OR_CANCELLED",(ok,why)
+red_final=run(status="completed",conclusion="cancelled",
+              created="2026-10-05T20:35:00Z",
+              updated="2026-10-05T20:40:00Z")
+ok,why=evaluate_readiness(NOW,CONTRACT,root_kick,final_kick,
+                          root,final+[red_final])
+assert not ok and why=="FINAL_LATEST_RUN_FAILED_OR_CANCELLED",(ok,why)
+# 'updated_at' cannot refresh a root whose source compute started hours ago.
+old_root_new_updated=[run(created="2026-10-05T17:00:00Z",
+                          updated="2026-10-05T20:59:00Z")]
+ok,why=evaluate_readiness(NOW,CONTRACT,
+                          {"requested_at_utc":"2026-10-05T16:00:00Z"},
+                          final_kick,old_root_new_updated,final)
+assert not ok and why=="ROOT_SUCCESS_STALE",(ok,why)
 
 workflow=(Path(__file__).resolve().parent.parent/".github/workflows/nasdaq-xray-delivery.yml").read_text()
 assert 'workflow_run:' in workflow
 assert 'workflows: ["XRAY Canonical Current Final Factory", "NASDAQ SWING XRAY Autonomous Data Plane"]' in workflow
 assert "github.event.workflow_run.conclusion == 'success'" in workflow
 
-print("XRAY_DELIVERY_SCHEDULER_GUARD_SELFTEST=PASS")
+print("XRAY_DELIVERY_SCHEDULER_GUARD_SELFTEST=PASS_WEEKEND_NOOP_RED_ROOT_RED_FINAL_AND_CREATED_AT_FRESHNESS")
