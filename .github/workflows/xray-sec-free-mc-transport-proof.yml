@@ -42,6 +42,7 @@ jobs:
         run: |
           python -m py_compile nasdaq-xray/sec_sgml_acceptance_witness.py
           python nasdaq-xray/sec_sgml_acceptance_witness.py --selftest
+          python -O nasdaq-xray/sec_sgml_acceptance_witness.py --selftest
           python nasdaq-xray/sec_sgml_acceptance_witness.py --apple-canary             --out "$RUNNER_TEMP/xray_sec_apple_sgml_clock.json"
           python - <<'PY'
           import json, os

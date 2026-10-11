@@ -1,0 +1,35 @@
+{
+  "schema": "XRAY_20261011_PYTHON_PIT_SGML_DST_REPAIR_V1",
+  "live_main_preimage": "87b21db3fa0f82be0e16c2e4031e02e9ade2af9a",
+  "source_asof": "2026-10-09",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "research_pit_bug": {
+    "source": "dgunning/edgartools/issues/557",
+    "related": "dgunning/edgartools/issues/697",
+    "description": "UTC/Eastern acceptance and latest-version lookahead can compromise PIT",
+    "edgartools_deployed": false,
+    "source_code_copied_from_third_party": false
+  },
+  "negative_reproduction": {
+    "input_fall": "20261101013000",
+    "input_spring": "20260308023000",
+    "pre_patch_zoneinfo_fold0_resolves_without_rejecting": true,
+    "after_patch_requires_single_round_trip_UTC": true
+  },
+  "scope": "OFFICIAL_SEC_SGML_PARSER_ONLY_NOT_FULL_514_CENSUS",
+  "source_guard_python_modes": [
+    "normal",
+    "optimized"
+  ],
+  "expected_tests": "4_POSITIVE_11_NEGATIVE",
+  "source_sha_bound_by_workflow": true,
+  "licensed_market_data_collected": false,
+  "can_create_primary": false,
+  "can_create_r92": false,
+  "provider_entitlement": "UNVERIFIED",
+  "research_go": "NO-GO",
+  "ci_status_at_write": "PENDING"
+}

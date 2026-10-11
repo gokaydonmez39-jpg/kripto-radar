@@ -42,6 +42,32 @@ def sec_official_url(accession: str, cik: str) -> str:
             + "/" + accession + ".txt")
 
 
+def strict_edgar_eastern_utc(raw_clock: str) -> dt.datetime:
+    """Reject wall-clock ambiguities and DST gaps in official SGML timestamps.
+
+    Python ZoneInfo.replace(tzinfo=...) silently chooses fold=0 even when the
+    local clock has two possible UTC meanings or none. A PIT proof cannot
+    choose an unobserved fold. This guard does not repair vendor MC authority.
+    """
+    if not isinstance(raw_clock, str) or not re.fullmatch(r"\d{14}", raw_clock):
+        raise ValueError("SEC_SGML_CLOCK_FORMAT_INVALID")
+    try:
+        naive = dt.datetime.strptime(raw_clock, "%Y%m%d%H%M%S")
+        eastern = ZoneInfo("America/New_York")
+        possibilities = set()
+        for fold in (0, 1):
+            candidate = naive.replace(tzinfo=eastern, fold=fold)
+            utc = candidate.astimezone(dt.timezone.utc)
+            restored = utc.astimezone(eastern).replace(tzinfo=None)
+            if restored == naive:
+                possibilities.add(utc)
+        if len(possibilities) != 1:
+            raise ValueError("SEC_SGML_DST_CLOCK_AMBIGUOUS_OR_NONEXISTENT")
+        return next(iter(possibilities))
+    except (OverflowError, TypeError) as exc:
+        raise ValueError("SEC_SGML_CLOCK_FORMAT_INVALID") from exc
+
+
 def parse_official_header(data: bytes, accession: str, cik: str, asof: str) -> dict:
     url = sec_official_url(accession, cik)
     if not isinstance(data, bytes) or not 0 < len(data) <= LIM:
@@ -65,9 +91,7 @@ def parse_official_header(data: bytes, accession: str, cik: str, asof: str) -> d
     if len(clocks) != 1:
         raise ValueError("SEC_SGML_ACCEPTANCE_CLOCK_NOT_UNIQUE")
     try:
-        local = dt.datetime.strptime(clocks[0], "%Y%m%d%H%M%S").replace(
-            tzinfo=ZoneInfo("America/New_York"))
-        utc = local.astimezone(dt.timezone.utc)
+        utc = strict_edgar_eastern_utc(clocks[0])
         cutoff = official_nasdaq_close_utc(asof)
     except (TypeError, ValueError, OverflowError) as e:
         raise ValueError("SEC_SGML_CLOCK_OR_EXCHANGE_CUTOFF_INVALID") from e
@@ -135,16 +159,21 @@ def sample_header(clock: str = "20260730163028") -> bytes:
         "</SEC-HEADER>\n<DOCUMENT>\n").encode("ascii")
 
 
+def require_test(ok: bool, label: str) -> None:
+    if not ok:
+        raise AssertionError(label)
+
+
 def selftest() -> None:
     close = dt.datetime(2026, 7, 30, 20, tzinfo=dt.timezone.utc)
     with patch(__name__ + ".official_nasdaq_close_utc", return_value=close):
         a = parse_official_header(sample_header(), APPLE_ACC, APPLE_CIK, APPLE_ASOF)
-        assert a["accepted_at_utc"] == "2026-07-30T20:30:28+00:00"
-        assert a["status"] == "SGML_ACCEPTED_AFTER_RTH_CLOSE_UNKNOWN"
-        assert a["production_mc_primary_pass"] is False and a["can_register_R92"] is False
+        require_test(a["accepted_at_utc"] == "2026-07-30T20:30:28+00:00", "APPLE_ACCEPTED_CLOCK")
+        require_test(a["status"] == "SGML_ACCEPTED_AFTER_RTH_CLOSE_UNKNOWN", "APPLE_AFTER_CLOSE")
+        require_test(a["production_mc_primary_pass"] is False and a["can_register_R92"] is False, "NO_PRIMARY_NO_R92")
         good = parse_official_header(
             sample_header("20260730155900"), APPLE_ACC, APPLE_CIK, APPLE_ASOF)
-        assert good["status"] == "SGML_ACCEPTED_PRE_RTH_CLOSE_SHADOW_ONLY"
+        require_test(good["status"] == "SGML_ACCEPTED_PRE_RTH_CLOSE_SHADOW_ONLY", "PRE_CLOSE_SHADOW")
         cases = [
             (sample_header(), APPLE_ACC, "0000002178"),
             (sample_header(), "0000320193-26-000019", APPLE_CIK),
@@ -165,9 +194,31 @@ def selftest() -> None:
             except (ValueError, UnicodeError):
                 continue
             raise AssertionError("SEC_SGML_PROVENANCE_NEGATIVE_BYPASS")
-    assert sec_official_url(APPLE_ACC, APPLE_CIK).endswith(
-        "/000032019326000018/0000320193-26-000018.txt")
-    print("XRAY_SEC_SGML_HEADER_SELFTEST=PASS_2_POSITIVE_7_NEGATIVE_NO_PRIMARY")
+    require_test(sec_official_url(APPLE_ACC, APPLE_CIK).endswith(
+        "/000032019326000018/0000320193-26-000018.txt"), "ACCESSION_URL_EXACT")
+    # The old naive ZoneInfo.replace silently chose a UTC instant for both.
+    require_test(strict_edgar_eastern_utc("20260730155900").isoformat() ==
+                 "2026-07-30T19:59:00+00:00", "NORMAL_DST_ORIGIN")
+    require_test(strict_edgar_eastern_utc("20261102155900").isoformat() ==
+                 "2026-11-02T20:59:00+00:00", "NORMAL_STANDARD_TIME")
+    for bad_time in ("20261101013000",  # repeated 01:30; two valid UTC instants
+                     "20260308023000"): # skipped 02:30; no valid UTC instant
+        try:
+            strict_edgar_eastern_utc(bad_time)
+        except ValueError as exc:
+            require_test(str(exc) == "SEC_SGML_DST_CLOCK_AMBIGUOUS_OR_NONEXISTENT",
+                         "DST_WRONG_REJECTION_REASON")
+        else:
+            raise AssertionError("SEC_SGML_DST_NEGATIVE_BYPASS")
+        try:
+            with patch(__name__ + ".official_nasdaq_close_utc", return_value=close):
+                parse_official_header(sample_header(bad_time), APPLE_ACC, APPLE_CIK, APPLE_ASOF)
+        except ValueError as exc:
+            require_test(str(exc) == "SEC_SGML_CLOCK_OR_EXCHANGE_CUTOFF_INVALID",
+                         "SGML_DST_FAIL_CLOSED_WRONG_REASON")
+        else:
+            raise AssertionError("SEC_SGML_PARSE_DST_NEGATIVE_BYPASS")
+    print("XRAY_SEC_SGML_HEADER_SELFTEST=PASS_4_POSITIVE_11_NEGATIVE_NO_PRIMARY_PYTHON_O_SAFE")
 
 
 if __name__ == "__main__":
