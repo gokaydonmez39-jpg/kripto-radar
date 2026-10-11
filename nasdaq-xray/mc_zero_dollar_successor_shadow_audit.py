@@ -178,7 +178,32 @@ def classify_shadow_candidate(mc_rec: dict, nq_rec: dict | None) -> tuple[str, l
     ]
 
 
+def count_exact_pit_unknowns(rows: dict) -> int:
+    # An exact Nasdaq PIT observation requires the conjunction used by
+    # classify_shadow_candidate; a mere True flag is insufficient.
+    return sum(1 for row in rows.values()
+               if not (row.get("nasdaq_shadow_eligible") is True
+                       and row.get("nasdaq_close_match") is True
+                       and row.get("nasdaq_pit_status") == "SHADOW_ELIGIBLE"))
+
+
 def selftest() -> None:
+    samples = {
+        "verified": {"nasdaq_shadow_eligible": True,
+                     "nasdaq_close_match": True,
+                     "nasdaq_pit_status": "SHADOW_ELIGIBLE"},
+        "missing": {"nasdaq_shadow_eligible": False,
+                    "nasdaq_close_match": False,
+                    "nasdaq_pit_status": "UNKNOWN"},
+    }
+    samples["also_verified"] = dict(samples["verified"])
+    assert count_exact_pit_unknowns(samples)==1, "PIT_UNKNOWN_COUNT_INVERTED"
+    assert count_exact_pit_unknowns({"ready":samples["verified"]})==0
+    assert count_exact_pit_unknowns({"missing":samples["missing"]})==1
+    deceptive=dict(samples["verified"],nasdaq_close_match=False)
+    assert count_exact_pit_unknowns({"ready":samples["verified"],
+                                     "false_ready":deceptive})==1
+    assert count_exact_pit_unknowns({})==0
     high = {
         "rallies_market_cap_usd": 3_000_000_000,
         "longbridge_market_cap_usd": 3_100_000_000,
@@ -222,7 +247,57 @@ def selftest() -> None:
         assert str(e)=="MC_ACTIVE_HEAD_COUNT:2"
     else:
         raise AssertionError("MC_AMBIGUOUS_HEAD_SELFTEST_DID_NOT_FAIL")
+    # Genuine absence of current MC may not crash source diagnostics, but
+    # it must never become audited zero-unknown evidence or authority.
+    blocked=blocked_current_mc_report(
+        {"asof_et":"2026-10-09","pass_symbols":["A","B"],"pass_count":2})
+    assert blocked["status"]=="BLOCKED_NO_EXACT_CURRENT_MC_AUTHORITY"
+    assert blocked["unassessed_price_pass_count"]==2
+    assert blocked["unknown_count"]==0 and blocked["rows"]=={}
+    assert blocked["source_current_mc_authority"]=="MISSING"
+    assert blocked["alpha_authority"] is False
+    assert blocked["successor_activation"]=="FORBIDDEN_SHADOW_ONLY"
+    for corrupt in (
+        {"pass_symbols":["A","A"],"pass_count":2},
+        {"pass_symbols":["A","B"],"pass_count":"2"},
+        {"pass_symbols":["A"],"pass_count":2},
+    ):
+        try:blocked_current_mc_report(corrupt)
+        except AssertionError as exc:
+            assert str(exc)=="PRICE_PASS_SCOPE_NOT_VERIFIABLE"
+        else:raise AssertionError("BROKEN_SCOPE_ACCEPTED")
     print("MC_ZERO_DOLLAR_SUCCESSOR_SHADOW_AUDIT_SELFTEST=PASS")
+
+
+def blocked_current_mc_report(price: dict) -> dict:
+    """Explicitly unassessed; never equate zero audited UNKNOWN with zero gaps."""
+    p=price.get("pass_symbols")
+    n=price.get("pass_count")
+    if (type(p) is not list or type(n) is not int or len(p)!=n
+            or len(set(p))!=n or n<1):
+        raise AssertionError("PRICE_PASS_SCOPE_NOT_VERIFIABLE")
+    return {
+        "schema": "XRAY_MC_ZERO_DOLLAR_SUCCESSOR_SHADOW_AUDIT_V1",
+        "status": "BLOCKED_NO_EXACT_CURRENT_MC_AUTHORITY",
+        "asof_et": price.get("asof_et"),
+        "task_id": TASK_ID,
+        "execution": "NONE", "real_money": "NO-GO",
+        "unknown_never_pass": True, "alpha_authority": False,
+        "production_policy_version": POLICY_VERSION,
+        "production_policy_changed": False,
+        "production_classification_applied": False,
+        "production_changes": 0,
+        "successor_activation": "FORBIDDEN_SHADOW_ONLY",
+        "source_price_path": "nasdaq-xray/canonical_current_price_dv30.json",
+        "source_price_blob_sha": git_blob(PRICE),
+        "source_mc_path": None, "source_mc_blob_sha": None,
+        "source_current_mc_authority": "MISSING",
+        "unassessed_price_pass_count": n,
+        "unknown_count": 0, "unknown_symbols": [], "rows": {},
+        "exact_same_asof_post_close_nasdaq_pit_unknown_count": None,
+        "sec_transport_status": "NOT_EVALUATED_NO_MC_AUTHORITY",
+        "shadow_candidate_counts": {},
+    }
 
 
 def main() -> None:
@@ -232,7 +307,15 @@ def main() -> None:
     sec = readj(SEC_PROBE)
 
     assert int(price.get("unknown_count", -1)) == 0
-    mc_path, mc_rel, mc_sha, mc = select_current_mc(price)
+    try:
+        mc_path, mc_rel, mc_sha, mc = select_current_mc(price)
+    except AssertionError as exc:
+        if str(exc)!="NO_EXACT_CURRENT_MC_AUTHORITY":
+            raise
+        blocked=blocked_current_mc_report(price)
+        OUT.write_text(json.dumps(blocked,sort_keys=True,indent=2)+"\n",encoding="utf-8")
+        print("XRAY_MC_SHADOW_AUDIT=BLOCKED_NO_EXACT_CURRENT_MC_AUTHORITY_NO_GO")
+        return
     evidence = (terminal.get("evidence") or {}).get("mc") or {}
     terminal_binding_current = (
         terminal.get("asof_et") == price.get("asof_et")
@@ -284,11 +367,10 @@ def main() -> None:
         1 for r in rows.values()
         if r["production_status_before"] != r["production_status_after"]
     )
-    exact_pit_unknowns = sum(
-        1 for r in rows.values() if r["nasdaq_shadow_eligible"] is True
-    )
+    exact_pit_unknowns = count_exact_pit_unknowns(rows)
     out = {
         "schema": "XRAY_MC_ZERO_DOLLAR_SUCCESSOR_SHADOW_AUDIT_V1",
+        "status": "SHADOW_ONLY_MC_SOURCE_AVAILABLE",
         "task_id": TASK_ID,
         "asof_et": price["asof_et"],
         "execution": "NONE",
