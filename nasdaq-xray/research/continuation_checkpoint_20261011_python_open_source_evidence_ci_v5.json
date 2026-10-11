@@ -1,0 +1,167 @@
+{
+  "schema": "XRAY_CONTINUATION_20261011_PYTHON_OPEN_SOURCE_EVIDENCE_AND_CI_V5",
+  "source_main_sha": "7395feb3f4fdace73c328d2604f791abb3a9869a",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "target": "NASDAQ_LONG_ONLY_RESEARCH_GO_NOT_REAL_MONEY",
+  "important_gate_distinction": {
+    "research_only_release": "ACCOUNT_AND_G9_NOT_INTRINSIC_PREREQUISITES_BUT_PRIMARY_MC_LICENSED_HISTORY_SAFETY_REAL_CANDIDATE_EVIDENCE_REQUIRED",
+    "true_full_go": "G9_AND_ACCOUNT_REQUIRED_INDEPENDENTLY"
+  },
+  "live_changes": [
+    {
+      "commit": "7b4b3cecd954a4451bf3f510fd1372099ba7d60b",
+      "kind": "SGML_DST_FOLD_GAP_PIT_REPAIR",
+      "ci_run": 38173361557,
+      "ci_conclusion": "success",
+      "positive": 4,
+      "negative": 11,
+      "normal_and_optimized_tests": true,
+      "official_SEC_transport_probe": "success_non_primary",
+      "full_scope_sgml_attested": false
+    },
+    {
+      "commit": "6fe25e1189eb100610f734b98972770f42cd8bf8",
+      "kind": "SEC_514_RELEASE_GUARD_AND_SHA_PIN",
+      "ci_run": 38173546629,
+      "ci_conclusion": "success",
+      "positive": 2,
+      "negative": 22,
+      "normal_and_optimized_tests": true,
+      "run_38173546648": "CANCELLED_SUPERSEDED_BY_SECURITY_HARDENING"
+    },
+    {
+      "commit": "7395feb3f4fdace73c328d2604f791abb3a9869a",
+      "kind": "SEC_514_RELEASE_RED_TEAM_STRICT_COMPLETE_TRANSPORT_MASTER_SUBSET_AND_BLOB",
+      "ci_run": 38173716507,
+      "ci_conclusion": "success",
+      "positive": 2,
+      "negative": 27,
+      "normal_and_optimized_tests": true,
+      "full_live_run_id": 38173716522,
+      "full_live_result_at_checkpoint": "IN_PROGRESS_NOT_PROVEN_PASS"
+    }
+  ],
+  "python_source_research": [
+    {
+      "name": "dgunning/edgartools",
+      "evidence_url": "https://github.com/dgunning/edgartools/issues/697",
+      "validated_scope": "PIT_RESTATEMENT_LATEST_ONLY_LOOKAHEAD_HAZARD",
+      "role": "NON_AUTHORITATIVE_PIT_REVISION_AUDIT",
+      "installed_or_promoted": false
+    },
+    {
+      "name": "dgunning/edgartools",
+      "evidence_url": "https://github.com/dgunning/edgartools/issues/557",
+      "validated_scope": "ACCEPTANCE_DATE_UTC_EASTERN_PROVENANCE_HAZARD",
+      "role": "SGML_OFFICIAL_CLOCK_CROSSCHECK_PREFER",
+      "installed_or_promoted": false
+    },
+    {
+      "name": "jadchaar/sec-edgar-downloader",
+      "evidence_url": "https://github.com/jadchaar/sec-edgar-downloader/blob/master/CHANGELOG.md",
+      "validated_scope": "SEC_EDGAR_RATE_LIMITED_DOWNLOADER",
+      "role": "ALTERNATIVE_TRANSPORT_ONLY_EXISTING_2_REQUESTS_PER_SEC_CODE_ALREADY_CAPPED",
+      "installed_or_promoted": false
+    },
+    {
+      "name": "gerrymanoim/exchange_calendars",
+      "evidence_url": "https://github.com/gerrymanoim/exchange_calendars/blob/master/exchange_calendars/calendar_utils.py",
+      "validated_scope": "XNAS_ALIASES_XNYS_CALENDAR",
+      "role": "DIAGNOSTIC_SECONDARY_NOT_INDEPENDENT_NASDAQ_AUTHORITY",
+      "installed_or_promoted": false
+    },
+    {
+      "name": "OpenBB_Python_V5",
+      "evidence_url": "https://docs.openbb.co/odp/python/faqs/license",
+      "validated_scope": "APACHE_2_CODE_PROVIDER_DATA_RIGHTS_SEPARATE",
+      "role": "POSSIBLE_CONNECTOR_ABSTRACTION_ONLY",
+      "installed_or_promoted": false
+    },
+    {
+      "name": "ranaroussi/yfinance",
+      "evidence_url": "https://github.com/ranaroussi/yfinance/blob/main/README.md",
+      "validated_scope": "YAHOO_API_PERSONAL_USE_ONLY",
+      "role": "PRODUCTION_REJECT_ABSENT_SEPARATE_RIGHTS",
+      "installed_or_promoted": false
+    },
+    {
+      "name": "Alpaca_Data_API",
+      "evidence_url": "https://docs.alpaca.markets/us/v1.1/docs/about-market-data-api",
+      "validated_scope": "BASIC_FREE_REALTIME_IEX_LIMITED_HISTORICAL_SIP_15MIN",
+      "role": "NUMERIC_SHADOW_ONLY_UNTIL_AUTOMATED_RIGHTS_ATTESTED",
+      "installed_or_promoted": false
+    },
+    {
+      "name": "Massive_Stocks_Basic",
+      "evidence_url": "https://massive.com/pricing?product=stocks",
+      "validated_scope": "FREE_2_YEARS_EOD_5_CALLS_PER_MINUTE_INDIVIDUAL_USE",
+      "role": "SHADOW_ONLY_RIGHTS_KEY_AND_ASOF_MISSING",
+      "installed_or_promoted": false
+    },
+    {
+      "name": "SEC_BULK_COMPANYFACTS_SUBMISSIONS",
+      "evidence_url": "https://www.sec.gov/search-filings/edgar-application-programming-interfaces",
+      "validated_scope": "NIGHTLY_PUBLIC_BULK_ZIPS_AVAILABLE_NOT_INTRADAY_PIT",
+      "role": "OFFLINE_SOURCE_TRANSPORT_CANDIDATE_NOT_INSTALLED",
+      "installed_or_promoted": false
+    },
+    {
+      "name": "NASDAQ_TRADER_SYMBOL_DIRECTORY",
+      "evidence_url": "https://www.nasdaqtrader.com/trader.aspx?id=symboldirdefs",
+      "validated_scope": "OFFICIAL_CURRENT_ETF_TEST_SYMBOL_FIELDS_AND_CREATION_TIMESTAMP",
+      "role": "MASTER_IDENTITY_WITNESS_WITH_ASOF_AND_CA_RECONCILIATION",
+      "installed_or_promoted": false
+    }
+  ],
+  "x_direct_source_tests": {
+    "accounts": [
+      "SEC_News",
+      "AlpacaHQ",
+      "MassiveAPI"
+    ],
+    "results": [
+      "DISABLED_ERROR",
+      "HTTP_403_FORBIDDEN",
+      "DISABLED_ERROR"
+    ],
+    "tweets_read_or_used_as_proof": 0
+  },
+  "current_known_evidence": {
+    "SEC_live_514_last_completed_run": 38169144342,
+    "SEC_shares_vintage_only": 346,
+    "SEC_unknown": 167,
+    "SEC_transport_unknown": 1,
+    "SEC_PRIMARY_MC": 0,
+    "PRICE_ASOF": "2026-10-09",
+    "PRICE_PASS": 514,
+    "MASTER_ASOF": "2026-10-09",
+    "MASTER_PASS": 3184,
+    "MASTER_UNKNOWN": 12,
+    "ROOT_HISTORY_OLD_PASS": 497,
+    "ROOT_HISTORY_OLD_UNKNOWN": 229,
+    "terminal_asof": "2026-10-07",
+    "real_R92": "NONE_PROVEN",
+    "device_receipt": "NONE_PROVEN"
+  },
+  "hard_blockers": [
+    "C417_ZERO_SAME_ASOF_PRIMARY_MC",
+    "RUNNER_MARKET_DATA_NONDISPLAY_LICENSE_UNATTESTED",
+    "OFFICIAL_260_52_HISTORY_NOT_ATTESTED",
+    "TWELVE_KEY_ABSENT",
+    "MASSIVE_KEY_RIGHTS_UNVERIFIED",
+    "MASTER_12_UNKNOWN",
+    "CURRENT_TERMINAL_CHAIN_STALE",
+    "REAL_R92_DEVICE_RECEIPT_ABSENT"
+  ],
+  "release": "NO-GO",
+  "source_rights_created": false,
+  "primary_market_cap_created": false,
+  "history_pass_created": false,
+  "market_data_in_repo": false,
+  "credential_values_in_repo": false,
+  "next_safe_test": "REQUIRE_38173716522_COMPLETED_SUCCESS_PLUS_REAL_SEC_514_ARTIFACT_READBACK_BEFORE_RELEASE_GUARD_CLAIM"
+}
