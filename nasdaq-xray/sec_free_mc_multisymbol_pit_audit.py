@@ -75,6 +75,11 @@ def load_scope(offset:int=0,limit:int=0)->tuple[str,list[str]]:
         if not symbols: raise ValueError("EMPTY_SEC_BATCH")
     return asof,symbols
 
+def root_cause_class(status:str,reason:str)->str:
+    """Source-only diagnostic. It NEVER grants MC, history, or AL."""
+    return "UNRESOLVED_SOURCE"
+
+
 def selftest():
     rows={"fields":["cik","ticker","title","exchange"],
           "data":[[320193,"AAPL","Apple Inc.","Nasdaq"],
@@ -97,6 +102,17 @@ def selftest():
         try:load_scope(bad_offset,bad_limit)
         except ValueError:pass
         else:raise AssertionError("UNSAFE_BATCH_INPUT_ACCEPTED")
+    categories={
+        ("SHADOW_SHARES_VINTAGE_ONLY","SHARE_CLASS_CORP_ACTION_AND_PIT_PRICE_STILL_REQUIRED"):"PIT_SHARES_PRESENT_MORE_VALIDATION_REQUIRED",
+        ("UNKNOWN","NO_DEI_BUT_GAAP_SHARES_AVAILABLE_CLASS_UNRESOLVED"):"ISSUER_SHARE_CLASS_AMBIGUITY",
+        ("UNKNOWN","NO_FRESH_ACCEPTANCE_BOUND_SINGLE_ENTITY_SHARES"):"SEC_FILING_VINTAGE_NOT_PIT_VERIFIED",
+        ("UNKNOWN","NO_SEC_DEI_OR_GAAP_SHARES_FACT"):"SEC_SHARES_TAG_ABSENT",
+        ("UNKNOWN","SEC_SHARES_STALE_OR_FUTURE_OBSERVATION"):"SEC_SHARES_FACT_OUTSIDE_ASOF_WINDOW",
+        ("UNKNOWN_SEC_TRANSPORT","SEC_HTTP_404"):"SEC_IDENTIFIER_OR_RESOURCE_REVIEW"}
+    for (status,reason),expected in categories.items():
+        assert root_cause_class(status,reason)==expected,("WRONG_SEC_REMEDIATION",reason)
+    assert root_cause_class("UNKNOWN","SEC_HTTP_429")=="FAIR_ACCESS_HALT"
+    assert root_cause_class("UNKNOWN","UNCLASSIFIED")=="UNRESOLVED_SOURCE"
     print("XRAY_SEC_MULTI_SCOPE_SELFTEST=PASS_CIK_EXCHANGE_DUPLICATE_FAIL_CLOSED")
 
 def run(offset:int=0,limit:int=0)->dict:
