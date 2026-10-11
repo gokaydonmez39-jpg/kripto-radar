@@ -97,7 +97,7 @@ jobs:
           j=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_monday_live_actions.json").read_text())
           assert j["schema"]=="XRAY_MONDAY_LIVE_ACTIONS_EXECUTION_WITNESS_V1"
           assert j["main_stable_during_observation"] is True
-          assert len(j["execution_witnesses"])==8
+          assert len(j["execution_witnesses"])==15
           assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
           assert not j["alpha_authority"] and not j["real_user_device_receipt_attested"]
           print("XRAY_MONDAY_LIVE_ACTIONS_REPORT=RECORDED_NOT_PROVIDER_OR_DEVICE_RELEASE")
