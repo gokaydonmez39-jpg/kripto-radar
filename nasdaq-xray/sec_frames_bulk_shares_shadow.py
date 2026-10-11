@@ -34,13 +34,20 @@ NO_AUTH={"execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
 def periods(asof:str)->tuple[str,...]:
     x=dt.date.fromisoformat(asof)
     if x.isoformat()!=asof:raise ValueError("ASOF_INVALID")
-    year=x.year;quarter=(x.month-1)//3+1
-    result=[]
-    # Current quarter data should not be assumed complete at the close.
-    for _ in range(3):
+    year=x.year
+    quarter=(x.month-1)//3
+    if quarter==0:year-=1;quarter=4
+    # The just-closed calendar quarter can be largely unfiled.
+    quarter_end=(dt.date(year+1,1,1) if quarter==4
+                 else dt.date(year,quarter*3+1,1))-dt.timedelta(days=1)
+    if (x-quarter_end).days<45:
         quarter-=1
         if quarter==0:year-=1;quarter=4
+    result=[]
+    for _ in range(3):
         result.append(f"CY{year}Q{quarter}I")
+        quarter-=1
+        if quarter==0:year-=1;quarter=4
     return tuple(result)
 
 def classify_fact(row,asof):
