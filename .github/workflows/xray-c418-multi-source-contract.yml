@@ -8,6 +8,7 @@ on:
       - "nasdaq-xray/c418_shadow_resilience_guard.py"
       - "nasdaq-xray/c418_duplicate_feed_shadow_guard.py"
       - "nasdaq-xray/c418_history_exact_session_shadow_guard.py"
+      - "nasdaq-xray/c418_preopen_intersection_guard.py"
       - "nasdaq-xray/mc_free_successor_contract.py"
       - "nasdaq-xray/c418_canonical_source_sha_selftest.py"
       - "nasdaq-xray/c418_upstream_independence_attestation_selftest.py"
@@ -45,13 +46,14 @@ jobs:
         run: python -m pip install --disable-pip-version-check "pandas_market_calendars==5.4.0"
       - name: Verify C4.18 frozen proposal contract and exact provider roles
         run: |
-          python -m py_compile nasdaq-xray/c418_multi_source_guard.py nasdaq-xray/rallies_history_shadow_guard.py nasdaq-xray/c418_shadow_resilience_guard.py nasdaq-xray/c418_duplicate_feed_shadow_guard.py nasdaq-xray/c418_history_exact_session_shadow_guard.py
+          python -m py_compile nasdaq-xray/c418_multi_source_guard.py nasdaq-xray/rallies_history_shadow_guard.py nasdaq-xray/c418_shadow_resilience_guard.py nasdaq-xray/c418_duplicate_feed_shadow_guard.py nasdaq-xray/c418_history_exact_session_shadow_guard.py nasdaq-xray/c418_preopen_intersection_guard.py
           (cd nasdaq-xray && python rallies_history_shadow_guard.py --selftest)
           python nasdaq-xray/source_successor_c418_preflight.py --selftest
           python nasdaq-xray/c418_multi_source_guard.py --selftest
           python nasdaq-xray/c418_shadow_resilience_guard.py --selftest
           python nasdaq-xray/c418_duplicate_feed_shadow_guard.py --selftest
           python nasdaq-xray/c418_history_exact_session_shadow_guard.py --selftest
+          python nasdaq-xray/c418_preopen_intersection_guard.py --selftest
           python nasdaq-xray/mc_free_successor_contract.py --selftest
           python nasdaq-xray/c418_canonical_source_sha_selftest.py
           python nasdaq-xray/c418_upstream_independence_attestation_selftest.py
