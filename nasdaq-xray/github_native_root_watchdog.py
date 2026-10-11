@@ -4,6 +4,7 @@ No alpha, account, entitlement, MC, terminal or immutable witness writes.
 """
 from __future__ import annotations
 import argparse
+import base64
 import datetime as dt
 import json
 import os
@@ -16,6 +17,8 @@ WORKFLOW = "nasdaq-xray-daily.yml"
 NAME = "NASDAQ SWING XRAY Autonomous Data Plane"
 API = "https://api.github.com/repos/" + REPO
 ACTIVE = {"queued", "in_progress", "pending", "waiting", "requested"}
+HEALTH_KICK_PATH = "nasdaq-xray/scheduler_kick_dataplane.json"
+HEALTH_KICK_COOLDOWN_SECONDS = 180
 UTC = dt.timezone.utc
 NY = ZoneInfo("America/New_York")
 
@@ -120,6 +123,42 @@ def get_runs(token):
 def head_sha(token):
     return str(github("GET","/branches/main",token).get("commit",{}).get("sha") or "")
 
+def get_health_kick(token):
+    """Read Health's durable root-kick lease. The watchdog cannot write it."""
+    item=github("GET","/contents/"+HEALTH_KICK_PATH+"?ref=main",token)
+    if (not isinstance(item,dict) or not isinstance(item.get("sha"),str)
+        or len(item["sha"])!=40 or item.get("encoding")!="base64"
+        or not isinstance(item.get("content"),str)):
+        raise RuntimeError("HEALTH_KICK_GITHUB_BLOB_INVALID")
+    try:
+        raw=base64.b64decode(item["content"],validate=False)
+        value=json.loads(raw)
+    except (ValueError,TypeError) as ex:
+        raise RuntimeError("HEALTH_KICK_UNREADABLE") from ex
+    if (not isinstance(value,dict) or
+        value.get("schema")!="XRAY_SCHEDULER_KICK_V1" or
+        value.get("execution")!="NONE" or
+        value.get("real_money")!="NO-GO" or
+        type(value.get("sequence")) is not int or value["sequence"]<0):
+        raise RuntimeError("HEALTH_KICK_SAFETY_INVALID")
+    timestamp(value.get("requested_at_utc"))
+    return {"sha":item["sha"],"sequence":value["sequence"],
+            "requested_at_utc":value["requested_at_utc"]}
+
+def health_lease_authorizes(now,before,after):
+    """Never race a fresh/different Health CAS; no promotion of root status."""
+    if not isinstance(before,dict) or not isinstance(after,dict):
+        return False,"HEALTH_KICK_LEASE_MISSING"
+    if before!=after:
+        return False,"HEALTH_KICK_CHANGED_DURING_SNAPSHOT"
+    try:
+        age=(now.astimezone(UTC)-timestamp(after["requested_at_utc"])).total_seconds()
+    except (KeyError,TypeError,ValueError,OverflowError):
+        return False,"HEALTH_KICK_TIMESTAMP_UNVERIFIED"
+    if not (age>HEALTH_KICK_COOLDOWN_SECONDS):
+        return False,"HEALTH_KICK_COOLDOWN_OR_FUTURE"
+    return True,"HEALTH_KICK_LEASE_EXPIRED_STABLE"
+
 def selftest():
     now=dt.datetime(2026,10,8,11,tzinfo=UTC)
     def r(num,date,status,conclusion=None):
@@ -165,6 +204,21 @@ def selftest():
     assert two_read_authorized(stale,fresh,"a"*40,"a"*40,now)[0] is False
     assert two_read_authorized(stale,stale,"a"*40,"b"*40,now)[0] is False
     assert classify(now,[])["dispatch_allowed"] is True
+    old_lease={"sha":"a"*40,"sequence":4,
+               "requested_at_utc":"2026-10-08T09:30:00Z"}
+    assert health_lease_authorizes(now,old_lease,old_lease)[0] is True
+    recent=dict(old_lease,requested_at_utc="2026-10-08T10:58:00Z")
+    assert health_lease_authorizes(now,recent,recent)==(
+        False,"HEALTH_KICK_COOLDOWN_OR_FUTURE")
+    exact=dict(old_lease,requested_at_utc="2026-10-08T10:57:00Z")
+    assert health_lease_authorizes(now,exact,exact)[0] is False
+    changed=dict(old_lease,sha="b"*40,sequence=5)
+    assert health_lease_authorizes(now,old_lease,changed)==(
+        False,"HEALTH_KICK_CHANGED_DURING_SNAPSHOT")
+    future=dict(old_lease,requested_at_utc="2026-10-08T11:01:00Z")
+    assert health_lease_authorizes(now,future,future)[0] is False
+    missing=dict(old_lease,requested_at_utc="INVALID")
+    assert health_lease_authorizes(now,missing,missing)[0] is False
     try:
         classify(now,[r(5,"BAD_DATE","completed")])
         raise AssertionError("MALFORMED_DATE_ACCEPTED")
@@ -196,21 +250,30 @@ def main():
         "mc_primary_promoted":False,"g9_promoted":False,"account_promoted":False,
         "r92_created":False,"terminal_pass_claimed":False,"recovery_proven":False,
         "first_snapshot":first,"action":"NONE","second_snapshot":None,
+        "health_kick_lease_check":"NOT_NEEDED",
     }
     try:
         if first["dispatch_allowed"]:
+            # The Health automation can independently CAS the same root kick.
+            # Inspect its durable lease on BOTH sides of the Actions snapshots
+            # before a second native dispatch; never infer full atomic locking.
+            kick_before=get_health_kick(token)
             after=get_runs(token)
             after_head=head_sha(token)
+            kick_after=get_health_kick(token)
             accepted,reason=two_read_authorized(
                 before,after,before_head,after_head,dt.datetime.now(UTC))
+            lease_ok,lease_reason=health_lease_authorizes(
+                dt.datetime.now(UTC),kick_before,kick_after)
             output["second_snapshot"]=reason
-            if accepted:
+            output["health_kick_lease_check"]=lease_reason
+            if accepted and lease_ok:
                 response=github("POST","/actions/workflows/"+WORKFLOW+
                                 "/dispatches",token,{"ref":"main"})
                 output["action"]="ROOT_DISPATCH_ACCEPTED_NOT_RECOVERY"
                 output["dispatch_http_status"]=response["http_status"]
             else:
-                output["action"]="NO_ACTION_LIVE_SNAPSHOT_CHANGED"
+                output["action"]="NO_ACTION_LIVE_SNAPSHOT_OR_HEALTH_LEASE"
     finally:
         target=pathlib.Path(args.out)
         target.parent.mkdir(parents=True,exist_ok=True)
