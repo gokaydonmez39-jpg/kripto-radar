@@ -53,6 +53,9 @@ CHECKS={
         "XRAY_DELIVERY_NOOP=NO_REGISTERED_RESEARCH_CANDIDATE",
         "XRAY_DELIVERY_R92_PRESENT=true",
         "gh issue create",
+        'gh issue view "$existing" --json number,title,body,url',
+        "delivery_issue_receipt_guard.py",
+        "XRAY_BACKUP_DELIVERY_UNVERIFIED",
     )),
     "official_safety_before_delivery":("nasdaq-xray-delivery.yml",(
         "Refresh official Nasdaq halt + Security Status guard",
@@ -180,6 +183,9 @@ def selftest():
         ("xray-github-native-root-watchdog.yml",
          "github_native_chain_health.py --out", "no-chain-health"),
         ("nasdaq-xray-daily.yml","root_weekend_quota_guard.py --emit","disabled-weekend-guard"),
+        ("nasdaq-xray-delivery.yml","delivery_issue_receipt_guard.py","MISSING_VERIFIER"),
+        ("nasdaq-xray-delivery.yml",'gh issue view "$existing" --json number,title,body,url',
+         "UNVERIFIED_ISSUE_SEARCH_RESULT"),
     ]
     for name,needle,replacement in regressions:
         assert needle in files[name],(name,needle)
@@ -199,7 +205,7 @@ def selftest():
         without_guard[:destination]+guard_step+without_guard[destination:])
     assert not validate_contract(modified)["ok"]
     assert session_timeline()
-    print("XRAY_MONDAY_MICROAUDIT_SELFTEST=PASS_8_NEGATIVES_DST_DELIVERY_RECOVERY_NO_FALSE_GO")
+    print("XRAY_MONDAY_MICROAUDIT_SELFTEST=PASS_10_NEGATIVES_DST_DELIVERY_RECEIPTS_RECOVERY_NO_FALSE_GO")
 
 def main():
     parser=argparse.ArgumentParser()
