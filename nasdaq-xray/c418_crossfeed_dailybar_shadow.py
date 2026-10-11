@@ -99,37 +99,38 @@ def check(symbol,asof,alpaca,massive):
     }
 
 def example():
+    # Fabricated arithmetic fixture only: never persist actual vendor OHLCV.
     return (
-        {"symbol":"AAPL","timestamp":"2026-10-09T04:00:00+00:00",
-         "open":"331.695","high":"338.61","low":"330.70","close":"336.64","volume":38038338},
-        {"symbol":"AAPL","timestamp":"2026-10-09T20:00:00+00:00",
-         "open":"331.695","high":"338.61","low":"330.70","close":"336.64","volume":37881200},
+        {"symbol":"TEST","timestamp":"2026-10-09T04:00:00+00:00",
+         "open":"10.00","high":"11.00","low":"9.50","close":"10.25","volume":12000},
+        {"symbol":"TEST","timestamp":"2026-10-09T20:00:00+00:00",
+         "open":"10.00","high":"11.00","low":"9.50","close":"10.25","volume":12300},
     )
 
 def selftest():
     a,b=example()
-    output=check("AAPL","2026-10-09",a,b)
+    output=check("TEST","2026-10-09",a,b)
     require(output["status"]=="OHLC_EQUAL_VOLUME_SEMANTICS_UNVERIFIED"
             and not output["volume_fields_equal"]
             and not output["can_create_PRICE_DV30_PASS"],"PRICE_EQUAL_VOLUME_UNPROVEN_POSITIVE")
     same=copy.deepcopy(b);same["volume"]=a["volume"]
-    require(check("AAPL","2026-10-09",a,same)["volume_fields_equal"],
+    require(check("TEST","2026-10-09",a,same)["volume_fields_equal"],
             "SAME_VOLUME_POSITIVE")
     # US post-Thanksgiving 2026 is an official 13:00 Eastern close.
     winter_a=copy.deepcopy(a);winter_b=copy.deepcopy(b)
     winter_a["timestamp"]="2026-11-27T05:00:00+00:00"
     winter_b["timestamp"]="2026-11-27T18:00:00+00:00"
-    require(check("AAPL","2026-11-27",winter_a,winter_b)["price_fields_equal"],
+    require(check("TEST","2026-11-27",winter_a,winter_b)["price_fields_equal"],
             "OFFICIAL_EARLY_CLOSE_POSITIVE")
     def reject(name,aa,bb,asof="2026-10-09"):
-        try:check("AAPL",asof,aa,bb)
+        try:check("TEST",asof,aa,bb)
         except ValueError:return
         raise AssertionError("C418_CROSSFEED_NEGATIVE_BYPASS:"+name)
     wrong=copy.deepcopy(b);wrong["timestamp"]="2026-10-09T19:00:00+00:00"
     reject("MASSIVE_WRONG_CUTOFF",a,wrong)
     wrong=copy.deepcopy(a);wrong["timestamp"]="2026-10-09T20:00:00+00:00"
     reject("ALPACA_WRONG_START",wrong,b)
-    wrong=copy.deepcopy(a);wrong["symbol"]="PLTR"
+    wrong=copy.deepcopy(a);wrong["symbol"]="OTHER"
     reject("IDENTITY_COLLISION",wrong,b)
     wrong=copy.deepcopy(b);wrong["close"]=0
     reject("ZERO_CLOSE",a,wrong)

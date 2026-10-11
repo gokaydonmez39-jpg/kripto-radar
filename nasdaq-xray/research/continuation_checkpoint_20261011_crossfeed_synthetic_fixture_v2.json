@@ -1,0 +1,13 @@
+{
+  "schema": "XRAY_C418_CROSSFEED_SELFTEST_FIXTURE_SYNTHETIC_ONLY_V2",
+  "parent_head_sha": "1c9cb5fd0e9a5b229b7b995e801a24acfcaae4d8",
+  "previous_commit": "1c9cb5fd0e9a5b229b7b995e801a24acfcaae4d8",
+  "fix": "REPLACE_REAL_VENDOR_SAMPLE_VALUES_IN_TEST_FIXTURE_WITH_FABRICATED_TEST_ONLY_VALUES",
+  "all_actual_vendor_observations_kept_only_in_transient_private_connector": true,
+  "public_repo_no_raw_vendor_prices_by_fixture_after_fix": true,
+  "production_vendor_data_persistence": false,
+  "ci": "PENDING",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "release": "NO-GO"
+}
