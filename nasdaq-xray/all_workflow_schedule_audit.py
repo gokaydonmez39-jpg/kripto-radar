@@ -63,7 +63,7 @@ PROVIDER_RIGHTS={
 }
 
 def crons(source):
-    return tuple(re.findall(r'^\\s*- cron: ["\\\']([^"\\\']+)["\\\']\\s*$',source,re.M))
+    return tuple(re.findall(r'^\s*- cron: ["\\']([^"\\']+)["\\']\s*$',source,re.M))
 
 def inventory(files):
     errors=[]
@@ -77,12 +77,12 @@ def inventory(files):
         found=crons(source)
         if found:
             scheduled[name]=list(found)
-        if re.search(r'^\\s+issues:\\s*write\\s*$',source,re.M):
+        if re.search(r'^\s+issues:\s*write\s*$',source,re.M):
             writer_names.append(name)
         if name in READONLY_PROVIDER_SCHEDULED:
-            if not re.search(r'^\\s+contents:\\s*read\\s*$',source,re.M):
+            if not re.search(r'^\s+contents:\s*read\s*$',source,re.M):
                 errors.append("SCHEDULED_SHADOW_CONTENTS_NOT_READ_ONLY:"+name)
-            if re.search(r'^\\s+contents:\\s*write\\s*$',source,re.M):
+            if re.search(r'^\s+contents:\s*write\s*$',source,re.M):
                 errors.append("SCHEDULED_SHADOW_WRITE_PRIVILEGE:"+name)
     for n,expected in EXPECTED.items():
         if n not in names:errors.append("SCHEDULED_WORKFLOW_FILE_MISSING:"+n)
