@@ -26,14 +26,14 @@ jobs:
       XRAY_MASSIVE_NONDISPLAY_LICENSE_OK: ${{ vars.XRAY_MASSIVE_NONDISPLAY_LICENSE_OK }}
       XRAY_MASSIVE_LICENSE_EVIDENCE_SHA256: ${{ secrets.XRAY_MASSIVE_LICENSE_EVIDENCE_SHA256 }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       - name: Exact triggering source commit
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           echo "XRAY_HISTORY_REQUEST_HEAD_EXACT=PASS"
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: "3.12"
       - name: Install fixed Nasdaq exchange calendar
@@ -42,6 +42,9 @@ jobs:
         run: |
           python -m py_compile nasdaq-xray/current_history_source_request.py
           python nasdaq-xray/current_history_source_request.py --selftest
+          # Critical negative checks must still execute with assertions removed.
+          python -O nasdaq-xray/current_history_source_request.py --selftest
+          echo "XRAY_HISTORY_REQUEST_OPTIMIZED_PYTHON_GUARDS=PASS_16_NEGATIVES"
       - name: Validate $0 Twelve Data quota against exact current PRICE SHA (no API key or vendor calls)
         run: |
           python -m py_compile nasdaq-xray/free_history_source_preflight.py
@@ -152,7 +155,7 @@ jobs:
           print("XRAY_HISTORY_CURRENT_SCOPE_REQUEST_SAFETY=PASS")
           PY
       - name: Persist only public tickers and official calendar schedule
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: xray-current-history-source-request-no-vendor-bars
           path: |
