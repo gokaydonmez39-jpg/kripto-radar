@@ -1,0 +1,13 @@
+{
+  "schema": "XRAY_P0_ALPACA_515_RAW_SPLIT_RECONCILIATION_V1",
+  "parent_main": "efd9c41b18ee77bdd54a29a1d9bb615b50e85e3d",
+  "reason": "Compare same 260 official NASDAQ session bars raw and split-adjusted under same asof symbol identity. Persist only derived classification, no raw prices or traded volume.",
+  "provider_docs": "https://docs.alpaca.markets/us/reference/stockbars",
+  "action_census_run": 38178327791,
+  "source_515_scope": 515,
+  "history_primary_authority": false,
+  "issuer_ca_independent_pit_verified": false,
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "ci": "PENDING"
+}
