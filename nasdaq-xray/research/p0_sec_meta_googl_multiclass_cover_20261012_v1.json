@@ -1,0 +1,77 @@
+{
+  "schema": "XRAY_20261012_SEC_2_MULTICLASS_SOURCE_RECOVERY_SHADOW_V1",
+  "asof_et": "2026-10-09",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "source_origin": "OFFICIAL_SEC_2026_10Q_COVER_PAGE_DIMENSIONAL_SHARES_IN_PUBLIC_FILING",
+  "critical_note": "SEC companyfacts excludes dimensional stock class facts. Public 10-Q cover provides classes but old observation dates and not independent filing acceptance witnesses. NO PRIMARY promotion.",
+  "records": {
+    "GOOGL": {
+      "cik": "0001652044",
+      "sec_accession": "0001652044-26-000071",
+      "sec_10q_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/goog-20260630.htm",
+      "sec_10q_public_period_end": "2026-06-30",
+      "sec_class_observed_date": "2026-07-15",
+      "share_units": "millions_as_filed_rounded",
+      "classes": [
+        {
+          "class": "A",
+          "ticker": "GOOGL",
+          "tradeable_nasdaq": true,
+          "shares_millions_as_filed": 5868
+        },
+        {
+          "class": "B",
+          "ticker": null,
+          "tradeable_nasdaq": false,
+          "shares_millions_as_filed": 835
+        },
+        {
+          "class": "C",
+          "ticker": "GOOG",
+          "tradeable_nasdaq": true,
+          "shares_millions_as_filed": 5527
+        }
+      ],
+      "prior_sec_514_reason": "NO_DEI_BUT_GAAP_SHARES_AVAILABLE_CLASS_UNRESOLVED",
+      "security_note": "GOOGL one Class A price times all Alphabet shares is NOT exact issuer market cap, Class C GOOG prices and B unlisted economics need independent valuation and PIT corporate action lineage."
+    },
+    "META": {
+      "cik": "0001326801",
+      "sec_accession": "0001628280-26-050705",
+      "sec_10q_url": "https://www.sec.gov/Archives/edgar/data/1326801/000162828026050705/meta-20260630.htm",
+      "sec_10q_public_period_end": "2026-06-30",
+      "sec_class_observed_date": "2026-07-24",
+      "share_units": "shares_exact_cover_page",
+      "classes": [
+        {
+          "class": "A",
+          "ticker": "META",
+          "tradeable_nasdaq": true,
+          "shares_as_filed": 2205128509
+        },
+        {
+          "class": "B",
+          "ticker": null,
+          "tradeable_nasdaq": false,
+          "shares_as_filed": 342377716
+        }
+      ],
+      "prior_sec_514_reason": "NO_SEC_DEI_OR_GAAP_SHARES_FACT",
+      "security_note": "META Class B is non-listed and included in issuer equity. Full issuer MC requires exact class/share/issuance and independent as-of price evidence; not silently counted as Class A tradeable shares."
+    }
+  },
+  "source_content_read_from_official_SEC_web_pages": true,
+  "source_archive_bytes_SHA256_attested": false,
+  "submissions_acceptance_utc_independently_bound": false,
+  "post_observed_to_20261009_split_and_issuance_reconciled": false,
+  "independent_issuer_market_cap_crosscheck_verified": false,
+  "personal_noncommercial_data_use": true,
+  "pricing_result_computed": false,
+  "c417_primary_mc_count_increment": 0,
+  "r92_created": false,
+  "GO": false
+}
