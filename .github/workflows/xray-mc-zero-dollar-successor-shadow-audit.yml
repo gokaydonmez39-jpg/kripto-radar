@@ -17,7 +17,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: xray-mc-zero-dollar-successor-shadow-audit
+  group: xray-mc-zero-dollar-successor-shadow-audit-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -51,6 +51,19 @@ jobs:
           assert j["successor_activation"]=="FORBIDDEN_SHADOW_ONLY"
           assert j["unknown_count"]==len(j["unknown_symbols"])==len(j["rows"])
           assert set(j["rows"])==set(j["unknown_symbols"])
+          if j.get("status")=="BLOCKED_NO_EXACT_CURRENT_MC_AUTHORITY":
+            price=json.load(open("nasdaq-xray/canonical_current_price_dv30.json",encoding="utf-8"))
+            assert j["source_current_mc_authority"]=="MISSING"
+            assert j["source_mc_path"] is None and j["source_mc_blob_sha"] is None
+            assert j["unassessed_price_pass_count"]==price["pass_count"]>0
+            assert j["exact_same_asof_post_close_nasdaq_pit_unknown_count"] is None
+            assert j["unknown_count"]==0 and j["rows"]=={}
+            print("XRAY_MC_SHADOW_SOURCE_STATUS=BLOCKED_NO_CURRENT_MC_NO_GO")
+          else:
+            assert j.get("status")=="SHADOW_ONLY_MC_SOURCE_AVAILABLE"
+            assert j["exact_same_asof_post_close_nasdaq_pit_unknown_count"]<=j["unknown_count"]
+            assert j["source_mc_blob_sha"] and j["source_mc_path"]
+            print("XRAY_MC_SHADOW_SOURCE_STATUS=AUDITED_NO_PRODUCTION_AUTHORITY")
           assert all(r["production_status_before"]=="MC_UNKNOWN" for r in j["rows"].values())
           assert all(r["production_status_after"]=="MC_UNKNOWN" for r in j["rows"].values())
           print({
