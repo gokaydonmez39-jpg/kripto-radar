@@ -97,7 +97,11 @@ def audit(price,master,alpaca,sec,price_sha,master_sha):
     reasons=sec.get("reason_codes")
     if (not isinstance(statuses,dict) or set(statuses)!=set(names)
         or not isinstance(reasons,dict) or set(reasons)!=set(names)
-        or dict(Counter(statuses.values()))!=sec.get("status_counts")):
+        or dict(Counter(statuses.values()))!=sec.get("status_counts")
+        or dict(Counter(reasons.values()))!=sec.get("reason_counts")
+        or sec.get("remediation_count_exact") is not True
+        or not isinstance(sec.get("remediation_counts"),dict)
+        or sum(sec["remediation_counts"].values())!=len(names)):
         raise ValueError("SEC_STATUS_NOT_EXACT_FULL_SET")
     price_set=set(names)
     short=set(missing)
@@ -108,6 +112,36 @@ def audit(price,master,alpaca,sec,price_sha,master_sha):
     if (joint&mc_unknown or joint&short or mc_unknown&short
         or joint|mc_unknown|short!=price_set):
         raise ValueError("INEXACT_SET_PARTITION")
+    # Mutually exclusive, exact-set priority cohorts. These summarize ONLY
+    # observed status/reason metadata; they never recreate restricted bars,
+    # issuer share counts, market caps, or a C4.17 source entitlement.
+    cohorts=(
+        ("P0_TECHNICAL_JOIN_REQUIRES_CLASS_CA_PIT_REVIEW",joint,
+         "VALIDATE_ISSUER_CLASS_ADR_SPLIT_PIT_ACCEPTANCE_AND_AUTHORIZED_PRICE"),
+        ("P1_HISTORY_COMPLETE_SEC_REASON_REMEDIATION",mc_unknown,
+         "RESOLVE_OFFICIAL_FILING_ACCEPTANCE_OR_MISSING_SHARE_FACT_BY_REASON"),
+        ("P2_SEC_VINTAGE_HISTORY_SHORT_SECURITY_CONTINUITY",short & vintage,
+         "VERIFY_260_SESSIONS_52_WEEKS_AND_SAME_SECURITY_IDENTITY"),
+        ("P3_BOTH_SOURCES_UNRESOLVED",short-vintage,
+         "REPAIR_SEC_REASON_AND_VERIFY_UNSHORTENABLE_HISTORY_INDEPENDENTLY"),
+    )
+    ranked=[]
+    for priority,group,next_check in cohorts:
+        specific=Counter(reasons[s] for s in group)
+        ranked.append({
+            "priority":priority,
+            "symbol_count":len(group),
+            "symbol_set_sha256":_digest(group),
+            "source_reason_counts":dict(sorted(specific.items())),
+            "required_independent_verification":next_check,
+            "primary_mc_admitted":False,
+            "history_primary_admitted":False,
+        })
+    if (sum(x["symbol_count"] for x in ranked)!=len(names)
+        or Counter({reason:sum(x["source_reason_counts"].get(reason,0)
+                for x in ranked) for reason in set(reasons.values())})
+             !=Counter(reasons.values())):
+        raise ValueError("INEXACT_REMEDIATION_REASON_PARTITION")
     return {
        "schema":SCHEMA, "asof_et":asof,
        "source_price_blob_sha":price_sha,"source_master_blob_sha":master_sha,
@@ -120,6 +154,8 @@ def audit(price,master,alpaca,sec,price_sha,master_sha):
        "history_short_sec_vintage":len(short&vintage),
        "history_short_sec_unknown":len(short-vintage),
        "technical_intersection_sha256":_digest(joint),
+       "reason_coded_remediation_queue":ranked,
+       "reason_coded_remediation_scope_exact":True,
        "unproven_mc_cohort_sha256":_digest(mc_unknown),
        "history_short_sha256":_digest(short),
        "status":"EXACT_RESEARCH_PARTITION_ONLY",
@@ -163,6 +199,11 @@ def selftest():
                        "B":"NO_SEC_DEI_OR_GAAP_SHARES_FACT",
                        "C":"SHARE_CLASS_CORP_ACTION_AND_PIT_PRICE_STILL_REQUIRED"},
        "status_counts":{SEC_VINTAGE:2,"UNKNOWN":1},
+       "reason_counts":{"SHARE_CLASS_CORP_ACTION_AND_PIT_PRICE_STILL_REQUIRED":2,
+                        "NO_SEC_DEI_OR_GAAP_SHARES_FACT":1},
+       "remediation_counts":{"PIT_SHARES_PRESENT_MORE_VALIDATION_REQUIRED":2,
+                             "SEC_SHARES_TAG_ABSENT":1},
+       "remediation_count_exact":True,
        "execution":"NONE","real_money":"NO-GO"}
     from copy import deepcopy
     assert _digest(symbols)!=_sec_digest(symbols)
@@ -170,6 +211,16 @@ def selftest():
     assert (out["technical_intersection"],out["history_observed_sec_unknown"],
             out["history_short_in_price_pass"])==(1,1,1)
     assert not out["can_create_PRIMARY"] and not out["can_register_R92"]
+    q=out["reason_coded_remediation_queue"]
+    assert out["reason_coded_remediation_scope_exact"] is True
+    assert [(x["symbol_count"],x["primary_mc_admitted"],
+             x["history_primary_admitted"]) for x in q] == [
+                (1,False,False),(1,False,False),(1,False,False),(0,False,False)]
+    assert q[0]["source_reason_counts"]=={
+        "SHARE_CLASS_CORP_ACTION_AND_PIT_PRICE_STILL_REQUIRED":1}
+    assert q[1]["source_reason_counts"]=={"NO_SEC_DEI_OR_GAAP_SHARES_FACT":1}
+    assert q[2]["source_reason_counts"]=={
+        "SHARE_CLASS_CORP_ACTION_AND_PIT_PRICE_STILL_REQUIRED":1}
     for key,group,value in (
         ("pass_count",p,4),
         ("source_master_blob_sha",a,"0"*40),
@@ -178,7 +229,12 @@ def selftest():
         ("source_market_data_rights_independently_attested",a,True),
         ("sample_scope_sha256",t,"0"*64),
         ("c417_primary_mc_count",t,1),
-        ("batch_limit",t,2)):
+        ("batch_limit",t,2),
+        ("reason_counts",t,{"MISREPORTED_REASON":3}),
+        ("remediation_count_exact",t,False),
+        ("remediation_counts",t,{"MISREPORTED_REMEDIATION":2}),
+        ("reason_codes",t,{"A":"SHARE_CLASS_CORP_ACTION_AND_PIT_PRICE_STILL_REQUIRED",
+                            "C":"SHARE_CLASS_CORP_ACTION_AND_PIT_PRICE_STILL_REQUIRED"})):
         pp,mm,aa,tt=(deepcopy(p),deepcopy(m),deepcopy(a),deepcopy(t))
         obj=pp if group is p else aa if group is a else tt
         obj[key]=value
@@ -211,6 +267,10 @@ def main():
               json.loads(args.private_sec.read_text()),_sha(pb),_sha(mb))
     args.out.write_text(json.dumps(res,sort_keys=True)+"\n")
     print("XRAY_C418_RESEARCH_PRIORITY="+str(res["technical_intersection"]))
+    print("XRAY_C418_REASON_COHORTS="+json.dumps([
+        {"priority":v["priority"],"count":v["symbol_count"],
+         "reason_counts":v["source_reason_counts"]}
+        for v in res["reason_coded_remediation_queue"]],sort_keys=True))
     print("XRAY_C418_PARTITION_AUTHORITY=SHADOW_ONLY_NO_MC_NO_R92")
     raise SystemExit(2)
 
