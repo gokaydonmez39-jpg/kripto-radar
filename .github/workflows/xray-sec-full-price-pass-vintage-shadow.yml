@@ -4,12 +4,16 @@ on:
   push:
     branches: [main]
     paths:
+      - "nasdaq-xray/canonical_current_price_dv30.json"
+      - "nasdaq-xray/canonical_current_master_manifest.json"
+      - "nasdaq-xray/sec_free_mc_multisymbol_pit_audit.py"
+      - "nasdaq-xray/sec_official_free_mc_transport_probe.py"
       - ".github/workflows/xray-sec-full-price-pass-vintage-shadow.yml"
 permissions:
   contents: read
 concurrency:
   group: xray-sec-full-price-pass-vintage-shadow
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   collect-official-share-vintages:
     runs-on: ubuntu-latest
@@ -38,7 +42,7 @@ jobs:
         env:
           XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
         run: |
-          python nasdaq-xray/sec_free_mc_multisymbol_pit_audit.py --offset 0 --limit 514 \
+          python nasdaq-xray/sec_free_mc_multisymbol_pit_audit.py --all-price-pass \
             --output "$RUNNER_TEMP/xray_sec_full_price_pass_vintage_operational.json"
       - name: Assert exact 514-symbol scope and zero false MC authority
         run: |
@@ -49,16 +53,24 @@ jobs:
           assert j["schema"]=="XRAY_SEC_MULTISYMBOL_PIT_SHADOW_V1"
           source=json.load(open("nasdaq-xray/canonical_current_price_dv30.json",encoding="utf-8"))
           assert j["asof_et"]==source["asof_et"]
-          assert source["pass_count"]==514 and len(source["pass_symbols"])==514
-          assert j["sample_count"]==514 and len(j["statuses"])==514
-          assert j["batch_offset"]==0 and j["batch_limit"]==514
+          import hashlib
+          assert len(source["pass_symbols"])==source["pass_count"]
+          assert len(set(source["pass_symbols"]))==source["pass_count"]
+          assert 1<=source["pass_count"]<=650
+          assert j["full_current_price_pass_scope"] is True
+          assert j["sample_count"]==source["pass_count"]
+          assert len(j["statuses"])==source["pass_count"]
+          assert set(j["statuses"])==set(source["pass_symbols"])
+          expected=hashlib.sha256(("\\n".join(sorted(source["pass_symbols"]))+"\\n").encode()).hexdigest()
+          assert j["sample_scope_sha256"]==expected
+          assert j["batch_offset"]==0 and j["batch_limit"]==source["pass_count"]
           assert j["c417_primary_mc_count"]==0 and j["market_cap_calculated"] is False
           assert j["production_alpha_authority"] is False
           assert j["price_binding_attested"] is False
           assert j["corporate_action_binding_attested"] is False
           assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
           assert len(j["master_git_blob_sha"])==40 and len(j["price_git_blob_sha"])==40
-          print("XRAY_SEC_FULL_SCOPE=514_VERIFIED_SHADOW_ONLY")
+          print("XRAY_SEC_FULL_SCOPE="+str(source["pass_count"])+"_VERIFIED_SHADOW_ONLY")
           print("XRAY_SEC_FULL_SCOPE_UNKNOWN_COUNTS="+json.dumps(j["status_counts"],sort_keys=True))
           print("XRAY_SEC_FULL_SCOPE_REASON_COUNTS="+json.dumps(j["reason_counts"],sort_keys=True))
           PY
