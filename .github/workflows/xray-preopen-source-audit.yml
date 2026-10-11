@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/research_preopen_source_audit.py"
+      - "nasdaq-xray/preopen_live_release_gate.py"
       - ".github/workflows/xray-preopen-source-audit.yml"
   workflow_run:
     workflows:
@@ -15,6 +16,7 @@ on:
     branches: [main]
   schedule:
     - cron: "25 12 * * 1-5"
+    - cron: "15 13 * * 1-5"
 permissions:
   contents: read
 concurrency:
@@ -27,16 +29,30 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
           fetch-depth: 1
+      - name: Reject mixed commit evidence before preopen checks
+        shell: bash
+        env:
+          XRAY_EXPECTED_SHA: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
+        run: |
+          set -euo pipefail
+          [[ "$(git rev-parse HEAD)" == "$XRAY_EXPECTED_SHA" ]] || exit 2
+          now_main="$(git ls-remote origin refs/heads/main | cut -f1)"
+          [[ -n "$now_main" && "$now_main" == "$XRAY_EXPECTED_SHA" ]] || {
+            echo "XRAY_PREOPEN_STALE_INVOCATION_SHA_FAIL_CLOSED"
+            exit 2
+          }
+          echo "XRAY_PREOPEN_CURRENT_MAIN_SHA_EXACT=PASS"
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
       - name: Compile and test true positive/negative proof boundaries
         run: |
-          python -m py_compile nasdaq-xray/research_preopen_source_audit.py nasdaq-xray/e2e_production_readiness.py
+          python -m py_compile nasdaq-xray/research_preopen_source_audit.py nasdaq-xray/e2e_production_readiness.py nasdaq-xray/preopen_live_release_gate.py
           python nasdaq-xray/research_preopen_source_audit.py --selftest
           python nasdaq-xray/e2e_production_readiness.py --selftest
+          python nasdaq-xray/preopen_live_release_gate.py --selftest
       - name: Verify exact current Git source blobs and blocked classifications
         run: |
           python nasdaq-xray/research_preopen_source_audit.py --output "$RUNNER_TEMP/xray_preopen_source_readiness.json"
@@ -53,10 +69,31 @@ jobs:
           assert obj["bigdata_free_credit_availability_proven_by_this_audit"] is False
           print("XRAY_PREOPEN_SOURCE_GUARDS=PASS_NO_ALPHA_NO_REAL_MONEY_NO_LICENSE_INFERENCE")
           PY
+      - name: Current NASDAQ official preopen truth report, never false release
+        run: |
+          python nasdaq-xray/preopen_live_release_gate.py --out "$RUNNER_TEMP/xray_current_preopen.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])/"xray_current_preopen.json"
+          r=json.loads(p.read_text(encoding="utf-8"))
+          assert r["schema"]=="XRAY_CURRENT_PREOPEN_SOURCE_AND_DELIVERY_GATE_V1"
+          assert r["execution"]=="NONE" and r["real_money"]=="NO-GO"
+          assert r["real_device_receipt_verified"] is False
+          assert r["r92_created"] is False and r["c417_primary_created"] is False
+          assert r["alpha_promotion_authorized"] is False
+          assert r["automated_orders_authorized"] is False
+          assert r["no_vendor_bars_or_private_account_data_emitted"] is True
+          if not r["research_source_chain_ready"]:
+              assert r["status"]=="PREOPEN_BLOCKED_NO_GO" and r["blockers"]
+          print("XRAY_PREOPEN_OPERATIONAL_TRUTH="+r["status"])
+          PY
       - name: Upload public operational counts only
         uses: actions/upload-artifact@v4
         with:
           name: xray-preopen-source-readiness-v1
-          path: ${{ runner.temp }}/xray_preopen_source_readiness.json
+          path: |
+            ${{ runner.temp }}/xray_preopen_source_readiness.json
+            ${{ runner.temp }}/xray_current_preopen.json
           retention-days: 14
           if-no-files-found: error
