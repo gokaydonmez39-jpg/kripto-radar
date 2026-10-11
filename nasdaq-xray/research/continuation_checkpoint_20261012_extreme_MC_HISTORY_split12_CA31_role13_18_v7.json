@@ -1,0 +1,162 @@
+{
+  "schema": "XRAY_20261012_EXTREME_P0_MC_HISTORY_SOURCE_LOCALIZED_REAL_CI_V7",
+  "previous_live_head": "809daba6151d74771ab549a716d0ed96d0a8ea06",
+  "asof_et": "2026-10-09",
+  "date_local": "2026-10-12",
+  "repository": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "user_scope": "PERSONAL_NONCOMMERCIAL_READ_ONLY_NASDAQ_RESEARCH_ALERTS_NO_RESALE",
+  "no_trade_write": true,
+  "no_alpha_gates_relaxed": true,
+  "verified_original_CI_evidence": [
+    {
+      "run": 38181275008,
+      "status": "success",
+      "meaning": "12/12 real SEC original 8K/10Q IPO/share-split original docs read, accepted pre-ASOF, numeric split ratio text parsed; hardgate all 12 required",
+      "source_artifact_id": 11717692126
+    },
+    {
+      "run": 38181275015,
+      "status": "success",
+      "meaning": "11/11 real 260 SIP paired raw and split historical bars mathematically reproduce corporate event new:old ratios, 15 negative tests; hardgate all 11 required",
+      "source_artifact_id": 11718495833
+    },
+    {
+      "run": 38181356461,
+      "status": "success",
+      "meaning": "515-scope real Alpaca CA census by symbol 859 events of which 56 non-cash dividends, 228 CA-touched symbols and 37 non-split corporate actions; source-epoch exact",
+      "artifact_id": 11718135779
+    },
+    {
+      "run": 38181517369,
+      "status": "success",
+      "meaning": "exact 497 stocks split into 466 no non-split CA event observed by Alpaca and 31 non-split CA risk, 17 short securities/6 non-split CA. 5 normal/-O negative",
+      "artifact_id": 11717667656,
+      "sha256": "sha256:3a74dc004a0f584f7f02468f770ad3c06b2d9828e41cc2cf44d3cbaeba4072d4"
+    },
+    {
+      "run": 38181849385,
+      "status": "success",
+      "meaning": "31 exact non-split CA event set recoded 13 direct security identity/price rebase vs 18 acquirer-only capital/share issuance, no unknown role drift, normal/-O tests",
+      "artifact_id": 11718067446,
+      "sha256": "sha256:ac2d22399b4de052e81e1ba0c593bcdca7e6a86ba2a681c2ce0d596ef3b95cd6"
+    },
+    {
+      "run": 38179408285,
+      "status": "success",
+      "meaning": "64 stock SEC official accepted PIT shares times Alpaca single session close, 37 issuer arithmetic SHADOW, 27 UNKNOWN, no SEC 429/403",
+      "artifact_id": 11716318884
+    }
+  ],
+  "history_partition": {
+    "scope_price_pass": 514,
+    "QQQ_reference": 1,
+    "full_260_52_observed_stocks": 497,
+    "official_too_young_260_52": 17,
+    "raw_split_11_event_ratio_issuer_doc_sec_12_PIT_and_math_success": 11,
+    "full_stocks_non_split_CA_review_31_source_exact": 31,
+    "full_stocks_without_non_split_CA_event_observed_466": 466,
+    "direct_security_role_13": [
+      "ASND",
+      "CBSH",
+      "CCC",
+      "CMCSA",
+      "DFTX",
+      "ECHO",
+      "FISV",
+      "HON",
+      "INDV",
+      "IRTC",
+      "MIDD",
+      "MRX",
+      "TRI"
+    ],
+    "acquirer_side_mc_cap_table_role_18": [
+      "ASST",
+      "BKR",
+      "BNTX",
+      "CHTR",
+      "CORZ",
+      "GMAB",
+      "HBAN",
+      "IESC",
+      "LGND",
+      "NBIX",
+      "NXST",
+      "RGEN",
+      "RGLD",
+      "SNY",
+      "SOUN",
+      "SWKS",
+      "USAR",
+      "WFRD"
+    ],
+    "roles_unexplained": 0,
+    "actual_independently_proven_NO_CA_for_466": false,
+    "complete_security_identity_per_symbol_PIT_attested": false,
+    "production_canonical_HISTORY_PASS_new_created": 0
+  },
+  "primary_mc": {
+    "full_514_C417_PRIMARY_PASSES": 0,
+    "dispersed_SEC_Alpaca_64_shadow_issuer_arithmetic": 37,
+    "unknown_issuer_class_or_PIT_27": 27,
+    "official_META_GOOGL_SEC_DUAL_CLASS_ACCEPTED_PRE_ASOF": true,
+    "massive_ticker_weightedshares_times_currentprice_same_issuer_multiclass_different_MCAP_not_independent": true,
+    "issuer_paid_data_feed_not_added": true,
+    "third_party_unattended_research_api_rights_independently_documented": false,
+    "C417_successor_formal_authorization": false,
+    "requirements": "Exact symbol-CIK historical listing class, class counts and ADR ratios, filing acceptances before cutoff, issuance/splits/buybacks up to ASOF, independent asof cap witness and approved personal automation source terms."
+  },
+  "canonical_unchanged": {
+    "price_asof": "2026-10-09",
+    "price_pass_count": 514,
+    "price_blob": "6f3f68fff0897d68f200ad3621c51a5071494714",
+    "master_asof": "2026-10-09",
+    "master_pass": 3184,
+    "master_unknown": 12,
+    "master_blob": "828c21436a836b69fe5084387e1c54446c7b5075",
+    "history_asof": "2026-10-07",
+    "history_pass": 460,
+    "history_blob": "28e182225c45c3adf4243e40eb7df7ebdb783884",
+    "terminal_asof": "2026-10-07",
+    "terminal_status": "PARTIAL",
+    "terminal_R92": 0,
+    "terminal_blob": "ea9c41cd1e5971e78d85bf3f620d7f8c4e01034f"
+  },
+  "remaining_hard_GO_blockers": [
+    "C417_FULL_PRIMARY_MC_UNPROVEN",
+    "FULL_497_HISTORY_INDEPENDENT_ISSUER_SECURITY_IDENTITY_AND_NON_SPLIT_CA_CONTINUITY_UNPROVEN",
+    "SOURCE_RIGHTS_DOCUMENTATION_PERSONAL_UNATTENDED_AUTOMATED_API_USE_NOT_SEPARATELY_ATTESTED",
+    "MASTER_12_UNKNOWN",
+    "CANONICAL_HISTORY_TERMINAL_ASOF_STALE",
+    "G9_SOURCE_ENTITLEMENT_ACCOUNT_READ_AND_ACTUAL_DEVICE_DELIVERY_RECEIPT_NOT_PROVEN"
+  ],
+  "rejected_actions": [
+    "SHADOW_TO_PRIMARY_AUTOMATIC_PROMOTION",
+    "STOCK_CLASS_MULTICLASS_TICKER_CAP_FAKE_INDEPENDENT_CAP",
+    "SYNTHETIC_BARS_FOR_17_TOO_YOUNG",
+    "PRICE_DV30_THRESHOLDS_RELAXATION",
+    "TRADING_EXECUTION",
+    "FAKE_R92_AND_GO"
+  ],
+  "max_release": "READ_ONLY_PROVENANCE_SHADOW_RESEARCH",
+  "production_research_signal_GO": false,
+  "real_money_GO": false,
+  "documentation": "Reproducible GitHub Actions exact run IDs and artifacts above; no uploaded raw bars/provider shares",
+  "external_sources": [
+    "https://www.sec.gov/search-filings/edgar-application-programming-interfaces",
+    "https://docs.alpaca.markets/us/reference/stockbars",
+    "https://docs.alpaca.markets/us/docs/market-data-faq"
+  ],
+  "next_focus_order": [
+    "C4.17 formal evidence for issuer share-class PIT and independent cap current 514 scope",
+    "13 direct historical CA cases exact security class identity and 18 acquirer issuer-capital changes",
+    "independent source document CA publishing for 466 no event observed rather than conclude no events",
+    "current canonical history terminal G9 notifications after upstream pass"
+  ]
+}
