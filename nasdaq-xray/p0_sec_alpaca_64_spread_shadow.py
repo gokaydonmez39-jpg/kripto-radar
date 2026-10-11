@@ -45,6 +45,37 @@ def spread(price,master,sec_map):
     require(len(routes)+len(missing)==N,"SEC_MAP_PARTITION_GAP")
     return asof,picks,routes,missing
 
+def shard_price_scope(price,master,sec_map,shard):
+    """Bound all current PRICE symbols to exactly four disjoint slices."""
+    from current_history_source_request import sha256_lines
+    require(type(shard) is int and 0<=shard<4,"INVALID_FULL_SCOPE_SHARD")
+    asof=price.get("asof_et")
+    all_symbols=price.get("pass_symbols")
+    master_symbols=master.get("pass_symbols")
+    require(asof=="2026-10-09" and master.get("asof_et")==asof
+            and type(all_symbols) is list and
+            all_symbols==sorted(set(all_symbols))
+            and len(all_symbols)==price.get("pass_count")==514
+            and sha256_lines(all_symbols)==price.get("pass_hash")
+            and type(master_symbols) is list and
+            set(all_symbols).issubset(set(master_symbols))
+            and all(x.get("unknown_never_pass") is True and
+                    x.get("execution")=="NONE" and
+                    x.get("real_money")=="NO-GO"
+                    for x in (price,master)),
+            "FULL_PRICE_SCOPE_IDENTITY_OR_SAFETY_UNVERIFIED")
+    partitions=[all_symbols[i::4] for i in range(4)]
+    require(sorted(map(len,partitions))==[128,128,129,129]
+            and len(set().union(*(set(x) for x in partitions)))==514
+            and sum(map(len,partitions))==514,
+            "FULL_514_SHARD_UNION_NOT_EXACT")
+    picks=partitions[shard]
+    routes={t:sec_map[t] for t in picks if
+            isinstance(sec_map.get(t),str) and len(sec_map[t])==10 and
+            sec_map[t].isdigit()}
+    missing=[t for t in picks if t not in routes]
+    return asof,picks,routes,missing
+
 def classify(price,master,asof,picks,routes,missing,sip_fetch,sec_fetch,*,expected_count=N):
     outcome={sym:{"status":"UNKNOWN_OFFICIAL_CIK_MAPPING",
                   "above_2b_derived_issuer_shadow":None,
@@ -161,12 +192,25 @@ def selftest():
             fake["production_C417_PRIMARY_MC_created"]==0
             and fake["status_counts"]["UNKNOWN_SEC_DIMENSIONAL_CLASS_OR_PIT_SHARES"]==64,
             "ALL_UNKNOWN_STAYS_UNKNOWN")
-    print("XRAY_PERSONAL_MC_64_COHORT_SELFTEST=PASS_3_POSITIVE_5_NEGATIVE_PYTHON_O_SAFE_NO_PRIMARY")
+    whole=sorted(f"TEST{i:04d}" for i in range(514))
+    big=dict(p,pass_symbols=whole,pass_count=514,
+             pass_hash=sha256_lines(whole))
+    allmap={sym:f"{2000+i:010d}" for i,sym in enumerate(whole)}
+    allshards=[shard_price_scope(big,dict(m,pass_symbols=whole),allmap,k)[1]
+               for k in range(4)]
+    require(sorted(map(len,allshards))==[128,128,129,129]
+            and set().union(*(set(x) for x in allshards))==set(whole),
+            "FULL_514_DISJOINT_PARTITION_SELFTEST")
+    badbig=deepcopy(big);badbig["pass_hash"]="0"*64
+    deny("FULL_514_HASH_CHANGED",lambda:
+         shard_price_scope(badbig,dict(m,pass_symbols=whole),allmap,0))
+    print("XRAY_PERSONAL_MC_64_COHORT_SELFTEST=PASS_4_POSITIVE_6_NEGATIVE_PYTHON_O_SAFE_NO_PRIMARY")
 
 def main():
     ap=argparse.ArgumentParser()
     ap.add_argument("--selftest",action="store_true")
     ap.add_argument("--out",type=Path)
+    ap.add_argument("--full-shard",type=int,choices=[0,1,2,3])
     args=ap.parse_args()
     if args.selftest:return selftest()
     require(args.out is not None,"EXPLICIT_OUTPUT_PATH_REQUIRED")
@@ -180,7 +224,8 @@ def main():
     require(sufficient_delay(asof,dt.datetime.now(dt.timezone.utc)),
             "SIP_HOLDBACK_BEFORE_ASOF_CLOSE")
     mapped=map_ciks(get_json(SEC_MAP,ua))
-    asof,picks,routes,missing=spread(price,master,mapped)
+    asof,picks,routes,missing=(spread(price,master,mapped) if args.full_shard is None
+              else shard_price_scope(price,master,mapped,args.full_shard))
     nextday=(dt.date.fromisoformat(asof)+dt.timedelta(days=1)).isoformat()
     last_call=[0.0]
     def sec_fetch(sym,cik):
@@ -196,7 +241,16 @@ def main():
         return request_batch(symbols,stamp+"T00:00:00Z",
                              nextday+"T00:00:00Z",key,secret,
                              adjustment="raw",asof=stamp)
-    result=classify(price,master,asof,picks,routes,missing,sip_fetch,sec_fetch)
+    result=classify(price,master,asof,picks,routes,missing,sip_fetch,sec_fetch,
+                    expected_count=len(picks))
+    if args.full_shard is not None:
+        result["schema"]="XRAY_PERSONAL_SEC_ALPACA_FULL_514_MC_FOUR_SHARD_SHADOW_V1"
+        result["status"]="SHADOW_EXACT_FULL_514_PARTIAL_SHARD_NO_PRIMARY"
+        result["sampling"]="FULL_514_EXACT_UNION_FOUR_SHARDS"
+        result["shard"]=args.full_shard
+        result["shard_total"]=4
+        result["source_scope_pass_count"]=price["pass_count"]
+        result["full_514_PRIMARY_claim"]=False
     args.out.write_text(json.dumps(result,sort_keys=True,indent=2)+"\n")
     print("XRAY_PERSONAL_MC_64_STATUS="+result["status"])
     print("XRAY_PERSONAL_MC_64_COUNTS="+json.dumps(result["status_counts"],sort_keys=True))
