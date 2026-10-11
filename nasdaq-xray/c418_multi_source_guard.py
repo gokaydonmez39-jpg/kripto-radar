@@ -24,11 +24,12 @@ SCHEMA="XRAY_C418_MULTI_SOURCE_EVIDENCE_V1"
 REPORT="XRAY_C418_MULTI_SOURCE_GUARD_REPORT_V1"
 SHA256=re.compile(r"^[a-f0-9]{64}$")
 SHA1=re.compile(r"^[a-f0-9]{40}$")
-PROVIDERS={"Bigdata","Massive","SEC_EDGAR","NASDAQ","Alpaca","Yahoo_AKShare_Eastmoney"}
+PROVIDERS={"Bigdata","Massive","SEC_EDGAR","NASDAQ","Alpaca","Rallies","Yahoo_AKShare_Eastmoney"}
 ALLOWED_SOURCE_KINDS={
     "Bigdata":{"MC"},
     "Massive":{"MC","PRICE","HISTORY"},
     "Alpaca":{"PRICE","HISTORY"},
+    "Rallies":{"PRICE","HISTORY"},
     "SEC_EDGAR":set(),
     "NASDAQ":set(),
     "Yahoo_AKShare_Eastmoney":{"PRICE","HISTORY"},
@@ -122,6 +123,7 @@ def validate(evidence, grants, policy, profile):
         "NASDAQ":"EXCHANGE_IDENTITY",
         "Massive":"SHADOW_MC_OR_PRICE",
         "Alpaca":"SHADOW_HISTORY_OR_PRICE",
+        "Rallies":"SHADOW_HISTORY_ONLY_ADJUSTMENT_UNVERIFIED",
         "Bigdata":"BLOCKED_EXISTING_PRIMARY",
         "Yahoo_AKShare_Eastmoney":"UNLICENSED_SHADOW",
     }
