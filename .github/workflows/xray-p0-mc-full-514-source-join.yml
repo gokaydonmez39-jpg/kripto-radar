@@ -1,5 +1,10 @@
 name: XRAY P0 514 MC Four-Shard Source Join No GO
 on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/p0_mc_514_four_artifact_source_join.py"
+      - ".github/workflows/xray-p0-mc-full-514-source-join.yml"
   workflow_run:
     workflows: ["XRAY Free Personal MC Exact 514 SEC Alpaca Four Shards"]
     types: [completed]
@@ -9,7 +14,7 @@ permissions:
   actions: read
 jobs:
   join-exact-514:
-    if: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' }}
+    if: ${{ github.event_name == 'push' || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main') }}
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
@@ -19,7 +24,7 @@ jobs:
       - name: Establish four genuine artifacts for the exact finished run
         env:
           GH_TOKEN: ${{ github.token }}
-          UPSTREAM_ID: ${{ github.event.workflow_run.id }}
+          UPSTREAM_ID: ${{ github.event_name == 'push' && '38183058048' || github.event.workflow_run.id }}
         run: |
           set -euo pipefail
           for i in 0 1 2 3; do
@@ -35,7 +40,7 @@ jobs:
         run: python -m pip install --disable-pip-version-check "pandas_market_calendars==5.4.0"
       - name: Verify optimizer-safe exact-set union and no PRIMARY
         env:
-          SOURCE_SHA: ${{ github.event.workflow_run.head_sha }}
+          SOURCE_SHA: ${{ github.event_name == 'push' && '0d40b9577183b6cc6e4e5c6309b35873b2c19d9d' || github.event.workflow_run.head_sha }}
         run: |
           python nasdaq-xray/p0_mc_514_four_artifact_source_join.py \
             --shard0 "$RUNNER_TEMP/shard0/mc514_0.json" \
