@@ -72,7 +72,7 @@ OFFICIAL_SPLIT_TEXT={
   "ASST@2026-02-06":(r"\b1\s*[:/-]\s*20\b",r"\b1\s*[- ]\s*for\s*[- ]\s*20\b"),
   "BKNG@2026-04-06":(r"twenty\s*[- ]\s*five\s*[- ]\s*for\s*[- ]\s*one",r"\b25\s*[- ]\s*for\s*[- ]\s*1\b"),
   "CRWD@2026-07-02":(r"four\s*[- ]\s*for\s*[- ]\s*one",r"\b4\s*[- ]\s*for\s*[- ]\s*1\b"),
-  "HON@2026-06-29":(r"\b1\s*[- ]\s*for\s*[- ]\s*2\b",r"\b1\s*[:/]\s*2\b"),
+  "HON@2026-06-29":(r"\b1\s*[- ]\s*for\s*[- ]\s*2\b",r"\b1\s*[:/]\s*2\b",r"every\s+two\s+shares.{0,230}combined\s+into\s+one\s+share"),
   "IESC@2026-08-24":(r"two\s*[- ]\s*for\s*[- ]\s*one",r"\b2\s*[- ]\s*for\s*[- ]\s*1\b"),
   "KLAC@2026-06-12":(r"ten\s*[- ]\s*to\s*[- ]\s*one",r"ten\s*[- ]\s*for\s*[- ]\s*one",r"\b10\s*[- ]\s*for\s*[- ]\s*1\b"),
   "MNST@2026-08-11":(r"two\s*[- ]\s*for\s*[- ]\s*one",r"\b2\s*[- ]\s*for\s*[- ]\s*1\b"),
