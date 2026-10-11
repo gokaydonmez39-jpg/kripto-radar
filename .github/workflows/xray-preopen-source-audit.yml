@@ -124,6 +124,15 @@ jobs:
           assert r["alpha_promotion_authorized"] is False
           assert r["automated_orders_authorized"] is False
           assert r["no_vendor_bars_or_private_account_data_emitted"] is True
+          assert isinstance(r["candidate_local_preopen_blockers"], list)
+          assert r["candidate_local_research_preconditions_attested"] is (not bool(r["candidate_local_preopen_blockers"]))
+          if r["candidate_local_research_preconditions_attested"]:
+              assert r["registered_candidate_count"] > 0
+              assert r["candidate_local_preopen_status"] == "CURRENT_R92_LOCAL_PRECONDITIONS_ONLY_NO_DEVICE_RECEIPT"
+              assert r["real_device_receipt_verified"] is False
+          else:
+              assert r["candidate_local_preopen_status"] == "LOCAL_RESEARCH_BLOCKED_NO_GO"
+              assert r["candidate_local_preopen_blockers"]
           if not r["research_source_chain_ready"]:
               assert r["status"]=="PREOPEN_BLOCKED_NO_GO" and r["blockers"]
           print("XRAY_PREOPEN_OPERATIONAL_TRUTH="+r["status"])
