@@ -61,7 +61,7 @@ jobs:
           assert j["sample_count"]==source["pass_count"]
           assert len(j["statuses"])==source["pass_count"]
           assert set(j["statuses"])==set(source["pass_symbols"])
-          expected=hashlib.sha256(("\\n".join(sorted(source["pass_symbols"]))+"\\n").encode()).hexdigest()
+          expected=hashlib.sha256(("\n".join(sorted(source["pass_symbols"]))+"\n").encode()).hexdigest()
           assert j["sample_scope_sha256"]==expected
           assert j["batch_offset"]==0 and j["batch_limit"]==source["pass_count"]
           assert j["c417_primary_mc_count"]==0 and j["market_cap_calculated"] is False
