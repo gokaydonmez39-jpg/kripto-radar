@@ -28,32 +28,67 @@ def sha(name):
         return None
 
 def mc_exact(mc,price,price_sha):
-    """Do NOT accept WATCH, missing provenance or incomplete symbol partitions."""
-    symbols=set(price.get("pass_symbols") or [])
-    statuses={
-       "MC_PASS_PRIMARY":set(mc.get("primary_pass_symbols") or []),
-       "MC_FAIL_PRIMARY":set(mc.get("primary_fail_symbols") or []),
-       "MC_PASS_FALLBACK_WATCH":set(mc.get("fallback_watch_symbols") or []),
-       "MC_FAIL_FALLBACK_TWO_SOURCE":set(mc.get("fallback_fail_symbols") or mc.get("fallback_two_source_fail_symbols") or []),
-       "MC_UNKNOWN":set(mc.get("unknown_symbols") or [])}
+    """Verify the exact MC partition, not merely deduplicated set counts."""
+    if not isinstance(mc,dict) or not isinstance(price,dict):
+        return False
+    def exact_symbols(values):
+        return (type(values) is list
+                and all(type(sym) is str and sym and sym==sym.strip()
+                        for sym in values)
+                and len(values)==len(set(values)))
+    price_raw=price.get("pass_symbols")
+    input_raw=mc.get("input_pass_symbols")
+    results=mc.get("results")
+    if (not exact_symbols(price_raw) or not exact_symbols(input_raw)
+            or not isinstance(results,dict)
+            or any(not isinstance(v,dict) for v in results.values())):
+        return False
+    first=mc.get("fallback_fail_symbols",[])
+    second=mc.get("fallback_two_source_fail_symbols",[])
+    if not exact_symbols(first) or not exact_symbols(second):
+        return False
+    # Native bridges may include BOTH old/new fallback-fail aliases.
+    # A contradictory copy cannot be ignored by selecting the first key.
+    if ("fallback_fail_symbols" in mc
+            and "fallback_two_source_fail_symbols" in mc
+            and set(first)!=set(second)):
+        return False
+    fail_raw=first if "fallback_fail_symbols" in mc else second
+    raw_groups={
+       "MC_PASS_PRIMARY":mc.get("primary_pass_symbols",[]),
+       "MC_FAIL_PRIMARY":mc.get("primary_fail_symbols",[]),
+       "MC_PASS_FALLBACK_WATCH":mc.get("fallback_watch_symbols",[]),
+       "MC_FAIL_FALLBACK_TWO_SOURCE":fail_raw,
+       "MC_UNKNOWN":mc.get("unknown_symbols",[])}
+    if any(not exact_symbols(raw) for raw in raw_groups.values()):
+        return False
+    symbols=set(price_raw)
+    statuses={group:set(raw) for group,raw in raw_groups.items()}
     if not (mc.get("asof_et")==price.get("asof_et")
             and mc.get("input_blob_sha")==price_sha
             and mc.get("input_pass_hash")==price.get("pass_hash")
             and mc.get("policy_hash")==POLICY
             and mc.get("execution")=="NONE" and mc.get("real_money")=="NO-GO"
             and mc.get("unknown_never_pass") is True
-            and set(mc.get("input_pass_symbols") or [])==symbols
-            and len(mc.get("input_pass_symbols") or [])==len(symbols)
-            and set(mc.get("results") or {})==symbols):
+            and set(input_raw)==symbols
+            and len(input_raw)==len(symbols)
+            and set(results)==symbols):
         return False
     seen=set()
     for group, group_symbols in statuses.items():
         if seen & group_symbols:return False
         seen |= group_symbols
-        if any((mc["results"][s] or {}).get("status") != group for s in group_symbols):
+        if any((results[s] or {}).get("status") != group for s in group_symbols):
             return False
-    counts=mc.get("counts") or {}
-    if any(int(counts.get(k,-1))!=len(v) for k,v in statuses.items()):
+    counts=mc.get("counts")
+    if not isinstance(counts,dict):return False
+    if any(type(counts.get(k)) is not int or counts[k]!=len(v)
+           for k,v in raw_groups.items()):
+        return False
+    # TOTAL is optional in early source schemas, but must be an exact
+    # integer equal to the authoritative PRICE PASS scope when present.
+    if ("TOTAL" in counts
+            and (type(counts["TOTAL"]) is not int or counts["TOTAL"]!=len(symbols))):
         return False
     # Independent row-level semantics: a primary label and exact symbol-set
     # equality cannot substitute for an XNAS issuer or C4.17 USD cap value.
@@ -418,6 +453,23 @@ def selftest():
                   "B":{"status":"MC_PASS_FALLBACK_WATCH","r92_eligible":False}}}
     assert mc_exact(mc,price,"P")
     from copy import deepcopy
+    # RED: set() deduplication and int() coercion cannot prove the exact
+    # PRIMARY partition and counters. Native C4.17 bridges preserve lists and
+    # exact integer counts; aliases must not disagree about FAIL membership.
+    for label,edit in (
+        ("DUPLICATE_PRIMARY_MEMBER",lambda x:x["primary_pass_symbols"].append("A")),
+        ("PRIMARY_COUNT_STRING",lambda x:x["counts"].update(MC_PASS_PRIMARY="1")),
+        ("PRIMARY_COUNT_FLOAT",lambda x:x["counts"].update(MC_PASS_PRIMARY=1.9)),
+        ("PRIMARY_COUNT_BOOLEAN",lambda x:x["counts"].update(MC_PASS_PRIMARY=True)),
+        ("TOTAL_WRONG",lambda x:x["counts"].update(TOTAL=99)),
+        ("TOTAL_WRONG_TYPE",lambda x:x["counts"].update(TOTAL="2")),
+        ("PRIMARY_GROUP_NOT_LIST",lambda x:x.update(primary_pass_symbols="A")),
+    ):
+        bad=deepcopy(mc)
+        edit(bad)
+        assert not mc_exact(bad,price,"P"),("UNTRUSTWORTHY_MC_PARTITION_ACCEPTED",label)
+    bad_price=dict(price,pass_symbols=["A","A","B"])
+    assert not mc_exact(mc,bad_price,"P"),"DUPLICATED_PRICE_PROOF_SCOPE_ACCEPTED"
     for change in (
        lambda x:x.update(input_blob_sha="OTHER"),
        lambda x:x.update(asof_et="2026-10-07"),
@@ -465,6 +517,16 @@ def selftest():
     native["counts"]["MC_FAIL_PRIMARY"]=1
     native_price=dict(price,pass_symbols=["A","B","C","D","E"])
     assert mc_exact(native,native_price,"P"),"NEGATIVE_NATIVE_SCHEMA_FALSE_REJECTION"
+    conflicting=deepcopy(native)
+    conflicting["fallback_two_source_fail_symbols"]=["A"]
+    assert not mc_exact(conflicting,native_price,"P"),"CONFLICTING_FALLBACK_ALIAS_SILENTLY_ACCEPTED"
+    duplicated=deepcopy(native)
+    duplicated["fallback_fail_symbols"]=["C","C"]
+    assert not mc_exact(duplicated,native_price,"P"),"DUPLICATE_NEGATIVE_GROUP_ACCEPTED"
+    consistent=deepcopy(native)
+    consistent["fallback_two_source_fail_symbols"]=["C"]
+    assert mc_exact(consistent,native_price,"P"),"MATCHING_NATIVE_ALIAS_FALSE_REJECTED"
+
     for sym in ("C","D","E"):
         forged=deepcopy(native)
         forged["results"][sym]["r92_eligible"]=True
