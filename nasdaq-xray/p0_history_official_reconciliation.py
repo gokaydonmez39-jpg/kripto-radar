@@ -89,7 +89,8 @@ def audit(price,master,alpaca,registry,pbytes,mbytes,*,expected_asof=None):
     counts=alpaca.get("counts")
     missing=alpaca.get("unverified_symbols")
     require(isinstance(counts,dict) and isinstance(missing,dict)
-            and set(counts)=={SUCCESS,SHORT}
+            and set(counts)=={SUCCESS,SHORT,"UNCHECKED_DUE_TO_TRANSPORT"}
+            and counts.get("UNCHECKED_DUE_TO_TRANSPORT")==0
             and set(missing).issubset(set(target))
             and all(v==SHORT for v in missing.values())
             and counts.get(SHORT)==len(missing)
@@ -185,7 +186,7 @@ def selftest():
          "transport_error_class":None,"api_feed":"sip","api_timeframe":"1Day",
          "api_adjustment":"raw","expected_daily_sessions":260,
          "required_completed_week_closes":52,
-         "counts":{SUCCESS:2,SHORT:1},"unverified_symbols":{"TWO":SHORT},
+         "counts":{SUCCESS:2,SHORT:1,"UNCHECKED_DUE_TO_TRANSPORT":0},"unverified_symbols":{"TWO":SHORT},
          "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
          "vendor_ohlcv_in_artifact":False,"vendor_raw_bars_persisted":False,
          "canonical_history_pass_created":0,"primary_mc_pass_created":0,
@@ -213,6 +214,7 @@ def selftest():
        ("api_adjustment","split"),("expected_daily_sessions",259),
        ("required_completed_week_closes",51),
        ("counts",{SUCCESS:3,SHORT:0}),
+       ("counts",{SUCCESS:2,SHORT:1,"UNCHECKED_DUE_TO_TRANSPORT":1}),
        ("unverified_symbols",{}),
        ("vendor_raw_bars_persisted",True),
        ("current_c417_history_primary_authority",True),
@@ -233,7 +235,7 @@ def selftest():
     red("RAW_PRICE_BLOB_CHANGED",pp=pb+b"tamper")
     variant=copy.deepcopy(master);variant["pass_symbols"]=["TEST"]
     red("MASTER_MISSING_PRICE_SYMBOL",m=variant)
-    print("XRAY_P0_HISTORY_OFFICIAL_RECONCILIATION=PASS_1_SYNTHETIC_POSITIVE_28_NEGATIVE_PYTHON_O_SAFE_NO_AUTHORITY")
+    print("XRAY_P0_HISTORY_OFFICIAL_RECONCILIATION=PASS_1_SYNTHETIC_POSITIVE_29_NEGATIVE_PYTHON_O_SAFE_NO_AUTHORITY")
 
 def main():
     parser=argparse.ArgumentParser()
