@@ -60,10 +60,19 @@ def classify(now, runs):
                       and (now-timestamp(r["created_at"])).total_seconds() > 3300]
     success_age = (now-timestamp(success["created_at"])).total_seconds() if success else None
     last_age = (now-timestamp(latest["created_at"])).total_seconds() if latest else None
-    if success_age is not None and -60 <= success_age <= 4500:
-        decision = "FRESH_ROOT_SUCCESS"
-    elif active:
+    # Newer active/failed runs take precedence over an older green job.
+    # Otherwise a recent SUCCESS can conceal the last root's failure, leaving
+    # unattended recovery incorrectly classified as healthy for up to 4500s.
+    if active:
         decision = "ACTIVE_ROOT_SUPPRESS"
+    elif (latest is not None and latest.get("status")=="completed"
+          and latest.get("conclusion")!="success"):
+        if last_age is not None and -60 <= last_age < 1800:
+            decision = "RECENT_FAILED_ROOT_COOLDOWN"
+        else:
+            decision = "STALE_ROOT_ELIGIBLE"
+    elif success_age is not None and -60 <= success_age <= 4500:
+        decision = "FRESH_ROOT_SUCCESS"
     elif last_age is not None and -60 <= last_age < 1800:
         decision = "RECENT_ROOT_COOLDOWN"
     else:
@@ -184,7 +193,27 @@ def selftest():
     zombie=[r(8,"2026-10-08T08:00:00Z","in_progress")]+stale
     assert classify(now,zombie)["decision"]=="STALE_ROOT_ELIGIBLE"
     assert classify(now,zombie)["expired_active_root_ids"]==[8]
-    assert classify(now,cooldown)["decision"]=="RECENT_ROOT_COOLDOWN"
+    assert classify(now,cooldown)["decision"]=="RECENT_FAILED_ROOT_COOLDOWN"
+    # A red run created AFTER an earlier green root is NOT healthy.
+    green_earlier=r(100,"2026-10-08T10:10:00Z","completed","success")
+    failed_newer=r(101,"2026-10-08T10:40:00Z","completed","failure")
+    recent_failure=classify(now,[green_earlier,failed_newer])
+    assert recent_failure["decision"]=="RECENT_FAILED_ROOT_COOLDOWN"
+    assert not recent_failure["dispatch_allowed"]
+    # After the bounded failure cooldown, recovery is allowed even if a
+    # preceding green SUCCESS has not quite reached its 4500-second TTL.
+    now_later=dt.datetime(2026,10,8,11,11,tzinfo=UTC)
+    green_inside_ttl=r(102,"2026-10-08T10:01:00Z","completed","success")
+    failed_outside_cooldown=r(103,"2026-10-08T10:40:00Z","completed","failure")
+    failed_recovery=classify(now_later,[green_inside_ttl,failed_outside_cooldown])
+    assert failed_recovery["decision"]=="STALE_ROOT_ELIGIBLE"
+    assert failed_recovery["dispatch_allowed"]
+    assert two_read_authorized([green_inside_ttl,failed_outside_cooldown],
+        [green_inside_ttl,failed_outside_cooldown],"a"*40,"a"*40,now_later)[0]
+    # Pending successor takes precedence over a previous green success.
+    active_after_green=r(104,"2026-10-08T10:55:00Z","queued")
+    assert classify(now,[green_earlier,active_after_green])["decision"]=="ACTIVE_ROOT_SUPPRESS"
+    # Monday active root has precedence even after weekend no-compute green.
     assert classify(dt.datetime(2026,10,10,11,tzinfo=UTC),stale)["decision"]=="WEEKEND_OBSERVE_ONLY"
     # Monday 00:05 EDT.  Sunday 23:59 EDT push returned green, but its
     # root data-plane compute was explicitly SKIPPED by weekend quota gate.
