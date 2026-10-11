@@ -15,6 +15,7 @@ import re
 import urllib.error
 import urllib.request
 from pathlib import Path
+from functools import lru_cache
 
 DEFAULT_ASOF="2026-10-08"
 CIK="0000320193"  # Apple: transport canary, not a real trading candidate
@@ -65,6 +66,7 @@ def accession_acceptance_index(sub: dict) -> dict:
         idx[acc]={"form":form,"filed":filed,"accepted_at":stamp}
     return idx
 
+@lru_cache(maxsize=512)
 def official_nasdaq_close_utc(asof: str) -> dt.datetime:
     """Official regular-session close, including 13:00 ET half days.
 
@@ -72,7 +74,6 @@ def official_nasdaq_close_utc(asof: str) -> dt.datetime:
     share-vintage PIT acceptance; there is no 16:00 fallback.
     """
     import pandas_market_calendars as mcal
-    from functools import lru_cache
     # The calendar library resolves exchange holidays and early closes.
     try:
         day=dt.date.fromisoformat(asof)
