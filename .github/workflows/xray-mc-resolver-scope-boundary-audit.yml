@@ -1,0 +1,62 @@
+name: XRAY MC Resolver Scope Boundary Real 553-vs-3184 Regression
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/build_mc_provenance_rebind.py"
+      - "nasdaq-xray/tests/test_resolver_mc_scope_boundary_20261012.py"
+      - ".github/workflows/xray-mc-resolver-scope-boundary-audit.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          ref: ${{ github.sha }}
+      - name: Verify exact triggering commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          echo "XRAY_SCOPE_SOURCE_SHA=EXACT_TRIGGER"
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.12"
+      - name: Syntax and preexisting MC successor settlement selftests
+        run: |
+          python -m py_compile nasdaq-xray/build_mc_provenance_rebind.py
+          python -m py_compile nasdaq-xray/tests/test_resolver_mc_scope_boundary_20261012.py
+          python nasdaq-xray/build_mc_provenance_rebind.py --selftest
+      - name: Independent exact immutable 2026-10-09 v1-v2 proof
+        run: |
+          python nasdaq-xray/tests/test_resolver_mc_scope_boundary_20261012.py --out "$RUNNER_TEMP/xray_real_resolver_scope_boundary.json"
+          python -O nasdaq-xray/tests/test_resolver_mc_scope_boundary_20261012.py
+      - name: Verify read-only no GO claims in evidence
+        run: |
+          python - <<'PY'
+          import json,os,pathlib
+          j=json.loads((pathlib.Path(os.environ["RUNNER_TEMP"])/"xray_real_resolver_scope_boundary.json").read_text())
+          if not (j["schema"]=="XRAY_MC_RESOLVER_SCOPE_REGRESSION_V1"
+                  and j["real_full_symbol_count"]==3184 and j["real_partial_symbol_count"]==553
+                  and j["partial_hash_equals_full_queue_hash"] is True
+                  and j["partial_is_full_mc_handoff"] is False
+                  and j["partial_is_settlement_only"] is True
+                  and j["full_is_exact_mc_handoff"] is True
+                  and j["negative_cases"]>=14
+                  and j["mc_primary_measurements_created"]==0
+                  and j["r92_created"] is False and j["go"] is False
+                  and j["execution"]=="NONE" and j["real_money"]=="NO-GO"):
+              raise SystemExit("XRAY_MC_RESOLVER_SCOPE_BOUNDED_EVIDENCE_FAILED")
+          print("XRAY_REAL_MC_RESOLVER_SCOPE_BUG_REPAIRED_REGRESSION=PASS")
+          PY
+      - name: Upload independently inspectable source-proof receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: xray-mc-resolver-scope-boundary-20261012
+          path: ${{ runner.temp }}/xray_real_resolver_scope_boundary.json
+          retention-days: 30
+          if-no-files-found: error
