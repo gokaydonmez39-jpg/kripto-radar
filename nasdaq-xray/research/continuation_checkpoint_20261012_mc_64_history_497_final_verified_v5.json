@@ -1,0 +1,119 @@
+{
+  "schema": "XRAY_P0_PERSONAL_SEC_ALPACA_MC_HISTORY_FINAL_LIVE_VERIFIED_V5",
+  "live_main_before_checkpoint": "f0b2750a2f3bfc1ab598409b5fe71b79c96048a4",
+  "canonical_asof_et": "2026-10-09",
+  "asof_istanbul_date": "2026-10-12",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "personal_research_only": true,
+  "external_distributor_or_trade_write": false,
+  "zero_paid_data_subscription_added": true,
+  "no_alpha_threshold_relaxation": true,
+  "current_canonical": {
+    "price_pass_count": 514,
+    "price_git_blob_sha": "6f3f68fff0897d68f200ad3621c51a5071494714",
+    "master_git_blob_sha": "828c21436a836b69fe5084387e1c54446c7b5075",
+    "canonical_history_asof_et": "2026-10-07",
+    "canonical_history_pass_count": 460,
+    "canonical_history_blob_sha": "28e182225c45c3adf4243e40eb7df7ebdb783884",
+    "terminal_asof_et": "2026-10-07",
+    "terminal_status": "PARTIAL",
+    "terminal_r92_candidates": 0,
+    "terminal_blob_sha": "ea9c41cd1e5971e78d85bf3f620d7f8c4e01034f"
+  },
+  "p0_MC": {
+    "CI_runs": [
+      {
+        "id": 38178236414,
+        "cohort": 8,
+        "sec_alpaca_arithmetic_shadow": 6,
+        "unknown": 2,
+        "status": "success"
+      },
+      {
+        "id": 38179408285,
+        "cohort": 64,
+        "sec_alpaca_arithmetic_shadow": 37,
+        "unknown": 27,
+        "status": "success"
+      },
+      {
+        "id": 38179099708,
+        "SEC_multiclass_witnesses": 2,
+        "status": "success"
+      },
+      {
+        "id": 38179937751,
+        "MC_multiclass_vendor_ticker_not_independent": true,
+        "status": "success",
+        "tests": "2_POSITIVE_9_NEGATIVE_PYTHON_AND_PYTHON_O"
+      }
+    ],
+    "unknown_27_sec_reason_partition": {
+      "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION": 8,
+      "NO_SEC_DEI_OR_GAAP_SHARES_FACT": 8,
+      "NO_DEI_BUT_GAAP_SHARES_AVAILABLE_CLASS_UNRESOLVED": 7,
+      "NO_FRESH_ACCEPTANCE_BOUND_SINGLE_ENTITY_SHARES": 4
+    },
+    "public_vendor_share_prices_and_mc_persisted": false,
+    "Massive_vs_Alpaca_math_probes_20261009": [
+      "AAPL",
+      "META",
+      "GOOGL"
+    ],
+    "formula_parity_3_of_3": true,
+    "META_SEC_Massive_two_class_share_aggregate_exact_in_interactive_test": true,
+    "GOOGL_SEC_million_rounded_class_aggregate_near_massive_weighted_shares": true,
+    "GOOG_and_GOOGL_same_issuer_vendor_ticker_marketcap_diff_percent_approx": 1.08,
+    "vendor_PIT_independent": false,
+    "independent_marketcap_issuer_valuation_verified": false,
+    "official_issuer_CA_and_postfiling_shares_exact_asof_verified": false,
+    "current_C417_PRIMARY_created": 0
+  },
+  "p0_HISTORY": {
+    "run_515_raw_split": 38178676524,
+    "run_515_CA": 38178327791,
+    "run_11_split_CA": 38178886981,
+    "run_four_witness": 38179222648,
+    "all_CI_conclusions": "success",
+    "scope_stocks": 514,
+    "full_260_52_stock_observed": 497,
+    "split_restated_with_CA_event": 11,
+    "no_split_restatement": 486,
+    "official_young": 17,
+    "QQQ_reference_complete": true,
+    "extra_unexplained": 0,
+    "symbol_mapping_ASOF_explicit": "2026-10-09",
+    "full_vendor_raw_prices_persisted": false,
+    "same_vendor_split_event_correlated": true,
+    "independent_SEC_class_CA_pit_and_publisher_time_verified": false,
+    "current_production_canonical_HISTORY_pass_created": 0
+  },
+  "completed_files": [
+    "nasdaq-xray/p0_sec_alpaca_64_spread_shadow.py",
+    "nasdaq-xray/p0_history_four_witness_guard.py",
+    "nasdaq-xray/p0_mc_multiclass_vendor_nonindependence.py",
+    "nasdaq-xray/p0_sec_dualclass_pit_shadow.py",
+    "nasdaq-xray/p0_ca_split_restatement_bridge.py",
+    "nasdaq-xray/p0_alpaca_515_raw_split_shadow.py"
+  ],
+  "known_true_remaining_blockers": [
+    "C417_PRIMARY_MC_REQUIRES_ACCEPTED_ASOF_ISSUER_CLASS_ISSUANCE_SPLIT_PLUS_INDEPENDENT_CAP_PROOF_0_514",
+    "TICKER_REFERENCE_MARKETCAP_FORMULA_NOT_INDEPENDENT_MCAP_SOURCE",
+    "CANONICAL_HISTORY_NOT_CURRENT_2026_10_09_AND_NO_ISSUER_INDEPENDENT_CA_PIT",
+    "PERSONAL_API_AUTOMATED_NONDISTRIBUTION_RIGHTS_MUST_NOT_BE_INFERRED_FROM_API_RESPONSE_ALONE",
+    "LATEST_CANONICAL_TERMINAL_STALE_2026_10_07_AND_R92_ZERO",
+    "G9_AND_ACCOUNT_DELIVERY_REQUIRE_SEPARATE_AUTHORITIES"
+  ],
+  "research_go_status": "SHADOW_TECHNICAL_EVIDENCE_VERIFIED_PRODUCTION_GO_BLOCKED",
+  "no_fake_GO": true,
+  "source_official_docs": [
+    "https://docs.alpaca.markets/us/reference/stockbars",
+    "https://massive.com/docs/rest/forex/tickers/ticker-overview?auth=signup",
+    "https://massive.com/knowledge-base/article/does-massive-provide-the-filing-date-for-any-financial-reports"
+  ],
+  "status_note": "CI success validates research program and counts, not production MC/HISTORY PASS nor legal rights."
+}
