@@ -39,6 +39,26 @@
       "role": "UNLICENSED_SHADOW",
       "production_eligible": false,
       "use": "best effort source with independent rights UNKNOWN"
+    },
+    "Rallies": {
+      "role": "SHADOW_HISTORY_ONLY_ADJUSTMENT_UNVERIFIED",
+      "production_eligible": false,
+      "observed_live": "2026-10-11_INTERACTIVE_CONNECTED_15_SYMBOLS_300_DAILY_ROWS_EACH",
+      "endpoint": "mcp__Rallies__get_price_from_date_range",
+      "source_docs": "https://rallies.ai/api-docs",
+      "observations": "300 date scoped OHLCV rows per 15 symbols including QQQ; 160 fractional volumes for 14 checked examples since 2026-02-23; response lacks adjustment/feed metadata; spot checked 2026-10-09 daily bulk consistent with range but not independent",
+      "known_gaps": [
+        "NO_CONFIRMED_UNATTENDED_GITHUB_API_PATH",
+        "NO_AUTOMATED_NONDISPLAY_RETENTION_RIGHTS",
+        "VOLUME_FRACTIONAL_FROM_2026_02_23",
+        "NO_EXPLICIT_RTH_FEED_SCOPE",
+        "NO_ADJUSTMENT_FACTORS",
+        "NO_INDEPENDENT_260x52_VALIDATED_CURRENT_PRICE_SET",
+        "NO_RAW_DATA_IN_PUBLIC_REPOSITORY"
+      ],
+      "usage": "DIAGNOSTIC_ONLY_FAIL_CLOSED; NO_DV30_NO_C417_HISTORY_PASS_NO_MC_PRIMARY_NO_R92",
+      "no_secret_in_repo": true,
+      "activation": "NOT_ACTIVATED"
     }
   },
   "independent_sources_min_for_mc_diagnostic": 2,
