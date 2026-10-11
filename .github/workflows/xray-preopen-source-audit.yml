@@ -118,6 +118,8 @@ jobs:
           assert j["schema"]=="XRAY_MONDAY_LIVE_ACTIONS_EXECUTION_WITNESS_V1"
           assert j["main_stable_during_observation"] is True
           assert len(j["execution_witnesses"])==17
+          assert len(j["supplemental_scheduled_witnesses"])==7
+          assert len(j["workflow_inventory"]["supplemental"])==7
           assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
           assert not j["alpha_authority"] and not j["real_user_device_receipt_attested"]
           print("XRAY_MONDAY_LIVE_ACTIONS_REPORT=RECORDED_NOT_PROVIDER_OR_DEVICE_RELEASE")
