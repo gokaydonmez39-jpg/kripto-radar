@@ -25,5 +25,15 @@
   "current_terminal_completed_attested": false,
   "notification_device_receipt_attested": false,
   "final_production_go_claimed": false,
-  "disclaimer": "Operational research monitoring start only. Any WATCH or CI success is NOT an AL signal. NO AL without exact-source verified release."
+  "disclaimer": "Operational research monitoring start only. Any WATCH or CI success is NOT an AL signal. NO AL without exact-source verified release.",
+  "explicit_foreground_start": {
+    "requested_at_utc": "2026-10-11T23:43:49.364Z",
+    "requested_by": "USER_EXPLICIT_20261012_START",
+    "launch_type": "EXISTING_APPROVED_RESEARCH_ONLY_WORKFLOWS",
+    "request_sequence": 1,
+    "source_preimage_blob_sha": "a0fdcf9d922b2a69de385b67409bdeaf6a664a2a",
+    "full_production_go_authorized": false,
+    "trade_execution_authorized": false,
+    "delivery_receipt_inferred": false
+  }
 }
