@@ -88,8 +88,14 @@ def inspect_events(batch,first,asof,fetch):
                          row.get(key) in role_sets}
                 require(bool(related),"CA_EVENT_WITHOUT_REQUESTED_PARTY")
                 if group in EXCLUDED:continue
-                for role,sym in related.items():
+                # A single event can list the SAME symbol both as old and
+                # new ticker or both acquiree/acquirer. The original 515
+                # census counted once per event+symbol, NOT once per role.
+                # Preserve every role while counting each affected security
+                # only once, otherwise the 31 exact source joins drift.
+                for sym in set(related.values()):
                     type_counts[sym][group]+=1
+                for role,sym in related.items():
                     if role in DIRECT:role_sets[sym].add("DIRECT")
                     elif role in ACQUIRER:role_sets[sym].add("ACQUIRER")
                     else:raise ValueError("XRAY_CA_ROLE_31:UNKNOWN_EVENT_SUBJECT_ROLE")
@@ -159,6 +165,14 @@ def selftest():
                 "next_page_token":None}
     counts,roles=inspect_events(["AA","BB","CC","DD"],"2025-09-29",
                                 "2026-10-09",fetch)
+    duplicate_role_event={"id":"test-E","old_symbol":"BB","new_symbol":"BB",
+                          "process_date":date}
+    repeated=inspect_events(["BB"],"2025-09-29","2026-10-09",lambda *a:
+                  {"corporate_actions":{"name_changes":[duplicate_role_event]},
+                   "next_page_token":None})
+    require(repeated[0]["BB"]=={"name_changes":1}
+            and repeated[1]["BB"]=={"DIRECT"},
+            "SAME_SYMBOL_MULTI_ROLE_EVENT_MUST_COUNT_ONCE")
     require(roles["AA"]=={"ACQUIRER"} and
             roles["BB"]==roles["CC"]==roles["DD"]=={"DIRECT"} and
             counts["AA"]=={"stock_mergers":1} and
@@ -176,7 +190,7 @@ def selftest():
     reject("DUPLICATE_EVENT",{"corporate_actions":{"stock_mergers":[
           rows[0][1],rows[0][1]]}})
     reject("EMPTY_SCHEMA",{})
-    print("XRAY_P0_CA_ROLE_31_SELFTEST=PASS_1_POSITIVE_5_NEGATIVE_PYTHON_O_SAFE")
+    print("XRAY_P0_CA_ROLE_31_SELFTEST=PASS_2_POSITIVE_5_NEGATIVE_PYTHON_O_SAFE")
 
 def main():
     ap=argparse.ArgumentParser()
