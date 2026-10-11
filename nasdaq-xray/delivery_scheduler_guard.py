@@ -102,6 +102,11 @@ def classify_active(now_utc, runs, grace_seconds, recovery_successes=None):
     return "CLEAR"
 
 def evaluate_readiness(now_utc,contract,root_kick,final_kick,root_runs,final_runs):
+    # Exclude foreign branch CI from canonical root/final recovery authority.
+    if (not isinstance(root_runs,list) or not isinstance(final_runs,list)
+        or any(not isinstance(r,dict) or r.get("head_branch")!="main"
+               for r in root_runs+final_runs)):
+        return False,"ACTIONS_MAIN_BRANCH_RUN_IDENTITY_UNVERIFIED"
     if now_utc.tzinfo is None:
         now_utc=now_utc.replace(tzinfo=timezone.utc)
     now_utc=now_utc.astimezone(timezone.utc)
@@ -160,7 +165,7 @@ def evaluate_readiness(now_utc,contract,root_kick,final_kick,root_runs,final_run
     return True,"PASS"
 
 def _fetch_runs(repo,workflow,token):
-    url=f"https://api.github.com/repos/{repo}/actions/workflows/{workflow}/runs?per_page=50"
+    url=f"https://api.github.com/repos/{repo}/actions/workflows/{workflow}/runs?per_page=50&branch=main"
     req=urllib.request.Request(url,headers={
         "Accept":"application/vnd.github+json",
         "Authorization":f"Bearer {token}",
@@ -169,7 +174,10 @@ def _fetch_runs(repo,workflow,token):
     })
     with urllib.request.urlopen(req,timeout=20) as resp:
         data=json.load(resp)
-    return data.get("workflow_runs") or []
+    rows=data.get("workflow_runs")
+    if not isinstance(rows,list):
+        raise RuntimeError("ACTIONS_WORKFLOW_RUNS_NOT_LIST")
+    return rows
 
 def main():
     try:
