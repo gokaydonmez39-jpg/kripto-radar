@@ -30,7 +30,7 @@ jobs:
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/roles" "$RUNNER_TEMP/quality"
           gh run download 38181849385 -R "${{ github.repository }}" \
-            -n xray-p0-31-ca-issuer-roles-reconciled-shadow -D "$RUNNER_TEMP/roles"
+            -n xray-31-ca-direct13-acquirer18-sha-bound-shadow -D "$RUNNER_TEMP/roles"
           gh run download 38182564771 -R "${{ github.repository }}" \
             -n xray-515-ca-complete-all-data-quality-shadow -D "$RUNNER_TEMP/quality"
           test -s "$RUNNER_TEMP/roles/xray_history_ca_31_roles.json"
