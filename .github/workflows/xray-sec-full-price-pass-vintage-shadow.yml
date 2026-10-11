@@ -17,8 +17,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.sha }}
           fetch-depth: 1
+      - name: Prove source snapshot is exact workflow invocation SHA
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          echo "XRAY_SEC_FULL_SCOPE_TRIGGER_SHA=PASS_EXACT"
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
