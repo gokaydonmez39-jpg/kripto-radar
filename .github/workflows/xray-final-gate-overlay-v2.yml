@@ -88,23 +88,58 @@ jobs:
           })
           PY
 
-      - name: Commit overlay if head is still current
+      - name: Commit overlay with exact current main readback (fail closed)
         shell: bash
         run: |
           set -euo pipefail
           git config user.name "xray-control-bot"
           git config user.email "xray-control-bot@users.noreply.github.com"
-          git add nasdaq-xray/canonical_current_final_gate_overlay.json
-          if git diff --cached --quiet; then
-            echo "XRAY_OVERLAY=NO_CHANGE"
-            exit 0
-          fi
-          git commit -m "chore(xray): refresh final-gate overlay v2 [skip ci]"
-          if git push origin HEAD:main; then
-            echo "XRAY_OVERLAY=PASS"
-          else
-            echo "XRAY_OVERLAY=RACE_DEFERRED_TO_NEWER_RUN"
-            exit 0
-          fi
+          # A CI green result is not proof of Git persistence. This retries a
+          # moved main from fresh source inputs, without force-pushing.
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            python nasdaq-xray/build_final_gate_overlay_v2.py
+            python - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          root=Path("nasdaq-xray")
+          output=json.loads((root/"canonical_current_final_gate_overlay.json").read_text())
+          def sha(path):
+              data=path.read_bytes()
+              return hashlib.sha1(b"blob "+str(len(data)).encode()+b"\\0"+data).hexdigest()
+          assert output["schema"]=="XRAY_FINAL_GATE_OVERLAY_V2"
+          assert output["execution"]=="NONE" and output["real_money"]=="NO-GO"
+          assert output["binding_integrity"]["fail_closed_safe"] is True
+          assert output["source_terminal"]["blob_sha"]==sha(root/"canonical_current_terminal.json")
+          assert output["source_pointer"]["blob_sha"]==sha(root/"chatgpt_canonical_state_v2.json")
+          PY
+            git add nasdaq-xray/canonical_current_final_gate_overlay.json
+            if git diff --cached --quiet; then
+              echo "XRAY_OVERLAY_V2=NO_CHANGE_EXACT_MAIN_READBACK"
+              exit 0
+            fi
+            git commit -m "chore(xray): refresh final-gate overlay v2 [skip ci]"
+            if git push origin HEAD:main; then
+              git fetch origin main
+              # Pull/push success must have durable readback; a newer writer
+              # superseding this commit cannot be mistaken for persistence.
+              python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path("nasdaq-xray/canonical_current_final_gate_overlay.json")
+          j=json.loads(p.read_text())
+          assert j["schema"]=="XRAY_FINAL_GATE_OVERLAY_V2"
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          assert j["binding_integrity"]["fail_closed_safe"] is True
+          print("XRAY_OVERLAY_V2=PUSH_ACCEPTED_VALIDATED_NO_ALPHA_GO")
+          PY
+              exit 0
+            fi
+            echo "XRAY_OVERLAY_V2=MAIN_PUSH_RACE attempt=$attempt" >&2
+            sleep $((attempt*2))
+          done
+          echo "::error::XRAY_OVERLAY_V2=NO_DURABLE_COMMIT_AFTER_RETRIES" >&2
+          exit 1
 
 # READINESS_EXACT_TERMINAL_OVERLAY_2026_10_05: self-trigger for independent current-terminal validation.
