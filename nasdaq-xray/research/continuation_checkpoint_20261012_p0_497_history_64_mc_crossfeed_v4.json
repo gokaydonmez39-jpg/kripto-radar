@@ -1,0 +1,160 @@
+{
+  "schema": "XRAY_20261012_P0_PERSONAL_64_MC_497_HISTORY_MULTISOURCE_VERIFIED_V4",
+  "asof_et": "2026-10-09",
+  "preimage_main": "a017fe15077f25b18bb8b3b8139f9641b6f3ed29",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "user_intent": "EXCLUSIVELY_PRIVATE_PERSONAL_RESEARCH_AND_ALERTS_NO_COMMERCIAL_RESALE_NO_AUTO_TRADES",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "no_threshold_relaxation": true,
+  "source_trust": "GITHUB_ACTIONS_EXACT_2026_10_09_GIT_BLOB_AND_CONNECTED_INTERACTIVE_PROVIDER",
+  "primary_MC": {
+    "current_primary_pass_count": 0,
+    "universe_price_pass_count": 514,
+    "official_sec_514_run": 38173716522,
+    "official_sec_514_reason_counts": {
+      "SHADOW_SHARES_VINTAGE_ONLY": 346,
+      "UNKNOWN": 167,
+      "UNKNOWN_SEC_TRANSPORT": 1
+    },
+    "eight_canary_run": 38178236414,
+    "eight_canary_result": {
+      "successful_issuer_mc_arithmetic_shadow": 6,
+      "unknown_issuer_pit_shares": 2
+    },
+    "spread_64_run": 38179408285,
+    "spread_64_artifact": 11716318884,
+    "spread_64_artifact_sha256": "sha256:1ac68e1520a0ef8649b15e39a2a1464c5ba4e99a14d7589f924f11bc5fbe5d64",
+    "spread_64_result": {
+      "sampled": 64,
+      "official_CIK_mapped": 64,
+      "SEC_issuer_requests_attempted": 64,
+      "successful_issuer_mc_arithmetic_shadow": 37,
+      "UNKNOWN_issuer_class_or_PIT": 27,
+      "SEC_403_429_fair_access_halt": false,
+      "created_PRIMARY": 0
+    },
+    "spread_64_unknown_reason_counts_joined_against_full_SEC_run": {
+      "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION": 8,
+      "NO_SEC_DEI_OR_GAAP_SHARES_FACT": 8,
+      "NO_DEI_BUT_GAAP_SHARES_AVAILABLE_CLASS_UNRESOLVED": 7,
+      "NO_FRESH_ACCEPTANCE_BOUND_SINGLE_ENTITY_SHARES": 4
+    },
+    "spread_64_unknown_exact_symbols_by_SEC_class": {
+      "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION": [
+        "AAL",
+        "ACMR",
+        "AUR",
+        "CMCSA",
+        "EXC",
+        "LSTR",
+        "NXPI",
+        "ONB"
+      ],
+      "NO_SEC_DEI_OR_GAAP_SHARES_FACT": [
+        "BIDU",
+        "CBRS",
+        "FCNCA",
+        "FRVO",
+        "GMAB",
+        "SPCX",
+        "TEM",
+        "XE"
+      ],
+      "NO_DEI_BUT_GAAP_SHARES_AVAILABLE_CLASS_UNRESOLVED": [
+        "AFRM",
+        "FLNC",
+        "HLNE",
+        "ROAD",
+        "SHOP",
+        "TTAN",
+        "TXG"
+      ],
+      "NO_FRESH_ACCEPTANCE_BOUND_SINGLE_ENTITY_SHARES": [
+        "ALM",
+        "HTHT",
+        "SBLK",
+        "WIX"
+      ]
+    },
+    "sec_dualclass_meta_googl_official_source_registry": "nasdaq-xray/research/p0_sec_meta_googl_multiclass_cover_20261012_v1.json",
+    "sec_dualclass_10Q_pit_run": 38179099708,
+    "sec_dualclass_10Q_acceptance_both_clock_safely_pre_asof": 2,
+    "sec_dualclass_authority": false,
+    "massive_interactive_reference_vs_alpaca_sip_shadow": {
+      "comparison_date": "2026-10-09",
+      "symbols": [
+        "AAPL",
+        "GOOGL",
+        "META"
+      ],
+      "real_provider_mathematically_parity_count": 3,
+      "source_formula": "MASSIVE_REFERENCE_MARKET_CAP_EQUALS_WEIGHTED_SHARES_OUTSTANDING_MULTIPLIED_BY_ALPACA_SIP_SAME_DAY_CLOSE",
+      "price_parity": "SAME_TO_CENT_FOR_3_OF_3",
+      "marketcap_arithmetic_relative_deviation_max": "<1e-12",
+      "META_official_SEC_two_class_sum_equal_massive_weighted_shares": true,
+      "GOOGL_official_SEC_cover_rounded_millions_close_to_massive_weighted_shares": true,
+      "comparison_is_independent_PIT_source": false,
+      "method_caveats": "Massive reference date may use SEC period end ahead of SEC filing acceptance; weighted market cap is convention, not separately verified executable class-weighted fair valuation; 2026-07 class shares not proven unchanged to 2026-10-09; multi-class A/B/C have different market prices; no independent MC PRIMARY.",
+      "vendor_raw_OHLCV_shares_or_marketcap_persisted": false
+    },
+    "missing_required_for_PRIMARY": [
+      "SEC_SHARE_CLASS_AND_ADR_IDENTITY_PER_SECURITY",
+      "FULL_CORPORATE_ACTION_AND_ISSUANCE_REC_FROM_LATEST_ACCEPTED_FILING_TO_ASOF",
+      "C417_POLICY_ADMITTED_INDEPENDENT_ASOF_MARKET_CAP_WITH_ACCEPTED_TIMESTAMP",
+      "CURRENT_FULL_514_COHORT_C417_PRIMARY_CALC_VERIFIED",
+      "DATA_USE_RIGHTS_FOR_UNATTENDED_RESEARCH_AT_SCALE"
+    ]
+  },
+  "history_260_52": {
+    "full_scope_with_qqq": 515,
+    "fully_observed_research_stocks": 497,
+    "qqq_reference_full": 1,
+    "official_young_260_ineligible": 17,
+    "unresolved_scope_count": 0,
+    "raw_split_515_run": 38178676524,
+    "raw_split_515_numeric_restated_stocks": 11,
+    "raw_split_515_unchanged": 504,
+    "split_CA_11_run": 38178886981,
+    "split_event_same_vendor_eleven_of_eleven": true,
+    "full_515_CA_event_census_run": 38178327791,
+    "census_total_events": 859,
+    "non_cash_dividend_events": 56,
+    "four_witness_join_run": 38179222648,
+    "four_witness_ci": "success",
+    "falsification_tests_normal_and_optimized": 7,
+    "full_history_stock_partition": {
+      "split_event_correlated_restatements": 11,
+      "no_split_restatement_observed": 486,
+      "official_too_young": 17
+    },
+    "symbol_mapping_asof_explicit": "2026-10-09",
+    "independent_CA_publication_PIT_attested": false,
+    "license_entitlement_unattended_attested": false,
+    "production_HISTORY_PRIMARY_PASS_CREATED": 0
+  },
+  "canonical_non_overwritten": {
+    "history_asof": "2026-10-07",
+    "history_pass_count": 460,
+    "terminal_asof": "2026-10-07",
+    "terminal_status": "PARTIAL",
+    "R92_candidate_count": 0
+  },
+  "latest_readiness": "RESEARCH_SHADOW_VERIFIED_OPERATIONAL_PRIMARY_GO_NO_GO",
+  "next_actions": [
+    "Verify legal personal unattended source rights; do not equate free SIP API with resale-license requirement",
+    "Resolve share-class/ADR current outstanding and post-filing split/issuance PIT per 514",
+    "Find independent timestamp-accepted market-cap reconciliation vs SEC/Alpaca at full issuer and share-class semantics",
+    "Verify CA event publication timestamps vs issuer SEC filings to promote 497 HISTORY safely",
+    "Rebind current canonical HISTORY and terminal by exact SHA only after proofs"
+  ],
+  "official_sources": [
+    "https://docs.alpaca.markets/us/reference/stockbars",
+    "https://massive.com/knowledge-base/article/does-massive-provide-the-filing-date-for-any-financial-reports",
+    "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/goog-20260630.htm",
+    "https://www.sec.gov/Archives/edgar/data/1326801/000162828026050705/meta-20260630.htm"
+  ],
+  "no_provider_raw_data_in_this_checkpoint": true
+}
