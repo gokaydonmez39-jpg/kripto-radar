@@ -533,11 +533,22 @@ def latest_filing_date(sub:dict,asof:str):
     accepted=recent.get("acceptanceDateTime") or []
     if not days or len(days)!=len(accepted):
         return None
+    # The same SEC filing must not be available before its actual official
+    # Nasdaq session close: early-close days are 13:00 ET; holidays have none.
+    # This is identity discovery only, never direct AL authority.
     try:
         asof_day=date.fromisoformat(asof)
-        cutoff=datetime.combine(asof_day,clocktime(16,0),
-                 tzinfo=ZoneInfo("America/New_York")).astimezone(timezone.utc)
-    except (ValueError,TypeError):
+        schedule=mcal.get_calendar("NASDAQ").schedule(
+            start_date=asof_day,end_date=asof_day)
+        if len(schedule)!=1:
+            return None
+        stamp=schedule.iloc[0]["market_close"]
+        if stamp.tzinfo is None:
+            return None
+        cutoff=stamp.to_pydatetime().astimezone(timezone.utc)
+        if cutoff.date()!=asof_day:
+            return None
+    except (ValueError,TypeError,IndexError,KeyError,AttributeError):
         return None
     valid=[]
     for day,stamp in zip(days,accepted):
