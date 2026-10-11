@@ -20,6 +20,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Install pinned official Nasdaq market-session calendar
+        run: python -m pip install --disable-pip-version-check "pandas_market_calendars==5.4.0"
       - name: Test original SEC PIT and adversarial same-filing share conflict
         run: |
           python -m py_compile nasdaq-xray/sec_official_free_mc_transport_probe.py nasdaq-xray/tests/test_sec_share_vintage_ambiguous.py
