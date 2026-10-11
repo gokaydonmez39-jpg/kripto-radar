@@ -48,7 +48,7 @@ def summarize(now,workflow,runs):
     if now.tzinfo is None:raise ValueError("CLOCK_MUST_HAVE_TIMEZONE")
     if not isinstance(runs,list):raise ValueError("RUNS_MALFORMED")
     for r in runs:
-        if not isinstance(r,dict) or r.get("head_branch") not in ("main",None):
+        if not isinstance(r,dict) or r.get("head_branch")!="main":
             raise ValueError("RUN_IDENTITY_OR_BRANCH_UNVERIFIED")
         stamp(r.get("created_at"))
     ordered=sorted(runs,key=lambda r:stamp(r["created_at"]),reverse=True)
@@ -149,6 +149,15 @@ def selftest():
     assert m["state"]=="JOB_SUCCESS_ONLY_NO_DATA_OR_DEVICE_AUTHORITY"
     assert summarize(date,"pre_mc",[sunday])["last_success_id"]==1
     assert summarize(date,"final",[])["state"]=="NO_RUN_OBSERVED"
+    for branch in (None,"feature/untrusted","refs/tags/v1"):
+        untrusted=run(99,"2026-10-12T04:01:00Z")
+        untrusted["head_branch"]=branch
+        try:summarize(date,"root",[untrusted])
+        except ValueError:pass
+        else:raise AssertionError("NON_MAIN_ROOT_SUCCESS_ACCEPTED")
+    # No Main/official authority may be inferred from missing branch metadata.
+    good_branch=run(98,"2026-10-12T04:01:00Z")
+    assert summarize(date,"root",[good_branch])["last_success_id"]==98
     assert summarize(date,"root",[run(4,"2026-10-12T04:02:00Z",
                                      "in_progress",None)])["state"]=="PENDING_OR_RUNNING_NOT_RECOVERY"
     assert summarize(date,"delivery",[run(5,"2026-10-12T04:03:00Z",
