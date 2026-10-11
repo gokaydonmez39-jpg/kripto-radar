@@ -1,6 +1,11 @@
 name: XRAY SEC Full Scope Transient-Only Retry
 on:
   workflow_dispatch:
+  workflow_run:
+    workflows:
+      - "XRAY SEC Full PRICE-PASS Vintage Shadow"
+    types: [completed]
+    branches: [main]
   push:
     branches: [main]
     paths:
@@ -14,18 +19,26 @@ concurrency:
   cancel-in-progress: true
 jobs:
   retry-only-verified-temporary-errors:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.sha }}
-      - name: Assert exact triggering source code SHA
+          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
+      - name: Assert exact invocation and still-current main source
         shell: bash
+        env:
+          XRAY_EXPECTED_SHA: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
         run: |
           set -euo pipefail
-          [[ "$(git rev-parse HEAD)" == "$GITHUB_SHA" ]] || exit 2
-          echo "XRAY_SEC_TRANSIENT_TRIGGER_SHA=PASS_EXACT"
+          [[ "$(git rev-parse HEAD)" == "$XRAY_EXPECTED_SHA" ]] || exit 2
+          current_main="$(git ls-remote origin refs/heads/main | cut -f1)"
+          [[ -n "$current_main" && "$current_main" == "$XRAY_EXPECTED_SHA" ]] || {
+            echo "XRAY_SEC_TRANSIENT_TRIGGER_NOT_CURRENT_MAIN_FAIL_CLOSED" >&2
+            exit 2
+          }
+          echo "XRAY_SEC_TRANSIENT_TRIGGER_SHA=PASS_EXACT_MAIN_CURRENT"
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
