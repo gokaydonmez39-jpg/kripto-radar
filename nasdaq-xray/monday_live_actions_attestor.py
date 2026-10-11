@@ -27,6 +27,13 @@ WORKFLOWS={
     "watchdog":"xray-github-native-root-watchdog.yml",
     "delivery":"nasdaq-xray-delivery.yml",
     "e2e":"xray-e2e-production-readiness.yml",
+    "research_watch":"xray-research-watch-radar.yml",
+    "strict_g9":"xray-strict-g9-gate.yml",
+    "account_reconcile":"xray-account-gate-reconcile.yml",
+    "live_truth":"xray-live-truth-attestation.yml",
+    "stage_relay":"xray-native-stage-relay-live.yml",
+    "manual_research":"xray-manual-decision-research-shadow.yml",
+    "final_overlay":"xray-final-gate-overlay-v2.yml",
 }
 SUCCESS="completed"
 
@@ -153,7 +160,7 @@ def selftest():
     good=[{"path":".github/workflows/"+v,"id":i+1,"state":"active"}
           for i,v in enumerate(WORKFLOWS.values())]
     assert workflow_inventory(good)["all_required_active"] is True
-    assert len(workflow_inventory(good)["required"])==8
+    assert len(workflow_inventory(good)["required"])==15
     disabled=[dict(row) for row in good]
     disabled[2]["state"]="disabled_manually"
     assert workflow_inventory(disabled)["all_required_active"] is False
@@ -168,7 +175,7 @@ def selftest():
     try:summarize(dt.datetime(2026,10,12,4,5),"root",[])
     except ValueError:pass
     else:raise AssertionError("NAIVE_CLOCK_ACCEPTED")
-    print("XRAY_MONDAY_LIVE_ACTIONS_SELFTEST=PASS_WEEKEND_ROOT_SUNDAY_GREEN_NOT_MONDAY_HEARTBEAT_NO_FAKE_RECEIPT")
+    print("XRAY_MONDAY_LIVE_ACTIONS_SELFTEST=PASS_15_WORKFLOWS_WEEKEND_ROOT_MAIN_NO_FAKE_RECEIPT")
 
 def github(path,token):
     if not token or not path.startswith("/"):raise RuntimeError("GITHUB_AUTH_UNAVAILABLE")
