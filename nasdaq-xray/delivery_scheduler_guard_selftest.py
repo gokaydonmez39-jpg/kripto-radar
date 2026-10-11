@@ -11,7 +11,7 @@ CONTRACT={
 NOW=datetime(2026,10,5,21,0,tzinfo=timezone.utc)
 
 def run(status="completed",conclusion="success",created="2026-10-05T20:20:00Z",updated="2026-10-05T20:50:00Z"):
-    return {"status":status,"conclusion":conclusion,"created_at":created,"updated_at":updated}
+    return {"status":status,"conclusion":conclusion,"created_at":created,"updated_at":updated,"head_branch":"main"}
 
 root_kick={"requested_at_utc":"2026-10-05T20:00:00Z"}
 final_kick={"requested_at_utc":"2026-10-05T20:00:00Z"}
@@ -121,6 +121,21 @@ ok,why=evaluate_readiness(NOW,CONTRACT,
                           {"requested_at_utc":"2026-10-05T16:00:00Z"},
                           final_kick,old_root_new_updated,final)
 assert not ok and why=="ROOT_SUCCESS_STALE",(ok,why)
+
+# Foreign branch green jobs may never attest main research delivery.
+foreign=run()
+foreign["head_branch"]="feature/fake-green"
+ok,why=evaluate_readiness(NOW,CONTRACT,root_kick,final_kick,[foreign],final)
+assert not ok and why=="ACTIONS_MAIN_BRANCH_RUN_IDENTITY_UNVERIFIED",(ok,why)
+bad=run()
+bad.pop("head_branch")
+ok,why=evaluate_readiness(NOW,CONTRACT,root_kick,final_kick,[bad],final)
+assert not ok and why=="ACTIONS_MAIN_BRANCH_RUN_IDENTITY_UNVERIFIED",(ok,why)
+ok,why=evaluate_readiness(NOW,CONTRACT,root_kick,final_kick,root,[foreign])
+assert not ok and why=="ACTIONS_MAIN_BRANCH_RUN_IDENTITY_UNVERIFIED",(ok,why)
+from delivery_scheduler_guard import _fetch_runs
+import inspect
+assert "branch=main" in inspect.getsource(_fetch_runs)
 
 workflow=(Path(__file__).resolve().parent.parent/".github/workflows/nasdaq-xray-delivery.yml").read_text()
 assert 'workflow_run:' in workflow
