@@ -72,13 +72,18 @@ def build(price,master,price_sha):
     assert not(pass_set & unknown_set or pass_set & blocked_set or unknown_set & blocked_set),"PRICE_PARTITION_OVERLAP"
     master_set=set(master.get("pass_symbols",[]))
     assert pass_set|unknown_set|blocked_set <= master_set,"PRICE_OUTSIDE_MASTER"
+    # PASS list hashes bind membership but do not prove each PRICE classifier
+    # row is genuinely PASS. Reject missing or contradictory per-symbol rows.
     results=price.get("results")
-    if results is not None:
-        assert isinstance(results,dict) and set(results)==master_set,"PRICE_RESULT_PARTITION_DRIFT"
-        for symbol in unknown:
-            assert isinstance(results[symbol],dict) and results[symbol].get("status")!="PASS_PRICE_DV30","PRICE_UNKNOWN_RESULT_FALSE_PASS"
-        for symbol in blocked:
-            assert isinstance(results[symbol],dict) and results[symbol].get("status")!="PASS_PRICE_DV30","PRICE_BLOCKED_RESULT_FALSE_PASS"
+    assert isinstance(results,dict) and set(results)==master_set,"PRICE_RESULT_PARTITION_DRIFT"
+    for symbol in symbols:
+        assert isinstance(results[symbol],dict) and results[symbol].get("status")=="PASS_PRICE_DV30","PRICE_PASS_RESULT_FALSE_PASS"
+    for symbol in master_set-pass_set:
+        assert isinstance(results[symbol],dict) and results[symbol].get("status")!="PASS_PRICE_DV30","PRICE_UNLISTED_RESULT_FALSE_PASS"
+    for symbol in unknown:
+        assert isinstance(results[symbol],dict) and results[symbol].get("status")!="PASS_PRICE_DV30","PRICE_UNKNOWN_RESULT_FALSE_PASS"
+    for symbol in blocked:
+        assert isinstance(results[symbol],dict) and results[symbol].get("status")!="PASS_PRICE_DV30","PRICE_BLOCKED_RESULT_FALSE_PASS"
     assert master.get("asof_et")==price.get("asof_et"),"SAME_ASOF_REQUIRED"
     daily,weekly=expected_dates(asof)
     assert len(daily)==260 and len(weekly)==52 and daily[-1]==asof
@@ -116,7 +121,8 @@ def selftest():
     p={"asof_et":asof,"pass_symbols":["AAA","BBB"],"pass_count":2,
        "pass_hash":sha256_lines(["AAA","BBB"]),
        "unknown_count":0,"unknown_symbols":[],"blocked_count":0,"blocked_symbols":[],
-       "execution":"NONE","real_money":"NO-GO"}
+       "execution":"NONE","real_money":"NO-GO",
+       "results":{"AAA":{"status":"PASS_PRICE_DV30"},"BBB":{"status":"PASS_PRICE_DV30"}}}
     out=build(p,m,"a"*40)
     assert out["status"]=="RESEARCH_HISTORY_REQUEST_READY_NO_MARKET_HISTORY_MEASURED"
     assert out["required_daily_count"]==260 and len(out["required_daily_official_sessions"])==260
@@ -128,6 +134,7 @@ def selftest():
     m_partial["pass_symbols"].append("CCC")
     p_partial["unknown_symbols"]=["CCC"]
     p_partial["unknown_count"]=1
+    p_partial["results"]["CCC"]={"status":"UNKNOWN_STATIC"}
     partial=build(p_partial,m_partial,"b"*40)
     assert partial["symbol_scope"]==["AAA","BBB"]
     assert partial["source_price_unknown_count"]==1
@@ -146,7 +153,12 @@ def selftest():
        ("UNKNOWN_BLOCKED_OVERLAP",lambda a,b:a.update(unknown_symbols=["CCC"],unknown_count=1,blocked_symbols=["CCC"],blocked_count=1)),
        ("FOREIGN_UNKNOWN",lambda a,b:a.update(unknown_symbols=["ZZZ"],unknown_count=1)),
        ("EXECUTION",lambda a,b:a.update(execution="REAL")),
-       ("NONSESSION",lambda a,b:(a.update(asof_et="2026-10-10"),b.update(asof_et="2026-10-10")))
+       ("NONSESSION",lambda a,b:(a.update(asof_et="2026-10-10"),b.update(asof_et="2026-10-10"))),
+       ("MISSING_SOURCE_ROWS",lambda a,b:a.pop("results")),
+       ("PASS_SYMBOL_RESULT_FAIL",lambda a,b:a["results"]["AAA"].update(status="FAIL_PRICE")),
+       ("UNLISTED_SYMBOL_FALSE_PASS",lambda a,b:(
+           b["pass_symbols"].append("CCC"),
+           a["results"].update({"CCC":{"status":"PASS_PRICE_DV30"}})))
     ]
     for name,mutator in cases:
         a,b=copy.deepcopy(p),copy.deepcopy(m)
@@ -154,7 +166,7 @@ def selftest():
         try:build(a,b,"a"*40)
         except (AssertionError,ValueError):continue
         raise AssertionError("INVALID_CURRENT_HISTORY_REQUEST_ACCEPTED:"+name)
-    print("XRAY_CURRENT_HISTORY_REQUEST_SELFTEST=PASS_TWO_POSITIVES_TWELVE_FAIL_CLOSED")
+    print("XRAY_CURRENT_HISTORY_REQUEST_SELFTEST=PASS_TWO_POSITIVES_FIFTEEN_FAIL_CLOSED")
 
 def main():
     ap=argparse.ArgumentParser()
