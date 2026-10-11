@@ -30,9 +30,9 @@ EAST=ZoneInfo("America/New_York")
 def require(ok,code):
     if not ok:raise ValueError("P0_SEC_ALPACA_MC_FAIL_CLOSED:"+code)
 
-def exact_accepted_share_count(facts,sub,asof):
+def exact_accepted_share_count(facts,sub,asof,*,cik=SEC_CIK):
     # Use the existing strict SEC PIT classifier FIRST, not our own heuristic.
-    finding=select_shares(facts,sub,asof,expected_cik=SEC_CIK)
+    finding=select_shares(facts,sub,asof,expected_cik=cik)
     require(finding.get("status")=="SHADOW_SHARES_VINTAGE_ONLY",
             "SEC_NO_EXACT_VINTAGE")
     idx=accession_acceptance_index(sub)
@@ -66,21 +66,23 @@ def exact_accepted_share_count(facts,sub,asof):
     require(len(values)==1,"LATEST_OFFICIAL_VINTAGE_NOT_UNIQUE")
     return next(iter(values)),finding
 
-def measure(price,master,facts,sub,bars,asof):
+def measure(price,master,facts,sub,bars,asof,*,symbol=TICKER,cik=SEC_CIK):
+    require(isinstance(symbol,str) and symbol and isinstance(cik,str)
+            and len(cik)==10 and cik.isdigit(),"CANARY_IDENTITY_INVALID")
     require(price.get("asof_et")==master.get("asof_et")==asof,
             "CANONICAL_ASOF_DRIFT")
-    require(TICKER in (price.get("pass_symbols") or []),"PRICE_NOT_IN_CANONICAL_PASS")
-    require(TICKER in (master.get("pass_symbols") or []),"MASTER_NO_EXACT_SECURITY")
+    require(symbol in (price.get("pass_symbols") or []),"PRICE_NOT_IN_CANONICAL_PASS")
+    require(symbol in (master.get("pass_symbols") or []),"MASTER_NO_EXACT_SECURITY")
     require(price.get("unknown_never_pass") is True and master.get("unknown_never_pass") is True
             and price.get("execution")=="NONE" and master.get("execution")=="NONE"
             and price.get("real_money")=="NO-GO" and master.get("real_money")=="NO-GO",
             "CANONICAL_SAFETY_INVALID")
     require(sha256_lines(price["pass_symbols"])==price["pass_hash"],
             "PRICE_PASS_SHA256_INVALID")
-    require(str(facts.get("cik")).lstrip("0")==SEC_CIK.lstrip("0") and
-            str(sub.get("cik")).lstrip("0")==SEC_CIK.lstrip("0"),
+    require(str(facts.get("cik")).lstrip("0")==cik.lstrip("0") and
+            str(sub.get("cik")).lstrip("0")==cik.lstrip("0"),
             "ISSUER_CIK_MISMATCH")
-    shares,provenance=exact_accepted_share_count(facts,sub,asof)
+    shares,provenance=exact_accepted_share_count(facts,sub,asof,cik=cik)
     require(isinstance(bars,list) and len(bars)==1,"ALPACA_ONE_SESSION_REQUIRED")
     bar=bars[0]
     require(timestamp_date(bar.get("t"))==dt.date.fromisoformat(asof),
@@ -100,7 +102,7 @@ def measure(price,master,facts,sub,bars,asof):
     # SEC EntityCommonStockSharesOutstanding is entity-level, not necessarily
     # the traded share CLASS. Issuance/splits/ADR from the filing to EOD
     # remain unverified. No independent primary MC crosscheck. Do not promote.
-    return {"schema":SCHEMA,"asof_et":asof,"symbol":TICKER,
+    return {"schema":SCHEMA,"asof_et":asof,"symbol":symbol,
             "status":"SHADOW_SEC_PIT_AND_SIP_CLOSE_ARITHMETIC_VERIFIED_CLASS_CA_UNPROVEN",
             "SEC_exact_CIK_and_filing_vintage_checked":True,
             "SEC_share_age_days":provenance.get("shares_age_days"),
