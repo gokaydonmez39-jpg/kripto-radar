@@ -1,0 +1,149 @@
+{
+  "schema": "XRAY_HISTORY_SEC_PIT_INTEGRITY_FORENSIC_CONTINUATION_V3",
+  "date_utc": "2026-10-11",
+  "asof_et": "2026-10-09",
+  "based_on_live_main_sha": "e5e631cced8a67d4ade1050c3219777f9d077b30",
+  "compiled_policy": "C4.17",
+  "control": "C4.27",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "alpha_thresholds_unchanged": true,
+  "real_trade_or_order": false,
+  "can_create_PRIMARY": false,
+  "can_register_R92": false,
+  "changes": [
+    {
+      "kind": "SOURCE_CLASSIFIER_BIDIRECTIONAL_MEMBERSHIP_NEGATIVE_FIX",
+      "commit": "86faac93b10c40682a94a24fc155921d99cb90c0",
+      "file": "nasdaq-xray/current_history_source_request.py",
+      "old_vulnerability": "PRICE_PASS_ARRAY_HASH_ONLY;PER_PASS_RESULT_STATUS_UNCHECKED;RESULTS_MAP_OPTIONAL;UNLISTED_PASS_STATUS_NOT_EXCLUDED",
+      "repair": "REQUIRE_EXACT_MASTER_RESULT_MAP_EVERY_PASS_RESULT_IS_PASS_EVERY_UNLISTED_IS_NONPASS",
+      "actual_verified_current_20261009": {
+        "pass_symbols": 514,
+        "consistent_pass_rows": 514,
+        "master_rows": 3184,
+        "unlisted_pass_rows": 0
+      },
+      "ci": [
+        {
+          "run_id": 38168195213,
+          "status": "SUCCESS",
+          "selftest": "PASS_TWO_POSITIVES_FIFTEEN_FAIL_CLOSED"
+        },
+        {
+          "run_id": 38168195207,
+          "status": "SUCCESS",
+          "selftest": "PASS_TWO_POSITIVES_FIFTEEN_FAIL_CLOSED"
+        }
+      ],
+      "vendor_bars_measured_by_fix": 0,
+      "legal_source_authority_created": false
+    },
+    {
+      "kind": "SEC_ACCESSION_ACCEPTANCE_PIT_DUPLICATE_CONFLICT_FAIL_CLOSED",
+      "commit": "e5e631cced8a67d4ade1050c3219777f9d077b30",
+      "file": "nasdaq-xray/sec_official_free_mc_transport_probe.py",
+      "old_vulnerability": "DUPLICATE_OFFICIAL_SUBMISSION_ACCESSION_CONFLICT_SILENT_LAST_WRITE_WINS",
+      "repair": "IDENTICAL_DUPLICATE_IDEMPOTENT_CONFLICTING_FORM_DATE_OR_ACCEPTANCE_RAISES_AND_SELECT_SHARES_RETURNS_UNKNOWN",
+      "ci": [
+        {
+          "run_id": 38168394094,
+          "status": "SUCCESS",
+          "test": "SEC_SAME_VINTAGE_CONFLICT_REJECTED_NO_PRIMARY"
+        },
+        {
+          "run_id": 38168394131,
+          "status": "SUCCESS",
+          "test": "SEC_FREE_MC_PIT_SELFTEST"
+        },
+        {
+          "run_id": 38168394213,
+          "status": "SUCCESS",
+          "test": "ZERO_DOLLAR_FOUR_STAGE_GUARDS_ONLY"
+        },
+        {
+          "run_id": 38168394193,
+          "status": "SUCCESS",
+          "test": "SEC_MULTISYMBOL_SHADOW_35"
+        }
+      ],
+      "latest_sec_35_sample": {
+        "scope": 35,
+        "shadow_vintage_only": 27,
+        "unknown": 8,
+        "primary_mc_count": 0
+      },
+      "official_transport": "HTTP_200_SEC_COMPANYFACTS_AND_SUBMISSIONS",
+      "legal_source_authority_created": false
+    }
+  ],
+  "latest_root_history_real_audit": {
+    "source_artifact_run": 38167191884,
+    "artifact_id": 11712807173,
+    "scope": 3184,
+    "source_status": "PARTIAL_HISTORY",
+    "source_pass": 497,
+    "unknown_total": 229,
+    "unknown_breakdown": {
+      "provider_transient_retries_exhausted": 30,
+      "independent_260_daily_history_missing": 150,
+      "missing_asof": 44,
+      "incomplete_exact30": 5
+    },
+    "legacy_hash_integrity": "LEGACY_HASH_NOT_INDEPENDENTLY_VERIFIABLE",
+    "source_scope_not_identical_to_canonical_price_pass": true
+  },
+  "latest_same_asof_price": {
+    "source_blob_sha": "6f3f68fff0897d68f200ad3621c51a5071494714",
+    "source_asof": "2026-10-09",
+    "pass_count": 514,
+    "source_non_g9_count": 514,
+    "independently_granted_automated_nondisplay_rights_proven": false
+  },
+  "provider_runner_probe": {
+    "source_ci_run_id": 38168195213,
+    "twelve_history_probe": "BLOCKED_NO_KEY",
+    "massive_grouped_probe": "BLOCKED_RIGHTS_OR_KEY",
+    "massive_full_260_runner_ci": 38168483194,
+    "massive_full_260_result": "BLOCKED_AUTH_OR_NONDISPLAY_AND_PRIVATE_CACHE_RIGHTS",
+    "private_vendor_history_files_present": 0,
+    "scope_missing_vendor_files": 515,
+    "third_party_code_license_does_not_grant_vendor_market_data_rights": true
+  },
+  "market_cap": {
+    "current_primary_market_cap_count": 0,
+    "bigdata_observed_zero_credits_previous_checkpoint": true,
+    "sec_514_prior_shadow_counts": {
+      "share_vintage_only": 346,
+      "unknown": 167,
+      "transport_unknown": 1
+    },
+    "sec_514_after_new_accession_fix_census_run": 38168394100,
+    "sec_514_new_census_completed_proven": false,
+    "sec_companyfacts_date_class_corporate_actions_price_not_attested": true,
+    "no_unlicensed_policy_substitution": true
+  },
+  "external_primary_sources": [
+    "https://www.sec.gov/search-filings/edgar-application-programming-interfaces",
+    "https://github.com/dgunning/edgartools",
+    "https://github.com/eduardgci/Public-Filings-Screener",
+    "https://massive.com/legal/market-data-terms-of-service",
+    "https://alpaca.markets/support/redistribute-alpaca-api",
+    "https://docs.github.com/en/actions/reference/security/secure-use"
+  ],
+  "x_com_source_verified_same_turn": false,
+  "x_com_observation": "PUBLIC_X_COM_POST_RENDERED_NO_READABLE_SOURCE_BODY;DO_NOT_TREAT_AS_LICENSE_OR_VALIDATION_EVIDENCE",
+  "release": "NO-GO",
+  "blockers": [
+    "MC_SAME_ASOF_PRIMARY_PROVIDER_AND_AUTHORIZED_RIGHTS_UNPROVEN",
+    "514_NON_G9_PRICE_SOURCE_RESEARCH_RELEASE_RIGHTS_UNVERIFIED",
+    "260_DAILY_AND_52_WEEK_COMPLETE_AUTHORIZED_BAR_CHAIN_UNATTESTED",
+    "MASTER_12_UNRESOLVED_PIT_IDENTITIES",
+    "SEC_SHARE_CLASS_CORPORATE_ACTIONS_AND_ACCEPTANCE_PIT_NOT_FULLY_ATTESTED",
+    "ASOF_20261009_TERMINAL_CHAIN_STILL_20261007",
+    "REAL_R92_REGISTERED_CANDIDATE_AND_DEVICE_RECEIPT_UNPROVEN",
+    "STRICT_G9_AND_READ_ONLY_ACCOUNT_FOR_TRUE_FULL_GO_UNPROVEN"
+  ],
+  "note": "This is a historical verified engineering checkpoint; always prefer exact current GitHub readback. Successful CI is NOT market-source rights, daily bar authority, AL or device delivery."
+}
