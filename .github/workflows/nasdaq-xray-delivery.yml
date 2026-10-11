@@ -197,12 +197,16 @@ jobs:
           while IFS=$'\t' read -r delivery_key ticker body_file; do
             [ -n "$delivery_key" ] || continue
             title="[XRAY RESEARCH AL ADAYI] $ticker — $delivery_key"
-            # GitHub issue search is fuzzy/eventually consistent. Inspect a
-            # bounded exact title/key set; ambiguous or truncated => fail closed.
+            # Never use GitHub's eventually consistent issue-search index
+            # to establish absence: a recently created Issue may be invisible
+            # there, producing duplicate alerts. Paginate ALL repository issues
+            # (open and closed), excluding pull requests, with API failures
+            # stopping the job via pipefail. Exact title/key match is required.
             search_file="$(mktemp)"
-            gh issue list --repo "$GITHUB_REPOSITORY" --state all \
-              --limit 100 --search "$delivery_key in:title" \
-              --json number,title > "$search_file"
+            gh api --method GET --paginate \
+              "/repos/$GITHUB_REPOSITORY/issues?state=all&per_page=100" \
+              --jq '.[] | select(has("pull_request") | not) | {number,title}' \
+              | jq -s '.' > "$search_file"
             existing=$(python nasdaq-xray/delivery_issue_receipt_guard.py \
               --search-json "$search_file" --delivery-key "$delivery_key" \
               --symbol "$ticker")
