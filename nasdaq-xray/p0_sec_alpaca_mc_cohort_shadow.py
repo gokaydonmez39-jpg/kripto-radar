@@ -178,7 +178,8 @@ def main():
             asof,route=scope(price,master,sec_map)
             nextday=(dt.date.fromisoformat(asof)+dt.timedelta(days=1)).isoformat()
             bars=request_batch(sorted(route),asof+"T00:00:00Z",
-                                nextday+"T00:00:00Z",key,secret)
+                                nextday+"T00:00:00Z",key,secret,
+                                adjustment="raw",asof=asof)
             last_request=[0.0]
             def fetch(sym,cik):
                 # Never bypass official SEC fair-access limits (<=2 requests/s).

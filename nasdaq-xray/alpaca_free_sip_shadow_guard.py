@@ -131,7 +131,7 @@ def load_scope():
         raise ValueError("UNVERIFIED_EXPECTED_30_SESSIONS")
     return m,p,symbols,dates,blob_sha(master_path),blob_sha(price_path)
 
-def request_batch(symbols,start,period_end,key,secret):
+def request_batch(symbols,start,period_end,key,secret,*,adjustment="raw",asof=None):
     """Consume ALL pages; no partial symbol cohort can appear complete.
 
     Vendor data stays in process memory. No persistent cached bars, quote
@@ -139,8 +139,17 @@ def request_batch(symbols,start,period_end,key,secret):
     """
     if not key or not secret:
         raise RuntimeError("ALPACA_SECRETS_MISSING")
+    if adjustment not in {"raw","split"}:
+        raise ValueError("ALPACA_RESEARCH_ONLY_RAW_OR_SPLIT_ADJUSTMENT")
+    if asof is not None:
+        try:
+            day=dt.date.fromisoformat(asof)
+            if day.isoformat()!=asof:raise ValueError("INVALID_DATE")
+        except (TypeError,ValueError) as exc:
+            raise ValueError("ALPACA_EXACT_SYMBOL_MAPPING_ASOF_INVALID") from exc
     base={"symbols":",".join(symbols),"start":start,"end":period_end,
-          "timeframe":"1Day","feed":"sip","adjustment":"raw","limit":10000}
+          "timeframe":"1Day","feed":"sip","adjustment":adjustment,"limit":10000}
+    if asof is not None:base["asof"]=asof
     def fetch_page(token):
         params=dict(base)
         if token is not None:

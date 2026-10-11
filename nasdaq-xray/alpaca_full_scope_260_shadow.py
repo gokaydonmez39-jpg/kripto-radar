@@ -218,8 +218,10 @@ def main():
     if not key or not secret:
         raise SystemExit("XRAY_ALPACA_515=BLOCKED_PRIVATE_CREDENTIALS_UNAVAILABLE")
     def real(batch,start,end):
-        return request_batch(batch,start,end,key,secret)
+        return request_batch(batch,start,end,key,secret,adjustment="raw",asof=asof)
     result=audit(asof,targets,daily,weeks,real,now=dt.datetime.now(UTC))
+    result["api_symbol_mapping_asof_et"]=asof
+    result["security_identity_lineage_independently_verified"]=False
     result["source_price_blob_sha"]=blob_sha(PRICE)
     result["source_master_blob_sha"]=blob_sha(MASTER)
     result["source_price_pass_hash"]=price["pass_hash"]

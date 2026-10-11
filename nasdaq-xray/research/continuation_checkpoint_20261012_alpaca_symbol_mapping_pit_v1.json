@@ -1,0 +1,13 @@
+{
+  "schema": "XRAY_ALPACA_SYMBOL_MAPPING_ASOF_EXPLICIT_V1",
+  "before_main": "78392f96f163332d6088fd5c3bf74152279a4a2a",
+  "provider_doc": "https://docs.alpaca.markets/us/reference/stockbars",
+  "issue": "Alpaca bar API asof default today can alias historical ticker names as of later date",
+  "fix": "Always explicitly set asof=canonical trading decision day for full-515 HISTORY and 8-issuer/1-issuer MC; raw/split dual parameter validated",
+  "historical_predecessor_identity_verified": false,
+  "can_change_260_price_set": false,
+  "authority": false,
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "ci": "PENDING"
+}

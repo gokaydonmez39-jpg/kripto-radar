@@ -199,7 +199,8 @@ def main():
             sub=get_json(f"https://data.sec.gov/submissions/CIK{SEC_CIK}.json",ua)
             nextday=(dt.date.fromisoformat(asof)+dt.timedelta(days=1)).isoformat()
             bars=request_batch([TICKER],asof+"T00:00:00Z",
-                               nextday+"T00:00:00Z",key,secret).get(TICKER,[])
+                               nextday+"T00:00:00Z",key,secret,
+                               adjustment="raw",asof=asof).get(TICKER,[])
             out=measure(price,master,facts,sub,bars,asof)
         except (ValueError,RuntimeError,KeyError,TypeError) as err:
             # Never echo vendor responses, secrets, share count, or prices.
