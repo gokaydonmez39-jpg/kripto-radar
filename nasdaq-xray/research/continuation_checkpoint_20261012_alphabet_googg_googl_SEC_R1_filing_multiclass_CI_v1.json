@@ -1,0 +1,38 @@
+{
+  "schema": "XRAY_20261012_P0_OFFICIAL_ALPHABET_R1_ORIGINAL_FILING_CLASS_SHADOW_V1",
+  "asof_et": "2026-10-09",
+  "scope": "ALPHABET_CIK_0001652044_10Q_ACCEPTED_PRE_ASOF",
+  "source_official_URL": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/R1.htm",
+  "source_filing_accession": "0001652044-26-000071",
+  "SEC_original_R1_rendering_sha256": "e898cfd64124ddd4c7cf7c0326a61bade39a31dd12043bcd030120f5c31dfa01",
+  "source_Github_Actions_run": 38185006087,
+  "source_run_commit": "a8edc1d2cbaa258188e8c80095b3be90b8e1598e",
+  "source_artifact_id": 11719371054,
+  "source_zip_sha256": "db37322cd7d9fbc6c41219f394fc09916416ea559f5469296fc7644c6c87a638",
+  "CI_result": "SUCCESS_SOURCE_HTTP_200_SEC_SUBMISSION_PIT_AND_R1_NEGATIVE_OPTIMIZED_TESTS",
+  "listed_common_class_symbol_identity": {
+    "GOOGL": "CLASS_A_COMMON",
+    "GOOG": "CLASS_C_CAPITAL"
+  },
+  "unlisted_common_class_B_seen": true,
+  "additional_listed_depositary_preferred_classes": [
+    "GOOGM",
+    "GOOGN"
+  ],
+  "preferred_covered_interest_ratio_in_original_filing": "1/20",
+  "raw_numeric_share_count_not_archived": true,
+  "official_filing_acceptance_confirmed_pre_2026_10_09_close": true,
+  "SEC_filing_share_vintage_reference_date": "2026-07-15",
+  "SEC_filing_report_period": "2026-06-30",
+  "type_of_proof": "OFFICIAL_XBRL_RENDERED_REPORT_CLASS_TICKER_DIAGNOSTIC_ONLY",
+  "machine_axis_member_context_not_fully_reconciled": true,
+  "total_issuer_2026_10_09_MC_PIT_independent_crosscheck_missing": true,
+  "post_filing_issuance_repurchases_ADS_to_asof_unreconciled": true,
+  "C417_PRIMARY_MC_created": 0,
+  "canonical_HISTORY_PASS_created": 0,
+  "R92_created": false,
+  "GO": false,
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true
+}
