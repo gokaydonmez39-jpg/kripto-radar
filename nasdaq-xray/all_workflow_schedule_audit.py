@@ -63,7 +63,7 @@ PROVIDER_RIGHTS={
 }
 
 def crons(source):
-    return tuple(re.findall(r'^\s*- cron: ["\\']([^"\\']+)["\\']\s*$',source,re.M))
+    return tuple(re.findall(r"""^\s*- cron: ["']([^"']+)["']\s*$""",source,re.M))
 
 def inventory(files):
     errors=[]
