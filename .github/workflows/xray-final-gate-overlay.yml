@@ -22,8 +22,9 @@ permissions:
   contents: write
 
 concurrency:
-  group: xray-final-gate-overlay
-  cancel-in-progress: true
+  # Shared exclusive writer lane with overlay-v2. Both target the same artifact.
+  group: xray-canonical-final-overlay-single-writer
+  cancel-in-progress: false
 
 jobs:
   overlay:
