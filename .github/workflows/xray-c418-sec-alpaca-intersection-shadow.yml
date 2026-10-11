@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/c418_preopen_intersection_guard.py"
+      - "nasdaq-xray/c418_crossfeed_dailybar_shadow.py"
       - ".github/workflows/xray-c418-sec-alpaca-intersection-shadow.yml"
   workflow_run:
     workflows:
@@ -44,6 +45,9 @@ jobs:
           python -m pip install --disable-pip-version-check "pandas_market_calendars==5.4.0"
           python -m py_compile nasdaq-xray/c418_preopen_intersection_guard.py
           python nasdaq-xray/c418_preopen_intersection_guard.py --selftest
+          python -m py_compile nasdaq-xray/c418_crossfeed_dailybar_shadow.py
+          python nasdaq-xray/c418_crossfeed_dailybar_shadow.py --selftest
+          python -O nasdaq-xray/c418_crossfeed_dailybar_shadow.py --selftest
       - name: Download latest matching SANITIZED full-scope SEC and Alpaca source witnesses
         shell: bash
         env:

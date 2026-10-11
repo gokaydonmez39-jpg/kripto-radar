@@ -1,0 +1,30 @@
+{
+  "schema": "XRAY_20261011_C418_CROSSFEED_SESSION_VOLUME_GUARD_V1",
+  "parent_head": "6648f0a8057edf15b70a4c93e2b5a08a9a071d35",
+  "compares": [
+    "ALPACA_DAILY_START_EASTERN_MIDNIGHT",
+    "MASSIVE_GROUPED_OFFICIAL_MARKET_CLOSE",
+    "EXACT_TICKER",
+    "EXACT_ASOF",
+    "EXACT_OHLC_FIELDS",
+    "VOLUME_DIFFERENCE_WITHOUT_FALSE_DV30_PASS"
+  ],
+  "tests": {
+    "positive": 3,
+    "negative": 10,
+    "modes": [
+      "python",
+      "python -O"
+    ]
+  },
+  "real_provider_sample": "2026-10-09_AAPL_PLTR_OZK_OHLC_12_OF_12_VOLUME_3_OF_3_MISMATCH",
+  "explanatory_source": "https://massive.com/knowledge-base/article/why-is-massives-market-data-different-from-other-providers",
+  "private_raw_prices_saved": false,
+  "license_new_grant": false,
+  "MC_PRIMARY": false,
+  "HISTORY_PASS": false,
+  "R92": false,
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "ci_status": "PENDING"
+}
