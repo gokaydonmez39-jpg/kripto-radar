@@ -33,11 +33,31 @@ def _dt(value):
 def _successful_runs(runs):
     return [r for r in runs if r.get("status")=="completed" and r.get("conclusion")=="success"]
 
+
+def _weekday_root_successes(runs):
+    # A green Sunday root is a weekend quota-protection NO-COMPUTE job.
+    ny=ZoneInfo("America/New_York")
+    return [r for r in _successful_runs(runs)
+            if _dt(r.get("created_at")).astimezone(ny).weekday()<5]
+
+
+def _latest_completed(runs):
+    finished=[r for r in runs if r.get("status")=="completed"]
+    return max(finished,key=lambda r:_dt(r.get("created_at"))) if finished else None
+
+
+def _later_red_than_green(runs,successes):
+    latest=_latest_completed(runs)
+    if latest is None or latest.get("conclusion")=="success":
+        return False
+    newest_green=max(successes,key=lambda r:_dt(r.get("created_at"))) if successes else None
+    return newest_green is None or _dt(latest["created_at"])>_dt(newest_green["created_at"])
+
 ACTIVE={"queued","in_progress","pending","waiting","requested"}
 COMPLETED="completed"
 
 
-def classify_active(now_utc, runs, grace_seconds):
+def classify_active(now_utc, runs, grace_seconds, recovery_successes=None):
     """Suppress genuinely active runs; expire zombies only with newer SUCCESS.
 
     An old queued job is not evidence of ongoing recovery forever. However,
@@ -47,7 +67,8 @@ def classify_active(now_utc, runs, grace_seconds):
     """
     if type(grace_seconds) is not int or grace_seconds <= 0:
         return "ACTIVE_GRACE_INVALID"
-    successes=_successful_runs(runs)
+    successes=(_successful_runs(runs) if recovery_successes is None
+               else recovery_successes)
     for run in runs:
         status=run.get("status")
         if status==COMPLETED:
@@ -93,7 +114,10 @@ def evaluate_readiness(now_utc,contract,root_kick,final_kick,root_runs,final_run
 
     root_grace=contract.get("root_active_run_grace_seconds",3300)
     final_grace=contract.get("final_active_run_grace_seconds",3600)
-    root_active=classify_active(now_utc,root_runs,root_grace)
+    # Quota-protected weekend root successes are not recovered data work.
+    root_success=_weekday_root_successes(root_runs)
+    root_active=classify_active(now_utc,root_runs,root_grace,
+                                recovery_successes=root_success)
     if root_active!="CLEAR":
         return False,("ROOT_RECOVERY_ACTIVE" if root_active=="ACTIVE"
                       else "ROOT_"+root_active)
@@ -102,9 +126,14 @@ def evaluate_readiness(now_utc,contract,root_kick,final_kick,root_runs,final_run
         return False,("FINAL_RECOVERY_ACTIVE" if final_active=="ACTIVE"
                       else "FINAL_"+final_active)
 
-    root_success=_successful_runs(root_runs)
     final_success=_successful_runs(final_runs)
-    latest_root=max(root_success,key=lambda r:_dt(r.get("updated_at") or r.get("created_at"))) if root_success else None
+    # A newer red completion outranks an earlier green run: do not release a
+    # candidate from a broken current root/final chain.
+    if _later_red_than_green(root_runs,root_success):
+        return False,"ROOT_LATEST_RUN_FAILED_OR_CANCELLED"
+    if _later_red_than_green(final_runs,final_success):
+        return False,"FINAL_LATEST_RUN_FAILED_OR_CANCELLED"
+    latest_root=max(root_success,key=lambda r:_dt(r.get("created_at"))) if root_success else None
 
     for label,kick,runs in (("ROOT",root_kick,root_success),("FINAL",final_kick,final_success)):
         kt=_dt(kick.get("requested_at_utc"))
@@ -118,7 +147,9 @@ def evaluate_readiness(now_utc,contract,root_kick,final_kick,root_runs,final_run
     if ny.weekday()<5:
         if latest_root is None:
             return False,"ROOT_SUCCESS_MISSING"
-        rt=_dt(latest_root.get("updated_at") or latest_root.get("created_at"))
+        # updated_at can move after a retry/UI update while source compute is
+        # still from an earlier invocation; freshness binds created_at.
+        rt=_dt(latest_root.get("created_at"))
         if rt is None:
             return False,"ROOT_SUCCESS_TIME_MISSING"
         age=(now_utc-rt).total_seconds()
