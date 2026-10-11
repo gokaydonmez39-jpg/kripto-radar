@@ -8,6 +8,9 @@ on:
       - "nasdaq-xray/preopen_live_release_gate.py"
       - "nasdaq-xray/monday_launch_microaudit.py"
       - "nasdaq-xray/all_workflow_schedule_audit.py"
+      - "nasdaq-xray/root_history_recovery_microaudit.py"
+      - "nasdaq-xray/sina_state_hash_guard.py"
+      - "nasdaq-xray/sina_stage.py"
       - ".github/workflows/**"
       - "nasdaq-xray/monday_live_actions_attestor.py"
       - "nasdaq-xray/delivery_issue_receipt_guard.py"
@@ -85,6 +88,25 @@ jobs:
           assert j["alpha_authority"] is False and j["no_real_device_receipt_claim"] is True
           assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
           print("XRAY_MONDAY_LAUNCH_TOPOLOGY_CONTRACT=PASS_NOT_PRODUCTION_GO")
+          PY
+      - name: Exact-history forensic recovery + verifiable state hash regressions
+        run: |
+          python -m py_compile nasdaq-xray/root_history_recovery_microaudit.py nasdaq-xray/sina_state_hash_guard.py
+          python nasdaq-xray/sina_state_hash_guard.py
+          python nasdaq-xray/sina_transport_rescue.py
+          python nasdaq-xray/root_history_recovery_microaudit.py --selftest
+          python nasdaq-xray/root_history_recovery_microaudit.py --out "$RUNNER_TEMP/xray_root_history_recovery.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          x=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_root_history_recovery.json").read_text())
+          assert x["schema"]=="XRAY_ROOT_HISTORY_RECOVERY_MICROAUDIT_V1"
+          assert x["unknown_count"]==sum(x["unknown_reason_counts"].values())
+          assert x["source_state_hash_integrity"] in ("PASS_DETERMINISTIC_BLOB_INTERNAL","LEGACY_HASH_NOT_INDEPENDENTLY_VERIFIABLE")
+          assert x["eligible_single_round_real_provider_retries_now"]<=32
+          assert not x["alpha_authority"] and not x["real_user_device_receipt_attested"]
+          assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
+          print("XRAY_ROOT_HISTORY_DIAGNOSTIC=VERIFIED_COUNTS_WITHOUT_MARKET_PASS")
           PY
       - name: Full 135-workflow automatic schedule, privilege and licensing topology
         run: |
@@ -222,5 +244,6 @@ jobs:
             ${{ runner.temp }}/xray_monday_launch_microaudit.json
             ${{ runner.temp }}/xray_monday_live_actions.json
             ${{ runner.temp }}/xray_all_workflow_schedule_audit.json
+            ${{ runner.temp }}/xray_root_history_recovery.json
           retention-days: 14
           if-no-files-found: error
