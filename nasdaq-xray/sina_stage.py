@@ -23,6 +23,7 @@ import urllib.request
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone, timedelta
 from sina_transport_rescue import choose as choose_transport_rescue
+from sina_state_hash_guard import seal as seal_sina_state
 from sina_identity_epoch import frozen_identity_fingerprint
 from sina_late_asof_recheck import choose as choose_late_asof, choose_canary_probe
 from pathlib import Path
@@ -1249,9 +1250,7 @@ def main():
         state["status"]="IDENTITY_READY_MARKET_GATES_DEFERRED"
         state["history_source"]="DEFERRED_TO_PRICE_DV30_HISTORY_PHASE"
         state["updated_at_utc"]=now
-        state["state_hash"]=hashlib.sha256(
-          json.dumps(state,sort_keys=True,separators=(",",":")).encode("utf-8")
-        ).hexdigest()
+        seal_sina_state(state)
         write(STATE,state)
         cand={
           "schema":"XRAY_SINA_CANDIDATES_V2",
@@ -1396,9 +1395,7 @@ def main():
             raise RuntimeError("LATE_ASOF_PENDING_CLOSE_UNVERIFIED")
         close=schedule.iloc[0]["market_close"].to_pydatetime()
         state["pending_late_asof_recheck"]=len(choose_late_asof(state,close))
-    state["state_hash"]=hashlib.sha256(
-      json.dumps(state,sort_keys=True,separators=(",",":")).encode("utf-8")
-    ).hexdigest()
+    seal_sina_state(state)
     write(STATE,state)
 
     candidates={}
