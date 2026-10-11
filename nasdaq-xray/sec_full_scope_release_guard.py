@@ -17,11 +17,9 @@ ROOT=Path(__file__).resolve().parent
 SCHEMA="XRAY_SEC_MULTISYMBOL_PIT_SHADOW_V1"
 STATUS_ALLOWED=frozenset({
     "SHADOW_SHARES_VINTAGE_ONLY","UNKNOWN",
-    "UNKNOWN_OFFICIAL_CIK_ROUTE","UNKNOWN_SEC_TRANSPORT",
-    "UNKNOWN_NOT_ATTEMPTED_UPSTREAM_SEC_BLOCK"})
+    "UNKNOWN_OFFICIAL_CIK_ROUTE","UNKNOWN_SEC_TRANSPORT"})
 TRANSPORT_ALLOWED=frozenset({
-    "SEC_OFFICIAL_MULTI_REQUESTS_COMPLETE_WITH_UNKNOWN_ALLOWED",
-    "BLOCKED_FAIR_ACCESS_STOP"})
+    "SEC_OFFICIAL_MULTI_REQUESTS_COMPLETE_WITH_UNKNOWN_ALLOWED"})
 
 def require(ok,reason):
     # NOT assert: safety checks still run when PYTHONOPTIMIZE=1.
@@ -39,6 +37,8 @@ def validate(report,price,master,price_raw,master_raw):
             "OBJECT_SCHEMA")
     require(isinstance(price_raw,bytes) and isinstance(master_raw,bytes),
             "GIT_BLOB_BYTES")
+    require(json.loads(price_raw)==price and json.loads(master_raw)==master,
+            "SOURCE_OBJECT_VS_GIT_BLOB_CONTENT_DRIFT")
     scope=price.get("pass_symbols")
     require(isinstance(scope,list) and bool(scope)
             and all(isinstance(x,str) and x for x in scope)
@@ -47,6 +47,14 @@ def validate(report,price,master,price_raw,master_raw):
             and price["pass_count"]==len(scope)
             and 1<=len(scope)<=650,
             "PRICE_PASS_SCOPE")
+    master_pass=master.get("pass_symbols")
+    require(isinstance(master_pass,list)
+            and all(isinstance(x,str) and x for x in master_pass)
+            and type(master.get("pass_count")) is int
+            and master["pass_count"]==len(master_pass)
+            and len(master_pass)==len(set(master_pass))
+            and set(scope).issubset(set(master_pass)),
+            "PRICE_PASS_NOT_EXACT_SUBSET_OF_MASTER")
     require(price.get("asof_et")==master.get("asof_et")==report.get("asof_et"),
             "ASOF_EXACT")
     require(report.get("schema")==SCHEMA
@@ -100,12 +108,8 @@ def validate(report,price,master,price_raw,master_raw):
     require(report.get("remediation_counts")==dict(sorted(remediation.items()))
             and report.get("remediation_count_exact") is True,
             "REMEDIATION_INCONSISTENT")
-    if report["transport"]=="BLOCKED_FAIR_ACCESS_STOP":
-        require(any(v=="UNKNOWN_NOT_ATTEMPTED_UPSTREAM_SEC_BLOCK" for v in statuses.values()),
-                "UNATTESTED_TRANSPORT_STOP")
-    else:
-        require("UNKNOWN_NOT_ATTEMPTED_UPSTREAM_SEC_BLOCK" not in statuses.values(),
-                "FALSE_COMPLETE_TRANSPORT")
+    require("UNKNOWN_NOT_ATTEMPTED_UPSTREAM_SEC_BLOCK" not in statuses.values(),
+            "FALSE_COMPLETE_TRANSPORT")
     return {
         "schema":"XRAY_SEC_FULL_SCOPE_RELEASE_GUARD_V1",
         "status":"VERIFIED_SHADOW_ONLY",
@@ -122,7 +126,8 @@ def validate(report,price,master,price_raw,master_raw):
 
 def fixture():
     price={"asof_et":"2026-10-09","pass_symbols":["AAPL","NVDA"],"pass_count":2}
-    master={"asof_et":"2026-10-09","queue_total":2}
+    master={"asof_et":"2026-10-09","queue_total":2,
+            "pass_symbols":["AAPL","NVDA"],"pass_count":2}
     pb=(json.dumps(price,sort_keys=True)+"\n").encode()
     mb=(json.dumps(master,sort_keys=True)+"\n").encode()
     statuses={"AAPL":"SHADOW_SHARES_VINTAGE_ONLY","NVDA":"UNKNOWN"}
@@ -181,6 +186,11 @@ def selftest():
       ("FAKE_CORP_ACTION",lambda a:a[0].update(corporate_action_binding_attested=True)),
       ("FAKE_R92",lambda a:a[0].update(no_real_candidate_claim=False)),
       ("SILENT_TRANSPORT",lambda a:a[0].update(transport="BLOCKED_CONFIG")),
+      ("FAIR_ACCESS_PARTIAL",lambda a:a[0].update(transport="BLOCKED_FAIR_ACCESS_STOP")),
+      ("MASTER_PASS_NOT_IN_SCOPE",lambda a:a[2]["pass_symbols"].remove("NVDA")),
+      ("MASTER_COUNT_CORRUPTED",lambda a:a[2].update(pass_count=5)),
+      ("PRICE_OBJECT_NOT_RAW_BLOB",lambda a:a[1].update(pass_count=999)),
+      ("MASTER_OBJECT_NOT_RAW_BLOB",lambda a:a[2].update(queue_total=999)),
       ("PIT_MAP_FICTION",lambda a:a[0].update(ticker_map_timestamp="PIT_VERIFIED")),
       ("UNKNOWN_TO_PASS",lambda a:a[0]["statuses"].update(NVDA="PASS")),
       ("TAMPERED_SOURCE_SCOPE",lambda a:a[1]["pass_symbols"].append("FAKE")),
@@ -188,7 +198,7 @@ def selftest():
     ]
     for label,change in checks:
         negative(label,change)
-    print("XRAY_SEC_FULL_SCOPE_RELEASE_SELFTEST=PASS_2_POSITIVE_22_NEGATIVE_NO_MC_NO_R92_PYTHON_O_SAFE")
+    print("XRAY_SEC_FULL_SCOPE_RELEASE_SELFTEST=PASS_2_POSITIVE_27_NEGATIVE_NO_MC_NO_R92_PYTHON_O_SAFE")
 
 def main():
     p=argparse.ArgumentParser()

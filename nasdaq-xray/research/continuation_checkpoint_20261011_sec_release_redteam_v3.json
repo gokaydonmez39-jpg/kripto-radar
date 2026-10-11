@@ -1,0 +1,29 @@
+{
+  "schema": "XRAY_20261011_SEC_RELEASE_RED_TEAM_HARDEN_V3",
+  "parent_main_sha": "6fe25e1189eb100610f734b98972770f42cd8bf8",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "source_status": "SEC_514_SHADOW_NOT_PRIMARY",
+  "source_scope_guard": [
+    "NO_FAIR_ACCESS_STOP_AS_VERIFIED",
+    "STRICT_COMPLETE_TRANSPORT_ONLY",
+    "PRICE_PASS_SUBSET_MASTER_EXACT_SET",
+    "OBJECT_SAME_AS_GIT_BLOB_BYTES"
+  ],
+  "regression": {
+    "positive": 2,
+    "negative": 27,
+    "python": [
+      "3.12",
+      "3.12 -O"
+    ]
+  },
+  "prior_release_guard_22_negative": "ADDITIONAL_FAIL_CLOSED_GAPS_IDENTIFIED",
+  "can_create_primary": false,
+  "can_create_r92": false,
+  "go": "NO-GO",
+  "ci": "PENDING",
+  "metadata_only": true
+}
