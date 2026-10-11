@@ -321,7 +321,26 @@
         "NOTIFICATION_DEVICE_RECEIPT_NOT_PROVEN",
         "SOURCE_EPOCH_NOT_LATEST_COMPLETED_SESSION",
         "TERMINAL_CURRENT_MC_CHAIN_NOT_PROVEN"
-      ]
+      ],
+      "e2e_non_g9_veto_commit": "d469f8e53ae73847e03691b62c01464097529fef",
+      "e2e_current_fail_closed_run_id": 38140751041
+    },
+    "price_pass_non_g9_release_guard": {
+      "asof_et": "2026-10-09",
+      "canonical_price_blob_sha": "6f3f68fff0897d68f200ad3621c51a5071494714",
+      "pass_symbols_total": 514,
+      "non_g9_price_pass_symbols": 514,
+      "shared_source_label": "RALLIES_BULK_ALL_TICKERS_EXACT30_NON_G9",
+      "same_policy_reuse_records": 3183,
+      "reevaluated_records": 1,
+      "c417_rallies_primary_materialized_count": 0,
+      "reported_price_pass_count_is_not_source_license_authority": true,
+      "status": "E2E_FAIL_CLOSED_PRICE_PASS_NON_G9_SOURCE_NOT_RELEASE_AUTHORITY",
+      "e2e_guard_commit": "d469f8e53ae73847e03691b62c01464097529fef",
+      "e2e_run_id": 38140751041,
+      "e2e_result": "FAILURE_EXPECTED_RELEASE_NO_GO",
+      "e2e_negative_test_log": "XRAY_E2E_NON_G9_PRICE_RELEASE_VETO=PASS_5_NEGATIVE_NO_LICENSE_INFERENCE",
+      "vendor_rights_verified": false
     }
   },
   "rights_and_coverage": {
@@ -404,7 +423,8 @@
     "BUSINESS_QUANT_30_CALLS_DAY_BATCH_COVERAGE_AND_RIGHTS_UNTESTED",
     "SEC_FRAMES_34_PRIOR_UNKNOWN_RESEARCH_CANDIDATES_STILL_REQUIRE_PIT_FILINGS_SHARE_CLASS_AND_CORPORATE_ACTIONS",
     "SEC_FRAMES_OUTPUT_SAME_ASOF_BLOB_SHA_BINDING_VERIFIED_BUT_DOES_NOT_CREATE_MC_AUTHORITY",
-    "SEC_514_FULL_VINTAGE_RESCAN_TRIGGERED_RESULT_PENDING_NEVER_PRIMARY_BY_WORKFLOW"
+    "SEC_514_FULL_VINTAGE_RESCAN_TRIGGERED_RESULT_PENDING_NEVER_PRIMARY_BY_WORKFLOW",
+    "514_CANONICAL_PRICE_PASS_MARKED_RALLIES_NON_G9_NO_C417_PRIMARY_SOURCE_RIGHTS"
   ],
   "no_vendor_raw_bars_stored": true,
   "operator_approval_to_promote": false,
@@ -417,6 +437,7 @@
   "real_money": "NO-GO",
   "unknown_never_pass": true,
   "technical_next_steps": [
+    "Obtain valid documented PRICE non-display derived research entitlement and rerun full daily DV30 with primary source lineage (all 514 current PASS are tagged NON_G9)",
     "Retain existing Alpaca 515 daily/260/52 no vendor bar export; do not duplicate transport implementation",
     "Review licensing scope for personal automated GitHub runner, derived swing alerts and private retention independently",
     "Reconcile SEC 514 full vintage shadow census, status-by-status; no class-assumption shortcuts",
