@@ -85,12 +85,6 @@ def audit(state,root,now):
             raise ValueError("UNRECOGNIZED_UNKNOWN_CLASS:"+symbol)
         elif status!="PASS" and not status.startswith(("FAIL_","BLOCK_")):
             raise ValueError("HISTORY_RESULT_STATUS_UNRECOGNIZED:"+symbol)
-    # C4.17: a complete cursor and matching UNKNOWN subtotal do not prove
-    # the persisted PASS/FAIL/BLOCK partition matches individual source rows.
-    # This guard is required even when a legacy hash cannot be reconstructed.
-    declared_counts=state.get("counts")
-    if not isinstance(declared_counts,dict) or declared_counts!=dict(bystatus):
-        raise ValueError("HISTORY_DECLARED_STATUS_COUNTS_DRIFT")
     unknown=sum(n for status,n in bystatus.items() if status.startswith("UNKNOWN"))
     if unknown!=state.get("unknown_count"):
         raise ValueError("SINA_UNKNOWN_COUNT_DRIFT")
@@ -100,6 +94,12 @@ def audit(state,root,now):
         raise ValueError("SINA_RETRY_COUNTER_DRIFT")
     if sum(bystatus.values())!=len(q):
         raise ValueError("HISTORY_CLASSIFICATION_SUM_DRIFT")
+    # C4.17: a complete cursor and matching UNKNOWN subtotal do not prove
+    # the persisted PASS/FAIL/BLOCK partition matches individual source rows.
+    # This guard is required even when a legacy hash cannot be reconstructed.
+    declared_counts=state.get("counts")
+    if not isinstance(declared_counts,dict) or declared_counts!=dict(bystatus):
+        raise ValueError("HISTORY_DECLARED_STATUS_COUNTS_DRIFT")
     root_status=root.get("status")
     if root_status=="PARTIAL_HISTORY":
         if state.get("status")!="HISTORY_PARTIAL" or unknown<=0:
