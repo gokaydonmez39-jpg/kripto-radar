@@ -1,0 +1,116 @@
+{
+  "schema": "XRAY_SEC_SGML_OFFICIAL_ACCEPTANCE_PROVENANCE_20261011_V4",
+  "record_date_utc": "2026-10-11",
+  "source_current_trading_asof": "2026-10-09",
+  "live_main_at_write": "1fd15f6dfe9c60fcf96538fefc3808a3c6abde8a",
+  "authority": "RESEARCH_ONLY_OFFICIAL_SEC_CLOCK_PROVENANCE_NO_PRICE_MC_ALPHA",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "issue": {
+    "root": "SEC_SUBMISSIONS_ACCEPTANCE_DATE_TIME_MIXES_UTC_AND_NEW_YORK_CLOCK_EVEN_IF_Z",
+    "failure_mode": "Z_IS_ASSUMED_TO_BE_UTC_CAN_FABRICATE_PRE_MARKET_CLOSE_PIT_ELIGIBILITY",
+    "external_independent_research": "https://iangow.github.io/sec_submissions/timestamps/",
+    "sec_official_timestamp_rules": "https://www.sec.gov/about/webmaster-frequently-asked-questions",
+    "minimal_reproduction": {
+      "raw": "2026-10-08T19:59:00Z",
+      "nasdaq_close_utc": "2026-10-08T20:00:00+00:00",
+      "as_utc": "2026-10-08T19:59:00+00:00",
+      "as_new_york_clock": "2026-10-08T23:59:00+00:00",
+      "result": "UNKNOWN_SEC_ACCEPTANCE_CLOCK_AMBIGUOUS_PIT"
+    }
+  },
+  "repairs": [
+    {
+      "commit": "6be676d8b92b5cb86033270a116c462c8309cba5",
+      "file": "nasdaq-xray/sec_official_free_mc_transport_probe.py",
+      "function": "select_shares",
+      "method": "VERIFY_BOTH_PLAUSIBLE_CLOCKS_BEFORE_OFFICIAL_FULL_OR_EARLY_NASDAQ_CLOSE",
+      "production_mc_created": false,
+      "ci": [
+        38169144357,
+        38169144353,
+        38169144329
+      ]
+    },
+    {
+      "commit": "fb1fd2c7a87a4b389ce881f9ef341f44255f9b67",
+      "file": "nasdaq-xray/sec_sgml_acceptance_witness.py",
+      "method": "VALIDATE_SEC_DOCUMENT_ACCESSION_AND_EXACT_CIK_AND_SGML_HEADER_ACCEPTANCE_IN_AMERICA_NEW_YORK"
+    },
+    {
+      "commit": "806bb56c4cb346169400a37494faabcacba2ba75",
+      "file": ".github/workflows/xray-sec-free-mc-transport-proof.yml",
+      "method": "PIN_THREE_ACTION_SHAS_CHECK_GITHUB_TRIGGER_SHA_PROBE_REAL_SEC_SGML_AND_UPLOAD_META_ONLY",
+      "ci": 38169428794
+    },
+    {
+      "commit": "fca37d46638e8b5520d5fb3dc93fe3eda75d3565",
+      "file": "nasdaq-xray/immutable_action_dependency_guard.py",
+      "method": "EXTEND_PINNED_WORKFLOW_GUARD_15_41_AND_SEC_TRIGGERED_SOURCE_SHA_FENCE",
+      "ci": 38169635503,
+      "ci_result": "FAILED_NEGATIVE_TEST_CAUGHT_ESCAPED_REGEX"
+    },
+    {
+      "commit": "1fd15f6dfe9c60fcf96538fefc3808a3c6abde8a",
+      "file": "nasdaq-xray/immutable_action_dependency_guard.py",
+      "method": "REPAIR_REGEX_AND_RERUN_9_NEGATIVES",
+      "ci": 38169738447,
+      "ci_result": "SUCCESS"
+    }
+  ],
+  "real_sgml_proof": {
+    "source": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000018/0000320193-26-000018.txt",
+    "issuer": "Apple Inc.",
+    "cik": "0000320193",
+    "accession": "0000320193-26-000018",
+    "filing_form": "8-K",
+    "filing_date": "2026-07-30",
+    "official_sec_header_acceptance_et": "2026-07-30 16:30:28 America/New_York",
+    "official_sec_header_acceptance_utc": "2026-07-30T20:30:28+00:00",
+    "official_nasdaq_close_utc": "2026-07-30T20:00:00+00:00",
+    "pit_classification": "SGML_ACCEPTED_AFTER_RTH_CLOSE_UNKNOWN",
+    "sgml_header_sha256": "77be2f07cd05ee3bbdcc674dbd4ba0460dd1787168cb402c7d6a3fdbd119cd62",
+    "transport_direct_sec_http_proven": true,
+    "ci_run": 38169428794,
+    "ci_result": "SUCCESS",
+    "ci_selftest": "PASS_2_POSITIVE_7_NEGATIVE_NO_PRIMARY",
+    "artifact_id": 11713471017,
+    "artifact_filename": "xray-sec-sgml-canary-20261011.zip",
+    "raw_sec_sgml_or_vendor_bars_committed": false
+  },
+  "supply_chain": {
+    "latest_guard_ci": 38169738447,
+    "guard_ci_status": "SUCCESS",
+    "log_negative": "XRAY_IMMUTABLE_ACTION_GUARD_SELFTEST=PASS_9_NEGATIVES",
+    "log_full": "XRAY_IMMUTABLE_ACTION_GUARD=PASS_15_WORKFLOWS_41_EXACT_OFFICIAL_SHAS",
+    "rights_log": "XRAY_C418_MULTI_SOURCE_LIVE_READINESS=DATA_BLOCKED_CORRECT_NO_LICENSE",
+    "repo_remaining_unpinned_workflows_not_exhaustively_remediated": true
+  },
+  "new_514_full_sec_census": {
+    "run_id": 38169144342,
+    "last_checked_status": "IN_PROGRESS",
+    "claim_of_completion": false,
+    "price_pass_scope": 514,
+    "source_asof": "2026-10-09",
+    "primary_mc_created": false
+  },
+  "source_rights": {
+    "sec_official_public_edgar_document_reuse": "PUBLIC_DOMAIN_OR_PUBLIC_FILING_REUSE_SUBJECT_TO_SEC_FAIR_ACCESS",
+    "licensed_vendor_non_display_price_rights": "NOT_ATTESTED",
+    "bigdata_primary_mc_credits": "OBSERVED_ZERO_IN_PRIOR_READBACK"
+  },
+  "unresolved_production": {
+    "current_same_asof_primary_mc": 0,
+    "price_pass_non_g9_scope": 514,
+    "root_history_unknown": 229,
+    "master_identity_unknown": 12,
+    "terminal_frozen_at": "2026-10-07",
+    "real_r92_registered": false,
+    "device_receipt_verified": false,
+    "go": "NO-GO"
+  },
+  "constraints": "Neither synthetic SGML self-tests nor one real Apple filing authorizes 514 PIT listing class MC or vendor market-data retention; the SEC 514 full run is not finished."
+}
