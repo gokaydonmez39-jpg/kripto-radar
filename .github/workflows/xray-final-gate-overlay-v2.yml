@@ -26,8 +26,9 @@ permissions:
   contents: write
 
 concurrency:
-  group: xray-final-gate-overlay-v2
-  cancel-in-progress: true
+  # Share a single-writer lane with the legacy hourly overlay refresher.
+  group: xray-canonical-final-overlay-single-writer
+  cancel-in-progress: false
 
 jobs:
   overlay:
