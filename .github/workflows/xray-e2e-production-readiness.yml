@@ -30,8 +30,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
           fetch-depth: 1
+      - name: Reject stale or mismatched HEAD for production-readiness evidence
+        shell: bash
+        env:
+          XRAY_EXPECTED_SHA: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
+        run: |
+          set -euo pipefail
+          actual="$(git rev-parse HEAD)"
+          [[ "$actual" == "$XRAY_EXPECTED_SHA" ]] || { echo "XRAY_E2E_WRONG_INVOCATION_SHA" >&2; exit 2; }
+          current_main="$(git ls-remote origin refs/heads/main | cut -f1)"
+          [[ -n "$current_main" && "$current_main" == "$XRAY_EXPECTED_SHA" ]] || {
+            echo "XRAY_E2E_CHECKED_SOURCE_NOT_CURRENT_MAIN_FAIL_CLOSED" >&2
+            exit 2
+          }
+          echo "XRAY_E2E_SOURCE_SHA_EXACT_AND_MAIN_CURRENT=PASS"
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
