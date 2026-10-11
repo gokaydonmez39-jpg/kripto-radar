@@ -6,6 +6,7 @@ on:
     paths:
       - "nasdaq-xray/sec_free_mc_multisymbol_pit_audit.py"
       - "nasdaq-xray/sec_official_free_mc_transport_probe.py"
+      - "nasdaq-xray/sec_frames_bulk_shares_shadow.py"
       - ".github/workflows/xray-sec-free-mc-multisymbol-pit-shadow.yml"
 permissions:
   contents: read
@@ -37,6 +38,8 @@ jobs:
           python -m py_compile nasdaq-xray/sec_official_free_mc_transport_probe.py nasdaq-xray/sec_free_mc_multisymbol_pit_audit.py
           python nasdaq-xray/sec_official_free_mc_transport_probe.py --selftest
           python nasdaq-xray/sec_free_mc_multisymbol_pit_audit.py --selftest
+          python -m py_compile nasdaq-xray/sec_frames_bulk_shares_shadow.py
+          python nasdaq-xray/sec_frames_bulk_shares_shadow.py --selftest
       - name: Sample official SEC share vintages, never classify PRIMARY MC
         env:
           XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
@@ -59,11 +62,39 @@ jobs:
           print("XRAY_SEC_OFFICIAL_35_OF_PRICE_PASS=SHADOW_ONLY_NO_MC_AUTHORITY")
           print("XRAY_SEC_MULTI_SOURCE_AUDIT=PASS_NO_FALSE_MC")
           PY
+      - name: Discover issuer-wide SEC share facts via bounded official frames, never MC
+        env:
+          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
+        run: |
+          python nasdaq-xray/sec_frames_bulk_shares_shadow.py --out "$RUNNER_TEMP/xray_sec_frames_shadow.json"
+          python - <<'PY'
+          import os,json
+          from pathlib import Path
+          j=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_sec_frames_shadow.json").read_text())
+          assert j["schema"]=="XRAY_C418_SEC_FRAMES_SHARE_DISCOVERY_SHADOW_V1"
+          assert j["current_price_pass_scope_count"]==514
+          assert j["c417_mc_primary_created"] is False
+          assert j["c417_history_pass_created"] is False
+          assert j["r92_eligible"] is False
+          assert j["market_cap_calculated"] is False
+          assert j["raw_shares_in_report"] is False
+          assert j["issuer_share_class_pit_attested"] is False
+          assert j["filing_acceptance_intraday_attested"] is False
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          if j["status"]=="SHADOW_FRAME_DISCOVERY_COMPLETE_NOT_PIT":
+              assert j["frames_http200"]==6
+              assert sum(j["classes"].values())==514
+          else:
+              assert j["status"] in ("SOURCE_NOT_AVAILABLE","SOURCE_PARTIAL_FRAME_TRANSPORT")
+          print("XRAY_SEC_FRAMES_READBACK="+j["status"]+"_NO_PRIMARY_NO_AL")
+          PY
       - name: Persist operational results only, 14 days
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: xray-sec-multi-pit-shadow-operational-v1
-          path: ${{ runner.temp }}/xray_sec_multisymbol_pit_shadow.json
+          path: |
+            ${{ runner.temp }}/xray_sec_multisymbol_pit_shadow.json
+            ${{ runner.temp }}/xray_sec_frames_shadow.json
           retention-days: 14
           if-no-files-found: warn
