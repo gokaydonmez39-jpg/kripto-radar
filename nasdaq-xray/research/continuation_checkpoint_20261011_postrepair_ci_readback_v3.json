@@ -1,0 +1,67 @@
+{
+  "schema": "XRAY_20261011_LIVE_CI_POSTREPAIR_READBACK_V3",
+  "parent_head_sha": "88b0fb9f3463cae57172d920c6f008a015def60d",
+  "metadata_only": true,
+  "policy": "C4.17",
+  "control": "C4.27",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "source_epoch_repair": {
+    "commit": "e081641402e73b96541436d28f89256c79464fe1",
+    "account_run": 38172722882,
+    "manual_run": 38172722873,
+    "account_conclusion": "success",
+    "manual_conclusion": "success",
+    "two_repetitions_of_5_positive_6_negative": "PASSED_UNDER_NORMAL_AND_OPTIMIZED_PYTHON",
+    "manual_current_main": "CURRENT_EXACT",
+    "manual_public_status": "SOURCE_INTEGRITY_BLOCKED",
+    "account_reconcile": "NO_CHANGE"
+  },
+  "account_optimized_repair": {
+    "commit": "88b0fb9f3463cae57172d920c6f008a015def60d",
+    "run_id": 38172851023,
+    "conclusion": "success",
+    "positive_tests": 2,
+    "negative_tests": 7,
+    "interpreter_modes": [
+      "python",
+      "python -O"
+    ],
+    "all_six_code_guards_unoptimizable": true,
+    "prior_log_label_erroneous": "4_POSITIVE_ACTUAL_2_POSITIVE",
+    "fix_proposed_in_same_commit": true
+  },
+  "preopen": {
+    "run_id": 38172851000,
+    "conclusion": "success"
+  },
+  "source_observations": {
+    "terminal_asof_et": "2026-10-07",
+    "master_asof_et": "2026-10-09",
+    "master_pass": 3184,
+    "master_unknown": 12,
+    "SEC_source_run": 38169144342,
+    "sec_scoped": 514,
+    "sec_shadow_vintages": 346,
+    "sec_unknown": 167,
+    "sec_transport_unknown": 1,
+    "sec_primary": 0
+  },
+  "rights": {
+    "same_asof_PRIMARY_MC": false,
+    "production_non_display_license": false,
+    "full_260_session_history_proven": false
+  },
+  "runtime": {
+    "account_pass": false,
+    "g9_pass": false,
+    "registered_r92_proven": false,
+    "user_device_receipt_proven": false
+  },
+  "research_go": "NO-GO",
+  "supersedes": [
+    "nasdaq-xray/research/continuation_checkpoint_20261011_account_manual_source_epoch_repair_v1.json",
+    "nasdaq-xray/research/continuation_checkpoint_20261011_account_optimized_guard_v2.json"
+  ]
+}

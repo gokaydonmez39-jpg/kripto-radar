@@ -94,7 +94,7 @@ def main():
     bad=base_gate();bad["execution"]="TRADE";run_case(bad,adapters(),False,"ACCOUNT_GATE_EXECUTION_UNSAFE")
     bad=adapters();bad["real_money"]="GO";run_case(base_gate(),bad,False,"ACCOUNT_ADAPTER_EXECUTION_UNSAFE")
     bad=base_gate();bad["provider"]="BAD";run_case(bad,adapters(),False,"ACCOUNT_GATE_PROVIDER_INVALID")
-    print("XRAY_ACCOUNT_GATE_RECONCILER_SELFTEST=PASS_4_POSITIVE_7_NEGATIVE_OPTIMIZED_SAFE")
+    print("XRAY_ACCOUNT_GATE_RECONCILER_SELFTEST=PASS_2_POSITIVE_7_NEGATIVE_OPTIMIZED_SAFE")
 
 if __name__=="__main__":
     main()

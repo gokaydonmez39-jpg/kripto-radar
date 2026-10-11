@@ -6,12 +6,14 @@
   "execution": "NONE",
   "real_money": "NO-GO",
   "fixed": "SIX_UNOPTIMIZABLE_ACCOUNT_GATES_REPLACE_PYTHON_ASSERT",
-  "test_matrix": "4_POSITIVE_7_NEGATIVE_BOTH_INTERPRETER_MODES",
+  "test_matrix": "2_POSITIVE_7_NEGATIVE_BOTH_INTERPRETER_MODES",
   "can_create_account_pass": false,
   "account_status": "ACCOUNT_BOOTSTRAP_READY_CREDENTIALS_REQUIRED",
   "source_sha_fences_unchanged": true,
   "no_primary_mc_created": true,
   "production_go": "NO-GO",
   "ci_status_at_write": "PENDING",
-  "metadata_only": true
+  "metadata_only": true,
+  "corrected_report_label": "PREVIOUS_CI_LOG_TEXT_INCORRECT_4_POSITIVE_ACTUAL_2_POSITIVE",
+  "correction_semantics": "MESSAGE_ONLY_TEST_OUTCOMES_UNCHANGED"
 }
