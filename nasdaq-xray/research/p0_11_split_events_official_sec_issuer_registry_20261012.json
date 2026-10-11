@@ -1,0 +1,103 @@
+{
+  "schema": "XRAY_P0_11_SPLIT_OFFICIAL_SEC_ISSUER_SOURCE_REGISTRY_V1",
+  "decision_asof": "2026-10-09",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "role": "OFFICIAL_FILINGS_AND_IR_HUMAN_VERIFIED_RATE_AND_SPLIT_EVENT_SOURCE_RESEARCH_ONLY_NO_PIT_ACCEPTANCE_PROOF",
+  "source_file_bodies_and_SHA256_downloaded_attested": false,
+  "SEC_accepted_filing_times_all_events_machine_attested": false,
+  "post_split_issuance_issuer_MC_proven": false,
+  "provider_CA_publication_time_machine_attested": false,
+  "current_C417_PRIMARY_MC_created": 0,
+  "canonical_HISTORY_PASS_created": 0,
+  "R92_created": false,
+  "GO": false,
+  "events": [
+    {
+      "symbol": "ASST",
+      "process_date": "2026-02-06",
+      "factor_new_over_old": "0.05",
+      "document": "https://www.sec.gov/Archives/edgar/data/1920406/000162828026019879/asst-20251231.htm",
+      "type": "reverse_split",
+      "document_note": "Issuer retrospective 1:20 reverse split, potential execution after-close effective-day classification requires exact proof"
+    },
+    {
+      "symbol": "BKNG",
+      "process_date": "2026-04-06",
+      "factor_new_over_old": "25",
+      "document": "https://www.sec.gov/Archives/edgar/data/1075531/000095015726000465/form8-k.htm",
+      "type": "forward_split"
+    },
+    {
+      "symbol": "CRWD",
+      "process_date": "2026-07-02",
+      "factor_new_over_old": "4",
+      "document": "https://www.sec.gov/Archives/edgar/data/1535527/000153552726000022/crwd-20260603.htm",
+      "type": "forward_split"
+    },
+    {
+      "symbol": "HON",
+      "process_date": "2026-06-29",
+      "factor_new_over_old": "0.5",
+      "document": "https://www.sec.gov/Archives/edgar/data/773840/000077384026000084/hon-20260625.htm",
+      "type": "reverse_split"
+    },
+    {
+      "symbol": "IESC",
+      "process_date": "2026-08-24",
+      "factor_new_over_old": "2",
+      "document": "https://www.sec.gov/Archives/edgar/data/1048268/000104826826000131/iesc-20260731.htm",
+      "type": "forward_split"
+    },
+    {
+      "symbol": "KLAC",
+      "process_date": "2026-06-12",
+      "factor_new_over_old": "10",
+      "document": "https://www.sec.gov/Archives/edgar/data/319201/000119312526212093/d116682dex991.htm",
+      "type": "forward_split"
+    },
+    {
+      "symbol": "MNST",
+      "process_date": "2026-08-11",
+      "factor_new_over_old": "2",
+      "document": "https://www.sec.gov/Archives/edgar/data/865752/000110465926081842/tm2619964d1_ex99-1.htm",
+      "type": "forward_split"
+    },
+    {
+      "symbol": "NFLX",
+      "process_date": "2025-11-17",
+      "factor_new_over_old": "10",
+      "document": "https://www.sec.gov/Archives/edgar/data/1065280/000106528025000407/ex991_q425stocksplit.htm",
+      "type": "forward_split"
+    },
+    {
+      "symbol": "POWL",
+      "process_date": "2026-04-06",
+      "factor_new_over_old": "3",
+      "document": "https://www.sec.gov/Archives/edgar/data/80420/000008042026000107/powl-20260630.htm",
+      "type": "forward_split"
+    },
+    {
+      "symbol": "SNEX",
+      "process_date": "2026-03-23",
+      "factor_new_over_old": "1.5",
+      "document": "https://www.sec.gov/Archives/edgar/data/913760/000091376026000015/intl-20260204.htm",
+      "type": "forward_split"
+    },
+    {
+      "symbol": "SNEX",
+      "process_date": "2026-07-20",
+      "factor_new_over_old": "1.5",
+      "document": "https://www.sec.gov/Archives/edgar/data/913760/000091376026000034/pressrelease-may2026_stock.htm",
+      "type": "forward_split"
+    },
+    {
+      "symbol": "TRI",
+      "process_date": "2026-05-04",
+      "factor_new_over_old": "0.98456",
+      "document": "https://www.sec.gov/Archives/edgar/data/1075124/000119312526201824/d139216dex991.htm",
+      "type": "reverse_split"
+    }
+  ]
+}
