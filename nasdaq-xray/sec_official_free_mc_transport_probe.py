@@ -15,7 +15,7 @@ import re
 import urllib.error
 import urllib.request
 from pathlib import Path
-from zoneinfo import ZoneInfo
+from functools import lru_cache
 
 DEFAULT_ASOF="2026-10-08"
 CIK="0000320193"  # Apple: transport canary, not a real trading candidate
@@ -66,13 +66,41 @@ def accession_acceptance_index(sub: dict) -> dict:
         idx[acc]={"form":form,"filed":filed,"accepted_at":stamp}
     return idx
 
+@lru_cache(maxsize=512)
+def official_nasdaq_close_utc(asof: str) -> dt.datetime:
+    """Official regular-session close, including 13:00 ET half days.
+
+    No trading session, unknown schedule, or unavailable calendar => no
+    share-vintage PIT acceptance; there is no 16:00 fallback.
+    """
+    import pandas_market_calendars as mcal
+    # The calendar library resolves exchange holidays and early closes.
+    try:
+        day=dt.date.fromisoformat(asof)
+        cal=mcal.get_calendar("NASDAQ")
+        sched=cal.schedule(start_date=day,end_date=day)
+        if len(sched)!=1:
+            raise ValueError("NASDAQ_ASOF_NOT_TRADING_SESSION")
+        stamp=sched.iloc[0]["market_close"]
+        if stamp.tzinfo is None:
+            raise ValueError("NASDAQ_SESSION_CLOSE_TIMEZONE_MISSING")
+        result=stamp.to_pydatetime().astimezone(dt.timezone.utc)
+        if result.date()!=day:
+            raise ValueError("NASDAQ_SESSION_CLOSE_DATE_MISMATCH")
+        return result
+    except (KeyError,IndexError,TypeError,AttributeError) as exc:
+        raise ValueError("NASDAQ_SESSION_CALENDAR_UNAVAILABLE") from exc
+
+
 def select_shares(facts:dict,sub:dict,asof:str,expected_cik:str=CIK) -> dict:
     cutoff=dt.date.fromisoformat(asof)
-    # PIT authority is bounded at the completed regular Nasdaq session close,
-    # NOT midnight UTC: otherwise late SEC filings cause lookahead leakage.
-    session_close_utc=dt.datetime.combine(
-        cutoff,dt.time(16,0),tzinfo=ZoneInfo("America/New_York")
-    ).astimezone(dt.timezone.utc)
+    # The official Nasdaq trading calendar, not assumed 16:00 ET, is the
+    # sole completed-session PIT cutoff (holidays/half-days fail closed).
+    try:
+        session_close_utc=official_nasdaq_close_utc(asof)
+    except ValueError as exc:
+        return {"status":"UNKNOWN","reason":str(exc),
+                "production_mc_primary_pass":False}
     if str(facts.get("cik") or "").lstrip("0")!=expected_cik.lstrip("0"):
         return {"status":"UNKNOWN","reason":"SEC_COMPANYFACTS_CIK_MISMATCH"}
     if str(sub.get("cik") or "").lstrip("0")!=expected_cik.lstrip("0"):
@@ -212,6 +240,31 @@ def selftest():
     assert select_shares(same_close,sub_close,asof)["status"]=="UNKNOWN"
     sub_close["filings"]["recent"]["acceptanceDateTime"][0]="2026-10-08T19:59:00Z"
     assert select_shares(same_close,sub_close,asof)["status"]=="SHADOW_SHARES_VINTAGE_ONLY"
+    # Nasdaq official 2026 calendar: 27 Nov is an early-close session
+    # (13:00 ET / 18:00 UTC); 26 Nov is Thanksgiving market holiday.
+    # The old 16:00 ET hardcode leaks a 13:30 ET filing into same-day PIT.
+    early_fak=json.loads(json.dumps(fak))
+    early_row=early_fak["facts"]["dei"]["EntityCommonStockSharesOutstanding"]["units"]["shares"][0]
+    early_row.update({"filed":"2026-11-27","end":"2026-11-27"})
+    early_fak["facts"]["dei"]["EntityCommonStockSharesOutstanding"]["units"]["shares"]=[early_row]
+    early_sub={"cik":320193,"filings":{"recent":{
+        "accessionNumber":["0000320193-26-000001"],
+        "form":["10-Q"],"filingDate":["2026-11-27"],
+        "acceptanceDateTime":["2026-11-27T18:30:00Z"]}}}
+    assert select_shares(early_fak,early_sub,"2026-11-27")["status"]=="UNKNOWN", (
+        "EARLY_CLOSE_POST_13_ET_LOOKAHEAD_ACCEPTED")
+    early_sub["filings"]["recent"]["acceptanceDateTime"][0]="2026-11-27T17:59:00Z"
+    assert select_shares(early_fak,early_sub,"2026-11-27")["status"]=="SHADOW_SHARES_VINTAGE_ONLY", (
+        "VALID_EARLY_CLOSE_PRE_13_ET_FACT_FALSE_REJECTED")
+    holiday_fak=json.loads(json.dumps(early_fak))
+    holiday_fak["facts"]["dei"]["EntityCommonStockSharesOutstanding"]["units"]["shares"][0].update({
+        "filed":"2026-11-26","end":"2026-11-26"})
+    holiday_sub=json.loads(json.dumps(early_sub))
+    holiday_sub["filings"]["recent"]["filingDate"]=["2026-11-26"]
+    holiday_sub["filings"]["recent"]["acceptanceDateTime"]=["2026-11-26T18:00:00Z"]
+    assert select_shares(holiday_fak,holiday_sub,"2026-11-26")["reason"]=="NASDAQ_ASOF_NOT_TRADING_SESSION", (
+        "HOLIDAY_ASOF_FALSE_PIT_ACCEPTANCE")
+
     bad=json.loads(json.dumps(fak))
     bad["cik"]=1234
     assert select_shares(bad,subs,asof)["reason"]=="SEC_COMPANYFACTS_CIK_MISMATCH"
