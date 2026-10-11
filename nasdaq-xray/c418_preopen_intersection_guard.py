@@ -137,6 +137,13 @@ def audit(price,master,alpaca,sec,price_sha,master_sha):
         root_cause_class(statuses[sym],reasons[sym],sym) for sym in names))
     if actual_remediations!=sec["remediation_counts"]:
         raise ValueError("SEC_REMEDIATION_PER_SYMBOL_PROVENANCE_MISMATCH")
+    # An eligible SEC DEI share vintage is emitted with this exact reason
+    # by select_shares. A fabricated "SHADOW" label with an UNKNOWN reason
+    # would otherwise retain a plausible PIT remediation aggregate.
+    eligible_reason="SHARE_CLASS_CORP_ACTION_AND_PIT_PRICE_STILL_REQUIRED"
+    if any((statuses[sym]==SEC_VINTAGE)!=(reasons[sym]==eligible_reason)
+           for sym in names):
+        raise ValueError("SEC_VINTAGE_STATUS_REASON_COUPLING_FAILED")
     price_set=set(names)
     short=set(missing)
     observed=price_set-short
@@ -279,7 +286,16 @@ def selftest():
         try:audit(pp,mm,aa,tt,"a"*40,"b"*40)
         except ValueError:pass
         else:raise AssertionError("PARTITION_NEGATIVE_FALSE_PASS_"+key)
-    print("XRAY_C418_EXACT_341_PARTITION_SELFTEST=PASS_SET_SHA_NEGATIVES_NO_PRIMARY")
+    # Adversarial SEC fact: counters still match after a fake SHADOW reason.
+    # Only strict per-symbol status/reason coupling can reject this case.
+    altered=deepcopy(t)
+    altered["reason_codes"]["A"]="NO_SEC_DEI_OR_GAAP_SHARES_FACT"
+    altered["reason_counts"]=dict(Counter(altered["reason_codes"].values()))
+    try:audit(p,m,a,altered,"a"*40,"b"*40)
+    except ValueError as err:
+        assert "SEC_VINTAGE_STATUS_REASON_COUPLING_FAILED" in str(err),err
+    else:raise AssertionError("SEC_VINTAGE_REASON_FORGED_BUT_ACCEPTED")
+    print("XRAY_C418_EXACT_341_PARTITION_SELFTEST=PASS_SET_SHA_NEGATIVES_REASON_COUPLING_NO_PRIMARY")
 
 def main():
     x=argparse.ArgumentParser()
