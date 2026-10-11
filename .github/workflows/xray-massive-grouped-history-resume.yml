@@ -8,6 +8,7 @@ on:
       - "nasdaq-xray/grouped_history_full_pipeline_selftest.py"
       - "nasdaq-xray/qualified_history_ingress_shadow.py"
       - "nasdaq-xray/source_epoch_freshness_guard.py"
+      - "nasdaq-xray/history_downstream_action_pin_selftest.py"
       - "nasdaq-xray/qualified_history_ingress_shadow.py"
       - ".github/workflows/xray-massive-grouped-history-resume.yml"
   schedule:
@@ -29,12 +30,12 @@ jobs:
       XRAY_MASSIVE_LICENSE_EVIDENCE_SHA256: ${{ secrets.XRAY_MASSIVE_LICENSE_EVIDENCE_SHA256 }}
       GH_TOKEN: ${{ github.token }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           ref: ${{ github.sha }}
       - name: Verify exact triggering source
         run: test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: "3.12"
       - name: Install exchange calendar and encryption
@@ -45,6 +46,8 @@ jobs:
           python nasdaq-xray/massive_grouped_history_resume.py --selftest
           python -m py_compile nasdaq-xray/grouped_history_full_pipeline_selftest.py
           python nasdaq-xray/grouped_history_full_pipeline_selftest.py
+          python nasdaq-xray/history_downstream_action_pin_selftest.py
+          python -O nasdaq-xray/history_downstream_action_pin_selftest.py
       - name: Independent official last-complete Nasdaq ASOF gate, no false GO
         run: |
           python -m py_compile nasdaq-xray/source_epoch_freshness_guard.py
@@ -162,7 +165,7 @@ jobs:
           PY
       - name: Persist only encrypted private vendor checkpoint
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: xray-grouped-encrypted-checkpoint-v1
           path: ${{ runner.temp }}/xray_grouped_history_checkpoint.enc
@@ -170,7 +173,7 @@ jobs:
           retention-days: 14
       - name: Persist sanitized operational evidence
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: xray-grouped-history-health-v1
           path: |

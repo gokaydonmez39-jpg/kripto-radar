@@ -1,0 +1,22 @@
+{
+  "schema": "XRAY_20261011_ENCRYPTED_HISTORY_TWO_SOURCE_ACTIONS_PIN_V1",
+  "parent_head": "dd4520b0128a569f2b428da091728fea33d03b44",
+  "source": [
+    "MASSIVE_GROUPED_260",
+    "TWELVE_BASIC_260"
+  ],
+  "fix": "IMMUTABLE_OFFICIAL_ACTIONS_CHECKOUT_SETUP_UPLOAD",
+  "tests": {
+    "positive": 2,
+    "negative": 7,
+    "python_o": true
+  },
+  "provider_calls": "NONE_BY_TEST",
+  "can_create_history_pass": false,
+  "can_create_primary_mc": false,
+  "can_register_r92": false,
+  "account_or_entitlement_changed": false,
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "ci": "PENDING"
+}
