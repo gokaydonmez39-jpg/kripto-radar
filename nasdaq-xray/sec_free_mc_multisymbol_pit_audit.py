@@ -42,7 +42,11 @@ def map_ciks(source:dict)->dict:
     for row in rows:
         if not isinstance(row,list) or len(row)<len(fields):
             continue
-        ticker=str(row[i["ticker"]] or "").strip().upper()
+        ticker=str(row[i["ticker"]] or "").strip()
+        # Nasdaq symbol identities can be case-distinct. Never canonicalize
+        # an issuer symbol: two different case-sensitive symbols must not
+        # collapse to the same CIK route (or mask one another as duplicates).
+        # Missing exact-case symbols remain UNKNOWN in downstream scope joins.
         exchange=str(row[i["exchange"]] or "").strip().lower()
         try:
             cik=int(row[i["cik"]])
@@ -133,6 +137,18 @@ def selftest():
     result=map_ciks(rows)
     assert result["AAPL"]=="0000320193"
     assert "TSM" not in result and "DUP" not in result and "ZERO" not in result
+    case_distinct={"fields":["cik","ticker","exchange"],
+        "data":[[111,"BCPC","Nasdaq"],[222,"BCpC","Nasdaq"],
+                [333,"TPC","Nasdaq"],[444,"TpC","Nasdaq"]]}
+    mapped=map_ciks(case_distinct)
+    assert mapped=={"BCPC":"0000000111","BCpC":"0000000222",
+                    "TPC":"0000000333","TpC":"0000000444"},(
+        "SEC_EXACT_TICKER_CASE_COLLAPSED_OR_MISROUTED",mapped)
+    # Duplicate EXACT ticker is still an ambiguous route, never last-write-wins.
+    duplicate_exact={"fields":["cik","ticker","exchange"],
+                     "data":[[111,"BCPC","Nasdaq"],[999,"BCPC","Nasdaq"],
+                             [222,"BCpC","Nasdaq"]]}
+    assert map_ciks(duplicate_exact)=={"BCpC":"0000000222"}
     # Nasdaq-listed ETFs could be in the SEC ticker map, but cannot enter
     # without explicit master and PRICE PASS intersections.
     assert result["QQQ"]=="0000000101"
@@ -174,7 +190,7 @@ def selftest():
         "PIT_SHARES_PRESENT_MORE_VALIDATION_REQUIRED")
     assert root_cause_class("UNKNOWN","SEC_HTTP_429")=="FAIR_ACCESS_HALT"
     assert root_cause_class("UNKNOWN","UNCLASSIFIED")=="UNRESOLVED_SOURCE"
-    print("XRAY_SEC_MULTI_SCOPE_SELFTEST=PASS_CIK_EXCHANGE_DUPLICATE_FDIC110_FAIL_CLOSED")
+    print("XRAY_SEC_MULTI_SCOPE_SELFTEST=PASS_CIK_EXCHANGE_DUPLICATE_FDIC110_EXACT_CASE_FAIL_CLOSED")
 
 def run(offset:int=0,limit:int=0,*,full_current:bool=False)->dict:
     asof,syms=load_scope(offset,limit,full_current=full_current)
