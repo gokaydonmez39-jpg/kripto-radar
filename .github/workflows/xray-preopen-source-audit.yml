@@ -71,6 +71,44 @@ jobs:
           assert obj["bigdata_free_credit_availability_proven_by_this_audit"] is False
           print("XRAY_PREOPEN_SOURCE_GUARDS=PASS_NO_ALPHA_NO_REAL_MONEY_NO_LICENSE_INFERENCE")
           PY
+      - name: Refresh official halt and suspension evidence in this preopen audit (ephemeral only)
+        shell: bash
+        timeout-minutes: 4
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import datetime as dt
+          import json
+          import subprocess
+          import sys
+          from pathlib import Path
+          sys.path.insert(0, "nasdaq-xray")
+          from preopen_live_release_gate import official_window
+          now=dt.datetime.now(dt.timezone.utc)
+          active=official_window(now)["preopen"]
+          if not active:
+              print("XRAY_PREOPEN_OFFICIAL_REFRESH=SKIPPED_OUTSIDE_OFFICIAL_PREOPEN")
+              raise SystemExit(0)
+          subprocess.run([sys.executable,"nasdaq-xray/official_source_guard.py"],check=True)
+          target=Path("nasdaq-xray/canonical_official_source_guard.json")
+          guard=json.loads(target.read_text(encoding="utf-8"))
+          stamp=dt.datetime.fromisoformat(guard["generated_at_utc"].replace("Z","+00:00"))
+          assert stamp.tzinfo is not None
+          age=(dt.datetime.now(dt.timezone.utc)-stamp).total_seconds()
+          assert 0<=age<=180,"OFFICIAL_REFRESH_NOT_FRESH"
+          assert guard["schema"]=="XRAY_OFFICIAL_SOURCE_GUARD_V1"
+          assert guard["execution"]=="NONE" and guard["real_money"]=="NO-GO"
+          assert guard["alpha_authority"] is False
+          assert guard["sources"].get("trade_halts",{}).get("status") in ("PASS","UNKNOWN")
+          assert guard["sources"].get("security_status",{}).get("status") in ("PASS","UNKNOWN")
+          if (guard["sources"]["trade_halts"]["status"]!="PASS"
+              or guard["sources"]["security_status"]["status"]!="PASS"):
+              print("XRAY_PREOPEN_OFFICIAL_REFRESH=DEGRADED_FAIL_CLOSED")
+          else:
+              print("XRAY_PREOPEN_OFFICIAL_REFRESH=LIVE_FRESH_GUARDS_SHADOW_ONLY")
+          print("XRAY_PREOPEN_OFFICIAL_REFRESH_AGE_SECONDS="+str(round(age)))
+          print("XRAY_PREOPEN_OFFICIAL_REFRESH=EPHEMERAL_NOT_COMMITTED_NO_ALPHA")
+          PY
       - name: Current NASDAQ official preopen truth report, never false release
         run: |
           python nasdaq-xray/preopen_live_release_gate.py --out "$RUNNER_TEMP/xray_current_preopen.json"
