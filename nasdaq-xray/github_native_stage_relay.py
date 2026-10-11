@@ -11,6 +11,7 @@ import argparse
 import datetime as dt
 import json
 import os
+import subprocess
 from pathlib import Path
 
 from github_native_root_watchdog import github, head_sha, timestamp, UTC
@@ -75,6 +76,12 @@ def load_sources():
         "canonical_current_terminal.json"
     ))
 
+def exact_checked_out_main(local_sha,first_remote_sha,second_remote_sha):
+    """Do not dispatch a newer main using stale committed source snapshots."""
+    return (all(isinstance(v,str) and len(v)==40 for v in
+                (local_sha,first_remote_sha,second_remote_sha))
+            and local_sha==first_remote_sha==second_remote_sha)
+
 def selftest():
     now=dt.datetime(2026,10,9,9,tzinfo=UTC)
     r={"asof_et":"2026-10-08","status":"PARTIAL_HISTORY",
@@ -102,7 +109,13 @@ def selftest():
         assert classify(now,rs,ms,ps,t,[])[1] is False
     assert set(WORKFLOWS)=={"pre-mc","post-mc"}
     assert len(set(WORKFLOWS.values()))==2
-    print("XRAY_STAGE_RELAY_SELFTEST=PASS_EXACT_EPOCH_7_NEGATIVE_TWO_TARGETS_NO_PRIMARY_OR_TRADE")
+    sha="a"*40
+    assert exact_checked_out_main(sha,sha,sha)
+    for trio in ((sha,"b"*40,sha),(sha,sha,"b"*40),
+                 ("b"*40,sha,sha),("",sha,sha),
+                 (sha,sha,None),("not-a-sha",sha,sha)):
+        assert not exact_checked_out_main(*trio)
+    print("XRAY_STAGE_RELAY_SELFTEST=PASS_EXACT_EPOCH_13_NEGATIVE_TWO_TARGETS_CHECKOUT_SHA_BOUND_NO_PRIMARY_OR_TRADE")
 
 def main():
     parser=argparse.ArgumentParser()
@@ -120,6 +133,8 @@ def main():
         raise RuntimeError("GITHUB_ACTIONS_DISPATCH_TOKEN_MISSING")
     target=WORKFLOWS[args.target]
     a=head_sha(token)
+    local_sha=subprocess.check_output(
+        ["git","rev-parse","HEAD"],text=True).strip()
     sources=load_sources()
     first_runs=read_runs(token,target)
     reason,eligible=classify(dt.datetime.now(UTC),*sources,first_runs)
@@ -131,12 +146,17 @@ def main():
          "current_terminal_asof":sources[3].get("asof_et"),
          "reason":reason,"target_workflow":target,
          "action":"NONE","dispatch_accepted":False,
-         "main_sha":a}
+         "main_sha":a,"local_checkout_sha":local_sha}
     if eligible:
         b=head_sha(token)
         next_runs=read_runs(token,target)
         again_reason,still_ok=classify(dt.datetime.now(UTC),*sources,next_runs)
-        if a!=b or fingerprint(first_runs)!=fingerprint(next_runs) or not still_ok:
+        # Both remote snapshots and the actual runner checkout must agree.
+        # This is critical when another writer updated main since checkout.
+        checkout_exact=exact_checked_out_main(local_sha,a,b)
+        out["checkout_main_sha_exact"]=checkout_exact
+        if (not checkout_exact or
+            fingerprint(first_runs)!=fingerprint(next_runs) or not still_ok):
             out["action"]="SKIP_CONCURRENT_MAIN_OR_PRE_MC_CHANGE"
             out["second_reason"]=again_reason
         else:
