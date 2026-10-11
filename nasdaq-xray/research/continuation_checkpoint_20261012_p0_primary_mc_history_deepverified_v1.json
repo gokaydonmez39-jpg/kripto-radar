@@ -1,0 +1,144 @@
+{
+  "schema": "XRAY_20261012_P0_MC_AND_260_52_HISTORY_EVIDENCE_CHECKPOINT_V1",
+  "asof_et": "2026-10-09",
+  "live_main_before_checkpoint": "c3ef4b58f6899724a033d62903a28cb8e0b656f5",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "source_authority": "CURRENT_LIVE_GITHUB_AND_ORIGINAL_RUN_ARTIFACT_PLUS_CONNECTED_PROVIDER_AND_OFFICIAL_ISSUER_DOCS",
+  "p0_mc": {
+    "current_primary_count": 0,
+    "reason": "BIGDATA_C4_17_PRIMARY_REQUIRES_FRESH_EXACT_NASDAQ_COMPANY_PUBLIC_USD_MARKETCAP_AND_ZERO_DOLLAR_AVAILABILITY",
+    "bigdata_connected_account_live_status": {
+      "payg_balance": 0,
+      "outOfCredits": true
+    },
+    "passive_same_asof_mc_counts": {
+      "fallback_watch": 475,
+      "fallback_fail": 10,
+      "unknown": 29,
+      "primary": 0
+    },
+    "SEC_full_run": 38173716522,
+    "SEC_release": "VERIFIED_SHADOW_ONLY_514",
+    "SEC_status_counts": {
+      "SHADOW_SHARES_VINTAGE_ONLY": 346,
+      "UNKNOWN": 167,
+      "UNKNOWN_SEC_TRANSPORT": 1
+    },
+    "SEC_alpaca_joint_run": 38175270958,
+    "joint_research_cohorts": {
+      "technical_class_action_pit": 341,
+      "history_complete_sec_unknown": 156,
+      "history_short": 17
+    },
+    "shadow_cannot_become_primary": true,
+    "source_legality": "NO_NEW_LICENSE_OR_PRIMARY_AUTHORITY",
+    "next_requirement": "DIRECT_PROVIDER_ENTITLEMENT_WITH_PIT_SHARE_CLASS_AND_NONDISPLAY_RIGHTS_OR_FORMAL_C417_SUCCESSOR_WITH_INDEPENDENT_REVIEW"
+  },
+  "p0_history": {
+    "original_alpaca_run": 38170900300,
+    "original_alpaca_artifact_id": 11714078156,
+    "artifact_json_sha256": "952ef9f7df3541df4b64c8b992fc2ead23611bd6056965edd1c824e0b5d53b51",
+    "scope_514_plus_qqq": 515,
+    "measured": 515,
+    "shadow_completed_260_52": 498,
+    "officially_short_17": [
+      "BSP",
+      "CBRS",
+      "EQPT",
+      "FRVO",
+      "HONA",
+      "INIO",
+      "MDLN",
+      "MMED",
+      "NAVN",
+      "PURR",
+      "QNT",
+      "SHAZ",
+      "SKHY",
+      "SOLS",
+      "SPCX",
+      "VSNT",
+      "XE"
+    ],
+    "transport_not_measured": 0,
+    "history_production_pass_created": 0,
+    "actual_connected_alpaca_sample": {
+      "asof": "2026-10-09",
+      "tickers": [
+        "AAPL",
+        "PLTR",
+        "OZK",
+        "QQQ"
+      ],
+      "bars_each": 263,
+      "calendar_sessions_20250924_to_20261009": 263,
+      "exact_latest_260_each": true,
+      "valid_OHLCV_each": 263,
+      "missing_official_session_dates_each": 0
+    },
+    "corporate_actions_adjustment_share_class_attested": false,
+    "licensed_unattended_internal_use_and_private_storage_attested": false,
+    "public_vendor_bars_persisted": false
+  },
+  "repair_proof": [
+    {
+      "commit": "7521deb7257727a7061c0837ee62b6572d49a03e",
+      "run": 38175830225,
+      "conclusion": "success",
+      "change": "41_HISTORY_ASSERT_TO_REQUIRE_PYTHON_O_INVARIANTS",
+      "tests": "2_POSITIVE_21_NEGATIVE_NORMAL_AND_OPTIMIZED"
+    },
+    {
+      "commit": "fc53e0bb55742140444654963535cc94aace887e",
+      "run": 38176314398,
+      "conclusion": "success",
+      "change": "MASSIVE_GROUPED_EXACT_NASDAQ_CLOSE_DST_EARLY_CLOSE",
+      "tests": "3_POSITIVE_12_NEGATIVE_NORMAL_AND_OPTIMIZED"
+    },
+    {
+      "commit": "fc53e0bb55742140444654963535cc94aace887e",
+      "run": 38176314431,
+      "conclusion": "success",
+      "change": "HISTORY_260_RESUME_SYNTHETIC_INTEGRATION_REGRESSION"
+    },
+    {
+      "commit": "74b00f7b4424fdded37c82d7945388d5fde12534",
+      "fix_commit": "c3ef4b58f6899724a033d62903a28cb8e0b656f5",
+      "run": 38176520535,
+      "conclusion": "success",
+      "change": "17_OFFICIAL_LISTING_HISTORY_FAIL_ONLY_PURR_SHAZ_SEC",
+      "tests": "17_POSITIVE_6_NEGATIVE_NORMAL_AND_OPTIMIZED",
+      "artifact_id": 11716157363,
+      "artifact_sha256": "sha256:e33c87f04602a40cdd3ecc5ec9c6b4925b1e84f026d89d5e69a7e7ce76bd8d3c",
+      "artifact_json_sha256": "630a53c7ba2e879cb84cea9a06356dae556724f546e8aa955c2f86b554d0a145"
+    }
+  ],
+  "primary_sources": [
+    "https://www.sec.gov/Archives/edgar/data/2078856/000119312526055449/purr-20251202.htm",
+    "https://www.sec.gov/Archives/edgar/data/2068385/000182912626001479/sharonai_ex99-1.htm",
+    "https://massive.com/legal/market-data-terms-of-service",
+    "https://docs.alpaca.markets/us/docs/market-data-faq",
+    "https://files.alpaca.markets/disclosures/library/TermsAndConditions.pdf"
+  ],
+  "post_mc_expected_block_run": 38176437422,
+  "post_mc_block": "CURRENT_MC_BRIDGE_ABSENT_CURRENT_MEASUREMENT_REQUIRED",
+  "post_mc_credential_status": "NOT_PROBED_BY_POST_MC_WORKFLOW",
+  "history_source_code_non_primary_only": true,
+  "remaining_hard_barriers": [
+    "C417_BIGDATA_PRIMARY_BALANCE_ZERO",
+    "LICENSED_AND_NONDISPLAY_PIT_ISSUER_CLASS_MC_SOURCE_NOT_ATTESTED",
+    "NO_514_SCOPE_C417_PRIMARY_MC",
+    "515_SCOPE_SHADOW_HIST_498_COMPLETE_17_OFFICIAL_LISTING_FAIL_ONLY",
+    "LEGAL_AUTOMATED_HIST_260_52_RIGHTS_AND_CA_CONTINUITY_NOT_VERIFIED",
+    "R92_UNREGISTERED_NO_LATEST_TERMINAL_GO"
+  ],
+  "alpha_thresholds_changed": false,
+  "no_provider_license_assumed": true,
+  "no_paid_fallback": true,
+  "go_status": "NO-GO",
+  "purpose": "PERSIST_CRITICAL_RESEARCH_AND_CI_EVIDENCE_FOR_NEXT_FOREGROUND_CONTINUATION_NO_UNAUTHORIZED_PROMOTION"
+}
