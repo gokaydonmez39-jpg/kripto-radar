@@ -78,33 +78,58 @@ def validate_price(price: dict, master: dict) -> tuple[list[str], str]:
 
 
 def settlement_witness_relation(j: dict, master: dict) -> str | None:
-    """Allow exact-current queue or a provably safe current subset of a prior full-scope witness."""
-    if (
-        j.get("queue_hash") == master.get("queue_hash")
-        and int(j.get("queue_total", -1)) == int(master.get("queue_total", -2))
-    ):
-        return "EXACT_QUEUE"
+    """Check the ACTUAL symbol set, not a matching queue hash/count assertion.
 
-    if j.get("bridge_role") != "FULL_SCOPE_MC_HANDOFF_PROVENANCE":
+    A residual authority may witness settlement for the symbols it covers,
+    but it is NEVER full-scope MC handoff authority. Full-scope and subset
+    handoffs must explicitly prove the immutable member list.
+    """
+    role = j.get("bridge_role")
+    if role not in {"CURRENT_RESIDUAL_REQUEST_AUTHORITY",
+                    "FULL_SCOPE_MC_HANDOFF_PROVENANCE"}:
         return None
-    source_symbols = list(j.get("symbols") or [])
-    current_symbols = list(master.get("pass_symbols") or [])
-    if not source_symbols or not current_symbols:
+    source_symbols = j.get("symbols")
+    current_symbols = master.get("pass_symbols")
+    settlement_symbols = j.get("settlement_symbols")
+    if not all(type(x) is list and len(x)>0 for x in (
+            source_symbols, current_symbols, settlement_symbols)):
         return None
-    if len(source_symbols) != len(set(source_symbols)):
+    for seq in (source_symbols, current_symbols, settlement_symbols):
+        if any(type(s) is not str or not s or s!=s.strip() for s in seq):
+            return None
+        if len(seq) != len(set(seq)):
+            return None
+    if source_symbols != sorted(source_symbols) or current_symbols != sorted(current_symbols):
         return None
-    if len(source_symbols) != int(j.get("queue_total", -1)):
-        return None
-    if j.get("symbol_hash") != hash_lines(source_symbols):
+    if (type(j.get("symbol_count")) is not int
+            or j["symbol_count"] != len(source_symbols)
+            or type(j.get("queue_total")) is not int
+            or j["queue_total"] < len(source_symbols)
+            or type(master.get("queue_total")) is not int
+            or master["queue_total"] != len(current_symbols)
+            or j.get("symbol_hash") != hash_lines(source_symbols)):
         return None
     source_set = set(source_symbols)
     current_set = set(current_symbols)
-    settlement_symbols = list(j.get("settlement_symbols") or [])
-    if not settlement_symbols or len(set(settlement_symbols)) != len(settlement_symbols):
+    settled_set = set(settlement_symbols)
+    if not settled_set.issubset(source_set):
         return None
-    if not current_set.issubset(source_set):
+
+    exact_queue = (j.get("queue_hash") == master.get("queue_hash")
+                   and j["queue_total"] == master["queue_total"])
+    if exact_queue:
+        if role == "FULL_SCOPE_MC_HANDOFF_PROVENANCE":
+            return "EXACT_QUEUE" if source_set == current_set else None
+        # A current residual can attest its own *settled* subset, never all
+        # members of the full market-cap input queue.
+        return ("EXACT_QUEUE_RESIDUAL_SETTLEMENT_ONLY"
+                if source_set.issubset(current_set) else None)
+
+    if role != "FULL_SCOPE_MC_HANDOFF_PROVENANCE":
         return None
-    if not set(settlement_symbols).issubset(current_set):
+    # An older FULL-scope witness can be rebound only to a genuine current
+    # subset, with every settled name explicitly present in the current set.
+    if not current_set.issubset(source_set) or not settled_set.issubset(current_set):
         return None
     return "SAFE_SUBSET_REBIND"
 
@@ -272,6 +297,7 @@ def selftest() -> None:
         "bridge_role": "FULL_SCOPE_MC_HANDOFF_PROVENANCE",
         "queue_hash": "older-hash",
         "queue_total": 3,
+        "symbol_count": 3,
         "symbols": ["AAA", "BBB", "CCC"],
         "symbol_hash": hash_lines(["AAA", "BBB", "CCC"]),
         "settlement_symbols": ["AAA", "BBB"],
@@ -285,7 +311,21 @@ def selftest() -> None:
     synthetic_witness["bridge_role"] = "FULL_SCOPE_MC_HANDOFF_PROVENANCE"
     synthetic_witness["queue_hash"] = "current-hash"
     synthetic_witness["queue_total"] = 2
+    # Previously this malformed 3-vs-2 witness was accepted as EXACT_QUEUE.
+    assert settlement_witness_relation(synthetic_witness, synthetic_master) is None
+    synthetic_witness["symbols"] = ["AAA", "BBB"]
+    synthetic_witness["symbol_hash"] = hash_lines(synthetic_witness["symbols"])
+    synthetic_witness["symbol_count"] = 2
     assert settlement_witness_relation(synthetic_witness, synthetic_master) == "EXACT_QUEUE"
+    synthetic_witness["bridge_role"] = "CURRENT_RESIDUAL_REQUEST_AUTHORITY"
+    assert settlement_witness_relation(synthetic_witness, synthetic_master) == "EXACT_QUEUE_RESIDUAL_SETTLEMENT_ONLY"
+    synthetic_witness["symbols"] = ["AAA", "CCC"]
+    synthetic_witness["symbol_hash"] = hash_lines(synthetic_witness["symbols"])
+    assert settlement_witness_relation(synthetic_witness, synthetic_master) is None
+    synthetic_witness["symbols"] = ["AAA", "BBB"]
+    synthetic_witness["symbol_hash"] = hash_lines(synthetic_witness["symbols"])
+    synthetic_witness["settlement_symbols"] = ["AAA", "CCC"]
+    assert settlement_witness_relation(synthetic_witness, synthetic_master) is None
 
     # Regression: an exact immutable residual -> full-scope witness chain must
     # resolve to the reusable full-scope authority rather than failing on the
