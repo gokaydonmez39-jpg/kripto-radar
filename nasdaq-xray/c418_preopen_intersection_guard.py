@@ -11,6 +11,8 @@ import hashlib
 import json
 from collections import Counter
 from datetime import datetime, timezone
+
+from sec_free_mc_multisymbol_pit_audit import root_cause_class
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parent
@@ -103,6 +105,20 @@ def audit(price,master,alpaca,sec,price_sha,master_sha):
         or not isinstance(sec.get("remediation_counts"),dict)
         or sum(sec["remediation_counts"].values())!=len(names)):
         raise ValueError("SEC_STATUS_NOT_EXACT_FULL_SET")
+    # Source truth is the exact per-symbol status+reason pair. A remediation
+    # histogram with a correct total can still be fabricated or misrouted.
+    # Never trust an upstream "remediation_count_exact" boolean on its own.
+    admissible_statuses={
+        SEC_VINTAGE,"UNKNOWN","UNKNOWN_SEC_TRANSPORT",
+        "UNKNOWN_OFFICIAL_CIK_ROUTE",
+        "UNKNOWN_NOT_ATTEMPTED_UPSTREAM_SEC_BLOCK",
+    }
+    if not set(statuses.values()).issubset(admissible_statuses):
+        raise ValueError("SEC_UNRECOGNIZED_SYMBOL_STATUS")
+    actual_remediations=dict(Counter(
+        root_cause_class(statuses[sym],reasons[sym],sym) for sym in names))
+    if actual_remediations!=sec["remediation_counts"]:
+        raise ValueError("SEC_REMEDIATION_PER_SYMBOL_PROVENANCE_MISMATCH")
     price_set=set(names)
     short=set(missing)
     observed=price_set-short
@@ -233,6 +249,8 @@ def selftest():
         ("reason_counts",t,{"MISREPORTED_REASON":3}),
         ("remediation_count_exact",t,False),
         ("remediation_counts",t,{"MISREPORTED_REMEDIATION":2}),
+        # Old guard accepted any spoofed remediation classes totaling 3.
+        ("remediation_counts",t,{"COUNTERFEIT_SOURCE_SUCCESS":3}),
         ("reason_codes",t,{"A":"SHARE_CLASS_CORP_ACTION_AND_PIT_PRICE_STILL_REQUIRED",
                             "C":"SHARE_CLASS_CORP_ACTION_AND_PIT_PRICE_STILL_REQUIRED"})):
         pp,mm,aa,tt=(deepcopy(p),deepcopy(m),deepcopy(a),deepcopy(t))
