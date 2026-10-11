@@ -45,7 +45,7 @@ def spread(price,master,sec_map):
     require(len(routes)+len(missing)==N,"SEC_MAP_PARTITION_GAP")
     return asof,picks,routes,missing
 
-def classify(price,master,asof,picks,routes,missing,sip_fetch,sec_fetch):
+def classify(price,master,asof,picks,routes,missing,sip_fetch,sec_fetch,*,expected_count=N):
     outcome={sym:{"status":"UNKNOWN_OFFICIAL_CIK_MAPPING",
                   "above_2b_derived_issuer_shadow":None,
                   "C417_PRIMARY":False} for sym in missing}
@@ -93,12 +93,12 @@ def classify(price,master,asof,picks,routes,missing,sip_fetch,sec_fetch):
                                    "UNKNOWN_SEC_DIMENSIONAL_CLASS_OR_PIT_SHARES"),
                           "above_2b_derived_issuer_shadow":None,
                           "C417_PRIMARY":False}
-    require(set(outcome)==set(picks) and len(outcome)==N,"SAMPLE_64_UNRESOLVED_SET")
+    require(set(outcome)==set(picks) and len(outcome)==expected_count and expected_count==len(picks),"SAMPLE_UNRESOLVED_SET")
     counts=collections.Counter(x["status"] for x in outcome.values())
     return {"schema":SCHEMA,"asof_et":asof,
             "sampling":"64_EVENLY_SPACED_LEXICOGRAPHIC_CURRENT_PRICE_PASS",
             "source_price_pass_count":price["pass_count"],
-            "sampled_count":N,"sampled_symbols":picks,
+            "sampled_count":expected_count,"sampled_symbols":picks,
             "matched_official_SEC_CIK":len(routes),
             "unmatched_official_SEC_CIK":len(missing),
             "attempted_SEC_issuer_requests":attempted,
