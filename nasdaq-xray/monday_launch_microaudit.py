@@ -58,7 +58,11 @@ CHECKS={
         "XRAY_BACKUP_DELIVERY_UNVERIFIED",
         "--search-json",
         "gh label list --repo",
-        "--limit 100 --search",
+        'gh api --method GET --paginate',
+        '"/repos/$GITHUB_REPOSITORY/issues?state=all&per_page=100"',
+        '--jq \'.[] | select(has("pull_request") | not) | {number,title}\'',
+        "| jq -s '.' >",
+
     )),
     "official_safety_before_delivery":("nasdaq-xray-delivery.yml",(
         "Refresh official Nasdaq halt + Security Status guard",
@@ -95,8 +99,12 @@ def validate_contract(files:dict[str,str])->dict:
     # failure risks two user-facing notifications for one registered R92.
     if d.count("gh issue create")!=1 or "|| gh issue create" in d:
         errors.append("DELIVERY_DUPLICATE_ISSUE_CREATE_PATH")
-    if "'.[0].number // empty'" in d:
+    if "'.[0].number // empty'" in d or "gh issue list --repo" in d:
         errors.append("DELIVERY_UNVERIFIED_FIRST_FUZZY_MATCH")
+    if "gh api --method GET --paginate" not in d or "--search \"$delivery_key in:title\"" in d:
+        errors.append("DELIVERY_ISSUE_LOOKUP_NOT_EXHAUSTIVE")
+    if "set -euo pipefail" not in d:
+        errors.append("DELIVERY_PAGINATION_API_FAILURE_NOT_FATAL")
     receipt_guard=(DATA/"delivery_issue_receipt_guard.py").read_text()
     if "def unique_exact_issue(" not in receipt_guard:
         errors.append("DELIVERY_EXACT_ISSUE_LOOKUP_GUARD_MISSING")
