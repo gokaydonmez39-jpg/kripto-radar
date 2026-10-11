@@ -81,6 +81,24 @@ def audit(price,master,alpaca,sec,price_sha,master_sha):
         or not set(missing).issubset(set(names))
         or any(value==SUCCESS for value in missing.values())):
         raise ValueError("ALPACA_INCOMPLETE_OR_FALSE_COUNTS")
+    # The Alpaca shadow exposes only an aggregate and a per-symbol exception
+    # ledger. Recompute their exact equality, rather than accepting an invented
+    # status with the same total or reassigning a real unresolved symbol's reason.
+    valid_history_statuses={
+        SUCCESS,"UNCHECKED_DUE_TO_TRANSPORT","MALFORMED_BAR",
+        "NONFINITE_OHLCV","INVALID_OHLCV_OR_ZERO_VOLUME",
+        "DUPLICATE_SESSION","FUTURE_LOOKAHEAD","NON_OFFICIAL_SESSION",
+        "TIMESTAMP_OR_OHLCV_PARSE_ERROR","NO_BAR",
+        "MISSING_EXACT_COMPLETED_SESSIONS",
+        "MISSING_52_COMPLETED_WEEK_CLOSES",
+    }
+    if (any(k not in valid_history_statuses
+            or type(v) is not int or v<0 for k,v in counts.items())
+        or any(reason not in valid_history_statuses-{SUCCESS,"UNCHECKED_DUE_TO_TRANSPORT"}
+               for reason in missing.values())
+        or dict(Counter(missing.values()))!={k:v for k,v in counts.items()
+                          if k not in (SUCCESS,"UNCHECKED_DUE_TO_TRANSPORT") and v}):
+        raise ValueError("ALPACA_PER_SYMBOL_HISTORY_CLASSIFICATION_DRIFT")
     if (sec.get("schema")!="XRAY_SEC_MULTISYMBOL_PIT_SHADOW_V1"
         or sec.get("asof_et")!=asof
         or sec.get("master_git_blob_sha")!=master_sha
@@ -251,6 +269,8 @@ def selftest():
         ("remediation_counts",t,{"MISREPORTED_REMEDIATION":2}),
         # Old guard accepted any spoofed remediation classes totaling 3.
         ("remediation_counts",t,{"COUNTERFEIT_SOURCE_SUCCESS":3}),
+        ("counts",a,{SUCCESS:3,"COUNTERFEIT_SOURCE_SUCCESS":1}),
+        ("unverified_symbols",a,{"C":"NO_BAR"}),
         ("reason_codes",t,{"A":"SHARE_CLASS_CORP_ACTION_AND_PIT_PRICE_STILL_REQUIRED",
                             "C":"SHARE_CLASS_CORP_ACTION_AND_PIT_PRICE_STILL_REQUIRED"})):
         pp,mm,aa,tt=(deepcopy(p),deepcopy(m),deepcopy(a),deepcopy(t))
