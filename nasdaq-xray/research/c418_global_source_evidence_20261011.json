@@ -224,6 +224,54 @@
         "market_data_license_information_found_in_social_post": false,
         "authority": "OFFICIAL_PROVIDER_TERMS_AND_LIVE_DATA_ONLY"
       }
+    },
+    "sec_official_frames_514_bulk_remediation": {
+      "asof_et": "2026-10-09",
+      "test_type": "PRODUCTION_SHADOW_REAL_SEC_EDGAR_FRAMES_READBACK_NOT_MC_AUTHORITY",
+      "source_script": "nasdaq-xray/sec_frames_bulk_shares_shadow.py",
+      "sec_frame_http200_requests": 6,
+      "current_cik_route_from_SEC_map": "CURRENT_ONLY_NOT_PIT",
+      "latest_validated_run_id": 38138116548,
+      "latest_validated_head_sha": "7cfc82b44c5018ff159b62e496d4d382ade5ef85",
+      "latest_validated_actions_conclusion": "success",
+      "prior_complete_companyfacts_run_id": 38123723783,
+      "prior_full_514_artifact_digest": "sha256:d534b4dc3b11b429dd7931a7ae8df445d8bc5782441f875b9de7cf400f2ca56d",
+      "frames_514_artifact_digest": "sha256:9046b841c5e823c30cf24e2879c5523ff8a30417d58ad7124d23765a12f9721c",
+      "same_asof_exact_set_sha256": "f1073b9026483455bb6402cefcccdad340631a328788896777cc625e57567de6",
+      "universe_514_complete_both": true,
+      "companyfacts_c417_shadow_pit_vintage_only": 346,
+      "companyfacts_unknown": 167,
+      "companyfacts_transport_unknown": 1,
+      "frames_counts": {
+        "DEI_FRAME_CANDIDATE_NEEDS_OFFICIAL_CLASS_AND_ACCEPTANCE": 331,
+        "USGAAP_ONLY_DIMENSIONAL_CLASS_UNKNOWN": 37,
+        "MULTI_TICKER_ISSUER_CLASS_AMBIGUOUS": 4,
+        "NO_FRESH_FRAME_SHARE_FACT": 142
+      },
+      "dual_observation_exact_join_count": 514,
+      "companyfacts_shadow_and_frames_DEI": 309,
+      "companyfacts_shadow_and_frames_GAAP": 25,
+      "companyfacts_shadow_and_frames_missing": 12,
+      "former_companyfacts_unknown_but_frames_DEI": 22,
+      "former_companyfacts_unknown_but_frames_GAAP": 12,
+      "former_companyfacts_unknown_and_multiticker_ambiguous": 4,
+      "former_companyfacts_unknown_or_transport_and_frames_missing": 130,
+      "new_research_candidates_from_previous_unknown_only": 34,
+      "new_primary_MC": 0,
+      "new_c417_history_PASS": 0,
+      "new_R92": 0,
+      "duplicate_CIK_symbols": [
+        "FOX",
+        "FOXA",
+        "GOOG",
+        "GOOGL"
+      ],
+      "no_raw_shares_or_proprietary_OHLCV_in_public_evidence": true,
+      "SEC_FRAME_PIT_ACCEPTANCE_PROVEN": false,
+      "issuer_share_class_verified": false,
+      "corporate_actions_adjustment_proven": false,
+      "upstream_independence_proven": false,
+      "next_requirement": "34_unknown_SEC_FRAMES_issuer_accession_acceptance_time_class_issuer_reconciliation_only_AFTER_PROOF_NO_PRIMARY"
     }
   },
   "rights_and_coverage": {
@@ -301,7 +349,8 @@
     "RALLIES_MASSIVE_514_ASOF_COVERAGE_IS_ONE_DAY_ONLY_NOT_260_HISTORY",
     "514_PRICE_PASS_ALPACA_HISTORY_497_GTE260_BARCOUNT_NOT_EXACT_CALENDAR_PIT_LICENSE",
     "FULL_3401_REFRESH_NOT_FIT_TWELVE_DATA_FREE_800_PER_DAY",
-    "BUSINESS_QUANT_30_CALLS_DAY_BATCH_COVERAGE_AND_RIGHTS_UNTESTED"
+    "BUSINESS_QUANT_30_CALLS_DAY_BATCH_COVERAGE_AND_RIGHTS_UNTESTED",
+    "SEC_FRAMES_34_PRIOR_UNKNOWN_RESEARCH_CANDIDATES_STILL_REQUIRE_PIT_FILINGS_SHARE_CLASS_AND_CORPORATE_ACTIONS"
   ],
   "no_vendor_raw_bars_stored": true,
   "operator_approval_to_promote": false,
