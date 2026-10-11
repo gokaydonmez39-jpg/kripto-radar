@@ -76,7 +76,24 @@ def load_scope(offset:int=0,limit:int=0)->tuple[str,list[str]]:
     return asof,symbols
 
 def root_cause_class(status:str,reason:str)->str:
-    """Source-only diagnostic. It NEVER grants MC, history, or AL."""
+    """A source-remediation queue only; no authority for C4.17 MC or R92."""
+    if status=="SHADOW_SHARES_VINTAGE_ONLY":
+        return "PIT_SHARES_PRESENT_MORE_VALIDATION_REQUIRED"
+    if reason in ("SEC_HTTP_403","SEC_HTTP_429","SEC_FAIR_ACCESS_STOP"):
+        return "FAIR_ACCESS_HALT"
+    if status in ("UNKNOWN","UNKNOWN_SEC_TRANSPORT","UNKNOWN_OFFICIAL_CIK_ROUTE"):
+        return {
+            "NO_DEI_BUT_GAAP_SHARES_AVAILABLE_CLASS_UNRESOLVED":
+                "ISSUER_SHARE_CLASS_AMBIGUITY",
+            "NO_FRESH_ACCEPTANCE_BOUND_SINGLE_ENTITY_SHARES":
+                "SEC_FILING_VINTAGE_NOT_PIT_VERIFIED",
+            "NO_SEC_DEI_OR_GAAP_SHARES_FACT":
+                "SEC_SHARES_TAG_ABSENT",
+            "SEC_SHARES_STALE_OR_FUTURE_OBSERVATION":
+                "SEC_SHARES_FACT_OUTSIDE_ASOF_WINDOW",
+            "SEC_HTTP_404": "SEC_IDENTIFIER_OR_RESOURCE_REVIEW",
+            "SEC_CURRENT_CIK_ROUTE_MISSING":"SEC_IDENTIFIER_OR_RESOURCE_REVIEW",
+        }.get(reason,"UNRESOLVED_SOURCE")
     return "UNRESOLVED_SOURCE"
 
 
@@ -175,6 +192,15 @@ def run(offset:int=0,limit:int=0)->dict:
     result["reason_codes"]=dict(sorted(reason_codes.items()))
     result["status_counts"]=dict(sorted(collections.Counter(status.values()).items()))
     result["reason_counts"]=dict(sorted(collections.Counter(reason_codes.values()).items()))
+    # Deterministic root-cause routing exposes the exact 168 unresolved
+    # reasons without inventing shares, quote prices or C4.17 PRIMARY passes.
+    remediation={sym:root_cause_class(status[sym],reason_codes[sym])
+                 for sym in status}
+    result["remediation_counts"]=dict(sorted(collections.Counter(
+        remediation.values()).items()))
+    result["remediation_count_exact"]=sum(result["remediation_counts"].values())==len(syms)
+    if not result["remediation_count_exact"]:
+        raise ValueError("SEC_REMEDIATION_SCOPE_MISMATCH")
     if result["transport"]!="BLOCKED_FAIR_ACCESS_STOP":
         result["transport"]="SEC_OFFICIAL_MULTI_REQUESTS_COMPLETE_WITH_UNKNOWN_ALLOWED"
     return result
@@ -200,6 +226,7 @@ def main():
         print("XRAY_SEC_CANARY_REASON_BY_SYMBOL="+json.dumps(
             {k:(out.get("reason_codes") or {}).get(k) for k,v in
              (out.get("statuses") or {}).items() if v=="UNKNOWN"},sort_keys=True))
+    print("XRAY_SEC_REMEDIATION_COUNTS="+json.dumps(out.get("remediation_counts") or {},sort_keys=True))
     print("XRAY_SEC_MULTI_PRIMARY=0_NO_C417_PRODUCTION_AUTHORITY")
     if out["transport"].startswith("BLOCKED_"):
         raise SystemExit(2)
