@@ -46,7 +46,7 @@ def guard(records,scope):
                 and all(isinstance(x,str) and x.startswith((
                 "https://www.sec.gov/","https://www.nasdaq.com/",
                 "https://www.nasdaqtrader.com/","https://classic.nasdaqtrader.com/",
-                "https://ir.quantinuum.com/","https://investors.navan.com/",
+                "https://ir.spacex.com/","https://ir.quantinuum.com/","https://investors.navan.com/",
                 "https://navan.gcs-web.com/","https://investors.versantmedia.com/",
                 "https://investors.honeywell.com/","https://www.torm.com/",
                 "https://investors.maxlinear.com/")) for x in sources),
