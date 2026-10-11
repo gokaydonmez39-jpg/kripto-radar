@@ -1,0 +1,16 @@
+{
+  "schema": "XRAY_20261012_P0_515_CORPORATE_ACTIONS_SYMBOL_LOCAL_SAFE_LEDGER_V1",
+  "before_head": "29f9ee2833595dbff51efb72025d43c35fc9a0d5",
+  "asof_et": "2026-10-09",
+  "source_earlier_515_run": 38178327791,
+  "original_total_CA_events": 859,
+  "original_non_cash_CA_events": 56,
+  "problem": "Aggregate counts do not reveal 497 eligible symbols exposed to non-split corporate actions; no-split-adjustment must not be falsely asserted NO-CORPORATE-ACTION",
+  "change": "Persist only symbol and event-type counts, no CA ids, amounts, prices, proprietary raw records",
+  "independent_issuer_CA_PIT_attested": false,
+  "production_HISTORY_PASS": false,
+  "C417_PRIMARY_MC": false,
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "ci": "PENDING"
+}

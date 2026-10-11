@@ -76,6 +76,9 @@ def audit(asof,targets,start,fetch,*,now):
     if start>=asof or not isinstance(start,str):
         raise ValueError("ALPACA_CA_HORIZON_INVALID")
     counts=collections.Counter()
+    # Per-symbol derived counts only. No official event bodies, IDs, ratios,
+    # CUSIPs or market-data fields may enter the public artifact.
+    per_symbol_event_groups=collections.defaultdict(collections.Counter)
     event_fingerprints={}
     cross_batch_duplicates=0
     unknown_group_count=0
@@ -134,6 +137,8 @@ def audit(asof,targets,start,fetch,*,now):
                             continue
                         event_fingerprints[identifier]=fingerprint
                         counts[group]+=1
+                        for issuer_symbol in subjects.intersection(targets):
+                            per_symbol_event_groups[issuer_symbol][group]+=1
                 pages+=1
                 nt=response.get("next_page_token")
                 if nt is None or nt=="":
@@ -155,8 +160,33 @@ def audit(asof,targets,start,fetch,*,now):
         fault="ALPACA_CA_UNKNOWN_VENDOR_GROUP_SCHEMA"
     if fault is None and unmatched_subjects:
         fault="ALPACA_CA_EVENT_SUBJECT_NOT_BOUND_TO_REQUEST"
+    reviewed={}
+    non_split_review={}
+    for sym in targets:
+        categories=per_symbol_event_groups.get(sym,collections.Counter())
+        events=sum(categories.values())
+        noncash={group:n for group,n in categories.items()
+                 if group!="cash_dividends"}
+        split_only={group:n for group,n in noncash.items()
+                    if group in {"forward_splits","reverse_splits","unit_splits"}}
+        other={group:n for group,n in noncash.items()
+               if group not in {"forward_splits","reverse_splits","unit_splits"}}
+        if other:
+            non_split_review[sym]={"reason":"NON_SPLIT_CA_OFFICIAL_ISSUER_PIT_REQUIRED",
+                                   "event_type_counts":dict(sorted(other.items()))}
+        if events:
+            reviewed[sym]={"all_type_counts":dict(sorted(categories.items())),
+                           "has_non_cash_CA":bool(noncash),
+                           "has_non_split_non_cash_CA":bool(other),
+                           "same_vendor_types_not_issuer_PIT_proof":True}
     return {
         "schema":SCHEMA,"asof_et":asof,"asof_start":start,
+        "symbol_local_CA_affected_count":len(reviewed),
+        "symbol_local_non_split_review_count":len(non_split_review),
+        "symbol_local_CA_type_ledger":reviewed,
+        "symbol_local_non_split_review":non_split_review,
+        "symbol_local_no_event_observed_count":len(targets)-len(reviewed),
+        "symbol_local_CA_registry_completed":measured==len(targets) and fault is None,
         "expected_symbols":len(targets),"measured_symbols":measured,
         "unmeasured_symbols":len(targets)-measured,
         "pages_consumed":pages,"total_events_seen":sum(counts.values()),
@@ -200,6 +230,11 @@ def selftest():
     assert ok["status"]=="SHADOW_SCOPE_COMPLETE_CA_NOT_PIT"
     assert ok["total_events_seen"]==2 and ok["pages_consumed"]==2
     assert ok["non_cash_dividend_events"]==1
+    assert ok["symbol_local_CA_affected_count"]==1
+    assert ok["symbol_local_non_split_review_count"]==1
+    assert ok["symbol_local_non_split_review"]["AAPL"]["event_type_counts"]=={"name_changes":1}
+    assert ok["symbol_local_CA_type_ledger"]["AAPL"]["has_non_cash_CA"] is True
+    assert ok["symbol_local_CA_registry_completed"] is True
     assert ok["canonical_pass_created"]==0
     def query(func):
         v=audit(asof,fake,"2025-09-29",func,now=now)

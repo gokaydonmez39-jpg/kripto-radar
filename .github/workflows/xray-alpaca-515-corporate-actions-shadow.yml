@@ -70,6 +70,10 @@ jobs:
           assert r["current_c417_history_primary_authority"] is False
           assert r["current_c417_mc_primary_authority"] is False
           assert r["canonical_pass_created"]==0 and r["r92_created"] is False
+          assert r["symbol_local_CA_registry_completed"] is True
+          assert r["symbol_local_CA_affected_count"]+r["symbol_local_no_event_observed_count"]==515
+          assert r["symbol_local_non_split_review_count"]==len(r["symbol_local_non_split_review"])
+          assert set(r["symbol_local_non_split_review"]).issubset(set(r["symbol_local_CA_type_ledger"]))
           assert r["vendor_raw_events_persisted"] is False
           assert r["execution"]=="NONE" and r["real_money"]=="NO-GO"
           print("XRAY_515_CORPORATE_ACTION_SCOPE=PASS_RESEARCH_CENSUS_NO_PIT_NO_GO")
