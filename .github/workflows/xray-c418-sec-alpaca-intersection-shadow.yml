@@ -1,0 +1,152 @@
+name: XRAY C4.18 SEC-Alpaca Provenance Intersection (No Production)
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/c418_preopen_intersection_guard.py"
+      - ".github/workflows/xray-c418-sec-alpaca-intersection-shadow.yml"
+  workflow_run:
+    workflows:
+      - "XRAY SEC Full PRICE-PASS Vintage Shadow"
+      - "XRAY Alpaca 515 Exact-260 SIP Shadow Full Scope (No GO)"
+    types: [completed]
+    branches: [main]
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: xray-c418-sec-alpaca-joined-source-current
+  cancel-in-progress: true
+jobs:
+  exact-provenance-only:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+      - name: Ensure this research run uses current main, not a superseded source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          remote_sha="$(git ls-remote origin refs/heads/main | cut -f1)"
+          test -n "$remote_sha" && test "$remote_sha" = "$GITHUB_SHA"
+          echo "XRAY_C418_PARTITION_SOURCE_SHA=CURRENT_MAIN_EXACT"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pinned official calendar and test adversarial partitions
+        run: |
+          python -m pip install --disable-pip-version-check "pandas_market_calendars==5.4.0"
+          python -m py_compile nasdaq-xray/c418_preopen_intersection_guard.py
+          python nasdaq-xray/c418_preopen_intersection_guard.py --selftest
+      - name: Download latest matching SANITIZED full-scope SEC and Alpaca source witnesses
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          for provider in sec alpaca; do
+            if [[ "$provider" = sec ]]; then
+              workflow="xray-sec-full-price-pass-vintage-shadow.yml"
+              artifact="xray-sec-full-price-pass-vintage-shadow-v1"
+              target="xray_sec_full_price_pass_vintage_operational.json"
+            else
+              workflow="xray-alpaca-full-515-260-sip-shadow.yml"
+              artifact="xray-515-exact260-sip-status-no-vendor-bars"
+              target="xray_alpaca_full_515_shadow.json"
+            fi
+            found=0
+            runs=$(gh run list -R "${{ github.repository }}" --workflow "$workflow" --branch main \
+              --status success --limit 50 --json databaseId --jq '.[].databaseId')
+            for id in $runs; do
+              dir="$RUNNER_TEMP/xray_c418_join/$provider/$id"
+              if ! gh run download "$id" -R "${{ github.repository }}" -n "$artifact" -D "$dir" >/dev/null 2>&1; then
+                continue
+              fi
+              if [[ ! -s "$dir/$target" ]]; then continue; fi
+              if python - "$dir/$target" "$provider" <<'PY'
+          import hashlib,json,subprocess,sys
+          from pathlib import Path
+          source=json.loads(Path(sys.argv[1]).read_text())
+          kind=sys.argv[2]
+          p=Path("nasdaq-xray/canonical_current_price_dv30.json")
+          m=Path("nasdaq-xray/canonical_current_master_manifest.json")
+          price=json.loads(p.read_text())
+          master=json.loads(m.read_text())
+          assert price["asof_et"]==master["asof_et"]==source["asof_et"]
+          psha=subprocess.check_output(["git","hash-object",str(p)],text=True).strip()
+          msha=subprocess.check_output(["git","hash-object",str(m)],text=True).strip()
+          if kind=="sec":
+              assert source["schema"]=="XRAY_SEC_MULTISYMBOL_PIT_SHADOW_V1"
+              assert source["price_git_blob_sha"]==psha
+              assert source["master_git_blob_sha"]==msha
+              assert source["sample_count"]==price["pass_count"]
+              assert set(source["statuses"])==set(price["pass_symbols"])
+          else:
+              assert source["schema"]=="XRAY_ALPACA_CURRENT_515_EXACT260_SIP_SHADOW_V1"
+              assert source["source_price_blob_sha"]==psha
+              assert source["source_master_blob_sha"]==msha
+              assert source["price_pass_count"]==price["pass_count"]
+              assert source["expected_scope_count"]==price["pass_count"]+1
+              assert source["measured_scope_count"]==source["expected_scope_count"]
+          print("XRAY_C418_SOURCE_ARTIFACT=EXACT_ASOF_SCOPE_SHA")
+          PY
+              then
+                cp "$dir/$target" "$RUNNER_TEMP/xray_c418_$provider.json"
+                echo "XRAY_C418_MATCHED_${provider^^}_RUN_ID=$id"
+                found=1
+                break
+              fi
+            done
+            if [[ "$found" != 1 ]]; then
+              echo "XRAY_C418_${provider^^}_NO_SHA_BOUND_SUCCESSFUL_WITNESS" >&2
+              exit 2
+            fi
+          done
+      - name: Evaluate current 260x52 and SEC shares-vintage exact set intersection
+        shell: bash
+        run: |
+          set -euo pipefail
+          set +e
+          python nasdaq-xray/c418_preopen_intersection_guard.py \
+            --private-alpaca "$RUNNER_TEMP/xray_c418_alpaca.json" \
+            --private-sec "$RUNNER_TEMP/xray_c418_sec.json" \
+            --out "$RUNNER_TEMP/xray_c418_exact_partition.json"
+          status=$?
+          set -e
+          if [[ "$status" != 2 || ! -s "$RUNNER_TEMP/xray_c418_exact_partition.json" ]]; then
+            echo "XRAY_C418_PARTITION_AUTHORITY_OR_SOURCE_INVALID" >&2
+            exit 2
+          fi
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          x=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_c418_exact_partition.json").read_text())
+          assert x["schema"]=="XRAY_C418_PREOPEN_EXACT_PARTITION_SHADOW_V1"
+          assert x["status"]=="EXACT_RESEARCH_PARTITION_ONLY"
+          assert x["technical_intersection"]+x["history_observed_sec_unknown"]+x["history_short_in_price_pass"]==x["price_pass_scope"]
+          assert x["history_shadow_numeric_complete"]+x["history_short_in_price_pass"]==x["price_pass_scope"]
+          assert x["can_create_PRIMARY"] is False and x["can_create_HISTORY_PASS"] is False
+          assert x["can_register_R92"] is False and x["production_authority"] is False
+          assert x["vendor_raw_bars_exported"] is False and x["raw_share_counts_exported"] is False
+          assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
+          print("XRAY_C418_SAME_ASOF_INTERSECTION=PASS_RESEARCH_ONLY")
+          print("XRAY_C418_INTERSECTION_COUNTS="+json.dumps({
+              "technical_intersection":x["technical_intersection"],
+              "history_observed_sec_unknown":x["history_observed_sec_unknown"],
+              "history_short_in_price_pass":x["history_short_in_price_pass"],
+          },sort_keys=True))
+          PY
+      - name: Retain ONLY sanitized counts, SHA and reason partitions
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-c418-sec-alpaca-exact-set-research-only
+          path: ${{ runner.temp }}/xray_c418_exact_partition.json
+          if-no-files-found: ignore
+          retention-days: 14
