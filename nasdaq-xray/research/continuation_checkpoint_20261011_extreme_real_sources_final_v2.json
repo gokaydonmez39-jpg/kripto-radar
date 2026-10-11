@@ -1,0 +1,153 @@
+{
+  "schema": "XRAY_20261011_EXTREME_SOURCE_RESEARCH_CURRENT_FINAL_READBACK_V2",
+  "main_source_before_checkpoint": "5e6b7e909f6a651b6715ea37a59edc982bce20b7",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "sec_514_online_current": {
+    "run": 38173716522,
+    "run_head_sha": "7395feb3f4fdace73c328d2604f791abb3a9869a",
+    "conclusion": "success",
+    "artifact_id": 11715069202,
+    "artifact_name": "xray-sec-full-price-pass-vintage-shadow-v1",
+    "artifact_zip_sha256": "1c6aeea90390efb1fd401aa3803f609b8367067009224e34aac136952363dc56",
+    "artifact_json_sha256": "6961725a874196cbc7b788dda85e77b7f5ed9fd559d309f509c5eaefbf8e16b6",
+    "byte_identical_to_previous_run_38169144342": true,
+    "scope_count": 514,
+    "asof_et": "2026-10-09",
+    "price_git_blob_sha": "6f3f68fff0897d68f200ad3621c51a5071494714",
+    "master_git_blob_sha": "828c21436a836b69fe5084387e1c54446c7b5075",
+    "status_counts": {
+      "SHADOW_SHARES_VINTAGE_ONLY": 346,
+      "UNKNOWN": 167,
+      "UNKNOWN_SEC_TRANSPORT": 1
+    },
+    "counts_exact": true,
+    "reason_counts_exact": true,
+    "scope_keys_exact": true,
+    "remediation_total": 514,
+    "release_status": "VERIFIED_SHADOW_ONLY_514",
+    "release_python_and_optimized_python_verified": true,
+    "market_cap_calculated": false,
+    "primary_mc_count": 0
+  },
+  "massive_grouped_real_connected_shadow": {
+    "provider": "Massive",
+    "source": "GET /v2/aggs/grouped/locale/us/market/stocks/2026-10-09",
+    "source_doc": "https://massive.com/docs/rest/stocks/aggregates/daily-market-summary",
+    "two_variants": [
+      "adjusted=true",
+      "adjusted=false"
+    ],
+    "single_date_all_us_symbols_each": 12598,
+    "ohlcv_numeric_valid_each": 12594,
+    "bad_numeric_example_symbols": [
+      "UPGR",
+      "ZBZX",
+      "ZTEST",
+      "ZTST"
+    ],
+    "unadjusted_price_pass_514_found": 514,
+    "unadjusted_price_pass_514_numeric_valid": 514,
+    "unadjusted_price_pass_missing": 0,
+    "history_targets_514_plus_qqq": 515,
+    "targets_found": 515,
+    "targets_numeric_valid": 515,
+    "adjusted_versus_unadjusted_ohlcv_identical_for_this_date_all_us": true,
+    "grouped_timestamp_ms": 1791576000000,
+    "grouped_timestamp_utc": "2026-10-09T20:00:00+00:00",
+    "all_260_days_52_weeks_proven": false,
+    "rights_attested": false,
+    "storage": "EPHEMERAL_MASSIVE_WORKSPACE_ONLY_NO_VENDOR_BARS_IN_REPOSITORY"
+  },
+  "cross_provider_sip_sample": {
+    "providers": [
+      "Massive grouped unadjusted",
+      "Alpaca historical SIP"
+    ],
+    "asof_et": "2026-10-09",
+    "symbols": [
+      "AAPL",
+      "PLTR",
+      "OZK"
+    ],
+    "ohlc_fields_per_symbol": 4,
+    "exact_ohlc_fields": 12,
+    "volume_equality_count": 0,
+    "volume_mismatch_count": 3,
+    "volume_semantic_compatibility_unverified": true,
+    "alpaca_daily_timestamp_utc": "2026-10-09T04:00:00+00:00",
+    "massive_grouped_daily_timestamp_utc": "2026-10-09T20:00:00+00:00",
+    "normalized_same_nasdaq_et_session": true,
+    "thresholds_modified": false,
+    "production_crossfeed_equivalence_proven": false
+  },
+  "massive_reference_mc_pit": {
+    "ticker_overview_endpoint": "/v3/reference/tickers/{ticker}?date=YYYY-MM-DD",
+    "symbols_tested": [
+      "AAPL",
+      "PLTR",
+      "OZK"
+    ],
+    "market_cap_field_present_interactive": true,
+    "historical_point_in_time_acceptance_proven": false,
+    "source_docs": "https://massive.com/docs/rest/stocks/tickers/ticker-overview",
+    "official_market_cap_method": "https://massive.com/knowledge-base/categories/reference-data",
+    "risk": "SEC_PERIOD_END_MAY_PRECEDE_PUBLIC_FILING_ACCEPTANCE_CAUSING_POSSIBLE_LOOKAHEAD",
+    "primary_permitted": false
+  },
+  "rights": {
+    "provider_market_data_terms": "https://massive.com/legal/market-data-terms-of-service",
+    "relevant_rule": "NONDISPLAY_OR_DERIVED_INVESTMENT_STRATEGY_USE_REQUIRES_LICENSE",
+    "massive_runner_non_display_license_verified": false,
+    "massive_private_retention_rights_verified": false,
+    "twelve_rights_and_key_verified": false,
+    "price_data_repository_persisted": false
+  },
+  "github_code_changes": [
+    {
+      "sha": "dd4520b0128a569f2b428da091728fea33d03b44",
+      "purpose": "MASSIVE_MC_RESUME_IMMUTABLE_SHA",
+      "run_id": 38174370324,
+      "conclusion": "success",
+      "tests": "2_POSITIVE_4_NEGATIVE_NORMAL_AND_OPTIMIZED",
+      "live_collection": "BLOCKED_NONDISPLAY_LICENSE_UNVERIFIED"
+    },
+    {
+      "sha": "d0bd6cf4dd9c6f8804fc09c08632490a0740e470",
+      "purpose": "MASSIVE_GROUPED_AND_TWELVE_SHA_PIN_HISTORY",
+      "run_ids": [
+        38174587581,
+        38174587633
+      ],
+      "conclusions": [
+        "success",
+        "success"
+      ],
+      "tests": "2_POSITIVE_7_NEGATIVE_NORMAL_AND_OPTIMIZED",
+      "massive_collection": "BLOCKED_RIGHTS_OR_KEY",
+      "twelve_collection": "BLOCKED_SOURCE_LICENSE_OR_KEY"
+    }
+  ],
+  "current_blockers": [
+    "C417_PRIMARY_MC_ZERO",
+    "SAME_ASOF_PRICE_MC_LEGAL_LICENSE_AND_ACCEPTANCE_PIT_UNPROVEN",
+    "UNATTENDED_GITHUB_RUNNER_NONDISPLAY_AND_PRIVATE_CACHE_RIGHTS_UNVERIFIED",
+    "REAL_260_SESSIONS_AND_52_COMPLETED_WEEKS_HISTORY_NOT_PROVEN",
+    "SOURCE_VOLUME_DISCREPANCY_REQUIRES_SEMANTIC_RECONCILIATION",
+    "MASTER_12_UNKNOWN",
+    "LATEST_TERMINAL_NOT_CURRENT_ASOF",
+    "REAL_R92_AND_DEVICE_RECEIPT_NOT_ATTESTED",
+    "G9_ACCOUNT_FULL_GO_BLOCKED"
+  ],
+  "alpha_thresholds_unchanged": true,
+  "can_register_r92": false,
+  "can_create_primary": false,
+  "real_money_no_go": true,
+  "research_go": "NO-GO",
+  "source_license_created": false,
+  "source_data_persisted": false,
+  "proven_by": "LIVE_GITHUB_CI_LOGS_AND_DOWNLOAD_ARTIFACT_PLUS_CONNECTED_READONLY_PROVIDER_SQL_AND_OFFICIAL_PROVIDER_DOCUMENTATION"
+}
