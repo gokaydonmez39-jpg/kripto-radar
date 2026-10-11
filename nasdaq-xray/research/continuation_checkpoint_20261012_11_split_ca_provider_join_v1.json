@@ -1,0 +1,13 @@
+{
+  "schema": "XRAY_P0_CA_11_RAW_SPLIT_RESTATEMENT_EVENT_JOIN_V1",
+  "parent_main": "f38d6293cb991e91637d1b518c3575a79d53f1ce",
+  "canonical_asof": "2026-10-09",
+  "source_515_run_id": 38178676524,
+  "source_ca_census_run_id": 38178327791,
+  "observed_split_restatement_count": 11,
+  "source_issues": "SEC issuer CA and Alpaca publisher timing are NOT independently verified",
+  "proposed_next": "Test exact per ticker Alpaca CA type existence matched to raw/split restatement, never primary",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "CI": "PENDING"
+}
