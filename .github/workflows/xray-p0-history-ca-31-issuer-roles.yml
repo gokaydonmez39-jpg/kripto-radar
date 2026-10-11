@@ -1,0 +1,81 @@
+name: XRAY P0 31 Corporate Actions Issuer Role Exact Crossfeed
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/p0_history_ca_31_issuer_roles.py"
+      - ".github/workflows/xray-p0-history-ca-31-issuer-roles.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  thirty-one-issuer-role-partition:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+      - name: Strict source SHA fence
+        run: test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: '3.12'
+      - name: Fail-closed real event-role negative fixtures
+        run: |
+          python -m py_compile nasdaq-xray/p0_history_ca_31_issuer_roles.py
+          python nasdaq-xray/p0_history_ca_31_issuer_roles.py --selftest
+          python -O nasdaq-xray/p0_history_ca_31_issuer_roles.py --selftest
+      - name: Fetch 515 exact CA census and 497 exact official calendar risk queue
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/ca31/census" "$RUNNER_TEMP/ca31/queue"
+          gh run download 38181356461 -R "${{ github.repository }}" \
+            -n xray-515-corporate-actions-count-only-no-pit -D "$RUNNER_TEMP/ca31/census"
+          gh run download 38181517369 -R "${{ github.repository }}" \
+            -n xray-497-history-31-nonsplit-issuer-risks-no-go -D "$RUNNER_TEMP/ca31/queue"
+          test -s "$RUNNER_TEMP/ca31/census/xray_515_ca_census_shadow.json"
+          test -s "$RUNNER_TEMP/ca31/queue/xray_history_nonsplit_CA_497.json"
+      - name: Check exact ticker roles using real read-only Alpaca event query
+        env:
+          XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID }}
+          XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY }}
+        run: |
+          python nasdaq-xray/p0_history_ca_31_issuer_roles.py \
+            --census "$RUNNER_TEMP/ca31/census/xray_515_ca_census_shadow.json" \
+            --queue "$RUNNER_TEMP/ca31/queue/xray_history_nonsplit_CA_497.json" \
+            --out "$RUNNER_TEMP/xray_history_ca_31_roles.json"
+      - name: Fail closed on drift or false production history release
+        run: |
+          python - <<'PY'
+          import json,os,subprocess
+          from pathlib import Path
+          j=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_history_ca_31_roles.json").read_text())
+          assert j["schema"]=="XRAY_P0_31_CA_ROLES_DIRECT13_ACQUIRER18_SHADOW_V1"
+          assert j["status"]=="RECONCILED_31_CA_ROLE_PARTITION_SHADOW_ONLY"
+          assert j["full_history_review_cohort"]==31
+          assert len(j["direct_security_CA_review_symbols"])==13
+          assert len(j["acquirer_cap_table_CA_review_symbols"])==18
+          assert j["unknown_role_or_census_drift_symbols"]==[]
+          assert sum(j["category_counts"].values())==31
+          assert j["source_price_blob_sha"]==subprocess.check_output(
+           ["git","hash-object","nasdaq-xray/canonical_current_price_dv30.json"],text=True).strip()
+          assert j["source_master_blob_sha"]==subprocess.check_output(
+           ["git","hash-object","nasdaq-xray/canonical_current_master_manifest.json"],text=True).strip()
+          assert j["C417_PRIMARY_MC_pass_created"]==0
+          assert j["canonical_HISTORY_PASS_created"]==0
+          assert j["R92_created"] is False and j["GO"] is False
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          print("XRAY_CA31_VERIFIED_DIRECT_13_ACQUIRER_18_NO_GO")
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: xray-31-ca-direct13-acquirer18-sha-bound-shadow
+          path: ${{ runner.temp }}/xray_history_ca_31_roles.json
+          retention-days: 14
+          if-no-files-found: error
