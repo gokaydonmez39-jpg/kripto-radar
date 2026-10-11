@@ -9,6 +9,10 @@ on:
       - "nasdaq-xray/monday_launch_microaudit.py"
       - "nasdaq-xray/monday_live_actions_attestor.py"
       - "nasdaq-xray/delivery_issue_receipt_guard.py"
+      - "nasdaq-xray/delivery_scheduler_guard.py"
+      - "nasdaq-xray/delivery_scheduler_guard_selftest.py"
+      - "nasdaq-xray/delivery_ledger_merge.py"
+      - "nasdaq-xray/github_native_root_watchdog.py"
       - ".github/workflows/nasdaq-xray-delivery.yml"
       - ".github/workflows/xray-preopen-source-audit.yml"
   workflow_run:
@@ -67,6 +71,8 @@ jobs:
           python nasdaq-xray/monday_launch_microaudit.py --selftest
           python -m py_compile nasdaq-xray/delivery_issue_receipt_guard.py
           python nasdaq-xray/delivery_issue_receipt_guard.py --selftest
+          python nasdaq-xray/delivery_scheduler_guard_selftest.py
+          python nasdaq-xray/delivery_ledger_merge.py --selftest
           python nasdaq-xray/monday_launch_microaudit.py --out "$RUNNER_TEMP/xray_monday_launch_microaudit.json"
           python - <<'PY'
           import json,os
