@@ -192,6 +192,7 @@ def selftest() -> None:
                     "nasdaq_close_match": False,
                     "nasdaq_pit_status": "UNKNOWN"},
     }
+    samples["also_verified"] = dict(samples["verified"])
     assert count_exact_pit_unknowns(samples)==1, "PIT_UNKNOWN_COUNT_INVERTED"
     high = {
         "rallies_market_cap_usd": 3_000_000_000,
