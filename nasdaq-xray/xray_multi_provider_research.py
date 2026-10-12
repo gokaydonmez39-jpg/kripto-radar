@@ -114,10 +114,21 @@ def sec_directory(http_get,cache):
         m={}
         for row in rows:
             try:
-                sym=str(row[pos["ticker"]]).upper()
-                if SYMBOL.fullmatch(sym) and str(row[pos["exchange"]]).upper()=="NASDAQ":
-                    m[sym]=(int(row[pos["cik"]]),str(row[pos["name"]]))
-            except (IndexError,ValueError,TypeError):pass
+                ticker=row[pos["ticker"]]
+                exchange=row[pos["exchange"]]
+                cik=int(row[pos["cik"]])
+                name=str(row[pos["name"]])
+            except (IndexError,ValueError,TypeError):
+                continue
+            # Symbol case is security identity. Never coerce a different
+            # issuer listing into the requested exact uppercase spelling.
+            if (not isinstance(ticker,str) or not SYMBOL.fullmatch(ticker)
+                or not isinstance(exchange,str) or exchange.upper()!="NASDAQ"):
+                continue
+            identity=(cik,name)
+            if ticker in m and m[ticker]!=identity:
+                raise ValueError("SEC_DIRECTORY_CONFLICTING_SYMBOL_MAPPING")
+            m[ticker]=identity
         if not m:raise ValueError("SEC_DIRECTORY_EMPTY")
         cache["directory"]=m
     return cache["directory"]
@@ -481,6 +492,15 @@ def selftest():
     exact=sec_directory(lambda url:collision,{})
     assert exact.get("ALIS")==(1920406,"Calisa Acquisition")
     assert "alis" not in exact
+    conflicting={"fields":["ticker","name","cik","exchange"],
+                 "data":[["ALIS","Calisa Acquisition",1920406,"NASDAQ"],
+                         ["ALIS","Another Company",9999999,"NASDAQ"]]}
+    try:
+        sec_directory(lambda url:conflicting,{})
+    except ValueError as e:
+        assert str(e)=="SEC_DIRECTORY_CONFLICTING_SYMBOL_MAPPING"
+    else:
+        raise AssertionError("SEC_DUPLICATE_DIFFERENT_CIK_ACCEPTED")
 
     c=collections.Counter()
     mem={"mirror":{"ALIS":"0001920406"}}
