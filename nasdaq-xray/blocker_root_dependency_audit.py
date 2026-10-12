@@ -225,13 +225,14 @@ def fixtures():
        "execution":"NONE","real_money":"NO-GO"}
     p={"asof_et":"2026-10-09","pass_symbols":["AAA"],"pass_count":1,
        "pass_hash":sha_symbols(["AAA"]),"source_master_queue_hash":m["queue_hash"],
+       "unknown_symbols":[],"unknown_count":0,
        "unknown_never_pass":True,"execution":"NONE","real_money":"NO-GO"}
     t={"asof_et":"2026-10-07","unknown_never_pass":True,"execution":"NONE","real_money":"NO-GO"}
     blobs={"master":"a"*40,"price":"b"*40,"terminal":"c"*40}
     e={"schema":"XRAY_E2E_PRODUCTION_READINESS_AUDIT_V1",
        "source_blob_shas":dict(blobs),"asof_et":"2026-10-09","terminal_asof_et":"2026-10-07",
        "price_pass_count":1,"master_unknown_count":1,"current_mc_authority_count":0,
-       "blockers":sorted(BLOCKS),"source_session_lags":{"TERMINAL":2},
+       "blockers":sorted(BLOCKS-{"PRICE_UNKNOWN_CURRENT","SETTLEMENT_UNVERIFIED_OR_PRICE_SHA_DRIFT"}),"source_session_lags":{"TERMINAL":2},
        "actual_device_delivery_receipt_attested":False,"ready_for_current_research_signal":False,"alpha_authority":False,
        "historical_manual_non_g9_source_contract_ready":True,
        "historical_manual_research_candidate_prep_only":False,
