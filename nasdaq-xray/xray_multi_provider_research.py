@@ -473,6 +473,15 @@ def selftest():
     m={"fields":["ticker","name","cik","exchange"],
        "data":[["ALIS","Calisa Acquisition",1920406,"Nasdaq"]]}
     assert sec_directory(lambda url:m,{})["ALIS"][0]==1920406
+    # SEC case preservation regression: a distinct lower-case listing can
+    # never overwrite a verified exact requested upper-case Nasdaq ticker.
+    collision={"fields":["ticker","name","cik","exchange"],
+               "data":[["ALIS","Calisa Acquisition",1920406,"Nasdaq"],
+                       ["alis","Distinct security",9999999,"Nasdaq"]]}
+    exact=sec_directory(lambda url:collision,{})
+    assert exact.get("ALIS")==(1920406,"Calisa Acquisition")
+    assert "alis" not in exact
+
     c=collections.Counter()
     mem={"mirror":{"ALIS":"0001920406"}}
     status,att=route("MASTER","ALIS","2026-10-07",{"BQ":"","MASSIVE":""},
