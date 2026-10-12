@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/e2e_production_readiness.py"
+      - "nasdaq-xray/blocker_root_dependency_audit.py"
       - "nasdaq-xray/source_epoch_freshness_guard.py"
       - ".github/workflows/xray-e2e-production-readiness.yml"
   workflow_run:
@@ -83,11 +84,35 @@ jobs:
           print("XRAY_READINESS_REPORT_CHECK=PASS_FAIL_CLOSED")
           print("XRAY_READINESS_REPORT_RELEASE=NOT_GRANTED")
           PY
+      - name: Independent root cause DAG, exact source-SHA, and 12-SPAC scope regression
+        run: |
+          python -m py_compile nasdaq-xray/blocker_root_dependency_audit.py
+          python nasdaq-xray/blocker_root_dependency_audit.py --selftest
+          python -O nasdaq-xray/blocker_root_dependency_audit.py --selftest
+          python nasdaq-xray/blocker_root_dependency_audit.py \
+            --e2e-witness "$RUNNER_TEMP/xray_e2e_readiness.json" \
+            --out "$RUNNER_TEMP/xray_e2e_causal_dag.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])/"xray_e2e_causal_dag.json"
+          j=json.loads(p.read_text())
+          if not (j["schema"]=="XRAY_C417_BLOCKER_CAUSAL_DAG_V1"
+                  and j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+                  and j["unknown_never_pass"] is True
+                  and j["go"] is False and j["alpha_authority"] is False
+                  and j["real_device_notification_receipt_attested"] is False
+                  and j["candidate_local_identity_disjoint_does_not_prove_mc_or_al"] is True):
+              raise SystemExit("XRAY_ROOT_CAUSE_CAUSAL_DAG_SAFETY_FAULT")
+          print("XRAY_E2E_BLOCKER_CAUSAL_DAG=PASS_SOURCE_EXACT_NO_GO")
+          PY
       - name: Upload operational-only blocker witness (never a trading signal)
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: xray-e2e-readiness-failclosed-v1
-          path: ${{ runner.temp }}/xray_e2e_readiness.json
+          path: |
+            ${{ runner.temp }}/xray_e2e_readiness.json
+            ${{ runner.temp }}/xray_e2e_causal_dag.json
           retention-days: 14
           if-no-files-found: error
       # IMPORTANT: selftest PASS is not production readiness. The artifact is
