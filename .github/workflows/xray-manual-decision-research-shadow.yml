@@ -124,8 +124,10 @@ jobs:
           assert j["alpha_authority"] is False and j["orders"]==[]
           assert j["source_rights_not_elevated"] is True
           assert j["b_precursor_count"]==len(j["b_precursors"])
-          if j["status"]!="B_PRECURSOR_RESEARCH_ONLY_NO_AL":
+          if j["status"] not in ("B_PRECURSOR_RESEARCH_ONLY_NO_AL",
+                                 "PARTIAL_PROVEN_SUBSET_WATCH_ONLY_NO_AL"):
               assert j["b_precursor_count"]==0 and j["b_precursors"]==[]
+          assert set(x["symbol"] for x in j["b_precursors"]).isdisjoint(j["blocked_symbols"])
           print("XRAY_ALPACA_SIP_PUBLIC_GUARD=PASS_NO_AL")
           with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a") as f:
               f.write("\\n## Alpaca historical SIP — private B precursor, never AL\\n\\n")
