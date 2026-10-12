@@ -31,7 +31,7 @@ SCHEMA = "XRAY_C418_DYNAMIC_MULTI_PROVIDER_ROUTING_READINESS_V2"
 EXPECTED_IDS = {
     "SEC_EDGAR","ALPACA","RALLIES","LONGBRIDGE","MASSIVE",
     "FMP","ALPHA_VANTAGE","EODHD","TIINGO",
-    "NASDAQ_DATA_LINK_SHARADAR","OPENBB",
+    "NASDAQ_DATA_LINK_SHARADAR","OPENBB","BUSINESSQUANT",
 }
 DANGEROUS_KEYS = {"raw","api_key","apikey","token","password",
                   "market_cap_usd","close_usd","positions"}
@@ -68,7 +68,7 @@ def provider_table(inv):
             and inv.get("no_vendor_raw_data_in_public_artifact") is True,
             "INVENTORY_SHADOW_FROZEN")
     rows=inv.get("sources")
-    require(type(rows) is list and len(rows)==11,"INVENTORY_SOURCE_CARDINALITY")
+    require(type(rows) is list and len(rows)==12,"INVENTORY_SOURCE_CARDINALITY")
     ids=[r.get("id") for r in rows if type(r) is dict]
     require(len(ids)==len(rows) and set(ids)==EXPECTED_IDS
             and len(ids)==len(set(ids)),"INVENTORY_SOURCE_IDENTITY")
@@ -152,7 +152,7 @@ def analyze(master,price,inv,proposal,g9,sha_master,sha_price,sha_inventory):
     candidate_local_unknown=sorted(set(ps)&set(us))
     require(len(candidate_local_unknown)==0,"IDENTITY_UNKNOWN_IN_PRICE_SCOPE")
     estimates={}
-    for src in ("MASSIVE","FMP","ALPHA_VANTAGE","EODHD"):
+    for src in ("MASSIVE","FMP","ALPHA_VANTAGE","EODHD","BUSINESSQUANT"):
         r=providers[src]
         d=r.get("daily_requests")
         m=r.get("rate_per_minute")
@@ -183,7 +183,7 @@ def analyze(master,price,inv,proposal,g9,sha_master,sha_price,sha_inventory):
         "identity_unknown_intersect_price_count":0,
         "discovered_source_rows":len(providers),
         "market_cap_direct_provider_count":sum(x["market_cap_direct"] for x in providers.values()),
-        "historical_source_count":3,
+        "historical_source_count":4,
         "historical_interactive_massive_rallies_samples":3,
         "verified_distinct_market_cap_origin_count":0,
         "new_primary_mc_authority_count":0,
@@ -240,7 +240,7 @@ def selftest():
     g9={"status":"BLOCKED_STRICT_PERMANENT_ZERO"}
     args=(master,price,inv,proposal,g9,"a"*40,"b"*40,"c"*40)
     got=analyze(*args)
-    require(got["discovered_source_rows"]==11 and got["identity_unknown_intersect_price_count"]==0,
+    require(got["discovered_source_rows"]==12 and got["identity_unknown_intersect_price_count"]==0,
             "SELFTEST_POSITIVE")
     require(got["go"] is False and got["new_primary_mc_authority_count"]==0
             and got["verified_distinct_market_cap_origin_count"]==0,
@@ -249,6 +249,14 @@ def selftest():
     require(got["per_source_capacity_scenarios"]["FMP"]["minimum_days_if_one_request_per_symbol"]==3,"FMP_CAP_3")
     require(got["per_source_capacity_scenarios"]["ALPHA_VANTAGE"]["minimum_days_if_one_request_per_symbol"]==21,"ALPHA_CAP_21")
     require(got["per_source_capacity_scenarios"]["EODHD"]["minimum_days_if_one_request_per_symbol"]==26,"EODHD_CAP_26")
+    require(got["per_source_capacity_scenarios"]["BUSINESSQUANT"]["minimum_days_if_one_request_per_symbol"]==18,"BUSINESSQUANT_CAP_18_IF_ONE_PER_SYMBOL")
+    require(got["new_primary_mc_authority_count"]==0 and got["new_r92_count_created"]==0,"BQ_NOT_PRIMARY")
+    bq=next(s for s in inv["sources"] if s["id"]=="BUSINESSQUANT")
+    require(bq["current_connected"]=="IN_REPO_RESEARCH_ADAPTER_NO_VERIFIED_KEY"
+            and bq["lookahead_guard"].startswith("SCREEN_RECALCULATED_EVERY_MINUTE")
+            and bq["runner_key_attested"] is False
+            and bq["mc_current_exact"] is False, "BQ_NOT_PIT_OR_LICENSED")
+
     require(got["per_source_capacity_scenarios"]["TIINGO"]["single_account_full_current_cohort_coverage_possible"] is False,"TIINGO_514_CANNOT")
     # Regression: next exact MASTER/PRICE ASOF is not an error because a
     # historical 2026-10-09 research sample remains in the source inventory.
@@ -306,7 +314,7 @@ def selftest():
         try:analyze(*m)
         except ValueError:n+=1
         else:raise RuntimeError("UNSAFE_ROUTER_MUTANT_ACCEPTED:"+label)
-    print("XRAY_C418_11_SOURCE_ROUTING_DYNAMIC_ASOF=PASS_REAL_SOURCE_SCHEMA_"
+    print("XRAY_C418_12_SOURCE_ROUTING_DYNAMIC_ASOF=PASS_REAL_SOURCE_SCHEMA_"
           +str(n)+"_NEGATIVE_C417_NO_MC_NO_R92")
 
 def main():
