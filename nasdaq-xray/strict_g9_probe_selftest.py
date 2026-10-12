@@ -155,6 +155,23 @@ def main():
             continue
         raise AssertionError("INVALID_G9_PRICE_TRIPLET_ACCEPTED")
     assert mod.strict_triplet(10,11,10.5)==(10.0,11.0,10.5)
+    # RED: preauthority probe is SHADOW but must not accept corrupt provider
+    # prices or infer timezone from an unspecified runner locale.
+    from datetime import datetime,timezone,timedelta
+    spec=importlib.util.spec_from_file_location("g9_preauth_shadow_test",
+                                                HERE/"g9_preauthority_probe.py")
+    pre=importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(pre)
+    n=datetime(2026,10,12,14,0,tzinfo=timezone.utc)
+    valid=n-timedelta(seconds=5)
+    assert pre.parse_ts("2026-10-12T14:00:00") is None,"PREAUTH_NAIVE_TIMESTAMP_ACCEPTED"
+    assert pre.parse_ts(float("nan")) is None,"PREAUTH_NAN_EPOCH_ACCEPTED"
+    for b,a,l in ((float("nan"),101,100),(99,float("inf"),100),
+                  (99,101,float("-inf")),(True,101,100),(101,99,100)):
+        try:pre.validate_triplet(b,a,l,valid,valid,n)
+        except (ValueError,TypeError,RuntimeError):continue
+        raise AssertionError("PREAUTH_INVALID_QUOTE_ACCEPTED")
+    assert pre.validate_triplet(99,101,100,valid,valid,n)[:3]==(99.0,101.0,100.0)
     print("XRAY_STRICT_G9_FAIL_CLOSED_SELFTEST=PASS")
 
 if __name__=="__main__":
