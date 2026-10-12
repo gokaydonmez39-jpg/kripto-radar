@@ -521,6 +521,73 @@ def selftest():
         else:
             raise AssertionError("BQ_HISTORICAL_MC_FALSE_ACCEPT")
     print("XRAY_BQ_HISTORIC_DAILY_MC=PASS_NINE_NEGATIVE_NO_PRIMARY")
+    # Batch contract tests: five per vendor call, never 6; only exact
+    # symbols/dates count, partial days remain unqualified (not FALSE PASS).
+    symbols=["AAPL","AMZN","GOOG","MSFT","NVDA"]
+    def bq_batch_mock(url,headers=None,body=None):
+        from urllib.parse import urlsplit,parse_qs
+        args=parse_qs(urlsplit(url).query)
+        assert url.startswith("https://data.businessquant.com/historic?")
+        assert args["slug"]==["market-capitalization-daily"]
+        assert args["from_date"]==args["till_date"]==["2026-10-09"]
+        assert args["mode"]==["original"]
+        named=args["ticker"][0].split(",")
+        assert len(named)==5 and set(named)==set(symbols)
+        return [{"ticker":ticker,"date":"2026-10-09",
+                 "metric":"Market Capitalization (Daily)","value":3500000000.0}
+                for ticker in named]
+    full=bq_historic_batch_shadow(symbols,"2026-10-09","FAKE",bq_batch_mock)
+    assert full=={s:True for s in symbols}
+    subset=[{"ticker":"AAPL","date":"2026-10-09",
+             "metric":"Market Capitalization (Daily)","value":3500000000.0}]
+    missing=bq_historic_batch_shadow(symbols,"2026-10-09","FAKE",lambda *a,**kw:subset)
+    assert missing["AAPL"] is True and sum(missing.values())==1
+    bad_bundles=[
+        subset+subset,
+        subset+[{"ticker":"OTHER","date":"2026-10-09",
+                 "metric":"Market Capitalization","value":3500000000.0}],
+        [{"ticker":"AAPL","date":"2026-10-09","metric":"Revenue (Annual)","value":1e9}],
+        [{"ticker":"AAPL","date":"2026-10-09","metric":"Market Capitalization","value":float("nan")}],
+        {"metadata":{"rows":5}},
+    ]
+    for payload in bad_bundles:
+        try:bq_historic_batch_shadow(symbols,"2026-10-09","FAKE",lambda *a,**kw:payload)
+        except ValueError:pass
+        else:raise AssertionError("BQ_BATCH_INVALID_RESPONSE_ACCEPTED")
+    for input_symbols in ([],symbols+["TSLA"],["AAPL","AAPL"],["INVALID SYMBOL"]):
+        try:bq_historic_batch_shadow(input_symbols,"2026-10-09","FAKE",bq_batch_mock)
+        except ValueError:pass
+        else:raise AssertionError("BQ_BATCH_UNSAFE_SCOPE_ACCEPTED")
+    # Integrated test: exactly ONE paid-by-quota BQ batch request for all
+    # five MC discovery tickers; status-only payload has no vendor MC values.
+    call_count=[0]
+    def counted_get(url,headers=None,body=None):
+        call_count[0]+=1
+        return bq_batch_mock(url,headers,body)
+    from unittest.mock import patch as _patch_batch
+    def synthetic_batch_inputs():
+        return ("2026-10-09",{"MASTER":[],"MC":symbols,"EVENT":[]},
+                {"MASTER":"a"*40,"PRICE":"b"*40,"MC":None,
+                 "HISTORY":"c"*40,"EVENT":"d"*40,"TERMINAL":"e"*40})
+    with _patch_batch.dict(os.environ,{
+        "XRAY_MASSIVE_API_KEY":"",
+        "XRAY_BQ_API_KEY":"BQ_FAKE_NO_REAL_VENDORDATA",
+        "XRAY_BQ_UNATTENDED_RESEARCH_LICENSE_OK":"true",
+        "XRAY_BQ_LICENSE_EVIDENCE_SHA256":"a"*64
+    }):
+        simulated=produce(5,inputs_fn=lambda:(_ for _ in ()).throw(ValueError("SOURCE_DRIFT:TERMINAL")),
+                          recovery_inputs_fn=synthetic_batch_inputs,http_get=counted_get,
+                          allow_pre_mc_recovery=True)
+    assert call_count==[1]
+    assert simulated["invocation_counts"]["BQ"]==1
+    assert simulated["invocation_counts"]["BQ_MC_HISTORICAL_DAILY"]==1
+    assert simulated["lanes"]["MC"]["status_counts"]=={"REFERENCE_OBSERVED_NOT_AUTHORITY":5}
+    assert simulated["mc_pass_created"] is False and simulated["alpha_authority"] is False
+    assert simulated["g9_pass"] is False and simulated["real_money"]=="NO-GO"
+    assert "3500000000" not in json.dumps(simulated)
+    assert "BQ_FAKE_NO_REAL_VENDORDATA" not in json.dumps(simulated)
+    print("XRAY_BQ_FIVE_TICKER_BATCH_ONE_CALL=PASS_9_NEGATIVE_NO_PRIMARY_NO_PIT")
+
 
     assert rotate_sample(["A","B","C","D","E","F"],2,0)==["A","B"]
     assert rotate_sample(["A","B","C","D","E","F"],2,1)==["C","D"]
