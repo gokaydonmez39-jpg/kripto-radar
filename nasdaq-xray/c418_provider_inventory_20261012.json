@@ -488,5 +488,65 @@
     "real_money": "NO-GO",
     "new_primary_mc_count": 0,
     "comment": "OPENAPI schema inspected; REST AAPL live vendor sample could not be obtained from web environment. No fictitious API response or quota consumption asserted."
+  },
+  "additional_direct_historical_mc_sources_20261012": {
+    "authority": "RESEARCH_SHADOW_ONLY",
+    "automated_collection_new_entitlements_verified": false,
+    "candidate_endpoints": [
+      {
+        "id": "FINNHUB_HISTORIC_MC",
+        "endpoint": "/stock/historical-market-cap",
+        "official_sdk": "https://github.com/Finnhub-Stock-API/finnhub-python/blob/master/finnhub/client.py",
+        "official_openapi": "https://github.com/Finnhub-Stock-API/finnhub-go/blob/master/api/openapi.yaml",
+        "observed_expected_schema": {
+          "symbol": "string",
+          "currency": "USD",
+          "data": "list of atDate + marketCapitalization"
+        },
+        "free_account_exact_historical_mc_entitlement": "UNVERIFIED",
+        "github_runner_key": "NOT_ATTESTED",
+        "publication_timestamp_in_endpoint": "NOT_DOCUMENTED",
+        "historical_asof_exact_known_at_close": "NOT_PROVEN",
+        "issuer_share_class_ADR_CA": "NOT_PROVEN",
+        "potential_mode": "ONE_TICKER_SHADOW",
+        "production_primary_allowed": false
+      },
+      {
+        "id": "EODHD_HISTORIC_MC_WEEKLY",
+        "endpoint": "/api/historical-market-cap/{ticker}",
+        "official_docs": "https://eodhd.com/financial-apis/historical-market-capitalization-api",
+        "provider_openapi": "https://github.com/EodHistoricalData/EODHD-openapi",
+        "coverage": "NYSE_AND_NASDAQ",
+        "equity_frequency": "WEEKLY_SAMPLED",
+        "request_charge_credits": 10,
+        "free_package_calls_per_day": 20,
+        "free_package_fundamentals_coverage": false,
+        "free_mode_full_514_daily_feasible": false,
+        "one_day_514_credits": 5140,
+        "publication_timestamp_attested": false,
+        "primary_allowed": false
+      },
+      {
+        "id": "SHARADAR_DAILY_MARKETCAP",
+        "endpoint": "https://api.sharadar.com/v1.0/data/daily",
+        "official_docs": "https://sharadar.com/docs/daily",
+        "unit": "USD_MILLIONS",
+        "reported_pit_ready": true,
+        "bulk_download_available_with_key": true,
+        "free_entry_universe": "DOW_30",
+        "full_514_free_entitlement": false,
+        "internal_unattended_runner_rights_verified": false,
+        "primary_allowed": false
+      }
+    ],
+    "new_code": "nasdaq-xray/c418_historic_mc_vendor_shadow.py",
+    "code_contract": "EXACT_SYMBOL_NO_WEEKLY_FORWARD_FILL_NO_FUTURE_ROW_NOT_PIT_WITHOUT_VENDOR_PUBLICATION_TIME",
+    "entry_policy": "C4.17_UNCHANGED",
+    "independent_upstream_verified": false,
+    "production_primary_count": 0,
+    "new_R92_count": 0,
+    "bigdata_replaced": false,
+    "source_rights_and_session_pit_still_blocked": true,
+    "no_paid_calls": false
   }
 }
