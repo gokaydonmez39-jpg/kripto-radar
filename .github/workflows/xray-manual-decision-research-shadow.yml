@@ -7,11 +7,13 @@ on:
     branches: [main]
   schedule:
     - cron: "17 21 * * 1-5"
+    - cron: "15 13 * * 1-5" # 16:15 TRT preopen research; not a punctual delivery guarantee
   push:
     branches: [main]
     paths:
       - "nasdaq-xray/manual_decision_report.py"
       - "nasdaq-xray/eod_screening_digest.py"
+      - "nasdaq-xray/alpaca_sip_eod_b_shadow.py"
       - "nasdaq-xray/manual_workflow_trigger_sha_guard.py"
       - "nasdaq-xray/research_only_start_20261010.json"
       - "nasdaq-xray/research_only_start_guard.py"
@@ -28,7 +30,7 @@ jobs:
   manual-research:
     if: ${{ github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_repository.full_name == github.repository && github.event.workflow_run.head_branch == 'main') }}
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
@@ -99,6 +101,38 @@ jobs:
               f.write("PRICE/DV30 screened: **"+str(len(j["screen_symbols"]))+"** / master identity PASS: "+str(j["master_identity_pass_count"])+"\\n\\n")
               f.write("Technical, primary MC, AL and real delivery: **NOT VERIFIED**; no trade or notification.\\n")
           print("XRAY_EOD_SCREEN_READBACK=PASS_SOURCE_EXACT_NO_FAKE_AL")
+          PY
+      - name: Optional free historical SIP 260d/52w B research (never AL)
+        shell: bash
+        env:
+          APCA_API_KEY_ID: ${{ secrets.APCA_API_KEY_ID }}
+          APCA_API_SECRET_KEY: ${{ secrets.APCA_API_SECRET_KEY }}
+        run: |
+          set -euo pipefail
+          python -m py_compile nasdaq-xray/alpaca_sip_eod_b_shadow.py
+          python nasdaq-xray/alpaca_sip_eod_b_shadow.py --selftest
+          python -O nasdaq-xray/alpaca_sip_eod_b_shadow.py --selftest
+          python nasdaq-xray/alpaca_sip_eod_b_shadow.py --out "$RUNNER_TEMP/xray_sip_b_research.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])/"xray_sip_b_research.json"
+          j=json.loads(p.read_text())
+          assert j["schema"]=="XRAY_SIP_EOD_260_52_B_RESEARCH_SHADOW_V1"
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          assert j["qualified_al_count"]==0 and j["qualified_al_symbols"]==[]
+          assert j["alpha_authority"] is False and j["orders"]==[]
+          assert j["source_rights_not_elevated"] is True
+          assert j["b_precursor_count"]==len(j["b_precursors"])
+          if j["status"]!="B_PRECURSOR_RESEARCH_ONLY_NO_AL":
+              assert j["b_precursor_count"]==0 and j["b_precursors"]==[]
+          print("XRAY_ALPACA_SIP_PUBLIC_GUARD=PASS_NO_AL")
+          with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a") as f:
+              f.write("\\n## Alpaca historical SIP — private B precursor, never AL\\n\\n")
+              f.write("Source status: **"+j["status"]+"**\\n\\n")
+              f.write("260-session / 52-completed-week symbols: **"+str(j["260d_52w_verified_count"])+"**\\n\\n")
+              f.write("B research precursors: **"+str(j["b_precursor_count"])+"**\\n\\n")
+              f.write("Strict C4.17 AL authority: **NO** — MC/R1-RR/legal/G9/account/delivery not promoted.\\n")
           PY
       - name: Compile and regression tests (manual only, no account or orders)
         run: |
@@ -285,6 +319,14 @@ jobs:
         with:
           name: xray-eod-screen-research-only
           path: ${{ runner.temp }}/xray_eod_screen.json
+          retention-days: 14
+          if-no-files-found: warn
+      - name: Upload optional SIP derived-only research diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: xray-alpaca-sip-b-research-only
+          path: ${{ runner.temp }}/xray_sip_b_research.json
           retention-days: 14
           if-no-files-found: warn
       - name: Upload safe operational telemetry only
