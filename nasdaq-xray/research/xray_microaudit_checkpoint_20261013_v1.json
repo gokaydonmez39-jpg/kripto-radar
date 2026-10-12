@@ -1,0 +1,158 @@
+{
+  "schema": "XRAY_MICROAUDIT_CONTINUATION_CHECKPOINT_V1",
+  "captured_utc": "2026-10-12T23:26:45Z",
+  "repo": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "head_at_capture": "c5abd0acc4af89cc02c1934b91c147e03f767ecf",
+  "safety": {
+    "alpha_policy": "C4.17",
+    "control": "C4.27",
+    "execution": "NONE",
+    "real_money": "NO-GO",
+    "unknown_never_pass": true,
+    "no_paid_fallback": true
+  },
+  "audited_state": {
+    "price_asof": "2026-10-12",
+    "price_pass": 0,
+    "price_unknown": 540,
+    "master_identity_unknown": 10,
+    "terminal_asof": "2026-10-07",
+    "registered_R92": 0,
+    "user_device_receipt": "UNVERIFIED",
+    "system_ready": false
+  },
+  "tasks_topology": {
+    "active": 5,
+    "canonical": "6a825366222081918997094d76e6ae46",
+    "canonical_notifications_configured": true,
+    "source": "ChatGPT active task readback",
+    "additional_task": false
+  },
+  "repairs_verified": [
+    {
+      "name": "Rallies runtime quarantine",
+      "commit": "05b6679c19a32f4f506d79cf54f408f587576e2c",
+      "ci": 38321766357,
+      "result": "PASS"
+    },
+    {
+      "name": "Oct09 official IPO historical-only",
+      "ci": 38320191250,
+      "result": "PASS"
+    },
+    {
+      "name": "Oct09 GRAL exact Sina and PRICE SHA-bound historical-only",
+      "ci": 38322083053,
+      "result": "PASS"
+    },
+    {
+      "name": "Root failover actually triggered root",
+      "ci": 38320459000,
+      "result": "SUCCESS_PARTIAL_HISTORY"
+    }
+  ],
+  "last_blocking_runs": [
+    {
+      "ci": 38321233197,
+      "name": "Post-MC",
+      "result": "FAIL_CLOSED_PRIMARY_MC_ABSENT"
+    },
+    {
+      "ci": 38320593839,
+      "name": "E2E",
+      "result": "CI_EXIT_2_RELEASE_NOT_GRANTED",
+      "safety_dag": "PASS"
+    }
+  ],
+  "historical_source_sha": {
+    "sina_oct09": "ffee6b60305336d9b6c89e52621f98a12a8850e9",
+    "price_oct09": "6f3f68fff0897d68f200ad3621c51a5071494714"
+  },
+  "ordered_recovery_steps": [
+    {
+      "order": 1,
+      "id": "1_SAFETY",
+      "status": "CI_PASS",
+      "acceptance": "Rallies current positive source quarantine enforced in price/resolver code and regression"
+    },
+    {
+      "order": 2,
+      "id": "2_SCHEDULER",
+      "status": "ROOT_RECOVERY_PROVEN_ONLY",
+      "acceptance": "Five existing ChatGPT tasks; existing Health CAS failover; no sixth task"
+    },
+    {
+      "order": 3,
+      "id": "3_PRICE_DV30",
+      "status": "BLOCKED",
+      "acceptance": "2026-10-12 price PASS=0 UNKNOWN=540; require lawful actual exact30 unadjusted integer RTH volumes"
+    },
+    {
+      "order": 4,
+      "id": "4_SETTLEMENT",
+      "status": "UNVERIFIED",
+      "acceptance": "Exact current Alpaca historical SIP delayed RTH snapshot/cross-check/price SHA binding"
+    },
+    {
+      "order": 5,
+      "id": "5_PRIMARY_MC",
+      "status": "ABSENT",
+      "acceptance": "Current C4.17 primary licensed USD company cap >=2B and same-ASOF exact pass scope"
+    },
+    {
+      "order": 6,
+      "id": "6_HISTORY",
+      "status": "PARTIAL",
+      "acceptance": "260 actual completed daily and 52 completed weekly sessions per symbol; no fabricated history"
+    },
+    {
+      "order": 7,
+      "id": "7_IDENTITY",
+      "status": "UNKNOWN_10",
+      "acceptance": "Independent official issuer/security identity and explicit exclusions"
+    },
+    {
+      "order": 8,
+      "id": "8_EVENT_TECHNICAL",
+      "status": "BLOCKED_UPSTREAM",
+      "acceptance": "Event/legal/weekly/stage1/regime/deep/R1/RR/official safety same-ASOF exact chain"
+    },
+    {
+      "order": 9,
+      "id": "9_TERMINAL",
+      "status": "ASOF_2026_10_07",
+      "acceptance": "Exact 2026-10-12 terminal required before current R92; NO-GO until proven"
+    },
+    {
+      "order": 10,
+      "id": "10_CHATGPT_NOTIFICATION",
+      "status": "DEVICE_RECEIPT_UNVERIFIED",
+      "acceptance": "Canonical only; emit real in-chat scheduled digest and verify iPhone push, no GitHub Issue and no fabricated AL"
+    },
+    {
+      "order": 11,
+      "id": "11_R92_LIFECYCLE",
+      "status": "NO_REGISTERED_R92",
+      "acceptance": "Evidence-registered unique-key candidate, active lifecycle and dedup"
+    },
+    {
+      "order": 12,
+      "id": "12_STRICT_FULL_GO",
+      "status": "INDEPENDENT_BLOCKED",
+      "acceptance": "G9 and read-only ACCOUNT for TRUE_FULL_GO only; manual research track independent"
+    }
+  ],
+  "not_repairable_by_repo_code_only": [
+    "Vendor entitlement and independently authenticated zero-dollar data access",
+    "iPhone OS push permission and actual device notification receipt"
+  ],
+  "final": {
+    "research_production_ready": false,
+    "all_system_100_percent": false,
+    "phone_receipt_proven": false,
+    "manual_r92_candidate_released": false,
+    "execution": "NONE",
+    "real_money": "NO-GO"
+  }
+}
