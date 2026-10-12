@@ -155,6 +155,7 @@ jobs:
           python nasdaq-xray/research_dual_lane_readiness.py \
             --start "$RUNNER_TEMP/xray_research_start_witness.json" \
             --preentry "$RUNNER_TEMP/xray_preentry_watch.json" \
+            --manual "$RUNNER_TEMP/xray_manual_sip_watch_provenance.json" \
             --out "$RUNNER_TEMP/xray_dual_lane_readiness.json"
           python - <<'PY'
           import json,os,pathlib
@@ -164,10 +165,18 @@ jobs:
           assert j["r92_candidates"]==j["buy_candidates"]==j["orders"]==[]
           assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
           assert not j["user_device_delivery_verified"]
+          assert j["manual_eod_not_automated"] is True
+          assert j["manual_eod_alpha_authority"] is False and j["manual_eod_r92_authority"] is False
+          if j["manual_eod_watch_status"]=="CURRENT_COMPLETED_EOD_MANUAL_SHADOW_NOT_AL":
+              assert j["manual_eod_watch_count"]==11
+              assert len(set(j["manual_eod_watch_symbols"]))==11
+          else:
+              assert j["manual_eod_watch_count"]==0 and j["manual_eod_watch_symbols"]==[]
           with pathlib.Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a") as out:
               out.write("\\n## Research START vs Verified AL START — observational only\\n\\n")
               out.write("Research: **"+j["research_start_status"]+"**\\n\\n")
               out.write("Verified AL: **"+j["verified_al_start_status"]+"**\\n\\n")
+              out.write("Manual 11 EOD research WATCH (not Canonical AL): **"+j["manual_eod_watch_status"]+"** count="+str(j["manual_eod_watch_count"])+"\\n\\n")
               out.write("Source-exact: **"+str(j["source_exact"])+"**. No trades, no AL release.\\n")
           PY
       - name: Verify 2-8 session outcomes are pending without real future evidence
