@@ -13,6 +13,7 @@ on:
       - "nasdaq-xray/research_only_start_20261010.json"
       - "nasdaq-xray/research_only_start_guard.py"
       - nasdaq-xray/preentry_watch_observer.py
+      - nasdaq-xray/research_dual_lane_readiness.py
       - nasdaq-xray/forward_watch_metrics.py
       - .github/workflows/xray-research-watch-radar.yml
       - nasdaq-xray/canonical_current_final_tech.json
@@ -146,6 +147,29 @@ jobs:
               f.write("No AL, no broker, no device-delivery assertion.\\n")
           print("XRAY_PREENTRY_WATCH_CONTRACT=PASS_SEPARATE_NO_BUY")
           PY
+      - name: Emit source-SHA-bound Research START and Verified AL START lane status
+        run: |
+          python -m py_compile nasdaq-xray/research_dual_lane_readiness.py
+          python nasdaq-xray/research_dual_lane_readiness.py --selftest
+          python -O nasdaq-xray/research_dual_lane_readiness.py --selftest
+          python nasdaq-xray/research_dual_lane_readiness.py \
+            --start "$RUNNER_TEMP/xray_research_start_witness.json" \
+            --preentry "$RUNNER_TEMP/xray_preentry_watch.json" \
+            --out "$RUNNER_TEMP/xray_dual_lane_readiness.json"
+          python - <<'PY'
+          import json,os,pathlib
+          j=json.loads((pathlib.Path(os.environ["RUNNER_TEMP"])/"xray_dual_lane_readiness.json").read_text())
+          assert j["schema"]=="XRAY_RESEARCH_VERIFIED_DUAL_LANE_READBACK_V1"
+          assert not j["alpha_authority"] and not j["delivery_authority"]
+          assert j["r92_candidates"]==j["buy_candidates"]==j["orders"]==[]
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          assert not j["user_device_delivery_verified"]
+          with pathlib.Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a") as out:
+              out.write("\\n## Research START vs Verified AL START — observational only\\n\\n")
+              out.write("Research: **"+j["research_start_status"]+"**\\n\\n")
+              out.write("Verified AL: **"+j["verified_al_start_status"]+"**\\n\\n")
+              out.write("Source-exact: **"+str(j["source_exact"])+"**. No trades, no AL release.\\n")
+          PY
       - name: Verify 2-8 session outcomes are pending without real future evidence
         run: |
           python nasdaq-xray/forward_watch_metrics.py --out "$RUNNER_TEMP/xray_forward_watch_metrics.json"
@@ -175,6 +199,7 @@ jobs:
             ${{ runner.temp }}/xray_research_start_witness.json
             ${{ runner.temp }}/xray_research_watch_radar.json
             ${{ runner.temp }}/xray_preentry_watch.json
+            ${{ runner.temp }}/xray_dual_lane_readiness.json
             ${{ runner.temp }}/xray_forward_watch_metrics.json
           retention-days: 14
           if-no-files-found: error
