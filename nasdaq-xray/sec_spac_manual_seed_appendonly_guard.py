@@ -29,6 +29,15 @@ NO_RELEASE={"execution":"NONE","real_money":"NO-GO","unknown_never_pass":True}
 def git_blob_bytes(buf):
     return hashlib.sha1(b"blob "+str(len(buf)).encode("ascii")+b"\0"+buf).hexdigest()
 
+def sec_url_valid(url,cik):
+    if not isinstance(url,str) or not isinstance(cik,str):
+        return False
+    if url.startswith("https://www.sec.gov/Archives/edgar/data/"):
+        return True
+    # Prior official SEC identity seeds sometimes link the SEC CIK browse
+    # page rather than an accession; do not turn this into arbitrary URLs.
+    return url=="https://www.sec.gov/edgar/browse/?CIK="+cik
+
 def date_valid(text):
     if not isinstance(text,str):
         return False
@@ -85,7 +94,7 @@ def prove(proof,seed,asof,symbol,original_sha,current_sha):
         or manual.get("is_blank_check") is not True
         or manual.get("evidence_authority")!="SEC_EDGAR_OFFICIAL"
         or not re.fullmatch(r"0[0-9]{9}",str(manual.get("cik") or ""))
-        or not str(manual.get("source_url") or "").startswith("https://www.sec.gov/Archives/edgar/")
+        or not sec_url_valid(manual.get("source_url"),manual.get("cik"))
         or not date_valid(manual.get("evidence_date"))
         or not date_valid(manual.get("verified_asof_et"))
         or not (manual["evidence_date"]<=manual["verified_asof_et"]<=asof)):
