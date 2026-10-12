@@ -17,11 +17,11 @@ import urllib.request
 ROOT=pathlib.Path(__file__).resolve().parent
 SCHEMA="XRAY_MULTI_PROVIDER_RESEARCH_SHADOW_V1"
 ROUTES={"MASTER":("SEC_TICKER_DIRECTORY","SEC_MIRROR_PIT","BQ_STOCK_PROFILE"),
-        "MC":("MASSIVE_TICKER_PIT","BQ_MC_SCREENER"),
+        "MC":("MASSIVE_TICKER_PIT","BQ_MC_HISTORICAL_DAILY","BQ_MC_SCREENER"),
         "EVENT":("SEC_SUBMISSIONS","BQ_SEC_FILINGS")}
 MAX_PER_RUN={"SEC_TICKER_DIRECTORY":1,"SEC_MIRROR_PIT":1,"SEC_SUBMISSIONS":3,
              "MASSIVE_TICKER_PIT":3,"BQ_STOCK_PROFILE":3,
-             "BQ_MC_SCREENER":3,"BQ_SEC_FILINGS":3}
+             "BQ_MC_SCREENER":3,"BQ_MC_HISTORICAL_DAILY":3,"BQ_SEC_FILINGS":3}
 GROUP_CAP={"SEC":5,"MIRROR":1,"MASSIVE":3,"BQ":7}
 SEC_DIRECTORY="https://www.sec.gov/files/company_tickers_exchange.json"
 UA="NASDAQ-SWING-XRAY/1.0 non-trading research github.com/gokaydonmez39-jpg/kripto-radar"
@@ -114,7 +114,26 @@ def lookup(provider,sym,asof,keys,cache,http_get):
         row=obj.get("results") if isinstance(obj,dict) else None
         if not isinstance(row,dict) or row.get("ticker")!=sym or row.get("market")!="stocks" or finite(row.get("market_cap")) is None:
             raise ValueError("MASSIVE_NO_MATCHING_PIT_MC")
-        return "PIT_MC_DISCOVERY_ONLY"
+        # A Massive report-period date is not filing-acceptance-time PIT.
+        return "REPORT_PERIOD_MC_NOT_FILING_ACCEPTANCE_PIT"
+    if provider=="BQ_MC_HISTORICAL_DAILY":
+        url=bq_url("historic",keys["BQ"],slug="market-capitalization-daily",
+                   ticker=sym,from_date=asof,till_date=asof,mode="original")
+        obj=http_get(url)
+        # BQ returns a flat array with ticker, metric, date, value. Daily
+        # observation date does NOT imply original SEC filing acceptance PIT.
+        rows=obj if isinstance(obj,list) else None
+        if not isinstance(rows,list):
+            raise ValueError("BQ_DAILY_MC_FLAT_ROWS_UNVERIFIED")
+        matches=[r for r in rows if isinstance(r,dict)
+                 and str(r.get("ticker","")).upper()==sym
+                 and r.get("date")==asof
+                 and isinstance(r.get("metric"),str)
+                 and "market cap" in r["metric"].casefold()
+                 and finite(r.get("value")) is not None]
+        if len(matches)!=1:
+            raise ValueError("BQ_DAILY_MC_SYMBOL_DATE_METRIC_NOT_UNIQUE")
+        return "DATE_SCOPED_MC_NOT_FILING_ACCEPTANCE_PIT"
     if provider=="BQ_MC_SCREENER":
         url=bq_url("screener",keys["BQ"],page=1,limit=5)
         obj=http_get(url,headers={"Content-Type":"application/json"},
@@ -177,6 +196,8 @@ def route(lane,sym,asof,keys,counters,cache,http_get=http,runner=lookup):
         try:
             status=runner(provider,sym,asof,keys,cache,http_get)
             if status not in ("IDENTITY_DISCOVERY_ONLY","PIT_MC_DISCOVERY_ONLY",
+                              "REPORT_PERIOD_MC_NOT_FILING_ACCEPTANCE_PIT",
+                              "DATE_SCOPED_MC_NOT_FILING_ACCEPTANCE_PIT",
                               "LATEST_NON_PIT_MC_DISCOVERY_ONLY","PAST_FILINGS_DISCOVERY_ONLY"):
                 raise ValueError("UNKNOWN_RESULT_TYPE")
             attempts.append((provider,status))
@@ -369,7 +390,7 @@ def selftest():
     q=collections.Counter()
     status,att=route("MC","ASTS","2026-10-07",{"BQ":"k","MASSIVE":""},q,{},runner=good)
     assert status=="REFERENCE_OBSERVED_NOT_AUTHORITY"
-    assert att[0]==("MASSIVE_TICKER_PIT","NO_KEY") and att[1][0]=="BQ_MC_SCREENER"
+    assert att[0]==("MASSIVE_TICKER_PIT","NO_KEY") and att[1][0]=="BQ_MC_HISTORICAL_DAILY"
     def quota(p,*args):
         if p=="MASSIVE_TICKER_PIT":
             raise urllib.error.HTTPError("https://api.massive.com/",429,"quota",{},None)
@@ -378,7 +399,7 @@ def selftest():
     status,att=route("MC","ASTS","2026-10-07",{"BQ":"k","MASSIVE":"k"},
                      collections.Counter(),c,runner=quota)
     assert status=="REFERENCE_OBSERVED_NOT_AUTHORITY"
-    assert att[0][1]=="QUOTA_429" and att[1][0]=="BQ_MC_SCREENER"
+    assert att[0][1]=="QUOTA_429" and att[1][0]=="BQ_MC_HISTORICAL_DAILY"
     assert c["circuit:MASSIVE_TICKER_PIT"] is True
     q=collections.Counter({"MASSIVE":GROUP_CAP["MASSIVE"],"BQ":GROUP_CAP["BQ"]})
     status,att=route("MC","ASTS","2026-10-07",{"BQ":"k","MASSIVE":"k"},q,{},runner=good)
