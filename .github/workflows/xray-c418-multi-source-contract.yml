@@ -4,6 +4,8 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/c418_multi_source_guard.py"
+      - "nasdaq-xray/c418_provider_inventory_20261012.json"
+      - "nasdaq-xray/c418_provider_routing_readiness.py"
       - "nasdaq-xray/immutable_action_dependency_guard.py"
       - "nasdaq-xray/rallies_history_shadow_guard.py"
       - "nasdaq-xray/c418_shadow_resilience_guard.py"
@@ -59,6 +61,33 @@ jobs:
           python nasdaq-xray/mc_free_successor_contract.py --selftest
           python nasdaq-xray/c418_canonical_source_sha_selftest.py
           python nasdaq-xray/c418_upstream_independence_attestation_selftest.py
+      - name: Verify 11-route real 514-symbol cohort capacity and forbid fake MC rights
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile nasdaq-xray/c418_provider_routing_readiness.py
+          python nasdaq-xray/c418_provider_routing_readiness.py --selftest
+          python -O nasdaq-xray/c418_provider_routing_readiness.py --selftest
+          python nasdaq-xray/c418_provider_routing_readiness.py \
+            --out "$RUNNER_TEMP/xray_c418_514_source_router.json"
+          python - <<'PY'
+          import os,json
+          from pathlib import Path
+          j=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_c418_514_source_router.json").read_text())
+          assert j["schema"]=="XRAY_C418_REAL_514_MULTI_PROVIDER_ROUTING_READINESS_V1"
+          assert j["asof_et"]=="2026-10-09"
+          assert j["canonical_price_pass_count"]==514
+          assert j["master_identity_unknown_count"]==12
+          assert j["identity_unknown_intersect_price_count"]==0
+          assert j["discovered_source_rows"]==11
+          assert j["verified_distinct_market_cap_origin_count"]==0
+          assert j["new_primary_mc_authority_count"]==0
+          assert j["new_r92_count_created"]==0
+          assert j["go"] is False and j["unknown_never_pass"] is True
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          assert j["no_vendor_raw_data_exported"] is True
+          print("XRAY_C418_514_ACTUAL_ROUTING=PASS_11_PROVIDERS_NO_FAKE_PRIMARY")
+          PY
       - name: Confirm missing real provider rights cannot become PRIMARY or R92
         shell: bash
         run: |
@@ -88,6 +117,8 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: xray-c418-multi-source-code-preflight
-          path: ${{ runner.temp }}/xray_c418_multi_source_health.json
+          path: |
+            ${{ runner.temp }}/xray_c418_multi_source_health.json
+            ${{ runner.temp }}/xray_c418_514_source_router.json
           retention-days: 14
           if-no-files-found: error
