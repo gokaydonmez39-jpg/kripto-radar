@@ -1,0 +1,107 @@
+name: XRAY SEC 9-Oct Manual SPAC Append-Only Provenance
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/sec_spac_manual_seed_appendonly_guard.py"
+      - "nasdaq-xray/sina_stage.py"
+      - "nasdaq-xray/master_sec_identity_manual_seed_registry.json"
+      - "nasdaq-xray/master_sec_spac_proof_20261009.json"
+      - ".github/workflows/xray-sec-manual-seed-appendonly-live-proof.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  prove:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.12"
+      - name: Verify exact triggering SHA
+        run: test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+      - name: Execute all real 135 SEC issuer bindings and twenty negative mutations
+        run: |
+          python -m py_compile nasdaq-xray/sec_spac_manual_seed_appendonly_guard.py nasdaq-xray/sina_stage.py
+          python nasdaq-xray/sec_spac_manual_seed_appendonly_guard.py
+          python -O nasdaq-xray/sec_spac_manual_seed_appendonly_guard.py
+      - name: Execute actual Sina SEC proof loader without network and reject amended issuer
+        shell: bash
+        run: |
+          python - <<'PY'
+          import ast, importlib.util, json, re, tempfile
+          from datetime import datetime
+          from pathlib import Path
+          root=Path("nasdaq-xray")
+          spec=importlib.util.spec_from_file_location("secproof",root/"sec_spac_manual_seed_appendonly_guard.py")
+          module=importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(module)
+          source=(root/"sina_stage.py").read_text()
+          parsed=ast.parse(source)
+          selected=next(n for n in parsed.body
+                        if isinstance(n,ast.FunctionDef) and n.name=="load_sec_spac_proof")
+          compiled=compile(ast.Module(body=[selected],type_ignores=[]),"<actual_sina_sec_proof_loader>","exec")
+          regex_node=next(n.value for n in parsed.body if isinstance(n,ast.Assign)
+                          and any(isinstance(t,ast.Name) and t.id=="SPAC_SUSPECT" for t in n.targets))
+          spac=eval(compile(ast.Expression(regex_node),"<actual_spac_regex>","eval"),{"re":re})
+          env={"ROOT":root,"MANUAL_IDENTITY_SEED":root/"master_sec_identity_manual_seed_registry.json",
+               "json":json,"re":re,"datetime":datetime,"SPAC_SUSPECT":spac,
+               "prove_manual_sec_seed":module.prove,
+               "git_blob_sha":lambda p:module.git_blob_bytes(p.read_bytes()),
+               "sec_spac_proof_path":lambda asof:root/("master_sec_spac_proof_"+asof.replace("-","")+".json")}
+          exec(compiled,env)
+          result,sha=env["load_sec_spac_proof"]("2026-10-09")
+          if "AACI" not in result or len(result)<135 or len(sha)!=40:
+              raise SystemExit("REAL_SINA_SEC_LOADER_FALSE_NEGATIVE")
+          with tempfile.TemporaryDirectory(prefix="xray-sec-drift-") as d:
+              clone=Path(d)
+              proof=json.loads((root/"master_sec_spac_proof_20261009.json").read_text())
+              seeds=json.loads((root/"master_sec_identity_manual_seed_registry.json").read_text())
+              (clone/"master_sec_spac_proof_20261009.json").write_text(json.dumps(proof))
+              seeds["records"]["AACI"]["cik"]="0000000001"
+              (clone/"master_sec_identity_manual_seed_registry.json").write_text(json.dumps(seeds))
+              env["ROOT"]=clone
+              env["MANUAL_IDENTITY_SEED"]=clone/"master_sec_identity_manual_seed_registry.json"
+              try:
+                  env["load_sec_spac_proof"]("2026-10-09")
+              except RuntimeError as exc:
+                  if "SEC_SPAC_PROOF_MANUAL_SEED_PROVENANCE_INVALID:AACI" not in str(exc):
+                      raise
+              else:
+                  raise SystemExit("MUTATED_OFFICIAL_SEC_IDENTITY_WAS_ACCEPTED")
+          print("XRAY_SINA_REAL_9OCT_SEC_LOADER=PASS_AACI_AND_ALL_FROZEN_PROOFS")
+          print("XRAY_SINA_MUTATED_AACI_REJECTED=PASS")
+          PY
+      - name: Publish nontrading safe witness
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          from hashlib import sha1
+          r=Path("nasdaq-xray")
+          doc={
+            "schema":"XRAY_SEC_SPAC_APPENDONLY_CI_WITNESS_V1",
+            "sha":os.environ["GITHUB_SHA"],
+            "asof_et":"2026-10-09",
+            "manual_official_proof_count":135,
+            "negative_mutations_rejected":20,
+            "real_sina_loader_pass":True,
+            "changed_manual_seed_row_acceptance":False,
+            "MC_PRIMARY_created":False,
+            "can_register_R92":False,
+            "GO":False,"execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
+          }
+          p=Path(os.environ["RUNNER_TEMP"])/"xray_sec_spac_appendonly_witness.json"
+          p.write_text(json.dumps(doc,indent=2,sort_keys=True)+"\n")
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: xray-sec-spac-appendonly-safety-proof
+          path: ${{ runner.temp }}/xray_sec_spac_appendonly_witness.json
+          retention-days: 14
+          if-no-files-found: error
