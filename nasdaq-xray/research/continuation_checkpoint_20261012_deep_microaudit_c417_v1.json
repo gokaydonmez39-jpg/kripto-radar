@@ -1,6 +1,6 @@
 {
   "schema": "XRAY_DEEP_MICROAUDIT_CHECKPOINT_V1",
-  "observation_date_utc": "2026-10-12T21:08:58.556Z",
+  "observation_date_utc": "2026-10-12T21:15:50.141Z",
   "source_repository": "gokaydonmez39-jpg/kripto-radar",
   "branch": "main",
   "reference_head_before_checkpoint": "c3fb030a8edd2b2f399c24b5a8f04bc38da73b97",
@@ -167,6 +167,52 @@
       "r92_created": false,
       "classification": "RESEARCH_DIAGNOSTIC_SOURCE_SPECIFIC_GAP_NOT_PRIMARY_RELEASE",
       "conclusion": "TICKER_ONLY_EOD_SOURCE_EXISTS_FOR_LARGE_FRACTION; SOURCE_RIGHTS, SESSION_COVERAGE, CORPORATE_ACTION, TICKER_LISTING_IDENTITY REMAIN UNPROVEN"
+    },
+    "live_root_unknown_partition_20261012": {
+      "source": "GITHUB_ACTIONS_SUCCESS_PLUS_GIT_EXACT_READBACK",
+      "verified_root_run_id": 38308331033,
+      "root_orchestrator_state_blob_sha": "8ce606b679eb3b59a3f6dd4189887a62b3734c36",
+      "root_asof_et": "2026-10-12",
+      "queue_total": 3185,
+      "exact_reason_counts": {
+        "ASOF_BAR_MISSING_NOT_SHORT_HISTORY_PROOF": 3157,
+        "PROVIDER_EXCEPTION_RETRY_EXHAUSTED": 28
+      },
+      "reason_partition_exact": true,
+      "reason_counts_sum": 3185,
+      "pending_retry": 0,
+      "source_fix_commits": [
+        "9f95d799ee463e62c8a42b9be5c7a0cbcb22c1a2",
+        "80d4acf2e96dd85619996cb977acbc9f9af378bb"
+      ],
+      "static_compile_and_regression": "PASS",
+      "root_action_conclusion": "success",
+      "root_data_plane_status": "PARTIAL_HISTORY",
+      "history_recovered_count": 0,
+      "production_go": false
+    },
+    "rallies_exact30_validation_attempt_20261012": {
+      "source": "CONNECTED_RALLIES_FOREGROUND_NO_VENDOR_BARS_PERSISTED",
+      "expected_completed_sessions": 30,
+      "single_exact_asof_bulk_days_observed_successfully": 1,
+      "full_exact30_batch_attempt_result": "CODE_MODE_MAXIMUM_TOOL_CALLS_EXCEEDED",
+      "exact30_complete_symbol_coverage_attested": false,
+      "dv30_median_attested": false,
+      "production_price_pass_created": false,
+      "retry_guidance": "Bounded batches with real provider rights and offline known ASOF+identity reference; no automatic promotion.",
+      "full_scope_auto_runner_rights": false,
+      "strict_primary_mc": false,
+      "no_synthetic_fallback": true
+    },
+    "connected_bigdata_quota_status_20261012": {
+      "source": "CONNECTED_BIGDATA_HELP_STRUCTURED_CONTENT",
+      "observed_date_utc": "2026-10-12",
+      "payg_out_of_credits": true,
+      "payg_available_credit_zero": true,
+      "subscription_or_entitlement_not_implied": true,
+      "purchase_requested": false,
+      "purchase_performed": false,
+      "primary_mc_proof_created": false
     }
   },
   "dependency_order": [
@@ -186,7 +232,8 @@
       "acceptance": "Nonempty exact-ASOF vendor daily bars validated by official exchange dates and source entitlement, no synthetic backfill; runner artifact + Git blob exact",
       "rollback": "HISTORY_PARTIAL, no new PASS",
       "observation": "3-symbol Alpaca delayed-SIP snapshot has ASOF daily bar field but get_stock_bars historical endpoint returns api_error; this is not a production fallback or proof of 260/52.",
-      "rallies_probe_observation": "Rallies read-only foreground bulk 2026-10-12 returned 12,588 unique tickers; 3,150 exact source-queue symbol matches with valid positive OHLCV; 35 missing; 4 sample exact 20:00Z timestamps. This is NOT full NASDAQ identity/PIT or automated runner rights and cannot satisfy exact30/260 alone."
+      "rallies_probe_observation": "Rallies read-only foreground bulk 2026-10-12 returned 12,588 unique tickers; 3,150 exact source-queue symbol matches with valid positive OHLCV; 35 missing; 4 sample exact 20:00Z timestamps. This is NOT full NASDAQ identity/PIT or automated runner rights and cannot satisfy exact30/260 alone.",
+      "latest_acceptance": "Real 12-Oct Rallies source matched 3150 of 3185 symbols for a single day, but 30-day full DV30 remained UNVERIFIED due tool call ceiling; rights for GitHub automatic use not attested."
     },
     {
       "id": "P1",
