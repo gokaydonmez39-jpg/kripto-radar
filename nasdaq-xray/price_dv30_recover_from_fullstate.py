@@ -25,6 +25,39 @@ OFFICIAL_GUARD=Path(os.getenv("XRAY_OFFICIAL_SOURCE_GUARD",str(ROOT/"canonical_o
 OFFICIAL_LISTING_REGISTRY=Path(os.getenv("XRAY_OFFICIAL_LISTING_REGISTRY",str(ROOT/"price_official_listing_registry.json")))
 
 
+RALLIES_GOVERNANCE=ROOT/"provider_automation_governance.json"
+RALLIES_UNVERIFIED_POSITIVE_QUARANTINE_ASOF="2026-10-12"
+
+
+def rallies_current_positive_authority_allowed(asof):
+    """Fail closed on 2026-10-12+ Rallies DV30 positive authority without entitlement/volume proof.
+
+    Old frozen ASOF fixtures remain regression-only, never eligible for a later
+    session. An absent/corrupt governance file cannot silently admit a PASS.
+    """
+    if not isinstance(asof,str) or len(asof)!=10:
+        return False
+    if asof<RALLIES_UNVERIFIED_POSITIVE_QUARANTINE_ASOF:
+        return True  # Historical test replay only; no cross-ASOF promotion.
+    try:
+        gov=json.loads(RALLIES_GOVERNANCE.read_text())
+        provider=(gov.get("providers") or {}).get("RALLIES") or {}
+        return bool(
+            gov.get("schema")=="XRAY_PROVIDER_AUTOMATION_GOVERNANCE_V1"
+            and gov.get("execution")=="NONE"
+            and gov.get("real_money")=="NO-GO"
+            and gov.get("unknown_never_pass") is True
+            and gov.get("no_paid_fallback") is True
+            and provider.get("positive_price_dv30_promotion_allowed") is True
+            and provider.get("passive_reader_positive_promotion_allowed") is True
+            and provider.get("automated_non_display_runner_entitlement")=="ATTESTED"
+            and provider.get("unadjusted_official_rth_integer_volume_lineage")=="ATTESTED"
+            and provider.get("paid_top_up_allowed") is False
+        )
+    except (OSError,ValueError,TypeError):
+        return False
+
+
 def git_blob_sha(path:Path)->str:
     b=path.read_bytes()
     return hashlib.sha1(b"blob "+str(len(b)).encode()+b"\0"+b).hexdigest()
@@ -212,6 +245,8 @@ def load_c417_rallies_primary(asof,queue=None):
     path=c417_rallies_primary_path(asof)
     try:
         obj=json.loads(path.read_text())
+        if not rallies_current_positive_authority_allowed(asof):
+            raise ValueError("RALLIES_CURRENT_POSITIVE_AUTHORITY_QUARANTINED")
         if not (
           obj.get("schema")=="XRAY_RALLIES_DV30_CLASSIFICATION_V1"
           and obj.get("asof_et")==asof
@@ -298,6 +333,8 @@ def apply_c417_rallies_primary_partition(results,primary,queue):
     """
     if not isinstance(primary,dict):
         return []
+    if not rallies_current_positive_authority_allowed(primary.get("asof_et")):
+        return []  # No Rallies PASS/FAIL/DV30 row may become current authority.
     fp=primary.get("fail_price") or {}
     fd=primary.get("fail_dv30") or {}
     pp=primary.get("pass_price_dv30") or {}
@@ -1260,6 +1297,8 @@ def valid_bridge_price_resolution(x,asof):
           and bool(x.get("source"))
         )
     if d=="PASS_PRICE_DV30":
+        if not rallies_current_positive_authority_allowed(asof):
+            return False
         known=x.get("known_session_count")
         source_proof=(x.get("source"),x.get("proof"))
         if x.get("compact_terminal_proof") is True:
