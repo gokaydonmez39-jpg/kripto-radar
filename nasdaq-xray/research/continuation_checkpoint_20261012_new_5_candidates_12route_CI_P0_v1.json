@@ -114,8 +114,31 @@
       "artifact_id": 11731669908,
       "github_artifact_zip_sha256": "05f007cdadf9f82053b29751ce4fa038c44fe5c36e7bfee81a8840189819a29f"
     },
-    "artifact_zip_independently_downloaded_and_hashed": false,
-    "workflow_success_proves_primary_mc": false
+    "artifact_zip_independently_downloaded_and_hashed": true,
+    "workflow_success_proves_primary_mc": false,
+    "artifact_zip_sha_mismatch_count": 0,
+    "artifact_independent_readback": {
+      "verification_method": "GITHUB_ARTIFACT_ZIP_DOWNLOADED_TO_LOCAL_CONTAINER_SHA256_COMPUTED_AND_JSON_CONTENT_INSPECTED",
+      "C418_zip_sha256_match": true,
+      "MULTISOURCE_SHADOW_zip_sha256_match": true,
+      "zip_payload_json_files_opened": 5,
+      "router_asof": "2026-10-09",
+      "router_discovered_source_rows": 12,
+      "router_primary_mc_count": 0,
+      "router_new_r92_count": 0,
+      "C418_live_health_status": "DATA_BLOCKED",
+      "shadow_result": "PRE_MC_SOURCE_EXACT_SHADOW_ONLY_NO_PRIMARY_NO_AL",
+      "shadow_mc_research_scope": 514,
+      "shadow_mc_sample_attempted": 5,
+      "shadow_mc_sample_unknown": 5,
+      "shadow_BQ_probe_status": "BLOCKED_NO_API_KEY",
+      "shadow_BQ_http_calls": 0,
+      "shadow_master_blob_matches_git": true,
+      "shadow_price_blob_matches_git": true,
+      "shadow_history_blob_matches_git": true,
+      "shadow_terminal_blob_matches_git": true,
+      "strict_go": false
+    }
   },
   "pr_7": {
     "state": "open",
@@ -173,5 +196,5 @@
     "https://www.nasdaq.com/market-activity/stock-market-holiday-schedule"
   ],
   "full_production_go": false,
-  "notes": "Source research and compile/selftests in Actions succeed; neither immutable ZIP bytes independently downloaded nor production same-asof 514 PRIMARY verified. No live order, purchase, AL, or phone delivery executed."
+  "notes": "Two GitHub Actions artifacts independently downloaded and SHA-256 checked, with 5 JSON payloads parsed; C4.18 remains blocked, 0 PRIMARY MC, 0 new R92 and no G9 or device receipt. No live order/purchase/AL executed."
 }
