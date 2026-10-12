@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Single limited BQ /quotes?mode=eod research probe, never PRIMARY.
 
-Uses existing XRAY_BQ_API_KEY if provided. One 12-row AAPL-only completed EOD
+Uses an operator-attested licensed XRAY_BQ_API_KEY only; mere key presence
+cannot trigger unattended API access. One 12-row AAPL-only completed EOD
 query, bounded to the exact current PRICE ASOF; no vendor data persisted, no
 secrets or URL/error body logged, no third-party dataset construction.
 R92 / MC / canonical HISTORY changes expressly prohibited.
@@ -11,6 +12,7 @@ import argparse
 import json
 import math
 import os
+import re
 import subprocess
 import urllib.error
 import urllib.parse
@@ -94,7 +96,14 @@ def limited_get(key:str,asof:str)->object:
     return json.loads(raw)
 
 
-def run(asof:str,key:str,http_get=limited_get)->dict:
+def research_grant_claim(env)->bool:
+    """Bounded research-only operator assertion; not independently verified licence."""
+    return bool(
+        env.get("XRAY_BQ_UNATTENDED_RESEARCH_LICENSE_OK","").lower()=="true"
+        and re.fullmatch(r"[a-f0-9]{64}",
+            env.get("XRAY_BQ_LICENSE_EVIDENCE_SHA256","")))
+
+def run(asof:str,key:str,http_get=limited_get,*,research_grant_ok:bool=False)->dict:
     report={
         "schema":SCHEMA,"status":"BLOCKED_NO_API_KEY",
         "asof_et":asof,"provider":"BUSINESS_QUANT_EOD_ONE_CALL",
@@ -107,6 +116,9 @@ def run(asof:str,key:str,http_get=limited_get)->dict:
         "unknown_never_pass":True,
     }
     if not key:
+        return report
+    if research_grant_ok is not True:
+        report["status"]="BLOCKED_UNATTESTED_RESEARCH_LICENSE"
         return report
     report["symbol_count_requested"]=1
     report["api_call_count"]=1
@@ -137,7 +149,15 @@ def selftest()->None:
     assert validate(sample,asof)["bar_rows_validated"]==1
     assert validate({TICKER:sample},asof)["cik_in_response"]
     assert run(asof,"",lambda *a: (_ for _ in ()).throw(AssertionError("CALL_WITH_NO_KEY")))["api_call_count"]==0
-    good=run(asof,"fake-not-real-key",lambda *a:{TICKER:sample})
+    assert run(asof,"key-present",
+               lambda *a: (_ for _ in ()).throw(AssertionError("UNLICENSED_NETWORK_CALL"))
+              )["status"]=="BLOCKED_UNATTESTED_RESEARCH_LICENSE"
+    assert research_grant_claim({}) is False
+    assert research_grant_claim({"XRAY_BQ_UNATTENDED_RESEARCH_LICENSE_OK":"true",
+                                  "XRAY_BQ_LICENSE_EVIDENCE_SHA256":"UNPROVEN"}) is False
+    assert research_grant_claim({"XRAY_BQ_UNATTENDED_RESEARCH_LICENSE_OK":"true",
+                                  "XRAY_BQ_LICENSE_EVIDENCE_SHA256":"a"*64}) is True
+    good=run(asof,"fake-not-real-key",lambda *a:{TICKER:sample},research_grant_ok=True)
     assert good["status"]=="SHADOW_EOD_SAMPLE_STRUCTURAL_ONLY"
     assert good["production_history_authority"] is False and good["can_register_R92"] is False
     assert good["api_key_or_request_url_reported"] is False
@@ -160,7 +180,7 @@ def selftest()->None:
     assert len(cases)==9
     import urllib.error
     for code in (401,403,429,500):
-        r=run(asof,"mock-token",lambda *a,c=code:(_ for _ in ()).throw(urllib.error.HTTPError("https://secret.invalid?api_key=SECRET",c,"none",None,None)))
+        r=run(asof,"mock-token",lambda *a,c=code:(_ for _ in ()).throw(urllib.error.HTTPError("https://secret.invalid?api_key=SECRET",c,"none",None,None)),research_grant_ok=True)
         assert r["status"].startswith("BLOCKED_")
         assert "SECRET" not in json.dumps(r)
     print("XRAY_BQ_SHADOW_EOD_SELFTEST=PASS_2_POSITIVE_9_NEGATIVE_4_HTTP_AND_NO_KEY_NO_DATA_LEAK")
@@ -180,7 +200,8 @@ def main()->None:
     p=json.loads(PRICE.read_text(encoding="utf-8"))
     if p.get("execution")!="NONE" or p.get("real_money")!="NO-GO":
         raise SystemExit("PRICE_SAFETY_INVALID")
-    out=run(p["asof_et"],os.environ.get("XRAY_BQ_API_KEY","").strip())
+    out=run(p["asof_et"],os.environ.get("XRAY_BQ_API_KEY","").strip(),
+            research_grant_ok=research_grant_claim(os.environ))
     args.out.write_text(json.dumps(out,sort_keys=True,indent=2)+"\n",encoding="utf-8")
     print("XRAY_BQ_EOD_SHADOW_STATUS="+out["status"])
     print("XRAY_BQ_EOD_SHADOW_REQUESTS="+str(out["api_call_count"]))
