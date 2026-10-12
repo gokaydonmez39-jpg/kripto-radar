@@ -15,8 +15,9 @@ from pathlib import Path
 
 ROOT=Path(__file__).resolve().parent
 EVENT=ROOT/"evidence/nasdaq_gral_20260923_full_session_halt_v1.json"
-SINA=ROOT/"sina_state.json"
+SINA=ROOT/"research/gral_sina_full_state_20261009.json"
 PINNED_EVENT_BLOB="55f807af528a723883e307105d7f59f202324dbb"
+PINNED_SINA_BLOB="ffee6b60305336d9b6c89e52621f98a12a8850e9"
 ONLY_ASOF="2026-10-09"
 HALT_DAY="2026-09-23"
 SCHEMA="XRAY_PRICE_GRAL_20261009_HALTED_SESSION_FAIL_ONLY_V1"
@@ -115,7 +116,7 @@ def apply_to_results(results,asof,dates,queue_hash,*,event_path=EVENT,sina_path=
         return []
     try:
         eb=event_path.read_bytes();sb=sina_path.read_bytes()
-        if blob_sha(eb)!=PINNED_EVENT_BLOB:return []
+        if blob_sha(eb)!=PINNED_EVENT_BLOB or blob_sha(sb)!=PINNED_SINA_BLOB:return []
         event=json.loads(eb);sina=json.loads(sb)
     except (ValueError,OSError,TypeError):
         return []
@@ -136,6 +137,7 @@ def selftest():
     event_bytes=EVENT.read_bytes()
     sina_bytes=SINA.read_bytes()
     assert blob_sha(event_bytes)==PINNED_EVENT_BLOB
+    assert blob_sha(sina_bytes)==PINNED_SINA_BLOB
     event=json.loads(event_bytes);sina=json.loads(sina_bytes)
     assert sina["asof_et"]==ONLY_ASOF
     row={"status":"UNKNOWN","info":{"reason":"AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"}}
