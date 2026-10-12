@@ -397,6 +397,49 @@ def selftest():
     assert rotate_sample(["A","B","C","D","E","F"],2,1)==["C","D"]
     assert rotate_sample(["A","B","C","D","E","F"],2,2)==["E","F"]
     assert rotate_sample([],2,0)==[]
+    # Real repo pre-MC recovery: current MASTER/PRICE may advance while
+    # HISTORY and TERMINAL remain stale. This MUST NOT freeze shadow discovery.
+    recovered_asof,recovered_scopes,recovered_sha=pre_mc_recovery_inputs()
+    assert recovered_scopes["EVENT"]==[]
+    assert recovered_scopes["MC"]==sorted(set(recovered_scopes["MC"]))
+    assert len(recovered_scopes["MC"])>0
+    assert recovered_sha["MC"] is None
+    assert recovered_sha["PRICE"]==blob(ROOT/"canonical_current_price_dv30.json")
+    assert recovered_sha["MASTER"]==blob(ROOT/"canonical_current_master_manifest.json")
+    assert recovered_asof==json.loads((ROOT/"canonical_current_price_dv30.json").read_text())["asof_et"]
+
+    # Deliberately simulate the production circular deadlock. Recovery must
+    # inspect just MASTER/PRICE and never infer MC PRIMARY, EVENTS or R92.
+    def synthetic_recovery():
+        return "2026-10-09",{"MASTER":["ALIS"],"MC":["AAPL"],"EVENT":[]},{
+            "MASTER":"a"*40,"PRICE":"b"*40,"MC":None,
+            "HISTORY":"c"*40,"EVENT":"d"*40,"TERMINAL":"e"*40}
+    def lagging_terminal():
+        raise ValueError("SOURCE_DRIFT:TERMINAL")
+    from unittest.mock import patch
+    with patch.dict(os.environ,{"XRAY_MASSIVE_API_KEY":"SECRET_FAKE",
+                                 "XRAY_BQ_API_KEY":"SECRET_FAKE",
+                                 "XRAY_MASSIVE_UNATTENDED_RESEARCH_LICENSE_OK":"",
+                                 "XRAY_BQ_UNATTENDED_RESEARCH_LICENSE_OK":""}):
+        recovery=produce(1,inputs_fn=lagging_terminal,
+                         recovery_inputs_fn=synthetic_recovery,
+                         allow_pre_mc_recovery=True,
+                         runner=lambda p,*a:"IDENTITY_DISCOVERY_ONLY")
+    assert recovery["result"]=="PRE_MC_SOURCE_EXACT_SHADOW_ONLY_NO_PRIMARY_NO_AL"
+    assert recovery["source_epoch_exact"] is False
+    assert recovery["pre_mc_recovery_source_exact"] is True
+    assert recovery["lanes"]["MC"]["scope_count"]==1
+    assert recovery["lanes"]["EVENT"]["scope_unverified"] is True
+    assert recovery["provider_keys_present"]=={"MASSIVE":False,"BQ":False}
+    assert recovery["mc_pass_created"] is False and recovery["alpha_authority"] is False
+    assert recovery["g9_pass"] is False and recovery["raw_market_data_persisted"] is False
+    no_recovery=produce(1,inputs_fn=lagging_terminal,
+                        recovery_inputs_fn=lambda: (_ for _ in ()).throw(ValueError("BAD_MASTER")),
+                        allow_pre_mc_recovery=True,
+                        runner=lambda *a: (_ for _ in ()).throw(AssertionError("NETWORK_WITH_BAD_MASTER")))
+    assert no_recovery["result"]=="BLOCKED_SOURCE_EPOCH_NO_CALLS_NO_ALPHA"
+    assert no_recovery["invocation_counts"]=={}
+    print("XRAY_PRE_MC_514_SHADOW_RECOVERY=PASS_LAG_TERMINAL_INDEPENDENT_ZERO_PRIMARY")
     def stale_inputs():
         raise ValueError("SOURCE_DRIFT:MASTER")
     blocked=produce(1,inputs_fn=stale_inputs,
