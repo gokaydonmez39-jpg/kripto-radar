@@ -1,6 +1,6 @@
 {
   "schema": "XRAY_DEEP_MICROAUDIT_CHECKPOINT_V1",
-  "observation_date_utc": "2026-10-12T20:51:46.555Z",
+  "observation_date_utc": "2026-10-12T20:55:25.026Z",
   "source_repository": "gokaydonmez39-jpg/kripto-radar",
   "branch": "main",
   "reference_head_before_checkpoint": "c3fb030a8edd2b2f399c24b5a8f04bc38da73b97",
@@ -103,6 +103,27 @@
       "canonical_notification_authority_id": "6a825366222081918997094d76e6ae46",
       "support_tasks_silent": true,
       "new_tasks_created": 0
+    },
+    "source_transport_canary_20261012": {
+      "observation_scope": "AAPL,NVDA,MSFT",
+      "source": "CONNECTED_ALPACA_READONLY_FOREGROUND",
+      "session_date": "2026-10-12",
+      "official_calendar_verified": true,
+      "official_rth_close_local": "16:00 America/New_York",
+      "snapshot_feed": "delayed_sip",
+      "snapshot_daily_bar_present_for_three": true,
+      "snapshot_daily_bar_timestamp_session_date": "2026-10-12",
+      "valid_positive_ohlc_volume_for_three": true,
+      "historical_bars_endpoint": "get_stock_bars",
+      "historical_bars_result": "API_ERROR_INVALID_ARGUMENT_WRAPPER",
+      "source_incident_class": "SINA_ASOF_MISSING_WITH_ALPACA_SNAPSHOT_AVAILABLE_HISTORICAL_ENDPOINT_UNAVAILABLE",
+      "current_260_daily_52_weekly_proven": false,
+      "runner_auto_rights_proven_by_this_probe": false,
+      "complete_nasdaq_universe_proven": false,
+      "current_mc_primary_proven": false,
+      "production_pass_created": false,
+      "vendor_prices_and_bars_persisted": false,
+      "conclusion": "SHADOW_DIAGNOSTIC_ONLY_NO_RELEASE"
     }
   },
   "dependency_order": [
@@ -120,7 +141,8 @@
       "status": "SOURCE_PUBLICATION_PENDING",
       "task": "Observe the 2026-10-12 completed official session through exact source publication and bounded real-quote canaries; distinguish feed delay, transport retry, permanent short history and 212 unknown identity",
       "acceptance": "Nonempty exact-ASOF vendor daily bars validated by official exchange dates and source entitlement, no synthetic backfill; runner artifact + Git blob exact",
-      "rollback": "HISTORY_PARTIAL, no new PASS"
+      "rollback": "HISTORY_PARTIAL, no new PASS",
+      "observation": "3-symbol Alpaca delayed-SIP snapshot has ASOF daily bar field but get_stock_bars historical endpoint returns api_error; this is not a production fallback or proof of 260/52."
     },
     {
       "id": "P1",
