@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import json, os, ssl, time, urllib.parse, urllib.request
+import json, os, ssl, time, urllib.parse, urllib.request, math
 from datetime import datetime, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -15,10 +15,38 @@ def now_iso():
     return datetime.now(timezone.utc).isoformat()
 
 def parse_ts(s):
-    if not s: return None
-    s=str(s).replace("Z","+00:00")
-    try: return datetime.fromisoformat(s).astimezone(timezone.utc)
-    except Exception: return None
+    """Reject timezone-naive provider timestamps; never infer runner locale."""
+    if not isinstance(s,str) or not s.strip(): return None
+    try:
+        parsed=datetime.fromisoformat(s.replace("Z","+00:00"))
+        if parsed.tzinfo is None or parsed.utcoffset() is None:
+            return None
+        return parsed.astimezone(timezone.utc)
+    except (ValueError,TypeError,OverflowError):
+        return None
+
+def strict_triplet(bid,ask,last):
+    """Reject nonfinite, Boolean and crossed NBBO values in ALL G9 adapters."""
+    values=(bid,ask,last)
+    if any(type(v) is bool or v is None for v in values):
+        raise ValueError("G9_INVALID_NUMERIC_VALUE")
+    try:
+        b,a,l=(float(v) for v in values)
+    except (TypeError,ValueError,OverflowError):
+        raise ValueError("G9_INVALID_NUMERIC_VALUE") from None
+    if (not all(math.isfinite(x) and x>0 for x in (b,a,l))
+        or b>a):
+        raise ValueError("G9_NONFINITE_NONPOSITIVE_OR_CROSSED_QUOTE")
+    return b,a,l
+
+def exact_symbol_row(rows,symbol,*,field="symbol"):
+    """No symbol case coercion or first-row fallback; reject duplicates."""
+    if not isinstance(rows,list) or not isinstance(symbol,str):
+        raise ValueError("G9_SYMBOL_ROWS_INVALID")
+    found=[row for row in rows if isinstance(row,dict) and row.get(field)==symbol]
+    if len(found)>1:
+        raise ValueError("G9_AMBIGUOUS_DUPLICATE_TICKER")
+    return found[0] if found else None
 
 def write(obj):
     OUT.write_text(json.dumps(obj,sort_keys=True,indent=2)+"\n")
@@ -86,7 +114,7 @@ def best(side,kind):
         try:
             px=float(x.get("Price"))
             ts=parse_ts(x.get("TimeStamp"))
-            if px>0 and ts: out.append((px,ts,x.get("Name")))
+            if math.isfinite(px) and px>0 and ts: out.append((px,ts,x.get("Name")))
         except Exception: pass
     if not out: return None
     return max(out,key=lambda x:x[0]) if kind=="bid" else min(out,key=lambda x:x[0])
@@ -118,10 +146,10 @@ def run_wealthnow_technical(base):
                 raise RuntimeError(f"WEALTHNOW_NOT_REGULAR_SESSION_{sym}")
             if snap.get("is_stale") is not False:
                 raise RuntimeError(f"WEALTHNOW_STALE_OR_UNKNOWN_{sym}")
-            bid=float(snap["bid"]); ask=float(snap["ask"]); last=float(snap["price"])
+            bid,ask,last=strict_triplet(snap["bid"],snap["ask"],snap["price"])
             qts=parse_ts(snap.get("quote_as_of"))
             tts=parse_ts(snap.get("as_of") or snap.get("time"))
-            if min(bid,ask,last)<=0 or bid>ask or not qts or not tts:
+            if not qts or not tts:
                 raise RuntimeError(f"WEALTHNOW_INVALID_QUOTE_{sym}")
             quote_age=(utcnow-qts).total_seconds()
             trade_age=(utcnow-tts).total_seconds()
@@ -201,11 +229,10 @@ def run_paper_invest_technical(base):
             t=paper_request_json("GET",f"https://api.paperinvest.io/v1/market-data/trade/{sym}",token=token)
             if not isinstance(q,dict) or not isinstance(t,dict):
                 raise RuntimeError(f"PAPER_SCHEMA_MISMATCH_{sym}")
-            bid=float(q["bid"]); ask=float(q["ask"])
-            last=float(t.get("price"))
+            bid,ask,last=strict_triplet(q["bid"],q["ask"],t.get("price"))
             qts=paper_event_ts(q.get("timestamp"))
             tts=paper_event_ts(t.get("timestamp"))
-            if min(bid,ask,last)<=0 or bid>ask or not qts or not tts:
+            if not qts or not tts:
                 raise RuntimeError(f"PAPER_INVALID_QUOTE_TRADE_{sym}")
             quote_age=(utcnow-qts).total_seconds()
             trade_age=(utcnow-tts).total_seconds()
@@ -254,18 +281,18 @@ def run_clearstreet_technical(base):
             rows=j.get("data") if isinstance(j,dict) else None
             if not isinstance(rows,list) or not rows:
                 raise RuntimeError(f"CLEARSTREET_SNAPSHOT_SCHEMA_MISMATCH_{sym}")
-            snap=next((x for x in rows if isinstance(x,dict) and str(x.get("symbol") or "").upper()==sym),rows[0])
+            snap=exact_symbol_row(rows,sym)
             if not isinstance(snap,dict):
                 raise RuntimeError(f"CLEARSTREET_SNAPSHOT_ROW_INVALID_{sym}")
             quote=snap.get("last_quote")
             trade=snap.get("last_trade")
             if not isinstance(quote,dict) or not isinstance(trade,dict):
                 raise RuntimeError(f"CLEARSTREET_QUOTE_TRADE_MISSING_{sym}")
-            bid=float(quote["bid"]); ask=float(quote["ask"]); last=float(trade["price"])
+            bid,ask,last=strict_triplet(quote["bid"],quote["ask"],trade["price"])
             bts=parse_ts(quote.get("bid_timestamp"))
             ats=parse_ts(quote.get("ask_timestamp"))
             tts=parse_ts(trade.get("timestamp"))
-            if min(bid,ask,last)<=0 or bid>ask or not bts or not ats or not tts:
+            if not bts or not ats or not tts:
                 raise RuntimeError(f"CLEARSTREET_INVALID_NBBO_TRADE_{sym}")
             bid_age=(utcnow-bts).total_seconds()
             ask_age=(utcnow-ats).total_seconds()
@@ -368,7 +395,7 @@ def main():
         snap=get_json(token,"https://api.tradestation.com/v3/marketdata/quotes/"+",".join(SYMBOLS))
         rows=snap.get("Quotes") if isinstance(snap,dict) else None
         if not isinstance(rows,list): raise RuntimeError("QUOTE_SNAPSHOT_SCHEMA_MISMATCH")
-        by={str(x.get("Symbol","")).upper():x for x in rows}
+        by={sym:exact_symbol_row(rows,sym,field="Symbol") for sym in SYMBOLS}
         details={}
         utcnow=datetime.now(timezone.utc)
         for sym in SYMBOLS:
@@ -377,9 +404,9 @@ def main():
             mf=q.get("MarketFlags") or {}
             if mf.get("IsDelayed") is not False:
                 raise RuntimeError(f"DELAYED_OR_UNKNOWN_QUOTE_{sym}")
-            bid=float(q["Bid"]); ask=float(q["Ask"]); last=float(q["Last"])
+            bid,ask,last=strict_triplet(q["Bid"],q["Ask"],q["Last"])
             tt=parse_ts(q.get("TradeTime"))
-            if min(bid,ask,last)<=0 or bid>ask or not tt:
+            if not tt:
                 raise RuntimeError(f"INVALID_QUOTE_{sym}")
             depth=stream_first_depth(token,sym)
             b=best(depth.get("Bids"),"bid"); a=best(depth.get("Asks"),"ask")
