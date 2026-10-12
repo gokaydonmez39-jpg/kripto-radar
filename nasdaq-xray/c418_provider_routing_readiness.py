@@ -249,6 +249,39 @@ def selftest():
     require(got["per_source_capacity_scenarios"]["FMP"]["minimum_days_if_one_request_per_symbol"]==3,"FMP_CAP_3")
     require(got["per_source_capacity_scenarios"]["ALPHA_VANTAGE"]["minimum_days_if_one_request_per_symbol"]==21,"ALPHA_CAP_21")
     require(got["per_source_capacity_scenarios"]["EODHD"]["minimum_days_if_one_request_per_symbol"]==26,"EODHD_CAP_26")
+    require(got["per_source_capacity_scenarios"]["TIINGO"]["single_account_full_current_cohort_coverage_possible"] is False,"TIINGO_514_CANNOT")
+    # Regression: next exact MASTER/PRICE ASOF is not an error because a
+    # historical 2026-10-09 research sample remains in the source inventory.
+    shifted=[copy.deepcopy(z) for z in args]
+    shifted[0]["asof_et"]=shifted[1]["asof_et"]="2026-10-12"
+    shifted[0]["unknown_symbols"]=[f"U{i:02d}" for i in range(9)]
+    shifted[0]["unknown_count"]=9
+    shifted[1]["pass_symbols"]=shifted[0]["pass_symbols"][:520]
+    shifted[1]["pass_count"]=520
+    shifted[1]["pass_hash"]=symbol_hash(shifted[1]["pass_symbols"])
+    new_epoch=analyze(*shifted)
+    require(new_epoch["canonical_price_pass_count"]==520
+            and new_epoch["master_identity_unknown_count"]==9
+            and new_epoch["historical_3_ticker_sample_is_current_asof"] is False
+            and new_epoch["verified_distinct_market_cap_origin_count"]==0
+            and new_epoch["go"] is False,"NEXT_EPOCH_520_9_NO_FALSE_MC")
+    # No PRICE-eligible stocks is valid and cannot divide by zero.
+    shifted[1]["pass_symbols"]=[]
+    shifted[1]["pass_count"]=0
+    shifted[1]["pass_hash"]=symbol_hash([])
+    no_price=analyze(*shifted)
+    require(no_price["canonical_price_pass_count"]==0
+            and no_price["per_source_capacity_scenarios"]["MASSIVE"]["minimum_minutes_if_one_request_per_symbol"]==0
+            and no_price["go"] is False,"NO_PRICE_ZERO_NOT_VALID")
+    # A past-source-data sample which lies in the future of the current
+    # canonical price epoch must be rejected as invalid research lineage.
+    bad_inventory=copy.deepcopy(inv)
+    bad_inventory["live_shadow_probe_summary"]["asof"]="2026-10-14"
+    futures=[copy.deepcopy(z) for z in args]
+    futures[2]=bad_inventory
+    try:analyze(*futures)
+    except ValueError:pass
+    else:raise RuntimeError("FUTURE_VENDOR_SAMPLE_MUST_FAIL_CLOSED")
     mutations=[
         (0,lambda x:x.update(unknown_count=0),"MASTER_COUNT"),
         (0,lambda x:x["unknown_symbols"].append("S0000"),"UNKNOWN_OVERLAP"),
