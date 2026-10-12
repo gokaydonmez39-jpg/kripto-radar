@@ -403,7 +403,10 @@ def selftest():
     assert rotate_sample([],2,0)==[]
     # Real repo pre-MC recovery: current MASTER/PRICE may advance while
     # HISTORY and TERMINAL remain stale. This MUST NOT freeze shadow discovery.
-    recovered_asof,recovered_scopes,recovered_sha=pre_mc_recovery_inputs()
+    fixture_asof=proper_date(json.loads((ROOT/"canonical_current_price_dv30.json").read_text())["asof_et"])
+    fixture_now=dt.datetime.combine(dt.date.fromisoformat(fixture_asof),dt.time(23,30),
+                                    tzinfo=dt.timezone.utc)
+    recovered_asof,recovered_scopes,recovered_sha=pre_mc_recovery_inputs(now_utc=fixture_now)
     assert recovered_scopes["EVENT"]==[]
     assert recovered_scopes["MC"]==sorted(set(recovered_scopes["MC"]))
     assert len(recovered_scopes["MC"])>0
