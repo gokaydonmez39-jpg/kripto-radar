@@ -34,6 +34,39 @@ def main():
     master_queue=list(master.get("pass_symbols") or [])
     assert master_queue and len(master_queue)==int(master.get("pass_count",-1))
 
+    # New-source runtime admission must deny unverified current Rallies PASS
+    # independently of immutable 2026-10-07 historical fixture behavior.
+    from price_dv30_recover_from_fullstate import (
+        rallies_current_positive_authority_allowed,
+        valid_bridge_price_resolution,
+    )
+    if asof >= "2026-10-12":
+        assert rallies_current_positive_authority_allowed(asof) is False
+        unverified={
+            "decision":"PASS_PRICE_DV30",
+            "source":"RALLIES_CANDLESTICK_SCANNER_EXACT30_PRIMARY",
+            "proof":"RALLIES_EXACT30_MEDIAN_GE_GATE",
+            "known_session_count":30,
+            "missing_sessions":[],
+            "price":300.0,
+            "dv30":1_000_000_000.0,
+            "no_synthetic_bar":True,
+            "compact_terminal_proof":True,
+        }
+        assert valid_bridge_price_resolution(unverified,asof) is False
+        sample_primary={
+            "asof_et":asof,
+            "pass_price_dv30":{"AAPL":{
+                "asof_close":300.0,"dv30_median":1_000_000_000.0,
+                "known_session_count":30,"missing_sessions":[]
+            }},
+        }
+        synthetic={"AAPL":{"status":"UNKNOWN","info":{"reason":"TEST"}}}
+        assert apply_c417_rallies_primary_partition(synthetic,sample_primary,["AAPL"])==[]
+        assert synthetic["AAPL"]["status"]=="UNKNOWN"
+        assert rallies_current_positive_authority_allowed("2026-10-07") is True
+        print("XRAY_RALLIES_CURRENT_POSITIVE_RUNTIME_QUARANTINE=PASS_NEGATIVE_PLUS_HISTORY_REPLAY")
+
     primary,meta=load_c417_rallies_primary(asof)
     if primary is None:
         # Live provider evidence is an INPUT, not a fixture. Do not make the
