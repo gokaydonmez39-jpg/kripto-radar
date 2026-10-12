@@ -1,0 +1,83 @@
+{
+  "schema": "XRAY_20261012_SIP_514_FULL_B_RESEARCH_SHADOW_V1",
+  "observed_date_trt": "2026-10-12",
+  "asof_et": "2026-10-09",
+  "universe": {
+    "nasdaq_master_pass": 3184,
+    "master_unknown": 12,
+    "price_dv30_pass": 514,
+    "source_scope_symbols_sha256": "cb6d740f43378cacca40351e7503384d52b5a81a8b9b6cdc444f58a3965bbaef"
+  },
+  "history": {
+    "provider": "ALPACA_HISTORICAL_SIP_INTERACTIVE",
+    "feed": "sip",
+    "min_daily_sessions": 260,
+    "weeks_required": 52,
+    "reference_260_from_AAPL_calendar_crosschecked": true,
+    "scope_measured": 514,
+    "coverage_260_52_observed": 497,
+    "insufficient_history": 17,
+    "transport_errors": 0
+  },
+  "b_precursor": {
+    "method": "Independent JS translation of existing alpaca_sip_eod_b_shadow.py B precursor predicates, not Python workflow runner execution",
+    "symbol_scope": 514,
+    "eligible_history": 497,
+    "technical_rejected": 496,
+    "b_precursor_pass": 1,
+    "pass_symbols": [
+      "FSLY"
+    ],
+    "rejection_counts_nonexclusive": {
+      "NO_VALID_NARROW_BREAKOUT": 437,
+      "WEEKLY_TREND_FAIL": 339,
+      "SMA50_TREND_FAIL": 352,
+      "QQQ_RS20_RS60_FAIL": 411,
+      "RVOL_LT_1_5": 469,
+      "COMPRESSION_FAIL": 394
+    }
+  },
+  "fsly": {
+    "precursor_pass": true,
+    "rvol": 1.954351808181408,
+    "relative_return_diff_20": 0.214,
+    "relative_return_diff_60": 0.378,
+    "breakout_base_sessions": 10,
+    "higher_low_observed": true,
+    "structural_risk_fraction": 0.17563541254756432,
+    "max_risk_fraction": 0.08,
+    "risk_gate_pass": false,
+    "chase_threshold_crossed": true,
+    "c417_r1_rr_primary_verified": false,
+    "technical_al": false,
+    "raw_prices_in_report": false
+  },
+  "provenance": {
+    "master_git_blob": "828c21436a836b69fe5084387e1c54446c7b5075",
+    "price_git_blob": "6f3f68fff0897d68f200ad3621c51a5071494714",
+    "b_shadow_script_git_blob": "8fbbb8536a39ceccc43e67629474fd0fb24771cc",
+    "screen_artifact_content_sha256": "0efb8d2ba2dbcd97b44aefdfbe399ee6fa1c3757a925bc26d1c73152d2611667"
+  },
+  "replay_caveats": {
+    "vendor_raw_ohlcv_stored": false,
+    "vendor_price_values_stored": false,
+    "authoritative_pit_split_adjustment_verified": false,
+    "runner_creds_verified": false,
+    "licensed_same_asof_primary_mc_verified": false,
+    "c417_full_a_b_c_d_recomputed": false,
+    "full_auto_e2e_completed": false,
+    "phone_delivery_receipt": false,
+    "event_legal_independent_verified": false
+  },
+  "control": {
+    "policy": "C4.17",
+    "control": "C4.27",
+    "c418": "SHADOW_ONLY",
+    "execution": "NONE",
+    "real_money": "NO-GO",
+    "unknown_never_pass": true,
+    "r92_registered": 0,
+    "strict_full_go": false
+  },
+  "expiry_rule": "Snapshot valid for ASOF 2026-10-09 only; after next completed US trading session, archival/research only; never promote to current AL."
+}

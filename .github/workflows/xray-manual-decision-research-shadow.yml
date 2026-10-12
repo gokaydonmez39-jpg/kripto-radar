@@ -20,6 +20,7 @@ on:
       - "nasdaq-xray/manual_signal_lifecycle_shadow.py"
       - "nasdaq-xray/manual_followup_registry.py"
       - "nasdaq-xray/manual_decision_policy_v1.json"
+      - "nasdaq-xray/research/continuation_checkpoint_20261012_full_514_sip_b_recheck_v1.json"
       - ".github/workflows/xray-manual-decision-research-shadow.yml"
 permissions:
   contents: read
@@ -101,6 +102,48 @@ jobs:
               f.write("PRICE/DV30 screened: **"+str(len(j["screen_symbols"]))+"** / master identity PASS: "+str(j["master_identity_pass_count"])+"\\n\\n")
               f.write("Technical, primary MC, AL and real delivery: **NOT VERIFIED**; no trade or notification.\\n")
           print("XRAY_EOD_SCREEN_READBACK=PASS_SOURCE_EXACT_NO_FAKE_AL")
+          PY
+      - name: Read source-bound independent SIP B precursor evidence (never AL)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import datetime as dt
+          import json
+          import os
+          import subprocess
+          import sys
+          from pathlib import Path
+          sys.path.insert(0, "nasdaq-xray")
+          from source_epoch_freshness_guard import last_complete_session
+          r=json.loads(Path("nasdaq-xray/research/continuation_checkpoint_20261012_full_514_sip_b_recheck_v1.json").read_text(encoding="utf-8"))
+          def must(value, reason):
+              if not value: raise SystemExit("XRAY_SIP_B_SHADOW_INVALID:"+reason)
+          must(r.get("schema")=="XRAY_20261012_SIP_514_FULL_B_RESEARCH_SHADOW_V1", "SCHEMA")
+          u=r["universe"]; h=r["history"]; b=r["b_precursor"]; f=r["fsly"]
+          must(u["price_dv30_pass"]==h["scope_measured"]==b["symbol_scope"]==514, "SCOPE")
+          must(h["coverage_260_52_observed"]==497 and h["insufficient_history"]==17, "HISTORY")
+          must(b["eligible_history"]==497 and b["technical_rejected"]==496 and b["b_precursor_pass"]==1, "B_PARTITION")
+          must(b["pass_symbols"]==["FSLY"] and f["precursor_pass"] is True, "PRECURSOR")
+          must(f["structural_risk_fraction"]>f["max_risk_fraction"] and f["risk_gate_pass"] is False, "RISK_VETO")
+          must(f["chase_threshold_crossed"] is True and f["technical_al"] is False, "CHASE_VETO")
+          must(all(value is False for value in r["replay_caveats"].values()), "RIGHTS_ELEVATION")
+          must(r["control"]["execution"]=="NONE" and r["control"]["real_money"]=="NO-GO" and r["control"]["strict_full_go"] is False, "EXECUTION")
+          def blob(path):
+              return subprocess.check_output(["git","hash-object",path],text=True).strip()
+          source_exact=(blob("nasdaq-xray/canonical_current_master_manifest.json")==r["provenance"]["master_git_blob"] and
+                        blob("nasdaq-xray/canonical_current_price_dv30.json")==r["provenance"]["price_git_blob"])
+          latest=last_complete_session(dt.datetime.now(dt.timezone.utc))
+          current=(source_exact and latest==r["asof_et"])
+          state="ASOF_BOUND_INTERACTIVE_SHADOW_NOT_RUNNER_REPLAYED" if current else "STALE_ARCHIVAL_RESEARCH_ONLY"
+          with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a",encoding="utf-8") as out:
+              out.write("## Independent 514-symbol SIP B-precursor replay (NOT AL)\\n\\n")
+              out.write("Snapshot ASOF: "+r["asof_et"]+"; latest NASDAQ: "+latest+"; state: "+state+"\\n\\n")
+              out.write("260/52 observed: 497; insufficient: 17; B precursors: 1 (FSLY); technical B rejects: 496.\\n\\n")
+              out.write("FSLY **RISK > 8% / CHASE VETO**; no C4.17 AL, PRIMARY MC, R92 or device receipt.\\n\\n")
+              out.write("This was an interactive provider replay, not automated GitHub-runner SIP evidence.\\n")
+          print("XRAY_SIP_B_RESEARCH_ONLY="+state)
+          print("XRAY_SIP_B_VALIDATED=1_FSLY_RISK_CHASE_VETO_NO_AL")
           PY
       - name: Optional free historical SIP 260d/52w B research (never AL)
         shell: bash
