@@ -1,6 +1,6 @@
 {
   "schema": "XRAY_DEEP_MICROAUDIT_CHECKPOINT_V1",
-  "observation_date_utc": "2026-10-12T21:32:49.786Z",
+  "observation_date_utc": "2026-10-12T21:38:34.440Z",
   "source_repository": "gokaydonmez39-jpg/kripto-radar",
   "branch": "main",
   "reference_head_before_checkpoint": "c3fb030a8edd2b2f399c24b5a8f04bc38da73b97",
@@ -446,6 +446,54 @@
       "unknown_never_pass": true,
       "execution": "NONE",
       "real_money": "NO-GO"
+    },
+    "rallies_newscope_fractional_volume_failclosed_guard_20261013": {
+      "schema": "XRAY_FRACTIONAL_VENDOR_VOLUME_FAIL_CLOSED_REGRESSION_V1",
+      "first_observed_utc": "2026-10-12",
+      "prior_bug": "build_c417_rallies_newscope_partition accepted fractional volume in exact30 median; isolated reproduction produced false PASS",
+      "production_code_commit": "69bcf23eab83db245c6e901fa37a113637aa4b3e",
+      "test_workflow_commit": "d5fa53807c9647d8ec0f48c7561b95c31f6c7baa",
+      "workflow_name": "XRAY Dynamic Phase Regression",
+      "workflow_run_id": 38311705339,
+      "actual_workflow_conclusion": "success",
+      "positive_case": "30 exact completed sessions with valid integer regular-session volume in fixture remain mathematical DV30 PASS",
+      "negative_case": "One session fractional volume is BLOCK_CURRENT_RUN, no PASS",
+      "race_duplicate_case": "Later integer duplicate cannot restore invalid fractional source day",
+      "policy_price_threshold_usd": 5,
+      "policy_dv30_threshold_usd": 50000000,
+      "policy_alpha_changed": false,
+      "scope": "RALLIES_NEW_SCOPE_RESEARCH_ONLY_PATH; PRECOMPUTED_IMMUTABLE_PRIOR_ASOF_PRIMARY_NOT_RECLASSIFIED",
+      "volume_source_unadjusted_proven": false,
+      "automated_production_data_rights_verified": false,
+      "r92_signal_created": false,
+      "execution": "NONE",
+      "real_money": "NO-GO",
+      "unknown_never_pass": true
+    },
+    "current_session_spac_identity_triage_20261013": {
+      "source_sina_blob_sha": "516b069aebbdf4af32c6fcc741323e943b5c53dc",
+      "asof_et": "2026-10-12",
+      "identity_unknown_total": 212,
+      "reason_counts": {
+        "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED": 212
+      },
+      "predecessor_master_asof": "2026-10-09",
+      "predecessor_master_unknown_count": 12,
+      "temporal_reuse_forbidden": true,
+      "independent_official_PIT_evidence_missing": true,
+      "classification": "BLOCKED_AUTHORITY_NOT_NOOP",
+      "r92_created": false
+    },
+    "official_candidate_guard_freshness_observation_20261013": {
+      "observed_at_utc": "2026-10-12T21:38:34.440Z",
+      "guard_blob_sha": "fe345fd94e45da78c6786c503f1b448c0d4a4636",
+      "generated_at_utc": "2026-10-12T20:50:47.538721+00:00",
+      "official_feeds_status": "PASS",
+      "hard_max_freshness_seconds": 900,
+      "fresh_at_snapshot": false,
+      "restoration_authority": "EXISTING_HEALTH_FINAL_FACTORY_FAILOVER_ONLY",
+      "this_checkpoint_does_not_kick": true,
+      "no_candidate_delivery_while_stale": true
     }
   },
   "dependency_order": [
@@ -546,7 +594,8 @@
       "status": "PARTIAL",
       "task": "Keep exactly five active XRAY tasks; test root/final stale failover CAS, two snapshots, single-writer cooldown, provider quota and non-retryable zero-credit, alert incident escalation and recovery dedup; repair manual research SHA drift without weakening source checks",
       "acceptance": "real positive+negative GitHub regressions, Actions artifact exact readback, fault→recovery transitions and no-noop false PASS",
-      "rollback": "FAIL_CLOSED_AND_HEALTH_INCIDENT"
+      "rollback": "FAIL_CLOSED_AND_HEALTH_INCIDENT",
+      "last_regression": "Rallies fraction-newscope failclosed positive and negative CI PASS run 38311705339; global release still blocked by source/rights and ASOF."
     },
     {
       "id": "P11",
