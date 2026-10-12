@@ -1,6 +1,6 @@
 {
   "schema": "XRAY_DEEP_MICROAUDIT_CHECKPOINT_V1",
-  "observation_date_utc": "2026-10-12T21:15:50.141Z",
+  "observation_date_utc": "2026-10-12T21:32:49.786Z",
   "source_repository": "gokaydonmez39-jpg/kripto-radar",
   "branch": "main",
   "reference_head_before_checkpoint": "c3fb030a8edd2b2f399c24b5a8f04bc38da73b97",
@@ -213,6 +213,239 @@
       "purchase_requested": false,
       "purchase_performed": false,
       "primary_mc_proof_created": false
+    },
+    "rallies_completed_30_source_semantics_probe_20261013": {
+      "schema": "XRAY_RESEARCH_ONLY_RALLIES_EXACT30_SOURCE_COVERAGE_DIAGNOSTIC_V1",
+      "observed_at_utc": "2026-10-12T21:32:49.786Z",
+      "source": "CONNECTED_RALLIES_GET_OHCV_ALL_TICKERS_DATE_PLUS_GET_PRICE_FROM_DATE_RANGE",
+      "reference_sina_state_sha": "516b069aebbdf4af32c6fcc741323e943b5c53dc",
+      "reference_queue_total": 3185,
+      "official_nasdaq_calendar_url": "https://www.nasdaq.com/market-activity/stock-market-holiday-schedule",
+      "exact30_session_days_descending": [
+        "2026-10-12",
+        "2026-10-09",
+        "2026-10-08",
+        "2026-10-07",
+        "2026-10-06",
+        "2026-10-05",
+        "2026-10-02",
+        "2026-10-01",
+        "2026-09-30",
+        "2026-09-29",
+        "2026-09-28",
+        "2026-09-25",
+        "2026-09-24",
+        "2026-09-23",
+        "2026-09-22",
+        "2026-09-21",
+        "2026-09-18",
+        "2026-09-17",
+        "2026-09-16",
+        "2026-09-15",
+        "2026-09-14",
+        "2026-09-11",
+        "2026-09-10",
+        "2026-09-09",
+        "2026-09-08",
+        "2026-09-04",
+        "2026-09-03",
+        "2026-09-02",
+        "2026-09-01",
+        "2026-08-31"
+      ],
+      "day_level_match_counts": [
+        {
+          "day": "2026-10-12",
+          "exact_case_sensitive_matches": 3150,
+          "unmatched_in_oct12_root_queue": 35
+        },
+        {
+          "day": "2026-10-09",
+          "exact_case_sensitive_matches": 3139,
+          "unmatched_in_oct12_root_queue": 46
+        },
+        {
+          "day": "2026-10-08",
+          "exact_case_sensitive_matches": 3126,
+          "unmatched_in_oct12_root_queue": 59
+        },
+        {
+          "day": "2026-10-07",
+          "exact_case_sensitive_matches": 3136,
+          "unmatched_in_oct12_root_queue": 49
+        },
+        {
+          "day": "2026-10-06",
+          "exact_case_sensitive_matches": 3134,
+          "unmatched_in_oct12_root_queue": 51
+        },
+        {
+          "day": "2026-10-05",
+          "exact_case_sensitive_matches": 3145,
+          "unmatched_in_oct12_root_queue": 40
+        },
+        {
+          "day": "2026-10-02",
+          "exact_case_sensitive_matches": 3140,
+          "unmatched_in_oct12_root_queue": 45
+        },
+        {
+          "day": "2026-10-01",
+          "exact_case_sensitive_matches": 3141,
+          "unmatched_in_oct12_root_queue": 44
+        },
+        {
+          "day": "2026-09-30",
+          "exact_case_sensitive_matches": 3133,
+          "unmatched_in_oct12_root_queue": 52
+        },
+        {
+          "day": "2026-09-29",
+          "exact_case_sensitive_matches": 3127,
+          "unmatched_in_oct12_root_queue": 58
+        },
+        {
+          "day": "2026-09-28",
+          "exact_case_sensitive_matches": 3120,
+          "unmatched_in_oct12_root_queue": 65
+        },
+        {
+          "day": "2026-09-25",
+          "exact_case_sensitive_matches": 3121,
+          "unmatched_in_oct12_root_queue": 64
+        },
+        {
+          "day": "2026-09-24",
+          "exact_case_sensitive_matches": 3128,
+          "unmatched_in_oct12_root_queue": 57
+        },
+        {
+          "day": "2026-09-23",
+          "exact_case_sensitive_matches": 3127,
+          "unmatched_in_oct12_root_queue": 58
+        },
+        {
+          "day": "2026-09-22",
+          "exact_case_sensitive_matches": 3132,
+          "unmatched_in_oct12_root_queue": 53
+        },
+        {
+          "day": "2026-09-21",
+          "exact_case_sensitive_matches": 3124,
+          "unmatched_in_oct12_root_queue": 61
+        },
+        {
+          "day": "2026-09-18",
+          "exact_case_sensitive_matches": 3121,
+          "unmatched_in_oct12_root_queue": 64
+        },
+        {
+          "day": "2026-09-17",
+          "exact_case_sensitive_matches": 3124,
+          "unmatched_in_oct12_root_queue": 61
+        },
+        {
+          "day": "2026-09-16",
+          "exact_case_sensitive_matches": 3113,
+          "unmatched_in_oct12_root_queue": 72
+        },
+        {
+          "day": "2026-09-15",
+          "exact_case_sensitive_matches": 3119,
+          "unmatched_in_oct12_root_queue": 66
+        },
+        {
+          "day": "2026-09-14",
+          "exact_case_sensitive_matches": 3128,
+          "unmatched_in_oct12_root_queue": 57
+        },
+        {
+          "day": "2026-09-11",
+          "exact_case_sensitive_matches": 3113,
+          "unmatched_in_oct12_root_queue": 72
+        },
+        {
+          "day": "2026-09-10",
+          "exact_case_sensitive_matches": 3121,
+          "unmatched_in_oct12_root_queue": 64
+        },
+        {
+          "day": "2026-09-09",
+          "exact_case_sensitive_matches": 3109,
+          "unmatched_in_oct12_root_queue": 76
+        },
+        {
+          "day": "2026-09-08",
+          "exact_case_sensitive_matches": 3117,
+          "unmatched_in_oct12_root_queue": 68
+        },
+        {
+          "day": "2026-09-04",
+          "exact_case_sensitive_matches": 3117,
+          "unmatched_in_oct12_root_queue": 68
+        },
+        {
+          "day": "2026-09-03",
+          "exact_case_sensitive_matches": 3110,
+          "unmatched_in_oct12_root_queue": 75
+        },
+        {
+          "day": "2026-09-02",
+          "exact_case_sensitive_matches": 3111,
+          "unmatched_in_oct12_root_queue": 74
+        },
+        {
+          "day": "2026-09-01",
+          "exact_case_sensitive_matches": 3105,
+          "unmatched_in_oct12_root_queue": 80
+        },
+        {
+          "day": "2026-08-31",
+          "exact_case_sensitive_matches": 3112,
+          "unmatched_in_oct12_root_queue": 73
+        }
+      ],
+      "exact30_sessions_observed": 30,
+      "per_day_min_matched": 3105,
+      "per_day_max_matched": 3150,
+      "per_day_min_unmatched": 35,
+      "per_day_max_unmatched": 80,
+      "daily_matched_ohlcv_positive_and_geometry_valid": true,
+      "daily_matched_duplicate_exact_symbol_count": 0,
+      "daily_matched_timestamp_date_mismatch_count": 0,
+      "note": "Per-date matching does not establish the intersection of exact30 symbols nor PIT listing identity. All matched OHLCV checked for finite positive OHLCV and OHLC candle geometry; dates match source timestamps. No durable vendor OHLCV persisted.",
+      "early_day_fractional_volume_count": {
+        "2026-10-12": 2984,
+        "2026-10-09": 2826,
+        "2026-10-08": 3063,
+        "2026-10-07": 3063,
+        "2026-10-06": 3063
+      },
+      "exact30_individual_history_samples": [
+        "AAPL",
+        "NVDA",
+        "MSFT",
+        "QQQ"
+      ],
+      "sample_range_days": 30,
+      "all_four_sample_day_schedules_exact": true,
+      "all_four_sample_history_volume_fractional_days": 30,
+      "sample_history_source_raw_RTH_volume_attestation": false,
+      "sample_mathematical_DV30_median_research_only": true,
+      "source_bulk_and_ticker_history_volume_is_integer": false,
+      "source_volume_mechanism": "UNKNOWN_COULD_BE_ADJUSTED_VENDOR_FIELD",
+      "raw_reg_session_volumes_independently_crosschecked": false,
+      "SEC_NASDAQ_listing_PIT_identity_proven": false,
+      "continuous_260_daily_and_52_weekly_proven": false,
+      "primary_MC_source_proven": false,
+      "runner_licensed_automated_non_display_permission_proven": false,
+      "b2b_key_needed": "https://rallies.ai/api-docs",
+      "consumer_free_pricing_is_not_automated_license": true,
+      "classification": "CONFIRMED_NONAUTHORITATIVE_DATA_AVAILABILITY_BLOCKED_RTH_VOLUME_PROVENANCE_AND_AUTOMATION_RIGHTS",
+      "production_DV30_and_MC_AND_R92_pass_created": false,
+      "unknown_never_pass": true,
+      "execution": "NONE",
+      "real_money": "NO-GO"
     }
   },
   "dependency_order": [
@@ -227,13 +460,13 @@
     {
       "id": "P0_B",
       "owner": "ROOT_DATA_PLANE",
-      "status": "SOURCE_PUBLICATION_PENDING",
+      "status": "BLOCKED_UNADJUSTED_RTH_SOURCE_RIGHTS",
       "task": "Observe the 2026-10-12 completed official session through exact source publication and bounded real-quote canaries; distinguish feed delay, transport retry, permanent short history and 212 unknown identity",
       "acceptance": "Nonempty exact-ASOF vendor daily bars validated by official exchange dates and source entitlement, no synthetic backfill; runner artifact + Git blob exact",
       "rollback": "HISTORY_PARTIAL, no new PASS",
       "observation": "3-symbol Alpaca delayed-SIP snapshot has ASOF daily bar field but get_stock_bars historical endpoint returns api_error; this is not a production fallback or proof of 260/52.",
       "rallies_probe_observation": "Rallies read-only foreground bulk 2026-10-12 returned 12,588 unique tickers; 3,150 exact source-queue symbol matches with valid positive OHLCV; 35 missing; 4 sample exact 20:00Z timestamps. This is NOT full NASDAQ identity/PIT or automated runner rights and cannot satisfy exact30/260 alone.",
-      "latest_acceptance": "Real 12-Oct Rallies source matched 3150 of 3185 symbols for a single day, but 30-day full DV30 remained UNVERIFIED due tool call ceiling; rights for GitHub automatic use not attested."
+      "latest_acceptance": "30/30 completed Nasdaq dates returned Rallies bulk OHLCV; each date matched 3105-3150 of 3185 exact Oct12 root symbols, but fractional-volume values prevalent; no independent unadjusted RTH volume lineage, PIT issuer identity, runner entitlement, 260/52 or authoritative DV30. Keep PRICE/MC/R92 blocked."
     },
     {
       "id": "P1",
