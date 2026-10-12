@@ -6,6 +6,7 @@ on:
     paths:
       - "nasdaq-xray/strict_g9_probe.py"
       - "nasdaq-xray/strict_g9_probe_selftest.py"
+      - "nasdaq-xray/g9_preauthority_probe.py"
       - "nasdaq-xray/g9_entitlement_authority.json"
       - "nasdaq-xray/g9_provider_adapter_contract.json"
       - ".github/workflows/xray-strict-g9-gate.yml"
@@ -40,7 +41,7 @@ jobs:
         with: {python-version: "3.12"}
 
       - name: Compile strict G9 probe
-        run: python -m py_compile nasdaq-xray/strict_g9_probe.py nasdaq-xray/strict_g9_probe_selftest.py
+        run: python -m py_compile nasdaq-xray/strict_g9_probe.py nasdaq-xray/strict_g9_probe_selftest.py nasdaq-xray/g9_preauthority_probe.py
 
       - name: Run strict fail-closed selftest
         run: python nasdaq-xray/strict_g9_probe_selftest.py
