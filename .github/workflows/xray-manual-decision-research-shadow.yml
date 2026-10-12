@@ -150,10 +150,31 @@ jobs:
       - name: Optional free historical SIP 260d/52w B research (never AL)
         shell: bash
         env:
-          APCA_API_KEY_ID: ${{ secrets.APCA_API_KEY_ID }}
-          APCA_API_SECRET_KEY: ${{ secrets.APCA_API_SECRET_KEY }}
+          # Same proven read-only DATA credentials as full-515 SIP runner.
+          # Secret values never enter logs, code, issues or artifacts.
+          APCA_API_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID }}
+          APCA_API_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY }}
         run: |
           set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          manual=Path(".github/workflows/xray-manual-decision-research-shadow.yml").read_text()
+          full=Path(".github/workflows/xray-alpaca-full-515-260-sip-shadow.yml").read_text()
+          script=Path("nasdaq-xray/alpaca_sip_eod_b_shadow.py").read_text()
+          for wanted in ("secrets.XRAY_ALPACA_DATA_KEY_ID",
+                         "secrets.XRAY_ALPACA_DATA_SECRET_KEY"):
+              if wanted not in manual or wanted not in full:
+                  raise SystemExit("XRAY_ALPACA_SECRET_NAME_DRIFT_FAIL_CLOSED")
+          if ("APCA_API_KEY_ID: " + "${{ secrets.XRAY_ALPACA_DATA_KEY_ID }}") not in manual:
+              raise SystemExit("XRAY_ALPACA_SHADOW_KEY_ALIAS_DRIFT")
+          if ("APCA_API_SECRET_KEY: " + "${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY }}") not in manual:
+              raise SystemExit("XRAY_ALPACA_SHADOW_SECRET_ALIAS_DRIFT")
+          if 'os.environ.get("APCA_API_KEY_ID")' not in script or 'os.environ.get("APCA_API_SECRET_KEY")' not in script:
+              raise SystemExit("XRAY_ALPACA_SHADOW_SCRIPT_ENV_DRIFT")
+          if "source_rights_not_elevated" not in script or "qualified_al_count" not in script:
+              raise SystemExit("XRAY_ALPACA_SHADOW_NO_AUTHORITY_GUARD_MISSING")
+          print("XRAY_ALPACA_READONLY_SECRET_ALIAS=PASS_TWO_WORKFLOWS_SAME_DATA_KEY_PAIR_NO_ALPHA")
+          PY
           python -m py_compile nasdaq-xray/alpaca_sip_eod_b_shadow.py
           python nasdaq-xray/alpaca_sip_eod_b_shadow.py --selftest
           python -O nasdaq-xray/alpaca_sip_eod_b_shadow.py --selftest
