@@ -75,11 +75,26 @@ def prove(row):
         observed = date.fromisoformat(observed)
     except (TypeError, ValueError):
         return unknown("INVALID_SHARES_VINTAGE")
-    official_close = datetime.combine(day, datetime.min.time()).replace(
-        tzinfo=NY, hour=16).astimezone(timezone.utc)
+    # Official exchange calendar MUST supply the actual close (including
+    # early-close days); a hardcoded 16:00 ET creates PIT lookahead errors.
+    close_sha = row.get("official_calendar_evidence_sha256")
+    official_close = _utc(row.get("official_session_close_utc"))
+    if (row.get("official_calendar_session_verified") is not True
+            or not isinstance(close_sha, str) or not SHA.fullmatch(close_sha)
+            or official_close is None):
+        return unknown("OFFICIAL_SESSION_CLOSE_UNVERIFIED")
+    local_close = official_close.astimezone(NY)
+    if (local_close.date() != day
+            or (local_close.hour, local_close.minute, local_close.second)
+            not in {(13, 0, 0), (16, 0, 0)}):
+        return unknown("OFFICIAL_SESSION_CLOSE_INVALID")
     if (observed > day or (day - observed).days > 120 or accepted is None
+            or accepted.astimezone(NY).date() < observed
             or accepted > official_close or price_stamp is None
-            or price_stamp.astimezone(NY).date() != day):
+            or price_stamp.astimezone(NY).date() != day
+            or price_stamp.astimezone(NY).hour != 0
+            or price_stamp.astimezone(NY).minute != 0
+            or price_stamp.astimezone(NY).second != 0):
         return unknown("LOOKAHEAD_OR_STALE_OR_WRONG_SESSION")
     if type(row.get("outstanding_class_shares")) is not int:
         return unknown("SHARE_TYPE_INVALID")
@@ -121,6 +136,9 @@ def selftest():
            "shares_observation_date": "2026-09-30",
            "filing_accepted_utc": "2026-10-02T12:00:00Z",
            "alpaca_bar_utc": "2026-10-09T04:00:00Z",
+           "official_session_close_utc": "2026-10-09T20:00:00Z",
+           "official_calendar_evidence_sha256": "c"*64,
+           "official_calendar_session_verified": True,
            "source_rights_attested": True}
     row.update({key: "a"*64 for key in (
         "sec_filing_sha256", "sec_class_identity_sha256",
@@ -143,6 +161,10 @@ def selftest():
         raise AssertionError("RAW_DATA_LEAK")
     negative = (
         ("sip_close_usd", "19.99", "SHADOW_CLASS_MC_LOWER_BOUND_INSUFFICIENT"),
+        ("official_calendar_session_verified", False, "UNKNOWN_OFFICIAL_SESSION_CLOSE_UNVERIFIED"),
+        ("official_calendar_evidence_sha256", "", "UNKNOWN_OFFICIAL_SESSION_CLOSE_UNVERIFIED"),
+        ("official_session_close_utc", "2026-10-10T00:00:00Z", "UNKNOWN_OFFICIAL_SESSION_CLOSE_INVALID"),
+        ("alpaca_bar_utc", "2026-10-09T13:30:00Z", "UNKNOWN_LOOKAHEAD_OR_STALE_OR_WRONG_SESSION"),
         ("max_share_reduction_asof_verified", False, "UNKNOWN_ASOF_SHARE_REDUCTION_UPPER_BOUND_UNPROVEN"),
         ("post_vintage_share_change_audit_sha256", "invalid", "UNKNOWN_ASOF_SHARE_REDUCTION_UPPER_BOUND_UNPROVEN"),
         ("maximum_post_vintage_share_reduction", None, "UNKNOWN_INVALID_ASOF_SHARE_REDUCTION_BOUND"),
@@ -167,7 +189,13 @@ def selftest():
         mutated[field] = bad
         if prove(mutated)["status"] != reason:
             raise AssertionError("NEGATIVE_REGRESSION:" + field)
-    print(json.dumps({"selftest": "PASS", "cases": 17,
+    # Synthetic early-close regression: Friday 13:00 ET must reject 14:00 ET filings.
+    early = dict(row)
+    early["official_session_close_utc"] = "2026-10-09T17:00:00Z"
+    early["filing_accepted_utc"] = "2026-10-09T18:00:00Z"
+    if prove(early)["status"] != "UNKNOWN_LOOKAHEAD_OR_STALE_OR_WRONG_SESSION":
+        raise AssertionError("EARLY_CLOSE_LOOKAHEAD")
+    print(json.dumps({"selftest": "PASS", "cases": 22,
                       "production_mc_created": 0, "R92_created": 0,
                       "version": SCHEMA}))
 
