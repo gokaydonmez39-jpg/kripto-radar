@@ -439,6 +439,7 @@ def build_c417_rallies_newscope_partition(raw_rows,asof,queue,primary):
         usable={}
         asof_close=None
         zero_volume=[]
+        nonintegral_volume_dates=set()
         for row in rows:
             d=row.get("date")
             if d not in exp:
@@ -447,6 +448,15 @@ def build_c417_rallies_newscope_partition(raw_rows,asof,queue,primary):
             if d==asof and px is not None and px>0:
                 asof_close=px
             if px is None or px<=0 or vol is None or vol<0:
+                continue
+            # A split-adjusted/normalized fractional share count is not
+            # proof of C4.17 regular-session traded share volume.
+            # A later duplicate row cannot heal an invalid source date.
+            if not vol.is_integer():
+                nonintegral_volume_dates.add(d)
+                usable.pop(d,None)
+                continue
+            if d in nonintegral_volume_dates:
                 continue
             usable[d]=(px,vol)
             if vol==0:
@@ -465,10 +475,13 @@ def build_c417_rallies_newscope_partition(raw_rows,asof,queue,primary):
             continue
         if missing:
             bc[sym]={
-              "reason":"RALLIES_NEW_SCOPE_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK",
+              "reason":("RALLIES_NEW_SCOPE_NONINTEGRAL_VOLUME_NOT_UNADJUSTED_RTH_PROOF"
+                        if nonintegral_volume_dates else
+                        "RALLIES_NEW_SCOPE_EXACT30_INCOMPLETE_SPLIT_OR_SOURCE_ALIGNMENT_RISK"),
               "observed_usable_sessions":len(usable),
               "missing_sessions":missing,
               "zero_volume_sessions":zero_volume,
+              "nonintegral_volume_sessions":sorted(nonintegral_volume_dates),
             }
             continue
         dv30=statistics.median(usable[d][0]*usable[d][1] for d in exp)
