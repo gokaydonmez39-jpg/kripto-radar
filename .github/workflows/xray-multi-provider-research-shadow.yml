@@ -57,6 +57,12 @@ jobs:
           assert j["schema"]=="XRAY_C418_DYNAMIC_MULTI_PROVIDER_ROUTING_READINESS_V2"
           assert j["discovered_source_rows"]==12
           assert j["verified_distinct_market_cap_origin_count"]==0
+          bq=j["per_source_capacity_scenarios"]["BUSINESSQUANT"]
+          assert bq["documented_tickers_per_call"]==5
+          assert bq["best_case_historical_mc_calls_if_all_symbols_have_data"]==103
+          assert bq["best_case_free_calendar_days"]==4
+          assert bq["historical_filing_acceptance_pit_proven"] is False
+          assert bq["best_case_only_not_entitled_to_primary"] is True
           assert j["new_primary_mc_authority_count"]==0
           assert j["new_r92_count_created"]==0
           assert j["effective_policy"]=="C4.17"
