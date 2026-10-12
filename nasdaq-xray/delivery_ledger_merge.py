@@ -13,7 +13,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 SCHEMA = "XRAY_DELIVERY_LEDGER_V1"
-STATUS_RANK = {"MISSING_RETRY_REQUIRED": 1, "DELIVERED": 2}
+STATUS_RANK = {"MISSING_RETRY_REQUIRED": 1, "SUPPRESSED_CHATGPT_ONLY": 1, "DELIVERED": 2}
 NEUTRAL = "ENABLED_PLATFORM_NOT_OBSERVABLE"
 
 
@@ -53,6 +53,8 @@ def _check(ledger):
         n = row.get("backup_issue_number")
         if status == "DELIVERED" and (type(n) is not int or n < 1):
             raise ValueError("DELIVERED_WITHOUT_ISSUE_RECEIPT")
+        if status == "SUPPRESSED_CHATGPT_ONLY" and n is not None:
+            raise ValueError("SUPPRESSED_CHANNEL_CANNOT_CLAIM_GITHUB_ISSUE_RECEIPT")
         if n is not None and (type(n) is not int or n < 1):
             raise ValueError("INVALID_ISSUE_NUMBER")
 
@@ -194,7 +196,19 @@ def selftest():
     kept=merge(a_verified,b_later)["deliveries"]["OLD|A|1"]
     assert kept["chatgpt_notification"]=="USER_RECEIPT_VERIFIED"
     assert kept["backup_issue_status"]=="MISSING_RETRY_REQUIRED"
-    print("XRAY_LEDGER_MERGE_RACE_AND_CONFLICT_SELFTEST=PASS_CHRONOLOGICAL_RECHECK_REVOKES_STALE_DELIVERED")
+    suppressed=json.loads(json.dumps(b))
+    suppressed["deliveries"]["NEW|D|1"]={
+        "symbol":"NEW","backup_issue_status":"SUPPRESSED_CHATGPT_ONLY",
+        "backup_issue_number":None,"last_checked_at_utc":"2026-10-12T17:00:00Z",
+        "chatgpt_notification":"ENABLED_PLATFORM_NOT_OBSERVABLE"}
+    assert merge(a,suppressed)["deliveries"]["NEW|D|1"]["backup_issue_status"]=="SUPPRESSED_CHATGPT_ONLY"
+    bad=json.loads(json.dumps(suppressed))
+    bad["deliveries"]["NEW|D|1"]["backup_issue_number"]=501
+    try: merge(a,bad)
+    except ValueError as exc:
+        assert str(exc)=="SUPPRESSED_CHANNEL_CANNOT_CLAIM_GITHUB_ISSUE_RECEIPT"
+    else: raise AssertionError("SUPPRESSED_FAKE_ISSUE_ACCEPTED")
+    print("XRAY_LEDGER_MERGE_RACE_AND_CONFLICT_SELFTEST=PASS_CHRONOLOGICAL_RECHECK_SUPPRESSED_CHATGPT_ONLY")
 
 
 def main():

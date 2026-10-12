@@ -121,6 +121,11 @@ def validate_contract(files:dict[str,str])->dict:
     d=files["nasdaq-xray-delivery.yml"]
     # One issue creation per key; fallback double-create after uncertain HTTP
     # failure risks two user-facing notifications for one registered R92.
+    if ("issues: write" in d or
+        "if: steps.prep.outputs.ready == 'true' && false" not in d or
+        "python nasdaq-xray/chatgpt_only_delivery_mode.py --check" not in d or
+        'backup_issue_status":"SUPPRESSED_CHATGPT_ONLY"' not in d):
+        errors.append("DELIVERY_CHATGPT_ONLY_USER_PREFERENCE_DRIFT")
     if d.count("gh issue create")!=1 or "|| gh issue create" in d:
         errors.append("DELIVERY_DUPLICATE_ISSUE_CREATE_PATH")
     if "'.[0].number // empty'" in d or "gh issue list --repo" in d:
@@ -243,6 +248,11 @@ def selftest():
          "REMOTE_MAIN_EXACT_BLOB_READBACK_PASS_NOT_ALPHA_GO",
          "RACE_DEFERRED_TO_NEWER_RUN"),
         ("nasdaq-xray-delivery.yml","gh issue create","echo no-issue"),
+        ("nasdaq-xray-delivery.yml",
+         "if: steps.prep.outputs.ready == 'true' && false",
+         "if: steps.prep.outputs.ready == 'true'"),
+        ("nasdaq-xray-delivery.yml",
+         "issues: read","issues: write"),
         ("nasdaq-xray-delivery.yml",
          "if: steps.prep.outputs.ready == 'true'",
          "if: always()"),

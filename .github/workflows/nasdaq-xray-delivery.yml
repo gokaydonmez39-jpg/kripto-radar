@@ -18,6 +18,8 @@ on:
       - "nasdaq-xray/delivery_candidate_preflight.py"
       - "nasdaq-xray/delivery_scheduler_guard_selftest.py"
       - "nasdaq-xray/delivery_ledger_merge.py"
+      - "nasdaq-xray/chatgpt_only_delivery_mode.py"
+      - "nasdaq-xray/notification_channel_policy_v1.json"
       - "nasdaq-xray/delivery_prepare_selftest.py"
       - "nasdaq-xray/official_source_guard.py"
       - "nasdaq-xray/resilience_runtime.py"
@@ -30,7 +32,7 @@ on:
 permissions:
   actions: read
   contents: write
-  issues: write
+  issues: read
 
 concurrency:
   group: nasdaq-xray-delivery
@@ -98,6 +100,12 @@ jobs:
           python nasdaq-xray/delivery_scheduler_guard_selftest.py
           python nasdaq-xray/delivery_candidate_preflight.py --selftest
           python nasdaq-xray/delivery_issue_receipt_guard.py --selftest
+
+      - name: Enforce user-preferred ChatGPT-only notifications (no GitHub Issue send)
+        run: |
+          python nasdaq-xray/chatgpt_only_delivery_mode.py --selftest
+          python -O nasdaq-xray/chatgpt_only_delivery_mode.py --selftest
+          python nasdaq-xray/chatgpt_only_delivery_mode.py --check
 
       - name: Classify registered R92 presence without claiming source readiness
         id: presence
@@ -176,9 +184,12 @@ jobs:
             echo "reason=${reason:-UNCLASSIFIED_PREP_BLOCK}" >> "$GITHUB_OUTPUT"
           fi
 
+      # User elected ChatGPT-only alerts. This legacy GitHub Issue sink is
+      # intentionally unreachable. Defense-in-depth: issues permission is read.
+      # Do NOT enable until the user explicitly requests GitHub issue alerts.
       - name: Create or recover deduplicated research candidate issues
         id: issues
-        if: steps.prep.outputs.ready == 'true'
+        if: steps.prep.outputs.ready == 'true' && false
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
@@ -288,11 +299,13 @@ jobs:
                   key=x["delivery_key"]
                   if key not in seen:
                       rec=d["deliveries"].setdefault(key,{})
-                      rec.update({"symbol":x["symbol"],"backup_issue_status":"MISSING_RETRY_REQUIRED","backup_issue_number":None,"last_checked_at_utc":datetime.now(timezone.utc).isoformat(),"chatgpt_notification":"ENABLED_PLATFORM_NOT_OBSERVABLE","email_notification":"ENABLED_PLATFORM_NOT_OBSERVABLE"})
+                      rec.update({"symbol":x["symbol"],"backup_issue_status":"SUPPRESSED_CHATGPT_ONLY","backup_issue_number":None,"last_checked_at_utc":datetime.now(timezone.utc).isoformat(),"chatgpt_notification":"ENABLED_PLATFORM_NOT_OBSERVABLE","email_notification":"ENABLED_PLATFORM_NOT_OBSERVABLE"})
           d["updated_at_utc"]=datetime.now(timezone.utc).isoformat()
           p.write_text(json.dumps(d,sort_keys=True,indent=2)+"\n")
-          missing=[k for k,v in d["deliveries"].items() if v.get("backup_issue_status")!="DELIVERED"]
+          missing=[k for k,v in d["deliveries"].items() if v.get("backup_issue_status") not in ("DELIVERED","SUPPRESSED_CHATGPT_ONLY")]
           print("XRAY_DELIVERY_LEDGER_MISSING="+str(len(missing)))
+          print("XRAY_DELIVERY_MODE=CHATGPT_ONLY_GITHUB_ISSUES_SUPPRESSED")
+          print("XRAY_DELIVERY_USER_DEVICE_RECEIPT=UNVERIFIED")
           PY
 
       - name: Commit delivery ledger
