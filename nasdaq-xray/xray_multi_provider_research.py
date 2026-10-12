@@ -542,7 +542,11 @@ def selftest():
              "metric":"Market Capitalization (Daily)","value":3500000000.0}]
     missing=bq_historic_batch_shadow(symbols,"2026-10-09","FAKE",lambda *a,**kw:subset)
     assert missing["AAPL"] is True and sum(missing.values())==1
+    # RED regression: case-mismatched provider response is not the
+    # requested exact Nasdaq security even when upper() would match.
     bad_bundles=[
+        [{"ticker":"aapl","date":"2026-10-09",
+          "metric":"Market Capitalization","value":3500000000.0}],
         subset+subset,
         subset+[{"ticker":"OTHER","date":"2026-10-09",
                  "metric":"Market Capitalization","value":3500000000.0}],
