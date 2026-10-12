@@ -117,7 +117,18 @@
       "market_cap_direct": true,
       "lookahead_guard": "API_DATE_IS_NOT_ALONE_PROOF_OF_PUBLICATION_TIMESTAMP",
       "rights_state": "AUTOMATED_DERIVED_AND_OUTPUT_DATA_USE_UNVERIFIED",
-      "runner_key_attested": false
+      "runner_key_attested": false,
+      "historical_mc_endpoint": "https://financialmodelingprep.com/stable/historical-market-capitalization",
+      "historical_mc_docs": "https://site.financialmodelingprep.com/developer/docs/stable/historical-market-cap",
+      "historical_mc_response_schema": "ARRAY_OF_SYMBOL_DATE_MARKETCAP",
+      "historical_mc_one_symbol_per_call_assumed": true,
+      "historical_market_cap_free_tier_endpoint_grant": "NOT_VERIFIED",
+      "historical_market_cap_currency_lineage": "AS_TRADING_REQUIRE_INDEPENDENT_USD_CONFIRMATION",
+      "historical_market_cap_publication_timestamp": "NOT_EXPOSED_BY_DOCUMENTED_ROW",
+      "historical_market_cap_independent_upstream": "UNVERIFIED",
+      "historical_mc_shadow_validator": "nasdaq-xray/c418_historic_mc_vendor_shadow.py",
+      "historical_mc_can_create_primary": false,
+      "historical_mc_can_create_r92": false
     },
     {
       "id": "ALPHA_VANTAGE",
