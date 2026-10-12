@@ -177,6 +177,8 @@ jobs:
               out.write("Research: **"+j["research_start_status"]+"**\\n\\n")
               out.write("Verified AL: **"+j["verified_al_start_status"]+"**\\n\\n")
               out.write("Manual 11 EOD research WATCH (not Canonical AL): **"+j["manual_eod_watch_status"]+"** count="+str(j["manual_eod_watch_count"])+"\\n\\n")
+              if j["manual_eod_watch_count"]:
+                  out.write("EOD manual observation symbols (NON-AL): "+", ".join(j["manual_eod_watch_symbols"])+"\\n\\n")
               out.write("Source-exact: **"+str(j["source_exact"])+"**. No trades, no AL release.\\n")
           PY
       - name: Verify 2-8 session outcomes are pending without real future evidence
