@@ -6,6 +6,7 @@ on:
       - "nasdaq-xray/c418_multi_source_guard.py"
       - "nasdaq-xray/c418_provider_inventory_20261012.json"
       - "nasdaq-xray/c418_provider_routing_readiness.py"
+      - "nasdaq-xray/c418_daily_mc_capacity_guard.py"
       - "nasdaq-xray/immutable_action_dependency_guard.py"
       - "nasdaq-xray/rallies_history_shadow_guard.py"
       - "nasdaq-xray/c418_shadow_resilience_guard.py"
@@ -61,6 +62,32 @@ jobs:
           python nasdaq-xray/mc_free_successor_contract.py --selftest
           python nasdaq-xray/c418_canonical_source_sha_selftest.py
           python nasdaq-xray/c418_upstream_independence_attestation_selftest.py
+      - name: Prove daily free MC quota insufficient before any PRIMARY promotion
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python -m py_compile nasdaq-xray/c418_daily_mc_capacity_guard.py
+          python nasdaq-xray/c418_daily_mc_capacity_guard.py --selftest
+          python -O nasdaq-xray/c418_daily_mc_capacity_guard.py --selftest
+          python nasdaq-xray/c418_daily_mc_capacity_guard.py --out "$RUNNER_TEMP/xray_c418_daily_mc_capacity.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          x=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_c418_daily_mc_capacity.json").read_text())
+          assert x["schema"]=="XRAY_C418_DAILY_MC_CAPACITY_GUARD_V1"
+          assert x["status"]=="SHADOW_DAILY_REFRESH_BLOCKED"
+          assert x["source_cohort_price_pass"]==514
+          assert x["BQ"]["daily_free_requests"]==30
+          assert x["BQ"]["tickers_per_historical_mc_call"]==5
+          assert x["BQ"]["required_full_cohort_calls"]==103
+          assert x["BQ"]["maximum_tickers_per_day"]==150
+          assert x["BQ"]["minimum_quota_calendar_days"]==4
+          assert x["BQ"]["full_cohort_daily_refresh_with_this_quota"] is False
+          assert not any(x[k] for k in ("can_create_PRIMARY","can_register_R92","can_enable_G9","production_go","vendor_raw_data_persisted"))
+          assert x["real_money"]=="NO-GO" and x["execution"]=="NONE"
+          print("XRAY_BQ_FREE_514_DAILY_CAPACITY=BLOCKED_NO_PRIMARY_NO_GO")
+          PY
       - name: Verify 12-route real current cohort capacity and forbid fake MC rights
         shell: bash
         run: |
@@ -133,5 +160,6 @@ jobs:
           path: |
             ${{ runner.temp }}/xray_c418_multi_source_health.json
             ${{ runner.temp }}/xray_c418_514_source_router.json
+            ${{ runner.temp }}/xray_c418_daily_mc_capacity.json
           retention-days: 14
           if-no-files-found: error
