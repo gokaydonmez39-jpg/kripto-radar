@@ -34,11 +34,11 @@ def must(condition, reason):
 
 
 def git_blob(raw):
-    return hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\\0" + raw).hexdigest()
+    return hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest()
 
 
 def symbol_hash(symbols):
-    return hashlib.sha256("\\n".join(symbols).encode()).hexdigest()
+    return hashlib.sha256("\n".join(symbols).encode()).hexdigest()
 
 
 def valid_symbols(values):
@@ -275,7 +275,7 @@ def main():
     if not args.out or args.out.resolve().is_relative_to(ROOT.parent):
         ap.error("out must be outside git repository (private runner path)")
     report=build(dt.datetime.now(dt.timezone.utc))
-    args.out.write_text(json.dumps(report,indent=2,sort_keys=True)+"\\n")
+    args.out.write_text(json.dumps(report,indent=2,sort_keys=True)+"\n")
     print("XRAY_INTERACTIVE_SIP_WATCH="+report["status"])
     print("XRAY_INTERACTIVE_SIP_WATCH_COUNT="+str(report["current_eod_research_watch_count"]))
     print("XRAY_C417_AL=UNVERIFIED_NOT_ASSUMED_ZERO")
