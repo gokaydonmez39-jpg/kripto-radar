@@ -239,6 +239,39 @@ def main():
         try:o.history_retry_plan(invalid)
         except ValueError:pass
         else:raise AssertionError("INVALID_HISTORY_PROGRESS_ACCEPTED")
+    # P0-B: Proven per-row UNKNOWN partition, not a guessed history failure.
+    sample={
+        "queue":["AAA","BBB","CCC","DDD"],
+        "unknown_count":3,
+        "results":{
+            "AAA":{"status":"UNKNOWN_STATIC","info":{"reason":"ASOF_MISSING_REQUIRES_RESOLUTION","bars":600}},
+            "BBB":{"status":"UNKNOWN_RETRY_EXHAUSTED","info":"TimeoutError: provider unavailable"},
+            "CCC":{"status":"UNKNOWN_STATIC","info":{"reason":"SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION","bars":18}},
+            "DDD":{"status":"FAIL_PRICE","info":{"proof":"ASOF_CLOSE"}},
+        },
+    }
+    partition=o.history_unknown_reason_partition(sample)
+    assert partition=={
+        "ASOF_BAR_MISSING_NOT_SHORT_HISTORY_PROOF":1,
+        "PROVIDER_EXCEPTION_RETRY_EXHAUSTED":1,
+        "SHORT_HISTORY_REQUIRES_INDEPENDENT_PROOF":1,
+    },partition
+    # Deterministic and bounded: never leak arbitrary provider exceptions.
+    reverse=dict(sample,results=dict(reversed(list(sample["results"].items()))))
+    assert o.history_unknown_reason_partition(reverse)==partition
+    for broken in (
+        dict(sample,unknown_count=2),
+        dict(sample,results=dict(sample["results"],INJECTED={"status":"UNKNOWN_STATIC"})),
+        dict(sample,results=dict(sample["results"],AAA=None)),
+        dict(sample,queue=["AAA","AAA","CCC","DDD"]),
+    ):
+        try:o.history_unknown_reason_partition(broken)
+        except ValueError:pass
+        else:raise AssertionError("DIAGNOSTIC_UNKNOWN_INTEGRITY_NOT_BLOCKED")
+    empty={"queue":["OK"],"unknown_count":0,
+           "results":{"OK":{"status":"PASS","info":{"proof":"EXACT30_MEDIAN"}}}}
+    assert o.history_unknown_reason_partition(empty)=={}
+    print("XRAY_HISTORY_UNKNOWN_REASON_PARTITION=PASS_3_CLASSES_4_NEGATIVE_EMPTY_NONPROMOTION")
     print("XRAY_HISTORY_RETRY_PROGRESS_SELFTEST=PASS_4_POSITIVE_3_NEGATIVE")
     print("XRAY_PARTIAL_HISTORY_STALE_STATE_SELFTEST=PASS")
 
