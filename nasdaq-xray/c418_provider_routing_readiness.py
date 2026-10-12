@@ -190,6 +190,37 @@ def analyze(master,price,inv,proposal,g9,sha_master,sha_price,sha_inventory,now_
         "batch_api_token_present_in_runner":False,
         "best_case_only_not_entitled_to_primary":True,
     })
+    # Explicitly document FMP's historical endpoint without granting access.
+    # Its row date is NOT issuer-filing acceptance / publication-time PIT.
+    fmp=providers["FMP"]
+    require(fmp.get("historical_mc_endpoint")==
+            "https://financialmodelingprep.com/stable/historical-market-capitalization"
+            and fmp.get("historical_mc_response_schema")==
+            "ARRAY_OF_SYMBOL_DATE_MARKETCAP"
+            and fmp.get("historical_mc_one_symbol_per_call_assumed") is True
+            and fmp.get("historical_market_cap_free_tier_endpoint_grant")==
+            "NOT_VERIFIED"
+            and fmp.get("historical_market_cap_currency_lineage")==
+            "AS_TRADING_REQUIRE_INDEPENDENT_USD_CONFIRMATION"
+            and fmp.get("historical_market_cap_publication_timestamp")==
+            "NOT_EXPOSED_BY_DOCUMENTED_ROW"
+            and fmp.get("historical_market_cap_independent_upstream")==
+            "UNVERIFIED"
+            and fmp.get("historical_mc_can_create_primary") is False
+            and fmp.get("historical_mc_can_create_r92") is False
+            and fmp.get("runner_key_attested") is False,
+            "FMP_HISTORIC_ENDPOINT_RIGHTS_PIT_NOT_READY")
+    estimates["FMP"].update({
+        "historical_endpoint_documented":True,
+        "historical_response_ticker_echo_expected":True,
+        "historical_single_symbol_calls_if_entitled":len(ps),
+        "best_case_free_calendar_days_if_endpoint_entitled":
+            cap(len(ps),fmp["daily_requests"]),
+        "historical_row_publication_time_attested":False,
+        "free_endpoint_eligibility_attested":False,
+        "usd_listing_attested":False,
+        "historical_vendor_can_create_primary":False,
+    })
     ti=providers["TIINGO"]
     estimates["TIINGO"]={
         "unique_symbol_quota_month":ti["max_unique_symbols"],
@@ -278,6 +309,14 @@ def selftest():
             "SELFTEST_MUST_NOT_GO")
     require(got["per_source_capacity_scenarios"]["MASSIVE"]["minimum_minutes_if_one_request_per_symbol"]==103,"MASSIVE_CAP_103")
     require(got["per_source_capacity_scenarios"]["FMP"]["minimum_days_if_one_request_per_symbol"]==3,"FMP_CAP_3")
+    fmp=got["per_source_capacity_scenarios"]["FMP"]
+    require(fmp["historical_endpoint_documented"] is True
+            and fmp["historical_single_symbol_calls_if_entitled"]==514
+            and fmp["best_case_free_calendar_days_if_endpoint_entitled"]==3
+            and all(fmp[k] is False for k in
+                    ("historical_row_publication_time_attested",
+                     "free_endpoint_eligibility_attested","usd_listing_attested",
+                     "historical_vendor_can_create_primary")),"FMP_HISTORIC_SHADOW_NONAUTHORITY")
     require(got["per_source_capacity_scenarios"]["ALPHA_VANTAGE"]["minimum_days_if_one_request_per_symbol"]==21,"ALPHA_CAP_21")
     require(got["per_source_capacity_scenarios"]["EODHD"]["minimum_days_if_one_request_per_symbol"]==26,"EODHD_CAP_26")
     bqroute=got["per_source_capacity_scenarios"]["BUSINESSQUANT"]
@@ -355,6 +394,10 @@ def selftest():
         (2,lambda x:next(s for s in x["sources"] if s["id"]=="BUSINESSQUANT").update(max_tickers_per_historic_call=514),"FAKE_BQ_BATCH_CAP"),
         (2,lambda x:next(s for s in x["sources"] if s["id"]=="BUSINESSQUANT").update(automated_non_display_primary_license_verified=True),"FAKE_BQ_PRIMARY_LICENSE"),
         (2,lambda x:next(s for s in x["sources"] if s["id"]=="BUSINESSQUANT").update(historical_mc_slug="market-capitalization"),"WRONG_BQ_DAILY_SLUG"),
+        (2,lambda x:next(s for s in x["sources"] if s["id"]=="FMP").update(historical_mc_endpoint="https://invalid.example"),"FMP_ENDPOINT_TAMPER"),
+        (2,lambda x:next(s for s in x["sources"] if s["id"]=="FMP").update(historical_market_cap_free_tier_endpoint_grant="PERMITTED"),"FMP_FALSE_LICENSE"),
+        (2,lambda x:next(s for s in x["sources"] if s["id"]=="FMP").update(historical_mc_can_create_primary=True),"FMP_FALSE_PRIMARY"),
+        (2,lambda x:next(s for s in x["sources"] if s["id"]=="FMP").update(historical_market_cap_currency_lineage="USD"),"FMP_FALSE_CURRENCY"),
         (2,lambda x:x["live_shadow_probe_summary"].update(upstream_independence_verified=True),"FAKE_INDEPENDENCE"),
         (2,lambda x:x["live_shadow_probe_summary"].update(production_mc_primary_created=1),"FAKE_MC"),
         (3,lambda x:x.update(explicit_source_promotion_authorized=True),"FAKE_C418_CUTOVER"),
