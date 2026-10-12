@@ -216,6 +216,7 @@ def selftest():
     try:summarize(dt.datetime(2026,10,12,4,5),"root",[])
     except ValueError:pass
     else:raise AssertionError("NAIVE_CLOCK_ACCEPTED")
+    snapshot_retry_selftest()
     print("XRAY_MONDAY_LIVE_ACTIONS_SELFTEST=PASS_17_WORKFLOWS_MAIN_AND_TWO_OVERLAY_WRITERS_NO_FAKE_RECEIPT")
 
 def github(path,token):
@@ -231,6 +232,76 @@ def github(path,token):
         if result.status!=200:raise RuntimeError("GITHUB_ACTIONS_HTTP_NON_200")
         return json.loads(result.read(3000000))
 
+def read_stable_actions_snapshot(token, max_attempts=2):
+    """Retry a whole Actions observation, never splice records from different HEADs.
+
+    Each attempt reads one live main preimage, the workflow inventory and all
+    execution witnesses, then an independent main postimage. A concurrent
+    official-safety/reporting commit invalidates that observation, NOT the
+    underlying historical run records. Persistent movement stays fail-closed.
+    """
+    if type(max_attempts) is not int or not 1 <= max_attempts <= 3:
+        raise ValueError("INVALID_ACTIONS_SNAPSHOT_ATTEMPTS")
+    for attempt in range(max_attempts):
+        head_a=github("/git/ref/heads/main",token)["object"]["sha"]
+        if not (isinstance(head_a,str) and len(head_a)==40 and
+                all(c in "0123456789abcdef" for c in head_a)):
+            raise RuntimeError("GITHUB_MAIN_SHA_INVALID")
+        inventory=fetch_workflow_inventory(token)
+        entries={}
+        now=dt.datetime.now(UTC)
+        for key,name in WORKFLOWS.items():
+            runs=verify_response(github(
+                "/actions/workflows/"+name+"/runs?per_page=20&branch=main",token))
+            entries[key]=summarize(now,key,runs)
+        supplementary={}
+        for key,name in SUPPLEMENTAL_SCHEDULED.items():
+            runs=verify_response(github(
+                "/actions/workflows/"+name+"/runs?per_page=20&branch=main",token))
+            supplementary[key]=summarize(now,key,runs)
+        head_b=github("/git/ref/heads/main",token)["object"]["sha"]
+        if head_a==head_b:
+            return now,head_a,inventory,entries,supplementary,attempt+1
+    raise RuntimeError("GITHUB_MAIN_CHANGED_DURING_ACTIONS_AUDIT_AFTER_BOUNDED_RETRIES")
+
+
+def snapshot_retry_selftest():
+    from unittest.mock import patch
+    workflows=[{"path":".github/workflows/"+n,"id":i+1,"state":"active"}
+               for i,n in enumerate(WORKFLOWS.values())]
+    workflows += [{"path":".github/workflows/"+n,"id":100+i,"state":"active"}
+                  for i,n in enumerate(SUPPLEMENTAL_SCHEDULED.values())]
+    def run_case(heads):
+        it=iter(heads)
+        def fake(url,token):
+            if url=="/git/ref/heads/main":
+                return {"object":{"sha":next(it)}}
+            if url=="/actions/workflows?per_page=100&page=1":
+                return {"total_count":len(workflows),"workflows":workflows}
+            if url.startswith("/actions/workflows/") and url.endswith(
+                    "/runs?per_page=20&branch=main"):
+                return {"workflow_runs":[]}
+            raise AssertionError("UNEXPECTED_SNAPSHOT_ENDPOINT:"+url)
+        with patch(__name__+".github",side_effect=fake):
+            return read_stable_actions_snapshot("test",max_attempts=2)
+    stable=run_case(["a"*40,"b"*40,"b"*40,"b"*40])
+    assert stable[1]=="b"*40 and stable[-1]==2
+    assert len(stable[3])==17 and len(stable[4])==7
+    try:
+        run_case(["a"*40,"b"*40,"c"*40,"d"*40])
+    except RuntimeError as e:
+        assert str(e)=="GITHUB_MAIN_CHANGED_DURING_ACTIONS_AUDIT_AFTER_BOUNDED_RETRIES"
+    else:
+        raise AssertionError("MOVING_MAIN_ACCEPTED")
+    try:
+        read_stable_actions_snapshot("test",max_attempts=0)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("UNBOUNDED_OR_ZERO_RETRY_ACCEPTED")
+    print("XRAY_MONDAY_ACTIONS_ATOMIC_SNAPSHOT_RETRY=PASS_POSITIVE_2_NEGATIVE")
+
+
 def main():
     p=argparse.ArgumentParser()
     p.add_argument("--selftest",action="store_true")
@@ -241,25 +312,11 @@ def main():
     if os.environ.get("GITHUB_REPOSITORY")!=REPO:
         raise RuntimeError("GITHUB_REPOSITORY_MISMATCH")
     token=os.environ.get("GITHUB_TOKEN","")
-    head_a=github("/git/ref/heads/main",token)["object"]["sha"]
-    now=dt.datetime.now(UTC)
-    inventory=fetch_workflow_inventory(token)
-    entries={}
-    for key,name in WORKFLOWS.items():
-        runs=verify_response(github(
-            "/actions/workflows/"+name+"/runs?per_page=20&branch=main",token))
-        entries[key]=summarize(now,key,runs)
-    supplementary={}
-    for key,name in SUPPLEMENTAL_SCHEDULED.items():
-        runs=verify_response(github(
-            "/actions/workflows/"+name+"/runs?per_page=20&branch=main",token))
-        supplementary[key]=summarize(now,key,runs)
-    head_b=github("/git/ref/heads/main",token)["object"]["sha"]
-    main_exact=bool(head_a and head_a==head_b)
-    if not main_exact:raise RuntimeError("GITHUB_MAIN_CHANGED_DURING_ACTIONS_AUDIT")
+    now,head_a,inventory,entries,supplementary,attempts=read_stable_actions_snapshot(token)
     result={
         "schema":SCHEMA,"generated_at_utc":now.isoformat(),"main_sha":head_a,
         "main_stable_during_observation":True,
+        "atomic_snapshot_attempts":attempts,
         "workflow_inventory":inventory,
         "execution_witnesses":entries,
         "supplemental_scheduled_witnesses":supplementary,
