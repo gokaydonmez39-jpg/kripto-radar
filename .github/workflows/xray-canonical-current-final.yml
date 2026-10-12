@@ -300,9 +300,43 @@ jobs:
           cat /tmp/event_out >> "$GITHUB_OUTPUT"
           cat /tmp/event_out
 
-      - name: Healthy no-op while current upstream epoch is incomplete
+      - name: Annotate source-blocked no-op with exact ASOF (never label SUCCESS as GO)
         if: steps.event_rebind.outputs.ready == 'false' || (steps.event.outputs.ready != 'true' && steps.event.outputs.upstream_epoch_drift == 'true')
-        run: echo "XRAY_FINAL_UPSTREAM_EPOCH=WAITING_NOOP event_rebind_reason=${{ steps.event_rebind.outputs.pending_reason }}"
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "XRAY_FINAL_UPSTREAM_EPOCH=WAITING_NOOP event_rebind_reason=${{ steps.event_rebind.outputs.pending_reason }}"
+          echo "::warning title=XRAY SOURCE-BLOCKED FINAL::Workflow completed safely, but current upstream MC/HISTORY/Event lineage did not qualify for terminal generation. SUCCESS here is not research GO, R92, or notification delivery."
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          root=Path("nasdaq-xray")
+          def rd(name):
+              try: return json.loads((root/name).read_text())
+              except (OSError,ValueError,TypeError): return {}
+          master=rd("canonical_current_master_manifest.json")
+          history=rd("canonical_current_history.json")
+          terminal=rd("canonical_current_terminal.json")
+          values={
+              "status":"BLOCKED_UPSTREAM_NO_NEW_TERMINAL",
+              "master_asof":master.get("asof_et") or "UNKNOWN",
+              "history_asof":history.get("asof_et") or "UNKNOWN",
+              "terminal_asof":terminal.get("asof_et") or "UNKNOWN",
+              "terminal_status":terminal.get("status") or "UNKNOWN",
+              "current_exact_source_chain_pass":False,
+              "new_r92_created":False,
+              "phone_delivery_attested":False,
+              "execution":"NONE","real_money":"NO-GO",
+          }
+          rows=["## XRAY Final Factory — source-blocked safe no-op",
+                "This run **did not generate a new authoritative terminal**. A green Actions check is not research GO, an AL signal, or device delivery.",
+                "| Proof field | Observed |","|---|---|"]
+          rows += ["| "+k+" | "+str(v)+" |" for k,v in values.items()]
+          with open(os.environ["GITHUB_STEP_SUMMARY"],"a",encoding="utf-8") as fp:
+              fp.write("\n".join(rows)+"\n")
+          print("XRAY_FINAL_RELEASE_ATTESTATION=BLOCKED_UPSTREAM_NO_NEW_TERMINAL_NO_R92")
+          print("XRAY_FINAL_EPOCH_DIAGNOSTIC="+json.dumps(values,sort_keys=True))
+          PY
 
       - name: Fail closed when exact event binding is unavailable
         if: steps.event_rebind.outputs.ready != 'false' && steps.event.outputs.ready != 'true' && steps.event.outputs.upstream_epoch_drift != 'true'
