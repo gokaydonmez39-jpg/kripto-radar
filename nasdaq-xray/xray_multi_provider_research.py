@@ -84,7 +84,7 @@ def bq_historic_batch_shadow(symbols,asof,key,http_get):
     for row in obj:
         if not isinstance(row,dict):
             raise ValueError("BQ_BATCH_NON_OBJECT")
-        ticker=str(row.get("ticker") or "").upper()
+        ticker=row.get("ticker")
         # Additional time-series rows outside the explicitly requested ASOF
         # must not be used for authority or counted as same-session evidence.
         if row.get("date")!=asof:
@@ -145,7 +145,7 @@ def lookup(provider,sym,asof,keys,cache,http_get):
     if provider=="BQ_STOCK_PROFILE":
         obj=http_get(bq_url("stocks/profile",keys["BQ"],ticker=sym))
         row=obj.get("data",obj) if isinstance(obj,dict) else None
-        if not isinstance(row,dict) or str(row.get("ticker","")).upper()!=sym or not str(row.get("cik") or "").strip("0").isdigit():
+        if not isinstance(row,dict) or row.get("ticker")!=sym or not str(row.get("cik") or "").strip("0").isdigit():
             raise ValueError("BQ_IDENTITY_UNVERIFIED")
         return "IDENTITY_DISCOVERY_ONLY"
     if provider=="MASSIVE_TICKER_PIT":
@@ -171,7 +171,7 @@ def lookup(provider,sym,asof,keys,cache,http_get):
         if not isinstance(rows,list):
             raise ValueError("BQ_DAILY_MC_FLAT_ROWS_UNVERIFIED")
         matches=[r for r in rows if isinstance(r,dict)
-                 and str(r.get("ticker","")).upper()==sym
+                 and r.get("ticker")==sym
                  and r.get("date")==asof
                  and isinstance(r.get("metric"),str)
                  and "market cap" in r["metric"].casefold()
@@ -185,7 +185,7 @@ def lookup(provider,sym,asof,keys,cache,http_get):
             body={"conditions":"\"ticker\" = '"+sym+"'","preferred_columns":["Market Capitalization"]})
         rows=obj.get("data") if isinstance(obj,dict) else None
         if not isinstance(rows,list) or len(rows)!=1 or not isinstance(rows[0],dict) or (
-            str(rows[0].get("ticker","")).upper()!=sym or finite(rows[0].get("Market Capitalization")) is None):
+            rows[0].get("ticker")!=sym or finite(rows[0].get("Market Capitalization")) is None):
             raise ValueError("BQ_MC_IDENTITY_OR_CAP_UNVERIFIED")
         # BQ current screener is not verified PIT for canonical ASOF.
         return "LATEST_NON_PIT_MC_DISCOVERY_ONLY"
