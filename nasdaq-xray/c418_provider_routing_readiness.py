@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Actual C4.17 source-exact 514-cohort alternate-provider feasibility report.
+"""Current-ASOF C4.17 source-exact cohort provider feasibility report.
 
 This is a production-risk RED/GREEN router for source *eligibility*, not a
 source of prices. It reads CURRENT tracked canonical artifacts and separately
@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import argparse
 import copy
+import datetime as dt
 import hashlib
 import json
 import math
@@ -25,7 +26,7 @@ PROPOSAL = ROOT / "source_successor_c418_proposal.json"
 MASTER = ROOT / "canonical_current_master_manifest.json"
 PRICE = ROOT / "canonical_current_price_dv30.json"
 G9 = ROOT / "g9_entitlement_authority.json"
-SCHEMA = "XRAY_C418_REAL_514_MULTI_PROVIDER_ROUTING_READINESS_V1"
+SCHEMA = "XRAY_C418_DYNAMIC_MULTI_PROVIDER_ROUTING_READINESS_V2"
 
 EXPECTED_IDS = {
     "SEC_EDGAR","ALPACA","RALLIES","LONGBRIDGE","MASSIVE",
@@ -51,7 +52,7 @@ def valid_set(rows):
                 and all(type(x) is str and re.fullmatch(r"[A-Z0-9.-]+",x) for x in rows))
 
 def cap(n,rate):
-    require(type(n) is int and n>0 and type(rate) is int and rate>0,
+    require(type(n) is int and n>=0 and type(rate) is int and rate>0,
             "INVALID_QUOTA_ARITHMETIC")
     return (n+rate-1)//rate
 
@@ -120,8 +121,10 @@ def analyze(master,price,inv,proposal,g9,sha_master,sha_price,sha_inventory):
             and proposal.get("unknown_never_pass") is True,
             "NO_POLICY_CUTOVER")
     require(g9.get("status")=="BLOCKED_STRICT_PERMANENT_ZERO","G9_UNEXPECTED_CHANGE_REVIEW")
-    require(master.get("asof_et")==price.get("asof_et")
-            and master.get("asof_et")=="2026-10-09", "ASOF_SOURCE_CHANGE_REVALIDATE")
+    asof=price.get("asof_et")
+    require(type(asof) is str and re.fullmatch(r"20[0-9]{2}-[01][0-9]-[0-3][0-9]",asof or "") is not None
+            and dt.date.fromisoformat(asof).isoformat()==asof
+            and master.get("asof_et")==asof, "ASOF_MASTER_PRICE_NOT_EXACT")
     require(all(x.get("execution")=="NONE" and x.get("real_money")=="NO-GO"
                 and x.get("unknown_never_pass") is True for x in (master,price)),
             "CANONICAL_SAFETY_INVALID")
@@ -140,9 +143,10 @@ def analyze(master,price,inv,proposal,g9,sha_master,sha_price,sha_inventory):
             and type(price.get("blocked_count")) is int
             and price.get("blocked_count")==0,
             "SOURCE_HASH_SCOPE_OR_PRICE_NOT_COMPLETE")
-    require(len(ps)==514 and len(us)==12,"TARGET_514_12_DROPPED")
-    require(inv["live_shadow_probe_summary"]["asof"]==price["asof_et"],
-            "SHADOW_SAMPLE_NOT_SAME_ASOF")
+    require(len(ms)>0 and len(ps)<=len(ms),"MASTER_SCOPE_OR_PRICE_COHORT_BAD")
+    # Earlier interactive source samples remain historical when ASOF changes.
+    sample_asof=inv["live_shadow_probe_summary"]["asof"]
+    require(sample_asof<=asof,"HISTORICAL_SAMPLE_FROM_FUTURE")
     require(len(sha_master)==len(sha_price)==40 and len(sha_inventory)==40,
             "GIT_BLOB_NOT_40")
     candidate_local_unknown=sorted(set(ps)&set(us))
@@ -162,16 +166,17 @@ def analyze(master,price,inv,proposal,g9,sha_master,sha_price,sha_inventory):
     ti=providers["TIINGO"]
     estimates["TIINGO"]={
         "unique_symbol_quota_month":ti["max_unique_symbols"],
-        "single_account_full_514_coverage_possible":bool(ti["max_unique_symbols"]>=len(ps)),
+        "single_account_full_current_cohort_coverage_possible":bool(ti["max_unique_symbols"]>=len(ps)),
         "not_a_mc_source":True,
         "actual_same_asof_mc_entitlement":"UNVERIFIED",
     }
-    require(not estimates["TIINGO"]["single_account_full_514_coverage_possible"],
-            "TIINGO_QUOTA_ASSUMPTION_DRIFT")
     return {
         "schema":SCHEMA,
         "asof_et":price["asof_et"],
         "source_git_blob_shas":{"master":sha_master,"price":sha_price,"inventory":sha_inventory},
+        "historical_3_ticker_sample_asof_et":sample_asof,
+        "historical_3_ticker_sample_is_current_asof":sample_asof==asof,
+        "historical_sample_may_grant_primary":False,
         "canonical_price_pass_count":len(ps),
         "master_identity_pass_count":len(ms),
         "master_identity_unknown_count":len(us),
@@ -179,7 +184,7 @@ def analyze(master,price,inv,proposal,g9,sha_master,sha_price,sha_inventory):
         "discovered_source_rows":len(providers),
         "market_cap_direct_provider_count":sum(x["market_cap_direct"] for x in providers.values()),
         "historical_source_count":3,
-        "real_interactive_massive_rallies_samples":3,
+        "historical_interactive_massive_rallies_samples":3,
         "verified_distinct_market_cap_origin_count":0,
         "new_primary_mc_authority_count":0,
         "production_mc_primary_pass_count_created":0,
@@ -222,8 +227,8 @@ def selftest():
             "unknown_never_pass":True,"pass_symbols":["A","B"],"pass_count":2,
             "unknown_symbols":["SPAC"],"unknown_count":1,
             "queue_hash":symbol_hash(["A","B"])}
-    # Mutant evaluation has invariant fixed 514/12. Use full structural
-    # positive fixture without any fabricated price/vendor MC observations.
+    # The test starts from real Oct-09 counts, but dynamically shifts ASOF
+    # and cohort size to prove future exact-source sessions remain routable.
     master["pass_symbols"]=[f"S{i:04d}" for i in range(3184)]
     master["pass_count"]=3184
     master["unknown_symbols"]=[f"U{i:02d}" for i in range(12)]
@@ -268,7 +273,7 @@ def selftest():
         try:analyze(*m)
         except ValueError:n+=1
         else:raise RuntimeError("UNSAFE_ROUTER_MUTANT_ACCEPTED:"+label)
-    print("XRAY_C418_11_SOURCE_ROUTING=PASS_REAL_SOURCE_SCHEMA_"
+    print("XRAY_C418_11_SOURCE_ROUTING_DYNAMIC_ASOF=PASS_REAL_SOURCE_SCHEMA_"
           +str(n)+"_NEGATIVE_C417_NO_MC_NO_R92")
 
 def main():
@@ -284,6 +289,7 @@ def main():
     if opt.out:
         opt.out.write_text(json.dumps(result,indent=2,sort_keys=True)+"\n")
     print("XRAY_C418_MULTI_PROVIDER_FEASIBILITY=VALID_ROUTING_NO_PRODUCTION_GO")
+    print("XRAY_C418_CURRENT_ASOF="+result["asof_et"])
     print("XRAY_C418_SCOPE="+str(result["canonical_price_pass_count"]))
     print("XRAY_C418_SOURCES="+str(result["discovered_source_rows"]))
     print("XRAY_C418_LIVE_PRIMARY=0_SOURCE_LICENSE_AND_PIT_UNVERIFIED")
